@@ -21,7 +21,7 @@
         "client/build/",
         "server/build/"
       ],
-      "notes": "Imported as the Phaser base code. MIT notice is preserved in LICENSE."
+      "notes": "Imported as the Phaser base code. MIT notice is preserved in legal/upstream-licenses/turtlepu-worms-ii-MIT.txt."
     },
     {
       "id": "lorgan3-sorcerers",
