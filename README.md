@@ -39,11 +39,28 @@ npm start
 The browser client builds with Vite into `client/build/`. The Node server builds
 with esbuild into `server/build/server.js`.
 
+## Codex Subagents
+
+Role-specific Codex agents live in `.codex/agents/`:
+
+- `worms_port_planner`
+- `worms_port_test_worker`
+- `worms_port_base_game_worker`
+- `worms_port_network_worker`
+- `worms_port_asset_curator`
+- `worms_port_compliance_keeper`
+- `worms_port_docs_keeper`
+- `worms_port_reviewer`
+
+See `AGENTS.md` and `docs/planning/implementation_plan.md` for role routing.
+
 ## Upstream Pins
 
 - Base: `TurtlePU/worms-ii` at `75cc89a3a20a56473f2224a7f29b390be24a49a6`
 - Quarantine reference: `lorgan3/sorcerers` at
   `0f45c4920321c0a3a14de30fe5cf44131a38da89`
 
-See `docs/import-boundary.md`, `docs/asset-review-workflow.md`, and `legal/`
-for the operational rules.
+See `AGENTS.md`, `docs/import-boundary.md`,
+`docs/asset-review-workflow.md`, `docs/process/development_workflow.md`,
+`docs/planning/implementation_plan.md`, and `legal/` for the operational
+rules.

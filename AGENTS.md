@@ -1,0 +1,87 @@
+# Worms_Port Agent Instructions
+
+## Repository Context
+
+Worms_Port is an MIT-licensed Phaser project bootstrapped from the MIT
+`TurtlePU/worms-ii` code base. The repo uses `lorgan3/sorcerers` only as a
+quarantined reference/archive. Sorcerers code and bulk assets are not product
+inputs.
+
+Current project goal: keep the imported Turtle base buildable and gradually
+re-theme/rebuild it into a commercially usable project with strict third-party
+traceability. Only assets with exact-file evidence for commercial use,
+redistribution, modification, and attribution duties may enter `assets/`.
+
+## Source Documents
+
+Before feature work, read the relevant docs in this order:
+
+1. `README.md` - project setup, current import boundary, build commands.
+2. `docs/import-boundary.md` - Turtle base and Sorcerers quarantine rules.
+3. `docs/asset-review-workflow.md` - per-asset review workflow.
+4. `docs/process/development_workflow.md` - required development loop.
+5. `docs/planning/implementation_plan.md` - current slices and subagent roles.
+6. `legal/source-manifest.json` - source roles and upstream pins.
+7. `legal/asset-manifest.json` - approved product assets.
+8. `legal/allowed-licenses.json` - allowed and blocked asset licenses.
+9. `legal/dependency-license-overrides.json` - npm license metadata overrides.
+
+## Required Workflow
+
+For implementation work:
+
+1. Check `git status --short --branch`.
+2. Identify which source document and subagent role owns the change.
+3. Keep changes scoped to the requested slice.
+4. Preserve the Turtle/Sorcerers import boundary.
+5. Run the planned verification.
+6. Update docs or manifests when source, license, build, or workflow truth
+   changes.
+7. Report changed files, checks run, and remaining risk.
+
+If the user asks only for planning, review, or brainstorming, do not edit code.
+
+## Import Boundary Rules
+
+- `TurtlePU/worms-ii` is the approved MIT base code source.
+- `lorgan3/sorcerers` is GPL-3.0 quarantine/reference only.
+- Do not copy Sorcerers code into `client/`, `server/`, `shared/`, or scripts.
+- Do not bulk import Sorcerers assets.
+- Do not treat Sorcerers credits as final license evidence.
+- Product assets must live under `assets/` and have approved manifest entries.
+- Quarantine material belongs only under ignored quarantine folders.
+- Keep the project MIT-compatible for commercial use.
+
+## Test Expectations
+
+- Documentation-only changes do not require a full build; say that explicitly.
+- Source/tooling changes should run `npm run build`.
+- Compliance-sensitive changes should run `npm run check:compliance`.
+- Package changes should run `npm audit`.
+- Server/client runtime changes should include a smoke test when practical.
+- Always report skipped checks and why.
+
+## Codex Subagent Roles
+
+Role-specific Codex agents live in `.codex/agents/`:
+
+- `worms_port_planner` - feature slicing, scope checks, and import-boundary planning.
+- `worms_port_test_worker` - test planning, type/build/audit checks, and smoke verification.
+- `worms_port_base_game_worker` - Turtle-derived Phaser/client gameplay and re-theme work.
+- `worms_port_network_worker` - Express, Socket.IO, server runtime, and multiplayer state.
+- `worms_port_asset_curator` - Sorcerers quarantine review, asset manifests, and attribution.
+- `worms_port_compliance_keeper` - legal manifests, package/license gates, and MIT compatibility.
+- `worms_port_docs_keeper` - README, docs, AGENTS, planning, and role maintenance.
+- `worms_port_reviewer` - read-only review for boundary risk, bugs, and missing checks.
+
+Subagents coordinate through docs, manifests, commits, and completion summaries,
+not private handoff.
+
+## Git And Reporting
+
+- Check status before edits and commits.
+- Do not revert or overwrite user changes unless explicitly asked.
+- Keep commits small and conventional.
+- If asked to commit all open changes, use `git add -A`.
+- Final summaries should list behavior delivered, files changed, checks run,
+  and next recommended step.

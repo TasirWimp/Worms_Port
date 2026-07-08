@@ -43,6 +43,26 @@
         "asset import without exact-file license evidence"
       ],
       "notes": "The repo and its credits are pointers for review only. No Sorcerers files are product assets."
+    },
+    {
+      "id": "nimirun-coderepo-subagent-pattern",
+      "role": "process_pattern_reference",
+      "repository": "local/NimiRun_CodeRepo",
+      "url": "C:/Users/jensb/Desktop/Projects/NimiRun/NimiRun_CodeRepo",
+      "commit": null,
+      "license": "project-local-reference",
+      "decision": "pattern_adapted_no_code_import",
+      "copied_into": [],
+      "allowed_uses": [
+        "subagent role-organization pattern",
+        "repo workflow documentation pattern"
+      ],
+      "blocked_uses": [
+        "Pocket Bot product-specific role copy",
+        "Nimiq product scope import",
+        "runtime code import"
+      ],
+      "notes": "Used as the local reference for adapting AGENTS.md plus .codex/agents role scaffolding to Worms_Port-specific responsibilities."
     }
   ]
 }
