@@ -1,0 +1,66 @@
+{
+  "policy": "Overrides are used only when package-lock.json omits license metadata for an installed npm package whose package manifest has been checked.",
+  "checked_date": "2026-07-08",
+  "packages": {
+    "@types/body-parser": {
+      "license": "MIT",
+      "evidence": "node_modules/@types/body-parser/package.json"
+    },
+    "@types/connect": {
+      "license": "MIT",
+      "evidence": "node_modules/@types/connect/package.json"
+    },
+    "buffer-from": {
+      "license": "MIT",
+      "evidence": "node_modules/buffer-from/package.json"
+    },
+    "commander": {
+      "license": "MIT",
+      "evidence": "node_modules/commander/package.json"
+    },
+    "ee-first": {
+      "license": "MIT",
+      "evidence": "node_modules/ee-first/package.json"
+    },
+    "escape-html": {
+      "license": "MIT",
+      "evidence": "node_modules/escape-html/package.json"
+    },
+    "etag": {
+      "license": "MIT",
+      "evidence": "node_modules/etag/package.json"
+    },
+    "object-assign": {
+      "license": "MIT",
+      "evidence": "node_modules/object-assign/package.json"
+    },
+    "once": {
+      "license": "ISC",
+      "evidence": "node_modules/once/package.json"
+    },
+    "parseurl": {
+      "license": "MIT",
+      "evidence": "node_modules/parseurl/package.json"
+    },
+    "range-parser": {
+      "license": "MIT",
+      "evidence": "node_modules/range-parser/package.json"
+    },
+    "safer-buffer": {
+      "license": "MIT",
+      "evidence": "node_modules/safer-buffer/package.json"
+    },
+    "vary": {
+      "license": "MIT",
+      "evidence": "node_modules/vary/package.json"
+    },
+    "wrappy": {
+      "license": "ISC",
+      "evidence": "node_modules/wrappy/package.json"
+    },
+    "xmlhttprequest-ssl": {
+      "license": "MIT",
+      "evidence": "node_modules/xmlhttprequest-ssl/package.json"
+    }
+  }
+}

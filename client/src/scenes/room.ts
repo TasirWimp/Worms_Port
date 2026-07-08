@@ -1,7 +1,7 @@
-import 'phaser';
+import type { Socket } from 'socket.io-client';
 import Toastify from 'toastify-js';
 
-import Cookie from '../lib/Cookie';
+import Cookie from '../lib/cookie';
 import { $, request, ErrType, is_error, game_has_player } from '../lib/util';
 
 import OverlayedScene from './overlayed';
@@ -22,7 +22,7 @@ export default class RoomScene extends OverlayedScene
     protected me: string;
     protected ready: boolean;
     protected room_id: string;
-    protected socket: SocketIOClient.Socket;
+    protected socket: Socket;
 
     public constructor ()
     {
@@ -32,7 +32,7 @@ export default class RoomScene extends OverlayedScene
     public init (
         args: {
             room_id: string,
-            socket: SocketIOClient.Socket
+            socket: Socket
         }
     ) {
         this.ready = false;

@@ -1,4 +1,4 @@
-import 'phaser';
+import Phaser from 'phaser';
 
 export default abstract class OverlayedScene extends Phaser.Scene
 {

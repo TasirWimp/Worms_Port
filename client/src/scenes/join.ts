@@ -1,7 +1,7 @@
-import 'phaser';
+import type { Socket } from 'socket.io-client';
 
 import { $, request, game_has_player } from '../lib/util';
-import Cookie from '../lib/Cookie';
+import Cookie from '../lib/cookie';
 
 import OverlayedScene from './overlayed';
 
@@ -16,7 +16,7 @@ export default class JoinScene extends OverlayedScene
     /** Input of room id. */
     protected inp_room: HTMLInputElement;
 
-    protected socket: SocketIOClient.Socket;
+    protected socket: Socket;
 
     public constructor ()
     {
@@ -25,7 +25,7 @@ export default class JoinScene extends OverlayedScene
 
     public init (
         args: {
-            socket: SocketIOClient.Socket
+            socket: Socket
         }
     ) {
         this.socket = args.socket;

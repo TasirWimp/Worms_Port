@@ -2,7 +2,7 @@ import express from 'express';
 import http from 'http';
 import os from 'os';
 import path from 'path';
-import socket from 'socket.io';
+import { Server as SocketIOServer } from 'socket.io';
 
 import { init_id_generator } from './util/id-gen';
 
@@ -24,7 +24,7 @@ init_id_generator(words, 3);
 
 const app = express();
 const server = new http.Server(app);
-const io = socket(server);
+const io = new SocketIOServer(server);
 
 app.use('/', express.static(client_dir));
 app.use('/assets', express.static(path.join(__dirname, '../../client/assets')));

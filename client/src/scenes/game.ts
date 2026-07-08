@@ -1,6 +1,6 @@
-import 'phaser';
+import type { Socket } from 'socket.io-client';
 
-import Cookie from '../lib/Cookie';
+import Cookie from '../lib/cookie';
 
 import OverlayedScene from './overlayed';
 import { ErrType, is_error } from '../lib/util';
@@ -9,7 +9,7 @@ export default class GameScene extends OverlayedScene
 {
     protected me: PublicPlayerInfo;
     protected scheme: Scheme;
-    protected socket: SocketIOClient.Socket;
+    protected socket: Socket;
     protected watcher: EventTarget;
 
     public constructor ()
@@ -20,7 +20,7 @@ export default class GameScene extends OverlayedScene
 
     public init (
         args: {
-            socket: SocketIOClient.Socket
+            socket: Socket
         }
     ) {
         this.socket = args.socket;

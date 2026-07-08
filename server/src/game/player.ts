@@ -1,7 +1,7 @@
 /// <reference path="../../../shared/types.d.ts"/>
 
-import { beautify } from '~/util/id-gen';
-import { array_map } from '~/util/other';
+import { beautify } from '../util/id-gen';
+import { array_map } from '../util/other';
 
 import { Weapon } from './weapon-types';
 

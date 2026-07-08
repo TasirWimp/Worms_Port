@@ -1,7 +1,7 @@
 import { EventEmitter } from 'events';
-import SocketIO from 'socket.io';
+import type { Server } from 'socket.io';
 
-import { beautify } from '~/util/id-gen';
+import { beautify } from '../util/id-gen';
 
 import { Room } from './class';
 import { dummy } from './dummy';
@@ -28,7 +28,7 @@ export class RoomWatcher extends EventEmitter {
      * * `server:room#enable(enabled: boolean)`
      * * `server:room#leave(public_id: string)`
      */
-    protected io: SocketIO.Server;
+    protected io: Server;
 
     protected constructor() {
         super();
@@ -62,12 +62,12 @@ export class RoomWatcher extends EventEmitter {
         return this.lobbies.values().next().value;
     }
 
-    public use(io: SocketIO.Server) {
+    public use(io: Server) {
         this.io = io;
     }
 
     protected emit_enable(room: Room) {
-        this.io.sockets.connected[room.players[0].id].emit(
+        this.io.sockets.sockets.get(room.players[0].id)?.emit(
             'server:room#enable',
             room.players.every(({ ready }) => ready)
         );

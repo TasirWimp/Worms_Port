@@ -26,6 +26,19 @@ Run the compliance gate before importing or committing assets:
 npm run check:compliance
 ```
 
+## Build
+
+Use Node.js 20 or newer.
+
+```sh
+npm install
+npm run build
+npm start
+```
+
+The browser client builds with Vite into `client/build/`. The Node server builds
+with esbuild into `server/build/server.js`.
+
 ## Upstream Pins
 
 - Base: `TurtlePU/worms-ii` at `75cc89a3a20a56473f2224a7f29b390be24a49a6`

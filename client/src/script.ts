@@ -1,6 +1,6 @@
-import 'phaser';
+import Phaser from 'phaser';
 
-import io from 'socket.io-client';
+import { io } from 'socket.io-client';
 
 import JoinScene from './scenes/join';
 import RoomScene from './scenes/room';

@@ -1,17 +1,17 @@
-import * as Express from 'express';
-import SocketIO from 'socket.io';
+import type { Application } from 'express';
+import type { Server } from 'socket.io';
 
 import { GameWatcher } from './watcher';
 import { dummy } from './dummy';
 
-export function setup_game_api(app: Express.Application, io: SocketIO.Server) {
+export function setup_game_api(app: Application, io: Server) {
     setup_express_requests(app);
     setup_socket_events(io);
     GameWatcher.instance.use(io);
 }
 
-function setup_express_requests(app: Express.Application) {
-    app.get('/.game.has_player/game=:game_id?/player=:player_id?', (req, res) => {
+function setup_express_requests(app: Application) {
+    app.get('/.game.has_player/game=:game_id/player=:player_id', (req, res) => {
         res.send({
             response: GameWatcher.instance
                 .get(req.params.game_id).has_player(req.params.player_id)
@@ -19,7 +19,7 @@ function setup_express_requests(app: Express.Application) {
     });
 }
 
-function setup_socket_events(io: SocketIO.Server) {
+function setup_socket_events(io: Server) {
     io.on('connection', (socket) => {
         var game = dummy;
         socket

@@ -1,5 +1,5 @@
 import { EventEmitter } from 'events';
-import SocketIO from 'socket.io';
+import type { Server } from 'socket.io';
 
 import { Game } from './class';
 import { dummy } from './dummy';
@@ -9,7 +9,7 @@ export class GameWatcher extends EventEmitter {
     public static readonly instance = new GameWatcher();
 
     protected games: Map<string, Game>;
-    protected io: SocketIO.Server;
+    protected io: Server;
 
     protected constructor() {
         super();
@@ -33,7 +33,7 @@ export class GameWatcher extends EventEmitter {
         return this.games.get(game_id) || dummy;
     }
 
-    public use(io: SocketIO.Server) {
+    public use(io: Server) {
         this.io = io;
     }
 

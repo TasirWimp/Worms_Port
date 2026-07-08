@@ -1,21 +1,21 @@
-import * as Express from 'express';
-import SocketIO from 'socket.io';
+import type { Application } from 'express';
+import type { Server } from 'socket.io';
 
-import { beautify } from '~/util/id-gen';
+import { beautify } from '../util/id-gen';
 
 import { Room } from './class';
 import { dummy } from './dummy';
 import { RoomWatcher } from './watcher';
 
-export function setup_room_api(app: Express.Application, io: SocketIO.Server) {
+export function setup_room_api(app: Application, io: Server) {
     on_room_requests(app);
     on_room_events(io);
     RoomWatcher.instance.use(io);
 }
 
-function on_room_requests(application: Express.Application) {
+function on_room_requests(application: Application) {
     application
-        .get('/.room.can_join/id=:room_id?', (req, res) => {
+        .get('/.room.can_join/id=:room_id', (req, res) => {
             res.send({
                 response: RoomWatcher.instance
                     .can_join(req.params.room_id)
@@ -27,12 +27,12 @@ function on_room_requests(application: Express.Application) {
             }
             res.send(RoomWatcher.instance.join_id());
         })
-        .get('/.room.get_players/id=:room_id?', (req, res) => {
+        .get('/.room.get_players/id=:room_id', (req, res) => {
             res.send(RoomWatcher.instance.get(req.params.room_id).get_players());
         });
 }
 
-function on_room_events(io: SocketIO.Server) {
+function on_room_events(io: Server) {
     io.on('connection', (socket) => {
         let room = dummy;
         socket
