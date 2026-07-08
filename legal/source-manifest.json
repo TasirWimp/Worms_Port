@@ -1,0 +1,48 @@
+{
+  "checked_date": "2026-07-08",
+  "sources": [
+    {
+      "id": "turtlepu-worms-ii",
+      "role": "base_code",
+      "repository": "TurtlePU/worms-ii",
+      "url": "https://github.com/TurtlePU/worms-ii",
+      "commit": "75cc89a3a20a56473f2224a7f29b390be24a49a6",
+      "license": "MIT",
+      "decision": "approved_base",
+      "copied_into": [
+        "client/",
+        "server/",
+        "shared/",
+        "package.json",
+        "package-lock.json"
+      ],
+      "excluded": [
+        ".git/",
+        "client/build/",
+        "server/build/"
+      ],
+      "notes": "Imported as the Phaser base code. MIT notice is preserved in LICENSE."
+    },
+    {
+      "id": "lorgan3-sorcerers",
+      "role": "quarantine_reference_only",
+      "repository": "lorgan3/sorcerers",
+      "url": "https://github.com/lorgan3/sorcerers",
+      "commit": "0f45c4920321c0a3a14de30fe5cf44131a38da89",
+      "license": "GPL-3.0",
+      "decision": "not_imported",
+      "copied_into": [],
+      "allowed_uses": [
+        "gameplay reference",
+        "asset-origin discovery",
+        "local ignored quarantine review"
+      ],
+      "blocked_uses": [
+        "code copy",
+        "bulk asset import",
+        "asset import without exact-file license evidence"
+      ],
+      "notes": "The repo and its credits are pointers for review only. No Sorcerers files are product assets."
+    }
+  ]
+}

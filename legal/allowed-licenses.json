@@ -1,0 +1,44 @@
+{
+  "approved_for_product_assets": [
+    "CC0-1.0",
+    "PDM-1.0",
+    "Public-Domain",
+    "MIT",
+    "BSD-2-Clause",
+    "BSD-3-Clause",
+    "Apache-2.0",
+    "ISC",
+    "Zlib",
+    "CC-BY-3.0",
+    "CC-BY-4.0",
+    "Commercial-Asset-License",
+    "Owned-Original"
+  ],
+  "requires_attribution": [
+    "CC-BY-3.0",
+    "CC-BY-4.0",
+    "MIT",
+    "BSD-2-Clause",
+    "BSD-3-Clause",
+    "Apache-2.0",
+    "ISC",
+    "Zlib",
+    "Commercial-Asset-License"
+  ],
+  "blocked_for_product_assets": [
+    "GPL-2.0",
+    "GPL-3.0",
+    "AGPL-3.0",
+    "LGPL-2.1",
+    "LGPL-3.0",
+    "CC-BY-SA-3.0",
+    "CC-BY-SA-4.0",
+    "CC-BY-NC-3.0",
+    "CC-BY-NC-4.0",
+    "CC-BY-ND-3.0",
+    "CC-BY-ND-4.0",
+    "Personal-Use-Only",
+    "No-Redistribution",
+    "Unclear"
+  ]
+}

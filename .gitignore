@@ -1,0 +1,25 @@
+# node
+node_modules/
+npm-debug.log*
+
+# parcel
+.cache/
+client/dist/
+server/dist/
+client/build/
+server/build/
+
+# local-only upstream review material
+.quarantine/
+assets-quarantine/sorcerers/raw/**
+assets-quarantine/sorcerers/reviewed/green/**
+assets-quarantine/sorcerers/reviewed/yellow/**
+assets-quarantine/sorcerers/reviewed/rejected/**
+!assets-quarantine/sorcerers/raw/README.md
+!assets-quarantine/sorcerers/raw/.gitkeep
+!assets-quarantine/sorcerers/reviewed/green/README.md
+!assets-quarantine/sorcerers/reviewed/green/.gitkeep
+!assets-quarantine/sorcerers/reviewed/yellow/README.md
+!assets-quarantine/sorcerers/reviewed/yellow/.gitkeep
+!assets-quarantine/sorcerers/reviewed/rejected/README.md
+!assets-quarantine/sorcerers/reviewed/rejected/.gitkeep

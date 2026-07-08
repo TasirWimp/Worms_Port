@@ -1,0 +1,12 @@
+{
+    "compilerOptions": {
+        "allowSyntheticDefaultImports": true,
+        "baseUrl": "./src",
+        "downlevelIteration": true,
+        "paths": {
+            "~*": ["./*"]
+        },
+        "resolveJsonModule": true,
+        "target": "es5"
+    }
+}
