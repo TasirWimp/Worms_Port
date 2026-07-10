@@ -11,6 +11,7 @@
     "check:package-licenses": "node scripts/check-package-licenses.js",
     "check:compliance": "npm run check:asset-manifest && npm run check:import-boundary && npm run check:package-licenses",
     "check:types": "tsc -p server/tsconfig.json --noEmit && tsc -p client/tsconfig.json --noEmit",
+    "smoke": "node scripts/smoke-built-server.js",
     "start": "node server/build/server.js",
     "dev-client": "vite --config vite.client.config.ts --host 0.0.0.0",
     "dev-server": "tsx watch server/src/server.ts"

@@ -33,11 +33,14 @@ Use Node.js 20 or newer.
 ```sh
 npm install
 npm run build
+npm run smoke
 npm start
 ```
 
 The browser client builds with Vite into `client/build/`. The Node server builds
-with esbuild into `server/build/server.js`.
+with esbuild into `server/build/server.js`. The smoke command starts that built
+server on an available local port and verifies the game page and room join-ID
+API.
 
 ## Codex Subagents
 

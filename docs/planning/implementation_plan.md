@@ -43,7 +43,7 @@ Current roles:
 
 ### WP-001 Subagent Scaffolding
 
-Status: active.
+Status: complete.
 
 Goal: add Worms_Port-specific subagent roles, repo instructions, and workflow
 docs adapted from NimiRun_CodeRepo's concept.
@@ -55,6 +55,8 @@ Verification:
 
 ### WP-002 Runtime Smoke Test Script
 
+Status: complete.
+
 Goal: add a repeatable script for built-server smoke checks so future network
 changes can verify `/` and a room API response without ad hoc commands.
 
@@ -64,6 +66,10 @@ Verification:
 
 - `npm run build`
 - smoke script returns success against the built server.
+
+Delivered with `npm run smoke`, which starts `server/build/server.js` on an
+available local port, verifies `/` and `/.room.join_id`, and cleans up the
+server process after success or failure.
 
 ### WP-003 Product Rename And Theme Boundary
 
