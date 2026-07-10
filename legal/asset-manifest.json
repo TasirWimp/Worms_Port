@@ -1,5 +1,24 @@
 {
   "policy": "Only approved, traceable, commercial-use-compatible product assets may enter assets/.",
-  "checked_date": "2026-07-08",
-  "assets": []
+  "checked_date": "2026-07-10",
+  "assets": [
+    {
+      "id": "pocket-robot-openai-owned-original",
+      "file": "assets/sprites/pocket-robot.png",
+      "origin_repo": "direct/user-provided ChatGPT generation",
+      "original_source_url": "https://chatgpt.com/",
+      "author": "TasirWimp with OpenAI image generation",
+      "license": "Owned-Original",
+      "commercial_use_allowed": true,
+      "redistribution_allowed": true,
+      "modification_allowed": true,
+      "attribution_required": false,
+      "share_alike": false,
+      "no_technical_restrictions": false,
+      "evidence_url": "https://openai.com/policies/terms-of-use/",
+      "checked_date": "2026-07-10",
+      "decision": "approved",
+      "notes": "User supplied and authorized the source concept for project use. Source concept SHA-256: 762327F9D87D60757B5858DEFE5E9284C73874CF28EF72F23502C421161064DF. OpenAI-built-in image generation recreated the isolated robot on a chroma-key background; local chroma-key removal produced the RGBA master. Master SHA-256: 32F655898444C48F58DA3BEADC62483ED82C3632CFC1B4B0EC9CD27752AD9E83. Runtime PNG is a 456x512 Lanczos downscale with SHA-256: 42930118FDFD50F62D2433D76B477ECCA56D5459497943C1F431695C511EE355. Prompt intent: faithfully recreate only the small faceted bronze-and-black robot with two amber eyes as an isolated full-body 2D game asset. OpenAI Terms of Use state that, as between the user and OpenAI and to the extent permitted by law, the user owns Output; the user remains responsible for Input rights and use. No Sorcerers material was used."
+    }
+  ]
 }

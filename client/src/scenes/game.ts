@@ -5,6 +5,12 @@ import Cookie from '../lib/cookie';
 import OverlayedScene from './overlayed';
 import { ErrType, is_error } from '../lib/util';
 
+const POCKET_ROBOT_TEXTURE = 'pocket-robot';
+const pocketRobotUrl = new URL(
+    '../../../assets/sprites/pocket-robot.png',
+    import.meta.url
+).href;
+
 export default class GameScene extends OverlayedScene
 {
     protected me: PublicPlayerInfo;
@@ -28,9 +34,21 @@ export default class GameScene extends OverlayedScene
         this.validate();
     }
 
+    public preload ()
+    {
+        super.preload();
+        this.load.image(POCKET_ROBOT_TEXTURE, pocketRobotUrl);
+    }
+
     public create ()
     {
         super.create();
+
+        const { width, height } = this.game.canvas;
+        const pocketRobot = this.add
+                .image(width / 2, height / 2, POCKET_ROBOT_TEXTURE)
+                .setDepth(-1);
+        pocketRobot.setScale(Math.min(height * 0.6, 360) / pocketRobot.height);
 
         if (!this.me) {
             this.watcher.addEventListener('me-set', () => this.emit_ready());

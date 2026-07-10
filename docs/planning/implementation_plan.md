@@ -80,6 +80,8 @@ Verification:
 
 ### WP-004 First Asset Import Trial
 
+Status: complete.
+
 Goal: import one CC0/owned placeholder asset through the full manifest,
 attribution, and compliance flow.
 
@@ -90,6 +92,11 @@ Verification:
 - complete `legal/asset-manifest.json` entry,
 - `npm run check:compliance`,
 - build if runtime references are added.
+
+Delivered with the owned, AI-assisted Pocket Robot runtime sprite. The approved
+asset is loaded directly from `assets/sprites/` through Vite and displayed by
+the Phaser game scene. Exact source, master, and runtime hashes are recorded in
+the asset manifest.
 
 ## Standing Risks
 
