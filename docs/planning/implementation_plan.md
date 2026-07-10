@@ -73,6 +73,8 @@ server process after success or failure.
 
 ### WP-003 Product Rename And Theme Boundary
 
+Status: active.
+
 Goal: remove remaining Worms-facing naming from user-visible surfaces and define
 a new non-infringing theme direction before importing visual/audio assets.
 
@@ -83,6 +85,13 @@ Verification:
 
 - source scan for blocked brand names in user-facing code/docs,
 - `npm run build`.
+
+Direction selected: **NIMble Knots: Cotton Clash**, featuring mouthless,
+big-eyed Knotkin fantasy Callings in the cotton-and-crochet Patchwork Realms.
+`docs/art-direction.md` is the creative source of truth. The concept image is
+documentation-only pending Nimiq brand-use confirmation and final per-file
+product asset approval. The Pocket Robot is non-canonical and remains only as
+the completed asset-import trial until a later runtime replacement slice.
 
 ### WP-004 First Asset Import Trial
 

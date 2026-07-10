@@ -17,14 +17,16 @@ redistribution, modification, and attribution duties may enter `assets/`.
 Before feature work, read the relevant docs in this order:
 
 1. `README.md` - project setup, current import boundary, build commands.
-2. `docs/import-boundary.md` - Turtle base and Sorcerers quarantine rules.
-3. `docs/asset-review-workflow.md` - per-asset review workflow.
-4. `docs/process/development_workflow.md` - required development loop.
-5. `docs/planning/implementation_plan.md` - current slices and subagent roles.
-6. `legal/source-manifest.json` - source roles and upstream pins.
-7. `legal/asset-manifest.json` - approved product assets.
-8. `legal/allowed-licenses.json` - allowed and blocked asset licenses.
-9. `legal/dependency-license-overrides.json` - npm license metadata overrides.
+2. `docs/art-direction.md` - NIMble Knots world, characters, visual boundary,
+   and concept provenance.
+3. `docs/import-boundary.md` - Turtle base and Sorcerers quarantine rules.
+4. `docs/asset-review-workflow.md` - per-asset review workflow.
+5. `docs/process/development_workflow.md` - required development loop.
+6. `docs/planning/implementation_plan.md` - current slices and subagent roles.
+7. `legal/source-manifest.json` - source roles and upstream pins.
+8. `legal/asset-manifest.json` - approved product assets.
+9. `legal/allowed-licenses.json` - allowed and blocked asset licenses.
+10. `legal/dependency-license-overrides.json` - npm license metadata overrides.
 
 ## Required Workflow
 

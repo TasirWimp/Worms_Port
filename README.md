@@ -42,6 +42,17 @@ with esbuild into `server/build/server.js`. The smoke command starts that built
 server on an available local port and verifies the game page and room join-ID
 API.
 
+## World And Art Direction
+
+The planned product identity is **NIMble Knots: Cotton Clash**, a playful
+fantasy artillery game set in handcrafted Patchwork Realms. Its Knotkin heroes
+combine cotton and crochet materials, large bead eyes, mouthless Nimiq-inspired
+geometry, and distinct fantasy Callings.
+
+See `docs/art-direction.md` for the current world, character, material, Nimiq
+palette, reward-loop, provenance, and import-boundary decisions. Concept art is
+documentation-only until it passes the product asset gate.
+
 ## Codex Subagents
 
 Role-specific Codex agents live in `.codex/agents/`:

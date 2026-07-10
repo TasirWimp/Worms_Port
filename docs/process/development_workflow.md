@@ -10,6 +10,8 @@ Use these files to decide where a change belongs:
 
 - `README.md` for setup, build, and high-level repo status.
 - `AGENTS.md` for Codex operating rules and subagent roles.
+- `docs/art-direction.md` for product identity, world, character, visual, and
+  concept-art boundaries.
 - `docs/import-boundary.md` for upstream source roles.
 - `docs/asset-review-workflow.md` for third-party asset review.
 - `docs/planning/implementation_plan.md` for current slices and role routing.
