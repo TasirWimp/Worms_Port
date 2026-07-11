@@ -1,8 +1,11 @@
 # NIMble Knots: Cotton Clash
 
-NIMble Knots is an MIT-licensed fantasy artillery game built with Phaser. The
-`Worms_Port` repository was bootstrapped from the MIT `TurtlePU/worms-ii` code
-base and retains that provenance.
+NIMble Knots is an MIT-licensed, mobile-first fantasy artillery game built with
+Phaser for the Nimiq Pay Mini Apps environment. The competition release focuses
+on an immediately available single-player challenge against a deterministic AI
+opponent, with an optional fixed sponsor-funded NIM reward for eligible wins.
+The `Worms_Port` repository was bootstrapped from the MIT
+`TurtlePU/worms-ii` code base and retains that provenance.
 
 ## Import Boundary
 
@@ -53,6 +56,28 @@ geometry, and distinct fantasy Callings.
 See `docs/art-direction.md` for the current world, character, material, Nimiq
 palette, reward-loop, provenance, and import-boundary decisions. Concept art is
 documentation-only until it passes the product asset gate.
+
+The canonical artwork reference for future Knotkin production is
+`docs/images/art-direction/knotkin-class-lineup-concept.png`. Production assets
+must follow its visual system but still require independent generation records,
+exact-file approval, and manifest entries before runtime use.
+
+## Competition Release
+
+The active release target is phone-only play inside Nimiq Pay:
+
+- portrait-first and landscape-capable touch controls,
+- instant practice without matchmaking or a wallet prompt,
+- a deterministic single-player Daily Grand Knot Challenge,
+- server-authoritative rewarded matches and replay-safe claims,
+- fixed sponsor-funded NIM rewards with no player stake or betting,
+- Wizard, Thief, and Warrior as the initial Calling choices,
+- automated mobile-browser validation, with physical Android/iOS testing kept
+  outside the autonomous development cycle.
+
+PvP matchmaking is a post-competition feature. See
+`docs/planning/implementation_plan.md` for the active execution pointer and
+work-package sequence.
 
 ## Codex Subagents
 

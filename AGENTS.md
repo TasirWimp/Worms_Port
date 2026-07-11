@@ -7,10 +7,12 @@ Worms_Port is an MIT-licensed Phaser project bootstrapped from the MIT
 quarantined reference/archive. Sorcerers code and bulk assets are not product
 inputs.
 
-Current project goal: keep the imported Turtle base buildable and gradually
-re-theme/rebuild it into a commercially usable project with strict third-party
-traceability. Only assets with exact-file evidence for commercial use,
-redistribution, modification, and attribution duties may enter `assets/`.
+Current project goal: deliver a mobile-first Nimiq Pay competition release with
+instant single-player practice, a deterministic AI Loomkeeper, and an optional
+fixed sponsor-funded NIM reward for eligible skill-based wins. PvP matchmaking
+is deferred. Keep the imported Turtle base buildable and preserve strict
+third-party traceability. Only assets with exact-file evidence for commercial
+use, redistribution, modification, and attribution duties may enter `assets/`.
 
 ## Source Documents
 
@@ -27,6 +29,10 @@ Before feature work, read the relevant docs in this order:
 8. `legal/asset-manifest.json` - approved product assets.
 9. `legal/allowed-licenses.json` - allowed and blocked asset licenses.
 10. `legal/dependency-license-overrides.json` - npm license metadata overrides.
+
+For fresh-chat re-entry, follow that order, then read the **Execution Pointer**
+at the top of `docs/planning/implementation_plan.md`. Check Git status and recent
+commits before starting only the named next work package.
 
 ## Required Workflow
 
@@ -61,7 +67,25 @@ If the user asks only for planning, review, or brainstorming, do not edit code.
 - Compliance-sensitive changes should run `npm run check:compliance`.
 - Package changes should run `npm audit`.
 - Server/client runtime changes should include a smoke test when practical.
+- Gameplay UI changes should run the automated phone-browser matrix once WP-013
+  provides it.
+- Real Android/iOS testing is outside the autonomous cycle. Report it as not run
+  until a separate release-testing environment is provided.
 - Always report skipped checks and why.
+
+## Active Product Constraints
+
+- Competition release play must not depend on another human being online.
+- Practice must work without wallet connection, matchmaking, or a reward pool.
+- Rewarded matches are server-authoritative deterministic skill challenges
+  against an independently implemented AI.
+- Rewards are fixed and sponsor-funded. Player stakes, betting, escrow, random
+  winner selection, and player-loss-funded payouts are blocked.
+- Phone portrait is the default composition; landscape is supported but cannot
+  be required. No core action may require hover, keyboard, or precision mouse.
+- Production artwork must follow
+  `docs/images/art-direction/knotkin-class-lineup-concept.png` while preserving
+  its documentation-only status until exact-file asset approval.
 
 ## Codex Subagent Roles
 

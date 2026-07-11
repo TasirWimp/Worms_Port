@@ -5,6 +5,43 @@ is scoped coordination around the current repo risks: MIT base code, Sorcerers
 quarantine, commercial-use asset traceability, and a modern buildable
 Phaser/Socket.IO stack.
 
+## Execution Pointer
+
+- Active target: mobile-first single-player Nimiq Pay competition release.
+- Next work package: **WP-005 Autonomous Foundation And Release Contract**.
+- Last completed work package: **WP-004 First Asset Import Trial**.
+- PvP and matchmaking: deferred until after the competition release.
+- Canonical artwork reference:
+  `docs/images/art-direction/knotkin-class-lineup-concept.png`.
+- Physical Android/iOS testing: outside the automated cycle. Record it as not
+  run until a separate release-testing environment is provided.
+
+A fresh Codex chat should read `AGENTS.md` and its ordered source documents,
+check the worktree and recent commits, then start only the work package named
+above. Update this pointer in the same commit that completes a work package.
+
+## Competition Release Contract
+
+The first public release must be useful when only one person is online. Its
+primary journey is:
+
+1. Open the mini app on a phone inside Nimiq Pay.
+2. Start an unlimited Practice Clash without matchmaking or a wallet prompt.
+3. Optionally sign an eligible Daily Grand Knot Challenge with a Nimiq wallet.
+4. Fight a deterministic AI Loomkeeper under server-authoritative rules.
+5. Win by skill within a disclosed turn limit.
+6. Claim one reserved, fixed sponsor-funded NIM reward when available.
+7. Retry, view the daily leaderboard, or share the mini-app deep link.
+
+The release starts with one player-controlled Knotkin, one AI opponent, one
+Patch, Wizard/Thief/Warrior Calling choices, Threadball, two additional
+independently designed Relics, movement, touch aiming and power, destructible
+terrain, Stitching damage, turn timing, Unraveling, results, and retry.
+
+The reward is not a stake, wager, escrow, random prize, or transfer funded by a
+losing player. Practice remains available when the Prize Loom is empty. Reward
+availability and terms must be disclosed before a challenge starts.
+
 ## Current Status
 
 - `TurtlePU/worms-ii` is imported as the MIT base code source.
@@ -13,6 +50,11 @@ Phaser/Socket.IO stack.
 - Compliance checks cover product asset manifests, import-boundary rules, and
   npm package license policy.
 - No Sorcerers product assets or Sorcerers code are imported.
+- WP-003 established NIMble Knots and the canonical Knotkin Calling lineup.
+- The current runtime is a lobby/reconnect shell with placeholder gameplay; it
+  does not yet implement the competition release contract.
+- Automated unit, deterministic simulation, Socket.IO protocol, mobile-browser,
+  visual-regression, and performance suites do not yet exist.
 
 ## Codex Subagent Roles
 
@@ -26,10 +68,10 @@ Current roles:
   and non-goal definition before code changes.
 - `worms_port_test_worker` - test planning, typecheck/build/audit verification,
   and smoke-test notes.
-- `worms_port_base_game_worker` - Turtle-derived Phaser client, scene behavior,
-  overlay UI, project renaming, and re-theme implementation.
-- `worms_port_network_worker` - Express server, Socket.IO protocol, room/game
-  lifecycle, and multiplayer runtime behavior.
+- `worms_port_base_game_worker` - Turtle-derived Phaser client, phone layouts,
+  touch combat, scene behavior, overlay UI, and re-theme implementation.
+- `worms_port_network_worker` - Express server, Socket.IO protocol,
+  authoritative simulation sessions, challenge tickets, and reward runtime.
 - `worms_port_asset_curator` - Sorcerers quarantine, exact-file asset license
   review, `assets/`, `legal/asset-manifest.json`, and attribution.
 - `worms_port_compliance_keeper` - MIT compatibility, source manifests,
@@ -39,7 +81,7 @@ Current roles:
 - `worms_port_reviewer` - read-only review for bugs, boundary drift, license
   gaps, missing tests, and build/runtime risk.
 
-## Near-Term Slices
+## Completed Slices
 
 ### WP-001 Subagent Scaffolding
 
@@ -115,6 +157,244 @@ complete manifest trial. WP-003 later removed it from the client bundle after
 the Knotkin direction was selected. The approved file and exact source, master,
 and runtime hashes remain as a traceability fixture in the asset manifest.
 
+## Autonomous Execution Model
+
+Every planned work package runs in an isolated branch or worktree and follows
+the loop in `docs/process/development_workflow.md`. The orchestrating agent must
+record the starting commit, changed paths, planned checks, deterministic seeds,
+and final evidence. Implementation, test, compliance, asset, and review roles
+remain separated when their responsibilities differ.
+
+Routine implementation choices do not require user confirmation. Stop and ask
+only when a change would weaken licensing or import rules, use unclear brand or
+asset rights, activate real funds, expose secrets, materially change the release
+contract, or require unavailable external infrastructure.
+
+## Sorcerers Clean-Room Protocol
+
+Sorcerers can inform black-box behavior only:
+
+1. A reference observer records visible inputs, outcomes, state transitions,
+   and timing tolerances against the pinned Sorcerers commit.
+2. The record identifies viewed material and classifies each requirement as
+   product-authored, Turtle-derived, common genre behavior, or reference-observed.
+3. It excludes code, algorithms, internal identifiers, constants, file names,
+   assets, costumes, audio, and distinctive expressive sequences.
+4. The behavioral specification is frozen and hashed before implementation.
+5. Implementers use only that specification, the MIT Turtle base, this repo's
+   product documents, and independently licensed technical sources.
+6. A read-only reviewer checks for suspicious text, identifiers, constants,
+   structure, control flow, event sequences, and asset similarity.
+
+Sorcerers images or files must never be uploaded to image generation, ComfyUI,
+AutoSprite, or another production service.
+
+## Planned Work Packages
+
+### WP-005 Autonomous Foundation And Release Contract
+
+Status: next.
+
+Goal: make the approved plan executable and fail closed before gameplay work.
+
+Owning roles: `worms_port_planner`, `worms_port_test_worker`,
+`worms_port_compliance_keeper`, `worms_port_docs_keeper`.
+
+Deliverables:
+
+- executable work-package and evidence conventions,
+- clean-room reference records and similarity-review gate,
+- CI for compliance, types, clean build, audit, and non-stale smoke testing,
+- stronger import scanning that includes untracked product files,
+- one runtime path from approved root `assets/` into the client build,
+- official Nimiq Mini Apps skill and MCP capability readiness notes.
+
+Verification: compliance, types, clean build, audit, built smoke, and read-only
+review. No gameplay behavior is added.
+
+### WP-006 Validated Session And Command Protocol
+
+Status: planned. Depends on WP-005.
+
+Goal: define runtime-validated schemas for signed sessions, practice and reward
+challenge creation, commands, snapshots, acknowledgements, errors, and results.
+Replace caller-supplied Socket.IO identity with opaque server-issued tokens;
+add origin, size, rate, timeout, teardown, and replay guards.
+
+Owning roles: `worms_port_network_worker`, `worms_port_test_worker`.
+
+Verification: schema unit tests, malformed/event-flood cases, real
+`socket.io-client` protocol tests, compliance, types, build, and built smoke.
+
+### WP-007 Deterministic Artillery Simulation
+
+Status: planned. Depends on WP-006.
+
+Goal: implement a Phaser-independent, server-authoritative model with fixed
+ticks, seeded randomness, stable command ordering, serializable snapshots,
+state hashes, movement, projectile flight, collision, bounded terrain
+deformation, Stitching damage, turns, timeouts, and victory.
+
+Owning roles: `worms_port_network_worker`, `worms_port_base_game_worker`,
+`worms_port_test_worker`.
+
+Verification: unit tests, invariant/property tests with printed seeds, golden
+replays, reconnect reconstruction, duplicate/late command rejection, build.
+
+### WP-008 Loomkeeper AI
+
+Status: planned. Depends on WP-007.
+
+Goal: add an independently designed deterministic AI that evaluates a bounded
+set of legal movement, Relic, angle, and power choices through the public
+simulation API. Difficulty comes from bounded search and controlled aim error,
+not hidden rule advantages.
+
+Owning roles: `worms_port_base_game_worker`, `worms_port_test_worker`.
+
+Verification: deterministic decision tests, legal-command invariants, turn
+budget, difficulty bounds, golden match replays, build.
+
+### WP-009 Phone Combat Scene
+
+Status: planned. Depends on WP-007; may proceed in parallel with WP-008.
+
+Goal: implement the portrait-first Phaser battlefield and large touch controls
+for movement, Relic selection, drag aim/power, trajectory preview, firing,
+Stitching, turn time, pause, and retry. Landscape is enhanced but optional.
+Use code-drawn placeholders until production art is approved.
+
+Owning roles: `worms_port_base_game_worker`, `worms_port_test_worker`.
+
+Verification: phone viewport browser tests, touch-only journey, safe areas,
+resize/orientation, background/resume, reduced motion, screenshots, build.
+
+### WP-010 Complete Practice Clash
+
+Status: planned. Depends on WP-008 and WP-009.
+
+Goal: deliver an immediate, unlimited, non-rewarded player-versus-Loomkeeper
+match with onboarding, results, retry, and deterministic local/server modes.
+
+Owning roles: `worms_port_base_game_worker`, `worms_port_network_worker`,
+`worms_port_test_worker`.
+
+Verification: complete touch journey on the browser phone matrix, two full
+golden matches, result consistency, reconnect/resume, visual evidence, build.
+
+### WP-011 Nimiq Pay Identity Adapter
+
+Status: planned. Depends on WP-006 and WP-010.
+
+Goal: isolate the official Mini App SDK behind an adapter for initialization,
+language, wallet account selection, signed challenges, rejection, timeout, and
+optional consent-based device identity. Practice cannot depend on the provider.
+
+Owning roles: `worms_port_network_worker`, `worms_port_compliance_keeper`,
+`worms_port_test_worker`.
+
+Verification: fake-provider approve/reject/timeout tests, nonce expiry, wrong
+address/network, replay rejection, package audit, compliance, build.
+
+### WP-012 Sponsored Daily Challenge
+
+Status: planned. Depends on WP-007, WP-008, and WP-011.
+
+Goal: implement fixed reward configuration, eligibility checks, short-lived
+reward reservation, server-authoritative result verification, idempotent claim
+queue, daily ceiling, exhausted-pool disclosure, and payout kill switch.
+
+Owning roles: `worms_port_network_worker`, `worms_port_compliance_keeper`,
+`worms_port_test_worker`, `worms_port_reviewer`.
+
+Verification: forged result, nonce replay, duplicate claim, reservation expiry,
+concurrent winners, depleted pool, cancellation, provider outage, delayed
+confirmation, and secret-scan tests. Real funds remain disabled by default.
+
+### WP-013 Autonomous Quality Harness
+
+Status: planned. Depends on WP-010 and WP-012.
+
+Goal: complete automated browser, visual, performance, protocol, abuse, and
+reward-security gates. Use isolated browser contexts and deterministic fake
+wallets; retain traces, screenshots, diffs, replay seeds, bundle data, and
+timing evidence on failure.
+
+Owning roles: `worms_port_test_worker`, `worms_port_reviewer`.
+
+Verification matrix: mobile Chromium at 360x640, 390x844, and 412x915;
+844x390 landscape; mobile WebKit emulation; low-bandwidth/offline/resume;
+desktop only as a debugging fallback. Physical phones are explicitly excluded.
+
+### WP-014 Production Art And Audio
+
+Status: planned. Depends on WP-009 and WP-013 asset gates.
+
+Goal: produce Wizard, Thief, Warrior, Loomkeeper variant, Relics, first Patch,
+effects, UI media, and short audio through the MCP asset pipeline. Every brief
+must cite `docs/images/art-direction/knotkin-class-lineup-concept.png` as the
+canonical visual reference. No pixels from the concept image enter runtime
+without explicit exact-file approval.
+
+Owning roles: `worms_port_asset_curator`, `worms_port_compliance_keeper`,
+`worms_port_base_game_worker`, `worms_port_reviewer`.
+
+Verification: art-direction checks, animation consistency, exact provenance,
+model/component license evidence, manifest hashes, attribution, compliance,
+mobile screenshots, build.
+
+### WP-015 Retention And Distribution
+
+Status: planned. Depends on WP-012 and WP-014.
+
+Goal: add a privacy-conscious daily leaderboard, result sharing, Nimiq Pay
+deep link, localized essential UI, reward availability messaging, and aggregate
+funnel telemetry with disclosure and consent where required.
+
+Owning roles: `worms_port_base_game_worker`, `worms_port_network_worker`,
+`worms_port_test_worker`, `worms_port_reviewer`.
+
+Verification: first-run under 60 seconds, share/deep-link fallbacks, privacy and
+consent cases, locale overflow, depleted-pool clarity, full automated suite.
+
+### WP-016 Deployment And Submission
+
+Status: planned. Depends on WP-013 and WP-015.
+
+Goal: deploy through HTTPS with environment validation, health checks, rollback,
+secret separation, payout disabled-by-default configuration, submission copy,
+screenshots, and walkthrough evidence.
+
+Owning roles: `worms_port_planner`, `worms_port_network_worker`,
+`worms_port_docs_keeper`, `worms_port_reviewer`.
+
+Verification: clean install, audit, compliance, full build, complete automated
+suite, production smoke, deep link, disabled/enabled reward configuration, and
+rollback rehearsal. Real Android/iOS testing is listed separately as not run;
+it does not block completion of the documented autonomous cycle.
+
+## Dependency Order
+
+```text
+WP-005 -> WP-006 -> WP-007 -> WP-008 ----\
+                         \-> WP-009 -----+-> WP-010 -> WP-011 -> WP-012
+                                                           \-> WP-013
+WP-009 + WP-013 --------------------------------------------> WP-014
+WP-012 + WP-014 --------------------------------------------> WP-015 -> WP-016
+```
+
+WP-010 is the first complete playable. WP-013 is the automated competition
+candidate gate. WP-016 is the submission-ready repository and deployment.
+
+## Deferred Until After Competition
+
+- PvP matchmaking, private rooms, tournaments, and Guild rosters.
+- Player stakes, escrow, betting, or winner-takes-player-funds mechanics.
+- More than the first three playable Callings and first three Relics.
+- Campaigns, bots beyond the Loomkeeper, rankings, chat, and native wrappers.
+- Sorcerers feature parity as a goal; only independently selected product
+  behavior may enter a work package.
+
 ## Standing Risks
 
 - Sorcerers GPL code contaminates product code.
@@ -124,3 +404,7 @@ and runtime hashes remain as a traceability fixture in the asset manifest.
 - Runtime modernization breaks room/game Socket.IO behavior.
 - Nimiq-derived geometry or brand elements enter production without written
   permission or an applicable license.
+- Reward abuse drains sponsor funds through forged, replayed, or duplicate
+  claims.
+- Mobile browser emulation misses a Nimiq Pay WebView or physical-device issue.
+- A generated asset inherits unclear model, reference, or service rights.

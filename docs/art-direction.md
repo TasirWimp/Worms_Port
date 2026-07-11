@@ -1,8 +1,8 @@
 # NIMble Knots World And Art Direction
 
-Status: active concept direction for WP-003. This document defines the current
-creative boundary. It does not approve concept images or Nimiq brand elements
-as runtime product assets.
+Status: active production direction for the mobile competition release. This
+document defines the current creative boundary. It does not approve concept
+images or Nimiq brand elements as runtime product assets.
 
 ## Product Identity
 
@@ -42,6 +42,44 @@ fighters. Rival Guilds clash over magical spools, Loomstones, and Relics.
 Combat is dramatic but not graphic. Impacts create cotton bursts, thread
 spirals, embroidered marks, and comic reactions. A defeated Knotkin unravels
 into fluff and thread and can later be restitched.
+
+## Competition Release Mode
+
+The first release is an immediately playable single-player artillery challenge
+for phones inside Nimiq Pay. It does not depend on matchmaking.
+
+- **Practice Clash:** starts without a wallet prompt, has unlimited retries,
+  and does not pay a reward.
+- **Daily Grand Knot Challenge:** uses a wallet-signed challenge ticket and a
+  deterministic server-authoritative match against an AI-controlled Knotkin.
+- **Loomkeeper:** the AI opponent follows the same movement, aiming, Relic,
+  damage, and turn rules as the player. Its implementation must be independently
+  designed and must not reproduce Sorcerers algorithms.
+- **Win condition:** defeat the Loomkeeper within a disclosed turn limit.
+- **Release Callings:** Wizard, Thief, and Warrior are the initial player
+  choices. They share gameplay statistics until balancing tests justify
+  differences. Ranger, Alchemist, and Cleric remain part of the canonical
+  visual world and later content roadmap.
+
+PvP, matchmaking, Guild rosters, tournaments, and player-funded entry are
+post-competition concerns. Their future implementation must not complicate or
+delay the single-player release.
+
+## Mobile Presentation
+
+NIMble Knots is composed for phone screens rather than desktop play scaled
+down after implementation.
+
+- Portrait is the default layout: the Patch occupies the upper area and large
+  thumb controls occupy the lower area.
+- Landscape is a supported enhanced layout and must not be required to play.
+- All gameplay commands use touch/pointer interaction; no hover, keyboard,
+  right-click, or precision-mouse action may be required.
+- Aiming, power, movement, Relic selection, confirmation, pause, and retry must
+  remain readable and operable with safe-area insets and browser chrome.
+- Wallet approval dialogs pause challenge timers and cannot cause a lost turn.
+- Character silhouettes, eyes, held Relics, trajectory previews, hazards, and
+  Stitching state must remain legible at the smallest supported phone viewport.
 
 ## Knotkin Anatomy
 
@@ -110,19 +148,31 @@ permission is required before importing them.
 
 ## Nimiq Reward Loop
 
-The current competition-safe concept uses a sponsor or community-funded
-**Prize Loom**, not player-funded winner-takes-all deposits.
+The competition-safe concept uses a sponsor or community-funded **Prize Loom**,
+not player-funded winner-takes-all deposits.
 
-1. Players connect a wallet and sign a match challenge.
-2. Their signed NIM Threads weave their Knotkin into the Patch.
-3. Both players enter with equal conditions and no at-risk player stake.
-4. Deterministic Thread Sparks power abilities during the Clash.
-5. The winner may claim a fixed, disclosed NIM reward from the Prize Loom.
-6. Players may optionally send a post-match **Honor Thread** tip.
+1. A player may start Practice immediately without connecting a wallet.
+2. Before a rewarded challenge, the player signs a short-lived challenge
+   request through Nimiq Pay.
+3. The server confirms eligibility and reserves one available fixed reward for
+   the disclosed challenge window.
+4. A deterministic NIM Thread seed weaves the player and Loomkeeper into the
+   Patch under equal, published rules.
+5. The server authoritatively verifies movement, shots, damage, turns, victory,
+   and the final replay hash.
+6. An eligible winner may claim the reserved fixed NIM reward exactly once.
+7. When the daily Prize Loom is empty, Practice remains available and the UI
+   must disclose that no reward can be won before play starts.
 
-Escrow, betting, chance-based payouts, and player-loss-funded rewards are out of
-scope unless competition approval, legal review, security review, and explicit
-rules are obtained.
+Reward amount, daily budget, eligibility window, and reservation timeout are
+deployment configuration, not client authority. Claims require an expiring
+nonce, replay protection, idempotency, rate limits, a daily payout ceiling, and
+an operator kill switch. A consenting pseudonymous device identifier may be
+combined with the wallet identity for abuse resistance and leaderboard use.
+
+Escrow, betting, chance-based payouts, player stakes, and player-loss-funded
+rewards are blocked. Real sponsor funds require a separate operational approval
+and payout canary outside ordinary autonomous code refinement.
 
 ## Current Concept Artwork
 
@@ -150,8 +200,26 @@ shape and is superseded.
 
 ![Knotkin fantasy Calling lineup](images/art-direction/knotkin-class-lineup-concept.png)
 
-This image establishes the current canonical concept for Knotkin anatomy,
-material treatment, fantasy Callings, and Nimiq-derived palette.
+This image is the canonical artwork reference for future Knotkin and Calling
+production. New character briefs, pose masters, sprites, portraits, promotional
+art, and in-game Calling depictions must begin from its visual system:
+
+- the same shared angular crochet body family,
+- exactly two oversized glossy bead eyes and no mouth,
+- the pictured Calling color identities and material vocabulary,
+- chunky yarn bodies, felt garments, visible stitches, wooden buttons, spools,
+  polished thimbles, and toy-like fantasy equipment,
+- compact silhouettes that remain readable on a phone,
+- a warm handcrafted stage with cotton clouds and stitched Patchwork terrain.
+
+The image is a design reference, not a sprite sheet or runtime source. The user
+has approved it as the canonical creative and generation reference, so approved
+production tools may receive the tracked file as conditioning input when its
+path and SHA-256 are recorded. Do not crop, trace, or ship its pixels directly.
+This approval does not resolve Nimiq brand or geometry rights. Generated
+derivatives remain in quarantine until their prompts, workflows, model
+licenses, source hashes, output hashes, review, and manifest entries are
+complete.
 
 ### Concept Provenance
 
@@ -199,6 +267,9 @@ Required:
 - tactile crochet, felt, cotton, and stitched terrain,
 - strong mobile-scale silhouettes,
 - per-file commercial-use and redistribution evidence for production assets.
+- production briefs that cite
+  `docs/images/art-direction/knotkin-class-lineup-concept.png` as the canonical
+  visual reference and record any additional inputs separately.
 
 Blocked:
 
@@ -214,8 +285,9 @@ Blocked:
 
 - Confirm written permission or an applicable license for Nimiq-inspired body
   geometry and any official brand elements used in the final product.
-- Decide whether each player controls one Knotkin or a small Guild roster.
-- Define the first production-ready Calling and animation set.
+- Define the first production-ready Wizard, Thief, and Warrior animation set.
 - Define the first Patch and its destructible-material behavior.
-- Confirm Prize Loom funding and payout architecture with competition
-  organizers before implementation.
+- Set the fixed reward, daily Prize Loom budget, eligibility window, and
+  reservation timeout before enabling real payouts.
+- Provide an Android/iOS release-testing environment when physical-device
+  validation is scheduled; it remains outside the autonomous cycle.
