@@ -207,9 +207,38 @@ Deliverables:
 - CI for compliance, types, clean build, audit, and non-stale smoke testing,
 - stronger import scanning that includes untracked product files,
 - one runtime path from approved root `assets/` into the client build,
-- official Nimiq Mini Apps skill and MCP capability readiness notes.
+- official Nimiq Mini Apps skill and MCP capability readiness notes,
+- `@playwright/test` as a reviewed development dependency with its exact version
+  recorded in `package-lock.json`,
+- a checked-in Playwright configuration that starts a freshly built server on
+  an isolated port and retains traces, screenshots, and video on failure,
+- installed Chromium and WebKit browser binaries in local development and CI,
+- an initial phone-sized Chromium and WebKit smoke test that proves the built
+  page loads, the Phaser canvas is nonblank, no page or console error occurs,
+  and touch input can activate the first available interaction,
+- package scripts for the browser smoke and later full browser suite.
 
-Verification: compliance, types, clean build, audit, built smoke, and read-only
+Playwright is not currently installed in this repository. Codex in-app browser
+automation may support exploratory inspection, but it is not a substitute for
+the reproducible project test runner, checked-in configuration, pinned package,
+or CI browser binaries.
+
+WP-005 Playwright acceptance criteria:
+
+1. `npm ls @playwright/test --depth=0` resolves the locked dependency.
+2. `npx playwright --version` succeeds from the repository.
+3. Chromium and WebKit launch through Playwright without using a system-browser
+   executable override.
+4. The browser smoke starts from a clean build rather than stale ignored output.
+5. At least one Chromium phone project and one WebKit phone project pass.
+6. A deliberately failing local run can produce a readable trace and screenshot
+   artifact; generated evidence remains outside product `assets/`.
+7. CI installs the matching browser binaries and uploads failure artifacts.
+8. Browser caches and generated results are ignored and never enter the product
+   asset manifest.
+
+Verification: compliance, types, clean build, audit, built smoke, Playwright
+version and browser-launch checks, mobile Chromium/WebKit smoke, and read-only
 review. No gameplay behavior is added.
 
 ### WP-006 Validated Session And Command Protocol
@@ -319,6 +348,9 @@ Goal: complete automated browser, visual, performance, protocol, abuse, and
 reward-security gates. Use isolated browser contexts and deterministic fake
 wallets; retain traces, screenshots, diffs, replay seeds, bundle data, and
 timing evidence on failure.
+
+WP-013 extends the Playwright installation and launch smoke delivered by WP-005;
+it does not introduce the browser runner for the first time.
 
 Owning roles: `worms_port_test_worker`, `worms_port_reviewer`.
 

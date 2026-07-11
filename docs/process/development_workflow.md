@@ -93,6 +93,30 @@ states. Real Android and iOS testing is outside the autonomous cycle. Every
 completion summary must state that it was not run rather than imply device
 coverage from emulation.
 
+### Playwright Bootstrap
+
+WP-005 must establish that Playwright works in this repository before later
+work packages depend on it. Installing only the npm package or printing a
+version is insufficient. Completion requires actual Chromium and WebKit
+launches against a freshly built local server and a phone-sized smoke journey.
+
+The checked-in Playwright configuration must:
+
+- use the repository-local `@playwright/test` dependency,
+- start or reuse only a test-owned server on an isolated port,
+- use deterministic locale, timezone, viewport, device scale factor, and
+  reduced-motion settings where visual evidence is captured,
+- fail on uncaught page errors and unexpected console errors,
+- assert that the Phaser canvas exists and contains nonblank pixels,
+- retain trace and screenshot evidence on failure,
+- keep caches, reports, videos, traces, and screenshots out of `assets/`, and
+- provide Chromium and WebKit phone projects without system-browser executable
+  overrides.
+
+WP-005 provides browser launch and application smoke coverage. WP-013 expands
+that foundation into the full viewport, visual-regression, network, resume,
+fake-wallet, performance, and multiplayer-context matrix.
+
 ## Asset Generation Loop
 
 Production art follows this fail-closed sequence:
