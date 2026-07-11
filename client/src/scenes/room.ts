@@ -179,10 +179,10 @@ export default class RoomScene extends OverlayedScene
 }
 
 const ready_sign = (ready: boolean) =>
-    ready ? '✔️' : '❌';
+    ready ? 'Ready' : 'Waiting';
 
 const is_me_sign = (is_me: boolean) =>
-    is_me ? '⬅️' : '';
+    is_me ? 'You' : '';
 
 const first_sign = (first: boolean) =>
-    first ? '🥇' : '';
+    first ? 'Host' : '';

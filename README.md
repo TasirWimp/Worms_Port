@@ -1,7 +1,8 @@
-# Worms_Port
+# NIMble Knots: Cotton Clash
 
-Worms_Port is an MIT-licensed Phaser project bootstrapped from the MIT
-`TurtlePU/worms-ii` code base.
+NIMble Knots is an MIT-licensed fantasy artillery game built with Phaser. The
+`Worms_Port` repository was bootstrapped from the MIT `TurtlePU/worms-ii` code
+base and retains that provenance.
 
 ## Import Boundary
 

@@ -3,7 +3,7 @@
 import { beautify } from '../util/id-gen';
 import { array_map } from '../util/other';
 
-import { Weapon } from './weapon-types';
+import { Relic } from './relic-types';
 
 export class Player {
     public readonly first_id: string;
@@ -13,13 +13,13 @@ export class Player {
     public online: boolean;
     public ready: boolean;
 
-    protected weapons: {
+    protected relics: {
         amount: number,
         delay: number
     }[];
 
-    protected worms: {
-        hp: number;
+    protected knotkin: {
+        stitching: number;
         name: string;
         position: any;
     }[];
@@ -29,13 +29,13 @@ export class Player {
         this.last_id = id;
         this.online = false;
         this.ready = false;
-        this.weapons = array_map(Weapon.count, (index) => ({
-            amount: scheme.weapons[index].amount,
-            delay: scheme.weapons[index].delay
+        this.relics = array_map(Relic.count, (index) => ({
+            amount: scheme.relics[index].amount,
+            delay: scheme.relics[index].delay
         }));
-        this.worms = array_map(scheme.worm_count, (jndex) => ({
-            hp: scheme.worm_hp,
-            name: scheme.worm_name[index][jndex],
+        this.knotkin = array_map(scheme.knotkin_count, (jndex) => ({
+            stitching: scheme.knotkin_stitching,
+            name: scheme.knotkin_names[index][jndex],
             position: {}
         }));
     }
@@ -44,7 +44,7 @@ export class Player {
         this.last_id = last_id;
         if (!this.ready) {
             // TODO in join_with [Player]
-            // init worms' positions. For each worm:
+            // Initialize each Knotkin on valid Patch terrain.
             // 1. throw it in random coords
             // 2. make it fall
             // 3. if in water -- reroll

@@ -73,6 +73,11 @@ if (!sorcerers || sorcerers.role !== 'quarantine_reference_only' || sorcerers.li
 }
 
 for (const file of trackedOrWorkingFiles()) {
+  const absoluteFile = path.join(root, file);
+  if (!fs.existsSync(absoluteFile)) {
+    continue;
+  }
+
   if (file.startsWith('assets-quarantine/sorcerers/raw/')) {
     const basename = path.basename(file);
     if (basename !== 'README.md' && !allowedQuarantineBasenames.has(basename)) {
@@ -89,7 +94,7 @@ for (const file of trackedOrWorkingFiles()) {
   }
 
   if (isProductCodePath(file) && /\.(ts|js|json|html|css|scss|md)$/.test(file)) {
-    const text = fs.readFileSync(path.join(root, file), 'utf8');
+    const text = fs.readFileSync(absoluteFile, 'utf8');
     if (/github\.com\/lorgan3\/sorcerers|lorgan3\/sorcerers/.test(text)) {
       errors.push(`${file}: product code must not depend on or import from Sorcerers.`);
     }

@@ -1,4 +1,5 @@
 import Phaser from 'phaser';
+import './style.css';
 
 import { io } from 'socket.io-client';
 
@@ -6,16 +7,19 @@ import JoinScene from './scenes/join';
 import RoomScene from './scenes/room';
 import GameScene from './scenes/game';
 
-class WormsPortGame extends Phaser.Game
+class NimbleKnotsGame extends Phaser.Game
 {
     constructor ()
     {
         super({
-            title: 'Worms Port',
-            width: 800,
-            height: 600,
-            backgroundColor: 0xFFFFFF,
+            title: 'NIMble Knots: Cotton Clash',
+            backgroundColor: 0x1F2348,
             parent: 'game',
+            scale: {
+                mode: Phaser.Scale.RESIZE,
+                width: 800,
+                height: 600
+            },
             dom: {
                 createContainer: true
             },
@@ -25,6 +29,6 @@ class WormsPortGame extends Phaser.Game
 }
 
 window.onload = () => {
-    let game = new WormsPortGame();
+    let game = new NimbleKnotsGame();
     game.scene.start('join', { socket: io() });
 };

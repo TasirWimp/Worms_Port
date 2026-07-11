@@ -1,7 +1,7 @@
 {
-  "name": "worms-port",
+  "name": "nimble-knots",
   "version": "0.0.0",
-  "description": "MIT Phaser base with strict third-party asset traceability and Sorcerers quarantine workflow.",
+  "description": "NIMble Knots: Cotton Clash, an MIT-licensed fantasy artillery game with strict third-party asset traceability.",
   "scripts": {
     "build-server": "node scripts/clean-dir.js server/build && esbuild server/src/server.ts --bundle --platform=node --target=node20 --format=cjs --outfile=server/build/server.js",
     "build-client": "vite build --config vite.client.config.ts",

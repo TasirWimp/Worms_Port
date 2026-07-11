@@ -5,12 +5,6 @@ import Cookie from '../lib/cookie';
 import OverlayedScene from './overlayed';
 import { ErrType, is_error } from '../lib/util';
 
-const POCKET_ROBOT_TEXTURE = 'pocket-robot';
-const pocketRobotUrl = new URL(
-    '../../../assets/sprites/pocket-robot.png',
-    import.meta.url
-).href;
-
 export default class GameScene extends OverlayedScene
 {
     protected me: PublicPlayerInfo;
@@ -34,21 +28,10 @@ export default class GameScene extends OverlayedScene
         this.validate();
     }
 
-    public preload ()
-    {
-        super.preload();
-        this.load.image(POCKET_ROBOT_TEXTURE, pocketRobotUrl);
-    }
-
     public create ()
     {
         super.create();
-
-        const { width, height } = this.game.canvas;
-        const pocketRobot = this.add
-                .image(width / 2, height / 2, POCKET_ROBOT_TEXTURE)
-                .setDepth(-1);
-        pocketRobot.setScale(Math.min(height * 0.6, 360) / pocketRobot.height);
+        this.draw_placeholder_patch();
 
         if (!this.me) {
             this.watcher.addEventListener('me-set', () => this.emit_ready());
@@ -70,6 +53,71 @@ export default class GameScene extends OverlayedScene
     protected setup_socket ()
     {
         // TODO: socket events
+    }
+
+    protected draw_placeholder_patch ()
+    {
+        const { width, height } = this.game.canvas;
+        const patch = this.add.graphics().setDepth(-3);
+
+        patch.fillStyle(0x795548);
+        patch.fillRoundedRect(width * 0.03, height * 0.68, width * 0.42, height * 0.25, 26);
+        patch.fillRoundedRect(width * 0.55, height * 0.62, width * 0.42, height * 0.31, 26);
+        patch.fillStyle(0x88B04B);
+        patch.fillRoundedRect(width * 0.02, height * 0.65, width * 0.44, 55, 24);
+        patch.fillRoundedRect(width * 0.54, height * 0.59, width * 0.44, 55, 24);
+
+        this.draw_knotkin(width * 0.28, height * 0.63, 0x0582CA, 0xE9B213);
+        this.draw_knotkin(width * 0.72, height * 0.57, 0x5F4B8B, 0xFA7268);
+    }
+
+    protected draw_knotkin (
+        x: number,
+        y: number,
+        body_color: number,
+        accent_color: number
+    ) {
+        const knotkin = this.add.graphics().setDepth(-2);
+
+        knotkin.fillStyle(body_color);
+        knotkin.fillRoundedRect(x - 76, y - 12, 30, 22, 8);
+        knotkin.fillRoundedRect(x + 46, y - 12, 30, 22, 8);
+        knotkin.fillPoints([
+            new Phaser.Geom.Point(x - 42, y - 58),
+            new Phaser.Geom.Point(x + 42, y - 58),
+            new Phaser.Geom.Point(x + 60, y - 30),
+            new Phaser.Geom.Point(x + 48, y + 22),
+            new Phaser.Geom.Point(x + 20, y + 42),
+            new Phaser.Geom.Point(x - 20, y + 42),
+            new Phaser.Geom.Point(x - 48, y + 22),
+            new Phaser.Geom.Point(x - 60, y - 30)
+        ], true);
+        knotkin.fillRoundedRect(x - 38, y + 34, 30, 28, 7);
+        knotkin.fillRoundedRect(x + 8, y + 34, 30, 28, 7);
+
+        knotkin.lineStyle(4, accent_color, 1);
+        knotkin.strokePoints([
+            new Phaser.Geom.Point(x - 42, y - 58),
+            new Phaser.Geom.Point(x + 42, y - 58),
+            new Phaser.Geom.Point(x + 60, y - 30),
+            new Phaser.Geom.Point(x + 48, y + 22),
+            new Phaser.Geom.Point(x + 20, y + 42),
+            new Phaser.Geom.Point(x - 20, y + 42),
+            new Phaser.Geom.Point(x - 48, y + 22),
+            new Phaser.Geom.Point(x - 60, y - 30)
+        ], true);
+
+        knotkin.fillStyle(0x111111);
+        knotkin.fillCircle(x - 20, y - 10, 13);
+        knotkin.fillCircle(x + 20, y - 10, 13);
+        knotkin.fillStyle(0xFFFFFF);
+        knotkin.fillCircle(x - 16, y - 15, 4);
+        knotkin.fillCircle(x + 24, y - 15, 4);
+
+        knotkin.lineStyle(3, accent_color, 0.9);
+        for (let offset = -30; offset <= 30; offset += 15) {
+            knotkin.lineBetween(x + offset, y + 27, x + offset + 7, y + 31);
+        }
     }
 
     protected emit_ready ()

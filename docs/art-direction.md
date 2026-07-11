@@ -184,9 +184,9 @@ brand-use rights and exact final-asset provenance must be confirmed before
 product approval. No Sorcerers material was used.
 
 The earlier Pocket Robot asset is a superseded import-workflow trial and is not
-part of the NIMble Knots art direction. Removing it from runtime and replacing
-it with approved Knotkin production assets belongs to a later implementation
-slice.
+part of the NIMble Knots art direction. WP-003 removed it from runtime. The
+approved file remains under `assets/` only as a traceability fixture until a
+separate archive or removal policy is adopted.
 
 ## Art Boundary
 

@@ -21,12 +21,12 @@ declare type Scheme = {
 }
 
 declare type PlayerScheme = {
-    weapons: {
+    relics: {
         name: string,
         amount: number,
         delay: number
     }[];
-    worm_count: number;
-    worm_hp: number;
-    worm_name: string[][];
+    knotkin_count: number;
+    knotkin_stitching: number;
+    knotkin_names: string[][];
 }

@@ -73,7 +73,7 @@ server process after success or failure.
 
 ### WP-003 Product Rename And Theme Boundary
 
-Status: active.
+Status: complete.
 
 Goal: remove remaining Worms-facing naming from user-visible surfaces and define
 a new non-infringing theme direction before importing visual/audio assets.
@@ -86,12 +86,14 @@ Verification:
 - source scan for blocked brand names in user-facing code/docs,
 - `npm run build`.
 
-Direction selected: **NIMble Knots: Cotton Clash**, featuring mouthless,
-big-eyed Knotkin fantasy Callings in the cotton-and-crochet Patchwork Realms.
-`docs/art-direction.md` is the creative source of truth. The concept image is
-documentation-only pending Nimiq brand-use confirmation and final per-file
-product asset approval. The Pocket Robot is non-canonical and remains only as
-the completed asset-import trial until a later runtime replacement slice.
+Delivered as **NIMble Knots: Cotton Clash**, featuring mouthless, big-eyed
+Knotkin fantasy Callings in the cotton-and-crochet Patchwork Realms.
+`docs/art-direction.md` is the creative source of truth. Product metadata,
+visible client surfaces, default game schema, and server model terminology now
+use NIMble Knots concepts. The Pocket Robot was removed from runtime and
+replaced by code-drawn Knotkin placeholders; it remains only as the approved
+asset-import traceability fixture. Concept artwork remains documentation-only
+pending Nimiq brand-use confirmation and final per-file product approval.
 
 ### WP-004 First Asset Import Trial
 
@@ -108,10 +110,10 @@ Verification:
 - `npm run check:compliance`,
 - build if runtime references are added.
 
-Delivered with the owned, AI-assisted Pocket Robot runtime sprite. The approved
-asset is loaded directly from `assets/sprites/` through Vite and displayed by
-the Phaser game scene. Exact source, master, and runtime hashes are recorded in
-the asset manifest.
+Delivered with the owned, AI-assisted Pocket Robot runtime sprite as the first
+complete manifest trial. WP-003 later removed it from the client bundle after
+the Knotkin direction was selected. The approved file and exact source, master,
+and runtime hashes remain as a traceability fixture in the asset manifest.
 
 ## Standing Risks
 
@@ -120,4 +122,5 @@ the asset manifest.
 - Commercial-use-allowed is mistaken for mobile-app-safe.
 - Dependency upgrades add non-commercial or copyleft package licenses.
 - Runtime modernization breaks room/game Socket.IO behavior.
-- Re-theme work preserves Worms-branded or Team17-like assets/naming too long.
+- Nimiq-derived geometry or brand elements enter production without written
+  permission or an applicable license.

@@ -1,6 +1,25 @@
-<h1>Lobby</h1>
-<input type="text" id="inp-room-id" readonly>
-<button id="b-back">Back</button>
-<input type="checkbox" id="inp-ready">
-<button id="b-start" disabled>Start</button>
-<table><tbody id="t-room"></tbody></table>
+<main class="screen-shell">
+    <header class="brand-lockup">
+        <p class="eyebrow">Guild Lobby</p>
+        <h1>Prepare the Clash</h1>
+        <p class="screen-copy">Share this code with the rival Guild.</p>
+    </header>
+    <div class="action-stack">
+        <div class="action-row">
+            <label class="visually-hidden" for="inp-room-id">Clash code</label>
+            <input type="text" id="inp-room-id" readonly>
+            <button class="quiet" id="b-back">Leave</button>
+        </div>
+        <label class="ready-toggle" for="inp-ready">
+            <input type="checkbox" id="inp-ready">
+            Guild ready
+        </label>
+    </div>
+    <table class="guild-table">
+        <thead>
+            <tr><th>Guild</th><th>Status</th><th>Player</th><th>Role</th></tr>
+        </thead>
+        <tbody id="t-room"></tbody>
+    </table>
+    <button id="b-start" disabled>Start Clash</button>
+</main>
