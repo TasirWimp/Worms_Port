@@ -368,12 +368,66 @@ must cite `docs/images/art-direction/knotkin-class-lineup-concept.png` as the
 canonical visual reference. No pixels from the concept image enter runtime
 without explicit exact-file approval.
 
+Minimum visual asset inventory:
+
+- four isolated side-view character masters: Wizard, Thief, Warrior, and a
+  friendly but clearly opposing Loomkeeper variant,
+- one normalized runtime atlas per character with `idle`, `move`, `jump_start`,
+  `fall`, `land`, `aim_low`, `aim_mid`, `aim_high`, `fire`, `hit`, `unravel`,
+  and `victory` states,
+- separate transparent masters and phone-readable icons for Threadball and the
+  two additional Relics frozen by the gameplay specification,
+- separate projectile, trail, impact, Stitching-damage, Unraveling, and Prize
+  Loom reward effects,
+- one Patch environment split into a scalable decorative backdrop, separate
+  transparent background props, repeatable terrain material textures, and a
+  code-owned destructible collision mask,
+- Calling portraits or icons derived from approved character masters rather
+  than cropped from the lineup concept,
+- short approved audio for aiming/charging, firing, impact, damage, Unraveling,
+  victory, and reward confirmation through a separate audio provenance path.
+
+Character master contract:
+
+- 512x512 RGBA source master, transparent background, facing right,
+- orthographic-like side view suitable for a side-on artillery game,
+- one full character only, no scenery, text, frame, shadow crop, or other
+  character,
+- exactly two glossy bead eyes, no mouth or other facial marks,
+- full feet visible on one shared ground baseline with sufficient motion
+  padding,
+- consistent body proportions, costume topology, lighting, palette, and
+  handedness across all poses,
+- neutral locomotion masters avoid baking a selected Relic into every frame;
+  unavoidable Relic-specific animation is a separately tracked derivative,
+- runtime candidate normalized to a 192x192 frame with pivot at 50% horizontal
+  and 88% vertical; a different size or pivot requires recorded phone-readability
+  evidence and a contract update.
+
+Environment contract:
+
+- decorative background pixels never define authoritative collision,
+- sky/fabric fill, cotton clouds, banners/loom structures, and distant props are
+  separate layers that can compose in both portrait and landscape,
+- terrain top, edge, and interior materials repeat without visible seams and
+  remain convincing after circular destruction,
+- deterministic map geometry and the server collision mask are generated or
+  stored as product data independently from decorative artwork,
+- no important landmark is placed where phone cropping or HUD safe areas hide
+  it.
+
+The exact MCP handoff, animation frame budgets, normalization rules, evidence
+requirements, and phone acceptance checks are normative in
+`docs/process/development_workflow.md` under **Asset Generation Loop**.
+
 Owning roles: `worms_port_asset_curator`, `worms_port_compliance_keeper`,
 `worms_port_base_game_worker`, `worms_port_reviewer`.
 
-Verification: art-direction checks, animation consistency, exact provenance,
-model/component license evidence, manifest hashes, attribution, compliance,
-mobile screenshots, build.
+Verification: inventory completeness, character-master and environment
+contracts, art-direction checks, animation consistency, exact provenance,
+model/component license evidence, manifest hashes, attribution, atlas loading,
+mobile screenshots at all automated phone viewports, visual review, compliance,
+and build.
 
 ### WP-015 Retention And Distribution
 

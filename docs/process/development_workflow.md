@@ -144,6 +144,148 @@ prompts, negative constraints, workflow JSON and hash, seeds, model and custom
 node versions and licenses, service/job IDs, parent/output hashes, postprocess
 configuration, and reviewer identity.
 
+### Production Decomposition
+
+The lineup concept contains enough information to begin production, but it is a
+composited front-facing scene. It must be decomposed through newly generated
+assets rather than cropped into the game.
+
+Character production starts with four isolated 512x512 RGBA masters: Wizard,
+Thief, Warrior, and a Loomkeeper opponent variant. Each master shows one full
+Knotkin facing right in an orthographic-like side view on transparency. The
+feet share a stable baseline, the entire silhouette remains inside motion-safe
+padding, and there is no scenery, text, framing, or second character. Exactly
+two bead eyes, no mouth, Calling costume topology, body proportions, palette,
+lighting direction, and handedness must remain stable.
+
+Relics and effects are separate transparent asset families. At minimum this
+includes Threadball, the two additional gameplay-approved Relics, their
+phone-readable icons, projectiles, trails, impacts, Stitching damage,
+Unraveling, and Prize Loom reward effects. A Relic should remain separate from
+the character atlas when practical. If a pose must bake in a Relic, that atlas
+is a separately named derivative with its own parent hashes and manifest entry.
+
+The first Patch is not one flattened painting. Produce:
+
+- a scalable sky or fabric fill,
+- separate cotton-cloud and distant-decoration layers,
+- separate banners, loom structures, and decorative props,
+- repeatable terrain top, edge, and interior materials,
+- optional foreground dressing that never controls collision.
+
+The deterministic terrain silhouette and collision mask remain code-owned game
+data. Decorative background pixels cannot define authoritative terrain or be
+used as a collision mask. Terrain materials must tolerate circular destruction
+without revealing baked scenery or obvious seams.
+
+Calling portraits and icons are derived from approved isolated masters, not
+cropped from `knotkin-class-lineup-concept.png`. Audio uses a separate brief,
+generator/source evidence, license review, normalization, and manifest path; a
+visual MCP output is never treated as audio provenance.
+
+### MCP Handoff
+
+Use this exact handoff for each visual asset family:
+
+1. **Brief:** assign an asset-family ID, intended runtime path, dimensions,
+   animation or layer inventory, blocked motifs, and acceptance checks. Record
+   the canonical concept path and SHA-256 plus every additional input.
+2. **Image generation:** create a new isolated master from the approved brief
+   and canonical reference. Store the untouched result only in ignored
+   quarantine and record the full prompt, output ID, date, and SHA-256.
+3. **Master review:** reject anatomy, eye count, mouth, silhouette, costume,
+   lighting, perspective, equipment, alpha, or third-party similarity drift.
+   Only a reviewed master proceeds.
+4. **ComfyUI refinement:** use only when every checkpoint, VAE, LoRA,
+   ControlNet, embedding, upscaler, and custom node has approved commercial-use
+   evidence. Record workflow JSON and hash, seed, sampler, scheduler, steps,
+   CFG, dimensions, denoise, component names, versions, licenses, and hashes.
+   If the model inventory is not approved or the server is unavailable, skip
+   refinement or stop; do not substitute an unrecorded local workflow.
+5. **AutoSprite animation:** upload the approved isolated character master,
+   reuse one character ID for its Calling, request the normative animation
+   states, and record character, pose, job, video, and spritesheet IDs plus all
+   downloaded hashes. If AutoSprite is unavailable, stop animation production
+   rather than silently changing generators.
+6. **Deterministic normalization:** preserve the untouched master, normalize
+   runtime frame size, pivot, baseline, padding, alpha, naming, timing, and
+   atlas metadata through a versioned script and configuration hash.
+7. **In-engine staging:** load quarantined candidates through a test-only path,
+   render deterministic gameplay states, and capture the automated phone
+   viewports. Staging cannot place unapproved files in product `assets/`.
+8. **Review and refinement:** run art, animation, IP, provenance, canvas,
+   visual-diff, and phone-readability checks. Permit at most three scoped
+   retries for one failure signature; rejection does not relax the contract.
+9. **Promotion:** add exact final hashes and evidence to the manifest, update
+   attribution when required, copy only approved runtime files into `assets/`,
+   then run compliance, build, browser smoke, and relevant visual tests.
+
+### Animation Contract
+
+Every first-release character atlas uses the same state names and baseline:
+
+| State | Frames | Loop | Required behavior |
+| --- | ---: | --- | --- |
+| `idle` | 8-12 | yes | Minimal breathing/thread motion; no silhouette drift |
+| `move` | 8-12 | yes | Stable baseline and readable short stride |
+| `jump_start` | 3-5 | no | Leaves the ground from the idle pose |
+| `fall` | 2-4 | holdable | Stable airborne pose without scale drift |
+| `land` | 3-5 | no | Returns exactly to the idle baseline |
+| `aim_low` | 1-3 | holdable | Low trajectory pose |
+| `aim_mid` | 1-3 | holdable | Mid trajectory pose |
+| `aim_high` | 1-3 | holdable | High trajectory pose |
+| `fire` | 6-10 | no | Names the exact gameplay release frame |
+| `hit` | 4-6 | no | Cotton compression without anatomy mutation |
+| `unravel` | 8-12 | no | Non-graphic defeat ending in thread and fluff |
+| `victory` | 8-12 | yes | Compact celebration that stays inside padding |
+
+Generate right-facing source frames. Runtime mirroring is allowed only after a
+handedness and costume-asymmetry review. Otherwise produce and track a separate
+left-facing derivative. Start from 512x512 masters and normalize the first
+runtime candidate to 192x192 RGBA frames with a pivot at 50% horizontal and 88%
+vertical. Changing frame size, pivot, or baseline requires recorded in-engine
+phone-readability evidence and an update to the asset-family brief.
+
+### Runtime Naming And Placement
+
+Use stable kebab-case asset-family IDs and group approved files by role:
+
+```text
+assets/characters/knotkin/{wizard,thief,warrior,loomkeeper}/
+assets/relics/<relic-id>/
+assets/effects/<effect-id>/
+assets/environment/patch-01/{background,props,terrain}/
+assets/ui/{callings,relics,reward}/
+assets/audio/{combat,result,reward}/
+```
+
+Atlas frame names follow `<calling>/<state>/<zero-padded-frame>`. The atlas
+records frame rectangles, pivots, durations, loop hints, and the release frame
+for `fire`. Source masters, service downloads, rejected outputs, videos,
+workflows, and intermediate frames remain in ignored quarantine rather than the
+runtime tree.
+
+### Asset Acceptance
+
+Before promotion, automated and reviewer evidence must establish:
+
+- exactly two eyes, no mouth, stable anatomy, costume, palette, lighting, and
+  equipment identity across every character frame,
+- stable frame dimensions, ground baseline, pivot, alpha edges, visual scale,
+  and no disconnected alpha fragments or halos,
+- valid loops and transitions with no eye duplication, hand/equipment swapping,
+  flicker, clipping, or unintended left/right changes,
+- complete Phaser atlas loading with every required state and release frame,
+- readable character, Relic, trajectory, projectile, and impact silhouettes at
+  360x640, 390x844, 412x915, and 844x390,
+- no collision dependency on decorative art and no important background detail
+  hidden by portrait cropping, safe areas, or HUD,
+- expected/current/diff captures for deterministic scenes with no automatic
+  baseline acceptance,
+- complete parent/output hashes, generator and service records, model-component
+  licenses, postprocess configuration, reviewer identity, manifest entry, and
+  attribution duties.
+
 No generated output can promote itself into `assets/`. Failed or exhausted
 iterations remain quarantined.
 
