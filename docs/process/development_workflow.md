@@ -658,7 +658,9 @@ model:
    coordinates or client-owned position.
 2. **Aim zone:** a lower-right pad owns one pointer from down through release or
    cancellation. Vector angle controls trajectory and clamped vector magnitude
-   controls power. Shared deterministic simulation renders the preview.
+   controls power. The advisory preview runs against a clone of the current v2
+   snapshot through the shared deterministic simulation API. It cannot mutate
+   authoritative state or submit a command, and the next server snapshot wins.
 3. **Aim release:** ordinary release freezes the selected angle/power. It does
    not fire. Release outside, `pointercancel`, lost focus, hidden document,
    scene pause/shutdown, resize, or orientation change cancels the gesture.
@@ -666,15 +668,18 @@ model:
    command only from the `aim_locked` state. Duplicate taps, stale turns, or a
    suspended scene cannot submit another command.
 5. **Relics and commands:** Relic selection, pause, retry, and confirmations use
-   large tap targets. Swipe, pinch, long-press, hover, and multi-finger chords
-   are not required for the competition release.
+   large tap targets. WP-010 implements pause/retry affordances, but pause only
+   suspends client input and presentation and retry does not create a new
+   challenge. WP-011 owns authoritative practice pause and retry lifecycle.
+   Swipe, pinch, long-press, hover, and multi-finger chords are not required for
+   the competition release.
 6. **Camera:** automatic active-Knotkin and projectile framing is the default.
    Optional battlefield panning can be added only when no control owns the
    pointer and it cannot alter simulation state.
 7. **Lifecycle:** the input adapter has explicit `idle`, `moving`, `aiming`,
-   `aim_locked`, and `suspended` states. Every cancellation path clears vectors,
-   visual pressed states, timers, and pointer ownership before returning to a
-   safe state.
+   `aim_locked`, `submitting`, and `suspended` states. Every cancellation path
+   clears vectors, visual pressed states, timers, and pointer ownership before
+   returning to a safe state.
 8. **Wallet interruption:** opening a Nimiq Pay approval dialog suspends input
    and turn timing. Resume requires a fresh pointer-down; a pre-dialog contact
    can never continue or fire afterward.
@@ -683,11 +688,23 @@ The implementation may tune the 18% dead zone or layout-relative control radius
 only through recorded phone-emulation evidence. It must not tune by copying
 constants from a reference implementation.
 
+WP-010 consumes v2 `ChallengeSnapshot`, `RELIC_IDS`, and `RELIC_RULES` as its
+source of gameplay truth. The fixed simulation battlefield is 128x72 cells at
+8 units per cell, or 1024x576 logical units. A scene-local layout adapter maps
+that world to the current camera while keeping portrait controls, landscape
+reflow, safe areas, and browser chrome outside gameplay coordinates. Keep the
+combat layout, snapshot renderer, touch-control state machine, command adapter,
+and HUD/pause overlay as separate responsibilities; do not grow the imported
+room-oriented `GameScene` into one combined lifecycle and combat controller.
+
 ### Reference Verification
 
-Playwright coverage must exercise:
+WP-010 Playwright coverage uses Chromium at 360x640, 390x844, and 844x390 plus
+WebKit at 390x844. WP-014 expands this to the complete 412x915,
+visual-regression, network-degradation, and performance matrix. Across the
+applicable matrix, coverage must exercise:
 
-- touch-only completion at 360x640, 390x844, 412x915, and 844x390,
+- touch-only completion at every configured WP-010 viewport,
 - movement below, at, and above the dead-zone threshold,
 - minimum and maximum aim/power clamps and deterministic preview agreement,
 - release inside, release outside, pointer cancellation, duplicate tap, blur,

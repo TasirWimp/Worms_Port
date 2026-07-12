@@ -407,8 +407,16 @@ Status: planned. Depends on WP-009.
 
 Goal: implement the portrait-first Phaser battlefield and large touch controls
 for movement, Relic selection, drag aim/power, trajectory preview, firing,
-Stitching, turn time, pause, and retry. Landscape is enhanced but optional.
-Use code-drawn placeholders until production art is approved.
+Stitching, turn time, and pause/retry affordances. Landscape is enhanced but
+optional. Use code-drawn placeholders until production art is approved.
+
+WP-010 owns presentation, touch-input state, control availability, and the
+snapshot-to-command adapter. Its pause control suspends client input and
+presentation only; it does not stop the authoritative turn clock. Its retry
+control exposes a safe UI state but does not own challenge creation or match
+lifecycle. WP-011 owns practice-match creation, results, actual retry behavior,
+and any authoritative practice pause semantics. Rewarded matches remain
+unpausable except for a separately specified wallet interruption.
 
 Mobile input references:
 
@@ -456,19 +464,42 @@ Control contract:
 - raw screen coordinates are not network commands; the client emits validated,
   bounded gameplay intent against the shared deterministic simulation.
 
+Rendering and command data contract:
+
+- consume the v2 `ChallengeSnapshot`, `RELIC_IDS`, and `RELIC_RULES` rather than
+  duplicating Relic identifiers, balance values, selected state, Stitching,
+  turn ownership, or deadline data in UI code,
+- map the simulation's 128 by 72 cells at 8 units per cell to one fixed
+  1024x576 logical battlefield, then adapt camera and control zones around that
+  world for portrait, landscape, safe areas, and browser chrome,
+- calculate the trajectory preview from a clone of the current v2 snapshot
+  through the shared deterministic simulation API; preview work is advisory,
+  never mutates authoritative state, and never submits a network command,
+- replace local presentation immediately from each accepted authoritative
+  snapshot, including after stale-command rejection or reconnect.
+
+Keep the existing room/game flow from becoming one combined scene. Use scoped
+boundaries for the combat scene/layout, snapshot renderer, touch-control state
+machine, command adapter, and HUD/pause overlay. WP-010 may use a deterministic
+fixture or adapter harness for lifecycle states that WP-011 has not wired yet.
+
 Owning roles: `worms_port_base_game_worker`, `worms_port_test_worker`.
 
-Verification: phone viewport browser tests, touch-only journey, movement and aim
-dead zones, explicit-fire safety, pointer ownership, release-outside and
-cancellation cases, safe areas, browser scroll/zoom suppression, resize and
-orientation, background/resume, reduced motion, screenshots, build.
+Verification: Chromium at 360x640, 390x844, and 844x390 plus WebKit at 390x844;
+touch-only journey; movement and aim dead zones; exact cloned-state trajectory
+preview; explicit-fire safety; pointer ownership; release-outside and
+cancellation cases; safe areas; browser scroll/zoom suppression; resize and
+orientation; background/resume; reduced motion; screenshots; build. WP-014
+owns the expanded 412x915, visual-regression, network-degradation, and
+performance matrix.
 
 ### WP-011 Complete Practice Clash
 
 Status: planned. Depends on WP-008, WP-009, and WP-010.
 
 Goal: deliver an immediate, unlimited, non-rewarded player-versus-Loomkeeper
-match with onboarding, results, retry, and deterministic local/server modes.
+match with onboarding, results, challenge creation, actual retry behavior,
+authoritative practice pause semantics, and deterministic local/server modes.
 
 Owning roles: `worms_port_base_game_worker`, `worms_port_network_worker`,
 `worms_port_test_worker`.
