@@ -301,6 +301,193 @@ The import gate is supporting evidence, not proof that GPL expression was not
 copied. Completion also requires the clean-room record, implementation
 declaration, similarity review, and relevant behavioral tests.
 
+## Mobile Touch Reference Protocol
+
+WP-009 uses two pinned MIT source references plus current standards documents.
+They provide implementation ideas, not a UI to copy unchanged.
+
+### Pinned Sources
+
+**Phaser examples**
+
+- Repository: `https://github.com/phaserjs/examples`
+- Commit: `6d23cdeb99c956ce72993904ad0f869c06fc6b3b`
+- License evidence: the pinned README declares example source code MIT and
+  explicitly excludes its assets from reuse.
+- Approved paths:
+  - `public/3.86/src/input/dragging/drag horizontally.js`
+  - `public/3.86/src/input/multitouch/two touch inputs.js`
+  - `public/3.86/src/scalemanager/orientation check.js`
+  - directly required Phaser source/API documentation only.
+
+Use these examples to confirm Phaser's interactive drag events, axis clamping,
+additional pointers, `Phaser.Scale.FIT`, and orientation-change lifecycle. The
+examples target Phaser 3.86; verify every API against the project's Phaser 3.90
+types and documentation before implementation. Do not use their images, audio,
+fonts, skins, or other example assets.
+
+**Rex Rainbow Phaser notes and plugins**
+
+- Repository: `https://github.com/rexrainbow/phaser3-rex-notes`
+- Commit: `12d1ed131105e47515fc429ef0ba8abc93fb025f`
+- License evidence: the pinned repository `LICENSE` is MIT.
+- Approved paths:
+  - `examples/virtualjoystick/float.js`
+  - `examples/virtualjoystick/drag-vector.js`
+  - `examples/virtualjoystick/virtualjoystick+button.js`
+  - `plugins/utils/input/VectorToCursorKeys.js`
+  - `plugins/input/virtualjoystick/VirtualJoyStick.js`
+  - `plugins/input/toucheventstop/TouchEventStop.js`
+  - directly required helper source only.
+
+Use these sources to understand floating control anchoring, horizontal-only
+direction modes, distance thresholds, normalized vector force and angle,
+enable/disable cleanup, and stopping control events from reaching the
+battlefield. Do not import the plugin or its visual assets by default. Prefer a
+small typed product-owned adapter; a dependency or copied fragment requires a
+separate package/license decision and source-manifest update.
+
+**Last One Flying applied game**
+
+- Repository: `https://github.com/colinkiama/last-one-flying`
+- Commit: `f1e7501d47777621aab67da4db166b2e59c25987`
+- License evidence: the pinned `LICENSE.md` and `package.json` declare MIT.
+- Approved paths:
+  - `src/scenes/Battle.js`
+  - `src/systems/touchControlsSystem.js`
+  - `src/systems/movementSystem.js`
+  - `src/systems/combatSystem.js`
+  - `src/scenes/HUD.js`
+  - `src/constants/touch.js`
+  - directly required source-only helpers.
+
+This is the primary applied-game reference. It demonstrates dual joystick
+creation inside a real battle scene, a small touch-control abstraction consumed
+by movement and combat systems, runtime touch-control visibility, a parallel HUD
+scene, pause/resume events, and scene-shutdown unsubscription. Use those
+ownership and lifecycle boundaries as design evidence.
+
+Do not copy its fixed joystick coordinates, continuous real-time control model,
+`up&down` movement mapping, vendored Rex build, visual/audio assets, or
+pointerdown/pointerup-only pressed-state logic. It does not establish the
+release-outside, `pointercancel`, safe-area, orientation-reflow,
+server-authority, aim-lock, or explicit-fire guarantees required here. These
+gaps become regression cases rather than inherited behavior.
+
+**Acquati focused integration**
+
+- Repository:
+  `https://github.com/Acquati/touchscreen-joystick-for-phaser-3`
+- Commit: `9a535e3a2fc5feb1d15e24d730682188ace194b3`
+- License evidence: the pinned `LICENSE` and `package.json` declare MIT.
+- Approved paths:
+  - `src/scenes/MainScene.ts`
+  - `package.json`
+  - directly required TypeScript configuration only.
+
+This is the focused integration reference. It demonstrates retrieving the Rex
+plugin from a Phaser scene, creating a fixed visual pad, reading its cursor-key
+projection, applying a force threshold, and feeding ordinary Phaser movement.
+Use it to understand the smallest integration surface and TypeScript boundary.
+
+Do not copy its demo assets, fixed 8-direction layout, old Phaser 3.55/Rex
+versions, per-direction keyboard-state mutation, debug text, or frame-by-frame
+velocity ownership. NIMble Knots translates pointer vectors into typed,
+quantized gameplay intent and keeps keyboard fallback separate from touch state.
+
+### Applied Reference Hierarchy
+
+Use reference material in this order:
+
+1. Current Phaser 3.90 API, W3C Pointer Events, and WebKit safe-area behavior.
+2. The NIMble Knots control contract and server-authoritative command model.
+3. Phaser and Rex focused source examples for individual mechanics.
+4. Last One Flying for complete scene/system ownership and lifecycle lessons.
+5. Acquati for the smallest TypeScript joystick integration surface.
+
+An applied project never overrides a newer API or product invariant. The worker
+must record which exact files were inspected and which lessons were adopted,
+modified, or rejected. By default no reference code is copied. Any copied MIT
+fragment requires an exact-path source-manifest update, preserved notice,
+similarity review, and focused test proving why a local implementation was not
+preferable.
+
+**Authoritative API and browser behavior**
+
+- Phaser 3.90 Input:
+  `https://docs.phaser.io/phaser/concepts/input`
+- Phaser 3.90 Input Events:
+  `https://docs.phaser.io/api-documentation/3.90.0/namespace/input-events`
+- Phaser Scale Manager:
+  `https://docs.phaser.io/phaser/concepts/scale-manager`
+- W3C Pointer Events:
+  `https://www.w3.org/TR/pointerevents/`
+- WebKit safe-area guidance:
+  `https://webkit.org/blog/7929/designing-websites-for-iphone-x/`
+
+The API and standards sources override an older example when behavior differs.
+Use scoped `touch-action` to prevent browser panning/zooming on the game control
+surface; canceling pointer events alone is not sufficient. Use safe-area insets
+for control placement and support orientation reflow rather than forcing the
+user to rotate.
+
+### NIMble Knots Adaptation
+
+The reference patterns are adapted into a turn-based single-pointer control
+model:
+
+1. **Movement zone:** a floating horizontal pad can anchor only inside the
+   lower-left control zone. Its radius is layout-relative, its dead zone starts
+   at 18% of radius, and its x force is normalized to `[-1, 1]`. The client
+   quantizes that value into bounded movement intent; it never sends pointer
+   coordinates or client-owned position.
+2. **Aim zone:** a lower-right pad owns one pointer from down through release or
+   cancellation. Vector angle controls trajectory and clamped vector magnitude
+   controls power. Shared deterministic simulation renders the preview.
+3. **Aim release:** ordinary release freezes the selected angle/power. It does
+   not fire. Release outside, `pointercancel`, lost focus, hidden document,
+   scene pause/shutdown, resize, or orientation change cancels the gesture.
+4. **Fire:** a separate minimum 48 CSS-pixel button submits one idempotent Fire
+   command only from the `aim_locked` state. Duplicate taps, stale turns, or a
+   suspended scene cannot submit another command.
+5. **Relics and commands:** Relic selection, pause, retry, and confirmations use
+   large tap targets. Swipe, pinch, long-press, hover, and multi-finger chords
+   are not required for the competition release.
+6. **Camera:** automatic active-Knotkin and projectile framing is the default.
+   Optional battlefield panning can be added only when no control owns the
+   pointer and it cannot alter simulation state.
+7. **Lifecycle:** the input adapter has explicit `idle`, `moving`, `aiming`,
+   `aim_locked`, and `suspended` states. Every cancellation path clears vectors,
+   visual pressed states, timers, and pointer ownership before returning to a
+   safe state.
+8. **Wallet interruption:** opening a Nimiq Pay approval dialog suspends input
+   and turn timing. Resume requires a fresh pointer-down; a pre-dialog contact
+   can never continue or fire afterward.
+
+The implementation may tune the 18% dead zone or layout-relative control radius
+only through recorded phone-emulation evidence. It must not tune by copying
+constants from a reference implementation.
+
+### Reference Verification
+
+Playwright coverage must exercise:
+
+- touch-only completion at 360x640, 390x844, 412x915, and 844x390,
+- movement below, at, and above the dead-zone threshold,
+- minimum and maximum aim/power clamps and deterministic preview agreement,
+- release inside, release outside, pointer cancellation, duplicate tap, blur,
+  hidden/resume, resize, and orientation changes,
+- no shot on aim release or any cancellation path,
+- exactly one command from one valid Fire activation,
+- no browser scrolling, zooming, text selection, or control-event leakage into
+  the battlefield,
+- safe-area separation, minimum target sizes, and no overlap between movement,
+  aim, Fire, Relic, wallet, and HUD surfaces,
+- mouse input only as a development fallback; no hover or keyboard dependency.
+
+Store traces and screenshots as test evidence outside `assets/`. Physical
+Android/iOS validation remains outside the autonomous cycle.
+
 ## Plan Change Protocol
 
 If implementation shows that the plan is wrong or risky:

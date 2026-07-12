@@ -1,6 +1,9 @@
 # Import Boundary
 
-This project has two upstream roles. They are intentionally not symmetrical.
+This project has one approved base-code upstream and one quarantined gameplay
+reference. They are intentionally not symmetrical. Additional MIT technical
+references may inform bounded implementation patterns but are not imported
+upstreams or product asset sources.
 
 ## TurtlePU/worms-ii
 
@@ -41,6 +44,37 @@ Blocked:
 - Treating Sorcerers credits as sufficient license evidence.
 - Importing any asset without exact-file source, author, license, evidence URL,
   checked date, and an approved manifest entry.
+
+## Mobile Input Technical References
+
+Role: approved code-reference-only sources.
+
+The pinned `phaserjs/examples`, `rexrainbow/phaser3-rex-notes`,
+`colinkiama/last-one-flying`, and
+`Acquati/touchscreen-joystick-for-phaser-3` commits in
+`legal/source-manifest.json` may inform WP-009 touch input, drag-vector,
+dead-zone, orientation, event-isolation, and applied scene/system integration.
+
+Allowed:
+
+- Inspect only the recorded source paths and their directly required helper
+  code.
+- Reimplement product-specific behavior against Phaser 3.90 APIs.
+- Copy a small MIT code fragment only after recording the exact source path,
+  preserving its notice, and updating `copied_into` in the source manifest.
+
+Blocked:
+
+- Importing example images, sounds, fonts, skins, demo assets, or other media.
+- Treating the reference repos as product asset buckets.
+- Adding a Rex plugin dependency without dependency-license and bundle review.
+- Assuming a Phaser 3.86 or current Phaser 4 example works unchanged with the
+  project's Phaser 3.90 runtime.
+- Copying generic joystick code when a smaller product-owned control adapter
+  satisfies the documented behavior.
+- Copying Last One Flying's fixed-position dual-stick layout or Acquati's direct
+  keyboard-cursor mutation instead of implementing the documented turn-based
+  command and cancellation model.
 
 ## Product Asset Gate
 

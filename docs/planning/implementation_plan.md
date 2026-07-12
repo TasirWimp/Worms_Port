@@ -293,10 +293,58 @@ for movement, Relic selection, drag aim/power, trajectory preview, firing,
 Stitching, turn time, pause, and retry. Landscape is enhanced but optional.
 Use code-drawn placeholders until production art is approved.
 
+Mobile input references:
+
+- `phaserjs/examples` at
+  `6d23cdeb99c956ce72993904ad0f869c06fc6b3b` for Phaser-native horizontal
+  drag, multitouch pointer registration, FIT scaling, and orientation events,
+- `rexrainbow/phaser3-rex-notes` at
+  `12d1ed131105e47515fc429ef0ba8abc93fb025f` for floating joystick placement,
+  horizontal direction locking, vector force/angle, dead zones, and touch-event
+  isolation,
+- `colinkiama/last-one-flying` at
+  `f1e7501d47777621aab67da4db166b2e59c25987` as the primary applied-game
+  reference for separating touch controls, movement, combat, HUD, settings,
+  pause/resume, and scene-shutdown responsibilities,
+- `Acquati/touchscreen-joystick-for-phaser-3` at
+  `9a535e3a2fc5feb1d15e24d730682188ace194b3` as the focused integration
+  reference for wiring a Rex joystick into a small Phaser 3 TypeScript scene,
+- Phaser 3.90 Input and Scale documentation plus the W3C Pointer Events
+  specification for current API and browser cancellation semantics.
+
+These are code-reference-only sources. Do not import their assets or add a Rex
+runtime dependency by default. The normative adaptation rules and exact source
+paths are in `docs/process/development_workflow.md` under **Mobile Touch
+Reference Protocol**.
+
+Applied-project use is deliberately selective. Last One Flying demonstrates a
+useful systems boundary and complete scene lifecycle, but its fixed coordinates,
+real-time dual joysticks, and incomplete cancellation handling are not product
+requirements. Acquati demonstrates a minimal integration, but its older Phaser
+and Rex versions and direct mutation of keyboard cursor state are not copied.
+The NIMble Knots control contract below takes precedence.
+
+Control contract:
+
+- a floating horizontal movement pad is restricted to the lower-left control
+  zone and produces normalized, quantized movement intent,
+- a lower-right aim pad maps one owned pointer vector to angle and power; release
+  locks the preview and never fires,
+- a separate explicit Fire button sends the authoritative command and remains
+  disabled outside the player's valid turn state,
+- Relic selection uses large tap targets rather than a required swipe,
+- pointer ownership cannot transfer between controls during one contact,
+- pointer cancellation, release outside, blur, backgrounding, resize, and
+  orientation change clear transient input and can never fire a shot,
+- raw screen coordinates are not network commands; the client emits validated,
+  bounded gameplay intent against the shared deterministic simulation.
+
 Owning roles: `worms_port_base_game_worker`, `worms_port_test_worker`.
 
-Verification: phone viewport browser tests, touch-only journey, safe areas,
-resize/orientation, background/resume, reduced motion, screenshots, build.
+Verification: phone viewport browser tests, touch-only journey, movement and aim
+dead zones, explicit-fire safety, pointer ownership, release-outside and
+cancellation cases, safe areas, browser scroll/zoom suppression, resize and
+orientation, background/resume, reduced motion, screenshots, build.
 
 ### WP-010 Complete Practice Clash
 

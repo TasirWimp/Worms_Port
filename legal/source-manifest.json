@@ -1,5 +1,5 @@
 {
-  "checked_date": "2026-07-08",
+  "checked_date": "2026-07-12",
   "sources": [
     {
       "id": "turtlepu-worms-ii",
@@ -63,6 +63,121 @@
         "runtime code import"
       ],
       "notes": "Used as the local reference for adapting AGENTS.md plus .codex/agents role scaffolding to Worms_Port-specific responsibilities."
+    },
+    {
+      "id": "phaserjs-examples-mobile-input",
+      "role": "technical_code_reference_only",
+      "repository": "phaserjs/examples",
+      "url": "https://github.com/phaserjs/examples",
+      "commit": "6d23cdeb99c956ce72993904ad0f869c06fc6b3b",
+      "license": "MIT",
+      "license_evidence": "https://github.com/phaserjs/examples/blob/6d23cdeb99c956ce72993904ad0f869c06fc6b3b/README.md#license",
+      "decision": "approved_reference_no_import",
+      "copied_into": [],
+      "referenced_paths": [
+        "public/3.86/src/input/dragging/drag horizontally.js",
+        "public/3.86/src/input/multitouch/two touch inputs.js",
+        "public/3.86/src/scalemanager/orientation check.js"
+      ],
+      "allowed_uses": [
+        "Phaser pointer and drag behavior reference",
+        "multitouch registration reference",
+        "FIT scaling and orientation lifecycle reference"
+      ],
+      "blocked_uses": [
+        "example asset import",
+        "code copy without exact-path traceability and MIT notice",
+        "unverified use of Phaser 3.86 or Phaser 4 APIs in Phaser 3.90"
+      ],
+      "notes": "The repository README declares source code MIT but explicitly excludes example assets from commercial reuse. Only the listed source files and directly required API context are approved references."
+    },
+    {
+      "id": "rexrainbow-phaser-touch-controls",
+      "role": "technical_code_reference_only",
+      "repository": "rexrainbow/phaser3-rex-notes",
+      "url": "https://github.com/rexrainbow/phaser3-rex-notes",
+      "commit": "12d1ed131105e47515fc429ef0ba8abc93fb025f",
+      "license": "MIT",
+      "license_evidence": "https://github.com/rexrainbow/phaser3-rex-notes/blob/12d1ed131105e47515fc429ef0ba8abc93fb025f/LICENSE",
+      "decision": "approved_reference_no_import",
+      "copied_into": [],
+      "referenced_paths": [
+        "examples/virtualjoystick/float.js",
+        "examples/virtualjoystick/drag-vector.js",
+        "examples/virtualjoystick/virtualjoystick+button.js",
+        "plugins/utils/input/VectorToCursorKeys.js",
+        "plugins/input/virtualjoystick/VirtualJoyStick.js",
+        "plugins/input/toucheventstop/TouchEventStop.js"
+      ],
+      "allowed_uses": [
+        "floating horizontal touch-control behavior reference",
+        "dead-zone and vector normalization reference",
+        "touch-event isolation and cleanup reference"
+      ],
+      "blocked_uses": [
+        "plugin or example asset import",
+        "runtime dependency without package and license review",
+        "code copy without exact-path traceability and MIT notice"
+      ],
+      "notes": "Reference behavior only by default. Prefer a small typed product-owned adapter over importing the plugin. Assets and skins are not approved product inputs."
+    },
+    {
+      "id": "last-one-flying-mobile-controls",
+      "role": "applied_game_code_reference_only",
+      "repository": "colinkiama/last-one-flying",
+      "url": "https://github.com/colinkiama/last-one-flying",
+      "commit": "f1e7501d47777621aab67da4db166b2e59c25987",
+      "license": "MIT",
+      "license_evidence": "https://github.com/colinkiama/last-one-flying/blob/f1e7501d47777621aab67da4db166b2e59c25987/LICENSE.md",
+      "decision": "approved_reference_no_import",
+      "copied_into": [],
+      "referenced_paths": [
+        "src/scenes/Battle.js",
+        "src/systems/touchControlsSystem.js",
+        "src/systems/movementSystem.js",
+        "src/systems/combatSystem.js",
+        "src/scenes/HUD.js",
+        "src/constants/touch.js"
+      ],
+      "allowed_uses": [
+        "applied touch-control system boundary reference",
+        "battle scene movement combat and HUD integration reference",
+        "touch-control settings pause resume and shutdown lifecycle reference"
+      ],
+      "blocked_uses": [
+        "game asset audio font or vendored plugin import",
+        "fixed-coordinate dual-stick layout copy",
+        "pointerdown and pointerup-only state handling copy",
+        "code copy without exact-path traceability and MIT notice"
+      ],
+      "notes": "Primary applied-game reference. Adopt the separation of touch controls from movement, combat, HUD, settings, and lifecycle. Do not inherit fixed coordinates, real-time dual-stick assumptions, or missing pointercancel, release-outside, safe-area, orientation, and server-authority handling."
+    },
+    {
+      "id": "acquati-phaser-touchscreen-joystick",
+      "role": "applied_integration_code_reference_only",
+      "repository": "Acquati/touchscreen-joystick-for-phaser-3",
+      "url": "https://github.com/Acquati/touchscreen-joystick-for-phaser-3",
+      "commit": "9a535e3a2fc5feb1d15e24d730682188ace194b3",
+      "license": "MIT",
+      "license_evidence": "https://github.com/Acquati/touchscreen-joystick-for-phaser-3/blob/9a535e3a2fc5feb1d15e24d730682188ace194b3/LICENSE",
+      "decision": "approved_reference_no_import",
+      "copied_into": [],
+      "referenced_paths": [
+        "src/scenes/MainScene.ts",
+        "package.json"
+      ],
+      "allowed_uses": [
+        "minimal Phaser TypeScript joystick integration reference",
+        "force-threshold and cursor projection reference",
+        "keyboard and touch input boundary comparison"
+      ],
+      "blocked_uses": [
+        "demo asset import",
+        "old Phaser or Rex dependency import without review",
+        "direct keyboard-cursor mutation copy",
+        "code copy without exact-path traceability and MIT notice"
+      ],
+      "notes": "Focused integration reference only. Use it to understand the minimum Phaser scene and Rex joystick wiring. NIMble Knots must emit typed touch intent instead of mutating keyboard cursor state and must use reviewed Phaser 3.90-compatible APIs."
     }
   ]
 }
