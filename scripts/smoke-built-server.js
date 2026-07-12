@@ -91,6 +91,18 @@ async function main() {
       throw new Error('Root response did not contain the built game page.');
     }
 
+    const overlayResponse = await fetch(`${baseUrl}/overlay/join.html`);
+    const overlayBody = await overlayResponse.text();
+    if (!overlayResponse.ok || !overlayBody.includes('NIMble Knots')) {
+      throw new Error('Built join overlay was not served from the client build.');
+    }
+
+    const approvedAssetsResponse = await fetch(`${baseUrl}/assets/approved-assets.json`);
+    const approvedAssets = await approvedAssetsResponse.json();
+    if (!approvedAssetsResponse.ok || !Array.isArray(approvedAssets.assets)) {
+      throw new Error('Approved asset build manifest was not served from the client build.');
+    }
+
     const roomResponse = await fetch(`${baseUrl}/.room.join_id`);
     const roomId = (await roomResponse.text()).trim();
     if (!roomResponse.ok || !/^[a-z0-9]+(?:-[a-z0-9]+){2}$/.test(roomId)) {
@@ -100,7 +112,7 @@ async function main() {
     }
 
     console.log(`Built server smoke test passed on port ${port}.`);
-    console.log(`Validated / and /.room.join_id (${roomId}).`);
+    console.log(`Validated /, built overlays, approved asset plumbing, and /.room.join_id (${roomId}).`);
   } finally {
     await stopServer(child);
     if (stderr.trim()) {

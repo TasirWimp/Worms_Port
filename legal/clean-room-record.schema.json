@@ -1,0 +1,57 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://github.com/TasirWimp/Worms_Port/legal/clean-room-record.schema.json",
+  "title": "NIMble Knots clean-room reference record",
+  "type": "object",
+  "required": [
+    "id",
+    "work_package",
+    "source_commit",
+    "observed_material",
+    "behavior_record",
+    "behavior_record_sha256",
+    "observer",
+    "status"
+  ],
+  "properties": {
+    "id": { "type": "string", "pattern": "^[a-z0-9-]+$" },
+    "work_package": { "type": "string", "pattern": "^WP-[0-9]{3}$" },
+    "source_commit": { "const": "0f45c4920321c0a3a14de30fe5cf44131a38da89" },
+    "observed_material": { "type": "array", "minItems": 1, "items": { "type": "string" } },
+    "behavior_record": { "type": "string", "minLength": 1 },
+    "behavior_record_sha256": { "type": "string", "pattern": "^[0-9A-F]{64}$" },
+    "observer": { "type": "string", "minLength": 1 },
+    "status": { "enum": ["observed", "complete"] },
+    "implementer": { "type": "string", "minLength": 1 },
+    "reviewer": { "type": "string", "minLength": 1 },
+    "implementation_declaration": { "type": "string", "minLength": 1 },
+    "similarity_review": { "enum": ["pass", "blocked"] },
+    "behavioral_tests": { "type": "array", "minItems": 1, "items": { "type": "string" } }
+  },
+  "allOf": [
+    {
+      "if": { "properties": { "status": { "const": "complete" } } },
+      "then": {
+        "required": [
+          "implementer",
+          "reviewer",
+          "implementation_declaration",
+          "similarity_review",
+          "behavioral_tests"
+        ]
+      },
+      "else": {
+        "not": {
+          "anyOf": [
+            { "required": ["implementer"] },
+            { "required": ["reviewer"] },
+            { "required": ["implementation_declaration"] },
+            { "required": ["similarity_review"] },
+            { "required": ["behavioral_tests"] }
+          ]
+        }
+      }
+    }
+  ],
+  "additionalProperties": false
+}

@@ -27,7 +27,6 @@ const server = new http.Server(app);
 const io = new SocketIOServer(server);
 
 app.use('/', express.static(client_dir));
-app.use('/assets', express.static(path.join(__dirname, '../../client/assets')));
 
 app.get('/', (_, res) => {
     res.sendFile(path.join(client_dir, 'index.html'));

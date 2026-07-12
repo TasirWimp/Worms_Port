@@ -1,3 +1,4 @@
+const crypto = require('crypto');
 const fs = require('fs');
 const path = require('path');
 
@@ -56,6 +57,7 @@ const ids = new Set();
 const requiredFields = [
   'id',
   'file',
+  'sha256',
   'origin_repo',
   'original_source_url',
   'author',
@@ -93,6 +95,13 @@ for (const asset of manifestAssets) {
     }
     if (!fs.existsSync(absoluteFile)) {
       errors.push(`${asset.id}: listed file does not exist: ${asset.file}`);
+    } else if (!fs.lstatSync(absoluteFile).isFile()) {
+      errors.push(`${asset.id}: product assets must be regular files, not links or directories.`);
+    } else {
+      const actualHash = crypto.createHash('sha256').update(fs.readFileSync(absoluteFile)).digest('hex').toUpperCase();
+      if (!/^[0-9A-F]{64}$/.test(asset.sha256 || '') || actualHash !== asset.sha256) {
+        errors.push(`${asset.id}: sha256 does not match the exact product asset bytes.`);
+      }
     }
     if (byFile.has(asset.file)) {
       errors.push(`${asset.id}: duplicate manifest file entry: ${asset.file}`);
@@ -135,6 +144,13 @@ for (const asset of manifestAssets) {
   }
   if (asset.attribution_required === true && !asset.attribution_text) {
     errors.push(`${asset.id}: attribution_text is required when attribution_required is true.`);
+  }
+  if (asset.runtime_path !== undefined && (
+    typeof asset.runtime_path !== 'string' ||
+    !asset.runtime_path.startsWith('assets/product/') ||
+    asset.runtime_path.includes('..')
+  )) {
+    errors.push(`${asset.id}: runtime_path must stay under assets/product/.`);
   }
 }
 

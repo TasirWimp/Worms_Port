@@ -8,8 +8,8 @@ Phaser/Socket.IO stack.
 ## Execution Pointer
 
 - Active target: mobile-first single-player Nimiq Pay competition release.
-- Next work package: **WP-005 Autonomous Foundation And Release Contract**.
-- Last completed work package: **WP-004 First Asset Import Trial**.
+- Next work package: **WP-006 Validated Session And Command Protocol**.
+- Last completed work package: **WP-005 Autonomous Foundation And Release Contract**.
 - PvP and matchmaking: deferred until after the competition release.
 - Canonical artwork reference:
   `docs/images/art-direction/knotkin-class-lineup-concept.png`.
@@ -53,7 +53,8 @@ availability and terms must be disclosed before a challenge starts.
 - WP-003 established NIMble Knots and the canonical Knotkin Calling lineup.
 - The current runtime is a lobby/reconnect shell with placeholder gameplay; it
   does not yet implement the competition release contract.
-- Automated unit, deterministic simulation, Socket.IO protocol, mobile-browser,
+- WP-005 provides tooling tests plus fresh-build phone Chromium/WebKit smoke.
+  Deterministic simulation, Socket.IO protocol, full phone matrix,
   visual-regression, and performance suites do not yet exist.
 
 ## Codex Subagent Roles
@@ -193,7 +194,7 @@ AutoSprite, or another production service.
 
 ### WP-005 Autonomous Foundation And Release Contract
 
-Status: next.
+Status: complete.
 
 Goal: make the approved plan executable and fail closed before gameplay work.
 
@@ -240,6 +241,19 @@ WP-005 Playwright acceptance criteria:
 Verification: compliance, types, clean build, audit, built smoke, Playwright
 version and browser-launch checks, mobile Chromium/WebKit smoke, and read-only
 review. No gameplay behavior is added.
+
+Implementation note: the approved-asset build path is manifest-aware and is
+verified with isolated fixtures. It copies only entries that declare a runtime
+path. WP-005 does not assign that path to the Pocket Robot or add production
+art, so its generated runtime inventory remains empty until a future package
+approves a genuine runtime asset.
+
+Delivered with exact-file asset hashes, untracked implementation/quarantine
+scanning, staged clean-room and work-package evidence gates, built-only overlay
+serving, non-stale smoke commands, Playwright 1.61.1 Chromium/WebKit phone
+projects on a dynamic test-owned port, failure artifact retention, and GitHub
+Actions verification. The official Nimiq skill, documentation MCP, and SDK
+readiness are recorded for WP-011 without adding a premature wallet dependency.
 
 ### WP-006 Validated Session And Command Protocol
 

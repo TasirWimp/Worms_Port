@@ -5,6 +5,7 @@
     {
       "id": "pocket-robot-openai-owned-original",
       "file": "assets/sprites/pocket-robot.png",
+      "sha256": "42930118FDFD50F62D2433D76B477ECCA56D5459497943C1F431695C511EE355",
       "origin_repo": "direct/user-provided ChatGPT generation",
       "original_source_url": "https://chatgpt.com/",
       "author": "TasirWimp with OpenAI image generation",

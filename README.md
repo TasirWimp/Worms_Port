@@ -36,15 +36,24 @@ Use Node.js 20 or newer.
 
 ```sh
 npm install
+npx playwright install chromium webkit
 npm run build
 npm run smoke
+npm run test:browser:smoke
 npm start
 ```
 
 The browser client builds with Vite into `client/build/`. The Node server builds
-with esbuild into `server/build/server.js`. The smoke command starts that built
-server on an available local port and verifies the game page and room join-ID
-API.
+with esbuild into `server/build/server.js`. The smoke command performs a fresh
+build, starts that server on an available local port, and verifies the game
+page, built overlays, approved-asset plumbing, and room join-ID API.
+`npm run test:browser:smoke` performs a fresh build and runs the phone-sized
+Chromium and WebKit touch journey. Run `npm run verify:full` for the complete
+autonomous foundation funnel.
+
+Playwright reports, traces, screenshots, and videos are generated outside
+`assets/` and are ignored locally. CI retains them only when verification
+fails.
 
 ## World And Art Direction
 

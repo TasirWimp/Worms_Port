@@ -87,6 +87,7 @@ The manifest gate requires:
 - origin repo or direct original source
 - author
 - exact license
+- exact-file SHA-256
 - commercial use allowed
 - redistribution allowed
 - modification allowed
@@ -95,3 +96,10 @@ The manifest gate requires:
 - approved decision
 
 If any field is unclear, the asset stays out of `assets/`.
+
+An approved entry is not automatically shipped. Runtime candidates must also
+declare a unique `runtime_path` below `assets/product/`. The client build copies
+only those explicitly approved entries, verifies source/destination byte
+hashes, and publishes `/assets/approved-assets.json`. Entries without a runtime
+path, including the Pocket Robot traceability fixture, stay outside the client
+build.

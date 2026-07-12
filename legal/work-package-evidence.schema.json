@@ -1,0 +1,41 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://github.com/TasirWimp/Worms_Port/legal/work-package-evidence.schema.json",
+  "title": "NIMble Knots work-package evidence",
+  "type": "object",
+  "required": [
+    "id",
+    "status",
+    "starting_commit",
+    "branch",
+    "initial_worktree",
+    "starting_lock_sha256",
+    "owning_roles",
+    "scope",
+    "non_goals",
+    "planned_checks",
+    "deterministic_seeds",
+    "sorcerers_reference_used",
+    "clean_room_records"
+  ],
+  "properties": {
+    "id": { "type": "string", "pattern": "^WP-[0-9]{3}$" },
+    "status": { "enum": ["in_progress", "complete", "blocked"] },
+    "starting_commit": { "type": "string", "pattern": "^[0-9a-f]{7,40}$" },
+    "branch": { "type": "string", "minLength": 1 },
+    "initial_worktree": { "enum": ["clean", "dirty-preserved"] },
+    "starting_lock_sha256": { "type": "string", "pattern": "^[0-9A-F]{64}$" },
+    "owning_roles": { "type": "array", "minItems": 1, "items": { "type": "string" } },
+    "scope": { "type": "array", "minItems": 1, "items": { "type": "string" } },
+    "non_goals": { "type": "array", "minItems": 1, "items": { "type": "string" } },
+    "planned_checks": { "type": "array", "minItems": 1, "items": { "type": "string" } },
+    "deterministic_seeds": { "type": "array", "items": { "type": "string" } },
+    "sorcerers_reference_used": { "type": "boolean" },
+    "clean_room_records": { "type": "array", "items": { "type": "string" } },
+    "check_results": { "type": "array" },
+    "reviews": { "type": "array" },
+    "skipped_checks": { "type": "array" },
+    "residual_risks": { "type": "array" }
+  },
+  "additionalProperties": false
+}

@@ -9,6 +9,12 @@ server/dist/
 client/build/
 server/build/
 
+# local browser-test output
+test-results/
+playwright-report/
+blob-report/
+.playwright-cache/
+
 # local-only upstream review material
 .quarantine/
 assets-quarantine/sorcerers/raw/**

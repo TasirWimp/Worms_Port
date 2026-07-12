@@ -64,6 +64,22 @@ waiting for routine implementation decisions:
 9. Persist sanitized evidence, update source-of-truth documents, commit the
    bounded slice, and advance the execution pointer only after all gates pass.
 
+### Work-Package Evidence
+
+Every autonomous package has a tracked JSON record under `docs/evidence/` that
+conforms to `legal/work-package-evidence.schema.json`. Create it before the
+first edit and record the starting commit, branch, initial worktree state,
+dependency-lock SHA-256, owning roles, scope, non-goals, planned checks,
+deterministic seeds or an empty list, and whether Sorcerers observation was
+used. `npm run check:work-packages` validates these records.
+
+Before marking a record complete, add every check result, independent review,
+skipped check, and residual risk. Generated traces, videos, reports,
+screenshots, caches, and raw logs stay in ignored `test-results/` or
+`playwright-report/`. Only compact sanitized facts belong in the tracked
+record; never persist secrets, wallet material, device identifiers, or raw
+quarantine content.
+
 Never auto-approve screenshot baselines, asset licenses, attribution omissions,
 brand permissions, payment exceptions, security exceptions, or real-fund
 activation.
@@ -289,6 +305,13 @@ Before promotion, automated and reviewer evidence must establish:
 No generated output can promote itself into `assets/`. Failed or exhausted
 iterations remain quarantined.
 
+The client build accepts root product assets only through
+`scripts/copy-approved-assets.js`. A manifest entry must be approved and name a
+unique path below `assets/product/`; the copy step checks byte equality and
+writes the served inventory to `/assets/approved-assets.json`. The path is
+tested with isolated tooling fixtures. WP-005 intentionally assigns no runtime
+path to the Pocket Robot, so it remains outside the client build.
+
 ## Clean-Room Reference Loop
 
 Only a reference-observer role may inspect Sorcerers. It produces a
@@ -297,9 +320,40 @@ The implementation worker cannot access Sorcerers or its quarantine and uses
 only the frozen record, the MIT Turtle base, and independent sources. A separate
 reviewer may compare both sides but returns only bounded contamination findings.
 
-The import gate is supporting evidence, not proof that GPL expression was not
-copied. Completion also requires the clean-room record, implementation
-declaration, similarity review, and relevant behavioral tests.
+Each observation is registered in `legal/clean-room-records.json` and conforms
+to `legal/clean-room-record.schema.json`. The initial `observed` stage records
+the observer, pinned source, viewed material, and frozen behavior-record path
+and SHA-256 before implementation begins. The `complete` stage adds a separate
+implementer and reviewer, the implementation declaration, passing similarity
+decision, and behavioral-test evidence. A work-package record that declares
+Sorcerers use must link at least one observed record and cannot complete until
+that record completes.
+`npm run check:clean-room` verifies hashes and role separation and fails closed
+on incomplete entries.
+
+The import gate and registry checks are supporting evidence, not proof that GPL
+expression was not copied. Completion still requires human similarity review
+and relevant behavioral tests.
+
+## Nimiq Developer Capability Readiness
+
+Checked 2026-07-12 against the official Nimiq Developer Center:
+
+- Install the official Mini Apps Agent Skill with
+  `npx skills add nimiq/developer-center --skill mini-apps`; see
+  `https://nimiq.dev/mini-apps/build-with-ai`.
+- The official documentation MCP endpoint is
+  `https://nimiq.com/developers/mcp`; see `https://nimiq.dev/ai/mcp`.
+- Mini Apps run inside the Nimiq Pay WebView. The documented Nimiq provider
+  entry point is `init()` from `@nimiq/mini-app-sdk`; see
+  `https://nimiq.dev/mini-apps/`.
+
+The repository does not vendor the skill, configure the MCP, or depend on the
+SDK. This Codex session also exposes no Nimiq-specific skill or MCP tool. That
+does not block WP-005 browser foundations. Before WP-011, re-check the official
+docs, review and pin the SDK, then install the official skill or configure the
+official documentation MCP. Nimiq Pay allowlisting and physical WebView testing
+remain external-environment checks.
 
 ## Mobile Touch Reference Protocol
 

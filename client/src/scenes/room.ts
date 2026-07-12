@@ -26,7 +26,7 @@ export default class RoomScene extends OverlayedScene
 
     public constructor ()
     {
-        super({ key: 'room' }, 'assets/overlay/room.html');
+        super({ key: 'room' }, '/overlay/room.html');
     }
 
     public init (

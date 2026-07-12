@@ -14,7 +14,7 @@ export default class GameScene extends OverlayedScene
 
     public constructor ()
     {
-        super({ key: 'game' }, 'assets/overlay/game.html');
+        super({ key: 'game' }, '/overlay/game.html');
         this.watcher = new EventTarget();
     }
 

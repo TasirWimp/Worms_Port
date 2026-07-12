@@ -12,7 +12,7 @@ through Sorcerers.
    no-redistribution, unclear, GPL/AGPL/LGPL, CC-BY-SA, trademark/IP-derived,
    or otherwise incompatible with commercial mobile distribution.
 5. If the license is allowed, add a complete entry to
-   `legal/asset-manifest.json`.
+   `legal/asset-manifest.json`, including the exact-file SHA-256.
 6. Copy the reviewed asset into the correct `assets/` subfolder.
 7. Update `legal/attribution.md` when attribution is required.
 8. Run `npm run check:compliance`.

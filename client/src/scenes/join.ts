@@ -20,7 +20,7 @@ export default class JoinScene extends OverlayedScene
 
     public constructor ()
     {
-        super({ key: 'join' }, 'assets/overlay/join.html');
+        super({ key: 'join' }, '/overlay/join.html');
     }
 
     public init (
