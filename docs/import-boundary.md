@@ -52,7 +52,7 @@ Role: approved code-reference-only sources.
 The pinned `phaserjs/examples`, `rexrainbow/phaser3-rex-notes`,
 `colinkiama/last-one-flying`, and
 `Acquati/touchscreen-joystick-for-phaser-3` commits in
-`legal/source-manifest.json` may inform WP-009 touch input, drag-vector,
+`legal/source-manifest.json` may inform WP-010 touch input, drag-vector,
 dead-zone, orientation, event-isolation, and applied scene/system integration.
 
 Allowed:

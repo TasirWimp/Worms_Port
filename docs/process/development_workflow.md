@@ -123,7 +123,7 @@ identity, and reward work:
   one strict object plus a required acknowledgement callback. Responses carry
   protocol version, server time, request ID, and typed success/error data.
 - Practice creation is available. Signed-session and reward request shapes are
-  validated but return `FEATURE_UNAVAILABLE` until WP-011/WP-012.
+  validated but return `FEATURE_UNAVAILABLE` until WP-012/WP-013.
 - Per-session sequence and request-ID replay caches make exact duplicates
   idempotent and reject conflicts, stale commands, and gaps before WP-007 adds
   simulation semantics.
@@ -207,8 +207,38 @@ Phaser-free decision policy layered on `nimble-knots-artillery-v1`.
   search.
 
 The turn driver remains in-process with the WP-007 coordinator. A durable
-multi-instance or Vercel Functions deployment still requires shared state,
-exactly-once turn leases, and cross-instance event delivery.
+multi-instance deployment still requires shared state, exactly-once turn
+leases, and cross-instance event delivery.
+
+### Hosting Contract
+
+The selected competition-release host is one **Render Starter Web Service** in
+the Frankfurt region. The existing Node process serves the built client and
+owns Socket.IO, sessions, simulations, Loomkeeper scheduling, and replay state
+together. This is the simplest deployment consistent with the current
+single-process authority boundary.
+
+- Render Free is permitted only for private development and preview because an
+  idle service may sleep and cold-start. The public release uses the always-on
+  Starter instance.
+- Deploy one instance. Do not enable horizontal autoscaling while sessions,
+  simulations, AI turns, and replays remain in memory.
+- A process restart or deploy may end active practice matches. The client must
+  fail clearly and offer a fresh practice match rather than imply recovery.
+- Before sponsor-funded rewards are enabled, reward reservations, claims,
+  payout idempotency, and completed-match evidence require durable storage.
+- Multiple instances require shared durable snapshots/replays, exactly-once
+  turn and payout leases, and cross-instance Socket.IO delivery before they can
+  be considered safe.
+- Production configuration must include HTTPS, the Render public origin in
+  `ALLOWED_ORIGINS`, health checks, secret separation, spending alerts, rollback
+  evidence, and rewards disabled by default.
+
+Hosting choice checked 2026-07-12 against Render's official pricing, WebSocket,
+free-service, and region documentation:
+`https://render.com/pricing`,
+`https://render.com/articles/building-real-time-applications-with-websockets`,
+`https://render.com/docs/faq`, and `https://render.com/docs/regions`.
 
 ### Playwright Bootstrap
 
@@ -230,7 +260,7 @@ The checked-in Playwright configuration must:
 - provide Chromium and WebKit phone projects without system-browser executable
   overrides.
 
-WP-005 provides browser launch and application smoke coverage. WP-013 expands
+WP-005 provides browser launch and application smoke coverage. WP-014 expands
 that foundation into the full viewport, visual-regression, network, resume,
 fake-wallet, performance, and multiplayer-context matrix.
 
@@ -451,14 +481,14 @@ Checked 2026-07-12 against the official Nimiq Developer Center:
 
 The repository does not vendor the skill, configure the MCP, or depend on the
 SDK. This Codex session also exposes no Nimiq-specific skill or MCP tool. That
-does not block WP-005 browser foundations. Before WP-011, re-check the official
+does not block WP-005 browser foundations. Before WP-012, re-check the official
 docs, review and pin the SDK, then install the official skill or configure the
 official documentation MCP. Nimiq Pay allowlisting and physical WebView testing
 remain external-environment checks.
 
 ## Mobile Touch Reference Protocol
 
-WP-009 uses two pinned MIT source references plus current standards documents.
+WP-010 uses two pinned MIT source references plus current standards documents.
 They provide implementation ideas, not a UI to copy unchanged.
 
 ### Pinned Sources

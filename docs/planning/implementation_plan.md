@@ -8,7 +8,7 @@ Phaser/Socket.IO stack.
 ## Execution Pointer
 
 - Active target: mobile-first single-player Nimiq Pay competition release.
-- Next work package: **WP-009 Phone Combat Scene**.
+- Next work package: **WP-009 Relic Ruleset Completion**.
 - Last completed work package: **WP-008 Loomkeeper AI**.
 - PvP and matchmaking: deferred until after the competition release.
 - Canonical artwork reference:
@@ -42,6 +42,21 @@ The reward is not a stake, wager, escrow, random prize, or transfer funded by a
 losing player. Practice remains available when the Prize Loom is empty. Reward
 availability and terms must be disclosed before a challenge starts.
 
+## Hosting Decision
+
+The competition release will use one **Render Starter Web Service** in
+Frankfurt, serving the built client and persistent Node/Socket.IO runtime from
+the same process. Render Free may be used for private previews only. The public
+release stays on one always-on instance because authoritative session,
+simulation, Loomkeeper, and replay state is currently in memory.
+
+Horizontal scaling is deliberately disabled until shared durable state,
+exactly-once turn leases, and cross-instance event delivery exist. Durable
+reward reservations, claims, payout idempotency, and completed-match evidence
+must be added before real sponsor-funded rewards are enabled. WP-017 owns the
+deployment, health check, rollback, environment, origin, secret, and spending
+guardrails for this selected host.
+
 ## Current Status
 
 - `TurtlePU/worms-ii` is imported as the MIT base code source.
@@ -60,8 +75,13 @@ availability and terms must be disclosed before a challenge starts.
   exist.
 - WP-007 provides the product-owned deterministic artillery ruleset, canonical
   state hashes, bounded replay reconstruction, 29 focused simulation tests,
-  and simulation-aware protocol/reconnect coverage. Loomkeeper decisions,
-  combat presentation, the full phone matrix, and visual regression remain.
+  and simulation-aware protocol/reconnect coverage.
+- WP-008 provides the independently designed deterministic Loomkeeper policy,
+  bounded legal search, automated authoritative turns, replay integration, and
+  fixed-seed/golden verification.
+- The current ruleset exposes only Threadball. WP-009 now owns the missing two
+  Relics and a new replay ABI before combat presentation begins.
+- Combat presentation, the full phone matrix, and visual regression remain.
 
 ## Codex Subagent Roles
 
@@ -259,7 +279,7 @@ scanning, staged clean-room and work-package evidence gates, built-only overlay
 serving, non-stale smoke commands, Playwright 1.61.1 Chromium/WebKit phone
 projects on a dynamic test-owned port, failure artifact retention, and GitHub
 Actions verification. The official Nimiq skill, documentation MCP, and SDK
-readiness are recorded for WP-011 without adding a premature wallet dependency.
+readiness are recorded for WP-012 without adding a premature wallet dependency.
 
 ### WP-006 Validated Session And Command Protocol
 
@@ -337,11 +357,41 @@ decision tests and two complete golden matches freeze policy behavior and exact
 reconstruction hashes. A sixteen-command player-turn cap plus full-plan replay
 reservation prevents replay exhaustion from stranding an AI handoff. The AI
 remains subject to the existing in-process,
-non-Vercel-durable simulation limitation.
+single-process, restart-sensitive simulation limitation.
 
-### WP-009 Phone Combat Scene
+### WP-009 Relic Ruleset Completion
 
-Status: planned. Depends on WP-007; may proceed in parallel with WP-008.
+Status: planned. Depends on WP-007 and WP-008.
+
+Goal: freeze and implement the two additional independently designed Relics
+required by the competition contract. Introduce a new replay ABI identifier
+rather than changing `nimble-knots-artillery-v1` in place. Each Relic must have
+a distinct, disclosed, deterministic tactical role; use only bounded integer
+state and the public simulation transition API; obey the same authority,
+movement, damage, turn, and replay rules for player and Loomkeeper; and remain
+usable without production artwork.
+
+The package must first record the exact Relic names, player-facing behavior,
+integer constants, selection rules, terrain interaction, damage/effect bounds,
+AI candidate representation, and phone-readable placeholder requirements in
+the gameplay and art-direction documentation. It then updates strict protocol
+snapshots, replay reconstruction, the Loomkeeper policy, and golden evidence
+for the new ruleset while retaining reconstruction support for existing v1
+fixtures. No Sorcerers mechanics, constants, names, code, or assets may inform
+the design.
+
+Owning roles: `worms_port_planner`, `worms_port_base_game_worker`,
+`worms_port_test_worker`, `worms_port_reviewer`.
+
+Verification: deterministic unit and invariant tests for all three Relics,
+player/Loomkeeper legal-command parity, bounded candidate and transition work,
+terrain and damage edge cases, v1 replay compatibility, new-ruleset golden
+replays including player win, Loomkeeper win, and turn-limit draw, protocol
+snapshot limits, compliance, build, and read-only review.
+
+### WP-010 Phone Combat Scene
+
+Status: planned. Depends on WP-009.
 
 Goal: implement the portrait-first Phaser battlefield and large touch controls
 for movement, Relic selection, drag aim/power, trajectory preview, firing,
@@ -401,9 +451,9 @@ dead zones, explicit-fire safety, pointer ownership, release-outside and
 cancellation cases, safe areas, browser scroll/zoom suppression, resize and
 orientation, background/resume, reduced motion, screenshots, build.
 
-### WP-010 Complete Practice Clash
+### WP-011 Complete Practice Clash
 
-Status: planned. Depends on WP-008 and WP-009.
+Status: planned. Depends on WP-008, WP-009, and WP-010.
 
 Goal: deliver an immediate, unlimited, non-rewarded player-versus-Loomkeeper
 match with onboarding, results, retry, and deterministic local/server modes.
@@ -414,9 +464,9 @@ Owning roles: `worms_port_base_game_worker`, `worms_port_network_worker`,
 Verification: complete touch journey on the browser phone matrix, two full
 golden matches, result consistency, reconnect/resume, visual evidence, build.
 
-### WP-011 Nimiq Pay Identity Adapter
+### WP-012 Nimiq Pay Identity Adapter
 
-Status: planned. Depends on WP-006 and WP-010.
+Status: planned. Depends on WP-006 and WP-011.
 
 Goal: isolate the official Mini App SDK behind an adapter for initialization,
 language, wallet account selection, signed challenges, rejection, timeout, and
@@ -428,9 +478,9 @@ Owning roles: `worms_port_network_worker`, `worms_port_compliance_keeper`,
 Verification: fake-provider approve/reject/timeout tests, nonce expiry, wrong
 address/network, replay rejection, package audit, compliance, build.
 
-### WP-012 Sponsored Daily Challenge
+### WP-013 Sponsored Daily Challenge
 
-Status: planned. Depends on WP-007, WP-008, and WP-011.
+Status: planned. Depends on WP-007, WP-008, WP-009, and WP-012.
 
 Goal: implement fixed reward configuration, eligibility checks, short-lived
 reward reservation, server-authoritative result verification, idempotent claim
@@ -443,16 +493,16 @@ Verification: forged result, nonce replay, duplicate claim, reservation expiry,
 concurrent winners, depleted pool, cancellation, provider outage, delayed
 confirmation, and secret-scan tests. Real funds remain disabled by default.
 
-### WP-013 Autonomous Quality Harness
+### WP-014 Autonomous Quality Harness
 
-Status: planned. Depends on WP-010 and WP-012.
+Status: planned. Depends on WP-011 and WP-013.
 
 Goal: complete automated browser, visual, performance, protocol, abuse, and
 reward-security gates. Use isolated browser contexts and deterministic fake
 wallets; retain traces, screenshots, diffs, replay seeds, bundle data, and
 timing evidence on failure.
 
-WP-013 extends the Playwright installation and launch smoke delivered by WP-005;
+WP-014 extends the Playwright installation and launch smoke delivered by WP-005;
 it does not introduce the browser runner for the first time.
 
 Owning roles: `worms_port_test_worker`, `worms_port_reviewer`.
@@ -461,9 +511,9 @@ Verification matrix: mobile Chromium at 360x640, 390x844, and 412x915;
 844x390 landscape; mobile WebKit emulation; low-bandwidth/offline/resume;
 desktop only as a debugging fallback. Physical phones are explicitly excluded.
 
-### WP-014 Production Art And Audio
+### WP-015 Production Art And Audio
 
-Status: planned. Depends on WP-009 and WP-013 asset gates.
+Status: planned. Depends on WP-010 and WP-014 asset gates.
 
 Goal: produce Wizard, Thief, Warrior, Loomkeeper variant, Relics, first Patch,
 effects, UI media, and short audio through the MCP asset pipeline. Every brief
@@ -532,9 +582,9 @@ model/component license evidence, manifest hashes, attribution, atlas loading,
 mobile screenshots at all automated phone viewports, visual review, compliance,
 and build.
 
-### WP-015 Retention And Distribution
+### WP-016 Retention And Distribution
 
-Status: planned. Depends on WP-012 and WP-014.
+Status: planned. Depends on WP-013 and WP-015.
 
 Goal: add a privacy-conscious daily leaderboard, result sharing, Nimiq Pay
 deep link, localized essential UI, reward availability messaging, and aggregate
@@ -546,13 +596,18 @@ Owning roles: `worms_port_base_game_worker`, `worms_port_network_worker`,
 Verification: first-run under 60 seconds, share/deep-link fallbacks, privacy and
 consent cases, locale overflow, depleted-pool clarity, full automated suite.
 
-### WP-016 Deployment And Submission
+### WP-017 Deployment And Submission
 
-Status: planned. Depends on WP-013 and WP-015.
+Status: planned. Depends on WP-014 and WP-016.
 
-Goal: deploy through HTTPS with environment validation, health checks, rollback,
-secret separation, payout disabled-by-default configuration, submission copy,
-screenshots, and walkthrough evidence.
+Goal: deploy the combined static client and persistent Node/Socket.IO server as
+one single-instance Render Web Service in Frankfurt. Use Render Starter for the
+public release, with Free permitted only for private development because it may
+sleep and cold-start. Include HTTPS, environment validation, health checks,
+rollback, secret separation, payout disabled-by-default configuration,
+submission copy, screenshots, and walkthrough evidence. Do not enable multiple
+instances until authoritative sessions, simulations, AI scheduling, replay,
+and reward state have durable shared storage and exactly-once leases.
 
 Owning roles: `worms_port_planner`, `worms_port_network_worker`,
 `worms_port_docs_keeper`, `worms_port_reviewer`.
@@ -565,15 +620,14 @@ it does not block completion of the documented autonomous cycle.
 ## Dependency Order
 
 ```text
-WP-005 -> WP-006 -> WP-007 -> WP-008 ----\
-                         \-> WP-009 -----+-> WP-010 -> WP-011 -> WP-012
-                                                           \-> WP-013
-WP-009 + WP-013 --------------------------------------------> WP-014
-WP-012 + WP-014 --------------------------------------------> WP-015 -> WP-016
+WP-005 -> WP-006 -> WP-007 -> WP-008 -> WP-009 -> WP-010 -> WP-011
+WP-011 -> WP-012 -> WP-013 -> WP-014
+WP-010 + WP-014 ----------------------------------------------------> WP-015
+WP-013 + WP-015 ----------------------------------------------------> WP-016 -> WP-017
 ```
 
-WP-010 is the first complete playable. WP-013 is the automated competition
-candidate gate. WP-016 is the submission-ready repository and deployment.
+WP-011 is the first complete playable. WP-014 is the automated competition
+candidate gate. WP-017 is the submission-ready repository and deployment.
 
 ## Deferred Until After Competition
 

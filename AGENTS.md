@@ -69,7 +69,7 @@ If the user asks only for planning, review, or brainstorming, do not edit code.
 - Server/client runtime changes should include a smoke test when practical.
 - After WP-005, browser-facing changes should run the Playwright phone smoke.
 - Gameplay UI changes should run the full automated phone-browser matrix once
-  WP-013 provides it.
+  WP-014 provides it.
 - Real Android/iOS testing is outside the autonomous cycle. Report it as not run
   until a separate release-testing environment is provided.
 - Always report skipped checks and why.

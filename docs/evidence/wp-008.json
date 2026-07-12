@@ -65,8 +65,8 @@
   ],
   "skipped_checks": [
     "Physical Android and iOS testing: no release-testing environment was provided.",
-    "Nimiq Pay WebView and real wallet-provider testing: deferred to the external release environment and WP-011.",
-    "Gameplay UI and full phone combat matrix: the combat scene and WP-013 matrix are not yet implemented."
+    "Nimiq Pay WebView and real wallet-provider testing: deferred to the external release environment and WP-012.",
+    "Gameplay UI and full phone combat matrix: the combat scene and WP-014 matrix are not yet implemented."
   ],
   "residual_risks": [
     "Authoritative simulations, AI scheduling, and replay logs remain in-process and are not durable across restart or multiple Vercel Function instances.",

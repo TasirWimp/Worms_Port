@@ -85,9 +85,9 @@ records. Client commands include both their transport sequence and expected
 simulation turn; delayed, duplicated, conflicting, or wrong-turn commands
 cannot silently apply to a later state.
 
-Simulation state is currently in-process. It is suitable for the persistent
-single-process Node deployment used by this development slice, but it is not
-yet durable across server restarts or multiple Vercel Function instances.
+Simulation state is currently in-process. It is suitable for the selected
+single-instance persistent Node deployment, but it is not durable across
+server restarts or multiple instances.
 
 The independently designed `nimble-knots-loomkeeper-v1` policy evaluates a
 fixed, bounded lattice of movement, Threadball, angle, and power candidates by
@@ -97,6 +97,26 @@ commands. Practice challenges currently disclose and use the immutable
 only difficulty controls; the Loomkeeper receives no extra health, damage,
 movement, collision knowledge, or retries. Only the selected legal plan is
 committed to the authoritative replay.
+
+The competition contract requires two additional independently designed
+Relics. They are intentionally scheduled as WP-009 before the phone combat
+scene. Because `nimble-knots-artillery-v1` is frozen replay ABI, their mechanics
+will enter through a new ruleset identifier with updated AI and golden replay
+coverage rather than silently changing v1.
+
+## Hosting
+
+The selected public host is one **Render Starter Web Service** in Frankfurt.
+The existing Node process serves both the built client and Socket.IO runtime,
+keeping the current in-memory authority boundary on one persistent instance.
+Render Free is limited to private previews because it may sleep and cold-start.
+
+Do not enable horizontal scaling until sessions, simulations, Loomkeeper turns,
+replays, and reward state use shared durable storage with exactly-once leases
+and cross-instance event delivery. Sponsor-funded rewards additionally require
+durable reservations, claims, payout idempotency, and completed-match evidence
+before activation. See `docs/process/development_workflow.md` under **Hosting
+Contract** for the operational requirements.
 
 ## World And Art Direction
 

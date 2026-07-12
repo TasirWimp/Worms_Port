@@ -54,7 +54,7 @@
   ],
   "skipped_checks": [
     "Physical Android and iOS testing: no release-testing environment was provided.",
-    "Nimiq Pay WebView and real wallet-provider testing: deferred to the external release environment and WP-011."
+    "Nimiq Pay WebView and real wallet-provider testing: deferred to the external release environment and WP-012."
   ],
   "residual_risks": [
     "The bearer token remains readable by same-origin script, so CSP and XSS hardening remain required before production deployment.",

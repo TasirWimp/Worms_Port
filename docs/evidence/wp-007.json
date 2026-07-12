@@ -64,7 +64,7 @@
   ],
   "skipped_checks": [
     "Physical Android and iOS testing: no release-testing environment was provided.",
-    "Nimiq Pay WebView and real wallet-provider testing: deferred to the external release environment and WP-011.",
+    "Nimiq Pay WebView and real wallet-provider testing: deferred to the external release environment and WP-012.",
     "Loomkeeper decision quality and difficulty testing: simulation actor authority is present, but decision policy belongs to WP-008."
   ],
   "residual_risks": [
