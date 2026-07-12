@@ -905,6 +905,8 @@ test('protocol commands mutate authoritative simulation once and reconstruct fro
             calling: 'wizard'
         });
         assert.equal(ChallengeSnapshotSchema.safeParse(created.data).success, true);
+        assert.equal(created.data.simulation.rulesetId, 'nimble-knots-artillery-v2');
+        assert.equal(created.data.loomkeeperPolicyId, 'nimble-knots-loomkeeper-v2');
         assert.ok(Buffer.byteLength(JSON.stringify(created.data), 'utf8') <= 8 * 1024);
         const initialHash = created.data.stateHash;
         const initialRevision = created.data.revision;
@@ -934,15 +936,26 @@ test('protocol commands mutate authoritative simulation once and reconstruct fro
         const duplicate = await emitAck(socket, protocolEvents.commandSubmit, movedPayload);
         assert.deepEqual(duplicate, moved);
 
+        const selected = await emitAck(socket, protocolEvents.commandSubmit, {
+            requestId: 'simulation_relic_01',
+            sequence: 3,
+            challengeId: created.data.challengeId,
+            expectedTurn: 0,
+            command: { type: 'select_relic', relicId: 'spoolburst' }
+        });
+        assert.equal(selected.ok, true);
+        assert.equal(selected.data.simulation.selectedRelic, 'spoolburst');
+        assert.equal(ChallengeSnapshotSchema.safeParse(selected.data).success, true);
+
         const session = runtime.sessions.getBound(socket.id!);
         assert.ok(session);
         const replay = runtime.sessions.replayForChallenge(session, created.data.challengeId);
         assert.ok(replay);
-        assert.equal(replay.records.length, 1);
+        assert.equal(replay.records.length, 2);
         const verifier = new SimulationCoordinator();
         try {
             const reconstructed = verifier.reconstructAndVerify(replay);
-            assert.equal(reconstructed.stateHash, moved.data.stateHash);
+            assert.equal(reconstructed.stateHash, selected.data.stateHash);
         } finally {
             verifier.dispose();
         }
@@ -986,11 +999,13 @@ test('player fire produces one automated Loomkeeper turn and records only its ch
         };
         const fired = await emitAck(socket, protocolEvents.commandSubmit, firePayload);
         assert.equal(fired.ok, true);
+        assert.equal(fired.data.simulation.rulesetId, 'nimble-knots-artillery-v2');
+        assert.equal(fired.data.simulation.rulesetVersion, 2);
         assert.equal(fired.data.simulation.activeActor, 'loomkeeper');
         assert.equal(fired.data.simulation.turn, 1);
         const reply = await automated;
         assert.equal(reply.simulation.activeActor, 'player');
-        assert.equal(reply.loomkeeperPolicyId, 'nimble-knots-loomkeeper-v1');
+        assert.equal(reply.loomkeeperPolicyId, 'nimble-knots-loomkeeper-v2');
 
         const session = runtime.sessions.getBound(socket.id!);
         assert.ok(session);

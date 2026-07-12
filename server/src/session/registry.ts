@@ -14,11 +14,10 @@ import {
     type CoordinatorReplay,
     type CoordinatorUpdate
 } from '../simulation/coordinator';
-import type { SimulationCommand } from '../../../shared/simulation';
+import { LEGACY_RULESET_ID, type SimulationCommand } from '../../../shared/simulation';
 import {
     decideLoomkeeperTurn,
     LOOMKEEPER_MAX_COMMANDS,
-    LOOMKEEPER_POLICY_ID,
     type LoomkeeperDifficulty
 } from '../../../shared/loomkeeper';
 import { issueToken, opaqueId, tokenDigest } from './token';
@@ -30,6 +29,15 @@ const DEFAULT_CHALLENGE_TTL_MS = 30 * 60_000;
 const REPLAY_LIMIT = 256;
 const MAXIMUM_PLAYER_COMMANDS_PER_TURN = 16;
 const MINIMUM_AUTOMATED_REPLAY_RECORDS = 512;
+
+type LegacyChallengeSnapshot = Extract<
+    ChallengeSnapshot,
+    { loomkeeperPolicyId: 'nimble-knots-loomkeeper-v1' }
+>;
+type CurrentChallengeSnapshot = Extract<
+    ChallengeSnapshot,
+    { loomkeeperPolicyId: 'nimble-knots-loomkeeper-v2' }
+>;
 
 type CachedRequest = {
     hash: string;
@@ -617,22 +625,31 @@ export class SessionRegistry {
     ): ChallengeSnapshot {
         const simulation = this.coordinator.get(challenge.id);
         if (!simulation) throw new Error(`Challenge ${challenge.id} has no simulation state.`);
-        return {
+        const fields = {
             protocolVersion: PROTOCOL_VERSION,
             serverTimeMs: this.now(),
             sessionId: session.id,
             challengeId: challenge.id,
             mode: challenge.mode,
             calling: challenge.calling,
-            loomkeeperPolicyId: LOOMKEEPER_POLICY_ID,
             loomkeeperDifficulty: challenge.loomkeeperDifficulty,
             status: challenge.status,
             revision: challenge.revision,
             nextSequence,
             expiresAt: new Date(challenge.expiresAt).toISOString(),
-            stateHash: simulation.stateHash,
-            simulation: simulation.state
+            stateHash: simulation.stateHash
         };
+        return simulation.state.rulesetId === LEGACY_RULESET_ID
+            ? {
+                ...fields,
+                loomkeeperPolicyId: 'nimble-knots-loomkeeper-v1',
+                simulation: simulation.state as LegacyChallengeSnapshot['simulation']
+            }
+            : {
+                ...fields,
+                loomkeeperPolicyId: 'nimble-knots-loomkeeper-v2',
+                simulation: simulation.state as CurrentChallengeSnapshot['simulation']
+            };
     }
 
     private onSimulationTransition(update: CoordinatorUpdate): void {

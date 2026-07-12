@@ -8,8 +8,8 @@ Phaser/Socket.IO stack.
 ## Execution Pointer
 
 - Active target: mobile-first single-player Nimiq Pay competition release.
-- Next work package: **WP-009 Relic Ruleset Completion**.
-- Last completed work package: **WP-008 Loomkeeper AI**.
+- Next work package: **WP-010 Phone Combat Scene**.
+- Last completed work package: **WP-009 Relic Ruleset Completion**.
 - PvP and matchmaking: deferred until after the competition release.
 - Canonical artwork reference:
   `docs/images/art-direction/knotkin-class-lineup-concept.png`.
@@ -67,8 +67,9 @@ guardrails for this selected host.
 - No Sorcerers product assets or Sorcerers code are imported.
 - WP-003 established NIMble Knots and the canonical Knotkin Calling lineup.
 - The current runtime is a session-bound lobby/reconnect shell with placeholder
-  gameplay and a validated v1 command boundary; it does not yet implement the
-  deterministic competition match.
+  presentation and a validated command boundary. Its deterministic v2 match,
+  three Relics, and Loomkeeper are authoritative but not yet exposed through a
+  complete phone combat scene.
 - WP-005 provides tooling tests plus fresh-build phone Chromium/WebKit smoke.
 - WP-006 provides strict schema tests and a real `socket.io-client` protocol
   suite. The full gameplay phone matrix and visual-regression suites do not yet
@@ -79,8 +80,8 @@ guardrails for this selected host.
 - WP-008 provides the independently designed deterministic Loomkeeper policy,
   bounded legal search, automated authoritative turns, replay integration, and
   fixed-seed/golden verification.
-- The current ruleset exposes only Threadball. WP-009 now owns the missing two
-  Relics and a new replay ABI before combat presentation begins.
+- WP-009 provides the v2 replay ABI and the complete Threadball, Needlepoint,
+  and Spoolburst gameplay roster while preserving v1 reconstruction.
 - Combat presentation, the full phone matrix, and visual regression remain.
 
 ## Codex Subagent Roles
@@ -361,7 +362,7 @@ single-process, restart-sensitive simulation limitation.
 
 ### WP-009 Relic Ruleset Completion
 
-Status: planned. Depends on WP-007 and WP-008.
+Status: complete. Depends on WP-007 and WP-008.
 
 Goal: freeze and implement the two additional independently designed Relics
 required by the competition contract. Introduce a new replay ABI identifier
@@ -388,6 +389,17 @@ player/Loomkeeper legal-command parity, bounded candidate and transition work,
 terrain and damage edge cases, v1 replay compatibility, new-ruleset golden
 replays including player win, Loomkeeper win, and turn-limit draw, protocol
 snapshot limits, compliance, build, and read-only review.
+
+Delivered as `nimble-knots-artillery-v2` with Threadball as the balanced Relic,
+Needlepoint as the narrow precision-damage Relic, and Spoolburst as the broad
+terrain/control Relic. New challenges and replays name v2 explicitly; legacy
+`RULESET_ID`/version exports, v1 state hashes, projectile shape, golden tests,
+and metadata-free replay reconstruction remain v1. Strict challenge snapshots
+couple v1 to Loomkeeper policy v1 and v2 to policy v2. The v2 Loomkeeper uses a
+deterministic axis-covering sampler across movement, Relic, angle, and power
+without raising its candidate or transition budgets. Golden v2 matches cover
+player win, Loomkeeper win, Spoolburst tactical selection, and turn-limit draw.
+No runtime assets, dependencies, or Sorcerers material were used.
 
 ### WP-010 Phone Combat Scene
 

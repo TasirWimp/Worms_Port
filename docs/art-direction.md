@@ -81,6 +81,31 @@ down after implementation.
 - Character silhouettes, eyes, held Relics, trajectory previews, hazards, and
   Stitching state must remain legible at the smallest supported phone viewport.
 
+## Release Relic Roster
+
+The competition release has exactly three independently designed Relics. Their
+mechanics are product-authored and do not derive from Sorcerers names,
+constants, algorithms, code, or assets.
+
+- **Threadball** (`threadball`) is the balanced baseline: a wound ball of NIM
+  Thread with medium Stitching damage and a medium circular terrain tear.
+- **Needlepoint** (`needlepoint`) is the precision choice: a toy-like polished
+  needle trailing luminous thread, with a small terrain puncture and a narrow,
+  high-damage impact area.
+- **Spoolburst** (`spoolburst`) is the control choice: an oversized wooden spool
+  releasing a broad cotton-and-thread burst, with lower peak damage but the
+  widest terrain opening and damage reach.
+
+All three use the same movement budget, angle and power inputs, projectile
+flight, collision authority, one-shot turn completion, and Stitching scale for
+player and Loomkeeper. Selection has no ammo, cooldown, hidden modifier, or
+Calling restriction and remains active until another Relic is selected.
+
+Code-drawn placeholders must remain distinct without color alone: Threadball
+uses a round wound silhouette, Needlepoint a narrow diagonal needle-and-thread
+silhouette, and Spoolburst a squat spool with an outward burst ring. Production
+art remains a later exact-file asset task.
+
 ## Knotkin Anatomy
 
 All Knotkin share one readable species silhouette:

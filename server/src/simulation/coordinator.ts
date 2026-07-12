@@ -4,11 +4,14 @@ import {
     advanceSimulationTicks,
     applySimulationCommand,
     canonicalSimulationJson,
-    createSimulation
+    createSimulation,
+    LEGACY_RULESET_ID,
+    LATEST_RULESET_ID
 } from '../../../shared/simulation';
 import type {
     SimulationActor,
     SimulationCommand,
+    SimulationRulesetId,
     SimulationState,
     SimulationTransition
 } from '../../../shared/simulation';
@@ -35,6 +38,7 @@ export type CoordinatorReplay = {
     sessionId: string;
     seed: number;
     calling: SimulationCalling;
+    rulesetId?: SimulationRulesetId;
     initialStateHash: string;
     records: readonly CoordinatorReplayRecord[];
 };
@@ -74,6 +78,7 @@ type MatchEntry = {
     sessionId: string;
     seed: number;
     calling: SimulationCalling;
+    rulesetId: SimulationRulesetId;
     state: SimulationState;
     initialStateHash: string;
     records: CoordinatorReplayRecord[];
@@ -117,19 +122,21 @@ export class SimulationCoordinator {
         challengeId: string,
         sessionId: string,
         seed: number,
-        calling: SimulationCalling
+        calling: SimulationCalling,
+        rulesetId: SimulationRulesetId = LATEST_RULESET_ID
     ): CoordinatorSnapshot {
         if (this.matches.has(challengeId)) {
             throw new Error(`A simulation already exists for challenge ${challengeId}.`);
         }
         const normalizedSeed = uint32(seed, 'seed');
-        const state = createSimulation(normalizedSeed, calling);
+        const state = createSimulation(normalizedSeed, calling, rulesetId);
         const initialStateHash = hashState(state);
         const entry: MatchEntry = {
             challengeId,
             sessionId,
             seed: normalizedSeed,
             calling,
+            rulesetId,
             state,
             initialStateHash,
             records: []
@@ -226,7 +233,8 @@ export class SimulationCoordinator {
             throw new Error('Replay exceeds the configured record limit.');
         }
         const seed = uint32(replay.seed, 'seed');
-        let state = createSimulation(seed, replay.calling);
+        const rulesetId = replay.rulesetId ?? LEGACY_RULESET_ID;
+        let state = createSimulation(seed, replay.calling, rulesetId);
         if (hashState(state) !== replay.initialStateHash) {
             throw new Error('Replay initial state hash does not match.');
         }
@@ -257,6 +265,7 @@ export class SimulationCoordinator {
             sessionId: replay.sessionId,
             seed,
             calling: replay.calling,
+            rulesetId,
             state,
             initialStateHash: replay.initialStateHash,
             records: replay.records.map((record) => structuredClone(record))
@@ -399,6 +408,7 @@ function replayOf(entry: MatchEntry): CoordinatorReplay {
         sessionId: entry.sessionId,
         seed: entry.seed,
         calling: entry.calling,
+        rulesetId: entry.rulesetId,
         initialStateHash: entry.initialStateHash,
         records: entry.records.map((record) => structuredClone(record))
     };

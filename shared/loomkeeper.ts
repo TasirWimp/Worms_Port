@@ -1,17 +1,21 @@
 import {
     applySimulationCommand,
     cloneSimulation,
+    LEGACY_RULESET_ID,
+    relicsForRuleset,
     SIM_RULES
 } from './simulation';
-import type { SimulationCommand, SimulationState } from './simulation';
+import type { RelicId, SimulationCommand, SimulationState } from './simulation';
 
 export const LOOMKEEPER_POLICY_ID = 'nimble-knots-loomkeeper-v1' as const;
+export const LEGACY_LOOMKEEPER_POLICY_ID = LOOMKEEPER_POLICY_ID;
+export const LATEST_LOOMKEEPER_POLICY_ID = 'nimble-knots-loomkeeper-v2' as const;
 export const LOOMKEEPER_MAX_COMMANDS = 11 as const;
 
 export type LoomkeeperDifficulty = 'gentle' | 'standard' | 'sharp';
 
 export type LoomkeeperDecision = {
-    policyId: typeof LOOMKEEPER_POLICY_ID;
+    policyId: typeof LOOMKEEPER_POLICY_ID | typeof LATEST_LOOMKEEPER_POLICY_ID;
     difficulty: LoomkeeperDifficulty;
     expectedTurn: number;
     basisRevision: number;
@@ -20,9 +24,16 @@ export type LoomkeeperDecision = {
     simulatedTransitions: number;
     chosenOrdinal: number;
     chosenScore: number;
+    selectedRelic: RelicId;
     idealAim: { angleMilliDegrees: number; powerPermille: number };
     appliedAim: { angleMilliDegrees: number; powerPermille: number };
     aimError: { angleMilliDegrees: number; powerPermille: number };
+    candidateCoverage: {
+        movementSteps: number[];
+        relicIds: RelicId[];
+        angles: number[];
+        powers: number[];
+    };
 };
 
 type Profile = {
@@ -67,6 +78,7 @@ export const LOOMKEEPER_PROFILES: Readonly<Record<LoomkeeperDifficulty, Profile>
 type Candidate = {
     ordinal: number;
     movementSteps: number;
+    relicId: RelicId;
     angleMilliDegrees: number;
     powerPermille: number;
 };
@@ -93,7 +105,11 @@ export function decideLoomkeeperTurn(
     const profile = LOOMKEEPER_PROFILES[difficulty];
     if (!profile) throw new RangeError(`Unknown Loomkeeper difficulty: ${String(difficulty)}.`);
 
-    const candidates = boundedCandidates(profile);
+    const candidates = boundedCandidates(
+        profile,
+        relicsForRuleset(source.rulesetId),
+        source.rulesetId === LEGACY_RULESET_ID
+    );
     let best: { candidate: Candidate; evaluation: Evaluation } | undefined;
     let evaluatedCandidates = 0;
     let simulatedTransitions = 0;
@@ -124,7 +140,7 @@ export function decideLoomkeeperTurn(
     simulatedTransitions += applied.transitions;
 
     return {
-        policyId: LOOMKEEPER_POLICY_ID,
+        policyId: loomkeeperPolicyIdFor(source),
         difficulty,
         expectedTurn: source.turn,
         basisRevision: source.revision,
@@ -133,6 +149,7 @@ export function decideLoomkeeperTurn(
         simulatedTransitions,
         chosenOrdinal: best.candidate.ordinal,
         chosenScore: applied.score,
+        selectedRelic: best.candidate.relicId,
         idealAim: {
             angleMilliDegrees: best.candidate.angleMilliDegrees,
             powerPermille: best.candidate.powerPermille
@@ -141,27 +158,77 @@ export function decideLoomkeeperTurn(
         aimError: {
             angleMilliDegrees: appliedAim.angleMilliDegrees - best.candidate.angleMilliDegrees,
             powerPermille: appliedAim.powerPermille - best.candidate.powerPermille
+        },
+        candidateCoverage: {
+            movementSteps: unique(candidates.map((candidate) => candidate.movementSteps)),
+            relicIds: unique(candidates.map((candidate) => candidate.relicId)),
+            angles: unique(candidates.map((candidate) => candidate.angleMilliDegrees)),
+            powers: unique(candidates.map((candidate) => candidate.powerPermille))
         }
     };
 }
 
-function boundedCandidates(profile: Profile): Candidate[] {
+export function loomkeeperPolicyIdFor(
+    state: Pick<SimulationState, 'rulesetId'>
+): LoomkeeperDecision['policyId'] {
+    return state.rulesetId === LEGACY_RULESET_ID
+        ? LEGACY_LOOMKEEPER_POLICY_ID
+        : LATEST_LOOMKEEPER_POLICY_ID;
+}
+
+function boundedCandidates(
+    profile: Profile,
+    relicIds: readonly RelicId[],
+    legacySampling: boolean
+): Candidate[] {
     const all: Candidate[] = [];
     let ordinal = 0;
     for (const movementSteps of profile.movementSteps) {
-        for (const angleMilliDegrees of profile.angles) {
-            for (const powerPermille of profile.powers) {
-                all.push({ ordinal, movementSteps, angleMilliDegrees, powerPermille });
-                ordinal += 1;
+        for (const relicId of relicIds) {
+            for (const angleMilliDegrees of profile.angles) {
+                for (const powerPermille of profile.powers) {
+                    all.push({ ordinal, movementSteps, relicId, angleMilliDegrees, powerPermille });
+                    ordinal += 1;
+                }
             }
         }
     }
     if (all.length <= profile.maximumCandidates) return all;
+    if (legacySampling) {
+        return Array.from(
+            { length: profile.maximumCandidates },
+            (_, index) => all[Math.trunc(index * all.length / profile.maximumCandidates)]
+        );
+    }
     const selected: Candidate[] = [];
+    const stride = coprimeStride(all.length, Math.trunc(all.length / profile.maximumCandidates) + 1);
+    let cursor = 0;
     for (let index = 0; index < profile.maximumCandidates; index += 1) {
-        selected.push(all[Math.trunc(index * all.length / profile.maximumCandidates)]);
+        selected.push(all[cursor]);
+        cursor = (cursor + stride) % all.length;
     }
     return selected;
+}
+
+function coprimeStride(length: number, start: number): number {
+    let stride = Math.max(1, start);
+    while (greatestCommonDivisor(stride, length) !== 1) stride += 1;
+    return stride;
+}
+
+function greatestCommonDivisor(left: number, right: number): number {
+    let a = left;
+    let b = right;
+    while (b !== 0) {
+        const remainder = a % b;
+        a = b;
+        b = remainder;
+    }
+    return a;
+}
+
+function unique<T>(values: readonly T[]): T[] {
+    return [...new Set(values)];
 }
 
 function evaluateCandidate(source: SimulationState, candidate: Candidate): Evaluation | undefined {
@@ -178,7 +245,7 @@ function evaluateCandidate(source: SimulationState, candidate: Candidate): Evalu
         commands.push(command);
     }
     const turnCommands: SimulationCommand[] = [
-        { type: 'select_relic', relicId: 'threadball' },
+        { type: 'select_relic', relicId: candidate.relicId },
         {
             type: 'aim',
             angleMilliDegrees: candidate.angleMilliDegrees,

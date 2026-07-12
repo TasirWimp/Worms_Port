@@ -1,6 +1,6 @@
 import assert from 'node:assert/strict';
 import test from 'node:test';
-import { createSimulation } from '../../shared/simulation';
+import { createLatestSimulation, createSimulation } from '../../shared/simulation';
 
 import {
     ChallengeCreateRequestSchema,
@@ -174,6 +174,27 @@ test('response schemas are strict and carry versioned timing metadata', () => {
 
     assert.equal(SessionOpenDataSchema.safeParse(session).success, true);
     assert.equal(ChallengeSnapshotSchema.safeParse(snapshot).success, true);
+    const currentSnapshot = {
+        ...snapshot,
+        loomkeeperPolicyId: 'nimble-knots-loomkeeper-v2',
+        simulation: createLatestSimulation(1, 'wizard')
+    } as const;
+    assert.equal(ChallengeSnapshotSchema.safeParse(currentSnapshot).success, true);
+    assert.equal(ChallengeSnapshotSchema.safeParse({
+        ...snapshot,
+        loomkeeperPolicyId: 'nimble-knots-loomkeeper-v2'
+    }).success, false);
+    assert.equal(ChallengeSnapshotSchema.safeParse({
+        ...currentSnapshot,
+        loomkeeperPolicyId: 'nimble-knots-loomkeeper-v1'
+    }).success, false);
+    assert.equal(ChallengeSnapshotSchema.safeParse({
+        ...currentSnapshot,
+        simulation: {
+            ...createLatestSimulation(1, 'wizard'),
+            rulesetVersion: 1
+        }
+    }).success, false);
     assert.equal(ChallengeResultSchema.safeParse(result).success, true);
     assert.equal(ProtocolSuccessAckSchema(SessionOpenDataSchema).safeParse({
         protocolVersion: 1,

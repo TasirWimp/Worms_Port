@@ -210,6 +210,36 @@ The turn driver remains in-process with the WP-007 coordinator. A durable
 multi-instance deployment still requires shared state, exactly-once turn
 leases, and cross-instance event delivery.
 
+### Relic Ruleset V2
+
+WP-009 introduces `nimble-knots-artillery-v2`; v1 constants and canonical
+replay hashes remain unchanged. A replay without an explicit ruleset identifier
+is interpreted as legacy v1. New practice challenges explicitly use v2.
+
+The v2 Relic constants are part of the replay ABI:
+
+| Relic ID | Tactical role | Crater radius | Damage radius | Maximum damage |
+| --- | --- | ---: | ---: | ---: |
+| `threadball` | balanced | 40 | 64 | 70 |
+| `needlepoint` | precision | 16 | 32 | 120 |
+| `spoolburst` | terrain/control | 64 | 88 | 45 |
+
+Radii and damage use integer world units. Every Relic uses the same fixed-point
+flight, gravity, swept collision, aim/power bounds, movement, turn, and victory
+rules. Relic selection is an accepted authoritative command, has no inventory
+or cooldown, and persists until changed. V1 accepts only Threadball.
+
+The Loomkeeper treats Relic ID as one bounded candidate dimension and evaluates
+every candidate only through the public simulation API. Search caps do not
+increase: the existing deterministic sampler selects from the enlarged stable
+candidate lattice, and only the chosen plan enters replay.
+
+WP-009 identifies the v2 policy as `nimble-knots-loomkeeper-v2`. Its coprime
+stride sampler covers every declared movement, Relic, angle, and power axis
+within each fixed profile cap. Legacy v1 simulations retain the exact v1 policy
+identifier and sampling order so their decisions and golden evidence do not
+change.
+
 ### Hosting Contract
 
 The selected competition-release host is one **Render Starter Web Service** in

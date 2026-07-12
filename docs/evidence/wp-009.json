@@ -1,0 +1,82 @@
+{
+  "id": "WP-009",
+  "status": "complete",
+  "starting_commit": "f934859",
+  "branch": "codex/wp-009-relic-ruleset",
+  "initial_worktree": "clean",
+  "starting_lock_sha256": "98951A0DECBB8FF685BD314AD44C853ED91554FFC46565BBDD03A27AB78A04AE",
+  "owning_roles": [
+    "worms_port_planner",
+    "worms_port_base_game_worker",
+    "worms_port_test_worker",
+    "worms_port_reviewer"
+  ],
+  "scope": [
+    "Freeze two independently designed Relics beside Threadball",
+    "Introduce a deterministic artillery v2 replay ABI while preserving v1 reconstruction",
+    "Extend strict snapshots and Loomkeeper candidate evaluation to all three Relics",
+    "Add parity, bounds, edge-case, compatibility, and golden replay evidence"
+  ],
+  "non_goals": [
+    "Phone combat controls or Phaser presentation",
+    "Production Relic artwork, audio, or asset imports",
+    "Nimiq wallet signatures, reward reservations, claims, or payouts",
+    "PvP matchmaking or Calling-specific gameplay statistics"
+  ],
+  "planned_checks": [
+    "npm run check:compliance",
+    "npm run check:types",
+    "npm run test:tooling",
+    "npm run test:protocol",
+    "npm run test:simulation",
+    "npm run test:loomkeeper",
+    "npm run test:relics",
+    "npm run build",
+    "npm run smoke:built",
+    "npm run test:browser:smoke",
+    "npm audit",
+    "read-only review"
+  ],
+  "deterministic_seeds": [
+    "0x00000001",
+    "0x6D2B79F5",
+    "0xC0FFEE11",
+    "0xDEADBEEF",
+    "0xFFFFFFFF",
+    "0x13579BDF",
+    "0x2468ACE0"
+  ],
+  "sorcerers_reference_used": false,
+  "clean_room_records": [],
+  "check_results": [
+    { "command": "npm run check:compliance", "status": "pass" },
+    { "command": "npm run check:types", "status": "pass" },
+    { "command": "npm run test:tooling", "status": "pass" },
+    { "command": "npm run test:protocol", "status": "pass" },
+    { "command": "npm run test:simulation", "status": "pass" },
+    { "command": "npm run test:loomkeeper", "status": "pass" },
+    { "command": "npm run test:relics", "status": "pass" },
+    { "command": "npm run build", "status": "pass" },
+    { "command": "npm run smoke:built", "status": "pass" },
+    { "command": "npm run test:browser:smoke", "status": "pass" },
+    { "command": "npm audit", "status": "pass" },
+    { "command": "read-only review", "status": "pass" }
+  ],
+  "reviews": [
+    { "role": "worms_port_test_worker", "reviewer": "wp009_test_review", "decision": "pass" },
+    { "role": "worms_port_planner", "reviewer": "wp009_boundary_review", "decision": "pass" },
+    { "role": "worms_port_reviewer", "reviewer": "wp009_code_review", "decision": "pass" }
+  ],
+  "skipped_checks": [
+    "Physical Android and iOS testing: no release-testing environment was provided.",
+    "Nimiq Pay WebView and real wallet-provider testing: deferred to the external release environment and WP-012.",
+    "Relic phone UI and production art/audio: owned by WP-010 and WP-015; this slice uses gameplay data only."
+  ],
+  "residual_risks": [
+    "Relic balance constants are frozen v2 replay ABI; later balance changes require a new ruleset identifier.",
+    "The public createSimulation helper defaults to v1 for compatibility; new authoritative callers must use createLatestSimulation or the coordinator default.",
+    "The bounded Loomkeeper sampler covers every candidate axis but intentionally evaluates only a deterministic subset of cross-product combinations.",
+    "Authoritative state and replay remain single-process and restart-sensitive until durable hosting work is implemented.",
+    "The client bundle is approximately 1.346 MB minified and 371.7 kB gzip and retains the existing chunk-size warning."
+  ]
+}

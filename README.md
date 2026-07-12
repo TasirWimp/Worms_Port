@@ -42,6 +42,7 @@ npm run smoke
 npm run test:protocol
 npm run test:simulation
 npm run test:loomkeeper
+npm run test:relics
 npm run test:browser:smoke
 npm start
 ```
@@ -78,19 +79,20 @@ accommodate mobile carrier/NAT address sharing.
 ## Deterministic Simulation Foundation
 
 Practice challenges use the product-owned
-`nimble-knots-artillery-v1` ruleset. The authoritative model is independent of
+`nimble-knots-artillery-v2` ruleset. The authoritative model is independent of
 Phaser and uses integer fixed ticks, an explicit uint32 seed, a packed collision
-mask, bounded Threadball physics, canonical SHA-256 state hashes, and replay
-records. Client commands include both their transport sequence and expected
-simulation turn; delayed, duplicated, conflicting, or wrong-turn commands
-cannot silently apply to a later state.
+mask, bounded Relic physics, canonical SHA-256 state hashes, and replay records.
+Client commands include both their transport sequence and expected simulation
+turn; delayed, duplicated, conflicting, or wrong-turn commands cannot silently
+apply to a later state. Legacy v1 replay hashes and reconstruction remain
+supported.
 
 Simulation state is currently in-process. It is suitable for the selected
 single-instance persistent Node deployment, but it is not durable across
 server restarts or multiple instances.
 
-The independently designed `nimble-knots-loomkeeper-v1` policy evaluates a
-fixed, bounded lattice of movement, Threadball, angle, and power candidates by
+The independently designed `nimble-knots-loomkeeper-v2` policy evaluates a
+fixed, bounded lattice of movement, Relic, angle, and power candidates by
 calling the same public simulation transition API available to player
 commands. Practice challenges currently disclose and use the immutable
 `standard` profile. Its deterministic aim error and search resolution are the
@@ -98,11 +100,10 @@ only difficulty controls; the Loomkeeper receives no extra health, damage,
 movement, collision knowledge, or retries. Only the selected legal plan is
 committed to the authoritative replay.
 
-The competition contract requires two additional independently designed
-Relics. They are intentionally scheduled as WP-009 before the phone combat
-scene. Because `nimble-knots-artillery-v1` is frozen replay ABI, their mechanics
-will enter through a new ruleset identifier with updated AI and golden replay
-coverage rather than silently changing v1.
+The release roster is Threadball (balanced), Needlepoint (precision), and
+Spoolburst (terrain/control). They share aim, power, movement, collision, and
+turn rules; only their disclosed crater, damage radius, and maximum damage
+bounds differ. No production Relic art is shipped yet.
 
 ## Hosting
 

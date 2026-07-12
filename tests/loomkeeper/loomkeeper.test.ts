@@ -3,6 +3,8 @@ import test from 'node:test';
 
 import {
     decideLoomkeeperTurn,
+    LEGACY_LOOMKEEPER_POLICY_ID,
+    LATEST_LOOMKEEPER_POLICY_ID,
     LOOMKEEPER_POLICY_ID,
     LOOMKEEPER_PROFILES,
     type LoomkeeperDifficulty
@@ -11,6 +13,7 @@ import {
     advanceSimulationTicks,
     applySimulationCommand,
     canonicalSimulationJson,
+    createLatestSimulation,
     createSimulation
 } from '../../shared/simulation';
 import type { SimulationState } from '../../shared/simulation';
@@ -51,6 +54,8 @@ function executeDecision(state: SimulationState, difficulty: LoomkeeperDifficult
 }
 
 test('decisions are deterministic, JSON-stable, and do not mutate their input', () => {
+    assert.equal(LOOMKEEPER_POLICY_ID, LEGACY_LOOMKEEPER_POLICY_ID);
+
     for (const seed of SEEDS) {
         for (const difficulty of DIFFICULTIES) {
             const state = loomkeeperTurn(seed);
@@ -59,9 +64,58 @@ test('decisions are deterministic, JSON-stable, and do not mutate their input', 
             const second = decideLoomkeeperTurn(JSON.parse(JSON.stringify(state)), difficulty);
             assert.deepEqual(second, first, `${seed.toString(16)} ${difficulty}`);
             assert.equal(canonicalSimulationJson(state), before);
-            assert.equal(first?.policyId, LOOMKEEPER_POLICY_ID);
+            assert.equal(first?.policyId, LEGACY_LOOMKEEPER_POLICY_ID);
         }
     }
+});
+
+test('v2 decisions search a legal Relic dimension without increasing budgets', () => {
+    for (const seed of SEEDS) {
+        for (const difficulty of DIFFICULTIES) {
+            const state = advanceSimulationTicks(createLatestSimulation(seed, 'wizard'), 900).state;
+            const { decision } = executeDecision(state, difficulty);
+            assert.equal(decision.policyId, LATEST_LOOMKEEPER_POLICY_ID);
+            assert.equal(['threadball', 'needlepoint', 'spoolburst'].includes(
+                decision.selectedRelic
+            ), true);
+            assert.equal(decision.evaluatedCandidates <= 256, true);
+            assert.equal(decision.simulatedTransitions <= 3_072, true);
+            assert.deepEqual(new Set(decision.candidateCoverage.relicIds), new Set([
+                'threadball', 'needlepoint', 'spoolburst'
+            ]));
+            assert.deepEqual(
+                new Set(decision.candidateCoverage.movementSteps),
+                new Set(LOOMKEEPER_PROFILES[difficulty].movementSteps)
+            );
+            assert.deepEqual(
+                new Set(decision.candidateCoverage.angles),
+                new Set(LOOMKEEPER_PROFILES[difficulty].angles)
+            );
+            assert.deepEqual(
+                new Set(decision.candidateCoverage.powers),
+                new Set(LOOMKEEPER_PROFILES[difficulty].powers)
+            );
+            assert.deepEqual(
+                decision.commands.find((command) => command.type === 'select_relic'),
+                { type: 'select_relic', relicId: decision.selectedRelic }
+            );
+        }
+    }
+});
+
+test('v2 policy chooses Spoolburst for a broad-control tactical state', () => {
+    let state = createLatestSimulation(1, 'wizard');
+    state.units[0].x = 100;
+    state = applySimulationCommand(state, 'player', { type: 'move', direction: 0 }, 0).state;
+    state = advanceSimulationTicks(state, 900).state;
+    const decision = decideLoomkeeperTurn(state, 'standard');
+    assert.ok(decision);
+    assert.equal(decision.selectedRelic, 'spoolburst');
+    assert.equal(decision.chosenOrdinal, 125);
+    assert.deepEqual(decision.idealAim, {
+        angleMilliDegrees: 50_000,
+        powerPermille: 1_000
+    });
 });
 
 test('every returned plan is legal and respects candidate, transition, and command budgets', () => {
@@ -142,7 +196,7 @@ test('registry commits one chosen AI plan and replay reconstruction matches', ()
         const challenge = registry.createChallenge(session, 'practice', 'wizard');
         assert.equal('code' in challenge, false);
         if ('code' in challenge) return;
-        assert.equal(challenge.loomkeeperPolicyId, LOOMKEEPER_POLICY_ID);
+        assert.equal(challenge.loomkeeperPolicyId, LATEST_LOOMKEEPER_POLICY_ID);
         const timeout = registry.advanceChallengeTicks(session, challenge.challengeId, 900);
         assert.equal('code' in timeout, false);
         const driven = registry.driveLoomkeeperTurn(session, challenge.challengeId);
@@ -176,16 +230,18 @@ test('two complete policy golden matches reconstruct to their exact final hashes
         {
             seed: 0x00000001,
             winner: 'player',
-            tick: 141,
-            replayLength: 15,
-            stateHash: '424506e3eb1d3b0490ea63de620b785835242cd784e74abcb26690c0a58f5652'
+            angleMilliDegrees: 40_000,
+            tick: 186,
+            replayLength: 9,
+            stateHash: '4dedbafef0c8573b3fc3ce081e7c8fc3a091ab3237ce613e7ba5b26706a9eec2'
         },
         {
             seed: 0xDEADBEEF,
-            winner: 'player',
-            tick: 255,
-            replayLength: 18,
-            stateHash: 'ead792a7448694ce3b4c91c6867cc3d291ade12d5316673f539d737b5e9a0d6d'
+            winner: 'loomkeeper',
+            angleMilliDegrees: 35_000,
+            tick: 359,
+            replayLength: 28,
+            stateHash: '36fac88d24cd3b32c3109a807052675eb60505bb3a33e391d879fbf7400d85ec'
         }
     ] as const;
     for (const golden of goldens) {
@@ -203,8 +259,14 @@ test('two complete policy golden matches reconstruct to their exact final hashes
             let snapshot = created;
             while (snapshot.simulation.phase !== 'finished') {
                 const turn = snapshot.simulation.turn;
+                const selected = registry.submitCommand(session, created.challengeId, {
+                    type: 'select_relic', relicId: 'threadball'
+                }, turn);
+                assert.equal('code' in selected, false);
                 const aimed = registry.submitCommand(session, created.challengeId, {
-                    type: 'aim', angleMilliDegrees: 35_000, powerPermille: 1_000
+                    type: 'aim',
+                    angleMilliDegrees: golden.angleMilliDegrees,
+                    powerPermille: 1_000
                 }, turn);
                 assert.equal('code' in aimed, false);
                 const fired = registry.submitCommand(

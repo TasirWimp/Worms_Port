@@ -139,7 +139,7 @@ const SimulationUnitSchema = z.object({
     alive: z.boolean()
 }).strict();
 
-const ProjectileSummarySchema = z.object({
+const ProjectileSummaryFields = {
     startX: z.number().int().min(-4096).max(4096),
     startY: z.number().int().min(-4096).max(4096),
     endX: z.number().int().min(-4096).max(4096),
@@ -150,12 +150,15 @@ const ProjectileSummarySchema = z.object({
         x: z.number().int().min(-4096).max(4096),
         y: z.number().int().min(-4096).max(4096)
     }).strict()).min(2).max(41)
+};
+
+const LegacyProjectileSummarySchema = z.object(ProjectileSummaryFields).strict();
+const CurrentProjectileSummarySchema = z.object({
+    relicId: z.enum(['threadball', 'needlepoint', 'spoolburst']),
+    ...ProjectileSummaryFields
 }).strict();
 
-export const SimulationSnapshotSchema = z.object({
-    formatVersion: z.literal(1),
-    rulesetId: z.literal('nimble-knots-artillery-v1'),
-    rulesetVersion: z.literal(1),
+const SimulationSnapshotFields = {
     seed: Uint32Schema,
     rngState: Uint32Schema,
     tick: z.number().int().nonnegative().max(Number.MAX_SAFE_INTEGER),
@@ -167,7 +170,6 @@ export const SimulationSnapshotSchema = z.object({
     winner: z.enum(['player', 'loomkeeper', 'draw']).nullable(),
     finishReason: z.enum(['unravelled', 'turn_limit']).nullable(),
     movementRemaining: z.number().int().min(0).max(64),
-    selectedRelic: z.literal('threadball'),
     aim: z.object({
         angleMilliDegrees: z.number().int().min(-90_000).max(90_000),
         powerPermille: z.number().int().min(0).max(1_000)
@@ -178,26 +180,59 @@ export const SimulationSnapshotSchema = z.object({
         height: z.literal(72),
         cellSize: z.literal(8),
         words: z.array(Uint32Schema).length(288)
-    }).strict(),
-    lastProjectile: ProjectileSummarySchema.nullable()
+    }).strict()
+};
+
+const LegacySimulationSnapshotSchema = z.object({
+    formatVersion: z.literal(1),
+    rulesetId: z.literal('nimble-knots-artillery-v1'),
+    rulesetVersion: z.literal(1),
+    ...SimulationSnapshotFields,
+    selectedRelic: z.literal('threadball'),
+    lastProjectile: LegacyProjectileSummarySchema.nullable()
 }).strict();
 
-export const ChallengeSnapshotSchema = z.object({
+const CurrentSimulationSnapshotSchema = z.object({
+    formatVersion: z.literal(2),
+    rulesetId: z.literal('nimble-knots-artillery-v2'),
+    rulesetVersion: z.literal(2),
+    ...SimulationSnapshotFields,
+    selectedRelic: z.enum(['threadball', 'needlepoint', 'spoolburst']),
+    lastProjectile: CurrentProjectileSummarySchema.nullable()
+}).strict();
+
+export const SimulationSnapshotSchema = z.discriminatedUnion('formatVersion', [
+    LegacySimulationSnapshotSchema,
+    CurrentSimulationSnapshotSchema
+]);
+
+const ChallengeSnapshotFields = {
     protocolVersion: z.literal(PROTOCOL_VERSION),
     serverTimeMs: z.number().int().nonnegative(),
     sessionId: z.string().min(16).max(64),
     challengeId: ChallengeIdSchema,
     mode: z.enum(['practice', 'reward']),
     calling: z.enum(['wizard', 'thief', 'warrior']),
-    loomkeeperPolicyId: z.literal('nimble-knots-loomkeeper-v1'),
     loomkeeperDifficulty: z.enum(['gentle', 'standard', 'sharp']),
     status: z.enum(['active', 'left', 'expired', 'completed']),
     revision: z.number().int().nonnegative(),
     nextSequence: SequenceSchema,
     expiresAt: z.string().datetime(),
-    stateHash: StateHashSchema,
-    simulation: SimulationSnapshotSchema
-}).strict();
+    stateHash: StateHashSchema
+};
+
+export const ChallengeSnapshotSchema = z.union([
+    z.object({
+        ...ChallengeSnapshotFields,
+        loomkeeperPolicyId: z.literal('nimble-knots-loomkeeper-v1'),
+        simulation: LegacySimulationSnapshotSchema
+    }).strict(),
+    z.object({
+        ...ChallengeSnapshotFields,
+        loomkeeperPolicyId: z.literal('nimble-knots-loomkeeper-v2'),
+        simulation: CurrentSimulationSnapshotSchema
+    }).strict()
+]);
 
 export const ChallengeResultSchema = z.object({
     protocolVersion: z.literal(PROTOCOL_VERSION),

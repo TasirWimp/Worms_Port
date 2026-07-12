@@ -1,5 +1,27 @@
 export const RULESET_ID = 'nimble-knots-artillery-v1' as const;
 export const RULESET_VERSION = 1 as const;
+export const LEGACY_RULESET_ID = RULESET_ID;
+export const LATEST_RULESET_ID = 'nimble-knots-artillery-v2' as const;
+export const LATEST_RULESET_VERSION = 2 as const;
+
+export type SimulationRulesetId = typeof RULESET_ID | typeof LATEST_RULESET_ID;
+export type RelicId = 'threadball' | 'needlepoint' | 'spoolburst';
+
+export const RELIC_IDS = Object.freeze([
+    'threadball',
+    'needlepoint',
+    'spoolburst'
+] as const);
+
+export const RELIC_RULES: Readonly<Record<RelicId, {
+    craterRadius: number;
+    damageRadius: number;
+    maximumDamage: number;
+}>> = Object.freeze({
+    threadball: Object.freeze({ craterRadius: 40, damageRadius: 64, maximumDamage: 70 }),
+    needlepoint: Object.freeze({ craterRadius: 16, damageRadius: 32, maximumDamage: 120 }),
+    spoolburst: Object.freeze({ craterRadius: 64, damageRadius: 88, maximumDamage: 45 })
+});
 
 export const SIM_RULES = Object.freeze({
     worldWidth: 1024,
@@ -54,6 +76,7 @@ export type PackedTerrain = {
 };
 
 export type ProjectileSummary = {
+    relicId?: RelicId;
     startX: number;
     startY: number;
     endX: number;
@@ -64,9 +87,9 @@ export type ProjectileSummary = {
 };
 
 export type SimulationState = {
-    formatVersion: 1;
-    rulesetId: typeof RULESET_ID;
-    rulesetVersion: 1;
+    formatVersion: 1 | 2;
+    rulesetId: SimulationRulesetId;
+    rulesetVersion: 1 | 2;
     seed: number;
     rngState: number;
     tick: number;
@@ -78,7 +101,7 @@ export type SimulationState = {
     winner: SimulationWinner | null;
     finishReason: 'unravelled' | 'turn_limit' | null;
     movementRemaining: number;
-    selectedRelic: 'threadball';
+    selectedRelic: RelicId;
     aim: { angleMilliDegrees: number; powerPermille: number } | null;
     units: [SimulationUnit, SimulationUnit];
     terrain: PackedTerrain;
@@ -88,7 +111,7 @@ export type SimulationState = {
 export type SimulationEvent =
     | { type: 'moved'; actor: SimulationActor; x: number; y: number }
     | { type: 'aimed'; actor: SimulationActor; angleMilliDegrees: number; powerPermille: number }
-    | { type: 'relic_selected'; actor: SimulationActor; relicId: 'threadball' }
+    | { type: 'relic_selected'; actor: SimulationActor; relicId: RelicId }
     | { type: 'projectile'; actor: SimulationActor; trace: { x: number; y: number }[] }
     | { type: 'impact'; x: number; y: number; target: ProjectileSummary['impact'] }
     | { type: 'damaged'; actor: SimulationActor; amount: number; stitching: number }
@@ -108,15 +131,19 @@ export type SimulationTransition = {
     error?: SimulationError;
 };
 
-export function createSimulation(seed: number, calling: PlayerCalling): SimulationState {
+export function createSimulation(
+    seed: number,
+    calling: PlayerCalling,
+    rulesetId: SimulationRulesetId = LEGACY_RULESET_ID
+): SimulationState {
     const normalizedSeed = normalizeSeed(seed);
     const generated = generateTerrain(normalizedSeed);
     const playerX = 192;
     const loomkeeperX = 832;
     const state: SimulationState = {
-        formatVersion: 1,
-        rulesetId: RULESET_ID,
-        rulesetVersion: RULESET_VERSION,
+        formatVersion: rulesetId === LEGACY_RULESET_ID ? 1 : 2,
+        rulesetId,
+        rulesetVersion: rulesetId === LEGACY_RULESET_ID ? RULESET_VERSION : LATEST_RULESET_VERSION,
         seed: normalizedSeed,
         rngState: generated.rngState,
         tick: 0,
@@ -139,6 +166,10 @@ export function createSimulation(seed: number, calling: PlayerCalling): Simulati
     };
     assertSimulationInvariants(state);
     return state;
+}
+
+export function createLatestSimulation(seed: number, calling: PlayerCalling): SimulationState {
+    return createSimulation(seed, calling, LATEST_RULESET_ID);
 }
 
 export function applySimulationCommand(
@@ -166,11 +197,12 @@ export function applySimulationCommand(
         }
         events.push({ type: 'moved', actor, x: moved.unit.x, y: moved.unit.y });
     } else if (command.type === 'select_relic') {
-        if (command.relicId !== 'threadball') {
-            return rejected(current, 'COMMAND_REJECTED', 'Only Threadball is available in this ruleset.');
+        const relicId = command.relicId as RelicId;
+        if (!availableRelics(state).includes(relicId)) {
+            return rejected(current, 'COMMAND_REJECTED', 'The Relic is not available in this ruleset.');
         }
-        state.selectedRelic = 'threadball';
-        events.push({ type: 'relic_selected', actor, relicId: 'threadball' });
+        state.selectedRelic = relicId;
+        events.push({ type: 'relic_selected', actor, relicId });
     } else if (command.type === 'aim') {
         if (!Number.isSafeInteger(command.angleMilliDegrees) ||
             !Number.isSafeInteger(command.powerPermille) ||
@@ -239,6 +271,14 @@ export function cloneSimulation(state: SimulationState): SimulationState {
     };
 }
 
+export function relicsForRuleset(rulesetId: SimulationRulesetId): readonly RelicId[] {
+    return rulesetId === LEGACY_RULESET_ID ? ['threadball'] : RELIC_IDS;
+}
+
+function availableRelics(state: SimulationState): readonly RelicId[] {
+    return relicsForRuleset(state.rulesetId);
+}
+
 export function terrainSolid(terrain: PackedTerrain, x: number, y: number): boolean {
     if (x < 0 || y < 0 || x >= terrain.width || y >= terrain.height) return false;
     const index = y * terrain.width + x;
@@ -277,8 +317,21 @@ export function deformTerrain(terrain: PackedTerrain, centerX: number, centerY: 
 }
 
 export function assertSimulationInvariants(state: SimulationState): void {
-    if (state.rulesetId !== RULESET_ID || state.rulesetVersion !== RULESET_VERSION) {
+    const legacy = state.rulesetId === LEGACY_RULESET_ID &&
+        state.rulesetVersion === 1 && state.formatVersion === 1;
+    const current = state.rulesetId === LATEST_RULESET_ID &&
+        state.rulesetVersion === LATEST_RULESET_VERSION && state.formatVersion === 2;
+    if (!legacy && !current) {
         throw new Error('Unknown deterministic simulation ruleset.');
+    }
+    if (!availableRelics(state).includes(state.selectedRelic)) {
+        throw new Error('Selected Relic is unavailable in this ruleset.');
+    }
+    if (state.lastProjectile && current && !state.lastProjectile.relicId) {
+        throw new Error('Current-ruleset projectile lacks its Relic identifier.');
+    }
+    if (state.lastProjectile && legacy && state.lastProjectile.relicId) {
+        throw new Error('Legacy projectile contains a current-ruleset field.');
     }
     const expectedWords = Math.ceil(state.terrain.width * state.terrain.height / 32);
     if (state.terrain.words.length !== expectedWords) throw new Error('Terrain word length changed.');
@@ -398,6 +451,8 @@ function resolveProjectile(
     const shooter = state.units[actor === 'player' ? 0 : 1];
     const scale = SIM_RULES.fixedPointScale;
     const aim = state.aim!;
+    const relicId = state.selectedRelic;
+    const relicRules = RELIC_RULES[relicId];
     const speed = SIM_RULES.minimumShotSpeed + Math.trunc(
         (SIM_RULES.maximumShotSpeed - SIM_RULES.minimumShotSpeed) * aim.powerPermille / 1000
     );
@@ -436,14 +491,15 @@ function resolveProjectile(
     }
     trace.push({ x: endX, y: endY });
     state.lastProjectile = {
+        ...(state.rulesetId === LATEST_RULESET_ID ? { relicId } : {}),
         startX, startY, endX, endY, flightTicks, impact,
         trace: trace.map((point) => ({ ...point }))
     };
     events.push({ type: 'projectile', actor, trace });
     events.push({ type: 'impact', x: endX, y: endY, target: impact });
     if (impact !== 'world_exit' && impact !== 'lifetime') {
-        deformTerrain(state.terrain, endX, endY, SIM_RULES.craterRadius);
-        applyDamage(state, endX, endY, events);
+        deformTerrain(state.terrain, endX, endY, relicRules.craterRadius);
+        applyDamage(state, endX, endY, relicRules, events);
         state.units.forEach((unit) => settleUnit(state, unit));
     }
     state.aim = null;
@@ -482,17 +538,23 @@ function sweptCollision(
     return undefined;
 }
 
-function applyDamage(state: SimulationState, x: number, y: number, events: SimulationEvent[]): void {
+function applyDamage(
+    state: SimulationState,
+    x: number,
+    y: number,
+    relicRules: (typeof RELIC_RULES)[RelicId],
+    events: SimulationEvent[]
+): void {
     for (const unit of state.units) {
         if (!unit.alive) continue;
         const dx = unit.x - x;
         const dy = unit.y - y;
         const distanceSquared = dx * dx + dy * dy;
-        if (distanceSquared > SIM_RULES.damageRadius * SIM_RULES.damageRadius) continue;
+        if (distanceSquared > relicRules.damageRadius * relicRules.damageRadius) continue;
         const distance = integerSquareRoot(distanceSquared);
         const damage = Math.max(1, Math.trunc(
-            (SIM_RULES.damageRadius - distance) * SIM_RULES.maximumDamage /
-            SIM_RULES.damageRadius
+            (relicRules.damageRadius - distance) * relicRules.maximumDamage /
+            relicRules.damageRadius
         ));
         unit.stitching = Math.max(0, unit.stitching - damage);
         if (unit.stitching === 0) unit.alive = false;
@@ -583,7 +645,7 @@ function clamp(value: number, minimum: number, maximum: number): number {
 function integerSquareRoot(value: number): number {
     if (value <= 0) return 0;
     let low = 1;
-    let high = Math.min(value, SIM_RULES.damageRadius);
+    let high = Math.min(value, RELIC_RULES.spoolburst.damageRadius);
     let result = 0;
     while (low <= high) {
         const middle = Math.trunc((low + high) / 2);
