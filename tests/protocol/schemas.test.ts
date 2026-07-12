@@ -151,6 +151,8 @@ test('response schemas are strict and carry versioned timing metadata', () => {
         challengeId,
         mode: 'practice' as const,
         calling: 'wizard' as const,
+        loomkeeperPolicyId: 'nimble-knots-loomkeeper-v1' as const,
+        loomkeeperDifficulty: 'standard' as const,
         status: 'active' as const,
         revision: 0,
         nextSequence: 1,

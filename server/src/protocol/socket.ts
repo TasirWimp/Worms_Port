@@ -258,13 +258,28 @@ export function setupProtocol(
                 );
                 ack(response);
                 if (response.ok) {
-                    socket.emit(protocolEvents.snapshot, response.data);
+                    const current = registry.activeSnapshot(session);
+                    const emitted = current ?? response.data;
+                    socket.emit(protocolEvents.snapshot, emitted);
                     const result = registry.takeChallengeResult(
                         session,
                         parsed.data.challengeId,
-                        response.data.nextSequence
+                        emitted.nextSequence
                     );
                     if (result) socket.emit(protocolEvents.result, result);
+                    const loomkeeper = registry.driveLoomkeeperTurn(
+                        session,
+                        parsed.data.challengeId
+                    );
+                    if (loomkeeper && !('code' in loomkeeper)) {
+                        socket.emit(protocolEvents.snapshot, loomkeeper);
+                        const loomkeeperResult = registry.takeChallengeResult(
+                            session,
+                            parsed.data.challengeId,
+                            loomkeeper.nextSequence
+                        );
+                        if (loomkeeperResult) socket.emit(protocolEvents.result, loomkeeperResult);
+                    }
                 }
             });
         });

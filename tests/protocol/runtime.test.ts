@@ -951,6 +951,139 @@ test('protocol commands mutate authoritative simulation once and reconstruct fro
     }
 });
 
+test('player fire produces one automated Loomkeeper turn and records only its chosen plan', async () => {
+    const { runtime, url } = await start({
+        sessionRegistry: { seedSource: () => 1, simulationTickIntervalMs: false }
+    });
+    const socket = await connect(url);
+    try {
+        await openSession(socket);
+        const created = await emitAck(socket, protocolEvents.challengeCreate, {
+            requestId: 'ai_create_01', sequence: 0,
+            mode: 'practice', calling: 'wizard'
+        });
+        await emitAck(socket, protocolEvents.commandSubmit, {
+            requestId: 'ai_aim_01', sequence: 1,
+            challengeId: created.data.challengeId, expectedTurn: 0,
+            command: { type: 'aim', angleMilliDegrees: 35_000, powerPermille: 700 }
+        });
+        const automatedSnapshots: any[] = [];
+        const automated = new Promise<any>((resolve, reject) => {
+            const timer = setTimeout(() => reject(new Error('Loomkeeper snapshot timed out.')), 1_000);
+            socket.on(protocolEvents.snapshot, (snapshot) => {
+                if (snapshot.challengeId === created.data.challengeId &&
+                    snapshot.simulation.turn === 2) {
+                    automatedSnapshots.push(snapshot);
+                    clearTimeout(timer);
+                    resolve(snapshot);
+                }
+            });
+        });
+        const firePayload = {
+            requestId: 'ai_fire_01', sequence: 2,
+            challengeId: created.data.challengeId, expectedTurn: 0,
+            command: { type: 'fire' }
+        };
+        const fired = await emitAck(socket, protocolEvents.commandSubmit, firePayload);
+        assert.equal(fired.ok, true);
+        assert.equal(fired.data.simulation.activeActor, 'loomkeeper');
+        assert.equal(fired.data.simulation.turn, 1);
+        const reply = await automated;
+        assert.equal(reply.simulation.activeActor, 'player');
+        assert.equal(reply.loomkeeperPolicyId, 'nimble-knots-loomkeeper-v1');
+
+        const session = runtime.sessions.getBound(socket.id!);
+        assert.ok(session);
+        const replay = runtime.sessions.replayForChallenge(session, created.data.challengeId)!;
+        const aiCommands = replay.records.filter(
+            (record) => record.operation.kind === 'command' && record.operation.actor === 'loomkeeper'
+        );
+        assert.equal(aiCommands.length > 0, true);
+        assert.equal(aiCommands.at(-1)?.operation.kind, 'command');
+        if (aiCommands.at(-1)?.operation.kind === 'command') {
+            assert.equal(aiCommands.at(-1)!.operation.command.type, 'fire');
+        }
+
+        const replayLength = replay.records.length;
+        assert.deepEqual(await emitAck(socket, protocolEvents.commandSubmit, firePayload), fired);
+        await new Promise((resolve) => setTimeout(resolve, 20));
+        assert.equal(automatedSnapshots.length, 2);
+        assert.equal(automatedSnapshots.at(-1).stateHash, reply.stateHash);
+        assert.equal(automatedSnapshots.at(-1).simulation.turn, 2);
+        assert.equal(
+            runtime.sessions.replayForChallenge(session, created.data.challengeId)!.records.length,
+            replayLength
+        );
+    } finally {
+        await closeAll(runtime, [socket]);
+    }
+});
+
+test('duplicate success resyncs the current transport cursor after an immutable rejection', async () => {
+    const { runtime, url } = await start({
+        sessionRegistry: { simulationTickIntervalMs: false }
+    });
+    const socket = await connect(url);
+    try {
+        await openSession(socket);
+        const created = await emitAck(socket, protocolEvents.challengeCreate, {
+            requestId: 'cursor_create_01', sequence: 0,
+            mode: 'practice', calling: 'wizard'
+        });
+        const movePayload = {
+            requestId: 'cursor_move_01', sequence: 1,
+            challengeId: created.data.challengeId, expectedTurn: 0,
+            command: { type: 'move', direction: -1 }
+        };
+        const moved = await emitAck(socket, protocolEvents.commandSubmit, movePayload);
+        const rejected = await emitAck(socket, protocolEvents.commandSubmit, {
+            requestId: 'cursor_reject_01', sequence: 2,
+            challengeId: created.data.challengeId, expectedTurn: 0,
+            command: { type: 'fire' }
+        });
+        assert.equal(rejected.ok, false);
+
+        const resynced = new Promise<any>((resolve) => socket.once(protocolEvents.snapshot, resolve));
+        assert.deepEqual(await emitAck(socket, protocolEvents.commandSubmit, movePayload), moved);
+        const snapshot = await resynced;
+        assert.equal(snapshot.stateHash, moved.data.stateHash);
+        assert.equal(snapshot.nextSequence, 3);
+    } finally {
+        await closeAll(runtime, [socket]);
+    }
+});
+
+test('duplicate success resyncs to a replacement challenge without mutating it', async () => {
+    const { runtime, url } = await start({ sessionRegistry: { simulationTickIntervalMs: false } });
+    const socket = await connect(url);
+    try {
+        await openSession(socket);
+        const first = await emitAck(socket, protocolEvents.challengeCreate, {
+            requestId: 'replace_create_a', sequence: 0, mode: 'practice', calling: 'wizard'
+        });
+        const movePayload = {
+            requestId: 'replace_move_a', sequence: 1,
+            challengeId: first.data.challengeId, expectedTurn: 0,
+            command: { type: 'move', direction: -1 }
+        };
+        const moved = await emitAck(socket, protocolEvents.commandSubmit, movePayload);
+        await emitAck(socket, protocolEvents.challengeLeave, {
+            requestId: 'replace_leave_a', sequence: 2, challengeId: first.data.challengeId
+        });
+        const second = await emitAck(socket, protocolEvents.challengeCreate, {
+            requestId: 'replace_create_b', sequence: 3, mode: 'practice', calling: 'thief'
+        });
+        const resynced = new Promise<any>((resolve) => socket.once(protocolEvents.snapshot, resolve));
+        assert.deepEqual(await emitAck(socket, protocolEvents.commandSubmit, movePayload), moved);
+        const snapshot = await resynced;
+        assert.equal(snapshot.challengeId, second.data.challengeId);
+        assert.equal(snapshot.stateHash, second.data.stateHash);
+        assert.equal(snapshot.nextSequence, 4);
+    } finally {
+        await closeAll(runtime, [socket]);
+    }
+});
+
 test('session resume emits the complete current simulation snapshot', async () => {
     const { runtime, url } = await start({
         sessionRegistry: { seedSource: () => 0xC0FFEE11, simulationTickIntervalMs: false }
@@ -999,7 +1132,11 @@ test('session resume emits the complete current simulation snapshot', async () =
 
 test('authoritative victory emits one final result and duplicate fire is inert', async () => {
     const { runtime, url } = await start({
-        sessionRegistry: { seedSource: () => 1, simulationTickIntervalMs: false }
+        sessionRegistry: {
+            seedSource: () => 1,
+            simulationTickIntervalMs: false,
+            loomkeeperEnabled: false
+        }
     });
     const socket = await connect(url);
     try {
@@ -1154,7 +1291,11 @@ test('terminal transition while disconnected is delivered once on resume', async
 
 test('simulation timeout routing targets only the owning session', async () => {
     const { runtime, url } = await start({
-        sessionRegistry: { seedSource: () => 1, simulationTickIntervalMs: false }
+        sessionRegistry: {
+            seedSource: () => 1,
+            simulationTickIntervalMs: false,
+            loomkeeperEnabled: false
+        }
     });
     const first = await connect(url);
     const second = await connect(url);

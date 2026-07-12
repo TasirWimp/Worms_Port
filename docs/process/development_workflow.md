@@ -171,8 +171,44 @@ the constants used by existing replay evidence.
   Independent replay reconstruction must match that hash at every committed
   checkpoint.
 - Turn-limit completion, projectile lifetime, replay length, terrain work, and
-  snapshot size all have hard bounds. The Loomkeeper decision policy remains
-  WP-008 work; WP-007 supplies only its legal deterministic actor boundary.
+  snapshot size all have hard bounds. WP-007 supplies the Loomkeeper's legal
+  deterministic actor boundary.
+
+### Deterministic Loomkeeper Policy
+
+WP-008 establishes `nimble-knots-loomkeeper-v1` as an independently designed,
+Phaser-free decision policy layered on `nimble-knots-artillery-v1`.
+
+- Candidate evaluation calls only `applySimulationCommand` on detached state
+  clones. It does not mutate authoritative state, consume its RNG cursor, or
+  write speculative candidates to replay.
+- Gentle, standard, and sharp profiles disclose fixed candidate and aim-error
+  limits. All share the same movement, Threadball, physics, health, damage,
+  collision, and turn rules as the player. Practice is fixed to standard until
+  a later UI explicitly scopes difficulty selection.
+- Canonical enumeration and strictly-greater integer scoring provide the tie
+  break. Policy entropy derives only from seed, RNG cursor, turn, and fixed
+  salts; wall time and ambient randomness are forbidden.
+- A decision evaluates at most 256 candidates and 3,072 public transitions,
+  then emits at most eight movement commands, one Threadball selection, one
+  aim, and one final fire command.
+- The session registry rechecks challenge status, state hash, revision, active
+  actor, and turn before committing a plan. Per-challenge pending/running guards
+  make duplicate requests and timeout scheduling idempotent.
+- Player turns accept at most sixteen mutating commands, and Fire is rejected
+  unless replay capacity can reserve the full eleven-command Loomkeeper bound.
+  The selected plan is capacity-checked before its first authoritative command,
+  so replay exhaustion cannot strand a partially committed AI turn.
+- Configurations that enable automated Loomkeeper turns require at least 512
+  replay records. Smaller caps are accepted only when automation is explicitly
+  disabled for isolated replay-limit tests.
+- Every selected Loomkeeper command is stored in the normal coordinator replay.
+  Reconstruction uses those records and never needs to rerun historical policy
+  search.
+
+The turn driver remains in-process with the WP-007 coordinator. A durable
+multi-instance or Vercel Functions deployment still requires shared state,
+exactly-once turn leases, and cross-instance event delivery.
 
 ### Playwright Bootstrap
 

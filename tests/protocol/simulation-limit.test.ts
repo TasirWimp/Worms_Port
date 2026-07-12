@@ -19,6 +19,7 @@ test('live replay-limit rejection preserves the session and permits an orderly l
         sessionRegistry: {
             simulationTickIntervalMs: false,
             simulationMaxReplayRecords: 2,
+            loomkeeperEnabled: false,
             seedSource: () => 0xC0FFEE11
         }
     });

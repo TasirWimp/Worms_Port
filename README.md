@@ -41,6 +41,7 @@ npm run build
 npm run smoke
 npm run test:protocol
 npm run test:simulation
+npm run test:loomkeeper
 npm run test:browser:smoke
 npm start
 ```
@@ -87,6 +88,15 @@ cannot silently apply to a later state.
 Simulation state is currently in-process. It is suitable for the persistent
 single-process Node deployment used by this development slice, but it is not
 yet durable across server restarts or multiple Vercel Function instances.
+
+The independently designed `nimble-knots-loomkeeper-v1` policy evaluates a
+fixed, bounded lattice of movement, Threadball, angle, and power candidates by
+calling the same public simulation transition API available to player
+commands. Practice challenges currently disclose and use the immutable
+`standard` profile. Its deterministic aim error and search resolution are the
+only difficulty controls; the Loomkeeper receives no extra health, damage,
+movement, collision knowledge, or retries. Only the selected legal plan is
+committed to the authoritative replay.
 
 ## World And Art Direction
 

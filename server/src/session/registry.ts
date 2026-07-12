@@ -15,6 +15,12 @@ import {
     type CoordinatorUpdate
 } from '../simulation/coordinator';
 import type { SimulationCommand } from '../../../shared/simulation';
+import {
+    decideLoomkeeperTurn,
+    LOOMKEEPER_MAX_COMMANDS,
+    LOOMKEEPER_POLICY_ID,
+    type LoomkeeperDifficulty
+} from '../../../shared/loomkeeper';
 import { issueToken, opaqueId, tokenDigest } from './token';
 
 const DEFAULT_SESSION_TTL_MS = 30 * 60_000;
@@ -22,6 +28,8 @@ const DEFAULT_RECONNECT_GRACE_MS = 2 * 60_000;
 const DEFAULT_TOKEN_RECOVERY_MS = 30_000;
 const DEFAULT_CHALLENGE_TTL_MS = 30 * 60_000;
 const REPLAY_LIMIT = 256;
+const MAXIMUM_PLAYER_COMMANDS_PER_TURN = 16;
+const MINIMUM_AUTOMATED_REPLAY_RECORDS = 512;
 
 type CachedRequest = {
     hash: string;
@@ -32,10 +40,13 @@ export type Challenge = {
     id: string;
     mode: 'practice' | 'reward';
     calling: 'wizard' | 'thief' | 'warrior';
+    loomkeeperDifficulty: LoomkeeperDifficulty;
     status: 'active' | 'left' | 'expired' | 'completed';
     revision: number;
     expiresAt: number;
     resultEmitted: boolean;
+    playerCommandTurn: number;
+    playerCommandCount: number;
 };
 
 export type Session = {
@@ -67,6 +78,8 @@ export type SessionRegistryOptions = {
     simulationTicksPerInterval?: number;
     simulationMaxReplayRecords?: number;
     seedSource?: () => number;
+    loomkeeperEnabled?: boolean;
+    loomkeeperDifficulty?: LoomkeeperDifficulty;
 };
 
 export class SessionRegistry {
@@ -86,6 +99,10 @@ export class SessionRegistry {
     private readonly onChallengeCompleted?: (result: ChallengeResult, socketId?: string) => void;
     private readonly coordinator: SimulationCoordinator;
     private readonly seedSource: () => number;
+    private readonly loomkeeperEnabled: boolean;
+    private readonly loomkeeperDifficulty: LoomkeeperDifficulty;
+    private readonly pendingLoomkeeperTurns = new Set<string>();
+    private readonly runningLoomkeeperTurns = new Set<string>();
     private inOrderedSimulation = false;
 
     public constructor(options: SessionRegistryOptions = {}) {
@@ -100,6 +117,15 @@ export class SessionRegistry {
         this.onChallengeSnapshot = options.onChallengeSnapshot;
         this.onChallengeCompleted = options.onChallengeCompleted;
         this.seedSource = options.seedSource || (() => randomBytes(4).readUInt32BE(0));
+        this.loomkeeperEnabled = options.loomkeeperEnabled ?? true;
+        this.loomkeeperDifficulty = options.loomkeeperDifficulty ?? 'standard';
+        if (this.loomkeeperEnabled && options.simulationMaxReplayRecords !== undefined &&
+            options.simulationMaxReplayRecords < MINIMUM_AUTOMATED_REPLAY_RECORDS) {
+            throw new RangeError(
+                `simulationMaxReplayRecords must be at least ${MINIMUM_AUTOMATED_REPLAY_RECORDS} ` +
+                'while automated Loomkeeper turns are enabled.'
+            );
+        }
         this.coordinator = new SimulationCoordinator({
             maxReplayRecords: options.simulationMaxReplayRecords,
             tickIntervalMs: options.simulationTickIntervalMs === false
@@ -249,10 +275,13 @@ export class SessionRegistry {
             id: opaqueId(),
             mode,
             calling,
+            loomkeeperDifficulty: this.loomkeeperDifficulty,
             status: 'active',
             revision: 0,
             expiresAt: this.now() + this.challengeTtlMs,
-            resultEmitted: false
+            resultEmitted: false,
+            playerCommandTurn: 0,
+            playerCommandCount: 0
         };
         challenge.expiresAt = Math.min(challenge.expiresAt, session.expiresAt);
         session.challenges.set(challenge.id, challenge);
@@ -275,6 +304,28 @@ export class SessionRegistry {
         if (isProtocolError(challenge)) {
             return challenge;
         }
+        const authoritativeTurn = this.coordinator.get(challengeId)!.state.turn;
+        if (challenge.playerCommandTurn !== authoritativeTurn) {
+            challenge.playerCommandTurn = authoritativeTurn;
+            challenge.playerCommandCount = 0;
+        }
+        if (challenge.playerCommandCount >= MAXIMUM_PLAYER_COMMANDS_PER_TURN) {
+            return {
+                code: 'COMMAND_REJECTED',
+                message: 'The accepted command budget for this turn has been reached.',
+                retryable: false
+            };
+        }
+        if (command.type === 'fire' && !this.coordinator.canAppendReplayRecords(
+            challengeId,
+            LOOMKEEPER_MAX_COMMANDS + 1
+        )) {
+            return {
+                code: 'COMMAND_REJECTED',
+                message: 'The replay budget cannot reserve a complete Loomkeeper reply.',
+                retryable: false
+            };
+        }
         this.inOrderedSimulation = true;
         let update: ReturnType<SimulationCoordinator['apply']>;
         try {
@@ -289,9 +340,70 @@ export class SessionRegistry {
                 retryable: false
             };
         }
+        challenge.playerCommandCount += 1;
         challenge.revision = update.state.revision;
         if (update.state.phase === 'finished') challenge.status = 'completed';
         return this.snapshot(session, challenge);
+    }
+
+    /**
+     * Commits at most one already-earned Loomkeeper turn. It is safe to call
+     * after duplicate transport acknowledgements because authority is checked
+     * again against the current authoritative snapshot.
+     */
+    public driveLoomkeeperTurn(
+        session: Session,
+        challengeId: string
+    ): ChallengeSnapshot | ProtocolError | undefined {
+        if (!this.loomkeeperEnabled || this.runningLoomkeeperTurns.has(challengeId)) return undefined;
+        const challenge = session.challenges.get(challengeId);
+        const basis = this.coordinator.get(challengeId);
+        if (!challenge || challenge.status !== 'active' || !basis ||
+            basis.state.phase !== 'awaiting_command' || basis.state.activeActor !== 'loomkeeper') {
+            return undefined;
+        }
+        const decision = decideLoomkeeperTurn(basis.state, challenge.loomkeeperDifficulty);
+        if (!decision) return undefined;
+        if (!this.coordinator.canAppendReplayRecords(challengeId, decision.commands.length)) {
+            return {
+                code: 'COMMAND_REJECTED',
+                message: 'The replay budget cannot commit the complete Loomkeeper plan.',
+                retryable: false
+            };
+        }
+        const current = this.coordinator.get(challengeId);
+        if (!current || current.stateHash !== basis.stateHash ||
+            current.state.revision !== decision.basisRevision ||
+            current.state.turn !== decision.expectedTurn ||
+            current.state.activeActor !== 'loomkeeper') {
+            return undefined;
+        }
+
+        this.runningLoomkeeperTurns.add(challengeId);
+        this.inOrderedSimulation = true;
+        try {
+            for (const command of decision.commands) {
+                const live = this.coordinator.get(challengeId);
+                if (!live || live.state.phase !== 'awaiting_command' ||
+                    live.state.activeActor !== 'loomkeeper' ||
+                    live.state.turn !== decision.expectedTurn) break;
+                const update = this.coordinator.apply(
+                    challengeId,
+                    'loomkeeper',
+                    command,
+                    decision.expectedTurn
+                );
+                if (!update.transition.accepted) break;
+            }
+        } finally {
+            this.inOrderedSimulation = false;
+            this.runningLoomkeeperTurns.delete(challengeId);
+        }
+        const final = this.coordinator.get(challengeId);
+        if (!final) return undefined;
+        challenge.revision = final.state.revision;
+        if (final.state.phase === 'finished') challenge.status = 'completed';
+        return this.snapshot(session, challenge, session.nextSequence);
     }
 
     public activeSnapshot(session: Session): ChallengeSnapshot | undefined {
@@ -512,6 +624,8 @@ export class SessionRegistry {
             challengeId: challenge.id,
             mode: challenge.mode,
             calling: challenge.calling,
+            loomkeeperPolicyId: LOOMKEEPER_POLICY_ID,
+            loomkeeperDifficulty: challenge.loomkeeperDifficulty,
             status: challenge.status,
             revision: challenge.revision,
             nextSequence,
@@ -538,6 +652,27 @@ export class SessionRegistry {
             );
             if (terminal) this.onChallengeCompleted?.(terminal, session.socketId);
         }
+        if (update.state.phase === 'awaiting_command' && update.state.activeActor === 'loomkeeper') {
+            this.queueLoomkeeperTurn(update.sessionId, update.challengeId);
+        }
+    }
+
+    private queueLoomkeeperTurn(sessionId: string, challengeId: string): void {
+        if (!this.loomkeeperEnabled || this.pendingLoomkeeperTurns.has(challengeId) ||
+            this.runningLoomkeeperTurns.has(challengeId)) return;
+        this.pendingLoomkeeperTurns.add(challengeId);
+        queueMicrotask(() => {
+            this.pendingLoomkeeperTurns.delete(challengeId);
+            const session = this.sessions.get(sessionId);
+            if (!session) return;
+            const snapshot = this.driveLoomkeeperTurn(session, challengeId);
+            if (!snapshot || 'code' in snapshot) return;
+            this.onChallengeSnapshot?.(snapshot, session.socketId);
+            if (session.socketId) {
+                const terminal = this.takeChallengeResult(session, challengeId, session.nextSequence);
+                if (terminal) this.onChallengeCompleted?.(terminal, session.socketId);
+            }
+        });
     }
 
     private completedResult(

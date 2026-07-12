@@ -191,6 +191,12 @@ export class SimulationCoordinator {
         return entry ? replayOf(entry) : undefined;
     }
 
+    public canAppendReplayRecords(challengeId: string, count: number): boolean {
+        const entry = this.require(challengeId);
+        const records = nonnegativeInteger(count, 'count');
+        return entry.records.length + records <= this.maxReplayRecords;
+    }
+
     public takePendingTerminalResult(challengeId: string): CoordinatorTerminalResult | undefined {
         const entry = this.matches.get(challengeId);
         if (!entry?.pendingTerminalResult) {

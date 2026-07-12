@@ -189,6 +189,8 @@ export const ChallengeSnapshotSchema = z.object({
     challengeId: ChallengeIdSchema,
     mode: z.enum(['practice', 'reward']),
     calling: z.enum(['wizard', 'thief', 'warrior']),
+    loomkeeperPolicyId: z.literal('nimble-knots-loomkeeper-v1'),
+    loomkeeperDifficulty: z.enum(['gentle', 'standard', 'sharp']),
     status: z.enum(['active', 'left', 'expired', 'completed']),
     revision: z.number().int().nonnegative(),
     nextSequence: SequenceSchema,

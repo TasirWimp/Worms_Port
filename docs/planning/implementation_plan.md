@@ -8,8 +8,8 @@ Phaser/Socket.IO stack.
 ## Execution Pointer
 
 - Active target: mobile-first single-player Nimiq Pay competition release.
-- Next work package: **WP-008 Loomkeeper AI**.
-- Last completed work package: **WP-007 Deterministic Artillery Simulation**.
+- Next work package: **WP-009 Phone Combat Scene**.
+- Last completed work package: **WP-008 Loomkeeper AI**.
 - PvP and matchmaking: deferred until after the competition release.
 - Canonical artwork reference:
   `docs/images/art-direction/knotkin-class-lineup-concept.png`.
@@ -314,7 +314,7 @@ deployment is explicitly outside this slice.
 
 ### WP-008 Loomkeeper AI
 
-Status: planned. Depends on WP-007.
+Status: complete. Depends on WP-007.
 
 Goal: add an independently designed deterministic AI that evaluates a bounded
 set of legal movement, Relic, angle, and power choices through the public
@@ -325,6 +325,19 @@ Owning roles: `worms_port_base_game_worker`, `worms_port_test_worker`.
 
 Verification: deterministic decision tests, legal-command invariants, turn
 budget, difficulty bounds, golden match replays, build.
+
+Delivered as `nimble-knots-loomkeeper-v1`: a Phaser-free policy that searches
+only accepted public simulation transitions on detached clones. Gentle,
+standard, and sharp profiles use fixed candidate and controlled aim-error
+bounds; practice challenges currently freeze and disclose standard. The
+server commits at most one selected plan per Loomkeeper turn, records each
+chosen command in the normal replay, and guards duplicate/timeout scheduling
+with authoritative hash, revision, actor, and turn rechecks. Seven fixed-seed
+decision tests and two complete golden matches freeze policy behavior and exact
+reconstruction hashes. A sixteen-command player-turn cap plus full-plan replay
+reservation prevents replay exhaustion from stranding an AI handoff. The AI
+remains subject to the existing in-process,
+non-Vercel-durable simulation limitation.
 
 ### WP-009 Phone Combat Scene
 
