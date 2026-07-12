@@ -1,7 +1,7 @@
 import type { Socket } from 'socket.io-client';
 
-import { $, request, game_has_player } from '../lib/util';
-import Cookie from '../lib/cookie';
+import { $, request } from '../lib/util';
+import { getActiveGameId } from '../lib/session';
 
 import OverlayedScene from './overlayed';
 
@@ -41,10 +41,10 @@ export default class JoinScene extends OverlayedScene
 
     protected setup_overlay_behavior ()
     {
-        this.b_back.onclick = async () => {
-            let res = await game_has_player(Cookie.get('room'), Cookie.get('id'));
-            if (res.response) {
-                this.scene.start('game', { socket: this.socket });
+        this.b_back.onclick = () => {
+            const gameId = getActiveGameId();
+            if (gameId) {
+                this.scene.start('game', { gameId, socket: this.socket });
             }
         }
 

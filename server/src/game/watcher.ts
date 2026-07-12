@@ -37,17 +37,40 @@ export class GameWatcher extends EventEmitter {
         this.io = io;
     }
 
+    public reset() {
+        this.games.clear();
+    }
+
+    public hidePlayer(playerId: string) {
+        for (const game of this.games.values()) {
+            if (game.has_player(playerId)) {
+                game.hide_player(playerId);
+            }
+        }
+    }
+
+    public hasPlayer(playerId: string) {
+        return [...this.games.values()].some((game) => game.has_player(playerId));
+    }
+
+    public gameIdForPlayer(playerId: string) {
+        return [...this.games.values()].find((game) => game.has_player(playerId))?.id;
+    }
+
     protected on_game_loop_start(game: Game) {
-        this.io.to(game.id).emit('server:game#start');
+        this.io.to(game.id).emit('server:game#start', { gameId: game.id });
     }
 
     protected on_new_game(game: Game) {
         this.games.set(game.id, game);
-        this.io.to(game.id).emit('server:game#start');
+        this.io.to(game.id).emit('server:game#start', { gameId: game.id });
     }
 
     protected on_player_hidden(game: Game, player: Player) {
         this.io.to(game.id).emit('server:game#hidden', player.public_id());
+        if (game.is_abandoned()) {
+            this.games.delete(game.id);
+        }
     }
 
     protected on_player_joined(game: Game, player: Player) {

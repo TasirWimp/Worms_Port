@@ -1,51 +1,32 @@
-import express from 'express';
-import http from 'http';
 import os from 'os';
-import path from 'path';
-import { Server as SocketIOServer } from 'socket.io';
+import { createRuntimeServer } from './runtime';
 
-import { init_id_generator } from './util/id-gen';
-
-import { setup_game_api } from './game/api';
-import { Game } from './game/class';
-
-import { setup_room_api } from './room/api';
-import { Room } from './room/class';
-import { RoomWatcher } from './room/watcher';
-
-import words from '../data/id-digits.json';
-
-const folder = process.env.DEV_SERVER ? 'dist' : 'build';
-const port   = +process.env.PORT || 3000;
-
-const client_dir = path.join(__dirname, `../../client/${folder}/`);
-
-init_id_generator(words, 3);
-
-const app = express();
-const server = new http.Server(app);
-const io = new SocketIOServer(server);
-
-app.use('/', express.static(client_dir));
-
-app.get('/', (_, res) => {
-    res.sendFile(path.join(client_dir, 'index.html'));
+const port = Number(process.env.PORT) || 3000;
+const sessionOpenRateCapacity = Number(process.env.SESSION_OPEN_RATE_CAPACITY);
+const runtime = createRuntimeServer({
+    sessionOpenRateCapacity: Number.isFinite(sessionOpenRateCapacity) &&
+        sessionOpenRateCapacity > 0
+        ? sessionOpenRateCapacity
+        : undefined
 });
 
-setup_room_api(app, io);
-setup_game_api(app, io);
-
-RoomWatcher.instance.on('game_started', (room: Room) => {
-    console.log('start');
-    new Game(room);
-});
-
-server.listen(port, () => {
+runtime.listen(port, '0.0.0.0').then(() => {
     for (let ifaceinfo of Object.values(os.networkInterfaces())) {
-        for (let iface of ifaceinfo) {
+        for (let iface of ifaceinfo || []) {
             if (!iface.internal && iface.family == 'IPv4') {
                 console.log(`Listening on http://${iface.address}:${port}`);
             }
         }
     }
 });
+
+for (const signal of ['SIGINT', 'SIGTERM'] as const) {
+    process.once(signal, () => {
+        runtime.close()
+            .then(() => process.exit(0))
+            .catch((error) => {
+                console.error(error);
+                process.exit(1);
+            });
+    });
+}

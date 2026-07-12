@@ -14,11 +14,12 @@
     "check:compliance": "npm run check:asset-manifest && npm run check:import-boundary && npm run check:package-licenses && npm run check:work-packages && npm run check:clean-room",
     "check:types": "tsc -p server/tsconfig.json --noEmit && tsc -p client/tsconfig.json --noEmit",
     "test:tooling": "node --test tests/tooling/*.test.js",
+    "test:protocol": "node --import tsx --test tests/protocol/*.test.ts",
     "smoke:built": "node scripts/smoke-built-server.js",
     "smoke": "npm run build && npm run smoke:built",
     "test:browser:smoke": "node scripts/run-playwright.js tests/browser/smoke.spec.ts",
     "test:browser": "node scripts/run-playwright.js",
-    "verify:fast": "npm run check:compliance && npm run check:types && npm run test:tooling",
+    "verify:fast": "npm run check:compliance && npm run check:types && npm run test:tooling && npm run test:protocol",
     "verify:runtime": "npm run build && npm run smoke:built && npm run test:browser:smoke",
     "verify:full": "npm run verify:fast && npm run verify:runtime && npm audit",
     "start": "node server/build/server.js",
@@ -39,7 +40,8 @@
     "phaser": "^3.90.0",
     "socket.io": "^4.8.1",
     "socket.io-client": "^4.8.1",
-    "toastify-js": "^1.12.0"
+    "toastify-js": "^1.12.0",
+    "zod": "4.4.3"
   },
   "devDependencies": {
     "@playwright/test": "1.61.1",

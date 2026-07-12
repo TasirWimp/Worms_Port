@@ -109,6 +109,37 @@ states. Real Android and iOS testing is outside the autonomous cycle. Every
 completion summary must state that it was not run rather than imply device
 coverage from emulation.
 
+### Validated Session Protocol
+
+WP-006 establishes the versioned Socket.IO boundary used by later simulation,
+identity, and reward work:
+
+- `v1:session.open` creates or resumes a session with a rotated 32-byte
+  base64url bearer token. The server stores only SHA-256 digests; a bounded
+  previous-token recovery window protects reconnects whose rotation
+  acknowledgement was lost, and only while no replacement socket is active.
+  Socket.IO IDs never authorize a player.
+- `v1:challenge.create`, `v1:command.submit`, and `v1:challenge.leave` accept
+  one strict object plus a required acknowledgement callback. Responses carry
+  protocol version, server time, request ID, and typed success/error data.
+- Practice creation is available. Signed-session and reward request shapes are
+  validated but return `FEATURE_UNAVAILABLE` until WP-011/WP-012.
+- Per-session sequence and request-ID replay caches make exact duplicates
+  idempotent and reject conflicts, stale commands, and gaps before WP-007 adds
+  simulation semantics.
+- Socket.IO transport payloads are capped at 16 KiB and event payloads at
+  8 KiB. Origin, event-rate, invalid-input, unauthenticated-open, reconnect,
+  challenge, and session timeouts fail closed.
+- Transient disconnects preserve lobby/game membership through the reconnect
+  grace period. Expiry performs authoritative cleanup, while challenge expiry
+  emits one typed terminal result and retains a bounded closed tombstone.
+
+The browser keeps the bearer token in `sessionStorage`, never cookies or URLs.
+This avoids ambient cookie authority but remains readable to same-origin
+script, so CSP/XSS hardening remains a deployment and later quality-harness
+concern. The legacy lobby UI is a temporary strict adapter bound to the server
+session; its old caller-supplied game identity endpoint is removed.
+
 ### Playwright Bootstrap
 
 WP-005 must establish that Playwright works in this repository before later

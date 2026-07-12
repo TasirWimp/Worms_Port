@@ -8,8 +8,8 @@ Phaser/Socket.IO stack.
 ## Execution Pointer
 
 - Active target: mobile-first single-player Nimiq Pay competition release.
-- Next work package: **WP-006 Validated Session And Command Protocol**.
-- Last completed work package: **WP-005 Autonomous Foundation And Release Contract**.
+- Next work package: **WP-007 Deterministic Artillery Simulation**.
+- Last completed work package: **WP-006 Validated Session And Command Protocol**.
 - PvP and matchmaking: deferred until after the competition release.
 - Canonical artwork reference:
   `docs/images/art-direction/knotkin-class-lineup-concept.png`.
@@ -51,11 +51,13 @@ availability and terms must be disclosed before a challenge starts.
   npm package license policy.
 - No Sorcerers product assets or Sorcerers code are imported.
 - WP-003 established NIMble Knots and the canonical Knotkin Calling lineup.
-- The current runtime is a lobby/reconnect shell with placeholder gameplay; it
-  does not yet implement the competition release contract.
+- The current runtime is a session-bound lobby/reconnect shell with placeholder
+  gameplay and a validated v1 command boundary; it does not yet implement the
+  deterministic competition match.
 - WP-005 provides tooling tests plus fresh-build phone Chromium/WebKit smoke.
-  Deterministic simulation, Socket.IO protocol, full phone matrix,
-  visual-regression, and performance suites do not yet exist.
+- WP-006 provides strict schema tests and a real `socket.io-client` protocol
+  suite. Deterministic simulation, the full phone matrix, visual-regression,
+  and performance suites do not yet exist.
 
 ## Codex Subagent Roles
 
@@ -257,7 +259,7 @@ readiness are recorded for WP-011 without adding a premature wallet dependency.
 
 ### WP-006 Validated Session And Command Protocol
 
-Status: planned. Depends on WP-005.
+Status: complete. Depends on WP-005.
 
 Goal: define runtime-validated schemas for signed sessions, practice and reward
 challenge creation, commands, snapshots, acknowledgements, errors, and results.
@@ -268,6 +270,18 @@ Owning roles: `worms_port_network_worker`, `worms_port_test_worker`.
 
 Verification: schema unit tests, malformed/event-flood cases, real
 `socket.io-client` protocol tests, compliance, types, build, and built smoke.
+
+Implementation note: signed-session and reward request envelopes are frozen but
+return `FEATURE_UNAVAILABLE`; WP-006 does not verify wallet signatures or
+reserve rewards. The legacy lobby remains only as a strict session-bound
+adapter so no insecure identity stack runs in parallel.
+
+Delivered with strict Zod v1 contracts, opaque digest-only bearer sessions,
+bounded token-rotation recovery, reconnect-grace rebinding, deterministic
+challenge-expiry results, replay and sequence enforcement, origin/payload/rate
+guards, and a 24-case protocol/client regression suite plus four phone-browser
+journeys. The browser uses
+WebSocket transport so production Origin enforcement remains fail-closed.
 
 ### WP-007 Deterministic Artillery Simulation
 

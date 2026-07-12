@@ -13,12 +13,14 @@ export class Room implements IRoom {
     public players: PlayerState[];
 
     protected scheme: Scheme;
+    protected started: boolean;
 
     /** @emits RoomWatcher#new_room */
     public constructor() {
         this.id = next_id();
         this.players = [];
         this.scheme = default_scheme;
+        this.started = false;
 
         RoomWatcher.instance.emit('new_room', this);
     }
@@ -63,6 +65,10 @@ export class Room implements IRoom {
         return this.players.length == this.scheme.player_limit;
     }
 
+    public is_started() {
+        return this.started;
+    }
+
     public player_index(player_id: string) {
         return this.players.findIndex(({ id }) => id == player_id);
     }
@@ -80,10 +86,11 @@ export class Room implements IRoom {
 
     /** @emits RoomWatcher#game_started */
     public start_game() {
-        if (!this.players.every(({ ready }) => ready)) {
+        if (this.started || this.players.length === 0 || !this.players.every(({ ready }) => ready)) {
             return;
         }
 
+        this.started = true;
         RoomWatcher.instance.emit('game_started', this);
     }
 }

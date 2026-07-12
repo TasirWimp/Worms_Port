@@ -21,7 +21,7 @@ export default defineConfig({
   fullyParallel: false,
   forbidOnly: Boolean(process.env.CI),
   retries: process.env.CI ? 1 : 0,
-  workers: process.env.CI ? 1 : undefined,
+  workers: 1,
   reporter: [
     ['line'],
     ['html', { outputFolder: 'playwright-report', open: 'never' }]
@@ -44,7 +44,11 @@ export default defineConfig({
   ],
   webServer: {
     command: 'node scripts/build-and-start-test-server.js',
-    env: { ...process.env, PORT: String(port) },
+    env: {
+      ...process.env,
+      PORT: String(port),
+      SESSION_OPEN_RATE_CAPACITY: '100'
+    },
     url: baseURL,
     reuseExistingServer: false,
     timeout: 60_000

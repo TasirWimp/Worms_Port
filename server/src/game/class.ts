@@ -56,6 +56,10 @@ export class Game implements IGame {
         GameWatcher.instance.emit('player_hidden', this, this.players[i]);
     }
 
+    public is_abandoned() {
+        return this.players.every(({ online }) => !online);
+    }
+
     public join(first_id: string, last_id: string) {
         let i = this.player_index(first_id, PlayerIdType.FIRST);
         if (i == -1) {

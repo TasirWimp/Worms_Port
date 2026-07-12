@@ -1,8 +1,8 @@
 import type { Socket } from 'socket.io-client';
 import Toastify from 'toastify-js';
 
-import Cookie from '../lib/cookie';
-import { $, request, ErrType, is_error, game_has_player } from '../lib/util';
+import { $, request, is_error, emitWithAck, parseRoomJoinAck } from '../lib/util';
+import { setActiveGameId, whenSessionReady } from '../lib/session';
 
 import OverlayedScene from './overlayed';
 
@@ -23,6 +23,7 @@ export default class RoomScene extends OverlayedScene
     protected ready: boolean;
     protected room_id: string;
     protected socket: Socket;
+    protected pending_events: (() => void)[];
 
     public constructor ()
     {
@@ -36,6 +37,7 @@ export default class RoomScene extends OverlayedScene
         }
     ) {
         this.ready = false;
+        this.pending_events = [];
         this.room_id = args.room_id;
         if (!this.socket) {
             this.socket = args.socket;
@@ -47,8 +49,8 @@ export default class RoomScene extends OverlayedScene
     {
         super.create();
         this.validate()
-            .then(() => this.show_members())
-            .then(() => this.ready = true);
+            .then((joined) => joined ? this.show_members() : undefined)
+            .then(() => this.finish_rehydrate());
     }
 
     public is_ready ()
@@ -87,16 +89,20 @@ export default class RoomScene extends OverlayedScene
     protected setup_overlay_behavior ()
     {
         this.b_back.onclick = () => {
-            this.socket.emit('client:room#leave');
+            void emitWithAck(this.socket, 'client:room#leave', {}).catch(console.error);
             this.scene.start('join', { socket: this.socket });
         };
 
         this.b_start.onclick = () => {
-            this.socket.emit('client:room#start');
+            void emitWithAck(this.socket, 'client:room#start', {}).catch(console.error);
         };
 
         this.inp_ready.onclick = () => {
-            this.socket.emit('client:room#ready', this.inp_ready.checked);
+            void emitWithAck(
+                this.socket,
+                'client:room#ready',
+                { ready: this.inp_ready.checked }
+            ).catch(console.error);
         };
 
         this.inp_room_id.value = this.room_id;
@@ -118,63 +124,108 @@ export default class RoomScene extends OverlayedScene
     protected setup_socket ()
     {
         this.socket
-            .on('server:room#join', (id: string) => {
-                if (this.is_ready()) {
-                    this.display_socket(id, false, this.me == id);
+            .on('connect', () => {
+                if (this.scene.isActive()) {
+                    this.ready = false;
+                    this.pending_events = [];
+                    void whenSessionReady(this.socket)
+                        .then(() => this.validate())
+                        .then((joined) => joined ? this.show_members() : undefined)
+                        .then(() => this.finish_rehydrate())
+                        .catch(console.error);
                 }
+            })
+            .on('server:room#join', (id: string) => {
+                this.dispatch_room_event(() => {
+                    this.display_socket(id, false, this.me == id);
+                });
             })
             .on('server:room#ready', (id: string, ready: boolean) => {
-                if (this.is_ready()) {
-                    $(`ready-${id}`).innerHTML = ready_sign(ready);
-                }
+                this.dispatch_room_event(() => {
+                    const field = $(`ready-${id}`);
+                    if (field) field.innerHTML = ready_sign(ready);
+                });
             })
             .on('server:room#first', (id: string) => {
-                if (this.is_ready()) {
-                    $(`first-${id}`).innerHTML = first_sign(true);
-                }
+                this.dispatch_room_event(() => {
+                    this.t_room.querySelectorAll<HTMLElement>('[id^="first-"]')
+                        .forEach((field) => field.innerHTML = first_sign(false));
+                    const field = $(`first-${id}`);
+                    if (field) field.innerHTML = first_sign(true);
+                });
             })
             .on('server:room#enable', (enabled: boolean) => {
-                if (this.is_ready()) {
+                this.dispatch_room_event(() => {
                     this.b_start.disabled = !enabled;
-                }
+                });
             })
             .on('server:room#leave', (id: string) => {
-                if (this.is_ready()) {
-                    this.t_room.removeChild($(`socket-${id}`));
-                }
+                this.dispatch_room_event(() => {
+                    const row = $(`socket-${id}`);
+                    if (row?.parentNode === this.t_room) this.t_room.removeChild(row);
+                });
             })
-            .on('server:game#start', async () => {
-                if (this.is_ready()) {
-                    Cookie.set('id', this.socket.id);
-                    Cookie.set('room', this.room_id);
-                    let res = await game_has_player(this.room_id, this.socket.id);
-                    if (res.response) {
-                        this.scene.start('game', { socket: this.socket });
-                    }
-                }
+            .on('server:game#start', ({ gameId }: { gameId: string }) => {
+                this.dispatch_room_event(() => {
+                    setActiveGameId(gameId);
+                    this.scene.start('game', { gameId, socket: this.socket });
+                });
             });
     }
 
     protected async validate ()
     {
-        let join_result = await new Promise((resolve, reject) => {
-            this.socket.emit('client:room#join', this.room_id, resolve);
-            setTimeout(reject, 10000);
-        }) as ErrType | { me: string };
+        let join_result = parseRoomJoinAck(await emitWithAck(
+            this.socket,
+            'client:room#join',
+            { roomId: this.room_id }
+        ));
 
         if (is_error(join_result)) {
-            throw this.scene.start('join', { error: join_result.error, socket: this.socket });
+            this.scene.start('join', { error: join_result.error, socket: this.socket });
+            return false;
+        } else if ('activeGameId' in join_result) {
+            setActiveGameId(join_result.activeGameId);
+            this.scene.start('game', {
+                gameId: join_result.activeGameId,
+                socket: this.socket
+            });
+            return false;
         } else {
             this.me = join_result.me;
+            return true;
+        }
+    }
+
+    protected dispatch_room_event (callback: () => void)
+    {
+        if (!this.scene.isActive()) return;
+        if (this.ready) callback();
+        else this.pending_events.push(callback);
+    }
+
+    protected finish_rehydrate ()
+    {
+        if (!this.scene.isActive()) return;
+        this.ready = true;
+        const pending = this.pending_events.splice(0);
+        for (const callback of pending) {
+            if (!this.scene.isActive()) break;
+            callback();
         }
     }
 
     protected async show_members ()
     {
         let members: PlayerState[] = await request(`/.room.get_players/id=${this.room_id}`, 'json');
+        this.t_room.replaceChildren();
         for (let { id, ready } of members) {
             this.display_socket(id, ready, id == this.me, id == members[0].id);
         }
+        const me = members.find(({ id }) => id === this.me);
+        this.inp_ready.checked = me?.ready ?? false;
+        this.b_start.disabled = members[0]?.id !== this.me ||
+            !members.every(({ ready }) => ready);
     }
 }
 

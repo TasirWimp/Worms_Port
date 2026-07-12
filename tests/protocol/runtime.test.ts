@@ -1,0 +1,884 @@
+import assert from 'node:assert/strict';
+import test from 'node:test';
+
+import { io as connectClient, type Socket } from 'socket.io-client';
+
+import {
+    ChallengeResultSchema,
+    ChallengeSnapshotSchema,
+    ProtocolFailureAckSchema,
+    ProtocolSuccessAckSchema,
+    SessionOpenDataSchema,
+    protocolEvents
+} from '../../shared/protocol';
+import { createRuntimeServer, type RuntimeServer } from '../../server/src/runtime';
+import { Room } from '../../server/src/room/class';
+import { Game } from '../../server/src/game/class';
+import { GameWatcher } from '../../server/src/game/watcher';
+
+type Ack = Record<string, any>;
+
+async function start(options: Parameters<typeof createRuntimeServer>[0] = {}) {
+    const runtime = createRuntimeServer({ allowMissingOrigin: true, ...options });
+    const port = await runtime.listen();
+    return { runtime, url: `http://127.0.0.1:${port}` };
+}
+
+function connect(url: string, origin?: string): Promise<Socket> {
+    return new Promise((resolve, reject) => {
+        const socket = connectClient(url, {
+            transports: ['websocket'],
+            reconnection: false,
+            timeout: 1_000,
+            extraHeaders: origin ? { Origin: origin } : undefined
+        });
+        const timer = setTimeout(() => {
+            socket.close();
+            reject(new Error('Socket connection timed out.'));
+        }, 2_000);
+        socket.once('connect', () => {
+            clearTimeout(timer);
+            resolve(socket);
+        });
+        socket.once('connect_error', (error) => {
+            clearTimeout(timer);
+            socket.close();
+            reject(error);
+        });
+    });
+}
+
+function rejectedConnection(
+    url: string,
+    origin?: string,
+    extraHeaders: Record<string, string> = {}
+): Promise<void> {
+    return new Promise((resolve, reject) => {
+        const socket = connectClient(url, {
+            transports: ['websocket'],
+            reconnection: false,
+            timeout: 1_000,
+            extraHeaders: { ...extraHeaders, ...(origin ? { Origin: origin } : {}) }
+        });
+        const timer = setTimeout(() => {
+            socket.close();
+            reject(new Error('Hostile origin was not rejected in time.'));
+        }, 2_000);
+        socket.once('connect', () => {
+            clearTimeout(timer);
+            socket.close();
+            reject(new Error('Hostile origin connected.'));
+        });
+        socket.once('connect_error', () => {
+            clearTimeout(timer);
+            socket.close();
+            resolve();
+        });
+    });
+}
+
+function emitAck(socket: Socket, event: string, payload: unknown): Promise<Ack> {
+    return new Promise((resolve, reject) => {
+        const timer = setTimeout(
+            () => reject(new Error(`Acknowledgement timed out for ${event}.`)),
+            1_500
+        );
+        socket.emit(event, payload, (response: Ack) => {
+            clearTimeout(timer);
+            resolve(response);
+        });
+    });
+}
+
+async function openSession(socket: Socket, requestId = 'session_01') {
+    const ack = await emitAck(socket, protocolEvents.sessionOpen, {
+        requestId,
+        action: 'create'
+    });
+    assert.equal(ProtocolSuccessAckSchema(SessionOpenDataSchema).safeParse(ack).success, true);
+    assert.equal(ack.ok, true);
+    return ack.data;
+}
+
+async function closeAll(runtime: RuntimeServer, sockets: Socket[]) {
+    for (const socket of sockets) {
+        socket.close();
+    }
+    await runtime.close();
+}
+
+test('runtime allows configured origins and rejects hostile origins', async () => {
+    const { runtime, url } = await start({ allowedOrigins: ['https://allowed.example'] });
+    const sockets: Socket[] = [];
+    try {
+        sockets.push(await connect(url, 'https://allowed.example'));
+        await rejectedConnection(url, 'https://hostile.example');
+    } finally {
+        await closeAll(runtime, sockets);
+    }
+});
+
+test('runtime rejects missing origins by default and expires unauthenticated sockets', async () => {
+    const strictRuntime = createRuntimeServer();
+    const strictPort = await strictRuntime.listen();
+    try {
+        await rejectedConnection(`http://127.0.0.1:${strictPort}`);
+        await rejectedConnection(`http://127.0.0.1:${strictPort}`, undefined, {
+            Referer: `http://127.0.0.1:${strictPort}/`,
+            'Sec-Fetch-Site': 'same-origin'
+        });
+    } finally {
+        await strictRuntime.close();
+    }
+
+    const { runtime, url } = await start({ sessionOpenTimeoutMs: 20 });
+    const socket = await connect(url);
+    try {
+        await new Promise<void>((resolve, reject) => {
+            const timer = setTimeout(() => reject(new Error('Unauthenticated socket stayed open.')), 250);
+            socket.once('disconnect', () => {
+                clearTimeout(timer);
+                resolve();
+            });
+        });
+        assert.equal(socket.connected, false);
+    } finally {
+        await closeAll(runtime, [socket]);
+    }
+});
+
+test('a lost resume acknowledgement can recover the same session with the stored token', async () => {
+    let now = 1_700_000_000_000;
+    const { runtime, url } = await start({
+        sessionRegistry: {
+            now: () => now,
+            tokenRecoveryMs: 10,
+            sweepIntervalMs: 60_000
+        }
+    });
+    const sockets: Socket[] = [];
+    try {
+        const original = await connect(url);
+        sockets.push(original);
+        const opened = await openSession(original);
+
+        const lostAckSocket = await connect(url);
+        sockets.push(lostAckSocket);
+        const resumed = await emitAck(lostAckSocket, protocolEvents.sessionOpen, {
+            requestId: 'lost_ack_resume_01',
+            action: 'resume',
+            token: opened.token
+        });
+        assert.equal(resumed.ok, true);
+        assert.equal(resumed.data.sessionId, opened.sessionId);
+        lostAckSocket.close();
+        await new Promise((resolve) => setTimeout(resolve, 10));
+        now += 5;
+
+        const recoveredSocket = await connect(url);
+        sockets.push(recoveredSocket);
+        const recovered = await emitAck(recoveredSocket, protocolEvents.sessionOpen, {
+            requestId: 'lost_ack_resume_02',
+            action: 'resume',
+            token: opened.token
+        });
+        assert.equal(recovered.ok, true);
+        assert.equal(recovered.data.sessionId, opened.sessionId);
+        assert.notEqual(recovered.data.token, opened.token);
+        assert.notEqual(recovered.data.token, resumed.data.token);
+        recoveredSocket.close();
+        await new Promise((resolve) => setTimeout(resolve, 10));
+        now += 6;
+
+        const expiredRecoverySocket = await connect(url);
+        sockets.push(expiredRecoverySocket);
+        const expiredRecovery = await emitAck(expiredRecoverySocket, protocolEvents.sessionOpen, {
+            requestId: 'lost_ack_resume_03',
+            action: 'resume',
+            token: opened.token
+        });
+        assert.equal(expiredRecovery.ok, false);
+        assert.equal(expiredRecovery.error.code, 'SESSION_EXPIRED');
+    } finally {
+        await closeAll(runtime, sockets);
+    }
+});
+
+test('temporary disconnect preserves room membership until session rebind', async () => {
+    const { runtime, url } = await start();
+    const sockets: Socket[] = [];
+    try {
+        const original = await connect(url);
+        sockets.push(original);
+        const opened = await openSession(original);
+        const roomId = (await (await fetch(`${url}/.room.join_id`)).text()).trim();
+        assert.equal((await emitAck(original, 'client:room#join', {
+            requestId: 'grace_room_join_01',
+            roomId
+        })).ok, true);
+        original.close();
+        await new Promise((resolve) => setTimeout(resolve, 10));
+        assert.equal((await (await fetch(
+            `${url}/.room.get_players/id=${roomId}`
+        )).json()).length, 1);
+
+        const resumedSocket = await connect(url);
+        sockets.push(resumedSocket);
+        const resumed = await emitAck(resumedSocket, protocolEvents.sessionOpen, {
+            requestId: 'grace_resume_01',
+            action: 'resume',
+            token: opened.token
+        });
+        assert.equal(resumed.ok, true);
+        assert.equal((await emitAck(resumedSocket, 'client:room#join', {
+            requestId: 'grace_room_join_02',
+            roomId
+        })).ok, true);
+        assert.equal((await (await fetch(
+            `${url}/.room.get_players/id=${roomId}`
+        )).json()).length, 1);
+    } finally {
+        await closeAll(runtime, sockets);
+    }
+});
+
+test('resuming into a different room removes the old authoritative membership', async () => {
+    const { runtime, url } = await start();
+    const sockets: Socket[] = [];
+    try {
+        const original = await connect(url);
+        sockets.push(original);
+        const opened = await openSession(original);
+        const firstRoomId = (await (await fetch(`${url}/.room.join_id`)).text()).trim();
+        const secondRoomId = new Room().id;
+        assert.equal((await emitAck(original, 'client:room#join', {
+            requestId: 'move_room_join_01',
+            roomId: firstRoomId
+        })).ok, true);
+        original.close();
+        await new Promise((resolve) => setTimeout(resolve, 10));
+
+        const resumedSocket = await connect(url);
+        sockets.push(resumedSocket);
+        assert.equal((await emitAck(resumedSocket, protocolEvents.sessionOpen, {
+            requestId: 'move_room_resume_01',
+            action: 'resume',
+            token: opened.token
+        })).ok, true);
+        assert.equal((await emitAck(resumedSocket, 'client:room#join', {
+            requestId: 'move_room_join_02',
+            roomId: secondRoomId
+        })).ok, true);
+
+        const firstPlayers = await (await fetch(
+            `${url}/.room.get_players/id=${firstRoomId}`
+        )).json();
+        const secondPlayers = await (await fetch(
+            `${url}/.room.get_players/id=${secondRoomId}`
+        )).json();
+        assert.deepEqual(firstPlayers, []);
+        assert.equal(secondPlayers.length, 1);
+    } finally {
+        await closeAll(runtime, sockets);
+    }
+});
+
+test('session tokens are opaque, rotate on resume, and invalidate the old token', async () => {
+    const { runtime, url } = await start();
+    const sockets: Socket[] = [];
+    try {
+        const first = await connect(url);
+        sockets.push(first);
+        const opened = await openSession(first);
+        assert.notEqual(opened.token, first.id);
+        assert.notEqual(opened.sessionId, first.id);
+        const originalToken = opened.token;
+        const sessionId = opened.sessionId;
+        const roomId = (await (await fetch(`${url}/.room.join_id`)).text()).trim();
+        const initialRoomJoin = await emitAck(first, 'client:room#join', {
+            requestId: 'resume_room_01',
+            roomId
+        });
+        assert.equal(initialRoomJoin.ok, true);
+        const replaced = new Promise<void>((resolve) => first.once('disconnect', () => resolve()));
+
+        const resumedSocket = await connect(url);
+        sockets.push(resumedSocket);
+        const resumed = await emitAck(resumedSocket, protocolEvents.sessionOpen, {
+            requestId: 'session_02',
+            action: 'resume',
+            token: originalToken
+        });
+        assert.equal(ProtocolSuccessAckSchema(SessionOpenDataSchema).safeParse(resumed).success, true);
+        assert.equal(resumed.data.resumed, true);
+        assert.equal(resumed.data.sessionId, sessionId);
+        assert.notEqual(resumed.data.token, originalToken);
+        await replaced;
+        assert.equal(first.connected, false);
+        const reboundRoom = await emitAck(resumedSocket, 'client:room#join', {
+            requestId: 'resume_room_02',
+            roomId
+        });
+        assert.equal(reboundRoom.ok, true);
+
+        const staleSocket = await connect(url);
+        sockets.push(staleSocket);
+        const stale = await emitAck(staleSocket, protocolEvents.sessionOpen, {
+            requestId: 'session_03',
+            action: 'resume',
+            token: originalToken
+        });
+        assert.equal(ProtocolFailureAckSchema.safeParse(stale).success, true);
+        assert.equal(stale.error.code, 'SESSION_EXPIRED');
+    } finally {
+        await closeAll(runtime, sockets);
+    }
+});
+
+test('legacy adapters require a bound session and reject caller-supplied identity', async () => {
+    const { runtime, url } = await start();
+    const socket = await connect(url);
+    try {
+        const unauthenticated = await emitAck(socket, 'client:room#join', {
+            requestId: 'legacy_unauth_01',
+            roomId: 'not-a-room'
+        });
+        assert.equal(unauthenticated.ok, false);
+
+        await openSession(socket);
+        const roomId = (await (await fetch(`${url}/.room.join_id`)).text()).trim();
+        const forgedRoom = await emitAck(socket, 'client:room#join', {
+            requestId: 'legacy_forge_01',
+            roomId,
+            socketId: 'caller-controlled'
+        });
+        assert.equal(forgedRoom.ok, false);
+        assert.equal(forgedRoom.error.code, 'BAD_REQUEST');
+
+        const joined = await emitAck(socket, 'client:room#join', {
+            requestId: 'legacy_join_01',
+            roomId
+        });
+        assert.equal(joined.ok, true);
+        assert.equal(typeof joined.data.me, 'string');
+
+        const forgedGame = await emitAck(socket, 'client:game#join', {
+            requestId: 'legacy_game_01',
+            gameId: roomId,
+            socketId: socket.id
+        });
+        assert.equal(forgedGame.ok, false);
+        assert.equal(forgedGame.error.code, 'BAD_REQUEST');
+    } finally {
+        await closeAll(runtime, [socket]);
+    }
+});
+
+test('malformed, extra, and oversized events fail closed without echoing secrets', async () => {
+    const { runtime, url } = await start();
+    const socket = await connect(url);
+    try {
+        await openSession(socket);
+        const extra = await emitAck(socket, protocolEvents.challengeCreate, {
+            requestId: 'malformed_01',
+            sequence: 0,
+            mode: 'practice',
+            calling: 'wizard',
+            token: 'must-not-be-echoed'
+        });
+        assert.equal(ProtocolFailureAckSchema.safeParse(extra).success, true);
+        assert.equal(extra.error.code, 'BAD_REQUEST');
+        assert.doesNotMatch(JSON.stringify(extra), /must-not-be-echoed/);
+
+        const malformed = await emitAck(socket, protocolEvents.commandSubmit, null);
+        assert.equal(malformed.error.code, 'BAD_REQUEST');
+
+        const malformedId = await emitAck(socket, protocolEvents.sessionOpen, {
+            requestId: '!',
+            action: 'create'
+        });
+        assert.equal(ProtocolFailureAckSchema.safeParse(malformedId).success, true);
+        assert.equal(malformedId.requestId, 'invalid-request');
+
+        const oversized = await emitAck(socket, protocolEvents.challengeCreate, {
+            requestId: 'oversize_01',
+            sequence: 0,
+            mode: 'practice',
+            calling: 'wizard',
+            padding: 'x'.repeat(9 * 1024)
+        });
+        assert.equal(oversized.error.code, 'PAYLOAD_TOO_LARGE');
+        assert.doesNotMatch(JSON.stringify(oversized), /x{64}/);
+    } finally {
+        await closeAll(runtime, [socket]);
+    }
+});
+
+test('pending connection and oversized-invalid budgets fail closed', async () => {
+    const { runtime, url } = await start({
+        maxPendingConnections: 1,
+        sessionOpenTimeoutMs: 500
+    });
+    const first = await connect(url);
+    const second = connectClient(url, {
+        transports: ['websocket'],
+        reconnection: false
+    });
+    try {
+        await new Promise<void>((resolve, reject) => {
+            const timer = setTimeout(() => reject(new Error('Excess pending connection survived.')), 250);
+            second.once('disconnect', () => {
+                clearTimeout(timer);
+                resolve();
+            });
+            second.once('connect_error', () => {
+                clearTimeout(timer);
+                resolve();
+            });
+        });
+
+        await openSession(first);
+        const disconnected = new Promise<void>((resolve) => first.once('disconnect', () => resolve()));
+        for (let index = 0; index < 5; index += 1) {
+            const response = await emitAck(first, protocolEvents.challengeCreate, {
+                requestId: `oversized_${index}`,
+                sequence: 0,
+                mode: 'practice',
+                calling: 'wizard',
+                padding: 'x'.repeat(9 * 1024)
+            });
+            assert.equal(response.error.code, 'PAYLOAD_TOO_LARGE');
+        }
+        first.emit(protocolEvents.challengeCreate, {
+            requestId: 'oversized_5',
+            sequence: 0,
+            mode: 'practice',
+            calling: 'wizard',
+            padding: 'x'.repeat(9 * 1024)
+        });
+        await disconnected;
+        assert.equal(first.connected, false);
+    } finally {
+        second.close();
+        await closeAll(runtime, [first]);
+    }
+});
+
+test('reward challenges remain unavailable and consume their ordered request', async () => {
+    const { runtime, url } = await start();
+    const socket = await connect(url);
+    try {
+        const signed = await emitAck(socket, protocolEvents.sessionOpen, {
+            requestId: 'signed_001',
+            action: 'authorize',
+            proof: {
+                address: 'NQ00 TEST ADDRESS',
+                challenge: 'challenge_nonce_01',
+                signature: 'a'.repeat(64)
+            }
+        });
+        assert.equal(signed.ok, false);
+        assert.equal(signed.error.code, 'FEATURE_UNAVAILABLE');
+        await openSession(socket);
+        const reward = await emitAck(socket, protocolEvents.challengeCreate, {
+            requestId: 'reward_001',
+            sequence: 0,
+            mode: 'reward',
+            calling: 'thief',
+            eligibility: { token: 'eligibility_token_01' }
+        });
+        assert.equal(ProtocolFailureAckSchema.safeParse(reward).success, true);
+        assert.equal(reward.error.code, 'FEATURE_UNAVAILABLE');
+
+        const practice = await emitAck(socket, protocolEvents.challengeCreate, {
+            requestId: 'practice_01',
+            sequence: 1,
+            mode: 'practice',
+            calling: 'thief'
+        });
+        assert.equal(ProtocolSuccessAckSchema(ChallengeSnapshotSchema).safeParse(practice).success, true);
+        assert.equal(practice.data.mode, 'practice');
+    } finally {
+        await closeAll(runtime, [socket]);
+    }
+});
+
+test('ordered commands are idempotent and reject conflicts, gaps, and stale sequences', async () => {
+    const { runtime, url } = await start();
+    const socket = await connect(url);
+    try {
+        await openSession(socket);
+        const created = await emitAck(socket, protocolEvents.challengeCreate, {
+            requestId: 'practice_01',
+            sequence: 0,
+            mode: 'practice',
+            calling: 'warrior'
+        });
+        const command = {
+            requestId: 'command_01',
+            sequence: 1,
+            challengeId: created.data.challengeId,
+            command: { type: 'move', direction: 1 }
+        };
+        const accepted = await emitAck(socket, protocolEvents.commandSubmit, command);
+        assert.equal(accepted.ok, true);
+        assert.equal(accepted.data.revision, 1);
+
+        const duplicate = await emitAck(socket, protocolEvents.commandSubmit, command);
+        assert.deepEqual(duplicate, accepted);
+
+        const conflict = await emitAck(socket, protocolEvents.commandSubmit, {
+            ...command,
+            command: { type: 'move', direction: -1 }
+        });
+        assert.equal(conflict.error.code, 'REPLAY_CONFLICT');
+
+        const gap = await emitAck(socket, protocolEvents.commandSubmit, {
+            requestId: 'command_03',
+            sequence: 3,
+            challengeId: created.data.challengeId,
+            command: { type: 'fire' }
+        });
+        assert.equal(gap.error.code, 'SEQUENCE_GAP');
+
+        const stale = await emitAck(socket, protocolEvents.commandSubmit, {
+            requestId: 'command_00',
+            sequence: 0,
+            challengeId: created.data.challengeId,
+            command: { type: 'fire' }
+        });
+        assert.equal(stale.error.code, 'STALE_SEQUENCE');
+
+        const next = await emitAck(socket, protocolEvents.commandSubmit, {
+            requestId: 'command_02',
+            sequence: 2,
+            challengeId: created.data.challengeId,
+            command: { type: 'fire' }
+        });
+        assert.equal(next.ok, true);
+        assert.equal(next.data.revision, 2);
+    } finally {
+        await closeAll(runtime, [socket]);
+    }
+});
+
+test('challenge expiry emits one terminal result and remains consistently closed', async () => {
+    let now = 1_700_000_000_000;
+    const { runtime, url } = await start({
+        sessionRegistry: {
+            now: () => now,
+            challengeTtlMs: 10,
+            sweepIntervalMs: 60_000
+        }
+    });
+    const socket = await connect(url);
+    try {
+        await openSession(socket);
+        const created = await emitAck(socket, protocolEvents.challengeCreate, {
+            requestId: 'expiry_create_01',
+            sequence: 0,
+            mode: 'practice',
+            calling: 'wizard'
+        });
+        const expiredResult = new Promise<any>((resolve) => {
+            socket.once(protocolEvents.result, resolve);
+        });
+        now += 11;
+        runtime.sessions.sweep();
+        const result = await expiredResult;
+        assert.equal(ChallengeResultSchema.safeParse(result).success, true);
+        assert.equal(result.challengeId, created.data.challengeId);
+        assert.equal(result.outcome, 'expired');
+        assert.equal(result.revision, 1);
+
+        const command = await emitAck(socket, protocolEvents.commandSubmit, {
+            requestId: 'expiry_command_01',
+            sequence: 1,
+            challengeId: created.data.challengeId,
+            command: { type: 'fire' }
+        });
+        assert.equal(command.ok, false);
+        assert.equal(command.error.code, 'CHALLENGE_CLOSED');
+    } finally {
+        await closeAll(runtime, [socket]);
+    }
+});
+
+test('creating after elapsed challenge expiry emits once and retains a closed tombstone', async () => {
+    let now = 1_700_000_000_000;
+    const { runtime, url } = await start({
+        sessionRegistry: {
+            now: () => now,
+            challengeTtlMs: 10,
+            sweepIntervalMs: 60_000
+        }
+    });
+    const socket = await connect(url);
+    try {
+        await openSession(socket);
+        const first = await emitAck(socket, protocolEvents.challengeCreate, {
+            requestId: 'rollover_create_01',
+            sequence: 0,
+            mode: 'practice',
+            calling: 'wizard'
+        });
+        const results: any[] = [];
+        socket.on(protocolEvents.result, (result) => results.push(result));
+        now += 11;
+        const second = await emitAck(socket, protocolEvents.challengeCreate, {
+            requestId: 'rollover_create_02',
+            sequence: 1,
+            mode: 'practice',
+            calling: 'thief'
+        });
+        assert.equal(second.ok, true);
+        assert.notEqual(second.data.challengeId, first.data.challengeId);
+        assert.equal(results.length, 1);
+        assert.equal(results[0].challengeId, first.data.challengeId);
+        assert.equal(results[0].outcome, 'expired');
+        assert.equal(results[0].nextSequence, second.data.nextSequence);
+
+        const oldCommand = await emitAck(socket, protocolEvents.commandSubmit, {
+            requestId: 'rollover_command_01',
+            sequence: 2,
+            challengeId: first.data.challengeId,
+            command: { type: 'fire' }
+        });
+        assert.equal(oldCommand.ok, false);
+        assert.equal(oldCommand.error.code, 'CHALLENGE_CLOSED');
+        runtime.sessions.sweep();
+        assert.equal(results.length, 1);
+    } finally {
+        await closeAll(runtime, [socket]);
+    }
+});
+
+test('a started room cannot reappear as a joinable phantom lobby', async () => {
+    const { runtime, url } = await start();
+    const sockets: Socket[] = [];
+    try {
+        const roomId = (await (await fetch(`${url}/.room.join_id`)).text()).trim();
+        for (let index = 0; index < 4; index += 1) {
+            const socket = await connect(url);
+            sockets.push(socket);
+            await openSession(socket, `phantom_session_${index}`);
+            assert.equal((await emitAck(socket, 'client:room#join', {
+                requestId: `phantom_join_${index}`,
+                roomId
+            })).ok, true);
+            assert.equal((await emitAck(socket, 'client:room#ready', {
+                requestId: `phantom_ready_${index}`,
+                ready: true
+            })).ok, true);
+        }
+        const started = new Promise<{ gameId: string }>((resolve) => {
+            sockets[0].once('server:game#start', resolve);
+        });
+        assert.equal((await emitAck(sockets[0], 'client:room#start', {
+            requestId: 'phantom_start_01'
+        })).ok, true);
+        assert.equal((await started).gameId, roomId);
+
+        assert.equal((await emitAck(sockets[0], 'client:room#leave', {
+            requestId: 'phantom_leave_01'
+        })).ok, true);
+        const canJoin = await (await fetch(`${url}/.room.can_join/id=${roomId}`)).json();
+        assert.equal(canJoin.response, false);
+
+        const newRoomId = new Room().id;
+        const secondLobby = await emitAck(sockets[0], 'client:room#join', {
+            requestId: 'phantom_second_lobby_01',
+            roomId: newRoomId
+        });
+        assert.equal(secondLobby.ok, true);
+        assert.equal(secondLobby.data.activeGameId, roomId);
+        assert.deepEqual(await (await fetch(
+            `${url}/.room.get_players/id=${newRoomId}`
+        )).json(), []);
+    } finally {
+        await closeAll(runtime, sockets);
+    }
+});
+
+test('an offline room member resumes directly into a game started in their absence', async () => {
+    const { runtime, url } = await start();
+    const sockets: Socket[] = [];
+    try {
+        const roomId = (await (await fetch(`${url}/.room.join_id`)).text()).trim();
+        const sessions: any[] = [];
+        for (let index = 0; index < 4; index += 1) {
+            const socket = await connect(url);
+            sockets.push(socket);
+            sessions.push(await openSession(socket, `offline_game_session_${index}`));
+            assert.equal((await emitAck(socket, 'client:room#join', {
+                requestId: `offline_game_join_${index}`,
+                roomId
+            })).ok, true);
+            assert.equal((await emitAck(socket, 'client:room#ready', {
+                requestId: `offline_game_ready_${index}`,
+                ready: true
+            })).ok, true);
+        }
+
+        sockets[1].close();
+        await new Promise((resolve) => setTimeout(resolve, 10));
+        const started = new Promise<{ gameId: string }>((resolve) => {
+            sockets[0].once('server:game#start', resolve);
+        });
+        assert.equal((await emitAck(sockets[0], 'client:room#start', {
+            requestId: 'offline_game_start_01'
+        })).ok, true);
+        assert.equal((await started).gameId, roomId);
+
+        const resumedSocket = await connect(url);
+        sockets.push(resumedSocket);
+        assert.equal((await emitAck(resumedSocket, protocolEvents.sessionOpen, {
+            requestId: 'offline_game_resume_01',
+            action: 'resume',
+            token: sessions[1].token
+        })).ok, true);
+        const redirect = await emitAck(resumedSocket, 'client:room#join', {
+            requestId: 'offline_game_room_rebind_01',
+            roomId
+        });
+        assert.equal(redirect.ok, true);
+        assert.equal(redirect.data.activeGameId, roomId);
+        const reboundGame = await emitAck(resumedSocket, 'client:game#join', {
+            requestId: 'offline_game_rebind_01',
+            gameId: redirect.data.activeGameId
+        });
+        assert.equal(reboundGame.ok, true);
+    } finally {
+        await closeAll(runtime, sockets);
+    }
+});
+
+test('event floods are rate limited without disconnecting a valid session', async () => {
+    const { runtime, url } = await start();
+    const socket = await connect(url);
+    try {
+        await openSession(socket);
+        const requests = Array.from({ length: 60 }, (_, index) => emitAck(
+            socket,
+            protocolEvents.challengeCreate,
+            {
+                requestId: `flood_${String(index).padStart(3, '0')}`,
+                sequence: 0,
+                mode: 'practice',
+                calling: 'wizard'
+            }
+        ));
+        const responses = await Promise.all(requests);
+        assert.equal(responses.some(
+            (response) => !response.ok && response.error.code === 'RATE_LIMITED'
+        ), true);
+        assert.equal(socket.connected, true);
+    } finally {
+        await closeAll(runtime, [socket]);
+    }
+});
+
+test('disconnect expiry and runtime close release session and server state', async () => {
+    let now = 1_700_000_000_000;
+    const { runtime, url } = await start({
+        sessionRegistry: {
+            now: () => now,
+            reconnectGraceMs: 10,
+            sweepIntervalMs: 60_000
+        }
+    });
+    const socket = await connect(url);
+    await openSession(socket);
+    assert.equal(runtime.sessions.size, 1);
+    socket.close();
+    await new Promise((resolve) => setTimeout(resolve, 20));
+    now += 11;
+    runtime.sessions.sweep();
+    assert.equal(runtime.sessions.size, 0);
+
+    await runtime.close();
+    await runtime.close();
+    assert.equal(runtime.httpServer.listening, false);
+});
+
+test('live session expiry disconnects the socket and tears down legacy membership', async () => {
+    let now = 1_700_000_000_000;
+    const { runtime, url } = await start({
+        sessionRegistry: {
+            now: () => now,
+            sessionTtlMs: 10,
+            sweepIntervalMs: 60_000
+        }
+    });
+    const socket = await connect(url);
+    try {
+        const opened = await openSession(socket);
+        const roomId = (await (await fetch(`${url}/.room.join_id`)).text()).trim();
+        assert.equal((await emitAck(socket, 'client:room#join', {
+            requestId: 'expiry_room_01',
+            roomId
+        })).ok, true);
+        const defensiveDuplicateRoom = new Room();
+        assert.equal(defensiveDuplicateRoom.add_player(opened.sessionId), true);
+        const duplicateGameRoomOne = new Room();
+        const duplicateGameRoomTwo = new Room();
+        assert.equal(duplicateGameRoomOne.add_player(opened.sessionId), true);
+        assert.equal(duplicateGameRoomTwo.add_player(opened.sessionId), true);
+        new Game(duplicateGameRoomOne);
+        new Game(duplicateGameRoomTwo);
+        assert.equal(GameWatcher.instance.hasPlayer(opened.sessionId), true);
+        const disconnected = new Promise<void>((resolve) => socket.once('disconnect', () => resolve()));
+        now += 11;
+        runtime.sessions.sweep();
+        await disconnected;
+        assert.equal(runtime.sessions.size, 0);
+        const players = await (await fetch(`${url}/.room.get_players/id=${roomId}`)).json();
+        assert.deepEqual(players, []);
+        const duplicatePlayers = await (await fetch(
+            `${url}/.room.get_players/id=${defensiveDuplicateRoom.id}`
+        )).json();
+        assert.deepEqual(duplicatePlayers, []);
+        assert.equal(GameWatcher.instance.hasPlayer(opened.sessionId), false);
+    } finally {
+        await closeAll(runtime, [socket]);
+    }
+});
+
+test('session closure cleans legacy membership even before replacement rebind', async () => {
+    let now = 1_700_000_000_000;
+    const { runtime, url } = await start({
+        sessionRegistry: {
+            now: () => now,
+            reconnectGraceMs: 10,
+            sweepIntervalMs: 60_000
+        }
+    });
+    const original = await connect(url);
+    const sockets = [original];
+    try {
+        const opened = await openSession(original);
+        const roomId = (await (await fetch(`${url}/.room.join_id`)).text()).trim();
+        assert.equal((await emitAck(original, 'client:room#join', {
+            requestId: 'orphan_room_01',
+            roomId
+        })).ok, true);
+
+        const replacement = await connect(url);
+        sockets.push(replacement);
+        const resumed = await emitAck(replacement, protocolEvents.sessionOpen, {
+            requestId: 'orphan_resume_01',
+            action: 'resume',
+            token: opened.token
+        });
+        assert.equal(resumed.ok, true);
+        replacement.close();
+        await new Promise((resolve) => setTimeout(resolve, 10));
+        now += 11;
+        runtime.sessions.sweep();
+
+        const players = await (await fetch(`${url}/.room.get_players/id=${roomId}`)).json();
+        assert.deepEqual(players, []);
+    } finally {
+        await closeAll(runtime, sockets);
+    }
+});

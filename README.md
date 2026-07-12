@@ -39,6 +39,7 @@ npm install
 npx playwright install chromium webkit
 npm run build
 npm run smoke
+npm run test:protocol
 npm run test:browser:smoke
 npm start
 ```
@@ -54,6 +55,23 @@ autonomous foundation funnel.
 Playwright reports, traces, screenshots, and videos are generated outside
 `assets/` and are ignored locally. CI retains them only when verification
 fails.
+
+## Session And Protocol Foundation
+
+The active Socket.IO transport uses strict v1 request/acknowledgement schemas
+and server-issued 256-bit opaque session tokens. Socket.IO IDs are transport
+details and are never accepted from callers as player identity. Practice
+sessions work without a wallet; signed sessions and rewarded challenges have
+validated placeholder contracts but remain unavailable until their dedicated
+work packages.
+
+Production deployments should set `ALLOWED_ORIGINS` to a comma-separated list
+of additional trusted origins when same-origin access is insufficient. Missing
+Socket.IO Origin headers are rejected by default and may be enabled only for a
+controlled non-browser environment with `ALLOW_MISSING_ORIGIN=true`.
+`SESSION_OPEN_RATE_CAPACITY` may raise the per-IP session-open burst only in a
+controlled deployment or test environment; production defaults to thirty to
+accommodate mobile carrier/NAT address sharing.
 
 ## World And Art Direction
 

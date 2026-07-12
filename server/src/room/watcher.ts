@@ -29,6 +29,7 @@ export class RoomWatcher extends EventEmitter {
      * * `server:room#leave(public_id: string)`
      */
     protected io: Server;
+    protected socketForPlayer: (playerId: string) => string | undefined = () => undefined;
 
     protected constructor() {
         super();
@@ -62,12 +63,39 @@ export class RoomWatcher extends EventEmitter {
         return this.lobbies.values().next().value;
     }
 
-    public use(io: Server) {
+    public use(io: Server, socketForPlayer: (playerId: string) => string | undefined) {
         this.io = io;
+        this.socketForPlayer = socketForPlayer;
+    }
+
+    public reset() {
+        this.lobbies.clear();
+        this.rooms.clear();
+        this.socketForPlayer = () => undefined;
+    }
+
+    public removePlayer(playerId: string) {
+        for (const room of this.rooms.values()) {
+            if (room.player_index(playerId) !== -1) {
+                room.delete_player(playerId);
+            }
+        }
+    }
+
+    public removePlayerExcept(playerId: string, retainedRoomId: string) {
+        for (const room of this.rooms.values()) {
+            if (room.id !== retainedRoomId && room.player_index(playerId) !== -1) {
+                room.delete_player(playerId);
+            }
+        }
     }
 
     protected emit_enable(room: Room) {
-        this.io.sockets.sockets.get(room.players[0].id)?.emit(
+        const socketId = this.socketForPlayer(room.players[0].id);
+        if (!socketId) {
+            return;
+        }
+        this.io.sockets.sockets.get(socketId)?.emit(
             'server:room#enable',
             room.players.every(({ ready }) => ready)
         );
@@ -115,7 +143,15 @@ export class RoomWatcher extends EventEmitter {
         if (room.players.length != 0) {
             this.emit_enable(room);
         }
-        this.lobbies.add(room.id);
+        if (room.is_started()) {
+            return;
+        }
+        if (room.players.length === 0) {
+            this.lobbies.delete(room.id);
+            this.rooms.delete(room.id);
+        } else {
+            this.lobbies.add(room.id);
+        }
     }
 
     protected on_player_ready(room: Room, player_index: number) {

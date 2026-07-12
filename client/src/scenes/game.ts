@@ -1,13 +1,13 @@
 import type { Socket } from 'socket.io-client';
 
-import Cookie from '../lib/cookie';
-
 import OverlayedScene from './overlayed';
-import { ErrType, is_error } from '../lib/util';
+import { emitWithAck, is_error, parseGameJoinAck } from '../lib/util';
+import { clearActiveGameId, whenSessionReady } from '../lib/session';
 
 export default class GameScene extends OverlayedScene
 {
     protected me: PublicPlayerInfo;
+    protected gameId: string;
     protected scheme: Scheme;
     protected socket: Socket;
     protected watcher: EventTarget;
@@ -16,13 +16,16 @@ export default class GameScene extends OverlayedScene
     {
         super({ key: 'game' }, '/overlay/game.html');
         this.watcher = new EventTarget();
+        this.on_reconnect = this.on_reconnect.bind(this);
     }
 
     public init (
         args: {
+            gameId: string,
             socket: Socket
         }
     ) {
+        this.gameId = args.gameId;
         this.socket = args.socket;
         this.setup_socket();
         this.validate();
@@ -52,7 +55,17 @@ export default class GameScene extends OverlayedScene
 
     protected setup_socket ()
     {
-        // TODO: socket events
+        this.socket.off('connect', this.on_reconnect);
+        this.socket.on('connect', this.on_reconnect);
+    }
+
+    protected on_reconnect ()
+    {
+        if (this.scene.isActive()) {
+            void whenSessionReady(this.socket)
+                .then(() => this.validate())
+                .catch(console.error);
+        }
     }
 
     protected draw_placeholder_patch ()
@@ -122,27 +135,24 @@ export default class GameScene extends OverlayedScene
 
     protected emit_ready ()
     {
-        this.socket.emit('client:game#ready');
+        void emitWithAck(this.socket, 'client:game#ready', {}).catch(console.error);
     }
 
     protected async validate ()
     {
-        let join_result = await new Promise((resolve, reject) => {
-            this.socket.emit(
-                'client:game#join',
-                Cookie.get('room'), Cookie.get('id'),
-                resolve
-            );
-            setTimeout(reject, 3000);
-        }) as ErrType | { me: PublicPlayerInfo, scheme: Scheme };
+        let join_result = parseGameJoinAck(await emitWithAck(
+            this.socket,
+            'client:game#join',
+            { gameId: this.gameId }
+        ));
 
         if (is_error(join_result)) {
+            clearActiveGameId();
             this.scene.start('join', { error: join_result.error, socket: this.socket });
         } else {
             this.me = join_result.me;
             this.scheme = join_result.scheme;
             this.watcher.dispatchEvent(new Event('me-set'));
-            console.log('succ');
         }
     }
 }

@@ -6,6 +6,7 @@ import { io } from 'socket.io-client';
 import JoinScene from './scenes/join';
 import RoomScene from './scenes/room';
 import GameScene from './scenes/game';
+import { bootstrapSession } from './lib/session';
 
 class NimbleKnotsGame extends Phaser.Game
 {
@@ -28,7 +29,9 @@ class NimbleKnotsGame extends Phaser.Game
     }
 }
 
-window.onload = () => {
+window.onload = async () => {
+    const socket = io({ transports: ['websocket'] });
+    await bootstrapSession(socket);
     let game = new NimbleKnotsGame();
-    game.scene.start('join', { socket: io() });
+    game.scene.start('join', { socket });
 };
