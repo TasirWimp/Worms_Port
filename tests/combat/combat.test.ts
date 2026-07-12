@@ -1,0 +1,96 @@
+import assert from 'node:assert/strict';
+import test from 'node:test';
+
+import { computeCombatLayout } from '../../client/src/combat/layout';
+import { CombatInputController } from '../../client/src/combat/input';
+import { trajectoryPreview } from '../../client/src/combat/preview';
+import {
+    applySimulationCommand,
+    canonicalSimulationJson,
+    createLatestSimulation,
+    SIM_RULES
+} from '../../shared/simulation';
+
+const VIEWPORTS = [
+    [360, 640],
+    [390, 844],
+    [412, 915],
+    [844, 390]
+] as const;
+
+test('combat layout preserves the fixed world and non-overlapping safe control zones', () => {
+    for (const [width, height] of VIEWPORTS) {
+        const layout = computeCombatLayout(width, height, { top: 11, right: 7, bottom: 13, left: 5 });
+        assert.equal(layout.battlefield.width / layout.battlefield.height,
+            SIM_RULES.worldWidth / SIM_RULES.worldHeight);
+        for (const rect of [layout.battlefield, layout.movementZone, layout.aimZone, layout.actionZone]) {
+            assert.equal(rect.x >= 0 && rect.y >= 0, true);
+            assert.equal(rect.x + rect.width <= width + 0.001, true, JSON.stringify({ width, rect }));
+            assert.equal(rect.y + rect.height <= height + 0.001, true, JSON.stringify({ height, rect }));
+        }
+        assert.equal(overlaps(layout.movementZone, layout.aimZone), false);
+        assert.equal(overlaps(layout.movementZone, layout.actionZone), false);
+        assert.equal(overlaps(layout.aimZone, layout.actionZone), false);
+    }
+});
+
+test('movement dead zone quantizes only the owned pointer and release outside is inert', () => {
+    const input = new CombatInputController();
+    assert.equal(input.begin('movement', 1, { x: 100, y: 100 }, 100), true);
+    input.move(1, { x: 117, y: 100 });
+    assert.equal(input.movementDirection(), 0);
+    input.move(2, { x: 200, y: 100 });
+    assert.equal(input.movementDirection(), 0);
+    input.move(1, { x: 119, y: 100 });
+    assert.equal(input.movementDirection(), 1);
+    assert.deepEqual(input.end(1, true), { type: 'move', direction: 1 });
+
+    assert.equal(input.begin('movement', 3, { x: 100, y: 100 }, 100), true);
+    input.move(3, { x: 0, y: 100 });
+    assert.equal(input.end(3, false), null);
+    assert.equal(input.phase, 'idle');
+});
+
+test('aim clamps power, locks without firing, and explicit submission is separate', () => {
+    const input = new CombatInputController();
+    assert.equal(input.begin('aim', 7, { x: 200, y: 300 }, 100), true);
+    input.move(7, { x: 400, y: 100 });
+    const command = input.end(7, true);
+    assert.equal(command?.type, 'aim');
+    assert.equal(input.phase, 'aim_locked');
+    assert.equal(input.lockedAim?.powerPermille, 1000);
+    assert.equal(input.beginSubmission(), true);
+    assert.equal(input.phase, 'submitting');
+    input.finishSubmission(true, false);
+    assert.equal(input.phase, 'idle');
+    assert.equal(input.lockedAim, null);
+});
+
+test('cancellation, suspension, and pointer ownership cannot produce commands', () => {
+    const input = new CombatInputController();
+    assert.equal(input.begin('movement', 10, { x: 10, y: 10 }, 50), true);
+    assert.equal(input.begin('aim', 11, { x: 30, y: 30 }, 50), false);
+    assert.equal(input.cancel(11), false);
+    assert.equal(input.cancel(10), true);
+    input.suspend();
+    assert.equal(input.begin('aim', 12, { x: 0, y: 0 }, 50), false);
+    input.resume();
+    assert.equal(input.phase, 'idle');
+});
+
+test('trajectory preview exactly matches cloned v2 resolution and leaves its source untouched', () => {
+    const state = createLatestSimulation(0xC0FFEE11, 'wizard');
+    const before = canonicalSimulationJson(state);
+    const aim = { angleMilliDegrees: 42_000, powerPermille: 760 };
+    const preview = trajectoryPreview(state, aim);
+    const aimed = applySimulationCommand(state, 'player', { type: 'aim', ...aim }, state.turn);
+    const fired = applySimulationCommand(aimed.state, 'player', { type: 'fire' }, aimed.state.turn);
+    assert.deepEqual(preview, fired.state.lastProjectile?.trace);
+    assert.equal(canonicalSimulationJson(state), before);
+    assert.equal(preview.length >= 2, true);
+});
+
+function overlaps(a: { x: number; y: number; width: number; height: number }, b: typeof a): boolean {
+    return a.x < b.x + b.width && a.x + a.width > b.x &&
+        a.y < b.y + b.height && a.y + a.height > b.y;
+}

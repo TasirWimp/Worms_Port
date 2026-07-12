@@ -53,6 +53,9 @@ test('built phone journey renders and accepts touch', async ({ page }) => {
   expect(pageErrors, `Unexpected page errors: ${pageErrors.join(' | ')}`).toEqual([]);
   expect(consoleErrors, `Unexpected console errors: ${consoleErrors.join(' | ')}`).toEqual([]);
 
+  await page.locator('#b-back').tap();
+  await expect(page.locator('#b-rand')).toBeVisible();
+
   if (process.env.PLAYWRIGHT_ARTIFACT_PROBE === '1') {
     expect('artifact-probe').toBe('intentional-failure');
   }
@@ -64,9 +67,19 @@ test('room reconnect replaces missed peer state from the server snapshot', async
   await expect(page.locator('#b-rand')).toBeVisible({ timeout: 10_000 });
   await page.locator('#b-rand').tap();
   await expect(page.getByRole('heading', { name: 'Prepare the Clash' })).toBeVisible();
-  const roomId = await page.locator('#inp-room-id').inputValue();
+  let roomId = await page.locator('#inp-room-id').inputValue();
   await expect.poll(() => page.locator('#t-room tr').count()).toBeGreaterThan(0);
-  const initialPlayerCount = await page.locator('#t-room tr').count();
+  let initialPlayerCount = await page.locator('#t-room tr').count();
+  if (initialPlayerCount >= 4) {
+    const freshRoomId = await page.evaluate(async () => (await fetch('/.room.join_id')).text());
+    await page.locator('#b-back').tap();
+    await expect(page.locator('#b-rand')).toBeVisible();
+    await page.locator('#inp-room').fill(freshRoomId);
+    await page.locator('#b-join').tap();
+    await expect(page.getByRole('heading', { name: 'Prepare the Clash' })).toBeVisible();
+    roomId = await page.locator('#inp-room-id').inputValue();
+    initialPlayerCount = await page.locator('#t-room tr').count();
+  }
   expect(initialPlayerCount).toBeLessThan(4);
 
   await context.setOffline(true);
@@ -106,6 +119,12 @@ test('room reconnect replaces missed peer state from the server snapshot', async
       { timeout: 10_000 }
     );
     await expect(page.locator('#t-room')).toContainText('Ready');
+    const peerLeft = await emitAck(peer, 'client:room#leave', {
+      requestId: 'browser_peer_leave_01'
+    });
+    expect(peerLeft.ok).toBe(true);
+    await page.locator('#b-back').tap();
+    await expect(page.locator('#b-rand')).toBeVisible();
   } finally {
     await context.setOffline(false);
     peer.close();

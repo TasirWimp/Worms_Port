@@ -3,9 +3,9 @@ import { defineConfig } from '@playwright/test';
 const port = Number(process.env.PLAYWRIGHT_PORT || 4173);
 const baseURL = `http://127.0.0.1:${port}`;
 
-const phoneUse = {
-  viewport: { width: 390, height: 844 },
-  screen: { width: 390, height: 844 },
+const phoneUse = (width: number, height: number) => ({
+  viewport: { width, height },
+  screen: { width, height },
   deviceScaleFactor: 2,
   hasTouch: true,
   isMobile: true,
@@ -13,7 +13,7 @@ const phoneUse = {
   timezoneId: 'UTC',
   reducedMotion: 'reduce' as const,
   colorScheme: 'light' as const
-};
+});
 
 export default defineConfig({
   testDir: './tests/browser',
@@ -34,12 +34,20 @@ export default defineConfig({
   },
   projects: [
     {
-      name: 'chromium-phone',
-      use: { ...phoneUse, browserName: 'chromium' }
+      name: 'chromium-360x640',
+      use: { ...phoneUse(360, 640), browserName: 'chromium' }
     },
     {
-      name: 'webkit-phone',
-      use: { ...phoneUse, browserName: 'webkit' }
+      name: 'chromium-390x844',
+      use: { ...phoneUse(390, 844), browserName: 'chromium' }
+    },
+    {
+      name: 'chromium-844x390',
+      use: { ...phoneUse(844, 390), browserName: 'chromium' }
+    },
+    {
+      name: 'webkit-390x844',
+      use: { ...phoneUse(390, 844), browserName: 'webkit' }
     }
   ],
   webServer: {

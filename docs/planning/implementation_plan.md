@@ -8,8 +8,8 @@ Phaser/Socket.IO stack.
 ## Execution Pointer
 
 - Active target: mobile-first single-player Nimiq Pay competition release.
-- Next work package: **WP-010 Phone Combat Scene**.
-- Last completed work package: **WP-009 Relic Ruleset Completion**.
+- Next work package: **WP-011 Complete Practice Clash**.
+- Last completed work package: **WP-010 Phone Combat Scene**.
 - PvP and matchmaking: deferred until after the competition release.
 - Canonical artwork reference:
   `docs/images/art-direction/knotkin-class-lineup-concept.png`.
@@ -66,10 +66,9 @@ guardrails for this selected host.
   npm package license policy.
 - No Sorcerers product assets or Sorcerers code are imported.
 - WP-003 established NIMble Knots and the canonical Knotkin Calling lineup.
-- The current runtime is a session-bound lobby/reconnect shell with placeholder
-  presentation and a validated command boundary. Its deterministic v2 match,
-  three Relics, and Loomkeeper are authoritative but not yet exposed through a
-  complete phone combat scene.
+- The current runtime has a session-bound lobby/reconnect shell plus a separate
+  portrait-first combat preview over the validated v2 snapshot/command
+  boundary. WP-011 still owns the complete live practice lifecycle.
 - WP-005 provides tooling tests plus fresh-build phone Chromium/WebKit smoke.
 - WP-006 provides strict schema tests and a real `socket.io-client` protocol
   suite. The full gameplay phone matrix and visual-regression suites do not yet
@@ -82,7 +81,11 @@ guardrails for this selected host.
   fixed-seed/golden verification.
 - WP-009 provides the v2 replay ABI and the complete Threadball, Needlepoint,
   and Spoolburst gameplay roster while preserving v1 reconstruction.
-- Combat presentation, the full phone matrix, and visual regression remain.
+- WP-010 provides the fixed-world Phaser battlefield, code-drawn combat
+  presentation, touch input state machine, cloned-state trajectory preview,
+  and its focused Chromium/WebKit phone matrix.
+- Complete practice lifecycle, the expanded phone matrix, and visual
+  regression remain.
 
 ## Codex Subagent Roles
 
@@ -403,7 +406,7 @@ No runtime assets, dependencies, or Sorcerers material were used.
 
 ### WP-010 Phone Combat Scene
 
-Status: planned. Depends on WP-009.
+Status: complete. Depends on WP-009.
 
 Goal: implement the portrait-first Phaser battlefield and large touch controls
 for movement, Relic selection, drag aim/power, trajectory preview, firing,
@@ -492,6 +495,20 @@ cancellation cases; safe areas; browser scroll/zoom suppression; resize and
 orientation; background/resume; reduced motion; screenshots; build. WP-014
 owns the expanded 412x915, visual-regression, network-degradation, and
 performance matrix.
+
+Delivered: a separate Phaser combat scene consumes v2 challenge snapshots and
+maps the fixed 1024x576 simulation world into portrait and landscape layouts.
+Product-owned DOM/pointer controls implement the 18% movement dead zone,
+single-pointer ownership, bounded aim/power, explicit Fire, three distinct
+Relic buttons, client-only pause, and retry affordance. Terrain, Knotkin,
+Relics, Stitching, turn time, last-projectile trace, and advisory trajectory are
+code-drawn without runtime assets. The advisory trace is reconstructed through
+the shared simulation API from a detached clone and recomputed after accepted
+snapshots. Cancellation, release outside, blur, backgrounding, resize,
+orientation, and scene shutdown clear transient input. Five focused tests and
+sixteen built-browser cases cover the documented WP-010 matrix; the legacy
+smoke suite now runs eight cases over the same projects. The deterministic
+`combat-preview` fixture is intentionally not the WP-011 live practice flow.
 
 ### WP-011 Complete Practice Clash
 

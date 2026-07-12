@@ -1,0 +1,71 @@
+{
+  "id": "WP-010",
+  "status": "complete",
+  "starting_commit": "2a8147cb3b8830e7982d2692c8cc517a1199c01f",
+  "branch": "codex/wp-010-phone-combat-scene",
+  "initial_worktree": "clean",
+  "starting_lock_sha256": "98951A0DECBB8FF685BD314AD44C853ED91554FFC46565BBDD03A27AB78A04AE",
+  "owning_roles": [
+    "worms_port_base_game_worker",
+    "worms_port_test_worker"
+  ],
+  "scope": [
+    "Implement a portrait-first Phaser combat presentation over v2 challenge snapshots",
+    "Add touch-only movement, Relic selection, drag aim and power, explicit Fire, client pause, and retry affordances",
+    "Render deterministic terrain, Knotkin, Stitching, turn time, projectile trace, and advisory trajectory preview with code-drawn placeholders",
+    "Add responsive portrait and landscape layout plus pointer cancellation and ownership safety",
+    "Add the documented WP-010 Chromium and WebKit phone-browser matrix"
+  ],
+  "non_goals": [
+    "Complete practice-match onboarding, results, actual retry lifecycle, or authoritative practice pause",
+    "Production artwork, audio, third-party assets, or new runtime dependencies",
+    "Wallet approval, rewarded challenges, claims, or payouts",
+    "PvP matchmaking or Calling-specific gameplay statistics"
+  ],
+  "planned_checks": [
+    "npm run check:compliance",
+    "npm run check:types",
+    "npm run verify:fast",
+    "npm run build",
+    "npm run smoke:built",
+    "npm run test:browser:smoke",
+    "npm run test:browser:combat",
+    "npm audit",
+    "self-review"
+  ],
+  "deterministic_seeds": [
+    "0x00000001",
+    "0xC0FFEE11"
+  ],
+  "sorcerers_reference_used": false,
+  "clean_room_records": [],
+  "check_results": [
+    { "command": "npm run check:compliance", "status": "pass" },
+    { "command": "npm run check:types", "status": "pass" },
+    { "command": "npm run verify:fast", "status": "pass" },
+    { "command": "npm run build", "status": "pass" },
+    { "command": "npm run smoke:built", "status": "pass" },
+    { "command": "npm run test:browser:smoke", "status": "pass" },
+    { "command": "npm run test:browser:combat", "status": "pass" },
+    { "command": "npm audit", "status": "pass" },
+    { "command": "self-review", "status": "pass" }
+  ],
+  "reviews": [
+    { "role": "worms_port_base_game_worker", "reviewer": "primary-agent-code-review", "decision": "pass" },
+    { "role": "worms_port_test_worker", "reviewer": "primary-agent-test-review", "decision": "pass" }
+  ],
+  "skipped_checks": [
+    "Physical Android and iOS testing: no release-testing environment was provided.",
+    "Nimiq Pay WebView testing: deferred to the external release environment.",
+    "Complete live practice creation, reconnect, results, authoritative pause, and retry: owned by WP-011.",
+    "The 412x915 browser project, visual regression, network degradation, and performance matrix: owned by WP-014.",
+    "Production artwork and audio: owned by WP-015; WP-010 uses code-drawn placeholders only."
+  ],
+  "residual_risks": [
+    "The combat-preview query route is a deterministic local fixture and is not yet connected to the live challenge protocol.",
+    "Client pause intentionally does not stop the authoritative turn clock; WP-011 must define and implement practice pause authority.",
+    "Safe-area behavior is covered by layout contracts and browser CSS but still requires physical Nimiq Pay WebView validation.",
+    "The client bundle is approximately 1.374 MB minified and 380.4 kB gzip and retains the chunk-size warning.",
+    "Authoritative challenge state remains single-process and restart-sensitive under the existing hosting contract."
+  ]
+}

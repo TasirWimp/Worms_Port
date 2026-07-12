@@ -43,7 +43,9 @@ npm run test:protocol
 npm run test:simulation
 npm run test:loomkeeper
 npm run test:relics
+npm run test:combat
 npm run test:browser:smoke
+npm run test:browser:combat
 npm start
 ```
 
@@ -104,6 +106,23 @@ The release roster is Threadball (balanced), Needlepoint (precision), and
 Spoolburst (terrain/control). They share aim, power, movement, collision, and
 turn rules; only their disclosed crater, damage radius, and maximum damage
 bounds differ. No production Relic art is shipped yet.
+
+## Phone Combat Preview
+
+WP-010 provides a portrait-first Phaser battlefield and touch-control surface
+at `/?combat-preview=1`. It renders the v2 1024x576 logical Patch, packed
+terrain, code-drawn Knotkin and Relics, Stitching, turn time, projectile traces,
+and an advisory trajectory calculated against a detached simulation clone.
+Movement and aim pads have single-pointer ownership; aim release locks without
+firing, while Fire is a separate minimum-size action. Cancellation, release
+outside, blur, backgrounding, resize, and orientation changes fail safe.
+
+The preview route uses a deterministic local adapter intentionally. It proves
+the scene and typed snapshot-to-command boundary but does not create or resume
+a server challenge. Pause suspends client input while the authoritative clock
+contract remains unchanged, and Retry is an affordance only. WP-011 owns the
+complete practice lifecycle, live protocol adapter, results, authoritative
+practice pause, and actual retry behavior.
 
 ## Hosting
 

@@ -6,11 +6,12 @@ import { io } from 'socket.io-client';
 import JoinScene from './scenes/join';
 import RoomScene from './scenes/room';
 import GameScene from './scenes/game';
+import CombatScene from './scenes/combat';
 import { bootstrapSession } from './lib/session';
 
 class NimbleKnotsGame extends Phaser.Game
 {
-    constructor ()
+    constructor (combatPreview = false)
     {
         super({
             title: 'NIMble Knots: Cotton Clash',
@@ -24,14 +25,21 @@ class NimbleKnotsGame extends Phaser.Game
             dom: {
                 createContainer: true
             },
-            scene: [ JoinScene, RoomScene, GameScene ]
+            scene: combatPreview
+                ? [ CombatScene, JoinScene, RoomScene, GameScene ]
+                : [ JoinScene, RoomScene, GameScene, CombatScene ]
         });
     }
 }
 
 window.onload = async () => {
+    const combatPreview = new URLSearchParams(window.location.search).has('combat-preview');
+    if (combatPreview) {
+        new NimbleKnotsGame(true);
+        return;
+    }
     const socket = io({ transports: ['websocket'] });
     await bootstrapSession(socket);
-    let game = new NimbleKnotsGame();
+    const game = new NimbleKnotsGame();
     game.scene.start('join', { socket });
 };
