@@ -140,6 +140,40 @@ script, so CSP/XSS hardening remains a deployment and later quality-harness
 concern. The legacy lobby UI is a temporary strict adapter bound to the server
 session; its old caller-supplied game identity endpoint is removed.
 
+### Deterministic Artillery Ruleset
+
+WP-007 establishes `nimble-knots-artillery-v1` as a replay ABI. Later balance
+changes must introduce a new ruleset identifier rather than silently changing
+the constants used by existing replay evidence.
+
+- The shared model is Phaser-independent. Positions, velocities, Stitching,
+  terrain cells, tick cursors, aim, power, movement budgets, and damage are
+  bounded integers. Authoritative transitions do not use `Math.random`,
+  wall-clock timestamps, floating deltas, or Phaser physics.
+- A uint32 seed deterministically generates a 128 by 72 packed terrain mask.
+  Decorative terrain pixels never define collision. Threadball deformation
+  only clears cells inside a bounded integer circle.
+- Movement resolves one bounded quantum. Aim locks integer angle and power;
+  Fire then resolves every swept projectile step, first collision, terrain
+  deformation, radial damage, settling, victory, and turn transition before
+  acknowledging the command.
+- One central coordinator advances timeout ticks. Replay records store those
+  tick advances and accepted commands, never wall time, Socket.IO IDs, bearer
+  tokens, request IDs, or presentation data.
+- SHA-256 hashes cover canonical simulation state, including seed/RNG cursor,
+  tick, turn, actors, terrain, aim, projectile summary, and terminal state.
+  Server timestamps and challenge expiry metadata are excluded.
+- The protocol sequence is the transport order. `expectedTurn` is the gameplay
+  precondition that prevents a delayed command from executing during a later
+  turn. A well-formed but illegal gameplay command consumes its transport
+  sequence while leaving simulation state and replay unchanged.
+- Reconnect emits the complete current authoritative snapshot and state hash.
+  Independent replay reconstruction must match that hash at every committed
+  checkpoint.
+- Turn-limit completion, projectile lifetime, replay length, terrain work, and
+  snapshot size all have hard bounds. The Loomkeeper decision policy remains
+  WP-008 work; WP-007 supplies only its legal deterministic actor boundary.
+
 ### Playwright Bootstrap
 
 WP-005 must establish that Playwright works in this repository before later

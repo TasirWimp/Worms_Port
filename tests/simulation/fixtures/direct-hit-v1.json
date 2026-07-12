@@ -1,0 +1,18 @@
+{
+  "seed": 3237998097,
+  "calling": "wizard",
+  "initialHash": "fc1d6bb92a1f61b4209eb4a944a564c5d755ec4039762827b009dc69f31de365",
+  "commands": [
+    { "actor": "player", "expectedTurn": 0, "command": { "type": "aim", "angleMilliDegrees": 45000, "powerPermille": 1000 }, "stateHash": "12f2af62a11782743f8fd5c27664d892527f200142564ab9f3ae6943fb442705" },
+    { "actor": "player", "expectedTurn": 0, "command": { "type": "fire" }, "stateHash": "10476e7503723b7455aa0b1e8ae1c4de436dde4c1a1e5f7b9c61367c4c57e113" },
+    { "actor": "loomkeeper", "expectedTurn": 1, "command": { "type": "aim", "angleMilliDegrees": 45000, "powerPermille": 1000 }, "stateHash": "3767752b9ae97f161c268dcc7052312c36d3505cee8f6855722c10b342d705ca" },
+    { "actor": "loomkeeper", "expectedTurn": 1, "command": { "type": "fire" }, "stateHash": "207066e5303e3b3214fbce6293c77dbdf9d146a4a6dbfcc53145583a2d0ddf2e" },
+    { "actor": "player", "expectedTurn": 2, "command": { "type": "aim", "angleMilliDegrees": 45000, "powerPermille": 1000 }, "stateHash": "43a57c1cc1d062d1bb8828ef7d865f5d9abe90438feecdc03aa16e27b4d14251" },
+    { "actor": "player", "expectedTurn": 2, "command": { "type": "fire" }, "stateHash": "3aab4224e2df9140c5aa9ddb696ed17281213638a0dc5716244521a7d605ed35" }
+  ],
+  "final": {
+    "winner": "player",
+    "tick": 186,
+    "stateHash": "3aab4224e2df9140c5aa9ddb696ed17281213638a0dc5716244521a7d605ed35"
+  }
+}

@@ -61,6 +61,8 @@ export function createRuntimeServer(options: RuntimeServerOptions = {}) {
     });
     const callerClosedHandler = options.sessionRegistry?.onSessionClosed;
     const callerChallengeExpiredHandler = options.sessionRegistry?.onChallengeExpired;
+    const callerChallengeSnapshotHandler = options.sessionRegistry?.onChallengeSnapshot;
+    const callerChallengeCompletedHandler = options.sessionRegistry?.onChallengeCompleted;
     const sessions = new SessionRegistry({
         ...options.sessionRegistry,
         onSessionClosed: (sessionId, socketId) => {
@@ -76,6 +78,18 @@ export function createRuntimeServer(options: RuntimeServerOptions = {}) {
                 io.sockets.sockets.get(socketId)?.emit(protocolEvents.result, result);
             }
             callerChallengeExpiredHandler?.(result, socketId);
+        },
+        onChallengeSnapshot: (snapshot, socketId) => {
+            if (socketId) {
+                io.sockets.sockets.get(socketId)?.emit(protocolEvents.snapshot, snapshot);
+            }
+            callerChallengeSnapshotHandler?.(snapshot, socketId);
+        },
+        onChallengeCompleted: (result, socketId) => {
+            if (socketId) {
+                io.sockets.sockets.get(socketId)?.emit(protocolEvents.result, result);
+            }
+            callerChallengeCompletedHandler?.(result, socketId);
         }
     });
 

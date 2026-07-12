@@ -6,6 +6,8 @@ export const SESSION_TOKEN_PATTERN = /^[A-Za-z0-9_-]{43}$/;
 export const RequestIdSchema = z.string().min(8).max(64).regex(/^[A-Za-z0-9_-]+$/);
 const SequenceSchema = z.number().int().nonnegative().max(0xFFFFFFFF);
 const ChallengeIdSchema = z.string().min(16).max(64).regex(/^[A-Za-z0-9_-]+$/);
+const Uint32Schema = z.number().int().nonnegative().max(0xFFFFFFFF);
+const StateHashSchema = z.string().regex(/^[a-f0-9]{64}$/);
 
 export const SignedSessionProofSchema = z.object({
     address: z.string().min(1).max(128).regex(/^[A-Za-z0-9 ]+$/),
@@ -66,6 +68,7 @@ export const CommandSubmitRequestSchema = z.object({
     requestId: RequestIdSchema,
     sequence: SequenceSchema,
     challengeId: ChallengeIdSchema,
+    expectedTurn: z.number().int().nonnegative().max(0xFFFF),
     command: ProtocolCommandSchema
 }).strict();
 
@@ -88,6 +91,9 @@ export const ProtocolErrorSchema = z.object({
         'SEQUENCE_GAP',
         'RATE_LIMITED',
         'PAYLOAD_TOO_LARGE',
+        'COMMAND_REJECTED',
+        'NOT_YOUR_TURN',
+        'LATE_TURN',
         'INTERNAL_ERROR'
     ]),
     message: z.string().min(1).max(160),
@@ -123,6 +129,59 @@ export const SessionOpenDataSchema = z.object({
     expiresAt: z.string().datetime()
 }).strict();
 
+const SimulationUnitSchema = z.object({
+    id: z.enum(['player', 'loomkeeper']),
+    calling: z.enum(['wizard', 'thief', 'warrior', 'loomkeeper']),
+    x: z.number().int().min(-4096).max(4096),
+    y: z.number().int().min(-4096).max(4096),
+    facing: z.union([z.literal(-1), z.literal(1)]),
+    stitching: z.number().int().min(0).max(100),
+    alive: z.boolean()
+}).strict();
+
+const ProjectileSummarySchema = z.object({
+    startX: z.number().int().min(-4096).max(4096),
+    startY: z.number().int().min(-4096).max(4096),
+    endX: z.number().int().min(-4096).max(4096),
+    endY: z.number().int().min(-4096).max(4096),
+    flightTicks: z.number().int().nonnegative().max(300),
+    impact: z.enum(['terrain', 'player', 'loomkeeper', 'world_exit', 'lifetime']),
+    trace: z.array(z.object({
+        x: z.number().int().min(-4096).max(4096),
+        y: z.number().int().min(-4096).max(4096)
+    }).strict()).min(2).max(41)
+}).strict();
+
+export const SimulationSnapshotSchema = z.object({
+    formatVersion: z.literal(1),
+    rulesetId: z.literal('nimble-knots-artillery-v1'),
+    rulesetVersion: z.literal(1),
+    seed: Uint32Schema,
+    rngState: Uint32Schema,
+    tick: z.number().int().nonnegative().max(Number.MAX_SAFE_INTEGER),
+    revision: z.number().int().nonnegative().max(Number.MAX_SAFE_INTEGER),
+    turn: z.number().int().nonnegative().max(16),
+    activeActor: z.enum(['player', 'loomkeeper']),
+    turnDeadlineTick: z.number().int().nonnegative().max(Number.MAX_SAFE_INTEGER),
+    phase: z.enum(['awaiting_command', 'finished']),
+    winner: z.enum(['player', 'loomkeeper', 'draw']).nullable(),
+    finishReason: z.enum(['unravelled', 'turn_limit']).nullable(),
+    movementRemaining: z.number().int().min(0).max(64),
+    selectedRelic: z.literal('threadball'),
+    aim: z.object({
+        angleMilliDegrees: z.number().int().min(-90_000).max(90_000),
+        powerPermille: z.number().int().min(0).max(1_000)
+    }).strict().nullable(),
+    units: z.tuple([SimulationUnitSchema, SimulationUnitSchema]),
+    terrain: z.object({
+        width: z.literal(128),
+        height: z.literal(72),
+        cellSize: z.literal(8),
+        words: z.array(Uint32Schema).length(288)
+    }).strict(),
+    lastProjectile: ProjectileSummarySchema.nullable()
+}).strict();
+
 export const ChallengeSnapshotSchema = z.object({
     protocolVersion: z.literal(PROTOCOL_VERSION),
     serverTimeMs: z.number().int().nonnegative(),
@@ -130,10 +189,12 @@ export const ChallengeSnapshotSchema = z.object({
     challengeId: ChallengeIdSchema,
     mode: z.enum(['practice', 'reward']),
     calling: z.enum(['wizard', 'thief', 'warrior']),
-    status: z.enum(['active', 'left', 'expired']),
+    status: z.enum(['active', 'left', 'expired', 'completed']),
     revision: z.number().int().nonnegative(),
     nextSequence: SequenceSchema,
-    expiresAt: z.string().datetime()
+    expiresAt: z.string().datetime(),
+    stateHash: StateHashSchema,
+    simulation: SimulationSnapshotSchema
 }).strict();
 
 export const ChallengeResultSchema = z.object({
@@ -141,9 +202,11 @@ export const ChallengeResultSchema = z.object({
     serverTimeMs: z.number().int().nonnegative(),
     sessionId: z.string().min(16).max(64),
     challengeId: ChallengeIdSchema,
-    outcome: z.enum(['left', 'expired']),
+    outcome: z.enum(['left', 'expired', 'player_win', 'loomkeeper_win', 'draw']),
     revision: z.number().int().nonnegative(),
-    nextSequence: SequenceSchema
+    nextSequence: SequenceSchema,
+    finalTick: z.number().int().nonnegative().nullable(),
+    finalStateHash: StateHashSchema.nullable()
 }).strict();
 
 export const ProtocolErrorEventSchema = z.object({
@@ -174,6 +237,7 @@ export type ProtocolError = z.infer<typeof ProtocolErrorSchema>;
 export type SessionOpenData = z.infer<typeof SessionOpenDataSchema>;
 export type ChallengeSnapshot = z.infer<typeof ChallengeSnapshotSchema>;
 export type ChallengeResult = z.infer<typeof ChallengeResultSchema>;
+export type SimulationSnapshot = z.infer<typeof SimulationSnapshotSchema>;
 
 export type ProtocolAck<T> =
     | {

@@ -1,5 +1,6 @@
 import assert from 'node:assert/strict';
 import test from 'node:test';
+import { createSimulation } from '../../shared/simulation';
 
 import {
     ChallengeCreateRequestSchema,
@@ -96,7 +97,7 @@ test('command schema accepts exact field boundaries and rejects unsafe intent', 
     ];
     for (const command of validCommands) {
         assert.equal(CommandSubmitRequestSchema.safeParse({
-            requestId, sequence: 0, challengeId, command
+            requestId, sequence: 0, challengeId, expectedTurn: 0, command
         }).success, true);
     }
 
@@ -115,7 +116,7 @@ test('command schema accepts exact field boundaries and rejects unsafe intent', 
     ];
     for (const command of invalidCommands) {
         assert.equal(CommandSubmitRequestSchema.safeParse({
-            requestId, sequence: 0, challengeId, command
+            requestId, sequence: 0, challengeId, expectedTurn: 0, command
         }).success, false);
     }
 
@@ -123,6 +124,7 @@ test('command schema accepts exact field boundaries and rejects unsafe intent', 
         requestId,
         sequence: 0,
         challengeId: 'a'.repeat(15),
+        expectedTurn: 0,
         command: { type: 'fire' }
     }).success, false);
     assert.equal(ChallengeLeaveRequestSchema.safeParse({
@@ -141,6 +143,7 @@ test('response schemas are strict and carry versioned timing metadata', () => {
         resumed: false,
         expiresAt
     };
+    const simulation = createSimulation(1, 'wizard');
     const snapshot = {
         protocolVersion: 1 as const,
         serverTimeMs: now,
@@ -151,7 +154,9 @@ test('response schemas are strict and carry versioned timing metadata', () => {
         status: 'active' as const,
         revision: 0,
         nextSequence: 1,
-        expiresAt
+        expiresAt,
+        stateHash: 'a'.repeat(64),
+        simulation
     };
     const result = {
         protocolVersion: 1 as const,
@@ -160,7 +165,9 @@ test('response schemas are strict and carry versioned timing metadata', () => {
         challengeId,
         outcome: 'left' as const,
         revision: 1,
-        nextSequence: 2
+        nextSequence: 2,
+        finalTick: 0,
+        finalStateHash: 'b'.repeat(64)
     };
 
     assert.equal(SessionOpenDataSchema.safeParse(session).success, true);

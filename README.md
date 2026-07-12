@@ -40,6 +40,7 @@ npx playwright install chromium webkit
 npm run build
 npm run smoke
 npm run test:protocol
+npm run test:simulation
 npm run test:browser:smoke
 npm start
 ```
@@ -72,6 +73,20 @@ controlled non-browser environment with `ALLOW_MISSING_ORIGIN=true`.
 `SESSION_OPEN_RATE_CAPACITY` may raise the per-IP session-open burst only in a
 controlled deployment or test environment; production defaults to thirty to
 accommodate mobile carrier/NAT address sharing.
+
+## Deterministic Simulation Foundation
+
+Practice challenges use the product-owned
+`nimble-knots-artillery-v1` ruleset. The authoritative model is independent of
+Phaser and uses integer fixed ticks, an explicit uint32 seed, a packed collision
+mask, bounded Threadball physics, canonical SHA-256 state hashes, and replay
+records. Client commands include both their transport sequence and expected
+simulation turn; delayed, duplicated, conflicting, or wrong-turn commands
+cannot silently apply to a later state.
+
+Simulation state is currently in-process. It is suitable for the persistent
+single-process Node deployment used by this development slice, but it is not
+yet durable across server restarts or multiple Vercel Function instances.
 
 ## World And Art Direction
 

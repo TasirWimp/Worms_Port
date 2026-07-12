@@ -1,4 +1,4 @@
-import { createHash } from 'crypto';
+import { createHash, randomBytes } from 'crypto';
 
 import type {
     ChallengeResult,
@@ -9,6 +9,12 @@ import type {
 } from '../../../shared/protocol';
 import { PROTOCOL_VERSION } from '../../../shared/protocol';
 import { failure, success } from '../protocol/errors';
+import {
+    SimulationCoordinator,
+    type CoordinatorReplay,
+    type CoordinatorUpdate
+} from '../simulation/coordinator';
+import type { SimulationCommand } from '../../../shared/simulation';
 import { issueToken, opaqueId, tokenDigest } from './token';
 
 const DEFAULT_SESSION_TTL_MS = 30 * 60_000;
@@ -26,9 +32,10 @@ export type Challenge = {
     id: string;
     mode: 'practice' | 'reward';
     calling: 'wizard' | 'thief' | 'warrior';
-    status: 'active' | 'left' | 'expired';
+    status: 'active' | 'left' | 'expired' | 'completed';
     revision: number;
     expiresAt: number;
+    resultEmitted: boolean;
 };
 
 export type Session = {
@@ -54,6 +61,12 @@ export type SessionRegistryOptions = {
     sweepIntervalMs?: number;
     onSessionClosed?: (sessionId: string, socketId?: string) => void;
     onChallengeExpired?: (result: ChallengeResult, socketId?: string) => void;
+    onChallengeSnapshot?: (snapshot: ChallengeSnapshot, socketId?: string) => void;
+    onChallengeCompleted?: (result: ChallengeResult, socketId?: string) => void;
+    simulationTickIntervalMs?: number | false;
+    simulationTicksPerInterval?: number;
+    simulationMaxReplayRecords?: number;
+    seedSource?: () => number;
 };
 
 export class SessionRegistry {
@@ -69,6 +82,11 @@ export class SessionRegistry {
     private readonly sweepTimer: NodeJS.Timeout;
     private readonly onSessionClosed?: (sessionId: string, socketId?: string) => void;
     private readonly onChallengeExpired?: (result: ChallengeResult, socketId?: string) => void;
+    private readonly onChallengeSnapshot?: (snapshot: ChallengeSnapshot, socketId?: string) => void;
+    private readonly onChallengeCompleted?: (result: ChallengeResult, socketId?: string) => void;
+    private readonly coordinator: SimulationCoordinator;
+    private readonly seedSource: () => number;
+    private inOrderedSimulation = false;
 
     public constructor(options: SessionRegistryOptions = {}) {
         this.now = options.now || Date.now;
@@ -79,6 +97,17 @@ export class SessionRegistry {
         this.maxSessions = options.maxSessions || 10_000;
         this.onSessionClosed = options.onSessionClosed;
         this.onChallengeExpired = options.onChallengeExpired;
+        this.onChallengeSnapshot = options.onChallengeSnapshot;
+        this.onChallengeCompleted = options.onChallengeCompleted;
+        this.seedSource = options.seedSource || (() => randomBytes(4).readUInt32BE(0));
+        this.coordinator = new SimulationCoordinator({
+            maxReplayRecords: options.simulationMaxReplayRecords,
+            tickIntervalMs: options.simulationTickIntervalMs === false
+                ? undefined
+                : options.simulationTickIntervalMs ?? 1_000,
+            ticksPerInterval: options.simulationTicksPerInterval ?? 30,
+            onTransition: (update) => this.onSimulationTransition(update)
+        });
         this.sweepTimer = setInterval(
             () => this.sweep(),
             options.sweepIntervalMs || 15_000
@@ -212,7 +241,9 @@ export class SessionRegistry {
             .filter(([, existing]) => existing.status !== 'active')
             .map(([id]) => id);
         while (closedIds.length > 1) {
-            session.challenges.delete(closedIds.shift()!);
+            const removedId = closedIds.shift()!;
+            session.challenges.delete(removedId);
+            this.coordinator.delete(removedId);
         }
         const challenge: Challenge = {
             id: opaqueId(),
@@ -220,20 +251,93 @@ export class SessionRegistry {
             calling,
             status: 'active',
             revision: 0,
-            expiresAt: this.now() + this.challengeTtlMs
+            expiresAt: this.now() + this.challengeTtlMs,
+            resultEmitted: false
         };
         challenge.expiresAt = Math.min(challenge.expiresAt, session.expiresAt);
         session.challenges.set(challenge.id, challenge);
+        this.coordinator.create(
+            challenge.id,
+            session.id,
+            this.seedSource() >>> 0,
+            calling
+        );
         return this.snapshot(session, challenge);
     }
 
-    public submitCommand(session: Session, challengeId: string): ChallengeSnapshot | ProtocolError {
+    public submitCommand(
+        session: Session,
+        challengeId: string,
+        command: SimulationCommand,
+        expectedTurn: number
+    ): ChallengeSnapshot | ProtocolError {
         const challenge = this.activeChallenge(session, challengeId);
         if (isProtocolError(challenge)) {
             return challenge;
         }
-        challenge.revision += 1;
+        this.inOrderedSimulation = true;
+        let update: ReturnType<SimulationCoordinator['apply']>;
+        try {
+            update = this.coordinator.apply(challengeId, 'player', command, expectedTurn);
+        } finally {
+            this.inOrderedSimulation = false;
+        }
+        if (!update.transition.accepted) {
+            return {
+                code: update.transition.error!.code,
+                message: update.transition.error!.message,
+                retryable: false
+            };
+        }
+        challenge.revision = update.state.revision;
+        if (update.state.phase === 'finished') challenge.status = 'completed';
         return this.snapshot(session, challenge);
+    }
+
+    public activeSnapshot(session: Session): ChallengeSnapshot | undefined {
+        const challenges = [...session.challenges.values()];
+        const challenge = challenges.find((candidate) => candidate.status === 'active') ||
+            challenges.reverse().find((candidate) => candidate.status === 'completed');
+        return challenge && this.coordinator.get(challenge.id)
+            ? this.snapshot(session, challenge, session.nextSequence)
+            : undefined;
+    }
+
+    public replayForChallenge(session: Session, challengeId: string): CoordinatorReplay | undefined {
+        const challenge = session.challenges.get(challengeId);
+        return challenge ? this.coordinator.replay(challenge.id) : undefined;
+    }
+
+    public takeChallengeResult(
+        session: Session,
+        challengeId: string,
+        nextSequence: number
+    ): ChallengeResult | undefined {
+        const challenge = session.challenges.get(challengeId);
+        const terminal = this.coordinator.takePendingTerminalResult(challengeId);
+        if (!challenge || !terminal || challenge.resultEmitted) return undefined;
+        challenge.resultEmitted = true;
+        return this.completedResult(
+            session.id,
+            challenge,
+            terminal.winner,
+            terminal.tick,
+            terminal.stateHash,
+            nextSequence
+        );
+    }
+
+    public advanceChallengeTicks(
+        session: Session,
+        challengeId: string,
+        count: number
+    ): ChallengeSnapshot | ProtocolError {
+        const challenge = this.activeChallenge(session, challengeId);
+        if (isProtocolError(challenge)) return challenge;
+        const update = this.coordinator.advance(challengeId, count);
+        challenge.revision = update.state.revision;
+        if (update.state.phase === 'finished') challenge.status = 'completed';
+        return this.snapshot(session, challenge, session.nextSequence);
     }
 
     public leaveChallenge(session: Session, challengeId: string): ChallengeResult | ProtocolError {
@@ -250,8 +354,11 @@ export class SessionRegistry {
             challengeId: challenge.id,
             outcome: 'left',
             revision: challenge.revision,
-            nextSequence: session.nextSequence + 1
+            nextSequence: session.nextSequence + 1,
+            finalTick: this.coordinator.get(challenge.id)?.state.tick ?? null,
+            finalStateHash: this.coordinator.get(challenge.id)?.stateHash ?? null
         };
+        this.coordinator.delete(challenge.id);
         return result;
     }
 
@@ -307,6 +414,7 @@ export class SessionRegistry {
             this.sessionsBySocket.delete(session.socketId);
         }
         this.sessions.delete(sessionId);
+        this.coordinator.deleteForSession(sessionId);
         this.onSessionClosed?.(session.id, session.socketId);
     }
 
@@ -336,6 +444,7 @@ export class SessionRegistry {
         this.sessions.clear();
         this.sessionsByDigest.clear();
         this.sessionsBySocket.clear();
+        this.coordinator.dispose();
     }
 
     public get size(): number {
@@ -374,6 +483,7 @@ export class SessionRegistry {
         }
         challenge.status = 'expired';
         challenge.revision += 1;
+        const final = this.coordinator.get(challenge.id);
         this.onChallengeExpired?.({
             protocolVersion: PROTOCOL_VERSION,
             serverTimeMs: this.now(),
@@ -381,11 +491,20 @@ export class SessionRegistry {
             challengeId: challenge.id,
             outcome: 'expired',
             revision: challenge.revision,
-            nextSequence
+            nextSequence,
+            finalTick: final?.state.tick ?? null,
+            finalStateHash: final?.stateHash ?? null
         }, session.socketId);
+        this.coordinator.delete(challenge.id);
     }
 
-    private snapshot(session: Session, challenge: Challenge): ChallengeSnapshot {
+    private snapshot(
+        session: Session,
+        challenge: Challenge,
+        nextSequence = session.nextSequence + 1
+    ): ChallengeSnapshot {
+        const simulation = this.coordinator.get(challenge.id);
+        if (!simulation) throw new Error(`Challenge ${challenge.id} has no simulation state.`);
         return {
             protocolVersion: PROTOCOL_VERSION,
             serverTimeMs: this.now(),
@@ -395,8 +514,54 @@ export class SessionRegistry {
             calling: challenge.calling,
             status: challenge.status,
             revision: challenge.revision,
-            nextSequence: session.nextSequence + 1,
-            expiresAt: new Date(challenge.expiresAt).toISOString()
+            nextSequence,
+            expiresAt: new Date(challenge.expiresAt).toISOString(),
+            stateHash: simulation.stateHash,
+            simulation: simulation.state
+        };
+    }
+
+    private onSimulationTransition(update: CoordinatorUpdate): void {
+        const session = this.sessions.get(update.sessionId);
+        const challenge = session?.challenges.get(update.challengeId);
+        if (!session || !challenge) return;
+        challenge.revision = update.state.revision;
+        if (update.state.phase === 'finished') challenge.status = 'completed';
+        if (this.inOrderedSimulation || update.transition.events.length === 0) return;
+        const snapshot = this.snapshot(session, challenge, session.nextSequence);
+        this.onChallengeSnapshot?.(snapshot, session.socketId);
+        if (session.socketId) {
+            const terminal = this.takeChallengeResult(
+                session,
+                challenge.id,
+                session.nextSequence
+            );
+            if (terminal) this.onChallengeCompleted?.(terminal, session.socketId);
+        }
+    }
+
+    private completedResult(
+        sessionId: string,
+        challenge: Challenge,
+        winner: 'player' | 'loomkeeper' | 'draw' | null,
+        tick: number,
+        stateHash: string,
+        nextSequence: number
+    ): ChallengeResult {
+        return {
+            protocolVersion: PROTOCOL_VERSION,
+            serverTimeMs: this.now(),
+            sessionId,
+            challengeId: challenge.id,
+            outcome: winner === 'player'
+                ? 'player_win'
+                : winner === 'loomkeeper'
+                    ? 'loomkeeper_win'
+                    : 'draw',
+            revision: challenge.revision,
+            nextSequence,
+            finalTick: tick,
+            finalStateHash: stateHash
         };
     }
 

@@ -9,6 +9,7 @@ import {
     SessionOpenRequestSchema
 } from '../../../shared/protocol';
 import type { ProtocolAck, ProtocolError } from '../../../shared/protocol';
+import type { SimulationCommand } from '../../../shared/simulation';
 import { ackFor, SessionRegistry } from '../session/registry';
 import { eventFits, TokenBucket } from './guards';
 import { failure } from './errors';
@@ -184,6 +185,19 @@ export function setupProtocol(
             if (resumed.previousSocketId) {
                 io.sockets.sockets.get(resumed.previousSocketId)?.disconnect(true);
             }
+            const reboundSession = registry.getBound(socket.id);
+            if (reboundSession) {
+                const activeSnapshot = registry.activeSnapshot(reboundSession);
+                if (activeSnapshot) {
+                    socket.emit(protocolEvents.snapshot, activeSnapshot);
+                    const terminal = registry.takeChallengeResult(
+                        reboundSession,
+                        activeSnapshot.challengeId,
+                        activeSnapshot.nextSequence
+                    );
+                    if (terminal) socket.emit(protocolEvents.result, terminal);
+                }
+            }
         });
 
         socket.on(protocolEvents.challengeCreate, (payload: unknown, ack?: Ack) => {
@@ -234,12 +248,23 @@ export function setupProtocol(
                     parsed.data,
                     () => ackFor(
                         parsed.data.requestId,
-                        registry.submitCommand(session, parsed.data.challengeId)
+                        registry.submitCommand(
+                            session,
+                            parsed.data.challengeId,
+                            parsed.data.command as SimulationCommand,
+                            parsed.data.expectedTurn
+                        )
                     )
                 );
                 ack(response);
                 if (response.ok) {
                     socket.emit(protocolEvents.snapshot, response.data);
+                    const result = registry.takeChallengeResult(
+                        session,
+                        parsed.data.challengeId,
+                        response.data.nextSequence
+                    );
+                    if (result) socket.emit(protocolEvents.result, result);
                 }
             });
         });

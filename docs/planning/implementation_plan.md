@@ -8,8 +8,8 @@ Phaser/Socket.IO stack.
 ## Execution Pointer
 
 - Active target: mobile-first single-player Nimiq Pay competition release.
-- Next work package: **WP-007 Deterministic Artillery Simulation**.
-- Last completed work package: **WP-006 Validated Session And Command Protocol**.
+- Next work package: **WP-008 Loomkeeper AI**.
+- Last completed work package: **WP-007 Deterministic Artillery Simulation**.
 - PvP and matchmaking: deferred until after the competition release.
 - Canonical artwork reference:
   `docs/images/art-direction/knotkin-class-lineup-concept.png`.
@@ -56,8 +56,12 @@ availability and terms must be disclosed before a challenge starts.
   deterministic competition match.
 - WP-005 provides tooling tests plus fresh-build phone Chromium/WebKit smoke.
 - WP-006 provides strict schema tests and a real `socket.io-client` protocol
-  suite. Deterministic simulation, the full phone matrix, visual-regression,
-  and performance suites do not yet exist.
+  suite. The full gameplay phone matrix and visual-regression suites do not yet
+  exist.
+- WP-007 provides the product-owned deterministic artillery ruleset, canonical
+  state hashes, bounded replay reconstruction, 29 focused simulation tests,
+  and simulation-aware protocol/reconnect coverage. Loomkeeper decisions,
+  combat presentation, the full phone matrix, and visual regression remain.
 
 ## Codex Subagent Roles
 
@@ -285,7 +289,7 @@ WebSocket transport so production Origin enforcement remains fail-closed.
 
 ### WP-007 Deterministic Artillery Simulation
 
-Status: planned. Depends on WP-006.
+Status: complete. Depends on WP-006.
 
 Goal: implement a Phaser-independent, server-authoritative model with fixed
 ticks, seeded randomness, stable command ordering, serializable snapshots,
@@ -297,6 +301,16 @@ Owning roles: `worms_port_network_worker`, `worms_port_base_game_worker`,
 
 Verification: unit tests, invariant/property tests with printed seeds, golden
 replays, reconnect reconstruction, duplicate/late command rejection, build.
+
+Delivered as `nimble-knots-artillery-v1`: a Phaser-independent integer model
+with seeded packed terrain, bounded fixed-tick movement and Threadball flight,
+swept collision, Euclidean radial damage, deformation, settling, turn timeout,
+turn-limit completion, canonical SHA-256 state hashes, bounded projectile
+traces, replay reconstruction, and complete reconnect snapshots. The protocol
+uses `expectedTurn` beside its transport sequence so delayed commands cannot
+execute in a later turn. Seven frozen seeds and a six-command golden replay end
+in a player victory at tick 186. State remains in-process; durable multi-instance
+deployment is explicitly outside this slice.
 
 ### WP-008 Loomkeeper AI
 
