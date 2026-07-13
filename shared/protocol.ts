@@ -78,6 +78,13 @@ export const ChallengeLeaveRequestSchema = z.object({
     challengeId: ChallengeIdSchema
 }).strict();
 
+export const ChallengePauseRequestSchema = z.object({
+    requestId: RequestIdSchema,
+    sequence: SequenceSchema,
+    challengeId: ChallengeIdSchema,
+    paused: z.boolean()
+}).strict();
+
 export const ProtocolErrorSchema = z.object({
     code: z.enum([
         'BAD_REQUEST',
@@ -215,6 +222,7 @@ const ChallengeSnapshotFields = {
     calling: z.enum(['wizard', 'thief', 'warrior']),
     loomkeeperDifficulty: z.enum(['gentle', 'standard', 'sharp']),
     status: z.enum(['active', 'left', 'expired', 'completed']),
+    paused: z.boolean(),
     revision: z.number().int().nonnegative(),
     nextSequence: SequenceSchema,
     expiresAt: z.string().datetime(),
@@ -261,6 +269,7 @@ export const ChallengeCreateAckSchema = z.union([
     ProtocolFailureAckSchema
 ]);
 export const CommandSubmitAckSchema = ChallengeCreateAckSchema;
+export const ChallengePauseAckSchema = ChallengeCreateAckSchema;
 export const ChallengeLeaveAckSchema = z.union([
     ProtocolSuccessAckSchema(ChallengeResultSchema),
     ProtocolFailureAckSchema
@@ -270,6 +279,7 @@ export type SessionOpenRequest = z.infer<typeof SessionOpenRequestSchema>;
 export type ChallengeCreateRequest = z.infer<typeof ChallengeCreateRequestSchema>;
 export type CommandSubmitRequest = z.infer<typeof CommandSubmitRequestSchema>;
 export type ChallengeLeaveRequest = z.infer<typeof ChallengeLeaveRequestSchema>;
+export type ChallengePauseRequest = z.infer<typeof ChallengePauseRequestSchema>;
 export type ProtocolError = z.infer<typeof ProtocolErrorSchema>;
 export type SessionOpenData = z.infer<typeof SessionOpenDataSchema>;
 export type ChallengeSnapshot = z.infer<typeof ChallengeSnapshotSchema>;
@@ -296,6 +306,7 @@ export const protocolEvents = {
     sessionOpen: 'v1:session.open',
     challengeCreate: 'v1:challenge.create',
     commandSubmit: 'v1:command.submit',
+    challengePause: 'v1:challenge.pause',
     challengeLeave: 'v1:challenge.leave',
     snapshot: 'v1:challenge.snapshot',
     result: 'v1:challenge.result',

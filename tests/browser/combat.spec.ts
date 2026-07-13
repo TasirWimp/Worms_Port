@@ -99,14 +99,14 @@ test('pointer transfer, cancellation, release outside, pause, and retry fail saf
 
   await page.locator('.pause-button').tap();
   await expect(page.locator('.combat-ui')).toHaveAttribute('data-paused', 'true');
-  await expect(page.getByText(/authoritative turn clock continues/i)).toBeVisible();
+  await expect(page.getByText(/turn clock stopped/i)).toBeVisible();
   await expect(page.locator('.movement-zone')).toHaveAttribute('aria-disabled', 'true');
   await page.locator('.pause-button').tap();
   await expect(page.locator('.combat-ui')).toHaveAttribute('data-paused', 'false');
 
   const turn = await page.locator('.combat-ui').getAttribute('data-turn');
   await page.locator('.retry-button').tap();
-  await expect(page.getByText(/WP-011 practice lifecycle/i)).toBeVisible();
+  await expect(page.getByText(/Fresh Practice Clash started/i)).toBeVisible();
   await expect(page.locator('.combat-ui')).toHaveAttribute('data-turn', turn!);
 });
 

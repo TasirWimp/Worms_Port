@@ -2,12 +2,22 @@ import Phaser from 'phaser';
 import './style.css';
 
 import { io } from 'socket.io-client';
+import { protocolEvents } from '../../shared/protocol';
 
 import JoinScene from './scenes/join';
 import RoomScene from './scenes/room';
 import GameScene from './scenes/game';
 import CombatScene from './scenes/combat';
+import PracticeScene from './scenes/practice';
+import ResultScene from './scenes/result';
 import { bootstrapSession } from './lib/session';
+import { PRACTICE_CLIENT_REGISTRY_KEY, PracticeClient } from './practice/client';
+
+class BootScene extends Phaser.Scene {
+    public constructor() {
+        super({ key: 'boot' });
+    }
+}
 
 class NimbleKnotsGame extends Phaser.Game
 {
@@ -27,7 +37,7 @@ class NimbleKnotsGame extends Phaser.Game
             },
             scene: combatPreview
                 ? [ CombatScene, JoinScene, RoomScene, GameScene ]
-                : [ JoinScene, RoomScene, GameScene, CombatScene ]
+                : [ BootScene, PracticeScene, CombatScene, ResultScene, JoinScene, RoomScene, GameScene ]
         });
     }
 }
@@ -39,7 +49,17 @@ window.onload = async () => {
         return;
     }
     const socket = io({ transports: ['websocket'] });
-    await bootstrapSession(socket);
+    const initialSnapshots: unknown[] = [];
+    const initialResults: unknown[] = [];
+    const bufferSnapshot = (snapshot: unknown) => initialSnapshots.push(snapshot);
+    const bufferResult = (result: unknown) => initialResults.push(result);
+    socket.on(protocolEvents.snapshot, bufferSnapshot);
+    socket.on(protocolEvents.result, bufferResult);
+    const session = await bootstrapSession(socket);
+    const client = new PracticeClient(socket, session, initialSnapshots, initialResults);
+    socket.off(protocolEvents.snapshot, bufferSnapshot);
+    socket.off(protocolEvents.result, bufferResult);
     const game = new NimbleKnotsGame();
-    game.scene.start('join', { socket });
+    game.registry.set(PRACTICE_CLIENT_REGISTRY_KEY, client);
+    game.scene.start('practice');
 };

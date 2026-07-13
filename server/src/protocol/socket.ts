@@ -3,6 +3,7 @@ import type { Server, Socket } from 'socket.io';
 import {
     ChallengeCreateRequestSchema,
     ChallengeLeaveRequestSchema,
+    ChallengePauseRequestSchema,
     CommandSubmitRequestSchema,
     protocolEvents,
     RequestIdSchema,
@@ -284,6 +285,37 @@ export function setupProtocol(
             });
         });
 
+        socket.on(protocolEvents.challengePause, (payload: unknown, ack?: Ack) => {
+            if (!guard(socket, payload, ack, invalidLimiter)) {
+                return;
+            }
+            const parsed = ChallengePauseRequestSchema.safeParse(payload);
+            if (!parsed.success) {
+                invalid(socket, ack, requestIdOf(payload), invalidLimiter);
+                return;
+            }
+            withSession(socket, registry, parsed.data.requestId, ack, (session) => {
+                const response = registry.sequence(
+                    session,
+                    parsed.data.requestId,
+                    parsed.data.sequence,
+                    parsed.data,
+                    () => ackFor(
+                        parsed.data.requestId,
+                        registry.setChallengePaused(
+                            session,
+                            parsed.data.challengeId,
+                            parsed.data.paused
+                        )
+                    )
+                );
+                ack(response);
+                if (response.ok) {
+                    socket.emit(protocolEvents.snapshot, response.data);
+                }
+            });
+        });
+
         socket.on(protocolEvents.challengeLeave, (payload: unknown, ack?: Ack) => {
             if (!guard(socket, payload, ack, invalidLimiter)) {
                 return;
@@ -389,6 +421,7 @@ const ALLOWED_CLIENT_EVENTS = new Set([
     protocolEvents.sessionOpen,
     protocolEvents.challengeCreate,
     protocolEvents.commandSubmit,
+    protocolEvents.challengePause,
     protocolEvents.challengeLeave,
     'client:room#join',
     'client:room#ready',

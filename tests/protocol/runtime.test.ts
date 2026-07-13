@@ -1344,3 +1344,142 @@ test('simulation timeout routing targets only the owning session', async () => {
         await closeAll(runtime, [first, second]);
     }
 });
+
+test('practice pause is authoritative, ordered, idempotent, and reconnect-safe', async () => {
+    const { runtime, url } = await start({
+        sessionRegistry: { seedSource: () => 1, simulationTickIntervalMs: false }
+    });
+    const sockets: Socket[] = [];
+    try {
+        const original = await connect(url);
+        sockets.push(original);
+        const opened = await openSession(original, 'pause_session_01');
+        const created = await emitAck(original, protocolEvents.challengeCreate, {
+            requestId: 'pause_create_01', sequence: 0,
+            mode: 'practice', calling: 'wizard'
+        });
+        assert.equal(created.ok, true);
+        assert.equal(created.data.paused, false);
+
+        const pausePayload = {
+            requestId: 'pause_set_01', sequence: 1,
+            challengeId: created.data.challengeId, paused: true
+        };
+        const paused = await emitAck(original, protocolEvents.challengePause, pausePayload);
+        assert.equal(paused.ok, true);
+        assert.equal(paused.data.paused, true);
+        assert.equal(paused.data.revision, created.data.revision + 1);
+        assert.equal(paused.data.simulation.tick, created.data.simulation.tick);
+        assert.deepEqual(await emitAck(original, protocolEvents.challengePause, pausePayload), paused);
+
+        const session = runtime.sessions.getBound(original.id!);
+        assert.ok(session);
+        const blockedTicks = runtime.sessions.advanceChallengeTicks(
+            session, created.data.challengeId, 30
+        );
+        assert.equal('code' in blockedTicks && blockedTicks.code, 'COMMAND_REJECTED');
+        const blockedCommand = await emitAck(original, protocolEvents.commandSubmit, {
+            requestId: 'pause_move_01', sequence: 2,
+            challengeId: created.data.challengeId, expectedTurn: 0,
+            command: { type: 'move', direction: 1 }
+        });
+        assert.equal(blockedCommand.ok, false);
+        assert.equal(blockedCommand.error.code, 'COMMAND_REJECTED');
+
+        original.close();
+        await new Promise((resolve) => setTimeout(resolve, 10));
+        const resumedSocket = await connect(url);
+        sockets.push(resumedSocket);
+        const snapshotEvent = new Promise<any>((resolve) => {
+            resumedSocket.once(protocolEvents.snapshot, resolve);
+        });
+        const resumedSession = await emitAck(resumedSocket, protocolEvents.sessionOpen, {
+            requestId: 'pause_resume_session_01', action: 'resume', token: opened.token
+        });
+        assert.equal(resumedSession.ok, true);
+        const rebound = await snapshotEvent;
+        assert.equal(rebound.paused, true);
+        assert.equal(rebound.nextSequence, 3);
+
+        const resumed = await emitAck(resumedSocket, protocolEvents.challengePause, {
+            requestId: 'pause_set_02', sequence: 3,
+            challengeId: created.data.challengeId, paused: false
+        });
+        assert.equal(resumed.ok, true);
+        assert.equal(resumed.data.paused, false);
+        assert.equal(resumed.data.revision, paused.data.revision + 1);
+        const reboundSession = runtime.sessions.getBound(resumedSocket.id!);
+        assert.ok(reboundSession);
+        const advanced = runtime.sessions.advanceChallengeTicks(
+            reboundSession, created.data.challengeId, 30
+        );
+        assert.equal('code' in advanced, false);
+        if (!('code' in advanced)) {
+            assert.equal(advanced.simulation.tick, 30);
+            assert.equal(advanced.revision, resumed.data.revision + 1);
+        }
+    } finally {
+        await closeAll(runtime, sockets);
+    }
+});
+
+test('reconnect preserves a pending Loomkeeper handoff and rejects pause during it', async () => {
+    const { runtime, url } = await start({
+        sessionRegistry: {
+            seedSource: () => 1,
+            simulationTickIntervalMs: false,
+            loomkeeperEnabled: false
+        }
+    });
+    const sockets: Socket[] = [];
+    try {
+        const original = await connect(url);
+        sockets.push(original);
+        const opened = await openSession(original, 'handoff_session_01');
+        const created = await emitAck(original, protocolEvents.challengeCreate, {
+            requestId: 'handoff_create_01', sequence: 0,
+            mode: 'practice', calling: 'thief'
+        });
+        await emitAck(original, protocolEvents.commandSubmit, {
+            requestId: 'handoff_aim_01', sequence: 1,
+            challengeId: created.data.challengeId, expectedTurn: 0,
+            command: { type: 'aim', angleMilliDegrees: 35_000, powerPermille: 700 }
+        });
+        const fired = await emitAck(original, protocolEvents.commandSubmit, {
+            requestId: 'handoff_fire_01', sequence: 2,
+            challengeId: created.data.challengeId, expectedTurn: 0,
+            command: { type: 'fire' }
+        });
+        assert.equal(fired.ok, true);
+        assert.equal(fired.data.simulation.activeActor, 'loomkeeper');
+
+        original.close();
+        await new Promise((resolve) => setTimeout(resolve, 10));
+        const resumedSocket = await connect(url);
+        sockets.push(resumedSocket);
+        const snapshotEvent = new Promise<any>((resolve) => {
+            resumedSocket.once(protocolEvents.snapshot, resolve);
+        });
+        const resumedSession = await emitAck(resumedSocket, protocolEvents.sessionOpen, {
+            requestId: 'handoff_resume_01', action: 'resume', token: opened.token
+        });
+        assert.equal(resumedSession.ok, true);
+        const rebound = await snapshotEvent;
+        assert.equal(rebound.challengeId, created.data.challengeId);
+        assert.equal(rebound.stateHash, fired.data.stateHash);
+        assert.equal(rebound.simulation.activeActor, 'loomkeeper');
+        assert.equal(rebound.simulation.turn, 1);
+
+        const pause = await emitAck(resumedSocket, protocolEvents.challengePause, {
+            requestId: 'handoff_pause_01', sequence: 3,
+            challengeId: created.data.challengeId, paused: true
+        });
+        assert.equal(pause.ok, false);
+        assert.equal(pause.error.code, 'COMMAND_REJECTED');
+        const reboundSession = runtime.sessions.getBound(resumedSocket.id!);
+        assert.ok(reboundSession);
+        assert.equal(runtime.sessions.activeSnapshot(reboundSession)!.paused, false);
+    } finally {
+        await closeAll(runtime, sockets);
+    }
+});

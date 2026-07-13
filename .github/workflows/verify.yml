@@ -25,6 +25,8 @@ jobs:
       - run: npm run build
       - run: npm run smoke:built
       - run: npm run test:browser:smoke
+      - run: npm run test:browser:combat
+      - run: npm run test:browser:practice
       - name: Upload browser failure evidence
         if: failure()
         uses: actions/upload-artifact@v4

@@ -50,7 +50,10 @@ export type Challenge = {
     calling: 'wizard' | 'thief' | 'warrior';
     loomkeeperDifficulty: LoomkeeperDifficulty;
     status: 'active' | 'left' | 'expired' | 'completed';
+    paused: boolean;
     revision: number;
+    simulationRevision: number;
+    simulationStateHash: string;
     expiresAt: number;
     resultEmitted: boolean;
     playerCommandTurn: number;
@@ -279,13 +282,23 @@ export class SessionRegistry {
             session.challenges.delete(removedId);
             this.coordinator.delete(removedId);
         }
+        const challengeId = opaqueId();
+        const simulation = this.coordinator.create(
+            challengeId,
+            session.id,
+            this.seedSource() >>> 0,
+            calling
+        );
         const challenge: Challenge = {
-            id: opaqueId(),
+            id: challengeId,
             mode,
             calling,
             loomkeeperDifficulty: this.loomkeeperDifficulty,
             status: 'active',
+            paused: false,
             revision: 0,
+            simulationRevision: 0,
+            simulationStateHash: simulation.stateHash,
             expiresAt: this.now() + this.challengeTtlMs,
             resultEmitted: false,
             playerCommandTurn: 0,
@@ -293,12 +306,6 @@ export class SessionRegistry {
         };
         challenge.expiresAt = Math.min(challenge.expiresAt, session.expiresAt);
         session.challenges.set(challenge.id, challenge);
-        this.coordinator.create(
-            challenge.id,
-            session.id,
-            this.seedSource() >>> 0,
-            calling
-        );
         return this.snapshot(session, challenge);
     }
 
@@ -311,6 +318,13 @@ export class SessionRegistry {
         const challenge = this.activeChallenge(session, challengeId);
         if (isProtocolError(challenge)) {
             return challenge;
+        }
+        if (challenge.paused) {
+            return {
+                code: 'COMMAND_REJECTED',
+                message: 'Resume the Practice Clash before submitting gameplay commands.',
+                retryable: false
+            };
         }
         const authoritativeTurn = this.coordinator.get(challengeId)!.state.turn;
         if (challenge.playerCommandTurn !== authoritativeTurn) {
@@ -349,7 +363,7 @@ export class SessionRegistry {
             };
         }
         challenge.playerCommandCount += 1;
-        challenge.revision = update.state.revision;
+        this.syncSimulationState(challenge, update);
         if (update.state.phase === 'finished') challenge.status = 'completed';
         return this.snapshot(session, challenge);
     }
@@ -366,7 +380,7 @@ export class SessionRegistry {
         if (!this.loomkeeperEnabled || this.runningLoomkeeperTurns.has(challengeId)) return undefined;
         const challenge = session.challenges.get(challengeId);
         const basis = this.coordinator.get(challengeId);
-        if (!challenge || challenge.status !== 'active' || !basis ||
+        if (!challenge || challenge.status !== 'active' || challenge.paused || !basis ||
             basis.state.phase !== 'awaiting_command' || basis.state.activeActor !== 'loomkeeper') {
             return undefined;
         }
@@ -409,7 +423,7 @@ export class SessionRegistry {
         }
         const final = this.coordinator.get(challengeId);
         if (!final) return undefined;
-        challenge.revision = final.state.revision;
+        this.syncSimulationState(challenge, final);
         if (final.state.phase === 'finished') challenge.status = 'completed';
         return this.snapshot(session, challenge, session.nextSequence);
     }
@@ -454,8 +468,15 @@ export class SessionRegistry {
     ): ChallengeSnapshot | ProtocolError {
         const challenge = this.activeChallenge(session, challengeId);
         if (isProtocolError(challenge)) return challenge;
+        if (challenge.paused) {
+            return {
+                code: 'COMMAND_REJECTED',
+                message: 'Paused Practice Clashes do not advance simulation ticks.',
+                retryable: false
+            };
+        }
         const update = this.coordinator.advance(challengeId, count);
-        challenge.revision = update.state.revision;
+        this.syncSimulationState(challenge, update);
         if (update.state.phase === 'finished') challenge.status = 'completed';
         return this.snapshot(session, challenge, session.nextSequence);
     }
@@ -480,6 +501,38 @@ export class SessionRegistry {
         };
         this.coordinator.delete(challenge.id);
         return result;
+    }
+
+    public setChallengePaused(
+        session: Session,
+        challengeId: string,
+        paused: boolean
+    ): ChallengeSnapshot | ProtocolError {
+        const challenge = this.activeChallenge(session, challengeId);
+        if (isProtocolError(challenge)) return challenge;
+        if (challenge.mode !== 'practice') {
+            return {
+                code: 'COMMAND_REJECTED',
+                message: 'Only Practice Clashes can be paused.',
+                retryable: false
+            };
+        }
+        if (challenge.paused === paused) {
+            return this.snapshot(session, challenge);
+        }
+        const simulation = this.coordinator.get(challengeId);
+        if (!simulation || simulation.state.phase !== 'awaiting_command' ||
+            simulation.state.activeActor !== 'player') {
+            return {
+                code: 'COMMAND_REJECTED',
+                message: 'Practice can pause only while awaiting your command.',
+                retryable: false
+            };
+        }
+        challenge.paused = paused;
+        challenge.revision += 1;
+        this.coordinator.setPaused(challengeId, paused);
+        return this.snapshot(session, challenge);
     }
 
     public sequence<T>(
@@ -634,6 +687,7 @@ export class SessionRegistry {
             calling: challenge.calling,
             loomkeeperDifficulty: challenge.loomkeeperDifficulty,
             status: challenge.status,
+            paused: challenge.paused,
             revision: challenge.revision,
             nextSequence,
             expiresAt: new Date(challenge.expiresAt).toISOString(),
@@ -656,7 +710,7 @@ export class SessionRegistry {
         const session = this.sessions.get(update.sessionId);
         const challenge = session?.challenges.get(update.challengeId);
         if (!session || !challenge) return;
-        challenge.revision = update.state.revision;
+        this.syncSimulationState(challenge, update);
         if (update.state.phase === 'finished') challenge.status = 'completed';
         if (this.inOrderedSimulation || update.transition.events.length === 0) return;
         const snapshot = this.snapshot(session, challenge, session.nextSequence);
@@ -669,7 +723,8 @@ export class SessionRegistry {
             );
             if (terminal) this.onChallengeCompleted?.(terminal, session.socketId);
         }
-        if (update.state.phase === 'awaiting_command' && update.state.activeActor === 'loomkeeper') {
+        if (!challenge.paused && update.state.phase === 'awaiting_command' &&
+            update.state.activeActor === 'loomkeeper') {
             this.queueLoomkeeperTurn(update.sessionId, update.challengeId);
         }
     }
@@ -715,6 +770,20 @@ export class SessionRegistry {
             finalTick: tick,
             finalStateHash: stateHash
         };
+    }
+
+    private syncSimulationState(
+        challenge: Challenge,
+        update: Pick<CoordinatorUpdate, 'state' | 'stateHash'>
+    ): void {
+        if (update.state.revision < challenge.simulationRevision) {
+            throw new Error('Simulation revision cannot move backward.');
+        }
+        if (update.stateHash !== challenge.simulationStateHash) {
+            challenge.revision += 1;
+            challenge.simulationStateHash = update.stateHash;
+        }
+        challenge.simulationRevision = update.state.revision;
     }
 
     private openData(session: Session, token: string, resumed: boolean): SessionOpenData {

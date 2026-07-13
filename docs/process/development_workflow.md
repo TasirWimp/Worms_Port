@@ -119,9 +119,10 @@ identity, and reward work:
   previous-token recovery window protects reconnects whose rotation
   acknowledgement was lost, and only while no replacement socket is active.
   Socket.IO IDs never authorize a player.
-- `v1:challenge.create`, `v1:command.submit`, and `v1:challenge.leave` accept
-  one strict object plus a required acknowledgement callback. Responses carry
-  protocol version, server time, request ID, and typed success/error data.
+- `v1:challenge.create`, `v1:command.submit`, `v1:challenge.pause`, and
+  `v1:challenge.leave` accept one strict object plus a required acknowledgement
+  callback. Responses carry protocol version, server time, request ID, and
+  typed success/error data.
 - Practice creation is available. Signed-session and reward request shapes are
   validated but return `FEATURE_UNAVAILABLE` until WP-012/WP-013.
 - Per-session sequence and request-ID replay caches make exact duplicates
@@ -139,6 +140,36 @@ This avoids ambient cookie authority but remains readable to same-origin
 script, so CSP/XSS hardening remains a deployment and later quality-harness
 concern. The legacy lobby UI is a temporary strict adapter bound to the server
 session; its old caller-supplied game identity endpoint is removed.
+
+### Complete Practice Lifecycle
+
+WP-011 makes the default phone journey a live server-backed Practice Clash.
+The deterministic `combat-preview` route remains a test fixture and is not an
+offline product mode. Calling onboarding, protocol/session ownership, combat,
+and result presentation remain separate typed responsibilities.
+
+- The live adapter serializes one mutation at a time and owns request IDs,
+  acknowledgement correlation, the server-provided sequence cursor, strict
+  schema parsing, listener cleanup, and bounded retry of an identical request
+  after acknowledgement timeout.
+- Challenge snapshot revision is monotonic across simulation and lifecycle
+  changes. The client rejects stale or conflicting same-revision snapshots;
+  local previews and delayed events cannot replace newer authority.
+- Disconnect suspends all combat input. Session resume consumes the complete
+  snapshot and next sequence without replaying speculative commands. Initial
+  resume snapshots/results are buffered during bootstrap so a reload cannot
+  miss authority emitted alongside token rotation.
+- Retry consumes an orderly leave when the challenge is active, suppresses its
+  expected delayed `left` event, and creates a fresh challenge. Terminal results
+  are deduplicated by challenge, revision, and outcome.
+- `v1:challenge.pause` is practice-only, idempotent, session-authorized, and
+  sequence checked. It is accepted only during the player's
+  `awaiting_command` phase. Accepted pause state appears in every challenge
+  snapshot, suspends coordinator tick advancement, persists over reconnect,
+  and rejects gameplay commands until resume. Overall expiry remains active.
+- A process restart may lose the in-memory match. A replacement session clears
+  the old active marker and exposes a fresh-Practice recovery action; durable
+  restart recovery remains outside WP-011.
 
 ### Deterministic Artillery Ruleset
 
@@ -668,9 +699,9 @@ model:
    command only from the `aim_locked` state. Duplicate taps, stale turns, or a
    suspended scene cannot submit another command.
 5. **Relics and commands:** Relic selection, pause, retry, and confirmations use
-   large tap targets. WP-010 implements pause/retry affordances, but pause only
-   suspends client input and presentation and retry does not create a new
-   challenge. WP-011 owns authoritative practice pause and retry lifecycle.
+   large tap targets. WP-010 provides the presentation affordances; WP-011
+   connects them to authoritative practice pause/resume and fresh-challenge
+   retry. Rewarded challenges remain unpausable.
    Swipe, pinch, long-press, hover, and multi-finger chords are not required for
    the competition release.
 6. **Camera:** automatic active-Knotkin and projectile framing is the default.

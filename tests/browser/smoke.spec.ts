@@ -1,33 +1,63 @@
 import { expect, test } from '@playwright/test';
-import { io as connectClient, type Socket } from 'socket.io-client';
 
-function emitAck(socket: Socket, event: string, payload: unknown): Promise<any> {
-  return new Promise((resolve, reject) => {
-    const timer = setTimeout(() => reject(new Error(`${event} acknowledgement timed out.`)), 2_000);
-    socket.emit(event, payload, (response: unknown) => {
-      clearTimeout(timer);
-      resolve(response);
-    });
-  });
-}
-
-test('built phone journey renders and accepts touch', async ({ page }) => {
+test('built phone journey starts wallet-free live practice and accepts touch', async ({ page }) => {
   const pageErrors: string[] = [];
   const consoleErrors: string[] = [];
-
   page.on('pageerror', (error) => pageErrors.push(error.message));
   page.on('console', (message) => {
     if (message.type() === 'error') consoleErrors.push(message.text());
   });
 
   await page.goto('/');
-  await page.waitForTimeout(250);
-  expect(pageErrors, `Unexpected page errors: ${pageErrors.join(' | ')}`).toEqual([]);
-  expect(consoleErrors, `Unexpected console errors: ${consoleErrors.join(' | ')}`).toEqual([]);
+  await expect(page.getByRole('heading', { name: 'Practice Clash' })).toBeVisible({ timeout: 10_000 });
+  await expect(page.getByText(/No wallet, matchmaking, or reward pool/i)).toBeVisible();
+  await page.getByRole('button', { name: /Thief/ }).tap();
+  await expect(page.getByRole('button', { name: /Thief/ })).toHaveAttribute('aria-pressed', 'true');
+  await page.getByRole('button', { name: 'Start Practice' }).tap();
 
+  const ui = page.locator('.combat-ui');
+  await expect(ui).toBeVisible();
+  await expect(ui).toHaveAttribute('data-calling', 'thief');
+  await expect(ui).toHaveAttribute('data-challenge-id', /^[A-Za-z0-9_-]{16,64}$/);
   const canvas = page.locator('#game canvas');
   await expect(canvas).toBeVisible();
-  await expect.poll(async () => canvas.evaluate(async (element: HTMLCanvasElement) => {
+  await expect.poll(() => canvasColors(canvas)).toBeGreaterThan(1);
+
+  await page.locator('.pause-button').tap();
+  await expect(ui).toHaveAttribute('data-paused', 'true');
+  await expect(page.getByText(/turn clock stopped/i)).toBeVisible();
+  await page.locator('.pause-button').tap();
+  await expect(ui).toHaveAttribute('data-paused', 'false');
+
+  expect(pageErrors, `Unexpected page errors: ${pageErrors.join(' | ')}`).toEqual([]);
+  expect(consoleErrors, `Unexpected console errors: ${consoleErrors.join(' | ')}`).toEqual([]);
+  if (process.env.PLAYWRIGHT_ARTIFACT_PROBE === '1') {
+    expect('artifact-probe').toBe('intentional-failure');
+  }
+});
+
+test('practice reconnect suspends controls and resumes the same challenge', async ({ page, context }) => {
+  test.setTimeout(45_000);
+  await page.goto('/');
+  await expect(page.getByRole('heading', { name: 'Practice Clash' })).toBeVisible({ timeout: 10_000 });
+  await page.getByRole('button', { name: 'Start Practice' }).tap();
+  const ui = page.locator('.combat-ui');
+  await expect(ui).toBeVisible();
+  const challengeId = await ui.getAttribute('data-challenge-id');
+
+  await context.setOffline(true);
+  await expect(ui).toHaveAttribute('data-suspended', 'true', { timeout: 10_000 });
+  await expect(page.getByText(/Reconnecting/i)).toBeVisible();
+  await expect(page.locator('.movement-zone')).toHaveAttribute('aria-disabled', 'true');
+
+  await context.setOffline(false);
+  await expect(ui).toHaveAttribute('data-suspended', 'false', { timeout: 15_000 });
+  await expect(ui).toHaveAttribute('data-challenge-id', challengeId!);
+  await expect(page.locator('.movement-zone')).toHaveAttribute('aria-disabled', 'false');
+});
+
+async function canvasColors(canvas: import('@playwright/test').Locator): Promise<number> {
+  return canvas.evaluate(async (element: HTMLCanvasElement) => {
     await new Promise<void>((resolve) => requestAnimationFrame(() => requestAnimationFrame(() => resolve())));
     const probe = document.createElement('canvas');
     probe.width = 64;
@@ -43,90 +73,5 @@ test('built phone journey renders and accepts touch', async ({ page }) => {
       }
     }
     return colors.size;
-  })).toBeGreaterThan(1);
-
-  await expect(page.locator('#b-rand')).toBeVisible({ timeout: 10_000 });
-  await page.locator('#b-rand').tap();
-  await expect(page.getByRole('heading', { name: 'Prepare the Clash' })).toBeVisible();
-  await expect(page.locator('#inp-room-id')).toHaveValue(/^[a-z0-9]+(?:-[a-z0-9]+){2}$/);
-
-  expect(pageErrors, `Unexpected page errors: ${pageErrors.join(' | ')}`).toEqual([]);
-  expect(consoleErrors, `Unexpected console errors: ${consoleErrors.join(' | ')}`).toEqual([]);
-
-  await page.locator('#b-back').tap();
-  await expect(page.locator('#b-rand')).toBeVisible();
-
-  if (process.env.PLAYWRIGHT_ARTIFACT_PROBE === '1') {
-    expect('artifact-probe').toBe('intentional-failure');
-  }
-});
-
-test('room reconnect replaces missed peer state from the server snapshot', async ({ page, context }) => {
-  test.setTimeout(45_000);
-  await page.goto('/');
-  await expect(page.locator('#b-rand')).toBeVisible({ timeout: 10_000 });
-  await page.locator('#b-rand').tap();
-  await expect(page.getByRole('heading', { name: 'Prepare the Clash' })).toBeVisible();
-  let roomId = await page.locator('#inp-room-id').inputValue();
-  await expect.poll(() => page.locator('#t-room tr').count()).toBeGreaterThan(0);
-  let initialPlayerCount = await page.locator('#t-room tr').count();
-  if (initialPlayerCount >= 4) {
-    const freshRoomId = await page.evaluate(async () => (await fetch('/.room.join_id')).text());
-    await page.locator('#b-back').tap();
-    await expect(page.locator('#b-rand')).toBeVisible();
-    await page.locator('#inp-room').fill(freshRoomId);
-    await page.locator('#b-join').tap();
-    await expect(page.getByRole('heading', { name: 'Prepare the Clash' })).toBeVisible();
-    roomId = await page.locator('#inp-room-id').inputValue();
-    initialPlayerCount = await page.locator('#t-room tr').count();
-  }
-  expect(initialPlayerCount).toBeLessThan(4);
-
-  await context.setOffline(true);
-  await page.waitForTimeout(300);
-
-  const origin = new URL(page.url()).origin;
-  const peer = connectClient(origin, {
-    transports: ['websocket'],
-    reconnection: false,
-    extraHeaders: { Origin: origin }
   });
-  try {
-    await new Promise<void>((resolve, reject) => {
-      peer.once('connect', () => resolve());
-      peer.once('connect_error', reject);
-    });
-    const opened = await emitAck(peer, 'v1:session.open', {
-      requestId: 'browser_peer_session_01',
-      action: 'create'
-    });
-    expect(opened.ok).toBe(true);
-    const joined = await emitAck(peer, 'client:room#join', {
-      requestId: 'browser_peer_join_01',
-      roomId
-    });
-    expect(joined.ok).toBe(true);
-    const ready = await emitAck(peer, 'client:room#ready', {
-      requestId: 'browser_peer_ready_01',
-      ready: true
-    });
-    expect(ready.ok).toBe(true);
-    await expect(page.locator('#t-room tr')).toHaveCount(initialPlayerCount);
-
-    await context.setOffline(false);
-    await expect(page.locator('#t-room tr')).toHaveCount(
-      initialPlayerCount + 1,
-      { timeout: 10_000 }
-    );
-    await expect(page.locator('#t-room')).toContainText('Ready');
-    const peerLeft = await emitAck(peer, 'client:room#leave', {
-      requestId: 'browser_peer_leave_01'
-    });
-    expect(peerLeft.ok).toBe(true);
-    await page.locator('#b-back').tap();
-    await expect(page.locator('#b-rand')).toBeVisible();
-  } finally {
-    await context.setOffline(false);
-    peer.close();
-  }
-});
+}

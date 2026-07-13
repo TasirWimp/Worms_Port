@@ -439,6 +439,140 @@ button:disabled {
     margin: 0;
 }
 
+.practice-shell,
+.result-shell {
+    position: absolute;
+    z-index: 8;
+    inset: 0;
+    display: grid;
+    place-items: center;
+    padding: max(18px, var(--safe-area-top)) max(18px, var(--safe-area-right))
+        max(18px, var(--safe-area-bottom)) max(18px, var(--safe-area-left));
+    overflow: auto;
+    touch-action: manipulation;
+}
+
+.practice-card,
+.result-card {
+    width: min(100%, 520px);
+    padding: clamp(1.1rem, 4vw, 2rem);
+    color: #1f2348;
+    text-align: center;
+    background: rgb(255 255 255 / 94%);
+    border: 3px solid #e9b213;
+    border-radius: 22px;
+    box-shadow: 0 20px 50px rgb(31 35 72 / 28%);
+}
+
+.practice-card h1,
+.result-card h1 {
+    margin: 0.2rem 0 0.65rem;
+    font-size: clamp(2rem, 9vw, 3.2rem);
+    line-height: 0.95;
+}
+
+.practice-eyebrow {
+    margin: 0;
+    color: #5f4b8b;
+    font-size: 0.72rem;
+    font-weight: 900;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+}
+
+.practice-intro,
+.result-copy,
+.calling-note {
+    margin: 0.6rem auto 1rem;
+    line-height: 1.4;
+}
+
+.calling-picker {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 0.55rem;
+    padding: 0;
+    border: 0;
+}
+
+.calling-picker legend {
+    width: 100%;
+    margin-bottom: 0.55rem;
+    font-weight: 900;
+}
+
+.calling-picker button,
+.practice-start,
+.result-card button {
+    min-height: 52px;
+    padding: 0.65rem;
+    color: #1f2348;
+    font-weight: 900;
+    background: #eef7f7;
+    border: 2px solid rgb(31 35 72 / 28%);
+    border-radius: 13px;
+    touch-action: manipulation;
+}
+
+.calling-picker button small {
+    display: block;
+    margin-top: 0.15rem;
+    font-size: 0.62rem;
+    font-weight: 700;
+}
+
+.calling-picker button.is-selected {
+    color: #fff;
+    background: #5f4b8b;
+    border-color: #e9b213;
+}
+
+.practice-start,
+.result-retry {
+    width: 100%;
+    color: #fff !important;
+    background: #0582ca !important;
+    border-color: #1f2348 !important;
+}
+
+.result-change {
+    width: 100%;
+    margin-top: 0.55rem;
+}
+
+.practice-message,
+.result-message {
+    min-height: 1.4em;
+    margin: 0.75rem 0 0;
+    color: #5f4b8b;
+    font-weight: 800;
+}
+
+.result-facts {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 0.55rem;
+    margin: 1rem 0;
+}
+
+.result-facts div {
+    padding: 0.65rem;
+    background: #eef7f7;
+    border-radius: 12px;
+}
+
+.result-facts dt {
+    font-size: 0.68rem;
+    font-weight: 900;
+    text-transform: uppercase;
+}
+
+.result-facts dd {
+    margin: 0.25rem 0 0;
+    font-family: ui-monospace, monospace;
+    font-size: 0.78rem;
+}
+
 .visually-hidden {
     position: absolute;
     width: 1px;
@@ -460,6 +594,19 @@ button:disabled {
     .screen-shell {
         width: min(90vw, 440px);
         padding: 1.1rem;
+    }
+
+    .practice-shell,
+    .result-shell {
+        place-items: start center;
+    }
+
+    .calling-picker {
+        grid-template-columns: 1fr;
+    }
+
+    .calling-picker button {
+        min-height: 48px;
     }
 
     .action-row {

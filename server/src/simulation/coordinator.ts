@@ -82,6 +82,7 @@ type MatchEntry = {
     state: SimulationState;
     initialStateHash: string;
     records: CoordinatorReplayRecord[];
+    paused: boolean;
     terminalResult?: CoordinatorTerminalResult;
     pendingTerminalResult?: CoordinatorTerminalResult;
 };
@@ -139,7 +140,8 @@ export class SimulationCoordinator {
             rulesetId,
             state,
             initialStateHash,
-            records: []
+            records: [],
+            paused: false
         };
         this.matches.set(challengeId, entry);
         this.captureTerminal(entry);
@@ -180,7 +182,7 @@ export class SimulationCoordinator {
     public tickAll(count = 1): CoordinatorUpdate[] {
         const updates: CoordinatorUpdate[] = [];
         for (const entry of this.matches.values()) {
-            if (entry.terminalResult) {
+            if (entry.terminalResult || entry.paused) {
                 continue;
             }
             updates.push(this.advance(entry.challengeId, count));
@@ -191,6 +193,17 @@ export class SimulationCoordinator {
     public get(challengeId: string): CoordinatorSnapshot | undefined {
         const entry = this.matches.get(challengeId);
         return entry ? this.snapshotOf(entry) : undefined;
+    }
+
+    public setPaused(challengeId: string, paused: boolean): CoordinatorSnapshot {
+        const entry = this.require(challengeId);
+        this.ensureMutable(entry);
+        entry.paused = paused;
+        return this.snapshotOf(entry);
+    }
+
+    public isPaused(challengeId: string): boolean {
+        return this.require(challengeId).paused;
     }
 
     public replay(challengeId: string): CoordinatorReplay | undefined {
@@ -268,7 +281,8 @@ export class SimulationCoordinator {
             rulesetId,
             state,
             initialStateHash: replay.initialStateHash,
-            records: replay.records.map((record) => structuredClone(record))
+            records: replay.records.map((record) => structuredClone(record)),
+            paused: false
         };
         this.captureTerminal(reconstructed, false);
         return this.snapshotOf(reconstructed);

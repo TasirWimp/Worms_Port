@@ -1,4 +1,4 @@
-import type { ChallengeSnapshot } from '../../../shared/protocol';
+import type { ChallengeResult, ChallengeSnapshot } from '../../../shared/protocol';
 import type { SimulationCommand } from '../../../shared/simulation';
 
 export type CombatCommandSubmitter = (
@@ -9,6 +9,13 @@ export type CombatCommandSubmitter = (
 export type CombatSceneArgs = {
     snapshot: ChallengeSnapshot;
     submitCommand: CombatCommandSubmitter;
+    setPaused?: (paused: boolean) => Promise<ChallengeSnapshot>;
+    retry?: () => Promise<ChallengeSnapshot>;
+    onSnapshot?: (listener: (snapshot: ChallengeSnapshot) => void) => () => void;
+    onResult?: (listener: (result: ChallengeResult) => void) => () => void;
+    onConnection?: (listener: (state: 'connected' | 'reconnecting') => void) => () => void;
+    onUnavailable?: (listener: (message: string) => void) => () => void;
+    onError?: (listener: (message: string) => void) => () => void;
     previewLabel?: string;
 };
 

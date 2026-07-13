@@ -173,3 +173,22 @@ test('serialized authoritative coordinator snapshots remain below the 8 KiB even
         coordinator.dispose();
     }
 });
+
+test('coordinator pause suspends scheduled ticks without entering deterministic replay', () => {
+    const coordinator = new SimulationCoordinator();
+    try {
+        const created = coordinator.create('challenge_paused', 'session_paused', 1, 'wizard');
+        coordinator.setPaused('challenge_paused', true);
+        assert.equal(coordinator.isPaused('challenge_paused'), true);
+        assert.deepEqual(coordinator.tickAll(30), []);
+        assert.equal(coordinator.get('challenge_paused')!.stateHash, created.stateHash);
+        assert.equal(coordinator.replay('challenge_paused')!.records.length, 0);
+
+        coordinator.setPaused('challenge_paused', false);
+        const [advanced] = coordinator.tickAll(30);
+        assert.equal(advanced.state.tick, 30);
+        assert.equal(coordinator.replay('challenge_paused')!.records.length, 1);
+    } finally {
+        coordinator.dispose();
+    }
+});

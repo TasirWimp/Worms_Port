@@ -1,6 +1,6 @@
 import Phaser from 'phaser';
 
-import type { ChallengeSnapshot } from '../../../shared/protocol';
+import type { ChallengeResult, ChallengeSnapshot } from '../../../shared/protocol';
 import type { SimulationCommand, SimulationState } from '../../../shared/simulation';
 import { CombatControls } from '../combat/controls';
 import type { CombatSceneArgs, SafeAreaInsets } from '../combat/contracts';
@@ -17,6 +17,8 @@ export default class CombatScene extends Phaser.Scene {
     private layout: CombatLayout;
     private preview: { x: number; y: number }[] = [];
     private pendingCommand = false;
+    private transitioning = false;
+    private readonly unsubscribers: (() => void)[] = [];
 
     public constructor() {
         super({ key: 'combat' });
@@ -44,10 +46,8 @@ export default class CombatScene extends Phaser.Scene {
                     : [];
                 this.render();
             },
-            onPauseChange: () => this.render(),
-            onRetry: () => this.controls.setMessage(
-                'Retry becomes active with the WP-011 practice lifecycle.'
-            )
+            onPauseChange: (paused) => void this.setPaused(paused),
+            onRetry: () => void this.retry()
         });
         if (this.args.previewLabel) {
             this.controls.root.dataset.preview = this.args.previewLabel;
@@ -59,6 +59,31 @@ export default class CombatScene extends Phaser.Scene {
         window.addEventListener('blur', this.onWindowBlur);
         document.addEventListener('visibilitychange', this.onVisibility);
         this.events.once(Phaser.Scenes.Events.SHUTDOWN, this.shutdown);
+        if (this.args.onSnapshot) {
+            this.unsubscribers.push(this.args.onSnapshot((snapshot) => this.acceptSnapshot(snapshot)));
+        }
+        if (this.args.onResult) {
+            this.unsubscribers.push(this.args.onResult((result) => this.showResult(result)));
+        }
+        if (this.args.onConnection) {
+            this.unsubscribers.push(this.args.onConnection((state) => {
+                const reconnecting = state === 'reconnecting';
+                this.controls.setConnectionSuspended(reconnecting);
+                this.controls.setMessage(reconnecting
+                    ? 'Reconnecting · controls are safely suspended'
+                    : this.snapshot.paused ? 'Practice paused · turn clock stopped' : '');
+            }));
+        }
+        if (this.args.onUnavailable) {
+            this.unsubscribers.push(this.args.onUnavailable((message) => {
+                if (this.transitioning) return;
+                this.transitioning = true;
+                this.scene.start('result', { calling: this.snapshot.calling, message });
+            }));
+        }
+        if (this.args.onError) {
+            this.unsubscribers.push(this.args.onError((message) => this.controls.setMessage(message)));
+        }
         this.onResize();
     }
 
@@ -71,22 +96,8 @@ export default class CombatScene extends Phaser.Scene {
         this.controls.root.dataset.lastCommand = command.type;
         try {
             const next = await this.args.submitCommand(command, this.snapshot.simulation.turn);
-            if (next.simulation.rulesetId !== 'nimble-knots-artillery-v2') {
-                throw new Error('Combat scene accepts only v2 challenge snapshots.');
-            }
-            if (next.revision < this.snapshot.revision) {
-                throw new Error('A stale challenge snapshot was ignored.');
-            }
-            this.snapshot = structuredClone(next);
-            this.controls.update(this.snapshot);
-            this.preview = this.controls.input.lockedAim
-                ? trajectoryPreview(
-                    this.snapshot.simulation as SimulationState,
-                    this.controls.input.lockedAim
-                )
-                : [];
+            this.acceptSnapshot(next);
             this.controls.setMessage('');
-            this.render();
             this.controls.submissionFinished(true);
         } catch (error) {
             this.controls.setMessage(error instanceof Error ? error.message : 'Command failed.');
@@ -95,6 +106,68 @@ export default class CombatScene extends Phaser.Scene {
             this.pendingCommand = false;
             this.controls.setBusy(false);
         }
+    }
+
+    private async setPaused(paused: boolean): Promise<void> {
+        if (this.pendingCommand || !this.args.setPaused) return;
+        this.pendingCommand = true;
+        this.controls.setBusy(true);
+        try {
+            const next = await this.args.setPaused(paused);
+            this.acceptSnapshot(next);
+            this.controls.setMessage(paused
+                ? 'Practice paused · turn clock stopped'
+                : 'Practice resumed');
+        } catch (error) {
+            this.controls.setMessage(error instanceof Error ? error.message : 'Pause request failed.');
+        } finally {
+            this.pendingCommand = false;
+            this.controls.setBusy(false);
+        }
+    }
+
+    private async retry(): Promise<void> {
+        if (this.pendingCommand || !this.args.retry) return;
+        this.pendingCommand = true;
+        this.controls.setBusy(true);
+        try {
+            const next = await this.args.retry();
+            this.preview = [];
+            this.acceptSnapshot(next);
+            this.controls.root.removeAttribute('data-last-command');
+            this.controls.setMessage('Fresh Practice Clash started');
+        } catch (error) {
+            this.controls.setMessage(error instanceof Error ? error.message : 'Retry failed.');
+        } finally {
+            this.pendingCommand = false;
+            this.controls.setBusy(false);
+        }
+    }
+
+    private acceptSnapshot(next: ChallengeSnapshot): void {
+        if (next.simulation.rulesetId !== 'nimble-knots-artillery-v2') {
+            this.controls?.setMessage('Combat scene accepts only v2 challenge snapshots.');
+            return;
+        }
+        if (next.challengeId === this.snapshot.challengeId && next.revision < this.snapshot.revision) {
+            return;
+        }
+        this.snapshot = structuredClone(next);
+        if (!this.controls) return;
+        this.controls.update(this.snapshot);
+        this.preview = this.controls.input.lockedAim && !this.snapshot.paused
+            ? trajectoryPreview(
+                this.snapshot.simulation as SimulationState,
+                this.controls.input.lockedAim
+            )
+            : [];
+        this.render();
+    }
+
+    private showResult(result: ChallengeResult): void {
+        if (this.transitioning || result.challengeId !== this.snapshot.challengeId) return;
+        this.transitioning = true;
+        this.scene.start('result', { result, calling: this.snapshot.calling });
     }
 
     private onResize(): void {
@@ -145,6 +218,7 @@ export default class CombatScene extends Phaser.Scene {
         window.removeEventListener('orientationchange', this.onViewportChange);
         window.removeEventListener('blur', this.onWindowBlur);
         document.removeEventListener('visibilitychange', this.onVisibility);
+        for (const unsubscribe of this.unsubscribers.splice(0)) unsubscribe();
         this.controls?.destroy();
         this.combatRenderer?.destroy();
     }

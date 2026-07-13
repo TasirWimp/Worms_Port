@@ -31,7 +31,16 @@ export function createCombatFixture(
                 simulation: transition.state as ChallengeSnapshot['simulation']
             } as ChallengeSnapshot;
             return structuredClone(snapshot);
-        }
+        },
+        setPaused: async (paused: boolean) => {
+            snapshot = {
+                ...snapshot,
+                paused,
+                revision: snapshot.revision + 1
+            } as ChallengeSnapshot;
+            return structuredClone(snapshot);
+        },
+        retry: async () => createCombatFixture(seed, calling).snapshot
     };
 }
 
@@ -49,6 +58,7 @@ function fixtureSnapshot(
         loomkeeperDifficulty: 'standard',
         loomkeeperPolicyId: 'nimble-knots-loomkeeper-v2',
         status: 'active',
+        paused: false,
         revision: simulation.revision,
         nextSequence: 0,
         expiresAt: '2099-01-01T00:00:00.000Z',

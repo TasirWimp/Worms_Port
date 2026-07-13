@@ -5,6 +5,7 @@ import { createLatestSimulation, createSimulation } from '../../shared/simulatio
 import {
     ChallengeCreateRequestSchema,
     ChallengeLeaveRequestSchema,
+    ChallengePauseRequestSchema,
     ChallengeResultSchema,
     ChallengeSnapshotSchema,
     CommandSubmitRequestSchema,
@@ -132,6 +133,15 @@ test('command schema accepts exact field boundaries and rejects unsafe intent', 
         sequence: 0,
         challengeId: 'a'.repeat(64)
     }).success, true);
+    assert.equal(ChallengePauseRequestSchema.safeParse({
+        requestId, sequence: 1, challengeId, paused: true
+    }).success, true);
+    assert.equal(ChallengePauseRequestSchema.safeParse({
+        requestId, sequence: 1, challengeId, paused: 'true'
+    }).success, false);
+    assert.equal(ChallengePauseRequestSchema.safeParse({
+        requestId, sequence: 1, challengeId, paused: false, extra: true
+    }).success, false);
 });
 
 test('response schemas are strict and carry versioned timing metadata', () => {
@@ -154,6 +164,7 @@ test('response schemas are strict and carry versioned timing metadata', () => {
         loomkeeperPolicyId: 'nimble-knots-loomkeeper-v1' as const,
         loomkeeperDifficulty: 'standard' as const,
         status: 'active' as const,
+        paused: false,
         revision: 0,
         nextSequence: 1,
         expiresAt,

@@ -44,8 +44,10 @@ npm run test:simulation
 npm run test:loomkeeper
 npm run test:relics
 npm run test:combat
+npm run test:practice
 npm run test:browser:smoke
 npm run test:browser:combat
+npm run test:browser:practice
 npm start
 ```
 
@@ -66,9 +68,11 @@ fails.
 The active Socket.IO transport uses strict v1 request/acknowledgement schemas
 and server-issued 256-bit opaque session tokens. Socket.IO IDs are transport
 details and are never accepted from callers as player identity. Practice
-sessions work without a wallet; signed sessions and rewarded challenges have
-validated placeholder contracts but remain unavailable until their dedicated
-work packages.
+sessions work without a wallet. The default client creates live v2 Practice
+Clashes, submits ordered commands, consumes authoritative snapshots and
+results, and reconnects with the rotated session token. Signed sessions and
+rewarded challenges have validated placeholder contracts but remain
+unavailable until their dedicated work packages.
 
 Production deployments should set `ALLOWED_ORIGINS` to a comma-separated list
 of additional trusted origins when same-origin access is insufficient. Missing
@@ -107,7 +111,27 @@ Spoolburst (terrain/control). They share aim, power, movement, collision, and
 turn rules; only their disclosed crater, damage radius, and maximum damage
 bounds differ. No production Relic art is shipped yet.
 
-## Phone Combat Preview
+## Complete Practice Clash
+
+The default `/` journey is the first complete playable: choose Wizard, Thief,
+or Warrior, start an unlimited non-rewarded Practice Clash, fight the standard
+deterministic Loomkeeper, view the authoritative result, and retry with a fresh
+challenge ID and seed. Practice does not require a wallet, matchmaking, another
+player, or reward availability.
+
+The live adapter owns request IDs, the ordered transport cursor, strict
+acknowledgements, monotonic challenge revisions, reconnect snapshots, and
+single result delivery. Disconnects suspend controls. A resumed session keeps
+the same authoritative match; a lost in-memory session clearly offers a fresh
+Practice Clash rather than implying restart recovery.
+
+Practice pause uses the ordered `v1:challenge.pause` operation. It is available
+only while an active practice match awaits the player's command, stops that
+challenge's authoritative tick advancement, survives reconnect, and rejects
+gameplay commands until resumed. Session and challenge expiry still bound
+in-memory retention.
+
+## Phone Combat Fixture
 
 WP-010 provides a portrait-first Phaser battlefield and touch-control surface
 at `/?combat-preview=1`. It renders the v2 1024x576 logical Patch, packed
@@ -117,12 +141,9 @@ Movement and aim pads have single-pointer ownership; aim release locks without
 firing, while Fire is a separate minimum-size action. Cancellation, release
 outside, blur, backgrounding, resize, and orientation changes fail safe.
 
-The preview route uses a deterministic local adapter intentionally. It proves
-the scene and typed snapshot-to-command boundary but does not create or resume
-a server challenge. Pause suspends client input while the authoritative clock
-contract remains unchanged, and Retry is an affordance only. WP-011 owns the
-complete practice lifecycle, live protocol adapter, results, authoritative
-practice pause, and actual retry behavior.
+The preview route remains a deterministic local test adapter intentionally. It
+proves the scene and typed snapshot-to-command boundary but is not an alternate
+offline product mode. The default product journey always uses the live server.
 
 ## Hosting
 

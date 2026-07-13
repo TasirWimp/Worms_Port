@@ -8,8 +8,8 @@ Phaser/Socket.IO stack.
 ## Execution Pointer
 
 - Active target: mobile-first single-player Nimiq Pay competition release.
-- Next work package: **WP-011 Complete Practice Clash**.
-- Last completed work package: **WP-010 Phone Combat Scene**.
+- Next work package: **WP-012 Nimiq Pay Identity Adapter**.
+- Last completed work package: **WP-011 Complete Practice Clash**.
 - PvP and matchmaking: deferred until after the competition release.
 - Canonical artwork reference:
   `docs/images/art-direction/knotkin-class-lineup-concept.png`.
@@ -66,9 +66,9 @@ guardrails for this selected host.
   npm package license policy.
 - No Sorcerers product assets or Sorcerers code are imported.
 - WP-003 established NIMble Knots and the canonical Knotkin Calling lineup.
-- The current runtime has a session-bound lobby/reconnect shell plus a separate
-  portrait-first combat preview over the validated v2 snapshot/command
-  boundary. WP-011 still owns the complete live practice lifecycle.
+- The default runtime is a complete server-backed Practice Clash from Calling
+  selection through combat, authoritative result, reconnect, pause, and retry.
+  The deterministic combat preview remains a separate test-only fixture.
 - WP-005 provides tooling tests plus fresh-build phone Chromium/WebKit smoke.
 - WP-006 provides strict schema tests and a real `socket.io-client` protocol
   suite. The full gameplay phone matrix and visual-regression suites do not yet
@@ -84,7 +84,10 @@ guardrails for this selected host.
 - WP-010 provides the fixed-world Phaser battlefield, code-drawn combat
   presentation, touch input state machine, cloned-state trajectory preview,
   and its focused Chromium/WebKit phone matrix.
-- Complete practice lifecycle, the expanded phone matrix, and visual
+- WP-011 provides the complete live server-backed Practice Clash lifecycle,
+  authoritative pause/retry, reconnect suspension, and its focused
+  Chromium/WebKit phone matrix.
+- Nimiq Pay identity/reward work, the expanded phone matrix, and visual
   regression remain.
 
 ## Codex Subagent Roles
@@ -506,13 +509,14 @@ code-drawn without runtime assets. The advisory trace is reconstructed through
 the shared simulation API from a detached clone and recomputed after accepted
 snapshots. Cancellation, release outside, blur, backgrounding, resize,
 orientation, and scene shutdown clear transient input. Five focused tests and
-sixteen built-browser cases cover the documented WP-010 matrix; the legacy
-smoke suite now runs eight cases over the same projects. The deterministic
-`combat-preview` fixture is intentionally not the WP-011 live practice flow.
+sixteen built-browser cases cover the documented WP-010 matrix; the foundation
+smoke suite now runs eight live-practice cases over the same projects. The
+deterministic `combat-preview` fixture is intentionally not the WP-011 live
+practice flow.
 
 ### WP-011 Complete Practice Clash
 
-Status: planned. Depends on WP-008, WP-009, and WP-010.
+Status: complete. Depends on WP-008, WP-009, and WP-010.
 
 Goal: deliver an immediate, unlimited, non-rewarded player-versus-Loomkeeper
 match through the live session/challenge protocol and authoritative v2
@@ -606,6 +610,24 @@ Physical Android/iOS and Nimiq Pay WebView testing remain not run until the
 separate release-testing environment exists. WP-014 still owns 412x915,
 visual-regression baselines, low-bandwidth/offline/resume, bundle/performance,
 and the complete competition-candidate quality gate.
+
+Delivered: the default phone route now selects one of the three equal-stat
+Callings and creates a live v2 practice challenge without wallet or matchmaking
+dependencies. A scoped client adapter owns strict acknowledgements, request
+IDs, sequence advancement, stale/conflicting snapshot rejection, bootstrap
+snapshot/result buffering, reconnect suspension, and result deduplication. The
+combat scene consumes asynchronous Loomkeeper and timer authority, while a
+separate result scene exposes final tick/hash and Play Again or Calling-change
+actions. Retry closes an active challenge and creates a fresh ID and seed.
+
+`v1:challenge.pause` adds strict ordered practice-only pause/resume. Server
+snapshots expose pause state and a monotonic challenge revision independent of
+the embedded simulation revision. Paused matches stop coordinator ticks,
+reject gameplay commands, retain state across reconnect, and resume at the same
+tick; session/challenge expiry remains bounded. Focused client, coordinator,
+schema, and real Socket.IO tests cover ordering and pause authority. The built
+Chromium/WebKit phone suites cover onboarding, live commands, pause, automated
+Loomkeeper handoff, reconnect, and fresh retry without using the fixture route.
 
 ### WP-012 Nimiq Pay Identity Adapter
 

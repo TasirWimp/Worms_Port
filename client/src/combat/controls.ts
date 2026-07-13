@@ -28,7 +28,10 @@ export class CombatControls {
     private readonly timer: HTMLElement;
     private snapshot: ChallengeSnapshot;
     private paused = false;
+    private suspended = false;
     private submitting = false;
+    private snapshotReceivedAt = performance.now();
+    private readonly timerInterval: number;
 
     public constructor(
         parent: HTMLElement,
@@ -86,11 +89,14 @@ export class CombatControls {
             this.refresh();
             this.callbacks.onCommand({ type: 'fire' });
         });
-        this.pauseButton.addEventListener('click', () => this.setPaused(!this.paused));
+        this.pauseButton.addEventListener('click', () => {
+            if (this.canPause()) this.callbacks.onPauseChange(!this.paused);
+        });
         this.retryButton.addEventListener('click', () => this.callbacks.onRetry());
         this.bindPad(this.movementZone, 'movement');
         this.bindPad(this.aimZone, 'aim');
         this.update(snapshot);
+        this.timerInterval = window.setInterval(() => this.refresh(), 250);
     }
 
     public setLayout(layout: CombatLayout): void {
@@ -103,6 +109,8 @@ export class CombatControls {
 
     public update(snapshot: ChallengeSnapshot): void {
         this.snapshot = snapshot;
+        this.snapshotReceivedAt = performance.now();
+        this.syncPaused(snapshot.paused);
         if (!this.submitting) this.input.syncAuthoritativeAim(snapshot.simulation.aim);
         this.refresh();
     }
@@ -115,6 +123,16 @@ export class CombatControls {
 
     public setBusy(busy: boolean): void {
         this.submitting = busy;
+        this.refresh();
+    }
+
+    public setConnectionSuspended(suspended: boolean): void {
+        this.suspended = suspended;
+        if (suspended) this.input.suspend();
+        else if (!this.paused) this.input.resume();
+        this.resetKnob(this.movementKnob);
+        this.resetKnob(this.aimKnob);
+        this.callbacks.onAimPreview(this.input.lockedAim);
         this.refresh();
     }
 
@@ -133,6 +151,7 @@ export class CombatControls {
     }
 
     public destroy(): void {
+        window.clearInterval(this.timerInterval);
         this.root.remove();
     }
 
@@ -185,20 +204,26 @@ export class CombatControls {
         zone.addEventListener('lostpointercapture', cancel);
     }
 
-    private setPaused(paused: boolean): void {
+    private syncPaused(paused: boolean): void {
+        const changed = this.paused !== paused;
         this.paused = paused;
         if (paused) this.input.suspend();
-        else this.input.resume();
+        else if (!this.suspended) this.input.resume();
+        if (!changed) return;
         this.resetKnob(this.movementKnob);
         this.resetKnob(this.aimKnob);
         this.callbacks.onAimPreview(this.input.lockedAim);
-        this.callbacks.onPauseChange(paused);
-        this.setMessage(paused ? 'Client paused · authoritative turn clock continues' : '');
-        this.refresh();
     }
 
     private canSubmit(): boolean {
-        return !this.paused && !this.submitting &&
+        return !this.paused && !this.suspended && !this.submitting &&
+            this.snapshot.status === 'active' &&
+            this.snapshot.simulation.phase === 'awaiting_command' &&
+            this.snapshot.simulation.activeActor === 'player';
+    }
+
+    private canPause(): boolean {
+        return !this.suspended && !this.submitting &&
             this.snapshot.status === 'active' &&
             this.snapshot.simulation.phase === 'awaiting_command' &&
             this.snapshot.simulation.activeActor === 'player';
@@ -208,16 +233,27 @@ export class CombatControls {
         const simulation = this.snapshot.simulation;
         const player = simulation.units[0];
         const loomkeeper = simulation.units[1];
+        const elapsedTicks = this.paused || this.suspended
+            ? 0
+            : Math.floor((performance.now() - this.snapshotReceivedAt) * SIM_RULES.tickRate / 1_000);
+        const displayedTick = Math.min(simulation.turnDeadlineTick, simulation.tick + elapsedTicks);
         const seconds = Math.max(0, Math.ceil(
-            (simulation.turnDeadlineTick - simulation.tick) / SIM_RULES.tickRate
+            (simulation.turnDeadlineTick - displayedTick) / SIM_RULES.tickRate
         ));
-        this.status.textContent = simulation.activeActor === 'player' ? 'Your turn' : 'Loomkeeper weaving';
+        this.status.textContent = this.paused
+            ? 'Practice paused'
+            : simulation.activeActor === 'player' ? 'Your turn' : 'Loomkeeper weaving';
         this.stitching.textContent = `Stitching ${player.stitching} · ${loomkeeper.stitching}`;
         this.timer.textContent = `${seconds}s`;
         this.root.dataset.phase = this.input.phase;
         this.root.dataset.selectedRelic = simulation.selectedRelic;
         this.root.dataset.turn = String(simulation.turn);
+        this.root.dataset.revision = String(this.snapshot.revision);
+        this.root.dataset.simulationTick = String(simulation.tick);
+        this.root.dataset.challengeId = this.snapshot.challengeId;
+        this.root.dataset.calling = this.snapshot.calling;
         this.root.dataset.paused = String(this.paused);
+        this.root.dataset.suspended = String(this.suspended);
         this.root.dataset.activeActor = simulation.activeActor;
         this.root.dataset.playerX = String(player.x);
         this.root.classList.toggle('is-paused', this.paused);
@@ -229,7 +265,9 @@ export class CombatControls {
         }
         this.fireButton.disabled = !canSubmit || this.input.phase !== 'aim_locked';
         this.pauseButton.textContent = this.paused ? 'Resume' : 'Pause';
+        this.pauseButton.disabled = !this.canPause();
         this.pauseButton.setAttribute('aria-pressed', String(this.paused));
+        this.retryButton.disabled = this.suspended || this.submitting;
         this.movementZone.setAttribute('aria-disabled', String(!canSubmit));
         this.aimZone.setAttribute('aria-disabled', String(!canSubmit));
     }
