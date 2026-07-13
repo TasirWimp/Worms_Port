@@ -515,14 +515,97 @@ smoke suite now runs eight cases over the same projects. The deterministic
 Status: planned. Depends on WP-008, WP-009, and WP-010.
 
 Goal: deliver an immediate, unlimited, non-rewarded player-versus-Loomkeeper
-match with onboarding, results, challenge creation, actual retry behavior,
-authoritative practice pause semantics, and deterministic local/server modes.
+match through the live session/challenge protocol and authoritative v2
+simulation. Practice starts without a wallet, matchmaking, another player, or
+a reward pool. The server-backed path is the only product lifecycle in this
+package. The deterministic `combat-preview` route remains a test-only adapter
+harness; an offline/local product mode is not part of the competition release.
+
+Lifecycle contract:
+
+- keep onboarding, live protocol/session ownership, combat presentation, and
+  results as separate typed responsibilities rather than extending the legacy
+  room scene into one controller,
+- let the player choose Wizard, Thief, or Warrior before creating a `practice`
+  challenge; the three Callings retain identical gameplay statistics,
+- open or resume the opaque-token session, create the challenge through
+  `v1:challenge.create`, submit gameplay through `v1:command.submit`, and
+  consume `v1:challenge.snapshot` and `v1:challenge.result` as the only live
+  gameplay authority,
+- make the live client adapter own request IDs, the server-provided next
+  sequence, acknowledgement correlation, one in-flight mutation, strict typed
+  errors, and listener cleanup; UI and Phaser code never manufacture transport
+  authority,
+- replace presentation only from the newest accepted authoritative challenge
+  revision and state hash. The challenge revision is monotonic across both
+  simulation updates and lifecycle-only pause/resume changes; it must never be
+  reset from the embedded simulation revision. A stale acknowledgement,
+  delayed snapshot, duplicate event, or local trajectory preview cannot roll
+  state backward,
+- suspend controls during disconnect and resume the same active challenge from
+  the complete server snapshot and next sequence. Do not replay speculative
+  client commands after reconnect,
+- present exactly one terminal result for player win, Loomkeeper win, draw,
+  leave, or expiry, with its authoritative final hash and retry action, and
+- make Retry close or leave any active challenge when required, then create a
+  fresh practice challenge with a new challenge ID and seed. The prior
+  challenge must reject further commands.
+
+Practice pause contract:
+
+- add one strict, versioned, session-authorized and sequence-checked protocol
+  operation that sets the paused state idempotently; do not encode pause as a
+  simulation command or client-only timer adjustment,
+- allow authoritative pause only for an active practice challenge during the
+  player's `awaiting_command` phase. Reward challenges and Loomkeeper turns
+  reject it without changing transport or simulation state beyond the normal
+  sequence contract,
+- expose the accepted pause state in the authoritative challenge snapshot.
+  While paused, the coordinator does not advance that challenge's simulation
+  ticks or turn deadline and gameplay commands are rejected; leave and retry
+  remain available,
+- resume from the same simulation tick and remaining turn budget. Session and
+  overall challenge expiry continue to bound retained in-memory state, and
+- retain pause state across a transient reconnect. Client input remains
+  suspended until the server acknowledges resume and provides the current
+  authoritative snapshot.
+
+Failure contract: a Render process restart or expired session may end an
+in-memory practice match. The client must say that the match cannot be resumed
+and offer a fresh Practice Clash; WP-011 does not imply durable recovery.
+
+Non-goals: wallet or Nimiq Pay integration, rewarded challenges, claims,
+leaderboards, sharing, PvP, offline/local product play, durable restart
+recovery, production art/audio, and the expanded WP-014 visual, degraded
+network, 412x915, and performance gates.
 
 Owning roles: `worms_port_base_game_worker`, `worms_port_network_worker`,
-`worms_port_test_worker`.
+`worms_port_test_worker`, `worms_port_reviewer`.
 
-Verification: complete touch journey on the browser phone matrix, two full
-golden matches, result consistency, reconnect/resume, visual evidence, build.
+Verification:
+
+- focused client lifecycle and protocol-schema tests for request/sequence
+  ownership, stale and duplicate delivery, pause authorization/state, retry,
+  listener cleanup, and fail-closed error handling,
+- real Socket.IO journeys for creation, player commands, automated Loomkeeper
+  turns, pause/resume, terminal result, leave, retry, and reconnect from both a
+  player turn and a pending Loomkeeper handoff,
+- one deterministic player-win golden match and one deterministic non-win
+  golden match, with final result, snapshot, replay hash, and reconstructed
+  state in agreement,
+- a complete touch-only onboarding-to-retry browser journey on Chromium at
+  360x640, 390x844, and 844x390 plus WebKit at 390x844, using the live local
+  server rather than `combat-preview`,
+- process-loss/session-expiry coverage that clearly offers a fresh Practice
+  Clash without claiming the old in-memory match was recovered,
+- screenshots and traces outside `assets/`; compliance, types, focused unit,
+  simulation, Loomkeeper, Relic, combat, protocol, clean build, built smoke,
+  browser smoke, live-practice browser checks, audit, and read-only review.
+
+Physical Android/iOS and Nimiq Pay WebView testing remain not run until the
+separate release-testing environment exists. WP-014 still owns 412x915,
+visual-regression baselines, low-bandwidth/offline/resume, bundle/performance,
+and the complete competition-candidate quality gate.
 
 ### WP-012 Nimiq Pay Identity Adapter
 
