@@ -25,6 +25,14 @@ test('work-package evidence enforces schema fields and clean-room linkage', () =
   assert.match(validateEvidence([{ ...base, unexpected: true }], [], () => hash).join('\n'), /unexpected field/);
   assert.match(validateEvidence([{ ...base, check_results: 'invalid' }], [], () => hash).join('\n'), /must be an array/);
   assert.match(validateEvidence([{ ...base, starting_lock_sha256: 'B'.repeat(64) }], [], () => hash).join('\n'), /hash mismatch/);
+  assert.match(validateEvidence([base], [], () => null).join('\n'), /cannot be resolved/);
+  assert.deepEqual(validateEvidence(
+    [base], [], () => null, { allowUnresolvedHistory: true }
+  ), []);
+  assert.match(validateEvidence(
+    [{ ...base, starting_lock_sha256: 'invalid' }], [], () => null,
+    { allowUnresolvedHistory: true }
+  ).join('\n'), /invalid lock hash/);
 
   const cleanRecord = { id: 'observed-behavior', work_package: 'WP-998' };
   const linked = { ...base, sorcerers_reference_used: true, clean_room_records: [cleanRecord.id] };

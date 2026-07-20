@@ -29,10 +29,27 @@ function canonicalLockHash(commit, root = repoRoot) {
   }
 }
 
-function validateEvidence(records, cleanRoomRecords, resolveLockHash = canonicalLockHash) {
+function isShallowRepository(root = repoRoot) {
+  try {
+    return childProcess.execFileSync(
+      'git', ['rev-parse', '--is-shallow-repository'],
+      { cwd: root, encoding: 'utf8', stdio: ['ignore', 'pipe', 'ignore'] }
+    ).trim() === 'true';
+  } catch (error) {
+    return false;
+  }
+}
+
+function validateEvidence(
+  records,
+  cleanRoomRecords,
+  resolveLockHash = canonicalLockHash,
+  options = {}
+) {
   const errors = [];
   const ids = new Set();
   const cleanRoomById = new Map(cleanRoomRecords.map((record) => [record.id, record]));
+  const allowUnresolvedHistory = options.allowUnresolvedHistory === true;
 
   for (const evidence of records) {
     const label = evidence.id || '<missing id>';
@@ -67,8 +84,13 @@ function validateEvidence(records, cleanRoomRecords, resolveLockHash = canonical
     if (!/^[0-9A-F]{64}$/.test(evidence.starting_lock_sha256 || '')) errors.push(`${label}: invalid lock hash.`);
 
     const actualLockHash = resolveLockHash(evidence.starting_commit);
-    if (!actualLockHash) errors.push(`${label}: starting commit or package-lock.json cannot be resolved.`);
-    else if (actualLockHash !== evidence.starting_lock_sha256) errors.push(`${label}: starting lock hash mismatch.`);
+    if (!actualLockHash) {
+      if (!allowUnresolvedHistory) {
+        errors.push(`${label}: starting commit or package-lock.json cannot be resolved.`);
+      }
+    } else if (actualLockHash !== evidence.starting_lock_sha256) {
+      errors.push(`${label}: starting lock hash mismatch.`);
+    }
 
     if (typeof evidence.sorcerers_reference_used !== 'boolean') {
       errors.push(`${label}: sorcerers_reference_used must be explicit.`);
@@ -124,7 +146,15 @@ function main() {
   const files = fs.readdirSync(evidenceRoot).filter((file) => file.endsWith('.json'));
   const records = files.map((file) => JSON.parse(fs.readFileSync(path.join(evidenceRoot, file), 'utf8')));
   const cleanRoom = JSON.parse(fs.readFileSync(path.join(repoRoot, 'legal', 'clean-room-records.json'), 'utf8'));
-  const errors = validateEvidence(records, cleanRoom.records || []);
+  const allowUnresolvedHistory =
+    process.env.ALLOW_SHALLOW_WORK_PACKAGE_EVIDENCE === 'true' &&
+    isShallowRepository();
+  const errors = validateEvidence(
+    records,
+    cleanRoom.records || [],
+    canonicalLockHash,
+    { allowUnresolvedHistory }
+  );
 
   if (errors.length) {
     console.error('Work-package evidence compliance failed:');
@@ -133,9 +163,12 @@ function main() {
     return;
   }
 
+  if (allowUnresolvedHistory) {
+    console.log('Shallow checkout: historical lock resolution was unavailable by design.');
+  }
   console.log(`Work-package evidence compliance passed (${files.length} record(s)).`);
 }
 
 if (require.main === module) main();
 
-module.exports = { canonicalLockHash, validateEvidence };
+module.exports = { canonicalLockHash, isShallowRepository, validateEvidence };

@@ -152,6 +152,13 @@ The existing Node process serves both the built client and Socket.IO runtime,
 keeping the current in-memory authority boundary on one persistent instance.
 Render Free is limited to private previews because it may sleep and cold-start.
 
+Render's build checkout is shallow and does not expose the Git remote. Set
+`ALLOW_SHALLOW_WORK_PACKAGE_EVIDENCE=true` only on that service and use
+`npm ci && npm run build`. This preserves all current-tree compliance checks;
+only historical starting-commit lookup is skipped after the checker confirms
+the repository is actually shallow. GitHub Actions fetches full history and
+continues to enforce every historical lock pin before integration.
+
 Do not enable horizontal scaling until sessions, simulations, Loomkeeper turns,
 replays, and reward state use shared durable storage with exactly-once leases
 and cross-instance event delivery. Sponsor-funded rewards additionally require

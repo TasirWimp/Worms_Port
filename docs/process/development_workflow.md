@@ -294,6 +294,11 @@ single-process authority boundary.
 - Production configuration must include HTTPS, the Render public origin in
   `ALLOWED_ORIGINS`, health checks, secret separation, spending alerts, rollback
   evidence, and rewards disabled by default.
+- Render's shallow, remote-less build checkout sets
+  `ALLOW_SHALLOW_WORK_PACKAGE_EVIDENCE=true`. The evidence checker accepts that
+  opt-in only when Git confirms a shallow repository; it still validates every
+  evidence field and current compliance gate. GitHub Actions uses full history
+  and remains the authoritative historical starting-lock verification.
 
 Hosting choice checked 2026-07-12 against Render's official pricing, WebSocket,
 free-service, and region documentation:
