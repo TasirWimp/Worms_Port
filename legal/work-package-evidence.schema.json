@@ -19,7 +19,7 @@
     "clean_room_records"
   ],
   "properties": {
-    "id": { "type": "string", "pattern": "^WP-[0-9]{3}$" },
+    "id": { "type": "string", "pattern": "^WP-[0-9]{3}[A-Z]?$" },
     "status": { "enum": ["in_progress", "complete", "blocked"] },
     "starting_commit": { "type": "string", "pattern": "^[0-9a-f]{7,40}$" },
     "branch": { "type": "string", "minLength": 1 },

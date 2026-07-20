@@ -77,7 +77,7 @@ function validateEvidence(
 
     if (ids.has(evidence.id)) errors.push(`${label}: duplicate work-package id.`);
     ids.add(evidence.id);
-    if (!/^WP-\d{3}$/.test(evidence.id || '')) errors.push(`${label}: invalid work-package id.`);
+    if (!/^WP-\d{3}[A-Z]?$/.test(evidence.id || '')) errors.push(`${label}: invalid work-package id.`);
     if (!['in_progress', 'complete', 'blocked'].includes(evidence.status)) errors.push(`${label}: invalid status.`);
     if (!/^[0-9a-f]{7,40}$/.test(evidence.starting_commit || '')) errors.push(`${label}: invalid starting_commit.`);
     if (!['clean', 'dirty-preserved'].includes(evidence.initial_worktree)) errors.push(`${label}: invalid initial_worktree.`);

@@ -59,9 +59,14 @@ test('portrait/landscape layout is touch-safe and renders deterministic combat',
 });
 
 test('touch movement, Relic selection, aim lock, and explicit Fire stay separate', async ({ page }) => {
+  const startX = Number(await page.locator('.combat-ui').getAttribute('data-player-x'));
   await dragPad(page, '.movement-zone', 1, 0.36, 0);
   await expect(page.locator('.combat-ui')).toHaveAttribute('data-last-command', 'move');
-  await expect(page.locator('.combat-ui')).toHaveAttribute('data-player-x', '200');
+  await expect.poll(async () => Math.abs(
+    Number(await page.locator('.combat-ui').getAttribute('data-player-x')) - startX
+  )).toBeGreaterThanOrEqual(8);
+  await expect(page.locator('.combat-ui')).toHaveAttribute('data-presenting', 'false');
+  await expect(page.locator('.combat-ui')).toHaveAttribute('data-preview-points', '0');
 
   await page.getByRole('button', { name: 'Select Needlepoint' }).tap();
   await expect(page.locator('.combat-ui')).toHaveAttribute('data-selected-relic', 'needlepoint');
@@ -75,11 +80,33 @@ test('touch movement, Relic selection, aim lock, and explicit Fire stay separate
   await expect(page.locator('.fire-button')).toBeEnabled();
   await expect(page.locator('.combat-ui')).not.toHaveAttribute('data-last-command', 'fire');
 
+  await dragPad(page, '.movement-zone', 3, -0.36, 0);
+  await expect(page.locator('.combat-ui')).toHaveAttribute('data-presenting', 'false');
+  await expect(page.locator('.combat-ui')).toHaveAttribute('data-preview-points', '0');
+  await expect(page.locator('.fire-button')).toBeDisabled();
+  await expect(page.getByText(/aim again/i)).toBeVisible();
+  await dragPad(page, '.aim-zone', 4, 0.3, -0.34);
+  await expect(page.locator('.fire-button')).toBeEnabled();
+
+  await installPresentationRecorder(page);
   await page.locator('.fire-button').tap();
   await expect(page.locator('.combat-ui')).toHaveAttribute('data-last-command', 'fire');
   await expect(page.locator('.combat-ui')).toHaveAttribute('data-active-actor', 'loomkeeper');
+  await expect(page.locator('.combat-ui')).toHaveAttribute('data-presenting', 'false');
   await expect(page.locator('.combat-ui')).toHaveAttribute('data-preview-points', '0');
   await expect(page.locator('.fire-button')).toBeDisabled();
+  const presentation = await readPresentationRecorder(page);
+  expect(presentation.phases).toEqual(expect.arrayContaining([
+    'player-projectile', 'player-impact'
+  ]));
+  expect(presentation.maximumProjectilePoints).toBeGreaterThan(1);
+});
+
+test('compact landscape visual viewport keeps every control visible and separate', async ({ page }, testInfo) => {
+  await page.setViewportSize({ width: 800, height: 300 });
+  await expect(page.locator('.combat-ui')).toHaveAttribute('data-orientation', 'landscape');
+  await assertControlsFit(page);
+  await page.screenshot({ path: testInfo.outputPath('wp-011a-compact-landscape.png') });
 });
 
 test('pointer transfer, cancellation, release outside, pause, and retry fail safe', async ({ page }) => {
@@ -185,4 +212,63 @@ function overlaps(
 ): boolean {
   return a.x < b.x + b.width && a.x + a.width > b.x &&
     a.y < b.y + b.height && a.y + a.height > b.y;
+}
+
+async function assertControlsFit(page: Page): Promise<void> {
+  const viewport = await page.evaluate(() => ({
+    width: window.visualViewport?.width ?? window.innerWidth,
+    height: window.visualViewport?.height ?? window.innerHeight
+  }));
+  const boxes = await Promise.all([
+    page.locator('.movement-zone').boundingBox(),
+    page.locator('.aim-zone').boundingBox(),
+    page.locator('.combat-actions').boundingBox()
+  ]);
+  for (const box of boxes) {
+    expect(box).not.toBeNull();
+    expect(box!.x).toBeGreaterThanOrEqual(0);
+    expect(box!.y).toBeGreaterThanOrEqual(0);
+    expect(box!.x + box!.width).toBeLessThanOrEqual(viewport.width + 1);
+    expect(box!.y + box!.height).toBeLessThanOrEqual(viewport.height + 1);
+  }
+  expect(overlaps(boxes[0]!, boxes[1]!)).toBe(false);
+  expect(overlaps(boxes[0]!, boxes[2]!)).toBe(false);
+  expect(overlaps(boxes[1]!, boxes[2]!)).toBe(false);
+  for (const button of await page.locator('.combat-actions button').all()) {
+    const box = await button.boundingBox();
+    expect(box).not.toBeNull();
+    expect(box!.x + box!.width).toBeLessThanOrEqual(viewport.width + 1);
+    expect(box!.y + box!.height).toBeLessThanOrEqual(viewport.height + 1);
+  }
+}
+
+async function installPresentationRecorder(page: Page): Promise<void> {
+  await page.locator('.combat-ui').evaluate((element) => {
+    const state = { phases: [] as string[], maximumProjectilePoints: 0 };
+    (window as typeof window & { __combatPresentation?: typeof state }).__combatPresentation = state;
+    const record = () => {
+      const phase = (element as HTMLElement).dataset.presentation;
+      if (phase && state.phases.at(-1) !== phase) state.phases.push(phase);
+      state.maximumProjectilePoints = Math.max(
+        state.maximumProjectilePoints,
+        Number((element as HTMLElement).dataset.projectilePoints || 0)
+      );
+    };
+    new MutationObserver(record).observe(element, {
+      attributes: true,
+      attributeFilter: ['data-presentation', 'data-projectile-points']
+    });
+    record();
+  });
+}
+
+async function readPresentationRecorder(page: Page): Promise<{
+  phases: string[];
+  maximumProjectilePoints: number;
+}> {
+  return page.evaluate(() => (
+    window as typeof window & {
+      __combatPresentation: { phases: string[]; maximumProjectilePoints: number }
+    }
+  ).__combatPresentation);
 }

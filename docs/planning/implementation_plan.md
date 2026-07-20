@@ -8,7 +8,8 @@ Phaser/Socket.IO stack.
 ## Execution Pointer
 
 - Active target: mobile-first single-player Nimiq Pay competition release.
-- Next work package: **WP-011A Real-device Gameplay Stabilization**.
+- Next work package: **WP-011A Real-device Gameplay Stabilization** (implementation
+  complete; Samsung Galaxy S22 Nimiq Pay acceptance pending).
 - Last completed work package: **WP-011 Complete Practice Clash**.
 - PvP and matchmaking: deferred until after the competition release.
 - Canonical artwork reference:
@@ -91,7 +92,9 @@ guardrails for this selected host.
 - A first Samsung Galaxy S22 acceptance pass in Nimiq Pay confirmed the initial
   Practice Clash core loop, but found repeated-match result, movement and aim,
   turn presentation, trajectory lifecycle, and landscape layout regressions.
-  WP-011A is the blocking stabilization slice for those findings.
+  WP-011A now has an implemented and automated stabilization candidate. Its
+  physical Samsung Galaxy S22 portrait/landscape re-test remains the blocking
+  acceptance gate before WP-012 starts.
 - Nimiq Pay identity/reward work, the expanded phone matrix, and visual
   regression remain.
 
@@ -636,7 +639,8 @@ Loomkeeper handoff, reconnect, and fresh retry without using the fixture route.
 
 ### WP-011A Real-device Gameplay Stabilization
 
-Status: planned. Depends on WP-011. Blocks WP-012.
+Status: implementation complete; Samsung Galaxy S22 Nimiq Pay acceptance
+pending. Depends on WP-011. Blocks WP-012.
 
 Goal: close the real-device acceptance gap between a correct authoritative
 Practice Clash and a clearly readable, repeatable touch experience. Preserve
@@ -729,6 +733,33 @@ Verification:
 - compliance, types, focused tests, build, built smoke, and phone-browser smoke.
   Store automated screenshots, video, and traces outside `assets/`. Record the
   user-run physical-device result separately from the autonomous checks.
+
+Delivered candidate: scene-local transition and presentation state now resets
+for every fresh challenge, and a live deterministic browser journey completes
+two consecutive Clashes with distinct challenge IDs and seeds and one result
+screen per match. Accepted authority is separated from rendered state through a
+bounded presentation queue that shows player movement/projectile/impact and
+Loomkeeper movement/aim/projectile/impact phases before final terrain, Stitching,
+turn, or result state is exposed. Reconnect cancels presentation and snaps to the
+newest authoritative snapshot; reduced motion retains the causal phases with
+shorter durations.
+
+Movement drag strength submits up to four existing bounded movement commands,
+animates accepted displacement, reports blocked movement, clears the prior aim,
+and requires a new aim before Fire. Advisory trajectories clear across Fire,
+movement, turn handoff, reconnect, result, and challenge replacement. The game
+shell now follows `visualViewport`; compact landscape keeps movement, aim, and
+all six action buttons visible and separate at an 800x300 usable viewport.
+Deterministic test-only seed injection is enabled only under `NODE_ENV=test` for
+repeatable consecutive-match browser evidence. No simulation, Loomkeeper,
+Relic, replay, protocol authority, product asset, dependency, or hosting rule
+changed.
+
+Automated candidate verification passes the full compliance/type/unit/protocol/
+build/smoke/audit funnel, twenty combat browser cases, and thirteen live-practice
+browser cases (with three intentional project skips). The required Samsung
+Galaxy S22 Nimiq Pay portrait/landscape re-test has not yet been run, so WP-011A
+remains the execution pointer and WP-012 remains blocked.
 
 ### WP-012 Nimiq Pay Identity Adapter
 

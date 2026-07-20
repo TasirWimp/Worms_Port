@@ -171,6 +171,34 @@ and result presentation remain separate typed responsibilities.
   the old active marker and exposes a fresh-Practice recovery action; durable
   restart recovery remains outside WP-011.
 
+### Real-device Gameplay Presentation
+
+WP-011A keeps protocol truth and presentation state separate. The newest valid
+snapshot is accepted immediately for sequencing and reconnect correctness, while
+a bounded client queue presents accepted revisions in causal order. Presentation
+may interpolate an authoritative movement or reveal an authoritative projectile
+trace progressively; it must never invent a command, collision, damage value,
+terrain mutation, result, or replay hash. Gameplay controls stay disabled until
+the queued presentation reaches the accepted state. Reconnect may cancel the
+queue and snap to the newest complete authoritative snapshot.
+
+Each new challenge must reset scene-local transition, result, acknowledgement,
+aim, projectile, and presentation state. A terminal result waits until its final
+snapshot has been presented, then appears exactly once for that challenge. This
+rule applies equally to the first match, Play Again, and in-scene Retry.
+
+Movement drag strength maps to at most four ordinary authoritative movement
+commands; it does not introduce a new simulation command or change replay rules.
+Accepted movement clears the locked aim and requires a new aim before Fire.
+Advisory trajectories exist only for the current legal player aim and clear on
+movement, Fire, turn change, disconnect, result, and challenge replacement.
+
+Phone layout uses the current `visualViewport` dimensions plus safe-area insets,
+not a minimum synthetic viewport height. Compact landscape must keep battlefield,
+HUD, movement, aim, Relics, Fire, Pause, and Retry visible and non-overlapping
+when embedded browser chrome reduces the usable height. Resize, rotation, and
+visual-viewport changes cancel transient pointer ownership.
+
 ### Deterministic Artillery Ruleset
 
 WP-007 establishes `nimble-knots-artillery-v1` as a replay ABI. Later balance

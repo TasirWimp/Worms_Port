@@ -15,14 +15,17 @@ const VIEWPORTS = [
     [360, 640],
     [390, 844],
     [412, 915],
-    [844, 390]
+    [844, 390],
+    [800, 300]
 ] as const;
 
 test('combat layout preserves the fixed world and non-overlapping safe control zones', () => {
     for (const [width, height] of VIEWPORTS) {
         const layout = computeCombatLayout(width, height, { top: 11, right: 7, bottom: 13, left: 5 });
-        assert.equal(layout.battlefield.width / layout.battlefield.height,
-            SIM_RULES.worldWidth / SIM_RULES.worldHeight);
+        assert.equal(Math.abs(
+            layout.battlefield.width / layout.battlefield.height -
+            SIM_RULES.worldWidth / SIM_RULES.worldHeight
+        ) < 1e-12, true);
         for (const rect of [layout.battlefield, layout.movementZone, layout.aimZone, layout.actionZone]) {
             assert.equal(rect.x >= 0 && rect.y >= 0, true);
             assert.equal(rect.x + rect.width <= width + 0.001, true, JSON.stringify({ width, rect }));
@@ -43,6 +46,9 @@ test('movement dead zone quantizes only the owned pointer and release outside is
     assert.equal(input.movementDirection(), 0);
     input.move(1, { x: 119, y: 100 });
     assert.equal(input.movementDirection(), 1);
+    assert.equal(input.movementSteps(), 1);
+    input.move(1, { x: 200, y: 100 });
+    assert.equal(input.movementSteps(), 4);
     assert.deepEqual(input.end(1, true), { type: 'move', direction: 1 });
 
     assert.equal(input.begin('movement', 3, { x: 100, y: 100 }, 100), true);

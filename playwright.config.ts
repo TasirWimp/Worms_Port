@@ -54,8 +54,10 @@ export default defineConfig({
     command: 'node scripts/build-and-start-test-server.js',
     env: {
       ...process.env,
+      NODE_ENV: 'test',
       PORT: String(port),
-      SESSION_OPEN_RATE_CAPACITY: '100'
+      SESSION_OPEN_RATE_CAPACITY: '100',
+      PRACTICE_TEST_SEEDS: '1,3735928559'
     },
     url: baseURL,
     reuseExistingServer: false,

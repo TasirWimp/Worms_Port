@@ -131,6 +131,22 @@ challenge's authoritative tick advancement, survives reconnect, and rejects
 gameplay commands until resumed. Session and challenge expiry still bound
 in-memory retention.
 
+WP-011A stabilizes that lifecycle for real-device play. Consecutive completed
+Clashes now reset scene-local result state and each transition to its own result
+screen. The client retains the newest authoritative snapshot while presenting
+accepted player movement, player shots and impacts, Loomkeeper aim, shots and
+impacts, and the resulting terrain and Stitching changes in causal order.
+Controls remain suspended during those presentation phases; reduced-motion
+users receive the same causal phases with shorter timing.
+
+Touch movement converts drag strength into one to four existing authoritative
+movement commands, visibly animates each accepted displacement, and clears the
+old aim so the player must deliberately aim again. Advisory trajectories clear
+on Fire, movement, turn changes, disconnect, result, and challenge replacement.
+The combat shell follows the usable `visualViewport`; compact landscape places
+movement and aim beside a two-row action area so browser chrome does not force
+the control groups to overlap.
+
 ## Phone Combat Fixture
 
 WP-010 provides a portrait-first Phaser battlefield and touch-control surface
@@ -140,6 +156,11 @@ and an advisory trajectory calculated against a detached simulation clone.
 Movement and aim pads have single-pointer ownership; aim release locks without
 firing, while Fire is a separate minimum-size action. Cancellation, release
 outside, blur, backgrounding, resize, and orientation changes fail safe.
+
+The fixture uses the same WP-011A causal presentation queue, bounded movement,
+trajectory cleanup, and compact-landscape layout as live Practice. It remains
+a deterministic test adapter; authoritative outcomes still come only from the
+shared simulation and live server path.
 
 The preview route remains a deterministic local test adapter intentionally. It
 proves the scene and typed snapshot-to-command boundary but is not an alternate

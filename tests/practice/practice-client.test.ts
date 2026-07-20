@@ -54,6 +54,23 @@ test('practice client buffers one terminal result received during session bootst
     client.dispose();
 });
 
+test('practice client delivers terminal results for consecutive challenge IDs', () => {
+    const socket = new FakeSocket();
+    const client = new PracticeClient(socket as unknown as Socket, session());
+    const results: ChallengeResult[] = [];
+    client.onResult((value) => results.push(value));
+
+    socket.trigger(protocolEvents.result, result(4, 'practice_challenge_01'));
+    socket.trigger(protocolEvents.result, result(8, 'practice_challenge_02'));
+    socket.trigger(protocolEvents.result, result(8, 'practice_challenge_02'));
+
+    assert.deepEqual(results.map((value) => value.challengeId), [
+        'practice_challenge_01',
+        'practice_challenge_02'
+    ]);
+    client.dispose();
+});
+
 function session(): SessionOpenData {
     return {
         protocolVersion: 1,
@@ -85,12 +102,12 @@ function snapshot(revision: number, hash: string, paused: boolean): ChallengeSna
     };
 }
 
-function result(revision: number): ChallengeResult {
+function result(revision: number, challengeId = 'practice_challenge_01'): ChallengeResult {
     return {
         protocolVersion: 1,
         serverTimeMs: revision,
         sessionId: 'practice_session_01',
-        challengeId: 'practice_challenge_01',
+        challengeId,
         outcome: 'draw',
         revision,
         nextSequence: revision,
