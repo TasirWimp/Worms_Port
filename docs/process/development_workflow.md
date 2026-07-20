@@ -199,6 +199,20 @@ HUD, movement, aim, Relics, Fire, Pause, and Retry visible and non-overlapping
 when embedded browser chrome reduces the usable height. Resize, rotation, and
 visual-viewport changes cancel transient pointer ownership.
 
+### Embedded Full-screen Requests
+
+Landscape combat may offer a standard Fullscreen API request from an explicit
+player tap. Request `navigationUI: 'hide'` first and treat orientation locking
+as optional only after entry succeeds. Never auto-enter full screen and never
+make Practice depend on it. Capability absence or rejection must preserve the
+compact `visualViewport` layout and provide truthful feedback.
+
+CSS, viewport metadata, and PWA display settings do not control Nimiq Pay's
+native URL ribbon or Android system bars. A physical Nimiq Pay device check is
+therefore the acceptance authority for WP-011B; if native chrome remains, record
+the host limitation and raise a Nimiq Pay feature request rather than adding an
+undocumented bridge or browser-specific spoof.
+
 ### Deterministic Artillery Ruleset
 
 WP-007 establishes `nimble-knots-artillery-v1` as a replay ABI. Later balance

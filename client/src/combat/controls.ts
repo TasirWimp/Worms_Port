@@ -10,6 +10,7 @@ type CombatControlsCallbacks = {
     onAimPreview: (aim: AimIntent | null) => void;
     onPauseChange: (paused: boolean) => void;
     onRetry: () => void;
+    onFullscreenToggle: () => void;
 };
 
 export class CombatControls {
@@ -22,6 +23,7 @@ export class CombatControls {
     private readonly fireButton: HTMLButtonElement;
     private readonly pauseButton: HTMLButtonElement;
     private readonly retryButton: HTMLButtonElement;
+    private readonly fullscreenButton: HTMLButtonElement;
     private readonly relicButtons = new Map<RelicId, HTMLButtonElement>();
     private readonly callbacks: CombatControlsCallbacks;
     private readonly status: HTMLElement;
@@ -46,10 +48,11 @@ export class CombatControls {
         this.root = document.createElement('div');
         this.root.className = 'combat-ui';
         this.root.innerHTML = `
-            <section class="combat-status" aria-live="polite">
-                <strong class="combat-turn"></strong>
+            <section class="combat-status">
+                <strong class="combat-turn" aria-live="polite"></strong>
                 <span class="combat-stitching"></span>
                 <span class="combat-timer"></span>
+                <button type="button" class="combat-fullscreen-button" aria-label="Enter full screen">Full screen</button>
             </section>
             <div class="combat-touch-zone movement-zone" role="group" aria-label="Movement pad">
                 <span class="pad-label">Move</span><span class="pad-ring"></span><span class="pad-knob"></span>
@@ -64,6 +67,7 @@ export class CombatControls {
         this.status = this.root.querySelector('.combat-turn');
         this.stitching = this.root.querySelector('.combat-stitching');
         this.timer = this.root.querySelector('.combat-timer');
+        this.fullscreenButton = this.root.querySelector('.combat-fullscreen-button');
         this.movementZone = this.root.querySelector('.movement-zone');
         this.aimZone = this.root.querySelector('.aim-zone');
         this.movementKnob = this.movementZone.querySelector('.pad-knob');
@@ -96,6 +100,7 @@ export class CombatControls {
             if (this.canPause()) this.callbacks.onPauseChange(!this.paused);
         });
         this.retryButton.addEventListener('click', () => this.callbacks.onRetry());
+        this.fullscreenButton.addEventListener('click', () => this.callbacks.onFullscreenToggle());
         this.bindPad(this.movementZone, 'movement');
         this.bindPad(this.aimZone, 'aim');
         this.update(snapshot);
@@ -108,6 +113,17 @@ export class CombatControls {
         place(this.aimZone, layout.aimZone);
         const actions = this.root.querySelector('.combat-actions') as HTMLElement;
         place(actions, layout.actionZone);
+    }
+
+    public setFullscreenState(available: boolean, active: boolean): void {
+        this.root.dataset.fullscreenAvailable = String(available);
+        this.root.dataset.fullscreen = String(active);
+        this.fullscreenButton.textContent = active ? 'Exit full screen' : 'Full screen';
+        this.fullscreenButton.setAttribute(
+            'aria-label',
+            active ? 'Exit full screen' : 'Enter full screen'
+        );
+        this.fullscreenButton.setAttribute('aria-pressed', String(active));
     }
 
     public update(snapshot: ChallengeSnapshot): void {

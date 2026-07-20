@@ -8,7 +8,7 @@ Phaser/Socket.IO stack.
 ## Execution Pointer
 
 - Active target: mobile-first single-player Nimiq Pay competition release.
-- Next work package: **WP-012 Nimiq Pay Identity Adapter**.
+- Next work package: **WP-011B Embedded Full-screen Capability Probe** (device acceptance pending).
 - Last completed work package: **WP-011A Real-device Gameplay Stabilization**.
 - PvP and matchmaking: deferred until after the competition release.
 - Canonical artwork reference:
@@ -94,6 +94,9 @@ guardrails for this selected host.
   WP-011A implemented the stabilization candidate, passed its automated gates,
   and passed the user-run Samsung Galaxy S22 Nimiq Pay portrait/landscape
   acceptance re-test. WP-012 may now start.
+- WP-011B adds a standards-based, user-activated full-screen probe for compact
+  landscape. It cannot force Nimiq Pay or Android native chrome to disappear;
+  that result remains a host capability to verify on the Samsung Galaxy S22.
 - Nimiq Pay identity/reward work, the expanded phone matrix, and visual
   regression remain.
 
@@ -760,9 +763,47 @@ Samsung Galaxy S22 Nimiq Pay portrait/landscape re-test passed on 2026-07-20;
 the repeated-match result, movement/aim, causal turn presentation, trajectory
 cleanup, and compact-landscape fixes worked on the deployed Render build.
 
+### WP-011B Embedded Full-screen Capability Probe
+
+Status: implemented; Samsung Galaxy S22 Nimiq Pay acceptance pending. Depends
+on WP-011A. WP-012 does not depend on the host accepting this optional probe.
+
+Goal: give landscape players the strongest standards-based request web content
+can make to reduce browser chrome, without assuming control over Nimiq Pay's
+native WebView or Android system UI.
+
+Scope:
+
+- show a compact **Full screen** HUD action only in landscape and only when the
+  standard Fullscreen API reports that requests are enabled,
+- invoke `requestFullscreen({ navigationUI: 'hide' })` directly from the player
+  tap, then optionally request a landscape orientation lock after entry,
+- expose a clear Exit action, follow browser Back/full-screen change events,
+  cancel transient combat input during viewport changes, and resize against the
+  resulting usable viewport,
+- keep the existing compact landscape composition as the fallback when the API
+  is unavailable or rejected, with a clear host-capability message, and
+- verify the actual result inside Nimiq Pay on the Samsung Galaxy S22. Success
+  means both system bars and the Nimiq Pay URL ribbon disappear; partial or no
+  removal is recorded as a native-host limitation rather than worked around
+  with undocumented APIs.
+
+Non-goals: automatic full screen, misleading PWA metadata, CSS claims to hide
+native chrome, a native wrapper, Nimiq Pay application changes, gameplay or
+authority changes, dependencies, or assets.
+
+Owning roles: `worms_port_base_game_worker`, `worms_port_test_worker`, and
+`worms_port_reviewer`.
+
+Verification: pure capability/request/exit/failure tests; a built Chromium
+landscape UI probe; the WP-011A combat and live-practice phone matrices; build,
+smoke, compliance, and audit; then Samsung Galaxy S22 Nimiq Pay landscape entry,
+exit, rotation, and fallback acceptance.
+
 ### WP-012 Nimiq Pay Identity Adapter
 
-Status: planned. Depends on WP-006 and WP-011A.
+Status: planned. Depends on WP-006 and WP-011A. The optional WP-011B host probe
+may complete independently.
 
 Goal: isolate the official Mini App SDK behind an adapter for initialization,
 language, wallet account selection, signed challenges, rejection, timeout, and
@@ -917,14 +958,16 @@ it does not block completion of the documented autonomous cycle.
 
 ```text
 WP-005 -> WP-006 -> WP-007 -> WP-008 -> WP-009 -> WP-010 -> WP-011 -> WP-011A
+WP-011A -> WP-011B (optional host capability)
 WP-011A -> WP-012 -> WP-013 -> WP-014
 WP-010 + WP-014 ------------------------------------------------------------> WP-015
 WP-013 + WP-015 ------------------------------------------------------------> WP-016 -> WP-017
 ```
 
 WP-011 is the first complete playable. WP-011A is its real-device acceptance
-stabilization gate. WP-014 is the automated competition-candidate gate. WP-017
-is the submission-ready repository and deployment.
+stabilization gate. WP-011B is a non-blocking embedded-host capability probe.
+WP-014 is the automated competition-candidate gate. WP-017 is the
+submission-ready repository and deployment.
 
 ## Deferred Until After Competition
 

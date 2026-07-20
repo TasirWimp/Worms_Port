@@ -147,6 +147,14 @@ The combat shell follows the usable `visualViewport`; compact landscape places
 movement and aim beside a two-row action area so browser chrome does not force
 the control groups to overlap.
 
+In landscape, capable browsers also expose a user-activated **Full screen** HUD
+action. It requests the standard Fullscreen API with hidden navigation UI and
+then makes a best-effort landscape orientation lock. The action is omitted when
+the browser reports no support, and rejection leaves the compact embedded
+layout usable. Web content cannot guarantee removal of Nimiq Pay's native URL
+ribbon or Android system bars; the host must implement and permit full-screen
+WebView presentation for those surfaces to disappear.
+
 ## Phone Combat Fixture
 
 WP-010 provides a portrait-first Phaser battlefield and touch-control surface

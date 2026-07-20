@@ -24,6 +24,17 @@ test('portrait/landscape layout is touch-safe and renders deterministic combat',
   await expect(canvas).toBeVisible();
   expect((await canvas.screenshot()).byteLength).toBeGreaterThan(2_000);
   await expect(page.locator('.screen-shell')).toHaveCount(0);
+  const fullscreenButton = page.locator('.combat-fullscreen-button');
+  const fullscreenAvailable = await page.evaluate(() =>
+    document.fullscreenEnabled &&
+    typeof document.documentElement.requestFullscreen === 'function' &&
+    typeof document.exitFullscreen === 'function'
+  );
+  if (viewport.width > viewport.height && fullscreenAvailable) {
+    await expect(fullscreenButton).toBeVisible();
+  } else {
+    await expect(fullscreenButton).toBeHidden();
+  }
 
   const boxes = await Promise.all([
     page.locator('.movement-zone').boundingBox(),
@@ -56,6 +67,55 @@ test('portrait/landscape layout is touch-safe and renders deterministic combat',
     innerHeight
   }))).toEqual({ width: viewport.width, height: viewport.height, innerWidth: viewport.width, innerHeight: viewport.height });
   await page.screenshot({ path: testInfo.outputPath('wp-010-combat.png') });
+});
+
+test('landscape offers a user-activated full-screen probe with a safe exit', async ({ page }, testInfo) => {
+  test.skip(testInfo.project.name !== 'chromium-844x390', 'Landscape capability probe');
+
+  await page.evaluate(() => {
+    let active: Element | null = null;
+    Object.defineProperty(document, 'fullscreenEnabled', { configurable: true, get: () => true });
+    Object.defineProperty(document, 'fullscreenElement', { configurable: true, get: () => active });
+    Object.defineProperty(document.documentElement, 'requestFullscreen', {
+      configurable: true,
+      value: async (options?: FullscreenOptions) => {
+        (window as Window & { __fullscreenNavigationUi?: string }).__fullscreenNavigationUi =
+          options?.navigationUI;
+        active = document.documentElement;
+        document.dispatchEvent(new Event('fullscreenchange'));
+      }
+    });
+    Object.defineProperty(document, 'exitFullscreen', {
+      configurable: true,
+      value: async () => {
+        active = null;
+        document.dispatchEvent(new Event('fullscreenchange'));
+      }
+    });
+    document.dispatchEvent(new Event('fullscreenchange'));
+  });
+
+  const button = page.getByRole('button', { name: 'Enter full screen' });
+  await expect(button).toBeVisible();
+  await button.tap();
+  await expect(page.locator('.combat-ui')).toHaveAttribute('data-fullscreen', 'true');
+  await expect(page.getByRole('button', { name: 'Exit full screen' })).toBeVisible();
+  expect(await page.evaluate(() =>
+    (window as Window & { __fullscreenNavigationUi?: string }).__fullscreenNavigationUi
+  )).toBe('hide');
+
+  await page.getByRole('button', { name: 'Exit full screen' }).tap();
+  await expect(page.locator('.combat-ui')).toHaveAttribute('data-fullscreen', 'false');
+
+  await page.evaluate(() => {
+    Object.defineProperty(document.documentElement, 'requestFullscreen', {
+      configurable: true,
+      value: async () => { throw new DOMException('Host declined', 'NotSupportedError'); }
+    });
+  });
+  await button.tap();
+  await expect(button).toBeHidden();
+  await expect(page.getByText('Full screen is not supported by this app host')).toBeVisible();
 });
 
 test('touch movement, Relic selection, aim lock, and explicit Fire stay separate', async ({ page }) => {
