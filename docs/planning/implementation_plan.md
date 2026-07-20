@@ -8,15 +8,14 @@ Phaser/Socket.IO stack.
 ## Execution Pointer
 
 - Active target: mobile-first single-player Nimiq Pay competition release.
-- Next work package: **WP-011A Real-device Gameplay Stabilization** (implementation
-  complete; Samsung Galaxy S22 Nimiq Pay acceptance pending).
-- Last completed work package: **WP-011 Complete Practice Clash**.
+- Next work package: **WP-012 Nimiq Pay Identity Adapter**.
+- Last completed work package: **WP-011A Real-device Gameplay Stabilization**.
 - PvP and matchmaking: deferred until after the competition release.
 - Canonical artwork reference:
   `docs/images/art-direction/knotkin-class-lineup-concept.png`.
 - General physical Android/iOS testing remains outside the automated cycle.
-  WP-011A adds a user-run Samsung Galaxy S22 acceptance gate in Nimiq Pay for
-  the reported real-device regressions.
+  WP-011A's user-run Samsung Galaxy S22 acceptance gate in Nimiq Pay passed on
+  2026-07-20 for the reported real-device regressions.
 
 A fresh Codex chat should read `AGENTS.md` and its ordered source documents,
 check the worktree and recent commits, then start only the work package named
@@ -92,9 +91,9 @@ guardrails for this selected host.
 - A first Samsung Galaxy S22 acceptance pass in Nimiq Pay confirmed the initial
   Practice Clash core loop, but found repeated-match result, movement and aim,
   turn presentation, trajectory lifecycle, and landscape layout regressions.
-  WP-011A now has an implemented and automated stabilization candidate. Its
-  physical Samsung Galaxy S22 portrait/landscape re-test remains the blocking
-  acceptance gate before WP-012 starts.
+  WP-011A implemented the stabilization candidate, passed its automated gates,
+  and passed the user-run Samsung Galaxy S22 Nimiq Pay portrait/landscape
+  acceptance re-test. WP-012 may now start.
 - Nimiq Pay identity/reward work, the expanded phone matrix, and visual
   regression remain.
 
@@ -639,8 +638,7 @@ Loomkeeper handoff, reconnect, and fresh retry without using the fixture route.
 
 ### WP-011A Real-device Gameplay Stabilization
 
-Status: implementation complete; Samsung Galaxy S22 Nimiq Pay acceptance
-pending. Depends on WP-011. Blocks WP-012.
+Status: complete. Depends on WP-011.
 
 Goal: close the real-device acceptance gap between a correct authoritative
 Practice Clash and a clearly readable, repeatable touch experience. Preserve
@@ -757,9 +755,10 @@ changed.
 
 Automated candidate verification passes the full compliance/type/unit/protocol/
 build/smoke/audit funnel, twenty combat browser cases, and thirteen live-practice
-browser cases (with three intentional project skips). The required Samsung
-Galaxy S22 Nimiq Pay portrait/landscape re-test has not yet been run, so WP-011A
-remains the execution pointer and WP-012 remains blocked.
+browser cases (with three intentional project skips). The required user-run
+Samsung Galaxy S22 Nimiq Pay portrait/landscape re-test passed on 2026-07-20;
+the repeated-match result, movement/aim, causal turn presentation, trajectory
+cleanup, and compact-landscape fixes worked on the deployed Render build.
 
 ### WP-012 Nimiq Pay Identity Adapter
 

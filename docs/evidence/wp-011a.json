@@ -1,6 +1,6 @@
 {
   "id": "WP-011A",
-  "status": "in_progress",
+  "status": "complete",
   "starting_commit": "dff5d0b0faea28ec8c8d227104355ae0484a8964",
   "branch": "codex/wp-011a-real-device-stabilization",
   "initial_worktree": "clean",
@@ -37,7 +37,8 @@
     "npm run test:browser:combat",
     "npm run test:browser:practice",
     "npm audit",
-    "self-review"
+    "self-review",
+    "Samsung Galaxy S22 Nimiq Pay acceptance"
   ],
   "deterministic_seeds": [
     "0x00000001",
@@ -57,7 +58,8 @@
     { "command": "npm run test:browser:combat", "status": "pass" },
     { "command": "npm run test:browser:practice", "status": "pass" },
     { "command": "npm audit", "status": "pass" },
-    { "command": "self-review", "status": "pass" }
+    { "command": "self-review", "status": "pass" },
+    { "command": "Samsung Galaxy S22 Nimiq Pay acceptance", "status": "pass" }
   ],
   "reviews": [
     { "role": "worms_port_base_game_worker", "reviewer": "primary-agent-client-review", "decision": "pass" },
@@ -66,13 +68,12 @@
     { "role": "worms_port_reviewer", "reviewer": "primary-agent-boundary-review", "decision": "pass" }
   ],
   "skipped_checks": [
-    "Samsung Galaxy S22 Nimiq Pay portrait/landscape acceptance: requires the user-run deployed-device re-test before WP-011A can complete.",
     "Physical Android and iOS coverage beyond the reported Samsung device: no release-testing environment was provided.",
     "The 412x915 project, visual-regression baselines, degraded-network matrix, and performance budgets: owned by WP-014.",
     "Production artwork and audio: owned by WP-015; WP-011A retains approved code-drawn placeholders."
   ],
   "residual_risks": [
-    "The stabilization candidate passes emulated Chromium/WebKit browser matrices but still requires confirmation in the Samsung Galaxy S22 Nimiq Pay WebView that exposed the defects.",
+    "The Samsung Galaxy S22 Nimiq Pay acceptance passed, but one device and WebView version does not establish coverage for the wider Android and iOS device matrix.",
     "Practice authority remains in one Render process; a restart or session expiry offers a fresh Clash rather than durable recovery.",
     "Reconnect intentionally snaps to the newest authoritative snapshot instead of replaying presentation frames missed while disconnected.",
     "The client bundle is approximately 1.400 MB minified and 386.67 kB gzip and retains the chunk-size warning."
