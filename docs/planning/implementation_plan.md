@@ -8,13 +8,14 @@ Phaser/Socket.IO stack.
 ## Execution Pointer
 
 - Active target: mobile-first single-player Nimiq Pay competition release.
-- Next work package: **WP-012 Nimiq Pay Identity Adapter**.
+- Next work package: **WP-011A Real-device Gameplay Stabilization**.
 - Last completed work package: **WP-011 Complete Practice Clash**.
 - PvP and matchmaking: deferred until after the competition release.
 - Canonical artwork reference:
   `docs/images/art-direction/knotkin-class-lineup-concept.png`.
-- Physical Android/iOS testing: outside the automated cycle. Record it as not
-  run until a separate release-testing environment is provided.
+- General physical Android/iOS testing remains outside the automated cycle.
+  WP-011A adds a user-run Samsung Galaxy S22 acceptance gate in Nimiq Pay for
+  the reported real-device regressions.
 
 A fresh Codex chat should read `AGENTS.md` and its ordered source documents,
 check the worktree and recent commits, then start only the work package named
@@ -87,6 +88,10 @@ guardrails for this selected host.
 - WP-011 provides the complete live server-backed Practice Clash lifecycle,
   authoritative pause/retry, reconnect suspension, and its focused
   Chromium/WebKit phone matrix.
+- A first Samsung Galaxy S22 acceptance pass in Nimiq Pay confirmed the initial
+  Practice Clash core loop, but found repeated-match result, movement and aim,
+  turn presentation, trajectory lifecycle, and landscape layout regressions.
+  WP-011A is the blocking stabilization slice for those findings.
 - Nimiq Pay identity/reward work, the expanded phone matrix, and visual
   regression remain.
 
@@ -629,9 +634,105 @@ schema, and real Socket.IO tests cover ordering and pause authority. The built
 Chromium/WebKit phone suites cover onboarding, live commands, pause, automated
 Loomkeeper handoff, reconnect, and fresh retry without using the fixture route.
 
+### WP-011A Real-device Gameplay Stabilization
+
+Status: planned. Depends on WP-011. Blocks WP-012.
+
+Goal: close the real-device acceptance gap between a correct authoritative
+Practice Clash and a clearly readable, repeatable touch experience. Preserve
+the v2 simulation, Loomkeeper decisions, replay hashes, and server authority;
+fix lifecycle and presentation behavior without moving gameplay outcomes to
+the client.
+
+Acceptance evidence: the first Samsung Galaxy S22 test inside Nimiq Pay on
+2026-07-20 passed Calling selection, first-match creation, round progression,
+pause/resume, portrait composition, and the remaining WP-011 core journey on
+the first attempt. It also exposed the following blocking regressions:
+
+- after retry, a completed second match did not transition to the result scene;
+  controls became disabled and only the in-scene Retry action remained,
+- movement input produced no visible Knotkin movement and caused the advisory
+  trajectory to reverse direction,
+- authoritative player and Loomkeeper turns collapsed into an immediate state
+  change: projectiles, impacts, Loomkeeper movement/aim, and damage order were
+  not visibly presented, so both Stitching values appeared to change together,
+- the advisory trajectory remained visible after firing, and
+- in landscape, the Nimiq Pay browser ribbon reduced the usable visual viewport
+  while movement, aim, Relic, and action controls overlapped or were clipped.
+
+Lifecycle and presentation scope:
+
+- reset all per-challenge result, listener, acknowledgement, and presentation
+  state when Play Again or Retry creates a fresh challenge. Every terminal
+  challenge, including two or more consecutive retries, must present exactly
+  one result scene with Play Again and Calling-change actions,
+- keep the newest accepted authoritative snapshot as protocol truth while a
+  separate bounded presentation queue renders accepted revisions in order.
+  Client animation must never manufacture commands, outcomes, damage, terrain,
+  or hashes and must not roll authority backward,
+- visibly present the player movement, player projectile, impact, terrain and
+  Stitching change, Loomkeeper movement/aim, Loomkeeper projectile, impact, and
+  resulting state before returning control or showing the terminal result,
+- suspend gameplay input while confirmed actions are being presented. Cap and
+  coalesce only presentation-safe idle frames so delayed rendering cannot grow
+  an unbounded queue; reconnect may snap to the newest complete authoritative
+  state with a clear recovery transition,
+- use existing authoritative projectile traces and snapshots when sufficient.
+  Add only the minimum typed presentation metadata if an accepted transition
+  cannot otherwise be reconstructed; do not change simulation or AI balance,
+- make accepted movement visibly reposition the Knotkin and provide clear
+  feedback for rejected or terrain-blocked movement. Movement must not invert
+  aim or facing through a screen/world coordinate error,
+- show the advisory trajectory only for the current legal player aim. Clear it
+  on Fire, movement, turn change, disconnect, result, and challenge replacement;
+  recreate it from the next accepted snapshot and new player input, and
+- preserve reduced-motion behavior by shortening or simplifying presentation,
+  not by collapsing causally distinct player and Loomkeeper outcomes into one
+  unexplained Stitching update.
+
+Real-device layout scope:
+
+- size the combat shell against the usable `visualViewport` and dynamic viewport
+  height, including Nimiq Pay browser chrome and safe-area insets,
+- provide a compact landscape composition in which battlefield, HUD, movement,
+  aim, Relic selection, Fire, Pause, and Retry remain visible, non-overlapping,
+  and touchable without page scrolling,
+- retain the accepted portrait behavior and touch target sizes, and
+- treat resize, orientation, visual-viewport changes, and browser-ribbon changes
+  as input-cancellation boundaries so they cannot move or fire accidentally.
+
+Non-goals: wallet identity, rewarded challenges, payouts, leaderboards, PvP,
+new Calling statistics, Relic balance changes, production art/audio, durable
+restart recovery, or the complete WP-014 visual/performance/degraded-network
+gate.
+
+Owning roles: `worms_port_base_game_worker`, `worms_port_network_worker`,
+`worms_port_test_worker`, and `worms_port_reviewer`.
+
+Verification:
+
+- focused lifecycle tests that complete at least two consecutive challenges and
+  assert one result transition per challenge plus fresh challenge ID and seed,
+- presentation-queue tests for ordered player/AI movement, projectile, impact,
+  terrain, Stitching, turn, reconnect, reduced-motion, and terminal-result
+  handling without authority rollback,
+- movement and coordinate-transform tests in both orientations, including
+  blocked movement and trajectory direction before and after movement,
+- live Socket.IO and built-browser journeys that visibly distinguish player and
+  Loomkeeper actions and verify trajectory cleanup and control suspension,
+- Chromium 360x640, 390x844, and 844x390 plus WebKit 390x844, with bounding-box
+  assertions that every essential control is inside the visual viewport and no
+  control groups overlap,
+- a Samsung Galaxy S22 Nimiq Pay re-test in portrait and landscape, including
+  two completed matches, movement in both directions, all three Relics,
+  pause/resume, rotation, and retry, and
+- compliance, types, focused tests, build, built smoke, and phone-browser smoke.
+  Store automated screenshots, video, and traces outside `assets/`. Record the
+  user-run physical-device result separately from the autonomous checks.
+
 ### WP-012 Nimiq Pay Identity Adapter
 
-Status: planned. Depends on WP-006 and WP-011.
+Status: planned. Depends on WP-006 and WP-011A.
 
 Goal: isolate the official Mini App SDK behind an adapter for initialization,
 language, wallet account selection, signed challenges, rejection, timeout, and
@@ -785,14 +886,15 @@ it does not block completion of the documented autonomous cycle.
 ## Dependency Order
 
 ```text
-WP-005 -> WP-006 -> WP-007 -> WP-008 -> WP-009 -> WP-010 -> WP-011
-WP-011 -> WP-012 -> WP-013 -> WP-014
-WP-010 + WP-014 ----------------------------------------------------> WP-015
-WP-013 + WP-015 ----------------------------------------------------> WP-016 -> WP-017
+WP-005 -> WP-006 -> WP-007 -> WP-008 -> WP-009 -> WP-010 -> WP-011 -> WP-011A
+WP-011A -> WP-012 -> WP-013 -> WP-014
+WP-010 + WP-014 ------------------------------------------------------------> WP-015
+WP-013 + WP-015 ------------------------------------------------------------> WP-016 -> WP-017
 ```
 
-WP-011 is the first complete playable. WP-014 is the automated competition
-candidate gate. WP-017 is the submission-ready repository and deployment.
+WP-011 is the first complete playable. WP-011A is its real-device acceptance
+stabilization gate. WP-014 is the automated competition-candidate gate. WP-017
+is the submission-ready repository and deployment.
 
 ## Deferred Until After Competition
 
