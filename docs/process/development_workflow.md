@@ -213,6 +213,14 @@ therefore the acceptance authority for WP-011B; if native chrome remains, record
 the host limitation and raise a Nimiq Pay feature request rather than adding an
 undocumented bridge or browser-specific spoof.
 
+WP-011B device acceptance established an additional supported-browser rule:
+full-screen entry must not lock landscape. Physical rotation must continue to
+select the existing portrait or landscape composition. Because document full
+screen survives Phaser scene transitions, every terminal result screen reached
+while it is active must expose a visible **Exit full screen** action; returning
+to default browser mode cannot depend on a combat-scene control that no longer
+exists. WP-011C owns these corrections.
+
 ### Deterministic Artillery Ruleset
 
 WP-007 establishes `nimble-knots-artillery-v1` as a replay ABI. Later balance

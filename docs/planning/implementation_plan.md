@@ -8,14 +8,16 @@ Phaser/Socket.IO stack.
 ## Execution Pointer
 
 - Active target: mobile-first single-player Nimiq Pay competition release.
-- Next work package: **WP-011B Embedded Full-screen Capability Probe** (device acceptance pending).
-- Last completed work package: **WP-011A Real-device Gameplay Stabilization**.
+- Next work package: **WP-011C Full-screen Rotation and Exit Stabilization**.
+- Last completed work package: **WP-011B Embedded Full-screen Capability Probe**.
 - PvP and matchmaking: deferred until after the competition release.
 - Canonical artwork reference:
   `docs/images/art-direction/knotkin-class-lineup-concept.png`.
 - General physical Android/iOS testing remains outside the automated cycle.
   WP-011A's user-run Samsung Galaxy S22 acceptance gate in Nimiq Pay passed on
   2026-07-20 for the reported real-device regressions.
+  WP-011B acceptance on the same device confirmed working full screen in Samsung
+  Chrome and no exposed Fullscreen API inside Nimiq Pay.
 
 A fresh Codex chat should read `AGENTS.md` and its ordered source documents,
 check the worktree and recent commits, then start only the work package named
@@ -95,8 +97,10 @@ guardrails for this selected host.
   and passed the user-run Samsung Galaxy S22 Nimiq Pay portrait/landscape
   acceptance re-test. WP-012 may now start.
 - WP-011B adds a standards-based, user-activated full-screen probe for compact
-  landscape. It cannot force Nimiq Pay or Android native chrome to disappear;
-  that result remains a host capability to verify on the Samsung Galaxy S22.
+  landscape. Samsung Galaxy S22 acceptance confirmed that it works in Chrome,
+  while Nimiq Pay does not expose the required API and correctly retains the
+  compact embedded fallback. Chrome acceptance also found forced-landscape and
+  result-screen exit defects assigned to WP-011C.
 - Nimiq Pay identity/reward work, the expanded phone matrix, and visual
   regression remain.
 
@@ -765,8 +769,8 @@ cleanup, and compact-landscape fixes worked on the deployed Render build.
 
 ### WP-011B Embedded Full-screen Capability Probe
 
-Status: implemented; Samsung Galaxy S22 Nimiq Pay acceptance pending. Depends
-on WP-011A. WP-012 does not depend on the host accepting this optional probe.
+Status: complete. Depends on WP-011A. WP-012 does not depend on the host
+accepting this optional probe.
 
 Goal: give landscape players the strongest standards-based request web content
 can make to reduce browser chrome, without assuming control over Nimiq Pay's
@@ -799,6 +803,67 @@ Verification: pure capability/request/exit/failure tests; a built Chromium
 landscape UI probe; the WP-011A combat and live-practice phone matrices; build,
 smoke, compliance, and audit; then Samsung Galaxy S22 Nimiq Pay landscape entry,
 exit, rotation, and fallback acceptance.
+
+Acceptance result on 2026-07-20: Samsung Chrome exposed the Fullscreen API, the
+button appeared, and full-screen entry removed the browser chrome. Nimiq Pay did
+not expose the API, so the button stayed hidden and the safe compact layout was
+retained. The probe therefore established the native-host boundary as intended.
+Chrome testing found two follow-up defects: the post-entry orientation lock
+prevents rotating back to portrait, and transition to the result scene removes
+the only visible full-screen toggle. Both are scoped to WP-011C rather than
+reopening the host-capability probe.
+
+### WP-011C Full-screen Rotation and Exit Stabilization
+
+Status: planned. Depends on WP-011B. This corrective package does not block or
+change WP-012 identity work.
+
+Goal: make supported browser full screen reversible and orientation-responsive
+through the complete Practice Clash journey, including terminal results.
+
+Confirmed Samsung Galaxy S22 Chrome defects:
+
+- entering full screen calls `screen.orientation.lock('landscape')`, after which
+  physical rotation cannot switch the game to portrait, and
+- completing a match while full screen transitions away from the combat HUD,
+  so the result screen has no visible control to return to default browser mode.
+
+Scope:
+
+- remove the forced landscape orientation lock from full-screen entry. Keep the
+  browser in full screen across ordinary rotation and recompute the existing
+  portrait or landscape layout from the resulting usable viewport,
+- preserve input cancellation and resize safety across full-screen and physical
+  orientation changes,
+- add a state-aware **Full screen** / **Exit full screen** control to the result
+  screen. When full screen is active, the exit action must remain visible and
+  usable regardless of orientation,
+- centralize or share full-screen state only as much as needed to keep combat
+  and result scenes synchronized with `fullscreenchange`,
+- retain the existing compact fallback and hidden entry control in Nimiq Pay,
+  where the host reports the Fullscreen API as unavailable, and
+- ensure Play Again and Calling-change actions still work after entering or
+  leaving full screen.
+
+Non-goals: forcing Nimiq Pay native chrome to disappear, closing the Nimiq Pay
+mini app through an undocumented bridge, locking any orientation, changing
+gameplay authority, or adding dependencies and assets.
+
+Owning roles: `worms_port_base_game_worker`, `worms_port_test_worker`, and
+`worms_port_reviewer`.
+
+Verification:
+
+- unit coverage proving full-screen entry no longer requests an orientation
+  lock and exit remains idempotent,
+- Chromium phone-browser coverage for landscape entry, rotation to portrait and
+  back while still full screen, completion into the result scene, result-screen
+  exit, and subsequent Play Again/Calling-change actions,
+- the existing combat, live-practice, and smoke phone matrices plus build,
+  compliance, and audit, and
+- Samsung Galaxy S22 Chrome acceptance for entry, landscape-to-portrait rotation,
+  match completion, result-screen exit to default mode, and retry. Confirm that
+  Nimiq Pay still uses the non-full-screen fallback without a dead control.
 
 ### WP-012 Nimiq Pay Identity Adapter
 
@@ -958,7 +1023,7 @@ it does not block completion of the documented autonomous cycle.
 
 ```text
 WP-005 -> WP-006 -> WP-007 -> WP-008 -> WP-009 -> WP-010 -> WP-011 -> WP-011A
-WP-011A -> WP-011B (optional host capability)
+WP-011A -> WP-011B -> WP-011C (optional browser full-screen path)
 WP-011A -> WP-012 -> WP-013 -> WP-014
 WP-010 + WP-014 ------------------------------------------------------------> WP-015
 WP-013 + WP-015 ------------------------------------------------------------> WP-016 -> WP-017
@@ -966,7 +1031,8 @@ WP-013 + WP-015 ------------------------------------------------------------> WP
 
 WP-011 is the first complete playable. WP-011A is its real-device acceptance
 stabilization gate. WP-011B is a non-blocking embedded-host capability probe.
-WP-014 is the automated competition-candidate gate. WP-017 is the
+WP-011C stabilizes the supported-browser path without changing the Nimiq Pay
+fallback. WP-014 is the automated competition-candidate gate. WP-017 is the
 submission-ready repository and deployment.
 
 ## Deferred Until After Competition

@@ -155,6 +155,12 @@ layout usable. Web content cannot guarantee removal of Nimiq Pay's native URL
 ribbon or Android system bars; the host must implement and permit full-screen
 WebView presentation for those surfaces to disappear.
 
+Samsung Galaxy S22 acceptance confirmed that this works in Samsung Chrome but
+that Nimiq Pay does not expose the Fullscreen API. WP-011C tracks two Chrome
+follow-ups: remove the forced landscape lock so full-screen play can rotate to
+portrait, and keep a full-screen/default-mode toggle available on the result
+screen.
+
 ## Phone Combat Fixture
 
 WP-010 provides a portrait-first Phaser battlefield and touch-control surface

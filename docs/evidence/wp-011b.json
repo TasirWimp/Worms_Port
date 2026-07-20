@@ -1,6 +1,6 @@
 {
   "id": "WP-011B",
-  "status": "in_progress",
+  "status": "complete",
   "starting_commit": "ed2c342f03e9e3b05f9ac752b6cc6caf5df7177b",
   "branch": "codex/wp-011b-fullscreen-probe",
   "initial_worktree": "clean",
@@ -36,7 +36,7 @@
     "npm run test:browser:smoke",
     "npm audit",
     "self-review",
-    "Samsung Galaxy S22 Nimiq Pay full-screen acceptance"
+    "Samsung Galaxy S22 Chrome and Nimiq Pay full-screen acceptance"
   ],
   "deterministic_seeds": [],
   "sorcerers_reference_used": false,
@@ -52,7 +52,8 @@
     { "command": "npm run smoke:built", "status": "pass" },
     { "command": "npm run test:browser:smoke", "status": "pass" },
     { "command": "npm audit", "status": "pass" },
-    { "command": "self-review", "status": "pass" }
+    { "command": "self-review", "status": "pass" },
+    { "command": "Samsung Galaxy S22 Chrome and Nimiq Pay full-screen acceptance", "status": "pass" }
   ],
   "reviews": [
     { "role": "worms_port_base_game_worker", "reviewer": "primary-agent-client-review", "decision": "pass" },
@@ -60,13 +61,12 @@
     { "role": "worms_port_reviewer", "reviewer": "primary-agent-boundary-review", "decision": "pass" }
   ],
   "skipped_checks": [
-    "Samsung Galaxy S22 Nimiq Pay full-screen acceptance: requires deployment and the user's physical device.",
     "Physical Android and iOS coverage beyond the Samsung device: no release-testing environment was provided.",
     "WP-014 visual-regression baselines, expanded device matrix, degraded-network matrix, and performance budgets are not yet available."
   ],
   "residual_risks": [
-    "Nimiq Pay may report no Fullscreen API support or reject the request because its native WebView host does not implement custom full-screen presentation.",
-    "Even successful web full-screen entry may leave the Nimiq Pay URL ribbon or Android system bars visible because those surfaces are controlled by the native host.",
+    "Samsung Galaxy S22 testing confirmed Nimiq Pay does not expose the Fullscreen API, so native URL and system chrome remain outside web-content control.",
+    "Samsung Chrome full-screen entry currently locks landscape and the result scene lacks an exit toggle; both confirmed defects are assigned to WP-011C.",
     "The client bundle remains approximately 1.403 MB minified and 387.19 kB gzip and retains the existing chunk-size warning."
   ]
 }
