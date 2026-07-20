@@ -64,6 +64,16 @@ export class CombatInputController {
         return normalized < 0 ? -1 : 1;
     }
 
+    public movementSteps(): number {
+        if (!this.owner || this.owner.kind !== 'movement') return 0;
+        const strength = Math.min(
+            1,
+            Math.abs(this.owner.current.x - this.owner.origin.x) / this.owner.radius
+        );
+        if (strength < 0.18) return 0;
+        return Math.min(4, Math.max(1, Math.ceil((strength - 0.18) / 0.205)));
+    }
+
     public aimIntent(): AimIntent | null {
         if (!this.owner || this.owner.kind !== 'aim') return this.lockedAim;
         const dx = this.owner.current.x - this.owner.origin.x;
@@ -132,6 +142,11 @@ export class CombatInputController {
         if (this.owner || this.phase === 'suspended' || this.phase === 'submitting') return;
         this.lockedAim = aim ? { ...aim } : null;
         this.phase = this.lockedAim ? 'aim_locked' : 'idle';
+    }
+
+    public clearAim(): void {
+        this.lockedAim = null;
+        if (!this.owner && this.phase === 'aim_locked') this.phase = 'idle';
     }
 
     public ownedPointer(): Readonly<OwnedPointer> | null {

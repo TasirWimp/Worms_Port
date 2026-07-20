@@ -6,6 +6,7 @@ import type { CombatLayout } from './layout';
 
 type CombatControlsCallbacks = {
     onCommand: (command: SimulationCommand) => void;
+    onMovement: (direction: -1 | 1, steps: number) => void;
     onAimPreview: (aim: AimIntent | null) => void;
     onPauseChange: (paused: boolean) => void;
     onRetry: () => void;
@@ -30,6 +31,8 @@ export class CombatControls {
     private paused = false;
     private suspended = false;
     private submitting = false;
+    private presenting = false;
+    private presentationStatus = '';
     private snapshotReceivedAt = performance.now();
     private readonly timerInterval: number;
 
@@ -115,14 +118,36 @@ export class CombatControls {
         this.refresh();
     }
 
-    public submissionFinished(accepted: boolean): void {
+    public submissionFinished(accepted: boolean, authoritativeAimLocked: boolean): void {
         this.submitting = false;
-        this.input.finishSubmission(accepted, Boolean(this.snapshot.simulation.aim));
+        this.input.finishSubmission(accepted, authoritativeAimLocked);
+        this.callbacks.onAimPreview(this.input.lockedAim);
         this.refresh();
     }
 
     public setBusy(busy: boolean): void {
         this.submitting = busy;
+        this.refresh();
+    }
+
+    public setPresenting(phase: string | null, status = ''): void {
+        this.presenting = Boolean(phase);
+        this.presentationStatus = status;
+        if (this.presenting) {
+            this.input.cancel();
+            this.resetKnob(this.movementKnob);
+            this.resetKnob(this.aimKnob);
+        }
+        if (phase) this.root.dataset.presentation = phase;
+        else this.root.removeAttribute('data-presentation');
+        this.root.dataset.presenting = String(this.presenting);
+        this.refresh();
+    }
+
+    public clearAimLock(): void {
+        this.input.clearAim();
+        this.resetKnob(this.aimKnob);
+        this.callbacks.onAimPreview(null);
         this.refresh();
     }
 
@@ -185,6 +210,7 @@ export class CombatControls {
             if (!owner || owner.id !== event.pointerId || owner.kind !== kind) return;
             event.preventDefault();
             this.input.move(event.pointerId, point(event));
+            const movementSteps = kind === 'movement' ? this.input.movementSteps() : 0;
             const rect = zone.getBoundingClientRect();
             const inside = event.clientX >= rect.left && event.clientX <= rect.right &&
                 event.clientY >= rect.top && event.clientY <= rect.bottom;
@@ -192,7 +218,13 @@ export class CombatControls {
             this.resetKnob(knob);
             if (kind === 'aim') this.callbacks.onAimPreview(this.input.lockedAim);
             this.refresh();
-            if (command) this.callbacks.onCommand(command);
+            if (command?.type === 'move') {
+                if (command.direction && movementSteps > 0) {
+                    this.callbacks.onMovement(command.direction, movementSteps);
+                } else {
+                    this.setMessage('Drag farther left or right to move');
+                }
+            } else if (command) this.callbacks.onCommand(command);
         });
         const cancel = (event: PointerEvent) => {
             if (!this.input.cancel(event.pointerId)) return;
@@ -216,14 +248,14 @@ export class CombatControls {
     }
 
     private canSubmit(): boolean {
-        return !this.paused && !this.suspended && !this.submitting &&
+        return !this.paused && !this.suspended && !this.submitting && !this.presenting &&
             this.snapshot.status === 'active' &&
             this.snapshot.simulation.phase === 'awaiting_command' &&
             this.snapshot.simulation.activeActor === 'player';
     }
 
     private canPause(): boolean {
-        return !this.suspended && !this.submitting &&
+        return !this.suspended && !this.submitting && !this.presenting &&
             this.snapshot.status === 'active' &&
             this.snapshot.simulation.phase === 'awaiting_command' &&
             this.snapshot.simulation.activeActor === 'player';
@@ -240,9 +272,9 @@ export class CombatControls {
         const seconds = Math.max(0, Math.ceil(
             (simulation.turnDeadlineTick - displayedTick) / SIM_RULES.tickRate
         ));
-        this.status.textContent = this.paused
+        this.status.textContent = this.presentationStatus || (this.paused
             ? 'Practice paused'
-            : simulation.activeActor === 'player' ? 'Your turn' : 'Loomkeeper weaving';
+            : simulation.activeActor === 'player' ? 'Your turn' : 'Loomkeeper weaving');
         this.stitching.textContent = `Stitching ${player.stitching} · ${loomkeeper.stitching}`;
         this.timer.textContent = `${seconds}s`;
         this.root.dataset.phase = this.input.phase;
@@ -250,10 +282,12 @@ export class CombatControls {
         this.root.dataset.turn = String(simulation.turn);
         this.root.dataset.revision = String(this.snapshot.revision);
         this.root.dataset.simulationTick = String(simulation.tick);
+        this.root.dataset.seed = String(simulation.seed);
         this.root.dataset.challengeId = this.snapshot.challengeId;
         this.root.dataset.calling = this.snapshot.calling;
         this.root.dataset.paused = String(this.paused);
         this.root.dataset.suspended = String(this.suspended);
+        this.root.dataset.presenting = String(this.presenting);
         this.root.dataset.activeActor = simulation.activeActor;
         this.root.dataset.playerX = String(player.x);
         this.root.classList.toggle('is-paused', this.paused);
@@ -267,7 +301,7 @@ export class CombatControls {
         this.pauseButton.textContent = this.paused ? 'Resume' : 'Pause';
         this.pauseButton.disabled = !this.canPause();
         this.pauseButton.setAttribute('aria-pressed', String(this.paused));
-        this.retryButton.disabled = this.suspended || this.submitting;
+        this.retryButton.disabled = this.suspended || this.submitting || this.presenting;
         this.movementZone.setAttribute('aria-disabled', String(!canSubmit));
         this.aimZone.setAttribute('aria-disabled', String(!canSubmit));
     }

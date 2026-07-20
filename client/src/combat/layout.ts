@@ -22,33 +22,52 @@ export function computeCombatLayout(
     const right = Math.max(MINIMUM_INSET, safeArea.right);
     const top = Math.max(MINIMUM_INSET, safeArea.top);
     const bottom = Math.max(MINIMUM_INSET, safeArea.bottom);
-    const usableWidth = Math.max(240, width - left - right);
-    const usableHeight = Math.max(320, height - top - bottom);
+    const usableWidth = Math.max(1, width - left - right);
+    const usableHeight = Math.max(1, height - top - bottom);
     const orientation = width > height ? 'landscape' : 'portrait';
 
     if (orientation === 'landscape') {
-        const actionWidth = Math.max(224, Math.min(300, usableWidth * 0.31));
-        const battlefieldWidthLimit = usableWidth - actionWidth - 12;
-        const battlefieldHeightLimit = usableHeight - HUD_HEIGHT;
+        const hudHeight = Math.min(HUD_HEIGHT, Math.max(44, usableHeight * 0.16));
+        const actionWidth = Math.min(
+            320,
+            Math.max(200, usableWidth * 0.34),
+            usableWidth * 0.46
+        );
+        const battlefieldWidthLimit = Math.max(1, usableWidth - actionWidth - 12);
+        const battlefieldHeightLimit = Math.max(1, usableHeight - hudHeight);
         const scale = Math.min(
             battlefieldWidthLimit / SIM_RULES.worldWidth,
             battlefieldHeightLimit / SIM_RULES.worldHeight
         );
         const battlefield = {
             x: left + Math.max(0, (battlefieldWidthLimit - SIM_RULES.worldWidth * scale) / 2),
-            y: top + HUD_HEIGHT + Math.max(0, (battlefieldHeightLimit - SIM_RULES.worldHeight * scale) / 2),
+            y: top + hudHeight + Math.max(0, (battlefieldHeightLimit - SIM_RULES.worldHeight * scale) / 2),
             width: SIM_RULES.worldWidth * scale,
             height: SIM_RULES.worldHeight * scale
         };
         const actionX = left + battlefieldWidthLimit + 12;
-        const actionHeight = 104;
-        const padHeight = Math.max(82, (usableHeight - HUD_HEIGHT - actionHeight - 12) / 2);
+        const controlsTop = top + hudHeight;
+        const controlsHeight = Math.max(1, usableHeight - hudHeight);
+        const gap = 6;
+        const maximumActionHeight = Math.max(48, controlsHeight - 72);
+        const actionHeight = Math.min(
+            104,
+            Math.max(96, controlsHeight * 0.42),
+            maximumActionHeight
+        );
+        const padHeight = Math.max(1, controlsHeight - actionHeight - gap);
+        const padWidth = (actionWidth - gap) / 2;
         return {
             orientation,
             battlefield,
-            movementZone: { x: actionX, y: top + HUD_HEIGHT, width: actionWidth, height: padHeight },
-            aimZone: { x: actionX, y: top + HUD_HEIGHT + padHeight + 6, width: actionWidth, height: padHeight },
-            actionZone: { x: actionX, y: height - bottom - actionHeight, width: actionWidth, height: actionHeight },
+            movementZone: { x: actionX, y: controlsTop, width: padWidth, height: padHeight },
+            aimZone: { x: actionX + padWidth + gap, y: controlsTop, width: padWidth, height: padHeight },
+            actionZone: {
+                x: actionX,
+                y: controlsTop + padHeight + gap,
+                width: actionWidth,
+                height: actionHeight
+            },
             worldScale: scale
         };
     }

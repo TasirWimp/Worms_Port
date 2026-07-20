@@ -1,23 +1,41 @@
 import Phaser from 'phaser';
 
 import type { ChallengeResult, ChallengeSnapshot } from '../../../shared/protocol';
-import type { SimulationCommand, SimulationState } from '../../../shared/simulation';
+import {
+    cloneSimulation,
+    type SimulationCommand,
+    type SimulationState
+} from '../../../shared/simulation';
 import { CombatControls } from '../combat/controls';
 import type { CombatSceneArgs, SafeAreaInsets } from '../combat/contracts';
 import { createCombatFixture } from '../combat/fixture';
 import { computeCombatLayout, type CombatLayout } from '../combat/layout';
+import {
+    planCombatPresentation,
+    presentationLabel,
+    type CombatPresentationStep
+} from '../combat/presentation';
 import { trajectoryPreview } from '../combat/preview';
 import { CombatRenderer } from '../combat/renderer';
+
+const MAX_PRESENTATION_SNAPSHOTS = 32;
 
 export default class CombatScene extends Phaser.Scene {
     private args: CombatSceneArgs;
     private snapshot: ChallengeSnapshot;
+    private authoritativeSnapshot: ChallengeSnapshot;
     private combatRenderer: CombatRenderer;
     private controls: CombatControls;
     private layout: CombatLayout;
+    private renderState: SimulationState;
     private preview: { x: number; y: number }[] = [];
+    private projectileTrace: { x: number; y: number }[] = [];
+    private readonly snapshotQueue: ChallengeSnapshot[] = [];
+    private pendingResult?: ChallengeResult;
     private pendingCommand = false;
+    private presenting = false;
     private transitioning = false;
+    private presentationEpoch = 0;
     private readonly unsubscribers: (() => void)[] = [];
 
     public constructor() {
@@ -32,6 +50,16 @@ export default class CombatScene extends Phaser.Scene {
     public init(args?: CombatSceneArgs): void {
         this.args = args?.snapshot ? args : createCombatFixture();
         this.snapshot = structuredClone(this.args.snapshot);
+        this.authoritativeSnapshot = structuredClone(this.args.snapshot);
+        this.renderState = cloneSimulation(this.snapshot.simulation as SimulationState);
+        this.preview = [];
+        this.projectileTrace = [];
+        this.snapshotQueue.splice(0);
+        this.pendingResult = undefined;
+        this.pendingCommand = false;
+        this.presenting = false;
+        this.transitioning = false;
+        this.presentationEpoch += 1;
     }
 
     public create(): void {
@@ -40,6 +68,7 @@ export default class CombatScene extends Phaser.Scene {
         this.combatRenderer = new CombatRenderer(this);
         this.controls = new CombatControls(parent, this.snapshot, {
             onCommand: (command) => void this.submit(command),
+            onMovement: (direction, steps) => void this.submitMovement(direction, steps),
             onAimPreview: (aim) => {
                 this.preview = aim
                     ? trajectoryPreview(this.snapshot.simulation as SimulationState, aim)
@@ -56,6 +85,8 @@ export default class CombatScene extends Phaser.Scene {
         this.scale.on(Phaser.Scale.Events.RESIZE, this.onResize);
         window.addEventListener('resize', this.onViewportChange);
         window.addEventListener('orientationchange', this.onViewportChange);
+        window.visualViewport?.addEventListener('resize', this.onViewportChange);
+        window.visualViewport?.addEventListener('scroll', this.onViewportChange);
         window.addEventListener('blur', this.onWindowBlur);
         document.addEventListener('visibilitychange', this.onVisibility);
         this.events.once(Phaser.Scenes.Events.SHUTDOWN, this.shutdown);
@@ -68,6 +99,7 @@ export default class CombatScene extends Phaser.Scene {
         if (this.args.onConnection) {
             this.unsubscribers.push(this.args.onConnection((state) => {
                 const reconnecting = state === 'reconnecting';
+                if (reconnecting) this.interruptPresentation();
                 this.controls.setConnectionSuspended(reconnecting);
                 this.controls.setMessage(reconnecting
                     ? 'Reconnecting · controls are safely suspended'
@@ -89,19 +121,64 @@ export default class CombatScene extends Phaser.Scene {
 
     private async submit(command: SimulationCommand): Promise<void> {
         if (this.pendingCommand) return;
-        if (this.snapshot.simulation.activeActor !== 'player' ||
-            this.snapshot.simulation.phase !== 'awaiting_command') return;
+        if (this.authoritativeSnapshot.simulation.activeActor !== 'player' ||
+            this.authoritativeSnapshot.simulation.phase !== 'awaiting_command') return;
         this.pendingCommand = true;
         this.controls.setBusy(true);
         this.controls.root.dataset.lastCommand = command.type;
+        if (command.type === 'fire') {
+            this.preview = [];
+            this.render();
+        }
         try {
-            const next = await this.args.submitCommand(command, this.snapshot.simulation.turn);
+            const next = await this.args.submitCommand(
+                command,
+                this.authoritativeSnapshot.simulation.turn
+            );
             this.acceptSnapshot(next);
             this.controls.setMessage('');
-            this.controls.submissionFinished(true);
+            this.controls.submissionFinished(true, Boolean(next.simulation.aim));
         } catch (error) {
             this.controls.setMessage(error instanceof Error ? error.message : 'Command failed.');
-            this.controls.submissionFinished(false);
+            this.controls.submissionFinished(
+                false,
+                Boolean(this.authoritativeSnapshot.simulation.aim)
+            );
+        } finally {
+            this.pendingCommand = false;
+            this.controls.setBusy(false);
+        }
+    }
+
+    private async submitMovement(direction: -1 | 1, requestedSteps: number): Promise<void> {
+        if (this.pendingCommand || this.presenting) return;
+        if (this.authoritativeSnapshot.simulation.activeActor !== 'player' ||
+            this.authoritativeSnapshot.simulation.phase !== 'awaiting_command') return;
+        this.pendingCommand = true;
+        this.controls.setBusy(true);
+        this.controls.root.dataset.lastCommand = 'move';
+        this.controls.clearAimLock();
+        this.preview = [];
+        let acceptedSteps = 0;
+        try {
+            for (let index = 0; index < Math.min(4, requestedSteps); index += 1) {
+                const basis = this.authoritativeSnapshot;
+                if (basis.simulation.activeActor !== 'player' ||
+                    basis.simulation.phase !== 'awaiting_command') break;
+                const beforeX = basis.simulation.units[0].x;
+                const next = await this.args.submitCommand(
+                    { type: 'move', direction },
+                    basis.simulation.turn
+                );
+                this.acceptSnapshot(next);
+                if (next.simulation.units[0].x === beforeX) break;
+                acceptedSteps += 1;
+            }
+            this.controls.setMessage(acceptedSteps > 0
+                ? `Moved ${direction < 0 ? 'left' : 'right'} · aim again`
+                : 'The Knotkin could not move farther');
+        } catch (error) {
+            this.controls.setMessage(error instanceof Error ? error.message : 'Movement failed.');
         } finally {
             this.pendingCommand = false;
             this.controls.setBusy(false);
@@ -149,24 +226,44 @@ export default class CombatScene extends Phaser.Scene {
             this.controls?.setMessage('Combat scene accepts only v2 challenge snapshots.');
             return;
         }
-        if (next.challengeId === this.snapshot.challengeId && next.revision < this.snapshot.revision) {
+        const current = this.authoritativeSnapshot;
+        if (next.challengeId === current.challengeId && next.revision < current.revision) {
             return;
         }
-        this.snapshot = structuredClone(next);
+        if (next.challengeId === current.challengeId && next.revision === current.revision) return;
+        this.authoritativeSnapshot = structuredClone(next);
         if (!this.controls) return;
-        this.controls.update(this.snapshot);
-        this.preview = this.controls.input.lockedAim && !this.snapshot.paused
-            ? trajectoryPreview(
-                this.snapshot.simulation as SimulationState,
-                this.controls.input.lockedAim
-            )
-            : [];
-        this.render();
+        if (next.challengeId !== this.snapshot.challengeId) {
+            this.resetForChallenge(next);
+            return;
+        }
+        const queued = this.snapshotQueue.at(-1);
+        if (queued?.challengeId === next.challengeId && queued.revision >= next.revision) return;
+        if (queued && planCombatPresentation(queued, next, false).length === 0) {
+            this.snapshotQueue[this.snapshotQueue.length - 1] = structuredClone(next);
+            return;
+        }
+        if (this.snapshotQueue.length >= MAX_PRESENTATION_SNAPSHOTS) {
+            this.interruptPresentation();
+            this.controls.setMessage('Caught up to the current authoritative turn');
+            return;
+        }
+        this.snapshotQueue.push(structuredClone(next));
+        void this.processPresentationQueue();
     }
 
     private showResult(result: ChallengeResult): void {
-        if (this.transitioning || result.challengeId !== this.snapshot.challengeId) return;
+        if (this.transitioning || result.challengeId !== this.authoritativeSnapshot.challengeId) return;
+        this.pendingResult = structuredClone(result);
+        this.maybeShowResult();
+    }
+
+    private maybeShowResult(): void {
+        const result = this.pendingResult;
+        if (!result || this.presenting || this.snapshotQueue.length > 0 ||
+            result.challengeId !== this.snapshot.challengeId || this.transitioning) return;
         this.transitioning = true;
+        this.pendingResult = undefined;
         this.scene.start('result', { result, calling: this.snapshot.calling });
     }
 
@@ -205,10 +302,12 @@ export default class CombatScene extends Phaser.Scene {
     private render(): void {
         if (!this.layout || !this.combatRenderer) return;
         this.controls.root.dataset.previewPoints = String(this.preview.length);
+        this.controls.root.dataset.projectilePoints = String(this.projectileTrace.length);
         this.combatRenderer.render(
-            this.snapshot.simulation as SimulationState,
+            this.renderState,
             this.layout,
-            this.preview
+            this.preview,
+            this.projectileTrace
         );
     }
 
@@ -216,11 +315,164 @@ export default class CombatScene extends Phaser.Scene {
         this.scale.off(Phaser.Scale.Events.RESIZE, this.onResize);
         window.removeEventListener('resize', this.onViewportChange);
         window.removeEventListener('orientationchange', this.onViewportChange);
+        window.visualViewport?.removeEventListener('resize', this.onViewportChange);
+        window.visualViewport?.removeEventListener('scroll', this.onViewportChange);
         window.removeEventListener('blur', this.onWindowBlur);
         document.removeEventListener('visibilitychange', this.onVisibility);
         for (const unsubscribe of this.unsubscribers.splice(0)) unsubscribe();
+        this.presentationEpoch += 1;
+        this.snapshotQueue.splice(0);
         this.controls?.destroy();
         this.combatRenderer?.destroy();
+    }
+
+    private async processPresentationQueue(): Promise<void> {
+        if (this.presenting) return;
+        this.presenting = true;
+        const epoch = this.presentationEpoch;
+        try {
+            while (this.snapshotQueue.length > 0 && epoch === this.presentationEpoch) {
+                const next = this.snapshotQueue.shift()!;
+                await this.presentSnapshot(next, epoch);
+            }
+        } finally {
+            if (epoch !== this.presentationEpoch) return;
+            this.presenting = false;
+            this.controls.setPresenting(null);
+            this.maybeShowResult();
+        }
+    }
+
+    private async presentSnapshot(next: ChallengeSnapshot, epoch: number): Promise<void> {
+        const previous = this.snapshot;
+        const reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+        const steps = planCombatPresentation(previous, next, reducedMotion);
+        if (steps.length === 0) {
+            this.commitPresentedSnapshot(next, false);
+            return;
+        }
+        const working = cloneSimulation(previous.simulation as SimulationState);
+        working.selectedRelic = next.simulation.selectedRelic;
+        const playerMoved = previous.simulation.units[0].x !== next.simulation.units[0].x ||
+            previous.simulation.units[0].y !== next.simulation.units[0].y;
+
+        for (const step of steps) {
+            if (epoch !== this.presentationEpoch) return;
+            this.controls.setPresenting(step.phase, presentationLabel(step));
+            if (step.kind === 'movement') {
+                await this.presentMovement(working, step, epoch, reducedMotion);
+            } else if (step.kind === 'aim') {
+                this.renderState = cloneSimulation(working);
+                this.preview = step.trace.map((point) => ({ ...point }));
+                this.projectileTrace = [];
+                this.render();
+                await this.waitForPresentation(step.durationMs, epoch);
+            } else if (step.kind === 'projectile') {
+                this.preview = [];
+                await this.presentProjectile(working, step, epoch, reducedMotion);
+            } else {
+                this.renderState = cloneSimulation(next.simulation as SimulationState);
+                this.preview = [];
+                this.projectileTrace = next.simulation.lastProjectile?.trace.map(
+                    (point) => ({ ...point })
+                ) ?? [];
+                this.controls.update(next);
+                this.render();
+                await this.waitForPresentation(step.durationMs, epoch);
+            }
+        }
+        if (epoch === this.presentationEpoch) this.commitPresentedSnapshot(next, playerMoved);
+    }
+
+    private async presentMovement(
+        working: SimulationState,
+        step: Extract<CombatPresentationStep, { kind: 'movement' }>,
+        epoch: number,
+        reducedMotion: boolean
+    ): Promise<void> {
+        const frames = reducedMotion ? 2 : 8;
+        const unit = working.units[step.actor === 'player' ? 0 : 1];
+        for (let frame = 1; frame <= frames; frame += 1) {
+            unit.x = Math.round(step.from.x + (step.to.x - step.from.x) * frame / frames);
+            unit.y = Math.round(step.from.y + (step.to.y - step.from.y) * frame / frames);
+            this.renderState = cloneSimulation(working);
+            this.preview = [];
+            this.projectileTrace = [];
+            this.render();
+            await this.waitForPresentation(step.durationMs / frames, epoch);
+            if (epoch !== this.presentationEpoch) return;
+        }
+    }
+
+    private async presentProjectile(
+        working: SimulationState,
+        step: Extract<CombatPresentationStep, { kind: 'projectile' }>,
+        epoch: number,
+        reducedMotion: boolean
+    ): Promise<void> {
+        const frames = reducedMotion ? 3 : Math.min(12, Math.max(6, step.trace.length));
+        this.renderState = cloneSimulation(working);
+        for (let frame = 1; frame <= frames; frame += 1) {
+            const points = Math.max(2, Math.ceil(step.trace.length * frame / frames));
+            this.projectileTrace = step.trace.slice(0, points).map((point) => ({ ...point }));
+            this.render();
+            await this.waitForPresentation(step.durationMs / frames, epoch);
+            if (epoch !== this.presentationEpoch) return;
+        }
+    }
+
+    private commitPresentedSnapshot(next: ChallengeSnapshot, clearAim: boolean): void {
+        this.snapshot = structuredClone(next);
+        this.renderState = cloneSimulation(next.simulation as SimulationState);
+        this.projectileTrace = [];
+        this.controls.update(this.snapshot);
+        if (clearAim) this.controls.clearAimLock();
+        this.preview = this.controls.input.lockedAim && !this.snapshot.paused &&
+            this.snapshot.status === 'active' &&
+            this.snapshot.simulation.activeActor === 'player'
+            ? trajectoryPreview(this.renderState, this.controls.input.lockedAim)
+            : [];
+        this.render();
+    }
+
+    private resetForChallenge(next: ChallengeSnapshot): void {
+        this.presentationEpoch += 1;
+        this.snapshotQueue.splice(0);
+        this.presenting = false;
+        this.transitioning = false;
+        this.pendingResult = undefined;
+        this.snapshot = structuredClone(next);
+        this.authoritativeSnapshot = structuredClone(next);
+        this.renderState = cloneSimulation(next.simulation as SimulationState);
+        this.preview = [];
+        this.projectileTrace = [];
+        this.controls.setPresenting(null);
+        this.controls.update(this.snapshot);
+        this.controls.clearAimLock();
+        this.render();
+    }
+
+    private interruptPresentation(): void {
+        this.presentationEpoch += 1;
+        this.snapshotQueue.splice(0);
+        this.presenting = false;
+        this.snapshot = structuredClone(this.authoritativeSnapshot);
+        this.renderState = cloneSimulation(
+            this.authoritativeSnapshot.simulation as SimulationState
+        );
+        this.preview = [];
+        this.projectileTrace = [];
+        this.controls?.setPresenting(null);
+        this.controls?.update(this.snapshot);
+        this.render();
+    }
+
+    private waitForPresentation(durationMs: number, epoch: number): Promise<void> {
+        return new Promise<void>((resolve) => {
+            window.setTimeout(() => resolve(), Math.max(0, durationMs));
+        }).then(() => {
+            if (epoch !== this.presentationEpoch) return;
+        });
     }
 }
 

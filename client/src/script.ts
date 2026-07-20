@@ -13,6 +13,19 @@ import ResultScene from './scenes/result';
 import { bootstrapSession } from './lib/session';
 import { PRACTICE_CLIENT_REGISTRY_KEY, PracticeClient } from './practice/client';
 
+function syncVisualViewport(): void {
+    const viewport = window.visualViewport;
+    const width = Math.max(1, Math.floor(viewport?.width ?? window.innerWidth));
+    const height = Math.max(1, Math.floor(viewport?.height ?? window.innerHeight));
+    document.documentElement.style.setProperty('--app-viewport-width', `${width}px`);
+    document.documentElement.style.setProperty('--app-viewport-height', `${height}px`);
+}
+
+syncVisualViewport();
+window.addEventListener('resize', syncVisualViewport);
+window.visualViewport?.addEventListener('resize', syncVisualViewport);
+window.visualViewport?.addEventListener('scroll', syncVisualViewport);
+
 class BootScene extends Phaser.Scene {
     public constructor() {
         super({ key: 'boot' });

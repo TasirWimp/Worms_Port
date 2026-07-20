@@ -19,7 +19,8 @@ export class CombatRenderer {
     public render(
         state: SimulationState,
         layout: CombatLayout,
-        preview: { x: number; y: number }[]
+        preview: { x: number; y: number }[],
+        projectileTrace: { x: number; y: number }[] = []
     ): void {
         const g = this.graphics;
         const field = layout.battlefield;
@@ -30,7 +31,7 @@ export class CombatRenderer {
         g.fillRoundedRect(field.x, field.y, field.width, field.height, 10);
         this.drawClouds(layout);
         this.drawTerrain(state, layout);
-        this.drawTrace(state.lastProjectile?.trace ?? [], layout, 0xFC8702, 0.8, false);
+        this.drawTrace(projectileTrace, layout, 0xFC8702, 1, false);
         this.drawTrace(preview, layout, 0xE9B213, 0.95, true);
         for (const unit of state.units) this.drawKnotkin(unit, layout, state.selectedRelic);
         g.lineStyle(2, 0x1F2348, 0.65);
