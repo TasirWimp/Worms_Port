@@ -8,11 +8,8 @@ Phaser/Socket.IO stack.
 ## Execution Pointer
 
 - Active target: mobile-first single-player Nimiq Pay competition release.
-- Next work package: **WP-011D deployed-device acceptance**.
-- Queued after that acceptance: **WP-011E Arena-first Contextual Combat HUD**;
-  its design contract is refined below and implementation has not started.
-- Last completed work package: **WP-011C Full-screen Rotation, Exit, and
-  Sideways Stabilization**.
+- Next work package: **WP-011E Arena-first Contextual Combat HUD**.
+- Last completed work package: **WP-011D Default Sideways Host Workaround**.
 - PvP and matchmaking: deferred until after the competition release.
 - Canonical artwork reference:
   `docs/images/art-direction/knotkin-class-lineup-concept.png`.
@@ -22,10 +19,11 @@ Phaser/Socket.IO stack.
   WP-011B acceptance on the same device confirmed working full screen in Samsung
   Chrome and no exposed Fullscreen API inside Nimiq Pay.
   WP-011C's clockwise sideways mode passed user-run Samsung Galaxy S22 Nimiq
-  Pay acceptance on 2026-07-21. WP-011D makes it the temporary portrait-viewport
-  default; its removal trigger is a verified documented Nimiq Pay full-screen
-  game mode or equivalent standard/native capability that removes host chrome.
-  Until then, keep `?sideways=left` and `?sideways=off` as documented controls.
+  Pay acceptance on 2026-07-21. WP-011D's no-query clockwise default then passed
+  user-run acceptance on the same device and date. Its removal trigger is a
+  verified documented Nimiq Pay full-screen game mode or equivalent
+  standard/native capability that removes host chrome. Until then, keep
+  `?sideways=left` and `?sideways=off` as documented controls.
 
 A fresh Codex chat should read `AGENTS.md` and its ordered source documents,
 check the worktree and recent commits, then start only the work package named
@@ -114,11 +112,11 @@ guardrails for this selected host.
   and `sideways=left` virtual-landscape modes for portrait-locked mini-app
   viewports. Its automated verification and deployed Samsung Galaxy S22 Nimiq
   Pay acceptance passed.
-- WP-011D's implementation candidate makes clockwise sideways presentation the
-  temporary default for portrait browser viewports. `sideways=left` selects the
-  opposite direction and `sideways=off` preserves the maintained normal
-  responsive composition. Deployed Samsung acceptance of the no-query default
-  remains before the package is marked complete.
+- WP-011D makes clockwise sideways presentation the temporary default for
+  portrait browser viewports. `sideways=left` selects the opposite direction
+  and `sideways=off` preserves the maintained normal responsive composition.
+  The deployed no-query default passed user-run Samsung Galaxy S22 Nimiq Pay
+  acceptance on 2026-07-21.
 - WP-011E is planned as a presentation-only arena-first HUD refinement. Its
   wireframe, phase visibility, space targets, accessibility invariants, and
   verification slices are defined below; no gameplay authority or combat code
@@ -915,7 +913,7 @@ the current host. This closes WP-011C and motivates WP-011D's temporary default.
 
 ### WP-011D Default Sideways Host Workaround
 
-Status: implementation candidate complete; deployed-device acceptance pending.
+Status: complete.
 Depends on WP-011C. This presentation policy does not block or change WP-012
 identity work.
 
@@ -966,6 +964,12 @@ Verification:
   and
 - user-run Samsung Galaxy S22 Nimiq Pay acceptance starting from the ordinary
   no-query Render URL with Android auto-rotate disabled while portrait.
+
+Acceptance result on 2026-07-21: the user-run Samsung Galaxy S22 Nimiq Pay test
+started from the ordinary no-query Render URL with Android auto-rotate disabled
+and confirmed the default clockwise sideways presentation works as intended.
+This closes WP-011D while retaining `sideways=left`, `sideways=off`, and the
+documented host-capability removal trigger.
 
 ### WP-011E Arena-first Contextual Combat HUD
 

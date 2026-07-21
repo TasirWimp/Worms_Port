@@ -1,6 +1,6 @@
 {
   "id": "WP-011D",
-  "status": "in_progress",
+  "status": "complete",
   "starting_commit": "a7ac40fbd452903b83ef300ccf2886541deea647",
   "branch": "codex/wp-011d-sideways-default",
   "initial_worktree": "clean",
@@ -56,7 +56,7 @@
     { "command": "npm run test:browser:practice", "status": "pass" },
     { "command": "npm audit", "status": "pass" },
     { "command": "self-review", "status": "pass" },
-    { "command": "Samsung Galaxy S22 Nimiq Pay default-sideways acceptance", "status": "pending" }
+    { "command": "Samsung Galaxy S22 Nimiq Pay default-sideways acceptance", "status": "pass" }
   ],
   "reviews": [
     { "role": "worms_port_base_game_worker", "reviewer": "primary-agent-client-review", "decision": "pass" },
@@ -65,7 +65,6 @@
     { "role": "worms_port_reviewer", "reviewer": "primary-agent-boundary-review", "decision": "pass" }
   ],
   "skipped_checks": [
-    "Samsung Galaxy S22 Nimiq Pay default-sideways acceptance: pending branch deployment by the user.",
     "Physical Android and iOS coverage beyond the Samsung device: no release-testing environment was provided.",
     "WP-014 visual-regression baselines, expanded device matrix, degraded-network matrix, and performance budgets are not yet available."
   ],
