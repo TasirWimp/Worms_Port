@@ -577,6 +577,18 @@ button:disabled {
     line-height: 1.4;
 }
 
+.practice-sideways-note {
+    display: none;
+    margin: 0.45rem auto 0.65rem;
+    padding: 0.5rem 0.7rem;
+    color: #1f2348;
+    font-size: 0.78rem;
+    line-height: 1.25;
+    background: rgb(233 178 19 / 28%);
+    border: 2px solid #e9b213;
+    border-radius: 10px;
+}
+
 .calling-picker {
     display: grid;
     grid-template-columns: repeat(3, 1fr);
@@ -724,4 +736,23 @@ button:disabled {
 
 :root[data-sideways] .calling-picker {
     grid-template-columns: repeat(3, 1fr);
+}
+
+:root[data-sideways] .practice-card {
+    width: min(100%, 680px);
+    padding: clamp(0.7rem, 2vw, 1.1rem);
+}
+
+:root[data-sideways] .practice-card h1 {
+    font-size: clamp(1.7rem, 6vw, 2.5rem);
+}
+
+:root[data-sideways] .practice-intro,
+:root[data-sideways] .calling-note {
+    margin: 0.35rem auto 0.55rem;
+}
+
+:root[data-sideways='right'] .practice-sideways-note-right,
+:root[data-sideways='left'] .practice-sideways-note-left {
+    display: block;
 }

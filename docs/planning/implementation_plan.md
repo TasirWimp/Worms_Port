@@ -926,6 +926,8 @@ Scope:
   documented `sideways=off` normal responsive composition,
 - retain automatic virtual-rotation deactivation in an actual landscape
   viewport,
+- show a prominent direction-aware start-card instruction to disable Android
+  auto-rotate before turning the phone; hide it in normal responsive mode,
 - keep legacy portrait and browser-full-screen regression coverage through the
   explicit opt-out while smoke and focused live tests cover the production
   default, and

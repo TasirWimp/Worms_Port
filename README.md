@@ -12,7 +12,8 @@ The `Worms_Port` repository was bootstrapped from the MIT
 **Current default:** a portrait browser viewport renders the complete game as
 a clockwise-rotated landscape composition. Before opening the mini app, disable
 Android auto-rotate while the phone is portrait; then hold the phone with its
-top/earpiece on the left. The ordinary Render URL needs no query parameter.
+top/earpiece on the left. The ordinary Render URL needs no query parameter. The
+Practice start card repeats this setup before the player starts a Clash.
 
 This WP-011D policy is a host workaround, not the intended permanent display
 architecture. Nimiq Pay currently keeps its native URL ribbon and Android

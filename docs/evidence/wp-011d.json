@@ -15,6 +15,7 @@
     "Make clockwise virtual landscape the default when the browser viewport is portrait",
     "Keep explicit counter-clockwise and normal responsive presentation controls",
     "Retain automatic deactivation when the browser viewport is actually landscape",
+    "Show a direction-aware Auto rotate instruction on the Practice start card only while sideways mode is active",
     "Document the Nimiq Pay limitation, Android setup, escape hatch, and removal trigger for fresh re-entry",
     "Record completion of the user-run WP-011C Samsung Galaxy S22 acceptance"
   ],
@@ -72,6 +73,6 @@
     "The default assumes Nimiq Pay users follow the documented Android auto-rotate-off setup and hold the phone with its top on the left.",
     "Other portrait WebViews also receive the workaround unless they use sideways=off; host detection is deliberately avoided because it would be brittle.",
     "Nimiq Pay controls its native chrome, so the workaround uses the available viewport but cannot remove those surfaces.",
-    "The client bundle is approximately 1.406 MB minified and 387.73 kB gzip and retains the existing chunk-size warning."
+    "The client bundle is approximately 1.406 MB minified and 387.84 kB gzip and retains the existing chunk-size warning."
   ]
 }

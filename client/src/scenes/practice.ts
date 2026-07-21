@@ -30,6 +30,14 @@ export default class PracticeScene extends Phaser.Scene {
                 <p class="practice-eyebrow">NIMble Knots · Cotton Clash</p>
                 <h1 id="practice-title">Practice Clash</h1>
                 <p class="practice-intro">Face the deterministic Loomkeeper instantly. No wallet, matchmaking, or reward pool.</p>
+                <p class="practice-sideways-note practice-sideways-note-right">
+                    <strong>Before playing:</strong> keep the phone upright, switch off Auto rotate,
+                    then turn it so the phone's top points left.
+                </p>
+                <p class="practice-sideways-note practice-sideways-note-left">
+                    <strong>Before playing:</strong> keep the phone upright, switch off Auto rotate,
+                    then turn it so the phone's top points right.
+                </p>
                 <fieldset class="calling-picker">
                     <legend>Choose your Calling</legend>
                     <button type="button" data-calling="wizard">Wizard<small>Spoolcraft</small></button>

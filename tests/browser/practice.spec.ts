@@ -9,6 +9,7 @@ test.beforeEach(async ({ page }) => {
   });
   await page.goto('/?sideways=off');
   await expect(page.getByRole('heading', { name: 'Practice Clash' })).toBeVisible({ timeout: 10_000 });
+  await expect(page.locator('.practice-sideways-note:visible')).toHaveCount(0);
   await expect.poll(() => pageErrors).toEqual([]);
   await expect.poll(() => consoleErrors).toEqual([]);
 });
@@ -93,6 +94,11 @@ test('default sideways mode carries the live practice journey into virtual lands
   await page.goto('/');
   await expect(page.getByRole('heading', { name: 'Practice Clash' })).toBeVisible();
   await expect(page.locator('html')).toHaveAttribute('data-sideways', 'right');
+  const instruction = page.locator('.practice-sideways-note-right');
+  await expect(instruction).toBeVisible();
+  await expect(instruction).toContainText('switch off Auto rotate');
+  await expect(instruction).toContainText("phone's top points left");
+  await page.screenshot({ path: testInfo.outputPath('wp-011d-start-instruction.png') });
   await page.getByRole('button', { name: 'Start Practice' }).tap();
   const ui = page.locator('.combat-ui');
   await expect(ui).toBeVisible();
