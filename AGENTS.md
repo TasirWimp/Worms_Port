@@ -34,6 +34,13 @@ For fresh-chat re-entry, follow that order, then read the **Execution Pointer**
 at the top of `docs/planning/implementation_plan.md`. Check Git status and recent
 commits before starting only the named next work package.
 
+Temporary display policy: WP-011D defaults portrait browser viewports to the
+clockwise sideways landscape workaround because Nimiq Pay does not currently
+provide full-screen mini-app presentation. `README.md` documents the user setup,
+`?sideways=left` alternative, `?sideways=off` escape hatch, and removal trigger.
+Do not remove or silently redesign this workaround until the Execution Pointer
+records a verified Nimiq Pay full-screen replacement.
+
 ## Required Workflow
 
 For implementation work:
@@ -82,8 +89,11 @@ If the user asks only for planning, review, or brainstorming, do not edit code.
   against an independently implemented AI.
 - Rewards are fixed and sponsor-funded. Player stakes, betting, escrow, random
   winner selection, and player-loss-funded payouts are blocked.
-- Phone portrait is the default composition; landscape is supported but cannot
-  be required. No core action may require hover, keyboard, or precision mouse.
+- While the WP-011D Nimiq Pay workaround is active, portrait browser viewports
+  default to the clockwise virtual-landscape composition. The normal portrait
+  composition remains supported through `?sideways=off`, and actual landscape
+  viewports must not be double-rotated. No core action may require hover,
+  keyboard, or precision mouse.
 - Production artwork must follow
   `docs/images/art-direction/knotkin-class-lineup-concept.png` while preserving
   its documentation-only status until exact-file asset approval.

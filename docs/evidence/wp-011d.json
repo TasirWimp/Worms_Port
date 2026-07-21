@@ -1,28 +1,28 @@
 {
-  "id": "WP-011C",
-  "status": "complete",
-  "starting_commit": "a7f66c31fe77f20932f2dbe2c825cbfa6f93f742",
-  "branch": "codex/wp-011c-sideways-mode",
+  "id": "WP-011D",
+  "status": "in_progress",
+  "starting_commit": "a7ac40fbd452903b83ef300ccf2886541deea647",
+  "branch": "codex/wp-011d-sideways-default",
   "initial_worktree": "clean",
   "starting_lock_sha256": "98951A0DECBB8FF685BD314AD44C853ED91554FFC46565BBDD03A27AB78A04AE",
   "owning_roles": [
     "worms_port_base_game_worker",
+    "worms_port_docs_keeper",
     "worms_port_test_worker",
     "worms_port_reviewer"
   ],
   "scope": [
-    "Remove orientation locking from standard browser full-screen entry",
-    "Keep a state-aware full-screen/default-screen toggle available on terminal results",
-    "Offer opt-in clockwise and counter-clockwise virtual landscape in a portrait browser viewport",
-    "Swap Phaser logical dimensions, remap safe-area edges, and inverse-map touch coordinates while sideways",
-    "Automatically deactivate sideways transforms when the browser viewport actually becomes landscape",
-    "Record the Samsung Galaxy S22 Nimiq Pay auto-rotate-off precondition and deployed acceptance"
+    "Make clockwise virtual landscape the default when the browser viewport is portrait",
+    "Keep explicit counter-clockwise and normal responsive presentation controls",
+    "Retain automatic deactivation when the browser viewport is actually landscape",
+    "Document the Nimiq Pay limitation, Android setup, escape hatch, and removal trigger for fresh re-entry",
+    "Record completion of the user-run WP-011C Samsung Galaxy S22 acceptance"
   ],
   "non_goals": [
-    "Changing Android auto-rotate or reliably detecting physical device attitude from web content",
+    "Changing Android auto-rotate or detecting physical device attitude from web content",
     "Forcing Nimiq Pay native URL or Android system chrome to disappear",
     "Undocumented Nimiq Pay APIs, native application changes, or a native wrapper",
-    "Making sideways presentation the default for every player",
+    "Removing the maintained normal portrait composition",
     "Gameplay authority, simulation, Loomkeeper, Relic, reward, or wallet changes",
     "New third-party dependencies or product assets"
   ],
@@ -38,7 +38,7 @@
     "npm run test:browser:practice",
     "npm audit",
     "self-review",
-    "Samsung Galaxy S22 Chrome and Nimiq Pay acceptance"
+    "Samsung Galaxy S22 Nimiq Pay default-sideways acceptance"
   ],
   "deterministic_seeds": [],
   "sorcerers_reference_used": false,
@@ -55,22 +55,23 @@
     { "command": "npm run test:browser:practice", "status": "pass" },
     { "command": "npm audit", "status": "pass" },
     { "command": "self-review", "status": "pass" },
-    { "command": "Samsung Galaxy S22 Chrome and Nimiq Pay acceptance", "status": "pass" }
+    { "command": "Samsung Galaxy S22 Nimiq Pay default-sideways acceptance", "status": "pending" }
   ],
   "reviews": [
     { "role": "worms_port_base_game_worker", "reviewer": "primary-agent-client-review", "decision": "pass" },
+    { "role": "worms_port_docs_keeper", "reviewer": "primary-agent-docs-review", "decision": "pass" },
     { "role": "worms_port_test_worker", "reviewer": "primary-agent-test-review", "decision": "pass" },
     { "role": "worms_port_reviewer", "reviewer": "primary-agent-boundary-review", "decision": "pass" }
   ],
   "skipped_checks": [
+    "Samsung Galaxy S22 Nimiq Pay default-sideways acceptance: pending branch deployment by the user.",
     "Physical Android and iOS coverage beyond the Samsung device: no release-testing environment was provided.",
     "WP-014 visual-regression baselines, expanded device matrix, degraded-network matrix, and performance budgets are not yet available."
   ],
   "residual_risks": [
-    "Samsung Galaxy S22 Nimiq Pay acceptance passed on 2026-07-21, but one device and WebView version does not establish wider Android or iOS coverage.",
-    "Sideways mode relies on the user disabling Android auto-rotate while portrait and selecting the matching device-hold direction.",
-    "Viewport orientation cannot prove physical phone attitude; WP-011C therefore shipped explicit queries, which WP-011D later supersedes with a documented temporary default and opt-out.",
-    "Nimiq Pay still controls its native URL ribbon and Android system chrome; this compatibility mode uses the remaining viewport but cannot hide those surfaces.",
-    "The client bundle is approximately 1.406 MB minified and 387.72 kB gzip and retains the existing chunk-size warning."
+    "The default assumes Nimiq Pay users follow the documented Android auto-rotate-off setup and hold the phone with its top on the left.",
+    "Other portrait WebViews also receive the workaround unless they use sideways=off; host detection is deliberately avoided because it would be brittle.",
+    "Nimiq Pay controls its native chrome, so the workaround uses the available viewport but cannot remove those surfaces.",
+    "The client bundle is approximately 1.406 MB minified and 387.73 kB gzip and retains the existing chunk-size warning."
   ]
 }

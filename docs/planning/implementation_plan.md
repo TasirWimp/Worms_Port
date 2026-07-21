@@ -8,8 +8,9 @@ Phaser/Socket.IO stack.
 ## Execution Pointer
 
 - Active target: mobile-first single-player Nimiq Pay competition release.
-- Next work package: **WP-011C deployed-device acceptance**.
-- Last completed work package: **WP-011B Embedded Full-screen Capability Probe**.
+- Next work package: **WP-011D deployed-device acceptance**.
+- Last completed work package: **WP-011C Full-screen Rotation, Exit, and
+  Sideways Stabilization**.
 - PvP and matchmaking: deferred until after the competition release.
 - Canonical artwork reference:
   `docs/images/art-direction/knotkin-class-lineup-concept.png`.
@@ -18,9 +19,11 @@ Phaser/Socket.IO stack.
   2026-07-20 for the reported real-device regressions.
   WP-011B acceptance on the same device confirmed working full screen in Samsung
   Chrome and no exposed Fullscreen API inside Nimiq Pay.
-  WP-011C's implementation candidate adds query-controlled clockwise and
-  counter-clockwise sideways modes for the confirmed auto-rotate-off Nimiq Pay
-  workaround; its Samsung device acceptance is pending deployment.
+  WP-011C's clockwise sideways mode passed user-run Samsung Galaxy S22 Nimiq
+  Pay acceptance on 2026-07-21. WP-011D makes it the temporary portrait-viewport
+  default; its removal trigger is a verified documented Nimiq Pay full-screen
+  game mode or equivalent standard/native capability that removes host chrome.
+  Until then, keep `?sideways=left` and `?sideways=off` as documented controls.
 
 A fresh Codex chat should read `AGENTS.md` and its ordered source documents,
 check the worktree and recent commits, then start only the work package named
@@ -104,11 +107,16 @@ guardrails for this selected host.
   while Nimiq Pay does not expose the required API and correctly retains the
   compact embedded fallback. Chrome acceptance also found forced-landscape and
   result-screen exit defects assigned to WP-011C.
-- WP-011C's implementation candidate removes the browser orientation lock,
+- WP-011C removes the browser orientation lock,
   retains a full-screen exit action on results, and adds opt-in `sideways=right`
   and `sideways=left` virtual-landscape modes for portrait-locked mini-app
-  viewports. Automated verification is complete; deployed Samsung Galaxy S22
-  acceptance remains before the package is marked complete.
+  viewports. Its automated verification and deployed Samsung Galaxy S22 Nimiq
+  Pay acceptance passed.
+- WP-011D's implementation candidate makes clockwise sideways presentation the
+  temporary default for portrait browser viewports. `sideways=left` selects the
+  opposite direction and `sideways=off` preserves the maintained normal
+  responsive composition. Deployed Samsung acceptance of the no-query default
+  remains before the package is marked complete.
 - Nimiq Pay identity/reward work, the expanded phone matrix, and visual
   regression remain.
 
@@ -823,9 +831,8 @@ reopening the host-capability probe.
 
 ### WP-011C Full-screen Rotation, Exit, and Sideways Stabilization
 
-Status: implementation candidate complete; deployed-device acceptance pending.
-Depends on WP-011B. This corrective package does not block or change WP-012
-identity work.
+Status: complete. Depends on WP-011B. This corrective package does not block or
+change WP-012 identity work.
 
 Goal: make supported browser full screen reversible and orientation-responsive
 through the complete Practice Clash journey, including terminal results, and
@@ -895,6 +902,62 @@ Verification:
   Nimiq Pay still uses the non-full-screen fallback without a dead control, then
   test `sideways=right` and `sideways=left` in Nimiq Pay with Android auto-rotate
   disabled.
+
+Acceptance result on 2026-07-21: the user-run Samsung Galaxy S22 Nimiq Pay test
+confirmed the sideways workaround works and is the preferred way to play in
+the current host. This closes WP-011C and motivates WP-011D's temporary default.
+
+### WP-011D Default Sideways Host Workaround
+
+Status: implementation candidate complete; deployed-device acceptance pending.
+Depends on WP-011C. This presentation policy does not block or change WP-012
+identity work.
+
+Goal: use the accepted clockwise virtual-landscape workaround without requiring
+a query parameter, while preserving explicit alternative and opt-out routes and
+making the temporary host dependency easy to recover in a fresh implementation
+session.
+
+Scope:
+
+- when `sideways` is absent and the browser viewport is portrait, behave as
+  `sideways=right`,
+- retain `sideways=1` / `sideways=right` and `sideways=left`, and add the
+  documented `sideways=off` normal responsive composition,
+- retain automatic virtual-rotation deactivation in an actual landscape
+  viewport,
+- keep legacy portrait and browser-full-screen regression coverage through the
+  explicit opt-out while smoke and focused live tests cover the production
+  default, and
+- record the workaround prominently in `README.md`, `AGENTS.md`, this Execution
+  Pointer, art direction, and the development workflow, including prerequisite,
+  direction, escape hatch, host limitation, and removal trigger.
+
+Removal trigger: replace the default only after a documented Nimiq Pay
+full-screen game mode or reliable standard/native capability is verified on a
+real device to remove the host URL ribbon/system-bar obstruction. Preserve
+`sideways=off` throughout migration and do not substitute an undocumented host
+bridge.
+
+Non-goals: host sniffing, changing Android auto-rotate, inferring physical
+device attitude, removing portrait support, changing gameplay authority,
+wallet/reward work, dependencies, or assets.
+
+Owning roles: `worms_port_base_game_worker`, `worms_port_docs_keeper`,
+`worms_port_test_worker`, and `worms_port_reviewer`.
+
+Verification:
+
+- unit coverage for no-query clockwise default, explicit left/right forms, and
+  `sideways=off`,
+- built phone smoke coverage of the no-query default across the existing
+  Chromium/WebKit phone projects,
+- focused combat and live Practice coverage for default rotation, touch mapping,
+  actual-landscape deactivation, and the explicit normal-layout regression path,
+- existing build, compliance, combat, practice, browser, smoke, and audit gates,
+  and
+- user-run Samsung Galaxy S22 Nimiq Pay acceptance starting from the ordinary
+  no-query Render URL with Android auto-rotate disabled while portrait.
 
 ### WP-012 Nimiq Pay Identity Adapter
 
@@ -1054,7 +1117,7 @@ it does not block completion of the documented autonomous cycle.
 
 ```text
 WP-005 -> WP-006 -> WP-007 -> WP-008 -> WP-009 -> WP-010 -> WP-011 -> WP-011A
-WP-011A -> WP-011B -> WP-011C (optional browser full-screen path)
+WP-011A -> WP-011B -> WP-011C -> WP-011D (temporary host-presentation path)
 WP-011A -> WP-012 -> WP-013 -> WP-014
 WP-010 + WP-014 ------------------------------------------------------------> WP-015
 WP-013 + WP-015 ------------------------------------------------------------> WP-016 -> WP-017
@@ -1062,9 +1125,11 @@ WP-013 + WP-015 ------------------------------------------------------------> WP
 
 WP-011 is the first complete playable. WP-011A is its real-device acceptance
 stabilization gate. WP-011B is a non-blocking embedded-host capability probe.
-WP-011C stabilizes the supported-browser path without changing the Nimiq Pay
-fallback. WP-014 is the automated competition-candidate gate. WP-017 is the
-submission-ready repository and deployment.
+WP-011C stabilizes the supported-browser path and proves the Nimiq Pay sideways
+fallback. WP-011D makes that fallback the documented temporary default until
+the host supplies full-screen game presentation. WP-014 is the automated
+competition-candidate gate. WP-017 is the submission-ready repository and
+deployment.
 
 ## Deferred Until After Competition
 

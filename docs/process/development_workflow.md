@@ -221,15 +221,23 @@ while it is active must expose a visible **Exit full screen** action; returning
 to default browser mode cannot depend on a combat-scene control that no longer
 exists. WP-011C owns these corrections.
 
-WP-011C also permits an explicit `sideways` query as a host-compatibility mode.
-It is active only when the browser reports a portrait viewport and must use
+WP-011C introduced `sideways` as a host-compatibility mode. It is active only
+when the browser reports a portrait viewport and must use
 swapped logical game dimensions, rotate the complete game surface, remap
 safe-area edges, and inverse-map pointer coordinates. `sideways=1` and
 `sideways=right` rotate clockwise; `sideways=left` rotates counter-clockwise.
 If the browser becomes landscape, the transform must disengage immediately to
-avoid double rotation. Keep this opt-in: viewport orientation does not reveal
-physical device attitude, and the web app must not pretend it can change the
-user's Android auto-rotate setting or the Nimiq Pay host chrome.
+avoid double rotation.
+
+WP-011D makes clockwise sideways the temporary default when no `sideways`
+query is present. `sideways=off` must retain the normal responsive composition
+for accessibility, diagnostics, other hosts, and future migration. Keep the
+default workaround clearly documented with its prerequisite (disable Android
+auto-rotate while portrait), alternate direction, opt-out, and removal trigger.
+Remove the default only after a documented Nimiq Pay full-screen game mode or
+reliable standard/native capability is verified to remove host chrome. Viewport
+orientation still does not reveal physical device attitude, and the web app
+must not claim it can change Android auto-rotate or Nimiq Pay chrome.
 
 ### Deterministic Artillery Ruleset
 

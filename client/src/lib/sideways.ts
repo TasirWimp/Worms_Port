@@ -9,11 +9,13 @@ export type ClientRectBounds = {
 
 export function requestedSidewaysMode(search: string): SidewaysMode | null {
     const params = new URLSearchParams(search);
-    if (!params.has('sideways')) return null;
+    if (!params.has('sideways')) return 'right';
     const value = params.get('sideways')?.toLowerCase();
     if (value === 'left' || value === 'counterclockwise' || value === 'ccw') return 'left';
     if (value === null || value === '' || value === '1' || value === 'right' ||
         value === 'clockwise' || value === 'cw') return 'right';
+    if (value === '0' || value === 'off' || value === 'false' || value === 'none' ||
+        value === 'portrait') return null;
     return null;
 }
 

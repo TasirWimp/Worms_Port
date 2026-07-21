@@ -70,9 +70,14 @@ delay the single-player release.
 NIMble Knots is composed for phone screens rather than desktop play scaled
 down after implementation.
 
-- Portrait is the default layout: the Patch occupies the upper area and large
-  thumb controls occupy the lower area.
-- Landscape is a supported enhanced layout and must not be required to play.
+- WP-011D temporarily makes the landscape composition the default inside a
+  portrait-locked Nimiq Pay viewport by rotating the complete game surface.
+  This is a host workaround until Nimiq Pay supports full-screen game mode, not
+  a change to the world's visual direction.
+- The normal portrait layout remains maintained through `?sideways=off`: the
+  Patch occupies the upper area and large thumb controls occupy the lower area.
+- Actual landscape viewports use the landscape composition directly and must
+  not receive a second virtual rotation.
 - All gameplay commands use touch/pointer interaction; no hover, keyboard,
   right-click, or precision-mouse action may be required.
 - Aiming, power, movement, Relic selection, confirmation, pause, and retry must

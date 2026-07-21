@@ -7,6 +7,38 @@ opponent, with an optional fixed sponsor-funded NIM reward for eligible wins.
 The `Worms_Port` repository was bootstrapped from the MIT
 `TurtlePU/worms-ii` code base and retains that provenance.
 
+## Temporary Nimiq Pay Display Workaround
+
+**Current default:** a portrait browser viewport renders the complete game as
+a clockwise-rotated landscape composition. Before opening the mini app, disable
+Android auto-rotate while the phone is portrait; then hold the phone with its
+top/earpiece on the left. The ordinary Render URL needs no query parameter.
+
+This WP-011D policy is a host workaround, not the intended permanent display
+architecture. Nimiq Pay currently keeps its native URL ribbon and Android
+system bars, does not expose the standard Fullscreen API to the mini app, and
+can preserve a portrait WebView when Android auto-rotate is disabled. The game
+uses that stable portrait viewport sideways so substantially more of the
+landscape battlefield and controls remain usable.
+
+Controls and escape hatches:
+
+- default or `?sideways=1` / `?sideways=right`: rotate content clockwise; hold
+  the phone with its top on the left,
+- `?sideways=left`: rotate content counter-clockwise; hold the phone with its
+  top on the right,
+- `?sideways=off`: use the maintained normal portrait/landscape responsive
+  composition, and
+- if the host actually reports a landscape viewport, virtual rotation switches
+  off automatically to prevent a double rotation.
+
+Revisit and remove the default workaround once Nimiq Pay provides a documented
+full-screen game mode or exposes a reliable standard/native full-screen
+capability that removes its host chrome. Do not replace this policy with an
+undocumented bridge. The canonical implementation status and removal condition
+are also recorded in the Execution Pointer of
+`docs/planning/implementation_plan.md`.
+
 ## Import Boundary
 
 - `TurtlePU/worms-ii` is the approved base code source. Its MIT notice is
@@ -161,17 +193,11 @@ Samsung Galaxy S22 acceptance confirmed that full screen works in Samsung
 Chrome but that Nimiq Pay does not expose the Fullscreen API. WP-011C removes
 the forced landscape lock and adds the result-screen toggle.
 
-WP-011C also provides an opt-in sideways composition for the Nimiq Pay host.
-With Android auto-rotate disabled while the phone is in portrait, open the app
-with `?sideways=1` (equivalent to `?sideways=right`). That rotates the content
-clockwise; hold the phone with its top/earpiece on the left. Use
-`?sideways=left` and hold the phone with its top/earpiece on the right for the
-opposite direction. The browser viewport remains portrait, while the game
-renders a landscape-sized scene rotated inside it and maps touch coordinates
-back into that logical scene. If the host actually rotates its viewport to
-landscape, the sideways transform automatically disengages to avoid rotating
-twice. This is a query-controlled compatibility mode, not an attempt to change
-the device's rotation setting or hide native host chrome.
+WP-011C introduced the sideways composition and WP-011D makes its clockwise
+form the temporary default. The browser viewport remains portrait, while the
+game renders a landscape-sized scene rotated inside it and maps touch
+coordinates back into that logical scene. The opt-out and host-removal
+condition are documented in **Temporary Nimiq Pay Display Workaround** above.
 
 ## Phone Combat Fixture
 
@@ -233,7 +259,7 @@ exact-file approval, and manifest entries before runtime use.
 
 The active release target is phone-only play inside Nimiq Pay:
 
-- portrait-first and landscape-capable touch controls,
+- virtual-landscape-by-default phone controls with a maintained portrait opt-out,
 - instant practice without matchmaking or a wallet prompt,
 - a deterministic single-player Daily Grand Knot Challenge,
 - server-authoritative rewarded matches and replay-safe claims,

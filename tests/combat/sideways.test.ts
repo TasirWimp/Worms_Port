@@ -7,14 +7,17 @@ import {
     resolveSidewaysMode
 } from '../../client/src/lib/sideways';
 
-test('sideways query supports a default and explicit rotation direction', () => {
-    assert.equal(requestedSidewaysMode(''), null);
+test('sideways defaults clockwise and supports explicit direction or opt-out', () => {
+    assert.equal(requestedSidewaysMode(''), 'right');
     assert.equal(requestedSidewaysMode('?sideways'), 'right');
     assert.equal(requestedSidewaysMode('?sideways=1'), 'right');
     assert.equal(requestedSidewaysMode('?sideways=right'), 'right');
     assert.equal(requestedSidewaysMode('?sideways=cw'), 'right');
     assert.equal(requestedSidewaysMode('?sideways=left'), 'left');
     assert.equal(requestedSidewaysMode('?sideways=ccw'), 'left');
+    assert.equal(requestedSidewaysMode('?sideways=off'), null);
+    assert.equal(requestedSidewaysMode('?sideways=0'), null);
+    assert.equal(requestedSidewaysMode('?sideways=portrait'), null);
     assert.equal(requestedSidewaysMode('?sideways=invalid'), null);
 });
 

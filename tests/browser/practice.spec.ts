@@ -7,7 +7,7 @@ test.beforeEach(async ({ page }) => {
   page.on('console', (message) => {
     if (message.type() === 'error') consoleErrors.push(message.text());
   });
-  await page.goto('/');
+  await page.goto('/?sideways=off');
   await expect(page.getByRole('heading', { name: 'Practice Clash' })).toBeVisible({ timeout: 10_000 });
   await expect.poll(() => pageErrors).toEqual([]);
   await expect.poll(() => consoleErrors).toEqual([]);
@@ -88,9 +88,9 @@ test('calling controls and live combat actions remain phone-safe', async ({ page
   }
 });
 
-test('sideways mode carries the live practice journey into virtual landscape', async ({ page }, testInfo) => {
+test('default sideways mode carries the live practice journey into virtual landscape', async ({ page }, testInfo) => {
   test.skip(testInfo.project.name !== 'chromium-390x844', 'One portrait viewport is sufficient.');
-  await page.goto('/?sideways=right');
+  await page.goto('/');
   await expect(page.getByRole('heading', { name: 'Practice Clash' })).toBeVisible();
   await expect(page.locator('html')).toHaveAttribute('data-sideways', 'right');
   await page.getByRole('button', { name: 'Start Practice' }).tap();
