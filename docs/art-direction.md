@@ -75,13 +75,18 @@ down after implementation.
   This is a host workaround until Nimiq Pay supports full-screen game mode, not
   a change to the world's visual direction.
 - The normal portrait layout remains maintained through `?sideways=off`: the
-  Patch occupies the upper area and large thumb controls occupy the lower area.
+  fixed 16:9 Patch uses the maximum safe rectangle and contextual thumb controls
+  overlay or occupy the surrounding space without reserving a permanent band.
 - Actual landscape viewports use the landscape composition directly and must
   not receive a second virtual rotation.
 - All gameplay commands use touch/pointer interaction; no hover, keyboard,
   right-click, or precision-mouse action may be required.
 - Aiming, power, movement, Relic selection, confirmation, pause, and retry must
   remain readable and operable with safe-area insets and browser chrome.
+- The arena reads first. Keep turn/time compact, anchor exact Stitching near the
+  relevant Knotkin, use floating movement/aim pads, expand Relics temporarily,
+  keep Fire explicit, and move Retry into the Pause sheet. Controls may fade by
+  phase but keep stable anchors and accessible state.
 - Wallet approval dialogs pause challenge timers and cannot cause a lost turn.
 - Character silhouettes, eyes, held Relics, trajectory previews, hazards, and
   Stitching state must remain legible at the smallest supported phone viewport.

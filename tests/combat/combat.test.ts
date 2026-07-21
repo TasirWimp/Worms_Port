@@ -1,7 +1,7 @@
 import assert from 'node:assert/strict';
 import test from 'node:test';
 
-import { computeCombatLayout } from '../../client/src/combat/layout';
+import { computeActorStatusLayout, computeCombatLayout } from '../../client/src/combat/layout';
 import { CombatInputController } from '../../client/src/combat/input';
 import { trajectoryPreview } from '../../client/src/combat/preview';
 import {
@@ -34,6 +34,31 @@ test('combat layout preserves the fixed world and non-overlapping safe control z
         assert.equal(overlaps(layout.movementZone, layout.aimZone), false);
         assert.equal(overlaps(layout.movementZone, layout.actionZone), false);
         assert.equal(overlaps(layout.aimZone, layout.actionZone), false);
+    }
+});
+
+test('arena-first layout reaches the full-height Samsung acceptance target', () => {
+    const layout = computeCombatLayout(844, 390);
+    assert.equal(layout.battlefield.width >= 660, true, JSON.stringify(layout.battlefield));
+    assert.equal(layout.battlefield.height >= 370, true, JSON.stringify(layout.battlefield));
+    assert.equal(layout.battlefield.x >= 8, true);
+    assert.equal(layout.battlefield.y >= 8, true);
+});
+
+test('actor Stitching anchors clamp to the arena and separate on collision', () => {
+    const layout = computeCombatLayout(844, 390);
+    const state = createLatestSimulation(0xC0FFEE11, 'wizard');
+    state.units[0].x = 64;
+    state.units[1].x = 64;
+    state.units[0].y = 48;
+    state.units[1].y = 48;
+    const statuses = computeActorStatusLayout(layout, state.units);
+    assert.equal(overlaps(statuses.player, statuses.loomkeeper), false);
+    for (const status of [statuses.player, statuses.loomkeeper]) {
+        assert.equal(status.x >= layout.battlefield.x, true);
+        assert.equal(status.y >= layout.battlefield.y, true);
+        assert.equal(status.x + status.width <= layout.battlefield.x + layout.battlefield.width, true);
+        assert.equal(status.y + status.height <= layout.battlefield.y + layout.battlefield.height, true);
     }
 });
 

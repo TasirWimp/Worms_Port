@@ -342,6 +342,7 @@ export default class CombatScene extends Phaser.Scene {
         if (!this.layout || !this.combatRenderer) return;
         this.controls.root.dataset.previewPoints = String(this.preview.length);
         this.controls.root.dataset.projectilePoints = String(this.projectileTrace.length);
+        this.controls.setUnitPositions(this.renderState.units);
         this.combatRenderer.render(
             this.renderState,
             this.layout,

@@ -8,7 +8,7 @@ Phaser/Socket.IO stack.
 ## Execution Pointer
 
 - Active target: mobile-first single-player Nimiq Pay competition release.
-- Next work package: **WP-011E Arena-first Contextual Combat HUD**.
+- Next work package: **WP-011E deployed-device acceptance**.
 - Last completed work package: **WP-011D Default Sideways Host Workaround**.
 - PvP and matchmaking: deferred until after the competition release.
 - Canonical artwork reference:
@@ -117,10 +117,11 @@ guardrails for this selected host.
   and `sideways=off` preserves the maintained normal responsive composition.
   The deployed no-query default passed user-run Samsung Galaxy S22 Nimiq Pay
   acceptance on 2026-07-21.
-- WP-011E is planned as a presentation-only arena-first HUD refinement. Its
-  wireframe, phase visibility, space targets, accessibility invariants, and
-  verification slices are defined below; no gameplay authority or combat code
-  has changed yet.
+- WP-011E's implementation candidate gives the arena the maximum safe 16:9
+  rectangle, adds compact actor-local status, floating thumb pads, contextual
+  Relic/Fire controls, and a Pause sheet without changing gameplay authority.
+  Automated verification passes; deployed Samsung Galaxy S22 Nimiq Pay
+  acceptance remains before completion.
 - Nimiq Pay identity/reward work, the expanded phone matrix, and visual
   regression remain.
 
@@ -973,7 +974,7 @@ documented host-capability removal trigger.
 
 ### WP-011E Arena-first Contextual Combat HUD
 
-Status: design refined; implementation not started. Depends on WP-011D's
+Status: implementation candidate complete; deployed-device acceptance pending. Depends on WP-011D's
 presentation policy and deployed-device acceptance. This visual refinement does
 not block or change WP-012 identity work.
 
@@ -1124,6 +1125,30 @@ Verification:
   first-use discoverability, one-thumb movement/aim/Fire, visible player and AI
   presentation, Pause/Retry recovery, no critical actor/trajectory occlusion,
   and materially larger battlefield confirmation.
+
+Delivered candidate: layout now computes the maximum 16:9 arena inside the
+safe `visualViewport`; at 844 by 390 it produces approximately 665 by 374 CSS
+pixels compared with the prior approximately 534 by 301. The compact turn/timer
+pill and collision-safe exact Stitching bars overlay the arena. Movement and aim
+retain their established left/right activation zones while their 96-pixel
+minimum pads appear at the active thumb and fade when idle or unavailable.
+
+The three permanent Relic buttons are replaced by one selected-Relic chip and a
+temporary three-item chooser. Aim release still locks without firing, explicit
+Fire becomes prominent only after lock, command controls fade in place through
+player/Loomkeeper presentation and reconnect, and reduced motion removes the
+transition without changing phase order. Pause remains in the safe corner;
+Retry and the supported combat full-screen action are available from its modal
+sheet. Actor status follows rendered movement while authoritative values and
+all simulation, protocol, replay, result, and Loomkeeper rules remain unchanged.
+
+Automated candidate verification passes 18 focused combat tests, 26 applicable
+combat-browser cases (six intentional project skips), 15 applicable live
+Practice browser cases (nine intentional project skips), and all eight built
+phone-smoke cases across the maintained Chromium/WebKit projects. Compliance,
+types, build, built-server smoke, Practice tests, audit, and self-review pass.
+The existing bundle-size warning remains. Physical Samsung Galaxy S22 Nimiq
+Pay acceptance is the only pending planned gate.
 
 ### WP-012 Nimiq Pay Identity Adapter
 

@@ -19,6 +19,12 @@ test('portrait/landscape layout is touch-safe and renders deterministic combat',
   await expect(ui).toHaveAttribute('data-orientation', viewport.width > viewport.height ? 'landscape' : 'portrait');
   await expect(ui).toHaveAttribute('data-selected-relic', 'threadball');
   await expect(page.getByText('Your turn')).toBeVisible();
+  await expect(page.locator('.player-status')).toHaveAttribute('aria-label', /Player Stitching 100/);
+  await expect(page.locator('.loomkeeper-status')).toHaveAttribute('aria-label', /Loomkeeper Stitching 100/);
+  if (viewport.width === 844 && viewport.height === 390) {
+    expect(Number(await ui.getAttribute('data-battlefield-width'))).toBeGreaterThanOrEqual(660);
+    expect(Number(await ui.getAttribute('data-battlefield-height'))).toBeGreaterThanOrEqual(370);
+  }
 
   const canvas = page.locator('#game canvas');
   await expect(canvas).toBeVisible();
@@ -31,7 +37,8 @@ test('portrait/landscape layout is touch-safe and renders deterministic combat',
     typeof document.exitFullscreen === 'function'
   );
   if (viewport.width > viewport.height && fullscreenAvailable) {
-    await expect(fullscreenButton).toBeVisible();
+    await expect(ui).toHaveAttribute('data-fullscreen-available', 'true');
+    await expect(fullscreenButton).toBeHidden();
   } else {
     await expect(fullscreenButton).toBeHidden();
   }
@@ -54,7 +61,7 @@ test('portrait/landscape layout is touch-safe and renders deterministic combat',
   expect(overlaps(boxes[0]!, boxes[2]!)).toBe(false);
   expect(overlaps(boxes[1]!, boxes[2]!)).toBe(false);
 
-  for (const button of await page.locator('.combat-actions button').all()) {
+  for (const button of await page.locator('.combat-actions button:visible').all()) {
     const box = await button.boundingBox();
     expect(box!.width).toBeGreaterThanOrEqual(48);
     expect(box!.height).toBeGreaterThanOrEqual(48);
@@ -95,6 +102,8 @@ test('landscape offers a user-activated full-screen probe with a safe exit', asy
     document.dispatchEvent(new Event('fullscreenchange'));
   });
 
+  await page.locator('.pause-button').tap();
+  await expect(page.locator('.combat-pause-sheet')).toBeVisible();
   const button = page.getByRole('button', { name: 'Enter full screen' });
   await expect(button).toBeVisible();
   await button.tap();
@@ -142,7 +151,7 @@ test('default sideways mode creates touch-safe landscape in a portrait viewport'
   const startX = Number(await ui.getAttribute('data-player-x'));
   await dragPad(page, '.movement-zone', 80, 0, 0.36);
   await expect.poll(async () => Number(await ui.getAttribute('data-player-x'))).toBeGreaterThan(startX);
-  await page.getByRole('button', { name: 'Select Needlepoint' }).tap();
+  await selectRelic(page, 'Needlepoint');
   await expect(ui).toHaveAttribute('data-selected-relic', 'needlepoint');
   await dragPad(page, '.aim-zone', 81, 0.34, 0.3);
   await expect(ui).toHaveAttribute('data-phase', 'aim_locked');
@@ -178,7 +187,7 @@ test('touch movement, Relic selection, aim lock, and explicit Fire stay separate
   await expect(page.locator('.combat-ui')).toHaveAttribute('data-presenting', 'false');
   await expect(page.locator('.combat-ui')).toHaveAttribute('data-preview-points', '0');
 
-  await page.getByRole('button', { name: 'Select Needlepoint' }).tap();
+  await selectRelic(page, 'Needlepoint');
   await expect(page.locator('.combat-ui')).toHaveAttribute('data-selected-relic', 'needlepoint');
 
   await dragPad(page, '.aim-zone', 2, 0.3, -0.34);
@@ -189,6 +198,8 @@ test('touch movement, Relic selection, aim lock, and explicit Fire stay separate
   )).toBeGreaterThan(1);
   await expect(page.locator('.fire-button')).toBeEnabled();
   await expect(page.locator('.combat-ui')).not.toHaveAttribute('data-last-command', 'fire');
+  const actionAnchor = await page.locator('.combat-actions').boundingBox();
+  const aimAnchor = await page.locator('.aim-zone').boundingBox();
 
   await dragPad(page, '.movement-zone', 3, -0.36, 0);
   await expect(page.locator('.combat-ui')).toHaveAttribute('data-presenting', 'false');
@@ -201,6 +212,12 @@ test('touch movement, Relic selection, aim lock, and explicit Fire stay separate
   await installPresentationRecorder(page);
   await page.locator('.fire-button').tap();
   await expect(page.locator('.combat-ui')).toHaveAttribute('data-last-command', 'fire');
+  await expect(page.locator('.combat-ui')).toHaveAttribute('data-presenting', 'true');
+  await expect.poll(() => page.locator('.combat-actions').evaluate((element) =>
+    Number.parseFloat(getComputedStyle(element).opacity)
+  )).toBeLessThan(0.05);
+  expect(await page.locator('.combat-actions').boundingBox()).toEqual(actionAnchor);
+  expect(await page.locator('.aim-zone').boundingBox()).toEqual(aimAnchor);
   await expect(page.locator('.combat-ui')).toHaveAttribute('data-active-actor', 'loomkeeper');
   await expect(page.locator('.combat-ui')).toHaveAttribute('data-presenting', 'false');
   await expect(page.locator('.combat-ui')).toHaveAttribute('data-preview-points', '0');
@@ -210,6 +227,37 @@ test('touch movement, Relic selection, aim lock, and explicit Fire stay separate
     'player-projectile', 'player-impact'
   ]));
   expect(presentation.maximumProjectilePoints).toBeGreaterThan(1);
+});
+
+test('floating pads appear at the active thumb and Relics expand in place', async ({ page }) => {
+  const zone = page.locator('.movement-zone');
+  const box = await zone.boundingBox();
+  expect(box).not.toBeNull();
+  await pointer(page, '.movement-zone', 'pointerdown', 70, 0.28, 0.36);
+  await expect(zone).toHaveClass(/is-active/);
+  const origin = await zone.evaluate((element) => ({
+    x: Number.parseFloat(element.style.getPropertyValue('--pad-x')),
+    y: Number.parseFloat(element.style.getPropertyValue('--pad-y'))
+  }));
+  expect(origin.x).toBeCloseTo(box!.width * 0.28, 0);
+  expect(origin.y).toBeCloseTo(box!.height * 0.36, 0);
+  await pointer(page, '.movement-zone', 'pointercancel', 70, 0.28, 0.36);
+  await expect(zone).not.toHaveClass(/is-active/);
+
+  const trigger = page.locator('.relic-trigger');
+  await expect(trigger).toHaveAttribute('aria-expanded', 'false');
+  await trigger.tap();
+  await expect(trigger).toHaveAttribute('aria-expanded', 'true');
+  await expect(page.locator('.relic-chooser')).toBeVisible();
+  for (const button of await page.locator('.relic-chooser button').all()) {
+    const relicBox = await button.boundingBox();
+    expect(relicBox).not.toBeNull();
+    expect(relicBox!.width).toBeGreaterThanOrEqual(48);
+    expect(relicBox!.height).toBeGreaterThanOrEqual(48);
+  }
+  await page.getByRole('button', { name: 'Select Spoolburst' }).tap();
+  await expect(page.locator('.combat-ui')).toHaveAttribute('data-selected-relic', 'spoolburst');
+  await expect(page.locator('.relic-chooser')).toBeHidden();
 });
 
 test('compact landscape visual viewport keeps every control visible and separate', async ({ page }, testInfo) => {
@@ -236,12 +284,14 @@ test('pointer transfer, cancellation, release outside, pause, and retry fail saf
 
   await page.locator('.pause-button').tap();
   await expect(page.locator('.combat-ui')).toHaveAttribute('data-paused', 'true');
-  await expect(page.getByText(/turn clock stopped/i)).toBeVisible();
+  await expect(page.locator('.combat-pause-sheet').getByText('Turn clock stopped', { exact: true })).toBeVisible();
   await expect(page.locator('.movement-zone')).toHaveAttribute('aria-disabled', 'true');
   await page.locator('.pause-button').tap();
   await expect(page.locator('.combat-ui')).toHaveAttribute('data-paused', 'false');
 
   const turn = await page.locator('.combat-ui').getAttribute('data-turn');
+  await page.locator('.pause-button').tap();
+  await expect(page.locator('.combat-pause-sheet')).toBeVisible();
   await page.locator('.retry-button').tap();
   await expect(page.getByText(/Fresh Practice Clash started/i)).toBeVisible();
   await expect(page.locator('.combat-ui')).toHaveAttribute('data-turn', turn!);
@@ -344,12 +394,18 @@ async function assertControlsFit(page: Page): Promise<void> {
   expect(overlaps(boxes[0]!, boxes[1]!)).toBe(false);
   expect(overlaps(boxes[0]!, boxes[2]!)).toBe(false);
   expect(overlaps(boxes[1]!, boxes[2]!)).toBe(false);
-  for (const button of await page.locator('.combat-actions button').all()) {
+  for (const button of await page.locator('.combat-actions button:visible').all()) {
     const box = await button.boundingBox();
     expect(box).not.toBeNull();
     expect(box!.x + box!.width).toBeLessThanOrEqual(viewport.width + 1);
     expect(box!.y + box!.height).toBeLessThanOrEqual(viewport.height + 1);
   }
+}
+
+async function selectRelic(page: Page, name: 'Threadball' | 'Needlepoint' | 'Spoolburst'): Promise<void> {
+  await page.locator('.relic-trigger').tap();
+  await expect(page.locator('.relic-chooser')).toBeVisible();
+  await page.getByRole('button', { name: `Select ${name}` }).tap();
 }
 
 async function installPresentationRecorder(page: Page): Promise<void> {

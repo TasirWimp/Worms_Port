@@ -176,16 +176,21 @@ Touch movement converts drag strength into one to four existing authoritative
 movement commands, visibly animates each accepted displacement, and clears the
 old aim so the player must deliberately aim again. Advisory trajectories clear
 on Fire, movement, turn changes, disconnect, result, and challenge replacement.
-The combat shell follows the usable `visualViewport`; compact landscape places
-movement and aim beside a two-row action area so browser chrome does not force
-the control groups to overlap.
+The combat shell follows the usable `visualViewport` and gives the fixed 16:9
+arena the mathematical maximum safe rectangle. Turn time is a compact top pill,
+exact Stitching bars follow their Knotkin, movement and aim are floating thumb
+pads, and the selected Relic expands into a temporary chooser. Controls keep
+stable anchors but fade while player input is not legal. Fire remains a separate
+tap after aim lock, while Retry and the combat full-screen action live in the
+Pause sheet.
 
-In landscape, capable browsers also expose a user-activated **Full screen** HUD
-action. It requests the standard Fullscreen API with hidden navigation UI but
-does not lock orientation. The action is omitted when the browser reports no
-support, and rejection leaves the compact embedded layout usable. A matching
-toggle remains available on the result screen while full screen is active, so
-the player can always return to the browser. Web content cannot guarantee
+In landscape, capable browsers also expose a user-activated **Full screen**
+action inside the Pause sheet. It requests the standard Fullscreen API with
+hidden navigation UI but does not lock orientation. The action is omitted when
+the browser reports no support, and rejection leaves the embedded layout
+usable. A matching toggle remains available on the result screen while full
+screen is active, so the player can always return to the browser. Web content
+cannot guarantee
 removal of Nimiq Pay's native URL ribbon or Android system bars; the host must
 implement and permit full-screen WebView presentation for those surfaces to
 disappear.

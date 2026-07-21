@@ -36,7 +36,7 @@ test('live practice supports authoritative pause, full player turn, and fresh re
   const startX = Number(await ui.getAttribute('data-player-x'));
   await dragPad(page, '.movement-zone', 21, 0.36, 0);
   await expect.poll(async () => Number(await ui.getAttribute('data-player-x'))).not.toBe(startX);
-  await page.getByRole('button', { name: 'Select Spoolburst' }).tap();
+  await selectRelic(page, 'Spoolburst');
   await expect(ui).toHaveAttribute('data-selected-relic', 'spoolburst');
   await dragPad(page, '.aim-zone', 22, 0.3, -0.34);
   await expect(page.locator('.fire-button')).toBeEnabled();
@@ -58,6 +58,8 @@ test('live practice supports authoritative pause, full player turn, and fresh re
   ]));
   expect(presentation.maximumProjectilePoints).toBeGreaterThan(1);
 
+  await page.locator('.pause-button').tap();
+  await expect(page.locator('.combat-pause-sheet')).toBeVisible();
   await page.locator('.retry-button').tap();
   await expect.poll(() => ui.getAttribute('data-challenge-id')).not.toBe(firstChallenge);
   await expect(ui).toHaveAttribute('data-turn', '0');
@@ -81,7 +83,7 @@ test('calling controls and live combat actions remain phone-safe', async ({ page
     await expect(page.locator('.combat-ui')).toHaveAttribute('data-orientation', 'landscape');
   }
   await assertControlsFit(page);
-  for (const button of await page.locator('.combat-actions button').all()) {
+  for (const button of await page.locator('.combat-actions button:visible').all()) {
     const box = await button.boundingBox();
     expect(box).not.toBeNull();
     expect(box!.width).toBeGreaterThanOrEqual(48);
@@ -141,8 +143,12 @@ test('a full-screen match retains an exit toggle on the result screen', async ({
   await installFullscreenStub(page);
   await page.getByRole('button', { name: 'Start Practice' }).tap();
   await expect(page.locator('.combat-ui')).toBeVisible();
+  await page.locator('.pause-button').tap();
+  await expect(page.locator('.combat-pause-sheet')).toBeVisible();
   await page.getByRole('button', { name: 'Enter full screen' }).tap();
   await expect.poll(() => page.evaluate(() => Boolean(document.fullscreenElement))).toBe(true);
+  await page.locator('.pause-button').tap();
+  await expect(page.locator('.combat-ui')).toHaveAttribute('data-paused', 'false');
 
   await completeCurrentClash(page);
   await expect(page.locator('.result-shell')).toBeVisible();
@@ -248,7 +254,7 @@ async function completeCurrentClash(page: Page): Promise<void> {
     if (await page.locator('.result-shell').count()) return;
 
     if (await ui.getAttribute('data-selected-relic') !== 'threadball') {
-      await page.getByRole('button', { name: 'Select Threadball' }).tap();
+      await selectRelic(page, 'Threadball');
       await expect(ui).toHaveAttribute('data-selected-relic', 'threadball');
     }
     const seed = Number(await ui.getAttribute('data-seed'));
@@ -293,6 +299,12 @@ async function aimAt(page: Page, angleDegrees: number, pointerId: number): Promi
       }));
     }
   }, { angleDegrees, pointerId });
+}
+
+async function selectRelic(page: Page, name: 'Threadball' | 'Needlepoint' | 'Spoolburst'): Promise<void> {
+  await page.locator('.relic-trigger').tap();
+  await expect(page.locator('.relic-chooser')).toBeVisible();
+  await page.getByRole('button', { name: `Select ${name}` }).tap();
 }
 
 async function assertControlsFit(page: Page): Promise<void> {

@@ -246,6 +246,10 @@ maximum-area 16:9 arena and predictable overlays. The battlefield consumes the
 mathematical maximum rectangle inside the safe `visualViewport`; no persistent
 HUD row or control column may reduce its renderer dimensions.
 
+The implementation target at the 844 by 390 Samsung acceptance viewport is at
+least 660 by 370 CSS pixels; the delivered candidate computes approximately
+665 by 374 compared with the prior approximately 534 by 301 arena.
+
 Keep only the turn/timer pill, actor-local exact Stitching bars, selected Relic,
 Pause, and the phase-relevant touch actions visible. Movement and aim use stable
 left/right activation zones with floating pad art at the touch origin. Fire
