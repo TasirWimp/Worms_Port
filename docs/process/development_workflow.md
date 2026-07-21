@@ -647,10 +647,10 @@ metadata, and the SDK source package:
 - Mini Apps run inside the Nimiq Pay WebView. The documented Nimiq provider
   entry point is `init()` from `@nimiq/mini-app-sdk`; see
   `https://nimiq.dev/mini-apps/`.
-- The current reviewed package is pre-1.0 `@nimiq/mini-app-sdk` `0.1.0`, declares
-  MIT, and points to `nimiq/trust-web3-provider` branch `nimiq`, directory
-  `packages/mini-app-sdk`. WP-012 must pin the exact reviewed version and rerun
-  package-license and audit gates rather than accepting an automatic range.
+- The implemented pre-1.0 `@nimiq/mini-app-sdk` dependency is exactly pinned at
+  `0.1.0`; its npm metadata declares MIT and points to
+  `nimiq/trust-web3-provider` branch `nimiq`, directory
+  `packages/mini-app-sdk`. Package-license and audit gates passed with the pin.
 - The documented Nimiq flow uses `listAccounts()` and `sign()`. Signing returns
   hex `publicKey` and `signature`, so server authorization must verify both the
   signature and public-key-to-address relationship against a server-issued
@@ -663,13 +663,14 @@ metadata, and the SDK source package:
   and consent on first use, is scoped to the mini-app origin, identifies a
   device rather than a user, and is never an authentication credential.
 
-The repository does not vendor the skill, configure the MCP, or depend on the
-SDK yet. This Codex session also exposes no Nimiq-specific skill or MCP tool.
-The WP-012 planning review therefore used the official primary documentation,
-repository, and npm metadata directly. At implementation start, re-check those
-sources, pin the reviewed SDK, and use the official skill or documentation MCP
-if available. Nimiq Pay allowlisting and physical WebView testing remain
-external-environment checks.
+The repository does not vendor the skill or configure the MCP. WP-012 used the
+official primary documentation, repository, and npm metadata directly, exactly
+pins the reviewed SDK, and exactly pins Apache-2.0 `@nimiq/core` `2.7.1` for
+server-only verification. The server build externalizes `@nimiq/core` so its
+packaged WASM resolves beside the installed dependency; the identity bundle
+gate confirms that core/WASM does not enter the browser build and that the SDK
+remains a lazy client chunk. Nimiq Pay allowlisting and physical WebView testing
+remain external-environment checks.
 
 WP-012 provider access is lazy and explicit. Application boot and Start
 Practice must never wait for `init()`. WP-012 uses a query-gated identity

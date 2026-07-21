@@ -9,6 +9,10 @@ import {
     ChallengeResultSchema,
     ChallengeSnapshotSchema,
     CommandSubmitRequestSchema,
+    IdentityBeginDataSchema,
+    IdentityBeginRequestSchema,
+    IdentityCompleteDataSchema,
+    IdentityCompleteRequestSchema,
     ProtocolFailureAckSchema,
     ProtocolSuccessAckSchema,
     SESSION_TOKEN_PATTERN,
@@ -32,15 +36,6 @@ test('session request schema enforces strict ids, actions, and opaque tokens', (
     assert.equal(SessionOpenRequestSchema.safeParse({
         requestId, action: 'resume', token
     }).success, true);
-    assert.equal(SessionOpenRequestSchema.safeParse({
-        requestId,
-        action: 'authorize',
-        proof: {
-            address: 'NQ00 TEST ADDRESS',
-            challenge: 'challenge_nonce_01',
-            signature: 'a'.repeat(64)
-        }
-    }).success, true);
     assert.match(token, SESSION_TOKEN_PATTERN);
 
     for (const invalid of [
@@ -49,16 +44,53 @@ test('session request schema enforces strict ids, actions, and opaque tokens', (
         { requestId, action: 'create', extra: true },
         { requestId, action: 'resume', token: 'short' },
         { requestId, action: 'resume', token, extra: true },
-        {
-            requestId,
-            action: 'authorize',
-            proof: { address: 'bad!', challenge: 'short', signature: 'short' }
-        },
+        { requestId, action: 'authorize', proof: {} },
         null,
         []
     ]) {
         assert.equal(SessionOpenRequestSchema.safeParse(invalid).success, false);
     }
+});
+
+test('identity schemas require strict server challenge and exact Nimiq proof fields', () => {
+    const address = 'NQ46 KLJE 5TMF 4Y1A 1255 CJHJ YG1S H0NU T604';
+    const authorizationId = 'A'.repeat(32);
+    const identity = { address, authorizedAt: expiresAt };
+    const session = {
+        protocolVersion: 1 as const,
+        serverTimeMs: now,
+        sessionId: 'session_00000001',
+        token,
+        resumed: false,
+        expiresAt,
+        identity
+    };
+    assert.equal(IdentityBeginRequestSchema.safeParse({ requestId, address }).success, true);
+    assert.equal(IdentityCompleteRequestSchema.safeParse({
+        requestId,
+        authorizationId,
+        address,
+        publicKey: 'ab'.repeat(32),
+        signature: 'cd'.repeat(64)
+    }).success, true);
+    assert.equal(IdentityBeginDataSchema.safeParse({
+        authorizationId,
+        address,
+        message: 'A'.repeat(64),
+        expiresAt
+    }).success, true);
+    assert.equal(IdentityCompleteDataSchema.safeParse(session).success, true);
+
+    for (const invalid of [
+        { requestId, address: 'NQ00 BAD!' },
+        { requestId, address, extra: true }
+    ]) assert.equal(IdentityBeginRequestSchema.safeParse(invalid).success, false);
+    for (const invalid of [
+        { requestId, authorizationId: 'short', address, publicKey: 'ab'.repeat(32), signature: 'cd'.repeat(64) },
+        { requestId, authorizationId, address: address.toLowerCase(), publicKey: 'ab'.repeat(32), signature: 'cd'.repeat(64) },
+        { requestId, authorizationId, address, publicKey: 'ab'.repeat(31), signature: 'cd'.repeat(64) },
+        { requestId, authorizationId, address, publicKey: 'ab'.repeat(32), signature: 'cd'.repeat(63) }
+    ]) assert.equal(IdentityCompleteRequestSchema.safeParse(invalid).success, false);
 });
 
 test('challenge schemas separate strict practice and reward creation', () => {

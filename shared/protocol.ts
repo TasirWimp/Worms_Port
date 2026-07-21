@@ -8,11 +8,23 @@ const SequenceSchema = z.number().int().nonnegative().max(0xFFFFFFFF);
 const ChallengeIdSchema = z.string().min(16).max(64).regex(/^[A-Za-z0-9_-]+$/);
 const Uint32Schema = z.number().int().nonnegative().max(0xFFFFFFFF);
 const StateHashSchema = z.string().regex(/^[a-f0-9]{64}$/);
+const NimiqAddressInputSchema = z.string().min(36).max(64).regex(/^[A-Za-z0-9 ]+$/);
+export const NormalizedNimiqAddressSchema = z.string().regex(
+    /^NQ[0-9]{2}(?: [0-9A-HJ-NP-VXY]{4}){8}$/
+);
+const AuthorizationIdSchema = z.string().length(32).regex(/^[A-Za-z0-9_-]+$/);
 
-export const SignedSessionProofSchema = z.object({
-    address: z.string().min(1).max(128).regex(/^[A-Za-z0-9 ]+$/),
-    challenge: z.string().min(16).max(512),
-    signature: z.string().min(32).max(512).regex(/^[A-Za-z0-9_-]+$/)
+export const IdentityBeginRequestSchema = z.object({
+    requestId: RequestIdSchema,
+    address: NimiqAddressInputSchema
+}).strict();
+
+export const IdentityCompleteRequestSchema = z.object({
+    requestId: RequestIdSchema,
+    authorizationId: AuthorizationIdSchema,
+    address: NormalizedNimiqAddressSchema,
+    publicKey: z.string().length(64).regex(/^[0-9a-fA-F]+$/),
+    signature: z.string().length(128).regex(/^[0-9a-fA-F]+$/)
 }).strict();
 
 export const SessionOpenRequestSchema = z.discriminatedUnion('action', [
@@ -24,11 +36,6 @@ export const SessionOpenRequestSchema = z.discriminatedUnion('action', [
         requestId: RequestIdSchema,
         action: z.literal('resume'),
         token: z.string().regex(SESSION_TOKEN_PATTERN)
-    }).strict(),
-    z.object({
-        requestId: RequestIdSchema,
-        action: z.literal('authorize'),
-        proof: SignedSessionProofSchema
     }).strict()
 ]);
 
@@ -127,14 +134,31 @@ export const ProtocolFailureAckSchema = z.object({
     error: ProtocolErrorSchema
 }).strict();
 
+export const WalletIdentitySchema = z.object({
+    address: NormalizedNimiqAddressSchema,
+    authorizedAt: z.string().datetime()
+}).strict();
+
 export const SessionOpenDataSchema = z.object({
     protocolVersion: z.literal(PROTOCOL_VERSION),
     serverTimeMs: z.number().int().nonnegative(),
     sessionId: z.string().min(16).max(64),
     token: z.string().regex(SESSION_TOKEN_PATTERN),
     resumed: z.boolean(),
+    expiresAt: z.string().datetime(),
+    identity: WalletIdentitySchema.optional()
+}).strict();
+
+export const IdentityBeginDataSchema = z.object({
+    authorizationId: AuthorizationIdSchema,
+    address: NormalizedNimiqAddressSchema,
+    message: z.string().min(64).max(1024).regex(/^[\x20-\x7E\n]+$/),
     expiresAt: z.string().datetime()
 }).strict();
+
+export const IdentityCompleteDataSchema = SessionOpenDataSchema.extend({
+    identity: WalletIdentitySchema
+});
 
 const SimulationUnitSchema = z.object({
     id: z.enum(['player', 'loomkeeper']),
@@ -264,6 +288,14 @@ export const SessionOpenAckSchema = z.union([
     ProtocolSuccessAckSchema(SessionOpenDataSchema),
     ProtocolFailureAckSchema
 ]);
+export const IdentityBeginAckSchema = z.union([
+    ProtocolSuccessAckSchema(IdentityBeginDataSchema),
+    ProtocolFailureAckSchema
+]);
+export const IdentityCompleteAckSchema = z.union([
+    ProtocolSuccessAckSchema(IdentityCompleteDataSchema),
+    ProtocolFailureAckSchema
+]);
 export const ChallengeCreateAckSchema = z.union([
     ProtocolSuccessAckSchema(ChallengeSnapshotSchema),
     ProtocolFailureAckSchema
@@ -276,6 +308,11 @@ export const ChallengeLeaveAckSchema = z.union([
 ]);
 
 export type SessionOpenRequest = z.infer<typeof SessionOpenRequestSchema>;
+export type IdentityBeginRequest = z.infer<typeof IdentityBeginRequestSchema>;
+export type IdentityCompleteRequest = z.infer<typeof IdentityCompleteRequestSchema>;
+export type IdentityBeginData = z.infer<typeof IdentityBeginDataSchema>;
+export type IdentityCompleteData = z.infer<typeof IdentityCompleteDataSchema>;
+export type WalletIdentity = z.infer<typeof WalletIdentitySchema>;
 export type ChallengeCreateRequest = z.infer<typeof ChallengeCreateRequestSchema>;
 export type CommandSubmitRequest = z.infer<typeof CommandSubmitRequestSchema>;
 export type ChallengeLeaveRequest = z.infer<typeof ChallengeLeaveRequestSchema>;
@@ -304,6 +341,8 @@ export type ProtocolAck<T> =
 
 export const protocolEvents = {
     sessionOpen: 'v1:session.open',
+    identityBegin: 'v1:identity.begin',
+    identityComplete: 'v1:identity.complete',
     challengeCreate: 'v1:challenge.create',
     commandSubmit: 'v1:command.submit',
     challengePause: 'v1:challenge.pause',

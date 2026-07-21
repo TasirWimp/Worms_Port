@@ -466,22 +466,17 @@ test('pending connection and oversized-invalid budgets fail closed', async () =>
     }
 });
 
-test('reward challenges remain unavailable and consume their ordered request', async () => {
+test('unconfigured identity and reward challenges remain unavailable', async () => {
     const { runtime, url } = await start();
     const socket = await connect(url);
     try {
-        const signed = await emitAck(socket, protocolEvents.sessionOpen, {
-            requestId: 'signed_001',
-            action: 'authorize',
-            proof: {
-                address: 'NQ00 TEST ADDRESS',
-                challenge: 'challenge_nonce_01',
-                signature: 'a'.repeat(64)
-            }
-        });
-        assert.equal(signed.ok, false);
-        assert.equal(signed.error.code, 'FEATURE_UNAVAILABLE');
         await openSession(socket);
+        const identity = await emitAck(socket, protocolEvents.identityBegin, {
+            requestId: 'identity_disabled_001',
+            address: 'NQ46 KLJE 5TMF 4Y1A 1255 CJHJ YG1S H0NU T604'
+        });
+        assert.equal(identity.ok, false);
+        assert.equal(identity.error.code, 'FEATURE_UNAVAILABLE');
         const reward = await emitAck(socket, protocolEvents.challengeCreate, {
             requestId: 'reward_001',
             sequence: 0,

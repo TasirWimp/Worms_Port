@@ -47,6 +47,22 @@ export function whenSessionReady (socket: Socket): Promise<SessionOpenData>
     return ready;
 }
 
+export function adoptSession(socket: Socket, session: SessionOpenData): SessionOpenData
+{
+    sessionStorage.setItem(SESSION_TOKEN_KEY, session.token);
+    const ready = Promise.resolve(structuredClone(session));
+    sessionReady.set(socket, ready);
+    return structuredClone(session);
+}
+
+export async function reconnectSession(socket: Socket): Promise<SessionOpenData>
+{
+    socket.disconnect();
+    socket.connect();
+    await waitForConnection(socket);
+    return ensureSession(socket);
+}
+
 export function getActiveGameId ()
 {
     return sessionStorage.getItem(ACTIVE_GAME_KEY);
@@ -125,8 +141,7 @@ async function openSession (
         throw new Error(`${response.error.code}: ${response.error.message}`);
     }
 
-    sessionStorage.setItem(SESSION_TOKEN_KEY, response.data.token);
-    return response.data;
+    return adoptSession(socket, response.data);
 }
 
 async function emitSessionOpen (

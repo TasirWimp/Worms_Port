@@ -6,12 +6,20 @@ import {
     PRACTICE_CLIENT_REGISTRY_KEY,
     type PracticeClient
 } from '../practice/client';
+import {
+    IDENTITY_SERVICES_REGISTRY_KEY,
+    IdentityAcceptanceView,
+    type IdentityAcceptanceServices
+} from '../identity/view';
 
 export default class PracticeScene extends Phaser.Scene {
     private client: PracticeClient;
     private root: HTMLElement;
     private calling: PlayerCalling = 'wizard';
     private readonly unsubscribers: (() => void)[] = [];
+    private identityView?: IdentityAcceptanceView;
+    private identityBusy = false;
+    private reconnecting = false;
 
     public constructor() {
         super({ key: 'practice' });
@@ -50,6 +58,19 @@ export default class PracticeScene extends Phaser.Scene {
             </section>
         `;
         host.appendChild(this.root);
+        const identityServices = this.registry.get(
+            IDENTITY_SERVICES_REGISTRY_KEY
+        ) as IdentityAcceptanceServices | undefined;
+        if (identityServices) {
+            this.identityView = new IdentityAcceptanceView(
+                this.root,
+                identityServices,
+                (busy) => {
+                    this.identityBusy = busy;
+                    this.refreshStartAvailability();
+                }
+            );
+        }
         const current = this.client.currentSnapshot();
         if (current) this.calling = current.calling;
         if (current?.status === 'active') {
@@ -64,7 +85,8 @@ export default class PracticeScene extends Phaser.Scene {
         }
         this.startButton().addEventListener('click', () => void this.startPractice());
         this.unsubscribers.push(this.client.onConnection((state) => {
-            this.startButton().disabled = state === 'reconnecting';
+            this.reconnecting = state === 'reconnecting';
+            this.refreshStartAvailability();
             this.setMessage(state === 'reconnecting' ? 'Reconnecting to the Practice server…' : '');
         }));
         this.unsubscribers.push(this.client.onUnavailable((message) => {
@@ -87,7 +109,7 @@ export default class PracticeScene extends Phaser.Scene {
             const snapshot = await this.client.start(this.calling);
             this.scene.start('combat', liveCombatArgs(this.client, snapshot));
         } catch (error) {
-            button.disabled = false;
+            this.refreshStartAvailability();
             this.setMessage(error instanceof Error ? error.message : 'Practice could not start.');
         }
     }
@@ -110,8 +132,14 @@ export default class PracticeScene extends Phaser.Scene {
         field.hidden = !message;
     }
 
+    private refreshStartAvailability(): void {
+        this.startButton().disabled = this.identityBusy || this.reconnecting;
+    }
+
     private shutdown(): void {
         for (const unsubscribe of this.unsubscribers.splice(0)) unsubscribe();
+        this.identityView?.destroy();
+        this.identityView = undefined;
         this.root?.remove();
     }
 }

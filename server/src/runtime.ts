@@ -6,6 +6,10 @@ import { Server as SocketIOServer } from 'socket.io';
 import { protocolEvents } from '../../shared/protocol';
 
 import { setup_game_api } from './game/api';
+import {
+    IdentityAuthorizationRegistry,
+    type IdentityAuthorizationOptions
+} from './identity/registry';
 import { setupProtocol } from './protocol/socket';
 import {
     configuredOrigins,
@@ -30,6 +34,7 @@ export type RuntimeServerOptions = {
     sessionOpenTimeoutMs?: number;
     maxPendingConnections?: number;
     sessionOpenRateCapacity?: number;
+    identity?: IdentityAuthorizationOptions | false;
 };
 
 let legacyRuntimeActive = false;
@@ -63,9 +68,13 @@ export function createRuntimeServer(options: RuntimeServerOptions = {}) {
     const callerChallengeExpiredHandler = options.sessionRegistry?.onChallengeExpired;
     const callerChallengeSnapshotHandler = options.sessionRegistry?.onChallengeSnapshot;
     const callerChallengeCompletedHandler = options.sessionRegistry?.onChallengeCompleted;
+    const identity = options.identity
+        ? new IdentityAuthorizationRegistry(options.identity)
+        : undefined;
     const sessions = new SessionRegistry({
         ...options.sessionRegistry,
         onSessionClosed: (sessionId, socketId) => {
+            identity?.cancelSession(sessionId);
             RoomWatcher.instance.removePlayer(sessionId);
             GameWatcher.instance.hidePlayer(sessionId);
             callerClosedHandler?.(sessionId, socketId);
@@ -108,7 +117,8 @@ export function createRuntimeServer(options: RuntimeServerOptions = {}) {
     setupProtocol(io, sessions, {
         sessionOpenTimeoutMs: options.sessionOpenTimeoutMs,
         maxPendingConnections: options.maxPendingConnections,
-        sessionOpenRateCapacity: options.sessionOpenRateCapacity
+        sessionOpenRateCapacity: options.sessionOpenRateCapacity,
+        identity
     });
     setup_room_api(app, io, sessions);
     setup_game_api(app, io, sessions);
@@ -126,6 +136,7 @@ export function createRuntimeServer(options: RuntimeServerOptions = {}) {
         RoomWatcher.instance.reset();
         GameWatcher.instance.reset();
         sessions.dispose();
+        identity?.dispose();
         await new Promise<void>((resolve, reject) => {
             io.close(() => {
                 if (!httpServer.listening) {
@@ -148,7 +159,7 @@ export function createRuntimeServer(options: RuntimeServerOptions = {}) {
         }
     );
 
-    return { app, httpServer, io, sessions, listen, close };
+    return { app, httpServer, io, sessions, identity, listen, close };
 }
 
 function startLegacyGame(room: Room): void {

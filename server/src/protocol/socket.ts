@@ -5,12 +5,15 @@ import {
     ChallengeLeaveRequestSchema,
     ChallengePauseRequestSchema,
     CommandSubmitRequestSchema,
+    IdentityBeginRequestSchema,
+    IdentityCompleteRequestSchema,
     protocolEvents,
     RequestIdSchema,
     SessionOpenRequestSchema
 } from '../../../shared/protocol';
 import type { ProtocolAck, ProtocolError } from '../../../shared/protocol';
 import type { SimulationCommand } from '../../../shared/simulation';
+import type { IdentityAuthorizationRegistry } from '../identity/registry';
 import { ackFor, SessionRegistry } from '../session/registry';
 import { eventFits, TokenBucket } from './guards';
 import { failure } from './errors';
@@ -24,6 +27,7 @@ export function setupProtocol(
         sessionOpenTimeoutMs?: number;
         maxPendingConnections?: number;
         sessionOpenRateCapacity?: number;
+        identity?: IdentityAuthorizationRegistry;
     } = {}
 ): void {
     const openLimiters = new Map<string, TokenBucket>();
@@ -155,15 +159,6 @@ export function setupProtocol(
                 return;
             }
 
-            if (parsed.data.action === 'authorize') {
-                ack(failure(
-                    parsed.data.requestId,
-                    'FEATURE_UNAVAILABLE',
-                    'Signed wallet sessions are reserved for the Nimiq identity work package.'
-                ));
-                return;
-            }
-
             const resumed = registry.resume(parsed.data.token, socket.id);
             if (resumed.error) {
                 ack(failure(
@@ -199,6 +194,117 @@ export function setupProtocol(
                     if (terminal) socket.emit(protocolEvents.result, terminal);
                 }
             }
+        });
+
+        socket.on(protocolEvents.identityBegin, (payload: unknown, ack?: Ack) => {
+            if (!guard(socket, payload, ack, invalidLimiter)) return;
+            const parsed = IdentityBeginRequestSchema.safeParse(payload);
+            if (!parsed.success) {
+                invalid(socket, ack, requestIdOf(payload), invalidLimiter);
+                return;
+            }
+            withSession(socket, registry, parsed.data.requestId, ack, (session) => {
+                if (!options.identity) {
+                    ack(failure(
+                        parsed.data.requestId,
+                        'FEATURE_UNAVAILABLE',
+                        'Nimiq identity is not configured on this server.'
+                    ));
+                    return;
+                }
+                if (registry.activeSnapshot(session)?.status === 'active') {
+                    ack(failure(
+                        parsed.data.requestId,
+                        'BAD_REQUEST',
+                        'Identity authorization is unavailable during an active Clash.'
+                    ));
+                    return;
+                }
+                ack(ackFor(
+                    parsed.data.requestId,
+                    options.identity.begin(
+                        session.id,
+                        socket.id,
+                        socket.handshake.address || 'unknown',
+                        parsed.data.address
+                    )
+                ));
+            });
+        });
+
+        socket.on(protocolEvents.identityComplete, (payload: unknown, ack?: Ack) => {
+            if (!guard(socket, payload, ack, invalidLimiter)) return;
+            const parsed = IdentityCompleteRequestSchema.safeParse(payload);
+            if (!parsed.success) {
+                const session = registry.getBound(socket.id);
+                const authorizationId = authorizationIdOf(payload);
+                if (session && authorizationId) {
+                    options.identity?.consumeMalformedAttempt(
+                        session.id,
+                        socket.id,
+                        authorizationId
+                    );
+                }
+                invalid(socket, ack, requestIdOf(payload), invalidLimiter);
+                return;
+            }
+            withSession(socket, registry, parsed.data.requestId, ack, (session) => {
+                if (!options.identity) {
+                    ack(failure(
+                        parsed.data.requestId,
+                        'FEATURE_UNAVAILABLE',
+                        'Nimiq identity is not configured on this server.'
+                    ));
+                    return;
+                }
+                if (registry.activeSnapshot(session)?.status === 'active') {
+                    options.identity.cancelSession(session.id);
+                    ack(failure(
+                        parsed.data.requestId,
+                        'UNAUTHORIZED',
+                        'Identity authorization failed. Start a new authorization attempt.'
+                    ));
+                    return;
+                }
+                const completed = options.identity.complete(
+                    session.id,
+                    socket.id,
+                    socket.handshake.address || 'unknown',
+                    parsed.data.authorizationId,
+                    parsed.data.address,
+                    parsed.data.publicKey,
+                    parsed.data.signature
+                );
+                if ('code' in completed) {
+                    ack(failure(
+                        parsed.data.requestId,
+                        completed.code,
+                        completed.message,
+                        completed.retryable
+                    ));
+                    return;
+                }
+                const opened = registry.authorize(session, {
+                    address: completed.address,
+                    authorizedAt: completed.authorizedAt
+                });
+                if ('code' in opened || !opened.identity) {
+                    ack(failure(
+                        parsed.data.requestId,
+                        'UNAUTHORIZED',
+                        'Identity authorization failed. Start a new authorization attempt.'
+                    ));
+                    return;
+                }
+                options.identity.cancelSession(session.id);
+                ack({
+                    protocolVersion: 1,
+                    serverTimeMs: Date.now(),
+                    ok: true,
+                    requestId: parsed.data.requestId,
+                    data: opened
+                });
+            });
         });
 
         socket.on(protocolEvents.challengeCreate, (payload: unknown, ack?: Ack) => {
@@ -345,6 +451,7 @@ export function setupProtocol(
 
         socket.on('disconnect', () => {
             clearTimeout(authenticationTimer);
+            options.identity?.cancelSocket(socket.id);
             registry.disconnect(socket.id);
         });
     });
@@ -417,8 +524,18 @@ function requestIdOf(payload: unknown): string {
     return 'invalid-request';
 }
 
+function authorizationIdOf(payload: unknown): string | undefined {
+    if (!payload || typeof payload !== 'object') return undefined;
+    const value = (payload as { authorizationId?: unknown }).authorizationId;
+    return typeof value === 'string' && /^[A-Za-z0-9_-]{32}$/.test(value)
+        ? value
+        : undefined;
+}
+
 const ALLOWED_CLIENT_EVENTS = new Set([
     protocolEvents.sessionOpen,
+    protocolEvents.identityBegin,
+    protocolEvents.identityComplete,
     protocolEvents.challengeCreate,
     protocolEvents.commandSubmit,
     protocolEvents.challengePause,

@@ -13,6 +13,9 @@ import ResultScene from './scenes/result';
 import { bootstrapSession } from './lib/session';
 import { requestedSidewaysMode, resolveSidewaysMode } from './lib/sideways';
 import { PRACTICE_CLIENT_REGISTRY_KEY, PracticeClient } from './practice/client';
+import { NimiqPayIdentityAdapter } from './identity/adapter';
+import { IdentityProtocolClient } from './identity/client';
+import { IDENTITY_SERVICES_REGISTRY_KEY } from './identity/view';
 
 const requestedSideways = requestedSidewaysMode(window.location.search);
 let runningGame: Phaser.Game | undefined;
@@ -78,7 +81,8 @@ class NimbleKnotsGame extends Phaser.Game
 }
 
 window.onload = async () => {
-    const combatPreview = new URLSearchParams(window.location.search).has('combat-preview');
+    const query = new URLSearchParams(window.location.search);
+    const combatPreview = query.has('combat-preview');
     if (combatPreview) {
         runningGame = new NimbleKnotsGame(true);
         syncVisualViewport();
@@ -99,5 +103,11 @@ window.onload = async () => {
     runningGame = game;
     syncVisualViewport();
     game.registry.set(PRACTICE_CLIENT_REGISTRY_KEY, client);
+    if (query.get('identity-preview') === '1') {
+        game.registry.set(IDENTITY_SERVICES_REGISTRY_KEY, {
+            adapter: new NimiqPayIdentityAdapter(),
+            protocol: new IdentityProtocolClient(socket)
+        });
+    }
     game.scene.start('practice');
 };

@@ -1010,6 +1010,60 @@ button:disabled {
     font-weight: 800;
 }
 
+.identity-acceptance {
+    width: min(100%, 520px);
+    margin-top: 0.75rem;
+    padding: 1rem;
+    color: #1f2348;
+    text-align: center;
+    background: rgb(255 255 255 / 96%);
+    border: 3px solid #21bca5;
+    border-radius: 18px;
+    box-shadow: 0 16px 38px rgb(31 35 72 / 24%);
+}
+
+.identity-acceptance h2,
+.identity-acceptance p {
+    margin: 0 0 0.55rem;
+}
+
+.identity-actions,
+.identity-accounts {
+    display: grid;
+    gap: 0.5rem;
+}
+
+.identity-actions {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
+.identity-acceptance button {
+    min-height: 48px;
+    padding: 0.6rem;
+    overflow-wrap: anywhere;
+    color: #1f2348;
+    font-weight: 900;
+    background: #eef7f7;
+    border: 2px solid rgb(31 35 72 / 28%);
+    border-radius: 12px;
+    touch-action: manipulation;
+}
+
+.identity-accounts {
+    margin-top: 0.5rem;
+}
+
+.identity-message {
+    min-height: 2.5em;
+    margin-top: 0.65rem !important;
+    color: #5f4b8b;
+    font-weight: 800;
+}
+
+.identity-acceptance[data-authorized='true'] {
+    border-color: #e9b213;
+}
+
 .result-facts {
     display: grid;
     grid-template-columns: repeat(2, 1fr);

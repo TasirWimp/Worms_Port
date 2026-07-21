@@ -98,6 +98,7 @@ export default class CombatScene extends Phaser.Scene {
         window.visualViewport?.addEventListener('resize', this.onViewportChange);
         window.visualViewport?.addEventListener('scroll', this.onViewportChange);
         window.addEventListener('blur', this.onWindowBlur);
+        window.addEventListener('nimble-knots:wallet-boundary', this.onWindowBlur);
         document.addEventListener('visibilitychange', this.onVisibility);
         document.addEventListener('fullscreenchange', this.onFullscreenChange);
         this.events.once(Phaser.Scenes.Events.SHUTDOWN, this.shutdown);
@@ -358,6 +359,7 @@ export default class CombatScene extends Phaser.Scene {
         window.visualViewport?.removeEventListener('resize', this.onViewportChange);
         window.visualViewport?.removeEventListener('scroll', this.onViewportChange);
         window.removeEventListener('blur', this.onWindowBlur);
+        window.removeEventListener('nimble-knots:wallet-boundary', this.onWindowBlur);
         document.removeEventListener('visibilitychange', this.onVisibility);
         document.removeEventListener('fullscreenchange', this.onFullscreenChange);
         for (const unsubscribe of this.unsubscribers.splice(0)) unsubscribe();

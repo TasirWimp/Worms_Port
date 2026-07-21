@@ -78,9 +78,11 @@ npm run test:loomkeeper
 npm run test:relics
 npm run test:combat
 npm run test:practice
+npm run test:identity
 npm run test:browser:smoke
 npm run test:browser:combat
 npm run test:browser:practice
+npm run test:browser:identity
 npm start
 ```
 
@@ -103,9 +105,9 @@ and server-issued 256-bit opaque session tokens. Socket.IO IDs are transport
 details and are never accepted from callers as player identity. Practice
 sessions work without a wallet. The default client creates live v2 Practice
 Clashes, submits ordered commands, consumes authoritative snapshots and
-results, and reconnects with the rotated session token. Signed sessions and
-rewarded challenges have validated placeholder contracts but remain
-unavailable until their dedicated work packages.
+results, and reconnects with the rotated session token. WP-012 adds an optional
+verified Nimiq wallet identity to that existing session; rewarded challenges
+remain unavailable until their dedicated work package.
 
 Production deployments should set `ALLOWED_ORIGINS` to a comma-separated list
 of additional trusted origins when same-origin access is insufficient. Missing
@@ -114,6 +116,37 @@ controlled non-browser environment with `ALLOW_MISSING_ORIGIN=true`.
 `SESSION_OPEN_RATE_CAPACITY` may raise the per-IP session-open burst only in a
 controlled deployment or test environment; production defaults to thirty to
 accommodate mobile carrier/NAT address sharing.
+
+## Nimiq Pay Identity Adapter
+
+WP-012 provides a query-gated identity acceptance surface at
+`/?identity-preview=1`. Opening the ordinary `/` Practice journey does not load
+or initialize the Mini App SDK and never prompts for a wallet. The acceptance
+surface explicitly requests an account, asks Nimiq Pay to sign a readable,
+short-lived server challenge, and rotates the anonymous session token only
+after the server verifies the official Nimiq signed-message construction and
+derives the selected address from the signing public key.
+
+Identity-enabled deployments require both:
+
+- `NIMIQ_NETWORK=main-albatross`, which fixes the signed authorization domain,
+  and
+- `IDENTITY_PUBLIC_ORIGIN=https://your-public-origin.example`, or Render's
+  automatically supplied `RENDER_EXTERNAL_URL` for the same purpose.
+
+Startup fails if only one value is available. Public deployments must also keep
+their Socket.IO origin policy explicit through `ALLOWED_ORIGINS` when access is
+not same-origin. Pending authorizations are memory-only, expire after three
+minutes, are single-use even after invalid proof submission, and safely vanish
+on restart or disconnect. No private key, reusable signature, raw device ID, or
+wallet proof is stored in the browser session token. The optional device-ID
+button tests consent only, immediately discards the returned value, and cannot
+authenticate a session.
+
+`@nimiq/mini-app-sdk` is exactly pinned and isolated in a lazy client chunk.
+`@nimiq/core` is exactly pinned, used only by the server verifier, and remains
+external to the esbuild bundle so its packaged WASM resource resolves correctly
+on Render. `npm run check:identity-bundles` enforces that separation.
 
 ## Deterministic Simulation Foundation
 

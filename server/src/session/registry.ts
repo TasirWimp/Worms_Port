@@ -5,7 +5,8 @@ import type {
     ChallengeSnapshot,
     ProtocolAck,
     ProtocolError,
-    SessionOpenData
+    SessionOpenData,
+    WalletIdentity
 } from '../../../shared/protocol';
 import { PROTOCOL_VERSION } from '../../../shared/protocol';
 import { failure, success } from '../protocol/errors';
@@ -71,6 +72,7 @@ export type Session = {
     nextSequence: number;
     replay: Map<string, CachedRequest>;
     challenges: Map<string, Challenge>;
+    identity?: WalletIdentity;
 };
 
 export type SessionRegistryOptions = {
@@ -233,6 +235,32 @@ export class SessionRegistry {
         const sessionId = this.sessionsBySocket.get(socketId);
         const session = sessionId ? this.sessions.get(sessionId) : undefined;
         return session && !this.isExpired(session) ? session : undefined;
+    }
+
+    public authorize(session: Session, identity: WalletIdentity): SessionOpenData | ProtocolError {
+        this.sweep();
+        if (this.sessions.get(session.id) !== session || this.isExpired(session) ||
+            !session.socketId) {
+            return {
+                code: 'UNAUTHORIZED',
+                message: 'Identity authorization failed. Start a new authorization attempt.',
+                retryable: false
+            };
+        }
+
+        const previousDigest = session.tokenDigest;
+        const replacement = issueToken();
+        const replacementDigest = tokenDigest(replacement);
+        if (session.previousTokenDigest) {
+            this.sessionsByDigest.delete(session.previousTokenDigest);
+        }
+        session.previousTokenDigest = previousDigest;
+        session.previousTokenExpiresAt = this.now() + this.tokenRecoveryMs;
+        session.tokenDigest = replacementDigest;
+        session.identity = { ...identity };
+        this.sessionsByDigest.set(previousDigest, session.id);
+        this.sessionsByDigest.set(replacementDigest, session.id);
+        return this.openData(session, replacement, false);
     }
 
     public socketIdForSession(sessionId: string): string | undefined {
@@ -793,7 +821,8 @@ export class SessionRegistry {
             sessionId: session.id,
             token,
             resumed,
-            expiresAt: new Date(session.expiresAt).toISOString()
+            expiresAt: new Date(session.expiresAt).toISOString(),
+            ...(session.identity ? { identity: { ...session.identity } } : {})
         };
     }
 
