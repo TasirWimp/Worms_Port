@@ -1,0 +1,74 @@
+{
+  "id": "WP-011E",
+  "status": "complete",
+  "starting_commit": "a350c6f01002738c0fbf48e8732cde0b51d6abe7",
+  "branch": "codex/wp-011e-arena-hud",
+  "initial_worktree": "clean",
+  "starting_lock_sha256": "98951A0DECBB8FF685BD314AD44C853ED91554FFC46565BBDD03A27AB78A04AE",
+  "owning_roles": [
+    "worms_port_base_game_worker",
+    "worms_port_test_worker",
+    "worms_port_docs_keeper",
+    "worms_port_reviewer"
+  ],
+  "scope": [
+    "Give the fixed 16:9 battlefield the maximum rectangle inside the safe visual viewport",
+    "Replace permanently reserved status and control bands with compact contextual overlays",
+    "Provide floating movement and aim pads while keeping aim lock and Fire separate",
+    "Collapse Relic selection into a selected-Relic chip and move Retry into the Pause sheet",
+    "Drive visible controls from the existing authoritative and presentation phases",
+    "Add focused layout, input, accessibility, and phone-browser regression coverage"
+  ],
+  "non_goals": [
+    "Simulation, protocol, replay, Loomkeeper, Relic behavior, balance, or result-rule changes",
+    "Auto-fire, drag-to-fire, host-specific APIs, or control of native Nimiq Pay chrome",
+    "New third-party dependencies or copied third-party UI and product assets",
+    "A user-customizable HUD editor or removal of sideways=off and browser full-screen support"
+  ],
+  "planned_checks": [
+    "npm run check:compliance",
+    "npm run check:types",
+    "npm run test:combat",
+    "npm run test:practice",
+    "npm run build",
+    "npm run smoke:built",
+    "npm run test:browser:smoke",
+    "npm run test:browser:combat",
+    "npm run test:browser:practice",
+    "npm audit",
+    "self-review",
+    "Samsung Galaxy S22 Nimiq Pay arena-first HUD acceptance"
+  ],
+  "deterministic_seeds": [],
+  "sorcerers_reference_used": false,
+  "clean_room_records": [],
+  "check_results": [
+    { "command": "npm run check:compliance", "status": "pass" },
+    { "command": "npm run check:types", "status": "pass" },
+    { "command": "npm run test:combat", "status": "pass" },
+    { "command": "npm run test:practice", "status": "pass" },
+    { "command": "npm run build", "status": "pass" },
+    { "command": "npm run smoke:built", "status": "pass" },
+    { "command": "npm run test:browser:smoke", "status": "pass" },
+    { "command": "npm run test:browser:combat", "status": "pass" },
+    { "command": "npm run test:browser:practice", "status": "pass" },
+    { "command": "npm audit", "status": "pass" },
+    { "command": "self-review", "status": "pass" },
+    { "command": "Samsung Galaxy S22 Nimiq Pay arena-first HUD acceptance", "status": "pass" }
+  ],
+  "reviews": [
+    { "role": "worms_port_base_game_worker", "reviewer": "primary-agent-client-review", "decision": "pass" },
+    { "role": "worms_port_test_worker", "reviewer": "primary-agent-test-review", "decision": "pass" },
+    { "role": "worms_port_docs_keeper", "reviewer": "primary-agent-docs-review", "decision": "pass" },
+    { "role": "worms_port_reviewer", "reviewer": "primary-agent-boundary-review", "decision": "pass" }
+  ],
+  "skipped_checks": [
+    "Physical Android and iOS coverage beyond the Samsung device: no release-testing environment was provided.",
+    "WP-014 visual-regression baselines, expanded device matrix, degraded-network matrix, and performance budgets are not yet available."
+  ],
+  "residual_risks": [
+    "Floating controls and actor-local Stitching bars passed Samsung Galaxy S22 Nimiq Pay acceptance, but other physical Android and iOS devices remain untested.",
+    "The default sideways workaround still assumes Android auto-rotate is disabled while portrait and cannot remove Nimiq Pay native chrome.",
+    "The client bundle is approximately 1.411 MB minified and 389.00 kB gzip and retains the existing chunk-size warning."
+  ]
+}

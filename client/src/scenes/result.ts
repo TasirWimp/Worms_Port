@@ -2,6 +2,8 @@ import Phaser from 'phaser';
 
 import type { ChallengeResult } from '../../../shared/protocol';
 import type { PlayerCalling } from '../../../shared/simulation';
+import { canRequestFullscreen, toggleGameFullscreen } from '../combat/fullscreen';
+import { activeSidewaysMode } from '../lib/sideways';
 import {
     liveCombatArgs,
     PRACTICE_CLIENT_REGISTRY_KEY,
@@ -18,14 +20,18 @@ export default class ResultScene extends Phaser.Scene {
     private args: ResultSceneArgs;
     private client: PracticeClient;
     private root: HTMLElement;
+    private fullscreenUnavailable = false;
 
     public constructor() {
         super({ key: 'result' });
         this.shutdown = this.shutdown.bind(this);
+        this.onFullscreenChange = this.onFullscreenChange.bind(this);
+        this.onViewportChange = this.onViewportChange.bind(this);
     }
 
     public init(args: ResultSceneArgs): void {
         this.args = args;
+        this.fullscreenUnavailable = false;
     }
 
     public create(): void {
@@ -51,6 +57,7 @@ export default class ResultScene extends Phaser.Scene {
                     </dl>` : ''}
                 <button type="button" class="result-retry">Play Again</button>
                 <button type="button" class="result-change">Change Calling</button>
+                <button type="button" class="result-fullscreen" hidden></button>
                 <p class="result-message" aria-live="polite"></p>
             </section>
         `;
@@ -61,6 +68,13 @@ export default class ResultScene extends Phaser.Scene {
         this.root.querySelector<HTMLButtonElement>('.result-change')!.addEventListener(
             'click', () => this.scene.start('practice')
         );
+        this.root.querySelector<HTMLButtonElement>('.result-fullscreen')!.addEventListener(
+            'click', () => void this.toggleFullscreen()
+        );
+        document.addEventListener('fullscreenchange', this.onFullscreenChange);
+        window.addEventListener('resize', this.onViewportChange);
+        window.visualViewport?.addEventListener('resize', this.onViewportChange);
+        this.refreshFullscreenButton();
         this.events.once(Phaser.Scenes.Events.SHUTDOWN, this.shutdown);
     }
 
@@ -78,7 +92,51 @@ export default class ResultScene extends Phaser.Scene {
         }
     }
 
+    private async toggleFullscreen(): Promise<void> {
+        const outcome = await toggleGameFullscreen();
+        if (outcome.status === 'unsupported') {
+            this.fullscreenUnavailable = true;
+            this.setMessage('Full screen is not supported by this app host');
+        } else if (outcome.status === 'rejected') {
+            this.setMessage('Full screen was blocked by this app host');
+        } else if (outcome.status === 'entered') {
+            this.setMessage('Full screen active');
+        } else {
+            this.setMessage('Returned to default screen');
+        }
+        this.refreshFullscreenButton();
+    }
+
+    private onFullscreenChange(): void {
+        this.refreshFullscreenButton();
+    }
+
+    private onViewportChange(): void {
+        window.requestAnimationFrame(() => this.refreshFullscreenButton());
+    }
+
+    private refreshFullscreenButton(): void {
+        const button = this.root?.querySelector<HTMLButtonElement>('.result-fullscreen');
+        if (!button) return;
+        const active = Boolean(document.fullscreenElement);
+        const available = !activeSidewaysMode() && !this.fullscreenUnavailable &&
+            canRequestFullscreen();
+        const landscape = this.scale.width > this.scale.height;
+        button.hidden = !active && (!available || !landscape);
+        button.textContent = active ? 'Exit full screen' : 'Full screen';
+        button.setAttribute('aria-label', active ? 'Exit full screen' : 'Enter full screen');
+        button.setAttribute('aria-pressed', String(active));
+    }
+
+    private setMessage(message: string): void {
+        const field = this.root.querySelector<HTMLElement>('.result-message');
+        if (field) field.textContent = message;
+    }
+
     private shutdown(): void {
+        document.removeEventListener('fullscreenchange', this.onFullscreenChange);
+        window.removeEventListener('resize', this.onViewportChange);
+        window.visualViewport?.removeEventListener('resize', this.onViewportChange);
         this.root?.remove();
     }
 }

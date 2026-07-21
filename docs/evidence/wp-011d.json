@@ -1,0 +1,77 @@
+{
+  "id": "WP-011D",
+  "status": "complete",
+  "starting_commit": "a7ac40fbd452903b83ef300ccf2886541deea647",
+  "branch": "codex/wp-011d-sideways-default",
+  "initial_worktree": "clean",
+  "starting_lock_sha256": "98951A0DECBB8FF685BD314AD44C853ED91554FFC46565BBDD03A27AB78A04AE",
+  "owning_roles": [
+    "worms_port_base_game_worker",
+    "worms_port_docs_keeper",
+    "worms_port_test_worker",
+    "worms_port_reviewer"
+  ],
+  "scope": [
+    "Make clockwise virtual landscape the default when the browser viewport is portrait",
+    "Keep explicit counter-clockwise and normal responsive presentation controls",
+    "Retain automatic deactivation when the browser viewport is actually landscape",
+    "Show a direction-aware Auto rotate instruction on the Practice start card only while sideways mode is active",
+    "Document the Nimiq Pay limitation, Android setup, escape hatch, and removal trigger for fresh re-entry",
+    "Record completion of the user-run WP-011C Samsung Galaxy S22 acceptance"
+  ],
+  "non_goals": [
+    "Changing Android auto-rotate or detecting physical device attitude from web content",
+    "Forcing Nimiq Pay native URL or Android system chrome to disappear",
+    "Undocumented Nimiq Pay APIs, native application changes, or a native wrapper",
+    "Removing the maintained normal portrait composition",
+    "Gameplay authority, simulation, Loomkeeper, Relic, reward, or wallet changes",
+    "New third-party dependencies or product assets"
+  ],
+  "planned_checks": [
+    "npm run check:compliance",
+    "npm run check:types",
+    "npm run test:combat",
+    "npm run test:practice",
+    "npm run build",
+    "npm run smoke:built",
+    "npm run test:browser:smoke",
+    "npm run test:browser:combat",
+    "npm run test:browser:practice",
+    "npm audit",
+    "self-review",
+    "Samsung Galaxy S22 Nimiq Pay default-sideways acceptance"
+  ],
+  "deterministic_seeds": [],
+  "sorcerers_reference_used": false,
+  "clean_room_records": [],
+  "check_results": [
+    { "command": "npm run check:compliance", "status": "pass" },
+    { "command": "npm run check:types", "status": "pass" },
+    { "command": "npm run test:combat", "status": "pass" },
+    { "command": "npm run test:practice", "status": "pass" },
+    { "command": "npm run build", "status": "pass" },
+    { "command": "npm run smoke:built", "status": "pass" },
+    { "command": "npm run test:browser:smoke", "status": "pass" },
+    { "command": "npm run test:browser:combat", "status": "pass" },
+    { "command": "npm run test:browser:practice", "status": "pass" },
+    { "command": "npm audit", "status": "pass" },
+    { "command": "self-review", "status": "pass" },
+    { "command": "Samsung Galaxy S22 Nimiq Pay default-sideways acceptance", "status": "pass" }
+  ],
+  "reviews": [
+    { "role": "worms_port_base_game_worker", "reviewer": "primary-agent-client-review", "decision": "pass" },
+    { "role": "worms_port_docs_keeper", "reviewer": "primary-agent-docs-review", "decision": "pass" },
+    { "role": "worms_port_test_worker", "reviewer": "primary-agent-test-review", "decision": "pass" },
+    { "role": "worms_port_reviewer", "reviewer": "primary-agent-boundary-review", "decision": "pass" }
+  ],
+  "skipped_checks": [
+    "Physical Android and iOS coverage beyond the Samsung device: no release-testing environment was provided.",
+    "WP-014 visual-regression baselines, expanded device matrix, degraded-network matrix, and performance budgets are not yet available."
+  ],
+  "residual_risks": [
+    "The default assumes Nimiq Pay users follow the documented Android auto-rotate-off setup and hold the phone with its top on the left.",
+    "Other portrait WebViews also receive the workaround unless they use sideways=off; host detection is deliberately avoided because it would be brittle.",
+    "Nimiq Pay controls its native chrome, so the workaround uses the available viewport but cannot remove those surfaces.",
+    "The client bundle is approximately 1.406 MB minified and 387.84 kB gzip and retains the existing chunk-size warning."
+  ]
+}

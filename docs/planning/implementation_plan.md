@@ -9,13 +9,23 @@ Phaser/Socket.IO stack.
 
 - Active target: mobile-first single-player Nimiq Pay competition release.
 - Next work package: **WP-012 Nimiq Pay Identity Adapter**.
-- Last completed work package: **WP-011A Real-device Gameplay Stabilization**.
+- Last completed work package: **WP-011E Arena-first Contextual Combat HUD**.
 - PvP and matchmaking: deferred until after the competition release.
 - Canonical artwork reference:
   `docs/images/art-direction/knotkin-class-lineup-concept.png`.
 - General physical Android/iOS testing remains outside the automated cycle.
   WP-011A's user-run Samsung Galaxy S22 acceptance gate in Nimiq Pay passed on
   2026-07-20 for the reported real-device regressions.
+  WP-011B acceptance on the same device confirmed working full screen in Samsung
+  Chrome and no exposed Fullscreen API inside Nimiq Pay.
+  WP-011C's clockwise sideways mode passed user-run Samsung Galaxy S22 Nimiq
+  Pay acceptance on 2026-07-21. WP-011D's no-query clockwise default then passed
+  user-run acceptance on the same device and date. Its removal trigger is a
+  verified documented Nimiq Pay full-screen game mode or equivalent
+  standard/native capability that removes host chrome. Until then, keep
+  `?sideways=left` and `?sideways=off` as documented controls.
+  WP-011E's arena-first HUD passed user-run Samsung Galaxy S22 Nimiq Pay
+  acceptance on 2026-07-21.
 
 A fresh Codex chat should read `AGENTS.md` and its ordered source documents,
 check the worktree and recent commits, then start only the work package named
@@ -94,6 +104,26 @@ guardrails for this selected host.
   WP-011A implemented the stabilization candidate, passed its automated gates,
   and passed the user-run Samsung Galaxy S22 Nimiq Pay portrait/landscape
   acceptance re-test. WP-012 may now start.
+- WP-011B adds a standards-based, user-activated full-screen probe for compact
+  landscape. Samsung Galaxy S22 acceptance confirmed that it works in Chrome,
+  while Nimiq Pay does not expose the required API and correctly retains the
+  compact embedded fallback. Chrome acceptance also found forced-landscape and
+  result-screen exit defects assigned to WP-011C.
+- WP-011C removes the browser orientation lock,
+  retains a full-screen exit action on results, and adds opt-in `sideways=right`
+  and `sideways=left` virtual-landscape modes for portrait-locked mini-app
+  viewports. Its automated verification and deployed Samsung Galaxy S22 Nimiq
+  Pay acceptance passed.
+- WP-011D makes clockwise sideways presentation the temporary default for
+  portrait browser viewports. `sideways=left` selects the opposite direction
+  and `sideways=off` preserves the maintained normal responsive composition.
+  The deployed no-query default passed user-run Samsung Galaxy S22 Nimiq Pay
+  acceptance on 2026-07-21.
+- WP-011E gives the arena the maximum safe 16:9
+  rectangle, adds compact actor-local status, floating thumb pads, contextual
+  Relic/Fire controls, and a Pause sheet without changing gameplay authority.
+  Automated verification and user-run Samsung Galaxy S22 Nimiq Pay acceptance
+  passed on 2026-07-21.
 - Nimiq Pay identity/reward work, the expanded phone matrix, and visual
   regression remain.
 
@@ -760,9 +790,378 @@ Samsung Galaxy S22 Nimiq Pay portrait/landscape re-test passed on 2026-07-20;
 the repeated-match result, movement/aim, causal turn presentation, trajectory
 cleanup, and compact-landscape fixes worked on the deployed Render build.
 
+### WP-011B Embedded Full-screen Capability Probe
+
+Status: complete. Depends on WP-011A. WP-012 does not depend on the host
+accepting this optional probe.
+
+Goal: give landscape players the strongest standards-based request web content
+can make to reduce browser chrome, without assuming control over Nimiq Pay's
+native WebView or Android system UI.
+
+Scope:
+
+- show a compact **Full screen** HUD action only in landscape and only when the
+  standard Fullscreen API reports that requests are enabled,
+- invoke `requestFullscreen({ navigationUI: 'hide' })` directly from the player
+  tap, then optionally request a landscape orientation lock after entry,
+- expose a clear Exit action, follow browser Back/full-screen change events,
+  cancel transient combat input during viewport changes, and resize against the
+  resulting usable viewport,
+- keep the existing compact landscape composition as the fallback when the API
+  is unavailable or rejected, with a clear host-capability message, and
+- verify the actual result inside Nimiq Pay on the Samsung Galaxy S22. Success
+  means both system bars and the Nimiq Pay URL ribbon disappear; partial or no
+  removal is recorded as a native-host limitation rather than worked around
+  with undocumented APIs.
+
+Non-goals: automatic full screen, misleading PWA metadata, CSS claims to hide
+native chrome, a native wrapper, Nimiq Pay application changes, gameplay or
+authority changes, dependencies, or assets.
+
+Owning roles: `worms_port_base_game_worker`, `worms_port_test_worker`, and
+`worms_port_reviewer`.
+
+Verification: pure capability/request/exit/failure tests; a built Chromium
+landscape UI probe; the WP-011A combat and live-practice phone matrices; build,
+smoke, compliance, and audit; then Samsung Galaxy S22 Nimiq Pay landscape entry,
+exit, rotation, and fallback acceptance.
+
+Acceptance result on 2026-07-20: Samsung Chrome exposed the Fullscreen API, the
+button appeared, and full-screen entry removed the browser chrome. Nimiq Pay did
+not expose the API, so the button stayed hidden and the safe compact layout was
+retained. The probe therefore established the native-host boundary as intended.
+Chrome testing found two follow-up defects: the post-entry orientation lock
+prevents rotating back to portrait, and transition to the result scene removes
+the only visible full-screen toggle. Both are scoped to WP-011C rather than
+reopening the host-capability probe.
+
+### WP-011C Full-screen Rotation, Exit, and Sideways Stabilization
+
+Status: complete. Depends on WP-011B. This corrective package does not block or
+change WP-012 identity work.
+
+Goal: make supported browser full screen reversible and orientation-responsive
+through the complete Practice Clash journey, including terminal results, and
+provide an explicit virtual-landscape fallback for portrait-locked Nimiq Pay.
+
+Confirmed Samsung Galaxy S22 Chrome defects:
+
+- entering full screen calls `screen.orientation.lock('landscape')`, after which
+  physical rotation cannot switch the game to portrait, and
+- completing a match while full screen transitions away from the combat HUD,
+  so the result screen has no visible control to return to default browser mode.
+
+Confirmed Samsung Galaxy S22 Nimiq Pay precondition:
+
+- when Android auto-rotate is disabled while portrait, Nimiq Pay keeps a
+  portrait browser viewport after the physical phone is turned sideways. This
+  gives web content a stable surface on which to opt into a rotated landscape
+  composition without relying on an unavailable host full-screen API.
+
+Scope:
+
+- remove the forced landscape orientation lock from full-screen entry. Keep the
+  browser in full screen across ordinary rotation and recompute the existing
+  portrait or landscape layout from the resulting usable viewport,
+- preserve input cancellation and resize safety across full-screen and physical
+  orientation changes,
+- add a state-aware **Full screen** / **Exit full screen** control to the result
+  screen. When full screen is active, the exit action must remain visible and
+  usable regardless of orientation,
+- centralize or share full-screen state only as much as needed to keep combat
+  and result scenes synchronized with `fullscreenchange`,
+- retain the existing compact fallback and hidden entry control in Nimiq Pay,
+  where the host reports the Fullscreen API as unavailable, and
+- ensure Play Again and Calling-change actions still work after entering or
+  leaving full screen,
+- add query-controlled `sideways=right` (also `sideways=1`) and
+  `sideways=left` modes which create landscape logical dimensions only while
+  the actual browser viewport is portrait,
+- rotate the complete game surface, remap safe-area edges and inverse-map touch
+  coordinates so movement and aiming retain their visual directions, and
+- automatically disengage the virtual rotation when the actual viewport is
+  landscape, avoiding a double rotation if the host or device setting changes.
+
+Non-goals: forcing Nimiq Pay native chrome to disappear, closing the Nimiq Pay
+mini app through an undocumented bridge, changing Android auto-rotate, detecting
+physical device attitude independently of the browser viewport, making sideways
+mode the default, locking any orientation, changing gameplay authority, or
+adding dependencies and assets.
+
+Owning roles: `worms_port_base_game_worker`, `worms_port_test_worker`, and
+`worms_port_reviewer`.
+
+Verification:
+
+- unit coverage proving full-screen entry no longer requests an orientation
+  lock and exit remains idempotent,
+- Chromium phone-browser coverage for landscape entry, rotation to portrait and
+  back while still full screen, completion into the result scene, result-screen
+  exit, and subsequent Play Again/Calling-change actions,
+- Chromium portrait-viewport coverage for both sideways directions, logical
+  landscape sizing, touch movement and aim mapping, safe control fit, and
+  automatic deactivation when the browser actually becomes landscape,
+- the existing combat, live-practice, and smoke phone matrices plus build,
+  compliance, and audit, and
+- Samsung Galaxy S22 Chrome acceptance for entry, landscape-to-portrait rotation,
+  match completion, result-screen exit to default mode, and retry. Confirm that
+  Nimiq Pay still uses the non-full-screen fallback without a dead control, then
+  test `sideways=right` and `sideways=left` in Nimiq Pay with Android auto-rotate
+  disabled.
+
+Acceptance result on 2026-07-21: the user-run Samsung Galaxy S22 Nimiq Pay test
+confirmed the sideways workaround works and is the preferred way to play in
+the current host. This closes WP-011C and motivates WP-011D's temporary default.
+
+### WP-011D Default Sideways Host Workaround
+
+Status: complete.
+Depends on WP-011C. This presentation policy does not block or change WP-012
+identity work.
+
+Goal: use the accepted clockwise virtual-landscape workaround without requiring
+a query parameter, while preserving explicit alternative and opt-out routes and
+making the temporary host dependency easy to recover in a fresh implementation
+session.
+
+Scope:
+
+- when `sideways` is absent and the browser viewport is portrait, behave as
+  `sideways=right`,
+- retain `sideways=1` / `sideways=right` and `sideways=left`, and add the
+  documented `sideways=off` normal responsive composition,
+- retain automatic virtual-rotation deactivation in an actual landscape
+  viewport,
+- show a prominent direction-aware start-card instruction to disable Android
+  auto-rotate before turning the phone; hide it in normal responsive mode,
+- keep legacy portrait and browser-full-screen regression coverage through the
+  explicit opt-out while smoke and focused live tests cover the production
+  default, and
+- record the workaround prominently in `README.md`, `AGENTS.md`, this Execution
+  Pointer, art direction, and the development workflow, including prerequisite,
+  direction, escape hatch, host limitation, and removal trigger.
+
+Removal trigger: replace the default only after a documented Nimiq Pay
+full-screen game mode or reliable standard/native capability is verified on a
+real device to remove the host URL ribbon/system-bar obstruction. Preserve
+`sideways=off` throughout migration and do not substitute an undocumented host
+bridge.
+
+Non-goals: host sniffing, changing Android auto-rotate, inferring physical
+device attitude, removing portrait support, changing gameplay authority,
+wallet/reward work, dependencies, or assets.
+
+Owning roles: `worms_port_base_game_worker`, `worms_port_docs_keeper`,
+`worms_port_test_worker`, and `worms_port_reviewer`.
+
+Verification:
+
+- unit coverage for no-query clockwise default, explicit left/right forms, and
+  `sideways=off`,
+- built phone smoke coverage of the no-query default across the existing
+  Chromium/WebKit phone projects,
+- focused combat and live Practice coverage for default rotation, touch mapping,
+  actual-landscape deactivation, and the explicit normal-layout regression path,
+- existing build, compliance, combat, practice, browser, smoke, and audit gates,
+  and
+- user-run Samsung Galaxy S22 Nimiq Pay acceptance starting from the ordinary
+  no-query Render URL with Android auto-rotate disabled while portrait.
+
+Acceptance result on 2026-07-21: the user-run Samsung Galaxy S22 Nimiq Pay test
+started from the ordinary no-query Render URL with Android auto-rotate disabled
+and confirmed the default clockwise sideways presentation works as intended.
+This closes WP-011D while retaining `sideways=left`, `sideways=off`, and the
+documented host-capability removal trigger.
+
+### WP-011E Arena-first Contextual Combat HUD
+
+Status: complete. Depends on WP-011D's
+presentation policy and deployed-device acceptance. This visual refinement does
+not block or change WP-012 identity work.
+
+Goal: give the fixed 16:9 battlefield the maximum usable safe-viewport area and
+move the essential status and touch controls into a restrained, contextual
+overlay. The arena should read first; controls should stay predictable and
+usable without becoming a permanently opaque second screen.
+
+Research basis:
+
+- Apple's [Game controls](https://developer.apple.com/design/human-interface-guidelines/game-controls)
+  guidance supports contextual controls, controls that fade while idle, and a
+  floating thumbstick that appears where the player touches.
+- The Game Developer articles on
+  [dynamic interfaces](https://www.gamedeveloper.com/design/dynamic-user-interfaces-adapting-to-changing-situations-in-games-to-increase-player-performance)
+  and [peripheral HUD perception](https://www.gamedeveloper.com/design/perceiving-without-looking-designing-huds-for-peripheral-vision)
+  support removing irrelevant information by phase while keeping locations
+  stable, shapes distinct, and text short enough to read peripherally.
+- Activision's official
+  [Call of Duty: Mobile control overview](https://blog.activision.com/call-of-duty/2019-10/Getting-a-Grip-on-the-Call-of-Duty-Mobile-Controls.html)
+  provides a shipped reference for repositionable touch overlays and opacity
+  adjustment. WP-011E adopts the overlay principle, not its visual design.
+- Dargom Studio's [GunboundM](https://dargomstudio.com/index.php/gunboundm/)
+  is a relevant mobile artillery reference for a battlefield-dominant
+  composition. No code, artwork, layout pixels, or product assets may be copied.
+
+Current measured baseline and target:
+
+- At the Samsung acceptance viewport of 844 by 390 CSS pixels, the present
+  eight-pixel safe margins leave about 828 by 374 pixels. The permanent 54-pixel
+  status row and approximately 282-pixel action column limit the 16:9 arena to
+  about 534 by 301 pixels.
+- Using the same safe viewport without reserved status or control bands permits
+  an approximately 665 by 374 arena. WP-011E must reach at least 660 by 370 at
+  this viewport, a minimum 20 percent linear-scale improvement over the current
+  layout, without cropping simulation space.
+- The renderer must use the mathematical maximum 16:9 rectangle inside the safe
+  viewport in every supported composition. Persistent opaque HUD surfaces must
+  not reserve arena rows or columns and should cover no more than 10 percent of
+  the arena at rest.
+
+Target composition:
+
+```text
++---------------------- full safe-viewport arena -----------------------+
+| [Pause]                    [YOUR TURN - 17s]                           |
+|                                                                      |
+|          [Player Stitching]                 [AI Stitching]            |
+|                Knotkin       terrain       Loomkeeper                 |
+|                                                                      |
+|  (floating MOVE)       [Selected Relic v]       (floating AIM)       |
+|                                                    [FIRE]            |
++----------------------------------------------------------------------+
+```
+
+Information architecture:
+
+| Current surface | Arena-first replacement |
+| --- | --- |
+| Full-width status bar | Compact top-center turn/timer pill |
+| Combined `Stitching 100 - 100` text | Short exact-value bars anchored near, but not over, each actor |
+| Permanently visible movement and aim pads | Stable left/right touch zones whose pad appears under the active thumb and fades when idle |
+| Three permanent Relic buttons | Selected-Relic chip that opens a temporary three-item chooser in a stable location |
+| Fire, Pause, and Retry row | Explicit Fire near the aim zone; Pause in a safe corner; Retry inside the pause sheet |
+| Persistent instructional/status copy | Short transient battlefield toast with an accessible live-region equivalent |
+
+Phase and visibility contract:
+
+| Presentation phase | Persistent information | Active controls | Faded or hidden |
+| --- | --- | --- | --- |
+| Player decision, no locked aim | Turn/timer, both Stitching bars, Pause | Movement zone, aim zone, Relic chip | Fire unavailable; idle pad art faint |
+| Player aiming or aim locked | Turn/timer, both Stitching bars, Pause | Aim zone, Relic chip, explicit Fire when locked | Movement fades; unrelated instructions hide |
+| Player command presentation | Both Stitching bars, compact phase label | None | Movement, aim, Relic, and Fire fade and reject input |
+| Loomkeeper presentation | Both Stitching bars, compact `Loomkeeper` phase label | Pause only when the lifecycle permits it | All command controls fade and reject input |
+| Paused | Dimmed arena and current Stitching | Resume, Retry, and supported full-screen action in a modal sheet | Battlefield touch zones reject input |
+| Disconnected/reconnecting | Latest rendered arena and connection state | Retry/return action only when the protocol permits it | All gameplay controls reject input |
+| Terminal result | Existing result scene | Play Again, Calling change, and full-screen exit when applicable | Combat overlay is destroyed |
+
+Interaction and accessibility invariants:
+
+- Fire remains a separate deliberate action. Releasing the aim pad locks aim and
+  must never also submit Fire.
+- Logical control anchors stay fixed across phase changes. Controls may fade or
+  expand in place; they must not jump beneath a resting thumb.
+- Every button keeps a minimum 48 by 48 CSS-pixel target. Each floating pad has
+  at least a 96-pixel active diameter and remains operable with one thumb.
+- Idle pads remain discoverable through a faint boundary or first-use cue;
+  active pads gain contrast at the touch origin. Visibility cannot depend on
+  color alone.
+- Exact Stitching values, whose turn it is, remaining time, selected Relic,
+  locked-aim readiness, pause state, and connection state remain available to
+  assistive technology even when their visual treatment is compact.
+- Actor bars choose a clamped screen-space anchor above the actor and must not
+  cover the actor center, aim origin, or safe edge. When anchors would collide,
+  they move outward predictably rather than overlap.
+- Reduced-motion mode uses immediate visibility changes while preserving every
+  causal presentation phase. Ordinary fades are short presentation effects and
+  never delay authority or enable input early.
+- Safe-area insets, `visualViewport`, default clockwise sideways presentation,
+  explicit left rotation, `sideways=off`, actual landscape, and browser full
+  screen remain supported. The overlay cannot infer device attitude or control
+  native host chrome.
+- This package may change DOM/CSS/canvas presentation and input hit geometry,
+  but not simulation commands, command ordering, replay hashes, Loomkeeper
+  policy, server authority, result rules, or the Turtle/Sorcerers import
+  boundary.
+
+Implementation slices:
+
+1. **Arena geometry and compact status.** Replace reserved HUD/action bands with
+   a maximum-area battlefield, add turn/timer and actor Stitching anchors, and
+   keep existing controls temporarily functional as overlays. Establish layout
+   geometry tests before changing control disclosure.
+2. **Contextual touch controls.** Convert movement and aim to floating pads,
+   collapse Relics into the selected-chip chooser, keep explicit Fire, and move
+   Retry into the Pause sheet. Preserve current command callbacks and pointer
+   cancellation rules.
+3. **Phase transitions and hardening.** Drive visibility from the existing
+   presentation state, add reduced-motion and accessibility behavior, tune
+   occlusion, and complete the browser/device matrix.
+
+Non-goals: gameplay balance, new Relics, simulation or protocol changes,
+drag-to-fire, auto-fire, hidden exact Stitching, host-specific APIs, native-app
+changes, copied third-party UI, production artwork imports, user-customizable
+HUD editing, or a general desktop HUD redesign beyond keeping `sideways=off`
+functional.
+
+Owning roles: `worms_port_base_game_worker`, `worms_port_test_worker`,
+`worms_port_docs_keeper`, and `worms_port_reviewer`.
+
+Verification:
+
+- pure layout tests for maximum 16:9 arena geometry, safe-area clamping, actor
+  bar collision handling, and both sideways directions,
+- input tests proving floating-pad origin/mapping, aim-lock then explicit Fire,
+  Relic chooser semantics, phase gating, pause-sheet Retry, pointer cancellation,
+  keyboard focus, and accessible labels,
+- Chromium 360 by 640, 390 by 844, 844 by 390, and compact 640 by 360 plus
+  WebKit 390 by 844 screenshot/bounding-box coverage across decision, aim,
+  player presentation, Loomkeeper presentation, pause, reconnect, and result,
+- assertions that the 844 by 390 arena is at least 660 by 370, no essential
+  target leaves the safe viewport, stable controls do not jump between phases,
+  and persistent opaque overlays stay within the coverage budget,
+- existing live Practice journeys, two-match regression, all three Relics,
+  full-screen/result exit, sideways default/left/off, build, compliance, audit,
+  and phone smoke, and
+- user-run Samsung Galaxy S22 Nimiq Pay acceptance with auto-rotate disabled:
+  first-use discoverability, one-thumb movement/aim/Fire, visible player and AI
+  presentation, Pause/Retry recovery, no critical actor/trajectory occlusion,
+  and materially larger battlefield confirmation.
+
+Delivered candidate: layout now computes the maximum 16:9 arena inside the
+safe `visualViewport`; at 844 by 390 it produces approximately 665 by 374 CSS
+pixels compared with the prior approximately 534 by 301. The compact turn/timer
+pill and collision-safe exact Stitching bars overlay the arena. Movement and aim
+retain their established left/right activation zones while their 96-pixel
+minimum pads appear at the active thumb and fade when idle or unavailable.
+
+The three permanent Relic buttons are replaced by one selected-Relic chip and a
+temporary three-item chooser. Aim release still locks without firing, explicit
+Fire becomes prominent only after lock, command controls fade in place through
+player/Loomkeeper presentation and reconnect, and reduced motion removes the
+transition without changing phase order. Pause remains in the safe corner;
+Retry and the supported combat full-screen action are available from its modal
+sheet. Actor status follows rendered movement while authoritative values and
+all simulation, protocol, replay, result, and Loomkeeper rules remain unchanged.
+
+Automated candidate verification passes 18 focused combat tests, 26 applicable
+combat-browser cases (six intentional project skips), 15 applicable live
+Practice browser cases (nine intentional project skips), and all eight built
+phone-smoke cases across the maintained Chromium/WebKit projects. Compliance,
+types, build, built-server smoke, Practice tests, audit, and self-review pass.
+The existing bundle-size warning remains. Physical Samsung Galaxy S22 Nimiq
+Pay acceptance passed on 2026-07-21.
+
+Acceptance result on 2026-07-21: the user-run Samsung Galaxy S22 Nimiq Pay test
+confirmed that the maximum-area battlefield, actor-local Stitching, floating
+movement and aim pads, contextual Relic/Fire controls, phase visibility, and
+Pause-sheet recovery work correctly on the deployed build. This closes
+WP-011E; physical coverage beyond that Samsung device remains a release risk.
+
 ### WP-012 Nimiq Pay Identity Adapter
 
-Status: planned. Depends on WP-006 and WP-011A.
+Status: planned. Depends on WP-006 and WP-011A. The optional WP-011B host probe
+may complete independently.
 
 Goal: isolate the official Mini App SDK behind an adapter for initialization,
 language, wallet account selection, signed challenges, rejection, timeout, and
@@ -917,14 +1316,20 @@ it does not block completion of the documented autonomous cycle.
 
 ```text
 WP-005 -> WP-006 -> WP-007 -> WP-008 -> WP-009 -> WP-010 -> WP-011 -> WP-011A
+WP-011A -> WP-011B -> WP-011C -> WP-011D -> WP-011E (presentation path)
 WP-011A -> WP-012 -> WP-013 -> WP-014
 WP-010 + WP-014 ------------------------------------------------------------> WP-015
 WP-013 + WP-015 ------------------------------------------------------------> WP-016 -> WP-017
 ```
 
 WP-011 is the first complete playable. WP-011A is its real-device acceptance
-stabilization gate. WP-014 is the automated competition-candidate gate. WP-017
-is the submission-ready repository and deployment.
+stabilization gate. WP-011B is a non-blocking embedded-host capability probe.
+WP-011C stabilizes the supported-browser path and proves the Nimiq Pay sideways
+fallback. WP-011D makes that fallback the documented temporary default until
+the host supplies full-screen game presentation. WP-011E then maximizes the
+arena and makes its HUD phase-contextual without changing game authority.
+WP-014 is the automated competition-candidate gate. WP-017 is the
+submission-ready repository and deployment.
 
 ## Deferred Until After Competition
 

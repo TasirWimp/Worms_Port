@@ -7,8 +7,9 @@ test.beforeEach(async ({ page }) => {
   page.on('console', (message) => {
     if (message.type() === 'error') consoleErrors.push(message.text());
   });
-  await page.goto('/');
+  await page.goto('/?sideways=off');
   await expect(page.getByRole('heading', { name: 'Practice Clash' })).toBeVisible({ timeout: 10_000 });
+  await expect(page.locator('.practice-sideways-note:visible')).toHaveCount(0);
   await expect.poll(() => pageErrors).toEqual([]);
   await expect.poll(() => consoleErrors).toEqual([]);
 });
@@ -35,7 +36,7 @@ test('live practice supports authoritative pause, full player turn, and fresh re
   const startX = Number(await ui.getAttribute('data-player-x'));
   await dragPad(page, '.movement-zone', 21, 0.36, 0);
   await expect.poll(async () => Number(await ui.getAttribute('data-player-x'))).not.toBe(startX);
-  await page.getByRole('button', { name: 'Select Spoolburst' }).tap();
+  await selectRelic(page, 'Spoolburst');
   await expect(ui).toHaveAttribute('data-selected-relic', 'spoolburst');
   await dragPad(page, '.aim-zone', 22, 0.3, -0.34);
   await expect(page.locator('.fire-button')).toBeEnabled();
@@ -57,6 +58,8 @@ test('live practice supports authoritative pause, full player turn, and fresh re
   ]));
   expect(presentation.maximumProjectilePoints).toBeGreaterThan(1);
 
+  await page.locator('.pause-button').tap();
+  await expect(page.locator('.combat-pause-sheet')).toBeVisible();
   await page.locator('.retry-button').tap();
   await expect.poll(() => ui.getAttribute('data-challenge-id')).not.toBe(firstChallenge);
   await expect(ui).toHaveAttribute('data-turn', '0');
@@ -80,12 +83,33 @@ test('calling controls and live combat actions remain phone-safe', async ({ page
     await expect(page.locator('.combat-ui')).toHaveAttribute('data-orientation', 'landscape');
   }
   await assertControlsFit(page);
-  for (const button of await page.locator('.combat-actions button').all()) {
+  for (const button of await page.locator('.combat-actions button:visible').all()) {
     const box = await button.boundingBox();
     expect(box).not.toBeNull();
     expect(box!.width).toBeGreaterThanOrEqual(48);
     expect(box!.height).toBeGreaterThanOrEqual(48);
   }
+});
+
+test('default sideways mode carries the live practice journey into virtual landscape', async ({ page }, testInfo) => {
+  test.skip(testInfo.project.name !== 'chromium-390x844', 'One portrait viewport is sufficient.');
+  await page.goto('/');
+  await expect(page.getByRole('heading', { name: 'Practice Clash' })).toBeVisible();
+  await expect(page.locator('html')).toHaveAttribute('data-sideways', 'right');
+  const instruction = page.locator('.practice-sideways-note-right');
+  await expect(instruction).toBeVisible();
+  await expect(instruction).toContainText('switch off Auto rotate');
+  await expect(instruction).toContainText("phone's top points left");
+  await page.screenshot({ path: testInfo.outputPath('wp-011d-start-instruction.png') });
+  await page.getByRole('button', { name: 'Start Practice' }).tap();
+  const ui = page.locator('.combat-ui');
+  await expect(ui).toBeVisible();
+  await expect(ui).toHaveAttribute('data-orientation', 'landscape');
+  await assertControlsFit(page);
+
+  const startX = Number(await ui.getAttribute('data-player-x'));
+  await dragPad(page, '.movement-zone', 61, 0, 0.36);
+  await expect.poll(async () => Number(await ui.getAttribute('data-player-x'))).toBeGreaterThan(startX);
 });
 
 test('two consecutive completed Clashes each show a result and use fresh authority', async ({ page }, testInfo) => {
@@ -111,6 +135,32 @@ test('two consecutive completed Clashes each show a result and use fresh authori
   await expect(page.locator('.result-shell')).toBeVisible();
   await expect(page.getByRole('button', { name: 'Play Again' })).toBeVisible();
   await expect(page.getByRole('button', { name: 'Change Calling' })).toBeVisible();
+});
+
+test('a full-screen match retains an exit toggle on the result screen', async ({ page }, testInfo) => {
+  test.setTimeout(90_000);
+  test.skip(testInfo.project.name !== 'chromium-844x390', 'One landscape journey is sufficient.');
+  await installFullscreenStub(page);
+  await page.getByRole('button', { name: 'Start Practice' }).tap();
+  await expect(page.locator('.combat-ui')).toBeVisible();
+  await page.locator('.pause-button').tap();
+  await expect(page.locator('.combat-pause-sheet')).toBeVisible();
+  await page.getByRole('button', { name: 'Enter full screen' }).tap();
+  await expect.poll(() => page.evaluate(() => Boolean(document.fullscreenElement))).toBe(true);
+  await page.locator('.pause-button').tap();
+  await expect(page.locator('.combat-ui')).toHaveAttribute('data-paused', 'false');
+
+  await completeCurrentClash(page);
+  await expect(page.locator('.result-shell')).toBeVisible();
+  await expect(page.getByRole('button', { name: 'Exit full screen' })).toBeVisible();
+  await page.getByRole('button', { name: 'Exit full screen' }).tap();
+  await expect.poll(() => page.evaluate(() => Boolean(document.fullscreenElement))).toBe(false);
+  await expect(page.getByText('Returned to default screen')).toBeVisible();
+  await expect(page.getByRole('button', { name: 'Enter full screen' })).toBeVisible();
+
+  await page.getByRole('button', { name: 'Play Again' }).tap();
+  await expect(page.locator('.combat-ui')).toBeVisible();
+  await expect(page.locator('.combat-ui')).toHaveAttribute('data-fullscreen', 'false');
 });
 
 test('lost in-memory authority offers a fresh Practice Clash', async ({ page }) => {
@@ -165,6 +215,29 @@ async function pointer(
   }, { type, pointerId, xRatio, yRatio });
 }
 
+async function installFullscreenStub(page: Page): Promise<void> {
+  await page.evaluate(() => {
+    let active: Element | null = null;
+    Object.defineProperty(document, 'fullscreenEnabled', { configurable: true, get: () => true });
+    Object.defineProperty(document, 'fullscreenElement', { configurable: true, get: () => active });
+    Object.defineProperty(document.documentElement, 'requestFullscreen', {
+      configurable: true,
+      value: async () => {
+        active = document.documentElement;
+        document.dispatchEvent(new Event('fullscreenchange'));
+      }
+    });
+    Object.defineProperty(document, 'exitFullscreen', {
+      configurable: true,
+      value: async () => {
+        active = null;
+        document.dispatchEvent(new Event('fullscreenchange'));
+      }
+    });
+    document.dispatchEvent(new Event('fullscreenchange'));
+  });
+}
+
 async function completeCurrentClash(page: Page): Promise<void> {
   const ui = page.locator('.combat-ui');
   for (let shot = 0; shot < 10; shot += 1) {
@@ -181,7 +254,7 @@ async function completeCurrentClash(page: Page): Promise<void> {
     if (await page.locator('.result-shell').count()) return;
 
     if (await ui.getAttribute('data-selected-relic') !== 'threadball') {
-      await page.getByRole('button', { name: 'Select Threadball' }).tap();
+      await selectRelic(page, 'Threadball');
       await expect(ui).toHaveAttribute('data-selected-relic', 'threadball');
     }
     const seed = Number(await ui.getAttribute('data-seed'));
@@ -226,6 +299,12 @@ async function aimAt(page: Page, angleDegrees: number, pointerId: number): Promi
       }));
     }
   }, { angleDegrees, pointerId });
+}
+
+async function selectRelic(page: Page, name: 'Threadball' | 'Needlepoint' | 'Spoolburst'): Promise<void> {
+  await page.locator('.relic-trigger').tap();
+  await expect(page.locator('.relic-chooser')).toBeVisible();
+  await page.getByRole('button', { name: `Select ${name}` }).tap();
 }
 
 async function assertControlsFit(page: Page): Promise<void> {

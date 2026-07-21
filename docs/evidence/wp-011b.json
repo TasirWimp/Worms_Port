@@ -1,0 +1,72 @@
+{
+  "id": "WP-011B",
+  "status": "complete",
+  "starting_commit": "ed2c342f03e9e3b05f9ac752b6cc6caf5df7177b",
+  "branch": "codex/wp-011b-fullscreen-probe",
+  "initial_worktree": "clean",
+  "starting_lock_sha256": "98951A0DECBB8FF685BD314AD44C853ED91554FFC46565BBDD03A27AB78A04AE",
+  "owning_roles": [
+    "worms_port_base_game_worker",
+    "worms_port_test_worker",
+    "worms_port_reviewer"
+  ],
+  "scope": [
+    "Offer a visible landscape full-screen control only when the standard browser capability is reported",
+    "Request browser full screen from a direct user gesture with navigation UI hidden where the host honors it",
+    "Attempt landscape orientation lock only after full-screen entry and keep it optional",
+    "Preserve a safe embedded layout and clear failure feedback when Nimiq Pay rejects or omits the capability",
+    "Record Samsung Galaxy S22 Nimiq Pay acceptance of the actual host behavior"
+  ],
+  "non_goals": [
+    "Guaranteeing removal of Nimiq Pay native chrome or Android system bars from web content",
+    "Undocumented Nimiq Pay APIs, native application changes, or a native wrapper",
+    "Automatic full-screen entry without a user gesture",
+    "Gameplay authority, simulation, Loomkeeper, Relic, reward, or wallet changes",
+    "New third-party dependencies or product assets"
+  ],
+  "planned_checks": [
+    "npm run check:compliance",
+    "npm run check:types",
+    "npm run test:combat",
+    "npm run test:practice",
+    "npm run test:browser:combat",
+    "npm run test:browser:practice",
+    "npm run build",
+    "npm run smoke:built",
+    "npm run test:browser:smoke",
+    "npm audit",
+    "self-review",
+    "Samsung Galaxy S22 Chrome and Nimiq Pay full-screen acceptance"
+  ],
+  "deterministic_seeds": [],
+  "sorcerers_reference_used": false,
+  "clean_room_records": [],
+  "check_results": [
+    { "command": "npm run check:compliance", "status": "pass" },
+    { "command": "npm run check:types", "status": "pass" },
+    { "command": "npm run test:combat", "status": "pass" },
+    { "command": "npm run test:practice", "status": "pass" },
+    { "command": "npm run test:browser:combat", "status": "pass" },
+    { "command": "npm run test:browser:practice", "status": "pass" },
+    { "command": "npm run build", "status": "pass" },
+    { "command": "npm run smoke:built", "status": "pass" },
+    { "command": "npm run test:browser:smoke", "status": "pass" },
+    { "command": "npm audit", "status": "pass" },
+    { "command": "self-review", "status": "pass" },
+    { "command": "Samsung Galaxy S22 Chrome and Nimiq Pay full-screen acceptance", "status": "pass" }
+  ],
+  "reviews": [
+    { "role": "worms_port_base_game_worker", "reviewer": "primary-agent-client-review", "decision": "pass" },
+    { "role": "worms_port_test_worker", "reviewer": "primary-agent-test-review", "decision": "pass" },
+    { "role": "worms_port_reviewer", "reviewer": "primary-agent-boundary-review", "decision": "pass" }
+  ],
+  "skipped_checks": [
+    "Physical Android and iOS coverage beyond the Samsung device: no release-testing environment was provided.",
+    "WP-014 visual-regression baselines, expanded device matrix, degraded-network matrix, and performance budgets are not yet available."
+  ],
+  "residual_risks": [
+    "Samsung Galaxy S22 testing confirmed Nimiq Pay does not expose the Fullscreen API, so native URL and system chrome remain outside web-content control.",
+    "Samsung Chrome full-screen entry currently locks landscape and the result scene lacks an exit toggle; both confirmed defects are assigned to WP-011C.",
+    "The client bundle remains approximately 1.403 MB minified and 387.19 kB gzip and retains the existing chunk-size warning."
+  ]
+}

@@ -25,7 +25,7 @@ test('built phone journey starts wallet-free live practice and accepts touch', a
 
   await page.locator('.pause-button').tap();
   await expect(ui).toHaveAttribute('data-paused', 'true');
-  await expect(page.getByText(/turn clock stopped/i)).toBeVisible();
+  await expect(page.locator('.combat-pause-sheet').getByText('Turn clock stopped', { exact: true })).toBeVisible();
   await page.locator('.pause-button').tap();
   await expect(ui).toHaveAttribute('data-paused', 'false');
 

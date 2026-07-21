@@ -9,6 +9,8 @@ import {
 import { CombatControls } from '../combat/controls';
 import type { CombatSceneArgs, SafeAreaInsets } from '../combat/contracts';
 import { createCombatFixture } from '../combat/fixture';
+import { canRequestFullscreen, toggleGameFullscreen } from '../combat/fullscreen';
+import { activeSidewaysMode } from '../lib/sideways';
 import { computeCombatLayout, type CombatLayout } from '../combat/layout';
 import {
     planCombatPresentation,
@@ -35,6 +37,7 @@ export default class CombatScene extends Phaser.Scene {
     private pendingCommand = false;
     private presenting = false;
     private transitioning = false;
+    private fullscreenUnavailable = false;
     private presentationEpoch = 0;
     private readonly unsubscribers: (() => void)[] = [];
 
@@ -44,6 +47,7 @@ export default class CombatScene extends Phaser.Scene {
         this.onViewportChange = this.onViewportChange.bind(this);
         this.onWindowBlur = this.onWindowBlur.bind(this);
         this.onVisibility = this.onVisibility.bind(this);
+        this.onFullscreenChange = this.onFullscreenChange.bind(this);
         this.shutdown = this.shutdown.bind(this);
     }
 
@@ -59,6 +63,7 @@ export default class CombatScene extends Phaser.Scene {
         this.pendingCommand = false;
         this.presenting = false;
         this.transitioning = false;
+        this.fullscreenUnavailable = false;
         this.presentationEpoch += 1;
     }
 
@@ -76,8 +81,13 @@ export default class CombatScene extends Phaser.Scene {
                 this.render();
             },
             onPauseChange: (paused) => void this.setPaused(paused),
-            onRetry: () => void this.retry()
+            onRetry: () => void this.retry(),
+            onFullscreenToggle: () => void this.toggleFullscreen()
         });
+        this.controls.setFullscreenState(
+            !activeSidewaysMode() && canRequestFullscreen(),
+            Boolean(document.fullscreenElement)
+        );
         if (this.args.previewLabel) {
             this.controls.root.dataset.preview = this.args.previewLabel;
             this.controls.setMessage(this.args.previewLabel);
@@ -89,6 +99,7 @@ export default class CombatScene extends Phaser.Scene {
         window.visualViewport?.addEventListener('scroll', this.onViewportChange);
         window.addEventListener('blur', this.onWindowBlur);
         document.addEventListener('visibilitychange', this.onVisibility);
+        document.addEventListener('fullscreenchange', this.onFullscreenChange);
         this.events.once(Phaser.Scenes.Events.SHUTDOWN, this.shutdown);
         if (this.args.onSnapshot) {
             this.unsubscribers.push(this.args.onSnapshot((snapshot) => this.acceptSnapshot(snapshot)));
@@ -278,6 +289,10 @@ export default class CombatScene extends Phaser.Scene {
 
     private onViewportChange(): void {
         this.controls.cancelTransient();
+        this.controls.setFullscreenState(
+            !activeSidewaysMode() && !this.fullscreenUnavailable && canRequestFullscreen(),
+            Boolean(document.fullscreenElement)
+        );
         window.requestAnimationFrame(() => {
             if (!this.scene.isActive()) return;
             const host = document.getElementById('game');
@@ -299,10 +314,35 @@ export default class CombatScene extends Phaser.Scene {
         if (document.hidden) this.controls.cancelTransient();
     }
 
+    private async toggleFullscreen(): Promise<void> {
+        const outcome = await toggleGameFullscreen();
+        if (outcome.status === 'unsupported') {
+            this.fullscreenUnavailable = true;
+            this.controls.setFullscreenState(false, false);
+            this.controls.setMessage('Full screen is not supported by this app host');
+        } else if (outcome.status === 'rejected') {
+            this.controls.setMessage('Full screen was blocked by this app host');
+        } else if (outcome.status === 'entered') {
+            this.controls.setMessage('Full screen active · use Exit full screen or Back to leave');
+        } else {
+            this.controls.setMessage('Full screen closed');
+        }
+        this.onFullscreenChange();
+    }
+
+    private onFullscreenChange(): void {
+        this.controls.setFullscreenState(
+            !activeSidewaysMode() && !this.fullscreenUnavailable && canRequestFullscreen(),
+            Boolean(document.fullscreenElement)
+        );
+        this.onViewportChange();
+    }
+
     private render(): void {
         if (!this.layout || !this.combatRenderer) return;
         this.controls.root.dataset.previewPoints = String(this.preview.length);
         this.controls.root.dataset.projectilePoints = String(this.projectileTrace.length);
+        this.controls.setUnitPositions(this.renderState.units);
         this.combatRenderer.render(
             this.renderState,
             this.layout,
@@ -319,6 +359,7 @@ export default class CombatScene extends Phaser.Scene {
         window.visualViewport?.removeEventListener('scroll', this.onViewportChange);
         window.removeEventListener('blur', this.onWindowBlur);
         document.removeEventListener('visibilitychange', this.onVisibility);
+        document.removeEventListener('fullscreenchange', this.onFullscreenChange);
         for (const unsubscribe of this.unsubscribers.splice(0)) unsubscribe();
         this.presentationEpoch += 1;
         this.snapshotQueue.splice(0);

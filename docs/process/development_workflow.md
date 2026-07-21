@@ -199,6 +199,80 @@ HUD, movement, aim, Relics, Fire, Pause, and Retry visible and non-overlapping
 when embedded browser chrome reduces the usable height. Resize, rotation, and
 visual-viewport changes cancel transient pointer ownership.
 
+### Embedded Full-screen And Sideways Presentation
+
+Landscape combat may offer a standard Fullscreen API request from an explicit
+player tap. Request `navigationUI: 'hide'`, but do not request an orientation
+lock. Never auto-enter full screen and never make Practice depend on it.
+Capability absence or rejection must preserve the compact `visualViewport`
+layout and provide truthful feedback.
+
+CSS, viewport metadata, and PWA display settings do not control Nimiq Pay's
+native URL ribbon or Android system bars. A physical Nimiq Pay device check is
+therefore the acceptance authority for WP-011B; if native chrome remains, record
+the host limitation and raise a Nimiq Pay feature request rather than adding an
+undocumented bridge or browser-specific spoof.
+
+WP-011B device acceptance established an additional supported-browser rule:
+full-screen entry must not lock landscape. Physical rotation must continue to
+select the existing portrait or landscape composition. Because document full
+screen survives Phaser scene transitions, every terminal result screen reached
+while it is active must expose a visible **Exit full screen** action; returning
+to default browser mode cannot depend on a combat-scene control that no longer
+exists. WP-011C owns these corrections.
+
+WP-011C introduced `sideways` as a host-compatibility mode. It is active only
+when the browser reports a portrait viewport and must use
+swapped logical game dimensions, rotate the complete game surface, remap
+safe-area edges, and inverse-map pointer coordinates. `sideways=1` and
+`sideways=right` rotate clockwise; `sideways=left` rotates counter-clockwise.
+If the browser becomes landscape, the transform must disengage immediately to
+avoid double rotation.
+
+WP-011D makes clockwise sideways the temporary default when no `sideways`
+query is present. `sideways=off` must retain the normal responsive composition
+for accessibility, diagnostics, other hosts, and future migration. Keep the
+default workaround clearly documented with its prerequisite (disable Android
+auto-rotate while portrait), alternate direction, opt-out, and removal trigger.
+Remove the default only after a documented Nimiq Pay full-screen game mode or
+reliable standard/native capability is verified to remove host chrome. Viewport
+orientation still does not reveal physical device attitude, and the web app
+must not claim it can change Android auto-rotate or Nimiq Pay chrome.
+
+### Arena-first Contextual Combat HUD
+
+WP-011E replaces permanently reserved status and control bands with a
+maximum-area 16:9 arena and predictable overlays. The battlefield consumes the
+mathematical maximum rectangle inside the safe `visualViewport`; no persistent
+HUD row or control column may reduce its renderer dimensions.
+
+The implementation target at the 844 by 390 Samsung acceptance viewport is at
+least 660 by 370 CSS pixels; the delivered candidate computes approximately
+665 by 374 compared with the prior approximately 534 by 301 arena.
+
+Keep only the turn/timer pill, actor-local exact Stitching bars, selected Relic,
+Pause, and the phase-relevant touch actions visible. Movement and aim use stable
+left/right activation zones with floating pad art at the touch origin. Fire
+stays a separate explicit button after aim lock. Relic selection expands from a
+single selected-Relic chip, and Retry belongs in the Pause sheet rather than the
+live-fire surface.
+
+Visibility follows presentation state: player decision exposes command inputs;
+aim lock emphasizes explicit Fire; player and Loomkeeper presentations fade and
+disable all command inputs; pause and reconnect use modal state; terminal state
+destroys the combat overlay in favor of the result scene. Controls may fade or
+expand at fixed anchors but must not jump between phases. Reduced motion removes
+the fade while retaining the same state sequence.
+
+This is a presentation and input-geometry change only. It must preserve current
+simulation commands, replay hashes, server authority, pointer cancellation,
+safe-area handling, full-screen behavior, all three sideways modes, at least
+48-pixel buttons, at least 96-pixel pad activation diameter, non-color-only
+state, and accessible exact values. The detailed wireframe, phase table, target
+metrics, implementation slices, and verification matrix live in
+`docs/planning/implementation_plan.md` under **WP-011E Arena-first Contextual
+Combat HUD**.
+
 ### Deterministic Artillery Ruleset
 
 WP-007 establishes `nimble-knots-artillery-v1` as a replay ABI. Later balance

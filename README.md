@@ -7,6 +7,39 @@ opponent, with an optional fixed sponsor-funded NIM reward for eligible wins.
 The `Worms_Port` repository was bootstrapped from the MIT
 `TurtlePU/worms-ii` code base and retains that provenance.
 
+## Temporary Nimiq Pay Display Workaround
+
+**Current default:** a portrait browser viewport renders the complete game as
+a clockwise-rotated landscape composition. Before opening the mini app, disable
+Android auto-rotate while the phone is portrait; then hold the phone with its
+top/earpiece on the left. The ordinary Render URL needs no query parameter. The
+Practice start card repeats this setup before the player starts a Clash.
+
+This WP-011D policy is a host workaround, not the intended permanent display
+architecture. Nimiq Pay currently keeps its native URL ribbon and Android
+system bars, does not expose the standard Fullscreen API to the mini app, and
+can preserve a portrait WebView when Android auto-rotate is disabled. The game
+uses that stable portrait viewport sideways so substantially more of the
+landscape battlefield and controls remain usable.
+
+Controls and escape hatches:
+
+- default or `?sideways=1` / `?sideways=right`: rotate content clockwise; hold
+  the phone with its top on the left,
+- `?sideways=left`: rotate content counter-clockwise; hold the phone with its
+  top on the right,
+- `?sideways=off`: use the maintained normal portrait/landscape responsive
+  composition, and
+- if the host actually reports a landscape viewport, virtual rotation switches
+  off automatically to prevent a double rotation.
+
+Revisit and remove the default workaround once Nimiq Pay provides a documented
+full-screen game mode or exposes a reliable standard/native full-screen
+capability that removes its host chrome. Do not replace this policy with an
+undocumented bridge. The canonical implementation status and removal condition
+are also recorded in the Execution Pointer of
+`docs/planning/implementation_plan.md`.
+
 ## Import Boundary
 
 - `TurtlePU/worms-ii` is the approved base code source. Its MIT notice is
@@ -143,9 +176,34 @@ Touch movement converts drag strength into one to four existing authoritative
 movement commands, visibly animates each accepted displacement, and clears the
 old aim so the player must deliberately aim again. Advisory trajectories clear
 on Fire, movement, turn changes, disconnect, result, and challenge replacement.
-The combat shell follows the usable `visualViewport`; compact landscape places
-movement and aim beside a two-row action area so browser chrome does not force
-the control groups to overlap.
+The combat shell follows the usable `visualViewport` and gives the fixed 16:9
+arena the mathematical maximum safe rectangle. Turn time is a compact top pill,
+exact Stitching bars follow their Knotkin, movement and aim are floating thumb
+pads, and the selected Relic expands into a temporary chooser. Controls keep
+stable anchors but fade while player input is not legal. Fire remains a separate
+tap after aim lock, while Retry and the combat full-screen action live in the
+Pause sheet.
+
+In landscape, capable browsers also expose a user-activated **Full screen**
+action inside the Pause sheet. It requests the standard Fullscreen API with
+hidden navigation UI but does not lock orientation. The action is omitted when
+the browser reports no support, and rejection leaves the embedded layout
+usable. A matching toggle remains available on the result screen while full
+screen is active, so the player can always return to the browser. Web content
+cannot guarantee
+removal of Nimiq Pay's native URL ribbon or Android system bars; the host must
+implement and permit full-screen WebView presentation for those surfaces to
+disappear.
+
+Samsung Galaxy S22 acceptance confirmed that full screen works in Samsung
+Chrome but that Nimiq Pay does not expose the Fullscreen API. WP-011C removes
+the forced landscape lock and adds the result-screen toggle.
+
+WP-011C introduced the sideways composition and WP-011D makes its clockwise
+form the temporary default. The browser viewport remains portrait, while the
+game renders a landscape-sized scene rotated inside it and maps touch
+coordinates back into that logical scene. The opt-out and host-removal
+condition are documented in **Temporary Nimiq Pay Display Workaround** above.
 
 ## Phone Combat Fixture
 
@@ -207,7 +265,7 @@ exact-file approval, and manifest entries before runtime use.
 
 The active release target is phone-only play inside Nimiq Pay:
 
-- portrait-first and landscape-capable touch controls,
+- virtual-landscape-by-default phone controls with a maintained portrait opt-out,
 - instant practice without matchmaking or a wallet prompt,
 - a deterministic single-player Daily Grand Knot Challenge,
 - server-authoritative rewarded matches and replay-safe claims,

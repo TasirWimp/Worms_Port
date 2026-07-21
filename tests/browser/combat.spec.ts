@@ -7,7 +7,7 @@ test.beforeEach(async ({ page }) => {
   page.on('console', (message) => {
     if (message.type() === 'error') consoleErrors.push(message.text());
   });
-  await page.goto('/?combat-preview=1');
+  await page.goto('/?combat-preview=1&sideways=off');
   await expect(page.locator('.combat-ui')).toBeVisible();
   await expect.poll(() => pageErrors).toEqual([]);
   await expect.poll(() => consoleErrors).toEqual([]);
@@ -19,11 +19,29 @@ test('portrait/landscape layout is touch-safe and renders deterministic combat',
   await expect(ui).toHaveAttribute('data-orientation', viewport.width > viewport.height ? 'landscape' : 'portrait');
   await expect(ui).toHaveAttribute('data-selected-relic', 'threadball');
   await expect(page.getByText('Your turn')).toBeVisible();
+  await expect(page.locator('.player-status')).toHaveAttribute('aria-label', /Player Stitching 100/);
+  await expect(page.locator('.loomkeeper-status')).toHaveAttribute('aria-label', /Loomkeeper Stitching 100/);
+  if (viewport.width === 844 && viewport.height === 390) {
+    expect(Number(await ui.getAttribute('data-battlefield-width'))).toBeGreaterThanOrEqual(660);
+    expect(Number(await ui.getAttribute('data-battlefield-height'))).toBeGreaterThanOrEqual(370);
+  }
 
   const canvas = page.locator('#game canvas');
   await expect(canvas).toBeVisible();
   expect((await canvas.screenshot()).byteLength).toBeGreaterThan(2_000);
   await expect(page.locator('.screen-shell')).toHaveCount(0);
+  const fullscreenButton = page.locator('.combat-fullscreen-button');
+  const fullscreenAvailable = await page.evaluate(() =>
+    document.fullscreenEnabled &&
+    typeof document.documentElement.requestFullscreen === 'function' &&
+    typeof document.exitFullscreen === 'function'
+  );
+  if (viewport.width > viewport.height && fullscreenAvailable) {
+    await expect(ui).toHaveAttribute('data-fullscreen-available', 'true');
+    await expect(fullscreenButton).toBeHidden();
+  } else {
+    await expect(fullscreenButton).toBeHidden();
+  }
 
   const boxes = await Promise.all([
     page.locator('.movement-zone').boundingBox(),
@@ -43,7 +61,7 @@ test('portrait/landscape layout is touch-safe and renders deterministic combat',
   expect(overlaps(boxes[0]!, boxes[2]!)).toBe(false);
   expect(overlaps(boxes[1]!, boxes[2]!)).toBe(false);
 
-  for (const button of await page.locator('.combat-actions button').all()) {
+  for (const button of await page.locator('.combat-actions button:visible').all()) {
     const box = await button.boundingBox();
     expect(box!.width).toBeGreaterThanOrEqual(48);
     expect(box!.height).toBeGreaterThanOrEqual(48);
@@ -58,6 +76,107 @@ test('portrait/landscape layout is touch-safe and renders deterministic combat',
   await page.screenshot({ path: testInfo.outputPath('wp-010-combat.png') });
 });
 
+test('landscape offers a user-activated full-screen probe with a safe exit', async ({ page }, testInfo) => {
+  test.skip(testInfo.project.name !== 'chromium-844x390', 'Landscape capability probe');
+
+  await page.evaluate(() => {
+    let active: Element | null = null;
+    Object.defineProperty(document, 'fullscreenEnabled', { configurable: true, get: () => true });
+    Object.defineProperty(document, 'fullscreenElement', { configurable: true, get: () => active });
+    Object.defineProperty(document.documentElement, 'requestFullscreen', {
+      configurable: true,
+      value: async (options?: FullscreenOptions) => {
+        (window as Window & { __fullscreenNavigationUi?: string }).__fullscreenNavigationUi =
+          options?.navigationUI;
+        active = document.documentElement;
+        document.dispatchEvent(new Event('fullscreenchange'));
+      }
+    });
+    Object.defineProperty(document, 'exitFullscreen', {
+      configurable: true,
+      value: async () => {
+        active = null;
+        document.dispatchEvent(new Event('fullscreenchange'));
+      }
+    });
+    document.dispatchEvent(new Event('fullscreenchange'));
+  });
+
+  await page.locator('.pause-button').tap();
+  await expect(page.locator('.combat-pause-sheet')).toBeVisible();
+  const button = page.getByRole('button', { name: 'Enter full screen' });
+  await expect(button).toBeVisible();
+  await button.tap();
+  await expect(page.locator('.combat-ui')).toHaveAttribute('data-fullscreen', 'true');
+  await expect(page.getByRole('button', { name: 'Exit full screen' })).toBeVisible();
+  expect(await page.evaluate(() =>
+    (window as Window & { __fullscreenNavigationUi?: string }).__fullscreenNavigationUi
+  )).toBe('hide');
+
+  await page.setViewportSize({ width: 390, height: 844 });
+  await expect(page.locator('.combat-ui')).toHaveAttribute('data-orientation', 'portrait');
+  await expect(page.getByRole('button', { name: 'Exit full screen' })).toBeVisible();
+  await page.setViewportSize({ width: 844, height: 390 });
+  await expect(page.locator('.combat-ui')).toHaveAttribute('data-orientation', 'landscape');
+
+  await page.getByRole('button', { name: 'Exit full screen' }).tap();
+  await expect(page.locator('.combat-ui')).toHaveAttribute('data-fullscreen', 'false');
+
+  await page.evaluate(() => {
+    Object.defineProperty(document.documentElement, 'requestFullscreen', {
+      configurable: true,
+      value: async () => { throw new DOMException('Host declined', 'NotSupportedError'); }
+    });
+  });
+  await button.tap();
+  await expect(button).toBeHidden();
+  await expect(page.getByText('Full screen is not supported by this app host')).toBeVisible();
+});
+
+test('default sideways mode creates touch-safe landscape in a portrait viewport', async ({ page }, testInfo) => {
+  test.skip(testInfo.project.name !== 'chromium-390x844', 'One portrait viewport is sufficient.');
+  await page.goto('/?combat-preview=1');
+  const ui = page.locator('.combat-ui');
+  await expect(ui).toBeVisible();
+  await expect(page.locator('html')).toHaveAttribute('data-sideways', 'right');
+  await expect(page.locator('#game')).toHaveAttribute('data-sideways', 'right');
+  await expect(ui).toHaveAttribute('data-orientation', 'landscape');
+  await expect(page.locator('.combat-fullscreen-button')).toBeHidden();
+  expect(await page.locator('#game').evaluate((element) => ({
+    width: element.clientWidth,
+    height: element.clientHeight
+  }))).toEqual({ width: 844, height: 390 });
+  await assertControlsFit(page);
+
+  const startX = Number(await ui.getAttribute('data-player-x'));
+  await dragPad(page, '.movement-zone', 80, 0, 0.36);
+  await expect.poll(async () => Number(await ui.getAttribute('data-player-x'))).toBeGreaterThan(startX);
+  await selectRelic(page, 'Needlepoint');
+  await expect(ui).toHaveAttribute('data-selected-relic', 'needlepoint');
+  await dragPad(page, '.aim-zone', 81, 0.34, 0.3);
+  await expect(ui).toHaveAttribute('data-phase', 'aim_locked');
+  await expect(page.locator('.fire-button')).toBeEnabled();
+  await page.screenshot({ path: testInfo.outputPath('wp-011d-sideways-default.png') });
+
+  await page.setViewportSize({ width: 844, height: 390 });
+  await expect(page.locator('html')).not.toHaveAttribute('data-sideways', /.+/);
+  await expect(ui).toHaveAttribute('data-orientation', 'landscape');
+  expect(await page.locator('#game').evaluate((element) => ({
+    width: element.clientWidth,
+    height: element.clientHeight
+  }))).toEqual({ width: 844, height: 390 });
+  await page.setViewportSize({ width: 390, height: 844 });
+  await page.goto('/?combat-preview=1&sideways=left');
+  await expect(page.locator('html')).toHaveAttribute('data-sideways', 'left');
+  await expect(page.locator('.combat-ui')).toHaveAttribute('data-orientation', 'landscape');
+  await assertControlsFit(page);
+  const leftStartX = Number(await page.locator('.combat-ui').getAttribute('data-player-x'));
+  await dragPad(page, '.movement-zone', 82, 0, -0.36);
+  await expect.poll(async () =>
+    Number(await page.locator('.combat-ui').getAttribute('data-player-x'))
+  ).toBeGreaterThan(leftStartX);
+});
+
 test('touch movement, Relic selection, aim lock, and explicit Fire stay separate', async ({ page }) => {
   const startX = Number(await page.locator('.combat-ui').getAttribute('data-player-x'));
   await dragPad(page, '.movement-zone', 1, 0.36, 0);
@@ -68,7 +187,7 @@ test('touch movement, Relic selection, aim lock, and explicit Fire stay separate
   await expect(page.locator('.combat-ui')).toHaveAttribute('data-presenting', 'false');
   await expect(page.locator('.combat-ui')).toHaveAttribute('data-preview-points', '0');
 
-  await page.getByRole('button', { name: 'Select Needlepoint' }).tap();
+  await selectRelic(page, 'Needlepoint');
   await expect(page.locator('.combat-ui')).toHaveAttribute('data-selected-relic', 'needlepoint');
 
   await dragPad(page, '.aim-zone', 2, 0.3, -0.34);
@@ -79,6 +198,8 @@ test('touch movement, Relic selection, aim lock, and explicit Fire stay separate
   )).toBeGreaterThan(1);
   await expect(page.locator('.fire-button')).toBeEnabled();
   await expect(page.locator('.combat-ui')).not.toHaveAttribute('data-last-command', 'fire');
+  const actionAnchor = await page.locator('.combat-actions').boundingBox();
+  const aimAnchor = await page.locator('.aim-zone').boundingBox();
 
   await dragPad(page, '.movement-zone', 3, -0.36, 0);
   await expect(page.locator('.combat-ui')).toHaveAttribute('data-presenting', 'false');
@@ -91,6 +212,12 @@ test('touch movement, Relic selection, aim lock, and explicit Fire stay separate
   await installPresentationRecorder(page);
   await page.locator('.fire-button').tap();
   await expect(page.locator('.combat-ui')).toHaveAttribute('data-last-command', 'fire');
+  await expect(page.locator('.combat-ui')).toHaveAttribute('data-presenting', 'true');
+  await expect.poll(() => page.locator('.combat-actions').evaluate((element) =>
+    Number.parseFloat(getComputedStyle(element).opacity)
+  )).toBeLessThan(0.05);
+  expect(await page.locator('.combat-actions').boundingBox()).toEqual(actionAnchor);
+  expect(await page.locator('.aim-zone').boundingBox()).toEqual(aimAnchor);
   await expect(page.locator('.combat-ui')).toHaveAttribute('data-active-actor', 'loomkeeper');
   await expect(page.locator('.combat-ui')).toHaveAttribute('data-presenting', 'false');
   await expect(page.locator('.combat-ui')).toHaveAttribute('data-preview-points', '0');
@@ -100,6 +227,37 @@ test('touch movement, Relic selection, aim lock, and explicit Fire stay separate
     'player-projectile', 'player-impact'
   ]));
   expect(presentation.maximumProjectilePoints).toBeGreaterThan(1);
+});
+
+test('floating pads appear at the active thumb and Relics expand in place', async ({ page }) => {
+  const zone = page.locator('.movement-zone');
+  const box = await zone.boundingBox();
+  expect(box).not.toBeNull();
+  await pointer(page, '.movement-zone', 'pointerdown', 70, 0.28, 0.36);
+  await expect(zone).toHaveClass(/is-active/);
+  const origin = await zone.evaluate((element) => ({
+    x: Number.parseFloat(element.style.getPropertyValue('--pad-x')),
+    y: Number.parseFloat(element.style.getPropertyValue('--pad-y'))
+  }));
+  expect(origin.x).toBeCloseTo(box!.width * 0.28, 0);
+  expect(origin.y).toBeCloseTo(box!.height * 0.36, 0);
+  await pointer(page, '.movement-zone', 'pointercancel', 70, 0.28, 0.36);
+  await expect(zone).not.toHaveClass(/is-active/);
+
+  const trigger = page.locator('.relic-trigger');
+  await expect(trigger).toHaveAttribute('aria-expanded', 'false');
+  await trigger.tap();
+  await expect(trigger).toHaveAttribute('aria-expanded', 'true');
+  await expect(page.locator('.relic-chooser')).toBeVisible();
+  for (const button of await page.locator('.relic-chooser button').all()) {
+    const relicBox = await button.boundingBox();
+    expect(relicBox).not.toBeNull();
+    expect(relicBox!.width).toBeGreaterThanOrEqual(48);
+    expect(relicBox!.height).toBeGreaterThanOrEqual(48);
+  }
+  await page.getByRole('button', { name: 'Select Spoolburst' }).tap();
+  await expect(page.locator('.combat-ui')).toHaveAttribute('data-selected-relic', 'spoolburst');
+  await expect(page.locator('.relic-chooser')).toBeHidden();
 });
 
 test('compact landscape visual viewport keeps every control visible and separate', async ({ page }, testInfo) => {
@@ -126,12 +284,14 @@ test('pointer transfer, cancellation, release outside, pause, and retry fail saf
 
   await page.locator('.pause-button').tap();
   await expect(page.locator('.combat-ui')).toHaveAttribute('data-paused', 'true');
-  await expect(page.getByText(/turn clock stopped/i)).toBeVisible();
+  await expect(page.locator('.combat-pause-sheet').getByText('Turn clock stopped', { exact: true })).toBeVisible();
   await expect(page.locator('.movement-zone')).toHaveAttribute('aria-disabled', 'true');
   await page.locator('.pause-button').tap();
   await expect(page.locator('.combat-ui')).toHaveAttribute('data-paused', 'false');
 
   const turn = await page.locator('.combat-ui').getAttribute('data-turn');
+  await page.locator('.pause-button').tap();
+  await expect(page.locator('.combat-pause-sheet')).toBeVisible();
   await page.locator('.retry-button').tap();
   await expect(page.getByText(/Fresh Practice Clash started/i)).toBeVisible();
   await expect(page.locator('.combat-ui')).toHaveAttribute('data-turn', turn!);
@@ -234,12 +394,18 @@ async function assertControlsFit(page: Page): Promise<void> {
   expect(overlaps(boxes[0]!, boxes[1]!)).toBe(false);
   expect(overlaps(boxes[0]!, boxes[2]!)).toBe(false);
   expect(overlaps(boxes[1]!, boxes[2]!)).toBe(false);
-  for (const button of await page.locator('.combat-actions button').all()) {
+  for (const button of await page.locator('.combat-actions button:visible').all()) {
     const box = await button.boundingBox();
     expect(box).not.toBeNull();
     expect(box!.x + box!.width).toBeLessThanOrEqual(viewport.width + 1);
     expect(box!.y + box!.height).toBeLessThanOrEqual(viewport.height + 1);
   }
+}
+
+async function selectRelic(page: Page, name: 'Threadball' | 'Needlepoint' | 'Spoolburst'): Promise<void> {
+  await page.locator('.relic-trigger').tap();
+  await expect(page.locator('.relic-chooser')).toBeVisible();
+  await page.getByRole('button', { name: `Select ${name}` }).tap();
 }
 
 async function installPresentationRecorder(page: Page): Promise<void> {
