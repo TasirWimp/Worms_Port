@@ -636,7 +636,8 @@ and relevant behavioral tests.
 
 ## Nimiq Developer Capability Readiness
 
-Checked 2026-07-12 against the official Nimiq Developer Center:
+Checked 2026-07-21 against the official Nimiq Developer Center, published npm
+metadata, and the SDK source package:
 
 - Install the official Mini Apps Agent Skill with
   `npx skills add nimiq/developer-center --skill mini-apps`; see
@@ -646,13 +647,36 @@ Checked 2026-07-12 against the official Nimiq Developer Center:
 - Mini Apps run inside the Nimiq Pay WebView. The documented Nimiq provider
   entry point is `init()` from `@nimiq/mini-app-sdk`; see
   `https://nimiq.dev/mini-apps/`.
+- The current reviewed package is pre-1.0 `@nimiq/mini-app-sdk` `0.1.0`, declares
+  MIT, and points to `nimiq/trust-web3-provider` branch `nimiq`, directory
+  `packages/mini-app-sdk`. WP-012 must pin the exact reviewed version and rerun
+  package-license and audit gates rather than accepting an automatic range.
+- The documented Nimiq flow uses `listAccounts()` and `sign()`. Signing returns
+  hex `publicKey` and `signature`, so server authorization must verify both the
+  signature and public-key-to-address relationship against a server-issued
+  canonical challenge.
+- Host language is available through the SDK helper or
+  `window.nimiqPay?.language`. The optional device identifier requires a reason
+  and consent on first use, is scoped to the mini-app origin, identifies a
+  device rather than a user, and is never an authentication credential.
 
 The repository does not vendor the skill, configure the MCP, or depend on the
-SDK. This Codex session also exposes no Nimiq-specific skill or MCP tool. That
-does not block WP-005 browser foundations. Before WP-012, re-check the official
-docs, review and pin the SDK, then install the official skill or configure the
-official documentation MCP. Nimiq Pay allowlisting and physical WebView testing
-remain external-environment checks.
+SDK yet. This Codex session also exposes no Nimiq-specific skill or MCP tool.
+The WP-012 planning review therefore used the official primary documentation,
+repository, and npm metadata directly. At implementation start, re-check those
+sources, pin the reviewed SDK, and use the official skill or documentation MCP
+if available. Nimiq Pay allowlisting and physical WebView testing remain
+external-environment checks.
+
+WP-012 provider access is lazy and explicit. Application boot and Start
+Practice must never wait for `init()`. WP-012 uses a query-gated identity
+acceptance surface; WP-013 owns the production rewarded-challenge identity
+entry. No wallet action belongs in the combat HUD, Pause sheet, or an active
+turn. Cancel all owned pointers before native approval and resynchronize the
+visual viewport, full-screen, and sideways state when it settles. A future
+feature that truly requires an in-match wallet dialog must separately specify
+authoritative interruption semantics; it cannot inherit Practice pause behavior
+implicitly.
 
 ## Mobile Touch Reference Protocol
 

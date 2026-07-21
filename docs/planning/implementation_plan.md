@@ -10,6 +10,11 @@ Phaser/Socket.IO stack.
 - Active target: mobile-first single-player Nimiq Pay competition release.
 - Next work package: **WP-012 Nimiq Pay Identity Adapter**.
 - Last completed work package: **WP-011E Arena-first Contextual Combat HUD**.
+- WP-012 was refined against the official Nimiq Mini App documentation and
+  published `@nimiq/mini-app-sdk` `0.1.0` contract on 2026-07-21. Preserve the
+  accepted Practice/HUD journey: provider access is lazy, identity acceptance
+  is query-gated until WP-013 adds the rewarded-match entry, and Practice never
+  depends on Nimiq Pay.
 - PvP and matchmaking: deferred until after the competition release.
 - Canonical artwork reference:
   `docs/images/art-direction/knotkin-class-lineup-concept.png`.
@@ -103,7 +108,8 @@ guardrails for this selected host.
   turn presentation, trajectory lifecycle, and landscape layout regressions.
   WP-011A implemented the stabilization candidate, passed its automated gates,
   and passed the user-run Samsung Galaxy S22 Nimiq Pay portrait/landscape
-  acceptance re-test. WP-012 may now start.
+  acceptance re-test. WP-012 may now start under its refined WP-011E
+  integration boundary.
 - WP-011B adds a standards-based, user-activated full-screen probe for compact
   landscape. Samsung Galaxy S22 acceptance confirmed that it works in Chrome,
   while Nimiq Pay does not expose the required API and correctly retains the
@@ -1160,18 +1166,116 @@ WP-011E; physical coverage beyond that Samsung device remains a release risk.
 
 ### WP-012 Nimiq Pay Identity Adapter
 
-Status: planned. Depends on WP-006 and WP-011A. The optional WP-011B host probe
-may complete independently.
+Status: refined and ready for implementation. Depends on WP-006's validated
+session protocol and the accepted WP-011E client baseline. WP-011B through
+WP-011D remain presentation constraints rather than identity authority.
 
 Goal: isolate the official Mini App SDK behind an adapter for initialization,
 language, wallet account selection, signed challenges, rejection, timeout, and
 optional consent-based device identity. Practice cannot depend on the provider.
 
-Owning roles: `worms_port_network_worker`, `worms_port_compliance_keeper`,
-`worms_port_test_worker`.
+Official integration baseline, reviewed 2026-07-21:
 
-Verification: fake-provider approve/reject/timeout tests, nonce expiry, wrong
-address/network, replay rejection, package audit, compliance, build.
+- pin the pre-1.0 `@nimiq/mini-app-sdk` package at the reviewed exact version
+  `0.1.0`; its npm metadata declares MIT and points to
+  `nimiq/trust-web3-provider` branch `nimiq`, directory
+  `packages/mini-app-sdk`,
+- use `init({ timeout })` only behind the adapter and only after an explicit
+  identity action; do not wait for provider injection during application boot,
+- use `listAccounts()` for consent-based account selection and `sign()` for
+  the canonical server challenge; the documented signing result contains hex
+  `publicKey` and `signature` values,
+- read host language through the SDK helper or `window.nimiqPay?.language`,
+  then fall back to the device language and English without turning WP-012 into
+  a full localization package, and
+- expose `requestDeviceIdentifier({ reason })` only as a separate optional
+  consent action. It identifies an origin-scoped device, not a wallet user, and
+  must never authenticate a session.
+
+Adapter and product boundary:
+
+- define a small application-owned interface with explicit `unavailable`,
+  `initializing`, `ready`, `awaiting_approval`, `authorized`, `rejected`,
+  `timed_out`, and `failed` outcomes; SDK/provider errors must not leak through
+  as product control flow,
+- standalone browsers and Nimiq Pay instances without an injected provider
+  must return a bounded unavailable result while Start Practice continues to
+  work unchanged,
+- do not add wallet controls to the combat HUD, Pause sheet, or result actions,
+  and do not trigger native approval while a Practice or rewarded turn is
+  active,
+- keep the production Practice entry visually and behaviorally unchanged;
+  provide a query-gated same-origin identity acceptance surface for fake and
+  physical Nimiq Pay provider testing, then let WP-013 own the production Daily
+  Challenge identity call to action, and
+- before and after any native approval request, cancel owned pointers and
+  resynchronize `visualViewport`, full-screen, and sideways presentation state
+  so returning from Nimiq Pay cannot continue a stale movement or shot.
+
+Authorization protocol:
+
+1. Add a strict authorization-begin request. The server creates an opaque
+   authorization ID and random nonce, stores only bounded pending state, and
+   returns one canonical UTF-8 message to sign.
+2. Bind that message to a schema/version tag, purpose, configured public
+   origin/audience, configured Nimiq network, selected normalized address,
+   authorization ID, nonce, issue time, expiry, and the current connection or
+   anonymous session attempt. The client cannot supply or rewrite the message
+   accepted by the verifier.
+3. Complete authorization with only the authorization ID, normalized address,
+   public key, and signature. Extend or replace the reserved
+   `SignedSessionProofSchema`; the current address/challenge/signature shape is
+   not sufficient for the SDK result or a server-issued challenge flow.
+4. Verify the canonical stored message with a reviewed, pinned Nimiq
+   verification primitive; prove that the public key derives the selected
+   address, and reject wrong signature, address, purpose, origin/audience,
+   network domain, expiry, or connection binding.
+5. Consume an authorization ID exactly once. Bound outstanding attempts per
+   connection and address, rate-limit begin/complete calls, expire and sweep
+   abandoned attempts, and make simultaneous or replayed completion fail
+   closed. A Render restart may invalidate a pending authorization but cannot
+   create an authorized session.
+6. On success, issue the existing opaque server session token and bind the
+   verified wallet identity to server-side session state. Never store a private
+   key, raw device identifier, or reusable signed challenge in the browser
+   session token.
+
+The configured Nimiq network is a server authorization domain, not a value the
+current Nimiq provider reports. “Wrong network” tests therefore mutate the
+canonical signed domain or server configuration; WP-012 must not invent an
+undocumented provider network API.
+
+Non-goals: rewarded-match eligibility or reservation, claims, payouts or any
+NIM transaction, production Daily Challenge UI, leaderboard behavior, using a
+device ID as authentication, full localization, durable multi-instance
+authorization state, PvP, or changes to simulation/gameplay authority. Real
+fund movement remains blocked.
+
+Owning roles: `worms_port_network_worker`, `worms_port_compliance_keeper`,
+`worms_port_test_worker`, and `worms_port_reviewer`.
+
+Verification:
+
+- adapter unit tests for delayed injection, standalone unavailability,
+  approval, rejection, timeout, malformed provider results, account selection,
+  host-language fallback, and optional device-identifier consent/error paths,
+- protocol tests for nonce uniqueness and expiry, malformed payloads, wrong
+  signature/public key/address/purpose/origin/network/binding, replay,
+  simultaneous completion, rate limits, disconnect, sweep, and session-token
+  issuance only after successful verification,
+- Chromium/WebKit browser coverage proving default Practice never initializes
+  or waits for the provider, plus a fake-provider identity acceptance route
+  that preserves sideways/viewport state and clears stale input across the
+  approval boundary,
+- user-run Samsung Galaxy S22 Nimiq Pay acceptance for provider discovery,
+  account approval, signing approval and rejection, returning from the native
+  dialog, and continued wallet-free Practice; record allowlisting or host
+  limitations separately,
+- exact dependency pin and license review, `npm audit`, compliance, types,
+  focused protocol/identity/browser tests, clean build, built-server smoke, and
+  browser smoke, and
+- read-only security review before merge. Keep real transactions and sponsor
+  funds disabled and untested in this package.
 
 ### WP-013 Sponsored Daily Challenge
 
@@ -1317,7 +1421,7 @@ it does not block completion of the documented autonomous cycle.
 ```text
 WP-005 -> WP-006 -> WP-007 -> WP-008 -> WP-009 -> WP-010 -> WP-011 -> WP-011A
 WP-011A -> WP-011B -> WP-011C -> WP-011D -> WP-011E (presentation path)
-WP-011A -> WP-012 -> WP-013 -> WP-014
+WP-011E -> WP-012 -> WP-013 -> WP-014
 WP-010 + WP-014 ------------------------------------------------------------> WP-015
 WP-013 + WP-015 ------------------------------------------------------------> WP-016 -> WP-017
 ```
@@ -1328,6 +1432,8 @@ WP-011C stabilizes the supported-browser path and proves the Nimiq Pay sideways
 fallback. WP-011D makes that fallback the documented temporary default until
 the host supplies full-screen game presentation. WP-011E then maximizes the
 arena and makes its HUD phase-contextual without changing game authority.
+WP-012 inherits that accepted client baseline but keeps identity outside the
+default Practice journey; WP-013 is the first production reward entry point.
 WP-014 is the automated competition-candidate gate. WP-017 is the
 submission-ready repository and deployment.
 
