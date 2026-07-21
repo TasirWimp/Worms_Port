@@ -13,11 +13,6 @@ type FullscreenDocument = {
     exitFullscreen?: () => Promise<void>;
 };
 
-type OrientationController = {
-    lock?: (orientation: 'landscape') => Promise<void>;
-    unlock?: () => void;
-};
-
 export function canRequestFullscreen(doc: FullscreenDocument = document): boolean {
     return doc.fullscreenEnabled &&
         typeof doc.documentElement.requestFullscreen === 'function' &&
@@ -25,20 +20,17 @@ export function canRequestFullscreen(doc: FullscreenDocument = document): boolea
 }
 
 export async function toggleGameFullscreen(
-    doc: FullscreenDocument = document,
-    orientation: OrientationController = screen.orientation as OrientationController
+    doc: FullscreenDocument = document
 ): Promise<FullscreenOutcome> {
     if (!canRequestFullscreen(doc)) return { status: 'unsupported' };
 
     try {
         if (doc.fullscreenElement) {
             await doc.exitFullscreen!();
-            try { orientation.unlock?.(); } catch {}
             return { status: 'exited' };
         }
 
         await doc.documentElement.requestFullscreen!({ navigationUI: 'hide' });
-        try { await orientation.lock?.('landscape'); } catch {}
         return { status: 'entered' };
     } catch (error) {
         const name = error instanceof DOMException ? error.name : '';

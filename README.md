@@ -148,18 +148,30 @@ movement and aim beside a two-row action area so browser chrome does not force
 the control groups to overlap.
 
 In landscape, capable browsers also expose a user-activated **Full screen** HUD
-action. It requests the standard Fullscreen API with hidden navigation UI and
-then makes a best-effort landscape orientation lock. The action is omitted when
-the browser reports no support, and rejection leaves the compact embedded
-layout usable. Web content cannot guarantee removal of Nimiq Pay's native URL
-ribbon or Android system bars; the host must implement and permit full-screen
-WebView presentation for those surfaces to disappear.
+action. It requests the standard Fullscreen API with hidden navigation UI but
+does not lock orientation. The action is omitted when the browser reports no
+support, and rejection leaves the compact embedded layout usable. A matching
+toggle remains available on the result screen while full screen is active, so
+the player can always return to the browser. Web content cannot guarantee
+removal of Nimiq Pay's native URL ribbon or Android system bars; the host must
+implement and permit full-screen WebView presentation for those surfaces to
+disappear.
 
-Samsung Galaxy S22 acceptance confirmed that this works in Samsung Chrome but
-that Nimiq Pay does not expose the Fullscreen API. WP-011C tracks two Chrome
-follow-ups: remove the forced landscape lock so full-screen play can rotate to
-portrait, and keep a full-screen/default-mode toggle available on the result
-screen.
+Samsung Galaxy S22 acceptance confirmed that full screen works in Samsung
+Chrome but that Nimiq Pay does not expose the Fullscreen API. WP-011C removes
+the forced landscape lock and adds the result-screen toggle.
+
+WP-011C also provides an opt-in sideways composition for the Nimiq Pay host.
+With Android auto-rotate disabled while the phone is in portrait, open the app
+with `?sideways=1` (equivalent to `?sideways=right`). That rotates the content
+clockwise; hold the phone with its top/earpiece on the left. Use
+`?sideways=left` and hold the phone with its top/earpiece on the right for the
+opposite direction. The browser viewport remains portrait, while the game
+renders a landscape-sized scene rotated inside it and maps touch coordinates
+back into that logical scene. If the host actually rotates its viewport to
+landscape, the sideways transform automatically disengages to avoid rotating
+twice. This is a query-controlled compatibility mode, not an attempt to change
+the device's rotation setting or hide native host chrome.
 
 ## Phone Combat Fixture
 

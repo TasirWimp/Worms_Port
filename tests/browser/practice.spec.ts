@@ -88,6 +88,22 @@ test('calling controls and live combat actions remain phone-safe', async ({ page
   }
 });
 
+test('sideways mode carries the live practice journey into virtual landscape', async ({ page }, testInfo) => {
+  test.skip(testInfo.project.name !== 'chromium-390x844', 'One portrait viewport is sufficient.');
+  await page.goto('/?sideways=right');
+  await expect(page.getByRole('heading', { name: 'Practice Clash' })).toBeVisible();
+  await expect(page.locator('html')).toHaveAttribute('data-sideways', 'right');
+  await page.getByRole('button', { name: 'Start Practice' }).tap();
+  const ui = page.locator('.combat-ui');
+  await expect(ui).toBeVisible();
+  await expect(ui).toHaveAttribute('data-orientation', 'landscape');
+  await assertControlsFit(page);
+
+  const startX = Number(await ui.getAttribute('data-player-x'));
+  await dragPad(page, '.movement-zone', 61, 0, 0.36);
+  await expect.poll(async () => Number(await ui.getAttribute('data-player-x'))).toBeGreaterThan(startX);
+});
+
 test('two consecutive completed Clashes each show a result and use fresh authority', async ({ page }, testInfo) => {
   test.setTimeout(120_000);
   test.skip(testInfo.project.name !== 'chromium-390x844', 'One deterministic live journey is sufficient.');
@@ -111,6 +127,28 @@ test('two consecutive completed Clashes each show a result and use fresh authori
   await expect(page.locator('.result-shell')).toBeVisible();
   await expect(page.getByRole('button', { name: 'Play Again' })).toBeVisible();
   await expect(page.getByRole('button', { name: 'Change Calling' })).toBeVisible();
+});
+
+test('a full-screen match retains an exit toggle on the result screen', async ({ page }, testInfo) => {
+  test.setTimeout(90_000);
+  test.skip(testInfo.project.name !== 'chromium-844x390', 'One landscape journey is sufficient.');
+  await installFullscreenStub(page);
+  await page.getByRole('button', { name: 'Start Practice' }).tap();
+  await expect(page.locator('.combat-ui')).toBeVisible();
+  await page.getByRole('button', { name: 'Enter full screen' }).tap();
+  await expect.poll(() => page.evaluate(() => Boolean(document.fullscreenElement))).toBe(true);
+
+  await completeCurrentClash(page);
+  await expect(page.locator('.result-shell')).toBeVisible();
+  await expect(page.getByRole('button', { name: 'Exit full screen' })).toBeVisible();
+  await page.getByRole('button', { name: 'Exit full screen' }).tap();
+  await expect.poll(() => page.evaluate(() => Boolean(document.fullscreenElement))).toBe(false);
+  await expect(page.getByText('Returned to default screen')).toBeVisible();
+  await expect(page.getByRole('button', { name: 'Enter full screen' })).toBeVisible();
+
+  await page.getByRole('button', { name: 'Play Again' }).tap();
+  await expect(page.locator('.combat-ui')).toBeVisible();
+  await expect(page.locator('.combat-ui')).toHaveAttribute('data-fullscreen', 'false');
 });
 
 test('lost in-memory authority offers a fresh Practice Clash', async ({ page }) => {
@@ -163,6 +201,29 @@ async function pointer(
       clientY: rect.top + rect.height * args.yRatio
     }));
   }, { type, pointerId, xRatio, yRatio });
+}
+
+async function installFullscreenStub(page: Page): Promise<void> {
+  await page.evaluate(() => {
+    let active: Element | null = null;
+    Object.defineProperty(document, 'fullscreenEnabled', { configurable: true, get: () => true });
+    Object.defineProperty(document, 'fullscreenElement', { configurable: true, get: () => active });
+    Object.defineProperty(document.documentElement, 'requestFullscreen', {
+      configurable: true,
+      value: async () => {
+        active = document.documentElement;
+        document.dispatchEvent(new Event('fullscreenchange'));
+      }
+    });
+    Object.defineProperty(document, 'exitFullscreen', {
+      configurable: true,
+      value: async () => {
+        active = null;
+        document.dispatchEvent(new Event('fullscreenchange'));
+      }
+    });
+    document.dispatchEvent(new Event('fullscreenchange'));
+  });
 }
 
 async function completeCurrentClash(page: Page): Promise<void> {

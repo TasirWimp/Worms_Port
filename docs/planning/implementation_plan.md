@@ -8,7 +8,7 @@ Phaser/Socket.IO stack.
 ## Execution Pointer
 
 - Active target: mobile-first single-player Nimiq Pay competition release.
-- Next work package: **WP-011C Full-screen Rotation and Exit Stabilization**.
+- Next work package: **WP-011C deployed-device acceptance**.
 - Last completed work package: **WP-011B Embedded Full-screen Capability Probe**.
 - PvP and matchmaking: deferred until after the competition release.
 - Canonical artwork reference:
@@ -18,6 +18,9 @@ Phaser/Socket.IO stack.
   2026-07-20 for the reported real-device regressions.
   WP-011B acceptance on the same device confirmed working full screen in Samsung
   Chrome and no exposed Fullscreen API inside Nimiq Pay.
+  WP-011C's implementation candidate adds query-controlled clockwise and
+  counter-clockwise sideways modes for the confirmed auto-rotate-off Nimiq Pay
+  workaround; its Samsung device acceptance is pending deployment.
 
 A fresh Codex chat should read `AGENTS.md` and its ordered source documents,
 check the worktree and recent commits, then start only the work package named
@@ -101,6 +104,11 @@ guardrails for this selected host.
   while Nimiq Pay does not expose the required API and correctly retains the
   compact embedded fallback. Chrome acceptance also found forced-landscape and
   result-screen exit defects assigned to WP-011C.
+- WP-011C's implementation candidate removes the browser orientation lock,
+  retains a full-screen exit action on results, and adds opt-in `sideways=right`
+  and `sideways=left` virtual-landscape modes for portrait-locked mini-app
+  viewports. Automated verification is complete; deployed Samsung Galaxy S22
+  acceptance remains before the package is marked complete.
 - Nimiq Pay identity/reward work, the expanded phone matrix, and visual
   regression remain.
 
@@ -813,13 +821,15 @@ prevents rotating back to portrait, and transition to the result scene removes
 the only visible full-screen toggle. Both are scoped to WP-011C rather than
 reopening the host-capability probe.
 
-### WP-011C Full-screen Rotation and Exit Stabilization
+### WP-011C Full-screen Rotation, Exit, and Sideways Stabilization
 
-Status: planned. Depends on WP-011B. This corrective package does not block or
-change WP-012 identity work.
+Status: implementation candidate complete; deployed-device acceptance pending.
+Depends on WP-011B. This corrective package does not block or change WP-012
+identity work.
 
 Goal: make supported browser full screen reversible and orientation-responsive
-through the complete Practice Clash journey, including terminal results.
+through the complete Practice Clash journey, including terminal results, and
+provide an explicit virtual-landscape fallback for portrait-locked Nimiq Pay.
 
 Confirmed Samsung Galaxy S22 Chrome defects:
 
@@ -827,6 +837,13 @@ Confirmed Samsung Galaxy S22 Chrome defects:
   physical rotation cannot switch the game to portrait, and
 - completing a match while full screen transitions away from the combat HUD,
   so the result screen has no visible control to return to default browser mode.
+
+Confirmed Samsung Galaxy S22 Nimiq Pay precondition:
+
+- when Android auto-rotate is disabled while portrait, Nimiq Pay keeps a
+  portrait browser viewport after the physical phone is turned sideways. This
+  gives web content a stable surface on which to opt into a rotated landscape
+  composition without relying on an unavailable host full-screen API.
 
 Scope:
 
@@ -843,11 +860,20 @@ Scope:
 - retain the existing compact fallback and hidden entry control in Nimiq Pay,
   where the host reports the Fullscreen API as unavailable, and
 - ensure Play Again and Calling-change actions still work after entering or
-  leaving full screen.
+  leaving full screen,
+- add query-controlled `sideways=right` (also `sideways=1`) and
+  `sideways=left` modes which create landscape logical dimensions only while
+  the actual browser viewport is portrait,
+- rotate the complete game surface, remap safe-area edges and inverse-map touch
+  coordinates so movement and aiming retain their visual directions, and
+- automatically disengage the virtual rotation when the actual viewport is
+  landscape, avoiding a double rotation if the host or device setting changes.
 
 Non-goals: forcing Nimiq Pay native chrome to disappear, closing the Nimiq Pay
-mini app through an undocumented bridge, locking any orientation, changing
-gameplay authority, or adding dependencies and assets.
+mini app through an undocumented bridge, changing Android auto-rotate, detecting
+physical device attitude independently of the browser viewport, making sideways
+mode the default, locking any orientation, changing gameplay authority, or
+adding dependencies and assets.
 
 Owning roles: `worms_port_base_game_worker`, `worms_port_test_worker`, and
 `worms_port_reviewer`.
@@ -859,11 +885,16 @@ Verification:
 - Chromium phone-browser coverage for landscape entry, rotation to portrait and
   back while still full screen, completion into the result scene, result-screen
   exit, and subsequent Play Again/Calling-change actions,
+- Chromium portrait-viewport coverage for both sideways directions, logical
+  landscape sizing, touch movement and aim mapping, safe control fit, and
+  automatic deactivation when the browser actually becomes landscape,
 - the existing combat, live-practice, and smoke phone matrices plus build,
   compliance, and audit, and
 - Samsung Galaxy S22 Chrome acceptance for entry, landscape-to-portrait rotation,
   match completion, result-screen exit to default mode, and retry. Confirm that
-  Nimiq Pay still uses the non-full-screen fallback without a dead control.
+  Nimiq Pay still uses the non-full-screen fallback without a dead control, then
+  test `sideways=right` and `sideways=left` in Nimiq Pay with Android auto-rotate
+  disabled.
 
 ### WP-012 Nimiq Pay Identity Adapter
 

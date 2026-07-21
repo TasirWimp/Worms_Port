@@ -11,7 +11,11 @@ import CombatScene from './scenes/combat';
 import PracticeScene from './scenes/practice';
 import ResultScene from './scenes/result';
 import { bootstrapSession } from './lib/session';
+import { requestedSidewaysMode, resolveSidewaysMode } from './lib/sideways';
 import { PRACTICE_CLIENT_REGISTRY_KEY, PracticeClient } from './practice/client';
+
+const requestedSideways = requestedSidewaysMode(window.location.search);
+let runningGame: Phaser.Game | undefined;
 
 function syncVisualViewport(): void {
     const viewport = window.visualViewport;
@@ -19,6 +23,20 @@ function syncVisualViewport(): void {
     const height = Math.max(1, Math.floor(viewport?.height ?? window.innerHeight));
     document.documentElement.style.setProperty('--app-viewport-width', `${width}px`);
     document.documentElement.style.setProperty('--app-viewport-height', `${height}px`);
+    const sideways = resolveSidewaysMode(requestedSideways, width, height);
+    if (sideways) document.documentElement.dataset.sideways = sideways;
+    else document.documentElement.removeAttribute('data-sideways');
+    const host = document.getElementById('game');
+    if (host) {
+        if (sideways) host.dataset.sideways = sideways;
+        else host.removeAttribute('data-sideways');
+    }
+    const gameWidth = sideways ? height : width;
+    const gameHeight = sideways ? width : height;
+    if (runningGame &&
+        (runningGame.scale.width !== gameWidth || runningGame.scale.height !== gameHeight)) {
+        runningGame.scale.resize(gameWidth, gameHeight);
+    }
 }
 
 syncVisualViewport();
@@ -36,14 +54,18 @@ class NimbleKnotsGame extends Phaser.Game
 {
     constructor (combatPreview = false)
     {
+        const viewport = window.visualViewport;
+        const viewportWidth = Math.max(1, Math.floor(viewport?.width ?? window.innerWidth));
+        const viewportHeight = Math.max(1, Math.floor(viewport?.height ?? window.innerHeight));
+        const sideways = resolveSidewaysMode(requestedSideways, viewportWidth, viewportHeight);
         super({
             title: 'NIMble Knots: Cotton Clash',
             backgroundColor: 0x1F2348,
             parent: 'game',
             scale: {
-                mode: Phaser.Scale.RESIZE,
-                width: 800,
-                height: 600
+                mode: requestedSideways ? Phaser.Scale.NONE : Phaser.Scale.RESIZE,
+                width: sideways ? viewportHeight : viewportWidth,
+                height: sideways ? viewportWidth : viewportHeight
             },
             dom: {
                 createContainer: true
@@ -58,7 +80,8 @@ class NimbleKnotsGame extends Phaser.Game
 window.onload = async () => {
     const combatPreview = new URLSearchParams(window.location.search).has('combat-preview');
     if (combatPreview) {
-        new NimbleKnotsGame(true);
+        runningGame = new NimbleKnotsGame(true);
+        syncVisualViewport();
         return;
     }
     const socket = io({ transports: ['websocket'] });
@@ -73,6 +96,8 @@ window.onload = async () => {
     socket.off(protocolEvents.snapshot, bufferSnapshot);
     socket.off(protocolEvents.result, bufferResult);
     const game = new NimbleKnotsGame();
+    runningGame = game;
+    syncVisualViewport();
     game.registry.set(PRACTICE_CLIENT_REGISTRY_KEY, client);
     game.scene.start('practice');
 };

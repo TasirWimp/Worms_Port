@@ -3,6 +3,7 @@ import { RELIC_IDS, SIM_RULES, type RelicId, type SimulationCommand } from '../.
 import { CombatInputController } from './input';
 import type { AimIntent } from './input';
 import type { CombatLayout } from './layout';
+import { activeSidewaysMode, clientPointToGame } from '../lib/sideways';
 
 type CombatControlsCallbacks = {
     onCommand: (command: SimulationCommand) => void;
@@ -203,7 +204,7 @@ export class CombatControls {
             event.preventDefault();
             const rect = zone.getBoundingClientRect();
             const radius = Math.max(24, Math.min(rect.width, rect.height) * 0.34);
-            if (!this.input.begin(kind, event.pointerId, point(event), radius)) return;
+            if (!this.input.begin(kind, event.pointerId, this.point(event), radius)) return;
             try { zone.setPointerCapture(event.pointerId); } catch {}
             this.updateKnob(knob, 0, 0, radius);
             this.refresh();
@@ -212,11 +213,12 @@ export class CombatControls {
             const owner = this.input.ownedPointer();
             if (!owner || owner.id !== event.pointerId || owner.kind !== kind) return;
             event.preventDefault();
-            this.input.move(event.pointerId, point(event));
+            const pointer = this.point(event);
+            this.input.move(event.pointerId, pointer);
             this.updateKnob(
                 knob,
-                event.clientX - owner.origin.x,
-                event.clientY - owner.origin.y,
+                pointer.x - owner.origin.x,
+                pointer.y - owner.origin.y,
                 owner.radius
             );
             if (kind === 'aim') this.callbacks.onAimPreview(this.input.aimIntent());
@@ -225,7 +227,7 @@ export class CombatControls {
             const owner = this.input.ownedPointer();
             if (!owner || owner.id !== event.pointerId || owner.kind !== kind) return;
             event.preventDefault();
-            this.input.move(event.pointerId, point(event));
+            this.input.move(event.pointerId, this.point(event));
             const movementSteps = kind === 'movement' ? this.input.movementSteps() : 0;
             const rect = zone.getBoundingClientRect();
             const inside = event.clientX >= rect.left && event.clientX <= rect.right &&
@@ -331,6 +333,16 @@ export class CombatControls {
     private resetKnob(knob: HTMLElement): void {
         knob.style.transform = 'translate(0px, 0px)';
     }
+
+    private point(event: PointerEvent): { x: number; y: number } {
+        const game = document.getElementById('game');
+        if (!game) return { x: event.clientX, y: event.clientY };
+        return clientPointToGame(
+            { x: event.clientX, y: event.clientY },
+            game.getBoundingClientRect(),
+            activeSidewaysMode()
+        );
+    }
 }
 
 function actionButton(parent: HTMLElement, label: string, className: string): HTMLButtonElement {
@@ -340,10 +352,6 @@ function actionButton(parent: HTMLElement, label: string, className: string): HT
     button.textContent = label;
     parent.appendChild(button);
     return button;
-}
-
-function point(event: PointerEvent): { x: number; y: number } {
-    return { x: event.clientX, y: event.clientY };
 }
 
 function place(element: HTMLElement, rect: { x: number; y: number; width: number; height: number }): void {

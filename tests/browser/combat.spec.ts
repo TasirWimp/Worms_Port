@@ -104,6 +104,12 @@ test('landscape offers a user-activated full-screen probe with a safe exit', asy
     (window as Window & { __fullscreenNavigationUi?: string }).__fullscreenNavigationUi
   )).toBe('hide');
 
+  await page.setViewportSize({ width: 390, height: 844 });
+  await expect(page.locator('.combat-ui')).toHaveAttribute('data-orientation', 'portrait');
+  await expect(page.getByRole('button', { name: 'Exit full screen' })).toBeVisible();
+  await page.setViewportSize({ width: 844, height: 390 });
+  await expect(page.locator('.combat-ui')).toHaveAttribute('data-orientation', 'landscape');
+
   await page.getByRole('button', { name: 'Exit full screen' }).tap();
   await expect(page.locator('.combat-ui')).toHaveAttribute('data-fullscreen', 'false');
 
@@ -116,6 +122,50 @@ test('landscape offers a user-activated full-screen probe with a safe exit', asy
   await button.tap();
   await expect(button).toBeHidden();
   await expect(page.getByText('Full screen is not supported by this app host')).toBeVisible();
+});
+
+test('query-controlled sideways mode creates touch-safe landscape in a portrait viewport', async ({ page }, testInfo) => {
+  test.skip(testInfo.project.name !== 'chromium-390x844', 'One portrait viewport is sufficient.');
+  await page.goto('/?combat-preview=1&sideways=right');
+  const ui = page.locator('.combat-ui');
+  await expect(ui).toBeVisible();
+  await expect(page.locator('html')).toHaveAttribute('data-sideways', 'right');
+  await expect(page.locator('#game')).toHaveAttribute('data-sideways', 'right');
+  await expect(ui).toHaveAttribute('data-orientation', 'landscape');
+  await expect(page.locator('.combat-fullscreen-button')).toBeHidden();
+  expect(await page.locator('#game').evaluate((element) => ({
+    width: element.clientWidth,
+    height: element.clientHeight
+  }))).toEqual({ width: 844, height: 390 });
+  await assertControlsFit(page);
+
+  const startX = Number(await ui.getAttribute('data-player-x'));
+  await dragPad(page, '.movement-zone', 80, 0, 0.36);
+  await expect.poll(async () => Number(await ui.getAttribute('data-player-x'))).toBeGreaterThan(startX);
+  await page.getByRole('button', { name: 'Select Needlepoint' }).tap();
+  await expect(ui).toHaveAttribute('data-selected-relic', 'needlepoint');
+  await dragPad(page, '.aim-zone', 81, 0.34, 0.3);
+  await expect(ui).toHaveAttribute('data-phase', 'aim_locked');
+  await expect(page.locator('.fire-button')).toBeEnabled();
+  await page.screenshot({ path: testInfo.outputPath('wp-011c-sideways-right.png') });
+
+  await page.setViewportSize({ width: 844, height: 390 });
+  await expect(page.locator('html')).not.toHaveAttribute('data-sideways', /.+/);
+  await expect(ui).toHaveAttribute('data-orientation', 'landscape');
+  expect(await page.locator('#game').evaluate((element) => ({
+    width: element.clientWidth,
+    height: element.clientHeight
+  }))).toEqual({ width: 844, height: 390 });
+  await page.setViewportSize({ width: 390, height: 844 });
+  await page.goto('/?combat-preview=1&sideways=left');
+  await expect(page.locator('html')).toHaveAttribute('data-sideways', 'left');
+  await expect(page.locator('.combat-ui')).toHaveAttribute('data-orientation', 'landscape');
+  await assertControlsFit(page);
+  const leftStartX = Number(await page.locator('.combat-ui').getAttribute('data-player-x'));
+  await dragPad(page, '.movement-zone', 82, 0, -0.36);
+  await expect.poll(async () =>
+    Number(await page.locator('.combat-ui').getAttribute('data-player-x'))
+  ).toBeGreaterThan(leftStartX);
 });
 
 test('touch movement, Relic selection, aim lock, and explicit Fire stay separate', async ({ page }) => {

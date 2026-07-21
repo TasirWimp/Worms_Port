@@ -10,6 +10,7 @@ import { CombatControls } from '../combat/controls';
 import type { CombatSceneArgs, SafeAreaInsets } from '../combat/contracts';
 import { createCombatFixture } from '../combat/fixture';
 import { canRequestFullscreen, toggleGameFullscreen } from '../combat/fullscreen';
+import { activeSidewaysMode } from '../lib/sideways';
 import { computeCombatLayout, type CombatLayout } from '../combat/layout';
 import {
     planCombatPresentation,
@@ -84,7 +85,7 @@ export default class CombatScene extends Phaser.Scene {
             onFullscreenToggle: () => void this.toggleFullscreen()
         });
         this.controls.setFullscreenState(
-            canRequestFullscreen(),
+            !activeSidewaysMode() && canRequestFullscreen(),
             Boolean(document.fullscreenElement)
         );
         if (this.args.previewLabel) {
@@ -288,6 +289,10 @@ export default class CombatScene extends Phaser.Scene {
 
     private onViewportChange(): void {
         this.controls.cancelTransient();
+        this.controls.setFullscreenState(
+            !activeSidewaysMode() && !this.fullscreenUnavailable && canRequestFullscreen(),
+            Boolean(document.fullscreenElement)
+        );
         window.requestAnimationFrame(() => {
             if (!this.scene.isActive()) return;
             const host = document.getElementById('game');
@@ -327,7 +332,7 @@ export default class CombatScene extends Phaser.Scene {
 
     private onFullscreenChange(): void {
         this.controls.setFullscreenState(
-            !this.fullscreenUnavailable && canRequestFullscreen(),
+            !activeSidewaysMode() && !this.fullscreenUnavailable && canRequestFullscreen(),
             Boolean(document.fullscreenElement)
         );
         this.onViewportChange();

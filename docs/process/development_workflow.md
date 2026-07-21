@@ -199,13 +199,13 @@ HUD, movement, aim, Relics, Fire, Pause, and Retry visible and non-overlapping
 when embedded browser chrome reduces the usable height. Resize, rotation, and
 visual-viewport changes cancel transient pointer ownership.
 
-### Embedded Full-screen Requests
+### Embedded Full-screen And Sideways Presentation
 
 Landscape combat may offer a standard Fullscreen API request from an explicit
-player tap. Request `navigationUI: 'hide'` first and treat orientation locking
-as optional only after entry succeeds. Never auto-enter full screen and never
-make Practice depend on it. Capability absence or rejection must preserve the
-compact `visualViewport` layout and provide truthful feedback.
+player tap. Request `navigationUI: 'hide'`, but do not request an orientation
+lock. Never auto-enter full screen and never make Practice depend on it.
+Capability absence or rejection must preserve the compact `visualViewport`
+layout and provide truthful feedback.
 
 CSS, viewport metadata, and PWA display settings do not control Nimiq Pay's
 native URL ribbon or Android system bars. A physical Nimiq Pay device check is
@@ -220,6 +220,16 @@ screen survives Phaser scene transitions, every terminal result screen reached
 while it is active must expose a visible **Exit full screen** action; returning
 to default browser mode cannot depend on a combat-scene control that no longer
 exists. WP-011C owns these corrections.
+
+WP-011C also permits an explicit `sideways` query as a host-compatibility mode.
+It is active only when the browser reports a portrait viewport and must use
+swapped logical game dimensions, rotate the complete game surface, remap
+safe-area edges, and inverse-map pointer coordinates. `sideways=1` and
+`sideways=right` rotate clockwise; `sideways=left` rotates counter-clockwise.
+If the browser becomes landscape, the transform must disengage immediately to
+avoid double rotation. Keep this opt-in: viewport orientation does not reveal
+physical device attitude, and the web app must not pretend it can change the
+user's Android auto-rotate setting or the Nimiq Pay host chrome.
 
 ### Deterministic Artillery Ruleset
 
