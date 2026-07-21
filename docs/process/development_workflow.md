@@ -655,6 +655,9 @@ metadata, and the SDK source package:
   hex `publicKey` and `signature`, so server authorization must verify both the
   signature and public-key-to-address relationship against a server-issued
   canonical challenge.
+- The provider contract can resolve an `ErrorResponse` instead of rejecting.
+  Every adapter call must validate the resolved union before reading account or
+  signature data, and user rejection must settle without an automatic retry.
 - Host language is available through the SDK helper or
   `window.nimiqPay?.language`. The optional device identifier requires a reason
   and consent on first use, is scoped to the mini-app origin, identifies a
@@ -677,6 +680,50 @@ visual viewport, full-screen, and sideways state when it settles. A future
 feature that truly requires an in-match wallet dialog must separately specify
 authoritative interruption semantics; it cannot inherit Practice pause behavior
 implicitly.
+
+### Nimiq Signed-Identity Security Rules
+
+WP-012 was cross-checked on 2026-07-21 against pinned official
+`trust-web3-provider`, Hub, Keyguard, and Wallet sources plus the community
+`onmax/nimiq-auth`, `Harlski/nspace`, and `Nuxt-Nimiq-Login` implementations
+listed in the implementation plan. Community repositories are behavioral
+review evidence only; they are not approved import sources.
+
+- The server creates a CSPRNG challenge with a short expiry and retains the
+  canonical message. A client submits only the opaque authorization ID,
+  address, public key, and signature; it never chooses the verified message,
+  origin, network, purpose, time, or connection binding.
+- The displayed message is printable ASCII with fixed fields and LF endings.
+  Keep it short enough to inspect in the wallet approval view. No JSON
+  serialization, localization, arbitrary user text, or URL-carried proof is
+  part of the signed format.
+- Verify the official Nimiq signed-message prefix, JavaScript character length,
+  SHA-256 construction, signature, and public-key-derived address through an
+  exactly pinned server-only Nimiq library. Raw-message Ed25519 verification and
+  Keyguard's separate Connect Challenge prefix are not equivalent.
+- Atomically consume a pending attempt before proof verification. Invalid,
+  expired, concurrent, replayed, disconnected, or restarted attempts fail
+  closed and require a new challenge. Limit outstanding state and begin/complete
+  rates by connection, anonymous session, IP, and address-derived privacy-safe
+  key.
+- Return uniform authorization failures and keep secrets and wallet material
+  out of logs. Server diagnostics may retain only sanitized reason codes and
+  opaque/hash-reduced correlation values.
+- A provider account list is selection UX, not authority. The verifier derives
+  the address from the signed public key and compares it with the address bound
+  to the server-created attempt. Never trust a client mode/provider flag.
+- Production identity mode requires explicit public-origin, allowed-origin, and
+  Nimiq-network configuration. A successful proof rotates into a fresh opaque
+  server session; no pending challenge, proof, public key, raw address/device
+  identifier, or reusable signature belongs in that token.
+
+The implementation gate includes official-prefix golden vectors, raw-message
+and wrong-prefix negatives, canonicalization mutation tests, resolved provider
+error tests, concurrent replay, consume-on-failure, server-only bundle
+inspection, and a Render-built startup smoke. Prefer the official crypto
+implementation over copied helpers; if package size or WASM loading blocks the
+server target, stop at the dependency spike and document the compatibility
+decision rather than substituting handwritten cryptography.
 
 ## Mobile Touch Reference Protocol
 

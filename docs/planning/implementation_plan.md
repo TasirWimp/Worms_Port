@@ -10,11 +10,12 @@ Phaser/Socket.IO stack.
 - Active target: mobile-first single-player Nimiq Pay competition release.
 - Next work package: **WP-012 Nimiq Pay Identity Adapter**.
 - Last completed work package: **WP-011E Arena-first Contextual Combat HUD**.
-- WP-012 was refined against the official Nimiq Mini App documentation and
-  published `@nimiq/mini-app-sdk` `0.1.0` contract on 2026-07-21. Preserve the
-  accepted Practice/HUD journey: provider access is lazy, identity acceptance
-  is query-gated until WP-013 adds the rewarded-match entry, and Practice never
-  depends on Nimiq Pay.
+- WP-012 was refined against the official Nimiq Mini App documentation,
+  published `@nimiq/mini-app-sdk` `0.1.0` contract, and pinned official and
+  community open-source wallet-authentication examples on 2026-07-21. Preserve
+  the accepted Practice/HUD journey: provider access is lazy, identity
+  acceptance is query-gated until WP-013 adds the rewarded-match entry, and
+  Practice never depends on Nimiq Pay.
 - PvP and matchmaking: deferred until after the competition release.
 - Canonical artwork reference:
   `docs/images/art-direction/knotkin-class-lineup-concept.png`.
@@ -1185,12 +1186,36 @@ Official integration baseline, reviewed 2026-07-21:
 - use `listAccounts()` for consent-based account selection and `sign()` for
   the canonical server challenge; the documented signing result contains hex
   `publicKey` and `signature` values,
+- validate both thrown failures and resolved provider `ErrorResponse` values
+  from `listAccounts()` and `sign()`; never destructure or authorize an
+  unchecked provider result and never automatically retry a user rejection,
 - read host language through the SDK helper or `window.nimiqPay?.language`,
   then fall back to the device language and English without turning WP-012 into
   a full localization package, and
 - expose `requestDeviceIdentifier({ reason })` only as a separate optional
   consent action. It identifies an origin-scoped device, not a wallet user, and
   must never authenticate a session.
+
+Open-source security review, reviewed 2026-07-21:
+
+- primary behavior references are the official
+  `nimiq/trust-web3-provider` commit
+  `49cfe535b90c61e48766d1f7a6206a80442692a1`, `nimiq/hub` commit
+  `3cee2efe83a476eae9a5825bb2f2dea2266a3918`, `nimiq/keyguard` commit
+  `02e7534f9b7668bfc66666e1a82bd87584f5b406`, and `nimiq/wallet` commit
+  `fa271bb362b2cf6a8abfc39560145f6f80b219e1`,
+- community implementation evidence is `onmax/nimiq-auth` commit
+  `c2a4c63a28b71e1185e16719922810553c11fab4`, `Harlski/nspace` commit
+  `1b0f1e3698089e8bc1369c43b84e0c30231a31c1`, and
+  `blouflashdb/Nuxt-Nimiq-Login` commit
+  `902478a955228f09a1379a50784023fb9793ddc2`; these are review references,
+  not approved code or asset inputs, and
+- the reusable pattern is a server-created, short-lived, single-use challenge
+  verified through official Nimiq cryptography with the signer address derived
+  from the public key. Do not copy examples that leave a signed JWT replayable
+  until expiry, compare authentication secrets with ordinary string equality,
+  trust client-supplied messages or identity flags, or implement custom
+  signature/address cryptography.
 
 Adapter and product boundary:
 
@@ -1215,30 +1240,56 @@ Adapter and product boundary:
 Authorization protocol:
 
 1. Add a strict authorization-begin request. The server creates an opaque
-   authorization ID and random nonce, stores only bounded pending state, and
-   returns one canonical UTF-8 message to sign.
+   authorization ID and at least 256 bits of CSPRNG nonce, stores only bounded
+   pending state, and returns one canonical message to sign with a two-to-five
+   minute lifetime. Do not place the challenge, proof, or authorization ID in a
+   URL.
 2. Bind that message to a schema/version tag, purpose, configured public
    origin/audience, configured Nimiq network, selected normalized address,
    authorization ID, nonce, issue time, expiry, and the current connection or
    anonymous session attempt. The client cannot supply or rewrite the message
-   accepted by the verifier.
+   accepted by the verifier. Derive origin and network from server configuration,
+   not request data. Use a short, printable ASCII, line-oriented format with
+   fixed field order and LF endings so the host approval is understandable and
+   JavaScript character length cannot diverge from UTF-8 byte length.
 3. Complete authorization with only the authorization ID, normalized address,
    public key, and signature. Extend or replace the reserved
    `SignedSessionProofSchema`; the current address/challenge/signature shape is
-   not sufficient for the SDK result or a server-issued challenge flow.
-4. Verify the canonical stored message with a reviewed, pinned Nimiq
-   verification primitive; prove that the public key derives the selected
-   address, and reject wrong signature, address, purpose, origin/audience,
-   network domain, expiry, or connection binding.
-5. Consume an authorization ID exactly once. Bound outstanding attempts per
-   connection and address, rate-limit begin/complete calls, expire and sweep
-   abandoned attempts, and make simultaneous or replayed completion fail
-   closed. A Render restart may invalidate a pending authorization but cannot
-   create an authorized session.
-6. On success, issue the existing opaque server session token and bind the
+   not sufficient for the SDK result or a server-issued challenge flow. Treat
+   `listAccounts()` as selection UX only: its cached address list is not
+   authentication authority.
+4. Verify the canonical stored message using the standard Nimiq signed-message
+   construction (`\x16Nimiq Signed Message:\n`, JavaScript message character
+   length, message, SHA-256, then signature verification) and a reviewed,
+   exactly pinned server-only Nimiq verification dependency. Do not verify the
+   raw message directly and do not use Keyguard's distinct Connect Challenge
+   prefix unless a future provider contract explicitly exposes that operation.
+5. Derive the signer address from the verified public key and compare its
+   normalized value with the address bound at begin time. Reject wrong or
+   malformed signature, public key, address, purpose, origin/audience, network
+   domain, expiry, or connection binding; never trust a client identity-mode
+   flag.
+6. Atomically consume an authorization ID before expensive proof verification,
+   including invalid proofs, so simultaneous or replayed completion fails
+   closed and any failure requires a fresh begin request. Bound outstanding
+   attempts per connection, anonymous session, IP, and normalized-address hash;
+   rate-limit begin/complete calls, cap request sizes, expire and sweep abandoned
+   attempts, and return a uniform external authorization failure. A Render
+   restart may invalidate pending authorization but cannot create an authorized
+   session.
+7. On success, rotate into a new opaque server session token, invalidate the
+   anonymous attempt and other pending authorization owned by it, and bind the
    verified wallet identity to server-side session state. Never store a private
    key, raw device identifier, or reusable signed challenge in the browser
    session token.
+
+Pending authorization remains server-side, so it does not need a client-carried
+JWT or custom HMAC wrapper. Do not log full canonical messages, nonces,
+signatures, public keys, session tokens, or raw wallet/device identifiers;
+record only sanitized reason codes and opaque/hash-reduced correlation data.
+Identity-enabled production startup must have an explicit public origin,
+allowed Socket.IO origin set, and Nimiq network domain rather than a wildcard or
+request-derived value.
 
 The configured Nimiq network is a server authorization domain, not a value the
 current Nimiq provider reports. “Wrong network” tests therefore mutate the
@@ -1257,12 +1308,18 @@ Owning roles: `worms_port_network_worker`, `worms_port_compliance_keeper`,
 Verification:
 
 - adapter unit tests for delayed injection, standalone unavailability,
-  approval, rejection, timeout, malformed provider results, account selection,
-  host-language fallback, and optional device-identifier consent/error paths,
+  approval, rejection without retry, timeout, thrown errors, resolved
+  `ErrorResponse` values, malformed provider results and encodings, account
+  selection/cache behavior, host-language fallback, and optional
+  device-identifier consent/error paths,
 - protocol tests for nonce uniqueness and expiry, malformed payloads, wrong
-  signature/public key/address/purpose/origin/network/binding, replay,
-  simultaneous completion, rate limits, disconnect, sweep, and session-token
-  issuance only after successful verification,
+  signature/public key/address/purpose/origin/network/binding, strict field
+  order, LF/CRLF and non-ASCII canonicalization rejection, standard Nimiq
+  signed-message golden vectors, raw-message and Connect-prefix negative cases,
+  proof-size/encoding limits, replay, simultaneous completion with at most one
+  success, failed-proof consumption, uniform failures, rate limits, disconnect,
+  sweep/restart invalidation, and session-token issuance only after successful
+  verification,
 - Chromium/WebKit browser coverage proving default Practice never initializes
   or waits for the provider, plus a fake-provider identity acceptance route
   that preserves sideways/viewport state and clears stale input across the
@@ -1271,9 +1328,14 @@ Verification:
   account approval, signing approval and rejection, returning from the native
   dialog, and continued wallet-free Practice; record allowlisting or host
   limitations separately,
-- exact dependency pin and license review, `npm audit`, compliance, types,
-  focused protocol/identity/browser tests, clean build, built-server smoke, and
-  browser smoke, and
+- perform a server-only `@nimiq/core` dependency spike before committing the
+  verifier: choose and exactly pin a reviewed compatible release, record its
+  Apache-2.0 license, prove its WASM/resources start in the Render-built server,
+  and inspect the client output to ensure neither the package nor its WASM is
+  shipped in the browser bundle,
+- exact dependency pins and license review, `npm audit`, compliance, types,
+  focused protocol/identity/browser tests, clean build, built-server and Render
+  runtime smoke, client-bundle inspection, and browser smoke, and
 - read-only security review before merge. Keep real transactions and sponsor
   funds disabled and untested in this package.
 
