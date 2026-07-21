@@ -9,6 +9,8 @@ Phaser/Socket.IO stack.
 
 - Active target: mobile-first single-player Nimiq Pay competition release.
 - Next work package: **WP-011D deployed-device acceptance**.
+- Queued after that acceptance: **WP-011E Arena-first Contextual Combat HUD**;
+  its design contract is refined below and implementation has not started.
 - Last completed work package: **WP-011C Full-screen Rotation, Exit, and
   Sideways Stabilization**.
 - PvP and matchmaking: deferred until after the competition release.
@@ -117,6 +119,10 @@ guardrails for this selected host.
   opposite direction and `sideways=off` preserves the maintained normal
   responsive composition. Deployed Samsung acceptance of the no-query default
   remains before the package is marked complete.
+- WP-011E is planned as a presentation-only arena-first HUD refinement. Its
+  wireframe, phase visibility, space targets, accessibility invariants, and
+  verification slices are defined below; no gameplay authority or combat code
+  has changed yet.
 - Nimiq Pay identity/reward work, the expanded phone matrix, and visual
   regression remain.
 
@@ -961,6 +967,160 @@ Verification:
 - user-run Samsung Galaxy S22 Nimiq Pay acceptance starting from the ordinary
   no-query Render URL with Android auto-rotate disabled while portrait.
 
+### WP-011E Arena-first Contextual Combat HUD
+
+Status: design refined; implementation not started. Depends on WP-011D's
+presentation policy and deployed-device acceptance. This visual refinement does
+not block or change WP-012 identity work.
+
+Goal: give the fixed 16:9 battlefield the maximum usable safe-viewport area and
+move the essential status and touch controls into a restrained, contextual
+overlay. The arena should read first; controls should stay predictable and
+usable without becoming a permanently opaque second screen.
+
+Research basis:
+
+- Apple's [Game controls](https://developer.apple.com/design/human-interface-guidelines/game-controls)
+  guidance supports contextual controls, controls that fade while idle, and a
+  floating thumbstick that appears where the player touches.
+- The Game Developer articles on
+  [dynamic interfaces](https://www.gamedeveloper.com/design/dynamic-user-interfaces-adapting-to-changing-situations-in-games-to-increase-player-performance)
+  and [peripheral HUD perception](https://www.gamedeveloper.com/design/perceiving-without-looking-designing-huds-for-peripheral-vision)
+  support removing irrelevant information by phase while keeping locations
+  stable, shapes distinct, and text short enough to read peripherally.
+- Activision's official
+  [Call of Duty: Mobile control overview](https://blog.activision.com/call-of-duty/2019-10/Getting-a-Grip-on-the-Call-of-Duty-Mobile-Controls.html)
+  provides a shipped reference for repositionable touch overlays and opacity
+  adjustment. WP-011E adopts the overlay principle, not its visual design.
+- Dargom Studio's [GunboundM](https://dargomstudio.com/index.php/gunboundm/)
+  is a relevant mobile artillery reference for a battlefield-dominant
+  composition. No code, artwork, layout pixels, or product assets may be copied.
+
+Current measured baseline and target:
+
+- At the Samsung acceptance viewport of 844 by 390 CSS pixels, the present
+  eight-pixel safe margins leave about 828 by 374 pixels. The permanent 54-pixel
+  status row and approximately 282-pixel action column limit the 16:9 arena to
+  about 534 by 301 pixels.
+- Using the same safe viewport without reserved status or control bands permits
+  an approximately 665 by 374 arena. WP-011E must reach at least 660 by 370 at
+  this viewport, a minimum 20 percent linear-scale improvement over the current
+  layout, without cropping simulation space.
+- The renderer must use the mathematical maximum 16:9 rectangle inside the safe
+  viewport in every supported composition. Persistent opaque HUD surfaces must
+  not reserve arena rows or columns and should cover no more than 10 percent of
+  the arena at rest.
+
+Target composition:
+
+```text
++---------------------- full safe-viewport arena -----------------------+
+| [Pause]                    [YOUR TURN - 17s]                           |
+|                                                                      |
+|          [Player Stitching]                 [AI Stitching]            |
+|                Knotkin       terrain       Loomkeeper                 |
+|                                                                      |
+|  (floating MOVE)       [Selected Relic v]       (floating AIM)       |
+|                                                    [FIRE]            |
++----------------------------------------------------------------------+
+```
+
+Information architecture:
+
+| Current surface | Arena-first replacement |
+| --- | --- |
+| Full-width status bar | Compact top-center turn/timer pill |
+| Combined `Stitching 100 - 100` text | Short exact-value bars anchored near, but not over, each actor |
+| Permanently visible movement and aim pads | Stable left/right touch zones whose pad appears under the active thumb and fades when idle |
+| Three permanent Relic buttons | Selected-Relic chip that opens a temporary three-item chooser in a stable location |
+| Fire, Pause, and Retry row | Explicit Fire near the aim zone; Pause in a safe corner; Retry inside the pause sheet |
+| Persistent instructional/status copy | Short transient battlefield toast with an accessible live-region equivalent |
+
+Phase and visibility contract:
+
+| Presentation phase | Persistent information | Active controls | Faded or hidden |
+| --- | --- | --- | --- |
+| Player decision, no locked aim | Turn/timer, both Stitching bars, Pause | Movement zone, aim zone, Relic chip | Fire unavailable; idle pad art faint |
+| Player aiming or aim locked | Turn/timer, both Stitching bars, Pause | Aim zone, Relic chip, explicit Fire when locked | Movement fades; unrelated instructions hide |
+| Player command presentation | Both Stitching bars, compact phase label | None | Movement, aim, Relic, and Fire fade and reject input |
+| Loomkeeper presentation | Both Stitching bars, compact `Loomkeeper` phase label | Pause only when the lifecycle permits it | All command controls fade and reject input |
+| Paused | Dimmed arena and current Stitching | Resume, Retry, and supported full-screen action in a modal sheet | Battlefield touch zones reject input |
+| Disconnected/reconnecting | Latest rendered arena and connection state | Retry/return action only when the protocol permits it | All gameplay controls reject input |
+| Terminal result | Existing result scene | Play Again, Calling change, and full-screen exit when applicable | Combat overlay is destroyed |
+
+Interaction and accessibility invariants:
+
+- Fire remains a separate deliberate action. Releasing the aim pad locks aim and
+  must never also submit Fire.
+- Logical control anchors stay fixed across phase changes. Controls may fade or
+  expand in place; they must not jump beneath a resting thumb.
+- Every button keeps a minimum 48 by 48 CSS-pixel target. Each floating pad has
+  at least a 96-pixel active diameter and remains operable with one thumb.
+- Idle pads remain discoverable through a faint boundary or first-use cue;
+  active pads gain contrast at the touch origin. Visibility cannot depend on
+  color alone.
+- Exact Stitching values, whose turn it is, remaining time, selected Relic,
+  locked-aim readiness, pause state, and connection state remain available to
+  assistive technology even when their visual treatment is compact.
+- Actor bars choose a clamped screen-space anchor above the actor and must not
+  cover the actor center, aim origin, or safe edge. When anchors would collide,
+  they move outward predictably rather than overlap.
+- Reduced-motion mode uses immediate visibility changes while preserving every
+  causal presentation phase. Ordinary fades are short presentation effects and
+  never delay authority or enable input early.
+- Safe-area insets, `visualViewport`, default clockwise sideways presentation,
+  explicit left rotation, `sideways=off`, actual landscape, and browser full
+  screen remain supported. The overlay cannot infer device attitude or control
+  native host chrome.
+- This package may change DOM/CSS/canvas presentation and input hit geometry,
+  but not simulation commands, command ordering, replay hashes, Loomkeeper
+  policy, server authority, result rules, or the Turtle/Sorcerers import
+  boundary.
+
+Implementation slices:
+
+1. **Arena geometry and compact status.** Replace reserved HUD/action bands with
+   a maximum-area battlefield, add turn/timer and actor Stitching anchors, and
+   keep existing controls temporarily functional as overlays. Establish layout
+   geometry tests before changing control disclosure.
+2. **Contextual touch controls.** Convert movement and aim to floating pads,
+   collapse Relics into the selected-chip chooser, keep explicit Fire, and move
+   Retry into the Pause sheet. Preserve current command callbacks and pointer
+   cancellation rules.
+3. **Phase transitions and hardening.** Drive visibility from the existing
+   presentation state, add reduced-motion and accessibility behavior, tune
+   occlusion, and complete the browser/device matrix.
+
+Non-goals: gameplay balance, new Relics, simulation or protocol changes,
+drag-to-fire, auto-fire, hidden exact Stitching, host-specific APIs, native-app
+changes, copied third-party UI, production artwork imports, user-customizable
+HUD editing, or a general desktop HUD redesign beyond keeping `sideways=off`
+functional.
+
+Owning roles: `worms_port_base_game_worker`, `worms_port_test_worker`,
+`worms_port_docs_keeper`, and `worms_port_reviewer`.
+
+Verification:
+
+- pure layout tests for maximum 16:9 arena geometry, safe-area clamping, actor
+  bar collision handling, and both sideways directions,
+- input tests proving floating-pad origin/mapping, aim-lock then explicit Fire,
+  Relic chooser semantics, phase gating, pause-sheet Retry, pointer cancellation,
+  keyboard focus, and accessible labels,
+- Chromium 360 by 640, 390 by 844, 844 by 390, and compact 640 by 360 plus
+  WebKit 390 by 844 screenshot/bounding-box coverage across decision, aim,
+  player presentation, Loomkeeper presentation, pause, reconnect, and result,
+- assertions that the 844 by 390 arena is at least 660 by 370, no essential
+  target leaves the safe viewport, stable controls do not jump between phases,
+  and persistent opaque overlays stay within the coverage budget,
+- existing live Practice journeys, two-match regression, all three Relics,
+  full-screen/result exit, sideways default/left/off, build, compliance, audit,
+  and phone smoke, and
+- user-run Samsung Galaxy S22 Nimiq Pay acceptance with auto-rotate disabled:
+  first-use discoverability, one-thumb movement/aim/Fire, visible player and AI
+  presentation, Pause/Retry recovery, no critical actor/trajectory occlusion,
+  and materially larger battlefield confirmation.
+
 ### WP-012 Nimiq Pay Identity Adapter
 
 Status: planned. Depends on WP-006 and WP-011A. The optional WP-011B host probe
@@ -1119,7 +1279,7 @@ it does not block completion of the documented autonomous cycle.
 
 ```text
 WP-005 -> WP-006 -> WP-007 -> WP-008 -> WP-009 -> WP-010 -> WP-011 -> WP-011A
-WP-011A -> WP-011B -> WP-011C -> WP-011D (temporary host-presentation path)
+WP-011A -> WP-011B -> WP-011C -> WP-011D -> WP-011E (presentation path)
 WP-011A -> WP-012 -> WP-013 -> WP-014
 WP-010 + WP-014 ------------------------------------------------------------> WP-015
 WP-013 + WP-015 ------------------------------------------------------------> WP-016 -> WP-017
@@ -1129,9 +1289,10 @@ WP-011 is the first complete playable. WP-011A is its real-device acceptance
 stabilization gate. WP-011B is a non-blocking embedded-host capability probe.
 WP-011C stabilizes the supported-browser path and proves the Nimiq Pay sideways
 fallback. WP-011D makes that fallback the documented temporary default until
-the host supplies full-screen game presentation. WP-014 is the automated
-competition-candidate gate. WP-017 is the submission-ready repository and
-deployment.
+the host supplies full-screen game presentation. WP-011E then maximizes the
+arena and makes its HUD phase-contextual without changing game authority.
+WP-014 is the automated competition-candidate gate. WP-017 is the
+submission-ready repository and deployment.
 
 ## Deferred Until After Competition
 

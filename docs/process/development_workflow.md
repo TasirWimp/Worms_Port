@@ -239,6 +239,36 @@ reliable standard/native capability is verified to remove host chrome. Viewport
 orientation still does not reveal physical device attitude, and the web app
 must not claim it can change Android auto-rotate or Nimiq Pay chrome.
 
+### Arena-first Contextual Combat HUD
+
+WP-011E replaces permanently reserved status and control bands with a
+maximum-area 16:9 arena and predictable overlays. The battlefield consumes the
+mathematical maximum rectangle inside the safe `visualViewport`; no persistent
+HUD row or control column may reduce its renderer dimensions.
+
+Keep only the turn/timer pill, actor-local exact Stitching bars, selected Relic,
+Pause, and the phase-relevant touch actions visible. Movement and aim use stable
+left/right activation zones with floating pad art at the touch origin. Fire
+stays a separate explicit button after aim lock. Relic selection expands from a
+single selected-Relic chip, and Retry belongs in the Pause sheet rather than the
+live-fire surface.
+
+Visibility follows presentation state: player decision exposes command inputs;
+aim lock emphasizes explicit Fire; player and Loomkeeper presentations fade and
+disable all command inputs; pause and reconnect use modal state; terminal state
+destroys the combat overlay in favor of the result scene. Controls may fade or
+expand at fixed anchors but must not jump between phases. Reduced motion removes
+the fade while retaining the same state sequence.
+
+This is a presentation and input-geometry change only. It must preserve current
+simulation commands, replay hashes, server authority, pointer cancellation,
+safe-area handling, full-screen behavior, all three sideways modes, at least
+48-pixel buttons, at least 96-pixel pad activation diameter, non-color-only
+state, and accessible exact values. The detailed wireframe, phase table, target
+metrics, implementation slices, and verification matrix live in
+`docs/planning/implementation_plan.md` under **WP-011E Arena-first Contextual
+Combat HUD**.
+
 ### Deterministic Artillery Ruleset
 
 WP-007 establishes `nimble-knots-artillery-v1` as a replay ABI. Later balance
