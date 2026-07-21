@@ -1,6 +1,6 @@
 {
   "id": "WP-011E",
-  "status": "in_progress",
+  "status": "complete",
   "starting_commit": "a350c6f01002738c0fbf48e8732cde0b51d6abe7",
   "branch": "codex/wp-011e-arena-hud",
   "initial_worktree": "clean",
@@ -54,7 +54,7 @@
     { "command": "npm run test:browser:practice", "status": "pass" },
     { "command": "npm audit", "status": "pass" },
     { "command": "self-review", "status": "pass" },
-    { "command": "Samsung Galaxy S22 Nimiq Pay arena-first HUD acceptance", "status": "pending" }
+    { "command": "Samsung Galaxy S22 Nimiq Pay arena-first HUD acceptance", "status": "pass" }
   ],
   "reviews": [
     { "role": "worms_port_base_game_worker", "reviewer": "primary-agent-client-review", "decision": "pass" },
@@ -63,12 +63,11 @@
     { "role": "worms_port_reviewer", "reviewer": "primary-agent-boundary-review", "decision": "pass" }
   ],
   "skipped_checks": [
-    "Samsung Galaxy S22 Nimiq Pay arena-first HUD acceptance: pending branch deployment by the user.",
     "Physical Android and iOS coverage beyond the Samsung device: no release-testing environment was provided.",
     "WP-014 visual-regression baselines, expanded device matrix, degraded-network matrix, and performance budgets are not yet available."
   ],
   "residual_risks": [
-    "Floating controls and actor-local Stitching bars pass emulated phone geometry but still require physical one-thumb and occlusion acceptance in Nimiq Pay.",
+    "Floating controls and actor-local Stitching bars passed Samsung Galaxy S22 Nimiq Pay acceptance, but other physical Android and iOS devices remain untested.",
     "The default sideways workaround still assumes Android auto-rotate is disabled while portrait and cannot remove Nimiq Pay native chrome.",
     "The client bundle is approximately 1.411 MB minified and 389.00 kB gzip and retains the existing chunk-size warning."
   ]

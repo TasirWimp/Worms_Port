@@ -8,8 +8,8 @@ Phaser/Socket.IO stack.
 ## Execution Pointer
 
 - Active target: mobile-first single-player Nimiq Pay competition release.
-- Next work package: **WP-011E deployed-device acceptance**.
-- Last completed work package: **WP-011D Default Sideways Host Workaround**.
+- Next work package: **WP-012 Nimiq Pay Identity Adapter**.
+- Last completed work package: **WP-011E Arena-first Contextual Combat HUD**.
 - PvP and matchmaking: deferred until after the competition release.
 - Canonical artwork reference:
   `docs/images/art-direction/knotkin-class-lineup-concept.png`.
@@ -24,6 +24,8 @@ Phaser/Socket.IO stack.
   verified documented Nimiq Pay full-screen game mode or equivalent
   standard/native capability that removes host chrome. Until then, keep
   `?sideways=left` and `?sideways=off` as documented controls.
+  WP-011E's arena-first HUD passed user-run Samsung Galaxy S22 Nimiq Pay
+  acceptance on 2026-07-21.
 
 A fresh Codex chat should read `AGENTS.md` and its ordered source documents,
 check the worktree and recent commits, then start only the work package named
@@ -117,11 +119,11 @@ guardrails for this selected host.
   and `sideways=off` preserves the maintained normal responsive composition.
   The deployed no-query default passed user-run Samsung Galaxy S22 Nimiq Pay
   acceptance on 2026-07-21.
-- WP-011E's implementation candidate gives the arena the maximum safe 16:9
+- WP-011E gives the arena the maximum safe 16:9
   rectangle, adds compact actor-local status, floating thumb pads, contextual
   Relic/Fire controls, and a Pause sheet without changing gameplay authority.
-  Automated verification passes; deployed Samsung Galaxy S22 Nimiq Pay
-  acceptance remains before completion.
+  Automated verification and user-run Samsung Galaxy S22 Nimiq Pay acceptance
+  passed on 2026-07-21.
 - Nimiq Pay identity/reward work, the expanded phone matrix, and visual
   regression remain.
 
@@ -974,7 +976,7 @@ documented host-capability removal trigger.
 
 ### WP-011E Arena-first Contextual Combat HUD
 
-Status: implementation candidate complete; deployed-device acceptance pending. Depends on WP-011D's
+Status: complete. Depends on WP-011D's
 presentation policy and deployed-device acceptance. This visual refinement does
 not block or change WP-012 identity work.
 
@@ -1148,7 +1150,13 @@ Practice browser cases (nine intentional project skips), and all eight built
 phone-smoke cases across the maintained Chromium/WebKit projects. Compliance,
 types, build, built-server smoke, Practice tests, audit, and self-review pass.
 The existing bundle-size warning remains. Physical Samsung Galaxy S22 Nimiq
-Pay acceptance is the only pending planned gate.
+Pay acceptance passed on 2026-07-21.
+
+Acceptance result on 2026-07-21: the user-run Samsung Galaxy S22 Nimiq Pay test
+confirmed that the maximum-area battlefield, actor-local Stitching, floating
+movement and aim pads, contextual Relic/Fire controls, phase visibility, and
+Pause-sheet recovery work correctly on the deployed build. This closes
+WP-011E; physical coverage beyond that Samsung device remains a release risk.
 
 ### WP-012 Nimiq Pay Identity Adapter
 
