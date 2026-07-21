@@ -11,6 +11,8 @@ import {
     CommandSubmitRequestSchema,
     IdentityBeginDataSchema,
     IdentityBeginRequestSchema,
+    IdentityCancelDataSchema,
+    IdentityCancelRequestSchema,
     IdentityCompleteDataSchema,
     IdentityCompleteRequestSchema,
     ProtocolFailureAckSchema,
@@ -73,6 +75,10 @@ test('identity schemas require strict server challenge and exact Nimiq proof fie
         publicKey: 'ab'.repeat(32),
         signature: 'cd'.repeat(64)
     }).success, true);
+    assert.equal(IdentityCancelRequestSchema.safeParse({
+        requestId,
+        authorizationId
+    }).success, true);
     assert.equal(IdentityBeginDataSchema.safeParse({
         authorizationId,
         address,
@@ -80,6 +86,7 @@ test('identity schemas require strict server challenge and exact Nimiq proof fie
         expiresAt
     }).success, true);
     assert.equal(IdentityCompleteDataSchema.safeParse(session).success, true);
+    assert.equal(IdentityCancelDataSchema.safeParse({ cancelled: true }).success, true);
 
     for (const invalid of [
         { requestId, address: 'NQ00 BAD!' },
@@ -91,6 +98,10 @@ test('identity schemas require strict server challenge and exact Nimiq proof fie
         { requestId, authorizationId, address, publicKey: 'ab'.repeat(31), signature: 'cd'.repeat(64) },
         { requestId, authorizationId, address, publicKey: 'ab'.repeat(32), signature: 'cd'.repeat(63) }
     ]) assert.equal(IdentityCompleteRequestSchema.safeParse(invalid).success, false);
+    for (const invalid of [
+        { requestId, authorizationId: 'short' },
+        { requestId, authorizationId, extra: true }
+    ]) assert.equal(IdentityCancelRequestSchema.safeParse(invalid).success, false);
 });
 
 test('challenge schemas separate strict practice and reward creation', () => {

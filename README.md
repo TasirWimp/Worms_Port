@@ -138,7 +138,9 @@ Startup fails if only one value is available. Public deployments must also keep
 their Socket.IO origin policy explicit through `ALLOWED_ORIGINS` when access is
 not same-origin. Pending authorizations are memory-only, expire after three
 minutes, are single-use even after invalid proof submission, and safely vanish
-on restart or disconnect. No private key, reusable signature, raw device ID, or
+on restart or disconnect. Rejected, timed-out, or malformed signing responses
+also trigger an owner-bound best-effort cancellation so the same account can
+retry immediately. No private key, reusable signature, raw device ID, or
 wallet proof is stored in the browser session token. The optional device-ID
 button tests consent only, immediately discards the returned value, and cannot
 authenticate a session.

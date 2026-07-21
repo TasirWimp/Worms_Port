@@ -6,6 +6,7 @@ import {
     ChallengePauseRequestSchema,
     CommandSubmitRequestSchema,
     IdentityBeginRequestSchema,
+    IdentityCancelRequestSchema,
     IdentityCompleteRequestSchema,
     protocolEvents,
     RequestIdSchema,
@@ -307,6 +308,31 @@ export function setupProtocol(
             });
         });
 
+        socket.on(protocolEvents.identityCancel, (payload: unknown, ack?: Ack) => {
+            if (!guard(socket, payload, ack, invalidLimiter)) return;
+            const parsed = IdentityCancelRequestSchema.safeParse(payload);
+            if (!parsed.success) {
+                invalid(socket, ack, requestIdOf(payload), invalidLimiter);
+                return;
+            }
+            withSession(socket, registry, parsed.data.requestId, ack, (session) => {
+                if (!options.identity) {
+                    ack(failure(
+                        parsed.data.requestId,
+                        'FEATURE_UNAVAILABLE',
+                        'Nimiq identity is not configured on this server.'
+                    ));
+                    return;
+                }
+                options.identity.cancelAttempt(
+                    session.id,
+                    socket.id,
+                    parsed.data.authorizationId
+                );
+                ack(ackFor(parsed.data.requestId, { cancelled: true as const }));
+            });
+        });
+
         socket.on(protocolEvents.challengeCreate, (payload: unknown, ack?: Ack) => {
             if (!guard(socket, payload, ack, invalidLimiter)) {
                 return;
@@ -536,6 +562,7 @@ const ALLOWED_CLIENT_EVENTS = new Set([
     protocolEvents.sessionOpen,
     protocolEvents.identityBegin,
     protocolEvents.identityComplete,
+    protocolEvents.identityCancel,
     protocolEvents.challengeCreate,
     protocolEvents.commandSubmit,
     protocolEvents.challengePause,

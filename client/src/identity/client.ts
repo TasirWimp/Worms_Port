@@ -2,6 +2,7 @@ import type { Socket } from 'socket.io-client';
 
 import {
     IdentityBeginAckSchema,
+    IdentityCancelAckSchema,
     IdentityCompleteAckSchema,
     IdentityCompleteDataSchema,
     protocolEvents,
@@ -82,6 +83,24 @@ export class IdentityProtocolClient {
             throw new IdentityProtocolError(parsed.data.error.message, parsed.data.error.code);
         }
         return adoptSession(this.socket, parsed.data.data) as IdentityCompleteData;
+    }
+
+    public async cancel(authorizationId: string): Promise<void> {
+        const requestId = createRequestId();
+        const raw = await this.emit(protocolEvents.identityCancel, {
+            requestId,
+            authorizationId
+        });
+        const parsed = IdentityCancelAckSchema.safeParse(raw);
+        if (!parsed.success || parsed.data.requestId !== requestId) {
+            throw new IdentityProtocolError(
+                'The server returned an invalid identity cancellation response.',
+                'INVALID_RESPONSE'
+            );
+        }
+        if (parsed.data.ok === false) {
+            throw new IdentityProtocolError(parsed.data.error.message, parsed.data.error.code);
+        }
     }
 
     private emit(event: string, request: unknown): Promise<unknown> {

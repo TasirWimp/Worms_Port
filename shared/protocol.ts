@@ -27,6 +27,11 @@ export const IdentityCompleteRequestSchema = z.object({
     signature: z.string().length(128).regex(/^[0-9a-fA-F]+$/)
 }).strict();
 
+export const IdentityCancelRequestSchema = z.object({
+    requestId: RequestIdSchema,
+    authorizationId: AuthorizationIdSchema
+}).strict();
+
 export const SessionOpenRequestSchema = z.discriminatedUnion('action', [
     z.object({
         requestId: RequestIdSchema,
@@ -159,6 +164,10 @@ export const IdentityBeginDataSchema = z.object({
 export const IdentityCompleteDataSchema = SessionOpenDataSchema.extend({
     identity: WalletIdentitySchema
 });
+
+export const IdentityCancelDataSchema = z.object({
+    cancelled: z.literal(true)
+}).strict();
 
 const SimulationUnitSchema = z.object({
     id: z.enum(['player', 'loomkeeper']),
@@ -296,6 +305,10 @@ export const IdentityCompleteAckSchema = z.union([
     ProtocolSuccessAckSchema(IdentityCompleteDataSchema),
     ProtocolFailureAckSchema
 ]);
+export const IdentityCancelAckSchema = z.union([
+    ProtocolSuccessAckSchema(IdentityCancelDataSchema),
+    ProtocolFailureAckSchema
+]);
 export const ChallengeCreateAckSchema = z.union([
     ProtocolSuccessAckSchema(ChallengeSnapshotSchema),
     ProtocolFailureAckSchema
@@ -310,6 +323,7 @@ export const ChallengeLeaveAckSchema = z.union([
 export type SessionOpenRequest = z.infer<typeof SessionOpenRequestSchema>;
 export type IdentityBeginRequest = z.infer<typeof IdentityBeginRequestSchema>;
 export type IdentityCompleteRequest = z.infer<typeof IdentityCompleteRequestSchema>;
+export type IdentityCancelRequest = z.infer<typeof IdentityCancelRequestSchema>;
 export type IdentityBeginData = z.infer<typeof IdentityBeginDataSchema>;
 export type IdentityCompleteData = z.infer<typeof IdentityCompleteDataSchema>;
 export type WalletIdentity = z.infer<typeof WalletIdentitySchema>;
@@ -343,6 +357,7 @@ export const protocolEvents = {
     sessionOpen: 'v1:session.open',
     identityBegin: 'v1:identity.begin',
     identityComplete: 'v1:identity.complete',
+    identityCancel: 'v1:identity.cancel',
     challengeCreate: 'v1:challenge.create',
     commandSubmit: 'v1:command.submit',
     challengePause: 'v1:challenge.pause',

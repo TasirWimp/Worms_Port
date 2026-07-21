@@ -85,8 +85,10 @@ export class IdentityAcceptanceView {
         if (this.busy) return;
         this.setBusy(true);
         this.setMessage('Preparing a short-lived server authorization...');
+        let pendingAuthorizationId: string | undefined;
         try {
             const authorization = await this.services.protocol.begin(address);
+            pendingAuthorizationId = authorization.authorizationId;
             this.setMessage('Review and approve the readable sign-in message in Nimiq Pay.');
             const signed = await this.services.adapter.sign(authorization.message);
             if ('message' in signed) {
@@ -94,11 +96,19 @@ export class IdentityAcceptanceView {
                 return;
             }
             const completed = await this.services.protocol.complete(authorization, signed.value);
+            pendingAuthorizationId = undefined;
             this.root.dataset.authorized = 'true';
             this.setMessage(`Authorized as ${completed.identity.address}.`);
         } catch (error) {
             this.setMessage(identityErrorMessage(error));
         } finally {
+            if (pendingAuthorizationId) {
+                try {
+                    await this.services.protocol.cancel(pendingAuthorizationId);
+                } catch {
+                    // Best-effort cleanup; expiry and disconnect remain safe fallbacks.
+                }
+            }
             this.setBusy(false);
         }
     }

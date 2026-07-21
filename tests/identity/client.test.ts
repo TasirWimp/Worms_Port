@@ -73,6 +73,30 @@ class LostCompleteAckSocket extends EventEmitter {
     }
 }
 
+class CancelAckSocket extends EventEmitter {
+    public connected = true;
+    public cancelCalls = 0;
+
+    timeout() { return this; }
+
+    emit(event: string, ...args: any[]): boolean {
+        if (event === protocolEvents.identityCancel) {
+            this.cancelCalls += 1;
+            const request = args[0];
+            const callback = args[1];
+            queueMicrotask(() => callback(null, {
+                protocolVersion: PROTOCOL_VERSION,
+                serverTimeMs: 1_700_000_000_000,
+                ok: true,
+                requestId: request.requestId,
+                data: { cancelled: true }
+            }));
+            return true;
+        }
+        return super.emit(event, ...args);
+    }
+}
+
 test('lost completion acknowledgement recovers the rotated identity session without proof retry', async () => {
     const storage = new MemoryStorage();
     Object.assign(globalThis, {
@@ -97,4 +121,11 @@ test('lost completion acknowledgement recovers the rotated identity session with
     assert.equal(socket.completeCalls, 1);
     assert.equal(socket.disconnects, 1);
     assert.equal(socket.connects, 1);
+});
+
+test('client sends one strict best-effort cancellation for an abandoned authorization', async () => {
+    const socket = new CancelAckSocket();
+    const client = new IdentityProtocolClient(socket as any);
+    await client.cancel('A'.repeat(32));
+    assert.equal(socket.cancelCalls, 1);
 });

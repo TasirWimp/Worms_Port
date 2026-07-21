@@ -106,6 +106,26 @@ test('an invalid owning proof burns the attempt while a foreign connection canno
     }
 });
 
+test('only the owning session can cancel an abandoned attempt and retry immediately', () => {
+    const registry = createRegistry();
+    try {
+        const begun = registry.begin('session_01', 'socket_01', '127.0.0.1', ADDRESS);
+        assert.equal('code' in begun, false);
+        if ('code' in begun) return;
+        registry.cancelAttempt('session_02', 'socket_02', begun.authorizationId);
+        assert.equal(registry.size, 1);
+        registry.cancelAttempt('session_01', 'socket_01', begun.authorizationId);
+        registry.cancelAttempt('session_01', 'socket_01', begun.authorizationId);
+        assert.equal(registry.size, 0);
+
+        const retry = registry.begin('session_01', 'socket_01', '127.0.0.1', ADDRESS);
+        assert.equal('code' in retry, false);
+        assert.equal(registry.size, 1);
+    } finally {
+        registry.dispose();
+    }
+});
+
 test('proofs for a different purpose, origin, network, or binding fail closed', () => {
     const mutations = [
         (message: string) => message.replace(

@@ -198,6 +198,14 @@ export class IdentityAuthorizationRegistry {
         socketId: string,
         authorizationId: string
     ): void {
+        this.cancelAttempt(sessionId, socketId, authorizationId);
+    }
+
+    public cancelAttempt(
+        sessionId: string,
+        socketId: string,
+        authorizationId: string
+    ): void {
         const pending = this.pending.get(authorizationId);
         if (pending?.sessionId === sessionId && pending.socketId === socketId) {
             this.pending.delete(authorizationId);

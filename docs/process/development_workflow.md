@@ -682,6 +682,14 @@ feature that truly requires an in-match wallet dialog must separately specify
 authoritative interruption semantics; it cannot inherit Practice pause behavior
 implicitly.
 
+Real-device acceptance added one lifecycle requirement: every server-created
+authorization that does not reach `identity.complete` must be explicitly
+cancelled when the provider rejects, times out, or returns a malformed result.
+The cancellation request is bound to the current authenticated session and
+socket, consumes only its own opaque authorization ID, is idempotent from the
+client's perspective, and grants no identity. A rejected signing dialog must
+permit an immediate same-account retry rather than waiting for server expiry.
+
 ### Nimiq Signed-Identity Security Rules
 
 WP-012 was cross-checked on 2026-07-21 against pinned official

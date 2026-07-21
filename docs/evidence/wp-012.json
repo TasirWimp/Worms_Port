@@ -1,6 +1,6 @@
 {
   "id": "WP-012",
-  "status": "complete",
+  "status": "in_progress",
   "starting_commit": "dac09fe",
   "branch": "codex/wp-012-identity-adapter",
   "initial_worktree": "clean",
@@ -17,6 +17,7 @@
     "Verify the official Nimiq signed-message construction and derive the signer address through an exactly pinned server-only Nimiq dependency",
     "Issue a rotated opaque authenticated session only after a valid proof and preserve wallet-free Practice",
     "Provide a query-gated fake-provider and physical-provider identity acceptance surface outside active gameplay",
+    "Cancel abandoned server authorization attempts after signing rejection, timeout, or malformed provider output so immediate retry remains available",
     "Add focused adapter, protocol, browser, dependency, bundle, and Render-built runtime evidence"
   ],
   "non_goals": [
@@ -39,6 +40,7 @@
     "npm run smoke:built",
     "npm run test:browser:smoke",
     "npm run test:browser:identity",
+    "identity rejection followed by immediate same-account retry",
     "npm audit",
     "server-only Nimiq dependency and client-bundle inspection",
     "self-review"
@@ -59,6 +61,7 @@
     { "command": "npm run test:browser:smoke", "status": "pass" },
     { "command": "npm run test:browser:practice", "status": "pass" },
     { "command": "npm run test:browser:identity", "status": "pass" },
+    { "command": "identity rejection followed by immediate same-account retry", "status": "pass" },
     { "command": "npm audit", "status": "pass" },
     { "command": "server-only Nimiq dependency and client-bundle inspection", "status": "pass" },
     { "command": "self-review", "status": "pass" }
@@ -70,14 +73,13 @@
     { "role": "worms_port_reviewer", "reviewer": "primary-agent-security-review", "decision": "pass" }
   ],
   "skipped_checks": [
-    "Samsung Galaxy S22 Nimiq Pay identity acceptance: no physical-device/provider session was available to the autonomous implementation cycle.",
     "Physical iOS and additional Android identity coverage: no release-testing environment was provided.",
     "WP-014 visual baselines, expanded device/degraded-network matrix, and performance budgets are not yet available."
   ],
   "residual_risks": [
-    "Nimiq Pay allowlisting, real provider discovery, account approval, signing approval/rejection, and native-dialog return remain to be confirmed on the deployed Samsung Galaxy S22 acceptance URL.",
+    "Samsung Galaxy S22 Nimiq Pay confirmed provider discovery, successful account/signature approval, server authorization, and signing rejection; the immediate retry correction still requires deployed re-testing.",
     "Render must expose RENDER_EXTERNAL_URL or IDENTITY_PUBLIC_ORIGIN and NIMIQ_NETWORK=main-albatross; partial identity configuration deliberately prevents startup.",
     "Pending authorizations and authenticated sessions remain single-instance in-memory state and are safely invalidated by a Render restart; horizontal scaling is still blocked.",
-    "The client main chunk is approximately 1.422 MB minified and 392.33 kB gzip and retains the existing chunk-size warning; the added SDK stays in a separate lazy 0.69 kB chunk."
+    "The client main chunk is approximately 1.423 MB minified and 392.41 kB gzip and retains the existing chunk-size warning; the added SDK stays in a separate lazy 0.69 kB chunk."
   ]
 }

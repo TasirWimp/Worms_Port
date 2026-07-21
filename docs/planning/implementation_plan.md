@@ -8,8 +8,8 @@ Phaser/Socket.IO stack.
 ## Execution Pointer
 
 - Active target: mobile-first single-player Nimiq Pay competition release.
-- Next work package: **WP-013 Sponsored Daily Challenge**.
-- Last completed work package: **WP-012 Nimiq Pay Identity Adapter**.
+- Next work package: **WP-012 Nimiq Pay Identity Adapter acceptance correction**.
+- Last completed work package: **WP-011E Arena-first Contextual Combat HUD**.
 - WP-012 exactly pins `@nimiq/mini-app-sdk` `0.1.0` and server-only
   `@nimiq/core` `2.7.1`. Provider access remains lazy, identity acceptance is
   query-gated at `?identity-preview=1` until WP-013 adds the production
@@ -34,8 +34,10 @@ Phaser/Socket.IO stack.
   WP-011E's arena-first HUD passed user-run Samsung Galaxy S22 Nimiq Pay
   acceptance on 2026-07-21.
   WP-012 automated fake-provider acceptance passed across the maintained phone
-  browser projects. Physical Nimiq Pay provider discovery and approval remain
-  the next external acceptance check; they do not block wallet-free Practice.
+  browser projects. Physical Nimiq Pay acceptance subsequently confirmed real
+  authorization and signing rejection, but exposed that a rejected signature
+  leaves its server authorization pending and can block an immediate retry.
+  Complete explicit abandoned-attempt cancellation before advancing to WP-013.
 
 A fresh Codex chat should read `AGENTS.md` and its ordered source documents,
 check the worktree and recent commits, then start only the work package named
@@ -1174,9 +1176,28 @@ WP-011E; physical coverage beyond that Samsung device remains a release risk.
 
 ### WP-012 Nimiq Pay Identity Adapter
 
-Status: complete on 2026-07-21. Depends on WP-006's validated
+Status: acceptance correction in progress on 2026-07-21. Depends on WP-006's validated
 session protocol and the accepted WP-011E client baseline. WP-011B through
 WP-011D remain presentation constraints rather than identity authority.
+
+Physical acceptance correction: Samsung Galaxy S22 Nimiq Pay successfully
+completed account discovery, signing approval, official server verification,
+and the authenticated result. Rejecting the native signing approval produced a
+truthful failure, but the client did not release the short-lived server attempt.
+Repeated account selection could therefore reach the pending/rate bound and
+report `Identity authorization is temporarily unavailable` until disconnect or
+expiry. Add a strict authenticated `v1:identity.cancel` operation that consumes
+only the calling session/socket's authorization ID. The client must invoke it
+after signing rejection, approval timeout, or malformed/failed provider output;
+cancellation is best-effort and must never replace completion or authorize a
+session. Immediate same-account retry must receive a fresh authorization and
+reach signing approval without waiting for the three-minute expiry.
+
+Correction implementation result: the strict cancel request, owner-bound
+server consumption, uniform idempotent acknowledgement, and client cleanup are
+implemented. Focused unit/Socket.IO coverage and the browser sequence `reject
+signing -> retry the same account -> authorize` pass. The deployed Samsung
+Galaxy S22 Nimiq Pay retry remains the closing physical acceptance check.
 
 Delivered: the Mini App SDK is loaded only after an explicit action on the
 query-gated acceptance surface; ordinary Practice does not initialize it.

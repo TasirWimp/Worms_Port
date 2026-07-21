@@ -6,8 +6,8 @@ import { nimiqSignedMessageHash } from '../../server/src/identity/crypto';
 const PRIVATE_KEY = '000102030405060708090a0b0c0d0e0f101112131415161718191a1b1c1d1e1f';
 const DEVICE_ID = 'ab'.repeat(32);
 
-function createSigner() {
-  const privateKey = PrivateKey.fromHex(PRIVATE_KEY);
+function createSigner(privateKeyHex = PRIVATE_KEY) {
+  const privateKey = PrivateKey.fromHex(privateKeyHex);
   const publicKey = PublicKey.derive(privateKey);
   const addressObject = publicKey.toAddress();
   const address = addressObject.toUserFriendlyAddress();
@@ -38,9 +38,9 @@ function captureErrors(page: Page) {
   return errors;
 }
 
-test('query-gated fake provider authorizes a rotated session and leaves Practice usable', async ({ page }) => {
+test('query-gated fake provider authorizes a rotated session and leaves Practice usable', async ({ page }, testInfo) => {
   const errors = captureErrors(page);
-  const signer = createSigner();
+  const signer = createSigner(projectPrivateKey(testInfo.project.name));
   try {
     await page.exposeFunction('testNimiqSign', (message: string) => signer.sign(message));
     await page.addInitScript(({ address, deviceId }) => {
@@ -102,27 +102,58 @@ test('query-gated fake provider authorizes a rotated session and leaves Practice
   }
 });
 
-test('resolved wallet rejection is truthful, preserves sideways mode, and does not block Practice', async ({ page }, testInfo) => {
+function projectPrivateKey(projectName: string): string {
+  const suffixes: Record<string, string> = {
+    'chromium-360x640': '20',
+    'chromium-390x844': '21',
+    'chromium-844x390': '22',
+    'webkit-390x844': '23'
+  };
+  return `${PRIVATE_KEY.slice(0, -2)}${suffixes[projectName] || '24'}`;
+}
+
+test('signing rejection is cancelled and the same account can retry immediately', async ({ page }, testInfo) => {
   test.skip(testInfo.project.name !== 'chromium-390x844', 'One portrait host covers the rejection presentation.');
   const errors = captureErrors(page);
-  await page.addInitScript(() => {
-    const runtime = window as any;
-    runtime.nimiq = {
-      listAccounts: async () => ({
-        error: { type: 'USER_REJECTED', message: 'User cancelled account access.' }
-      })
-    };
-    runtime.nimiqPay = { language: 'en' };
-  });
-  await page.goto('/?identity-preview=1');
-  await expect(page.locator('html')).toHaveAttribute('data-sideways', 'right');
-  await page.getByRole('button', { name: 'Choose Nimiq account' }).tap();
-  await expect(page.locator('.identity-message')).toContainText('cancelled');
-  await expect(page.locator('html')).toHaveAttribute('data-sideways', 'right');
-  await expect(page.getByRole('button', { name: 'Start Practice' })).toBeEnabled();
-  await page.getByRole('button', { name: 'Start Practice' }).tap();
-  await expect(page.locator('.combat-ui')).toBeVisible();
-  expect(errors).toEqual([]);
+  const signer = createSigner();
+  try {
+    await page.exposeFunction('testNimiqSign', (message: string) => signer.sign(message));
+    await page.addInitScript(({ address }) => {
+      const runtime = window as any;
+      runtime.__walletCalls = { signs: 0 };
+      runtime.nimiq = {
+        listAccounts: async () => [address],
+        sign: async (message: string) => {
+          runtime.__walletCalls.signs += 1;
+          if (runtime.__walletCalls.signs <= 2) {
+            return { error: { type: 'USER_REJECTED', message: 'User cancelled signing.' } };
+          }
+          return runtime.testNimiqSign(message);
+        }
+      };
+      runtime.nimiqPay = { language: 'en' };
+    }, { address: signer.address });
+    await page.goto('/?identity-preview=1');
+    await expect(page.locator('html')).toHaveAttribute('data-sideways', 'right');
+    await page.getByRole('button', { name: 'Choose Nimiq account' }).tap();
+    const account = page.getByRole('button', { name: signer.address });
+    await account.tap();
+    await expect(page.locator('.identity-message')).toContainText('cancelled');
+    await expect(account).toBeEnabled();
+
+    await account.tap();
+    await expect(page.locator('.identity-message')).toContainText('cancelled');
+    await expect(account).toBeEnabled();
+
+    await account.tap();
+    await expect(page.locator('.identity-message')).toContainText(`Authorized as ${signer.address}`);
+    expect(await page.evaluate(() => (window as any).__walletCalls.signs)).toBe(3);
+    await expect(page.locator('html')).toHaveAttribute('data-sideways', 'right');
+    await expect(page.getByRole('button', { name: 'Start Practice' })).toBeEnabled();
+    expect(errors).toEqual([]);
+  } finally {
+    signer.dispose();
+  }
 });
 
 test('ordinary Practice never initializes or calls an injected wallet provider', async ({ page }) => {

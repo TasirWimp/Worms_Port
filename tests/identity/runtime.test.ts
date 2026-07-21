@@ -182,6 +182,50 @@ test('invalid proof is consumed and concurrent completion has at most one succes
     }
 });
 
+test('abandoned signing can be cancelled and retried immediately without an ownership oracle', async () => {
+    const { runtime, url } = await start();
+    const owner = await connect(url);
+    const foreign = await connect(url);
+    const signer = createSigner();
+    try {
+        await openSession(owner, 'identity_cancel_owner_session');
+        await openSession(foreign, 'identity_cancel_foreign_session');
+        const authorization = await begin(
+            owner,
+            signer.address,
+            'identity_cancel_begin'
+        );
+
+        const foreignCancel = await emitAck(foreign, protocolEvents.identityCancel, {
+            requestId: 'identity_cancel_foreign',
+            authorizationId: authorization.authorizationId
+        });
+        assert.equal(foreignCancel.ok, true);
+        assert.deepEqual(foreignCancel.data, { cancelled: true });
+        assert.equal(runtime.identity?.size, 1);
+
+        const cancelled = await emitAck(owner, protocolEvents.identityCancel, {
+            requestId: 'identity_cancel_owner',
+            authorizationId: authorization.authorizationId
+        });
+        assert.equal(cancelled.ok, true);
+        assert.deepEqual(cancelled.data, { cancelled: true });
+        assert.equal(runtime.identity?.size, 0);
+
+        const repeatedCancel = await emitAck(owner, protocolEvents.identityCancel, {
+            requestId: 'identity_cancel_repeat',
+            authorizationId: authorization.authorizationId
+        });
+        assert.equal(repeatedCancel.ok, true);
+        const retry = await begin(owner, signer.address, 'identity_cancel_retry');
+        assert.notEqual(retry.authorizationId, '');
+        assert.equal(runtime.identity?.size, 1);
+    } finally {
+        signer.dispose();
+        await closeAll(runtime, [owner, foreign]);
+    }
+});
+
 test('identity stays disabled without configuration and cannot begin during Practice', async () => {
     const disabled = await start(false);
     const disabledSocket = await connect(disabled.url);
