@@ -1,6 +1,6 @@
 {
   "id": "WP-012",
-  "status": "in_progress",
+  "status": "complete",
   "starting_commit": "dac09fe",
   "branch": "codex/wp-012-identity-adapter",
   "initial_worktree": "clean",
@@ -41,6 +41,7 @@
     "npm run test:browser:smoke",
     "npm run test:browser:identity",
     "identity rejection followed by immediate same-account retry",
+    "Samsung Galaxy S22 Nimiq Pay authorization, rejection, and immediate-retry acceptance",
     "npm audit",
     "server-only Nimiq dependency and client-bundle inspection",
     "self-review"
@@ -62,6 +63,7 @@
     { "command": "npm run test:browser:practice", "status": "pass" },
     { "command": "npm run test:browser:identity", "status": "pass" },
     { "command": "identity rejection followed by immediate same-account retry", "status": "pass" },
+    { "command": "Samsung Galaxy S22 Nimiq Pay authorization, rejection, and immediate-retry acceptance", "status": "pass" },
     { "command": "npm audit", "status": "pass" },
     { "command": "server-only Nimiq dependency and client-bundle inspection", "status": "pass" },
     { "command": "self-review", "status": "pass" }
@@ -77,7 +79,6 @@
     "WP-014 visual baselines, expanded device/degraded-network matrix, and performance budgets are not yet available."
   ],
   "residual_risks": [
-    "Samsung Galaxy S22 Nimiq Pay confirmed provider discovery, successful account/signature approval, server authorization, and signing rejection; the immediate retry correction still requires deployed re-testing.",
     "Render must expose RENDER_EXTERNAL_URL or IDENTITY_PUBLIC_ORIGIN and NIMIQ_NETWORK=main-albatross; partial identity configuration deliberately prevents startup.",
     "Pending authorizations and authenticated sessions remain single-instance in-memory state and are safely invalidated by a Render restart; horizontal scaling is still blocked.",
     "The client main chunk is approximately 1.423 MB minified and 392.41 kB gzip and retains the existing chunk-size warning; the added SDK stays in a separate lazy 0.69 kB chunk."
