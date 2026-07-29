@@ -8,7 +8,7 @@ Phaser/Socket.IO stack.
 ## Execution Pointer
 
 - Active target: mobile-first single-player Nimiq Pay competition release.
-- Next work package: **WP-013 Sponsored Daily Challenge refinement**.
+- Next work package: **WP-013 Sponsored Daily Challenge implementation**.
 - Last completed work package: **WP-012 Nimiq Pay Identity Adapter**.
 - WP-012 exactly pins `@nimiq/mini-app-sdk` `0.1.0` and server-only
   `@nimiq/core` `2.7.1`. Provider access remains lazy, identity acceptance is
@@ -17,6 +17,12 @@ Phaser/Socket.IO stack.
   identity acceptance pass still requires `NIMIQ_NETWORK=main-albatross` and
   either Render's `RENDER_EXTERNAL_URL` or an explicit matching
   `IDENTITY_PUBLIC_ORIGIN`.
+- WP-013 planning was security-refined on 2026-07-29. Its implementation must
+  add a durable PostgreSQL reward ledger, atomic reservation and daily-budget
+  enforcement, an explicit payout state machine, exact signed-transaction
+  recovery, a low-funded dedicated sponsor hot wallet, and disabled-by-default
+  activation gates. A wallet address is an eligibility identity, not proof of
+  one human; Practice remains the unrestricted fallback.
 - PvP and matchmaking: deferred until after the competition release.
 - Canonical artwork reference:
   `docs/images/art-direction/knotkin-class-lineup-concept.png`.
@@ -1395,18 +1401,299 @@ Verification:
 
 ### WP-013 Sponsored Daily Challenge
 
-Status: planned. Depends on WP-007, WP-008, WP-009, and WP-012.
+Status: security-refined on 2026-07-29; implementation pending. Depends on
+WP-007, WP-008, WP-009, and WP-012.
 
-Goal: implement fixed reward configuration, eligibility checks, short-lived
-reward reservation, server-authoritative result verification, idempotent claim
-queue, daily ceiling, exhausted-pool disclosure, and payout kill switch.
+Goal: deliver one optional wallet-authorized Daily Grand Knot Challenge with a
+fixed sponsor-funded NIM reward for an eligible server-authoritative win.
+Practice remains unlimited, wallet-free, and available when rewards are
+disabled, paused, exhausted, or unavailable. Implement durable eligibility,
+reservation, match evidence, claims, payout reconciliation, daily spending
+limits, and an operator kill switch before any real sponsor funds can move.
+
+#### Security and implementation references
+
+The refinement was checked against primary Nimiq, OWASP, PostgreSQL, and Render
+guidance:
+
+- Nimiq transaction structure, network binding, submission failures, and
+  macro-block finality:
+  `https://nimiq.dev/protocol/transactions`;
+- Nimiq server RPC submission and transaction lookup:
+  `https://nimiq.dev/rpc/`;
+- official Nimiq Core policy source:
+  `https://github.com/nimiq/core-rs-albatross/blob/albatross/primitives/src/policy.rs`;
+- OWASP Transaction Authorization, Secrets Management, Logging, and API6
+  sensitive-business-flow guidance:
+  `https://cheatsheetseries.owasp.org/cheatsheets/Transaction_Authorization_Cheat_Sheet.html`,
+  `https://cheatsheetseries.owasp.org/cheatsheets/Secrets_Management_Cheat_Sheet.html`,
+  `https://cheatsheetseries.owasp.org/cheatsheets/Logging_Cheat_Sheet.html`, and
+  `https://owasp.org/API-Security/editions/2023/en/0xa6-unrestricted-access-to-sensitive-business-flows/`;
+- PostgreSQL serializable transactions, explicit/advisory locks, unique
+  constraints, and `ON CONFLICT` behavior:
+  `https://www.postgresql.org/docs/current/transaction-iso.html`,
+  `https://www.postgresql.org/docs/current/explicit-locking.html`, and
+  `https://www.postgresql.org/docs/current/sql-insert.html`; and
+- Render runtime secrets and environment separation:
+  `https://render.com/docs/configure-environment-variables` and
+  `https://render.com/docs/projects`.
+
+Open-source implementation review used
+`Timidan/nimdrops@7bb791e6adf63a3fcc8f101e02f1fa2331d92556` as the closest
+MIT behavioral reference for atomic claims, durable payout intent, a
+single-worker lease, exact serialized-transaction persistence, and crash/race
+tests. `Eligioo/nimtris@34018fc71aa840d0e62b5328ada288df7b42e5e0` was useful
+only for historical Nimiq game-reward orientation and has no repository license
+suitable for product import.
+`NIMIQ-MINIAPPS/NIMIQ-ARCADE@d80f9156b9f816587b4fbe45970f0583d1cab337`
+is MIT and closer to a Mini App game, but its client-reported score/XP and
+untested payout path are explicitly rejected as reward authority. These
+repositories are review evidence only: no code, assets, secrets, or payout
+configuration may be copied from them.
+
+The current Nimiq documentation is internally inconsistent about transaction
+validity: the transaction guide describes 120 blocks, while pinned
+`@nimiq/core` `2.7.1` exposes 120 batches, 60 blocks per batch, and 7,200
+validity-window blocks, consistent with Nimiq's current multisig explanation.
+Do not hardcode either prose value. Read and test
+`Policy.TRANSACTION_VALIDITY_WINDOW_BLOCKS` from the exactly pinned server-only
+core dependency when constructing and expiring transactions.
+
+#### Product and authority boundary
+
+- The ordinary Practice entry must not initialize Nimiq Pay, inspect reward
+  state, require durable storage, or become unavailable with the payout
+  service.
+- The Daily Challenge entry is the first production consumer of WP-012's
+  verified wallet session. Account selection alone is not authority.
+- The server chooses the eligibility day, reward amount, recipient, ruleset,
+  Loomkeeper profile, seed, turn limit, reservation deadline, and payout state.
+  The client can request or display these values but cannot supply or alter
+  them.
+- Bind the immutable normalized payout recipient to the WP-012 verified public
+  key/address when the reservation is created. A claim never accepts a payout
+  address, reward amount, result, replay hash, transaction, network, or fee from
+  the client.
+- Use integer Luna throughout the money path (`1 NIM = 100,000 Luna`). Reject
+  floating-point reward or fee configuration and out-of-range integer values.
+- Disclose the fixed reward, eligibility rule, turn limit, reservation window,
+  and current availability before native wallet approval and before play. A
+  later race may truthfully return unavailable; it must not silently downgrade
+  a rewarded match to Practice.
+- Default eligibility is one started rewarded attempt per verified wallet per
+  UTC challenge day. Unlimited Practice is the retry path after a loss,
+  forfeit, or consumed rewarded attempt.
+- Creating a reservation does not consume the daily attempt until the
+  authoritative rewarded match starts. Bound pre-start reservation churn per
+  wallet/session/IP, permit only one active reservation per wallet, and release
+  an unstarted expired or cancelled reservation atomically.
+- Starting, leaving, losing, timing out, or completing a rewarded match consumes
+  the attempt. Provider failure before the match starts must not consume it.
+  Once the server records an eligible win, the reward is a durable liability
+  and cannot disappear at UTC rollover, reservation expiry, deploy, or
+  disconnect.
+
+#### Durable reward ledger and concurrency
+
+- WP-013 requires a PostgreSQL-compatible durable database even while Render
+  remains a single web-service instance. In-memory maps, local files, browser
+  storage, and Render's ephemeral filesystem are not monetary authority.
+- Store schema migrations in the repository and use a least-privileged runtime
+  database role. Keep the sponsor private key out of every database table,
+  migration, fixture, trace, and backup.
+- Persist immutable challenge-day policy, reservation, authoritative match
+  evidence, claim intent, payout intent, state-transition events, serialized
+  signed transaction, transaction hash, inclusion/finality evidence, and
+  sanitized operator reason codes.
+- Required database backstops include one started attempt per
+  wallet/challenge-day, one active reservation per eligible wallet, one payout
+  per winning entitlement, one request digest per idempotency key, and one
+  immutable signed transaction per payout attempt. Application checks alone
+  are insufficient.
+- Reserve a reward and decrement available daily capacity in one transaction.
+  Reservations count against the configured daily Luna ceiling until released
+  or converted to a durable winning liability.
+- Use a small `SERIALIZABLE` transaction or explicit row lock for the final
+  reward slot and ledger solvency check. Retry the complete transaction on
+  PostgreSQL serialization failure (`SQLSTATE 40001`); never retry only the
+  final statement.
+- A PostgreSQL advisory lock may ensure that only one payout worker actively
+  signs at a time, but it is cooperative and cannot replace unique constraints,
+  state-transition guards, or idempotency.
+- Treat “exactly once” as an exactly-once payout effect produced by durable
+  idempotency and reconciliation. Do not claim that network delivery or RPC
+  broadcasting itself occurs exactly once.
+
+#### Reward and payout state machine
+
+Only allow documented transitions. Request handlers own reservation and claim
+intent; the authoritative simulation owns match outcomes; the payout worker
+alone owns monetary states after queueing.
+
+```text
+reserved -> in_progress -> lost | forfeited | expired
+reserved -> cancelled | expired
+in_progress -> won -> claimable -> queued -> signed
+signed -> broadcast_unknown -> included -> finalized
+queued | signed | broadcast_unknown -> manual_review
+```
+
+- `lost`, `forfeited`, `expired`, `cancelled`, and `finalized` are terminal for
+  their entitlement branch.
+- `won` and later states retain the fixed liability until finalized or resolved
+  by an audited operator action. Pool reset must not erase them.
+- A kill switch stops new reservations, claims, signing, and first broadcasts.
+  It must continue read-only reconciliation of already known transaction hashes
+  so an ambiguous payout is not incorrectly treated as unpaid.
+- Every state change checks its expected previous state in the same database
+  statement or transaction and appends an audit event. Out-of-order, skipped,
+  repeated with different data, or client-selected transitions fail closed.
+- Cancellation is allowed only before `in_progress`. Disconnecting or closing
+  the UI after a rewarded match starts is a forfeit or resumable authoritative
+  match according to the existing session deadline, never a way to recover the
+  consumed daily attempt.
+
+#### Claim authorization and abuse controls
+
+- The authoritative simulation result and retained replay/state hash are the
+  only win evidence. A client result screen, score, health value, screenshot,
+  elapsed time, or replay upload cannot create an entitlement.
+- Issue a short-lived, single-use server claim nonce only for an authenticated
+  session bound to a durable `won` entitlement. A re-authenticated session for
+  the same verified wallet may recover an outstanding claim without changing
+  its recipient or amount.
+- Require a client idempotency key and bind it to the canonical claim-request
+  digest. Repeating the same key and body returns the same claim; reusing the
+  key with different data returns a conflict and creates nothing.
+- Rate-limit availability, reservation, match creation, claim, and status
+  polling separately by privacy-reduced IP, session, wallet, and entitlement
+  keys. Keep the existing shared-carrier/NAT allowance in mind.
+- One wallet is not proof of one human. Optional consent-based device identity,
+  IP reputation, flow timing, or a risk-triggered human check may raise abuse
+  cost, but none may replace the signed wallet or authoritative match result.
+  Do not claim Sybil resistance, silently fingerprint users, or make raw device
+  identifiers durable reward authority.
+- Reservation exhaustion is an abuse case: limit active and daily reservation
+  creation, sweep expiry transactionally, and alert when expired/unstarted
+  reservations consume an unusual share of the pool.
+
+#### Payout worker and Nimiq transaction recovery
+
+- Run one logical signer worker. Public Socket.IO/HTTP handlers may enqueue
+  immutable payout intent but must never receive the signer object, key bytes,
+  or an operation that signs caller-provided transaction fields.
+- Before signing, re-read the locked entitlement and validate the expected
+  signer address, configured Nimiq network, immutable recipient and Luna value,
+  per-transfer limit, daily ledger ceiling, hot-wallet balance, fee reserve,
+  current chain height, and healthy non-stale RPC status.
+- Build and sign only from stored server intent. Persist the exact serialized
+  signed transaction and deterministic transaction hash before the first
+  `sendRawTransaction` call.
+- An RPC timeout, disconnect, duplicate response, worker crash, or process
+  restart after submission is an ambiguous broadcast, not proof of failure.
+  Query the stored hash and rebroadcast the exact stored bytes as needed.
+  Never construct a replacement merely because submission did not return.
+- Distinguish `signed`, `broadcast_unknown`, `included`, and `finalized` in
+  storage and user messaging. Mempool acceptance or RPC submission is not
+  “paid”; Nimiq macro-block finality is the completed state.
+- The first release sends an expired, conflicting, missing-after-window, or
+  otherwise irreconcilable transaction to `manual_review`. Automatic
+  replacement transactions are out of scope because they can double-pay if the
+  original status was misclassified.
+- RPC endpoints are server-controlled HTTPS configuration, never request
+  parameters. Validate expected network and freshness, bound timeouts/retries,
+  and treat every RPC response as untrusted external input.
+- Reconciliation must be restart-safe and scan durable non-terminal payouts on
+  startup. A deploy cannot forget a signed or possibly broadcast transaction.
+
+#### Sponsor key, hosting, and activation boundary
+
+- Use a dedicated automated payout hot wallet, never a personal wallet or the
+  full sponsor treasury. Keep the main sponsor funds offline or under a
+  separately operated multisig and top up only the configured daily ceiling
+  plus a bounded fee buffer.
+- Supply the hot-wallet key only as a Render runtime secret file. Never commit
+  it, place it in `render.yaml`, expose it as a Docker build argument, ship it
+  in a client bundle, store it in PostgreSQL, or print it in logs/errors.
+- Separate local/fake, testnet/staging, and mainnet database, RPC, signer, and
+  wallet configuration. Staging must be unable to address the production
+  secret or database through a shared environment group.
+- Rewards start in `disabled` mode and the server must not require or parse a
+  payout key in that mode. Presence of a key must never enable payouts.
+- Activation progresses through disabled, deterministic fake/record-only,
+  testnet, and explicit mainnet modes. Mainnet startup requires mutually
+  consistent network, expected signer address, fixed reward, per-transfer and
+  daily ceilings, database migrations, RPC health, secret source, and an
+  operator acknowledgement. Any missing or contradictory value fails closed.
+- Provide an immediate operator pause, key-rotation procedure, suspected-leak
+  response, database/RPC outage procedure, low-balance and ledger-solvency
+  alerts, and a reconciliation command that cannot sign or broadcast new data.
+- Add and test an explicit production Content Security Policy and standard
+  security headers before exposing the Daily entry. The existing browser
+  session token is same-origin-script readable, so XSS prevention remains part
+  of the reward boundary. Header choices must be verified inside Nimiq Pay and
+  must not assume unsupported cross-origin isolation.
+
+#### User-visible behavior
+
+- Before authorization, show `available`, `paused`, `exhausted`, or
+  `temporarily unavailable` without revealing wallet-specific eligibility.
+- After authorization, distinguish ineligible/already attempted, reserved,
+  match in progress, lost/forfeited, claimable, processing, finalized, and
+  manual-review/support states.
+- Never say “won NIM” before the authoritative `won` entitlement exists, or
+  “paid” before finality. Display the fixed amount and bound recipient in the
+  claim confirmation and payout status.
+- Provider rejection, database/RPC outage, exhausted rewards, or the kill
+  switch must leave Practice immediately available and must not loop native
+  wallet approval.
+
+Non-goals: player stakes, deposits, escrow, betting, random rewards,
+player-loss-funded payouts, client-authoritative scores/results, automatic
+replacement of ambiguous transactions, multiple concurrent signers,
+horizontal Render scaling, a claimable token or internal currency, silent
+device fingerprinting, proving one wallet equals one human, production
+mainnet activation, or moving sponsor funds during autonomous implementation.
 
 Owning roles: `worms_port_network_worker`, `worms_port_compliance_keeper`,
 `worms_port_test_worker`, `worms_port_reviewer`.
 
-Verification: forged result, nonce replay, duplicate claim, reservation expiry,
-concurrent winners, depleted pool, cancellation, provider outage, delayed
-confirmation, and secret-scan tests. Real funds remain disabled by default.
+Verification:
+
+- schema/migration tests plus database restart recovery; unique-constraint,
+  final-slot, serializable-retry, active-reservation, UTC rollover, expired
+  reservation, and ledger-solvency races using at least two independent
+  database connections;
+- forged result/replay/recipient/amount/network/state-transition requests,
+  claim-nonce replay, same-key/same-body idempotency, same-key/different-body
+  conflict, duplicate claim, re-authenticated claim recovery, address mismatch,
+  lost/forfeited match, reservation churn, rate limits, and depleted pool;
+- deterministic fake signer/RPC tests covering insufficient funds, fee reserve,
+  wrong signer/network, stale height, provider outage, delayed inclusion,
+  macro-block finality, transaction expiry, and invalid external responses;
+- crash injection before and after reservation commit, win commit, queue
+  commit, signing, signed-byte/hash persistence, first broadcast, ambiguous
+  timeout, inclusion, and finality; every restart must resume without losing a
+  liability or constructing an unintended second transaction;
+- concurrent worker tests proving one logical signer, cooperative advisory-lock
+  behavior, database uniqueness as the final backstop, exact-byte rebroadcast,
+  and manual review instead of automatic replacement;
+- browser coverage for wallet-free Practice, truthful pre-authorization
+  availability, account/sign rejection, consumed and unconsumed eligibility,
+  expired/cancelled reservation, result-to-claim flow, processing/finalized
+  wording, exhausted/paused/outage fallback, re-authentication, and no wallet
+  action during an active turn;
+- production-header/CSP checks, origin enforcement, request-size bounds,
+  structured redacted logs, secret scans across source/build/test artifacts,
+  client-bundle inspection, and proof that the sponsor key is not read while
+  rewards are disabled;
+- exact dependency pins and license review, `npm audit`, compliance, types,
+  focused protocol/simulation/identity/reward tests, clean build, built-server
+  and Render runtime smoke, complete maintained phone-browser coverage, and a
+  read-only security review; and
+- one explicitly approved tiny testnet canary followed by stored-hash
+  reconciliation and restart recovery. Mainnet funds remain disabled and real
+  Android/iOS payout acceptance remains a separate operator/user-run gate.
 
 ### WP-014 Autonomous Quality Harness
 
