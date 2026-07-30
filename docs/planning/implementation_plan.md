@@ -8,21 +8,25 @@ Phaser/Socket.IO stack.
 ## Execution Pointer
 
 - Active target: mobile-first single-player Nimiq Pay competition release.
-- Next work package: **WP-013 Sponsored Daily Challenge implementation**.
+- Next work package: **WP-013 deployed record-only/PostgreSQL acceptance**,
+  followed by the explicitly approved tiny TestAlbatross canary.
 - Last completed work package: **WP-012 Nimiq Pay Identity Adapter**.
 - WP-012 exactly pins `@nimiq/mini-app-sdk` `0.1.0` and server-only
   `@nimiq/core` `2.7.1`. Provider access remains lazy, identity acceptance is
-  query-gated at `?identity-preview=1` until WP-013 adds the production
-  rewarded-match entry, and Practice never depends on Nimiq Pay. A deployed
-  identity acceptance pass still requires `NIMIQ_NETWORK=main-albatross` and
-  either Render's `RENDER_EXTERNAL_URL` or an explicit matching
-  `IDENTITY_PUBLIC_ORIGIN`.
-- WP-013 planning was security-refined on 2026-07-29. Its implementation must
-  add a durable PostgreSQL reward ledger, atomic reservation and daily-budget
-  enforcement, an explicit payout state machine, exact signed-transaction
-  recovery, a low-funded dedicated sponsor hot wallet, and disabled-by-default
-  activation gates. A wallet address is an eligibility identity, not proof of
-  one human; Practice remains the unrestricted fallback.
+  now used by WP-013's separate production Daily entry, the diagnostics surface
+  remains query-gated at `?identity-preview=1`, and Practice never depends on
+  Nimiq Pay. A deployed identity acceptance pass still requires
+  `NIMIQ_NETWORK=main-albatross` and either Render's `RENDER_EXTERNAL_URL` or an
+  explicit matching `IDENTITY_PUBLIC_ORIGIN`.
+- WP-013 implementation landed locally on 2026-07-29 with a durable PostgreSQL
+  ledger/migration, atomic reservation and daily-budget enforcement,
+  server-reconstructed win evidence, nonce/idempotency-bound claims, an
+  explicit payout state machine, exact signed-transaction recovery, CSP and
+  security headers, a production Daily entry, and disabled-by-default
+  activation gates. Record-only Render/PostgreSQL restart acceptance and one
+  explicitly approved tiny TestAlbatross canary remain external gates. A
+  wallet address is an eligibility identity, not proof of one human; Practice
+  remains the unrestricted fallback.
 - PvP and matchmaking: deferred until after the competition release.
 - Canonical artwork reference:
   `docs/images/art-direction/knotkin-class-lineup-concept.png`.
@@ -1401,7 +1405,9 @@ Verification:
 
 ### WP-013 Sponsored Daily Challenge
 
-Status: security-refined on 2026-07-29; implementation pending. Depends on
+Status: implemented locally on 2026-07-29; deployed record-only PostgreSQL
+restart acceptance and the explicitly approved tiny TestAlbatross canary are
+pending. Mainnet remains disabled and out of autonomous scope. Depends on
 WP-007, WP-008, WP-009, and WP-012.
 
 Goal: deliver one optional wallet-authorized Daily Grand Knot Challenge with a

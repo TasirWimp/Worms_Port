@@ -113,7 +113,10 @@ test('challenge schemas separate strict practice and reward creation', () => {
         sequence: 0xFFFFFFFF,
         mode: 'reward',
         calling: 'warrior',
-        eligibility: { token: 'eligibility_token_01' }
+        eligibility: {
+            challengeId: 'reward_challenge_01',
+            token: 'e'.repeat(43)
+        }
     }).success, true);
 
     for (const invalid of [
@@ -122,7 +125,7 @@ test('challenge schemas separate strict practice and reward creation', () => {
         { requestId, sequence: 0, mode: 'practice', calling: 'bard' },
         { requestId, sequence: 0, mode: 'practice', calling: 'wizard', eligibility: { token: 'eligibility_token_01' } },
         { requestId, sequence: 0, mode: 'reward', calling: 'thief' },
-        { requestId, sequence: 0, mode: 'reward', calling: 'thief', eligibility: { token: 'too-short' } }
+        { requestId, sequence: 0, mode: 'reward', calling: 'thief', eligibility: { challengeId: 'reward_challenge_01', token: 'too-short' } }
     ]) {
         assert.equal(ChallengeCreateRequestSchema.safeParse(invalid).success, false);
     }

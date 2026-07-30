@@ -106,8 +106,9 @@ details and are never accepted from callers as player identity. Practice
 sessions work without a wallet. The default client creates live v2 Practice
 Clashes, submits ordered commands, consumes authoritative snapshots and
 results, and reconnects with the rotated session token. WP-012 adds an optional
-verified Nimiq wallet identity to that existing session; rewarded challenges
-remain unavailable until their dedicated work package.
+verified Nimiq wallet identity to that existing session. WP-013 uses that
+identity only for the separate Daily Challenge entry and binds any fixed reward
+to the verified address before play.
 
 Production deployments should set `ALLOWED_ORIGINS` to a comma-separated list
 of additional trusted origins when same-origin access is insufficient. Missing
@@ -117,15 +118,21 @@ controlled non-browser environment with `ALLOW_MISSING_ORIGIN=true`.
 controlled deployment or test environment; production defaults to thirty to
 accommodate mobile carrier/NAT address sharing.
 
-## Nimiq Pay Identity Adapter
+## Nimiq Pay Identity And Daily Challenge
 
-WP-012 provides a query-gated identity acceptance surface at
-`/?identity-preview=1`. Opening the ordinary `/` Practice journey does not load
-or initialize the Mini App SDK and never prompts for a wallet. The acceptance
-surface explicitly requests an account, asks Nimiq Pay to sign a readable,
-short-lived server challenge, and rotates the anonymous session token only
-after the server verifies the official Nimiq signed-message construction and
-derives the selected address from the signing public key.
+WP-012 provides the identity adapter, and WP-013 makes it available from the
+optional Daily Grand Knot Challenge. Opening the ordinary `/` journey and
+starting Practice does not load or initialize the Mini App SDK and never
+prompts for a wallet. The Daily entry first discloses public availability,
+fixed Luna/NIM amount, one-started-attempt-per-wallet-and-UTC-day eligibility,
+sixteen-turn limit, and reservation window. It requests an account only after
+the player chooses that path. `/?identity-preview=1` remains the isolated
+identity diagnostics surface.
+
+The authorization asks Nimiq Pay to sign a readable, short-lived server
+challenge and rotates the anonymous session token only after the server
+verifies the official Nimiq signed-message construction and derives the
+selected address from the signing public key.
 
 Identity-enabled deployments require both:
 
@@ -149,6 +156,36 @@ authenticate a session.
 `@nimiq/core` is exactly pinned, used only by the server verifier, and remains
 external to the esbuild bundle so its packaged WASM resource resolves correctly
 on Render. `npm run check:identity-bundles` enforces that separation.
+
+WP-013 rewards are disabled by default. `REWARD_MODE=disabled` does not require
+a database, RPC endpoint, or sponsor key and cannot move funds. Enabled modes
+require a PostgreSQL `DATABASE_URL`; the server applies
+`server/migrations/001_reward_ledger.sql` before listening. The safe activation
+ladder is:
+
+1. `disabled` - public Practice and identity, with no reward authority.
+2. `record-only` - durable reservations, replay-verified claims, and a
+   deterministic fake payout worker for staging acceptance; no Nimiq
+   transaction is created.
+3. `testnet` - explicitly configured TestAlbatross RPC and dedicated,
+   low-funded test signer.
+4. `mainnet` - operational release only, requiring the exact acknowledgement
+   `REWARD_MAINNET_ACKNOWLEDGEMENT=I_UNDERSTAND_MAINNET_PAYOUTS`.
+
+Common settings are `REWARD_LUNA`, `REWARD_DAILY_BUDGET_LUNA`,
+`REWARD_FEE_LUNA`, `REWARD_RESERVATION_SECONDS`, `REWARD_CLAIM_SECONDS`, and
+the immediate kill switch `REWARD_PAUSED=true`. Monetary values are integer
+Luna (`100000 Luna = 1 NIM`). The pinned ruleset currently requires
+`REWARD_TURN_LIMIT=16`.
+
+Chain modes additionally require `REWARD_NETWORK`,
+`REWARD_EXPECTED_SIGNER_ADDRESS`, `REWARD_RPC_URL`, and
+`REWARD_PRIVATE_KEY_FILE`. The last setting must point to a Render secret file
+containing only the 32-byte private key as hexadecimal. Never use a personal or
+treasury wallet, put the key in an environment variable/database, or commit it.
+The worker persists the exact signed bytes and hash before broadcast, reconciles
+inclusion to macro-block finality, and sends expired/ambiguous cases to
+`manual_review` instead of constructing a replacement transaction.
 
 ## Deterministic Simulation Foundation
 
@@ -273,12 +310,12 @@ only historical starting-commit lookup is skipped after the checker confirms
 the repository is actually shallow. GitHub Actions fetches full history and
 continues to enforce every historical lock pin before integration.
 
-Do not enable horizontal scaling until sessions, simulations, Loomkeeper turns,
-replays, and reward state use shared durable storage with exactly-once leases
-and cross-instance event delivery. Sponsor-funded rewards additionally require
-durable reservations, claims, payout idempotency, and completed-match evidence
-before activation. See `docs/process/development_workflow.md` under **Hosting
-Contract** for the operational requirements.
+Do not enable horizontal scaling. WP-013 makes the monetary ledger durable and
+uses a PostgreSQL advisory signer lease, but sessions, active simulations,
+Loomkeeper turns, and Socket.IO delivery remain single-process. Attach a Render
+PostgreSQL database before using `record-only` or chain reward modes. See
+`docs/process/development_workflow.md` under **Hosting Contract** for activation,
+pause, outage, and key-response requirements.
 
 ## World And Art Direction
 

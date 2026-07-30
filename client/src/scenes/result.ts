@@ -1,6 +1,6 @@
 import Phaser from 'phaser';
 
-import type { ChallengeResult } from '../../../shared/protocol';
+import type { ChallengeResult, RewardUpdateData } from '../../../shared/protocol';
 import type { PlayerCalling } from '../../../shared/simulation';
 import { canRequestFullscreen, toggleGameFullscreen } from '../combat/fullscreen';
 import { activeSidewaysMode } from '../lib/sideways';
@@ -14,6 +14,8 @@ type ResultSceneArgs = {
     result?: ChallengeResult;
     calling: PlayerCalling;
     message?: string;
+    rewarded?: boolean;
+    rewardUpdate?: RewardUpdateData;
 };
 
 export default class ResultScene extends Phaser.Scene {
@@ -21,6 +23,8 @@ export default class ResultScene extends Phaser.Scene {
     private client: PracticeClient;
     private root: HTMLElement;
     private fullscreenUnavailable = false;
+    private rewardUpdate?: RewardUpdateData;
+    private unsubscribeReward?: () => void;
 
     public constructor() {
         super({ key: 'result' });
@@ -47,7 +51,9 @@ export default class ResultScene extends Phaser.Scene {
         if (this.args.result?.finalStateHash) this.root.dataset.finalHash = this.args.result.finalStateHash;
         this.root.innerHTML = `
             <section class="result-card" aria-labelledby="result-title">
-                <p class="practice-eyebrow">Practice Clash complete</p>
+                <p class="practice-eyebrow">${
+                    this.args.rewarded ? 'Daily Challenge complete' : 'Practice Clash complete'
+                }</p>
                 <h1 id="result-title">${resultTitle(outcome)}</h1>
                 <p class="result-copy">${this.args.message ?? resultCopy(outcome)}</p>
                 ${this.args.result ? `
@@ -55,7 +61,17 @@ export default class ResultScene extends Phaser.Scene {
                         <div><dt>Final tick</dt><dd>${this.args.result.finalTick ?? '—'}</dd></div>
                         <div><dt>Replay hash</dt><dd>${shortHash(this.args.result.finalStateHash)}</dd></div>
                     </dl>` : ''}
-                <button type="button" class="result-retry">Play Again</button>
+                ${this.args.rewarded ? `
+                    <section class="reward-result" aria-live="polite">
+                        <h2>Fixed sponsor reward</h2>
+                        <p class="reward-result-status">Verifying the authoritative result...</p>
+                        <button type="button" class="reward-claim" hidden>Claim fixed reward</button>
+                        <button type="button" class="reward-refresh" hidden>Refresh payout status</button>
+                    </section>
+                ` : ''}
+                <button type="button" class="result-retry">${
+                    this.args.rewarded ? 'Play Practice' : 'Play Again'
+                }</button>
                 <button type="button" class="result-change">Change Calling</button>
                 <button type="button" class="result-fullscreen" hidden></button>
                 <p class="result-message" aria-live="polite"></p>
@@ -71,11 +87,93 @@ export default class ResultScene extends Phaser.Scene {
         this.root.querySelector<HTMLButtonElement>('.result-fullscreen')!.addEventListener(
             'click', () => void this.toggleFullscreen()
         );
+        this.root.querySelector<HTMLButtonElement>('.reward-claim')?.addEventListener(
+            'click', () => void this.claimReward()
+        );
+        this.root.querySelector<HTMLButtonElement>('.reward-refresh')?.addEventListener(
+            'click', () => void this.refreshReward()
+        );
+        const rewardChallengeId = this.args.result?.challengeId ??
+            this.args.rewardUpdate?.challengeId;
+        if (this.args.rewarded && rewardChallengeId) {
+            this.unsubscribeReward = this.client.onRewardUpdate((update) => {
+                if (update.challengeId === rewardChallengeId) {
+                    this.showRewardUpdate(update);
+                }
+            });
+            const existing = this.args.rewardUpdate ??
+                this.client.rewardForChallenge(rewardChallengeId);
+            if (existing) this.showRewardUpdate(existing);
+        }
         document.addEventListener('fullscreenchange', this.onFullscreenChange);
         window.addEventListener('resize', this.onViewportChange);
         window.visualViewport?.addEventListener('resize', this.onViewportChange);
         this.refreshFullscreenButton();
         this.events.once(Phaser.Scenes.Events.SHUTDOWN, this.shutdown);
+    }
+
+    private async claimReward(): Promise<void> {
+        if (!this.rewardUpdate) return;
+        this.setRewardBusy(true);
+        try {
+            this.showRewardUpdate(await this.client.claimReward(this.rewardUpdate));
+        } catch (error) {
+            this.setRewardStatus(
+                error instanceof Error ? error.message : 'The reward claim failed.'
+            );
+        } finally {
+            this.setRewardBusy(false);
+        }
+    }
+
+    private async refreshReward(): Promise<void> {
+        if (!this.rewardUpdate) return;
+        this.setRewardBusy(true);
+        try {
+            this.showRewardUpdate(
+                await this.client.rewardStatus(this.rewardUpdate.entitlementId)
+            );
+        } catch (error) {
+            this.setRewardStatus(
+                error instanceof Error ? error.message : 'Payout status is unavailable.'
+            );
+        } finally {
+            this.setRewardBusy(false);
+        }
+    }
+
+    private showRewardUpdate(update: RewardUpdateData): void {
+        this.rewardUpdate = structuredClone(update);
+        const recipient = `${update.recipient.slice(0, 9)}...${update.recipient.slice(-9)}`;
+        this.setRewardStatus(
+            `${update.message} ${formatNim(update.rewardLuna)} NIM is bound to ${recipient}.`
+        );
+        const claim = this.root.querySelector<HTMLButtonElement>('.reward-claim');
+        const refresh = this.root.querySelector<HTMLButtonElement>('.reward-refresh');
+        if (claim) claim.hidden = update.state !== 'claimable' || !update.claimNonce;
+        if (refresh) {
+            refresh.hidden = ![
+                'claimable',
+                'queued',
+                'signed',
+                'broadcast_unknown',
+                'included',
+                'manual_review'
+            ].includes(update.state);
+        }
+    }
+
+    private setRewardStatus(message: string): void {
+        const field = this.root.querySelector<HTMLElement>('.reward-result-status');
+        if (field) field.textContent = message;
+    }
+
+    private setRewardBusy(busy: boolean): void {
+        for (const button of this.root.querySelectorAll<HTMLButtonElement>(
+            '.reward-claim, .reward-refresh'
+        )) {
+            button.disabled = busy;
+        }
     }
 
     private async retry(): Promise<void> {
@@ -134,6 +232,8 @@ export default class ResultScene extends Phaser.Scene {
     }
 
     private shutdown(): void {
+        this.unsubscribeReward?.();
+        this.unsubscribeReward = undefined;
         document.removeEventListener('fullscreenchange', this.onFullscreenChange);
         window.removeEventListener('resize', this.onViewportChange);
         window.visualViewport?.removeEventListener('resize', this.onViewportChange);
@@ -141,12 +241,19 @@ export default class ResultScene extends Phaser.Scene {
     }
 }
 
+function formatNim(luna: string): string {
+    const amount = BigInt(luna);
+    const whole = amount / 100_000n;
+    const fraction = (amount % 100_000n).toString().padStart(5, '0').replace(/0+$/, '');
+    return fraction ? `${whole}.${fraction}` : whole.toString();
+}
+
 function resultTitle(outcome: ChallengeResult['outcome'] | undefined): string {
     if (outcome === 'player_win') return 'Grand Knot!';
     if (outcome === 'loomkeeper_win') return 'The Loomkeeper prevailed';
     if (outcome === 'draw') return 'Threads tied';
     if (outcome === 'expired') return 'Practice expired';
-    return 'Practice interrupted';
+    return outcome ? 'Practice interrupted' : 'Reward status';
 }
 
 function resultCopy(outcome: ChallengeResult['outcome'] | undefined): string {
@@ -154,7 +261,9 @@ function resultCopy(outcome: ChallengeResult['outcome'] | undefined): string {
     if (outcome === 'loomkeeper_win') return 'Restitch and try a different line.';
     if (outcome === 'draw') return 'The turn limit closed this Clash evenly.';
     if (outcome === 'expired') return 'This in-memory Practice Clash reached its expiry.';
-    return 'Start a fresh Practice Clash whenever you are ready.';
+    return outcome
+        ? 'Start a fresh Practice Clash whenever you are ready.'
+        : 'This wallet has an outstanding Daily Challenge reward record.';
 }
 
 function shortHash(hash: string | null): string {

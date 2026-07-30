@@ -116,6 +116,7 @@ export class SessionRegistry {
     private readonly loomkeeperDifficulty: LoomkeeperDifficulty;
     private readonly pendingLoomkeeperTurns = new Set<string>();
     private readonly runningLoomkeeperTurns = new Set<string>();
+    private readonly sequenceLocks = new Map<string, Promise<void>>();
     private inOrderedSimulation = false;
 
     public constructor(options: SessionRegistryOptions = {}) {
@@ -285,12 +286,13 @@ export class SessionRegistry {
     public createChallenge(
         session: Session,
         mode: 'practice' | 'reward',
-        calling: 'wizard' | 'thief' | 'warrior'
+        calling: 'wizard' | 'thief' | 'warrior',
+        reward?: { challengeId: string; seed: number }
     ): ChallengeSnapshot | ProtocolError {
-        if (mode === 'reward') {
+        if (mode === 'reward' && !reward) {
             return {
                 code: 'FEATURE_UNAVAILABLE',
-                message: 'Reward challenges are not enabled in this release slice.',
+                message: 'A durable reward reservation is required.',
                 retryable: false
             };
         }
@@ -310,11 +312,11 @@ export class SessionRegistry {
             session.challenges.delete(removedId);
             this.coordinator.delete(removedId);
         }
-        const challengeId = opaqueId();
+        const challengeId = reward?.challengeId ?? opaqueId();
         const simulation = this.coordinator.create(
             challengeId,
             session.id,
-            this.seedSource() >>> 0,
+            reward?.seed ?? this.seedSource() >>> 0,
             calling
         );
         const challenge: Challenge = {
@@ -470,6 +472,31 @@ export class SessionRegistry {
         return challenge ? this.coordinator.replay(challenge.id) : undefined;
     }
 
+    public replayForSessionChallenge(
+        sessionId: string,
+        challengeId: string
+    ): CoordinatorReplay | undefined {
+        const session = this.sessions.get(sessionId);
+        return session ? this.replayForChallenge(session, challengeId) : undefined;
+    }
+
+    public challengeMode(
+        sessionId: string,
+        challengeId: string
+    ): Challenge['mode'] | undefined {
+        return this.sessions.get(sessionId)?.challenges.get(challengeId)?.mode;
+    }
+
+    public socketIdsForWallet(address: string): string[] {
+        const socketIds: string[] = [];
+        for (const session of this.sessions.values()) {
+            if (session.identity?.address === address && session.socketId && !this.isExpired(session)) {
+                socketIds.push(session.socketId);
+            }
+        }
+        return socketIds;
+    }
+
     public takeChallengeResult(
         session: Session,
         challengeId: string,
@@ -602,6 +629,62 @@ export class SessionRegistry {
         return ack;
     }
 
+    public async sequenceAsync<T>(
+        session: Session,
+        requestId: string,
+        sequence: number,
+        payload: unknown,
+        operation: () => Promise<ProtocolAck<T>>
+    ): Promise<ProtocolAck<T>> {
+        const previous = this.sequenceLocks.get(session.id) ?? Promise.resolve();
+        let release!: () => void;
+        const current = new Promise<void>((resolve) => {
+            release = resolve;
+        });
+        const queued = previous.then(() => current);
+        this.sequenceLocks.set(session.id, queued);
+        await previous;
+        try {
+            const hash = requestHash(payload);
+            const cached = session.replay.get(requestId);
+            if (cached) {
+                if (cached.hash !== hash) {
+                    return failure(
+                        requestId,
+                        'REPLAY_CONFLICT',
+                        'The request id was already used for different content.'
+                    );
+                }
+                return cached.ack as ProtocolAck<T>;
+            }
+            if (sequence < session.nextSequence) {
+                return failure(requestId, 'STALE_SEQUENCE', 'The command sequence is stale.');
+            }
+            if (sequence > session.nextSequence) {
+                return failure(
+                    requestId,
+                    'SEQUENCE_GAP',
+                    'The command sequence has a gap.',
+                    true
+                );
+            }
+            const ack = await operation();
+            session.nextSequence += 1;
+            session.replay.set(requestId, { hash, ack: ack as ProtocolAck<unknown> });
+            while (session.replay.size > REPLAY_LIMIT) {
+                const oldest = session.replay.keys().next().value;
+                if (oldest === undefined) break;
+                session.replay.delete(oldest);
+            }
+            return ack;
+        } finally {
+            release();
+            if (this.sequenceLocks.get(session.id) === queued) {
+                this.sequenceLocks.delete(session.id);
+            }
+        }
+    }
+
     public close(sessionId: string): void {
         const session = this.sessions.get(sessionId);
         if (!session) {
@@ -615,6 +698,7 @@ export class SessionRegistry {
             this.sessionsBySocket.delete(session.socketId);
         }
         this.sessions.delete(sessionId);
+        this.sequenceLocks.delete(sessionId);
         this.coordinator.deleteForSession(sessionId);
         this.onSessionClosed?.(session.id, session.socketId);
     }

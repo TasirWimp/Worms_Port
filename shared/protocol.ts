@@ -13,6 +13,9 @@ export const NormalizedNimiqAddressSchema = z.string().regex(
     /^NQ[0-9]{2}(?: [0-9A-HJ-NP-VXY]{4}){8}$/
 );
 const AuthorizationIdSchema = z.string().length(32).regex(/^[A-Za-z0-9_-]+$/);
+const RewardRecordIdSchema = z.string().min(16).max(64).regex(/^[A-Za-z0-9_-]+$/);
+const RewardTokenSchema = z.string().length(43).regex(/^[A-Za-z0-9_-]+$/);
+const LunaStringSchema = z.string().regex(/^(0|[1-9][0-9]{0,19})$/);
 
 export const IdentityBeginRequestSchema = z.object({
     requestId: RequestIdSchema,
@@ -30,6 +33,28 @@ export const IdentityCompleteRequestSchema = z.object({
 export const IdentityCancelRequestSchema = z.object({
     requestId: RequestIdSchema,
     authorizationId: AuthorizationIdSchema
+}).strict();
+
+export const RewardInfoRequestSchema = z.object({
+    requestId: RequestIdSchema
+}).strict();
+
+export const RewardReserveRequestSchema = z.object({
+    requestId: RequestIdSchema,
+    sequence: SequenceSchema,
+    calling: z.enum(['wizard', 'thief', 'warrior'])
+}).strict();
+
+export const RewardClaimRequestSchema = z.object({
+    requestId: RequestIdSchema,
+    entitlementId: RewardRecordIdSchema,
+    claimNonce: RewardTokenSchema,
+    idempotencyKey: z.string().min(16).max(64).regex(/^[A-Za-z0-9_-]+$/)
+}).strict();
+
+export const RewardStatusRequestSchema = z.object({
+    requestId: RequestIdSchema,
+    entitlementId: RewardRecordIdSchema.optional()
 }).strict();
 
 export const SessionOpenRequestSchema = z.discriminatedUnion('action', [
@@ -55,7 +80,8 @@ export const ChallengeCreateRequestSchema = z.object({
     mode: z.literal('reward'),
     calling: z.enum(['wizard', 'thief', 'warrior']),
     eligibility: z.object({
-        token: z.string().min(16).max(512).regex(/^[A-Za-z0-9._~-]+$/)
+        challengeId: ChallengeIdSchema,
+        token: RewardTokenSchema
     }).strict()
 }).strict());
 
@@ -113,6 +139,10 @@ export const ProtocolErrorSchema = z.object({
         'COMMAND_REJECTED',
         'NOT_YOUR_TURN',
         'LATE_TURN',
+        'REWARD_UNAVAILABLE',
+        'REWARD_INELIGIBLE',
+        'REWARD_CONFLICT',
+        'REWARD_PAUSED',
         'INTERNAL_ERROR'
     ]),
     message: z.string().min(1).max(160),
@@ -167,6 +197,62 @@ export const IdentityCompleteDataSchema = SessionOpenDataSchema.extend({
 
 export const IdentityCancelDataSchema = z.object({
     cancelled: z.literal(true)
+}).strict();
+
+export const RewardPublicStateSchema = z.enum([
+    'disabled',
+    'available',
+    'paused',
+    'exhausted',
+    'temporarily_unavailable'
+]);
+
+export const RewardPayoutStateSchema = z.enum([
+    'reserved',
+    'in_progress',
+    'lost',
+    'forfeited',
+    'expired',
+    'cancelled',
+    'claimable',
+    'queued',
+    'signed',
+    'broadcast_unknown',
+    'included',
+    'finalized',
+    'manual_review'
+]);
+
+export const RewardInfoDataSchema = z.object({
+    status: RewardPublicStateSchema,
+    challengeDay: z.string().date(),
+    rewardLuna: LunaStringSchema,
+    reservationSeconds: z.number().int().positive().max(3600),
+    turnLimit: z.number().int().positive().max(64)
+}).strict();
+
+export const RewardReservationDataSchema = z.object({
+    reservationId: RewardRecordIdSchema,
+    challengeId: ChallengeIdSchema,
+    eligibilityToken: RewardTokenSchema,
+    challengeDay: z.string().date(),
+    rewardLuna: LunaStringSchema,
+    recipient: NormalizedNimiqAddressSchema,
+    calling: z.enum(['wizard', 'thief', 'warrior']),
+    expiresAt: z.string().datetime()
+}).strict();
+
+export const RewardUpdateDataSchema = z.object({
+    entitlementId: RewardRecordIdSchema,
+    challengeId: ChallengeIdSchema,
+    challengeDay: z.string().date(),
+    rewardLuna: LunaStringSchema,
+    recipient: NormalizedNimiqAddressSchema,
+    state: RewardPayoutStateSchema,
+    claimNonce: RewardTokenSchema.optional(),
+    transactionHash: z.string().regex(/^[a-f0-9]{64}$/).optional(),
+    finalizedAt: z.string().datetime().optional(),
+    message: z.string().min(1).max(200)
 }).strict();
 
 const SimulationUnitSchema = z.object({
@@ -309,6 +395,19 @@ export const IdentityCancelAckSchema = z.union([
     ProtocolSuccessAckSchema(IdentityCancelDataSchema),
     ProtocolFailureAckSchema
 ]);
+export const RewardInfoAckSchema = z.union([
+    ProtocolSuccessAckSchema(RewardInfoDataSchema),
+    ProtocolFailureAckSchema
+]);
+export const RewardReserveAckSchema = z.union([
+    ProtocolSuccessAckSchema(RewardReservationDataSchema),
+    ProtocolFailureAckSchema
+]);
+export const RewardClaimAckSchema = z.union([
+    ProtocolSuccessAckSchema(RewardUpdateDataSchema),
+    ProtocolFailureAckSchema
+]);
+export const RewardStatusAckSchema = RewardClaimAckSchema;
 export const ChallengeCreateAckSchema = z.union([
     ProtocolSuccessAckSchema(ChallengeSnapshotSchema),
     ProtocolFailureAckSchema
@@ -327,6 +426,10 @@ export type IdentityCancelRequest = z.infer<typeof IdentityCancelRequestSchema>;
 export type IdentityBeginData = z.infer<typeof IdentityBeginDataSchema>;
 export type IdentityCompleteData = z.infer<typeof IdentityCompleteDataSchema>;
 export type WalletIdentity = z.infer<typeof WalletIdentitySchema>;
+export type RewardInfoData = z.infer<typeof RewardInfoDataSchema>;
+export type RewardReservationData = z.infer<typeof RewardReservationDataSchema>;
+export type RewardUpdateData = z.infer<typeof RewardUpdateDataSchema>;
+export type RewardPayoutState = z.infer<typeof RewardPayoutStateSchema>;
 export type ChallengeCreateRequest = z.infer<typeof ChallengeCreateRequestSchema>;
 export type CommandSubmitRequest = z.infer<typeof CommandSubmitRequestSchema>;
 export type ChallengeLeaveRequest = z.infer<typeof ChallengeLeaveRequestSchema>;
@@ -358,6 +461,11 @@ export const protocolEvents = {
     identityBegin: 'v1:identity.begin',
     identityComplete: 'v1:identity.complete',
     identityCancel: 'v1:identity.cancel',
+    rewardInfo: 'v1:reward.info',
+    rewardReserve: 'v1:reward.reserve',
+    rewardClaim: 'v1:reward.claim',
+    rewardStatus: 'v1:reward.status',
+    rewardUpdate: 'v1:reward.update',
     challengeCreate: 'v1:challenge.create',
     commandSubmit: 'v1:command.submit',
     challengePause: 'v1:challenge.pause',

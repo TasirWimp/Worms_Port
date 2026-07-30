@@ -1,5 +1,6 @@
 import Phaser from 'phaser';
 
+import type { RewardInfoData } from '../../../shared/protocol';
 import type { PlayerCalling } from '../../../shared/simulation';
 import {
     liveCombatArgs,
@@ -19,6 +20,8 @@ export default class PracticeScene extends Phaser.Scene {
     private readonly unsubscribers: (() => void)[] = [];
     private identityView?: IdentityAcceptanceView;
     private identityBusy = false;
+    private rewardBusy = false;
+    private rewardInfo?: RewardInfoData;
     private reconnecting = false;
 
     public constructor() {
@@ -56,20 +59,25 @@ export default class PracticeScene extends Phaser.Scene {
                 <button type="button" class="practice-start">Start Practice</button>
                 <p class="practice-message" aria-live="polite"></p>
             </section>
+            <section class="daily-card" aria-labelledby="daily-title">
+                <p class="practice-eyebrow">Optional sponsor reward</p>
+                <h2 id="daily-title">Daily Grand Knot Challenge</h2>
+                <p class="daily-summary">Practice needs no wallet. Check the optional sponsor-funded challenge only when you want it.</p>
+                <dl class="daily-facts" hidden></dl>
+                <div class="daily-identity"></div>
+                <button type="button" class="daily-check">Check Daily Challenge</button>
+                <button type="button" class="daily-start" hidden disabled>Start Daily Challenge</button>
+                <p class="daily-message" aria-live="polite"></p>
+            </section>
         `;
         host.appendChild(this.root);
         const identityServices = this.registry.get(
             IDENTITY_SERVICES_REGISTRY_KEY
         ) as IdentityAcceptanceServices | undefined;
-        if (identityServices) {
-            this.identityView = new IdentityAcceptanceView(
-                this.root,
-                identityServices,
-                (busy) => {
-                    this.identityBusy = busy;
-                    this.refreshStartAvailability();
-                }
-            );
+        const identityPreview = new URLSearchParams(window.location.search)
+            .get('identity-preview') === '1';
+        if (identityPreview && identityServices) {
+            this.mountIdentity(identityServices, false);
         }
         const current = this.client.currentSnapshot();
         if (current) this.calling = current.calling;
@@ -84,6 +92,11 @@ export default class PracticeScene extends Phaser.Scene {
             });
         }
         this.startButton().addEventListener('click', () => void this.startPractice());
+        this.root.querySelector<HTMLButtonElement>('.daily-check')!.addEventListener(
+            'click',
+            () => void this.loadRewardInfo(identityServices, identityPreview)
+        );
+        this.dailyButton().addEventListener('click', () => void this.startDaily());
         this.unsubscribers.push(this.client.onConnection((state) => {
             this.reconnecting = state === 'reconnecting';
             this.refreshStartAvailability();
@@ -96,9 +109,112 @@ export default class PracticeScene extends Phaser.Scene {
         }));
         this.unsubscribers.push(this.client.onError((message) => this.setMessage(message)));
         this.unsubscribers.push(this.client.onResult((result) => {
-            this.scene.start('result', { result, calling: this.calling });
+            const snapshot = this.client.currentSnapshot();
+            this.scene.start('result', {
+                result,
+                calling: this.calling,
+                rewarded: snapshot?.challengeId === result.challengeId &&
+                    snapshot.mode === 'reward'
+            });
         }));
         this.events.once(Phaser.Scenes.Events.SHUTDOWN, this.shutdown);
+    }
+
+    private async loadRewardInfo(
+        identityServices: IdentityAcceptanceServices | undefined,
+        identityPreview: boolean
+    ): Promise<void> {
+        const summary = this.root.querySelector<HTMLElement>('.daily-summary')!;
+        const check = this.root.querySelector<HTMLButtonElement>('.daily-check')!;
+        check.disabled = true;
+        summary.textContent = "Checking today's availability...";
+        try {
+            const info = await this.client.rewardInfo();
+            this.rewardInfo = info;
+            summary.textContent = rewardAvailability(info.status);
+            const facts = this.root.querySelector<HTMLElement>('.daily-facts')!;
+            facts.hidden = false;
+            facts.innerHTML = `
+                <div><dt>Fixed reward</dt><dd>${formatNim(info.rewardLuna)} NIM</dd></div>
+                <div><dt>Eligibility</dt><dd>One started attempt per wallet and UTC day</dd></div>
+                <div><dt>Turn limit</dt><dd>${info.turnLimit}</dd></div>
+                <div><dt>Reservation</dt><dd>${info.reservationSeconds} seconds</dd></div>
+            `;
+            if (info.status === 'available' && identityServices && !identityPreview) {
+                this.mountIdentity(identityServices, true);
+            }
+            this.dailyButton().hidden = info.status !== 'available';
+            if (this.client.currentIdentity()) await this.recoverReward();
+        } catch {
+            summary.textContent =
+                'Rewards are temporarily unavailable. Unlimited Practice is ready.';
+        } finally {
+            check.disabled = false;
+            check.textContent = 'Refresh Daily availability';
+        }
+        this.refreshStartAvailability();
+    }
+
+    private mountIdentity(
+        services: IdentityAcceptanceServices,
+        production: boolean
+    ): void {
+        if (this.identityView) return;
+        const parent = production
+            ? this.root.querySelector<HTMLElement>('.daily-identity')!
+            : this.root;
+        this.identityView = new IdentityAcceptanceView(
+            parent,
+            services,
+            (busy) => {
+                this.identityBusy = busy;
+                this.refreshStartAvailability();
+            },
+            {
+                production,
+                onAuthorized: (identity) => {
+                    this.client.noteAuthorizedIdentity(identity);
+                    this.refreshStartAvailability();
+                    void this.recoverReward();
+                }
+            }
+        );
+        if (production && this.client.currentIdentity()) {
+            this.identityView.root.hidden = true;
+        }
+    }
+
+    private async recoverReward(): Promise<void> {
+        try {
+            const update = await this.client.rewardStatus();
+            this.scene.start('result', {
+                calling: this.calling,
+                rewarded: true,
+                rewardUpdate: update
+            });
+        } catch {
+            // No outstanding claim is the expected state for most authorizations.
+        }
+    }
+
+    private async startDaily(): Promise<void> {
+        const button = this.dailyButton();
+        this.rewardBusy = true;
+        this.refreshStartAvailability();
+        this.setDailyMessage("Reserving today's fixed sponsor reward...");
+        try {
+            const snapshot = await this.client.startReward(this.calling);
+            this.scene.start('combat', liveCombatArgs(this.client, snapshot));
+        } catch (error) {
+            this.setDailyMessage(
+                error instanceof Error
+                    ? `${error.message} Unlimited Practice remains available.`
+                    : 'The Daily Challenge could not start. Unlimited Practice remains available.'
+            );
+        } finally {
+            this.rewardBusy = false;
+            if (this.scene.isActive()) this.refreshStartAvailability();
+        }
     }
 
     private async startPractice(): Promise<void> {
@@ -126,14 +242,27 @@ export default class PracticeScene extends Phaser.Scene {
         return this.root.querySelector('.practice-start') as HTMLButtonElement;
     }
 
+    private dailyButton(): HTMLButtonElement {
+        return this.root.querySelector('.daily-start') as HTMLButtonElement;
+    }
+
     private setMessage(message: string): void {
         const field = this.root.querySelector('.practice-message') as HTMLElement;
         field.textContent = message;
         field.hidden = !message;
     }
 
+    private setDailyMessage(message: string): void {
+        const field = this.root.querySelector<HTMLElement>('.daily-message')!;
+        field.textContent = message;
+        field.hidden = !message;
+    }
+
     private refreshStartAvailability(): void {
-        this.startButton().disabled = this.identityBusy || this.reconnecting;
+        this.startButton().disabled = this.reconnecting || this.identityBusy;
+        this.dailyButton().disabled = this.reconnecting || this.identityBusy ||
+            this.rewardBusy || this.rewardInfo?.status !== 'available' ||
+            !this.client.currentIdentity();
     }
 
     private shutdown(): void {
@@ -142,6 +271,23 @@ export default class PracticeScene extends Phaser.Scene {
         this.identityView = undefined;
         this.root?.remove();
     }
+}
+
+function rewardAvailability(status: RewardInfoData['status']): string {
+    if (status === 'available') {
+        return 'Available today. Authorize the receiving wallet before play.';
+    }
+    if (status === 'paused') return 'Sponsor rewards are paused. Unlimited Practice is ready.';
+    if (status === 'exhausted') return "Today's reward pool is exhausted. Unlimited Practice is ready.";
+    if (status === 'disabled') return 'Sponsor rewards are disabled. Unlimited Practice is ready.';
+    return 'Rewards are temporarily unavailable. Unlimited Practice is ready.';
+}
+
+function formatNim(luna: string): string {
+    const amount = BigInt(luna);
+    const whole = amount / 100_000n;
+    const fraction = (amount % 100_000n).toString().padStart(5, '0').replace(/0+$/, '');
+    return fraction ? `${whole}.${fraction}` : whole.toString();
 }
 
 function drawBackdrop(scene: Phaser.Scene): void {
