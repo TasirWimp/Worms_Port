@@ -57,21 +57,23 @@
     { "command": "npm run smoke:built", "status": "pass" },
     { "command": "GitHub Actions Visual baseline candidates run 30714882370", "status": "pass", "detail": "Ubuntu 24.04 capture completed in 4m48s and uploaded 35 PNG candidates. Explicit review rejected the initial set because the portrait aim-pad hint clipped at the right edge; none of those candidates were committed." },
     { "command": "node scripts/run-playwright.js tests/browser/visual.spec.ts --ignore-snapshots --grep visual-geometry-baselines", "status": "pass", "detail": "The corrective pad-label rendered-width assertion passed all five maintained projects: 5 passed in 39.9 seconds." },
+    { "command": "GitHub Actions Visual baseline candidates run 30715750959", "status": "pass", "detail": "Commit f553b6aaca923dca857d2eed1f2889a16194577d on Ubuntu 24.04 uploaded 35 PNGs without Actions runtime warnings. Explicit review approved every frame: 16 unaffected frames were byte-identical to the initial capture and all 19 corrected combat/pause frames showed the complete aim hint." },
     { "command": "npm audit", "status": "pass", "detail": "0 vulnerabilities" }
   ],
   "reviews": [
     { "role": "worms_port_test_worker", "reviewer": "primary-agent-pre-baseline-matrix-review", "decision": "pass" },
     { "role": "worms_port_base_game_worker", "reviewer": "primary-agent-labeled-preview-and-recovery-review", "decision": "pass" },
-    { "role": "worms_port_compliance_keeper", "reviewer": "primary-agent-synthetic-authority-and-artifact-boundary-review", "decision": "pass" }
+    { "role": "worms_port_compliance_keeper", "reviewer": "primary-agent-synthetic-authority-and-artifact-boundary-review", "decision": "pass" },
+    { "role": "worms_port_reviewer", "reviewer": "primary-agent-linux-baseline-visual-review", "decision": "pass" }
   ],
   "skipped_checks": [
-    "npm run test:browser:visual and npm run test:browser:matrix remain pending until reviewed Linux baselines exist. The corresponding Windows logic preflight passed 8 applicable visual journeys with 12 reviewed exclusions, and the zero-retry quality preflight passed all 125 project results with screenshots ignored: 86 passed and 39 reviewed exclusions.",
+    "The reviewed Linux baselines now exist locally, but exact npm run test:browser:visual and npm run test:browser:matrix comparison remain pending until the baseline commit is pushed and ordinary Ubuntu 24.04 CI consumes it. The earlier Windows logic preflight passed 8 applicable visual journeys with 12 reviewed exclusions, and the zero-retry quality preflight passed all 125 project results with screenshots ignored: 86 passed and 39 reviewed exclusions.",
     "The isolated Ubuntu 24.04 WSL copy downloaded the pinned browsers but could not run them because WebKit requires system packages and WSL sudo needs user interaction. No WSL image is being treated as release evidence.",
-    "The first GitHub Actions candidate generation passed, but its 35-image set was rejected because the portrait aim-pad hint clipped. Verify run 30714882362 then reached result 119 of 125 with every preceding CI step green before GitHub canceled the job at its 20-minute ceiling. The corrective copy, rendered-width assertion, Node 24 Actions upgrades, and evidence-based 30-minute ceiling need a new commit and push before replacement candidate generation and ordinary comparison can run.",
+    "The first GitHub Actions candidate generation passed, but its 35-image set was rejected because the portrait aim-pad hint clipped. Verify run 30714882362 then reached result 119 of 125 with every preceding CI step green before GitHub canceled the job at its 20-minute ceiling. The corrective copy, rendered-width assertion, Node 24 Actions upgrades, and evidence-based 30-minute ceiling are now on the PR; replacement candidate run 30715750959 passed review, while ordinary baseline comparison awaits the baseline commit.",
     "Physical Android/iOS and Nimiq Pay WebView testing was not run; browser emulation and synthetic safe areas do not substitute for it."
   ],
   "residual_risks": [
-    "Reviewed Ubuntu 24.04 screenshot baselines and a clean ordinary comparison run are still required before WP-014B can close.",
+    "The 35 reviewed Ubuntu 24.04 screenshot baselines still require a clean ordinary comparison run before WP-014B can close.",
     "The query-only deterministic result preview is visibly labeled as an automated no-wallet/no-payout surface and contains no external authority; it still ships in the client bundle as a capture helper.",
     "Synthetic safe-area and browser emulation cannot prove physical Nimiq Pay chrome, notch, or device font behavior."
   ]

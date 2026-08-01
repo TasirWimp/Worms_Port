@@ -58,10 +58,11 @@ Phaser/Socket.IO stack.
   is shortened, a cross-project rendered-width assertion now passes locally,
   and the Actions use current Node 24 majors. The initial Verify run reached
   result 119 of 125 before its 20-minute ceiling canceled it, so the replacement
-  uses an evidence-based 30-minute ceiling. Re-entry after the next push is to
-  inspect the replacement **Visual baseline candidates** artifact, add only the
-  reviewed snapshots, and run ordinary visual plus full-matrix comparison. Do
-  not start WP-014C until that closes `docs/evidence/wp-014b.json`.
+  uses an evidence-based 30-minute ceiling. Replacement candidate run
+  30715750959 passed and all 35 Ubuntu 24.04 PNGs are explicitly reviewed and
+  present locally for the next commit. Re-entry after that baseline push is to
+  require a clean ordinary visual plus full-matrix comparison, close
+  `docs/evidence/wp-014b.json`, and only then advance to WP-014C.
 - The approved post-competition weekly program is now scoped as WP-018 through
   WP-021: Nimiq Chronicle, Loom XP qualification, optional PvP Sparring Loom,
   and the Weekly Grand Knot Tournament with an additional sponsor-funded
