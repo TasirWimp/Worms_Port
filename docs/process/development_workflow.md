@@ -508,9 +508,12 @@ implementing or running it:
   at Render, Nimiq Pay, a real wallet, or a public chain.
 - Use one Playwright worker per CI job. Every test starts with a fresh browser
   context unless the named purpose is multi-context isolation or contention.
-  Test keys are fixed synthetic fixtures; raw session tokens, signatures,
-  device identifiers, database credentials, and environment dumps cannot enter
-  reports, traces, screenshots, logs, or tracked evidence.
+  Test keys are fixed synthetic fixtures. Real/external wallet secrets,
+  signatures, device identifiers, database credentials, and environment dumps
+  cannot enter reports, traces, screenshots, logs, or tracked evidence.
+  Playwright traces may retain only short-lived synthetic loopback session
+  authority; it expires with the test server, stays under bounded CI retention,
+  and never enters tracked evidence.
 - The maintained projects are Chromium 360x640, 390x844, 412x915, and 844x390
   plus WebKit 390x844. Keep one reviewed allowlist for scenario-specific
   project exclusions. Fail the quality gate on an unexpected skip, focused
@@ -547,7 +550,17 @@ implementing or running it:
   sanitized bundle/timing JSON, and deterministic seeds for 14 days. Generated
   artifacts remain ignored under `test-results/` or `playwright-report/` and
   outside `assets/`. Track only reviewed expected screenshots and compact
-  sanitized facts in `docs/evidence/wp-014.json`.
+  sanitized facts in the applicable `docs/evidence/wp-014a.json` through
+  `docs/evidence/wp-014e.json` slice record.
+
+WP-014A delivered the five maintained projects, `test:browser:matrix`, one
+worker, zero retries, executable critical-suite/expected-skip accounting,
+synthetic safe-area fixtures, all-suite CI routing, and the existing 14-day
+failure-artifact upload. The authoritative local run accounted for all 105
+project results (78 passed and 27 reviewed exclusions). It also corrected
+ordinary pointer mapping when the capped game surface is centered inside a
+larger viewport. WP-014B owns committed visual baselines and layout-state
+captures; do not add them retroactively to WP-014A.
 
 Official implementation references reviewed on 2026-08-01:
 `https://playwright.dev/docs/test-projects`,

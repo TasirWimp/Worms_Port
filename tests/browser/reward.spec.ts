@@ -9,8 +9,11 @@ test('Daily Challenge discloses, authorizes, plays, and reports a consumed loss'
   page
 }, testInfo) => {
   test.setTimeout(120_000);
-  test.skip(testInfo.project.name !== 'chromium-390x844', 'One phone viewport covers the reward journey.');
-  const privateKey = PrivateKey.fromHex(PRIVATE_KEY);
+  test.skip(
+    !['chromium-390x844', 'webkit-390x844'].includes(testInfo.project.name),
+    'One maintained project per mobile engine covers the complete reward journey.'
+  );
+  const privateKey = PrivateKey.fromHex(projectPrivateKey(testInfo.project.name));
   const publicKey = PublicKey.derive(privateKey);
   const addressObject = publicKey.toAddress();
   const address = addressObject.toUserFriendlyAddress();
@@ -75,6 +78,14 @@ test('Daily Challenge discloses, authorizes, plays, and reports a consumed loss'
     privateKey.free();
   }
 });
+
+function projectPrivateKey(projectName: string): string {
+  const suffixes: Record<string, string> = {
+    'chromium-390x844': '31',
+    'webkit-390x844': '32'
+  };
+  return `${PRIVATE_KEY.slice(0, -2)}${suffixes[projectName] || '33'}`;
+}
 
 async function completeCurrentClash(page: Page): Promise<void> {
   const ui = page.locator('.combat-ui');

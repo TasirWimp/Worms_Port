@@ -83,6 +83,8 @@ npm run test:browser:smoke
 npm run test:browser:combat
 npm run test:browser:practice
 npm run test:browser:identity
+npm run test:browser:reward
+npm run test:browser:matrix
 npm start
 ```
 
@@ -91,8 +93,12 @@ with esbuild into `server/build/server.js`. The smoke command performs a fresh
 build, starts that server on an available local port, and verifies the game
 page, built overlays, approved-asset plumbing, and room join-ID API.
 `npm run test:browser:smoke` performs a fresh build and runs the phone-sized
-Chromium and WebKit touch journey. Run `npm run verify:full` for the complete
-autonomous foundation funnel.
+Chromium and WebKit touch journey. `npm run test:browser:matrix` is the
+zero-retry WP-014 release gate for all maintained browser suites at Chromium
+360x640, 390x844, 412x915, and 844x390 plus WebKit 390x844. It fails on an
+unexpected project skip or omitted critical journey. `verify:full` retains the
+pre-WP-014 foundation funnel until WP-014E adds the remaining visual,
+PostgreSQL, resilience, and performance gates.
 
 Playwright reports, traces, screenshots, and videos are generated outside
 `assets/` and are ignored locally. CI retains them only when verification

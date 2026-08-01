@@ -8,8 +8,8 @@ Phaser/Socket.IO stack.
 ## Execution Pointer
 
 - Active target: mobile-first single-player Nimiq Pay competition release.
-- Next work package: **WP-014 Autonomous Quality Harness**.
-- Last completed work package: **WP-013 Sponsored Daily Challenge**.
+- Next work package: **WP-014B Visual and layout gate**.
+- Last completed work package: **WP-014A Harness and CI foundation**.
 - WP-012 exactly pins `@nimiq/mini-app-sdk` `0.1.0` and server-only
   `@nimiq/core` `2.7.1`. Provider access remains lazy, identity acceptance is
   now used by WP-013's separate production Daily entry, the diagnostics surface
@@ -34,9 +34,13 @@ Phaser/Socket.IO stack.
   acceptance, not authorization to leave public mainnet rewards active. A
   wallet address is an eligibility identity, not proof of one human; Practice
   remains the unrestricted fallback.
-- WP-014 was refined on 2026-08-01 into five sequential slices. Start with
-  **WP-014A Harness and CI foundation**, then visual/layout, resilience and
-  context isolation, PostgreSQL/reward security, and performance/closure. The
+- WP-014 was refined on 2026-08-01 into five sequential slices. WP-014A is
+  complete: the maintained 412x915 project, zero-retry full-matrix command,
+  reviewed expected-skip policy, safe-area fixture, CI routing, and failure
+  artifacts are in place. Its first matrix run exposed and corrected centered
+  non-sideways pointer coordinates; the final 105-result run passed. Start
+  **WP-014B Visual and layout gate**, then resilience and context isolation,
+  PostgreSQL/reward security, and performance/closure. The
   harness is loopback-only, uses synthetic wallets plus record-only/fake payout
   boundaries, and cannot receive a real key, external payout RPC, or chain
   reward mode. Its detailed matrix, budgets, artifact policy, and completion
@@ -1743,8 +1747,8 @@ Verification:
 
 ### WP-014 Autonomous Quality Harness
 
-Status: refined on 2026-08-01; implementation has not started. Depends on
-WP-011 and WP-013.
+Status: implementation in progress. WP-014A completed on 2026-08-01; WP-014B
+is next. Depends on WP-011 and WP-013.
 
 Goal: turn the existing focused tests into the reproducible automated
 competition-candidate gate. Complete the browser, visual, performance,
@@ -1763,9 +1767,8 @@ Current baseline gaps:
 
 - `verify:full` runs only the browser smoke rather than the complete maintained
   browser suite;
-- CI does not yet run the identity or reward browser suites;
-- the 412x915 project, committed screenshot comparisons, explicit bundle and
-  timing budgets, and unexpected-skip accounting do not exist;
+- committed screenshot comparisons and explicit bundle/timing gates do not
+  exist;
 - current browser reward acceptance uses the in-memory test store, while the
   completed work-package evidence still records the absence of an autonomous
   two-connection PostgreSQL race injection; and
@@ -1790,9 +1793,12 @@ secret, and import-boundary review.
   fail-closed and unchanged.
 - Browser contexts receive distinct fixed test keys and fresh storage by
   default. A shared synthetic wallet is used only in tests that deliberately
-  prove same-wallet contention. Never record raw session tokens, authorization
-  signatures, device identifiers, database passwords, or environment dumps in
-  tracked evidence or uploaded artifacts.
+  prove same-wallet contention. Never record real/external wallet secrets,
+  authorization signatures, device identifiers, database passwords, or
+  environment dumps in tracked evidence or uploaded artifacts. Playwright
+  traces may contain short-lived synthetic loopback session authority; the
+  test server invalidates it on exit, it is never copied into tracked evidence,
+  and failure artifacts retain it only under the bounded CI policy.
 - Keep `REWARD_PAUSED=true` on the deployed Render service. WP-014 does not
   authorize another mainnet transaction, change daily reward policy, or weaken
   payout guardrails established by WP-013.
@@ -1975,18 +1981,23 @@ allowance cannot be reassigned to JavaScript.
   timing/bundle JSON, and printed deterministic seeds for failed CI jobs for 14
   days. Keep all generated artifacts ignored and outside `assets/`; track only
   reviewed screenshot baselines and compact sanitized facts in
-  `docs/evidence/wp-014.json`.
-- The WP-014 evidence record is created at implementation start, before the
+  the applicable per-slice evidence record under `docs/evidence/`.
+- Each WP-014A through WP-014E slice creates its own evidence record before the
   first source/tooling edit. Completion records every planned command exactly
   once, the deterministic seeds, expected skips, physical-device omission,
   residual single-instance/runtime risks, and identified reviews.
 
 #### Implementation slices
 
-1. **WP-014A Harness and CI foundation:** create the evidence record; add the
-   412x915 project, explicit suite tags/scripts, unexpected-skip accounting,
-   zero-retry gate configuration, safe-area fixture, complete CI suite routing,
-   and failure-artifact policy.
+1. **WP-014A Harness and CI foundation - complete 2026-08-01:** added the
+   412x915 project, `test:browser:matrix`, executable maintained-project and
+   expected-skip accounting, zero retries, one worker, synthetic safe-area
+   fixtures, all-suite CI routing, and retained failure artifacts. The final
+   matrix accounted for 105 project results: 78 passed and 27 reviewed project
+   exclusions. Its first run exposed a 7.5-pixel pointer-origin error when a
+   normal game surface was vertically centered; non-sideways client coordinates
+   now map relative to the game bounds and focused plus full-matrix regressions
+   pass. Evidence: `docs/evidence/wp-014a.json`.
 2. **WP-014B Visual and layout gate:** stabilize deterministic states, add
    reviewed cross-project geometry/state baselines and thresholds, and enforce
    touch geometry, sideways, reduced-motion, scroll/zoom, and result recovery.

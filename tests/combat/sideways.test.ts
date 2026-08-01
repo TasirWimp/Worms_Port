@@ -44,10 +44,13 @@ test('counter-clockwise sideways input maps screen axes into virtual landscape a
     );
 });
 
-test('ordinary viewport input coordinates remain unchanged', () => {
-    const point = { x: 120, y: 254 };
-    assert.equal(
-        clientPointToGame(point, { top: 0, right: 0, bottom: 0, left: 0 }, null),
-        point
+test('ordinary viewport input maps from client coordinates into centered game bounds', () => {
+    assert.deepEqual(
+        clientPointToGame(
+            { x: 120, y: 254 },
+            { top: 7.5, right: 412, bottom: 907.5, left: 0 },
+            null
+        ),
+        { x: 120, y: 246.5 }
     );
 });
