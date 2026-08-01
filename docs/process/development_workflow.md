@@ -490,7 +490,73 @@ The checked-in Playwright configuration must:
 
 WP-005 provides browser launch and application smoke coverage. WP-014 expands
 that foundation into the full viewport, visual-regression, network, resume,
-fake-wallet, performance, and multiplayer-context matrix.
+fake-wallet, performance, PostgreSQL, and isolated multi-context matrix.
+Multi-context means separate sessions and wallets exercising isolation and
+contention against one server; it does not add PvP or matchmaking.
+
+### WP-014 Quality Harness Protocol
+
+WP-014 is the automated competition-candidate gate. Its normative scope,
+matrix, budgets, slices, and acceptance criteria live in
+`docs/planning/implementation_plan.md`. Apply these operational rules while
+implementing or running it:
+
+- Use only a freshly built loopback service, deterministic fake wallets,
+  record-only rewards, fake signer/RPC adapters, and a disposable PostgreSQL
+  database. Quality-test startup must reject chain reward modes, external RPC
+  targets, and any configured payout key file. Never point an autonomous suite
+  at Render, Nimiq Pay, a real wallet, or a public chain.
+- Use one Playwright worker per CI job. Every test starts with a fresh browser
+  context unless the named purpose is multi-context isolation or contention.
+  Test keys are fixed synthetic fixtures; raw session tokens, signatures,
+  device identifiers, database credentials, and environment dumps cannot enter
+  reports, traces, screenshots, logs, or tracked evidence.
+- The maintained projects are Chromium 360x640, 390x844, 412x915, and 844x390
+  plus WebKit 390x844. Keep one reviewed allowlist for scenario-specific
+  project exclusions. Fail the quality gate on an unexpected skip, focused
+  test, empty critical project, or retry-only pass.
+- Required gates use zero retries. Preserve the first failure and classify it
+  before a manual diagnostic rerun. Never hide nondeterminism with a retry,
+  larger screenshot tolerance, longer timeout, broader skip, or weakened
+  assertion.
+- Generate screenshot baselines and compare them only in the pinned Linux CI
+  browser environment. Freeze UTC, seeds, device scale, motion mode, color
+  scheme, fonts, and fake-wallet state. Use `maxDiffPixelRatio=0.005` and
+  per-pixel threshold `0.2`. Baseline updates are explicit reviewed changes;
+  ordinary CI never writes expected snapshots.
+- Chromium may use supported deterministic bandwidth/latency control. Chromium
+  and WebKit both cover offline/resume. Model Socket.IO acknowledgement loss,
+  duplicate/stale delivery, and ordering faults through typed fixtures instead
+  of claiming arbitrary WebSocket packet-loss emulation.
+- PostgreSQL CI uses a reviewed digest-pinned PostgreSQL 16 service image,
+  unique disposable databases, migrations from zero, and at least two
+  independent connections for contention. Broad visual/state coverage may use
+  the memory store, but one record-only built-browser Daily journey and all
+  concurrency/restart authority checks use PostgreSQL.
+- Measure the clean production client bundle exactly and gzip it in the gate;
+  inspect the ordinary Practice network log to prove the Mini App SDK remains
+  lazy. Timing uses one discarded warm-up plus five samples on the pinned
+  Chromium CI project with one worker. Both median and maximum must meet the
+  budgets recorded in the implementation plan.
+- `verify:full` must become a truthful aggregate of fast checks, clean build,
+  built smoke, every maintained browser suite, quality/security checks,
+  identity-bundle separation, and `npm audit`. It cannot silently skip the
+  PostgreSQL or browser quality jobs because a local prerequisite is missing;
+  report the prerequisite and run the authoritative job in CI.
+- On failure retain the HTML report, trace, screenshot, video, visual diff,
+  sanitized bundle/timing JSON, and deterministic seeds for 14 days. Generated
+  artifacts remain ignored under `test-results/` or `playwright-report/` and
+  outside `assets/`. Track only reviewed expected screenshots and compact
+  sanitized facts in `docs/evidence/wp-014.json`.
+
+Official implementation references reviewed on 2026-08-01:
+`https://playwright.dev/docs/test-projects`,
+`https://playwright.dev/docs/ci`,
+`https://playwright.dev/docs/test-snapshots`,
+`https://playwright.dev/docs/test-retries`,
+`https://playwright.dev/docs/trace-viewer-intro`,
+`https://playwright.dev/docs/network`, and
+`https://docs.github.com/en/actions/tutorials/use-containerized-services/create-postgresql-service-containers`.
 
 ## Asset Generation Loop
 
