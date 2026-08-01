@@ -10,11 +10,22 @@ import {
     IdentityCompleteRequestSchema,
     protocolEvents,
     RequestIdSchema,
+    RewardClaimRequestSchema,
+    RewardInfoRequestSchema,
+    RewardReserveRequestSchema,
+    RewardStatusRequestSchema,
     SessionOpenRequestSchema
 } from '../../../shared/protocol';
-import type { ProtocolAck, ProtocolError } from '../../../shared/protocol';
+import type {
+    ChallengeResult,
+    ProtocolAck,
+    ProtocolError
+} from '../../../shared/protocol';
 import type { SimulationCommand } from '../../../shared/simulation';
 import type { IdentityAuthorizationRegistry } from '../identity/registry';
+import type { RewardService } from '../reward/service';
+import { RewardStoreError } from '../reward/types';
+import type { CoordinatorReplay } from '../simulation/coordinator';
 import { ackFor, SessionRegistry } from '../session/registry';
 import { eventFits, TokenBucket } from './guards';
 import { failure } from './errors';
@@ -29,9 +40,11 @@ export function setupProtocol(
         maxPendingConnections?: number;
         sessionOpenRateCapacity?: number;
         identity?: IdentityAuthorizationRegistry;
+        rewards?: RewardService;
     } = {}
 ): void {
     const openLimiters = new Map<string, TokenBucket>();
+    const rewardReserveIpLimiters = new Map<string, TokenBucket>();
     let pendingConnections = 0;
 
     io.on('connection', (socket) => {
@@ -56,6 +69,10 @@ export function setupProtocol(
         authenticationTimer.unref();
         const eventLimiter = new TokenBucket(30, 20 / 1000);
         const invalidLimiter = new TokenBucket(5, 5 / 10_000);
+        const rewardInfoLimiter = new TokenBucket(8, 8 / 60_000);
+        const rewardReserveLimiter = new TokenBucket(3, 3 / 60_000);
+        const rewardClaimLimiter = new TokenBucket(5, 5 / 60_000);
+        const rewardStatusLimiter = new TokenBucket(12, 12 / 60_000);
         const ip = socket.handshake.address || 'unknown';
         const openCapacity = options.sessionOpenRateCapacity ?? 30;
         const openLimiter = openLimiters.get(ip) || new TokenBucket(
@@ -69,6 +86,14 @@ export function setupProtocol(
                 break;
             }
             openLimiters.delete(oldest);
+        }
+        const rewardReserveIpLimiter = rewardReserveIpLimiters.get(ip) ||
+            new TokenBucket(60, 60 / (60 * 60_000));
+        rewardReserveIpLimiters.set(ip, rewardReserveIpLimiter);
+        while (rewardReserveIpLimiters.size > 4096) {
+            const oldest = rewardReserveIpLimiters.keys().next().value;
+            if (oldest === undefined) break;
+            rewardReserveIpLimiters.delete(oldest);
         }
 
         socket.use((packet, next) => {
@@ -333,6 +358,175 @@ export function setupProtocol(
             });
         });
 
+        socket.on(protocolEvents.rewardInfo, (payload: unknown, ack?: Ack) => {
+            if (!guard(socket, payload, ack, invalidLimiter)) return;
+            const parsed = RewardInfoRequestSchema.safeParse(payload);
+            if (!parsed.success) {
+                invalid(socket, ack, requestIdOf(payload), invalidLimiter);
+                return;
+            }
+            if (!rewardInfoLimiter.take()) {
+                ack?.(failure(
+                    parsed.data.requestId,
+                    'RATE_LIMITED',
+                    'Wait before checking Daily Challenge availability again.',
+                    true
+                ));
+                return;
+            }
+            withSessionAsync(socket, registry, parsed.data.requestId, ack, async () => {
+                if (!options.rewards) {
+                    ack(failure(
+                        parsed.data.requestId,
+                        'REWARD_UNAVAILABLE',
+                        'Sponsor rewards are unavailable.'
+                    ));
+                    return;
+                }
+                try {
+                    ack(ackFor(parsed.data.requestId, await options.rewards.info()));
+                } catch (error) {
+                    ack(rewardFailure(parsed.data.requestId, error));
+                }
+            });
+        });
+
+        socket.on(protocolEvents.rewardReserve, (payload: unknown, ack?: Ack) => {
+            if (!guard(socket, payload, ack, invalidLimiter)) return;
+            const parsed = RewardReserveRequestSchema.safeParse(payload);
+            if (!parsed.success) {
+                invalid(socket, ack, requestIdOf(payload), invalidLimiter);
+                return;
+            }
+            if (!rewardReserveLimiter.take() || !rewardReserveIpLimiter.take()) {
+                ack?.(failure(
+                    parsed.data.requestId,
+                    'RATE_LIMITED',
+                    'Wait before reserving another Daily Challenge.',
+                    true
+                ));
+                return;
+            }
+            withSessionAsync(socket, registry, parsed.data.requestId, ack, async (session) => {
+                if (!options.rewards) {
+                    ack(failure(
+                        parsed.data.requestId,
+                        'REWARD_UNAVAILABLE',
+                        'Sponsor rewards are unavailable.'
+                    ));
+                    return;
+                }
+                const active = registry.activeSnapshot(session);
+                if (active?.status === 'active') {
+                    ack(failure(
+                        parsed.data.requestId,
+                        'BAD_REQUEST',
+                        'Finish or leave the active Clash before reserving a reward.'
+                    ));
+                    return;
+                }
+                const response = await registry.sequenceAsync(
+                    session,
+                    parsed.data.requestId,
+                    parsed.data.sequence,
+                    parsed.data,
+                    async () => {
+                        try {
+                            return ackFor(
+                                parsed.data.requestId,
+                                await options.rewards!.reserve(
+                                    session.identity,
+                                    parsed.data.calling
+                                )
+                            );
+                        } catch (error) {
+                            return rewardFailure(parsed.data.requestId, error);
+                        }
+                    }
+                );
+                ack(response);
+            });
+        });
+
+        socket.on(protocolEvents.rewardClaim, (payload: unknown, ack?: Ack) => {
+            if (!guard(socket, payload, ack, invalidLimiter)) return;
+            const parsed = RewardClaimRequestSchema.safeParse(payload);
+            if (!parsed.success) {
+                invalid(socket, ack, requestIdOf(payload), invalidLimiter);
+                return;
+            }
+            if (!rewardClaimLimiter.take()) {
+                ack?.(failure(
+                    parsed.data.requestId,
+                    'RATE_LIMITED',
+                    'Wait before submitting the reward claim again.',
+                    true
+                ));
+                return;
+            }
+            withSessionAsync(socket, registry, parsed.data.requestId, ack, async (session) => {
+                if (!options.rewards) {
+                    ack(failure(
+                        parsed.data.requestId,
+                        'REWARD_UNAVAILABLE',
+                        'Sponsor rewards are unavailable.'
+                    ));
+                    return;
+                }
+                try {
+                    const update = await options.rewards.claim(
+                        session.identity,
+                        parsed.data.entitlementId,
+                        parsed.data.claimNonce,
+                        parsed.data.idempotencyKey
+                    );
+                    ack(ackFor(parsed.data.requestId, update));
+                    socket.emit(protocolEvents.rewardUpdate, update);
+                } catch (error) {
+                    ack(rewardFailure(parsed.data.requestId, error));
+                }
+            });
+        });
+
+        socket.on(protocolEvents.rewardStatus, (payload: unknown, ack?: Ack) => {
+            if (!guard(socket, payload, ack, invalidLimiter)) return;
+            const parsed = RewardStatusRequestSchema.safeParse(payload);
+            if (!parsed.success) {
+                invalid(socket, ack, requestIdOf(payload), invalidLimiter);
+                return;
+            }
+            if (!rewardStatusLimiter.take()) {
+                ack?.(failure(
+                    parsed.data.requestId,
+                    'RATE_LIMITED',
+                    'Wait before refreshing payout status again.',
+                    true
+                ));
+                return;
+            }
+            withSessionAsync(socket, registry, parsed.data.requestId, ack, async (session) => {
+                if (!options.rewards) {
+                    ack(failure(
+                        parsed.data.requestId,
+                        'REWARD_UNAVAILABLE',
+                        'Sponsor rewards are unavailable.'
+                    ));
+                    return;
+                }
+                try {
+                    ack(ackFor(
+                        parsed.data.requestId,
+                        await options.rewards.status(
+                            session.identity,
+                            parsed.data.entitlementId
+                        )
+                    ));
+                } catch (error) {
+                    ack(rewardFailure(parsed.data.requestId, error));
+                }
+            });
+        });
+
         socket.on(protocolEvents.challengeCreate, (payload: unknown, ack?: Ack) => {
             if (!guard(socket, payload, ack, invalidLimiter)) {
                 return;
@@ -342,7 +536,84 @@ export function setupProtocol(
                 invalid(socket, ack, requestIdOf(payload), invalidLimiter);
                 return;
             }
-            withSession(socket, registry, parsed.data.requestId, ack, (session) => {
+            withSessionAsync(socket, registry, parsed.data.requestId, ack, async (session) => {
+                if (parsed.data.mode === 'reward') {
+                    const rewardRequest = parsed.data;
+                    if (!options.rewards) {
+                        ack(failure(
+                            parsed.data.requestId,
+                            'REWARD_UNAVAILABLE',
+                            'Sponsor rewards are unavailable.'
+                        ));
+                        return;
+                    }
+                    if (registry.activeSnapshot(session)?.status === 'active') {
+                        ack(failure(
+                            parsed.data.requestId,
+                            'BAD_REQUEST',
+                            'Finish or leave the active Clash before starting a reward match.'
+                        ));
+                        return;
+                    }
+                    const response = await registry.sequenceAsync(
+                        session,
+                        parsed.data.requestId,
+                        parsed.data.sequence,
+                        parsed.data,
+                        async () => {
+                            let entitlement: Awaited<ReturnType<RewardService['start']>> |
+                                undefined;
+                            try {
+                                entitlement = await options.rewards!.start(
+                                    session.identity,
+                                    rewardRequest.eligibility.challengeId,
+                                    rewardRequest.eligibility.token
+                                );
+                                const created = registry.createChallenge(
+                                    session,
+                                    'reward',
+                                    rewardRequest.calling,
+                                    {
+                                        challengeId: entitlement.challengeId,
+                                        seed: entitlement.seed
+                                    }
+                                );
+                                if ('code' in created) {
+                                    await options.rewards!.completeMatch({
+                                        protocolVersion: 1,
+                                        serverTimeMs: Date.now(),
+                                        sessionId: session.id,
+                                        challengeId: entitlement.challengeId,
+                                        outcome: 'left',
+                                        revision: 0,
+                                        nextSequence: session.nextSequence + 1,
+                                        finalTick: null,
+                                        finalStateHash: null
+                                    });
+                                }
+                                return ackFor(parsed.data.requestId, created);
+                            } catch (error) {
+                                if (entitlement) {
+                                    await options.rewards!.completeMatch({
+                                        protocolVersion: 1,
+                                        serverTimeMs: Date.now(),
+                                        sessionId: session.id,
+                                        challengeId: entitlement.challengeId,
+                                        outcome: 'left',
+                                        revision: 0,
+                                        nextSequence: session.nextSequence + 1,
+                                        finalTick: null,
+                                        finalStateHash: null
+                                    }).catch(() => undefined);
+                                }
+                                return rewardFailure(parsed.data.requestId, error);
+                            }
+                        }
+                    );
+                    ack(response);
+                    if (response.ok) socket.emit(protocolEvents.snapshot, response.data);
+                    return;
+                }
                 const response = registry.sequence(
                     session,
                     parsed.data.requestId,
@@ -399,7 +670,15 @@ export function setupProtocol(
                         parsed.data.challengeId,
                         emitted.nextSequence
                     );
-                    if (result) socket.emit(protocolEvents.result, result);
+                    if (result) {
+                        socket.emit(protocolEvents.result, result);
+                        settleRewardResult(
+                            result,
+                            registry.challengeMode(session.id, result.challengeId) === 'reward'
+                                ? registry.replayForChallenge(session, result.challengeId)
+                                : undefined
+                        );
+                    }
                     const loomkeeper = registry.driveLoomkeeperTurn(
                         session,
                         parsed.data.challengeId
@@ -411,7 +690,21 @@ export function setupProtocol(
                             parsed.data.challengeId,
                             loomkeeper.nextSequence
                         );
-                        if (loomkeeperResult) socket.emit(protocolEvents.result, loomkeeperResult);
+                        if (loomkeeperResult) {
+                            socket.emit(protocolEvents.result, loomkeeperResult);
+                            settleRewardResult(
+                                loomkeeperResult,
+                                registry.challengeMode(
+                                    session.id,
+                                    loomkeeperResult.challengeId
+                                ) === 'reward'
+                                    ? registry.replayForChallenge(
+                                        session,
+                                        loomkeeperResult.challengeId
+                                    )
+                                    : undefined
+                            );
+                        }
                     }
                 }
             });
@@ -458,6 +751,13 @@ export function setupProtocol(
                 return;
             }
             withSession(socket, registry, parsed.data.requestId, ack, (session) => {
+                const rewardMode = registry.challengeMode(
+                    session.id,
+                    parsed.data.challengeId
+                ) === 'reward';
+                const rewardReplay = rewardMode
+                    ? registry.replayForChallenge(session, parsed.data.challengeId)
+                    : undefined;
                 const response = registry.sequence(
                     session,
                     parsed.data.requestId,
@@ -471,9 +771,22 @@ export function setupProtocol(
                 ack(response);
                 if (response.ok) {
                     socket.emit(protocolEvents.result, response.data);
+                    if (rewardMode && options.rewards) {
+                        settleRewardResult(response.data, rewardReplay);
+                    }
                 }
             });
         });
+
+        const settleRewardResult = (
+            result: ChallengeResult,
+            replay: CoordinatorReplay | undefined
+        ) => {
+            if (!replay || !options.rewards) return;
+            void options.rewards.completeMatch(result, replay).then((update) => {
+                if (update) socket.emit(protocolEvents.rewardUpdate, update);
+            }).catch(() => undefined);
+        };
 
         socket.on('disconnect', () => {
             clearTimeout(authenticationTimer);
@@ -534,6 +847,55 @@ function withSession(
     operation(session);
 }
 
+function withSessionAsync(
+    socket: Socket,
+    registry: SessionRegistry,
+    requestId: string,
+    ack: Ack,
+    operation: (session: ReturnType<SessionRegistry['getBound']> & {}) => Promise<void>
+): void {
+    const session = registry.getBound(socket.id);
+    if (!session) {
+        ack(failure(requestId, 'UNAUTHORIZED', 'Open or resume a session first.'));
+        return;
+    }
+    void operation(session).catch(() => {
+        ack(failure(
+            requestId,
+            'INTERNAL_ERROR',
+            'The request could not be completed.',
+            true
+        ));
+    });
+}
+
+function rewardFailure(requestId: string, error: unknown): ProtocolAck<never> {
+    if (!(error instanceof RewardStoreError)) {
+        return failure(
+            requestId,
+            'INTERNAL_ERROR',
+            'The reward request could not be completed.',
+            true
+        );
+    }
+    switch (error.code) {
+        case 'disabled':
+        case 'exhausted':
+            return failure(requestId, 'REWARD_UNAVAILABLE', error.message);
+        case 'unavailable':
+            return failure(requestId, 'REWARD_UNAVAILABLE', error.message, true);
+        case 'paused':
+            return failure(requestId, 'REWARD_PAUSED', error.message, true);
+        case 'ineligible':
+        case 'not_found':
+            return failure(requestId, 'REWARD_INELIGIBLE', error.message);
+        case 'conflict':
+        case 'expired':
+        case 'invalid_state':
+            return failure(requestId, 'REWARD_CONFLICT', error.message);
+    }
+}
+
 function requestIdOf(payload: unknown): string {
     if (
         payload &&
@@ -563,6 +925,10 @@ const ALLOWED_CLIENT_EVENTS = new Set([
     protocolEvents.identityBegin,
     protocolEvents.identityComplete,
     protocolEvents.identityCancel,
+    protocolEvents.rewardInfo,
+    protocolEvents.rewardReserve,
+    protocolEvents.rewardClaim,
+    protocolEvents.rewardStatus,
     protocolEvents.challengeCreate,
     protocolEvents.commandSubmit,
     protocolEvents.challengePause,

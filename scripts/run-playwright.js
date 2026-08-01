@@ -17,12 +17,24 @@ function getFreePort() {
 async function main() {
   const port = await getFreePort();
   const cli = require.resolve('@playwright/test/cli');
+  const args = process.argv.slice(2);
+  const rewardRun = args.some((argument) => argument.includes('reward.spec'));
   const child = childProcess.spawn(
     process.execPath,
-    [cli, 'test', ...process.argv.slice(2)],
+    [cli, 'test', ...args],
     {
       cwd: path.resolve(__dirname, '..'),
-      env: { ...process.env, PLAYWRIGHT_PORT: String(port) },
+      env: {
+        ...process.env,
+        PLAYWRIGHT_PORT: String(port),
+        ...(rewardRun ? {
+          REWARD_MODE: 'record-only',
+          REWARD_TEST_MEMORY_STORE: 'true',
+          REWARD_TEST_SEED: '1',
+          REWARD_LUNA: '100000',
+          REWARD_DAILY_BUDGET_LUNA: '400000'
+        } : {})
+      },
       stdio: 'inherit'
     }
   );

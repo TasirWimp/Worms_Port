@@ -482,14 +482,17 @@ test('unconfigured identity and reward challenges remain unavailable', async () 
             sequence: 0,
             mode: 'reward',
             calling: 'thief',
-            eligibility: { token: 'eligibility_token_01' }
+            eligibility: {
+                challengeId: 'reward_challenge_01',
+                token: 'e'.repeat(43)
+            }
         });
         assert.equal(ProtocolFailureAckSchema.safeParse(reward).success, true);
-        assert.equal(reward.error.code, 'FEATURE_UNAVAILABLE');
+        assert.equal(reward.error.code, 'REWARD_UNAVAILABLE');
 
         const practice = await emitAck(socket, protocolEvents.challengeCreate, {
             requestId: 'practice_01',
-            sequence: 1,
+            sequence: 0,
             mode: 'practice',
             calling: 'thief'
         });

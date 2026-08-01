@@ -103,11 +103,9 @@ window.onload = async () => {
     runningGame = game;
     syncVisualViewport();
     game.registry.set(PRACTICE_CLIENT_REGISTRY_KEY, client);
-    if (query.get('identity-preview') === '1') {
-        game.registry.set(IDENTITY_SERVICES_REGISTRY_KEY, {
-            adapter: new NimiqPayIdentityAdapter(),
-            protocol: new IdentityProtocolClient(socket)
-        });
-    }
+    game.registry.set(IDENTITY_SERVICES_REGISTRY_KEY, {
+        adapter: new NimiqPayIdentityAdapter(),
+        protocol: new IdentityProtocolClient(socket)
+    });
     game.scene.start('practice');
 };

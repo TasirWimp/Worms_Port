@@ -17,6 +17,8 @@ import {
     originAllowed
 } from './protocol/guards';
 import { setup_room_api } from './room/api';
+import type { RewardPayoutWorker } from './reward/payout';
+import type { RewardService } from './reward/service';
 import { Room } from './room/class';
 import { RoomWatcher } from './room/watcher';
 import { Game } from './game/class';
@@ -35,6 +37,8 @@ export type RuntimeServerOptions = {
     maxPendingConnections?: number;
     sessionOpenRateCapacity?: number;
     identity?: IdentityAuthorizationOptions | false;
+    rewards?: RewardService;
+    rewardWorker?: RewardPayoutWorker;
 };
 
 let legacyRuntimeActive = false;
@@ -53,6 +57,31 @@ export function createRuntimeServer(options: RuntimeServerOptions = {}) {
     RoomWatcher.instance.reset();
     GameWatcher.instance.reset();
     const app = express();
+    app.disable('x-powered-by');
+    app.use((_, response, next) => {
+        response.setHeader(
+            'Content-Security-Policy',
+            [
+                "default-src 'self'",
+                "base-uri 'self'",
+                "object-src 'none'",
+                "frame-ancestors 'none'",
+                "form-action 'self'",
+                "script-src 'self'",
+                "style-src 'self' 'unsafe-inline'",
+                "img-src 'self' data:",
+                "font-src 'self'",
+                "connect-src 'self' ws: wss:"
+            ].join('; ')
+        );
+        response.setHeader('Referrer-Policy', 'no-referrer');
+        response.setHeader('X-Content-Type-Options', 'nosniff');
+        response.setHeader(
+            'Permissions-Policy',
+            'camera=(), geolocation=(), microphone=(), payment=()'
+        );
+        next();
+    });
     const httpServer = new http.Server(app);
     const io = new SocketIOServer(httpServer, {
         maxHttpBufferSize: MAX_TRANSPORT_BYTES,
@@ -71,7 +100,28 @@ export function createRuntimeServer(options: RuntimeServerOptions = {}) {
     const identity = options.identity
         ? new IdentityAuthorizationRegistry(options.identity)
         : undefined;
-    const sessions = new SessionRegistry({
+    let sessions!: SessionRegistry;
+    const emitRewardUpdate = (update: Awaited<ReturnType<RewardService['status']>>) => {
+        for (const socketId of sessions.socketIdsForWallet(update.recipient)) {
+            io.sockets.sockets.get(socketId)?.emit(protocolEvents.rewardUpdate, update);
+        }
+    };
+    const processRewardResult = (result: Parameters<NonNullable<
+        SessionRegistryOptions['onChallengeCompleted']
+    >>[0]) => {
+        if (!options.rewards ||
+            sessions.challengeMode(result.sessionId, result.challengeId) !== 'reward') return;
+        const replay = sessions.replayForSessionChallenge(
+            result.sessionId,
+            result.challengeId
+        );
+        void options.rewards.completeMatch(result, replay).then((update) => {
+            if (update) emitRewardUpdate(update);
+        }).catch(() => {
+            // The durable in-progress entitlement remains recoverable for operator review.
+        });
+    };
+    sessions = new SessionRegistry({
         ...options.sessionRegistry,
         onSessionClosed: (sessionId, socketId) => {
             identity?.cancelSession(sessionId);
@@ -86,6 +136,7 @@ export function createRuntimeServer(options: RuntimeServerOptions = {}) {
             if (socketId) {
                 io.sockets.sockets.get(socketId)?.emit(protocolEvents.result, result);
             }
+            processRewardResult(result);
             callerChallengeExpiredHandler?.(result, socketId);
         },
         onChallengeSnapshot: (snapshot, socketId) => {
@@ -98,6 +149,7 @@ export function createRuntimeServer(options: RuntimeServerOptions = {}) {
             if (socketId) {
                 io.sockets.sockets.get(socketId)?.emit(protocolEvents.result, result);
             }
+            processRewardResult(result);
             callerChallengeCompletedHandler?.(result, socketId);
         }
     });
@@ -118,7 +170,8 @@ export function createRuntimeServer(options: RuntimeServerOptions = {}) {
         sessionOpenTimeoutMs: options.sessionOpenTimeoutMs,
         maxPendingConnections: options.maxPendingConnections,
         sessionOpenRateCapacity: options.sessionOpenRateCapacity,
-        identity
+        identity,
+        rewards: options.rewards
     });
     setup_room_api(app, io, sessions);
     setup_game_api(app, io, sessions);
@@ -137,6 +190,8 @@ export function createRuntimeServer(options: RuntimeServerOptions = {}) {
         GameWatcher.instance.reset();
         sessions.dispose();
         identity?.dispose();
+        await options.rewardWorker?.close();
+        await options.rewards?.close();
         await new Promise<void>((resolve, reject) => {
             io.close(() => {
                 if (!httpServer.listening) {
@@ -148,18 +203,34 @@ export function createRuntimeServer(options: RuntimeServerOptions = {}) {
         });
     };
 
-    const listen = (port = 0, host = '127.0.0.1') => new Promise<number>(
-        (resolve, reject) => {
+    let initialized = false;
+    const listen = async (port = 0, host = '127.0.0.1'): Promise<number> => {
+        if (!initialized) {
+            await options.rewards?.initialize();
+            options.rewardWorker?.start();
+            initialized = true;
+        }
+        return new Promise<number>((resolve, reject) => {
             httpServer.once('error', reject);
             httpServer.listen(port, host, () => {
                 httpServer.off('error', reject);
                 const address = httpServer.address();
                 resolve(typeof address === 'object' && address ? address.port : port);
             });
-        }
-    );
+        });
+    };
 
-    return { app, httpServer, io, sessions, identity, listen, close };
+    return {
+        app,
+        httpServer,
+        io,
+        sessions,
+        identity,
+        rewards: options.rewards,
+        emitRewardUpdate,
+        listen,
+        close
+    };
 }
 
 function startLegacyGame(room: Room): void {

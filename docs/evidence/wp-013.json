@@ -1,0 +1,112 @@
+{
+  "id": "WP-013",
+  "status": "complete",
+  "starting_commit": "24e5ef1",
+  "branch": "codex/wp-013-sponsored-daily-challenge",
+  "initial_worktree": "clean",
+  "starting_lock_sha256": "5F86BC3B97713CF577A42B2967BF0CA14D1EAF6FF57E83411EE342B9B09F1D96",
+  "owning_roles": [
+    "worms_port_network_worker",
+    "worms_port_compliance_keeper",
+    "worms_port_test_worker",
+    "worms_port_reviewer"
+  ],
+  "scope": [
+    "Add the optional production Daily Challenge entry without changing wallet-free unlimited Practice",
+    "Persist daily policy, reservations, consumed attempts, authoritative replay evidence, claims, payout intent, signed bytes, hashes, and transition events in PostgreSQL",
+    "Enforce atomic daily Luna capacity, one consumed attempt per verified wallet and UTC day, one active reservation, and idempotent single-use claims",
+    "Reconstruct server-owned winning replays before creating a claimable fixed reward",
+    "Add one leased signer/reconciliation worker with exact-byte rebroadcast, inclusion/finality states, pause control, and manual review instead of automatic replacement",
+    "Keep payouts disabled by default and add explicit record-only, TestAlbatross, and acknowledged MainAlbatross activation gates",
+    "Add focused reward, protocol, browser, migration, security-header, build, compliance, and audit evidence",
+    "Add a wallet-scoped, bounded repeat-attempt canary override with distinct durable attempt slots and a separate mainnet acknowledgement"
+  ],
+  "non_goals": [
+    "Player stakes, deposits, escrow, betting, random rewards, or player-loss-funded payouts",
+    "Client-authoritative results, caller-selected recipient/amount/network/fee, replay uploads, or automatic replacement transactions",
+    "Autonomous production mainnet activation, autonomous sponsor-fund movement, or autonomous approval of a real transaction",
+    "Horizontal Render scaling, durable active simulations, PvP, matchmaking, leaderboards, artwork, audio, or Sorcerers material"
+  ],
+  "planned_checks": [
+    "npm run verify:fast",
+    "npm run check:compliance",
+    "npm run check:types",
+    "npm run test:reward",
+    "npm run test:reward (repeat-attempt and compact-address refinement)",
+    "npm run check:types (repeat-attempt refinement)",
+    "npm run test:protocol",
+    "npm run test:practice",
+    "npm run test:identity",
+    "npm run build",
+    "npm run smoke:built",
+    "npm run test:browser:practice",
+    "npm run test:browser:identity",
+    "npm run test:browser:reward",
+    "npm run test:browser:smoke",
+    "npm audit",
+    "Render record-only PostgreSQL deployment acceptance",
+    "user-operated tiny MainAlbatross canary and restart reconciliation",
+    "post-canary safety restoration",
+    "server/client secret and bundle inspection",
+    "self-review"
+  ],
+  "deterministic_seeds": [
+    "1"
+  ],
+  "sorcerers_reference_used": false,
+  "clean_room_records": [],
+  "check_results": [
+    { "command": "npm run verify:fast", "status": "pass" },
+    { "command": "npm run check:compliance", "status": "pass" },
+    { "command": "npm run check:types", "status": "pass" },
+    { "command": "npm run test:reward", "status": "pass" },
+    { "command": "npm run test:reward (repeat-attempt and compact-address refinement)", "status": "pass", "detail": "19 tests passed, including wallet scoping, compact-address normalization, limit bounds, mainnet acknowledgement, sequential attempt slots, and completed-liability recovery behavior." },
+    { "command": "npm run check:types (repeat-attempt refinement)", "status": "pass" },
+    { "command": "npm run test:protocol", "status": "pass" },
+    { "command": "npm run test:practice", "status": "pass" },
+    { "command": "npm run test:identity", "status": "pass" },
+    { "command": "npm run build", "status": "pass" },
+    { "command": "npm run smoke:built", "status": "pass" },
+    { "command": "npm run test:browser:practice", "status": "pass" },
+    { "command": "npm run test:browser:identity", "status": "pass" },
+    { "command": "npm run test:browser:reward", "status": "pass" },
+    { "command": "npm run test:browser:smoke", "status": "pass" },
+    { "command": "npm audit", "status": "pass", "detail": "0 vulnerabilities" },
+    {
+      "command": "server/client secret and bundle inspection",
+      "status": "pass",
+      "detail": "No private-key material was found in built server or client output; private-key configuration names occur only in the server bundle."
+    },
+    {
+      "command": "Render record-only PostgreSQL deployment acceptance",
+      "status": "pass",
+      "detail": "User-operated acceptance passed on 2026-08-01, including durable migration and restart behavior on the deployed Render service."
+    },
+    {
+      "command": "user-operated tiny MainAlbatross canary and restart reconciliation",
+      "status": "pass",
+      "detail": "Exactly one 100000-Luna (1 NIM), zero-fee transfer was included in block 57732455 with executionResult=true: f3f40995754b708f2ae2586888d74688d8a5bf218fe07f80d49d1fe255e0c3e6. Its macro-block threshold was 57732480 and the observed head was 57732923. No duplicate transfer appeared after redeployment."
+    },
+    {
+      "command": "post-canary safety restoration",
+      "status": "pass",
+      "detail": "The wallet-scoped repeat-attempt variables were removed, REWARD_PAUSED=true was restored, and the service was redeployed."
+    },
+    { "command": "self-review", "status": "pass" }
+  ],
+  "reviews": [
+    { "role": "worms_port_network_worker", "reviewer": "primary-agent-payout-state-review", "decision": "pass" },
+    { "role": "worms_port_compliance_keeper", "reviewer": "primary-agent-license-and-secret-boundary-review", "decision": "pass" },
+    { "role": "worms_port_test_worker", "reviewer": "primary-agent-acceptance-evidence-review", "decision": "pass" },
+    { "role": "worms_port_reviewer", "reviewer": "primary-agent-final-security-and-scope-review", "decision": "pass" }
+  ],
+  "skipped_checks": [
+    "An autonomous PostgreSQL two-connection race injection was not run because no disposable local or TEST_DATABASE_URL PostgreSQL service was available; the live Render acceptance covered migration and restart behavior but not this synthetic concurrency test.",
+    "A full physical Android/iOS Daily Challenge and CSP matrix was not run in the autonomous environment; the user-operated Samsung/Nimiq Pay mainnet claim path passed."
+  ],
+  "residual_risks": [
+    "Active sessions and simulations remain in one Render process; deploys can forfeit an in-progress rewarded attempt and horizontal scaling remains blocked.",
+    "Public RPC availability and low-funded signer balance/fee operations remain production dependencies even though the selected MainAlbatross path passed the bounded canary.",
+    "Mainnet payouts remain paused; public activation still requires the remaining WP-014 through WP-017 quality and release approvals."
+  ]
+}

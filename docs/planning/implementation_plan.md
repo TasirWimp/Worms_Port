@@ -8,22 +8,42 @@ Phaser/Socket.IO stack.
 ## Execution Pointer
 
 - Active target: mobile-first single-player Nimiq Pay competition release.
-- Next work package: **WP-013 Sponsored Daily Challenge implementation**.
-- Last completed work package: **WP-012 Nimiq Pay Identity Adapter**.
+- Next work package: **WP-014 Autonomous Quality Harness**.
+- Last completed work package: **WP-013 Sponsored Daily Challenge**.
 - WP-012 exactly pins `@nimiq/mini-app-sdk` `0.1.0` and server-only
   `@nimiq/core` `2.7.1`. Provider access remains lazy, identity acceptance is
-  query-gated at `?identity-preview=1` until WP-013 adds the production
-  rewarded-match entry, and Practice never depends on Nimiq Pay. A deployed
-  identity acceptance pass still requires `NIMIQ_NETWORK=main-albatross` and
-  either Render's `RENDER_EXTERNAL_URL` or an explicit matching
-  `IDENTITY_PUBLIC_ORIGIN`.
-- WP-013 planning was security-refined on 2026-07-29. Its implementation must
-  add a durable PostgreSQL reward ledger, atomic reservation and daily-budget
-  enforcement, an explicit payout state machine, exact signed-transaction
-  recovery, a low-funded dedicated sponsor hot wallet, and disabled-by-default
-  activation gates. A wallet address is an eligibility identity, not proof of
-  one human; Practice remains the unrestricted fallback.
-- PvP and matchmaking: deferred until after the competition release.
+  now used by WP-013's separate production Daily entry, the diagnostics surface
+  remains query-gated at `?identity-preview=1`, and Practice never depends on
+  Nimiq Pay. A deployed identity acceptance pass still requires
+  `NIMIQ_NETWORK=main-albatross` and either Render's `RENDER_EXTERNAL_URL` or an
+  explicit matching `IDENTITY_PUBLIC_ORIGIN`.
+- WP-013 completed on 2026-08-01 with a durable PostgreSQL
+  ledger/migration, atomic reservation and daily-budget enforcement,
+  server-reconstructed win evidence, nonce/idempotency-bound claims, an
+  explicit payout state machine, exact signed-transaction recovery, CSP and
+  security headers, a production Daily entry, and disabled-by-default
+  activation gates. A wallet-scoped, bounded repeat-attempt override now permits
+  controlled same-day payout debugging without deleting prior ledger evidence;
+  Mainnet requires a separate repeat-attempt acknowledgement. Render
+  record-only/PostgreSQL acceptance passed, followed by an explicitly
+  user-approved tiny MainAlbatross canary. It produced exactly one 1 NIM
+  transaction (`f3f40995754b708f2ae2586888d74688d8a5bf218fe07f80d49d1fe255e0c3e6`)
+  in block 57732455, was observed beyond macro-block finality, and did not
+  duplicate after redeployment. The repeat-attempt settings were removed and
+  `REWARD_PAUSED=true` was restored and deployed. This is bounded operational
+  acceptance, not authorization to leave public mainnet rewards active. A
+  wallet address is an eligibility identity, not proof of one human; Practice
+  remains the unrestricted fallback.
+- The approved post-competition weekly program is now scoped as WP-018 through
+  WP-021: Nimiq Chronicle, Loom XP qualification, optional PvP Sparring Loom,
+  and the Weekly Grand Knot Tournament with an additional sponsor-funded
+  USDTTON payout channel to GCrypto. The program uses a weekly multi-objective
+  governance packet and may later use a read-only LLM advisory narrator, but no
+  model may change eligibility, ranking, rewards, or payments. These packages
+  are planning only. Do not start them or advance this pointer until the
+  existing WP-014 through WP-017 release sequence is complete.
+- PvP and matchmaking remain deferred until WP-020; no current release path
+  may depend on another human being online.
 - Canonical artwork reference:
   `docs/images/art-direction/knotkin-class-lineup-concept.png`.
 - General physical Android/iOS testing remains outside the automated cycle.
@@ -1401,8 +1421,14 @@ Verification:
 
 ### WP-013 Sponsored Daily Challenge
 
-Status: security-refined on 2026-07-29; implementation pending. Depends on
-WP-007, WP-008, WP-009, and WP-012.
+Status: completed on 2026-08-01. Deployed record-only PostgreSQL acceptance
+passed, followed by a user-operated, explicitly approved tiny MainAlbatross
+canary with a dedicated low-funded signer. Exactly one 1 NIM transaction was
+included in block 57732455, observed beyond macro-block finality, and not
+duplicated after redeployment. The repeat-attempt settings were then removed
+and `REWARD_PAUSED=true` was restored and deployed. This acceptance does not
+grant autonomous authority over mainnet funds or approve public payout
+activation. Depends on WP-007, WP-008, WP-009, and WP-012.
 
 Goal: deliver one optional wallet-authorized Daily Grand Knot Challenge with a
 fixed sponsor-funded NIM reward for an eligible server-authoritative win.
@@ -1483,6 +1509,12 @@ core dependency when constructing and expiring transactions.
 - Default eligibility is one started rewarded attempt per verified wallet per
   UTC challenge day. Unlimited Practice is the retry path after a loss,
   forfeit, or consumed rewarded attempt.
+- A controlled payout canary may temporarily raise that limit only for one
+  explicitly configured normalized test-wallet address, to at most five
+  sequential attempt slots. Mainnet requires an additional exact operator
+  acknowledgement. The exception must not weaken daily budget, active-match,
+  replay, claim, idempotency, signer, reconciliation, or finality controls and
+  must be removed after testing.
 - Creating a reservation does not consume the daily attempt until the
   authoritative rewarded match starts. Bound pre-start reservation churn per
   wallet/session/IP, permit only one active reservation per wallet, and release
@@ -1819,6 +1851,651 @@ suite, production smoke, deep link, disabled/enabled reward configuration, and
 rollback rehearsal. Real Android/iOS testing is listed separately as not run;
 it does not block completion of the documented autonomous cycle.
 
+## Post-Competition Weekly System And Governance Foundation
+
+Status: approved planning foundation for WP-018 through WP-021 and explicitly
+non-executable until WP-017 is complete. This section governs the later work
+packages but does not advance the Execution Pointer.
+
+### System model and optimization boundary
+
+The weekly program is a repeated multi-agent incentive and competition system.
+Players act locally through Practice, Loomkeeper matches, optional PvP,
+community activity, and Nimiq ecosystem use. A slower weekly governance layer
+observes complete windows and may adjust only a future week's policy. The
+designer is a fallible policy steward, not an oracle entitled to overwrite
+player agency or already-earned history.
+
+Player motivations remain separately visible:
+
+- intrinsic play value: enjoyable artillery, mastery, autonomy, novelty, and
+  meaningful improvement;
+- competition and social value: fair comparison, recognition, belonging, and
+  an understandable route from training to tournament performance;
+- monetary value: a credible chance at a disclosed sponsor-funded prize without
+  an entry payment, stake, purchase, or expectation that play is employment;
+- trust and access: stable rules, privacy, appeals, understandable evidence,
+  low wallet friction, and a practical free single-player path.
+
+Designer and Nimiq-ecosystem motivations also remain separately visible:
+
+- a game that retains players because it is worth playing without a prize;
+- legitimate discovery and repeated use of Nimiq wallets, merchants, and mini
+  apps rather than self-transfer or one-off transaction volume;
+- community visibility that is voluntary, privacy-preserving, and not coerced
+  advertising;
+- sustainable sponsor cost, payout reliability, abuse resistance, and current
+  legal/platform/provider compliance; and
+- public recoverability of rules, evidence, corrections, and payouts through
+  the Nimiq Chronicle.
+
+Do not collapse these motivations into one master score. Treat each weekly
+policy as a constrained multi-objective optimization proposal evaluated under
+at least these cuts:
+
+1. player experience and voluntary return;
+2. mastery, skill expression, and competition integrity;
+3. access and distributional fairness;
+4. genuine retained Nimiq ecosystem use;
+5. abuse resistance, privacy, and player harm;
+6. sponsor sustainability and operational reliability; and
+7. auditability and recoverability.
+
+XP, transaction count, posts, matches, retention, and payout volume are
+cut-bound probes. None is interchangeable with whole-system health. An
+aggregate improvement cannot trade away the protected free path, fairness,
+privacy, or financial-safety boundary.
+
+### Scientific and governance basis
+
+The literature below motivates design risks and testable hypotheses; it does
+not establish target-specific effects, optimal weights, or facts about Filipino
+players. Those require prospective player research and bounded pilots.
+
+| Research line | Design consequence for this program |
+| --- | --- |
+| Holmstrom and Milgrom, [Multitask Principal-Agent Analyses](https://doi.org/10.1093/jleo/7.special_issue.24) | Strong incentives on measured tasks can redirect effort away from unmeasured value. Keep XP sources typed and capped; do not treat XP maximization as player or ecosystem success. |
+| Campbell, [Assessing the Impact of Planned Social Change](https://doi.org/10.1016/0149-7189(79)90048-X) | Once a measure controls access to value it attracts adaptation and corruption pressure. Preserve replay, anti-farming tests, qualitative evidence, and residuals outside the score. |
+| Deci, Koestner, and Ryan, [A Meta-Analytic Review of Experiments Examining the Effects of Extrinsic Rewards on Intrinsic Motivation](https://doi.org/10.1037/0033-2909.125.6.627), together with Cerasoli, Nicklin, and Ford, [Intrinsic Motivation and Extrinsic Incentives Jointly Predict Performance](https://doi.org/10.1037/a0035661) | Monetary incentives and intrinsic motivation can interact differently by context, contingency, and performance type. Practice and mastery remain primary; prizes are bounded overlays rather than the reason every action exists. |
+| Mekler et al., [Towards Understanding the Effects of Individual Gamification Elements on Intrinsic Motivation and Performance](https://doi.org/10.1016/j.chb.2015.08.048), and Sailer and Homner, [The Gamification of Learning: A Meta-Analysis](https://doi.org/10.1007/s10648-019-09498-w) | Points, levels, and competition may change behavior without reliably creating intrinsic motivation, and effects are heterogeneous. Measure enjoyment and autonomy separately from activity volume and introduce mechanics incrementally. |
+| Jia et al., [Designing Leaderboards for Gamification](https://doi.org/10.1145/3025453.3025826) | Leaderboard experience varies with rank, domain, and player characteristics. Report cut-specific outcomes, protect lower-ranked players from unnecessary exposure, and do not infer universal benefit from aggregate engagement. |
+| Lazear and Rosen, [Rank-Order Tournaments as Optimum Labor Contracts](https://doi.org/10.1086/261010), and Moldovanu and Sela, [The Optimal Allocation of Prizes in Contests](https://doi.org/10.1257/aer.91.3.542) | Contest response depends on ability, effort costs, risk, and prize structure. Freeze a disclosed skill format and prize table, test heterogeneous cohorts, and do not assume winner-take-all or one prize curve is generally optimal. |
+| Rochet and Tirole, [Platform Competition in Two-Sided Markets](https://doi.org/10.1162/154247603322493212) | Player value and partner/ecosystem value are coupled but distinct. Measure retained value on both sides instead of maximizing transaction volume at the expense of play. |
+| Delic and Delfabbro, [Profiling the Potential Risks and Benefits of Emerging Play-to-Earn Games](https://doi.org/10.1007/s11469-022-00894-y) | Reported play-to-earn experience includes financial harm, loss chasing, inequality, and excessive-play pressure. Keep rewards sponsor-funded, forbid player investment/stakes, preserve the free path, and disclose that prizes are uncertain and limited. |
+| Lo et al., [Reliability Analysis for Blockchain Oracles](https://doi.org/10.1016/j.compeleceng.2020.106582) | Blockchain reliability does not transfer automatically to off-chain classification. Nimiq anchors commitments; server evidence, replay, review, and corrections remain separate truth-bearing roles. |
+
+For a later LLM advisory narrator, use the current
+[NIST Generative AI Profile](https://nvlpubs.nist.gov/nistpubs/ai/NIST.AI.600-1.pdf)
+for governance, testing, monitoring, override, and deactivation planning, plus
+OWASP's current [Prompt Injection](https://genai.owasp.org/llmrisk/llm01-prompt-injection/)
+and [Excessive Agency](https://genai.owasp.org/llmrisk/llm062025-excessive-agency/)
+guidance for untrusted-input, least-privilege, independent authorization, and
+human-approval boundaries.
+
+### Bounded CRPM governance transfer
+
+CRPM is used here only as an MIT-compatible L4+ design and operations scaffold,
+pinned to [CRPM commit `7eee60e`](https://github.com/TasirWimp/CRPM/tree/7eee60e1e5bfb5d46e975c6df36ec107f43cbb19).
+The transfer is `support_qualified`: it governs how the project declares cuts,
+protected constraints, evidence, interventions, residue, and re-entry. It is
+not a game ontology, player psychology model, optimal-control theorem, or
+empirical validation of this product.
+
+The applicable CRPM sources are:
+
+- windowed, sparse, fallible, freeze-capable governance in the
+  [Level-3 Methodology](https://github.com/TasirWimp/CRPM/blob/7eee60e1e5bfb5d46e975c6df36ec107f43cbb19/methodology/CRPM_Level3_Methodology.md);
+- the script/assistant/human authority split and role non-substitution in
+  [CRPM Operating Layer](https://github.com/TasirWimp/CRPM/blob/7eee60e1e5bfb5d46e975c6df36ec107f43cbb19/docs/architecture/CRPM_Operating_Layer_COL_v0.md);
+- LLM use for exposing hidden residue rather than determining final meaning in
+  [LLM Tension Amplification Re-entry](https://github.com/TasirWimp/CRPM/blob/7eee60e1e5bfb5d46e975c6df36ec107f43cbb19/docs/architecture/CRPM_LLM_Tension_Amplification_Reentry_Note_v0.md);
+- non-scalar, cut-indexed evaluation and false-closure controls in
+  [CRPM Evaluation Language](https://github.com/TasirWimp/CRPM/blob/7eee60e1e5bfb5d46e975c6df36ec107f43cbb19/docs/architecture/CRPM_Evaluation_Language_Operational_Note_v0.md);
+- anchor, consequence, interface-test, and falsifier gates in the
+  [Transformation Admissibility Standard](https://github.com/TasirWimp/CRPM/blob/7eee60e1e5bfb5d46e975c6df36ec107f43cbb19/methodology/CRPM_Transformation_Admissibility_Standard_v0_1.md); and
+- the one-new-port and living-trace heuristics in the
+  [L4 Translation Governance Addendum](https://github.com/TasirWimp/CRPM/blob/7eee60e1e5bfb5d46e975c6df36ec107f43cbb19/methodology/L4_Translation_Governance_Addendum_v0_1.md).
+
+The exploratory CRPM `Pi_exec / Pi_review / H_policy` role split may be reused
+only as an internal analogy:
+
+- `Pi_exec` is deterministic, approved server policy. It calculates XP,
+  qualification, rating, ranking, and payment state and cannot invent weights.
+- `Pi_review` is wider-window evaluation, deterministic tests, accountable
+  human judgment, and an optional LLM proposal/challenge surface.
+- `H_policy` is the append-only trace linking evidence, proposals,
+  disagreements, approvals, exact compiled configuration, Chronicle anchors,
+  outcomes, corrections, and residual uncertainty.
+
+Do not import CRPM equations, dream/physics material, narrator/avatar ontology,
+or a scalar governance-health controller into the game. In particular, the
+exploratory [Agent-Narrator Mode-Growth Bridge](https://github.com/TasirWimp/CRPM/blob/7eee60e1e5bfb5d46e975c6df36ec107f43cbb19/docs/architecture/voyage_graphs/research_notes/CRPM_CMB_DG_Agent_Narrator_Mode_Growth_Bridge_v0.md)
+does not become product doctrine.
+
+### Weekly Mechanism Governance Packet
+
+Before each enabled week, create a versioned packet containing:
+
+- week, policy version, population/frame, active cuts, scope, and explicit
+  non-claims;
+- the protected family and proof that the free single-player qualification path
+  remains practical;
+- one primary mechanism/port under evaluation, with other new ports disabled;
+- baseline, hypothesis, exact parameter delta, expected benefits and harms per
+  cut, forbidden behavior, cheapest falsifier, and rollback/freeze conditions;
+- frozen XP, rating, qualification, tournament, evidence, prize, and payout
+  parameters;
+- evidence-source and covariance notes distinguishing shared reconstruction
+  from genuinely independent player, legal, security, or provider evidence;
+- adverse events, appeals, corrections, unresolved residue, and missing data;
+  and
+- post-window decision: keep, make a small future bias, weaken, freeze, revert,
+  or open a separately declared test.
+
+Hash a privacy-reviewed public representation into `WEEK_OPEN`. Ordinary
+changes apply only to a future week; safety controls may pause an affected
+feature but cannot silently rewrite the active policy or earned history. One
+noisy week is not enough to demand a change. Governance reads multiple stable
+windows unless a predeclared safety boundary is crossed.
+
+### Optional LLM advisory narrator
+
+The narrator is a distributed governance relation, not one sovereign bot. A
+later LLM component may inspect a completed, provenance-bound,
+privacy-minimized weekly packet; expose conflicts and residue; and emit one
+typed proposal for a future week. It never approves, compiles, publishes,
+executes, signs, or silently changes a rule.
+
+Required architecture:
+
+1. deterministic code closes the window and produces aggregate evidence;
+2. an isolated read-only LLM returns a strict proposal with source hashes,
+   active cuts, one bounded delta, expected effects/harms, missing evidence,
+   falsifier, rollback condition, uncertainty, and `no_change` support;
+3. deterministic gates reject schema, invariant, budget, privacy, fairness,
+   simulation, or maximum-delta violations;
+4. named humans review source evidence rather than only the model summary and
+   approve or reject the value-bearing change;
+5. deterministic code serializes the exact approved next-week configuration;
+6. `WEEK_OPEN` commits the approved policy; and
+7. the server executes without an LLM call in gameplay, XP, qualification,
+   ranking, entitlement, or payout paths.
+
+The LLM has no database-write, deployment, arbitrary-fetch, Chronicle, wallet,
+treasury, attestor, or payment tool. It never decides individual XP,
+disqualification, appeals, partner allowlisting, eligibility, ranking, prize
+amount, jurisdiction, or payment. Raw player/social content, URLs, images,
+wallet identifiers, and partner text are untrusted and cannot enter the
+privileged policy prompt. Any qualitative-analysis experiment runs in a
+separate no-tool sandbox and exports only typed, minimized candidate evidence.
+
+Record the exact model/provider/version, prompt and schema hashes, aggregate
+input hash, retrieval/tool versions, sampling settings, raw and parsed output
+hashes, validator result, human edits/disposition, compiled policy hash, and
+later outcome. A model, prompt, source, schema, or tool change is a new
+intervention and returns to shadow evaluation. The game falls back to the last
+approved policy or disables the next experiment when the narrator is
+unavailable. Human approval is never removed for an LLM-originated change that
+affects qualification, ranking, rewards, money, legal eligibility, sanctions,
+or a protected constraint.
+
+Activation sequence:
+
+1. Chronicle and governance packets in record-only mode;
+2. skill-only Loom XP and ticket qualification;
+3. tournament dry run without a real payout;
+4. ecosystem-spend XP, community/social XP, and PvP as separately approved
+   ports, ordinarily one new port per pilot window; and
+5. the real USDTTON sponsor payout as a separate final activation gate.
+
+The optional LLM begins with synthetic adversarial packets, then shadow-only
+weekly proposals, retrospective comparison, and a human-approved non-monetary
+pilot. No current stage licenses autonomous production-weight adjustment.
+
+### WP-018 Nimiq Chronicle And Public Verification
+
+Status: planned and explicitly deferred until WP-017 is complete. Depends on
+WP-013, WP-014, and WP-017.
+
+Goal: make Nimiq the public, tamper-evident audit spine for weekly competition
+and governance history without sending every gameplay, XP, or policy-review
+event as an individual transaction. Preserve complete authoritative evidence
+and Weekly Mechanism Governance Packets in PostgreSQL, batch canonical event
+leaves into Merkle trees, and periodically anchor only their roots on Nimiq.
+Deliver a public verifier that can prove a disclosed receipt or governance
+packet belongs to a finalized root.
+
+Authority and truth boundary:
+
+- Nimiq finality proves that an anchored commitment existed and was not later
+  rewritten. It does not independently prove that the server classified a
+  match or XP event correctly. Server-authoritative simulation, signed
+  receipts, deterministic replays, validation policy, and public inclusion
+  proofs remain necessary.
+- Keep an append-only canonical event ledger in PostgreSQL. Each event has a
+  versioned type, week ID, monotonic sequence, canonical payload hash, policy
+  version, server signing-key ID, creation time, and correction relationship
+  when applicable.
+- Issue a server-signed receipt for every accepted XP, match, qualification,
+  tournament-result, and payout-status event. A receipt is not final until the
+  UI can associate it with a finalized Nimiq anchor and a valid Merkle proof.
+- Treat governance proposals, validator results, human dispositions, exact
+  compiled-policy hashes, and post-window review as typed append-only events.
+  An optional LLM proposal is never itself an approved policy or evidence that
+  an intervention helped.
+- Never edit or delete an anchored event to change history. Append a typed
+  correction, reversal, or disqualification event, anchor the new root, and
+  make the verifier display both records.
+- Use a dedicated, low-funded Chronicle attestor wallet, separate from the NIM
+  reward wallet, TON USDTTON payout wallet, and sponsor treasury. Anchor attestor
+  key rotations before a replacement key becomes authoritative.
+- Treat a compromised attestor as able to publish false future commitments,
+  but not rewrite previously finalized roots. Add an independently operated
+  watcher that checks sequence continuity, expected roots, policy hashes,
+  signer identity, and anchor finality.
+
+Weekly anchor protocol:
+
+- `WEEK_OPEN` commits to the week ID, ruleset and Loomkeeper versions, XP and
+  rating policies, qualification threshold, prize table, approved ecosystem
+  evidence profiles, tournament format, server/attestor keys, scheduling
+  policy, one active experimental port, the privacy-reviewed Weekly Mechanism
+  Governance Packet hash, and an unrevealed deterministic seed commitment.
+- `XP_ROOT` and `MATCH_ROOT` batch accepted receipts at a configured interval
+  or event threshold. Do not create one Nimiq transaction per activity.
+- `QUALIFICATION_ROOT` fixes the eligible set at a disclosed finalized Nimiq
+  block height. Wall-clock time alone is not the authoritative cutoff.
+- `TOURNAMENT_RESULT_ROOT` commits to authoritative scores, placements, replay
+  hashes, disqualifications, and the revealed-seed evidence.
+- `PAYOUT_ROOT` commits to payout obligations and public chain transaction
+  references without publishing unnecessary cross-chain identity data.
+- `WEEK_REVIEW` commits to the privacy-reviewed post-window evaluation packet,
+  proposal and human-disposition hashes, corrections, unresolved residue, and
+  the keep, small-future-bias, weaken, freeze, revert, or new-test decision. It
+  does not authorize the next policy; only a later `WEEK_OPEN` does.
+- Every anchor uses a versioned compact envelope containing at least the event
+  class, week ID, batch sequence, and 32-byte Merkle root. Keep the encoding
+  within Nimiq's documented transaction-data limit and reserve bytes for
+  version/flags. Freeze exact bytes and golden vectors before implementation.
+- Consider an anchor final only after Nimiq macro-block finality. Show pending,
+  included, finalized, and correction states accurately.
+- Batch frequency is an operating parameter with a maximum unanchored age and
+  event count. Congestion, fee budget, or RPC failure may delay anchoring but
+  cannot silently drop accepted receipts or qualify them as finalized.
+
+Privacy boundary:
+
+- Do not put wallet addresses, social URLs or handles, GCrypto/TON deposit
+  addresses, IP/device identifiers, replay bodies, or other personal data in
+  Nimiq transaction data.
+- Use domain-separated, versioned, privacy-preserving participant commitments
+  with per-week salt/key material. Document which authorized verifier can
+  reproduce them and how key destruction or retention affects auditability.
+- A public TON payout transaction is inherently observable. The Chronicle
+  must not add an unnecessary direct link between the player's Nimiq identity
+  and GCrypto deposit address.
+
+Primary protocol references to reverify when implementation starts:
+
+- transaction data, fee, and submission behavior:
+  `https://nimiq.dev/web-client/guides/send-transactions`;
+- transaction and macro-block finality:
+  `https://nimiq.dev/protocol/transactions`;
+- Merkle-tree and proof terminology:
+  `https://nimiq.dev/protocol/glossary`; and
+- wallet message-signing behavior:
+  `https://nimiq.dev/hub/guide/transactions`.
+
+Non-goals: storing complete matches or personal data on-chain, issuing Loom XP
+as a transferable token, treating a hash as proof that its source statement is
+true, replacing the WP-013 monetary ledger, making an LLM a policy authority,
+real-fund activation, or importing third-party blockchain/indexer code without
+source and license review.
+
+Owning roles: `worms_port_network_worker`,
+`worms_port_compliance_keeper`, `worms_port_test_worker`,
+`worms_port_docs_keeper`, `worms_port_reviewer`.
+
+Verification: canonical-encoding and domain-separation golden vectors; stable
+Merkle roots independent of database query order; receipt/signature and
+inclusion-proof positives/negatives; duplicate, omitted, reordered, conflicting,
+and corrected event cases; crash/restart between ledger commit, batch creation,
+transaction signing, broadcast, inclusion, and finality; exact-byte/hash
+reconciliation; governance-packet, proposal, human-disposition, compiled-policy,
+and `WEEK_REVIEW` reconstruction; attestor rotation and watcher alarms; RPC
+outage and fee-budget behavior; public verifier phone coverage; privacy review;
+secret scan; database restart acceptance; Nimiq testnet anchor canary;
+compliance, audit, types, build, and read-only security review. Mainnet
+Chronicle activation remains a separately approved operational gate.
+
+### WP-019 Weekly Loom XP And Qualification
+
+Status: planned and explicitly deferred until WP-018 is complete. Depends on
+WP-016 and WP-018.
+
+Goal: add a weekly, non-transferable Loom XP progression system and derive one
+weekly Tournament Ticket from server-validated activity. A player must always
+be able to reach the qualification threshold through free single-player skill
+play. The first activation is skill-only. Ecosystem and community activity are
+disabled-by-default, separately activated, capped accelerators rather than
+purchase, publicity, or human-opponent requirements.
+
+Progression and qualification boundary:
+
+- Real NIM remains player-owned money. Loom XP is account-bound reputation with
+  no cash value, transfer, withdrawal, sale, staking, or redemption. A
+  Tournament Ticket is a non-transferable weekly eligibility record, not a
+  token or prize.
+- Freeze each week's XP sources, caps, minimum evidence, correction rules,
+  qualification threshold, and ticket policy in `WEEK_OPEN` before activity
+  begins. Do not change scoring retroactively.
+- Activate `SKILL_XP` first. Treat `ECOSYSTEM_SPEND_XP` and
+  `COMMUNITY_QUEST_XP` as separate ports with independent record-only,
+  governance-packet, legal/privacy, abuse, and production gates. Do not enable
+  both for the first time in one ordinary pilot window.
+- Use integer XP only. Keep separate lifetime, seasonal, and current-week totals
+  if product testing supports all three; only current-week XP controls the
+  weekly ticket.
+- Free Practice/Loomkeeper skill activity alone must supply at least 100% of
+  the ticket threshold within a reasonable disclosed play budget. Spending NIM,
+  posting publicly, consenting to device identity, or finding a PvP opponent
+  cannot be mandatory.
+- Add per-source and daily caps, diminishing returns, meaningful-play checks,
+  and append-only reversals. Never subtract XP merely because a player loses a
+  match or spends NIM.
+- Compute every accepted XP event and ticket deterministically under the
+  frozen policy. An LLM may later propose a bounded future-week schedule but
+  cannot classify an event, assign player-specific XP, change a table, issue a
+  ticket, or approve its own proposal.
+- Issue the ticket only after the qualifying XP set is covered by finalized
+  Chronicle roots at the cutoff. Late or corrected events follow a disclosed
+  appeal/manual-review policy and cannot silently rewrite the eligible set.
+
+Evidence profiles:
+
+- Practice and Loomkeeper XP comes only from authoritative simulation results
+  and retained replay/state hashes. Client scores, screenshots, or uploads are
+  not evidence.
+- Nimiq ecosystem-spend XP requires a finalized unique Nimiq transaction from
+  the verified player address to an allowlisted merchant/mini-app recipient,
+  the week-approved network and minimum amount, plus a partner-signed service
+  receipt when a bare transfer would not prove genuine ecosystem use. Consume
+  each transaction hash once and reject self-transfers, refunds, circular
+  transfers, and operator-controlled farming.
+- The approved recipient/evidence registry and partner signing keys are part of
+  `WEEK_OPEN`. Adding a partner mid-week affects only a later week unless a
+  correction policy explicitly protects players from an operator error.
+- Community/social quests are optional and low-capped. Store only a minimized
+  verification result and evidence retention deadline; never anchor the public
+  post URL or handle. Do not automate scraping or require advertising language
+  without platform-terms, privacy, and promotion-law review.
+
+User-visible behavior:
+
+- Show the current week, finalized and pending XP separately, source caps,
+  threshold, cutoff block/time estimate, ticket state, and corrections.
+- Give each accepted event a downloadable/viewable Chronicle receipt and proof
+  status. Explain that on-chain anchoring makes history tamper-evident but does
+  not place personal gameplay data on Nimiq.
+- At weekly rollover, preserve historical receipts and qualification evidence
+  while resetting only the new current-week counter according to the anchored
+  policy.
+
+Non-goals: an XP token, purchase-to-enter, mandatory social posting, mandatory
+NIM spending, client-authoritative quests, indiscriminate wallet-history
+scanning, proof that one wallet equals one human, automatic LLM weight tuning,
+or weekly prize payout.
+
+Owning roles: `worms_port_planner`, `worms_port_network_worker`,
+`worms_port_base_game_worker`, `worms_port_compliance_keeper`,
+`worms_port_test_worker`, `worms_port_reviewer`.
+
+Verification: deterministic XP and cap tables; free-skill qualification path;
+pending-versus-finalized anchors; week rollover and cutoff-height races;
+duplicate/replayed/refunded/self/circular spend evidence; partner-signature and
+allowlist rotation; forged client activity; correction/disqualification and
+appeal states; privacy deletion/retention behavior; locale and phone layout;
+database restart/concurrency; disabled and separately enabled external-port
+gates; governance-packet and future-policy reconstruction;
+promotion/platform-terms review; complete browser matrix; compliance, audit,
+build, and read-only abuse review.
+
+### WP-020 Sparring Loom PvP
+
+Status: planned, optional, and explicitly deferred until WP-019 is complete.
+Depends on WP-007, WP-009, WP-014, WP-018, and WP-019. It is not a prerequisite
+for the asynchronous tournament or its payout channel.
+
+Goal: add optional server-authoritative player-versus-player Sparring Loom
+matches during the weekly qualification period. Meaningful participation can
+earn capped Loom XP while a separate Loom Rating represents competitive skill.
+The weekly system, Practice, and qualification must continue to work when no
+opponent is online. PvP is its own governance port and must pass record-only and
+human-approved activation independently of ecosystem, social, tournament, and
+payout ports.
+
+Match and scoring boundary:
+
+- Reuse the deterministic artillery rules and authoritative command validation;
+  never trust a client result, damage value, elapsed time, replay, XP change, or
+  rating change.
+- Loom XP measures bounded progression; Loom Rating measures PvP skill. Freeze
+  the rating algorithm, provisional rules, season reset, XP schedule, and
+  anti-farming limits in `WEEK_OPEN`. Winning may add a small XP bonus, but a
+  legitimate completed loss still earns participation XP.
+- Keep PvP XP optional and capped below the amount needed to force PvP as the
+  only practical qualification path. No XP or NIM is transferred from the
+  loser, and no match may require a stake, deposit, entry payment, escrow, or
+  player-funded prize.
+- Both players may sign short-lived pre-match intent with their verified Nimiq
+  identity. The server owns matchmaking and the final result; a losing player
+  cannot veto a completed authoritative result by withholding a signature.
+- Persist the authoritative replay/state hash, ruleset, seed commitment/result,
+  pseudonymous participant commitments, outcome, XP/rating deltas, disconnect
+  classification, and server receipt. Include the receipt in `MATCH_ROOT` and
+  affected XP receipts in `XP_ROOT`.
+- A matchmaking timeout offers Practice, a Loomkeeper activity, or an
+  asynchronous product-approved alternative. It never blocks the app or ticket
+  path. Private rooms, spectator mode, chat, and Guild competition remain
+  separate future work.
+
+Abuse and fairness controls:
+
+- Reward only matches that meet minimum meaningful-turn/action and duration
+  rules. Immediate forfeits, scripted inactivity, duplicate commands, or
+  abandoned lobbies earn no XP.
+- Limit XP-bearing rematches per opponent/day, apply pair-based diminishing
+  returns, reward a bounded number of unique opponents, and cap daily PvP XP.
+- Rate-limit queueing and matches by session, verified wallet, privacy-reduced
+  IP/risk key, and pair. Account for shared mobile-carrier NATs; IP equality
+  alone must not convict players.
+- Detect impossible concurrency, repeated reciprocal outcomes, intentional
+  forfeits, coordinated farming clusters, and replay/input similarity for
+  review. Risk signals may delay XP finalization but cannot silently confiscate
+  earned NIM or expose raw device identifiers.
+- Define disconnect, reconnect, timeout, draw, and server-failure outcomes
+  before launch. Infrastructure failure must not become a player loss or
+  repeatable XP source.
+
+Non-goals: replacing the Loomkeeper tournament with mandatory synchronous PvP,
+cash wagering, player-funded rewards, private rooms, chat, Guild rosters,
+spectating, claiming strong Sybil resistance, or horizontally scaling the
+existing single-process server without the durable/shared-state work that PvP
+load requires.
+
+Owning roles: `worms_port_network_worker`,
+`worms_port_base_game_worker`, `worms_port_test_worker`,
+`worms_port_compliance_keeper`, `worms_port_reviewer`.
+
+Verification: deterministic two-player command/replay reconstruction; queue,
+cancel, timeout, reconnect, simultaneous disconnect, draw, and server-restart
+cases; XP/rating separation and golden tables; repeated-pair/daily caps;
+forfeit/inactivity/collusion simulations; carrier-NAT false-positive review;
+forged result and identity binding; Chronicle receipts and correction proofs;
+load/latency/capacity tests; maintained phone-browser matrix; physical two-device
+Nimiq Pay acceptance; compliance, audit, build, smoke, and independent fairness
+and security review.
+
+### WP-021 Weekly Grand Knot Tournament And GCrypto USDTTON Payout
+
+Status: planned and explicitly deferred until WP-019 is complete. Depends on
+WP-013, WP-017, WP-018, and WP-019. WP-020 PvP is optional and does not block
+the asynchronous tournament or payout implementation.
+
+Goal: run a weekly deterministic skill tournament for qualified ticket holders
+and add a second sponsor-funded payout channel: USDTTON, GCrypto's USDT asset on
+The Open Network, sent to the receive details supplied by the player from the
+`GCrypto -> USDTTON / USDT (The Open Network) -> Receive` flow. Continue to use
+NIM in the game and retain the WP-013 NIM reward channel independently.
+
+Tournament boundary:
+
+- The first weekly format must remain useful asynchronously and cannot require
+  another human to be online at a particular time. Use the same disclosed,
+  deterministic, server-authoritative challenge/rules for all qualified
+  players; PvP remains a qualification dimension, not a required tournament
+  opponent.
+- `WEEK_OPEN` fixes the qualification threshold, entry window, tournament
+  ruleset, seed commitment, scoring/tie-break policy, attempt count, eligibility
+  jurisdiction/age rules, prize table, sponsor budget, and payout channels.
+- Entry uses the finalized Tournament Ticket. There is no fee, stake, deposit,
+  escrow, random winner, purchase requirement, player-loss-funded pool, or
+  advantage purchased with NIM.
+- Derive ranking only from authoritative simulation evidence. Reveal the seed
+  and publish Chronicle-verifiable results after the dispute window. Corrections
+  and disqualifications are new anchored events, not rewritten standings.
+- Use a fixed, fully funded, disclosed placement-prize table or another
+  specifically reviewed skill-prize structure. Never calculate a winner's
+  payout from player losses or entries.
+- Launch the tournament first as a dry run with receipts, ranking, disputes,
+  and payout obligations but no real transfer. Tournament operation and the
+  real USDTTON channel are separate activation gates.
+
+TON payout boundary:
+
+- Treat `NIM_NATIVE` and `USDT_TON_GCRYPTO` as separate typed payment
+  channels with separate wallets, limits, state machines, reconciliation, and
+  user wording. XP and tickets never become redeemable balances.
+- At claim time, the qualified Nimiq wallet signs a short-lived canonical
+  message binding the week/entitlement, `TON_MAINNET`, reviewed USDT Jetton
+  master, integer micro-USDT amount, current GCrypto destination owner address,
+  the current required GCrypto memo string, nonce, expiry, and public origin.
+  Address or memo entry without this signature is not payout authorization.
+- Explain that the player must open the current GCrypto `USDTTON` asset, tap
+  `Receive`, and copy or scan both the address and memo string shown there.
+  Treat the address and memo as one indivisible destination pair: the memo is
+  mandatory for the current GCrypto route, must be copied exactly, and must not
+  be inferred, normalized, reused from another deposit, or replaced with a
+  player identifier. The network must read `The Open Network`; generic USDT, an
+  Ethereum, Tron, Avalanche, Celo, or Kaia address, a Telegram username, phone
+  number, or other GCash identifier is not interchangeable.
+- Explain that blockchain transfers are irreversible and GCrypto may change
+  asset/network support, receive availability, minimums, memo requirements,
+  conversion rules, limits, verification, fees, or age/jurisdiction rules. An
+  on-chain success is not guaranteed cash-out; completion remains pending until
+  GCrypto credits the deposit and the player can see it in transaction history.
+- Validate the TON user-friendly address checksum and network flag, supported
+  workchain/address form, exact allowlisted USDT Jetton master, on-chain
+  metadata, six-decimal micro-USDT encoding, configured amount bounds, sponsor
+  Jetton balance, TON gas reserve, a present and bounded GCrypto memo string, and
+  entitlement ownership on the server. Canonicalize the address for comparison
+  while preserving the exact player-reviewed display form. The client cannot
+  select the master, network, decimals, amount, gas/forwarding policy, or signer.
+- Treat the destination as the TON owner address supplied by GCrypto. Do not
+  replace it with an independently derived Jetton-wallet address or infer it
+  from the player's Nimiq identity. Build the TEP-74 Jetton transfer through the
+  sender's verified USDT Jetton wallet and retain the recipient owner address
+  in the authoritative intent.
+- Set a unique Jetton `query_id`, sufficient attached TON for fees, and a
+  positive `forward_ton_amount` so the recipient receives a standard
+  `transfer_notification`. Encode the required GCrypto memo string exactly in
+  the reviewed forward payload. Do not invent, alter, or omit it.
+- Permit destination-pair correction only before the payout intent becomes
+  immutable. Show a final confirmation with network, asset, amount, address,
+  and the exact memo string. Prefer QR-derived values and a separately
+  confirmed tiny canary before larger transfers.
+- Persist the immutable payout intent, Nimiq authorizer, TON network, Jetton
+  master and decimals, recipient address, GCrypto memo string, forward payload,
+  amount, `query_id`, sender wallet version/address, wallet sequence number,
+  gas/forward amounts, exact
+  unsigned and signed message BOCs, message/transaction hashes, logical-time and
+  block references, broadcast ambiguity, Jetton transfer/notification evidence,
+  GCrypto-credit state, and every transition in PostgreSQL before claiming
+  completion.
+- Use durable idempotency over the entitlement, address, memo, and amount, with
+  one logical signer. After an ambiguous broadcast, reconcile the stored
+  BOC/message hash, wallet sequence number, `query_id`, and chain state before
+  any retry. Never create a second Jetton transfer merely because an RPC or
+  indexer call timed out.
+- Keep the TON sponsor wallet dedicated and low-funded. The signer key is
+  runtime-only and separated from Nimiq identity, Chronicle, NIM reward, and
+  treasury keys. Add pause, daily/weekly ceilings, USDT and TON-gas alerts, key
+  rotation, RPC/indexer disagreement, outage, and manual-review procedures.
+- Record only a privacy-minimized payout commitment and public TON transaction
+  reference in `PAYOUT_ROOT`; do not publish the Nimiq-to-GCrypto identity
+  mapping, receive memo, or unnecessary address linkage on Nimiq.
+
+Activation and compliance boundary:
+
+- Reverify GCrypto network/token support, deposit minimums, terms, and receive
+  flow immediately before implementation acceptance and again before every
+  production activation. Provider behavior documented during planning is not a
+  permanent protocol guarantee.
+- Planning references, reverified on 2026-07-31, are GCrypto's
+  [coins and networks](https://help.gcash.com/hc/en-us/articles/9781218166041-GCrypto-coins-and-networks),
+  [receive flow](https://help.gcash.com/hc/en-us/articles/10203149752601-How-to-receive-crypto-on-GCrypto),
+  [receive troubleshooting](https://help.gcash.com/hc/en-us/articles/31309702924441-Can-t-send-or-receive-crypto-on-GCrypto),
+  and [fees](https://help.gcash.com/hc/en-us/articles/22747167650201-GCrypto-fees).
+  They currently list `USDTTON` on `The Open Network` and require the selected
+  asset/network to match, but the in-app receive screen remains authoritative
+  for the player's current deposit details.
+- A user-run mainnet acceptance on 2026-08-01 successfully credited GCrypto
+  using both the displayed TON address and the displayed memo string. This is
+  current operational evidence, not a permanent provider guarantee. The
+  `USDT_TON_GCRYPTO` channel therefore treats the memo as mandatory while still
+  reverifying the live receive screen before every payout.
+- Implementation references are TON's
+  [Jetton payment-processing guidance](https://docs.ton.org/applications/payments/jettons),
+  [TEP-74 transfer interface](https://docs.ton.org/contracts/standard/tokens/jettons/api),
+  and [Jetton transfer guide](https://docs.ton.org/contracts/standard/tokens/jettons/transfer).
+  At planning time they identify USDT as a six-decimal Jetton whose master is
+  `EQCxE6mUtQJKFnGfaROTKOt1lZbDiiX1kCixRv7Nw2Id_sDs`; reverify the official
+  master and metadata before freezing any implementation vector.
+- Activation progresses through disabled, record-only tournament obligations,
+  TON testnet with a product-controlled mock Jetton and non-GCrypto recipient,
+  tournament dry run, and an explicitly approved tiny mainnet GCrypto canary.
+  GCrypto cannot be tested with testnet assets. Production USDTTON and sponsor
+  funds remain outside autonomous implementation authority.
+- Complete Philippine counsel/DTI and platform promotion review before public
+  launch, including tournament rules, eligibility, prize disclosures, social
+  quest language, tax/accounting, privacy, complaints, and winner/payout
+  records. Technical completion does not authorize the promotion or transfer
+  real funds.
+
+Non-goals: replacing NIM in the game, automatic NIM/USDT conversion, custody of
+player funds, a player withdrawal balance, sending to a generic GCash identifier,
+guaranteeing fiat conversion, paying an unverified client result, or enabling
+TON mainnet through ordinary autonomous deployment.
+
+Owning roles: `worms_port_planner`, `worms_port_network_worker`,
+`worms_port_compliance_keeper`, `worms_port_test_worker`,
+`worms_port_docs_keeper`, `worms_port_reviewer`.
+
+Verification: ticket/cutoff/ranking/tie/dispute golden cases; authoritative
+replay and result-root reconstruction; forged or replayed payout authorization;
+wrong network, Jetton master, decimals, address network flag/checksum/workchain,
+recipient-owner versus Jetton-wallet confusion, missing/wrong memo, amount,
+`query_id`, forward payload, or `forward_ton_amount`; integer and budget
+boundaries; duplicate claims and concurrent wallet-sequence races; crash
+injection before and after intent, signing, persistence, broadcast, recipient
+Jetton transfer/notification, and observed finality; exact BOC/message/hash
+reconciliation and manual review for ambiguity; TON gas and USDT insufficiency;
+RPC/indexer outage, disagreement, and stale-chain responses; secret and
+client-bundle scans; record-only restart acceptance; mock-Jetton TON testnet
+canary; tiny GCrypto production-route manual acceptance and credit confirmation;
+Chronicle payout proof; legal/promotion approval evidence; compliance, audit,
+types, build, full browser matrix, and independent payout security review.
+
 ## Dependency Order
 
 ```text
@@ -1827,6 +2504,8 @@ WP-011A -> WP-011B -> WP-011C -> WP-011D -> WP-011E (presentation path)
 WP-011E -> WP-012 -> WP-013 -> WP-014
 WP-010 + WP-014 ------------------------------------------------------------> WP-015
 WP-013 + WP-015 ------------------------------------------------------------> WP-016 -> WP-017
+WP-017 -> WP-018 -> WP-019 -> WP-021
+                            `-> WP-020 (optional PvP port; non-blocking)
 ```
 
 WP-011 is the first complete playable. WP-011A is its real-device acceptance
@@ -1838,14 +2517,24 @@ arena and makes its HUD phase-contextual without changing game authority.
 WP-012 inherits that accepted client baseline but keeps identity outside the
 default Practice journey; WP-013 is the first production reward entry point.
 WP-014 is the automated competition-candidate gate. WP-017 is the
-submission-ready repository and deployment.
+submission-ready repository and deployment. Only after that existing release
+sequence is complete does WP-018 establish the Chronicle; WP-019 builds weekly
+qualification on it; WP-021 opens the asynchronous weekly tournament and its
+separately gated USDTTON prize channel. WP-020 may add optional PvP XP after
+WP-019 but does not block WP-021.
 
 ## Deferred Until After Competition
 
-- PvP matchmaking, private rooms, tournaments, and Guild rosters.
+- WP-018 through WP-021 are approved post-competition work packages but remain
+  non-executable until the Execution Pointer advances beyond WP-017.
+- Private rooms, spectator mode, chat, and Guild rosters remain unscheduled
+  after the bounded WP-020 PvP scope.
 - Player stakes, escrow, betting, or winner-takes-player-funds mechanics.
 - More than the first three playable Callings and first three Relics.
-- Campaigns, bots beyond the Loomkeeper, rankings, chat, and native wrappers.
+- Campaigns, gameplay bots beyond the Loomkeeper, rankings beyond the planned
+  weekly standings/Loom Rating, and native wrappers. The optional read-only
+  governance narrator is not a gameplay bot and remains shadow-only until its
+  separate gates pass.
 - Sorcerers feature parity as a goal; only independently selected product
   behavior may enter a work package.
 
@@ -1860,5 +2549,21 @@ submission-ready repository and deployment.
   permission or an applicable license.
 - Reward abuse drains sponsor funds through forged, replayed, or duplicate
   claims.
+- An on-chain Chronicle root is presented as proof that an off-chain event was
+  truthful instead of only proof that the commitment is tamper-evident.
+- XP farming, repeated-pair PvP, collusion, or circular ecosystem transfers
+  create qualification without meaningful play.
+- Public commitments or payout references unnecessarily link a Nimiq identity,
+  social profile, device, or GCrypto/TON deposit address.
+- USDTTON master/network, address, memo/comment, forward-payload, or GCrypto
+  support changes cause an irreversible transfer to an unsupported or
+  uncredited destination, or payout ambiguity causes a double payment.
+- XP, transaction count, posts, retention, or an LLM-generated narrative is
+  promoted from a cut-bound probe into a false whole-system objective.
+- An LLM narrator receives raw player-controlled content, gains production or
+  wallet authority, changes a live week, or turns correlated observations into
+  unsupported causal claims.
+- A Philippine promotion launches without current legal, platform, privacy,
+  tax/accounting, and provider-policy review.
 - Mobile browser emulation misses a Nimiq Pay WebView or physical-device issue.
 - A generated asset inherits unclear model, reference, or service rights.

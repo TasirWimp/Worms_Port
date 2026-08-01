@@ -8,10 +8,19 @@ import {
     ChallengeSnapshotSchema,
     CommandSubmitAckSchema,
     protocolEvents,
+    RewardClaimAckSchema,
+    RewardInfoAckSchema,
+    RewardReserveAckSchema,
+    RewardStatusAckSchema,
+    RewardUpdateDataSchema,
     type ChallengeResult,
     type ChallengeSnapshot,
     type ProtocolError,
-    type SessionOpenData
+    type RewardInfoData,
+    type RewardReservationData,
+    type RewardUpdateData,
+    type SessionOpenData,
+    type WalletIdentity
 } from '../../../shared/protocol';
 import type { PlayerCalling, SimulationCommand } from '../../../shared/simulation';
 import type { CombatSceneArgs } from '../combat/contracts';
@@ -34,6 +43,7 @@ export class PracticeProtocolError extends Error {
 export class PracticeClient {
     private snapshot?: ChallengeSnapshot;
     private sessionId: string;
+    private identity?: WalletIdentity;
     private nextSequence = 0;
     private mutationPending = false;
     private readonly suppressedLeaveChallenges = new Set<string>();
@@ -45,6 +55,8 @@ export class PracticeClient {
     private readonly connectionListeners = new Set<(state: PracticeConnectionState) => void>();
     private readonly unavailableListeners = new Set<(message: string) => void>();
     private readonly errorListeners = new Set<(message: string) => void>();
+    private readonly rewardListeners = new Set<(update: RewardUpdateData) => void>();
+    private readonly rewardUpdates = new Map<string, RewardUpdateData>();
 
     public constructor(
         private readonly socket: Socket,
@@ -53,6 +65,7 @@ export class PracticeClient {
         initialResults: readonly unknown[] = []
     ) {
         this.sessionId = session.sessionId;
+        this.identity = session.identity ? structuredClone(session.identity) : undefined;
         const stored = readActivePractice();
         if (stored && stored.sessionId !== session.sessionId) {
             this.pendingUnavailable =
@@ -63,8 +76,10 @@ export class PracticeClient {
         this.onResultEvent = this.onResultEvent.bind(this);
         this.onDisconnect = this.onDisconnect.bind(this);
         this.onConnect = this.onConnect.bind(this);
+        this.onRewardUpdateEvent = this.onRewardUpdateEvent.bind(this);
         socket.on(protocolEvents.snapshot, this.onSnapshotEvent);
         socket.on(protocolEvents.result, this.onResultEvent);
+        socket.on(protocolEvents.rewardUpdate, this.onRewardUpdateEvent);
         socket.on('disconnect', this.onDisconnect);
         socket.on('connect', this.onConnect);
         for (const raw of initialSnapshots) this.onSnapshotEvent(raw);
@@ -81,6 +96,85 @@ export class PracticeClient {
             mode: 'practice',
             calling
         }, ChallengeCreateAckSchema);
+    }
+
+    public currentIdentity(): WalletIdentity | undefined {
+        return this.identity ? structuredClone(this.identity) : undefined;
+    }
+
+    public noteAuthorizedIdentity(identity: WalletIdentity): void {
+        this.identity = structuredClone(identity);
+    }
+
+    public async rewardInfo(): Promise<RewardInfoData> {
+        await whenSessionReady(this.socket);
+        const requestId = createRequestId();
+        const raw = await this.emitWithRetry(protocolEvents.rewardInfo, { requestId });
+        const parsed = RewardInfoAckSchema.safeParse(raw);
+        if (!parsed.success || parsed.data.requestId !== requestId) {
+            throw new Error('Server returned invalid Daily Challenge availability.');
+        }
+        if (parsed.data.ok === false) throw new PracticeProtocolError(parsed.data.error);
+        return structuredClone(parsed.data.data);
+    }
+
+    public async startReward(calling: PlayerCalling): Promise<ChallengeSnapshot> {
+        const reservation = await this.reserveReward(calling);
+        return this.sendSnapshotMutation(protocolEvents.challengeCreate, {
+            mode: 'reward',
+            calling,
+            eligibility: {
+                challengeId: reservation.challengeId,
+                token: reservation.eligibilityToken
+            }
+        }, ChallengeCreateAckSchema);
+    }
+
+    public rewardForChallenge(challengeId: string): RewardUpdateData | undefined {
+        const update = this.rewardUpdates.get(challengeId);
+        return update ? structuredClone(update) : undefined;
+    }
+
+    public onRewardUpdate(listener: (update: RewardUpdateData) => void): Unsubscribe {
+        this.rewardListeners.add(listener);
+        return () => this.rewardListeners.delete(listener);
+    }
+
+    public async claimReward(update: RewardUpdateData): Promise<RewardUpdateData> {
+        if (!update.claimNonce) {
+            throw new Error('Refresh reward status before claiming.');
+        }
+        await whenSessionReady(this.socket);
+        const requestId = createRequestId();
+        const raw = await this.emitWithRetry(protocolEvents.rewardClaim, {
+            requestId,
+            entitlementId: update.entitlementId,
+            claimNonce: update.claimNonce,
+            idempotencyKey: createRequestId()
+        });
+        const parsed = RewardClaimAckSchema.safeParse(raw);
+        if (!parsed.success || parsed.data.requestId !== requestId) {
+            throw new Error('Server returned an invalid reward claim.');
+        }
+        if (parsed.data.ok === false) throw new PracticeProtocolError(parsed.data.error);
+        this.acceptRewardUpdate(parsed.data.data);
+        return structuredClone(parsed.data.data);
+    }
+
+    public async rewardStatus(entitlementId?: string): Promise<RewardUpdateData> {
+        await whenSessionReady(this.socket);
+        const requestId = createRequestId();
+        const raw = await this.emitWithRetry(protocolEvents.rewardStatus, {
+            requestId,
+            ...(entitlementId ? { entitlementId } : {})
+        });
+        const parsed = RewardStatusAckSchema.safeParse(raw);
+        if (!parsed.success || parsed.data.requestId !== requestId) {
+            throw new Error('Server returned an invalid reward status.');
+        }
+        if (parsed.data.ok === false) throw new PracticeProtocolError(parsed.data.error);
+        this.acceptRewardUpdate(parsed.data.data);
+        return structuredClone(parsed.data.data);
     }
 
     public async submitCommand(
@@ -159,6 +253,7 @@ export class PracticeClient {
     public dispose(): void {
         this.socket.off(protocolEvents.snapshot, this.onSnapshotEvent);
         this.socket.off(protocolEvents.result, this.onResultEvent);
+        this.socket.off(protocolEvents.rewardUpdate, this.onRewardUpdateEvent);
         this.socket.off('disconnect', this.onDisconnect);
         this.socket.off('connect', this.onConnect);
         this.snapshotListeners.clear();
@@ -166,6 +261,7 @@ export class PracticeClient {
         this.connectionListeners.clear();
         this.unavailableListeners.clear();
         this.errorListeners.clear();
+        this.rewardListeners.clear();
     }
 
     private async leave(challengeId: string): Promise<ChallengeResult> {
@@ -187,6 +283,33 @@ export class PracticeClient {
             this.nextSequence = Math.max(this.nextSequence, parsed.data.data.nextSequence);
             this.acceptResult(parsed.data.data);
             if (this.snapshot?.challengeId === challengeId) this.snapshot = undefined;
+            return structuredClone(parsed.data.data);
+        } finally {
+            this.mutationPending = false;
+        }
+    }
+
+    private async reserveReward(calling: PlayerCalling): Promise<RewardReservationData> {
+        if (this.mutationPending) throw new Error('Another Clash action is still pending.');
+        if (!this.socket.connected) throw new Error('Reconnecting to the Clash server.');
+        this.mutationPending = true;
+        const requestId = createRequestId();
+        const sequence = this.nextSequence;
+        try {
+            const raw = await this.emitWithRetry(protocolEvents.rewardReserve, {
+                requestId,
+                sequence,
+                calling
+            });
+            const parsed = RewardReserveAckSchema.safeParse(raw);
+            if (!parsed.success || parsed.data.requestId !== requestId) {
+                throw new Error('Server returned an invalid reward reservation.');
+            }
+            if (parsed.data.ok === false) {
+                this.consumeRejectedSequence(sequence, parsed.data.error);
+                throw new PracticeProtocolError(parsed.data.error);
+            }
+            this.nextSequence = Math.max(this.nextSequence, sequence + 1);
             return structuredClone(parsed.data.data);
         } finally {
             this.mutationPending = false;
@@ -309,6 +432,22 @@ export class PracticeClient {
         this.acceptResult(parsed.data);
     }
 
+    private onRewardUpdateEvent(raw: unknown): void {
+        const parsed = RewardUpdateDataSchema.safeParse(raw);
+        if (!parsed.success) {
+            this.notifyError('The server sent an invalid reward status.');
+            return;
+        }
+        this.acceptRewardUpdate(parsed.data);
+    }
+
+    private acceptRewardUpdate(update: RewardUpdateData): void {
+        this.rewardUpdates.set(update.challengeId, structuredClone(update));
+        for (const listener of this.rewardListeners) {
+            listener(structuredClone(update));
+        }
+    }
+
     private onDisconnect(): void {
         for (const listener of this.connectionListeners) listener('reconnecting');
     }
@@ -320,6 +459,9 @@ export class PracticeClient {
                     this.sessionId = session.sessionId;
                     this.nextSequence = 0;
                     this.snapshot = undefined;
+                    this.identity = session.identity
+                        ? structuredClone(session.identity)
+                        : undefined;
                     clearActivePractice();
                     for (const listener of this.unavailableListeners) {
                         listener('The previous in-memory Practice Clash cannot be resumed. Start a fresh Clash.');

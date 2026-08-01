@@ -1,11 +1,17 @@
 import { NimiqPayIdentityAdapter } from './adapter';
 import { IdentityProtocolClient, IdentityProtocolError } from './client';
+import type { WalletIdentity } from '../../../shared/protocol';
 
 export const IDENTITY_SERVICES_REGISTRY_KEY = 'identity-services';
 
 export type IdentityAcceptanceServices = {
     adapter: NimiqPayIdentityAdapter;
     protocol: IdentityProtocolClient;
+};
+
+export type IdentityAcceptanceOptions = {
+    production?: boolean;
+    onAuthorized?: (identity: WalletIdentity) => void;
 };
 
 export class IdentityAcceptanceView {
@@ -17,18 +23,26 @@ export class IdentityAcceptanceView {
     public constructor(
         parent: HTMLElement,
         private readonly services: IdentityAcceptanceServices,
-        private readonly onBusy: (busy: boolean) => void
+        private readonly onBusy: (busy: boolean) => void,
+        private readonly options: IdentityAcceptanceOptions = {}
     ) {
         this.root = document.createElement('section');
         this.root.className = 'identity-acceptance';
         this.root.setAttribute('aria-labelledby', 'identity-acceptance-title');
+        const production = options.production === true;
         this.root.innerHTML = `
-            <h2 id="identity-acceptance-title">Nimiq Pay identity test</h2>
-            <p>This query-only surface verifies wallet identity. Practice never needs it.</p>
+            <h2 id="identity-acceptance-title">${
+                production ? 'Authorize your reward wallet' : 'Nimiq Pay identity test'
+            }</h2>
+            <p>${
+                production
+                    ? 'Choose the account that should receive a fixed reward after an eligible server-verified win. Practice never needs a wallet.'
+                    : 'This query-only surface verifies wallet identity. Practice never needs it.'
+            }</p>
             <p class="identity-language">Host language: <strong>${services.adapter.hostLanguage()}</strong></p>
             <div class="identity-actions">
                 <button type="button" data-identity-action="accounts">Choose Nimiq account</button>
-                <button type="button" data-identity-action="device">Test optional device consent</button>
+                ${production ? '' : '<button type="button" data-identity-action="device">Test optional device consent</button>'}
             </div>
             <div class="identity-accounts" aria-label="Available Nimiq accounts"></div>
             <p class="identity-message" aria-live="polite">Wallet access has not been requested.</p>
@@ -99,6 +113,7 @@ export class IdentityAcceptanceView {
             pendingAuthorizationId = undefined;
             this.root.dataset.authorized = 'true';
             this.setMessage(`Authorized as ${completed.identity.address}.`);
+            if (!this.disposed) this.options.onAuthorized?.(completed.identity);
         } catch (error) {
             this.setMessage(identityErrorMessage(error));
         } finally {

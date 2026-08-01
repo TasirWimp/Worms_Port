@@ -1,5 +1,5 @@
 {
-  "checked_date": "2026-07-12",
+  "checked_date": "2026-07-31",
   "sources": [
     {
       "id": "turtlepu-worms-ii",
@@ -63,6 +63,40 @@
         "runtime code import"
       ],
       "notes": "Used as the local reference for adapting AGENTS.md plus .codex/agents role scaffolding to Worms_Port-specific responsibilities."
+    },
+    {
+      "id": "tasirwimp-crpm-weekly-governance-method",
+      "role": "design_governance_method_reference",
+      "repository": "TasirWimp/CRPM",
+      "url": "https://github.com/TasirWimp/CRPM",
+      "commit": "7eee60e1e5bfb5d46e975c6df36ec107f43cbb19",
+      "license": "MIT",
+      "license_evidence": "https://github.com/TasirWimp/CRPM/blob/7eee60e1e5bfb5d46e975c6df36ec107f43cbb19/LICENSE",
+      "decision": "method_adapted_no_code_import",
+      "copied_into": [],
+      "referenced_paths": [
+        "methodology/CRPM_Level3_Methodology.md",
+        "docs/architecture/CRPM_Operating_Layer_COL_v0.md",
+        "docs/architecture/CRPM_LLM_Tension_Amplification_Reentry_Note_v0.md",
+        "docs/architecture/CRPM_Evaluation_Language_Operational_Note_v0.md",
+        "methodology/CRPM_Transformation_Admissibility_Standard_v0_1.md",
+        "methodology/L4_Translation_Governance_Addendum_v0_1.md",
+        "docs/architecture/voyage_graphs/research_notes/CRPM_CMB_DG_Agent_Narrator_Mode_Growth_Bridge_v0.md"
+      ],
+      "allowed_uses": [
+        "L4+ weekly mechanism-governance and re-entry scaffold",
+        "multi-cut and non-scalar evaluation discipline",
+        "script, advisory LLM, human, and append-only policy-trace role pattern",
+        "source-attributed planning terminology and bounded adaptation"
+      ],
+      "blocked_uses": [
+        "runtime code import without separate review",
+        "CRPM L1-L3 ontology or equations as game doctrine",
+        "CMB, physics, or dream material as product evidence",
+        "LLM autonomy over eligibility, ranking, rewards, or payment",
+        "claim that CRPM empirically validates the game design"
+      ],
+      "notes": "The implementation plan adapts a bounded L4+ governance method only. CRPM remains an external design reference and is not a runtime dependency, player model, optimization theorem, or source of empirical player evidence."
     },
     {
       "id": "phaserjs-examples-mobile-input",

@@ -898,6 +898,7 @@ button:disabled {
 }
 
 .practice-card,
+.daily-card,
 .result-card {
     width: min(100%, 520px);
     padding: clamp(1.1rem, 4vw, 2rem);
@@ -910,10 +911,52 @@ button:disabled {
 }
 
 .practice-card h1,
+.daily-card h2,
 .result-card h1 {
     margin: 0.2rem 0 0.65rem;
     font-size: clamp(2rem, 9vw, 3.2rem);
     line-height: 0.95;
+}
+
+.practice-shell {
+    grid-template-columns: repeat(auto-fit, minmax(min(100%, 360px), 1fr));
+    gap: 1rem;
+    align-items: start;
+}
+
+.daily-card h2 {
+    font-size: clamp(1.55rem, 7vw, 2.35rem);
+}
+
+.daily-summary,
+.daily-message {
+    line-height: 1.35;
+}
+
+.daily-facts {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 0.5rem;
+    margin: 0.8rem 0;
+}
+
+.daily-facts div {
+    padding: 0.55rem;
+    background: #eef7f7;
+    border-radius: 10px;
+}
+
+.daily-facts dt {
+    color: #5f4b8b;
+    font-size: 0.65rem;
+    font-weight: 900;
+    text-transform: uppercase;
+}
+
+.daily-facts dd {
+    margin: 0.2rem 0 0;
+    font-size: 0.78rem;
+    font-weight: 800;
 }
 
 .practice-eyebrow {
@@ -960,6 +1003,8 @@ button:disabled {
 
 .calling-picker button,
 .practice-start,
+.daily-check,
+.daily-start,
 .result-card button {
     min-height: 52px;
     padding: 0.65rem;
@@ -985,11 +1030,28 @@ button:disabled {
 }
 
 .practice-start,
+.daily-start,
 .result-retry {
     width: 100%;
     color: #fff !important;
     background: #0582ca !important;
     border-color: #1f2348 !important;
+}
+
+.daily-start {
+    width: 100%;
+}
+
+.daily-check {
+    width: 100%;
+    margin-bottom: 0.55rem;
+}
+
+.daily-message {
+    min-height: 1.4em;
+    margin: 0.65rem 0 0;
+    color: #5f4b8b;
+    font-weight: 800;
 }
 
 .result-change {
@@ -1064,6 +1126,12 @@ button:disabled {
     border-color: #e9b213;
 }
 
+.daily-identity .identity-acceptance {
+    margin: 0.7rem 0;
+    padding: 0.75rem;
+    box-shadow: none;
+}
+
 .result-facts {
     display: grid;
     grid-template-columns: repeat(2, 1fr);
@@ -1087,6 +1155,25 @@ button:disabled {
     margin: 0.25rem 0 0;
     font-family: ui-monospace, monospace;
     font-size: 0.78rem;
+}
+
+.reward-result {
+    margin: 0.8rem 0;
+    padding: 0.75rem;
+    background: #eef7f7;
+    border: 2px solid #21bca5;
+    border-radius: 12px;
+}
+
+.reward-result h2,
+.reward-result p {
+    margin: 0 0 0.55rem;
+}
+
+.reward-claim,
+.reward-refresh {
+    width: 100%;
+    margin-top: 0.45rem;
 }
 
 .visually-hidden {
@@ -1149,6 +1236,10 @@ button:disabled {
 
 :root[data-sideways] .practice-card {
     width: min(100%, 680px);
+    padding: clamp(0.7rem, 2vw, 1.1rem);
+}
+
+:root[data-sideways] .daily-card {
     padding: clamp(0.7rem, 2vw, 1.1rem);
 }
 

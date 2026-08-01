@@ -375,6 +375,7 @@ export class CombatControls {
         this.root.dataset.simulationTick = String(simulation.tick);
         this.root.dataset.seed = String(simulation.seed);
         this.root.dataset.challengeId = this.snapshot.challengeId;
+        this.root.dataset.mode = this.snapshot.mode;
         this.root.dataset.calling = this.snapshot.calling;
         this.root.dataset.paused = String(this.paused);
         this.root.dataset.suspended = String(this.suspended);

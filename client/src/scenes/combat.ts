@@ -122,7 +122,11 @@ export default class CombatScene extends Phaser.Scene {
             this.unsubscribers.push(this.args.onUnavailable((message) => {
                 if (this.transitioning) return;
                 this.transitioning = true;
-                this.scene.start('result', { calling: this.snapshot.calling, message });
+                this.scene.start('result', {
+                    calling: this.snapshot.calling,
+                    rewarded: this.snapshot.mode === 'reward',
+                    message
+                });
             }));
         }
         if (this.args.onError) {
@@ -276,7 +280,11 @@ export default class CombatScene extends Phaser.Scene {
             result.challengeId !== this.snapshot.challengeId || this.transitioning) return;
         this.transitioning = true;
         this.pendingResult = undefined;
-        this.scene.start('result', { result, calling: this.snapshot.calling });
+        this.scene.start('result', {
+            result,
+            calling: this.snapshot.calling,
+            rewarded: this.snapshot.mode === 'reward'
+        });
     }
 
     private onResize(): void {

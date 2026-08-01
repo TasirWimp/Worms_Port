@@ -123,8 +123,9 @@ identity, and reward work:
   `v1:challenge.leave` accept one strict object plus a required acknowledgement
   callback. Responses carry protocol version, server time, request ID, and
   typed success/error data.
-- Practice creation is available. Signed-session and reward request shapes are
-  validated but return `FEATURE_UNAVAILABLE` until WP-012/WP-013.
+- Practice creation and the separate WP-013 Daily Challenge lifecycle are
+  available. Rewards remain `disabled` by default; enabled modes require
+  verified WP-012 identity and a durable PostgreSQL ledger.
 - Per-session sequence and request-ID replay caches make exact duplicates
   idempotent and reject conflicts, stale commands, and gaps before WP-007 adds
   simulation semantics.
@@ -388,8 +389,9 @@ single-process authority boundary.
   simulations, AI turns, and replays remain in memory.
 - A process restart or deploy may end active practice matches. The client must
   fail clearly and offer a fresh practice match rather than imply recovery.
-- Before sponsor-funded rewards are enabled, reward reservations, claims,
-  payout idempotency, and completed-match evidence require durable storage.
+- WP-013 reward reservations, claims, immutable policy, match replay/evidence,
+  payout intent, signed bytes/hash, and transition events live in PostgreSQL.
+  Render's filesystem and in-memory state are never monetary authority.
 - Multiple instances require shared durable snapshots/replays, exactly-once
   turn and payout leases, and cross-instance Socket.IO delivery before they can
   be considered safe.
@@ -401,6 +403,64 @@ single-process authority boundary.
   opt-in only when Git confirms a shallow repository; it still validates every
   evidence field and current compliance gate. GitHub Actions uses full history
   and remains the authoritative historical starting-lock verification.
+
+#### Reward activation and incident procedure
+
+Keep `REWARD_MODE=disabled` until a separate Render PostgreSQL database is
+attached and `record-only` acceptance proves reservation expiry/cancellation,
+one consumed attempt per verified wallet/UTC day, authoritative loss and win
+handling, claim recovery, deploy/restart persistence, and daily budget
+enforcement. The application applies its idempotent migration at startup, but
+the runtime database user should own only this application schema and must not
+be a Render/database administrator.
+
+Before `testnet`, create a dedicated low-funded automated wallet, mount its
+private key as a Render secret file, set the expected signer address and HTTPS
+RPC explicitly, and verify balance plus fee reserve. Approve one tiny canary,
+record its stored hash, restart the service, and prove that reconciliation
+reaches macro-block finality without creating a second transaction. Mainnet
+activation is not part of autonomous WP-013 acceptance.
+
+If a user-approved payout canary needs more than one same-day run, scope the
+temporary exception to the dedicated test wallet with
+`REWARD_TEST_WALLET_ADDRESS` and `REWARD_TEST_DAILY_ATTEMPT_LIMIT` (maximum
+five). This is the authorized player/recipient wallet, not the payout signer.
+Mainnet additionally requires
+`REWARD_TEST_REPEAT_ACKNOWLEDGEMENT=I_UNDERSTAND_REPEAT_MAINNET_REWARDS`.
+Attempt slots remain separate immutable ledger records and all budget, replay,
+claim, signing, reconciliation, and finality controls still apply. Remove the
+override settings after the canary; do not reset or delete existing
+entitlements to regain eligibility.
+
+WP-013's bounded operational acceptance completed on 2026-08-01. The
+user-operated MainAlbatross canary produced exactly one 1 NIM transaction,
+`f3f40995754b708f2ae2586888d74688d8a5bf218fe07f80d49d1fe255e0c3e6`,
+which was included in block 57732455 and observed beyond its macro-block
+finality threshold at block 57732480. A subsequent redeployment did not create
+a duplicate transaction. The repeat-attempt settings were removed and
+`REWARD_PAUSED=true` was restored and deployed. Keep payouts paused until the
+remaining quality and release gates explicitly approve public activation.
+
+For an outage or suspected incident:
+
+1. set `REWARD_PAUSED=true` and redeploy; this blocks new reservations, claims,
+   signing, and first/repeat broadcasts while retaining read-only hash
+   reconciliation;
+2. preserve the PostgreSQL ledger and `reward_events`; do not delete, replay,
+   edit, or manually reset an ambiguous entitlement;
+3. if key exposure is suspected, remove the secret from the service, transfer
+   remaining hot-wallet funds with an independently operated recovery process,
+   rotate to a fresh dedicated key, and leave affected payouts in
+   `manual_review`;
+4. restore database/RPC service and reconcile stored hashes before considering
+   any manually approved replacement; and
+5. keep the Daily entry paused or disabled while confirming that ordinary
+   Practice still works.
+
+Never scale the web service above one instance during this release. The
+PostgreSQL advisory lock limits active signers, but in-memory sessions,
+simulations, and Socket.IO delivery still require the single-instance hosting
+contract.
 
 Hosting choice checked 2026-07-12 against Render's official pricing, WebSocket,
 free-service, and region documentation:
