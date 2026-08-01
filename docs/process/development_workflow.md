@@ -432,6 +432,15 @@ claim, signing, reconciliation, and finality controls still apply. Remove the
 override settings after the canary; do not reset or delete existing
 entitlements to regain eligibility.
 
+WP-013's bounded operational acceptance completed on 2026-08-01. The
+user-operated MainAlbatross canary produced exactly one 1 NIM transaction,
+`f3f40995754b708f2ae2586888d74688d8a5bf218fe07f80d49d1fe255e0c3e6`,
+which was included in block 57732455 and observed beyond its macro-block
+finality threshold at block 57732480. A subsequent redeployment did not create
+a duplicate transaction. The repeat-attempt settings were removed and
+`REWARD_PAUSED=true` was restored and deployed. Keep payouts paused until the
+remaining quality and release gates explicitly approve public activation.
+
 For an outage or suspected incident:
 
 1. set `REWARD_PAUSED=true` and redeploy; this blocks new reservations, claims,

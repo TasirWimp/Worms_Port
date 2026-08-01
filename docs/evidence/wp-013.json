@@ -1,6 +1,6 @@
 {
   "id": "WP-013",
-  "status": "in_progress",
+  "status": "complete",
   "starting_commit": "24e5ef1",
   "branch": "codex/wp-013-sponsored-daily-challenge",
   "initial_worktree": "clean",
@@ -24,7 +24,7 @@
   "non_goals": [
     "Player stakes, deposits, escrow, betting, random rewards, or player-loss-funded payouts",
     "Client-authoritative results, caller-selected recipient/amount/network/fee, replay uploads, or automatic replacement transactions",
-    "Production mainnet activation, sponsor-fund movement, or autonomous approval of a real transaction",
+    "Autonomous production mainnet activation, autonomous sponsor-fund movement, or autonomous approval of a real transaction",
     "Horizontal Render scaling, durable active simulations, PvP, matchmaking, leaderboards, artwork, audio, or Sorcerers material"
   ],
   "planned_checks": [
@@ -32,6 +32,8 @@
     "npm run check:compliance",
     "npm run check:types",
     "npm run test:reward",
+    "npm run test:reward (repeat-attempt and compact-address refinement)",
+    "npm run check:types (repeat-attempt refinement)",
     "npm run test:protocol",
     "npm run test:practice",
     "npm run test:identity",
@@ -42,9 +44,9 @@
     "npm run test:browser:reward",
     "npm run test:browser:smoke",
     "npm audit",
-    "PostgreSQL two-connection race and restart recovery",
     "Render record-only PostgreSQL deployment acceptance",
     "user-operated tiny MainAlbatross canary and restart reconciliation",
+    "post-canary safety restoration",
     "server/client secret and bundle inspection",
     "self-review"
   ],
@@ -58,7 +60,7 @@
     { "command": "npm run check:compliance", "status": "pass" },
     { "command": "npm run check:types", "status": "pass" },
     { "command": "npm run test:reward", "status": "pass" },
-    { "command": "npm run test:reward (repeat-attempt refinement)", "status": "pass", "detail": "18 tests passed, including wallet scoping, limit bounds, mainnet acknowledgement, sequential attempt slots, and completed-liability recovery behavior." },
+    { "command": "npm run test:reward (repeat-attempt and compact-address refinement)", "status": "pass", "detail": "19 tests passed, including wallet scoping, compact-address normalization, limit bounds, mainnet acknowledgement, sequential attempt slots, and completed-liability recovery behavior." },
     { "command": "npm run check:types (repeat-attempt refinement)", "status": "pass" },
     { "command": "npm run test:protocol", "status": "pass" },
     { "command": "npm run test:practice", "status": "pass" },
@@ -75,23 +77,36 @@
       "status": "pass",
       "detail": "No private-key material was found in built server or client output; private-key configuration names occur only in the server bundle."
     },
+    {
+      "command": "Render record-only PostgreSQL deployment acceptance",
+      "status": "pass",
+      "detail": "User-operated acceptance passed on 2026-08-01, including durable migration and restart behavior on the deployed Render service."
+    },
+    {
+      "command": "user-operated tiny MainAlbatross canary and restart reconciliation",
+      "status": "pass",
+      "detail": "Exactly one 100000-Luna (1 NIM), zero-fee transfer was included in block 57732455 with executionResult=true: f3f40995754b708f2ae2586888d74688d8a5bf218fe07f80d49d1fe255e0c3e6. Its macro-block threshold was 57732480 and the observed head was 57732923. No duplicate transfer appeared after redeployment."
+    },
+    {
+      "command": "post-canary safety restoration",
+      "status": "pass",
+      "detail": "The wallet-scoped repeat-attempt variables were removed, REWARD_PAUSED=true was restored, and the service was redeployed."
+    },
     { "command": "self-review", "status": "pass" }
   ],
   "reviews": [
-    "Final diff-scope, payout-state, default-disabled, client opt-in, secret-boundary, and import-boundary review completed without a blocking finding.",
-    "Repeat-attempt refinement self-review confirmed wallet-only scoping, maximum-five validation, separate mainnet acknowledgement, sequential attempt slots, one in-progress match, immutable prior liabilities, and rollback-compatible index naming."
+    { "role": "worms_port_network_worker", "reviewer": "primary-agent-payout-state-review", "decision": "pass" },
+    { "role": "worms_port_compliance_keeper", "reviewer": "primary-agent-license-and-secret-boundary-review", "decision": "pass" },
+    { "role": "worms_port_test_worker", "reviewer": "primary-agent-acceptance-evidence-review", "decision": "pass" },
+    { "role": "worms_port_reviewer", "reviewer": "primary-agent-final-security-and-scope-review", "decision": "pass" }
   ],
   "skipped_checks": [
-    "PostgreSQL two-connection race/restart verification was not run because no disposable local or TEST_DATABASE_URL PostgreSQL service is available.",
-    "The repeat-attempt migration has not been exercised against a disposable local PostgreSQL because DATABASE_URL and psql are unavailable in the autonomous environment.",
-    "The user reported Render record-only PostgreSQL acceptance passed on 2026-08-01.",
-    "The user explicitly chose a dedicated low-funded MainAlbatross canary instead of TestAlbatross; transaction submission and reconciliation remain user-operated external acceptance.",
-    "Physical Android/iOS Daily Challenge and CSP acceptance was not run in the autonomous environment."
+    "An autonomous PostgreSQL two-connection race injection was not run because no disposable local or TEST_DATABASE_URL PostgreSQL service was available; the live Render acceptance covered migration and restart behavior but not this synthetic concurrency test.",
+    "A full physical Android/iOS Daily Challenge and CSP matrix was not run in the autonomous environment; the user-operated Samsung/Nimiq Pay mainnet claim path passed."
   ],
   "residual_risks": [
-    "The new PostgreSQL attempt-slot migration still requires Render deployment and same-day repeat-attempt acceptance.",
     "Active sessions and simulations remain in one Render process; deploys can forfeit an in-progress rewarded attempt and horizontal scaling remains blocked.",
-    "Nimiq RPC transaction lookup has no structured response contract in the current public documentation and must be proven against the selected MainAlbatross endpoint during the canary.",
-    "The temporary repeat-attempt settings increase the configured test wallet's possible same-day payout liability and must be removed immediately after the canary."
+    "Public RPC availability and low-funded signer balance/fee operations remain production dependencies even though the selected MainAlbatross path passed the bounded canary.",
+    "Mainnet payouts remain paused; public activation still requires the remaining WP-014 through WP-017 quality and release approvals."
   ]
 }

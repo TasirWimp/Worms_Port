@@ -192,6 +192,16 @@ broad/global bypass.
 Here, the test wallet is the Nimiq Pay account that authorizes and receives the
 reward; it is not the sponsor signer's funded address.
 
+WP-013 operational acceptance completed on 2026-08-01. The user-run Render
+record-only/PostgreSQL pass was followed by one deliberately tiny
+MainAlbatross canary: transaction
+`f3f40995754b708f2ae2586888d74688d8a5bf218fe07f80d49d1fe255e0c3e6`
+transferred 1 NIM in block 57732455, crossed its macro-block finality threshold
+at block 57732480, and had no duplicate after redeployment. The temporary
+repeat-attempt settings were removed and `REWARD_PAUSED=true` was restored and
+deployed. This records bounded acceptance only; mainnet rewards remain paused
+pending the remaining quality and release gates.
+
 Chain modes additionally require `REWARD_NETWORK`,
 `REWARD_EXPECTED_SIGNER_ADDRESS`, `REWARD_RPC_URL`, and
 `REWARD_PRIVATE_KEY_FILE`. The last setting must point to a Render secret file

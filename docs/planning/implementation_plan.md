@@ -8,11 +8,8 @@ Phaser/Socket.IO stack.
 ## Execution Pointer
 
 - Active target: mobile-first single-player Nimiq Pay competition release.
-- Next work package: **WP-013 user-operated MainAlbatross payout canary and
-  reconciliation acceptance**. Deployed record-only/PostgreSQL acceptance
-  passed on 2026-08-01; the user elected to proceed with a dedicated,
-  deliberately low-funded MainAlbatross signer instead of TestAlbatross.
-- Last completed work package: **WP-012 Nimiq Pay Identity Adapter**.
+- Next work package: **WP-014 Autonomous Quality Harness**.
+- Last completed work package: **WP-013 Sponsored Daily Challenge**.
 - WP-012 exactly pins `@nimiq/mini-app-sdk` `0.1.0` and server-only
   `@nimiq/core` `2.7.1`. Provider access remains lazy, identity acceptance is
   now used by WP-013's separate production Daily entry, the diagnostics surface
@@ -20,16 +17,21 @@ Phaser/Socket.IO stack.
   Nimiq Pay. A deployed identity acceptance pass still requires
   `NIMIQ_NETWORK=main-albatross` and either Render's `RENDER_EXTERNAL_URL` or an
   explicit matching `IDENTITY_PUBLIC_ORIGIN`.
-- WP-013 implementation landed locally on 2026-07-29 with a durable PostgreSQL
+- WP-013 completed on 2026-08-01 with a durable PostgreSQL
   ledger/migration, atomic reservation and daily-budget enforcement,
   server-reconstructed win evidence, nonce/idempotency-bound claims, an
   explicit payout state machine, exact signed-transaction recovery, CSP and
   security headers, a production Daily entry, and disabled-by-default
   activation gates. A wallet-scoped, bounded repeat-attempt override now permits
   controlled same-day payout debugging without deleting prior ledger evidence;
-  Mainnet requires a separate repeat-attempt acknowledgement. The explicitly
-  user-approved tiny MainAlbatross canary and stored-hash reconciliation remain
-  external gates. A
+  Mainnet requires a separate repeat-attempt acknowledgement. Render
+  record-only/PostgreSQL acceptance passed, followed by an explicitly
+  user-approved tiny MainAlbatross canary. It produced exactly one 1 NIM
+  transaction (`f3f40995754b708f2ae2586888d74688d8a5bf218fe07f80d49d1fe255e0c3e6`)
+  in block 57732455, was observed beyond macro-block finality, and did not
+  duplicate after redeployment. The repeat-attempt settings were removed and
+  `REWARD_PAUSED=true` was restored and deployed. This is bounded operational
+  acceptance, not authorization to leave public mainnet rewards active. A
   wallet address is an eligibility identity, not proof of one human; Practice
   remains the unrestricted fallback.
 - The approved post-competition weekly program is now scoped as WP-018 through
@@ -39,7 +41,7 @@ Phaser/Socket.IO stack.
   governance packet and may later use a read-only LLM advisory narrator, but no
   model may change eligibility, ranking, rewards, or payments. These packages
   are planning only. Do not start them or advance this pointer until the
-  existing WP-013 through WP-017 release sequence is complete.
+  existing WP-014 through WP-017 release sequence is complete.
 - PvP and matchmaking remain deferred until WP-020; no current release path
   may depend on another human being online.
 - Canonical artwork reference:
@@ -1419,11 +1421,14 @@ Verification:
 
 ### WP-013 Sponsored Daily Challenge
 
-Status: implemented locally on 2026-07-29; deployed record-only PostgreSQL
-acceptance passed on 2026-08-01. A user-operated, explicitly approved tiny
-MainAlbatross canary is in progress with a dedicated low-funded signer; this
-does not grant autonomous authority over mainnet funds. Depends on
-WP-007, WP-008, WP-009, and WP-012.
+Status: completed on 2026-08-01. Deployed record-only PostgreSQL acceptance
+passed, followed by a user-operated, explicitly approved tiny MainAlbatross
+canary with a dedicated low-funded signer. Exactly one 1 NIM transaction was
+included in block 57732455, observed beyond macro-block finality, and not
+duplicated after redeployment. The repeat-attempt settings were then removed
+and `REWARD_PAUSED=true` was restored and deployed. This acceptance does not
+grant autonomous authority over mainnet funds or approve public payout
+activation. Depends on WP-007, WP-008, WP-009, and WP-012.
 
 Goal: deliver one optional wallet-authorized Daily Grand Knot Challenge with a
 fixed sponsor-funded NIM reward for an eligible server-authoritative win.
