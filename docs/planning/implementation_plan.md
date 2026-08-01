@@ -52,11 +52,16 @@ Phaser/Socket.IO stack.
   recovery, canonical combat/Daily states, compact-landscape states, and
   executable touch/scroll/zoom/selection checks are implemented. The
   pre-baseline zero-retry logic pass accounted for 125 project results: 86
-  passed and 39 reviewed exclusions. Re-entry after the next push is to open
-  the implementation PR so **Visual baseline candidates** captures its
-  artifact, download and inspect every Ubuntu 24.04 PNG, add only the reviewed
-  snapshots, and then run ordinary visual plus full-matrix comparison. Do not
-  start WP-014C until that closes `docs/evidence/wp-014b.json`.
+  passed and 39 reviewed exclusions. Draft PR #1 is open. Its first Ubuntu
+  24.04 capture passed and produced 35 candidates, but explicit review rejected
+  the set because the portrait aim-pad hint clipped at the right edge. The hint
+  is shortened, a cross-project rendered-width assertion now passes locally,
+  and the Actions use current Node 24 majors. The initial Verify run reached
+  result 119 of 125 before its 20-minute ceiling canceled it, so the replacement
+  uses an evidence-based 30-minute ceiling. Re-entry after the next push is to
+  inspect the replacement **Visual baseline candidates** artifact, add only the
+  reviewed snapshots, and run ordinary visual plus full-matrix comparison. Do
+  not start WP-014C until that closes `docs/evidence/wp-014b.json`.
 - The approved post-competition weekly program is now scoped as WP-018 through
   WP-021: Nimiq Chronicle, Loom XP qualification, optional PvP Sparring Loom,
   and the Weekly Grand Knot Tournament with an additional sponsor-funded

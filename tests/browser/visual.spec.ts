@@ -315,6 +315,16 @@ async function assertCombatGeometry(page: Page): Promise<void> {
   expect(overlaps(boxes[0]!, boxes[1]!)).toBe(false);
   expect(overlaps(boxes[0]!, boxes[2]!)).toBe(false);
   expect(overlaps(boxes[1]!, boxes[2]!)).toBe(false);
+  const padLabelWidths = await page.locator('.combat-touch-zone .pad-label').evaluateAll(
+    (labels) => labels.map((label) => ({
+      clientWidth: label.clientWidth,
+      scrollWidth: label.scrollWidth
+    }))
+  );
+  expect(padLabelWidths).toHaveLength(2);
+  for (const width of padLabelWidths) {
+    expect(width.scrollWidth).toBeLessThanOrEqual(width.clientWidth + 1);
+  }
   await assertMinimumTargets(page, '.combat-actions button:visible, .pause-button:visible');
   await assertSafeAreaContainment(page);
 }
