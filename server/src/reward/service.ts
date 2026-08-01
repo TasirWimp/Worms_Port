@@ -99,6 +99,9 @@ export class RewardService {
             seed: this.seedSource() >>> 0,
             rewardLuna: this.config.rewardLuna,
             dailyBudgetLuna: this.config.dailyBudgetLuna,
+            dailyAttemptLimit: this.config.testWalletAddress === identity.address
+                ? this.config.testDailyAttemptLimit
+                : 1,
             paused: this.config.paused,
             eligibilityTokenDigest: tokenDigest(rawToken),
             reservationExpiresAt: new Date(now.getTime() + this.config.reservationTtlMs),
@@ -229,6 +232,12 @@ export class RewardService {
                 identity.address,
                 challengeDay(this.now())
             );
+        if (!entitlementId && entitlement &&
+            this.config.testWalletAddress === identity.address &&
+            entitlement.attemptNumber < this.config.testDailyAttemptLimit &&
+            ['lost', 'forfeited', 'finalized'].includes(entitlement.state)) {
+            entitlement = undefined;
+        }
         if (!entitlement) {
             throw new RewardStoreError('not_found', 'Reward entitlement not found.');
         }

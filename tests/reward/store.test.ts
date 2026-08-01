@@ -117,6 +117,55 @@ test('startup forfeits orphaned in-progress matches without losing attempt histo
     );
 });
 
+test('a bounded test-wallet limit permits sequential attempt slots only', async () => {
+    const store = new MemoryRewardStore();
+    const first = {
+        ...reservation('entitlement_record_01', 'reward_challenge_01', WALLET),
+        dailyAttemptLimit: 2
+    };
+    await store.reserve(first);
+    assert.equal((await store.start(
+        first.challengeId,
+        WALLET,
+        first.eligibilityTokenDigest,
+        NOW
+    )).attemptNumber, 1);
+    await store.completeMatch({
+        challengeId: first.challengeId,
+        outcome: 'loomkeeper_win',
+        finalTick: 20,
+        finalStateHash: 'a'.repeat(64),
+        now: NOW
+    });
+
+    const second = {
+        ...reservation('entitlement_record_02', 'reward_challenge_02', WALLET),
+        dailyAttemptLimit: 2
+    };
+    await store.reserve(second);
+    assert.equal((await store.start(
+        second.challengeId,
+        WALLET,
+        second.eligibilityTokenDigest,
+        NOW
+    )).attemptNumber, 2);
+    await store.completeMatch({
+        challengeId: second.challengeId,
+        outcome: 'loomkeeper_win',
+        finalTick: 20,
+        finalStateHash: 'b'.repeat(64),
+        now: NOW
+    });
+
+    await assert.rejects(
+        store.reserve({
+            ...reservation('entitlement_record_03', 'reward_challenge_03', WALLET),
+            dailyAttemptLimit: 2
+        }),
+        (error: unknown) => error instanceof RewardStoreError && error.code === 'ineligible'
+    );
+});
+
 test('cancelled reservation churn is bounded per wallet and UTC day', async () => {
     const store = new MemoryRewardStore();
     for (let index = 0; index < 5; index += 1) {
@@ -148,6 +197,7 @@ function reservation(id: string, challengeId: string, walletAddress: string) {
         seed: 7,
         rewardLuna: 100_000n,
         dailyBudgetLuna: 100_000n,
+        dailyAttemptLimit: 1,
         paused: false,
         eligibilityTokenDigest: digest(`${id}-token`),
         reservationExpiresAt: new Date(NOW.getTime() + 60_000),
@@ -165,7 +215,8 @@ function config(): RewardConfig {
         claimTtlMs: 60_000,
         turnLimit: 16,
         paused: false,
-        network: 'test-albatross'
+        network: 'test-albatross',
+        testDailyAttemptLimit: 1
     };
 }
 

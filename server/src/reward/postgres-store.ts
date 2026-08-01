@@ -28,6 +28,8 @@ type EntitlementRow = QueryResultRow & {
     reward_luna: string;
     state: RewardPayoutState;
     attempt_consumed: boolean;
+    attempt_number: number;
+    daily_attempt_limit: number;
     reservation_expires_at: Date;
     final_tick: string | null;
     final_state_hash: string | null;
@@ -55,8 +57,9 @@ export class PostgresRewardStore implements RewardStore {
     }
 
     public async initialize(): Promise<void> {
-        const migration = await readRewardMigration();
-        await this.pool.query(migration);
+        for (const migration of await readRewardMigrations()) {
+            await this.pool.query(migration);
+        }
     }
 
     public async close(): Promise<void> {
@@ -134,6 +137,7 @@ export class PostgresRewardStore implements RewardStore {
 
     public async reserve(input: RewardReservationInput): Promise<RewardEntitlement> {
         return this.serializable(async (client) => {
+            const dailyAttemptLimit = input.dailyAttemptLimit ?? 1;
             await this.expireReservationsInTransaction(client, input.now);
             const day = await this.ensureDay(client, input.challengeDay, {
                 mode: 'record-only',
@@ -144,7 +148,8 @@ export class PostgresRewardStore implements RewardStore {
                 claimTtlMs: 1,
                 turnLimit: 1,
                 paused: input.paused,
-                network: 'test-albatross'
+                network: 'test-albatross',
+                testDailyAttemptLimit: 1
             });
             const locked = await client.query<{
                 committed_luna: string;
@@ -161,17 +166,30 @@ export class PostgresRewardStore implements RewardStore {
             if (!budget || budget.paused || day.paused) {
                 throw new RewardStoreError('paused', 'Sponsor rewards are paused.');
             }
-            const consumed = await client.query(
-                `SELECT 1 FROM reward_entitlements
+            const consumed = await client.query<{ count: string }>(
+                `SELECT COUNT(*)::text AS count FROM reward_entitlements
                   WHERE challenge_day = $1 AND wallet_address = $2
-                    AND attempt_consumed
-                  LIMIT 1`,
+                    AND attempt_consumed`,
                 [input.challengeDay, input.walletAddress]
             );
-            if (consumed.rowCount) {
+            const consumedAttempts = Number(consumed.rows[0]?.count ?? 0);
+            if (consumedAttempts >= dailyAttemptLimit) {
                 throw new RewardStoreError(
                     'ineligible',
                     'This wallet already used today’s rewarded attempt.'
+                );
+            }
+            const inProgress = await client.query(
+                `SELECT 1 FROM reward_entitlements
+                  WHERE challenge_day = $1 AND wallet_address = $2
+                    AND state = 'in_progress'
+                  LIMIT 1`,
+                [input.challengeDay, input.walletAddress]
+            );
+            if (inProgress.rowCount) {
+                throw new RewardStoreError(
+                    'conflict',
+                    'A rewarded challenge is already in progress for this wallet.'
                 );
             }
             const reservationCount = await client.query<{ count: string }>(
@@ -195,9 +213,10 @@ export class PostgresRewardStore implements RewardStore {
                 const inserted = await client.query<EntitlementRow>(
                     `INSERT INTO reward_entitlements (
                         id, challenge_id, challenge_day, wallet_address, calling,
-                        seed, reward_luna, state, eligibility_token_digest,
+                        seed, reward_luna, state, attempt_number,
+                        daily_attempt_limit, eligibility_token_digest,
                         reservation_expires_at, created_at, updated_at
-                    ) VALUES ($1,$2,$3,$4,$5,$6,$7,'reserved',$8,$9,$10,$10)
+                    ) VALUES ($1,$2,$3,$4,$5,$6,$7,'reserved',$8,$9,$10,$11,$12,$12)
                     RETURNING *`,
                     [
                         input.id,
@@ -207,6 +226,8 @@ export class PostgresRewardStore implements RewardStore {
                         input.calling,
                         input.seed,
                         input.rewardLuna.toString(),
+                        consumedAttempts + 1,
+                        dailyAttemptLimit,
                         input.eligibilityTokenDigest,
                         input.reservationExpiresAt,
                         input.now
@@ -257,6 +278,18 @@ export class PostgresRewardStore implements RewardStore {
             if (row.reservation_expires_at.getTime() <= now.getTime()) {
                 await this.releaseReservation(client, row, 'expired', now);
                 throw new RewardStoreError('expired', 'The reward reservation expired.');
+            }
+            const consumed = await client.query<{ count: string }>(
+                `SELECT COUNT(*)::text AS count FROM reward_entitlements
+                  WHERE challenge_day = $1 AND wallet_address = $2
+                    AND attempt_consumed AND id <> $3`,
+                [dayString(row.challenge_day), row.wallet_address, row.id]
+            );
+            if (Number(consumed.rows[0]?.count ?? 0) >= row.daily_attempt_limit) {
+                throw new RewardStoreError(
+                    'ineligible',
+                    'This wallet already used today’s rewarded attempt.'
+                );
             }
             try {
                 const updated = await client.query<EntitlementRow>(
@@ -808,6 +841,8 @@ function entitlementFromRow(row: EntitlementRow): RewardEntitlement {
         rewardLuna: BigInt(row.reward_luna),
         state: row.state,
         attemptConsumed: row.attempt_consumed,
+        attemptNumber: row.attempt_number,
+        dailyAttemptLimit: row.daily_attempt_limit,
         reservationExpiresAt: new Date(row.reservation_expires_at),
         ...(row.final_tick !== null ? { finalTick: Number(row.final_tick) } : {}),
         ...(row.final_state_hash ? { finalStateHash: row.final_state_hash } : {}),
@@ -825,19 +860,31 @@ function entitlementFromRow(row: EntitlementRow): RewardEntitlement {
     };
 }
 
-async function readRewardMigration(): Promise<string> {
-    const candidates = [
-        path.join(__dirname, '../migrations/001_reward_ledger.sql'),
-        path.join(__dirname, '../../migrations/001_reward_ledger.sql')
-    ];
-    for (const candidate of candidates) {
-        try {
-            return await readFile(candidate, 'utf8');
-        } catch {
-            // Try the source or built-server layout.
+async function readRewardMigrations(): Promise<string[]> {
+    const migrations: string[] = [];
+    for (const filename of [
+        '001_reward_ledger.sql',
+        '002_reward_test_attempt_slots.sql'
+    ]) {
+        const candidates = [
+            path.join(__dirname, '../migrations', filename),
+            path.join(__dirname, '../../migrations', filename)
+        ];
+        let migration: string | undefined;
+        for (const candidate of candidates) {
+            try {
+                migration = await readFile(candidate, 'utf8');
+                break;
+            } catch {
+                // Try the source or built-server layout.
+            }
         }
+        if (!migration) {
+            throw new Error(`Reward ledger migration ${filename} could not be located.`);
+        }
+        migrations.push(migration);
     }
-    throw new Error('Reward ledger migration could not be located.');
+    return migrations;
 }
 
 function dayString(value: string | Date): string {

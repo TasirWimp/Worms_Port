@@ -18,7 +18,8 @@
     "Reconstruct server-owned winning replays before creating a claimable fixed reward",
     "Add one leased signer/reconciliation worker with exact-byte rebroadcast, inclusion/finality states, pause control, and manual review instead of automatic replacement",
     "Keep payouts disabled by default and add explicit record-only, TestAlbatross, and acknowledged MainAlbatross activation gates",
-    "Add focused reward, protocol, browser, migration, security-header, build, compliance, and audit evidence"
+    "Add focused reward, protocol, browser, migration, security-header, build, compliance, and audit evidence",
+    "Add a wallet-scoped, bounded repeat-attempt canary override with distinct durable attempt slots and a separate mainnet acknowledgement"
   ],
   "non_goals": [
     "Player stakes, deposits, escrow, betting, random rewards, or player-loss-funded payouts",
@@ -43,7 +44,7 @@
     "npm audit",
     "PostgreSQL two-connection race and restart recovery",
     "Render record-only PostgreSQL deployment acceptance",
-    "explicitly approved tiny TestAlbatross canary and restart reconciliation",
+    "user-operated tiny MainAlbatross canary and restart reconciliation",
     "server/client secret and bundle inspection",
     "self-review"
   ],
@@ -57,6 +58,8 @@
     { "command": "npm run check:compliance", "status": "pass" },
     { "command": "npm run check:types", "status": "pass" },
     { "command": "npm run test:reward", "status": "pass" },
+    { "command": "npm run test:reward (repeat-attempt refinement)", "status": "pass", "detail": "18 tests passed, including wallet scoping, limit bounds, mainnet acknowledgement, sequential attempt slots, and completed-liability recovery behavior." },
+    { "command": "npm run check:types (repeat-attempt refinement)", "status": "pass" },
     { "command": "npm run test:protocol", "status": "pass" },
     { "command": "npm run test:practice", "status": "pass" },
     { "command": "npm run test:identity", "status": "pass" },
@@ -75,18 +78,20 @@
     { "command": "self-review", "status": "pass" }
   ],
   "reviews": [
-    "Final diff-scope, payout-state, default-disabled, client opt-in, secret-boundary, and import-boundary review completed without a blocking finding."
+    "Final diff-scope, payout-state, default-disabled, client opt-in, secret-boundary, and import-boundary review completed without a blocking finding.",
+    "Repeat-attempt refinement self-review confirmed wallet-only scoping, maximum-five validation, separate mainnet acknowledgement, sequential attempt slots, one in-progress match, immutable prior liabilities, and rollback-compatible index naming."
   ],
   "skipped_checks": [
     "PostgreSQL two-connection race/restart verification was not run because no disposable local or TEST_DATABASE_URL PostgreSQL service is available.",
-    "Render record-only PostgreSQL acceptance requires deployment and operator-provided Render database configuration.",
-    "The tiny TestAlbatross canary requires explicit user approval, a dedicated low-funded signer, and an external RPC.",
-    "Mainnet activation and real sponsor funds are intentionally disabled and out of scope.",
+    "The repeat-attempt migration has not been exercised against a disposable local PostgreSQL because DATABASE_URL and psql are unavailable in the autonomous environment.",
+    "The user reported Render record-only PostgreSQL acceptance passed on 2026-08-01.",
+    "The user explicitly chose a dedicated low-funded MainAlbatross canary instead of TestAlbatross; transaction submission and reconciliation remain user-operated external acceptance.",
     "Physical Android/iOS Daily Challenge and CSP acceptance was not run in the autonomous environment."
   ],
   "residual_risks": [
-    "The PostgreSQL migration and implementation compile but still require live two-connection concurrency and restart testing before record-only acceptance can close.",
+    "The new PostgreSQL attempt-slot migration still requires Render deployment and same-day repeat-attempt acceptance.",
     "Active sessions and simulations remain in one Render process; deploys can forfeit an in-progress rewarded attempt and horizontal scaling remains blocked.",
-    "Nimiq RPC transaction lookup has no structured response contract in the current public documentation and must be proven against the selected TestAlbatross endpoint before canary approval."
+    "Nimiq RPC transaction lookup has no structured response contract in the current public documentation and must be proven against the selected MainAlbatross endpoint during the canary.",
+    "The temporary repeat-attempt settings increase the configured test wallet's possible same-day payout liability and must be removed immediately after the canary."
   ]
 }

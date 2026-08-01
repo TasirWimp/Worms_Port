@@ -130,6 +130,7 @@ function config(): RewardConfig {
         claimTtlMs: 60_000,
         turnLimit: 16,
         paused: false,
-        network: 'test-albatross'
+        network: 'test-albatross',
+        testDailyAttemptLimit: 1
     };
 }

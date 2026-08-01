@@ -83,6 +83,7 @@ export class MemoryRewardStore implements RewardStore {
 
     public async reserve(input: RewardReservationInput): Promise<RewardEntitlement> {
         return this.lock(async () => {
+            const dailyAttemptLimit = input.dailyAttemptLimit ?? 1;
             this.expireUnlocked(input.now);
             const day = this.day(input.challengeDay, {
                 mode: 'record-only',
@@ -93,19 +94,18 @@ export class MemoryRewardStore implements RewardStore {
                 claimTtlMs: 1,
                 turnLimit: 1,
                 paused: input.paused,
-                network: 'test-albatross'
+                network: 'test-albatross',
+                testDailyAttemptLimit: 1
             });
             if (day.paused) throw new RewardStoreError('paused', 'Sponsor rewards are paused.');
             let dailyReservations = 0;
+            let consumedAttempts = 0;
             for (const existing of this.entitlements.values()) {
                 if (existing.challengeDay !== input.challengeDay ||
                     existing.walletAddress !== input.walletAddress) continue;
                 dailyReservations += 1;
                 if (existing.attemptConsumed) {
-                    throw new RewardStoreError(
-                        'ineligible',
-                        'This wallet already used today’s rewarded attempt.'
-                    );
+                    consumedAttempts += 1;
                 }
                 if (existing.state === 'reserved') {
                     throw new RewardStoreError(
@@ -113,6 +113,18 @@ export class MemoryRewardStore implements RewardStore {
                         'An active reward reservation already exists for this wallet.'
                     );
                 }
+                if (existing.state === 'in_progress') {
+                    throw new RewardStoreError(
+                        'conflict',
+                        'A rewarded challenge is already in progress for this wallet.'
+                    );
+                }
+            }
+            if (consumedAttempts >= dailyAttemptLimit) {
+                throw new RewardStoreError(
+                    'ineligible',
+                    'This wallet already used today’s rewarded attempt.'
+                );
             }
             if (dailyReservations >= MAX_DAILY_RESERVATIONS_PER_WALLET) {
                 throw new RewardStoreError(
@@ -133,6 +145,8 @@ export class MemoryRewardStore implements RewardStore {
                 rewardLuna: input.rewardLuna,
                 state: 'reserved',
                 attemptConsumed: false,
+                attemptNumber: consumedAttempts + 1,
+                dailyAttemptLimit,
                 reservationExpiresAt: new Date(input.reservationExpiresAt),
                 eligibilityTokenDigest: input.eligibilityTokenDigest
             };
@@ -163,16 +177,20 @@ export class MemoryRewardStore implements RewardStore {
                 this.release(entitlement, 'expired');
                 throw new RewardStoreError('expired', 'The reward reservation expired.');
             }
+            let consumedAttempts = 0;
             for (const existing of this.entitlements.values()) {
                 if (existing.id !== entitlement.id &&
                     existing.challengeDay === entitlement.challengeDay &&
                     existing.walletAddress === walletAddress &&
                     existing.attemptConsumed) {
-                    throw new RewardStoreError(
-                        'ineligible',
-                        'This wallet already used today’s rewarded attempt.'
-                    );
+                    consumedAttempts += 1;
                 }
+            }
+            if (consumedAttempts >= entitlement.dailyAttemptLimit) {
+                throw new RewardStoreError(
+                    'ineligible',
+                    'This wallet already used today’s rewarded attempt.'
+                );
             }
             entitlement.state = 'in_progress';
             entitlement.attemptConsumed = true;

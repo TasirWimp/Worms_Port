@@ -8,8 +8,10 @@ Phaser/Socket.IO stack.
 ## Execution Pointer
 
 - Active target: mobile-first single-player Nimiq Pay competition release.
-- Next work package: **WP-013 deployed record-only/PostgreSQL acceptance**,
-  followed by the explicitly approved tiny TestAlbatross canary.
+- Next work package: **WP-013 user-operated MainAlbatross payout canary and
+  reconciliation acceptance**. Deployed record-only/PostgreSQL acceptance
+  passed on 2026-08-01; the user elected to proceed with a dedicated,
+  deliberately low-funded MainAlbatross signer instead of TestAlbatross.
 - Last completed work package: **WP-012 Nimiq Pay Identity Adapter**.
 - WP-012 exactly pins `@nimiq/mini-app-sdk` `0.1.0` and server-only
   `@nimiq/core` `2.7.1`. Provider access remains lazy, identity acceptance is
@@ -23,8 +25,11 @@ Phaser/Socket.IO stack.
   server-reconstructed win evidence, nonce/idempotency-bound claims, an
   explicit payout state machine, exact signed-transaction recovery, CSP and
   security headers, a production Daily entry, and disabled-by-default
-  activation gates. Record-only Render/PostgreSQL restart acceptance and one
-  explicitly approved tiny TestAlbatross canary remain external gates. A
+  activation gates. A wallet-scoped, bounded repeat-attempt override now permits
+  controlled same-day payout debugging without deleting prior ledger evidence;
+  Mainnet requires a separate repeat-attempt acknowledgement. The explicitly
+  user-approved tiny MainAlbatross canary and stored-hash reconciliation remain
+  external gates. A
   wallet address is an eligibility identity, not proof of one human; Practice
   remains the unrestricted fallback.
 - The approved post-competition weekly program is now scoped as WP-018 through
@@ -1415,8 +1420,9 @@ Verification:
 ### WP-013 Sponsored Daily Challenge
 
 Status: implemented locally on 2026-07-29; deployed record-only PostgreSQL
-restart acceptance and the explicitly approved tiny TestAlbatross canary are
-pending. Mainnet remains disabled and out of autonomous scope. Depends on
+acceptance passed on 2026-08-01. A user-operated, explicitly approved tiny
+MainAlbatross canary is in progress with a dedicated low-funded signer; this
+does not grant autonomous authority over mainnet funds. Depends on
 WP-007, WP-008, WP-009, and WP-012.
 
 Goal: deliver one optional wallet-authorized Daily Grand Knot Challenge with a
@@ -1498,6 +1504,12 @@ core dependency when constructing and expiring transactions.
 - Default eligibility is one started rewarded attempt per verified wallet per
   UTC challenge day. Unlimited Practice is the retry path after a loss,
   forfeit, or consumed rewarded attempt.
+- A controlled payout canary may temporarily raise that limit only for one
+  explicitly configured normalized test-wallet address, to at most five
+  sequential attempt slots. Mainnet requires an additional exact operator
+  acknowledgement. The exception must not weaken daily budget, active-match,
+  replay, claim, idempotency, signer, reconciliation, or finality controls and
+  must be removed after testing.
 - Creating a reservation does not consume the daily attempt until the
   authoritative rewarded match starts. Bound pre-start reservation churn per
   wallet/session/IP, permit only one active reservation per wallet, and release

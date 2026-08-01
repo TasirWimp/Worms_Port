@@ -2,6 +2,7 @@ import { NormalizedNimiqAddressSchema } from '../../../shared/protocol';
 import type { RewardConfig, RewardMode } from './types';
 
 const MAINNET_ACKNOWLEDGEMENT = 'I_UNDERSTAND_MAINNET_PAYOUTS';
+const REPEAT_MAINNET_ACKNOWLEDGEMENT = 'I_UNDERSTAND_REPEAT_MAINNET_REWARDS';
 
 export function rewardConfigFromEnvironment(
     environment: NodeJS.ProcessEnv = process.env
@@ -55,6 +56,24 @@ export function rewardConfigFromEnvironment(
     const operatorAcknowledgement = optionalTrimmed(
         environment.REWARD_MAINNET_ACKNOWLEDGEMENT
     );
+    const testWalletAddress = optionalAddress(environment.REWARD_TEST_WALLET_ADDRESS);
+    const rawTestDailyAttemptLimit = optionalTrimmed(
+        environment.REWARD_TEST_DAILY_ATTEMPT_LIMIT
+    );
+    const testDailyAttemptLimit = rawTestDailyAttemptLimit
+        ? boundedInteger(
+            rawTestDailyAttemptLimit,
+            'REWARD_TEST_DAILY_ATTEMPT_LIMIT',
+            2,
+            5
+        )
+        : 1;
+    if ((testWalletAddress && !rawTestDailyAttemptLimit) ||
+        (!testWalletAddress && rawTestDailyAttemptLimit)) {
+        throw new Error(
+            'REWARD_TEST_WALLET_ADDRESS and REWARD_TEST_DAILY_ATTEMPT_LIMIT must be set together.'
+        );
+    }
 
     if (mode === 'testnet' || mode === 'mainnet') {
         if (!expectedSignerAddress || !privateKeyFile || !rpcUrl) {
@@ -76,6 +95,14 @@ export function rewardConfigFromEnvironment(
                 `Mainnet rewards require REWARD_MAINNET_ACKNOWLEDGEMENT=${MAINNET_ACKNOWLEDGEMENT}.`
             );
         }
+        if (testWalletAddress && optionalTrimmed(
+            environment.REWARD_TEST_REPEAT_ACKNOWLEDGEMENT
+        ) !== REPEAT_MAINNET_ACKNOWLEDGEMENT) {
+            throw new Error(
+                'Mainnet repeat-attempt testing requires ' +
+                `REWARD_TEST_REPEAT_ACKNOWLEDGEMENT=${REPEAT_MAINNET_ACKNOWLEDGEMENT}.`
+            );
+        }
     }
 
     return {
@@ -88,10 +115,12 @@ export function rewardConfigFromEnvironment(
         turnLimit,
         paused: environment.REWARD_PAUSED === 'true',
         network,
+        testDailyAttemptLimit,
         ...(expectedSignerAddress ? { expectedSignerAddress } : {}),
         ...(privateKeyFile ? { privateKeyFile } : {}),
         ...(rpcUrl ? { rpcUrl } : {}),
-        ...(operatorAcknowledgement ? { operatorAcknowledgement } : {})
+        ...(operatorAcknowledgement ? { operatorAcknowledgement } : {}),
+        ...(testWalletAddress ? { testWalletAddress } : {})
     };
 }
 

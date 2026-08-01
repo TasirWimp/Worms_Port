@@ -421,6 +421,17 @@ record its stored hash, restart the service, and prove that reconciliation
 reaches macro-block finality without creating a second transaction. Mainnet
 activation is not part of autonomous WP-013 acceptance.
 
+If a user-approved payout canary needs more than one same-day run, scope the
+temporary exception to the dedicated test wallet with
+`REWARD_TEST_WALLET_ADDRESS` and `REWARD_TEST_DAILY_ATTEMPT_LIMIT` (maximum
+five). This is the authorized player/recipient wallet, not the payout signer.
+Mainnet additionally requires
+`REWARD_TEST_REPEAT_ACKNOWLEDGEMENT=I_UNDERSTAND_REPEAT_MAINNET_REWARDS`.
+Attempt slots remain separate immutable ledger records and all budget, replay,
+claim, signing, reconciliation, and finality controls still apply. Remove the
+override settings after the canary; do not reset or delete existing
+entitlements to regain eligibility.
+
 For an outage or suspected incident:
 
 1. set `REWARD_PAUSED=true` and redeploy; this blocks new reservations, claims,

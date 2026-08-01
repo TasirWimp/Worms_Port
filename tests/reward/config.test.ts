@@ -48,3 +48,40 @@ test('chain modes fail closed and mainnet requires an explicit acknowledgement',
         /I_UNDERSTAND_MAINNET_PAYOUTS/
     );
 });
+
+test('repeat-attempt testing is wallet-scoped, bounded, and separately acknowledged on mainnet', () => {
+    const wallet = 'NQ46 KLJE 5TMF 4Y1A 1255 CJHJ YG1S H0NU T604';
+    assert.throws(
+        () => rewardConfigFromEnvironment({
+            REWARD_TEST_DAILY_ATTEMPT_LIMIT: '2'
+        }),
+        /must be set together/
+    );
+    assert.throws(
+        () => rewardConfigFromEnvironment({
+            REWARD_TEST_WALLET_ADDRESS: wallet,
+            REWARD_TEST_DAILY_ATTEMPT_LIMIT: '6'
+        }),
+        /between 2 and 5/
+    );
+    const mainnet = {
+        REWARD_MODE: 'mainnet',
+        REWARD_NETWORK: 'main-albatross',
+        REWARD_EXPECTED_SIGNER_ADDRESS: wallet,
+        REWARD_PRIVATE_KEY_FILE: '/run/secrets/reward-key',
+        REWARD_RPC_URL: 'https://rpc.example.test',
+        REWARD_MAINNET_ACKNOWLEDGEMENT: 'I_UNDERSTAND_MAINNET_PAYOUTS',
+        REWARD_TEST_WALLET_ADDRESS: wallet,
+        REWARD_TEST_DAILY_ATTEMPT_LIMIT: '2'
+    };
+    assert.throws(
+        () => rewardConfigFromEnvironment(mainnet),
+        /I_UNDERSTAND_REPEAT_MAINNET_REWARDS/
+    );
+    const config = rewardConfigFromEnvironment({
+        ...mainnet,
+        REWARD_TEST_REPEAT_ACKNOWLEDGEMENT: 'I_UNDERSTAND_REPEAT_MAINNET_REWARDS'
+    });
+    assert.equal(config.testWalletAddress, wallet);
+    assert.equal(config.testDailyAttemptLimit, 2);
+});

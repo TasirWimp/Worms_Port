@@ -160,8 +160,8 @@ on Render. `npm run check:identity-bundles` enforces that separation.
 WP-013 rewards are disabled by default. `REWARD_MODE=disabled` does not require
 a database, RPC endpoint, or sponsor key and cannot move funds. Enabled modes
 require a PostgreSQL `DATABASE_URL`; the server applies
-`server/migrations/001_reward_ledger.sql` before listening. The safe activation
-ladder is:
+the ordered SQL files under `server/migrations/` before listening. The safe
+activation ladder is:
 
 1. `disabled` - public Practice and identity, with no reward authority.
 2. `record-only` - durable reservations, replay-verified claims, and a
@@ -177,6 +177,20 @@ Common settings are `REWARD_LUNA`, `REWARD_DAILY_BUDGET_LUNA`,
 the immediate kill switch `REWARD_PAUSED=true`. Monetary values are integer
 Luna (`100000 Luna = 1 NIM`). The pinned ruleset currently requires
 `REWARD_TURN_LIMIT=16`.
+
+For a controlled repeat-attempt payout canary, an operator may temporarily set
+`REWARD_TEST_WALLET_ADDRESS` to one normalized test-wallet address and
+`REWARD_TEST_DAILY_ATTEMPT_LIMIT` to an integer from `2` through `5`. Mainnet
+also requires the separate exact acknowledgement
+`REWARD_TEST_REPEAT_ACKNOWLEDGEMENT=I_UNDERSTAND_REPEAT_MAINNET_REWARDS`.
+The override creates distinct durable attempt slots only for that address; it
+does not bypass the daily Luna budget, one-active-match rule, replay-verified
+win, single-use claim, payout idempotency, signer checks, or finality. Remove
+all three test settings immediately after the canary to restore the default
+one-started-attempt rule. Never target an uninvolved production player or add a
+broad/global bypass.
+Here, the test wallet is the Nimiq Pay account that authorizes and receives the
+reward; it is not the sponsor signer's funded address.
 
 Chain modes additionally require `REWARD_NETWORK`,
 `REWARD_EXPECTED_SIGNER_ADDRESS`, `REWARD_RPC_URL`, and

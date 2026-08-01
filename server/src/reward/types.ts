@@ -21,6 +21,8 @@ export type RewardConfig = {
     privateKeyFile?: string;
     rpcUrl?: string;
     operatorAcknowledgement?: string;
+    testWalletAddress?: string;
+    testDailyAttemptLimit: number;
 };
 
 export type RewardEntitlement = {
@@ -33,6 +35,8 @@ export type RewardEntitlement = {
     rewardLuna: bigint;
     state: RewardPayoutState;
     attemptConsumed: boolean;
+    attemptNumber: number;
+    dailyAttemptLimit: number;
     reservationExpiresAt: Date;
     finalTick?: number;
     finalStateHash?: string;
@@ -54,6 +58,7 @@ export type RewardReservationInput = {
     seed: number;
     rewardLuna: bigint;
     dailyBudgetLuna: bigint;
+    dailyAttemptLimit: number;
     paused: boolean;
     eligibilityTokenDigest: string;
     reservationExpiresAt: Date;
