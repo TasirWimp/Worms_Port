@@ -21,8 +21,9 @@ async function main() {
   const qualityGate = rawArgs.includes('--quality-gate');
   const args = rawArgs.filter((argument) => argument !== '--quality-gate');
   if (qualityGate) assertQualityGateEnvironment(process.env);
-  const rewardRun = args.length === 0 ||
-    args.some((argument) => argument.includes('reward.spec'));
+  const rewardRun = qualityGate || args.length === 0 || args.some((argument) =>
+    argument.includes('reward.spec') || argument.includes('visual.spec')
+  );
   const child = childProcess.spawn(
     process.execPath,
     [cli, 'test', ...args],

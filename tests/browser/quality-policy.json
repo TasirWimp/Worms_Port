@@ -11,7 +11,8 @@
     "combat.spec.ts",
     "practice.spec.ts",
     "identity.spec.ts",
-    "reward.spec.ts"
+    "reward.spec.ts",
+    "visual.spec.ts"
   ],
   "criticalTests": [
     {
@@ -29,6 +30,10 @@
     {
       "file": "identity.spec.ts",
       "title": "ordinary Practice never initializes or calls an injected wallet provider"
+    },
+    {
+      "file": "visual.spec.ts",
+      "title": "visual geometry baselines cover start, combat, result, and recovery"
     }
   ],
   "expectedProjectSkips": [
@@ -73,6 +78,24 @@
       "title": "Daily Challenge discloses, authorizes, plays, and reports a consumed loss",
       "runsOn": ["chromium-390x844", "webkit-390x844"],
       "reason": "The complete fake-wallet Daily journey runs once per maintained mobile engine."
+    },
+    {
+      "file": "visual.spec.ts",
+      "title": "canonical visual states cover combat presentation, controls, motion, and sideways modes",
+      "runsOn": ["chromium-390x844"],
+      "reason": "State-rich combat visual baselines are frozen on the canonical Chromium project."
+    },
+    {
+      "file": "visual.spec.ts",
+      "title": "canonical Daily visuals cover availability, authorization, claim processing, and finality",
+      "runsOn": ["chromium-390x844"],
+      "reason": "State-rich synthetic-wallet Daily visual baselines are frozen on canonical Chromium."
+    },
+    {
+      "file": "visual.spec.ts",
+      "title": "compact landscape visuals cover Pause and full-screen fallback",
+      "runsOn": ["chromium-844x390"],
+      "reason": "Pause and standards-based full-screen fallback presentation applies to compact landscape."
     }
   ]
 }

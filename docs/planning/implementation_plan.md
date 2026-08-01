@@ -47,6 +47,16 @@ Phaser/Socket.IO stack.
   gates are normative in the WP-014 section below and in
   `docs/process/development_workflow.md` under **WP-014 Quality Harness
   Protocol**.
+- WP-014B implementation is in progress. Deterministic labeled result/reward
+  previews, the 0.2/0.005 screenshot contract, cross-project geometry and
+  recovery, canonical combat/Daily states, compact-landscape states, and
+  executable touch/scroll/zoom/selection checks are implemented. The
+  pre-baseline zero-retry logic pass accounted for 125 project results: 86
+  passed and 39 reviewed exclusions. Re-entry after the next push is to open
+  the implementation PR so **Visual baseline candidates** captures its
+  artifact, download and inspect every Ubuntu 24.04 PNG, add only the reviewed
+  snapshots, and then run ordinary visual plus full-matrix comparison. Do not
+  start WP-014C until that closes `docs/evidence/wp-014b.json`.
 - The approved post-competition weekly program is now scoped as WP-018 through
   WP-021: Nimiq Chronicle, Loom XP qualification, optional PvP Sparring Loom,
   and the Weekly Grand Knot Tournament with an additional sponsor-funded
@@ -1998,9 +2008,15 @@ allowance cannot be reassigned to JavaScript.
    normal game surface was vertically centered; non-sideways client coordinates
    now map relative to the game bounds and focused plus full-matrix regressions
    pass. Evidence: `docs/evidence/wp-014a.json`.
-2. **WP-014B Visual and layout gate:** stabilize deterministic states, add
-   reviewed cross-project geometry/state baselines and thresholds, and enforce
-   touch geometry, sideways, reduced-motion, scroll/zoom, and result recovery.
+2. **WP-014B Visual and layout gate - implementation in progress:** the
+   deterministic capture states, frozen thresholds, five-project geometry and
+   recovery journey, canonical combat/Daily states, compact-landscape states,
+   and layout assertions are implemented. A pull-request Ubuntu 24.04 workflow
+   generates artifact-only candidates for explicit review and remains manually
+   dispatchable after it reaches the default branch. Its pre-baseline quality
+   run passed 125 project results (86 applicable passes and 39 reviewed
+   exclusions). Reviewed Linux PNGs and ordinary comparison CI remain before
+   completion.
 3. **WP-014C Resilience and isolation:** add supported network/offline/resume,
    delayed-provider, session-loss, deterministic protocol-fault, and two-context
    storage/event/authority isolation coverage.

@@ -16,6 +16,7 @@ import { PRACTICE_CLIENT_REGISTRY_KEY, PracticeClient } from './practice/client'
 import { NimiqPayIdentityAdapter } from './identity/adapter';
 import { IdentityProtocolClient } from './identity/client';
 import { IDENTITY_SERVICES_REGISTRY_KEY } from './identity/view';
+import { createResultPreview } from './result/fixture';
 
 const requestedSideways = requestedSidewaysMode(window.location.search);
 let runningGame: Phaser.Game | undefined;
@@ -82,6 +83,16 @@ class NimbleKnotsGame extends Phaser.Game
 
 window.onload = async () => {
     const query = new URLSearchParams(window.location.search);
+    const resultPreview = query.get('result-preview');
+    if (resultPreview === 'practice' || resultPreview === 'reward') {
+        const preview = createResultPreview(resultPreview);
+        const game = new NimbleKnotsGame();
+        runningGame = game;
+        syncVisualViewport();
+        game.registry.set(PRACTICE_CLIENT_REGISTRY_KEY, preview.client);
+        game.scene.start('result', preview.args);
+        return;
+    }
     const combatPreview = query.has('combat-preview');
     if (combatPreview) {
         runningGame = new NimbleKnotsGame(true);

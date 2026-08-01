@@ -84,6 +84,7 @@ npm run test:browser:combat
 npm run test:browser:practice
 npm run test:browser:identity
 npm run test:browser:reward
+npm run test:browser:visual
 npm run test:browser:matrix
 npm start
 ```
@@ -99,6 +100,16 @@ zero-retry WP-014 release gate for all maintained browser suites at Chromium
 unexpected project skip or omitted critical journey. `verify:full` retains the
 pre-WP-014 foundation funnel until WP-014E adds the remaining visual,
 PostgreSQL, resilience, and performance gates.
+
+WP-014 visual baselines are created only by the GitHub Actions workflow
+**Visual baseline candidates** on the implementation pull request. That
+artifact-only workflow runs the pinned Ubuntu 24.04 Chromium/WebKit revisions
+with `--update-snapshots` and uploads the candidate PNGs; it never commits
+them. After the workflow exists on `main`, it can also be dispatched manually
+for an exact branch ref. Download and inspect every candidate before adding it
+under `tests/browser/visual.spec.ts-snapshots/`. Windows or unreviewed
+screenshots are not release evidence, and ordinary `Verify` runs only compare
+committed baselines.
 
 Playwright reports, traces, screenshots, and videos are generated outside
 `assets/` and are ignored locally. CI retains them only when verification

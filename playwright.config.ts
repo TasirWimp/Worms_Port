@@ -28,6 +28,15 @@ export default defineConfig({
     ['html', { outputFolder: 'playwright-report', open: 'never' }],
     ['./scripts/playwright-quality-reporter.js']
   ],
+  expect: {
+    toHaveScreenshot: {
+      animations: 'disabled',
+      caret: 'hide',
+      maxDiffPixelRatio: 0.005,
+      scale: 'css',
+      threshold: 0.2
+    }
+  },
   use: {
     baseURL,
     trace: 'retain-on-failure',

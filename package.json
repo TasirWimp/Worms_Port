@@ -30,6 +30,7 @@
     "test:browser:practice": "node scripts/run-playwright.js tests/browser/practice.spec.ts",
     "test:browser:identity": "node scripts/run-playwright.js tests/browser/identity.spec.ts",
     "test:browser:reward": "node scripts/run-playwright.js tests/browser/reward.spec.ts",
+    "test:browser:visual": "node scripts/run-playwright.js tests/browser/visual.spec.ts",
     "test:browser:matrix": "node scripts/run-playwright.js --quality-gate",
     "test:browser": "node scripts/run-playwright.js",
     "verify:fast": "npm run check:compliance && npm run check:types && npm run test:tooling && npm run test:protocol && npm run test:simulation && npm run test:loomkeeper && npm run test:relics && npm run test:combat && npm run test:practice && npm run test:identity && npm run test:reward",

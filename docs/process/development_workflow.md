@@ -527,6 +527,15 @@ implementing or running it:
   scheme, fonts, and fake-wallet state. Use `maxDiffPixelRatio=0.005` and
   per-pixel threshold `0.2`. Baseline updates are explicit reviewed changes;
   ordinary CI never writes expected snapshots.
+- For initial or intentional baseline updates, push the implementation branch
+  and open or update its pull request. **Visual baseline candidates** produces
+  a 14-day artifact for that PR; after the workflow reaches the default branch,
+  it can also be dispatched manually for an exact ref. Inspect every PNG and
+  add only approved files under `tests/browser/visual.spec.ts-snapshots/`. The
+  workflow has read-only repository permission and cannot commit. A Windows
+  update, artifact upload, or `--update-snapshots` pass alone is not evidence;
+  the committed images must pass the ordinary Ubuntu 24.04 comparison job
+  afterward.
 - Chromium may use supported deterministic bandwidth/latency control. Chromium
   and WebKit both cover offline/resume. Model Socket.IO acknowledgement loss,
   duplicate/stale delivery, and ordering faults through typed fixtures instead
@@ -562,13 +571,23 @@ ordinary pointer mapping when the capped game surface is centered inside a
 larger viewport. WP-014B owns committed visual baselines and layout-state
 captures; do not add them retroactively to WP-014A.
 
+WP-014B currently provides deterministic, visibly labeled result/reward
+preview states with fake in-memory transitions only, a visual test covering
+start/combat/result geometry and recovery on all five projects, canonical
+combat presentation and Daily states, compact-landscape Pause/full-screen
+fallback, and executable touch/scroll/zoom/selection assertions. The
+pre-baseline zero-retry logic run passed 125 project results (86 passed, 39
+reviewed exclusions). Linux candidate generation, explicit image review, and
+ordinary comparison CI remain the completion boundary.
+
 Official implementation references reviewed on 2026-08-01:
 `https://playwright.dev/docs/test-projects`,
 `https://playwright.dev/docs/ci`,
 `https://playwright.dev/docs/test-snapshots`,
 `https://playwright.dev/docs/test-retries`,
 `https://playwright.dev/docs/trace-viewer-intro`,
-`https://playwright.dev/docs/network`, and
+`https://playwright.dev/docs/network`,
+`https://docs.github.com/actions/managing-workflow-runs/manually-running-a-workflow`, and
 `https://docs.github.com/en/actions/tutorials/use-containerized-services/create-postgresql-service-containers`.
 
 ## Asset Generation Loop
