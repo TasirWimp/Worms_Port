@@ -2362,14 +2362,16 @@ TON payout boundary:
 - At claim time, the qualified Nimiq wallet signs a short-lived canonical
   message binding the week/entitlement, `TON_MAINNET`, reviewed USDT Jetton
   master, integer micro-USDT amount, current GCrypto destination owner address,
-  any receive-flow-required memo/comment/reference, nonce, expiry, and public
-  origin. Account selection or address entry without this signature is not
-  payout authorization.
+  the current required GCrypto memo string, nonce, expiry, and public origin.
+  Address or memo entry without this signature is not payout authorization.
 - Explain that the player must open the current GCrypto `USDTTON` asset, tap
-  `Receive`, and copy or scan the address and any additional receive data shown
-  there. The network must read `The Open Network`; generic USDT, an Ethereum,
-  Tron, Avalanche, Celo, or Kaia address, a Telegram username, phone number, or
-  other GCash identifier is not interchangeable.
+  `Receive`, and copy or scan both the address and memo string shown there.
+  Treat the address and memo as one indivisible destination pair: the memo is
+  mandatory for the current GCrypto route, must be copied exactly, and must not
+  be inferred, normalized, reused from another deposit, or replaced with a
+  player identifier. The network must read `The Open Network`; generic USDT, an
+  Ethereum, Tron, Avalanche, Celo, or Kaia address, a Telegram username, phone
+  number, or other GCash identifier is not interchangeable.
 - Explain that blockchain transfers are irreversible and GCrypto may change
   asset/network support, receive availability, minimums, memo requirements,
   conversion rules, limits, verification, fees, or age/jurisdiction rules. An
@@ -2378,10 +2380,10 @@ TON payout boundary:
 - Validate the TON user-friendly address checksum and network flag, supported
   workchain/address form, exact allowlisted USDT Jetton master, on-chain
   metadata, six-decimal micro-USDT encoding, configured amount bounds, sponsor
-  Jetton balance, TON gas reserve, optional receive reference, and entitlement
-  ownership on the server. Canonicalize the address for comparison while
-  preserving the exact player-reviewed display form. The client cannot select
-  the master, network, decimals, amount, gas/forwarding policy, or signer.
+  Jetton balance, TON gas reserve, a present and bounded GCrypto memo string, and
+  entitlement ownership on the server. Canonicalize the address for comparison
+  while preserving the exact player-reviewed display form. The client cannot
+  select the master, network, decimals, amount, gas/forwarding policy, or signer.
 - Treat the destination as the TON owner address supplied by GCrypto. Do not
   replace it with an independently derived Jetton-wallet address or infer it
   from the player's Nimiq identity. Build the TEP-74 Jetton transfer through the
@@ -2389,23 +2391,25 @@ TON payout boundary:
   in the authoritative intent.
 - Set a unique Jetton `query_id`, sufficient attached TON for fees, and a
   positive `forward_ton_amount` so the recipient receives a standard
-  `transfer_notification`. Encode any GCrypto-required memo/comment/reference
-  exactly in the reviewed forward payload. Do not invent or omit receive data.
-- Permit destination/reference correction only before the payout intent becomes
+  `transfer_notification`. Encode the required GCrypto memo string exactly in
+  the reviewed forward payload. Do not invent, alter, or omit it.
+- Permit destination-pair correction only before the payout intent becomes
   immutable. Show a final confirmation with network, asset, amount, address,
-  and memo/comment/reference state. Prefer a QR-derived value and a separately
+  and the exact memo string. Prefer QR-derived values and a separately
   confirmed tiny canary before larger transfers.
 - Persist the immutable payout intent, Nimiq authorizer, TON network, Jetton
-  master and decimals, recipient, forward payload, amount, `query_id`, sender
-  wallet version/address, wallet sequence number, gas/forward amounts, exact
+  master and decimals, recipient address, GCrypto memo string, forward payload,
+  amount, `query_id`, sender wallet version/address, wallet sequence number,
+  gas/forward amounts, exact
   unsigned and signed message BOCs, message/transaction hashes, logical-time and
   block references, broadcast ambiguity, Jetton transfer/notification evidence,
   GCrypto-credit state, and every transition in PostgreSQL before claiming
   completion.
-- Use durable idempotency and one logical signer. After an ambiguous broadcast,
-  reconcile the stored BOC/message hash, wallet sequence number, `query_id`, and
-  chain state before any retry. Never create a second Jetton transfer merely
-  because an RPC or indexer call timed out.
+- Use durable idempotency over the entitlement, address, memo, and amount, with
+  one logical signer. After an ambiguous broadcast, reconcile the stored
+  BOC/message hash, wallet sequence number, `query_id`, and chain state before
+  any retry. Never create a second Jetton transfer merely because an RPC or
+  indexer call timed out.
 - Keep the TON sponsor wallet dedicated and low-funded. The signer key is
   runtime-only and separated from Nimiq identity, Chronicle, NIM reward, and
   treasury keys. Add pause, daily/weekly ceilings, USDT and TON-gas alerts, key
@@ -2428,6 +2432,11 @@ Activation and compliance boundary:
   They currently list `USDTTON` on `The Open Network` and require the selected
   asset/network to match, but the in-app receive screen remains authoritative
   for the player's current deposit details.
+- A user-run mainnet acceptance on 2026-08-01 successfully credited GCrypto
+  using both the displayed TON address and the displayed memo string. This is
+  current operational evidence, not a permanent provider guarantee. The
+  `USDT_TON_GCRYPTO` channel therefore treats the memo as mandatory while still
+  reverifying the live receive screen before every payout.
 - Implementation references are TON's
   [Jetton payment-processing guidance](https://docs.ton.org/applications/payments/jettons),
   [TEP-74 transfer interface](https://docs.ton.org/contracts/standard/tokens/jettons/api),
