@@ -85,3 +85,21 @@ test('repeat-attempt testing is wallet-scoped, bounded, and separately acknowled
     assert.equal(config.testWalletAddress, wallet);
     assert.equal(config.testDailyAttemptLimit, 2);
 });
+
+test('reward wallet settings normalize compact addresses and identify invalid variables', () => {
+    const config = rewardConfigFromEnvironment({
+        REWARD_TEST_WALLET_ADDRESS: 'NQ3461R8YJUAKLDJ4VVLE22VT7KEATA3A1HY',
+        REWARD_TEST_DAILY_ATTEMPT_LIMIT: '2'
+    });
+    assert.equal(
+        config.testWalletAddress,
+        'NQ34 61R8 YJUA KLDJ 4VVL E22V T7KE ATA3 A1HY'
+    );
+    assert.throws(
+        () => rewardConfigFromEnvironment({
+            REWARD_TEST_WALLET_ADDRESS: 'not-an-address',
+            REWARD_TEST_DAILY_ATTEMPT_LIMIT: '2'
+        }),
+        /REWARD_TEST_WALLET_ADDRESS must be a valid compact or spaced Nimiq address/
+    );
+});

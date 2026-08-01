@@ -179,7 +179,7 @@ Luna (`100000 Luna = 1 NIM`). The pinned ruleset currently requires
 `REWARD_TURN_LIMIT=16`.
 
 For a controlled repeat-attempt payout canary, an operator may temporarily set
-`REWARD_TEST_WALLET_ADDRESS` to one normalized test-wallet address and
+`REWARD_TEST_WALLET_ADDRESS` to one compact or spaced test-wallet address and
 `REWARD_TEST_DAILY_ATTEMPT_LIMIT` to an integer from `2` through `5`. Mainnet
 also requires the separate exact acknowledgement
 `REWARD_TEST_REPEAT_ACKNOWLEDGEMENT=I_UNDERSTAND_REPEAT_MAINNET_REWARDS`.

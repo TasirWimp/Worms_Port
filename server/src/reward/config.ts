@@ -50,13 +50,19 @@ export function rewardConfigFromEnvironment(
             : mode === 'mainnet'
                 ? 'main-albatross'
                 : 'test-albatross';
-    const expectedSignerAddress = optionalAddress(environment.REWARD_EXPECTED_SIGNER_ADDRESS);
+    const expectedSignerAddress = optionalAddress(
+        environment.REWARD_EXPECTED_SIGNER_ADDRESS,
+        'REWARD_EXPECTED_SIGNER_ADDRESS'
+    );
     const privateKeyFile = optionalTrimmed(environment.REWARD_PRIVATE_KEY_FILE);
     const rpcUrl = optionalRpcUrl(environment.REWARD_RPC_URL);
     const operatorAcknowledgement = optionalTrimmed(
         environment.REWARD_MAINNET_ACKNOWLEDGEMENT
     );
-    const testWalletAddress = optionalAddress(environment.REWARD_TEST_WALLET_ADDRESS);
+    const testWalletAddress = optionalAddress(
+        environment.REWARD_TEST_WALLET_ADDRESS,
+        'REWARD_TEST_WALLET_ADDRESS'
+    );
     const rawTestDailyAttemptLimit = optionalTrimmed(
         environment.REWARD_TEST_DAILY_ATTEMPT_LIMIT
     );
@@ -168,12 +174,16 @@ function boundedInteger(value: string, name: string, minimum: number, maximum: n
     return parsed;
 }
 
-function optionalAddress(value: string | undefined): string | undefined {
-    const normalized = optionalTrimmed(value);
-    if (!normalized) return undefined;
+function optionalAddress(value: string | undefined, name: string): string | undefined {
+    const trimmed = optionalTrimmed(value);
+    if (!trimmed) return undefined;
+    const compact = trimmed.replace(/\s/g, '').toUpperCase();
+    const normalized = compact.length === 36
+        ? [compact.slice(0, 4), ...(compact.slice(4).match(/.{4}/g) ?? [])].join(' ')
+        : trimmed;
     const parsed = NormalizedNimiqAddressSchema.safeParse(normalized);
     if (!parsed.success) {
-        throw new Error('REWARD_EXPECTED_SIGNER_ADDRESS must be a normalized Nimiq address.');
+        throw new Error(`${name} must be a valid compact or spaced Nimiq address.`);
     }
     return parsed.data;
 }
