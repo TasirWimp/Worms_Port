@@ -3,6 +3,7 @@
   "checked_date": "2026-08-02",
   "policy": {
     "distribution": "external_not_bundled",
+    "project_workflow_distribution": "source_tooling_only_not_product_runtime",
     "generated_output_state": "quarantined_candidate_until_exact_file_approval",
     "promotion_gate": "docs/asset-review-workflow.md",
     "product_asset_manifest": "legal/asset-manifest.json"
@@ -45,7 +46,8 @@
       "distribution": "external_not_bundled",
       "allowed_untracked_paths": [
         ".venv/",
-        "logs/"
+        "logs/",
+        "workflows/generate_image_conditioned.json"
       ],
       "approved_uses": [
         "loopback-only MCP access to the separately installed ComfyUI API",
@@ -72,14 +74,59 @@
       "distribution": "external_not_bundled",
       "approved_uses": [
         "deterministic local pipeline health smoke",
-        "quarantined experiments that are not product asset candidates"
+        "quarantined production-candidate generation through the exact reviewed WP-015B workflow"
       ],
       "blocked_uses": [
-        "production asset promotion without a separate model, prompt, input, output, and IP review",
+        "product asset promotion without a separate prompt, input, output, exact-file, and IP review",
         "redistribution with Worms_Port",
         "using Sorcerers material as prompt, image, conditioning, or training input"
       ],
-      "notes": "The verified file hash matches the Comfy-Org archive. This checkpoint proves the local pipeline only; it is not pre-approved to author production assets."
+      "notes": "The verified file hash matches the Comfy-Org archive. On 2026-08-02 the project owner approved this checkpoint for quarantined WP-015 production-candidate generation. Generated output remains unapproved until the complete exact-file product asset gate passes."
+    },
+    {
+      "id": "comfyui-mcp-generate-image-workflow",
+      "kind": "generation_workflow",
+      "source_url": "https://github.com/joenorton/comfyui-mcp-server/blob/e0101b2312f30501664dabe4a74c1283c4268eb8/workflows/generate_image.json",
+      "revision": "e0101b2312f30501664dabe4a74c1283c4268eb8",
+      "version": "pinned-commit",
+      "file_path": "workflows/generate_image.json",
+      "file_sha256": "968A5B78766549BBAF374C1C27BE80B75E6BB389A01CCC237639DFB4EFCF3CD5",
+      "input_mode": "text_to_image",
+      "license": "Apache-2.0",
+      "license_evidence": "https://github.com/joenorton/comfyui-mcp-server/blob/e0101b2312f30501664dabe4a74c1283c4268eb8/LICENSE",
+      "distribution": "external_not_bundled",
+      "approved_uses": [
+        "deterministic 512x512 text-to-image production-candidate generation in external quarantine",
+        "prompt-driven isolated master exploration under the WP-015 briefs and negative constraints"
+      ],
+      "blocked_uses": [
+        "claiming direct image conditioning or image-to-image refinement because this graph accepts no image input",
+        "automatic publication into assets or automatic edits to the product asset manifest",
+        "using an unrecorded workflow edit, custom node, model component, or random seed"
+      ],
+      "notes": "The project owner approved this exact production workflow on 2026-08-02. It contains CheckpointLoaderSimple, EmptyLatentImage, CLIP text encoders, KSampler, VAE decode, and SaveImage nodes only. The canonical lineup guides the written brief and visual review but cannot be supplied directly to this text-only graph."
+    },
+    {
+      "id": "wormsport-generate-image-conditioned-workflow",
+      "kind": "generation_workflow",
+      "source_path": "scripts/comfy-workflows/generate_image_conditioned.json",
+      "runtime_path": "workflows/generate_image_conditioned.json",
+      "version": "1",
+      "file_sha256": "C21BD9224D08E1708073C3C11BFF749E4B901F5BE20EFE32245DAE6B489D3060",
+      "input_mode": "image_to_image",
+      "license": "MIT",
+      "license_evidence": "LICENSE",
+      "distribution": "project_source_tooling",
+      "approved_uses": [
+        "deterministic image-plus-text refinement of an explicitly staged quarantined input",
+        "fixed-seed 512x512 isolated-master iteration with disclosed denoise strength"
+      ],
+      "blocked_uses": [
+        "using a documentation concept crop or generated output as a runtime asset without exact-file approval",
+        "reading an arbitrary ComfyUI input filename that was not staged through the reviewed pipeline action",
+        "claiming IP-Adapter, ControlNet, style-transfer, or reference-only conditioning beyond ordinary VAE img2img"
+      ],
+      "notes": "Project-owned source tooling. The graph uses only pinned ComfyUI core nodes: LoadImage, VAEEncode, the reviewed checkpoint, CLIP text encoders, KSampler, VAEDecode, and SaveImage. The pipeline copies its exact bytes into the external MCP workflow directory and stages input bytes under the external ComfyUI input quarantine; neither copy is a product asset."
     }
   ]
 }

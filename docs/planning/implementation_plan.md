@@ -8,16 +8,26 @@ Phaser/Socket.IO stack.
 ## Execution Pointer
 
 - Active target: mobile-first single-player Nimiq Pay competition release.
-- Active work package: **WP-015B Basic assembly contract and vertical-slice
-  foundation**. Freeze production generation rights, exact lineage, character
-  sockets and basic animation triggers, and the versioned Relic range/damage
-  tiers before producing the Wizard, Loomkeeper, Threadball, and first Patch
-  slice. Promote nothing until exact-file evidence and IP/art review pass.
-- Last completed work package: **WP-015A Local asset-pipeline foundation** on
-  2026-08-02. The pinned ComfyUI/MCP stack, component manifest, environment
-  lock, loopback start/status/stop/smoke command, and clean-machine re-entry
-  runbook are verified. Its current checkpoint is smoke-only, not production
-  art authority.
+- Active work package: **WP-015B0 Approval and conditioned-pipeline commit
+  closure**. Geometry/model/workflow approval, exact-hash enforcement, safe
+  input staging, dedicated MCP discovery, and the bounded technical img2img
+  smoke are implemented and verified in the working tree, but are not yet
+  committed or pushed. Do not start WP-015B1 until this B0 change is committed
+  on origin.
+- Last committed implementation slice: **WP-015A Local asset-pipeline
+  foundation** on 2026-08-02. The uncommitted B0 working tree intentionally
+  retains the knitting-inspired baseline at
+  `docs/images/art-direction/knotkin-class-lineup-concept.png`; project-owner
+  attestation records Nimiq team/foundation encouragement for its inspired
+  geometry and approves that competition direction.
+  The exact SD 1.5 checkpoint, pinned text-only MCP workflow, and project-owned
+  image-conditioned workflow are approved for quarantined candidate generation,
+  not automatic product-asset promotion.
+- Next after the WP-015B0 commit: **WP-015B1 Vertical-slice briefs and
+  deterministic generation contract**. Freeze the Wizard, Loomkeeper,
+  Threadball, and first Patch briefs, negative constraints, seeds,
+  socket/origin metadata, animation triggers, and acceptance checks before
+  generating a candidate.
 - WP-012 exactly pins `@nimiq/mini-app-sdk` `0.1.0` and server-only
   `@nimiq/core` `2.7.1`. Provider access remains lazy, identity acceptance is
   now used by WP-013's separate production Daily entry, the diagnostics surface
@@ -142,9 +152,13 @@ Phaser/Socket.IO stack.
   package lock, dependency health, model name/size/hash, ports, and command
   ancestry before it starts or stops anything. Component licenses and blocked
   promotion behavior are enforced by `npm run check:compliance`; evidence is
-  closed in `docs/evidence/wp-015a.json`. Re-entry is WP-015B's basic assembly
-  contract and vertical-slice foundation, not automatic asset generation or
-  promotion.
+  closed in `docs/evidence/wp-015a.json`. The current uncommitted WP-015B0
+  working tree records approval of the exact checkpoint, text-only image
+  workflow, and project-owned VAE img2img workflow for quarantined production
+  candidates and closes the geometry/baseline decision. Its evidence remains
+  `in_progress` until the B0 change is committed. Re-entry is B0 commit/push
+  closure, then WP-015B1 briefs and deterministic generation contracts, not
+  automatic promotion.
 - The approved post-competition weekly program is now scoped as WP-018 through
   WP-021: Nimiq Chronicle, Loom XP qualification, optional PvP Sparring Loom,
   and the Weekly Grand Knot Tournament with an additional sponsor-funded
@@ -2207,12 +2221,25 @@ Sequential delivery slices:
   external generator stack, freeze its bridge environment, prove a bounded
   loopback smoke, and provide one fail-closed re-entry command. This slice
   promotes no media.
-- **WP-015B Basic assembly contract and vertical-slice foundation — next:**
-  approve every actual production generation component and workflow; freeze
-  exact lineage, four family briefs, anatomy/baseline/held-Relic sockets,
-  projectile origins, basic animation triggers, and the v3 Relic tier contract.
-  Create quarantined Wizard, Loomkeeper, Threadball, and first-Patch candidates
-  only after those foundations pass review.
+- **WP-015B Basic assembly contract and vertical-slice foundation — in
+  progress:**
+  - **WP-015B0 Approval and canonical baseline — working-tree implementation
+    verified; commit/push pending:** record the project owner's
+    Nimiq-team/foundation encouragement attestation and project approval; point
+    re-entry to the documentation-only knitting lineup; approve and hash the
+    exact archived checkpoint, text-only generation workflow, and project-owned
+    image-plus-text refinement graph; retain exact-output review. The bounded
+    technical smoke remained in external quarantine and this slice promotes no
+    media.
+  - **WP-015B1 Vertical-slice briefs and deterministic generation contract —
+    next after the B0 commit:** freeze Wizard, Loomkeeper, Threadball, and
+    first-Patch briefs, prompts, negative constraints, seeds,
+    anatomy/baseline/held-Relic sockets, projectile origins, animation triggers,
+    and acceptance checks.
+  - **WP-015B2 Quarantined vertical-slice masters:** generate fixed-seed
+    candidates only after B1 review, record untouched outputs and complete
+    art/IP/provenance comparison, and promote nothing until an exact candidate
+    is explicitly accepted.
 - **WP-015C First playable visual slice:** promote and integrate only approved
   Wizard, Loomkeeper, Threadball, and Patch assets. Prove one complete
   move/aim/fire/flight/impact/damage/result exchange at maintained phone

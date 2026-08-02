@@ -71,15 +71,17 @@ revisions, Python environment, model name and size, and—when requested—the
 2.13 GB checkpoint hash before it starts anything:
 
 ```powershell
+powershell -NoProfile -ExecutionPolicy Bypass -File .\scripts\comfy-asset-pipeline.ps1 -Action Prepare
 powershell -NoProfile -ExecutionPolicy Bypass -File .\scripts\comfy-asset-pipeline.ps1 -Action Status -VerifyHashes
 powershell -NoProfile -ExecutionPolicy Bypass -File .\scripts\comfy-asset-pipeline.ps1 -Action Start
 powershell -NoProfile -ExecutionPolicy Bypass -File .\scripts\comfy-asset-pipeline.ps1 -Action Smoke
 ```
 
 `Start` binds ComfyUI to `127.0.0.1:8188` and the MCP bridge to
-`127.0.0.1:9000/mcp`. If ComfyUI tools do not appear in an already-open Codex
-task, restart Codex after `Start`; MCP tool discovery occurs when the client
-session opens. Stop the verified local processes with:
+`127.0.0.1:9000/mcp`. Workflow-specific tools are registered when the bridge
+starts and imported when the Codex task starts. After adding or changing a
+reviewed workflow, restart the MCP server first and then restart Codex. Stop the
+verified local processes with:
 
 ```powershell
 powershell -NoProfile -ExecutionPolicy Bypass -File .\scripts\comfy-asset-pipeline.ps1 -Action Stop
@@ -92,6 +94,42 @@ Override a moved install with `WORMS_COMFY_ROOT`, `WORMS_COMFY_MCP_ROOT`,
 output remains under ComfyUI's external shared output directory. It is not an
 approved asset, and the bridge's generic publish tools must never write to
 `assets/` or `legal/asset-manifest.json`.
+
+WP-015B0 approves the exact archived checkpoint, the pinned text-only
+`workflows/generate_image.json`, and the project-owned
+`generate_image_conditioned` img2img graph for quarantined production
+candidates. Prepare and exact-hash the conditioned graph in the external MCP
+checkout with:
+
+```powershell
+powershell -NoProfile -ExecutionPolicy Bypass -File .\scripts\comfy-asset-pipeline.ps1 -Action Prepare
+```
+
+Stage only an explicitly reviewed documentation image, ignored quarantined
+master, or prior external ComfyUI output:
+
+```powershell
+powershell -NoProfile -ExecutionPolicy Bypass -File .\scripts\comfy-asset-pipeline.ps1 -Action StageInput -InputImage <path> -StagedName wizard-master-v1.png
+```
+
+The command returns the constrained `reference_image` value for the dedicated
+MCP tool:
+
+```text
+tool: generate_image_conditioned
+parameters: reference_image, prompt, negative_prompt, seed, steps, cfg,
+            sampler_name, scheduler, denoise, model
+```
+
+The generic `run_workflow` endpoint remains a fallback if workflow-specific
+tool registration is unavailable; normal use should prefer the dedicated tool.
+
+Use lower denoise to preserve more of the staged image and higher denoise to
+permit a larger prompt-driven change; always record the value. The canonical
+knitting-inspired baseline remains outside the product asset tree at
+`docs/images/art-direction/knotkin-class-lineup-concept.png`: use it for briefs
+and visual comparison, but never crop, trace, or ship it as a runtime sprite.
+Every generated output still requires separate exact-file and IP review.
 
 ## Build
 

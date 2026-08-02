@@ -7,7 +7,9 @@ const manifestPath = path.join(repoRoot, 'legal', 'generation-component-manifest
 const requiredIds = new Set([
   'comfyui',
   'comfyui-mcp-server',
-  'stable-diffusion-v1-5-archive-fp16'
+  'stable-diffusion-v1-5-archive-fp16',
+  'comfyui-mcp-generate-image-workflow',
+  'wormsport-generate-image-conditioned-workflow'
 ]);
 const allowedKinds = new Set([
   'external_generation_tool',
@@ -31,7 +33,10 @@ function validateGenerationComponents(manifest, root = repoRoot) {
     errors.push('checked_date must use YYYY-MM-DD.');
   }
   if (manifest?.policy?.distribution !== 'external_not_bundled') {
-    errors.push('policy must keep generation components external and unbundled.');
+    errors.push('policy must keep third-party generation components external and unbundled.');
+  }
+  if (manifest?.policy?.project_workflow_distribution !== 'source_tooling_only_not_product_runtime') {
+    errors.push('project workflows must remain source tooling and outside product runtime assets.');
   }
   if (manifest?.policy?.generated_output_state !== 'quarantined_candidate_until_exact_file_approval') {
     errors.push('generated output must remain quarantined until exact-file approval.');
@@ -45,16 +50,26 @@ function validateGenerationComponents(manifest, root = repoRoot) {
     if (ids.has(component?.id)) errors.push(`${label}: duplicate component id.`);
     ids.add(component?.id);
 
-    for (const field of ['id', 'kind', 'source_url', 'revision', 'version', 'license', 'license_evidence', 'distribution', 'notes']) {
+    for (const field of ['id', 'kind', 'version', 'license', 'license_evidence', 'distribution', 'notes']) {
       if (typeof component?.[field] !== 'string' || !component[field]) {
         errors.push(`${label}: missing ${field}.`);
       }
     }
     if (!allowedKinds.has(component?.kind)) errors.push(`${label}: invalid kind.`);
-    if (!/^https:\/\//.test(component?.source_url || '')) errors.push(`${label}: source_url must be HTTPS.`);
-    if (!/^https:\/\//.test(component?.license_evidence || '')) errors.push(`${label}: license_evidence must be HTTPS.`);
-    if (!/^[0-9a-f]{40}$/.test(component?.revision || '')) errors.push(`${label}: revision must be a full Git hash.`);
-    if (component?.distribution !== 'external_not_bundled') errors.push(`${label}: component must remain external and unbundled.`);
+    if (component?.distribution === 'external_not_bundled') {
+      if (!/^https:\/\//.test(component?.source_url || '')) errors.push(`${label}: source_url must be HTTPS.`);
+      if (!/^https:\/\//.test(component?.license_evidence || '')) errors.push(`${label}: license_evidence must be HTTPS.`);
+      if (!/^[0-9a-f]{40}$/.test(component?.revision || '')) errors.push(`${label}: revision must be a full Git hash.`);
+    } else if (component?.distribution === 'project_source_tooling') {
+      if (component.kind !== 'generation_workflow') {
+        errors.push(`${label}: only a project-owned generation workflow may use project_source_tooling.`);
+      }
+      if (component.license !== 'MIT' || component.license_evidence !== 'LICENSE') {
+        errors.push(`${label}: project source tooling must use the repository MIT license.`);
+      }
+    } else {
+      errors.push(`${label}: invalid component distribution; third-party components must remain external and unbundled.`);
+    }
     if (component?.kind === 'external_generation_tool' || component?.kind === 'external_generation_bridge') {
       if (!Array.isArray(component.allowed_untracked_paths) ||
           component.allowed_untracked_paths.some((entry) => typeof entry !== 'string' || !entry)) {
@@ -114,6 +129,35 @@ function validateGenerationComponents(manifest, root = repoRoot) {
   const comfy = components.find((component) => component.id === 'comfyui');
   if (comfy && !/^[0-9A-F]{64}$/.test(comfy.local_launcher_sha256 || '')) {
     errors.push(`${comfy.id}: local_launcher_sha256 must be exact.`);
+  }
+
+  const workflows = components.filter((component) => component.kind === 'generation_workflow');
+  for (const workflow of workflows) {
+    if (!/^[0-9A-F]{64}$/.test(workflow.file_sha256 || '')) {
+      errors.push(`${workflow.id}: file_sha256 must be exact.`);
+    }
+    const runtimePath = workflow.file_path || workflow.runtime_path;
+    if (!/^workflows\/[a-z0-9][a-z0-9._-]*\.json$/.test(runtimePath || '')) {
+      errors.push(`${workflow.id}: runtime workflow path must name one JSON file below workflows/.`);
+    }
+    if (!['text_to_image', 'image_to_image'].includes(workflow.input_mode)) {
+      errors.push(`${workflow.id}: input_mode must disclose text_to_image or image_to_image.`);
+    }
+    if (workflow.distribution === 'project_source_tooling') {
+      if (!/^scripts\/comfy-workflows\/[a-z0-9][a-z0-9._-]*\.json$/.test(workflow.source_path || '')) {
+        errors.push(`${workflow.id}: source_path must name one JSON file below scripts/comfy-workflows/.`);
+        continue;
+      }
+      const sourcePath = path.resolve(root, workflow.source_path);
+      if (!sourcePath.startsWith(path.resolve(root) + path.sep) || !fs.existsSync(sourcePath)) {
+        errors.push(`${workflow.id}: source_path must resolve inside the repository.`);
+        continue;
+      }
+      const actualHash = crypto.createHash('sha256').update(fs.readFileSync(sourcePath)).digest('hex').toUpperCase();
+      if (actualHash !== workflow.file_sha256) {
+        errors.push(`${workflow.id}: project workflow hash mismatch.`);
+      }
+    }
   }
 
   return errors;

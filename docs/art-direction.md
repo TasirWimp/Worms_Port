@@ -261,10 +261,16 @@ The image is a design reference, not a sprite sheet or runtime source. The user
 has approved it as the canonical creative and generation reference, so approved
 production tools may receive the tracked file as conditioning input when its
 path and SHA-256 are recorded. Do not crop, trace, or ship its pixels directly.
-This approval does not resolve Nimiq brand or geometry rights. Generated
-derivatives remain in quarantine until their prompts, workflows, model
-licenses, source hashes, output hashes, review, and manifest entries are
-complete.
+
+For WP-015B0 the project owner records that the Nimiq team/foundation
+encouraged the Nimiq-inspired body geometry for the Mini App competition: its
+purpose is to bring the brand to a wider audience and build a recognizable
+connection with Nimiq. That owner-supplied record closes the project's internal
+competition-scope geometry decision. It does not import or authorize an
+official Nimiq logo, icon, font, or other brand file, and the game must not claim
+to be an official Nimiq product. Generated derivatives remain in quarantine
+until their prompts, workflows, model licenses, source hashes, output hashes,
+review, and manifest entries are complete.
 
 ### Concept Provenance
 
@@ -292,9 +298,11 @@ complete.
 
 All three were generated on 2026-07-10 with OpenAI built-in image generation
 under TasirWimp's authoring direction. OpenAI output terms do not by themselves
-grant rights to third-party brands represented in input references. Nimiq
-brand-use rights and exact final-asset provenance must be confirmed before
-product approval. No Sorcerers material was used.
+grant rights to third-party brands represented in input references. The
+project-owner record above documents the Nimiq team/foundation encouragement
+and approves the inspired geometry as the project's competition direction; any
+official Nimiq brand file still needs separate exact permission and provenance.
+No Sorcerers material was used.
 
 The earlier Pocket Robot asset is a superseded import-workflow trial and is not
 part of the NIMble Knots art direction. WP-003 removed it from runtime. The
@@ -328,8 +336,8 @@ Blocked:
 
 ## Open Decisions
 
-- Confirm written permission or an applicable license for Nimiq-inspired body
-  geometry and any official brand elements used in the final product.
+- If an official Nimiq logo, icon, font, or other brand file is proposed later,
+  archive its separate written permission and exact-file provenance before use.
 - Define the first production-ready Wizard, Thief, and Warrior animation set.
 - Define the first Patch and its destructible-material behavior.
 - Set the fixed reward, daily Prize Loom budget, eligibility window, and

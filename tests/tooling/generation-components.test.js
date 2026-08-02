@@ -43,3 +43,34 @@ test('generation checkpoint requires exact hash, size, name, and license evidenc
   assert.match(errors, /missing license/);
   assert.match(errors, /license must remain explicit/);
 });
+
+test('generation workflow requires an exact JSON hash and disclosed input mode', () => {
+  const invalid = structuredClone(manifest);
+  const workflow = invalid.components.find((component) => component.kind === 'generation_workflow');
+  workflow.file_sha256 = 'abc';
+  workflow.file_path = '../different.json';
+  workflow.input_mode = 'undisclosed';
+
+  const errors = validateGenerationComponents(invalid).join('\n');
+  assert.match(errors, /file_sha256/);
+  assert.match(errors, /runtime workflow path/);
+  assert.match(errors, /input_mode/);
+});
+
+test('project image-conditioned workflow is exact MIT source tooling', () => {
+  const hashInvalid = structuredClone(manifest);
+  const hashedWorkflow = hashInvalid.components.find((component) => component.distribution === 'project_source_tooling');
+  hashedWorkflow.file_sha256 = '0'.repeat(64);
+  assert.match(validateGenerationComponents(hashInvalid).join('\n'), /project workflow hash mismatch/);
+
+  const invalid = structuredClone(manifest);
+  const workflow = invalid.components.find((component) => component.distribution === 'project_source_tooling');
+  workflow.source_path = '../different.json';
+  workflow.runtime_path = '../different.json';
+  workflow.license = 'Unclear';
+
+  const errors = validateGenerationComponents(invalid).join('\n');
+  assert.match(errors, /repository MIT license/);
+  assert.match(errors, /runtime workflow path/);
+  assert.match(errors, /source_path/);
+});

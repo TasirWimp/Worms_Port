@@ -714,7 +714,9 @@ visual reference. The image remains documentation-only: it cannot be cropped,
 traced, or shipped directly. It may be supplied to an approved production tool
 as the user-selected creative conditioning reference only when the tracked path
 and SHA-256 are recorded in the generation evidence. This does not resolve
-Nimiq brand or geometry rights. A brief must record all other inputs and
+rights to official Nimiq brand files. WP-015B0 separately records the project
+owner's attestation of Nimiq team/foundation encouragement and project approval
+of the inspired body geometry. A brief must record all other inputs and
 explicitly block Sorcerers, Worms/Team17, realistic firearms, unlicensed logos,
 and recognizable third-party characters.
 
@@ -739,20 +741,23 @@ SD 1.5 FP16 checkpoint with SHA-256
 The GPL-3.0 ComfyUI program, Apache bridge, model, virtual environment, logs,
 and outputs remain outside this repository.
 
-Normal re-entry is four commands from the Worms_Port root:
+Normal re-entry is five commands from the Worms_Port root:
 
 ```powershell
 git status --short --branch
+powershell -NoProfile -ExecutionPolicy Bypass -File .\scripts\comfy-asset-pipeline.ps1 -Action Prepare
 powershell -NoProfile -ExecutionPolicy Bypass -File .\scripts\comfy-asset-pipeline.ps1 -Action Status -VerifyHashes
 powershell -NoProfile -ExecutionPolicy Bypass -File .\scripts\comfy-asset-pipeline.ps1 -Action Start
 powershell -NoProfile -ExecutionPolicy Bypass -File .\scripts\comfy-asset-pipeline.ps1 -Action Smoke
 ```
 
-`Status` is safe while the services are stopped. `Start` refuses an unreviewed
-Git revision, changed Python package set, broken dependency environment,
-unexpected checkpoint, or unrelated process occupying either port. It starts
-hidden loopback-only processes and writes PID state plus logs under
-`%LOCALAPPDATA%\Worms_Port\comfy-pipeline`. `Smoke` uses seed 1 and a bounded
+`Prepare` copies only the exact-hashed project img2img graph into the external
+MCP workflow directory and is safe while the services are stopped. `Status` is
+safe after that preparation. `Start` also prepares the graph, then refuses an
+unreviewed Git revision, changed Python package set, broken dependency
+environment, unexpected checkpoint, or unrelated process occupying either
+port. It starts hidden loopback-only processes and writes PID state plus logs
+under `%LOCALAPPDATA%\Worms_Port\comfy-pipeline`. `Smoke` uses seed 1 and a bounded
 256x256, four-step workflow; it proves transport, checkpoint loading, GPU
 execution, and output retrieval, not visual quality or production approval.
 `Stop` terminates only listener processes whose command ancestry matches the
@@ -794,15 +799,82 @@ For a clean-machine restoration:
 5. Set `%USERPROFILE%\.config\comfy-mcp\config.json` so
    `defaults.image.model` is `v1-5-pruned-emaonly-fp16.safetensors`.
 6. Register `[mcp_servers.comfyui]` with
-   `url = "http://127.0.0.1:9000/mcp"` in Codex config, run `Start`, and restart
-   Codex so its next task discovers the live MCP endpoint.
+   `url = "http://127.0.0.1:9000/mcp"` in Codex config, run `Prepare`, and run
+   `Start`. Because the bridge registers workflow-specific tools when its server
+   starts, use `Stop` then `Start` after adding or changing a reviewed graph if
+   it was already running. Restart Codex only after that server restart so its
+   next task imports the live tool schema.
 
-The current checkpoint is authorized only for deterministic health smoke and
-non-product experiments. WP-015B must approve every model/workflow/input used
-for a real character master or skip ComfyUI. The MCP bridge exposes generic
-`publish_asset` behavior, but that path is blocked for Worms_Port: untouched
-outputs stay in external quarantine until the explicit review and promotion
-sequence below copies one exact approved file.
+WP-015B0 approves the exact archived SD 1.5 checkpoint and pinned text-to-image
+`workflows/generate_image.json` graph for quarantined production-candidate
+generation. The pipeline entry point verifies that workflow's
+`968A5B78766549BBAF374C1C27BE80B75E6BB389A01CCC237639DFB4EFCF3CD5`
+SHA-256 on every status/start/smoke preflight.
+
+The project-owned
+`scripts/comfy-workflows/generate_image_conditioned.json` graph adds ordinary
+VAE img2img: `LoadImage` and `VAEEncode` provide the initial latent while the
+same reviewed checkpoint, positive/negative CLIP text, KSampler, VAE decode,
+and SaveImage path remain deterministic. `Prepare` verifies its
+`C21BD9224D08E1708073C3C11BFF749E4B901F5BE20EFE32245DAE6B489D3060`
+SHA-256 and copies those exact bytes to the external MCP workflow directory.
+`StageInput` accepts only an explicit PNG/JPEG/WebP below tracked
+`docs/images/`, ignored `assets-quarantine/`, or the external ComfyUI output
+directory; it copies exact bytes under the external `input/wormsport/` folder
+and returns the safe relative `reference_image` value.
+
+The workflow-specific MCP tool is `generate_image_conditioned`. Its parameters
+include `reference_image`, positive and negative prompts, seed, steps, CFG,
+sampler, scheduler, denoise, and model. The generic `run_workflow` endpoint
+remains a fallback, but normal re-entry should use the dedicated tool so the
+reviewed parameter schema is visible before execution.
+
+This graph is not IP-Adapter, ControlNet, style transfer, or reference-only
+conditioning. Denoise controls how much input composition survives. For the
+production character path, first create and review an isolated 512x512 master,
+then stage that master for controlled refinement. Feeding the complete lineup
+directly into VAE img2img preserves its multi-character landscape composition
+and is not a substitute for master isolation.
+
+The MCP bridge exposes generic `publish_asset` behavior, but that path is
+blocked for Worms_Port: untouched outputs stay in external quarantine until
+the explicit review and promotion sequence below copies one exact approved
+file.
+
+### WP-015B0 Approval And Canonical Baseline
+
+WP-015B0 is the no-product-output pre-production gate. A bounded technical
+smoke may write an untouched file to external quarantine to prove the reviewed
+workflow; it must not create or promote a product asset. B0 records:
+
+- the canonical baseline at
+  `docs/images/art-direction/knotkin-class-lineup-concept.png`, SHA-256
+  `B4B9B1E676E7DD5CD13F7ABB2B63048884D209295379FCC10347348F80D5FD46`;
+  its location under `docs/images/` is deliberate because it is a generation
+  and review reference, not a runtime asset,
+- the project owner's report that the Nimiq team/foundation encourages the
+  inspired body geometry for the Mini App competition and brand connection,
+  plus the owner's approval of that project direction, without authorizing
+  official Nimiq brand files or an official-product claim,
+- project-owner approval of the exact archived checkpoint, exact pinned
+  text-to-image workflow, and project-owned image-conditioned workflow recorded
+  in `legal/generation-component-manifest.json`, and
+- the continuing exact-output gate: an approved model and workflow produce
+  quarantined candidates, never automatically approved product assets.
+
+The B0 technical smoke used seed `15015000`, four steps, CFG `6`, Euler/normal,
+and denoise `0.35`. It produced a valid 256x256 PNG only in external quarantine
+(SHA-256
+`72CAC609419A83B8501B001D2E011C3D213373AC9D62B05C0C9022D4762F468D`).
+This proves image-plus-text execution, not art acceptance, product approval, or
+runtime integration.
+
+The earlier `cotton-clash-battle-study.png` remains useful for material and
+battlefield mood, and `knotkin-calling-lineup-study.png` remains useful for the
+Calling vocabulary. Both are superseded for anatomy. WP-015B1 begins with
+written Wizard, Loomkeeper, Threadball, and first-Patch briefs based on the
+canonical lineup and records the fixed prompts, negative constraints, seeds,
+socket/origin contract, and acceptance checks before any candidate generation.
 
 ### WP-015 Basic Assembly Scope
 
@@ -893,6 +965,9 @@ Use this exact handoff for each visual asset family:
    ControlNet, embedding, upscaler, and custom node has approved commercial-use
    evidence. Record workflow JSON and hash, seed, sampler, scheduler, steps,
    CFG, dimensions, denoise, component names, versions, licenses, and hashes.
+   For image-plus-text refinement, use `StageInput` and the reviewed
+   `generate_image_conditioned` graph; record the staged source hash and safe
+   relative `reference_image` returned by the command.
    If the model inventory is not approved or the server is unavailable, skip
    refinement or stop; do not substitute an unrecorded local workflow.
 5. **AutoSprite animation:** upload the approved isolated character master,

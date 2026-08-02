@@ -1,9 +1,12 @@
 [CmdletBinding()]
 param(
-    [ValidateSet('Start', 'Status', 'Stop', 'Smoke')]
+    [ValidateSet('Start', 'Status', 'Stop', 'Smoke', 'Prepare', 'StageInput')]
     [string]$Action = 'Status',
     [switch]$VerifyHashes,
     [switch]$Json,
+    [string]$InputImage,
+    [ValidatePattern('^[a-z0-9][a-z0-9._-]{0,63}\.(png|jpg|jpeg|webp)$')]
+    [string]$StagedName = 'reference.png',
     [ValidateRange(10, 300)]
     [int]$TimeoutSeconds = 60
 )
@@ -37,8 +40,15 @@ $SmokeHelper = Join-Path $RepoRoot 'scripts\comfy-mcp-smoke.py'
 $CheckpointComponent = $Manifest.components | Where-Object id -eq 'stable-diffusion-v1-5-archive-fp16'
 $ComfyComponent = $Manifest.components | Where-Object id -eq 'comfyui'
 $McpComponent = $Manifest.components | Where-Object id -eq 'comfyui-mcp-server'
+$ImageWorkflowComponent = $Manifest.components | Where-Object id -eq 'comfyui-mcp-generate-image-workflow'
+$ConditionedWorkflowComponent = $Manifest.components | Where-Object id -eq 'wormsport-generate-image-conditioned-workflow'
 $McpRequirementsLock = Join-Path $RepoRoot $McpComponent.requirements_lock
+$ImageWorkflowPath = Join-Path $McpRoot $ImageWorkflowComponent.file_path
+$ConditionedWorkflowSource = Join-Path $RepoRoot $ConditionedWorkflowComponent.source_path
+$ConditionedWorkflowPath = Join-Path $McpRoot $ConditionedWorkflowComponent.runtime_path
 $CheckpointPath = Join-Path (Join-Path $SharedRoot 'models\checkpoints') $CheckpointComponent.file_name
+$ComfyInputRoot = Join-Path $SharedRoot 'input'
+$StagedInputRoot = Join-Path $ComfyInputRoot 'wormsport'
 
 function Assert-RequiredFile {
     param([string]$Path, [string]$Label)
@@ -52,6 +62,30 @@ function Assert-RequiredDirectory {
     if (-not (Test-Path -LiteralPath $Path -PathType Container)) {
         throw "$Label is missing: $Path"
     }
+}
+
+function Assert-FileHash {
+    param([string]$Path, [string]$ExpectedHash, [string]$Label)
+    Assert-RequiredFile $Path $Label
+    $actualHash = (Get-FileHash -LiteralPath $Path -Algorithm SHA256).Hash
+    if ($actualHash -ne $ExpectedHash) {
+        throw "$Label hash mismatch. Expected $ExpectedHash, found $actualHash."
+    }
+    return $actualHash
+}
+
+function Install-ConditionedWorkflow {
+    Assert-FileHash $ConditionedWorkflowSource $ConditionedWorkflowComponent.file_sha256 'Project image-conditioned workflow' | Out-Null
+
+    if (Test-Path -LiteralPath $ConditionedWorkflowPath -PathType Leaf) {
+        Assert-FileHash $ConditionedWorkflowPath $ConditionedWorkflowComponent.file_sha256 'Staged image-conditioned workflow' | Out-Null
+        return
+    }
+
+    $runtimeDirectory = Split-Path -Parent $ConditionedWorkflowPath
+    New-Item -ItemType Directory -Force -Path $runtimeDirectory | Out-Null
+    Copy-Item -LiteralPath $ConditionedWorkflowSource -Destination $ConditionedWorkflowPath
+    Assert-FileHash $ConditionedWorkflowPath $ConditionedWorkflowComponent.file_sha256 'Staged image-conditioned workflow' | Out-Null
 }
 
 function Get-GitHead {
@@ -98,8 +132,12 @@ function Assert-LocalComponents {
     Assert-RequiredFile $McpPython 'ComfyUI MCP bridge Python'
     Assert-RequiredFile $McpServer 'ComfyUI MCP bridge server'
     Assert-RequiredFile $McpRequirementsLock 'ComfyUI MCP bridge requirements lock'
+    Assert-RequiredFile $ImageWorkflowPath 'Reviewed image workflow'
+    Assert-RequiredFile $ConditionedWorkflowSource 'Project image-conditioned workflow'
+    Assert-RequiredFile $ConditionedWorkflowPath 'Staged image-conditioned workflow; run Prepare first'
     Assert-RequiredFile $McpConfigPath 'ComfyUI MCP defaults'
     Assert-RequiredFile $CheckpointPath 'Generation checkpoint'
+    Assert-RequiredDirectory $ComfyInputRoot 'ComfyUI input directory'
 
     Assert-ReviewedGitCheckout $ComfyRepo 'ComfyUI' $ComfyComponent
     Assert-ReviewedGitCheckout $McpRoot 'ComfyUI MCP bridge' $McpComponent
@@ -112,6 +150,12 @@ function Assert-LocalComponents {
     if ($requirementsHash -ne $McpComponent.requirements_lock_sha256) {
         throw "MCP requirements lock hash mismatch. Expected $($McpComponent.requirements_lock_sha256), found $requirementsHash."
     }
+    $workflowHash = (Get-FileHash -LiteralPath $ImageWorkflowPath -Algorithm SHA256).Hash
+    if ($workflowHash -ne $ImageWorkflowComponent.file_sha256) {
+        throw "Image workflow hash mismatch. Expected $($ImageWorkflowComponent.file_sha256), found $workflowHash. Review the exact workflow before continuing."
+    }
+    Assert-FileHash $ConditionedWorkflowSource $ConditionedWorkflowComponent.file_sha256 'Project image-conditioned workflow' | Out-Null
+    Assert-FileHash $ConditionedWorkflowPath $ConditionedWorkflowComponent.file_sha256 'Staged image-conditioned workflow' | Out-Null
 
     $pythonVersion = (& $McpPython --version 2>&1).ToString().Trim() -replace '^Python\s+', ''
     if ($pythonVersion -ne $McpComponent.python_version) {
@@ -243,6 +287,13 @@ function Get-PipelineStatus {
         codex_registered = Get-CodexRegistration
         checkpoint = $CheckpointComponent.file_name
         checkpoint_hash_verified = $HashCheckpoint
+        image_workflow = $ImageWorkflowComponent.file_path
+        image_workflow_sha256 = $ImageWorkflowComponent.file_sha256
+        image_workflow_input_mode = $ImageWorkflowComponent.input_mode
+        conditioned_workflow = $ConditionedWorkflowComponent.runtime_path
+        conditioned_workflow_sha256 = $ConditionedWorkflowComponent.file_sha256
+        conditioned_workflow_input_mode = $ConditionedWorkflowComponent.input_mode
+        staged_input_root = $StagedInputRoot
         output_root = Join-Path $SharedRoot 'output'
         state_root = $StateRoot
     }
@@ -256,6 +307,7 @@ function Write-PipelineStatus {
 }
 
 function Start-Pipeline {
+    Install-ConditionedWorkflow
     Assert-LocalComponents $true
     Assert-LoopbackBinding 8188 'ComfyUI'
     Assert-LoopbackBinding 9000 'MCP bridge'
@@ -361,9 +413,77 @@ function Invoke-PipelineSmoke {
     Write-Output "Smoke output remains quarantined under: $(Join-Path $SharedRoot 'output')"
 }
 
+function Prepare-ConditionedPipeline {
+    Install-ConditionedWorkflow
+    Assert-LocalComponents $true
+    Write-PipelineStatus $true
+}
+
+function Stage-ConditionedInput {
+    if ([string]::IsNullOrWhiteSpace($InputImage)) {
+        throw 'StageInput requires -InputImage with an explicit PNG, JPEG, or WebP path.'
+    }
+
+    Install-ConditionedWorkflow
+    Assert-LocalComponents $false
+    Assert-RequiredFile $InputImage 'Conditioned input image'
+
+    $sourcePath = (Resolve-Path -LiteralPath $InputImage).Path
+    $sourceExtension = [IO.Path]::GetExtension($sourcePath).ToLowerInvariant()
+    if ($sourceExtension -notin @('.png', '.jpg', '.jpeg', '.webp')) {
+        throw 'Conditioned input must be a PNG, JPEG, or WebP file.'
+    }
+
+    $allowedSourceRoots = @(
+        (Join-Path $RepoRoot 'docs\images'),
+        (Join-Path $RepoRoot 'assets-quarantine'),
+        (Join-Path $SharedRoot 'output')
+    )
+    $sourceAllowed = $false
+    foreach ($allowedRoot in $allowedSourceRoots) {
+        $normalizedRoot = [IO.Path]::GetFullPath($allowedRoot).TrimEnd(
+            [IO.Path]::DirectorySeparatorChar,
+            [IO.Path]::AltDirectorySeparatorChar
+        ) + [IO.Path]::DirectorySeparatorChar
+        if ($sourcePath.StartsWith($normalizedRoot, [StringComparison]::OrdinalIgnoreCase)) {
+            $sourceAllowed = $true
+            break
+        }
+    }
+    if (-not $sourceAllowed) {
+        throw 'Conditioned input must come from docs/images, assets-quarantine, or the external ComfyUI output directory.'
+    }
+
+    New-Item -ItemType Directory -Force -Path $StagedInputRoot | Out-Null
+    $targetPath = Join-Path $StagedInputRoot $StagedName
+    $sourceHash = (Get-FileHash -LiteralPath $sourcePath -Algorithm SHA256).Hash
+    if (Test-Path -LiteralPath $targetPath -PathType Leaf) {
+        $targetHash = (Get-FileHash -LiteralPath $targetPath -Algorithm SHA256).Hash
+        if ($targetHash -ne $sourceHash) {
+            throw "Staged input $StagedName already exists with different bytes. Choose a new -StagedName or review and remove the old external input."
+        }
+    } else {
+        Copy-Item -LiteralPath $sourcePath -Destination $targetPath
+        Assert-FileHash $targetPath $sourceHash 'Staged conditioned input' | Out-Null
+    }
+
+    $result = [pscustomobject]@{
+        action = 'StageInput'
+        source_path = $sourcePath
+        source_sha256 = $sourceHash
+        staged_path = $targetPath
+        reference_image = "wormsport/$StagedName"
+        workflow_id = [IO.Path]::GetFileNameWithoutExtension($ConditionedWorkflowComponent.runtime_path)
+    }
+    if ($Json) { $result | ConvertTo-Json -Depth 3 -Compress }
+    else { $result | Format-List }
+}
+
 switch ($Action) {
     'Start' { Start-Pipeline }
     'Status' { Write-PipelineStatus ([bool]$VerifyHashes) }
     'Stop' { Stop-Pipeline }
     'Smoke' { Invoke-PipelineSmoke }
+    'Prepare' { Prepare-ConditionedPipeline }
+    'StageInput' { Stage-ConditionedInput }
 }

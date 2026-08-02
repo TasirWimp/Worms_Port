@@ -1,0 +1,76 @@
+{
+  "id": "WP-015B",
+  "status": "in_progress",
+  "starting_commit": "bfb1677f4a1cb460cf9b5125c7aa14336cf6dbc6",
+  "branch": "codex/wp-015-production-assets",
+  "initial_worktree": "clean",
+  "starting_lock_sha256": "8A13522641DC030E38258E08B843B1E902B018E324D3AEECA3CD577F0EF10704",
+  "owning_roles": [
+    "worms_port_asset_curator",
+    "worms_port_compliance_keeper",
+    "worms_port_base_game_worker",
+    "worms_port_reviewer"
+  ],
+  "scope": [
+    "Record the project owner's attestation of Nimiq team/foundation encouragement, approval of the inspired geometry direction, and canonical documentation-only knitting baseline",
+    "Approve and exact-hash the production checkpoint, text-to-image workflow, and project-owned image-conditioned refinement workflow while preserving external quarantine",
+    "Freeze the Wizard, Loomkeeper, Threadball, and first-Patch briefs, prompts, negative constraints, sockets, triggers, and acceptance checks",
+    "Generate deterministic quarantined vertical-slice candidates and complete pre-promotion art, IP, provenance, and phone-readability review"
+  ],
+  "non_goals": [
+    "Promoting or integrating any runtime image, atlas, effect, environment, UI, or audio asset before WP-015C",
+    "Treating model, workflow, project-owner, or candidate-generation approval as exact-output product approval",
+    "Shipping, cropping, tracing, or moving the canonical documentation concept into assets",
+    "Using official Nimiq logo, icon, font, or brand files without separate exact permission and provenance",
+    "Using Sorcerers or Worms/Team17 code, prompts, screenshots, concepts, or assets"
+  ],
+  "planned_checks": [
+    "npm run check:compliance",
+    "npm run test:tooling",
+    "npm run build",
+    "npm audit",
+    "ComfyUI production preflight with exact checkpoint and workflow hashes",
+    "fixed-seed quarantined vertical-slice master review",
+    "self-review"
+  ],
+  "deterministic_seeds": [
+    "15015000",
+    "15015001",
+    "15015002",
+    "15015003",
+    "15015004"
+  ],
+  "sorcerers_reference_used": false,
+  "clean_room_records": [],
+  "check_results": [
+    {
+      "command": "npm run check:compliance",
+      "status": "pass",
+      "detail": "Passed against the uncommitted WP-015B0 working tree with five reviewed generation components, 21 work-package evidence records, zero clean-room records, and no product-media promotion."
+    },
+    {
+      "command": "npm run test:tooling",
+      "status": "pass",
+      "detail": "All 24 tooling tests passed, including exact-hash and input-mode validation for the project-owned image-conditioned workflow."
+    },
+    {
+      "command": "npm run build",
+      "status": "pass",
+      "detail": "The complete server and client build passed for the current WP-015B0 working tree. Zero approved runtime assets were copied; the existing client chunk-size warning remains unchanged."
+    },
+    {
+      "command": "ComfyUI production preflight with exact checkpoint and workflow hashes",
+      "status": "pass",
+      "detail": "Verified ComfyUI 0.27.1 and the pinned MCP bridge on the RX 7600, the exact 2.13 GB checkpoint, the pinned text-to-image graph, and project-owned image-conditioned graph C21BD9224D08E1708073C3C11BFF749E4B901F5BE20EFE32245DAE6B489D3060. StageInput copied prior external smoke bytes 43F813104432B1C44E7083A88589F51B8719E695F2AC27AD35212004EAF6C8FF under the constrained input namespace. Seed 15015000, four steps, CFG 6, Euler/normal, and denoise 0.35 produced a valid 256x256 quarantined PNG (109690 bytes, SHA-256 72CAC609419A83B8501B001D2E011C3D213373AC9D62B05C0C9022D4762F468D). No product asset or manifest entry was created."
+    }
+  ],
+  "skipped_checks": [
+    "The phone-browser matrix was not run for WP-015B0 because this slice changes only the offline generation pipeline, documentation, compliance metadata, and quarantined technical output; it changes no browser-facing code or runtime asset.",
+    "Real-device testing was not run because WP-015B0 creates no player-visible behavior or product media."
+  ],
+  "residual_risks": [
+    "The reviewed image-conditioned graph is ordinary VAE img2img, not IP-Adapter or ControlNet; strong composition changes require an isolated master and carefully chosen denoise.",
+    "WP-015B0 remains uncommitted and unpushed, so WP-015B1 must not begin until this working-tree state is committed on origin.",
+    "WP-015B1 briefs, WP-015B2 fixed-seed candidate generation, exact-output art/IP review, npm audit, and final self-review remain pending before WP-015B can close."
+  ]
+}
