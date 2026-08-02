@@ -1,6 +1,6 @@
 {
   "id": "WP-014D",
-  "status": "in_progress",
+  "status": "complete",
   "starting_commit": "62536332c60c97a81e1793cec211b918497b78cc",
   "branch": "codex/wp-014-quality-harness",
   "initial_worktree": "clean",
@@ -60,14 +60,18 @@
     { "command": "npm run check:types", "status": "pass" },
     { "command": "npm run test:tooling", "status": "pass", "detail": "13 tests passed, including PostgreSQL browser authority refusal and reward artifact scan fixtures." },
     { "command": "npm run test:protocol", "status": "pass", "detail": "38 tests passed." },
-    { "command": "npm run test:reward", "status": "pass", "detail": "23 tests passed, including quality-mode authority guards, payout preparation faults, delayed finality, expiry, exact-byte reuse, and security headers." },
+    { "command": "npm run test:reward", "status": "pass", "detail": "24 tests passed in final CI, including quality-mode authority guards, payout preparation faults, delayed finality, expiry, exact-byte reuse, security headers, and credential-free idle PostgreSQL pool error handling." },
+    { "command": "npm run test:reward:postgres", "status": "pass", "detail": "Six disposable real-PostgreSQL cases passed in final run 30749716477, covering migrations, two-connection contention, idempotency, expiry/cancellation, UTC rollover, signer leasing, and restart/reconciliation boundaries. Two earlier retained failures corrected a mismatched concurrency expectation, an invalid address fixture, and a production idle-pool error-handling gap." },
     { "command": "npm run test:browser:reward", "status": "pass", "detail": "The maintained Chromium and WebKit Daily routes passed; three reviewed project exclusions remained." },
+    { "command": "npm run test:browser:reward:postgres", "status": "pass", "detail": "The built Chromium Daily journey passed against a disposable real PostgreSQL store in record-only mode, including durable entitlement and ledger-event verification." },
     { "command": "npm run check:identity-bundles", "status": "pass", "detail": "The Mini App SDK remains lazy in the client and @nimiq/core remains server-only outside centralized test support." },
     { "command": "npm run check:reward-security", "status": "pass", "detail": "No payout-key fixture, wallet proof, session token, or server-only marker leaked into inspected source, build, or generated text artifacts." },
     { "command": "npm run build", "status": "pass", "detail": "Compliance, types, server, and client production builds passed; the existing client chunk warning remains assigned to WP-014E." },
     { "command": "npm run smoke:built", "status": "pass", "detail": "Built server, overlays, approved-asset plumbing, and join-ID API passed." },
     { "command": "node scripts/run-playwright.js --quality-gate --ignore-snapshots", "status": "pass", "detail": "All 150 local Windows logic results passed with one worker and zero retries: 94 passed and 56 reviewed exclusions in 5.5 minutes. Linux screenshot comparison remains CI-only." },
     { "command": "npm audit", "status": "pass", "detail": "0 vulnerabilities" },
+    { "command": "GitHub Actions postgres-reward-security", "status": "pass", "detail": "Final run 30749716477 job 91501469406 passed in 2m13s with the digest-pinned PostgreSQL service, all six integration cases, the built real-store browser journey, 24 reward tests, both security checks, and zero audit vulnerabilities. The two prior failures were retained and fixed rather than retried." },
+    { "command": "GitHub Actions Verify matrix", "status": "pass", "detail": "Final run 30749716477 job 91501469412 passed in 21m7s. The one-worker, zero-retry Ubuntu browser matrix accounted for all 150 results: 94 applicable passes and 56 reviewed exclusions, with ordinary visual comparisons included." },
     { "command": "PostgreSQL image digest and safety-boundary review", "status": "pass", "detail": "The official Docker Hub tag metadata was checked for postgres:16.10-bookworm and CI pins its multi-architecture digest sha256:38471f330eb885e04de130b768d6db4e10469e2311879c7e5c699f6d2d8a1c74. Test startup and runners reject chain modes, payout authority, repeat-attempt overrides, external databases, and unsafe database names." },
     { "command": "security and import-boundary review", "status": "pass", "detail": "Compliance and reward-security scans pass. The slice adds no dependency or asset, uses one centralized synthetic key fixture, adds no client payout authority, and does not use Sorcerers material." },
     { "command": "self-review", "status": "pass", "detail": "Reviewed serialized migrations, two-pool contention, claim idempotency, advisory signer lease, restart boundaries, exact signed-byte reuse, browser ledger assertions, database cleanup, zero retries, CI time bounds, and generated-artifact retention. No production reward policy or external authority was enabled." }
@@ -79,11 +83,11 @@
     { "role": "worms_port_reviewer", "reviewer": "primary-agent-scope-safety-and-residual-risk-review", "decision": "pass" }
   ],
   "skipped_checks": [
-    "npm run test:reward:postgres and npm run test:browser:reward:postgres were not run locally because this Windows environment has neither Docker nor psql; the digest-pinned Ubuntu PostgreSQL job is mandatory before completion.",
+    "npm run test:reward:postgres and npm run test:browser:reward:postgres were not run locally because this Windows environment has neither Docker nor psql; both passed authoritatively in the digest-pinned Ubuntu PostgreSQL job.",
     "Physical Android/iOS and Nimiq Pay WebView testing was not run; browser automation and synthetic wallet providers do not substitute for it."
   ],
   "residual_risks": [
-    "The new PostgreSQL migrations, races, restart boundaries, and built-browser durable journey are type/discovery checked locally but require their first authoritative disposable-service CI execution.",
+    "The disposable CI PostgreSQL service covers correctness and concurrency but cannot reproduce every Render network, storage, failover, or outage topology.",
     "Sessions and active simulations remain single-process and non-durable; WP-014D hardens reward liabilities but does not add horizontal runtime authority."
   ]
 }

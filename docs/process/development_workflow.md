@@ -596,7 +596,7 @@ every other console error remains actionable. Ordinary Ubuntu Verify run
 30742976205 then passed all 150 results with the same totals, one worker, zero
 retries, and unchanged visual thresholds in 22m22s.
 
-WP-014D is implemented locally and awaits CI closure. The focused
+WP-014D completed on 2026-08-02. The focused
 `test:reward:postgres` suite creates a fresh database per case, runs repository
 migrations from zero, and exercises two-connection budget, wallet, claim,
 expiry, rollover, advisory-lease, and restart/reconciliation boundaries. The
@@ -608,10 +608,19 @@ modes, payout RPC/key/recovery settings, and non-`nimble_knots_wp014_*`
 databases. The CI service is PostgreSQL `16.10-bookworm`, pinned to reviewed
 multi-architecture digest
 `sha256:38471f330eb885e04de130b768d6db4e10469e2311879c7e5c699f6d2d8a1c74`.
-The ordinary in-memory browser matrix remains separate and locally passed all
-150 zero-retry project results (94 passed, 56 reviewed exclusions). Do not mark
-WP-014D complete until the dedicated PostgreSQL/reward-security job and
-ordinary Verify job pass on Ubuntu.
+The first PostgreSQL CI run retained failures caused by a concurrency fixture
+that expected two successful starts despite the consumed-eligibility contract
+and by an invalid synthetic address. The corrected second run passed its six
+scenario assertions but exposed an uncaught idle-client `pg` pool error during
+forced database teardown. Production now handles that pool event with a
+credential-free message while active query errors still reject, and the unit
+suite covers the boundary. Final GitHub Actions run 30749716477 passed
+`test:reward:postgres` (six real-database cases), the built Chromium
+`test:browser:reward:postgres` journey, 24 reward tests, identity-bundle and
+reward-security checks, and the audit in the 2m13s dedicated job. The separate
+ordinary Verify job passed all 150 zero-retry browser results (94 passed, 56
+reviewed exclusions) in 21m7s. No physical Android/iOS, real Nimiq Pay wallet,
+external RPC, sponsor key, or public-chain transfer was used.
 
 Official implementation references reviewed on 2026-08-01:
 `https://playwright.dev/docs/test-projects`,

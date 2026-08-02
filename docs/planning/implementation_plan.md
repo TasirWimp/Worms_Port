@@ -8,10 +8,10 @@ Phaser/Socket.IO stack.
 ## Execution Pointer
 
 - Active target: mobile-first single-player Nimiq Pay competition release.
-- Active work package: **WP-014D PostgreSQL and reward security**. Implementation
-  is locally green; the digest-pinned PostgreSQL and ordinary Verify jobs must
-  pass after the branch is pushed before the slice can close.
-- Last completed work package: **WP-014C Resilience and isolation**.
+- Active work package: **WP-014E Performance and closure**. Enforce the
+  documented bundle and timing budgets, make `verify:full` truthful, and close
+  the complete WP-014 quality harness only after its final clean-checkout gate.
+- Last completed work package: **WP-014D PostgreSQL and reward security**.
 - WP-012 exactly pins `@nimiq/mini-app-sdk` `0.1.0` and server-only
   `@nimiq/core` `2.7.1`. Provider access remains lazy, identity acceptance is
   now used by WP-013's separate production Daily entry, the diagnostics surface
@@ -37,14 +37,16 @@ Phaser/Socket.IO stack.
   wallet address is an eligibility identity, not proof of one human; Practice
   remains the unrestricted fallback.
 - WP-014 was refined on 2026-08-01 into five sequential slices. WP-014A through
-  WP-014C are complete: the maintained 412x915 project, zero-retry full-matrix
+  WP-014D are complete: the maintained 412x915 project, zero-retry full-matrix
   command, reviewed expected-skip policy, safe-area fixture, CI routing, and
   failure artifacts are in place. Its first matrix run exposed and corrected centered
   non-sideways pointer coordinates; the final 105-result run passed. The visual
   and layout gate then added reviewed Linux baselines and passed its final
   125-result Ubuntu comparison. Resilience and isolation then expanded the
-  matrix to 150 results and passed ordinary Ubuntu CI. Start **WP-014D
-  PostgreSQL and reward security**, then performance/closure. The
+  matrix to 150 results and passed ordinary Ubuntu CI. PostgreSQL concurrency,
+  restart, real-store browser, payout-fault, and reward-security coverage also
+  passed its dedicated Ubuntu job. Start **WP-014E Performance and closure**.
+  The
   harness is loopback-only, uses synthetic wallets plus record-only/fake payout
   boundaries, and cannot receive a real key, external payout RPC, or chain
   reward mode. Its detailed matrix, budgets, artifact policy, and completion
@@ -89,15 +91,19 @@ Phaser/Socket.IO stack.
   150 results with the same totals, zero retries, and frozen visual thresholds
   in 22m22s. Evidence is closed in `docs/evidence/wp-014c.json`; re-entry is
   WP-014D planning and implementation.
-- WP-014D implementation is ready for CI on 2026-08-02. It adds a
+- WP-014D completed on 2026-08-02. It adds a
   digest-pinned PostgreSQL 16.10 Bookworm service, serialized concurrent
   migrations, two-connection ledger contention/restart coverage, a built
   record-only Daily journey against the real store, fake payout fault and
   finality coverage, quality-startup authority guards, stricter response
-  headers, and source/build/artifact secret scans. The local zero-retry matrix
-  remains green at 150 results (94 passed, 56 reviewed exclusions). This
-  Windows environment has neither Docker nor `psql`; therefore the two
-  PostgreSQL commands and both Ubuntu jobs remain mandatory before completion.
+  headers, source/build/artifact secret scans, and a sanitized idle PostgreSQL
+  connection error handler. The first two PostgreSQL CI executions exposed a
+  mismatched concurrency fixture, an invalid synthetic address, and then the
+  missing idle-pool error handler; all were corrected without retries or
+  weakened assertions. Final run 30749716477 passed the dedicated PostgreSQL
+  and reward-security job in 2m13s. Its ordinary Verify job passed all 150
+  zero-retry browser results (94 passed, 56 reviewed exclusions) in 21m7s.
+  Evidence is closed in `docs/evidence/wp-014d.json`; re-entry is WP-014E.
 - The approved post-competition weekly program is now scoped as WP-018 through
   WP-021: Nimiq Chronicle, Loom XP qualification, optional PvP Sparring Loom,
   and the Weekly Grand Knot Tournament with an additional sponsor-funded
@@ -1798,10 +1804,9 @@ Verification:
 
 ### WP-014 Autonomous Quality Harness
 
-Status: implementation in progress. WP-014A completed on 2026-08-01,
-WP-014B and WP-014C completed on 2026-08-02, and WP-014D is implemented
-locally pending its PostgreSQL and ordinary Ubuntu CI gates. Depends on WP-011
-and WP-013.
+Status: implementation in progress. WP-014A completed on 2026-08-01, and
+WP-014B through WP-014D completed on 2026-08-02. WP-014E performance and
+closure is next. Depends on WP-011 and WP-013.
 
 Goal: turn the existing focused tests into the reproducible automated
 competition-candidate gate. Complete the browser, visual, performance,
@@ -2070,12 +2075,13 @@ allowance cannot be reassigned to JavaScript.
    narrowed without weakening other error assertions, ordinary Ubuntu Verify
    run 30742976205 passed 94 applicable routes and 56 reviewed exclusions with
    zero retries.
-4. **WP-014D PostgreSQL and reward security - implementation pending CI:** the
+4. **WP-014D PostgreSQL and reward security - complete 2026-08-02:** the
    digest-pinned CI service, two-connection migration/concurrency/restart tests,
    real-store record-only browser journey, fake signer/RPC faults,
-   security-header checks, and artifact secret scans are implemented. Close
-   this slice only after the dedicated PostgreSQL/reward-security job and the
-   ordinary Verify matrix pass from the pushed commit.
+   security-header checks, artifact secret scans, and sanitized idle-pool error
+   handling are implemented. Final run 30749716477 passed the dedicated job
+   and the ordinary 150-result, zero-retry Verify matrix after two retained
+   failure runs drove fixture and production robustness corrections.
 5. **WP-014E Performance and closure:** enforce bundle/timing budgets, make
    `verify:full` truthful and complete, run the entire matrix, review failure
    evidence and expected skips, record residual risks, and advance the pointer
