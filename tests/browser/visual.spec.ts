@@ -97,7 +97,9 @@ test('canonical visual states cover combat presentation, controls, motion, and s
   await page.goto('/?sideways=off');
   await expect(page.getByRole('heading', { name: 'Practice Clash' })).toBeVisible();
   await page.getByRole('button', { name: 'Start Practice' }).tap();
-  await expect(page.locator('.combat-ui')).toBeVisible();
+  const liveUi = page.locator('.combat-ui');
+  await expect(liveUi).toBeVisible();
+  await expect(liveUi).toHaveAttribute('data-seed', '1');
   await aimAt(page, 40, 302);
   await expect(page.locator('.fire-button')).toBeEnabled();
   await armPresentationGate(page, 'player-projectile');

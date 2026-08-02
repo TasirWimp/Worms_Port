@@ -52,17 +52,21 @@ Phaser/Socket.IO stack.
   recovery, canonical combat/Daily states, compact-landscape states, and
   executable touch/scroll/zoom/selection checks are implemented. The
   pre-baseline zero-retry logic pass accounted for 125 project results: 86
-  passed and 39 reviewed exclusions. Draft PR #1 is open. Its first Ubuntu
-  24.04 capture passed and produced 35 candidates, but explicit review rejected
-  the set because the portrait aim-pad hint clipped at the right edge. The hint
-  is shortened, a cross-project rendered-width assertion now passes locally,
-  and the Actions use current Node 24 majors. The initial Verify run reached
-  result 119 of 125 before its 20-minute ceiling canceled it, so the replacement
-  uses an evidence-based 30-minute ceiling. Replacement candidate run
-  30715750959 passed and all 35 Ubuntu 24.04 PNGs are explicitly reviewed and
-  present locally for the next commit. Re-entry after that baseline push is to
-  require a clean ordinary visual plus full-matrix comparison, close
-  `docs/evidence/wp-014b.json`, and only then advance to WP-014C.
+  passed and 39 reviewed exclusions. Draft PR #1 is open. The reviewed 35-image
+  Ubuntu 24.04 baseline set is committed at `66bee6d`; candidate run 30716193040
+  reproduced all 35 files byte-for-byte. Ordinary Verify run 30716193041 then
+  completed the 125-result policy accounting within its 30-minute job ceiling
+  but exposed two harness issues: the two-seed Practice sequence was global to
+  the long-lived test server, and three interaction-heavy tests had only the
+  old 30-second budget. The bounded correction scopes deterministic Practice
+  seed cycling to each session, asserts canonical seed 1 explicitly, and gives
+  only the affected tests a 60-second budget with 15-second presentation waits;
+  this stays below the documented 120-second individual-test limit and changes
+  neither retries nor visual thresholds. The corrected local zero-retry matrix
+  passed all 125 project results with 86 applicable passes and 39 reviewed
+  exclusions. Re-entry is to push the correction, require a clean ordinary
+  Ubuntu visual plus full-matrix comparison, close `docs/evidence/wp-014b.json`,
+  and only then advance to WP-014C.
 - The approved post-competition weekly program is now scoped as WP-018 through
   WP-021: Nimiq Chronicle, Loom XP qualification, optional PvP Sparring Loom,
   and the Weekly Grand Knot Tournament with an additional sponsor-funded

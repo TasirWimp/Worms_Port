@@ -18,7 +18,6 @@ const sessionOpenRateCapacity = Number(process.env.SESSION_OPEN_RATE_CAPACITY);
 const deterministicTestSeeds = process.env.NODE_ENV === 'test'
     ? parseTestSeeds(process.env.PRACTICE_TEST_SEEDS)
     : [];
-let deterministicTestSeedIndex = 0;
 let runtime: RuntimeServer | undefined;
 
 void main().catch((error) => {
@@ -56,8 +55,8 @@ async function main(): Promise<void> {
             ? sessionOpenRateCapacity
             : undefined,
         sessionRegistry: deterministicTestSeeds.length > 0 ? {
-            seedSource: () => deterministicTestSeeds[
-                deterministicTestSeedIndex++ % deterministicTestSeeds.length
+            seedSource: (_sessionId, practiceIndex) => deterministicTestSeeds[
+                practiceIndex % deterministicTestSeeds.length
             ]
         } : undefined,
         identity,

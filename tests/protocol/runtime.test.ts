@@ -15,6 +15,7 @@ import { createRuntimeServer, type RuntimeServer } from '../../server/src/runtim
 import { Room } from '../../server/src/room/class';
 import { Game } from '../../server/src/game/class';
 import { GameWatcher } from '../../server/src/game/watcher';
+import { SessionRegistry } from '../../server/src/session/registry';
 import { SimulationCoordinator } from '../../server/src/simulation/coordinator';
 import { SIM_RULES } from '../../shared/simulation';
 
@@ -959,6 +960,49 @@ test('protocol commands mutate authoritative simulation once and reconstruct fro
         }
     } finally {
         await closeAll(runtime, [socket]);
+    }
+});
+
+test('deterministic Practice seed cycling is isolated per session', () => {
+    const seeds = [1, 0xDEADBEEF];
+    const calls: { sessionId: string; practiceIndex: number }[] = [];
+    const registry = new SessionRegistry({
+        simulationTickIntervalMs: false,
+        seedSource: (sessionId, practiceIndex) => {
+            calls.push({ sessionId, practiceIndex });
+            return seeds[practiceIndex % seeds.length];
+        }
+    });
+    try {
+        assert.equal('code' in registry.create('seed-socket-a'), false);
+        assert.equal('code' in registry.create('seed-socket-b'), false);
+        const sessionA = registry.getBound('seed-socket-a');
+        const sessionB = registry.getBound('seed-socket-b');
+        assert.ok(sessionA);
+        assert.ok(sessionB);
+
+        const firstA = registry.createChallenge(sessionA, 'practice', 'wizard');
+        assert.equal('code' in firstA, false);
+        if ('code' in firstA) return;
+        assert.equal(firstA.simulation.seed, seeds[0]);
+        registry.leaveChallenge(sessionA, firstA.challengeId);
+
+        const secondA = registry.createChallenge(sessionA, 'practice', 'wizard');
+        assert.equal('code' in secondA, false);
+        if ('code' in secondA) return;
+        assert.equal(secondA.simulation.seed, seeds[1]);
+
+        const firstB = registry.createChallenge(sessionB, 'practice', 'wizard');
+        assert.equal('code' in firstB, false);
+        if ('code' in firstB) return;
+        assert.equal(firstB.simulation.seed, seeds[0]);
+        assert.deepEqual(calls, [
+            { sessionId: sessionA.id, practiceIndex: 0 },
+            { sessionId: sessionA.id, practiceIndex: 1 },
+            { sessionId: sessionB.id, practiceIndex: 0 }
+        ]);
+    } finally {
+        registry.dispose();
     }
 });
 

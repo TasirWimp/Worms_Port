@@ -15,6 +15,7 @@ test.beforeEach(async ({ page }) => {
 });
 
 test('live practice supports authoritative pause, full player turn, and fresh retry', async ({ page }, testInfo) => {
+  test.setTimeout(60_000);
   await page.getByRole('button', { name: /Warrior/ }).tap();
   await page.getByRole('button', { name: 'Start Practice' }).tap();
   const ui = page.locator('.combat-ui');
