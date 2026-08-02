@@ -265,7 +265,7 @@ test('two browser contexts isolate storage, identity, challenge events, controls
     await dragPad(secondPage, '.movement-zone', 82, 0.36, 0);
     await expect.poll(async () => Number(await secondUi.getAttribute('data-player-x'))).not.toBe(secondStartX);
     await expect(secondUi).toHaveAttribute('data-challenge-id', secondChallenge!);
-    expect(firstErrors).toEqual([]);
+    expect(unexpectedOfflineLifecycleErrors(firstErrors)).toEqual([]);
     expect(secondErrors).toEqual([]);
   } finally {
     await context.setOffline(false).catch(() => undefined);
@@ -290,6 +290,12 @@ function captureErrors(page: Page): string[] {
     if (message.type() === 'error') errors.push(message.text());
   });
   return errors;
+}
+
+function unexpectedOfflineLifecycleErrors(errors: string[]): string[] {
+  const intentionalOfflineWebSocketFailure =
+    /^WebSocket connection to 'ws:\/\/127\.0\.0\.1:\d+\/socket\.io\/\?[^']*transport=websocket[^']*' failed: Error in connection establishment: net::ERR_INTERNET_DISCONNECTED$/;
+  return errors.filter((message) => !intentionalOfflineWebSocketFailure.test(message));
 }
 
 function phoneContext(testInfo: TestInfo): BrowserContextOptions {
