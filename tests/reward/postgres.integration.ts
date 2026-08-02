@@ -17,13 +17,14 @@ import {
     type RewardReservationInput
 } from '../../server/src/reward/types';
 import type { CoordinatorReplay } from '../../server/src/simulation/coordinator';
+import { createTestSigner, privateKeyForProject } from '../support/nimiq-signer';
 
 const ADMIN_URL = requiredAdminUrl();
 const DAY = '2026-08-02';
 const NEXT_DAY = '2026-08-03';
 const NOW = new Date(`${DAY}T12:00:00.000Z`);
 const WALLET = 'NQ46 KLJE 5TMF 4Y1A 1255 CJHJ YG1S H0NU T604';
-const OTHER_WALLET = 'NQ57 WZKS E7RF G7SV 8F7F YG5E E2L3 1X3G RKXA';
+const OTHER_WALLET = syntheticWalletAddress('postgres-integration');
 let databaseSequence = 0;
 
 test('concurrent initialization migrates a zero database exactly once', async () => {
@@ -124,12 +125,20 @@ test('two connections allocate one final budget slot and one active wallet autho
                     activeDay,
                     { dailyBudgetLuna: 200_000n }
                 );
-            const started = await Promise.all([
+            const started = await Promise.allSettled([
                 first.start(input.challengeId, WALLET, input.eligibilityTokenDigest, NOW),
                 second.start(input.challengeId, WALLET, input.eligibilityTokenDigest, NOW)
             ]);
-            assert.equal(started[0].id, started[1].id);
-            assert.equal(started[0].attemptConsumed, true);
+            assert.equal(started.filter((result) => result.status === 'fulfilled').length, 1);
+            assert.equal(started.filter((result) => result.status === 'rejected').length, 1);
+            const startedEntitlement = started.find((result) => result.status === 'fulfilled');
+            assert.ok(startedEntitlement && startedEntitlement.status === 'fulfilled');
+            assert.equal(startedEntitlement.value.id, active.value.id);
+            assert.equal(startedEntitlement.value.attemptConsumed, true);
+            const rejectedStart = started.find((result) => result.status === 'rejected');
+            assert.ok(rejectedStart && rejectedStart.status === 'rejected');
+            assert.ok(rejectedStart.reason instanceof RewardStoreError);
+            assert.equal(rejectedStart.reason.code, 'ineligible');
             await assert.rejects(
                 first.reserve(reservation(
                     'entitlement_active_03',
@@ -543,6 +552,15 @@ function rewardError(code: RewardStoreError['code']) {
 
 function digest(value: string): string {
     return createHash('sha256').update(value).digest('base64url');
+}
+
+function syntheticWalletAddress(projectName: string): string {
+    const signer = createTestSigner(privateKeyForProject(projectName));
+    try {
+        return signer.address;
+    } finally {
+        signer.dispose();
+    }
 }
 
 async function withDatabase(
