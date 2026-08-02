@@ -262,6 +262,11 @@ has approved it as the canonical creative and generation reference, so approved
 production tools may receive the tracked file as conditioning input when its
 path and SHA-256 are recorded. Do not crop, trace, or ship its pixels directly.
 
+The first production interpretation is frozen in
+`asset-briefs/wp-015b1-vertical-slice.md`. That contract translates the lineup
+into isolated Wizard and Loomkeeper masters, a separate Threadball family, and
+decomposed Patch 01 materials without copying the lineup's composite pixels.
+
 For WP-015B0 the project owner records that the Nimiq team/foundation
 encouraged the Nimiq-inspired body geometry for the Mini App competition: its
 purpose is to bring the brand to a wider audience and build a recognizable
@@ -338,8 +343,10 @@ Blocked:
 
 - If an official Nimiq logo, icon, font, or other brand file is proposed later,
   archive its separate written permission and exact-file provenance before use.
-- Define the first production-ready Wizard, Thief, and Warrior animation set.
-- Define the first Patch and its destructible-material behavior.
+- Validate the frozen Wizard/Loomkeeper animation and socket contract in the
+  first playable visual slice before extending it to Thief and Warrior.
+- Validate Patch 01 tiling, phone composition, and code-owned circular
+  destruction before producing additional Patches or decorative layers.
 - Set the fixed reward, daily Prize Loom budget, eligibility window, and
   reservation timeout before enabling real payouts.
 - Provide an Android/iOS release-testing environment when physical-device

@@ -871,10 +871,23 @@ runtime integration.
 
 The earlier `cotton-clash-battle-study.png` remains useful for material and
 battlefield mood, and `knotkin-calling-lineup-study.png` remains useful for the
-Calling vocabulary. Both are superseded for anatomy. WP-015B1 begins with
-written Wizard, Loomkeeper, Threadball, and first-Patch briefs based on the
-canonical lineup and records the fixed prompts, negative constraints, seeds,
-socket/origin contract, and acceptance checks before any candidate generation.
+Calling vocabulary. Both are superseded for anatomy.
+
+### WP-015B1 Frozen Vertical-Slice Contract
+
+The normative Wizard, Loomkeeper, Threadball, and first-Patch briefs are in
+`docs/asset-briefs/wp-015b1-vertical-slice.md`. They freeze exact positive and
+negative prompts, primary seeds, approved workflow settings, character pivot,
+baseline, held-Relic socket, projectile-origin offset, animation frame counts
+and triggers, environment decomposition, and family acceptance checks before
+candidate generation. B1 generates and promotes no media.
+
+The complete multi-character lineup is a visual and review reference, not the
+ordinary VAE starting image. B2 begins with one isolated text-to-image candidate
+for each registered purpose. The image-conditioned workflow may refine only an
+isolated, reviewed quarantined master staged through `StageInput`. A rejected
+candidate does not authorize seed shopping, prompt drift, or generic MCP
+publication.
 
 ### WP-015 Basic Assembly Scope
 
@@ -912,13 +925,14 @@ assets rather than cropped into the game.
 
 Character production starts with four isolated 512x512 RGBA masters: Wizard,
 Thief, Warrior, and a Loomkeeper opponent variant. Each master shows one full
-Knotkin facing right in an orthographic-like side view on transparency. The
-feet share a stable baseline, the entire silhouette remains inside motion-safe
-padding, and there is no scenery, text, framing, or second character. Exactly
-two bead eyes, no mouth, Calling costume topology, body proportions, palette,
-lighting direction, and handedness must remain stable. Every pose also obeys a
-common held-Relic socket and projectile-origin contract so the same separate
-Relic assets can attach consistently without becoming collision authority.
+Knotkin facing right in an orthographic-like three-quarter side view on
+transparency so both bead eyes remain visible. The feet share a stable baseline,
+the entire silhouette remains inside motion-safe padding, and there is no
+scenery, text, framing, or second character. Exactly two bead eyes, no mouth,
+Calling costume topology, body proportions, palette, lighting direction, and
+handedness must remain stable. Every pose also obeys a common held-Relic socket
+and projectile-origin contract so the same separate Relic assets can attach
+consistently without becoming collision authority.
 
 Relics and effects are separate transparent asset families. Each of the three
 starting Relics receives a phone-readable icon, held sprite, projectile,
@@ -1024,12 +1038,12 @@ phone-readability evidence and an update to the asset-family brief.
 Use stable kebab-case asset-family IDs and group approved files by role:
 
 ```text
-assets/characters/knotkin/{wizard,thief,warrior,loomkeeper}/
-assets/relics/<relic-id>/
-assets/effects/<effect-id>/
-assets/environment/patch-01/{background,props,terrain}/
-assets/ui/{callings,relics,reward}/
-assets/audio/{combat,result,reward}/
+assets/product/characters/knotkin/{wizard,thief,warrior,loomkeeper}/
+assets/product/relics/<relic-id>/
+assets/product/effects/<effect-id>/
+assets/product/environment/patch-01/{background,props,terrain}/
+assets/product/ui/{callings,relics,reward}/
+assets/product/audio/{combat,result,reward}/
 ```
 
 Atlas frame names follow `<calling>/<state>/<zero-padded-frame>`. The atlas

@@ -131,6 +131,13 @@ knitting-inspired baseline remains outside the product asset tree at
 and visual comparison, but never crop, trace, or ship it as a runtime sprite.
 Every generated output still requires separate exact-file and IP review.
 
+The frozen WP-015B1 generation contract is
+`docs/asset-briefs/wp-015b1-vertical-slice.md`. It contains the exact Wizard,
+Loomkeeper, Threadball, and Patch 01 prompts, primary seeds, workflow settings,
+socket/origin geometry, animation triggers, and acceptance gates. B1 itself
+generates no media; after its commit is on origin, WP-015B2 may create only the
+listed candidates in external quarantine.
+
 ## Build
 
 Use Node.js 20 or newer.
