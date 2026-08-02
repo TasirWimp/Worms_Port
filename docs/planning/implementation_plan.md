@@ -8,8 +8,8 @@ Phaser/Socket.IO stack.
 ## Execution Pointer
 
 - Active target: mobile-first single-player Nimiq Pay competition release.
-- Next work package: **WP-014B Visual and layout gate**.
-- Last completed work package: **WP-014A Harness and CI foundation**.
+- Next work package: **WP-014C Resilience and isolation**.
+- Last completed work package: **WP-014B Visual and layout gate**.
 - WP-012 exactly pins `@nimiq/mini-app-sdk` `0.1.0` and server-only
   `@nimiq/core` `2.7.1`. Provider access remains lazy, identity acceptance is
   now used by WP-013's separate production Daily entry, the diagnostics surface
@@ -34,20 +34,21 @@ Phaser/Socket.IO stack.
   acceptance, not authorization to leave public mainnet rewards active. A
   wallet address is an eligibility identity, not proof of one human; Practice
   remains the unrestricted fallback.
-- WP-014 was refined on 2026-08-01 into five sequential slices. WP-014A is
-  complete: the maintained 412x915 project, zero-retry full-matrix command,
-  reviewed expected-skip policy, safe-area fixture, CI routing, and failure
-  artifacts are in place. Its first matrix run exposed and corrected centered
-  non-sideways pointer coordinates; the final 105-result run passed. Start
-  **WP-014B Visual and layout gate**, then resilience and context isolation,
-  PostgreSQL/reward security, and performance/closure. The
+- WP-014 was refined on 2026-08-01 into five sequential slices. WP-014A and
+  WP-014B are complete: the maintained 412x915 project, zero-retry full-matrix
+  command, reviewed expected-skip policy, safe-area fixture, CI routing, and
+  failure artifacts are in place. Its first matrix run exposed and corrected centered
+  non-sideways pointer coordinates; the final 105-result run passed. The visual
+  and layout gate then added reviewed Linux baselines and passed its final
+  125-result Ubuntu comparison. Start **WP-014C Resilience and isolation**, then
+  PostgreSQL/reward security and performance/closure. The
   harness is loopback-only, uses synthetic wallets plus record-only/fake payout
   boundaries, and cannot receive a real key, external payout RPC, or chain
   reward mode. Its detailed matrix, budgets, artifact policy, and completion
   gates are normative in the WP-014 section below and in
   `docs/process/development_workflow.md` under **WP-014 Quality Harness
   Protocol**.
-- WP-014B implementation is in progress. Deterministic labeled result/reward
+- WP-014B completed on 2026-08-02. Deterministic labeled result/reward
   previews, the 0.2/0.005 screenshot contract, cross-project geometry and
   recovery, canonical combat/Daily states, compact-landscape states, and
   executable touch/scroll/zoom/selection checks are implemented. The
@@ -64,9 +65,10 @@ Phaser/Socket.IO stack.
   this stays below the documented 120-second individual-test limit and changes
   neither retries nor visual thresholds. The corrected local zero-retry matrix
   passed all 125 project results with 86 applicable passes and 39 reviewed
-  exclusions. Re-entry is to push the correction, require a clean ordinary
-  Ubuntu visual plus full-matrix comparison, close `docs/evidence/wp-014b.json`,
-  and only then advance to WP-014C.
+  exclusions. Ordinary Ubuntu Verify run 30739075679 then passed the same
+  125-result, one-worker, zero-retry matrix—including all 35 reviewed screenshot
+  comparisons—and the complete job finished in 20m27s. Evidence is closed in
+  `docs/evidence/wp-014b.json`; re-entry is WP-014C planning and implementation.
 - The approved post-competition weekly program is now scoped as WP-018 through
   WP-021: Nimiq Chronicle, Loom XP qualification, optional PvP Sparring Loom,
   and the Weekly Grand Knot Tournament with an additional sponsor-funded
@@ -1767,8 +1769,8 @@ Verification:
 
 ### WP-014 Autonomous Quality Harness
 
-Status: implementation in progress. WP-014A completed on 2026-08-01; WP-014B
-is next. Depends on WP-011 and WP-013.
+Status: implementation in progress. WP-014A completed on 2026-08-01 and
+WP-014B completed on 2026-08-02; WP-014C is next. Depends on WP-011 and WP-013.
 
 Goal: turn the existing focused tests into the reproducible automated
 competition-candidate gate. Complete the browser, visual, performance,
@@ -2018,15 +2020,16 @@ allowance cannot be reassigned to JavaScript.
    normal game surface was vertically centered; non-sideways client coordinates
    now map relative to the game bounds and focused plus full-matrix regressions
    pass. Evidence: `docs/evidence/wp-014a.json`.
-2. **WP-014B Visual and layout gate - implementation in progress:** the
+2. **WP-014B Visual and layout gate - complete 2026-08-02:** the
    deterministic capture states, frozen thresholds, five-project geometry and
    recovery journey, canonical combat/Daily states, compact-landscape states,
    and layout assertions are implemented. A pull-request Ubuntu 24.04 workflow
    generates artifact-only candidates for explicit review and remains manually
    dispatchable after it reaches the default branch. Its pre-baseline quality
    run passed 125 project results (86 applicable passes and 39 reviewed
-   exclusions). Reviewed Linux PNGs and ordinary comparison CI remain before
-   completion.
+   exclusions). All 35 reviewed Linux PNGs were independently reproduced, and
+   ordinary Ubuntu Verify run 30739075679 passed the final 125-result matrix
+   with the same totals, zero retries, and frozen visual thresholds.
 3. **WP-014C Resilience and isolation:** add supported network/offline/resume,
    delayed-provider, session-loss, deterministic protocol-fault, and two-context
    storage/event/authority isolation coverage.

@@ -1,6 +1,6 @@
 {
   "id": "WP-014B",
-  "status": "in_progress",
+  "status": "complete",
   "starting_commit": "096a4c71c657a73aaf78674d6d6ac64d0fc6f2e3",
   "branch": "codex/wp-014-quality-harness",
   "initial_worktree": "clean",
@@ -36,7 +36,7 @@
     "npm run test:combat",
     "npm run build",
     "npm run smoke:built",
-    "npm run test:browser:visual",
+    "Visual screenshot suite within npm run test:browser:matrix",
     "npm run test:browser:matrix",
     "npm audit",
     "Linux screenshot baseline review",
@@ -57,30 +57,25 @@
     { "command": "npm run test:combat", "status": "pass", "detail": "18 tests passed." },
     { "command": "npm run build", "status": "pass", "detail": "Production server and client builds passed; the existing large-client-chunk warning remains assigned to WP-014E." },
     { "command": "npm run smoke:built", "status": "pass" },
-    { "command": "GitHub Actions Visual baseline candidates run 30714882370", "status": "pass", "detail": "Ubuntu 24.04 capture completed in 4m48s and uploaded 35 PNG candidates. Explicit review rejected the initial set because the portrait aim-pad hint clipped at the right edge; none of those candidates were committed." },
-    { "command": "node scripts/run-playwright.js tests/browser/visual.spec.ts --ignore-snapshots --grep visual-geometry-baselines", "status": "pass", "detail": "The corrective pad-label rendered-width assertion passed all five maintained projects: 5 passed in 39.9 seconds." },
-    { "command": "GitHub Actions Visual baseline candidates run 30715750959", "status": "pass", "detail": "Commit f553b6aaca923dca857d2eed1f2889a16194577d on Ubuntu 24.04 uploaded 35 PNGs without Actions runtime warnings. Explicit review approved every frame: 16 unaffected frames were byte-identical to the initial capture and all 19 corrected combat/pause frames showed the complete aim hint." },
-    { "command": "GitHub Actions Visual baseline candidates run 30716193040", "status": "pass", "detail": "Commit 66bee6dc0779743246c4beaa3d913dd599333437 reproduced all 35 reviewed Ubuntu 24.04 PNGs byte-for-byte." },
-    { "command": "GitHub Actions Verify run 30716193041", "status": "fail", "detail": "The zero-retry policy accounted for all 125 project results within 20m02s, but 5 Chromium results failed: one visual used the alternate globally consumed Practice seed and four interaction journeys exhausted either a 5-second presentation wait or the old 30-second test budget while traces showed continued deterministic progress." },
-    { "command": "node scripts/run-playwright.js tests/browser/combat.spec.ts tests/browser/practice.spec.ts --project=chromium-390x844 --project=chromium-412x915 --project=chromium-844x390 --grep=\"default sideways|touch movement|live practice supports\" --repeat-each=3", "status": "pass", "detail": "The affected combat, Practice, and sideways journeys produced 24 applicable passes and 12 reviewed exclusions across three repetitions with zero retries." },
-    { "command": "node scripts/run-playwright.js tests/browser/visual.spec.ts --project=chromium-390x844 --grep=\"canonical visual states\" --ignore-snapshots", "status": "pass", "detail": "The canonical state journey passed with an explicit data-seed=1 assertion after session-scoped test seed cycling." },
-    { "command": "node scripts/run-playwright.js --quality-gate --ignore-snapshots", "status": "pass", "detail": "All 125 local Windows logic results were accounted for with one worker and zero retries: 86 passed and 39 reviewed exclusions in 4m53s. Linux screenshot comparison remains CI-only." },
-    { "command": "npm audit", "status": "pass", "detail": "0 vulnerabilities" }
+    { "command": "Visual screenshot suite within npm run test:browser:matrix", "status": "pass", "detail": "All 35 reviewed Linux screenshot assertions ran as the visual subset of the ordinary Ubuntu 24.04 matrix and passed at threshold 0.2 with maxDiffPixelRatio 0.005. The dedicated script remains available for focused debugging; the release gate avoided a duplicate second invocation." },
+    { "command": "npm run test:browser:matrix", "status": "pass", "detail": "GitHub Actions Verify run 30739075679 tested commit fbf64617ad6437344a69667205c03953e5d58bd6 on Ubuntu 24.04: all 125 project results were accounted for with one worker and zero retries, 86 passed, 39 reviewed exclusions, and the WP-014 quality policy passed in 18.2 minutes. The complete job passed in 20m27s." },
+    { "command": "npm audit", "status": "pass", "detail": "0 vulnerabilities" },
+    { "command": "Linux screenshot baseline review", "status": "pass", "detail": "Initial candidate run 30714882370 was explicitly rejected for a clipped portrait aim-pad hint. Replacement run 30715750959 produced 35 reviewed Ubuntu 24.04 PNGs after the correction, and run 30716193040 reproduced all 35 files byte-for-byte at commit 66bee6dc0779743246c4beaa3d913dd599333437." },
+    { "command": "GitHub Actions visual comparison", "status": "pass", "detail": "Verify run 30716193041 retained the first failure evidence for one globally consumed Practice seed and four exhausted interaction budgets. After session-scoped deterministic seed cycling and bounded waits passed focused repeats plus the full local logic matrix, ordinary Verify run 30739075679 passed every reviewed Linux comparison without retries or threshold changes." },
+    { "command": "self-review", "status": "pass", "detail": "Confirmed that the correction affects only deterministic test-mode Practice seed selection and bounded test waits; production randomness, reward seeds, retry policy, visual thresholds, import boundaries, and external-authority prohibitions remain unchanged." }
   ],
   "reviews": [
     { "role": "worms_port_test_worker", "reviewer": "primary-agent-pre-baseline-matrix-review", "decision": "pass" },
     { "role": "worms_port_base_game_worker", "reviewer": "primary-agent-labeled-preview-and-recovery-review", "decision": "pass" },
     { "role": "worms_port_compliance_keeper", "reviewer": "primary-agent-synthetic-authority-and-artifact-boundary-review", "decision": "pass" },
-    { "role": "worms_port_reviewer", "reviewer": "primary-agent-linux-baseline-visual-review", "decision": "pass" }
+    { "role": "worms_port_reviewer", "reviewer": "primary-agent-linux-baseline-visual-review", "decision": "pass" },
+    { "role": "worms_port_reviewer", "reviewer": "primary-agent-ordinary-linux-comparison-review", "decision": "pass" }
   ],
   "skipped_checks": [
-    "The 35 reviewed Linux baselines are committed and independently reproduced byte-for-byte, but exact npm run test:browser:visual and npm run test:browser:matrix comparison remain pending until ordinary Ubuntu 24.04 CI consumes the corrective session-seed and timeout patch.",
     "The isolated Ubuntu 24.04 WSL copy downloaded the pinned browsers but could not run them because WebKit requires system packages and WSL sudo needs user interaction. No WSL image is being treated as release evidence.",
-    "Verify run 30716193041 retained its first-failure evidence and was not rerun as proof. The local correction passes the focused repeated journeys and complete screenshot-ignored matrix; the next ordinary Ubuntu run is the required comparison authority.",
     "Physical Android/iOS and Nimiq Pay WebView testing was not run; browser emulation and synthetic safe areas do not substitute for it."
   ],
   "residual_risks": [
-    "The corrective session-seed and bounded test-budget patch still requires a clean ordinary Ubuntu 24.04 screenshot comparison before WP-014B can close.",
     "The query-only deterministic result preview is visibly labeled as an automated no-wallet/no-payout surface and contains no external authority; it still ships in the client bundle as a capture helper.",
     "Synthetic safe-area and browser emulation cannot prove physical Nimiq Pay chrome, notch, or device font behavior."
   ]
