@@ -104,6 +104,25 @@ Phaser/Socket.IO stack.
   and reward-security job in 2m13s. Its ordinary Verify job passed all 150
   zero-retry browser results (94 passed, 56 reviewed exclusions) in 21m7s.
   Evidence is closed in `docs/evidence/wp-014d.json`; re-entry is WP-014E.
+- WP-014E implementation is ready for CI on 2026-08-02. The clean bundle gate
+  follows the Vite entry manifest and records exact raw and deterministic gzip
+  bytes. The pinned Chromium performance gate uses full motion, one discarded
+  warm-up, five measured fresh contexts, browser-relative marks, and a zero
+  lazy-SDK-request assertion. The final local production build measured
+  1,436,262 raw bytes for the largest initial JavaScript chunk and 398,415
+  gzip bytes for initial JavaScript plus CSS. Full-motion timing medians were
+  255.7 ms to actionable Practice, 55.5 ms from Start to legal input, 43.2 ms
+  from Fire to a visible projectile, and 2,547.7 ms through the complete
+  Loomkeeper response; all five maxima also passed and the SDK request count
+  remained zero. The full
+  browser policy remains strict when run together and supports only explicit
+  reviewed CI project shards; `verify:quality`, `verify:postgres`, and
+  `verify:full` expose their distinct authority. Fast, browser, PostgreSQL, and
+  performance/bundle CI jobs must pass within the documented wall-time budgets
+  before WP-014 and this slice can close. The final local `verify:full` passed
+  in 7m10s with 94 applicable browser results, 56 reviewed exclusions, zero
+  retries, explicit non-Linux visual omission, and explicit PostgreSQL
+  prerequisite reporting.
 - The approved post-competition weekly program is now scoped as WP-018 through
   WP-021: Nimiq Chronicle, Loom XP qualification, optional PvP Sparring Loom,
   and the Weekly Grand Knot Tournament with an additional sponsor-funded
@@ -2082,10 +2101,13 @@ allowance cannot be reassigned to JavaScript.
    handling are implemented. Final run 30749716477 passed the dedicated job
    and the ordinary 150-result, zero-retry Verify matrix after two retained
    failure runs drove fixture and production robustness corrections.
-5. **WP-014E Performance and closure:** enforce bundle/timing budgets, make
-   `verify:full` truthful and complete, run the entire matrix, review failure
-   evidence and expected skips, record residual risks, and advance the pointer
-   only when every gate passes.
+5. **WP-014E Performance and closure - implementation pending CI:** exact
+   initial-graph bundle and full-motion timing budgets, zero lazy-SDK Practice
+   requests, truthful aggregate verification, reviewed CI project shards, and
+   sanitized failure evidence are implemented. Close WP-014 and advance the
+   pointer only after every required Ubuntu job passes within its wall-time
+   budget and the final expected-skip, security, and residual-risk reviews are
+   recorded.
 
 #### Acceptance
 

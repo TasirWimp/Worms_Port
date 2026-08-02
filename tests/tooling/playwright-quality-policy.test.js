@@ -40,6 +40,33 @@ test('quality policy rejects an unexpected skip and missing project', () => {
   assert.match(errors.join('\n'), /critical test skipped: phone-a/);
 });
 
+test('quality policy accepts an explicit CI project shard without weakening routed checks', () => {
+  const phoneA = passing.filter((record) => record.project === 'phone-a');
+  assert.deepEqual(
+    evaluateQualityRun(policy, ['phone-a'], phoneA, { allowProjectSubset: true }),
+    []
+  );
+  phoneA[0] = { ...phoneA[0], status: 'skipped' };
+  assert.match(
+    evaluateQualityRun(policy, ['phone-a'], phoneA, { allowProjectSubset: true }).join('\n'),
+    /critical test skipped: phone-a/
+  );
+});
+
+test('quality shard rejects missing requested projects and results from extra projects', () => {
+  const phoneA = passing.filter((record) => record.project === 'phone-a');
+  assert.match(
+    evaluateQualityRun(policy, ['phone-a', 'phone-b'], phoneA, {
+      allowProjectSubset: true
+    }).join('\n'),
+    /critical test did not run: phone-b/
+  );
+  assert.match(
+    evaluateQualityRun(policy, ['phone-a'], passing, { allowProjectSubset: true }).join('\n'),
+    /result came from an unrequested quality project: phone-b/
+  );
+});
+
 test('quality policy rejects a routed test outside its allowlist', () => {
   const records = passing.map((record) => ({ ...record }));
   records[2].status = 'passed';

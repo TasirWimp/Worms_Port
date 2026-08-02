@@ -8,6 +8,10 @@ const {
 class PlaywrightQualityReporter {
   constructor() {
     this.enabled = process.env.PLAYWRIGHT_QUALITY_GATE === 'true';
+    this.allowProjectSubset = process.env.PLAYWRIGHT_QUALITY_SHARD === 'true';
+    this.requestedShardProjects = (process.env.PLAYWRIGHT_QUALITY_PROJECTS || '')
+      .split(',')
+      .filter(Boolean);
     this.projects = [];
     this.records = [];
   }
@@ -30,7 +34,12 @@ class PlaywrightQualityReporter {
 
   async onEnd() {
     if (!this.enabled) return undefined;
-    const errors = evaluateQualityRun(loadQualityPolicy(), this.projects, this.records);
+    const evaluatedProjects = this.allowProjectSubset
+      ? this.requestedShardProjects
+      : this.projects;
+    const errors = evaluateQualityRun(loadQualityPolicy(), evaluatedProjects, this.records, {
+      allowProjectSubset: this.allowProjectSubset
+    });
     if (errors.length === 0) {
       console.log(`WP-014 browser quality policy passed (${this.records.length} project results).`);
       return undefined;

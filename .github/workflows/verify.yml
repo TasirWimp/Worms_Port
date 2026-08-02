@@ -9,9 +9,9 @@ permissions:
   contents: read
 
 jobs:
-  verify:
+  fast:
     runs-on: ubuntu-24.04
-    timeout-minutes: 30
+    timeout-minutes: 20
     steps:
       - uses: actions/checkout@v5
         with:
@@ -21,17 +21,84 @@ jobs:
           node-version: 20
           cache: npm
       - run: npm ci
-      - run: npx playwright install --with-deps chromium webkit
       - run: npm run verify:fast
       - run: npm audit
       - run: npm run build
       - run: npm run smoke:built
-      - run: npm run test:browser:matrix
+      - run: npm run check:identity-bundles
+      - run: npm run check:reward-security
+
+  browser-quality:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 20
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - name: chromium-small
+            browser: chromium
+            projects: --project=chromium-360x640 --project=chromium-390x844
+          - name: chromium-large
+            browser: chromium
+            projects: --project=chromium-412x915 --project=chromium-844x390
+          - name: webkit
+            browser: webkit
+            projects: --project=webkit-390x844
+    steps:
+      - uses: actions/checkout@v5
+        with:
+          fetch-depth: 0
+      - uses: actions/setup-node@v6
+        with:
+          node-version: 20
+          cache: npm
+      - run: npm ci
+      - run: npx playwright install --with-deps ${{ matrix.browser }}
+      - run: node scripts/run-playwright.js --quality-gate --quality-shard ${{ matrix.projects }}
       - name: Upload browser failure evidence
         if: failure()
         uses: actions/upload-artifact@v6
         with:
-          name: playwright-failure-evidence
+          name: playwright-failure-evidence-${{ matrix.name }}
+          path: |
+            test-results/
+            playwright-report/
+          if-no-files-found: ignore
+          retention-days: 14
+
+  performance-bundle:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v5
+        with:
+          fetch-depth: 0
+      - uses: actions/setup-node@v6
+        with:
+          node-version: 20
+          cache: npm
+      - run: npm ci
+      - run: npx playwright install --with-deps chromium
+      - run: npm run build
+      - run: npm run test:browser:performance
+      - name: Measure the fresh client bundle
+        if: always()
+        run: npm run check:bundle-budget
+      - name: Upload sanitized performance and bundle measurements
+        if: always()
+        uses: actions/upload-artifact@v6
+        with:
+          name: performance-bundle-measurements-${{ github.run_id }}
+          path: |
+            test-results/wp014-bundle.json
+            test-results/wp014-performance.json
+          if-no-files-found: ignore
+          retention-days: 14
+      - name: Upload performance or bundle failure evidence
+        if: failure()
+        uses: actions/upload-artifact@v6
+        with:
+          name: performance-bundle-failure-evidence
           path: |
             test-results/
             playwright-report/

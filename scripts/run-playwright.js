@@ -19,9 +19,31 @@ async function main() {
   const cli = require.resolve('@playwright/test/cli');
   const rawArgs = process.argv.slice(2);
   const qualityGate = rawArgs.includes('--quality-gate');
-  const args = rawArgs.filter((argument) => argument !== '--quality-gate');
-  if (qualityGate) assertQualityGateEnvironment(process.env);
-  const rewardRun = qualityGate || args.length === 0 || args.some((argument) =>
+  const qualityShard = rawArgs.includes('--quality-shard');
+  const performanceGate = rawArgs.includes('--performance-gate');
+  const args = rawArgs.filter((argument) =>
+    argument !== '--quality-gate' && argument !== '--quality-shard' &&
+    argument !== '--performance-gate'
+  );
+  if (qualityShard && !qualityGate) {
+    throw new Error('A quality shard requires --quality-gate.');
+  }
+  if (qualityShard && !args.some((argument) => argument.startsWith('--project='))) {
+    throw new Error('A quality shard requires at least one explicit --project=<name>.');
+  }
+  const qualityProjects = args
+    .filter((argument) => argument.startsWith('--project='))
+    .map((argument) => argument.slice('--project='.length))
+    .filter(Boolean);
+  if (qualityGate && process.env.CI && args.includes('--ignore-snapshots')) {
+    throw new Error('WP-014 CI quality tests cannot ignore Linux visual comparisons.');
+  }
+  if (qualityGate && process.platform !== 'linux' && !args.includes('--ignore-snapshots')) {
+    console.log('Non-Linux WP-014 run: visual comparisons are explicitly omitted; authoritative Linux CI remains mandatory.');
+    args.push('--ignore-snapshots');
+  }
+  if (qualityGate || performanceGate) assertQualityGateEnvironment(process.env);
+  const rewardRun = qualityGate || (!performanceGate && args.length === 0) || args.some((argument) =>
     argument.includes('reward.spec') || argument.includes('visual.spec')
   );
   const child = childProcess.spawn(
@@ -33,6 +55,9 @@ async function main() {
         ...process.env,
         PLAYWRIGHT_PORT: String(port),
         ...(qualityGate ? { PLAYWRIGHT_QUALITY_GATE: 'true' } : {}),
+        ...(qualityShard ? { PLAYWRIGHT_QUALITY_SHARD: 'true' } : {}),
+        ...(qualityShard ? { PLAYWRIGHT_QUALITY_PROJECTS: qualityProjects.join(',') } : {}),
+        ...(performanceGate ? { PLAYWRIGHT_PERFORMANCE_GATE: 'true' } : {}),
         ...(rewardRun ? {
           WP014_QUALITY_TEST: 'true',
           REWARD_MODE: 'record-only',

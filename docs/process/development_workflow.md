@@ -93,10 +93,13 @@ verify:fast
   compliance -> types -> unit -> deterministic simulation
 
 verify:runtime
-  clean build -> built smoke -> protocol -> browser phone matrix
+  clean build -> built smoke
+
+verify:quality
+  fresh build -> bundle/identity/reward security -> full browser matrix -> performance
 
 verify:full
-  verify:fast -> verify:runtime -> visual -> performance -> read-only review
+  verify:fast -> verify:runtime -> verify:quality -> explicit PostgreSQL status -> audit
 ```
 
 Built smoke tests must rebuild or prove that output metadata matches the current
@@ -621,6 +624,32 @@ reward-security checks, and the audit in the 2m13s dedicated job. The separate
 ordinary Verify job passed all 150 zero-retry browser results (94 passed, 56
 reviewed exclusions) in 21m7s. No physical Android/iOS, real Nimiq Pay wallet,
 external RPC, sponsor key, or public-chain transfer was used.
+
+WP-014E is implemented locally and awaits its authoritative Ubuntu gates. A
+fresh Vite manifest now identifies the initial static client graph, and
+`check:bundle-budget` records exact raw plus level-9 gzip bytes under ignored
+`test-results/`. Dynamic imports are excluded from initial transfer only when
+the manifest classifies them as such. The pinned 390x844 Chromium performance
+gate runs full motion with one discarded warm-up and five measured fresh
+contexts; browser-relative marks cover actionable Practice, legal combat input,
+visible projectile presentation, and the complete Loomkeeper response. It also
+fails if ordinary Practice requests the identified lazy Mini App SDK chunk.
+`verify:quality` and `verify:full` now cover the complete maintained browser
+matrix; `verify:full` reports the missing local PostgreSQL prerequisite instead
+of implying database evidence, while the separate `verify:postgres` job remains
+mandatory. GitHub Actions partitions fast, three reviewed browser project
+shards, PostgreSQL/reward-security, and performance/bundle work under the
+documented 20-minute per-job and 30-minute complete-workflow ceilings. Failed
+jobs retain browser evidence for 14 days, while the performance job retains
+sanitized successful or failed bundle/timing JSON for the same period. The
+final local production build measured 1,436,262 raw bytes for the largest
+initial JavaScript chunk and 398,415 gzip bytes for initial JavaScript plus
+CSS. Its full-motion timing medians/maxima were 255.7/264.1 ms to actionable
+Practice, 55.5/74.1 ms from Start to legal input, 43.2/47.3 ms from Fire to a
+visible projectile, and 2,547.7/2,601.1 ms through the complete response. The
+SDK request count, page-error count, and console-error count were zero. Local
+`verify:full` passed in 7m10s with all 150 browser results accounted for; Linux
+visual comparison and real PostgreSQL remain mandatory CI authority.
 
 Official implementation references reviewed on 2026-08-01:
 `https://playwright.dev/docs/test-projects`,

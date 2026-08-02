@@ -1,0 +1,81 @@
+{
+  "id": "WP-014E",
+  "status": "in_progress",
+  "starting_commit": "365a430e20df611689cd26357de7952d63678e20",
+  "branch": "codex/wp-014-quality-harness",
+  "initial_worktree": "clean",
+  "starting_lock_sha256": "8A13522641DC030E38258E08B843B1E902B018E324D3AEECA3CD577F0EF10704",
+  "owning_roles": [
+    "worms_port_test_worker",
+    "worms_port_compliance_keeper",
+    "worms_port_reviewer"
+  ],
+  "scope": [
+    "Measure the clean production entry JavaScript and CSS graph exactly, including raw and deterministic gzip byte budgets",
+    "Prove ordinary wallet-free Practice makes no request for the lazy Mini App SDK before wallet action",
+    "Measure the documented Practice navigation, combat readiness, projectile presentation, and complete response budgets with one warm-up and five samples on pinned Chromium",
+    "Add explicit bundle, performance, quality, PostgreSQL-quality, and truthful full-verification commands",
+    "Partition required GitHub Actions checks so individual jobs and complete workflow stay within documented wall-time budgets",
+    "Retain sanitized bundle and timing evidence on failure and close the complete WP-014 quality harness only after every authoritative gate passes"
+  ],
+  "non_goals": [
+    "Changing gameplay, reward policy, identity behavior, layouts, visual baselines, production assets, or audio merely to improve a metric",
+    "Raising a documented budget, adding retries, widening screenshot tolerances, or weakening expected-skip policy to make a gate pass",
+    "Using Render, Nimiq Pay, a real wallet, external RPC, sponsor key, recovery words, public chain, or real NIM transfer",
+    "Adding PostgreSQL durability to active simulations, horizontal scaling, PvP, matchmaking, production art, or Sorcerers code or assets"
+  ],
+  "planned_checks": [
+    "npm run check:compliance",
+    "npm run check:types",
+    "npm run test:tooling",
+    "npm run verify:fast",
+    "npm run build",
+    "npm run smoke:built",
+    "npm run check:bundle-budget",
+    "npm run test:browser:performance",
+    "npm run test:browser:matrix",
+    "npm run check:identity-bundles",
+    "npm run check:reward-security",
+    "npm run verify:quality",
+    "npm run verify:full",
+    "npm audit",
+    "GitHub Actions fast",
+    "GitHub Actions browser-quality matrix",
+    "GitHub Actions postgres-reward-security",
+    "GitHub Actions performance-bundle",
+    "failure-artifact and expected-skip review",
+    "security and import-boundary review",
+    "self-review"
+  ],
+  "deterministic_seeds": [
+    "1",
+    "3735928559"
+  ],
+  "sorcerers_reference_used": false,
+  "clean_room_records": [],
+  "check_results": [
+    { "command": "npm run check:compliance", "status": "pass", "detail": "Asset, import-boundary, dependency-license, 19 work-package, and clean-room checks passed." },
+    { "command": "npm run check:types", "status": "pass", "detail": "Server and client TypeScript checks passed within the final full funnel." },
+    { "command": "npm run test:tooling", "status": "pass", "detail": "20 tooling tests passed, including exact bundle ceilings, timing summaries, production browser builds, strict CI sharding, and inherited-authority refusal." },
+    { "command": "npm run verify:fast", "status": "pass", "detail": "Compliance, types, tooling, protocol, deterministic simulation, Loomkeeper, Relic, combat, Practice, identity, and 24 reward tests passed." },
+    { "command": "npm run build", "status": "pass", "detail": "The complete production build passed and emitted the Vite entry manifest used by the exact bundle gate." },
+    { "command": "npm run smoke:built", "status": "pass", "detail": "Built server, game page, overlays, approved-asset plumbing, and join-ID API passed." },
+    { "command": "npm run check:bundle-budget", "status": "pass", "detail": "Largest initial JavaScript was 1,436,262/1,500,000 raw bytes; initial JavaScript plus CSS was 398,415/430,000 deterministic gzip bytes." },
+    { "command": "npm run test:browser:performance", "status": "pass", "detail": "One warm-up plus five full-motion production-build samples passed. Medians/maxima were 255.7/264.1 ms navigation, 55.5/74.1 ms Practice readiness, 43.2/47.3 ms projectile visibility, and 2,547.7/2,601.1 ms complete response; SDK requests, page errors, and console errors were zero." },
+    { "command": "npm run test:browser:matrix", "status": "pass", "detail": "The final non-Linux logic matrix accounted for all 150 zero-retry results: 94 passed and 56 reviewed exclusions in 5.5 minutes. Linux visual comparison remains CI-only." },
+    { "command": "npm run check:identity-bundles", "status": "pass", "detail": "The Mini App SDK remains one dynamic client entry and @nimiq/core remains server-only." },
+    { "command": "npm run check:reward-security", "status": "pass", "detail": "No payout key, proof, token, signature, or server-only dependency leaked into inspected source, build, or generated text artifacts." },
+    { "command": "npm run verify:quality", "status": "pass", "detail": "The fresh build, bundle, identity/reward security, complete logic matrix, and performance gates passed within verify:full." },
+    { "command": "npm run verify:full", "status": "pass", "detail": "The truthful local aggregate passed in 7m10s and explicitly reported both non-Linux visual omission and the unavailable PostgreSQL prerequisite." },
+    { "command": "npm audit", "status": "pass", "detail": "0 vulnerabilities" }
+  ],
+  "skipped_checks": [
+    "Local Linux visual comparison was not run because baselines are authoritative only on pinned Ubuntu; non-Linux verify:full reported and omitted snapshots while CI rejects that flag.",
+    "npm run verify:postgres was not run locally because this Windows environment has neither Docker nor psql; the digest-pinned GitHub Actions job remains mandatory.",
+    "Physical Android/iOS and Nimiq Pay WebView testing was not run; WP-014 automation does not substitute for the completed real-device gameplay acceptance or a future release-device pass."
+  ],
+  "residual_risks": [
+    "Authoritative Ubuntu bundle/timing values and all four partitioned job wall times remain pending until the pushed CI run.",
+    "Sessions and active simulations remain single-process and non-durable; WP-014 closes automated release quality but does not add horizontal runtime authority."
+  ]
+}

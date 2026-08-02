@@ -15,12 +15,14 @@ function testKey(file, title) {
   return `${file}\u0000${title}`;
 }
 
-function evaluateQualityRun(policy, configuredProjects, records) {
+function evaluateQualityRun(policy, configuredProjects, records, options = {}) {
   const errors = [];
   const maintained = new Set(policy.maintainedProjects);
   const configured = new Set(configuredProjects);
-  for (const project of maintained) {
-    if (!configured.has(project)) errors.push(`maintained project did not run: ${project}`);
+  if (options.allowProjectSubset !== true) {
+    for (const project of maintained) {
+      if (!configured.has(project)) errors.push(`maintained project did not run: ${project}`);
+    }
   }
   for (const project of configured) {
     if (!maintained.has(project)) errors.push(`unreviewed quality-gate project ran: ${project}`);
@@ -28,6 +30,9 @@ function evaluateQualityRun(policy, configuredProjects, records) {
 
   const recordMap = new Map();
   for (const record of records) {
+    if (!configured.has(record.project)) {
+      errors.push(`result came from an unrequested quality project: ${record.project}`);
+    }
     const key = recordKey(record.project, record.file, record.title);
     if (recordMap.has(key)) errors.push(`duplicate quality result: ${record.project} / ${record.file} / ${record.title}`);
     recordMap.set(key, record);
@@ -49,7 +54,7 @@ function evaluateQualityRun(policy, configuredProjects, records) {
   }
 
   for (const entry of policy.expectedProjectSkips) {
-    for (const project of policy.maintainedProjects) {
+    for (const project of configuredProjects) {
       const record = recordMap.get(recordKey(project, entry.file, entry.title));
       if (!record) {
         errors.push(`expected routed test did not run: ${project} / ${entry.file} / ${entry.title}`);
@@ -62,7 +67,7 @@ function evaluateQualityRun(policy, configuredProjects, records) {
   }
 
   for (const critical of policy.criticalTests) {
-    for (const project of policy.maintainedProjects) {
+    for (const project of configuredProjects) {
       const record = recordMap.get(recordKey(project, critical.file, critical.title));
       if (!record) {
         errors.push(`critical test did not run: ${project} / ${critical.file} / ${critical.title}`);
