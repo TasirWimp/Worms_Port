@@ -8,8 +8,11 @@ Phaser/Socket.IO stack.
 ## Execution Pointer
 
 - Active target: mobile-first single-player Nimiq Pay competition release.
-- Next work package: **WP-014 Autonomous Quality Harness**.
-- Last completed work package: **WP-013 Sponsored Daily Challenge**.
+- Active work package: **WP-015 Production Art And Audio**. Produce the first
+  approved runtime art/audio set through the exact-file asset review and
+  manifest pipeline, using the WP-014 capture, visual, and media-budget gates.
+- Last completed work package: **WP-014 Autonomous Quality Harness**, including
+  **WP-014E Performance and closure** on 2026-08-02.
 - WP-012 exactly pins `@nimiq/mini-app-sdk` `0.1.0` and server-only
   `@nimiq/core` `2.7.1`. Provider access remains lazy, identity acceptance is
   now used by WP-013's separate production Daily entry, the diagnostics surface
@@ -34,6 +37,98 @@ Phaser/Socket.IO stack.
   acceptance, not authorization to leave public mainnet rewards active. A
   wallet address is an eligibility identity, not proof of one human; Practice
   remains the unrestricted fallback.
+- WP-014 was refined on 2026-08-01 into five sequential slices and completed on
+  2026-08-02. The maintained 412x915 project, zero-retry full-matrix
+  command, reviewed expected-skip policy, safe-area fixture, CI routing, and
+  failure artifacts are in place. Its first matrix run exposed and corrected centered
+  non-sideways pointer coordinates; the final 105-result run passed. The visual
+  and layout gate then added reviewed Linux baselines and passed its final
+  125-result Ubuntu comparison. Resilience and isolation then expanded the
+  matrix to 150 results and passed ordinary Ubuntu CI. PostgreSQL concurrency,
+  restart, real-store browser, payout-fault, reward-security, exact bundle, and
+  full-motion performance coverage passed their dedicated Ubuntu jobs. The
+  harness is loopback-only, uses synthetic wallets plus record-only/fake payout
+  boundaries, and cannot receive a real key, external payout RPC, or chain
+  reward mode. Its detailed matrix, budgets, artifact policy, and completion
+  gates are normative in the WP-014 section below and in
+  `docs/process/development_workflow.md` under **WP-014 Quality Harness
+  Protocol**.
+- WP-014B completed on 2026-08-02. Deterministic labeled result/reward
+  previews, the 0.2/0.005 screenshot contract, cross-project geometry and
+  recovery, canonical combat/Daily states, compact-landscape states, and
+  executable touch/scroll/zoom/selection checks are implemented. The
+  pre-baseline zero-retry logic pass accounted for 125 project results: 86
+  passed and 39 reviewed exclusions. Draft PR #1 is open. The reviewed 35-image
+  Ubuntu 24.04 baseline set is committed at `66bee6d`; candidate run 30716193040
+  reproduced all 35 files byte-for-byte. Ordinary Verify run 30716193041 then
+  completed the 125-result policy accounting within its 30-minute job ceiling
+  but exposed two harness issues: the two-seed Practice sequence was global to
+  the long-lived test server, and three interaction-heavy tests had only the
+  old 30-second budget. The bounded correction scopes deterministic Practice
+  seed cycling to each session, asserts canonical seed 1 explicitly, and gives
+  only the affected tests a 60-second budget with 15-second presentation waits;
+  this stays below the documented 120-second individual-test limit and changes
+  neither retries nor visual thresholds. The corrected local zero-retry matrix
+  passed all 125 project results with 86 applicable passes and 39 reviewed
+  exclusions. Ordinary Ubuntu Verify run 30739075679 then passed the same
+  125-result, one-worker, zero-retry matrix—including all 35 reviewed screenshot
+  comparisons—and the complete job finished in 20m27s. Evidence is closed in
+  `docs/evidence/wp-014b.json`; re-entry is WP-014C planning and implementation.
+- WP-014C completed on 2026-08-02. It adds the explicit
+  `test:browser:resilience` suite for constrained Chromium loading,
+  Chromium/WebKit offline and same-authority resume, hidden/background input
+  cleanup, viewport change, delayed synthetic provider settlement, truthful
+  lost-session recovery, and two-context storage/identity/challenge/control
+  isolation. Deterministic client fixtures cover lost and delayed
+  acknowledgements, exact-request retry, stale/conflicting/foreign events, and
+  terminal deduplication. The focused suite passed 8 applicable routes with 17
+  reviewed exclusions; three canonical repetitions passed 24 applicable routes
+  with 6 exclusions. The complete local zero-retry logic matrix then passed all
+  150 project results: 94 passed and 56 reviewed exclusions in 5.6 minutes.
+  Initial Ubuntu run 30741922105 retained one expected-offline console
+  diagnostic; a narrow exact-message test correction preserved every other
+  console error as actionable. Ordinary Verify run 30742976205 then passed all
+  150 results with the same totals, zero retries, and frozen visual thresholds
+  in 22m22s. Evidence is closed in `docs/evidence/wp-014c.json`; re-entry is
+  WP-014D planning and implementation.
+- WP-014D completed on 2026-08-02. It adds a
+  digest-pinned PostgreSQL 16.10 Bookworm service, serialized concurrent
+  migrations, two-connection ledger contention/restart coverage, a built
+  record-only Daily journey against the real store, fake payout fault and
+  finality coverage, quality-startup authority guards, stricter response
+  headers, source/build/artifact secret scans, and a sanitized idle PostgreSQL
+  connection error handler. The first two PostgreSQL CI executions exposed a
+  mismatched concurrency fixture, an invalid synthetic address, and then the
+  missing idle-pool error handler; all were corrected without retries or
+  weakened assertions. Final run 30749716477 passed the dedicated PostgreSQL
+  and reward-security job in 2m13s. Its ordinary Verify job passed all 150
+  zero-retry browser results (94 passed, 56 reviewed exclusions) in 21m7s.
+  Evidence is closed in `docs/evidence/wp-014d.json`; re-entry is WP-014E.
+- WP-014E completed on 2026-08-02. The clean bundle gate
+  follows the Vite entry manifest and records exact raw and deterministic gzip
+  bytes. The pinned Chromium performance gate uses full motion, one discarded
+  warm-up, five measured fresh contexts, browser-relative marks, and a zero
+  lazy-SDK-request assertion. The final local production build measured
+  1,436,262 raw bytes for the largest initial JavaScript chunk and 398,415
+  gzip bytes for initial JavaScript plus CSS. Authoritative Ubuntu full-motion
+  timing medians/maxima were 463.9/718.2 ms to actionable Practice,
+  346.3/352.7 ms from Start to legal input, 241.3/283.4 ms from Fire to a
+  visible projectile, and 5,289.5/5,548.1 ms through the complete Loomkeeper
+  response. The SDK request, page-error, and console-error counts remained
+  zero. The full
+  browser policy remains strict when run together and supports only explicit
+  reviewed CI project shards; `verify:quality`, `verify:postgres`, and
+  `verify:full` expose their distinct authority. Fast, browser, PostgreSQL, and
+  performance/bundle CI jobs all passed in run 30752850448. The three browser
+  shards accounted for all 150 results (94 passed, 56 reviewed exclusions),
+  each job stayed below 10 minutes, and the complete workflow finished in
+  9m09s. The final local `verify:full` passed
+  in 7m10s with 94 applicable browser results, 56 reviewed exclusions, zero
+  retries, explicit non-Linux visual omission, and explicit PostgreSQL
+  prerequisite reporting. Evidence is closed in `docs/evidence/wp-014e.json`;
+  re-entry is WP-015 planning and implementation. The Linux Fire median has
+  only 8.7 ms of headroom and remains a monitored risk, not a reason to raise
+  the budget.
 - The approved post-competition weekly program is now scoped as WP-018 through
   WP-021: Nimiq Chronicle, Loom XP qualification, optional PvP Sparring Loom,
   and the Weekly Grand Knot Tournament with an additional sponsor-funded
@@ -167,8 +262,11 @@ guardrails for this selected host.
 - WP-012 adds a lazy query-gated Nimiq Pay adapter, server-created signed
   identity challenges, official server-only verification, atomic replay
   protection, and opaque authenticated-session rotation. Automated acceptance
-  passed; physical Nimiq Pay identity approval remains external.
-- Reward work, the expanded phone matrix, and visual regression remain.
+  passed; the corrected rejection/cancellation/retry behavior also passed the
+  user-run Samsung Galaxy S22 Nimiq Pay acceptance gate on 2026-07-29.
+- WP-013 provides the completed, paused-by-default Daily Challenge and durable
+  reward ledger. The expanded phone matrix, visual regression, resilience,
+  real-PostgreSQL concurrency, and performance gates remain for WP-014.
 
 ## Codex Subagent Roles
 
@@ -1723,27 +1821,331 @@ Verification:
   focused protocol/simulation/identity/reward tests, clean build, built-server
   and Render runtime smoke, complete maintained phone-browser coverage, and a
   read-only security review; and
-- one explicitly approved tiny testnet canary followed by stored-hash
-  reconciliation and restart recovery. Mainnet funds remain disabled and real
-  Android/iOS payout acceptance remains a separate operator/user-run gate.
+- one explicitly approved tiny chain canary followed by stored-hash
+  reconciliation and restart recovery. The user chose a deliberately
+  low-funded MainAlbatross canary, completed the real-device payout path, and
+  restored `REWARD_PAUSED=true`; exact acceptance evidence is recorded above
+  and in `docs/evidence/wp-013.json`.
 
 ### WP-014 Autonomous Quality Harness
 
-Status: planned. Depends on WP-011 and WP-013.
+Status: complete 2026-08-02. WP-014A completed on 2026-08-01, and WP-014B
+through WP-014E completed on 2026-08-02. Depends on WP-011 and WP-013.
 
-Goal: complete automated browser, visual, performance, protocol, abuse, and
-reward-security gates. Use isolated browser contexts and deterministic fake
-wallets; retain traces, screenshots, diffs, replay seeds, bundle data, and
-timing evidence on failure.
+Goal: turn the existing focused tests into the reproducible automated
+competition-candidate gate. Complete the browser, visual, performance,
+protocol, abuse, PostgreSQL, and reward-security coverage that prior packages
+deferred. Use isolated browser contexts, deterministic seeds, synthetic wallet
+keys, record-only rewards, and fake signer/RPC boundaries. Retain actionable
+traces, screenshots, diffs, seeds, bundle measurements, and timing evidence on
+failure.
 
-WP-014 extends the Playwright installation and launch smoke delivered by WP-005;
-it does not introduce the browser runner for the first time.
+WP-014 extends the Playwright installation and launch smoke delivered by
+WP-005 and the focused combat, Practice, identity, and reward suites delivered
+through WP-013. It does not replace those suites, introduce Playwright for the
+first time, or redesign product behavior merely to make a test pass.
 
-Owning roles: `worms_port_test_worker`, `worms_port_reviewer`.
+Initial baseline gaps, all closed by WP-014A through WP-014E:
 
-Verification matrix: mobile Chromium at 360x640, 390x844, and 412x915;
-844x390 landscape; mobile WebKit emulation; low-bandwidth/offline/resume;
-desktop only as a debugging fallback. Physical phones are explicitly excluded.
+- `verify:full` covered only the browser smoke rather than the complete
+  maintained browser suite;
+- committed screenshot comparisons and explicit bundle/timing gates did not
+  exist;
+- browser reward acceptance used the in-memory test store, while completed
+  work-package evidence recorded no autonomous two-connection PostgreSQL race
+  injection; and
+- offline/resume covered one Practice smoke case, but low-bandwidth,
+  delayed-wallet, multi-context isolation, and complete failure-artifact
+  coverage were not release gates.
+
+Owning roles: `worms_port_test_worker`, `worms_port_reviewer`, with
+`worms_port_network_worker` limited to PostgreSQL, protocol, and reward fault
+fixtures and `worms_port_compliance_keeper` limited to dependency, artifact,
+secret, and import-boundary review.
+
+#### Safety and authority boundary
+
+- Automated WP-014 runs use only loopback application URLs, an ephemeral test
+  PostgreSQL database, deterministic fake wallets, record-only rewards, and
+  fake signer/RPC adapters. No suite may receive recovery words, a production
+  private-key file, a real payout RPC, or a real Nimiq Pay approval surface.
+- The harness must fail before server startup if its quality-test mode is
+  combined with `REWARD_MODE=testnet|mainnet`, a non-loopback RPC target, or a
+  populated `REWARD_PRIVATE_KEY_FILE`. Ordinary production validation remains
+  fail-closed and unchanged.
+- Browser contexts receive distinct fixed test keys and fresh storage by
+  default. A shared synthetic wallet is used only in tests that deliberately
+  prove same-wallet contention. Never record real/external wallet secrets,
+  authorization signatures, device identifiers, database passwords, or
+  environment dumps in tracked evidence or uploaded artifacts. Playwright
+  traces may contain short-lived synthetic loopback session authority; the
+  test server invalidates it on exit, it is never copied into tracked evidence,
+  and failure artifacts retain it only under the bounded CI policy.
+- Keep `REWARD_PAUSED=true` on the deployed Render service. WP-014 does not
+  authorize another mainnet transaction, change daily reward policy, or weaken
+  payout guardrails established by WP-013.
+- Physical Android/iOS and Nimiq Pay WebView behavior remain separate
+  user-operated acceptance. Browser emulation and injected fake providers must
+  never be described as physical-device coverage.
+
+#### Maintained browser matrix
+
+The gate uses one worker per CI job and these maintained projects:
+
+| Project | Required presentation and purpose |
+| --- | --- |
+| Chromium 360x640 | Smallest portrait viewport; default clockwise sideways composition and touch geometry |
+| Chromium 390x844 | Canonical portrait host; full state, wallet, resilience, and visual coverage |
+| Chromium 412x915 | Large Android portrait viewport deferred by WP-010/WP-011 |
+| Chromium 844x390 | Actual compact landscape; no double rotation and standards-based full-screen fallback |
+| WebKit 390x844 | Mobile WebKit compatibility for the critical Practice and Daily journeys |
+
+Every project must complete wallet-free start, Calling selection, one legal
+touch movement/aim/fire cycle, authoritative Loomkeeper presentation,
+pause/reconnect behavior where legal, and terminal-result recovery. The
+canonical Chromium project additionally covers `sideways=left`,
+`sideways=off`, reduced-motion and motion-enabled modes, all three Relics,
+consecutive matches, identity rejection/cancellation/retry, and the full Daily
+state sequence. Landscape-only full-screen tests remain scoped to the compact
+landscape project.
+
+Scenario-specific project exclusions may remain, but they must be declared in
+one reviewed allowlist with a reason. The gate fails on any unexpected skip,
+focused/`.only` test, or project with no applicable critical journey. Desktop
+is a local debugging fallback and is not release evidence.
+
+Safe-area automation uses deterministic zero and synthetic inset fixtures for
+layout math; it does not claim that desktop browser emulation reproduces
+Nimiq Pay or a physical notch. All projects assert 48 CSS-pixel minimum action
+targets, 96 CSS-pixel minimum pad activation diameters, no control overlap, no
+browser scroll/zoom/text-selection leakage, non-color-only state, and readable
+exact Stitching/reward values.
+
+#### Visual-regression contract
+
+- Use Playwright screenshot assertions in the pinned Linux CI environment
+  that creates and verifies the baselines. Do not compare baselines generated
+  on a different OS/browser revision as release evidence.
+- Commit only reviewed expected PNG baselines beside their tests. Ordinary CI
+  cannot update them. A baseline change requires an explicit update command,
+  inspection of the diff, and `worms_port_reviewer` approval; never auto-accept
+  a changed screenshot.
+- Freeze UTC time, deterministic challenge seeds, reduced motion, fonts,
+  device scale factor, color scheme, and synthetic wallet state. Mask only
+  proven non-product nondeterminism such as request IDs or server timestamps;
+  never mask the arena, Knotkin, terrain, projectile, controls, result, reward
+  state, or wallet recipient/amount disclosure.
+- Geometry baselines cover start, player-decision combat, and result at all
+  five projects. State-rich baselines at canonical Chromium cover aim lock,
+  player projectile/impact, Loomkeeper aim/projectile/impact, Relic chooser,
+  pause/reconnect, Daily availability/authorization/claim processing/finalized
+  wording, and the three sideways modes. Compact landscape covers its Pause
+  sheet and full-screen capability fallback.
+- The initial comparison permits at most `maxDiffPixelRatio=0.005` with
+  Playwright's per-pixel threshold `0.2`. Any need to raise either threshold is
+  a documented plan change, not a test-fix shortcut. WP-015 will intentionally
+  update approved art baselines through the same reviewed process.
+
+#### Resilience, protocol, and context-isolation contract
+
+- Cover initial slow loading, delayed acknowledgements, transient offline,
+  reconnect, hidden/background resume, viewport change, provider rejection,
+  delayed provider settlement, and server/session loss. Each case must clear
+  owned pointers, suppress duplicate commands, and either resume the same
+  authority or truthfully offer a fresh match according to the existing
+  contract.
+- Use browser offline/resume on Chromium and WebKit. Apply bandwidth/latency
+  throttling only where the engine exposes a deterministic supported mechanism;
+  cover Socket.IO acknowledgement loss, duplicate delivery, stale revisions,
+  and ordering faults through typed protocol fixtures rather than claiming
+  Playwright can reproduce arbitrary WebSocket packet loss.
+- Two simultaneous isolated browser contexts must not share storage, session
+  tokens, wallet identity, challenge events, results, or controls. Closing or
+  reconnecting one context cannot mutate the other. These are concurrency and
+  isolation tests, not PvP or matchmaking implementation.
+- Same-wallet contexts must prove one active Daily reservation/attempt;
+  distinct-wallet contexts must prove atomic final-budget-slot allocation and
+  carrier-NAT-safe rate-limit behavior without broad production bypasses.
+- Keep deterministic fuzz/property seeds printed on failure and replayable from
+  one command. Invalid schemas, oversized payloads, wrong origins, forged
+  sequence/turn/revision/recipient/amount/network data, and duplicate or
+  conflicting idempotency keys must fail closed without changing authority.
+
+#### PostgreSQL and reward-security contract
+
+- CI provisions a disposable PostgreSQL 16 service container from a reviewed
+  digest-pinned image. Each reward test database is uniquely named, receives
+  repository migrations from zero, and is dropped after the job. No test may
+  connect to Render or any externally supplied production database.
+- Exercise migrations, UTC rollover, reservation expiry/cancellation, one
+  active reservation, same-wallet attempt uniqueness, daily-budget final-slot
+  contention, claim-nonce replay, same-key conflict, and signer-lease behavior
+  through at least two independent database connections.
+- Run one built-browser Daily journey against the real PostgreSQL store in
+  record-only mode. The broad viewport/state matrix may retain the faster
+  in-memory store, but it cannot substitute for the PostgreSQL gate.
+- Inject process exits around reservation, authoritative win, claim/payout
+  queue, fake signed-byte/hash persistence, fake broadcast, inclusion, and
+  finality. Restart/reconciliation must preserve every liability and must never
+  construct a second logical transaction for ambiguous or already stored data.
+- Fake signer/RPC cases cover insufficient balance, fee reserve, wrong
+  signer/network, stale height, outage, invalid responses, delayed inclusion,
+  finality, expiry, and manual review. Source, build output, browser bundles,
+  traces, screenshots, reports, and logs are scanned for private-key fixtures,
+  session tokens, authorization signatures, and server-only dependency leaks.
+- Assert CSP/security headers, origin enforcement, request-size limits,
+  structured redaction, and that disabled/paused rewards do not read a signer
+  key or broadcast. No automated test enables a real chain mode.
+
+#### Performance and bundle budgets
+
+Budgets are measured against a clean production build and a warm loopback test
+server on the pinned CI browser with one worker. Record the environment and all
+raw samples. Timing gates use one discarded warm-up plus five measured runs;
+the median and maximum must both pass.
+
+| Measure | Initial WP-014 budget |
+| --- | ---: |
+| Largest initial client JavaScript chunk, raw | <= 1,500,000 bytes |
+| Initial JavaScript plus CSS, gzip | <= 430,000 bytes |
+| Ordinary Practice requests for the lazy Mini App SDK before wallet action | 0 |
+| Navigation to actionable Practice start, median / maximum | <= 2,000 ms / 3,000 ms |
+| Start Practice tap to legal combat input, median / maximum | <= 3,000 ms / 5,000 ms |
+| Legal Fire tap to visible projectile presentation, median / maximum | <= 250 ms / 500 ms |
+| Complete player-shot and Loomkeeper-response presentation | <= 10,000 ms maximum |
+| Individual browser test | <= 120 seconds |
+| Each required CI job / complete workflow wall time | <= 20 / 30 minutes |
+
+The current accepted build is approximately 1,434,333 raw bytes for the main
+client JavaScript chunk and approximately 395.21 kB gzip, so these budgets add
+bounded CI variance without normalizing further growth. A budget failure opens
+a measured optimization or plan-review task; do not raise a number merely to
+make CI green. WP-015 receives a separate provisional maximum of 1.5 MB total
+compressed initial media transfer and must prefer lazy loading; that media
+allowance cannot be reassigned to JavaScript.
+
+#### WP-015 production-asset handoff gate
+
+- Provide reusable deterministic capture helpers for approved runtime asset
+  candidates at every maintained viewport and state-rich canonical scene. The
+  helpers do not generate, approve, normalize, or promote art/audio; WP-015
+  retains those responsibilities.
+- Prove the existing asset-manifest and approved-copy pipeline rejects missing
+  hashes, undeclared runtime paths, documentation/quarantine inputs, and
+  mismatched copied bytes. Runtime tests load only manifest-approved product
+  paths and keep collision/terrain authority independent of decorative pixels.
+- Report JavaScript/CSS and media transfer separately. The provisional 1.5 MB
+  compressed initial-media ceiling is a WP-015 handoff constraint, not unused
+  code budget. Additional Calling, Patch, effect, or audio media must be lazy
+  unless a reviewed phone-readability or causal-presentation requirement proves
+  it belongs in initial loading.
+- Preserve baseline-update review as the visual acceptance surface for WP-015.
+  Passing a screenshot comparison cannot substitute for exact-file provenance,
+  commercial-use rights, manifest approval, attribution, or Nimiq brand/IP
+  permission.
+
+#### CI, evidence, and retry policy
+
+- Add explicit scripts for the maintained browser matrix, visual comparison,
+  resilience/context isolation, PostgreSQL reward integration, bundle budget,
+  performance budget, and a true `verify:quality`. Redefine `verify:full` to
+  include `verify:fast`, clean build/built smoke, every maintained browser
+  suite, `verify:quality`, identity-bundle inspection, and `npm audit`.
+- Split GitHub Actions into bounded fail-fast, browser/visual,
+  PostgreSQL/reward-security, and performance/bundle jobs when required to keep
+  the wall-time budget. A job may reuse only build artifacts produced from the
+  same commit and lockfile; no stale local output is evidence.
+- Required gates use zero retries. A first-failure/second-pass result is still
+  flaky and cannot close WP-014. A manual diagnostic rerun is allowed only
+  after the first failure artifacts are retained and does not replace the
+  failing result.
+- Retain Playwright HTML report, trace, screenshot, video, visual diff, sanitized
+  timing/bundle JSON, and printed deterministic seeds for failed CI jobs for 14
+  days. Keep all generated artifacts ignored and outside `assets/`; track only
+  reviewed screenshot baselines and compact sanitized facts in
+  the applicable per-slice evidence record under `docs/evidence/`.
+- Each WP-014A through WP-014E slice creates its own evidence record before the
+  first source/tooling edit. Completion records every planned command exactly
+  once, the deterministic seeds, expected skips, physical-device omission,
+  residual single-instance/runtime risks, and identified reviews.
+
+#### Implementation slices
+
+1. **WP-014A Harness and CI foundation - complete 2026-08-01:** added the
+   412x915 project, `test:browser:matrix`, executable maintained-project and
+   expected-skip accounting, zero retries, one worker, synthetic safe-area
+   fixtures, all-suite CI routing, and retained failure artifacts. The final
+   matrix accounted for 105 project results: 78 passed and 27 reviewed project
+   exclusions. Its first run exposed a 7.5-pixel pointer-origin error when a
+   normal game surface was vertically centered; non-sideways client coordinates
+   now map relative to the game bounds and focused plus full-matrix regressions
+   pass. Evidence: `docs/evidence/wp-014a.json`.
+2. **WP-014B Visual and layout gate - complete 2026-08-02:** the
+   deterministic capture states, frozen thresholds, five-project geometry and
+   recovery journey, canonical combat/Daily states, compact-landscape states,
+   and layout assertions are implemented. A pull-request Ubuntu 24.04 workflow
+   generates artifact-only candidates for explicit review and remains manually
+   dispatchable after it reaches the default branch. Its pre-baseline quality
+   run passed 125 project results (86 applicable passes and 39 reviewed
+   exclusions). All 35 reviewed Linux PNGs were independently reproduced, and
+   ordinary Ubuntu Verify run 30739075679 passed the final 125-result matrix
+   with the same totals, zero retries, and frozen visual thresholds.
+3. **WP-014C Resilience and isolation - complete 2026-08-02:** supported
+   constrained Chromium loading, Chromium/WebKit offline/resume, delayed
+   synthetic provider settlement, session-loss recovery, deterministic client
+   protocol faults, and two-context storage/identity/challenge/control
+   isolation are implemented. The focused routes and complete 150-result local
+   zero-retry logic matrix passed. After one expected-offline diagnostic was
+   narrowed without weakening other error assertions, ordinary Ubuntu Verify
+   run 30742976205 passed 94 applicable routes and 56 reviewed exclusions with
+   zero retries.
+4. **WP-014D PostgreSQL and reward security - complete 2026-08-02:** the
+   digest-pinned CI service, two-connection migration/concurrency/restart tests,
+   real-store record-only browser journey, fake signer/RPC faults,
+   security-header checks, artifact secret scans, and sanitized idle-pool error
+   handling are implemented. Final run 30749716477 passed the dedicated job
+   and the ordinary 150-result, zero-retry Verify matrix after two retained
+   failure runs drove fixture and production robustness corrections.
+5. **WP-014E Performance and closure - complete 2026-08-02:** exact
+   initial-graph bundle and full-motion timing budgets, zero lazy-SDK Practice
+   requests, truthful aggregate verification, reviewed CI project shards, and
+   sanitized failure evidence are implemented. Run 30752850448 passed the fast,
+   three browser, PostgreSQL/reward-security, and performance/bundle jobs. All
+   150 zero-retry browser results were accounted for (94 passed, 56 reviewed
+   exclusions), every job finished within 10 minutes, and the workflow wall
+   time was 9m09s. Exact Ubuntu bundle and timing measurements, expected-skip,
+   security, self-review, and residual risks are recorded in
+   `docs/evidence/wp-014e.json`.
+
+#### Acceptance
+
+- all five projects execute their required critical journeys with no
+  unexpected skips, focused tests, retry-only passes, page errors, or
+  unexpected console errors;
+- visual baselines pass within the frozen threshold and every intentional
+  baseline change has explicit review;
+- offline/resume, delayed provider, session loss, and two-context isolation
+  preserve or truthfully replace authority without duplicate input;
+- PostgreSQL two-connection races, restart/reconciliation, record-only browser
+  flow, fake payout faults, CSP/origin/redaction, and secret/bundle scans pass;
+- exact bundle and timing budgets pass from recorded clean-build measurements;
+- `npm run verify:full` and the required GitHub Actions jobs pass from a clean
+  checkout with zero vulnerabilities and complete compliance; and
+- physical Android/iOS testing is explicitly reported as not run. No real
+  wallet, external RPC, sponsor key, NIM transfer, production asset, Sorcerers
+  material, PvP, or matchmaking behavior is added.
+
+Primary implementation references reviewed for this refinement:
+
+- Playwright projects, CI, screenshots, retries, tracing, and network control:
+  `https://playwright.dev/docs/test-projects`,
+  `https://playwright.dev/docs/ci`,
+  `https://playwright.dev/docs/test-snapshots`,
+  `https://playwright.dev/docs/test-retries`,
+  `https://playwright.dev/docs/trace-viewer-intro`, and
+  `https://playwright.dev/docs/network`;
+- GitHub Actions PostgreSQL service containers:
+  `https://docs.github.com/en/actions/tutorials/use-containerized-services/create-postgresql-service-containers`.
 
 ### WP-015 Production Art And Audio
 

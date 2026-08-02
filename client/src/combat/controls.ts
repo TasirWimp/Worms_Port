@@ -83,7 +83,7 @@ export class CombatControls {
                 <span class="pad-label">Move</span><span class="pad-ring"></span><span class="pad-knob"></span>
             </div>
             <div class="combat-touch-zone aim-zone" role="group" aria-label="Aim and power pad">
-                <span class="pad-label">Aim - release to lock</span><span class="pad-ring"></span><span class="pad-knob"></span>
+                <span class="pad-label">Aim · release locks</span><span class="pad-ring"></span><span class="pad-knob"></span>
             </div>
             <nav class="combat-actions" aria-label="Combat actions"></nav>
             <section class="combat-pause-sheet" aria-label="Paused Practice controls" aria-hidden="true" hidden>

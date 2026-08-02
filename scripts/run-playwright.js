@@ -17,8 +17,35 @@ function getFreePort() {
 async function main() {
   const port = await getFreePort();
   const cli = require.resolve('@playwright/test/cli');
-  const args = process.argv.slice(2);
-  const rewardRun = args.some((argument) => argument.includes('reward.spec'));
+  const rawArgs = process.argv.slice(2);
+  const qualityGate = rawArgs.includes('--quality-gate');
+  const qualityShard = rawArgs.includes('--quality-shard');
+  const performanceGate = rawArgs.includes('--performance-gate');
+  const args = rawArgs.filter((argument) =>
+    argument !== '--quality-gate' && argument !== '--quality-shard' &&
+    argument !== '--performance-gate'
+  );
+  if (qualityShard && !qualityGate) {
+    throw new Error('A quality shard requires --quality-gate.');
+  }
+  if (qualityShard && !args.some((argument) => argument.startsWith('--project='))) {
+    throw new Error('A quality shard requires at least one explicit --project=<name>.');
+  }
+  const qualityProjects = args
+    .filter((argument) => argument.startsWith('--project='))
+    .map((argument) => argument.slice('--project='.length))
+    .filter(Boolean);
+  if (qualityGate && process.env.CI && args.includes('--ignore-snapshots')) {
+    throw new Error('WP-014 CI quality tests cannot ignore Linux visual comparisons.');
+  }
+  if (qualityGate && process.platform !== 'linux' && !args.includes('--ignore-snapshots')) {
+    console.log('Non-Linux WP-014 run: visual comparisons are explicitly omitted; authoritative Linux CI remains mandatory.');
+    args.push('--ignore-snapshots');
+  }
+  if (qualityGate || performanceGate) assertQualityGateEnvironment(process.env);
+  const rewardRun = qualityGate || (!performanceGate && args.length === 0) || args.some((argument) =>
+    argument.includes('reward.spec') || argument.includes('visual.spec')
+  );
   const child = childProcess.spawn(
     process.execPath,
     [cli, 'test', ...args],
@@ -27,8 +54,14 @@ async function main() {
       env: {
         ...process.env,
         PLAYWRIGHT_PORT: String(port),
+        ...(qualityGate ? { PLAYWRIGHT_QUALITY_GATE: 'true' } : {}),
+        ...(qualityShard ? { PLAYWRIGHT_QUALITY_SHARD: 'true' } : {}),
+        ...(qualityShard ? { PLAYWRIGHT_QUALITY_PROJECTS: qualityProjects.join(',') } : {}),
+        ...(performanceGate ? { PLAYWRIGHT_PERFORMANCE_GATE: 'true' } : {}),
         ...(rewardRun ? {
+          WP014_QUALITY_TEST: 'true',
           REWARD_MODE: 'record-only',
+          REWARD_PAUSED: 'false',
           REWARD_TEST_MEMORY_STORE: 'true',
           REWARD_TEST_SEED: '1',
           REWARD_LUNA: '100000',
@@ -46,7 +79,31 @@ async function main() {
   else process.exit(result.code ?? 1);
 }
 
-main().catch((error) => {
-  console.error(`Playwright runner failed: ${error.message}`);
-  process.exitCode = 1;
-});
+function assertQualityGateEnvironment(env) {
+  if (['testnet', 'mainnet'].includes(env.REWARD_MODE || '')) {
+    throw new Error('WP-014 quality tests refuse inherited chain reward modes.');
+  }
+  const blocked = [
+    'DATABASE_URL',
+    'REWARD_PRIVATE_KEY_FILE',
+    'REWARD_RPC_URL',
+    'NIMIQ_RECOVERY_WORDS',
+    'REWARD_MAINNET_ACKNOWLEDGEMENT',
+    'REWARD_TEST_WALLET_ADDRESS',
+    'REWARD_TEST_DAILY_ATTEMPT_LIMIT',
+    'REWARD_TEST_REPEAT_ACKNOWLEDGEMENT'
+  ];
+  const configured = blocked.filter((name) => typeof env[name] === 'string' && env[name].trim());
+  if (configured.length > 0) {
+    throw new Error(`WP-014 quality tests refuse inherited external authority: ${configured.join(', ')}.`);
+  }
+}
+
+if (require.main === module) {
+  main().catch((error) => {
+    console.error(`Playwright runner failed: ${error.message}`);
+    process.exitCode = 1;
+  });
+}
+
+module.exports = { assertQualityGateEnvironment };

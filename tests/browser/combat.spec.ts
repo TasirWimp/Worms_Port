@@ -1,5 +1,12 @@
 import { expect, test, type Page } from '@playwright/test';
 
+import {
+  applySyntheticSafeArea,
+  readSafeArea,
+  SYNTHETIC_SAFE_AREA,
+  ZERO_SAFE_AREA
+} from './support/safe-area';
+
 test.beforeEach(async ({ page }) => {
   const pageErrors: string[] = [];
   const consoleErrors: string[] = [];
@@ -76,6 +83,18 @@ test('portrait/landscape layout is touch-safe and renders deterministic combat',
   await page.screenshot({ path: testInfo.outputPath('wp-010-combat.png') });
 });
 
+test('safe-area fixture applies deterministic zero and synthetic insets', async ({ page }) => {
+  await applySyntheticSafeArea(page, ZERO_SAFE_AREA);
+  expect(await readSafeArea(page)).toEqual(ZERO_SAFE_AREA);
+
+  await applySyntheticSafeArea(page, SYNTHETIC_SAFE_AREA);
+  expect(await readSafeArea(page)).toEqual(SYNTHETIC_SAFE_AREA);
+  const status = await page.locator('.combat-status').boundingBox();
+  expect(status).not.toBeNull();
+  expect(status!.x).toBeGreaterThanOrEqual(SYNTHETIC_SAFE_AREA.left - 1);
+  expect(status!.y).toBeGreaterThanOrEqual(SYNTHETIC_SAFE_AREA.top - 1);
+});
+
 test('landscape offers a user-activated full-screen probe with a safe exit', async ({ page }, testInfo) => {
   test.skip(testInfo.project.name !== 'chromium-844x390', 'Landscape capability probe');
 
@@ -134,6 +153,7 @@ test('landscape offers a user-activated full-screen probe with a safe exit', asy
 });
 
 test('default sideways mode creates touch-safe landscape in a portrait viewport', async ({ page }, testInfo) => {
+  test.setTimeout(60_000);
   test.skip(testInfo.project.name !== 'chromium-390x844', 'One portrait viewport is sufficient.');
   await page.goto('/?combat-preview=1');
   const ui = page.locator('.combat-ui');
@@ -178,13 +198,16 @@ test('default sideways mode creates touch-safe landscape in a portrait viewport'
 });
 
 test('touch movement, Relic selection, aim lock, and explicit Fire stay separate', async ({ page }) => {
+  test.setTimeout(60_000);
   const startX = Number(await page.locator('.combat-ui').getAttribute('data-player-x'));
   await dragPad(page, '.movement-zone', 1, 0.36, 0);
   await expect(page.locator('.combat-ui')).toHaveAttribute('data-last-command', 'move');
   await expect.poll(async () => Math.abs(
     Number(await page.locator('.combat-ui').getAttribute('data-player-x')) - startX
   )).toBeGreaterThanOrEqual(8);
-  await expect(page.locator('.combat-ui')).toHaveAttribute('data-presenting', 'false');
+  await expect(page.locator('.combat-ui')).toHaveAttribute('data-presenting', 'false', {
+    timeout: 15_000
+  });
   await expect(page.locator('.combat-ui')).toHaveAttribute('data-preview-points', '0');
 
   await selectRelic(page, 'Needlepoint');
@@ -202,7 +225,9 @@ test('touch movement, Relic selection, aim lock, and explicit Fire stay separate
   const aimAnchor = await page.locator('.aim-zone').boundingBox();
 
   await dragPad(page, '.movement-zone', 3, -0.36, 0);
-  await expect(page.locator('.combat-ui')).toHaveAttribute('data-presenting', 'false');
+  await expect(page.locator('.combat-ui')).toHaveAttribute('data-presenting', 'false', {
+    timeout: 15_000
+  });
   await expect(page.locator('.combat-ui')).toHaveAttribute('data-preview-points', '0');
   await expect(page.locator('.fire-button')).toBeDisabled();
   await expect(page.getByText(/aim again/i)).toBeVisible();

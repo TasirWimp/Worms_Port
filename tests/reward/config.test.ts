@@ -1,7 +1,10 @@
 import assert from 'node:assert/strict';
 import test from 'node:test';
 
-import { rewardConfigFromEnvironment } from '../../server/src/reward/config';
+import {
+    assertRewardQualityTestEnvironment,
+    rewardConfigFromEnvironment
+} from '../../server/src/reward/config';
 
 test('rewards default disabled without requiring payout secrets', () => {
     const config = rewardConfigFromEnvironment({
@@ -102,4 +105,42 @@ test('reward wallet settings normalize compact addresses and identify invalid va
         }),
         /REWARD_TEST_WALLET_ADDRESS must be a valid compact or spaced Nimiq address/
     );
+});
+
+test('quality-test mode permits only memory or loopback disposable record-only authority', () => {
+    assert.doesNotThrow(() => assertRewardQualityTestEnvironment({
+        WP014_QUALITY_TEST: 'true',
+        REWARD_MODE: 'record-only',
+        REWARD_TEST_MEMORY_STORE: 'true'
+    }));
+    assert.doesNotThrow(() => assertRewardQualityTestEnvironment({
+        WP014_QUALITY_TEST: 'true',
+        REWARD_MODE: 'record-only',
+        DATABASE_URL: 'postgresql://test:test@127.0.0.1:5432/nimble_knots_wp014_browser_01'
+    }));
+    assert.throws(() => assertRewardQualityTestEnvironment({
+        WP014_QUALITY_TEST: 'true',
+        REWARD_MODE: 'mainnet'
+    }), /refuse chain reward modes/);
+    assert.throws(() => assertRewardQualityTestEnvironment({
+        WP014_QUALITY_TEST: 'true',
+        REWARD_MODE: 'record-only',
+        REWARD_PRIVATE_KEY_FILE: '/run/secrets/reward-key',
+        REWARD_TEST_MEMORY_STORE: 'true'
+    }), /refuse payout authority: REWARD_PRIVATE_KEY_FILE/);
+    assert.throws(() => assertRewardQualityTestEnvironment({
+        WP014_QUALITY_TEST: 'true',
+        REWARD_MODE: 'record-only',
+        REWARD_TEST_MEMORY_STORE: 'true',
+        REWARD_TEST_WALLET_ADDRESS: 'NQ46 KLJE 5TMF 4Y1A 1255 CJHJ YG1S H0NU T604'
+    }), /refuse payout authority: REWARD_TEST_WALLET_ADDRESS/);
+    assert.throws(() => assertRewardQualityTestEnvironment({
+        WP014_QUALITY_TEST: 'true',
+        REWARD_MODE: 'record-only',
+        DATABASE_URL: 'postgresql://test:test@database.example/nimble_knots_wp014_external'
+    }), /require a loopback PostgreSQL URL/);
+    assert.throws(() => assertRewardQualityTestEnvironment({
+        WP014_QUALITY_TEST: 'true',
+        REWARD_MODE: 'record-only'
+    }), /require an explicit memory or disposable PostgreSQL store/);
 });

@@ -76,6 +76,8 @@ export function createRuntimeServer(options: RuntimeServerOptions = {}) {
         );
         response.setHeader('Referrer-Policy', 'no-referrer');
         response.setHeader('X-Content-Type-Options', 'nosniff');
+        response.setHeader('X-Frame-Options', 'DENY');
+        response.setHeader('Cross-Origin-Resource-Policy', 'same-origin');
         response.setHeader(
             'Permissions-Policy',
             'camera=(), geolocation=(), microphone=(), payment=()'

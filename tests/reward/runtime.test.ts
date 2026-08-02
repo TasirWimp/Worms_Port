@@ -1,4 +1,7 @@
 import assert from 'node:assert/strict';
+import { mkdtemp, rm, writeFile } from 'node:fs/promises';
+import { tmpdir } from 'node:os';
+import { join } from 'node:path';
 import test from 'node:test';
 
 import { io, type Socket } from 'socket.io-client';
@@ -99,16 +102,30 @@ test('authorized reward transport reserves, starts, and forfeits one durable att
 });
 
 test('runtime responses include the production security headers', async () => {
-    const runtime = createRuntimeServer({ allowedOrigins: ['http://127.0.0.1'] });
+    const clientDir = await mkdtemp(join(tmpdir(), 'nimble-knots-runtime-'));
+    await writeFile(
+        join(clientDir, 'index.html'),
+        '<!doctype html><title>NIMble Knots test fixture</title>',
+        'utf8'
+    );
+    const runtime = createRuntimeServer({
+        allowedOrigins: ['http://127.0.0.1'],
+        clientDir
+    });
     const port = await runtime.listen();
     try {
         const response = await fetch(`http://127.0.0.1:${port}/`);
+        assert.equal(response.status, 200);
         assert.match(response.headers.get('content-security-policy') ?? '', /object-src 'none'/);
         assert.equal(response.headers.get('x-content-type-options'), 'nosniff');
         assert.equal(response.headers.get('referrer-policy'), 'no-referrer');
+        assert.equal(response.headers.get('x-frame-options'), 'DENY');
+        assert.equal(response.headers.get('cross-origin-resource-policy'), 'same-origin');
+        assert.match(response.headers.get('permissions-policy') ?? '', /payment=\(\)/);
         assert.equal(response.headers.has('x-powered-by'), false);
     } finally {
         await runtime.close();
+        await rm(clientDir, { recursive: true, force: true });
     }
 });
 

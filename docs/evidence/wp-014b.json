@@ -1,0 +1,82 @@
+{
+  "id": "WP-014B",
+  "status": "complete",
+  "starting_commit": "096a4c71c657a73aaf78674d6d6ac64d0fc6f2e3",
+  "branch": "codex/wp-014-quality-harness",
+  "initial_worktree": "clean",
+  "starting_lock_sha256": "8A13522641DC030E38258E08B843B1E902B018E324D3AEECA3CD577F0EF10704",
+  "owning_roles": [
+    "worms_port_test_worker",
+    "worms_port_base_game_worker",
+    "worms_port_reviewer",
+    "worms_port_compliance_keeper"
+  ],
+  "scope": [
+    "Add Linux Playwright screenshot assertions at the frozen 0.2 per-pixel and 0.005 ratio thresholds",
+    "Cover deterministic start, combat, and result geometry at all five maintained projects",
+    "Cover canonical aim lock, Relic chooser, pause, reduced and full motion, projectile and impact presentation, and all three sideways modes",
+    "Cover canonical Daily availability, authorization, claim processing, and finalized wording with a synthetic wallet and record-only boundary",
+    "Cover compact-landscape Pause and standards-based full-screen fallback presentation",
+    "Enforce action and pad target sizes, control separation, exact status values, non-color state, safe-area containment, and browser scroll, zoom, and selection suppression",
+    "Provide a deterministic result preview and recovery fixture for visual capture without external wallet, database, RPC, or chain authority",
+    "Integrate the visual suite into the maintained zero-retry quality matrix and reviewed expected-skip policy"
+  ],
+  "non_goals": [
+    "Network degradation, delayed providers, session loss, or multi-context isolation assigned to WP-014C",
+    "PostgreSQL races, restart injection, fake signer or RPC faults, and artifact secret scanning assigned to WP-014D",
+    "Bundle and timing budgets or verify:full closure assigned to WP-014E",
+    "Real Nimiq Pay, physical Android or iOS, real wallets, external RPCs, NIM transfers, production art or audio, PvP, matchmaking, or Sorcerers material",
+    "Automatic acceptance of changed screenshot baselines or increased visual thresholds"
+  ],
+  "planned_checks": [
+    "npm run check:compliance",
+    "npm run check:types",
+    "npm run test:tooling",
+    "npm run test:protocol",
+    "npm run test:combat",
+    "npm run build",
+    "npm run smoke:built",
+    "Visual screenshot suite within npm run test:browser:matrix",
+    "npm run test:browser:matrix",
+    "npm audit",
+    "Linux screenshot baseline review",
+    "GitHub Actions visual comparison",
+    "self-review"
+  ],
+  "deterministic_seeds": [
+    "1",
+    "3735928559"
+  ],
+  "sorcerers_reference_used": false,
+  "clean_room_records": [],
+  "check_results": [
+    { "command": "npm run check:compliance", "status": "pass", "detail": "All 16 work-package records and asset, import-boundary, dependency-license, and clean-room gates passed." },
+    { "command": "npm run check:types", "status": "pass" },
+    { "command": "npm run test:tooling", "status": "pass", "detail": "10 tests passed." },
+    { "command": "npm run test:protocol", "status": "pass", "detail": "38 tests passed after adding deterministic Practice seed isolation per session." },
+    { "command": "npm run test:combat", "status": "pass", "detail": "18 tests passed." },
+    { "command": "npm run build", "status": "pass", "detail": "Production server and client builds passed; the existing large-client-chunk warning remains assigned to WP-014E." },
+    { "command": "npm run smoke:built", "status": "pass" },
+    { "command": "Visual screenshot suite within npm run test:browser:matrix", "status": "pass", "detail": "All 35 reviewed Linux screenshot assertions ran as the visual subset of the ordinary Ubuntu 24.04 matrix and passed at threshold 0.2 with maxDiffPixelRatio 0.005. The dedicated script remains available for focused debugging; the release gate avoided a duplicate second invocation." },
+    { "command": "npm run test:browser:matrix", "status": "pass", "detail": "GitHub Actions Verify run 30739075679 tested commit fbf64617ad6437344a69667205c03953e5d58bd6 on Ubuntu 24.04: all 125 project results were accounted for with one worker and zero retries, 86 passed, 39 reviewed exclusions, and the WP-014 quality policy passed in 18.2 minutes. The complete job passed in 20m27s." },
+    { "command": "npm audit", "status": "pass", "detail": "0 vulnerabilities" },
+    { "command": "Linux screenshot baseline review", "status": "pass", "detail": "Initial candidate run 30714882370 was explicitly rejected for a clipped portrait aim-pad hint. Replacement run 30715750959 produced 35 reviewed Ubuntu 24.04 PNGs after the correction, and run 30716193040 reproduced all 35 files byte-for-byte at commit 66bee6dc0779743246c4beaa3d913dd599333437." },
+    { "command": "GitHub Actions visual comparison", "status": "pass", "detail": "Verify run 30716193041 retained the first failure evidence for one globally consumed Practice seed and four exhausted interaction budgets. After session-scoped deterministic seed cycling and bounded waits passed focused repeats plus the full local logic matrix, ordinary Verify run 30739075679 passed every reviewed Linux comparison without retries or threshold changes." },
+    { "command": "self-review", "status": "pass", "detail": "Confirmed that the correction affects only deterministic test-mode Practice seed selection and bounded test waits; production randomness, reward seeds, retry policy, visual thresholds, import boundaries, and external-authority prohibitions remain unchanged." }
+  ],
+  "reviews": [
+    { "role": "worms_port_test_worker", "reviewer": "primary-agent-pre-baseline-matrix-review", "decision": "pass" },
+    { "role": "worms_port_base_game_worker", "reviewer": "primary-agent-labeled-preview-and-recovery-review", "decision": "pass" },
+    { "role": "worms_port_compliance_keeper", "reviewer": "primary-agent-synthetic-authority-and-artifact-boundary-review", "decision": "pass" },
+    { "role": "worms_port_reviewer", "reviewer": "primary-agent-linux-baseline-visual-review", "decision": "pass" },
+    { "role": "worms_port_reviewer", "reviewer": "primary-agent-ordinary-linux-comparison-review", "decision": "pass" }
+  ],
+  "skipped_checks": [
+    "The isolated Ubuntu 24.04 WSL copy downloaded the pinned browsers but could not run them because WebKit requires system packages and WSL sudo needs user interaction. No WSL image is being treated as release evidence.",
+    "Physical Android/iOS and Nimiq Pay WebView testing was not run; browser emulation and synthetic safe areas do not substitute for it."
+  ],
+  "residual_risks": [
+    "The query-only deterministic result preview is visibly labeled as an automated no-wallet/no-payout surface and contains no external authority; it still ships in the client bundle as a capture helper.",
+    "Synthetic safe-area and browser emulation cannot prove physical Nimiq Pay chrome, notch, or device font behavior."
+  ]
+}

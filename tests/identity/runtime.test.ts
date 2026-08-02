@@ -1,7 +1,6 @@
 import assert from 'node:assert/strict';
 import test from 'node:test';
 
-import { PrivateKey, PublicKey, Signature } from '@nimiq/core';
 import { io as connectClient, type Socket } from 'socket.io-client';
 
 import {
@@ -9,8 +8,8 @@ import {
     IdentityCompleteDataSchema,
     protocolEvents
 } from '../../shared/protocol';
-import { nimiqSignedMessageHash } from '../../server/src/identity/crypto';
 import { createRuntimeServer, type RuntimeServer } from '../../server/src/runtime';
+import { createTestSigner } from '../support/nimiq-signer';
 
 type Ack = Record<string, any>;
 
@@ -66,33 +65,6 @@ async function begin(socket: Socket, address: string, requestId = 'identity_begi
     return ack.data;
 }
 
-function createSigner(hex = '000102030405060708090a0b0c0d0e0f101112131415161718191a1b1c1d1e1f') {
-    const privateKey = PrivateKey.fromHex(hex);
-    const publicKey = PublicKey.derive(privateKey);
-    const derivedAddress = publicKey.toAddress();
-    const address = derivedAddress.toUserFriendlyAddress();
-    derivedAddress.free();
-    return {
-        address,
-        sign(message: string) {
-            const signature = Signature.create(
-                privateKey,
-                publicKey,
-                nimiqSignedMessageHash(message)
-            );
-            try {
-                return { publicKey: publicKey.toHex(), signature: signature.toHex() };
-            } finally {
-                signature.free();
-            }
-        },
-        dispose() {
-            publicKey.free();
-            privateKey.free();
-        }
-    };
-}
-
 async function closeAll(runtime: RuntimeServer, sockets: Socket[]) {
     for (const socket of sockets) socket.close();
     await runtime.close();
@@ -101,7 +73,7 @@ async function closeAll(runtime: RuntimeServer, sockets: Socket[]) {
 test('real Socket.IO identity proof rotates the session and replay fails closed', async () => {
     const { runtime, url } = await start();
     const socket = await connect(url);
-    const signer = createSigner();
+    const signer = createTestSigner();
     try {
         const opened = await openSession(socket);
         const authorization = await begin(socket, signer.address);
@@ -136,7 +108,7 @@ test('real Socket.IO identity proof rotates the session and replay fails closed'
 test('invalid proof is consumed and concurrent completion has at most one success', async () => {
     const { runtime, url } = await start();
     const socket = await connect(url);
-    const signer = createSigner();
+    const signer = createTestSigner();
     try {
         await openSession(socket);
         const invalidAttempt = await begin(socket, signer.address, 'identity_begin_invalid');
@@ -186,7 +158,7 @@ test('abandoned signing can be cancelled and retried immediately without an owne
     const { runtime, url } = await start();
     const owner = await connect(url);
     const foreign = await connect(url);
-    const signer = createSigner();
+    const signer = createTestSigner();
     try {
         await openSession(owner, 'identity_cancel_owner_session');
         await openSession(foreign, 'identity_cancel_foreign_session');
@@ -229,7 +201,7 @@ test('abandoned signing can be cancelled and retried immediately without an owne
 test('identity stays disabled without configuration and cannot begin during Practice', async () => {
     const disabled = await start(false);
     const disabledSocket = await connect(disabled.url);
-    const signer = createSigner();
+    const signer = createTestSigner();
     try {
         await openSession(disabledSocket, 'identity_disabled_session');
         const unavailable = await emitAck(disabledSocket, protocolEvents.identityBegin, {
@@ -282,7 +254,7 @@ test('identity stays disabled without configuration and cannot begin during Prac
 test('malformed proof fields are rejected without echoing wallet material', async () => {
     const { runtime, url } = await start();
     const socket = await connect(url);
-    const signer = createSigner();
+    const signer = createTestSigner();
     try {
         await openSession(socket);
         const authorization = await begin(socket, signer.address);

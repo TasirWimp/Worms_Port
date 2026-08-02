@@ -3,8 +3,9 @@ import test from 'node:test';
 import type { Socket } from 'socket.io-client';
 
 import type { ChallengeResult, ChallengeSnapshot, SessionOpenData } from '../../shared/protocol';
-import { protocolEvents } from '../../shared/protocol';
+import { PROTOCOL_VERSION, protocolEvents } from '../../shared/protocol';
 import { createLatestSimulation } from '../../shared/simulation';
+import { adoptSession } from '../../client/src/lib/session';
 import { PracticeClient } from '../../client/src/practice/client';
 
 test('practice client rejects stale/conflicting snapshots and delivers one terminal result', () => {
@@ -36,6 +37,18 @@ test('practice client rejects stale/conflicting snapshots and delivers one termi
     socket.trigger(protocolEvents.result, terminal);
     assert.equal(results.length, 1);
     assert.deepEqual(results[0], terminal);
+
+    socket.trigger(protocolEvents.snapshot, {
+        ...snapshot(5, 'd', false),
+        sessionId: 'foreign_practice_session'
+    });
+    socket.trigger(protocolEvents.result, {
+        ...result(6),
+        sessionId: 'foreign_practice_session'
+    });
+    assert.equal(client.currentSnapshot()!.revision, 3);
+    assert.equal(snapshots.length, 1);
+    assert.equal(results.length, 1);
     client.dispose();
 });
 
@@ -51,6 +64,45 @@ test('practice client buffers one terminal result received during session bootst
     assert.deepEqual(results, [terminal]);
     socket.trigger(protocolEvents.result, terminal);
     assert.deepEqual(results, [terminal]);
+    client.dispose();
+});
+
+test('lost Practice acknowledgement retries the exact request and applies authority once', async () => {
+    installBrowserStorage();
+    const socket = new AckFaultSocket('lost-first');
+    adoptSession(socket as unknown as Socket, session());
+    const client = new PracticeClient(socket as unknown as Socket, session());
+    const delivered: ChallengeSnapshot[] = [];
+    client.onSnapshot((value) => delivered.push(value));
+
+    const created = await client.start('wizard');
+
+    assert.equal(socket.requests.length, 2);
+    assert.deepEqual(socket.requests[1], socket.requests[0]);
+    assert.equal(created.challengeId, 'practice_challenge_01');
+    assert.equal(created.nextSequence, 1);
+    assert.equal(delivered.length, 1);
+    assert.equal(client.currentSnapshot()?.challengeId, created.challengeId);
+    client.dispose();
+});
+
+test('delayed Practice acknowledgement serializes mutations without a duplicate command', async () => {
+    installBrowserStorage();
+    const socket = new AckFaultSocket('delayed');
+    adoptSession(socket as unknown as Socket, session());
+    const client = new PracticeClient(socket as unknown as Socket, session());
+
+    const pending = client.start('thief');
+    await Promise.resolve();
+    await assert.rejects(
+        () => client.start('warrior'),
+        /Another practice action is still pending/
+    );
+    const created = await pending;
+
+    assert.equal(socket.requests.length, 1);
+    assert.equal((socket.requests[0] as { calling: string }).calling, 'thief');
+    assert.equal(created.calling, 'thief');
     client.dispose();
 });
 
@@ -135,4 +187,64 @@ class FakeSocket {
     public trigger(event: string, value: unknown): void {
         for (const listener of this.listeners.get(event) ?? []) listener(value);
     }
+}
+
+class AckFaultSocket extends FakeSocket {
+    public readonly requests: unknown[] = [];
+
+    public constructor(private readonly fault: 'lost-first' | 'delayed') {
+        super();
+    }
+
+    public timeout(): this {
+        return this;
+    }
+
+    public emit(event: string, ...args: unknown[]): boolean {
+        if (event !== protocolEvents.challengeCreate) return true;
+        const request = args[0] as { requestId: string; calling: 'wizard' | 'thief' | 'warrior' };
+        const callback = args[1] as (error: Error | null, ack?: unknown) => void;
+        this.requests.push(structuredClone(request));
+        if (this.fault === 'lost-first' && this.requests.length === 1) {
+            queueMicrotask(() => callback(new Error('simulated lost acknowledgement')));
+            return true;
+        }
+        const respond = () => callback(null, {
+            protocolVersion: PROTOCOL_VERSION,
+            serverTimeMs: 1_700_000_000_000,
+            ok: true,
+            requestId: request.requestId,
+            data: {
+                ...snapshot(0, 'a', false),
+                calling: request.calling,
+                nextSequence: 1
+            }
+        });
+        if (this.fault === 'delayed') setTimeout(respond, 25);
+        else queueMicrotask(respond);
+        return true;
+    }
+}
+
+class MemoryStorage {
+    private readonly values = new Map<string, string>();
+
+    public getItem(key: string): string | null {
+        return this.values.get(key) ?? null;
+    }
+
+    public setItem(key: string, value: string): void {
+        this.values.set(key, value);
+    }
+
+    public removeItem(key: string): void {
+        this.values.delete(key);
+    }
+}
+
+function installBrowserStorage(): void {
+    Object.assign(globalThis, {
+        sessionStorage: new MemoryStorage(),
+        window: { setTimeout, clearTimeout }
+    });
 }

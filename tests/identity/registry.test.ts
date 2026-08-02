@@ -1,13 +1,11 @@
 import assert from 'node:assert/strict';
 import test from 'node:test';
 
-import { PrivateKey, PublicKey, Signature } from '@nimiq/core';
-
-import { nimiqSignedMessageHash } from '../../server/src/identity/crypto';
 import {
     buildCanonicalIdentityMessage,
     IdentityAuthorizationRegistry
 } from '../../server/src/identity/registry';
+import { createTestSigner } from '../support/nimiq-signer';
 
 const ADDRESS = 'NQ46 KLJE 5TMF 4Y1A 1255 CJHJ YG1S H0NU T604';
 const AUTHORIZATION_ID = 'A'.repeat(32);
@@ -26,17 +24,11 @@ function createRegistry(now = () => NOW) {
 }
 
 function sign(message: string) {
-    const privateKey = PrivateKey.fromHex(
-        '000102030405060708090a0b0c0d0e0f101112131415161718191a1b1c1d1e1f'
-    );
-    const publicKey = PublicKey.derive(privateKey);
-    const signature = Signature.create(privateKey, publicKey, nimiqSignedMessageHash(message));
+    const signer = createTestSigner();
     try {
-        return { publicKey: publicKey.toHex(), signature: signature.toHex() };
+        return signer.sign(message);
     } finally {
-        signature.free();
-        publicKey.free();
-        privateKey.free();
+        signer.dispose();
     }
 }
 

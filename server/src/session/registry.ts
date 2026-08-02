@@ -70,6 +70,7 @@ export type Session = {
     expiresAt: number;
     disconnectedDeadline?: number;
     nextSequence: number;
+    practiceSeedIndex: number;
     replay: Map<string, CachedRequest>;
     challenges: Map<string, Challenge>;
     identity?: WalletIdentity;
@@ -90,7 +91,7 @@ export type SessionRegistryOptions = {
     simulationTickIntervalMs?: number | false;
     simulationTicksPerInterval?: number;
     simulationMaxReplayRecords?: number;
-    seedSource?: () => number;
+    seedSource?: (sessionId: string, practiceIndex: number) => number;
     loomkeeperEnabled?: boolean;
     loomkeeperDifficulty?: LoomkeeperDifficulty;
 };
@@ -111,7 +112,7 @@ export class SessionRegistry {
     private readonly onChallengeSnapshot?: (snapshot: ChallengeSnapshot, socketId?: string) => void;
     private readonly onChallengeCompleted?: (result: ChallengeResult, socketId?: string) => void;
     private readonly coordinator: SimulationCoordinator;
-    private readonly seedSource: () => number;
+    private readonly seedSource: (sessionId: string, practiceIndex: number) => number;
     private readonly loomkeeperEnabled: boolean;
     private readonly loomkeeperDifficulty: LoomkeeperDifficulty;
     private readonly pendingLoomkeeperTurns = new Set<string>();
@@ -172,6 +173,7 @@ export class SessionRegistry {
             socketId,
             expiresAt: this.now() + this.sessionTtlMs,
             nextSequence: 0,
+            practiceSeedIndex: 0,
             replay: new Map(),
             challenges: new Map()
         };
@@ -313,10 +315,14 @@ export class SessionRegistry {
             this.coordinator.delete(removedId);
         }
         const challengeId = reward?.challengeId ?? opaqueId();
+        const seed = reward?.seed ?? this.seedSource(
+            session.id,
+            session.practiceSeedIndex++
+        ) >>> 0;
         const simulation = this.coordinator.create(
             challengeId,
             session.id,
-            reward?.seed ?? this.seedSource() >>> 0,
+            seed,
             calling
         );
         const challenge: Challenge = {

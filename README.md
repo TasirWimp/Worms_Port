@@ -79,10 +79,24 @@ npm run test:relics
 npm run test:combat
 npm run test:practice
 npm run test:identity
+npm run test:reward
+npm run test:reward:postgres
 npm run test:browser:smoke
 npm run test:browser:combat
 npm run test:browser:practice
 npm run test:browser:identity
+npm run test:browser:reward
+npm run test:browser:reward:postgres
+npm run test:browser:resilience
+npm run test:browser:visual
+npm run test:browser:performance
+npm run test:browser:matrix
+npm run check:bundle-budget
+npm run check:identity-bundles
+npm run check:reward-security
+npm run verify:quality
+npm run verify:postgres
+npm run verify:full
 npm start
 ```
 
@@ -91,8 +105,60 @@ with esbuild into `server/build/server.js`. The smoke command performs a fresh
 build, starts that server on an available local port, and verifies the game
 page, built overlays, approved-asset plumbing, and room join-ID API.
 `npm run test:browser:smoke` performs a fresh build and runs the phone-sized
-Chromium and WebKit touch journey. Run `npm run verify:full` for the complete
-autonomous foundation funnel.
+Chromium and WebKit touch journey. `npm run test:browser:matrix` is the
+zero-retry WP-014 release gate for all maintained browser suites at Chromium
+360x640, 390x844, 412x915, and 844x390 plus WebKit 390x844. It fails on an
+unexpected project skip or omitted critical journey. `npm run
+test:browser:performance` uses the pinned 390x844 Chromium project, one worker,
+one discarded warm-up, and five full-motion samples. It records sanitized raw
+timings under ignored `test-results/` and fails the navigation, combat-readiness,
+projectile, complete-response, or lazy Mini App SDK request budget. `npm run
+check:bundle-budget` reads the fresh Vite manifest, follows only the initial
+static entry graph, deterministically gzips its JavaScript and CSS, and records
+the exact ignored byte report.
+
+`npm run verify:quality` performs a fresh build followed by the bundle,
+identity/reward-security, complete browser matrix, and performance gates.
+`npm run verify:full` adds the fast funnel, built runtime smoke, and audit. It
+prints explicitly when local PostgreSQL authority is unavailable; that message
+is not PostgreSQL evidence. `npm run verify:postgres` remains the separate
+mandatory real-database gate and requires `WP014_TEST_DATABASE_URL`. GitHub
+Actions runs the complete browser matrix in reviewed project shards and runs
+PostgreSQL/reward-security plus performance/bundle as separate required jobs.
+Non-Linux `verify:quality` runs the complete logic matrix but explicitly omits
+visual comparison; ignored snapshots are rejected in CI, where the reviewed
+Linux baselines remain authoritative. The performance job retains its sanitized
+successful or failed byte/timing JSON for 14 days.
+
+`npm run test:browser:resilience` is the focused WP-014C suite. It uses
+Chromium's supported deterministic network controls for constrained initial
+loading, Chromium and WebKit offline/resume, delayed synthetic wallet
+settlement, truthful lost-session recovery, and two simultaneous isolated
+browser contexts. It uses only loopback authority and fixed synthetic keys;
+it does not emulate arbitrary WebSocket packet loss or contact Nimiq Pay,
+Render, a real wallet, an external RPC, or a chain.
+
+WP-014D adds focused PostgreSQL and reward-security gates. Set
+`WP014_TEST_DATABASE_URL` to an administrator connection for a disposable
+PostgreSQL service on `localhost`, `127.0.0.1`, or `::1`, then run
+`npm run test:reward:postgres` and `npm run test:browser:reward:postgres`.
+Each command creates and drops only uniquely named `nimble_knots_wp014_*`
+databases. The harness refuses external databases, chain reward modes, payout
+RPC settings, recovery words, and private-key files. `npm run
+check:reward-security` requires a fresh build and scans source, build output,
+and generated text artifacts for payout-key fixtures, wallet proofs, session
+tokens, and server-only dependency leakage. The digest-pinned PostgreSQL 16
+GitHub Actions job is authoritative when local PostgreSQL is unavailable.
+
+WP-014 visual baselines are created only by the GitHub Actions workflow
+**Visual baseline candidates** on the implementation pull request. That
+artifact-only workflow runs the pinned Ubuntu 24.04 Chromium/WebKit revisions
+with `--update-snapshots` and uploads the candidate PNGs; it never commits
+them. After the workflow exists on `main`, it can also be dispatched manually
+for an exact branch ref. Download and inspect every candidate before adding it
+under `tests/browser/visual.spec.ts-snapshots/`. Windows or unreviewed
+screenshots are not release evidence, and ordinary `Verify` runs only compare
+committed baselines.
 
 Playwright reports, traces, screenshots, and videos are generated outside
 `assets/` and are ignored locally. CI retains them only when verification

@@ -9,6 +9,7 @@ import {
     normalizeNimiqAddress,
     verifyNimiqSignedMessage
 } from '../../server/src/identity/crypto';
+import { TEST_PRIVATE_KEY } from '../support/nimiq-signer';
 
 const VECTOR = {
     message: 'NIMble Knots identity golden vector',
@@ -30,9 +31,7 @@ test('official Nimiq signed-message golden vector verifies and derives its addre
 });
 
 test('raw-message and Connect Challenge signatures are not identity signatures', () => {
-    const privateKey = PrivateKey.fromHex(
-        '000102030405060708090a0b0c0d0e0f101112131415161718191a1b1c1d1e1f'
-    );
+    const privateKey = PrivateKey.fromHex(TEST_PRIVATE_KEY);
     const publicKey = PublicKey.derive(privateKey);
     try {
         const raw = Signature.create(

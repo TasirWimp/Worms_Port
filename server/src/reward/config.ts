@@ -4,6 +4,55 @@ import type { RewardConfig, RewardMode } from './types';
 const MAINNET_ACKNOWLEDGEMENT = 'I_UNDERSTAND_MAINNET_PAYOUTS';
 const REPEAT_MAINNET_ACKNOWLEDGEMENT = 'I_UNDERSTAND_REPEAT_MAINNET_REWARDS';
 
+export function assertRewardQualityTestEnvironment(
+    environment: NodeJS.ProcessEnv = process.env
+): void {
+    if (environment.WP014_QUALITY_TEST !== 'true') return;
+    const mode = (environment.REWARD_MODE ?? 'disabled').trim();
+    if (mode === 'testnet' || mode === 'mainnet') {
+        throw new Error('WP-014 quality tests refuse chain reward modes.');
+    }
+    const blocked = [
+        'REWARD_PRIVATE_KEY_FILE',
+        'REWARD_RPC_URL',
+        'NIMIQ_RECOVERY_WORDS',
+        'REWARD_MAINNET_ACKNOWLEDGEMENT',
+        'REWARD_TEST_WALLET_ADDRESS',
+        'REWARD_TEST_DAILY_ATTEMPT_LIMIT',
+        'REWARD_TEST_REPEAT_ACKNOWLEDGEMENT'
+    ].filter((name) => optionalTrimmed(environment[name]));
+    if (blocked.length > 0) {
+        throw new Error(
+            `WP-014 quality tests refuse payout authority: ${blocked.join(', ')}.`
+        );
+    }
+    const databaseUrl = optionalTrimmed(environment.DATABASE_URL);
+    const memoryStore = environment.REWARD_TEST_MEMORY_STORE === 'true';
+    if (databaseUrl && memoryStore) {
+        throw new Error('WP-014 quality tests cannot combine PostgreSQL and the memory store.');
+    }
+    if (databaseUrl) {
+        if (mode !== 'record-only') {
+            throw new Error('WP-014 PostgreSQL quality tests require record-only rewards.');
+        }
+        const url = new URL(databaseUrl);
+        const loopback = url.hostname === 'localhost' || url.hostname === '127.0.0.1' ||
+            url.hostname === '::1';
+        const databaseName = decodeURIComponent(url.pathname.slice(1));
+        if (!['postgres:', 'postgresql:'].includes(url.protocol) || !loopback ||
+            !/^nimble_knots_wp014_[a-z0-9_]+$/.test(databaseName)) {
+            throw new Error(
+                'WP-014 quality tests require a loopback PostgreSQL URL with a ' +
+                'nimble_knots_wp014_* disposable database.'
+            );
+        }
+    } else if (mode === 'record-only' && !memoryStore) {
+        throw new Error(
+            'WP-014 record-only quality tests require an explicit memory or disposable PostgreSQL store.'
+        );
+    }
+}
+
 export function rewardConfigFromEnvironment(
     environment: NodeJS.ProcessEnv = process.env
 ): RewardConfig {

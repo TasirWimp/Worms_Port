@@ -45,5 +45,5 @@ export function clientPointToGame(
     if (mode === 'left') {
         return { x: bounds.bottom - point.y, y: point.x - bounds.left };
     }
-    return point;
+    return { x: point.x - bounds.left, y: point.y - bounds.top };
 }

@@ -63,6 +63,8 @@ input {
     overflow: hidden;
     background: #1f2348;
     box-shadow: 0 18px 48px rgb(31 35 72 / 22%);
+    user-select: none;
+    -webkit-user-select: none;
 }
 
 :root[data-sideways] #game {
@@ -895,6 +897,21 @@ button:disabled {
         max(18px, var(--safe-area-bottom)) max(18px, var(--safe-area-left));
     overflow: auto;
     touch-action: manipulation;
+}
+
+.result-preview-note {
+    position: absolute;
+    top: max(8px, var(--safe-area-top));
+    right: max(8px, var(--safe-area-right));
+    z-index: 2;
+    margin: 0;
+    padding: 0.35rem 0.55rem;
+    color: #fff;
+    font-size: 0.62rem;
+    font-weight: 900;
+    background: #5f4b8b;
+    border: 2px solid #e9b213;
+    border-radius: 999px;
 }
 
 .practice-card,

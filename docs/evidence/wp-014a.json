@@ -1,0 +1,75 @@
+{
+  "id": "WP-014A",
+  "status": "complete",
+  "starting_commit": "a0235b5c54e9f503f8b0d9aeeac21177da451c57",
+  "branch": "codex/wp-014-quality-harness",
+  "initial_worktree": "clean",
+  "starting_lock_sha256": "8A13522641DC030E38258E08B843B1E902B018E324D3AEECA3CD577F0EF10704",
+  "owning_roles": [
+    "worms_port_test_worker",
+    "worms_port_reviewer",
+    "worms_port_compliance_keeper",
+    "worms_port_base_game_worker"
+  ],
+  "scope": [
+    "Add the maintained Chromium 412x915 project without changing existing viewport behavior",
+    "Add explicit browser-suite routing and a complete WP-014A matrix command",
+    "Make zero retries and one worker mandatory for release-gating browser projects",
+    "Add reviewed expected-skip accounting that fails on unexpected skips or empty critical projects",
+    "Add deterministic zero and synthetic-inset safe-area fixture foundations",
+    "Route all maintained browser suites through GitHub Actions and retain sanitized failure artifacts",
+    "Correct normal pointer coordinates when the capped game surface is centered inside a larger viewport",
+    "Update planning and workflow truth for per-slice WP-014 evidence"
+  ],
+  "non_goals": [
+    "Committed visual baselines or screenshot-threshold enforcement, which belong to WP-014B",
+    "Low-bandwidth, delayed-provider, session-isolation, or protocol-fault expansion, which belongs to WP-014C",
+    "PostgreSQL service containers, reward concurrency, restart injection, or fake payout faults, which belong to WP-014D",
+    "Bundle or timing budgets and final verify:full closure, which belong to WP-014E",
+    "Real wallets, Nimiq Pay approval, external RPC access, real NIM, production art/audio, PvP, matchmaking, or Sorcerers material"
+  ],
+  "planned_checks": [
+    "npm run check:compliance",
+    "npm run check:types",
+    "npm run test:tooling",
+    "npm run build",
+    "npm run smoke:built",
+    "npm run test:browser:matrix",
+    "npm audit",
+    "CI workflow and failure-artifact policy inspection",
+    "self-review"
+  ],
+  "deterministic_seeds": [
+    "1",
+    "3735928559"
+  ],
+  "sorcerers_reference_used": false,
+  "clean_room_records": [],
+  "check_results": [
+    { "command": "npm run check:compliance", "status": "pass", "detail": "All 15 work-package records and asset, import-boundary, dependency-license, and clean-room gates passed." },
+    { "command": "npm run check:types", "status": "pass" },
+    { "command": "npm run test:tooling", "status": "pass", "detail": "10 tests passed, including policy routing, unexpected-skip rejection, and inherited external-authority rejection." },
+    { "command": "npm run build", "status": "pass", "detail": "Production server and client builds passed; the existing large-client-chunk warning remains assigned to WP-014E." },
+    { "command": "npm run smoke:built", "status": "pass", "detail": "Built server, overlays, approved-asset plumbing, and join-ID API passed." },
+    { "command": "npm run test:browser:matrix", "status": "pass", "detail": "All 105 project results were accounted for with one worker and zero retries: 78 passed and 27 reviewed project exclusions across four Chromium viewports and WebKit 390x844. The first run exposed the centered-game pointer bug; focused and complete reruns passed after one correction." },
+    { "command": "npm audit", "status": "pass", "detail": "0 vulnerabilities" },
+    { "command": "CI workflow and failure-artifact policy inspection", "status": "pass", "detail": "The required workflow now routes smoke, combat, Practice, identity, and reward through test:browser:matrix and retains test-results plus playwright-report for 14 days on failure." },
+    { "command": "self-review", "status": "pass" }
+  ],
+  "reviews": [
+    { "role": "worms_port_test_worker", "reviewer": "primary-agent-matrix-and-policy-review", "decision": "pass" },
+    { "role": "worms_port_base_game_worker", "reviewer": "primary-agent-pointer-coordinate-review", "decision": "pass" },
+    { "role": "worms_port_compliance_keeper", "reviewer": "primary-agent-artifact-and-authority-boundary-review", "decision": "pass" },
+    { "role": "worms_port_reviewer", "reviewer": "primary-agent-final-scope-and-risk-review", "decision": "pass" }
+  ],
+  "skipped_checks": [
+    "The updated GitHub Actions job cannot execute until this branch is pushed; local execution used the same test:browser:matrix command and all five configured projects.",
+    "Physical Android/iOS and Nimiq Pay WebView testing was not run because WP-014A is an autonomous browser-emulation/tooling slice."
+  ],
+  "residual_risks": [
+    "The first GitHub-hosted run must confirm browser availability, workflow syntax, and the 20-minute job ceiling after push.",
+    "Committed visual baselines, resilience/context isolation, real-PostgreSQL concurrency, artifact secret scanning, and bundle/performance enforcement remain assigned to WP-014B through WP-014E.",
+    "The client main chunk still emits the existing greater-than-500-kB warning; WP-014E owns its explicit budget and optimization decision.",
+    "Synthetic safe-area fixtures verify CSS/layout math but cannot prove physical Nimiq Pay host chrome or notch behavior."
+  ]
+}

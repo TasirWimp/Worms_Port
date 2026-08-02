@@ -10,12 +10,13 @@ import {
     type PracticeClient
 } from '../practice/client';
 
-type ResultSceneArgs = {
+export type ResultSceneArgs = {
     result?: ChallengeResult;
     calling: PlayerCalling;
     message?: string;
     rewarded?: boolean;
     rewardUpdate?: RewardUpdateData;
+    previewLabel?: string;
 };
 
 export default class ResultScene extends Phaser.Scene {
@@ -48,8 +49,12 @@ export default class ResultScene extends Phaser.Scene {
         this.root = document.createElement('main');
         this.root.className = 'result-shell';
         this.root.dataset.outcome = outcome ?? 'unavailable';
+        if (this.args.previewLabel) this.root.dataset.preview = 'true';
         if (this.args.result?.finalStateHash) this.root.dataset.finalHash = this.args.result.finalStateHash;
         this.root.innerHTML = `
+            ${this.args.previewLabel ? `
+                <p class="result-preview-note">${this.args.previewLabel}</p>
+            ` : ''}
             <section class="result-card" aria-labelledby="result-title">
                 <p class="practice-eyebrow">${
                     this.args.rewarded ? 'Daily Challenge complete' : 'Practice Clash complete'
@@ -183,7 +188,9 @@ export default class ResultScene extends Phaser.Scene {
         message.textContent = 'Weaving a fresh Practice Clash…';
         try {
             const snapshot = await this.client.retry(this.args.calling);
-            this.scene.start('combat', liveCombatArgs(this.client, snapshot));
+            const combatArgs = liveCombatArgs(this.client, snapshot);
+            if (this.args.previewLabel) combatArgs.previewLabel = this.args.previewLabel;
+            this.scene.start('combat', combatArgs);
         } catch (error) {
             button.disabled = false;
             message.textContent = error instanceof Error ? error.message : 'Retry failed.';

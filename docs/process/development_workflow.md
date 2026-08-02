@@ -93,10 +93,13 @@ verify:fast
   compliance -> types -> unit -> deterministic simulation
 
 verify:runtime
-  clean build -> built smoke -> protocol -> browser phone matrix
+  clean build -> built smoke
+
+verify:quality
+  fresh build -> bundle/identity/reward security -> full browser matrix -> performance
 
 verify:full
-  verify:fast -> verify:runtime -> visual -> performance -> read-only review
+  verify:fast -> verify:runtime -> verify:quality -> explicit PostgreSQL status -> audit
 ```
 
 Built smoke tests must rebuild or prove that output metadata matches the current
@@ -490,7 +493,182 @@ The checked-in Playwright configuration must:
 
 WP-005 provides browser launch and application smoke coverage. WP-014 expands
 that foundation into the full viewport, visual-regression, network, resume,
-fake-wallet, performance, and multiplayer-context matrix.
+fake-wallet, performance, PostgreSQL, and isolated multi-context matrix.
+Multi-context means separate sessions and wallets exercising isolation and
+contention against one server; it does not add PvP or matchmaking.
+
+### WP-014 Quality Harness Protocol
+
+WP-014 is the automated competition-candidate gate. Its normative scope,
+matrix, budgets, slices, and acceptance criteria live in
+`docs/planning/implementation_plan.md`. Apply these operational rules while
+implementing or running it:
+
+- Use only a freshly built loopback service, deterministic fake wallets,
+  record-only rewards, fake signer/RPC adapters, and a disposable PostgreSQL
+  database. Quality-test startup must reject chain reward modes, external RPC
+  targets, and any configured payout key file. Never point an autonomous suite
+  at Render, Nimiq Pay, a real wallet, or a public chain.
+- Use one Playwright worker per CI job. Every test starts with a fresh browser
+  context unless the named purpose is multi-context isolation or contention.
+  Test keys are fixed synthetic fixtures. Real/external wallet secrets,
+  signatures, device identifiers, database credentials, and environment dumps
+  cannot enter reports, traces, screenshots, logs, or tracked evidence.
+  Playwright traces may retain only short-lived synthetic loopback session
+  authority; it expires with the test server, stays under bounded CI retention,
+  and never enters tracked evidence.
+- The maintained projects are Chromium 360x640, 390x844, 412x915, and 844x390
+  plus WebKit 390x844. Keep one reviewed allowlist for scenario-specific
+  project exclusions. Fail the quality gate on an unexpected skip, focused
+  test, empty critical project, or retry-only pass.
+- Required gates use zero retries. Preserve the first failure and classify it
+  before a manual diagnostic rerun. Never hide nondeterminism with a retry,
+  larger screenshot tolerance, longer timeout, broader skip, or weakened
+  assertion.
+- Generate screenshot baselines and compare them only in the pinned Linux CI
+  browser environment. Freeze UTC, seeds, device scale, motion mode, color
+  scheme, fonts, and fake-wallet state. Use `maxDiffPixelRatio=0.005` and
+  per-pixel threshold `0.2`. Baseline updates are explicit reviewed changes;
+  ordinary CI never writes expected snapshots.
+- For initial or intentional baseline updates, push the implementation branch
+  and open or update its pull request. **Visual baseline candidates** produces
+  a 14-day artifact for that PR; after the workflow reaches the default branch,
+  it can also be dispatched manually for an exact ref. Inspect every PNG and
+  add only approved files under `tests/browser/visual.spec.ts-snapshots/`. The
+  workflow has read-only repository permission and cannot commit. A Windows
+  update, artifact upload, or `--update-snapshots` pass alone is not evidence;
+  the committed images must pass the ordinary Ubuntu 24.04 comparison job
+  afterward.
+- Chromium may use supported deterministic bandwidth/latency control. Chromium
+  and WebKit both cover offline/resume. Model Socket.IO acknowledgement loss,
+  duplicate/stale delivery, and ordering faults through typed fixtures instead
+  of claiming arbitrary WebSocket packet-loss emulation.
+- PostgreSQL CI uses a reviewed digest-pinned PostgreSQL 16 service image,
+  unique disposable databases, migrations from zero, and at least two
+  independent connections for contention. Broad visual/state coverage may use
+  the memory store, but one record-only built-browser Daily journey and all
+  concurrency/restart authority checks use PostgreSQL.
+- Measure the clean production client bundle exactly and gzip it in the gate;
+  inspect the ordinary Practice network log to prove the Mini App SDK remains
+  lazy. Timing uses one discarded warm-up plus five samples on the pinned
+  Chromium CI project with one worker. Both median and maximum must meet the
+  budgets recorded in the implementation plan.
+- `verify:full` must become a truthful aggregate of fast checks, clean build,
+  built smoke, every maintained browser suite, quality/security checks,
+  identity-bundle separation, and `npm audit`. It cannot silently skip the
+  PostgreSQL or browser quality jobs because a local prerequisite is missing;
+  report the prerequisite and run the authoritative job in CI.
+- On failure retain the HTML report, trace, screenshot, video, visual diff,
+  sanitized bundle/timing JSON, and deterministic seeds for 14 days. Generated
+  artifacts remain ignored under `test-results/` or `playwright-report/` and
+  outside `assets/`. Track only reviewed expected screenshots and compact
+  sanitized facts in the applicable `docs/evidence/wp-014a.json` through
+  `docs/evidence/wp-014e.json` slice record.
+
+WP-014A delivered the five maintained projects, `test:browser:matrix`, one
+worker, zero retries, executable critical-suite/expected-skip accounting,
+synthetic safe-area fixtures, all-suite CI routing, and the existing 14-day
+failure-artifact upload. The authoritative local run accounted for all 105
+project results (78 passed and 27 reviewed exclusions). It also corrected
+ordinary pointer mapping when the capped game surface is centered inside a
+larger viewport. WP-014B owns committed visual baselines and layout-state
+captures; do not add them retroactively to WP-014A.
+
+WP-014B completed with deterministic, visibly labeled result/reward
+preview states with fake in-memory transitions only, a visual test covering
+start/combat/result geometry and recovery on all five projects, canonical
+combat presentation and Daily states, compact-landscape Pause/full-screen
+fallback, and executable touch/scroll/zoom/selection assertions. The
+pre-baseline zero-retry logic run passed 125 project results (86 passed, 39
+reviewed exclusions). All 35 reviewed Ubuntu baselines were independently
+reproduced, and ordinary Verify run 30739075679 passed the final comparison.
+
+WP-014C completed with `test:browser:resilience` covering supported constrained
+Chromium loading, Chromium/WebKit offline and same-authority resume, hidden/background
+input cleanup, viewport change, delayed synthetic provider settlement,
+truthful lost-session recovery, and two-context storage/identity/challenge/
+control isolation. Deterministic client fixtures separately cover lost and
+delayed acknowledgements, exact-request retry, stale/conflicting/foreign
+events, and terminal deduplication; they do not claim arbitrary WebSocket
+packet-loss emulation. The local zero-retry logic matrix accounts for 150
+project results (94 passed, 56 reviewed exclusions). Initial Ubuntu Verify run
+30741922105 exposed one test-only classification of Chromium's expected
+`net::ERR_INTERNET_DISCONNECTED` WebSocket diagnostic during the deliberately
+offline context. The correction excludes only that exact expected diagnostic;
+every other console error remains actionable. Ordinary Ubuntu Verify run
+30742976205 then passed all 150 results with the same totals, one worker, zero
+retries, and unchanged visual thresholds in 22m22s.
+
+WP-014D completed on 2026-08-02. The focused
+`test:reward:postgres` suite creates a fresh database per case, runs repository
+migrations from zero, and exercises two-connection budget, wallet, claim,
+expiry, rollover, advisory-lease, and restart/reconciliation boundaries. The
+`test:browser:reward:postgres` runner creates one additional disposable
+database, runs a built Chromium Daily loss in record-only mode, verifies the
+durable entitlement and event sequence, and drops the database. Both runners
+accept only a loopback `WP014_TEST_DATABASE_URL`; quality startup refuses chain
+modes, payout RPC/key/recovery settings, and non-`nimble_knots_wp014_*`
+databases. The CI service is PostgreSQL `16.10-bookworm`, pinned to reviewed
+multi-architecture digest
+`sha256:38471f330eb885e04de130b768d6db4e10469e2311879c7e5c699f6d2d8a1c74`.
+The first PostgreSQL CI run retained failures caused by a concurrency fixture
+that expected two successful starts despite the consumed-eligibility contract
+and by an invalid synthetic address. The corrected second run passed its six
+scenario assertions but exposed an uncaught idle-client `pg` pool error during
+forced database teardown. Production now handles that pool event with a
+credential-free message while active query errors still reject, and the unit
+suite covers the boundary. Final GitHub Actions run 30749716477 passed
+`test:reward:postgres` (six real-database cases), the built Chromium
+`test:browser:reward:postgres` journey, 24 reward tests, identity-bundle and
+reward-security checks, and the audit in the 2m13s dedicated job. The separate
+ordinary Verify job passed all 150 zero-retry browser results (94 passed, 56
+reviewed exclusions) in 21m7s. No physical Android/iOS, real Nimiq Pay wallet,
+external RPC, sponsor key, or public-chain transfer was used.
+
+WP-014E completed on 2026-08-02. A
+fresh Vite manifest now identifies the initial static client graph, and
+`check:bundle-budget` records exact raw plus level-9 gzip bytes under ignored
+`test-results/`. Dynamic imports are excluded from initial transfer only when
+the manifest classifies them as such. The pinned 390x844 Chromium performance
+gate runs full motion with one discarded warm-up and five measured fresh
+contexts; browser-relative marks cover actionable Practice, legal combat input,
+visible projectile presentation, and the complete Loomkeeper response. It also
+fails if ordinary Practice requests the identified lazy Mini App SDK chunk.
+`verify:quality` and `verify:full` now cover the complete maintained browser
+matrix; `verify:full` reports the missing local PostgreSQL prerequisite instead
+of implying database evidence, while the separate `verify:postgres` job remains
+mandatory. GitHub Actions partitions fast, three reviewed browser project
+shards, PostgreSQL/reward-security, and performance/bundle work under the
+documented 20-minute per-job and 30-minute complete-workflow ceilings. Failed
+jobs retain browser evidence for 14 days, while the performance job retains
+sanitized successful or failed bundle/timing JSON for the same period. The
+final local and Ubuntu production build measured 1,436,262 raw bytes for the
+largest initial JavaScript chunk and 398,415 gzip bytes for initial JavaScript
+plus CSS. Authoritative Ubuntu full-motion timing medians/maxima were 463.9/718.2 ms
+to actionable Practice, 346.3/352.7 ms from Start to legal input,
+241.3/283.4 ms from Fire to a visible projectile, and 5,289.5/5,548.1 ms
+through the complete response. The SDK request count, page-error count, and
+console-error count were zero. Local `verify:full` passed in 7m10s with all 150
+browser results accounted for and its Linux/PostgreSQL omissions explicit.
+Authoritative run 30752850448 then passed the fast job in 1m11s, PostgreSQL and
+reward security in 2m05s, performance/bundle in 2m46s, WebKit in 3m05s, and
+both Chromium shards in 9m06s or less. The shards accounted for 94 passes and
+56 reviewed exclusions with zero retries; the complete workflow finished in
+9m09s. Visual candidate run 30752850445 also passed in 3m54s. The Linux Fire
+median retains only 8.7 ms of budget headroom and must be monitored rather than
+normalized by raising the threshold. Evidence is closed in
+`docs/evidence/wp-014e.json`, WP-014 is complete, and the execution pointer
+advances to WP-015.
+
+Official implementation references reviewed on 2026-08-01:
+`https://playwright.dev/docs/test-projects`,
+`https://playwright.dev/docs/ci`,
+`https://playwright.dev/docs/test-snapshots`,
+`https://playwright.dev/docs/test-retries`,
+`https://playwright.dev/docs/trace-viewer-intro`,
+`https://playwright.dev/docs/network`,
+`https://docs.github.com/actions/managing-workflow-runs/manually-running-a-workflow`, and
+`https://docs.github.com/en/actions/tutorials/use-containerized-services/create-postgresql-service-containers`.
 
 ## Asset Generation Loop
 

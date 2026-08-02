@@ -7,6 +7,7 @@ export default defineConfig({
   build: {
     outDir: path.resolve(__dirname, 'client/build'),
     emptyOutDir: true,
+    manifest: true,
     sourcemap: false
   }
 });

@@ -1,0 +1,44 @@
+name: Visual baseline candidates
+
+on:
+  pull_request:
+    paths:
+      - .github/workflows/visual-baselines.yml
+      - client/**
+      - tests/browser/**
+      - playwright.config.ts
+      - scripts/run-playwright.js
+      - package.json
+      - package-lock.json
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  capture:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v5
+        with:
+          fetch-depth: 0
+      - uses: actions/setup-node@v6
+        with:
+          node-version: 20
+          cache: npm
+      - run: npm ci
+      - run: npx playwright install --with-deps chromium webkit
+      - name: Generate Linux screenshot candidates
+        run: npm run test:browser:visual -- --update-snapshots
+      - name: Upload candidates for explicit review
+        if: always()
+        uses: actions/upload-artifact@v6
+        with:
+          name: visual-baseline-candidates-${{ github.run_id }}
+          path: |
+            tests/browser/visual.spec.ts-snapshots/
+            test-results/
+            playwright-report/
+          if-no-files-found: error
+          retention-days: 14

@@ -3,6 +3,7 @@ import { createHash } from 'node:crypto';
 import test from 'node:test';
 
 import {
+    PayoutAdapterError,
     RewardPayoutWorker,
     type ChainTransactionStatus,
     type RewardPayoutAdapter
@@ -58,11 +59,110 @@ test('the pause switch does not perform a first broadcast of persisted signed in
     await worker.close();
 });
 
+test('fake signer and RPC preparation faults enter manual review with sanitized reasons', async () => {
+    for (const reason of [
+        'insufficient_funds',
+        'fee_reserve',
+        'wrong_signer',
+        'wrong_network',
+        'stale_head',
+        'rpc_outage',
+        'rpc_shape_error'
+    ]) {
+        const store = new MemoryRewardStore();
+        const queued = await queuedEntitlement(store);
+        const adapter = new FakeAdapter();
+        adapter.prepareError = new PayoutAdapterError(reason, `synthetic ${reason}`);
+        const worker = new RewardPayoutWorker(store, adapter, config());
+
+        await worker.runOnce();
+
+        const reviewed = await store.status(queued.id, WALLET);
+        assert.equal(reviewed?.state, 'manual_review');
+        assert.equal(reviewed?.reasonCode, reason);
+        assert.equal(adapter.prepareCalls, 1);
+        assert.equal(adapter.broadcasts.length, 0);
+        await worker.close();
+    }
+});
+
+test('delayed inclusion survives worker replacement and finalizes without signing again', async () => {
+    const store = new MemoryRewardStore();
+    const queued = await queuedEntitlement(store);
+    const firstAdapter = new FakeAdapter();
+    const firstWorker = new RewardPayoutWorker(store, firstAdapter, config());
+    await firstWorker.runOnce();
+    assert.equal((await store.status(queued.id, WALLET))?.state, 'broadcast_unknown');
+    assert.equal(firstAdapter.prepareCalls, 1);
+    await firstWorker.close();
+
+    const inclusionAdapter = new FakeAdapter();
+    inclusionAdapter.chainStatus = {
+        state: 'included',
+        headHeight: 80,
+        includedHeight: 60,
+        finalized: false
+    };
+    const inclusionWorker = new RewardPayoutWorker(store, inclusionAdapter, config());
+    await inclusionWorker.runOnce();
+    assert.equal((await store.status(queued.id, WALLET))?.state, 'included');
+    assert.equal(inclusionAdapter.prepareCalls, 0);
+    await inclusionWorker.close();
+
+    const finalityAdapter = new FakeAdapter();
+    finalityAdapter.chainStatus = {
+        state: 'included',
+        headHeight: 120,
+        includedHeight: 60,
+        finalized: true
+    };
+    const finalityWorker = new RewardPayoutWorker(store, finalityAdapter, config());
+    await finalityWorker.runOnce();
+    assert.equal((await store.status(queued.id, WALLET))?.state, 'finalized');
+    assert.equal(finalityAdapter.prepareCalls, 0);
+    await finalityWorker.close();
+});
+
+test('expired absence and invalid status never construct a replacement transaction', async () => {
+    const expiredStore = new MemoryRewardStore();
+    const expired = await queuedEntitlement(expiredStore);
+    const expiredAdapter = new FakeAdapter();
+    expiredAdapter.chainStatus = { state: 'absent', headHeight: 111 };
+    const expiredWorker = new RewardPayoutWorker(expiredStore, expiredAdapter, config());
+    await expiredWorker.runOnce();
+    assert.equal((await expiredStore.status(expired.id, WALLET))?.state, 'manual_review');
+    assert.equal((await expiredStore.status(expired.id, WALLET))?.reasonCode, 'expired_absent');
+    await expiredWorker.runOnce();
+    assert.equal(expiredAdapter.prepareCalls, 1);
+    assert.equal(new Set(expiredAdapter.broadcasts).size, 1);
+    await expiredWorker.close();
+
+    const invalidStore = new MemoryRewardStore();
+    const ambiguous = await queuedEntitlement(invalidStore);
+    const invalidAdapter = new FakeAdapter();
+    invalidAdapter.statusError = new PayoutAdapterError(
+        'rpc_shape_error',
+        'synthetic invalid response'
+    );
+    const invalidWorker = new RewardPayoutWorker(invalidStore, invalidAdapter, config());
+    await invalidWorker.runOnce();
+    await invalidWorker.runOnce();
+    assert.equal((await invalidStore.status(ambiguous.id, WALLET))?.state, 'broadcast_unknown');
+    assert.equal(invalidAdapter.prepareCalls, 1);
+    assert.equal(new Set(invalidAdapter.broadcasts).size, 1);
+    await invalidWorker.close();
+});
+
 class FakeAdapter implements RewardPayoutAdapter {
     public broadcasts: string[] = [];
+    public prepareCalls = 0;
+    public prepareError?: Error;
+    public statusError?: Error;
     public chainStatus: ChainTransactionStatus = { state: 'absent', headHeight: 50 };
 
     public async prepare(_entitlement: RewardEntitlement) {
+        this.prepareCalls += 1;
+        if (this.prepareError) throw this.prepareError;
         return {
             serializedTransaction: 'cafe',
             transactionHash: 'a'.repeat(64),
@@ -75,6 +175,7 @@ class FakeAdapter implements RewardPayoutAdapter {
     }
 
     public async status(_transactionHash: string): Promise<ChainTransactionStatus> {
+        if (this.statusError) throw this.statusError;
         return this.chainStatus;
     }
 
