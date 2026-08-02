@@ -63,6 +63,36 @@ Run the compliance gate before importing or committing assets:
 npm run check:compliance
 ```
 
+## Local ComfyUI Asset Pipeline
+
+WP-015A reconstructs the tested Windows ComfyUI/MCP refinement stack as a
+fail-closed local tool. The one entry point checks the exact external Git
+revisions, Python environment, model name and size, and—when requested—the
+2.13 GB checkpoint hash before it starts anything:
+
+```powershell
+powershell -NoProfile -ExecutionPolicy Bypass -File .\scripts\comfy-asset-pipeline.ps1 -Action Status -VerifyHashes
+powershell -NoProfile -ExecutionPolicy Bypass -File .\scripts\comfy-asset-pipeline.ps1 -Action Start
+powershell -NoProfile -ExecutionPolicy Bypass -File .\scripts\comfy-asset-pipeline.ps1 -Action Smoke
+```
+
+`Start` binds ComfyUI to `127.0.0.1:8188` and the MCP bridge to
+`127.0.0.1:9000/mcp`. If ComfyUI tools do not appear in an already-open Codex
+task, restart Codex after `Start`; MCP tool discovery occurs when the client
+session opens. Stop the verified local processes with:
+
+```powershell
+powershell -NoProfile -ExecutionPolicy Bypass -File .\scripts\comfy-asset-pipeline.ps1 -Action Stop
+```
+
+The default machine paths and complete reinstall/re-entry procedure are in
+`docs/process/development_workflow.md` under **WP-015A Local ComfyUI Re-entry**.
+Override a moved install with `WORMS_COMFY_ROOT`, `WORMS_COMFY_MCP_ROOT`,
+`WORMS_COMFY_SHARED_ROOT`, or `WORMS_COMFY_MCP_CONFIG`. Smoke and candidate
+output remains under ComfyUI's external shared output directory. It is not an
+approved asset, and the bridge's generic publish tools must never write to
+`assets/` or `legal/asset-manifest.json`.
+
 ## Build
 
 Use Node.js 20 or newer.

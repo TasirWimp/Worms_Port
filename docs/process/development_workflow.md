@@ -697,6 +697,85 @@ prompts, negative constraints, workflow JSON and hash, seeds, model and custom
 node versions and licenses, service/job IDs, parent/output hashes, postprocess
 configuration, and reviewer identity.
 
+### WP-015A Local ComfyUI Re-entry
+
+The verified workstation stack is external tooling, not part of the MIT
+product. Its reviewed inventory lives in
+`legal/generation-component-manifest.json`; the bridge's exact Windows Python
+environment lives in `scripts/comfy-mcp-requirements.lock`. The pinned stack is
+ComfyUI 0.27.1 at `c2638ce6c00e3426c48d56a775bc46e9a8464094`, the
+Apache-2.0 MCP bridge at
+`e0101b2312f30501664dabe4a74c1283c4268eb8`, and the Comfy-Org archived
+SD 1.5 FP16 checkpoint with SHA-256
+`E9476A13728CD75D8279F6EC8BAD753A66A1957CA375A1464DC63B37DB6E3916`.
+The GPL-3.0 ComfyUI program, Apache bridge, model, virtual environment, logs,
+and outputs remain outside this repository.
+
+Normal re-entry is four commands from the Worms_Port root:
+
+```powershell
+git status --short --branch
+powershell -NoProfile -ExecutionPolicy Bypass -File .\scripts\comfy-asset-pipeline.ps1 -Action Status -VerifyHashes
+powershell -NoProfile -ExecutionPolicy Bypass -File .\scripts\comfy-asset-pipeline.ps1 -Action Start
+powershell -NoProfile -ExecutionPolicy Bypass -File .\scripts\comfy-asset-pipeline.ps1 -Action Smoke
+```
+
+`Status` is safe while the services are stopped. `Start` refuses an unreviewed
+Git revision, changed Python package set, broken dependency environment,
+unexpected checkpoint, or unrelated process occupying either port. It starts
+hidden loopback-only processes and writes PID state plus logs under
+`%LOCALAPPDATA%\Worms_Port\comfy-pipeline`. `Smoke` uses seed 1 and a bounded
+256x256, four-step workflow; it proves transport, checkpoint loading, GPU
+execution, and output retrieval, not visual quality or production approval.
+`Stop` terminates only listener processes whose command ancestry matches the
+reviewed external paths. Use the same script with `-Action Stop` before moving
+or updating either checkout.
+
+The verified default machine layout is:
+
+```text
+E:\ComFy\TasirWimp\                         Comfy Desktop/ROCm root
+E:\ComFy\TasirWimp\ComfyUI\                pinned ComfyUI checkout
+C:\Users\jensb\Desktop\Projects\comfyui-mcp-server\  pinned bridge checkout
+%LOCALAPPDATA%\Comfy-Desktop\ComfyUI-Shared\models\checkpoints\
+%USERPROFILE%\.config\comfy-mcp\config.json
+%USERPROFILE%\.codex\config.toml
+```
+
+If those paths move, set `WORMS_COMFY_ROOT`, `WORMS_COMFY_MCP_ROOT`,
+`WORMS_COMFY_SHARED_ROOT`, `WORMS_COMFY_MCP_CONFIG`, or
+`WORMS_CODEX_CONFIG` before invoking the script. Do not edit the manifest merely
+to accept local drift. Review the new source revision, license, model terms,
+and hashes first.
+
+For a clean-machine restoration:
+
+1. Install official Comfy Desktop (the verified setup used desktop 1.0.28),
+   choose the AMD ROCm environment, and place its workspace at
+   `E:\ComFy\TasirWimp`. Confirm the generated `start-comfy-api.bat` binds only
+   to `127.0.0.1:8188`.
+2. Check out ComfyUI at the manifest revision. Do not update to the fetched
+   default branch until a new component review changes the pin.
+3. Clone `https://github.com/joenorton/comfyui-mcp-server.git`, check out its
+   manifest revision, create a Python 3.10.6 virtual environment at `.venv`,
+   and install only `scripts/comfy-mcp-requirements.lock` into that external
+   environment. Run `python -m pip check`.
+4. Download the exact checkpoint URL from the generation-component manifest
+   into the shared `models\checkpoints` directory. Let `Status -VerifyHashes`
+   verify its size and SHA-256; never bypass a mismatch.
+5. Set `%USERPROFILE%\.config\comfy-mcp\config.json` so
+   `defaults.image.model` is `v1-5-pruned-emaonly-fp16.safetensors`.
+6. Register `[mcp_servers.comfyui]` with
+   `url = "http://127.0.0.1:9000/mcp"` in Codex config, run `Start`, and restart
+   Codex so its next task discovers the live MCP endpoint.
+
+The current checkpoint is authorized only for deterministic health smoke and
+non-product experiments. WP-015B must approve every model/workflow/input used
+for a real character master or skip ComfyUI. The MCP bridge exposes generic
+`publish_asset` behavior, but that path is blocked for Worms_Port: untouched
+outputs stay in external quarantine until the explicit review and promotion
+sequence below copies one exact approved file.
+
 ### Production Decomposition
 
 The lineup concept contains enough information to begin production, but it is a

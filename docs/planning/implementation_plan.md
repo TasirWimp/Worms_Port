@@ -8,11 +8,15 @@ Phaser/Socket.IO stack.
 ## Execution Pointer
 
 - Active target: mobile-first single-player Nimiq Pay competition release.
-- Active work package: **WP-015 Production Art And Audio**. Produce the first
-  approved runtime art/audio set through the exact-file asset review and
-  manifest pipeline, using the WP-014 capture, visual, and media-budget gates.
-- Last completed work package: **WP-014 Autonomous Quality Harness**, including
-  **WP-014E Performance and closure** on 2026-08-02.
+- Active work package: **WP-015B Character briefs and isolated masters**. Use
+  only newly approved generation components and the canonical lineup reference
+  to create quarantined Wizard, Thief, Warrior, and Loomkeeper candidates;
+  promote nothing until its exact-file evidence and IP/art review passes.
+- Last completed work package: **WP-015A Local asset-pipeline foundation** on
+  2026-08-02. The pinned ComfyUI/MCP stack, component manifest, environment
+  lock, loopback start/status/stop/smoke command, and clean-machine re-entry
+  runbook are verified. Its current checkpoint is smoke-only, not production
+  art authority.
 - WP-012 exactly pins `@nimiq/mini-app-sdk` `0.1.0` and server-only
   `@nimiq/core` `2.7.1`. Provider access remains lazy, identity acceptance is
   now used by WP-013's separate production Daily entry, the diagnostics surface
@@ -129,6 +133,16 @@ Phaser/Socket.IO stack.
   re-entry is WP-015 planning and implementation. The Linux Fire median has
   only 8.7 ms of headroom and remains a monitored risk, not a reason to raise
   the budget.
+- WP-015A completed on 2026-08-02. It reconstructed ComfyUI 0.27.1 on the AMD
+  RX 7600, the loopback MCP bridge, Codex registration, and the exact archived
+  checkpoint. A seed-1 256x256 four-step MCP image passed end to end in 14.2
+  seconds and remained in the external Comfy shared output. The new
+  `comfy-asset-pipeline.ps1` entry point verifies Git pins, the Python 3.10.6
+  package lock, dependency health, model name/size/hash, ports, and command
+  ancestry before it starts or stops anything. Component licenses and blocked
+  promotion behavior are enforced by `npm run check:compliance`; evidence is
+  closed in `docs/evidence/wp-015a.json`. Re-entry is WP-015B character briefs
+  and isolated masters, not automatic asset generation or promotion.
 - The approved post-competition weekly program is now scoped as WP-018 through
   WP-021: Nimiq Chronicle, Loom XP qualification, optional PvP Sparring Loom,
   and the Weekly Grand Knot Tournament with an additional sponsor-funded
@@ -2149,7 +2163,8 @@ Primary implementation references reviewed for this refinement:
 
 ### WP-015 Production Art And Audio
 
-Status: planned. Depends on WP-010 and WP-014 asset gates.
+Status: in progress. Depends on WP-010 and WP-014 asset gates. WP-015A is
+complete; WP-015B is the active slice.
 
 Goal: produce Wizard, Thief, Warrior, Loomkeeper variant, Relics, first Patch,
 effects, UI media, and short audio through the MCP asset pipeline. Every brief
@@ -2175,6 +2190,29 @@ Minimum visual asset inventory:
   than cropped from the lineup concept,
 - short approved audio for aiming/charging, firing, impact, damage, Unraveling,
   victory, and reward confirmation through a separate audio provenance path.
+
+Sequential delivery slices:
+
+- **WP-015A Pipeline foundation — complete:** pin and license-review the local
+  external generator stack, freeze its bridge environment, prove a bounded
+  loopback smoke, and provide one fail-closed re-entry command. This slice
+  promotes no media.
+- **WP-015B Character briefs and isolated masters — next:** approve each actual
+  generation component and workflow, freeze four family briefs, create new
+  quarantined 512x512 masters, and pass art/IP/provenance review before any
+  exact-file master promotion.
+- **WP-015C Character atlases and normalization:** animate only approved
+  masters, freeze state/frame contracts and parent hashes, normalize atlases
+  deterministically, integrate them behind manifest approval, and pass phone
+  capture plus visual-baseline review.
+- **WP-015D Relics, effects, Patch, and UI media:** deliver the three Relic
+  families, causal combat/reward effects, layered environment, repeatable
+  terrain materials, and master-derived UI media while keeping collision data
+  code-owned and additional media lazy where required.
+- **WP-015E Audio and closure:** deliver the separately sourced/generated short
+  audio inventory, normalize it, finish attribution and exact manifests, check
+  the 1.5 MB initial-media budget, and close all compliance, build, browser,
+  visual, and real-device acceptance evidence.
 
 Character master contract:
 

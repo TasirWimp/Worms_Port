@@ -1,0 +1,85 @@
+{
+  "schema_version": 1,
+  "checked_date": "2026-08-02",
+  "policy": {
+    "distribution": "external_not_bundled",
+    "generated_output_state": "quarantined_candidate_until_exact_file_approval",
+    "promotion_gate": "docs/asset-review-workflow.md",
+    "product_asset_manifest": "legal/asset-manifest.json"
+  },
+  "components": [
+    {
+      "id": "comfyui",
+      "kind": "external_generation_tool",
+      "source_url": "https://github.com/Comfy-Org/ComfyUI",
+      "revision": "c2638ce6c00e3426c48d56a775bc46e9a8464094",
+      "version": "0.27.1",
+      "local_launcher_sha256": "91827D0ED786B98E609595C108AEE46FC1C6593BD47F3A0DA60C9A9BE67CD8FE",
+      "license": "GPL-3.0-only",
+      "license_evidence": "https://github.com/Comfy-Org/ComfyUI/blob/c2638ce6c00e3426c48d56a775bc46e9a8464094/LICENSE",
+      "distribution": "external_not_bundled",
+      "allowed_untracked_paths": [],
+      "approved_uses": [
+        "loopback-only local generation and controlled refinement",
+        "quarantined candidate export for separate exact-file review"
+      ],
+      "blocked_uses": [
+        "copying or bundling ComfyUI code into the MIT product",
+        "publicly exposing the unauthenticated local API",
+        "treating tool output as an approved product asset"
+      ],
+      "notes": "The locally verified AMD/ROCm install is a separate GPL program. Worms_Port invokes its loopback API and distributes none of its code."
+    },
+    {
+      "id": "comfyui-mcp-server",
+      "kind": "external_generation_bridge",
+      "source_url": "https://github.com/joenorton/comfyui-mcp-server",
+      "revision": "e0101b2312f30501664dabe4a74c1283c4268eb8",
+      "version": "pinned-commit",
+      "python_version": "3.10.6",
+      "requirements_lock": "scripts/comfy-mcp-requirements.lock",
+      "requirements_lock_sha256": "CAABD726D8D1E74B427C59A22550BEB1175BE804A24F3C5CB3EA79EE8D19AE0E",
+      "local_config_sha256": "0169C0DBA504A2FC7E066AEC8474FE1B0281FE782DC270A461CBE2B513B7D250",
+      "license": "Apache-2.0",
+      "license_evidence": "https://github.com/joenorton/comfyui-mcp-server/blob/e0101b2312f30501664dabe4a74c1283c4268eb8/LICENSE",
+      "distribution": "external_not_bundled",
+      "allowed_untracked_paths": [
+        ".venv/",
+        "logs/"
+      ],
+      "approved_uses": [
+        "loopback-only MCP access to the separately installed ComfyUI API",
+        "pipeline health smoke and quarantined candidate iteration"
+      ],
+      "blocked_uses": [
+        "automatic publication into assets/",
+        "automatic edits to legal/asset-manifest.json",
+        "publicly exposing the unauthenticated MCP endpoint"
+      ],
+      "notes": "The bridge remains a separate checkout. Its generic publish tools are outside the approved Worms_Port promotion path and must not be used for assets/."
+    },
+    {
+      "id": "stable-diffusion-v1-5-archive-fp16",
+      "kind": "generation_checkpoint",
+      "source_url": "https://huggingface.co/Comfy-Org/stable-diffusion-v1-5-archive/blob/4b97aa05c15972d2628d6f6db8fb2b0a68d9241e/v1-5-pruned-emaonly-fp16.safetensors",
+      "revision": "4b97aa05c15972d2628d6f6db8fb2b0a68d9241e",
+      "version": "archived-checkpoint",
+      "file_name": "v1-5-pruned-emaonly-fp16.safetensors",
+      "file_size": 2132696762,
+      "file_sha256": "E9476A13728CD75D8279F6EC8BAD753A66A1957CA375A1464DC63B37DB6E3916",
+      "license": "CreativeML-OpenRAIL-M",
+      "license_evidence": "https://huggingface.co/Comfy-Org/stable-diffusion-v1-5-archive/tree/4b97aa05c15972d2628d6f6db8fb2b0a68d9241e",
+      "distribution": "external_not_bundled",
+      "approved_uses": [
+        "deterministic local pipeline health smoke",
+        "quarantined experiments that are not product asset candidates"
+      ],
+      "blocked_uses": [
+        "production asset promotion without a separate model, prompt, input, output, and IP review",
+        "redistribution with Worms_Port",
+        "using Sorcerers material as prompt, image, conditioning, or training input"
+      ],
+      "notes": "The verified file hash matches the Comfy-Org archive. This checkpoint proves the local pipeline only; it is not pre-approved to author production assets."
+    }
+  ]
+}
