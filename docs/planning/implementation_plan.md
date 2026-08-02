@@ -8,8 +8,8 @@ Phaser/Socket.IO stack.
 ## Execution Pointer
 
 - Active target: mobile-first single-player Nimiq Pay competition release.
-- Next work package: **WP-014C Resilience and isolation**.
-- Last completed work package: **WP-014B Visual and layout gate**.
+- Next work package: **WP-014D PostgreSQL and reward security**.
+- Last completed work package: **WP-014C Resilience and isolation**.
 - WP-012 exactly pins `@nimiq/mini-app-sdk` `0.1.0` and server-only
   `@nimiq/core` `2.7.1`. Provider access remains lazy, identity acceptance is
   now used by WP-013's separate production Daily entry, the diagnostics surface
@@ -34,14 +34,15 @@ Phaser/Socket.IO stack.
   acceptance, not authorization to leave public mainnet rewards active. A
   wallet address is an eligibility identity, not proof of one human; Practice
   remains the unrestricted fallback.
-- WP-014 was refined on 2026-08-01 into five sequential slices. WP-014A and
-  WP-014B are complete: the maintained 412x915 project, zero-retry full-matrix
+- WP-014 was refined on 2026-08-01 into five sequential slices. WP-014A through
+  WP-014C are complete: the maintained 412x915 project, zero-retry full-matrix
   command, reviewed expected-skip policy, safe-area fixture, CI routing, and
   failure artifacts are in place. Its first matrix run exposed and corrected centered
   non-sideways pointer coordinates; the final 105-result run passed. The visual
   and layout gate then added reviewed Linux baselines and passed its final
-  125-result Ubuntu comparison. Start **WP-014C Resilience and isolation**, then
-  PostgreSQL/reward security and performance/closure. The
+  125-result Ubuntu comparison. Resilience and isolation then expanded the
+  matrix to 150 results and passed ordinary Ubuntu CI. Start **WP-014D
+  PostgreSQL and reward security**, then performance/closure. The
   harness is loopback-only, uses synthetic wallets plus record-only/fake payout
   boundaries, and cannot receive a real key, external payout RPC, or chain
   reward mode. Its detailed matrix, budgets, artifact policy, and completion
@@ -69,7 +70,7 @@ Phaser/Socket.IO stack.
   125-result, one-worker, zero-retry matrix—including all 35 reviewed screenshot
   comparisons—and the complete job finished in 20m27s. Evidence is closed in
   `docs/evidence/wp-014b.json`; re-entry is WP-014C planning and implementation.
-- WP-014C implementation is in progress. The candidate adds the explicit
+- WP-014C completed on 2026-08-02. It adds the explicit
   `test:browser:resilience` suite for constrained Chromium loading,
   Chromium/WebKit offline and same-authority resume, hidden/background input
   cleanup, viewport change, delayed synthetic provider settlement, truthful
@@ -80,8 +81,12 @@ Phaser/Socket.IO stack.
   reviewed exclusions; three canonical repetitions passed 24 applicable routes
   with 6 exclusions. The complete local zero-retry logic matrix then passed all
   150 project results: 94 passed and 56 reviewed exclusions in 5.6 minutes.
-  Re-entry is to push the candidate, require a clean ordinary Ubuntu matrix,
-  close `docs/evidence/wp-014c.json`, and then advance to WP-014D.
+  Initial Ubuntu run 30741922105 retained one expected-offline console
+  diagnostic; a narrow exact-message test correction preserved every other
+  console error as actionable. Ordinary Verify run 30742976205 then passed all
+  150 results with the same totals, zero retries, and frozen visual thresholds
+  in 22m22s. Evidence is closed in `docs/evidence/wp-014c.json`; re-entry is
+  WP-014D planning and implementation.
 - The approved post-competition weekly program is now scoped as WP-018 through
   WP-021: Nimiq Chronicle, Loom XP qualification, optional PvP Sparring Loom,
   and the Weekly Grand Knot Tournament with an additional sponsor-funded
@@ -2043,12 +2048,15 @@ allowance cannot be reassigned to JavaScript.
    exclusions). All 35 reviewed Linux PNGs were independently reproduced, and
    ordinary Ubuntu Verify run 30739075679 passed the final 125-result matrix
    with the same totals, zero retries, and frozen visual thresholds.
-3. **WP-014C Resilience and isolation - implementation in progress:** supported
+3. **WP-014C Resilience and isolation - complete 2026-08-02:** supported
    constrained Chromium loading, Chromium/WebKit offline/resume, delayed
    synthetic provider settlement, session-loss recovery, deterministic client
    protocol faults, and two-context storage/identity/challenge/control
    isolation are implemented. The focused routes and complete 150-result local
-   zero-retry logic matrix pass; ordinary Ubuntu CI remains before completion.
+   zero-retry logic matrix passed. After one expected-offline diagnostic was
+   narrowed without weakening other error assertions, ordinary Ubuntu Verify
+   run 30742976205 passed 94 applicable routes and 56 reviewed exclusions with
+   zero retries.
 4. **WP-014D PostgreSQL and reward security:** add the digest-pinned CI service,
    two-connection migration/concurrency/restart tests, real-store record-only
    browser journey, fake signer/RPC faults, security-header checks, and artifact

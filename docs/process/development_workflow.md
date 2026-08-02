@@ -580,16 +580,21 @@ pre-baseline zero-retry logic run passed 125 project results (86 passed, 39
 reviewed exclusions). All 35 reviewed Ubuntu baselines were independently
 reproduced, and ordinary Verify run 30739075679 passed the final comparison.
 
-WP-014C adds `test:browser:resilience` to cover supported constrained Chromium
-loading, Chromium/WebKit offline and same-authority resume, hidden/background
+WP-014C completed with `test:browser:resilience` covering supported constrained
+Chromium loading, Chromium/WebKit offline and same-authority resume, hidden/background
 input cleanup, viewport change, delayed synthetic provider settlement,
 truthful lost-session recovery, and two-context storage/identity/challenge/
 control isolation. Deterministic client fixtures separately cover lost and
 delayed acknowledgements, exact-request retry, stale/conflicting/foreign
 events, and terminal deduplication; they do not claim arbitrary WebSocket
 packet-loss emulation. The local zero-retry logic matrix accounts for 150
-project results (94 passed, 56 reviewed exclusions). Ordinary Ubuntu CI remains
-the completion authority for this slice.
+project results (94 passed, 56 reviewed exclusions). Initial Ubuntu Verify run
+30741922105 exposed one test-only classification of Chromium's expected
+`net::ERR_INTERNET_DISCONNECTED` WebSocket diagnostic during the deliberately
+offline context. The correction excludes only that exact expected diagnostic;
+every other console error remains actionable. Ordinary Ubuntu Verify run
+30742976205 then passed all 150 results with the same totals, one worker, zero
+retries, and unchanged visual thresholds in 22m22s.
 
 Official implementation references reviewed on 2026-08-01:
 `https://playwright.dev/docs/test-projects`,
