@@ -8,25 +8,21 @@ Phaser/Socket.IO stack.
 ## Execution Pointer
 
 - Active target: mobile-first single-player Nimiq Pay competition release.
-- Active work package: **WP-015B1 Vertical-slice brief contract and commit
-  closure**. The Wizard, Loomkeeper, Threadball, and first-Patch prompts,
-  deterministic seeds, character sockets, projectile-origin metadata,
-  animation triggers, and acceptance gates are frozen in
-  `docs/asset-briefs/wp-015b1-vertical-slice.md`. This working-tree contract
-  generates and promotes no media; commit and push it before WP-015B2 begins.
-- Last committed implementation slice: **WP-015B0 Approval and canonical
-  baseline** on 2026-08-02 at `95957e3`. It intentionally retains the
-  knitting-inspired baseline at
-  `docs/images/art-direction/knotkin-class-lineup-concept.png`; project-owner
-  attestation records Nimiq team/foundation encouragement for its inspired
-  geometry and approves that competition direction.
-  The exact SD 1.5 checkpoint, pinned text-only MCP workflow, and project-owned
-  image-conditioned workflow are approved for quarantined candidate generation,
-  not automatic product-asset promotion.
-- Next after the WP-015B1 commit: **WP-015B2 Quarantined vertical-slice
-  masters**. Generate only the fixed primary candidates defined by the B1
-  contract, record untouched external outputs and exact lineage, complete
-  art/IP review, and promote nothing.
+- Active work package: **WP-015B2 Quarantined vertical-slice prompt
+  refinement**. The fixed primary pass and one documented text-only retry were
+  rejected. A conditioned Wizard diagnostic also failed before the user stopped
+  the batch. Exact outputs, hashes, decisions, and the empty queue confirmation
+  are recorded in `docs/asset-briefs/wp-015b2-generation-review.md`. Generation
+  is paused while the prompts are split into smaller staged goals.
+- Last committed implementation slice: **WP-015B1 Vertical-slice generation
+  contract** on 2026-08-02 at `1eaf731`. Its prompts, seeds, character sockets,
+  projectile-origin metadata, animation triggers, and acceptance gates remain
+  the product intent, but the local SD 1.5 checkpoint cannot reliably satisfy
+  them in one dense prompt.
+- Next bounded action: refine one short Wizard generation sequence first,
+  review each stage before continuing, and only then adapt the proven pattern to
+  Loomkeeper, Threadball, and Patch 01. Do not queue another multi-asset batch or
+  promote any current output.
 - WP-012 exactly pins `@nimiq/mini-app-sdk` `0.1.0` and server-only
   `@nimiq/core` `2.7.1`. Provider access remains lazy, identity acceptance is
   now used by WP-013's separate production Daily entry, the diagnostics surface
@@ -154,10 +150,11 @@ Phaser/Socket.IO stack.
   closed in `docs/evidence/wp-015a.json`. Committed WP-015B0 approves the exact
   checkpoint, text-only image workflow, and project-owned VAE img2img workflow
   for quarantined production candidates and closes the geometry/baseline
-  decision. The current WP-015B1 working tree freezes the first vertical-slice
-  prompts, seeds, geometry, animation triggers, and review gates without
-  generating media. Re-entry is B1 commit/push closure, then the bounded B2
-  quarantine generation handoff, not automatic promotion.
+  decision. Committed WP-015B1 freezes the first vertical-slice prompts, seeds,
+  geometry, animation triggers, and review gates. The initial B2 text-only pass,
+  one prompt-only retry, and one conditioned Wizard diagnostic did not satisfy
+  those gates. Re-entry is the recorded B2 prompt refinement, one asset and one
+  staged goal at a time, not automatic regeneration or promotion.
 - The approved post-competition weekly program is now scoped as WP-018 through
   WP-021: Nimiq Chronicle, Loom XP qualification, optional PvP Sparring Loom,
   and the Weekly Grand Knot Tournament with an additional sponsor-funded
@@ -2230,15 +2227,17 @@ Sequential delivery slices:
     exact-output review. The bounded technical smoke remained in external
     quarantine and this slice promoted no media.
   - **WP-015B1 Vertical-slice briefs and deterministic generation contract —
-    working-tree implementation verified; commit/push pending:** freeze Wizard,
-    Loomkeeper, Threadball, and first-Patch briefs, prompts, negative
-    constraints, seeds, anatomy/baseline/held-Relic sockets, projectile origins,
-    animation triggers, and acceptance checks in
-    `docs/asset-briefs/wp-015b1-vertical-slice.md`. Generate no media in B1.
-  - **WP-015B2 Quarantined vertical-slice masters — next after the B1 commit:**
-    generate fixed-seed candidates only from the frozen contract, record
-    untouched outputs and complete art/IP/provenance comparison, and promote
-    nothing until an exact candidate is explicitly accepted.
+    complete 2026-08-02:** freeze Wizard, Loomkeeper, Threadball, and first-Patch
+    briefs, prompts, negative constraints, seeds,
+    anatomy/baseline/held-Relic sockets, projectile origins, animation triggers,
+    and acceptance checks in `docs/asset-briefs/wp-015b1-vertical-slice.md`.
+    This slice generated no media.
+  - **WP-015B2 Quarantined vertical-slice masters — in progress, prompt
+    refinement paused:** the fixed primary pass and Retry 1 failed art gates;
+    the user stopped Retry 2 after one conditioned Wizard diagnostic. Preserve
+    all exact rejected outputs, refine prompts into short staged goals, generate
+    one asset at a time, and promote nothing until an exact candidate is
+    explicitly accepted.
 - **WP-015C First playable visual slice:** promote and integrate only approved
   Wizard, Loomkeeper, Threadball, and Patch assets. Prove one complete
   move/aim/fire/flight/impact/damage/result exchange at maintained phone

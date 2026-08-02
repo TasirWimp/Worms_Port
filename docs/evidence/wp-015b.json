@@ -70,6 +70,11 @@
       "command": "WP-015B1 brief-contract completeness and source-boundary review",
       "status": "pass",
       "detail": "Reviewed docs/asset-briefs/wp-015b1-vertical-slice.md at SHA-256 5A323A12BF3C3238179C624D3B87DEA9F0AA3D80B7FD974B51A30CC174B9862E. The contract freezes six exact positive prompts, three shared/family negative prompts, seeds 15015001 through 15015006, reviewed model/workflow hashes and settings, Wizard/Loomkeeper normalization and animation triggers, Threadball derivatives, Patch decomposition, B2 handoff, and explicit no-generation/no-promotion/Sorcerers and official-brand boundaries."
+    },
+    {
+      "command": "fixed-seed quarantined vertical-slice master review",
+      "status": "fail",
+      "detail": "The six exact primary outputs and six same-seed prompt-only Retry 1 outputs failed the frozen art gates. The user stopped conditioned Retry 2 after its first Wizard output also failed; the ComfyUI queue then reported zero running and zero pending jobs. All output paths, hashes, asset/prompt IDs, settings, and rejection reasons are recorded in docs/asset-briefs/wp-015b2-generation-review.md. No file was promoted or copied into assets/."
     }
   ],
   "skipped_checks": [
@@ -78,7 +83,7 @@
   ],
   "residual_risks": [
     "The reviewed image-conditioned graph is ordinary VAE img2img, not IP-Adapter or ControlNet; strong composition changes require an isolated master and carefully chosen denoise.",
-    "WP-015B1 remains uncommitted and unpushed, so WP-015B2 must not begin until the frozen brief contract is committed on origin.",
-    "WP-015B2 fixed-seed candidate generation, exact-output art/IP review, npm audit, and final self-review remain pending before WP-015B can close."
+    "The current SD 1.5 checkpoint did not reliably follow the dense B1 character, Relic, and environment prompts. B2 remains open while prompts are decomposed into short staged goals and reviewed one asset at a time.",
+    "No WP-015B2 output currently passes exact-output art/IP review; candidate acceptance, npm audit, and final self-review remain pending before WP-015B can close."
   ]
 }
