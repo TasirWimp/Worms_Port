@@ -377,6 +377,34 @@ within each fixed profile cap. Legacy v1 simulations retain the exact v1 policy
 identifier and sampling order so their decisions and golden evidence do not
 change.
 
+### Planned Basic Relic Ruleset V3
+
+WP-015 prepares `nimble-knots-artillery-v3` for the first production-asset
+vertical slice. V1 and v2 constants, identifiers, replay hashes, and policy
+behavior remain immutable. A stored replay must always select the ruleset that
+created it.
+
+| Relic ID | Range tier | Direct Stitching damage tier |
+| --- | --- | --- |
+| `threadball` | medium | medium |
+| `needlepoint` | highest | lowest |
+| `spoolburst` | lowest | highest |
+
+Range is expressed through one deterministic per-Relic launch-speed band while
+gravity, angle and power inputs, flight lifetime, collision authority,
+movement, and turn completion remain common. WP-015 initially keeps damage
+radius, terrain radius, collision radius, precision, falloff, ammo, cooldowns,
+secondary effects, and Calling modifiers on one shared basic baseline. These
+dimensions are deferred so the first real-device evaluation measures the
+assembled artillery loop rather than a large balance matrix.
+
+The implementation slice freezes exact integer values and deterministic
+fixed-shot tests before v3 becomes a challenge default. The tier ordering is a
+product identity, not final balance. The Loomkeeper receives the same public
+range and damage model as the player; visuals never provide simulation
+authority. A later precision mechanic must be deterministic and disclosed and
+requires another versioned ruleset if it changes replay outcomes.
+
 ### Hosting Contract
 
 The selected competition-release host is one **Render Starter Web Service** in
@@ -776,6 +804,34 @@ for a real character master or skip ComfyUI. The MCP bridge exposes generic
 outputs stay in external quarantine until the explicit review and promotion
 sequence below copies one exact approved file.
 
+### WP-015 Basic Assembly Scope
+
+WP-015 is an integration-first asset pass. Its purpose is to make one complete
+artillery exchange readable on a phone—move, aim, fire, projectile flight,
+impact, Stitching loss, result—not to finish every animation, environment
+layer, effect variant, or balance dimension before anything is assembled.
+
+The required basic inventory is:
+
+- four character masters with common anatomy, baseline, scale, handedness,
+  held-Relic socket, and projectile-origin contracts,
+- only the animation states currently triggered by the playable loop,
+- one icon, held sprite, projectile, simple trail, and simple impact for each
+  of Threadball, Needlepoint, and Spoolburst,
+- shared basic Stitching-damage, Unraveling, victory, and reward effects,
+- one Patch with a scalable fill, one cotton-cloud or distant layer, and
+  repeatable terrain top and interior materials,
+- Calling portraits and Relic icons while touch controls and essential status
+  text remain accessible HTML/CSS, and
+- a small combat/result audio set after the visual loop works end to end.
+
+Production starts with Wizard, Loomkeeper, Threadball, and one Patch as a
+single vertical slice. It must pass in-engine phone review before the remaining
+Callings and Relics are produced in batch. Additional Patches, foreground
+dressing, high-detail VFX, full animation coverage, Calling-specific effects,
+precision and radius differentiation, and final weapon tuning are explicitly
+deferred.
+
 ### Production Decomposition
 
 The lineup concept contains enough information to begin production, but it is a
@@ -788,22 +844,27 @@ Knotkin facing right in an orthographic-like side view on transparency. The
 feet share a stable baseline, the entire silhouette remains inside motion-safe
 padding, and there is no scenery, text, framing, or second character. Exactly
 two bead eyes, no mouth, Calling costume topology, body proportions, palette,
-lighting direction, and handedness must remain stable.
+lighting direction, and handedness must remain stable. Every pose also obeys a
+common held-Relic socket and projectile-origin contract so the same separate
+Relic assets can attach consistently without becoming collision authority.
 
-Relics and effects are separate transparent asset families. At minimum this
-includes Threadball, the two additional gameplay-approved Relics, their
-phone-readable icons, projectiles, trails, impacts, Stitching damage,
-Unraveling, and Prize Loom reward effects. A Relic should remain separate from
-the character atlas when practical. If a pose must bake in a Relic, that atlas
-is a separately named derivative with its own parent hashes and manifest entry.
+Relics and effects are separate transparent asset families. Each of the three
+starting Relics receives a phone-readable icon, held sprite, projectile,
+simple trail, and simple impact. Stitching damage, Unraveling, victory, and
+Prize Loom reward effects may use shared basic families. A Relic should remain
+separate from the character atlas when practical. If a pose must bake in a
+Relic, that atlas is a separately named derivative with its own parent hashes
+and manifest entry.
 
 The first Patch is not one flattened painting. Produce:
 
 - a scalable sky or fabric fill,
-- separate cotton-cloud and distant-decoration layers,
-- separate banners, loom structures, and decorative props,
-- repeatable terrain top, edge, and interior materials,
-- optional foreground dressing that never controls collision.
+- one separate cotton-cloud or distant-decoration layer,
+- repeatable terrain top and interior materials.
+
+Banners, loom structures, extra props, edge variants, and foreground dressing
+are later detail passes unless the basic phone composition cannot be read
+without them.
 
 The deterministic terrain silhouette and collision mask remain code-owned game
 data. Decorative background pixels cannot define authoritative terrain or be
@@ -852,24 +913,29 @@ Use this exact handoff for each visual asset family:
    attribution when required, copy only approved runtime files into `assets/`,
    then run compliance, build, browser smoke, and relevant visual tests.
 
-### Animation Contract
+### Basic Animation Contract
 
-Every first-release character atlas uses the same state names and baseline:
+Every WP-015 character atlas uses the same basic state names and baseline. The
+frame ranges are intentionally small so integration feedback arrives before a
+large animation batch is produced:
 
 | State | Frames | Loop | Required behavior |
 | --- | ---: | --- | --- |
-| `idle` | 8-12 | yes | Minimal breathing/thread motion; no silhouette drift |
-| `move` | 8-12 | yes | Stable baseline and readable short stride |
-| `jump_start` | 3-5 | no | Leaves the ground from the idle pose |
-| `fall` | 2-4 | holdable | Stable airborne pose without scale drift |
-| `land` | 3-5 | no | Returns exactly to the idle baseline |
-| `aim_low` | 1-3 | holdable | Low trajectory pose |
-| `aim_mid` | 1-3 | holdable | Mid trajectory pose |
-| `aim_high` | 1-3 | holdable | High trajectory pose |
-| `fire` | 6-10 | no | Names the exact gameplay release frame |
-| `hit` | 4-6 | no | Cotton compression without anatomy mutation |
-| `unravel` | 8-12 | no | Non-graphic defeat ending in thread and fluff |
-| `victory` | 8-12 | yes | Compact celebration that stays inside padding |
+| `idle` | 4-8 | yes | Minimal breathing/thread motion; no silhouette drift |
+| `move` | 6-8 | yes | Stable baseline and readable short stride |
+| `aim_low` | 1 | holdable | Low trajectory pose with stable held-Relic socket |
+| `aim_mid` | 1 | holdable | Mid trajectory pose with stable held-Relic socket |
+| `aim_high` | 1 | holdable | High trajectory pose with stable held-Relic socket |
+| `fire` | 4-6 | no | Names the exact projectile release frame and origin |
+| `hit` | 3-4 | no | Cotton compression without anatomy mutation |
+| `unravel` | 6-8 | no | Non-graphic defeat ending in thread and fluff |
+| `victory` | 6-8 | yes | Compact celebration that stays inside padding |
+
+`jump_start` is deferred because the current command model has no jump action.
+Dedicated `fall` and `land` states remain reserved until the presentation layer
+has a visible deterministic settling trigger. A later animation expansion must
+update this contract before production and cannot be inferred from unused
+placeholder state names.
 
 Generate right-facing source frames. Runtime mirroring is allowed only after a
 handedness and costume-asymmetry review. Otherwise produce and track a separate
@@ -892,10 +958,10 @@ assets/audio/{combat,result,reward}/
 ```
 
 Atlas frame names follow `<calling>/<state>/<zero-padded-frame>`. The atlas
-records frame rectangles, pivots, durations, loop hints, and the release frame
-for `fire`. Source masters, service downloads, rejected outputs, videos,
-workflows, and intermediate frames remain in ignored quarantine rather than the
-runtime tree.
+records frame rectangles, pivots, durations, loop hints, the held-Relic socket,
+the projectile origin, and the release frame for `fire`. Source masters,
+service downloads, rejected outputs, videos, workflows, and intermediate
+frames remain in ignored quarantine rather than the runtime tree.
 
 ### Asset Acceptance
 

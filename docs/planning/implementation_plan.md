@@ -8,10 +8,11 @@ Phaser/Socket.IO stack.
 ## Execution Pointer
 
 - Active target: mobile-first single-player Nimiq Pay competition release.
-- Active work package: **WP-015B Character briefs and isolated masters**. Use
-  only newly approved generation components and the canonical lineup reference
-  to create quarantined Wizard, Thief, Warrior, and Loomkeeper candidates;
-  promote nothing until its exact-file evidence and IP/art review passes.
+- Active work package: **WP-015B Basic assembly contract and vertical-slice
+  foundation**. Freeze production generation rights, exact lineage, character
+  sockets and basic animation triggers, and the versioned Relic range/damage
+  tiers before producing the Wizard, Loomkeeper, Threadball, and first Patch
+  slice. Promote nothing until exact-file evidence and IP/art review pass.
 - Last completed work package: **WP-015A Local asset-pipeline foundation** on
   2026-08-02. The pinned ComfyUI/MCP stack, component manifest, environment
   lock, loopback start/status/stop/smoke command, and clean-machine re-entry
@@ -141,8 +142,9 @@ Phaser/Socket.IO stack.
   package lock, dependency health, model name/size/hash, ports, and command
   ancestry before it starts or stops anything. Component licenses and blocked
   promotion behavior are enforced by `npm run check:compliance`; evidence is
-  closed in `docs/evidence/wp-015a.json`. Re-entry is WP-015B character briefs
-  and isolated masters, not automatic asset generation or promotion.
+  closed in `docs/evidence/wp-015a.json`. Re-entry is WP-015B's basic assembly
+  contract and vertical-slice foundation, not automatic asset generation or
+  promotion.
 - The approved post-competition weekly program is now scoped as WP-018 through
   WP-021: Nimiq Chronicle, Loom XP qualification, optional PvP Sparring Loom,
   and the Weekly Grand Knot Tournament with an additional sponsor-funded
@@ -2166,30 +2168,38 @@ Primary implementation references reviewed for this refinement:
 Status: in progress. Depends on WP-010 and WP-014 asset gates. WP-015A is
 complete; WP-015B is the active slice.
 
-Goal: produce Wizard, Thief, Warrior, Loomkeeper variant, Relics, first Patch,
-effects, UI media, and short audio through the MCP asset pipeline. Every brief
-must cite `docs/images/art-direction/knotkin-class-lineup-concept.png` as the
-canonical visual reference. No pixels from the concept image enter runtime
-without explicit exact-file approval.
+Goal: assemble a basic, phone-playable production-art version of the existing
+artillery loop so real-device testing can show how characters, weapons,
+projectiles, impacts, damage, environment, UI, and results work together. This
+is an integration and game-feel pass, not final detail, animation coverage, or
+balance polish. Every brief must cite
+`docs/images/art-direction/knotkin-class-lineup-concept.png` as the canonical
+visual reference. No pixels from the concept image enter runtime without
+explicit exact-file approval.
 
-Minimum visual asset inventory:
+The three starting Relics are the base default roster. WP-015 introduces a
+new versioned ruleset rather than changing v1 or v2 replay truth. Only range and
+maximum direct Stitching damage distinguish them initially: Threadball is
+medium/medium, Needlepoint is highest/lowest, and Spoolburst is lowest/highest.
+Damage radius, terrain radius, precision, falloff, ammo, cooldowns, secondary
+effects, Calling modifiers, and final numeric tuning remain shared or deferred.
+
+Basic asset inventory:
 
 - four isolated side-view character masters: Wizard, Thief, Warrior, and a
   friendly but clearly opposing Loomkeeper variant,
-- one normalized runtime atlas per character with `idle`, `move`, `jump_start`,
-  `fall`, `land`, `aim_low`, `aim_mid`, `aim_high`, `fire`, `hit`, `unravel`,
-  and `victory` states,
-- separate transparent masters and phone-readable icons for Threadball and the
-  two additional Relics frozen by the gameplay specification,
-- separate projectile, trail, impact, Stitching-damage, Unraveling, and Prize
-  Loom reward effects,
-- one Patch environment split into a scalable decorative backdrop, separate
-  transparent background props, repeatable terrain material textures, and a
-  code-owned destructible collision mask,
+- one basic normalized runtime atlas per character with `idle`, `move`,
+  `aim_low`, `aim_mid`, `aim_high`, `fire`, `hit`, `unravel`, and `victory`,
+- separate transparent icon, held sprite, projectile, simple trail, and simple
+  impact assets for Threadball, Needlepoint, and Spoolburst,
+- shared basic Stitching-damage, Unraveling, victory, and Prize Loom reward
+  effects,
+- one Patch with a scalable fill, one cotton-cloud or distant layer, repeatable
+  terrain top and interior materials, and a code-owned collision mask,
 - Calling portraits or icons derived from approved character masters rather
   than cropped from the lineup concept,
-- short approved audio for aiming/charging, firing, impact, damage, Unraveling,
-  victory, and reward confirmation through a separate audio provenance path.
+- a small approved audio set for firing, impact, damage/Unraveling, result, and
+  reward confirmation through a separate audio provenance path.
 
 Sequential delivery slices:
 
@@ -2197,22 +2207,30 @@ Sequential delivery slices:
   external generator stack, freeze its bridge environment, prove a bounded
   loopback smoke, and provide one fail-closed re-entry command. This slice
   promotes no media.
-- **WP-015B Character briefs and isolated masters — next:** approve each actual
-  generation component and workflow, freeze four family briefs, create new
-  quarantined 512x512 masters, and pass art/IP/provenance review before any
-  exact-file master promotion.
-- **WP-015C Character atlases and normalization:** animate only approved
-  masters, freeze state/frame contracts and parent hashes, normalize atlases
-  deterministically, integrate them behind manifest approval, and pass phone
-  capture plus visual-baseline review.
-- **WP-015D Relics, effects, Patch, and UI media:** deliver the three Relic
-  families, causal combat/reward effects, layered environment, repeatable
-  terrain materials, and master-derived UI media while keeping collision data
-  code-owned and additional media lazy where required.
-- **WP-015E Audio and closure:** deliver the separately sourced/generated short
-  audio inventory, normalize it, finish attribution and exact manifests, check
-  the 1.5 MB initial-media budget, and close all compliance, build, browser,
+- **WP-015B Basic assembly contract and vertical-slice foundation — next:**
+  approve every actual production generation component and workflow; freeze
+  exact lineage, four family briefs, anatomy/baseline/held-Relic sockets,
+  projectile origins, basic animation triggers, and the v3 Relic tier contract.
+  Create quarantined Wizard, Loomkeeper, Threadball, and first-Patch candidates
+  only after those foundations pass review.
+- **WP-015C First playable visual slice:** promote and integrate only approved
+  Wizard, Loomkeeper, Threadball, and Patch assets. Prove one complete
+  move/aim/fire/flight/impact/damage/result exchange at maintained phone
+  viewports before batch-producing the rest of the roster.
+- **WP-015D Basic roster completion:** add the new versioned range/damage
+  ruleset while preserving v1/v2 replays; complete Thief, Warrior,
+  Needlepoint, Spoolburst, shared effects, and master-derived UI media. Keep
+  collision code-owned and load only the selected Calling plus shared media.
+- **WP-015E Basic audio and closure:** deliver the small separately
+  sourced/generated audio set, finish exact manifests and attribution, check
+  the 1.5 MB initial-media budget, and close compliance, build, browser,
   visual, and real-device acceptance evidence.
+
+Deferred beyond WP-015: high-detail variants, multiple Patches, foreground
+dressing, unused jump/fall/land animations, Calling-specific effects, radius
+and precision differentiation, secondary weapon mechanics, and final balance
+tuning. Reopen those only after the basic assembled game has real-device
+feedback.
 
 Character master contract:
 
@@ -2225,6 +2243,8 @@ Character master contract:
   padding,
 - consistent body proportions, costume topology, lighting, palette, and
   handedness across all poses,
+- stable held-Relic socket and projectile-origin metadata shared across basic
+  aim and fire states,
 - neutral locomotion masters avoid baking a selected Relic into every frame;
   unavoidable Relic-specific animation is a separately tracked derivative,
 - runtime candidate normalized to a 192x192 frame with pivot at 50% horizontal
@@ -2234,9 +2254,9 @@ Character master contract:
 Environment contract:
 
 - decorative background pixels never define authoritative collision,
-- sky/fabric fill, cotton clouds, banners/loom structures, and distant props are
-  separate layers that can compose in both portrait and landscape,
-- terrain top, edge, and interior materials repeat without visible seams and
+- the basic sky/fabric fill and one cotton-cloud or distant layer compose in
+  both portrait and landscape,
+- terrain top and interior materials repeat without visible seams and
   remain convincing after circular destruction,
 - deterministic map geometry and the server collision mask are generated or
   stored as product data independently from decorative artwork,
@@ -2250,11 +2270,14 @@ requirements, and phone acceptance checks are normative in
 Owning roles: `worms_port_asset_curator`, `worms_port_compliance_keeper`,
 `worms_port_base_game_worker`, `worms_port_reviewer`.
 
-Verification: inventory completeness, character-master and environment
-contracts, art-direction checks, animation consistency, exact provenance,
+Verification: first prove the Wizard/Loomkeeper/Threadball/Patch exchange end to
+end, then check basic inventory completeness, character/socket/environment
+contracts, v1/v2 replay compatibility, deterministic v3 range/damage tier
+ordering, art direction, animation consistency, exact provenance,
 model/component license evidence, manifest hashes, attribution, atlas loading,
-mobile screenshots at all automated phone viewports, visual review, compliance,
-and build.
+the 1.5 MB compressed initial-media ceiling, mobile screenshots at all
+automated phone viewports, visual review, compliance, build, browser matrix,
+and separate real-device acceptance.
 
 ### WP-016 Retention And Distribution
 

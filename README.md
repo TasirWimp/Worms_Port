@@ -331,10 +331,14 @@ only difficulty controls; the Loomkeeper receives no extra health, damage,
 movement, collision knowledge, or retries. Only the selected legal plan is
 committed to the authoritative replay.
 
-The release roster is Threadball (balanced), Needlepoint (precision), and
-Spoolburst (terrain/control). They share aim, power, movement, collision, and
-turn rules; only their disclosed crater, damage radius, and maximum damage
-bounds differ. No production Relic art is shipped yet.
+The current `nimble-knots-artillery-v2` runtime preserves its historical
+placeholder tuning: all three Relics share launch-speed bounds while crater,
+damage-radius, and maximum-damage constants differ. WP-015 does not rewrite
+that replay history. It prepares a new versioned basic ruleset in which
+Threadball has medium range and damage, Needlepoint has the highest range and
+lowest damage, and Spoolburst has the lowest range and highest damage. Other
+weapon dimensions and fine tuning are deferred. No production Relic art is
+shipped yet.
 
 ## Complete Practice Clash
 

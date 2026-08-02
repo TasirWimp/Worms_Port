@@ -98,23 +98,33 @@ mechanics are product-authored and do not derive from Sorcerers names,
 constants, algorithms, code, or assets.
 
 - **Threadball** (`threadball`) is the balanced baseline: a wound ball of NIM
-  Thread with medium Stitching damage and a medium circular terrain tear.
-- **Needlepoint** (`needlepoint`) is the precision choice: a toy-like polished
-  needle trailing luminous thread, with a small terrain puncture and a narrow,
-  high-damage impact area.
-- **Spoolburst** (`spoolburst`) is the control choice: an oversized wooden spool
-  releasing a broad cotton-and-thread burst, with lower peak damage but the
-  widest terrain opening and damage reach.
+  Thread with medium range and medium Stitching damage.
+- **Needlepoint** (`needlepoint`) is the long-range choice: a toy-like polished
+  needle trailing luminous thread, with the highest range and lowest Stitching
+  damage.
+- **Spoolburst** (`spoolburst`) is the heavy close-range choice: an oversized
+  wooden spool that deals the highest Stitching damage at the lowest range.
+
+WP-015 differentiates only these two dimensions: range and maximum direct
+Stitching damage. Damage radius, terrain radius, precision, falloff, ammo,
+cooldowns, secondary effects, and Calling modifiers remain on a shared basic
+baseline or are deferred until the assembled game has been evaluated on real
+phones. Any future precision mechanic must be deterministic and disclosed; it
+must not introduce hidden or ambient random misses.
+
+The existing `nimble-knots-artillery-v2` constants remain immutable replay
+history. The range/damage identities above are planned for a new versioned
+ruleset rather than changing historical v2 results.
 
 All three use the same movement budget, angle and power inputs, projectile
 flight, collision authority, one-shot turn completion, and Stitching scale for
 player and Loomkeeper. Selection has no ammo, cooldown, hidden modifier, or
 Calling restriction and remains active until another Relic is selected.
 
-Code-drawn placeholders must remain distinct without color alone: Threadball
-uses a round wound silhouette, Needlepoint a narrow diagonal needle-and-thread
-silhouette, and Spoolburst a squat spool with an outward burst ring. Production
-art remains a later exact-file asset task.
+Code-drawn placeholders and production assets must remain distinct without
+color alone: Threadball reads as round and balanced, Needlepoint as fast and
+long-reaching, and Spoolburst as heavy and short-reaching. WP-015 visuals must
+not imply unimplemented radius, precision, or secondary-effect differences.
 
 ## Knotkin Anatomy
 
