@@ -57,8 +57,18 @@ export class PostgresRewardStore implements RewardStore {
     }
 
     public async initialize(): Promise<void> {
-        for (const migration of await readRewardMigrations()) {
-            await this.pool.query(migration);
+        const client = await this.pool.connect();
+        try {
+            await client.query('SELECT pg_advisory_lock(1313, 0)');
+            try {
+                for (const migration of await readRewardMigrations()) {
+                    await client.query(migration);
+                }
+            } finally {
+                await client.query('SELECT pg_advisory_unlock(1313, 0)');
+            }
+        } finally {
+            client.release();
         }
     }
 

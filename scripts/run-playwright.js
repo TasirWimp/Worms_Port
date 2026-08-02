@@ -34,6 +34,7 @@ async function main() {
         PLAYWRIGHT_PORT: String(port),
         ...(qualityGate ? { PLAYWRIGHT_QUALITY_GATE: 'true' } : {}),
         ...(rewardRun ? {
+          WP014_QUALITY_TEST: 'true',
           REWARD_MODE: 'record-only',
           REWARD_PAUSED: 'false',
           REWARD_TEST_MEMORY_STORE: 'true',
@@ -61,7 +62,11 @@ function assertQualityGateEnvironment(env) {
     'DATABASE_URL',
     'REWARD_PRIVATE_KEY_FILE',
     'REWARD_RPC_URL',
-    'NIMIQ_RECOVERY_WORDS'
+    'NIMIQ_RECOVERY_WORDS',
+    'REWARD_MAINNET_ACKNOWLEDGEMENT',
+    'REWARD_TEST_WALLET_ADDRESS',
+    'REWARD_TEST_DAILY_ATTEMPT_LIMIT',
+    'REWARD_TEST_REPEAT_ACKNOWLEDGEMENT'
   ];
   const configured = blocked.filter((name) => typeof env[name] === 'string' && env[name].trim());
   if (configured.length > 0) {

@@ -8,7 +8,9 @@ Phaser/Socket.IO stack.
 ## Execution Pointer
 
 - Active target: mobile-first single-player Nimiq Pay competition release.
-- Next work package: **WP-014D PostgreSQL and reward security**.
+- Active work package: **WP-014D PostgreSQL and reward security**. Implementation
+  is locally green; the digest-pinned PostgreSQL and ordinary Verify jobs must
+  pass after the branch is pushed before the slice can close.
 - Last completed work package: **WP-014C Resilience and isolation**.
 - WP-012 exactly pins `@nimiq/mini-app-sdk` `0.1.0` and server-only
   `@nimiq/core` `2.7.1`. Provider access remains lazy, identity acceptance is
@@ -87,6 +89,15 @@ Phaser/Socket.IO stack.
   150 results with the same totals, zero retries, and frozen visual thresholds
   in 22m22s. Evidence is closed in `docs/evidence/wp-014c.json`; re-entry is
   WP-014D planning and implementation.
+- WP-014D implementation is ready for CI on 2026-08-02. It adds a
+  digest-pinned PostgreSQL 16.10 Bookworm service, serialized concurrent
+  migrations, two-connection ledger contention/restart coverage, a built
+  record-only Daily journey against the real store, fake payout fault and
+  finality coverage, quality-startup authority guards, stricter response
+  headers, and source/build/artifact secret scans. The local zero-retry matrix
+  remains green at 150 results (94 passed, 56 reviewed exclusions). This
+  Windows environment has neither Docker nor `psql`; therefore the two
+  PostgreSQL commands and both Ubuntu jobs remain mandatory before completion.
 - The approved post-competition weekly program is now scoped as WP-018 through
   WP-021: Nimiq Chronicle, Loom XP qualification, optional PvP Sparring Loom,
   and the Weekly Grand Knot Tournament with an additional sponsor-funded
@@ -1787,8 +1798,10 @@ Verification:
 
 ### WP-014 Autonomous Quality Harness
 
-Status: implementation in progress. WP-014A completed on 2026-08-01 and
-WP-014B completed on 2026-08-02; WP-014C is next. Depends on WP-011 and WP-013.
+Status: implementation in progress. WP-014A completed on 2026-08-01,
+WP-014B and WP-014C completed on 2026-08-02, and WP-014D is implemented
+locally pending its PostgreSQL and ordinary Ubuntu CI gates. Depends on WP-011
+and WP-013.
 
 Goal: turn the existing focused tests into the reproducible automated
 competition-candidate gate. Complete the browser, visual, performance,
@@ -2057,10 +2070,12 @@ allowance cannot be reassigned to JavaScript.
    narrowed without weakening other error assertions, ordinary Ubuntu Verify
    run 30742976205 passed 94 applicable routes and 56 reviewed exclusions with
    zero retries.
-4. **WP-014D PostgreSQL and reward security:** add the digest-pinned CI service,
-   two-connection migration/concurrency/restart tests, real-store record-only
-   browser journey, fake signer/RPC faults, security-header checks, and artifact
-   secret scans.
+4. **WP-014D PostgreSQL and reward security - implementation pending CI:** the
+   digest-pinned CI service, two-connection migration/concurrency/restart tests,
+   real-store record-only browser journey, fake signer/RPC faults,
+   security-header checks, and artifact secret scans are implemented. Close
+   this slice only after the dedicated PostgreSQL/reward-security job and the
+   ordinary Verify matrix pass from the pushed commit.
 5. **WP-014E Performance and closure:** enforce bundle/timing budgets, make
    `verify:full` truthful and complete, run the entire matrix, review failure
    evidence and expected skips, record residual risks, and advance the pointer

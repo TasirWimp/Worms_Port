@@ -79,14 +79,19 @@ npm run test:relics
 npm run test:combat
 npm run test:practice
 npm run test:identity
+npm run test:reward
+npm run test:reward:postgres
 npm run test:browser:smoke
 npm run test:browser:combat
 npm run test:browser:practice
 npm run test:browser:identity
 npm run test:browser:reward
+npm run test:browser:reward:postgres
 npm run test:browser:resilience
 npm run test:browser:visual
 npm run test:browser:matrix
+npm run check:identity-bundles
+npm run check:reward-security
 npm start
 ```
 
@@ -109,6 +114,18 @@ settlement, truthful lost-session recovery, and two simultaneous isolated
 browser contexts. It uses only loopback authority and fixed synthetic keys;
 it does not emulate arbitrary WebSocket packet loss or contact Nimiq Pay,
 Render, a real wallet, an external RPC, or a chain.
+
+WP-014D adds focused PostgreSQL and reward-security gates. Set
+`WP014_TEST_DATABASE_URL` to an administrator connection for a disposable
+PostgreSQL service on `localhost`, `127.0.0.1`, or `::1`, then run
+`npm run test:reward:postgres` and `npm run test:browser:reward:postgres`.
+Each command creates and drops only uniquely named `nimble_knots_wp014_*`
+databases. The harness refuses external databases, chain reward modes, payout
+RPC settings, recovery words, and private-key files. `npm run
+check:reward-security` requires a fresh build and scans source, build output,
+and generated text artifacts for payout-key fixtures, wallet proofs, session
+tokens, and server-only dependency leakage. The digest-pinned PostgreSQL 16
+GitHub Actions job is authoritative when local PostgreSQL is unavailable.
 
 WP-014 visual baselines are created only by the GitHub Actions workflow
 **Visual baseline candidates** on the implementation pull request. That

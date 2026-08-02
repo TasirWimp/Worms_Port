@@ -1,6 +1,6 @@
 import { PrivateKey, PublicKey, Signature } from '@nimiq/core';
 
-import { nimiqSignedMessageHash } from '../../../server/src/identity/crypto';
+import { nimiqSignedMessageHash } from '../../server/src/identity/crypto';
 
 export const TEST_PRIVATE_KEY =
   '000102030405060708090a0b0c0d0e0f101112131415161718191a1b1c1d1e1f';

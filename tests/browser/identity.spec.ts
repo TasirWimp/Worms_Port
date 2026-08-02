@@ -4,7 +4,7 @@ import {
   createTestSigner,
   privateKeyForProject,
   TEST_DEVICE_ID
-} from './support/nimiq-signer';
+} from '../support/nimiq-signer';
 
 function captureErrors(page: Page) {
   const errors: string[] = [];

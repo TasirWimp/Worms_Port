@@ -2,7 +2,10 @@ import os from 'os';
 
 import type { RuntimeServer } from './runtime';
 import { createRuntimeServer } from './runtime';
-import { rewardConfigFromEnvironment } from './reward/config';
+import {
+    assertRewardQualityTestEnvironment,
+    rewardConfigFromEnvironment
+} from './reward/config';
 import {
     NimiqRpcPayoutAdapter,
     RecordOnlyPayoutAdapter,
@@ -26,6 +29,7 @@ void main().catch((error) => {
 });
 
 async function main(): Promise<void> {
+    assertRewardQualityTestEnvironment();
     const rewardConfig = rewardConfigFromEnvironment();
     const identity = identityOptionsFromEnvironment(rewardConfig.mode !== 'disabled');
     const store = rewardStoreFromEnvironment(rewardConfig.mode);

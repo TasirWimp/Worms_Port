@@ -37,3 +37,49 @@ jobs:
             playwright-report/
           if-no-files-found: ignore
           retention-days: 14
+
+  postgres-reward-security:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 20
+    env:
+      WP014_TEST_DATABASE_URL: postgresql://nimble_knots_test:nimble_knots_test@127.0.0.1:5432/postgres
+    services:
+      postgres:
+        image: postgres:16.10-bookworm@sha256:38471f330eb885e04de130b768d6db4e10469e2311879c7e5c699f6d2d8a1c74
+        env:
+          POSTGRES_USER: nimble_knots_test
+          POSTGRES_PASSWORD: nimble_knots_test
+          POSTGRES_DB: postgres
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd "pg_isready -U nimble_knots_test -d postgres"
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+    steps:
+      - uses: actions/checkout@v5
+        with:
+          fetch-depth: 0
+      - uses: actions/setup-node@v6
+        with:
+          node-version: 20
+          cache: npm
+      - run: npm ci
+      - run: npx playwright install --with-deps chromium
+      - run: npm run test:reward:postgres
+      - run: npm run test:reward
+      - run: npm run test:browser:reward:postgres
+      - run: npm run check:identity-bundles
+      - run: npm run check:reward-security
+      - run: npm audit
+      - name: Upload PostgreSQL reward failure evidence
+        if: failure()
+        uses: actions/upload-artifact@v6
+        with:
+          name: postgres-reward-failure-evidence
+          path: |
+            test-results/
+            playwright-report/
+          if-no-files-found: ignore
+          retention-days: 14

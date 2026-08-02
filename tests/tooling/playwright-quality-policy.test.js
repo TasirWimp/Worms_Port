@@ -59,7 +59,11 @@ test('quality runner rejects inherited chain, database, RPC, and key authority',
     'DATABASE_URL',
     'REWARD_PRIVATE_KEY_FILE',
     'REWARD_RPC_URL',
-    'NIMIQ_RECOVERY_WORDS'
+    'NIMIQ_RECOVERY_WORDS',
+    'REWARD_MAINNET_ACKNOWLEDGEMENT',
+    'REWARD_TEST_WALLET_ADDRESS',
+    'REWARD_TEST_DAILY_ATTEMPT_LIMIT',
+    'REWARD_TEST_REPEAT_ACKNOWLEDGEMENT'
   ]) {
     assert.throws(
       () => assertQualityGateEnvironment({ [name]: 'configured' }),

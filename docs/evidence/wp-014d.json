@@ -1,0 +1,89 @@
+{
+  "id": "WP-014D",
+  "status": "in_progress",
+  "starting_commit": "62536332c60c97a81e1793cec211b918497b78cc",
+  "branch": "codex/wp-014-quality-harness",
+  "initial_worktree": "clean",
+  "starting_lock_sha256": "8A13522641DC030E38258E08B843B1E902B018E324D3AEECA3CD577F0EF10704",
+  "owning_roles": [
+    "worms_port_network_worker",
+    "worms_port_test_worker",
+    "worms_port_compliance_keeper",
+    "worms_port_reviewer"
+  ],
+  "scope": [
+    "Add a digest-pinned PostgreSQL 16 GitHub Actions service and disposable uniquely named databases for reward quality tests",
+    "Exercise repository migrations from zero and through concurrent initialization",
+    "Exercise two-connection final-budget, same-wallet, claim-idempotency, reservation expiry and cancellation, UTC rollover, and payout-lease authority",
+    "Exercise durable restart and reconciliation from in-progress, queued, signed, ambiguous broadcast, inclusion, and finality boundaries without constructing a second logical transaction",
+    "Run one built Chromium Daily journey against the real PostgreSQL store in record-only mode and verify durable rows afterward",
+    "Add deterministic fake payout fault coverage for balance, fee, signer, network, stale head, outage, invalid response, delayed inclusion, finality, expiry, exact-byte rebroadcast, and manual review",
+    "Add quality-test startup guards, production security-header assertions, and reward secret/server-dependency artifact scans",
+    "Integrate focused scripts, CI routing, documentation, and compact completion evidence"
+  ],
+  "non_goals": [
+    "A real Nimiq Pay provider, real wallet, recovery words, private payout key, Render database, external RPC, public chain, or NIM transfer",
+    "Testnet or mainnet reward mode in any autonomous process",
+    "Horizontal scaling, durable active simulations, PvP, matchmaking, automatic replacement of ambiguous payouts, or multiple concurrent signers",
+    "Bundle and timing budgets, verify:full closure, or workflow-wide performance partitioning assigned to WP-014E",
+    "Production art, audio, Nimiq brand assets, or Sorcerers code or assets"
+  ],
+  "planned_checks": [
+    "npm run check:compliance",
+    "npm run check:types",
+    "npm run test:tooling",
+    "npm run test:protocol",
+    "npm run test:reward",
+    "npm run test:reward:postgres",
+    "npm run test:browser:reward",
+    "npm run test:browser:reward:postgres",
+    "npm run check:identity-bundles",
+    "npm run check:reward-security",
+    "npm run build",
+    "npm run smoke:built",
+    "node scripts/run-playwright.js --quality-gate --ignore-snapshots",
+    "npm audit",
+    "GitHub Actions postgres-reward-security",
+    "GitHub Actions Verify matrix",
+    "PostgreSQL image digest and safety-boundary review",
+    "security and import-boundary review",
+    "self-review"
+  ],
+  "deterministic_seeds": [
+    "1",
+    "3735928559"
+  ],
+  "sorcerers_reference_used": false,
+  "clean_room_records": [],
+  "check_results": [
+    { "command": "npm run check:compliance", "status": "pass", "detail": "Asset, import-boundary, dependency-license, work-package, and clean-room checks passed with 18 evidence records." },
+    { "command": "npm run check:types", "status": "pass" },
+    { "command": "npm run test:tooling", "status": "pass", "detail": "13 tests passed, including PostgreSQL browser authority refusal and reward artifact scan fixtures." },
+    { "command": "npm run test:protocol", "status": "pass", "detail": "38 tests passed." },
+    { "command": "npm run test:reward", "status": "pass", "detail": "23 tests passed, including quality-mode authority guards, payout preparation faults, delayed finality, expiry, exact-byte reuse, and security headers." },
+    { "command": "npm run test:browser:reward", "status": "pass", "detail": "The maintained Chromium and WebKit Daily routes passed; three reviewed project exclusions remained." },
+    { "command": "npm run check:identity-bundles", "status": "pass", "detail": "The Mini App SDK remains lazy in the client and @nimiq/core remains server-only outside centralized test support." },
+    { "command": "npm run check:reward-security", "status": "pass", "detail": "No payout-key fixture, wallet proof, session token, or server-only marker leaked into inspected source, build, or generated text artifacts." },
+    { "command": "npm run build", "status": "pass", "detail": "Compliance, types, server, and client production builds passed; the existing client chunk warning remains assigned to WP-014E." },
+    { "command": "npm run smoke:built", "status": "pass", "detail": "Built server, overlays, approved-asset plumbing, and join-ID API passed." },
+    { "command": "node scripts/run-playwright.js --quality-gate --ignore-snapshots", "status": "pass", "detail": "All 150 local Windows logic results passed with one worker and zero retries: 94 passed and 56 reviewed exclusions in 5.5 minutes. Linux screenshot comparison remains CI-only." },
+    { "command": "npm audit", "status": "pass", "detail": "0 vulnerabilities" },
+    { "command": "PostgreSQL image digest and safety-boundary review", "status": "pass", "detail": "The official Docker Hub tag metadata was checked for postgres:16.10-bookworm and CI pins its multi-architecture digest sha256:38471f330eb885e04de130b768d6db4e10469e2311879c7e5c699f6d2d8a1c74. Test startup and runners reject chain modes, payout authority, repeat-attempt overrides, external databases, and unsafe database names." },
+    { "command": "security and import-boundary review", "status": "pass", "detail": "Compliance and reward-security scans pass. The slice adds no dependency or asset, uses one centralized synthetic key fixture, adds no client payout authority, and does not use Sorcerers material." },
+    { "command": "self-review", "status": "pass", "detail": "Reviewed serialized migrations, two-pool contention, claim idempotency, advisory signer lease, restart boundaries, exact signed-byte reuse, browser ledger assertions, database cleanup, zero retries, CI time bounds, and generated-artifact retention. No production reward policy or external authority was enabled." }
+  ],
+  "reviews": [
+    { "role": "worms_port_network_worker", "reviewer": "primary-agent-postgresql-concurrency-and-restart-review", "decision": "pass" },
+    { "role": "worms_port_test_worker", "reviewer": "primary-agent-browser-routing-and-fault-matrix-review", "decision": "pass" },
+    { "role": "worms_port_compliance_keeper", "reviewer": "primary-agent-secret-scan-and-import-boundary-review", "decision": "pass" },
+    { "role": "worms_port_reviewer", "reviewer": "primary-agent-scope-safety-and-residual-risk-review", "decision": "pass" }
+  ],
+  "skipped_checks": [
+    "npm run test:reward:postgres and npm run test:browser:reward:postgres were not run locally because this Windows environment has neither Docker nor psql; the digest-pinned Ubuntu PostgreSQL job is mandatory before completion.",
+    "Physical Android/iOS and Nimiq Pay WebView testing was not run; browser automation and synthetic wallet providers do not substitute for it."
+  ],
+  "residual_risks": [
+    "The new PostgreSQL migrations, races, restart boundaries, and built-browser durable journey are type/discovery checked locally but require their first authoritative disposable-service CI execution.",
+    "Sessions and active simulations remain single-process and non-durable; WP-014D hardens reward liabilities but does not add horizontal runtime authority."
+  ]
+}

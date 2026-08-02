@@ -1,13 +1,10 @@
 import { expect, test, type Page } from '@playwright/test';
-import { PrivateKey, PublicKey, Signature } from '@nimiq/core';
 
-import { nimiqSignedMessageHash } from '../../server/src/identity/crypto';
+import { createTestSigner } from '../support/nimiq-signer';
 import {
   applySyntheticSafeArea,
   SYNTHETIC_SAFE_AREA
 } from './support/safe-area';
-
-const PRIVATE_KEY = '000102030405060708090a0b0c0d0e0f101112131415161718191a1b1c1d1e1f';
 
 test('visual geometry baselines cover start, combat, result, and recovery', async ({ page }) => {
   const errors = captureErrors(page);
@@ -124,24 +121,9 @@ test('canonical Daily visuals cover availability, authorization, claim processin
   test.setTimeout(120_000);
   test.skip(testInfo.project.name !== 'chromium-390x844', 'Canonical Daily visual-state coverage.');
   const errors = captureErrors(page);
-  const privateKey = PrivateKey.fromHex(PRIVATE_KEY);
-  const publicKey = PublicKey.derive(privateKey);
-  const addressObject = publicKey.toAddress();
-  const address = addressObject.toUserFriendlyAddress();
-  addressObject.free();
+  const signer = createTestSigner();
   try {
-    await page.exposeFunction('testNimiqVisualSign', (message: string) => {
-      const signature = Signature.create(
-        privateKey,
-        publicKey,
-        nimiqSignedMessageHash(message)
-      );
-      try {
-        return { publicKey: publicKey.toHex(), signature: signature.toHex() };
-      } finally {
-        signature.free();
-      }
-    });
+    await page.exposeFunction('testNimiqVisualSign', (message: string) => signer.sign(message));
     await page.addInitScript(({ wallet }) => {
       const runtime = window as any;
       runtime.nimiq = {
@@ -149,7 +131,7 @@ test('canonical Daily visuals cover availability, authorization, claim processin
         sign: async (message: string) => runtime.testNimiqVisualSign(message)
       };
       runtime.nimiqPay = { language: 'en' };
-    }, { wallet: address });
+    }, { wallet: signer.address });
 
     await page.goto('/?sideways=off');
     await page.getByRole('button', { name: 'Check Daily Challenge' }).tap();
@@ -161,9 +143,9 @@ test('canonical Daily visuals cover availability, authorization, claim processin
     await screenshot(page, 'canonical-daily-available.png');
 
     await page.getByRole('button', { name: 'Choose Nimiq account' }).tap();
-    await page.getByRole('button', { name: address }).tap();
+    await page.getByRole('button', { name: signer.address }).tap();
     await expect(page.getByRole('button', { name: 'Start Daily Challenge' })).toBeEnabled();
-    await expect(page.locator('.identity-message')).toContainText(`Authorized as ${address}`);
+    await expect(page.locator('.identity-message')).toContainText(`Authorized as ${signer.address}`);
     await screenshot(page, 'canonical-daily-authorized.png');
 
     await page.goto('/?result-preview=reward&sideways=off');
@@ -181,8 +163,7 @@ test('canonical Daily visuals cover availability, authorization, claim processin
     await screenshot(page, 'canonical-daily-finalized.png');
     expect(errors).toEqual([]);
   } finally {
-    publicKey.free();
-    privateKey.free();
+    signer.dispose();
   }
 });
 

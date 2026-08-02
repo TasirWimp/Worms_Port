@@ -6,7 +6,7 @@ import {
   type TestInfo
 } from '@playwright/test';
 
-import { createTestSigner } from './support/nimiq-signer';
+import { createTestSigner } from '../support/nimiq-signer';
 
 const CANONICAL_PROJECTS = new Set(['chromium-390x844', 'webkit-390x844']);
 

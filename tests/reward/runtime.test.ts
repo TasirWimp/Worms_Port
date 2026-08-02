@@ -119,6 +119,9 @@ test('runtime responses include the production security headers', async () => {
         assert.match(response.headers.get('content-security-policy') ?? '', /object-src 'none'/);
         assert.equal(response.headers.get('x-content-type-options'), 'nosniff');
         assert.equal(response.headers.get('referrer-policy'), 'no-referrer');
+        assert.equal(response.headers.get('x-frame-options'), 'DENY');
+        assert.equal(response.headers.get('cross-origin-resource-policy'), 'same-origin');
+        assert.match(response.headers.get('permissions-policy') ?? '', /payment=\(\)/);
         assert.equal(response.headers.has('x-powered-by'), false);
     } finally {
         await runtime.close();
