@@ -8,21 +8,26 @@ Phaser/Socket.IO stack.
 ## Execution Pointer
 
 - Active target: mobile-first single-player Nimiq Pay competition release.
-- Active work package: **WP-015B2 Quarantined vertical-slice prompt
-  refinement**. The fixed primary pass and one documented text-only retry were
-  rejected. A conditioned Wizard diagnostic also failed before the user stopped
-  the batch. Exact outputs, hashes, decisions, and the empty queue confirmation
-  are recorded in `docs/asset-briefs/wp-015b2-generation-review.md`. Generation
-  is paused while the prompts are split into smaller staged goals.
-- Last committed implementation slice: **WP-015B1 Vertical-slice generation
-  contract** on 2026-08-02 at `1eaf731`. Its prompts, seeds, character sockets,
-  projectile-origin metadata, animation triggers, and acceptance gates remain
-  the product intent, but the local SD 1.5 checkpoint cannot reliably satisfy
-  them in one dense prompt.
-- Next bounded action: refine one short Wizard generation sequence first,
-  review each stage before continuing, and only then adapt the proven pattern to
-  Loomkeeper, Threadball, and Patch 01. Do not queue another multi-asset batch or
-  promote any current output.
+- Active work package: **WP-015B2A FLUX.2 Klein 4B model-admission
+  deviation**. The fixed SD 1.5 primary pass, prompt-only retry, and one
+  conditioned Wizard diagnostic were rejected and are preserved at committed
+  review record `2c528b8`. Generation remains paused. Before any further art
+  attempt, the proposed FLUX.2 Klein 4B distilled FP8 route must pass the
+  component, workflow, RX 7600 8 GB, and two-purpose visual-admission gates
+  defined in the WP-015 section and
+  `docs/asset-briefs/wp-015b2-generation-review.md`.
+- Last committed documentation slice: **WP-015B2 SD 1.5 generation review and
+  prompt refinement** on 2026-08-02 at `2c528b8`. WP-015B1's product-facing
+  anatomy, socket, projectile-origin, animation, environment, and acceptance
+  requirements remain normative. Its exact prompts, seeds, and sampler settings
+  remain the historical SD 1.5 contract and are not presumed equivalent for a
+  different model architecture.
+- Next bounded action: review and exact-hash only the proposed external FLUX.2
+  Klein 4B FP8 diffusion model, Qwen3 4B text encoder, and FLUX.2 VAE, including
+  exact source revision and commercial-use license evidence. Do not generate,
+  approve the model route, change the pinned ComfyUI checkout, install custom
+  nodes, queue another multi-asset batch, or promote any current output during
+  that component-review step.
 - WP-012 exactly pins `@nimiq/mini-app-sdk` `0.1.0` and server-only
   `@nimiq/core` `2.7.1`. Provider access remains lazy, identity acceptance is
   now used by WP-013's separate production Daily entry, the diagnostics surface
@@ -153,8 +158,10 @@ Phaser/Socket.IO stack.
   decision. Committed WP-015B1 freezes the first vertical-slice prompts, seeds,
   geometry, animation triggers, and review gates. The initial B2 text-only pass,
   one prompt-only retry, and one conditioned Wizard diagnostic did not satisfy
-  those gates. Re-entry is the recorded B2 prompt refinement, one asset and one
-  staged goal at a time, not automatic regeneration or promotion.
+  those gates. Committed review `2c528b8` records the failed attempts and stop.
+  Re-entry is now the bounded WP-015B2A FLUX.2 Klein 4B model-admission
+  deviation, beginning with component provenance, licensing, and exact hashes;
+  it is not automatic model adoption, regeneration, or promotion.
 - The approved post-competition weekly program is now scoped as WP-018 through
   WP-021: Nimiq Chronicle, Loom XP qualification, optional PvP Sparring Loom,
   and the Weekly Grand Knot Tournament with an additional sponsor-funded
@@ -2232,12 +2239,19 @@ Sequential delivery slices:
     anatomy/baseline/held-Relic sockets, projectile origins, animation triggers,
     and acceptance checks in `docs/asset-briefs/wp-015b1-vertical-slice.md`.
     This slice generated no media.
-  - **WP-015B2 Quarantined vertical-slice masters — in progress, prompt
-    refinement paused:** the fixed primary pass and Retry 1 failed art gates;
-    the user stopped Retry 2 after one conditioned Wizard diagnostic. Preserve
-    all exact rejected outputs, refine prompts into short staged goals, generate
-    one asset at a time, and promote nothing until an exact candidate is
-    explicitly accepted.
+  - **WP-015B2 Quarantined vertical-slice masters — in progress, generation
+    suspended:** the fixed primary pass and Retry 1 failed art gates; the user
+    stopped Retry 2 after one conditioned Wizard diagnostic. Preserve every
+    exact rejected output and promote nothing. Prompt decomposition alone is no
+    longer the immediate next action because the approved SD 1.5 route did not
+    demonstrate adequate structural instruction following.
+  - **WP-015B2A FLUX.2 Klein 4B model-admission deviation — active, no model
+    approved:** pause B2 generation and evaluate the distilled FP8 4B route as a
+    possible replacement candidate. Admission is sequential: exact-component
+    review, native-workflow review, fail-closed pipeline support, RX 7600 8 GB
+    technical smoke, then a Wizard/Threadball visual micro-bakeoff. Failure at
+    any gate retains SD 1.5 as historical evidence and returns to planning; it
+    does not authorize a larger model, cloud API, custom node, or asset batch.
 - **WP-015C First playable visual slice:** promote and integrate only approved
   Wizard, Loomkeeper, Threadball, and Patch assets. Prove one complete
   move/aim/fire/flight/impact/damage/result exchange at maintained phone
@@ -2250,6 +2264,68 @@ Sequential delivery slices:
   sourced/generated audio set, finish exact manifests and attribution, check
   the 1.5 MB initial-media budget, and close compliance, build, browser,
   visual, and real-device acceptance evidence.
+
+WP-015B2A is a corrective admission gate, not an approval of FLUX.2, its
+component mirrors, a new prompt contract, or any output. It deviates from the
+previous plan as follows:
+
+1. **Component evidence first:** review the exact external distilled FP8
+   diffusion model, Qwen3 4B text encoder, and FLUX.2 VAE. Record canonical
+   source, immutable source revision, exact filename, byte size, SHA-256,
+   license, license evidence, distribution boundary, approved uses, and blocked
+   uses before any workflow can reference them. Mirrored encoder/VAE files need
+   evidence tying their exact bytes and license to the canonical component;
+   an unlicensed mirror label is insufficient.
+2. **Native workflow only:** review project-owned text-to-image and
+   single-reference-edit graphs built solely from the already pinned ComfyUI
+   0.27.1 core nodes. Exact-hash both graphs and register only their bounded
+   parameters. Do not update ComfyUI, install a custom node, use an external
+   generation API, expose either loopback service, or weaken the existing SD
+   1.5 verification route.
+3. **Fail-closed multi-model pipeline:** add a separate reviewed model profile
+   rather than replacing the SD 1.5 smoke checkpoint or accepting arbitrary
+   model names. `Prepare`, `Status`, `Start`, and MCP registration must verify
+   the selected profile's complete component and workflow chain. All files and
+   outputs remain external and quarantined.
+4. **Eight-GB technical admission:** run batch size one on the actual Windows
+   AMD Radeon RX 7600 with low-VRAM text-encoder offload and previews disabled.
+   Record resolution, settings, wall time, reported memory behavior, output
+   hash, and any fallback or error. Official ComfyUI documentation reports
+   about 8.4 GB VRAM for the distilled workflow on an RTX 5090, while the full
+   model card describes about 13 GB for the ordinary route; therefore 8 GB AMD
+   compatibility is an unresolved local gate, not an accepted fact.
+5. **Two-purpose visual admission:** only after the technical smoke passes,
+   evaluate one isolated Wizard structure pass, one isolated Threadball
+   structure pass, and at most one controlled reference edit. Use short staged
+   prompts and review every output before continuing. Do not queue Loomkeeper,
+   Patch, animation, or roster batches at this gate.
+6. **Explicit adoption decision:** adopt the route for resumed B2 generation
+   only if provenance, license, pipeline, hardware, and both visual purposes
+   pass. Otherwise record rejection and refine the plan without seed shopping
+   or silently changing models.
+
+WP-015B1 remains normative for product anatomy, side view, sockets, projectile
+origin, animation triggers, environment decomposition, and acceptance. Its
+exact SD 1.5 prompts, seeds, CFG, sampler, scheduler, and workflow hashes remain
+the immutable historical contract for the rejected run. A different model must
+receive a separately reviewed model-specific prompt/settings/seed amendment;
+cross-model seed equality is not meaningful. For Patch terrain, generation may
+offer reviewed material source imagery, but seamless edges, exact repeatability,
+transparent cleanup, and collision geometry must be deterministic postprocess
+or code-owned work rather than model promises.
+
+Primary official sources reviewed for this planning deviation:
+
+- FLUX.2 model family, 4B Apache-2.0 status, generation/editing support, and
+  consumer-GPU positioning:
+  `https://github.com/black-forest-labs/flux2`;
+- exact distilled FP8 model card and license:
+  `https://huggingface.co/black-forest-labs/FLUX.2-klein-4b-fp8`;
+- native ComfyUI 4B text-to-image/edit workflows, three component locations,
+  and published FP8 memory figure:
+  `https://docs.comfy.org/tutorials/flux/flux-2-klein`;
+- ComfyUI low-VRAM, preview, offload, and AMD guidance:
+  `https://docs.comfy.org/troubleshooting/overview`.
 
 Deferred beyond WP-015: high-detail variants, multiple Patches, foreground
 dressing, unused jump/fall/land animations, Calling-specific effects, radius

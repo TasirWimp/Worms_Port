@@ -15,6 +15,7 @@
     "Record the project owner's attestation of Nimiq team/foundation encouragement, approval of the inspired geometry direction, and canonical documentation-only knitting baseline",
     "Approve and exact-hash the production checkpoint, text-to-image workflow, and project-owned image-conditioned refinement workflow while preserving external quarantine",
     "Freeze the Wizard, Loomkeeper, Threadball, and first-Patch briefs, prompts, negative constraints, sockets, triggers, and acceptance checks",
+    "After the rejected SD 1.5 attempts, insert a bounded FLUX.2 Klein 4B model-admission deviation without approving a model or resuming generation",
     "Generate deterministic quarantined vertical-slice candidates and complete pre-promotion art, IP, provenance, and phone-readability review"
   ],
   "non_goals": [
@@ -30,6 +31,10 @@
     "npm run build",
     "npm audit",
     "ComfyUI production preflight with exact checkpoint and workflow hashes",
+    "FLUX.2 Klein three-component provenance, commercial-use license, and exact-hash admission",
+    "FLUX.2 native core-node text-to-image and reference-edit workflow hash review",
+    "RX 7600 8 GB low-VRAM technical smoke",
+    "Wizard and Threadball staged visual admission",
     "WP-015B1 brief-contract completeness and source-boundary review",
     "fixed-seed quarantined vertical-slice master review",
     "self-review"
@@ -83,7 +88,9 @@
   ],
   "residual_risks": [
     "The reviewed image-conditioned graph is ordinary VAE img2img, not IP-Adapter or ControlNet; strong composition changes require an isolated master and carefully chosen denoise.",
-    "The current SD 1.5 checkpoint did not reliably follow the dense B1 character, Relic, and environment prompts. B2 remains open while prompts are decomposed into short staged goals and reviewed one asset at a time.",
+    "The current SD 1.5 checkpoint did not reliably follow the dense B1 character, Relic, and environment prompts. Its rejected prompts, seeds, settings, and outputs remain historical evidence; they are not silently reused for another model architecture.",
+    "FLUX.2 Klein 4B distilled FP8 is only a proposed admission candidate. Its exact diffusion, encoder, and VAE provenance and licenses are not yet reviewed or hashed, and no workflow or output is approved.",
+    "Official ComfyUI documentation reports about 8.4 GB VRAM for the distilled route on an RTX 5090. The actual Windows AMD RX 7600 has 8 GB, so offloaded execution, stability, runtime, and visual usefulness remain unproven local gates.",
     "No WP-015B2 output currently passes exact-output art/IP review; candidate acceptance, npm audit, and final self-review remain pending before WP-015B can close."
   ]
 }

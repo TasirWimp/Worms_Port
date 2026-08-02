@@ -225,3 +225,51 @@ output completed in Retry 2. Generation remains paused. The next amendment must
 split visual goals into short, staged prompts and test one asset at a time before
 submitting another batch. Existing rejected files may be analyzed, but no new
 generation occurs until that prompt refinement is reviewed.
+
+## Approved Planning Deviation: WP-015B2A Model Admission
+
+Decision date: 2026-08-02. Starting review record: `2c528b8`.
+
+The prompt-only retries and conditioned Wizard diagnostic show that prompt
+decomposition by itself is not a sufficient next step for the approved SD 1.5
+route. The final sentence of the stop record above is therefore superseded only
+for execution order: generation stays paused while a bounded FLUX.2 Klein 4B
+distilled FP8 model-admission gate runs first. The rejected SD 1.5 files,
+settings, prompts, seeds, and decisions remain immutable evidence; the proposed
+route is not yet an approved generation component.
+
+The deviation preserves the B1 product requirements for anatomy, side view,
+eyes, baseline, sockets, projectile origin, animation triggers, environment
+decomposition, phone readability, and exact-output review. It does not carry
+the B1 SD 1.5 prompts, seeds, CFG, sampler, scheduler, or workflow settings into
+a different architecture. If the new route passes admission, a separate
+model-specific short staged prompt/settings/seed amendment must be reviewed
+before B2 candidate generation resumes.
+
+Admission proceeds in this exact order:
+
+1. Review and exact-hash the external distilled FP8 diffusion model, Qwen3 4B
+   text encoder, and FLUX.2 VAE with canonical-source and commercial-use
+   license evidence. A mirror without exact license/provenance linkage fails.
+2. Review and exact-hash bounded text-to-image and single-reference-edit
+   workflows using only the pinned ComfyUI 0.27.1 core nodes. Do not update
+   ComfyUI, install custom nodes, or use a cloud generation API.
+3. Extend the local tooling with a fail-closed separate model profile. Preserve
+   the existing SD 1.5 smoke route and reject arbitrary component or workflow
+   selection.
+4. Prove a batch-one technical smoke on the actual Windows AMD Radeon RX 7600
+   8 GB route using low-VRAM text-encoder offload and disabled previews. Record
+   exact settings, runtime, memory behavior, output hash, and failures. The
+   published FP8 figure is about 8.4 GB on an RTX 5090, so local compatibility
+   is a gate rather than an assumption.
+5. Only after technical admission, run one Wizard structure pass, one
+   Threadball structure pass, and at most one controlled reference edit with
+   short staged prompts. Review after every output; do not batch the remaining
+   purposes.
+6. Record an explicit adopt/reject decision. Only an adopted route may receive
+   the model-specific prompt amendment and resume B2 generation.
+
+Model generation will not be treated as proof of seamless terrain, exact
+transparent edges, repeatable tiling, or collision geometry. Those properties
+remain deterministic postprocess or code-owned responsibilities. This planning
+deviation downloads, generates, promotes, and approves nothing by itself.
