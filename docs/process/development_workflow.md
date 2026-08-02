@@ -625,7 +625,7 @@ ordinary Verify job passed all 150 zero-retry browser results (94 passed, 56
 reviewed exclusions) in 21m7s. No physical Android/iOS, real Nimiq Pay wallet,
 external RPC, sponsor key, or public-chain transfer was used.
 
-WP-014E is implemented locally and awaits its authoritative Ubuntu gates. A
+WP-014E completed on 2026-08-02. A
 fresh Vite manifest now identifies the initial static client graph, and
 `check:bundle-budget` records exact raw plus level-9 gzip bytes under ignored
 `test-results/`. Dynamic imports are excluded from initial transfer only when
@@ -642,14 +642,23 @@ shards, PostgreSQL/reward-security, and performance/bundle work under the
 documented 20-minute per-job and 30-minute complete-workflow ceilings. Failed
 jobs retain browser evidence for 14 days, while the performance job retains
 sanitized successful or failed bundle/timing JSON for the same period. The
-final local production build measured 1,436,262 raw bytes for the largest
-initial JavaScript chunk and 398,415 gzip bytes for initial JavaScript plus
-CSS. Its full-motion timing medians/maxima were 255.7/264.1 ms to actionable
-Practice, 55.5/74.1 ms from Start to legal input, 43.2/47.3 ms from Fire to a
-visible projectile, and 2,547.7/2,601.1 ms through the complete response. The
-SDK request count, page-error count, and console-error count were zero. Local
-`verify:full` passed in 7m10s with all 150 browser results accounted for; Linux
-visual comparison and real PostgreSQL remain mandatory CI authority.
+final local and Ubuntu production build measured 1,436,262 raw bytes for the
+largest initial JavaScript chunk and 398,415 gzip bytes for initial JavaScript
+plus CSS. Authoritative Ubuntu full-motion timing medians/maxima were 463.9/718.2 ms
+to actionable Practice, 346.3/352.7 ms from Start to legal input,
+241.3/283.4 ms from Fire to a visible projectile, and 5,289.5/5,548.1 ms
+through the complete response. The SDK request count, page-error count, and
+console-error count were zero. Local `verify:full` passed in 7m10s with all 150
+browser results accounted for and its Linux/PostgreSQL omissions explicit.
+Authoritative run 30752850448 then passed the fast job in 1m11s, PostgreSQL and
+reward security in 2m05s, performance/bundle in 2m46s, WebKit in 3m05s, and
+both Chromium shards in 9m06s or less. The shards accounted for 94 passes and
+56 reviewed exclusions with zero retries; the complete workflow finished in
+9m09s. Visual candidate run 30752850445 also passed in 3m54s. The Linux Fire
+median retains only 8.7 ms of budget headroom and must be monitored rather than
+normalized by raising the threshold. Evidence is closed in
+`docs/evidence/wp-014e.json`, WP-014 is complete, and the execution pointer
+advances to WP-015.
 
 Official implementation references reviewed on 2026-08-01:
 `https://playwright.dev/docs/test-projects`,

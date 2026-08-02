@@ -8,10 +8,11 @@ Phaser/Socket.IO stack.
 ## Execution Pointer
 
 - Active target: mobile-first single-player Nimiq Pay competition release.
-- Active work package: **WP-014E Performance and closure**. Enforce the
-  documented bundle and timing budgets, make `verify:full` truthful, and close
-  the complete WP-014 quality harness only after its final clean-checkout gate.
-- Last completed work package: **WP-014D PostgreSQL and reward security**.
+- Active work package: **WP-015 Production Art And Audio**. Produce the first
+  approved runtime art/audio set through the exact-file asset review and
+  manifest pipeline, using the WP-014 capture, visual, and media-budget gates.
+- Last completed work package: **WP-014 Autonomous Quality Harness**, including
+  **WP-014E Performance and closure** on 2026-08-02.
 - WP-012 exactly pins `@nimiq/mini-app-sdk` `0.1.0` and server-only
   `@nimiq/core` `2.7.1`. Provider access remains lazy, identity acceptance is
   now used by WP-013's separate production Daily entry, the diagnostics surface
@@ -36,17 +37,16 @@ Phaser/Socket.IO stack.
   acceptance, not authorization to leave public mainnet rewards active. A
   wallet address is an eligibility identity, not proof of one human; Practice
   remains the unrestricted fallback.
-- WP-014 was refined on 2026-08-01 into five sequential slices. WP-014A through
-  WP-014D are complete: the maintained 412x915 project, zero-retry full-matrix
+- WP-014 was refined on 2026-08-01 into five sequential slices and completed on
+  2026-08-02. The maintained 412x915 project, zero-retry full-matrix
   command, reviewed expected-skip policy, safe-area fixture, CI routing, and
   failure artifacts are in place. Its first matrix run exposed and corrected centered
   non-sideways pointer coordinates; the final 105-result run passed. The visual
   and layout gate then added reviewed Linux baselines and passed its final
   125-result Ubuntu comparison. Resilience and isolation then expanded the
   matrix to 150 results and passed ordinary Ubuntu CI. PostgreSQL concurrency,
-  restart, real-store browser, payout-fault, and reward-security coverage also
-  passed its dedicated Ubuntu job. Start **WP-014E Performance and closure**.
-  The
+  restart, real-store browser, payout-fault, reward-security, exact bundle, and
+  full-motion performance coverage passed their dedicated Ubuntu jobs. The
   harness is loopback-only, uses synthetic wallets plus record-only/fake payout
   boundaries, and cannot receive a real key, external payout RPC, or chain
   reward mode. Its detailed matrix, budgets, artifact policy, and completion
@@ -104,25 +104,31 @@ Phaser/Socket.IO stack.
   and reward-security job in 2m13s. Its ordinary Verify job passed all 150
   zero-retry browser results (94 passed, 56 reviewed exclusions) in 21m7s.
   Evidence is closed in `docs/evidence/wp-014d.json`; re-entry is WP-014E.
-- WP-014E implementation is ready for CI on 2026-08-02. The clean bundle gate
+- WP-014E completed on 2026-08-02. The clean bundle gate
   follows the Vite entry manifest and records exact raw and deterministic gzip
   bytes. The pinned Chromium performance gate uses full motion, one discarded
   warm-up, five measured fresh contexts, browser-relative marks, and a zero
   lazy-SDK-request assertion. The final local production build measured
   1,436,262 raw bytes for the largest initial JavaScript chunk and 398,415
-  gzip bytes for initial JavaScript plus CSS. Full-motion timing medians were
-  255.7 ms to actionable Practice, 55.5 ms from Start to legal input, 43.2 ms
-  from Fire to a visible projectile, and 2,547.7 ms through the complete
-  Loomkeeper response; all five maxima also passed and the SDK request count
-  remained zero. The full
+  gzip bytes for initial JavaScript plus CSS. Authoritative Ubuntu full-motion
+  timing medians/maxima were 463.9/718.2 ms to actionable Practice,
+  346.3/352.7 ms from Start to legal input, 241.3/283.4 ms from Fire to a
+  visible projectile, and 5,289.5/5,548.1 ms through the complete Loomkeeper
+  response. The SDK request, page-error, and console-error counts remained
+  zero. The full
   browser policy remains strict when run together and supports only explicit
   reviewed CI project shards; `verify:quality`, `verify:postgres`, and
   `verify:full` expose their distinct authority. Fast, browser, PostgreSQL, and
-  performance/bundle CI jobs must pass within the documented wall-time budgets
-  before WP-014 and this slice can close. The final local `verify:full` passed
+  performance/bundle CI jobs all passed in run 30752850448. The three browser
+  shards accounted for all 150 results (94 passed, 56 reviewed exclusions),
+  each job stayed below 10 minutes, and the complete workflow finished in
+  9m09s. The final local `verify:full` passed
   in 7m10s with 94 applicable browser results, 56 reviewed exclusions, zero
   retries, explicit non-Linux visual omission, and explicit PostgreSQL
-  prerequisite reporting.
+  prerequisite reporting. Evidence is closed in `docs/evidence/wp-014e.json`;
+  re-entry is WP-015 planning and implementation. The Linux Fire median has
+  only 8.7 ms of headroom and remains a monitored risk, not a reason to raise
+  the budget.
 - The approved post-competition weekly program is now scoped as WP-018 through
   WP-021: Nimiq Chronicle, Loom XP qualification, optional PvP Sparring Loom,
   and the Weekly Grand Knot Tournament with an additional sponsor-funded
@@ -1823,9 +1829,8 @@ Verification:
 
 ### WP-014 Autonomous Quality Harness
 
-Status: implementation in progress. WP-014A completed on 2026-08-01, and
-WP-014B through WP-014D completed on 2026-08-02. WP-014E performance and
-closure is next. Depends on WP-011 and WP-013.
+Status: complete 2026-08-02. WP-014A completed on 2026-08-01, and WP-014B
+through WP-014E completed on 2026-08-02. Depends on WP-011 and WP-013.
 
 Goal: turn the existing focused tests into the reproducible automated
 competition-candidate gate. Complete the browser, visual, performance,
@@ -1840,18 +1845,18 @@ WP-005 and the focused combat, Practice, identity, and reward suites delivered
 through WP-013. It does not replace those suites, introduce Playwright for the
 first time, or redesign product behavior merely to make a test pass.
 
-Current baseline gaps:
+Initial baseline gaps, all closed by WP-014A through WP-014E:
 
-- `verify:full` runs only the browser smoke rather than the complete maintained
-  browser suite;
-- committed screenshot comparisons and explicit bundle/timing gates do not
+- `verify:full` covered only the browser smoke rather than the complete
+  maintained browser suite;
+- committed screenshot comparisons and explicit bundle/timing gates did not
   exist;
-- current browser reward acceptance uses the in-memory test store, while the
-  completed work-package evidence still records the absence of an autonomous
-  two-connection PostgreSQL race injection; and
-- offline/resume exists for one Practice smoke case, but low-bandwidth,
+- browser reward acceptance used the in-memory test store, while completed
+  work-package evidence recorded no autonomous two-connection PostgreSQL race
+  injection; and
+- offline/resume covered one Practice smoke case, but low-bandwidth,
   delayed-wallet, multi-context isolation, and complete failure-artifact
-  coverage are not yet release gates.
+  coverage were not release gates.
 
 Owning roles: `worms_port_test_worker`, `worms_port_reviewer`, with
 `worms_port_network_worker` limited to PostgreSQL, protocol, and reward fault
@@ -2101,13 +2106,16 @@ allowance cannot be reassigned to JavaScript.
    handling are implemented. Final run 30749716477 passed the dedicated job
    and the ordinary 150-result, zero-retry Verify matrix after two retained
    failure runs drove fixture and production robustness corrections.
-5. **WP-014E Performance and closure - implementation pending CI:** exact
+5. **WP-014E Performance and closure - complete 2026-08-02:** exact
    initial-graph bundle and full-motion timing budgets, zero lazy-SDK Practice
    requests, truthful aggregate verification, reviewed CI project shards, and
-   sanitized failure evidence are implemented. Close WP-014 and advance the
-   pointer only after every required Ubuntu job passes within its wall-time
-   budget and the final expected-skip, security, and residual-risk reviews are
-   recorded.
+   sanitized failure evidence are implemented. Run 30752850448 passed the fast,
+   three browser, PostgreSQL/reward-security, and performance/bundle jobs. All
+   150 zero-retry browser results were accounted for (94 passed, 56 reviewed
+   exclusions), every job finished within 10 minutes, and the workflow wall
+   time was 9m09s. Exact Ubuntu bundle and timing measurements, expected-skip,
+   security, self-review, and residual risks are recorded in
+   `docs/evidence/wp-014e.json`.
 
 #### Acceptance
 
