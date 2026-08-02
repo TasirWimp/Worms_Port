@@ -54,6 +54,11 @@ export class PostgresRewardStore implements RewardStore {
             max: maximumConnections,
             application_name: 'nimble-knots-rewards'
         });
+        this.pool.on('error', () => {
+            // pg removes failed idle clients. Keep connection details out of logs;
+            // active query failures still reject their owning operation.
+            console.error('Reward database idle connection was lost.');
+        });
     }
 
     public async initialize(): Promise<void> {
