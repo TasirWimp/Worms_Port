@@ -571,14 +571,25 @@ ordinary pointer mapping when the capped game surface is centered inside a
 larger viewport. WP-014B owns committed visual baselines and layout-state
 captures; do not add them retroactively to WP-014A.
 
-WP-014B currently provides deterministic, visibly labeled result/reward
+WP-014B completed with deterministic, visibly labeled result/reward
 preview states with fake in-memory transitions only, a visual test covering
 start/combat/result geometry and recovery on all five projects, canonical
 combat presentation and Daily states, compact-landscape Pause/full-screen
 fallback, and executable touch/scroll/zoom/selection assertions. The
 pre-baseline zero-retry logic run passed 125 project results (86 passed, 39
-reviewed exclusions). Linux candidate generation, explicit image review, and
-ordinary comparison CI remain the completion boundary.
+reviewed exclusions). All 35 reviewed Ubuntu baselines were independently
+reproduced, and ordinary Verify run 30739075679 passed the final comparison.
+
+WP-014C adds `test:browser:resilience` to cover supported constrained Chromium
+loading, Chromium/WebKit offline and same-authority resume, hidden/background
+input cleanup, viewport change, delayed synthetic provider settlement,
+truthful lost-session recovery, and two-context storage/identity/challenge/
+control isolation. Deterministic client fixtures separately cover lost and
+delayed acknowledgements, exact-request retry, stale/conflicting/foreign
+events, and terminal deduplication; they do not claim arbitrary WebSocket
+packet-loss emulation. The local zero-retry logic matrix accounts for 150
+project results (94 passed, 56 reviewed exclusions). Ordinary Ubuntu CI remains
+the completion authority for this slice.
 
 Official implementation references reviewed on 2026-08-01:
 `https://playwright.dev/docs/test-projects`,

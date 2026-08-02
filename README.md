@@ -84,6 +84,7 @@ npm run test:browser:combat
 npm run test:browser:practice
 npm run test:browser:identity
 npm run test:browser:reward
+npm run test:browser:resilience
 npm run test:browser:visual
 npm run test:browser:matrix
 npm start
@@ -100,6 +101,14 @@ zero-retry WP-014 release gate for all maintained browser suites at Chromium
 unexpected project skip or omitted critical journey. `verify:full` retains the
 pre-WP-014 foundation funnel until WP-014E adds the remaining visual,
 PostgreSQL, resilience, and performance gates.
+
+`npm run test:browser:resilience` is the focused WP-014C suite. It uses
+Chromium's supported deterministic network controls for constrained initial
+loading, Chromium and WebKit offline/resume, delayed synthetic wallet
+settlement, truthful lost-session recovery, and two simultaneous isolated
+browser contexts. It uses only loopback authority and fixed synthetic keys;
+it does not emulate arbitrary WebSocket packet loss or contact Nimiq Pay,
+Render, a real wallet, an external RPC, or a chain.
 
 WP-014 visual baselines are created only by the GitHub Actions workflow
 **Visual baseline candidates** on the implementation pull request. That

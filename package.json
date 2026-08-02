@@ -30,6 +30,7 @@
     "test:browser:practice": "node scripts/run-playwright.js tests/browser/practice.spec.ts",
     "test:browser:identity": "node scripts/run-playwright.js tests/browser/identity.spec.ts",
     "test:browser:reward": "node scripts/run-playwright.js tests/browser/reward.spec.ts",
+    "test:browser:resilience": "node scripts/run-playwright.js tests/browser/resilience.spec.ts",
     "test:browser:visual": "node scripts/run-playwright.js tests/browser/visual.spec.ts",
     "test:browser:matrix": "node scripts/run-playwright.js --quality-gate",
     "test:browser": "node scripts/run-playwright.js",

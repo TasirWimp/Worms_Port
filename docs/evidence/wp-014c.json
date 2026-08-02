@@ -1,0 +1,91 @@
+{
+  "id": "WP-014C",
+  "status": "in_progress",
+  "starting_commit": "8cc04695376fb66fc587705a2f709d32df1840be",
+  "branch": "codex/wp-014-quality-harness",
+  "initial_worktree": "clean",
+  "starting_lock_sha256": "8A13522641DC030E38258E08B843B1E902B018E324D3AEECA3CD577F0EF10704",
+  "owning_roles": [
+    "worms_port_test_worker",
+    "worms_port_network_worker",
+    "worms_port_base_game_worker",
+    "worms_port_compliance_keeper",
+    "worms_port_reviewer"
+  ],
+  "scope": [
+    "Add an explicit Playwright resilience and isolation suite to the maintained zero-retry phone matrix",
+    "Exercise deterministic constrained initial loading on supported Chromium tooling without claiming arbitrary WebSocket packet loss",
+    "Exercise transient offline, hidden/background lifecycle, viewport change, and same-authority resume on Chromium and WebKit",
+    "Exercise delayed synthetic Nimiq provider settlement without duplicate wallet or protocol calls",
+    "Exercise expired or lost in-memory session recovery with truthful fresh-Practice behavior",
+    "Exercise two simultaneous isolated contexts so storage, session tokens, wallet identity, challenge authority, controls, and reconnect lifecycle do not cross",
+    "Add deterministic client protocol-fault fixtures for acknowledgement loss/delay, exact-request retry, stale/conflicting/foreign events, and result deduplication",
+    "Integrate reviewed project routing, documentation, and compact completion evidence"
+  ],
+  "non_goals": [
+    "Arbitrary WebSocket packet-loss emulation or claims that browser throttling reproduces every carrier-network failure",
+    "PostgreSQL contention, restart injection, reward-store recovery, fake signer or RPC faults, security-header scans, or secret scans assigned to WP-014D",
+    "Bundle or timing budgets, verify:full closure, or workflow partitioning assigned to WP-014E",
+    "Durable active-match recovery across a real process restart, horizontal scaling, PvP, or matchmaking",
+    "Real Nimiq Pay, physical Android or iOS, real wallets, external RPCs, chain modes, NIM transfers, production art or audio, or Sorcerers material"
+  ],
+  "planned_checks": [
+    "npm run check:compliance",
+    "npm run check:identity-bundles",
+    "npm run check:types",
+    "npm run test:practice",
+    "npm run test:identity",
+    "npm run test:browser:identity",
+    "npm run test:protocol",
+    "npm run test:tooling",
+    "npm run test:browser:resilience",
+    "node scripts/run-playwright.js --quality-gate --ignore-snapshots",
+    "npm run build",
+    "npm run smoke:built",
+    "npm audit",
+    "GitHub Actions Verify resilience and matrix",
+    "safety and import-boundary review",
+    "self-review"
+  ],
+  "deterministic_seeds": [
+    "1",
+    "3735928559"
+  ],
+  "sorcerers_reference_used": false,
+  "clean_room_records": [],
+  "check_results": [
+    { "command": "npm run check:compliance", "status": "pass", "detail": "All 17 work-package records and asset, import-boundary, dependency-license, and clean-room gates passed." },
+    { "command": "npm run check:identity-bundles", "status": "pass", "detail": "Confirmed that the Mini App SDK remains lazy in the client and @nimiq/core remains server-only outside test support." },
+    { "command": "npm run check:types", "status": "pass" },
+    { "command": "npm run test:practice", "status": "pass", "detail": "5 tests passed, including exact-request retry after a lost acknowledgement, serialized mutation during delayed acknowledgement, foreign/stale snapshot rejection, and terminal deduplication." },
+    { "command": "npm run test:identity", "status": "pass", "detail": "22 tests passed." },
+    { "command": "npm run test:browser:identity", "status": "pass", "detail": "11 applicable routes passed with 4 reviewed exclusions after the exact first diagnostic exposed and corrected one stale test-constant name from shared signer extraction." },
+    { "command": "npm run test:protocol", "status": "pass", "detail": "38 tests passed, retaining server idempotency, ordering, resume, ownership, and timeout coverage." },
+    { "command": "npm run test:tooling", "status": "pass", "detail": "10 tests passed, including quality routing and unexpected-skip rejection." },
+    { "command": "npm run test:browser:resilience", "status": "pass", "detail": "All 25 project results were accounted for: 8 routed journeys passed and 17 reviewed exclusions. A three-repeat diagnostic on canonical Chromium and WebKit then passed 24 applicable journeys with 6 exclusions and no retries." },
+    { "command": "node scripts/run-playwright.js --quality-gate --ignore-snapshots", "status": "pass", "detail": "All 150 local Windows logic results passed the one-worker zero-retry quality policy: 94 passed and 56 reviewed exclusions in 5.6 minutes. Linux screenshot comparison remains CI-only." },
+    { "command": "npm run build", "status": "pass", "detail": "Compliance, types, server, and client production builds passed; the existing large-client-chunk warning remains assigned to WP-014E." },
+    { "command": "npm run smoke:built", "status": "pass", "detail": "Built server, overlays, approved-asset plumbing, and join-ID API passed." },
+    { "command": "npm audit", "status": "pass", "detail": "0 vulnerabilities" },
+    { "command": "safety and import-boundary review", "status": "pass", "detail": "The slice adds only test, test-support, routing, evidence, and documentation files. It uses fixed synthetic keys and loopback authority, adds no dependency or product asset, does not alter production client/server behavior, and does not use Sorcerers material." },
+    { "command": "self-review", "status": "pass", "detail": "Confirmed capability-specific routing, zero retries, per-test budgets at or below 120 seconds, exact request reuse after acknowledgement loss, no broad skip, no threshold change, and truthful separation between supported browser network controls and typed protocol-fault fixtures." }
+  ],
+  "reviews": [
+    { "role": "worms_port_test_worker", "reviewer": "primary-agent-resilience-routing-and-repeat-review", "decision": "pass" },
+    { "role": "worms_port_network_worker", "reviewer": "primary-agent-protocol-fault-and-session-ownership-review", "decision": "pass" },
+    { "role": "worms_port_base_game_worker", "reviewer": "primary-agent-transient-input-and-recovery-review", "decision": "pass" },
+    { "role": "worms_port_compliance_keeper", "reviewer": "primary-agent-synthetic-authority-and-import-boundary-review", "decision": "pass" },
+    { "role": "worms_port_reviewer", "reviewer": "primary-agent-scope-and-residual-risk-review", "decision": "pass" }
+  ],
+  "skipped_checks": [
+    "The ordinary Ubuntu 24.04 matrix is pending until the candidate is committed and pushed. The local matrix intentionally ignored screenshot pixels because Windows images are not release evidence; the committed Linux baselines were not changed.",
+    "Deterministic bandwidth and latency control runs only on Chromium through its supported CDP surface. WebKit covers offline/resume through Playwright context control; the suite does not claim arbitrary WebSocket packet-loss emulation.",
+    "Physical Android/iOS and Nimiq Pay WebView testing was not run; browser automation and synthetic lifecycle events do not substitute for it."
+  ],
+  "residual_risks": [
+    "The candidate still requires a clean ordinary Ubuntu 24.04 matrix before WP-014C can close.",
+    "Synthetic visibility events and browser offline controls cannot reproduce every mobile OS freeze, carrier transition, or Nimiq Pay host lifecycle.",
+    "Active simulations remain single-process and non-durable across an actual Render restart or horizontal scaling; truthful fresh-Practice recovery is the current product contract.",
+    "Same-wallet Daily contention, final-budget allocation, PostgreSQL restart behavior, and payout fault injection remain assigned to WP-014D."
+  ]
+}

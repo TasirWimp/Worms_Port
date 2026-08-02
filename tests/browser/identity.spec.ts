@@ -1,33 +1,10 @@
 import { expect, test, type Page } from '@playwright/test';
-import { PrivateKey, PublicKey, Signature } from '@nimiq/core';
 
-import { nimiqSignedMessageHash } from '../../server/src/identity/crypto';
-
-const PRIVATE_KEY = '000102030405060708090a0b0c0d0e0f101112131415161718191a1b1c1d1e1f';
-const DEVICE_ID = 'ab'.repeat(32);
-
-function createSigner(privateKeyHex = PRIVATE_KEY) {
-  const privateKey = PrivateKey.fromHex(privateKeyHex);
-  const publicKey = PublicKey.derive(privateKey);
-  const addressObject = publicKey.toAddress();
-  const address = addressObject.toUserFriendlyAddress();
-  addressObject.free();
-  return {
-    address,
-    sign(message: string) {
-      const signature = Signature.create(privateKey, publicKey, nimiqSignedMessageHash(message));
-      try {
-        return { publicKey: publicKey.toHex(), signature: signature.toHex() };
-      } finally {
-        signature.free();
-      }
-    },
-    dispose() {
-      publicKey.free();
-      privateKey.free();
-    }
-  };
-}
+import {
+  createTestSigner,
+  privateKeyForProject,
+  TEST_DEVICE_ID
+} from './support/nimiq-signer';
 
 function captureErrors(page: Page) {
   const errors: string[] = [];
@@ -40,7 +17,7 @@ function captureErrors(page: Page) {
 
 test('query-gated fake provider authorizes a rotated session and leaves Practice usable', async ({ page }, testInfo) => {
   const errors = captureErrors(page);
-  const signer = createSigner(projectPrivateKey(testInfo.project.name));
+  const signer = createTestSigner(privateKeyForProject(testInfo.project.name));
   try {
     await page.exposeFunction('testNimiqSign', (message: string) => signer.sign(message));
     await page.addInitScript(({ address, deviceId }) => {
@@ -66,7 +43,7 @@ test('query-gated fake provider authorizes a rotated session and leaves Practice
           return deviceId;
         }
       };
-    }, { address: signer.address, deviceId: DEVICE_ID });
+    }, { address: signer.address, deviceId: TEST_DEVICE_ID });
 
     await page.goto('/?identity-preview=1&sideways=off');
     await expect(page.getByRole('heading', { name: 'Practice Clash' })).toBeVisible();
@@ -88,9 +65,9 @@ test('query-gated fake provider authorizes a rotated session and leaves Practice
       storage: JSON.stringify(sessionStorage),
       htmlContainsDeviceId: document.documentElement.innerHTML.includes(deviceId),
       calls: (window as any).__walletCalls
-    }), { deviceId: DEVICE_ID });
+    }), { deviceId: TEST_DEVICE_ID });
     expect(state.token).not.toBe(originalToken);
-    expect(state.storage).not.toContain(DEVICE_ID);
+    expect(state.storage).not.toContain(TEST_DEVICE_ID);
     expect(state.htmlContainsDeviceId).toBe(false);
     expect(state.calls).toEqual({ accounts: 1, signs: 1, devices: 1, boundaries: 6 });
 
@@ -102,20 +79,10 @@ test('query-gated fake provider authorizes a rotated session and leaves Practice
   }
 });
 
-function projectPrivateKey(projectName: string): string {
-  const suffixes: Record<string, string> = {
-    'chromium-360x640': '20',
-    'chromium-390x844': '21',
-    'chromium-844x390': '22',
-    'webkit-390x844': '23'
-  };
-  return `${PRIVATE_KEY.slice(0, -2)}${suffixes[projectName] || '24'}`;
-}
-
 test('signing rejection is cancelled and the same account can retry immediately', async ({ page }, testInfo) => {
   test.skip(testInfo.project.name !== 'chromium-390x844', 'One portrait host covers the rejection presentation.');
   const errors = captureErrors(page);
-  const signer = createSigner();
+  const signer = createTestSigner();
   try {
     await page.exposeFunction('testNimiqSign', (message: string) => signer.sign(message));
     await page.addInitScript(({ address }) => {

@@ -69,6 +69,19 @@ Phaser/Socket.IO stack.
   125-result, one-worker, zero-retry matrix—including all 35 reviewed screenshot
   comparisons—and the complete job finished in 20m27s. Evidence is closed in
   `docs/evidence/wp-014b.json`; re-entry is WP-014C planning and implementation.
+- WP-014C implementation is in progress. The candidate adds the explicit
+  `test:browser:resilience` suite for constrained Chromium loading,
+  Chromium/WebKit offline and same-authority resume, hidden/background input
+  cleanup, viewport change, delayed synthetic provider settlement, truthful
+  lost-session recovery, and two-context storage/identity/challenge/control
+  isolation. Deterministic client fixtures cover lost and delayed
+  acknowledgements, exact-request retry, stale/conflicting/foreign events, and
+  terminal deduplication. The focused suite passed 8 applicable routes with 17
+  reviewed exclusions; three canonical repetitions passed 24 applicable routes
+  with 6 exclusions. The complete local zero-retry logic matrix then passed all
+  150 project results: 94 passed and 56 reviewed exclusions in 5.6 minutes.
+  Re-entry is to push the candidate, require a clean ordinary Ubuntu matrix,
+  close `docs/evidence/wp-014c.json`, and then advance to WP-014D.
 - The approved post-competition weekly program is now scoped as WP-018 through
   WP-021: Nimiq Chronicle, Loom XP qualification, optional PvP Sparring Loom,
   and the Weekly Grand Knot Tournament with an additional sponsor-funded
@@ -2030,9 +2043,12 @@ allowance cannot be reassigned to JavaScript.
    exclusions). All 35 reviewed Linux PNGs were independently reproduced, and
    ordinary Ubuntu Verify run 30739075679 passed the final 125-result matrix
    with the same totals, zero retries, and frozen visual thresholds.
-3. **WP-014C Resilience and isolation:** add supported network/offline/resume,
-   delayed-provider, session-loss, deterministic protocol-fault, and two-context
-   storage/event/authority isolation coverage.
+3. **WP-014C Resilience and isolation - implementation in progress:** supported
+   constrained Chromium loading, Chromium/WebKit offline/resume, delayed
+   synthetic provider settlement, session-loss recovery, deterministic client
+   protocol faults, and two-context storage/identity/challenge/control
+   isolation are implemented. The focused routes and complete 150-result local
+   zero-retry logic matrix pass; ordinary Ubuntu CI remains before completion.
 4. **WP-014D PostgreSQL and reward security:** add the digest-pinned CI service,
    two-connection migration/concurrency/restart tests, real-store record-only
    browser journey, fake signer/RPC faults, security-header checks, and artifact

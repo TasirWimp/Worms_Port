@@ -12,6 +12,7 @@
     "practice.spec.ts",
     "identity.spec.ts",
     "reward.spec.ts",
+    "resilience.spec.ts",
     "visual.spec.ts"
   ],
   "criticalTests": [
@@ -78,6 +79,36 @@
       "title": "Daily Challenge discloses, authorizes, plays, and reports a consumed loss",
       "runsOn": ["chromium-390x844", "webkit-390x844"],
       "reason": "The complete fake-wallet Daily journey runs once per maintained mobile engine."
+    },
+    {
+      "file": "resilience.spec.ts",
+      "title": "constrained Chromium loading reaches actionable wallet-free Practice",
+      "runsOn": ["chromium-390x844"],
+      "reason": "Chromium CDP provides the supported deterministic bandwidth and latency control."
+    },
+    {
+      "file": "resilience.spec.ts",
+      "title": "Chromium and WebKit offline lifecycle resumes the same authority",
+      "runsOn": ["chromium-390x844", "webkit-390x844"],
+      "reason": "The canonical mobile projects cover offline resume in both maintained browser engines."
+    },
+    {
+      "file": "resilience.spec.ts",
+      "title": "delayed synthetic wallet settlement authorizes once and keeps Practice usable",
+      "runsOn": ["chromium-390x844"],
+      "reason": "One canonical Chromium project covers bounded delayed synthetic provider settlement."
+    },
+    {
+      "file": "resilience.spec.ts",
+      "title": "lost session authority offers one truthful fresh Practice path",
+      "runsOn": ["chromium-390x844", "webkit-390x844"],
+      "reason": "The canonical Chromium and WebKit projects cover truthful lost-session recovery."
+    },
+    {
+      "file": "resilience.spec.ts",
+      "title": "two browser contexts isolate storage, identity, challenge events, controls, and reconnects",
+      "runsOn": ["chromium-390x844", "webkit-390x844"],
+      "reason": "The canonical Chromium and WebKit projects cover simultaneous browser-context isolation."
     },
     {
       "file": "visual.spec.ts",
