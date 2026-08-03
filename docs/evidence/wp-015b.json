@@ -12,7 +12,7 @@
     "worms_port_reviewer"
   ],
   "scope": [
-    "Record the project owner's attestation of Nimiq team/foundation encouragement, approval of the inspired geometry direction, and canonical documentation-only knitting baseline",
+    "Record the project owner's attestation of Nimiq team/foundation encouragement, historical approval to explore inspired geometry, the later rounded-doll anatomy reset, and the canonical documentation-only Calling/material baseline",
     "Approve and exact-hash the production checkpoint, text-to-image workflow, and project-owned image-conditioned refinement workflow while preserving external quarantine",
     "Freeze the Wizard, Loomkeeper, Threadball, and first-Patch briefs, prompts, negative constraints, sockets, triggers, and acceptance checks",
     "After the rejected SD 1.5 attempts, insert a bounded FLUX.2 Klein 4B model-admission deviation without approving a model or resuming generation",
@@ -21,6 +21,7 @@
     "Adopt the accepted fitted-knit structure for exactly one fixed-seed Wizard cuteness and Calling-styling edit without combining alpha, animation, or exact socket normalization",
     "Record the project-owner acceptance of B2D eyebrows, moderate body variation, and cuteness direction; construct and review a protected B2E route; then execute exactly one approved frozen request without retry",
     "Record the project-owner rejection of B2E's Wizard identity and thief-like neck wrap, then construct deterministic B2F hood structure controls and stop before staging or inference for exact source review",
+    "Record the project-owner decision to supersede the hexagonal anatomy after the full B2A-B2F control cycle, return to FLUX's rounded crochet-doll prior, compare one abstract-grip trial with one visible shallow-bowl palm trial, and freeze the selected external Wizard direction without product promotion",
     "Generate deterministic quarantined vertical-slice candidates and complete pre-promotion art, IP, provenance, and phone-readability review"
   ],
   "non_goals": [
@@ -45,6 +46,7 @@
     "WP-015B2D exact-input cuteness and Wizard-styling edit with full-size, 48px, and deterministic silhouette review",
     "WP-015B2E protected-property mask integrity, pinned core-node workflow schema, exact preflight, one frozen request, protected-pixel equality, drift telemetry, and full-size/48px review",
     "WP-015B2F deterministic hood guide and generous mask integrity, exact-B2D scaffold protection, frozen prompt review, full-size/48px review, and no-inference boundary",
+    "WP-015B2G exact rounded-doll prompt, fixed seeds, external output paths and hashes, cupped-palm visual decision, fail-closed shutdown, and no-product-promotion boundary",
     "WP-015B1 brief-contract completeness and source-boundary review",
     "fixed-seed quarantined vertical-slice master review",
     "self-review"
@@ -66,7 +68,9 @@
     "15026003",
     "15026004",
     "15026005",
-    "15026006"
+    "15026006",
+    "15027001",
+    "15027002"
   ],
   "sorcerers_reference_used": false,
   "clean_room_records": [],
@@ -365,11 +369,26 @@
       "command": "WP-015B2F single protected Wizard-hood edit and visual closure",
       "status": "fail",
       "detail": "Source-side JSON parsing, all 38 tooling tests, complete compliance/type/server/client build, npm audit with zero vulnerabilities, and git diff check passed. Exact preflight verified three model hashes, three workflow hashes, native RX 7600 low-VRAM/no-preview startup, all three MCP tools, staged scaffold A048CA16B249298BBECFAD2F57552B04958E26F766D01F6577D1C6A011A0231C, staged mask AC9F8F101094C5C15361FD24827C4F24B7C52ACBC652000748B209CB5483F56B, a 0/0 queue, and B2E _00001_ as newest generated-output baseline. The sole seed 15026006 request completed as prompt 1f5fc569-5250-4799-a236-0bb22ba629c8 in 355.120 seconds. External output WormsPortFlux2KleinProtectedEdit_00002_.png is a 920,934-byte 1024x1024 PNG, SHA-256 BE162B61FF38BE0EE2EA58716BDBAF5D2B38F0D8E6608953D2ECA41EFE7AD608. Host free RAM minimum was 3,925,364,736 bytes and driver-reported free VRAM minimum was 2,376,634,880 bytes. All 844,934 zero-mask pixels equal the scaffold exactly; baseline drift is zero, canvas IoU 0.835513, and normalized IoU 0.796676. Its 3,103-byte 48px derivative is SHA-256 70FC1611E1F84081699B9A805E0C6A7A795B5B89CA7ABA783FC84E4AE1968B90. The hood passes Wizard identity and 48px readability, but visible polygonal face and rectangular mouth seams fail full-size integration. The queue ended 0/0, both services stopped, no retry ran, and no file entered assets."
+    },
+    {
+      "command": "WP-015B2G rounded-doll reset and abstract-grip trial",
+      "status": "fail",
+      "detail": "After exact model/workflow hash verification, native RX 7600 low-VRAM/no-preview startup, three-tool MCP registration, an empty queue, and WormsPortFlux2KleinText_00003_.png baseline capture, one unconditioned text request ran with seed 15027001. Prompt e3ac9210-551f-4c92-b6bb-e8b9da1f6cce completed in 257.38 seconds. External 1024x1024 output C:\\Users\\jensb\\AppData\\Local\\Comfy-Desktop\\ComfyUI-Shared\\output\\WormsPortFlux2KleinText_00004_.png is 1,077,223 bytes, SHA-256 F5A58D589BD0624BA502D8277BF94FC7A4BD43B09BD05FF98CB184FEF6A3BE1C. Rounded doll anatomy, two eyes, mouth, star hat, isolation, and separated forward arm passed the reset direction, but abstract C-shaped-grip wording produced a closed thumbs-up mitten without an open Relic cradle. No automatic retry ran."
+    },
+    {
+      "command": "WP-015B2G upward-facing cupped-palm candidate and owner decision",
+      "status": "pass",
+      "detail": "After a fresh exact-hash, low-VRAM, three-tool, empty-queue preflight with _00004_ as the newest baseline, one owner-authorized revised text request ran with seed 15027002. Prompt ba48322c-5236-4876-a09f-42c20712919d completed in 258.082 seconds. External 1024x1024 output C:\\Users\\jensb\\AppData\\Local\\Comfy-Desktop\\ComfyUI-Shared\\output\\WormsPortFlux2KleinText_00005_.png is 788,520 bytes, SHA-256 40F9E81254A0792B967889808BD8BD8DE33DBDE5EAB7C4CBB1B336DD02BC54A5. Visible shallow-bowl wording produced a clear upward-facing empty cupped palm while preserving the selected cute rounded doll, two eyes, curved mouth, pointed gold-star Wizard hat, separate feet, isolation, and readable silhouette. The owner selected this exact file as the Wizard master direction. Slight front bias and faint contact shadow remain normalization/review concerns. The queue ended cleanly, both services stopped, no third request ran, and nothing entered assets."
+    },
+    {
+      "command": "WP-015B2G decision-path documentation closure",
+      "status": "pass",
+      "detail": "The art direction, vertical-slice brief, generation review, development re-entry note, implementation pointer, repository instructions, README, and this evidence record now consistently preserve the full SD 1.5 through B2F failure path and the owner-directed B2G reset: FLUX naturally maps cute toward rounded doll anatomy, so the project stops fighting that prior and retains Nimiq connection through palette, textile material, Calling costume, eyes, and world language instead of mandatory hexagonal anatomy. The exact selected external path, SHA-256, prompt, seed 15027002, prompt ID, runtime, known residue, quarantine state, and next normalization gates are recorded. JSON parsing, npm run check:compliance, and git diff --check passed; build, browser matrix, and real-device checks were not required for documentation-only changes."
     }
   ],
   "skipped_checks": [
-    "The phone-browser matrix was not run for WP-015B0, WP-015B1, WP-015B2A Gates 1-6, WP-015B2B, WP-015B2C, WP-015B2D, WP-015B2E, or WP-015B2F because these slices change only the offline generation pipeline, documentation, compliance metadata, and external quarantined component state; they change no browser-facing code or runtime asset.",
-    "Real-device testing was not run because WP-015B0, WP-015B1, WP-015B2A Gates 1-6, WP-015B2B, WP-015B2C, WP-015B2D, WP-015B2E, and WP-015B2F create no player-visible behavior or product media.",
+    "The phone-browser matrix was not run for WP-015B0, WP-015B1, WP-015B2A Gates 1-6, WP-015B2B, WP-015B2C, WP-015B2D, WP-015B2E, WP-015B2F, or WP-015B2G because these slices change only the offline generation pipeline, documentation, compliance metadata, and external quarantined component state; they change no browser-facing code or runtime asset.",
+    "Real-device testing was not run because WP-015B0, WP-015B1, WP-015B2A Gates 1-6, WP-015B2B, WP-015B2C, WP-015B2D, WP-015B2E, WP-015B2F, and WP-015B2G create no player-visible behavior or product media.",
     "FLUX inference was not run in Gate 3 because the separate Gate 4 technical smoke had to record runtime, memory behavior, and exact output evidence as its own bounded review.",
     "Wizard, Threadball, and reference-edit visual admission was not run in Gate 4 because technical hardware admission and visual-purpose admission are separate gates."
   ],
@@ -377,11 +396,11 @@
     "The reviewed image-conditioned graph uses native FLUX ReferenceLatent semantic conditioning, not a hard edge, pose, mask, or ControlNet constraint. B2C demonstrates one successful semantic-scaffold workaround but does not establish pixel-exact geometry control for arbitrary characters.",
     "The current SD 1.5 checkpoint did not reliably follow the dense B1 character, Relic, and environment prompts. Its rejected prompts, seeds, settings, and outputs remain historical evidence; they are not silently reused for another model architecture.",
     "WP-015B2A retains exactly three external FLUX.2 component files, two native workflows, and one closed executable profile as technical evidence. The completed WP-015B2B diagnostic changed only the structural input and prompt strategy and failed its Wizard anatomy purpose; its result does not authorize a second attempt, multi-reference graph, or batch.",
-    "The Windows AMD RX 7600 8 GB completed the technical smoke, all three Gate 5 requests, B2B, both B2C gates, B2D, and B2E without runtime failure, but offloaded generation took 253-309 seconds. Driver portability remains unproven and its approximate VRAM samples must not be generalized into a hardware requirement.",
+    "The Windows AMD RX 7600 8 GB completed the technical smoke, all three Gate 5 requests, B2B, both B2C gates, B2D, B2E, B2F, and both B2G text trials without runtime failure, but offloaded generation took 253-355 seconds. Driver portability remains unproven and its approximate VRAM samples must not be generalized into a hardware requirement.",
     "Threadball passed only a bounded structure review; its opaque output has no exact-output IP/product approval, alpha normalization, derivative cleanup, or manifest entry. It may inform a later separately reviewed Relic-only route but is not a product asset.",
     "B2C proves that a mechanical semantic scaffold can establish angular geometry and survive one fitted-knit conversion, but the opaque knit output retains panel seams and a rear scaffold volume. B2D proves that larger close-set eyes, a curved smile, optional paired eyebrows, pale chenille, a belt/button, and warmer details improve appeal. B2E preserves every zero-mask pixel but is rejected as the next Wizard master because its compact crown loses the Wizard calling and its horizontal neck wrap reads thief-like. B2F proves the new scaffold can drive a clear tall Wizard hood, but exact restoration of hard face and mouth islands creates unacceptable visible seams. Normalization, alpha, socket, and animation remain unresolved.",
     "The mouth amendment improves expression capacity but requires a later neutral-mouth topology and bounded expression-frame contract so mouth placement does not flicker or multiply across animation.",
     "B2E proves the core latent-mask route can preserve all zero-mask decoded pixels exactly and produce a coherent head-worn covering, but it does not establish that future masks, characters, or prompts will behave similarly. The one-request allowance is consumed and no retry is authorized.",
-    "No WP-015B2 output currently passes exact-output product/IP and runtime-normalization review. Threadball, the B2C knit conversion, B2D creative-direction result, B2E rejected cowl candidate, B2F deterministic scaffold, and B2F rejected seamed output remain external evidence. Character generation is closed pending a reviewed mask-topology plan; separate denoise/composite masks or semantic regeneration of the complete face/hood region are hypotheses, not authorization."
+    "The B2G cupped-palm Wizard is the owner-selected production direction but has not yet passed exact-output product/IP or runtime-normalization review. Threadball, the B2C knit conversion, B2D creative-direction result, B2E rejected cowl candidate, B2F deterministic scaffold, B2F rejected seamed output, B2G closed-mitten trial, and B2G selected candidate remain external evidence. Further character generation is closed. The next bounded work is deterministic alpha/background extraction, crop, baseline/pivot/socket normalization, phone-size inspection, and product-manifest review of exact B2G output 40F9E812...4A5; the old mask-topology repair and LoRA remain deferred alternatives, not authorization."
   ]
 }

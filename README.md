@@ -207,6 +207,22 @@ A full Wizard robe/tunic remains deferred to a later separate pass. Re-entry,
 exact output evidence, and the mask-coupling lesson are in
 `docs/asset-briefs/wp-015b2-generation-review.md`.
 
+WP-015B2G records the project-owner decision to stop treating FLUX's rounded
+crochet-doll prior as a defect. The full B2A-B2F cycle proved that increasingly
+strict hexagonal guides, a robot scaffold, knit conversion, and protected
+garment edits could enforce pieces of the old anatomy, but each added visual
+cost: lost cuteness, wrong Calling reads, construction residue, or hard mask
+seams. The route therefore returns to the first successful FLUX Wizard text
+composition and applies the useful lessons from that cycle without preserving
+the rejected hexagonal constraint. Exactly two follow-up text candidates ran.
+Seed `15027001` produced a strong Wizard with a closed thumbs-up mitten; seed
+`15027002` replaced the abstract grip language with an upward-facing shallow-
+bowl palm and is the owner-selected direction. The exact prompt, full external
+path, hashes, decision trail, and remaining product gates are recorded in
+`docs/asset-briefs/wp-015b2-generation-review.md`. The selected PNG remains
+external quarantine: no runtime asset, alpha extraction, socket normalization,
+animation, or product-manifest approval is implied.
+
 ## Build
 
 Use Node.js 20 or newer.
@@ -560,16 +576,17 @@ pause, outage, and key-response requirements.
 The planned product identity is **NIMble Knots: Cotton Clash**, a playful
 fantasy artillery game set in handcrafted Patchwork Realms. Its Knotkin heroes
 combine cotton and crochet materials, large bead eyes, small expressive mouths,
-Nimiq-inspired geometry, and distinct fantasy Callings.
+Nimiq blue/gold textile language, and distinct fantasy Callings.
 
 See `docs/art-direction.md` for the current world, character, material, Nimiq
 palette, reward-loop, provenance, and import-boundary decisions. Concept art is
 documentation-only until it passes the product asset gate.
 
-The canonical artwork reference for future Knotkin production is
-`docs/images/art-direction/knotkin-class-lineup-concept.png`. Production assets
-must follow its visual system but still require independent generation records,
-exact-file approval, and manifest entries before runtime use.
+The canonical Calling, palette, material, and world-language reference is
+`docs/images/art-direction/knotkin-class-lineup-concept.png`; WP-015B2G
+supersedes its angular anatomy with the selected rounded crochet-doll direction.
+Production assets still require independent generation records, exact-file
+approval, and manifest entries before runtime use.
 
 ## Competition Release
 

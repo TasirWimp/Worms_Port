@@ -8,8 +8,25 @@ Phaser/Socket.IO stack.
 ## Execution Pointer
 
 - Active target: mobile-first single-player Nimiq Pay competition release.
-- Active work package: **WP-015B2F Wizard-hood protected edit — single request
-  completed; visual integration rejected; generation closed**. B2E historically
+- Active work package: **WP-015B2G rounded-doll reset — owner-selected external
+  Wizard direction; product normalization and approval pending**. The full
+  B2A-B2F cycle demonstrated that FLUX naturally maps `cute crochet Wizard` to
+  rounded doll anatomy. Increasingly strict hexagonal guides, a robot scaffold,
+  fitted-knit conversion, and protected cowl/hood edits could force local
+  geometry, but accumulated lost cuteness, mechanical residue, incorrect Calling
+  reads, or hard composite seams. The project owner therefore superseded the
+  hexagonal production requirement and returned to unconditioned text generation
+  using the lessons from that cycle. Seed `15027001` produced a strong rounded
+  Wizard but interpreted the abstract `C-shaped grip` as a closed thumbs-up
+  mitten. Seed `15027002` replaced that abstraction with the visible picture of
+  an upward-facing shallow-bowl palm. The owner selected exact external output
+  `WormsPortFlux2KleinText_00005_.png`, SHA-256
+  `40F9E81254A0792B967889808BD8BD8DE33DBDE5EAB7C4CBB1B336DD02BC54A5`,
+  as the current Wizard master direction. It remains external quarantine and
+  still needs exact-output IP review, deterministic alpha/background extraction,
+  crop, baseline/pivot/socket normalization, mobile-size review, animation
+  planning, product-manifest approval, and runtime integration. No third prompt,
+  LoRA training, or promotion is authorized. B2E historically
   selected a pinned core-node route and produced a deterministic source-only
   candidate. Workflow
   `scripts/comfy-workflows/generate_flux2_klein_protected_edit.json` is a
@@ -72,12 +89,13 @@ Phaser/Socket.IO stack.
   owner accepts the eyebrows, body-width variation, and cuteness direction;
   IoU is drift telemetry rather than automatic art authority. B2E executed the
   single reviewed interior edit that mediates between B2C geometry and B2D
-  styling. Protect the recognisable angular body
-  family, a Wizard cowl/hat resting on the head, the usable forward Relic hand,
-  exactly two eyes and one mouth, and friendly/cute readability. Paired stitched
-  eyebrows are optional. Leave other local material, expression, costume, and
-  proportion detail to FLUX. Alpha, animation, exact hand/socket normalization,
-  another Calling, and product promotion remain blocked. Its predecessor
+  styling. Those angular protected-property requirements are now historical
+  evidence rather than the active anatomy contract. The current protected
+  properties are the rounded crochet-doll family, a clear Calling-defining hat,
+  the upward-facing cupped Relic palm, exactly two eyes and one mouth, and
+  friendly/cute readability. Paired stitched eyebrows remain optional. Alpha,
+  animation, exact hand/socket normalization, another Calling, and product
+  promotion remain blocked. Its predecessor
   **WP-015B2C robot-scaffold knit
   conversion completed with both gates passed on 2026-08-03**. Before that,
   **WP-015B2A FLUX.2 Klein 4B model-admission deviation** completed Gates 1
@@ -125,18 +143,19 @@ Phaser/Socket.IO stack.
   comparison with normalized IoU `0.956188` and baseline drift `12` pixels.
   Both files remain external quarantine; B2C itself authorized no further
   generation.
-- Last committed implementation slice: **WP-015B2E protected-edit execution
-  and project-owner review** on 2026-08-03 at `5299673`. WP-015B1's product-facing
-  anatomy, socket, projectile-origin, animation, environment, and acceptance
-  requirements remain normative. Its exact prompts, seeds, and sampler settings
-  remain the historical SD 1.5 contract and are not presumed equivalent for a
-  different model architecture.
-- Next bounded action: review and plan the mask-topology lesson before another
-  character request. Candidate strategies are separate denoise/composite masks
-  with an adequate transition band or semantic regeneration of the complete
-  face/hood region while retaining two-eye/one-mouth requirements. Neither is
-  authorized now. Loomkeeper, a full robe/tunic, animation, roster work, alpha,
-  socket normalization, retry, and promotion remain blocked.
+- Last committed implementation slice: **WP-015B2F protected Wizard-hood review
+  and rejection** on 2026-08-03 at `7c51bb2`. WP-015B1's baseline, socket,
+  projectile-origin, animation, environment, and source-boundary requirements
+  remain normative; WP-015B2G supersedes its angular anatomy and historical
+  cross-model prompts.
+- Next bounded action: plan and execute a deterministic, non-generative
+  normalization gate for the selected B2G Wizard candidate: exact-output IP
+  review, alpha/background extraction, crop, baseline/pivot, held-Relic socket,
+  phone-size inspection, and product-manifest decision. Do not run another
+  prompt or return to the mask topology merely because the candidate is slightly
+  front-facing or retains a faint contact shadow. Loomkeeper, animation, roster
+  work, runtime integration, and product promotion remain blocked until that
+  gate is reviewed.
 - WP-012 exactly pins `@nimiq/mini-app-sdk` `0.1.0` and server-only
   `@nimiq/core` `2.7.1`. Provider access remains lazy, identity acceptance is
   now used by WP-013's separate production Daily entry, the diagnostics surface
@@ -2339,7 +2358,8 @@ Sequential delivery slices:
   progress:**
   - **WP-015B0 Approval and canonical baseline — complete 2026-08-02:** record
     the project owner's Nimiq-team/foundation encouragement attestation and
-    project approval; point re-entry to the documentation-only knitting lineup;
+    historical geometry approval, later superseded for production anatomy by
+    B2G; point re-entry to the documentation-only knitting lineup;
     approve and hash the exact archived checkpoint, text-only generation
     workflow, and project-owned image-plus-text refinement graph; retain
     exact-output review. The bounded technical smoke remained in external
@@ -2349,9 +2369,11 @@ Sequential delivery slices:
     briefs, prompts, negative constraints, seeds,
     anatomy/baseline/held-Relic sockets, projectile origins, animation triggers,
     and acceptance checks in `docs/asset-briefs/wp-015b1-vertical-slice.md`.
-    This slice generated no media.
-  - **WP-015B2 Quarantined vertical-slice masters — in progress, generation
-    suspended:** the fixed primary pass and Retry 1 failed art gates; the user
+    B2G later amends the anatomy and current FLUX prompt while retaining the
+    baseline/socket/animation contract. This slice generated no media.
+  - **WP-015B2 Quarantined vertical-slice masters — in progress, Wizard
+    direction selected and further generation suspended:** the fixed primary
+    pass and Retry 1 failed art gates; the user
     stopped Retry 2 after one conditioned Wizard diagnostic. Preserve every
     exact rejected output and promote nothing. Prompt decomposition alone is no
     longer the immediate next action because the approved SD 1.5 route did not
@@ -2416,6 +2438,16 @@ Sequential delivery slices:
     48px read, and frozen prompt completed. Seed `15026006` produced a clear
     Wizard hood, but hard-restored face/mouth islands created visible seams.
     The allowance is consumed; no retry or changed control is implied.
+  - **WP-015B2G Rounded-doll requirement reset — owner-selected direction
+    recorded 2026-08-03:** preserve B2A-B2F as the full evidence trail, but stop
+    treating FLUX's rounded cute-doll prior as a defect. The old hexagonal
+    anatomy requirement is superseded. Two unconditioned, fixed-seed text trials
+    returned to the first successful FLUX composition while applying lessons
+    from the control cycle. Seed `15027001` failed only the abstract grip purpose
+    with a closed thumbs-up mitten. Seed `15027002` described the palm as an
+    upward-facing shallow bowl and produced selected external candidate
+    `40F9E812...4A5`. No third prompt, LoRA, normalization, or promotion is
+    implied. The exact prompt and full external path are frozen in the B2 review.
 - **WP-015C First playable visual slice:** promote and integrate only approved
   Wizard, Loomkeeper, Threadball, and Patch assets. Prove one complete
   move/aim/fire/flight/impact/damage/result exchange at maintained phone
@@ -2463,15 +2495,17 @@ previous plan as follows:
    passed, and the single allowed Wizard reference edit removed the mouth but
    did not solve angular anatomy or the forward-hand socket. Every request used
    its pre-recorded short prompt and seed and was reviewed before continuing.
-6. **Explicit adoption decision - rejected 2026-08-03:** provenance, license,
-   pipeline, and hardware passed, but both visual purposes did not. The route is
-   not adopted for resumed B2 generation. Preserve its technical and
-   Threadball evidence, block further candidate generation, and refine the
-   character-master plan without seed shopping or silently changing models.
+6. **Historical B2A adoption decision - rejected 2026-08-03:** provenance,
+   license, pipeline, and hardware passed, but both visual purposes did not. At
+   that gate the route was not adopted for resumed B2 generation. Its technical
+   and Threadball evidence remains preserved. The later, owner-scoped B2B-B2G
+   experiments and B2G anatomy reset are separately recorded decisions; they do
+   not rewrite this gate result.
 
-WP-015B1 remains normative for product anatomy, side view, sockets, projectile
-origin, animation triggers, environment decomposition, and acceptance. Its
-exact SD 1.5 prompts, seeds, CFG, sampler, scheduler, and workflow hashes remain
+WP-015B1 remains normative for baseline, sockets, projectile origin, animation
+triggers, environment decomposition, and source boundaries. WP-015B2G
+supersedes its angular product anatomy and historical SD 1.5 prompt wording.
+Those SD 1.5 prompts, seeds, CFG, sampler, scheduler, and workflow hashes remain
 the immutable historical contract for the rejected run. A different model must
 receive a separately reviewed model-specific prompt/settings/seed amendment;
 cross-model seed equality is not meaningful. For Patch terrain, generation may

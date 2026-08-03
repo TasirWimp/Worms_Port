@@ -1,7 +1,8 @@
 # WP-015B1 Vertical-Slice Asset Briefs
 
 Status: frozen historical B1 contract, amended for future character work by the
-WP-015B2C mouth and WP-015B2D creative-expression decisions below.
+WP-015B2C mouth, WP-015B2D creative-expression, and WP-015B2G rounded-doll
+decisions below.
 
 This document is the production contract for the first NIMble Knots visual
 slice: Wizard, Loomkeeper, Threadball, and Patch 01. WP-015B1 writes and reviews
@@ -13,17 +14,19 @@ the contract only. It generates, promotes, and integrates no media.
   `docs/images/art-direction/knotkin-class-lineup-concept.png`
 - Canonical reference SHA-256:
   `B4B9B1E676E7DD5CD13F7ABB2B63048884D209295379FCC10347348F80D5FD46`
-- The concept supplies anatomy, material, palette, costume, and world-language
-  guidance. Its pixels may not be cropped, traced, normalized, or shipped.
+- The concept supplies material, palette, costume, and world-language guidance.
+  Its angular anatomy is historical after WP-015B2G. Its pixels may not be
+  cropped, traced, normalized, or shipped.
 - Do not pass the complete lineup directly to ordinary VAE img2img. Its
   multi-character landscape composition conflicts with the isolated-master
   contract. Image-conditioned refinement may begin only from an isolated,
   quarantined candidate that has passed master review.
 - No Sorcerers, Worms/Team17, official Nimiq brand file, or other unrecorded
   third-party input is allowed in prompts, conditioning, comparison, or output.
-- Nimiq-inspired body geometry is project-approved for the competition scope,
-  but outputs must not display an official Nimiq logo or claim official-product
-  status.
+- Nimiq-inspired body geometry was project-approved for the competition scope,
+  but WP-015B2G no longer requires it after the generation evidence showed a
+  persistent conflict with the selected cute crochet-doll direction. Outputs
+  must not display an official Nimiq logo or claim official-product status.
 - Every output remains in external quarantine until its exact file, parents,
   generation record, visual/IP review, and product manifest entry pass.
 
@@ -44,24 +47,50 @@ are an allowed creative choice, not a mandatory species feature. A nose, extra
 eye, duplicated mouth, unrelated face mark, or inconsistent accidental feature
 remains blocked.
 
-Silhouette comparison is diagnostic evidence, not pixel-deterministic art
-authority. The protected body property is the recognisable broad angular
-Knotkin family: flat-crowned/chamfered upper body, narrow lower bridge, separate
-feet, and no return to a round head stacked on an oval torso. Moderate width,
-surface, costume, and proportion variation is allowed when owner review finds
-the protected family, usable Relic hand, and cuteness intact. Scale, placement,
-and small accumulated drift should be compensated during normalization rather
-than automatically rejecting otherwise successful art.
+Under the historical B2D decision, silhouette comparison was diagnostic evidence
+rather than pixel-deterministic art authority. Its then-protected body property
+was the broad angular Knotkin family: flat-crowned/chamfered upper body, narrow
+lower bridge, separate feet, and no return to a round head stacked on an oval
+torso. That record explains the later control work but is superseded by B2G
+below.
+
+### WP-015B2G rounded-doll and Relic-palm amendment
+
+The project owner superseded the angular body requirement on 2026-08-03 after
+reviewing the complete B2A-B2F path. FLUX repeatedly mapped cute crochet
+characters to rounded doll anatomy. Enforcing the earlier hexagonal target
+required a robot scaffold, material conversion, and protected garment edits
+that successively introduced mechanical residue, reduced cuteness, produced a
+thief-like wrap, or exposed hard composite seams. Future Knotkin masters instead
+share a compact rounded crochet-doll head and body, short separate limbs, two
+separate feet, exactly two bead eyes, one small expression-ready mouth, and
+optional paired stitched eyebrows.
+
+The Wizard's image-right arm reaches away from the torso and ends in an
+upward-facing cupped crochet mitten. Its palm reads like a shallow bowl: the
+thumb and rounded mitten edge rise without meeting, leaving an empty,
+unobstructed cradle for a separately rendered Relic. This visible-shape wording
+supersedes abstract `C-shaped grip` or invisible-cylinder instructions. The
+shared held-Relic socket, baseline, projectile origin, animation triggers,
+external quarantine, and exact-file approval gates remain normative. Future
+Loomkeeper and roster characters use the same rounded family while retaining
+distinct Calling colors and costumes.
 
 The exact SD 1.5 prompts and negative prompt below remain unchanged historical
 evidence for reproducibility. Their `no mouth`/`mouth` exclusions are superseded
 for future candidates and must not be copied into WP-015B2C or later generation
-contracts. All anatomy, baseline, socket, animation, environment, and
-source-boundary requirements remain normative.
+contracts. Their angular anatomy language is likewise superseded. Baseline,
+socket, animation, environment, and source-boundary requirements remain
+normative.
 
 ## Exact Generation Contract
 
-WP-015B2 may use only these already-reviewed components:
+This contract applies only to the frozen, rejected B1/SD 1.5 run. B2G uses the
+separately admitted FLUX.2 Klein profile, exact settings, and exact prompts
+recorded in `docs/asset-briefs/wp-015b2-generation-review.md`; it does not
+retroactively change the historical contract below.
+
+The original WP-015B2 run could use only these already-reviewed components:
 
 | Component | Exact value |
 | --- | --- |
@@ -172,16 +201,18 @@ origin, damage, turn timing, or replay truth.
 - Seed: `15015001`
 - Palette: Nimiq Light Blue `#0582CA`, Nimiq Blue `#1F2348`, Nimiq Gold
   `#E9B213`, with pale-blue cotton highlights.
-- Silhouette: shared angular Knotkin anatomy, broad flat-crown hood, chamfered
-  cheeks, sloped shoulders, short arms, narrow lower bridge, two separate feet.
-- Costume: folded deep-blue felt Wizard hood, visible gold blanket stitching,
+- Silhouette: shared compact rounded crochet-doll anatomy, short separate limbs,
+  two separate feet, and one readable upward-facing cupped palm.
+- Costume: tall pointed deep-blue felt Wizard hat with a softly folded tip,
+  small gold stitched stars, visible gold blanket stitching,
   woven belt and wooden button clasp. A compact spool staff may be strapped
   behind the rear shoulder, but the forward hand and Relic socket remain clear.
 - Expression: curious and determined through eye angle, one small neutral mouth,
   optional minimal paired stitched eyebrows, and forward body lean; exactly two
   glossy black bead eyes and no nose, extra eye, or unrelated facial marks.
 
-Exact positive prompt:
+Historical exact SD 1.5 positive prompt, superseded for future generation by
+WP-015B2G:
 
 ```text
 one complete cute handcrafted crochet fantasy game character, an angular Knotkin Wizard in a right-facing orthographic three-quarter side view, both glossy black bead eyes visible, no mouth, broad hexagonal head and torso with flat crown, chamfered cheeks, sloped shoulders, short angular arms, narrow lower bridge, two separate stubby rectangular feet, chunky pale blue chenille crochet body with visible stitches and cotton softness, folded deep navy felt wizard hood, gold blanket stitching, woven belt and wooden button clasp, compact wooden spool staff strapped behind the rear shoulder, empty forward hand held clearly in front for a separate game Relic, full feet on one level baseline, warm soft studio lighting, tactile yarn and felt materials, strong readable mobile game silhouette, one centered isolated subject on a plain uniform near-white background, generous empty padding, high quality 2D game asset source
@@ -189,9 +220,10 @@ one complete cute handcrafted crochet fantasy game character, an angular Knotkin
 
 Wizard acceptance:
 
-- the anatomy and blue/gold Wizard identity remain readable without the staff,
-- the empty forward hand can align to the shared socket without covering an eye,
-- the hood does not round away the flat crown or merge the two feet,
+- the rounded crochet-doll anatomy and blue/gold Wizard identity remain readable,
+- the upward-facing cupped palm can align to the shared socket without covering
+  an eye,
+- the pointed star hat leaves the face visible and the two feet remain separate,
 - staff, belt, and tassels stay inside motion-safe bounds and do not read as a
   realistic weapon,
 - both eyes remain distinct at a 48-pixel-tall phone preview, and
@@ -208,8 +240,8 @@ Wizard acceptance:
 - Seed: `15015002`
 - Palette: Nimiq Purple `#5F4B8B`, Nimiq Pink `#FA7268`, Nimiq Blue
   `#1F2348`, and restrained Nimiq Gold `#E9B213` stitching.
-- Silhouette: shared angular Knotkin anatomy with a short keeper mantle and a
-  folded asymmetrical cowl that does not resemble the Wizard hood.
+- Silhouette: shared rounded crochet-doll anatomy with a short keeper mantle and
+  a folded asymmetrical cowl that does not resemble the Wizard hat.
 - Costume: purple chenille body, coral felt mantle, dark woven sash, wooden
   buttons, a small decorative loom-shuttle charm fixed to the rear belt. No
   crown, armor, staff, weapon, villain spikes, or selected Relic.
@@ -217,7 +249,8 @@ Wizard acceptance:
   glossy black bead eyes, one small neutral mouth, optional minimal paired
   stitched eyebrows, and no nose, extra eye, or unrelated facial marks.
 
-Exact positive prompt:
+Historical exact SD 1.5 positive prompt, superseded for future generation by
+WP-015B2G:
 
 ```text
 one complete cute handcrafted crochet fantasy game character, a friendly opposing Loomkeeper in a right-facing orthographic three-quarter side view, both glossy black bead eyes visible, no mouth, broad angular hexagonal head and torso with flat crown, chamfered cheeks, sloped shoulders, short angular arms, narrow lower bridge, two separate stubby rectangular feet, chunky purple chenille crochet body with visible stitches and cotton softness, short coral felt keeper mantle, asymmetrical folded cowl distinct from a wizard hood, dark woven sash, wooden button fasteners, restrained gold stitching, tiny decorative wooden loom-shuttle charm fixed behind the rear hip, empty forward hand held clearly in front for a separate game Relic, calm capable competitive pose, full feet on one level baseline, warm soft studio lighting, tactile yarn felt and wood materials, strong readable mobile game silhouette, one centered isolated subject on a plain uniform near-white background, generous empty padding, high quality 2D game asset source
@@ -227,7 +260,7 @@ Loomkeeper acceptance:
 
 - the opponent reads as friendly and distinct from Wizard in grayscale and at a
   48-pixel-tall phone preview,
-- cowl and mantle preserve the shared angular species silhouette,
+- cowl and mantle preserve the shared rounded crochet-doll species silhouette,
 - the forward hand aligns to the shared socket and all asymmetry stays stable,
 - the rear charm cannot be mistaken for a held weapon or projectile,
 - there is no crown, evil face, military motif, selected Relic, or extra eye,

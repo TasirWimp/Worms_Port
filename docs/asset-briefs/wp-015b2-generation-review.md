@@ -1409,3 +1409,115 @@ small exact eye or mouth cut-outs as automatically seamless.
 The single allowance is consumed. No retry, cached resubmission, changed mask,
 seed, prompt, or graph ran. Both services are stopped; the output and derivative
 remain external quarantine and nothing entered `assets/`.
+
+## WP-015B2G Rounded-Doll Reset And Cupped-Palm Candidate
+
+Status: **project-owner direction selected; exact external candidate retained;
+product normalization and exact-file approval remain pending**.
+
+### Why the requirement changed
+
+The project owner reviewed the complete character-generation path and chose to
+adapt the design requirement to the admitted model instead of adding another
+control layer. The relevant path is:
+
+1. The original SD 1.5 route failed the dense character prompts and did not
+   establish a usable Wizard master.
+2. FLUX.2 Klein's first Wizard text primary, seed `15025001`, produced the
+   strongest immediately cute result: a rounded blue crochet doll with two bead
+   eyes, a small mouth, and readable Wizard headwear. It was rejected under the
+   then-current hexagonal anatomy and forward-hand gates.
+3. A direct FLUX reference edit and the deterministic B2B angular guide still
+   returned to a round head over an oval torso. Those failures isolated a strong
+   model prior: `cute crochet Wizard` naturally maps to doll anatomy.
+4. B2C could enforce the old geometry only by first generating a robot and then
+   converting it to fitted knit. This proved structural control but retained
+   mechanical construction residue and reduced the original character appeal.
+5. B2D restored cuteness but interpreted the cowl as a neck wrap. B2E's local
+   cowl edit read thief-like. B2F produced a recognisable tall Wizard hood, but
+   exact face/mouth restoration created visible polygonal and rectangular seams.
+   The increasingly constrained route solved individual requirements while
+   creating new integration failures.
+6. FLUX.2 Klein LoRA training was investigated as a technically valid way to
+   teach a new character concept. BFL recommends the 4B Base model for LoRA and
+   lists character consistency and concept learning as supported uses, but the
+   dataset, trainer, cloud/NVIDIA training, exact-license evidence, and pinned
+   Comfy FP8 loader admission would be a separate work package. It is deferred,
+   not rejected. References:
+   [BFL training guide](https://docs.bfl.ai/flux_2/flux2_klein_training) and
+   [official FLUX.2 repository](https://github.com/black-forest-labs/flux2).
+7. The owner therefore superseded the hexagonal-body requirement. The new rule
+   is to preserve FLUX's rounded cute crochet-doll family and apply the lessons
+   from the failed control cycle only where they help: short positive prompts,
+   a clear pointed Wizard hat, exactly two visible eyes, one small mouth, a
+   separate forward arm, and concrete visible-shape language for the Relic palm.
+
+This decision does not retroactively turn rejected B2A-B2F outputs into failed
+execution. They remain exact historical evidence showing why the product
+requirement changed. The Nimiq connection remains in the blue/gold palette,
+gold-thread details, textile world, naming, and competition context rather than
+the superseded hexagonal body.
+
+### First reset trial: closed mitten
+
+The first owner-reviewed reset prompt deliberately returned to unconditioned
+text-to-image generation and accepted rounded doll anatomy. It used seed
+`15027001`:
+
+```text
+One isolated full-body game character centered on a plain white background: a cute blue crochet Wizard doll with a compact rounded body, short limbs, and two separate stubby feet resting on the same baseline. Right-facing three-quarter view. Exactly two large glossy black bead eyes and one small neutral curved stitched mouth are visible. The nearer arm extends clearly forward to the right, separated from the torso, ending in an oversized crochet mitten hand with a distinct thumb and an open C-shaped grip. The grip is fully visible, unobstructed, and contains only empty white space so a separate game object can be added later. The other arm rests at the character's side. A tall pointed dark-blue felt Wizard hat with a softly folded tip and small gold stitched stars rests securely on the head without covering the face. Clean, readable mobile-game silhouette. Both hands are empty. No staff, text, logo, scenery, ground plane, cast shadow, or second character.
+```
+
+| Field | Recorded result |
+| --- | --- |
+| Comfy prompt ID | `e3ac9210-551f-4c92-b6bb-e8b9da1f6cce` |
+| Output | `WormsPortFlux2KleinText_00004_.png` |
+| Dimensions / bytes | 1024x1024 / 1077223 |
+| SHA-256 | `F5A58D589BD0624BA502D8277BF94FC7A4BD43B09BD05FF98CB184FEF6A3BE1C` |
+| Runtime | `257.38` seconds |
+
+The character, face, star hat, isolation, and separated forward arm passed the
+new direction. The abstract `C-shaped grip` instruction did not: FLUX produced
+a large closed thumbs-up mitten with no open cradle. No automatic retry ran.
+
+### Selected reset trial: upward-facing cupped palm
+
+The second and final trial kept the accepted character language and replaced
+the abstract grip with the visible picture of a shallow bowl. It used seed
+`15027002` and the exact prompt:
+
+```text
+One isolated full-body game character centered on a pure white background with generous space around the entire silhouette. A cute blue crochet Wizard doll with a compact rounded body, short limbs, and two separate stubby feet aligned on one baseline. The character faces toward the right edge in a three-quarter view. Exactly two large glossy black bead eyes and one small curved stitched smile are visible. The arm on the image-right side reaches horizontally away from the torso. It ends in a proportionate crochet mitten hand turned upward like a small shallow bowl: the palm faces upward and remains fully visible, while the thumb and rounded mitten fingers curl upward around its edges without touching. The empty palm forms a clear unobstructed cradle. The other arm hangs naturally at the character's side. A tall pointed dark-blue felt Wizard hat with a softly folded tip and small gold stitched stars rests on the head without covering the face. Clean, readable mobile-game character with even lighting. The raised palm is empty. No text, logo, scenery, floor plane, or second character.
+```
+
+Exact external evidence path:
+
+```text
+C:\Users\jensb\AppData\Local\Comfy-Desktop\ComfyUI-Shared\output\WormsPortFlux2KleinText_00005_.png
+```
+
+| Field | Recorded result |
+| --- | --- |
+| Comfy prompt ID | `ba48322c-5236-4876-a09f-42c20712919d` |
+| Output | `WormsPortFlux2KleinText_00005_.png` |
+| Dimensions / bytes | 1024x1024 / 788520 |
+| SHA-256 | `40F9E81254A0792B967889808BD8BD8DE33DBDE5EAB7C4CBB1B336DD02BC54A5` |
+| Runtime | `258.082` seconds |
+| Workflow settings | FLUX.2 Klein 4B distilled FP8, 1024x1024, batch 1, 4 steps, CFG 1, Euler |
+| Queue / shutdown | zero pending after completion; Comfy and MCP stopped |
+
+Project-owner review selects this as the current Wizard master **direction**.
+It preserves the appealing rounded doll anatomy rather than treating it as a
+failure. The pointed star hat reads as Wizard, both bead eyes and the curved
+mouth remain clear, both feet are complete, and the raised hand forms a visible
+upward-facing cradle suitable for a separately rendered Relic. The pose is
+slightly more front-facing than requested and a faint contact shadow remains;
+those are deterministic normalization/review concerns, not reasons to return to
+hexagonal generation.
+
+The exact PNG remains external quarantine and is not yet a product asset. It
+still requires exact-output IP review, alpha/background extraction, crop,
+baseline/pivot and held-Relic socket normalization, mobile-size review,
+animation planning, product-manifest approval, and runtime integration. No
+third reset prompt, reference edit, mask edit, LoRA training, or product
+promotion is authorized by this selection.

@@ -1467,6 +1467,42 @@ semantic regeneration of the complete face/hood region, but must create a new
 source gate and request allowance. The queue ended 0/0, both services were
 stopped, and re-entry is review/planning only.
 
+### WP-015B2G Rounded-Doll Reset Re-entry
+
+WP-015B2G supersedes the hexagonal production-anatomy requirement after the
+project owner reviewed the complete B2A-B2F evidence. Do not resume the robot,
+structure-guide, cowl-mask, or hood-mask routes. They remain historical controls
+that demonstrate why the requirement changed.
+
+The reset returned to the exact core-only `generate_flux2_klein_text` workflow.
+Seed `15027001` tested an abstract `C-shaped grip`; output
+`WormsPortFlux2KleinText_00004_.png`, SHA-256
+`F5A58D589BD0624BA502D8277BF94FC7A4BD43B09BD05FF98CB184FEF6A3BE1C`,
+retained a closed thumbs-up mitten and was not selected. Seed `15027002`
+replaced it with an upward-facing shallow-bowl palm and produced the selected
+external direction candidate:
+
+```text
+C:\Users\jensb\AppData\Local\Comfy-Desktop\ComfyUI-Shared\output\WormsPortFlux2KleinText_00005_.png
+40F9E81254A0792B967889808BD8BD8DE33DBDE5EAB7C4CBB1B336DD02BC54A5
+1024x1024, 788520 bytes
+```
+
+Exact selected prompt:
+
+```text
+One isolated full-body game character centered on a pure white background with generous space around the entire silhouette. A cute blue crochet Wizard doll with a compact rounded body, short limbs, and two separate stubby feet aligned on one baseline. The character faces toward the right edge in a three-quarter view. Exactly two large glossy black bead eyes and one small curved stitched smile are visible. The arm on the image-right side reaches horizontally away from the torso. It ends in a proportionate crochet mitten hand turned upward like a small shallow bowl: the palm faces upward and remains fully visible, while the thumb and rounded mitten fingers curl upward around its edges without touching. The empty palm forms a clear unobstructed cradle. The other arm hangs naturally at the character's side. A tall pointed dark-blue felt Wizard hat with a softly folded tip and small gold stitched stars rests on the head without covering the face. Clean, readable mobile-game character with even lighting. The raised palm is empty. No text, logo, scenery, floor plane, or second character.
+```
+
+Re-entry is read-only unless a later work package explicitly authorizes product
+normalization or another generation request. Confirm the external file and hash,
+then start from deterministic alpha/background extraction, crop, baseline,
+pivot, held-Relic socket, and phone-size review. The selected file is still
+quarantine evidence; do not copy it into `assets/`, animate it, or integrate it
+before exact-output IP and product-manifest approval. LoRA remains a separately
+scoped fallback for a future character-consistency need, not the active Wizard
+route.
+
 ### WP-015B0 Approval And Canonical Baseline
 
 WP-015B0 is the no-product-output pre-production gate. A bounded technical
@@ -1480,8 +1516,10 @@ workflow; it must not create or promote a product asset. B0 records:
   and review reference, not a runtime asset,
 - the project owner's report that the Nimiq team/foundation encourages the
   inspired body geometry for the Mini App competition and brand connection,
-  plus the owner's approval of that project direction, without authorizing
-  official Nimiq brand files or an official-product claim,
+  plus the owner's historical approval to explore that direction. WP-015B2G
+  later supersedes the anatomy requirement after production evidence while
+  retaining the palette/textile brand connection, without authorizing official
+  Nimiq brand files or an official-product claim,
 - project-owner approval of the exact archived checkpoint, exact pinned
   text-to-image workflow, and project-owned image-conditioned workflow recorded
   in `legal/generation-component-manifest.json`, and

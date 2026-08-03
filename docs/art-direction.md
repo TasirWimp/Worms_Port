@@ -130,29 +130,39 @@ not imply unimplemented radius, precision, or secondary-effect differences.
 
 All Knotkin share one readable species silhouette:
 
-- a broad angular hexagonal head-and-torso with a flat crown,
-- chamfered cheeks and sloped shoulders,
-- short angular arms,
-- a narrow lower bridge,
-- two separate stubby rectangular feet,
+- a compact rounded crochet-doll head and softly oval body,
+- short soft limbs whose silhouettes remain separate from the torso,
+- two separate stubby feet resting on one readable baseline,
+- a simple crochet mitten hand that can present a separate Relic from an
+  upward-facing cupped palm,
 - exactly two oversized glossy black bead eyes,
 - one small readable mouth suitable for expression variants, and
 - optional minimal stitched eyebrows when they strengthen a friendly
   expression, and no nose, extra eye, duplicated mouth, or unrelated facial
   marks.
 
-The shape is inspired by the user-supplied Nimiq emoticon reference. It must be
-expressed as soft three-dimensional anatomy, not printed as a Nimiq logo.
+The earlier broad hexagonal anatomy was inspired by the user-supplied Nimiq
+emoticon reference. WP-015B2A through B2F showed that FLUX consistently couples
+`cute crochet character` with rounded doll anatomy, while attempts to force the
+hexagonal form accumulated mechanical residue, lost cuteness, incorrect
+headwear, or visible composite seams. On 2026-08-03 the project owner therefore
+superseded the hexagonal production requirement instead of continuing to fight
+the admitted model. Nimiq connection now comes through the approved palette,
+gold stitching, textile world, and competition context rather than a literal or
+implied logo-shaped body.
+
 Emotion comes from eye angle, the small mouth, body tilt, pose, costume, and
 animation. The neutral master keeps one simple mouth that later expression
-variants may replace without changing the eyes or body silhouette.
+variants may replace without changing the eyes or the selected rounded-doll
+family.
 
-Costumes may exaggerate a Calling but must not hide the shared body silhouette.
-The design must remain readable at mobile-game scale.
+Costumes may exaggerate a Calling but must not hide the face, separate feet, or
+Relic-presenting hand. The design must remain readable at mobile-game scale.
 
 ## Callings
 
-- **Wizard:** folded hood, spool staff, pom-pom spells, tangled lightning.
+- **Wizard:** tall pointed felt hat with gold stitched stars, spool staff,
+  pom-pom spells, tangled lightning.
 - **Thief:** low hood, long scarf, needle grappling tool, button smoke bombs.
 - **Warrior:** felt armor, thimble helmet, button shield, spool hammer.
 - **Ranger:** stitched hat, twig-and-thread bow, yarn quiver.
@@ -243,18 +253,19 @@ shapes are superseded and are not canonical Knotkin anatomy.
 ![Early Knotkin fantasy Calling lineup](images/art-direction/knotkin-calling-lineup-study.png)
 
 This exploration established the Wizard, Thief, Warrior, Ranger, Alchemist,
-and Cleric lineup. Its rounded doll anatomy predates the Nimiq-inspired body
-shape and is superseded.
+and Cleric lineup. Its exact anatomy remains historical rather than a production
+master, but its friendly rounded-doll premise became directionally relevant
+again after the WP-015B2G requirement reset.
 
-### Current Knotkin Direction
+### Calling And Material Reference
 
 ![Knotkin fantasy Calling lineup](images/art-direction/knotkin-class-lineup-concept.png)
 
-This image is the canonical artwork reference for future Knotkin and Calling
-production. New character briefs, pose masters, sprites, portraits, promotional
-art, and in-game Calling depictions must begin from its visual system:
+This image remains the canonical Calling, palette, material, and world-language
+reference. Its angular anatomy is superseded by WP-015B2G. New character
+briefs, pose masters, sprites, portraits, promotional art, and in-game Calling
+depictions use the following retained parts of its visual system:
 
-- the same shared angular crochet body family,
 - exactly two oversized glossy bead eyes and one small expressive mouth,
 - the pictured Calling color identities and material vocabulary,
 - chunky yarn bodies, felt garments, visible stitches, wooden buttons, spools,
@@ -262,16 +273,29 @@ art, and in-game Calling depictions must begin from its visual system:
 - compact silhouettes that remain readable on a phone,
 - a warm handcrafted stage with cotton clouds and stitched Patchwork terrain.
 
-The project owner's 2026-08-03 mouth amendment is the one deliberate forward
-deviation from the pictured faces: production masters add one small neutral
-mouth so animation can provide expression variants. The lineup remains
-canonical for anatomy, eyes, palette, material, costume, and world language;
-the mouth amendment does not authorize other unrecorded redesigns.
+The project owner's 2026-08-03 mouth amendment adds one small neutral mouth so
+animation can provide expression variants. The later WP-015B2G amendment is a
+second explicit deviation: production anatomy follows the rounded crochet-doll
+family demonstrated by FLUX rather than the pictured hexagonal body. The lineup
+remains canonical for eyes, palette, material, costume vocabulary, and world
+language, not anatomy.
 
 The image is a design reference, not a sprite sheet or runtime source. The user
-has approved it as the canonical creative and generation reference, so approved
-production tools may receive the tracked file as conditioning input when its
-path and SHA-256 are recorded. Do not crop, trace, or ship its pixels directly.
+has approved it as the canonical Calling, material, and world-language
+reference, so approved production tools may receive the tracked file as
+conditioning input when its path and SHA-256 are recorded. It is no longer the
+anatomy reference. Do not crop, trace, or ship its pixels directly.
+
+The current rounded Wizard direction is the external, quarantined B2G output:
+
+`C:\Users\jensb\AppData\Local\Comfy-Desktop\ComfyUI-Shared\output\WormsPortFlux2KleinText_00005_.png`
+
+Its SHA-256 is
+`40F9E81254A0792B967889808BD8BD8DE33DBDE5EAB7C4CBB1B336DD02BC54A5`.
+It is selected visual-direction evidence, not an approved product asset. Its
+exact prompt, seed, workflow, decision path, and outstanding normalization
+gates are recorded in
+`docs/asset-briefs/wp-015b2-generation-review.md`.
 
 ### Deterministic Wizard Structure Guide
 
@@ -328,6 +352,11 @@ variation as useful FLUX creativity. Its measured normalized silhouette IoU
 B2C remains the strongest geometry reference and B2D the preferred cuteness and
 surface-treatment reference; neither image is yet normalized or approved as a
 runtime product asset.
+
+These B2B-B2F controls are now historical evidence for why the project stopped
+forcing the hexagonal body. They remain useful demonstrations of structural
+conditioning and mask limitations, but they no longer define future Knotkin
+anatomy or authorize another controlled repair.
 
 ### Deterministic Wizard Cowl Edit Mask
 
@@ -390,14 +419,14 @@ but the output is rejected because exact face/mouth restoration creates visible
 hard seams; it does not permit a retry, changed control, or product promotion.
 
 Future generated art is not expected to be deterministic to the last detail.
-Protect the recognisable angular Knotkin family, the Wizard cowl/hat resting on
-the head rather than only around the neck, a forward hand capable of holding a
-separate Relic, exactly two eyes, one mouth, and the friendly/cute character of
-the design. Let FLUX vary eyebrow use, eye spacing, stitch pattern, textile
-folds, belt/button treatment, local proportions, and other non-protected detail.
-Silhouette measurements should reveal drift and guide later compensation; they
-do not supersede project-owner visual review when the protected properties
-remain intact.
+Protect the recognisable rounded crochet-doll family, a Calling-defining hat or
+costume that does not hide the face, an upward-facing cupped hand capable of
+presenting a separate Relic, exactly two eyes, one mouth, and friendly/cute
+phone-scale readability. Let FLUX vary eyebrow use, eye spacing, stitch pattern,
+textile folds, local proportions, and other non-protected detail. Measurements
+should reveal crop, baseline, and socket drift for later deterministic
+normalization; they no longer compare candidates to the superseded hexagonal
+silhouette.
 
 The first production interpretation is frozen in
 `asset-briefs/wp-015b1-vertical-slice.md`. That contract translates the lineup
@@ -408,11 +437,14 @@ For WP-015B0 the project owner records that the Nimiq team/foundation
 encouraged the Nimiq-inspired body geometry for the Mini App competition: its
 purpose is to bring the brand to a wider audience and build a recognizable
 connection with Nimiq. That owner-supplied record closes the project's internal
-competition-scope geometry decision. It does not import or authorize an
-official Nimiq logo, icon, font, or other brand file, and the game must not claim
-to be an official Nimiq product. Generated derivatives remain in quarantine
-until their prompts, workflows, model licenses, source hashes, output hashes,
-review, and manifest entries are complete.
+competition-scope permission question, but does not require retaining geometry
+that proved unsuitable for the production model. WP-015B2G keeps the intended
+brand connection through Nimiq colors, gold-thread details, naming, and world
+language. It does not import or authorize an official Nimiq logo, icon, font,
+or other brand file, and the game must not claim to be an official Nimiq
+product. Generated derivatives remain in quarantine until their prompts,
+workflows, model licenses, source hashes, output hashes, review, and manifest
+entries are complete.
 
 ### Concept Provenance
 
@@ -442,8 +474,10 @@ All three were generated on 2026-07-10 with OpenAI built-in image generation
 under TasirWimp's authoring direction. OpenAI output terms do not by themselves
 grant rights to third-party brands represented in input references. The
 project-owner record above documents the Nimiq team/foundation encouragement
-and approves the inspired geometry as the project's competition direction; any
-official Nimiq brand file still needs separate exact permission and provenance.
+and the project's historical approval to explore inspired geometry. WP-015B2G
+later supersedes that anatomy requirement on production evidence while retaining
+the intended brand connection through palette and textile language. Any official
+Nimiq brand file still needs separate exact permission and provenance.
 No Sorcerers material was used.
 
 The earlier Pocket Robot asset is a superseded import-workflow trial and is not
@@ -455,7 +489,7 @@ separate archive or removal policy is adopted.
 
 Required:
 
-- cute cotton Knotkin with the shared angular anatomy,
+- cute cotton Knotkin with the shared rounded crochet-doll anatomy,
 - big eyes and one small expression-ready mouth,
 - readable fantasy Callings,
 - playful artillery confrontation,

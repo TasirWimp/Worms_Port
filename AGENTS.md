@@ -100,9 +100,12 @@ If the user asks only for planning, review, or brainstorming, do not edit code.
   composition remains supported through `?sideways=off`, and actual landscape
   viewports must not be double-rotated. No core action may require hover,
   keyboard, or precision mouse.
-- Production artwork must follow
-  `docs/images/art-direction/knotkin-class-lineup-concept.png` while preserving
-  its documentation-only status until exact-file asset approval.
+- Production Calling colors, textile materials, and fantasy vocabulary continue
+  to follow `docs/images/art-direction/knotkin-class-lineup-concept.png`, but
+  WP-015B2G supersedes its angular anatomy with the owner-approved rounded
+  crochet-doll direction and upward-facing cupped Relic palm recorded in
+  `docs/art-direction.md`. The lineup and every external FLUX candidate remain
+  documentation/quarantine evidence until exact-file asset approval.
 
 ## Codex Subagent Roles
 
