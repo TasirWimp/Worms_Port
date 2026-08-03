@@ -8,26 +8,29 @@ Phaser/Socket.IO stack.
 ## Execution Pointer
 
 - Active target: mobile-first single-player Nimiq Pay competition release.
-- Active work package: **WP-015B2G rounded-doll reset — owner-selected external
-  Wizard direction; product normalization and approval pending**. The full
-  B2A-B2F cycle demonstrated that FLUX naturally maps `cute crochet Wizard` to
-  rounded doll anatomy. Increasingly strict hexagonal guides, a robot scaffold,
-  fitted-knit conversion, and protected cowl/hood edits could force local
-  geometry, but accumulated lost cuteness, mechanical residue, incorrect Calling
-  reads, or hard composite seams. The project owner therefore superseded the
-  hexagonal production requirement and returned to unconditioned text generation
-  using the lessons from that cycle. Seed `15027001` produced a strong rounded
-  Wizard but interpreted the abstract `C-shaped grip` as a closed thumbs-up
-  mitten. Seed `15027002` replaced that abstraction with the visible picture of
-  an upward-facing shallow-bowl palm. The owner selected exact external output
-  `WormsPortFlux2KleinText_00005_.png`, SHA-256
-  `40F9E81254A0792B967889808BD8BD8DE33DBDE5EAB7C4CBB1B336DD02BC54A5`,
-  as the current Wizard master direction. It remains external quarantine and
-  still needs exact-output IP review, deterministic alpha/background extraction,
-  crop, baseline/pivot/socket normalization, mobile-size review, animation
-  planning, product-manifest approval, and runtime integration. No third prompt,
-  LoRA training, or promotion is authorized. B2E historically
-  selected a pinned core-node route and produced a deterministic source-only
+- Active work package: **WP-015B2H Wizard production normalization — planned
+  and ready for implementation**. Its sole source is the owner-selected external
+  B2G output `WormsPortFlux2KleinText_00005_.png`, SHA-256
+  `40F9E81254A0792B967889808BD8BD8DE33DBDE5EAB7C4CBB1B336DD02BC54A5`.
+  B2H is deterministic and non-generative: verify the source hash and exact-output
+  rights/IP boundary; preserve the untouched 1024x1024 source externally;
+  implement versioned alpha/background extraction and edge cleanup; derive the
+  512x512 RGBA master plus 192x192 and 48px review derivatives; align baseline,
+  pivot, and the upward-facing Relic-palm socket by uniform scale/translation;
+  and record full-size and phone-size review. Do not repaint, synthesize missing
+  pixels, non-uniformly warp anatomy, run FLUX, return to a mask, train a LoRA,
+  animate, or integrate the candidate. If the baseline and socket cannot both
+  meet the frozen contract without distortion, stop and review the coordinates
+  instead of forcing the image. Only an explicit exact-file review may approve
+  the normalized master in `legal/asset-manifest.json`; runtime promotion remains
+  blocked until the animation derivatives pass their later gate.
+- Following gates: **WP-015B3** completes the remaining Wizard/Loomkeeper/
+  Threadball/Patch vertical-slice inventory and admits one animation route;
+  **WP-015C** then performs integration only. B3 and C remain blocked until B2H
+  closes. D remains blocked until the assembled C slice passes automated phone
+  views and a separate real-device review.
+- Historical B2A-B2G evidence digest: B2E selected a pinned core-node route and
+  produced a deterministic source-only
   candidate. Workflow
   `scripts/comfy-workflows/generate_flux2_klein_protected_edit.json` is a
   23-node graph, SHA-256
@@ -143,19 +146,14 @@ Phaser/Socket.IO stack.
   comparison with normalized IoU `0.956188` and baseline drift `12` pixels.
   Both files remain external quarantine; B2C itself authorized no further
   generation.
-- Last committed implementation slice: **WP-015B2F protected Wizard-hood review
-  and rejection** on 2026-08-03 at `7c51bb2`. WP-015B1's baseline, socket,
-  projectile-origin, animation, environment, and source-boundary requirements
-  remain normative; WP-015B2G supersedes its angular anatomy and historical
-  cross-model prompts.
-- Next bounded action: plan and execute a deterministic, non-generative
-  normalization gate for the selected B2G Wizard candidate: exact-output IP
-  review, alpha/background extraction, crop, baseline/pivot, held-Relic socket,
-  phone-size inspection, and product-manifest decision. Do not run another
-  prompt or return to the mask topology merely because the candidate is slightly
-  front-facing or retains a faint contact shadow. Loomkeeper, animation, roster
-  work, runtime integration, and product promotion remain blocked until that
-  gate is reviewed.
+- Last committed planning/art-direction slice: **WP-015B2G rounded-doll reset**
+  on 2026-08-03 at `00d23d2`. WP-015B1's baseline, socket, projectile-origin,
+  animation, environment, and source-boundary requirements remain normative;
+  B2G supersedes its angular anatomy and historical cross-model prompts.
+- Next bounded action: implement only **WP-015B2H**. The detailed re-entry and
+  stop conditions are in `docs/process/development_workflow.md`. No Loomkeeper,
+  animation, roster, runtime-integration, or further generation work belongs in
+  that slice.
 - WP-012 exactly pins `@nimiq/mini-app-sdk` `0.1.0` and server-only
   `@nimiq/core` `2.7.1`. Provider access remains lazy, identity acceptance is
   now used by WP-013's separate production Daily entry, the diagnostics surface
@@ -2321,8 +2319,9 @@ projectiles, impacts, damage, environment, UI, and results work together. This
 is an integration and game-feel pass, not final detail, animation coverage, or
 balance polish. Every brief must cite
 `docs/images/art-direction/knotkin-class-lineup-concept.png` as the canonical
-visual reference. No pixels from the concept image enter runtime without
-explicit exact-file approval.
+Calling, palette, material, costume-vocabulary, and world-language reference.
+WP-015B2G supersedes its anatomy with the rounded crochet-doll family. No pixels
+from the concept image enter runtime without explicit exact-file approval.
 
 The three starting Relics are the base default roster. WP-015 introduces a
 new versioned ruleset rather than changing v1 or v2 replay truth. Only range and
@@ -2448,18 +2447,72 @@ Sequential delivery slices:
     upward-facing shallow bowl and produced selected external candidate
     `40F9E812...4A5`. No third prompt, LoRA, normalization, or promotion is
     implied. The exact prompt and full external path are frozen in the B2 review.
-- **WP-015C First playable visual slice:** promote and integrate only approved
-  Wizard, Loomkeeper, Threadball, and Patch assets. Prove one complete
-  move/aim/fire/flight/impact/damage/result exchange at maintained phone
-  viewports before batch-producing the rest of the roster.
-- **WP-015D Basic roster completion:** add the new versioned range/damage
-  ruleset while preserving v1/v2 replays; complete Thief, Warrior,
-  Needlepoint, Spoolburst, shared effects, and master-derived UI media. Keep
-  collision code-owned and load only the selected Calling plus shared media.
-- **WP-015E Basic audio and closure:** deliver the small separately
-  sourced/generated audio set, finish exact manifests and attribution, check
-  the 1.5 MB initial-media budget, and close compliance, build, browser,
-  visual, and real-device acceptance evidence.
+  - **WP-015B2H Wizard production normalization — planned and next:** bind only
+    external source `40F9E812...4A5`. Review its exact-output rights/IP boundary,
+    then use a versioned deterministic script and configuration to remove the
+    plain background and faint contact shadow, decontaminate edge color, preserve
+    the untouched source, and derive a 512x512 RGBA master plus 192x192 and 48px
+    review files. Use uniform scale and translation only. Align the ground pivot,
+    baseline, visible palm cradle, held-Relic socket, and motion-safe padding to
+    the retained B1 contract; if that is impossible without repainting or
+    non-uniform distortion, stop and review the coordinates. Record full-size,
+    alpha-edge, 48px, and maintained-phone review. A pass may approve the exact
+    normalized master with complete parent/component/postprocess hashes but does
+    not authorize animation, a runtime atlas, integration, another prompt, or
+    another Calling.
+  - **WP-015B3 Vertical-slice production completion — planned after B2H:**
+    complete all approved inputs required by C before touching runtime code:
+    - **B3A companion masters:** freeze new FLUX-specific prompts/settings/seeds
+      for the rounded Loomkeeper and Patch layers before inference. Review the
+      existing Threadball candidate `2BAE664F...F4089EB` first and normalize it
+      if it passes; generate a replacement only through a separately approved
+      amendment. Produce requests serially, review each exact output, and stop on
+      a repeated failure instead of starting a batch.
+    - **B3B animation-route admission:** after the normalized Wizard is approved,
+      review the current availability, commercial terms, privacy/input-retention,
+      output rights, export format, component/service identity, and reproducible
+      evidence surface of AutoSprite or a proposed alternative. Upload nothing
+      until that route passes. Run one Wizard-only technical and visual pilot;
+      if unavailable, legally unclear, or visually unstable, stop and refine a
+      deterministic alternative rather than silently changing services.
+    - **B3C playable derivative inventory:** only after the Wizard pilot passes,
+      produce and normalize the minimum Wizard and Loomkeeper animation states,
+      Threadball icon/held/projectile/trail/impact family, Patch background/cloud/
+      repeatable terrain materials, and shared damage/result effects needed by
+      the C exchange. Record atlas metadata, pivots, sockets, release frame,
+      parent hashes, phone-size review, manifest decisions, and the 1.5 MB media
+      budget. C stays blocked until every required runtime file is approved.
+- **WP-015C First playable visual slice — integration only:** load the approved
+  Wizard and Loomkeeper atlases, attach the approved Threadball derivatives at
+  the recorded socket/projectile origin, compose Patch decorative layers over
+  code-owned terrain/collision, and bind presentation states only to existing
+  authoritative events. No generation, source repair, ruleset change, or asset
+  approval belongs in C. Prove one complete player and Loomkeeper
+  move/aim/fire/flight/impact/damage/result exchange at all maintained phone
+  viewports, with reduced-motion behavior, v1/v2 replay truth, placeholder
+  fallback/error handling, lazy-loading/media-budget reporting, and no change to
+  collision or simulation authority. Run compliance, build, the full automated
+  phone-browser matrix, and the Ubuntu visual-candidate workflow. D remains
+  blocked until the candidate is reviewed on a real phone and any finding is
+  either fixed or explicitly deferred.
+- **WP-015D Basic roster and ruleset completion:** after C acceptance, freeze
+  exact v3 range/damage values and add `nimble-knots-artillery-v3` while
+  preserving byte-for-byte v1/v2 replay behavior. Range and maximum direct
+  Stitching damage are the only initial Relic differences. Then produce,
+  approve, and integrate Thief, Warrior, Needlepoint, Spoolburst, shared effects,
+  and master-derived UI media through the proven B3 pipeline. Keep collision
+  code-owned, load only the selected Calling plus shared media, and retain radius,
+  precision, falloff, ammo, cooldown, secondary effects, Calling modifiers, and
+  final tuning as deferred. Close with deterministic v3 ordering/replay tests,
+  compliance, build, browser matrix, visual review, and real-device acceptance.
+- **WP-015E Basic audio and closure:** source or generate the small combat/result/
+  reward audio set through a separate exact-file license and provenance path;
+  normalize loudness/format and verify mute, pause, repeated-play, and mobile
+  lifecycle behavior. Finish all visual/audio manifests and attribution, confirm
+  lazy loading and the 1.5 MB compressed initial-media ceiling, inspect the final
+  Ubuntu visual baselines, and close compliance, audit, build, complete browser,
+  production-smoke, and separate real-device acceptance evidence. Detailed art,
+  extra animation, additional Patches, and balance polish remain deferred.
 
 WP-015B2A is a corrective admission gate, not an approval of FLUX.2, its
 component mirrors, a new prompt contract, or any output. It deviates from the

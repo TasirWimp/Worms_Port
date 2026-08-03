@@ -83,6 +83,32 @@ contracts. Their angular anatomy language is likewise superseded. Baseline,
 socket, animation, environment, and source-boundary requirements remain
 normative.
 
+### WP-015B2H/B3 production handoff
+
+WP-015B2H binds only selected external Wizard source
+`40F9E81254A0792B967889808BD8BD8DE33DBDE5EAB7C4CBB1B336DD02BC54A5`.
+It is a deterministic master-normalization and exact-file approval gate, not a
+generation or animation pass. Preserve the opaque 1024x1024 original externally;
+derive the 512x512 RGBA master, 192x192 review candidate, and 48px phone preview
+through a versioned script/configuration using deterministic background removal,
+edge decontamination, crop, uniform scaling, and translation. Do not repaint,
+generatively fill, reshape, or non-uniformly warp the selected character.
+
+The coordinates below remain targets, not authority to distort the art. If the
+visible ground baseline and center of the cupped palm cannot both align to them
+with one uniform transform while retaining safe padding, stop and amend the
+normalization contract through recorded phone evidence. Only the approved
+normalized master may enter WP-015B3 animation-route review.
+
+WP-015B3 must freeze separate FLUX-specific prompts/settings/seeds for the
+rounded Loomkeeper and Patch before any new request. Historical SD 1.5 seeds and
+prompts below cannot be reused across architectures. Existing Threadball output
+`2BAE664F7E5A862BCB53B55A68071580485CE040A89650C68EC6FA398F4089EB`
+receives exact-output review before replacement is considered. Animation begins
+with one approved Wizard-only pilot after the chosen service/route passes its
+license, privacy/input-retention, output-rights, export, and evidence gate. Only
+a reviewed Wizard pilot may authorize the Loomkeeper animation inventory.
+
 ## Exact Generation Contract
 
 This contract applies only to the frozen, rejected B1/SD 1.5 run. B2G uses the

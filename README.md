@@ -223,6 +223,19 @@ path, hashes, decision trail, and remaining product gates are recorded in
 external quarantine: no runtime asset, alpha extraction, socket normalization,
 animation, or product-manifest approval is implied.
 
+The refined next slice is WP-015B2H, a deterministic, non-generative Wizard
+normalization gate. It binds only the selected B2G file and may perform reviewed
+background/alpha extraction, edge cleanup, crop, uniform scale/translation,
+baseline/pivot/socket alignment, and 512/192/48px derivation. It must stop rather
+than repaint, warp, regenerate, or force incompatible coordinates. If the exact
+normalized master passes output-IP, provenance, alpha-edge, full-size, and
+phone-size review, it may receive source-asset approval; animation and runtime
+integration remain blocked. WP-015B3 then completes the Loomkeeper, Threadball,
+Patch, minimum effects, and a separately admitted Wizard-first animation route.
+WP-015C is integration-only and begins only when that complete vertical-slice
+inventory is manifest-approved. The exact gates and re-entry order are in the
+Execution Pointer and `docs/process/development_workflow.md`.
+
 ## Build
 
 Use Node.js 20 or newer.

@@ -704,28 +704,35 @@ Production art follows this fail-closed sequence:
 
 ```text
 approved brief -> quarantined concept master -> controlled refinement
-  -> animation/export -> deterministic normalization -> in-engine phone captures
-  -> art/IP/provenance review -> manifest approval -> assets/ promotion
+  -> deterministic master normalization -> art/IP/provenance/master approval
+  -> animation/export -> deterministic runtime normalization
+  -> in-engine phone captures -> derivative review and manifest approval
+  -> assets/ promotion
 ```
 
 All Knotkin production briefs use
 `docs/images/art-direction/knotkin-class-lineup-concept.png` as the canonical
-visual reference. The image remains documentation-only: it cannot be cropped,
-traced, or shipped directly. It may be supplied to an approved production tool
-as the user-selected creative conditioning reference only when the tracked path
-and SHA-256 are recorded in the generation evidence. This does not resolve
-rights to official Nimiq brand files. WP-015B0 separately records the project
-owner's attestation of Nimiq team/foundation encouragement and project approval
-of the inspired body geometry. A brief must record all other inputs and
-explicitly block Sorcerers, Worms/Team17, realistic firearms, unlicensed logos,
-and recognizable third-party characters.
+Calling, palette, material, costume-vocabulary, and world-language reference.
+WP-015B2G supersedes its angular anatomy with the rounded crochet-doll family.
+The image remains documentation-only: it cannot be cropped, traced, or shipped
+directly. It may be supplied to an approved production tool as the user-selected
+creative conditioning reference only when the tracked path and SHA-256 are
+recorded in the generation evidence. This does not resolve rights to official
+Nimiq brand files. WP-015B0 separately records the project owner's attestation
+of Nimiq team/foundation encouragement and historical approval to explore the
+inspired body geometry; it is not a continuing geometry requirement. A brief
+must record all other inputs and explicitly block Sorcerers, Worms/Team17,
+realistic firearms, unlicensed logos, and recognizable third-party characters.
 
-Built-in image generation is used for rights-safe concept masters, ComfyUI for
-reproducible controlled refinement after every model component passes license
-review, and AutoSprite for animation/export from an approved master. Record
-prompts, negative constraints, workflow JSON and hash, seeds, model and custom
-node versions and licenses, service/job IDs, parent/output hashes, postprocess
-configuration, and reviewer identity.
+Only a separately approved generation profile may produce a quarantined concept
+master or refinement. The current rounded Wizard direction came from the
+reviewed local FLUX.2 Klein profile; that does not automatically approve the
+same profile for a different purpose. AutoSprite is only a planned animation
+route until B3B establishes its current availability, commercial terms,
+input-retention/privacy behavior, output rights, export behavior, and evidence
+surface. Record prompts, negative constraints, workflow JSON and hash, seeds,
+model and custom-node versions and licenses, service/job IDs, parent/output
+hashes, postprocess configuration, and reviewer identity.
 
 ### WP-015A Local ComfyUI Re-entry
 
@@ -1503,6 +1510,116 @@ before exact-output IP and product-manifest approval. LoRA remains a separately
 scoped fallback for a future character-consistency need, not the active Wizard
 route.
 
+### WP-015B2H Wizard Production-Normalization Re-entry
+
+WP-015B2H is the next executable slice. It authorizes deterministic
+normalization of exactly one source and authorizes no inference:
+
+```text
+C:\Users\jensb\AppData\Local\Comfy-Desktop\ComfyUI-Shared\output\WormsPortFlux2KleinText_00005_.png
+40F9E81254A0792B967889808BD8BD8DE33DBDE5EAB7C4CBB1B336DD02BC54A5
+1024x1024, 788520 bytes
+```
+
+Required order:
+
+1. Check Git status and confirm the external file exists with the exact size and
+   SHA-256 above. A mismatch stops the slice; do not reconstruct the source from
+   screenshots or another generated output.
+2. Create the B2H evidence record and freeze a versioned normalization
+   configuration before writing the normalizer. The configuration records the
+   source hash, background/matte rule, edge-color decontamination rule, connected
+   subject selection, crop/padding, resampling filter, target dimensions,
+   baseline, pivot, palm/socket point, and output naming.
+3. Review the exact output and its complete FLUX component chain for commercial
+   use, redistribution, modification, attribution, official-brand implications,
+   and recognizable third-party similarity. A model/component admission is not
+   an output-IP approval. Record the human review separately from automated
+   pixel checks.
+4. Preserve the untouched opaque 1024x1024 source externally. Use the versioned
+   script to remove only the plain background and faint contact shadow,
+   decontaminate the deterministic edge matte, select the single connected
+   character, and derive a 512x512 RGBA master. Do not manually paint, clone,
+   reconstruct, generatively fill, reshape, or non-uniformly warp any body,
+   costume, face, or hand pixels.
+5. Use uniform scale and translation to target the retained B1 512x512 ground
+   pivot `(256,451)`, held-Relic socket `(341,293)`, motion-safe bounds, and the
+   visible center of the upward-facing palm cradle. Derive the 192x192 review
+   candidate at pivot `(96,169)` and socket `(128,110)`, plus an exact 48px-tall
+   phone-readability derivative. If one uniform transform cannot satisfy the
+   baseline and visible socket without clipping or implausible metadata, stop
+   and propose a reviewed coordinate amendment; never distort the character to
+   make old coordinates pass.
+6. Prove deterministic byte reproduction, valid real alpha, no opaque or
+   disconnected background fragments, no bright/dark fringe at representative
+   backgrounds, stable feet/baseline, motion-safe padding, readable eyes/mouth/
+   hat/palm at 48px, and full-size preservation of the selected direction.
+7. If and only if the exact-output, visual, alpha, geometry, provenance, and
+   phone-size reviews pass, add the exact normalized master and complete parent/
+   postprocess evidence to `legal/asset-manifest.json` and copy the reviewed
+   bytes into their approved source location under `assets/`. Do not assign a
+   runtime atlas path merely to close B2H; animation derivatives receive their
+   own later entries and runtime paths.
+
+B2H completion runs the normalizer determinism tests, JSON/evidence checks,
+`npm run check:compliance`, `npm run build`, `npm run smoke`, and
+`git diff --check`. The browser matrix is not required unless B2H changes a
+browser-facing asset path or runtime code. Real-device testing is not run in
+B2H because no player-visible asset is integrated. Report both omissions.
+
+### WP-015B3 Vertical-Slice Production Re-entry
+
+WP-015B3 begins only after B2H approves the normalized Wizard master. It closes
+the asset-production prerequisites that WP-015C is not allowed to invent while
+integrating.
+
+1. **B3A companion masters:** amend the B1 brief with exact FLUX-specific
+   prompts, settings, seeds, and request limits for the rounded Loomkeeper and
+   Patch layers before inference. Review existing external Threadball candidate
+   `2BAE664F7E5A862BCB53B55A68071580485CE040A89650C68EC6FA398F4089EB`
+   against its bounded Relic purpose before considering another request. Process
+   one family at a time and normalize/approve each exact file. A repeated failure
+   pauses the family; it does not authorize seed shopping or a batch.
+2. **B3B animation-route admission:** only an approved normalized Wizard master
+   may be considered for upload. Reverify AutoSprite or an alternative for
+   service identity, commercial terms, input retention/privacy, output rights,
+   model/component disclosure where applicable, accepted dimensions, state and
+   frame control, export format, stable character identity, and durable job/hash
+   evidence. Upload nothing until those checks pass. Run one Wizard-only pilot
+   covering the minimum animation contract. Stop if the service is unavailable,
+   the rights/evidence boundary is unclear, or identity/socket/baseline drift is
+   not controllable; refine an alternative as a separate planning gate.
+3. **B3C playable derivatives:** only after the Wizard pilot passes may the route
+   animate Loomkeeper. Produce the required Wizard/Loomkeeper states, Threadball
+   icon/held/projectile/trail/impact files, Patch background/cloud/repeatable
+   terrain materials, and minimum shared damage/result effects. Normalize every
+   frame and layer deterministically; record pivots, sockets, projectile origin,
+   release frame, durations, parent/output hashes, atlas metadata, exact-file
+   approvals, phone-size review, and media budget.
+
+WP-015C remains blocked until the manifest-approved inventory can express one
+complete exchange without generation, manual source repair, or unapproved test
+paths. B3 changes no gameplay rules and integrates no product media into the
+combat scene.
+
+### WP-015C First Playable Visual-Slice Re-entry
+
+WP-015C is integration-only. Its inputs are the approved B3 Wizard/Loomkeeper
+atlases, Threadball derivatives, Patch layers, shared minimum effects, and their
+manifest metadata. It may add client asset loading, atlas/state mapping, socket
+attachment, decorative composition, failure fallback, and presentation-event
+binding. It may not generate/refine art, repair source pixels, approve licenses,
+change simulation/collision authority, or introduce the v3 Relic ruleset.
+
+Acceptance requires one deterministic player-and-Loomkeeper exchange through
+move, aim, fire, projectile flight, impact, Stitching damage, and result at every
+maintained phone viewport and under reduced motion. Decorative Patch pixels never
+define collision. V1/v2 replay truth and authoritative event timing stay intact.
+Run compliance, build, the full zero-retry browser matrix, bundle/media budget,
+and the Ubuntu visual-candidate workflow. Inspect the Ubuntu candidate explicitly;
+never approve new baselines from Windows. A separate real-phone acceptance is
+required before WP-015D batch production begins.
+
 ### WP-015B0 Approval And Canonical Baseline
 
 WP-015B0 is the no-product-output pre-production gate. A bounded technical
@@ -1652,21 +1769,32 @@ Use this exact handoff for each visual asset family:
    relative `reference_image` returned by the command.
    If the model inventory is not approved or the server is unavailable, skip
    refinement or stop; do not substitute an unrecorded local workflow.
-5. **AutoSprite animation:** upload the approved isolated character master,
-   reuse one character ID for its Calling, request the normative animation
-   states, and record character, pose, job, video, and spritesheet IDs plus all
-   downloaded hashes. If AutoSprite is unavailable, stop animation production
-   rather than silently changing generators.
-6. **Deterministic normalization:** preserve the untouched master, normalize
-   runtime frame size, pivot, baseline, padding, alpha, naming, timing, and
-   atlas metadata through a versioned script and configuration hash.
-7. **In-engine staging:** load quarantined candidates through a test-only path,
+5. **Deterministic master normalization and approval:** preserve the untouched
+   generator output externally. Through a versioned script and configuration,
+   produce a real-alpha isolated master with reviewed crop, padding, baseline,
+   pivot, and held-Relic socket. Review exact-output IP/provenance, visual
+   identity, alpha edges, and phone readability. Only the exact normalized
+   master may receive source-asset manifest approval; do not assign a runtime
+   path until a runtime derivative is ready.
+6. **Animation-route admission and export:** after the route-specific service,
+   license, privacy, output-rights, and evidence review passes, upload only the
+   approved isolated character master. Reuse one character ID for its Calling,
+   request the normative animation states, and record character, pose, job,
+   video, spritesheet, parent, and download hashes. AutoSprite is the planned
+   route, not an already approved dependency. If it is unavailable or fails the
+   review, stop animation production rather than silently changing generators.
+7. **Deterministic runtime normalization:** normalize runtime frame size, pivot,
+   baseline, padding, alpha, naming, timing, and atlas metadata through a
+   versioned script and configuration hash. Preserve every untouched service
+   download externally and keep source-master and runtime-derivative lineage
+   explicit.
+8. **In-engine staging:** load quarantined candidates through a test-only path,
    render deterministic gameplay states, and capture the automated phone
    viewports. Staging cannot place unapproved files in product `assets/`.
-8. **Review and refinement:** run art, animation, IP, provenance, canvas,
+9. **Review and refinement:** run art, animation, IP, provenance, canvas,
    visual-diff, and phone-readability checks. Permit at most three scoped
    retries for one failure signature; rejection does not relax the contract.
-9. **Promotion:** add exact final hashes and evidence to the manifest, update
+10. **Promotion:** add exact final hashes and evidence to the manifest, update
    attribution when required, copy only approved runtime files into `assets/`,
    then run compliance, build, browser smoke, and relevant visual tests.
 
