@@ -34,6 +34,7 @@ $StateRoot = Join-Path $env:LOCALAPPDATA 'Worms_Port\comfy-pipeline'
 $StatePath = Join-Path $StateRoot 'state.json'
 $ComfyRepo = Join-Path $ComfyRoot 'ComfyUI'
 $ComfyStarter = Join-Path $ComfyRoot 'start-comfy-api.bat'
+$ComfyExtraModelPaths = Join-Path $ComfyRepo 'extra_model_paths.yaml'
 $McpPython = Join-Path $McpRoot '.venv\Scripts\python.exe'
 $McpServer = Join-Path $McpRoot 'server.py'
 $SmokeHelper = Join-Path $RepoRoot 'scripts\comfy-mcp-smoke.py'
@@ -128,6 +129,7 @@ function Assert-LocalComponents {
 
     Assert-RequiredDirectory $ComfyRepo 'ComfyUI checkout'
     Assert-RequiredFile $ComfyStarter 'ComfyUI loopback starter'
+    Assert-RequiredFile $ComfyExtraModelPaths 'ComfyUI extra model paths config'
     Assert-RequiredDirectory $McpRoot 'ComfyUI MCP bridge checkout'
     Assert-RequiredFile $McpPython 'ComfyUI MCP bridge Python'
     Assert-RequiredFile $McpServer 'ComfyUI MCP bridge server'
@@ -146,6 +148,7 @@ function Assert-LocalComponents {
     if ($launcherHash -ne $ComfyComponent.local_launcher_sha256) {
         throw "ComfyUI launcher hash mismatch. Expected $($ComfyComponent.local_launcher_sha256), found $launcherHash."
     }
+    Assert-FileHash $ComfyExtraModelPaths $ComfyComponent.local_extra_model_paths_sha256 'ComfyUI extra model paths config' | Out-Null
     $requirementsHash = (Get-FileHash -LiteralPath $McpRequirementsLock -Algorithm SHA256).Hash
     if ($requirementsHash -ne $McpComponent.requirements_lock_sha256) {
         throw "MCP requirements lock hash mismatch. Expected $($McpComponent.requirements_lock_sha256), found $requirementsHash."

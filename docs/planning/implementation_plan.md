@@ -9,25 +9,32 @@ Phaser/Socket.IO stack.
 
 - Active target: mobile-first single-player Nimiq Pay competition release.
 - Active work package: **WP-015B2A FLUX.2 Klein 4B model-admission
-  deviation**. The fixed SD 1.5 primary pass, prompt-only retry, and one
-  conditioned Wizard diagnostic were rejected and are preserved at committed
-  review record `2c528b8`. Generation remains paused. Before any further art
-  attempt, the proposed FLUX.2 Klein 4B distilled FP8 route must pass the
-  component, workflow, RX 7600 8 GB, and two-purpose visual-admission gates
-  defined in the WP-015 section and
-  `docs/asset-briefs/wp-015b2-generation-review.md`.
-- Last committed documentation slice: **WP-015B2 SD 1.5 generation review and
-  prompt refinement** on 2026-08-02 at `2c528b8`. WP-015B1's product-facing
+  deviation**. Gates 1 and 2 passed on 2026-08-03 for exactly three external files:
+  canonical BFL FP8 diffusion model
+  `97ED34FE0567E436200F2FAEE3939B88F2B5D99F8AF2A4DC16532C4245C0CCB6`,
+  deterministic canonical-shard encoder merge
+  `AD65083F0B6561CC84B9B6A42FF397EE749171E367C28D800C4A6FD612ABC169`,
+  and canonical BFL FP32 VAE
+  `D64F3A68E1CC4F9F4E29B6E0DA38A0204FE9A49F2D4053F0EC1FA1CA02F9C4B5`.
+  The unlicensed pre-release Comfy encoder mirror is rejected. Two native
+  core-node source graphs are now exact-hashed at
+  `626568CEAA47627F7D421D3BD1B0AA151E1643DBA8FBD631F5EB437666649E28`
+  (text) and
+  `A2BF8CD3C015D36646E73F2FA87F22741E4410D27B26D562331057B49CFF6C8E`
+  (single reference), but remain runtime-disabled and uninstalled. Generation
+  remains paused; no FLUX route, output, or product asset is approved.
+- Last committed documentation slice: **WP-015B2A model-admission planning
+  deviation** on 2026-08-02 at `9813d39`. WP-015B1's product-facing
   anatomy, socket, projectile-origin, animation, environment, and acceptance
   requirements remain normative. Its exact prompts, seeds, and sampler settings
   remain the historical SD 1.5 contract and are not presumed equivalent for a
   different model architecture.
-- Next bounded action: review and exact-hash only the proposed external FLUX.2
-  Klein 4B FP8 diffusion model, Qwen3 4B text encoder, and FLUX.2 VAE, including
-  exact source revision and commercial-use license evidence. Do not generate,
-  approve the model route, change the pinned ComfyUI checkout, install custom
-  nodes, queue another multi-asset batch, or promote any current output during
-  that component-review step.
+- Next bounded action: Gate 3 only - extend the local tooling with a separate
+  fail-closed FLUX profile that verifies the complete three-component and
+  exact-workflow chain before installing runtime copies. Preserve the SD 1.5
+  route and reject arbitrary model/workflow selection. Do not generate, approve
+  the model route, change the pinned ComfyUI checkout, install custom nodes,
+  run the RX 7600 smoke, queue an asset batch, or promote output in Gate 3.
 - WP-012 exactly pins `@nimiq/mini-app-sdk` `0.1.0` and server-only
   `@nimiq/core` `2.7.1`. Provider access remains lazy, identity acceptance is
   now used by WP-013's separate production Daily entry, the diagnostics surface
@@ -159,9 +166,10 @@ Phaser/Socket.IO stack.
   geometry, animation triggers, and review gates. The initial B2 text-only pass,
   one prompt-only retry, and one conditioned Wizard diagnostic did not satisfy
   those gates. Committed review `2c528b8` records the failed attempts and stop.
-  Re-entry is now the bounded WP-015B2A FLUX.2 Klein 4B model-admission
-  deviation, beginning with component provenance, licensing, and exact hashes;
-  it is not automatic model adoption, regeneration, or promotion.
+  WP-015B2A Gates 1 and 2 now record the exact admitted external components and
+  two runtime-disabled native source workflows. Re-entry begins with Gate 3
+  fail-closed profile integration; it is not automatic model adoption,
+  regeneration, or promotion.
 - The approved post-competition weekly program is now scoped as WP-018 through
   WP-021: Nimiq Chronicle, Loom XP qualification, optional PvP Sparring Loom,
   and the Weekly Grand Knot Tournament with an additional sponsor-funded
@@ -2245,13 +2253,16 @@ Sequential delivery slices:
     exact rejected output and promote nothing. Prompt decomposition alone is no
     longer the immediate next action because the approved SD 1.5 route did not
     demonstrate adequate structural instruction following.
-  - **WP-015B2A FLUX.2 Klein 4B model-admission deviation — active, no model
-    approved:** pause B2 generation and evaluate the distilled FP8 4B route as a
-    possible replacement candidate. Admission is sequential: exact-component
-    review, native-workflow review, fail-closed pipeline support, RX 7600 8 GB
-    technical smoke, then a Wizard/Threadball visual micro-bakeoff. Failure at
-    any gate retains SD 1.5 as historical evidence and returns to planning; it
-    does not authorize a larger model, cloud API, custom node, or asset batch.
+  - **WP-015B2A FLUX.2 Klein 4B model-admission deviation — active, Gates 1
+    and 2 passed, route not approved:** exact-component review admitted the canonical
+    BFL FP8 diffusion model, a deterministic single-file merge of the canonical
+    BFL Qwen shards, and the canonical BFL FP32 VAE. The pre-release Comfy Qwen
+    mirror failed exact provenance and is blocked. Two exact, core-only native
+    workflows passed source review but remain runtime-disabled. Admission
+    continues with fail-closed pipeline support, RX 7600 8 GB technical smoke,
+    then a Wizard/Threadball visual micro-bakeoff. Failure at any later
+    gate retains SD 1.5 as historical evidence and returns to planning; it does
+    not authorize a larger model, cloud API, custom node, or asset batch.
 - **WP-015C First playable visual slice:** promote and integrate only approved
   Wizard, Loomkeeper, Threadball, and Patch assets. Prove one complete
   move/aim/fire/flight/impact/damage/result exchange at maintained phone
@@ -2269,14 +2280,13 @@ WP-015B2A is a corrective admission gate, not an approval of FLUX.2, its
 component mirrors, a new prompt contract, or any output. It deviates from the
 previous plan as follows:
 
-1. **Component evidence first:** review the exact external distilled FP8
-   diffusion model, Qwen3 4B text encoder, and FLUX.2 VAE. Record canonical
-   source, immutable source revision, exact filename, byte size, SHA-256,
-   license, license evidence, distribution boundary, approved uses, and blocked
-   uses before any workflow can reference them. Mirrored encoder/VAE files need
-   evidence tying their exact bytes and license to the canonical component;
-   an unlicensed mirror label is insufficient.
-2. **Native workflow only:** review project-owned text-to-image and
+1. **Component evidence first — passed 2026-08-03:** exact-hash and admit only
+   the external BFL FP8 diffusion file, deterministic canonical-shard Qwen merge,
+   and exact BFL FP32 VAE recorded in
+   `legal/generation-component-manifest.json`. The official Comfy guide's
+   pre-release Qwen mirror is rejected because two tensors differ from canonical
+   BFL/Qwen and its repository supplies no exact license/provenance linkage.
+2. **Native workflow only — passed 2026-08-03 as runtime-disabled source:** review project-owned text-to-image and
    single-reference-edit graphs built solely from the already pinned ComfyUI
    0.27.1 core nodes. Exact-hash both graphs and register only their bounded
    parameters. Do not update ComfyUI, install a custom node, use an external
@@ -2318,12 +2328,20 @@ Primary official sources reviewed for this planning deviation:
 
 - FLUX.2 model family, 4B Apache-2.0 status, generation/editing support, and
   consumer-GPU positioning:
-  `https://github.com/black-forest-labs/flux2`;
+  `https://github.com/black-forest-labs/flux2/tree/50fe5162777813d869182b139e83b10743caef15`;
 - exact distilled FP8 model card and license:
-  `https://huggingface.co/black-forest-labs/FLUX.2-klein-4b-fp8`;
+  `https://huggingface.co/black-forest-labs/FLUX.2-klein-4b-fp8/tree/5b4408e59397a4a37ccb46afe426d8ed86379441`;
 - native ComfyUI 4B text-to-image/edit workflows, three component locations,
   and published FP8 memory figure:
-  `https://docs.comfy.org/tutorials/flux/flux-2-klein`;
+  `https://github.com/Comfy-Org/docs/blob/ac1bc24fdc79409f3b469d5130b2dbb7097d4f0d/tutorials/flux/flux-2-klein.mdx`;
+- canonical Apache-2.0 BFL Qwen shards and Klein VAE used for Gate 1 tensor
+  comparison:
+  `https://huggingface.co/black-forest-labs/FLUX.2-klein-4B/tree/e7b7dc27f91deacad38e78976d1f2b499d76a294`;
+- canonical FP32 VAE exact file plus BFL's file-family-specific Apache-2.0
+  autoencoder statement:
+  `https://huggingface.co/black-forest-labs/FLUX.2-dev/blob/26afe3a78bb242c0a8bb181dcc8937bb16e5c66c/vae/diffusion_pytorch_model.safetensors`
+  and
+  `https://github.com/black-forest-labs/flux2/blob/50fe5162777813d869182b139e83b10743caef15/README.md#flux2-autoencoder`;
 - ComfyUI low-VRAM, preview, offload, and AMD guidance:
   `https://docs.comfy.org/troubleshooting/overview`.
 

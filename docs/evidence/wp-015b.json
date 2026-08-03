@@ -80,16 +80,61 @@
       "command": "fixed-seed quarantined vertical-slice master review",
       "status": "fail",
       "detail": "The six exact primary outputs and six same-seed prompt-only Retry 1 outputs failed the frozen art gates. The user stopped conditioned Retry 2 after its first Wizard output also failed; the ComfyUI queue then reported zero running and zero pending jobs. All output paths, hashes, asset/prompt IDs, settings, and rejection reasons are recorded in docs/asset-briefs/wp-015b2-generation-review.md. No file was promoted or copied into assets/."
+    },
+    {
+      "command": "FLUX.2 Klein three-component provenance, commercial-use license, and exact-hash admission",
+      "status": "pass",
+      "detail": "Gate 1 admitted only external file hashes 97ED34FE0567E436200F2FAEE3939B88F2B5D99F8AF2A4DC16532C4245C0CCB6 (canonical BFL distilled FP8 diffusion), AD65083F0B6561CC84B9B6A42FF397EE749171E367C28D800C4A6FD612ABC169 (deterministic single-file merge of two exact BFL Apache-2.0 Qwen shards), and D64F3A68E1CC4F9F4E29B6E0DA38A0204FE9A49F2D4053F0EC1FA1CA02F9C4B5 (canonical BFL FP32 VAE covered by BFL's explicit Apache-2.0 autoencoder statement). All six downloaded source/comparison files matched pinned LFS size and SHA-256 metadata. The encoder merge passed 398/398 raw tensor comparisons; the VAE matched its canonical FP32 LFS object and projected exactly across all 251 tensors to the Apache Klein BF16 VAE. The pre-release Comfy encoder mirror was rejected after two final-layer tensors differed from canonical BFL/Qwen and no exact mirror license/provenance linkage was present. Files remain external; no workflow, generation route, output, or product asset was approved."
+    },
+    {
+      "command": "npm run test:tooling (WP-015B2A Gate 1)",
+      "status": "pass",
+      "detail": "All 25 tooling tests passed, including the new exact FLUX split-component contracts and fail-closed deterministic-repackage provenance checks."
+    },
+    {
+      "command": "npm run check:compliance (WP-015B2A Gate 1)",
+      "status": "pass",
+      "detail": "Asset, generation-component, import-boundary, package-license, work-package, and clean-room checks passed with eight reviewed generation components, 21 evidence records, and zero clean-room records."
+    },
+    {
+      "command": "npm run build (WP-015B2A Gate 1)",
+      "status": "pass",
+      "detail": "The complete compliance, TypeScript, server, and client build passed. Zero runtime assets were copied; the existing Vite chunk-size warning remains unchanged."
+    },
+    {
+      "command": "Comfy FLUX component relocation and loader discovery",
+      "status": "pass",
+      "detail": "Stopped ComfyUI and the MCP bridge through the reviewed pipeline, moved the three exact component files from the C: shared model directories to E:/ComFy/TasirWimp/Worms_Port-models, and reverified their SHA-256 values after the move. Pinned local extra_model_paths.yaml at D03C5A366C7291F161B30DDB6CF5002800B67380E6D32D7DCC410AEFD1B4A00D, restarted both loopback services, and confirmed through ComfyUI object_info that UNETLoader, CLIPLoader, and VAELoader discover the exact reviewed filenames. No workflow or generation ran."
+    },
+    {
+      "command": "FLUX.2 native core-node text-to-image and reference-edit workflow hash review",
+      "status": "pass",
+      "detail": "Gate 2 translated the official Comfy workflow templates pinned at cebdebc9fc2febcb97a5db0dd291f59f5300b176 into a 13-node text graph 626568CEAA47627F7D421D3BD1B0AA151E1643DBA8FBD631F5EB437666649E28 and a 19-node single-reference graph A2BF8CD3C015D36646E73F2FA87F22741E4410D27B26D562331057B49CFF6C8E. Both exact-bind the three Gate 1 filenames, four steps, CFG 1, Euler, and batch one; the text graph is fixed at 1024x1024 and the edit graph bounds one staged reference to one megapixel. Every node, required input, and connected edge type passed the pinned local ComfyUI 0.27.1 object_info schema. The manifest keeps both runtime-disabled and neither was copied to the external MCP workflows directory. No prompt or generation ran."
+    },
+    {
+      "command": "npm run test:tooling (WP-015B2A Gate 2)",
+      "status": "pass",
+      "detail": "All 26 tooling tests passed, including exact FLUX workflow hash, official-template revision, model-chain, core-node, fixed-settings, placeholder-set, and runtime-disabled contracts."
+    },
+    {
+      "command": "npm run check:compliance (WP-015B2A Gate 2)",
+      "status": "pass",
+      "detail": "Asset, generation-component, import-boundary, package-license, work-package, and clean-room checks passed with ten reviewed generation components, 21 evidence records, and zero clean-room records."
+    },
+    {
+      "command": "npm run build (WP-015B2A Gate 2)",
+      "status": "pass",
+      "detail": "The complete compliance, TypeScript, server, and client build passed. The two FLUX graphs remained source-only, zero runtime assets were copied, and the existing Vite chunk-size warning remained unchanged."
     }
   ],
   "skipped_checks": [
-    "The phone-browser matrix was not run for WP-015B0 or WP-015B1 because these slices change only the offline generation pipeline, documentation, compliance metadata, and quarantined technical output; they change no browser-facing code or runtime asset.",
-    "Real-device testing was not run because WP-015B0 and WP-015B1 create no player-visible behavior or product media."
+    "The phone-browser matrix was not run for WP-015B0, WP-015B1, or WP-015B2A Gates 1-2 because these slices change only the offline generation pipeline, documentation, compliance metadata, and external quarantined component state; they change no browser-facing code or runtime asset.",
+    "Real-device testing was not run because WP-015B0, WP-015B1, and WP-015B2A Gates 1-2 create no player-visible behavior or product media."
   ],
   "residual_risks": [
     "The reviewed image-conditioned graph is ordinary VAE img2img, not IP-Adapter or ControlNet; strong composition changes require an isolated master and carefully chosen denoise.",
     "The current SD 1.5 checkpoint did not reliably follow the dense B1 character, Relic, and environment prompts. Its rejected prompts, seeds, settings, and outputs remain historical evidence; they are not silently reused for another model architecture.",
-    "FLUX.2 Klein 4B distilled FP8 is only a proposed admission candidate. Its exact diffusion, encoder, and VAE provenance and licenses are not yet reviewed or hashed, and no workflow or output is approved.",
+    "WP-015B2A Gates 1-2 admit exactly three external FLUX.2 component files and two runtime-disabled native source workflows, but no fail-closed pipeline profile, executable route, hardware route, prompt contract, generated output, or product asset is approved yet.",
     "Official ComfyUI documentation reports about 8.4 GB VRAM for the distilled route on an RTX 5090. The actual Windows AMD RX 7600 has 8 GB, so offloaded execution, stability, runtime, and visual usefulness remain unproven local gates.",
     "No WP-015B2 output currently passes exact-output art/IP review; candidate acceptance, npm audit, and final self-review remain pending before WP-015B can close."
   ]

@@ -273,3 +273,117 @@ Model generation will not be treated as proof of seamless terrain, exact
 transparent edges, repeatable tiling, or collision geometry. Those properties
 remain deterministic postprocess or code-owned responsibilities. This planning
 deviation downloads, generates, promotes, and approves nothing by itself.
+
+## WP-015B2A Gate 1 Result: Exact Components
+
+Review date: 2026-08-03. Status: **pass with a canonical encoder
+substitution; FLUX route still not approved**.
+
+The three external component files admitted for the next native-workflow review
+are:
+
+| Role | Reviewed external file | Bytes | SHA-256 | Exact source relation |
+| --- | --- | ---: | --- | --- |
+| Distilled FP8 diffusion model | `flux-2-klein-4b-fp8.safetensors` | 4,070,624,520 | `97ED34FE0567E436200F2FAEE3939B88F2B5D99F8AF2A4DC16532C4245C0CCB6` | exact canonical BFL file at `5b4408e59397a4a37ccb46afe426d8ed86379441`, Apache-2.0 |
+| Qwen3 4B text encoder | `qwen_3_4b_bfl_apache.safetensors` | 8,044,982,048 | `AD65083F0B6561CC84B9B6A42FF397EE749171E367C28D800C4A6FD612ABC169` | deterministic single-file repackage of the two canonical BFL Klein 4B shards at `e7b7dc27f91deacad38e78976d1f2b499d76a294`, Apache-2.0 |
+| FLUX.2 VAE | `flux2-vae.safetensors` | 336,213,556 | `D64F3A68E1CC4F9F4E29B6E0DA38A0204FE9A49F2D4053F0EC1FA1CA02F9C4B5` | exact canonical BFL FP32 VAE at `26afe3a78bb242c0a8bb181dcc8937bb16e5c66c`; BFL's pinned `flux2` README licenses the FLUX.2 autoencoder under Apache-2.0 |
+
+The encoder repackage has two exact inputs:
+
+- `model-00001-of-00002.safetensors`, 4,967,215,360 bytes, SHA-256
+  `8C0506E7F4936FA7E26183A4FD8DA4E2BDBC5990BA64AE441F965D51228F36EA`;
+- `model-00002-of-00002.safetensors`, 3,077,766,632 bytes, SHA-256
+  `82F2BD839378541B0557BFABAF37C7D3D637071FDCB73302DEDD7CF61162CE07`.
+
+The merge removes only the safetensors `__metadata__` records, shifts the
+second shard's data offsets by the first shard's data length, writes one
+compact eight-byte-aligned combined header, and concatenates the two source
+data regions without conversion. Independent post-build comparison passed for
+all 398 tensor names, shapes, dtypes, and per-tensor raw SHA-256 values.
+
+The official Comfy guide's pre-release mirror
+`qwen_3_4b.safetensors`, SHA-256
+`6C671498573AC2F7A5501502CCCE8D2B08EA6CA2F661C458E708F36B36EDFC5A`,
+is explicitly rejected. It was uploaded before the BFL Klein release, has no
+exact license/provenance declaration, and differs from both the canonical BFL
+and Qwen bytes in `model.layers.35.mlp.down_proj.weight` and
+`model.layers.35.mlp.up_proj.weight`. It must not be substituted into the
+reviewed route merely because the official Comfy tutorial links to it.
+
+The VAE's exact hash is present in BFL's canonical `FLUX.2-dev` repository.
+Its 251 tensor names and shapes also match the Apache Klein 4B VAE: projecting
+each of the 250 FP32 floating tensors to BF16 reproduces the Klein tensor
+exactly, while the I64 state matches directly. This evidence is limited to the
+autoencoder; it does not admit any non-autoencoder `FLUX.2-dev` weight.
+
+External evidence is preserved below
+`E:\ComFy\TasirWimp\component-evidence\wp-015b2a`. The admitted files are
+installed at:
+
+```text
+E:\ComFy\TasirWimp\Worms_Port-models\diffusion_models\flux-2-klein-4b-fp8.safetensors
+E:\ComFy\TasirWimp\Worms_Port-models\text_encoders\qwen_3_4b_bfl_apache.safetensors
+E:\ComFy\TasirWimp\Worms_Port-models\vae\flux2-vae.safetensors
+```
+
+The ignored local `E:\ComFy\TasirWimp\ComfyUI\extra_model_paths.yaml`
+registers those three E: subdirectories while retaining the Comfy Desktop shared
+root for the approved SD 1.5 route, inputs, and outputs. Its reviewed SHA-256 is
+`D03C5A366C7291F161B30DDB6CF5002800B67380E6D32D7DCC410AEFD1B4A00D`.
+The repository pipeline preflight pins that hash and fails closed on path drift.
+
+Gate 1 approves only those exact external bytes for Gate 2 workflow
+construction. It does not approve either FLUX workflow, the pipeline profile,
+RX 7600 compatibility, prompt settings, generation, output, or product-media
+promotion. The next bounded action is to construct, inspect, exact-hash, and
+register native ComfyUI 0.27.1 text-to-image and single-reference-edit graphs
+without updating ComfyUI or installing custom nodes.
+
+## WP-015B2A Gate 2 Result: Native Core-Node Workflows
+
+Review date: 2026-08-03. Status: **pass as non-executable source tooling;
+FLUX route still not approved**.
+
+Gate 2 translated the distilled graphs from the official Comfy workflow
+templates at exact revision
+`cebdebc9fc2febcb97a5db0dd291f59f5300b176` into project-owned Comfy API
+format. The translations replace the template encoder mirror with the reviewed
+canonical-shard merge and bind all three Gate 1 filenames exactly:
+
+| Mode | Project source | Nodes | SHA-256 |
+| --- | --- | ---: | --- |
+| Text to image | `scripts/comfy-workflows/generate_flux2_klein_text.json` | 13 | `626568CEAA47627F7D421D3BD1B0AA151E1643DBA8FBD631F5EB437666649E28` |
+| Single-reference edit | `scripts/comfy-workflows/generate_flux2_klein_reference_edit.json` | 19 | `A2BF8CD3C015D36646E73F2FA87F22741E4410D27B26D562331057B49CFF6C8E` |
+
+Both graphs fix the distilled route to four steps, CFG 1, Euler, batch size
+one, `flux-2-klein-4b-fp8.safetensors`,
+`qwen_3_4b_bfl_apache.safetensors`, and `flux2-vae.safetensors`. The text graph
+fixes the canvas and scheduler to 1024x1024. The edit graph accepts one
+explicitly staged reference filename, scales it to one megapixel using
+`nearest-exact`, derives the output dimensions from that bounded image, and
+uses the native `ReferenceLatent` conditioning structure. It does not expose a
+second reference, denoise control, arbitrary model choice, custom node, or
+workflow selector.
+
+Every node class, required input, and connected output/input type was checked
+against the running pinned ComfyUI 0.27.1 `object_info` schema. The exact model
+filenames were also visible to `UNETLoader`, `CLIPLoader`, and `VAELoader`.
+No prompt was submitted and no FLUX model was loaded for inference.
+
+The manifest records both workflows with `runtime_enabled: false`. Their
+runtime targets are intentionally absent from the external MCP `workflows`
+directory, and the pipeline still exposes only the established SD 1.5 route.
+Gate 2 therefore approves exact source graphs for Gate 3 integration review;
+it does not approve execution, hardware compatibility, prompt settings,
+generated output, or product media.
+
+Before this review, the three verified failed-download directories below
+`E:\ComFy\TasirWimp\hf-cache`, `hf-downloads`, and `hf-verified` were removed,
+reclaiming about 8.94 GiB. The reviewed model store and
+`component-evidence\wp-015b2a` were preserved.
+
+The next bounded action is Gate 3 only: add a separate fail-closed FLUX profile
+to the local pipeline, keep the SD 1.5 route intact, verify the full component
+and workflow chain before staging runtime copies, and reject arbitrary model or
+workflow selection. Do not run the RX 7600 technical smoke until that profile
+passes its own tooling and compliance checks.

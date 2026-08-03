@@ -1,6 +1,6 @@
 {
   "schema_version": 1,
-  "checked_date": "2026-08-02",
+  "checked_date": "2026-08-03",
   "policy": {
     "distribution": "external_not_bundled",
     "project_workflow_distribution": "source_tooling_only_not_product_runtime",
@@ -16,6 +16,7 @@
       "revision": "c2638ce6c00e3426c48d56a775bc46e9a8464094",
       "version": "0.27.1",
       "local_launcher_sha256": "91827D0ED786B98E609595C108AEE46FC1C6593BD47F3A0DA60C9A9BE67CD8FE",
+      "local_extra_model_paths_sha256": "D03C5A366C7291F161B30DDB6CF5002800B67380E6D32D7DCC410AEFD1B4A00D",
       "license": "GPL-3.0-only",
       "license_evidence": "https://github.com/Comfy-Org/ComfyUI/blob/c2638ce6c00e3426c48d56a775bc46e9a8464094/LICENSE",
       "distribution": "external_not_bundled",
@@ -29,7 +30,7 @@
         "publicly exposing the unauthenticated local API",
         "treating tool output as an approved product asset"
       ],
-      "notes": "The locally verified AMD/ROCm install is a separate GPL program. Worms_Port invokes its loopback API and distributes none of its code."
+      "notes": "The locally verified AMD/ROCm install is a separate GPL program. Worms_Port invokes its loopback API and distributes none of its code. The pinned ignored extra_model_paths.yaml retains the Desktop shared model root and adds only the E:/ComFy/TasirWimp/Worms_Port-models directories for reviewed FLUX components."
     },
     {
       "id": "comfyui-mcp-server",
@@ -82,6 +83,169 @@
         "using Sorcerers material as prompt, image, conditioning, or training input"
       ],
       "notes": "The verified file hash matches the Comfy-Org archive. On 2026-08-02 the project owner approved this checkpoint for quarantined WP-015 production-candidate generation. Generated output remains unapproved until the complete exact-file product asset gate passes."
+    },
+    {
+      "id": "flux2-klein-4b-distilled-fp8",
+      "kind": "generation_diffusion_model",
+      "source_url": "https://huggingface.co/black-forest-labs/FLUX.2-klein-4b-fp8/blob/5b4408e59397a4a37ccb46afe426d8ed86379441/flux-2-klein-4b-fp8.safetensors",
+      "revision": "5b4408e59397a4a37ccb46afe426d8ed86379441",
+      "version": "distilled-fp8",
+      "file_name": "flux-2-klein-4b-fp8.safetensors",
+      "file_size": 4070624520,
+      "file_sha256": "97ED34FE0567E436200F2FAEE3939B88F2B5D99F8AF2A4DC16532C4245C0CCB6",
+      "source_relation": "canonical",
+      "license": "Apache-2.0",
+      "license_evidence": "https://huggingface.co/black-forest-labs/FLUX.2-klein-4b-fp8/blob/5b4408e59397a4a37ccb46afe426d8ed86379441/LICENSE.md",
+      "distribution": "external_not_bundled",
+      "approved_uses": [
+        "external quarantined WP-015B2A native-workflow construction and exact-hash review",
+        "later batch-one technical smoke only after the workflow and fail-closed profile gates pass"
+      ],
+      "blocked_uses": [
+        "candidate generation before the remaining WP-015B2A gates pass",
+        "redistribution with Worms_Port or storage below assets",
+        "product asset promotion without separate exact-output review"
+      ],
+      "notes": "The locally verified file size and SHA-256 match the canonical BFL LFS object at the pinned revision. Gate 1 admits only this external component; it does not approve a FLUX workflow, model route, generated output, or product asset."
+    },
+    {
+      "id": "flux2-klein-qwen3-4b-text-encoder",
+      "kind": "generation_text_encoder",
+      "source_url": "https://huggingface.co/black-forest-labs/FLUX.2-klein-4B/tree/e7b7dc27f91deacad38e78976d1f2b499d76a294/text_encoder",
+      "revision": "e7b7dc27f91deacad38e78976d1f2b499d76a294",
+      "version": "BFL-4B-BF16-deterministic-merge",
+      "file_name": "qwen_3_4b_bfl_apache.safetensors",
+      "file_size": 8044982048,
+      "file_sha256": "AD65083F0B6561CC84B9B6A42FF397EE749171E367C28D800C4A6FD612ABC169",
+      "source_relation": "deterministic_repackage",
+      "canonical_source_url": "https://huggingface.co/black-forest-labs/FLUX.2-klein-4B/tree/e7b7dc27f91deacad38e78976d1f2b499d76a294/text_encoder",
+      "canonical_revision": "e7b7dc27f91deacad38e78976d1f2b499d76a294",
+      "provenance_inputs": [
+        {
+          "file_name": "model-00001-of-00002.safetensors",
+          "file_size": 4967215360,
+          "file_sha256": "8C0506E7F4936FA7E26183A4FD8DA4E2BDBC5990BA64AE441F965D51228F36EA",
+          "source_url": "https://huggingface.co/black-forest-labs/FLUX.2-klein-4B/blob/e7b7dc27f91deacad38e78976d1f2b499d76a294/text_encoder/model-00001-of-00002.safetensors"
+        },
+        {
+          "file_name": "model-00002-of-00002.safetensors",
+          "file_size": 3077766632,
+          "file_sha256": "82F2BD839378541B0557BFABAF37C7D3D637071FDCB73302DEDD7CF61162CE07",
+          "source_url": "https://huggingface.co/black-forest-labs/FLUX.2-klein-4B/blob/e7b7dc27f91deacad38e78976d1f2b499d76a294/text_encoder/model-00002-of-00002.safetensors"
+        }
+      ],
+      "repackage_recipe": "Remove only each source file's safetensors __metadata__ entry; preserve source tensor order, dtype, shape, and raw data regions; shift every second-shard data offset by the first shard's data byte count; compact-encode the combined JSON header, pad it with spaces to an eight-byte boundary, then concatenate both original tensor-data regions byte-for-byte.",
+      "compatibility_evidence": [
+        "Local comparison passed for all 398 tensor names, shapes, dtypes, and per-tensor raw SHA-256 values against the two canonical BFL shards.",
+        "The official pinned ComfyUI guide requires one qwen_3_4b safetensors text-encoder file: https://github.com/Comfy-Org/docs/blob/ac1bc24fdc79409f3b469d5130b2dbb7097d4f0d/tutorials/flux/flux-2-klein.mdx",
+        "The pre-release Comfy mirror file 6C671498573AC2F7A5501502CCCE8D2B08EA6CA2F661C458E708F36B36EDFC5A was rejected because two final-layer tensors differ from both BFL and Qwen canonical bytes and the mirror provides no exact license/provenance linkage."
+      ],
+      "license": "Apache-2.0",
+      "license_evidence": "https://huggingface.co/black-forest-labs/FLUX.2-klein-4B/blob/e7b7dc27f91deacad38e78976d1f2b499d76a294/LICENSE.md",
+      "distribution": "external_not_bundled",
+      "approved_uses": [
+        "external quarantined WP-015B2A native-workflow construction and exact-hash review",
+        "later batch-one technical smoke only after the workflow and fail-closed profile gates pass"
+      ],
+      "blocked_uses": [
+        "using the rejected pre-release Comfy mirror in the reviewed route",
+        "candidate generation before the remaining WP-015B2A gates pass",
+        "redistribution with Worms_Port or storage below assets"
+      ],
+      "notes": "This single-file encoder was built externally from the two exact BFL Apache-2.0 shards without tensor conversion. The reviewed output is installed outside the repository; neither source weights nor merged bytes are distributed with Worms_Port."
+    },
+    {
+      "id": "flux2-vae",
+      "kind": "generation_vae",
+      "source_url": "https://huggingface.co/black-forest-labs/FLUX.2-dev/blob/26afe3a78bb242c0a8bb181dcc8937bb16e5c66c/vae/diffusion_pytorch_model.safetensors",
+      "revision": "26afe3a78bb242c0a8bb181dcc8937bb16e5c66c",
+      "version": "FLUX.2-FP32-autoencoder",
+      "file_name": "flux2-vae.safetensors",
+      "file_size": 336213556,
+      "file_sha256": "D64F3A68E1CC4F9F4E29B6E0DA38A0204FE9A49F2D4053F0EC1FA1CA02F9C4B5",
+      "source_relation": "canonical",
+      "compatibility_evidence": [
+        "The exact local SHA-256 matches BFL's canonical FP32 VAE file at revision 26afe3a78bb242c0a8bb181dcc8937bb16e5c66c.",
+        "All 251 tensor names and shapes match the Apache-2.0 FLUX.2 Klein 4B VAE; projecting each of the 250 FP32 floating tensors to BF16 exactly reproduces the canonical Klein BF16 tensor, and the I64 state matches exactly."
+      ],
+      "license": "Apache-2.0",
+      "license_evidence": "https://github.com/black-forest-labs/flux2/blob/50fe5162777813d869182b139e83b10743caef15/README.md#flux2-autoencoder",
+      "distribution": "external_not_bundled",
+      "approved_uses": [
+        "external quarantined WP-015B2A native-workflow construction and exact-hash review",
+        "later batch-one technical smoke only after the workflow and fail-closed profile gates pass"
+      ],
+      "blocked_uses": [
+        "candidate generation before the remaining WP-015B2A gates pass",
+        "redistribution with Worms_Port or storage below assets",
+        "treating the containing FLUX.2-dev model license as permission for non-autoencoder model weights"
+      ],
+      "notes": "BFL's official pinned README states that the FLUX.2 autoencoder is Apache-2.0. The containing FLUX.2-dev repository also carries non-autoencoder model weights under a different license; this admission is restricted to the exact VAE file and does not admit any FLUX.2-dev diffusion model."
+    },
+    {
+      "id": "wormsport-flux2-klein-text-to-image-workflow",
+      "kind": "generation_workflow",
+      "source_path": "scripts/comfy-workflows/generate_flux2_klein_text.json",
+      "runtime_path": "workflows/generate_flux2_klein_text.json",
+      "source_template_url": "https://github.com/Comfy-Org/workflow_templates/blob/cebdebc9fc2febcb97a5db0dd291f59f5300b176/templates/image_flux2_klein_text_to_image.json",
+      "source_template_revision": "cebdebc9fc2febcb97a5db0dd291f59f5300b176",
+      "comfyui_revision": "c2638ce6c00e3426c48d56a775bc46e9a8464094",
+      "version": "1",
+      "file_sha256": "626568CEAA47627F7D421D3BD1B0AA151E1643DBA8FBD631F5EB437666649E28",
+      "input_mode": "text_to_image",
+      "model_components": [
+        "flux2-klein-4b-distilled-fp8",
+        "flux2-klein-qwen3-4b-text-encoder",
+        "flux2-vae"
+      ],
+      "core_nodes_only": true,
+      "runtime_enabled": false,
+      "license": "MIT",
+      "license_evidence": "LICENSE",
+      "distribution": "project_source_tooling",
+      "approved_uses": [
+        "exact-hash review as a non-executable WP-015B2A source workflow",
+        "later one-image quarantined technical smoke only after the fail-closed runtime profile gate passes"
+      ],
+      "blocked_uses": [
+        "copying into the external MCP workflow directory before the runtime profile gate passes",
+        "changing the reviewed model filenames, four-step schedule, CFG 1, Euler sampler, 1024x1024 canvas, or batch size one without a new review and hash",
+        "automatic publication into assets or product-asset approval"
+      ],
+      "notes": "Project-owned API-format translation of the official pinned FLUX.2 Klein 4B distilled text-to-image graph. It uses only nodes confirmed by the local pinned ComfyUI object schema. Gate 2 records source bytes only; no FLUX generation was run and the workflow is not installed into the MCP bridge."
+    },
+    {
+      "id": "wormsport-flux2-klein-reference-edit-workflow",
+      "kind": "generation_workflow",
+      "source_path": "scripts/comfy-workflows/generate_flux2_klein_reference_edit.json",
+      "runtime_path": "workflows/generate_flux2_klein_reference_edit.json",
+      "source_template_url": "https://github.com/Comfy-Org/workflow_templates/blob/cebdebc9fc2febcb97a5db0dd291f59f5300b176/templates/image_flux2_klein_image_edit_4b_distilled.json",
+      "source_template_revision": "cebdebc9fc2febcb97a5db0dd291f59f5300b176",
+      "comfyui_revision": "c2638ce6c00e3426c48d56a775bc46e9a8464094",
+      "version": "1",
+      "file_sha256": "A2BF8CD3C015D36646E73F2FA87F22741E4410D27B26D562331057B49CFF6C8E",
+      "input_mode": "image_to_image",
+      "model_components": [
+        "flux2-klein-4b-distilled-fp8",
+        "flux2-klein-qwen3-4b-text-encoder",
+        "flux2-vae"
+      ],
+      "core_nodes_only": true,
+      "runtime_enabled": false,
+      "license": "MIT",
+      "license_evidence": "LICENSE",
+      "distribution": "project_source_tooling",
+      "approved_uses": [
+        "exact-hash review as a non-executable WP-015B2A single-reference source workflow",
+        "later one-image quarantined technical smoke with one explicitly staged reference only after the fail-closed runtime profile gate passes"
+      ],
+      "blocked_uses": [
+        "copying into the external MCP workflow directory before the runtime profile gate passes",
+        "reading an arbitrary ComfyUI input filename that was not staged through the reviewed pipeline action",
+        "changing the reviewed model filenames, one-megapixel reference bound, four-step schedule, CFG 1, Euler sampler, or batch size one without a new review and hash",
+        "claiming multi-reference, ControlNet, IP-Adapter, style-transfer, or automatic product-asset approval"
+      ],
+      "notes": "Project-owned API-format translation of the official pinned single-reference FLUX.2 Klein 4B distilled edit graph. It uses ReferenceLatent and only other nodes confirmed by the local pinned ComfyUI object schema. Gate 2 records source bytes only; no FLUX generation was run and the workflow is not installed into the MCP bridge."
     },
     {
       "id": "comfyui-mcp-generate-image-workflow",

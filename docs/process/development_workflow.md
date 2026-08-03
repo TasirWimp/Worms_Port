@@ -769,6 +769,7 @@ The verified default machine layout is:
 ```text
 E:\ComFy\TasirWimp\                         Comfy Desktop/ROCm root
 E:\ComFy\TasirWimp\ComfyUI\                pinned ComfyUI checkout
+E:\ComFy\TasirWimp\Worms_Port-models\      reviewed FLUX component root
 C:\Users\jensb\Desktop\Projects\comfyui-mcp-server\  pinned bridge checkout
 %LOCALAPPDATA%\Comfy-Desktop\ComfyUI-Shared\models\checkpoints\
 %USERPROFILE%\.config\comfy-mcp\config.json
@@ -840,6 +841,72 @@ The MCP bridge exposes generic `publish_asset` behavior, but that path is
 blocked for Worms_Port: untouched outputs stay in external quarantine until
 the explicit review and promotion sequence below copies one exact approved
 file.
+
+### WP-015B2A Gate 1 Component-Only State
+
+Gate 1 admitted three exact external FLUX.2 files on 2026-08-03. They are
+installed on E: and registered as extra Comfy model directories as follows:
+
+```text
+E:\ComFy\TasirWimp\Worms_Port-models\diffusion_models\flux-2-klein-4b-fp8.safetensors
+  97ED34FE0567E436200F2FAEE3939B88F2B5D99F8AF2A4DC16532C4245C0CCB6
+E:\ComFy\TasirWimp\Worms_Port-models\text_encoders\qwen_3_4b_bfl_apache.safetensors
+  AD65083F0B6561CC84B9B6A42FF397EE749171E367C28D800C4A6FD612ABC169
+E:\ComFy\TasirWimp\Worms_Port-models\vae\flux2-vae.safetensors
+  D64F3A68E1CC4F9F4E29B6E0DA38A0204FE9A49F2D4053F0EC1FA1CA02F9C4B5
+```
+
+The ignored local file
+`E:\ComFy\TasirWimp\ComfyUI\extra_model_paths.yaml` retains the Desktop
+shared root and registers only the E: `diffusion_models`, `text_encoders`, and
+`vae` paths above. Its required SHA-256 is
+`D03C5A366C7291F161B30DDB6CF5002800B67380E6D32D7DCC410AEFD1B4A00D`.
+`Prepare`, `Status`, `Start`, and `Smoke` fail closed if that config drifts.
+
+Source/comparison evidence remains outside the repository at
+`E:\ComFy\TasirWimp\component-evidence\wp-015b2a`. The encoder is a
+deterministic single-file merge of the two exact BFL Apache-2.0 shards; its
+inputs and byte-preserving merge recipe are recorded in
+`legal/generation-component-manifest.json`. Rebuild only from those exact
+inputs and require the recorded output hash.
+
+Do not use the official Comfy guide's pre-release
+`qwen_3_4b.safetensors` mirror. Its bytes differ from canonical BFL/Qwen in two
+final-layer tensors, and its repository does not provide exact license or
+provenance linkage. It is retained only as rejected evidence.
+
+Gate 1 remains component-only. Gate 2 added the two exact source workflows
+described below, but the current `Prepare`, `Status`, `Start`, and `Smoke`
+actions still describe and verify the approved SD 1.5 route; they do not yet
+admit or verify FLUX.2. Do not change the bridge default model, hand an
+arbitrary FLUX graph to `run_workflow`, or generate an image. Gate 3 must first
+add the separate fail-closed pipeline profile.
+
+### WP-015B2A Gate 2 Runtime-Disabled Workflow State
+
+The two project-owned Comfy API graphs are:
+
+```text
+scripts\comfy-workflows\generate_flux2_klein_text.json
+  626568CEAA47627F7D421D3BD1B0AA151E1643DBA8FBD631F5EB437666649E28
+scripts\comfy-workflows\generate_flux2_klein_reference_edit.json
+  A2BF8CD3C015D36646E73F2FA87F22741E4410D27B26D562331057B49CFF6C8E
+```
+
+They translate the official Comfy workflow templates pinned at
+`cebdebc9fc2febcb97a5db0dd291f59f5300b176` and use only core nodes available
+in the pinned ComfyUI 0.27.1 schema. Both bind the exact reviewed Gate 1 model
+filenames, four steps, CFG 1, Euler, and batch size one. The text route is fixed
+at 1024x1024. The edit route accepts one staged reference, bounds it to one
+megapixel, and derives the canvas size from that reference.
+
+`legal/generation-component-manifest.json` intentionally records both with
+`runtime_enabled: false`. Their `runtime_path` values document the later Gate 3
+copy targets; the files must not yet exist in the external bridge `workflows`
+directory. Do not copy them manually or use generic `run_workflow`. Gate 3 must
+make exact-hash installation and removal part of a named FLUX profile and must
+fail closed on any component, path-config, workflow, or profile drift while
+leaving the SD 1.5 smoke profile unchanged.
 
 ### WP-015B0 Approval And Canonical Baseline
 

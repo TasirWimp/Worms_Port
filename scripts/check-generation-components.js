@@ -8,6 +8,11 @@ const requiredIds = new Set([
   'comfyui',
   'comfyui-mcp-server',
   'stable-diffusion-v1-5-archive-fp16',
+  'flux2-klein-4b-distilled-fp8',
+  'flux2-klein-qwen3-4b-text-encoder',
+  'flux2-vae',
+  'wormsport-flux2-klein-text-to-image-workflow',
+  'wormsport-flux2-klein-reference-edit-workflow',
   'comfyui-mcp-generate-image-workflow',
   'wormsport-generate-image-conditioned-workflow'
 ]);
@@ -15,6 +20,8 @@ const allowedKinds = new Set([
   'external_generation_tool',
   'external_generation_bridge',
   'generation_checkpoint',
+  'generation_diffusion_model',
+  'generation_text_encoder',
   'generation_vae',
   'generation_lora',
   'generation_embedding',
@@ -23,6 +30,118 @@ const allowedKinds = new Set([
   'generation_custom_node',
   'generation_workflow'
 ]);
+const modelFileKinds = new Set([
+  'generation_checkpoint',
+  'generation_diffusion_model',
+  'generation_text_encoder',
+  'generation_vae'
+]);
+const reviewedModelContracts = new Map([
+  ['stable-diffusion-v1-5-archive-fp16', {
+    kind: 'generation_checkpoint',
+    fileName: 'v1-5-pruned-emaonly-fp16.safetensors',
+    fileSize: 2132696762,
+    fileSha256: 'E9476A13728CD75D8279F6EC8BAD753A66A1957CA375A1464DC63B37DB6E3916',
+    license: 'CreativeML-OpenRAIL-M'
+  }],
+  ['flux2-klein-4b-distilled-fp8', {
+    kind: 'generation_diffusion_model',
+    fileName: 'flux-2-klein-4b-fp8.safetensors',
+    fileSize: 4070624520,
+    fileSha256: '97ED34FE0567E436200F2FAEE3939B88F2B5D99F8AF2A4DC16532C4245C0CCB6',
+    license: 'Apache-2.0',
+    sourceRelation: 'canonical'
+  }],
+  ['flux2-klein-qwen3-4b-text-encoder', {
+    kind: 'generation_text_encoder',
+    fileName: 'qwen_3_4b_bfl_apache.safetensors',
+    fileSize: 8044982048,
+    fileSha256: 'AD65083F0B6561CC84B9B6A42FF397EE749171E367C28D800C4A6FD612ABC169',
+    license: 'Apache-2.0',
+    sourceRelation: 'deterministic_repackage'
+  }],
+  ['flux2-vae', {
+    kind: 'generation_vae',
+    fileName: 'flux2-vae.safetensors',
+    fileSize: 336213556,
+    fileSha256: 'D64F3A68E1CC4F9F4E29B6E0DA38A0204FE9A49F2D4053F0EC1FA1CA02F9C4B5',
+    license: 'Apache-2.0',
+    sourceRelation: 'canonical'
+  }]
+]);
+const reviewedFluxWorkflowContracts = new Map([
+  ['wormsport-flux2-klein-text-to-image-workflow', {
+    sourcePath: 'scripts/comfy-workflows/generate_flux2_klein_text.json',
+    runtimePath: 'workflows/generate_flux2_klein_text.json',
+    inputMode: 'text_to_image',
+    sourceTemplateUrl: 'https://github.com/Comfy-Org/workflow_templates/blob/cebdebc9fc2febcb97a5db0dd291f59f5300b176/templates/image_flux2_klein_text_to_image.json',
+    sourceTemplateRevision: 'cebdebc9fc2febcb97a5db0dd291f59f5300b176',
+    nodeClasses: [
+      'CFGGuider',
+      'CLIPLoader',
+      'CLIPTextEncode',
+      'ConditioningZeroOut',
+      'EmptyFlux2LatentImage',
+      'Flux2Scheduler',
+      'KSamplerSelect',
+      'RandomNoise',
+      'SamplerCustomAdvanced',
+      'SaveImage',
+      'UNETLoader',
+      'VAEDecode',
+      'VAELoader'
+    ],
+    placeholders: ['PARAM_INT_SEED', 'PARAM_PROMPT']
+  }],
+  ['wormsport-flux2-klein-reference-edit-workflow', {
+    sourcePath: 'scripts/comfy-workflows/generate_flux2_klein_reference_edit.json',
+    runtimePath: 'workflows/generate_flux2_klein_reference_edit.json',
+    inputMode: 'image_to_image',
+    sourceTemplateUrl: 'https://github.com/Comfy-Org/workflow_templates/blob/cebdebc9fc2febcb97a5db0dd291f59f5300b176/templates/image_flux2_klein_image_edit_4b_distilled.json',
+    sourceTemplateRevision: 'cebdebc9fc2febcb97a5db0dd291f59f5300b176',
+    nodeClasses: [
+      'CFGGuider',
+      'CLIPLoader',
+      'CLIPTextEncode',
+      'ConditioningZeroOut',
+      'EmptyFlux2LatentImage',
+      'Flux2Scheduler',
+      'GetImageSize',
+      'ImageScaleToTotalPixels',
+      'KSamplerSelect',
+      'LoadImage',
+      'RandomNoise',
+      'ReferenceLatent',
+      'ReferenceLatent',
+      'SamplerCustomAdvanced',
+      'SaveImage',
+      'UNETLoader',
+      'VAEDecode',
+      'VAEEncode',
+      'VAELoader'
+    ],
+    placeholders: ['PARAM_INT_SEED', 'PARAM_PROMPT', 'PARAM_STR_REFERENCE_IMAGE']
+  }]
+]);
+const reviewedFluxModelComponents = [
+  'flux2-klein-4b-distilled-fp8',
+  'flux2-klein-qwen3-4b-text-encoder',
+  'flux2-vae'
+];
+
+function collectPlaceholders(value, result = []) {
+  if (typeof value === 'string' && value.startsWith('PARAM_')) result.push(value);
+  if (Array.isArray(value)) {
+    for (const item of value) collectPlaceholders(item, result);
+  } else if (value && typeof value === 'object') {
+    for (const item of Object.values(value)) collectPlaceholders(item, result);
+  }
+  return result;
+}
+
+function sameArray(left, right) {
+  return JSON.stringify(left) === JSON.stringify(right);
+}
 
 function validateGenerationComponents(manifest, root = repoRoot) {
   const errors = [];
@@ -82,25 +201,56 @@ function validateGenerationComponents(manifest, root = repoRoot) {
         errors.push(`${label}: ${field} must be a non-empty string array.`);
       }
     }
+    if (modelFileKinds.has(component?.kind)) {
+      if (!/^[0-9A-F]{64}$/.test(component.file_sha256 || '')) {
+        errors.push(`${label}: file_sha256 must be 64 uppercase hexadecimal characters.`);
+      }
+      if (!Number.isInteger(component.file_size) || component.file_size <= 0) {
+        errors.push(`${label}: file_size must be a positive integer.`);
+      }
+      if (!/^[a-zA-Z0-9][a-zA-Z0-9._-]*\.safetensors$/.test(component.file_name || '')) {
+        errors.push(`${label}: file_name must identify one safetensors file.`);
+      }
+    }
   }
 
   for (const id of requiredIds) {
     if (!ids.has(id)) errors.push(`missing required component ${id}.`);
   }
 
-  const checkpoint = components.find((component) => component.id === 'stable-diffusion-v1-5-archive-fp16');
-  if (checkpoint) {
-    if (!/^[0-9A-F]{64}$/.test(checkpoint.file_sha256 || '')) {
-      errors.push(`${checkpoint.id}: file_sha256 must be 64 uppercase hexadecimal characters.`);
+  for (const [id, contract] of reviewedModelContracts) {
+    const component = components.find((candidate) => candidate.id === id);
+    if (!component) continue;
+    if (component.kind !== contract.kind) errors.push(`${id}: unexpected reviewed model kind.`);
+    if (component.file_name !== contract.fileName) errors.push(`${id}: unexpected reviewed file_name.`);
+    if (component.file_size !== contract.fileSize) errors.push(`${id}: unexpected reviewed file_size.`);
+    if (component.file_sha256 !== contract.fileSha256) errors.push(`${id}: unexpected reviewed file_sha256.`);
+    if (component.license !== contract.license) errors.push(`${id}: model license must remain explicit as ${contract.license}.`);
+    if (contract.sourceRelation && component.source_relation !== contract.sourceRelation) {
+      errors.push(`${id}: source_relation must remain ${contract.sourceRelation}.`);
     }
-    if (!Number.isInteger(checkpoint.file_size) || checkpoint.file_size <= 0) {
-      errors.push(`${checkpoint.id}: file_size must be a positive integer.`);
-    }
-    if (checkpoint.file_name !== 'v1-5-pruned-emaonly-fp16.safetensors') {
-      errors.push(`${checkpoint.id}: unexpected checkpoint file_name.`);
-    }
-    if (checkpoint.license !== 'CreativeML-OpenRAIL-M') {
-      errors.push(`${checkpoint.id}: checkpoint license must remain explicit.`);
+    if (contract.sourceRelation === 'deterministic_repackage') {
+      if (!/^https:\/\//.test(component.canonical_source_url || '')) {
+        errors.push(`${id}: canonical_source_url must be HTTPS for a deterministic repackage.`);
+      }
+      if (!/^[0-9a-f]{40}$/.test(component.canonical_revision || '')) {
+        errors.push(`${id}: canonical_revision must be a full Git hash for a deterministic repackage.`);
+      }
+      if (!Array.isArray(component.compatibility_evidence) || component.compatibility_evidence.length === 0 ||
+          component.compatibility_evidence.some((entry) => typeof entry !== 'string' || !entry)) {
+        errors.push(`${id}: compatibility_evidence must bind a deterministic repackage to its canonical component.`);
+      }
+      if (!Array.isArray(component.provenance_inputs) || component.provenance_inputs.length === 0 ||
+          component.provenance_inputs.some((entry) =>
+            typeof entry?.file_name !== 'string' || !entry.file_name ||
+            !Number.isInteger(entry.file_size) || entry.file_size <= 0 ||
+            !/^[0-9A-F]{64}$/.test(entry.file_sha256 || '') ||
+            !/^https:\/\//.test(entry.source_url || ''))) {
+        errors.push(`${id}: provenance_inputs must exact-hash every canonical repackage input.`);
+      }
+      if (typeof component.repackage_recipe !== 'string' || !component.repackage_recipe) {
+        errors.push(`${id}: repackage_recipe must describe the deterministic external transformation.`);
+      }
     }
   }
 
@@ -130,6 +280,9 @@ function validateGenerationComponents(manifest, root = repoRoot) {
   if (comfy && !/^[0-9A-F]{64}$/.test(comfy.local_launcher_sha256 || '')) {
     errors.push(`${comfy.id}: local_launcher_sha256 must be exact.`);
   }
+  if (comfy && !/^[0-9A-F]{64}$/.test(comfy.local_extra_model_paths_sha256 || '')) {
+    errors.push(`${comfy.id}: local_extra_model_paths_sha256 must be exact.`);
+  }
 
   const workflows = components.filter((component) => component.kind === 'generation_workflow');
   for (const workflow of workflows) {
@@ -156,6 +309,87 @@ function validateGenerationComponents(manifest, root = repoRoot) {
       const actualHash = crypto.createHash('sha256').update(fs.readFileSync(sourcePath)).digest('hex').toUpperCase();
       if (actualHash !== workflow.file_sha256) {
         errors.push(`${workflow.id}: project workflow hash mismatch.`);
+      }
+    }
+
+    const contract = reviewedFluxWorkflowContracts.get(workflow.id);
+    if (!contract) continue;
+    if (workflow.source_path !== contract.sourcePath) errors.push(`${workflow.id}: reviewed source_path changed.`);
+    if (workflow.runtime_path !== contract.runtimePath) errors.push(`${workflow.id}: reviewed runtime_path changed.`);
+    if (workflow.input_mode !== contract.inputMode) errors.push(`${workflow.id}: reviewed input_mode changed.`);
+    if (workflow.source_template_url !== contract.sourceTemplateUrl) {
+      errors.push(`${workflow.id}: official source_template_url changed.`);
+    }
+    if (workflow.source_template_revision !== contract.sourceTemplateRevision) {
+      errors.push(`${workflow.id}: official source_template_revision changed.`);
+    }
+    if (workflow.comfyui_revision !== 'c2638ce6c00e3426c48d56a775bc46e9a8464094') {
+      errors.push(`${workflow.id}: ComfyUI compatibility revision changed.`);
+    }
+    if (!sameArray(workflow.model_components, reviewedFluxModelComponents)) {
+      errors.push(`${workflow.id}: reviewed FLUX model component set changed.`);
+    }
+    if (workflow.core_nodes_only !== true) errors.push(`${workflow.id}: core_nodes_only must remain true.`);
+    if (workflow.runtime_enabled !== false) errors.push(`${workflow.id}: Gate 2 workflow must remain runtime-disabled.`);
+
+    const sourcePath = path.resolve(root, contract.sourcePath);
+    if (!fs.existsSync(sourcePath)) continue;
+    let graph;
+    try {
+      graph = JSON.parse(fs.readFileSync(sourcePath, 'utf8'));
+    } catch {
+      errors.push(`${workflow.id}: source workflow must contain valid JSON.`);
+      continue;
+    }
+    const nodes = Object.values(graph);
+    const actualClasses = nodes.map((node) => node?.class_type).sort();
+    const expectedClasses = [...contract.nodeClasses].sort();
+    if (!sameArray(actualClasses, expectedClasses)) {
+      errors.push(`${workflow.id}: reviewed core node set changed.`);
+    }
+    const placeholders = [...new Set(collectPlaceholders(graph))].sort();
+    if (!sameArray(placeholders, [...contract.placeholders].sort())) {
+      errors.push(`${workflow.id}: reviewed parameter placeholder set changed.`);
+    }
+
+    const onlyNode = (classType) => nodes.find((node) => node?.class_type === classType);
+    if (onlyNode('UNETLoader')?.inputs?.unet_name !== 'flux-2-klein-4b-fp8.safetensors') {
+      errors.push(`${workflow.id}: reviewed diffusion-model filename changed.`);
+    }
+    const clip = onlyNode('CLIPLoader');
+    if (clip?.inputs?.clip_name !== 'qwen_3_4b_bfl_apache.safetensors' || clip?.inputs?.type !== 'flux2') {
+      errors.push(`${workflow.id}: reviewed FLUX.2 text-encoder binding changed.`);
+    }
+    if (onlyNode('VAELoader')?.inputs?.vae_name !== 'flux2-vae.safetensors') {
+      errors.push(`${workflow.id}: reviewed VAE filename changed.`);
+    }
+    if (onlyNode('Flux2Scheduler')?.inputs?.steps !== 4) {
+      errors.push(`${workflow.id}: distilled schedule must remain four steps.`);
+    }
+    if (onlyNode('CFGGuider')?.inputs?.cfg !== 1) {
+      errors.push(`${workflow.id}: distilled CFG must remain 1.`);
+    }
+    if (onlyNode('KSamplerSelect')?.inputs?.sampler_name !== 'euler') {
+      errors.push(`${workflow.id}: distilled sampler must remain Euler.`);
+    }
+    if (onlyNode('EmptyFlux2LatentImage')?.inputs?.batch_size !== 1) {
+      errors.push(`${workflow.id}: batch size must remain one.`);
+    }
+    if (workflow.input_mode === 'text_to_image') {
+      const latent = onlyNode('EmptyFlux2LatentImage');
+      const scheduler = onlyNode('Flux2Scheduler');
+      if (latent?.inputs?.width !== 1024 || latent?.inputs?.height !== 1024 ||
+          scheduler?.inputs?.width !== 1024 || scheduler?.inputs?.height !== 1024) {
+        errors.push(`${workflow.id}: text canvas and schedule must remain 1024x1024.`);
+      }
+    } else {
+      const scale = onlyNode('ImageScaleToTotalPixels');
+      if (scale?.inputs?.megapixels !== 1 || scale?.inputs?.resolution_steps !== 1 ||
+          scale?.inputs?.upscale_method !== 'nearest-exact') {
+        errors.push(`${workflow.id}: reference preprocessing must remain bounded to one megapixel.`);
+      }
+      if (onlyNode('LoadImage')?.inputs?.image !== 'PARAM_STR_REFERENCE_IMAGE') {
+        errors.push(`${workflow.id}: reference input must remain an explicit staged filename parameter.`);
       }
     }
   }
