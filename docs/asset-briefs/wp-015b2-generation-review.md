@@ -966,3 +966,163 @@ construction seams and a rear scaffold volume, has no final Calling cowl or
 Relic-socket normalization, and has not passed exact-output IP/product review.
 Further work must first adopt the route and freeze a separate Wizard styling and
 normalization contract. No third request ran under B2C.
+
+## WP-015B2D Wizard Cuteness And Calling Styling
+
+Contract date: 2026-08-03. Status: **one fixed-seed reference edit completed;
+cuteness direction accepted by the project owner; production normalization and
+head-worn Wizard cowl remain pending**.
+
+### Adoption decision and scope
+
+The project owner accepts the B2C fitted-knit output as the correct structural
+route but finds it less cute than the canonical Calling study. B2D therefore
+adopts only its angular silhouette as an edit target. It does not adopt the
+robot-like panel construction, rear block, joint language, or mouth slot.
+
+This pass intentionally changes one family of features: friendly facial appeal,
+continuous textile construction, and the minimum Wizard Calling treatment.
+Cuteness is translated into concrete local cues rather than the generic words
+`doll`, `plush`, `puffy`, or a rounded-body request:
+
+- two slightly larger, closer-set glossy bead eyes,
+- one tiny upward-curved stitched smile,
+- softer pale-blue chenille with continuous crochet rather than panel seams,
+- a clean compact back without the scaffold block, and
+- a deep-navy folded felt cowl, restrained gold stitching, woven belt, and one
+  wooden button, all kept inside the existing angular outline.
+
+Alpha extraction, animation, expression variants, exact hand/socket
+normalization, staff/Relic equipment, Loomkeeper generation, other Callings,
+and product promotion remain separate later gates. This keeps the request below
+the detail load that contributed to earlier model failures.
+
+### Frozen request
+
+| Field | Frozen value |
+| --- | --- |
+| MCP tool | `generate_flux2_klein_reference_edit` |
+| Reference | exact B2C knit output SHA-256 `5FF0A63DAC03E13B2A3390AD77E6929A9822412E1A1E0415E7A38125D703B246`, staged as `wormsport/wizard-knit-proof-15026003.png` |
+| Seed | `15026004` |
+| Settings | unchanged native single-reference graph; one-megapixel reference bound; 1024x1024 canvas; batch 1; 4 FLUX.2 scheduler steps; CFG 1; Euler |
+| Runtime | closed `flux2-klein`, `--lowvram --preview-method none`, no inline preview |
+| Request limit | one terminal request; no retry or prompt/seed/reference change |
+
+Exact 84-word prompt:
+
+```text
+Image 1 is the exact fitted-knit structure. Preserve its angular silhouette, scale, right-facing pose, flat crown, chamfered body, narrow lower bridge, rectangular feet, and forward hand. Change only styling and expression: soft pale-blue chenille, a close-fitting deep-navy folded cowl inside the outline, exactly two slightly larger close-set glossy bead eyes, one tiny curved stitched smile, restrained gold stitching, a woven belt, and one wooden button. Replace rigid panel seams and the rear block with continuous crochet and a clean back. Center unchanged on white.
+```
+
+### Initial narrow decision gate (historical)
+
+The following gate was frozen before seeing the output. It remains recorded for
+reproducibility, but the project-owner review below supersedes its treatment of
+eyebrows and a single numeric silhouette floor as automatic rejection rules.
+
+The untouched full output and exact 48x48 derivative both must pass:
+
+1. The broad flat crown, chamfered continuous body, narrow lower bridge, two
+   separate rectangular feet, right-facing pose, and complete forward hand are
+   retained.
+2. The deterministic comparator reports bounds-normalized silhouette IoU at
+   least `0.90` against the B2C knit proof and baseline drift no greater than
+   `16` source pixels.
+3. The cowl follows the flat crown and remains within the angular outline; it
+   does not become a pointed hat or round hood/head.
+4. Exactly two bead eyes and one small mouth remain. The eyes are slightly
+   larger/closer and the mouth is a tiny curved textile smile rather than a
+   mechanical slot. There is no nose, eyebrow, blush mark, or extra feature.
+5. Continuous soft crochet, the clean back, cowl, belt, button, and restrained
+   gold stitching replace exposed robotic panel, joint, cavity, and backpack
+   language.
+6. Compared with the B2C proof, the face and materials read visibly friendlier
+   and more endearing at full size and 48px without relying on body rounding.
+7. The image contains one complete isolated subject on white with no text,
+   logo, official Nimiq asset, scenery, staff, selected Relic, or second figure.
+
+Failure of any controlling criterion rejects the result and closes B2D. A pass
+proves the Wizard master direction but still does not approve a product asset.
+The next decision after a pass is deterministic production normalization:
+socket alignment, alpha, crop/padding, pivot/baseline, and animation-source
+planning. It is not another model retry.
+
+### Recorded result
+
+| Field | Recorded value |
+| --- | --- |
+| Prompt ID | `c82a19fa-6be7-4a30-b193-b9c708638302` |
+| Terminal state | success; queue returned to 0 running / 0 pending |
+| Elapsed | helper 312.618 seconds; Comfy server 310.13 seconds |
+| Full output | external `WormsPortFlux2KleinReferenceEdit_00005_.png` |
+| Output properties | 1024x1024 opaque RGB PNG; 887,003 bytes |
+| Output SHA-256 | `DEF9265DAA4C6F2799D16870205E2015291E3E4AAE0F61802349C9FD8D56AD00` |
+| 48px evidence | external `E:\ComFy\TasirWimp\component-evidence\wp-015b2d\gate1\wizard-cuteness-15026004-48px.png`; 48x48; 2,897 bytes |
+| 48px SHA-256 | `AB172F6B365B64093F5E2BE03F4AE2D24623F73E18A881033172ED0DA5A6E8E1` |
+| Runtime telemetry | RX 7600 LOW_VRAM; helper driver free-VRAM minimum 3,239,481,856 bytes; server loaded 2,844.00 MB, offloaded 1,038.02 MB, reserved a 324.00 MB buffer; no sample error or retry |
+| Raw-canvas IoU | `0.813777` |
+| Bounds-normalized IoU | `0.880098` against the initial `0.90` floor |
+| Baseline drift | `0` pixels against maximum `16` |
+| Initial numeric decision | below the narrow floor; retained as drift telemetry |
+| Project-owner creative decision | **accept B2D's cuteness/body direction; continue through a mediated normalization plan** |
+
+The concrete cuteness strategy worked visually. The result is friendlier than
+the B2C proof: pale chenille replaces dark rigid panels, the larger close-set
+eyes and curved smile read clearly, the back is cleaner, and the cowl, belt,
+button, and restrained gold detail establish a warmer handmade identity. It
+remains readable at 48x48.
+
+Against the initial narrow gate, FLUX added two stitched eyebrows and narrowed
+the body enough to record normalized IoU `0.880098` below `0.90`. The dark
+textile also reads primarily as a neck wrap rather than a folded head-worn
+Wizard cowl. Those observations remain useful diagnostic evidence.
+
+### Project-owner creative review
+
+The project owner accepts the paired eyebrows because they strengthen cuteness
+and accepts the observed body narrowing as normal creative variation within the
+recognisable angular Knotkin family. Asset generation is not intended to be
+pixel-deterministic. Silhouette comparison therefore becomes drift telemetry:
+it may trigger later scale/width compensation or closer visual review, but no
+single IoU value automatically rejects art whose protected properties remain
+intact.
+
+B2D closes without a retry and its exact output remains external because alpha,
+socket normalization, crop/pivot/baseline, animation suitability, and exact-file
+product approval are still incomplete—not because its eyebrows or measured
+width are unacceptable. The owner-approved appeal cues are the larger close-set
+eyes, curved smile, optional paired eyebrows, pale chenille, belt/button, clean
+back, and warmer handcrafted character.
+
+## WP-015B2E Protected-Property Masked-Edit Investigation
+
+Status: **planning only; no workflow or generation authorized**.
+
+B2E will investigate an interior/region-controlled edit that mediates between
+B2C's strong geometry and B2D's accepted cute styling. The goal is not to freeze
+every pixel or eliminate FLUX creativity. It is to protect only the properties
+that make the character usable and recognisable:
+
+1. a broad angular Knotkin body family with a flat/chamfered crown, narrow lower
+   bridge, and separate feet, allowing moderate local proportion variation;
+2. a Wizard cowl/hat visibly resting on the head rather than existing only as a
+   neck wrap;
+3. a complete forward hand that can be normalized to hold a separate Relic;
+4. exactly two bead eyes and one expression-ready mouth, with optional paired
+   stitched eyebrows; and
+5. a clearly friendly, cute handcrafted character at full size and 48px.
+
+Everything else is a creative field for FLUX: eye spacing and highlights,
+eyebrow curve, stitch pattern, textile folds, trim, belt/button treatment,
+surface micro-detail, local width, and other non-protected variation. Global
+scale, position, baseline, padding, and small width drift are normalization
+concerns when they can be compensated without distorting the protected form.
+
+The investigation must determine whether the pinned core-node Comfy runtime can
+support a reviewed mask or region-control route without unreviewed custom nodes.
+The likely editable zones are face, head/cowl, and textile surface; the body
+outline, feet, and Relic hand should receive stronger preservation. Because a
+head-worn cowl may legitimately change the crown edge, the mask cannot simply
+freeze the whole exterior silhouette. B2C is the geometry reference and B2D is
+the cuteness/style reference. No prompt, seed, workflow edit, staged image, or
+inference is authorized until that technical and review contract is documented.

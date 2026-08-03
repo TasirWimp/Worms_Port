@@ -33,7 +33,7 @@
     },
     {
       "id": "flux2-klein",
-      "state": "robot_scaffold_knit_route_passed",
+      "state": "wizard_master_creative_direction_accepted_masked_edit_planning",
       "runtime_enabled": true,
       "model_components": [
         "flux2-klein-4b-distilled-fp8",
@@ -54,7 +54,7 @@
         "--preview-method none"
       ],
       "smoke_tool": "generate_flux2_klein_text",
-      "notes": "WP-015B2C completed both gates. The exact external robot scaffold BC6B21B74C5016504A733D5D1EC306FE7F46A8CC5E526E0FFF28EB9EABC25D38 passed angular structure; its single fitted-knit conversion 5FF0A63DAC03E13B2A3390AD77E6929A9822412E1A1E0415E7A38125D703B246 preserved the structure with normalized IoU 0.956188 and 12-pixel baseline drift. This proves a bounded visual route only. Further inference, route adoption, another character, normalization, or product promotion requires a separately reviewed decision."
+      "notes": "WP-015B2D completed exactly one single-reference Wizard cuteness/styling edit of B2C knit bytes 5FF0A63DAC03E13B2A3390AD77E6929A9822412E1A1E0415E7A38125D703B246 with seed 15026004. Output DEF9265DAA4C6F2799D16870205E2015291E3E4AAE0F61802349C9FD8D56AD00 improved friendly appeal and measured 0.880098 normalized silhouette IoU. The project owner accepts its paired eyebrows, moderate body variation, and cuteness direction; IoU is drift telemetry rather than automatic rejection. WP-015B2E is planning only for a protected-property masked or region-controlled edit. No inference, workflow change, normalization, another character, or product promotion is authorized."
     }
   ],
   "conditioning_inputs": [
@@ -181,11 +181,12 @@
         "the completed bounded Wizard and Threadball visual admission in WP-015B2A Gate 5",
         "the completed single fixed-seed WP-015B2B Wizard structure-guide diagnostic",
         "the completed single fixed-seed WP-015B2C Gate 1 mechanical-scaffold diagnostic",
-        "the completed single fixed-seed WP-015B2C Gate 2 fitted-knit conversion of exact robot bytes BC6B21B74C5016504A733D5D1EC306FE7F46A8CC5E526E0FFF28EB9EABC25D38"
+        "the completed single fixed-seed WP-015B2C Gate 2 fitted-knit conversion of exact robot bytes BC6B21B74C5016504A733D5D1EC306FE7F46A8CC5E526E0FFF28EB9EABC25D38",
+        "the completed single fixed-seed WP-015B2D Wizard cuteness and styling edit of exact knit bytes 5FF0A63DAC03E13B2A3390AD77E6929A9822412E1A1E0415E7A38125D703B246, retained as project-owner-accepted creative-direction evidence output DEF9265DAA4C6F2799D16870205E2015291E3E4AAE0F61802349C9FD8D56AD00"
       ],
       "blocked_uses": [
-        "candidate generation beyond the single WP-015B2C Gate 2 fitted-knit conversion without a later reviewed decision",
-        "batch candidate generation because this route was not adopted",
+        "candidate generation beyond the single WP-015B2D Wizard cuteness and styling edit without a later reviewed decision",
+        "batch candidate generation; WP-015B2D authorizes exactly one request",
         "redistribution with Worms_Port or storage below assets",
         "product asset promotion without separate exact-output review"
       ],
@@ -232,12 +233,13 @@
         "the completed bounded Wizard and Threadball visual admission in WP-015B2A Gate 5",
         "the completed single fixed-seed WP-015B2B Wizard structure-guide diagnostic",
         "the completed single fixed-seed WP-015B2C Gate 1 mechanical-scaffold diagnostic",
-        "the completed single fixed-seed WP-015B2C Gate 2 fitted-knit conversion of exact robot bytes BC6B21B74C5016504A733D5D1EC306FE7F46A8CC5E526E0FFF28EB9EABC25D38"
+        "the completed single fixed-seed WP-015B2C Gate 2 fitted-knit conversion of exact robot bytes BC6B21B74C5016504A733D5D1EC306FE7F46A8CC5E526E0FFF28EB9EABC25D38",
+        "the completed single fixed-seed WP-015B2D Wizard cuteness and styling edit of exact knit bytes 5FF0A63DAC03E13B2A3390AD77E6929A9822412E1A1E0415E7A38125D703B246, retained as project-owner-accepted creative-direction evidence output DEF9265DAA4C6F2799D16870205E2015291E3E4AAE0F61802349C9FD8D56AD00"
       ],
       "blocked_uses": [
         "using the rejected pre-release Comfy mirror in the reviewed route",
-        "candidate generation beyond the single WP-015B2C Gate 2 fitted-knit conversion without a later reviewed decision",
-        "batch candidate generation because this route was not adopted",
+        "candidate generation beyond the single WP-015B2D Wizard cuteness and styling edit without a later reviewed decision",
+        "batch candidate generation; WP-015B2D authorizes exactly one request",
         "redistribution with Worms_Port or storage below assets"
       ],
       "notes": "This single-file encoder was built externally from the two exact BFL Apache-2.0 shards without tensor conversion. The reviewed output is installed outside the repository; neither source weights nor merged bytes are distributed with Worms_Port."
@@ -265,11 +267,12 @@
         "the completed bounded Wizard and Threadball visual admission in WP-015B2A Gate 5",
         "the completed single fixed-seed WP-015B2B Wizard structure-guide diagnostic",
         "the completed single fixed-seed WP-015B2C Gate 1 mechanical-scaffold diagnostic",
-        "the completed single fixed-seed WP-015B2C Gate 2 fitted-knit conversion of exact robot bytes BC6B21B74C5016504A733D5D1EC306FE7F46A8CC5E526E0FFF28EB9EABC25D38"
+        "the completed single fixed-seed WP-015B2C Gate 2 fitted-knit conversion of exact robot bytes BC6B21B74C5016504A733D5D1EC306FE7F46A8CC5E526E0FFF28EB9EABC25D38",
+        "the completed single fixed-seed WP-015B2D Wizard cuteness and styling edit of exact knit bytes 5FF0A63DAC03E13B2A3390AD77E6929A9822412E1A1E0415E7A38125D703B246, retained as project-owner-accepted creative-direction evidence output DEF9265DAA4C6F2799D16870205E2015291E3E4AAE0F61802349C9FD8D56AD00"
       ],
       "blocked_uses": [
-        "candidate generation beyond the single WP-015B2C Gate 2 fitted-knit conversion without a later reviewed decision",
-        "batch candidate generation because this route was not adopted",
+        "candidate generation beyond the single WP-015B2D Wizard cuteness and styling edit without a later reviewed decision",
+        "batch candidate generation; WP-015B2D authorizes exactly one request",
         "redistribution with Worms_Port or storage below assets",
         "treating the containing FLUX.2-dev model license as permission for non-autoencoder model weights"
       ],
@@ -335,16 +338,17 @@
         "the completed single quarantined Wizard reference diagnostic using one explicitly staged exact input in WP-015B2A Gate 5",
         "the completed single fixed-seed WP-015B2B Wizard diagnostic using the exact project-owned structure guide",
         "the completed single fixed-seed WP-015B2C Gate 1 mechanical-scaffold diagnostic using that exact guide",
-        "the completed single fixed-seed WP-015B2C Gate 2 fitted-knit conversion using only staged robot bytes BC6B21B74C5016504A733D5D1EC306FE7F46A8CC5E526E0FFF28EB9EABC25D38"
+        "the completed single fixed-seed WP-015B2C Gate 2 fitted-knit conversion using only staged robot bytes BC6B21B74C5016504A733D5D1EC306FE7F46A8CC5E526E0FFF28EB9EABC25D38",
+        "the completed single fixed-seed WP-015B2D Wizard cuteness and styling edit using only staged knit bytes 5FF0A63DAC03E13B2A3390AD77E6929A9822412E1A1E0415E7A38125D703B246, retained as project-owner-accepted creative-direction evidence output DEF9265DAA4C6F2799D16870205E2015291E3E4AAE0F61802349C9FD8D56AD00"
       ],
       "blocked_uses": [
         "copying into the external MCP workflow directory outside the exact profile installer",
-        "any generation beyond the single WP-015B2C Gate 2 fitted-knit conversion without a later reviewed decision",
+        "any generation beyond the single WP-015B2D Wizard cuteness and styling edit without a later reviewed decision",
         "reading an arbitrary ComfyUI input filename that was not staged through the reviewed pipeline action",
         "changing the reviewed model filenames, one-megapixel reference bound, four-step schedule, CFG 1, Euler sampler, or batch size one without a new review and hash",
         "claiming multi-reference, ControlNet, IP-Adapter, style-transfer, or automatic product-asset approval"
       ],
-      "notes": "Project-owned API-format translation of the official pinned single-reference FLUX.2 Klein 4B distilled edit graph. WP-015B2C Gate 1 passed with the exact external robot scaffold BC6B21B74C5016504A733D5D1EC306FE7F46A8CC5E526E0FFF28EB9EABC25D38; Gate 2 then passed its single material-only conversion as exact output 5FF0A63DAC03E13B2A3390AD77E6929A9822412E1A1E0415E7A38125D703B246. No further structure-guide request, retry, alternate reference, or third generation is authorized."
+      "notes": "Project-owned API-format translation of the official pinned single-reference FLUX.2 Klein 4B distilled edit graph. WP-015B2C passed its structure and knit-conversion gates. WP-015B2D then completed exactly one styling edit of exact output 5FF0A63DAC03E13B2A3390AD77E6929A9822412E1A1E0415E7A38125D703B246 with seed 15026004. Project owner review accepts output DEF9265DAA4C6F2799D16870205E2015291E3E4AAE0F61802349C9FD8D56AD00 as creative-direction evidence. WP-015B2E may investigate but not execute a masked or region-controlled workflow; no follow-on request is authorized."
     },
     {
       "id": "comfyui-mcp-generate-image-workflow",

@@ -1,7 +1,7 @@
 # WP-015B1 Vertical-Slice Asset Briefs
 
 Status: frozen historical B1 contract, amended for future character work by the
-WP-015B2C mouth decision below.
+WP-015B2C mouth and WP-015B2D creative-expression decisions below.
 
 This document is the production contract for the first NIMble Knots visual
 slice: Wizard, Loomkeeper, Threadball, and Patch 01. WP-015B1 writes and reviews
@@ -33,6 +33,25 @@ The project owner approved one small expressive mouth on 2026-08-03. Future
 Knotkin masters require exactly two glossy bead eyes and one small neutral mouth;
 later animation may replace that mouth with bounded expression variants. No
 nose, eyebrows, extra eye, or other facial feature is introduced.
+
+### WP-015B2D creative-expression amendment
+
+The project owner accepted the B2D Wizard's minimal stitched eyebrows and
+bounded body variation on 2026-08-03. Future masters still require exactly two
+bead eyes and one small expression-ready mouth, but may add one intentional
+stitched eyebrow above each eye when it improves friendly expression. Eyebrows
+are an allowed creative choice, not a mandatory species feature. A nose, extra
+eye, duplicated mouth, unrelated face mark, or inconsistent accidental feature
+remains blocked.
+
+Silhouette comparison is diagnostic evidence, not pixel-deterministic art
+authority. The protected body property is the recognisable broad angular
+Knotkin family: flat-crowned/chamfered upper body, narrow lower bridge, separate
+feet, and no return to a round head stacked on an oval torso. Moderate width,
+surface, costume, and proportion variation is allowed when owner review finds
+the protected family, usable Relic hand, and cuteness intact. Scale, placement,
+and small accumulated drift should be compensated during normalization rather
+than automatically rejecting otherwise successful art.
 
 The exact SD 1.5 prompts and negative prompt below remain unchanged historical
 evidence for reproducibility. Their `no mouth`/`mouth` exclusions are superseded
@@ -159,8 +178,8 @@ origin, damage, turn timing, or replay truth.
   woven belt and wooden button clasp. A compact spool staff may be strapped
   behind the rear shoulder, but the forward hand and Relic socket remain clear.
 - Expression: curious and determined through eye angle, one small neutral mouth,
-  and forward body lean; exactly two glossy black bead eyes and no nose,
-  eyebrows, or other facial marks.
+  optional minimal paired stitched eyebrows, and forward body lean; exactly two
+  glossy black bead eyes and no nose, extra eye, or unrelated facial marks.
 
 Exact positive prompt:
 
@@ -195,8 +214,8 @@ Wizard acceptance:
   buttons, a small decorative loom-shuttle charm fixed to the rear belt. No
   crown, armor, staff, weapon, villain spikes, or selected Relic.
 - Expression: calm, capable, and competitive rather than sinister; exactly two
-  glossy black bead eyes, one small neutral mouth, and no nose, eyebrows, or
-  other facial marks.
+  glossy black bead eyes, one small neutral mouth, optional minimal paired
+  stitched eyebrows, and no nose, extra eye, or unrelated facial marks.
 
 Exact positive prompt:
 

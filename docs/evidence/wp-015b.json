@@ -18,6 +18,8 @@
     "After the rejected SD 1.5 attempts, insert a bounded FLUX.2 Klein 4B model-admission deviation without approving a model or resuming generation",
     "After the failed FLUX Wizard edit, test one deterministic project-owned structure reference with one positive-only fixed-seed diagnostic",
     "After three rounded Wizard failures, test one mechanical scaffold and conditionally one fitted-knit conversion while amending the future face contract to retain a small expressive mouth",
+    "Adopt the accepted fitted-knit structure for exactly one fixed-seed Wizard cuteness and Calling-styling edit without combining alpha, animation, or exact socket normalization",
+    "Record the project-owner acceptance of B2D eyebrows, moderate body variation, and cuteness direction, then investigate a protected-property masked or region-controlled B2E route without authorizing inference",
     "Generate deterministic quarantined vertical-slice candidates and complete pre-promotion art, IP, provenance, and phone-readability review"
   ],
   "non_goals": [
@@ -39,6 +41,8 @@
     "Wizard and Threadball staged visual admission",
     "WP-015B2B deterministic structure-guide integrity and one fixed-seed Wizard diagnostic",
     "WP-015B2C Gate 1 robot-scaffold diagnostic and conditional Gate 2 fitted-knit silhouette preservation",
+    "WP-015B2D exact-input cuteness and Wizard-styling edit with full-size, 48px, and deterministic silhouette review",
+    "WP-015B2E protected-property, creative-field, drift-telemetry, and no-generation planning review",
     "WP-015B1 brief-contract completeness and source-boundary review",
     "fixed-seed quarantined vertical-slice master review",
     "self-review"
@@ -57,7 +61,8 @@
     "15025003",
     "15026001",
     "15026002",
-    "15026003"
+    "15026003",
+    "15026004"
   ],
   "sorcerers_reference_used": false,
   "clean_room_records": [],
@@ -306,11 +311,26 @@
       "command": "WP-015B2C closure verification",
       "status": "pass",
       "detail": "JSON parsing, npm run check:compliance, all 30 tooling tests, the complete compliance/TypeScript/server/client build, npm audit with zero vulnerabilities, and git diff --check passed after the final profile state transitioned to robot_scaffold_knit_route_passed. Zero runtime assets were copied; the existing Vite chunk-size warning remained unchanged."
+    },
+    {
+      "command": "WP-015B2D single Wizard cuteness and Calling-styling edit",
+      "status": "pass",
+      "detail": "The authorization bound exact B2C knit input 5FF0A63DAC03E13B2A3390AD77E6929A9822412E1A1E0415E7A38125D703B246, seed 15026004, one 84-word prompt, and one terminal request. Compliance, 31 tooling tests, the complete build, npm audit, exact model/workflow hashes, LOW_VRAM/no-preview startup, both MCP tools, staged-source equality, empty queue, and _00004_ latest-output baseline passed before inference. Prompt c82a19fa-6be7-4a30-b193-b9c708638302 completed successfully in 312.618 seconds without sampling error or retry. External output WormsPortFlux2KleinReferenceEdit_00005_.png is an 887,003-byte 1024x1024 opaque RGB PNG, SHA-256 DEF9265DAA4C6F2799D16870205E2015291E3E4AAE0F61802349C9FD8D56AD00. Its 2,897-byte exact 48px derivative is SHA-256 AB172F6B365B64093F5E2BE03F4AE2D24623F73E18A881033172ED0DA5A6E8E1. The initial narrow gate flagged two added eyebrows, a neck-wrap cowl interpretation, and normalized silhouette IoU 0.880098 below its 0.90 floor. Baseline drift was 0 pixels. The queue returned to 0/0 and no retry ran."
+    },
+    {
+      "command": "WP-015B2D closure verification",
+      "status": "pass",
+      "detail": "The initial automated closure recorded the narrow gate result and both local services stopped. JSON parsing, npm run check:compliance, all 31 tooling tests, the full compliance/TypeScript/server/client build, npm audit with zero vulnerabilities, exact silhouette reproduction, git diff --check, and the assets-tree status check passed. Zero runtime assets were copied; the existing Vite chunk-size warning remained unchanged."
+    },
+    {
+      "command": "WP-015B2D project-owner creative review and WP-015B2E planning boundary",
+      "status": "pass",
+      "detail": "The project owner accepted the paired eyebrows, moderate body-width variation, and overall cuteness direction. Normalized silhouette IoU 0.880098 is now drift telemetry that may guide later compensation rather than automatic rejection. Protected properties are the recognisable angular Knotkin family, a Wizard cowl or hat resting on the head, a usable forward Relic hand, exactly two eyes and one mouth with optional paired eyebrows, and friendly phone-scale appeal. WP-015B2E may investigate a pinned core-node mask or region-controlled route but authorizes no workflow change, staged input, prompt, seed, inference, normalization, or promotion. JSON parsing, compliance, all 31 tooling tests, the full build, npm audit with zero vulnerabilities, git diff --check, and the zero-runtime-asset check passed after the policy transition."
     }
   ],
   "skipped_checks": [
-    "The phone-browser matrix was not run for WP-015B0, WP-015B1, WP-015B2A Gates 1-6, WP-015B2B, or WP-015B2C because these slices change only the offline generation pipeline, documentation, compliance metadata, and external quarantined component state; they change no browser-facing code or runtime asset.",
-    "Real-device testing was not run because WP-015B0, WP-015B1, WP-015B2A Gates 1-6, WP-015B2B, and WP-015B2C create no player-visible behavior or product media.",
+    "The phone-browser matrix was not run for WP-015B0, WP-015B1, WP-015B2A Gates 1-6, WP-015B2B, WP-015B2C, or WP-015B2D because these slices change only the offline generation pipeline, documentation, compliance metadata, and external quarantined component state; they change no browser-facing code or runtime asset.",
+    "Real-device testing was not run because WP-015B0, WP-015B1, WP-015B2A Gates 1-6, WP-015B2B, WP-015B2C, and WP-015B2D create no player-visible behavior or product media.",
     "FLUX inference was not run in Gate 3 because the separate Gate 4 technical smoke had to record runtime, memory behavior, and exact output evidence as its own bounded review.",
     "Wizard, Threadball, and reference-edit visual admission was not run in Gate 4 because technical hardware admission and visual-purpose admission are separate gates."
   ],
@@ -320,8 +340,8 @@
     "WP-015B2A retains exactly three external FLUX.2 component files, two native workflows, and one closed executable profile as technical evidence. The completed WP-015B2B diagnostic changed only the structural input and prompt strategy and failed its Wizard anatomy purpose; its result does not authorize a second attempt, multi-reference graph, or batch.",
     "The Windows AMD RX 7600 8 GB completed the technical smoke, all three Gate 5 requests, B2B, and both B2C gates without runtime failure, but each offloaded request took 253-299 seconds. Driver portability remains unproven and its approximate VRAM samples must not be generalized into a hardware requirement.",
     "Threadball passed only a bounded structure review; its opaque output has no exact-output IP/product approval, alpha normalization, derivative cleanup, or manifest entry. It may inform a later separately reviewed Relic-only route but is not a product asset.",
-    "B2C proves that a mechanical semantic scaffold can establish angular geometry and survive one fitted-knit conversion, but the opaque knit output retains panel seams and a rear scaffold volume, lacks final Wizard Calling treatment, and has no exact hand/socket normalization, alpha, animation, or product manifest entry.",
+    "B2C proves that a mechanical semantic scaffold can establish angular geometry and survive one fitted-knit conversion, but the opaque knit output retains panel seams and a rear scaffold volume. B2D proves that larger close-set eyes, a curved smile, optional paired eyebrows, pale chenille, a belt/button, and warmer details improve appeal. Its 0.880098 normalized IoU is accepted creative variation and retained as drift telemetry. The head-worn Wizard cowl, normalization, alpha, socket, and animation requirements remain unresolved.",
     "The mouth amendment improves expression capacity but requires a later neutral-mouth topology and bounded expression-frame contract so mouth placement does not flicker or multiply across animation.",
-    "No WP-015B2 output currently passes exact-output art/IP review. Threadball and the B2C knit conversion remain quarantined route evidence, and character production cannot resume until a Wizard-master adoption and cleanup contract is reviewed."
+    "No WP-015B2 output currently passes exact-output product/IP and runtime-normalization review. Threadball, the B2C knit conversion, and the owner-accepted B2D creative-direction result remain external evidence. Character generation cannot resume until WP-015B2E documents a reviewed masked or region-controlled method, protected/editable regions, input roles, and human review rule."
   ]
 }

@@ -170,3 +170,22 @@ test('generation profiles reject arbitrary model, workflow, tool, and launch sel
   policyInvalid.policy.profile_selection = 'arbitrary';
   assert.match(validateGenerationComponents(policyInvalid).join('\n'), /profile selection must remain closed/);
 });
+
+test('WP-015B2D owner review accepts creative direction while B2E stays planning-only', () => {
+  const profile = manifest.profiles.find((candidate) => candidate.id === 'flux2-klein');
+  assert.equal(profile.state, 'wizard_master_creative_direction_accepted_masked_edit_planning');
+  assert.match(profile.notes, /WP-015B2D/);
+  assert.match(profile.notes, /DEF9265DAA4C6F2799D16870205E2015291E3E4AAE0F61802349C9FD8D56AD00/);
+  assert.match(profile.notes, /15026004/);
+  assert.match(profile.notes, /0\.880098/);
+  assert.match(profile.notes, /project owner/);
+  assert.match(profile.notes, /planning only/);
+
+  const invalid = structuredClone(manifest);
+  invalid.profiles.find((candidate) => candidate.id === 'flux2-klein').notes =
+    'Generic generation is permitted.';
+  assert.match(
+    validateGenerationComponents(invalid).join('\n'),
+    /profile notes do not bind the reviewed bounded request/
+  );
+});

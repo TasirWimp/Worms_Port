@@ -8,8 +8,26 @@ Phaser/Socket.IO stack.
 ## Execution Pointer
 
 - Active target: mobile-first single-player Nimiq Pay competition release.
-- Active work package: **WP-015B2C robot-scaffold knit conversion - completed
-  with both gates passed on 2026-08-03**. Its predecessor
+- Active work package: **WP-015B2E protected-property masked-edit
+  investigation — planning only; no generation authorized**. WP-015B2D
+  completed once on 2026-08-03 from external WP-015B2C knit proof SHA-256
+  `5FF0A63DAC03E13B2A3390AD77E6929A9822412E1A1E0415E7A38125D703B246`.
+  Its single seed `15026004` reference edit ran as prompt
+  `c82a19fa-6be7-4a30-b193-b9c708638302`. It visibly improved friendly appeal,
+  producing exact external output
+  `DEF9265DAA4C6F2799D16870205E2015291E3E4AAE0F61802349C9FD8D56AD00`
+  with paired eyebrows and normalized silhouette IoU `0.880098`. The project
+  owner accepts the eyebrows, body-width variation, and cuteness direction;
+  IoU is drift telemetry rather than automatic art authority. B2E must
+  investigate a reviewed interior/region-controlled workflow that mediates
+  between B2C geometry and B2D styling. Protect the recognisable angular body
+  family, a Wizard cowl/hat resting on the head, the usable forward Relic hand,
+  exactly two eyes and one mouth, and friendly/cute readability. Paired stitched
+  eyebrows are optional. Leave other local material, expression, costume, and
+  proportion detail to FLUX. Alpha, animation, exact hand/socket normalization,
+  another Calling, and product promotion remain blocked. Its predecessor
+  **WP-015B2C robot-scaffold knit
+  conversion completed with both gates passed on 2026-08-03**. Before that,
   **WP-015B2A FLUX.2 Klein 4B model-admission deviation** completed Gates 1
   through 6 on 2026-08-03 for exactly three external files:
   canonical BFL FP8 diffusion model
@@ -53,21 +71,21 @@ Phaser/Socket.IO stack.
   `5FF0A63DAC03E13B2A3390AD77E6929A9822412E1A1E0415E7A38125D703B246`.
   It retained the visual structure at 48px and passed the deterministic
   comparison with normalized IoU `0.956188` and baseline drift `12` pixels.
-  Both files remain external quarantine and no further generation is
-  authorized.
-- Last committed implementation slice: **WP-015B2B deterministic
-  structure-reference rejection** on 2026-08-03 at `8cf45e2`. WP-015B1's product-facing
+  Both files remain external quarantine; B2C itself authorized no further
+  generation.
+- Last committed implementation slice: **WP-015B2C robot-scaffold knit route**
+  on 2026-08-03 at `03ef535`. WP-015B1's product-facing
   anatomy, socket, projectile-origin, animation, environment, and acceptance
   requirements remain normative. Its exact prompts, seeds, and sampler settings
   remain the historical SD 1.5 contract and are not presumed equivalent for a
   different model architecture.
-- Next bounded action: planning only — review adoption of the demonstrated
-  robot-scaffold/fitted-knit route and freeze a separate Wizard-master styling,
-  cleanup, alpha, hand/socket-normalization, and exact-output review contract.
-  The current knit proof retains construction seams and a rear scaffold volume
-  and has no final Calling cowl. A third request, retry, alternate reference,
-  Loomkeeper, animation, roster work, normalization, or promotion remains
-  blocked until that contract is documented.
+- Next bounded action: investigate which pinned Comfy core nodes can provide a
+  mask or region-controlled edit without adding an unreviewed custom node.
+  Freeze the protected/editable regions, B2C/B2D input roles, workflow hash,
+  prompt scope, human review rule, and drift-compensation boundary before any
+  request. Measurements support owner visual review; they do not demand
+  last-pixel determinism. Loomkeeper, animation, roster work, alpha, socket
+  normalization, and promotion remain blocked until this contract is reviewed.
 - WP-012 exactly pins `@nimiq/mini-app-sdk` `0.1.0` and server-only
   `@nimiq/core` `2.7.1`. Provider access remains lazy, identity acceptance is
   now used by WP-013's separate production Daily entry, the diagnostics surface
@@ -2438,7 +2456,8 @@ Character master contract:
 - one full character only, no scenery, text, frame, shadow crop, or other
   character,
 - exactly two glossy bead eyes, one small neutral expression-ready mouth, and no
-  nose, eyebrows, or other facial marks,
+  nose, extra eye, duplicated mouth, or unrelated facial marks; one intentional
+  stitched eyebrow above each eye is optional,
 - full feet visible on one shared ground baseline with sufficient motion
   padding,
 - consistent body proportions, costume topology, lighting, palette, and

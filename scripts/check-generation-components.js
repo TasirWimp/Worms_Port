@@ -154,7 +154,7 @@ const reviewedProfileContracts = new Map([
     smokeTool: 'generate_image'
   }],
   ['flux2-klein', {
-    state: 'robot_scaffold_knit_route_passed',
+    state: 'wizard_master_creative_direction_accepted_masked_edit_planning',
     modelComponents: reviewedFluxModelComponents,
     workflowComponents: [
       'wormsport-flux2-klein-text-to-image-workflow',
@@ -166,7 +166,15 @@ const reviewedProfileContracts = new Map([
     ],
     comfyLaunchMode: 'lowvram_no_preview',
     requiredComfyArguments: ['--lowvram', '--preview-method none'],
-    smokeTool: 'generate_flux2_klein_text'
+    smokeTool: 'generate_flux2_klein_text',
+    requiredNoteFragments: [
+      'WP-015B2D',
+      'DEF9265DAA4C6F2799D16870205E2015291E3E4AAE0F61802349C9FD8D56AD00',
+      '15026004',
+      '0.880098',
+      'project owner',
+      'planning only'
+    ]
   }]
 ]);
 
@@ -563,6 +571,10 @@ function validateGenerationComponents(manifest, root = repoRoot) {
       if (profile.smoke_tool !== contract.smokeTool ||
           !contract.requiredMcpTools.includes(profile.smoke_tool)) {
         errors.push(`${label}: reviewed smoke tool changed or is not registered by the profile.`);
+      }
+      if (Array.isArray(contract.requiredNoteFragments) &&
+          contract.requiredNoteFragments.some((fragment) => !profile.notes.includes(fragment))) {
+        errors.push(`${label}: profile notes do not bind the reviewed bounded request.`);
       }
 
       for (const componentId of profile.model_components || []) {

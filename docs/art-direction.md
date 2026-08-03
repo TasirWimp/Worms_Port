@@ -137,7 +137,9 @@ All Knotkin share one readable species silhouette:
 - two separate stubby rectangular feet,
 - exactly two oversized glossy black bead eyes,
 - one small readable mouth suitable for expression variants, and
-- no nose, eyebrows, or other facial marks.
+- optional minimal stitched eyebrows when they strengthen a friendly
+  expression, and no nose, extra eye, duplicated mouth, or unrelated facial
+  marks.
 
 The shape is inspired by the user-supplied Nimiq emoticon reference. It must be
 expressed as soft three-dimensional anatomy, not printed as a Nimiq logo.
@@ -310,6 +312,32 @@ it preserves `0.956188` normalized silhouette IoU and a 12-pixel baseline drift.
 This is route evidence only. The knit output retains construction seams and a
 rear scaffold volume and lacks final Calling design, alpha, socket
 normalization, animation, and exact-output product approval.
+
+WP-015B2D adopts that exact knit output only as the structural edit target for
+one Wizard cuteness and Calling-styling pass. The angular body remains fixed.
+Friendly appeal comes from slightly larger close-set bead eyes, one tiny curved
+stitched smile, softer continuous chenille, and warm textile details rather
+than a rounded or puffy body. A close-fitting folded cowl must stay inside the
+existing flat-crowned outline. This is a candidate-generation contract, not an
+amendment that permits generic doll anatomy or promotes the B2C/B2D pixels.
+
+The single B2D result confirms that these local cues restore friendly appeal.
+The project owner accepts its paired stitched eyebrows and moderate body-width
+variation as useful FLUX creativity. Its measured normalized silhouette IoU
+`0.880098` is retained as drift telemetry, not an automatic art rejection.
+B2C remains the strongest geometry reference and B2D the preferred cuteness and
+surface-treatment reference; neither image is yet normalized or approved as a
+runtime product asset.
+
+Future generated art is not expected to be deterministic to the last detail.
+Protect the recognisable angular Knotkin family, the Wizard cowl/hat resting on
+the head rather than only around the neck, a forward hand capable of holding a
+separate Relic, exactly two eyes, one mouth, and the friendly/cute character of
+the design. Let FLUX vary eyebrow use, eye spacing, stitch pattern, textile
+folds, belt/button treatment, local proportions, and other non-protected detail.
+Silhouette measurements should reveal drift and guide later compensation; they
+do not supersede project-owner visual review when the protected properties
+remain intact.
 
 The first production interpretation is frozen in
 `asset-briefs/wp-015b1-vertical-slice.md`. That contract translates the lineup

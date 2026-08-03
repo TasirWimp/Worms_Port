@@ -1200,7 +1200,9 @@ The robot is an external disposable scaffold and remains blocked as product art.
 The knit result also remains quarantined. B2C adds one small neutral mouth to the
 future character contract so later expression frames can replace it; it adds no
 nose, eyebrows, or other face feature. Historical mouthless prompts remain
-unaltered evidence.
+unaltered evidence. The later B2D owner review supersedes only the eyebrow
+restriction for future work: one intentional stitched eyebrow above each eye is
+allowed when it supports the expression.
 
 Gate 2 passed on 2026-08-03 as prompt
 `936917b2-f182-4cfa-8960-5fccda8cbe0c`. Exact staged/source robot SHA-256 was
@@ -1218,6 +1220,87 @@ B2C is therefore complete. Stop the local services and return to planning. The
 knit output proves the route but remains external and unapproved; do not add
 Calling details, generate another character, normalize it, or promote it until
 a separate route-adoption and Wizard-master contract is reviewed.
+
+### WP-015B2D Wizard Cuteness And Calling Styling
+
+B2D adopts only the exact B2C knit silhouette and authorizes one styling edit.
+It targets the specific loss of cuteness without asking FLUX to solve alpha,
+animation, socket geometry, and character-family production in the same prompt.
+The normative gate and exact prompt are in
+`docs/asset-briefs/wp-015b2-generation-review.md`.
+
+Re-entry sequence:
+
+```powershell
+git status --short --branch
+npm run check:compliance
+npm run test:tooling
+npm run build
+npm audit
+.\scripts\comfy-asset-pipeline.ps1 -Action Prepare -Profile flux2-klein -Json
+.\scripts\comfy-asset-pipeline.ps1 -Action Status -Profile flux2-klein -VerifyHashes -Json
+.\scripts\comfy-asset-pipeline.ps1 -Action Start -Profile flux2-klein -Json
+.\scripts\comfy-asset-pipeline.ps1 -Action StageInput -Profile flux2-klein -InputImage "$env:LOCALAPPDATA\Comfy-Desktop\ComfyUI-Shared\output\WormsPortFlux2KleinReferenceEdit_00004_.png" -StagedName wizard-knit-proof-15026003.png -Json
+python .\scripts\comfy-mcp-smoke.py --profile flux2-klein --probe
+```
+
+Before inference, verify the staged/source SHA-256 is exactly
+`5FF0A63DAC03E13B2A3390AD77E6929A9822412E1A1E0415E7A38125D703B246`,
+the queue is empty, and `_00004_` is still the latest FLUX reference-edit
+output. Then run exactly one request with seed `15026004` and the frozen prompt:
+
+```text
+Image 1 is the exact fitted-knit structure. Preserve its angular silhouette, scale, right-facing pose, flat crown, chamfered body, narrow lower bridge, rectangular feet, and forward hand. Change only styling and expression: soft pale-blue chenille, a close-fitting deep-navy folded felt cowl inside the outline, exactly two slightly larger close-set glossy bead eyes, one tiny curved stitched smile, restrained gold stitching, a woven belt, and one wooden button. Replace rigid panel seams and the rear block with continuous crochet and a clean back. Center unchanged on white.
+```
+
+Do not retry. Create an exact 48px derivative externally, compare the untouched
+output to `_00004_` with `scripts/compare-character-silhouettes.js`, perform the
+full-size and phone-scale gate, record the result, close the manifest state,
+and stop both services. No output enters `assets/` in B2D.
+
+B2D completed once as prompt `c82a19fa-6be7-4a30-b193-b9c708638302`.
+External output `WormsPortFlux2KleinReferenceEdit_00005_.png` is a 887,003-byte
+1024x1024 opaque RGB PNG, SHA-256
+`DEF9265DAA4C6F2799D16870205E2015291E3E4AAE0F61802349C9FD8D56AD00`.
+Its 2,897-byte exact 48px derivative is SHA-256
+`AB172F6B365B64093F5E2BE03F4AE2D24623F73E18A881033172ED0DA5A6E8E1`.
+The request completed without sampling error or retry; the queue returned to
+zero. Normalized silhouette IoU was `0.880098` against the `0.90` floor and
+baseline drift was `0` pixels.
+
+The initial narrow gate flagged the paired eyebrows, neck-wrap cowl, and body
+narrowing. The later project-owner review accepts the eyebrows and width as
+useful creative variation and accepts B2D's cuteness direction. Treat
+`0.880098` as drift telemetry that may inform later width/scale compensation,
+not as an automatic art rejection. The remaining protected Calling issue is a
+Wizard cowl/hat that visibly rests on the head. B2D remains external and
+unpromoted because normalization, alpha, socket, animation, and exact-file
+product review are incomplete.
+
+### WP-015B2E Protected-Property Masked-Edit Investigation
+
+B2E is planning-only until it identifies a reviewed mask or region-control
+route compatible with the pinned core-node Comfy runtime. No inference is
+authorized. Use B2C as geometry evidence and B2D as cuteness/style evidence.
+
+Protect only:
+
+- the recognisable broad angular Knotkin family, narrow lower bridge, and
+  separate feet, with moderate proportion variation allowed,
+- a Wizard cowl/hat visibly resting on the head,
+- a complete forward hand able to normalize to the separate-Relic socket,
+- exactly two eyes and one mouth, with optional intentional paired eyebrows,
+  and
+- friendly/cute readability at full size and 48px.
+
+Leave eye spacing, eyebrow curve, stitches, textile folds, trim, belt/button
+treatment, surface detail, and local proportions to FLUX. Silhouette IoU,
+baseline, canvas position, and bounds remain diagnostic measurements. Compensate
+small global drift during deterministic normalization when possible. A mask
+must allow the head-worn cowl to affect the crown while preserving the body,
+feet, and hand strongly enough for gameplay. Document workflow provenance,
+editable/protected regions, input roles, output review, and failure handling
+before staging or generating anything.
 
 ### WP-015B0 Approval And Canonical Baseline
 
@@ -1308,8 +1391,10 @@ transparency so both bead eyes remain visible. The feet share a stable baseline,
 the entire silhouette remains inside motion-safe padding, and there is no
 scenery, text, framing, or second character. Exactly two bead eyes, one small
 expression-ready mouth, Calling costume topology, body proportions, palette,
-lighting direction, and handedness must remain stable. No nose, eyebrows, extra
-eye, or other facial feature is introduced. Every pose also obeys a common
+lighting direction, and handedness must remain stable. One intentional stitched
+eyebrow above each eye is optional when it improves friendly expression. No
+nose, extra eye, duplicated mouth, or unrelated facial feature is introduced.
+Every pose also obeys a common
 held-Relic socket and projectile-origin contract so the same separate Relic
 assets can attach consistently without becoming collision authority.
 
@@ -1436,8 +1521,9 @@ frames remain in ignored quarantine rather than the runtime tree.
 
 Before promotion, automated and reviewer evidence must establish:
 
-- exactly two eyes, one controlled mouth expression, no other facial features,
-  and stable anatomy, costume, palette, lighting, and equipment identity across
+- exactly two eyes, one controlled mouth expression, optional intentional
+  paired stitched eyebrows, no nose/extra eye/duplicated mouth/unrelated face
+  mark, and stable anatomy, costume, palette, lighting, and equipment identity across
   every character frame,
 - stable frame dimensions, ground baseline, pivot, alpha edges, visual scale,
   and no disconnected alpha fragments or halos,

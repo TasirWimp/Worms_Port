@@ -162,7 +162,27 @@ numeric silhouette preservation. Both outputs remain external quarantine and
 the route is not yet an approved Wizard master. The future face contract keeps
 exactly two bead eyes plus one small neutral expression-ready mouth. See
 `docs/asset-briefs/wp-015b2-generation-review.md`; no further generation is
-implied.
+implied by B2C itself.
+
+WP-015B2D adopts that demonstrated route for one narrowly scoped Wizard styling
+test. It exact-stages only the B2C knit proof and runs one fixed-seed reference
+edit that must preserve the angular silhouette while replacing the remaining
+robot construction with continuous chenille, a close-fitting folded Wizard
+cowl, two slightly larger close-set bead eyes, and one tiny curved stitched
+smile. The prompt uses those concrete appeal cues instead of generic plush,
+doll, puffy, or rounded-body language. The output remains external quarantine;
+alpha extraction, animation, exact socket normalization, other characters, and
+product promotion are separate later decisions.
+
+The one B2D request completed and visibly improved friendly appeal. The project
+owner accepts its paired eyebrows and moderate body narrowing as useful FLUX
+creativity; normalized silhouette IoU `0.880098` is drift telemetry, not an
+automatic rejection. The remaining protected Calling issue is that its dark
+cowl reads mainly as a neck wrap instead of a Wizard cowl/hat resting on the
+head. The image remains external because alpha, socket, crop/pivot/baseline,
+animation, and exact-file product approval are unfinished. Re-entry is the
+planning-only WP-015B2E masked-edit investigation described in the generation
+review and workflow docs; it authorizes no new inference.
 
 ## Build
 
