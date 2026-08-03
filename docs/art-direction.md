@@ -136,11 +136,14 @@ All Knotkin share one readable species silhouette:
 - a narrow lower bridge,
 - two separate stubby rectangular feet,
 - exactly two oversized glossy black bead eyes,
-- no mouth, nose, eyebrows, or other facial marks.
+- one small readable mouth suitable for expression variants, and
+- no nose, eyebrows, or other facial marks.
 
 The shape is inspired by the user-supplied Nimiq emoticon reference. It must be
 expressed as soft three-dimensional anatomy, not printed as a Nimiq logo.
-Emotion comes from eye angle, body tilt, pose, costume, and animation.
+Emotion comes from eye angle, the small mouth, body tilt, pose, costume, and
+animation. The neutral master keeps one simple mouth that later expression
+variants may replace without changing the eyes or body silhouette.
 
 Costumes may exaggerate a Calling but must not hide the shared body silhouette.
 The design must remain readable at mobile-game scale.
@@ -250,12 +253,18 @@ production. New character briefs, pose masters, sprites, portraits, promotional
 art, and in-game Calling depictions must begin from its visual system:
 
 - the same shared angular crochet body family,
-- exactly two oversized glossy bead eyes and no mouth,
+- exactly two oversized glossy bead eyes and one small expressive mouth,
 - the pictured Calling color identities and material vocabulary,
 - chunky yarn bodies, felt garments, visible stitches, wooden buttons, spools,
   polished thimbles, and toy-like fantasy equipment,
 - compact silhouettes that remain readable on a phone,
 - a warm handcrafted stage with cotton clouds and stitched Patchwork terrain.
+
+The project owner's 2026-08-03 mouth amendment is the one deliberate forward
+deviation from the pictured faces: production masters add one small neutral
+mouth so animation can provide expression variants. The lineup remains
+canonical for anatomy, eyes, palette, material, costume, and world language;
+the mouth amendment does not authorize other unrecorded redesigns.
 
 The image is a design reference, not a sprite sheet or runtime source. The user
 has approved it as the canonical creative and generation reference, so approved
@@ -281,13 +290,26 @@ tracing, or copying any concept pixels.
 - Frozen guide geometry: ground baseline `y=902`; held-Relic socket center
   `(682,586)`, exactly twice the B1 512x512 coordinates.
 
-Its only approved generation use was the completed fixed-seed FLUX.2 Klein
-single-reference diagnostic. The guide defined structure and pose while the
-prompt defined crochet material and Wizard Calling identity, but FLUX returned
-to rounded doll anatomy and failed the structure gate. The guide remains useful
-documentation evidence; it may not enter `assets/`, substitute for exact-output
-review, authorize a rerun/character/batch, or be described as finished product
-artwork.
+Its approved generation uses are the completed fixed-seed FLUX.2 Klein
+single-reference diagnostic and the completed WP-015B2C Gate 1 robot-scaffold
+test.
+The first use defined structure and pose while the prompt defined crochet
+material and Wizard Calling identity, but FLUX returned to rounded doll anatomy
+and failed. B2C therefore removes crochet/Calling semantics for one mechanical
+control. Gate 1 passed, and Gate 2 must reference only those exact robot bytes,
+not the guide. The guide remains documentation evidence; it may not enter
+`assets/`, substitute for exact-output review, authorize a rerun/other
+character/batch, or be described as finished product artwork.
+
+WP-015B2C proved the temporary mechanical-scaffold route without changing the
+world boundary. Gate 1's external robot is SHA-256
+`BC6B21B74C5016504A733D5D1EC306FE7F46A8CC5E526E0FFF28EB9EABC25D38`.
+Gate 2's external fitted-knit conversion is SHA-256
+`5FF0A63DAC03E13B2A3390AD77E6929A9822412E1A1E0415E7A38125D703B246`;
+it preserves `0.956188` normalized silhouette IoU and a 12-pixel baseline drift.
+This is route evidence only. The knit output retains construction seams and a
+rear scaffold volume and lacks final Calling design, alpha, socket
+normalization, animation, and exact-output product approval.
 
 The first production interpretation is frozen in
 `asset-briefs/wp-015b1-vertical-slice.md`. That contract translates the lineup
@@ -346,7 +368,7 @@ separate archive or removal policy is adopted.
 Required:
 
 - cute cotton Knotkin with the shared angular anatomy,
-- big eyes and no mouth,
+- big eyes and one small expression-ready mouth,
 - readable fantasy Callings,
 - playful artillery confrontation,
 - tactile crochet, felt, cotton, and stitched terrain,
@@ -361,7 +383,9 @@ Blocked:
 - Worms or Team17 character silhouettes, names, UI, or branded visual motifs,
 - Sorcerers code, artwork, costumes, audio, or copied character designs,
 - realistic violence, gore, firearms, or grim military presentation,
-- robots as the canonical player characters,
+- robots as the canonical player characters; a quarantined mechanical scaffold
+  may be used only as a temporary generation-control input when its exact
+  contract and output are recorded,
 - unlicensed Nimiq brand assets or an implication that the game is an official
   Nimiq product,
 - concept art entering runtime without an approved asset-manifest entry.

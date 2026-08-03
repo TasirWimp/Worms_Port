@@ -33,7 +33,7 @@
     },
     {
       "id": "flux2-klein",
-      "state": "structure_recovery_visual_rejected",
+      "state": "robot_scaffold_knit_route_passed",
       "runtime_enabled": true,
       "model_components": [
         "flux2-klein-4b-distilled-fp8",
@@ -54,7 +54,7 @@
         "--preview-method none"
       ],
       "smoke_tool": "generate_flux2_klein_text",
-      "notes": "Gate 4 technically admitted the exact closed profile on the Windows AMD Radeon RX 7600 8 GB route. Gate 5 passed Threadball but failed Wizard text-only and when the rejected rounded Wizard was reused as its only reference. The one authorized WP-015B2B structure-guide diagnostic also failed: FLUX kept the desired material, eyes, feet, and hand but returned to rounded doll anatomy. The profile remains technical evidence only; another request, character, multi-reference graph, batch, or product promotion requires a separately reviewed decision."
+      "notes": "WP-015B2C completed both gates. The exact external robot scaffold BC6B21B74C5016504A733D5D1EC306FE7F46A8CC5E526E0FFF28EB9EABC25D38 passed angular structure; its single fitted-knit conversion 5FF0A63DAC03E13B2A3390AD77E6929A9822412E1A1E0415E7A38125D703B246 preserved the structure with normalized IoU 0.956188 and 12-pixel baseline drift. This proves a bounded visual route only. Further inference, route adoption, another character, normalization, or product promotion requires a separately reviewed decision."
     }
   ],
   "conditioning_inputs": [
@@ -73,12 +73,13 @@
       "distribution": "documentation_conditioning_only",
       "approved_uses": [
         "historical evidence for the completed single fixed-seed WP-015B2B Wizard structure-reference diagnostic through the reviewed FLUX single-reference workflow",
+        "historical evidence for the completed fixed-seed WP-015B2C Gate 1 mechanical-scaffold diagnostic through the reviewed FLUX single-reference workflow",
         "documentation and visual comparison of the project-owned Knotkin anatomy, baseline, and held-Relic socket contract"
       ],
       "blocked_uses": [
         "product runtime use or treatment as finished artwork",
         "tracing or cropping the canonical lineup into this guide",
-        "a rerun, second diagnostic, multi-reference edit, batch, or product promotion without a later reviewed decision"
+        "reuse for Gate 2, which must condition only on the exact passed robot scaffold, or any later rerun, multi-reference edit, batch, or product promotion"
       ],
       "notes": "Deterministically rendered from project-authored geometry only. The 1024x1024 guide scales the frozen 512x512 character contract by two: baseline y=902 and held-Relic socket center (682,586). It contains a clean angular body, two eye positions, separate feet, and a protruding forward mitten on white; it contains no canonical-lineup pixels, generated art, Sorcerers material, official Nimiq brand file, or runtime media."
     }
@@ -178,10 +179,12 @@
         "external quarantined WP-015B2A native-workflow construction and exact-hash review",
         "the completed one-image WP-015B2A Gate 4 technical smoke",
         "the completed bounded Wizard and Threadball visual admission in WP-015B2A Gate 5",
-        "the completed single fixed-seed WP-015B2B Wizard structure-guide diagnostic"
+        "the completed single fixed-seed WP-015B2B Wizard structure-guide diagnostic",
+        "the completed single fixed-seed WP-015B2C Gate 1 mechanical-scaffold diagnostic",
+        "the completed single fixed-seed WP-015B2C Gate 2 fitted-knit conversion of exact robot bytes BC6B21B74C5016504A733D5D1EC306FE7F46A8CC5E526E0FFF28EB9EABC25D38"
       ],
       "blocked_uses": [
-        "candidate generation beyond the single fixed WP-015B2B structure-guide diagnostic without a later reviewed decision",
+        "candidate generation beyond the single WP-015B2C Gate 2 fitted-knit conversion without a later reviewed decision",
         "batch candidate generation because this route was not adopted",
         "redistribution with Worms_Port or storage below assets",
         "product asset promotion without separate exact-output review"
@@ -227,11 +230,13 @@
         "external quarantined WP-015B2A native-workflow construction and exact-hash review",
         "the completed one-image WP-015B2A Gate 4 technical smoke",
         "the completed bounded Wizard and Threadball visual admission in WP-015B2A Gate 5",
-        "the completed single fixed-seed WP-015B2B Wizard structure-guide diagnostic"
+        "the completed single fixed-seed WP-015B2B Wizard structure-guide diagnostic",
+        "the completed single fixed-seed WP-015B2C Gate 1 mechanical-scaffold diagnostic",
+        "the completed single fixed-seed WP-015B2C Gate 2 fitted-knit conversion of exact robot bytes BC6B21B74C5016504A733D5D1EC306FE7F46A8CC5E526E0FFF28EB9EABC25D38"
       ],
       "blocked_uses": [
         "using the rejected pre-release Comfy mirror in the reviewed route",
-        "candidate generation beyond the single fixed WP-015B2B structure-guide diagnostic without a later reviewed decision",
+        "candidate generation beyond the single WP-015B2C Gate 2 fitted-knit conversion without a later reviewed decision",
         "batch candidate generation because this route was not adopted",
         "redistribution with Worms_Port or storage below assets"
       ],
@@ -258,10 +263,12 @@
         "external quarantined WP-015B2A native-workflow construction and exact-hash review",
         "the completed one-image WP-015B2A Gate 4 technical smoke",
         "the completed bounded Wizard and Threadball visual admission in WP-015B2A Gate 5",
-        "the completed single fixed-seed WP-015B2B Wizard structure-guide diagnostic"
+        "the completed single fixed-seed WP-015B2B Wizard structure-guide diagnostic",
+        "the completed single fixed-seed WP-015B2C Gate 1 mechanical-scaffold diagnostic",
+        "the completed single fixed-seed WP-015B2C Gate 2 fitted-knit conversion of exact robot bytes BC6B21B74C5016504A733D5D1EC306FE7F46A8CC5E526E0FFF28EB9EABC25D38"
       ],
       "blocked_uses": [
-        "candidate generation beyond the single fixed WP-015B2B structure-guide diagnostic without a later reviewed decision",
+        "candidate generation beyond the single WP-015B2C Gate 2 fitted-knit conversion without a later reviewed decision",
         "batch candidate generation because this route was not adopted",
         "redistribution with Worms_Port or storage below assets",
         "treating the containing FLUX.2-dev model license as permission for non-autoencoder model weights"
@@ -326,16 +333,18 @@
       "approved_uses": [
         "exact-hash installation and MCP registration through the closed flux2-klein profile",
         "the completed single quarantined Wizard reference diagnostic using one explicitly staged exact input in WP-015B2A Gate 5",
-        "the completed single fixed-seed WP-015B2B Wizard diagnostic using the exact project-owned structure guide"
+        "the completed single fixed-seed WP-015B2B Wizard diagnostic using the exact project-owned structure guide",
+        "the completed single fixed-seed WP-015B2C Gate 1 mechanical-scaffold diagnostic using that exact guide",
+        "the completed single fixed-seed WP-015B2C Gate 2 fitted-knit conversion using only staged robot bytes BC6B21B74C5016504A733D5D1EC306FE7F46A8CC5E526E0FFF28EB9EABC25D38"
       ],
       "blocked_uses": [
         "copying into the external MCP workflow directory outside the exact profile installer",
-        "any generation beyond the single fixed WP-015B2B structure-guide diagnostic without a later reviewed decision",
+        "any generation beyond the single WP-015B2C Gate 2 fitted-knit conversion without a later reviewed decision",
         "reading an arbitrary ComfyUI input filename that was not staged through the reviewed pipeline action",
         "changing the reviewed model filenames, one-megapixel reference bound, four-step schedule, CFG 1, Euler sampler, or batch size one without a new review and hash",
         "claiming multi-reference, ControlNet, IP-Adapter, style-transfer, or automatic product-asset approval"
       ],
-      "notes": "Project-owned API-format translation of the official pinned single-reference FLUX.2 Klein 4B distilled edit graph. Gate 5 used the rejected rounded Wizard as its only reference and failed anatomy/hand control. WP-015B2B replaced that malformed reference with one deterministic project-owned structure guide and removed negative-concept wording from the fixed prompt. The one authorized diagnostic completed but again failed angular anatomy, so further use requires another reviewed decision."
+      "notes": "Project-owned API-format translation of the official pinned single-reference FLUX.2 Klein 4B distilled edit graph. WP-015B2C Gate 1 passed with the exact external robot scaffold BC6B21B74C5016504A733D5D1EC306FE7F46A8CC5E526E0FFF28EB9EABC25D38; Gate 2 then passed its single material-only conversion as exact output 5FF0A63DAC03E13B2A3390AD77E6929A9822412E1A1E0415E7A38125D703B246. No further structure-guide request, retry, alternate reference, or third generation is authorized."
     },
     {
       "id": "comfyui-mcp-generate-image-workflow",

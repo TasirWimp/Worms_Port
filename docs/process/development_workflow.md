@@ -1137,6 +1137,88 @@ is a planning decision between a separately reviewed two-reference
 structure/style experiment and a deterministic character-master construction
 route; neither is authorized by WP-015B2B.
 
+### WP-015B2C Robot-Scaffold Knit Conversion
+
+B2C tests whether the repeated rounded result comes from FLUX's learned
+crochet/Wizard doll prior rather than the deterministic guide. It is a two-gate
+experiment, not a two-image batch. Gate 1 alone is initially executable. Gate 2
+is conditional and requires a recorded Gate 1 pass plus a second manifest state
+transition.
+
+The exact guide, model chain, single-reference workflow, dimensions, batch,
+steps, CFG, sampler, low-VRAM mode, and no-preview mode remain unchanged. Gate 1
+uses seed `15026002` and the exact prompt:
+
+```text
+Image 1 defines the exact silhouette and pose. Render its flat-crowned continuous angular head-and-torso, chamfered shoulders, narrow lower bridge, two separate rectangular feet, and forward articulated hand as a compact blue mechanical automaton. Use planar painted-metal panels, crisp beveled edges, two glossy black circular eyes, and one small neutral mouth slot. One complete right-facing character centered on an unbroken white field.
+```
+
+Before inference, rebuild and hash the guide, run `Prepare`, run
+`Status -VerifyHashes`, start the closed profile, exact-stage the guide, probe
+both required MCP tools, and record an empty queue plus latest-output baseline.
+Then run exactly:
+
+```powershell
+python .\scripts\comfy-mcp-smoke.py --profile flux2-klein --reference-image wormsport/wizard-structure-guide-v1.png --seed 15026002 --timeout 600 --prompt 'Image 1 defines the exact silhouette and pose. Render its flat-crowned continuous angular head-and-torso, chamfered shoulders, narrow lower bridge, two separate rectangular feet, and forward articulated hand as a compact blue mechanical automaton. Use planar painted-metal panels, crisp beveled edges, two glossy black circular eyes, and one small neutral mouth slot. One complete right-facing character centered on an unbroken white field.'
+```
+
+Review the full output and exact 48x48 derivative against the Gate 1 decision
+rule in `docs/asset-briefs/wp-015b2-generation-review.md`. Stop on failure. A
+pass permits documentation and manifest changes only; it does not itself permit
+the knit request.
+
+Gate 1 passed on 2026-08-03 as prompt
+`2dfc929f-3370-41e9-a568-4f1a86689c36`. The 1024x1024 opaque RGB output
+`WormsPortFlux2KleinReferenceEdit_00003_.png` is 644,831 bytes, SHA-256
+`BC6B21B74C5016504A733D5D1EC306FE7F46A8CC5E526E0FFF28EB9EABC25D38`.
+Its exact 48x48 derivative is 2,799 bytes, SHA-256
+`3D82FC1A55BC94AFABF1258C6E129F2421390C0FC6FEEECAB244917820A4C2BD`,
+under `E:\ComFy\TasirWimp\component-evidence\wp-015b2c\gate1`. The result
+retains the flat crown, chamfered chassis, narrow lower body, rectangular feet,
+articulated hand, two eyes, and one mouth at both sizes. This permits the second
+manifest transition; the robot remains external disposable evidence.
+
+After those changes and a second successful preflight, Gate 2 may exact-stage
+the accepted robot bytes and run seed `15026003` with this frozen prompt:
+
+```text
+Image 1 is the exact mechanical scaffold. Preserve its complete silhouette, scale, pose, planar proportions, flat crown, chamfered sides, narrow lower bridge, rectangular feet, articulated forward hand, two eyes, and small neutral mouth. Change only its materials: every visible surface becomes a closely fitted padded blue crochet shell stretched over the rigid faceted frame, with restrained dark-blue felt and gold stitching. Centered unchanged on the white field.
+```
+
+After Gate 2 completes, record the exact full-output and 48px hashes, then run
+the deterministic shape comparison with the exact output paths:
+
+```powershell
+node .\scripts\compare-character-silhouettes.js --reference <robot-output.png> --candidate <knit-output.png> --threshold 32 --normalized-size 256 --minimum-iou 0.90 --maximum-baseline-drift 16
+```
+
+This reports raw-canvas IoU, foreground-bounds-normalized IoU, both bounds, and
+baseline drift. `numeric_gate_pass` does not override a missing hand, rounded
+crown, extra face feature, or any other visual failure.
+
+The robot is an external disposable scaffold and remains blocked as product art.
+The knit result also remains quarantined. B2C adds one small neutral mouth to the
+future character contract so later expression frames can replace it; it adds no
+nose, eyebrows, or other face feature. Historical mouthless prompts remain
+unaltered evidence.
+
+Gate 2 passed on 2026-08-03 as prompt
+`936917b2-f182-4cfa-8960-5fccda8cbe0c`. Exact staged/source robot SHA-256 was
+`BC6B21B74C5016504A733D5D1EC306FE7F46A8CC5E526E0FFF28EB9EABC25D38`.
+The 1024x1024 opaque RGB knit output
+`WormsPortFlux2KleinReferenceEdit_00004_.png` is 1,130,420 bytes, SHA-256
+`5FF0A63DAC03E13B2A3390AD77E6929A9822412E1A1E0415E7A38125D703B246`.
+Its exact 48x48 derivative is 3,394 bytes, SHA-256
+`9308495013B25771F6B015AC7FD4EE3FC3B76DE4360AAF2A218ED4009D3A7B18`.
+The comparator recorded raw IoU `0.951554`, normalized IoU `0.956188`, and
+baseline drift `12`, passing the `0.90` / `16` numeric gate. Visual review also
+passed every structural, material, face, hand, foot, and phone-scale criterion.
+
+B2C is therefore complete. Stop the local services and return to planning. The
+knit output proves the route but remains external and unapproved; do not add
+Calling details, generate another character, normalize it, or promote it until
+a separate route-adoption and Wizard-master contract is reviewed.
+
 ### WP-015B0 Approval And Canonical Baseline
 
 WP-015B0 is the no-product-output pre-production gate. A bounded technical
@@ -1224,11 +1306,12 @@ Thief, Warrior, and a Loomkeeper opponent variant. Each master shows one full
 Knotkin facing right in an orthographic-like three-quarter side view on
 transparency so both bead eyes remain visible. The feet share a stable baseline,
 the entire silhouette remains inside motion-safe padding, and there is no
-scenery, text, framing, or second character. Exactly two bead eyes, no mouth,
-Calling costume topology, body proportions, palette, lighting direction, and
-handedness must remain stable. Every pose also obeys a common held-Relic socket
-and projectile-origin contract so the same separate Relic assets can attach
-consistently without becoming collision authority.
+scenery, text, framing, or second character. Exactly two bead eyes, one small
+expression-ready mouth, Calling costume topology, body proportions, palette,
+lighting direction, and handedness must remain stable. No nose, eyebrows, extra
+eye, or other facial feature is introduced. Every pose also obeys a common
+held-Relic socket and projectile-origin contract so the same separate Relic
+assets can attach consistently without becoming collision authority.
 
 Relics and effects are separate transparent asset families. Each of the three
 starting Relics receives a phone-readable icon, held sprite, projectile,
@@ -1268,8 +1351,9 @@ Use this exact handoff for each visual asset family:
 2. **Image generation:** create a new isolated master from the approved brief
    and canonical reference. Store the untouched result only in ignored
    quarantine and record the full prompt, output ID, date, and SHA-256.
-3. **Master review:** reject anatomy, eye count, mouth, silhouette, costume,
-   lighting, perspective, equipment, alpha, or third-party similarity drift.
+3. **Master review:** reject anatomy, eye count, mouth count/placement,
+   silhouette, costume, lighting, perspective, equipment, alpha, or third-party
+   similarity drift.
    Only a reviewed master proceeds.
 4. **ComfyUI refinement:** use only when every checkpoint, VAE, LoRA,
    ControlNet, embedding, upscaler, and custom node has approved commercial-use
@@ -1352,8 +1436,9 @@ frames remain in ignored quarantine rather than the runtime tree.
 
 Before promotion, automated and reviewer evidence must establish:
 
-- exactly two eyes, no mouth, stable anatomy, costume, palette, lighting, and
-  equipment identity across every character frame,
+- exactly two eyes, one controlled mouth expression, no other facial features,
+  and stable anatomy, costume, palette, lighting, and equipment identity across
+  every character frame,
 - stable frame dimensions, ground baseline, pivot, alpha edges, visual scale,
   and no disconnected alpha fragments or halos,
 - valid loops and transitions with no eye duplication, hand/equipment swapping,

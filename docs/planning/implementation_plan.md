@@ -8,8 +8,8 @@ Phaser/Socket.IO stack.
 ## Execution Pointer
 
 - Active target: mobile-first single-player Nimiq Pay competition release.
-- Active work package: **WP-015B2B deterministic structure-reference Wizard
-  recovery - completed with visual rejection on 2026-08-03**. Its predecessor
+- Active work package: **WP-015B2C robot-scaffold knit conversion - completed
+  with both gates passed on 2026-08-03**. Its predecessor
   **WP-015B2A FLUX.2 Klein 4B model-admission deviation** completed Gates 1
   through 6 on 2026-08-03 for exactly three external files:
   canonical BFL FP8 diffusion model
@@ -44,20 +44,30 @@ Phaser/Socket.IO stack.
   mitten, but replaced the guide's angular continuous body with a pointed hat,
   round head, and oval torso. The frozen structure purpose therefore failed.
   No retry, multi-reference graph, custom node, larger model, batch, or product
-  promotion is authorized.
-- Last committed implementation slice: **WP-015B2A Gates 5/6** on
-  2026-08-03 at `84844dc`. WP-015B1's product-facing
+  promotion is authorized. B2C isolated the remaining hypothesis by rendering
+  the exact guide once as a faceted mechanical scaffold without crochet,
+  Wizard, cute, plush, doll, or puffy semantics. Gate 1 passed as prompt
+  `2dfc929f-3370-41e9-a568-4f1a86689c36`; its exact external output is SHA-256
+  `BC6B21B74C5016504A733D5D1EC306FE7F46A8CC5E526E0FFF28EB9EABC25D38`.
+  The second reviewed state produced exactly one fitted-knit conversion,
+  `5FF0A63DAC03E13B2A3390AD77E6929A9822412E1A1E0415E7A38125D703B246`.
+  It retained the visual structure at 48px and passed the deterministic
+  comparison with normalized IoU `0.956188` and baseline drift `12` pixels.
+  Both files remain external quarantine and no further generation is
+  authorized.
+- Last committed implementation slice: **WP-015B2B deterministic
+  structure-reference rejection** on 2026-08-03 at `8cf45e2`. WP-015B1's product-facing
   anatomy, socket, projectile-origin, animation, environment, and acceptance
   requirements remain normative. Its exact prompts, seeds, and sampler settings
   remain the historical SD 1.5 contract and are not presumed equivalent for a
   different model architecture.
-- Next bounded action: commit the B2B guide, exact evidence, and rejection
-  record, then refine the next character-master route before any inference. The
-  decision is between a separately reviewed two-reference structure/style
-  diagnostic and deterministic character-master construction. A rerun, second
-  seed/prompt, rejected-output reference, canonical-lineup conditioning,
-  multi-reference graph, Loomkeeper, Patch, animation, roster work, or promotion
-  remains blocked until that decision is documented.
+- Next bounded action: planning only — review adoption of the demonstrated
+  robot-scaffold/fitted-knit route and freeze a separate Wizard-master styling,
+  cleanup, alpha, hand/socket-normalization, and exact-output review contract.
+  The current knit proof retains construction seams and a rear scaffold volume
+  and has no final Calling cowl. A third request, retry, alternate reference,
+  Loomkeeper, animation, roster work, normalization, or promotion remains
+  blocked until that contract is documented.
 - WP-012 exactly pins `@nimiq/mini-app-sdk` `0.1.0` and server-only
   `@nimiq/core` `2.7.1`. Provider access remains lazy, identity acceptance is
   now used by WP-013's separate production Daily entry, the diagnostics surface
@@ -405,7 +415,7 @@ Verification:
 - source scan for blocked brand names in user-facing code/docs,
 - `npm run build`.
 
-Delivered as **NIMble Knots: Cotton Clash**, featuring mouthless, big-eyed
+Delivered as **NIMble Knots: Cotton Clash**, featuring expressive, big-eyed
 Knotkin fantasy Callings in the cotton-and-crochet Patchwork Realms.
 `docs/art-direction.md` is the creative source of truth. Product metadata,
 visible client surfaces, default game schema, and server model terminology now
@@ -2303,6 +2313,18 @@ Sequential delivery slices:
     the angular structure purpose and remains quarantined. Multi-reference style
     conditioning and deterministic character construction remain separately
     reviewed alternatives rather than automatic follow-ups.
+  - **WP-015B2C Robot-scaffold knit conversion — completed with both gates
+    passed 2026-08-03:** test the
+    project owner's hypothesis that `crochet Wizard` activates the rounded doll
+    prior. The first fixed request uses the deterministic guide and mechanical
+    semantics only. Stop if it does not produce the angular chassis. Only a
+    recorded pass plus a second fail-closed manifest state may authorize one
+    material-only conversion into a fitted crochet shell. Gate 1 passed and Gate
+    2 preserved the exact robot structure with normalized IoU `0.956188` and
+    12-pixel baseline drift. Both outputs remain disposable quarantine evidence,
+    not a player-character direction or approved master. The mouth contract is
+    amended to two bead eyes and one small neutral expression-ready mouth while
+    historical prompts remain unchanged.
 - **WP-015C First playable visual slice:** promote and integrate only approved
   Wizard, Loomkeeper, Threadball, and Patch assets. Prove one complete
   move/aim/fire/flight/impact/damage/result exchange at maintained phone
@@ -2415,7 +2437,8 @@ Character master contract:
 - orthographic-like side view suitable for a side-on artillery game,
 - one full character only, no scenery, text, frame, shadow crop, or other
   character,
-- exactly two glossy bead eyes, no mouth or other facial marks,
+- exactly two glossy bead eyes, one small neutral expression-ready mouth, and no
+  nose, eyebrows, or other facial marks,
 - full feet visible on one shared ground baseline with sufficient motion
   padding,
 - consistent body proportions, costume topology, lighting, palette, and

@@ -154,7 +154,7 @@ const reviewedProfileContracts = new Map([
     smokeTool: 'generate_image'
   }],
   ['flux2-klein', {
-    state: 'structure_recovery_visual_rejected',
+    state: 'robot_scaffold_knit_route_passed',
     modelComponents: reviewedFluxModelComponents,
     workflowComponents: [
       'wormsport-flux2-klein-text-to-image-workflow',

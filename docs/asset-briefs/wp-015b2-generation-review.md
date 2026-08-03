@@ -821,3 +821,148 @@ remains external quarantine. One terminal result exhausted this contract: no
 retry, prompt rewrite, seed change, or second reference was submitted. A future
 two-reference structure/style experiment or deterministic character-master
 route requires separate planning and approval.
+
+## WP-015B2C Robot-Scaffold Knit Conversion
+
+Contract date: 2026-08-03. Status: **both gates completed and passed; route
+evidence retained in external quarantine; further generation blocked**.
+
+### Reviewed hypothesis and boundary
+
+All three FLUX Wizard failures retained a familiar rounded amigurumi prior. The
+B2C experiment changes that semantic prior before adding any knitted material:
+
+1. render the exact deterministic guide as a compact faceted mechanical
+   scaffold, using no crochet, Wizard, hood, cute, plush, doll, or puffy term;
+2. stop immediately if that scaffold does not pass the angular anatomy gate;
+3. only after a recorded pass, stage the exact robot bytes and convert materials
+   while repeating every silhouette invariant; and
+4. compare the untouched robot and knit outputs before any adoption decision.
+
+The robot is a disposable external control image. It is not Knotkin lore,
+concept art, a runtime asset, a product candidate, or permission to redesign the
+characters as robots. Both outputs remain external quarantine. The project
+owner also amends the future character contract to exactly two bead eyes and one
+small neutral expression-ready mouth; historical mouthless prompts remain
+unchanged evidence and are not reused here.
+
+### Gate 1: mechanical scaffold
+
+| Field | Frozen value |
+| --- | --- |
+| MCP tool | `generate_flux2_klein_reference_edit` |
+| Reference | exact `knotkin-wizard-structure-guide-v1` input, staged as `wormsport/wizard-structure-guide-v1.png` |
+| Seed | `15026002` |
+| Settings | one-megapixel reference bound, 1024x1024 canvas, batch 1, 4 FLUX.2 scheduler steps, CFG 1, Euler |
+| Runtime | closed `flux2-klein`, `--lowvram --preview-method none`, no inline preview |
+
+Exact 61-word prompt:
+
+```text
+Image 1 defines the exact silhouette and pose. Render its flat-crowned continuous angular head-and-torso, chamfered shoulders, narrow lower bridge, two separate rectangular feet, and forward articulated hand as a compact blue mechanical automaton. Use planar painted-metal panels, crisp beveled edges, two glossy black circular eyes, and one small neutral mouth slot. One complete right-facing character centered on an unbroken white field.
+```
+
+Gate 1 passes only when the untouched full output and exact 48x48 derivative
+both show one complete isolated right-facing subject; one broad continuous
+flat-crowned faceted head-and-torso; visible chamfered sides and narrow lower
+bridge; two separate rectangular feet on one baseline; a protruding articulated
+forward hand; exactly two eyes; and one small neutral mouth. Mechanical material
+quality is secondary. A round head over an oval torso, domed crown, missing
+bridge/hand/foot, additional face feature, or small-scale silhouette collapse
+fails the gate.
+
+One terminal Gate 1 result exhausts its authorization. A failure closes B2C and
+blocks Gate 2. A pass must be recorded with prompt ID, dimensions, bytes, hash,
+telemetry, queue state, and derivative hash before the manifest can transition
+to the Gate 2 authorization.
+
+#### Gate 1 recorded result
+
+| Field | Recorded value |
+| --- | --- |
+| Prompt ID | `2dfc929f-3370-41e9-a568-4f1a86689c36` |
+| Terminal state | success; queue returned to 0 running / 0 pending |
+| Elapsed | helper 298.57 seconds; Comfy server 296.06 seconds |
+| Full output | external `WormsPortFlux2KleinReferenceEdit_00003_.png` |
+| Output properties | 1024x1024 opaque RGB PNG; 644,831 bytes |
+| Output SHA-256 | `BC6B21B74C5016504A733D5D1EC306FE7F46A8CC5E526E0FFF28EB9EABC25D38` |
+| 48px evidence | external `E:\ComFy\TasirWimp\component-evidence\wp-015b2c\gate1\wizard-robot-scaffold-15026002-48px.png`; 48x48; 2,799 bytes |
+| 48px SHA-256 | `3D82FC1A55BC94AFABF1258C6E129F2421390C0FC6FEEECAB244917820A4C2BD` |
+| Runtime telemetry | RX 7600 LOW_VRAM; helper driver free-VRAM minimum 3,239,481,856 bytes; server loaded 2,844.00 MB, offloaded 1,038.02 MB, and reserved a 324.00 MB buffer; no sample error or retry |
+| Decision | **pass — Gate 2 manifest transition permitted** |
+
+The output proves the semantic-prior hypothesis at the bounded level needed for
+Gate 2. It has a flat crown, chamfered planar sides, one angular outer chassis,
+a visibly narrowed lower body, two separate rectangular feet, a complete
+articulated forward hand, exactly two eyes, and one small mouth slot. The
+mechanical panel seam between upper and lower volumes does not divide the outer
+silhouette into the previous round head/oval torso anatomy. All controlling
+features remain readable at 48x48.
+
+The robot is not accepted product art, does not amend the Knotkin world into a
+robot setting, and may be used only as the exact Gate 2 material-conversion
+input. Exact hand/socket normalization and removal of mechanical seams remain
+later concerns; they do not block this scaffold purpose.
+
+### Gate 2: fitted knit shell (conditional)
+
+Gate 1 passed. Gate 2 becomes executable only after the closed profile records
+that result, exact-stages only the output above as
+`wormsport/wizard-robot-scaffold-15026002.png`, verifies the source/staged
+SHA-256, and reruns all preflight checks. Its frozen seed is `15026003`. Its
+exact 67-word prompt is:
+
+```text
+Image 1 is the exact mechanical scaffold. Preserve its complete silhouette, scale, pose, planar proportions, flat crown, chamfered sides, narrow lower bridge, rectangular feet, articulated forward hand, two eyes, and small neutral mouth. Change only its materials: every visible surface becomes a closely fitted padded blue crochet shell stretched over the rigid faceted frame, with restrained dark-blue felt and gold stitching. Centered unchanged on the white field.
+```
+
+Gate 2 passes only when the knitted result preserves every Gate 1 structural
+criterion, keeps exactly two eyes and one small mouth, reads as yarn/felt rather
+than exposed machinery, and remains clear at 48x48. In addition to visual
+review, compare foreground silhouettes after normalizing both non-white subject
+bounds; target at least `0.90` intersection-over-union, no baseline drift beyond
+`16` source pixels, and no material-caused loss of the forward hand. The exact
+comparator is `scripts/compare-character-silhouettes.js`: an 8-bit RGB/RGBA
+pixel enters the subject mask when its maximum channel distance from white is at
+least `32`; each foreground bound is normalized to 256x256 before IoU. The
+numeric measurement supports rather than overrides the visual gate.
+
+Terms such as `cute doll`, `plush toy`, and `puffy body` remain intentionally
+absent because they would reintroduce the rounded prior under test. Gate 2 does
+not add a Wizard hat or Calling props; those require a later bounded styling
+decision only after geometry and knit conversion both pass. No third request,
+prompt rewrite, seed change, multi-reference graph, Loomkeeper, animation,
+promotion, or runtime integration is authorized by B2C.
+
+#### Gate 2 recorded result
+
+| Field | Recorded value |
+| --- | --- |
+| Staged reference | `wormsport/wizard-robot-scaffold-15026002.png`; source/staged SHA-256 `BC6B21B74C5016504A733D5D1EC306FE7F46A8CC5E526E0FFF28EB9EABC25D38` |
+| Prompt ID | `936917b2-f182-4cfa-8960-5fccda8cbe0c` |
+| Terminal state | success; queue returned to 0 running / 0 pending |
+| Elapsed | helper 295.019 seconds; Comfy server 292.55 seconds |
+| Full output | external `WormsPortFlux2KleinReferenceEdit_00004_.png` |
+| Output properties | 1024x1024 opaque RGB PNG; 1,130,420 bytes |
+| Output SHA-256 | `5FF0A63DAC03E13B2A3390AD77E6929A9822412E1A1E0415E7A38125D703B246` |
+| 48px evidence | external `E:\ComFy\TasirWimp\component-evidence\wp-015b2c\gate2\wizard-knit-conversion-15026003-48px.png`; 48x48; 3,394 bytes |
+| 48px SHA-256 | `9308495013B25771F6B015AC7FD4EE3FC3B76DE4360AAF2A218ED4009D3A7B18` |
+| Runtime telemetry | RX 7600 LOW_VRAM; helper driver free-VRAM minimum 2,390,135,808 bytes; server loaded 2,808.00 MB, offloaded 1,074.02 MB, and reserved a 324.00 MB buffer; no sample error or retry |
+| Raw-canvas IoU | `0.951554` |
+| Bounds-normalized IoU | `0.956188` against required `0.90` |
+| Baseline drift | `12` pixels against maximum `16` |
+| Numeric decision | pass |
+| Visual decision | **pass — robot-scaffold fitted-knit route demonstrated** |
+
+The knit result preserves the robot's flat crown, chamfered planar outer body,
+narrow lower section, separate rectangular feet, forward articulated hand, two
+eyes, and small mouth. Crochet covers the visible shell and the restrained gold
+stitching follows the faceted seams. The silhouette remains clearly angular at
+48x48 rather than returning to the earlier round doll anatomy. Numeric overlap
+and baseline gates independently agree with the visual review.
+
+This is a route proof, not an approved Wizard master. It remains opaque, retains
+construction seams and a rear scaffold volume, has no final Calling cowl or
+Relic-socket normalization, and has not passed exact-output IP/product review.
+Further work must first adopt the route and freeze a separate Wizard styling and
+normalization contract. No third request ran under B2C.

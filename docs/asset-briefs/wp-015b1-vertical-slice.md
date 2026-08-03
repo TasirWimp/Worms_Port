@@ -1,7 +1,7 @@
 # WP-015B1 Vertical-Slice Asset Briefs
 
-Status: frozen for WP-015B2 after the commit containing this file is present on
-origin.
+Status: frozen historical B1 contract, amended for future character work by the
+WP-015B2C mouth decision below.
 
 This document is the production contract for the first NIMble Knots visual
 slice: Wizard, Loomkeeper, Threadball, and Patch 01. WP-015B1 writes and reviews
@@ -26,6 +26,19 @@ the contract only. It generates, promotes, and integrates no media.
   status.
 - Every output remains in external quarantine until its exact file, parents,
   generation record, visual/IP review, and product manifest entry pass.
+
+### WP-015B2C facial amendment
+
+The project owner approved one small expressive mouth on 2026-08-03. Future
+Knotkin masters require exactly two glossy bead eyes and one small neutral mouth;
+later animation may replace that mouth with bounded expression variants. No
+nose, eyebrows, extra eye, or other facial feature is introduced.
+
+The exact SD 1.5 prompts and negative prompt below remain unchanged historical
+evidence for reproducibility. Their `no mouth`/`mouth` exclusions are superseded
+for future candidates and must not be copied into WP-015B2C or later generation
+contracts. All anatomy, baseline, socket, animation, environment, and
+source-boundary requirements remain normative.
 
 ## Exact Generation Contract
 
@@ -145,8 +158,9 @@ origin, damage, turn timing, or replay truth.
 - Costume: folded deep-blue felt Wizard hood, visible gold blanket stitching,
   woven belt and wooden button clasp. A compact spool staff may be strapped
   behind the rear shoulder, but the forward hand and Relic socket remain clear.
-- Expression: curious and determined through eye angle and forward body lean;
-  exactly two glossy black bead eyes and no mouth or other facial marks.
+- Expression: curious and determined through eye angle, one small neutral mouth,
+  and forward body lean; exactly two glossy black bead eyes and no nose,
+  eyebrows, or other facial marks.
 
 Exact positive prompt:
 
@@ -181,7 +195,8 @@ Wizard acceptance:
   buttons, a small decorative loom-shuttle charm fixed to the rear belt. No
   crown, armor, staff, weapon, villain spikes, or selected Relic.
 - Expression: calm, capable, and competitive rather than sinister; exactly two
-  glossy black bead eyes and no mouth or other facial marks.
+  glossy black bead eyes, one small neutral mouth, and no nose, eyebrows, or
+  other facial marks.
 
 Exact positive prompt:
 

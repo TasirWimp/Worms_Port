@@ -17,6 +17,7 @@
     "Freeze the Wizard, Loomkeeper, Threadball, and first-Patch briefs, prompts, negative constraints, sockets, triggers, and acceptance checks",
     "After the rejected SD 1.5 attempts, insert a bounded FLUX.2 Klein 4B model-admission deviation without approving a model or resuming generation",
     "After the failed FLUX Wizard edit, test one deterministic project-owned structure reference with one positive-only fixed-seed diagnostic",
+    "After three rounded Wizard failures, test one mechanical scaffold and conditionally one fitted-knit conversion while amending the future face contract to retain a small expressive mouth",
     "Generate deterministic quarantined vertical-slice candidates and complete pre-promotion art, IP, provenance, and phone-readability review"
   ],
   "non_goals": [
@@ -37,6 +38,7 @@
     "RX 7600 8 GB low-VRAM technical smoke",
     "Wizard and Threadball staged visual admission",
     "WP-015B2B deterministic structure-guide integrity and one fixed-seed Wizard diagnostic",
+    "WP-015B2C Gate 1 robot-scaffold diagnostic and conditional Gate 2 fitted-knit silhouette preservation",
     "WP-015B1 brief-contract completeness and source-boundary review",
     "fixed-seed quarantined vertical-slice master review",
     "self-review"
@@ -53,7 +55,9 @@
     "15025001",
     "15025002",
     "15025003",
-    "15026001"
+    "15026001",
+    "15026002",
+    "15026003"
   ],
   "sorcerers_reference_used": false,
   "clean_room_records": [],
@@ -277,21 +281,47 @@
       "command": "npm audit (WP-015B2B closure)",
       "status": "pass",
       "detail": "npm reported zero vulnerabilities. No package or lockfile change was introduced by WP-015B2B."
+    },
+    {
+      "command": "WP-015B2C contract, mouth amendment, and Gate 1 preflight",
+      "status": "pass",
+      "detail": "The future character contract now keeps exactly two bead eyes and one small neutral expression-ready mouth while historical mouthless prompts remain unchanged evidence. The closed profile authorized Gate 1 only. Compliance, all 28 tooling tests, the full build, npm audit, exact guide regeneration, all three model hashes, both workflow hashes, LOW_VRAM/no-preview startup, staged guide hash, both MCP tools, an empty queue, and the prior B2B latest-output baseline passed before inference."
+    },
+    {
+      "command": "WP-015B2C Gate 1 mechanical-scaffold diagnostic",
+      "status": "pass",
+      "detail": "The one authorized seed 15026002 request completed as prompt 2dfc929f-3370-41e9-a568-4f1a86689c36 with helper elapsed time 298.57 seconds and no sampling error. Output WormsPortFlux2KleinReferenceEdit_00003_.png is a 644,831-byte 1024x1024 opaque RGB PNG, SHA-256 BC6B21B74C5016504A733D5D1EC306FE7F46A8CC5E526E0FFF28EB9EABC25D38. Its 2,799-byte 48x48 HighQualityBicubic derivative has SHA-256 3D82FC1A55BC94AFABF1258C6E129F2421390C0FC6FEEECAB244917820A4C2BD. The result passed the flat crown, chamfered planar chassis, continuous angular outer silhouette, narrowed lower body, rectangular feet, articulated forward hand, exactly two eyes, one mouth, isolation, and 48px readability purpose. It remains an external disposable robot scaffold. The queue returned to 0/0; no retry or Gate 2 request occurred before the second manifest transition."
+    },
+    {
+      "command": "WP-015B2C Gate 2 fitted-knit conversion",
+      "status": "pass",
+      "detail": "After Gate 1 documentation, the manifest transitioned separately and all compliance, 30 tooling tests, build, audit, exact model/workflow hashes, MCP tools, staged source hash, empty queue, and latest-output baseline passed. StageInput exact-copied robot bytes BC6B21B74C5016504A733D5D1EC306FE7F46A8CC5E526E0FFF28EB9EABC25D38 as wormsport/wizard-robot-scaffold-15026002.png. The single seed 15026003 conversion completed as prompt 936917b2-f182-4cfa-8960-5fccda8cbe0c in 295.019 seconds with no sampling error. Output WormsPortFlux2KleinReferenceEdit_00004_.png is a 1,130,420-byte 1024x1024 opaque RGB PNG, SHA-256 5FF0A63DAC03E13B2A3390AD77E6929A9822412E1A1E0415E7A38125D703B246. Its 3,394-byte 48x48 derivative has SHA-256 9308495013B25771F6B015AC7FD4EE3FC3B76DE4360AAF2A218ED4009D3A7B18. Visual review passed the angular knit shell, hand, feet, two eyes, one mouth, isolation, and 48px criteria. The deterministic comparison passed with canvas IoU 0.951554, normalized IoU 0.956188, and 12-pixel baseline drift. Both outputs remain external quarantine; no third request ran."
+    },
+    {
+      "command": "WP-015B2C deterministic silhouette tooling",
+      "status": "pass",
+      "detail": "The dependency-free 8-bit RGB/RGBA PNG comparator reports raw and foreground-bounds-normalized IoU plus baseline drift using a frozen 32-level maximum channel distance from white and 256x256 normalization. Its self-comparison and placement-normalization tests passed, and the exact Gate 2 comparison reproduced normalized IoU 0.956188 with 12-pixel baseline drift."
+    },
+    {
+      "command": "WP-015B2C closure verification",
+      "status": "pass",
+      "detail": "JSON parsing, npm run check:compliance, all 30 tooling tests, the complete compliance/TypeScript/server/client build, npm audit with zero vulnerabilities, and git diff --check passed after the final profile state transitioned to robot_scaffold_knit_route_passed. Zero runtime assets were copied; the existing Vite chunk-size warning remained unchanged."
     }
   ],
   "skipped_checks": [
-    "The phone-browser matrix was not run for WP-015B0, WP-015B1, WP-015B2A Gates 1-6, or WP-015B2B because these slices change only the offline generation pipeline, documentation, compliance metadata, and external quarantined component state; they change no browser-facing code or runtime asset.",
-    "Real-device testing was not run because WP-015B0, WP-015B1, WP-015B2A Gates 1-6, and WP-015B2B create no player-visible behavior or product media.",
+    "The phone-browser matrix was not run for WP-015B0, WP-015B1, WP-015B2A Gates 1-6, WP-015B2B, or WP-015B2C because these slices change only the offline generation pipeline, documentation, compliance metadata, and external quarantined component state; they change no browser-facing code or runtime asset.",
+    "Real-device testing was not run because WP-015B0, WP-015B1, WP-015B2A Gates 1-6, WP-015B2B, and WP-015B2C create no player-visible behavior or product media.",
     "FLUX inference was not run in Gate 3 because the separate Gate 4 technical smoke had to record runtime, memory behavior, and exact output evidence as its own bounded review.",
     "Wizard, Threadball, and reference-edit visual admission was not run in Gate 4 because technical hardware admission and visual-purpose admission are separate gates."
   ],
   "residual_risks": [
-    "The reviewed image-conditioned graph is ordinary VAE img2img, not IP-Adapter or ControlNet; strong composition changes require an isolated master and carefully chosen denoise.",
+    "The reviewed image-conditioned graph uses native FLUX ReferenceLatent semantic conditioning, not a hard edge, pose, mask, or ControlNet constraint. B2C demonstrates one successful semantic-scaffold workaround but does not establish pixel-exact geometry control for arbitrary characters.",
     "The current SD 1.5 checkpoint did not reliably follow the dense B1 character, Relic, and environment prompts. Its rejected prompts, seeds, settings, and outputs remain historical evidence; they are not silently reused for another model architecture.",
     "WP-015B2A retains exactly three external FLUX.2 component files, two native workflows, and one closed executable profile as technical evidence. The completed WP-015B2B diagnostic changed only the structural input and prompt strategy and failed its Wizard anatomy purpose; its result does not authorize a second attempt, multi-reference graph, or batch.",
-    "The Windows AMD RX 7600 8 GB completed the technical smoke, all three Gate 5 requests, and the B2B diagnostic without runtime failure, but each offloaded request took 253-298 seconds. Driver portability remains unproven and its approximate VRAM samples must not be generalized into a hardware requirement.",
+    "The Windows AMD RX 7600 8 GB completed the technical smoke, all three Gate 5 requests, B2B, and both B2C gates without runtime failure, but each offloaded request took 253-299 seconds. Driver portability remains unproven and its approximate VRAM samples must not be generalized into a hardware requirement.",
     "Threadball passed only a bounded structure review; its opaque output has no exact-output IP/product approval, alpha normalization, derivative cleanup, or manifest entry. It may inform a later separately reviewed Relic-only route but is not a product asset.",
-    "The deterministic guide fixes the intended angular anatomy, baseline, and socket in a conditioning diagram, but the B2B result confirmed that this single-reference FLUX route follows the Wizard semantics and materials more strongly than the required geometry. Character work remains blocked pending a separately reviewed two-reference or deterministic-construction route.",
-    "No WP-015B2 output currently passes exact-output art/IP review. The Threadball structure result remains only quarantined evidence, and the character route cannot resume until a new bounded construction plan is reviewed."
+    "B2C proves that a mechanical semantic scaffold can establish angular geometry and survive one fitted-knit conversion, but the opaque knit output retains panel seams and a rear scaffold volume, lacks final Wizard Calling treatment, and has no exact hand/socket normalization, alpha, animation, or product manifest entry.",
+    "The mouth amendment improves expression capacity but requires a later neutral-mouth topology and bounded expression-frame contract so mouth placement does not flicker or multiply across animation.",
+    "No WP-015B2 output currently passes exact-output art/IP review. Threadball and the B2C knit conversion remain quarantined route evidence, and character production cannot resume until a Wizard-master adoption and cleanup contract is reviewed."
   ]
 }

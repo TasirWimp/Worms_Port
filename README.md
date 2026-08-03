@@ -152,6 +152,18 @@ Re-entry starts from the recorded result and decision rule in
 rejected Wizard as a reference. A two-reference structure/style graph or a
 deterministic character-master route requires a separate reviewed plan.
 
+WP-015B2C tests a narrower robot-scaffold hypothesis through the same exact
+FLUX reference workflow. Gate 1 rendered the deterministic guide once as a
+faceted mechanical scaffold with seed `15026002` and passed the angular
+structure gate. The exact robot remains temporary external control evidence,
+never Knotkin lore or product art. Gate 2 then converted those exact bytes once
+with seed `15026003` into a closely fitted knitted shell and passed visual plus
+numeric silhouette preservation. Both outputs remain external quarantine and
+the route is not yet an approved Wizard master. The future face contract keeps
+exactly two bead eyes plus one small neutral expression-ready mouth. See
+`docs/asset-briefs/wp-015b2-generation-review.md`; no further generation is
+implied.
+
 ## Build
 
 Use Node.js 20 or newer.
@@ -504,8 +516,8 @@ pause, outage, and key-response requirements.
 
 The planned product identity is **NIMble Knots: Cotton Clash**, a playful
 fantasy artillery game set in handcrafted Patchwork Realms. Its Knotkin heroes
-combine cotton and crochet materials, large bead eyes, mouthless Nimiq-inspired
-geometry, and distinct fantasy Callings.
+combine cotton and crochet materials, large bead eyes, small expressive mouths,
+Nimiq-inspired geometry, and distinct fantasy Callings.
 
 See `docs/art-direction.md` for the current world, character, material, Nimiq
 palette, reward-loop, provenance, and import-boundary decisions. Concept art is
