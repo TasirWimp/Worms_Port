@@ -1001,6 +1001,46 @@ Only after both primary reviews may a single controlled reference edit be
 considered, and only when a failed primary gives a specific testable correction.
 Do not queue Loomkeeper, Patch, animation, roster, or promotion work.
 
+### WP-015B2A Gate 5/6 Visual Decision Re-entry
+
+Gate 5 completed on 2026-08-03 with the exact sequential maximum: one Wizard
+text primary, one Threadball text primary after Wizard review, and one
+controlled Wizard edit after both primary reviews. The queue returned to zero
+running and zero pending after each request. No retry, alternate seed, prompt
+rewrite, second edit, or batch ran.
+
+| Purpose | Seed | External output | SHA-256 | Decision |
+| --- | ---: | --- | --- | --- |
+| Wizard text primary | `15025001` | `WormsPortFlux2KleinText_00002_.png` | `D097705B08A4895ACCCA9D91B34B64039CACE893857E0BF688D54CA326481962` | reject |
+| Threadball text primary | `15025002` | `WormsPortFlux2KleinText_00003_.png` | `2BAE664F7E5A862BCB53B55A68071580485CE040A89650C68EC6FA398F4089EB` | pass for bounded structure only |
+| Wizard controlled edit | `15025003` | `WormsPortFlux2KleinReferenceEdit_00001_.png` | `9ACE9858AA1D81C5381548DF7473857C13EE83E4B90D9D8D6B5E8638B0B5A1CD` | reject |
+
+The text Wizard followed isolation, side bias, two eyes, hood identity, and
+separated feet, but added a mouth and produced rounded doll anatomy without a
+usable forward hand. `StageInput` exact-copied those rejected bytes as
+`wormsport/wizard-gate5-primary.png`. The one native FLUX reference edit removed
+the mouth but retained the rounded anatomy and unusable hand. Threadball alone
+passed its round blue/gold yarn-object structure at 28 pixels.
+
+Gate 6 therefore marks the `flux2-klein` profile
+`technical_only_visual_rejected`: it remains executable only so exact technical
+evidence can be inspected, but it is not an adopted B2 candidate route. Do not
+run `Smoke`, either FLUX MCP generation tool, or a generic workflow during
+ordinary re-entry. Use read-only status and the B2 review record:
+
+```powershell
+Set-Location "C:\Users\jensb\Desktop\Projects\Worms_Port"
+.\scripts\comfy-asset-pipeline.ps1 -Action Status -Profile flux2-klein -VerifyHashes -Json
+python .\scripts\comfy-mcp-smoke.py --profile flux2-klein --probe
+```
+
+All full-size outputs remain under the external Comfy output root. Exact 48px
+Wizard and 28px Threadball review derivatives remain under
+`E:\ComFy\TasirWimp\component-evidence\wp-015b2a\gate5`. None is a product
+asset. Re-entry returns to planning a character-master route that can enforce
+the anatomy and socket contract. A possible Relic-only FLUX route requires its
+own later scope decision; Threadball's pass does not authorize more generation.
+
 ### WP-015B0 Approval And Canonical Baseline
 
 WP-015B0 is the no-product-output pre-production gate. A bounded technical

@@ -130,7 +130,7 @@ test('generation profiles reject arbitrary model, workflow, tool, and launch sel
   fluxProfile.workflow_components = ['comfyui-mcp-generate-image-workflow'];
   fluxProfile.required_mcp_tools = ['run_workflow'];
   fluxProfile.required_comfy_arguments = [];
-  fluxProfile.state = 'technical_smoke_pending';
+  fluxProfile.state = 'hardware_admitted_visual_pending';
   invalid.profiles.push({
     ...structuredClone(fluxProfile),
     id: 'arbitrary-model'

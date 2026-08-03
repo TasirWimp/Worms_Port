@@ -495,3 +495,212 @@ bounded action is Gate 5 only: run and review one short-prompt Wizard structure
 pass, then run and review one short-prompt Threadball structure pass. At most
 one controlled reference edit may follow a clearly diagnosed failure; no other
 purpose or batch may be queued.
+
+## WP-015B2A Gate 5 Visual Admission Contract
+
+Contract date: 2026-08-03. Status: **Wizard primary approved to run; no later
+Gate 5 request is pre-approved**.
+
+Gate 5 tests whether the technically admitted FLUX route follows the two most
+important structure classes with materially shorter prompts than the rejected
+SD 1.5 route. It is a visual micro-bakeoff, not B2 production resumption. The
+canonical lineup remains a documentation-only art-direction reference; neither
+primary pass conditions on it or copies its pixels.
+
+The sequence is fail-closed:
+
+1. run the Wizard primary below and record terminal evidence;
+2. review it at 1024x1024 and a 48-pixel-tall phone preview;
+3. only after that decision, add and run the Threadball primary contract; and
+4. only after both primary reviews, decide whether one controlled reference
+   edit has a specific testable purpose. Otherwise record it as not used.
+
+### Wizard structure primary
+
+| Field | Frozen value |
+| --- | --- |
+| MCP tool | `generate_flux2_klein_text` |
+| Seed | `15025001` |
+| Settings | 1024x1024, batch 1, 4 FLUX.2 scheduler steps, CFG 1, Euler |
+| Runtime | closed `flux2-klein`, `--lowvram --preview-method none`, no inline preview |
+| Reference input | none |
+
+Exact prompt:
+
+```text
+One isolated full-body game character on a plain white background: a cute blue crochet Wizard with a broad angular hexagonal head-and-torso, flat crown, short arms, narrow lower bridge, and two separate rectangular feet on one baseline. Right-facing three-quarter side view, both glossy black bead eyes visible, no mouth. Folded dark-blue felt hood with gold stitching; empty forward hand. No staff, Relic, text, logo, scenery, shadow, or second character.
+```
+
+This first pass evaluates only the structure necessary to justify continuing:
+one complete subject; right-facing side-biased pose; exactly two readable bead
+eyes and no mouth; angular shared Knotkin anatomy; separated baseline feet;
+Wizard hood/palette; a clear empty forward hand; and an isolated background.
+It does not require final fiber fidelity, staff/belt/button detail, exact socket
+coordinates, alpha, animation readiness, or product-asset polish. Failure does
+not authorize a new prompt, new seed, or immediate reference edit.
+
+Wizard primary result: **reject as product structure; sufficient instruction
+following to continue the separate Threadball purpose test**.
+
+| Evidence | Recorded value |
+| --- | --- |
+| Prompt ID | `34c39230-baf7-4a48-9a11-fe0fd8c1a63f` |
+| Terminal state / helper wall time | Comfy `success` / 253.52 seconds |
+| External output | `WormsPortFlux2KleinText_00002_.png`, 1024x1024 opaque RGB PNG, 759,137 bytes |
+| SHA-256 | `D097705B08A4895ACCCA9D91B34B64039CACE893857E0BF688D54CA326481962` |
+| Cached invariant nodes | model, encoder, VAE, latent canvas, sampler, scheduler |
+| Sampled memory | host free minimum 4,480,778,240 bytes; driver free-VRAM minimum 3,019,488,768 bytes |
+
+The output contains one complete right-facing blue crochet Wizard on an
+isolated white field. Both bead eyes, hood identity, complete feet, and overall
+silhouette remain readable in the exact 48x48 review derivative at
+`E:\ComFy\TasirWimp\component-evidence\wp-015b2a\gate5\wizard-15025001-48px.png`
+(SHA-256
+`FFFEC34E99A9DA356B14D644DA0D61962ABE00E4CA08F714F523952F688D3084`).
+This is materially better structural instruction following than the rejected
+SD 1.5 Wizard outputs.
+
+It still fails three decisive requirements: the model added a visible mouth;
+the head, torso, and waist remain rounded doll anatomy rather than the broad
+angular Knotkin body with a narrow lower bridge; and neither front limb forms a
+clearly usable empty held-Relic hand/socket. The feet are separated but rounded,
+and a soft floor shadow is present. No output is approved or promoted. These
+failures are recorded without changing the prompt or seed and provide a
+specific possible reference-edit hypothesis only after Threadball review.
+
+### Threadball structure primary
+
+Wizard review closes the prerequisite for this second and final text primary.
+Its independently frozen contract is:
+
+| Field | Frozen value |
+| --- | --- |
+| MCP tool | `generate_flux2_klein_text` |
+| Seed | `15025002` |
+| Settings | 1024x1024, batch 1, 4 FLUX.2 scheduler steps, CFG 1, Euler |
+| Runtime | closed `flux2-klein`, `--lowvram --preview-method none`, no inline preview |
+| Reference input | none |
+
+Exact prompt:
+
+```text
+One isolated game projectile on a plain white background: a single centered spherical ball of chunky sky-blue chenille yarn, wrapped by three thin luminous gold threads. Clear round silhouette, visible soft fibers, balanced medium weight, generous empty padding. No character, hand, face, floor, cast shadow, trail, explosion, text, logo, fuse, or second object.
+```
+
+This pass evaluates one complete centered object, round readability at 28x28,
+soft wound-yarn material, a few gold wraps that read as thread rather than a
+logo/fuse/orbit, no baked trail or impact, balanced medium-weight identity, and
+an isolated field. It does not require alpha, exact derivative sizing, final
+fiber cleanup, trail/impact derivatives, or product polish. Failure does not
+authorize a prompt or seed change.
+
+Threadball primary result: **pass for Gate 5 structure; exact output remains
+quarantined and unapproved as product media**.
+
+| Evidence | Recorded value |
+| --- | --- |
+| Prompt ID | `9c00e7df-6055-42fa-b635-04754bfce2ae` |
+| Terminal state / helper wall time | Comfy `success` / 256.92 seconds |
+| External output | `WormsPortFlux2KleinText_00003_.png`, 1024x1024 opaque RGB PNG, 956,917 bytes |
+| SHA-256 | `2BAE664F7E5A862BCB53B55A68071580485CE040A89650C68EC6FA398F4089EB` |
+| Cached invariant nodes | model, encoder, VAE, latent canvas, sampler, scheduler |
+| Sampled memory | host free minimum 4,483,756,032 bytes; driver free-VRAM minimum 4,746,548,224 bytes |
+
+The output is one complete centered, circular, sky-blue chenille ball with a
+small set of distinct gold thread wraps. It has generous clean padding, no
+character, frame, trail, impact, fuse, or second object, and its round blue/gold
+identity survives the exact 28x28 review derivative at
+`E:\ComFy\TasirWimp\component-evidence\wp-015b2a\gate5\threadball-15025002-28px.png`
+(SHA-256
+`D70B0E51E91B3198C948DA3DC9A6C23AD4DE57148B0CB278443365F47F641452`).
+The gold is restrained thread rather than a logo or electrical orbit, and the
+object reads as balanced rather than needle-fast or spool-heavy. Final alpha,
+exact derivative cleanup, IP/output approval, and promotion remain later gates.
+
+### Wizard controlled reference edit
+
+Both primary purposes have now been reviewed. Threadball passed, while the
+Wizard primary established one bounded correction hypothesis. Gate 5 therefore
+uses its single optional reference edit on the exact rejected Wizard primary;
+the multi-character canonical lineup is not used as an input.
+
+| Field | Frozen value |
+| --- | --- |
+| MCP tool | `generate_flux2_klein_reference_edit` |
+| Reference source | exact `WormsPortFlux2KleinText_00002_.png` bytes, SHA-256 `D097705B08A4895ACCCA9D91B34B64039CACE893857E0BF688D54CA326481962` |
+| Seed | `15025003` |
+| Settings | one-megapixel reference bound, batch 1, 4 FLUX.2 scheduler steps, CFG 1, Euler |
+| Runtime | closed `flux2-klein`, `--lowvram --preview-method none`, no inline preview |
+
+Exact edit prompt:
+
+```text
+Edit the referenced Wizard character. Preserve its blue crochet material, dark-blue gold-stitched hood, full-body right-facing pose, two bead eyes, separated feet, single-subject composition, and white background. Change only its anatomy: remove the mouth; reshape the head and torso into one broad angular hexagonal form with a flat crown and narrow lower bridge; shape the forward arm into a clear empty hand. No staff, Relic, text, logo, or scenery.
+```
+
+The edit passes only if it keeps the already successful isolation, side bias,
+eyes, hood identity, materials, and feet while removing the mouth and visibly
+improving both shared Knotkin geometry and the empty forward-hand read. It is
+not a general beautification pass. Failure closes Gate 5 without another
+generation, seed, prompt rewrite, or reference.
+
+Controlled edit result: **reject**.
+
+`StageInput` copied the exact Wizard primary bytes to
+`wormsport/wizard-gate5-primary.png` and returned the reviewed
+`generate_flux2_klein_reference_edit` workflow. Source and staged SHA-256 both
+equal `D097705B08A4895ACCCA9D91B34B64039CACE893857E0BF688D54CA326481962`.
+
+| Evidence | Recorded value |
+| --- | --- |
+| Prompt ID | `5f649423-e441-40eb-a871-384aaccf2677` |
+| Terminal state / helper wall time | Comfy `success` / 297.30 seconds |
+| External output | `WormsPortFlux2KleinReferenceEdit_00001_.png`, 1024x1024 opaque RGB PNG, 1,129,517 bytes |
+| SHA-256 | `9ACE9858AA1D81C5381548DF7473857C13EE83E4B90D9D8D6B5E8638B0B5A1CD` |
+| Cached invariant nodes | model, encoder, VAE, sampler selection |
+| Sampled memory | host free minimum 4,625,379,328 bytes; driver free-VRAM minimum 2,840,247,808 bytes |
+
+The edit preserved a single complete right-facing blue crochet character, two
+eyes, separated feet, hood identity, and the white field, and it successfully
+removed the mouth. Its exact 48x48 review derivative is
+`E:\ComFy\TasirWimp\component-evidence\wp-015b2a\gate5\wizard-edit-15025003-48px.png`
+(SHA-256
+`11ED5D7BD73F66730BFC8A0C044CE2186191A7F6B69B5E780828B081509B94CF`).
+
+The body remains a rounded head over an oval doll torso rather than one broad
+angular hexagonal Knotkin form with a narrow lower bridge. Both limbs remain
+simple rounded arms; the forward limb does not provide a clear empty hand or
+held-Relic socket. The hood also gained a second peak without solving the body
+geometry. The edit therefore fails the frozen correction hypothesis. No second
+edit, new seed, prompt rewrite, or alternate reference is allowed.
+
+## WP-015B2A Gate 5 and Gate 6 Decision
+
+Decision date: 2026-08-03. Status: **technical route retained for evidence;
+general visual route rejected**.
+
+Gate 5 completed exactly three sequential, reviewed requests:
+
+1. Wizard text primary: rejected for mouth, rounded anatomy, and unusable hand;
+2. Threadball text primary: passed its bounded structure purpose; and
+3. the one allowed Wizard reference edit: removed the mouth but still failed
+   angular Knotkin anatomy and forward-hand structure.
+
+All three reached terminal success without OOM, node error, cancellation,
+retry, seed shopping, workflow fallback, or a second queued job. Their outputs
+and phone-scale derivatives remain external quarantine evidence. Nothing was
+copied below `assets/`, added to the product asset manifest, or approved as a
+production master.
+
+Gate 6 requires both visual purposes to pass before the route can resume B2
+candidate generation. Threadball alone is insufficient, so the closed
+`flux2-klein` profile is not adopted as the general WP-015B2 asset route. Its
+technical compatibility and stronger isolated-object performance remain useful
+evidence for a future separately reviewed Relic-only route, but they do not
+authorize more generation now.
+
+The next bounded action returns to planning only: choose a character-master
+construction route capable of enforcing angular Knotkin geometry, exact facial
+features, and deterministic held-Relic sockets. Do not generate Loomkeeper,
+Patch, animation, roster, or another Wizard/Threadball candidate until that
+route and any narrower FLUX use are explicitly reviewed.

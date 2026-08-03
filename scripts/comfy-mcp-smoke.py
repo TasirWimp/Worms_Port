@@ -4,6 +4,7 @@ from __future__ import annotations
 
 import argparse
 import json
+import re
 import sys
 import threading
 import time
@@ -172,8 +173,17 @@ def main() -> int:
     parser.add_argument("--profile", choices=("sd15", "flux2-klein"), default="sd15")
     parser.add_argument("--require-tool", action="append", default=[])
     parser.add_argument("--prompt")
+    parser.add_argument("--seed", type=int)
+    parser.add_argument("--reference-image")
     parser.add_argument("--timeout", type=int, default=300)
     args = parser.parse_args()
+    if args.reference_image:
+        if args.profile != "flux2-klein":
+            raise RuntimeError("--reference-image is supported only by the closed flux2-klein profile.")
+        if not re.fullmatch(r"wormsport/[a-z0-9][a-z0-9._-]{0,63}\.(png|jpg|jpeg|webp)", args.reference_image):
+            raise RuntimeError(
+                "--reference-image must be one safe wormsport/ filename returned by StageInput."
+            )
 
     tools_response = rpc(args.endpoint, "tools/list", {}, 1, min(args.timeout, 30))
     tools = tools_response.get("result", {}).get("tools", [])
@@ -204,6 +214,7 @@ def main() -> int:
         if args.profile == "sd15"
         else "WP-015B2A Gate 4 technical smoke: one flat cyan circle centered on a plain white background"
     )
+    seed = args.seed if args.seed is not None else (1 if args.profile == "sd15" else 15025000)
     if args.profile == "sd15":
         tool_name = "generate_image"
         arguments = {
@@ -216,14 +227,22 @@ def main() -> int:
             "sampler_name": "euler",
             "scheduler": "normal",
             "denoise": 1.0,
-            "seed": 1,
+            "seed": seed,
+            "return_inline_preview": False,
+        }
+    elif args.reference_image:
+        tool_name = "generate_flux2_klein_reference_edit"
+        arguments = {
+            "prompt": prompt,
+            "reference_image": args.reference_image,
+            "seed": seed,
             "return_inline_preview": False,
         }
     else:
         tool_name = "generate_flux2_klein_text"
         arguments = {
             "prompt": prompt,
-            "seed": 15025000,
+            "seed": seed,
             "return_inline_preview": False,
         }
     telemetry_samples: list[dict] = []
@@ -304,6 +323,8 @@ def main() -> int:
             "sampler_name": "euler",
             "batch_size": 1,
         })
+        if args.reference_image:
+            settings["reference_image"] = args.reference_image
     print(json.dumps({
         "status": "pass",
         "profile": args.profile,

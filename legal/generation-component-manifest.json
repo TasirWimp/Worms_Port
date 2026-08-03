@@ -32,7 +32,7 @@
     },
     {
       "id": "flux2-klein",
-      "state": "hardware_admitted_visual_pending",
+      "state": "technical_only_visual_rejected",
       "runtime_enabled": true,
       "model_components": [
         "flux2-klein-4b-distilled-fp8",
@@ -53,7 +53,7 @@
         "--preview-method none"
       ],
       "smoke_tool": "generate_flux2_klein_text",
-      "notes": "Gate 4 technically admits the exact closed profile on the Windows AMD Radeon RX 7600 8 GB route after one fixed-seed 1024x1024 smoke completed in 254.42 seconds without OOM, error, retry, or model fallback. CPU text-encoder offload through --lowvram and disabled previews remain mandatory. Visual usefulness and route adoption remain pending Gate 5 and Gate 6."
+      "notes": "Gate 4 technically admitted the exact closed profile on the Windows AMD Radeon RX 7600 8 GB route. Gate 5 then passed the Threadball structure purpose but failed the Wizard structure purpose both text-only and after the single allowed controlled edit. Gate 6 rejects this as the general WP-015B2 candidate route. The profile remains runtime-enabled only for exact evidence re-entry; further candidate generation is blocked pending a new reviewed plan."
     }
   ],
   "components": [
@@ -150,11 +150,11 @@
       "approved_uses": [
         "external quarantined WP-015B2A native-workflow construction and exact-hash review",
         "the completed one-image WP-015B2A Gate 4 technical smoke",
-        "one-image-at-a-time Wizard and Threadball visual admission in WP-015B2A Gate 5"
+        "the completed bounded Wizard and Threadball visual admission in WP-015B2A Gate 5"
       ],
       "blocked_uses": [
-        "candidate generation outside the sequential bounded WP-015B2A Gate 5 visual admission",
-        "batch candidate generation before explicit route adoption",
+        "further candidate generation after the failed WP-015B2A visual admission without a new reviewed plan",
+        "batch candidate generation because this route was not adopted",
         "redistribution with Worms_Port or storage below assets",
         "product asset promotion without separate exact-output review"
       ],
@@ -198,12 +198,12 @@
       "approved_uses": [
         "external quarantined WP-015B2A native-workflow construction and exact-hash review",
         "the completed one-image WP-015B2A Gate 4 technical smoke",
-        "one-image-at-a-time Wizard and Threadball visual admission in WP-015B2A Gate 5"
+        "the completed bounded Wizard and Threadball visual admission in WP-015B2A Gate 5"
       ],
       "blocked_uses": [
         "using the rejected pre-release Comfy mirror in the reviewed route",
-        "candidate generation outside the sequential bounded WP-015B2A Gate 5 visual admission",
-        "batch candidate generation before explicit route adoption",
+        "further candidate generation after the failed WP-015B2A visual admission without a new reviewed plan",
+        "batch candidate generation because this route was not adopted",
         "redistribution with Worms_Port or storage below assets"
       ],
       "notes": "This single-file encoder was built externally from the two exact BFL Apache-2.0 shards without tensor conversion. The reviewed output is installed outside the repository; neither source weights nor merged bytes are distributed with Worms_Port."
@@ -228,11 +228,11 @@
       "approved_uses": [
         "external quarantined WP-015B2A native-workflow construction and exact-hash review",
         "the completed one-image WP-015B2A Gate 4 technical smoke",
-        "one-image-at-a-time Wizard and Threadball visual admission in WP-015B2A Gate 5"
+        "the completed bounded Wizard and Threadball visual admission in WP-015B2A Gate 5"
       ],
       "blocked_uses": [
-        "candidate generation outside the sequential bounded WP-015B2A Gate 5 visual admission",
-        "batch candidate generation before explicit route adoption",
+        "further candidate generation after the failed WP-015B2A visual admission without a new reviewed plan",
+        "batch candidate generation because this route was not adopted",
         "redistribution with Worms_Port or storage below assets",
         "treating the containing FLUX.2-dev model license as permission for non-autoencoder model weights"
       ],
@@ -262,14 +262,15 @@
       "approved_uses": [
         "exact-hash installation and MCP registration through the closed flux2-klein profile",
         "one-image quarantined technical smoke in WP-015B2A Gate 4",
-        "one-image-at-a-time Wizard and Threadball visual admission in WP-015B2A Gate 5"
+        "the completed bounded Wizard and Threadball visual admission in WP-015B2A Gate 5"
       ],
       "blocked_uses": [
         "copying into the external MCP workflow directory outside the exact profile installer",
+        "further candidate generation after the failed WP-015B2A visual admission without a new reviewed plan",
         "changing the reviewed model filenames, four-step schedule, CFG 1, Euler sampler, 1024x1024 canvas, or batch size one without a new review and hash",
         "automatic publication into assets or product-asset approval"
       ],
-      "notes": "Project-owned API-format translation of the official pinned FLUX.2 Klein 4B distilled text-to-image graph. It uses only nodes confirmed by the local pinned ComfyUI object schema. Gate 4 completed one exact-profile technical smoke without OOM, retry, or fallback; its output remains external quarantine evidence and does not approve visual-route adoption or product media."
+      "notes": "Project-owned API-format translation of the official pinned FLUX.2 Klein 4B distilled text-to-image graph. Gate 4 completed one technical smoke. Gate 5 then produced exactly one Wizard and one Threadball primary: Threadball passed its bounded structure purpose, but Wizard failed. All outputs remain external quarantine evidence; the route is not adopted for further candidate generation or product media."
     },
     {
       "id": "wormsport-flux2-klein-reference-edit-workflow",
@@ -294,15 +295,16 @@
       "distribution": "project_source_tooling",
       "approved_uses": [
         "exact-hash installation and MCP registration through the closed flux2-klein profile",
-        "later one-image quarantined reference diagnostic with one explicitly staged input only after technical admission"
+        "the completed single quarantined Wizard reference diagnostic using one explicitly staged exact input in WP-015B2A Gate 5"
       ],
       "blocked_uses": [
         "copying into the external MCP workflow directory outside the exact profile installer",
+        "any second reference edit or later candidate generation after the completed WP-015B2A Gate 5 diagnostic without a new reviewed plan",
         "reading an arbitrary ComfyUI input filename that was not staged through the reviewed pipeline action",
         "changing the reviewed model filenames, one-megapixel reference bound, four-step schedule, CFG 1, Euler sampler, or batch size one without a new review and hash",
         "claiming multi-reference, ControlNet, IP-Adapter, style-transfer, or automatic product-asset approval"
       ],
-      "notes": "Project-owned API-format translation of the official pinned single-reference FLUX.2 Klein 4B distilled edit graph. It uses ReferenceLatent and only other nodes confirmed by the local pinned ComfyUI object schema. Gate 4 did not run this graph; at most one explicitly reviewed and staged reference edit remains available only inside the sequential Gate 5 visual admission."
+      "notes": "Project-owned API-format translation of the official pinned single-reference FLUX.2 Klein 4B distilled edit graph. Gate 5 used it exactly once with the staged rejected Wizard primary. The edit removed the mouth but did not produce the required angular Knotkin anatomy or clear forward hand, so the visual route was rejected and further reference edits are blocked pending a new reviewed plan."
     },
     {
       "id": "comfyui-mcp-generate-image-workflow",

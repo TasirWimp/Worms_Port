@@ -8,8 +8,10 @@ Phaser/Socket.IO stack.
 ## Execution Pointer
 
 - Active target: mobile-first single-player Nimiq Pay competition release.
-- Active work package: **WP-015B2A FLUX.2 Klein 4B model-admission
-  deviation**. Gates 1 through 4 passed on 2026-08-03 for exactly three external files:
+- Active work package: **WP-015B2 quarantined vertical-slice masters -
+  character-route planning refinement; generation suspended**. Its corrective
+  **WP-015B2A FLUX.2 Klein 4B model-admission deviation** completed Gates 1
+  through 6 on 2026-08-03 for exactly three external files:
   canonical BFL FP8 diffusion model
   `97ED34FE0567E436200F2FAEE3939B88F2B5D99F8AF2A4DC16532C4245C0CCB6`,
   deterministic canonical-shard encoder merge
@@ -28,21 +30,22 @@ Phaser/Socket.IO stack.
   254.42 seconds without OOM, retry, node error, or model fallback. Its external
   quarantined PNG is exact-hashed at
   `CFCDDB3E74B1B3B2E1082571BA54F0F37F603E563902B6DDB8397DEA7C1516F4`.
-  This admits the hardware route only; visual usefulness, route adoption, and
-  every product asset remain unapproved.
-- Last committed implementation slice: **WP-015B2A Gate 3** on
-  2026-08-03 at `0448676`. WP-015B1's product-facing
+  Gate 5 then passed the Threadball structure purpose but failed Wizard both as
+  text-to-image and after the single controlled edit. Gate 6 therefore retains
+  the technical evidence but rejects FLUX as the general B2 visual route. Every
+  generated output and product asset remains unapproved.
+- Last committed implementation slice: **WP-015B2A Gate 4** on
+  2026-08-03 at `e56799f`. WP-015B1's product-facing
   anatomy, socket, projectile-origin, animation, environment, and acceptance
   requirements remain normative. Its exact prompts, seeds, and sampler settings
   remain the historical SD 1.5 contract and are not presumed equivalent for a
   different model architecture.
-- Next bounded action: Gate 5 only - run one isolated Wizard structure pass,
-  review it, then run one isolated Threadball structure pass and review it.
-  Use a separately documented short FLUX-specific prompt, seed, and settings for
-  each; do not reuse the dense SD 1.5 prompts. Only if one failed structure
-  output gives a clear reference-edit hypothesis may Gate 5 use its single
-  allowed controlled reference edit. Do not queue Loomkeeper, Patch, animation,
-  or roster work, adopt the route, or promote any output.
+- Next bounded action: planning only - refine the WP-015B2 character-master
+  construction route around enforceable angular Knotkin geometry, exact facial
+  features, and deterministic held-Relic sockets. FLUX may be considered later
+  as a separately reviewed Relic-only route because Threadball passed, but no
+  further generation, Loomkeeper, Patch, animation, roster work, or promotion is
+  authorized by the completed B2A deviation.
 - WP-012 exactly pins `@nimiq/mini-app-sdk` `0.1.0` and server-only
   `@nimiq/core` `2.7.1`. Provider access remains lazy, identity acceptance is
   now used by WP-013's separate production Daily entry, the diagnostics surface
@@ -174,11 +177,11 @@ Phaser/Socket.IO stack.
   geometry, animation triggers, and review gates. The initial B2 text-only pass,
   one prompt-only retry, and one conditioned Wizard diagnostic did not satisfy
   those gates. Committed review `2c528b8` records the failed attempts and stop.
-  WP-015B2A Gates 1 through 4 now record the exact admitted external components,
-  native workflows, closed runtime profiles, and successful RX 7600 technical
-  smoke. Re-entry begins with the sequential Gate 5 Wizard/Threadball visual
-  micro-bakeoff; technical admission is not automatic model adoption, batch
-  regeneration, exact-output approval, or promotion.
+  WP-015B2A Gates 1 through 6 now record the exact admitted external components,
+  native workflows, closed runtime profiles, successful RX 7600 technical
+  smoke, split Wizard/Threadball visual result, and explicit general-route
+  rejection. Re-entry begins with character-route planning, not generation,
+  exact-output approval, or promotion.
 - The approved post-competition weekly program is now scoped as WP-018 through
   WP-021: Nimiq Chronicle, Loom XP qualification, optional PvP Sparring Loom,
   and the Weekly Grand Knot Tournament with an additional sponsor-funded
@@ -2262,18 +2265,20 @@ Sequential delivery slices:
     exact rejected output and promote nothing. Prompt decomposition alone is no
     longer the immediate next action because the approved SD 1.5 route did not
     demonstrate adequate structural instruction following.
-  - **WP-015B2A FLUX.2 Klein 4B model-admission deviation — active, Gates 1
-    through 4 passed, route not adopted:** exact-component review admitted the canonical
+  - **WP-015B2A FLUX.2 Klein 4B model-admission deviation — complete 2026-08-03,
+    general route rejected:** exact-component review admitted the canonical
     BFL FP8 diffusion model, a deterministic single-file merge of the canonical
     BFL Qwen shards, and the canonical BFL FP32 VAE. The pre-release Comfy Qwen
     mirror failed exact provenance and is blocked. Two exact, core-only native
     workflows passed source review, and the closed `sd15`/`flux2-klein`
     profiles now exact-install and register only their reviewed chains. One
     fixed-seed technical smoke passed on the RX 7600 8 GB route without OOM,
-    retry, node error, or model fallback. Admission continues with a sequential
-    Wizard/Threadball visual micro-bakeoff. Failure at either remaining
-    gate retains SD 1.5 as historical evidence and returns to planning; it does
-    not authorize a larger model, cloud API, custom node, or asset batch.
+    retry, node error, or model fallback. The sequential visual micro-bakeoff
+    passed Threadball but failed Wizard text generation and its one controlled
+    edit. The profile remains technical evidence and a possible future
+    separately reviewed Relic-only route; general B2 generation returns to
+    planning and does not authorize a larger model, cloud API, custom node, or
+    asset batch.
 - **WP-015C First playable visual slice:** promote and integrate only approved
   Wizard, Loomkeeper, Threadball, and Patch assets. Prove one complete
   move/aim/fire/flight/impact/damage/result exchange at maintained phone
@@ -2316,15 +2321,16 @@ previous plan as follows:
    recorded in the B2A review and evidence record. Driver-reported memory
    samples are retained as approximate telemetry rather than a portable GPU
    requirement.
-5. **Two-purpose visual admission:** only after the technical smoke passes,
-   evaluate one isolated Wizard structure pass, one isolated Threadball
-   structure pass, and at most one controlled reference edit. Use short staged
-   prompts and review every output before continuing. Do not queue Loomkeeper,
-   Patch, animation, or roster batches at this gate.
-6. **Explicit adoption decision:** adopt the route for resumed B2 generation
-   only if provenance, license, pipeline, hardware, and both visual purposes
-   pass. Otherwise record rejection and refine the plan without seed shopping
-   or silently changing models.
+5. **Two-purpose visual admission - completed with split result 2026-08-03:**
+   one isolated Wizard text pass failed, one isolated Threadball text pass
+   passed, and the single allowed Wizard reference edit removed the mouth but
+   did not solve angular anatomy or the forward-hand socket. Every request used
+   its pre-recorded short prompt and seed and was reviewed before continuing.
+6. **Explicit adoption decision - rejected 2026-08-03:** provenance, license,
+   pipeline, and hardware passed, but both visual purposes did not. The route is
+   not adopted for resumed B2 generation. Preserve its technical and
+   Threadball evidence, block further candidate generation, and refine the
+   character-master plan without seed shopping or silently changing models.
 
 WP-015B1 remains normative for product anatomy, side view, sockets, projectile
 origin, animation triggers, environment decomposition, and acceptance. Its
