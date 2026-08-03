@@ -1,0 +1,3 @@
+/scripts/comfy-mcp-requirements.lock text eol=lf
+/scripts/comfy-workflows/*.json text eol=lf
+/scripts/generate-wizard-structure-guide.js text eol=lf

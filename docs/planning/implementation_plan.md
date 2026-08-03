@@ -8,8 +8,8 @@ Phaser/Socket.IO stack.
 ## Execution Pointer
 
 - Active target: mobile-first single-player Nimiq Pay competition release.
-- Active work package: **WP-015B2 quarantined vertical-slice masters -
-  character-route planning refinement; generation suspended**. Its corrective
+- Active work package: **WP-015B2B deterministic structure-reference Wizard
+  recovery - completed with visual rejection on 2026-08-03**. Its predecessor
   **WP-015B2A FLUX.2 Klein 4B model-admission deviation** completed Gates 1
   through 6 on 2026-08-03 for exactly three external files:
   canonical BFL FP8 diffusion model
@@ -31,21 +31,33 @@ Phaser/Socket.IO stack.
   quarantined PNG is exact-hashed at
   `CFCDDB3E74B1B3B2E1082571BA54F0F37F603E563902B6DDB8397DEA7C1516F4`.
   Gate 5 then passed the Threadball structure purpose but failed Wizard both as
-  text-to-image and after the single controlled edit. Gate 6 therefore retains
-  the technical evidence but rejects FLUX as the general B2 visual route. Every
-  generated output and product asset remains unapproved.
-- Last committed implementation slice: **WP-015B2A Gate 4** on
-  2026-08-03 at `e56799f`. WP-015B1's product-facing
+  text-to-image and after the single controlled edit because that edit reused
+  the malformed rounded Wizard as its only structural reference. Gate 6 retains
+  that evidence and rejects the attempted route. WP-015B2B changed only the
+  reference strategy: one exact project-owned angular guide, one positive-only
+  67-word prompt, fixed seed `15026001`, and the unchanged native
+  single-reference graph. Prompt
+  `6fede7ab-3de4-4d67-9a24-d3de5ea3ca1f` completed once in 298.33 seconds and
+  produced exact-hashed external output
+  `FD24C8CD494FD9631BE2BC589067BE8477C67026DC24ED9BA9A9A3A07920570B`.
+  It preserved the Wizard materials, two eyes, separate feet, and forward
+  mitten, but replaced the guide's angular continuous body with a pointed hat,
+  round head, and oval torso. The frozen structure purpose therefore failed.
+  No retry, multi-reference graph, custom node, larger model, batch, or product
+  promotion is authorized.
+- Last committed implementation slice: **WP-015B2A Gates 5/6** on
+  2026-08-03 at `84844dc`. WP-015B1's product-facing
   anatomy, socket, projectile-origin, animation, environment, and acceptance
   requirements remain normative. Its exact prompts, seeds, and sampler settings
   remain the historical SD 1.5 contract and are not presumed equivalent for a
   different model architecture.
-- Next bounded action: planning only - refine the WP-015B2 character-master
-  construction route around enforceable angular Knotkin geometry, exact facial
-  features, and deterministic held-Relic sockets. FLUX may be considered later
-  as a separately reviewed Relic-only route because Threadball passed, but no
-  further generation, Loomkeeper, Patch, animation, roster work, or promotion is
-  authorized by the completed B2A deviation.
+- Next bounded action: commit the B2B guide, exact evidence, and rejection
+  record, then refine the next character-master route before any inference. The
+  decision is between a separately reviewed two-reference structure/style
+  diagnostic and deterministic character-master construction. A rerun, second
+  seed/prompt, rejected-output reference, canonical-lineup conditioning,
+  multi-reference graph, Loomkeeper, Patch, animation, roster work, or promotion
+  remains blocked until that decision is documented.
 - WP-012 exactly pins `@nimiq/mini-app-sdk` `0.1.0` and server-only
   `@nimiq/core` `2.7.1`. Provider access remains lazy, identity acceptance is
   now used by WP-013's separate production Daily entry, the diagnostics surface
@@ -2279,6 +2291,18 @@ Sequential delivery slices:
     separately reviewed Relic-only route; general B2 generation returns to
     planning and does not authorize a larger model, cloud API, custom node, or
     asset batch.
+  - **WP-015B2B Deterministic structure-reference Wizard recovery — completed
+    with visual rejection 2026-08-03:** BFL's official guidance identifies clean pose/layout references
+    and explicit reference roles as FLUX.2's structural-control mechanism and
+    advises positive descriptions rather than negative prompting. Add one
+    project-owned 1024x1024 guide that scales the frozen B1 baseline and socket
+    exactly, keep the existing core-only single-reference graph unchanged, and
+    authorize one positive-only fixed-seed Wizard diagnostic. The one request
+    completed technically but returned to a round head and oval torso despite
+    retaining the eyes, feet, hand, and Wizard material identity, so it failed
+    the angular structure purpose and remains quarantined. Multi-reference style
+    conditioning and deterministic character construction remain separately
+    reviewed alternatives rather than automatic follow-ups.
 - **WP-015C First playable visual slice:** promote and integrate only approved
   Wizard, Loomkeeper, Threadball, and Patch assets. Prove one complete
   move/aim/fire/flight/impact/damage/result exchange at maintained phone
@@ -2362,6 +2386,22 @@ Primary official sources reviewed for this planning deviation:
   `https://github.com/black-forest-labs/flux2/blob/50fe5162777813d869182b139e83b10743caef15/README.md#flux2-autoencoder`;
 - ComfyUI low-VRAM, preview, offload, and AMD guidance:
   `https://docs.comfy.org/troubleshooting/overview`.
+
+Additional primary sources reviewed for WP-015B2B on 2026-08-03:
+
+- BFL FLUX.2 prompt ordering, 30-80-word normal range, positive description,
+  structured prompts, and explicit multi-reference roles:
+  `https://docs.bfl.ai/guides/prompting_guide_flux2`;
+- BFL structural guidance through clean pose, edge, and layout references
+  instead of a dedicated ControlNet input, plus the warning that matching is
+  semantic rather than pixel-perfect:
+  `https://docs.bfl.ai/guides/usecases_editing_controlnets`;
+- BFL single-reference instruction guidance:
+  `https://docs.bfl.ai/guides/prompting_editing_single_reference`;
+- FLUX.2 Klein 4B single/multi-reference support and Apache-2.0 status:
+  `https://github.com/black-forest-labs/flux2`; and
+- ComfyUI's official distilled 4B edit workflow and published 8.4 GB figure:
+  `https://docs.comfy.org/tutorials/flux/flux-2-klein`.
 
 Deferred beyond WP-015: high-detail variants, multiple Patches, foreground
 dressing, unused jump/fall/land animations, Calling-specific effects, radius

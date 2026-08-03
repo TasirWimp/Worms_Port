@@ -69,6 +69,18 @@ const reviewedModelContracts = new Map([
     sourceRelation: 'canonical'
   }]
 ]);
+const reviewedConditioningInputContracts = new Map([
+  ['knotkin-wizard-structure-guide-v1', {
+    kind: 'project_owned_structure_reference',
+    sourcePath: 'docs/images/art-direction/knotkin-wizard-structure-guide.png',
+    generatorPath: 'scripts/generate-wizard-structure-guide.js',
+    width: 1024,
+    height: 1024,
+    fileSize: 15044,
+    fileSha256: '5A8F1C1D0942755F113327467462D47812A22A64BAF3DF2C5CD2E0F491FA9AA1',
+    generatorSha256: '695B499E67794692BFEB248C22CA24C24C2D0091107B4EAAE247D29830FCAF63'
+  }]
+]);
 const reviewedFluxWorkflowContracts = new Map([
   ['wormsport-flux2-klein-text-to-image-workflow', {
     sourcePath: 'scripts/comfy-workflows/generate_flux2_klein_text.json',
@@ -142,7 +154,7 @@ const reviewedProfileContracts = new Map([
     smokeTool: 'generate_image'
   }],
   ['flux2-klein', {
-    state: 'technical_only_visual_rejected',
+    state: 'structure_recovery_visual_rejected',
     modelComponents: reviewedFluxModelComponents,
     workflowComponents: [
       'wormsport-flux2-klein-text-to-image-workflow',
@@ -188,6 +200,9 @@ function validateGenerationComponents(manifest, root = repoRoot) {
   }
   if (manifest?.policy?.profile_selection !== 'closed_manifest_profiles_only') {
     errors.push('generation profile selection must remain closed to manifest-defined profiles.');
+  }
+  if (manifest?.policy?.conditioning_input_state !== 'project_owned_documentation_only_until_generated_output_review') {
+    errors.push('conditioning inputs must remain project-owned documentation references until output review.');
   }
   if (manifest?.policy?.generated_output_state !== 'quarantined_candidate_until_exact_file_approval') {
     errors.push('generated output must remain quarantined until exact-file approval.');
@@ -248,6 +263,78 @@ function validateGenerationComponents(manifest, root = repoRoot) {
 
   for (const id of requiredIds) {
     if (!ids.has(id)) errors.push(`missing required component ${id}.`);
+  }
+
+  const conditioningInputs = manifest?.conditioning_inputs;
+  if (!Array.isArray(conditioningInputs)) {
+    errors.push('conditioning_inputs must be an array.');
+  } else {
+    const conditioningIds = new Set();
+    for (const input of conditioningInputs) {
+      const label = input?.id || '<missing conditioning input id>';
+      if (!/^[a-z0-9][a-z0-9-]*$/.test(input?.id || '')) errors.push(`${label}: invalid conditioning input id.`);
+      if (conditioningIds.has(input?.id)) errors.push(`${label}: duplicate conditioning input id.`);
+      conditioningIds.add(input?.id);
+      if (input?.license !== 'MIT' || input?.distribution !== 'documentation_conditioning_only') {
+        errors.push(`${label}: project-owned conditioning inputs must remain MIT documentation-only material.`);
+      }
+      for (const field of ['approved_uses', 'blocked_uses']) {
+        if (!Array.isArray(input?.[field]) || input[field].length === 0 ||
+            input[field].some((entry) => typeof entry !== 'string' || !entry)) {
+          errors.push(`${label}: ${field} must be a non-empty string array.`);
+        }
+      }
+
+      const contract = reviewedConditioningInputContracts.get(input?.id);
+      if (!contract) {
+        errors.push(`${label}: arbitrary conditioning inputs are blocked.`);
+        continue;
+      }
+      if (input.kind !== contract.kind) errors.push(`${label}: reviewed conditioning kind changed.`);
+      if (input.source_path !== contract.sourcePath) errors.push(`${label}: reviewed conditioning source_path changed.`);
+      if (input.generator_path !== contract.generatorPath) errors.push(`${label}: reviewed conditioning generator_path changed.`);
+      if (input.width !== contract.width || input.height !== contract.height) {
+        errors.push(`${label}: reviewed conditioning dimensions changed.`);
+      }
+      if (input.file_size !== contract.fileSize || input.file_sha256 !== contract.fileSha256) {
+        errors.push(`${label}: reviewed conditioning file size or hash changed.`);
+      }
+      if (input.generator_sha256 !== contract.generatorSha256) {
+        errors.push(`${label}: reviewed conditioning generator hash changed.`);
+      }
+
+      const sourcePath = path.resolve(root, input.source_path || '');
+      const generatorPath = path.resolve(root, input.generator_path || '');
+      const rootPrefix = path.resolve(root) + path.sep;
+      if (!sourcePath.startsWith(rootPrefix) || !fs.existsSync(sourcePath)) {
+        errors.push(`${label}: conditioning source must resolve inside the repository.`);
+      } else {
+        const bytes = fs.readFileSync(sourcePath);
+        const hash = crypto.createHash('sha256').update(bytes).digest('hex').toUpperCase();
+        if (bytes.length !== input.file_size || hash !== input.file_sha256) {
+          errors.push(`${label}: conditioning source bytes do not match the manifest.`);
+        }
+        const pngSignature = Buffer.from([137, 80, 78, 71, 13, 10, 26, 10]);
+        if (bytes.length < 24 || !bytes.subarray(0, 8).equals(pngSignature) ||
+            bytes.readUInt32BE(16) !== input.width || bytes.readUInt32BE(20) !== input.height) {
+          errors.push(`${label}: conditioning source must be the reviewed PNG dimensions.`);
+        }
+      }
+      if (!generatorPath.startsWith(rootPrefix) || !fs.existsSync(generatorPath)) {
+        errors.push(`${label}: conditioning generator must resolve inside the repository.`);
+      } else {
+        const generatorHash = crypto.createHash('sha256').update(fs.readFileSync(generatorPath)).digest('hex').toUpperCase();
+        if (generatorHash !== input.generator_sha256) {
+          errors.push(`${label}: conditioning generator bytes do not match the manifest.`);
+        }
+      }
+    }
+    for (const inputId of reviewedConditioningInputContracts.keys()) {
+      if (!conditioningIds.has(inputId)) errors.push(`missing required conditioning input ${inputId}.`);
+    }
+    if (conditioningInputs.length !== reviewedConditioningInputContracts.size) {
+      errors.push('conditioning input count must remain closed to the reviewed set.');
+    }
   }
 
   for (const [id, contract] of reviewedModelContracts) {

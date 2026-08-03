@@ -1041,6 +1041,102 @@ asset. Re-entry returns to planning a character-master route that can enforce
 the anatomy and socket contract. A possible Relic-only FLUX route requires its
 own later scope decision; Threadball's pass does not authorize more generation.
 
+### WP-015B2B Structure-Reference Wizard Recovery
+
+The B2A Wizard edit used the already-rounded rejected Wizard as its only
+reference. That test was useful evidence but could not establish whether the
+native FLUX edit model can follow a clean anatomy guide. BFL's official FLUX.2
+guidance recommends clean pose, edge, or layout references for structural
+control, explicit reference roles, positive descriptions, and a prompt that is
+not overloaded with simultaneous structural constraints. The pinned ComfyUI
+`ReferenceLatent` node already provides this single-reference mechanism; no
+ControlNet, custom node, ComfyUI update, larger model, or new workflow is
+required for the first recovery diagnostic.
+
+The exact project-owned input is:
+
+```text
+docs/images/art-direction/knotkin-wizard-structure-guide.png
+1024x1024 opaque PNG, 15044 bytes
+SHA-256 5A8F1C1D0942755F113327467462D47812A22A64BAF3DF2C5CD2E0F491FA9AA1
+generator scripts/generate-wizard-structure-guide.js
+generator SHA-256 695B499E67794692BFEB248C22CA24C24C2D0091107B4EAAE247D29830FCAF63
+```
+
+The generator uses project-authored geometry only. It scales the B1 baseline
+and held-Relic socket by exactly two to `y=902` and `(682,586)`, draws one
+angular body with separate feet, two eye locations, and a protruding forward
+mitten, and reads no image input. The guide is documentation conditioning, not
+finished art or a product asset.
+
+Rebuild, verify, and stage it without inference:
+
+```powershell
+Set-Location "C:\Users\jensb\Desktop\Projects\Worms_Port"
+node .\scripts\generate-wizard-structure-guide.js
+Get-FileHash .\docs\images\art-direction\knotkin-wizard-structure-guide.png -Algorithm SHA256
+.\scripts\comfy-asset-pipeline.ps1 -Action Prepare -Profile flux2-klein -Json
+.\scripts\comfy-asset-pipeline.ps1 -Action Status -Profile flux2-klein -VerifyHashes -Json
+.\scripts\comfy-asset-pipeline.ps1 -Action StageInput -Profile flux2-klein -InputImage .\docs\images\art-direction\knotkin-wizard-structure-guide.png -StagedName wizard-structure-guide-v1.png -Json
+python .\scripts\comfy-mcp-smoke.py --profile flux2-klein --probe
+```
+
+Only after the manifest, guide hash, model/workflow hashes, low-VRAM launch,
+both MCP tools, staged hash, empty Comfy queue, and latest-output baseline are
+recorded may one request run through `generate_flux2_klein_reference_edit`.
+Its exact seed is `15026001`. Its exact prompt is:
+
+```text
+Image 1 defines the exact silhouette and pose. Preserve its flat-crowned angular head-and-torso, chamfered shoulders, narrow lower bridge, two separate rectangular feet, and forward arm ending in a simple mitten. Render that shape as a blue crochet Wizard with a dark-blue felt hood and restrained gold stitching. The face consists solely of two glossy black bead eyes. One complete right-facing character centered on an unbroken white field.
+```
+
+The prompt deliberately does not name unwanted face parts, props, scenery, or
+other negative concepts. The unchanged graph bounds the reference to one
+megapixel and uses batch one, four FLUX.2 scheduler steps, CFG 1, Euler, and no
+inline preview. The candidate command is:
+
+```powershell
+python .\scripts\comfy-mcp-smoke.py --profile flux2-klein --reference-image wormsport/wizard-structure-guide-v1.png --seed 15026001 --timeout 600 --prompt 'Image 1 defines the exact silhouette and pose. Preserve its flat-crowned angular head-and-torso, chamfered shoulders, narrow lower bridge, two separate rectangular feet, and forward arm ending in a simple mitten. Render that shape as a blue crochet Wizard with a dark-blue felt hood and restrained gold stitching. The face consists solely of two glossy black bead eyes. One complete right-facing character centered on an unbroken white field.'
+```
+
+Review the full output and an exact 48-pixel-tall derivative before any next
+decision. The diagnostic passes structure only when it retains one broad
+continuous angular head-and-torso with a flat crown and chamfered sides, a
+narrow lower bridge, two separate block-like feet, two bead eyes with an
+otherwise unmarked face, right-facing side bias, and a visibly protruding
+forward hand that can normalize to the B1 socket without covering an eye. A
+removable background shadow or opaque white field does not by itself fail this
+structure experiment, but neither is accepted product alpha.
+
+One terminal result closes the authorization. Do not change the seed or prompt,
+submit a second attempt, reuse either rejected Wizard, condition on the
+canonical lineup, add multi-reference nodes, queue Loomkeeper/Patch/animation,
+or promote output. A pass permits a separately documented route-adoption and
+exact-output review decision. A failure returns to planning; the next possible
+experiment is a separately reviewed two-reference structure/style graph, not
+an automatic retry.
+
+The one authorized request completed on 2026-08-03 as prompt
+`6fede7ab-3de4-4d67-9a24-d3de5ea3ca1f` in 298.33 seconds. Its untouched external
+output is `WormsPortFlux2KleinReferenceEdit_00002_.png`, 1024x1024 opaque PNG,
+1,163,317 bytes, SHA-256
+`FD24C8CD494FD9631BE2BC589067BE8477C67026DC24ED9BA9A9A3A07920570B`.
+The exact 48x48 HighQualityBicubic review derivative remains external at
+`E:\ComFy\TasirWimp\component-evidence\wp-015b2b\gate1\wizard-structure-15026001-48px.png`,
+3,467 bytes, SHA-256
+`192209CC0D7121AEDF0CC25CCDD0C807E314A6C0E65E459A83192B7A33D3E925`.
+Comfy reported 2,808.00 MB of the diffusion model loaded, 1,074.02 MB offloaded,
+a 324.00 MB buffer, and terminal success without a queued duplicate.
+
+The result passes isolation, side bias, two-eye face, separate feet, forward
+mitten, Wizard material identity, and 48px readability. It fails the controlling
+anatomy requirement: FLUX replaced the flat-crowned angular guide with a pointed
+hat, round head, and oval torso. Therefore the structure-reference route is
+rejected and its output remains external quarantine. Do not rerun it. Re-entry
+is a planning decision between a separately reviewed two-reference
+structure/style experiment and a deterministic character-master construction
+route; neither is authorized by WP-015B2B.
+
 ### WP-015B0 Approval And Canonical Baseline
 
 WP-015B0 is the no-product-output pre-production gate. A bounded technical

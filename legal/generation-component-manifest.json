@@ -5,6 +5,7 @@
     "distribution": "external_not_bundled",
     "project_workflow_distribution": "source_tooling_only_not_product_runtime",
     "profile_selection": "closed_manifest_profiles_only",
+    "conditioning_input_state": "project_owned_documentation_only_until_generated_output_review",
     "generated_output_state": "quarantined_candidate_until_exact_file_approval",
     "promotion_gate": "docs/asset-review-workflow.md",
     "product_asset_manifest": "legal/asset-manifest.json"
@@ -32,7 +33,7 @@
     },
     {
       "id": "flux2-klein",
-      "state": "technical_only_visual_rejected",
+      "state": "structure_recovery_visual_rejected",
       "runtime_enabled": true,
       "model_components": [
         "flux2-klein-4b-distilled-fp8",
@@ -53,7 +54,33 @@
         "--preview-method none"
       ],
       "smoke_tool": "generate_flux2_klein_text",
-      "notes": "Gate 4 technically admitted the exact closed profile on the Windows AMD Radeon RX 7600 8 GB route. Gate 5 then passed the Threadball structure purpose but failed the Wizard structure purpose both text-only and after the single allowed controlled edit. Gate 6 rejects this as the general WP-015B2 candidate route. The profile remains runtime-enabled only for exact evidence re-entry; further candidate generation is blocked pending a new reviewed plan."
+      "notes": "Gate 4 technically admitted the exact closed profile on the Windows AMD Radeon RX 7600 8 GB route. Gate 5 passed Threadball but failed Wizard text-only and when the rejected rounded Wizard was reused as its only reference. The one authorized WP-015B2B structure-guide diagnostic also failed: FLUX kept the desired material, eyes, feet, and hand but returned to rounded doll anatomy. The profile remains technical evidence only; another request, character, multi-reference graph, batch, or product promotion requires a separately reviewed decision."
+    }
+  ],
+  "conditioning_inputs": [
+    {
+      "id": "knotkin-wizard-structure-guide-v1",
+      "kind": "project_owned_structure_reference",
+      "source_path": "docs/images/art-direction/knotkin-wizard-structure-guide.png",
+      "generator_path": "scripts/generate-wizard-structure-guide.js",
+      "version": "1",
+      "width": 1024,
+      "height": 1024,
+      "file_size": 15044,
+      "file_sha256": "5A8F1C1D0942755F113327467462D47812A22A64BAF3DF2C5CD2E0F491FA9AA1",
+      "generator_sha256": "695B499E67794692BFEB248C22CA24C24C2D0091107B4EAAE247D29830FCAF63",
+      "license": "MIT",
+      "distribution": "documentation_conditioning_only",
+      "approved_uses": [
+        "historical evidence for the completed single fixed-seed WP-015B2B Wizard structure-reference diagnostic through the reviewed FLUX single-reference workflow",
+        "documentation and visual comparison of the project-owned Knotkin anatomy, baseline, and held-Relic socket contract"
+      ],
+      "blocked_uses": [
+        "product runtime use or treatment as finished artwork",
+        "tracing or cropping the canonical lineup into this guide",
+        "a rerun, second diagnostic, multi-reference edit, batch, or product promotion without a later reviewed decision"
+      ],
+      "notes": "Deterministically rendered from project-authored geometry only. The 1024x1024 guide scales the frozen 512x512 character contract by two: baseline y=902 and held-Relic socket center (682,586). It contains a clean angular body, two eye positions, separate feet, and a protruding forward mitten on white; it contains no canonical-lineup pixels, generated art, Sorcerers material, official Nimiq brand file, or runtime media."
     }
   ],
   "components": [
@@ -150,10 +177,11 @@
       "approved_uses": [
         "external quarantined WP-015B2A native-workflow construction and exact-hash review",
         "the completed one-image WP-015B2A Gate 4 technical smoke",
-        "the completed bounded Wizard and Threadball visual admission in WP-015B2A Gate 5"
+        "the completed bounded Wizard and Threadball visual admission in WP-015B2A Gate 5",
+        "the completed single fixed-seed WP-015B2B Wizard structure-guide diagnostic"
       ],
       "blocked_uses": [
-        "further candidate generation after the failed WP-015B2A visual admission without a new reviewed plan",
+        "candidate generation beyond the single fixed WP-015B2B structure-guide diagnostic without a later reviewed decision",
         "batch candidate generation because this route was not adopted",
         "redistribution with Worms_Port or storage below assets",
         "product asset promotion without separate exact-output review"
@@ -198,11 +226,12 @@
       "approved_uses": [
         "external quarantined WP-015B2A native-workflow construction and exact-hash review",
         "the completed one-image WP-015B2A Gate 4 technical smoke",
-        "the completed bounded Wizard and Threadball visual admission in WP-015B2A Gate 5"
+        "the completed bounded Wizard and Threadball visual admission in WP-015B2A Gate 5",
+        "the completed single fixed-seed WP-015B2B Wizard structure-guide diagnostic"
       ],
       "blocked_uses": [
         "using the rejected pre-release Comfy mirror in the reviewed route",
-        "further candidate generation after the failed WP-015B2A visual admission without a new reviewed plan",
+        "candidate generation beyond the single fixed WP-015B2B structure-guide diagnostic without a later reviewed decision",
         "batch candidate generation because this route was not adopted",
         "redistribution with Worms_Port or storage below assets"
       ],
@@ -228,10 +257,11 @@
       "approved_uses": [
         "external quarantined WP-015B2A native-workflow construction and exact-hash review",
         "the completed one-image WP-015B2A Gate 4 technical smoke",
-        "the completed bounded Wizard and Threadball visual admission in WP-015B2A Gate 5"
+        "the completed bounded Wizard and Threadball visual admission in WP-015B2A Gate 5",
+        "the completed single fixed-seed WP-015B2B Wizard structure-guide diagnostic"
       ],
       "blocked_uses": [
-        "further candidate generation after the failed WP-015B2A visual admission without a new reviewed plan",
+        "candidate generation beyond the single fixed WP-015B2B structure-guide diagnostic without a later reviewed decision",
         "batch candidate generation because this route was not adopted",
         "redistribution with Worms_Port or storage below assets",
         "treating the containing FLUX.2-dev model license as permission for non-autoencoder model weights"
@@ -295,16 +325,17 @@
       "distribution": "project_source_tooling",
       "approved_uses": [
         "exact-hash installation and MCP registration through the closed flux2-klein profile",
-        "the completed single quarantined Wizard reference diagnostic using one explicitly staged exact input in WP-015B2A Gate 5"
+        "the completed single quarantined Wizard reference diagnostic using one explicitly staged exact input in WP-015B2A Gate 5",
+        "the completed single fixed-seed WP-015B2B Wizard diagnostic using the exact project-owned structure guide"
       ],
       "blocked_uses": [
         "copying into the external MCP workflow directory outside the exact profile installer",
-        "any second reference edit or later candidate generation after the completed WP-015B2A Gate 5 diagnostic without a new reviewed plan",
+        "any generation beyond the single fixed WP-015B2B structure-guide diagnostic without a later reviewed decision",
         "reading an arbitrary ComfyUI input filename that was not staged through the reviewed pipeline action",
         "changing the reviewed model filenames, one-megapixel reference bound, four-step schedule, CFG 1, Euler sampler, or batch size one without a new review and hash",
         "claiming multi-reference, ControlNet, IP-Adapter, style-transfer, or automatic product-asset approval"
       ],
-      "notes": "Project-owned API-format translation of the official pinned single-reference FLUX.2 Klein 4B distilled edit graph. Gate 5 used it exactly once with the staged rejected Wizard primary. The edit removed the mouth but did not produce the required angular Knotkin anatomy or clear forward hand, so the visual route was rejected and further reference edits are blocked pending a new reviewed plan."
+      "notes": "Project-owned API-format translation of the official pinned single-reference FLUX.2 Klein 4B distilled edit graph. Gate 5 used the rejected rounded Wizard as its only reference and failed anatomy/hand control. WP-015B2B replaced that malformed reference with one deterministic project-owned structure guide and removed negative-concept wording from the fixed prompt. The one authorized diagnostic completed but again failed angular anatomy, so further use requires another reviewed decision."
     },
     {
       "id": "comfyui-mcp-generate-image-workflow",

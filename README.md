@@ -138,6 +138,20 @@ socket/origin geometry, animation triggers, and acceptance gates. B1 itself
 generates no media; after its commit is on origin, WP-015B2 may create only the
 listed candidates in external quarantine.
 
+WP-015B2B tested a narrower FLUX Wizard recovery after the rounded text and edit
+outputs failed. Its project-owned control image is
+`docs/images/art-direction/knotkin-wizard-structure-guide.png`, reproduced by
+`node scripts/generate-wizard-structure-guide.js` and exact-bound in
+`legal/generation-component-manifest.json`. The one authorized fixed-seed,
+positive-only diagnostic completed on 2026-08-03 through the unchanged
+`generate_flux2_klein_reference_edit` graph. FLUX preserved the Wizard material,
+eyes, feet, and hand but replaced the guide's angular continuous body with a
+round head over an oval torso, so the route failed its frozen structure gate.
+Re-entry starts from the recorded result and decision rule in
+`docs/asset-briefs/wp-015b2-generation-review.md`; do not rerun it or reuse any
+rejected Wizard as a reference. A two-reference structure/style graph or a
+deterministic character-master route requires a separate reviewed plan.
+
 ## Build
 
 Use Node.js 20 or newer.

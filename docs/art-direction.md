@@ -262,6 +262,33 @@ has approved it as the canonical creative and generation reference, so approved
 production tools may receive the tracked file as conditioning input when its
 path and SHA-256 are recorded. Do not crop, trace, or ship its pixels directly.
 
+### Deterministic Wizard Structure Guide
+
+![Project-owned Wizard structure guide](images/art-direction/knotkin-wizard-structure-guide.png)
+
+`docs/images/art-direction/knotkin-wizard-structure-guide.png` is a
+documentation-only control image for the bounded WP-015B2B Wizard recovery. It
+is not concept art, generated output, or a runtime sprite. The project-owned
+script `scripts/generate-wizard-structure-guide.js` draws it from the written
+Knotkin anatomy and frozen 512x512 geometry contract without reading, cropping,
+tracing, or copying any concept pixels.
+
+- PNG SHA-256:
+  `5A8F1C1D0942755F113327467462D47812A22A64BAF3DF2C5CD2E0F491FA9AA1`
+- Generator SHA-256:
+  `695B499E67794692BFEB248C22CA24C24C2D0091107B4EAAE247D29830FCAF63`
+- Canvas: opaque 1024x1024 PNG on white.
+- Frozen guide geometry: ground baseline `y=902`; held-Relic socket center
+  `(682,586)`, exactly twice the B1 512x512 coordinates.
+
+Its only approved generation use was the completed fixed-seed FLUX.2 Klein
+single-reference diagnostic. The guide defined structure and pose while the
+prompt defined crochet material and Wizard Calling identity, but FLUX returned
+to rounded doll anatomy and failed the structure gate. The guide remains useful
+documentation evidence; it may not enter `assets/`, substitute for exact-output
+review, authorize a rerun/character/batch, or be described as finished product
+artwork.
+
 The first production interpretation is frozen in
 `asset-briefs/wp-015b1-vertical-slice.md`. That contract translates the lineup
 into isolated Wizard and Loomkeeper masters, a separate Threadball family, and

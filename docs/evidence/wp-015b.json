@@ -16,6 +16,7 @@
     "Approve and exact-hash the production checkpoint, text-to-image workflow, and project-owned image-conditioned refinement workflow while preserving external quarantine",
     "Freeze the Wizard, Loomkeeper, Threadball, and first-Patch briefs, prompts, negative constraints, sockets, triggers, and acceptance checks",
     "After the rejected SD 1.5 attempts, insert a bounded FLUX.2 Klein 4B model-admission deviation without approving a model or resuming generation",
+    "After the failed FLUX Wizard edit, test one deterministic project-owned structure reference with one positive-only fixed-seed diagnostic",
     "Generate deterministic quarantined vertical-slice candidates and complete pre-promotion art, IP, provenance, and phone-readability review"
   ],
   "non_goals": [
@@ -35,6 +36,7 @@
     "FLUX.2 native core-node text-to-image and reference-edit workflow hash review",
     "RX 7600 8 GB low-VRAM technical smoke",
     "Wizard and Threadball staged visual admission",
+    "WP-015B2B deterministic structure-guide integrity and one fixed-seed Wizard diagnostic",
     "WP-015B1 brief-contract completeness and source-boundary review",
     "fixed-seed quarantined vertical-slice master review",
     "self-review"
@@ -50,7 +52,8 @@
     "15025000",
     "15025001",
     "15025002",
-    "15025003"
+    "15025003",
+    "15026001"
   ],
   "sorcerers_reference_used": false,
   "clean_room_records": [],
@@ -239,21 +242,56 @@
       "command": "npm run build (WP-015B2A Gates 5/6)",
       "status": "pass",
       "detail": "The complete compliance, TypeScript, server, and client build passed. Zero runtime product assets were copied; the existing Vite chunk-size warning remained unchanged."
+    },
+    {
+      "command": "WP-015B2B deterministic structure-guide construction and integrity preflight",
+      "status": "pass",
+      "detail": "The project-owned Node generator reproducibly wrote docs/images/art-direction/knotkin-wizard-structure-guide.png as a 15,044-byte 1024x1024 opaque PNG with SHA-256 5A8F1C1D0942755F113327467462D47812A22A64BAF3DF2C5CD2E0F491FA9AA1. Its exact-hashed source reads no images and encodes the doubled B1 baseline y=902 and held-Relic socket center (682,586). The manifest checker rejected conditioning-policy, license, distribution, dimension, hash, path, arbitrary-input, and input-count drift."
+    },
+    {
+      "command": "WP-015B2B exact closed-profile and no-generation preflight",
+      "status": "pass",
+      "detail": "Prepare and Status -VerifyHashes reverified all three external FLUX model components and both exact native workflows. Start confirmed ComfyUI 0.27.1 on native AMD Radeon RX 7600 in LOW_VRAM/no-preview mode and both exact MCP tools. StageInput exact-copied the guide to wormsport/wizard-structure-guide-v1.png with the reviewed hash. The MCP probe reported ready; the queue was 0 running / 0 pending and WormsPortFlux2KleinReferenceEdit_00001_.png remained the latest output before the request, proving no preflight generation."
+    },
+    {
+      "command": "WP-015B2B single structure-reference Wizard diagnostic",
+      "status": "fail",
+      "detail": "The one authorized positive-only prompt and seed 15026001 were submitted once as prompt 6fede7ab-3de4-4d67-9a24-d3de5ea3ca1f. Although the calling shell observer timed out after submission, no retry was made; Comfy history and server logs recorded terminal success in 298.33 seconds and a clean 0/0 queue. Output WormsPortFlux2KleinReferenceEdit_00002_.png is a 1,163,317-byte 1024x1024 opaque PNG, SHA-256 FD24C8CD494FD9631BE2BC589067BE8477C67026DC24ED9BA9A9A3A07920570B. Comfy loaded 2,808.00 MB of diffusion weights, offloaded 1,074.02 MB, reserved a 324.00 MB buffer, and completed four Euler steps without node error. The 3,467-byte 48x48 HighQualityBicubic derivative has SHA-256 192209CC0D7121AEDF0CC25CCDD0C807E314A6C0E65E459A83192B7A33D3E925. Isolation, two eyes, feet, forward mitten, Wizard material, and small-scale readability passed, but the required flat-crowned angular continuous body failed because FLUX returned a pointed hat, round head, and oval torso. The output remains external quarantine and the one-request authorization is exhausted."
+    },
+    {
+      "command": "npm run check:compliance (WP-015B2B closure)",
+      "status": "pass",
+      "detail": "Asset, generation-component, import-boundary, package-license, work-package, and clean-room checks passed with ten reviewed generation components, two closed profiles, 21 evidence records, and zero clean-room records. The profile state is fail-closed as structure_recovery_visual_rejected."
+    },
+    {
+      "command": "npm run test:tooling (WP-015B2B closure)",
+      "status": "pass",
+      "detail": "All 28 tooling tests passed, including exact project-owned structure-guide path, dimensions, bytes, hashes, generator hash, licensing, documentation-only distribution, arbitrary-input rejection, and closed profile-state enforcement."
+    },
+    {
+      "command": "npm run build (WP-015B2B closure)",
+      "status": "pass",
+      "detail": "The complete compliance, TypeScript, server, and client build passed. Zero runtime product assets were copied; the existing Vite chunk-size warning remained unchanged."
+    },
+    {
+      "command": "npm audit (WP-015B2B closure)",
+      "status": "pass",
+      "detail": "npm reported zero vulnerabilities. No package or lockfile change was introduced by WP-015B2B."
     }
   ],
   "skipped_checks": [
-    "The phone-browser matrix was not run for WP-015B0, WP-015B1, or WP-015B2A Gates 1-6 because these slices change only the offline generation pipeline, documentation, compliance metadata, and external quarantined component state; they change no browser-facing code or runtime asset.",
-    "Real-device testing was not run because WP-015B0, WP-015B1, and WP-015B2A Gates 1-6 create no player-visible behavior or product media.",
+    "The phone-browser matrix was not run for WP-015B0, WP-015B1, WP-015B2A Gates 1-6, or WP-015B2B because these slices change only the offline generation pipeline, documentation, compliance metadata, and external quarantined component state; they change no browser-facing code or runtime asset.",
+    "Real-device testing was not run because WP-015B0, WP-015B1, WP-015B2A Gates 1-6, and WP-015B2B create no player-visible behavior or product media.",
     "FLUX inference was not run in Gate 3 because the separate Gate 4 technical smoke had to record runtime, memory behavior, and exact output evidence as its own bounded review.",
     "Wizard, Threadball, and reference-edit visual admission was not run in Gate 4 because technical hardware admission and visual-purpose admission are separate gates."
   ],
   "residual_risks": [
     "The reviewed image-conditioned graph is ordinary VAE img2img, not IP-Adapter or ControlNet; strong composition changes require an isolated master and carefully chosen denoise.",
     "The current SD 1.5 checkpoint did not reliably follow the dense B1 character, Relic, and environment prompts. Its rejected prompts, seeds, settings, and outputs remain historical evidence; they are not silently reused for another model architecture.",
-    "WP-015B2A Gates 1-6 retain exactly three external FLUX.2 component files, two native workflows, and one closed executable profile as technical evidence. The general visual route is rejected: further candidate generation is blocked until a new reviewed plan changes that decision.",
-    "The Windows AMD RX 7600 8 GB completed the technical smoke and all three Gate 5 requests without runtime failure, but each offloaded request took 253-297 seconds. Driver portability remains unproven and its approximate VRAM samples must not be generalized into a hardware requirement.",
+    "WP-015B2A retains exactly three external FLUX.2 component files, two native workflows, and one closed executable profile as technical evidence. The completed WP-015B2B diagnostic changed only the structural input and prompt strategy and failed its Wizard anatomy purpose; its result does not authorize a second attempt, multi-reference graph, or batch.",
+    "The Windows AMD RX 7600 8 GB completed the technical smoke, all three Gate 5 requests, and the B2B diagnostic without runtime failure, but each offloaded request took 253-298 seconds. Driver portability remains unproven and its approximate VRAM samples must not be generalized into a hardware requirement.",
     "Threadball passed only a bounded structure review; its opaque output has no exact-output IP/product approval, alpha normalization, derivative cleanup, or manifest entry. It may inform a later separately reviewed Relic-only route but is not a product asset.",
-    "No admitted route currently produces the required angular Knotkin anatomy and deterministic held-Relic socket. Character-master route refinement is required before B2 generation can resume.",
-    "No WP-015B2 output currently passes exact-output art/IP review; candidate acceptance, npm audit, and final self-review remain pending before WP-015B can close."
+    "The deterministic guide fixes the intended angular anatomy, baseline, and socket in a conditioning diagram, but the B2B result confirmed that this single-reference FLUX route follows the Wizard semantics and materials more strongly than the required geometry. Character work remains blocked pending a separately reviewed two-reference or deterministic-construction route.",
+    "No WP-015B2 output currently passes exact-output art/IP review. The Threadball structure result remains only quarantined evidence, and the character route cannot resume until a new bounded construction plan is reviewed."
   ]
 }

@@ -704,3 +704,120 @@ construction route capable of enforcing angular Knotkin geometry, exact facial
 features, and deterministic held-Relic sockets. Do not generate Loomkeeper,
 Patch, animation, roster, or another Wizard/Threadball candidate until that
 route and any narrower FLUX use are explicitly reviewed.
+
+## WP-015B2B Deterministic Structure-Reference Recovery
+
+Contract date: 2026-08-03. Status: **completed; bounded structure purpose
+failed; further generation blocked pending a new reviewed plan**.
+
+### Reviewed correction hypothesis
+
+The B2A controlled edit asked FLUX to replace anatomy while simultaneously
+preserving the rejected rounded Wizard that supplied all reference tokens. The
+new experiment changes the structural input rather than adding prompt detail:
+
+- use a clean project-owned anatomy and pose guide as the only reference;
+- retain the exact B2A single-reference graph and admitted model chain;
+- describe only desired content in a 67-word positive prompt;
+- test one new fixed seed; and
+- evaluate structure before material polish, alpha, animation, or promotion.
+
+This follows BFL's official FLUX.2 structural-reference and positive-prompt
+guidance. It does not authorize a ControlNet, custom node, ComfyUI update,
+larger/Base model, cloud API, full-lineup input, multi-reference graph, or a
+second request.
+
+### Exact conditioning guide
+
+| Field | Frozen value |
+| --- | --- |
+| Input ID | `knotkin-wizard-structure-guide-v1` |
+| Source | `docs/images/art-direction/knotkin-wizard-structure-guide.png` |
+| Generator | `scripts/generate-wizard-structure-guide.js` |
+| PNG | 1024x1024 opaque RGBA, 15,044 bytes |
+| PNG SHA-256 | `5A8F1C1D0942755F113327467462D47812A22A64BAF3DF2C5CD2E0F491FA9AA1` |
+| Generator SHA-256 | `695B499E67794692BFEB248C22CA24C24C2D0091107B4EAAE247D29830FCAF63` |
+| Geometry | baseline `y=902`; held-Relic socket center `(682,586)` |
+| Staged name | `wormsport/wizard-structure-guide-v1.png` |
+
+The guide is rendered solely from project-authored polygons and ellipses. It
+contains no generated-art input, canonical-lineup pixels, crop, trace,
+Sorcerers/Worms material, or official Nimiq brand file. Its cyan/navy flat
+diagram is not an art candidate and may not enter runtime.
+
+### Frozen diagnostic
+
+| Field | Frozen value |
+| --- | --- |
+| MCP tool | `generate_flux2_klein_reference_edit` |
+| Reference | exact staged guide above |
+| Seed | `15026001` |
+| Settings | one-megapixel reference bound, 1024x1024 canvas, batch 1, 4 FLUX.2 scheduler steps, CFG 1, Euler |
+| Runtime | closed `flux2-klein`, `--lowvram --preview-method none`, no inline preview |
+
+Exact prompt:
+
+```text
+Image 1 defines the exact silhouette and pose. Preserve its flat-crowned angular head-and-torso, chamfered shoulders, narrow lower bridge, two separate rectangular feet, and forward arm ending in a simple mitten. Render that shape as a blue crochet Wizard with a dark-blue felt hood and restrained gold stitching. The face consists solely of two glossy black bead eyes. One complete right-facing character centered on an unbroken white field.
+```
+
+The prompt contains no negative-concept list and does not name the face marks,
+props, background content, or other objects it seeks to exclude. The guide
+supplies geometry and pose; the prompt supplies Wizard material and Calling
+identity.
+
+### Decision rule
+
+Review the untouched 1024x1024 output and an exact 48-pixel-tall derivative.
+Pass the bounded structure purpose only if all are true:
+
+- one complete, right-facing, side-biased subject remains isolated;
+- the head and torso read as one broad continuous angular form with flat crown
+  and visible chamfered sides rather than a round head over an oval torso;
+- the lower bridge visibly narrows before two separate block-like feet on one
+  baseline;
+- exactly two bead eyes remain readable and the rest of the face is unmarked;
+- the forward arm ends in a visibly separate simple hand that can normalize to
+  the B1 socket without covering an eye; and
+- blue crochet plus dark-blue/gold Wizard identity is present without obscuring
+  the structure.
+
+Opaque white background or a deterministically removable soft shadow is not a
+structure failure, but neither satisfies later alpha/product acceptance. Exact
+socket coordinates, fiber polish, staff/belt details, animation, and runtime
+normalization remain later work.
+
+After one terminal result, record the prompt ID, output path, dimensions, byte
+size, SHA-256, telemetry, queue state, 48-pixel derivative hash, and decision.
+No second seed, rewritten prompt, alternate reference, full-lineup reference,
+multi-reference extension, Loomkeeper, Patch, animation, or promotion may run
+under this contract.
+
+### Recorded result and decision
+
+| Field | Recorded value |
+| --- | --- |
+| Prompt ID | `6fede7ab-3de4-4d67-9a24-d3de5ea3ca1f` |
+| Terminal state | success; queue returned to 0 running / 0 pending |
+| Elapsed | 298.335 seconds from Comfy history; server log 298.33 seconds |
+| Full output | external `WormsPortFlux2KleinReferenceEdit_00002_.png` |
+| Output properties | 1024x1024 opaque PNG; 1,163,317 bytes |
+| Output SHA-256 | `FD24C8CD494FD9631BE2BC589067BE8477C67026DC24ED9BA9A9A3A07920570B` |
+| 48px evidence | external `E:\ComFy\TasirWimp\component-evidence\wp-015b2b\gate1\wizard-structure-15026001-48px.png`; 48x48; 3,467 bytes |
+| 48px SHA-256 | `192209CC0D7121AEDF0CC25CCDD0C807E314A6C0E65E459A83192B7A33D3E925` |
+| Runtime telemetry | RX 7600 LOW_VRAM; 2,808.00 MB diffusion loaded, 1,074.02 MB offloaded, 324.00 MB buffer; four Euler steps; no node error or retry |
+| Decision | **fail — structure-reference Wizard route rejected** |
+
+The result is one isolated, complete, right-facing blue crochet Wizard with a
+dark-blue/gold felt hat, exactly two bead eyes, two readable feet, an unmarked
+face, and a separate forward mitten. Those properties and the overall Calling
+identity remain legible at 48x48.
+
+The decisive anatomy requirement failed. Instead of retaining the guide's one
+broad flat-crowned angular head-and-torso with chamfered sides and a narrow lower
+bridge, FLUX generated a pointed hat over a round head and oval doll torso. The
+output therefore cannot establish a Wizard master, cannot be promoted, and
+remains external quarantine. One terminal result exhausted this contract: no
+retry, prompt rewrite, seed change, or second reference was submitted. A future
+two-reference structure/style experiment or deterministic character-master
+route requires separate planning and approval.

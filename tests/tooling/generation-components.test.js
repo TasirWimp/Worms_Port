@@ -71,6 +71,27 @@ test('FLUX split model files remain exact and provenance-bound', () => {
   assert.match(errors, /source_relation must remain canonical/);
 });
 
+test('Wizard structure conditioning stays project-owned, exact, and documentation-only', () => {
+  const invalid = structuredClone(manifest);
+  const guide = invalid.conditioning_inputs.find(
+    (input) => input.id === 'knotkin-wizard-structure-guide-v1'
+  );
+  guide.file_sha256 = '0'.repeat(64);
+  guide.width = 512;
+  guide.distribution = 'product_runtime';
+  invalid.conditioning_inputs.push({ ...structuredClone(guide), id: 'arbitrary-guide' });
+  invalid.policy.conditioning_input_state = 'approved_product_asset';
+
+  const errors = validateGenerationComponents(invalid).join('\n');
+  assert.match(errors, /conditioning inputs must remain project-owned documentation references/);
+  assert.match(errors, /project-owned conditioning inputs must remain MIT documentation-only/);
+  assert.match(errors, /reviewed conditioning dimensions changed/);
+  assert.match(errors, /reviewed conditioning file size or hash changed/);
+  assert.match(errors, /conditioning source bytes do not match the manifest/);
+  assert.match(errors, /arbitrary conditioning inputs are blocked/);
+  assert.match(errors, /conditioning input count must remain closed/);
+});
+
 test('generation workflow requires an exact JSON hash and disclosed input mode', () => {
   const invalid = structuredClone(manifest);
   const workflow = invalid.components.find((component) => component.kind === 'generation_workflow');
