@@ -1279,9 +1279,67 @@ product review are incomplete.
 
 ### WP-015B2E Protected-Property Masked-Edit Investigation
 
-B2E is planning-only until it identifies a reviewed mask or region-control
-route compatible with the pinned core-node Comfy runtime. No inference is
-authorized. Use B2C as geometry evidence and B2D as cuteness/style evidence.
+B2E completed its source/tooling investigation without inference. It selected a
+core-node masked latent edit and rejected the following alternatives:
+
+- `InpaintModelConditioning` adds model-specific concat conditioning and its
+  pinned node schema warns that the noise-mask option may improve results or
+  completely break them depending on the model. The installed FLUX.2 Klein edit
+  model has not established that contract.
+- `VAEEncodeForInpaint` intentionally replaces masked source pixels before VAE
+  encoding. B2E instead needs B2D to remain the semantic reference and base
+  latent while the mask only gates denoising.
+- `DifferentialDiffusion` is marked experimental in the pinned ComfyUI source.
+- custom inpaint/crop, segmentation, ControlNet, and IP-Adapter nodes would add
+  an unreviewed component and are not needed for this bounded hypothesis.
+
+The selected source graph is
+`scripts/comfy-workflows/generate_flux2_klein_protected_edit.json`, a 23-node
+project-owned derivative of the official pinned FLUX.2 Klein 4B distilled edit
+template. Its SHA-256 is
+`AD4D4F96AD7D7C024A1A903A440DD4FE6D9E31353ACB7E436BF7DFC787321DAA`.
+It uses only pinned ComfyUI 0.27.1 core nodes:
+
+1. load and bound the exact B2D image to one megapixel;
+2. encode B2D once and use that latent as both the sole `ReferenceLatent` and
+   the sampler's starting image;
+3. load the exact project-owned mask, match it to the bounded base, and read its
+   red channel as the edit mask;
+4. attach that mask with `SetLatentNoiseMask`, then retain the existing four
+   FLUX.2 steps, CFG `1`, Euler sampler, one-image batch, and low-VRAM/no-preview
+   profile settings; and
+5. decode, then use `ImageCompositeMasked` with B2D as destination and the same
+   mask so pixels outside the reviewed region are restored before saving.
+
+B2C remains geometry evidence, not a second model input. This avoids the extra
+reference tokens and semantic competition of multi-reference conditioning on
+the 8 GB GPU while still making the B2C broad angular family the human review
+standard. B2D is the edit target, base latent, and only style/reference image.
+
+The deterministic mask lives at
+`docs/images/art-direction/knotkin-wizard-cowl-edit-mask.png`, is 1024x1024,
+11,323 bytes, and has SHA-256
+`2B6C5F51A6EA411BB8B9C40AF861A339622316CB1D9710719F7F0CDEC327425B`.
+`scripts/generate-wizard-cowl-edit-mask.js`, SHA-256
+`8DFD6623479D61603C046550F9184F13ADAE0C4FA3E40E9C49F2017E6F8634A1`,
+regenerates it byte-for-byte. White permits edits around the crown, head
+perimeter, and navy neck wrap, including enough white-background halo for the
+cowl to grow above the existing silhouette. The central face island and all
+pixels below the cowl boundary are black, protecting the accepted eyes,
+eyebrows, mouth, body, feet, baseline, and forward Relic hand. A four-times
+render and box downsample provide a narrow soft boundary without another node.
+
+Pinned `object_info` validation passed all 23 node classes, required inputs, and
+connected edge types. This proves graph compatibility, not FLUX.2 masked-edit
+quality. The graph remains `runtime_enabled: false`, is absent from the closed
+profile and MCP directory, and exposed no MCP tool. After validation the queue
+was zero running / zero pending, B2D remained the newest output, and both local
+services were stopped. No image or mask was staged and no prompt ran. Current
+official ComfyUI background references are the
+[inpainting guide](https://docs.comfy.org/tutorials/basic/inpaint) and
+[FLUX.2 Klein guide](https://docs.comfy.org/tutorials/flux/flux-2-klein);
+the exact implementation authority remains the locally pinned ComfyUI revision
+recorded in the generation manifest.
 
 Protect only:
 
@@ -1293,14 +1351,34 @@ Protect only:
   and
 - friendly/cute readability at full size and 48px.
 
-Leave eye spacing, eyebrow curve, stitches, textile folds, trim, belt/button
-treatment, surface detail, and local proportions to FLUX. Silhouette IoU,
-baseline, canvas position, and bounds remain diagnostic measurements. Compensate
-small global drift during deterministic normalization when possible. A mask
-must allow the head-worn cowl to affect the crown while preserving the body,
-feet, and hand strongly enough for gameplay. Document workflow provenance,
-editable/protected regions, input roles, output review, and failure handling
-before staging or generating anything.
+Leave cowl point, folds, trim, stitch pattern, and local crown/neck shape to
+FLUX. Eye spacing, eyebrows, mouth, body, hand, and feet happen to receive
+stronger-than-semantic protection in this pass because they lie outside the
+mask. Silhouette IoU, baseline, canvas position, and bounds remain diagnostic
+measurements; small later normalization remains allowed.
+
+The next gate may activate exactly these bytes only after a separate project
+owner decision. If activated, freeze seed `15026005` and this prompt:
+
+> Change only the navy knitted neck wrap into a cute Wizard cowl that visibly
+> rests on and frames the head, with a soft pointed crown and short neck drape.
+> Preserve the pale chenille angular Knotkin body, full pose, complete forward
+> hand, belt, button, separate feet, exactly two eyes, paired eyebrows, one
+> curved mouth, white background, centered full-body framing, and friendly
+> handcrafted appeal. No weapon, staff, extra limb, extra face, floating hat,
+> text, logo, or rear shell.
+
+Before that one request, activation must exact-install and register the candidate
+workflow, stage exact B2D bytes and the exact tracked mask under two safe names,
+verify model/workflow/input hashes, confirm low-VRAM/no-preview launch mode, and
+record an empty queue plus B2D as latest-output baseline. Human review controls
+the result: the cowl must visibly rest on the head; the character must retain
+exactly two eyes, optional paired eyebrows, one mouth, the complete forward
+hand, separate feet, broad angular family, and cute 48px read. Pixel equality
+outside every nonzero mask pixel is mandatory; variation inside the mask is
+creative rather than a reason to reject. A failed result authorizes no retry,
+seed shopping, mask widening, or full-canvas fallback. Alpha, animation, socket
+normalization, another Calling, and product promotion remain later work.
 
 ### WP-015B0 Approval And Canonical Baseline
 

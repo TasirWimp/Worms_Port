@@ -329,6 +329,33 @@ B2C remains the strongest geometry reference and B2D the preferred cuteness and
 surface-treatment reference; neither image is yet normalized or approved as a
 runtime product asset.
 
+### Deterministic Wizard Cowl Edit Mask
+
+![Project-owned Wizard cowl edit mask](images/art-direction/knotkin-wizard-cowl-edit-mask.png)
+
+WP-015B2E records a second documentation-only control image at
+`docs/images/art-direction/knotkin-wizard-cowl-edit-mask.png`. White marks the
+only editable region around B2D's crown, head perimeter, and navy neck wrap;
+the central face island, body, feet, baseline, and forward Relic hand remain
+black. Its halo permits a head-worn cowl to extend above the current crown
+without opening the entire character silhouette to regeneration.
+
+- PNG SHA-256:
+  `2B6C5F51A6EA411BB8B9C40AF861A339622316CB1D9710719F7F0CDEC327425B`
+- Generator SHA-256:
+  `8DFD6623479D61603C046550F9184F13ADAE0C4FA3E40E9C49F2017E6F8634A1`
+- Canvas: opaque 1024x1024 grayscale PNG; white editable, black protected.
+- Intended base: external B2D evidence
+  `DEF9265DAA4C6F2799D16870205E2015291E3E4AAE0F61802349C9FD8D56AD00`.
+- Geometry review evidence: external B2C output
+  `5FF0A63DAC03E13B2A3390AD77E6929A9822412E1A1E0415E7A38125D703B246`;
+  it is not a second model input.
+
+The mask is source/review tooling, not artwork. It may not enter `assets/`, be
+repainted ad hoc, be reused for another Calling, or be staged while the exact
+protected-edit workflow remains runtime-disabled. Its workflow and activation
+contract live in `asset-briefs/wp-015b2-generation-review.md`.
+
 Future generated art is not expected to be deterministic to the last detail.
 Protect the recognisable angular Knotkin family, the Wizard cowl/hat resting on
 the head rather than only around the neck, a forward hand capable of holding a

@@ -42,7 +42,7 @@
     "WP-015B2B deterministic structure-guide integrity and one fixed-seed Wizard diagnostic",
     "WP-015B2C Gate 1 robot-scaffold diagnostic and conditional Gate 2 fitted-knit silhouette preservation",
     "WP-015B2D exact-input cuteness and Wizard-styling edit with full-size, 48px, and deterministic silhouette review",
-    "WP-015B2E protected-property, creative-field, drift-telemetry, and no-generation planning review",
+    "WP-015B2E protected-property mask integrity, pinned core-node workflow schema, creative-field, drift-telemetry, and no-generation review",
     "WP-015B1 brief-contract completeness and source-boundary review",
     "fixed-seed quarantined vertical-slice master review",
     "self-review"
@@ -62,7 +62,8 @@
     "15026001",
     "15026002",
     "15026003",
-    "15026004"
+    "15026004",
+    "15026005"
   ],
   "sorcerers_reference_used": false,
   "clean_room_records": [],
@@ -326,11 +327,22 @@
       "command": "WP-015B2D project-owner creative review and WP-015B2E planning boundary",
       "status": "pass",
       "detail": "The project owner accepted the paired eyebrows, moderate body-width variation, and overall cuteness direction. Normalized silhouette IoU 0.880098 is now drift telemetry that may guide later compensation rather than automatic rejection. Protected properties are the recognisable angular Knotkin family, a Wizard cowl or hat resting on the head, a usable forward Relic hand, exactly two eyes and one mouth with optional paired eyebrows, and friendly phone-scale appeal. WP-015B2E may investigate a pinned core-node mask or region-controlled route but authorizes no workflow change, staged input, prompt, seed, inference, normalization, or promotion. JSON parsing, compliance, all 31 tooling tests, the full build, npm audit with zero vulnerabilities, git diff --check, and the zero-runtime-asset check passed after the policy transition."
+    },
+    {
+      "command": "WP-015B2E protected-edit source and no-inference validation",
+      "status": "pass",
+      "detail": "Selected a core-only B2D-base route after excluding model-dependent InpaintModelConditioning, destructive masked-pixel VAEEncodeForInpaint behavior, experimental DifferentialDiffusion, and custom nodes. Project source workflow scripts/comfy-workflows/generate_flux2_klein_protected_edit.json contains 23 nodes and exact hash AD4D4F96AD7D7C024A1A903A440DD4FE6D9E31353ACB7E436BF7DFC787321DAA. It uses B2D as sole ReferenceLatent and base latent, gates sampling with SetLatentNoiseMask, and restores protected pixels through ImageCompositeMasked. Deterministic 1024x1024 cowl mask 2B6C5F51A6EA411BB8B9C40AF861A339622316CB1D9710719F7F0CDEC327425B regenerates byte-for-byte from generator 8DFD6623479D61603C046550F9184F13ADAE0C4FA3E40E9C49F2017E6F8634A1 and protects the face, body, feet, baseline, and Relic hand while opening the crown/neck-wrap region. Pinned ComfyUI 0.27.1 object_info validation passed all classes, required inputs, and connected edge types. The candidate remains runtime-disabled, outside the profile and MCP runtime directory. The validation session ended with a 0/0 queue, B2D still latest, and both services stopped; no input staging or inference occurred. Seed 15026005 and the exact cowl-only prompt are reserved but not authorized."
+    },
+    {
+      "command": "WP-015B2E source-gate closure verification",
+      "status": "pass",
+      "detail": "JSON parsing, npm run check:compliance, all 33 tooling tests, the complete compliance/TypeScript/server/client build, npm audit with zero vulnerabilities, git diff --check, deterministic mask regeneration, and the zero-runtime-asset build check passed. Generation-component compliance now covers 11 exact components and two closed profiles while keeping the protected-edit candidate runtime-disabled. The existing Vite chunk-size warning remains unchanged."
     }
   ],
   "skipped_checks": [
-    "The phone-browser matrix was not run for WP-015B0, WP-015B1, WP-015B2A Gates 1-6, WP-015B2B, WP-015B2C, or WP-015B2D because these slices change only the offline generation pipeline, documentation, compliance metadata, and external quarantined component state; they change no browser-facing code or runtime asset.",
-    "Real-device testing was not run because WP-015B0, WP-015B1, WP-015B2A Gates 1-6, WP-015B2B, WP-015B2C, and WP-015B2D create no player-visible behavior or product media.",
+    "The phone-browser matrix was not run for WP-015B0, WP-015B1, WP-015B2A Gates 1-6, WP-015B2B, WP-015B2C, WP-015B2D, or the WP-015B2E source gate because these slices change only the offline generation pipeline, documentation, compliance metadata, and external quarantined component state; they change no browser-facing code or runtime asset.",
+    "Real-device testing was not run because WP-015B0, WP-015B1, WP-015B2A Gates 1-6, WP-015B2B, WP-015B2C, WP-015B2D, and the WP-015B2E source gate create no player-visible behavior or product media.",
+    "FLUX inference, input staging, MCP workflow installation, and MCP tool registration were not run for WP-015B2E because this gate validates source topology, exact mask bytes, and pinned node compatibility before a separate activation decision.",
     "FLUX inference was not run in Gate 3 because the separate Gate 4 technical smoke had to record runtime, memory behavior, and exact output evidence as its own bounded review.",
     "Wizard, Threadball, and reference-edit visual admission was not run in Gate 4 because technical hardware admission and visual-purpose admission are separate gates."
   ],
@@ -342,6 +354,7 @@
     "Threadball passed only a bounded structure review; its opaque output has no exact-output IP/product approval, alpha normalization, derivative cleanup, or manifest entry. It may inform a later separately reviewed Relic-only route but is not a product asset.",
     "B2C proves that a mechanical semantic scaffold can establish angular geometry and survive one fitted-knit conversion, but the opaque knit output retains panel seams and a rear scaffold volume. B2D proves that larger close-set eyes, a curved smile, optional paired eyebrows, pale chenille, a belt/button, and warmer details improve appeal. Its 0.880098 normalized IoU is accepted creative variation and retained as drift telemetry. The head-worn Wizard cowl, normalization, alpha, socket, and animation requirements remain unresolved.",
     "The mouth amendment improves expression capacity but requires a later neutral-mouth topology and bounded expression-frame contract so mouth placement does not flicker or multiply across animation.",
-    "No WP-015B2 output currently passes exact-output product/IP and runtime-normalization review. Threadball, the B2C knit conversion, and the owner-accepted B2D creative-direction result remain external evidence. Character generation cannot resume until WP-015B2E documents a reviewed masked or region-controlled method, protected/editable regions, input roles, and human review rule."
+    "The B2E graph is schema-compatible but its latent-mask behavior and boundary quality remain unproven with the distilled FLUX.2 Klein model. Its final pixel composite should restore zero-mask pixels, but only one separately authorized inference can test whether the editable ring produces a natural head-worn cowl without seams.",
+    "No WP-015B2 output currently passes exact-output product/IP and runtime-normalization review. Threadball, the B2C knit conversion, and the owner-accepted B2D creative-direction result remain external evidence. Character generation cannot resume until the project owner reviews the exact B2E mask and source workflow and separately authorizes profile activation plus the one frozen request."
   ]
 }

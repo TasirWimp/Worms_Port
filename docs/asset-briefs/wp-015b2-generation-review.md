@@ -1096,12 +1096,13 @@ back, and warmer handcrafted character.
 
 ## WP-015B2E Protected-Property Masked-Edit Investigation
 
-Status: **planning only; no workflow or generation authorized**.
+Status: **source workflow and deterministic mask complete; activation review
+pending; no generation authorized**.
 
-B2E will investigate an interior/region-controlled edit that mediates between
-B2C's strong geometry and B2D's accepted cute styling. The goal is not to freeze
-every pixel or eliminate FLUX creativity. It is to protect only the properties
-that make the character usable and recognisable:
+B2E investigated an interior/region-controlled edit that mediates between B2C's
+strong geometry and B2D's accepted cute styling. The goal remains to protect
+gameplay and Calling properties without removing FLUX's useful creative
+variation:
 
 1. a broad angular Knotkin body family with a flat/chamfered crown, narrow lower
    bridge, and separate feet, allowing moderate local proportion variation;
@@ -1118,11 +1119,126 @@ surface micro-detail, local width, and other non-protected variation. Global
 scale, position, baseline, padding, and small width drift are normalization
 concerns when they can be compensated without distorting the protected form.
 
-The investigation must determine whether the pinned core-node Comfy runtime can
-support a reviewed mask or region-control route without unreviewed custom nodes.
-The likely editable zones are face, head/cowl, and textile surface; the body
-outline, feet, and Relic hand should receive stronger preservation. Because a
-head-worn cowl may legitimately change the crown edge, the mask cannot simply
-freeze the whole exterior silhouette. B2C is the geometry reference and B2D is
-the cuteness/style reference. No prompt, seed, workflow edit, staged image, or
-inference is authorized until that technical and review contract is documented.
+For this single-purpose pass, the creative field is intentionally narrower than
+the long-term character doctrine: only the cowl point, folds, trim, stitches,
+and local crown/neck shape are editable. The accepted B2D face and all gameplay
+anatomy remain outside the mask. A later animation or expression pass may vary
+the face deliberately; this cowl repair may not.
+
+### Technical decision
+
+| Candidate | Decision | Reason |
+| --- | --- | --- |
+| `InpaintModelConditioning` | reject | Adds concat conditioning whose pinned node warning says the noise mask may break depending on the model; no FLUX.2 Klein contract was established. |
+| `VAEEncodeForInpaint` | reject | Replaces masked source pixels before VAE encoding; B2E needs B2D to remain the semantic reference and base. |
+| `DifferentialDiffusion` | reject | Marked experimental in pinned ComfyUI 0.27.1. |
+| custom inpaint/crop, segmentation, ControlNet, or IP-Adapter nodes | reject | Adds an unreviewed dependency and is unnecessary for the bounded cowl hypothesis. |
+| `VAEEncode` + `SetLatentNoiseMask` + `ImageCompositeMasked` | select | Uses only pinned core nodes, edits a B2D base latent, and restores pixels outside the same deterministic mask. |
+
+The selected API graph is
+`scripts/comfy-workflows/generate_flux2_klein_protected_edit.json`: 23 nodes,
+5,626 bytes, SHA-256
+`AD4D4F96AD7D7C024A1A903A440DD4FE6D9E31353ACB7E436BF7DFC787321DAA`.
+It derives from the same official FLUX.2 Klein 4B distilled image-edit template
+revision `cebdebc9fc2febcb97a5db0dd291f59f5300b176` as the admitted full-canvas
+edit workflow. It retains the exact three model filenames, four steps, CFG `1`,
+Euler sampler, one-megapixel bound, and batch-one input behavior.
+
+The graph changes the edit topology only:
+
+1. B2D is scaled once, VAE-encoded once, supplied as the sole positive and
+   negative `ReferenceLatent`, and reused as the sampler's base latent.
+2. A second staged image is size-matched and converted from its red channel to
+   a mask.
+3. `SetLatentNoiseMask` attaches that mask to the B2D base latent.
+4. The decoded result is composited onto the bounded B2D pixels using the same
+   mask; outside-mask pixels therefore do not depend on latent reconstruction.
+
+B2C is **geometry evidence, not a second model input**. This preserves its role
+in human review while avoiding extra reference tokens, memory use, and semantic
+competition on the 8 GB GPU. B2D is the edit target, base latent, and sole
+style/reference image.
+
+Pinned ComfyUI 0.27.1 `object_info` validation found every class, required
+input, and connected edge type valid. The graph contains no
+`InpaintModelConditioning`, `VAEEncodeForInpaint`, `DifferentialDiffusion`,
+`EmptyFlux2LatentImage`, or custom node. Schema compatibility does not prove
+masked-edit image quality.
+
+### Exact mask and regions
+
+![WP-015B2E Wizard cowl edit mask](../images/art-direction/knotkin-wizard-cowl-edit-mask.png)
+
+The mask is 1024x1024, 11,323 bytes, SHA-256
+`2B6C5F51A6EA411BB8B9C40AF861A339622316CB1D9710719F7F0CDEC327425B`.
+`scripts/generate-wizard-cowl-edit-mask.js`, SHA-256
+`8DFD6623479D61603C046550F9184F13ADAE0C4FA3E40E9C49F2017E6F8634A1`,
+regenerates it byte-for-byte. White is editable; black is protected.
+
+- The white outer ring covers B2D's navy wrap and head perimeter and extends
+  into the white halo above the crown so a cowl can visibly rest on the head.
+- The black central island protects the exact accepted eyes, paired eyebrows,
+  mouth, and pale face.
+- Black below the cowl boundary protects the body, belt/button, arms, complete
+  forward Relic hand, separate feet, and baseline.
+- Four-times rendering plus deterministic box downsampling creates only a
+  narrow anti-aliased boundary. Any pixel with nonzero mask value belongs to
+  the editable transition; all zero-mask decoded pixels must remain equal to
+  B2D after the final composite.
+
+The mask geometry was reviewed against external B2C evidence
+`5FF0A63DAC03E13B2A3390AD77E6929A9822412E1A1E0415E7A38125D703B246`
+and targets external B2D evidence
+`DEF9265DAA4C6F2799D16870205E2015291E3E4AAE0F61802349C9FD8D56AD00`.
+Neither generated image was copied into the repository.
+
+### Frozen activation candidate
+
+| Field | Frozen value |
+| --- | --- |
+| Workflow | `generate_flux2_klein_protected_edit` candidate; currently not registered |
+| Base/reference | exact B2D output `DEF9265D...AD00` |
+| Geometry review evidence | exact B2C output `5FF0A63D...B246`; not a model input |
+| Mask | exact tracked PNG `2B6C5F51...7425B` |
+| Seed | `15026005` |
+| Requests | one, only after a separate activation decision |
+| Output state | external quarantine only |
+
+Frozen prompt:
+
+> Change only the navy knitted neck wrap into a cute Wizard cowl that visibly
+> rests on and frames the head, with a soft pointed crown and short neck drape.
+> Preserve the pale chenille angular Knotkin body, full pose, complete forward
+> hand, belt, button, separate feet, exactly two eyes, paired eyebrows, one
+> curved mouth, white background, centered full-body framing, and friendly
+> handcrafted appeal. No weapon, staff, extra limb, extra face, floating hat,
+> text, logo, or rear shell.
+
+If later activated, preflight must exact-install and register only the reviewed
+workflow, stage B2D and the tracked mask under two safe `wormsport/` names,
+verify their hashes, verify all model/workflow hashes and the low-VRAM/no-preview
+launch, and record a zero-running/zero-pending queue with B2D still newest.
+
+Human acceptance is controlling:
+
+1. the new cowl visibly rests on and frames the head rather than remaining a
+   neck-only wrap or floating as a separate hat;
+2. the result retains the broad angular Knotkin family, exact two eyes, optional
+   paired eyebrows, one mouth, complete forward hand, separate feet, and
+   friendly/cute full-size and 48px read;
+3. decoded pixels outside every nonzero mask pixel equal B2D after compositing;
+4. cowl point, folds, trim, stitches, and bounded local silhouette variation are
+   judged creatively, not by a last-pixel target; and
+5. silhouette IoU, bounds, position, and baseline remain drift telemetry for
+   later normalization, not automatic rejection authority.
+
+One failure closes the gate. It authorizes no retry, seed shopping, mask edit,
+second reference, wider region, full-canvas fallback, alpha, animation, socket
+normalization, another Calling, or product promotion.
+
+The source graph remains `runtime_enabled: false`, is absent from the closed
+profile and external MCP workflow directory, and exposed no tool. The temporary
+schema-validation start ended with zero running and zero pending prompts, B2D
+still the newest output, and both services stopped. No source image or mask was
+staged and no inference ran. The next action is a project-owner activation
+review, not generation.

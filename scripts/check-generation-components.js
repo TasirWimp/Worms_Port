@@ -13,6 +13,7 @@ const requiredIds = new Set([
   'flux2-vae',
   'wormsport-flux2-klein-text-to-image-workflow',
   'wormsport-flux2-klein-reference-edit-workflow',
+  'wormsport-flux2-klein-protected-edit-workflow',
   'comfyui-mcp-generate-image-workflow',
   'wormsport-generate-image-conditioned-workflow'
 ]);
@@ -79,6 +80,16 @@ const reviewedConditioningInputContracts = new Map([
     fileSize: 15044,
     fileSha256: '5A8F1C1D0942755F113327467462D47812A22A64BAF3DF2C5CD2E0F491FA9AA1',
     generatorSha256: '695B499E67794692BFEB248C22CA24C24C2D0091107B4EAAE247D29830FCAF63'
+  }],
+  ['knotkin-wizard-cowl-edit-mask-v1', {
+    kind: 'project_owned_edit_mask',
+    sourcePath: 'docs/images/art-direction/knotkin-wizard-cowl-edit-mask.png',
+    generatorPath: 'scripts/generate-wizard-cowl-edit-mask.js',
+    width: 1024,
+    height: 1024,
+    fileSize: 11323,
+    fileSha256: '2B6C5F51A6EA411BB8B9C40AF861A339622316CB1D9710719F7F0CDEC327425B',
+    generatorSha256: '8DFD6623479D61603C046550F9184F13ADAE0C4FA3E40E9C49F2017E6F8634A1'
   }]
 ]);
 const reviewedFluxWorkflowContracts = new Map([
@@ -103,7 +114,8 @@ const reviewedFluxWorkflowContracts = new Map([
       'VAEDecode',
       'VAELoader'
     ],
-    placeholders: ['PARAM_INT_SEED', 'PARAM_PROMPT']
+    placeholders: ['PARAM_INT_SEED', 'PARAM_PROMPT'],
+    runtimeEnabled: true
   }],
   ['wormsport-flux2-klein-reference-edit-workflow', {
     sourcePath: 'scripts/comfy-workflows/generate_flux2_klein_reference_edit.json',
@@ -132,7 +144,47 @@ const reviewedFluxWorkflowContracts = new Map([
       'VAEEncode',
       'VAELoader'
     ],
-    placeholders: ['PARAM_INT_SEED', 'PARAM_PROMPT', 'PARAM_STR_REFERENCE_IMAGE']
+    placeholders: ['PARAM_INT_SEED', 'PARAM_PROMPT', 'PARAM_STR_REFERENCE_IMAGE'],
+    runtimeEnabled: true
+  }],
+  ['wormsport-flux2-klein-protected-edit-workflow', {
+    sourcePath: 'scripts/comfy-workflows/generate_flux2_klein_protected_edit.json',
+    runtimePath: 'workflows/generate_flux2_klein_protected_edit.json',
+    inputMode: 'masked_image_to_image',
+    sourceTemplateUrl: 'https://github.com/Comfy-Org/workflow_templates/blob/cebdebc9fc2febcb97a5db0dd291f59f5300b176/templates/image_flux2_klein_image_edit_4b_distilled.json',
+    sourceTemplateRevision: 'cebdebc9fc2febcb97a5db0dd291f59f5300b176',
+    nodeClasses: [
+      'CFGGuider',
+      'CLIPLoader',
+      'CLIPTextEncode',
+      'ConditioningZeroOut',
+      'Flux2Scheduler',
+      'GetImageSize',
+      'ImageCompositeMasked',
+      'ImageScale',
+      'ImageScaleToTotalPixels',
+      'ImageToMask',
+      'KSamplerSelect',
+      'LoadImage',
+      'LoadImage',
+      'RandomNoise',
+      'ReferenceLatent',
+      'ReferenceLatent',
+      'SamplerCustomAdvanced',
+      'SaveImage',
+      'SetLatentNoiseMask',
+      'UNETLoader',
+      'VAEDecode',
+      'VAEEncode',
+      'VAELoader'
+    ],
+    placeholders: [
+      'PARAM_INT_SEED',
+      'PARAM_PROMPT',
+      'PARAM_STR_MASK_IMAGE',
+      'PARAM_STR_REFERENCE_IMAGE'
+    ],
+    runtimeEnabled: false
   }]
 ]);
 const reviewedFluxModelComponents = [
@@ -154,7 +206,7 @@ const reviewedProfileContracts = new Map([
     smokeTool: 'generate_image'
   }],
   ['flux2-klein', {
-    state: 'wizard_master_creative_direction_accepted_masked_edit_planning',
+    state: 'wizard_masked_edit_workflow_review_pending',
     modelComponents: reviewedFluxModelComponents,
     workflowComponents: [
       'wormsport-flux2-klein-text-to-image-workflow',
@@ -173,7 +225,10 @@ const reviewedProfileContracts = new Map([
       '15026004',
       '0.880098',
       'project owner',
-      'planning only'
+      'AD4D4F96AD7D7C024A1A903A440DD4FE6D9E31353ACB7E436BF7DFC787321DAA',
+      '2B6C5F51A6EA411BB8B9C40AF861A339622316CB1D9710719F7F0CDEC327425B',
+      'not profile-enabled',
+      'no inference'
     ]
   }]
 ]);
@@ -430,10 +485,11 @@ function validateGenerationComponents(manifest, root = repoRoot) {
     if (!/^workflows\/[a-z0-9][a-z0-9._-]*\.json$/.test(runtimePath || '')) {
       errors.push(`${workflow.id}: runtime workflow path must name one JSON file below workflows/.`);
     }
-    if (!['text_to_image', 'image_to_image'].includes(workflow.input_mode)) {
-      errors.push(`${workflow.id}: input_mode must disclose text_to_image or image_to_image.`);
+    if (!['text_to_image', 'image_to_image', 'masked_image_to_image'].includes(workflow.input_mode)) {
+      errors.push(`${workflow.id}: input_mode must disclose text_to_image, image_to_image, or masked_image_to_image.`);
     }
-    if (workflow.runtime_enabled !== true) {
+    const contract = reviewedFluxWorkflowContracts.get(workflow.id);
+    if (workflow.runtime_enabled !== true && contract?.runtimeEnabled !== false) {
       errors.push(`${workflow.id}: reviewed workflow must be runtime-enabled only through a closed profile.`);
     }
     if (workflow.distribution === 'project_source_tooling') {
@@ -452,7 +508,6 @@ function validateGenerationComponents(manifest, root = repoRoot) {
       }
     }
 
-    const contract = reviewedFluxWorkflowContracts.get(workflow.id);
     if (!contract) continue;
     if (workflow.source_path !== contract.sourcePath) errors.push(`${workflow.id}: reviewed source_path changed.`);
     if (workflow.runtime_path !== contract.runtimePath) errors.push(`${workflow.id}: reviewed runtime_path changed.`);
@@ -470,7 +525,9 @@ function validateGenerationComponents(manifest, root = repoRoot) {
       errors.push(`${workflow.id}: reviewed FLUX model component set changed.`);
     }
     if (workflow.core_nodes_only !== true) errors.push(`${workflow.id}: core_nodes_only must remain true.`);
-    if (workflow.runtime_enabled !== true) errors.push(`${workflow.id}: Gate 3 workflow must remain profile-enabled.`);
+    if (workflow.runtime_enabled !== contract.runtimeEnabled) {
+      errors.push(`${workflow.id}: reviewed runtime-enabled state changed.`);
+    }
 
     const sourcePath = path.resolve(root, contract.sourcePath);
     if (!fs.existsSync(sourcePath)) continue;
@@ -512,7 +569,8 @@ function validateGenerationComponents(manifest, root = repoRoot) {
     if (onlyNode('KSamplerSelect')?.inputs?.sampler_name !== 'euler') {
       errors.push(`${workflow.id}: distilled sampler must remain Euler.`);
     }
-    if (onlyNode('EmptyFlux2LatentImage')?.inputs?.batch_size !== 1) {
+    if (workflow.input_mode !== 'masked_image_to_image' &&
+        onlyNode('EmptyFlux2LatentImage')?.inputs?.batch_size !== 1) {
       errors.push(`${workflow.id}: batch size must remain one.`);
     }
     if (workflow.input_mode === 'text_to_image') {
@@ -528,8 +586,74 @@ function validateGenerationComponents(manifest, root = repoRoot) {
           scale?.inputs?.upscale_method !== 'nearest-exact') {
         errors.push(`${workflow.id}: reference preprocessing must remain bounded to one megapixel.`);
       }
-      if (onlyNode('LoadImage')?.inputs?.image !== 'PARAM_STR_REFERENCE_IMAGE') {
+      const loadImages = nodes.filter((node) => node?.class_type === 'LoadImage');
+      if (!loadImages.some((node) => node?.inputs?.image === 'PARAM_STR_REFERENCE_IMAGE')) {
         errors.push(`${workflow.id}: reference input must remain an explicit staged filename parameter.`);
+      }
+      if (workflow.input_mode === 'masked_image_to_image') {
+        if (loadImages.length !== 2 ||
+            !loadImages.some((node) => node?.inputs?.image === 'PARAM_STR_MASK_IMAGE')) {
+          errors.push(`${workflow.id}: protected edit must expose exactly one staged base and one staged mask.`);
+        }
+        if (onlyNode('ImageToMask')?.inputs?.channel !== 'red') {
+          errors.push(`${workflow.id}: protected edit must read the reviewed grayscale mask from its red channel.`);
+        }
+        if (onlyNode('EmptyFlux2LatentImage')) {
+          errors.push(`${workflow.id}: protected edit must sample from the encoded base, not an empty latent.`);
+        }
+        const latentMask = onlyNode('SetLatentNoiseMask');
+        const sampler = onlyNode('SamplerCustomAdvanced');
+        const composite = onlyNode('ImageCompositeMasked');
+        const baseEncode = onlyNode('VAEEncode');
+        const maskNode = onlyNode('ImageToMask');
+        const decoded = onlyNode('VAEDecode');
+        const baseScale = onlyNode('ImageScaleToTotalPixels');
+        const maskScale = onlyNode('ImageScale');
+        const imageSize = onlyNode('GetImageSize');
+        const references = nodes.filter((node) => node?.class_type === 'ReferenceLatent');
+        const baseLoad = loadImages.find((node) => node?.inputs?.image === 'PARAM_STR_REFERENCE_IMAGE');
+        const maskLoad = loadImages.find((node) => node?.inputs?.image === 'PARAM_STR_MASK_IMAGE');
+        const expectedLink = (value, sourceNode, output = 0) =>
+          sameArray(value, [String(sourceNode), output]);
+        const findId = (target) => Object.entries(graph).find(([, node]) => node === target)?.[0];
+        const latentMaskId = findId(latentMask);
+        const maskNodeId = findId(maskNode);
+        const baseEncodeId = findId(baseEncode);
+        const decodedId = findId(decoded);
+        const baseScaleId = findId(baseScale);
+        const maskScaleId = findId(maskScale);
+        const imageSizeId = findId(imageSize);
+        const baseLoadId = findId(baseLoad);
+        const maskLoadId = findId(maskLoad);
+        if (!expectedLink(baseScale?.inputs?.image, baseLoadId) ||
+            !expectedLink(imageSize?.inputs?.image, baseScaleId) ||
+            !expectedLink(baseEncode?.inputs?.pixels, baseScaleId) ||
+            references.length !== 2 ||
+            references.some((reference) => !expectedLink(reference?.inputs?.latent, baseEncodeId))) {
+          errors.push(`${workflow.id}: B2D must remain the bounded base latent and sole model reference.`);
+        }
+        if (!expectedLink(maskScale?.inputs?.image, maskLoadId) ||
+            !expectedLink(maskScale?.inputs?.width, imageSizeId, 0) ||
+            !expectedLink(maskScale?.inputs?.height, imageSizeId, 1) ||
+            maskScale?.inputs?.upscale_method !== 'nearest-exact' ||
+            maskScale?.inputs?.crop !== 'disabled' ||
+            !expectedLink(maskNode?.inputs?.image, maskScaleId)) {
+          errors.push(`${workflow.id}: staged mask must size-match B2D before red-channel extraction.`);
+        }
+        if (!expectedLink(latentMask?.inputs?.samples, baseEncodeId) ||
+            !expectedLink(latentMask?.inputs?.mask, maskNodeId) ||
+            !expectedLink(sampler?.inputs?.latent_image, latentMaskId)) {
+          errors.push(`${workflow.id}: noise mask must constrain the encoded B2D base supplied to the sampler.`);
+        }
+        if (!expectedLink(composite?.inputs?.destination, baseScaleId) ||
+            !expectedLink(composite?.inputs?.source, decodedId) ||
+            !expectedLink(composite?.inputs?.mask, maskNodeId) ||
+            composite?.inputs?.resize_source !== false) {
+          errors.push(`${workflow.id}: final composite must restore protected B2D pixels outside the same mask.`);
+        }
+        if (nodes.some((node) => ['InpaintModelConditioning', 'DifferentialDiffusion'].includes(node?.class_type))) {
+          errors.push(`${workflow.id}: model-dependent or experimental inpaint nodes are blocked.`);
+        }
       }
     }
   }

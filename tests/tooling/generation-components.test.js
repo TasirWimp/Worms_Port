@@ -71,7 +71,7 @@ test('FLUX split model files remain exact and provenance-bound', () => {
   assert.match(errors, /source_relation must remain canonical/);
 });
 
-test('Wizard structure conditioning stays project-owned, exact, and documentation-only', () => {
+test('Wizard structure and edit-mask conditioning stay project-owned, exact, and documentation-only', () => {
   const invalid = structuredClone(manifest);
   const guide = invalid.conditioning_inputs.find(
     (input) => input.id === 'knotkin-wizard-structure-guide-v1'
@@ -123,7 +123,7 @@ test('project image-conditioned workflow is exact MIT source tooling', () => {
   assert.match(errors, /source_path/);
 });
 
-test('FLUX workflows stay reviewed, core-only, and closed-profile enabled', () => {
+test('FLUX workflows keep their reviewed core topology and runtime states', () => {
   const invalid = structuredClone(manifest);
   const textWorkflow = invalid.components.find(
     (component) => component.id === 'wormsport-flux2-klein-text-to-image-workflow'
@@ -131,17 +131,22 @@ test('FLUX workflows stay reviewed, core-only, and closed-profile enabled', () =
   const editWorkflow = invalid.components.find(
     (component) => component.id === 'wormsport-flux2-klein-reference-edit-workflow'
   );
+  const protectedEditWorkflow = invalid.components.find(
+    (component) => component.id === 'wormsport-flux2-klein-protected-edit-workflow'
+  );
 
   textWorkflow.runtime_enabled = false;
   textWorkflow.core_nodes_only = false;
   textWorkflow.model_components = ['different-model'];
   editWorkflow.source_template_revision = '0'.repeat(40);
+  protectedEditWorkflow.runtime_enabled = true;
 
   const errors = validateGenerationComponents(invalid).join('\n');
-  assert.match(errors, /profile-enabled/);
+  assert.match(errors, /runtime-enabled/);
   assert.match(errors, /core_nodes_only/);
   assert.match(errors, /model component set/);
   assert.match(errors, /source_template_revision/);
+  assert.match(errors, /reviewed runtime-enabled state changed/);
 });
 
 test('generation profiles reject arbitrary model, workflow, tool, and launch selection', () => {
@@ -171,15 +176,26 @@ test('generation profiles reject arbitrary model, workflow, tool, and launch sel
   assert.match(validateGenerationComponents(policyInvalid).join('\n'), /profile selection must remain closed/);
 });
 
-test('WP-015B2D owner review accepts creative direction while B2E stays planning-only', () => {
+test('WP-015B2E keeps the exact protected-edit workflow source-only and inference-blocked', () => {
   const profile = manifest.profiles.find((candidate) => candidate.id === 'flux2-klein');
-  assert.equal(profile.state, 'wizard_master_creative_direction_accepted_masked_edit_planning');
+  assert.equal(profile.state, 'wizard_masked_edit_workflow_review_pending');
   assert.match(profile.notes, /WP-015B2D/);
   assert.match(profile.notes, /DEF9265DAA4C6F2799D16870205E2015291E3E4AAE0F61802349C9FD8D56AD00/);
   assert.match(profile.notes, /15026004/);
   assert.match(profile.notes, /0\.880098/);
   assert.match(profile.notes, /project owner/);
-  assert.match(profile.notes, /planning only/);
+  assert.match(profile.notes, /AD4D4F96AD7D7C024A1A903A440DD4FE6D9E31353ACB7E436BF7DFC787321DAA/);
+  assert.match(profile.notes, /2B6C5F51A6EA411BB8B9C40AF861A339622316CB1D9710719F7F0CDEC327425B/);
+  assert.match(profile.notes, /not profile-enabled/);
+  assert.match(profile.notes, /no inference/);
+
+  const workflow = manifest.components.find(
+    (component) => component.id === 'wormsport-flux2-klein-protected-edit-workflow'
+  );
+  assert.equal(workflow.input_mode, 'masked_image_to_image');
+  assert.equal(workflow.runtime_enabled, false);
+  assert.equal(profile.workflow_components.includes(workflow.id), false);
+  assert.equal(profile.required_mcp_tools.includes('generate_flux2_klein_protected_edit'), false);
 
   const invalid = structuredClone(manifest);
   invalid.profiles.find((candidate) => candidate.id === 'flux2-klein').notes =

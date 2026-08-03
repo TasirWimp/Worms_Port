@@ -33,7 +33,7 @@
     },
     {
       "id": "flux2-klein",
-      "state": "wizard_master_creative_direction_accepted_masked_edit_planning",
+      "state": "wizard_masked_edit_workflow_review_pending",
       "runtime_enabled": true,
       "model_components": [
         "flux2-klein-4b-distilled-fp8",
@@ -54,7 +54,7 @@
         "--preview-method none"
       ],
       "smoke_tool": "generate_flux2_klein_text",
-      "notes": "WP-015B2D completed exactly one single-reference Wizard cuteness/styling edit of B2C knit bytes 5FF0A63DAC03E13B2A3390AD77E6929A9822412E1A1E0415E7A38125D703B246 with seed 15026004. Output DEF9265DAA4C6F2799D16870205E2015291E3E4AAE0F61802349C9FD8D56AD00 improved friendly appeal and measured 0.880098 normalized silhouette IoU. The project owner accepts its paired eyebrows, moderate body variation, and cuteness direction; IoU is drift telemetry rather than automatic rejection. WP-015B2E is planning only for a protected-property masked or region-controlled edit. No inference, workflow change, normalization, another character, or product promotion is authorized."
+      "notes": "WP-015B2D completed exactly one single-reference Wizard cuteness/styling edit of B2C knit bytes 5FF0A63DAC03E13B2A3390AD77E6929A9822412E1A1E0415E7A38125D703B246 with seed 15026004. Output DEF9265DAA4C6F2799D16870205E2015291E3E4AAE0F61802349C9FD8D56AD00 improved friendly appeal and measured 0.880098 normalized silhouette IoU. The project owner accepts its paired eyebrows, moderate body variation, and cuteness direction; IoU is drift telemetry rather than automatic rejection. WP-015B2E constructed source-only protected-edit workflow AD4D4F96AD7D7C024A1A903A440DD4FE6D9E31353ACB7E436BF7DFC787321DAA and deterministic cowl mask 2B6C5F51A6EA411BB8B9C40AF861A339622316CB1D9710719F7F0CDEC327425B. The candidate is not profile-enabled, was not installed in the external bridge, and permits no inference, staging, normalization, another character, or product promotion until a separate review authorizes activation."
     }
   ],
   "conditioning_inputs": [
@@ -82,6 +82,30 @@
         "reuse for Gate 2, which must condition only on the exact passed robot scaffold, or any later rerun, multi-reference edit, batch, or product promotion"
       ],
       "notes": "Deterministically rendered from project-authored geometry only. The 1024x1024 guide scales the frozen 512x512 character contract by two: baseline y=902 and held-Relic socket center (682,586). It contains a clean angular body, two eye positions, separate feet, and a protruding forward mitten on white; it contains no canonical-lineup pixels, generated art, Sorcerers material, official Nimiq brand file, or runtime media."
+    },
+    {
+      "id": "knotkin-wizard-cowl-edit-mask-v1",
+      "kind": "project_owned_edit_mask",
+      "source_path": "docs/images/art-direction/knotkin-wizard-cowl-edit-mask.png",
+      "generator_path": "scripts/generate-wizard-cowl-edit-mask.js",
+      "version": "1",
+      "width": 1024,
+      "height": 1024,
+      "file_size": 11323,
+      "file_sha256": "2B6C5F51A6EA411BB8B9C40AF861A339622316CB1D9710719F7F0CDEC327425B",
+      "generator_sha256": "8DFD6623479D61603C046550F9184F13ADAE0C4FA3E40E9C49F2017E6F8634A1",
+      "license": "MIT",
+      "distribution": "documentation_conditioning_only",
+      "approved_uses": [
+        "deterministic documentation and static review of the WP-015B2E Wizard cowl editable region",
+        "future exact-hash staging through the protected-edit workflow only after a separate activation decision"
+      ],
+      "blocked_uses": [
+        "product runtime use or treatment as finished artwork",
+        "staging or inference while the protected-edit workflow remains runtime-disabled",
+        "manual replacement, repainting, or reuse for another character without a new exact-file review"
+      ],
+      "notes": "Project-authored 1024x1024 grayscale control image. White permits change only around B2D's crown, head perimeter, and navy neck wrap; the black central face island protects the accepted eyes, paired eyebrows, and mouth, while black below y=610 protects the body, feet, baseline, and forward Relic hand. A four-times render and deterministic box downsample provide a narrow anti-aliased boundary. The geometry was reviewed against B2C evidence 5FF0A63DAC03E13B2A3390AD77E6929A9822412E1A1E0415E7A38125D703B246 and targets B2D base evidence DEF9265DAA4C6F2799D16870205E2015291E3E4AAE0F61802349C9FD8D56AD00; neither external generated file is copied into the repository."
     }
   ],
   "components": [
@@ -349,6 +373,39 @@
         "claiming multi-reference, ControlNet, IP-Adapter, style-transfer, or automatic product-asset approval"
       ],
       "notes": "Project-owned API-format translation of the official pinned single-reference FLUX.2 Klein 4B distilled edit graph. WP-015B2C passed its structure and knit-conversion gates. WP-015B2D then completed exactly one styling edit of exact output 5FF0A63DAC03E13B2A3390AD77E6929A9822412E1A1E0415E7A38125D703B246 with seed 15026004. Project owner review accepts output DEF9265DAA4C6F2799D16870205E2015291E3E4AAE0F61802349C9FD8D56AD00 as creative-direction evidence. WP-015B2E may investigate but not execute a masked or region-controlled workflow; no follow-on request is authorized."
+    },
+    {
+      "id": "wormsport-flux2-klein-protected-edit-workflow",
+      "kind": "generation_workflow",
+      "source_path": "scripts/comfy-workflows/generate_flux2_klein_protected_edit.json",
+      "runtime_path": "workflows/generate_flux2_klein_protected_edit.json",
+      "source_template_url": "https://github.com/Comfy-Org/workflow_templates/blob/cebdebc9fc2febcb97a5db0dd291f59f5300b176/templates/image_flux2_klein_image_edit_4b_distilled.json",
+      "source_template_revision": "cebdebc9fc2febcb97a5db0dd291f59f5300b176",
+      "comfyui_revision": "c2638ce6c00e3426c48d56a775bc46e9a8464094",
+      "version": "1-candidate",
+      "file_sha256": "AD4D4F96AD7D7C024A1A903A440DD4FE6D9E31353ACB7E436BF7DFC787321DAA",
+      "input_mode": "masked_image_to_image",
+      "model_components": [
+        "flux2-klein-4b-distilled-fp8",
+        "flux2-klein-qwen3-4b-text-encoder",
+        "flux2-vae"
+      ],
+      "core_nodes_only": true,
+      "runtime_enabled": false,
+      "license": "MIT",
+      "license_evidence": "LICENSE",
+      "distribution": "project_source_tooling",
+      "approved_uses": [
+        "exact-hash source review and pinned ComfyUI 0.27.1 object_info validation for WP-015B2E",
+        "reviewing the proposed B2D-base, single-reference, deterministic-mask architecture before activation"
+      ],
+      "blocked_uses": [
+        "copying into the external MCP workflow directory or adding it to the executable flux2-klein profile before a separate activation decision",
+        "staging the B2D base or cowl mask, registering an MCP tool, or running any prompt while runtime_enabled is false",
+        "using InpaintModelConditioning, DifferentialDiffusion, a custom node, a second model reference, or an unreviewed mask",
+        "automatic publication into assets or product-asset approval"
+      ],
+      "notes": "Source-only 23-node derivative of the official pinned FLUX.2 Klein 4B distilled reference-edit template. It encodes B2D as both the base latent and sole ReferenceLatent, applies the project-owned grayscale mask through SetLatentNoiseMask, samples with the unchanged four-step/CFG-1/Euler settings, and uses ImageCompositeMasked to restore pixels outside the same mask. B2C remains geometry review evidence rather than a second latent reference, limiting memory and semantic ambiguity on the 8 GB GPU. Pinned object_info validation found every core class, required input, and connected edge type valid. ComfyUI and the bridge were then stopped with a zero-running/zero-pending queue and B2D still the newest output; no inference ran."
     },
     {
       "id": "comfyui-mcp-generate-image-workflow",

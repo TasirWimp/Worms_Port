@@ -8,8 +8,29 @@ Phaser/Socket.IO stack.
 ## Execution Pointer
 
 - Active target: mobile-first single-player Nimiq Pay competition release.
-- Active work package: **WP-015B2E protected-property masked-edit
-  investigation — planning only; no generation authorized**. WP-015B2D
+- Active work package: **WP-015B2E protected-property masked-edit activation
+  review — source gate complete; no generation authorized**. The investigation
+  selected a pinned core-node route and produced a deterministic source-only
+  candidate. Workflow
+  `scripts/comfy-workflows/generate_flux2_klein_protected_edit.json` is a
+  23-node graph, SHA-256
+  `AD4D4F96AD7D7C024A1A903A440DD4FE6D9E31353ACB7E436BF7DFC787321DAA`.
+  Its project-owned 1024x1024 mask is
+  `docs/images/art-direction/knotkin-wizard-cowl-edit-mask.png`, SHA-256
+  `2B6C5F51A6EA411BB8B9C40AF861A339622316CB1D9710719F7F0CDEC327425B`,
+  generated exactly by source SHA-256
+  `8DFD6623479D61603C046550F9184F13ADAE0C4FA3E40E9C49F2017E6F8634A1`.
+  Pinned ComfyUI 0.27.1 `object_info` found all 23 core nodes, required inputs,
+  and connected edge types valid. The graph uses B2D as the sole reference and
+  base latent, applies `SetLatentNoiseMask`, and restores protected pixels with
+  `ImageCompositeMasked`. B2C supplies the geometry review contract rather
+  than a second memory-consuming and semantically ambiguous reference. The
+  source workflow remains `runtime_enabled: false`: it was not copied into the
+  external bridge, was not registered as an MCP tool, and no input was staged
+  or generated. `InpaintModelConditioning` is excluded because its own pinned
+  schema warns that the noise-mask path can break depending on the model;
+  experimental `DifferentialDiffusion` and all custom nodes are also excluded.
+  WP-015B2D
   completed once on 2026-08-03 from external WP-015B2C knit proof SHA-256
   `5FF0A63DAC03E13B2A3390AD77E6929A9822412E1A1E0415E7A38125D703B246`.
   Its single seed `15026004` reference edit ran as prompt
@@ -73,19 +94,23 @@ Phaser/Socket.IO stack.
   comparison with normalized IoU `0.956188` and baseline drift `12` pixels.
   Both files remain external quarantine; B2C itself authorized no further
   generation.
-- Last committed implementation slice: **WP-015B2C robot-scaffold knit route**
-  on 2026-08-03 at `03ef535`. WP-015B1's product-facing
+- Last committed implementation slice: **WP-015B2D creative-direction review**
+  on 2026-08-03 at `7685d4d`. WP-015B1's product-facing
   anatomy, socket, projectile-origin, animation, environment, and acceptance
   requirements remain normative. Its exact prompts, seeds, and sampler settings
   remain the historical SD 1.5 contract and are not presumed equivalent for a
   different model architecture.
-- Next bounded action: investigate which pinned Comfy core nodes can provide a
-  mask or region-controlled edit without adding an unreviewed custom node.
-  Freeze the protected/editable regions, B2C/B2D input roles, workflow hash,
-  prompt scope, human review rule, and drift-compensation boundary before any
-  request. Measurements support owner visual review; they do not demand
-  last-pixel determinism. Loomkeeper, animation, roster work, alpha, socket
-  normalization, and promotion remain blocked until this contract is reviewed.
+- Next bounded action: review the exact B2E mask and source graph. If the project
+  owner approves activation, make a separate manifest/pipeline transition that
+  installs and registers only this exact graph, stages exact B2D bytes plus the
+  exact project mask, verifies an empty queue and latest-output baseline, and
+  authorizes exactly one seed `15026005` request with the frozen prompt in
+  `docs/asset-briefs/wp-015b2-generation-review.md`. Do not treat that review as
+  authorization now. A result must visibly place the cowl on the head, preserve
+  the face/body/feet/Relic hand outside the mask, and remain cute at 48px.
+  Measurements support owner visual review; moderate editable-region variation
+  is welcome. Loomkeeper, animation, roster work, alpha, socket normalization,
+  another attempt, and promotion remain blocked.
 - WP-012 exactly pins `@nimiq/mini-app-sdk` `0.1.0` and server-only
   `@nimiq/core` `2.7.1`. Provider access remains lazy, identity acceptance is
   now used by WP-013's separate production Daily entry, the diagnostics surface

@@ -180,9 +180,14 @@ creativity; normalized silhouette IoU `0.880098` is drift telemetry, not an
 automatic rejection. The remaining protected Calling issue is that its dark
 cowl reads mainly as a neck wrap instead of a Wizard cowl/hat resting on the
 head. The image remains external because alpha, socket, crop/pivot/baseline,
-animation, and exact-file product approval are unfinished. Re-entry is the
-planning-only WP-015B2E masked-edit investigation described in the generation
-review and workflow docs; it authorizes no new inference.
+animation, and exact-file product approval are unfinished. WP-015B2E has now
+constructed and pinned a source-only 23-node masked-edit candidate plus a
+deterministic cowl-region mask. It uses B2D as the sole reference/base latent,
+limits sampling with a core noise mask, and restores pixels outside the same
+mask. The candidate remains runtime-disabled, absent from the external MCP
+workflow directory, and unexecuted. Re-entry is the activation review in
+`docs/asset-briefs/wp-015b2-generation-review.md`; it authorizes no inference
+until the project owner separately approves the exact workflow and mask.
 
 ## Build
 
