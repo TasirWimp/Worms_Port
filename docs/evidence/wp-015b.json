@@ -19,7 +19,8 @@
     "After the failed FLUX Wizard edit, test one deterministic project-owned structure reference with one positive-only fixed-seed diagnostic",
     "After three rounded Wizard failures, test one mechanical scaffold and conditionally one fitted-knit conversion while amending the future face contract to retain a small expressive mouth",
     "Adopt the accepted fitted-knit structure for exactly one fixed-seed Wizard cuteness and Calling-styling edit without combining alpha, animation, or exact socket normalization",
-    "Record the project-owner acceptance of B2D eyebrows, moderate body variation, and cuteness direction; construct and review a protected B2E route; then execute exactly one approved frozen request and return to owner review without retry",
+    "Record the project-owner acceptance of B2D eyebrows, moderate body variation, and cuteness direction; construct and review a protected B2E route; then execute exactly one approved frozen request without retry",
+    "Record the project-owner rejection of B2E's Wizard identity and thief-like neck wrap, then construct deterministic B2F hood structure controls and stop before staging or inference for exact source review",
     "Generate deterministic quarantined vertical-slice candidates and complete pre-promotion art, IP, provenance, and phone-readability review"
   ],
   "non_goals": [
@@ -43,6 +44,7 @@
     "WP-015B2C Gate 1 robot-scaffold diagnostic and conditional Gate 2 fitted-knit silhouette preservation",
     "WP-015B2D exact-input cuteness and Wizard-styling edit with full-size, 48px, and deterministic silhouette review",
     "WP-015B2E protected-property mask integrity, pinned core-node workflow schema, exact preflight, one frozen request, protected-pixel equality, drift telemetry, and full-size/48px review",
+    "WP-015B2F deterministic hood guide and generous mask integrity, exact-B2D scaffold protection, frozen prompt review, full-size/48px review, and no-inference boundary",
     "WP-015B1 brief-contract completeness and source-boundary review",
     "fixed-seed quarantined vertical-slice master review",
     "self-review"
@@ -63,7 +65,8 @@
     "15026002",
     "15026003",
     "15026004",
-    "15026005"
+    "15026005",
+    "15026006"
   ],
   "sorcerers_reference_used": false,
   "clean_room_records": [],
@@ -346,12 +349,27 @@
     {
       "command": "WP-015B2E protected-pixel, silhouette, and preliminary visual review",
       "status": "pass",
-      "detail": "All 907,427 zero-mask pixels equal B2D exactly with zero mismatches and maximum RGB-channel difference zero. Baseline drift is 0, canvas IoU 0.897468, and normalized silhouette IoU 0.840783; the IoU values remain drift telemetry. The exact 48px HighQualityBicubic derivative is 2,986 bytes, SHA-256 92524044C2B65179302D47EFF8092C97534E342C1DEA31F49023EC3C6F5C8964. Full-size and 48px review preliminarily pass the head-worn cowl and protected-property purpose. The crown is compact/hood-like rather than strongly pointed and remains a project-owner review point. The queue ended 0/0, both services were stopped, no file entered assets, and the request allowance is consumed."
+      "detail": "All 907,427 zero-mask pixels equal B2D exactly with zero mismatches and maximum RGB-channel difference zero. Baseline drift is 0, canvas IoU 0.897468, and normalized silhouette IoU 0.840783; the IoU values remain drift telemetry. The exact 48px HighQualityBicubic derivative is 2,986 bytes, SHA-256 92524044C2B65179302D47EFF8092C97534E342C1DEA31F49023EC3C6F5C8964. Preliminary review passed the mechanical protected-property purpose, but subsequent project-owner review rejected it as the next Wizard master because the compact crown loses the Wizard calling and the horizontal neck wrap reads thief-like. The queue ended 0/0, both services were stopped, no file entered assets, and the request allowance is consumed."
+    },
+    {
+      "command": "WP-015B2F deterministic Wizard-hood source-review gate",
+      "status": "pass",
+      "detail": "Project-owned generator 3B009E6F4A5908D4BAFA63426E7538F9B59DD2A4A286246FFC2604DCD7D0FB69 reproduced the 25,382-byte hood guide 08CB26CE3FAC6605859F9C9B51331351F28F40A005F6A101B2E575D8A56C6AB8 and 12,461-byte generous mask AC9F8F101094C5C15361FD24827C4F24B7C52ACBC652000748B209CB5483F56B byte-for-byte. It accepted only exact B2D bytes and created external scaffold A048CA16B249298BBECFAD2F57552B04958E26F766D01F6577D1C6A011A0231C plus 48px derivative DFACDC05E4D2A1E858C4565D678E3731099451973EA7F7EBC650D9C1DF486331. All 844,934 zero-mask pixels match B2D exactly; baseline drift is zero. Canvas IoU 0.859408 and normalized IoU 0.813729 are expected drift telemetry because the control deliberately adds the missing tall crown. Full-size and 48px source review passes the intended pointed-hood readability. The frozen hood-only prompt, no-robe boundary, and owner-approval gate are documented. JSON parsing, all 38 tooling tests, compliance, full build, npm audit with zero vulnerabilities, git diff check, and zero-runtime-asset check passed. No Comfy service was started, no input was staged, and no inference ran."
+    },
+    {
+      "command": "WP-015B2F project-owner source approval and one-request activation",
+      "status": "pass",
+      "detail": "The project owner approved the exact tall pointed-hood guide, generous mask with separate face/mouth protection, exact-B2D external scaffold, 48px read, and frozen hood-only prompt. The fail-closed profile now authorizes exactly one protected edit with seed 15026006, staged base wormsport/wizard-hood-scaffold-v1.png, and staged mask wormsport/wizard-hood-edit-mask-v1.png. A full robe/tunic, retry, prompt/seed/input change, another Calling, normalization, animation, and product promotion remain blocked."
+    },
+    {
+      "command": "WP-015B2F single protected Wizard-hood edit and visual closure",
+      "status": "fail",
+      "detail": "Source-side JSON parsing, all 38 tooling tests, complete compliance/type/server/client build, npm audit with zero vulnerabilities, and git diff check passed. Exact preflight verified three model hashes, three workflow hashes, native RX 7600 low-VRAM/no-preview startup, all three MCP tools, staged scaffold A048CA16B249298BBECFAD2F57552B04958E26F766D01F6577D1C6A011A0231C, staged mask AC9F8F101094C5C15361FD24827C4F24B7C52ACBC652000748B209CB5483F56B, a 0/0 queue, and B2E _00001_ as newest generated-output baseline. The sole seed 15026006 request completed as prompt 1f5fc569-5250-4799-a236-0bb22ba629c8 in 355.120 seconds. External output WormsPortFlux2KleinProtectedEdit_00002_.png is a 920,934-byte 1024x1024 PNG, SHA-256 BE162B61FF38BE0EE2EA58716BDBAF5D2B38F0D8E6608953D2ECA41EFE7AD608. Host free RAM minimum was 3,925,364,736 bytes and driver-reported free VRAM minimum was 2,376,634,880 bytes. All 844,934 zero-mask pixels equal the scaffold exactly; baseline drift is zero, canvas IoU 0.835513, and normalized IoU 0.796676. Its 3,103-byte 48px derivative is SHA-256 70FC1611E1F84081699B9A805E0C6A7A795B5B89CA7ABA783FC84E4AE1968B90. The hood passes Wizard identity and 48px readability, but visible polygonal face and rectangular mouth seams fail full-size integration. The queue ended 0/0, both services stopped, no retry ran, and no file entered assets."
     }
   ],
   "skipped_checks": [
-    "The phone-browser matrix was not run for WP-015B0, WP-015B1, WP-015B2A Gates 1-6, WP-015B2B, WP-015B2C, WP-015B2D, or WP-015B2E because these slices change only the offline generation pipeline, documentation, compliance metadata, and external quarantined component state; they change no browser-facing code or runtime asset.",
-    "Real-device testing was not run because WP-015B0, WP-015B1, WP-015B2A Gates 1-6, WP-015B2B, WP-015B2C, WP-015B2D, and WP-015B2E create no player-visible behavior or product media.",
+    "The phone-browser matrix was not run for WP-015B0, WP-015B1, WP-015B2A Gates 1-6, WP-015B2B, WP-015B2C, WP-015B2D, WP-015B2E, or WP-015B2F because these slices change only the offline generation pipeline, documentation, compliance metadata, and external quarantined component state; they change no browser-facing code or runtime asset.",
+    "Real-device testing was not run because WP-015B0, WP-015B1, WP-015B2A Gates 1-6, WP-015B2B, WP-015B2C, WP-015B2D, WP-015B2E, and WP-015B2F create no player-visible behavior or product media.",
     "FLUX inference was not run in Gate 3 because the separate Gate 4 technical smoke had to record runtime, memory behavior, and exact output evidence as its own bounded review.",
     "Wizard, Threadball, and reference-edit visual admission was not run in Gate 4 because technical hardware admission and visual-purpose admission are separate gates."
   ],
@@ -361,9 +379,9 @@
     "WP-015B2A retains exactly three external FLUX.2 component files, two native workflows, and one closed executable profile as technical evidence. The completed WP-015B2B diagnostic changed only the structural input and prompt strategy and failed its Wizard anatomy purpose; its result does not authorize a second attempt, multi-reference graph, or batch.",
     "The Windows AMD RX 7600 8 GB completed the technical smoke, all three Gate 5 requests, B2B, both B2C gates, B2D, and B2E without runtime failure, but offloaded generation took 253-309 seconds. Driver portability remains unproven and its approximate VRAM samples must not be generalized into a hardware requirement.",
     "Threadball passed only a bounded structure review; its opaque output has no exact-output IP/product approval, alpha normalization, derivative cleanup, or manifest entry. It may inform a later separately reviewed Relic-only route but is not a product asset.",
-    "B2C proves that a mechanical semantic scaffold can establish angular geometry and survive one fitted-knit conversion, but the opaque knit output retains panel seams and a rear scaffold volume. B2D proves that larger close-set eyes, a curved smile, optional paired eyebrows, pale chenille, a belt/button, and warmer details improve appeal. B2E adds a head-worn compact hood/cowl while preserving every zero-mask pixel. Its crown is not strongly pointed and requires project-owner exact-output review; normalization, alpha, socket, and animation remain unresolved.",
+    "B2C proves that a mechanical semantic scaffold can establish angular geometry and survive one fitted-knit conversion, but the opaque knit output retains panel seams and a rear scaffold volume. B2D proves that larger close-set eyes, a curved smile, optional paired eyebrows, pale chenille, a belt/button, and warmer details improve appeal. B2E preserves every zero-mask pixel but is rejected as the next Wizard master because its compact crown loses the Wizard calling and its horizontal neck wrap reads thief-like. B2F proves the new scaffold can drive a clear tall Wizard hood, but exact restoration of hard face and mouth islands creates unacceptable visible seams. Normalization, alpha, socket, and animation remain unresolved.",
     "The mouth amendment improves expression capacity but requires a later neutral-mouth topology and bounded expression-frame contract so mouth placement does not flicker or multiply across animation.",
     "B2E proves the core latent-mask route can preserve all zero-mask decoded pixels exactly and produce a coherent head-worn covering, but it does not establish that future masks, characters, or prompts will behave similarly. The one-request allowance is consumed and no retry is authorized.",
-    "No WP-015B2 output currently passes exact-output product/IP and runtime-normalization review. Threadball, the B2C knit conversion, B2D creative-direction result, and B2E cowl candidate remain external evidence. Character generation cannot resume until the project owner reviews exact B2E output 1275B2BD8021EAA5C51AA0606A6CC20BA21B15ED6CEBC4A7C1FC76308BA9D2E0 and a later bounded plan authorizes the next action."
+    "No WP-015B2 output currently passes exact-output product/IP and runtime-normalization review. Threadball, the B2C knit conversion, B2D creative-direction result, B2E rejected cowl candidate, B2F deterministic scaffold, and B2F rejected seamed output remain external evidence. Character generation is closed pending a reviewed mask-topology plan; separate denoise/composite masks or semantic regeneration of the complete face/hood region are hypotheses, not authorization."
   ]
 }

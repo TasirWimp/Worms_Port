@@ -187,10 +187,24 @@ limits sampling with a core noise mask, and restores pixels outside the same
 mask. After project-owner approval, the one external quarantined request ran
 with seed `15026005` and produced exact output
 `1275B2BD8021EAA5C51AA0606A6CC20BA21B15ED6CEBC4A7C1FC76308BA9D2E0`.
-All `907427` zero-mask pixels match B2D exactly; preliminary full-size and 48px
-review passes the head-worn cowl purpose, although the compact crown remains a
-project-owner review point. No retry, further inference, normalization, or
-product promotion is authorized. Re-entry and acceptance evidence are in
+All `907427` zero-mask pixels match B2D exactly, but project-owner review
+rejects the result as the next Wizard master: the compact covering no longer
+reads clearly as a Wizard hat and its horizontal neck wrap reads thief-like.
+No retry ran.
+
+WP-015B2F is therefore a source-review gate, not another generation attempt.
+`scripts/generate-wizard-hood-structure-controls.js` deterministically creates
+the tracked tall pointed-hood guide and a more generous protected-edit mask,
+then can build one external review scaffold only from exact B2D bytes. The
+scaffold keeps the accepted face/mouth and lower anatomy while showing an open
+neck and two short separated mantle flaps instead of a scarf. The project owner
+approved the exact guide, mask, scaffold, 48px read, and frozen hood-only prompt
+for exactly one protected edit with seed `15026006`. That
+request produced a clearly Wizard-like knitted hood, but full-size review
+rejects the output because the hard-restored face and mouth islands leave
+visible polygonal/rectangular composite seams. No retry or changed input ran.
+A full Wizard robe/tunic remains deferred to a later separate pass. Re-entry,
+exact output evidence, and the mask-coupling lesson are in
 `docs/asset-briefs/wp-015b2-generation-review.md`.
 
 ## Build

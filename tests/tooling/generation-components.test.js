@@ -176,9 +176,9 @@ test('generation profiles reject arbitrary model, workflow, tool, and launch sel
   assert.match(validateGenerationComponents(policyInvalid).join('\n'), /profile selection must remain closed/);
 });
 
-test('WP-015B2E records only the reviewed completed protected-edit request', () => {
+test('WP-015B2F records the sole Wizard-hood edit and closes after visual rejection', () => {
   const profile = manifest.profiles.find((candidate) => candidate.id === 'flux2-klein');
-  assert.equal(profile.state, 'wizard_protected_edit_generated_owner_review_pending');
+  assert.equal(profile.state, 'wizard_hood_edit_generated_visual_rejected');
   assert.match(profile.notes, /WP-015B2D/);
   assert.match(profile.notes, /DEF9265DAA4C6F2799D16870205E2015291E3E4AAE0F61802349C9FD8D56AD00/);
   assert.match(profile.notes, /15026004/);
@@ -192,6 +192,23 @@ test('WP-015B2E records only the reviewed completed protected-edit request', () 
   assert.match(profile.notes, /d023da3f-77cf-4f05-ae7b-62ce66f1f176/);
   assert.match(profile.notes, /907427/);
   assert.match(profile.notes, /0\.840783/);
+  assert.match(profile.notes, /No retry/);
+  assert.match(profile.notes, /rejected/);
+  assert.match(profile.notes, /WP-015B2F/);
+  assert.match(profile.notes, /08CB26CE3FAC6605859F9C9B51331351F28F40A005F6A101B2E575D8A56C6AB8/);
+  assert.match(profile.notes, /AC9F8F101094C5C15361FD24827C4F24B7C52ACBC652000748B209CB5483F56B/);
+  assert.match(profile.notes, /A048CA16B249298BBECFAD2F57552B04958E26F766D01F6577D1C6A011A0231C/);
+  assert.match(profile.notes, /approved/);
+  assert.match(profile.notes, /15026006/);
+  assert.match(profile.notes, /wormsport\/wizard-hood-scaffold-v1\.png/);
+  assert.match(profile.notes, /wormsport\/wizard-hood-edit-mask-v1\.png/);
+  assert.match(profile.notes, /Exactly one/);
+  assert.match(profile.notes, /1f5fc569-5250-4799-a236-0bb22ba629c8/);
+  assert.match(profile.notes, /355\.120/);
+  assert.match(profile.notes, /BE162B61FF38BE0EE2EA58716BDBAF5D2B38F0D8E6608953D2ECA41EFE7AD608/);
+  assert.match(profile.notes, /844934/);
+  assert.match(profile.notes, /0\.796676/);
+  assert.match(profile.notes, /seams/);
   assert.match(profile.notes, /No retry/);
 
   const workflow = manifest.components.find(

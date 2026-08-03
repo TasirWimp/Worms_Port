@@ -33,7 +33,7 @@
     },
     {
       "id": "flux2-klein",
-      "state": "wizard_protected_edit_generated_owner_review_pending",
+      "state": "wizard_hood_edit_generated_visual_rejected",
       "runtime_enabled": true,
       "model_components": [
         "flux2-klein-4b-distilled-fp8",
@@ -56,7 +56,7 @@
         "--preview-method none"
       ],
       "smoke_tool": "generate_flux2_klein_text",
-      "notes": "WP-015B2D completed exactly one single-reference Wizard cuteness/styling edit of B2C knit bytes 5FF0A63DAC03E13B2A3390AD77E6929A9822412E1A1E0415E7A38125D703B246 with seed 15026004. Output DEF9265DAA4C6F2799D16870205E2015291E3E4AAE0F61802349C9FD8D56AD00 improved friendly appeal and measured 0.880098 normalized silhouette IoU. The project owner accepted its paired eyebrows, moderate body variation, and cuteness direction. For WP-015B2E the project owner approved exact workflow AD4D4F96AD7D7C024A1A903A440DD4FE6D9E31353ACB7E436BF7DFC787321DAA and deterministic cowl mask 2B6C5F51A6EA411BB8B9C40AF861A339622316CB1D9710719F7F0CDEC327425B. The profile executed exactly one protected edit of B2D with frozen seed 15026005 as Comfy prompt d023da3f-77cf-4f05-ae7b-62ce66f1f176, producing external 1024x1024 output 1275B2BD8021EAA5C51AA0606A6CC20BA21B15ED6CEBC4A7C1FC76308BA9D2E0 in 308.956 seconds. All 907427 zero-mask pixels match B2D exactly; normalized silhouette IoU 0.840783 remains drift telemetry. Preliminary full-size and 48px review passes the head-worn cowl and protected-property purpose, while the compact crown remains a project-owner review point. No retry, further inference, normalization, another character, or product promotion is authorized."
+      "notes": "WP-015B2D completed exactly one single-reference Wizard cuteness/styling edit of B2C knit bytes 5FF0A63DAC03E13B2A3390AD77E6929A9822412E1A1E0415E7A38125D703B246 with seed 15026004. Output DEF9265DAA4C6F2799D16870205E2015291E3E4AAE0F61802349C9FD8D56AD00 improved friendly appeal and measured 0.880098 normalized silhouette IoU. The project owner accepted its paired eyebrows, moderate body variation, and cuteness direction. For WP-015B2E the project owner approved exact workflow AD4D4F96AD7D7C024A1A903A440DD4FE6D9E31353ACB7E436BF7DFC787321DAA and deterministic cowl mask 2B6C5F51A6EA411BB8B9C40AF861A339622316CB1D9710719F7F0CDEC327425B. The profile executed exactly one protected edit of B2D with frozen seed 15026005 as Comfy prompt d023da3f-77cf-4f05-ae7b-62ce66f1f176, producing external output 1275B2BD8021EAA5C51AA0606A6CC20BA21B15ED6CEBC4A7C1FC76308BA9D2E0. All 907427 zero-mask pixels matched B2D exactly and normalized silhouette IoU was 0.840783. No retry ran. The project owner rejected B2E because its compact covering lost the Wizard calling and its horizontal neck wrap read thief-like. WP-015B2F bound deterministic hood guide 08CB26CE3FAC6605859F9C9B51331351F28F40A005F6A101B2E575D8A56C6AB8, generous mask AC9F8F101094C5C15361FD24827C4F24B7C52ACBC652000748B209CB5483F56B, external exact-B2D scaffold A048CA16B249298BBECFAD2F57552B04958E26F766D01F6577D1C6A011A0231C, staged base wormsport/wizard-hood-scaffold-v1.png, staged mask wormsport/wizard-hood-edit-mask-v1.png, and seed 15026006. Exactly one request completed as prompt 1f5fc569-5250-4799-a236-0bb22ba629c8 in 355.120 seconds, producing external 1024x1024 output BE162B61FF38BE0EE2EA58716BDBAF5D2B38F0D8E6608953D2ECA41EFE7AD608. All 844934 zero-mask pixels match the scaffold exactly; baseline drift is zero and normalized silhouette IoU 0.796676 remains telemetry. The tall knitted hood now reads Wizard-like at 48px, but full-size review rejects visible polygon and rectangular seams around the exactly restored face and mouth islands. This proves that one shared denoise/composite mask over-constrains the transition. No retry, prompt/seed/input change, full robe, normalization, another character, or product promotion is authorized."
     }
   ],
   "conditioning_inputs": [
@@ -108,6 +108,54 @@
         "manual replacement, repainting, or reuse for another character without a new exact-file review"
       ],
       "notes": "Project-authored 1024x1024 grayscale control image. White permits change only around B2D's crown, head perimeter, and navy neck wrap; the black central face island protects the accepted eyes, paired eyebrows, and mouth, while black below y=610 protects the body, feet, baseline, and forward Relic hand. A four-times render and deterministic box downsample provide a narrow anti-aliased boundary. The geometry was reviewed against B2C evidence 5FF0A63DAC03E13B2A3390AD77E6929A9822412E1A1E0415E7A38125D703B246 and targets B2D base evidence DEF9265DAA4C6F2799D16870205E2015291E3E4AAE0F61802349C9FD8D56AD00; neither external generated file is copied into the repository."
+    },
+    {
+      "id": "knotkin-wizard-hood-structure-guide-v1",
+      "kind": "project_owned_structure_reference",
+      "source_path": "docs/images/art-direction/knotkin-wizard-hood-structure-guide.png",
+      "generator_path": "scripts/generate-wizard-hood-structure-controls.js",
+      "version": "1",
+      "width": 1024,
+      "height": 1024,
+      "file_size": 25382,
+      "file_sha256": "08CB26CE3FAC6605859F9C9B51331351F28F40A005F6A101B2E575D8A56C6AB8",
+      "generator_sha256": "3B009E6F4A5908D4BAFA63426E7538F9B59DD2A4A286246FFC2604DCD7D0FB69",
+      "license": "MIT",
+      "distribution": "documentation_conditioning_only",
+      "approved_uses": [
+        "deterministic documentation and project-owner review of the WP-015B2F tall pointed Wizard-hood structure",
+        "construction of one exact-B2D external scaffold after the generator verifies B2D SHA-256 DEF9265DAA4C6F2799D16870205E2015291E3E4AAE0F61802349C9FD8D56AD00"
+      ],
+      "blocked_uses": [
+        "product runtime use or treatment as finished artwork",
+        "Comfy staging or inference before explicit project-owner approval of the paired guide, mask, scaffold, and frozen prompt",
+        "expansion into a full robe, another character, batch, or product promotion without a later reviewed decision"
+      ],
+      "notes": "Project-authored 1024x1024 flat structural control. It describes a tall asymmetric pointed crown, open face, open center neck, and two short separated shoulder-mantle flaps without asking FLUX to solve fabric texture or a full robe in the same request. It contains no generated, canonical-lineup, Nimiq-brand, Sorcerers, or runtime-media pixels."
+    },
+    {
+      "id": "knotkin-wizard-hood-edit-mask-v1",
+      "kind": "project_owned_edit_mask",
+      "source_path": "docs/images/art-direction/knotkin-wizard-hood-edit-mask.png",
+      "generator_path": "scripts/generate-wizard-hood-structure-controls.js",
+      "version": "1",
+      "width": 1024,
+      "height": 1024,
+      "file_size": 12461,
+      "file_sha256": "AC9F8F101094C5C15361FD24827C4F24B7C52ACBC652000748B209CB5483F56B",
+      "generator_sha256": "3B009E6F4A5908D4BAFA63426E7538F9B59DD2A4A286246FFC2604DCD7D0FB69",
+      "license": "MIT",
+      "distribution": "documentation_conditioning_only",
+      "approved_uses": [
+        "deterministic documentation and project-owner review of the WP-015B2F generous Wizard-hood editable region",
+        "exact-hash staging through the existing protected-edit workflow only after a separate activation decision"
+      ],
+      "blocked_uses": [
+        "product runtime use or treatment as finished artwork",
+        "staging or inference before project-owner approval",
+        "manual replacement, narrowing around the rejected scarf, or reuse for another character without a new exact-file review"
+      ],
+      "notes": "Project-authored 1024x1024 grayscale control image. White leaves creative room for a tall folded crown, hood sides, and complete removal of the thief-like horizontal wrap. Separate black islands protect the accepted upper face and mouth; black lower anatomy protects the body, feet, baseline, and forward Relic hand. The deterministic scaffold generator additionally proves every changed source pixel remains inside the editable region."
     }
   ],
   "components": [

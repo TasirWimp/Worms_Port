@@ -90,6 +90,26 @@ const reviewedConditioningInputContracts = new Map([
     fileSize: 11323,
     fileSha256: '2B6C5F51A6EA411BB8B9C40AF861A339622316CB1D9710719F7F0CDEC327425B',
     generatorSha256: '8DFD6623479D61603C046550F9184F13ADAE0C4FA3E40E9C49F2017E6F8634A1'
+  }],
+  ['knotkin-wizard-hood-structure-guide-v1', {
+    kind: 'project_owned_structure_reference',
+    sourcePath: 'docs/images/art-direction/knotkin-wizard-hood-structure-guide.png',
+    generatorPath: 'scripts/generate-wizard-hood-structure-controls.js',
+    width: 1024,
+    height: 1024,
+    fileSize: 25382,
+    fileSha256: '08CB26CE3FAC6605859F9C9B51331351F28F40A005F6A101B2E575D8A56C6AB8',
+    generatorSha256: '3B009E6F4A5908D4BAFA63426E7538F9B59DD2A4A286246FFC2604DCD7D0FB69'
+  }],
+  ['knotkin-wizard-hood-edit-mask-v1', {
+    kind: 'project_owned_edit_mask',
+    sourcePath: 'docs/images/art-direction/knotkin-wizard-hood-edit-mask.png',
+    generatorPath: 'scripts/generate-wizard-hood-structure-controls.js',
+    width: 1024,
+    height: 1024,
+    fileSize: 12461,
+    fileSha256: 'AC9F8F101094C5C15361FD24827C4F24B7C52ACBC652000748B209CB5483F56B',
+    generatorSha256: '3B009E6F4A5908D4BAFA63426E7538F9B59DD2A4A286246FFC2604DCD7D0FB69'
   }]
 ]);
 const reviewedFluxWorkflowContracts = new Map([
@@ -206,7 +226,7 @@ const reviewedProfileContracts = new Map([
     smokeTool: 'generate_image'
   }],
   ['flux2-klein', {
-    state: 'wizard_protected_edit_generated_owner_review_pending',
+    state: 'wizard_hood_edit_generated_visual_rejected',
     modelComponents: reviewedFluxModelComponents,
     workflowComponents: [
       'wormsport-flux2-klein-text-to-image-workflow',
@@ -235,6 +255,22 @@ const reviewedProfileContracts = new Map([
       'd023da3f-77cf-4f05-ae7b-62ce66f1f176',
       '907427',
       '0.840783',
+      'No retry',
+      'WP-015B2F',
+      '08CB26CE3FAC6605859F9C9B51331351F28F40A005F6A101B2E575D8A56C6AB8',
+      'AC9F8F101094C5C15361FD24827C4F24B7C52ACBC652000748B209CB5483F56B',
+      'A048CA16B249298BBECFAD2F57552B04958E26F766D01F6577D1C6A011A0231C',
+      'approved',
+      '15026006',
+      'wormsport/wizard-hood-scaffold-v1.png',
+      'wormsport/wizard-hood-edit-mask-v1.png',
+      'Exactly one',
+      '1f5fc569-5250-4799-a236-0bb22ba629c8',
+      '355.120',
+      'BE162B61FF38BE0EE2EA58716BDBAF5D2B38F0D8E6608953D2ECA41EFE7AD608',
+      '844934',
+      '0.796676',
+      'seams',
       'No retry'
     ]
   }]

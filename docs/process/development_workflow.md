@@ -1391,11 +1391,81 @@ The one activated request completed as Comfy prompt
 `1275B2BD8021EAA5C51AA0606A6CC20BA21B15ED6CEBC4A7C1FC76308BA9D2E0`.
 All `907427` zero-mask pixels equal B2D exactly, with maximum channel difference
 zero. Baseline drift is zero; normalized silhouette IoU `0.840783` remains
-telemetry. Full-size and 48px review preliminarily pass the head-worn-cowl and
-protected-property purpose; the compact hood-like crown awaits project-owner
-exact-output review. The queue returned to zero running / zero pending and both
-services were stopped. The request allowance is consumed, so re-entry is
-review-only and must not run another prompt.
+telemetry. Preliminary full-size and 48px review passed the mechanical
+protected-property purpose, but subsequent project-owner review rejected the
+compact crown as no longer clearly Wizard-like and the horizontal neck wrap as
+thief-like. The queue returned to zero running / zero pending and both services
+were stopped. The request allowance is consumed, so B2E re-entry must not run
+another prompt.
+
+### WP-015B2F Wizard-Hood Source Review
+
+Project-owner review rejects B2E as the next Wizard master: its compact crown
+loses the Wizard calling and its horizontal neck wrap reads thief-like. B2F is
+therefore a deterministic source-review gate. It must not stage an input, start
+Comfy/MCP, or run inference.
+
+Regenerate the tracked controls byte-for-byte from project-owned geometry:
+
+```powershell
+node scripts/generate-wizard-hood-structure-controls.js
+```
+
+When the exact external B2D evidence file is present, create the untracked
+source-review scaffold with explicit paths:
+
+```powershell
+$base = "$env:LOCALAPPDATA\Comfy-Desktop\ComfyUI-Shared\output\WormsPortFlux2KleinReferenceEdit_00005_.png"
+$scaffold = "$env:LOCALAPPDATA\Comfy-Desktop\ComfyUI-Shared\output\WormsPortWizardHoodScaffold_v1.png"
+node scripts/generate-wizard-hood-structure-controls.js --base $base --scaffold-out $scaffold
+```
+
+The generator refuses any base whose SHA-256 is not
+`DEF9265DAA4C6F2799D16870205E2015291E3E4AAE0F61802349C9FD8D56AD00`
+and verifies that every zero-mask pixel remains exact B2D. Expected source
+evidence:
+
+- guide `08CB26CE3FAC6605859F9C9B51331351F28F40A005F6A101B2E575D8A56C6AB8`;
+- mask `AC9F8F101094C5C15361FD24827C4F24B7C52ACBC652000748B209CB5483F56B`;
+- generator `3B009E6F4A5908D4BAFA63426E7538F9B59DD2A4A286246FFC2604DCD7D0FB69`;
+  and
+- external scaffold `A048CA16B249298BBECFAD2F57552B04958E26F766D01F6577D1C6A011A0231C`.
+
+Review the full-size guide, mask, scaffold, and the exact 48px scaffold
+derivative. The garment must read as a tall asymmetric pointed Wizard hood with
+an open center neck and two short separated mantle flaps, not a horizontal
+scarf. The mask is intentionally generous so FLUX can form folds and remove the
+old wrap; separate black islands protect the accepted upper face and mouth.
+The body, forward Relic hand, feet, and baseline remain protected.
+
+The frozen activation prompt and approval checklist live in
+`docs/asset-briefs/wp-015b2-generation-review.md`. A full robe/tunic is outside
+this pass. The project owner approved all four source controls. The fail-closed
+activation binds seed `15026006`, base
+`wormsport/wizard-hood-scaffold-v1.png`, mask
+`wormsport/wizard-hood-edit-mask-v1.png`, and exactly the frozen prompt. Run at
+most one request after source-side checks, full component/workflow hash
+verification, low-VRAM/no-preview startup, three-tool MCP probe, staged-byte
+equality, an empty queue, and newest-output baseline capture all pass. Any
+mismatch closes the gate; no retry or parameter change is authorized.
+
+The one request completed as prompt
+`1f5fc569-5250-4799-a236-0bb22ba629c8` in `355.120` seconds. External output
+`WormsPortFlux2KleinProtectedEdit_00002_.png` is 920934 bytes, SHA-256
+`BE162B61FF38BE0EE2EA58716BDBAF5D2B38F0D8E6608953D2ECA41EFE7AD608`.
+All `844934` zero-mask pixels equal the scaffold exactly, baseline drift is
+zero, and the exact 48px derivative is SHA-256
+`70FC1611E1F84081699B9A805E0C6A7A795B5B89CA7ABA783FC84E4AE1968B90`.
+The tall knitted hood passes Wizard identity and 48px readability, but hard
+polygonal face and rectangular mouth restoration boundaries are visibly
+seamed at full size. The result therefore fails as a master.
+
+The failure demonstrates that the denoise permission mask and final exact-
+composite mask have different transition requirements. Do not rerun this graph
+with a wider or changed mask. Future planning may investigate separate masks or
+semantic regeneration of the complete face/hood region, but must create a new
+source gate and request allowance. The queue ended 0/0, both services were
+stopped, and re-entry is review/planning only.
 
 ### WP-015B0 Approval And Canonical Baseline
 

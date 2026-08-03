@@ -8,8 +8,8 @@ Phaser/Socket.IO stack.
 ## Execution Pointer
 
 - Active target: mobile-first single-player Nimiq Pay competition release.
-- Active work package: **WP-015B2E protected-property masked edit — one frozen
-  request complete; exact-output project-owner review pending**. The investigation
+- Active work package: **WP-015B2F Wizard-hood protected edit — single request
+  completed; visual integration rejected; generation closed**. B2E historically
   selected a pinned core-node route and produced a deterministic source-only
   candidate. Workflow
   `scripts/comfy-workflows/generate_flux2_klein_protected_edit.json` is a
@@ -34,12 +34,30 @@ Phaser/Socket.IO stack.
   seconds. External output SHA-256 is
   `1275B2BD8021EAA5C51AA0606A6CC20BA21B15ED6CEBC4A7C1FC76308BA9D2E0`.
   All `907427` zero-mask pixels match B2D exactly; baseline drift is zero and
-  normalized silhouette IoU `0.840783` remains drift telemetry. Preliminary
-  full-size and 48px review passes the head-worn cowl and protected-property
-  purpose. The crown is compact/hood-like rather than strongly pointed, so the
-  exact output awaits project-owner review. No retry, further inference, mask
-  widening, full-canvas fallback, normalization, another character, or
-  promotion is authorized.
+  normalized silhouette IoU `0.840783` remains drift telemetry. Project-owner
+  review rejects the exact B2E output as the next Wizard master: its compact
+  crown loses the Wizard calling and its horizontal neck wrap reads thief-like.
+  No retry ran. B2F now binds project-owned hood guide
+  `08CB26CE3FAC6605859F9C9B51331351F28F40A005F6A101B2E575D8A56C6AB8`,
+  generous protected-edit mask
+  `AC9F8F101094C5C15361FD24827C4F24B7C52ACBC652000748B209CB5483F56B`,
+  and exact-B2D external review scaffold
+  `A048CA16B249298BBECFAD2F57552B04958E26F766D01F6577D1C6A011A0231C`.
+  The proposed garment is a tall asymmetric pointed hood with an open center
+  neck and short split mantle; a full robe/tunic is deferred. The project owner
+  authorized only the one-request transition binding
+  scaffold `A048CA16...0231C`, mask `AC9F8F10...3F56B`, staged names
+  `wormsport/wizard-hood-scaffold-v1.png` and
+  `wormsport/wizard-hood-edit-mask-v1.png`, frozen prompt, and seed `15026006`.
+  That request completed as prompt
+  `1f5fc569-5250-4799-a236-0bb22ba629c8` in `355.120` seconds and produced
+  external output
+  `BE162B61FF38BE0EE2EA58716BDBAF5D2B38F0D8E6608953D2ECA41EFE7AD608`.
+  All `844934` zero-mask pixels match the scaffold exactly and the hood reads
+  clearly as a Wizard at 48px. Full-size review nevertheless rejects the
+  visible polygonal face and rectangular mouth seams created by restoring hard
+  protected islands next to newly generated garment pixels. The shared denoise
+  and composite mask is therefore not adopted for this transition problem.
   `InpaintModelConditioning` is excluded because its own pinned
   schema warns that the noise-mask path can break depending on the model;
   experimental `DifferentialDiffusion` and all custom nodes are also excluded.
@@ -107,23 +125,18 @@ Phaser/Socket.IO stack.
   comparison with normalized IoU `0.956188` and baseline drift `12` pixels.
   Both files remain external quarantine; B2C itself authorized no further
   generation.
-- Last committed implementation slice: **WP-015B2D creative-direction review**
-  on 2026-08-03 at `7685d4d`. WP-015B1's product-facing
+- Last committed implementation slice: **WP-015B2E protected-edit execution
+  and project-owner review** on 2026-08-03 at `5299673`. WP-015B1's product-facing
   anatomy, socket, projectile-origin, animation, environment, and acceptance
   requirements remain normative. Its exact prompts, seeds, and sampler settings
   remain the historical SD 1.5 contract and are not presumed equivalent for a
   different model architecture.
-- Next bounded action: review the exact B2E mask and source graph. If the project
-  owner approves activation, make a separate manifest/pipeline transition that
-  installs and registers only this exact graph, stages exact B2D bytes plus the
-  exact project mask, verifies an empty queue and latest-output baseline, and
-  authorizes exactly one seed `15026005` request with the frozen prompt in
-  `docs/asset-briefs/wp-015b2-generation-review.md`. Do not treat that review as
-  authorization now. A result must visibly place the cowl on the head, preserve
-  the face/body/feet/Relic hand outside the mask, and remain cute at 48px.
-  Measurements support owner visual review; moderate editable-region variation
-  is welcome. Loomkeeper, animation, roster work, alpha, socket normalization,
-  another attempt, and promotion remain blocked.
+- Next bounded action: review and plan the mask-topology lesson before another
+  character request. Candidate strategies are separate denoise/composite masks
+  with an adequate transition band or semantic regeneration of the complete
+  face/hood region while retaining two-eye/one-mouth requirements. Neither is
+  authorized now. Loomkeeper, a full robe/tunic, animation, roster work, alpha,
+  socket normalization, retry, and promotion remain blocked.
 - WP-012 exactly pins `@nimiq/mini-app-sdk` `0.1.0` and server-only
   `@nimiq/core` `2.7.1`. Provider access remains lazy, identity acceptance is
   now used by WP-013's separate production Daily entry, the diagnostics surface
@@ -2386,13 +2399,23 @@ Sequential delivery slices:
     friendly appeal. The project owner accepts its paired eyebrows, moderate
     body variation, and cuteness direction. Output `DEF9265D...AD00` remains
     external evidence; its neck-wrap cowl required a protected local repair.
-  - **WP-015B2E Protected cowl edit — single request completed 2026-08-03;
-    exact-output owner review pending:** use B2D as the sole base/reference and
+  - **WP-015B2E Protected cowl edit — single request completed and rejected as
+    Wizard master 2026-08-03:** use B2D as the sole base/reference and
     the exact tracked cowl mask in the core-only protected workflow. Seed
     `15026005` produced external output `1275B2BD...D2E0`; every zero-mask pixel
-    equals B2D and the head covering now rests on the head at full size and
-    48px. The compact crown remains a creative review point. The one-request
+    equals B2D. Project-owner review found that its compact crown loses the
+    Wizard calling and its horizontal wrap reads thief-like. The one-request
     allowance is consumed; no retry or promotion is implied.
+  - **WP-015B2F Wizard-hood protected edit — single request completed and
+    visually rejected 2026-08-03:** use exact B2D to construct one deterministic external
+    scaffold with a tall asymmetric pointed hood, open neck, and short split
+    mantle. The tracked structure guide and generous mask preserve the accepted
+    face, mouth, lower body, forward Relic hand, feet, and baseline while giving
+    FLUX room to remove the rejected scarf. A full robe/tunic is a later
+    separate pass. Project-owner approval of the exact guide, mask, scaffold,
+    48px read, and frozen prompt completed. Seed `15026006` produced a clear
+    Wizard hood, but hard-restored face/mouth islands created visible seams.
+    The allowance is consumed; no retry or changed control is implied.
 - **WP-015C First playable visual slice:** promote and integrate only approved
   Wizard, Loomkeeper, Threadball, and Patch assets. Prove one complete
   move/aim/fire/flight/impact/damage/result exchange at maintained phone

@@ -352,9 +352,42 @@ without opening the entire character silhouette to regeneration.
   it is not a second model input.
 
 The mask is source/review tooling, not artwork. It may not enter `assets/`, be
-repainted ad hoc, be reused for another Calling, or be staged while the exact
-protected-edit workflow remains runtime-disabled. Its workflow and activation
-contract live in `asset-briefs/wp-015b2-generation-review.md`.
+repainted ad hoc, or be reused for another Calling. Its one B2E request has
+already been consumed; runtime availability of the exact protected-edit graph
+does not authorize a retry. Its workflow and activation history live in
+`asset-briefs/wp-015b2-generation-review.md`.
+
+### Wizard Hood Structure Controls
+
+![Project-owned Wizard hood structure guide](images/art-direction/knotkin-wizard-hood-structure-guide.png)
+
+![Project-owned Wizard hood edit mask](images/art-direction/knotkin-wizard-hood-edit-mask.png)
+
+Project-owner review rejects the B2E output as the next Wizard master despite
+its exact protected-pixel pass. Its compact head covering loses the Wizard
+calling, while the broad horizontal neck wrap reads more like a thief scarf.
+WP-015B2F responds with deterministic source controls before another model
+request: a tall asymmetrical pointed hood, open face and center neck, and two
+short separated mantle flaps. It intentionally does not define a full robe.
+
+- Structure guide SHA-256:
+  `08CB26CE3FAC6605859F9C9B51331351F28F40A005F6A101B2E575D8A56C6AB8`.
+- Generous mask SHA-256:
+  `AC9F8F101094C5C15361FD24827C4F24B7C52ACBC652000748B209CB5483F56B`.
+- Shared deterministic generator SHA-256:
+  `3B009E6F4A5908D4BAFA63426E7538F9B59DD2A4A286246FFC2604DCD7D0FB69`.
+- Intended exact base: external B2D evidence
+  `DEF9265DAA4C6F2799D16870205E2015291E3E4AAE0F61802349C9FD8D56AD00`.
+
+The mask is deliberately wider than the garment silhouette. It gives FLUX
+room to form textile folds and fully remove the rejected scarf while separate
+black islands preserve the accepted upper face and mouth. The body, forward
+Relic hand, feet, and baseline remain protected. The guide, mask, and external
+scaffold are review controls only, not runtime artwork. Project-owner approval
+permitted their exact staged derivatives for one seed `15026006` protected
+edit only. That allowance is now consumed. The hood reads clearly as a Wizard,
+but the output is rejected because exact face/mouth restoration creates visible
+hard seams; it does not permit a retry, changed control, or product promotion.
 
 Future generated art is not expected to be deterministic to the last detail.
 Protect the recognisable angular Knotkin family, the Wizard cowl/hat resting on

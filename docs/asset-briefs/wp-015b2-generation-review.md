@@ -1096,8 +1096,8 @@ back, and warmer handcrafted character.
 
 ## WP-015B2E Protected-Property Masked-Edit Investigation
 
-Status: **one frozen protected edit completed; preliminary purpose pass;
-project-owner exact-output review pending; generation closed**.
+Status: **one frozen protected edit completed; exact-output project-owner
+review rejected it as the next Wizard master; generation closed**.
 
 B2E investigated an interior/region-controlled edit that mediates between B2C's
 strong geometry and B2D's accepted cute styling. The goal remains to protect
@@ -1274,5 +1274,138 @@ The candidate remains external quarantine and is not in `assets/` or the
 product asset manifest. The sole request allowance is consumed. Both local
 services are stopped, and no retry, further inference, prompt/seed/mask change,
 full-canvas fallback, normalization, alpha, animation, socket work, another
-Calling, or product promotion is authorized. The next action is project-owner
-review of this exact output.
+Calling, or product promotion is authorized.
+
+Project-owner review rejects this exact output as the next Wizard master. The
+covering respects the mask technically, but the compact crown no longer reads
+unmistakably as a Wizard hat and the broad horizontal neck wrap reads
+thief-like. The accepted face, mouth, eyebrows, angular body direction, hand,
+feet, and friendly appeal remain useful B2D evidence. No second B2E request
+ran.
+
+## WP-015B2F Wizard-Hood Source-Review Gate
+
+Status: **one fixed-seed protected edit completed; Wizard hood passes but hard
+face/mouth composite seams fail full-size review; generation closed**.
+
+B2F isolates the failed garment problem before spending another request. It
+uses exact B2D again, not rejected B2E, and asks the next edit to solve only a
+recognisable Wizard hood. A full robe or tunic would add garment anatomy,
+body-silhouette, and texture decisions to the same four-step edit, so it is
+deferred to a later separate pass after the hood succeeds.
+
+### Exact controls
+
+![WP-015B2F Wizard hood structure guide](../images/art-direction/knotkin-wizard-hood-structure-guide.png)
+
+![WP-015B2F Wizard hood edit mask](../images/art-direction/knotkin-wizard-hood-edit-mask.png)
+
+| Control | Exact evidence |
+| --- | --- |
+| Generator | `scripts/generate-wizard-hood-structure-controls.js`, 13963 bytes, SHA-256 `3B009E6F4A5908D4BAFA63426E7538F9B59DD2A4A286246FFC2604DCD7D0FB69` |
+| Flat structure guide | 1024x1024 PNG, 25382 bytes, SHA-256 `08CB26CE3FAC6605859F9C9B51331351F28F40A005F6A101B2E575D8A56C6AB8` |
+| Protected-edit mask | 1024x1024 PNG, 12461 bytes, SHA-256 `AC9F8F101094C5C15361FD24827C4F24B7C52ACBC652000748B209CB5483F56B` |
+| Exact external B2D base | `WormsPortFlux2KleinReferenceEdit_00005_.png`, SHA-256 `DEF9265DAA4C6F2799D16870205E2015291E3E4AAE0F61802349C9FD8D56AD00` |
+| External deterministic review scaffold | `WormsPortWizardHoodScaffold_v1.png`, 756285 bytes, SHA-256 `A048CA16B249298BBECFAD2F57552B04958E26F766D01F6577D1C6A011A0231C` |
+| External 48px scaffold review | 3191 bytes, SHA-256 `DFACDC05E4D2A1E858C4565D678E3731099451973EA7F7EBC650D9C1DF486331` |
+
+The guide defines a tall asymmetric crown whose tip folds backward, an open
+face, an open center neck, and two short separated shoulder-mantle flaps. The
+mask is a permission region rather than a garment tracing: it leaves room for
+FLUX creativity around the crown and folds and opens enough of the old wrap to
+remove it completely. Separate protected islands retain the accepted upper
+face and mouth; the lower body, forward Relic hand, feet, and baseline remain
+protected. When supplied the exact B2D bytes, the generator also creates the
+external scaffold and fails if any zero-mask source pixel changes.
+
+### Frozen activation prompt
+
+> Image 1 defines the exact garment structure. Rebuild only its flat garment
+> guide as one continuous hand-knitted Wizard hood: a tall asymmetrical pointed
+> crown rising clearly above the head, with the tip folding backward, an open
+> face aperture, two soft side folds, and a short split shoulder mantle below
+> the chin. Use deep indigo-violet chenille with a narrow warm-gold stitched
+> edge. The silhouette must read unmistakably as a fantasy Wizard at 48px. Keep
+> the surrounding character unchanged. No separate horizontal scarf, beanie,
+> balaclava, or thief hood.
+
+This is structure-first wording. It does not ask for generic cuteness, a body
+redesign, a full robe, another Relic, or additional facial detail; B2D already
+supplies those accepted properties. The existing protected-edit graph remains
+the exact activation graph, with the deterministic B2D-derived scaffold as its
+sole base/reference and the new mask as its edit permission.
+
+### Review decision required
+
+Before any inference, the project owner must approve all of the following as a
+single source gate:
+
+1. the tall pointed hood and split-mantle structure at full size and 48px;
+2. the generous mask, including the separate face and mouth protection;
+3. the exact B2D-derived scaffold as the sole future base/reference; and
+4. the frozen hood-only prompt above.
+
+The project owner approved all four items. The separate activation transition
+binds exactly these execution values:
+
+| Field | Authorized value |
+| --- | --- |
+| Workflow | exact `generate_flux2_klein_protected_edit` graph `AD4D4F96...21DAA` |
+| Base/reference | external scaffold `A048CA16...0231C`, staged only as `wormsport/wizard-hood-scaffold-v1.png` |
+| Mask | tracked `AC9F8F10...3F56B`, staged only as `wormsport/wizard-hood-edit-mask-v1.png` |
+| Seed | `15026006` |
+| Prompt | exact frozen hood-only text above |
+| Requests | exactly one; no retry |
+
+Preflight must verify every model/workflow/input hash, low-VRAM/no-preview
+startup, all three closed-profile MCP tools, an empty queue, and the current
+newest-output baseline before submission. Any mismatch closes the gate without
+inference. A later robe/tunic pass must receive its own mask, prompt, review,
+and request allowance.
+
+### Single-request result
+
+The source checks passed with all 38 tooling tests, complete compliance/type/
+server/client build, zero audit vulnerabilities, and zero runtime assets. The
+exact preflight then verified all three model files, all three workflow files,
+native RX 7600 low-VRAM/no-preview startup, all three MCP tools, both staged
+hashes, an empty queue, and B2E `_00001_` as the newest generated-output
+baseline.
+
+| Field | Recorded result |
+| --- | --- |
+| Comfy prompt ID | `1f5fc569-5250-4799-a236-0bb22ba629c8` |
+| Output | `WormsPortFlux2KleinProtectedEdit_00002_.png` |
+| Dimensions / bytes | 1024x1024 / 920934 |
+| SHA-256 | `BE162B61FF38BE0EE2EA58716BDBAF5D2B38F0D8E6608953D2ECA41EFE7AD608` |
+| Runtime | `355.120` seconds |
+| Host free RAM minimum | 3925364736 bytes |
+| Driver-reported free VRAM minimum | 2376634880 bytes |
+| Queue after completion | zero running / zero pending |
+| 48px review derivative | external 3103-byte PNG, SHA-256 `70FC1611E1F84081699B9A805E0C6A7A795B5B89CA7ABA783FC84E4AE1968B90` |
+
+The hard preservation contract passes: all `844934` pixels whose new mask red
+channel is zero equal the deterministic scaffold exactly, with maximum channel
+difference zero. Baseline drift is zero; canvas IoU is `0.835513` and
+normalized silhouette IoU is `0.796676`. The low overlap is expected telemetry
+from the new tall crown and fabric folds, not the rejection reason.
+
+The generated garment solves its bounded purpose. It is recognisably Wizard-
+like at full size and 48px, with a tall asymmetric knitted crown, gold edge,
+and split mantle instead of the prior thief-like scarf. However, the output
+fails full-size integration: the exactly restored polygonal face island and
+small rectangular mouth island meet newly generated surrounding pixels with
+strong visible seams. The hood can be useful visual evidence, but the whole
+file is not an acceptable master.
+
+This failure identifies the control problem precisely. `SetLatentNoiseMask`
+needs contextual freedom around the face/garment transition, while exact final
+compositing should not reuse the same hard interior islands. The current graph
+couples those two different responsibilities. A future plan should either
+separate denoise and composite masks or allow the complete face/hood region to
+be regenerated under semantic two-eye/one-mouth constraints. It must not treat
+small exact eye or mouth cut-outs as automatically seamless.
+
+The single allowance is consumed. No retry, cached resubmission, changed mask,
+seed, prompt, or graph ran. Both services are stopped; the output and derivative
+remain external quarantine and nothing entered `assets/`.
