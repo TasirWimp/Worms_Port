@@ -4,6 +4,7 @@ const test = require('node:test');
 
 const {
   compareImages,
+  compareProtectedPixels,
   getBounds,
   intersectionOverUnion,
   normalizeMask
@@ -24,6 +25,32 @@ test('silhouette comparator reads the tracked RGBA guide deterministically', () 
   assert.equal(result.canvas_iou, 1);
   assert.equal(result.baseline_drift_pixels, 0);
   assert.equal(result.numeric_gate_pass, true);
+});
+
+test('protected-pixel comparator enforces exact equality outside the cowl mask', () => {
+  const guide = path.resolve(
+    __dirname,
+    '..',
+    '..',
+    'docs',
+    'images',
+    'art-direction',
+    'knotkin-wizard-structure-guide.png'
+  );
+  const mask = path.resolve(
+    __dirname,
+    '..',
+    '..',
+    'docs',
+    'images',
+    'art-direction',
+    'knotkin-wizard-cowl-edit-mask.png'
+  );
+  const result = compareProtectedPixels(guide, guide, mask);
+  assert.ok(result.protected_pixels > 0);
+  assert.equal(result.mismatched_protected_pixels, 0);
+  assert.equal(result.maximum_channel_difference, 0);
+  assert.equal(result.exact_protected_pixels_pass, true);
 });
 
 test('silhouette normalization separates shape overlap from canvas placement', () => {

@@ -33,7 +33,7 @@
     },
     {
       "id": "flux2-klein",
-      "state": "wizard_masked_edit_workflow_review_pending",
+      "state": "wizard_protected_edit_generated_owner_review_pending",
       "runtime_enabled": true,
       "model_components": [
         "flux2-klein-4b-distilled-fp8",
@@ -42,11 +42,13 @@
       ],
       "workflow_components": [
         "wormsport-flux2-klein-text-to-image-workflow",
-        "wormsport-flux2-klein-reference-edit-workflow"
+        "wormsport-flux2-klein-reference-edit-workflow",
+        "wormsport-flux2-klein-protected-edit-workflow"
       ],
       "required_mcp_tools": [
         "generate_flux2_klein_text",
-        "generate_flux2_klein_reference_edit"
+        "generate_flux2_klein_reference_edit",
+        "generate_flux2_klein_protected_edit"
       ],
       "comfy_launch_mode": "lowvram_no_preview",
       "required_comfy_arguments": [
@@ -54,7 +56,7 @@
         "--preview-method none"
       ],
       "smoke_tool": "generate_flux2_klein_text",
-      "notes": "WP-015B2D completed exactly one single-reference Wizard cuteness/styling edit of B2C knit bytes 5FF0A63DAC03E13B2A3390AD77E6929A9822412E1A1E0415E7A38125D703B246 with seed 15026004. Output DEF9265DAA4C6F2799D16870205E2015291E3E4AAE0F61802349C9FD8D56AD00 improved friendly appeal and measured 0.880098 normalized silhouette IoU. The project owner accepts its paired eyebrows, moderate body variation, and cuteness direction; IoU is drift telemetry rather than automatic rejection. WP-015B2E constructed source-only protected-edit workflow AD4D4F96AD7D7C024A1A903A440DD4FE6D9E31353ACB7E436BF7DFC787321DAA and deterministic cowl mask 2B6C5F51A6EA411BB8B9C40AF861A339622316CB1D9710719F7F0CDEC327425B. The candidate is not profile-enabled, was not installed in the external bridge, and permits no inference, staging, normalization, another character, or product promotion until a separate review authorizes activation."
+      "notes": "WP-015B2D completed exactly one single-reference Wizard cuteness/styling edit of B2C knit bytes 5FF0A63DAC03E13B2A3390AD77E6929A9822412E1A1E0415E7A38125D703B246 with seed 15026004. Output DEF9265DAA4C6F2799D16870205E2015291E3E4AAE0F61802349C9FD8D56AD00 improved friendly appeal and measured 0.880098 normalized silhouette IoU. The project owner accepted its paired eyebrows, moderate body variation, and cuteness direction. For WP-015B2E the project owner approved exact workflow AD4D4F96AD7D7C024A1A903A440DD4FE6D9E31353ACB7E436BF7DFC787321DAA and deterministic cowl mask 2B6C5F51A6EA411BB8B9C40AF861A339622316CB1D9710719F7F0CDEC327425B. The profile executed exactly one protected edit of B2D with frozen seed 15026005 as Comfy prompt d023da3f-77cf-4f05-ae7b-62ce66f1f176, producing external 1024x1024 output 1275B2BD8021EAA5C51AA0606A6CC20BA21B15ED6CEBC4A7C1FC76308BA9D2E0 in 308.956 seconds. All 907427 zero-mask pixels match B2D exactly; normalized silhouette IoU 0.840783 remains drift telemetry. Preliminary full-size and 48px review passes the head-worn cowl and protected-property purpose, while the compact crown remains a project-owner review point. No retry, further inference, normalization, another character, or product promotion is authorized."
     }
   ],
   "conditioning_inputs": [
@@ -149,6 +151,7 @@
         ".venv/",
         "logs/",
         "workflows/generate_image_conditioned.json",
+        "workflows/generate_flux2_klein_protected_edit.json",
         "workflows/generate_flux2_klein_reference_edit.json",
         "workflows/generate_flux2_klein_text.json"
       ],
@@ -206,11 +209,12 @@
         "the completed single fixed-seed WP-015B2B Wizard structure-guide diagnostic",
         "the completed single fixed-seed WP-015B2C Gate 1 mechanical-scaffold diagnostic",
         "the completed single fixed-seed WP-015B2C Gate 2 fitted-knit conversion of exact robot bytes BC6B21B74C5016504A733D5D1EC306FE7F46A8CC5E526E0FFF28EB9EABC25D38",
-        "the completed single fixed-seed WP-015B2D Wizard cuteness and styling edit of exact knit bytes 5FF0A63DAC03E13B2A3390AD77E6929A9822412E1A1E0415E7A38125D703B246, retained as project-owner-accepted creative-direction evidence output DEF9265DAA4C6F2799D16870205E2015291E3E4AAE0F61802349C9FD8D56AD00"
+        "the completed single fixed-seed WP-015B2D Wizard cuteness and styling edit of exact knit bytes 5FF0A63DAC03E13B2A3390AD77E6929A9822412E1A1E0415E7A38125D703B246, retained as project-owner-accepted creative-direction evidence output DEF9265DAA4C6F2799D16870205E2015291E3E4AAE0F61802349C9FD8D56AD00",
+        "the authorized single fixed-seed WP-015B2E protected cowl edit of exact B2D bytes DEF9265DAA4C6F2799D16870205E2015291E3E4AAE0F61802349C9FD8D56AD00 using exact mask 2B6C5F51A6EA411BB8B9C40AF861A339622316CB1D9710719F7F0CDEC327425B"
       ],
       "blocked_uses": [
-        "candidate generation beyond the single WP-015B2D Wizard cuteness and styling edit without a later reviewed decision",
-        "batch candidate generation; WP-015B2D authorizes exactly one request",
+        "candidate generation beyond the single authorized WP-015B2E protected cowl edit without a later reviewed decision",
+        "batch candidate generation; WP-015B2E authorizes exactly one request and no retry",
         "redistribution with Worms_Port or storage below assets",
         "product asset promotion without separate exact-output review"
       ],
@@ -258,12 +262,13 @@
         "the completed single fixed-seed WP-015B2B Wizard structure-guide diagnostic",
         "the completed single fixed-seed WP-015B2C Gate 1 mechanical-scaffold diagnostic",
         "the completed single fixed-seed WP-015B2C Gate 2 fitted-knit conversion of exact robot bytes BC6B21B74C5016504A733D5D1EC306FE7F46A8CC5E526E0FFF28EB9EABC25D38",
-        "the completed single fixed-seed WP-015B2D Wizard cuteness and styling edit of exact knit bytes 5FF0A63DAC03E13B2A3390AD77E6929A9822412E1A1E0415E7A38125D703B246, retained as project-owner-accepted creative-direction evidence output DEF9265DAA4C6F2799D16870205E2015291E3E4AAE0F61802349C9FD8D56AD00"
+        "the completed single fixed-seed WP-015B2D Wizard cuteness and styling edit of exact knit bytes 5FF0A63DAC03E13B2A3390AD77E6929A9822412E1A1E0415E7A38125D703B246, retained as project-owner-accepted creative-direction evidence output DEF9265DAA4C6F2799D16870205E2015291E3E4AAE0F61802349C9FD8D56AD00",
+        "the authorized single fixed-seed WP-015B2E protected cowl edit of exact B2D bytes DEF9265DAA4C6F2799D16870205E2015291E3E4AAE0F61802349C9FD8D56AD00 using exact mask 2B6C5F51A6EA411BB8B9C40AF861A339622316CB1D9710719F7F0CDEC327425B"
       ],
       "blocked_uses": [
         "using the rejected pre-release Comfy mirror in the reviewed route",
-        "candidate generation beyond the single WP-015B2D Wizard cuteness and styling edit without a later reviewed decision",
-        "batch candidate generation; WP-015B2D authorizes exactly one request",
+        "candidate generation beyond the single authorized WP-015B2E protected cowl edit without a later reviewed decision",
+        "batch candidate generation; WP-015B2E authorizes exactly one request and no retry",
         "redistribution with Worms_Port or storage below assets"
       ],
       "notes": "This single-file encoder was built externally from the two exact BFL Apache-2.0 shards without tensor conversion. The reviewed output is installed outside the repository; neither source weights nor merged bytes are distributed with Worms_Port."
@@ -292,11 +297,12 @@
         "the completed single fixed-seed WP-015B2B Wizard structure-guide diagnostic",
         "the completed single fixed-seed WP-015B2C Gate 1 mechanical-scaffold diagnostic",
         "the completed single fixed-seed WP-015B2C Gate 2 fitted-knit conversion of exact robot bytes BC6B21B74C5016504A733D5D1EC306FE7F46A8CC5E526E0FFF28EB9EABC25D38",
-        "the completed single fixed-seed WP-015B2D Wizard cuteness and styling edit of exact knit bytes 5FF0A63DAC03E13B2A3390AD77E6929A9822412E1A1E0415E7A38125D703B246, retained as project-owner-accepted creative-direction evidence output DEF9265DAA4C6F2799D16870205E2015291E3E4AAE0F61802349C9FD8D56AD00"
+        "the completed single fixed-seed WP-015B2D Wizard cuteness and styling edit of exact knit bytes 5FF0A63DAC03E13B2A3390AD77E6929A9822412E1A1E0415E7A38125D703B246, retained as project-owner-accepted creative-direction evidence output DEF9265DAA4C6F2799D16870205E2015291E3E4AAE0F61802349C9FD8D56AD00",
+        "the authorized single fixed-seed WP-015B2E protected cowl edit of exact B2D bytes DEF9265DAA4C6F2799D16870205E2015291E3E4AAE0F61802349C9FD8D56AD00 using exact mask 2B6C5F51A6EA411BB8B9C40AF861A339622316CB1D9710719F7F0CDEC327425B"
       ],
       "blocked_uses": [
-        "candidate generation beyond the single WP-015B2D Wizard cuteness and styling edit without a later reviewed decision",
-        "batch candidate generation; WP-015B2D authorizes exactly one request",
+        "candidate generation beyond the single authorized WP-015B2E protected cowl edit without a later reviewed decision",
+        "batch candidate generation; WP-015B2E authorizes exactly one request and no retry",
         "redistribution with Worms_Port or storage below assets",
         "treating the containing FLUX.2-dev model license as permission for non-autoencoder model weights"
       ],
@@ -382,7 +388,7 @@
       "source_template_url": "https://github.com/Comfy-Org/workflow_templates/blob/cebdebc9fc2febcb97a5db0dd291f59f5300b176/templates/image_flux2_klein_image_edit_4b_distilled.json",
       "source_template_revision": "cebdebc9fc2febcb97a5db0dd291f59f5300b176",
       "comfyui_revision": "c2638ce6c00e3426c48d56a775bc46e9a8464094",
-      "version": "1-candidate",
+      "version": "1",
       "file_sha256": "AD4D4F96AD7D7C024A1A903A440DD4FE6D9E31353ACB7E436BF7DFC787321DAA",
       "input_mode": "masked_image_to_image",
       "model_components": [
@@ -391,21 +397,22 @@
         "flux2-vae"
       ],
       "core_nodes_only": true,
-      "runtime_enabled": false,
+      "runtime_enabled": true,
       "license": "MIT",
       "license_evidence": "LICENSE",
       "distribution": "project_source_tooling",
       "approved_uses": [
         "exact-hash source review and pinned ComfyUI 0.27.1 object_info validation for WP-015B2E",
-        "reviewing the proposed B2D-base, single-reference, deterministic-mask architecture before activation"
+        "reviewing the proposed B2D-base, single-reference, deterministic-mask architecture before activation",
+        "the completed single external quarantined cowl-only edit of B2D with mask 2B6C5F51A6EA411BB8B9C40AF861A339622316CB1D9710719F7F0CDEC327425B and seed 15026005, output 1275B2BD8021EAA5C51AA0606A6CC20BA21B15ED6CEBC4A7C1FC76308BA9D2E0"
       ],
       "blocked_uses": [
-        "copying into the external MCP workflow directory or adding it to the executable flux2-klein profile before a separate activation decision",
-        "staging the B2D base or cowl mask, registering an MCP tool, or running any prompt while runtime_enabled is false",
+        "installing or invoking this workflow outside the closed flux2-klein profile",
+        "a second request, retry, different seed, changed prompt, wider mask, or full-canvas fallback after the one authorized WP-015B2E request",
         "using InpaintModelConditioning, DifferentialDiffusion, a custom node, a second model reference, or an unreviewed mask",
         "automatic publication into assets or product-asset approval"
       ],
-      "notes": "Source-only 23-node derivative of the official pinned FLUX.2 Klein 4B distilled reference-edit template. It encodes B2D as both the base latent and sole ReferenceLatent, applies the project-owned grayscale mask through SetLatentNoiseMask, samples with the unchanged four-step/CFG-1/Euler settings, and uses ImageCompositeMasked to restore pixels outside the same mask. B2C remains geometry review evidence rather than a second latent reference, limiting memory and semantic ambiguity on the 8 GB GPU. Pinned object_info validation found every core class, required input, and connected edge type valid. ComfyUI and the bridge were then stopped with a zero-running/zero-pending queue and B2D still the newest output; no inference ran."
+      "notes": "Activated after the project owner reviewed and approved the exact mask. This 23-node derivative of the official pinned FLUX.2 Klein 4B distilled reference-edit template encodes B2D as both the base latent and sole ReferenceLatent, applies the project-owned grayscale mask through SetLatentNoiseMask, samples with the unchanged four-step/CFG-1/Euler settings, and uses ImageCompositeMasked to restore pixels outside the same mask. B2C remains geometry review evidence rather than a second latent reference, limiting memory and semantic ambiguity on the 8 GB GPU. Pinned object_info validation found every core class, required input, and connected edge type valid. The one seed-15026005 request completed as prompt d023da3f-77cf-4f05-ae7b-62ce66f1f176 and output 1275B2BD8021EAA5C51AA0606A6CC20BA21B15ED6CEBC4A7C1FC76308BA9D2E0. No second request is authorized, and the result remains external quarantine pending project-owner exact-output review."
     },
     {
       "id": "comfyui-mcp-generate-image-workflow",

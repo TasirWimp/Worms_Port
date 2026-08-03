@@ -181,13 +181,17 @@ automatic rejection. The remaining protected Calling issue is that its dark
 cowl reads mainly as a neck wrap instead of a Wizard cowl/hat resting on the
 head. The image remains external because alpha, socket, crop/pivot/baseline,
 animation, and exact-file product approval are unfinished. WP-015B2E has now
-constructed and pinned a source-only 23-node masked-edit candidate plus a
+constructed and pinned a 23-node masked-edit workflow plus a
 deterministic cowl-region mask. It uses B2D as the sole reference/base latent,
 limits sampling with a core noise mask, and restores pixels outside the same
-mask. The candidate remains runtime-disabled, absent from the external MCP
-workflow directory, and unexecuted. Re-entry is the activation review in
-`docs/asset-briefs/wp-015b2-generation-review.md`; it authorizes no inference
-until the project owner separately approves the exact workflow and mask.
+mask. After project-owner approval, the one external quarantined request ran
+with seed `15026005` and produced exact output
+`1275B2BD8021EAA5C51AA0606A6CC20BA21B15ED6CEBC4A7C1FC76308BA9D2E0`.
+All `907427` zero-mask pixels match B2D exactly; preliminary full-size and 48px
+review passes the head-worn cowl purpose, although the compact crown remains a
+project-owner review point. No retry, further inference, normalization, or
+product promotion is authorized. Re-entry and acceptance evidence are in
+`docs/asset-briefs/wp-015b2-generation-review.md`.
 
 ## Build
 

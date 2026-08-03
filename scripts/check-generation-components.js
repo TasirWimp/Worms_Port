@@ -184,7 +184,7 @@ const reviewedFluxWorkflowContracts = new Map([
       'PARAM_STR_MASK_IMAGE',
       'PARAM_STR_REFERENCE_IMAGE'
     ],
-    runtimeEnabled: false
+    runtimeEnabled: true
   }]
 ]);
 const reviewedFluxModelComponents = [
@@ -206,15 +206,17 @@ const reviewedProfileContracts = new Map([
     smokeTool: 'generate_image'
   }],
   ['flux2-klein', {
-    state: 'wizard_masked_edit_workflow_review_pending',
+    state: 'wizard_protected_edit_generated_owner_review_pending',
     modelComponents: reviewedFluxModelComponents,
     workflowComponents: [
       'wormsport-flux2-klein-text-to-image-workflow',
-      'wormsport-flux2-klein-reference-edit-workflow'
+      'wormsport-flux2-klein-reference-edit-workflow',
+      'wormsport-flux2-klein-protected-edit-workflow'
     ],
     requiredMcpTools: [
       'generate_flux2_klein_text',
-      'generate_flux2_klein_reference_edit'
+      'generate_flux2_klein_reference_edit',
+      'generate_flux2_klein_protected_edit'
     ],
     comfyLaunchMode: 'lowvram_no_preview',
     requiredComfyArguments: ['--lowvram', '--preview-method none'],
@@ -227,8 +229,13 @@ const reviewedProfileContracts = new Map([
       'project owner',
       'AD4D4F96AD7D7C024A1A903A440DD4FE6D9E31353ACB7E436BF7DFC787321DAA',
       '2B6C5F51A6EA411BB8B9C40AF861A339622316CB1D9710719F7F0CDEC327425B',
-      'not profile-enabled',
-      'no inference'
+      '15026005',
+      'exactly one',
+      '1275B2BD8021EAA5C51AA0606A6CC20BA21B15ED6CEBC4A7C1FC76308BA9D2E0',
+      'd023da3f-77cf-4f05-ae7b-62ce66f1f176',
+      '907427',
+      '0.840783',
+      'No retry'
     ]
   }]
 ]);
@@ -451,6 +458,7 @@ function validateGenerationComponents(manifest, root = repoRoot) {
       '.venv/',
       'logs/',
       'workflows/generate_image_conditioned.json',
+      'workflows/generate_flux2_klein_protected_edit.json',
       'workflows/generate_flux2_klein_reference_edit.json',
       'workflows/generate_flux2_klein_text.json'
     ];

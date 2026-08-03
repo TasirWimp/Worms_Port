@@ -1279,8 +1279,10 @@ product review are incomplete.
 
 ### WP-015B2E Protected-Property Masked-Edit Investigation
 
-B2E completed its source/tooling investigation without inference. It selected a
-core-node masked latent edit and rejected the following alternatives:
+B2E completed its source/tooling investigation without inference, and the
+project owner then approved the exact workflow and mask for one frozen request.
+It selected a core-node masked latent edit and rejected the following
+alternatives:
 
 - `InpaintModelConditioning` adds model-specific concat conditioning and its
   pinned node schema warns that the noise-mask option may improve results or
@@ -1331,10 +1333,12 @@ render and box downsample provide a narrow soft boundary without another node.
 
 Pinned `object_info` validation passed all 23 node classes, required inputs, and
 connected edge types. This proves graph compatibility, not FLUX.2 masked-edit
-quality. The graph remains `runtime_enabled: false`, is absent from the closed
-profile and MCP directory, and exposed no MCP tool. After validation the queue
-was zero running / zero pending, B2D remained the newest output, and both local
-services were stopped. No image or mask was staged and no prompt ran. Current
+quality. After the project-owner approval, the graph is `runtime_enabled: true`
+inside the closed `flux2-klein` profile and may be installed only as
+`generate_flux2_klein_protected_edit`. The source-validation session itself
+ended with zero running / zero pending, B2D remained the newest output, and
+both local services were stopped; no image or mask was staged and no prompt ran
+during that gate. Current
 official ComfyUI background references are the
 [inpainting guide](https://docs.comfy.org/tutorials/basic/inpaint) and
 [FLUX.2 Klein guide](https://docs.comfy.org/tutorials/flux/flux-2-klein);
@@ -1357,8 +1361,8 @@ stronger-than-semantic protection in this pass because they lie outside the
 mask. Silhouette IoU, baseline, canvas position, and bounds remain diagnostic
 measurements; small later normalization remains allowed.
 
-The next gate may activate exactly these bytes only after a separate project
-owner decision. If activated, freeze seed `15026005` and this prompt:
+The project-owner decision activates exactly these reviewed bytes for seed
+`15026005` and this prompt:
 
 > Change only the navy knitted neck wrap into a cute Wizard cowl that visibly
 > rests on and frames the head, with a soft pointed crown and short neck drape.
@@ -1368,7 +1372,7 @@ owner decision. If activated, freeze seed `15026005` and this prompt:
 > handcrafted appeal. No weapon, staff, extra limb, extra face, floating hat,
 > text, logo, or rear shell.
 
-Before that one request, activation must exact-install and register the candidate
+Before that one request, activation must exact-install and register the
 workflow, stage exact B2D bytes and the exact tracked mask under two safe names,
 verify model/workflow/input hashes, confirm low-VRAM/no-preview launch mode, and
 record an empty queue plus B2D as latest-output baseline. Human review controls
@@ -1379,6 +1383,19 @@ outside every nonzero mask pixel is mandatory; variation inside the mask is
 creative rather than a reason to reject. A failed result authorizes no retry,
 seed shopping, mask widening, or full-canvas fallback. Alpha, animation, socket
 normalization, another Calling, and product promotion remain later work.
+
+The one activated request completed as Comfy prompt
+`d023da3f-77cf-4f05-ae7b-62ce66f1f176` in `308.956` seconds. Its external
+1024x1024 output is
+`WormsPortFlux2KleinProtectedEdit_00001_.png`, 906000 bytes, SHA-256
+`1275B2BD8021EAA5C51AA0606A6CC20BA21B15ED6CEBC4A7C1FC76308BA9D2E0`.
+All `907427` zero-mask pixels equal B2D exactly, with maximum channel difference
+zero. Baseline drift is zero; normalized silhouette IoU `0.840783` remains
+telemetry. Full-size and 48px review preliminarily pass the head-worn-cowl and
+protected-property purpose; the compact hood-like crown awaits project-owner
+exact-output review. The queue returned to zero running / zero pending and both
+services were stopped. The request allowance is consumed, so re-entry is
+review-only and must not run another prompt.
 
 ### WP-015B0 Approval And Canonical Baseline
 

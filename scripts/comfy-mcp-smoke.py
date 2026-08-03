@@ -175,22 +175,35 @@ def main() -> int:
     parser.add_argument("--prompt")
     parser.add_argument("--seed", type=int)
     parser.add_argument("--reference-image")
+    parser.add_argument("--mask-image")
     parser.add_argument("--timeout", type=int, default=300)
     args = parser.parse_args()
-    if args.reference_image:
+    image_arguments = {
+        "--reference-image": args.reference_image,
+        "--mask-image": args.mask_image,
+    }
+    for argument_name, image_name in image_arguments.items():
+        if not image_name:
+            continue
         if args.profile != "flux2-klein":
-            raise RuntimeError("--reference-image is supported only by the closed flux2-klein profile.")
-        if not re.fullmatch(r"wormsport/[a-z0-9][a-z0-9._-]{0,63}\.(png|jpg|jpeg|webp)", args.reference_image):
+            raise RuntimeError(f"{argument_name} is supported only by the closed flux2-klein profile.")
+        if not re.fullmatch(r"wormsport/[a-z0-9][a-z0-9._-]{0,63}\.(png|jpg|jpeg|webp)", image_name):
             raise RuntimeError(
-                "--reference-image must be one safe wormsport/ filename returned by StageInput."
+                f"{argument_name} must be one safe wormsport/ filename returned by StageInput."
             )
+    if args.mask_image and not args.reference_image:
+        raise RuntimeError("--mask-image requires the exact staged --reference-image base.")
 
     tools_response = rpc(args.endpoint, "tools/list", {}, 1, min(args.timeout, 30))
     tools = tools_response.get("result", {}).get("tools", [])
     names = [tool.get("name") for tool in tools]
     profile_tools = {
         "sd15": ["generate_image", "generate_image_conditioned"],
-        "flux2-klein": ["generate_flux2_klein_text", "generate_flux2_klein_reference_edit"],
+        "flux2-klein": [
+            "generate_flux2_klein_text",
+            "generate_flux2_klein_reference_edit",
+            "generate_flux2_klein_protected_edit",
+        ],
     }
     required_tools = args.require_tool or profile_tools[args.profile]
     missing_tools = [name for name in required_tools if name not in names]
@@ -227,6 +240,15 @@ def main() -> int:
             "sampler_name": "euler",
             "scheduler": "normal",
             "denoise": 1.0,
+            "seed": seed,
+            "return_inline_preview": False,
+        }
+    elif args.mask_image:
+        tool_name = "generate_flux2_klein_protected_edit"
+        arguments = {
+            "prompt": prompt,
+            "reference_image": args.reference_image,
+            "mask_image": args.mask_image,
             "seed": seed,
             "return_inline_preview": False,
         }
@@ -325,6 +347,8 @@ def main() -> int:
         })
         if args.reference_image:
             settings["reference_image"] = args.reference_image
+        if args.mask_image:
+            settings["mask_image"] = args.mask_image
     print(json.dumps({
         "status": "pass",
         "profile": args.profile,

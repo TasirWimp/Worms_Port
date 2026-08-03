@@ -167,6 +167,49 @@ function compareImages(referencePath, candidatePath, options = {}) {
   };
 }
 
+function compareProtectedPixels(referencePath, candidatePath, maskPath) {
+  const reference = decodePng(referencePath);
+  const candidate = decodePng(candidatePath);
+  const mask = decodePng(maskPath);
+  if (reference.width !== candidate.width || reference.height !== candidate.height ||
+      reference.width !== mask.width || reference.height !== mask.height) {
+    throw new Error('Reference, candidate, and mask canvases must have equal dimensions.');
+  }
+
+  let protectedPixels = 0;
+  let mismatchedProtectedPixels = 0;
+  let maximumChannelDifference = 0;
+  for (let index = 0; index < reference.width * reference.height; index += 1) {
+    const maskOffset = index * mask.channels;
+    if (mask.pixels[maskOffset] !== 0) continue;
+    protectedPixels += 1;
+
+    const referenceOffset = index * reference.channels;
+    const candidateOffset = index * candidate.channels;
+    let pixelMatches = true;
+    for (let channel = 0; channel < 3; channel += 1) {
+      const difference = Math.abs(
+        reference.pixels[referenceOffset + channel] - candidate.pixels[candidateOffset + channel]
+      );
+      maximumChannelDifference = Math.max(maximumChannelDifference, difference);
+      if (difference !== 0) pixelMatches = false;
+    }
+    if (!pixelMatches) mismatchedProtectedPixels += 1;
+  }
+
+  return {
+    reference: path.resolve(referencePath),
+    candidate: path.resolve(candidatePath),
+    mask: path.resolve(maskPath),
+    canvas: { width: reference.width, height: reference.height },
+    protected_mask_rule: 'red channel equals zero',
+    protected_pixels: protectedPixels,
+    mismatched_protected_pixels: mismatchedProtectedPixels,
+    maximum_channel_difference: maximumChannelDifference,
+    exact_protected_pixels_pass: mismatchedProtectedPixels === 0
+  };
+}
+
 function parseArguments(args) {
   const values = {};
   for (let index = 0; index < args.length; index += 2) {
@@ -176,7 +219,7 @@ function parseArguments(args) {
     values[key.slice(2)] = value;
   }
   if (!values.reference || !values.candidate) {
-    throw new Error('Usage: node scripts/compare-character-silhouettes.js --reference <png> --candidate <png>');
+    throw new Error('Usage: node scripts/compare-character-silhouettes.js --reference <png> --candidate <png> [--mask <png>]');
   }
   return values;
 }
@@ -189,6 +232,9 @@ function main() {
     minimumIou: args['minimum-iou'] ? Number(args['minimum-iou']) : undefined,
     maximumBaselineDrift: args['maximum-baseline-drift'] ? Number(args['maximum-baseline-drift']) : undefined
   });
+  if (args.mask) {
+    result.protected_pixel_comparison = compareProtectedPixels(args.reference, args.candidate, args.mask);
+  }
   console.log(JSON.stringify(result, null, 2));
 }
 
@@ -201,4 +247,12 @@ if (require.main === module) {
   }
 }
 
-module.exports = { compareImages, createForegroundMask, decodePng, getBounds, intersectionOverUnion, normalizeMask };
+module.exports = {
+  compareImages,
+  compareProtectedPixels,
+  createForegroundMask,
+  decodePng,
+  getBounds,
+  intersectionOverUnion,
+  normalizeMask
+};

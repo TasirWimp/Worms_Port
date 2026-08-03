@@ -1096,8 +1096,8 @@ back, and warmer handcrafted character.
 
 ## WP-015B2E Protected-Property Masked-Edit Investigation
 
-Status: **source workflow and deterministic mask complete; activation review
-pending; no generation authorized**.
+Status: **one frozen protected edit completed; preliminary purpose pass;
+project-owner exact-output review pending; generation closed**.
 
 B2E investigated an interior/region-controlled edit that mediates between B2C's
 strong geometry and B2D's accepted cute styling. The goal remains to protect
@@ -1196,13 +1196,13 @@ Neither generated image was copied into the repository.
 
 | Field | Frozen value |
 | --- | --- |
-| Workflow | `generate_flux2_klein_protected_edit` candidate; currently not registered |
+| Workflow | exact `generate_flux2_klein_protected_edit`; closed-profile registration only |
 | Base/reference | exact B2D output `DEF9265D...AD00` |
 | Geometry review evidence | exact B2C output `5FF0A63D...B246`; not a model input |
 | Mask | exact tracked PNG `2B6C5F51...7425B` |
 | Seed | `15026005` |
-| Requests | one, only after a separate activation decision |
-| Output state | external quarantine only |
+| Requests | exactly one; project-owner activation approved after source/mask review |
+| Output state | completed external quarantine candidate `1275B2BD...D2E0`; no retry |
 
 Frozen prompt:
 
@@ -1214,7 +1214,7 @@ Frozen prompt:
 > handcrafted appeal. No weapon, staff, extra limb, extra face, floating hat,
 > text, logo, or rear shell.
 
-If later activated, preflight must exact-install and register only the reviewed
+Before execution, preflight must exact-install and register only the reviewed
 workflow, stage B2D and the tracked mask under two safe `wormsport/` names,
 verify their hashes, verify all model/workflow hashes and the low-VRAM/no-preview
 launch, and record a zero-running/zero-pending queue with B2D still newest.
@@ -1236,9 +1236,43 @@ One failure closes the gate. It authorizes no retry, seed shopping, mask edit,
 second reference, wider region, full-canvas fallback, alpha, animation, socket
 normalization, another Calling, or product promotion.
 
-The source graph remains `runtime_enabled: false`, is absent from the closed
-profile and external MCP workflow directory, and exposed no tool. The temporary
-schema-validation start ended with zero running and zero pending prompts, B2D
-still the newest output, and both services stopped. No source image or mask was
-staged and no inference ran. The next action is a project-owner activation
-review, not generation.
+### Single-request result
+
+The exact preflight verified all three model hashes, all three workflow hashes,
+the low-VRAM/no-preview launch, all three MCP tool registrations, staged B2D
+SHA-256 `DEF9265D...AD00`, staged mask SHA-256 `2B6C5F51...7425B`, an empty
+queue, and B2D as the newest output. The sole request then completed as follows:
+
+| Field | Recorded result |
+| --- | --- |
+| Comfy prompt ID | `d023da3f-77cf-4f05-ae7b-62ce66f1f176` |
+| Output | `WormsPortFlux2KleinProtectedEdit_00001_.png` |
+| Dimensions / bytes | 1024x1024 / 906000 |
+| SHA-256 | `1275B2BD8021EAA5C51AA0606A6CC20BA21B15ED6CEBC4A7C1FC76308BA9D2E0` |
+| Runtime | `308.956` seconds |
+| Host free RAM minimum | 5386878976 bytes |
+| Driver-reported free VRAM minimum | 3232272896 bytes |
+| Queue after completion | zero running / zero pending |
+| 48px review derivative | external PNG, SHA-256 `92524044C2B65179302D47EFF8092C97534E342C1DEA31F49023EC3C6F5C8964` |
+
+The result passed the hard preservation contract: all `907427` pixels whose
+mask red channel is zero match B2D exactly, with zero mismatched protected
+pixels and maximum RGB-channel difference zero. Baseline drift is zero;
+canvas IoU is `0.897468` and normalized silhouette IoU is `0.840783`. As
+approved, those silhouette values are drift telemetry rather than automatic
+art rejection.
+
+Preliminary full-size and 48px review passes the bounded purpose. The navy
+covering now visibly rests on and frames the head, joins the short neck drape,
+and remains legible at gameplay scale. The accepted eyes, eyebrows, mouth,
+body, belt/button, forward hand, feet, pose, and baseline are unchanged outside
+the mask. The crown is compact and hood-like rather than strongly pointed;
+that is a project-owner exact-output review point, not grounds for an automatic
+retry. No visible boundary seam invalidates the candidate.
+
+The candidate remains external quarantine and is not in `assets/` or the
+product asset manifest. The sole request allowance is consumed. Both local
+services are stopped, and no retry, further inference, prompt/seed/mask change,
+full-canvas fallback, normalization, alpha, animation, socket work, another
+Calling, or product promotion is authorized. The next action is project-owner
+review of this exact output.

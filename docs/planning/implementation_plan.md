@@ -8,8 +8,8 @@ Phaser/Socket.IO stack.
 ## Execution Pointer
 
 - Active target: mobile-first single-player Nimiq Pay competition release.
-- Active work package: **WP-015B2E protected-property masked-edit activation
-  review — source gate complete; no generation authorized**. The investigation
+- Active work package: **WP-015B2E protected-property masked edit — one frozen
+  request complete; exact-output project-owner review pending**. The investigation
   selected a pinned core-node route and produced a deterministic source-only
   candidate. Workflow
   `scripts/comfy-workflows/generate_flux2_klein_protected_edit.json` is a
@@ -25,9 +25,22 @@ Phaser/Socket.IO stack.
   base latent, applies `SetLatentNoiseMask`, and restores protected pixels with
   `ImageCompositeMasked`. B2C supplies the geometry review contract rather
   than a second memory-consuming and semantically ambiguous reference. The
-  source workflow remains `runtime_enabled: false`: it was not copied into the
-  external bridge, was not registered as an MCP tool, and no input was staged
-  or generated. `InpaintModelConditioning` is excluded because its own pinned
+  project owner approved the exact source workflow and mask after reviewing the
+  source gate. The workflow is now `runtime_enabled: true`, belongs to the
+  closed `flux2-klein` profile, and may be exact-installed as MCP tool
+  `generate_flux2_klein_protected_edit`. The one request against B2D completed
+  with the tracked mask, frozen seed `15026005`, and documented cowl-only
+  prompt as Comfy prompt `d023da3f-77cf-4f05-ae7b-62ce66f1f176` in `308.956`
+  seconds. External output SHA-256 is
+  `1275B2BD8021EAA5C51AA0606A6CC20BA21B15ED6CEBC4A7C1FC76308BA9D2E0`.
+  All `907427` zero-mask pixels match B2D exactly; baseline drift is zero and
+  normalized silhouette IoU `0.840783` remains drift telemetry. Preliminary
+  full-size and 48px review passes the head-worn cowl and protected-property
+  purpose. The crown is compact/hood-like rather than strongly pointed, so the
+  exact output awaits project-owner review. No retry, further inference, mask
+  widening, full-canvas fallback, normalization, another character, or
+  promotion is authorized.
+  `InpaintModelConditioning` is excluded because its own pinned
   schema warns that the noise-mask path can break depending on the model;
   experimental `DifferentialDiffusion` and all custom nodes are also excluded.
   WP-015B2D
@@ -39,9 +52,9 @@ Phaser/Socket.IO stack.
   `DEF9265DAA4C6F2799D16870205E2015291E3E4AAE0F61802349C9FD8D56AD00`
   with paired eyebrows and normalized silhouette IoU `0.880098`. The project
   owner accepts the eyebrows, body-width variation, and cuteness direction;
-  IoU is drift telemetry rather than automatic art authority. B2E must
-  investigate a reviewed interior/region-controlled workflow that mediates
-  between B2C geometry and B2D styling. Protect the recognisable angular body
+  IoU is drift telemetry rather than automatic art authority. B2E executed the
+  single reviewed interior edit that mediates between B2C geometry and B2D
+  styling. Protect the recognisable angular body
   family, a Wizard cowl/hat resting on the head, the usable forward Relic hand,
   exactly two eyes and one mouth, and friendly/cute readability. Paired stitched
   eyebrows are optional. Leave other local material, expression, costume, and
@@ -2368,6 +2381,18 @@ Sequential delivery slices:
     not a player-character direction or approved master. The mouth contract is
     amended to two bead eyes and one small neutral expression-ready mouth while
     historical prompts remain unchanged.
+  - **WP-015B2D Wizard cuteness and Calling styling — completed 2026-08-03:**
+    use the accepted B2C fitted-knit bytes once with seed `15026004` to improve
+    friendly appeal. The project owner accepts its paired eyebrows, moderate
+    body variation, and cuteness direction. Output `DEF9265D...AD00` remains
+    external evidence; its neck-wrap cowl required a protected local repair.
+  - **WP-015B2E Protected cowl edit — single request completed 2026-08-03;
+    exact-output owner review pending:** use B2D as the sole base/reference and
+    the exact tracked cowl mask in the core-only protected workflow. Seed
+    `15026005` produced external output `1275B2BD...D2E0`; every zero-mask pixel
+    equals B2D and the head covering now rests on the head at full size and
+    48px. The compact crown remains a creative review point. The one-request
+    allowance is consumed; no retry or promotion is implied.
 - **WP-015C First playable visual slice:** promote and integrate only approved
   Wizard, Loomkeeper, Threadball, and Patch assets. Prove one complete
   move/aim/fire/flight/impact/damage/result exchange at maintained phone

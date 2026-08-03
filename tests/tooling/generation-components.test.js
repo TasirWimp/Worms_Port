@@ -139,7 +139,7 @@ test('FLUX workflows keep their reviewed core topology and runtime states', () =
   textWorkflow.core_nodes_only = false;
   textWorkflow.model_components = ['different-model'];
   editWorkflow.source_template_revision = '0'.repeat(40);
-  protectedEditWorkflow.runtime_enabled = true;
+  protectedEditWorkflow.runtime_enabled = false;
 
   const errors = validateGenerationComponents(invalid).join('\n');
   assert.match(errors, /runtime-enabled/);
@@ -176,9 +176,9 @@ test('generation profiles reject arbitrary model, workflow, tool, and launch sel
   assert.match(validateGenerationComponents(policyInvalid).join('\n'), /profile selection must remain closed/);
 });
 
-test('WP-015B2E keeps the exact protected-edit workflow source-only and inference-blocked', () => {
+test('WP-015B2E records only the reviewed completed protected-edit request', () => {
   const profile = manifest.profiles.find((candidate) => candidate.id === 'flux2-klein');
-  assert.equal(profile.state, 'wizard_masked_edit_workflow_review_pending');
+  assert.equal(profile.state, 'wizard_protected_edit_generated_owner_review_pending');
   assert.match(profile.notes, /WP-015B2D/);
   assert.match(profile.notes, /DEF9265DAA4C6F2799D16870205E2015291E3E4AAE0F61802349C9FD8D56AD00/);
   assert.match(profile.notes, /15026004/);
@@ -186,16 +186,21 @@ test('WP-015B2E keeps the exact protected-edit workflow source-only and inferenc
   assert.match(profile.notes, /project owner/);
   assert.match(profile.notes, /AD4D4F96AD7D7C024A1A903A440DD4FE6D9E31353ACB7E436BF7DFC787321DAA/);
   assert.match(profile.notes, /2B6C5F51A6EA411BB8B9C40AF861A339622316CB1D9710719F7F0CDEC327425B/);
-  assert.match(profile.notes, /not profile-enabled/);
-  assert.match(profile.notes, /no inference/);
+  assert.match(profile.notes, /15026005/);
+  assert.match(profile.notes, /exactly one/);
+  assert.match(profile.notes, /1275B2BD8021EAA5C51AA0606A6CC20BA21B15ED6CEBC4A7C1FC76308BA9D2E0/);
+  assert.match(profile.notes, /d023da3f-77cf-4f05-ae7b-62ce66f1f176/);
+  assert.match(profile.notes, /907427/);
+  assert.match(profile.notes, /0\.840783/);
+  assert.match(profile.notes, /No retry/);
 
   const workflow = manifest.components.find(
     (component) => component.id === 'wormsport-flux2-klein-protected-edit-workflow'
   );
   assert.equal(workflow.input_mode, 'masked_image_to_image');
-  assert.equal(workflow.runtime_enabled, false);
-  assert.equal(profile.workflow_components.includes(workflow.id), false);
-  assert.equal(profile.required_mcp_tools.includes('generate_flux2_klein_protected_edit'), false);
+  assert.equal(workflow.runtime_enabled, true);
+  assert.equal(profile.workflow_components.includes(workflow.id), true);
+  assert.equal(profile.required_mcp_tools.includes('generate_flux2_klein_protected_edit'), true);
 
   const invalid = structuredClone(manifest);
   invalid.profiles.find((candidate) => candidate.id === 'flux2-klein').notes =
