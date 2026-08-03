@@ -102,7 +102,7 @@ test('project image-conditioned workflow is exact MIT source tooling', () => {
   assert.match(errors, /source_path/);
 });
 
-test('FLUX workflows stay reviewed, core-only, and runtime-disabled at Gate 2', () => {
+test('FLUX workflows stay reviewed, core-only, and profile-enabled at Gate 3', () => {
   const invalid = structuredClone(manifest);
   const textWorkflow = invalid.components.find(
     (component) => component.id === 'wormsport-flux2-klein-text-to-image-workflow'
@@ -111,14 +111,39 @@ test('FLUX workflows stay reviewed, core-only, and runtime-disabled at Gate 2', 
     (component) => component.id === 'wormsport-flux2-klein-reference-edit-workflow'
   );
 
-  textWorkflow.runtime_enabled = true;
+  textWorkflow.runtime_enabled = false;
   textWorkflow.core_nodes_only = false;
   textWorkflow.model_components = ['different-model'];
   editWorkflow.source_template_revision = '0'.repeat(40);
 
   const errors = validateGenerationComponents(invalid).join('\n');
-  assert.match(errors, /runtime-disabled/);
+  assert.match(errors, /profile-enabled/);
   assert.match(errors, /core_nodes_only/);
   assert.match(errors, /model component set/);
   assert.match(errors, /source_template_revision/);
+});
+
+test('generation profiles reject arbitrary model, workflow, tool, and launch selection', () => {
+  const invalid = structuredClone(manifest);
+  const fluxProfile = invalid.profiles.find((profile) => profile.id === 'flux2-klein');
+  fluxProfile.model_components = ['stable-diffusion-v1-5-archive-fp16'];
+  fluxProfile.workflow_components = ['comfyui-mcp-generate-image-workflow'];
+  fluxProfile.required_mcp_tools = ['run_workflow'];
+  fluxProfile.required_comfy_arguments = [];
+  invalid.profiles.push({
+    ...structuredClone(fluxProfile),
+    id: 'arbitrary-model'
+  });
+
+  const errors = validateGenerationComponents(invalid).join('\n');
+  assert.match(errors, /model component chain/);
+  assert.match(errors, /workflow component chain/);
+  assert.match(errors, /MCP tool registration set/);
+  assert.match(errors, /launch arguments/);
+  assert.match(errors, /arbitrary generation profiles are blocked/);
+  assert.match(errors, /profile count/);
+
+  const policyInvalid = structuredClone(manifest);
+  policyInvalid.policy.profile_selection = 'arbitrary';
+  assert.match(validateGenerationComponents(policyInvalid).join('\n'), /profile selection must remain closed/);
 });

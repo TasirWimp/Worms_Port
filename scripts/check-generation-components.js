@@ -128,6 +128,35 @@ const reviewedFluxModelComponents = [
   'flux2-klein-qwen3-4b-text-encoder',
   'flux2-vae'
 ];
+const reviewedProfileContracts = new Map([
+  ['sd15', {
+    state: 'approved_quarantined_generation',
+    modelComponents: ['stable-diffusion-v1-5-archive-fp16'],
+    workflowComponents: [
+      'comfyui-mcp-generate-image-workflow',
+      'wormsport-generate-image-conditioned-workflow'
+    ],
+    requiredMcpTools: ['generate_image', 'generate_image_conditioned'],
+    comfyLaunchMode: 'pinned_launcher',
+    requiredComfyArguments: [],
+    smokeTool: 'generate_image'
+  }],
+  ['flux2-klein', {
+    state: 'technical_smoke_pending',
+    modelComponents: reviewedFluxModelComponents,
+    workflowComponents: [
+      'wormsport-flux2-klein-text-to-image-workflow',
+      'wormsport-flux2-klein-reference-edit-workflow'
+    ],
+    requiredMcpTools: [
+      'generate_flux2_klein_text',
+      'generate_flux2_klein_reference_edit'
+    ],
+    comfyLaunchMode: 'lowvram_no_preview',
+    requiredComfyArguments: ['--lowvram', '--preview-method none'],
+    smokeTool: 'generate_flux2_klein_text'
+  }]
+]);
 
 function collectPlaceholders(value, result = []) {
   if (typeof value === 'string' && value.startsWith('PARAM_')) result.push(value);
@@ -156,6 +185,9 @@ function validateGenerationComponents(manifest, root = repoRoot) {
   }
   if (manifest?.policy?.project_workflow_distribution !== 'source_tooling_only_not_product_runtime') {
     errors.push('project workflows must remain source tooling and outside product runtime assets.');
+  }
+  if (manifest?.policy?.profile_selection !== 'closed_manifest_profiles_only') {
+    errors.push('generation profile selection must remain closed to manifest-defined profiles.');
   }
   if (manifest?.policy?.generated_output_state !== 'quarantined_candidate_until_exact_file_approval') {
     errors.push('generated output must remain quarantined until exact-file approval.');
@@ -265,6 +297,16 @@ function validateGenerationComponents(manifest, root = repoRoot) {
     if (!/^[0-9A-F]{64}$/.test(bridge.local_config_sha256 || '')) {
       errors.push(`${bridge.id}: local_config_sha256 must be exact.`);
     }
+    const expectedUntrackedPaths = [
+      '.venv/',
+      'logs/',
+      'workflows/generate_image_conditioned.json',
+      'workflows/generate_flux2_klein_reference_edit.json',
+      'workflows/generate_flux2_klein_text.json'
+    ];
+    if (!sameArray(bridge.allowed_untracked_paths, expectedUntrackedPaths)) {
+      errors.push(`${bridge.id}: allowed_untracked_paths must remain the exact reviewed runtime set.`);
+    }
     const lockPath = path.resolve(root, bridge.requirements_lock || '');
     if (!lockPath.startsWith(path.resolve(root) + path.sep) || !fs.existsSync(lockPath)) {
       errors.push(`${bridge.id}: requirements_lock must resolve inside the repository.`);
@@ -295,6 +337,9 @@ function validateGenerationComponents(manifest, root = repoRoot) {
     }
     if (!['text_to_image', 'image_to_image'].includes(workflow.input_mode)) {
       errors.push(`${workflow.id}: input_mode must disclose text_to_image or image_to_image.`);
+    }
+    if (workflow.runtime_enabled !== true) {
+      errors.push(`${workflow.id}: reviewed workflow must be runtime-enabled only through a closed profile.`);
     }
     if (workflow.distribution === 'project_source_tooling') {
       if (!/^scripts\/comfy-workflows\/[a-z0-9][a-z0-9._-]*\.json$/.test(workflow.source_path || '')) {
@@ -330,7 +375,7 @@ function validateGenerationComponents(manifest, root = repoRoot) {
       errors.push(`${workflow.id}: reviewed FLUX model component set changed.`);
     }
     if (workflow.core_nodes_only !== true) errors.push(`${workflow.id}: core_nodes_only must remain true.`);
-    if (workflow.runtime_enabled !== false) errors.push(`${workflow.id}: Gate 2 workflow must remain runtime-disabled.`);
+    if (workflow.runtime_enabled !== true) errors.push(`${workflow.id}: Gate 3 workflow must remain profile-enabled.`);
 
     const sourcePath = path.resolve(root, contract.sourcePath);
     if (!fs.existsSync(sourcePath)) continue;
@@ -394,6 +439,66 @@ function validateGenerationComponents(manifest, root = repoRoot) {
     }
   }
 
+  const profiles = manifest?.profiles;
+  if (!Array.isArray(profiles)) {
+    errors.push('profiles must be an array.');
+  } else {
+    const profileIds = new Set();
+    for (const profile of profiles) {
+      const label = profile?.id || '<missing profile id>';
+      if (!/^[a-z0-9][a-z0-9-]*$/.test(profile?.id || '')) errors.push(`${label}: invalid profile id.`);
+      if (profileIds.has(profile?.id)) errors.push(`${label}: duplicate profile id.`);
+      profileIds.add(profile?.id);
+      if (profile?.runtime_enabled !== true) errors.push(`${label}: reviewed profile must be runtime-enabled.`);
+      if (typeof profile?.notes !== 'string' || !profile.notes) errors.push(`${label}: missing profile notes.`);
+
+      const contract = reviewedProfileContracts.get(profile?.id);
+      if (!contract) {
+        errors.push(`${label}: arbitrary generation profiles are blocked.`);
+        continue;
+      }
+      if (profile.state !== contract.state) errors.push(`${label}: reviewed profile state changed.`);
+      if (!sameArray(profile.model_components, contract.modelComponents)) {
+        errors.push(`${label}: reviewed model component chain changed.`);
+      }
+      if (!sameArray(profile.workflow_components, contract.workflowComponents)) {
+        errors.push(`${label}: reviewed workflow component chain changed.`);
+      }
+      if (!sameArray(profile.required_mcp_tools, contract.requiredMcpTools)) {
+        errors.push(`${label}: reviewed MCP tool registration set changed.`);
+      }
+      if (profile.comfy_launch_mode !== contract.comfyLaunchMode) {
+        errors.push(`${label}: reviewed Comfy launch mode changed.`);
+      }
+      if (!sameArray(profile.required_comfy_arguments, contract.requiredComfyArguments)) {
+        errors.push(`${label}: reviewed Comfy launch arguments changed.`);
+      }
+      if (profile.smoke_tool !== contract.smokeTool ||
+          !contract.requiredMcpTools.includes(profile.smoke_tool)) {
+        errors.push(`${label}: reviewed smoke tool changed or is not registered by the profile.`);
+      }
+
+      for (const componentId of profile.model_components || []) {
+        const component = components.find((candidate) => candidate.id === componentId);
+        if (!component || !modelFileKinds.has(component.kind)) {
+          errors.push(`${label}: model component ${componentId} is missing or is not an exact model file.`);
+        }
+      }
+      for (const componentId of profile.workflow_components || []) {
+        const component = components.find((candidate) => candidate.id === componentId);
+        if (!component || component.kind !== 'generation_workflow' || component.runtime_enabled !== true) {
+          errors.push(`${label}: workflow component ${componentId} is missing or not runtime-enabled.`);
+        }
+      }
+    }
+    for (const profileId of reviewedProfileContracts.keys()) {
+      if (!profileIds.has(profileId)) errors.push(`missing required generation profile ${profileId}.`);
+    }
+    if (profiles.length !== reviewedProfileContracts.size) {
+      errors.push('generation profile count must remain closed to the reviewed set.');
+    }
+  }
+
   return errors;
 }
 
@@ -406,7 +511,7 @@ function main() {
     process.exitCode = 1;
     return;
   }
-  console.log(`Generation-component compliance passed (${manifest.components.length} component(s)).`);
+  console.log(`Generation-component compliance passed (${manifest.components.length} component(s), ${manifest.profiles.length} profile(s)).`);
 }
 
 if (require.main === module) main();

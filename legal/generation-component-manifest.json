@@ -4,10 +4,58 @@
   "policy": {
     "distribution": "external_not_bundled",
     "project_workflow_distribution": "source_tooling_only_not_product_runtime",
+    "profile_selection": "closed_manifest_profiles_only",
     "generated_output_state": "quarantined_candidate_until_exact_file_approval",
     "promotion_gate": "docs/asset-review-workflow.md",
     "product_asset_manifest": "legal/asset-manifest.json"
   },
+  "profiles": [
+    {
+      "id": "sd15",
+      "state": "approved_quarantined_generation",
+      "runtime_enabled": true,
+      "model_components": [
+        "stable-diffusion-v1-5-archive-fp16"
+      ],
+      "workflow_components": [
+        "comfyui-mcp-generate-image-workflow",
+        "wormsport-generate-image-conditioned-workflow"
+      ],
+      "required_mcp_tools": [
+        "generate_image",
+        "generate_image_conditioned"
+      ],
+      "comfy_launch_mode": "pinned_launcher",
+      "required_comfy_arguments": [],
+      "smoke_tool": "generate_image",
+      "notes": "Preserves the exact WP-015A/B0 SD 1.5 health-smoke and quarantined candidate route. It remains the default profile for backward-compatible pipeline calls."
+    },
+    {
+      "id": "flux2-klein",
+      "state": "technical_smoke_pending",
+      "runtime_enabled": true,
+      "model_components": [
+        "flux2-klein-4b-distilled-fp8",
+        "flux2-klein-qwen3-4b-text-encoder",
+        "flux2-vae"
+      ],
+      "workflow_components": [
+        "wormsport-flux2-klein-text-to-image-workflow",
+        "wormsport-flux2-klein-reference-edit-workflow"
+      ],
+      "required_mcp_tools": [
+        "generate_flux2_klein_text",
+        "generate_flux2_klein_reference_edit"
+      ],
+      "comfy_launch_mode": "lowvram_no_preview",
+      "required_comfy_arguments": [
+        "--lowvram",
+        "--preview-method none"
+      ],
+      "smoke_tool": "generate_flux2_klein_text",
+      "notes": "Gate 3 admits only exact runtime installation and registration for the two reviewed FLUX workflows. The profile requires CPU text-encoder offload through --lowvram and disables sampler previews. Its first inference remains the separate Gate 4 technical smoke."
+    }
+  ],
   "components": [
     {
       "id": "comfyui",
@@ -48,7 +96,9 @@
       "allowed_untracked_paths": [
         ".venv/",
         "logs/",
-        "workflows/generate_image_conditioned.json"
+        "workflows/generate_image_conditioned.json",
+        "workflows/generate_flux2_klein_reference_edit.json",
+        "workflows/generate_flux2_klein_text.json"
       ],
       "approved_uses": [
         "loopback-only MCP access to the separately installed ComfyUI API",
@@ -199,20 +249,20 @@
         "flux2-vae"
       ],
       "core_nodes_only": true,
-      "runtime_enabled": false,
+      "runtime_enabled": true,
       "license": "MIT",
       "license_evidence": "LICENSE",
       "distribution": "project_source_tooling",
       "approved_uses": [
-        "exact-hash review as a non-executable WP-015B2A source workflow",
-        "later one-image quarantined technical smoke only after the fail-closed runtime profile gate passes"
+        "exact-hash installation and MCP registration through the closed flux2-klein profile",
+        "one-image quarantined technical smoke in WP-015B2A Gate 4"
       ],
       "blocked_uses": [
-        "copying into the external MCP workflow directory before the runtime profile gate passes",
+        "copying into the external MCP workflow directory outside the exact profile installer",
         "changing the reviewed model filenames, four-step schedule, CFG 1, Euler sampler, 1024x1024 canvas, or batch size one without a new review and hash",
         "automatic publication into assets or product-asset approval"
       ],
-      "notes": "Project-owned API-format translation of the official pinned FLUX.2 Klein 4B distilled text-to-image graph. It uses only nodes confirmed by the local pinned ComfyUI object schema. Gate 2 records source bytes only; no FLUX generation was run and the workflow is not installed into the MCP bridge."
+      "notes": "Project-owned API-format translation of the official pinned FLUX.2 Klein 4B distilled text-to-image graph. It uses only nodes confirmed by the local pinned ComfyUI object schema. Gate 3 permits only exact-hash installation through the closed flux2-klein profile; no FLUX generation has run."
     },
     {
       "id": "wormsport-flux2-klein-reference-edit-workflow",
@@ -231,21 +281,21 @@
         "flux2-vae"
       ],
       "core_nodes_only": true,
-      "runtime_enabled": false,
+      "runtime_enabled": true,
       "license": "MIT",
       "license_evidence": "LICENSE",
       "distribution": "project_source_tooling",
       "approved_uses": [
-        "exact-hash review as a non-executable WP-015B2A single-reference source workflow",
-        "later one-image quarantined technical smoke with one explicitly staged reference only after the fail-closed runtime profile gate passes"
+        "exact-hash installation and MCP registration through the closed flux2-klein profile",
+        "later one-image quarantined reference diagnostic with one explicitly staged input only after technical admission"
       ],
       "blocked_uses": [
-        "copying into the external MCP workflow directory before the runtime profile gate passes",
+        "copying into the external MCP workflow directory outside the exact profile installer",
         "reading an arbitrary ComfyUI input filename that was not staged through the reviewed pipeline action",
         "changing the reviewed model filenames, one-megapixel reference bound, four-step schedule, CFG 1, Euler sampler, or batch size one without a new review and hash",
         "claiming multi-reference, ControlNet, IP-Adapter, style-transfer, or automatic product-asset approval"
       ],
-      "notes": "Project-owned API-format translation of the official pinned single-reference FLUX.2 Klein 4B distilled edit graph. It uses ReferenceLatent and only other nodes confirmed by the local pinned ComfyUI object schema. Gate 2 records source bytes only; no FLUX generation was run and the workflow is not installed into the MCP bridge."
+      "notes": "Project-owned API-format translation of the official pinned single-reference FLUX.2 Klein 4B distilled edit graph. It uses ReferenceLatent and only other nodes confirmed by the local pinned ComfyUI object schema. Gate 3 permits only exact-hash installation through the closed flux2-klein profile; no FLUX generation has run."
     },
     {
       "id": "comfyui-mcp-generate-image-workflow",
@@ -256,6 +306,7 @@
       "file_path": "workflows/generate_image.json",
       "file_sha256": "968A5B78766549BBAF374C1C27BE80B75E6BB389A01CCC237639DFB4EFCF3CD5",
       "input_mode": "text_to_image",
+      "runtime_enabled": true,
       "license": "Apache-2.0",
       "license_evidence": "https://github.com/joenorton/comfyui-mcp-server/blob/e0101b2312f30501664dabe4a74c1283c4268eb8/LICENSE",
       "distribution": "external_not_bundled",
@@ -278,6 +329,7 @@
       "version": "1",
       "file_sha256": "C21BD9224D08E1708073C3C11BFF749E4B901F5BE20EFE32245DAE6B489D3060",
       "input_mode": "image_to_image",
+      "runtime_enabled": true,
       "license": "MIT",
       "license_evidence": "LICENSE",
       "distribution": "project_source_tooling",

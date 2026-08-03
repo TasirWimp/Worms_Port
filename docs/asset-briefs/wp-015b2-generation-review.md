@@ -387,3 +387,47 @@ to the local pipeline, keep the SD 1.5 route intact, verify the full component
 and workflow chain before staging runtime copies, and reject arbitrary model or
 workflow selection. Do not run the RX 7600 technical smoke until that profile
 passes its own tooling and compliance checks.
+
+## WP-015B2A Gate 3 Result: Closed Runtime Profiles
+
+Review date: 2026-08-03. Status: **pass without inference; FLUX hardware route
+still not approved**.
+
+Gate 3 adds exactly two manifest-defined runtime profiles:
+
+| Profile | Exact model chain | Exact workflow chain | Required MCP tools | Launch mode |
+| --- | --- | --- | --- | --- |
+| `sd15` | archived SD 1.5 checkpoint | pinned generic text graph plus project VAE img2img graph | `generate_image`, `generate_image_conditioned` | existing pinned launcher |
+| `flux2-klein` | Gate 1 diffusion, encoder, and VAE | Gate 2 text and single-reference graphs | `generate_flux2_klein_text`, `generate_flux2_klein_reference_edit` | `--lowvram --preview-method none` |
+
+The pipeline parameter accepts only those two names. It runs the generation
+manifest compliance check before copying, rejects an unknown profile, maps
+each reviewed component kind to one fixed external model directory, verifies
+model size on every action, and verifies model SHA-256 during `Prepare`,
+`Start`, `Smoke`, or `Status -VerifyHashes`. Each workflow source and runtime
+copy is exact-hashed. The bridge's allowed untracked paths now contain only its
+virtual environment, logs, and the three exact project workflow copies.
+
+Local non-inference integration produced these results:
+
+- `Prepare -Profile sd15` verified the original checkpoint and both original
+  workflows. Its two MCP tools remained registered.
+- `Prepare -Profile flux2-klein` verified all 12.45 GB of reviewed FLUX model
+  bytes and installed both exact workflow copies. It truthfully reported the
+  old process as not profile-ready before restart.
+- `Start -Profile flux2-klein` safely restarted the reviewed loopback ComfyUI
+  and MCP processes. Runtime status reported ComfyUI 0.27.1, AMD Radeon RX 7600
+  native, LOW_VRAM launch readiness, and both exact FLUX tools registered.
+- A subsequent exact SD 1.5 status check passed, demonstrating that the old
+  route and default checkpoint were not replaced.
+- An arbitrary profile name failed parameter validation before script work.
+- The Comfy queue remained empty. The newest external output stayed
+  `WormsPortConditioned_00002_.png` from
+  `2026-08-02T19:31:17.8169394Z`; Gate 3 wrote no generated image.
+
+The FLUX workflows are now executable only through the closed reviewed profile,
+but no inference has occurred. Gate 3 does not establish that the 8 GB GPU can
+load or sample the complete chain. The next bounded action is one Gate 4
+fixed-seed technical text-to-image smoke. It must record runtime and memory
+behavior plus the exact quarantined output; it must not evaluate the B1 art
+briefs, use reference editing, or trigger product promotion.

@@ -908,6 +908,59 @@ make exact-hash installation and removal part of a named FLUX profile and must
 fail closed on any component, path-config, workflow, or profile drift while
 leaving the SD 1.5 smoke profile unchanged.
 
+### WP-015B2A Gate 3 Closed Profile Re-entry
+
+Gate 3 defines exactly two runtime profiles in
+`legal/generation-component-manifest.json`:
+
+- `sd15` preserves the archived checkpoint, generic text workflow, and
+  project-owned VAE img2img workflow. It remains the default when `-Profile`
+  is omitted.
+- `flux2-klein` binds the three exact Gate 1 model components and the two exact
+  Gate 2 workflows. It starts ComfyUI with `--lowvram --preview-method none`,
+  which places the pinned runtime in LOW_VRAM mode and keeps the text encoder
+  offloaded when the runtime does not use dynamic VRAM.
+
+The PowerShell parameter uses an exact `ValidateSet`; the manifest compliance
+gate also rejects any third profile, component substitution, workflow
+substitution, tool-name drift, or launch-argument drift. The pipeline invokes
+that compliance gate before copying a workflow. Project workflow bytes are
+then copied only to their reviewed external MCP runtime names and rehashed.
+Model files are size-checked on every action and SHA-256 checked by `Prepare`,
+`Start`, `Smoke`, or `Status -VerifyHashes`.
+
+Re-enter the FLUX profile without inference:
+
+```powershell
+Set-Location "C:\Users\jensb\Desktop\Projects\Worms_Port"
+.\scripts\comfy-asset-pipeline.ps1 -Action Prepare -Profile flux2-klein -Json
+.\scripts\comfy-asset-pipeline.ps1 -Action Start -Profile flux2-klein -Json
+.\scripts\comfy-asset-pipeline.ps1 -Action Status -Profile flux2-klein -VerifyHashes -Json
+```
+
+`Prepare` installs and exact-hashes the two reviewed workflow copies but does
+not restart services. `Start` safely restarts only a reviewed loopback ComfyUI
+process when the required low-VRAM/no-preview arguments are absent, and only a
+reviewed loopback MCP process when the profile tools are not registered.
+`Status` reports the selected model/workflow chain, launch readiness, and MCP
+registration. The SD route can be rechecked independently with:
+
+```powershell
+.\scripts\comfy-asset-pipeline.ps1 -Action Status -Profile sd15 -VerifyHashes -Json
+```
+
+Do not use `-Action Smoke -Profile flux2-klein` during Gate 3: it deliberately
+submits the fixed Gate 4 technical prompt. Do not invoke the generic MCP
+`run_workflow` tool, hand-edit the external workflow copies, change the MCP
+default checkpoint, or add model/path overrides. A reference for a later
+approved diagnostic may be staged with `StageInput -Profile flux2-klein`; that
+action returns the reviewed single-reference workflow ID and never generates
+by itself.
+
+Gate 3 passed locally with both exact profile chains, ComfyUI 0.27.1 on the AMD
+Radeon RX 7600, LOW_VRAM startup, both FLUX MCP tools registered, an empty
+Comfy queue, and no new output file. Gate 4 remains the first FLUX inference.
+
 ### WP-015B0 Approval And Canonical Baseline
 
 WP-015B0 is the no-product-output pre-production gate. A bounded technical

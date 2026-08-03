@@ -125,16 +125,47 @@
       "command": "npm run build (WP-015B2A Gate 2)",
       "status": "pass",
       "detail": "The complete compliance, TypeScript, server, and client build passed. The two FLUX graphs remained source-only, zero runtime assets were copied, and the existing Vite chunk-size warning remained unchanged."
+    },
+    {
+      "command": "Closed-profile Prepare/Start/Status integration (WP-015B2A Gate 3)",
+      "status": "pass",
+      "detail": "The default sd15 profile exact-verified its archived checkpoint and two workflow hashes. The flux2-klein profile exact-verified 12,451,819,924 model bytes across the three Gate 1 hashes, exact-installed both Gate 2 workflow copies, safely restarted only reviewed loopback services, and reported ComfyUI 0.27.1 on the native AMD Radeon RX 7600 with LOW_VRAM launch readiness and previews disabled. The reviewed Stop/Start lifecycle also passed from a fully stopped state. A subsequent exact sd15 status pass proved the original route and MCP default checkpoint remained intact."
+    },
+    {
+      "command": "MCP profile registration and no-inference review (WP-015B2A Gate 3)",
+      "status": "pass",
+      "detail": "The restarted pinned bridge exposed generate_flux2_klein_text and generate_flux2_klein_reference_edit while retaining generate_image and generate_image_conditioned. The profile probe returned ready with 20 total MCP tools. No tools/call request was made: ComfyUI reported zero running and zero pending prompts, and the newest external output remained the rejected WormsPortConditioned_00002_.png from 2026-08-02T19:31:17.8169394Z."
+    },
+    {
+      "command": "Arbitrary generation-profile rejection (WP-015B2A Gate 3)",
+      "status": "pass",
+      "detail": "PowerShell parameter validation rejected profile name arbitrary before script work. Manifest compliance separately fixes the profile count at two and rejects model-chain, workflow-chain, MCP-tool, launch-mode, and low-VRAM/no-preview argument drift before runtime workflow copying."
+    },
+    {
+      "command": "npm run test:tooling (WP-015B2A Gate 3)",
+      "status": "pass",
+      "detail": "All 27 tooling tests passed, including exact closed-profile contracts and rejection coverage for arbitrary model, workflow, MCP tool, launch argument, and third-profile selection."
+    },
+    {
+      "command": "npm run check:compliance (WP-015B2A Gate 3)",
+      "status": "pass",
+      "detail": "Asset, generation-component, import-boundary, package-license, work-package, and clean-room checks passed with ten reviewed generation components, two closed profiles, 21 evidence records, and zero clean-room records."
+    },
+    {
+      "command": "npm run build (WP-015B2A Gate 3)",
+      "status": "pass",
+      "detail": "The complete compliance, TypeScript, server, and client build passed. Zero runtime product assets were copied, and the existing Vite chunk-size warning remained unchanged."
     }
   ],
   "skipped_checks": [
-    "The phone-browser matrix was not run for WP-015B0, WP-015B1, or WP-015B2A Gates 1-2 because these slices change only the offline generation pipeline, documentation, compliance metadata, and external quarantined component state; they change no browser-facing code or runtime asset.",
-    "Real-device testing was not run because WP-015B0, WP-015B1, and WP-015B2A Gates 1-2 create no player-visible behavior or product media."
+    "The phone-browser matrix was not run for WP-015B0, WP-015B1, or WP-015B2A Gates 1-3 because these slices change only the offline generation pipeline, documentation, compliance metadata, and external quarantined component state; they change no browser-facing code or runtime asset.",
+    "Real-device testing was not run because WP-015B0, WP-015B1, and WP-015B2A Gates 1-3 create no player-visible behavior or product media.",
+    "FLUX inference was not run in Gate 3 because the separate Gate 4 technical smoke must record runtime, memory behavior, and exact output evidence as its own bounded review."
   ],
   "residual_risks": [
     "The reviewed image-conditioned graph is ordinary VAE img2img, not IP-Adapter or ControlNet; strong composition changes require an isolated master and carefully chosen denoise.",
     "The current SD 1.5 checkpoint did not reliably follow the dense B1 character, Relic, and environment prompts. Its rejected prompts, seeds, settings, and outputs remain historical evidence; they are not silently reused for another model architecture.",
-    "WP-015B2A Gates 1-2 admit exactly three external FLUX.2 component files and two runtime-disabled native source workflows, but no fail-closed pipeline profile, executable route, hardware route, prompt contract, generated output, or product asset is approved yet.",
+    "WP-015B2A Gates 1-3 admit exactly three external FLUX.2 component files, two native workflows, and one closed executable profile, but no hardware inference result, prompt contract, generated FLUX output, visual-route adoption, or product asset is approved yet.",
     "Official ComfyUI documentation reports about 8.4 GB VRAM for the distilled route on an RTX 5090. The actual Windows AMD RX 7600 has 8 GB, so offloaded execution, stability, runtime, and visual usefulness remain unproven local gates.",
     "No WP-015B2 output currently passes exact-output art/IP review; candidate acceptance, npm audit, and final self-review remain pending before WP-015B can close."
   ]
