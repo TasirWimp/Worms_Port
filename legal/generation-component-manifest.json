@@ -32,7 +32,7 @@
     },
     {
       "id": "flux2-klein",
-      "state": "technical_smoke_pending",
+      "state": "hardware_admitted_visual_pending",
       "runtime_enabled": true,
       "model_components": [
         "flux2-klein-4b-distilled-fp8",
@@ -53,7 +53,7 @@
         "--preview-method none"
       ],
       "smoke_tool": "generate_flux2_klein_text",
-      "notes": "Gate 3 admits only exact runtime installation and registration for the two reviewed FLUX workflows. The profile requires CPU text-encoder offload through --lowvram and disables sampler previews. Its first inference remains the separate Gate 4 technical smoke."
+      "notes": "Gate 4 technically admits the exact closed profile on the Windows AMD Radeon RX 7600 8 GB route after one fixed-seed 1024x1024 smoke completed in 254.42 seconds without OOM, error, retry, or model fallback. CPU text-encoder offload through --lowvram and disabled previews remain mandatory. Visual usefulness and route adoption remain pending Gate 5 and Gate 6."
     }
   ],
   "components": [
@@ -149,14 +149,16 @@
       "distribution": "external_not_bundled",
       "approved_uses": [
         "external quarantined WP-015B2A native-workflow construction and exact-hash review",
-        "later batch-one technical smoke only after the workflow and fail-closed profile gates pass"
+        "the completed one-image WP-015B2A Gate 4 technical smoke",
+        "one-image-at-a-time Wizard and Threadball visual admission in WP-015B2A Gate 5"
       ],
       "blocked_uses": [
-        "candidate generation before the remaining WP-015B2A gates pass",
+        "candidate generation outside the sequential bounded WP-015B2A Gate 5 visual admission",
+        "batch candidate generation before explicit route adoption",
         "redistribution with Worms_Port or storage below assets",
         "product asset promotion without separate exact-output review"
       ],
-      "notes": "The locally verified file size and SHA-256 match the canonical BFL LFS object at the pinned revision. Gate 1 admits only this external component; it does not approve a FLUX workflow, model route, generated output, or product asset."
+      "notes": "The locally verified file size and SHA-256 match the canonical BFL LFS object at the pinned revision. Gates 1-4 admit this component, its closed workflow profile, and one successful technical smoke; they do not approve visual-route adoption, any exact generated output as product media, or redistribution."
     },
     {
       "id": "flux2-klein-qwen3-4b-text-encoder",
@@ -195,11 +197,13 @@
       "distribution": "external_not_bundled",
       "approved_uses": [
         "external quarantined WP-015B2A native-workflow construction and exact-hash review",
-        "later batch-one technical smoke only after the workflow and fail-closed profile gates pass"
+        "the completed one-image WP-015B2A Gate 4 technical smoke",
+        "one-image-at-a-time Wizard and Threadball visual admission in WP-015B2A Gate 5"
       ],
       "blocked_uses": [
         "using the rejected pre-release Comfy mirror in the reviewed route",
-        "candidate generation before the remaining WP-015B2A gates pass",
+        "candidate generation outside the sequential bounded WP-015B2A Gate 5 visual admission",
+        "batch candidate generation before explicit route adoption",
         "redistribution with Worms_Port or storage below assets"
       ],
       "notes": "This single-file encoder was built externally from the two exact BFL Apache-2.0 shards without tensor conversion. The reviewed output is installed outside the repository; neither source weights nor merged bytes are distributed with Worms_Port."
@@ -223,10 +227,12 @@
       "distribution": "external_not_bundled",
       "approved_uses": [
         "external quarantined WP-015B2A native-workflow construction and exact-hash review",
-        "later batch-one technical smoke only after the workflow and fail-closed profile gates pass"
+        "the completed one-image WP-015B2A Gate 4 technical smoke",
+        "one-image-at-a-time Wizard and Threadball visual admission in WP-015B2A Gate 5"
       ],
       "blocked_uses": [
-        "candidate generation before the remaining WP-015B2A gates pass",
+        "candidate generation outside the sequential bounded WP-015B2A Gate 5 visual admission",
+        "batch candidate generation before explicit route adoption",
         "redistribution with Worms_Port or storage below assets",
         "treating the containing FLUX.2-dev model license as permission for non-autoencoder model weights"
       ],
@@ -255,14 +261,15 @@
       "distribution": "project_source_tooling",
       "approved_uses": [
         "exact-hash installation and MCP registration through the closed flux2-klein profile",
-        "one-image quarantined technical smoke in WP-015B2A Gate 4"
+        "one-image quarantined technical smoke in WP-015B2A Gate 4",
+        "one-image-at-a-time Wizard and Threadball visual admission in WP-015B2A Gate 5"
       ],
       "blocked_uses": [
         "copying into the external MCP workflow directory outside the exact profile installer",
         "changing the reviewed model filenames, four-step schedule, CFG 1, Euler sampler, 1024x1024 canvas, or batch size one without a new review and hash",
         "automatic publication into assets or product-asset approval"
       ],
-      "notes": "Project-owned API-format translation of the official pinned FLUX.2 Klein 4B distilled text-to-image graph. It uses only nodes confirmed by the local pinned ComfyUI object schema. Gate 3 permits only exact-hash installation through the closed flux2-klein profile; no FLUX generation has run."
+      "notes": "Project-owned API-format translation of the official pinned FLUX.2 Klein 4B distilled text-to-image graph. It uses only nodes confirmed by the local pinned ComfyUI object schema. Gate 4 completed one exact-profile technical smoke without OOM, retry, or fallback; its output remains external quarantine evidence and does not approve visual-route adoption or product media."
     },
     {
       "id": "wormsport-flux2-klein-reference-edit-workflow",
@@ -295,7 +302,7 @@
         "changing the reviewed model filenames, one-megapixel reference bound, four-step schedule, CFG 1, Euler sampler, or batch size one without a new review and hash",
         "claiming multi-reference, ControlNet, IP-Adapter, style-transfer, or automatic product-asset approval"
       ],
-      "notes": "Project-owned API-format translation of the official pinned single-reference FLUX.2 Klein 4B distilled edit graph. It uses ReferenceLatent and only other nodes confirmed by the local pinned ComfyUI object schema. Gate 3 permits only exact-hash installation through the closed flux2-klein profile; no FLUX generation has run."
+      "notes": "Project-owned API-format translation of the official pinned single-reference FLUX.2 Klein 4B distilled edit graph. It uses ReferenceLatent and only other nodes confirmed by the local pinned ComfyUI object schema. Gate 4 did not run this graph; at most one explicitly reviewed and staged reference edit remains available only inside the sequential Gate 5 visual admission."
     },
     {
       "id": "comfyui-mcp-generate-image-workflow",

@@ -431,3 +431,67 @@ load or sample the complete chain. The next bounded action is one Gate 4
 fixed-seed technical text-to-image smoke. It must record runtime and memory
 behavior plus the exact quarantined output; it must not evaluate the B1 art
 briefs, use reference editing, or trigger product promotion.
+
+## WP-015B2A Gate 4 Result: RX 7600 Technical Smoke
+
+Review date: 2026-08-03. Status: **technical pass; hardware route admitted,
+visual route not adopted**.
+
+Exactly one MCP generation request ran through the closed `flux2-klein`
+profile. There was no retry, reference input, reference-edit call, asset prompt,
+seed search, or second queued job. Its fixed contract was:
+
+| Field | Value |
+| --- | --- |
+| MCP tool | `generate_flux2_klein_text` |
+| Prompt | `WP-015B2A Gate 4 technical smoke: one flat cyan circle centered on a plain white background` |
+| Prompt ID | `54eb2c85-54dc-44a9-a036-07f4fa2f8bd0` |
+| Seed | `15025000` |
+| Canvas / batch | 1024x1024 / 1 |
+| Schedule | 4 FLUX.2 scheduler steps, CFG 1, Euler |
+| Launch boundary | `--lowvram --preview-method none`, inline preview disabled |
+
+ComfyUI reported terminal `success` after 254.42 seconds. Its log recorded the
+Qwen text encoder loaded on CPU, the diffusion model loaded partially with
+2,964.02 MB resident, 918.00 MB offloaded, and a 243.00 MB reserved buffer, and
+the 160.31 MB VAE loaded completely. Sampling itself completed four of four
+steps in about 7.56 seconds; most wall time was initial component loading and
+offload work. There was no OOM, node error, cancellation, alternate model,
+workflow fallback, or cached-node reuse.
+
+The system-stat sample began with 20,469,755,904 bytes of free host RAM and
+observed a minimum of 4,422,750,208 bytes. The extended driver sample observed
+4,820,218,368 bytes as its minimum free VRAM. The same driver later reported a
+free-VRAM value above its nominal total, so those VRAM samples are approximate
+operational telemetry; the Comfy load/offload log is the stronger evidence for
+the actual execution plan. These measurements describe this Windows driver and
+process state and are not a general minimum-hardware claim.
+
+The one saved output is external quarantine evidence only:
+
+```text
+C:\Users\jensb\AppData\Local\Comfy-Desktop\ComfyUI-Shared\output\WormsPortFlux2KleinText_00001_.png
+1024x1024, 423534 bytes
+SHA-256 CFCDDB3E74B1B3B2E1082571BA54F0F37F603E563902B6DDB8397DEA7C1516F4
+```
+
+The PNG signature and dimensions passed validation, and the final Comfy queue
+contained zero running and zero pending jobs. It was not copied to `assets/`,
+entered in the product asset manifest, or judged against the Wizard,
+Threadball, or Patch briefs.
+
+The MCP bridge returned an interim `running` response after its internal
+30-second history window and logged that expected warning while the same Comfy
+prompt continued. This was not treated as success until terminal Comfy history
+reported completion. The pipeline smoke helper now polls that same prompt ID
+to a terminal success/error/timeout state while continuing telemetry; it never
+automatically retries or cancels a timed-out prompt.
+
+Gate 4 therefore proves that the exact reviewed chain can complete one
+batch-one generation on the local RX 7600 8 GB route. It does not prove useful
+art-direction following, transparent extraction, repeatability across drivers,
+reference-edit quality, route adoption, or product-asset approval. The next
+bounded action is Gate 5 only: run and review one short-prompt Wizard structure
+pass, then run and review one short-prompt Threadball structure pass. At most
+one controlled reference edit may follow a clearly diagnosed failure; no other
+purpose or batch may be queued.

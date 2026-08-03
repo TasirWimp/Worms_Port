@@ -875,12 +875,11 @@ Do not use the official Comfy guide's pre-release
 final-layer tensors, and its repository does not provide exact license or
 provenance linkage. It is retained only as rejected evidence.
 
-Gate 1 remains component-only. Gate 2 added the two exact source workflows
-described below, but the current `Prepare`, `Status`, `Start`, and `Smoke`
-actions still describe and verify the approved SD 1.5 route; they do not yet
-admit or verify FLUX.2. Do not change the bridge default model, hand an
-arbitrary FLUX graph to `run_workflow`, or generate an image. Gate 3 must first
-add the separate fail-closed pipeline profile.
+Gate 1 remained component-only. At Gate 2 close, the two exact source workflows
+described below were still absent from the runtime and the pipeline still
+described only SD 1.5. Gate 3 subsequently added the separate fail-closed
+profile; the historical Gate 1 boundary does not authorize changing the bridge
+default model or handing an arbitrary FLUX graph to `run_workflow`.
 
 ### WP-015B2A Gate 2 Runtime-Disabled Workflow State
 
@@ -900,13 +899,13 @@ filenames, four steps, CFG 1, Euler, and batch size one. The text route is fixed
 at 1024x1024. The edit route accepts one staged reference, bounds it to one
 megapixel, and derives the canvas size from that reference.
 
-`legal/generation-component-manifest.json` intentionally records both with
-`runtime_enabled: false`. Their `runtime_path` values document the later Gate 3
-copy targets; the files must not yet exist in the external bridge `workflows`
-directory. Do not copy them manually or use generic `run_workflow`. Gate 3 must
-make exact-hash installation and removal part of a named FLUX profile and must
-fail closed on any component, path-config, workflow, or profile drift while
-leaving the SD 1.5 smoke profile unchanged.
+At Gate 2 close, `legal/generation-component-manifest.json` intentionally
+recorded both with `runtime_enabled: false`; their `runtime_path` values only
+documented the proposed Gate 3 copy targets. Gate 3 subsequently switched the
+same exact-hashed records to profile-owned runtime installation. They still
+must not be copied manually or invoked through generic `run_workflow`; the named
+profile owns exact installation, removal, and drift rejection while leaving the
+SD 1.5 smoke profile unchanged.
 
 ### WP-015B2A Gate 3 Closed Profile Re-entry
 
@@ -959,7 +958,48 @@ by itself.
 
 Gate 3 passed locally with both exact profile chains, ComfyUI 0.27.1 on the AMD
 Radeon RX 7600, LOW_VRAM startup, both FLUX MCP tools registered, an empty
-Comfy queue, and no new output file. Gate 4 remains the first FLUX inference.
+Comfy queue, and no new output file. Gate 4 then supplied the separately
+recorded first FLUX inference below.
+
+### WP-015B2A Gate 4 Technical-Smoke Re-entry
+
+Gate 4 passed on 2026-08-03 with exactly one fixed-seed request through
+`generate_flux2_klein_text`. Comfy terminal history for prompt
+`54eb2c85-54dc-44a9-a036-07f4fa2f8bd0` reported success in 254.42 seconds on
+the native AMD Radeon RX 7600. The reviewed low-VRAM/no-preview launch partially
+loaded the diffusion model, offloaded 918.00 MB, and completed without OOM,
+node error, retry, or model fallback.
+
+The exact external evidence file is:
+
+```text
+C:\Users\jensb\AppData\Local\Comfy-Desktop\ComfyUI-Shared\output\WormsPortFlux2KleinText_00001_.png
+1024x1024, 423534 bytes
+CFCDDB3E74B1B3B2E1082571BA54F0F37F603E563902B6DDB8397DEA7C1516F4
+```
+
+Do not rerun `-Action Smoke -Profile flux2-klein` merely to re-enter this
+state; that action submits a new image. Re-enter read-only with:
+
+```powershell
+Set-Location "C:\Users\jensb\Desktop\Projects\Worms_Port"
+.\scripts\comfy-asset-pipeline.ps1 -Action Status -Profile flux2-klein -VerifyHashes -Json
+python .\scripts\comfy-mcp-smoke.py --profile flux2-klein --probe
+```
+
+The bridge can return an interim `running` result after its own 30-second
+history window even though Comfy is healthy. `comfy-mcp-smoke.py` now retains
+the same prompt ID, polls Comfy history until terminal success/error/timeout,
+and collects system telemetry for the complete wait. It reports `pass` only
+after terminal success. A timeout does not retry or cancel the prompt; inspect
+the queue and history before considering any subsequent request.
+
+Gate 4 is hardware admission only. Gate 5 must proceed sequentially: document
+one short FLUX-specific Wizard structure prompt/seed, submit one text output,
+and review it before documenting or submitting the Threadball structure pass.
+Only after both primary reviews may a single controlled reference edit be
+considered, and only when a failed primary gives a specific testable correction.
+Do not queue Loomkeeper, Patch, animation, roster, or promotion work.
 
 ### WP-015B0 Approval And Canonical Baseline
 

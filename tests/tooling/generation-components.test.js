@@ -102,7 +102,7 @@ test('project image-conditioned workflow is exact MIT source tooling', () => {
   assert.match(errors, /source_path/);
 });
 
-test('FLUX workflows stay reviewed, core-only, and profile-enabled at Gate 3', () => {
+test('FLUX workflows stay reviewed, core-only, and closed-profile enabled', () => {
   const invalid = structuredClone(manifest);
   const textWorkflow = invalid.components.find(
     (component) => component.id === 'wormsport-flux2-klein-text-to-image-workflow'
@@ -130,6 +130,7 @@ test('generation profiles reject arbitrary model, workflow, tool, and launch sel
   fluxProfile.workflow_components = ['comfyui-mcp-generate-image-workflow'];
   fluxProfile.required_mcp_tools = ['run_workflow'];
   fluxProfile.required_comfy_arguments = [];
+  fluxProfile.state = 'technical_smoke_pending';
   invalid.profiles.push({
     ...structuredClone(fluxProfile),
     id: 'arbitrary-model'
@@ -140,6 +141,7 @@ test('generation profiles reject arbitrary model, workflow, tool, and launch sel
   assert.match(errors, /workflow component chain/);
   assert.match(errors, /MCP tool registration set/);
   assert.match(errors, /launch arguments/);
+  assert.match(errors, /profile state changed/);
   assert.match(errors, /arbitrary generation profiles are blocked/);
   assert.match(errors, /profile count/);
 
