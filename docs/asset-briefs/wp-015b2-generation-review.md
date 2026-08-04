@@ -1665,7 +1665,7 @@ Patch request, animation, atlas, or runtime integration is authorized.
 
 ## WP-015B3A Patch Source-Contract Gate
 
-Status: **contract frozen; no Patch request has run**.
+Status: **Cloud request completed; owner visual decision pending**.
 
 The historical SD 1.5 Patch cloud, terrain-top, and terrain-interior outputs are
 rejected external evidence only. Their prompts and seeds cannot be retried under
@@ -1682,5 +1682,14 @@ exclusion set, sequential ordering, protected properties, rejection examples,
 and stop rule. The frozen order is Cloud, then Terrain Top, then Terrain
 Interior. Each requires a new fail-closed component/workflow/service/empty-queue
 preflight, visual review, and explicit continuation; a failure pauses the whole
-Patch family. No candidate, output path, hash, normalization configuration,
-source master, product-manifest entry, atlas, or runtime integration exists yet.
+Patch family. Cloud completed as prompt `0936905b-fb40-47e9-a621-8106e4382a93`
+in 255.665 seconds, producing untouched external 1024x1024 RGB24 output
+`WormsPortFlux2KleinText_00007_.png` (688,501 bytes, SHA-256
+`EA972B0B884AE5D144C74AE01E490E9C8961A42619172060C11F53925D48FFE7`).
+It has one connected off-white three-pom-pom crochet cluster, clean isolation,
+and no forbidden subject, text, logo, scenery, or contact plane. At full size it
+is more compact and pom-pom-like than a very low cloud; a non-promotional
+whole-canvas 48px review (`E16B9D8D...7CCEF`) remains quiet. The direction is
+reserved for project-owner judgment. No Cloud normalizer, source master,
+product-manifest entry, Terrain Top request, atlas, or runtime integration
+exists or is authorized while that decision is pending.

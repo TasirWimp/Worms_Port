@@ -121,9 +121,9 @@ If the user asks only for planning, review, or brainstorming, do not edit code.
   the Threadball. The separate Patch source contract is frozen: Cloud,
   Terrain Top, and Terrain Interior use text-only/no-reference seeds
   `15035002` through `15035004` under the pinned FLUX workflow. It authorizes
-  no Patch inference in the contract commit; the next eligible request is Cloud
-  only after fresh fail-closed preflight and explicit continuation. Review it
-  before Terrain Top, then Terrain Interior. FLUX provides textile source
+  no Patch inference in the contract commit. Cloud has now run once as external
+  candidate `EA972B0B...FFE7` and awaits project-owner visual direction; it may
+  not be normalized or followed by Terrain Top. FLUX provides textile source
   imagery only; later deterministic normalizers must prove alpha/repeatability.
   B3A may not generate a distinct Loomkeeper, assign the Wizard a runtime path,
   or silently generate another Wizard or Threadball.

@@ -557,8 +557,8 @@ or hit detection.
 | Settings | 1024x1024, batch 1, 4 FLUX.2 scheduler steps, CFG 1, Euler |
 | Reference input | none; no historical Patch output, Wizard, Threadball, Gemini concept, or external artwork may be staged or conditioned on |
 | Output location | external `WormsPortFlux2KleinText` Comfy output prefix only |
-| Current state | contract freeze only; no Patch request has run and no source master, product asset, runtime path, atlas, or gameplay integration exists |
-| Sequencing | run Cloud first only after fail-closed preflight and an explicit continuation; review and close that result before considering Terrain Top, then repeat for Terrain Interior |
+| Current state | Cloud has one quarantined external candidate pending owner decision; no normalizer, source master, product asset, runtime path, atlas, or gameplay integration exists |
+| Sequencing | review and close Cloud before freezing its normalizer or considering Terrain Top; then repeat the same gate for Terrain Interior |
 | Stop rule | stop the family on a component/workflow/service/queue failure, rejected candidate, or missing deterministic-normalization plan; no batch, seed shopping, reference edit, prompt repair, or automatic next request |
 
 The shared exclusion set is: character, creature, face, hands, Relic, weapon,
@@ -582,6 +582,19 @@ Exact positive prompt:
 ```text
 One isolated low horizontal cotton cloud layer for a mobile-game sky, centered on a plain white background: three overlapping soft off-white crochet pompoms form one connected calm cloud with a wide rounded silhouette, subtle visible fibers, even soft studio light, and generous padding. No separate cloud, scenery, horizon, ground, shadow, character, text, logo, icon, frame, weather, stars, rainbow, sun, moon, or dramatic lighting.
 ```
+
+The one authorized Cloud request completed as Comfy prompt
+`0936905b-fb40-47e9-a621-8106e4382a93` in 255.665 seconds. It produced the
+external, untouched 688,501-byte 1024x1024 RGB24 PNG
+`WormsPortFlux2KleinText_00007_.png`, SHA-256
+`EA972B0B884AE5D144C74AE01E490E9C8961A42619172060C11F53925D48FFE7`.
+Primary triage finds one connected off-white three-pom-pom crochet cluster on a
+clean white field, with no text, logo, character, scenery, or contact plane. Its
+full-size reading is more compact and pom-pom-like than a very low horizontal
+cloud; the non-promotional whole-canvas 48px review remains quiet but cannot
+decide that Calling-level art-direction judgment. It is therefore external
+quarantine pending project-owner visual decision. Do not normalize, crop, alpha
+extract, promote, retry, repair, generate Terrain Top, or integrate it.
 
 #### Gate 2: terrain-top textile source
 

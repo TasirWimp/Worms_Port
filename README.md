@@ -266,9 +266,11 @@ Terrain Interior (`15035004`), each under the same pinned FLUX workflow/settings
 and each requiring fresh preflight, review, and explicit continuation. FLUX can
 provide textile source imagery only; a later deterministic normalizer must prove
 Cloud alpha handling and terrain repeatability before any source-master approval.
-No Patch request has run yet. WP-015B3B separately admits a Wizard-first
-animation route, and B3C produces one Wizard inventory that WP-015C reuses for
-both the player and the AI Loomkeeper. A
+The one Cloud request completed as external candidate `EA972B0B...FFE7`; it is
+pending owner visual direction, so neither Cloud normalization nor Terrain Top
+generation is authorized. WP-015B3B separately admits a Wizard-first animation
+route, and B3C produces one Wizard inventory that WP-015C reuses for both the
+player and the AI Loomkeeper. A
 distinct Loomkeeper asset belongs to the wider character roster in WP-015D.
 WP-015C remains integration-only and begins only when the simplified vertical-
 slice inventory is manifest-approved. The Celestial Spinning Mill, Worldweave,

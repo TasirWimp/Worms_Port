@@ -30,13 +30,15 @@ Phaser/Socket.IO stack.
   evidence and contributes no pixels or conditioning. The decomposed Patch
   contract is now frozen: its text-only Cloud, Terrain Top, and Terrain Interior
   gates use seeds `15035002` through `15035004`, no references, and the pinned
-  FLUX workflow/settings. Its next eligible action is Cloud only after a fresh
-  fail-closed preflight and explicit continuation; review it before considering
-  Terrain Top, then Terrain Interior. FLUX outputs are textile source imagery,
-  never a promise of tile seams or collision geometry; deterministic later
-  normalizers must prove the Cloud alpha and terrain repeat tests. No distinct
-  Loomkeeper, batch, animation upload, source-master promotion, or runtime
-  integration belongs in B3A at this gate.
+  FLUX workflow/settings. The one Cloud request completed as external output
+  `EA972B0B...FFE7` and is now owner-decision-pending: it passes clean-isolation
+  and forbidden-content triage but is compact and pom-pom-like rather than a
+  clearly low cloud. Do not normalize it or consider Terrain Top until that
+  decision. FLUX outputs are textile source imagery, never a promise of tile
+  seams or collision geometry; deterministic later normalizers must prove the
+  Cloud alpha and terrain repeat tests. No distinct Loomkeeper, batch, animation
+  upload, source-master promotion, or runtime integration belongs in B3A at this
+  gate.
 - Following gates: **WP-015B3B** separately admits one Wizard-first animation
   route; **WP-015B3C** completes one manifest-approved Wizard inventory reused
   by both combatants plus the Threadball formation/held/flight/impact spell
@@ -2498,8 +2500,10 @@ Sequential delivery slices:
       integration is authorized. The equivalent Patch-layer contract is now
       frozen: Cloud (`15035002`), Terrain Top (`15035003`), and Terrain Interior
       (`15035004`) are text-only/no-reference requests under the same pinned
-      FLUX settings, but are strictly sequential. Each requires fresh preflight,
-      review, and explicit continuation; source imagery does not claim seamless
+      FLUX settings, but are strictly sequential. Cloud completed as external
+      `EA972B0B...FFE7` and awaits owner visual direction; no normalization or
+      Terrain Top request is authorized. Each source imagery gate needs fresh
+      preflight, review, and explicit continuation; it does not claim seamless
       tiling, which remains a deterministic-normalization proof. Stop on failure
       instead of starting a batch. Do not generate a distinct Loomkeeper in B3A.
     - **B3B animation-route admission:** after the normalized Wizard is approved,
