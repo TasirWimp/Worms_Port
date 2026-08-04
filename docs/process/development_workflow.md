@@ -1632,7 +1632,9 @@ integrating.
    with no runtime path. Owner-approved Terrain Top `BE5EB2E7...2B22` has
    deterministic 256x64 source master `41511E63...7897` through frozen crop,
    uniform scale, and horizontal repeat proof, with no runtime path. Terrain
-   Interior remains separately preflighted and review-gated. Those requests are strictly sequential, and
+   Interior completed its one separately preflighted request as external candidate
+   `98091C73...50F9`, which is owner-review-gated and has no normalizer, master,
+   runtime path, or retry authorization. Those requests are strictly sequential, and
    each output must be reviewed before the next gate. Treat FLUX output as
    textile source imagery only; a later frozen deterministic normalizer must
    prove Cloud alpha handling and terrain repeatability. Failure pauses the

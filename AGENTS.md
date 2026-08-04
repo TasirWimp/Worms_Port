@@ -126,8 +126,10 @@ If the user asks only for planning, review, or brainstorming, do not edit code.
   source master `7F327B51...4B23C`, with no runtime path. Owner-approved
   Terrain Top `BE5EB2E7...2B22` is deterministically promoted only as 256x64
   source master `41511E63...7897`; its three-copy horizontal repeat proof has
-  exact edge difference zero and it has no runtime path. Terrain Interior still
-  requires a separate preflight, request, review, and explicit continuation.
+  exact edge difference zero and it has no runtime path. Terrain Interior's one
+  separately preflighted request has completed as external candidate
+  `98091C73...50F9` and is pending owner review; it must not be normalized,
+  promoted, retried, or integrated. A reject pauses the Patch family.
   FLUX provides textile source imagery only, and deterministic normalizers must
   prove alpha/repeatability.
   B3A may not generate a distinct Loomkeeper, assign the Wizard a runtime path,

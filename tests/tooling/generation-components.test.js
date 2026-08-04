@@ -176,9 +176,9 @@ test('generation profiles reject arbitrary model, workflow, tool, and launch sel
   assert.match(validateGenerationComponents(policyInvalid).join('\n'), /profile selection must remain closed/);
 });
 
-test('FLUX profile preserves approved Wizard, Threadball, Cloud, and Terrain Top masters', () => {
+test('FLUX profile preserves approved Wizard, Threadball, Cloud, Terrain Top, and the gated Terrain Interior candidate', () => {
   const profile = manifest.profiles.find((candidate) => candidate.id === 'flux2-klein');
-  assert.equal(profile.state, 'wizard_threadball_cloud_terrain_top_masters_approved');
+  assert.equal(profile.state, 'wizard_threadball_cloud_terrain_top_masters_terrain_interior_candidate_pending_owner_review');
   assert.deepEqual(profile.latest_review, {
     decision: 'source_master_approved',
     generation_work_package: 'WP-015B2G',
@@ -325,6 +325,32 @@ test('FLUX profile preserves approved Wizard, Threadball, Cloud, and Terrain Top
     runtime_path_assigned: false,
     further_generation_authorized: false
   });
+  assert.deepEqual(profile.terrain_interior_authorized_request, {
+    decision: 'one_text_request_approved',
+    work_package: 'WP-015B3A',
+    purpose: 'patch-01-terrain-interior-source',
+    tool: 'generate_flux2_klein_text',
+    workflow_sha256: '626568CEAA47627F7D421D3BD1B0AA151E1643DBA8FBD631F5EB437666649E28',
+    seed: 15035004,
+    prompt: 'One flat orthographic square textile material study filling the canvas: evenly distributed warm-brown felt and dense short crochet fibers with sparse tiny gold stitches, quiet tactile depth, consistent scale, and even soft light. No central motif, directional pattern, border, seam, horizon, grass, stone, object, character, text, logo, shadow, vignette, or scenery.',
+    width: 1024,
+    height: 1024,
+    batch_size: 1,
+    steps: 4,
+    cfg: 1,
+    sampler: 'euler',
+    reference_input: 'none',
+    max_requests: 1,
+    status: 'consumed_owner_review_pending',
+    requests_consumed: 1,
+    prompt_id: 'db813267-25e6-4bef-ba14-ea8b41d491c6',
+    runtime_seconds: 255.203,
+    external_output_path: 'C:\\Users\\jensb\\AppData\\Local\\Comfy-Desktop\\ComfyUI-Shared\\output\\WormsPortFlux2KleinText_00009_.png',
+    external_output_sha256: '98091C738D0E226FCAFA60EFA00BB4F63A503723CC310726E7787FEC702250F9',
+    external_output_bytes: 2440150,
+    external_output_pixel_format: 'RGB24',
+    further_requests_authorized: false
+  });
   assert.match(profile.notes, /WP-015B2D/);
   assert.match(profile.notes, /DEF9265DAA4C6F2799D16870205E2015291E3E4AAE0F61802349C9FD8D56AD00/);
   assert.match(profile.notes, /15026004/);
@@ -344,6 +370,10 @@ test('FLUX profile preserves approved Wizard, Threadball, Cloud, and Terrain Top
   assert.match(profile.notes, /7F327B515FBF89F7DD275C4385FA194AE3F95E677C60BE10126CA68D9024B23C/);
   assert.match(profile.notes, /d2ca47de-5cfb-4830-bb2e-243edad798eb/);
   assert.match(profile.notes, /BE5EB2E77062C9A86327ECC1EB7704C33F8511291709AE18A52D1AF51BE42B22/);
+  assert.match(profile.notes, /db813267-25e6-4bef-ba14-ea8b41d491c6/);
+  assert.match(profile.notes, /98091C738D0E226FCAFA60EFA00BB4F63A503723CC310726E7787FEC702250F9/);
+  assert.match(profile.notes, /255\.203/);
+  assert.match(profile.notes, /visible large diagonal\/diamond quilt seams/);
   assert.match(profile.notes, /rejected/);
   assert.match(profile.notes, /WP-015B2F/);
   assert.match(profile.notes, /08CB26CE3FAC6605859F9C9B51331351F28F40A005F6A101B2E575D8A56C6AB8/);
@@ -424,5 +454,13 @@ test('FLUX profile preserves approved Wizard, Threadball, Cloud, and Terrain Top
   assert.match(
     validateGenerationComponents(changedTerrainTopReview).join('\n'),
     /exact Terrain Top source-master review changed/
+  );
+
+  const changedTerrainInteriorRequest = structuredClone(manifest);
+  changedTerrainInteriorRequest.profiles.find((candidate) => candidate.id === 'flux2-klein')
+    .terrain_interior_authorized_request.status = 'consumed_source_master_approved';
+  assert.match(
+    validateGenerationComponents(changedTerrainInteriorRequest).join('\n'),
+    /exact Terrain Interior authorized generation request changed/
   );
 });

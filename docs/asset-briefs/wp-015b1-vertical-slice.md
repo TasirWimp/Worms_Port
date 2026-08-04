@@ -3,9 +3,9 @@
 Status: frozen historical B1 contract, amended for future character work by the
 WP-015B2C mouth, WP-015B2D creative-expression, WP-015B2G rounded-doll, and
 WP-015B3 shared-Wizard opponent decisions below. WP-015B3A has completed the
-Threadball, Cloud, and Terrain Top source masters. Terrain Interior remains the
-next separately gated source request. This document authorizes no automatic or
-batch Patch inference.
+Threadball, Cloud, and Terrain Top source masters. Terrain Interior has one
+external candidate pending owner review. This document authorizes no automatic
+or batch Patch inference.
 
 This document is the production contract for the first NIMble Knots visual
 slice: Wizard, Loomkeeper, Threadball, and Patch 01. WP-015B1 writes and reviews
@@ -652,12 +652,20 @@ Exact positive prompt:
 One flat orthographic square textile material study filling the canvas: evenly distributed warm-brown felt and dense short crochet fibers with sparse tiny gold stitches, quiet tactile depth, consistent scale, and even soft light. No central motif, directional pattern, border, seam, horizon, grass, stone, object, character, text, logo, shadow, vignette, or scenery.
 ```
 
-After each accepted external candidate, stop. Cloud's and Terrain Top's narrow
-normalizers are frozen and approved. Terrain Interior remains the final Patch
-source request: after its owner review, a later narrow gate must freeze and test
-its deterministic central crop/edge treatment and 3x3 repeat test. Passing a
-source candidate does not approve the normalizer, a source master, the product
-manifest, or C integration.
+The sole request completed as Comfy prompt `db813267-25e6-4bef-ba14-ea8b41d491c6`
+in `255.203` seconds, producing untouched external `1024x1024` RGB24 output
+`WormsPortFlux2KleinText_00009_.png` (2,440,150 bytes, SHA-256
+`98091C738D0E226FCAFA60EFA00BB4F63A503723CC310726E7787FEC702250F9`). A
+non-promotional 48px whole-canvas review copy is external only (5,304 bytes,
+SHA-256 `2CB5BEF4B1F0F28403565384FD74929E191D0BB57F4957D3637DC1A3E3DE1D3E`).
+The candidate has a large directional diamond/quilt seam pattern, so it does
+not independently pass the uniform no-seam/no-direction acceptance check; the
+project owner must make the final visual decision. No normalizer, crop, source
+master, product-manifest entry, runtime path, or further generation is
+authorized while that decision is pending. If accepted, a later narrow gate must
+freeze and test its deterministic central crop/edge treatment and 3x3 repeat
+test; if rejected, the Patch family pauses. Passing a source candidate never
+approves C integration.
 
 ## WP-015B2 Handoff
 

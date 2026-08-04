@@ -287,8 +287,10 @@ white-matte normalization produced source master
 `BE5EB2E7...2B22` now has deterministic 256x64 master
 `assets/masters/environment/patch-01/terrain/patch-01-terrain-top-source-master-v1.png`
 (`41511E63...7897`), with a three-copy horizontal repeat proof whose edge
-difference is zero. It has no runtime path; a fresh Terrain Interior request
-still requires its own preflight, review, and explicit continuation. WP-015B3B separately admits a Wizard-first animation
+difference is zero. It has no runtime path. The one fresh Terrain Interior
+request completed as external candidate `98091C73...50F9` and is pending owner
+review; it has no normalizer, source master, product-manifest entry, runtime
+path, or retry authorization. WP-015B3B separately admits a Wizard-first animation
 route, and B3C produces one Wizard inventory that WP-015C reuses for both the
 player and the AI Loomkeeper. A
 distinct Loomkeeper asset belongs to the wider character roster in WP-015D.

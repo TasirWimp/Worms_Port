@@ -9,7 +9,7 @@ Phaser/Socket.IO stack.
 
 - Active target: mobile-first single-player Nimiq Pay competition release.
 - Active work package: **WP-015B3A shared companion masters — Terrain Top has one
-  approved source master; Terrain Interior remains separately gated**. WP-015B2H completed on 2026-08-04 and approved
+  approved source master; Terrain Interior has one candidate pending owner review**. WP-015B2H completed on 2026-08-04 and approved
   exact 512x512 RGBA Wizard source master
   `assets/masters/characters/knotkin/wizard/knotkin-wizard-source-master-v1.png`,
   SHA-256
@@ -38,7 +38,8 @@ Phaser/Socket.IO stack.
   Owner-approved Terrain Top source `BE5EB2E7...2B22` now has deterministic
   256x64 master `41511E63...7897`, after frozen crop, uniform scale, and a
   three-copy horizontal repeat proof with zero edge difference. It has no
-  runtime path. Terrain Interior remains a separate fresh-preflight/review gate. FLUX outputs
+  runtime path. Terrain Interior completed its separate fresh-preflighted request
+  as external candidate `98091C73...50F9`, pending owner review only. FLUX outputs
   are textile source imagery, never a promise of tile
   seams or collision geometry; deterministic later normalizers must prove the
   Cloud alpha and terrain repeat tests. No distinct Loomkeeper, batch, animation
@@ -175,11 +176,11 @@ Phaser/Socket.IO stack.
   byte-for-byte. The planned coordinate stop rule amended only socket metadata
   from the superseded angular `(341,293)` to the actual rounded-body palm
   `(407,228)`; pivot `(256,451)` and uniform placement remain intact.
-- Next bounded action: continue only **WP-015B3A** in the detailed order
-  recorded in `docs/process/development_workflow.md`: run the one separately
-  preflighted Terrain Interior request at seed `15035004`, then stop for visual
-  review. No Threadball, Cloud, Terrain Top, or Terrain Interior retry is
-  authorized.
+- Next bounded action: continue only **WP-015B3A** with owner visual review of
+  exact Terrain Interior candidate `98091C73...50F9`. No normalizer, crop,
+  source-master promotion, runtime path, or further request is authorized before
+  explicit acceptance; rejection pauses the Patch family. No Threadball, Cloud,
+  Terrain Top, or Terrain Interior retry is authorized.
   Distinct Loomkeeper production, animation,
   runtime integration, roster completion, and further Wizard generation remain
   outside that slice.
@@ -2511,8 +2512,9 @@ Sequential delivery slices:
       `7F327B51...4B23C` with no runtime path. Owner-approved Terrain Top then
       deterministically produced 256x64 source master `41511E63...7897` through
       frozen crop, uniform scale, and exact horizontal repeat proof; no runtime
-      path is assigned. Terrain Interior is the next separately preflighted
-      request. Each
+      path is assigned. Terrain Interior has consumed its separately preflighted
+      request as external candidate `98091C73...50F9`, pending owner review.
+      Each
       source imagery gate needs fresh
       preflight, review, and explicit continuation; it does not claim seamless
       tiling, which remains a deterministic-normalization proof. Stop on failure

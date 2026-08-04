@@ -226,7 +226,7 @@ const reviewedProfileContracts = new Map([
     smokeTool: 'generate_image'
   }],
   ['flux2-klein', {
-    state: 'wizard_threadball_cloud_terrain_top_masters_approved',
+    state: 'wizard_threadball_cloud_terrain_top_masters_terrain_interior_candidate_pending_owner_review',
     modelComponents: reviewedFluxModelComponents,
     workflowComponents: [
       'wormsport-flux2-klein-text-to-image-workflow',
@@ -387,6 +387,32 @@ const reviewedProfileContracts = new Map([
       runtime_path_assigned: false,
       further_generation_authorized: false
     },
+    terrainInteriorAuthorizedRequest: {
+      decision: 'one_text_request_approved',
+      work_package: 'WP-015B3A',
+      purpose: 'patch-01-terrain-interior-source',
+      tool: 'generate_flux2_klein_text',
+      workflow_sha256: '626568CEAA47627F7D421D3BD1B0AA151E1643DBA8FBD631F5EB437666649E28',
+      seed: 15035004,
+      prompt: 'One flat orthographic square textile material study filling the canvas: evenly distributed warm-brown felt and dense short crochet fibers with sparse tiny gold stitches, quiet tactile depth, consistent scale, and even soft light. No central motif, directional pattern, border, seam, horizon, grass, stone, object, character, text, logo, shadow, vignette, or scenery.',
+      width: 1024,
+      height: 1024,
+      batch_size: 1,
+      steps: 4,
+      cfg: 1,
+      sampler: 'euler',
+      reference_input: 'none',
+      max_requests: 1,
+      status: 'consumed_owner_review_pending',
+      requests_consumed: 1,
+      prompt_id: 'db813267-25e6-4bef-ba14-ea8b41d491c6',
+      runtime_seconds: 255.203,
+      external_output_path: 'C:\\Users\\jensb\\AppData\\Local\\Comfy-Desktop\\ComfyUI-Shared\\output\\WormsPortFlux2KleinText_00009_.png',
+      external_output_sha256: '98091C738D0E226FCAFA60EFA00BB4F63A503723CC310726E7787FEC702250F9',
+      external_output_bytes: 2440150,
+      external_output_pixel_format: 'RGB24',
+      further_requests_authorized: false
+    },
     requiredNoteFragments: [
       'WP-015B2D',
       'DEF9265DAA4C6F2799D16870205E2015291E3E4AAE0F61802349C9FD8D56AD00',
@@ -442,7 +468,11 @@ const reviewedProfileContracts = new Map([
       'F5668C102F21E2098BA7246866A2BE1FB59CCA91988BDCF2BCEA5CF65AA4FC6F',
       '41511E63D0DBF602FCA854EB983DB9B754631587F6E5234CBB9DAF9113E77897',
       'three-copy repeat proof has exact seam difference zero',
-      'No Terrain Interior request, animation, runtime integration, or further generation is authorized.'
+      '98091C738D0E226FCAFA60EFA00BB4F63A503723CC310726E7787FEC702250F9',
+      'db813267-25e6-4bef-ba14-ea8b41d491c6',
+      '255.203',
+      'visible large diagonal/diamond quilt seams',
+      'No crop, normalizer, source-master promotion, asset-manifest entry, runtime integration, or further generation is authorized.'
     ]
   }]
 ]);
@@ -937,6 +967,10 @@ function validateGenerationComponents(manifest, root = repoRoot) {
       if (contract.terrainTopReview &&
           JSON.stringify(profile.terrain_top_source_master_review) !== JSON.stringify(contract.terrainTopReview)) {
         errors.push(`${label}: exact Terrain Top source-master review changed.`);
+      }
+      if (contract.terrainInteriorAuthorizedRequest &&
+          JSON.stringify(profile.terrain_interior_authorized_request) !== JSON.stringify(contract.terrainInteriorAuthorizedRequest)) {
+        errors.push(`${label}: exact Terrain Interior authorized generation request changed.`);
       }
       if (contract.latestReview) {
         const exactFiles = [
