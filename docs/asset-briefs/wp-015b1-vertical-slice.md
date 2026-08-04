@@ -131,9 +131,11 @@ before any new request. Historical SD 1.5 seeds and prompts below cannot be
 reused across architectures. Existing Threadball output
 `2BAE664F7E5A862BCB53B55A68071580485CE040A89650C68EC6FA398F4089EB`
 is paused as historical structure evidence under the spell-direction amendment
-below and must not be normalized or promoted. B3A must freeze a new bounded
-Worldweave Threadball generation contract before any replacement request, then
-freeze the Patch contract before its first request. Animation begins with one
+below and must not be normalized or promoted. B3A required a new bounded
+Worldweave Threadball generation contract before any replacement request. The
+exact text-only contract is now frozen below and authorizes one request only
+after its fail-closed preflight. Patch remains blocked until that result is
+reviewed and the Patch contract is frozen separately. Animation begins with one
 approved Wizard-only pilot after the chosen service/route passes its license,
 privacy/input-retention, output-rights, export, and evidence gate. Only a
 reviewed Wizard pilot may authorize the one shared animation inventory.
@@ -345,11 +347,49 @@ and releases the stored force. Luminous gold NIM Thread is visible between dense
 blue wound layers as energy inside the material; it does not form a logo,
 electrical cage, orbit, fuse, or ordinary flame.
 
-B3A must freeze a new FLUX-specific prompt, seed, exact settings, request limit,
-output path, and stop conditions before one replacement request can run. The
-paused candidate cannot silently become the reference image. The replacement
-master remains one isolated effect-free object; the complete spell is expressed
-later through separate derivatives:
+The user supplied external Gemini concept
+`C:\Users\jensb\Downloads\Gemini_Generated_Image_t9q4oit9q4oit9q4.png`
+as visual direction on 2026-08-04: 1408x768 RGBA, 2,082,789 bytes, SHA-256
+`BD87405A8E29E4FCEEC87F4E4BC22256CEF215F2789DFDB1DD4BDD6A31DA6699`.
+Its admitted cues are only compressed blue strands, a visible warm-gold inner
+core, levitation, and inward tension. The realistic human Wizard, runes, room,
+loose scene-spanning strands, sparks, lighting composition, and rendered pixels
+are excluded. The file remains external, is not copied into the repository, and
+is comparison-only: it is not a conditioning, training, tracing, crop, or
+product input. The user identified it as Gemini-generated, but exact Gemini
+surface/model/prompt evidence is unavailable, so its provider terms are not used
+to authorize product lineage.
+
+#### Frozen B3A Threadball replacement request
+
+| Field | Exact value |
+| --- | --- |
+| Tool/workflow | `generate_flux2_klein_text` / `scripts/comfy-workflows/generate_flux2_klein_text.json` |
+| Workflow SHA-256 | `626568CEAA47627F7D421D3BD1B0AA151E1643DBA8FBD631F5EB437666649E28` |
+| Seed | `15035001` |
+| Settings | 1024x1024, batch 1, 4 FLUX.2 scheduler steps, CFG 1, Euler |
+| Reference input | none; the Gemini concept and paused Threadball are comparison-only |
+| Request limit | exactly one after fail-closed component/workflow/service/queue preflight |
+| Expected output prefix | `WormsPortFlux2KleinText` in the external Comfy output folder |
+| Stop rule | stop on service/hash/queue failure or after this one output; no automatic retry or Patch request |
+
+Exact 77-word positive prompt:
+
+```text
+One isolated mobile-game spell projectile centered on a plain white background: a compact spherical knot of tightly tensioned sky-blue chenille world-thread, layered strands pulled inward around a bright warm-gold NIM Thread core visible through several narrow openings. It hovers alone with contained magical pressure, tactile crochet fibers, a clean balanced silhouette, soft studio light, and generous padding. No character, hand, room, floor, shadow, loose trailing strands, sparks, rune, text, logo, fuse, flame, orbit, cage, or second object.
+```
+
+This contract authorized only that one unconditioned request. It completed as
+Comfy prompt `af2f84ad-deca-4a6d-bd83-b0b88e87c696` in 272.426 seconds and
+produced 787,706-byte 1024x1024 RGB24 external output
+`WormsPortFlux2KleinText_00006_.png`, SHA-256
+`1F41AF26B9F15419BFB5A59E2485B70EC706AB505672EC57AC8C9295B43F56EC`.
+The request allowance is consumed and the output awaits owner visual decision;
+do not change the prompt, seed, model, workflow, settings, dimensions, or input
+role, retry, or normalize in response to the result. The paused candidate
+cannot silently become the reference image. The
+replacement master remains one isolated effect-free object; the complete spell
+is expressed later through separate derivatives:
 
 - **held/formation:** loose strands gather and the knot levitates immediately
   above the Wizard's approved cupped-palm socket;

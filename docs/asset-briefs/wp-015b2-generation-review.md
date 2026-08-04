@@ -1608,3 +1608,49 @@ one-request limit, external output path, protected properties, rejection rules,
 and stop conditions. The paused candidate remains comparison evidence only and
 cannot silently become a conditioning input. Patch work remains queued after the
 Threadball family is resolved.
+
+## WP-015B3A Threadball Concept And Exact-Request Gate
+
+Status: **one exact text-only request completed; owner visual decision pending**.
+
+The user supplied external 2,082,789-byte 1408x768 RGBA Gemini concept
+`C:\Users\jensb\Downloads\Gemini_Generated_Image_t9q4oit9q4oit9q4.png`,
+SHA-256
+`BD87405A8E29E4FCEEC87F4E4BC22256CEF215F2789DFDB1DD4BDD6A31DA6699`.
+Visual review admits only its compressed blue strands, visible warm-gold core,
+levitation, and inward tension. Its human Wizard, runes, room, loose strands,
+sparks, lighting, composition, and exact pixels are excluded. The file remains
+external comparison evidence and will not be copied, staged, traced, cropped,
+conditioned on, trained on, shipped, or entered in the product asset manifest.
+The user identifies it as Gemini-generated; the exact app/model/prompt record is
+not available, so provider terms are not relied on for product lineage.
+
+The separately frozen text-only request uses exact workflow
+`626568CEAA47627F7D421D3BD1B0AA151E1643DBA8FBD631F5EB437666649E28`,
+seed `15035001`, the pinned 1024x1024/batch-one/four-step/CFG-1/Euler settings,
+no reference input, and the exact 77-word prompt in the B1 brief. It permits one
+`generate_flux2_klein_text` request only after the closed profile passes exact
+component/workflow hashes, low-VRAM/no-preview launch, required tool
+registration, empty-queue, and newest-output baseline checks. No automatic
+retry, reference edit, second seed, prompt repair, Patch request, normalization,
+or promotion is authorized by this gate.
+
+The closed preflight passed exact hashes for all three FLUX components and
+workflow `626568CE...9E28`, required low-VRAM/no-preview service launch, MCP tool
+registration, an empty queue, and newest-output baseline
+`WormsPortFlux2KleinText_00005_.png` (`40F9E812...4A5`). Exactly one job ran:
+prompt `af2f84ad-deca-4a6d-bd83-b0b88e87c696` completed successfully in
+272.426 seconds, producing 787,706-byte 1024x1024 RGB24 external output
+`C:\Users\jensb\AppData\Local\Comfy-Desktop\ComfyUI-Shared\output\WormsPortFlux2KleinText_00006_.png`,
+SHA-256 `1F41AF26B9F15419BFB5A59E2485B70EC706AB505672EC57AC8C9295B43F56EC`.
+The queue returned to empty and both services were stopped.
+
+Primary-agent visual triage: the candidate passes isolation, clean spherical
+silhouette, tactile sky-blue strands, visible warm-gold core, and forbidden-
+content checks. The core remains legible in a non-promotional 48px whole-canvas
+review derivative (`B03C0F94...2EAC7`). Its remaining decision risk is semantic:
+at full size it can still read as a carefully wound household yarn ball rather
+than visibly compressed Worldweave magic. That judgment is reserved for the
+project owner. The exact file remains external and quarantined; no retry,
+normalization, alpha work, manifest promotion, Patch request, or runtime use is
+authorized while the decision is pending.

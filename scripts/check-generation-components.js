@@ -226,7 +226,7 @@ const reviewedProfileContracts = new Map([
     smokeTool: 'generate_image'
   }],
   ['flux2-klein', {
-    state: 'wizard_rounded_source_master_approved',
+    state: 'b3a_threadball_candidate_review_pending',
     modelComponents: reviewedFluxModelComponents,
     workflowComponents: [
       'wormsport-flux2-klein-text-to-image-workflow',
@@ -255,6 +255,35 @@ const reviewedProfileContracts = new Map([
       normalized_master_path: 'assets/masters/characters/knotkin/wizard/knotkin-wizard-source-master-v1.png',
       runtime_path_assigned: false,
       further_generation_authorized: false
+    },
+    authorizedRequest: {
+      decision: 'one_text_request_approved',
+      work_package: 'WP-015B3A',
+      purpose: 'worldweave-threadball-replacement',
+      tool: 'generate_flux2_klein_text',
+      workflow_sha256: '626568CEAA47627F7D421D3BD1B0AA151E1643DBA8FBD631F5EB437666649E28',
+      seed: 15035001,
+      prompt: 'One isolated mobile-game spell projectile centered on a plain white background: a compact spherical knot of tightly tensioned sky-blue chenille world-thread, layered strands pulled inward around a bright warm-gold NIM Thread core visible through several narrow openings. It hovers alone with contained magical pressure, tactile crochet fibers, a clean balanced silhouette, soft studio light, and generous padding. No character, hand, room, floor, shadow, loose trailing strands, sparks, rune, text, logo, fuse, flame, orbit, cage, or second object.',
+      width: 1024,
+      height: 1024,
+      batch_size: 1,
+      steps: 4,
+      cfg: 1,
+      sampler: 'euler',
+      reference_input: 'none',
+      max_requests: 1,
+      status: 'completed_pending_owner_review',
+      requests_consumed: 1,
+      prompt_id: 'af2f84ad-deca-4a6d-bd83-b0b88e87c696',
+      runtime_seconds: 272.426,
+      external_output_path: 'C:\\Users\\jensb\\AppData\\Local\\Comfy-Desktop\\ComfyUI-Shared\\output\\WormsPortFlux2KleinText_00006_.png',
+      external_output_sha256: '1F41AF26B9F15419BFB5A59E2485B70EC706AB505672EC57AC8C9295B43F56EC',
+      external_output_bytes: 787706,
+      external_output_pixel_format: 'RGB24',
+      further_requests_authorized: false,
+      paused_candidate_sha256: '2BAE664F7E5A862BCB53B55A68071580485CE040A89650C68EC6FA398F4089EB',
+      concept_reference_sha256: 'BD87405A8E29E4FCEEC87F4E4BC22256CEF215F2789DFDB1DD4BDD6A31DA6699',
+      concept_reference_role: 'external_comparison_only'
     },
     requiredNoteFragments: [
       'WP-015B2D',
@@ -286,7 +315,15 @@ const reviewedProfileContracts = new Map([
       '844934',
       '0.796676',
       'seams',
-      'No retry'
+      'No retry',
+      'WP-015B3A',
+      '15035001',
+      '626568CEAA47627F7D421D3BD1B0AA151E1643DBA8FBD631F5EB437666649E28',
+      'BD87405A8E29E4FCEEC87F4E4BC22256CEF215F2789DFDB1DD4BDD6A31DA6699',
+      'af2f84ad-deca-4a6d-bd83-b0b88e87c696',
+      '272.426',
+      '1F41AF26B9F15419BFB5A59E2485B70EC706AB505672EC57AC8C9295B43F56EC',
+      'No retry, Patch request, normalization, promotion, or runtime integration'
     ]
   }]
 ]);
@@ -757,6 +794,10 @@ function validateGenerationComponents(manifest, root = repoRoot) {
       }
       if (contract.latestReview && JSON.stringify(profile.latest_review) !== JSON.stringify(contract.latestReview)) {
         errors.push(`${label}: latest exact-output review changed.`);
+      }
+      if (contract.authorizedRequest &&
+          JSON.stringify(profile.authorized_request) !== JSON.stringify(contract.authorizedRequest)) {
+        errors.push(`${label}: exact authorized generation request changed.`);
       }
       if (contract.latestReview) {
         const exactFiles = [

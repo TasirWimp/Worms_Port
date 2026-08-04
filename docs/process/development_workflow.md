@@ -1610,12 +1610,20 @@ integrating.
    paused as historical structure evidence. It reads as ordinary yarn rather
    than the compressed Worldweave spell now required by the product story, so do
    not normalize, promote, delete, or use it as conditioning. Before inference,
-   amend the B1 brief with one exact FLUX-specific replacement prompt, seed,
-   settings, request limit, output path, protected properties, rejection rules,
-   and stop conditions. Process and decide that one Threadball family before
-   freezing equivalent Patch-layer contracts. A repeated failure pauses the
-   family; it does not authorize seed shopping or a batch. Do not generate a
-   distinct Loomkeeper in B3A.
+   the B1 brief now freezes exact text-only seed `15035001`, its 77-word prompt,
+   pinned 1024x1024/batch-one/four-step/CFG-1/Euler workflow, no reference input,
+   one-request limit, output-baseline evidence, protected properties, rejection
+   rules, and stop conditions. User-supplied Gemini concept
+   `BD87405A...DA6699` remains external comparison evidence; do not copy, stage,
+   or condition on it. Reverify components/workflows, low-VRAM/no-preview launch,
+   tool registration, empty queue, and newest output before running exactly that
+   request. The request completed successfully as prompt
+   `af2f84ad-deca-4a6d-bd83-b0b88e87c696` in 272.426 seconds, producing exact
+   external output `1F41AF26...F56EC`; services were stopped and the request
+   allowance is consumed. Obtain the owner visual decision before normalization
+   or equivalent Patch-layer contracts. Failure pauses the family;
+   it does not authorize seed shopping or a batch. Do not generate a distinct
+   Loomkeeper in B3A.
 2. **B3B animation-route admission:** only an approved normalized Wizard master
    may be considered for upload. Reverify AutoSprite or an alternative for
    service identity, commercial terms, input retention/privacy, output rights,

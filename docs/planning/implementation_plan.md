@@ -20,10 +20,14 @@ Phaser/Socket.IO stack.
   `2BAE664F7E5A862BCB53B55A68071580485CE040A89650C68EC6FA398F4089EB`
   is paused as historical structure evidence: it reads as an ordinary yarn ball
   rather than the newly defined compressed Worldweave spell. Do not normalize,
-  promote, delete, or condition on it. B3A first freezes one replacement FLUX
-  prompt/seed/settings/request/output/stop contract, then processes the result
-  before freezing the decomposed Patch contract. Process one family at a time;
-  no inference is authorized by the planning amendment itself, and no distinct
+  promote, delete, or condition on it. The replacement contract is now frozen:
+  exact 77-word text-only prompt, seed `15035001`, pinned FLUX workflow/settings,
+  no reference image, and exactly one request after fail-closed preflight. That
+  allowance is consumed by exact external output `1F41AF26...F56EC`; it awaits
+  owner visual decision and authorizes no retry or normalization. The
+  user-supplied Gemini artwork `BD87405A...DA6699` is external comparison-only
+  evidence and contributes no pixels or conditioning. Process and review that
+  one result before freezing the decomposed Patch contract. No distinct
   Loomkeeper, batch, animation upload, or runtime integration belongs in B3A.
 - Following gates: **WP-015B3B** separately admits one Wizard-first animation
   route; **WP-015B3C** completes one manifest-approved Wizard inventory reused
@@ -156,12 +160,14 @@ Phaser/Socket.IO stack.
   byte-for-byte. The planned coordinate stop rule amended only socket metadata
   from the superseded angular `(341,293)` to the actual rounded-body palm
   `(407,228)`; pivot `(256,451)` and uniform placement remain intact.
-- Next bounded action: refine and execute only **WP-015B3A** in the detailed
-  order recorded in `docs/process/development_workflow.md`: freeze the replacement
-  Worldweave Threadball request, process and decide that one result, then freeze
-  the Patch source gates one family at a time. Distinct Loomkeeper production,
-  animation, runtime integration, roster completion, and further Wizard
-  generation remain outside that slice.
+- Next bounded action: continue only **WP-015B3A** in the detailed order
+  recorded in `docs/process/development_workflow.md`: obtain the owner visual
+  decision for exact seed-`15035001` Worldweave Threadball output
+  `1F41AF26...F56EC`, then decide whether the Threadball family may enter
+  deterministic normalization. No retry is authorized. Patch source-gate refinement
+  follows only after that decision. Distinct Loomkeeper production, animation,
+  runtime integration, roster completion, and further Wizard generation remain
+  outside that slice.
 - WP-012 exactly pins `@nimiq/mini-app-sdk` `0.1.0` and server-only
   `@nimiq/core` `2.7.1`. Provider access remains lazy, identity acceptance is
   now used by WP-013's separate production Daily entry, the diagnostics surface
@@ -2474,13 +2480,17 @@ Sequential delivery slices:
     - **B3A shared companion masters:** keep existing Threadball candidate
       `2BAE664F...F4089EB` paused as exact historical structure evidence because
       it reads as ordinary yarn rather than a compressed Worldweave spell. Do
-      not normalize, promote, delete, or use it as conditioning. First freeze a
-      new FLUX-specific Threadball prompt, seed, exact settings, one-request
-      limit, output path, protected properties, rejection rules, and stop
-      conditions. Process and review that one family before freezing equivalent
-      Patch-layer contracts and considering Patch inference. Stop on a repeated
-      failure instead of starting a batch. Do not generate a distinct
-      Loomkeeper in B3A.
+      not normalize, promote, delete, or use it as conditioning. The replacement
+      gate now freezes seed `15035001`, the exact 77-word text-only prompt, pinned
+      FLUX settings/workflow, no reference input, one request, output-baseline
+      evidence, protected properties, rejection rules, and stop conditions. The
+      external Gemini concept `BD87405A...DA6699` supplies comparison cues only;
+      it is not copied, staged, or conditioned on. The one request completed as
+      exact external output `1F41AF26...F56EC` and awaits owner visual decision;
+      no retry or normalization is authorized. Review that family before
+      freezing equivalent Patch-layer contracts and considering
+      Patch inference. Stop on failure instead of starting a batch. Do not
+      generate a distinct Loomkeeper in B3A.
     - **B3B animation-route admission:** after the normalized Wizard is approved,
       review the current availability, commercial terms, privacy/input-retention,
       output rights, export format, component/service identity, and reproducible

@@ -26,6 +26,7 @@
     "Normalize only exact B2G Wizard source 40F9E812...4A5 through a frozen deterministic configuration into reviewed 512x512 RGBA, 192x192, and 48px derivatives; stop rather than repaint, generate, non-uniformly warp, animate, or integrate",
     "Record the project-owner B3 simplification that reuses one approved Wizard presentation for the player and AI Loomkeeper, removes distinct Loomkeeper production from B3/C, and moves it to the WP-015D character roster",
     "Pause the ordinary-yarn Threadball candidate, connect Wizard spell presentation to the Celestial Spinning Mill and elemental Worldweave story, and propagate the revised spell-state contract through B3A, B3B, B3C, C, D, and E",
+    "Record the exact external Gemini concept as comparison-only evidence, freeze one text-only Worldweave Threadball request at seed 15035001 with no reference input, and stop after its exact output for review",
     "Generate deterministic quarantined vertical-slice candidates and complete pre-promotion art, IP, provenance, and phone-readability review"
   ],
   "non_goals": [
@@ -52,6 +53,7 @@
     "WP-015B2F deterministic hood guide and generous mask integrity, exact-B2D scaffold protection, frozen prompt review, full-size/48px review, and no-inference boundary",
     "WP-015B2G exact rounded-doll prompt, fixed seeds, external output paths and hashes, cupped-palm visual decision, fail-closed shutdown, and no-product-promotion boundary",
     "WP-015B2H source identity, exact-output rights/IP review, frozen normalization configuration, deterministic byte reproduction, alpha/background and edge quality, baseline/pivot/socket geometry, 48px and maintained-phone visual review, manifest lineage, and no-runtime-path boundary",
+    "WP-015B3A exact Gemini comparison record, frozen text-only request contract, fail-closed component/workflow/service/queue/output preflight, one-request limit, and exact-output visual review",
     "WP-015B1 brief-contract completeness and source-boundary review",
     "fixed-seed quarantined vertical-slice master review",
     "self-review"
@@ -75,7 +77,8 @@
     "15026005",
     "15026006",
     "15027001",
-    "15027002"
+    "15027002",
+    "15035001"
   ],
   "sorcerers_reference_used": false,
   "clean_room_records": [],
@@ -439,6 +442,21 @@
       "command": "WP-015B3 Threadball spell and world-story planning amendment",
       "status": "pass",
       "detail": "The owner paused exact external Threadball candidate 2BAE664F...F4089EB without rejecting or deleting its historical structure evidence because it reads as ordinary yarn rather than Wizard magic. Art direction now connects the Celestial Spinning Mill, NIM Thread, Worldweave, Knotkin Stitching/Unraveling/Restitching, and the textile elemental vocabulary: Worldweave/Thread as substance, Air/Draft as motion, Fire/Loomspark as energy, and Water/Cloudwater as flow and transformation. B3A must freeze one new exact Worldweave Threadball request contract before inference and resolve it before Patch; B3B preserves an empty stable Wizard palm; B3C creates separate formation/held/projectile/short-tail/impact spell assets; C binds them to existing authoritative events without gameplay changes; D applies Draft to Needlepoint and Loomspark to Spoolburst without adding mechanics; E carries those identities into audio. Cloudwater gameplay remains deferred. Documentation-only verification parsed this JSON, passed compliance, and passed git diff --check; build, browser matrix, and real-device checks were not run because no code, asset, manifest, runtime path, or player-visible behavior changed."
+    },
+    {
+      "command": "WP-015B3A Gemini comparison and exact-request gate",
+      "status": "pass",
+      "detail": "Recorded user-supplied 2,082,789-byte 1408x768 RGBA Gemini concept BD87405A8E29E4FCEEC87F4E4BC22256CEF215F2789DFDB1DD4BDD6A31DA6699 as external comparison-only evidence. Only compressed blue strands, a visible warm-gold core, levitation, and inward tension inform the separately authored prompt; the source remains outside the repository and is not copied, staged, traced, cropped, trained on, conditioned on, shipped, or added to the product asset manifest. The frozen request uses generate_flux2_klein_text, exact workflow 626568CE...9E28, seed 15035001, 1024x1024, batch one, four steps, CFG 1, Euler, no reference input, and the exact 77-word B1 prompt. It authorizes one request after fail-closed preflight and no retry, repair, reference edit, Patch request, normalization, promotion, or runtime integration."
+    },
+    {
+      "command": "WP-015B3A exact Threadball request and initial visual triage",
+      "status": "pass",
+      "detail": "Exact-hash preparation and verification passed for FLUX model 97ED34FE...CCB6, text encoder AD65083F...C169, VAE D64F3A68...C4B5, and text workflow 626568CE...9E28. Comfy launched with the reviewed low-VRAM/no-preview mode; generate_flux2_klein_text was registered, the queue was empty, and output baseline WormsPortFlux2KleinText_00005_.png was 40F9E812...4A5. Exactly one seed-15035001 request ran with no reference input or retry. Prompt af2f84ad-deca-4a6d-bd83-b0b88e87c696 completed successfully in 272.426 seconds as 787,706-byte 1024x1024 RGB24 external output WormsPortFlux2KleinText_00006_.png, SHA-256 1F41AF26B9F15419BFB5A59E2485B70EC706AB505672EC57AC8C9295B43F56EC. Queue returned empty and services stopped. Initial full-size and non-promotional 48px triage passes isolation, clean spherical silhouette, tactile blue strands, visible gold core, and forbidden-content checks; semantic reading as compressed magic rather than household yarn remains owner-decision pending. No normalization, exact-output approval, asset-manifest promotion, Patch request, or runtime integration occurred."
+    },
+    {
+      "command": "WP-015B3A pending-decision verification",
+      "status": "pass",
+      "detail": "Parsed both JSON evidence files, npm run check:compliance passed all asset, generation-component, import-boundary, package-license, work-package, and clean-room gates, npm run test:tooling passed all 42 tests, npm run build passed compliance, TypeScript, server, and client production builds, and git diff --check passed. The existing Vite large-chunk warning remains unchanged. npm audit was not rerun because no dependency or lockfile changed. Browser matrix and real-device tests were not run because the candidate remains external quarantine media with no runtime path or player-visible behavior."
     }
   ],
   "reviews": [
@@ -471,7 +489,8 @@
     "The phone-browser matrix was not run for WP-015B2H because the approved Wizard is a source master without runtime_path and no browser-facing code or runtime asset path changed.",
     "Real-device testing was not run for WP-015B2H because no player-visible media was integrated; the maintained 192px and exact 48px derivatives were reviewed locally instead.",
     "Build, browser-matrix, and real-device checks were not run for the WP-015B3 shared-Wizard opponent amendment because it changes planning and re-entry documentation only.",
-    "Build, browser-matrix, and real-device checks were not run for the WP-015B3 Threadball spell/world-story amendment because it changes planning and re-entry documentation only."
+    "Build, browser-matrix, and real-device checks were not run for the WP-015B3 Threadball spell/world-story amendment because it changes planning and re-entry documentation only.",
+    "The phone-browser matrix and real-device checks were not run for the WP-015B3A external Threadball candidate because it remains quarantined outside the product asset manifest and no browser-facing code, runtime path, or player-visible behavior changed."
   ],
   "residual_risks": [
     "The reviewed image-conditioned graph uses native FLUX ReferenceLatent semantic conditioning, not a hard edge, pose, mask, or ControlNet constraint. B2C demonstrates one successful semantic-scaffold workaround but does not establish pixel-exact geometry control for arbitrary characters.",
@@ -482,6 +501,6 @@
     "B2C proves that a mechanical semantic scaffold can establish angular geometry and survive one fitted-knit conversion, but the opaque knit output retains panel seams and a rear scaffold volume. B2D proves that larger close-set eyes, a curved smile, optional paired eyebrows, pale chenille, a belt/button, and warmer details improve appeal. B2E preserves every zero-mask pixel but is rejected as the next Wizard master because its compact crown loses the Wizard calling and its horizontal neck wrap reads thief-like. B2F proves the new scaffold can drive a clear tall Wizard hood, but exact restoration of hard face and mouth islands creates unacceptable visible seams. B2H resolves normalization, alpha, and the source-master socket for the B2G direction; animation and companion-asset consistency remain unresolved.",
     "The mouth amendment improves expression capacity but requires a later neutral-mouth topology and bounded expression-frame contract so mouth placement does not flicker or multiply across animation.",
     "B2E proves the core latent-mask route can preserve all zero-mask decoded pixels exactly and produce a coherent head-worn covering, but it does not establish that future masks, characters, or prompts will behave similarly. The one-request allowance is consumed and no retry is authorized.",
-    "The B2G cupped-palm Wizard has passed B2H exact-output product/IP, deterministic alpha, geometry, phone-size, and source-master manifest review as exact normalized bytes 7AF4864E...18A9. It remains intentionally non-runtime and unanimated. Threadball, the B2C knit conversion, B2D creative-direction result, B2E rejected cowl candidate, B2F deterministic scaffold, B2F rejected seamed output, B2G closed-mitten trial, and untouched B2G opaque parent remain external evidence. The next bounded work is B3A refinement and review of one replacement Worldweave Threadball request contract; no inference is yet authorized. Only after that family is processed do frozen Patch source gates begin. B3/C intentionally reuse one Wizard presentation for both combatants, which reduces immediate opponent visual distinction; existing labels and team/position cues remain required until WP-015D produces the distinct Loomkeeper with the wider roster. The old mask-topology repair and LoRA remain deferred alternatives, not authorization."
+    "The B2G cupped-palm Wizard has passed B2H exact-output product/IP, deterministic alpha, geometry, phone-size, and source-master manifest review as exact normalized bytes 7AF4864E...18A9. It remains intentionally non-runtime and unanimated. Threadball, the B2C knit conversion, B2D creative-direction result, B2E rejected cowl candidate, B2F deterministic scaffold, B2F rejected seamed output, B2G closed-mitten trial, and untouched B2G opaque parent remain external evidence. B3A now authorizes only one frozen seed-15035001 text-only Worldweave Threadball request after fail-closed preflight; its Gemini comparison supplies no pixels or conditioning, and no retry is authorized. Only after that exact result is reviewed do frozen Patch source gates begin. B3/C intentionally reuse one Wizard presentation for both combatants, which reduces immediate opponent visual distinction; existing labels and team/position cues remain required until WP-015D produces the distinct Loomkeeper with the wider roster. The old mask-topology repair and LoRA remain deferred alternatives, not authorization."
   ]
 }

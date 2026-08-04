@@ -244,9 +244,14 @@ npm run asset:normalize:wizard
 The next slice is WP-015B3A. Existing Threadball candidate
 `2BAE664F...F4089EB` is paused as historical structure evidence because it reads
 as ordinary yarn rather than the newly defined compressed Worldweave spell. Do
-not normalize, promote, delete, or condition on it. First freeze and review one
-replacement Threadball request contract, process that family, and only then
-freeze and process Patch companion-master gates one family at a time. WP-015B3B
+not normalize, promote, delete, or condition on it. The replacement gate is now
+frozen for exactly one unconditioned FLUX text request: its exact 77-word prompt,
+seed `15035001`, workflow/settings, output prefix, and stop rule are recorded in
+the B1 brief. The supplied Gemini artwork `BD87405A...DA6699` is external
+comparison-only evidence and supplies no product pixels or conditioning. Run
+the fail-closed preflight and exact request are complete. The request is now
+consumed: external output `1F41AF26...F56EC` is awaiting owner
+visual decision and is not approved, normalized, or a product asset. WP-015B3B
 separately admits a Wizard-first animation route, and B3C produces one Wizard
 inventory that WP-015C reuses for both the player and the AI Loomkeeper. A
 distinct Loomkeeper asset belongs to the wider character roster in WP-015D.

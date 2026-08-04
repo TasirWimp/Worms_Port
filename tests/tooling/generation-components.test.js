@@ -176,9 +176,9 @@ test('generation profiles reject arbitrary model, workflow, tool, and launch sel
   assert.match(validateGenerationComponents(policyInvalid).join('\n'), /profile selection must remain closed/);
 });
 
-test('FLUX profile preserves B2F history and binds the approved B2H Wizard source master', () => {
+test('FLUX profile preserves the Wizard master and binds one exact B3A Threadball request', () => {
   const profile = manifest.profiles.find((candidate) => candidate.id === 'flux2-klein');
-  assert.equal(profile.state, 'wizard_rounded_source_master_approved');
+  assert.equal(profile.state, 'b3a_threadball_candidate_review_pending');
   assert.deepEqual(profile.latest_review, {
     decision: 'source_master_approved',
     generation_work_package: 'WP-015B2G',
@@ -193,6 +193,35 @@ test('FLUX profile preserves B2F history and binds the approved B2H Wizard sourc
     normalized_master_path: 'assets/masters/characters/knotkin/wizard/knotkin-wizard-source-master-v1.png',
     runtime_path_assigned: false,
     further_generation_authorized: false
+  });
+  assert.deepEqual(profile.authorized_request, {
+    decision: 'one_text_request_approved',
+    work_package: 'WP-015B3A',
+    purpose: 'worldweave-threadball-replacement',
+    tool: 'generate_flux2_klein_text',
+    workflow_sha256: '626568CEAA47627F7D421D3BD1B0AA151E1643DBA8FBD631F5EB437666649E28',
+    seed: 15035001,
+    prompt: 'One isolated mobile-game spell projectile centered on a plain white background: a compact spherical knot of tightly tensioned sky-blue chenille world-thread, layered strands pulled inward around a bright warm-gold NIM Thread core visible through several narrow openings. It hovers alone with contained magical pressure, tactile crochet fibers, a clean balanced silhouette, soft studio light, and generous padding. No character, hand, room, floor, shadow, loose trailing strands, sparks, rune, text, logo, fuse, flame, orbit, cage, or second object.',
+    width: 1024,
+    height: 1024,
+    batch_size: 1,
+    steps: 4,
+    cfg: 1,
+    sampler: 'euler',
+    reference_input: 'none',
+    max_requests: 1,
+    status: 'completed_pending_owner_review',
+    requests_consumed: 1,
+    prompt_id: 'af2f84ad-deca-4a6d-bd83-b0b88e87c696',
+    runtime_seconds: 272.426,
+    external_output_path: 'C:\\Users\\jensb\\AppData\\Local\\Comfy-Desktop\\ComfyUI-Shared\\output\\WormsPortFlux2KleinText_00006_.png',
+    external_output_sha256: '1F41AF26B9F15419BFB5A59E2485B70EC706AB505672EC57AC8C9295B43F56EC',
+    external_output_bytes: 787706,
+    external_output_pixel_format: 'RGB24',
+    further_requests_authorized: false,
+    paused_candidate_sha256: '2BAE664F7E5A862BCB53B55A68071580485CE040A89650C68EC6FA398F4089EB',
+    concept_reference_sha256: 'BD87405A8E29E4FCEEC87F4E4BC22256CEF215F2789DFDB1DD4BDD6A31DA6699',
+    concept_reference_role: 'external_comparison_only'
   });
   assert.match(profile.notes, /WP-015B2D/);
   assert.match(profile.notes, /DEF9265DAA4C6F2799D16870205E2015291E3E4AAE0F61802349C9FD8D56AD00/);
@@ -248,5 +277,13 @@ test('FLUX profile preserves B2F history and binds the approved B2H Wizard sourc
   assert.match(
     validateGenerationComponents(changedReview).join('\n'),
     /latest exact-output review changed/
+  );
+
+  const changedRequest = structuredClone(manifest);
+  changedRequest.profiles.find((candidate) => candidate.id === 'flux2-klein')
+    .authorized_request.seed = 15035002;
+  assert.match(
+    validateGenerationComponents(changedRequest).join('\n'),
+    /exact authorized generation request changed/
   );
 });

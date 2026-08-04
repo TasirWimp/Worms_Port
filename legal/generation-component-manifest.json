@@ -33,7 +33,7 @@
     },
     {
       "id": "flux2-klein",
-      "state": "wizard_rounded_source_master_approved",
+      "state": "b3a_threadball_candidate_review_pending",
       "runtime_enabled": true,
       "model_components": [
         "flux2-klein-4b-distilled-fp8",
@@ -71,7 +71,36 @@
         "runtime_path_assigned": false,
         "further_generation_authorized": false
       },
-      "notes": "WP-015B2D completed exactly one single-reference Wizard cuteness/styling edit of B2C knit bytes 5FF0A63DAC03E13B2A3390AD77E6929A9822412E1A1E0415E7A38125D703B246 with seed 15026004. Output DEF9265DAA4C6F2799D16870205E2015291E3E4AAE0F61802349C9FD8D56AD00 improved friendly appeal and measured 0.880098 normalized silhouette IoU. The project owner accepted its paired eyebrows, moderate body variation, and cuteness direction. For WP-015B2E the project owner approved exact workflow AD4D4F96AD7D7C024A1A903A440DD4FE6D9E31353ACB7E436BF7DFC787321DAA and deterministic cowl mask 2B6C5F51A6EA411BB8B9C40AF861A339622316CB1D9710719F7F0CDEC327425B. The profile executed exactly one protected edit of B2D with frozen seed 15026005 as Comfy prompt d023da3f-77cf-4f05-ae7b-62ce66f1f176, producing external output 1275B2BD8021EAA5C51AA0606A6CC20BA21B15ED6CEBC4A7C1FC76308BA9D2E0. All 907427 zero-mask pixels matched B2D exactly and normalized silhouette IoU was 0.840783. No retry ran. The project owner rejected B2E because its compact covering lost the Wizard calling and its horizontal neck wrap read thief-like. WP-015B2F bound deterministic hood guide 08CB26CE3FAC6605859F9C9B51331351F28F40A005F6A101B2E575D8A56C6AB8, generous mask AC9F8F101094C5C15361FD24827C4F24B7C52ACBC652000748B209CB5483F56B, external exact-B2D scaffold A048CA16B249298BBECFAD2F57552B04958E26F766D01F6577D1C6A011A0231C, staged base wormsport/wizard-hood-scaffold-v1.png, staged mask wormsport/wizard-hood-edit-mask-v1.png, and seed 15026006. Exactly one request completed as prompt 1f5fc569-5250-4799-a236-0bb22ba629c8 in 355.120 seconds, producing external 1024x1024 output BE162B61FF38BE0EE2EA58716BDBAF5D2B38F0D8E6608953D2ECA41EFE7AD608. All 844934 zero-mask pixels match the scaffold exactly; baseline drift is zero and normalized silhouette IoU 0.796676 remains telemetry. The tall knitted hood now reads Wizard-like at 48px, but full-size review rejects visible polygon and rectangular seams around the exactly restored face and mouth islands. This proves that one shared denoise/composite mask over-constrains the transition. No retry, prompt/seed/input change, full robe, normalization, another character, or product promotion is authorized."
+      "authorized_request": {
+        "decision": "one_text_request_approved",
+        "work_package": "WP-015B3A",
+        "purpose": "worldweave-threadball-replacement",
+        "tool": "generate_flux2_klein_text",
+        "workflow_sha256": "626568CEAA47627F7D421D3BD1B0AA151E1643DBA8FBD631F5EB437666649E28",
+        "seed": 15035001,
+        "prompt": "One isolated mobile-game spell projectile centered on a plain white background: a compact spherical knot of tightly tensioned sky-blue chenille world-thread, layered strands pulled inward around a bright warm-gold NIM Thread core visible through several narrow openings. It hovers alone with contained magical pressure, tactile crochet fibers, a clean balanced silhouette, soft studio light, and generous padding. No character, hand, room, floor, shadow, loose trailing strands, sparks, rune, text, logo, fuse, flame, orbit, cage, or second object.",
+        "width": 1024,
+        "height": 1024,
+        "batch_size": 1,
+        "steps": 4,
+        "cfg": 1,
+        "sampler": "euler",
+        "reference_input": "none",
+        "max_requests": 1,
+        "status": "completed_pending_owner_review",
+        "requests_consumed": 1,
+        "prompt_id": "af2f84ad-deca-4a6d-bd83-b0b88e87c696",
+        "runtime_seconds": 272.426,
+        "external_output_path": "C:\\Users\\jensb\\AppData\\Local\\Comfy-Desktop\\ComfyUI-Shared\\output\\WormsPortFlux2KleinText_00006_.png",
+        "external_output_sha256": "1F41AF26B9F15419BFB5A59E2485B70EC706AB505672EC57AC8C9295B43F56EC",
+        "external_output_bytes": 787706,
+        "external_output_pixel_format": "RGB24",
+        "further_requests_authorized": false,
+        "paused_candidate_sha256": "2BAE664F7E5A862BCB53B55A68071580485CE040A89650C68EC6FA398F4089EB",
+        "concept_reference_sha256": "BD87405A8E29E4FCEEC87F4E4BC22256CEF215F2789DFDB1DD4BDD6A31DA6699",
+        "concept_reference_role": "external_comparison_only"
+      },
+      "notes": "WP-015B2D completed exactly one single-reference Wizard cuteness/styling edit of B2C knit bytes 5FF0A63DAC03E13B2A3390AD77E6929A9822412E1A1E0415E7A38125D703B246 with seed 15026004. Output DEF9265DAA4C6F2799D16870205E2015291E3E4AAE0F61802349C9FD8D56AD00 improved friendly appeal and measured 0.880098 normalized silhouette IoU. The project owner accepted its paired eyebrows, moderate body variation, and cuteness direction. For WP-015B2E the project owner approved exact workflow AD4D4F96AD7D7C024A1A903A440DD4FE6D9E31353ACB7E436BF7DFC787321DAA and deterministic cowl mask 2B6C5F51A6EA411BB8B9C40AF861A339622316CB1D9710719F7F0CDEC327425B. The profile executed exactly one protected edit of B2D with frozen seed 15026005 as Comfy prompt d023da3f-77cf-4f05-ae7b-62ce66f1f176, producing external output 1275B2BD8021EAA5C51AA0606A6CC20BA21B15ED6CEBC4A7C1FC76308BA9D2E0. All 907427 zero-mask pixels matched B2D exactly and normalized silhouette IoU was 0.840783. No retry ran. The project owner rejected B2E because its compact covering lost the Wizard calling and its horizontal neck wrap read thief-like. WP-015B2F bound deterministic hood guide 08CB26CE3FAC6605859F9C9B51331351F28F40A005F6A101B2E575D8A56C6AB8, generous mask AC9F8F101094C5C15361FD24827C4F24B7C52ACBC652000748B209CB5483F56B, external exact-B2D scaffold A048CA16B249298BBECFAD2F57552B04958E26F766D01F6577D1C6A011A0231C, staged base wormsport/wizard-hood-scaffold-v1.png, staged mask wormsport/wizard-hood-edit-mask-v1.png, and seed 15026006. Exactly one request completed as prompt 1f5fc569-5250-4799-a236-0bb22ba629c8 in 355.120 seconds, producing external 1024x1024 output BE162B61FF38BE0EE2EA58716BDBAF5D2B38F0D8E6608953D2ECA41EFE7AD608. All 844934 zero-mask pixels match the scaffold exactly; baseline drift is zero and normalized silhouette IoU 0.796676 remains telemetry. The tall knitted hood now reads Wizard-like at 48px, but full-size review rejects visible polygon and rectangular seams around the exactly restored face and mouth islands. This proves that one shared denoise/composite mask over-constrains the transition. No retry, prompt/seed/input change, full robe, normalization, another character, or product promotion is authorized. WP-015B3A completed exactly one text-only seed 15035001 Worldweave Threadball request after fail-closed preflight, using workflow 626568CEAA47627F7D421D3BD1B0AA151E1643DBA8FBD631F5EB437666649E28 with no reference input. Gemini concept BD87405A8E29E4FCEEC87F4E4BC22256CEF215F2789DFDB1DD4BDD6A31DA6699 remained external comparison-only evidence. Prompt af2f84ad-deca-4a6d-bd83-b0b88e87c696 completed in 272.426 seconds as external RGB24 output 1F41AF26B9F15419BFB5A59E2485B70EC706AB505672EC57AC8C9295B43F56EC. No retry, Patch request, normalization, promotion, or runtime integration is authorized."
     }
   ],
   "conditioning_inputs": [
@@ -274,11 +303,12 @@
         "the completed single fixed-seed WP-015B2C Gate 2 fitted-knit conversion of exact robot bytes BC6B21B74C5016504A733D5D1EC306FE7F46A8CC5E526E0FFF28EB9EABC25D38",
         "the completed single fixed-seed WP-015B2D Wizard cuteness and styling edit of exact knit bytes 5FF0A63DAC03E13B2A3390AD77E6929A9822412E1A1E0415E7A38125D703B246, retained as project-owner-accepted creative-direction evidence output DEF9265DAA4C6F2799D16870205E2015291E3E4AAE0F61802349C9FD8D56AD00",
         "the authorized single fixed-seed WP-015B2E protected cowl edit of exact B2D bytes DEF9265DAA4C6F2799D16870205E2015291E3E4AAE0F61802349C9FD8D56AD00 using exact mask 2B6C5F51A6EA411BB8B9C40AF861A339622316CB1D9710719F7F0CDEC327425B",
-        "the completed two fixed-seed WP-015B2G rounded-Wizard text trials, including selected seed 15027002 external output 40F9E81254A0792B967889808BD8BD8DE33DBDE5EAB7C4CBB1B336DD02BC54A5 and its separately approved WP-015B2H source master"
+        "the completed two fixed-seed WP-015B2G rounded-Wizard text trials, including selected seed 15027002 external output 40F9E81254A0792B967889808BD8BD8DE33DBDE5EAB7C4CBB1B336DD02BC54A5 and its separately approved WP-015B2H source master",
+        "the completed one-request WP-015B3A text-only Worldweave Threadball gate at seed 15035001, external output 1F41AF26B9F15419BFB5A59E2485B70EC706AB505672EC57AC8C9295B43F56EC"
       ],
       "blocked_uses": [
-        "candidate generation beyond the completed WP-015B2G rounded-Wizard trials without a later reviewed decision",
-        "batch or retry generation after WP-015B2G; WP-015B2H authorizes normalization only",
+        "candidate generation beyond the exact one-request WP-015B3A Threadball gate without a later reviewed decision",
+        "batch, retry, prompt repair, reference edit, or Patch generation under the WP-015B3A Threadball gate",
         "redistribution with Worms_Port or storage below assets",
         "product asset promotion without separate exact-output review"
       ],
@@ -328,12 +358,13 @@
         "the completed single fixed-seed WP-015B2C Gate 2 fitted-knit conversion of exact robot bytes BC6B21B74C5016504A733D5D1EC306FE7F46A8CC5E526E0FFF28EB9EABC25D38",
         "the completed single fixed-seed WP-015B2D Wizard cuteness and styling edit of exact knit bytes 5FF0A63DAC03E13B2A3390AD77E6929A9822412E1A1E0415E7A38125D703B246, retained as project-owner-accepted creative-direction evidence output DEF9265DAA4C6F2799D16870205E2015291E3E4AAE0F61802349C9FD8D56AD00",
         "the authorized single fixed-seed WP-015B2E protected cowl edit of exact B2D bytes DEF9265DAA4C6F2799D16870205E2015291E3E4AAE0F61802349C9FD8D56AD00 using exact mask 2B6C5F51A6EA411BB8B9C40AF861A339622316CB1D9710719F7F0CDEC327425B",
-        "the completed two fixed-seed WP-015B2G rounded-Wizard text trials, including selected seed 15027002 external output 40F9E81254A0792B967889808BD8BD8DE33DBDE5EAB7C4CBB1B336DD02BC54A5 and its separately approved WP-015B2H source master"
+        "the completed two fixed-seed WP-015B2G rounded-Wizard text trials, including selected seed 15027002 external output 40F9E81254A0792B967889808BD8BD8DE33DBDE5EAB7C4CBB1B336DD02BC54A5 and its separately approved WP-015B2H source master",
+        "the completed one-request WP-015B3A text-only Worldweave Threadball gate at seed 15035001, external output 1F41AF26B9F15419BFB5A59E2485B70EC706AB505672EC57AC8C9295B43F56EC"
       ],
       "blocked_uses": [
         "using the rejected pre-release Comfy mirror in the reviewed route",
-        "candidate generation beyond the completed WP-015B2G rounded-Wizard trials without a later reviewed decision",
-        "batch or retry generation after WP-015B2G; WP-015B2H authorizes normalization only",
+        "candidate generation beyond the exact one-request WP-015B3A Threadball gate without a later reviewed decision",
+        "batch, retry, prompt repair, reference edit, or Patch generation under the WP-015B3A Threadball gate",
         "redistribution with Worms_Port or storage below assets"
       ],
       "notes": "This single-file encoder was built externally from the two exact BFL Apache-2.0 shards without tensor conversion. The reviewed output is installed outside the repository; neither source weights nor merged bytes are distributed with Worms_Port."
@@ -364,11 +395,12 @@
         "the completed single fixed-seed WP-015B2C Gate 2 fitted-knit conversion of exact robot bytes BC6B21B74C5016504A733D5D1EC306FE7F46A8CC5E526E0FFF28EB9EABC25D38",
         "the completed single fixed-seed WP-015B2D Wizard cuteness and styling edit of exact knit bytes 5FF0A63DAC03E13B2A3390AD77E6929A9822412E1A1E0415E7A38125D703B246, retained as project-owner-accepted creative-direction evidence output DEF9265DAA4C6F2799D16870205E2015291E3E4AAE0F61802349C9FD8D56AD00",
         "the authorized single fixed-seed WP-015B2E protected cowl edit of exact B2D bytes DEF9265DAA4C6F2799D16870205E2015291E3E4AAE0F61802349C9FD8D56AD00 using exact mask 2B6C5F51A6EA411BB8B9C40AF861A339622316CB1D9710719F7F0CDEC327425B",
-        "the completed two fixed-seed WP-015B2G rounded-Wizard text trials, including selected seed 15027002 external output 40F9E81254A0792B967889808BD8BD8DE33DBDE5EAB7C4CBB1B336DD02BC54A5 and its separately approved WP-015B2H source master"
+        "the completed two fixed-seed WP-015B2G rounded-Wizard text trials, including selected seed 15027002 external output 40F9E81254A0792B967889808BD8BD8DE33DBDE5EAB7C4CBB1B336DD02BC54A5 and its separately approved WP-015B2H source master",
+        "the completed one-request WP-015B3A text-only Worldweave Threadball gate at seed 15035001, external output 1F41AF26B9F15419BFB5A59E2485B70EC706AB505672EC57AC8C9295B43F56EC"
       ],
       "blocked_uses": [
-        "candidate generation beyond the completed WP-015B2G rounded-Wizard trials without a later reviewed decision",
-        "batch or retry generation after WP-015B2G; WP-015B2H authorizes normalization only",
+        "candidate generation beyond the exact one-request WP-015B3A Threadball gate without a later reviewed decision",
+        "batch, retry, prompt repair, reference edit, or Patch generation under the WP-015B3A Threadball gate",
         "redistribution with Worms_Port or storage below assets",
         "treating the containing FLUX.2-dev model license as permission for non-autoencoder model weights"
       ],
@@ -399,15 +431,16 @@
         "exact-hash installation and MCP registration through the closed flux2-klein profile",
         "one-image quarantined technical smoke in WP-015B2A Gate 4",
         "the completed bounded Wizard and Threadball visual admission in WP-015B2A Gate 5",
-        "the completed two fixed-seed WP-015B2G rounded-Wizard text trials, including selected seed 15027002 output 40F9E81254A0792B967889808BD8BD8DE33DBDE5EAB7C4CBB1B336DD02BC54A5"
+        "the completed two fixed-seed WP-015B2G rounded-Wizard text trials, including selected seed 15027002 output 40F9E81254A0792B967889808BD8BD8DE33DBDE5EAB7C4CBB1B336DD02BC54A5",
+        "the completed one-request WP-015B3A text-only Worldweave Threadball gate at seed 15035001, external output 1F41AF26B9F15419BFB5A59E2485B70EC706AB505672EC57AC8C9295B43F56EC"
       ],
       "blocked_uses": [
         "copying into the external MCP workflow directory outside the exact profile installer",
-        "further candidate generation after the completed WP-015B2G bounded trials without a new reviewed plan",
+        "candidate generation beyond the exact one-request WP-015B3A Threadball gate without a later reviewed decision",
         "changing the reviewed model filenames, four-step schedule, CFG 1, Euler sampler, 1024x1024 canvas, or batch size one without a new review and hash",
         "automatic publication into assets or product-asset approval"
       ],
-      "latest_review": "WP-015B2G later reused the unchanged exact workflow for two separately authorized rounded-Wizard trials. Seed 15027002 output 40F9E812...4A5 passed owner selection, and WP-015B2H approved only deterministic normalized master 7AF4864E...18A9. No automatic promotion or further inference is authorized.",
+      "latest_review": "WP-015B3A completed exactly one text-only seed 15035001 Worldweave Threadball request with the unchanged exact workflow, no reference input, and fail-closed preflight. Prompt af2f84ad-deca-4a6d-bd83-b0b88e87c696 produced external output 1F41AF26...F56EC in 272.426 seconds. Gemini concept BD87405A...DA6699 remained external comparison-only evidence. No retry, automatic promotion, Patch request, normalization, or runtime integration is authorized.",
       "notes": "Project-owned API-format translation of the official pinned FLUX.2 Klein 4B distilled text-to-image graph. Gate 4 completed one technical smoke. Gate 5 then produced exactly one Wizard and one Threadball primary: Threadball passed its bounded structure purpose, but Wizard failed. Those historical Gate 5 outputs remain external quarantine evidence; later bounded decisions are recorded in latest_review."
     },
     {
