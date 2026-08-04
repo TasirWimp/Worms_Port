@@ -248,6 +248,13 @@ B3A source still exists with:
 npm run asset:normalize:threadball
 ```
 
+Reproduce the approved Cloud source-master review while its exact external B3A
+source still exists with:
+
+```powershell
+npm run asset:normalize:cloud
+```
+
 The next slice is WP-015B3A. Existing Threadball candidate
 `2BAE664F...F4089EB` is paused as historical structure evidence because it reads
 as ordinary yarn rather than the newly defined compressed Worldweave spell. Do
@@ -266,9 +273,12 @@ Terrain Interior (`15035004`), each under the same pinned FLUX workflow/settings
 and each requiring fresh preflight, review, and explicit continuation. FLUX can
 provide textile source imagery only; a later deterministic normalizer must prove
 Cloud alpha handling and terrain repeatability before any source-master approval.
-The one Cloud request completed as external candidate `EA972B0B...FFE7`; it is
-pending owner visual direction, so neither Cloud normalization nor Terrain Top
-generation is authorized. WP-015B3B separately admits a Wizard-first animation
+The owner accepted the one Cloud request (`EA972B0B...FFE7`), and deterministic
+white-matte normalization produced source master
+`assets/masters/environment/patch-01/clouds/patch-01-cloud-source-master-v1.png`
+(`7F327B51...4B23C`) with no runtime path. The only next Patch inference gate is
+Terrain Top (`15035003`), after its own fresh preflight and explicit continuation;
+do not batch it with Terrain Interior. WP-015B3B separately admits a Wizard-first animation
 route, and B3C produces one Wizard inventory that WP-015C reuses for both the
 player and the AI Loomkeeper. A
 distinct Loomkeeper asset belongs to the wider character roster in WP-015D.

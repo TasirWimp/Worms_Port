@@ -1665,7 +1665,7 @@ Patch request, animation, atlas, or runtime integration is authorized.
 
 ## WP-015B3A Patch Source-Contract Gate
 
-Status: **Cloud request completed; owner visual decision pending**.
+Status: **Cloud source-master approval completed; Terrain Top remains separately gated**.
 
 The historical SD 1.5 Patch cloud, terrain-top, and terrain-interior outputs are
 rejected external evidence only. Their prompts and seeds cannot be retried under
@@ -1689,7 +1689,14 @@ in 255.665 seconds, producing untouched external 1024x1024 RGB24 output
 It has one connected off-white three-pom-pom crochet cluster, clean isolation,
 and no forbidden subject, text, logo, scenery, or contact plane. At full size it
 is more compact and pom-pom-like than a very low cloud; a non-promotional
-whole-canvas 48px review (`E16B9D8D...7CCEF`) remains quiet. The direction is
-reserved for project-owner judgment. No Cloud normalizer, source master,
-product-manifest entry, Terrain Top request, atlas, or runtime integration
-exists or is authorized while that decision is pending.
+whole-canvas 48px review (`E16B9D8D...7CCEF`) remains quiet. The project owner
+accepted the direction. Deterministic normalizer
+`scripts/normalize-cloud-master.js` (`185E37D2...0492`) and frozen config
+`scripts/asset-normalization/wp-015b3a-patch-cloud-v1.json`
+(`A13DB44E...AE78`) produced byte-identical 512x512 RGBA master
+`assets/masters/environment/patch-01/clouds/patch-01-cloud-source-master-v1.png`
+(`7F327B51...4B23C`). It has one visible component, zero border-alpha pixels,
+and placement anchor `(256,256)`; deterministic enclosed-white-matte filling
+prevents stitch pinholes without painting, reconstruction, or inference. The
+source master is manifest-bound with no `runtime_path`, atlas, or integration.
+Terrain Top is the only next request, and remains separately preflighted.

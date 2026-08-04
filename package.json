@@ -18,6 +18,7 @@
     "check:compliance": "npm run check:asset-manifest && npm run check:generation-components && npm run check:import-boundary && npm run check:package-licenses && npm run check:work-packages && npm run check:clean-room",
     "asset:normalize:wizard": "node scripts/normalize-character-master.js",
     "asset:normalize:threadball": "node scripts/normalize-relic-master.js",
+    "asset:normalize:cloud": "node scripts/normalize-cloud-master.js",
     "check:types": "tsc -p server/tsconfig.json --noEmit && tsc -p client/tsconfig.json --noEmit",
     "test:tooling": "node --test tests/tooling/*.test.js",
     "test:protocol": "node --import tsx --test tests/protocol/*.test.ts",

@@ -1627,9 +1627,10 @@ integrating.
    integration is authorized. The equivalent Patch-layer contract is now frozen:
    Cloud seed `15035002`, Terrain Top `15035003`, and Terrain Interior
    `15035004` use the same pinned text-only workflow/settings and no reference
-   input. Cloud completed as quarantined output `EA972B0B...FFE7` after exact
-   preflight; it awaits project-owner visual direction and permits neither its
-   normalizer nor Terrain Top yet. Those requests are strictly sequential, and
+   input. Cloud completed as external output `EA972B0B...FFE7`, passed
+   project-owner review, and has deterministic source master `7F327B51...4B23C`
+   with no runtime path. Terrain Top is now the next separately preflighted gate.
+   Those requests are strictly sequential, and
    each output must be reviewed before the next gate. Treat FLUX output as
    textile source imagery only; a later frozen deterministic normalizer must
    prove Cloud alpha handling and terrain repeatability. Failure pauses the

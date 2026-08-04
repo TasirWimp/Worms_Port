@@ -162,6 +162,12 @@ blue strands so the gold core reads as internal Worldweave rather than a flat
 printed symbol. It is source-only and has no runtime path, animation, or
 integration authority.
 
+Patch 01's quiet off-white crochet Cloud has likewise completed owner-approved
+deterministic source-master normalization as
+`assets/masters/environment/patch-01/clouds/patch-01-cloud-source-master-v1.png`
+(`7F327B51...4B23C`). It is presentation-only source material with no runtime
+path; terrain solidity, crater shape, and collision remain code-owned.
+
 WP-015 differentiates only these two dimensions: range and maximum direct
 Stitching damage. Damage radius, terrain radius, precision, falloff, ammo,
 cooldowns, secondary effects, and Calling modifiers remain on a shared basic

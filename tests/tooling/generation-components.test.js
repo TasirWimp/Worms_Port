@@ -176,9 +176,9 @@ test('generation profiles reject arbitrary model, workflow, tool, and launch sel
   assert.match(validateGenerationComponents(policyInvalid).join('\n'), /profile selection must remain closed/);
 });
 
-test('FLUX profile preserves approved Wizard and Threadball source masters', () => {
+test('FLUX profile preserves approved Wizard, Threadball, and Cloud source masters', () => {
   const profile = manifest.profiles.find((candidate) => candidate.id === 'flux2-klein');
-  assert.equal(profile.state, 'wizard_and_threadball_source_masters_approved');
+  assert.equal(profile.state, 'wizard_threadball_and_cloud_source_masters_approved');
   assert.deepEqual(profile.latest_review, {
     decision: 'source_master_approved',
     generation_work_package: 'WP-015B2G',
@@ -239,6 +239,48 @@ test('FLUX profile preserves approved Wizard and Threadball source masters', () 
     runtime_path_assigned: false,
     further_generation_authorized: false
   });
+  assert.deepEqual(profile.cloud_authorized_request, {
+    decision: 'one_text_request_approved',
+    work_package: 'WP-015B3A',
+    purpose: 'patch-01-cotton-cloud-source',
+    tool: 'generate_flux2_klein_text',
+    workflow_sha256: '626568CEAA47627F7D421D3BD1B0AA151E1643DBA8FBD631F5EB437666649E28',
+    seed: 15035002,
+    prompt: 'One isolated low horizontal cotton cloud layer for a mobile-game sky, centered on a plain white background: three overlapping soft off-white crochet pompoms form one connected calm cloud with a wide rounded silhouette, subtle visible fibers, even soft studio light, and generous padding. No separate cloud, scenery, horizon, ground, shadow, character, text, logo, icon, frame, weather, stars, rainbow, sun, moon, or dramatic lighting.',
+    width: 1024,
+    height: 1024,
+    batch_size: 1,
+    steps: 4,
+    cfg: 1,
+    sampler: 'euler',
+    reference_input: 'none',
+    max_requests: 1,
+    status: 'consumed_source_master_approved',
+    requests_consumed: 1,
+    prompt_id: '0936905b-fb40-47e9-a621-8106e4382a93',
+    runtime_seconds: 255.665,
+    external_output_path: 'C:\\Users\\jensb\\AppData\\Local\\Comfy-Desktop\\ComfyUI-Shared\\output\\WormsPortFlux2KleinText_00007_.png',
+    external_output_sha256: 'EA972B0B884AE5D144C74AE01E490E9C8961A42619172060C11F53925D48FFE7',
+    external_output_bytes: 688501,
+    external_output_pixel_format: 'RGB24',
+    further_requests_authorized: false
+  });
+  assert.deepEqual(profile.cloud_source_master_review, {
+    decision: 'source_master_approved',
+    generation_work_package: 'WP-015B3A',
+    normalization_work_package: 'WP-015B3A',
+    seed: 15035002,
+    external_source_sha256: 'EA972B0B884AE5D144C74AE01E490E9C8961A42619172060C11F53925D48FFE7',
+    normalization_config_path: 'scripts/asset-normalization/wp-015b3a-patch-cloud-v1.json',
+    normalization_config_sha256: 'A13DB44E682870B262C6D2660790A63A5876F3131504DCA4F7E57C09309FAE78',
+    normalizer_path: 'scripts/normalize-cloud-master.js',
+    normalizer_sha256: '185E37D22822FEEB6FBA8049D77E18163758EFEF37CBDE28E13D82F9912B0492',
+    normalized_master_path: 'assets/masters/environment/patch-01/clouds/patch-01-cloud-source-master-v1.png',
+    normalized_master_sha256: '7F327B515FBF89F7DD275C4385FA194AE3F95E677C60BE10126CA68D9024B23C',
+    placement_anchor: [256, 256],
+    runtime_path_assigned: false,
+    further_generation_authorized: false
+  });
   assert.match(profile.notes, /WP-015B2D/);
   assert.match(profile.notes, /DEF9265DAA4C6F2799D16870205E2015291E3E4AAE0F61802349C9FD8D56AD00/);
   assert.match(profile.notes, /15026004/);
@@ -253,6 +295,9 @@ test('FLUX profile preserves approved Wizard and Threadball source masters', () 
   assert.match(profile.notes, /907427/);
   assert.match(profile.notes, /0\.840783/);
   assert.match(profile.notes, /No retry/);
+  assert.match(profile.notes, /0936905b-fb40-47e9-a621-8106e4382a93/);
+  assert.match(profile.notes, /EA972B0B884AE5D144C74AE01E490E9C8961A42619172060C11F53925D48FFE7/);
+  assert.match(profile.notes, /7F327B515FBF89F7DD275C4385FA194AE3F95E677C60BE10126CA68D9024B23C/);
   assert.match(profile.notes, /rejected/);
   assert.match(profile.notes, /WP-015B2F/);
   assert.match(profile.notes, /08CB26CE3FAC6605859F9C9B51331351F28F40A005F6A101B2E575D8A56C6AB8/);
@@ -309,5 +354,13 @@ test('FLUX profile preserves approved Wizard and Threadball source masters', () 
   assert.match(
     validateGenerationComponents(changedThreadballReview).join('\n'),
     /exact Threadball source-master review changed/
+  );
+
+  const changedCloudReview = structuredClone(manifest);
+  changedCloudReview.profiles.find((candidate) => candidate.id === 'flux2-klein')
+    .cloud_source_master_review.placement_anchor = [255, 256];
+  assert.match(
+    validateGenerationComponents(changedCloudReview).join('\n'),
+    /exact Cloud source-master review changed/
   );
 });

@@ -3,8 +3,9 @@
 Status: frozen historical B1 contract, amended for future character work by the
 WP-015B2C mouth, WP-015B2D creative-expression, WP-015B2G rounded-doll, and
 WP-015B3 shared-Wizard opponent decisions below. WP-015B3A has completed the
-Threadball source master and now freezes the separate Patch source contract;
-that contract authorizes no Patch inference in this document revision.
+Threadball and Cloud source masters. The next Patch gate is a separately
+preflighted Terrain Top request; this document authorizes no automatic or batch
+Patch inference.
 
 This document is the production contract for the first NIMble Knots visual
 slice: Wizard, Loomkeeper, Threadball, and Patch 01. WP-015B1 writes and reviews
@@ -557,8 +558,8 @@ or hit detection.
 | Settings | 1024x1024, batch 1, 4 FLUX.2 scheduler steps, CFG 1, Euler |
 | Reference input | none; no historical Patch output, Wizard, Threadball, Gemini concept, or external artwork may be staged or conditioned on |
 | Output location | external `WormsPortFlux2KleinText` Comfy output prefix only |
-| Current state | Cloud has one quarantined external candidate pending owner decision; no normalizer, source master, product asset, runtime path, atlas, or gameplay integration exists |
-| Sequencing | review and close Cloud before freezing its normalizer or considering Terrain Top; then repeat the same gate for Terrain Interior |
+| Current state | Cloud's sole external candidate is owner-accepted and source-master-approved through deterministic normalization; it has no runtime path, product path, atlas, or gameplay integration |
+| Sequencing | Cloud is closed; Terrain Top is the next separate one-request gate after fresh preflight and explicit continuation, followed later by Terrain Interior |
 | Stop rule | stop the family on a component/workflow/service/queue failure, rejected candidate, or missing deterministic-normalization plan; no batch, seed shopping, reference edit, prompt repair, or automatic next request |
 
 The shared exclusion set is: character, creature, face, hands, Relic, weapon,
@@ -588,13 +589,17 @@ The one authorized Cloud request completed as Comfy prompt
 external, untouched 688,501-byte 1024x1024 RGB24 PNG
 `WormsPortFlux2KleinText_00007_.png`, SHA-256
 `EA972B0B884AE5D144C74AE01E490E9C8961A42619172060C11F53925D48FFE7`.
-Primary triage finds one connected off-white three-pom-pom crochet cluster on a
-clean white field, with no text, logo, character, scenery, or contact plane. Its
-full-size reading is more compact and pom-pom-like than a very low horizontal
-cloud; the non-promotional whole-canvas 48px review remains quiet but cannot
-decide that Calling-level art-direction judgment. It is therefore external
-quarantine pending project-owner visual decision. Do not normalize, crop, alpha
-extract, promote, retry, repair, generate Terrain Top, or integrate it.
+Primary triage found one connected off-white three-pom-pom crochet cluster on a
+clean white field, with no text, logo, character, scenery, or contact plane. The
+project owner accepted its quiet compact/pom-pom reading. Frozen normalizer
+`scripts/asset-normalization/wp-015b3a-patch-cloud-v1.json`
+(`A13DB44E...AE78`) applies only white-matte extraction, enclosed-white-matte
+hole filling to prevent transparent stitch pinholes, uniform scale, and
+translation. It reproduced 512x512 RGBA source master
+`assets/masters/environment/patch-01/clouds/patch-01-cloud-source-master-v1.png`
+(`7F327B51...4B23C`) byte-for-byte, at placement anchor `(256,256)`, with no
+`runtime_path`. Do not retry or alter Cloud. Terrain Top remains a separate next
+request; no Terrain Interior or integration is authorized.
 
 #### Gate 2: terrain-top textile source
 
@@ -626,9 +631,9 @@ Exact positive prompt:
 One flat orthographic square textile material study filling the canvas: evenly distributed warm-brown felt and dense short crochet fibers with sparse tiny gold stitches, quiet tactile depth, consistent scale, and even soft light. No central motif, directional pattern, border, seam, horizon, grass, stone, object, character, text, logo, shadow, vignette, or scenery.
 ```
 
-After each accepted external candidate, stop. A later narrow gate must first
-freeze and test a material-specific normalizer: Cloud needs connected-subject
-alpha extraction without a contact shadow; Terrain Top needs a deterministic
+After each accepted external candidate, stop. Cloud's narrow normalizer is now
+frozen and approved. A later narrow gate must first freeze and test each
+remaining material-specific normalizer: Terrain Top needs a deterministic
 central strip and horizontal repeat test; Terrain Interior needs deterministic
 central crop/edge treatment and a 3x3 repeat test. Passing a source candidate
 does not approve the normalizer, a source master, the product manifest, or C

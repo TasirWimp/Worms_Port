@@ -226,7 +226,7 @@ const reviewedProfileContracts = new Map([
     smokeTool: 'generate_image'
   }],
   ['flux2-klein', {
-    state: 'wizard_and_threadball_source_masters_approved',
+    state: 'wizard_threadball_and_cloud_source_masters_approved',
     modelComponents: reviewedFluxModelComponents,
     workflowComponents: [
       'wormsport-flux2-klein-text-to-image-workflow',
@@ -301,6 +301,48 @@ const reviewedProfileContracts = new Map([
       runtime_path_assigned: false,
       further_generation_authorized: false
     },
+    cloudAuthorizedRequest: {
+      decision: 'one_text_request_approved',
+      work_package: 'WP-015B3A',
+      purpose: 'patch-01-cotton-cloud-source',
+      tool: 'generate_flux2_klein_text',
+      workflow_sha256: '626568CEAA47627F7D421D3BD1B0AA151E1643DBA8FBD631F5EB437666649E28',
+      seed: 15035002,
+      prompt: 'One isolated low horizontal cotton cloud layer for a mobile-game sky, centered on a plain white background: three overlapping soft off-white crochet pompoms form one connected calm cloud with a wide rounded silhouette, subtle visible fibers, even soft studio light, and generous padding. No separate cloud, scenery, horizon, ground, shadow, character, text, logo, icon, frame, weather, stars, rainbow, sun, moon, or dramatic lighting.',
+      width: 1024,
+      height: 1024,
+      batch_size: 1,
+      steps: 4,
+      cfg: 1,
+      sampler: 'euler',
+      reference_input: 'none',
+      max_requests: 1,
+      status: 'consumed_source_master_approved',
+      requests_consumed: 1,
+      prompt_id: '0936905b-fb40-47e9-a621-8106e4382a93',
+      runtime_seconds: 255.665,
+      external_output_path: 'C:\\Users\\jensb\\AppData\\Local\\Comfy-Desktop\\ComfyUI-Shared\\output\\WormsPortFlux2KleinText_00007_.png',
+      external_output_sha256: 'EA972B0B884AE5D144C74AE01E490E9C8961A42619172060C11F53925D48FFE7',
+      external_output_bytes: 688501,
+      external_output_pixel_format: 'RGB24',
+      further_requests_authorized: false
+    },
+    cloudReview: {
+      decision: 'source_master_approved',
+      generation_work_package: 'WP-015B3A',
+      normalization_work_package: 'WP-015B3A',
+      seed: 15035002,
+      external_source_sha256: 'EA972B0B884AE5D144C74AE01E490E9C8961A42619172060C11F53925D48FFE7',
+      normalization_config_path: 'scripts/asset-normalization/wp-015b3a-patch-cloud-v1.json',
+      normalization_config_sha256: 'A13DB44E682870B262C6D2660790A63A5876F3131504DCA4F7E57C09309FAE78',
+      normalizer_path: 'scripts/normalize-cloud-master.js',
+      normalizer_sha256: '185E37D22822FEEB6FBA8049D77E18163758EFEF37CBDE28E13D82F9912B0492',
+      normalized_master_path: 'assets/masters/environment/patch-01/clouds/patch-01-cloud-source-master-v1.png',
+      normalized_master_sha256: '7F327B515FBF89F7DD275C4385FA194AE3F95E677C60BE10126CA68D9024B23C',
+      placement_anchor: [256, 256],
+      runtime_path_assigned: false,
+      further_generation_authorized: false
+    },
     requiredNoteFragments: [
       'WP-015B2D',
       'DEF9265DAA4C6F2799D16870205E2015291E3E4AAE0F61802349C9FD8D56AD00',
@@ -342,7 +384,14 @@ const reviewedProfileContracts = new Map([
       'CF8C6301E9A41DBAB2A16B127F4DF553F719474644761EBE865EDF3A0452635B',
       'F44A5B86B146EC678E3C594E9C9FD78CADD592F8AF5069BE8A9E4A7944D65B8B',
       '608F490CEE2A7FA79F0EA47BF7B15A8E49685B7B1E65E5AE38E15A34B4CD9B6F',
-      'No retry, Patch request, animation, runtime integration, or further generation'
+      '15035002',
+      '0936905b-fb40-47e9-a621-8106e4382a93',
+      '255.665',
+      'EA972B0B884AE5D144C74AE01E490E9C8961A42619172060C11F53925D48FFE7',
+      'A13DB44E682870B262C6D2660790A63A5876F3131504DCA4F7E57C09309FAE78',
+      '185E37D22822FEEB6FBA8049D77E18163758EFEF37CBDE28E13D82F9912B0492',
+      '7F327B515FBF89F7DD275C4385FA194AE3F95E677C60BE10126CA68D9024B23C',
+      'No retry, Terrain Top request, animation, runtime integration, or further generation'
     ]
   }]
 ]);
@@ -822,6 +871,14 @@ function validateGenerationComponents(manifest, root = repoRoot) {
           JSON.stringify(profile.threadball_source_master_review) !== JSON.stringify(contract.threadballReview)) {
         errors.push(`${label}: exact Threadball source-master review changed.`);
       }
+      if (contract.cloudAuthorizedRequest &&
+          JSON.stringify(profile.cloud_authorized_request) !== JSON.stringify(contract.cloudAuthorizedRequest)) {
+        errors.push(`${label}: exact Cloud authorized generation request changed.`);
+      }
+      if (contract.cloudReview &&
+          JSON.stringify(profile.cloud_source_master_review) !== JSON.stringify(contract.cloudReview)) {
+        errors.push(`${label}: exact Cloud source-master review changed.`);
+      }
       if (contract.latestReview) {
         const exactFiles = [
           ['normalization_config_path', 'normalization_config_sha256'],
@@ -883,6 +940,38 @@ function validateGenerationComponents(manifest, root = repoRoot) {
             approvedMaster.sha256 !== profile.threadball_source_master_review.normalized_master_sha256 ||
             approvedMaster.runtime_path !== undefined) {
           errors.push(`${label}: approved Threadball source master must remain manifest-bound without runtime_path.`);
+        }
+      }
+      if (contract.cloudReview) {
+        const exactFiles = [
+          ['normalization_config_path', 'normalization_config_sha256'],
+          ['normalizer_path', 'normalizer_sha256'],
+          ['normalized_master_path', 'normalized_master_sha256']
+        ];
+        for (const [pathField, hashField] of exactFiles) {
+          const relativePath = profile.cloud_source_master_review?.[pathField] || '';
+          const resolvedPath = path.resolve(root, relativePath);
+          if (!relativePath || !resolvedPath.startsWith(path.resolve(root) + path.sep) ||
+              !fs.existsSync(resolvedPath)) {
+            errors.push(`${label}: Cloud ${pathField} must resolve inside the repository.`);
+            continue;
+          }
+          const actualHash = crypto.createHash('sha256').update(fs.readFileSync(resolvedPath))
+            .digest('hex').toUpperCase();
+          if (actualHash !== profile.cloud_source_master_review?.[hashField]) {
+            errors.push(`${label}: Cloud ${pathField} does not match ${hashField}.`);
+          }
+        }
+        const assetManifestPath = path.resolve(root, 'legal', 'asset-manifest.json');
+        const assetManifest = fs.existsSync(assetManifestPath) ?
+          JSON.parse(fs.readFileSync(assetManifestPath, 'utf8')) : null;
+        const approvedMaster = assetManifest?.assets?.find(
+          (asset) => asset.file === profile.cloud_source_master_review.normalized_master_path
+        );
+        if (!approvedMaster ||
+            approvedMaster.sha256 !== profile.cloud_source_master_review.normalized_master_sha256 ||
+            approvedMaster.runtime_path !== undefined) {
+          errors.push(`${label}: approved Cloud source master must remain manifest-bound without runtime_path.`);
         }
       }
       if (Array.isArray(contract.requiredNoteFragments) &&
