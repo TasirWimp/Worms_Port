@@ -255,6 +255,13 @@ source still exists with:
 npm run asset:normalize:cloud
 ```
 
+Reproduce the approved Terrain Top source-master review while its exact external
+B3A source still exists with:
+
+```powershell
+npm run asset:normalize:terrain-top
+```
+
 The next slice is WP-015B3A. Existing Threadball candidate
 `2BAE664F...F4089EB` is paused as historical structure evidence because it reads
 as ordinary yarn rather than the newly defined compressed Worldweave spell. Do
@@ -276,9 +283,12 @@ Cloud alpha handling and terrain repeatability before any source-master approval
 The owner accepted the one Cloud request (`EA972B0B...FFE7`), and deterministic
 white-matte normalization produced source master
 `assets/masters/environment/patch-01/clouds/patch-01-cloud-source-master-v1.png`
-(`7F327B51...4B23C`) with no runtime path. The one Terrain Top request
-(`15035003`) has completed as external candidate `BE5EB2E7...2B22` and awaits
-owner review; do not normalize it or generate Terrain Interior. WP-015B3B separately admits a Wizard-first animation
+(`7F327B51...4B23C`) with no runtime path. Owner-approved Terrain Top source
+`BE5EB2E7...2B22` now has deterministic 256x64 master
+`assets/masters/environment/patch-01/terrain/patch-01-terrain-top-source-master-v1.png`
+(`41511E63...7897`), with a three-copy horizontal repeat proof whose edge
+difference is zero. It has no runtime path; a fresh Terrain Interior request
+still requires its own preflight, review, and explicit continuation. WP-015B3B separately admits a Wizard-first animation
 route, and B3C produces one Wizard inventory that WP-015C reuses for both the
 player and the AI Loomkeeper. A
 distinct Loomkeeper asset belongs to the wider character roster in WP-015D.

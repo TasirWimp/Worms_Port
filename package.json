@@ -19,6 +19,7 @@
     "asset:normalize:wizard": "node scripts/normalize-character-master.js",
     "asset:normalize:threadball": "node scripts/normalize-relic-master.js",
     "asset:normalize:cloud": "node scripts/normalize-cloud-master.js",
+    "asset:normalize:terrain-top": "node scripts/normalize-terrain-top-master.js",
     "check:types": "tsc -p server/tsconfig.json --noEmit && tsc -p client/tsconfig.json --noEmit",
     "test:tooling": "node --test tests/tooling/*.test.js",
     "test:protocol": "node --import tsx --test tests/protocol/*.test.ts",

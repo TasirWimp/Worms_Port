@@ -3,8 +3,9 @@
 Status: frozen historical B1 contract, amended for future character work by the
 WP-015B2C mouth, WP-015B2D creative-expression, WP-015B2G rounded-doll, and
 WP-015B3 shared-Wizard opponent decisions below. WP-015B3A has completed the
-Threadball and Cloud source masters, plus one Terrain Top candidate awaiting
-owner review. This document authorizes no automatic or batch Patch inference.
+Threadball, Cloud, and Terrain Top source masters. Terrain Interior remains the
+next separately gated source request. This document authorizes no automatic or
+batch Patch inference.
 
 This document is the production contract for the first NIMble Knots visual
 slice: Wizard, Loomkeeper, Threadball, and Patch 01. WP-015B1 writes and reviews
@@ -557,8 +558,8 @@ or hit detection.
 | Settings | 1024x1024, batch 1, 4 FLUX.2 scheduler steps, CFG 1, Euler |
 | Reference input | none; no historical Patch output, Wizard, Threadball, Gemini concept, or external artwork may be staged or conditioned on |
 | Output location | external `WormsPortFlux2KleinText` Comfy output prefix only |
-| Current state | Cloud is source-master-approved with no runtime path; Terrain Top has one external candidate pending owner review, with no crop, repeat proof, source master, product path, atlas, or gameplay integration |
-| Sequencing | Cloud is closed; review Terrain Top before freezing its material-specific normalizer or considering Terrain Interior |
+| Current state | Cloud and Terrain Top are source-master-approved with no runtime path; Terrain Top is 256x64 and has an exact three-copy horizontal repeat proof, but no product path, atlas, or gameplay integration |
+| Sequencing | Cloud and Terrain Top are closed; Terrain Interior is separately preflighted, reviewed, and continued only after explicit authorization |
 | Stop rule | stop the family on a component/workflow/service/queue failure, rejected candidate, or missing deterministic-normalization plan; no batch, seed shopping, reference edit, prompt repair, or automatic next request |
 
 The shared exclusion set is: character, creature, face, hands, Relic, weapon,
@@ -597,8 +598,9 @@ hole filling to prevent transparent stitch pinholes, uniform scale, and
 translation. It reproduced 512x512 RGBA source master
 `assets/masters/environment/patch-01/clouds/patch-01-cloud-source-master-v1.png`
 (`7F327B51...4B23C`) byte-for-byte, at placement anchor `(256,256)`, with no
-`runtime_path`. Do not retry or alter Cloud. Terrain Top is now external
-quarantine pending owner review; no Terrain Interior or integration is authorized.
+`runtime_path`. Do not retry or alter Cloud. Owner-approved Terrain Top now has
+source master `41511E63...7897`; Terrain Interior and integration remain
+separately gated.
 
 #### Gate 2: terrain-top textile source
 
@@ -623,10 +625,17 @@ external, untouched 774,627-byte 1024x1024 RGB24 PNG
 Initial triage finds one full-width straight light-olive tufted grass strip,
 warm-brown felt below, and a restrained gold stitched join, with no hill,
 perspective, border, object, text, logo, or central motif. Its external
-whole-canvas 48px review (`8758AFE0...0D7A`) remains quiet. It is external
-quarantine pending project-owner visual decision. Do not crop, normalize, prove
-repeatability, promote, retry, repair, generate Terrain Interior, or integrate
-it.
+whole-canvas 48px review (`8758AFE0...0D7A`) remains quiet. The project owner
+accepted it. Frozen normalizer
+`scripts/normalize-terrain-top-master.js` (`F5668C10...FC6F`) applies only fixed
+crop `(0,392,1024,256)`, opaque conversion, one-quarter uniform scale, and a
+reciprocal 16-pixel horizontal edge blend. Its config
+`scripts/asset-normalization/wp-015b3a-patch-terrain-top-v1.json`
+(`4BA76F64...FFC8`) reproduced 256x64 opaque RGBA source master
+`assets/masters/environment/patch-01/terrain/patch-01-terrain-top-source-master-v1.png`
+(`41511E63...7897`) byte-for-byte. The fixed three-copy repeat proof has exact
+zero edge difference. The master has no `runtime_path`; do not retry, repair,
+integrate, or generate Terrain Interior without its separate next gate.
 
 #### Gate 3: terrain-interior textile source
 
@@ -643,13 +652,12 @@ Exact positive prompt:
 One flat orthographic square textile material study filling the canvas: evenly distributed warm-brown felt and dense short crochet fibers with sparse tiny gold stitches, quiet tactile depth, consistent scale, and even soft light. No central motif, directional pattern, border, seam, horizon, grass, stone, object, character, text, logo, shadow, vignette, or scenery.
 ```
 
-After each accepted external candidate, stop. Cloud's narrow normalizer is now
-frozen and approved. A later narrow gate must first freeze and test each
-remaining material-specific normalizer: Terrain Top needs a deterministic
-central strip and horizontal repeat test; Terrain Interior needs deterministic
-central crop/edge treatment and a 3x3 repeat test. Passing a source candidate
-does not approve the normalizer, a source master, the product manifest, or C
-integration.
+After each accepted external candidate, stop. Cloud's and Terrain Top's narrow
+normalizers are frozen and approved. Terrain Interior remains the final Patch
+source request: after its owner review, a later narrow gate must freeze and test
+its deterministic central crop/edge treatment and 3x3 repeat test. Passing a
+source candidate does not approve the normalizer, a source master, the product
+manifest, or C integration.
 
 ## WP-015B2 Handoff
 

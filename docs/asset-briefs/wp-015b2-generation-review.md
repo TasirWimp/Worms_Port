@@ -1665,7 +1665,7 @@ Patch request, animation, atlas, or runtime integration is authorized.
 
 ## WP-015B3A Patch Source-Contract Gate
 
-Status: **Terrain Top request completed; candidate awaits project-owner review**.
+Status: **Terrain Top source master approved; Terrain Interior remains separately gated**.
 
 The historical SD 1.5 Patch cloud, terrain-top, and terrain-interior outputs are
 rejected external evidence only. Their prompts and seeds cannot be retried under
@@ -1708,7 +1708,13 @@ bytes, SHA-256 `BE5EB2E77062C9A86327ECC1EB7704C33F8511291709AE18A52D1AF51BE42B22
 It shows a clear full-width light-olive tufted-yarn top strip, warm-brown felt,
 and one restrained gold blanket-stitch line with no scenery, perspective,
 object, text, logo, or focal motif. The non-promotional 48px whole-canvas review
-(`8758AFE0...0D7A`) remains quiet. This is external quarantine pending
-project-owner judgment. No crop, deterministic repeat proof, normalizer, source
-master, asset-manifest entry, Terrain Interior request, atlas, or runtime
-integration exists or is authorized.
+(`8758AFE0...0D7A`) remains quiet. The project owner accepted it. Frozen config
+`scripts/asset-normalization/wp-015b3a-patch-terrain-top-v1.json`
+(`4BA76F64...FFC8`) and normalizer `scripts/normalize-terrain-top-master.js`
+(`F5668C10...FC6F`) apply only exact crop `(0,392,1024,256)`, opaque conversion,
+one-quarter uniform scale, and a reciprocal 16-pixel edge blend. Two independent
+runs produced 256x64 opaque RGBA source master `41511E63...7897` byte-for-byte;
+its three-copy horizontal repeat proof has zero edge difference. It is
+manifest-bound with no `runtime_path`, atlas, terrain authority, or integration.
+Terrain Interior remains separately preflighted, reviewed, and explicitly
+continued.

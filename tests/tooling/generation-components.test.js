@@ -176,9 +176,9 @@ test('generation profiles reject arbitrary model, workflow, tool, and launch sel
   assert.match(validateGenerationComponents(policyInvalid).join('\n'), /profile selection must remain closed/);
 });
 
-test('FLUX profile preserves approved Wizard, Threadball, and Cloud masters plus the pending Terrain Top candidate', () => {
+test('FLUX profile preserves approved Wizard, Threadball, Cloud, and Terrain Top masters', () => {
   const profile = manifest.profiles.find((candidate) => candidate.id === 'flux2-klein');
-  assert.equal(profile.state, 'wizard_threadball_cloud_masters_terrain_top_candidate_pending_review');
+  assert.equal(profile.state, 'wizard_threadball_cloud_terrain_top_masters_approved');
   assert.deepEqual(profile.latest_review, {
     decision: 'source_master_approved',
     generation_work_package: 'WP-015B2G',
@@ -297,7 +297,7 @@ test('FLUX profile preserves approved Wizard, Threadball, and Cloud masters plus
     sampler: 'euler',
     reference_input: 'none',
     max_requests: 1,
-    status: 'consumed_owner_review_pending',
+    status: 'consumed_source_master_approved',
     requests_consumed: 1,
     prompt_id: 'd2ca47de-5cfb-4830-bb2e-243edad798eb',
     runtime_seconds: 260.706,
@@ -306,6 +306,24 @@ test('FLUX profile preserves approved Wizard, Threadball, and Cloud masters plus
     external_output_bytes: 774627,
     external_output_pixel_format: 'RGB24',
     further_requests_authorized: false
+  });
+  assert.deepEqual(profile.terrain_top_source_master_review, {
+    decision: 'source_master_approved',
+    generation_work_package: 'WP-015B3A',
+    normalization_work_package: 'WP-015B3A',
+    seed: 15035003,
+    external_source_sha256: 'BE5EB2E77062C9A86327ECC1EB7704C33F8511291709AE18A52D1AF51BE42B22',
+    normalization_config_path: 'scripts/asset-normalization/wp-015b3a-patch-terrain-top-v1.json',
+    normalization_config_sha256: '4BA76F6477FF10F332B632C832EE314AB73FF624E9DBE3F05AE9B4673BF3FFC8',
+    normalizer_path: 'scripts/normalize-terrain-top-master.js',
+    normalizer_sha256: 'F5668C102F21E2098BA7246866A2BE1FB59CCA91988BDCF2BCEA5CF65AA4FC6F',
+    normalized_master_path: 'assets/masters/environment/patch-01/terrain/patch-01-terrain-top-source-master-v1.png',
+    normalized_master_sha256: '41511E63D0DBF602FCA854EB983DB9B754631587F6E5234CBB9DAF9113E77897',
+    source_crop: [0, 392, 1024, 256],
+    master_canvas: [256, 64],
+    repeat_edge_maximum_difference: 0,
+    runtime_path_assigned: false,
+    further_generation_authorized: false
   });
   assert.match(profile.notes, /WP-015B2D/);
   assert.match(profile.notes, /DEF9265DAA4C6F2799D16870205E2015291E3E4AAE0F61802349C9FD8D56AD00/);
@@ -398,5 +416,13 @@ test('FLUX profile preserves approved Wizard, Threadball, and Cloud masters plus
   assert.match(
     validateGenerationComponents(changedTerrainTopRequest).join('\n'),
     /exact Terrain Top authorized generation request changed/
+  );
+
+  const changedTerrainTopReview = structuredClone(manifest);
+  changedTerrainTopReview.profiles.find((candidate) => candidate.id === 'flux2-klein')
+    .terrain_top_source_master_review.repeat_edge_maximum_difference = 1;
+  assert.match(
+    validateGenerationComponents(changedTerrainTopReview).join('\n'),
+    /exact Terrain Top source-master review changed/
   );
 });

@@ -226,7 +226,7 @@ const reviewedProfileContracts = new Map([
     smokeTool: 'generate_image'
   }],
   ['flux2-klein', {
-    state: 'wizard_threadball_cloud_masters_terrain_top_candidate_pending_review',
+    state: 'wizard_threadball_cloud_terrain_top_masters_approved',
     modelComponents: reviewedFluxModelComponents,
     workflowComponents: [
       'wormsport-flux2-klein-text-to-image-workflow',
@@ -359,7 +359,7 @@ const reviewedProfileContracts = new Map([
       sampler: 'euler',
       reference_input: 'none',
       max_requests: 1,
-      status: 'consumed_owner_review_pending',
+      status: 'consumed_source_master_approved',
       requests_consumed: 1,
       prompt_id: 'd2ca47de-5cfb-4830-bb2e-243edad798eb',
       runtime_seconds: 260.706,
@@ -368,6 +368,24 @@ const reviewedProfileContracts = new Map([
       external_output_bytes: 774627,
       external_output_pixel_format: 'RGB24',
       further_requests_authorized: false
+    },
+    terrainTopReview: {
+      decision: 'source_master_approved',
+      generation_work_package: 'WP-015B3A',
+      normalization_work_package: 'WP-015B3A',
+      seed: 15035003,
+      external_source_sha256: 'BE5EB2E77062C9A86327ECC1EB7704C33F8511291709AE18A52D1AF51BE42B22',
+      normalization_config_path: 'scripts/asset-normalization/wp-015b3a-patch-terrain-top-v1.json',
+      normalization_config_sha256: '4BA76F6477FF10F332B632C832EE314AB73FF624E9DBE3F05AE9B4673BF3FFC8',
+      normalizer_path: 'scripts/normalize-terrain-top-master.js',
+      normalizer_sha256: 'F5668C102F21E2098BA7246866A2BE1FB59CCA91988BDCF2BCEA5CF65AA4FC6F',
+      normalized_master_path: 'assets/masters/environment/patch-01/terrain/patch-01-terrain-top-source-master-v1.png',
+      normalized_master_sha256: '41511E63D0DBF602FCA854EB983DB9B754631587F6E5234CBB9DAF9113E77897',
+      source_crop: [0, 392, 1024, 256],
+      master_canvas: [256, 64],
+      repeat_edge_maximum_difference: 0,
+      runtime_path_assigned: false,
+      further_generation_authorized: false
     },
     requiredNoteFragments: [
       'WP-015B2D',
@@ -419,9 +437,12 @@ const reviewedProfileContracts = new Map([
       '7F327B515FBF89F7DD275C4385FA194AE3F95E677C60BE10126CA68D9024B23C',
       '15035003',
       'd2ca47de-5cfb-4830-bb2e-243edad798eb',
-      '260.706',
       'BE5EB2E77062C9A86327ECC1EB7704C33F8511291709AE18A52D1AF51BE42B22',
-      'no normalizer, crop, repeat proof, source master, asset-manifest entry, Terrain Interior request, animation, runtime integration, or further generation'
+      '4BA76F6477FF10F332B632C832EE314AB73FF624E9DBE3F05AE9B4673BF3FFC8',
+      'F5668C102F21E2098BA7246866A2BE1FB59CCA91988BDCF2BCEA5CF65AA4FC6F',
+      '41511E63D0DBF602FCA854EB983DB9B754631587F6E5234CBB9DAF9113E77897',
+      'three-copy repeat proof has exact seam difference zero',
+      'No Terrain Interior request, animation, runtime integration, or further generation is authorized.'
     ]
   }]
 ]);
@@ -913,6 +934,10 @@ function validateGenerationComponents(manifest, root = repoRoot) {
           JSON.stringify(profile.terrain_top_authorized_request) !== JSON.stringify(contract.terrainTopAuthorizedRequest)) {
         errors.push(`${label}: exact Terrain Top authorized generation request changed.`);
       }
+      if (contract.terrainTopReview &&
+          JSON.stringify(profile.terrain_top_source_master_review) !== JSON.stringify(contract.terrainTopReview)) {
+        errors.push(`${label}: exact Terrain Top source-master review changed.`);
+      }
       if (contract.latestReview) {
         const exactFiles = [
           ['normalization_config_path', 'normalization_config_sha256'],
@@ -1006,6 +1031,38 @@ function validateGenerationComponents(manifest, root = repoRoot) {
             approvedMaster.sha256 !== profile.cloud_source_master_review.normalized_master_sha256 ||
             approvedMaster.runtime_path !== undefined) {
           errors.push(`${label}: approved Cloud source master must remain manifest-bound without runtime_path.`);
+        }
+      }
+      if (contract.terrainTopReview) {
+        const exactFiles = [
+          ['normalization_config_path', 'normalization_config_sha256'],
+          ['normalizer_path', 'normalizer_sha256'],
+          ['normalized_master_path', 'normalized_master_sha256']
+        ];
+        for (const [pathField, hashField] of exactFiles) {
+          const relativePath = profile.terrain_top_source_master_review?.[pathField] || '';
+          const resolvedPath = path.resolve(root, relativePath);
+          if (!relativePath || !resolvedPath.startsWith(path.resolve(root) + path.sep) ||
+              !fs.existsSync(resolvedPath)) {
+            errors.push(`${label}: Terrain Top ${pathField} must resolve inside the repository.`);
+            continue;
+          }
+          const actualHash = crypto.createHash('sha256').update(fs.readFileSync(resolvedPath))
+            .digest('hex').toUpperCase();
+          if (actualHash !== profile.terrain_top_source_master_review?.[hashField]) {
+            errors.push(`${label}: Terrain Top ${pathField} does not match ${hashField}.`);
+          }
+        }
+        const assetManifestPath = path.resolve(root, 'legal', 'asset-manifest.json');
+        const assetManifest = fs.existsSync(assetManifestPath) ?
+          JSON.parse(fs.readFileSync(assetManifestPath, 'utf8')) : null;
+        const approvedMaster = assetManifest?.assets?.find(
+          (asset) => asset.file === profile.terrain_top_source_master_review.normalized_master_path
+        );
+        if (!approvedMaster ||
+            approvedMaster.sha256 !== profile.terrain_top_source_master_review.normalized_master_sha256 ||
+            approvedMaster.runtime_path !== undefined) {
+          errors.push(`${label}: approved Terrain Top source master must remain manifest-bound without runtime_path.`);
         }
       }
       if (Array.isArray(contract.requiredNoteFragments) &&

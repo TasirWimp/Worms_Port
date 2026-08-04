@@ -1629,9 +1629,10 @@ integrating.
    `15035004` use the same pinned text-only workflow/settings and no reference
    input. Cloud completed as external output `EA972B0B...FFE7`, passed
    project-owner review, and has deterministic source master `7F327B51...4B23C`
-   with no runtime path. Terrain Top has completed as external candidate
-   `BE5EB2E7...2B22` and awaits owner review; it may not be normalized or followed
-   by Terrain Interior. Those requests are strictly sequential, and
+   with no runtime path. Owner-approved Terrain Top `BE5EB2E7...2B22` has
+   deterministic 256x64 source master `41511E63...7897` through frozen crop,
+   uniform scale, and horizontal repeat proof, with no runtime path. Terrain
+   Interior remains separately preflighted and review-gated. Those requests are strictly sequential, and
    each output must be reviewed before the next gate. Treat FLUX output as
    textile source imagery only; a later frozen deterministic normalizer must
    prove Cloud alpha handling and terrain repeatability. Failure pauses the
