@@ -1620,8 +1620,12 @@ integrating.
    request. The request completed successfully as prompt
    `af2f84ad-deca-4a6d-bd83-b0b88e87c696` in 272.426 seconds, producing exact
    external output `1F41AF26...F56EC`; services were stopped and the request
-   allowance is consumed. Obtain the owner visual decision before normalization
-   or equivalent Patch-layer contracts. Failure pauses the family;
+   allowance is consumed. The project owner accepted its direction and
+   deterministic config `CF8C6301...635B` produced approved source master
+   `608F490C...D9B6F`, centered at projectile origin `(128,128)`, with genuine
+   strand gaps kept transparent. No retry, regeneration, animation, or runtime
+   integration is authorized. Freeze equivalent Patch-layer contracts before
+   further source work. Failure pauses the family;
    it does not authorize seed shopping or a batch. Do not generate a distinct
    Loomkeeper in B3A.
 2. **B3B animation-route admission:** only an approved normalized Wizard master

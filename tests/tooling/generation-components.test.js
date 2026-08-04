@@ -176,9 +176,9 @@ test('generation profiles reject arbitrary model, workflow, tool, and launch sel
   assert.match(validateGenerationComponents(policyInvalid).join('\n'), /profile selection must remain closed/);
 });
 
-test('FLUX profile preserves the Wizard master and binds one exact B3A Threadball request', () => {
+test('FLUX profile preserves approved Wizard and Threadball source masters', () => {
   const profile = manifest.profiles.find((candidate) => candidate.id === 'flux2-klein');
-  assert.equal(profile.state, 'b3a_threadball_candidate_review_pending');
+  assert.equal(profile.state, 'wizard_and_threadball_source_masters_approved');
   assert.deepEqual(profile.latest_review, {
     decision: 'source_master_approved',
     generation_work_package: 'WP-015B2G',
@@ -210,7 +210,7 @@ test('FLUX profile preserves the Wizard master and binds one exact B3A Threadbal
     sampler: 'euler',
     reference_input: 'none',
     max_requests: 1,
-    status: 'completed_pending_owner_review',
+    status: 'consumed_source_master_approved',
     requests_consumed: 1,
     prompt_id: 'af2f84ad-deca-4a6d-bd83-b0b88e87c696',
     runtime_seconds: 272.426,
@@ -222,6 +222,22 @@ test('FLUX profile preserves the Wizard master and binds one exact B3A Threadbal
     paused_candidate_sha256: '2BAE664F7E5A862BCB53B55A68071580485CE040A89650C68EC6FA398F4089EB',
     concept_reference_sha256: 'BD87405A8E29E4FCEEC87F4E4BC22256CEF215F2789DFDB1DD4BDD6A31DA6699',
     concept_reference_role: 'external_comparison_only'
+  });
+  assert.deepEqual(profile.threadball_source_master_review, {
+    decision: 'source_master_approved',
+    generation_work_package: 'WP-015B3A',
+    normalization_work_package: 'WP-015B3A',
+    seed: 15035001,
+    external_source_sha256: '1F41AF26B9F15419BFB5A59E2485B70EC706AB505672EC57AC8C9295B43F56EC',
+    normalization_config_path: 'scripts/asset-normalization/wp-015b3a-threadball-v1.json',
+    normalization_config_sha256: 'CF8C6301E9A41DBAB2A16B127F4DF553F719474644761EBE865EDF3A0452635B',
+    normalizer_path: 'scripts/normalize-relic-master.js',
+    normalizer_sha256: 'F44A5B86B146EC678E3C594E9C9FD78CADD592F8AF5069BE8A9E4A7944D65B8B',
+    normalized_master_path: 'assets/masters/relics/threadball/relic-threadball-source-master-v1.png',
+    normalized_master_sha256: '608F490CEE2A7FA79F0EA47BF7B15A8E49685B7B1E65E5AE38E15A34B4CD9B6F',
+    projectile_origin: [128, 128],
+    runtime_path_assigned: false,
+    further_generation_authorized: false
   });
   assert.match(profile.notes, /WP-015B2D/);
   assert.match(profile.notes, /DEF9265DAA4C6F2799D16870205E2015291E3E4AAE0F61802349C9FD8D56AD00/);
@@ -285,5 +301,13 @@ test('FLUX profile preserves the Wizard master and binds one exact B3A Threadbal
   assert.match(
     validateGenerationComponents(changedRequest).join('\n'),
     /exact authorized generation request changed/
+  );
+
+  const changedThreadballReview = structuredClone(manifest);
+  changedThreadballReview.profiles.find((candidate) => candidate.id === 'flux2-klein')
+    .threadball_source_master_review.projectile_origin = [127, 128];
+  assert.match(
+    validateGenerationComponents(changedThreadballReview).join('\n'),
+    /exact Threadball source-master review changed/
   );
 });

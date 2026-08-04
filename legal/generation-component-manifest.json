@@ -33,7 +33,7 @@
     },
     {
       "id": "flux2-klein",
-      "state": "b3a_threadball_candidate_review_pending",
+      "state": "wizard_and_threadball_source_masters_approved",
       "runtime_enabled": true,
       "model_components": [
         "flux2-klein-4b-distilled-fp8",
@@ -87,7 +87,7 @@
         "sampler": "euler",
         "reference_input": "none",
         "max_requests": 1,
-        "status": "completed_pending_owner_review",
+        "status": "consumed_source_master_approved",
         "requests_consumed": 1,
         "prompt_id": "af2f84ad-deca-4a6d-bd83-b0b88e87c696",
         "runtime_seconds": 272.426,
@@ -100,7 +100,23 @@
         "concept_reference_sha256": "BD87405A8E29E4FCEEC87F4E4BC22256CEF215F2789DFDB1DD4BDD6A31DA6699",
         "concept_reference_role": "external_comparison_only"
       },
-      "notes": "WP-015B2D completed exactly one single-reference Wizard cuteness/styling edit of B2C knit bytes 5FF0A63DAC03E13B2A3390AD77E6929A9822412E1A1E0415E7A38125D703B246 with seed 15026004. Output DEF9265DAA4C6F2799D16870205E2015291E3E4AAE0F61802349C9FD8D56AD00 improved friendly appeal and measured 0.880098 normalized silhouette IoU. The project owner accepted its paired eyebrows, moderate body variation, and cuteness direction. For WP-015B2E the project owner approved exact workflow AD4D4F96AD7D7C024A1A903A440DD4FE6D9E31353ACB7E436BF7DFC787321DAA and deterministic cowl mask 2B6C5F51A6EA411BB8B9C40AF861A339622316CB1D9710719F7F0CDEC327425B. The profile executed exactly one protected edit of B2D with frozen seed 15026005 as Comfy prompt d023da3f-77cf-4f05-ae7b-62ce66f1f176, producing external output 1275B2BD8021EAA5C51AA0606A6CC20BA21B15ED6CEBC4A7C1FC76308BA9D2E0. All 907427 zero-mask pixels matched B2D exactly and normalized silhouette IoU was 0.840783. No retry ran. The project owner rejected B2E because its compact covering lost the Wizard calling and its horizontal neck wrap read thief-like. WP-015B2F bound deterministic hood guide 08CB26CE3FAC6605859F9C9B51331351F28F40A005F6A101B2E575D8A56C6AB8, generous mask AC9F8F101094C5C15361FD24827C4F24B7C52ACBC652000748B209CB5483F56B, external exact-B2D scaffold A048CA16B249298BBECFAD2F57552B04958E26F766D01F6577D1C6A011A0231C, staged base wormsport/wizard-hood-scaffold-v1.png, staged mask wormsport/wizard-hood-edit-mask-v1.png, and seed 15026006. Exactly one request completed as prompt 1f5fc569-5250-4799-a236-0bb22ba629c8 in 355.120 seconds, producing external 1024x1024 output BE162B61FF38BE0EE2EA58716BDBAF5D2B38F0D8E6608953D2ECA41EFE7AD608. All 844934 zero-mask pixels match the scaffold exactly; baseline drift is zero and normalized silhouette IoU 0.796676 remains telemetry. The tall knitted hood now reads Wizard-like at 48px, but full-size review rejects visible polygon and rectangular seams around the exactly restored face and mouth islands. This proves that one shared denoise/composite mask over-constrains the transition. No retry, prompt/seed/input change, full robe, normalization, another character, or product promotion is authorized. WP-015B3A completed exactly one text-only seed 15035001 Worldweave Threadball request after fail-closed preflight, using workflow 626568CEAA47627F7D421D3BD1B0AA151E1643DBA8FBD631F5EB437666649E28 with no reference input. Gemini concept BD87405A8E29E4FCEEC87F4E4BC22256CEF215F2789DFDB1DD4BDD6A31DA6699 remained external comparison-only evidence. Prompt af2f84ad-deca-4a6d-bd83-b0b88e87c696 completed in 272.426 seconds as external RGB24 output 1F41AF26B9F15419BFB5A59E2485B70EC706AB505672EC57AC8C9295B43F56EC. No retry, Patch request, normalization, promotion, or runtime integration is authorized."
+      "threadball_source_master_review": {
+        "decision": "source_master_approved",
+        "generation_work_package": "WP-015B3A",
+        "normalization_work_package": "WP-015B3A",
+        "seed": 15035001,
+        "external_source_sha256": "1F41AF26B9F15419BFB5A59E2485B70EC706AB505672EC57AC8C9295B43F56EC",
+        "normalization_config_path": "scripts/asset-normalization/wp-015b3a-threadball-v1.json",
+        "normalization_config_sha256": "CF8C6301E9A41DBAB2A16B127F4DF553F719474644761EBE865EDF3A0452635B",
+        "normalizer_path": "scripts/normalize-relic-master.js",
+        "normalizer_sha256": "F44A5B86B146EC678E3C594E9C9FD78CADD592F8AF5069BE8A9E4A7944D65B8B",
+        "normalized_master_path": "assets/masters/relics/threadball/relic-threadball-source-master-v1.png",
+        "normalized_master_sha256": "608F490CEE2A7FA79F0EA47BF7B15A8E49685B7B1E65E5AE38E15A34B4CD9B6F",
+        "projectile_origin": [128, 128],
+        "runtime_path_assigned": false,
+        "further_generation_authorized": false
+      },
+      "notes": "WP-015B2D completed exactly one single-reference Wizard cuteness/styling edit of B2C knit bytes 5FF0A63DAC03E13B2A3390AD77E6929A9822412E1A1E0415E7A38125D703B246 with seed 15026004. Output DEF9265DAA4C6F2799D16870205E2015291E3E4AAE0F61802349C9FD8D56AD00 improved friendly appeal and measured 0.880098 normalized silhouette IoU. The project owner accepted its paired eyebrows, moderate body variation, and cuteness direction. For WP-015B2E the project owner approved exact workflow AD4D4F96AD7D7C024A1A903A440DD4FE6D9E31353ACB7E436BF7DFC787321DAA and deterministic cowl mask 2B6C5F51A6EA411BB8B9C40AF861A339622316CB1D9710719F7F0CDEC327425B. The profile executed exactly one protected edit of B2D with frozen seed 15026005 as Comfy prompt d023da3f-77cf-4f05-ae7b-62ce66f1f176, producing external output 1275B2BD8021EAA5C51AA0606A6CC20BA21B15ED6CEBC4A7C1FC76308BA9D2E0. All 907427 zero-mask pixels matched B2D exactly and normalized silhouette IoU was 0.840783. No retry ran. The project owner rejected B2E because its compact covering lost the Wizard calling and its horizontal neck wrap read thief-like. WP-015B2F bound deterministic hood guide 08CB26CE3FAC6605859F9C9B51331351F28F40A005F6A101B2E575D8A56C6AB8, generous mask AC9F8F101094C5C15361FD24827C4F24B7C52ACBC652000748B209CB5483F56B, external exact-B2D scaffold A048CA16B249298BBECFAD2F57552B04958E26F766D01F6577D1C6A011A0231C, staged base wormsport/wizard-hood-scaffold-v1.png, staged mask wormsport/wizard-hood-edit-mask-v1.png, and seed 15026006. Exactly one request completed as prompt 1f5fc569-5250-4799-a236-0bb22ba629c8 in 355.120 seconds, producing external 1024x1024 output BE162B61FF38BE0EE2EA58716BDBAF5D2B38F0D8E6608953D2ECA41EFE7AD608. All 844934 zero-mask pixels match the scaffold exactly; baseline drift is zero and normalized silhouette IoU 0.796676 remains telemetry. The tall knitted hood now reads Wizard-like at 48px, but full-size review rejects visible polygon and rectangular seams around the exactly restored face and mouth islands. This proves that one shared denoise/composite mask over-constrains the transition. No retry, prompt/seed/input change, full robe, normalization, another character, or product promotion is authorized. WP-015B3A completed exactly one text-only seed 15035001 Worldweave Threadball request after fail-closed preflight, using workflow 626568CEAA47627F7D421D3BD1B0AA151E1643DBA8FBD631F5EB437666649E28 with no reference input. Gemini concept BD87405A8E29E4FCEEC87F4E4BC22256CEF215F2789DFDB1DD4BDD6A31DA6699 remained external comparison-only evidence. Prompt af2f84ad-deca-4a6d-bd83-b0b88e87c696 completed in 272.426 seconds as external RGB24 output 1F41AF26B9F15419BFB5A59E2485B70EC706AB505672EC57AC8C9295B43F56EC. Owner approval advanced only its deterministic source master: 608F490CEE2A7FA79F0EA47BF7B15A8E49685B7B1E65E5AE38E15A34B4CD9B6F, centered at projectile origin (128,128), after two byte-identical normalizations with config CF8C6301E9A41DBAB2A16B127F4DF553F719474644761EBE865EDF3A0452635B and normalizer F44A5B86B146EC678E3C594E9C9FD78CADD592F8AF5069BE8A9E4A7944D65B8B. No retry, Patch request, animation, runtime integration, or further generation is authorized."
     }
   ],
   "conditioning_inputs": [

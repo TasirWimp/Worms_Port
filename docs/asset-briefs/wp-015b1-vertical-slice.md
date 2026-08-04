@@ -384,10 +384,18 @@ Comfy prompt `af2f84ad-deca-4a6d-bd83-b0b88e87c696` in 272.426 seconds and
 produced 787,706-byte 1024x1024 RGB24 external output
 `WormsPortFlux2KleinText_00006_.png`, SHA-256
 `1F41AF26B9F15419BFB5A59E2485B70EC706AB505672EC57AC8C9295B43F56EC`.
-The request allowance is consumed and the output awaits owner visual decision;
-do not change the prompt, seed, model, workflow, settings, dimensions, or input
-role, retry, or normalize in response to the result. The paused candidate
-cannot silently become the reference image. The
+The project owner accepted the direction and the allowance is consumed. A
+separate frozen deterministic config
+`scripts/asset-normalization/wp-015b3a-threadball-v1.json` (SHA-256
+`CF8C6301E9A41DBAB2A16B127F4DF553F719474644761EBE865EDF3A0452635B`)
+preserves real gaps between strands instead of filling them, applies only a
+uniform transform, and reproduced approved 256x256 RGBA source master
+`assets/masters/relics/threadball/relic-threadball-source-master-v1.png`
+(SHA-256 `608F490CEE2A7FA79F0EA47BF7B15A8E49685B7B1E65E5AE38E15A34B4CD9B6F`)
+byte-for-byte. Its projectile origin is `(128,128)` and it has no runtime path.
+Do not change the prompt, seed, model, workflow, settings, dimensions, input
+role, retry, regenerate, animate, or integrate in response to the result. The
+paused candidate cannot silently become the reference image. The
 replacement master remains one isolated effect-free object; the complete spell
 is expressed later through separate derivatives:
 

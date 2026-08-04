@@ -241,6 +241,13 @@ exists with:
 npm run asset:normalize:wizard
 ```
 
+Reproduce the approved Threadball source-master review while its exact external
+B3A source still exists with:
+
+```powershell
+npm run asset:normalize:threadball
+```
+
 The next slice is WP-015B3A. Existing Threadball candidate
 `2BAE664F...F4089EB` is paused as historical structure evidence because it reads
 as ordinary yarn rather than the newly defined compressed Worldweave spell. Do
@@ -250,8 +257,10 @@ seed `15035001`, workflow/settings, output prefix, and stop rule are recorded in
 the B1 brief. The supplied Gemini artwork `BD87405A...DA6699` is external
 comparison-only evidence and supplies no product pixels or conditioning. Run
 the fail-closed preflight and exact request are complete. The request is now
-consumed: external output `1F41AF26...F56EC` is awaiting owner
-visual decision and is not approved, normalized, or a product asset. WP-015B3B
+consumed: external output `1F41AF26...F56EC` now has deterministic source master
+`assets/masters/relics/threadball/relic-threadball-source-master-v1.png`
+(`608F490C...D9B6F`). It has no runtime path, atlas, animation, or gameplay
+integration. The next B3A action is separate Patch-contract refinement. WP-015B3B
 separately admits a Wizard-first animation route, and B3C produces one Wizard
 inventory that WP-015C reuses for both the player and the AI Loomkeeper. A
 distinct Loomkeeper asset belongs to the wider character roster in WP-015D.

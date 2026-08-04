@@ -153,7 +153,14 @@ structure evidence because it reads as an ordinary yarn ball rather than the
 compressed spell described above. It is neither rejected nor approved: do not
 normalize, promote, delete, or use it as a conditioning input. WP-015B3A must
 freeze and review a new exact FLUX request contract before one replacement can
-run.
+run. That replacement completed as external output `1F41AF26...F56EC`. With the
+owner's approval, deterministic white-matte extraction and uniform centering
+produced source master
+`assets/masters/relics/threadball/relic-threadball-source-master-v1.png`
+(`608F490C...D9B6F`). The master preserves transparent gaps between tensioned
+blue strands so the gold core reads as internal Worldweave rather than a flat
+printed symbol. It is source-only and has no runtime path, animation, or
+integration authority.
 
 WP-015 differentiates only these two dimensions: range and maximum direct
 Stitching damage. Damage radius, terrain radius, precision, falloff, ammo,

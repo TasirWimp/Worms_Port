@@ -806,7 +806,7 @@ under this contract.
 | 48px evidence | external `E:\ComFy\TasirWimp\component-evidence\wp-015b2b\gate1\wizard-structure-15026001-48px.png`; 48x48; 3,467 bytes |
 | 48px SHA-256 | `192209CC0D7121AEDF0CC25CCDD0C807E314A6C0E65E459A83192B7A33D3E925` |
 | Runtime telemetry | RX 7600 LOW_VRAM; 2,808.00 MB diffusion loaded, 1,074.02 MB offloaded, 324.00 MB buffer; four Euler steps; no node error or retry |
-| Decision | **fail — structure-reference Wizard route rejected** |
+| Decision | **fail â€” structure-reference Wizard route rejected** |
 
 The result is one isolated, complete, right-facing blue crochet Wizard with a
 dark-blue/gold felt hat, exactly two bead eyes, two readable feet, an unmarked
@@ -889,7 +889,7 @@ to the Gate 2 authorization.
 | 48px evidence | external `E:\ComFy\TasirWimp\component-evidence\wp-015b2c\gate1\wizard-robot-scaffold-15026002-48px.png`; 48x48; 2,799 bytes |
 | 48px SHA-256 | `3D82FC1A55BC94AFABF1258C6E129F2421390C0FC6FEEECAB244917820A4C2BD` |
 | Runtime telemetry | RX 7600 LOW_VRAM; helper driver free-VRAM minimum 3,239,481,856 bytes; server loaded 2,844.00 MB, offloaded 1,038.02 MB, and reserved a 324.00 MB buffer; no sample error or retry |
-| Decision | **pass — Gate 2 manifest transition permitted** |
+| Decision | **pass â€” Gate 2 manifest transition permitted** |
 
 The output proves the semantic-prior hypothesis at the bounded level needed for
 Gate 2. It has a flat crown, chamfered planar sides, one angular outer chassis,
@@ -952,7 +952,7 @@ promotion, or runtime integration is authorized by B2C.
 | Bounds-normalized IoU | `0.956188` against required `0.90` |
 | Baseline drift | `12` pixels against maximum `16` |
 | Numeric decision | pass |
-| Visual decision | **pass — robot-scaffold fitted-knit route demonstrated** |
+| Visual decision | **pass â€” robot-scaffold fitted-knit route demonstrated** |
 
 The knit result preserves the robot's flat crown, chamfered planar outer body,
 narrow lower section, separate rectangular feet, forward articulated hand, two
@@ -1089,7 +1089,7 @@ intact.
 
 B2D closes without a retry and its exact output remains external because alpha,
 socket normalization, crop/pivot/baseline, animation suitability, and exact-file
-product approval are still incomplete—not because its eyebrows or measured
+product approval are still incompleteâ€”not because its eyebrows or measured
 width are unacceptable. The owner-approved appeal cues are the larger close-set
 eyes, curved smile, optional paired eyebrows, pale chenille, belt/button, clean
 back, and warmer handcrafted character.
@@ -1611,7 +1611,7 @@ Threadball family is resolved.
 
 ## WP-015B3A Threadball Concept And Exact-Request Gate
 
-Status: **one exact text-only request completed; owner visual decision pending**.
+Status: **one exact text-only request and deterministic source-master approval completed**.
 
 The user supplied external 2,082,789-byte 1408x768 RGBA Gemini concept
 `C:\Users\jensb\Downloads\Gemini_Generated_Image_t9q4oit9q4oit9q4.png`,
@@ -1650,7 +1650,15 @@ silhouette, tactile sky-blue strands, visible warm-gold core, and forbidden-
 content checks. The core remains legible in a non-promotional 48px whole-canvas
 review derivative (`B03C0F94...2EAC7`). Its remaining decision risk is semantic:
 at full size it can still read as a carefully wound household yarn ball rather
-than visibly compressed Worldweave magic. That judgment is reserved for the
-project owner. The exact file remains external and quarantined; no retry,
-normalization, alpha work, manifest promotion, Patch request, or runtime use is
-authorized while the decision is pending.
+than visibly compressed Worldweave magic. The project owner accepted the
+direction and B3A advanced only through deterministic source-master review. The
+frozen normalizer `scripts/normalize-relic-master.js` (SHA-256
+`F44A5B86B146EC678E3C594E9C9FD78CADD592F8AF5069BE8A9E4A7944D65B8B`) uses
+the frozen B3A config (SHA-256 `CF8C6301...635B`) to extract the white matte,
+retain the largest knot, preserve genuine transparent gaps between strands,
+remove resampling fragments, and apply uniform centering only. Two independent
+runs reproduced master `608F490C...D9B6F`, its 48px/36px/28px derivatives, and
+navy/warm-light edge sheet byte-for-byte. The approved 256x256 RGBA master maps
+the visual center to projectile origin `(128,128)` and is manifest-approved
+without a runtime path. It remains a source master: no retry, further generation,
+Patch request, animation, atlas, or runtime integration is authorized.

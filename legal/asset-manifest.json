@@ -39,6 +39,25 @@
       "checked_date": "2026-08-04",
       "decision": "approved",
       "notes": "WP-015B2G used the project-authored generic rounded crochet-Wizard prompt, fixed seed 15027002, and the exact text-only workflow 626568CEAA47627F7D421D3BD1B0AA151E1643DBA8FBD631F5EB437666649E28 with the three external Apache-2.0 FLUX.2 components recorded in legal/generation-component-manifest.json. The selected external opaque 1024x1024 source is 788,520 bytes, SHA-256 40F9E81254A0792B967889808BD8BD8DE33DBDE5EAB7C4CBB1B336DD02BC54A5; it remains untouched outside the repository. Exact-output review found one isolated generic Wizard, exactly two bead eyes, one small mouth, one empty upward-facing palm, no text, logo, official Nimiq art, recognizable third-party character, or Sorcerers input. BFL's pinned model license is Apache-2.0; its current terms state that BFL claims no ownership in outputs while leaving input/output rights and lawful use with the user. WP-015B2H applied only deterministic white-background/contact-shadow removal, white-matte edge decontamination, connected-subject selection, uniform scale, and translation through frozen config 2AAEF899BD9FDBE202D5D9A293F1DC971ED62AAC32ED95095AF662FE6567D644 and normalizer B4AEF73CC30133F622C131A8E8D0322DECF953F933FEFC4EE83940FB328CDD82. The resulting 195,820-byte 512x512 RGBA source master maps ground pivot (256,451) and visible palm socket (407,228), preserves clean alpha on dark and light review backgrounds, and reproduced byte-for-byte. This is a source master only: it intentionally has no runtime_path, animation admission, atlas placement, or gameplay integration."
+    },
+    {
+      "id": "relic-threadball-flux2-owned-original-source-master-v1",
+      "file": "assets/masters/relics/threadball/relic-threadball-source-master-v1.png",
+      "sha256": "608F490CEE2A7FA79F0EA47BF7B15A8E49685B7B1E65E5AE38E15A34B4CD9B6F",
+      "origin_repo": "local text-only ComfyUI generation with the pinned Black Forest Labs FLUX.2 Klein 4B component chain",
+      "original_source_url": "https://huggingface.co/black-forest-labs/FLUX.2-klein-4b-fp8/tree/5b4408e59397a4a37ccb46afe426d8ed86379441",
+      "author": "TasirWimp with local FLUX.2 Klein generation and deterministic Worms_Port normalization",
+      "license": "Owned-Original",
+      "commercial_use_allowed": true,
+      "redistribution_allowed": true,
+      "modification_allowed": true,
+      "attribution_required": false,
+      "share_alike": false,
+      "no_technical_restrictions": false,
+      "evidence_url": "https://huggingface.co/black-forest-labs/FLUX.2-klein-4b-fp8/blob/5b4408e59397a4a37ccb46afe426d8ed86379441/LICENSE.md",
+      "checked_date": "2026-08-04",
+      "decision": "approved",
+      "notes": "WP-015B3A used the project-authored 77-word Worldweave Threadball prompt, fixed seed 15035001, and exact text-only workflow 626568CEAA47627F7D421D3BD1B0AA151E1643DBA8FBD631F5EB437666649E28 with the three external Apache-2.0 FLUX.2 components recorded in legal/generation-component-manifest.json. The sole external opaque 1024x1024 RGB source is 787,706 bytes, SHA-256 1F41AF26B9F15419BFB5A59E2485B70EC706AB505672EC57AC8C9295B43F56EC; the Gemini concept remains comparison-only and supplied no pixels or conditioning. Exact-output review found one isolated generic sky-blue chenille knot, a visible warm-gold interior, no text, logo, official Nimiq art, character, hand, weapon, recognizable third-party object, reference-image input, or Sorcerers material. BFL's pinned model license is Apache-2.0; its current terms leave input/output rights and lawful use with the user. WP-015B3A applied only deterministic white-matte extraction, white-edge decontamination, connected-subject selection, preservation of genuine open strand gaps, uniform scale, and translation through frozen config CF8C6301E9A41DBAB2A16B127F4DF553F719474644761EBE865EDF3A0452635B and normalizer F44A5B86B146EC678E3C594E9C9FD78CADD592F8AF5069BE8A9E4A7944D65B8B. The 90,764-byte 256x256 RGBA source master maps visual center/projectile origin (128,128), has clean alpha on navy and warm-light review backgrounds, and reproduced byte-for-byte. This is a source master only: it intentionally has no runtime_path, atlas placement, animation, or gameplay integration."
     }
   ]
 }

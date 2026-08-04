@@ -226,7 +226,7 @@ const reviewedProfileContracts = new Map([
     smokeTool: 'generate_image'
   }],
   ['flux2-klein', {
-    state: 'b3a_threadball_candidate_review_pending',
+    state: 'wizard_and_threadball_source_masters_approved',
     modelComponents: reviewedFluxModelComponents,
     workflowComponents: [
       'wormsport-flux2-klein-text-to-image-workflow',
@@ -272,7 +272,7 @@ const reviewedProfileContracts = new Map([
       sampler: 'euler',
       reference_input: 'none',
       max_requests: 1,
-      status: 'completed_pending_owner_review',
+      status: 'consumed_source_master_approved',
       requests_consumed: 1,
       prompt_id: 'af2f84ad-deca-4a6d-bd83-b0b88e87c696',
       runtime_seconds: 272.426,
@@ -284,6 +284,22 @@ const reviewedProfileContracts = new Map([
       paused_candidate_sha256: '2BAE664F7E5A862BCB53B55A68071580485CE040A89650C68EC6FA398F4089EB',
       concept_reference_sha256: 'BD87405A8E29E4FCEEC87F4E4BC22256CEF215F2789DFDB1DD4BDD6A31DA6699',
       concept_reference_role: 'external_comparison_only'
+    },
+    threadballReview: {
+      decision: 'source_master_approved',
+      generation_work_package: 'WP-015B3A',
+      normalization_work_package: 'WP-015B3A',
+      seed: 15035001,
+      external_source_sha256: '1F41AF26B9F15419BFB5A59E2485B70EC706AB505672EC57AC8C9295B43F56EC',
+      normalization_config_path: 'scripts/asset-normalization/wp-015b3a-threadball-v1.json',
+      normalization_config_sha256: 'CF8C6301E9A41DBAB2A16B127F4DF553F719474644761EBE865EDF3A0452635B',
+      normalizer_path: 'scripts/normalize-relic-master.js',
+      normalizer_sha256: 'F44A5B86B146EC678E3C594E9C9FD78CADD592F8AF5069BE8A9E4A7944D65B8B',
+      normalized_master_path: 'assets/masters/relics/threadball/relic-threadball-source-master-v1.png',
+      normalized_master_sha256: '608F490CEE2A7FA79F0EA47BF7B15A8E49685B7B1E65E5AE38E15A34B4CD9B6F',
+      projectile_origin: [128, 128],
+      runtime_path_assigned: false,
+      further_generation_authorized: false
     },
     requiredNoteFragments: [
       'WP-015B2D',
@@ -323,7 +339,10 @@ const reviewedProfileContracts = new Map([
       'af2f84ad-deca-4a6d-bd83-b0b88e87c696',
       '272.426',
       '1F41AF26B9F15419BFB5A59E2485B70EC706AB505672EC57AC8C9295B43F56EC',
-      'No retry, Patch request, normalization, promotion, or runtime integration'
+      'CF8C6301E9A41DBAB2A16B127F4DF553F719474644761EBE865EDF3A0452635B',
+      'F44A5B86B146EC678E3C594E9C9FD78CADD592F8AF5069BE8A9E4A7944D65B8B',
+      '608F490CEE2A7FA79F0EA47BF7B15A8E49685B7B1E65E5AE38E15A34B4CD9B6F',
+      'No retry, Patch request, animation, runtime integration, or further generation'
     ]
   }]
 ]);
@@ -799,6 +818,10 @@ function validateGenerationComponents(manifest, root = repoRoot) {
           JSON.stringify(profile.authorized_request) !== JSON.stringify(contract.authorizedRequest)) {
         errors.push(`${label}: exact authorized generation request changed.`);
       }
+      if (contract.threadballReview &&
+          JSON.stringify(profile.threadball_source_master_review) !== JSON.stringify(contract.threadballReview)) {
+        errors.push(`${label}: exact Threadball source-master review changed.`);
+      }
       if (contract.latestReview) {
         const exactFiles = [
           ['normalization_config_path', 'normalization_config_sha256'],
@@ -828,6 +851,38 @@ function validateGenerationComponents(manifest, root = repoRoot) {
         if (!approvedMaster || approvedMaster.sha256 !== profile.latest_review.normalized_master_sha256 ||
             approvedMaster.runtime_path !== undefined) {
           errors.push(`${label}: approved normalized master must remain manifest-bound without runtime_path.`);
+        }
+      }
+      if (contract.threadballReview) {
+        const exactFiles = [
+          ['normalization_config_path', 'normalization_config_sha256'],
+          ['normalizer_path', 'normalizer_sha256'],
+          ['normalized_master_path', 'normalized_master_sha256']
+        ];
+        for (const [pathField, hashField] of exactFiles) {
+          const relativePath = profile.threadball_source_master_review?.[pathField] || '';
+          const resolvedPath = path.resolve(root, relativePath);
+          if (!relativePath || !resolvedPath.startsWith(path.resolve(root) + path.sep) ||
+              !fs.existsSync(resolvedPath)) {
+            errors.push(`${label}: Threadball ${pathField} must resolve inside the repository.`);
+            continue;
+          }
+          const actualHash = crypto.createHash('sha256').update(fs.readFileSync(resolvedPath))
+            .digest('hex').toUpperCase();
+          if (actualHash !== profile.threadball_source_master_review?.[hashField]) {
+            errors.push(`${label}: Threadball ${pathField} does not match ${hashField}.`);
+          }
+        }
+        const assetManifestPath = path.resolve(root, 'legal', 'asset-manifest.json');
+        const assetManifest = fs.existsSync(assetManifestPath) ?
+          JSON.parse(fs.readFileSync(assetManifestPath, 'utf8')) : null;
+        const approvedMaster = assetManifest?.assets?.find(
+          (asset) => asset.file === profile.threadball_source_master_review.normalized_master_path
+        );
+        if (!approvedMaster ||
+            approvedMaster.sha256 !== profile.threadball_source_master_review.normalized_master_sha256 ||
+            approvedMaster.runtime_path !== undefined) {
+          errors.push(`${label}: approved Threadball source master must remain manifest-bound without runtime_path.`);
         }
       }
       if (Array.isArray(contract.requiredNoteFragments) &&

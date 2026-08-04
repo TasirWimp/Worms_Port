@@ -23,8 +23,9 @@ Phaser/Socket.IO stack.
   promote, delete, or condition on it. The replacement contract is now frozen:
   exact 77-word text-only prompt, seed `15035001`, pinned FLUX workflow/settings,
   no reference image, and exactly one request after fail-closed preflight. That
-  allowance is consumed by exact external output `1F41AF26...F56EC`; it awaits
-  owner visual decision and authorizes no retry or normalization. The
+  allowance is consumed by exact external output `1F41AF26...F56EC`, now approved
+  only as deterministic source master `608F490C...D9B6F`; it authorizes no retry,
+  regeneration, animation, or runtime integration. The
   user-supplied Gemini artwork `BD87405A...DA6699` is external comparison-only
   evidence and contributes no pixels or conditioning. Process and review that
   one result before freezing the decomposed Patch contract. No distinct
@@ -161,11 +162,10 @@ Phaser/Socket.IO stack.
   from the superseded angular `(341,293)` to the actual rounded-body palm
   `(407,228)`; pivot `(256,451)` and uniform placement remain intact.
 - Next bounded action: continue only **WP-015B3A** in the detailed order
-  recorded in `docs/process/development_workflow.md`: obtain the owner visual
-  decision for exact seed-`15035001` Worldweave Threadball output
-  `1F41AF26...F56EC`, then decide whether the Threadball family may enter
-  deterministic normalization. No retry is authorized. Patch source-gate refinement
-  follows only after that decision. Distinct Loomkeeper production, animation,
+  recorded in `docs/process/development_workflow.md`: freeze the separate Patch
+  source contract now that exact seed-`15035001` Worldweave Threadball source
+  master `608F490C...D9B6F` is approved. No Threadball retry is authorized.
+  Distinct Loomkeeper production, animation,
   runtime integration, roster completion, and further Wizard generation remain
   outside that slice.
 - WP-012 exactly pins `@nimiq/mini-app-sdk` `0.1.0` and server-only
@@ -2486,9 +2486,9 @@ Sequential delivery slices:
       evidence, protected properties, rejection rules, and stop conditions. The
       external Gemini concept `BD87405A...DA6699` supplies comparison cues only;
       it is not copied, staged, or conditioned on. The one request completed as
-      exact external output `1F41AF26...F56EC` and awaits owner visual decision;
-      no retry or normalization is authorized. Review that family before
-      freezing equivalent Patch-layer contracts and considering
+      exact external output `1F41AF26...F56EC` and deterministically approved
+      source master `608F490C...D9B6F`; no retry, animation, or runtime
+      integration is authorized. Freeze equivalent Patch-layer contracts before considering
       Patch inference. Stop on failure instead of starting a batch. Do not
       generate a distinct Loomkeeper in B3A.
     - **B3B animation-route admission:** after the normalized Wizard is approved,

@@ -113,15 +113,14 @@ If the user asks only for planning, review, or brainstorming, do not edit code.
   `2BAE664F...F4089EB` is paused as historical structure evidence because it
   reads as ordinary yarn rather than the compressed Worldweave spell. Do not
   normalize, promote, delete, or use it as conditioning. The replacement gate
-  now authorizes exactly one text-only request: the frozen 77-word prompt, seed
-  `15035001`, pinned FLUX workflow/settings, and no reference input. Supplied
-  Gemini concept `BD87405A...DA6699` is external comparison-only evidence and
-  contributes no pixels or conditioning. That request is consumed: exact
-  external output `1F41AF26...F56EC` is awaiting owner visual decision. Do not
-  retry or normalize it; review that output before freezing Patch source gates.
-  B3A may not generate a distinct Loomkeeper, animate, integrate
-  runtime media, assign the Wizard a runtime path, or silently generate another
-  Wizard or Threadball retry.
+  consumed one text-only request at seed `15035001`; exact external output
+  `1F41AF26...F56EC` is now deterministically approved as source master
+  `608F490C...D9B6F` with no runtime path. Supplied Gemini concept
+  `BD87405A...DA6699` remains external comparison-only evidence and contributes
+  no pixels or conditioning. Do not retry, regenerate, animate, or integrate
+  the Threadball. The next B3A action is to freeze the separate Patch source
+  contract; it may not generate a distinct Loomkeeper, assign the Wizard a
+  runtime path, or silently generate another Wizard or Threadball.
   B3B/B3C must approve one Wizard animation route and inventory; WP-015C reuses
   that same Wizard presentation for the player and AI Loomkeeper and keeps the
   palm empty for separate Threadball spell overlays. Distinct Loomkeeper
