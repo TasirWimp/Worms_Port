@@ -1605,13 +1605,14 @@ WP-015B3 begins only after B2H approves the normalized Wizard master. It closes
 the asset-production prerequisites that WP-015C is not allowed to invent while
 integrating.
 
-1. **B3A companion masters:** amend the B1 brief with exact FLUX-specific
-   prompts, settings, seeds, and request limits for the rounded Loomkeeper and
-   Patch layers before inference. Review existing external Threadball candidate
+1. **B3A shared companion masters:** amend the B1 brief with exact FLUX-specific
+   prompts, settings, seeds, and request limits for the Patch layers before
+   inference. Review existing external Threadball candidate
    `2BAE664F7E5A862BCB53B55A68071580485CE040A89650C68EC6FA398F4089EB`
    against its bounded Relic purpose before considering another request. Process
    one family at a time and normalize/approve each exact file. A repeated failure
-   pauses the family; it does not authorize seed shopping or a batch.
+   pauses the family; it does not authorize seed shopping or a batch. Do not
+   generate a distinct Loomkeeper in B3A.
 2. **B3B animation-route admission:** only an approved normalized Wizard master
    may be considered for upload. Reverify AutoSprite or an alternative for
    service identity, commercial terms, input retention/privacy, output rights,
@@ -1621,13 +1622,14 @@ integrating.
    covering the minimum animation contract. Stop if the service is unavailable,
    the rights/evidence boundary is unclear, or identity/socket/baseline drift is
    not controllable; refine an alternative as a separate planning gate.
-3. **B3C playable derivatives:** only after the Wizard pilot passes may the route
-   animate Loomkeeper. Produce the required Wizard/Loomkeeper states, Threadball
-   icon/held/projectile/trail/impact files, Patch background/cloud/repeatable
-   terrain materials, and minimum shared damage/result effects. Normalize every
-   frame and layer deterministically; record pivots, sockets, projectile origin,
-   release frame, durations, parent/output hashes, atlas metadata, exact-file
-   approvals, phone-size review, and media budget.
+3. **B3C playable derivatives:** after the Wizard pilot passes, produce one
+   Wizard animation inventory and approve it for reuse by both the player and AI
+   Loomkeeper. Also produce the Threadball icon/held/projectile/trail/impact
+   files, Patch background/cloud/repeatable terrain materials, and minimum shared
+   damage/result effects. Normalize every frame and layer deterministically;
+   record pivots, sockets, projectile origin, release frame, durations, parent/
+   output hashes, atlas metadata, exact-file approvals, phone-size review, and
+   media budget. Distinct Loomkeeper production remains deferred to WP-015D.
 
 WP-015C remains blocked until the manifest-approved inventory can express one
 complete exchange without generation, manual source repair, or unapproved test
@@ -1636,12 +1638,15 @@ combat scene.
 
 ### WP-015C First Playable Visual-Slice Re-entry
 
-WP-015C is integration-only. Its inputs are the approved B3 Wizard/Loomkeeper
-atlases, Threadball derivatives, Patch layers, shared minimum effects, and their
-manifest metadata. It may add client asset loading, atlas/state mapping, socket
-attachment, decorative composition, failure fallback, and presentation-event
-binding. It may not generate/refine art, repair source pixels, approve licenses,
-change simulation/collision authority, or introduce the v3 Relic ruleset.
+WP-015C is integration-only. Its inputs are the approved B3 Wizard atlas,
+Threadball derivatives, Patch layers, shared minimum effects, and their manifest
+metadata. It instantiates the same Wizard atlas for the player and AI
+Loomkeeper. The authoritative Loomkeeper actor, rules, labels, and team/position
+cues remain distinct even though the temporary character art is shared. C may
+add client asset loading, atlas/state mapping, socket attachment, decorative
+composition, failure fallback, and presentation-event binding. It may not
+generate/refine art, repair source pixels, approve licenses, change simulation/
+collision authority, or introduce the v3 Relic ruleset.
 
 Acceptance requires one deterministic player-and-Loomkeeper exchange through
 move, aim, fire, projectile flight, impact, Stitching damage, and result at every
@@ -1723,9 +1728,10 @@ The required basic inventory is:
   text remain accessible HTML/CSS, and
 - a small combat/result audio set after the visual loop works end to end.
 
-Production starts with Wizard, Loomkeeper, Threadball, and one Patch as a
-single vertical slice. It must pass in-engine phone review before the remaining
-Callings and Relics are produced in batch. Additional Patches, foreground
+Production starts with one Wizard presentation reused for both combatants,
+Threadball, and one Patch as a single vertical slice. It must pass in-engine
+phone review before the distinct Loomkeeper, remaining Callings, and remaining
+Relics are produced through the proven pipeline. Additional Patches, foreground
 dressing, high-detail VFX, full animation coverage, Calling-specific effects,
 precision and radius differentiation, and final weapon tuning are explicitly
 deferred.

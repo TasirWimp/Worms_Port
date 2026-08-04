@@ -450,13 +450,18 @@ normalizer removes the white background and faint floor shadow without repaint,
 fill, reconstruction, or warp. Exact-output review passed the two-eye/one-mouth
 Wizard identity, empty upward palm, phone-size read, dark/light alpha edge, and
 third-party-similarity boundary. This source master is the visual and geometry
-reference for later companion-master and animation work; later derivatives
-still require independent manifest entries and runtime paths.
+reference for the first animation route and for later rounded-family character
+work; later derivatives still require independent manifest entries and runtime
+paths.
 
 The first production interpretation is frozen in
 `asset-briefs/wp-015b1-vertical-slice.md`. That contract translates the lineup
 into isolated Wizard and Loomkeeper masters, a separate Threadball family, and
 decomposed Patch 01 materials without copying the lineup's composite pixels.
+The 2026-08-04 B3 simplification amendment preserves the Loomkeeper brief as
+future roster guidance but removes its distinct master from the first playable
+slice. WP-015B3/C reuse the same approved Wizard presentation for the player and
+AI opponent; WP-015D produces the distinct Loomkeeper with Thief and Warrior.
 
 For WP-015B0 the project owner records that the Nimiq team/foundation
 encouraged the Nimiq-inspired body geometry for the Mini App competition: its
@@ -541,8 +546,9 @@ Blocked:
 
 - If an official Nimiq logo, icon, font, or other brand file is proposed later,
   archive its separate written permission and exact-file provenance before use.
-- Validate the frozen Wizard/Loomkeeper animation and socket contract in the
-  first playable visual slice before extending it to Thief and Warrior.
+- Validate one Wizard animation/socket inventory reused by both combatants in
+  the first playable visual slice. Produce and validate the distinct Loomkeeper
+  later in WP-015D with Thief and Warrior.
 - Validate Patch 01 tiling, phone composition, and code-owned circular
   destruction before producing additional Patches or decorative layers.
 - Set the fixed reward, daily Prize Loom budget, eligibility window, and

@@ -111,11 +111,12 @@ If the user asks only for planning, review, or brainstorming, do not edit code.
   SHA-256 `7AF4864E...18A9`; it has no runtime path.
 - WP-015B3A is the only active asset slice. Review existing Threadball candidate
   `2BAE664F...F4089EB` before considering replacement generation, then freeze
-  rounded Loomkeeper and Patch source gates before inference. Process one family
-  at a time. It may not animate, integrate runtime media, assign the Wizard a
-  runtime path, or silently generate another Wizard. B3B/B3C must approve the
-  animation route and complete vertical-slice inventory before integration-only
-  WP-015C begins.
+  only the Patch source gates before inference. Process one family at a time.
+  It may not generate a distinct Loomkeeper, animate, integrate runtime media,
+  assign the Wizard a runtime path, or silently generate another Wizard.
+  B3B/B3C must approve one Wizard animation route and inventory; WP-015C reuses
+  that same Wizard presentation for the player and AI Loomkeeper. Distinct
+  Loomkeeper production is deferred to the wider character roster in WP-015D.
 
 ## Codex Subagent Roles
 

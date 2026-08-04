@@ -1,8 +1,8 @@
 # WP-015B1 Vertical-Slice Asset Briefs
 
 Status: frozen historical B1 contract, amended for future character work by the
-WP-015B2C mouth, WP-015B2D creative-expression, and WP-015B2G rounded-doll
-decisions below.
+WP-015B2C mouth, WP-015B2D creative-expression, WP-015B2G rounded-doll, and
+WP-015B3 shared-Wizard opponent decisions below.
 
 This document is the production contract for the first NIMble Knots visual
 slice: Wizard, Loomkeeper, Threadball, and Patch 01. WP-015B1 writes and reviews
@@ -78,6 +78,22 @@ approved palm rather than forcing different rounded bodies into one old angular-
 body coordinate. Future Loomkeeper and roster characters use the same rounded
 family while retaining distinct Calling colors and costumes.
 
+### WP-015B3 shared-Wizard opponent amendment
+
+The project owner simplified the first playable visual slice on 2026-08-04.
+WP-015B3 and WP-015C use the same approved Wizard source and animation inventory
+for the player and the AI Loomkeeper. The gameplay role remains Loomkeeper and
+retains its authoritative AI behavior, labels, team/position cues, and result
+semantics; this amendment changes only the temporary visual presentation.
+
+The historical Loomkeeper brief, seed, prompt failures, and geometry targets
+remain below for traceability, but they authorize no B3 generation or animation.
+Distinct Loomkeeper production moves to WP-015D with Thief, Warrior, and the
+wider character roster, where it must pass the same source-master, animation,
+manifest, phone, and real-device gates. B3A now contains only Threadball and
+Patch source work, B3B admits one Wizard animation route, and B3C completes one
+Wizard inventory for reuse by both combatants.
+
 The exact SD 1.5 prompts and negative prompt below remain unchanged historical
 evidence for reproducibility. Their `no mouth`/`mouth` exclusions are superseded
 for future candidates and must not be copied into WP-015B2C or later generation
@@ -110,14 +126,14 @@ placement, and safe padding while amending the visible Wizard palm socket to
 `(407,228)` (`(153,85)` on the 192px review). This is source-specific metadata,
 not a change to projectile simulation or Relic-local release offset.
 
-WP-015B3 must freeze separate FLUX-specific prompts/settings/seeds for the
-rounded Loomkeeper and Patch before any new request. Historical SD 1.5 seeds and
-prompts below cannot be reused across architectures. Existing Threadball output
+WP-015B3 must freeze separate FLUX-specific prompts/settings/seeds for Patch
+before any new request. Historical SD 1.5 seeds and prompts below cannot be
+reused across architectures. Existing Threadball output
 `2BAE664F7E5A862BCB53B55A68071580485CE040A89650C68EC6FA398F4089EB`
 receives exact-output review before replacement is considered. Animation begins
 with one approved Wizard-only pilot after the chosen service/route passes its
 license, privacy/input-retention, output-rights, export, and evidence gate. Only
-a reviewed Wizard pilot may authorize the Loomkeeper animation inventory.
+a reviewed Wizard pilot may authorize the one shared animation inventory.
 
 ## Exact Generation Contract
 
@@ -195,19 +211,19 @@ rounded source bodies require reviewed source-specific palm coordinates:
 | --- | ---: | ---: |
 | Ground pivot | `(256, 451)` | `(96, 169)` |
 | Approved Wizard held-Relic socket | `(407, 228)` | `(153, 85)` |
-| Loomkeeper initial socket target | `(341, 293)` | `(128, 110)` |
+| Historical Loomkeeper socket target, deferred to WP-015D | `(341, 293)` | `(128, 110)` |
 | Projectile-origin offset in Relic-local space | `(96, 0)` | `(36, 0)` |
 | Motion-safe horizontal bounds | `64..448` | `24..168` |
 | Motion-safe top/baseline | `32..451` | `12..169` |
 
 The master uses a right-facing, orthographic-like three-quarter side view so
 both bead eyes remain visible. Each forward hand records the visible palm center
-as its held-Relic socket without baking a Relic into neutral locomotion. B3A
+as its held-Relic socket without baking a Relic into neutral locomotion. WP-015D
 must stop and record a Loomkeeper coordinate amendment if one uniform transform
-cannot meet its initial target without implausible scale or crop. Runtime rotates
-a separate Relic around the approved per-actor socket; the shared local origin
-offset rotates with it. Mirroring for a left-facing actor is allowed only after
-costume handedness and asymmetry review.
+cannot meet its historical target without implausible scale or crop. Runtime
+rotates a separate Relic around the approved per-actor socket; the shared local
+origin offset rotates with it. Mirroring for a left-facing actor is allowed only
+after costume handedness and asymmetry review.
 
 Aim pose selection follows the authoritative locked angle:
 
@@ -271,13 +287,14 @@ Wizard acceptance:
 - no official Nimiq mark, text, scenery, second character, or selected Relic is
   present.
 
-## Brief: Loomkeeper
+## Brief: Loomkeeper (deferred to WP-015D)
 
 - Asset-family ID: `knotkin-loomkeeper-v1`
 - Intended product path after approval:
   `assets/product/characters/knotkin/loomkeeper/`
-- Purpose: friendly but unmistakable opposing AI character using the same rules
-  and animation/socket contract as the player.
+- Purpose: future friendly but unmistakable opposing AI character using the same
+  rules and animation/socket contract as the player. It is not required by
+  WP-015B3/C, where the AI temporarily reuses the Wizard presentation.
 - Seed: `15015002`
 - Palette: Nimiq Purple `#5F4B8B`, Nimiq Pink `#FA7268`, Nimiq Blue
   `#1F2348`, and restrained Nimiq Gold `#E9B213` stitching.

@@ -8,7 +8,7 @@ Phaser/Socket.IO stack.
 ## Execution Pointer
 
 - Active target: mobile-first single-player Nimiq Pay competition release.
-- Active work package: **WP-015B3A companion masters — planned and ready for
+- Active work package: **WP-015B3A shared companion masters — planned and ready for
   refinement/implementation**. WP-015B2H completed on 2026-08-04 and approved
   exact 512x512 RGBA Wizard source master
   `assets/masters/characters/knotkin/wizard/knotkin-wizard-source-master-v1.png`,
@@ -20,14 +20,16 @@ Phaser/Socket.IO stack.
   candidate `2BAE664F7E5A862BCB53B55A68071580485CE040A89650C68EC6FA398F4089EB`.
   Normalize/approve it if it passes; request a replacement only through a
   separately reviewed amendment. Before any new inference, freeze FLUX-specific
-  rounded Loomkeeper and decomposed Patch prompts, settings, seeds, request
-  limits, output paths, and stop conditions. Process one family at a time; no
-  batch, animation upload, or runtime integration belongs in B3A.
+  decomposed Patch prompts, settings, seeds, request limits, output paths, and
+  stop conditions. Process one family at a time; no distinct Loomkeeper, batch,
+  animation upload, or runtime integration belongs in B3A.
 - Following gates: **WP-015B3B** separately admits one Wizard-first animation
-  route; **WP-015B3C** completes manifest-approved playable derivatives;
-  **WP-015C** then performs integration only. D remains blocked until the
-  assembled C slice passes automated phone views and a separate real-device
-  review.
+  route; **WP-015B3C** completes one manifest-approved Wizard inventory reused
+  by both combatants; **WP-015C** then performs integration only. The gameplay
+  AI remains the Loomkeeper, but its first-slice presentation is the same Wizard
+  asset as the player. The distinct Loomkeeper moves to WP-015D with Thief,
+  Warrior, and the other roster assets. D remains blocked until the assembled C
+  slice passes automated phone views and a separate real-device review.
 - Historical B2A-B2G evidence digest: B2E selected a pinned core-node route and
   produced a deterministic source-only
   candidate. Workflow
@@ -153,9 +155,9 @@ Phaser/Socket.IO stack.
   `(407,228)`; pivot `(256,451)` and uniform placement remain intact.
 - Next bounded action: refine and execute only **WP-015B3A** in the detailed
   order recorded in `docs/process/development_workflow.md`: Threadball review,
-  then frozen Loomkeeper/Patch source gates, one family at a time. Animation,
-  runtime integration, roster completion, and further Wizard generation remain
-  outside that slice.
+  then frozen Patch source gates, one family at a time. Distinct Loomkeeper
+  production, animation, runtime integration, roster completion, and further
+  Wizard generation remain outside that slice.
 - WP-012 exactly pins `@nimiq/mini-app-sdk` `0.1.0` and server-only
   `@nimiq/core` `2.7.1`. Provider access remains lazy, identity acceptance is
   now used by WP-013's separate production Daily entry, the diagnostics surface
@@ -2465,12 +2467,13 @@ Sequential delivery slices:
     Calling remain blocked.
   - **WP-015B3 Vertical-slice production completion — active after B2H:**
     complete all approved inputs required by C before touching runtime code:
-    - **B3A companion masters:** freeze new FLUX-specific prompts/settings/seeds
-      for the rounded Loomkeeper and Patch layers before inference. Review the
+    - **B3A shared companion masters:** freeze new FLUX-specific prompts/settings/
+      seeds for the Patch layers before inference. Review the
       existing Threadball candidate `2BAE664F...F4089EB` first and normalize it
       if it passes; generate a replacement only through a separately approved
       amendment. Produce requests serially, review each exact output, and stop on
-      a repeated failure instead of starting a batch.
+      a repeated failure instead of starting a batch. Do not generate a distinct
+      Loomkeeper in B3A.
     - **B3B animation-route admission:** after the normalized Wizard is approved,
       review the current availability, commercial terms, privacy/input-retention,
       output rights, export format, component/service identity, and reproducible
@@ -2479,18 +2482,21 @@ Sequential delivery slices:
       if unavailable, legally unclear, or visually unstable, stop and refine a
       deterministic alternative rather than silently changing services.
     - **B3C playable derivative inventory:** only after the Wizard pilot passes,
-      produce and normalize the minimum Wizard and Loomkeeper animation states,
-      Threadball icon/held/projectile/trail/impact family, Patch background/cloud/
-      repeatable terrain materials, and shared damage/result effects needed by
-      the C exchange. Record atlas metadata, pivots, sockets, release frame,
-      parent hashes, phone-size review, manifest decisions, and the 1.5 MB media
-      budget. C stays blocked until every required runtime file is approved.
+      produce and normalize one minimum Wizard animation inventory for reuse by
+      both the player and AI Loomkeeper, plus the Threadball icon/held/projectile/
+      trail/impact family, Patch background/cloud/repeatable terrain materials,
+      and shared damage/result effects needed by the C exchange. Record atlas
+      metadata, pivots, sockets, release frame, parent hashes, phone-size review,
+      manifest decisions, and the 1.5 MB media budget. C stays blocked until
+      every required runtime file is approved.
 - **WP-015C First playable visual slice — integration only:** load the approved
-  Wizard and Loomkeeper atlases, attach the approved Threadball derivatives at
-  the recorded socket/projectile origin, compose Patch decorative layers over
-  code-owned terrain/collision, and bind presentation states only to existing
-  authoritative events. No generation, source repair, ruleset change, or asset
-  approval belongs in C. Prove one complete player and Loomkeeper
+  Wizard atlas for both the player and the AI Loomkeeper, attach the approved
+  Threadball derivatives at the recorded socket/projectile origin, compose Patch
+  decorative layers over code-owned terrain/collision, and bind presentation
+  states only to existing authoritative events. The existing Loomkeeper actor,
+  rules, labels, and team/position cues remain unchanged; only its temporary
+  visual presentation reuses the Wizard. No generation, source repair, ruleset
+  change, or asset approval belongs in C. Prove one complete player and Loomkeeper
   move/aim/fire/flight/impact/damage/result exchange at all maintained phone
   viewports, with reduced-motion behavior, v1/v2 replay truth, placeholder
   fallback/error handling, lazy-loading/media-budget reporting, and no change to
@@ -2502,8 +2508,11 @@ Sequential delivery slices:
   exact v3 range/damage values and add `nimble-knots-artillery-v3` while
   preserving byte-for-byte v1/v2 replay behavior. Range and maximum direct
   Stitching damage are the only initial Relic differences. Then produce,
-  approve, and integrate Thief, Warrior, Needlepoint, Spoolburst, shared effects,
-  and master-derived UI media through the proven B3 pipeline. Keep collision
+  approve, and integrate the distinct Loomkeeper together with Thief, Warrior,
+  Needlepoint, Spoolburst, shared effects, and master-derived UI media through
+  the proven B3 pipeline. Replace the AI's temporary shared-Wizard presentation
+  only after the Loomkeeper family passes the same source, animation, manifest,
+  phone, and real-device gates. Keep collision
   code-owned, load only the selected Calling plus shared media, and retain radius,
   precision, falloff, ammo, cooldown, secondary effects, Calling modifiers, and
   final tuning as deferred. Close with deterministic v3 ordering/replay tests,
@@ -2652,8 +2661,9 @@ requirements, and phone acceptance checks are normative in
 Owning roles: `worms_port_asset_curator`, `worms_port_compliance_keeper`,
 `worms_port_base_game_worker`, `worms_port_reviewer`.
 
-Verification: first prove the Wizard/Loomkeeper/Threadball/Patch exchange end to
-end, then check basic inventory completeness, character/socket/environment
+Verification: first prove the Wizard-as-player/shared-Wizard-as-Loomkeeper/
+Threadball/Patch exchange end to end, then check basic inventory completeness,
+character/socket/environment
 contracts, v1/v2 replay compatibility, deterministic v3 range/damage tier
 ordering, art direction, animation consistency, exact provenance,
 model/component license evidence, manifest hashes, attribution, atlas loading,

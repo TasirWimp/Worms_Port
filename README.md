@@ -242,11 +242,14 @@ npm run asset:normalize:wizard
 ```
 
 The next slice is WP-015B3A: review the existing Threadball evidence first,
-then freeze and process the rounded Loomkeeper and Patch companion-master gates
-one family at a time. WP-015B3B separately admits a Wizard-first animation
-route; WP-015C remains integration-only and begins only when the complete
-vertical-slice inventory is manifest-approved. The exact gates and re-entry
-order are in the Execution Pointer and `docs/process/development_workflow.md`.
+then freeze and process the Patch companion-master gates one family at a time.
+WP-015B3B separately admits a Wizard-first animation route, and B3C produces
+one Wizard inventory that WP-015C reuses for both the player and the AI
+Loomkeeper. A distinct Loomkeeper asset now belongs to the wider character
+roster in WP-015D. WP-015C remains integration-only and begins only when the
+simplified vertical-slice inventory is manifest-approved. The exact gates and
+re-entry order are in the Execution Pointer and
+`docs/process/development_workflow.md`.
 
 ## Build
 
