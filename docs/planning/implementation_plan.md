@@ -16,16 +16,19 @@ Phaser/Socket.IO stack.
   `7AF4864E00C7206A05684312916092C6881127F921FA7CEA01524899093318A9`,
   with ground pivot `(256,451)` and visible cupped-palm socket `(407,228)`.
   It has no `runtime_path` and authorizes no animation or integration.
-- B3A begins with an exact-output review of existing external Threadball
-  candidate `2BAE664F7E5A862BCB53B55A68071580485CE040A89650C68EC6FA398F4089EB`.
-  Normalize/approve it if it passes; request a replacement only through a
-  separately reviewed amendment. Before any new inference, freeze FLUX-specific
-  decomposed Patch prompts, settings, seeds, request limits, output paths, and
-  stop conditions. Process one family at a time; no distinct Loomkeeper, batch,
-  animation upload, or runtime integration belongs in B3A.
+- Existing external Threadball candidate
+  `2BAE664F7E5A862BCB53B55A68071580485CE040A89650C68EC6FA398F4089EB`
+  is paused as historical structure evidence: it reads as an ordinary yarn ball
+  rather than the newly defined compressed Worldweave spell. Do not normalize,
+  promote, delete, or condition on it. B3A first freezes one replacement FLUX
+  prompt/seed/settings/request/output/stop contract, then processes the result
+  before freezing the decomposed Patch contract. Process one family at a time;
+  no inference is authorized by the planning amendment itself, and no distinct
+  Loomkeeper, batch, animation upload, or runtime integration belongs in B3A.
 - Following gates: **WP-015B3B** separately admits one Wizard-first animation
   route; **WP-015B3C** completes one manifest-approved Wizard inventory reused
-  by both combatants; **WP-015C** then performs integration only. The gameplay
+  by both combatants plus the Threadball formation/held/flight/impact spell
+  family; **WP-015C** then performs integration only. The gameplay
   AI remains the Loomkeeper, but its first-slice presentation is the same Wizard
   asset as the player. The distinct Loomkeeper moves to WP-015D with Thief,
   Warrior, and the other roster assets. D remains blocked until the assembled C
@@ -154,10 +157,11 @@ Phaser/Socket.IO stack.
   from the superseded angular `(341,293)` to the actual rounded-body palm
   `(407,228)`; pivot `(256,451)` and uniform placement remain intact.
 - Next bounded action: refine and execute only **WP-015B3A** in the detailed
-  order recorded in `docs/process/development_workflow.md`: Threadball review,
-  then frozen Patch source gates, one family at a time. Distinct Loomkeeper
-  production, animation, runtime integration, roster completion, and further
-  Wizard generation remain outside that slice.
+  order recorded in `docs/process/development_workflow.md`: freeze the replacement
+  Worldweave Threadball request, process and decide that one result, then freeze
+  the Patch source gates one family at a time. Distinct Loomkeeper production,
+  animation, runtime integration, roster completion, and further Wizard
+  generation remain outside that slice.
 - WP-012 exactly pins `@nimiq/mini-app-sdk` `0.1.0` and server-only
   `@nimiq/core` `2.7.1`. Provider access remains lazy, identity acceptance is
   now used by WP-013's separate production Daily entry, the diagnostics surface
@@ -2467,12 +2471,15 @@ Sequential delivery slices:
     Calling remain blocked.
   - **WP-015B3 Vertical-slice production completion — active after B2H:**
     complete all approved inputs required by C before touching runtime code:
-    - **B3A shared companion masters:** freeze new FLUX-specific prompts/settings/
-      seeds for the Patch layers before inference. Review the
-      existing Threadball candidate `2BAE664F...F4089EB` first and normalize it
-      if it passes; generate a replacement only through a separately approved
-      amendment. Produce requests serially, review each exact output, and stop on
-      a repeated failure instead of starting a batch. Do not generate a distinct
+    - **B3A shared companion masters:** keep existing Threadball candidate
+      `2BAE664F...F4089EB` paused as exact historical structure evidence because
+      it reads as ordinary yarn rather than a compressed Worldweave spell. Do
+      not normalize, promote, delete, or use it as conditioning. First freeze a
+      new FLUX-specific Threadball prompt, seed, exact settings, one-request
+      limit, output path, protected properties, rejection rules, and stop
+      conditions. Process and review that one family before freezing equivalent
+      Patch-layer contracts and considering Patch inference. Stop on a repeated
+      failure instead of starting a batch. Do not generate a distinct
       Loomkeeper in B3A.
     - **B3B animation-route admission:** after the normalized Wizard is approved,
       review the current availability, commercial terms, privacy/input-retention,
@@ -2480,12 +2487,17 @@ Sequential delivery slices:
       evidence surface of AutoSprite or a proposed alternative. Upload nothing
       until that route passes. Run one Wizard-only technical and visual pilot;
       if unavailable, legally unclear, or visually unstable, stop and refine a
-      deterministic alternative rather than silently changing services.
+      deterministic alternative rather than silently changing services. The
+      pilot must preserve the approved empty cupped palm and a stable overlay
+      socket; it must not bake Threadball or another Relic into Wizard frames.
     - **B3C playable derivative inventory:** only after the Wizard pilot passes,
       produce and normalize one minimum Wizard animation inventory for reuse by
-      both the player and AI Loomkeeper, plus the Threadball icon/held/projectile/
-      trail/impact family, Patch background/cloud/repeatable terrain materials,
-      and shared damage/result effects needed by the C exchange. Record atlas
+      both the player and AI Loomkeeper, plus the Threadball formation/held/
+      projectile/short-tail/impact family, Patch background/cloud/repeatable
+      terrain materials, and shared damage/result effects needed by the C
+      exchange. The Threadball sequence must show loose strands gathering above
+      the palm, compressed flight, and rapid non-graphic unspooling against
+      Stitching without implying a new radius or status effect. Record atlas
       metadata, pivots, sockets, release frame, parent hashes, phone-size review,
       manifest decisions, and the 1.5 MB media budget. C stays blocked until
       every required runtime file is approved.
@@ -2493,7 +2505,10 @@ Sequential delivery slices:
   Wizard atlas for both the player and the AI Loomkeeper, attach the approved
   Threadball derivatives at the recorded socket/projectile origin, compose Patch
   decorative layers over code-owned terrain/collision, and bind presentation
-  states only to existing authoritative events. The existing Loomkeeper actor,
+  states only to existing authoritative events. Bind gathering/levitation to the
+  existing aim/fire preparation, release to the authoritative release frame,
+  and unspooling impact to the authoritative impact event without changing
+  physics, damage, collision, or replay truth. The existing Loomkeeper actor,
   rules, labels, and team/position cues remain unchanged; only its temporary
   visual presentation reuses the Wizard. No generation, source repair, ruleset
   change, or asset approval belongs in C. Prove one complete player and Loomkeeper
@@ -2510,17 +2525,22 @@ Sequential delivery slices:
   Stitching damage are the only initial Relic differences. Then produce,
   approve, and integrate the distinct Loomkeeper together with Thief, Warrior,
   Needlepoint, Spoolburst, shared effects, and master-derived UI media through
-  the proven B3 pipeline. Replace the AI's temporary shared-Wizard presentation
-  only after the Loomkeeper family passes the same source, animation, manifest,
-  phone, and real-device gates. Keep collision
+  the proven B3 pipeline. Needlepoint receives the Air/Draft visual grammar and
+  Spoolburst the Fire/Loomspark grammar, but range and direct damage remain their
+  only initial mechanical differences. Replace the AI's temporary shared-Wizard
+  presentation only after the Loomkeeper family passes the same source,
+  animation, manifest, phone, and real-device gates. Keep collision
   code-owned, load only the selected Calling plus shared media, and retain radius,
   precision, falloff, ammo, cooldown, secondary effects, Calling modifiers, and
   final tuning as deferred. Close with deterministic v3 ordering/replay tests,
   compliance, build, browser matrix, visual review, and real-device acceptance.
 - **WP-015E Basic audio and closure:** source or generate the small combat/result/
   reward audio set through a separate exact-file license and provenance path;
-  normalize loudness/format and verify mute, pause, repeated-play, and mobile
-  lifecycle behavior. Finish all visual/audio manifests and attribution, confirm
+  give Threadball a tightening/winding and snap-unravel identity, Needlepoint a
+  light Draft passage, and Spoolburst a warm Loomspark/unspooling identity
+  without realistic gunfire or explosive violence. Normalize loudness/format
+  and verify mute, pause, repeated-play, and mobile lifecycle behavior. Finish
+  all visual/audio manifests and attribution, confirm
   lazy loading and the 1.5 MB compressed initial-media ceiling, inspect the final
   Ubuntu visual baselines, and close compliance, audit, build, complete browser,
   production-smoke, and separate real-device acceptance evidence. Detailed art,
@@ -2617,9 +2637,9 @@ Additional primary sources reviewed for WP-015B2B on 2026-08-03:
 
 Deferred beyond WP-015: high-detail variants, multiple Patches, foreground
 dressing, unused jump/fall/land animations, Calling-specific effects, radius
-and precision differentiation, secondary weapon mechanics, and final balance
-tuning. Reopen those only after the basic assembled game has real-device
-feedback.
+and precision differentiation, secondary weapon mechanics, a playable
+Cloudwater/water Relic, elemental status interactions, and final balance tuning.
+Reopen those only after the basic assembled game has real-device feedback.
 
 Character master contract:
 

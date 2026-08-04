@@ -1580,3 +1580,31 @@ outputs, while its [usage policy](https://bfl.ai/legal/usage-policy) leaves
 lawful and non-infringing use with the user. These provider terms do not replace
 the project's own prompt/input/output review; they support it. The prompt used
 no third-party character, logo, official Nimiq file, or reference image.
+
+## Post-B2H Threadball Product-Direction Amendment
+
+Status: **paused as historical structure evidence on 2026-08-04; not rejected,
+normalized, promoted, or authorized as a reference input**.
+
+The project owner found that exact Gate 5 Threadball candidate
+`2BAE664F7E5A862BCB53B55A68071580485CE040A89650C68EC6FA398F4089EB`
+looks like an ordinary yarn ball. Its recorded Gate 5 pass remains true for the
+old bounded purpose: it is one isolated blue-and-gold round object that survives
+at 28px. That purpose was narrower than the newly established product story and
+does not make the file a Wizard spell or product master.
+
+The current direction connects the Relic to the Celestial Spinning Mill and the
+Worldweave recorded in `docs/art-direction.md`. Threadball is a hovering,
+compressed knot of world-thread with luminous NIM Thread visible inside its
+tensioned layers. Its separate formation, flight, and impact derivatives show
+loose fibers gathering above the Wizard's empty cupped palm, a compact projectile
+with a short taut thread-tail, and non-graphic loops rapidly unspooling against
+Stitching. It must not read as an earth clod, household yarn ball, bomb, fuse,
+electrical orbit, or generic fireball.
+
+No inference is authorized by this amendment alone. WP-015B3A must first record
+and review one new FLUX-specific positive prompt, seed, exact four-step settings,
+one-request limit, external output path, protected properties, rejection rules,
+and stop conditions. The paused candidate remains comparison evidence only and
+cannot silently become a conditioning input. Patch work remains queued after the
+Threadball family is resolved.

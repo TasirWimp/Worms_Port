@@ -130,10 +130,13 @@ WP-015B3 must freeze separate FLUX-specific prompts/settings/seeds for Patch
 before any new request. Historical SD 1.5 seeds and prompts below cannot be
 reused across architectures. Existing Threadball output
 `2BAE664F7E5A862BCB53B55A68071580485CE040A89650C68EC6FA398F4089EB`
-receives exact-output review before replacement is considered. Animation begins
-with one approved Wizard-only pilot after the chosen service/route passes its
-license, privacy/input-retention, output-rights, export, and evidence gate. Only
-a reviewed Wizard pilot may authorize the one shared animation inventory.
+is paused as historical structure evidence under the spell-direction amendment
+below and must not be normalized or promoted. B3A must freeze a new bounded
+Worldweave Threadball generation contract before any replacement request, then
+freeze the Patch contract before its first request. Animation begins with one
+approved Wizard-only pilot after the chosen service/route passes its license,
+privacy/input-retention, output-rights, export, and evidence gate. Only a
+reviewed Wizard pilot may authorize the one shared animation inventory.
 
 ## Exact Generation Contract
 
@@ -325,23 +328,61 @@ Loomkeeper acceptance:
   and
 - purple/coral color supports recognition but is not the only distinction.
 
+### WP-015B3A Threadball spell-direction amendment
+
+The project owner paused external FLUX candidate
+`2BAE664F7E5A862BCB53B55A68071580485CE040A89650C68EC6FA398F4089EB`
+on 2026-08-04. It still passes the historical bounded structure check as one
+clean, round, blue-and-gold yarn object, so it remains exact external evidence.
+It is not rejected, deleted, normalized, used as a conditioning input, or
+promoted. It no longer satisfies the product direction because it reads as a
+natural household yarn ball rather than Wizard magic.
+
+The replacement direction treats Thread as the Patchwork Realms' substance and
+magical potential rather than conventional earth. A Wizard draws loose
+world-thread from the Worldweave, compresses it into a hovering, tensioned knot,
+and releases the stored force. Luminous gold NIM Thread is visible between dense
+blue wound layers as energy inside the material; it does not form a logo,
+electrical cage, orbit, fuse, or ordinary flame.
+
+B3A must freeze a new FLUX-specific prompt, seed, exact settings, request limit,
+output path, and stop conditions before one replacement request can run. The
+paused candidate cannot silently become the reference image. The replacement
+master remains one isolated effect-free object; the complete spell is expressed
+later through separate derivatives:
+
+- **held/formation:** loose strands gather and the knot levitates immediately
+  above the Wizard's approved cupped-palm socket;
+- **projectile:** the compact tensioned knot travels with only a short taut
+  thread-tail supplied by a separate trail asset; and
+- **impact:** the knot rapidly unwinds into readable loops that tug at Stitching,
+  without implying fire, a large blast radius, or a secondary status effect.
+
+The Wizard animation remains Relic-free and must preserve an empty, stable palm
+for these overlays. This spell grammar changes presentation assets only; range,
+damage, collision, replay, and server authority remain unchanged until the
+separate v3 ruleset gate.
+
 ## Brief: Threadball
 
 - Asset-family ID: `relic-threadball-v1`
 - Intended product path after approval: `assets/product/relics/threadball/`
-- Purpose: balanced default Relic with medium range and medium direct Stitching
-  damage. The art must not imply special radius, precision, homing, or secondary
-  effects.
-- Seed: `15015003`
-- Master: one centered spherical wound-yarn object, no hand, character, icon
-  frame, trail, impact, scenery, text, or shadow touching the object.
-- Material/palette: sky-blue chenille thread core, a small number of luminous
-  gold NIM Thread wraps, visible soft fibers, round balanced silhouette.
+- Purpose: balanced default Worldweave spell with medium range and medium direct
+  Stitching damage. The art must not imply special radius, precision, homing, or
+  secondary effects.
+- Historical SD 1.5 seed: `15015003`; do not reuse it for the new FLUX contract.
+- Master: one centered, densely compressed and magically tensioned spherical
+  knot, no hand, character, icon frame, trail, impact, scenery, text, or shadow
+  touching the object.
+- Material/palette: dense sky-blue chenille world-thread pulled inward around a
+  luminous gold NIM Thread interior, with visible soft fibers and a balanced
+  circular silhouette. It must feel energized from within rather than loosely
+  wound or electrically surrounded.
 - Planned derivatives from the approved master: 48x48 UI icon, 36x36 held
   sprite, 28x28 projectile. The simple trail and impact remain separately
   reviewed derivatives and may not imply a larger damage radius.
 
-Exact positive prompt:
+Historical exact SD 1.5 positive prompt, superseded for B3A:
 
 ```text
 one single centered spherical Threadball game Relic, a compact balanced ball of hand-wound chunky sky-blue chenille yarn wrapped by a few thin luminous golden threads, tactile visible fibers and layered yarn strands, perfectly readable round silhouette, playful soft textile fantasy artillery projectile, medium visual weight, warm soft studio lighting, no character and no hand, one isolated object on a plain uniform near-white background, generous empty padding on every side, high quality 2D mobile game asset source
@@ -357,11 +398,16 @@ Threadball acceptance:
 
 - silhouette remains circular at 28x28 and differs from Needlepoint and
   Spoolburst without relying only on color,
-- gold wraps read as thread rather than a logo, fuse, electrical cage, or orbit,
+- compressed layers and inward tension make the object read as a spell rather
+  than an ordinary household yarn ball or earth clod,
+- gold light reads as NIM Thread within the material rather than a logo, fuse,
+  electrical cage, orbit, or ordinary flame,
 - no trail or impact is baked into the projectile master,
 - the object remains centered with complete padding and no cast-shadow contact,
   and
-- the result communicates medium weight, not a needle-fast or spool-heavy
+- the held, projectile, and impact derivatives form one readable sequence from
+  gathering strands through compressed flight to non-graphic Unraveling loops,
+  while communicating medium weight rather than a needle-fast or spool-heavy
   extreme.
 
 ## Brief: Patch 01

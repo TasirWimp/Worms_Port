@@ -109,14 +109,18 @@ If the user asks only for planning, review, or brainstorming, do not edit code.
   approved only exact Wizard source master
   `assets/masters/characters/knotkin/wizard/knotkin-wizard-source-master-v1.png`,
   SHA-256 `7AF4864E...18A9`; it has no runtime path.
-- WP-015B3A is the only active asset slice. Review existing Threadball candidate
-  `2BAE664F...F4089EB` before considering replacement generation, then freeze
-  only the Patch source gates before inference. Process one family at a time.
-  It may not generate a distinct Loomkeeper, animate, integrate runtime media,
-  assign the Wizard a runtime path, or silently generate another Wizard.
+- WP-015B3A is the only active asset slice. Existing Threadball candidate
+  `2BAE664F...F4089EB` is paused as historical structure evidence because it
+  reads as ordinary yarn rather than the compressed Worldweave spell. Do not
+  normalize, promote, delete, or use it as conditioning. Before inference,
+  freeze one exact replacement Threadball prompt/seed/settings/request/output/
+  stop contract; process that family before freezing Patch source gates. It may
+  not generate a distinct Loomkeeper, animate, integrate runtime media, assign
+  the Wizard a runtime path, or silently generate another Wizard.
   B3B/B3C must approve one Wizard animation route and inventory; WP-015C reuses
-  that same Wizard presentation for the player and AI Loomkeeper. Distinct
-  Loomkeeper production is deferred to the wider character roster in WP-015D.
+  that same Wizard presentation for the player and AI Loomkeeper and keeps the
+  palm empty for separate Threadball spell overlays. Distinct Loomkeeper
+  production is deferred to the wider character roster in WP-015D.
 
 ## Codex Subagent Roles
 

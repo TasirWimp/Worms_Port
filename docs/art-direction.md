@@ -43,6 +43,40 @@ Combat is dramatic but not graphic. Impacts create cotton bursts, thread
 spirals, embroidered marks, and comic reactions. A defeated Knotkin unravels
 into fluff and thread and can later be restitched.
 
+## The Celestial Mill And Elemental Weave
+
+Above the Patchwork Realms turns the **Celestial Spinning Mill**. It draws in
+unformed cosmic fleece and spins it into NIM Thread. Where that Thread gathers
+and knots, it becomes the Worldweave: the common substance from which floating
+Patches, Knotkin bodies, Relics, clouds, and everyday materials are made. NIM
+Thread is therefore not merely decorative gold yarn. It is matter, life force,
+and magical potential in one continuous system.
+
+The world's elemental vocabulary is textile rather than geological:
+
+- **Worldweave / Thread** is substance and structure. Tightly knotted Thread
+  becomes bodies, tools, and land rather than conventional soil or stone.
+- **Air / Draft** is loose motion through the weave. It carries cotton clouds,
+  lifts fibers, and gives a spell reach and precision.
+- **Fire / Loomspark** is energy released through tension and friction. It reads
+  as warm gold, coral, and ember-like thread light rather than realistic burning
+  or graphic injury.
+- **Water / Cloudwater** is flow and transformation condensed from the cotton
+  clouds. It can wet, weight, dye, soften, or felt fibers, but no such gameplay
+  effect is committed for the competition release.
+
+Knotkin are living knots in this weave. **Stitching** describes how firmly a
+Knotkin remains held together; **Unraveling** returns loosened fibers to the
+Worldweave; **Restitching** forms them again. This connects setting, health,
+combat, defeat, and recovery through one material story.
+
+Relics focus this elemental Thread so any Calling can use the same public combat
+rules. Wizards make the underlying magic most visible: they draw loose strands
+from the Worldweave, tension or knot them into a spell, and release the stored
+force. A hit disrupts the opponent's Stitching rather than inflicting realistic
+ballistic, burning, or drowning injury. Later Callings may handle the same
+Relics differently in animation, but receive no hidden mechanical advantage.
+
 ## Competition Release Mode
 
 The first release is an immediately playable single-player artillery challenge
@@ -97,13 +131,29 @@ The competition release has exactly three independently designed Relics. Their
 mechanics are product-authored and do not derive from Sorcerers names,
 constants, algorithms, code, or assets.
 
-- **Threadball** (`threadball`) is the balanced baseline: a wound ball of NIM
-  Thread with medium range and medium Stitching damage.
-- **Needlepoint** (`needlepoint`) is the long-range choice: a toy-like polished
-  needle trailing luminous thread, with the highest range and lowest Stitching
-  damage.
-- **Spoolburst** (`spoolburst`) is the heavy close-range choice: an oversized
-  wooden spool that deals the highest Stitching damage at the lowest range.
+- **Threadball** (`threadball`) is the balanced Worldweave spell: loose blue
+  world-thread is compressed into a hovering, magically tensioned knot with
+  luminous gold NIM Thread visible between its layers. It has medium range and
+  medium Stitching damage. It must not read as an ordinary household yarn ball,
+  earth clod, bomb, fuse, or generic fireball.
+- **Needlepoint** (`needlepoint`) is the long-range Air/Draft expression: a
+  toy-like polished needle draws a narrow line of luminous thread through the
+  air, giving the highest range and lowest Stitching damage.
+- **Spoolburst** (`spoolburst`) is the heavy Fire/Loomspark expression: an
+  over-tensioned wooden spool releases warm ember-like thread energy and rapid
+  unspooling force, giving the highest Stitching damage at the lowest range.
+
+Cloudwater establishes water in the setting but is not a fourth release Relic.
+A later water-focused Relic may explore flowing, weighting, dyeing, or felting
+imagery only after the basic assembled game is tested and its mechanics receive
+a separate deterministic, disclosed design gate.
+
+External Threadball candidate `2BAE664F...F4089EB` is paused as historical
+structure evidence because it reads as an ordinary yarn ball rather than the
+compressed spell described above. It is neither rejected nor approved: do not
+normalize, promote, delete, or use it as a conditioning input. WP-015B3A must
+freeze and review a new exact FLUX request contract before one replacement can
+run.
 
 WP-015 differentiates only these two dimensions: range and maximum direct
 Stitching damage. Damage radius, terrain radius, precision, falloff, ammo,
@@ -122,9 +172,11 @@ player and Loomkeeper. Selection has no ammo, cooldown, hidden modifier, or
 Calling restriction and remains active until another Relic is selected.
 
 Code-drawn placeholders and production assets must remain distinct without
-color alone: Threadball reads as round and balanced, Needlepoint as fast and
-long-reaching, and Spoolburst as heavy and short-reaching. WP-015 visuals must
-not imply unimplemented radius, precision, or secondary-effect differences.
+color alone: Threadball reads as a compressed round knot of stored Worldweave
+tension, Needlepoint as fast and long-reaching Draft, and Spoolburst as heavy
+short-reaching Loomspark. Elemental presentation is visual and narrative in the
+basic release; WP-015 visuals must not imply unimplemented radius, precision,
+status, terrain, or secondary-effect differences.
 
 ## Knotkin Anatomy
 
@@ -551,6 +603,8 @@ Blocked:
   later in WP-015D with Thief and Warrior.
 - Validate Patch 01 tiling, phone composition, and code-owned circular
   destruction before producing additional Patches or decorative layers.
+- Keep Cloudwater non-mechanical through WP-015; a playable water Relic or
+  elemental interaction requires a later disclosed rules and presentation gate.
 - Set the fixed reward, daily Prize Loom budget, eligibility window, and
   reservation timeout before enabling real payouts.
 - Provide an Android/iOS release-testing environment when physical-device

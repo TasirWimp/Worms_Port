@@ -241,15 +241,20 @@ exists with:
 npm run asset:normalize:wizard
 ```
 
-The next slice is WP-015B3A: review the existing Threadball evidence first,
-then freeze and process the Patch companion-master gates one family at a time.
-WP-015B3B separately admits a Wizard-first animation route, and B3C produces
-one Wizard inventory that WP-015C reuses for both the player and the AI
-Loomkeeper. A distinct Loomkeeper asset now belongs to the wider character
-roster in WP-015D. WP-015C remains integration-only and begins only when the
-simplified vertical-slice inventory is manifest-approved. The exact gates and
-re-entry order are in the Execution Pointer and
-`docs/process/development_workflow.md`.
+The next slice is WP-015B3A. Existing Threadball candidate
+`2BAE664F...F4089EB` is paused as historical structure evidence because it reads
+as ordinary yarn rather than the newly defined compressed Worldweave spell. Do
+not normalize, promote, delete, or condition on it. First freeze and review one
+replacement Threadball request contract, process that family, and only then
+freeze and process Patch companion-master gates one family at a time. WP-015B3B
+separately admits a Wizard-first animation route, and B3C produces one Wizard
+inventory that WP-015C reuses for both the player and the AI Loomkeeper. A
+distinct Loomkeeper asset belongs to the wider character roster in WP-015D.
+WP-015C remains integration-only and begins only when the simplified vertical-
+slice inventory is manifest-approved. The Celestial Spinning Mill, Worldweave,
+Air/Draft, Fire/Loomspark, and Water/Cloudwater story is recorded in
+`docs/art-direction.md`; exact gates and re-entry order are in the Execution
+Pointer and `docs/process/development_workflow.md`.
 
 ## Build
 
@@ -495,8 +500,10 @@ damage-radius, and maximum-damage constants differ. WP-015 does not rewrite
 that replay history. It prepares a new versioned basic ruleset in which
 Threadball has medium range and damage, Needlepoint has the highest range and
 lowest damage, and Spoolburst has the lowest range and highest damage. Other
-weapon dimensions and fine tuning are deferred. No production Relic art is
-shipped yet.
+weapon dimensions and fine tuning are deferred. Their planned visual grammar is
+Worldweave for Threadball, Air/Draft for Needlepoint, and Fire/Loomspark for
+Spoolburst. Cloudwater establishes water in the world but adds no release Relic
+or mechanic. No production Relic art is shipped yet.
 
 ## Complete Practice Clash
 
