@@ -226,7 +226,7 @@ const reviewedProfileContracts = new Map([
     smokeTool: 'generate_image'
   }],
   ['flux2-klein', {
-    state: 'wizard_hood_edit_generated_visual_rejected',
+    state: 'wizard_rounded_source_master_approved',
     modelComponents: reviewedFluxModelComponents,
     workflowComponents: [
       'wormsport-flux2-klein-text-to-image-workflow',
@@ -241,6 +241,21 @@ const reviewedProfileContracts = new Map([
     comfyLaunchMode: 'lowvram_no_preview',
     requiredComfyArguments: ['--lowvram', '--preview-method none'],
     smokeTool: 'generate_flux2_klein_text',
+    latestReview: {
+      decision: 'source_master_approved',
+      generation_work_package: 'WP-015B2G',
+      normalization_work_package: 'WP-015B2H',
+      seed: 15027002,
+      external_source_sha256: '40F9E81254A0792B967889808BD8BD8DE33DBDE5EAB7C4CBB1B336DD02BC54A5',
+      normalization_config_path: 'scripts/asset-normalization/wp-015b2h-wizard-v1.json',
+      normalized_master_sha256: '7AF4864E00C7206A05684312916092C6881127F921FA7CEA01524899093318A9',
+      normalization_config_sha256: '2AAEF899BD9FDBE202D5D9A293F1DC971ED62AAC32ED95095AF662FE6567D644',
+      normalizer_path: 'scripts/normalize-character-master.js',
+      normalizer_sha256: 'B4AEF73CC30133F622C131A8E8D0322DECF953F933FEFC4EE83940FB328CDD82',
+      normalized_master_path: 'assets/masters/characters/knotkin/wizard/knotkin-wizard-source-master-v1.png',
+      runtime_path_assigned: false,
+      further_generation_authorized: false
+    },
     requiredNoteFragments: [
       'WP-015B2D',
       'DEF9265DAA4C6F2799D16870205E2015291E3E4AAE0F61802349C9FD8D56AD00',
@@ -739,6 +754,40 @@ function validateGenerationComponents(manifest, root = repoRoot) {
       if (profile.smoke_tool !== contract.smokeTool ||
           !contract.requiredMcpTools.includes(profile.smoke_tool)) {
         errors.push(`${label}: reviewed smoke tool changed or is not registered by the profile.`);
+      }
+      if (contract.latestReview && JSON.stringify(profile.latest_review) !== JSON.stringify(contract.latestReview)) {
+        errors.push(`${label}: latest exact-output review changed.`);
+      }
+      if (contract.latestReview) {
+        const exactFiles = [
+          ['normalization_config_path', 'normalization_config_sha256'],
+          ['normalizer_path', 'normalizer_sha256'],
+          ['normalized_master_path', 'normalized_master_sha256']
+        ];
+        for (const [pathField, hashField] of exactFiles) {
+          const relativePath = profile.latest_review?.[pathField] || '';
+          const resolvedPath = path.resolve(root, relativePath);
+          if (!relativePath || !resolvedPath.startsWith(path.resolve(root) + path.sep) ||
+              !fs.existsSync(resolvedPath)) {
+            errors.push(`${label}: ${pathField} must resolve inside the repository.`);
+            continue;
+          }
+          const actualHash = crypto.createHash('sha256').update(fs.readFileSync(resolvedPath))
+            .digest('hex').toUpperCase();
+          if (actualHash !== profile.latest_review?.[hashField]) {
+            errors.push(`${label}: ${pathField} does not match ${hashField}.`);
+          }
+        }
+        const assetManifestPath = path.resolve(root, 'legal', 'asset-manifest.json');
+        const assetManifest = fs.existsSync(assetManifestPath) ?
+          JSON.parse(fs.readFileSync(assetManifestPath, 'utf8')) : null;
+        const approvedMaster = assetManifest?.assets?.find(
+          (asset) => asset.file === profile.latest_review.normalized_master_path
+        );
+        if (!approvedMaster || approvedMaster.sha256 !== profile.latest_review.normalized_master_sha256 ||
+            approvedMaster.runtime_path !== undefined) {
+          errors.push(`${label}: approved normalized master must remain manifest-bound without runtime_path.`);
+        }
       }
       if (Array.isArray(contract.requiredNoteFragments) &&
           contract.requiredNoteFragments.some((fragment) => !profile.notes.includes(fragment))) {

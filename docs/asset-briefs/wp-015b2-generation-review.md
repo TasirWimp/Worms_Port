@@ -1515,9 +1515,68 @@ slightly more front-facing than requested and a faint contact shadow remains;
 those are deterministic normalization/review concerns, not reasons to return to
 hexagonal generation.
 
-The exact PNG remains external quarantine and is not yet a product asset. It
-still requires exact-output IP review, alpha/background extraction, crop,
+At B2G closure the exact PNG remained external quarantine and was not yet a
+product asset. Exact-output IP review, alpha/background extraction, crop,
 baseline/pivot and held-Relic socket normalization, mobile-size review,
-animation planning, product-manifest approval, and runtime integration. No
-third reset prompt, reference edit, mask edit, LoRA training, or product
-promotion is authorized by this selection.
+animation planning, product-manifest approval, and runtime integration were
+still pending. The selection itself authorized no third reset prompt, reference
+edit, mask edit, LoRA training, or product promotion; B2H below is the separate
+normalization and approval decision.
+
+## WP-015B2H Production Normalization And Source-Master Approval
+
+Status: **completed 2026-08-04; exact normalized Wizard source master approved;
+no runtime path or animation admission**.
+
+B2H bound only the selected B2G parent `40F9E812...4A5`; no Comfy service,
+inference, repaint, clone, generative fill, reconstruction, non-uniform scale,
+or warp was used. The frozen implementation is:
+
+| Field | Exact evidence |
+| --- | --- |
+| Configuration | `scripts/asset-normalization/wp-015b2h-wizard-v1.json`, SHA-256 `2AAEF899BD9FDBE202D5D9A293F1DC971ED62AAC32ED95095AF662FE6567D644` |
+| Normalizer | `scripts/normalize-character-master.js`, SHA-256 `B4AEF73CC30133F622C131A8E8D0322DECF953F933FEFC4EE83940FB328CDD82` |
+| Approved master | `assets/masters/characters/knotkin/wizard/knotkin-wizard-source-master-v1.png` |
+| Master bytes / SHA-256 | 195820 / `7AF4864E00C7206A05684312916092C6881127F921FA7CEA01524899093318A9` |
+| 192px review | 29214 bytes / `5E5A2C9D923D361B91CA750FE858689A7111D993A15C670A75E3D931459BC632` |
+| 48px review | 2062 bytes / `726550CECE3F0AA866EA9A6CF4E80FFACDA19BCF8F77C40DCCF8E7AEC7E9B6B3` |
+| Dark/light edge review | 210156 bytes / `D4545EEBC98035677C57896BDB7351E3C8E64E6AC710799A22881908AD60105D` |
+| Master ground pivot / palm socket | `(256,451)` / `(407,228)` |
+| 192px ground pivot / palm socket | `(96,169)` / `(153,85)` |
+
+The first matte candidate was rejected before any asset copy: filling every
+enclosed near-white region kept the faint floor shadow below the left foot as
+an opaque white oval. The corrected frozen config separates the lower source
+shadow zone from blue yarn, fills only internal highlight regions above that
+zone, and removes isolated bicubic ringing pixels after resize. The resulting
+subject has one connected nonzero-alpha component, zero visible border pixels,
+clean dark-navy and warm-light edges, core bounds within the motion-safe area,
+and readable hat, eyes, mouth, feet, and cupped palm at 48px. A second run
+reproduced all four PNG hashes byte-for-byte.
+
+The retained B1 socket `(341,293)` cannot describe the owner-approved rounded
+body and extended hand at the retained ground baseline. Matching its vertical
+distance would scale the 898-pixel shadow-free subject to about 297 pixels tall.
+B2H therefore exercised the planned stop-and-amend rule: one uniform transform
+keeps the subject full-height and motion-safe, while the metadata socket moves
+to the visible palm at `(407,228)`. No character pixel was distorted to preserve
+the superseded coordinate.
+
+Exact-output review found a generic isolated crochet Wizard with two bead eyes,
+one mouth, a pointed star hat, an empty upward-facing palm, and no text, logo,
+official Nimiq art, recognizable third-party character, or Sorcerers input.
+The exact external FLUX.2 model chain remains Apache-2.0 and unbundled. The
+approved output and deterministic postprocess are recorded as `Owned-Original`
+in `legal/asset-manifest.json`. The master intentionally has no `runtime_path`;
+WP-015B3 must separately approve companion masters and animation derivatives
+before WP-015C may integrate anything.
+
+Exact rights evidence was rechecked against the pinned
+[FLUX.2 Klein 4B FP8 Apache-2.0 license](https://huggingface.co/black-forest-labs/FLUX.2-klein-4b-fp8/blob/5b4408e59397a4a37ccb46afe426d8ed86379441/LICENSE.md),
+the pinned Apache-2.0 BFL encoder repository, and the exact VAE evidence already
+recorded in `legal/generation-component-manifest.json`. BFL's current
+[terms](https://bfl.ai/legal/terms-of-service) say BFL claims no ownership in
+outputs, while its [usage policy](https://bfl.ai/legal/usage-policy) leaves
+lawful and non-infringing use with the user. These provider terms do not replace
+the project's own prompt/input/output review; they support it. The prompt used
+no third-party character, logo, official Nimiq file, or reference image.

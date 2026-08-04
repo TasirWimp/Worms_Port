@@ -71,10 +71,12 @@ upward-facing cupped crochet mitten. Its palm reads like a shallow bowl: the
 thumb and rounded mitten edge rise without meeting, leaving an empty,
 unobstructed cradle for a separately rendered Relic. This visible-shape wording
 supersedes abstract `C-shaped grip` or invisible-cylinder instructions. The
-shared held-Relic socket, baseline, projectile origin, animation triggers,
-external quarantine, and exact-file approval gates remain normative. Future
-Loomkeeper and roster characters use the same rounded family while retaining
-distinct Calling colors and costumes.
+shared attachment behavior, baseline, Relic-local projectile-origin offset,
+animation triggers, external quarantine, and exact-file approval gates remain
+normative. The absolute socket coordinate follows the reviewed center of each
+approved palm rather than forcing different rounded bodies into one old angular-
+body coordinate. Future Loomkeeper and roster characters use the same rounded
+family while retaining distinct Calling colors and costumes.
 
 The exact SD 1.5 prompts and negative prompt below remain unchanged historical
 evidence for reproducibility. Their `no mouth`/`mouth` exclusions are superseded
@@ -85,20 +87,28 @@ normative.
 
 ### WP-015B2H/B3 production handoff
 
-WP-015B2H binds only selected external Wizard source
+WP-015B2H completed by binding only selected external Wizard source
 `40F9E81254A0792B967889808BD8BD8DE33DBDE5EAB7C4CBB1B336DD02BC54A5`.
-It is a deterministic master-normalization and exact-file approval gate, not a
-generation or animation pass. Preserve the opaque 1024x1024 original externally;
-derive the 512x512 RGBA master, 192x192 review candidate, and 48px phone preview
-through a versioned script/configuration using deterministic background removal,
-edge decontamination, crop, uniform scaling, and translation. Do not repaint,
-generatively fill, reshape, or non-uniformly warp the selected character.
+It remained a deterministic master-normalization and exact-file approval gate,
+not a generation or animation pass. The opaque 1024x1024 original stays
+external; frozen config `2AAEF899...7D644` and normalizer
+`B4AEF73C...CDD82` produced approved master `7AF4864E...18A9`, 192x192
+review, and 48px phone preview through deterministic background/shadow removal,
+edge decontamination, uniform scaling, and translation. No repaint, generative
+fill, reshape, or non-uniform warp occurred.
 
 The coordinates below remain targets, not authority to distort the art. If the
 visible ground baseline and center of the cupped palm cannot both align to them
 with one uniform transform while retaining safe padding, stop and amend the
 normalization contract through recorded phone evidence. Only the approved
 normalized master may enter WP-015B3 animation-route review.
+
+That stop condition triggered for the old held socket: matching `(341,293)` and
+the retained baseline would shrink the 898-pixel shadow-free Wizard to about
+297 pixels tall. B2H therefore retained pivot `(256,451)`, full-height uniform
+placement, and safe padding while amending the visible Wizard palm socket to
+`(407,228)` (`(153,85)` on the 192px review). This is source-specific metadata,
+not a change to projectile simulation or Relic-local release offset.
 
 WP-015B3 must freeze separate FLUX-specific prompts/settings/seeds for the
 rounded Loomkeeper and Patch before any new request. Historical SD 1.5 seeds and
@@ -178,21 +188,26 @@ multiple characters, second character, group, front view, rear view, looking lef
 
 ## Character Geometry And Animation
 
-Wizard and Loomkeeper share one normalization contract:
+Wizard and Loomkeeper share one attachment-behavior contract. B2H proves that
+rounded source bodies require reviewed source-specific palm coordinates:
 
 | Field | 512x512 source | 192x192 runtime candidate |
 | --- | ---: | ---: |
 | Ground pivot | `(256, 451)` | `(96, 169)` |
-| Held-Relic socket | `(341, 293)` | `(128, 110)` |
+| Approved Wizard held-Relic socket | `(407, 228)` | `(153, 85)` |
+| Loomkeeper initial socket target | `(341, 293)` | `(128, 110)` |
 | Projectile-origin offset in Relic-local space | `(96, 0)` | `(36, 0)` |
 | Motion-safe horizontal bounds | `64..448` | `24..168` |
 | Motion-safe top/baseline | `32..451` | `12..169` |
 
 The master uses a right-facing, orthographic-like three-quarter side view so
-both bead eyes remain visible. The forward hand aligns to the held-Relic socket
-without a Relic baked into neutral locomotion. Runtime rotates a separate Relic
-around that socket; the local origin offset rotates with it. Mirroring for a
-left-facing actor is allowed only after costume handedness and asymmetry review.
+both bead eyes remain visible. Each forward hand records the visible palm center
+as its held-Relic socket without baking a Relic into neutral locomotion. B3A
+must stop and record a Loomkeeper coordinate amendment if one uniform transform
+cannot meet its initial target without implausible scale or crop. Runtime rotates
+a separate Relic around the approved per-actor socket; the shared local origin
+offset rotates with it. Mirroring for a left-facing actor is allowed only after
+costume handedness and asymmetry review.
 
 Aim pose selection follows the authoritative locked angle:
 

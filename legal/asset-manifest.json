@@ -1,6 +1,6 @@
 {
   "policy": "Only approved, traceable, commercial-use-compatible product assets may enter assets/.",
-  "checked_date": "2026-07-11",
+  "checked_date": "2026-08-04",
   "assets": [
     {
       "id": "pocket-robot-openai-owned-original",
@@ -20,6 +20,25 @@
       "checked_date": "2026-07-11",
       "decision": "approved",
       "notes": "User supplied and authorized the source concept for project use. Source concept SHA-256: 762327F9D87D60757B5858DEFE5E9284C73874CF28EF72F23502C421161064DF. OpenAI-built-in image generation recreated the isolated robot on a chroma-key background; local chroma-key removal produced the RGBA master. Master SHA-256: 32F655898444C48F58DA3BEADC62483ED82C3632CFC1B4B0EC9CD27752AD9E83. Runtime PNG is a 456x512 Lanczos downscale with SHA-256: 42930118FDFD50F62D2433D76B477ECCA56D5459497943C1F431695C511EE355. Prompt intent: faithfully recreate only the small faceted bronze-and-black robot with two amber eyes as an isolated full-body 2D game asset. OpenAI Terms of Use state that, as between the user and OpenAI and to the extent permitted by law, the user owns Output; the user remains responsible for Input rights and use. No Sorcerers material was used. WP-003 removed this asset from runtime after the Knotkin direction was selected. The file remains approved but unused as the asset-import traceability fixture."
+    },
+    {
+      "id": "knotkin-wizard-flux2-owned-original-source-master-v1",
+      "file": "assets/masters/characters/knotkin/wizard/knotkin-wizard-source-master-v1.png",
+      "sha256": "7AF4864E00C7206A05684312916092C6881127F921FA7CEA01524899093318A9",
+      "origin_repo": "local text-only ComfyUI generation with the pinned Black Forest Labs FLUX.2 Klein 4B component chain",
+      "original_source_url": "https://huggingface.co/black-forest-labs/FLUX.2-klein-4b-fp8/tree/5b4408e59397a4a37ccb46afe426d8ed86379441",
+      "author": "TasirWimp with local FLUX.2 Klein generation and deterministic Worms_Port normalization",
+      "license": "Owned-Original",
+      "commercial_use_allowed": true,
+      "redistribution_allowed": true,
+      "modification_allowed": true,
+      "attribution_required": false,
+      "share_alike": false,
+      "no_technical_restrictions": false,
+      "evidence_url": "https://huggingface.co/black-forest-labs/FLUX.2-klein-4b-fp8/blob/5b4408e59397a4a37ccb46afe426d8ed86379441/LICENSE.md",
+      "checked_date": "2026-08-04",
+      "decision": "approved",
+      "notes": "WP-015B2G used the project-authored generic rounded crochet-Wizard prompt, fixed seed 15027002, and the exact text-only workflow 626568CEAA47627F7D421D3BD1B0AA151E1643DBA8FBD631F5EB437666649E28 with the three external Apache-2.0 FLUX.2 components recorded in legal/generation-component-manifest.json. The selected external opaque 1024x1024 source is 788,520 bytes, SHA-256 40F9E81254A0792B967889808BD8BD8DE33DBDE5EAB7C4CBB1B336DD02BC54A5; it remains untouched outside the repository. Exact-output review found one isolated generic Wizard, exactly two bead eyes, one small mouth, one empty upward-facing palm, no text, logo, official Nimiq art, recognizable third-party character, or Sorcerers input. BFL's pinned model license is Apache-2.0; its current terms state that BFL claims no ownership in outputs while leaving input/output rights and lawful use with the user. WP-015B2H applied only deterministic white-background/contact-shadow removal, white-matte edge decontamination, connected-subject selection, uniform scale, and translation through frozen config 2AAEF899BD9FDBE202D5D9A293F1DC971ED62AAC32ED95095AF662FE6567D644 and normalizer B4AEF73CC30133F622C131A8E8D0322DECF953F933FEFC4EE83940FB328CDD82. The resulting 195,820-byte 512x512 RGBA source master maps ground pivot (256,451) and visible palm socket (407,228), preserves clean alpha on dark and light review backgrounds, and reproduced byte-for-byte. This is a source master only: it intentionally has no runtime_path, animation admission, atlas placement, or gameplay integration."
     }
   ]
 }

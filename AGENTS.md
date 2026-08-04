@@ -105,12 +105,17 @@ If the user asks only for planning, review, or brainstorming, do not edit code.
   WP-015B2G supersedes its angular anatomy with the owner-approved rounded
   crochet-doll direction and upward-facing cupped Relic palm recorded in
   `docs/art-direction.md`. The lineup and every external FLUX candidate remain
-  documentation/quarantine evidence until exact-file asset approval.
-- WP-015B2H is the only active asset slice. It may deterministically normalize
-  exact Wizard source `40F9E812...4A5` and decide its source-master approval; it
-  may not run inference, repaint/warp the character, animate it, create another
-  Calling, or integrate runtime media. WP-015B3 must complete and approve the
-  vertical-slice inventory before integration-only WP-015C begins.
+  documentation/quarantine evidence until exact-file asset approval. WP-015B2H
+  approved only exact Wizard source master
+  `assets/masters/characters/knotkin/wizard/knotkin-wizard-source-master-v1.png`,
+  SHA-256 `7AF4864E...18A9`; it has no runtime path.
+- WP-015B3A is the only active asset slice. Review existing Threadball candidate
+  `2BAE664F...F4089EB` before considering replacement generation, then freeze
+  rounded Loomkeeper and Patch source gates before inference. Process one family
+  at a time. It may not animate, integrate runtime media, assign the Wizard a
+  runtime path, or silently generate another Wizard. B3B/B3C must approve the
+  animation route and complete vertical-slice inventory before integration-only
+  WP-015C begins.
 
 ## Codex Subagent Roles
 

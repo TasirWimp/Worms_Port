@@ -23,6 +23,7 @@
     "Record the project-owner rejection of B2E's Wizard identity and thief-like neck wrap, then construct deterministic B2F hood structure controls and stop before staging or inference for exact source review",
     "Record the project-owner decision to supersede the hexagonal anatomy after the full B2A-B2F control cycle, return to FLUX's rounded crochet-doll prior, compare one abstract-grip trial with one visible shallow-bowl palm trial, and freeze the selected external Wizard direction without product promotion",
     "Refine the post-B2G handoff into a deterministic Wizard normalization/approval gate, a separately gated vertical-slice production and animation-admission package, and an integration-only first playable visual slice",
+    "Normalize only exact B2G Wizard source 40F9E812...4A5 through a frozen deterministic configuration into reviewed 512x512 RGBA, 192x192, and 48px derivatives; stop rather than repaint, generate, non-uniformly warp, animate, or integrate",
     "Generate deterministic quarantined vertical-slice candidates and complete pre-promotion art, IP, provenance, and phone-readability review"
   ],
   "non_goals": [
@@ -48,6 +49,7 @@
     "WP-015B2E protected-property mask integrity, pinned core-node workflow schema, exact preflight, one frozen request, protected-pixel equality, drift telemetry, and full-size/48px review",
     "WP-015B2F deterministic hood guide and generous mask integrity, exact-B2D scaffold protection, frozen prompt review, full-size/48px review, and no-inference boundary",
     "WP-015B2G exact rounded-doll prompt, fixed seeds, external output paths and hashes, cupped-palm visual decision, fail-closed shutdown, and no-product-promotion boundary",
+    "WP-015B2H source identity, exact-output rights/IP review, frozen normalization configuration, deterministic byte reproduction, alpha/background and edge quality, baseline/pivot/socket geometry, 48px and maintained-phone visual review, manifest lineage, and no-runtime-path boundary",
     "WP-015B1 brief-contract completeness and source-boundary review",
     "fixed-seed quarantined vertical-slice master review",
     "self-review"
@@ -76,6 +78,11 @@
   "sorcerers_reference_used": false,
   "clean_room_records": [],
   "check_results": [
+    {
+      "command": "WP-015B2H starting-state checkpoint",
+      "status": "pass",
+      "detail": "WP-015B2H starts from clean synchronized branch codex/wp-015-production-assets at commit 0d2cca606a6318185633e696872a47ebbecce0bc with package-lock SHA-256 044353A8A419C6B942D5D74C4941A5EF1DB7C22574DF676CBFE87D0C51144BB3. The sole external input exists at the frozen Comfy output path as a 788,520-byte 1024x1024 PNG with SHA-256 40F9E81254A0792B967889808BD8BD8DE33DBDE5EAB7C4CBB1B336DD02BC54A5. Scope is deterministic master normalization and exact-file review only. No inference, repainting, non-uniform warp, animation, another Calling, runtime path, or integration is authorized. Sorcerers was not inspected or used."
+    },
     {
       "command": "npm run check:compliance",
       "status": "pass",
@@ -390,13 +397,67 @@
       "command": "WP-015 post-B2G planning refinement",
       "status": "pass",
       "detail": "The Execution Pointer now advances only to WP-015B2H deterministic Wizard normalization of exact source 40F9E812...4A5. B2H freezes source verification, exact-output rights/IP review, versioned alpha/background and edge normalization, uniform-only placement, retained baseline/pivot/socket targets with a stop-and-amend rule, 512/192/48px review derivatives, source-master approval, and explicit no-generation/no-animation/no-integration boundaries. WP-015B3 now owns serial companion-master completion, Threadball reuse review, animation-route admission through a Wizard-only pilot, and all manifest-approved playable derivatives. WP-015C is integration-only and must pass automated phone/Ubuntu visual evidence plus separate real-device acceptance before D. D freezes replay-compatible v3 range/damage values and completes the roster; E adds separately reviewed audio and closes release evidence. The master workflow now normalizes and approves a source master before any animation upload, resolving the prior ordering contradiction. Evidence JSON parsing, npm run check:compliance, and git diff --check passed; build, browser, and real-device checks were not run because this refinement changes documentation only."
+    },
+    {
+      "command": "WP-015B2H frozen source, configuration, and exact-output rights/IP review",
+      "status": "pass",
+      "detail": "The sole 788,520-byte 1024x1024 RGB parent reverified as SHA-256 40F9E81254A0792B967889808BD8BD8DE33DBDE5EAB7C4CBB1B336DD02BC54A5 and remains untouched externally. Frozen config scripts/asset-normalization/wp-015b2h-wizard-v1.json is SHA-256 2AAEF899BD9FDBE202D5D9A293F1DC971ED62AAC32ED95095AF662FE6567D644; normalizer scripts/normalize-character-master.js is SHA-256 B4AEF73CC30133F622C131A8E8D0322DECF953F933FEFC4EE83940FB328CDD82. The exact text-only workflow is 626568CEAA47627F7D421D3BD1B0AA151E1643DBA8FBD631F5EB437666649E28. Pinned diffusion, BFL encoder, and VAE evidence remains Apache-2.0 and external/unbundled. BFL claims no output ownership while requiring lawful, non-infringing use. Human visual/IP review found one generic isolated crochet Wizard, two bead eyes, one mouth, an empty upward palm, no text, logo, official Nimiq art, recognizable third-party character, reference-image input, or Sorcerers material."
+    },
+    {
+      "command": "WP-015B2H candidate A alpha-edge visual review",
+      "status": "fail",
+      "detail": "The first deterministic candidate correctly extracted the character but the unrestricted enclosed-region rule filled a low-contrast floor-shadow cavity below the image-left foot, creating an opaque white oval on transparency and the dark review background. No file was copied into assets and no manifest entry was added. The failure amended only the frozen matte: source y>=900 now requires reviewed blue-excess thresholds, enclosed highlights are retained only above that shadow zone, and post-resample ringing islands are discarded. No character pixel was painted, regenerated, reconstructed, or warped."
+    },
+    {
+      "command": "WP-015B2H candidate B alpha, geometry, and phone-size visual review",
+      "status": "pass",
+      "detail": "The corrected candidate produces one connected subject with zero visible canvas-border pixels, zero disconnected pixels, 57,026 opaque pixels, 1,640 partial-alpha pixels, core bounds x=135..440 and y=32..452, and clean edges on navy and warm-light backgrounds. Hat, two eyes, mouth, separate feet, and empty cupped palm remain readable at 512, 192, and 48 pixels. The 195,820-byte master is 7AF4864E00C7206A05684312916092C6881127F921FA7CEA01524899093318A9; 192px review is 5E5A2C9D923D361B91CA750FE858689A7111D993A15C670A75E3D931459BC632; 48px review is 726550CECE3F0AA866EA9A6CF4E80FFACDA19BCF8F77C40DCCF8E7AEC7E9B6B3; dark/light sheet is D4545EEBC98035677C57896BDB7351E3C8E64E6AC710799A22881908AD60105D. Pivot remains (256,451). The stop-and-amend rule moves only socket metadata from superseded angular-body (341,293) to the visible rounded-body palm (407,228); forcing the old vertical displacement would make the shadow-free subject only about 297px tall."
+    },
+    {
+      "command": "WP-015B2H deterministic reproduction and normalizer tooling",
+      "status": "pass",
+      "detail": "A second independent candidate directory reproduced the master, 192px, 48px, and edge-review SHA-256 values byte-for-byte. Four new focused tests cover connected blue-subject selection with neutral-shadow rejection, enclosed-highlight preservation, partial edge alpha, exact source hash failure, deterministic RGBA PNG bytes, non-uniform-transform rejection, ringing-island cleanup, and the frozen source/pivot/socket/no-runtime boundary. The full npm run test:tooling suite passed 42/42 after the generation-profile regression test was advanced from the historical B2F state to the exact B2H source-master review."
+    },
+    {
+      "command": "WP-015B2H exact source-master manifest approval",
+      "status": "pass",
+      "detail": "Approved exact master bytes were copied to assets/masters/characters/knotkin/wizard/knotkin-wizard-source-master-v1.png and entered in legal/asset-manifest.json as Owned-Original with complete parent, workflow, external component, config, normalizer, and review lineage. The FLUX profile binds source 40F9E812...4A5 to normalized master 7AF4864E...18A9 and blocks further generation. Both asset and generation-component compliance pass. The asset deliberately has no runtime_path, so copy-approved-assets cannot ship it and B2H authorizes no atlas, animation, gameplay integration, another Calling, or further Wizard prompt."
+    },
+    {
+      "command": "WP-015B2H closure verification and current transitive security refresh",
+      "status": "pass",
+      "detail": "npm run verify:fast passed compliance, TypeScript, and all 198 tooling/protocol/simulation/Loomkeeper/Relic/combat/Practice/identity/reward tests. npm run smoke rebuilt server/client, copied zero runtime assets as required, and passed the built server/overlay/asset-plumbing/room smoke. The first final npm audit discovered newly published high-severity GHSA-2m8v-j782-fhvr in transitive socket.io-parser 4.2.6; the upstream advisory says 4.2.7 is the patched 4.x version and has no workaround. A compatible npm update changed only that transitive lock entry to 4.2.7, resulting package-lock SHA-256 18036C2C8F8AA35E2E5FEE03A0B421BA25561C00C609FD3C88BFC51BDEA56FAE, then verify:fast, full build/smoke, package-license compliance, and npm audit with zero vulnerabilities all passed. git diff --check passed. The existing Vite large-chunk warning remains unchanged. Browser matrix and real-device checks were intentionally skipped because the approved source master has no runtime_path and no player-visible behavior changed."
+    }
+  ],
+  "reviews": [
+    {
+      "role": "worms_port_asset_curator",
+      "reviewer": "primary-agent-exact-output-visual-ip-and-alpha-review",
+      "decision": "pass"
+    },
+    {
+      "role": "worms_port_compliance_keeper",
+      "reviewer": "primary-agent-flux-component-and-source-master-manifest-review",
+      "decision": "pass"
+    },
+    {
+      "role": "worms_port_test_worker",
+      "reviewer": "primary-agent-normalizer-determinism-and-geometry-review",
+      "decision": "pass"
+    },
+    {
+      "role": "worms_port_reviewer",
+      "reviewer": "primary-agent-no-inference-no-runtime-scope-review",
+      "decision": "pass"
     }
   ],
   "skipped_checks": [
     "The phone-browser matrix was not run for WP-015B0, WP-015B1, WP-015B2A Gates 1-6, WP-015B2B, WP-015B2C, WP-015B2D, WP-015B2E, WP-015B2F, or WP-015B2G because these slices change only the offline generation pipeline, documentation, compliance metadata, and external quarantined component state; they change no browser-facing code or runtime asset.",
     "Real-device testing was not run because WP-015B0, WP-015B1, WP-015B2A Gates 1-6, WP-015B2B, WP-015B2C, WP-015B2D, WP-015B2E, WP-015B2F, and WP-015B2G create no player-visible behavior or product media.",
     "FLUX inference was not run in Gate 3 because the separate Gate 4 technical smoke had to record runtime, memory behavior, and exact output evidence as its own bounded review.",
-    "Wizard, Threadball, and reference-edit visual admission was not run in Gate 4 because technical hardware admission and visual-purpose admission are separate gates."
+    "Wizard, Threadball, and reference-edit visual admission was not run in Gate 4 because technical hardware admission and visual-purpose admission are separate gates.",
+    "The phone-browser matrix was not run for WP-015B2H because the approved Wizard is a source master without runtime_path and no browser-facing code or runtime asset path changed.",
+    "Real-device testing was not run for WP-015B2H because no player-visible media was integrated; the maintained 192px and exact 48px derivatives were reviewed locally instead."
   ],
   "residual_risks": [
     "The reviewed image-conditioned graph uses native FLUX ReferenceLatent semantic conditioning, not a hard edge, pose, mask, or ControlNet constraint. B2C demonstrates one successful semantic-scaffold workaround but does not establish pixel-exact geometry control for arbitrary characters.",
@@ -404,9 +465,9 @@
     "WP-015B2A retains exactly three external FLUX.2 component files, two native workflows, and one closed executable profile as technical evidence. The completed WP-015B2B diagnostic changed only the structural input and prompt strategy and failed its Wizard anatomy purpose; its result does not authorize a second attempt, multi-reference graph, or batch.",
     "The Windows AMD RX 7600 8 GB completed the technical smoke, all three Gate 5 requests, B2B, both B2C gates, B2D, B2E, B2F, and both B2G text trials without runtime failure, but offloaded generation took 253-355 seconds. Driver portability remains unproven and its approximate VRAM samples must not be generalized into a hardware requirement.",
     "Threadball passed only a bounded structure review; its opaque output has no exact-output IP/product approval, alpha normalization, derivative cleanup, or manifest entry. It may inform a later separately reviewed Relic-only route but is not a product asset.",
-    "B2C proves that a mechanical semantic scaffold can establish angular geometry and survive one fitted-knit conversion, but the opaque knit output retains panel seams and a rear scaffold volume. B2D proves that larger close-set eyes, a curved smile, optional paired eyebrows, pale chenille, a belt/button, and warmer details improve appeal. B2E preserves every zero-mask pixel but is rejected as the next Wizard master because its compact crown loses the Wizard calling and its horizontal neck wrap reads thief-like. B2F proves the new scaffold can drive a clear tall Wizard hood, but exact restoration of hard face and mouth islands creates unacceptable visible seams. Normalization, alpha, socket, and animation remain unresolved.",
+    "B2C proves that a mechanical semantic scaffold can establish angular geometry and survive one fitted-knit conversion, but the opaque knit output retains panel seams and a rear scaffold volume. B2D proves that larger close-set eyes, a curved smile, optional paired eyebrows, pale chenille, a belt/button, and warmer details improve appeal. B2E preserves every zero-mask pixel but is rejected as the next Wizard master because its compact crown loses the Wizard calling and its horizontal neck wrap reads thief-like. B2F proves the new scaffold can drive a clear tall Wizard hood, but exact restoration of hard face and mouth islands creates unacceptable visible seams. B2H resolves normalization, alpha, and the source-master socket for the B2G direction; animation and companion-asset consistency remain unresolved.",
     "The mouth amendment improves expression capacity but requires a later neutral-mouth topology and bounded expression-frame contract so mouth placement does not flicker or multiply across animation.",
     "B2E proves the core latent-mask route can preserve all zero-mask decoded pixels exactly and produce a coherent head-worn covering, but it does not establish that future masks, characters, or prompts will behave similarly. The one-request allowance is consumed and no retry is authorized.",
-    "The B2G cupped-palm Wizard is the owner-selected production direction but has not yet passed exact-output product/IP or runtime-normalization review. Threadball, the B2C knit conversion, B2D creative-direction result, B2E rejected cowl candidate, B2F deterministic scaffold, B2F rejected seamed output, B2G closed-mitten trial, and B2G selected candidate remain external evidence. Further character generation is closed. The next bounded work is deterministic alpha/background extraction, crop, baseline/pivot/socket normalization, phone-size inspection, and product-manifest review of exact B2G output 40F9E812...4A5; the old mask-topology repair and LoRA remain deferred alternatives, not authorization."
+    "The B2G cupped-palm Wizard has passed B2H exact-output product/IP, deterministic alpha, geometry, phone-size, and source-master manifest review as exact normalized bytes 7AF4864E...18A9. It remains intentionally non-runtime and unanimated. Threadball, the B2C knit conversion, B2D creative-direction result, B2E rejected cowl candidate, B2F deterministic scaffold, B2F rejected seamed output, B2G closed-mitten trial, and untouched B2G opaque parent remain external evidence. The next bounded work is B3A review/normalization of the existing Threadball candidate followed by separately frozen rounded Loomkeeper and Patch source gates. The old mask-topology repair and LoRA remain deferred alternatives, not authorization."
   ]
 }

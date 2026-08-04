@@ -219,22 +219,34 @@ Seed `15027001` produced a strong Wizard with a closed thumbs-up mitten; seed
 `15027002` replaced the abstract grip language with an upward-facing shallow-
 bowl palm and is the owner-selected direction. The exact prompt, full external
 path, hashes, decision trail, and remaining product gates are recorded in
-`docs/asset-briefs/wp-015b2-generation-review.md`. The selected PNG remains
-external quarantine: no runtime asset, alpha extraction, socket normalization,
-animation, or product-manifest approval is implied.
+`docs/asset-briefs/wp-015b2-generation-review.md`.
 
-The refined next slice is WP-015B2H, a deterministic, non-generative Wizard
-normalization gate. It binds only the selected B2G file and may perform reviewed
-background/alpha extraction, edge cleanup, crop, uniform scale/translation,
-baseline/pivot/socket alignment, and 512/192/48px derivation. It must stop rather
-than repaint, warp, regenerate, or force incompatible coordinates. If the exact
-normalized master passes output-IP, provenance, alpha-edge, full-size, and
-phone-size review, it may receive source-asset approval; animation and runtime
-integration remain blocked. WP-015B3 then completes the Loomkeeper, Threadball,
-Patch, minimum effects, and a separately admitted Wizard-first animation route.
-WP-015C is integration-only and begins only when that complete vertical-slice
-inventory is manifest-approved. The exact gates and re-entry order are in the
-Execution Pointer and `docs/process/development_workflow.md`.
+WP-015B2H completed the deterministic, non-generative normalization gate for
+that exact source. The approved 512x512 RGBA source master is
+`assets/masters/characters/knotkin/wizard/knotkin-wizard-source-master-v1.png`,
+SHA-256 `7AF4864E...18A9`. The versioned normalizer removes the plain background
+and contact shadow, decontaminates the white edge matte, keeps one connected
+subject, and uses uniform scale/translation only. It preserves ground pivot
+`(256,451)` and amends the superseded angular-body socket to the visible rounded-
+doll palm at `(407,228)`; forcing the old `(341,293)` socket would have made the
+character implausibly small. Full-size, 192px, 48px, navy-background, and warm-
+light review passed, and two runs reproduced every PNG hash byte-for-byte. The
+master is manifest-approved but deliberately has no `runtime_path`, animation,
+atlas, or gameplay integration.
+
+Reproduce the reviewed local outputs while the exact external B2G source still
+exists with:
+
+```powershell
+npm run asset:normalize:wizard
+```
+
+The next slice is WP-015B3A: review the existing Threadball evidence first,
+then freeze and process the rounded Loomkeeper and Patch companion-master gates
+one family at a time. WP-015B3B separately admits a Wizard-first animation
+route; WP-015C remains integration-only and begins only when the complete
+vertical-slice inventory is manifest-approved. The exact gates and re-entry
+order are in the Execution Pointer and `docs/process/development_workflow.md`.
 
 ## Build
 

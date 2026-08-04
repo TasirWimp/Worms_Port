@@ -428,6 +428,31 @@ should reveal crop, baseline, and socket drift for later deterministic
 normalization; they no longer compare candidates to the superseded hexagonal
 silhouette.
 
+### Approved Wizard Source Master
+
+![Approved rounded crochet Wizard source master](../assets/masters/characters/knotkin/wizard/knotkin-wizard-source-master-v1.png)
+
+WP-015B2H approves this exact 512x512 RGBA file as the Wizard source master:
+
+- asset SHA-256:
+  `7AF4864E00C7206A05684312916092C6881127F921FA7CEA01524899093318A9`,
+- exact opaque B2G parent SHA-256:
+  `40F9E81254A0792B967889808BD8BD8DE33DBDE5EAB7C4CBB1B336DD02BC54A5`,
+- ground pivot `(256,451)`, visible cupped-palm Relic socket `(407,228)`,
+- 192px review pivot/socket `(96,169)` / `(153,85)`, and
+- no runtime path, animation admission, atlas placement, or collision authority.
+
+The source's rounded body and long raised arm cannot meet the superseded B1
+socket `(341,293)` at the retained baseline without shrinking the character to
+about 297 pixels tall. B2H therefore preserves the selected anatomy with one
+uniform full-height transform and moves metadata to the actual palm. The
+normalizer removes the white background and faint floor shadow without repaint,
+fill, reconstruction, or warp. Exact-output review passed the two-eye/one-mouth
+Wizard identity, empty upward palm, phone-size read, dark/light alpha edge, and
+third-party-similarity boundary. This source master is the visual and geometry
+reference for later companion-master and animation work; later derivatives
+still require independent manifest entries and runtime paths.
+
 The first production interpretation is frozen in
 `asset-briefs/wp-015b1-vertical-slice.md`. That contract translates the lineup
 into isolated Wizard and Loomkeeper masters, a separate Threadball family, and

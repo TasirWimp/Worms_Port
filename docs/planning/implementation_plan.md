@@ -8,27 +8,26 @@ Phaser/Socket.IO stack.
 ## Execution Pointer
 
 - Active target: mobile-first single-player Nimiq Pay competition release.
-- Active work package: **WP-015B2H Wizard production normalization — planned
-  and ready for implementation**. Its sole source is the owner-selected external
-  B2G output `WormsPortFlux2KleinText_00005_.png`, SHA-256
-  `40F9E81254A0792B967889808BD8BD8DE33DBDE5EAB7C4CBB1B336DD02BC54A5`.
-  B2H is deterministic and non-generative: verify the source hash and exact-output
-  rights/IP boundary; preserve the untouched 1024x1024 source externally;
-  implement versioned alpha/background extraction and edge cleanup; derive the
-  512x512 RGBA master plus 192x192 and 48px review derivatives; align baseline,
-  pivot, and the upward-facing Relic-palm socket by uniform scale/translation;
-  and record full-size and phone-size review. Do not repaint, synthesize missing
-  pixels, non-uniformly warp anatomy, run FLUX, return to a mask, train a LoRA,
-  animate, or integrate the candidate. If the baseline and socket cannot both
-  meet the frozen contract without distortion, stop and review the coordinates
-  instead of forcing the image. Only an explicit exact-file review may approve
-  the normalized master in `legal/asset-manifest.json`; runtime promotion remains
-  blocked until the animation derivatives pass their later gate.
-- Following gates: **WP-015B3** completes the remaining Wizard/Loomkeeper/
-  Threadball/Patch vertical-slice inventory and admits one animation route;
-  **WP-015C** then performs integration only. B3 and C remain blocked until B2H
-  closes. D remains blocked until the assembled C slice passes automated phone
-  views and a separate real-device review.
+- Active work package: **WP-015B3A companion masters — planned and ready for
+  refinement/implementation**. WP-015B2H completed on 2026-08-04 and approved
+  exact 512x512 RGBA Wizard source master
+  `assets/masters/characters/knotkin/wizard/knotkin-wizard-source-master-v1.png`,
+  SHA-256
+  `7AF4864E00C7206A05684312916092C6881127F921FA7CEA01524899093318A9`,
+  with ground pivot `(256,451)` and visible cupped-palm socket `(407,228)`.
+  It has no `runtime_path` and authorizes no animation or integration.
+- B3A begins with an exact-output review of existing external Threadball
+  candidate `2BAE664F7E5A862BCB53B55A68071580485CE040A89650C68EC6FA398F4089EB`.
+  Normalize/approve it if it passes; request a replacement only through a
+  separately reviewed amendment. Before any new inference, freeze FLUX-specific
+  rounded Loomkeeper and decomposed Patch prompts, settings, seeds, request
+  limits, output paths, and stop conditions. Process one family at a time; no
+  batch, animation upload, or runtime integration belongs in B3A.
+- Following gates: **WP-015B3B** separately admits one Wizard-first animation
+  route; **WP-015B3C** completes manifest-approved playable derivatives;
+  **WP-015C** then performs integration only. D remains blocked until the
+  assembled C slice passes automated phone views and a separate real-device
+  review.
 - Historical B2A-B2G evidence digest: B2E selected a pinned core-node route and
   produced a deterministic source-only
   candidate. Workflow
@@ -96,9 +95,9 @@ Phaser/Socket.IO stack.
   evidence rather than the active anatomy contract. The current protected
   properties are the rounded crochet-doll family, a clear Calling-defining hat,
   the upward-facing cupped Relic palm, exactly two eyes and one mouth, and
-  friendly/cute readability. Paired stitched eyebrows remain optional. Alpha,
-  animation, exact hand/socket normalization, another Calling, and product
-  promotion remain blocked. Its predecessor
+  friendly/cute readability. Paired stitched eyebrows remain optional. B2H now
+  resolves alpha, source-master approval, and the Wizard palm socket; animation,
+  runtime promotion, and another Calling remain blocked. Its predecessor
   **WP-015B2C robot-scaffold knit
   conversion completed with both gates passed on 2026-08-03**. Before that,
   **WP-015B2A FLUX.2 Klein 4B model-admission deviation** completed Gates 1
@@ -146,14 +145,17 @@ Phaser/Socket.IO stack.
   comparison with normalized IoU `0.956188` and baseline drift `12` pixels.
   Both files remain external quarantine; B2C itself authorized no further
   generation.
-- Last committed planning/art-direction slice: **WP-015B2G rounded-doll reset**
-  on 2026-08-03 at `00d23d2`. WP-015B1's baseline, socket, projectile-origin,
-  animation, environment, and source-boundary requirements remain normative;
-  B2G supersedes its angular anatomy and historical cross-model prompts.
-- Next bounded action: implement only **WP-015B2H**. The detailed re-entry and
-  stop conditions are in `docs/process/development_workflow.md`. No Loomkeeper,
-  animation, roster, runtime-integration, or further generation work belongs in
-  that slice.
+- Last completed asset slice: **WP-015B2H Wizard production normalization** on
+  2026-08-04. Frozen config `2AAEF899...7D644` and normalizer
+  `B4AEF73C...CDD82` produced the approved master `7AF4864E...18A9` twice
+  byte-for-byte. The planned coordinate stop rule amended only socket metadata
+  from the superseded angular `(341,293)` to the actual rounded-body palm
+  `(407,228)`; pivot `(256,451)` and uniform placement remain intact.
+- Next bounded action: refine and execute only **WP-015B3A** in the detailed
+  order recorded in `docs/process/development_workflow.md`: Threadball review,
+  then frozen Loomkeeper/Patch source gates, one family at a time. Animation,
+  runtime integration, roster completion, and further Wizard generation remain
+  outside that slice.
 - WP-012 exactly pins `@nimiq/mini-app-sdk` `0.1.0` and server-only
   `@nimiq/core` `2.7.1`. Provider access remains lazy, identity acceptance is
   now used by WP-013's separate production Daily entry, the diagnostics surface
@@ -2447,20 +2449,21 @@ Sequential delivery slices:
     upward-facing shallow bowl and produced selected external candidate
     `40F9E812...4A5`. No third prompt, LoRA, normalization, or promotion is
     implied. The exact prompt and full external path are frozen in the B2 review.
-  - **WP-015B2H Wizard production normalization — planned and next:** bind only
-    external source `40F9E812...4A5`. Review its exact-output rights/IP boundary,
-    then use a versioned deterministic script and configuration to remove the
-    plain background and faint contact shadow, decontaminate edge color, preserve
-    the untouched source, and derive a 512x512 RGBA master plus 192x192 and 48px
-    review files. Use uniform scale and translation only. Align the ground pivot,
-    baseline, visible palm cradle, held-Relic socket, and motion-safe padding to
-    the retained B1 contract; if that is impossible without repainting or
-    non-uniform distortion, stop and review the coordinates. Record full-size,
-    alpha-edge, 48px, and maintained-phone review. A pass may approve the exact
-    normalized master with complete parent/component/postprocess hashes but does
-    not authorize animation, a runtime atlas, integration, another prompt, or
-    another Calling.
-  - **WP-015B3 Vertical-slice production completion — planned after B2H:**
+  - **WP-015B2H Wizard production normalization — completed 2026-08-04:** exact
+    external source `40F9E812...4A5` passed output-IP/component review and remains
+    untouched outside the repository. Frozen config `2AAEF899...7D644` and
+    normalizer `B4AEF73C...CDD82` removed the background/contact shadow, retained
+    one connected subject, decontaminated the edge, and reproduced 512/192/48px
+    RGBA outputs byte-for-byte. Candidate A was rejected because generic enclosed-
+    region filling retained the floor shadow; the corrected shadow-zone matte
+    passed full-size, dark/light edge, 192px, and 48px review. Approved source
+    master `7AF4864E...18A9` retains pivot `(256,451)` and uses the actual visible
+    palm socket `(407,228)`. The old angular-body socket `(341,293)` was amended
+    because matching it at the retained baseline would shrink the character to
+    about 297px tall. No pixels were distorted. The manifest entry has no
+    `runtime_path`; animation, atlas, integration, another prompt, and another
+    Calling remain blocked.
+  - **WP-015B3 Vertical-slice production completion — active after B2H:**
     complete all approved inputs required by C before touching runtime code:
     - **B3A companion masters:** freeze new FLUX-specific prompts/settings/seeds
       for the rounded Loomkeeper and Patch layers before inference. Review the

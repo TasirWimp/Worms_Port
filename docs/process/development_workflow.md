@@ -1512,8 +1512,8 @@ route.
 
 ### WP-015B2H Wizard Production-Normalization Re-entry
 
-WP-015B2H is the next executable slice. It authorizes deterministic
-normalization of exactly one source and authorizes no inference:
+WP-015B2H completed on 2026-08-04. This re-entry contract reproduces the
+deterministic normalization of exactly one source and authorizes no inference:
 
 ```text
 C:\Users\jensb\AppData\Local\Comfy-Desktop\ComfyUI-Shared\output\WormsPortFlux2KleinText_00005_.png
@@ -1526,8 +1526,10 @@ Required order:
 1. Check Git status and confirm the external file exists with the exact size and
    SHA-256 above. A mismatch stops the slice; do not reconstruct the source from
    screenshots or another generated output.
-2. Create the B2H evidence record and freeze a versioned normalization
-   configuration before writing the normalizer. The configuration records the
+2. Extend the existing `docs/evidence/wp-015b.json` record with the B2H starting
+   commit, clean/dirty state, lock hash, scope, non-goals, and planned checks,
+   then freeze a versioned normalization configuration before writing the
+   normalizer. The configuration records the
    source hash, background/matte rule, edge-color decontamination rule, connected
    subject selection, crop/padding, resampling filter, target dimensions,
    baseline, pivot, palm/socket point, and output naming.
@@ -1566,6 +1568,36 @@ B2H completion runs the normalizer determinism tests, JSON/evidence checks,
 `git diff --check`. The browser matrix is not required unless B2H changes a
 browser-facing asset path or runtime code. Real-device testing is not run in
 B2H because no player-visible asset is integrated. Report both omissions.
+
+Completion record:
+
+- frozen config
+  `scripts/asset-normalization/wp-015b2h-wizard-v1.json`, SHA-256
+  `2AAEF899BD9FDBE202D5D9A293F1DC971ED62AAC32ED95095AF662FE6567D644`;
+- deterministic normalizer `scripts/normalize-character-master.js`, SHA-256
+  `B4AEF73CC30133F622C131A8E8D0322DECF953F933FEFC4EE83940FB328CDD82`;
+- first review candidate rejected before promotion because unrestricted enclosed-
+  region filling retained the floor shadow as an opaque white oval;
+- corrected matte freezes source-y-900 shadow-zone chroma controls, retains
+  internal highlights only above that zone, and removes post-resample ringing
+  islands without altering source anatomy;
+- approved 195820-byte 512x512 RGBA master
+  `assets/masters/characters/knotkin/wizard/knotkin-wizard-source-master-v1.png`,
+  SHA-256
+  `7AF4864E00C7206A05684312916092C6881127F921FA7CEA01524899093318A9`;
+- exact 192px and 48px review hashes `5E5A2C9D...BC632` and
+  `726550CE...9B6B3`; navy/warm-light edge sheet `D4545EEB...105D`;
+- retained pivot `(256,451)` and reviewed rounded-body palm socket `(407,228)`.
+  The old `(341,293)` socket is explicitly superseded for this source because
+  satisfying it at the same baseline would shrink the 898-pixel shadow-free
+  subject to about 297 pixels tall; no distortion was used; and
+- the exact master passed product manifest review with no `runtime_path`.
+  Animation, another Calling, another prompt, and gameplay integration remain
+  blocked for B2H.
+
+Reproduce external review outputs with `npm run asset:normalize:wizard`. The
+command fails closed unless the exact external parent size, hash, dimensions,
+and channel count still match the frozen config.
 
 ### WP-015B3 Vertical-Slice Production Re-entry
 

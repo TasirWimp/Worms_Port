@@ -1,0 +1,128 @@
+{
+  "schema_version": 1,
+  "id": "wp-015b2h-wizard-v1",
+  "work_package": "WP-015B2H",
+  "frozen_at": "2026-08-04",
+  "purpose": "Deterministically remove the plain background and faint contact shadow from the exact owner-selected rounded Wizard source, then place it without repainting or non-uniform distortion.",
+  "source": {
+    "default_external_path": "C:/Users/jensb/AppData/Local/Comfy-Desktop/ComfyUI-Shared/output/WormsPortFlux2KleinText_00005_.png",
+    "filename": "WormsPortFlux2KleinText_00005_.png",
+    "sha256": "40F9E81254A0792B967889808BD8BD8DE33DBDE5EAB7C4CBB1B336DD02BC54A5",
+    "bytes": 788520,
+    "width": 1024,
+    "height": 1024,
+    "channels": 3
+  },
+  "boundaries": {
+    "allowed": [
+      "background matte extraction",
+      "white-matte edge-color decontamination",
+      "largest connected subject selection",
+      "enclosed highlight preservation",
+      "uniform scale",
+      "translation",
+      "deterministic RGBA resampling"
+    ],
+    "blocked": [
+      "inference",
+      "manual painting",
+      "cloning",
+      "generative fill",
+      "body or costume reconstruction",
+      "non-uniform scale",
+      "warp",
+      "animation",
+      "runtime integration"
+    ]
+  },
+  "matte": {
+    "background_rgb": [255, 255, 255],
+    "distance_metric": "maximum absolute RGB channel distance",
+    "hard_foreground_threshold": 24,
+    "soft_edge_low_threshold": 4,
+    "soft_edge_high_threshold": 24,
+    "soft_edge_radius_pixels": 3,
+    "component_connectivity": 8,
+    "component_selection": "largest hard-foreground component",
+    "post_resample_component_selection": "retain the largest 8-connected nonzero-alpha component after each resize to suppress isolated bicubic ringing pixels",
+    "enclosed_holes": "fill as opaque above source y=900 to retain eyes, yarn highlights, and other source-internal near-white pixels; discard lower enclosed regions because they belong to the contact-shadow zone",
+    "preserve_enclosed_holes_max_y": 899,
+    "ground_shadow_exclusion": {
+      "start_y": 900,
+      "hard_minimum_blue_excess": 32,
+      "soft_minimum_blue_excess": 12,
+      "blue_excess_metric": "blue minus max(red, green)"
+    },
+    "external_background": "discard, including disconnected and border-connected pixels",
+    "contact_shadow": "discard unless a source pixel lies within the three-pixel soft edge of the selected hard subject",
+    "edge_color": "uncomposite soft-edge RGB from the fixed white matte using the computed alpha; hard foreground and enclosed holes retain exact source RGB",
+    "expected_hard_bounds": {
+      "min_x": 234,
+      "min_y": 65,
+      "max_x": 889,
+      "max_y": 963
+    }
+  },
+  "geometry": {
+    "source_landmarks": {
+      "ground_pivot": [493, 963],
+      "visible_palm_socket": [816, 485],
+      "method": "reviewed source-pixel landmarks: ground root between the two feet and visible center of the image-right upward-facing palm cradle"
+    },
+    "superseded_b1_socket": {
+      "master": [341, 293],
+      "review_192": [128, 110],
+      "status": "amended for the owner-approved rounded B2G anatomy",
+      "reason": "Matching the old socket and baseline would require scale about 0.3305, leaving the 898-pixel-tall shadow-free subject only about 297 pixels tall. The full-height uniform placement below preserves the selected character and moves metadata to the visible palm."
+    },
+    "master": {
+      "canvas": [512, 512],
+      "uniform_scale_numerator": 419,
+      "uniform_scale_denominator": 898,
+      "translation": [25.96993318485525, 1.6714922048997778],
+      "ground_pivot": [256, 451],
+      "visible_palm_socket": [407, 228],
+      "visible_palm_socket_unrounded": [406.7093541202672, 227.9688195991091],
+      "motion_safe": {
+        "min_x": 64,
+        "max_x": 448,
+        "min_y": 32,
+        "baseline_y": 451
+      },
+      "expected_subject_bounds_unrounded": [135.15256124721606, 32, 440.7706013363029, 451]
+    },
+    "review_192": {
+      "canvas": [192, 192],
+      "scale_from_master": 0.375,
+      "ground_pivot": [96, 169],
+      "visible_palm_socket": [153, 85]
+    },
+    "review_48": {
+      "canvas": [48, 48],
+      "scale_from_master": 0.09375,
+      "ground_pivot": [24, 42],
+      "visible_palm_socket": [38, 21]
+    }
+  },
+  "resampling": {
+    "filter": "Mitchell-Netravali bicubic",
+    "b": 0.3333333333333333,
+    "c": 0.3333333333333333,
+    "sampling": "pixel-center inverse mapping",
+    "alpha": "premultiplied during filtering, straight RGBA in PNG",
+    "png": "8-bit non-interlaced RGBA, filter type 0, deterministic zlib level 9"
+  },
+  "review_backgrounds": {
+    "dark_navy": [31, 35, 70],
+    "warm_light": [247, 242, 231],
+    "contact_sheet_order": ["dark_navy", "warm_light"]
+  },
+  "outputs": {
+    "master": "knotkin-wizard-source-master-v1.png",
+    "review_192": "knotkin-wizard-source-master-v1-review-192.png",
+    "review_48": "knotkin-wizard-source-master-v1-review-48.png",
+    "edge_review": "knotkin-wizard-source-master-v1-edge-review.png",
+    "report": "knotkin-wizard-source-master-v1.report.json",
+    "approved_master_path": "assets/masters/characters/knotkin/wizard/knotkin-wizard-source-master-v1.png"
+  }
+}

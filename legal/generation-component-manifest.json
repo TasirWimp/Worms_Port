@@ -1,6 +1,6 @@
 {
   "schema_version": 1,
-  "checked_date": "2026-08-03",
+  "checked_date": "2026-08-04",
   "policy": {
     "distribution": "external_not_bundled",
     "project_workflow_distribution": "source_tooling_only_not_product_runtime",
@@ -33,7 +33,7 @@
     },
     {
       "id": "flux2-klein",
-      "state": "wizard_hood_edit_generated_visual_rejected",
+      "state": "wizard_rounded_source_master_approved",
       "runtime_enabled": true,
       "model_components": [
         "flux2-klein-4b-distilled-fp8",
@@ -56,6 +56,21 @@
         "--preview-method none"
       ],
       "smoke_tool": "generate_flux2_klein_text",
+      "latest_review": {
+        "decision": "source_master_approved",
+        "generation_work_package": "WP-015B2G",
+        "normalization_work_package": "WP-015B2H",
+        "seed": 15027002,
+        "external_source_sha256": "40F9E81254A0792B967889808BD8BD8DE33DBDE5EAB7C4CBB1B336DD02BC54A5",
+        "normalization_config_path": "scripts/asset-normalization/wp-015b2h-wizard-v1.json",
+        "normalized_master_sha256": "7AF4864E00C7206A05684312916092C6881127F921FA7CEA01524899093318A9",
+        "normalization_config_sha256": "2AAEF899BD9FDBE202D5D9A293F1DC971ED62AAC32ED95095AF662FE6567D644",
+        "normalizer_path": "scripts/normalize-character-master.js",
+        "normalizer_sha256": "B4AEF73CC30133F622C131A8E8D0322DECF953F933FEFC4EE83940FB328CDD82",
+        "normalized_master_path": "assets/masters/characters/knotkin/wizard/knotkin-wizard-source-master-v1.png",
+        "runtime_path_assigned": false,
+        "further_generation_authorized": false
+      },
       "notes": "WP-015B2D completed exactly one single-reference Wizard cuteness/styling edit of B2C knit bytes 5FF0A63DAC03E13B2A3390AD77E6929A9822412E1A1E0415E7A38125D703B246 with seed 15026004. Output DEF9265DAA4C6F2799D16870205E2015291E3E4AAE0F61802349C9FD8D56AD00 improved friendly appeal and measured 0.880098 normalized silhouette IoU. The project owner accepted its paired eyebrows, moderate body variation, and cuteness direction. For WP-015B2E the project owner approved exact workflow AD4D4F96AD7D7C024A1A903A440DD4FE6D9E31353ACB7E436BF7DFC787321DAA and deterministic cowl mask 2B6C5F51A6EA411BB8B9C40AF861A339622316CB1D9710719F7F0CDEC327425B. The profile executed exactly one protected edit of B2D with frozen seed 15026005 as Comfy prompt d023da3f-77cf-4f05-ae7b-62ce66f1f176, producing external output 1275B2BD8021EAA5C51AA0606A6CC20BA21B15ED6CEBC4A7C1FC76308BA9D2E0. All 907427 zero-mask pixels matched B2D exactly and normalized silhouette IoU was 0.840783. No retry ran. The project owner rejected B2E because its compact covering lost the Wizard calling and its horizontal neck wrap read thief-like. WP-015B2F bound deterministic hood guide 08CB26CE3FAC6605859F9C9B51331351F28F40A005F6A101B2E575D8A56C6AB8, generous mask AC9F8F101094C5C15361FD24827C4F24B7C52ACBC652000748B209CB5483F56B, external exact-B2D scaffold A048CA16B249298BBECFAD2F57552B04958E26F766D01F6577D1C6A011A0231C, staged base wormsport/wizard-hood-scaffold-v1.png, staged mask wormsport/wizard-hood-edit-mask-v1.png, and seed 15026006. Exactly one request completed as prompt 1f5fc569-5250-4799-a236-0bb22ba629c8 in 355.120 seconds, producing external 1024x1024 output BE162B61FF38BE0EE2EA58716BDBAF5D2B38F0D8E6608953D2ECA41EFE7AD608. All 844934 zero-mask pixels match the scaffold exactly; baseline drift is zero and normalized silhouette IoU 0.796676 remains telemetry. The tall knitted hood now reads Wizard-like at 48px, but full-size review rejects visible polygon and rectangular seams around the exactly restored face and mouth islands. This proves that one shared denoise/composite mask over-constrains the transition. No retry, prompt/seed/input change, full robe, normalization, another character, or product promotion is authorized."
     }
   ],
@@ -258,11 +273,12 @@
         "the completed single fixed-seed WP-015B2C Gate 1 mechanical-scaffold diagnostic",
         "the completed single fixed-seed WP-015B2C Gate 2 fitted-knit conversion of exact robot bytes BC6B21B74C5016504A733D5D1EC306FE7F46A8CC5E526E0FFF28EB9EABC25D38",
         "the completed single fixed-seed WP-015B2D Wizard cuteness and styling edit of exact knit bytes 5FF0A63DAC03E13B2A3390AD77E6929A9822412E1A1E0415E7A38125D703B246, retained as project-owner-accepted creative-direction evidence output DEF9265DAA4C6F2799D16870205E2015291E3E4AAE0F61802349C9FD8D56AD00",
-        "the authorized single fixed-seed WP-015B2E protected cowl edit of exact B2D bytes DEF9265DAA4C6F2799D16870205E2015291E3E4AAE0F61802349C9FD8D56AD00 using exact mask 2B6C5F51A6EA411BB8B9C40AF861A339622316CB1D9710719F7F0CDEC327425B"
+        "the authorized single fixed-seed WP-015B2E protected cowl edit of exact B2D bytes DEF9265DAA4C6F2799D16870205E2015291E3E4AAE0F61802349C9FD8D56AD00 using exact mask 2B6C5F51A6EA411BB8B9C40AF861A339622316CB1D9710719F7F0CDEC327425B",
+        "the completed two fixed-seed WP-015B2G rounded-Wizard text trials, including selected seed 15027002 external output 40F9E81254A0792B967889808BD8BD8DE33DBDE5EAB7C4CBB1B336DD02BC54A5 and its separately approved WP-015B2H source master"
       ],
       "blocked_uses": [
-        "candidate generation beyond the single authorized WP-015B2E protected cowl edit without a later reviewed decision",
-        "batch candidate generation; WP-015B2E authorizes exactly one request and no retry",
+        "candidate generation beyond the completed WP-015B2G rounded-Wizard trials without a later reviewed decision",
+        "batch or retry generation after WP-015B2G; WP-015B2H authorizes normalization only",
         "redistribution with Worms_Port or storage below assets",
         "product asset promotion without separate exact-output review"
       ],
@@ -311,12 +327,13 @@
         "the completed single fixed-seed WP-015B2C Gate 1 mechanical-scaffold diagnostic",
         "the completed single fixed-seed WP-015B2C Gate 2 fitted-knit conversion of exact robot bytes BC6B21B74C5016504A733D5D1EC306FE7F46A8CC5E526E0FFF28EB9EABC25D38",
         "the completed single fixed-seed WP-015B2D Wizard cuteness and styling edit of exact knit bytes 5FF0A63DAC03E13B2A3390AD77E6929A9822412E1A1E0415E7A38125D703B246, retained as project-owner-accepted creative-direction evidence output DEF9265DAA4C6F2799D16870205E2015291E3E4AAE0F61802349C9FD8D56AD00",
-        "the authorized single fixed-seed WP-015B2E protected cowl edit of exact B2D bytes DEF9265DAA4C6F2799D16870205E2015291E3E4AAE0F61802349C9FD8D56AD00 using exact mask 2B6C5F51A6EA411BB8B9C40AF861A339622316CB1D9710719F7F0CDEC327425B"
+        "the authorized single fixed-seed WP-015B2E protected cowl edit of exact B2D bytes DEF9265DAA4C6F2799D16870205E2015291E3E4AAE0F61802349C9FD8D56AD00 using exact mask 2B6C5F51A6EA411BB8B9C40AF861A339622316CB1D9710719F7F0CDEC327425B",
+        "the completed two fixed-seed WP-015B2G rounded-Wizard text trials, including selected seed 15027002 external output 40F9E81254A0792B967889808BD8BD8DE33DBDE5EAB7C4CBB1B336DD02BC54A5 and its separately approved WP-015B2H source master"
       ],
       "blocked_uses": [
         "using the rejected pre-release Comfy mirror in the reviewed route",
-        "candidate generation beyond the single authorized WP-015B2E protected cowl edit without a later reviewed decision",
-        "batch candidate generation; WP-015B2E authorizes exactly one request and no retry",
+        "candidate generation beyond the completed WP-015B2G rounded-Wizard trials without a later reviewed decision",
+        "batch or retry generation after WP-015B2G; WP-015B2H authorizes normalization only",
         "redistribution with Worms_Port or storage below assets"
       ],
       "notes": "This single-file encoder was built externally from the two exact BFL Apache-2.0 shards without tensor conversion. The reviewed output is installed outside the repository; neither source weights nor merged bytes are distributed with Worms_Port."
@@ -346,11 +363,12 @@
         "the completed single fixed-seed WP-015B2C Gate 1 mechanical-scaffold diagnostic",
         "the completed single fixed-seed WP-015B2C Gate 2 fitted-knit conversion of exact robot bytes BC6B21B74C5016504A733D5D1EC306FE7F46A8CC5E526E0FFF28EB9EABC25D38",
         "the completed single fixed-seed WP-015B2D Wizard cuteness and styling edit of exact knit bytes 5FF0A63DAC03E13B2A3390AD77E6929A9822412E1A1E0415E7A38125D703B246, retained as project-owner-accepted creative-direction evidence output DEF9265DAA4C6F2799D16870205E2015291E3E4AAE0F61802349C9FD8D56AD00",
-        "the authorized single fixed-seed WP-015B2E protected cowl edit of exact B2D bytes DEF9265DAA4C6F2799D16870205E2015291E3E4AAE0F61802349C9FD8D56AD00 using exact mask 2B6C5F51A6EA411BB8B9C40AF861A339622316CB1D9710719F7F0CDEC327425B"
+        "the authorized single fixed-seed WP-015B2E protected cowl edit of exact B2D bytes DEF9265DAA4C6F2799D16870205E2015291E3E4AAE0F61802349C9FD8D56AD00 using exact mask 2B6C5F51A6EA411BB8B9C40AF861A339622316CB1D9710719F7F0CDEC327425B",
+        "the completed two fixed-seed WP-015B2G rounded-Wizard text trials, including selected seed 15027002 external output 40F9E81254A0792B967889808BD8BD8DE33DBDE5EAB7C4CBB1B336DD02BC54A5 and its separately approved WP-015B2H source master"
       ],
       "blocked_uses": [
-        "candidate generation beyond the single authorized WP-015B2E protected cowl edit without a later reviewed decision",
-        "batch candidate generation; WP-015B2E authorizes exactly one request and no retry",
+        "candidate generation beyond the completed WP-015B2G rounded-Wizard trials without a later reviewed decision",
+        "batch or retry generation after WP-015B2G; WP-015B2H authorizes normalization only",
         "redistribution with Worms_Port or storage below assets",
         "treating the containing FLUX.2-dev model license as permission for non-autoencoder model weights"
       ],
@@ -380,15 +398,17 @@
       "approved_uses": [
         "exact-hash installation and MCP registration through the closed flux2-klein profile",
         "one-image quarantined technical smoke in WP-015B2A Gate 4",
-        "the completed bounded Wizard and Threadball visual admission in WP-015B2A Gate 5"
+        "the completed bounded Wizard and Threadball visual admission in WP-015B2A Gate 5",
+        "the completed two fixed-seed WP-015B2G rounded-Wizard text trials, including selected seed 15027002 output 40F9E81254A0792B967889808BD8BD8DE33DBDE5EAB7C4CBB1B336DD02BC54A5"
       ],
       "blocked_uses": [
         "copying into the external MCP workflow directory outside the exact profile installer",
-        "further candidate generation after the failed WP-015B2A visual admission without a new reviewed plan",
+        "further candidate generation after the completed WP-015B2G bounded trials without a new reviewed plan",
         "changing the reviewed model filenames, four-step schedule, CFG 1, Euler sampler, 1024x1024 canvas, or batch size one without a new review and hash",
         "automatic publication into assets or product-asset approval"
       ],
-      "notes": "Project-owned API-format translation of the official pinned FLUX.2 Klein 4B distilled text-to-image graph. Gate 4 completed one technical smoke. Gate 5 then produced exactly one Wizard and one Threadball primary: Threadball passed its bounded structure purpose, but Wizard failed. All outputs remain external quarantine evidence; the route is not adopted for further candidate generation or product media."
+      "latest_review": "WP-015B2G later reused the unchanged exact workflow for two separately authorized rounded-Wizard trials. Seed 15027002 output 40F9E812...4A5 passed owner selection, and WP-015B2H approved only deterministic normalized master 7AF4864E...18A9. No automatic promotion or further inference is authorized.",
+      "notes": "Project-owned API-format translation of the official pinned FLUX.2 Klein 4B distilled text-to-image graph. Gate 4 completed one technical smoke. Gate 5 then produced exactly one Wizard and one Threadball primary: Threadball passed its bounded structure purpose, but Wizard failed. Those historical Gate 5 outputs remain external quarantine evidence; later bounded decisions are recorded in latest_review."
     },
     {
       "id": "wormsport-flux2-klein-reference-edit-workflow",

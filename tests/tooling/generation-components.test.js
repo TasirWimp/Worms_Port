@@ -176,9 +176,24 @@ test('generation profiles reject arbitrary model, workflow, tool, and launch sel
   assert.match(validateGenerationComponents(policyInvalid).join('\n'), /profile selection must remain closed/);
 });
 
-test('WP-015B2F records the sole Wizard-hood edit and closes after visual rejection', () => {
+test('FLUX profile preserves B2F history and binds the approved B2H Wizard source master', () => {
   const profile = manifest.profiles.find((candidate) => candidate.id === 'flux2-klein');
-  assert.equal(profile.state, 'wizard_hood_edit_generated_visual_rejected');
+  assert.equal(profile.state, 'wizard_rounded_source_master_approved');
+  assert.deepEqual(profile.latest_review, {
+    decision: 'source_master_approved',
+    generation_work_package: 'WP-015B2G',
+    normalization_work_package: 'WP-015B2H',
+    seed: 15027002,
+    external_source_sha256: '40F9E81254A0792B967889808BD8BD8DE33DBDE5EAB7C4CBB1B336DD02BC54A5',
+    normalization_config_path: 'scripts/asset-normalization/wp-015b2h-wizard-v1.json',
+    normalized_master_sha256: '7AF4864E00C7206A05684312916092C6881127F921FA7CEA01524899093318A9',
+    normalization_config_sha256: '2AAEF899BD9FDBE202D5D9A293F1DC971ED62AAC32ED95095AF662FE6567D644',
+    normalizer_path: 'scripts/normalize-character-master.js',
+    normalizer_sha256: 'B4AEF73CC30133F622C131A8E8D0322DECF953F933FEFC4EE83940FB328CDD82',
+    normalized_master_path: 'assets/masters/characters/knotkin/wizard/knotkin-wizard-source-master-v1.png',
+    runtime_path_assigned: false,
+    further_generation_authorized: false
+  });
   assert.match(profile.notes, /WP-015B2D/);
   assert.match(profile.notes, /DEF9265DAA4C6F2799D16870205E2015291E3E4AAE0F61802349C9FD8D56AD00/);
   assert.match(profile.notes, /15026004/);
@@ -225,5 +240,13 @@ test('WP-015B2F records the sole Wizard-hood edit and closes after visual reject
   assert.match(
     validateGenerationComponents(invalid).join('\n'),
     /profile notes do not bind the reviewed bounded request/
+  );
+
+  const changedReview = structuredClone(manifest);
+  changedReview.profiles.find((candidate) => candidate.id === 'flux2-klein')
+    .latest_review.runtime_path_assigned = true;
+  assert.match(
+    validateGenerationComponents(changedReview).join('\n'),
+    /latest exact-output review changed/
   );
 });
