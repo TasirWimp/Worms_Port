@@ -2,7 +2,9 @@
 
 Status: frozen historical B1 contract, amended for future character work by the
 WP-015B2C mouth, WP-015B2D creative-expression, WP-015B2G rounded-doll, and
-WP-015B3 shared-Wizard opponent decisions below.
+WP-015B3 shared-Wizard opponent decisions below. WP-015B3A has completed the
+Threadball source master and now freezes the separate Patch source contract;
+that contract authorizes no Patch inference in this document revision.
 
 This document is the production contract for the first NIMble Knots visual
 slice: Wizard, Loomkeeper, Threadball, and Patch 01. WP-015B1 writes and reviews
@@ -126,17 +128,21 @@ placement, and safe padding while amending the visible Wizard palm socket to
 `(407,228)` (`(153,85)` on the 192px review). This is source-specific metadata,
 not a change to projectile simulation or Relic-local release offset.
 
-WP-015B3 must freeze separate FLUX-specific prompts/settings/seeds for Patch
+WP-015B3 has frozen separate FLUX-specific prompts/settings/seeds for Patch
 before any new request. Historical SD 1.5 seeds and prompts below cannot be
-reused across architectures. Existing Threadball output
+reused across architectures. The B3A Patch contract makes one source request at
+a time and treats FLUX output only as textile source imagery: deterministic
+post-processing, rather than a model claim, must later establish seamless edges
+and repeatability. Existing Threadball output
 `2BAE664F7E5A862BCB53B55A68071580485CE040A89650C68EC6FA398F4089EB`
 is paused as historical structure evidence under the spell-direction amendment
 below and must not be normalized or promoted. B3A required a new bounded
 Worldweave Threadball generation contract before any replacement request. The
 exact text-only contract is now frozen below and authorizes one request only
-after its fail-closed preflight. Patch remains blocked until that result is
-reviewed and the Patch contract is frozen separately. Animation begins with one
-approved Wizard-only pilot after the chosen service/route passes its license,
+after its fail-closed preflight. The Threadball result is now reviewed and its
+source master is approved; the separate Patch contract is frozen below, but
+Patch inference remains blocked pending an explicit next gate. Animation begins
+with one approved Wizard-only pilot after the chosen service/route passes its license,
 privacy/input-retention, output-rights, export, and evidence gate. Only a
 reviewed Wizard pilot may authorize the one shared animation inventory.
 
@@ -525,6 +531,95 @@ Patch acceptance:
 - the cloud does not compete with trajectories, projectiles, status, or touch
   controls, and
 - portrait, virtual-sideways, and actual-landscape crops preserve a quiet arena.
+
+### WP-015B3A Patch source-contract amendment
+
+The historical Patch prompts, seeds `15015004` through `15015006`, and all
+rejected SD 1.5 output remain reproducibility evidence only. They do not
+authorize a cross-model retry. The first attempts also demonstrate why a prompt
+must not be trusted to make a repeatable texture: a model may supply useful
+textile material, but it cannot define the exact join, collision geometry, or
+destruction behaviour.
+
+The B3A contract therefore decomposes Patch 01 into three deliberately quiet
+source purposes. The fixed sky fill remains code-owned `#D9F2F3`; it requires no
+generation. Every FLUX output remains external quarantine until a separate,
+frozen deterministic normalizer proves its crop, alpha treatment where needed,
+and repeat test. No generated pixel may decide terrain solidity, crater shape,
+or hit detection.
+
+#### Shared request rules
+
+| Field | Exact value |
+| --- | --- |
+| Tool/workflow | `generate_flux2_klein_text` / `scripts/comfy-workflows/generate_flux2_klein_text.json` |
+| Workflow SHA-256 | `626568CEAA47627F7D421D3BD1B0AA151E1643DBA8FBD631F5EB437666649E28` |
+| Settings | 1024x1024, batch 1, 4 FLUX.2 scheduler steps, CFG 1, Euler |
+| Reference input | none; no historical Patch output, Wizard, Threadball, Gemini concept, or external artwork may be staged or conditioned on |
+| Output location | external `WormsPortFlux2KleinText` Comfy output prefix only |
+| Current state | contract freeze only; no Patch request has run and no source master, product asset, runtime path, atlas, or gameplay integration exists |
+| Sequencing | run Cloud first only after fail-closed preflight and an explicit continuation; review and close that result before considering Terrain Top, then repeat for Terrain Interior |
+| Stop rule | stop the family on a component/workflow/service/queue failure, rejected candidate, or missing deterministic-normalization plan; no batch, seed shopping, reference edit, prompt repair, or automatic next request |
+
+The shared exclusion set is: character, creature, face, hands, Relic, weapon,
+projectile, combat, explosion, interface, text, letter, number, watermark,
+signature, logo, official Nimiq logo, branded mark, building, Celestial Mill,
+loom, banner, prop, landmark, realistic landscape, soil, rock, military motif,
+gore, dark dramatic lighting, perspective, vanishing point, frame, outer
+border, fake transparency, checkerboard, or recognizable third-party scene.
+
+#### Gate 1: cotton-cloud source
+
+| Field | Exact value |
+| --- | --- |
+| Seed | `15035002` |
+| Purpose | One horizontally placeable, low visual-weight cloud layer; later normalization may derive transparency, but the model output is not itself a runtime layer. |
+| Candidate acceptance | One connected, wide, calm off-white cotton-cloud silhouette with generous room around it; no separate cloud, horizon, ground, contact shadow, or competing focal detail. It must remain quieter than a trajectory or Threadball at phone scale. |
+| Rejection examples | Disconnected clouds, a full-frame cotton texture, a dark scene, weather iconography, or any scenery/character/text/brand content. |
+
+Exact positive prompt:
+
+```text
+One isolated low horizontal cotton cloud layer for a mobile-game sky, centered on a plain white background: three overlapping soft off-white crochet pompoms form one connected calm cloud with a wide rounded silhouette, subtle visible fibers, even soft studio light, and generous padding. No separate cloud, scenery, horizon, ground, shadow, character, text, logo, icon, frame, weather, stars, rainbow, sun, moon, or dramatic lighting.
+```
+
+#### Gate 2: terrain-top textile source
+
+| Field | Exact value |
+| --- | --- |
+| Seed | `15035003` |
+| Purpose | Source imagery for a later deterministic 256x64 horizontal terrain-top material; the output itself does not claim seamlessness. |
+| Candidate acceptance | A single readable straight material boundary reaches both side edges: a shallow upper strip of light-olive tufted yarn grass, broader warm-brown felt below, and restrained small gold blanket stitches at their join. Scale, light, and texture density remain calm across the central crop area. |
+| Rejection examples | A full green field, vertical corduroy, hills, perspective, an irregular terrain silhouette, missing brown felt or stitched boundary, or a unique central motif. |
+
+Exact positive prompt:
+
+```text
+One flat orthographic textile material study centered on a plain white background: an uninterrupted straight horizontal boundary reaches from left edge to right edge, with a shallow upper strip of tufted light-olive yarn grass above broader warm-brown felt earth, joined by one restrained line of small gold blanket stitches. Tactile fibers, calm even light, and consistent scale. No hill, perspective, object, scenery, border, text, logo, shadow, or central motif.
+```
+
+#### Gate 3: terrain-interior textile source
+
+| Field | Exact value |
+| --- | --- |
+| Seed | `15035004` |
+| Purpose | Source imagery for a later deterministic 256x256 terrain-interior material that can sit behind code-owned circular destruction masks; the output itself does not claim seamlessness. |
+| Candidate acceptance | Warm-brown felt and short dense crochet fibers distribute evenly without a recognizable centre, directional stripe, border, sky, grass, or object. A central crop must read as quiet textile material rather than scenery. |
+| Rejection examples | A geometric panel, rosette, grid, edge frame, visible landscape, strong directional light, high-contrast vignette, or any object/character/text/brand content. |
+
+Exact positive prompt:
+
+```text
+One flat orthographic square textile material study filling the canvas: evenly distributed warm-brown felt and dense short crochet fibers with sparse tiny gold stitches, quiet tactile depth, consistent scale, and even soft light. No central motif, directional pattern, border, seam, horizon, grass, stone, object, character, text, logo, shadow, vignette, or scenery.
+```
+
+After each accepted external candidate, stop. A later narrow gate must first
+freeze and test a material-specific normalizer: Cloud needs connected-subject
+alpha extraction without a contact shadow; Terrain Top needs a deterministic
+central strip and horizontal repeat test; Terrain Interior needs deterministic
+central crop/edge treatment and a 3x3 repeat test. Passing a source candidate
+does not approve the normalizer, a source master, the product manifest, or C
+integration.
 
 ## WP-015B2 Handoff
 

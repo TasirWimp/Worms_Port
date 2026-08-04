@@ -521,6 +521,10 @@ The 2026-08-04 B3 simplification amendment preserves the Loomkeeper brief as
 future roster guidance but removes its distinct master from the first playable
 slice. WP-015B3/C reuse the same approved Wizard presentation for the player and
 AI opponent; WP-015D produces the distinct Loomkeeper with Thief and Warrior.
+The B3A Patch amendment separately freezes quiet Cloud, terrain-top, and
+terrain-interior source contracts. FLUX may provide textile source imagery, but
+only deterministic post-processing may establish transparent cloud edges or
+repeatable terrain joins; decorative Patches never own collision or destruction.
 
 For WP-015B0 the project owner records that the Nimiq team/foundation
 encouraged the Nimiq-inspired body geometry for the Mini App competition: its

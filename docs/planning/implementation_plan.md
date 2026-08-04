@@ -27,9 +27,16 @@ Phaser/Socket.IO stack.
   only as deterministic source master `608F490C...D9B6F`; it authorizes no retry,
   regeneration, animation, or runtime integration. The
   user-supplied Gemini artwork `BD87405A...DA6699` is external comparison-only
-  evidence and contributes no pixels or conditioning. Process and review that
-  one result before freezing the decomposed Patch contract. No distinct
-  Loomkeeper, batch, animation upload, or runtime integration belongs in B3A.
+  evidence and contributes no pixels or conditioning. The decomposed Patch
+  contract is now frozen: its text-only Cloud, Terrain Top, and Terrain Interior
+  gates use seeds `15035002` through `15035004`, no references, and the pinned
+  FLUX workflow/settings. Its next eligible action is Cloud only after a fresh
+  fail-closed preflight and explicit continuation; review it before considering
+  Terrain Top, then Terrain Interior. FLUX outputs are textile source imagery,
+  never a promise of tile seams or collision geometry; deterministic later
+  normalizers must prove the Cloud alpha and terrain repeat tests. No distinct
+  Loomkeeper, batch, animation upload, source-master promotion, or runtime
+  integration belongs in B3A at this gate.
 - Following gates: **WP-015B3B** separately admits one Wizard-first animation
   route; **WP-015B3C** completes one manifest-approved Wizard inventory reused
   by both combatants plus the Threadball formation/held/flight/impact spell
@@ -2488,9 +2495,13 @@ Sequential delivery slices:
       it is not copied, staged, or conditioned on. The one request completed as
       exact external output `1F41AF26...F56EC` and deterministically approved
       source master `608F490C...D9B6F`; no retry, animation, or runtime
-      integration is authorized. Freeze equivalent Patch-layer contracts before considering
-      Patch inference. Stop on failure instead of starting a batch. Do not
-      generate a distinct Loomkeeper in B3A.
+      integration is authorized. The equivalent Patch-layer contract is now
+      frozen: Cloud (`15035002`), Terrain Top (`15035003`), and Terrain Interior
+      (`15035004`) are text-only/no-reference requests under the same pinned
+      FLUX settings, but are strictly sequential. Each requires fresh preflight,
+      review, and explicit continuation; source imagery does not claim seamless
+      tiling, which remains a deterministic-normalization proof. Stop on failure
+      instead of starting a batch. Do not generate a distinct Loomkeeper in B3A.
     - **B3B animation-route admission:** after the normalized Wizard is approved,
       review the current availability, commercial terms, privacy/input-retention,
       output rights, export format, component/service identity, and reproducible

@@ -260,9 +260,15 @@ the fail-closed preflight and exact request are complete. The request is now
 consumed: external output `1F41AF26...F56EC` now has deterministic source master
 `assets/masters/relics/threadball/relic-threadball-source-master-v1.png`
 (`608F490C...D9B6F`). It has no runtime path, atlas, animation, or gameplay
-integration. The next B3A action is separate Patch-contract refinement. WP-015B3B
-separately admits a Wizard-first animation route, and B3C produces one Wizard
-inventory that WP-015C reuses for both the player and the AI Loomkeeper. A
+integration. The separate Patch source contract is now frozen: one text-only,
+no-reference Cloud request (`15035002`) precedes Terrain Top (`15035003`) and
+Terrain Interior (`15035004`), each under the same pinned FLUX workflow/settings
+and each requiring fresh preflight, review, and explicit continuation. FLUX can
+provide textile source imagery only; a later deterministic normalizer must prove
+Cloud alpha handling and terrain repeatability before any source-master approval.
+No Patch request has run yet. WP-015B3B separately admits a Wizard-first
+animation route, and B3C produces one Wizard inventory that WP-015C reuses for
+both the player and the AI Loomkeeper. A
 distinct Loomkeeper asset belongs to the wider character roster in WP-015D.
 WP-015C remains integration-only and begins only when the simplified vertical-
 slice inventory is manifest-approved. The Celestial Spinning Mill, Worldweave,

@@ -1662,3 +1662,25 @@ navy/warm-light edge sheet byte-for-byte. The approved 256x256 RGBA master maps
 the visual center to projectile origin `(128,128)` and is manifest-approved
 without a runtime path. It remains a source master: no retry, further generation,
 Patch request, animation, atlas, or runtime integration is authorized.
+
+## WP-015B3A Patch Source-Contract Gate
+
+Status: **contract frozen; no Patch request has run**.
+
+The historical SD 1.5 Patch cloud, terrain-top, and terrain-interior outputs are
+rejected external evidence only. Their prompts and seeds cannot be retried under
+FLUX. The replacement splits the quiet Patch into three text-only source-image
+gates, all using the same pinned FLUX workflow/settings as the accepted
+Threadball request and no reference image. It expressly does not ask a model to
+guarantee a seamless texture: FLUX may provide material source imagery only;
+later deterministic crop/edge handling must prove repeatability, while the
+server retains collision and destruction authority.
+
+The exact B1 amendment freezes Cloud seed `15035002`, Terrain Top seed
+`15035003`, Terrain Interior seed `15035004`, their positive prompts, shared
+exclusion set, sequential ordering, protected properties, rejection examples,
+and stop rule. The frozen order is Cloud, then Terrain Top, then Terrain
+Interior. Each requires a new fail-closed component/workflow/service/empty-queue
+preflight, visual review, and explicit continuation; a failure pauses the whole
+Patch family. No candidate, output path, hash, normalization configuration,
+source master, product-manifest entry, atlas, or runtime integration exists yet.

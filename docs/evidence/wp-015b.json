@@ -28,6 +28,7 @@
     "Pause the ordinary-yarn Threadball candidate, connect Wizard spell presentation to the Celestial Spinning Mill and elemental Worldweave story, and propagate the revised spell-state contract through B3A, B3B, B3C, C, D, and E",
     "Record the exact external Gemini concept as comparison-only evidence, freeze one text-only Worldweave Threadball request at seed 15035001 with no reference input, and stop after its exact output for review",
     "Approve only the exact B3A Threadball through frozen deterministic white-matte extraction, gap preservation, uniform centering, alpha/phone-size review, exact-file manifest lineage, and no-runtime-path enforcement",
+    "Freeze one separate text-only/no-reference B3A Patch source contract for Cloud, Terrain Top, and Terrain Interior, sequentially reviewable at seeds 15035002 through 15035004, while reserving alpha/repeatability for later deterministic-normalization gates",
     "Generate deterministic quarantined vertical-slice candidates and complete pre-promotion art, IP, provenance, and phone-readability review"
   ],
   "non_goals": [
@@ -56,6 +57,7 @@
     "WP-015B2H source identity, exact-output rights/IP review, frozen normalization configuration, deterministic byte reproduction, alpha/background and edge quality, baseline/pivot/socket geometry, 48px and maintained-phone visual review, manifest lineage, and no-runtime-path boundary",
     "WP-015B3A exact Gemini comparison record, frozen text-only request contract, fail-closed component/workflow/service/queue/output preflight, one-request limit, and exact-output visual review",
     "WP-015B3A Threadball source identity, frozen gap-preserving normalization, deterministic byte reproduction, alpha/background and 48px/36px/28px review, projectile-origin geometry, manifest lineage, and no-runtime-path boundary",
+    "WP-015B3A Patch source-contract completeness, model-versus-deterministic-tiling boundary, serial one-request sequencing, and no-inference/no-runtime-path enforcement",
     "WP-015B1 brief-contract completeness and source-boundary review",
     "fixed-seed quarantined vertical-slice master review",
     "self-review"
@@ -80,7 +82,10 @@
     "15026006",
     "15027001",
     "15027002",
-    "15035001"
+    "15035001",
+    "15035002",
+    "15035003",
+    "15035004"
   ],
   "sorcerers_reference_used": false,
   "clean_room_records": [],
@@ -469,6 +474,11 @@
       "command": "WP-015B3A Threadball source-master closure verification",
       "status": "pass",
       "detail": "npm run asset:normalize:threadball and a second independent normalization both produced master 608F490C...D9B6F. The focused normalizer and generation-component tests passed, npm run test:tooling passed all 44 tests, npm run build passed compliance, TypeScript, server, and client builds, npm audit found zero vulnerabilities, and git diff --check passed. The existing Vite large-chunk warning remains unchanged. Browser matrix and real-device testing remain out of scope because the approved Threadball is source-only with no runtime_path and no player-visible behavior changed."
+    },
+    {
+      "command": "WP-015B3A Patch source-contract gate",
+      "status": "pass",
+      "detail": "The B1 brief now freezes three separate no-reference FLUX text source purposes under exact workflow 626568CE...9E28 and fixed 1024x1024/batch-one/four-step/CFG-1/Euler settings: Cloud seed 15035002, Terrain Top seed 15035003, and Terrain Interior seed 15035004. The Cloud, then Terrain Top, then Terrain Interior order is strict; each requires fresh component/workflow/service/empty-queue preflight, output review, and explicit continuation. The contract records protected properties and rejection examples, forbids historical outputs, Wizard, Threadball, Gemini, or any external artwork as references, and forbids batch/retry/repair. It treats FLUX output as textile source imagery only: later frozen deterministic normalizers must prove Cloud alpha extraction and terrain repeatability while code retains collision and destruction authority. No inference, output, normalization configuration, source-master approval, asset-manifest entry, atlas, runtime path, or gameplay integration occurred."
     }
   ],
   "reviews": [
@@ -502,7 +512,8 @@
     "Real-device testing was not run for WP-015B2H because no player-visible media was integrated; the maintained 192px and exact 48px derivatives were reviewed locally instead.",
     "Build, browser-matrix, and real-device checks were not run for the WP-015B3 shared-Wizard opponent amendment because it changes planning and re-entry documentation only.",
     "Build, browser-matrix, and real-device checks were not run for the WP-015B3 Threadball spell/world-story amendment because it changes planning and re-entry documentation only.",
-    "The phone-browser matrix and real-device checks were not run for the WP-015B3A Threadball source master because it has no runtime_path and no browser-facing code or player-visible behavior changed."
+    "The phone-browser matrix and real-device checks were not run for the WP-015B3A Threadball source master because it has no runtime_path and no browser-facing code or player-visible behavior changed.",
+    "Build, browser-matrix, and real-device checks were not run for the WP-015B3A Patch source-contract gate because it changes planning, provenance, and no-inference boundaries only; no code, model component, runtime asset, or player-visible behaviour changed."
   ],
   "residual_risks": [
     "The reviewed image-conditioned graph uses native FLUX ReferenceLatent semantic conditioning, not a hard edge, pose, mask, or ControlNet constraint. B2C demonstrates one successful semantic-scaffold workaround but does not establish pixel-exact geometry control for arbitrary characters.",
@@ -513,6 +524,6 @@
     "B2C proves that a mechanical semantic scaffold can establish angular geometry and survive one fitted-knit conversion, but the opaque knit output retains panel seams and a rear scaffold volume. B2D proves that larger close-set eyes, a curved smile, optional paired eyebrows, pale chenille, a belt/button, and warmer details improve appeal. B2E preserves every zero-mask pixel but is rejected as the next Wizard master because its compact crown loses the Wizard calling and its horizontal neck wrap reads thief-like. B2F proves the new scaffold can drive a clear tall Wizard hood, but exact restoration of hard face and mouth islands creates unacceptable visible seams. B2H resolves normalization, alpha, and the source-master socket for the B2G direction; animation and companion-asset consistency remain unresolved.",
     "The mouth amendment improves expression capacity but requires a later neutral-mouth topology and bounded expression-frame contract so mouth placement does not flicker or multiply across animation.",
     "B2E proves the core latent-mask route can preserve all zero-mask decoded pixels exactly and produce a coherent head-worn covering, but it does not establish that future masks, characters, or prompts will behave similarly. The one-request allowance is consumed and no retry is authorized.",
-    "The B2G cupped-palm Wizard has passed B2H exact-output product/IP, deterministic alpha, geometry, phone-size, and source-master manifest review as exact normalized bytes 7AF4864E...18A9. It remains intentionally non-runtime and unanimated. Threadball, the B2C knit conversion, B2D creative-direction result, B2E rejected cowl candidate, B2F deterministic scaffold, B2F rejected seamed output, B2G closed-mitten trial, and untouched B2G opaque parent remain external evidence. B3A's one seed-15035001 Worldweave Threadball request has now produced approved source master 608F490C...D9B6F through gap-preserving deterministic normalization; its Gemini comparison supplied no pixels or conditioning, and no retry is authorized. The next bounded action is a separate Patch source contract, not Patch inference. B3/C intentionally reuse one Wizard presentation for both combatants, which reduces immediate opponent visual distinction; existing labels and team/position cues remain required until WP-015D produces the distinct Loomkeeper with the wider roster. The old mask-topology repair and LoRA remain deferred alternatives, not authorization."
+    "The B2G cupped-palm Wizard has passed B2H exact-output product/IP, deterministic alpha, geometry, phone-size, and source-master manifest review as exact normalized bytes 7AF4864E...18A9. It remains intentionally non-runtime and unanimated. Threadball, the B2C knit conversion, B2D creative-direction result, B2E rejected cowl candidate, B2F deterministic scaffold, B2F rejected seamed output, B2G closed-mitten trial, and untouched B2G opaque parent remain external evidence. B3A's one seed-15035001 Worldweave Threadball request has now produced approved source master 608F490C...D9B6F through gap-preserving deterministic normalization; its Gemini comparison supplied no pixels or conditioning, and no retry is authorized. The separate Patch contract now freezes Cloud, Terrain Top, and Terrain Interior sources at seeds 15035002 through 15035004, but no Patch inference is authorized by the contract alone. FLUX cannot establish exact tile seams or collision geometry; deterministic post-processing and code remain required. B3/C intentionally reuse one Wizard presentation for both combatants, which reduces immediate opponent visual distinction; existing labels and team/position cues remain required until WP-015D produces the distinct Loomkeeper with the wider roster. The old mask-topology repair and LoRA remain deferred alternatives, not authorization."
   ]
 }

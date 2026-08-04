@@ -118,9 +118,15 @@ If the user asks only for planning, review, or brainstorming, do not edit code.
   `608F490C...D9B6F` with no runtime path. Supplied Gemini concept
   `BD87405A...DA6699` remains external comparison-only evidence and contributes
   no pixels or conditioning. Do not retry, regenerate, animate, or integrate
-  the Threadball. The next B3A action is to freeze the separate Patch source
-  contract; it may not generate a distinct Loomkeeper, assign the Wizard a
-  runtime path, or silently generate another Wizard or Threadball.
+  the Threadball. The separate Patch source contract is frozen: Cloud,
+  Terrain Top, and Terrain Interior use text-only/no-reference seeds
+  `15035002` through `15035004` under the pinned FLUX workflow. It authorizes
+  no Patch inference in the contract commit; the next eligible request is Cloud
+  only after fresh fail-closed preflight and explicit continuation. Review it
+  before Terrain Top, then Terrain Interior. FLUX provides textile source
+  imagery only; later deterministic normalizers must prove alpha/repeatability.
+  B3A may not generate a distinct Loomkeeper, assign the Wizard a runtime path,
+  or silently generate another Wizard or Threadball.
   B3B/B3C must approve one Wizard animation route and inventory; WP-015C reuses
   that same Wizard presentation for the player and AI Loomkeeper and keeps the
   palm empty for separate Threadball spell overlays. Distinct Loomkeeper

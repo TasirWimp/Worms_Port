@@ -1624,10 +1624,16 @@ integrating.
    deterministic config `CF8C6301...635B` produced approved source master
    `608F490C...D9B6F`, centered at projectile origin `(128,128)`, with genuine
    strand gaps kept transparent. No retry, regeneration, animation, or runtime
-   integration is authorized. Freeze equivalent Patch-layer contracts before
-   further source work. Failure pauses the family;
-   it does not authorize seed shopping or a batch. Do not generate a distinct
-   Loomkeeper in B3A.
+   integration is authorized. The equivalent Patch-layer contract is now frozen:
+   Cloud seed `15035002`, Terrain Top `15035003`, and Terrain Interior
+   `15035004` use the same pinned text-only workflow/settings and no reference
+   input. Those requests are strictly sequential: Cloud is the next eligible
+   request only after a fresh fail-closed preflight and explicit continuation,
+   and each output must be reviewed before the next gate. Treat FLUX output as
+   textile source imagery only; a later frozen deterministic normalizer must
+   prove Cloud alpha handling and terrain repeatability. Failure pauses the
+   family; it does not authorize seed shopping or a batch. Do not generate a
+   distinct Loomkeeper in B3A.
 2. **B3B animation-route admission:** only an approved normalized Wizard master
    may be considered for upload. Reverify AutoSprite or an alternative for
    service identity, commercial terms, input retention/privacy, output rights,
