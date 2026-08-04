@@ -3,9 +3,8 @@
 Status: frozen historical B1 contract, amended for future character work by the
 WP-015B2C mouth, WP-015B2D creative-expression, WP-015B2G rounded-doll, and
 WP-015B3 shared-Wizard opponent decisions below. WP-015B3A has completed the
-Threadball and Cloud source masters. The next Patch gate is a separately
-preflighted Terrain Top request; this document authorizes no automatic or batch
-Patch inference.
+Threadball and Cloud source masters, plus one Terrain Top candidate awaiting
+owner review. This document authorizes no automatic or batch Patch inference.
 
 This document is the production contract for the first NIMble Knots visual
 slice: Wizard, Loomkeeper, Threadball, and Patch 01. WP-015B1 writes and reviews
@@ -558,8 +557,8 @@ or hit detection.
 | Settings | 1024x1024, batch 1, 4 FLUX.2 scheduler steps, CFG 1, Euler |
 | Reference input | none; no historical Patch output, Wizard, Threadball, Gemini concept, or external artwork may be staged or conditioned on |
 | Output location | external `WormsPortFlux2KleinText` Comfy output prefix only |
-| Current state | Cloud's sole external candidate is owner-accepted and source-master-approved through deterministic normalization; it has no runtime path, product path, atlas, or gameplay integration |
-| Sequencing | Cloud is closed; Terrain Top is the next separate one-request gate after fresh preflight and explicit continuation, followed later by Terrain Interior |
+| Current state | Cloud is source-master-approved with no runtime path; Terrain Top has one external candidate pending owner review, with no crop, repeat proof, source master, product path, atlas, or gameplay integration |
+| Sequencing | Cloud is closed; review Terrain Top before freezing its material-specific normalizer or considering Terrain Interior |
 | Stop rule | stop the family on a component/workflow/service/queue failure, rejected candidate, or missing deterministic-normalization plan; no batch, seed shopping, reference edit, prompt repair, or automatic next request |
 
 The shared exclusion set is: character, creature, face, hands, Relic, weapon,
@@ -598,8 +597,8 @@ hole filling to prevent transparent stitch pinholes, uniform scale, and
 translation. It reproduced 512x512 RGBA source master
 `assets/masters/environment/patch-01/clouds/patch-01-cloud-source-master-v1.png`
 (`7F327B51...4B23C`) byte-for-byte, at placement anchor `(256,256)`, with no
-`runtime_path`. Do not retry or alter Cloud. Terrain Top remains a separate next
-request; no Terrain Interior or integration is authorized.
+`runtime_path`. Do not retry or alter Cloud. Terrain Top is now external
+quarantine pending owner review; no Terrain Interior or integration is authorized.
 
 #### Gate 2: terrain-top textile source
 
@@ -615,6 +614,19 @@ Exact positive prompt:
 ```text
 One flat orthographic textile material study centered on a plain white background: an uninterrupted straight horizontal boundary reaches from left edge to right edge, with a shallow upper strip of tufted light-olive yarn grass above broader warm-brown felt earth, joined by one restrained line of small gold blanket stitches. Tactile fibers, calm even light, and consistent scale. No hill, perspective, object, scenery, border, text, logo, shadow, or central motif.
 ```
+
+The one authorized Terrain Top request completed as Comfy prompt
+`d2ca47de-5cfb-4830-bb2e-243edad798eb` in 260.706 seconds. It produced the
+external, untouched 774,627-byte 1024x1024 RGB24 PNG
+`WormsPortFlux2KleinText_00008_.png`, SHA-256
+`BE5EB2E77062C9A86327ECC1EB7704C33F8511291709AE18A52D1AF51BE42B22`.
+Initial triage finds one full-width straight light-olive tufted grass strip,
+warm-brown felt below, and a restrained gold stitched join, with no hill,
+perspective, border, object, text, logo, or central motif. Its external
+whole-canvas 48px review (`8758AFE0...0D7A`) remains quiet. It is external
+quarantine pending project-owner visual decision. Do not crop, normalize, prove
+repeatability, promote, retry, repair, generate Terrain Interior, or integrate
+it.
 
 #### Gate 3: terrain-interior textile source
 

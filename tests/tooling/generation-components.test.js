@@ -176,9 +176,9 @@ test('generation profiles reject arbitrary model, workflow, tool, and launch sel
   assert.match(validateGenerationComponents(policyInvalid).join('\n'), /profile selection must remain closed/);
 });
 
-test('FLUX profile preserves approved Wizard, Threadball, and Cloud source masters', () => {
+test('FLUX profile preserves approved Wizard, Threadball, and Cloud masters plus the pending Terrain Top candidate', () => {
   const profile = manifest.profiles.find((candidate) => candidate.id === 'flux2-klein');
-  assert.equal(profile.state, 'wizard_threadball_and_cloud_source_masters_approved');
+  assert.equal(profile.state, 'wizard_threadball_cloud_masters_terrain_top_candidate_pending_review');
   assert.deepEqual(profile.latest_review, {
     decision: 'source_master_approved',
     generation_work_package: 'WP-015B2G',
@@ -281,6 +281,32 @@ test('FLUX profile preserves approved Wizard, Threadball, and Cloud source maste
     runtime_path_assigned: false,
     further_generation_authorized: false
   });
+  assert.deepEqual(profile.terrain_top_authorized_request, {
+    decision: 'one_text_request_approved',
+    work_package: 'WP-015B3A',
+    purpose: 'patch-01-terrain-top-source',
+    tool: 'generate_flux2_klein_text',
+    workflow_sha256: '626568CEAA47627F7D421D3BD1B0AA151E1643DBA8FBD631F5EB437666649E28',
+    seed: 15035003,
+    prompt: 'One flat orthographic textile material study centered on a plain white background: an uninterrupted straight horizontal boundary reaches from left edge to right edge, with a shallow upper strip of tufted light-olive yarn grass above broader warm-brown felt earth, joined by one restrained line of small gold blanket stitches. Tactile fibers, calm even light, and consistent scale. No hill, perspective, object, scenery, border, text, logo, shadow, or central motif.',
+    width: 1024,
+    height: 1024,
+    batch_size: 1,
+    steps: 4,
+    cfg: 1,
+    sampler: 'euler',
+    reference_input: 'none',
+    max_requests: 1,
+    status: 'consumed_owner_review_pending',
+    requests_consumed: 1,
+    prompt_id: 'd2ca47de-5cfb-4830-bb2e-243edad798eb',
+    runtime_seconds: 260.706,
+    external_output_path: 'C:\\Users\\jensb\\AppData\\Local\\Comfy-Desktop\\ComfyUI-Shared\\output\\WormsPortFlux2KleinText_00008_.png',
+    external_output_sha256: 'BE5EB2E77062C9A86327ECC1EB7704C33F8511291709AE18A52D1AF51BE42B22',
+    external_output_bytes: 774627,
+    external_output_pixel_format: 'RGB24',
+    further_requests_authorized: false
+  });
   assert.match(profile.notes, /WP-015B2D/);
   assert.match(profile.notes, /DEF9265DAA4C6F2799D16870205E2015291E3E4AAE0F61802349C9FD8D56AD00/);
   assert.match(profile.notes, /15026004/);
@@ -298,6 +324,8 @@ test('FLUX profile preserves approved Wizard, Threadball, and Cloud source maste
   assert.match(profile.notes, /0936905b-fb40-47e9-a621-8106e4382a93/);
   assert.match(profile.notes, /EA972B0B884AE5D144C74AE01E490E9C8961A42619172060C11F53925D48FFE7/);
   assert.match(profile.notes, /7F327B515FBF89F7DD275C4385FA194AE3F95E677C60BE10126CA68D9024B23C/);
+  assert.match(profile.notes, /d2ca47de-5cfb-4830-bb2e-243edad798eb/);
+  assert.match(profile.notes, /BE5EB2E77062C9A86327ECC1EB7704C33F8511291709AE18A52D1AF51BE42B22/);
   assert.match(profile.notes, /rejected/);
   assert.match(profile.notes, /WP-015B2F/);
   assert.match(profile.notes, /08CB26CE3FAC6605859F9C9B51331351F28F40A005F6A101B2E575D8A56C6AB8/);
@@ -362,5 +390,13 @@ test('FLUX profile preserves approved Wizard, Threadball, and Cloud source maste
   assert.match(
     validateGenerationComponents(changedCloudReview).join('\n'),
     /exact Cloud source-master review changed/
+  );
+
+  const changedTerrainTopRequest = structuredClone(manifest);
+  changedTerrainTopRequest.profiles.find((candidate) => candidate.id === 'flux2-klein')
+    .terrain_top_authorized_request.seed = 15035004;
+  assert.match(
+    validateGenerationComponents(changedTerrainTopRequest).join('\n'),
+    /exact Terrain Top authorized generation request changed/
   );
 });

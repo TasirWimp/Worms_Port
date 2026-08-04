@@ -276,9 +276,9 @@ Cloud alpha handling and terrain repeatability before any source-master approval
 The owner accepted the one Cloud request (`EA972B0B...FFE7`), and deterministic
 white-matte normalization produced source master
 `assets/masters/environment/patch-01/clouds/patch-01-cloud-source-master-v1.png`
-(`7F327B51...4B23C`) with no runtime path. The only next Patch inference gate is
-Terrain Top (`15035003`), after its own fresh preflight and explicit continuation;
-do not batch it with Terrain Interior. WP-015B3B separately admits a Wizard-first animation
+(`7F327B51...4B23C`) with no runtime path. The one Terrain Top request
+(`15035003`) has completed as external candidate `BE5EB2E7...2B22` and awaits
+owner review; do not normalize it or generate Terrain Interior. WP-015B3B separately admits a Wizard-first animation
 route, and B3C produces one Wizard inventory that WP-015C reuses for both the
 player and the AI Loomkeeper. A
 distinct Loomkeeper asset belongs to the wider character roster in WP-015D.

@@ -1665,7 +1665,7 @@ Patch request, animation, atlas, or runtime integration is authorized.
 
 ## WP-015B3A Patch Source-Contract Gate
 
-Status: **Cloud source-master approval completed; Terrain Top remains separately gated**.
+Status: **Terrain Top request completed; candidate awaits project-owner review**.
 
 The historical SD 1.5 Patch cloud, terrain-top, and terrain-interior outputs are
 rejected external evidence only. Their prompts and seeds cannot be retried under
@@ -1699,4 +1699,16 @@ accepted the direction. Deterministic normalizer
 and placement anchor `(256,256)`; deterministic enclosed-white-matte filling
 prevents stitch pinholes without painting, reconstruction, or inference. The
 source master is manifest-bound with no `runtime_path`, atlas, or integration.
-Terrain Top is the only next request, and remains separately preflighted.
+Terrain Top was the next separately preflighted request.
+
+The Terrain Top request then completed as Comfy prompt
+`d2ca47de-5cfb-4830-bb2e-243edad798eb` in 260.706 seconds, producing untouched
+external 1024x1024 RGB24 output `WormsPortFlux2KleinText_00008_.png` (774,627
+bytes, SHA-256 `BE5EB2E77062C9A86327ECC1EB7704C33F8511291709AE18A52D1AF51BE42B22`).
+It shows a clear full-width light-olive tufted-yarn top strip, warm-brown felt,
+and one restrained gold blanket-stitch line with no scenery, perspective,
+object, text, logo, or focal motif. The non-promotional 48px whole-canvas review
+(`8758AFE0...0D7A`) remains quiet. This is external quarantine pending
+project-owner judgment. No crop, deterministic repeat proof, normalizer, source
+master, asset-manifest entry, Terrain Interior request, atlas, or runtime
+integration exists or is authorized.

@@ -226,7 +226,7 @@ const reviewedProfileContracts = new Map([
     smokeTool: 'generate_image'
   }],
   ['flux2-klein', {
-    state: 'wizard_threadball_and_cloud_source_masters_approved',
+    state: 'wizard_threadball_cloud_masters_terrain_top_candidate_pending_review',
     modelComponents: reviewedFluxModelComponents,
     workflowComponents: [
       'wormsport-flux2-klein-text-to-image-workflow',
@@ -343,6 +343,32 @@ const reviewedProfileContracts = new Map([
       runtime_path_assigned: false,
       further_generation_authorized: false
     },
+    terrainTopAuthorizedRequest: {
+      decision: 'one_text_request_approved',
+      work_package: 'WP-015B3A',
+      purpose: 'patch-01-terrain-top-source',
+      tool: 'generate_flux2_klein_text',
+      workflow_sha256: '626568CEAA47627F7D421D3BD1B0AA151E1643DBA8FBD631F5EB437666649E28',
+      seed: 15035003,
+      prompt: 'One flat orthographic textile material study centered on a plain white background: an uninterrupted straight horizontal boundary reaches from left edge to right edge, with a shallow upper strip of tufted light-olive yarn grass above broader warm-brown felt earth, joined by one restrained line of small gold blanket stitches. Tactile fibers, calm even light, and consistent scale. No hill, perspective, object, scenery, border, text, logo, shadow, or central motif.',
+      width: 1024,
+      height: 1024,
+      batch_size: 1,
+      steps: 4,
+      cfg: 1,
+      sampler: 'euler',
+      reference_input: 'none',
+      max_requests: 1,
+      status: 'consumed_owner_review_pending',
+      requests_consumed: 1,
+      prompt_id: 'd2ca47de-5cfb-4830-bb2e-243edad798eb',
+      runtime_seconds: 260.706,
+      external_output_path: 'C:\\Users\\jensb\\AppData\\Local\\Comfy-Desktop\\ComfyUI-Shared\\output\\WormsPortFlux2KleinText_00008_.png',
+      external_output_sha256: 'BE5EB2E77062C9A86327ECC1EB7704C33F8511291709AE18A52D1AF51BE42B22',
+      external_output_bytes: 774627,
+      external_output_pixel_format: 'RGB24',
+      further_requests_authorized: false
+    },
     requiredNoteFragments: [
       'WP-015B2D',
       'DEF9265DAA4C6F2799D16870205E2015291E3E4AAE0F61802349C9FD8D56AD00',
@@ -391,7 +417,11 @@ const reviewedProfileContracts = new Map([
       'A13DB44E682870B262C6D2660790A63A5876F3131504DCA4F7E57C09309FAE78',
       '185E37D22822FEEB6FBA8049D77E18163758EFEF37CBDE28E13D82F9912B0492',
       '7F327B515FBF89F7DD275C4385FA194AE3F95E677C60BE10126CA68D9024B23C',
-      'No retry, Terrain Top request, animation, runtime integration, or further generation'
+      '15035003',
+      'd2ca47de-5cfb-4830-bb2e-243edad798eb',
+      '260.706',
+      'BE5EB2E77062C9A86327ECC1EB7704C33F8511291709AE18A52D1AF51BE42B22',
+      'no normalizer, crop, repeat proof, source master, asset-manifest entry, Terrain Interior request, animation, runtime integration, or further generation'
     ]
   }]
 ]);
@@ -878,6 +908,10 @@ function validateGenerationComponents(manifest, root = repoRoot) {
       if (contract.cloudReview &&
           JSON.stringify(profile.cloud_source_master_review) !== JSON.stringify(contract.cloudReview)) {
         errors.push(`${label}: exact Cloud source-master review changed.`);
+      }
+      if (contract.terrainTopAuthorizedRequest &&
+          JSON.stringify(profile.terrain_top_authorized_request) !== JSON.stringify(contract.terrainTopAuthorizedRequest)) {
+        errors.push(`${label}: exact Terrain Top authorized generation request changed.`);
       }
       if (contract.latestReview) {
         const exactFiles = [
