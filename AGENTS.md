@@ -109,7 +109,7 @@ If the user asks only for planning, review, or brainstorming, do not edit code.
   approved only exact Wizard source master
   `assets/masters/characters/knotkin/wizard/knotkin-wizard-source-master-v1.png`,
   SHA-256 `7AF4864E...18A9`; it has no runtime path.
-- WP-015B3A is the only active asset slice. Existing Threadball candidate
+- WP-015B3C.1 is the active asset-admission slice. Existing Threadball candidate
   `2BAE664F...F4089EB` is paused as historical structure evidence because it
   reads as ordinary yarn rather than the compressed Worldweave spell. Do not
   normalize, promote, delete, or use it as conditioning. The replacement gate
@@ -138,8 +138,8 @@ If the user asks only for planning, review, or brainstorming, do not edit code.
   retry or otherwise reuse the original FLUX candidate; do not infer, paint
   after the bound export, integrate, or generate a new Patch asset. FLUX and
   manual sources require deterministic alpha/repeatability proof.
-  B3A may not generate a distinct Loomkeeper, assign the Wizard a runtime path,
-  or silently generate another Wizard or Threadball.
+  B3A may not generate a distinct Loomkeeper or silently generate another Wizard
+  or Threadball.
   B3B's first Wizard preset-Idle pilot lowered/remade the raised cupped palm
   (`6EA23DEE...4C718`), and the sole free-tier Custom successor replaced the
   empty palm with a blue woven basket/cup-like object in its first frame. Both
@@ -163,7 +163,15 @@ If the user asks only for planning, review, or brainstorming, do not edit code.
   inward thread-stroke, short-tail, and four-loop Unraveling rules; it binds
   solely to the existing authoritative presentation events and creates no
   runtime path. Do not use either rejected pilot or modify Wizard source pixels.
-  WP-015C reuses the one
+  B3C.1 may assign `runtime_path` only to byte-identical build copies of these
+  seven approved masters: Loomseed Wizard `1CC252B4...9419C`, cast stages
+  `C189A206...FDD0`, `94F0DEDC...CCA9`, and `8ECA37C6...23E9`, Cloud
+  `7F327B51...4B23C`, Terrain Top `41511E63...7897`, and Terrain Interior
+  `D50C2C60...2E40E9`. The copied output must stay below `assets/product/`,
+  exactly match the source hash, and total 607,427 source bytes. It must not
+  create a duplicate source file, promote the empty-handed Wizard/raw Threadball
+  master or rejected FLUX Terrain Interior, generate an atlas, add code, or make
+  player-visible changes. WP-015C reuses the one
   approved Wizard presentation for the player and AI Loomkeeper. Distinct
   Loomkeeper production is deferred to the wider character roster in WP-015D.
 

@@ -291,6 +291,32 @@ simulation/replay/turn/reward mutation, and B3C runtime integration. WP-015C
 must add the client presentation phase and verify it across the full phone
 matrix before any of these visual rules become player-visible.
 
+### B3C.1 deterministic runtime-copy bridge
+
+The source-only status above is intentional. Before WP-015C starts, B3C.1 may
+assign `runtime_path` values to exactly seven existing approved masters, so the
+existing build copier produces byte-identical files below `assets/product/`:
+
+| Approved source master | Runtime copy path |
+| --- | --- |
+| Wizard-with-Loomseed `1CC252B4...9419C` | `assets/product/characters/knotkin/wizard/knotkin-wizard-loomseed-v1.png` |
+| Threadball formation start `C189A206...FDD0` | `assets/product/relics/threadball/cast/formation-start-v1.png` |
+| Threadball formation ready `94F0DEDC...CCA9` | `assets/product/relics/threadball/cast/formation-ready-v1.png` |
+| Threadball projectile `8ECA37C6...23E9` | `assets/product/relics/threadball/cast/projectile-v1.png` |
+| Patch Cloud `7F327B51...4B23C` | `assets/product/environment/patch-01/clouds/cloud-v1.png` |
+| Patch Terrain Top `41511E63...7897` | `assets/product/environment/patch-01/terrain/top-v1.png` |
+| Patch Terrain Interior `D50C2C60...2E40E9` | `assets/product/environment/patch-01/terrain/interior-v1.png` |
+
+This is an admission of build copies, not new asset creation. The entries must
+retain their exact source hashes, the generated approved-assets manifest must
+list only those seven destinations, and their source total must remain exactly
+607,427 bytes, below the 1.5 MB initial-media budget. B3C.1 may not duplicate a
+file under `assets/product/`, alter a master, promote the unused empty-handed
+Wizard or raw Threadball source, re-admit the rejected FLUX Terrain Interior,
+generate an atlas, add scene code, or change player-visible behavior. It closes
+only after exact-copy, path-allowlist, media-budget, manifest, compliance, build,
+and audit checks pass. WP-015C then remains purely integration work.
+
 Sources rechecked on 2026-08-05: <https://www.autosprite.io/pricing>,
 <https://www.autosprite.io/docs/reference-animation-types>,
 <https://www.autosprite.io/docs/how-to-use>,
@@ -858,5 +884,5 @@ Before generating anything:
    `assets/`, update `legal/asset-manifest.json`, or integrate runtime media.
 
 WP-015B2 is ready to close only when every accepted master is reproducible from
-this contract and every rejection remains explicitly recorded. Exact-file
-promotion and gameplay integration belong to WP-015C.
+this contract and every rejection remains explicitly recorded. Exact runtime-copy
+promotion belongs to WP-015B3C.1; gameplay integration belongs to WP-015C.

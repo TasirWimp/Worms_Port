@@ -8,8 +8,13 @@ Phaser/Socket.IO stack.
 ## Execution Pointer
 
 - Active target: mobile-first single-player Nimiq Pay competition release.
-- Active work package: **WP-015B3C static Wizard/Threadball presentation
-  — source derivatives and effects contract complete; runtime integration remains:**
+- Active work package: **WP-015B3C.1 deterministic runtime-copy admission
+  — planning refined; implementation is the next bounded action:**
+  every B3C source master and effect contract is complete, but each accepted
+  source master deliberately has no `runtime_path`. B3C.1 is the explicit bridge
+  that may assign runtime paths only to byte-identical copies of the frozen
+  seven-file inventory below; it may not create, transform, regenerate, or
+  integrate media. Once it closes, WP-015C remains integration-only.
   both AutoSprite pilots remain rejected external evidence. The owner superseded
   the empty-palm overlay condition with a permanent held Loomseed and a separate
   temporary cast Threadball. B3C now has an exact source-only Wizard-with-
@@ -70,9 +75,10 @@ Phaser/Socket.IO stack.
   **WP-015B3C** has completed the static permanent-Loomseed and temporary
   Threadball formation/projectile source derivatives plus root-transform
   geometry. The separate effect admission now freezes the actual glow,
-  loose-fiber gather, short-tail, impact, and timing contract; **WP-015C** may
-  next perform integration
-  only. The gameplay
+  loose-fiber gather, short-tail, impact, and timing contract. **WP-015B3C.1**
+  must next assign only manifest runtime paths and prove byte-identical build
+  copies for the fixed inventory; **WP-015C** may then perform integration only.
+  The gameplay
   AI remains the Loomkeeper, but its first-slice presentation is the same Wizard
   asset as the player. The distinct Loomkeeper moves to WP-015D with Thief,
   Warrior, and the other roster assets. D remains blocked until the assembled C
@@ -2598,7 +2604,24 @@ Sequential delivery slices:
       anchor, aim-direction emission rule, parent hashes, phone-size review,
       manifest decisions, and the 1.5 MB media budget. C stays blocked until
       every required runtime file is approved.
-- **WP-015C First playable visual slice — integration only:** load the approved
+- **WP-015B3C.1 Runtime-copy admission — no new pixels or integration:**
+  promote only these already approved source files by adding an exact
+  `runtime_path` to their existing asset-manifest entry: the 512px
+  Wizard-with-Loomseed presentation master; Threadball `formation-start`,
+  `formation-ready`, and `projectile` 64px masters; Patch Cloud; Patch Terrain
+  Top; and Patch Terrain Interior. Each path must sit below `assets/product/`,
+  each build output must be byte-identical to its existing manifest-bound
+  source, and the generated approved-assets list must contain exactly those
+  seven files. Their current source bytes total 607,427 bytes, below the 1.5 MB
+  initial-media ceiling. Do not add a duplicate source file below
+  `assets/product/`, alter any master, promote the unused empty-handed Wizard or
+  raw Threadball master, add a runtime path to the rejected FLUX Terrain
+  Interior, generate an atlas, add code, or make player-visible changes. Close
+  with source-hash and path allowlist tests, manifest/compliance checks, build
+  copy equality, media-budget reporting, and `npm audit`. This resolves the
+  former C-entry contradiction without weakening the source-only approval gate.
+- **WP-015C First playable visual slice — integration only:** after B3C.1
+  closes, load the approved
   Wizard presentation for both the player and the AI Loomkeeper, compose the
   approved permanent Loomseed at its recorded anchor, launch the approved
   temporary Threadball derivatives from its emission origin, compose Patch

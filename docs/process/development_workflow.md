@@ -1691,17 +1691,27 @@ integrating.
    anchor, aim-direction emission rule, Fire phases, parent/output hashes,
    exact-file approvals, phone-size review, and media budget. Distinct
    Loomkeeper production remains deferred to WP-015D.
+4. **B3C.1 deterministic runtime-copy admission:** before C, assign a
+   `runtime_path` only to the existing Wizard-with-Loomseed master, three cast
+   stages, Cloud, Terrain Top, and repaired Terrain Interior. The build copier
+   must make exactly seven byte-identical files below `assets/product/`, totaling
+   607,427 source bytes. Do not create a duplicate asset file, modify a source
+   master, promote the empty-handed Wizard/raw Threadball/rejected Terrain
+   Interior, generate an atlas, or add scene code. Prove the exact path
+   allowlist, source/copy hashes, approved-assets inventory, media budget,
+   manifest/compliance, build, and audit before C starts.
 
-WP-015C remains blocked until the manifest-approved inventory can express one
+WP-015C remains blocked until B3C.1 has made that manifest-approved runtime
+inventory available and it can express one
 complete exchange without generation, manual source repair, or unapproved test
 paths. B3 changes no gameplay rules and integrates no product media into the
 combat scene.
 
 ### WP-015C First Playable Visual-Slice Re-entry
 
-WP-015C is integration-only. Its inputs are the approved B3 Wizard atlas,
-Threadball derivatives, Patch layers, shared minimum effects, and their manifest
-metadata. It instantiates the same Wizard atlas for the player and AI
+WP-015C is integration-only. Its inputs are the runtime-copy-approved B3 Wizard
+presentation, Threadball derivatives, Patch layers, shared minimum effects, and
+their manifest metadata. It instantiates the same Wizard presentation for the player and AI
 Loomkeeper. The authoritative Loomkeeper actor, rules, labels, and team/position
 cues remain distinct even though the temporary character art is shared. C may
 add client asset loading, atlas/state mapping, socket attachment, decorative
