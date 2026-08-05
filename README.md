@@ -249,7 +249,8 @@ npm run asset:compose:threadball-cast
 
 The command verifies the exact approved Threadball parent and writes only ignored
 review material under `test-results/`. It must reproduce the frozen formation
-and compact-projectile hashes; the tracked masters have no runtime path. It does
+and compact-projectile hashes; B3C.1 later admits only their byte-identical
+build-copy runtime paths. It does
 not invent or approve glow, loose fibers, tail, impact, animation, or gameplay
 integration.
 
@@ -295,11 +296,13 @@ Cloud alpha handling and terrain repeatability before any source-master approval
 The owner accepted the one Cloud request (`EA972B0B...FFE7`), and deterministic
 white-matte normalization produced source master
 `assets/masters/environment/patch-01/clouds/patch-01-cloud-source-master-v1.png`
-(`7F327B51...4B23C`) with no runtime path. Owner-approved Terrain Top source
+(`7F327B51...4B23C`), whose sole B3C.1 build copy is
+`assets/product/environment/patch-01/clouds/cloud-v1.png`. Owner-approved Terrain Top source
 `BE5EB2E7...2B22` now has deterministic 256x64 master
 `assets/masters/environment/patch-01/terrain/patch-01-terrain-top-source-master-v1.png`
 (`41511E63...7897`), with a three-copy horizontal repeat proof whose edge
-difference is zero. It has no runtime path. The one fresh Terrain Interior FLUX
+difference is zero and sole B3C.1 build copy
+`assets/product/environment/patch-01/terrain/top-v1.png`. The one fresh Terrain Interior FLUX
 request remains rejected as external candidate `98091C73...50F9` for visible
 directional quilt seams. The project owner separately repaired the material in
 the four-layer external XCF `2E94BBE4...CDBC7B`; GIMP 3.2.4's exact flattened
@@ -309,7 +312,8 @@ fixed 32px horizontal/vertical reciprocal edge blends, producing repeatable
 256x256 source master
 `assets/masters/environment/patch-01/terrain/patch-01-terrain-interior-source-master-v1.png`
 (`D50C2C60...2E40E9`) twice. Its 3x3 proof has zero difference across both tile
-boundaries. This manual-repair recovery adds no runtime path, atlas, terrain
+boundaries. Its sole B3C.1 build copy is
+`assets/product/environment/patch-01/terrain/interior-v1.png`; the manual-repair recovery adds no atlas, terrain
 authority, animation, or gameplay integration; no new Patch inference, retry,
 or post-export paint is authorized. WP-015B3B
 retains two rejected AutoSprite pilots as external evidence and freezes a
@@ -322,9 +326,9 @@ each centered at its local origin. They add no invented glow, loose fibers,
 tail, impact, animation, runtime path, or integration. The separate source-free
 effects contract now freezes a procedural halo, inward threads, short tail, and
 four-loop Unraveling effect for later client presentation only. Before WP-015C,
-WP-015B3C.1 must add only byte-identical build-copy runtime paths for the exact
+WP-015B3C.1 has added only byte-identical build-copy runtime paths for the exact
 seven already approved presentation/Patch masters (607,427 source bytes total),
-without new pixels or scene code. WP-015C then remains the gate that may actually
+without new pixels or scene code. WP-015C is now the gate that may actually
 integrate them. WP-015C will reuse the one approved Wizard
 presentation for both the player and the AI Loomkeeper. A distinct Loomkeeper
 asset belongs to the wider character roster in WP-015D.

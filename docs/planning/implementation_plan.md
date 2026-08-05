@@ -8,17 +8,18 @@ Phaser/Socket.IO stack.
 ## Execution Pointer
 
 - Active target: mobile-first single-player Nimiq Pay competition release.
-- Active work package: **WP-015B3C.1 deterministic runtime-copy admission
-  — planning refined; implementation is the next bounded action:**
-  every B3C source master and effect contract is complete, but each accepted
-  source master deliberately has no `runtime_path`. B3C.1 is the explicit bridge
-  that may assign runtime paths only to byte-identical copies of the frozen
-  seven-file inventory below; it may not create, transform, regenerate, or
-  integrate media. Once it closes, WP-015C remains integration-only.
-  both AutoSprite pilots remain rejected external evidence. The owner superseded
+- Active work package: **WP-015C First playable visual slice — integration
+  only:** WP-015B3C.1 completed on 2026-08-05. Its closed inventory assigns
+  `runtime_path` only to seven existing approved masters and the build copier
+  now produces their byte-identical copies below `assets/product/` (607,427
+  source bytes, below the 1.5 MB ceiling). It created no source asset, atlas,
+  scene code, or player-visible change. The raw empty-handed Wizard, raw
+  Threadball, and rejected FLUX Terrain Interior remain excluded. WP-015C may
+  now integrate only that fixed inventory; it may not approve or generate media.
+- Background: both AutoSprite pilots remain rejected external evidence. The owner superseded
   the empty-palm overlay condition with a permanent held Loomseed and a separate
-  temporary cast Threadball. B3C now has an exact source-only Wizard-with-
-  Loomseed derivative; it has no runtime path. WP-015B2H completed on 2026-08-04 and approved
+  temporary cast Threadball. B3C now has an exact Wizard-with-Loomseed
+  derivative with its one B3C.1 build-copy runtime path. WP-015B2H completed on 2026-08-04 and approved
   exact 512x512 RGBA Wizard source master
   `assets/masters/characters/knotkin/wizard/knotkin-wizard-source-master-v1.png`,
   SHA-256
@@ -53,19 +54,21 @@ Phaser/Socket.IO stack.
   gates use seeds `15035002` through `15035004`, no references, and the pinned
   FLUX workflow/settings. The sole Cloud request completed as external output
   `EA972B0B...FFE7`, passed owner review, and is now deterministically approved
-  only as source master `7F327B51...4B23C` (no `runtime_path`). Its frozen
+  as source master `7F327B51...4B23C`, with B3C.1 build-copy runtime path
+  `assets/product/environment/patch-01/clouds/cloud-v1.png`. Its frozen
   normalizer fills only fully enclosed white-matte stitch pinholes, then applies
   uniform placement at `(256,256)`; it does not paint, reconstruct, or infer.
   Owner-approved Terrain Top source `BE5EB2E7...2B22` now has deterministic
   256x64 master `41511E63...7897`, after frozen crop, uniform scale, and a
-  three-copy horizontal repeat proof with zero edge difference. It has no
-  runtime path. Terrain Interior's separate fresh-preflighted FLUX candidate
+  three-copy horizontal repeat proof with zero edge difference and B3C.1 build-copy
+  runtime path `assets/product/environment/patch-01/terrain/top-v1.png`. Terrain Interior's separate fresh-preflighted FLUX candidate
   `98091C73...50F9` remains rejected for its directional quilt seam pattern.
   The owner-approved four-layer GIMP repair `2E94BBE4...CDBC7B` instead yields
   exact flattened export `6419C1E8...CF8095`; frozen deterministic 2D
   normalization now approves source master `D50C2C60...2E40E9` at 256x256 with
-  zero difference across its 3x3 horizontal and vertical repeat proof. It has
-  no runtime path. FLUX outputs
+  zero difference across its 3x3 horizontal and vertical repeat proof; its
+  B3C.1 build-copy runtime path is
+  `assets/product/environment/patch-01/terrain/interior-v1.png`. FLUX outputs
   are textile source imagery, never a promise of tile
   seams or collision geometry; deterministic later normalizers must prove the
   Cloud alpha and terrain repeat tests. No distinct Loomkeeper, batch, animation
@@ -76,8 +79,8 @@ Phaser/Socket.IO stack.
   Threadball formation/projectile source derivatives plus root-transform
   geometry. The separate effect admission now freezes the actual glow,
   loose-fiber gather, short-tail, impact, and timing contract. **WP-015B3C.1**
-  must next assign only manifest runtime paths and prove byte-identical build
-  copies for the fixed inventory; **WP-015C** may then perform integration only.
+  has assigned only the fixed manifest runtime paths and proved byte-identical
+  build copies; **WP-015C** is the next integration-only slice.
   The gameplay
   AI remains the Loomkeeper, but its first-slice presentation is the same Wizard
   asset as the player. The distinct Loomkeeper moves to WP-015D with Thief,
@@ -2604,8 +2607,8 @@ Sequential delivery slices:
       anchor, aim-direction emission rule, parent hashes, phone-size review,
       manifest decisions, and the 1.5 MB media budget. C stays blocked until
       every required runtime file is approved.
-- **WP-015B3C.1 Runtime-copy admission — no new pixels or integration:**
-  promote only these already approved source files by adding an exact
+- **WP-015B3C.1 Runtime-copy admission — completed 2026-08-05:**
+  promoted only these already approved source files by adding an exact
   `runtime_path` to their existing asset-manifest entry: the 512px
   Wizard-with-Loomseed presentation master; Threadball `formation-start`,
   `formation-ready`, and `projectile` 64px masters; Patch Cloud; Patch Terrain
@@ -2616,9 +2619,10 @@ Sequential delivery slices:
   initial-media ceiling. Do not add a duplicate source file below
   `assets/product/`, alter any master, promote the unused empty-handed Wizard or
   raw Threadball master, add a runtime path to the rejected FLUX Terrain
-  Interior, generate an atlas, add code, or make player-visible changes. Close
-  with source-hash and path allowlist tests, manifest/compliance checks, build
-  copy equality, media-budget reporting, and `npm audit`. This resolves the
+  Interior, generate an atlas, add code, or make player-visible changes. The
+  `check:b3c-runtime-inventory` allowlist verifies the exact paths, source hashes,
+  and 607,427-byte total; focused tests prove byte-identical build copies.
+  Tooling, compliance, build, audit, and diff checks passed. This resolves the
   former C-entry contradiction without weakening the source-only approval gate.
 - **WP-015C First playable visual slice — integration only:** after B3C.1
   closes, load the approved

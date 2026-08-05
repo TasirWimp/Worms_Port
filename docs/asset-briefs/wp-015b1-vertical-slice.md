@@ -293,9 +293,10 @@ matrix before any of these visual rules become player-visible.
 
 ### B3C.1 deterministic runtime-copy bridge
 
-The source-only status above is intentional. Before WP-015C starts, B3C.1 may
-assign `runtime_path` values to exactly seven existing approved masters, so the
-existing build copier produces byte-identical files below `assets/product/`:
+The source-only master status is intentional. WP-015B3C.1 completed on
+2026-08-05 by assigning `runtime_path` values to exactly seven existing approved
+masters; the existing build copier produces byte-identical files below
+`assets/product/`:
 
 | Approved source master | Runtime copy path |
 | --- | --- |
@@ -310,12 +311,13 @@ existing build copier produces byte-identical files below `assets/product/`:
 This is an admission of build copies, not new asset creation. The entries must
 retain their exact source hashes, the generated approved-assets manifest must
 list only those seven destinations, and their source total must remain exactly
-607,427 bytes, below the 1.5 MB initial-media budget. B3C.1 may not duplicate a
+607,427 bytes, below the 1.5 MB initial-media budget. B3C.1 did not duplicate a
 file under `assets/product/`, alter a master, promote the unused empty-handed
 Wizard or raw Threadball source, re-admit the rejected FLUX Terrain Interior,
 generate an atlas, add scene code, or change player-visible behavior. It closes
 only after exact-copy, path-allowlist, media-budget, manifest, compliance, build,
-and audit checks pass. WP-015C then remains purely integration work.
+and audit checks pass; all passed on 2026-08-05. WP-015C remains purely
+integration work.
 
 Sources rechecked on 2026-08-05: <https://www.autosprite.io/pricing>,
 <https://www.autosprite.io/docs/reference-animation-types>,
@@ -748,7 +750,7 @@ or hit detection.
 | Settings | 1024x1024, batch 1, 4 FLUX.2 scheduler steps, CFG 1, Euler |
 | Reference input | none; no historical Patch output, Wizard, Threadball, Gemini concept, or external artwork may be staged or conditioned on |
 | Output location | external `WormsPortFlux2KleinText` Comfy output prefix only |
-| Current state | Cloud, Terrain Top, and the owner-repaired Terrain Interior are source-master-approved with no runtime path. Terrain Top is 256x64 with an exact three-copy horizontal proof; Terrain Interior is 256x256 with an exact 3x3 two-dimensional proof. Neither has a product path, atlas, or gameplay integration. |
+| Current state | Cloud, Terrain Top, and the owner-repaired Terrain Interior remain frozen source masters. B3C.1 admits only their listed byte-identical product build copies. Terrain Top is 256x64 with an exact three-copy horizontal proof; Terrain Interior is 256x256 with an exact 3x3 two-dimensional proof. There is still no atlas or gameplay integration. |
 | Sequencing | The three FLUX requests are closed. Terrain Interior's one FLUX request remains rejected; its later owner-manual recovery is separately frozen. No retry or next Patch request is authorized. |
 | Stop rule | stop the family on a component/workflow/service/queue failure, rejected candidate, or missing deterministic-normalization plan; no batch, seed shopping, reference edit, prompt repair, or automatic next request |
 
@@ -787,8 +789,9 @@ project owner accepted its quiet compact/pom-pom reading. Frozen normalizer
 hole filling to prevent transparent stitch pinholes, uniform scale, and
 translation. It reproduced 512x512 RGBA source master
 `assets/masters/environment/patch-01/clouds/patch-01-cloud-source-master-v1.png`
-(`7F327B51...4B23C`) byte-for-byte, at placement anchor `(256,256)`, with no
-`runtime_path`. Do not retry or alter Cloud. Owner-approved Terrain Top now has
+(`7F327B51...4B23C`) byte-for-byte, at placement anchor `(256,256)`, with sole
+B3C.1 build-copy path `assets/product/environment/patch-01/clouds/cloud-v1.png`.
+Do not retry or alter Cloud. Owner-approved Terrain Top now has
 source master `41511E63...7897`; the separately owner-repaired Terrain Interior
 now has source master `D50C2C60...2E40E9`, while integration remains separately
 gated.
@@ -825,8 +828,9 @@ reciprocal 16-pixel horizontal edge blend. Its config
 (`4BA76F64...FFC8`) reproduced 256x64 opaque RGBA source master
 `assets/masters/environment/patch-01/terrain/patch-01-terrain-top-source-master-v1.png`
 (`41511E63...7897`) byte-for-byte. The fixed three-copy repeat proof has exact
-zero edge difference. The master has no `runtime_path`; do not retry, repair,
-integrate, or generate Terrain Interior without its separate next gate.
+zero edge difference. Its sole B3C.1 build-copy path is
+`assets/product/environment/patch-01/terrain/top-v1.png`; do not retry, repair,
+or generate Terrain Interior without its separate next gate.
 
 #### Gate 3: terrain-interior textile source
 
@@ -859,8 +863,9 @@ candidate selection occurred. Frozen config
 verifies that export, uniformly scales the whole canvas to 256x256, and applies
 fixed 32px reciprocal edge blends horizontally and vertically. It reproduced
 source master `D50C2C60...2E40E9` twice and its 3x3 proof has zero edge
-difference on both axes. This manual recovery has no runtime path, atlas,
-terrain authority, animation, or C integration; no post-export paint, retry, or
+difference on both axes. Its sole B3C.1 build-copy path is
+`assets/product/environment/patch-01/terrain/interior-v1.png`; this manual
+recovery has no atlas, terrain authority, animation, or C integration; no post-export paint, retry, or
 new Patch request is authorized. Passing a source candidate never approves C
 integration.
 

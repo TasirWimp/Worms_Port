@@ -178,7 +178,7 @@ test('generation profiles reject arbitrary model, workflow, tool, and launch sel
 
 test('FLUX profile preserves approved Wizard, Threadball, Patch masters, and the rejected-to-manual Terrain Interior recovery record', () => {
   const profile = manifest.profiles.find((candidate) => candidate.id === 'flux2-klein');
-  assert.equal(profile.state, 'wizard_threadball_cloud_terrain_top_terrain_interior_manual_masters_approved');
+  assert.equal(profile.state, 'wizard_threadball_cloud_terrain_top_terrain_interior_runtime_inventory_approved');
   assert.deepEqual(profile.latest_review, {
     decision: 'source_master_approved',
     generation_work_package: 'WP-015B2G',
@@ -278,7 +278,10 @@ test('FLUX profile preserves approved Wizard, Threadball, Patch masters, and the
     normalized_master_path: 'assets/masters/environment/patch-01/clouds/patch-01-cloud-source-master-v1.png',
     normalized_master_sha256: '7F327B515FBF89F7DD275C4385FA194AE3F95E677C60BE10126CA68D9024B23C',
     placement_anchor: [256, 256],
-    runtime_path_assigned: false,
+    runtime_path_assigned: true,
+    runtime_path: 'assets/product/environment/patch-01/clouds/cloud-v1.png',
+    runtime_copy_work_package: 'WP-015B3C.1',
+    runtime_copy_source_bytes: 211751,
     further_generation_authorized: false
   });
   assert.deepEqual(profile.terrain_top_authorized_request, {
@@ -322,7 +325,10 @@ test('FLUX profile preserves approved Wizard, Threadball, Patch masters, and the
     source_crop: [0, 392, 1024, 256],
     master_canvas: [256, 64],
     repeat_edge_maximum_difference: 0,
-    runtime_path_assigned: false,
+    runtime_path_assigned: true,
+    runtime_path: 'assets/product/environment/patch-01/terrain/top-v1.png',
+    runtime_copy_work_package: 'WP-015B3C.1',
+    runtime_copy_source_bytes: 41834,
     further_generation_authorized: false
   });
   assert.deepEqual(profile.terrain_interior_authorized_request, {
@@ -369,7 +375,10 @@ test('FLUX profile preserves approved Wizard, Threadball, Patch masters, and the
     master_canvas: [256, 256],
     horizontal_repeat_edge_maximum_difference: 0,
     vertical_repeat_edge_maximum_difference: 0,
-    runtime_path_assigned: false,
+    runtime_path_assigned: true,
+    runtime_path: 'assets/product/environment/patch-01/terrain/interior-v1.png',
+    runtime_copy_work_package: 'WP-015B3C.1',
+    runtime_copy_source_bytes: 151898,
     further_generation_authorized: false
   });
   assert.match(profile.notes, /WP-015B2D/);

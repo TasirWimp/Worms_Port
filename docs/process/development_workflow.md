@@ -1691,7 +1691,7 @@ integrating.
    anchor, aim-direction emission rule, Fire phases, parent/output hashes,
    exact-file approvals, phone-size review, and media budget. Distinct
    Loomkeeper production remains deferred to WP-015D.
-4. **B3C.1 deterministic runtime-copy admission:** before C, assign a
+4. **B3C.1 deterministic runtime-copy admission — completed 2026-08-05:** assign a
    `runtime_path` only to the existing Wizard-with-Loomseed master, three cast
    stages, Cloud, Terrain Top, and repaired Terrain Interior. The build copier
    must make exactly seven byte-identical files below `assets/product/`, totaling
@@ -1699,10 +1699,11 @@ integrating.
    master, promote the empty-handed Wizard/raw Threadball/rejected Terrain
    Interior, generate an atlas, or add scene code. Prove the exact path
    allowlist, source/copy hashes, approved-assets inventory, media budget,
-   manifest/compliance, build, and audit before C starts.
+   manifest/compliance, build, and audit before C starts. The exact
+   `check:b3c-runtime-inventory` gate, its focused tests, tooling suite,
+   compliance, production build, audit, and diff check have passed.
 
-WP-015C remains blocked until B3C.1 has made that manifest-approved runtime
-inventory available and it can express one
+WP-015C may now use B3C.1's manifest-approved runtime inventory to express one
 complete exchange without generation, manual source repair, or unapproved test
 paths. B3 changes no gameplay rules and integrates no product media into the
 combat scene.

@@ -1,0 +1,142 @@
+const crypto = require('node:crypto');
+const fs = require('node:fs');
+const path = require('node:path');
+
+const repoRoot = path.resolve(__dirname, '..');
+const manifestPath = path.join(repoRoot, 'legal', 'asset-manifest.json');
+const initialMediaByteCeiling = 1_500_000;
+
+const expectedRuntimeInventory = Object.freeze([
+  {
+    id: 'knotkin-wizard-loomseed-presentation-owned-original-master-v1',
+    file: 'assets/masters/characters/knotkin/wizard/knotkin-wizard-loomseed-presentation-master-v1.png',
+    sha256: '1CC252B45C93D2553AC733DAA6AA49D05D6351DCC85E61EA559ECED458C9419C',
+    runtime_path: 'assets/product/characters/knotkin/wizard/knotkin-wizard-loomseed-v1.png',
+    bytes: 196974
+  },
+  {
+    id: 'relic-threadball-cast-formation-start-presentation-owned-original-master-v1',
+    file: 'assets/masters/relics/threadball/relic-threadball-cast-formation-start-presentation-master-v1.png',
+    sha256: 'C189A2060BE92DFAE75B8FDDB2F6038DBB209808B764197C9F93473A8908FDD0',
+    runtime_path: 'assets/product/relics/threadball/cast/formation-start-v1.png',
+    bytes: 1074
+  },
+  {
+    id: 'relic-threadball-cast-formation-ready-presentation-owned-original-master-v1',
+    file: 'assets/masters/relics/threadball/relic-threadball-cast-formation-ready-presentation-master-v1.png',
+    sha256: '94F0DEDC5ABCA6FF8E65B3F0CFA5EDC48ED869D382CD322CF90BAA492A3BCCA9',
+    runtime_path: 'assets/product/relics/threadball/cast/formation-ready-v1.png',
+    bytes: 2546
+  },
+  {
+    id: 'relic-threadball-cast-projectile-presentation-owned-original-master-v1',
+    file: 'assets/masters/relics/threadball/relic-threadball-cast-projectile-presentation-master-v1.png',
+    sha256: '8ECA37C67C06B2A0C6D8E866FE2FE3E18E40E9F22E557CDEBF8F5470E95123E9',
+    runtime_path: 'assets/product/relics/threadball/cast/projectile-v1.png',
+    bytes: 1350
+  },
+  {
+    id: 'patch-01-cloud-flux2-owned-original-source-master-v1',
+    file: 'assets/masters/environment/patch-01/clouds/patch-01-cloud-source-master-v1.png',
+    sha256: '7F327B515FBF89F7DD275C4385FA194AE3F95E677C60BE10126CA68D9024B23C',
+    runtime_path: 'assets/product/environment/patch-01/clouds/cloud-v1.png',
+    bytes: 211751
+  },
+  {
+    id: 'patch-01-terrain-top-flux2-owned-original-source-master-v1',
+    file: 'assets/masters/environment/patch-01/terrain/patch-01-terrain-top-source-master-v1.png',
+    sha256: '41511E63D0DBF602FCA854EB983DB9B754631587F6E5234CBB9DAF9113E77897',
+    runtime_path: 'assets/product/environment/patch-01/terrain/top-v1.png',
+    bytes: 41834
+  },
+  {
+    id: 'patch-01-terrain-interior-owner-manual-repair-source-master-v1',
+    file: 'assets/masters/environment/patch-01/terrain/patch-01-terrain-interior-source-master-v1.png',
+    sha256: 'D50C2C60A9941DEF0CD9E1C3C98A205A329CCFEC8766F3B1B70456728E2E40E9',
+    runtime_path: 'assets/product/environment/patch-01/terrain/interior-v1.png',
+    bytes: 151898
+  }
+]);
+
+function sha256(bytes) {
+  return crypto.createHash('sha256').update(bytes).digest('hex').toUpperCase();
+}
+
+function inventoryTotalBytes(inventory = expectedRuntimeInventory) {
+  return inventory.reduce((total, item) => total + item.bytes, 0);
+}
+
+function validateB3cRuntimeInventory(document, root = repoRoot) {
+  const errors = [];
+  const assets = Array.isArray(document?.assets) ? document.assets : [];
+  const runtimeAssets = assets.filter((asset) => asset.runtime_path);
+  const expectedById = new Map(expectedRuntimeInventory.map((item) => [item.id, item]));
+
+  if (runtimeAssets.length !== expectedRuntimeInventory.length) {
+    errors.push(`expected exactly ${expectedRuntimeInventory.length} B3C.1 runtime assets, found ${runtimeAssets.length}.`);
+  }
+
+  for (const asset of runtimeAssets) {
+    const expected = expectedById.get(asset.id);
+    if (!expected) {
+      errors.push(`${asset.id}: unexpected runtime asset is blocked.`);
+      continue;
+    }
+    for (const field of ['file', 'sha256', 'runtime_path']) {
+      if (asset[field] !== expected[field]) {
+        errors.push(`${asset.id}: ${field} must remain the frozen B3C.1 value.`);
+      }
+    }
+    if (asset.file.startsWith('assets/product/')) {
+      errors.push(`${asset.id}: runtime admission must not add a duplicate source under assets/product/.`);
+    }
+    const sourcePath = path.resolve(root, asset.file || '');
+    if (!sourcePath.startsWith(path.resolve(root, 'assets') + path.sep) || !fs.existsSync(sourcePath)) {
+      errors.push(`${asset.id}: approved source must resolve inside assets/.`);
+      continue;
+    }
+    const sourceBytes = fs.readFileSync(sourcePath);
+    if (sourceBytes.length !== expected.bytes) {
+      errors.push(`${asset.id}: source byte size must remain ${expected.bytes}.`);
+    }
+    if (sha256(sourceBytes) !== expected.sha256) {
+      errors.push(`${asset.id}: source hash must remain the frozen B3C.1 value.`);
+    }
+  }
+
+  for (const expected of expectedRuntimeInventory) {
+    const asset = runtimeAssets.find((candidate) => candidate.id === expected.id);
+    if (!asset) errors.push(`${expected.id}: required B3C.1 runtime asset is missing.`);
+  }
+
+  const totalBytes = inventoryTotalBytes();
+  if (totalBytes !== 607427) {
+    errors.push(`B3C.1 runtime source total must remain 607427 bytes, received ${totalBytes}.`);
+  }
+  if (totalBytes > initialMediaByteCeiling) {
+    errors.push(`B3C.1 runtime source total exceeds ${initialMediaByteCeiling} bytes.`);
+  }
+
+  return errors;
+}
+
+function main() {
+  const document = JSON.parse(fs.readFileSync(manifestPath, 'utf8'));
+  const errors = validateB3cRuntimeInventory(document);
+  if (errors.length > 0) {
+    console.error('B3C.1 runtime inventory check failed:');
+    for (const error of errors) console.error(`- ${error}`);
+    process.exitCode = 1;
+    return;
+  }
+  console.log(`B3C.1 runtime inventory passed (${expectedRuntimeInventory.length} assets, ${inventoryTotalBytes()} source bytes).`);
+}
+
+if (require.main === module) main();
+
+module.exports = {
+  expectedRuntimeInventory,
+  initialMediaByteCeiling,
+  inventoryTotalBytes,
+  validateB3cRuntimeInventory
+};

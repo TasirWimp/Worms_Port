@@ -109,7 +109,7 @@ If the user asks only for planning, review, or brainstorming, do not edit code.
   approved only exact Wizard source master
   `assets/masters/characters/knotkin/wizard/knotkin-wizard-source-master-v1.png`,
   SHA-256 `7AF4864E...18A9`; it has no runtime path.
-- WP-015B3C.1 is the active asset-admission slice. Existing Threadball candidate
+- WP-015B3C.1 completed the closed runtime-copy admission on 2026-08-05. Existing Threadball candidate
   `2BAE664F...F4089EB` is paused as historical structure evidence because it
   reads as ordinary yarn rather than the compressed Worldweave spell. Do not
   normalize, promote, delete, or use it as conditioning. The replacement gate
@@ -122,11 +122,12 @@ If the user asks only for planning, review, or brainstorming, do not edit code.
   Terrain Top, and Terrain Interior use text-only/no-reference seeds
   `15035002` through `15035004` under the pinned FLUX workflow. It authorizes
   no Patch inference in the contract commit. Cloud's sole external candidate
-  `EA972B0B...FFE7` is owner-approved and deterministically promoted only as
-  source master `7F327B51...4B23C`, with no runtime path. Owner-approved
+  `EA972B0B...FFE7` is owner-approved and deterministically promoted as
+  source master `7F327B51...4B23C`, with its sole B3C.1 runtime build-copy path.
+  Owner-approved
   Terrain Top `BE5EB2E7...2B22` is deterministically promoted only as 256x64
   source master `41511E63...7897`; its three-copy horizontal repeat proof has
-  exact edge difference zero and it has no runtime path. Terrain Interior's one
+  exact edge difference zero and its sole B3C.1 runtime build-copy path. Terrain Interior's one
   separately preflighted FLUX candidate `98091C73...50F9` remains rejected
   historical evidence for visible directional quilt seams. The project owner
   separately repaired it in external four-layer XCF `2E94BBE4...CDBC7B`; only
@@ -134,7 +135,7 @@ If the user asks only for planning, review, or brainstorming, do not edit code.
   config `wp-015b3c-patch-terrain-interior-manual-v1`. Deterministic uniform
   scaling plus fixed 32px horizontal/vertical reciprocal blends produced the
   opaque 256x256 source master `D50C2C60...2E40E9` twice, with a 3x3 proof of
-  zero difference at both repeat boundaries. It has no runtime path. Do not
+  zero difference at both repeat boundaries and its sole B3C.1 runtime build-copy path. Do not
   retry or otherwise reuse the original FLUX candidate; do not infer, paint
   after the bound export, integrate, or generate a new Patch asset. FLUX and
   manual sources require deterministic alpha/repeatability proof.
@@ -151,7 +152,7 @@ If the user asks only for planning, review, or brainstorming, do not edit code.
   origin. B3C has frozen config `wp-015b3c-wizard-loomseed-v1` and approved
   source-only composition `1CC252B4...9419C`: it uses only the two approved
   parents, layers the Loomseed above the palm, and leaves both source files
-  untouched. It has no runtime path. B3C now also approves three source-only
+  untouched. Its sole B3C.1 runtime build-copy path is the approved presentation copy. B3C now also approves three source-only
   temporary cast stages derived only from the same Threadball parent: compact
   `formation-start` (`C189A206...FDD0`), `formation-ready`
   (`94F0DEDC...CCA9`), and `projectile` (`8ECA37C6...23E9`). Frozen config
@@ -162,8 +163,8 @@ If the user asks only for planning, review, or brainstorming, do not edit code.
   (`2C9A827F...D34A`) now admits only later deterministic procedural halo,
   inward thread-stroke, short-tail, and four-loop Unraveling rules; it binds
   solely to the existing authoritative presentation events and creates no
-  runtime path. Do not use either rejected pilot or modify Wizard source pixels.
-  B3C.1 may assign `runtime_path` only to byte-identical build copies of these
+  effect-runtime path. Do not use either rejected pilot or modify Wizard source pixels.
+  B3C.1 assigned `runtime_path` only to byte-identical build copies of these
   seven approved masters: Loomseed Wizard `1CC252B4...9419C`, cast stages
   `C189A206...FDD0`, `94F0DEDC...CCA9`, and `8ECA37C6...23E9`, Cloud
   `7F327B51...4B23C`, Terrain Top `41511E63...7897`, and Terrain Interior
@@ -171,7 +172,7 @@ If the user asks only for planning, review, or brainstorming, do not edit code.
   exactly match the source hash, and total 607,427 source bytes. It must not
   create a duplicate source file, promote the empty-handed Wizard/raw Threadball
   master or rejected FLUX Terrain Interior, generate an atlas, add code, or make
-  player-visible changes. WP-015C reuses the one
+  player-visible changes. WP-015C is now the next integration-only slice and reuses the one
   approved Wizard presentation for the player and AI Loomkeeper. Distinct
   Loomkeeper production is deferred to the wider character roster in WP-015D.
 
