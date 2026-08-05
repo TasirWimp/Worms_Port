@@ -22,6 +22,7 @@
     "asset:compose:threadball-cast": "node scripts/compose-threadball-cast-derivatives.js",
     "asset:normalize:cloud": "node scripts/normalize-cloud-master.js",
     "asset:normalize:terrain-top": "node scripts/normalize-terrain-top-master.js",
+    "asset:normalize:terrain-interior": "node scripts/normalize-terrain-interior-master.js",
     "check:types": "tsc -p server/tsconfig.json --noEmit && tsc -p client/tsconfig.json --noEmit",
     "test:tooling": "node --test tests/tooling/*.test.js",
     "test:protocol": "node --import tsx --test tests/protocol/*.test.ts",

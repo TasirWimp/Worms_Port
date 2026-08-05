@@ -226,7 +226,7 @@ const reviewedProfileContracts = new Map([
     smokeTool: 'generate_image'
   }],
   ['flux2-klein', {
-    state: 'wizard_threadball_cloud_terrain_top_masters_terrain_interior_rejected_patch_paused',
+    state: 'wizard_threadball_cloud_terrain_top_terrain_interior_manual_masters_approved',
     modelComponents: reviewedFluxModelComponents,
     workflowComponents: [
       'wormsport-flux2-klein-text-to-image-workflow',
@@ -413,6 +413,27 @@ const reviewedProfileContracts = new Map([
       external_output_pixel_format: 'RGB24',
       further_requests_authorized: false
     },
+    terrainInteriorManualRepairReview: {
+      decision: 'source_master_approved_owner_manual_repair',
+      recovery_work_package: 'WP-015B3C',
+      rejected_external_source_sha256: '98091C738D0E226FCAFA60EFA00BB4F63A503723CC310726E7787FEC702250F9',
+      editable_source_sha256: '2E94BBE46A3E901BB8EB14B21F413E8ACCB850D3443FFD72308D63B09DCDBC7B',
+      editable_source_bytes: 6331391,
+      flattened_export_sha256: '6419C1E81F13FF75650A13F1FE6654711A7334C9A24EC48F86C4356533CF8095',
+      flattened_export_bytes: 2731505,
+      export_tool: 'GIMP 3.2.4 non-interactive flattened PNG export',
+      normalization_config_path: 'scripts/asset-normalization/wp-015b3c-patch-terrain-interior-manual-v1.json',
+      normalization_config_sha256: '73118EE47A92EEA00DD78D11508F4031EA532B8DB798030B56E48A19C951C71D',
+      normalizer_path: 'scripts/normalize-terrain-interior-master.js',
+      normalizer_sha256: '0DBA3767ECDF3B92A1C26653F899950FD1E8998E035BE7FB22B3EFFA2D4ED0CA',
+      normalized_master_path: 'assets/masters/environment/patch-01/terrain/patch-01-terrain-interior-source-master-v1.png',
+      normalized_master_sha256: 'D50C2C60A9941DEF0CD9E1C3C98A205A329CCFEC8766F3B1B70456728E2E40E9',
+      master_canvas: [256, 256],
+      horizontal_repeat_edge_maximum_difference: 0,
+      vertical_repeat_edge_maximum_difference: 0,
+      runtime_path_assigned: false,
+      further_generation_authorized: false
+    },
     requiredNoteFragments: [
       'WP-015B2D',
       'DEF9265DAA4C6F2799D16870205E2015291E3E4AAE0F61802349C9FD8D56AD00',
@@ -473,8 +494,14 @@ const reviewedProfileContracts = new Map([
       '255.203',
       'visible large diagonal/diamond quilt seams',
       'project owner rejected it',
-      'The Patch family is paused.',
-      'No crop, normalizer, source-master promotion, asset-manifest entry, runtime integration, or further generation is authorized.'
+      'That exact candidate remains rejected historical evidence.',
+      'GIMP 3.2.4',
+      '2E94BBE46A3E901BB8EB14B21F413E8ACCB850D3443FFD72308D63B09DCDBC7B',
+      '6419C1E81F13FF75650A13F1FE6654711A7334C9A24EC48F86C4356533CF8095',
+      '73118EE47A92EEA00DD78D11508F4031EA532B8DB798030B56E48A19C951C71D',
+      '0DBA3767ECDF3B92A1C26653F899950FD1E8998E035BE7FB22B3EFFA2D4ED0CA',
+      'D50C2C60A9941DEF0CD9E1C3C98A205A329CCFEC8766F3B1B70456728E2E40E9',
+      'No new FLUX request, inference, reference, post-export paint, runtime integration, terrain authority, or further generation is authorized.'
     ]
   }]
 ]);
@@ -974,6 +1001,11 @@ function validateGenerationComponents(manifest, root = repoRoot) {
           JSON.stringify(profile.terrain_interior_authorized_request) !== JSON.stringify(contract.terrainInteriorAuthorizedRequest)) {
         errors.push(`${label}: exact Terrain Interior authorized generation request changed.`);
       }
+      if (contract.terrainInteriorManualRepairReview &&
+          JSON.stringify(profile.terrain_interior_manual_repair_review) !==
+          JSON.stringify(contract.terrainInteriorManualRepairReview)) {
+        errors.push(`${label}: exact Terrain Interior manual-repair review changed.`);
+      }
       if (contract.latestReview) {
         const exactFiles = [
           ['normalization_config_path', 'normalization_config_sha256'],
@@ -1099,6 +1131,38 @@ function validateGenerationComponents(manifest, root = repoRoot) {
             approvedMaster.sha256 !== profile.terrain_top_source_master_review.normalized_master_sha256 ||
             approvedMaster.runtime_path !== undefined) {
           errors.push(`${label}: approved Terrain Top source master must remain manifest-bound without runtime_path.`);
+        }
+      }
+      if (contract.terrainInteriorManualRepairReview) {
+        const exactFiles = [
+          ['normalization_config_path', 'normalization_config_sha256'],
+          ['normalizer_path', 'normalizer_sha256'],
+          ['normalized_master_path', 'normalized_master_sha256']
+        ];
+        for (const [pathField, hashField] of exactFiles) {
+          const relativePath = profile.terrain_interior_manual_repair_review?.[pathField] || '';
+          const resolvedPath = path.resolve(root, relativePath);
+          if (!relativePath || !resolvedPath.startsWith(path.resolve(root) + path.sep) ||
+              !fs.existsSync(resolvedPath)) {
+            errors.push(`${label}: Terrain Interior manual repair ${pathField} must resolve inside the repository.`);
+            continue;
+          }
+          const actualHash = crypto.createHash('sha256').update(fs.readFileSync(resolvedPath))
+            .digest('hex').toUpperCase();
+          if (actualHash !== profile.terrain_interior_manual_repair_review?.[hashField]) {
+            errors.push(`${label}: Terrain Interior manual repair ${pathField} does not match ${hashField}.`);
+          }
+        }
+        const assetManifestPath = path.resolve(root, 'legal', 'asset-manifest.json');
+        const assetManifest = fs.existsSync(assetManifestPath) ?
+          JSON.parse(fs.readFileSync(assetManifestPath, 'utf8')) : null;
+        const approvedMaster = assetManifest?.assets?.find(
+          (asset) => asset.file === profile.terrain_interior_manual_repair_review.normalized_master_path
+        );
+        if (!approvedMaster ||
+            approvedMaster.sha256 !== profile.terrain_interior_manual_repair_review.normalized_master_sha256 ||
+            approvedMaster.runtime_path !== undefined) {
+          errors.push(`${label}: approved manual-repair Terrain Interior master must remain manifest-bound without runtime_path.`);
         }
       }
       if (Array.isArray(contract.requiredNoteFragments) &&

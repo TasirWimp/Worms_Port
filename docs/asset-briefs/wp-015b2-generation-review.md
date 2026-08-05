@@ -1665,7 +1665,9 @@ Patch request, animation, atlas, or runtime integration is authorized.
 
 ## WP-015B3A Patch Source-Contract Gate
 
-Status: **Terrain Top source master approved; Terrain Interior rejected and Patch family paused**.
+Status: **Terrain Top source master approved; the original Terrain Interior FLUX
+candidate remains rejected, while the separately owner-repaired GIMP source is
+approved as a no-runtime-path 256x256 source master under WP-015B3C**.
 
 The historical SD 1.5 Patch cloud, terrain-top, and terrain-interior outputs are
 rejected external evidence only. Their prompts and seeds cannot be retried under

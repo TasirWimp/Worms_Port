@@ -127,11 +127,17 @@ If the user asks only for planning, review, or brainstorming, do not edit code.
   Terrain Top `BE5EB2E7...2B22` is deterministically promoted only as 256x64
   source master `41511E63...7897`; its three-copy horizontal repeat proof has
   exact edge difference zero and it has no runtime path. Terrain Interior's one
-  separately preflighted request was rejected as external candidate
-  `98091C73...50F9` for visible directional quilt seams; it must not be
-  normalized, promoted, retried, or integrated. The Patch family is paused.
-  FLUX provides textile source imagery only, and deterministic normalizers must
-  prove alpha/repeatability.
+  separately preflighted FLUX candidate `98091C73...50F9` remains rejected
+  historical evidence for visible directional quilt seams. The project owner
+  separately repaired it in external four-layer XCF `2E94BBE4...CDBC7B`; only
+  its exact GIMP 3.2.4 flattened export `6419C1E8...CF8095` may feed frozen
+  config `wp-015b3c-patch-terrain-interior-manual-v1`. Deterministic uniform
+  scaling plus fixed 32px horizontal/vertical reciprocal blends produced the
+  opaque 256x256 source master `D50C2C60...2E40E9` twice, with a 3x3 proof of
+  zero difference at both repeat boundaries. It has no runtime path. Do not
+  retry or otherwise reuse the original FLUX candidate; do not infer, paint
+  after the bound export, integrate, or generate a new Patch asset. FLUX and
+  manual sources require deterministic alpha/repeatability proof.
   B3A may not generate a distinct Loomkeeper, assign the Wizard a runtime path,
   or silently generate another Wizard or Threadball.
   B3B's first Wizard preset-Idle pilot lowered/remade the raised cupped palm
@@ -152,7 +158,11 @@ If the user asks only for planning, review, or brainstorming, do not edit code.
   `wp-015b3c-threadball-cast-v1` maps each local visual origin to `(32,32)` and
   records the Wizard root-space emission offset `[151,-223]`. It creates no
   glow, loose fibers, tail, impact, animation, runtime path, or gameplay
-  authority. Do not use either rejected pilot or modify Wizard source pixels.
+  authority. Separate config `wp-015b3c-threadball-effects-v1`
+  (`2C9A827F...D34A`) now admits only later deterministic procedural halo,
+  inward thread-stroke, short-tail, and four-loop Unraveling rules; it binds
+  solely to the existing authoritative presentation events and creates no
+  runtime path. Do not use either rejected pilot or modify Wizard source pixels.
   WP-015C reuses the one
   approved Wizard presentation for the player and AI Loomkeeper. Distinct
   Loomkeeper production is deferred to the wider character roster in WP-015D.

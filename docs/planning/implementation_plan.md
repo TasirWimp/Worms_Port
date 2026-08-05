@@ -9,7 +9,7 @@ Phaser/Socket.IO stack.
 
 - Active target: mobile-first single-player Nimiq Pay competition release.
 - Active work package: **WP-015B3C static Wizard/Threadball presentation
-  — source derivatives complete; separate effects and runtime integration remain:**
+  — source derivatives and effects contract complete; runtime integration remains:**
   both AutoSprite pilots remain rejected external evidence. The owner superseded
   the empty-palm overlay condition with a permanent held Loomseed and a separate
   temporary cast Threadball. B3C now has an exact source-only Wizard-with-
@@ -28,8 +28,10 @@ Phaser/Socket.IO stack.
   from that same parent: formation-start `C189A206...FDD0`, formation-ready
   `94F0DEDC...CCA9`, and compact projectile `8ECA37C6...23E9`. All local visual
   origins are `(32,32)`; the future Wizard root-space emission offset is
-  `[151,-223]`. There is still no glow, loose-fiber, tail, impact, animation,
-  runtime derivative, or combat integration authorization.
+  `[151,-223]`. Separate effects config `wp-015b3c-threadball-effects-v1`
+  (`2C9A827F...D34A`) now freezes the later client-only order, timing, and
+  bounded procedural halo/gather/tail/impact grammar. It still creates no
+  runtime derivative or combat integration authorization.
 - Existing external Threadball candidate
   `2BAE664F7E5A862BCB53B55A68071580485CE040A89650C68EC6FA398F4089EB`
   is paused as historical structure evidence: it reads as an ordinary yarn ball
@@ -52,9 +54,13 @@ Phaser/Socket.IO stack.
   Owner-approved Terrain Top source `BE5EB2E7...2B22` now has deterministic
   256x64 master `41511E63...7897`, after frozen crop, uniform scale, and a
   three-copy horizontal repeat proof with zero edge difference. It has no
-  runtime path. Terrain Interior's separate fresh-preflighted candidate
-  `98091C73...50F9` was rejected for its directional quilt seam pattern, pausing
-  the Patch family. FLUX outputs
+  runtime path. Terrain Interior's separate fresh-preflighted FLUX candidate
+  `98091C73...50F9` remains rejected for its directional quilt seam pattern.
+  The owner-approved four-layer GIMP repair `2E94BBE4...CDBC7B` instead yields
+  exact flattened export `6419C1E8...CF8095`; frozen deterministic 2D
+  normalization now approves source master `D50C2C60...2E40E9` at 256x256 with
+  zero difference across its 3x3 horizontal and vertical repeat proof. It has
+  no runtime path. FLUX outputs
   are textile source imagery, never a promise of tile
   seams or collision geometry; deterministic later normalizers must prove the
   Cloud alpha and terrain repeat tests. No distinct Loomkeeper, batch, animation
@@ -63,9 +69,9 @@ Phaser/Socket.IO stack.
 - Following gates: **WP-015B3B** records the failed external-route evidence;
   **WP-015B3C** has completed the static permanent-Loomseed and temporary
   Threadball formation/projectile source derivatives plus root-transform
-  geometry. A separate effect admission must still resolve the actual glow,
-  loose-fiber gather, short-tail, impact, and timing contract before
-  **WP-015C** performs integration
+  geometry. The separate effect admission now freezes the actual glow,
+  loose-fiber gather, short-tail, impact, and timing contract; **WP-015C** may
+  next perform integration
   only. The gameplay
   AI remains the Loomkeeper, but its first-slice presentation is the same Wizard
   asset as the player. The distinct Loomkeeper moves to WP-015D with Thief,
@@ -199,9 +205,10 @@ Phaser/Socket.IO stack.
   two-run byte proof are frozen. The next exact Threadball-only composition
   config, composer, three 64x64 formation/projectile source derivatives,
   manifest lineage, rooted emission offset `[151,-223]`, visual reviews, and
-  two-run byte proof are also frozen. The remaining bounded B3C work is a
-  separate admission for glow/gather/tail/impact/timing, not a new Threadball
-  source generation or runtime path. The first
+  two-run byte proof are also frozen. The separate source-free effects config
+  has now frozen glow/gather/tail/impact/timing without a new Threadball
+  generation or runtime path. WP-015C remains the next integration-only gate.
+  The first
   Turbo/Budget preset-Idle pilot was exported as
   external sheet `6EA23DEE...4C718` and rejected because it lowered/remade the
   raised cupped palm. The documented free-tier Custom successor
@@ -213,9 +220,10 @@ Phaser/Socket.IO stack.
   authorized. B3C has instead created the static deterministic Loomseed
   derivative at `(407,228)`. The separate temporary Threadball must form and
   launch from its emission origin without using either rejected pilot's pixels,
-  pose, or conditioning. Terrain Interior candidate `98091C73...50F9`
-  is rejected and the Patch family is paused: no normalizer, crop, source-master
-  promotion, runtime path, or further Patch request is authorized. No Threadball,
+  pose, or conditioning. Terrain Interior candidate `98091C73...50F9` remains
+  rejected historical evidence. Its separately owner-approved GIMP repair is
+  closed as exact 256x256 source master `D50C2C60...2E40E9`; no post-export
+  paint, runtime path, or further Patch request is authorized. No Threadball,
   Cloud, Terrain Top, or Terrain Interior retry is authorized.
   Initial due diligence on 2026-08-04 finds AutoSprite.io available for custom
   animation and spritesheet downloads. Its 2025-09-18 terms retain user input
@@ -2558,9 +2566,13 @@ Sequential delivery slices:
       `7F327B51...4B23C` with no runtime path. Owner-approved Terrain Top then
       deterministically produced 256x64 source master `41511E63...7897` through
       frozen crop, uniform scale, and exact horizontal repeat proof; no runtime
-      path is assigned. Terrain Interior has consumed its separately preflighted
-      request as external candidate `98091C73...50F9`, then was rejected for its
-      directional quilt seam pattern; the Patch family is paused.
+      path is assigned. Terrain Interior consumed its separately preflighted
+      request as external candidate `98091C73...50F9`, then remains rejected for
+      its directional quilt seam pattern. The project owner separately repaired
+      the material in four-layer XCF `2E94BBE4...CDBC7B`; its exact GIMP export
+      `6419C1E8...CF8095` deterministically produces 256x256 source master
+      `D50C2C60...2E40E9` with a zero-difference 3x3 two-axis repeat proof and
+      no runtime path.
       Each
       source imagery gate needs fresh
       preflight, review, and explicit continuation; it does not claim seamless

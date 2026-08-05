@@ -1632,10 +1632,15 @@ integrating.
    with no runtime path. Owner-approved Terrain Top `BE5EB2E7...2B22` has
    deterministic 256x64 source master `41511E63...7897` through frozen crop,
    uniform scale, and horizontal repeat proof, with no runtime path. Terrain
-   Interior candidate `98091C73...50F9` was rejected for its directional quilt
-   seam pattern; the Patch family is paused and it has no normalizer, master,
-   runtime path, or retry authorization. Those requests are strictly sequential, and
-   each output must be reviewed before the next gate. Treat FLUX output as
+   Interior candidate `98091C73...50F9` remains rejected for its directional
+   quilt seam pattern. The owner separately repaired that material in four-layer
+   GIMP XCF `2E94BBE4...CDBC7B`; its exact flattened export
+   `6419C1E8...CF8095` deterministically produces opaque 256x256 master
+   `D50C2C60...2E40E9` with zero difference at both axes of a 3x3 repeat proof.
+   The original candidate remains rejected, and the recovery admits neither
+   post-export painting, runtime path, terrain authority, nor retry. Those
+   requests are strictly sequential, and each output must be reviewed before the
+   next gate. Treat FLUX output as
    textile source imagery only; a later frozen deterministic normalizer must
    prove Cloud alpha handling and terrain repeatability. Failure pauses the
    family; it does not authorize seed shopping or a batch. Do not generate a
@@ -1673,8 +1678,9 @@ integrating.
    approved Threadball master and map every local visual origin to `(32,32)`;
    the Wizard root-space emission offset is `[151,-223]`. No new glow, loose
    fibers, tail, impact, animation, runtime path, or authority has been
-   created. A later separately admitted effect route must still provide the
-   required glow/gather/tail/impact presentation. Patch
+   created. Config `wp-015b3c-threadball-effects-v1` now separately admits the
+   bounded later procedural halo/gather/tail/impact route, but it remains
+   unintegrated until C. Patch
    background/cloud/repeatable terrain materials, and minimum shared
    damage/result effects. The spell family shows loose fibers gathering at or
    beyond the Loomseed, a smaller temporary compressed knot, compact flight, and

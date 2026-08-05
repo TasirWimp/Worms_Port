@@ -299,10 +299,19 @@ white-matte normalization produced source master
 `BE5EB2E7...2B22` now has deterministic 256x64 master
 `assets/masters/environment/patch-01/terrain/patch-01-terrain-top-source-master-v1.png`
 (`41511E63...7897`), with a three-copy horizontal repeat proof whose edge
-difference is zero. It has no runtime path. The one fresh Terrain Interior
-request was rejected as external candidate `98091C73...50F9` for visible
-directional quilt seams. The Patch family is paused; it has no normalizer, source
-master, product-manifest entry, runtime path, or retry authorization. WP-015B3B
+difference is zero. It has no runtime path. The one fresh Terrain Interior FLUX
+request remains rejected as external candidate `98091C73...50F9` for visible
+directional quilt seams. The project owner separately repaired the material in
+the four-layer external XCF `2E94BBE4...CDBC7B`; GIMP 3.2.4's exact flattened
+export `6419C1E8...CF8095` is the only permitted recovery input. Frozen
+`wp-015b3c-patch-terrain-interior-manual-v1` uniformly scales it and applies
+fixed 32px horizontal/vertical reciprocal edge blends, producing repeatable
+256x256 source master
+`assets/masters/environment/patch-01/terrain/patch-01-terrain-interior-source-master-v1.png`
+(`D50C2C60...2E40E9`) twice. Its 3x3 proof has zero difference across both tile
+boundaries. This manual-repair recovery adds no runtime path, atlas, terrain
+authority, animation, or gameplay integration; no new Patch inference, retry,
+or post-export paint is authorized. WP-015B3B
 retains two rejected AutoSprite pilots as external evidence and freezes a
 deterministic Wizard presentation: a permanent held Loomseed and a separate
 temporary cast Threadball. B3C has deterministically composed and manifest-
@@ -310,8 +319,10 @@ approved the source-only Wizard-with-Loomseed master. B3C also approves three
 source-only cast stages deterministically resampled from the exact Threadball
 master: a small formation, a larger ready formation, and a compact projectile,
 each centered at its local origin. They add no invented glow, loose fibers,
-tail, impact, animation, runtime path, or integration. The next visual work is
-the separate effects/runtime gate. WP-015C will reuse the one approved Wizard
+tail, impact, animation, runtime path, or integration. The separate source-free
+effects contract now freezes a procedural halo, inward threads, short tail, and
+four-loop Unraveling effect for later client presentation only; WP-015C remains
+the gate that may actually integrate it. WP-015C will reuse the one approved Wizard
 presentation for both the player and the AI Loomkeeper. A distinct Loomkeeper
 asset belongs to the wider character roster in WP-015D.
 WP-015C remains integration-only and begins only when the simplified vertical-

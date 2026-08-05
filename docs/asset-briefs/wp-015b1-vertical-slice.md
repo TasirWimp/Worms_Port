@@ -4,8 +4,10 @@ Status: frozen historical B1 contract, amended for future character work by the
 WP-015B2C mouth, WP-015B2D creative-expression, WP-015B2G rounded-doll, and
 WP-015B3 shared-Wizard opponent decisions below. WP-015B3A has completed the
 Threadball, Cloud, and Terrain Top source masters. Terrain Interior's one
-external candidate was rejected for a directional quilt seam pattern; the Patch
-family is paused. This document authorizes no automatic or batch Patch inference.
+external FLUX candidate remains rejected for a directional quilt seam pattern.
+WP-015B3C separately admits the owner-repaired GIMP source as an exact,
+deterministically normalized source master; it authorizes no automatic, batch,
+or new Patch inference.
 
 This document is the production contract for the first NIMble Knots visual
 slice: Wizard, Loomkeeper, Threadball, and Patch 01. WP-015B1 writes and reviews
@@ -261,8 +263,33 @@ on a 64x64 local canvas at `(32,32)`. Their parent is solely
 offset `[151,-223]`. The initial Fire phase remains conceptually bounded to
 `glow -> temporary formation -> projectile launch`, but these masters do not
 claim glow/gathering, tail, impact, timing, animation, or runtime integration.
-A later raster-animation or procedural-effect route still requires a separate
-admission gate.
+
+### B3C source-free Threadball effect admission
+
+Frozen config `scripts/asset-normalization/wp-015b3c-threadball-effects-v1.json`
+(`2C9A827F...D34A`) admits the one later procedural route without creating a
+raster asset, modifying a source master, or wiring the route into the game.
+For both actors, a Threadball Fire must later present the existing Loomkeeper
+aim first when applicable, then `cast-charge` (80ms normal / 30ms reduced),
+`cast-formation` (120ms / 40ms), the existing authoritative projectile, and
+the existing authoritative impact. It may consume only the actor, Relic id,
+authoritative trace, and impact point already present in the presentation plan.
+
+- **Charge:** one restrained gold halo behind the held Loomseed and at most three
+  short blue strokes pointing inward; it is never a fireball or an ammo change.
+- **Formation:** center the approved start then ready stage at the root-
+  transformed origin; the permanent Loomseed stays visible and stationary.
+- **Flight:** place the approved compact projectile at the existing trace
+  endpoint and use at most three preceding trace segments as a short taut tail.
+- **Impact:** show at most four small blue/gold Unraveling loops at the existing
+  impact point—never an explosion, shockwave, crater outline, or a radius-scaled
+  visual.
+
+The effect config forbids source-pixel changes, implicit randomness,
+damage-radius coupling, new status effects, physics/collision/terrain changes,
+simulation/replay/turn/reward mutation, and B3C runtime integration. WP-015C
+must add the client presentation phase and verify it across the full phone
+matrix before any of these visual rules become player-visible.
 
 Sources rechecked on 2026-08-05: <https://www.autosprite.io/pricing>,
 <https://www.autosprite.io/docs/reference-animation-types>,
@@ -695,8 +722,8 @@ or hit detection.
 | Settings | 1024x1024, batch 1, 4 FLUX.2 scheduler steps, CFG 1, Euler |
 | Reference input | none; no historical Patch output, Wizard, Threadball, Gemini concept, or external artwork may be staged or conditioned on |
 | Output location | external `WormsPortFlux2KleinText` Comfy output prefix only |
-| Current state | Cloud and Terrain Top are source-master-approved with no runtime path; Terrain Top is 256x64 and has an exact three-copy horizontal repeat proof, but no product path, atlas, or gameplay integration. Terrain Interior is rejected and the Patch family is paused. |
-| Sequencing | Cloud and Terrain Top are closed; Terrain Interior's single request is consumed and rejected. No retry or next Patch request is authorized. |
+| Current state | Cloud, Terrain Top, and the owner-repaired Terrain Interior are source-master-approved with no runtime path. Terrain Top is 256x64 with an exact three-copy horizontal proof; Terrain Interior is 256x256 with an exact 3x3 two-dimensional proof. Neither has a product path, atlas, or gameplay integration. |
+| Sequencing | The three FLUX requests are closed. Terrain Interior's one FLUX request remains rejected; its later owner-manual recovery is separately frozen. No retry or next Patch request is authorized. |
 | Stop rule | stop the family on a component/workflow/service/queue failure, rejected candidate, or missing deterministic-normalization plan; no batch, seed shopping, reference edit, prompt repair, or automatic next request |
 
 The shared exclusion set is: character, creature, face, hands, Relic, weapon,
@@ -736,8 +763,9 @@ translation. It reproduced 512x512 RGBA source master
 `assets/masters/environment/patch-01/clouds/patch-01-cloud-source-master-v1.png`
 (`7F327B51...4B23C`) byte-for-byte, at placement anchor `(256,256)`, with no
 `runtime_path`. Do not retry or alter Cloud. Owner-approved Terrain Top now has
-source master `41511E63...7897`; Terrain Interior and integration remain
-separately gated.
+source master `41511E63...7897`; the separately owner-repaired Terrain Interior
+now has source master `D50C2C60...2E40E9`, while integration remains separately
+gated.
 
 #### Gate 2: terrain-top textile source
 
@@ -795,11 +823,20 @@ in `255.203` seconds, producing untouched external `1024x1024` RGB24 output
 `98091C738D0E226FCAFA60EFA00BB4F63A503723CC310726E7787FEC702250F9`). A
 non-promotional 48px whole-canvas review copy is external only (5,304 bytes,
 SHA-256 `2CB5BEF4B1F0F28403565384FD74929E191D0BB57F4957D3637DC1A3E3DE1D3E`).
-The candidate has a large directional diamond/quilt seam pattern and was
-rejected by the project owner: it fails the uniform no-seam/no-direction
-acceptance check. The Patch family is paused. No normalizer, crop, source master,
-product-manifest entry, runtime path, or further generation is authorized.
-Passing a source candidate never approves C integration.
+The candidate has a large directional diamond/quilt seam pattern and remains
+rejected historical evidence: it fails the uniform no-seam/no-direction
+acceptance check. The project owner separately repaired the material in the
+four-layer external XCF `2E94BBE4...CDBC7B`. GIMP 3.2.4 exported exactly one
+flattened 1024x1024 RGBA input `6419C1E8...CF8095`; no further FLUX inference or
+candidate selection occurred. Frozen config
+`scripts/asset-normalization/wp-015b3c-patch-terrain-interior-manual-v1.json`
+verifies that export, uniformly scales the whole canvas to 256x256, and applies
+fixed 32px reciprocal edge blends horizontally and vertically. It reproduced
+source master `D50C2C60...2E40E9` twice and its 3x3 proof has zero edge
+difference on both axes. This manual recovery has no runtime path, atlas,
+terrain authority, animation, or C integration; no post-export paint, retry, or
+new Patch request is authorized. Passing a source candidate never approves C
+integration.
 
 ## WP-015B2 Handoff
 

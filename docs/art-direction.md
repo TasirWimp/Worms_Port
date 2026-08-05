@@ -558,9 +558,14 @@ small formation-start is `C189A206...FDD0`, the larger formation-ready is
 Wizard emission offset `[151,-223]` from pivot `(256,451)`; it does not change
 authoritative shot origin or physics. These derivative bytes contain no new
 glow, gathering fibers, tail, impact, animation, runtime path, or gameplay
-authority. The visible strand-gathering and non-graphic Unraveling effects
-therefore remain separate later work rather than fabricated claims about these
-static masters.
+authority. The visible strand-gathering and non-graphic Unraveling effects are
+separately admitted in source-free config
+`scripts/asset-normalization/wp-015b3c-threadball-effects-v1.json`
+(`2C9A827F...D34A`). It permits only later deterministic code-drawn halo,
+inward thread strokes, a three-segment taut tail, and at most four small
+Unraveling loops. It explicitly forbids fire/explosion imagery, damage-radius
+coupling, collision, replay, and source-master modification. These effects
+remain unintegrated until WP-015C.
 
 The first production interpretation is frozen in
 `asset-briefs/wp-015b1-vertical-slice.md`. That contract translates the lineup

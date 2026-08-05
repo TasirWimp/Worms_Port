@@ -176,9 +176,9 @@ test('generation profiles reject arbitrary model, workflow, tool, and launch sel
   assert.match(validateGenerationComponents(policyInvalid).join('\n'), /profile selection must remain closed/);
 });
 
-test('FLUX profile preserves approved Wizard, Threadball, Cloud, Terrain Top, and the rejected Terrain Interior record', () => {
+test('FLUX profile preserves approved Wizard, Threadball, Patch masters, and the rejected-to-manual Terrain Interior recovery record', () => {
   const profile = manifest.profiles.find((candidate) => candidate.id === 'flux2-klein');
-  assert.equal(profile.state, 'wizard_threadball_cloud_terrain_top_masters_terrain_interior_rejected_patch_paused');
+  assert.equal(profile.state, 'wizard_threadball_cloud_terrain_top_terrain_interior_manual_masters_approved');
   assert.deepEqual(profile.latest_review, {
     decision: 'source_master_approved',
     generation_work_package: 'WP-015B2G',
@@ -351,6 +351,27 @@ test('FLUX profile preserves approved Wizard, Threadball, Cloud, Terrain Top, an
     external_output_pixel_format: 'RGB24',
     further_requests_authorized: false
   });
+  assert.deepEqual(profile.terrain_interior_manual_repair_review, {
+    decision: 'source_master_approved_owner_manual_repair',
+    recovery_work_package: 'WP-015B3C',
+    rejected_external_source_sha256: '98091C738D0E226FCAFA60EFA00BB4F63A503723CC310726E7787FEC702250F9',
+    editable_source_sha256: '2E94BBE46A3E901BB8EB14B21F413E8ACCB850D3443FFD72308D63B09DCDBC7B',
+    editable_source_bytes: 6331391,
+    flattened_export_sha256: '6419C1E81F13FF75650A13F1FE6654711A7334C9A24EC48F86C4356533CF8095',
+    flattened_export_bytes: 2731505,
+    export_tool: 'GIMP 3.2.4 non-interactive flattened PNG export',
+    normalization_config_path: 'scripts/asset-normalization/wp-015b3c-patch-terrain-interior-manual-v1.json',
+    normalization_config_sha256: '73118EE47A92EEA00DD78D11508F4031EA532B8DB798030B56E48A19C951C71D',
+    normalizer_path: 'scripts/normalize-terrain-interior-master.js',
+    normalizer_sha256: '0DBA3767ECDF3B92A1C26653F899950FD1E8998E035BE7FB22B3EFFA2D4ED0CA',
+    normalized_master_path: 'assets/masters/environment/patch-01/terrain/patch-01-terrain-interior-source-master-v1.png',
+    normalized_master_sha256: 'D50C2C60A9941DEF0CD9E1C3C98A205A329CCFEC8766F3B1B70456728E2E40E9',
+    master_canvas: [256, 256],
+    horizontal_repeat_edge_maximum_difference: 0,
+    vertical_repeat_edge_maximum_difference: 0,
+    runtime_path_assigned: false,
+    further_generation_authorized: false
+  });
   assert.match(profile.notes, /WP-015B2D/);
   assert.match(profile.notes, /DEF9265DAA4C6F2799D16870205E2015291E3E4AAE0F61802349C9FD8D56AD00/);
   assert.match(profile.notes, /15026004/);
@@ -375,7 +396,10 @@ test('FLUX profile preserves approved Wizard, Threadball, Cloud, Terrain Top, an
   assert.match(profile.notes, /255\.203/);
   assert.match(profile.notes, /visible large diagonal\/diamond quilt seams/);
   assert.match(profile.notes, /project owner rejected it/);
-  assert.match(profile.notes, /The Patch family is paused/);
+  assert.match(profile.notes, /That exact candidate remains rejected historical evidence/);
+  assert.match(profile.notes, /GIMP 3\.2\.4/);
+  assert.match(profile.notes, /2E94BBE46A3E901BB8EB14B21F413E8ACCB850D3443FFD72308D63B09DCDBC7B/);
+  assert.match(profile.notes, /D50C2C60A9941DEF0CD9E1C3C98A205A329CCFEC8766F3B1B70456728E2E40E9/);
   assert.match(profile.notes, /rejected/);
   assert.match(profile.notes, /WP-015B2F/);
   assert.match(profile.notes, /08CB26CE3FAC6605859F9C9B51331351F28F40A005F6A101B2E575D8A56C6AB8/);
@@ -464,5 +488,13 @@ test('FLUX profile preserves approved Wizard, Threadball, Cloud, Terrain Top, an
   assert.match(
     validateGenerationComponents(changedTerrainInteriorRequest).join('\n'),
     /exact Terrain Interior authorized generation request changed/
+  );
+
+  const changedTerrainInteriorManualReview = structuredClone(manifest);
+  changedTerrainInteriorManualReview.profiles.find((candidate) => candidate.id === 'flux2-klein')
+    .terrain_interior_manual_repair_review.master_canvas = [255, 256];
+  assert.match(
+    validateGenerationComponents(changedTerrainInteriorManualReview).join('\n'),
+    /exact Terrain Interior manual-repair review changed/
   );
 });
