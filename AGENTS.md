@@ -127,17 +127,26 @@ If the user asks only for planning, review, or brainstorming, do not edit code.
   Terrain Top `BE5EB2E7...2B22` is deterministically promoted only as 256x64
   source master `41511E63...7897`; its three-copy horizontal repeat proof has
   exact edge difference zero and it has no runtime path. Terrain Interior's one
-  separately preflighted request has completed as external candidate
-  `98091C73...50F9` and is pending owner review; it must not be normalized,
-  promoted, retried, or integrated. A reject pauses the Patch family.
+  separately preflighted request was rejected as external candidate
+  `98091C73...50F9` for visible directional quilt seams; it must not be
+  normalized, promoted, retried, or integrated. The Patch family is paused.
   FLUX provides textile source imagery only, and deterministic normalizers must
   prove alpha/repeatability.
   B3A may not generate a distinct Loomkeeper, assign the Wizard a runtime path,
   or silently generate another Wizard or Threadball.
-  B3B/B3C must approve one Wizard animation route and inventory; WP-015C reuses
-  that same Wizard presentation for the player and AI Loomkeeper and keeps the
-  palm empty for separate Threadball spell overlays. Distinct Loomkeeper
-  production is deferred to the wider character roster in WP-015D.
+  B3B's first Wizard preset-Idle pilot lowered/remade the raised cupped palm
+  (`6EA23DEE...4C718`), and the sole free-tier Custom successor replaced the
+  empty palm with a blue woven basket/cup-like object in its first frame. Both
+  remain external rejected evidence. No further AutoSprite request, paid pose
+  control, normalizer, or runtime use is authorized. The owner superseded the
+  empty-palm overlay requirement with a deterministic Wizard presentation: a
+  permanent Loomseed is composed only from approved Threadball lineage at palm
+  anchor `(407,228)`, while a separate temporary Threadball emits from that
+  origin. B3C must freeze the configuration and obtain derivative/manifest
+  approval before implementation; it must not use either rejected pilot or
+  modify Wizard source pixels. WP-015C reuses the one approved Wizard
+  presentation for the player and AI Loomkeeper. Distinct Loomkeeper production
+  is deferred to the wider character roster in WP-015D.
 
 ## Codex Subagent Roles
 

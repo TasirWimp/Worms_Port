@@ -3,9 +3,9 @@
 Status: frozen historical B1 contract, amended for future character work by the
 WP-015B2C mouth, WP-015B2D creative-expression, WP-015B2G rounded-doll, and
 WP-015B3 shared-Wizard opponent decisions below. WP-015B3A has completed the
-Threadball, Cloud, and Terrain Top source masters. Terrain Interior has one
-external candidate pending owner review. This document authorizes no automatic
-or batch Patch inference.
+Threadball, Cloud, and Terrain Top source masters. Terrain Interior's one
+external candidate was rejected for a directional quilt seam pattern; the Patch
+family is paused. This document authorizes no automatic or batch Patch inference.
 
 This document is the production contract for the first NIMble Knots visual
 slice: Wizard, Loomkeeper, Threadball, and Patch 01. WP-015B1 writes and reviews
@@ -94,8 +94,9 @@ remain below for traceability, but they authorize no B3 generation or animation.
 Distinct Loomkeeper production moves to WP-015D with Thief, Warrior, and the
 wider character roster, where it must pass the same source-master, animation,
 manifest, phone, and real-device gates. B3A now contains only Threadball and
-Patch source work, B3B admits one Wizard animation route, and B3C completes one
-Wizard inventory for reuse by both combatants.
+Patch source work. B3B records the deterministic Wizard Loomseed presentation
+contract after rejecting the external animation route, and B3C completes that
+single Wizard presentation for reuse by both combatants.
 
 The exact SD 1.5 prompts and negative prompt below remain unchanged historical
 evidence for reproducibility. Their `no mouth`/`mouth` exclusions are superseded
@@ -119,8 +120,9 @@ fill, reshape, or non-uniform warp occurred.
 The coordinates below remain targets, not authority to distort the art. If the
 visible ground baseline and center of the cupped palm cannot both align to them
 with one uniform transform while retaining safe padding, stop and amend the
-normalization contract through recorded phone evidence. Only the approved
-normalized master may enter WP-015B3 animation-route review.
+normalization contract through recorded phone evidence. The actual palm center
+is now the future Loomseed anchor and spell-emission origin; the approved
+empty-handed master remains the only source image at this gate.
 
 That stop condition triggered for the old held socket: matching `(341,293)` and
 the retained baseline would shrink the 898-pixel shadow-free Wizard to about
@@ -142,10 +144,116 @@ Worldweave Threadball generation contract before any replacement request. The
 exact text-only contract is now frozen below and authorizes one request only
 after its fail-closed preflight. The Threadball result is now reviewed and its
 source master is approved; the separate Patch contract is frozen below, but
-Patch inference remains blocked pending an explicit next gate. Animation begins
-with one approved Wizard-only pilot after the chosen service/route passes its license,
-privacy/input-retention, output-rights, export, and evidence gate. Only a
-reviewed Wizard pilot may authorize the one shared animation inventory.
+Patch inference remains blocked pending an explicit next gate. The external
+Wizard animation-route admission is closed after its two failed pilots. B3B now
+freezes a deterministic permanent-Loomseed and temporary-cast-Threadball
+presentation contract; only that contract, its later exact derivatives, and
+their manifest reviews may authorize the shared Wizard presentation.
+
+### WP-015B3B animation-route admission (2026-08-04/05)
+
+AutoSprite.io is provisionally admissible for externally quarantined Wizard-only
+experiments, not for product promotion. Its published terms (effective
+2025-09-18) say the user retains inputs and owns generated outputs subject to
+the rights in inputs and third-party materials, and say it does not train on
+user content. Its privacy policy says it processes uploads/prompts/outputs and
+retains them as necessary without a fixed retention period; deletion is by
+account setting or request. Its published documentation advertises custom
+animation and spritesheet/download workflows, but the service does not publish
+an exact inference model/version or guarantee non-infringement.
+
+The first, 2026-08-04 pilot uploaded only approved Wizard source master
+`7AF4864E...18A9` to the account-visible character `Knotkin Wizard —
+WP-015B3B pilot`. It used sidescroller/right-facing preset `Idle`,
+Turbo/Budget, 25 frames at 256px, default background removal, compression, and
+no sound. The exported external sheet is
+`C:\\Users\\jensb\\Downloads\\Knotkin Wizard — WP-015B3B pilot-idle-trimmed.png`
+(1280x1280, 546,923 bytes, SHA-256
+`6EA23DEE5CC42FFA94591B080086018AAEFD2521891E2B192D9DC8447864C718`).
+Frame review rejects it: AutoSprite lowered/remade the raised forward arm and
+cupped palm, leaving no stable separate-Relic socket. It remains external
+quarantine. The service did not expose durable job/asset IDs in its visible UI.
+At the owner's direction, retain the account pilot for now; do not delete it or
+use its rejected spritesheet as an input, pose, or conditioning source.
+
+The owner authorized exactly one second, free-tier **Custom animation** pilot.
+It was a constrained repair experiment, not a redo of the rejected preset and
+not a change to the approved source master. It reused the existing account
+character rather than uploading a second copy. It used sidescroller/right-facing,
+Turbo/Budget, 25 frames at 256px, default background removal, compression, and
+no sound. Do not select paid Advanced Mode, a paid pose operation, a paid
+upgrade, an API route, sound, another character, or a different source image.
+If the free UI does not expose this exact Custom route and these settings, stop
+instead of substituting a paid feature or a preset Idle request.
+
+Name the one request `Palm-preservation idle` and use this exact prompt:
+
+```text
+Right-facing three-quarter blue crochet Wizard holds a gentle seamless idle on one ground baseline. Only the torso expands and settles with quiet breathing, the yarn fibers softly stir, and the tip of the pointed Wizard hat sways slightly. The nearer arm remains raised forward, clearly separate from the torso. Its oversized upward-facing empty cupped mitten palm remains still, open, visible, and fixed in the same location as a socket for a separate Relic overlay. No arm or hand movement. No Relic, spell, staff, or object.
+```
+
+The free tier exposes custom prompts but not the paid first-frame/pose controls.
+The prompt therefore reduces rather than eliminates the risk of video-frame
+drift. On completion, preserve the untouched exported PNG and atlas externally,
+record the visible tier, settings, any visible IDs, prompt, parent/output hashes,
+and reviewer. Review every frame before any normalization: the two-eye/one-mouth
+Wizard identity must remain readable; both feet must share a stable baseline;
+the near arm must remain visibly raised and separated; and the empty,
+upward-facing cupped palm must remain open, visible, and usable as a separate
+Relic socket in every frame.
+
+The second pilot completed on 2026-08-05 as visible 25-frame, 256x256 sheet
+`Palm-preservation idle`. Its first editable frame fails the contract: the
+model replaces the empty cupped mitten palm with a large blue woven basket/cup-
+like object. The hand is therefore not an empty, open socket for the separate
+Relic overlay. One failed frame is sufficient to reject the whole animation;
+the remaining frames are not a route to salvage it. The live account sheet is
+retained temporarily for evidence, without edits or product use. The browser
+download dialog was completed, but no durable local export/hash was available
+to record in this session; that omission does not weaken the visual rejection
+or authorize a later export as an asset.
+
+Both B3B AutoSprite pilots fail their original empty-palm socket condition.
+AutoSprite animation generation for the Wizard is closed: no third attempt,
+paid upgrade, pose control, prompt variation, normalizer, runtime path, or
+asset promotion is authorized. Their frames and the accidental basket/cup-like
+object remain rejected external evidence; they must not become Loomseed input,
+pose reference, conditioning, or product pixels.
+
+#### Loomseed presentation amendment (2026-08-05)
+
+The project owner replaced the empty-palm overlay requirement with a Wizard
+presentation rule. The Wizard permanently holds a **Loomseed**: a calm,
+blue-and-gold Worldweave focus derived only later from approved Threadball
+source master `608F490C...D9B6F`, deterministically composed at the approved
+palm anchor `(407,228)` (`(153,85)` at the 192px review scale). The approved
+Wizard source master remains empty-handed and no new composite, runtime file,
+or manifest entry is authorized by this documentation amendment.
+
+On Fire, loose blue fibers and restrained gold light gather at or just beyond
+the Loomseed. A smaller, temporary cast Threadball forms at that emission
+origin and launches along the authoritative aim direction. The Loomseed stays
+with the Wizard; it is neither ammunition nor the projectile. The held and
+launched readings must remain distinct at phone scale: the held focus is calm
+and stable, while the projectile is compact, brief, and may carry the approved
+short thread tail. This changes neither range, damage, collision, turn timing,
+replay truth, reward logic, nor a cooldown/ammo rule.
+
+B3C must freeze the exact deterministic composition, parent hashes, local
+anchor/emission rule, visual phases, and approval boundaries before making any
+derivative. Its first presentation route is a root transform of the intact
+source master plus separately composed effects: root bob, lean, tint, or squash
+may move the Wizard, Loomseed anchor, and emission origin together, but may not
+reshape the raised hand or synthesize character frames. The initial Fire phase
+is bounded to `glow -> temporary formation -> projectile launch`; a later route
+may add raster animation only through a separate admission gate.
+
+Sources rechecked on 2026-08-05: <https://www.autosprite.io/pricing>,
+<https://www.autosprite.io/docs/reference-animation-types>,
+<https://www.autosprite.io/docs/how-to-use>,
+<https://www.autosprite.io/docs/faq>,
+<https://www.autosprite.io/docs/guide-advanced-mode>, and
+<https://www.autosprite.io/docs/api-spritesheets>.
 
 ## Exact Generation Contract
 
@@ -216,26 +324,29 @@ multiple characters, second character, group, front view, rear view, looking lef
 
 ## Character Geometry And Animation
 
-Wizard and Loomkeeper share one attachment-behavior contract. B2H proves that
-rounded source bodies require reviewed source-specific palm coordinates:
+Wizard and Loomkeeper share one source-geometry contract. B2H proves that
+rounded source bodies require reviewed source-specific palm coordinates. The
+Wizard's coordinate becomes the Loomseed anchor and spell-emission origin;
+Loomkeeper geometry remains deferred to WP-015D:
 
 | Field | 512x512 source | 192x192 runtime candidate |
 | --- | ---: | ---: |
 | Ground pivot | `(256, 451)` | `(96, 169)` |
-| Approved Wizard held-Relic socket | `(407, 228)` | `(153, 85)` |
+| Approved Wizard Loomseed anchor / emission origin | `(407, 228)` | `(153, 85)` |
 | Historical Loomkeeper socket target, deferred to WP-015D | `(341, 293)` | `(128, 110)` |
-| Projectile-origin offset in Relic-local space | `(96, 0)` | `(36, 0)` |
+| Legacy Relic-local offset (simulation metadata only; not the Loomseed visual rule) | `(96, 0)` | `(36, 0)` |
 | Motion-safe horizontal bounds | `64..448` | `24..168` |
 | Motion-safe top/baseline | `32..451` | `12..169` |
 
 The master uses a right-facing, orthographic-like three-quarter side view so
-both bead eyes remain visible. Each forward hand records the visible palm center
-as its held-Relic socket without baking a Relic into neutral locomotion. WP-015D
-must stop and record a Loomkeeper coordinate amendment if one uniform transform
-cannot meet its historical target without implausible scale or crop. Runtime
-rotates a separate Relic around the approved per-actor socket; the shared local
-origin offset rotates with it. Mirroring for a left-facing actor is allowed only
-after costume handedness and asymmetry review.
+both bead eyes remain visible. The Wizard's visible palm center is its Loomseed
+anchor and emission origin. A later deterministic presentation derivative
+places the permanent focus there; its temporary projectile launches beyond that
+anchor along the locked aim direction, rather than rotating a held object around
+the hand. WP-015D must stop and record a Loomkeeper coordinate amendment if one
+uniform transform cannot meet its historical target without implausible scale or
+crop. Mirroring for a left-facing actor is allowed only after costume handedness
+and asymmetry review.
 
 Aim pose selection follows the authoritative locked angle:
 
@@ -243,23 +354,27 @@ Aim pose selection follows the authoritative locked angle:
 - `aim_mid`: angle from `30_000` through `59_999` millidegrees,
 - `aim_high`: angle from `60_000` through `90_000` millidegrees.
 
-The vertical slice freezes these frame counts and triggers:
+The first presentation route freezes these state allowances and triggers. It
+does not require a generated character atlas: the intact Wizard source master
+can receive only deterministic root transforms, and the Loomseed/effects must
+inherit the same root transform without changing authoritative actor position.
 
 | State | Frames | Timing | Trigger |
 | --- | ---: | --- | --- |
-| `idle` | 6 | 140 ms, loop | Stable living actor with no more specific presentation |
-| `move` | 8 | 90 ms, loop | Accepted movement presentation until the unit reaches its authoritative position |
-| `aim_low` | 1 | hold | Locked low-angle aim presentation |
-| `aim_mid` | 1 | hold | Locked mid-angle aim presentation |
-| `aim_high` | 1 | hold | Locked high-angle aim presentation |
-| `fire` | 5 | 70 ms, once | Accepted Fire presentation; release on zero-based frame `2` |
-| `hit` | 4 | 90 ms, once | Authoritative `damaged` event with amount greater than zero |
-| `unravel` | 8 | 110 ms, once | Stitching reaches zero and this actor loses |
-| `victory` | 8 | 120 ms, loop | Authoritative terminal winner |
+| `idle` | 1 source + root loop | B3C-configured | Minimal deterministic breathing/bob; stable held Loomseed |
+| `move` | 1 source + root loop | B3C-configured | Presentation follows authoritative movement without altering position |
+| `aim_low` | 1 source | hold | Locked low-angle aim; Loomseed remains anchored |
+| `aim_mid` | 1 source | hold | Locked mid-angle aim; Loomseed remains anchored |
+| `aim_high` | 1 source | hold | Locked high-angle aim; Loomseed remains anchored |
+| `fire` | 3 effect phases | B3C-configured, once | Glow, temporary Threadball formation, then launch from the emission origin |
+| `hit` | 1 source + root pulse | B3C-configured, once | Authoritative `damaged` event with amount greater than zero |
+| `unravel` | deferred | n/a | Stitching reaches zero and this actor loses |
+| `victory` | deferred | n/a | Authoritative terminal winner |
 
-The release frame must use the same socket and local projectile-origin offset
-as the held aim pose. Presentation animation never changes collision, shot
-origin, damage, turn timing, or replay truth.
+The launch phase must use the same root-transformed anchor and the
+B3C-configured aim-direction emission rule as the held aim pose. Presentation
+never changes collision, the authoritative shot origin, damage, turn timing, or
+replay truth.
 
 ## Brief: Wizard
 
@@ -275,7 +390,8 @@ origin, damage, turn timing, or replay truth.
 - Costume: tall pointed deep-blue felt Wizard hat with a softly folded tip,
   small gold stitched stars, visible gold blanket stitching,
   woven belt and wooden button clasp. A compact spool staff may be strapped
-  behind the rear shoulder, but the forward hand and Relic socket remain clear.
+  behind the rear shoulder. The forward palm remains readable as the future
+  Loomseed anchor.
 - Expression: curious and determined through eye angle, one small neutral mouth,
   optional minimal paired stitched eyebrows, and forward body lean; exactly two
   glossy black bead eyes and no nose, extra eye, or unrelated facial marks.
@@ -290,8 +406,8 @@ one complete cute handcrafted crochet fantasy game character, an angular Knotkin
 Wizard acceptance:
 
 - the rounded crochet-doll anatomy and blue/gold Wizard identity remain readable,
-- the upward-facing cupped palm can align to the shared socket without covering
-  an eye,
+- the upward-facing cupped palm can align to the Loomseed anchor without
+  covering an eye,
 - the pointed star hat leaves the face visible and the two feet remain separate,
 - staff, belt, and tassels stay inside motion-safe bounds and do not read as a
   realistic weapon,
@@ -406,17 +522,19 @@ paused candidate cannot silently become the reference image. The
 replacement master remains one isolated effect-free object; the complete spell
 is expressed later through separate derivatives:
 
-- **held/formation:** loose strands gather and the knot levitates immediately
-  above the Wizard's approved cupped-palm socket;
-- **projectile:** the compact tensioned knot travels with only a short taut
+- **held Loomseed:** a calm, permanently held blue-and-gold focus is
+  deterministically composed at the Wizard's approved palm anchor;
+- **formation:** loose strands gather at or just beyond the Loomseed and make a
+  smaller temporary cast knot; the held Loomseed does not leave the Wizard;
+- **projectile:** that compact temporary knot travels with only a short taut
   thread-tail supplied by a separate trail asset; and
 - **impact:** the knot rapidly unwinds into readable loops that tug at Stitching,
   without implying fire, a large blast radius, or a secondary status effect.
 
-The Wizard animation remains Relic-free and must preserve an empty, stable palm
-for these overlays. This spell grammar changes presentation assets only; range,
-damage, collision, replay, and server authority remain unchanged until the
-separate v3 ruleset gate.
+The approved source master remains Relic-free, but its deterministic Wizard
+presentation derivative may hold the permanent Loomseed. This spell grammar
+changes presentation assets only; range, damage, collision, replay, and server
+authority remain unchanged until the separate v3 ruleset gate.
 
 ## Brief: Threadball
 
@@ -433,8 +551,9 @@ separate v3 ruleset gate.
   luminous gold NIM Thread interior, with visible soft fibers and a balanced
   circular silhouette. It must feel energized from within rather than loosely
   wound or electrically surrounded.
-- Planned derivatives from the approved master: 48x48 UI icon, 36x36 held
-  sprite, 28x28 projectile. The simple trail and impact remain separately
+- Planned derivatives from the approved master: 48x48 UI icon, a calm 36x36
+  permanent Loomseed sprite, and a smaller 28x28 temporary projectile. The
+  simple trail and impact remain separately
   reviewed derivatives and may not imply a larger damage radius.
 
 Historical exact SD 1.5 positive prompt, superseded for B3A:
@@ -558,8 +677,8 @@ or hit detection.
 | Settings | 1024x1024, batch 1, 4 FLUX.2 scheduler steps, CFG 1, Euler |
 | Reference input | none; no historical Patch output, Wizard, Threadball, Gemini concept, or external artwork may be staged or conditioned on |
 | Output location | external `WormsPortFlux2KleinText` Comfy output prefix only |
-| Current state | Cloud and Terrain Top are source-master-approved with no runtime path; Terrain Top is 256x64 and has an exact three-copy horizontal repeat proof, but no product path, atlas, or gameplay integration |
-| Sequencing | Cloud and Terrain Top are closed; Terrain Interior is separately preflighted, reviewed, and continued only after explicit authorization |
+| Current state | Cloud and Terrain Top are source-master-approved with no runtime path; Terrain Top is 256x64 and has an exact three-copy horizontal repeat proof, but no product path, atlas, or gameplay integration. Terrain Interior is rejected and the Patch family is paused. |
+| Sequencing | Cloud and Terrain Top are closed; Terrain Interior's single request is consumed and rejected. No retry or next Patch request is authorized. |
 | Stop rule | stop the family on a component/workflow/service/queue failure, rejected candidate, or missing deterministic-normalization plan; no batch, seed shopping, reference edit, prompt repair, or automatic next request |
 
 The shared exclusion set is: character, creature, face, hands, Relic, weapon,
@@ -658,14 +777,11 @@ in `255.203` seconds, producing untouched external `1024x1024` RGB24 output
 `98091C738D0E226FCAFA60EFA00BB4F63A503723CC310726E7787FEC702250F9`). A
 non-promotional 48px whole-canvas review copy is external only (5,304 bytes,
 SHA-256 `2CB5BEF4B1F0F28403565384FD74929E191D0BB57F4957D3637DC1A3E3DE1D3E`).
-The candidate has a large directional diamond/quilt seam pattern, so it does
-not independently pass the uniform no-seam/no-direction acceptance check; the
-project owner must make the final visual decision. No normalizer, crop, source
-master, product-manifest entry, runtime path, or further generation is
-authorized while that decision is pending. If accepted, a later narrow gate must
-freeze and test its deterministic central crop/edge treatment and 3x3 repeat
-test; if rejected, the Patch family pauses. Passing a source candidate never
-approves C integration.
+The candidate has a large directional diamond/quilt seam pattern and was
+rejected by the project owner: it fails the uniform no-seam/no-direction
+acceptance check. The Patch family is paused. No normalizer, crop, source master,
+product-manifest entry, runtime path, or further generation is authorized.
+Passing a source candidate never approves C integration.
 
 ## WP-015B2 Handoff
 

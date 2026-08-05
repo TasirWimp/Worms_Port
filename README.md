@@ -288,11 +288,14 @@ white-matte normalization produced source master
 `assets/masters/environment/patch-01/terrain/patch-01-terrain-top-source-master-v1.png`
 (`41511E63...7897`), with a three-copy horizontal repeat proof whose edge
 difference is zero. It has no runtime path. The one fresh Terrain Interior
-request completed as external candidate `98091C73...50F9` and is pending owner
-review; it has no normalizer, source master, product-manifest entry, runtime
-path, or retry authorization. WP-015B3B separately admits a Wizard-first animation
-route, and B3C produces one Wizard inventory that WP-015C reuses for both the
-player and the AI Loomkeeper. A
+request was rejected as external candidate `98091C73...50F9` for visible
+directional quilt seams. The Patch family is paused; it has no normalizer, source
+master, product-manifest entry, runtime path, or retry authorization. WP-015B3B
+retains two rejected AutoSprite pilots as external evidence and freezes a
+deterministic Wizard presentation: a permanent held Loomseed and a separate
+temporary cast Threadball. B3C may create those exact approved derivatives for
+one Wizard presentation that WP-015C reuses for both the player and the AI
+Loomkeeper. A
 distinct Loomkeeper asset belongs to the wider character roster in WP-015D.
 WP-015C remains integration-only and begins only when the simplified vertical-
 slice inventory is manifest-approved. The Celestial Spinning Mill, Worldweave,

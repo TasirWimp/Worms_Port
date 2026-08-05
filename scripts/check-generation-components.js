@@ -226,7 +226,7 @@ const reviewedProfileContracts = new Map([
     smokeTool: 'generate_image'
   }],
   ['flux2-klein', {
-    state: 'wizard_threadball_cloud_terrain_top_masters_terrain_interior_candidate_pending_owner_review',
+    state: 'wizard_threadball_cloud_terrain_top_masters_terrain_interior_rejected_patch_paused',
     modelComponents: reviewedFluxModelComponents,
     workflowComponents: [
       'wormsport-flux2-klein-text-to-image-workflow',
@@ -403,7 +403,7 @@ const reviewedProfileContracts = new Map([
       sampler: 'euler',
       reference_input: 'none',
       max_requests: 1,
-      status: 'consumed_owner_review_pending',
+      status: 'consumed_rejected_contract_violation',
       requests_consumed: 1,
       prompt_id: 'db813267-25e6-4bef-ba14-ea8b41d491c6',
       runtime_seconds: 255.203,
@@ -472,6 +472,8 @@ const reviewedProfileContracts = new Map([
       'db813267-25e6-4bef-ba14-ea8b41d491c6',
       '255.203',
       'visible large diagonal/diamond quilt seams',
+      'project owner rejected it',
+      'The Patch family is paused.',
       'No crop, normalizer, source-master promotion, asset-manifest entry, runtime integration, or further generation is authorized.'
     ]
   }]

@@ -8,14 +8,19 @@ Phaser/Socket.IO stack.
 ## Execution Pointer
 
 - Active target: mobile-first single-player Nimiq Pay competition release.
-- Active work package: **WP-015B3A shared companion masters — Terrain Top has one
-  approved source master; Terrain Interior has one candidate pending owner review**. WP-015B2H completed on 2026-08-04 and approved
+- Active work package: **WP-015B3B deterministic Loomseed presentation contract
+  — documented; implementation remains deferred to B3C:**
+  both AutoSprite pilots remain rejected external evidence. The owner superseded
+  the empty-palm overlay condition with a permanent held Loomseed and a separate
+  temporary cast Threadball. B3B now freezes that deterministic presentation
+  contract before B3C implementation. WP-015B2H completed on 2026-08-04 and approved
   exact 512x512 RGBA Wizard source master
   `assets/masters/characters/knotkin/wizard/knotkin-wizard-source-master-v1.png`,
   SHA-256
   `7AF4864E00C7206A05684312916092C6881127F921FA7CEA01524899093318A9`,
-  with ground pivot `(256,451)` and visible cupped-palm socket `(407,228)`.
-  It has no `runtime_path` and authorizes no animation or integration.
+  with ground pivot `(256,451)` and visible cupped-palm Loomseed
+  anchor/emission origin `(407,228)`. It has no `runtime_path` and authorizes
+  no derivative, animation, or integration.
 - Existing external Threadball candidate
   `2BAE664F7E5A862BCB53B55A68071580485CE040A89650C68EC6FA398F4089EB`
   is paused as historical structure evidence: it reads as an ordinary yarn ball
@@ -38,17 +43,20 @@ Phaser/Socket.IO stack.
   Owner-approved Terrain Top source `BE5EB2E7...2B22` now has deterministic
   256x64 master `41511E63...7897`, after frozen crop, uniform scale, and a
   three-copy horizontal repeat proof with zero edge difference. It has no
-  runtime path. Terrain Interior completed its separate fresh-preflighted request
-  as external candidate `98091C73...50F9`, pending owner review only. FLUX outputs
+  runtime path. Terrain Interior's separate fresh-preflighted candidate
+  `98091C73...50F9` was rejected for its directional quilt seam pattern, pausing
+  the Patch family. FLUX outputs
   are textile source imagery, never a promise of tile
   seams or collision geometry; deterministic later normalizers must prove the
   Cloud alpha and terrain repeat tests. No distinct Loomkeeper, batch, animation
   upload, source-master promotion, or runtime integration belongs in B3A at this
   gate.
-- Following gates: **WP-015B3B** separately admits one Wizard-first animation
-  route; **WP-015B3C** completes one manifest-approved Wizard inventory reused
-  by both combatants plus the Threadball formation/held/flight/impact spell
-  family; **WP-015C** then performs integration only. The gameplay
+- Following gates: **WP-015B3B** records the failed external-route evidence and
+  freezes the deterministic Loomseed presentation contract; **WP-015B3C**
+  creates and reviews one manifest-approved Wizard root presentation reused by
+  both combatants, with a permanent held Loomseed and the separate temporary
+  Threadball formation/flight/impact spell family; **WP-015C** then performs
+  integration only. The gameplay
   AI remains the Loomkeeper, but its first-slice presentation is the same Wizard
   asset as the player. The distinct Loomkeeper moves to WP-015D with Thief,
   Warrior, and the other roster assets. D remains blocked until the assembled C
@@ -176,11 +184,33 @@ Phaser/Socket.IO stack.
   byte-for-byte. The planned coordinate stop rule amended only socket metadata
   from the superseded angular `(341,293)` to the actual rounded-body palm
   `(407,228)`; pivot `(256,451)` and uniform placement remain intact.
-- Next bounded action: continue only **WP-015B3A** with owner visual review of
-  exact Terrain Interior candidate `98091C73...50F9`. No normalizer, crop,
-  source-master promotion, runtime path, or further request is authorized before
-  explicit acceptance; rejection pauses the Patch family. No Threadball, Cloud,
-  Terrain Top, or Terrain Interior retry is authorized.
+- Next bounded action: implement the separately reviewed **B3C deterministic
+  Loomseed presentation** only after its exact composition config and manifest
+  gate are frozen. The first Turbo/Budget preset-Idle pilot was exported as
+  external sheet `6EA23DEE...4C718` and rejected because it lowered/remade the
+  raised cupped palm. The documented free-tier Custom successor
+  `Palm-preservation idle` also failed: its first 256px frame replaces the empty
+  palm with a large blue woven basket/cup-like object, so it cannot establish
+  the intentional permanent Loomseed presentation. Both account pilots are
+  external rejected evidence; no further AutoSprite generation, paid pose
+  control, source re-upload, normalizer, runtime path, or asset promotion is
+  authorized. B3C may instead create a static deterministic Loomseed derivative
+  at `(407,228)`, with a separate temporary Threadball formed and launched from
+  its emission origin; it must not use either rejected pilot's pixels, pose, or
+  conditioning. Terrain Interior candidate `98091C73...50F9`
+  is rejected and the Patch family is paused: no normalizer, crop, source-master
+  promotion, runtime path, or further Patch request is authorized. No Threadball,
+  Cloud, Terrain Top, or Terrain Interior retry is authorized.
+  Initial due diligence on 2026-08-04 finds AutoSprite.io available for custom
+  animation and spritesheet downloads. Its 2025-09-18 terms retain user input
+  and output rights subject to input/third-party rights and state no training on
+  user content; its privacy policy retains uploaded inputs/outputs only as long
+  as needed but gives no fixed period, while its terms disclaim non-infringement
+  and identify third-party inference vendors without an exact model/version.
+  Both AutoSprite pilots remain externally quarantined and retained in the
+  account temporarily. The Custom successor consumed the sole further request
+  and failed its first-frame socket review, ending the route. Neither pilot can
+  approve a runtime asset.
   Distinct Loomkeeper production, animation,
   runtime integration, roster completion, and further Wizard generation remain
   outside that slice.
@@ -2396,7 +2426,7 @@ Sequential delivery slices:
   - **WP-015B1 Vertical-slice briefs and deterministic generation contract —
     complete 2026-08-02:** freeze Wizard, Loomkeeper, Threadball, and first-Patch
     briefs, prompts, negative constraints, seeds,
-    anatomy/baseline/held-Relic sockets, projectile origins, animation triggers,
+    anatomy/baseline/historical held-Relic sockets, projectile origins, animation triggers,
     and acceptance checks in `docs/asset-briefs/wp-015b1-vertical-slice.md`.
     B2G later amends the anatomy and current FLUX prompt while retaining the
     baseline/socket/animation contract. This slice generated no media.
@@ -2513,35 +2543,37 @@ Sequential delivery slices:
       deterministically produced 256x64 source master `41511E63...7897` through
       frozen crop, uniform scale, and exact horizontal repeat proof; no runtime
       path is assigned. Terrain Interior has consumed its separately preflighted
-      request as external candidate `98091C73...50F9`, pending owner review.
+      request as external candidate `98091C73...50F9`, then was rejected for its
+      directional quilt seam pattern; the Patch family is paused.
       Each
       source imagery gate needs fresh
       preflight, review, and explicit continuation; it does not claim seamless
       tiling, which remains a deterministic-normalization proof. Stop on failure
       instead of starting a batch. Do not generate a distinct Loomkeeper in B3A.
-    - **B3B animation-route admission:** after the normalized Wizard is approved,
-      review the current availability, commercial terms, privacy/input-retention,
-      output rights, export format, component/service identity, and reproducible
-      evidence surface of AutoSprite or a proposed alternative. Upload nothing
-      until that route passes. Run one Wizard-only technical and visual pilot;
-      if unavailable, legally unclear, or visually unstable, stop and refine a
-      deterministic alternative rather than silently changing services. The
-      pilot must preserve the approved empty cupped palm and a stable overlay
-      socket; it must not bake Threadball or another Relic into Wizard frames.
-    - **B3C playable derivative inventory:** only after the Wizard pilot passes,
-      produce and normalize one minimum Wizard animation inventory for reuse by
-      both the player and AI Loomkeeper, plus the Threadball formation/held/
-      projectile/short-tail/impact family, Patch background/cloud/repeatable
-      terrain materials, and shared damage/result effects needed by the C
-      exchange. The Threadball sequence must show loose strands gathering above
-      the palm, compressed flight, and rapid non-graphic unspooling against
-      Stitching without implying a new radius or status effect. Record atlas
-      metadata, pivots, sockets, release frame, parent hashes, phone-size review,
+    - **B3B deterministic Loomseed-presentation admission:** preserve the two
+      rejected AutoSprite pilots as external evidence and make no further
+      service request. Freeze the source parents, palm anchor, root-transform
+      rule, and three Fire phases for a permanent held Loomseed and separate
+      temporary cast Threadball. The exact approved Threadball source master is
+      the only permitted visual parent; the rejected basket/cup-like frame is
+      neither an input nor a product candidate. This documentation gate creates
+      no asset or runtime path.
+    - **B3C playable derivative inventory:** after B3B's deterministic contract
+      is frozen, produce and normalize one minimum Wizard root presentation for
+      reuse by both the player and AI Loomkeeper, plus the permanent Loomseed,
+      temporary Threadball formation/projectile/short-tail/impact family, Patch
+      background/cloud/repeatable terrain materials, and shared damage/result
+      effects needed by the C exchange. The Threadball sequence must show loose
+      strands gathering at or beyond the held Loomseed, compressed flight, and
+      rapid non-graphic unspooling against Stitching without implying a new
+      radius or status effect. Record composition metadata, pivots, Loomseed
+      anchor, aim-direction emission rule, parent hashes, phone-size review,
       manifest decisions, and the 1.5 MB media budget. C stays blocked until
       every required runtime file is approved.
 - **WP-015C First playable visual slice — integration only:** load the approved
-  Wizard atlas for both the player and the AI Loomkeeper, attach the approved
-  Threadball derivatives at the recorded socket/projectile origin, compose Patch
+  Wizard presentation for both the player and the AI Loomkeeper, compose the
+  approved permanent Loomseed at its recorded anchor, launch the approved
+  temporary Threadball derivatives from its emission origin, compose Patch
   decorative layers over code-owned terrain/collision, and bind presentation
   states only to existing authoritative events. Bind gathering/levitation to the
   existing aim/fire preparation, release to the authoritative release frame,
@@ -2625,8 +2657,11 @@ previous plan as follows:
    experiments and B2G anatomy reset are separately recorded decisions; they do
    not rewrite this gate result.
 
-WP-015B1 remains normative for baseline, sockets, projectile origin, animation
-triggers, environment decomposition, and source boundaries. WP-015B2G
+WP-015B1 remains normative for baseline, source-palm coordinates, historical
+projectile metadata, environment decomposition, and source boundaries. The
+B3B Loomseed amendment supersedes B1's empty-palm/held-Relic presentation rule
+while retaining the actual B2H palm coordinate as the anchor/emission origin.
+WP-015B2G
 supersedes its angular product anatomy and historical SD 1.5 prompt wording.
 Those SD 1.5 prompts, seeds, CFG, sampler, scheduler, and workflow hashes remain
 the immutable historical contract for the rejected run. A different model must
@@ -2692,10 +2727,11 @@ Character master contract:
   padding,
 - consistent body proportions, costume topology, lighting, palette, and
   handedness across all poses,
-- stable held-Relic socket and projectile-origin metadata shared across basic
-  aim and fire states,
-- neutral locomotion masters avoid baking a selected Relic into every frame;
-  unavoidable Relic-specific animation is a separately tracked derivative,
+- stable Wizard Loomseed anchor and aim-direction emission metadata across
+  basic aim and Fire states,
+- the approved source master remains empty-handed, while its separately tracked
+  deterministic presentation derivative may permanently compose the Loomseed;
+  the temporary cast Threadball remains independent,
 - runtime candidate normalized to a 192x192 frame with pivot at 50% horizontal
   and 88% vertical; a different size or pivot requires recorded phone-readability
   evidence and a contract update.

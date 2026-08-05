@@ -71,11 +71,13 @@ Worldweave; **Restitching** forms them again. This connects setting, health,
 combat, defeat, and recovery through one material story.
 
 Relics focus this elemental Thread so any Calling can use the same public combat
-rules. Wizards make the underlying magic most visible: they draw loose strands
-from the Worldweave, tension or knot them into a spell, and release the stored
-force. A hit disrupts the opponent's Stitching rather than inflicting realistic
-ballistic, burning, or drowning injury. Later Callings may handle the same
-Relics differently in animation, but receive no hidden mechanical advantage.
+rules. Wizards make the underlying magic most visible: a Wizard's permanently
+held **Loomseed** anchors the Calling to the Worldweave, draws loose strands
+into a temporary cast knot, and remains with the Wizard when that smaller spell
+is released. A hit disrupts the opponent's Stitching rather than inflicting
+realistic ballistic, burning, or drowning injury. Later Callings may handle the
+same Relics differently in animation, but receive no hidden mechanical
+advantage.
 
 ## Competition Release Mode
 
@@ -143,6 +145,11 @@ constants, algorithms, code, or assets.
   over-tensioned wooden spool releases warm ember-like thread energy and rapid
   unspooling force, giving the highest Stitching damage at the lowest range.
 
+For the Wizard's first presentation only, the Threadball family has two visual
+roles with one gameplay identity: the permanent calm Loomseed at the raised
+palm, and the smaller temporary cast Threadball that forms and launches from
+it. The Loomseed is not consumed, detached, or a second selectable Relic.
+
 Cloudwater establishes water in the setting but is not a fourth release Relic.
 A later water-focused Relic may explore flowing, weighting, dyeing, or felting
 imagery only after the basic assembled game is tested and its mechanics receive
@@ -198,8 +205,8 @@ All Knotkin share one readable species silhouette:
 - a compact rounded crochet-doll head and softly oval body,
 - short soft limbs whose silhouettes remain separate from the torso,
 - two separate stubby feet resting on one readable baseline,
-- a simple crochet mitten hand that can present a separate Relic from an
-  upward-facing cupped palm,
+- a simple crochet mitten hand with a readable upward-facing cupped palm; a
+  Wizard may permanently cradle its Calling focus there,
 - exactly two oversized glossy black bead eyes,
 - one small readable mouth suitable for expression variants, and
 - optional minimal stitched eyebrows when they strengthen a friendly
@@ -503,21 +510,25 @@ WP-015B2H approves this exact 512x512 RGBA file as the Wizard source master:
   `7AF4864E00C7206A05684312916092C6881127F921FA7CEA01524899093318A9`,
 - exact opaque B2G parent SHA-256:
   `40F9E81254A0792B967889808BD8BD8DE33DBDE5EAB7C4CBB1B336DD02BC54A5`,
-- ground pivot `(256,451)`, visible cupped-palm Relic socket `(407,228)`,
-- 192px review pivot/socket `(96,169)` / `(153,85)`, and
+- ground pivot `(256,451)`, visible cupped-palm Loomseed anchor/emission origin
+  `(407,228)`,
+- 192px review pivot/anchor `(96,169)` / `(153,85)`, and
 - no runtime path, animation admission, atlas placement, or collision authority.
 
 The source's rounded body and long raised arm cannot meet the superseded B1
 socket `(341,293)` at the retained baseline without shrinking the character to
 about 297 pixels tall. B2H therefore preserves the selected anatomy with one
-uniform full-height transform and moves metadata to the actual palm. The
-normalizer removes the white background and faint floor shadow without repaint,
-fill, reconstruction, or warp. Exact-output review passed the two-eye/one-mouth
-Wizard identity, empty upward palm, phone-size read, dark/light alpha edge, and
-third-party-similarity boundary. This source master is the visual and geometry
-reference for the first animation route and for later rounded-family character
-work; later derivatives still require independent manifest entries and runtime
-paths.
+uniform full-height transform and records the actual palm coordinate. The
+source master intentionally remains empty-handed: a later deterministic
+presentation derivative may compose the approved Threadball source as the
+permanent Loomseed at that anchor, while a separate temporary Threadball spell
+is emitted beyond it. The normalizer removes the white background and faint
+floor shadow without repaint, fill, reconstruction, or warp. Exact-output
+review passed the two-eye/one-mouth Wizard identity, empty upward palm,
+phone-size read, dark/light alpha edge, and third-party-similarity boundary.
+This source master is the visual and geometry reference for the first
+presentation route and for later rounded-family character work; later
+derivatives still require independent manifest entries and runtime paths.
 
 The first production interpretation is frozen in
 `asset-briefs/wp-015b1-vertical-slice.md`. That contract translates the lineup

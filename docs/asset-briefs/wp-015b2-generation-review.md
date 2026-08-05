@@ -1665,7 +1665,7 @@ Patch request, animation, atlas, or runtime integration is authorized.
 
 ## WP-015B3A Patch Source-Contract Gate
 
-Status: **Terrain Top source master approved; Terrain Interior has one external candidate pending owner review**.
+Status: **Terrain Top source master approved; Terrain Interior rejected and Patch family paused**.
 
 The historical SD 1.5 Patch cloud, terrain-top, and terrain-interior outputs are
 rejected external evidence only. Their prompts and seeds cannot be retried under
@@ -1724,6 +1724,6 @@ untouched external 1024x1024 RGB24 output `WormsPortFlux2KleinText_00009_.png`
 external non-promotional 48px review is 5,304 bytes, SHA-256
 `2CB5BEF4B1F0F28403565384FD74929E191D0BB57F4957D3637DC1A3E3DE1D3E`. The
 candidate visibly contains large diagonal/diamond quilt seams, a rejection
-example under the frozen contract; owner review is pending. It has no
-normalizer, source-master approval, asset-manifest entry, runtime path, or retry
-authorization. Rejection pauses the Patch family.
+example under the frozen contract. The project owner rejected it, so the Patch
+family is paused. It has no normalizer, source-master approval, asset-manifest
+entry, runtime path, or retry authorization.

@@ -1632,37 +1632,53 @@ integrating.
    with no runtime path. Owner-approved Terrain Top `BE5EB2E7...2B22` has
    deterministic 256x64 source master `41511E63...7897` through frozen crop,
    uniform scale, and horizontal repeat proof, with no runtime path. Terrain
-   Interior completed its one separately preflighted request as external candidate
-   `98091C73...50F9`, which is owner-review-gated and has no normalizer, master,
+   Interior candidate `98091C73...50F9` was rejected for its directional quilt
+   seam pattern; the Patch family is paused and it has no normalizer, master,
    runtime path, or retry authorization. Those requests are strictly sequential, and
    each output must be reviewed before the next gate. Treat FLUX output as
    textile source imagery only; a later frozen deterministic normalizer must
    prove Cloud alpha handling and terrain repeatability. Failure pauses the
    family; it does not authorize seed shopping or a batch. Do not generate a
    distinct Loomkeeper in B3A.
-2. **B3B animation-route admission:** only an approved normalized Wizard master
-   may be considered for upload. Reverify AutoSprite or an alternative for
-   service identity, commercial terms, input retention/privacy, output rights,
-   model/component disclosure where applicable, accepted dimensions, state and
-   frame control, export format, stable character identity, and durable job/hash
-   evidence. Upload nothing until those checks pass. Run one Wizard-only pilot
-   covering the minimum animation contract. Stop if the service is unavailable,
-   the rights/evidence boundary is unclear, or identity/socket/baseline drift is
-   not controllable; refine an alternative as a separate planning gate. Keep the
-   approved cupped palm empty and its overlay socket stable; no animation frame
-   may bake in Threadball or another selected Relic.
-3. **B3C playable derivatives:** after the Wizard pilot passes, produce one
-   Wizard animation inventory and approve it for reuse by both the player and AI
-   Loomkeeper. Also produce the Threadball formation/held/projectile/short-tail/
-   impact files, Patch background/cloud/repeatable terrain materials, and minimum
-   shared damage/result effects. The spell family shows loose fibers gathering
-   above the palm, a hovering compressed knot, compact flight, and rapid
-   non-graphic unspooling against Stitching; it must not imply fire, a larger
-   damage radius, or another unimplemented effect. Normalize every frame and
-   layer deterministically; record pivots, sockets, projectile origin, release
-   frame, durations, parent/output hashes, atlas metadata, exact-file approvals,
-   phone-size review, and media budget. Distinct Loomkeeper production remains
-   deferred to WP-015D.
+2. **B3B deterministic Loomseed-presentation admission:** the approved
+   empty-handed Wizard source master may not be uploaded or regenerated again.
+   The two completed AutoSprite pilots are rejected external evidence: the first
+   remade/lowered the raised palm and the second substituted a basket/cup-like
+   object. Retain them only for traceability; do not use their pixels, poses, or
+   prompts as a parent, conditioning input, normalizer target, or product asset.
+   Freeze a deterministic composition contract instead: the approved Threadball
+   source master is the only possible parent for a calm permanent Loomseed at
+   the reviewed palm anchor, and a smaller temporary cast Threadball forms at or
+   just beyond that anchor before launch. No further AutoSprite request, paid
+   pose control, animation-service substitution, source re-upload, or source
+   repair is authorized.
+   AutoSprite's current public terms/privacy review on 2026-08-04/05 permits only
+   quarantined pilots: output rights and no-training are stated, but retention is
+   not fixed, non-infringement is disclaimed, and exact inference-model/vendor
+   identity is not fully published. The first preset-Idle pilot fails because it
+   lowers/remakes the raised cupped palm, so its exported sheet
+   `6EA23DEE...4C718` remains external rejected evidence. Its sole documented
+   free-tier Custom successor `Palm-preservation idle` also fails its first
+   editable frame by replacing the empty palm with a large blue woven
+   basket/cup-like object. Both pilots are retained temporarily in the account at
+   the owner's direction, but neither is an input or product candidate. No further
+   AutoSprite generation, paid pose control, or route repair is authorized. No
+   pilot can promote a runtime asset without later exact-file, IP, normalization,
+   and manifest review.
+3. **B3C playable derivatives:** after the deterministic B3B contract is
+   frozen, compose and review one Wizard root presentation for reuse by both the
+   player and AI Loomkeeper. Produce the permanent Loomseed plus the temporary
+   Threadball formation/projectile/short-tail/impact files, Patch
+   background/cloud/repeatable terrain materials, and minimum shared
+   damage/result effects. The spell family shows loose fibers gathering at or
+   beyond the Loomseed, a smaller temporary compressed knot, compact flight, and
+   rapid non-graphic unspooling against Stitching; it must not imply fire, a
+   larger damage radius, or another unimplemented effect. The intact source
+   master may receive only deterministic root transforms; no generated character
+   frame or hand modification is part of this route. Record pivots, Loomseed
+   anchor, aim-direction emission rule, Fire phases, parent/output hashes,
+   exact-file approvals, phone-size review, and media budget. Distinct
+   Loomkeeper production remains deferred to WP-015D.
 
 WP-015C remains blocked until the manifest-approved inventory can express one
 complete exchange without generation, manual source repair, or unapproved test
@@ -1730,11 +1746,11 @@ Calling vocabulary. Both are superseded for anatomy.
 ### WP-015B1 Frozen Vertical-Slice Contract
 
 The normative Wizard, Loomkeeper, Threadball, and first-Patch briefs are in
-`docs/asset-briefs/wp-015b1-vertical-slice.md`. They freeze exact positive and
-negative prompts, primary seeds, approved workflow settings, character pivot,
-baseline, held-Relic socket, projectile-origin offset, animation frame counts
-and triggers, environment decomposition, and family acceptance checks before
-candidate generation. B1 generates and promotes no media.
+`docs/asset-briefs/wp-015b1-vertical-slice.md`. They preserve historical
+prompts, primary seeds, workflow settings, character pivot, baseline, and
+projectile metadata, while the B3B Loomseed amendment supersedes the
+empty-palm/held-Relic presentation rule with a palm anchor and aim-direction
+emission rule. B1 generates and promotes no media.
 
 The complete multi-character lineup is a visual and review reference, not the
 ordinary VAE starting image. B2 begins with one isolated text-to-image candidate
@@ -1753,7 +1769,7 @@ layer, effect variant, or balance dimension before anything is assembled.
 The required basic inventory is:
 
 - four character masters with common anatomy, baseline, scale, handedness,
-  held-Relic socket, and projectile-origin contracts,
+  source focus-anchor, and projectile-origin contracts,
 - only the animation states currently triggered by the playable loop,
 - one icon, held sprite, projectile, simple trail, and simple impact for each
   of Threadball, Needlepoint, and Spoolburst,
@@ -1788,9 +1804,11 @@ expression-ready mouth, Calling costume topology, body proportions, palette,
 lighting direction, and handedness must remain stable. One intentional stitched
 eyebrow above each eye is optional when it improves friendly expression. No
 nose, extra eye, duplicated mouth, or unrelated facial feature is introduced.
-Every pose also obeys a common
-held-Relic socket and projectile-origin contract so the same separate Relic
-assets can attach consistently without becoming collision authority.
+Every pose also obeys a common focus-anchor and projectile-origin contract so
+separate visual effects can attach consistently without becoming collision
+authority. The current Wizard route is the specific exception to a generic
+interchangeable held-Relic model: it composes a permanent Loomseed at the
+anchor and launches a distinct temporary Threadball.
 
 Relics and effects are separate transparent asset families. Each of the three
 starting Relics receives a phone-readable icon, held sprite, projectile,
@@ -1846,17 +1864,17 @@ Use this exact handoff for each visual asset family:
 5. **Deterministic master normalization and approval:** preserve the untouched
    generator output externally. Through a versioned script and configuration,
    produce a real-alpha isolated master with reviewed crop, padding, baseline,
-   pivot, and held-Relic socket. Review exact-output IP/provenance, visual
+   pivot, and source focus-anchor. Review exact-output IP/provenance, visual
    identity, alpha edges, and phone readability. Only the exact normalized
    master may receive source-asset manifest approval; do not assign a runtime
    path until a runtime derivative is ready.
-6. **Animation-route admission and export:** after the route-specific service,
-   license, privacy, output-rights, and evidence review passes, upload only the
-   approved isolated character master. Reuse one character ID for its Calling,
-   request the normative animation states, and record character, pose, job,
-   video, spritesheet, parent, and download hashes. AutoSprite is the planned
-   route, not an already approved dependency. If it is unavailable or fails the
-   review, stop animation production rather than silently changing generators.
+6. **Presentation-route admission:** use the admitted deterministic root
+   presentation where it is sufficient. It may compose only approved derivative
+   parents at recorded anchors and may not alter source pixels. Any later
+   animation service must separately pass its license, privacy, output-rights,
+   identity-control, and durable-evidence review before uploading the approved
+   isolated character master. AutoSprite's B3B route is closed after two failed
+   pilots and cannot be retried or treated as an approved dependency.
 7. **Deterministic runtime normalization:** normalize runtime frame size, pivot,
    baseline, padding, alpha, naming, timing, and atlas metadata through a
    versioned script and configuration hash. Preserve every untouched service
@@ -1874,21 +1892,23 @@ Use this exact handoff for each visual asset family:
 
 ### Basic Animation Contract
 
-Every WP-015 character atlas uses the same basic state names and baseline. The
-frame ranges are intentionally small so integration feedback arrives before a
-large animation batch is produced:
+The initial Wizard route does not require a generated character atlas. It uses
+the intact approved source master with deterministic root transforms and a
+separately composed permanent Loomseed; all presentation transforms inherit the
+same root and cannot move authoritative actor position. A later raster-animation
+route requires a separate admission gate. The initial state contract is:
 
 | State | Frames | Loop | Required behavior |
 | --- | ---: | --- | --- |
-| `idle` | 4-8 | yes | Minimal breathing/thread motion; no silhouette drift |
-| `move` | 6-8 | yes | Stable baseline and readable short stride |
-| `aim_low` | 1 | holdable | Low trajectory pose with stable held-Relic socket |
-| `aim_mid` | 1 | holdable | Mid trajectory pose with stable held-Relic socket |
-| `aim_high` | 1 | holdable | High trajectory pose with stable held-Relic socket |
-| `fire` | 4-6 | no | Names the exact projectile release frame and origin |
-| `hit` | 3-4 | no | Cotton compression without anatomy mutation |
-| `unravel` | 6-8 | no | Non-graphic defeat ending in thread and fluff |
-| `victory` | 6-8 | yes | Compact celebration that stays inside padding |
+| `idle` | 1 source + root loop | yes | Minimal breathing/thread motion; Loomseed stays at its anchor |
+| `move` | 1 source + root loop | yes | Presentation follows authoritative movement without position drift |
+| `aim_low` | 1 source | holdable | Low trajectory pose with stable Loomseed anchor |
+| `aim_mid` | 1 source | holdable | Mid trajectory pose with stable Loomseed anchor |
+| `aim_high` | 1 source | holdable | High trajectory pose with stable Loomseed anchor |
+| `fire` | 3 effect phases | no | Glow, temporary Threadball formation, and launch from the emission origin |
+| `hit` | 1 source + root pulse | no | Cotton compression without anatomy mutation |
+| `unravel` | deferred | no | Non-graphic defeat ending in thread and fluff |
+| `victory` | deferred | yes | Compact celebration that stays inside padding |
 
 `jump_start` is deferred because the current command model has no jump action.
 Dedicated `fall` and `land` states remain reserved until the presentation layer
@@ -1896,12 +1916,12 @@ has a visible deterministic settling trigger. A later animation expansion must
 update this contract before production and cannot be inferred from unused
 placeholder state names.
 
-Generate right-facing source frames. Runtime mirroring is allowed only after a
-handedness and costume-asymmetry review. Otherwise produce and track a separate
-left-facing derivative. Start from 512x512 masters and normalize the first
-runtime candidate to 192x192 RGBA frames with a pivot at 50% horizontal and 88%
-vertical. Changing frame size, pivot, or baseline requires recorded in-engine
-phone-readability evidence and an update to the asset-family brief.
+The Fire sequence is `glow -> temporary formation -> launch`. Its temporary
+projectile starts from the root-transformed Loomseed emission origin and leaves
+the permanent held focus behind. Runtime mirroring is allowed only after a
+handedness and costume-asymmetry review. A later atlas must start from the
+512x512 master and receive its own normalized frame, pivot, baseline, and
+phone-readability review; it cannot be inferred from this procedural route.
 
 ### Runtime Naming And Placement
 
@@ -1916,11 +1936,12 @@ assets/product/ui/{callings,relics,reward}/
 assets/product/audio/{combat,result,reward}/
 ```
 
-Atlas frame names follow `<calling>/<state>/<zero-padded-frame>`. The atlas
-records frame rectangles, pivots, durations, loop hints, the held-Relic socket,
-the projectile origin, and the release frame for `fire`. Source masters,
-service downloads, rejected outputs, videos, workflows, and intermediate
-frames remain in ignored quarantine rather than the runtime tree.
+If an atlas is later admitted, frame names follow
+`<calling>/<state>/<zero-padded-frame>`. The B3C presentation configuration
+instead records root-transform settings, the Loomseed anchor, the
+aim-direction emission rule, and the Fire phases. Source masters, service
+downloads, rejected outputs, videos, workflows, and intermediate frames remain
+in ignored quarantine rather than the runtime tree.
 
 ### Asset Acceptance
 

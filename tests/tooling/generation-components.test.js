@@ -176,9 +176,9 @@ test('generation profiles reject arbitrary model, workflow, tool, and launch sel
   assert.match(validateGenerationComponents(policyInvalid).join('\n'), /profile selection must remain closed/);
 });
 
-test('FLUX profile preserves approved Wizard, Threadball, Cloud, Terrain Top, and the gated Terrain Interior candidate', () => {
+test('FLUX profile preserves approved Wizard, Threadball, Cloud, Terrain Top, and the rejected Terrain Interior record', () => {
   const profile = manifest.profiles.find((candidate) => candidate.id === 'flux2-klein');
-  assert.equal(profile.state, 'wizard_threadball_cloud_terrain_top_masters_terrain_interior_candidate_pending_owner_review');
+  assert.equal(profile.state, 'wizard_threadball_cloud_terrain_top_masters_terrain_interior_rejected_patch_paused');
   assert.deepEqual(profile.latest_review, {
     decision: 'source_master_approved',
     generation_work_package: 'WP-015B2G',
@@ -341,7 +341,7 @@ test('FLUX profile preserves approved Wizard, Threadball, Cloud, Terrain Top, an
     sampler: 'euler',
     reference_input: 'none',
     max_requests: 1,
-    status: 'consumed_owner_review_pending',
+    status: 'consumed_rejected_contract_violation',
     requests_consumed: 1,
     prompt_id: 'db813267-25e6-4bef-ba14-ea8b41d491c6',
     runtime_seconds: 255.203,
@@ -374,6 +374,8 @@ test('FLUX profile preserves approved Wizard, Threadball, Cloud, Terrain Top, an
   assert.match(profile.notes, /98091C738D0E226FCAFA60EFA00BB4F63A503723CC310726E7787FEC702250F9/);
   assert.match(profile.notes, /255\.203/);
   assert.match(profile.notes, /visible large diagonal\/diamond quilt seams/);
+  assert.match(profile.notes, /project owner rejected it/);
+  assert.match(profile.notes, /The Patch family is paused/);
   assert.match(profile.notes, /rejected/);
   assert.match(profile.notes, /WP-015B2F/);
   assert.match(profile.notes, /08CB26CE3FAC6605859F9C9B51331351F28F40A005F6A101B2E575D8A56C6AB8/);
@@ -458,7 +460,7 @@ test('FLUX profile preserves approved Wizard, Threadball, Cloud, Terrain Top, an
 
   const changedTerrainInteriorRequest = structuredClone(manifest);
   changedTerrainInteriorRequest.profiles.find((candidate) => candidate.id === 'flux2-klein')
-    .terrain_interior_authorized_request.status = 'consumed_source_master_approved';
+    .terrain_interior_authorized_request.status = 'consumed_owner_review_pending';
   assert.match(
     validateGenerationComponents(changedTerrainInteriorRequest).join('\n'),
     /exact Terrain Interior authorized generation request changed/
