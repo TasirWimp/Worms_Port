@@ -1,0 +1,88 @@
+{
+  "schema_version": 1,
+  "id": "wp-015b3c-wizard-loomseed-v1",
+  "work_package": "WP-015B3C",
+  "frozen_at": "2026-08-05",
+  "purpose": "Deterministically compose the approved Threadball source as the Wizard's permanent Loomseed, without altering either source master or creating a projectile derivative.",
+  "inputs": {
+    "wizard": {
+      "path": "assets/masters/characters/knotkin/wizard/knotkin-wizard-source-master-v1.png",
+      "sha256": "7AF4864E00C7206A05684312916092C6881127F921FA7CEA01524899093318A9",
+      "bytes": 195820,
+      "width": 512,
+      "height": 512,
+      "channels": 4
+    },
+    "threadball": {
+      "path": "assets/masters/relics/threadball/relic-threadball-source-master-v1.png",
+      "sha256": "608F490CEE2A7FA79F0EA47BF7B15A8E49685B7B1E65E5AE38E15A34B4CD9B6F",
+      "bytes": 90764,
+      "width": 256,
+      "height": 256,
+      "channels": 4
+    }
+  },
+  "boundaries": {
+    "allowed": [
+      "exact source verification",
+      "uniform Threadball resampling",
+      "fixed translation to the reviewed palm anchor",
+      "deterministic alpha composition with the Wizard above the Loomseed",
+      "deterministic review-size resampling"
+    ],
+    "blocked": [
+      "inference",
+      "manual painting",
+      "cloning",
+      "generative fill",
+      "Wizard hand or body modification",
+      "Threadball strand or core reconstruction",
+      "non-uniform scale",
+      "warp",
+      "projectile generation",
+      "animation",
+      "runtime integration"
+    ]
+  },
+  "geometry": {
+    "canvas": [512, 512],
+    "wizard_palm_anchor": [407, 228],
+    "threadball_visual_center": [128, 128],
+    "loomseed_uniform_scale_numerator": 1,
+    "loomseed_uniform_scale_denominator": 4,
+    "loomseed_translation": [375, 196],
+    "loomseed_center": [407, 228],
+    "loomseed_rendered_nominal_size": [64, 64],
+    "layer_order": ["wizard", "loomseed"],
+    "temporary_cast_emission_origin": [407, 228],
+    "temporary_cast_rule": "A later runtime-only cast effect forms at or just beyond this root-transformed origin and launches along the authoritative aim direction. It is not created by this composition.",
+    "source_pivot": [256, 451]
+  },
+  "resampling": {
+    "filter": "Mitchell-Netravali bicubic",
+    "b": 0.3333333333333333,
+    "c": 0.3333333333333333,
+    "sampling": "pixel-center inverse mapping",
+    "alpha": "premultiplied during filtering, straight RGBA in PNG",
+    "png": "8-bit non-interlaced RGBA, filter type 0, deterministic zlib level 9"
+  },
+  "review_backgrounds": {
+    "dark_navy": [31, 35, 70],
+    "warm_light": [247, 242, 231],
+    "contact_sheet_order": ["dark_navy", "warm_light"]
+  },
+  "outputs": {
+    "master": "knotkin-wizard-loomseed-presentation-master-v1.png",
+    "review_192": "knotkin-wizard-loomseed-presentation-master-v1-review-192.png",
+    "review_48": "knotkin-wizard-loomseed-presentation-master-v1-review-48.png",
+    "edge_review": "knotkin-wizard-loomseed-presentation-master-v1-edge-review.png",
+    "report": "knotkin-wizard-loomseed-presentation-master-v1.report.json",
+    "approved_master_path": "assets/masters/characters/knotkin/wizard/knotkin-wizard-loomseed-presentation-master-v1.png",
+    "expected_sha256": {
+      "master": "1CC252B45C93D2553AC733DAA6AA49D05D6351DCC85E61EA559ECED458C9419C",
+      "review_192": "278F68C821191F4C5FF4ED87959A86BAE64FA81B6FBB5C9F387D1CC839EAAA35",
+      "review_48": "45CF9C9D9D8C17B33E59E2A379E37732F2D737F442A558621E1D9F8DD32C10AB",
+      "edge_review": "BEE57171B2DF2D5FD9B3729C05D0D35528521B3B3A2A1D62C4F38E11D710D2F8"
+    }
+  }
+}

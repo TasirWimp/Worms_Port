@@ -18,6 +18,7 @@
     "check:compliance": "npm run check:asset-manifest && npm run check:generation-components && npm run check:import-boundary && npm run check:package-licenses && npm run check:work-packages && npm run check:clean-room",
     "asset:normalize:wizard": "node scripts/normalize-character-master.js",
     "asset:normalize:threadball": "node scripts/normalize-relic-master.js",
+    "asset:compose:wizard-loomseed": "node scripts/compose-wizard-loomseed-presentation.js",
     "asset:normalize:cloud": "node scripts/normalize-cloud-master.js",
     "asset:normalize:terrain-top": "node scripts/normalize-terrain-top-master.js",
     "check:types": "tsc -p server/tsconfig.json --noEmit && tsc -p client/tsconfig.json --noEmit",

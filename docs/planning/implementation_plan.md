@@ -8,19 +8,22 @@ Phaser/Socket.IO stack.
 ## Execution Pointer
 
 - Active target: mobile-first single-player Nimiq Pay competition release.
-- Active work package: **WP-015B3B deterministic Loomseed presentation contract
-  — documented; implementation remains deferred to B3C:**
+- Active work package: **WP-015B3C permanent Loomseed presentation
+  — initial source derivative complete; temporary cast effect and runtime integration remain:**
   both AutoSprite pilots remain rejected external evidence. The owner superseded
   the empty-palm overlay condition with a permanent held Loomseed and a separate
-  temporary cast Threadball. B3B now freezes that deterministic presentation
-  contract before B3C implementation. WP-015B2H completed on 2026-08-04 and approved
+  temporary cast Threadball. B3C now has an exact source-only Wizard-with-
+  Loomseed derivative; it has no runtime path. WP-015B2H completed on 2026-08-04 and approved
   exact 512x512 RGBA Wizard source master
   `assets/masters/characters/knotkin/wizard/knotkin-wizard-source-master-v1.png`,
   SHA-256
   `7AF4864E00C7206A05684312916092C6881127F921FA7CEA01524899093318A9`,
   with ground pivot `(256,451)` and visible cupped-palm Loomseed
   anchor/emission origin `(407,228)`. It has no `runtime_path` and authorizes
-  no derivative, animation, or integration.
+  no animation or integration. B3C's deterministic composition config
+  `wp-015b3c-wizard-loomseed-v1` now maps the exact Threadball source at that
+  anchor and produced approved source presentation master `1CC252B4...9419C`.
+  No temporary projectile, animation, or runtime derivative is authorized yet.
 - Existing external Threadball candidate
   `2BAE664F7E5A862BCB53B55A68071580485CE040A89650C68EC6FA398F4089EB`
   is paused as historical structure evidence: it reads as an ordinary yarn ball
@@ -51,12 +54,11 @@ Phaser/Socket.IO stack.
   Cloud alpha and terrain repeat tests. No distinct Loomkeeper, batch, animation
   upload, source-master promotion, or runtime integration belongs in B3A at this
   gate.
-- Following gates: **WP-015B3B** records the failed external-route evidence and
-  freezes the deterministic Loomseed presentation contract; **WP-015B3C**
-  creates and reviews one manifest-approved Wizard root presentation reused by
-  both combatants, with a permanent held Loomseed and the separate temporary
-  Threadball formation/flight/impact spell family; **WP-015C** then performs
-  integration only. The gameplay
+- Following gates: **WP-015B3B** records the failed external-route evidence;
+  **WP-015B3C** has completed the source-only permanent Loomseed composition
+  and next admits the separate temporary Threadball formation/flight/impact
+  family plus bounded root transforms; **WP-015C** then performs integration
+  only. The gameplay
   AI remains the Loomkeeper, but its first-slice presentation is the same Wizard
   asset as the player. The distinct Loomkeeper moves to WP-015D with Thief,
   Warrior, and the other roster assets. D remains blocked until the assembled C
@@ -184,9 +186,12 @@ Phaser/Socket.IO stack.
   byte-for-byte. The planned coordinate stop rule amended only socket metadata
   from the superseded angular `(341,293)` to the actual rounded-body palm
   `(407,228)`; pivot `(256,451)` and uniform placement remain intact.
-- Next bounded action: implement the separately reviewed **B3C deterministic
-  Loomseed presentation** only after its exact composition config and manifest
-  gate are frozen. The first Turbo/Budget preset-Idle pilot was exported as
+- Completed B3C action: the exact deterministic Loomseed presentation config,
+  normalizer, source-only master, manifest lineage, 192px/48px reviews, and
+  two-run byte proof are now frozen. Next bounded action: approve the separate
+  temporary cast Threadball formation/projectile family and root-transform
+  parameters; no runtime path or combat integration is authorized yet. The first
+  Turbo/Budget preset-Idle pilot was exported as
   external sheet `6EA23DEE...4C718` and rejected because it lowered/remade the
   raised cupped palm. The documented free-tier Custom successor
   `Palm-preservation idle` also failed: its first 256px frame replaces the empty
@@ -194,10 +199,10 @@ Phaser/Socket.IO stack.
   the intentional permanent Loomseed presentation. Both account pilots are
   external rejected evidence; no further AutoSprite generation, paid pose
   control, source re-upload, normalizer, runtime path, or asset promotion is
-  authorized. B3C may instead create a static deterministic Loomseed derivative
-  at `(407,228)`, with a separate temporary Threadball formed and launched from
-  its emission origin; it must not use either rejected pilot's pixels, pose, or
-  conditioning. Terrain Interior candidate `98091C73...50F9`
+  authorized. B3C has instead created the static deterministic Loomseed
+  derivative at `(407,228)`. The separate temporary Threadball must form and
+  launch from its emission origin without using either rejected pilot's pixels,
+  pose, or conditioning. Terrain Interior candidate `98091C73...50F9`
   is rejected and the Patch family is paused: no normalizer, crop, source-master
   promotion, runtime path, or further Patch request is authorized. No Threadball,
   Cloud, Terrain Top, or Terrain Interior retry is authorized.

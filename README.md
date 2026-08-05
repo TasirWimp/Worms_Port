@@ -293,9 +293,10 @@ directional quilt seams. The Patch family is paused; it has no normalizer, sourc
 master, product-manifest entry, runtime path, or retry authorization. WP-015B3B
 retains two rejected AutoSprite pilots as external evidence and freezes a
 deterministic Wizard presentation: a permanent held Loomseed and a separate
-temporary cast Threadball. B3C may create those exact approved derivatives for
-one Wizard presentation that WP-015C reuses for both the player and the AI
-Loomkeeper. A
+temporary cast Threadball. B3C has deterministically composed and manifest-
+approved the source-only Wizard-with-Loomseed master; the temporary cast effect,
+runtime derivative, and integration remain later gates. WP-015C will reuse the
+one approved Wizard presentation for both the player and the AI Loomkeeper. A
 distinct Loomkeeper asset belongs to the wider character roster in WP-015D.
 WP-015C remains integration-only and begins only when the simplified vertical-
 slice inventory is manifest-approved. The Celestial Spinning Mill, Worldweave,

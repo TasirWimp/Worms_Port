@@ -142,11 +142,14 @@ If the user asks only for planning, review, or brainstorming, do not edit code.
   empty-palm overlay requirement with a deterministic Wizard presentation: a
   permanent Loomseed is composed only from approved Threadball lineage at palm
   anchor `(407,228)`, while a separate temporary Threadball emits from that
-  origin. B3C must freeze the configuration and obtain derivative/manifest
-  approval before implementation; it must not use either rejected pilot or
-  modify Wizard source pixels. WP-015C reuses the one approved Wizard
-  presentation for the player and AI Loomkeeper. Distinct Loomkeeper production
-  is deferred to the wider character roster in WP-015D.
+  origin. B3C has frozen config `wp-015b3c-wizard-loomseed-v1` and approved
+  source-only composition `1CC252B4...9419C`: it uses only the two approved
+  parents, layers the Loomseed above the palm, and leaves both source files
+  untouched. It has no runtime path. Next B3C work may create the separate
+  temporary cast effect and bounded root transforms, but must not use either
+  rejected pilot or modify Wizard source pixels. WP-015C reuses the one
+  approved Wizard presentation for the player and AI Loomkeeper. Distinct
+  Loomkeeper production is deferred to the wider character roster in WP-015D.
 
 ## Codex Subagent Roles
 

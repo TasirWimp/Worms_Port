@@ -228,7 +228,7 @@ blue-and-gold Worldweave focus derived only later from approved Threadball
 source master `608F490C...D9B6F`, deterministically composed at the approved
 palm anchor `(407,228)` (`(153,85)` at the 192px review scale). The approved
 Wizard source master remains empty-handed and no new composite, runtime file,
-or manifest entry is authorized by this documentation amendment.
+or manifest entry was authorized by the documentation amendment alone.
 
 On Fire, loose blue fibers and restrained gold light gather at or just beyond
 the Loomseed. A smaller, temporary cast Threadball forms at that emission
@@ -239,14 +239,23 @@ and stable, while the projectile is compact, brief, and may carry the approved
 short thread tail. This changes neither range, damage, collision, turn timing,
 replay truth, reward logic, nor a cooldown/ammo rule.
 
-B3C must freeze the exact deterministic composition, parent hashes, local
-anchor/emission rule, visual phases, and approval boundaries before making any
-derivative. Its first presentation route is a root transform of the intact
-source master plus separately composed effects: root bob, lean, tint, or squash
-may move the Wizard, Loomseed anchor, and emission origin together, but may not
+B3C completed the first deterministic presentation derivative on 2026-08-05:
+config `wp-015b3c-wizard-loomseed-v1` (`B42E2360...C718E`) and normalizer
+`compose-wizard-loomseed-presentation.js` (`58B81919...8847`) verify only the
+two approved parent masters, resample Threadball uniformly to 64x64, center it
+exactly at `(407,228)`, and layer it above the source palm so the blue/gold
+focus remains legible. It produced exact 512x512 RGBA source presentation
+master `assets/masters/characters/knotkin/wizard/knotkin-wizard-loomseed-presentation-master-v1.png`
+(`1CC252B4...9419C`) twice. The source parents are unchanged; no inference,
+hand repair, projectile, animation, or runtime path was created.
+
+The first presentation route remains a root transform of that intact combined
+master plus separately composed effects: root bob, lean, tint, or squash may
+move the Wizard, Loomseed anchor, and emission origin together, but may not
 reshape the raised hand or synthesize character frames. The initial Fire phase
-is bounded to `glow -> temporary formation -> projectile launch`; a later route
-may add raster animation only through a separate admission gate.
+is bounded to `glow -> temporary formation -> projectile launch`; the temporary
+cast Threadball and all runtime integration remain later B3C work. A later
+raster-animation route still requires a separate admission gate.
 
 Sources rechecked on 2026-08-05: <https://www.autosprite.io/pricing>,
 <https://www.autosprite.io/docs/reference-animation-types>,

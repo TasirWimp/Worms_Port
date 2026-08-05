@@ -530,6 +530,24 @@ This source master is the visual and geometry reference for the first
 presentation route and for later rounded-family character work; later
 derivatives still require independent manifest entries and runtime paths.
 
+### Approved Wizard Loomseed Presentation Master
+
+![Approved Wizard holding the Loomseed](../assets/masters/characters/knotkin/wizard/knotkin-wizard-loomseed-presentation-master-v1.png)
+
+WP-015B3C deterministically composes the approved Threadball source as the
+permanent Wizard Loomseed. Exact config
+`scripts/asset-normalization/wp-015b3c-wizard-loomseed-v1.json`
+(`B42E2360...C718E`) verifies both parents, maps the Threadball visual center to
+the palm anchor `(407,228)`, uniformly scales it to 64x64, and places it above
+the palm so its blue strands and gold core remain readable. Normalizer
+`scripts/compose-wizard-loomseed-presentation.js` (`58B81919...8847`) produced
+the exact 512x512 RGBA master
+`1CC252B45C93D2553AC733DAA6AA49D05D6351DCC85E61EA559ECED458C9419C`
+byte-for-byte twice. It is approved source presentation material only: no
+runtime path, animation, projectile, collision, or gameplay authority exists.
+The temporary cast Threadball remains separate and begins later at the same
+root-transformed emission origin.
+
 The first production interpretation is frozen in
 `asset-briefs/wp-015b1-vertical-slice.md`. That contract translates the lineup
 into isolated Wizard and Loomkeeper masters, a separate Threadball family, and
