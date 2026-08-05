@@ -1667,8 +1667,14 @@ integrating.
    and manifest review.
 3. **B3C playable derivatives:** after the deterministic B3B contract is
    frozen, compose and review one Wizard root presentation for reuse by both the
-   player and AI Loomkeeper. Produce the permanent Loomseed plus the temporary
-   Threadball formation/projectile/short-tail/impact files, Patch
+   player and AI Loomkeeper. The permanent Loomseed and three static temporary
+   Threadball formation-start/formation-ready/projectile derivatives are now
+   exact approved source material. They are uniformly resampled only from the
+   approved Threadball master and map every local visual origin to `(32,32)`;
+   the Wizard root-space emission offset is `[151,-223]`. No new glow, loose
+   fibers, tail, impact, animation, runtime path, or authority has been
+   created. A later separately admitted effect route must still provide the
+   required glow/gather/tail/impact presentation. Patch
    background/cloud/repeatable terrain materials, and minimum shared
    damage/result effects. The spell family shows loose fibers gathering at or
    beyond the Loomseed, a smaller temporary compressed knot, compact flight, and

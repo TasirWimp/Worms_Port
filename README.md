@@ -241,6 +241,18 @@ exists with:
 npm run asset:normalize:wizard
 ```
 
+Reproduce the three static, source-only Threadball cast-stage reviews with:
+
+```powershell
+npm run asset:compose:threadball-cast
+```
+
+The command verifies the exact approved Threadball parent and writes only ignored
+review material under `test-results/`. It must reproduce the frozen formation
+and compact-projectile hashes; the tracked masters have no runtime path. It does
+not invent or approve glow, loose fibers, tail, impact, animation, or gameplay
+integration.
+
 Reproduce the approved Threadball source-master review while its exact external
 B3A source still exists with:
 
@@ -294,10 +306,14 @@ master, product-manifest entry, runtime path, or retry authorization. WP-015B3B
 retains two rejected AutoSprite pilots as external evidence and freezes a
 deterministic Wizard presentation: a permanent held Loomseed and a separate
 temporary cast Threadball. B3C has deterministically composed and manifest-
-approved the source-only Wizard-with-Loomseed master; the temporary cast effect,
-runtime derivative, and integration remain later gates. WP-015C will reuse the
-one approved Wizard presentation for both the player and the AI Loomkeeper. A
-distinct Loomkeeper asset belongs to the wider character roster in WP-015D.
+approved the source-only Wizard-with-Loomseed master. B3C also approves three
+source-only cast stages deterministically resampled from the exact Threadball
+master: a small formation, a larger ready formation, and a compact projectile,
+each centered at its local origin. They add no invented glow, loose fibers,
+tail, impact, animation, runtime path, or integration. The next visual work is
+the separate effects/runtime gate. WP-015C will reuse the one approved Wizard
+presentation for both the player and the AI Loomkeeper. A distinct Loomkeeper
+asset belongs to the wider character roster in WP-015D.
 WP-015C remains integration-only and begins only when the simplified vertical-
 slice inventory is manifest-approved. The Celestial Spinning Mill, Worldweave,
 Air/Draft, Fire/Loomspark, and Water/Cloudwater story is recorded in

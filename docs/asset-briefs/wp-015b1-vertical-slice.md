@@ -252,10 +252,17 @@ hand repair, projectile, animation, or runtime path was created.
 The first presentation route remains a root transform of that intact combined
 master plus separately composed effects: root bob, lean, tint, or squash may
 move the Wizard, Loomseed anchor, and emission origin together, but may not
-reshape the raised hand or synthesize character frames. The initial Fire phase
-is bounded to `glow -> temporary formation -> projectile launch`; the temporary
-cast Threadball and all runtime integration remain later B3C work. A later
-raster-animation route still requires a separate admission gate.
+reshape the raised hand or synthesize character frames. B3C now records only
+the static source-derived temporary cast stages: a 24px-nominal start, a
+40px-nominal ready knot, and a 28px-nominal compact projectile, each centered
+on a 64x64 local canvas at `(32,32)`. Their parent is solely
+`608F490C...D9B6F`; config `wp-015b3c-threadball-cast-v1`
+(`5F4DAE04...AB19`) maps the future transformed emission origin to root-space
+offset `[151,-223]`. The initial Fire phase remains conceptually bounded to
+`glow -> temporary formation -> projectile launch`, but these masters do not
+claim glow/gathering, tail, impact, timing, animation, or runtime integration.
+A later raster-animation or procedural-effect route still requires a separate
+admission gate.
 
 Sources rechecked on 2026-08-05: <https://www.autosprite.io/pricing>,
 <https://www.autosprite.io/docs/reference-animation-types>,
@@ -533,12 +540,14 @@ is expressed later through separate derivatives:
 
 - **held Loomseed:** a calm, permanently held blue-and-gold focus is
   deterministically composed at the Wizard's approved palm anchor;
-- **formation:** loose strands gather at or just beyond the Loomseed and make a
-  smaller temporary cast knot; the held Loomseed does not leave the Wizard;
-- **projectile:** that compact temporary knot travels with only a short taut
-  thread-tail supplied by a separate trail asset; and
-- **impact:** the knot rapidly unwinds into readable loops that tug at Stitching,
-  without implying fire, a large blast radius, or a secondary status effect.
+- **formation:** the approved static 64px-canvas start and ready derivatives
+  make the temporary knot's small-to-larger sequence readable at the emission
+  origin; the held Loomseed does not leave the Wizard. They do not themselves
+  depict loose strands gathering;
+- **projectile:** the approved compact 28px-nominal temporary knot is centered
+  in its own 64px transparent canvas and contains no baked trail; and
+- **impact:** rapid non-graphic unspooling remains a separate, unapproved
+  effect rather than invented pixels in the current source-derived set.
 
 The approved source master remains Relic-free, but its deterministic Wizard
 presentation derivative may hold the permanent Loomseed. This spell grammar

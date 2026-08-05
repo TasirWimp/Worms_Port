@@ -145,9 +145,15 @@ If the user asks only for planning, review, or brainstorming, do not edit code.
   origin. B3C has frozen config `wp-015b3c-wizard-loomseed-v1` and approved
   source-only composition `1CC252B4...9419C`: it uses only the two approved
   parents, layers the Loomseed above the palm, and leaves both source files
-  untouched. It has no runtime path. Next B3C work may create the separate
-  temporary cast effect and bounded root transforms, but must not use either
-  rejected pilot or modify Wizard source pixels. WP-015C reuses the one
+  untouched. It has no runtime path. B3C now also approves three source-only
+  temporary cast stages derived only from the same Threadball parent: compact
+  `formation-start` (`C189A206...FDD0`), `formation-ready`
+  (`94F0DEDC...CCA9`), and `projectile` (`8ECA37C6...23E9`). Frozen config
+  `wp-015b3c-threadball-cast-v1` maps each local visual origin to `(32,32)` and
+  records the Wizard root-space emission offset `[151,-223]`. It creates no
+  glow, loose fibers, tail, impact, animation, runtime path, or gameplay
+  authority. Do not use either rejected pilot or modify Wizard source pixels.
+  WP-015C reuses the one
   approved Wizard presentation for the player and AI Loomkeeper. Distinct
   Loomkeeper production is deferred to the wider character roster in WP-015D.
 

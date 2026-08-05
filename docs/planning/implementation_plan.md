@@ -8,8 +8,8 @@ Phaser/Socket.IO stack.
 ## Execution Pointer
 
 - Active target: mobile-first single-player Nimiq Pay competition release.
-- Active work package: **WP-015B3C permanent Loomseed presentation
-  — initial source derivative complete; temporary cast effect and runtime integration remain:**
+- Active work package: **WP-015B3C static Wizard/Threadball presentation
+  — source derivatives complete; separate effects and runtime integration remain:**
   both AutoSprite pilots remain rejected external evidence. The owner superseded
   the empty-palm overlay condition with a permanent held Loomseed and a separate
   temporary cast Threadball. B3C now has an exact source-only Wizard-with-
@@ -23,7 +23,13 @@ Phaser/Socket.IO stack.
   no animation or integration. B3C's deterministic composition config
   `wp-015b3c-wizard-loomseed-v1` now maps the exact Threadball source at that
   anchor and produced approved source presentation master `1CC252B4...9419C`.
-  No temporary projectile, animation, or runtime derivative is authorized yet.
+  Frozen cast config `wp-015b3c-threadball-cast-v1`
+  (`5F4DAE04...AB19`) now approves only three static 64x64 presentation masters
+  from that same parent: formation-start `C189A206...FDD0`, formation-ready
+  `94F0DEDC...CCA9`, and compact projectile `8ECA37C6...23E9`. All local visual
+  origins are `(32,32)`; the future Wizard root-space emission offset is
+  `[151,-223]`. There is still no glow, loose-fiber, tail, impact, animation,
+  runtime derivative, or combat integration authorization.
 - Existing external Threadball candidate
   `2BAE664F7E5A862BCB53B55A68071580485CE040A89650C68EC6FA398F4089EB`
   is paused as historical structure evidence: it reads as an ordinary yarn ball
@@ -55,9 +61,11 @@ Phaser/Socket.IO stack.
   upload, source-master promotion, or runtime integration belongs in B3A at this
   gate.
 - Following gates: **WP-015B3B** records the failed external-route evidence;
-  **WP-015B3C** has completed the source-only permanent Loomseed composition
-  and next admits the separate temporary Threadball formation/flight/impact
-  family plus bounded root transforms; **WP-015C** then performs integration
+  **WP-015B3C** has completed the static permanent-Loomseed and temporary
+  Threadball formation/projectile source derivatives plus root-transform
+  geometry. A separate effect admission must still resolve the actual glow,
+  loose-fiber gather, short-tail, impact, and timing contract before
+  **WP-015C** performs integration
   only. The gameplay
   AI remains the Loomkeeper, but its first-slice presentation is the same Wizard
   asset as the player. The distinct Loomkeeper moves to WP-015D with Thief,
@@ -188,9 +196,12 @@ Phaser/Socket.IO stack.
   `(407,228)`; pivot `(256,451)` and uniform placement remain intact.
 - Completed B3C action: the exact deterministic Loomseed presentation config,
   normalizer, source-only master, manifest lineage, 192px/48px reviews, and
-  two-run byte proof are now frozen. Next bounded action: approve the separate
-  temporary cast Threadball formation/projectile family and root-transform
-  parameters; no runtime path or combat integration is authorized yet. The first
+  two-run byte proof are frozen. The next exact Threadball-only composition
+  config, composer, three 64x64 formation/projectile source derivatives,
+  manifest lineage, rooted emission offset `[151,-223]`, visual reviews, and
+  two-run byte proof are also frozen. The remaining bounded B3C work is a
+  separate admission for glow/gather/tail/impact/timing, not a new Threadball
+  source generation or runtime path. The first
   Turbo/Budget preset-Idle pilot was exported as
   external sheet `6EA23DEE...4C718` and rejected because it lowered/remade the
   raised cupped palm. The documented free-tier Custom successor

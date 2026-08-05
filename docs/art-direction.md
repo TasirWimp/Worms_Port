@@ -545,8 +545,22 @@ the exact 512x512 RGBA master
 `1CC252B45C93D2553AC733DAA6AA49D05D6351DCC85E61EA559ECED458C9419C`
 byte-for-byte twice. It is approved source presentation material only: no
 runtime path, animation, projectile, collision, or gameplay authority exists.
-The temporary cast Threadball remains separate and begins later at the same
-root-transformed emission origin.
+
+The same B3C record also approves three static, source-only temporary cast
+stages from the exact Threadball parent. Frozen config
+`scripts/asset-normalization/wp-015b3c-threadball-cast-v1.json`
+(`5F4DAE04...AB19`) and composer
+`scripts/compose-threadball-cast-derivatives.js` (`6030B9A6...E9B5`) map the
+source visual center to local `(32,32)` in every 64x64 transparent canvas. The
+small formation-start is `C189A206...FDD0`, the larger formation-ready is
+`94F0DEDC...CCA9`, and the compact flight-stage projectile is
+`8ECA37C6...23E9`. A later root transform maps their local origin to the same
+Wizard emission offset `[151,-223]` from pivot `(256,451)`; it does not change
+authoritative shot origin or physics. These derivative bytes contain no new
+glow, gathering fibers, tail, impact, animation, runtime path, or gameplay
+authority. The visible strand-gathering and non-graphic Unraveling effects
+therefore remain separate later work rather than fabricated claims about these
+static masters.
 
 The first production interpretation is frozen in
 `asset-briefs/wp-015b1-vertical-slice.md`. That contract translates the lineup
