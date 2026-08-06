@@ -18,10 +18,32 @@ Phaser/Socket.IO stack.
   source bytes, below the 1.5 MB ceiling). It created no source asset, atlas,
   scene code, or player-visible change. The raw empty-handed Wizard, raw
   Threadball, and rejected FLUX Terrain Interior remain excluded. WP-015C may
-  now integrate only that fixed inventory; it may not approve or generate media.
+  now integrate only that fixed inventory. The one documented, free-tier
+  AutoSprite **external-quarantine** idle pilot used only the approved
+  Wizard-with-Loomseed presentation and is rejected for a whole-sheet face-
+  identity failure. It may not create a runtime path, replace the deterministic
+  root-transform presentation, or authorize another request.
   The owner additionally authorized the single versioned rules exception after
   real-device testing: new challenges may use `nimble-knots-artillery-v3` with
   the documented shared-Wizard direct-hit profile, while V1/V2 remain immutable.
+- **WP-015C_Animation FLUX 3 external video evaluation:** this is a separate,
+  non-production research gate under C, not a reopening of the rejected
+  AutoSprite route. On 2026-08-06 the official global `FLUX` MCP connector was
+  registered at `https://mcp.bfl.ai`; it uses BFL OAuth and exposes FLUX.2 image
+  tools only, so it neither uses nor grants FLUX 3 video access through the
+  project's API key. The Windows User-scoped `Flux_GameAssets_API_Key` is used
+  only for direct BFL API requests in the invoking process, never copied to the
+  repository, a Codex config file, evidence, logs, or prompts. Its no-charge
+  `/v1/credits` preflight passed with 1,000 credits; the separate MCP OAuth
+  login also completed successfully. Codex must be restarted before this active
+  session can load its FLUX.2 image tools. No Wizard image, video request, or
+  output exists yet. Before any upload, the owner must explicitly decide
+  whether BFL's API-service training licence is acceptable or obtain written
+  confirmation that a BFL training opt-out changes that treatment. The first
+  eligible pilot, if approved, is exactly one silent 5-second HD **draft**
+  image-to-video request from the combined Wizard-with-Loomseed master, kept in
+  external quarantine only. It must not create a source asset, sprite sheet,
+  normalizer, runtime path, product build, or player-visible change.
 - Background: both AutoSprite pilots remain rejected external evidence. The owner superseded
   the empty-palm overlay condition with a permanent held Loomseed and a separate
   temporary cast Threadball. B3C now has an exact Wizard-with-Loomseed
@@ -230,9 +252,13 @@ Phaser/Socket.IO stack.
   `Palm-preservation idle` also failed: its first 256px frame replaces the empty
   palm with a large blue woven basket/cup-like object, so it cannot establish
   the intentional permanent Loomseed presentation. Both account pilots are
-  external rejected evidence; no further AutoSprite generation, paid pose
-  control, source re-upload, normalizer, runtime path, or asset promotion is
-  authorized. B3C has instead created the static deterministic Loomseed
+  external rejected evidence. Their former no-third-attempt rule was superseded
+  only once by a WP-015C combined-Loomseed pilot. That 25-frame, free-tier
+  output retained a focus but rewrote the approved face as one oversized cartoon
+  eye with no stitched mouth, so it is also rejected external evidence (exact
+  SHA-256 `74405D...DB9EB`). Paid pose control, retries, source re-upload,
+  normalizer, runtime path, and asset promotion remain prohibited. B3C has
+  instead created the static deterministic Loomseed
   derivative at `(407,228)`. The separate temporary Threadball must form and
   launch from its emission origin without using either rejected pilot's pixels,
   pose, or conditioning. Terrain Interior candidate `98091C73...50F9` remains
@@ -247,8 +273,8 @@ Phaser/Socket.IO stack.
   as needed but gives no fixed period, while its terms disclaim non-infringement
   and identify third-party inference vendors without an exact model/version.
   Both AutoSprite pilots remain externally quarantined and retained in the
-  account temporarily. The Custom successor consumed the sole further request
-  and failed its first-frame socket review, ending the route. Neither pilot can
+  account temporarily. The Custom successor consumed the former empty-palm
+  allowance and failed its first-frame socket review. Neither pilot can
   approve a runtime asset.
   Distinct Loomkeeper production, animation,
   runtime integration, roster completion, and further Wizard generation remain
@@ -2642,7 +2668,10 @@ Sequential delivery slices:
   physics, damage, collision, or replay truth. The existing Loomkeeper actor,
   rules, labels, and team/position cues remain unchanged; only its temporary
   visual presentation reuses the Wizard. No generation, source repair, or asset
-  approval belongs in C. The sole later real-device-authorized ruleset exception
+  approval belongs in C. Its one external-quarantine, free-tier AutoSprite
+  combined-Loomseed idle pilot is complete and rejected; it cannot alter this
+  runtime route, admit a file, or authorize another request. The sole later
+  real-device-authorized ruleset exception
   is `nimble-knots-artillery-v3`: new challenges retain every v2 mechanic and
   Loomkeeper policy but replace only direct projectile contact with the fixed
   shared-Wizard body profile `halfWidth: 32`, `top: 85`, `bottom: 13`, measured
@@ -2684,13 +2713,40 @@ Sequential delivery slices:
   while preserving V1/V2 goldens. Its fixed profile covers the current visible
   torso/head/hat/feet but deliberately excludes the extended palm/Loomseed;
   any distinct later character needs a newly versioned profile. Fresh phone,
-  Ubuntu-candidate, and full browser-matrix evidence now gate C closure.
+  Ubuntu-candidate, and full browser-matrix evidence originally gated C closure.
+  The owner subsequently passed the focused V3 real-phone hitbox check and
+  explicitly waived a replacement Ubuntu candidate for that correction; the
+  earlier pinned Ubuntu artifact remains technical evidence and no Windows
+  baseline was approved.
   Because V3 retains the historical V2 Relic values, the corrected target also
   makes a true direct Needlepoint contact capable of resolving a full
   100-Stitching target in one action. This is visible correctness rather than a
   stealth balance change; focused phone acceptance must assess the pacing before
   C closes. WP-015D's separately versioned V4 keeps the planned low-damage
   Needlepoint tier.
+- **WP-015C_Animation FLUX 3 external video evaluation:** preserve the first
+  playable slice's deterministic root-transform route while evaluating, but not
+  admitting, one possible video-assisted idle source. The official BFL MCP
+  connector is an OAuth-only FLUX.2 image connector; it is useful for later
+  still-image work but is not a FLUX 3 video control plane and must not receive
+  an API key. Direct video API access reads only the Windows User-scoped
+  `Flux_GameAssets_API_Key` at invocation time. The request must never print,
+  persist, or forward that value into a repository config, evidence record, or
+  prompt. BFL's FLUX 3 `i2v` contract has a 5-second minimum duration, so the
+  evaluation replaces the earlier idea of three 3-second clips with one silent
+  5-second HD draft (currently $0.30) at most. Do not submit it until the owner
+  records an informed decision about BFL's API terms, which permit service and
+  training use of submitted inputs/outputs; BFL's published privacy opt-out is
+  not assumed to amend those API terms. If authorized, upload only exact
+  combined Wizard-with-Loomseed master `1CC252B4...9419C`, retain the untouched
+  download/video metadata externally, and reject the whole result on any face,
+  mouth, Loomseed, palm, anatomy, full-body framing, baseline, background, or
+  identity drift. Record endpoint/model/version, request body excluding the key,
+  service task/result identifiers, requested duration/resolution/audio/draft
+  settings, cost, timestamps, source/output hashes, and retained content
+  credentials before any later frame-extraction proposal. There is no automatic
+  retry, frame extraction, alpha removal, atlas, normalization, staging,
+  runtime path, or visual-baseline update in this work package.
 - **WP-015D Basic roster and ruleset completion:** after C acceptance, freeze
   exact v4 range/damage values and add `nimble-knots-artillery-v4` while
   preserving byte-for-byte v1/v2/v3 replay behavior. Range and maximum direct

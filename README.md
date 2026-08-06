@@ -315,8 +315,8 @@ fixed 32px horizontal/vertical reciprocal edge blends, producing repeatable
 boundaries. Its sole B3C.1 build copy is
 `assets/product/environment/patch-01/terrain/interior-v1.png`; the manual-repair recovery adds no atlas, terrain
 authority, animation, or gameplay integration; no new Patch inference, retry,
-or post-export paint is authorized. WP-015B3B
-retains two rejected AutoSprite pilots as external evidence and freezes a
+or post-export paint is authorized. WP-015B3B retains two rejected raw
+empty-palm AutoSprite pilots as external evidence and freezes a
 deterministic Wizard presentation: a permanent held Loomseed and a separate
 temporary cast Threadball. B3C has deterministically composed and manifest-
 approved the source-only Wizard-with-Loomseed master. B3C also approves three
@@ -329,9 +329,20 @@ four-loop Unraveling effect for later client presentation only. Before WP-015C,
 WP-015B3C.1 has added only byte-identical build-copy runtime paths for the exact
 seven already approved presentation/Patch masters (607,427 source bytes total),
 without new pixels or scene code. WP-015C is now the gate that may actually
-integrate them. WP-015C will reuse the one approved Wizard
+integrate them. Its one free-tier external-quarantine idle pilot used only the
+approved combined Wizard-with-Loomseed presentation, but is rejected because it
+rewrites the Wizard's two black bead eyes and stitched mouth as one oversized
+cartoon eye. It adds no runtime asset and cannot replace the deterministic
+presentation route or authorize another request. WP-015C
+will reuse the one approved Wizard
 presentation for both the player and the AI Loomkeeper. A distinct Loomkeeper
 asset belongs to the wider character roster in WP-015D.
+`WP-015C_Animation` is a separately documented FLUX 3 external-video research
+gate, not an AutoSprite retry: BFL's OAuth MCP connector serves FLUX.2 images,
+while a direct API key preflight has made no media request. No approved art may
+be uploaded until the owner makes the recorded decision on BFL's training-use
+terms; any later one-shot video remains external quarantine and has no runtime
+path.
 WP-015C remains integration-only and begins only when the simplified vertical-
 slice inventory is manifest-approved. The Celestial Spinning Mill, Worldweave,
 Air/Draft, Fire/Loomspark, and Water/Cloudwater story is recorded in

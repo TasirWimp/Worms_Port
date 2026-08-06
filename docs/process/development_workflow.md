@@ -1680,9 +1680,12 @@ integrating.
    Freeze a deterministic composition contract instead: the approved Threadball
    source master is the only possible parent for a calm permanent Loomseed at
    the reviewed palm anchor, and a smaller temporary cast Threadball forms at or
-   just beyond that anchor before launch. No further AutoSprite request, paid
-   pose control, animation-service substitution, source re-upload, or source
-   repair is authorized.
+   just beyond that anchor before launch. The raw empty-handed source may never
+   be uploaded again. The later WP-015C exception permits exactly one
+   free-tier AutoSprite idle pilot from the approved combined
+   Wizard-with-Loomseed presentation, kept only in external quarantine; it does
+   not permit paid pose control, animation-service substitution, a raw-source
+   re-upload, source repair, a retry, a normalizer, a runtime path, or promotion.
    AutoSprite's current public terms/privacy review on 2026-08-04/05 permits only
    quarantined pilots: output rights and no-training are stated, but retention is
    not fixed, non-infringement is disclaimed, and exact inference-model/vendor
@@ -1692,10 +1695,11 @@ integrating.
    free-tier Custom successor `Palm-preservation idle` also fails its first
    editable frame by replacing the empty palm with a large blue woven
    basket/cup-like object. Both pilots are retained temporarily in the account at
-   the owner's direction, but neither is an input or product candidate. No further
-   AutoSprite generation, paid pose control, or route repair is authorized. No
-   pilot can promote a runtime asset without later exact-file, IP, normalization,
-   and manifest review.
+   the owner's direction, but neither is an input or product candidate. The
+   former closed route is superseded only by the distinct WP-015C combined-
+   Loomseed idle pilot defined below; neither rejected output, its prompt, nor
+   its pose may inform that pilot. No pilot can promote a runtime asset without
+   later exact-file, IP, normalization, and manifest review.
 3. **B3C playable derivatives:** after the deterministic B3B contract is
    frozen, compose and review one Wizard root presentation for reuse by both the
    player and AI Loomkeeper. The permanent Loomseed and three static temporary
@@ -1736,7 +1740,8 @@ combat scene.
 
 ### WP-015C First Playable Visual-Slice Re-entry
 
-WP-015C is integration-only. Its inputs are the runtime-copy-approved B3 Wizard
+WP-015C is integration-only except for one separately quarantined service pilot.
+Its runtime inputs are the runtime-copy-approved B3 Wizard
 presentation, Threadball derivatives, Patch layers, shared minimum effects, and
 their manifest metadata. It instantiates the same Wizard presentation for the player and AI
 Loomkeeper. The authoritative Loomkeeper actor, rules, labels, and team/position
@@ -1746,17 +1751,118 @@ composition, failure fallback, and presentation-event binding. Threadball
 gathering/levitation binds only to the existing aim/fire preparation, release to
 the authoritative release frame, and unspooling to the authoritative impact.
 These visuals do not change physics, damage, collision, or replay truth. C may
-not generate/refine art, repair source pixels, approve licenses, change
+not generate/refine product art, repair source pixels, approve licenses, change
 simulation/collision authority, or introduce the v3 Relic ruleset.
+
+#### WP-015C one-pilot Loomseed idle-animation exception (2026-08-06)
+
+The project owner reopened the animation question because the former failure
+condition has changed: the Wizard now permanently holds its Loomseed, rather
+than needing an empty hand as a separate Relic socket. This authorizes exactly
+one **free-tier Custom** AutoSprite idle request, using only
+`assets/masters/characters/knotkin/wizard/knotkin-wizard-loomseed-presentation-master-v1.png`
+(`1CC252B45C93D2553AC733DAA6AA49D05D6351DCC85E61EA559ECED458C9419C`) as
+the upload. Do not upload the raw empty-handed master, the runtime copy, either
+rejected pilot, or any third-party image. The service output is external
+quarantine evidence, never a product asset, even if it visually passes.
+
+Use sidescroller/right-facing, Turbo/Budget, 25 frames at 256px, default
+background removal, compression, and no sound. Do not choose Advanced Mode,
+paid pose/first-frame control, a paid plan, an API route, another character, or
+another source image. If the free UI cannot expose those settings, stop rather
+than substituting. Name the request `Loomseed-preservation idle` and use this
+exact prompt:
+
+```text
+Right-facing three-quarter blue crochet Wizard holds a gentle seamless idle on one ground baseline. Preserve the exact raised forward arm, upward-facing cupped mitten palm, and the small calm blue-and-gold Loomseed already resting in that palm. The Loomseed stays fully visible, attached to the palm, and stable in every frame; do not remove, replace, enlarge, detach, or turn it into a cup, basket, weapon, spell, or another object. Only quiet breathing, a tiny body bob, soft yarn-fiber stir, and slight pointed-hat-tip sway. Keep the full Wizard, two glossy black bead eyes, small stitched mouth, costume, feet, and plain/transparent background. No casting, projectile, walking, camera motion, text, scenery, extra limb, second character, or new object.
+```
+
+Record the account-visible character/request name, visible tier, all visible
+settings, prompt, source hash, any visible IDs, untouched export path/hash, and
+reviewer. Reject the entire output on any frame that removes, detaches, obscures,
+or substitutes the Loomseed; remakes the raised palm/arm; alters identity,
+baseline, or full-body framing; introduces an object, cast, background, or
+extra anatomy; or cannot be durably exported and hashed. One rejection ends this
+exception: no retry, prompt variation, normalizer, staging, runtime path, or
+asset-manifest entry follows without a new owner decision. A visual pass only
+creates review evidence; later independent license/privacy/output-rights,
+frame/pivot/baseline, exact-file, manifest, phone, and test-only staging gates
+remain required before any production use.
+
+The one pilot completed and consumed five free credits on 2026-08-06. Its
+account-visible character is `Knotkin Wizard — WP-015C Loomseed pilot`
+(`cmshun4s600brck4n4ex51xyz`); the free UI showed Humanoid, Auto Padding 75,
+sidescroller/right-facing, automatic first/last frames, Turbo/Budget 2 seconds,
+25 frames at 256px, default background removal/compression, and no sound. The
+untouched external 1280x1280 sheet is
+`C:\Users\jensb\Downloads\Knotkin Wizard — WP-015C Loomseed pilot-idle.png`
+(230,227 bytes, SHA-256
+`74405D51591BE482152A9AC2B4F9609E92651FCF200FFEBB31987EC8DD0DB9EB`). Its
+corners have alpha zero and its raised hand visibly retains a small blue/gold
+focus in every frame. The full 25-frame review nevertheless rejects it: every
+frame rewrites the source's two black bead eyes and small stitched mouth as one
+oversized white/black cartoon eye, with some blink frames and no mouth. Identity
+failure rejects the entire sheet, regardless of Loomseed retention. This closes
+the exception; retain the source and result only as external evidence. Do not
+retry, edit the prompt, repair, normalize, stage, manifest, or integrate it.
+
+#### WP-015C_Animation FLUX 3 external-video gate (2026-08-06)
+
+This is a separate, external-quarantine research lane, not a retry, repair, or
+replacement of AutoSprite. The official global `FLUX` MCP connector is
+registered at `https://mcp.bfl.ai`. It authenticates with a BFL OAuth account
+and exposes FLUX.2 **image** tools only; do not attach an API key or infer FLUX
+3 video support from that connector. Complete its one-time OAuth login in the
+Codex client only when the owner wants the still-image tools available. That
+login completed on 2026-08-06; restart Codex before a currently active session
+can load its tools.
+
+Direct BFL API calls use `Flux_GameAssets_API_Key`, which the owner placed at
+Windows **User** scope. Read it only into the invoking process at request time;
+never print it, rename/copy it to `BFL_API_KEY`, place it in a repository file,
+Codex config, shell history, request evidence, or prompt. A no-charge
+`GET https://api.bfl.ai/v1/credits` preflight on 2026-08-06 passed and returned
+1,000 credits. A newly started Codex process may not inherit a User-scoped
+variable automatically, so any helper must explicitly retrieve that scope or
+the owner must restart Codex; no secret workaround is permitted.
+
+No BFL media request is authorized merely by the connector or key preflight.
+BFL's API Service Terms (reviewed 2026-08-06) grant it broad rights to use
+inputs and outputs, including training/improving its products. Its published
+privacy-page training opt-out must not be assumed to amend those API terms.
+Before uploading the approved combined Wizard-with-Loomseed master, record the
+owner's affirmative choice to accept that treatment or BFL's written confirmation
+that an account-specific opt-out changes it. Do not upload the raw empty-handed
+Wizard, a runtime copy, a rejected AutoSprite sheet, or any third-party image.
+
+If that decision is recorded, the sole first FLUX 3 pilot is one **silent,
+5-second, HD, draft** `i2v` request from exact combined master
+`1CC252B45C93D2553AC733DAA6AA49D05D6351DCC85E61EA559ECED458C9419C`. FLUX 3
+does not offer a 3-second duration, so it replaces—not multiplies—the earlier
+three-short-animation idea. At the current documented rate this pilot costs
+$0.30. Save the untouched time-limited result externally before it expires;
+record the endpoint/model/version, request body without the key, result/task
+identifiers, requested settings, credit cost, timestamps, source/output hashes,
+and any content credentials. The external video is not a source asset or a
+candidate sprite sheet. Reject the entire pilot if any frame alters the two bead
+eyes, stitched mouth, Loomseed, raised palm/arm, body identity, full-body crop,
+baseline, or background; also reject on inaccessible/undocumented output.
+There is no automatic retry, frame extraction, alpha removal, normalizer, atlas,
+test staging, runtime path, product build, or phone-baseline update without a
+new work-package decision.
 
 Acceptance requires one deterministic player-and-Loomkeeper exchange through
 move, aim, fire, projectile flight, impact, Stitching damage, and result at every
 maintained phone viewport and under reduced motion. Decorative Patch pixels never
 define collision. V1/v2 replay truth and authoritative event timing stay intact.
-Run compliance, build, the full zero-retry browser matrix, bundle/media budget,
-and the Ubuntu visual-candidate workflow. Inspect the Ubuntu candidate explicitly;
-never approve new baselines from Windows. A separate real-phone acceptance is
-required before WP-015D batch production begins.
+Run compliance, build, the full zero-retry browser matrix, and bundle/media
+budget for runtime changes. The owner accepted the V3 real-phone hitbox
+re-check and waived a replacement Ubuntu candidate for that focused correction;
+retain the prior Ubuntu artifact as technical evidence and never approve a
+baseline from Windows. The external animation pilot does not change runtime and
+therefore does not trigger those product checks; it has its own evidence review
+above. A separate real-phone acceptance remains required before any later
+animated production asset can be admitted.
 
 ### WP-015B0 Approval And Canonical Baseline
 
@@ -1922,8 +2028,9 @@ Use this exact handoff for each visual asset family:
    parents at recorded anchors and may not alter source pixels. Any later
    animation service must separately pass its license, privacy, output-rights,
    identity-control, and durable-evidence review before uploading the approved
-   isolated character master. AutoSprite's B3B route is closed after two failed
-   pilots and cannot be retried or treated as an approved dependency.
+   isolated character master. AutoSprite's two B3B raw-source pilots remain
+   closed and may not be retried. WP-015C's one combined-Loomseed pilot is a
+   separately documented external experiment, not an approved dependency.
 7. **Deterministic runtime normalization:** normalize runtime frame size, pivot,
    baseline, padding, alpha, naming, timing, and atlas metadata through a
    versioned script and configuration hash. Preserve every untouched service

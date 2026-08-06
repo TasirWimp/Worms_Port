@@ -216,11 +216,11 @@ to record in this session; that omission does not weaken the visual rejection
 or authorize a later export as an asset.
 
 Both B3B AutoSprite pilots fail their original empty-palm socket condition.
-AutoSprite animation generation for the Wizard is closed: no third attempt,
-paid upgrade, pose control, prompt variation, normalizer, runtime path, or
-asset promotion is authorized. Their frames and the accidental basket/cup-like
-object remain rejected external evidence; they must not become Loomseed input,
-pose reference, conditioning, or product pixels.
+They remain closed historical routes: no raw-source third attempt, paid upgrade,
+pose control, prompt variation from either rejected prompt, normalizer, runtime
+path, or asset promotion is authorized. Their frames and the accidental
+basket/cup-like object remain rejected external evidence; they must not become
+Loomseed input, pose reference, conditioning, or product pixels.
 
 #### Loomseed presentation amendment (2026-08-05)
 
@@ -250,6 +250,68 @@ focus remains legible. It produced exact 512x512 RGBA source presentation
 master `assets/masters/characters/knotkin/wizard/knotkin-wizard-loomseed-presentation-master-v1.png`
 (`1CC252B4...9419C`) twice. The source parents are unchanged; no inference,
 hand repair, projectile, animation, or runtime path was created.
+
+#### WP-015C combined-Loomseed idle pilot amendment (2026-08-06)
+
+The permanent-Loomseed presentation removes the old empty-socket requirement,
+so the owner authorizes one new AutoSprite pilot—not a retry of either B3B
+pilot. Its sole permitted input is the combined master
+`knotkin-wizard-loomseed-presentation-master-v1.png`
+(`1CC252B4...9419C`); the raw empty-handed Wizard and both rejected outputs are
+still prohibited inputs. The pilot is free-tier Custom, sidescroller/right-
+facing, Turbo/Budget, 25 frames at 256px, default background removal,
+compression, and no sound. It must use the exact `Loomseed-preservation idle`
+prompt recorded in `docs/process/development_workflow.md`, without paid pose or
+first-frame control. Its output remains external quarantine and must be rejected
+in full if one frame changes, hides, detaches, removes, or substitutes the held
+Loomseed; alters the raised palm/arm, identity, baseline, or full-body framing;
+or lacks a durable untouched export/hash. A pass is evidence only and creates
+no atlas, normalizer, runtime path, manifest entry, or player-visible change.
+One failure closes this exception with no retry.
+
+The sole pilot completed on 2026-08-06 under account character
+`Knotkin Wizard — WP-015C Loomseed pilot` (visible character id
+`cmshun4s600brck4n4ex51xyz`). It used Humanoid and Auto Padding (75),
+sidescroller/right-facing, automatic first/last frames, Turbo/Budget 2 seconds,
+25 frames at 256px, default background removal/compression, no sound, and the
+exact frozen 756-character prompt. It consumed five free credits (8 to 3). The
+untouched 1280x1280 external PNG is retained outside the repository at
+`C:\Users\jensb\Downloads\Knotkin Wizard — WP-015C Loomseed pilot-idle.png`
+(230,227 bytes, SHA-256
+`74405D51591BE482152A9AC2B4F9609E92651FCF200FFEBB31987EC8DD0DB9EB`).
+The export retains actual alpha (corner alpha zero), and every frame retains a
+raised hand with a small blue/gold focus. It nevertheless fails the whole-sheet
+identity gate: the service replaces the approved two glossy black bead eyes and
+small stitched mouth with a single oversized white/black cartoon eye (including
+blink frames) and no mouth. The source face is not preserved. This one failure
+rejects all 25 frames; the file is durable external evidence only. No retry,
+prompt adjustment, repair, normalizer, test staging, manifest entry, runtime
+path, or player-visible change is authorized.
+
+#### WP-015C_Animation FLUX 3 external-video evaluation (2026-08-06)
+
+This separate research gate does not reopen either AutoSprite route. The official
+global BFL `FLUX` MCP registration at `https://mcp.bfl.ai` uses OAuth and FLUX.2
+image tools only. It cannot use the project API key and must not be represented
+as FLUX 3 video access. Its OAuth login completed on 2026-08-06; Codex needs a
+restart to load the new image tools into an active session. Direct FLUX 3 API
+requests instead read the owner's Windows User-scoped `Flux_GameAssets_API_Key` only at invocation time. Its
+no-charge BFL credit preflight passed with 1,000 credits; no image or video has
+been submitted.
+
+BFL's reviewed API terms permit the service to use inputs/outputs, including for
+training. The public privacy-page training opt-out is not assumed to supersede
+that grant. Therefore, no exact source master may be uploaded until the owner
+explicitly accepts that treatment or BFL confirms an effective account-specific
+opt-out in writing. If approved, the only first pilot is one silent 5-second HD
+draft `i2v` request from this combined master only (`1CC252B4...9419C`); it is
+external quarantine, never a source master, atlas, runtime copy, or product
+input. The five-second minimum replaces the earlier concept of three
+three-second clips. Preserve the raw time-limited video/download and its service
+metadata externally, then reject it in full for any face, mouth, Loomseed,
+raised-palm, anatomy, crop, baseline, or background drift. No automatic retry,
+extraction, alpha treatment, normalizer, staging, manifest update, or runtime
+integration is authorized.
 
 The first presentation route remains a root transform of that intact combined
 master plus separately composed effects: root bob, lean, tint, or squash may

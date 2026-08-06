@@ -666,8 +666,9 @@ Blocked:
 
 - If an official Nimiq logo, icon, font, or other brand file is proposed later,
   archive its separate written permission and exact-file provenance before use.
-- Validate one Wizard animation/socket inventory reused by both combatants in
-  the first playable visual slice. Produce and validate the distinct Loomkeeper
+- The one external AutoSprite combined-Loomseed idle pilot preserved the focus
+  but failed Wizard face identity, so root transforms remain the only approved
+  Wizard animation route for the first playable slice. Produce and validate the distinct Loomkeeper
   later in WP-015D with Thief and Warrior.
 - Validate Patch 01 tiling, phone composition, and code-owned circular
   destruction before producing additional Patches or decorative layers.

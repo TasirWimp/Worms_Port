@@ -18,16 +18,20 @@
     "Bind the approved Threadball charge, formation-start, formation-ready, projectile, blue-only short tail, and Unraveling impact grammar to existing authoritative Threadball presentation events",
     "Keep Needlepoint and Spoolburst on their existing generic presentation until WP-015D creates approved assets for them",
     "Permit Phaser's same-origin runtime decode blobs in the image-only CSP source list without relaxing script, connect, object, framing, or payment policy",
-    "Introduce only `nimble-knots-artillery-v3` for new challenges: a fixed direct-projectile body profile matching the shared Wizard presentation while preserving v1/v2 byte-for-byte"
+    "Introduce only `nimble-knots-artillery-v3` for new challenges: a fixed direct-projectile body profile matching the shared Wizard presentation while preserving v1/v2 byte-for-byte",
+    "Record the outcome of exactly one free-tier AutoSprite Custom idle pilot from the approved combined Wizard-with-Loomseed master as external quarantine evidence only; it cannot add a source asset, atlas, normalizer, runtime path, or player-visible change",
+    "Configure and preflight the separate WP-015C_Animation FLUX 3 video research lane without submitting source media or changing product behavior"
   ],
   "non_goals": [
-    "Generate, alter, or approve any source raster, atlas, animation, or additional runtime asset",
+    "Generate, alter, or approve any source raster, atlas, animation, or additional runtime asset, other than the separately documented external-quarantine pilot",
     "Change v1/v2 simulation, collision, damage, projectile paths, replay, turn timing, AI policy, rewards, or their rulesets",
     "Change V3 Relic constants, terrain footprint, movement, projectile launch, gravity, splash damage, Loomkeeper policy, or reward eligibility",
     "Derive hitboxes dynamically from image pixels or promote, alter, or generate any asset",
     "Use Patch pixels as collision truth or remove the existing procedural fallback",
     "Approve or update a visual baseline from Windows",
-    "Treat local browser verification as a substitute for the required Ubuntu candidate review or real-device acceptance"
+    "Treat local browser verification as a substitute for the required real-device acceptance",
+    "Upload the raw empty-handed Wizard, either rejected AutoSprite output, any third-party image, or the runtime copy to AutoSprite; use a paid feature, retry, prompt variation, normalizer, test-only staging, runtime path, or asset promotion for the one pilot",
+    "Submit any BFL image-to-video source input before the owner records a decision on BFL's training-use terms, or treat BFL's FLUX.2 OAuth MCP connector as FLUX 3 video access"
   ],
   "planned_checks": [
     "npm run check:compliance",
@@ -41,8 +45,8 @@
     "npm run build",
     "npm run check:bundle-budget",
     "npm run test:browser:matrix",
-    "Ubuntu visual-baseline candidate workflow and explicit candidate inspection",
-    "separate real-phone acceptance"
+    "external pilot evidence review: settings, source/output hash, every-frame Loomseed/identity/baseline review, and durable export",
+    "separate real-phone acceptance before any later animated production asset"
   ],
   "deterministic_seeds": [
     "1",
@@ -105,6 +109,16 @@
       "command": "npm run test:browser:matrix",
       "status": "pass",
       "detail": "Passed all 95 applicable zero-retry phone-browser results; 60 project-specific exclusions match the reviewed quality policy. V3 tests accept either the completed Loomkeeper presentation or a valid terminal result, and still prove fresh authority through Play Again. Local screenshot comparison remained omitted by policy."
+    },
+    {
+      "command": "WP-015C AutoSprite combined-Loomseed idle pilot, all 25 frames",
+      "status": "rejected",
+      "detail": "The single free-tier Custom pilot used combined source 1CC252B45C93D2553AC733DAA6AA49D05D6351DCC85E61EA559ECED458C9419C and produced a 1280x1280, 230,227-byte external PNG, SHA-256 74405D51591BE482152A9AC2B4F9609E92651FCF200FFEBB31987EC8DD0DB9EB. The raised hand keeps a blue/gold focus and corners are transparent, but all frames replace the approved two black bead eyes and small stitched mouth with one oversized white/black cartoon eye, including blinks. Identity failure rejects the entire sheet. It is retained outside the repository only; no retry or product path follows."
+    },
+    {
+      "command": "WP-015C_Animation BFL direct API credential preflight: GET /v1/credits",
+      "status": "pass",
+      "detail": "Read Flux_GameAssets_API_Key only from Windows User scope into the invoking process and authenticated without uploading media or starting a generation. The key value was neither printed nor persisted; BFL returned 1,000 credits. The separately registered https://mcp.bfl.ai FLUX MCP server completed its separate OAuth login and does not use this API key."
     }
   ],
   "reviews": [
@@ -112,18 +126,33 @@
       "role": "project owner",
       "reviewer": "Jens Bernhardt",
       "decision": "finding",
-      "detail": "Real-phone WP-015C acceptance found that the completed solid trajectory line overlaid the cast/impact presentation, while Needlepoint and Spoolburst lacked a discrete in-flight visual. The scoped repair removes the completed trajectory line, retains the dashed aim guide, and renders compact procedural projectile/impact visuals for the two unapproved Relic families. The focused re-check then found that Threadball retained one short gold line below the first projectile: its intended blue tail was overdrawn by a gold segment. The final in-scope correction removes that segment and narrows the source-free effect grammar to a blue-only short tail. The next real-phone check found that the large shared Wizard's visible upper body is outside the v1/v2 lower-body direct-hit target. The project owner authorized the bounded v3 correction: new challenges use a fixed body profile (`halfWidth: 32`, `top: 85`, `bottom: 13`) for direct projectile contact; v1/v2 replay behavior remains immutable. Phone re-check remains open."
+      "detail": "Real-phone WP-015C acceptance found that the completed solid trajectory line overlaid the cast/impact presentation, while Needlepoint and Spoolburst lacked a discrete in-flight visual. The scoped repair removes the completed trajectory line, retains the dashed aim guide, and renders compact procedural projectile/impact visuals for the two unapproved Relic families. The focused re-check then found that Threadball retained one short gold line below the first projectile: its intended blue tail was overdrawn by a gold segment. The final in-scope correction removes that segment and narrows the source-free effect grammar to a blue-only short tail. The next real-phone check found that the large shared Wizard's visible upper body is outside the v1/v2 lower-body direct-hit target. The project owner authorized the bounded v3 correction: new challenges use a fixed body profile (`halfWidth: 32`, `top: 85`, `bottom: 13`) for direct projectile contact; v1/v2 replay behavior remains immutable. The project owner subsequently tested the hitbox on phone and accepted it; the focused Ubuntu replacement was explicitly waived."
+    },
+    {
+      "role": "project owner",
+      "reviewer": "Jens Bernhardt",
+      "decision": "rejected after quarantine review",
+      "detail": "The permanent Loomseed removed the former empty-hand socket preservation requirement, so one free-tier Custom idle pilot was authorized from exact approved combined presentation master 1CC252B45C93D2553AC733DAA6AA49D05D6351DCC85E61EA559ECED458C9419C. Its 25-frame result retains a small focus but fails the still-required Wizard face identity: it replaces both black bead eyes and the stitched mouth with one large cartoon eye/no mouth. The old raw-empty-palm pilots and this combined-presentation pilot are rejected. No paid control, retry, normalizer, staging, runtime path, or asset promotion is authorized."
+    },
+    {
+      "role": "implementation",
+      "reviewer": "Codex",
+      "decision": "configured; no media submission",
+      "detail": "The official BFL FLUX MCP connector was registered globally at https://mcp.bfl.ai and completed OAuth login. BFL documents it as an OAuth FLUX.2 image connector, so it is intentionally separate from the direct FLUX 3 API key lane. No source image/video was uploaded. The documented BFL API training-use terms require a subsequent owner decision before the first limited image-to-video pilot."
     }
   ],
   "skipped_checks": [
-    "V3 changes the active combat candidates, so the prior Ubuntu artifact is historical only. A new pinned Ubuntu visual-baseline candidate workflow and explicit artifact inspection remain required; no Windows baseline was created or retained.",
-    "Separate real-phone acceptance remains open. It must confirm that upper Wizard body impacts now register, while the v3 Needlepoint direct-hit pacing remains acceptable."
+    "The project owner explicitly waived a replacement Ubuntu candidate for the focused V3 hitbox correction after passing real-phone acceptance. The prior pinned Ubuntu candidate remains technical evidence only; no Windows baseline was created or retained.",
+    "The rejected external AutoSprite pilot has no product path and therefore does not trigger a new build, browser matrix, Ubuntu candidate, or phone test. Its separately completed frame, alpha, settings, source, and output-hash review is recorded above.",
+    "WP-015C_Animation has only registered/preflighted services; no media exists, so no image/video frame review, build, browser matrix, visual baseline, or phone test applies yet."
   ],
   "residual_risks": [
     "The approved Wizard presentation is intentionally shared by player and Loomkeeper until WP-015D produces a distinct Loomkeeper; labels and team rings remain the distinction.",
     "The current deterministic Loomkeeper exchange may select Needlepoint or Spoolburst, which deliberately use bounded procedural placeholder presentation until their own approved asset families exist.",
     "Visual baselines will change and must be generated and inspected only through the pinned Ubuntu candidate workflow before any baseline commit.",
     "The v3 body profile is intentionally valid only for the shared Wizard presentation. WP-015D must version a new profile rather than reuse it unchanged when it introduces distinct Calling or Loomkeeper visuals.",
-    "V3 retains V2's historical 120 maximum Needlepoint damage, so a correct direct Needlepoint contact can resolve a full 100-Stitching target in one action. Focused phone acceptance must assess V3 pacing before the separately versioned V4 low-damage Needlepoint tier."
+    "V3 retains V2's historical 120 maximum Needlepoint damage, so a correct direct Needlepoint contact can resolve a full 100-Stitching target in one action. The owner accepted current V3 phone behavior, but WP-015D must separately version the planned low-damage Needlepoint tier.",
+    "AutoSprite does not publish an exact inference model/version and has no fixed retention period. Its completed combined-Loomseed pilot failed the face-identity gate despite preserving the focus, so the route is closed and must not be treated as a production dependency.",
+    "BFL's reviewed API terms permit training/improvement use of submitted inputs and outputs. The owner must make that explicit decision or obtain written BFL clarification before any approved Wizard source crosses the service boundary; FLUX 3 video output is opaque/external and would need a new frame, alpha, identity, provenance, and product-admission gate even if the pilot passes."
   ]
 }
