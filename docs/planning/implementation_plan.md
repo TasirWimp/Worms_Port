@@ -2649,8 +2649,12 @@ Sequential delivery slices:
   the fixed seven-file inventory now loads through a client-side fallback,
   the shared Wizard/temporary Threadball/Patch presentation is bound to existing
   authority, and the final Windows zero-retry matrix passed 95 applicable
-  results with 60 reviewed exclusions. The Ubuntu visual candidate and separate
-  real-phone review remain required before C can close.
+  results with 60 reviewed exclusions. On 2026-08-06, pinned Ubuntu 24.04
+  workflow run `31070047238` passed for commit `6339565432f480439dd907807234aec0db4bdf2a`
+  and uploaded the candidate artifact; its Threadball charge, formation,
+  projectile, impact, landscape, and sideways frames received a technical
+  inspection without any Windows baseline update. Explicit visual-baseline
+  approval and separate real-phone review remain required before C can close.
 - **WP-015D Basic roster and ruleset completion:** after C acceptance, freeze
   exact v3 range/damage values and add `nimble-knots-artillery-v3` while
   preserving byte-for-byte v1/v2 replay behavior. Range and maximum direct

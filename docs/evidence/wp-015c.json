@@ -74,11 +74,16 @@
       "command": "npm run test:browser:matrix",
       "status": "pass",
       "detail": "Final Windows zero-retry behavior matrix passed all 95 applicable results in 7.3 minutes; 60 project-specific exclusions were accounted for by the reviewed quality policy. Screenshot comparison remains Ubuntu-only."
+    },
+    {
+      "command": "Ubuntu 24.04 Visual baseline candidates (GitHub Actions run 31070047238)",
+      "status": "pass",
+      "detail": "The pinned workflow ran on commit 6339565432f480439dd907807234aec0db4bdf2a and uploaded the candidate artifact. Technical inspection covered the player Threadball charge, formation-start, formation-ready, projectile, impact, landscape, and sideways frames. No Windows baseline was created or updated."
     }
   ],
   "reviews": [],
   "skipped_checks": [
-    "The full Windows behavior matrix passed. Ubuntu visual-candidate inspection and real-phone acceptance remain open while this evidence is in progress."
+    "The full Windows behavior matrix passed and the Ubuntu candidate artifact was technically inspected. Explicit visual-baseline approval and separate real-phone acceptance remain open while this evidence is in progress."
   ],
   "residual_risks": [
     "The approved Wizard presentation is intentionally shared by player and Loomkeeper until WP-015D produces a distinct Loomkeeper; labels and team rings remain the distinction.",
