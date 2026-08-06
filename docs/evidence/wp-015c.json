@@ -1,0 +1,88 @@
+{
+  "id": "WP-015C",
+  "status": "in_progress",
+  "starting_commit": "84f93d8c800dd39f7cc1399fd23d618635ba7c26",
+  "branch": "codex/wp-015-production-assets",
+  "initial_worktree": "clean",
+  "starting_lock_sha256": "E3E461C3D97BEA4EAA18C87ABA4C83FB8B5286EC10A4235BE789679EFC8F0412",
+  "owning_roles": [
+    "worms_port_base_game_worker",
+    "worms_port_asset_curator",
+    "worms_port_test_worker",
+    "worms_port_reviewer"
+  ],
+  "scope": [
+    "Load only the seven manifest-approved WP-015B3C.1 runtime copies, with a visible procedural fallback if the fixed inventory cannot load",
+    "Present the same approved Wizard-with-Loomseed for player and Loomkeeper while retaining code-owned actor labels, team cues, positions, rules, and authority",
+    "Tile the approved Cloud, Terrain Top, and Terrain Interior as decorative layers over the existing code-owned terrain geometry only",
+    "Bind the approved Threadball charge, formation-start, formation-ready, projectile, short tail, and Unraveling impact grammar to existing authoritative Threadball presentation events",
+    "Keep Needlepoint and Spoolburst on their existing generic presentation until WP-015D creates approved assets for them",
+    "Permit Phaser's same-origin runtime decode blobs in the image-only CSP source list without relaxing script, connect, object, framing, or payment policy"
+  ],
+  "non_goals": [
+    "Generate, alter, or approve any source raster, atlas, animation, or additional runtime asset",
+    "Change simulation, collision, damage, projectile paths, replay, turn timing, AI policy, rewards, or the v1/v2 rulesets",
+    "Use Patch pixels as collision truth or remove the existing procedural fallback",
+    "Approve or update a visual baseline from Windows",
+    "Treat local browser verification as a substitute for the required Ubuntu candidate review or real-device acceptance"
+  ],
+  "planned_checks": [
+    "npm run check:compliance",
+    "npm run check:types",
+    "npm run test:combat",
+    "npm run test:tooling",
+    "node --import tsx --test tests/reward/runtime.test.ts",
+    "npm run build",
+    "npm run check:bundle-budget",
+    "npm run test:browser:matrix",
+    "Ubuntu visual-baseline candidate workflow and explicit candidate inspection",
+    "separate real-phone acceptance"
+  ],
+  "deterministic_seeds": [
+    "1",
+    "3735928559"
+  ],
+  "sorcerers_reference_used": false,
+  "clean_room_records": [],
+  "check_results": [
+    {
+      "command": "npm run check:types",
+      "status": "pass",
+      "detail": "Passed after the initial client integration."
+    },
+    {
+      "command": "npm run test:combat",
+      "status": "pass",
+      "detail": "Passed with Threadball normal/reduced causal-order coverage for both actors."
+    },
+    {
+      "command": "npm run test:tooling",
+      "status": "pass",
+      "detail": "Passed; the closed seven-file runtime inventory remains exact."
+    },
+    {
+      "command": "node --import tsx --test tests/reward/runtime.test.ts",
+      "status": "pass",
+      "detail": "Passed with the narrow image-only blob CSP assertion."
+    },
+    {
+      "command": "npm run build",
+      "status": "pass",
+      "detail": "Passed; the production copier emitted the seven byte-identical approved runtime files."
+    },
+    {
+      "command": "npm run test:browser:matrix",
+      "status": "pass",
+      "detail": "Final Windows zero-retry behavior matrix passed all 95 applicable results in 7.3 minutes; 60 project-specific exclusions were accounted for by the reviewed quality policy. Screenshot comparison remains Ubuntu-only."
+    }
+  ],
+  "reviews": [],
+  "skipped_checks": [
+    "The full Windows behavior matrix passed. Ubuntu visual-candidate inspection and real-phone acceptance remain open while this evidence is in progress."
+  ],
+  "residual_risks": [
+    "The approved Wizard presentation is intentionally shared by player and Loomkeeper until WP-015D produces a distinct Loomkeeper; labels and team rings remain the distinction.",
+    "The current deterministic Loomkeeper exchange may select Needlepoint or Spoolburst, which deliberately retain their generic presentation until their own approved asset families exist.",
+    "Visual baselines will change and must be generated and inspected only through the pinned Ubuntu candidate workflow before any baseline commit."
+  ]
+}

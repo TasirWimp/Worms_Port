@@ -9,7 +9,9 @@ Phaser/Socket.IO stack.
 
 - Active target: mobile-first single-player Nimiq Pay competition release.
 - Active work package: **WP-015C First playable visual slice — integration
-  only:** WP-015B3C.1 completed on 2026-08-05. Its closed inventory assigns
+  only:** implementation is in progress on `codex/wp-015-production-assets`;
+  its evidence carrier is `docs/evidence/wp-015c.json`. WP-015B3C.1 completed
+  on 2026-08-05. Its closed inventory assigns
   `runtime_path` only to seven existing approved masters and the build copier
   now produces their byte-identical copies below `assets/product/` (607,427
   source bytes, below the 1.5 MB ceiling). It created no source asset, atlas,
@@ -2643,7 +2645,12 @@ Sequential delivery slices:
   collision or simulation authority. Run compliance, build, the full automated
   phone-browser matrix, and the Ubuntu visual-candidate workflow. D remains
   blocked until the candidate is reviewed on a real phone and any finding is
-  either fixed or explicitly deferred.
+  either fixed or explicitly deferred. Implementation status on 2026-08-05:
+  the fixed seven-file inventory now loads through a client-side fallback,
+  the shared Wizard/temporary Threadball/Patch presentation is bound to existing
+  authority, and the final Windows zero-retry matrix passed 95 applicable
+  results with 60 reviewed exclusions. The Ubuntu visual candidate and separate
+  real-phone review remain required before C can close.
 - **WP-015D Basic roster and ruleset completion:** after C acceptance, freeze
   exact v3 range/damage values and add `nimble-knots-artillery-v3` while
   preserving byte-for-byte v1/v2 replay behavior. Range and maximum direct

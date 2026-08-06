@@ -7,6 +7,7 @@ import {
     type SimulationState
 } from '../../../shared/simulation';
 import { CombatControls } from '../combat/controls';
+import { preloadApprovedCombatAssets } from '../combat/approved-assets';
 import type { CombatSceneArgs, SafeAreaInsets } from '../combat/contracts';
 import { createCombatFixture } from '../combat/fixture';
 import { canRequestFullscreen, toggleGameFullscreen } from '../combat/fullscreen';
@@ -18,7 +19,7 @@ import {
     type CombatPresentationStep
 } from '../combat/presentation';
 import { trajectoryPreview } from '../combat/preview';
-import { CombatRenderer } from '../combat/renderer';
+import { CombatRenderer, type CombatVisualPhase } from '../combat/renderer';
 
 const MAX_PRESENTATION_SNAPSHOTS = 32;
 
@@ -32,6 +33,7 @@ export default class CombatScene extends Phaser.Scene {
     private renderState: SimulationState;
     private preview: { x: number; y: number }[] = [];
     private projectileTrace: { x: number; y: number }[] = [];
+    private visualPhase?: CombatVisualPhase;
     private readonly snapshotQueue: ChallengeSnapshot[] = [];
     private pendingResult?: ChallengeResult;
     private pendingCommand = false;
@@ -58,6 +60,7 @@ export default class CombatScene extends Phaser.Scene {
         this.renderState = cloneSimulation(this.snapshot.simulation as SimulationState);
         this.preview = [];
         this.projectileTrace = [];
+        this.visualPhase = undefined;
         this.snapshotQueue.splice(0);
         this.pendingResult = undefined;
         this.pendingCommand = false;
@@ -84,6 +87,7 @@ export default class CombatScene extends Phaser.Scene {
             onRetry: () => void this.retry(),
             onFullscreenToggle: () => void this.toggleFullscreen()
         });
+        this.controls.root.dataset.visualAssets = this.combatRenderer.assetState;
         this.controls.setFullscreenState(
             !activeSidewaysMode() && canRequestFullscreen(),
             Boolean(document.fullscreenElement)
@@ -133,6 +137,10 @@ export default class CombatScene extends Phaser.Scene {
             this.unsubscribers.push(this.args.onError((message) => this.controls.setMessage(message)));
         }
         this.onResize();
+    }
+
+    public preload(): void {
+        preloadApprovedCombatAssets(this);
     }
 
     private async submit(command: SimulationCommand): Promise<void> {
@@ -356,7 +364,8 @@ export default class CombatScene extends Phaser.Scene {
             this.renderState,
             this.layout,
             this.preview,
-            this.projectileTrace
+            this.projectileTrace,
+            this.visualPhase
         );
     }
 
@@ -410,14 +419,30 @@ export default class CombatScene extends Phaser.Scene {
         for (const step of steps) {
             if (epoch !== this.presentationEpoch) return;
             this.controls.setPresenting(step.phase, presentationLabel(step));
+            this.controls.root.removeAttribute('data-visual-stage');
             if (step.kind === 'movement') {
                 await this.presentMovement(working, step, epoch, reducedMotion);
             } else if (step.kind === 'aim') {
                 this.renderState = cloneSimulation(working);
                 this.preview = step.trace.map((point) => ({ ...point }));
                 this.projectileTrace = [];
+                this.visualPhase = undefined;
                 this.render();
                 await this.waitForPresentation(step.durationMs, epoch);
+            } else if (step.kind === 'cast-charge') {
+                this.renderState = cloneSimulation(working);
+                this.preview = [];
+                this.projectileTrace = [];
+                this.visualPhase = {
+                    kind: 'cast-charge',
+                    actor: step.actor,
+                    relicId: step.relicId,
+                    trace: step.trace.map((point) => ({ ...point }))
+                };
+                this.render();
+                await this.waitForPresentation(step.durationMs, epoch);
+            } else if (step.kind === 'cast-formation') {
+                await this.presentCastFormation(working, step, epoch);
             } else if (step.kind === 'projectile') {
                 this.preview = [];
                 await this.presentProjectile(working, step, epoch, reducedMotion);
@@ -427,6 +452,14 @@ export default class CombatScene extends Phaser.Scene {
                 this.projectileTrace = next.simulation.lastProjectile?.trace.map(
                     (point) => ({ ...point })
                 ) ?? [];
+                this.visualPhase = {
+                    kind: 'impact',
+                    actor: step.actor,
+                    relicId: next.simulation.lastProjectile && 'relicId' in next.simulation.lastProjectile
+                        ? next.simulation.lastProjectile.relicId
+                        : 'threadball',
+                    trace: this.projectileTrace.map((point) => ({ ...point }))
+                };
                 this.controls.update(next);
                 this.render();
                 await this.waitForPresentation(step.durationMs, epoch);
@@ -449,6 +482,7 @@ export default class CombatScene extends Phaser.Scene {
             this.renderState = cloneSimulation(working);
             this.preview = [];
             this.projectileTrace = [];
+            this.visualPhase = undefined;
             this.render();
             await this.waitForPresentation(step.durationMs / frames, epoch);
             if (epoch !== this.presentationEpoch) return;
@@ -466,16 +500,55 @@ export default class CombatScene extends Phaser.Scene {
         for (let frame = 1; frame <= frames; frame += 1) {
             const points = Math.max(2, Math.ceil(step.trace.length * frame / frames));
             this.projectileTrace = step.trace.slice(0, points).map((point) => ({ ...point }));
+            this.visualPhase = {
+                kind: 'projectile',
+                actor: step.actor,
+                relicId: step.relicId,
+                trace: this.projectileTrace.map((point) => ({ ...point }))
+            };
             this.render();
             await this.waitForPresentation(step.durationMs / frames, epoch);
             if (epoch !== this.presentationEpoch) return;
         }
     }
 
+    private async presentCastFormation(
+        working: SimulationState,
+        step: Extract<CombatPresentationStep, { kind: 'cast-formation' }>,
+        epoch: number
+    ): Promise<void> {
+        this.renderState = cloneSimulation(working);
+        this.preview = [];
+        this.projectileTrace = [];
+        this.visualPhase = {
+            kind: 'cast-formation',
+            actor: step.actor,
+            relicId: step.relicId,
+            stage: 'start',
+            trace: step.trace.map((point) => ({ ...point }))
+        };
+        this.controls.root.dataset.visualStage = 'formation-start';
+        this.render();
+        await this.waitForPresentation(step.durationMs * 0.45, epoch);
+        if (epoch !== this.presentationEpoch) return;
+        this.visualPhase = {
+            kind: 'cast-formation',
+            actor: step.actor,
+            relicId: step.relicId,
+            stage: 'ready',
+            trace: step.trace.map((point) => ({ ...point }))
+        };
+        this.controls.root.dataset.visualStage = 'formation-ready';
+        this.render();
+        await this.waitForPresentation(step.durationMs * 0.55, epoch);
+    }
+
     private commitPresentedSnapshot(next: ChallengeSnapshot, clearAim: boolean): void {
         this.snapshot = structuredClone(next);
         this.renderState = cloneSimulation(next.simulation as SimulationState);
         this.projectileTrace = [];
+        this.visualPhase = undefined;
+        this.controls.root.removeAttribute('data-visual-stage');
         this.controls.update(this.snapshot);
         if (clearAim) this.controls.clearAimLock();
         this.preview = this.controls.input.lockedAim && !this.snapshot.paused &&
@@ -497,6 +570,8 @@ export default class CombatScene extends Phaser.Scene {
         this.renderState = cloneSimulation(next.simulation as SimulationState);
         this.preview = [];
         this.projectileTrace = [];
+        this.visualPhase = undefined;
+        this.controls.root.removeAttribute('data-visual-stage');
         this.controls.setPresenting(null);
         this.controls.update(this.snapshot);
         this.controls.clearAimLock();
@@ -513,6 +588,8 @@ export default class CombatScene extends Phaser.Scene {
         );
         this.preview = [];
         this.projectileTrace = [];
+        this.visualPhase = undefined;
+        this.controls.root.removeAttribute('data-visual-stage');
         this.controls?.setPresenting(null);
         this.controls?.update(this.snapshot);
         this.render();

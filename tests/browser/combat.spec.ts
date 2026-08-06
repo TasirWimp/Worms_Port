@@ -25,6 +25,7 @@ test('portrait/landscape layout is touch-safe and renders deterministic combat',
   const viewport = page.viewportSize()!;
   await expect(ui).toHaveAttribute('data-orientation', viewport.width > viewport.height ? 'landscape' : 'portrait');
   await expect(ui).toHaveAttribute('data-selected-relic', 'threadball');
+  await expect(ui).toHaveAttribute('data-visual-assets', 'approved-runtime-copies');
   await expect(page.getByText('Your turn')).toBeVisible();
   await expect(page.locator('.player-status')).toHaveAttribute('aria-label', /Player Stitching 100/);
   await expect(page.locator('.loomkeeper-status')).toHaveAttribute('aria-label', /Loomkeeper Stitching 100/);
@@ -249,9 +250,34 @@ test('touch movement, Relic selection, aim lock, and explicit Fire stay separate
   await expect(page.locator('.fire-button')).toBeDisabled();
   const presentation = await readPresentationRecorder(page);
   expect(presentation.phases).toEqual(expect.arrayContaining([
-    'player-projectile', 'player-impact'
+    'player-projectile',
+    'player-impact'
   ]));
   expect(presentation.maximumProjectilePoints).toBeGreaterThan(1);
+});
+
+test('Threadball preserves the approved cast order before the authoritative trace', async ({ page }, testInfo) => {
+  test.skip(testInfo.project.name !== 'chromium-390x844', 'One phone viewport verifies the asset-bound sequence.');
+  await installPresentationRecorder(page);
+  await dragPad(page, '.aim-zone', 91, 0.3, -0.34);
+  await expect(page.locator('.fire-button')).toBeEnabled();
+  await page.locator('.fire-button').tap();
+  await expect(page.locator('.combat-ui')).toHaveAttribute('data-presenting', 'false', {
+    timeout: 15_000
+  });
+  const presentation = await readPresentationRecorder(page);
+  expect(presentation.phases).toEqual(expect.arrayContaining([
+    'player-cast-charge',
+    'player-cast-formation',
+    'player-projectile',
+    'player-impact'
+  ]));
+  expect(presentation.phases.indexOf('player-cast-charge')).toBeLessThan(
+    presentation.phases.indexOf('player-cast-formation')
+  );
+  expect(presentation.phases.indexOf('player-cast-formation')).toBeLessThan(
+    presentation.phases.indexOf('player-projectile')
+  );
 });
 
 test('floating pads appear at the active thumb and Relics expand in place', async ({ page }) => {

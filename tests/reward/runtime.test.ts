@@ -117,6 +117,7 @@ test('runtime responses include the production security headers', async () => {
         const response = await fetch(`http://127.0.0.1:${port}/`);
         assert.equal(response.status, 200);
         assert.match(response.headers.get('content-security-policy') ?? '', /object-src 'none'/);
+        assert.match(response.headers.get('content-security-policy') ?? '', /img-src 'self' data: blob:/);
         assert.equal(response.headers.get('x-content-type-options'), 'nosniff');
         assert.equal(response.headers.get('referrer-policy'), 'no-referrer');
         assert.equal(response.headers.get('x-frame-options'), 'DENY');

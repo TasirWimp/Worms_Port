@@ -51,6 +51,12 @@
       "reason": "The complete right/left/default sideways transition is frozen on the canonical portrait project."
     },
     {
+      "file": "combat.spec.ts",
+      "title": "Threadball preserves the approved cast order before the authoritative trace",
+      "runsOn": ["chromium-390x844"],
+      "reason": "The asset-bound Threadball spell sequence is frozen on one canonical portrait phone while the unit plan verifies both actors and reduced-motion timing."
+    },
+    {
       "file": "identity.spec.ts",
       "title": "signing rejection is cancelled and the same account can retry immediately",
       "runsOn": ["chromium-390x844"],

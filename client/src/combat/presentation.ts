@@ -21,6 +21,22 @@ export type CombatPresentationStep =
         durationMs: number;
       }
     | {
+        kind: 'cast-charge';
+        phase: `${SimulationActor}-cast-charge`;
+        actor: SimulationActor;
+        relicId: 'threadball';
+        trace: PresentationPoint[];
+        durationMs: number;
+      }
+    | {
+        kind: 'cast-formation';
+        phase: `${SimulationActor}-cast-formation`;
+        actor: SimulationActor;
+        relicId: 'threadball';
+        trace: PresentationPoint[];
+        durationMs: number;
+      }
+    | {
         kind: 'projectile';
         phase: `${SimulationActor}-projectile`;
         actor: SimulationActor;
@@ -46,8 +62,8 @@ export function planCombatPresentation(
     const beforeUnit = previous.simulation.units[actorIndex];
     const afterUnit = next.simulation.units[actorIndex];
     const durations = reducedMotion
-        ? { movement: 60, aim: 80, projectile: 120, impact: 80 }
-        : { movement: 240, aim: 320, projectile: 640, impact: 280 };
+        ? { movement: 60, aim: 80, castCharge: 30, castFormation: 40, projectile: 120, impact: 80 }
+        : { movement: 240, aim: 320, castCharge: 80, castFormation: 120, projectile: 640, impact: 280 };
     const steps: CombatPresentationStep[] = [];
 
     if (beforeUnit.x !== afterUnit.x || beforeUnit.y !== afterUnit.y) {
@@ -77,6 +93,24 @@ export function planCombatPresentation(
             durationMs: durations.aim
         });
     }
+    if (relicId === 'threadball') {
+        steps.push({
+            kind: 'cast-charge',
+            phase: `${actor}-cast-charge`,
+            actor,
+            relicId,
+            trace,
+            durationMs: durations.castCharge
+        });
+        steps.push({
+            kind: 'cast-formation',
+            phase: `${actor}-cast-formation`,
+            actor,
+            relicId,
+            trace,
+            durationMs: durations.castFormation
+        });
+    }
     steps.push({
         kind: 'projectile',
         phase: `${actor}-projectile`,
@@ -98,6 +132,8 @@ export function presentationLabel(step: CombatPresentationStep): string {
     const actor = step.actor === 'player' ? 'Your Knotkin' : 'Loomkeeper';
     if (step.kind === 'movement') return `${actor} moves`;
     if (step.kind === 'aim') return `Loomkeeper aims ${relicName(step.relicId)}`;
+    if (step.kind === 'cast-charge') return `${actor} gathers Worldweave`;
+    if (step.kind === 'cast-formation') return `${actor} forms Threadball`;
     if (step.kind === 'projectile') return `${actor} fires ${relicName(step.relicId)}`;
     return `${actor} impact`;
 }

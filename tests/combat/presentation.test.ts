@@ -25,7 +25,7 @@ test('presentation plan distinguishes movement from player and Loomkeeper shots'
     const playerFire = apply(aimed, 'player', { type: 'fire' });
     assert.deepEqual(
         planCombatPresentation(snapshot(aimed), snapshot(playerFire), false).map((step) => step.phase),
-        ['player-projectile', 'player-impact']
+        ['player-cast-charge', 'player-cast-formation', 'player-projectile', 'player-impact']
     );
     assert.equal(playerFire.activeActor, 'loomkeeper');
 
@@ -39,7 +39,13 @@ test('presentation plan distinguishes movement from player and Loomkeeper shots'
             snapshot(loomkeeperFire),
             false
         ).map((step) => step.phase),
-        ['loomkeeper-aim', 'loomkeeper-projectile', 'loomkeeper-impact']
+        [
+            'loomkeeper-aim',
+            'loomkeeper-cast-charge',
+            'loomkeeper-cast-formation',
+            'loomkeeper-projectile',
+            'loomkeeper-impact'
+        ]
     );
 });
 
