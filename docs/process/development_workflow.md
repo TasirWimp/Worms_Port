@@ -1806,16 +1806,23 @@ failure rejects the entire sheet, regardless of Loomseed retention. This closes
 the exception; retain the source and result only as external evidence. Do not
 retry, edit the prompt, repair, normalize, stage, manifest, or integrate it.
 
-#### WP-015C_Animation FLUX 3 external-video gate (2026-08-06)
+#### WP-015C_Animation FLUX.2 one-key-pose gate (revised 2026-08-06)
 
 This is a separate, external-quarantine research lane, not a retry, repair, or
-replacement of AutoSprite. The official global `FLUX` MCP connector is
-registered at `https://mcp.bfl.ai`. It authenticates with a BFL OAuth account
-and exposes FLUX.2 **image** tools only; do not attach an API key or infer FLUX
-3 video support from that connector. Complete its one-time OAuth login in the
-Codex client only when the owner wants the still-image tools available. That
-login completed on 2026-08-06; restart Codex before a currently active session
-can load its tools.
+replacement of AutoSprite. It supersedes the proposed FLUX 3 video lane: video
+may later provide motion-reference material, but it is not a sprite-production
+route. The first target is one still **cast-preparation** key pose which can be
+reviewed as a normal raster candidate before any later normalization decision.
+The existing deterministic root-transform/Threadball presentation remains the
+only approved runtime animation route.
+
+The official global `FLUX` MCP connector remains registered at
+`https://mcp.bfl.ai` and separately authenticated with BFL OAuth. It exposes
+FLUX.2 image tools only and must not receive an API key. Codex Desktop runtime
+`0.147.0-alpha.1.2` omits its remote tools from desktop-thread registries after
+full restarts/new chats; treat that as the current Codex Desktop exposure defect,
+not a failed BFL login. Retain the connector for CLI use or a later desktop fix;
+this gate uses the direct BFL API instead.
 
 Direct BFL API calls use `Flux_GameAssets_API_Key`, which the owner placed at
 Windows **User** scope. Read it only into the invoking process at request time;
@@ -1823,33 +1830,46 @@ never print it, rename/copy it to `BFL_API_KEY`, place it in a repository file,
 Codex config, shell history, request evidence, or prompt. A no-charge
 `GET https://api.bfl.ai/v1/credits` preflight on 2026-08-06 passed and returned
 1,000 credits. A newly started Codex process may not inherit a User-scoped
-variable automatically, so any helper must explicitly retrieve that scope or
-the owner must restart Codex; no secret workaround is permitted.
+variable automatically, so a helper must explicitly retrieve that scope or the
+owner must restart Codex; no secret workaround is permitted.
 
 No BFL media request is authorized merely by the connector or key preflight.
 BFL's API Service Terms (reviewed 2026-08-06) grant it broad rights to use
 inputs and outputs, including training/improving its products. Its published
 privacy-page training opt-out must not be assumed to amend those API terms.
-Before uploading the approved combined Wizard-with-Loomseed master, record the
-owner's affirmative choice to accept that treatment or BFL's written confirmation
-that an account-specific opt-out changes it. Do not upload the raw empty-handed
-Wizard, a runtime copy, a rejected AutoSprite sheet, or any third-party image.
+On 2026-08-06, the project owner affirmatively accepted that treatment for this
+one direct FLUX.2 `max` key-pose pilot. It covers the recorded Wizard input,
+original pose guide, prompt, and resulting output only; it does not authorize a
+second request or relax any review, provenance, or product-admission rule. Do
+not upload the raw empty-handed Wizard, a runtime copy, a rejected AutoSprite
+sheet, or any third-party image.
 
-If that decision is recorded, the sole first FLUX 3 pilot is one **silent,
-5-second, HD, draft** `i2v` request from exact combined master
-`1CC252B45C93D2553AC733DAA6AA49D05D6351DCC85E61EA559ECED458C9419C`. FLUX 3
-does not offer a 3-second duration, so it replaces—not multiplies—the earlier
-three-short-animation idea. At the current documented rate this pilot costs
-$0.30. Save the untouched time-limited result externally before it expires;
-record the endpoint/model/version, request body without the key, result/task
-identifiers, requested settings, credit cost, timestamps, source/output hashes,
-and any content credentials. The external video is not a source asset or a
-candidate sprite sheet. Reject the entire pilot if any frame alters the two bead
-eyes, stitched mouth, Loomseed, raised palm/arm, body identity, full-body crop,
-baseline, or background; also reject on inaccessible/undocumented output.
-There is no automatic retry, frame extraction, alpha removal, normalizer, atlas,
-test staging, runtime path, product build, or phone-baseline update without a
-new work-package decision.
+After that decision, freeze a single direct `POST /v1/flux-2-max` edit contract:
+
+1. **Identity reference:** exact combined Wizard-with-Loomseed master
+   `1CC252B45C93D2553AC733DAA6AA49D05D6351DCC85E61EA559ECED458C9419C`.
+2. **Structure reference:** one original, local, plain pose-guide image for a
+   subtle cast-preparation lean. It must contain no third-party or generated
+   pixels, be reviewed, and have its path/hash recorded before the request.
+3. **Request:** exactly one `flux-2-max` image-edit output at 1024x1024 on a
+   white/plain background, full body visible on one ground baseline. The helper
+   must take the exact positive structured prompt as a required command argument
+   or from one hash-bound external request file; it has no hidden/default prompt.
+   Do not ask for a sprite sheet, animation, video, alpha channel, projectile,
+   new object, or extra character.
+4. **Budget and preservation:** record the current quoted estimate (from $0.07),
+   endpoint/model, source/guide hashes, prompt/request body excluding the key,
+   result/task identifiers, settings, timestamps, cost, raw output hash, and
+   content credentials. Download the untouched image externally before any URL
+   expiry.
+5. **Review:** reject the complete pilot on any change to the two glossy black
+   bead eyes, small stitched mouth, permanent Loomseed, raised palm/arm, body
+   identity, full-body crop, baseline, or plain background. A visual pass is
+   evidence only.
+
+There is no automatic retry, generated sheet, video, alpha removal, normalizer,
+atlas, test staging, runtime path, product build, or phone-baseline update
+without a new work-package decision.
 
 Acceptance requires one deterministic player-and-Loomkeeper exchange through
 move, aim, fire, projectile flight, impact, Stitching damage, and result at every

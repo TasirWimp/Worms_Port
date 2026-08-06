@@ -288,29 +288,37 @@ rejects all 25 frames; the file is durable external evidence only. No retry,
 prompt adjustment, repair, normalizer, test staging, manifest entry, runtime
 path, or player-visible change is authorized.
 
-#### WP-015C_Animation FLUX 3 external-video evaluation (2026-08-06)
+#### WP-015C_Animation FLUX.2 one-key-pose evaluation (revised 2026-08-06)
 
-This separate research gate does not reopen either AutoSprite route. The official
-global BFL `FLUX` MCP registration at `https://mcp.bfl.ai` uses OAuth and FLUX.2
-image tools only. It cannot use the project API key and must not be represented
-as FLUX 3 video access. Its OAuth login completed on 2026-08-06; Codex needs a
-restart to load the new image tools into an active session. Direct FLUX 3 API
-requests instead read the owner's Windows User-scoped `Flux_GameAssets_API_Key` only at invocation time. Its
-no-charge BFL credit preflight passed with 1,000 credits; no image or video has
-been submitted.
+This separate research gate does not reopen either AutoSprite route and
+supersedes the proposed FLUX 3 video lane. FLUX 3 can later serve as external
+motion reference, but its video output is not a sprite-production input. The
+first candidate is one still **cast-preparation** Wizard key pose; existing root
+transforms and deterministic Threadball effects remain the only approved runtime
+animation route.
+
+The official global BFL `FLUX` MCP registration at `https://mcp.bfl.ai` uses
+OAuth and FLUX.2 image tools only. Its OAuth login is complete, but Codex
+Desktop `0.147.0-alpha.1.2` omits the authenticated remote tool set from desktop
+threads after restarts/new chats; retain it for CLI use or a later fix, not this
+asset workflow. The direct FLUX.2 API instead reads the owner's Windows
+User-scoped `Flux_GameAssets_API_Key` only at invocation time. Its no-charge BFL
+credit preflight passed with 1,000 credits; no image or video has been submitted.
 
 BFL's reviewed API terms permit the service to use inputs/outputs, including for
 training. The public privacy-page training opt-out is not assumed to supersede
-that grant. Therefore, no exact source master may be uploaded until the owner
-explicitly accepts that treatment or BFL confirms an effective account-specific
-opt-out in writing. If approved, the only first pilot is one silent 5-second HD
-draft `i2v` request from this combined master only (`1CC252B4...9419C`); it is
-external quarantine, never a source master, atlas, runtime copy, or product
-input. The five-second minimum replaces the earlier concept of three
-three-second clips. Preserve the raw time-limited video/download and its service
-metadata externally, then reject it in full for any face, mouth, Loomseed,
-raised-palm, anatomy, crop, baseline, or background drift. No automatic retry,
-extraction, alpha treatment, normalizer, staging, manifest update, or runtime
+that grant. On 2026-08-06, the owner accepted that treatment for one pilot only;
+the decision does not authorize further requests or any product path. The only
+first pilot is one direct
+`flux-2-max` 1024x1024 image-edit request (estimated from $0.07): exact combined
+master `1CC252B4...9419C` supplies identity, and one separately reviewed,
+locally-created, hash-bound pose guide supplies only the cast-preparation lean.
+The output requires a white/plain background, full body, and one ground
+baseline. It is external quarantine, never a source master, atlas, runtime copy,
+or product input. Preserve the untouched image/download and service metadata
+externally, then reject it in full for any face, mouth, Loomseed, raised-palm,
+anatomy, crop, baseline, or background drift. No automatic retry, generated
+sheet, video, alpha treatment, normalizer, staging, manifest update, or runtime
 integration is authorized.
 
 The first presentation route remains a root transform of that intact combined

@@ -26,24 +26,26 @@ Phaser/Socket.IO stack.
   The owner additionally authorized the single versioned rules exception after
   real-device testing: new challenges may use `nimble-knots-artillery-v3` with
   the documented shared-Wizard direct-hit profile, while V1/V2 remain immutable.
-- **WP-015C_Animation FLUX 3 external video evaluation:** this is a separate,
-  non-production research gate under C, not a reopening of the rejected
-  AutoSprite route. On 2026-08-06 the official global `FLUX` MCP connector was
-  registered at `https://mcp.bfl.ai`; it uses BFL OAuth and exposes FLUX.2 image
-  tools only, so it neither uses nor grants FLUX 3 video access through the
-  project's API key. The Windows User-scoped `Flux_GameAssets_API_Key` is used
-  only for direct BFL API requests in the invoking process, never copied to the
-  repository, a Codex config file, evidence, logs, or prompts. Its no-charge
-  `/v1/credits` preflight passed with 1,000 credits; the separate MCP OAuth
-  login also completed successfully. Codex must be restarted before this active
-  session can load its FLUX.2 image tools. No Wizard image, video request, or
-  output exists yet. Before any upload, the owner must explicitly decide
-  whether BFL's API-service training licence is acceptable or obtain written
-  confirmation that a BFL training opt-out changes that treatment. The first
-  eligible pilot, if approved, is exactly one silent 5-second HD **draft**
-  image-to-video request from the combined Wizard-with-Loomseed master, kept in
-  external quarantine only. It must not create a source asset, sprite sheet,
-  normalizer, runtime path, product build, or player-visible change.
+- **WP-015C_Animation FLUX.2 one-key-pose pilot:** this separate,
+  non-production research gate does not reopen rejected AutoSprite animation or
+  use FLUX 3 video. The goal is one still **cast-preparation key pose**, not a
+  generated sprite sheet: FLUX.2 `max` receives the exact combined
+  Wizard-with-Loomseed master as its identity reference and one later,
+  locally-created pose-guide image as its structure reference. The guide must be
+  plain, original project work, reviewed and hash-bound before the request; it
+  cannot contain third-party or generated pixels. The direct API request is
+  exactly one 1024x1024 `POST /v1/flux-2-max` edit, estimated from $0.07, with a
+  white/plain background and full-body ground baseline. The Windows User-scoped
+  `Flux_GameAssets_API_Key` is read only in the invoking process, never copied
+  to the repository, Codex config, evidence, logs, or prompts. Its no-charge
+  `/v1/credits` preflight passed with 1,000 credits. The official OAuth FLUX MCP
+  is separately configured but Codex Desktop `0.147.0-alpha.1.2` does not expose
+  it to chat threads, so it is not an implementation dependency. No Wizard
+  image or edited output exists yet. On 2026-08-06 the owner accepted BFL's API
+  input/output-use treatment, including training/improvement use, for this one
+  pilot only. The remaining source/pose-guide/prompt freeze is still required
+  before upload. The result remains external quarantine and cannot create a source asset,
+  sprite sheet, normalizer, runtime path, product build, or player-visible change.
 - Background: both AutoSprite pilots remain rejected external evidence. The owner superseded
   the empty-palm overlay condition with a permanent held Loomseed and a separate
   temporary cast Threadball. B3C now has an exact Wizard-with-Loomseed
@@ -2724,29 +2726,28 @@ Sequential delivery slices:
   stealth balance change; focused phone acceptance must assess the pacing before
   C closes. WP-015D's separately versioned V4 keeps the planned low-damage
   Needlepoint tier.
-- **WP-015C_Animation FLUX 3 external video evaluation:** preserve the first
-  playable slice's deterministic root-transform route while evaluating, but not
-  admitting, one possible video-assisted idle source. The official BFL MCP
-  connector is an OAuth-only FLUX.2 image connector; it is useful for later
-  still-image work but is not a FLUX 3 video control plane and must not receive
-  an API key. Direct video API access reads only the Windows User-scoped
-  `Flux_GameAssets_API_Key` at invocation time. The request must never print,
-  persist, or forward that value into a repository config, evidence record, or
-  prompt. BFL's FLUX 3 `i2v` contract has a 5-second minimum duration, so the
-  evaluation replaces the earlier idea of three 3-second clips with one silent
-  5-second HD draft (currently $0.30) at most. Do not submit it until the owner
-  records an informed decision about BFL's API terms, which permit service and
-  training use of submitted inputs/outputs; BFL's published privacy opt-out is
-  not assumed to amend those API terms. If authorized, upload only exact
-  combined Wizard-with-Loomseed master `1CC252B4...9419C`, retain the untouched
-  download/video metadata externally, and reject the whole result on any face,
-  mouth, Loomseed, palm, anatomy, full-body framing, baseline, background, or
-  identity drift. Record endpoint/model/version, request body excluding the key,
-  service task/result identifiers, requested duration/resolution/audio/draft
-  settings, cost, timestamps, source/output hashes, and retained content
-  credentials before any later frame-extraction proposal. There is no automatic
-  retry, frame extraction, alpha removal, atlas, normalization, staging,
-  runtime path, or visual-baseline update in this work package.
+- **WP-015C_Animation FLUX.2 one-key-pose pilot:** preserve the first playable
+  slice's deterministic root-transform route while evaluating, but not
+  admitting, one still cast-preparation pose. The official BFL MCP is an
+  OAuth-only FLUX.2 image connector, but Codex Desktop does not currently expose
+  its remote tools to threads; it must not receive an API key and is not used by
+  this work package. The direct helper reads only the Windows User-scoped
+  `Flux_GameAssets_API_Key` at invocation time. It must require the prompt from
+  its command arguments or a separately hash-bound request file, never conceal
+  it as a default, and must never print or persist the key. Before the single
+  request, freeze the exact source hash `1CC252B4...9419C`, a local original
+  pose-guide hash, positive structured prompt, `flux-2-max` endpoint, 1024x1024
+  output, white/plain background, full-body crop, and ground baseline. The owner
+  accepted BFL's documented service/training use of this pilot's submitted input
+  and resulting output on 2026-08-06; that narrow decision does not authorize a
+  second request or alter the other Terms. Retain the untouched image and service metadata externally and
+  reject the result on any face, mouth, Loomseed, palm, anatomy, full-body
+  framing, baseline, background, or identity drift. Record endpoint/model,
+  request body excluding the key, service task/result identifiers, settings,
+  cost, timestamps, source/guide/output hashes, and retained content credentials.
+  There is no automatic retry, generated sheet, video, alpha removal, atlas,
+  normalization, staging, runtime path, or visual-baseline update in this work
+  package.
 - **WP-015D Basic roster and ruleset completion:** after C acceptance, freeze
   exact v4 range/damage values and add `nimble-knots-artillery-v4` while
   preserving byte-for-byte v1/v2/v3 replay behavior. Range and maximum direct

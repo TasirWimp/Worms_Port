@@ -337,12 +337,13 @@ presentation route or authorize another request. WP-015C
 will reuse the one approved Wizard
 presentation for both the player and the AI Loomkeeper. A distinct Loomkeeper
 asset belongs to the wider character roster in WP-015D.
-`WP-015C_Animation` is a separately documented FLUX 3 external-video research
-gate, not an AutoSprite retry: BFL's OAuth MCP connector serves FLUX.2 images,
-while a direct API key preflight has made no media request. No approved art may
-be uploaded until the owner makes the recorded decision on BFL's training-use
-terms; any later one-shot video remains external quarantine and has no runtime
-path.
+`WP-015C_Animation` is a separately documented FLUX.2 one-key-pose research
+gate, not an AutoSprite retry. It replaces video-as-sprite-production with one
+external-only `flux-2-max` cast-preparation still, using the combined Wizard as
+an identity reference and an original local pose guide as structure reference.
+The owner accepted BFL's input/output-use treatment for this one external pilot;
+the remaining source/guide/prompt freeze still precedes upload. No generated
+sheet, normalization, or runtime path is part of this gate.
 WP-015C remains integration-only and begins only when the simplified vertical-
 slice inventory is manifest-approved. The Celestial Spinning Mill, Worldweave,
 Air/Draft, Fire/Loomspark, and Water/Cloudwater story is recorded in
