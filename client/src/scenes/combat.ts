@@ -420,6 +420,7 @@ export default class CombatScene extends Phaser.Scene {
             if (epoch !== this.presentationEpoch) return;
             this.controls.setPresenting(step.phase, presentationLabel(step));
             this.controls.root.removeAttribute('data-visual-stage');
+            this.controls.root.removeAttribute('data-projectile-visual');
             if (step.kind === 'movement') {
                 await this.presentMovement(working, step, epoch, reducedMotion);
             } else if (step.kind === 'aim') {
@@ -445,6 +446,10 @@ export default class CombatScene extends Phaser.Scene {
                 await this.presentCastFormation(working, step, epoch);
             } else if (step.kind === 'projectile') {
                 this.preview = [];
+                this.controls.root.dataset.projectileVisual = step.relicId === 'threadball' &&
+                    this.combatRenderer.assetState === 'approved-runtime-copies'
+                    ? 'threadball'
+                    : `generic-${step.relicId}`;
                 await this.presentProjectile(working, step, epoch, reducedMotion);
             } else {
                 this.renderState = cloneSimulation(next.simulation as SimulationState);
@@ -549,6 +554,7 @@ export default class CombatScene extends Phaser.Scene {
         this.projectileTrace = [];
         this.visualPhase = undefined;
         this.controls.root.removeAttribute('data-visual-stage');
+        this.controls.root.removeAttribute('data-projectile-visual');
         this.controls.update(this.snapshot);
         if (clearAim) this.controls.clearAimLock();
         this.preview = this.controls.input.lockedAim && !this.snapshot.paused &&
@@ -572,6 +578,7 @@ export default class CombatScene extends Phaser.Scene {
         this.projectileTrace = [];
         this.visualPhase = undefined;
         this.controls.root.removeAttribute('data-visual-stage');
+        this.controls.root.removeAttribute('data-projectile-visual');
         this.controls.setPresenting(null);
         this.controls.update(this.snapshot);
         this.controls.clearAimLock();
@@ -590,6 +597,7 @@ export default class CombatScene extends Phaser.Scene {
         this.projectileTrace = [];
         this.visualPhase = undefined;
         this.controls.root.removeAttribute('data-visual-stage');
+        this.controls.root.removeAttribute('data-projectile-visual');
         this.controls?.setPresenting(null);
         this.controls?.update(this.snapshot);
         this.render();

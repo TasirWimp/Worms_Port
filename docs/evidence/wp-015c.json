@@ -73,7 +73,12 @@
     {
       "command": "npm run test:browser:matrix",
       "status": "pass",
-      "detail": "Final Windows zero-retry behavior matrix passed all 95 applicable results in 7.3 minutes; 60 project-specific exclusions were accounted for by the reviewed quality policy. Screenshot comparison remains Ubuntu-only."
+      "detail": "After the real-phone presentation repair, the final Windows zero-retry behavior matrix passed all 95 applicable results; 60 project-specific exclusions were accounted for by the reviewed quality policy. Screenshot comparison remains Ubuntu-only."
+    },
+    {
+      "command": "npm run test:browser:practice",
+      "status": "pass",
+      "detail": "The focused live server-driven practice suite passed across its configured projects. It proves a generic moving Spoolburst visual for the player and an explicit Threadball-or-generic visual selection for the Loomkeeper."
     },
     {
       "command": "Ubuntu 24.04 Visual baseline candidates (GitHub Actions run 31070047238)",
@@ -81,13 +86,20 @@
       "detail": "The pinned workflow ran on commit 6339565432f480439dd907807234aec0db4bdf2a and uploaded the candidate artifact. Technical inspection covered the player Threadball charge, formation-start, formation-ready, projectile, impact, landscape, and sideways frames. No Windows baseline was created or updated."
     }
   ],
-  "reviews": [],
+  "reviews": [
+    {
+      "role": "project owner",
+      "reviewer": "Jens Bernhardt",
+      "decision": "finding",
+      "detail": "Real-phone WP-015C acceptance found that the completed solid trajectory line overlaid the cast/impact presentation, while Needlepoint and Spoolburst lacked a discrete in-flight visual. The scoped repair removes the completed trajectory line, retains the dashed aim guide, and renders compact procedural projectile/impact visuals for the two unapproved Relic families. Phone re-check remains open."
+    }
+  ],
   "skipped_checks": [
-    "The full Windows behavior matrix passed and the Ubuntu candidate artifact was technically inspected. Explicit visual-baseline approval and separate real-phone acceptance remain open while this evidence is in progress."
+    "The full Windows behavior matrix passed and the prior Ubuntu candidate artifact was technically inspected. This repair intentionally changes the visual candidates, so a new pinned Ubuntu candidate/inspection and a focused real-phone re-check remain open while this evidence is in progress."
   ],
   "residual_risks": [
     "The approved Wizard presentation is intentionally shared by player and Loomkeeper until WP-015D produces a distinct Loomkeeper; labels and team rings remain the distinction.",
-    "The current deterministic Loomkeeper exchange may select Needlepoint or Spoolburst, which deliberately retain their generic presentation until their own approved asset families exist.",
+    "The current deterministic Loomkeeper exchange may select Needlepoint or Spoolburst, which deliberately use bounded procedural placeholder presentation until their own approved asset families exist.",
     "Visual baselines will change and must be generated and inspected only through the pinned Ubuntu candidate workflow before any baseline commit."
   ]
 }

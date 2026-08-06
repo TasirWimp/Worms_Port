@@ -58,6 +58,14 @@ test('live practice supports authoritative pause, full player turn, and fresh re
     'loomkeeper-impact'
   ]));
   expect(presentation.maximumProjectilePoints).toBeGreaterThan(1);
+  expect(presentation.projectileVisuals).toContainEqual({
+    phase: 'player-projectile',
+    visual: 'generic-spoolburst'
+  });
+  expect(presentation.projectileVisuals).toContainEqual(expect.objectContaining({
+    phase: 'loomkeeper-projectile',
+    visual: expect.stringMatching(/^(threadball|generic-(needlepoint|spoolburst))$/)
+  }));
 
   await page.locator('.pause-button').tap();
   await expect(page.locator('.combat-pause-sheet')).toBeVisible();
@@ -340,11 +348,22 @@ function overlaps(
 
 async function installPresentationRecorder(page: Page): Promise<void> {
   await page.locator('.combat-ui').evaluate((element) => {
-    const state = { phases: [] as string[], maximumProjectilePoints: 0 };
+    const state = {
+      phases: [] as string[],
+      maximumProjectilePoints: 0,
+      projectileVisuals: [] as { phase: string; visual: string }[]
+    };
     (window as typeof window & { __practicePresentation?: typeof state }).__practicePresentation = state;
     const record = () => {
       const phase = (element as HTMLElement).dataset.presentation;
       if (phase && state.phases.at(-1) !== phase) state.phases.push(phase);
+      const visual = (element as HTMLElement).dataset.projectileVisual;
+      if (phase?.endsWith('-projectile') && visual) {
+        const previous = state.projectileVisuals.at(-1);
+        if (!previous || previous.phase !== phase || previous.visual !== visual) {
+          state.projectileVisuals.push({ phase, visual });
+        }
+      }
       state.maximumProjectilePoints = Math.max(
         state.maximumProjectilePoints,
         Number((element as HTMLElement).dataset.projectilePoints || 0)
@@ -352,7 +371,7 @@ async function installPresentationRecorder(page: Page): Promise<void> {
     };
     new MutationObserver(record).observe(element, {
       attributes: true,
-      attributeFilter: ['data-presentation', 'data-projectile-points']
+      attributeFilter: ['data-presentation', 'data-projectile-points', 'data-projectile-visual']
     });
     record();
   });
@@ -361,10 +380,15 @@ async function installPresentationRecorder(page: Page): Promise<void> {
 async function readPresentationRecorder(page: Page): Promise<{
   phases: string[];
   maximumProjectilePoints: number;
+  projectileVisuals: { phase: string; visual: string }[];
 }> {
   return page.evaluate(() => (
     window as typeof window & {
-      __practicePresentation: { phases: string[]; maximumProjectilePoints: number }
+      __practicePresentation: {
+        phases: string[];
+        maximumProjectilePoints: number;
+        projectileVisuals: { phase: string; visual: string }[];
+      }
     }
   ).__practicePresentation);
 }

@@ -112,9 +112,6 @@ export class CombatRenderer {
         if (this.usingApprovedAssets) this.drawTeamCues(state.units, layout);
 
         this.effects.clear();
-        const fallbackProjectile = !visualPhase || visualPhase.kind !== 'projectile' ||
-            visualPhase.relicId !== 'threadball' || !this.usingApprovedAssets;
-        if (fallbackProjectile) this.drawTrace(projectileTrace, layout, 0xFC8702, 1, false);
         this.drawTrace(preview, layout, 0xE9B213, 0.95, true);
         this.drawVisualPhase(visualPhase, layout);
 
@@ -257,11 +254,15 @@ export class CombatRenderer {
         if (visualPhase.kind === 'projectile') {
             if (visualPhase.relicId === 'threadball' && this.usingApprovedAssets) {
                 this.drawThreadballProjectile(visualPhase.trace, layout);
+            } else {
+                this.drawGenericProjectile(visualPhase.relicId, visualPhase.trace, layout);
             }
             return;
         }
         if (visualPhase.kind === 'impact' && visualPhase.relicId === 'threadball') {
             this.drawUnravelImpact(visualPhase.trace, layout);
+        } else if (visualPhase.kind === 'impact') {
+            this.drawGenericImpact(visualPhase.relicId, visualPhase.trace, layout);
         }
     }
 
@@ -321,6 +322,63 @@ export class CombatRenderer {
             const end = this.worldPoint(tail.at(-1)!.x, tail.at(-1)!.y, layout);
             this.effects.lineStyle(Math.max(1, layout.worldScale * 1.1), 0xE9B213, 0.35);
             this.effects.lineBetween(start.x, start.y, end.x, end.y);
+        }
+    }
+
+    private drawGenericProjectile(
+        relicId: RelicId,
+        trace: { x: number; y: number }[],
+        layout: CombatLayout
+    ): void {
+        if (trace.length === 0) return;
+        const point = this.worldPoint(trace.at(-1)!.x, trace.at(-1)!.y, layout);
+        const radius = Math.max(3, layout.worldScale * 5);
+        const g = this.effects;
+
+        if (relicId === 'needlepoint') {
+            g.fillStyle(0xDDFBFF, 0.98);
+            g.fillCircle(point.x, point.y, radius * 0.72);
+            g.lineStyle(Math.max(1.5, layout.worldScale * 1.7), 0x0582CA, 0.85);
+            g.strokeCircle(point.x, point.y, radius);
+            return;
+        }
+
+        if (relicId === 'spoolburst') {
+            g.fillStyle(0xFA7268, 0.94);
+            g.fillCircle(point.x, point.y, radius * 0.8);
+            g.lineStyle(Math.max(1, layout.worldScale * 1.5), 0xE9B213, 0.9);
+            g.strokeCircle(point.x, point.y, radius * 1.35);
+            g.fillStyle(0xFFF3B0, 0.9);
+            g.fillCircle(point.x, point.y, Math.max(1.5, radius * 0.25));
+            return;
+        }
+
+        g.fillStyle(0xE9B213, 0.9);
+        g.fillCircle(point.x, point.y, radius * 0.75);
+    }
+
+    private drawGenericImpact(
+        relicId: RelicId,
+        trace: { x: number; y: number }[],
+        layout: CombatLayout
+    ): void {
+        if (trace.length === 0) return;
+        const point = this.worldPoint(trace.at(-1)!.x, trace.at(-1)!.y, layout);
+        const radius = Math.max(4, layout.worldScale * 6);
+        const g = this.effects;
+
+        if (relicId === 'needlepoint') {
+            g.lineStyle(Math.max(1.5, layout.worldScale * 1.6), 0xDDFBFF, 0.9);
+            g.lineBetween(point.x - radius, point.y, point.x + radius, point.y);
+            g.lineBetween(point.x, point.y - radius, point.x, point.y + radius);
+            return;
+        }
+
+        if (relicId === 'spoolburst') {
+            for (const factor of [0.7, 1.25]) {
+                g.lineStyle(Math.max(1, layout.worldScale * 1.35), 0xFA7268, 0.75);
+                g.strokeCircle(point.x, point.y, radius * factor);
+            }
         }
     }
 

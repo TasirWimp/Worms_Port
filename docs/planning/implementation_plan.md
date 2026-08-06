@@ -2655,6 +2655,15 @@ Sequential delivery slices:
   projectile, impact, landscape, and sideways frames received a technical
   inspection without any Windows baseline update. Explicit visual-baseline
   approval and separate real-phone review remain required before C can close.
+  The first real-phone C review then found a completed solid flight-path overlay
+  obscuring the cast/impact read and no discrete in-flight visual for the
+  still-unapproved Needlepoint/Spoolburst families. The in-scope repair removes
+  every completed fired-path line while retaining the dashed aim preview;
+  Threadball keeps its approved sprite/short tail, and the two deferred families
+  now use bounded procedural projectile/impact placeholders. It changes no
+  source asset, physics, collision, damage, replay, or authority. A fresh
+  Ubuntu candidate inspection and focused real-phone re-check are required
+  before C can close.
 - **WP-015D Basic roster and ruleset completion:** after C acceptance, freeze
   exact v3 range/damage values and add `nimble-knots-artillery-v3` while
   preserving byte-for-byte v1/v2 replay behavior. Range and maximum direct
