@@ -120,7 +120,11 @@ test('canonical visual states cover combat presentation, controls, motion, and s
   await releasePresentationGate(page, 'loomkeeper-impact');
   await capturePresentation(page, 'loomkeeper-impact', 'canonical-loomkeeper-impact.png');
   await releasePresentationGate(page, null);
-  await expect(page.locator('.combat-ui')).toHaveAttribute('data-presenting', 'false');
+  await expect.poll(() => page.evaluate(() => {
+    if (document.querySelector('.result-shell')) return 'result';
+    const combat = document.querySelector<HTMLElement>('.combat-ui');
+    return combat?.dataset.presenting === 'false' ? 'ready' : 'waiting';
+  })).toMatch(/^(ready|result)$/);
   expect(errors).toEqual([]);
 });
 

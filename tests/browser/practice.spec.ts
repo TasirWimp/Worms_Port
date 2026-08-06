@@ -43,12 +43,24 @@ test('live practice supports authoritative pause, full player turn, and fresh re
   await expect(page.locator('.fire-button')).toBeEnabled();
   await installPresentationRecorder(page);
   await page.locator('.fire-button').tap();
-  await expect.poll(async () => Number(await ui.getAttribute('data-turn')), {
+  await expect.poll(async () => {
+    if (await page.locator('.result-shell').count()) return 'result';
+    return Number(await ui.getAttribute('data-turn')) >= 2 &&
+      await ui.getAttribute('data-active-actor') === 'player' &&
+      await ui.getAttribute('data-presenting') === 'false'
+      ? 'ready'
+      : 'waiting';
+  }, {
     timeout: 15_000
-  }).toBeGreaterThanOrEqual(2);
-  await expect(ui).toHaveAttribute('data-active-actor', 'player');
-  await expect(ui).toHaveAttribute('data-presenting', 'false');
-  await expect(ui).toHaveAttribute('data-preview-points', '0');
+  }).toMatch(/^(ready|result)$/);
+  const terminalAfterReply = await page.locator('.result-shell').count() > 0;
+  if (terminalAfterReply) {
+    await expect(page.locator('.result-shell')).toBeVisible();
+  } else {
+    await expect(ui).toHaveAttribute('data-active-actor', 'player');
+    await expect(ui).toHaveAttribute('data-presenting', 'false');
+    await expect(ui).toHaveAttribute('data-preview-points', '0');
+  }
   const presentation = await readPresentationRecorder(page);
   expect(presentation.phases).toEqual(expect.arrayContaining([
     'player-projectile',
@@ -67,13 +79,20 @@ test('live practice supports authoritative pause, full player turn, and fresh re
     visual: expect.stringMatching(/^(threadball|generic-(needlepoint|spoolburst))$/)
   }));
 
-  await page.locator('.pause-button').tap();
-  await expect(page.locator('.combat-pause-sheet')).toBeVisible();
-  await page.locator('.retry-button').tap();
+  if (terminalAfterReply) {
+    await page.getByRole('button', { name: 'Play Again' }).tap();
+  } else {
+    await page.locator('.pause-button').tap();
+    await expect(page.locator('.combat-pause-sheet')).toBeVisible();
+    await page.locator('.retry-button').tap();
+  }
+  await expect(ui).toBeVisible();
   await expect.poll(() => ui.getAttribute('data-challenge-id')).not.toBe(firstChallenge);
   await expect(ui).toHaveAttribute('data-turn', '0');
   await expect(ui).toHaveAttribute('data-calling', 'warrior');
-  await expect(page.getByText(/Fresh Practice Clash started/i)).toBeVisible();
+  if (!terminalAfterReply) {
+    await expect(page.getByText(/Fresh Practice Clash started/i)).toBeVisible();
+  }
   await page.screenshot({ path: testInfo.outputPath('wp-011-live-practice.png') });
 });
 

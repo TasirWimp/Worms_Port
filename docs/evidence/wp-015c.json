@@ -17,11 +17,14 @@
     "Tile the approved Cloud, Terrain Top, and Terrain Interior as decorative layers over the existing code-owned terrain geometry only",
     "Bind the approved Threadball charge, formation-start, formation-ready, projectile, blue-only short tail, and Unraveling impact grammar to existing authoritative Threadball presentation events",
     "Keep Needlepoint and Spoolburst on their existing generic presentation until WP-015D creates approved assets for them",
-    "Permit Phaser's same-origin runtime decode blobs in the image-only CSP source list without relaxing script, connect, object, framing, or payment policy"
+    "Permit Phaser's same-origin runtime decode blobs in the image-only CSP source list without relaxing script, connect, object, framing, or payment policy",
+    "Introduce only `nimble-knots-artillery-v3` for new challenges: a fixed direct-projectile body profile matching the shared Wizard presentation while preserving v1/v2 byte-for-byte"
   ],
   "non_goals": [
     "Generate, alter, or approve any source raster, atlas, animation, or additional runtime asset",
-    "Change simulation, collision, damage, projectile paths, replay, turn timing, AI policy, rewards, or the v1/v2 rulesets",
+    "Change v1/v2 simulation, collision, damage, projectile paths, replay, turn timing, AI policy, rewards, or their rulesets",
+    "Change V3 Relic constants, terrain footprint, movement, projectile launch, gravity, splash damage, Loomkeeper policy, or reward eligibility",
+    "Derive hitboxes dynamically from image pixels or promote, alter, or generate any asset",
     "Use Patch pixels as collision truth or remove the existing procedural fallback",
     "Approve or update a visual baseline from Windows",
     "Treat local browser verification as a substitute for the required Ubuntu candidate review or real-device acceptance"
@@ -30,6 +33,9 @@
     "npm run check:compliance",
     "npm run check:types",
     "npm run test:combat",
+    "npm run test:simulation",
+    "npm run test:relics",
+    "npm run test:protocol",
     "npm run test:tooling",
     "node --import tsx --test tests/reward/runtime.test.ts",
     "npm run build",
@@ -46,44 +52,59 @@
   "clean_room_records": [],
   "check_results": [
     {
+      "command": "npm run check:compliance",
+      "status": "pass",
+      "detail": "Passed as part of the v3 production build: exact approved asset inventory, generation provenance, import boundary, package licenses, work-package evidence, and clean-room checks remain valid."
+    },
+    {
       "command": "npm run check:types",
       "status": "pass",
-      "detail": "Passed after the initial client integration."
+      "detail": "Passed for the v3 ruleset, protocol union, client acceptance, and deterministic test seam."
     },
     {
       "command": "npm run test:combat",
       "status": "pass",
-      "detail": "Passed with Threadball normal/reduced causal-order coverage for both actors."
+      "detail": "Passed 18 tests, including causal player/Loomkeeper presentation ordering and mobile layout controls."
+    },
+    {
+      "command": "npm run test:simulation",
+      "status": "pass",
+      "detail": "Passed 30 deterministic terrain, command, trace, damage, timeout, replay, and bounded-workload tests."
+    },
+    {
+      "command": "npm run test:relics",
+      "status": "pass",
+      "detail": "Passed 9 tests: new challenges identify as v3, the visible upper-body Threadball direct hit applies 70 damage, and explicit v2/legacy replay goldens remain unchanged."
+    },
+    {
+      "command": "npm run test:protocol",
+      "status": "pass",
+      "detail": "Passed 38 strict transport, session, authoritative Practice, replay, and snapshot-schema tests for v3."
     },
     {
       "command": "npm run test:tooling",
       "status": "pass",
-      "detail": "Passed; the closed seven-file runtime inventory remains exact."
+      "detail": "Passed 61 tests; the closed seven-file runtime inventory remains exact."
     },
     {
       "command": "node --import tsx --test tests/reward/runtime.test.ts",
       "status": "pass",
-      "detail": "Passed with the narrow image-only blob CSP assertion."
+      "detail": "Passed 2 runtime transport/security-header tests; the companion v3 authoritative-win reward-service test also passed in the full reward suite."
     },
     {
       "command": "npm run build",
       "status": "pass",
-      "detail": "Passed; the production copier emitted the seven byte-identical approved runtime files."
+      "detail": "Passed compliance, types, server/client production builds, and byte-identical copying of the seven approved runtime files."
+    },
+    {
+      "command": "npm run check:bundle-budget",
+      "status": "pass",
+      "detail": "Passed with the largest initial JavaScript chunk at 1,447,097 / 1,500,000 bytes and initial JavaScript plus CSS gzip at 401,193 / 430,000 bytes."
     },
     {
       "command": "npm run test:browser:matrix",
       "status": "pass",
-      "detail": "After the real-phone presentation repair, the final Windows zero-retry behavior matrix passed all 95 applicable results; 60 project-specific exclusions were accounted for by the reviewed quality policy. Screenshot comparison remains Ubuntu-only."
-    },
-    {
-      "command": "npm run test:browser:practice",
-      "status": "pass",
-      "detail": "The focused live server-driven practice suite passed across its configured projects. It proves a generic moving Spoolburst visual for the player and an explicit Threadball-or-generic visual selection for the Loomkeeper."
-    },
-    {
-      "command": "Ubuntu 24.04 Visual baseline candidates (GitHub Actions run 31070047238)",
-      "status": "pass",
-      "detail": "The pinned workflow ran on commit 6339565432f480439dd907807234aec0db4bdf2a and uploaded the candidate artifact. Technical inspection covered the player Threadball charge, formation-start, formation-ready, projectile, impact, landscape, and sideways frames. No Windows baseline was created or updated."
+      "detail": "Passed all 95 applicable zero-retry phone-browser results; 60 project-specific exclusions match the reviewed quality policy. V3 tests accept either the completed Loomkeeper presentation or a valid terminal result, and still prove fresh authority through Play Again. Local screenshot comparison remained omitted by policy."
     }
   ],
   "reviews": [
@@ -91,15 +112,18 @@
       "role": "project owner",
       "reviewer": "Jens Bernhardt",
       "decision": "finding",
-      "detail": "Real-phone WP-015C acceptance found that the completed solid trajectory line overlaid the cast/impact presentation, while Needlepoint and Spoolburst lacked a discrete in-flight visual. The scoped repair removes the completed trajectory line, retains the dashed aim guide, and renders compact procedural projectile/impact visuals for the two unapproved Relic families. The focused re-check then found that Threadball retained one short gold line below the first projectile: its intended blue tail was overdrawn by a gold segment. The final in-scope correction removes that segment and narrows the source-free effect grammar to a blue-only short tail. Phone re-check remains open."
+      "detail": "Real-phone WP-015C acceptance found that the completed solid trajectory line overlaid the cast/impact presentation, while Needlepoint and Spoolburst lacked a discrete in-flight visual. The scoped repair removes the completed trajectory line, retains the dashed aim guide, and renders compact procedural projectile/impact visuals for the two unapproved Relic families. The focused re-check then found that Threadball retained one short gold line below the first projectile: its intended blue tail was overdrawn by a gold segment. The final in-scope correction removes that segment and narrows the source-free effect grammar to a blue-only short tail. The next real-phone check found that the large shared Wizard's visible upper body is outside the v1/v2 lower-body direct-hit target. The project owner authorized the bounded v3 correction: new challenges use a fixed body profile (`halfWidth: 32`, `top: 85`, `bottom: 13`) for direct projectile contact; v1/v2 replay behavior remains immutable. Phone re-check remains open."
     }
   ],
   "skipped_checks": [
-    "The full Windows behavior matrix passed and the prior Ubuntu candidate artifact was technically inspected. The final short-tail correction intentionally changes the visual candidates, so a new pinned Ubuntu candidate/inspection and a focused real-phone re-check remain open while this evidence is in progress."
+    "V3 changes the active combat candidates, so the prior Ubuntu artifact is historical only. A new pinned Ubuntu visual-baseline candidate workflow and explicit artifact inspection remain required; no Windows baseline was created or retained.",
+    "Separate real-phone acceptance remains open. It must confirm that upper Wizard body impacts now register, while the v3 Needlepoint direct-hit pacing remains acceptable."
   ],
   "residual_risks": [
     "The approved Wizard presentation is intentionally shared by player and Loomkeeper until WP-015D produces a distinct Loomkeeper; labels and team rings remain the distinction.",
     "The current deterministic Loomkeeper exchange may select Needlepoint or Spoolburst, which deliberately use bounded procedural placeholder presentation until their own approved asset families exist.",
-    "Visual baselines will change and must be generated and inspected only through the pinned Ubuntu candidate workflow before any baseline commit."
+    "Visual baselines will change and must be generated and inspected only through the pinned Ubuntu candidate workflow before any baseline commit.",
+    "The v3 body profile is intentionally valid only for the shared Wizard presentation. WP-015D must version a new profile rather than reuse it unchanged when it introduces distinct Calling or Loomkeeper visuals.",
+    "V3 retains V2's historical 120 maximum Needlepoint damage, so a correct direct Needlepoint contact can resolve a full 100-Stitching target in one action. Focused phone acceptance must assess V3 pacing before the separately versioned V4 low-damage Needlepoint tier."
   ]
 }

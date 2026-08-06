@@ -377,12 +377,38 @@ within each fixed profile cap. Legacy v1 simulations retain the exact v1 policy
 identifier and sampling order so their decisions and golden evidence do not
 change.
 
-### Planned Basic Relic Ruleset V3
+### Ruleset V3 Wizard Hitbox Stabilization
 
-WP-015 prepares `nimble-knots-artillery-v3` for the first production-asset
-vertical slice. V1 and v2 constants, identifiers, replay hashes, and policy
-behavior remain immutable. A stored replay must always select the ruleset that
-created it.
+Real-device WP-015C acceptance exposed a presentation/rules mismatch: the
+shared approved Wizard is substantially taller than the v1/v2 24 by 24 direct
+projectile target centred near the feet. `nimble-knots-artillery-v3` is the
+bounded corrective ruleset for new Practice and reward challenges. V1 and v2
+constants, identifiers, replay hashes, and policy behaviour remain immutable;
+a stored replay must always select the ruleset that created it.
+
+V3 retains the v2 Relic constants, terrain footprint, movement bounds, aim,
+launch, gravity, turn flow, damage radii, Loomkeeper v2 policy, and replay
+format. It changes only direct projectile contact against the current shared
+Wizard presentation. Its fixed integer body profile is measured from the
+authoritative unit centre: `halfWidth: 32`, `top: 85`, `bottom: 13` world
+units. It was derived once from the approved presentation's opaque bounds
+`(134..441, 32..452)`, ground pivot `(256,451)`, and fixed runtime scale
+`0.23`; it is code-owned replay data, not runtime image analysis. A direct
+collision inside this profile is zero-distance contact for that target's
+damage calculation. Splash behaviour for both actors remains unchanged.
+
+The profile covers the visible torso, head, hat, and feet while intentionally
+excluding the extended cupped palm/Loomseed rather than making a hand-held
+focus an oversized target. It is valid only while WP-015C presents the same
+Wizard for both combatants. A later distinct Calling or Loomkeeper visual
+requires its own reviewed profile in another ruleset; it must not silently
+alter v3.
+
+### Planned Basic Relic Ruleset V4
+
+After V3 ships, WP-015D prepares `nimble-knots-artillery-v4` for the first
+range/damage differentiation slice. V1, v2, and v3 constants, identifiers,
+replay hashes, and policy behavior remain immutable.
 
 | Relic ID | Range tier | Direct Stitching damage tier |
 | --- | --- | --- |
@@ -399,7 +425,7 @@ dimensions are deferred so the first real-device evaluation measures the
 assembled artillery loop rather than a large balance matrix.
 
 The implementation slice freezes exact integer values and deterministic
-fixed-shot tests before v3 becomes a challenge default. The tier ordering is a
+fixed-shot tests before v4 becomes a challenge default. The tier ordering is a
 product identity, not final balance. The Loomkeeper receives the same public
 range and damage model as the player; visuals never provide simulation
 authority. A later precision mechanic must be deterministic and disclosed and

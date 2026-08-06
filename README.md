@@ -555,7 +555,7 @@ inclusion to macro-block finality, and sends expired/ambiguous cases to
 ## Deterministic Simulation Foundation
 
 Practice challenges use the product-owned
-`nimble-knots-artillery-v2` ruleset. The authoritative model is independent of
+`nimble-knots-artillery-v3` ruleset. The authoritative model is independent of
 Phaser and uses integer fixed ticks, an explicit uint32 seed, a packed collision
 mask, bounded Relic physics, canonical SHA-256 state hashes, and replay records.
 Client commands include both their transport sequence and expected simulation
@@ -576,10 +576,11 @@ only difficulty controls; the Loomkeeper receives no extra health, damage,
 movement, collision knowledge, or retries. Only the selected legal plan is
 committed to the authoritative replay.
 
-The current `nimble-knots-artillery-v2` runtime preserves its historical
-placeholder tuning: all three Relics share launch-speed bounds while crater,
-damage-radius, and maximum-damage constants differ. WP-015 does not rewrite
-that replay history. It prepares a new versioned basic ruleset in which
+The current `nimble-knots-artillery-v3` runtime preserves v2's historical
+placeholder Relic tuning and adds only a fixed direct-projectile Wizard body
+profile, so the visible torso, head, hat, and feet can register a hit while the
+extended palm/Loomseed remains outside the target. V1/v2 replay behavior is
+unchanged. WP-015 later prepares a separate v4 ruleset in which
 Threadball has medium range and damage, Needlepoint has the highest range and
 lowest damage, and Spoolburst has the lowest range and highest damage. Other
 weapon dimensions and fine tuning are deferred. Their planned visual grammar is

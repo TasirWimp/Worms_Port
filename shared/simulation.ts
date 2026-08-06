@@ -1,10 +1,15 @@
 export const RULESET_ID = 'nimble-knots-artillery-v1' as const;
 export const RULESET_VERSION = 1 as const;
 export const LEGACY_RULESET_ID = RULESET_ID;
-export const LATEST_RULESET_ID = 'nimble-knots-artillery-v2' as const;
-export const LATEST_RULESET_VERSION = 2 as const;
+export const V2_RULESET_ID = 'nimble-knots-artillery-v2' as const;
+export const V2_RULESET_VERSION = 2 as const;
+export const LATEST_RULESET_ID = 'nimble-knots-artillery-v3' as const;
+export const LATEST_RULESET_VERSION = 3 as const;
 
-export type SimulationRulesetId = typeof RULESET_ID | typeof LATEST_RULESET_ID;
+export type SimulationRulesetId =
+    | typeof RULESET_ID
+    | typeof V2_RULESET_ID
+    | typeof LATEST_RULESET_ID;
 export type RelicId = 'threadball' | 'needlepoint' | 'spoolburst';
 
 export const RELIC_IDS = Object.freeze([
@@ -48,6 +53,33 @@ export const SIM_RULES = Object.freeze({
     maximumShotSpeed: 5120
 });
 
+export type DirectProjectileHitbox = Readonly<{
+    halfWidth: number;
+    top: number;
+    bottom: number;
+}>;
+
+/**
+ * V1/V2 retain the original 24 by 24 direct-hit square centred on the unit.
+ * V3 maps the current shared Wizard presentation once into fixed world units:
+ * its opaque source bounds are (134..441, 32..452), rooted at (256,451) and
+ * rendered at a constant 0.23 world scale. This is deliberately code-owned
+ * replay data, never runtime image analysis.
+ */
+export const DIRECT_PROJECTILE_HITBOXES: Readonly<Record<SimulationRulesetId, DirectProjectileHitbox>> = Object.freeze({
+    [LEGACY_RULESET_ID]: Object.freeze({
+        halfWidth: SIM_RULES.actorRadius,
+        top: SIM_RULES.actorRadius,
+        bottom: SIM_RULES.actorRadius
+    }),
+    [V2_RULESET_ID]: Object.freeze({
+        halfWidth: SIM_RULES.actorRadius,
+        top: SIM_RULES.actorRadius,
+        bottom: SIM_RULES.actorRadius
+    }),
+    [LATEST_RULESET_ID]: Object.freeze({ halfWidth: 32, top: 85, bottom: 13 })
+});
+
 export type SimulationActor = 'player' | 'loomkeeper';
 export type PlayerCalling = 'wizard' | 'thief' | 'warrior';
 export type SimulationWinner = SimulationActor | 'draw';
@@ -87,9 +119,9 @@ export type ProjectileSummary = {
 };
 
 export type SimulationState = {
-    formatVersion: 1 | 2;
+    formatVersion: 1 | 2 | 3;
     rulesetId: SimulationRulesetId;
-    rulesetVersion: 1 | 2;
+    rulesetVersion: 1 | 2 | 3;
     seed: number;
     rngState: number;
     tick: number;
@@ -141,9 +173,9 @@ export function createSimulation(
     const playerX = 192;
     const loomkeeperX = 832;
     const state: SimulationState = {
-        formatVersion: rulesetId === LEGACY_RULESET_ID ? 1 : 2,
+        formatVersion: rulesetVersionFor(rulesetId),
         rulesetId,
-        rulesetVersion: rulesetId === LEGACY_RULESET_ID ? RULESET_VERSION : LATEST_RULESET_VERSION,
+        rulesetVersion: rulesetVersionFor(rulesetId),
         seed: normalizedSeed,
         rngState: generated.rngState,
         tick: 0,
@@ -275,6 +307,10 @@ export function relicsForRuleset(rulesetId: SimulationRulesetId): readonly Relic
     return rulesetId === LEGACY_RULESET_ID ? ['threadball'] : RELIC_IDS;
 }
 
+export function directProjectileHitboxFor(rulesetId: SimulationRulesetId): DirectProjectileHitbox {
+    return DIRECT_PROJECTILE_HITBOXES[rulesetId];
+}
+
 function availableRelics(state: SimulationState): readonly RelicId[] {
     return relicsForRuleset(state.rulesetId);
 }
@@ -319,15 +355,17 @@ export function deformTerrain(terrain: PackedTerrain, centerX: number, centerY: 
 export function assertSimulationInvariants(state: SimulationState): void {
     const legacy = state.rulesetId === LEGACY_RULESET_ID &&
         state.rulesetVersion === 1 && state.formatVersion === 1;
-    const current = state.rulesetId === LATEST_RULESET_ID &&
-        state.rulesetVersion === LATEST_RULESET_VERSION && state.formatVersion === 2;
-    if (!legacy && !current) {
+    const v2 = state.rulesetId === V2_RULESET_ID &&
+        state.rulesetVersion === V2_RULESET_VERSION && state.formatVersion === 2;
+    const v3 = state.rulesetId === LATEST_RULESET_ID &&
+        state.rulesetVersion === LATEST_RULESET_VERSION && state.formatVersion === 3;
+    if (!legacy && !v2 && !v3) {
         throw new Error('Unknown deterministic simulation ruleset.');
     }
     if (!availableRelics(state).includes(state.selectedRelic)) {
         throw new Error('Selected Relic is unavailable in this ruleset.');
     }
-    if (state.lastProjectile && current && !state.lastProjectile.relicId) {
+    if (state.lastProjectile && (v2 || v3) && !state.lastProjectile.relicId) {
         throw new Error('Current-ruleset projectile lacks its Relic identifier.');
     }
     if (state.lastProjectile && legacy && state.lastProjectile.relicId) {
@@ -360,6 +398,12 @@ function normalizeSeed(seed: number): number {
     if (!Number.isSafeInteger(seed)) throw new Error('Simulation seed must be an integer.');
     const normalized = seed >>> 0;
     return normalized === 0 ? 0x6D2B79F5 : normalized;
+}
+
+function rulesetVersionFor(rulesetId: SimulationRulesetId): 1 | 2 | 3 {
+    if (rulesetId === LEGACY_RULESET_ID) return RULESET_VERSION;
+    if (rulesetId === V2_RULESET_ID) return V2_RULESET_VERSION;
+    return LATEST_RULESET_VERSION;
 }
 
 function nextRandom(state: number): number {
@@ -468,6 +512,7 @@ function resolveProjectile(
     let endX = startX;
     let endY = startY;
     let flightTicks = 0;
+    let directTarget: SimulationActor | undefined;
     for (let tick = 1; tick <= SIM_RULES.projectileTicks; tick += 1) {
         const oldX = x;
         const oldY = y;
@@ -482,6 +527,10 @@ function resolveProjectile(
         if (tick % 8 === 0 && trace.length < 40) trace.push({ x: endX, y: endY });
         if (collision) {
             impact = collision.target;
+            if (state.rulesetId === LATEST_RULESET_ID &&
+                (collision.target === 'player' || collision.target === 'loomkeeper')) {
+                directTarget = collision.target;
+            }
             break;
         }
         if (endX < 0 || endX >= SIM_RULES.worldWidth || endY < 0 || endY >= SIM_RULES.worldHeight) {
@@ -491,7 +540,7 @@ function resolveProjectile(
     }
     trace.push({ x: endX, y: endY });
     state.lastProjectile = {
-        ...(state.rulesetId === LATEST_RULESET_ID ? { relicId } : {}),
+        ...(state.rulesetId !== LEGACY_RULESET_ID ? { relicId } : {}),
         startX, startY, endX, endY, flightTicks, impact,
         trace: trace.map((point) => ({ ...point }))
     };
@@ -499,7 +548,7 @@ function resolveProjectile(
     events.push({ type: 'impact', x: endX, y: endY, target: impact });
     if (impact !== 'world_exit' && impact !== 'lifetime') {
         deformTerrain(state.terrain, endX, endY, relicRules.craterRadius);
-        applyDamage(state, endX, endY, relicRules, events);
+        applyDamage(state, endX, endY, relicRules, events, directTarget);
         state.units.forEach((unit) => settleUnit(state, unit));
     }
     state.aim = null;
@@ -516,6 +565,7 @@ function sweptCollision(
     flightTick: number
 ): { x: number; y: number; target: ProjectileSummary['impact'] } | undefined {
     const scale = SIM_RULES.fixedPointScale;
+    const hitbox = directProjectileHitboxFor(state.rulesetId);
     const x0 = Math.trunc(oldX / scale);
     const y0 = Math.trunc(oldY / scale);
     const x1 = Math.trunc(newX / scale);
@@ -526,8 +576,8 @@ function sweptCollision(
         const y = y0 + Math.trunc((y1 - y0) * step / steps);
         for (const unit of state.units) {
             if (!unit.alive || (unit.id === shooter && flightTick <= 3)) continue;
-            if (Math.abs(unit.x - x) <= SIM_RULES.actorRadius &&
-                Math.abs(unit.y - y) <= SIM_RULES.actorRadius) {
+            if (Math.abs(unit.x - x) <= hitbox.halfWidth &&
+                y >= unit.y - hitbox.top && y <= unit.y + hitbox.bottom) {
                 return { x, y, target: unit.id };
             }
         }
@@ -543,19 +593,23 @@ function applyDamage(
     x: number,
     y: number,
     relicRules: (typeof RELIC_RULES)[RelicId],
-    events: SimulationEvent[]
+    events: SimulationEvent[],
+    directTarget?: SimulationActor
 ): void {
     for (const unit of state.units) {
         if (!unit.alive) continue;
+        const directHit = directTarget === unit.id;
         const dx = unit.x - x;
         const dy = unit.y - y;
         const distanceSquared = dx * dx + dy * dy;
-        if (distanceSquared > relicRules.damageRadius * relicRules.damageRadius) continue;
+        if (!directHit && distanceSquared > relicRules.damageRadius * relicRules.damageRadius) continue;
         const distance = integerSquareRoot(distanceSquared);
-        const damage = Math.max(1, Math.trunc(
-            (relicRules.damageRadius - distance) * relicRules.maximumDamage /
-            relicRules.damageRadius
-        ));
+        const damage = directHit
+            ? relicRules.maximumDamage
+            : Math.max(1, Math.trunc(
+                (relicRules.damageRadius - distance) * relicRules.maximumDamage /
+                relicRules.damageRadius
+            ));
         unit.stitching = Math.max(0, unit.stitching - damage);
         if (unit.stitching === 0) unit.alive = false;
         events.push({ type: 'damaged', actor: unit.id, amount: damage, stitching: unit.stitching });

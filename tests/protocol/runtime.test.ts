@@ -904,7 +904,7 @@ test('protocol commands mutate authoritative simulation once and reconstruct fro
             calling: 'wizard'
         });
         assert.equal(ChallengeSnapshotSchema.safeParse(created.data).success, true);
-        assert.equal(created.data.simulation.rulesetId, 'nimble-knots-artillery-v2');
+        assert.equal(created.data.simulation.rulesetId, 'nimble-knots-artillery-v3');
         assert.equal(created.data.loomkeeperPolicyId, 'nimble-knots-loomkeeper-v2');
         assert.ok(Buffer.byteLength(JSON.stringify(created.data), 'utf8') <= 8 * 1024);
         const initialHash = created.data.stateHash;
@@ -1006,7 +1006,7 @@ test('deterministic Practice seed cycling is isolated per session', () => {
     }
 });
 
-test('player fire produces one automated Loomkeeper turn and records only its chosen plan', async () => {
+test('player fire produces one automated Loomkeeper resolution and records only its chosen plan', async () => {
     const { runtime, url } = await start({
         sessionRegistry: { seedSource: () => 1, simulationTickIntervalMs: false }
     });
@@ -1027,7 +1027,7 @@ test('player fire produces one automated Loomkeeper turn and records only its ch
             const timer = setTimeout(() => reject(new Error('Loomkeeper snapshot timed out.')), 1_000);
             socket.on(protocolEvents.snapshot, (snapshot) => {
                 if (snapshot.challengeId === created.data.challengeId &&
-                    snapshot.simulation.turn === 2) {
+                    (snapshot.simulation.turn === 2 || snapshot.simulation.phase === 'finished')) {
                     automatedSnapshots.push(snapshot);
                     clearTimeout(timer);
                     resolve(snapshot);
@@ -1041,13 +1041,19 @@ test('player fire produces one automated Loomkeeper turn and records only its ch
         };
         const fired = await emitAck(socket, protocolEvents.commandSubmit, firePayload);
         assert.equal(fired.ok, true);
-        assert.equal(fired.data.simulation.rulesetId, 'nimble-knots-artillery-v2');
-        assert.equal(fired.data.simulation.rulesetVersion, 2);
+        assert.equal(fired.data.simulation.rulesetId, 'nimble-knots-artillery-v3');
+        assert.equal(fired.data.simulation.rulesetVersion, 3);
         assert.equal(fired.data.simulation.activeActor, 'loomkeeper');
         assert.equal(fired.data.simulation.turn, 1);
         const reply = await automated;
-        assert.equal(reply.simulation.activeActor, 'player');
         assert.equal(reply.loomkeeperPolicyId, 'nimble-knots-loomkeeper-v2');
+        if (reply.simulation.phase === 'finished') {
+            assert.equal(reply.simulation.activeActor, 'loomkeeper');
+            assert.equal(reply.simulation.turn, 1);
+        } else {
+            assert.equal(reply.simulation.activeActor, 'player');
+            assert.equal(reply.simulation.turn, 2);
+        }
 
         const session = runtime.sessions.getBound(socket.id!);
         assert.ok(session);
@@ -1066,7 +1072,8 @@ test('player fire produces one automated Loomkeeper turn and records only its ch
         await new Promise((resolve) => setTimeout(resolve, 20));
         assert.equal(automatedSnapshots.length, 2);
         assert.equal(automatedSnapshots.at(-1).stateHash, reply.stateHash);
-        assert.equal(automatedSnapshots.at(-1).simulation.turn, 2);
+        assert.equal(automatedSnapshots.at(-1).simulation.phase, reply.simulation.phase);
+        assert.equal(automatedSnapshots.at(-1).simulation.turn, reply.simulation.turn);
         assert.equal(
             runtime.sessions.replayForChallenge(session, created.data.challengeId)!.records.length,
             replayLength

@@ -9,7 +9,8 @@ Phaser/Socket.IO stack.
 
 - Active target: mobile-first single-player Nimiq Pay competition release.
 - Active work package: **WP-015C First playable visual slice — integration
-  only:** implementation is in progress on `codex/wp-015-production-assets`;
+  plus bounded V3 hitbox stabilization:** implementation is in progress on
+  `codex/wp-015-production-assets`;
   its evidence carrier is `docs/evidence/wp-015c.json`. WP-015B3C.1 completed
   on 2026-08-05. Its closed inventory assigns
   `runtime_path` only to seven existing approved masters and the build copier
@@ -18,6 +19,9 @@ Phaser/Socket.IO stack.
   scene code, or player-visible change. The raw empty-handed Wizard, raw
   Threadball, and rejected FLUX Terrain Interior remain excluded. WP-015C may
   now integrate only that fixed inventory; it may not approve or generate media.
+  The owner additionally authorized the single versioned rules exception after
+  real-device testing: new challenges may use `nimble-knots-artillery-v3` with
+  the documented shared-Wizard direct-hit profile, while V1/V2 remain immutable.
 - Background: both AutoSprite pilots remain rejected external evidence. The owner superseded
   the empty-palm overlay condition with a permanent held Loomseed and a separate
   temporary cast Threadball. B3C now has an exact Wizard-with-Loomseed
@@ -2626,7 +2630,7 @@ Sequential delivery slices:
   and 607,427-byte total; focused tests prove byte-identical build copies.
   Tooling, compliance, build, audit, and diff checks passed. This resolves the
   former C-entry contradiction without weakening the source-only approval gate.
-- **WP-015C First playable visual slice — integration only:** after B3C.1
+- **WP-015C First playable visual slice — integration plus bounded V3 hitbox stabilization:** after B3C.1
   closes, load the approved
   Wizard presentation for both the player and the AI Loomkeeper, compose the
   approved permanent Loomseed at its recorded anchor, launch the approved
@@ -2637,12 +2641,21 @@ Sequential delivery slices:
   and unspooling impact to the authoritative impact event without changing
   physics, damage, collision, or replay truth. The existing Loomkeeper actor,
   rules, labels, and team/position cues remain unchanged; only its temporary
-  visual presentation reuses the Wizard. No generation, source repair, ruleset
-  change, or asset approval belongs in C. Prove one complete player and Loomkeeper
+  visual presentation reuses the Wizard. No generation, source repair, or asset
+  approval belongs in C. The sole later real-device-authorized ruleset exception
+  is `nimble-knots-artillery-v3`: new challenges retain every v2 mechanic and
+  Loomkeeper policy but replace only direct projectile contact with the fixed
+  shared-Wizard body profile `halfWidth: 32`, `top: 85`, `bottom: 13`, measured
+  from unit centre. V1/v2 must retain byte-for-byte replay behavior; V3 direct
+  contact is zero-distance damage only for the hit target, leaving splash,
+  terrain footprint, movement, launch, gravity, and Relic constants unchanged.
+  The profile derives once from recorded approved-presentation metrics and may
+  not inspect image pixels at runtime. Prove one complete player and Loomkeeper
   move/aim/fire/flight/impact/damage/result exchange at all maintained phone
   viewports, with reduced-motion behavior, v1/v2 replay truth, placeholder
   fallback/error handling, lazy-loading/media-budget reporting, and no change to
-  collision or simulation authority. Run compliance, build, the full automated
+  collision or simulation authority apart from that explicit versioned V3
+  profile. Run compliance, build, the full automated
   phone-browser matrix, and the Ubuntu visual-candidate workflow. D remains
   blocked until the candidate is reviewed on a real phone and any finding is
   either fixed or explicitly deferred. Implementation status on 2026-08-05:
@@ -2663,10 +2676,24 @@ Sequential delivery slices:
   now use bounded procedural projectile/impact placeholders. It changes no
   source asset, physics, collision, damage, replay, or authority. A fresh
   Ubuntu candidate inspection and focused real-phone re-check are required
-  before C can close.
+  before C can close. The next focused phone acceptance then exposed the larger
+  Wizard's upper body as visually present but mechanically untargetable because
+  v1/v2 retain their 24 by 24 lower-body target. The owner authorized the
+  versioned V3 correction above. It must update protocol validation, new-match
+  defaults, client acceptance, replay reconstruction, and deterministic tests
+  while preserving V1/V2 goldens. Its fixed profile covers the current visible
+  torso/head/hat/feet but deliberately excludes the extended palm/Loomseed;
+  any distinct later character needs a newly versioned profile. Fresh phone,
+  Ubuntu-candidate, and full browser-matrix evidence now gate C closure.
+  Because V3 retains the historical V2 Relic values, the corrected target also
+  makes a true direct Needlepoint contact capable of resolving a full
+  100-Stitching target in one action. This is visible correctness rather than a
+  stealth balance change; focused phone acceptance must assess the pacing before
+  C closes. WP-015D's separately versioned V4 keeps the planned low-damage
+  Needlepoint tier.
 - **WP-015D Basic roster and ruleset completion:** after C acceptance, freeze
-  exact v3 range/damage values and add `nimble-knots-artillery-v3` while
-  preserving byte-for-byte v1/v2 replay behavior. Range and maximum direct
+  exact v4 range/damage values and add `nimble-knots-artillery-v4` while
+  preserving byte-for-byte v1/v2/v3 replay behavior. Range and maximum direct
   Stitching damage are the only initial Relic differences. Then produce,
   approve, and integrate the distinct Loomkeeper together with Thief, Warrior,
   Needlepoint, Spoolburst, shared effects, and master-derived UI media through
@@ -2677,7 +2704,7 @@ Sequential delivery slices:
   animation, manifest, phone, and real-device gates. Keep collision
   code-owned, load only the selected Calling plus shared media, and retain radius,
   precision, falloff, ammo, cooldown, secondary effects, Calling modifiers, and
-  final tuning as deferred. Close with deterministic v3 ordering/replay tests,
+  final tuning as deferred. Close with deterministic v4 ordering/replay tests,
   compliance, build, browser matrix, visual review, and real-device acceptance.
 - **WP-015E Basic audio and closure:** source or generate the small combat/result/
   reward audio set through a separate exact-file license and provenance path;
@@ -2833,7 +2860,7 @@ Owning roles: `worms_port_asset_curator`, `worms_port_compliance_keeper`,
 Verification: first prove the Wizard-as-player/shared-Wizard-as-Loomkeeper/
 Threadball/Patch exchange end to end, then check basic inventory completeness,
 character/socket/environment
-contracts, v1/v2 replay compatibility, deterministic v3 range/damage tier
+contracts, v1/v2/v3 replay compatibility, deterministic v4 range/damage tier
 ordering, art direction, animation consistency, exact provenance,
 model/component license evidence, manifest hashes, attribution, atlas loading,
 the 1.5 MB compressed initial-media ceiling, mobile screenshots at all

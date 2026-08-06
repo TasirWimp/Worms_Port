@@ -14,7 +14,9 @@ import {
     applySimulationCommand,
     canonicalSimulationJson,
     createLatestSimulation,
-    createSimulation
+    createSimulation,
+    LATEST_RULESET_ID,
+    V2_RULESET_ID
 } from '../../shared/simulation';
 import type { SimulationState } from '../../shared/simulation';
 import { SessionRegistry } from '../../server/src/session/registry';
@@ -69,7 +71,7 @@ test('decisions are deterministic, JSON-stable, and do not mutate their input', 
     }
 });
 
-test('v2 decisions search a legal Relic dimension without increasing budgets', () => {
+test('current decisions search a legal Relic dimension without increasing budgets', () => {
     for (const seed of SEEDS) {
         for (const difficulty of DIFFICULTIES) {
             const state = advanceSimulationTicks(createLatestSimulation(seed, 'wizard'), 900).state;
@@ -103,7 +105,7 @@ test('v2 decisions search a legal Relic dimension without increasing budgets', (
     }
 });
 
-test('v2 policy chooses Spoolburst for a broad-control tactical state', () => {
+test('current policy chooses Spoolburst for a broad-control tactical state', () => {
     let state = createLatestSimulation(1, 'wizard');
     state.units[0].x = 100;
     state = applySimulationCommand(state, 'player', { type: 'move', direction: 0 }, 0).state;
@@ -183,7 +185,7 @@ test('standard seed-one decision is a stable policy golden', () => {
     });
 });
 
-test('registry commits one chosen AI plan and replay reconstruction matches', () => {
+test('current registry commits one chosen AI plan and replay reconstruction matches', () => {
     const registry = new SessionRegistry({
         simulationTickIntervalMs: false,
         sweepIntervalMs: 60_000,
@@ -196,12 +198,15 @@ test('registry commits one chosen AI plan and replay reconstruction matches', ()
         const challenge = registry.createChallenge(session, 'practice', 'wizard');
         assert.equal('code' in challenge, false);
         if ('code' in challenge) return;
+        assert.equal(challenge.simulation.rulesetId, LATEST_RULESET_ID);
         assert.equal(challenge.loomkeeperPolicyId, LATEST_LOOMKEEPER_POLICY_ID);
         const timeout = registry.advanceChallengeTicks(session, challenge.challengeId, 900);
         assert.equal('code' in timeout, false);
         const driven = registry.driveLoomkeeperTurn(session, challenge.challengeId);
         assert.ok(driven && !('code' in driven));
-        assert.equal(driven.simulation.activeActor, 'player');
+        assert.equal(driven.simulation.activeActor, 'loomkeeper');
+        assert.equal(driven.simulation.phase, 'finished');
+        assert.equal(driven.simulation.winner, 'loomkeeper');
         assert.equal(registry.driveLoomkeeperTurn(session, challenge.challengeId), undefined);
 
         const replay = registry.replayForChallenge(session, challenge.challengeId)!;
@@ -225,7 +230,7 @@ test('registry commits one chosen AI plan and replay reconstruction matches', ()
     }
 });
 
-test('two complete policy golden matches reconstruct to their exact final hashes', () => {
+test('v2 complete policy golden matches reconstruct to their exact final hashes', () => {
     const goldens = [
         {
             seed: 0x00000001,
@@ -248,7 +253,8 @@ test('two complete policy golden matches reconstruct to their exact final hashes
         const registry = new SessionRegistry({
             simulationTickIntervalMs: false,
             sweepIntervalMs: 60_000,
-            seedSource: () => golden.seed
+            seedSource: () => golden.seed,
+            simulationRulesetId: V2_RULESET_ID
         });
         try {
             registry.create(`socket-${golden.seed}`);
@@ -328,11 +334,12 @@ test('player turn and replay reservations prevent an incomplete AI handoff', () 
     }
 });
 
-test('timeout scheduling drives exactly one AI turn and queued work is lifecycle-safe', async () => {
+test('v2 timeout scheduling drives exactly one AI turn and queued work is lifecycle-safe', async () => {
     const registry = new SessionRegistry({
         simulationTickIntervalMs: false,
         sweepIntervalMs: 60_000,
-        seedSource: () => 1
+        seedSource: () => 1,
+        simulationRulesetId: V2_RULESET_ID
     });
     try {
         registry.create('socket-timeout');

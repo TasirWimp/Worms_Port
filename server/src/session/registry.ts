@@ -15,7 +15,12 @@ import {
     type CoordinatorReplay,
     type CoordinatorUpdate
 } from '../simulation/coordinator';
-import { LEGACY_RULESET_ID, type SimulationCommand } from '../../../shared/simulation';
+import {
+    LEGACY_RULESET_ID,
+    LATEST_RULESET_ID,
+    type SimulationCommand,
+    type SimulationRulesetId
+} from '../../../shared/simulation';
 import {
     decideLoomkeeperTurn,
     LOOMKEEPER_MAX_COMMANDS,
@@ -91,6 +96,11 @@ export type SessionRegistryOptions = {
     simulationTickIntervalMs?: number | false;
     simulationTicksPerInterval?: number;
     simulationMaxReplayRecords?: number;
+    /**
+     * Internal deterministic-test seam. Production challenges always use the
+     * current ruleset when this is omitted.
+     */
+    simulationRulesetId?: SimulationRulesetId;
     seedSource?: (sessionId: string, practiceIndex: number) => number;
     loomkeeperEnabled?: boolean;
     loomkeeperDifficulty?: LoomkeeperDifficulty;
@@ -112,6 +122,7 @@ export class SessionRegistry {
     private readonly onChallengeSnapshot?: (snapshot: ChallengeSnapshot, socketId?: string) => void;
     private readonly onChallengeCompleted?: (result: ChallengeResult, socketId?: string) => void;
     private readonly coordinator: SimulationCoordinator;
+    private readonly simulationRulesetId: SimulationRulesetId;
     private readonly seedSource: (sessionId: string, practiceIndex: number) => number;
     private readonly loomkeeperEnabled: boolean;
     private readonly loomkeeperDifficulty: LoomkeeperDifficulty;
@@ -132,6 +143,7 @@ export class SessionRegistry {
         this.onChallengeSnapshot = options.onChallengeSnapshot;
         this.onChallengeCompleted = options.onChallengeCompleted;
         this.seedSource = options.seedSource || (() => randomBytes(4).readUInt32BE(0));
+        this.simulationRulesetId = options.simulationRulesetId ?? LATEST_RULESET_ID;
         this.loomkeeperEnabled = options.loomkeeperEnabled ?? true;
         this.loomkeeperDifficulty = options.loomkeeperDifficulty ?? 'standard';
         if (this.loomkeeperEnabled && options.simulationMaxReplayRecords !== undefined &&
@@ -323,7 +335,8 @@ export class SessionRegistry {
             challengeId,
             session.id,
             seed,
-            calling
+            calling,
+            this.simulationRulesetId
         );
         const challenge: Challenge = {
             id: challengeId,

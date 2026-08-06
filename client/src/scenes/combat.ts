@@ -2,6 +2,7 @@ import Phaser from 'phaser';
 
 import type { ChallengeResult, ChallengeSnapshot } from '../../../shared/protocol';
 import {
+    LATEST_RULESET_ID,
     cloneSimulation,
     type SimulationCommand,
     type SimulationState
@@ -246,8 +247,8 @@ export default class CombatScene extends Phaser.Scene {
     }
 
     private acceptSnapshot(next: ChallengeSnapshot): void {
-        if (next.simulation.rulesetId !== 'nimble-knots-artillery-v2') {
-            this.controls?.setMessage('Combat scene accepts only v2 challenge snapshots.');
+        if (next.simulation.rulesetId !== LATEST_RULESET_ID) {
+            this.controls?.setMessage('Combat scene accepts only the current challenge ruleset.');
             return;
         }
         const current = this.authoritativeSnapshot;

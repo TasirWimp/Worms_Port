@@ -2,7 +2,7 @@ import assert from 'node:assert/strict';
 import test from 'node:test';
 
 import type { ChallengeResult } from '../../shared/protocol';
-import { decideLoomkeeperTurn } from '../../shared/loomkeeper';
+import { SIM_RULES } from '../../shared/simulation';
 import { MemoryRewardStore } from '../../server/src/reward/memory-store';
 import { RewardService } from '../../server/src/reward/service';
 import { RewardStoreError, type RewardConfig } from '../../server/src/reward/types';
@@ -63,37 +63,32 @@ test('a reconstructed authoritative win becomes one wallet-bound queued claim', 
         1,
         'wizard'
     );
-    while (coordinator.get(reservation.challengeId)!.state.phase === 'awaiting_command') {
-        let state = coordinator.get(reservation.challengeId)!.state;
-        if (state.activeActor === 'player') {
-            coordinator.apply(
-                reservation.challengeId,
-                'player',
-                { type: 'aim', angleMilliDegrees: 40_000, powerPermille: 1_000 },
-                state.turn
-            );
-            state = coordinator.get(reservation.challengeId)!.state;
-            coordinator.apply(
-                reservation.challengeId,
-                'player',
-                { type: 'fire' },
-                state.turn
-            );
-        } else {
-            const decision = decideLoomkeeperTurn(state, 'standard')!;
-            for (const command of decision.commands) {
-                const live = coordinator.get(reservation.challengeId)!.state;
-                if (live.phase === 'finished') break;
-                coordinator.apply(
-                    reservation.challengeId,
-                    'loomkeeper',
-                    command,
-                    live.turn
-                );
-            }
-        }
-    }
+    coordinator.apply(
+        reservation.challengeId,
+        'player',
+        { type: 'aim', angleMilliDegrees: 35_000, powerPermille: 1_000 },
+        0
+    );
+    coordinator.apply(reservation.challengeId, 'player', { type: 'fire' }, 0);
+    coordinator.advance(reservation.challengeId, SIM_RULES.turnTicks);
+    const secondTurn = coordinator.get(reservation.challengeId)!.state;
+    assert.equal(secondTurn.activeActor, 'player');
+    assert.equal(secondTurn.turn, 2);
+    coordinator.apply(
+        reservation.challengeId,
+        'player',
+        { type: 'aim', angleMilliDegrees: 35_000, powerPermille: 1_000 },
+        secondTurn.turn
+    );
+    coordinator.apply(
+        reservation.challengeId,
+        'player',
+        { type: 'fire' },
+        secondTurn.turn
+    );
     const terminal = coordinator.get(reservation.challengeId)!;
+    assert.equal(terminal.state.phase, 'finished');
+    assert.equal(terminal.state.winner, 'player');
     const update = await service.completeMatch({
         protocolVersion: 1,
         serverTimeMs: Date.now(),

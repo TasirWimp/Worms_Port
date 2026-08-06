@@ -183,8 +183,11 @@ phones. Any future precision mechanic must be deterministic and disclosed; it
 must not introduce hidden or ambient random misses.
 
 The existing `nimble-knots-artillery-v2` constants remain immutable replay
-history. The range/damage identities above are planned for a new versioned
-ruleset rather than changing historical v2 results.
+history. `nimble-knots-artillery-v3` retains them and adds only the fixed
+shared-Wizard direct-hit profile required by real-device acceptance; it maps
+the visible body without runtime image analysis and does not change terrain,
+movement, splash, or Relic values. The range/damage identities above are
+planned for v4 rather than changing historical v2/v3 results.
 
 All three use the same movement budget, angle and power inputs, projectile
 flight, collision authority, one-shot turn completion, and Stitching scale for
