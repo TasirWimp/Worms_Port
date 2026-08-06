@@ -317,12 +317,6 @@ export class CombatRenderer {
             .setVisible(true);
         const tail = trace.slice(Math.max(0, trace.length - 4));
         this.drawTrace(tail, layout, 0x0582CA, 0.72, false, Math.max(1, layout.worldScale * 2));
-        if (tail.length > 1) {
-            const start = this.worldPoint(tail[0].x, tail[0].y, layout);
-            const end = this.worldPoint(tail.at(-1)!.x, tail.at(-1)!.y, layout);
-            this.effects.lineStyle(Math.max(1, layout.worldScale * 1.1), 0xE9B213, 0.35);
-            this.effects.lineBetween(start.x, start.y, end.x, end.y);
-        }
     }
 
     private drawGenericProjectile(

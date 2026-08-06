@@ -15,7 +15,7 @@
     "Load only the seven manifest-approved WP-015B3C.1 runtime copies, with a visible procedural fallback if the fixed inventory cannot load",
     "Present the same approved Wizard-with-Loomseed for player and Loomkeeper while retaining code-owned actor labels, team cues, positions, rules, and authority",
     "Tile the approved Cloud, Terrain Top, and Terrain Interior as decorative layers over the existing code-owned terrain geometry only",
-    "Bind the approved Threadball charge, formation-start, formation-ready, projectile, short tail, and Unraveling impact grammar to existing authoritative Threadball presentation events",
+    "Bind the approved Threadball charge, formation-start, formation-ready, projectile, blue-only short tail, and Unraveling impact grammar to existing authoritative Threadball presentation events",
     "Keep Needlepoint and Spoolburst on their existing generic presentation until WP-015D creates approved assets for them",
     "Permit Phaser's same-origin runtime decode blobs in the image-only CSP source list without relaxing script, connect, object, framing, or payment policy"
   ],
@@ -91,11 +91,11 @@
       "role": "project owner",
       "reviewer": "Jens Bernhardt",
       "decision": "finding",
-      "detail": "Real-phone WP-015C acceptance found that the completed solid trajectory line overlaid the cast/impact presentation, while Needlepoint and Spoolburst lacked a discrete in-flight visual. The scoped repair removes the completed trajectory line, retains the dashed aim guide, and renders compact procedural projectile/impact visuals for the two unapproved Relic families. Phone re-check remains open."
+      "detail": "Real-phone WP-015C acceptance found that the completed solid trajectory line overlaid the cast/impact presentation, while Needlepoint and Spoolburst lacked a discrete in-flight visual. The scoped repair removes the completed trajectory line, retains the dashed aim guide, and renders compact procedural projectile/impact visuals for the two unapproved Relic families. The focused re-check then found that Threadball retained one short gold line below the first projectile: its intended blue tail was overdrawn by a gold segment. The final in-scope correction removes that segment and narrows the source-free effect grammar to a blue-only short tail. Phone re-check remains open."
     }
   ],
   "skipped_checks": [
-    "The full Windows behavior matrix passed and the prior Ubuntu candidate artifact was technically inspected. This repair intentionally changes the visual candidates, so a new pinned Ubuntu candidate/inspection and a focused real-phone re-check remain open while this evidence is in progress."
+    "The full Windows behavior matrix passed and the prior Ubuntu candidate artifact was technically inspected. The final short-tail correction intentionally changes the visual candidates, so a new pinned Ubuntu candidate/inspection and a focused real-phone re-check remain open while this evidence is in progress."
   ],
   "residual_risks": [
     "The approved Wizard presentation is intentionally shared by player and Loomkeeper until WP-015D produces a distinct Loomkeeper; labels and team rings remain the distinction.",

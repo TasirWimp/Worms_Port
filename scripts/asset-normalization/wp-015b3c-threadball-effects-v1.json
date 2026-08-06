@@ -91,7 +91,7 @@
     },
     "flight_tail": {
       "source": "existing authoritative projectile trace",
-      "graphic": "the compact projectile master at the current trace endpoint with a short taut blue-and-gold tail sampled only from preceding trace segments",
+      "graphic": "the compact projectile master at the current trace endpoint with a short taut blue tail sampled only from preceding trace segments",
       "limits": {
         "trace_segments_max": 3,
         "stroke_width_actor_radius_multiplier": 0.09,
