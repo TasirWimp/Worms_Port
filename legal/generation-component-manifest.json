@@ -288,6 +288,30 @@
       "notes": "Deterministically rendered from project-authored geometry only. The 1024x1024 guide scales the frozen 512x512 character contract by two: baseline y=902 and held-Relic socket center (682,586). It contains a clean angular body, two eye positions, separate feet, and a protruding forward mitten on white; it contains no canonical-lineup pixels, generated art, Sorcerers material, official Nimiq brand file, or runtime media."
     },
     {
+      "id": "knotkin-wizard-cast-preparation-pose-guide-v1",
+      "kind": "project_owned_structure_reference",
+      "source_path": "docs/images/art-direction/knotkin-wizard-cast-preparation-pose-guide-v1.png",
+      "generator_path": "scripts/generate-wizard-cast-preparation-pose-guide.js",
+      "version": "1",
+      "width": 1024,
+      "height": 1024,
+      "file_size": 17478,
+      "file_sha256": "17AC58E31834C9DAB434637A08B03DEAC72816F28D287C992D91BC4095E400FC",
+      "generator_sha256": "C363A73DD009116CFCD0FAE9804392AA29AC7211FD2CBDB9CD96214210C96768",
+      "license": "MIT",
+      "distribution": "documentation_conditioning_only",
+      "approved_uses": [
+        "one owner-approved direct FLUX.2 max WP-015C_Animation cast-preparation key-pose request, paired only with the exact combined Wizard-with-Loomseed master",
+        "documentation and visual review of the project-owned cast-preparation lean, shared foot baseline, and fixed Loomseed anchor"
+      ],
+      "blocked_uses": [
+        "product runtime use or treatment as finished artwork",
+        "a second BFL request, video, sprite sheet, alpha treatment, normalizer, staging, asset promotion, or runtime path",
+        "use with the raw empty-handed Wizard, a rejected AutoSprite output, a runtime copy, or a third-party input"
+      ],
+      "notes": "Deterministically rendered from project-authored flat geometry only. It is a 1024x1024 opaque, white-background pose diagram, not Wizard artwork. Both feet meet the ground baseline at y=902. Its marked Loomseed center is (814,456), the exact 2x transform of the approved combined master anchor (407,228). It depicts one right-facing cast-preparation lean with a raised cupped hand; no source-master, generated, third-party, Sorcerers, official Nimiq, or runtime-media pixels occur in the guide. The one BFL use remains pending project-owner visual approval and the separately hash-bound prompt/request contract."
+    },
+    {
       "id": "knotkin-wizard-cowl-edit-mask-v1",
       "kind": "project_owned_edit_mask",
       "source_path": "docs/images/art-direction/knotkin-wizard-cowl-edit-mask.png",

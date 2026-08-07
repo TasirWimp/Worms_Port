@@ -1848,9 +1848,17 @@ After that decision, freeze a single direct `POST /v1/flux-2-max` edit contract:
 
 1. **Identity reference:** exact combined Wizard-with-Loomseed master
    `1CC252B45C93D2553AC733DAA6AA49D05D6351DCC85E61EA559ECED458C9419C`.
-2. **Structure reference:** one original, local, plain pose-guide image for a
-   subtle cast-preparation lean. It must contain no third-party or generated
-   pixels, be reviewed, and have its path/hash recorded before the request.
+2. **Structure reference:** exact project-owned, opaque 1024x1024 pose-guide
+   `docs/images/art-direction/knotkin-wizard-cast-preparation-pose-guide-v1.png`
+   (`17AC58E31834C9DAB434637A08B03DEAC72816F28D287C992D91BC4095E400FC`,
+   17,478 bytes), deterministically rendered by
+   `scripts/generate-wizard-cast-preparation-pose-guide.js`
+   (`C363A73DD009116CFCD0FAE9804392AA29AC7211FD2CBDB9CD96214210C96768`). It
+   is an original plain diagram for a subtle right-facing cast-preparation lean,
+   with both feet on y=902 and its marked Loomseed center at `(814,456)`, the
+   exact two-times transform of the approved master anchor `(407,228)`. It
+   contains no third-party or generated pixels. Implementation inspection passed;
+   project-owner visual approval remains required before the request.
 3. **Request:** exactly one `flux-2-max` image-edit output at 1024x1024 on a
    white/plain background, full body visible on one ground baseline. The helper
    must take the exact positive structured prompt as a required command argument

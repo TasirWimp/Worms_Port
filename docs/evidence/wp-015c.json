@@ -20,6 +20,7 @@
     "Permit Phaser's same-origin runtime decode blobs in the image-only CSP source list without relaxing script, connect, object, framing, or payment policy",
     "Introduce only `nimble-knots-artillery-v3` for new challenges: a fixed direct-projectile body profile matching the shared Wizard presentation while preserving v1/v2 byte-for-byte",
     "Record the outcome of exactly one free-tier AutoSprite Custom idle pilot from the approved combined Wizard-with-Loomseed master as external quarantine evidence only; it cannot add a source asset, atlas, normalizer, runtime path, or player-visible change",
+    "Create, hash, and implementation-review the original WP-015C_Animation cast-preparation pose guide without submitting source media or changing product behavior",
     "Configure and preflight the separate WP-015C_Animation FLUX.2 one-key-pose lane without submitting source media or changing product behavior"
   ],
   "non_goals": [
@@ -120,6 +121,11 @@
       "command": "WP-015C_Animation BFL direct API credential preflight: GET /v1/credits",
       "status": "pass",
       "detail": "Read Flux_GameAssets_API_Key only from Windows User scope into the invoking process and authenticated without uploading media or starting a generation. The key value was neither printed nor persisted; BFL returned 1,000 credits. The separately registered https://mcp.bfl.ai FLUX MCP server completed its separate OAuth login and does not use this API key."
+    },
+    {
+      "command": "node scripts/generate-wizard-cast-preparation-pose-guide.js and exact-file inspection",
+      "status": "pass",
+      "detail": "Produced the original project-owned opaque 1024x1024 pose guide docs/images/art-direction/knotkin-wizard-cast-preparation-pose-guide-v1.png (17,478 bytes, SHA-256 17AC58E31834C9DAB434637A08B03DEAC72816F28D287C992D91BC4095E400FC) from generator scripts/generate-wizard-cast-preparation-pose-guide.js (SHA-256 C363A73DD009116CFCD0FAE9804392AA29AC7211FD2CBDB9CD96214210C96768). Visual inspection confirms a white/plain background, full body, shared y=902 baseline, a right-facing cast-preparation lean, and Loomseed marker at exact 2x master anchor (814,456). It contains no source-master, third-party, generated, or runtime pixels. Owner approval and the complete prompt/request freeze remain pending; no BFL media was submitted."
     }
   ],
   "reviews": [
@@ -146,6 +152,12 @@
       "reviewer": "Jens Bernhardt",
       "decision": "accepted BFL API input/output-use treatment; scoped pilot authorization",
       "detail": "On 2026-08-06, the owner accepted BFL's API Terms treatment of Inputs and Outputs, including service operation and training/improvement use, for exactly one external FLUX.2 max cast-preparation key-pose pilot. This covers only the approved combined Wizard-with-Loomseed source, one future original local pose guide, the frozen prompt, and the resulting output. It does not authorize a second request, video, sprite sheet, normalization, runtime path, or asset promotion. Source upload remains blocked until the guide and complete request contract are reviewed and hash-bound."
+    },
+    {
+      "role": "implementation",
+      "reviewer": "Codex",
+      "decision": "pose guide created and inspected; owner approval pending",
+      "detail": "Created one deterministic project-owned cast-preparation structure guide, exact SHA-256 17AC58E31834C9DAB434637A08B03DEAC72816F28D287C992D91BC4095E400FC. It is a plain flat diagram and contains no Wizard master or external pixels. Its y=902 baseline and (814,456) Loomseed marker preserve the exact 2x approved presentation-master geometry. It is registered in the closed conditioning manifest, but no BFL media request may proceed until the owner visually approves this guide and the complete prompt/request is separately frozen."
     }
   ],
   "skipped_checks": [

@@ -81,6 +81,16 @@ const reviewedConditioningInputContracts = new Map([
     fileSha256: '5A8F1C1D0942755F113327467462D47812A22A64BAF3DF2C5CD2E0F491FA9AA1',
     generatorSha256: '695B499E67794692BFEB248C22CA24C24C2D0091107B4EAAE247D29830FCAF63'
   }],
+  ['knotkin-wizard-cast-preparation-pose-guide-v1', {
+    kind: 'project_owned_structure_reference',
+    sourcePath: 'docs/images/art-direction/knotkin-wizard-cast-preparation-pose-guide-v1.png',
+    generatorPath: 'scripts/generate-wizard-cast-preparation-pose-guide.js',
+    width: 1024,
+    height: 1024,
+    fileSize: 17478,
+    fileSha256: '17AC58E31834C9DAB434637A08B03DEAC72816F28D287C992D91BC4095E400FC',
+    generatorSha256: 'C363A73DD009116CFCD0FAE9804392AA29AC7211FD2CBDB9CD96214210C96768'
+  }],
   ['knotkin-wizard-cowl-edit-mask-v1', {
     kind: 'project_owned_edit_mask',
     sourcePath: 'docs/images/art-direction/knotkin-wizard-cowl-edit-mask.png',

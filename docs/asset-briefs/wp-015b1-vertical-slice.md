@@ -311,8 +311,15 @@ that grant. On 2026-08-06, the owner accepted that treatment for one pilot only;
 the decision does not authorize further requests or any product path. The only
 first pilot is one direct
 `flux-2-max` 1024x1024 image-edit request (estimated from $0.07): exact combined
-master `1CC252B4...9419C` supplies identity, and one separately reviewed,
-locally-created, hash-bound pose guide supplies only the cast-preparation lean.
+master `1CC252B4...9419C` supplies identity, and the separately reviewable
+locally-created, hash-bound pose guide
+`docs/images/art-direction/knotkin-wizard-cast-preparation-pose-guide-v1.png`
+(`17AC58E3...00FC`, generator `C363A73D...6768`) supplies only the
+cast-preparation lean. It is an opaque 1024x1024 project-owned flat diagram:
+both feet meet y=902 and its Loomseed marker stays at `(814,456)`, the exact
+two-times transform of the combined master's `(407,228)` anchor. No source-
+master, generated, third-party, or runtime pixels appear in it. Owner review of
+the guide and the complete request contract still precedes upload.
 The output requires a white/plain background, full body, and one ground
 baseline. It is external quarantine, never a source master, atlas, runtime copy,
 or product input. Preserve the untouched image/download and service metadata

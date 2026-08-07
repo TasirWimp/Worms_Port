@@ -30,10 +30,14 @@ Phaser/Socket.IO stack.
   non-production research gate does not reopen rejected AutoSprite animation or
   use FLUX 3 video. The goal is one still **cast-preparation key pose**, not a
   generated sprite sheet: FLUX.2 `max` receives the exact combined
-  Wizard-with-Loomseed master as its identity reference and one later,
-  locally-created pose-guide image as its structure reference. The guide must be
-  plain, original project work, reviewed and hash-bound before the request; it
-  cannot contain third-party or generated pixels. The direct API request is
+  Wizard-with-Loomseed master as its identity reference and the locally-created
+  pose guide `docs/images/art-direction/knotkin-wizard-cast-preparation-pose-guide-v1.png`
+  (`17AC58E3...00FC`, generator `C363A73D...6768`) as its structure reference.
+  The guide is a plain, original 1024x1024 project diagram: feet share y=902 and
+  its Loomseed marker is fixed at `(814,456)`, the 2x approved-master anchor.
+  It contains no third-party or generated pixels. Implementation inspection has
+  passed, but owner review and the complete request-contract freeze remain
+  required before upload. The direct API request is
   exactly one 1024x1024 `POST /v1/flux-2-max` edit, estimated from $0.07, with a
   white/plain background and full-body ground baseline. The Windows User-scoped
   `Flux_GameAssets_API_Key` is read only in the invoking process, never copied
@@ -2735,9 +2739,12 @@ Sequential delivery slices:
   `Flux_GameAssets_API_Key` at invocation time. It must require the prompt from
   its command arguments or a separately hash-bound request file, never conceal
   it as a default, and must never print or persist the key. Before the single
-  request, freeze the exact source hash `1CC252B4...9419C`, a local original
-  pose-guide hash, positive structured prompt, `flux-2-max` endpoint, 1024x1024
-  output, white/plain background, full-body crop, and ground baseline. The owner
+  request, freeze the exact source hash `1CC252B4...9419C`, local original
+  pose guide `17AC58E3...00FC` (generator `C363A73D...6768`), positive
+  structured prompt, `flux-2-max` endpoint, 1024x1024 output, white/plain
+  background, full-body crop, and ground baseline. The pose guide is a flat
+  project diagram only: both feet rest at y=902 and the Loomseed marker stays at
+  `(814,456)`. The owner
   accepted BFL's documented service/training use of this pilot's submitted input
   and resulting output on 2026-08-06; that narrow decision does not authorize a
   second request or alter the other Terms. Retain the untouched image and service metadata externally and
