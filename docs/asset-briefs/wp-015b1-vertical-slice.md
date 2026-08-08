@@ -551,14 +551,14 @@ WP-015C uses the sheets only for client presentation. Idle loops while a unit is
 ready; the walk cycle plays during accepted movement; and source spell frames
 0-16 play for two seconds in standard motion (later baked-projectile frames are
 excluded because the authoritative trace and approved temporary Threadball own
-flight). The established short charge/formation still puts the projectile in
-flight promptly; the caster's two-second motion continues through its impact
-hold. A newly defeated unit plays its 25-frame Unraveling for two seconds in
-standard motion, remains fully opaque, then holds its terminal frame. Reduced
-motion retains its 250ms compact presentation. The static Loomseed-Wizard is
-retained if any sheet fails to load. These controls do not change simulation
-position, collision, health, damage, replay, turn timing, reward eligibility, or
-result authority.
+flight). Standard motion holds the gathering stage for one second and the
+formed-spell stage for one second, then launches the temporary Threadball only
+after the character sheet has completed. A newly defeated unit plays its
+25-frame Unraveling for two seconds in standard motion, remains fully opaque,
+then holds its terminal frame. Reduced motion retains its 250ms compact
+presentation. The static Loomseed-Wizard is retained if any sheet fails to
+load. These controls do not change simulation position, collision, health,
+damage, replay, turn timing, reward eligibility, or result authority.
 
 | State | Frames | Timing | Trigger |
 | --- | ---: | --- | --- |

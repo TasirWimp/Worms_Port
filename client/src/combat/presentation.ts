@@ -1,5 +1,6 @@
 import type { ChallengeSnapshot } from '../../../shared/protocol';
 import type { RelicId, SimulationActor } from '../../../shared/simulation';
+import { WIZARD_CAST_DURATION_MS } from './approved-assets';
 
 export type PresentationPoint = { x: number; y: number };
 
@@ -63,7 +64,16 @@ export function planCombatPresentation(
     const afterUnit = next.simulation.units[actorIndex];
     const durations = reducedMotion
         ? { movement: 60, aim: 80, castCharge: 30, castFormation: 40, projectile: 120, impact: 80 }
-        : { movement: 240, aim: 320, castCharge: 80, castFormation: 120, projectile: 640, impact: 280 };
+        : {
+            movement: 240,
+            aim: 320,
+            // The spell sheet completes before its temporary Threadball launches:
+            // one second of gathering followed by one second of formed spell.
+            castCharge: WIZARD_CAST_DURATION_MS / 2,
+            castFormation: WIZARD_CAST_DURATION_MS / 2,
+            projectile: 640,
+            impact: 280
+        };
     const steps: CombatPresentationStep[] = [];
 
     if (beforeUnit.x !== afterUnit.x || beforeUnit.y !== afterUnit.y) {

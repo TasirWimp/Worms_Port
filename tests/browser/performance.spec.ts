@@ -10,6 +10,7 @@ const {
 type TimingSample = {
   navigationToActionablePractice: number;
   startPracticeToLegalInput: number;
+  fireToCastStart: number;
   fireToVisibleProjectile: number;
   fireToCompleteResponse: number;
 };
@@ -134,6 +135,11 @@ async function samplePractice(browser: Browser, lazyMiniAppSdkPath: string): Pro
     await expect(page.locator('.fire-button')).toBeEnabled({ timeout: 5_000 });
     await page.locator('.fire-button').tap();
     await page.waitForFunction(() => (
+      window as typeof window & { __wp014Timing: { castAt: number | null } }
+    ).__wp014Timing.castAt !== null, undefined, {
+      timeout: 5_000
+    });
+    await page.waitForFunction(() => (
       window as typeof window & { __wp014Timing: { projectileAt: number | null } }
     ).__wp014Timing.projectileAt !== null, undefined, {
       timeout: 5_000
@@ -150,6 +156,7 @@ async function samplePractice(browser: Browser, lazyMiniAppSdkPath: string): Pro
           startTapAt: number | null;
           legalInputAt: number | null;
           fireTapAt: number | null;
+          castAt: number | null;
           projectileAt: number | null;
           responseAt: number | null;
         }
@@ -159,6 +166,7 @@ async function samplePractice(browser: Browser, lazyMiniAppSdkPath: string): Pro
       timing: {
         navigationToActionablePractice: round(state.actionableAt!),
         startPracticeToLegalInput: round(state.legalInputAt! - state.startTapAt!),
+        fireToCastStart: round(state.castAt! - state.fireTapAt!),
         fireToVisibleProjectile: round(state.projectileAt! - state.fireTapAt!),
         fireToCompleteResponse: round(state.responseAt! - state.fireTapAt!)
       },
@@ -177,6 +185,7 @@ function installTimingRecorder(): void {
     startTapAt: null as number | null,
     legalInputAt: null as number | null,
     fireTapAt: null as number | null,
+    castAt: null as number | null,
     projectileAt: null as number | null,
     responseAt: null as number | null,
     sawLoomkeeperImpact: false
@@ -213,6 +222,9 @@ function installTimingRecorder(): void {
         return;
       }
       if (!combat) return;
+      if (combat.dataset.presentation === 'player-cast-charge' && state.castAt === null) {
+        state.castAt = performance.now();
+      }
       if (combat.dataset.presentation === 'player-projectile' &&
           Number(combat.dataset.projectilePoints || 0) > 1 && state.projectileAt === null) {
         state.projectileAt = performance.now();

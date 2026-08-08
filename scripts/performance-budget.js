@@ -3,10 +3,10 @@ const BUDGETS = Object.freeze({
   measuredRuns: 5,
   navigationToActionablePractice: { medianMs: 2_000, maximumMs: 3_000 },
   startPracticeToLegalInput: { medianMs: 3_000, maximumMs: 5_000 },
-  // The Wizard's two-second cast now overlaps the existing early projectile
-  // launch. Preserve a sub-half-second hard ceiling while allowing its 200ms
-  // charge/formation sequence plus real browser scheduling overhead.
-  fireToVisibleProjectile: { medianMs: 350, maximumMs: 500 },
+  // Fire feedback remains immediate, but Threadball launches only after its
+  // complete two-second spell animation has played.
+  fireToCastStart: { medianMs: 350, maximumMs: 500 },
+  fireToVisibleProjectile: { minimumMs: 1_800, medianMs: 2_500, maximumMs: 3_000 },
   fireToCompleteResponse: { maximumMs: 10_000 },
   lazyMiniAppSdkRequests: 0
 });
@@ -14,6 +14,7 @@ const BUDGETS = Object.freeze({
 const TIMING_MEASURES = [
   'navigationToActionablePractice',
   'startPracticeToLegalInput',
+  'fireToCastStart',
   'fireToVisibleProjectile',
   'fireToCompleteResponse'
 ];
@@ -24,6 +25,7 @@ function summarizePerformanceSamples(warmup, samples, lazyMiniAppSdkRequests, en
     const values = samples.map((sample) => sample[measure]);
     measurements[measure] = {
       samplesMs: values,
+      minimumMs: values.length ? Math.min(...values) : null,
       medianMs: median(values),
       maximumMs: values.length ? Math.max(...values) : null
     };
@@ -54,6 +56,9 @@ function evaluatePerformanceReport(report) {
       continue;
     }
     const budget = BUDGETS[measure];
+    if (budget.minimumMs !== undefined && summary.minimumMs < budget.minimumMs) {
+      violations.push(`${measure} minimum ${format(summary.minimumMs)} ms was earlier than ${budget.minimumMs} ms.`);
+    }
     if (budget.medianMs !== undefined && summary.medianMs > budget.medianMs) {
       violations.push(`${measure} median ${format(summary.medianMs)} ms exceeded ${budget.medianMs} ms.`);
     }

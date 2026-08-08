@@ -10,7 +10,6 @@ import {
 } from '../../../shared/simulation';
 import { CombatControls } from '../combat/controls';
 import {
-    WIZARD_CAST_DURATION_MS,
     WIZARD_UNRAVEL_DURATION_MS,
     createApprovedWizardAnimations,
     preloadApprovedCombatAssets
@@ -423,7 +422,6 @@ export default class CombatScene extends Phaser.Scene {
         working.selectedRelic = next.simulation.selectedRelic;
         const playerMoved = previous.simulation.units[0].x !== next.simulation.units[0].x ||
             previous.simulation.units[0].y !== next.simulation.units[0].y;
-        let threadballCastElapsedMs = 0;
 
         for (const step of steps) {
             if (epoch !== this.presentationEpoch) return;
@@ -451,10 +449,8 @@ export default class CombatScene extends Phaser.Scene {
                 };
                 this.render();
                 await this.waitForPresentation(step.durationMs, epoch);
-                threadballCastElapsedMs += step.durationMs;
             } else if (step.kind === 'cast-formation') {
                 await this.presentCastFormation(working, step, epoch);
-                threadballCastElapsedMs += step.durationMs;
             } else if (step.kind === 'projectile') {
                 this.preview = [];
                 this.controls.root.dataset.projectileVisual = step.relicId === 'threadball' &&
@@ -462,7 +458,6 @@ export default class CombatScene extends Phaser.Scene {
                     ? 'threadball'
                     : `generic-${step.relicId}`;
                 await this.presentProjectile(working, step, epoch, reducedMotion);
-                if (step.relicId === 'threadball') threadballCastElapsedMs += step.durationMs;
             } else {
                 this.renderState = cloneSimulation(next.simulation as SimulationState);
                 this.preview = [];
@@ -476,19 +471,15 @@ export default class CombatScene extends Phaser.Scene {
                         ? next.simulation.lastProjectile.relicId
                         : 'threadball',
                     trace: this.projectileTrace.map((point) => ({ ...point })),
-                    unraveling: newlyUnraveledActors(working, next.simulation as SimulationState),
-                    casterFinishing: !reducedMotion && threadballCastElapsedMs < WIZARD_CAST_DURATION_MS
+                    unraveling: newlyUnraveledActors(working, next.simulation as SimulationState)
                 };
                 this.controls.update(next);
                 this.render();
-                const castRemainingMs = this.visualPhase.relicId === 'threadball' && !reducedMotion
-                    ? Math.max(0, WIZARD_CAST_DURATION_MS - threadballCastElapsedMs)
-                    : 0;
                 const unravelDurationMs = this.visualPhase.unraveling.length > 0
                     ? (reducedMotion ? 250 : WIZARD_UNRAVEL_DURATION_MS)
                     : 0;
                 await this.waitForPresentation(
-                    Math.max(step.durationMs, castRemainingMs, unravelDurationMs),
+                    Math.max(step.durationMs, unravelDurationMs),
                     epoch
                 );
             }

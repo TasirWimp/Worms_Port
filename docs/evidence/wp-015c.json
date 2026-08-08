@@ -176,8 +176,8 @@
     },
     {
       "command": "WP-015C standard-motion animation timing refinement",
-      "status": "pass",
-      "detail": "Owner-requested client-only adjustment: the 17 selected Loomseed-spell frames run at 8.5fps for 2,000ms and continue over the existing impact hold; the 25-frame Unraveling sheet runs at 12.5fps for 2,000ms, stays fully opaque, and retains its final frame. Reduced motion remains compact. The exact 200ms charge/formation remains unchanged, but measured browser scheduling made the former 250ms median projectile-visibility target unrealistically narrower than the approved presentation; the documented median target is therefore 350ms while the original 500ms hard cap remains. No asset byte, simulation, collision, replay, reward, or authoritative timing changed."
+      "status": "superseded by owner launch-order clarification",
+      "detail": "The first owner-requested client-only adjustment made the 17 selected Loomseed-spell frames run at 8.5fps for 2,000ms over the existing early projectile launch, and made the 25-frame Unraveling run at 12.5fps for 2,000ms fully opaque with its terminal frame retained. Subsequent real-phone review clarified that the projectile must launch only after, not during, the completed two-second spell. This first overlap route is no longer the current presentation behavior."
     },
     {
       "command": "npm run test:browser:performance",
@@ -193,6 +193,26 @@
       "command": "npm run check:bundle-budget",
       "status": "pass",
       "detail": "After the timing refinement, the largest initial JavaScript chunk is 1,449,851 / 1,500,000 bytes and initial JavaScript plus CSS gzip is 402,050 / 430,000 bytes."
+    },
+    {
+      "command": "WP-015C delayed Threadball launch refinement",
+      "status": "pass",
+      "detail": "Standard-motion Threadball now completes its 17 selected cast frames in two explicit one-second presentation phases (gathering, then formed spell) before the temporary projectile begins its 640ms flight. The completed cast no longer continues through impact. The separate 25-frame Unraveling remains fully opaque for two seconds and retains its terminal frame. This changes presentation timing only; source pixels, collision, simulation, replay, rewards, and authority remain unchanged."
+    },
+    {
+      "command": "npm run test:browser:performance",
+      "status": "pass",
+      "detail": "Passed five Chromium 390x844 samples. Fire-to-cast-start was 39.8ms minimum, 42.1ms median, and 43.9ms maximum against the 350ms median / 500ms maximum feedback budget. Fire-to-visible-projectile was 2,056.6ms minimum, 2,083.8ms median, and 2,116.0ms maximum against the deliberate 1,800ms minimum / 2,500ms median / 3,000ms maximum launch-order budget. Complete authoritative response median was 6,187.5ms (6,320.7ms maximum), with no page/console errors or lazy SDK requests."
+    },
+    {
+      "command": "npm run test:browser:matrix",
+      "status": "pass",
+      "detail": "Passed 95 zero-retry Chromium/WebKit mobile results in 6.1 minutes with 60 reviewed policy skips after the delayed projectile release. Windows visual pixel comparison remained omitted; pinned Ubuntu CI is still authoritative."
+    },
+    {
+      "command": "npm run check:bundle-budget",
+      "status": "pass",
+      "detail": "After the delayed-launch refinement, the largest initial JavaScript chunk is 1,449,614 / 1,500,000 bytes and initial JavaScript plus CSS gzip is 401,980 / 430,000 bytes."
     }
   ],
   "reviews": [
@@ -207,6 +227,12 @@
       "reviewer": "Jens Bernhardt",
       "decision": "accepted; presentation timing refinement requested",
       "detail": "After deploying the exact four-sheet implementation to Render and testing on phone, the owner accepted the animation integration and requested a standard-motion timing refinement only: spell casting should play for about two seconds, Unraveling should play for two seconds, and the defeated Wizard must remain fully opaque. The existing early projectile launch, reduced-motion compact path, source pixels, collision, simulation, replay, rewards, and authority remain unchanged."
+    },
+    {
+      "role": "project owner",
+      "reviewer": "Jens Bernhardt",
+      "decision": "clarification; projectile launches after the completed spell",
+      "detail": "Real-phone follow-up confirmed the longer animation but found that the Threadball still launched immediately. The owner clarified the intended causal order: standard-motion Threadball casting must visibly complete its two-second spell sheet before the projectile begins flight. This supersedes the former overlap interpretation. Defeat remains a separate fully opaque two-second Unraveling; reduced motion remains compact."
     },
     {
       "role": "project owner",
