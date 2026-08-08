@@ -336,10 +336,9 @@ slices the 5x5/256px grids without editing pixels and retains the static
 Loomseed-Wizard as fallback. The earlier free-tier external-quarantine idle
 pilot is still rejected because it rewrites the Wizard's two black bead eyes and
 stitched mouth as one oversized cartoon eye; it supplies no pixels or
-conditioning to the admitted exports. WP-015C
-will reuse the one approved Wizard
-presentation for both the player and the AI Loomkeeper. A distinct Loomkeeper
-asset belongs to the wider character roster in WP-015D.
+conditioning to the admitted exports. WP-015C completed with the one approved
+Wizard presentation shared by the player and AI Loomkeeper. A distinct
+Loomkeeper asset belongs to the post-release WP-017A character roster.
 `WP-015C_Animation` is a separately documented FLUX.2 one-key-pose research
 gate, not an AutoSprite retry. It replaces video-as-sprite-production with one
 external-only `flux-2-max` cast-preparation still, using the combined Wizard as
@@ -347,8 +346,10 @@ an identity reference and an original local pose guide as structure reference.
 The owner accepted BFL's input/output-use treatment for this one external pilot;
 the remaining source/guide/prompt freeze still precedes upload. No generated
 sheet, normalization, or runtime path is part of this gate.
-WP-015C remains integration-only and begins only when the simplified vertical-
-slice inventory is manifest-approved. The Celestial Spinning Mill, Worldweave,
+WP-015C is complete. Its simplified vertical-slice inventory is
+manifest-approved; WP-015D0 has frozen the V4 arena/camera contract and
+WP-015D1 is implementing it.
+The Celestial Spinning Mill, Worldweave,
 Air/Draft, Fire/Loomspark, and Water/Cloudwater story is recorded in
 `docs/art-direction.md`; exact gates and re-entry order are in the Execution
 Pointer and `docs/process/development_workflow.md`.
@@ -570,7 +571,7 @@ inclusion to macro-block finality, and sends expired/ambiguous cases to
 ## Deterministic Simulation Foundation
 
 Practice challenges use the product-owned
-`nimble-knots-artillery-v3` ruleset. The authoritative model is independent of
+`nimble-knots-artillery-v4` ruleset. The authoritative model is independent of
 Phaser and uses integer fixed ticks, an explicit uint32 seed, a packed collision
 mask, bounded Relic physics, canonical SHA-256 state hashes, and replay records.
 Client commands include both their transport sequence and expected simulation
@@ -591,11 +592,13 @@ only difficulty controls; the Loomkeeper receives no extra health, damage,
 movement, collision knowledge, or retries. Only the selected legal plan is
 committed to the authoritative replay.
 
-The current `nimble-knots-artillery-v3` runtime preserves v2's historical
-placeholder Relic tuning and adds only a fixed direct-projectile Wizard body
-profile, so the visible torso, head, hat, and feet can register a hit while the
-extended palm/Loomseed remains outside the target. V1/v2 replay behavior is
-unchanged. WP-015 later prepares a separate v4 ruleset in which
+V4 preserves v3's historical placeholder Relic tuning and fixed
+direct-projectile Wizard body profile, so the visible torso, head, hat, and
+feet can register a hit while the extended palm/Loomseed remains outside the
+target. It doubles only the authoritative arena width to 2048 world units;
+the mobile client still presents a 1024-by-576 camera window that can pan
+horizontally. V1/v2/v3 replay behavior is unchanged. WP-015D2 later prepares
+a separate v5 ruleset in which
 Threadball has medium range and damage, Needlepoint has the highest range and
 lowest damage, and Spoolburst has the lowest range and highest damage. Other
 weapon dimensions and fine tuning are deferred. Their planned visual grammar is

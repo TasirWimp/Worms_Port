@@ -1,7 +1,10 @@
 import type { IncomingMessage } from 'http';
 
 export const MAX_TRANSPORT_BYTES = 16 * 1024;
-export const MAX_EVENT_BYTES = 8 * 1024;
+// V4's 256 by 72 authoritative packed terrain needs more than the former 8 KiB
+// allowance after a projectile trace, but remains below the 16 KiB transport cap.
+// Commands remain far smaller and retain their strict schemas.
+export const MAX_EVENT_BYTES = 12 * 1024;
 
 export class TokenBucket {
     private available: number;

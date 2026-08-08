@@ -133,7 +133,7 @@ identity, and reward work:
   idempotent and reject conflicts, stale commands, and gaps before WP-007 adds
   simulation semantics.
 - Socket.IO transport payloads are capped at 16 KiB and event payloads at
-  8 KiB. Origin, event-rate, invalid-input, unauthenticated-open, reconnect,
+  12 KiB for V4's bounded 256x72 packed-terrain snapshot (still below the 16 KiB transport cap). Origin, event-rate, invalid-input, unauthenticated-open, reconnect,
   challenge, and session timeouts fail closed.
 - Transient disconnects preserve lobby/game membership through the reconnect
   grace period. Expiry performs authoritative cleanup, while challenge expiry
@@ -404,11 +404,35 @@ Wizard for both combatants. A later distinct Calling or Loomkeeper visual
 requires its own reviewed profile in another ruleset; it must not silently
 alter v3.
 
-### Planned Basic Relic Ruleset V4
+### Ruleset V4 Arena and Camera
 
-After V3 ships, WP-015D prepares `nimble-knots-artillery-v4` for the first
-range/damage differentiation slice. V1, v2, and v3 constants, identifiers,
-replay hashes, and policy behavior remain immutable.
+`nimble-knots-artillery-v4` is the current new-challenge ruleset. It preserves
+all V3 projectile, Relic, movement, direct-hit, Loomkeeper-policy, reward, and
+turn rules, but records a new deterministic 2048 by 576 authoritative arena:
+256 by 72 terrain cells at 8 world units, 576 packed uint32 words, and initial
+player/Loomkeeper positions 512/1152. V1/V2/V3 keep their exact 1024 by 576,
+128 by 72 terrain bytes, coordinates, state hashes, and replay reconstruction.
+
+The Phaser client owns only a 1024 by 576 horizontal camera window. Its clamped
+camera position, swipe input, off-screen Loomkeeper cue, aim-preview centering,
+and caster/projectile/impact framing are presentation state: never protocol,
+replay, collision, AI, reward, or command authority. The detailed frozen
+contract, including sideways coordinate conversion and control-routing rules,
+is `docs/planning/wp-015d0-arena-camera-contract.md`.
+
+V4's packed terrain plus a bounded projectile trace can exceed the old 8 KiB
+event allowance, so a strict 12 KiB event ceiling remains below the unchanged
+16 KiB Socket.IO transport cap. This increase accommodates only authoritative
+snapshot delivery; command schemas and all other rate/size guards are unchanged.
+
+### Planned Basic Relic Ruleset V5
+
+After the separately versioned V4 wider-arena/camera slice, WP-015D2 prepares
+`nimble-knots-artillery-v5` for the first range/damage differentiation slice.
+V1 through V4 constants, identifiers, replay hashes, and policy behavior remain
+immutable. The exact owner-approved V4 `2048 by 576` arena and camera contract is recorded in
+`docs/planning/wp-015d0-arena-camera-contract.md`; it deliberately does not
+change Relic tiers.
 
 | Relic ID | Range tier | Direct Stitching damage tier |
 | --- | --- | --- |
@@ -425,7 +449,7 @@ dimensions are deferred so the first real-device evaluation measures the
 assembled artillery loop rather than a large balance matrix.
 
 The implementation slice freezes exact integer values and deterministic
-fixed-shot tests before v4 becomes a challenge default. The tier ordering is a
+fixed-shot tests before v5 becomes a challenge default. The tier ordering is a
 product identity, not final balance. The Loomkeeper receives the same public
 range and damage model as the player; visuals never provide simulation
 authority. A later precision mechanic must be deterministic and disclosed and

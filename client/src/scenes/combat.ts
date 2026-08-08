@@ -9,6 +9,7 @@ import {
     type SimulationState
 } from '../../../shared/simulation';
 import { CombatControls } from '../combat/controls';
+import type { AimIntent } from '../combat/input';
 import {
     WIZARD_UNRAVEL_DURATION_MS,
     createApprovedWizardAnimations,
@@ -17,7 +18,16 @@ import {
 import type { CombatSceneArgs, SafeAreaInsets } from '../combat/contracts';
 import { createCombatFixture } from '../combat/fixture';
 import { canRequestFullscreen, toggleGameFullscreen } from '../combat/fullscreen';
-import { activeSidewaysMode } from '../lib/sideways';
+import { activeSidewaysMode, clientPointToGame } from '../lib/sideways';
+import {
+    cameraDirectionToWorldX,
+    cameraForActor,
+    clampCombatCamera,
+    createCombatCamera,
+    focusCombatCamera,
+    panCombatCamera,
+    type CombatCamera
+} from '../combat/camera';
 import { computeCombatLayout, type CombatLayout } from '../combat/layout';
 import {
     planCombatPresentation,
@@ -36,6 +46,7 @@ export default class CombatScene extends Phaser.Scene {
     private combatRenderer: CombatRenderer;
     private controls: CombatControls;
     private layout: CombatLayout;
+    private camera: CombatCamera;
     private renderState: SimulationState;
     private preview: { x: number; y: number }[] = [];
     private projectileTrace: { x: number; y: number }[] = [];
@@ -47,6 +58,12 @@ export default class CombatScene extends Phaser.Scene {
     private transitioning = false;
     private fullscreenUnavailable = false;
     private presentationEpoch = 0;
+    private cameraPointer?: {
+        id: number;
+        start: { x: number; y: number };
+        camera: CombatCamera;
+        panning: boolean;
+    };
     private readonly unsubscribers: (() => void)[] = [];
 
     public constructor() {
@@ -56,6 +73,9 @@ export default class CombatScene extends Phaser.Scene {
         this.onWindowBlur = this.onWindowBlur.bind(this);
         this.onVisibility = this.onVisibility.bind(this);
         this.onFullscreenChange = this.onFullscreenChange.bind(this);
+        this.onCameraPointerDown = this.onCameraPointerDown.bind(this);
+        this.onCameraPointerMove = this.onCameraPointerMove.bind(this);
+        this.onCameraPointerEnd = this.onCameraPointerEnd.bind(this);
         this.shutdown = this.shutdown.bind(this);
     }
 
@@ -64,6 +84,7 @@ export default class CombatScene extends Phaser.Scene {
         this.snapshot = structuredClone(this.args.snapshot);
         this.authoritativeSnapshot = structuredClone(this.args.snapshot);
         this.renderState = cloneSimulation(this.snapshot.simulation as SimulationState);
+        this.camera = createCombatCamera(this.renderState);
         this.preview = [];
         this.projectileTrace = [];
         this.visualPhase = undefined;
@@ -90,6 +111,7 @@ export default class CombatScene extends Phaser.Scene {
                     : [];
                 this.render();
             },
+            onAimLocked: (aim) => this.centerCameraOnAim(aim),
             onPauseChange: (paused) => void this.setPaused(paused),
             onRetry: () => void this.retry(),
             onFullscreenToggle: () => void this.toggleFullscreen()
@@ -112,6 +134,10 @@ export default class CombatScene extends Phaser.Scene {
         window.addEventListener('nimble-knots:wallet-boundary', this.onWindowBlur);
         document.addEventListener('visibilitychange', this.onVisibility);
         document.addEventListener('fullscreenchange', this.onFullscreenChange);
+        this.game.canvas.addEventListener('pointerdown', this.onCameraPointerDown);
+        this.game.canvas.addEventListener('pointermove', this.onCameraPointerMove);
+        this.game.canvas.addEventListener('pointerup', this.onCameraPointerEnd);
+        this.game.canvas.addEventListener('pointercancel', this.onCameraPointerEnd);
         this.events.once(Phaser.Scenes.Events.SHUTDOWN, this.shutdown);
         if (this.args.onSnapshot) {
             this.unsubscribers.push(this.args.onSnapshot((snapshot) => this.acceptSnapshot(snapshot)));
@@ -151,6 +177,7 @@ export default class CombatScene extends Phaser.Scene {
     }
 
     private async submit(command: SimulationCommand): Promise<void> {
+        this.cancelCameraPointer();
         if (this.pendingCommand) return;
         if (this.authoritativeSnapshot.simulation.activeActor !== 'player' ||
             this.authoritativeSnapshot.simulation.phase !== 'awaiting_command') return;
@@ -159,6 +186,7 @@ export default class CombatScene extends Phaser.Scene {
         this.controls.root.dataset.lastCommand = command.type;
         if (command.type === 'fire') {
             this.preview = [];
+            this.focusCameraOnActor('player');
             this.render();
         }
         try {
@@ -182,6 +210,7 @@ export default class CombatScene extends Phaser.Scene {
     }
 
     private async submitMovement(direction: -1 | 1, requestedSteps: number): Promise<void> {
+        this.cancelCameraPointer();
         if (this.pendingCommand || this.presenting) return;
         if (this.authoritativeSnapshot.simulation.activeActor !== 'player' ||
             this.authoritativeSnapshot.simulation.phase !== 'awaiting_command') return;
@@ -217,6 +246,7 @@ export default class CombatScene extends Phaser.Scene {
     }
 
     private async setPaused(paused: boolean): Promise<void> {
+        this.cancelCameraPointer();
         if (this.pendingCommand || !this.args.setPaused) return;
         this.pendingCommand = true;
         this.controls.setBusy(true);
@@ -235,6 +265,7 @@ export default class CombatScene extends Phaser.Scene {
     }
 
     private async retry(): Promise<void> {
+        this.cancelCameraPointer();
         if (this.pendingCommand || !this.args.retry) return;
         this.pendingCommand = true;
         this.controls.setBusy(true);
@@ -303,9 +334,15 @@ export default class CombatScene extends Phaser.Scene {
     }
 
     private onResize(): void {
+        this.cancelCameraPointer();
         const width = this.scale.width;
         const height = this.scale.height;
-        this.layout = computeCombatLayout(width, height, readSafeArea());
+        this.camera = cameraForActor(
+            this.renderState,
+            clampCombatCamera(this.renderState, this.camera),
+            this.snapshot.simulation.activeActor
+        );
+        this.layout = computeCombatLayout(width, height, readSafeArea(), this.camera);
         this.controls.setLayout(this.layout);
         this.controls.cancelTransient();
         this.render();
@@ -331,11 +368,15 @@ export default class CombatScene extends Phaser.Scene {
     }
 
     private onWindowBlur(): void {
+        this.cancelCameraPointer();
         this.controls.cancelTransient();
     }
 
     private onVisibility(): void {
-        if (document.hidden) this.controls.cancelTransient();
+        if (document.hidden) {
+            this.cancelCameraPointer();
+            this.controls.cancelTransient();
+        }
     }
 
     private async toggleFullscreen(): Promise<void> {
@@ -366,7 +407,11 @@ export default class CombatScene extends Phaser.Scene {
         if (!this.layout || !this.combatRenderer) return;
         this.controls.root.dataset.previewPoints = String(this.preview.length);
         this.controls.root.dataset.projectilePoints = String(this.projectileTrace.length);
+        this.controls.root.dataset.cameraLeft = this.camera.left.toFixed(2);
+        this.controls.root.dataset.cameraWidth = String(this.camera.width);
+        this.controls.setLayout(this.layout);
         this.controls.setUnitPositions(this.renderState.units);
+        this.updateCameraHint();
         this.combatRenderer.render(
             this.renderState,
             this.layout,
@@ -386,6 +431,11 @@ export default class CombatScene extends Phaser.Scene {
         window.removeEventListener('nimble-knots:wallet-boundary', this.onWindowBlur);
         document.removeEventListener('visibilitychange', this.onVisibility);
         document.removeEventListener('fullscreenchange', this.onFullscreenChange);
+        this.game.canvas.removeEventListener('pointerdown', this.onCameraPointerDown);
+        this.game.canvas.removeEventListener('pointermove', this.onCameraPointerMove);
+        this.game.canvas.removeEventListener('pointerup', this.onCameraPointerEnd);
+        this.game.canvas.removeEventListener('pointercancel', this.onCameraPointerEnd);
+        this.cancelCameraPointer();
         for (const unsubscribe of this.unsubscribers.splice(0)) unsubscribe();
         this.presentationEpoch += 1;
         this.snapshotQueue.splice(0);
@@ -439,6 +489,7 @@ export default class CombatScene extends Phaser.Scene {
                 await this.waitForPresentation(step.durationMs, epoch);
             } else if (step.kind === 'cast-charge') {
                 this.renderState = cloneSimulation(working);
+                this.focusCameraOnActor(step.actor);
                 this.preview = [];
                 this.projectileTrace = [];
                 this.visualPhase = {
@@ -460,6 +511,8 @@ export default class CombatScene extends Phaser.Scene {
                 await this.presentProjectile(working, step, epoch, reducedMotion);
             } else {
                 this.renderState = cloneSimulation(next.simulation as SimulationState);
+                const impact = next.simulation.lastProjectile?.trace.at(-1);
+                if (impact) this.setCamera(focusCombatCamera(this.renderState, this.camera, impact.x));
                 this.preview = [];
                 this.projectileTrace = next.simulation.lastProjectile?.trace.map(
                     (point) => ({ ...point })
@@ -523,6 +576,8 @@ export default class CombatScene extends Phaser.Scene {
                 ? 1
                 : Math.max(2, Math.ceil(step.trace.length * frame / (frames - 1)));
             this.projectileTrace = step.trace.slice(0, points).map((point) => ({ ...point }));
+            const endpoint = this.projectileTrace.at(-1);
+            if (endpoint) this.setCamera(focusCombatCamera(this.renderState, this.camera, endpoint.x));
             this.visualPhase = {
                 kind: 'projectile',
                 actor: step.actor,
@@ -580,6 +635,13 @@ export default class CombatScene extends Phaser.Scene {
             this.snapshot.simulation.activeActor === 'player'
             ? trajectoryPreview(this.renderState, this.controls.input.lockedAim)
             : [];
+        const lockedAim = this.controls.input.lockedAim;
+        const previewEndpoint = this.preview.at(-1);
+        if (lockedAim && previewEndpoint) {
+            this.setCamera(focusCombatCamera(this.renderState, this.camera, previewEndpoint.x));
+        } else {
+            this.focusCameraOnActor(this.snapshot.simulation.activeActor);
+        }
         this.render();
     }
 
@@ -592,6 +654,7 @@ export default class CombatScene extends Phaser.Scene {
         this.snapshot = structuredClone(next);
         this.authoritativeSnapshot = structuredClone(next);
         this.renderState = cloneSimulation(next.simulation as SimulationState);
+        this.camera = cameraForActor(this.renderState, this.camera, next.simulation.activeActor);
         this.preview = [];
         this.projectileTrace = [];
         this.visualPhase = undefined;
@@ -618,7 +681,101 @@ export default class CombatScene extends Phaser.Scene {
         this.controls.root.removeAttribute('data-projectile-visual');
         this.controls?.setPresenting(null);
         this.controls?.update(this.snapshot);
+        this.focusCameraOnActor(this.snapshot.simulation.activeActor);
         this.render();
+    }
+
+    private centerCameraOnAim(aim: AimIntent | null): void {
+        if (!aim || this.preview.length === 0) return;
+        const endpoint = this.preview.at(-1);
+        if (!endpoint) return;
+        this.setCamera(focusCombatCamera(this.renderState, this.camera, endpoint.x));
+        this.render();
+    }
+
+    private focusCameraOnActor(actor: SimulationActor): void {
+        this.setCamera(cameraForActor(this.renderState, this.camera, actor));
+    }
+
+    private setCamera(camera: CombatCamera): void {
+        this.camera = clampCombatCamera(this.renderState, camera);
+        if (this.layout) this.layout = { ...this.layout, camera: this.camera };
+    }
+
+    private updateCameraHint(): void {
+        if (!this.controls) return;
+        const canPan = !this.pendingCommand && !this.presenting && !this.snapshot.paused &&
+            this.snapshot.status === 'active' &&
+            this.snapshot.simulation.phase === 'awaiting_command' &&
+            this.snapshot.simulation.activeActor === 'player';
+        const loomkeeper = this.renderState.units[1];
+        this.controls.setCameraHint(canPan && loomkeeper.alive
+            ? cameraDirectionToWorldX(this.camera, loomkeeper.x)
+            : null);
+    }
+
+    private onCameraPointerDown(event: PointerEvent): void {
+        if (event.button > 0 || !this.canPanCamera() || !this.layout) return;
+        const point = this.cameraPoint(event);
+        const field = this.layout.battlefield;
+        if (point.x < field.x || point.x > field.x + field.width ||
+            point.y < field.y || point.y > field.y + field.height) return;
+        this.cameraPointer = {
+            id: event.pointerId,
+            start: point,
+            camera: this.camera,
+            panning: false
+        };
+        try { this.game.canvas.setPointerCapture(event.pointerId); } catch {}
+    }
+
+    private onCameraPointerMove(event: PointerEvent): void {
+        const pointer = this.cameraPointer;
+        if (!pointer || pointer.id !== event.pointerId || !this.layout) return;
+        const point = this.cameraPoint(event);
+        const dx = point.x - pointer.start.x;
+        const dy = point.y - pointer.start.y;
+        if (!pointer.panning) {
+            if (Math.abs(dx) < 12 || Math.abs(dx) < Math.abs(dy)) return;
+            pointer.panning = true;
+        }
+        event.preventDefault();
+        this.setCamera(panCombatCamera(
+            this.renderState,
+            pointer.camera,
+            -dx / this.layout.worldScale
+        ));
+        this.render();
+    }
+
+    private onCameraPointerEnd(event: PointerEvent): void {
+        if (!this.cameraPointer || this.cameraPointer.id !== event.pointerId) return;
+        if (this.cameraPointer.panning) event.preventDefault();
+        this.cancelCameraPointer();
+    }
+
+    private cancelCameraPointer(): void {
+        const pointer = this.cameraPointer;
+        if (!pointer) return;
+        try { this.game.canvas.releasePointerCapture(pointer.id); } catch {}
+        this.cameraPointer = undefined;
+    }
+
+    private canPanCamera(): boolean {
+        return !this.pendingCommand && !this.presenting && !this.snapshot.paused &&
+            this.snapshot.status === 'active' &&
+            this.snapshot.simulation.phase === 'awaiting_command' &&
+            this.snapshot.simulation.activeActor === 'player';
+    }
+
+    private cameraPoint(event: PointerEvent): { x: number; y: number } {
+        const game = document.getElementById('game');
+        if (!game) return { x: event.clientX, y: event.clientY };
+        return clientPointToGame(
+            { x: event.clientX, y: event.clientY },
+            game.getBoundingClientRect(),
+            activeSidewaysMode()
+        );
     }
 
     private waitForPresentation(durationMs: number, epoch: number): Promise<void> {

@@ -8,9 +8,10 @@ Phaser/Socket.IO stack.
 ## Execution Pointer
 
 - Active target: mobile-first single-player Nimiq Pay competition release.
-- Active work package: **WP-015D0 Arena Scale and Camera Contract:**
-  planning-only refinement on `codex/wp-015-production-assets`; its purpose is
-  to freeze the V4 wider-arena and camera contract before any D1 code change.
+- Active work package: **WP-015D1 V4 wider arena and pan camera:** implementation
+  of the owner-approved `2048 by 576` V4 arena/camera contract on
+  `codex/wp-015-production-assets`. D0 is complete; D1 must preserve V1/V2/V3
+  replay behavior and admits no obstacle, tactical-terrain, balance, or asset work.
   **WP-015C First playable visual slice — integration plus bounded V3 hitbox
   stabilization** completed on 2026-08-08; its evidence carrier is
   `docs/evidence/wp-015c.json`.
@@ -151,8 +152,8 @@ Phaser/Socket.IO stack.
   asset as the player. Distinct Loomkeeper, Thief, and Warrior production now
   moves to post-release WP-017A; D0 through D3 retain the shared Wizard.
   C passed automated phone views, a fresh pinned Ubuntu candidate workflow, and
-  separate Samsung real-device acceptance. **WP-015D0** is now the next
-  planning-only gate.
+  separate Samsung real-device acceptance. **WP-015D0** is complete and
+  **WP-015D1** is the active implementation gate.
 - Historical B2A-B2G evidence digest: B2E selected a pinned core-node route and
   produced a deterministic source-only
   candidate. Workflow
@@ -2796,32 +2797,19 @@ Sequential delivery slices:
   There is no automatic retry, generated sheet, video, alpha removal, atlas,
   normalization, staging, runtime path, or visual-baseline update in this work
   package.
-- **WP-015D0 Arena Scale and Camera Contract — planning-only:** after C
-  acceptance and before any D implementation, decide whether the first V4
-  arena expands beyond the current fixed 1024 by 576 / 128 by 72 world. The
-  starting candidate is 1536 by 576 with a 192 by 72 terrain grid, but D0 must
-  freeze exact dimensions, spawn separation, camera zoom bounds, and the
-  expected player-visible world window from phone evidence rather than treating
-  that candidate as already approved. The contract must keep V1/V2/V3 world
-  dimensions, terrain generation, coordinates, replay bytes, and ruleset
-  reconstruction immutable. The V4 camera must derive horizontal bounds from
-  the authoritative terrain dimensions and cell size, never a new hidden 1024
-  constant. It may pan only horizontally in the uncovered battlefield region;
-  it must not steal a Movement/Aim/Relic/Fire/Pause pointer, manufacture an
-  aim or movement command, or affect server authority. The existing Aim pad
-  remains the only angle/power input. On a legal player turn the camera begins
-  at the acting Wizard, preserves a player-selected view while aim is locked,
-  returns to the caster for the spell, and follows the authoritative projectile
-  / impact; the Loomkeeper receives the equivalent presentational framing. The
-  approved Cloud remains a distant presentation layer rather than collision
-  truth. D0 creates no source media, asset request, runtime code, ruleset,
-  balance change, terrain-generation change, obstacle, destructible prop,
-  alternate map, or gameplay feature. Obstacles and tactical terrain profiles
-  require a later separately versioned arena-tactics work package after basic
-  roster/range acceptance. Close D0 only with an owner-approved written
-  contract covering transform math, sideways gesture mapping, camera-follow
-  phases, accessibility/recovery behavior, replay boundary, test matrix, and
-  explicit non-goals.
+- **WP-015D0 Arena Scale and Camera Contract — complete:** the owner-approved
+  [WP-015D0 Arena Scale and Camera Contract](wp-015d0-arena-camera-contract.md)
+  freezes V4 as a `2048 by 576` world, `256 by 72` terrain at 8-unit cells,
+  player/Loomkeeper spawn x `512/1152`, and the current-scale `1024 by 576`
+  camera window with horizontal range `0..1024`. The initial reachable duel
+  separation remains 640, while the Loomkeeper sits just outside the starting
+  player window and the doubled world preserves genuine later tactical space.
+  It specifies sideways-safe canvas-only panning, a non-interactive swipe hint,
+  aim-lock centering on the authoritative preview endpoint with later
+  recentering, post-lock panning, caster/projectile/impact follow, recovery,
+  replay boundary, test matrix, and no-obstacles/no-tactical-terrain scope.
+  V1/V2/V3 world dimensions, terrain generation, coordinates, replay bytes,
+  and ruleset reconstruction remain immutable. **WP-015D1 is now active.**
 - **WP-015D1 V4 wider arena and pan camera:** after D0 contract approval,
   implement the one frozen V4 arena size, terrain-grid dimensions, spawn
   separation, deterministic low-relief ground extension, and horizontal

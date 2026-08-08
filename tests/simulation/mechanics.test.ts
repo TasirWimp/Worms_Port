@@ -7,8 +7,29 @@ import {
     assertSimulationInvariants,
     canonicalSimulationJson,
     createSimulation,
+    createLatestSimulation,
     SIM_RULES
 } from '../../shared/simulation';
+
+test('V4 doubles only authoritative arena width and remains deterministic', () => {
+    const first = createLatestSimulation(0xC0FFEE11, 'wizard');
+    const second = createLatestSimulation(0xC0FFEE11, 'wizard');
+    assert.equal(first.rulesetId, 'nimble-knots-artillery-v4');
+    assert.equal(first.formatVersion, 4);
+    assert.deepEqual(
+        { width: first.terrain.width, height: first.terrain.height, cellSize: first.terrain.cellSize, words: first.terrain.words.length },
+        { width: 256, height: 72, cellSize: 8, words: 576 }
+    );
+    assert.deepEqual(first.units.map((unit) => unit.x), [512, 1152]);
+    assert.equal(canonicalSimulationJson(first), canonicalSimulationJson(second));
+
+    const historical = createSimulation(0xC0FFEE11, 'wizard', 'nimble-knots-artillery-v3');
+    assert.deepEqual(
+        { width: historical.terrain.width, height: historical.terrain.height, cellSize: historical.terrain.cellSize, words: historical.terrain.words.length },
+        { width: 128, height: 72, cellSize: 8, words: 288 }
+    );
+    assert.deepEqual(historical.units.map((unit) => unit.x), [192, 832]);
+});
 
 test('move, aim, and fire form an authoritative fixed-turn transition', () => {
     const initial = createSimulation(0xC0FFEE11, 'wizard');

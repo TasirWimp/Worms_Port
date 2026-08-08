@@ -408,7 +408,7 @@ test('malformed, extra, and oversized events fail closed without echoing secrets
             sequence: 0,
             mode: 'practice',
             calling: 'wizard',
-            padding: 'x'.repeat(9 * 1024)
+            padding: 'x'.repeat(13 * 1024)
         });
         assert.equal(oversized.error.code, 'PAYLOAD_TOO_LARGE');
         assert.doesNotMatch(JSON.stringify(oversized), /x{64}/);
@@ -448,7 +448,7 @@ test('pending connection and oversized-invalid budgets fail closed', async () =>
                 sequence: 0,
                 mode: 'practice',
                 calling: 'wizard',
-                padding: 'x'.repeat(9 * 1024)
+                padding: 'x'.repeat(13 * 1024)
             });
             assert.equal(response.error.code, 'PAYLOAD_TOO_LARGE');
         }
@@ -457,7 +457,7 @@ test('pending connection and oversized-invalid budgets fail closed', async () =>
             sequence: 0,
             mode: 'practice',
             calling: 'wizard',
-            padding: 'x'.repeat(9 * 1024)
+            padding: 'x'.repeat(13 * 1024)
         });
         await disconnected;
         assert.equal(first.connected, false);
@@ -904,7 +904,7 @@ test('protocol commands mutate authoritative simulation once and reconstruct fro
             calling: 'wizard'
         });
         assert.equal(ChallengeSnapshotSchema.safeParse(created.data).success, true);
-        assert.equal(created.data.simulation.rulesetId, 'nimble-knots-artillery-v3');
+        assert.equal(created.data.simulation.rulesetId, 'nimble-knots-artillery-v4');
         assert.equal(created.data.loomkeeperPolicyId, 'nimble-knots-loomkeeper-v2');
         assert.ok(Buffer.byteLength(JSON.stringify(created.data), 'utf8') <= 8 * 1024);
         const initialHash = created.data.stateHash;
@@ -1041,8 +1041,8 @@ test('player fire produces one automated Loomkeeper resolution and records only 
         };
         const fired = await emitAck(socket, protocolEvents.commandSubmit, firePayload);
         assert.equal(fired.ok, true);
-        assert.equal(fired.data.simulation.rulesetId, 'nimble-knots-artillery-v3');
-        assert.equal(fired.data.simulation.rulesetVersion, 3);
+        assert.equal(fired.data.simulation.rulesetId, 'nimble-knots-artillery-v4');
+        assert.equal(fired.data.simulation.rulesetVersion, 4);
         assert.equal(fired.data.simulation.activeActor, 'loomkeeper');
         assert.equal(fired.data.simulation.turn, 1);
         const reply = await automated;

@@ -1,5 +1,6 @@
 import { SIM_RULES } from '../../../shared/simulation';
 import type { SimulationUnit } from '../../../shared/simulation';
+import { COMBAT_CAMERA_WINDOW, type CombatCamera } from './camera';
 import type { Rect, SafeAreaInsets } from './contracts';
 import { WIZARD_PRESENTATION_TOP_IN_WORLD } from './loomseed-origin';
 
@@ -12,6 +13,7 @@ export type CombatLayout = {
     statusZone: Rect;
     pauseZone: Rect;
     worldScale: number;
+    camera: CombatCamera;
 };
 
 const MINIMUM_INSET = 8;
@@ -24,7 +26,8 @@ const STATUS_HEIGHT = 46;
 export function computeCombatLayout(
     width: number,
     height: number,
-    safeArea: SafeAreaInsets = { top: 0, right: 0, bottom: 0, left: 0 }
+    safeArea: SafeAreaInsets = { top: 0, right: 0, bottom: 0, left: 0 },
+    camera: CombatCamera = { left: 0, top: 0, ...COMBAT_CAMERA_WINDOW }
 ): CombatLayout {
     const left = Math.max(MINIMUM_INSET, safeArea.left);
     const right = Math.max(MINIMUM_INSET, safeArea.right);
@@ -35,14 +38,14 @@ export function computeCombatLayout(
     const orientation = width > height ? 'landscape' : 'portrait';
 
     const scale = Math.min(
-        usableWidth / SIM_RULES.worldWidth,
-        usableHeight / SIM_RULES.worldHeight
+        usableWidth / camera.width,
+        usableHeight / camera.height
     );
     const battlefield = {
-        x: left + (usableWidth - SIM_RULES.worldWidth * scale) / 2,
-        y: top + (usableHeight - SIM_RULES.worldHeight * scale) / 2,
-        width: SIM_RULES.worldWidth * scale,
-        height: SIM_RULES.worldHeight * scale
+        x: left + (usableWidth - camera.width * scale) / 2,
+        y: top + (usableHeight - camera.height * scale) / 2,
+        width: camera.width * scale,
+        height: camera.height * scale
     };
 
     const padSize = Math.min(
@@ -74,14 +77,15 @@ export function computeCombatLayout(
             height: STATUS_HEIGHT
         },
         pauseZone: { x: left, y: top, width: 48, height: 48 },
-        worldScale: scale
+        worldScale: scale,
+        camera
     };
 }
 
 export function computeActorStatusLayout(
     layout: CombatLayout,
     units: readonly [SimulationUnit, SimulationUnit] | readonly SimulationUnit[]
-): { player: Rect; loomkeeper: Rect } {
+): { player?: Rect; loomkeeper?: Rect } {
     const width = Math.min(108, Math.max(78, layout.battlefield.width * 0.16));
     const height = 32;
     const edge = 6;
@@ -90,15 +94,21 @@ export function computeActorStatusLayout(
         (SIM_RULES.actorRadius + WIZARD_PRESENTATION_TOP_IN_WORLD) * layout.worldScale + 12
     );
     const field = layout.battlefield;
-    const rectFor = (unit: SimulationUnit): Rect => ({
-        x: clamp(field.x + unit.x * layout.worldScale - width / 2, field.x + edge, field.x + field.width - width - edge),
+    const rectFor = (unit: SimulationUnit): Rect | undefined => {
+        const worldX = unit.x - layout.camera.left;
+        if (worldX < -SIM_RULES.actorRadius || worldX > layout.camera.width + SIM_RULES.actorRadius) {
+            return undefined;
+        }
+        return {
+        x: clamp(field.x + worldX * layout.worldScale - width / 2, field.x + edge, field.x + field.width - width - edge),
         y: clamp(field.y + unit.y * layout.worldScale - actorOffset - height, field.y + edge, field.y + field.height - height - edge),
         width,
         height
-    });
+        };
+    };
     const player = rectFor(units[0]);
     const loomkeeper = rectFor(units[1]);
-    if (overlaps(player, loomkeeper)) {
+    if (player && loomkeeper && overlaps(player, loomkeeper)) {
         player.x = field.x + edge;
         loomkeeper.x = field.x + field.width - width - edge;
         const sharedY = Math.min(player.y, loomkeeper.y);

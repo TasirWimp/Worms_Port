@@ -15,6 +15,7 @@ type CombatControlsCallbacks = {
     onCommand: (command: SimulationCommand) => void;
     onMovement: (direction: -1 | 1, steps: number) => void;
     onAimPreview: (aim: AimIntent | null) => void;
+    onAimLocked: (aim: AimIntent | null) => void;
     onPauseChange: (paused: boolean) => void;
     onRetry: () => void;
     onFullscreenToggle: () => void;
@@ -78,6 +79,7 @@ export class CombatControls {
                 <strong class="unit-status-value"></strong>
                 <span class="unit-status-track" aria-hidden="true"><span></span></span>
             </div>
+            <div class="combat-camera-hint" aria-live="polite" hidden></div>
             <button type="button" class="pause-button" aria-label="Pause Practice">Pause</button>
             <div class="combat-touch-zone movement-zone" role="group" aria-label="Movement pad">
                 <span class="pad-label">Move</span><span class="pad-ring"></span><span class="pad-knob"></span>
@@ -166,6 +168,8 @@ export class CombatControls {
         this.root.dataset.orientation = layout.orientation;
         this.root.dataset.battlefieldWidth = layout.battlefield.width.toFixed(2);
         this.root.dataset.battlefieldHeight = layout.battlefield.height.toFixed(2);
+        this.root.dataset.battlefieldX = layout.battlefield.x.toFixed(2);
+        this.root.dataset.battlefieldY = layout.battlefield.y.toFixed(2);
         this.root.dataset.worldScale = layout.worldScale.toFixed(4);
         place(this.movementZone, layout.movementZone);
         place(this.aimZone, layout.aimZone);
@@ -188,6 +192,17 @@ export class CombatControls {
 
     public setUnitPositions(units: readonly SimulationUnit[]): void {
         this.positionUnitStatuses(units);
+    }
+
+    public setCameraHint(direction: 'left' | 'right' | null): void {
+        const hint = this.root.querySelector('.combat-camera-hint') as HTMLElement;
+        hint.hidden = !direction;
+        hint.textContent = direction === 'right'
+            ? '← Swipe left to find Loomkeeper'
+            : direction === 'left'
+                ? 'Swipe right to find Loomkeeper →'
+                : '';
+        this.root.dataset.cameraHint = direction ?? 'none';
     }
 
     public update(snapshot: ChallengeSnapshot): void {
@@ -304,7 +319,10 @@ export class CombatControls {
                 event.clientY >= rect.top && event.clientY <= rect.bottom;
             const command = this.input.end(event.pointerId, inside);
             this.resetPad(zone, knob);
-            if (kind === 'aim') this.callbacks.onAimPreview(this.input.lockedAim);
+            if (kind === 'aim') {
+                this.callbacks.onAimPreview(this.input.lockedAim);
+                this.callbacks.onAimLocked(this.input.lockedAim);
+            }
             this.refresh();
             if (command?.type === 'move') {
                 if (command.direction && movementSteps > 0) {
@@ -448,8 +466,8 @@ export class CombatControls {
     ): void {
         if (!this.layout) return;
         const positions = computeActorStatusLayout(this.layout, units);
-        place(this.playerStatus, positions.player);
-        place(this.loomkeeperStatus, positions.loomkeeper);
+        placeOptional(this.playerStatus, positions.player);
+        placeOptional(this.loomkeeperStatus, positions.loomkeeper);
     }
 
     private point(event: PointerEvent): { x: number; y: number } {
@@ -478,6 +496,15 @@ function place(element: HTMLElement | null, rect: { x: number; y: number; width:
     element.style.top = `${rect.y}px`;
     element.style.width = `${rect.width}px`;
     element.style.height = `${rect.height}px`;
+}
+
+function placeOptional(
+    element: HTMLElement | null,
+    rect: { x: number; y: number; width: number; height: number } | undefined
+): void {
+    if (!element) return;
+    element.hidden = !rect;
+    if (rect) place(element, rect);
 }
 
 function relicName(relicId: RelicId): string {

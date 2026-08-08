@@ -124,7 +124,7 @@ export function setupProtocol(
                 ack?.(failure(
                     requestIdOf(payload),
                     'PAYLOAD_TOO_LARGE',
-                    'The event payload exceeds the 8 KiB limit.'
+                    'The event payload exceeds the 12 KiB limit.'
                 ));
                 if (!invalidLimiter.take()) {
                     socket.disconnect(true);

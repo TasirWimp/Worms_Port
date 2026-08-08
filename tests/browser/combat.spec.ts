@@ -264,6 +264,25 @@ test('touch movement, Relic selection, aim lock, and explicit Fire stay separate
   expect(presentation.maximumProjectilePoints).toBeGreaterThan(1);
 });
 
+test('V4 pans to the Loomkeeper, recentres a locked aim, and preserves post-lock panning', async ({ page }) => {
+  const ui = page.locator('.combat-ui');
+  await expect(ui).toHaveAttribute('data-camera-left', '0.00');
+  await expect(page.getByText('← Swipe left to find Loomkeeper')).toBeVisible();
+
+  await dragBattlefield(page, 44, 0.74, 0.22, 0.35, 0.22);
+  await expect.poll(async () => Number(await ui.getAttribute('data-camera-left'))).toBeGreaterThan(120);
+  await expect(page.locator('.combat-camera-hint')).toBeHidden();
+  await expect(ui).not.toHaveAttribute('data-last-command', /move|aim|fire/);
+
+  await dragPad(page, '.aim-zone', 45, 0.3, -0.34);
+  await expect(ui).toHaveAttribute('data-phase', 'aim_locked');
+  const lockedCamera = Number(await ui.getAttribute('data-camera-left'));
+  await dragBattlefield(page, 46, 0.32, 0.22, 0.7, 0.35);
+  await expect.poll(async () => Number(await ui.getAttribute('data-camera-left'))).not.toBe(lockedCamera);
+  await expect(ui).toHaveAttribute('data-phase', 'aim_locked');
+  await expect(page.locator('.fire-button')).toBeEnabled();
+});
+
 test('Threadball preserves the approved cast order before the authoritative trace', async ({ page }, testInfo) => {
   test.skip(testInfo.project.name !== 'chromium-390x844', 'One phone viewport verifies the asset-bound sequence.');
   await installPresentationRecorder(page);
@@ -423,6 +442,43 @@ async function pointer(
       clientY: rect.top + rect.height * args.yRatio
     }));
   }, { type, pointerId, xRatio, yRatio });
+}
+
+async function dragBattlefield(
+  page: Page,
+  pointerId: number,
+  fromX: number,
+  fromY: number,
+  toX: number,
+  toY: number
+): Promise<void> {
+  const ui = page.locator('.combat-ui');
+  const canvas = page.locator('#game canvas');
+  const [x, y, width, height, canvasBox] = await Promise.all([
+    ui.getAttribute('data-battlefield-x'),
+    ui.getAttribute('data-battlefield-y'),
+    ui.getAttribute('data-battlefield-width'),
+    ui.getAttribute('data-battlefield-height'),
+    canvas.boundingBox()
+  ]);
+  expect(canvasBox).not.toBeNull();
+  const field = {
+    x: Number(x), y: Number(y), width: Number(width), height: Number(height)
+  };
+  expect(Object.values(field).every(Number.isFinite)).toBe(true);
+  const ratios = {
+    fromX: (field.x + field.width * fromX) / canvasBox!.width,
+    fromY: (field.y + field.height * fromY) / canvasBox!.height,
+    toX: (field.x + field.width * toX) / canvasBox!.width,
+    toY: (field.y + field.height * toY) / canvasBox!.height
+  };
+  expect(
+    Object.values(ratios).every(Number.isFinite),
+    JSON.stringify({ field, canvasBox, ratios })
+  ).toBe(true);
+  await pointer(page, '#game canvas', 'pointerdown', pointerId, ratios.fromX, ratios.fromY);
+  await pointer(page, '#game canvas', 'pointermove', pointerId, ratios.toX, ratios.toY);
+  await pointer(page, '#game canvas', 'pointerup', pointerId, ratios.toX, ratios.toY);
 }
 
 function overlaps(

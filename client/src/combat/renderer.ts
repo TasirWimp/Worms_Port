@@ -66,6 +66,8 @@ const TERRAIN_TOP_SOURCE_HEIGHT = 64;
 export class CombatRenderer {
     private readonly scene: Phaser.Scene;
     private readonly background: Phaser.GameObjects.Graphics;
+    private readonly worldClip: Phaser.GameObjects.Graphics;
+    private readonly worldMask: Phaser.Display.Masks.GeometryMask;
     private readonly teamCues: Phaser.GameObjects.Graphics;
     private readonly effects: Phaser.GameObjects.Graphics;
     private readonly wizardSprites: Partial<Record<SimulationActor, Phaser.GameObjects.Sprite>> = {};
@@ -80,8 +82,12 @@ export class CombatRenderer {
     public constructor(scene: Phaser.Scene) {
         this.scene = scene;
         this.background = scene.add.graphics().setDepth(0);
+        this.worldClip = scene.make.graphics();
+        this.worldMask = this.worldClip.createGeometryMask();
         this.teamCues = scene.add.graphics().setDepth(4);
         this.effects = scene.add.graphics().setDepth(6);
+        this.teamCues.setMask(this.worldMask);
+        this.effects.setMask(this.worldMask);
         this.usingApprovedAssets = approvedCombatAssetsLoaded(scene);
         this.usingWizardAnimations = approvedWizardAnimationsLoaded(scene);
 
@@ -91,13 +97,16 @@ export class CombatRenderer {
         for (let index = 0; index < 3; index += 1) {
             this.cloudSprites.push(scene.add.image(0, 0, APPROVED_COMBAT_ASSETS.cloud.key)
                 .setDepth(1)
-                .setAlpha(0.72));
+                .setAlpha(0.72)
+                .setMask(this.worldMask));
         }
         this.formationSprite = scene.add.image(0, 0, APPROVED_COMBAT_ASSETS.formationStart.key)
             .setDepth(5)
+            .setMask(this.worldMask)
             .setVisible(false);
         this.projectileSprite = scene.add.image(0, 0, APPROVED_COMBAT_ASSETS.projectile.key)
             .setDepth(5)
+            .setMask(this.worldMask)
             .setVisible(false);
     }
 
@@ -119,6 +128,9 @@ export class CombatRenderer {
         g.fillRect(0, 0, this.scene.scale.width, this.scene.scale.height);
         g.fillStyle(0xC9EEF2);
         g.fillRoundedRect(field.x, field.y, field.width, field.height, 10);
+        this.worldClip.clear();
+        this.worldClip.fillStyle(0xFFFFFF);
+        this.worldClip.fillRect(field.x, field.y, field.width, field.height);
 
         if (this.usingApprovedAssets) {
             this.updateClouds(layout);
@@ -143,6 +155,7 @@ export class CombatRenderer {
 
     public destroy(): void {
         this.background.destroy();
+        this.worldClip.destroy();
         this.teamCues.destroy();
         this.effects.destroy();
         for (const sprite of Object.values(this.wizardSprites)) sprite?.destroy();
@@ -173,7 +186,10 @@ export class CombatRenderer {
         ];
         for (const [index, sprite] of this.cloudSprites.entries()) {
             const [x, y, width] = placements[index];
-            sprite.setPosition(field.x + field.width * x, field.y + field.height * y)
+            sprite.setPosition(
+                field.x + field.width * x - layout.camera.left * layout.worldScale * 0.25,
+                field.y + field.height * y
+            )
                 .setDisplaySize(field.width * width, field.width * width)
                 .setVisible(true);
         }
@@ -196,7 +212,7 @@ export class CombatRenderer {
                         APPROVED_COMBAT_ASSETS.terrainInterior.key,
                         this.terrainInteriorTiles
                     );
-                    tile.setPosition(field.x + runStart * cell, field.y + y * cell)
+                    tile.setPosition(field.x + (runStart * state.terrain.cellSize - layout.camera.left) * layout.worldScale, field.y + y * cell)
                         .setSize((x - runStart) * cell + 0.5, cell + 0.5)
                         .setTileScale(materialScale, materialScale)
                         .setTilePosition(
@@ -218,7 +234,7 @@ export class CombatRenderer {
                     APPROVED_COMBAT_ASSETS.terrainTop.key,
                     this.terrainTopTiles
                     );
-                    tile.setPosition(field.x + x * cell, field.y + y * cell)
+                    tile.setPosition(field.x + (x * state.terrain.cellSize - layout.camera.left) * layout.worldScale, field.y + y * cell)
                         .setSize(
                             cell + 0.5,
                             Math.max(
@@ -244,7 +260,8 @@ export class CombatRenderer {
     ): Phaser.GameObjects.TileSprite {
         const tile = this.scene.add.tileSprite(0, 0, 1, 1, texture)
             .setOrigin(0, 0)
-            .setDepth(2);
+            .setDepth(2)
+            .setMask(this.worldMask);
         collection.push(tile);
         return tile;
     }
@@ -270,6 +287,7 @@ export class CombatRenderer {
                 .setFlipX(unit.facing < 0)
                 .setAlpha(1)
                 .setVisible(true);
+            sprite.setMask(this.worldMask);
             this.updateWizardAnimation(sprite, unit, visualPhase);
         }
     }
@@ -381,7 +399,8 @@ export class CombatRenderer {
             ? APPROVED_COMBAT_ASSETS.formationStart.key
             : APPROVED_COMBAT_ASSETS.formationReady.key;
         const scale = layout.worldScale * (visualPhase.stage === 'start' ? 0.38 : 0.62);
-        this.formationSprite.setTexture(key)
+        this.formationSprite.setMask(this.worldMask)
+            .setTexture(key)
             .setPosition(point.x, point.y)
             .setScale(scale)
             .setAlpha(visualPhase.stage === 'start' ? 0.9 : 1)
@@ -408,7 +427,8 @@ export class CombatRenderer {
     private drawThreadballProjectile(trace: { x: number; y: number }[], layout: CombatLayout): void {
         if (!this.projectileSprite || trace.length === 0) return;
         const endpoint = this.worldPoint(trace.at(-1)!.x, trace.at(-1)!.y, layout);
-        this.projectileSprite.setPosition(endpoint.x, endpoint.y)
+        this.projectileSprite.setMask(this.worldMask)
+            .setPosition(endpoint.x, endpoint.y)
             .setScale(Math.max(0.16, layout.worldScale * 0.46))
             .setAlpha(1)
             .setVisible(true);
@@ -547,7 +567,9 @@ export class CombatRenderer {
                 const solid = x < state.terrain.width && terrainSolid(state.terrain, x, y);
                 if (solid && runStart < 0) runStart = x;
                 if (!solid && runStart >= 0) {
-                    g.fillRect(field.x + runStart * cell, field.y + y * cell, (x - runStart) * cell + 0.6, cell + 0.6);
+                    const left = field.x + (runStart * state.terrain.cellSize - layout.camera.left) * layout.worldScale;
+                    const right = field.x + (x * state.terrain.cellSize - layout.camera.left) * layout.worldScale;
+                    g.fillRect(Math.max(field.x, left), field.y + y * cell, Math.max(0, Math.min(field.x + field.width, right) - Math.max(field.x, left)) + 0.6, cell + 0.6);
                     runStart = -1;
                 }
             }
@@ -556,7 +578,7 @@ export class CombatRenderer {
         for (let x = 0; x < state.terrain.width; x += 1) {
             for (let y = 0; y < state.terrain.height; y += 1) {
                 if (terrainSolid(state.terrain, x, y) && (y === 0 || !terrainSolid(state.terrain, x, y - 1))) {
-                    const px = field.x + x * cell;
+                    const px = field.x + (x * state.terrain.cellSize - layout.camera.left) * layout.worldScale;
                     const py = field.y + y * cell;
                     g.lineBetween(px, py, px + cell, py);
                     break;
@@ -625,8 +647,8 @@ export class CombatRenderer {
 
     private worldPoint(x: number, y: number, layout: CombatLayout): { x: number; y: number } {
         return {
-            x: layout.battlefield.x + x * layout.worldScale,
-            y: layout.battlefield.y + y * layout.worldScale
+            x: layout.battlefield.x + (x - layout.camera.left) * layout.worldScale,
+            y: layout.battlefield.y + (y - layout.camera.top) * layout.worldScale
         };
     }
 }

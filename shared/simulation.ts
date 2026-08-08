@@ -3,12 +3,17 @@ export const RULESET_VERSION = 1 as const;
 export const LEGACY_RULESET_ID = RULESET_ID;
 export const V2_RULESET_ID = 'nimble-knots-artillery-v2' as const;
 export const V2_RULESET_VERSION = 2 as const;
-export const LATEST_RULESET_ID = 'nimble-knots-artillery-v3' as const;
-export const LATEST_RULESET_VERSION = 3 as const;
+export const V3_RULESET_ID = 'nimble-knots-artillery-v3' as const;
+export const V3_RULESET_VERSION = 3 as const;
+export const V4_RULESET_ID = 'nimble-knots-artillery-v4' as const;
+export const V4_RULESET_VERSION = 4 as const;
+export const LATEST_RULESET_ID = V4_RULESET_ID;
+export const LATEST_RULESET_VERSION = V4_RULESET_VERSION;
 
 export type SimulationRulesetId =
     | typeof RULESET_ID
     | typeof V2_RULESET_ID
+    | typeof V3_RULESET_ID
     | typeof LATEST_RULESET_ID;
 export type RelicId = 'threadball' | 'needlepoint' | 'spoolburst';
 
@@ -53,6 +58,46 @@ export const SIM_RULES = Object.freeze({
     maximumShotSpeed: 5120
 });
 
+export type ArenaRules = Readonly<{
+    worldWidth: number;
+    worldHeight: number;
+    terrainCellSize: number;
+    terrainWidth: number;
+    terrainHeight: number;
+    playerSpawnX: number;
+    loomkeeperSpawnX: number;
+}>;
+
+/** V1/V2/V3's immutable 1024 by 576 terrain contract. */
+export const HISTORICAL_ARENA_RULES: ArenaRules = Object.freeze({
+    worldWidth: SIM_RULES.worldWidth,
+    worldHeight: SIM_RULES.worldHeight,
+    terrainCellSize: SIM_RULES.terrainCellSize,
+    terrainWidth: SIM_RULES.terrainWidth,
+    terrainHeight: SIM_RULES.terrainHeight,
+    playerSpawnX: 192,
+    loomkeeperSpawnX: 832
+});
+
+/**
+ * V4 doubles horizontal simulation space without changing vertical physics or
+ * the V3 reachable 640-unit opening duel. Presentation owns its camera; this
+ * remains authoritative replay data only through the ruleset/terrain state.
+ */
+export const V4_ARENA_RULES: ArenaRules = Object.freeze({
+    worldWidth: 2048,
+    worldHeight: 576,
+    terrainCellSize: 8,
+    terrainWidth: 256,
+    terrainHeight: 72,
+    playerSpawnX: 512,
+    loomkeeperSpawnX: 1152
+});
+
+export function arenaRulesFor(rulesetId: SimulationRulesetId): ArenaRules {
+    return rulesetId === V4_RULESET_ID ? V4_ARENA_RULES : HISTORICAL_ARENA_RULES;
+}
+
 export type DirectProjectileHitbox = Readonly<{
     halfWidth: number;
     top: number;
@@ -77,7 +122,8 @@ export const DIRECT_PROJECTILE_HITBOXES: Readonly<Record<SimulationRulesetId, Di
         top: SIM_RULES.actorRadius,
         bottom: SIM_RULES.actorRadius
     }),
-    [LATEST_RULESET_ID]: Object.freeze({ halfWidth: 32, top: 85, bottom: 13 })
+    [V3_RULESET_ID]: Object.freeze({ halfWidth: 32, top: 85, bottom: 13 }),
+    [V4_RULESET_ID]: Object.freeze({ halfWidth: 32, top: 85, bottom: 13 })
 });
 
 export type SimulationActor = 'player' | 'loomkeeper';
@@ -101,9 +147,9 @@ export type SimulationUnit = {
 };
 
 export type PackedTerrain = {
-    width: 128;
-    height: 72;
-    cellSize: 8;
+    width: number;
+    height: number;
+    cellSize: number;
     words: number[];
 };
 
@@ -119,9 +165,9 @@ export type ProjectileSummary = {
 };
 
 export type SimulationState = {
-    formatVersion: 1 | 2 | 3;
+    formatVersion: 1 | 2 | 3 | 4;
     rulesetId: SimulationRulesetId;
-    rulesetVersion: 1 | 2 | 3;
+    rulesetVersion: 1 | 2 | 3 | 4;
     seed: number;
     rngState: number;
     tick: number;
@@ -169,9 +215,10 @@ export function createSimulation(
     rulesetId: SimulationRulesetId = LEGACY_RULESET_ID
 ): SimulationState {
     const normalizedSeed = normalizeSeed(seed);
-    const generated = generateTerrain(normalizedSeed);
-    const playerX = 192;
-    const loomkeeperX = 832;
+    const arena = arenaRulesFor(rulesetId);
+    const generated = generateTerrain(normalizedSeed, arena);
+    const playerX = arena.playerSpawnX;
+    const loomkeeperX = arena.loomkeeperSpawnX;
     const state: SimulationState = {
         formatVersion: rulesetVersionFor(rulesetId),
         rulesetId,
@@ -357,22 +404,28 @@ export function assertSimulationInvariants(state: SimulationState): void {
         state.rulesetVersion === 1 && state.formatVersion === 1;
     const v2 = state.rulesetId === V2_RULESET_ID &&
         state.rulesetVersion === V2_RULESET_VERSION && state.formatVersion === 2;
-    const v3 = state.rulesetId === LATEST_RULESET_ID &&
-        state.rulesetVersion === LATEST_RULESET_VERSION && state.formatVersion === 3;
-    if (!legacy && !v2 && !v3) {
+    const v3 = state.rulesetId === V3_RULESET_ID &&
+        state.rulesetVersion === V3_RULESET_VERSION && state.formatVersion === 3;
+    const v4 = state.rulesetId === V4_RULESET_ID &&
+        state.rulesetVersion === V4_RULESET_VERSION && state.formatVersion === 4;
+    if (!legacy && !v2 && !v3 && !v4) {
         throw new Error('Unknown deterministic simulation ruleset.');
     }
     if (!availableRelics(state).includes(state.selectedRelic)) {
         throw new Error('Selected Relic is unavailable in this ruleset.');
     }
-    if (state.lastProjectile && (v2 || v3) && !state.lastProjectile.relicId) {
+    if (state.lastProjectile && (v2 || v3 || v4) && !state.lastProjectile.relicId) {
         throw new Error('Current-ruleset projectile lacks its Relic identifier.');
     }
     if (state.lastProjectile && legacy && state.lastProjectile.relicId) {
         throw new Error('Legacy projectile contains a current-ruleset field.');
     }
-    const expectedWords = Math.ceil(state.terrain.width * state.terrain.height / 32);
-    if (state.terrain.words.length !== expectedWords) throw new Error('Terrain word length changed.');
+    const arena = arenaRulesFor(state.rulesetId);
+    const expectedWords = Math.ceil(arena.terrainWidth * arena.terrainHeight / 32);
+    if (state.terrain.width !== arena.terrainWidth || state.terrain.height !== arena.terrainHeight ||
+        state.terrain.cellSize !== arena.terrainCellSize || state.terrain.words.length !== expectedWords) {
+        throw new Error('Terrain dimensions changed for this ruleset.');
+    }
     const integers: number[] = [
         state.seed, state.rngState, state.tick, state.revision, state.turn,
         state.turnDeadlineTick, state.movementRemaining,
@@ -400,10 +453,11 @@ function normalizeSeed(seed: number): number {
     return normalized === 0 ? 0x6D2B79F5 : normalized;
 }
 
-function rulesetVersionFor(rulesetId: SimulationRulesetId): 1 | 2 | 3 {
+function rulesetVersionFor(rulesetId: SimulationRulesetId): 1 | 2 | 3 | 4 {
     if (rulesetId === LEGACY_RULESET_ID) return RULESET_VERSION;
     if (rulesetId === V2_RULESET_ID) return V2_RULESET_VERSION;
-    return LATEST_RULESET_VERSION;
+    if (rulesetId === V3_RULESET_ID) return V3_RULESET_VERSION;
+    return V4_RULESET_VERSION;
 }
 
 function nextRandom(state: number): number {
@@ -414,12 +468,12 @@ function nextRandom(state: number): number {
     return value >>> 0;
 }
 
-function generateTerrain(seed: number): { terrain: PackedTerrain; rngState: number } {
-    const words = new Array(Math.ceil(SIM_RULES.terrainWidth * SIM_RULES.terrainHeight / 32)).fill(0);
+function generateTerrain(seed: number, arena: ArenaRules): { terrain: PackedTerrain; rngState: number } {
+    const words = new Array(Math.ceil(arena.terrainWidth * arena.terrainHeight / 32)).fill(0);
     const terrain: PackedTerrain = {
-        width: SIM_RULES.terrainWidth,
-        height: SIM_RULES.terrainHeight,
-        cellSize: SIM_RULES.terrainCellSize,
+        width: arena.terrainWidth,
+        height: arena.terrainHeight,
+        cellSize: arena.terrainCellSize,
         words
     };
     let rngState = seed;
@@ -469,7 +523,7 @@ function moveUnit(
     const targetX = clamp(
         unit.x + direction * SIM_RULES.movementStep,
         SIM_RULES.actorRadius,
-        SIM_RULES.worldWidth - SIM_RULES.actorRadius - 1
+        worldWidth(state.terrain) - SIM_RULES.actorRadius - 1
     );
     const targetY = surfaceY(state.terrain, targetX) - SIM_RULES.actorRadius;
     if (Math.abs(targetY - unit.y) > SIM_RULES.maximumClimb) {
@@ -527,13 +581,13 @@ function resolveProjectile(
         if (tick % 8 === 0 && trace.length < 40) trace.push({ x: endX, y: endY });
         if (collision) {
             impact = collision.target;
-            if (state.rulesetId === LATEST_RULESET_ID &&
+            if ((state.rulesetId === V3_RULESET_ID || state.rulesetId === V4_RULESET_ID) &&
                 (collision.target === 'player' || collision.target === 'loomkeeper')) {
                 directTarget = collision.target;
             }
             break;
         }
-        if (endX < 0 || endX >= SIM_RULES.worldWidth || endY < 0 || endY >= SIM_RULES.worldHeight) {
+        if (endX < 0 || endX >= worldWidth(state.terrain) || endY < 0 || endY >= worldHeight(state.terrain)) {
             impact = 'world_exit';
             break;
         }
@@ -619,7 +673,7 @@ function applyDamage(
 function settleUnit(state: SimulationState, unit: SimulationUnit): void {
     if (!unit.alive) return;
     const top = surfaceY(state.terrain, unit.x, unit.y + SIM_RULES.actorRadius);
-    if (top >= SIM_RULES.worldHeight) {
+    if (top >= worldHeight(state.terrain)) {
         unit.stitching = 0;
         unit.alive = false;
         return;
@@ -675,7 +729,15 @@ function surfaceY(terrain: PackedTerrain, worldX: number, startWorldY = 0): numb
     for (let y = start; y < terrain.height; y += 1) {
         if (terrainSolid(terrain, x, y)) return y * terrain.cellSize;
     }
-    return SIM_RULES.worldHeight;
+    return worldHeight(terrain);
+}
+
+function worldWidth(terrain: PackedTerrain): number {
+    return terrain.width * terrain.cellSize;
+}
+
+function worldHeight(terrain: PackedTerrain): number {
+    return terrain.height * terrain.cellSize;
 }
 
 function rejected(
