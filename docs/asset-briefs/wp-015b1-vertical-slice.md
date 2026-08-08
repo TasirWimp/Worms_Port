@@ -93,12 +93,14 @@ semantics; this amendment changes only the temporary visual presentation.
 
 The historical Loomkeeper brief, seed, prompt failures, and geometry targets
 remain below for traceability, but they authorize no B3 generation or animation.
-Distinct Loomkeeper production moves to WP-015D with Thief, Warrior, and the
-wider character roster, where it must pass the same source-master, animation,
-manifest, phone, and real-device gates. B3A now contains only Threadball and
-Patch source work. B3B records the deterministic Wizard Loomseed presentation
-contract after rejecting the external animation route, and B3C completes that
-single Wizard presentation for reuse by both combatants.
+Distinct Loomkeeper production moves with Thief, Warrior, and the wider
+character roster to post-release WP-017A, where it must pass the same
+source-master, animation, manifest, phone, and real-device gates. WP-015D1
+through WP-015D3 deliberately retain the shared Wizard presentation. B3A now
+contains only Threadball and Patch source work. B3B records the deterministic
+Wizard Loomseed presentation contract after rejecting the external animation
+route, and B3C completes that single Wizard presentation for reuse by both
+combatants.
 
 The exact SD 1.5 prompts and negative prompt below remain unchanged historical
 evidence for reproducibility. Their `no mouth`/`mouth` exclusions are superseded
@@ -490,16 +492,17 @@ multiple characters, second character, group, front view, rear view, looking lef
 
 ## Character Geometry And Animation
 
-Wizard and Loomkeeper share one source-geometry contract. B2H proves that
-rounded source bodies require reviewed source-specific palm coordinates. The
-Wizard's coordinate becomes the Loomseed anchor and spell-emission origin;
-Loomkeeper geometry remains deferred to WP-015D:
+Wizard and Loomkeeper share one source-geometry contract in the first playable
+slice. B2H proves that rounded source bodies require reviewed source-specific
+palm coordinates. The Wizard's coordinate becomes the Loomseed anchor and
+spell-emission origin; distinct Loomkeeper geometry remains deferred to
+post-release WP-017A:
 
 | Field | 512x512 source | 192x192 runtime candidate |
 | --- | ---: | ---: |
 | Ground pivot | `(256, 451)` | `(96, 169)` |
 | Approved Wizard Loomseed anchor / emission origin | `(407, 228)` | `(153, 85)` |
-| Historical Loomkeeper socket target, deferred to WP-015D | `(341, 293)` | `(128, 110)` |
+| Historical Loomkeeper socket target, deferred to WP-017A | `(341, 293)` | `(128, 110)` |
 | Legacy Relic-local offset (simulation metadata only; not the Loomseed visual rule) | `(96, 0)` | `(36, 0)` |
 | Motion-safe horizontal bounds | `64..448` | `24..168` |
 | Motion-safe top/baseline | `32..451` | `12..169` |
@@ -509,7 +512,7 @@ both bead eyes remain visible. The Wizard's visible palm center is its Loomseed
 anchor and emission origin. A later deterministic presentation derivative
 places the permanent focus there; its temporary projectile launches beyond that
 anchor along the locked aim direction, rather than rotating a held object around
-the hand. WP-015D must stop and record a Loomkeeper coordinate amendment if one
+the hand. WP-017A must stop and record a Loomkeeper coordinate amendment if one
 uniform transform cannot meet its historical target without implausible scale or
 crop. Mirroring for a left-facing actor is allowed only after costume handedness
 and asymmetry review.
@@ -642,7 +645,7 @@ Wizard acceptance:
 - no official Nimiq mark, text, scenery, second character, or selected Relic is
   present.
 
-## Brief: Loomkeeper (deferred to WP-015D)
+## Brief: Loomkeeper (deferred to post-release WP-017A)
 
 - Asset-family ID: `knotkin-loomkeeper-v1`
 - Intended product path after approval:

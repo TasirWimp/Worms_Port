@@ -145,9 +145,10 @@ Phaser/Socket.IO stack.
   build copies; **WP-015C** is the next integration-only slice.
   The gameplay
   AI remains the Loomkeeper, but its first-slice presentation is the same Wizard
-  asset as the player. The distinct Loomkeeper moves to WP-015D with Thief,
-  Warrior, and the other roster assets. D remains blocked until the assembled C
-  slice passes automated phone views and a separate real-device review.
+  asset as the player. Distinct Loomkeeper, Thief, and Warrior production now
+  moves to post-release WP-017A; D0 through D3 retain the shared Wizard.
+  D remains blocked until the assembled C slice passes automated phone views and
+  a separate real-device review.
 - Historical B2A-B2G evidence digest: B2E selected a pinned core-node route and
   produced a deterministic source-only
   candidate. Workflow
@@ -2757,7 +2758,7 @@ Sequential delivery slices:
   makes a true direct Needlepoint contact capable of resolving a full
   100-Stitching target in one action. This is visible correctness rather than a
   stealth balance change; focused phone acceptance must assess the pacing before
-  C closes. WP-015D's separately versioned V4 keeps the planned low-damage
+  C closes. WP-015D2's separately versioned V5 keeps the planned low-damage
   Needlepoint tier.
 - **WP-015C_Animation FLUX.2 one-key-pose pilot:** preserve the first playable
   slice's deterministic root-transform route while evaluating, but not
@@ -2783,21 +2784,71 @@ Sequential delivery slices:
   There is no automatic retry, generated sheet, video, alpha removal, atlas,
   normalization, staging, runtime path, or visual-baseline update in this work
   package.
-- **WP-015D Basic roster and ruleset completion:** after C acceptance, freeze
-  exact v4 range/damage values and add `nimble-knots-artillery-v4` while
-  preserving byte-for-byte v1/v2/v3 replay behavior. Range and maximum direct
-  Stitching damage are the only initial Relic differences. Then produce,
-  approve, and integrate the distinct Loomkeeper together with Thief, Warrior,
-  Needlepoint, Spoolburst, shared effects, and master-derived UI media through
-  the proven B3 pipeline. Needlepoint receives the Air/Draft visual grammar and
-  Spoolburst the Fire/Loomspark grammar, but range and direct damage remain their
-  only initial mechanical differences. Replace the AI's temporary shared-Wizard
-  presentation only after the Loomkeeper family passes the same source,
-  animation, manifest, phone, and real-device gates. Keep collision
-  code-owned, load only the selected Calling plus shared media, and retain radius,
-  precision, falloff, ammo, cooldown, secondary effects, Calling modifiers, and
-  final tuning as deferred. Close with deterministic v4 ordering/replay tests,
-  compliance, build, browser matrix, visual review, and real-device acceptance.
+- **WP-015D0 Arena Scale and Camera Contract — planning-only:** after C
+  acceptance and before any D implementation, decide whether the first V4
+  arena expands beyond the current fixed 1024 by 576 / 128 by 72 world. The
+  starting candidate is 1536 by 576 with a 192 by 72 terrain grid, but D0 must
+  freeze exact dimensions, spawn separation, camera zoom bounds, and the
+  expected player-visible world window from phone evidence rather than treating
+  that candidate as already approved. The contract must keep V1/V2/V3 world
+  dimensions, terrain generation, coordinates, replay bytes, and ruleset
+  reconstruction immutable. The V4 camera must derive horizontal bounds from
+  the authoritative terrain dimensions and cell size, never a new hidden 1024
+  constant. It may pan only horizontally in the uncovered battlefield region;
+  it must not steal a Movement/Aim/Relic/Fire/Pause pointer, manufacture an
+  aim or movement command, or affect server authority. The existing Aim pad
+  remains the only angle/power input. On a legal player turn the camera begins
+  at the acting Wizard, preserves a player-selected view while aim is locked,
+  returns to the caster for the spell, and follows the authoritative projectile
+  / impact; the Loomkeeper receives the equivalent presentational framing. The
+  approved Cloud remains a distant presentation layer rather than collision
+  truth. D0 creates no source media, asset request, runtime code, ruleset,
+  balance change, terrain-generation change, obstacle, destructible prop,
+  alternate map, or gameplay feature. Obstacles and tactical terrain profiles
+  require a later separately versioned arena-tactics work package after basic
+  roster/range acceptance. Close D0 only with an owner-approved written
+  contract covering transform math, sideways gesture mapping, camera-follow
+  phases, accessibility/recovery behavior, replay boundary, test matrix, and
+  explicit non-goals.
+- **WP-015D1 V4 wider arena and pan camera:** after D0 contract approval,
+  implement the one frozen V4 arena size, terrain-grid dimensions, spawn
+  separation, deterministic low-relief ground extension, and horizontal
+  camera/pan/follow behavior using the current approved shared-Wizard,
+  Threadball, Cloud, and Patch presentation. V4 retains the V3 Relic values,
+  actor labels, current shared-Wizard hitbox profile, and existing generic
+  Needlepoint/Spoolburst presentation, while preserving byte-for-byte V1/V2/V3
+  replay behavior. D1 must not generate or admit media; alter the existing
+  ground into a tactical terrain profile; add an obstacle, destructible prop,
+  alternate map, character, Calling distinction, Relic range/damage tier,
+  radius, precision, falloff, ammo, cooldown, or secondary effect. Prove the
+  camera bounds from the authoritative V4 terrain state, protected sideways
+  gesture routing, player/Loomkeeper framing, trajectory/projectile alignment,
+  bounded Loomkeeper search, deterministic V4 replay reconstruction, and the
+  full phone-browser plus real-device camera acceptance.
+- **WP-015D2 V5 basic Relic range and damage tiers:** after D1 acceptance,
+  freeze exact range and maximum direct-damage values for Threadball (medium /
+  medium), Needlepoint (long / low), and Spoolburst (short / high), then add
+  `nimble-knots-artillery-v5`. The split deliberately makes this V5 rather than
+  mutating the accepted V4 arena rules: V1 through V4 replay behavior and
+  reconstruction remain byte-for-byte. Use the current shared Wizard and the
+  current approved/procedural Relic presentation while deriving the revised
+  legal range and deterministic Loomkeeper policy from V5 only. Radius,
+  precision, falloff, ammo, cooldowns, status effects, Calling modifiers,
+  terrain tactics, obstacles, and source-media work remain deferred. Close with
+  exact tier/range/replay/AI ordering tests, compliance, build, full browser
+  matrix, and real-device pacing acceptance.
+- **WP-015D3 Needlepoint and Spoolburst visual identity:** after D2 acceptance,
+  create, exact-file review, and integrate the small approved UI/effect families
+  for Needlepoint's Air/Draft grammar and Spoolburst's Fire/Loomspark grammar.
+  This includes only the selected-Relic UI treatment and deterministic cast,
+  in-flight, short-tail, and impact presentation needed to make the two V5
+  tiers legible. Threadball retains its approved Worldweave presentation, and
+  both combatants retain the shared Wizard presentation. D3 must not introduce
+  a distinct Loomkeeper, Thief, Warrior, obstacle, tactical terrain profile,
+  alternate map, or new simulation/range/damage/hitbox rule. Exact source
+  masters, manifests, attribution, byte-identical runtime copies, media budget,
+  fallback behavior, browser visual review, and real-device acceptance are all
+  required before this presentation slice closes.
 - **WP-015E Basic audio and closure:** source or generate the small combat/result/
   reward audio set through a separate exact-file license and provenance path;
   give Threadball a tightening/winding and snap-unravel identity, Needlepoint a
@@ -2993,6 +3044,29 @@ Verification: clean install, audit, compliance, full build, complete automated
 suite, production smoke, deep link, disabled/enabled reward configuration, and
 rollback rehearsal. Real Android/iOS testing is listed separately as not run;
 it does not block completion of the documented autonomous cycle.
+
+### WP-017A Post-release Character Roster And Calling Differentiation
+
+Status: planned, post-release, and non-blocking to WP-018 through WP-021.
+Depends on WP-017 and the accepted shared-Wizard baseline from WP-015.
+
+Goal: produce, exact-file review, and integrate the distinct Loomkeeper, Thief,
+and Warrior character families that are intentionally excluded from WP-015D1
+through WP-015D3. Retain the current shared Wizard presentation for both
+combatants until each replacement source master, animation, socket/held-Relic
+geometry, source-specific hitbox, manifest entry, and runtime copy passes its
+own review. Calling identity remains presentation-only unless a later separately
+versioned mechanics package authorizes an actual Calling modifier.
+
+Non-goals: reopening the accepted V4/V5 arena or Relic tiers; adding obstacles,
+tactical terrain, PvP, rewards, or Calling-specific gameplay advantages; and
+promoting generated media without the same source, license, attribution,
+fallback, browser, and real-device gates used by the first Wizard slice.
+
+Verification: source-master and provenance review; alpha/baseline/identity/
+socket inspection; deterministic source-specific hitbox and replay tests; media
+budget/fallback checks; Ubuntu visual candidate review; full browser matrix; and
+separate real-device acceptance.
 
 ## Post-Competition Weekly System And Governance Foundation
 
@@ -3645,8 +3719,9 @@ types, build, full browser matrix, and independent payout security review.
 WP-005 -> WP-006 -> WP-007 -> WP-008 -> WP-009 -> WP-010 -> WP-011 -> WP-011A
 WP-011A -> WP-011B -> WP-011C -> WP-011D -> WP-011E (presentation path)
 WP-011E -> WP-012 -> WP-013 -> WP-014
-WP-010 + WP-014 ------------------------------------------------------------> WP-015
-WP-013 + WP-015 ------------------------------------------------------------> WP-016 -> WP-017
+WP-010 + WP-014 -> WP-015C -> WP-015D0 -> WP-015D1 -> WP-015D2 -> WP-015D3 -> WP-015E
+WP-013 + WP-015E -----------------------------------------------------------> WP-016 -> WP-017
+WP-017 -> WP-017A (post-release character roster; non-blocking)
 WP-017 -> WP-018 -> WP-019 -> WP-021
                             `-> WP-020 (optional PvP port; non-blocking)
 ```
