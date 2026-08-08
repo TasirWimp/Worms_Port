@@ -4,7 +4,6 @@ import type { ChallengeResult, ChallengeSnapshot } from '../../../shared/protoco
 import {
     LATEST_RULESET_ID,
     cloneSimulation,
-    directProjectileHitboxFor,
     type SimulationCommand,
     type SimulationActor,
     type SimulationState
@@ -116,7 +115,6 @@ export default class CombatScene extends Phaser.Scene {
                 }
                 this.render();
             },
-            onAimLocked: (aim) => this.centerCameraOnAim(aim),
             onPauseChange: (paused) => void this.setPaused(paused),
             onRetry: () => void this.retry(),
             onFullscreenToggle: () => void this.toggleFullscreen()
@@ -640,11 +638,7 @@ export default class CombatScene extends Phaser.Scene {
             this.snapshot.simulation.activeActor === 'player'
             ? trajectoryPreview(this.renderState, this.controls.input.lockedAim)
             : [];
-        const lockedAim = this.controls.input.lockedAim;
-        const previewEndpoint = this.preview.at(-1);
-        if (lockedAim && previewEndpoint) {
-            this.setCamera(focusCombatCamera(this.renderState, this.camera, previewEndpoint.x));
-        } else {
+        if (!this.controls.input.lockedAim) {
             this.focusCameraOnActor(this.snapshot.simulation.activeActor);
         }
         this.render();
@@ -690,33 +684,10 @@ export default class CombatScene extends Phaser.Scene {
         this.render();
     }
 
-    private centerCameraOnAim(aim: AimIntent | null): void {
-        if (!aim || this.preview.length === 0) return;
-        const endpoint = this.preview.at(-1);
-        if (!endpoint) return;
-        this.setCamera(focusCombatCamera(this.renderState, this.camera, endpoint.x));
-        this.render();
-    }
-
     private followCameraForAimPreview(): void {
         const endpoint = this.preview.at(-1);
         if (!endpoint) return;
-        // A direct authoritative hit preview deserves target framing, but it
-        // remains only a preview: the player still owns release, re-aim, and
-        // the later Fire command.
-        if (this.previewDirectlyHitsLoomkeeper(endpoint)) {
-            this.setCamera(focusCombatCamera(this.renderState, this.camera, endpoint.x));
-            return;
-        }
         this.setCamera(revealCombatCameraPoint(this.renderState, this.camera, endpoint.x));
-    }
-
-    private previewDirectlyHitsLoomkeeper(endpoint: { x: number; y: number }): boolean {
-        const target = this.renderState.units[1];
-        if (!target?.alive) return false;
-        const hitbox = directProjectileHitboxFor(this.renderState.rulesetId);
-        return Math.abs(target.x - endpoint.x) <= hitbox.halfWidth &&
-            endpoint.y >= target.y - hitbox.top && endpoint.y <= target.y + hitbox.bottom;
     }
 
     private focusCameraOnActor(actor: SimulationActor): void {

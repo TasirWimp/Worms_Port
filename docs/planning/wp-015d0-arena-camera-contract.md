@@ -120,20 +120,17 @@ or presentation is pending. It remains available after aim is locked.
 The Aim pad remains the sole angle/power input. A player pans toward the
 Loomkeeper until it is visible, adjusts aim with that target in view, and
 releases to lock. While the player is actively dragging Aim, an authoritative
-preview endpoint that would leave the camera window advances the camera just
-enough to keep that endpoint on the outgoing visible edge. This lets the player
-continue to read the projected terrain contact without a hidden target snap.
-If the preview's final sampled point directly intersects the Loomkeeper's
-existing code-owned hitbox, presentation frames that point at the centre; it
-does **not** submit, lock, alter, or otherwise complete the aim. Release remains
-the only way to lock an aim and Fire remains a separate command. Every user aim
-lock centres the camera on the current preview's authoritative final point
-(clamped to the camera range), making the predicted impact and target usable
-for fine tuning. Starting a new aim and locking it again repeats that
-recentering for the revised trajectory. The player may still swipe horizontally
-after any lock to inspect caster or target before Fire. Success never requires
-panning: all command controls and the ballistic preview work from the current
-view.
+preview endpoint that reaches the final 64 world units at an outgoing camera
+edge advances the camera just enough to retain that fixed 64-unit inset. This
+keeps the projected terrain contact and an edge-side target usable without a
+hidden target snap. It is presentation navigation only: it never submits,
+locks, alters, or otherwise completes the aim, including when the preview
+directly intersects the Loomkeeper. Release remains the only way to lock an aim
+and Fire remains a separate command. Aim lock deliberately preserves the exact
+camera position reached during the drag; it never centres the impact or enemy.
+The player may still swipe horizontally after any lock to inspect caster or
+target before Fire. Success never requires panning: all command controls and
+the ballistic preview work from the current view.
 
 When the Loomkeeper is outside the camera window during a legal player turn,
 the non-interactive HUD shows a concise direction-to-swipe hint: `Swipe left to
@@ -153,8 +150,8 @@ tail, arc, and impact remain aligned.
 | --- | --- |
 | New challenge, retry, recovered snapshot, player decision | Focus the active Wizard. The initial player spawn clamps to left 0. |
 | Player free decision before aim lock | Preserve the player-selected pan. |
-| Aim drag | Preserve the selected pan while its endpoint remains visible. If its authoritative endpoint crosses an outgoing edge, follow only far enough to keep it at that edge. A direct Loomkeeper-hit preview centres for inspection but never locks or submits input. |
-| Aim lock | Centre on the preview's final authoritative point. A later aim lock recentres on its revised final point. Manual horizontal panning remains available. |
+| Aim drag | Preserve the selected pan while its endpoint remains outside the 64-unit edge inset. Once it enters that inset, follow only far enough to keep it 64 units inside the outgoing edge. A direct Loomkeeper-hit preview receives no target snap, lock, or submission. |
+| Aim lock | Preserve the exact camera position reached during the drag. A later aim drag may advance its own edge-follow view; manual horizontal panning remains available. |
 | Accepted Fire and cast | Cancel manual pan and focus the caster before/through the two-second cast. |
 | Projectile / impact | Follow the displayed authoritative projectile to the impact; hold impact framing through its presentation. |
 | Next active turn | Focus the new active Wizard. |

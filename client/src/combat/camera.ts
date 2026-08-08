@@ -6,6 +6,9 @@ import type { SimulationActor, SimulationState } from '../../../shared/simulatio
  */
 export const COMBAT_CAMERA_WINDOW = Object.freeze({ width: 1024, height: 576 });
 
+/** Presentation-only breathing room between a live aim endpoint and the camera edge. */
+export const COMBAT_AIM_EDGE_INSET_WORLD = 64;
+
 export type CombatCamera = Readonly<{
     left: number;
     top: number;
@@ -62,11 +65,12 @@ export function revealCombatCameraPoint(
     camera: CombatCamera,
     worldX: number
 ): CombatCamera {
-    if (worldX > camera.left + camera.width) {
-        return clampCombatCamera(state, { ...camera, left: worldX - camera.width });
+    const inset = Math.min(COMBAT_AIM_EDGE_INSET_WORLD, camera.width / 2);
+    if (worldX > camera.left + camera.width - inset) {
+        return clampCombatCamera(state, { ...camera, left: worldX - camera.width + inset });
     }
-    if (worldX < camera.left) {
-        return clampCombatCamera(state, { ...camera, left: worldX });
+    if (worldX < camera.left + inset) {
+        return clampCombatCamera(state, { ...camera, left: worldX - inset });
     }
     return clampCombatCamera(state, camera);
 }

@@ -277,9 +277,10 @@ test('V4 follows a live preview edge, recentres a locked aim, and preserves post
   await expect(ui).toHaveAttribute('data-phase', 'aiming');
   await expect.poll(async () => Number(await ui.getAttribute('data-camera-left'))).toBeGreaterThan(20);
   await expect(ui).not.toHaveAttribute('data-last-command', 'aim');
+  const previewCamera = Number(await ui.getAttribute('data-camera-left'));
   await pointer(page, '.aim-zone', 'pointerup', 43, 0.99, 0.27);
   await expect(ui).toHaveAttribute('data-phase', 'aim_locked');
-  await expect.poll(async () => Number(await ui.getAttribute('data-camera-left'))).toBeGreaterThan(400);
+  await expect.poll(async () => Number(await ui.getAttribute('data-camera-left'))).toBe(previewCamera);
 
   await dragBattlefield(page, 44, 0.74, 0.22, 0.35, 0.22);
   await expect.poll(async () => Number(await ui.getAttribute('data-camera-left'))).toBeGreaterThan(120);

@@ -163,7 +163,7 @@ test('V4 camera pans over the doubled arena without changing the phone-sized com
         left: 640, top: 0, width: 1024, height: 576
     });
     assert.deepEqual(revealCombatCameraPoint(state, initial, 1068), {
-        left: 44, top: 0, width: 1024, height: 576
+        left: 108, top: 0, width: 1024, height: 576
     });
     assert.deepEqual(revealCombatCameraPoint(state, initial, -25), initial);
     assert.deepEqual(clampCombatCamera(state, { ...initial, left: -20, top: 99 }), initial);

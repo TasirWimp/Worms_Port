@@ -15,7 +15,6 @@ type CombatControlsCallbacks = {
     onCommand: (command: SimulationCommand) => void;
     onMovement: (direction: -1 | 1, steps: number) => void;
     onAimPreview: (aim: AimIntent | null) => void;
-    onAimLocked: (aim: AimIntent | null) => void;
     onPauseChange: (paused: boolean) => void;
     onRetry: () => void;
     onFullscreenToggle: () => void;
@@ -321,7 +320,6 @@ export class CombatControls {
             this.resetPad(zone, knob);
             if (kind === 'aim') {
                 this.callbacks.onAimPreview(this.input.lockedAim);
-                this.callbacks.onAimLocked(this.input.lockedAim);
             }
             this.refresh();
             if (command?.type === 'move') {
