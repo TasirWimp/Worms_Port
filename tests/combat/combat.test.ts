@@ -122,7 +122,7 @@ test('trajectory preview exactly matches cloned v2 resolution and leaves its sou
     assert.equal(preview.length >= 2, true);
 });
 
-test('Loomseed presentation anchor replaces only a trace start and keeps its authoritative flight intact', () => {
+test('Loomseed presentation anchor smoothly offsets a trace while preserving its authoritative impact', () => {
     const layout = computeCombatLayout(844, 390, { top: 0, right: 0, bottom: 0, left: 0 });
     const root = { x: 220, y: 310, facing: 1 as const };
     const trace = [{ x: 24, y: 42 }, { x: 55, y: 30 }, { x: 88, y: 48 }];
@@ -133,7 +133,9 @@ test('Loomseed presentation anchor replaces only a trace start and keeps its aut
     assert.equal(anchor.y, root.y - 106 * Math.max(0.1, layout.worldScale * 0.56));
     assert.equal(displayed[0].x * layout.worldScale + layout.battlefield.x, anchor.x);
     assert.equal(displayed[0].y * layout.worldScale + layout.battlefield.y, anchor.y);
-    assert.deepEqual(displayed.slice(1), trace.slice(1));
+    assert.equal(displayed[1].x, trace[1].x + (displayed[0].x - trace[0].x) * 0.25);
+    assert.equal(displayed[1].y, trace[1].y + (displayed[0].y - trace[0].y) * 0.25);
+    assert.deepEqual(displayed.at(-1), trace.at(-1));
     assert.deepEqual(trace, [{ x: 24, y: 42 }, { x: 55, y: 30 }, { x: 88, y: 48 }]);
 });
 

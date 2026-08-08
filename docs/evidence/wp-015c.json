@@ -216,8 +216,8 @@
     },
     {
       "command": "WP-015C Loomseed visual-origin correction",
-      "status": "pass",
-      "detail": "Real-phone acceptance found that the dashed aim guide and temporary projectile began below the permanent Loomseed. The 256px retained spell frame has a distinct Loomseed center at (158,106) relative to root (128,212), so the client now transforms that animation-specific hand anchor rather than reusing the 512px static-master scale. It replaces only the first displayed trace point and holds the first visible projectile frame at that point; all later trace points, impacts, collision, damage, replay, rewards, and server authority remain unchanged."
+      "status": "superseded by continuous-arc correction",
+      "detail": "The first real-phone repair correctly located the 256px retained spell-frame Loomseed center at (158,106) relative to root (128,212), but replaced only the first displayed trace point. A later phone check found the resulting discontinuity at low angles and an opponent preview anchored to the player. That first-point-only display route is no longer current."
     },
     {
       "command": "npm run check:types && npm run test:combat",
@@ -228,6 +228,16 @@
       "command": "npm run build && npm run test:browser:matrix && npm run test:browser:performance && npm run check:bundle-budget",
       "status": "pass",
       "detail": "Build passed compliance, types, server/client bundling, and exact copying of all 11 approved runtime assets. The full zero-retry mobile matrix passed 95 results in 10.7 minutes with 60 reviewed policy skips; Windows visual pixel comparison remained omitted because pinned Ubuntu CI is authoritative. The five-sample Chromium 390x844 performance probe passed: cast feedback median 45.4ms; visible projectile 2,172.3ms minimum / 2,189.8ms median / 2,209.6ms maximum; complete response 6,374.6ms median / 6,460.2ms maximum; no page/console errors or lazy SDK requests. Largest initial JavaScript was 1,450,223 / 1,500,000 bytes and initial JavaScript plus CSS gzip was 402,137 / 430,000 bytes."
+    },
+    {
+      "command": "WP-015C continuous Loomseed-arc correction",
+      "status": "pass",
+      "detail": "The client now applies a squared, smoothly attenuated visual offset to every sampled presentation point: full offset at the active Wizard's Loomseed origin and zero offset at the authoritative final impact. This removes the first-segment kink while preserving the existing sampled ballistic arc and exact impact coordinate. Aim previews now use render-state activeActor, so the Loomkeeper uses its own mirrored Loomseed anchor rather than the player's. The first projectile frame still holds at that actor's hand. Simulation, collisions, damage, replay, rewards, and server authority remain unchanged."
+    },
+    {
+      "command": "npm run check:types && npm run test:combat && npm run build && npm run test:browser:matrix && npm run check:bundle-budget",
+      "status": "pass",
+      "detail": "Passed both TypeScript projects, all 19 combat tests, full build/compliance/runtime-copy checks, and the full zero-retry mobile matrix: 95 passed in 6.1 minutes with 60 reviewed policy skips. Windows visual pixel comparison remained omitted because pinned Ubuntu CI is authoritative. Largest initial JavaScript was 1,450,341 / 1,500,000 bytes and initial JavaScript plus CSS gzip was 402,193 / 430,000 bytes."
     }
   ],
   "reviews": [
@@ -252,8 +262,14 @@
     {
       "role": "project owner",
       "reviewer": "Jens Bernhardt",
-      "decision": "real-phone visual-origin finding; repair authorized",
-      "detail": "After deploying the delayed-launch refinement on Render, the owner found that both the dashed aiming trajectory and launched Threadball appeared to originate below the held Loomseed. The owner requested that both visibly originate from the Loomseed in the Wizard's hand. The scoped repair is presentation-only and must retain the authoritative simulation trace after its first displayed point."
+      "decision": "real-phone visual-origin finding; first repair authorized then superseded",
+      "detail": "After deploying the delayed-launch refinement on Render, the owner found that both the dashed aiming trajectory and launched Threadball appeared to originate below the held Loomseed. The owner requested that both visibly originate from the Loomseed in the Wizard's hand. The scoped repair is presentation-only and must retain authoritative collision/result truth. Its initial first-point-only route is superseded by the later continuous-arc finding."
+    },
+    {
+      "role": "project owner",
+      "reviewer": "Jens Bernhardt",
+      "decision": "real-phone regression finding; continuous player and Loomkeeper arcs required",
+      "detail": "After deploying the first visual-origin repair, the owner found a low-angle discontinuity between the first player aim dash and the remaining trajectory, and found the opponent firing as a straight line. The owner requires the expected continuous parabolic reading for both actors while retaining the Loomseed origin. This supersedes the first-point-only display interpretation."
     },
     {
       "role": "project owner",

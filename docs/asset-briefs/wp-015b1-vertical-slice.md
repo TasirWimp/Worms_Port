@@ -559,11 +559,13 @@ then holds its terminal frame. Reduced motion retains its 250ms compact
 presentation. The retained spell frame has its own 256px-root Loomseed center
 at `(158,106)` relative to root `(128,212)`, rather than the static 512px
 master coordinate. Presentation maps the first displayed aim/flight trace point
-to that root-transformed hand anchor; all later trace points, including impact,
-remain authoritative simulation coordinates. The static Loomseed-Wizard is
-retained if any sheet fails to load. These controls do not change simulation
-position, collision, health, damage, replay, turn timing, reward eligibility,
-or result authority.
+to that root-transformed hand anchor and smoothly attenuates the visual offset
+to zero at the authoritative impact. This preserves a continuous parabolic
+reading without moving the collision/result coordinate. The preview anchors to
+the current active actor, so the Loomkeeper never borrows the player's hand
+origin. The static Loomseed-Wizard is retained if any sheet fails to load.
+These controls do not change simulation position, collision, health, damage,
+replay, turn timing, reward eligibility, or result authority.
 
 | State | Frames | Timing | Trigger |
 | --- | ---: | --- | --- |

@@ -31,9 +31,10 @@ export function loomseedScreenPoint(
     };
 }
 
-// Physics stays authoritative. Replacing only the first displayed point makes
-// the guide and launch leave the permanent Loomseed without moving impact,
-// collision, damage, replay, or the rest of the flight.
+// Physics stays authoritative. The presentation offsets the whole sampled arc
+// smoothly from the permanent Loomseed back to the authoritative impact. This
+// avoids a visible kink after the first point while leaving collision, damage,
+// replay, and the final impact coordinate unchanged.
 export function traceFromLoomseedOrigin(
     trace: readonly CombatWorldPoint[],
     root: WizardRoot,
@@ -42,11 +43,19 @@ export function traceFromLoomseedOrigin(
 ): CombatWorldPoint[] {
     if (trace.length === 0 || layout.worldScale <= 0) return trace.map((point) => ({ ...point }));
     const anchor = loomseedScreenPoint(root, layout, geometry);
-    return [
-        {
-            x: (anchor.x - layout.battlefield.x) / layout.worldScale,
-            y: (anchor.y - layout.battlefield.y) / layout.worldScale
-        },
-        ...trace.slice(1).map((point) => ({ ...point }))
-    ];
+    const origin = {
+        x: (anchor.x - layout.battlefield.x) / layout.worldScale,
+        y: (anchor.y - layout.battlefield.y) / layout.worldScale
+    };
+    if (trace.length === 1) return [origin];
+    const delta = { x: origin.x - trace[0].x, y: origin.y - trace[0].y };
+    const lastIndex = trace.length - 1;
+    return trace.map((point, index) => {
+        const remaining = 1 - index / lastIndex;
+        const weight = remaining * remaining;
+        return {
+            x: point.x + delta.x * weight,
+            y: point.y + delta.y * weight
+        };
+    });
 }

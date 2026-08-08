@@ -130,7 +130,7 @@ export class CombatRenderer {
         if (this.usingApprovedAssets) this.drawTeamCues(state.units, layout);
 
         this.effects.clear();
-        this.drawTrace(this.traceFromLoomseed(preview, 'player', layout), layout, 0xE9B213, 0.95, true);
+        this.drawTrace(this.traceFromLoomseed(preview, state.activeActor, layout), layout, 0xE9B213, 0.95, true);
         this.drawVisualPhase(visualPhase, layout);
 
         g.lineStyle(2, 0x1F2348, 0.65);
