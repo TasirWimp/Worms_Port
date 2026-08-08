@@ -8,10 +8,13 @@ Phaser/Socket.IO stack.
 ## Execution Pointer
 
 - Active target: mobile-first single-player Nimiq Pay competition release.
-- Active work package: **WP-015C First playable visual slice — integration
-  plus bounded V3 hitbox stabilization:** implementation is in progress on
-  `codex/wp-015-production-assets`;
-  its evidence carrier is `docs/evidence/wp-015c.json`. WP-015B3C.1 completed
+- Active work package: **WP-015D0 Arena Scale and Camera Contract:**
+  planning-only refinement on `codex/wp-015-production-assets`; its purpose is
+  to freeze the V4 wider-arena and camera contract before any D1 code change.
+  **WP-015C First playable visual slice — integration plus bounded V3 hitbox
+  stabilization** completed on 2026-08-08; its evidence carrier is
+  `docs/evidence/wp-015c.json`.
+  WP-015B3C.1 completed
   on 2026-08-05. Its first closed inventory assigned `runtime_path` only to
   seven existing approved masters and the build copier produced their
   byte-identical copies below `assets/product/` (607,427 source bytes). On
@@ -142,13 +145,14 @@ Phaser/Socket.IO stack.
   geometry. The separate effect admission now freezes the actual glow,
   loose-fiber gather, short-tail, impact, and timing contract. **WP-015B3C.1**
   has assigned only the fixed manifest runtime paths and proved byte-identical
-  build copies; **WP-015C** is the next integration-only slice.
+  build copies; **WP-015C** is complete.
   The gameplay
   AI remains the Loomkeeper, but its first-slice presentation is the same Wizard
   asset as the player. Distinct Loomkeeper, Thief, and Warrior production now
   moves to post-release WP-017A; D0 through D3 retain the shared Wizard.
-  D remains blocked until the assembled C slice passes automated phone views and
-  a separate real-device review.
+  C passed automated phone views, a fresh pinned Ubuntu candidate workflow, and
+  separate Samsung real-device acceptance. **WP-015D0** is now the next
+  planning-only gate.
 - Historical B2A-B2G evidence digest: B2E selected a pinned core-node route and
   produced a deterministic source-only
   candidate. Workflow
@@ -2759,7 +2763,15 @@ Sequential delivery slices:
   100-Stitching target in one action. This is visible correctness rather than a
   stealth balance change; focused phone acceptance must assess the pacing before
   C closes. WP-015D2's separately versioned V5 keeps the planned low-damage
-  Needlepoint tier.
+  Needlepoint tier. On 2026-08-08 the owner accepted the final Render-deployed
+  Samsung-phone presentation after the uniform 30 percent shared-Wizard scale
+  increase and the readable decorative Patch-material mapping. The previously
+  required fresh Ubuntu candidate run `31264979770` passed on the exact branch
+  ref `5484e4801df6672441ada6347b4e366363e7b56b` and its artifact was
+  technically inspected: the full-motion, projectile, Loomkeeper-aim, and wide
+  start candidates retained the intended composition. It created no Windows or
+  committed baseline. WP-015C is complete; WP-015D0 is the next planning-only
+  gate.
 - **WP-015C_Animation FLUX.2 one-key-pose pilot:** preserve the first playable
   slice's deterministic root-transform route while evaluating, but not
   admitting, one still relaxed idle pose. The official BFL MCP is an
