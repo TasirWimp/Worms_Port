@@ -346,9 +346,10 @@ an identity reference and an original local pose guide as structure reference.
 The owner accepted BFL's input/output-use treatment for this one external pilot;
 the remaining source/guide/prompt freeze still precedes upload. No generated
 sheet, normalization, or runtime path is part of this gate.
-WP-015C is complete. Its simplified vertical-slice inventory is
-manifest-approved; WP-015D0 has frozen the V4 arena/camera contract and
-WP-015D1 is implementing it.
+WP-015C and WP-015D1 are complete. The simplified vertical-slice inventory is
+manifest-approved; WP-015D0 froze the V4 arena/camera contract, and D1
+delivered the accepted wider arena, pan camera, and horizontal-only opening
+survey. WP-015D2 is next.
 The Celestial Spinning Mill, Worldweave,
 Air/Draft, Fire/Loomspark, and Water/Cloudwater story is recorded in
 `docs/art-direction.md`; exact gates and re-entry order are in the Execution

@@ -1,8 +1,8 @@
 # WP-015D0 Arena Scale and Camera Contract
 
-Status: approved by the project owner on 2026-08-08. WP-015D1 may implement
-this exact versioned V4 arena/camera slice. It does not authorize obstacles,
-tactical terrain, Relic tiers, or asset work.
+Status: D1 implementation complete and accepted by the project owner on
+2026-08-08. This exact versioned V4 arena/camera slice remains frozen; it did
+not authorize obstacles, tactical terrain, Relic tiers, or asset work.
 
 ## Purpose
 

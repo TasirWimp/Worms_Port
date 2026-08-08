@@ -8,10 +8,11 @@ Phaser/Socket.IO stack.
 ## Execution Pointer
 
 - Active target: mobile-first single-player Nimiq Pay competition release.
-- Active work package: **WP-015D1 V4 wider arena and pan camera:** implementation
-  of the owner-approved `2048 by 576` V4 arena/camera contract on
-  `codex/wp-015-production-assets`. D0 is complete; D1 must preserve V1/V2/V3
-  replay behavior and admits no obstacle, tactical-terrain, balance, or asset work.
+- Active work package: **WP-015D2 V5 basic Relic range and damage tiers:** refine
+  the three starting Relics without changing accepted V1 through V4 replay
+  behavior. **WP-015D1 V4 wider arena and pan camera completed on 2026-08-08**
+  on `codex/wp-015-production-assets`: V4 preserves historical replays while
+  admitting no obstacle, tactical-terrain, balance, or asset work.
   **WP-015C First playable visual slice — integration plus bounded V3 hitbox
   stabilization** completed on 2026-08-08; its evidence carrier is
   `docs/evidence/wp-015c.json`.
@@ -2805,26 +2806,34 @@ Sequential delivery slices:
   separation remains 640, while the Loomkeeper sits just outside the starting
   player window and the doubled world preserves genuine later tactical space.
   It specifies sideways-safe canvas-only panning, a non-interactive swipe hint,
-  aim-lock centering on the authoritative preview endpoint with later
-  recentering, post-lock panning, caster/projectile/impact follow, recovery,
+  edge-follow for an authoritative preview endpoint, preserved aim-lock view,
+  post-lock panning, caster/projectile/impact follow, recovery,
   replay boundary, test matrix, and no-obstacles/no-tactical-terrain scope.
   V1/V2/V3 world dimensions, terrain generation, coordinates, replay bytes,
-  and ruleset reconstruction remain immutable. **WP-015D1 is now active.**
-- **WP-015D1 V4 wider arena and pan camera:** after D0 contract approval,
-  implement the one frozen V4 arena size, terrain-grid dimensions, spawn
-  separation, deterministic low-relief ground extension, and horizontal
-  camera/pan/follow behavior using the current approved shared-Wizard,
-  Threadball, Cloud, and Patch presentation. V4 retains the V3 Relic values,
-  actor labels, current shared-Wizard hitbox profile, and existing generic
-  Needlepoint/Spoolburst presentation, while preserving byte-for-byte V1/V2/V3
-  replay behavior. D1 must not generate or admit media; alter the existing
-  ground into a tactical terrain profile; add an obstacle, destructible prop,
-  alternate map, character, Calling distinction, Relic range/damage tier,
-  radius, precision, falloff, ammo, cooldown, or secondary effect. Prove the
-  camera bounds from the authoritative V4 terrain state, protected sideways
-  gesture routing, player/Loomkeeper framing, trajectory/projectile alignment,
-  bounded Loomkeeper search, deterministic V4 replay reconstruction, and the
-  full phone-browser plus real-device camera acceptance.
+  and ruleset reconstruction remain immutable. **WP-015D1 completed on
+  2026-08-08.** Its final opening survey is horizontal-only: the fixed vertical
+  terrain/Wizard framing never reveals blank space or moves a Wizard into the
+  ground. `npm run build`, the 24 combat tests, and the 170-result zero-retry
+  phone-browser matrix passed; Windows visual comparison was intentionally
+  omitted under the existing policy, with Ubuntu CI remaining authoritative.
+  The project owner then accepted the final Samsung-phone behavior.
+- **WP-015D1 V4 wider arena and pan camera — complete 2026-08-08:** after D0
+  contract approval, D1 implemented the frozen V4 arena size, terrain-grid
+  dimensions, spawn separation, deterministic low-relief ground extension, and
+  horizontal camera/pan/follow behavior using the current approved
+  shared-Wizard, Threadball, Cloud, and Patch presentation. V4 retained the V3
+  Relic values, actor labels, current shared-Wizard hitbox profile, and generic
+  Needlepoint/Spoolburst presentation while preserving byte-for-byte V1/V2/V3
+  replay behavior. D1 generated or admitted no media and added no tactical
+  terrain profile, obstacle, destructible prop, alternate map, character,
+  Calling distinction, Relic range/damage tier, radius, precision, falloff,
+  ammo, cooldown, or secondary effect. It proved camera bounds from the
+  authoritative V4 terrain state, protected sideways gesture routing,
+  player/Loomkeeper framing, trajectory/projectile alignment, bounded
+  Loomkeeper search, deterministic V4 replay reconstruction, and the full
+  phone-browser plus Samsung real-device camera acceptance. The accepted
+  delivery includes the fixed-vertical, horizontal-only opening survey
+  correction.
 - **WP-015D2 V5 basic Relic range and damage tiers:** after D1 acceptance,
   freeze exact range and maximum direct-damage values for Threadball (medium /
   medium), Needlepoint (long / low), and Spoolburst (short / high), then add
