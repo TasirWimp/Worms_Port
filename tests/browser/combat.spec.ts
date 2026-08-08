@@ -271,15 +271,23 @@ test('V4 opening survey continuously zooms to the player view', async ({ page },
   await expect(page.locator('.combat-ui')).toBeVisible();
   const ui = page.locator('.combat-ui');
   const startWidth = Number(await ui.getAttribute('data-camera-width'));
+  const battlefieldHeight = await ui.getAttribute('data-battlefield-height');
+  const verticalScale = await ui.getAttribute('data-world-scale');
   expect(startWidth).toBeGreaterThan(1_500);
+  await expect(ui).toHaveAttribute('data-camera-top', '0.00');
   await page.waitForTimeout(1_000);
   const middleWidth = Number(await ui.getAttribute('data-camera-width'));
   expect(middleWidth).toBeLessThan(startWidth);
   expect(middleWidth).toBeGreaterThan(1_024);
+  await expect(ui).toHaveAttribute('data-battlefield-height', battlefieldHeight!);
+  await expect(ui).toHaveAttribute('data-world-scale', verticalScale!);
   await expect.poll(async () => Number(await ui.getAttribute('data-camera-width')), {
     timeout: 4_000
   }).toBe(1_024);
   await expect(ui).toHaveAttribute('data-camera-left', '0.00');
+  await expect(ui).toHaveAttribute('data-camera-top', '0.00');
+  await expect(ui).toHaveAttribute('data-battlefield-height', battlefieldHeight!);
+  await expect(ui).toHaveAttribute('data-world-scale', verticalScale!);
   await expect(page.getByText('← Swipe left to find Loomkeeper')).toBeVisible();
 });
 

@@ -27,9 +27,9 @@ export function createCombatCamera(state: Pick<SimulationState, 'terrain'>): Com
 }
 
 /**
- * V4's opening-only survey. It preserves the normal 16:9 presentation aspect
- * while fitting the full authoritative width, which places the extra vertical
- * sky around the existing world without extending simulation space.
+ * V4's opening-only survey fits the full authoritative width while preserving
+ * the normal vertical window. The layout applies a temporary horizontal-only
+ * presentation scale, so terrain and Wizards retain their normal y framing.
  */
 export function createCombatOverviewCamera(state: Pick<SimulationState, 'terrain'>): CombatCamera {
     const standard = standardCameraWindow(state);
@@ -38,7 +38,7 @@ export function createCombatOverviewCamera(state: Pick<SimulationState, 'terrain
         left: 0,
         top: 0,
         width,
-        height: width * standard.height / standard.width
+        height: standard.height
     });
 }
 
@@ -48,10 +48,10 @@ export function clampCombatCamera(
 ): CombatCamera {
     const standard = standardCameraWindow(state);
     const width = clamp(camera.width, standard.width, Math.max(standard.width, worldWidth(state)));
-    const height = width * standard.height / standard.width;
+    const height = standard.height;
     return {
         left: clamp(camera.left, 0, Math.max(0, worldWidth(state) - width)),
-        top: (worldHeight(state) - height) / 2,
+        top: 0,
         width,
         height
     };

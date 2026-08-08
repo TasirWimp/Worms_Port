@@ -187,7 +187,7 @@ export class CombatRenderer {
         for (const [index, sprite] of this.cloudSprites.entries()) {
             const [x, y, width] = placements[index];
             sprite.setPosition(
-                field.x + field.width * x - layout.camera.left * layout.worldScale * 0.25,
+                field.x + field.width * x - layout.camera.left * layout.worldScaleX * 0.25,
                 field.y + field.height * y
             )
                 .setDisplaySize(field.width * width, field.width * width)
@@ -196,8 +196,10 @@ export class CombatRenderer {
     }
 
     private updateTerrain(state: SimulationState, layout: CombatLayout): void {
-        const cell = state.terrain.cellSize * layout.worldScale;
-        const materialScale = layout.worldScale * TERRAIN_MATERIAL_SCALE_IN_WORLD;
+        const cellX = state.terrain.cellSize * layout.worldScaleX;
+        const cellY = state.terrain.cellSize * layout.worldScaleY;
+        const materialScaleX = layout.worldScaleX * TERRAIN_MATERIAL_SCALE_IN_WORLD;
+        const materialScaleY = layout.worldScaleY * TERRAIN_MATERIAL_SCALE_IN_WORLD;
         const field = layout.battlefield;
         let interiorIndex = 0;
         let topIndex = 0;
@@ -212,12 +214,12 @@ export class CombatRenderer {
                         APPROVED_COMBAT_ASSETS.terrainInterior.key,
                         this.terrainInteriorTiles
                     );
-                    tile.setPosition(field.x + (runStart * state.terrain.cellSize - layout.camera.left) * layout.worldScale, field.y + y * cell)
-                        .setSize((x - runStart) * cell + 0.5, cell + 0.5)
-                        .setTileScale(materialScale, materialScale)
+                    tile.setPosition(field.x + (runStart * state.terrain.cellSize - layout.camera.left) * layout.worldScaleX, field.y + y * cellY)
+                        .setSize((x - runStart) * cellX + 0.5, cellY + 0.5)
+                        .setTileScale(materialScaleX, materialScaleY)
                         .setTilePosition(
-                            runStart * cell / materialScale,
-                            y * cell / materialScale
+                            runStart * cellX / materialScaleX,
+                            y * cellY / materialScaleY
                         )
                         .setVisible(true);
                     runStart = -1;
@@ -234,18 +236,18 @@ export class CombatRenderer {
                     APPROVED_COMBAT_ASSETS.terrainTop.key,
                     this.terrainTopTiles
                     );
-                    tile.setPosition(field.x + (x * state.terrain.cellSize - layout.camera.left) * layout.worldScale, field.y + y * cell)
+                    tile.setPosition(field.x + (x * state.terrain.cellSize - layout.camera.left) * layout.worldScaleX, field.y + y * cellY)
                         .setSize(
-                            cell + 0.5,
+                            cellX + 0.5,
                             Math.max(
                                 2,
-                                layout.worldScale * TERRAIN_TOP_SOURCE_HEIGHT * TERRAIN_MATERIAL_SCALE_IN_WORLD
+                                layout.worldScaleY * TERRAIN_TOP_SOURCE_HEIGHT * TERRAIN_MATERIAL_SCALE_IN_WORLD
                             )
                         )
-                        .setTileScale(materialScale, materialScale)
+                        .setTileScale(materialScaleX, materialScaleY)
                         // Each surface segment starts at the grass edge while
                         // retaining a single horizontally aligned material run.
-                        .setTilePosition(x * cell / materialScale, 0)
+                        .setTilePosition(x * cellX / materialScaleX, 0)
                         .setVisible(true);
                 break;
             }
@@ -559,7 +561,8 @@ export class CombatRenderer {
     private drawFallbackTerrain(state: SimulationState, layout: CombatLayout): void {
         const g = this.background;
         const field = layout.battlefield;
-        const cell = state.terrain.cellSize * layout.worldScale;
+        const cellX = state.terrain.cellSize * layout.worldScaleX;
+        const cellY = state.terrain.cellSize * layout.worldScaleY;
         g.fillStyle(0x795548);
         for (let y = 0; y < state.terrain.height; y += 1) {
             let runStart = -1;
@@ -567,20 +570,20 @@ export class CombatRenderer {
                 const solid = x < state.terrain.width && terrainSolid(state.terrain, x, y);
                 if (solid && runStart < 0) runStart = x;
                 if (!solid && runStart >= 0) {
-                    const left = field.x + (runStart * state.terrain.cellSize - layout.camera.left) * layout.worldScale;
-                    const right = field.x + (x * state.terrain.cellSize - layout.camera.left) * layout.worldScale;
-                    g.fillRect(Math.max(field.x, left), field.y + y * cell, Math.max(0, Math.min(field.x + field.width, right) - Math.max(field.x, left)) + 0.6, cell + 0.6);
+                    const left = field.x + (runStart * state.terrain.cellSize - layout.camera.left) * layout.worldScaleX;
+                    const right = field.x + (x * state.terrain.cellSize - layout.camera.left) * layout.worldScaleX;
+                    g.fillRect(Math.max(field.x, left), field.y + y * cellY, Math.max(0, Math.min(field.x + field.width, right) - Math.max(field.x, left)) + 0.6, cellY + 0.6);
                     runStart = -1;
                 }
             }
         }
-        g.lineStyle(Math.max(2, cell * 0.45), 0x88B04B, 1);
+        g.lineStyle(Math.max(2, cellY * 0.45), 0x88B04B, 1);
         for (let x = 0; x < state.terrain.width; x += 1) {
             for (let y = 0; y < state.terrain.height; y += 1) {
                 if (terrainSolid(state.terrain, x, y) && (y === 0 || !terrainSolid(state.terrain, x, y - 1))) {
-                    const px = field.x + (x * state.terrain.cellSize - layout.camera.left) * layout.worldScale;
-                    const py = field.y + y * cell;
-                    g.lineBetween(px, py, px + cell, py);
+                    const px = field.x + (x * state.terrain.cellSize - layout.camera.left) * layout.worldScaleX;
+                    const py = field.y + y * cellY;
+                    g.lineBetween(px, py, px + cellX, py);
                     break;
                 }
             }
@@ -647,8 +650,8 @@ export class CombatRenderer {
 
     private worldPoint(x: number, y: number, layout: CombatLayout): { x: number; y: number } {
         return {
-            x: layout.battlefield.x + (x - layout.camera.left) * layout.worldScale,
-            y: layout.battlefield.y + (y - layout.camera.top) * layout.worldScale
+            x: layout.battlefield.x + (x - layout.camera.left) * layout.worldScaleX,
+            y: layout.battlefield.y + (y - layout.camera.top) * layout.worldScaleY
         };
     }
 }

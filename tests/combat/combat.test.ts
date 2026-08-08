@@ -68,7 +68,7 @@ test('actor Stitching cards keep their world anchor or hide instead of clamping 
     assert.notEqual(initial.player, undefined);
     assert.equal(
         initial.player!.x + initial.player!.width / 2,
-        initialLayout.battlefield.x + state.units[0].x * initialLayout.worldScale
+        initialLayout.battlefield.x + state.units[0].x * initialLayout.worldScaleX
     );
 
     const pannedLayout = computeCombatLayout(844, 390, undefined, {
@@ -80,7 +80,7 @@ test('actor Stitching cards keep their world anchor or hide instead of clamping 
     assert.equal(
         statuses.loomkeeper!.x + statuses.loomkeeper!.width / 2,
         pannedLayout.battlefield.x +
-            (state.units[1].x - pannedLayout.camera.left) * pannedLayout.worldScale
+            (state.units[1].x - pannedLayout.camera.left) * pannedLayout.worldScaleX
     );
 });
 
@@ -182,14 +182,28 @@ test('V4 opening survey continuously contracts from the full arena to the normal
     const state = createLatestSimulation(0xC0FFEE11, 'wizard');
     const overview = createCombatOverviewCamera(state);
     const playerView = createCombatCamera(state);
-    assert.deepEqual(overview, { left: 0, top: -288, width: 2048, height: 1152 });
+    assert.deepEqual(overview, { left: 0, top: 0, width: 2048, height: 576 });
     assert.equal(cameraDirectionToWorldX(overview, state.units[1].x), null);
     assert.deepEqual(interpolateCombatCamera(state, overview, playerView, 0.5), {
-        left: 0, top: -144, width: 1536, height: 864
+        left: 0, top: 0, width: 1536, height: 576
     });
     assert.deepEqual(interpolateCombatCamera(state, overview, playerView, 1), playerView);
 
     const layout = computeCombatLayout(844, 390, undefined, overview);
+    const normalLayout = computeCombatLayout(844, 390, undefined, playerView);
+    assert.equal(layout.battlefield.height, normalLayout.battlefield.height);
+    assert.equal(layout.worldScaleY, normalLayout.worldScaleY);
+    assert.equal(layout.worldScaleX, normalLayout.worldScaleX / 2);
+    assert.equal(
+        layout.battlefield.y + state.units[0].y * layout.worldScaleY,
+        normalLayout.battlefield.y + state.units[0].y * normalLayout.worldScaleY,
+        'the opening survey must keep the player planted at its normal vertical screen position'
+    );
+    assert.equal(
+        layout.battlefield.y + state.units[1].y * layout.worldScaleY,
+        normalLayout.battlefield.y + state.units[1].y * normalLayout.worldScaleY,
+        'the opening survey must keep the Loomkeeper planted at its normal vertical screen position'
+    );
     const statuses = computeActorStatusLayout(layout, state.units);
     assert.notEqual(statuses.player, undefined);
     assert.notEqual(statuses.loomkeeper, undefined);
@@ -216,11 +230,11 @@ test('Loomseed presentation anchor smoothly offsets a trace while preserving its
     assert.equal(anchor.x, root.x + 30 * wizardScale);
     assert.equal(anchor.y, root.y - 106 * wizardScale);
     assert.equal(
-        (displayed[0].x - layout.camera.left) * layout.worldScale + layout.battlefield.x,
+        (displayed[0].x - layout.camera.left) * layout.worldScaleX + layout.battlefield.x,
         anchor.x
     );
     assert.equal(
-        (displayed[0].y - layout.camera.top) * layout.worldScale + layout.battlefield.y,
+        (displayed[0].y - layout.camera.top) * layout.worldScaleY + layout.battlefield.y,
         anchor.y
     );
     assert.equal(displayed[1].x, trace[1].x + (displayed[0].x - trace[0].x) * 0.25);

@@ -884,7 +884,7 @@ export default class CombatScene extends Phaser.Scene {
         this.setCamera(panCombatCamera(
             this.renderState,
             pointer.camera,
-            -dx / this.layout.worldScale
+            -dx / this.layout.worldScaleX
         ));
         this.render();
     }

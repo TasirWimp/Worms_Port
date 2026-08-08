@@ -51,45 +51,52 @@ The camera is presentation-only client state. It is never serialized in a
 snapshot or replay, sent to the server, used by the Loomkeeper, or consulted by
 collision, damage, terrain deformation, rewards, or command validation.
 
-The normal V4 decision camera is exactly 1024 by 576 world units, with fixed
-zoom 1.0. V4 alone has one non-interactive opening survey: it starts at 2048 by
-1152 world units, centered vertically at `top = -288`, then continuously eases
-to the normal player view over three seconds. The taller survey only reveals
-sky around the existing 576-unit world; it does not add world, collision, or
-terrain space. There is no pinch, manual/dynamic zoom, zoom button, or
-AI-specific zoom. Responsive CSS fits the current 16:9 camera window inside the
-existing safe battlefield rectangle. At the accepted 844 by 390 logical Samsung
-viewport, the normal decision view preserves the current approximately 665 by
-374 CSS-pixel arena and its approximately 0.6493 screen pixels per world unit.
-It therefore displays 1/2 of the V4 width at the same character/material scale,
-rather than shrinking the whole 2048-unit arena.
+The normal V4 decision camera is exactly 1024 by 576 world units. V4 alone has
+one non-interactive opening survey: it starts at the full 2048 by 576 world
+width and then continuously eases to the normal player view over three seconds.
+It is a horizontal-only survey: the camera `top`, camera height, battlefield
+height, vertical terrain framing, and vertical Wizard placement are fixed at
+their normal values throughout. This prevents the opening view from exposing
+blank space above or below the terrain or making either Wizard rise into its
+ground position. There is no pinch, manual/dynamic zoom, zoom button, or
+AI-specific zoom. Responsive CSS keeps the existing safe 16:9 battlefield
+rectangle fixed. At the accepted 844 by 390 logical Samsung viewport, the
+normal decision view preserves the current approximately 665 by 374 CSS-pixel
+arena and its approximately 0.6493 vertical screen pixels per world unit. The
+opening survey temporarily halves only the horizontal presentation scale, so it
+shows the full V4 width without vertically shrinking or moving characters or
+terrain.
 
 ```text
 authoritative V4 terrain width = terrain.width * terrain.cellSize = 2048
 normalCamera = { left: 0, top: 0, width: 1024, height: 576 }
-openingSurvey = { left: 0, top: -288, width: 2048, height: 1152 }
+openingSurvey = { left: 0, top: 0, width: 2048, height: 576 }
 camera.left in [0, terrainWorldWidth - camera.width]
-camera.top = (terrainWorldHeight - camera.height) / 2
+camera.top = 0
+camera.height = 576
 
-screen.x = battlefield.x + (world.x - camera.left) * worldScale
-screen.y = battlefield.y + (world.y - camera.top) * worldScale
-worldScale = min(battlefield.width / camera.width,
-                 battlefield.height / camera.height)
+worldScaleY = min(usableBattlefieldWidth / 1024,
+                  usableBattlefieldHeight / 576)
+worldScaleX = battlefield.width / camera.width
+screen.x = battlefield.x + (world.x - camera.left) * worldScaleX
+screen.y = battlefield.y + (world.y - camera.top) * worldScaleY
 ```
 
 All D1 camera bounds must derive from the authoritative terrain width and cell
-size plus this named normal-camera/opening-survey contract. Renderer, layout, terrain
-tiling, actor/status anchors, Loomseed origin, aim dashes, projectile, impact,
-and the clipping mask use the same transform. They must not retain a hidden
-1024-world-width assumption. V1/V2/V3 continue to present their full 1024 by
-576 arena with a zero horizontal camera range.
+size plus this named normal-camera/opening-survey contract. Renderer, layout,
+terrain tiling, actor/status anchors, Loomseed origin, aim dashes, projectile,
+impact, and the clipping mask use the same split-axis transform. Visual sizes
+remain tied to `worldScaleY`; only world x positions use `worldScaleX` during
+the survey. They must not retain a hidden 1024-world-width assumption.
+V1/V2/V3 continue to present their full 1024 by 576 arena with a zero
+horizontal camera range.
 
-Camera `left` and the aspect-preserving camera height are clamped after every
-snapshot, resize, orientation change, reconnect, and scene reset. The opening
-survey uses an ease-in-out interpolation for exactly 3000ms; reduced motion
-sets its normal destination immediately. Any deliberate player input (a
-control interaction or a valid battlefield pan) cancels the remaining survey
-and adopts the normal active-Wizard framing immediately. No command,
+Camera `left` is clamped after every snapshot, resize, orientation change,
+reconnect, and scene reset; camera `top` and height remain at `0` and `576`.
+The opening survey uses an ease-in-out interpolation for exactly 3000ms;
+reduced motion sets its normal destination immediately. Any deliberate player
+input (a control interaction or a valid battlefield pan) cancels the remaining
+survey and adopts the normal active-Wizard framing immediately. No command,
 simulation event, or AI decision can extend, replay, or otherwise control that
 survey. Approved Cloud sprites are a distant clipped
 presentation layer with horizontal parallax factor 0.25; they never supply
@@ -122,7 +129,8 @@ or presentation is pending. It remains available after aim is locked.
    *displayed battlefield* therefore has the same logical horizontal pan
    meaning. The implementation must not branch on physical portrait direction.
 4. Dragging the displayed world right decreases `camera.left`; dragging it left
-   increases `camera.left`. Apply the world delta as `-logicalDeltaX / worldScale`
+   increases `camera.left`. Apply the world delta as
+   `-logicalDeltaX / worldScaleX`
    and clamp it to the named camera range. The gesture calls `preventDefault`
    only for its owned canvas pointer so it does not scroll or select the page.
 5. Pointer up, cancel, lost capture, window blur, hidden document, Pause,
@@ -230,8 +238,9 @@ schemas. It must not otherwise broaden transport input limits.
 ## Approved implementation authorization
 
 The project owner approved this exact V4 `2048 by 576`, `256 by 72`, `512/1152`
-spawn, opening-only `2048 by 1152` continuous three-second survey, normal fixed
-`1024 by 576` camera window with `0..1024` horizontal range, swipe-to-find
-hint, aim-lock view preservation, post-lock panning, continuous caster return,
-and caster/projectile/impact follow contract. Obstacles and tactical terrain
-remain outside WP-015D.
+spawn, opening-only `2048 by 576` horizontal-only continuous three-second
+survey with fixed vertical framing, normal fixed `1024 by 576` camera window
+with `0..1024` horizontal range, swipe-to-find hint, aim-lock view
+preservation, post-lock panning, continuous caster return, and
+caster/projectile/impact follow contract. Obstacles and tactical terrain remain
+outside WP-015D.

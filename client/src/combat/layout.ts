@@ -12,7 +12,12 @@ export type CombatLayout = {
     actionZone: Rect;
     statusZone: Rect;
     pauseZone: Rect;
+    /** Legacy vertical presentation scale; visual sizes stay tied to this value. */
     worldScale: number;
+    /** Horizontal presentation scale. The opening survey may temporarily reduce it. */
+    worldScaleX: number;
+    /** Vertical presentation scale. It remains fixed during the opening survey. */
+    worldScaleY: number;
     camera: CombatCamera;
 };
 
@@ -37,16 +42,17 @@ export function computeCombatLayout(
     const usableHeight = Math.max(1, height - top - bottom);
     const orientation = width > height ? 'landscape' : 'portrait';
 
-    const scale = Math.min(
-        usableWidth / camera.width,
-        usableHeight / camera.height
+    const worldScaleY = Math.min(
+        usableWidth / COMBAT_CAMERA_WINDOW.width,
+        usableHeight / COMBAT_CAMERA_WINDOW.height
     );
     const battlefield = {
-        x: left + (usableWidth - camera.width * scale) / 2,
-        y: top + (usableHeight - camera.height * scale) / 2,
-        width: camera.width * scale,
-        height: camera.height * scale
+        x: left + (usableWidth - COMBAT_CAMERA_WINDOW.width * worldScaleY) / 2,
+        y: top + (usableHeight - COMBAT_CAMERA_WINDOW.height * worldScaleY) / 2,
+        width: COMBAT_CAMERA_WINDOW.width * worldScaleY,
+        height: COMBAT_CAMERA_WINDOW.height * worldScaleY
     };
+    const worldScaleX = battlefield.width / camera.width;
 
     const padSize = Math.min(
         MAXIMUM_PAD_SIZE,
@@ -77,7 +83,9 @@ export function computeCombatLayout(
             height: STATUS_HEIGHT
         },
         pauseZone: { x: left, y: top, width: 48, height: 48 },
-        worldScale: scale,
+        worldScale: worldScaleY,
+        worldScaleX,
+        worldScaleY,
         camera
     };
 }
@@ -96,8 +104,8 @@ export function computeActorStatusLayout(
     const rectFor = (unit: SimulationUnit): Rect | undefined => {
         const worldX = unit.x - layout.camera.left;
         const status = {
-            x: field.x + worldX * layout.worldScale - width / 2,
-            y: field.y + unit.y * layout.worldScale - actorOffset - height,
+            x: field.x + worldX * layout.worldScaleX - width / 2,
+            y: field.y + unit.y * layout.worldScaleY - actorOffset - height,
             width,
             height
         };

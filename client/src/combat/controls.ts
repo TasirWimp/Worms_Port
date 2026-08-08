@@ -170,6 +170,7 @@ export class CombatControls {
         this.root.dataset.battlefieldX = layout.battlefield.x.toFixed(2);
         this.root.dataset.battlefieldY = layout.battlefield.y.toFixed(2);
         this.root.dataset.worldScale = layout.worldScale.toFixed(4);
+        this.root.dataset.worldScaleX = layout.worldScaleX.toFixed(4);
         place(this.movementZone, layout.movementZone);
         place(this.aimZone, layout.aimZone);
         place(this.actions, layout.actionZone);
