@@ -301,15 +301,15 @@
       "license": "MIT",
       "distribution": "documentation_conditioning_only",
       "approved_uses": [
-        "one owner-approved direct FLUX.2 max WP-015C_Animation cast-preparation key-pose request, paired only with the exact combined Wizard-with-Loomseed master",
         "documentation and visual review of the project-owned cast-preparation lean, shared foot baseline, and fixed Loomseed anchor"
       ],
       "blocked_uses": [
         "product runtime use or treatment as finished artwork",
+        "the owner-authorized direct FLUX.2 max idle-pose pilot, which submits only the combined Wizard-with-Loomseed master without this guide",
         "a second BFL request, video, sprite sheet, alpha treatment, normalizer, staging, asset promotion, or runtime path",
         "use with the raw empty-handed Wizard, a rejected AutoSprite output, a runtime copy, or a third-party input"
       ],
-      "notes": "Deterministically rendered from project-authored flat geometry only. It is a 1024x1024 opaque, white-background pose diagram, not Wizard artwork. Both feet meet the ground baseline at y=902. Its marked Loomseed center is (814,456), the exact 2x transform of the approved combined master anchor (407,228). It depicts one right-facing cast-preparation lean with a raised cupped hand; no source-master, generated, third-party, Sorcerers, official Nimiq, or runtime-media pixels occur in the guide. The one BFL use remains pending project-owner visual approval and the separately hash-bound prompt/request contract."
+      "notes": "Deterministically rendered from project-authored flat geometry only. It is a 1024x1024 opaque, white-background pose diagram, not Wizard artwork. Both feet meet the ground baseline at y=902. Its marked Loomseed center is (814,456), the exact 2x transform of the approved combined master anchor (407,228). It depicts one right-facing cast-preparation lean with a raised cupped hand; no source-master, generated, third-party, Sorcerers, official Nimiq, or runtime-media pixels occur in the guide. It remains documentation-only historical evidence: the owner revised the one FLUX.2 max pilot to a natural idle-pose edit with no pose guide."
     },
     {
       "id": "knotkin-wizard-cowl-edit-mask-v1",

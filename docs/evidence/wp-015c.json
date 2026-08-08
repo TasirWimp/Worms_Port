@@ -20,8 +20,9 @@
     "Permit Phaser's same-origin runtime decode blobs in the image-only CSP source list without relaxing script, connect, object, framing, or payment policy",
     "Introduce only `nimble-knots-artillery-v3` for new challenges: a fixed direct-projectile body profile matching the shared Wizard presentation while preserving v1/v2 byte-for-byte",
     "Record the outcome of exactly one free-tier AutoSprite Custom idle pilot from the approved combined Wizard-with-Loomseed master as external quarantine evidence only; it cannot add a source asset, atlas, normalizer, runtime path, or player-visible change",
-    "Create, hash, and implementation-review the original WP-015C_Animation cast-preparation pose guide without submitting source media or changing product behavior",
-    "Configure and preflight the separate WP-015C_Animation FLUX.2 one-key-pose lane without submitting source media or changing product behavior"
+    "Create, hash, and implementation-review the original WP-015C_Animation cast-preparation pose guide as documentation-only history without submitting source media or changing product behavior",
+    "Freeze and submit exactly one owner-authorized FLUX.2 max natural-idle-pose edit from the approved combined Wizard-with-Loomseed master alone; retain its untouched output only in external quarantine and do not change product behavior",
+    "After its documented Protected Content moderation outcome, freeze and submit exactly one separately owner-authorized FLUX.2 max text-only idle-pose diagnostic using no image, pose guide, brand, franchise, artist-style request, or third-party reference"
   ],
   "non_goals": [
     "Generate, alter, or approve any source raster, atlas, animation, or additional runtime asset, other than the separately documented external-quarantine pilot",
@@ -32,7 +33,7 @@
     "Approve or update a visual baseline from Windows",
     "Treat local browser verification as a substitute for the required real-device acceptance",
     "Upload the raw empty-handed Wizard, either rejected AutoSprite output, any third-party image, or the runtime copy to AutoSprite; use a paid feature, retry, prompt variation, normalizer, test-only staging, runtime path, or asset promotion for the one pilot",
-    "Submit any BFL source input before the source/pose-guide/prompt contract is frozen, treat BFL's FLUX.2 OAuth MCP connector as a usable Codex Desktop chat tool, exceed the single owner-approved FLUX.2 key-pose request, or create video/sprite-sheet output in this gate"
+    "Submit any BFL source input before the source/prompt contract is frozen, submit the cast-preparation pose guide, treat BFL's FLUX.2 OAuth MCP connector as a usable Codex Desktop chat tool, exceed either owner-approved FLUX.2 one-call cap, or create video/sprite-sheet output in this gate"
   ],
   "planned_checks": [
     "npm run check:compliance",
@@ -47,7 +48,7 @@
     "npm run check:bundle-budget",
     "npm run test:browser:matrix",
     "completed AutoSprite pilot evidence review: settings, source/output hash, every-frame Loomseed/identity/baseline review, and durable export",
-    "WP-015C_Animation FLUX.2 key-pose evidence review: recorded owner terms decision, source/pose-guide hash, prompt/request body excluding key, endpoint/model/settings/cost, durable raw output, and identity/baseline/plain-background review",
+    "WP-015C_Animation FLUX.2 key-pose evidence review: recorded owner terms decision, source hash/no-guide declaration or text-only/no-reference declaration, prompt/request body excluding key, endpoint/model/settings/cost, durable raw output when present, and identity/baseline/plain-background review",
     "separate real-phone acceptance before any later animated production asset"
   ],
   "deterministic_seeds": [
@@ -126,6 +127,26 @@
       "command": "node scripts/generate-wizard-cast-preparation-pose-guide.js and exact-file inspection",
       "status": "pass",
       "detail": "Produced the original project-owned opaque 1024x1024 pose guide docs/images/art-direction/knotkin-wizard-cast-preparation-pose-guide-v1.png (17,478 bytes, SHA-256 17AC58E31834C9DAB434637A08B03DEAC72816F28D287C992D91BC4095E400FC) from generator scripts/generate-wizard-cast-preparation-pose-guide.js (SHA-256 C363A73DD009116CFCD0FAE9804392AA29AC7211FD2CBDB9CD96214210C96768). Visual inspection confirms a white/plain background, full body, shared y=902 baseline, a right-facing cast-preparation lean, and Loomseed marker at exact 2x master anchor (814,456). It contains no source-master, third-party, generated, or runtime pixels. Owner approval and the complete prompt/request freeze remain pending; no BFL media was submitted."
+    },
+    {
+      "command": "node scripts/run-wp-015c-flux2-max-idle-pilot.js --dry-run",
+      "status": "pass",
+      "detail": "The owner revised the single BFL pilot to a natural idle pose with no pose-guide submission. The dry run verified the exact one-request contract docs/asset-briefs/wp-015c-animation-flux2-max-idle-request-v1.json (SHA-256 AC1D79F6D1840CEF2ACAB4B90F08F22EF48EF3802841159C9876A7E1E61D97D8), its exact combined Wizard-with-Loomseed input 1CC252B45C93D2553AC733DAA6AA49D05D6351DCC85E61EA559ECED458C9419C, no-guide declaration, FLUX.2 max endpoint, 1024x1024 PNG parameters, disabled prompt upsampling, fixed seed 15039001, and one-submission cap. Runner SHA-256: 2222E4F7FD1CFFA184BC947BF5B7627454798060D3F1DDACBF3FCF2D42C348DA. No key was read and no media was uploaded."
+    },
+    {
+      "command": "WP-015C_Animation direct BFL FLUX.2 max idle submission and terminal polling",
+      "status": "rejected",
+      "detail": "The one owner-authorized request contract AC1D79F6D1840CEF2ACAB4B90F08F22EF48EF3802841159C9876A7E1E61D97D8 submitted exact combined Wizard-with-Loomseed source 1CC252B45C93D2553AC733DAA6AA49D05D6351DCC85E61EA559ECED458C9419C as BFL task 9d825b3d-4533-4535-9bf4-07686ccd2f9e on 2026-08-07. The initial response quoted 10 credits, input 0.25 MP and output 1 MP. Terminal polling returned Request Moderated, no result image, and no settled cost. Ignored quarantine retains sanitized submission metadata only; no output exists. The one-submission cap is consumed, so no retry, prompt revision, model change, or pose-guide submission follows."
+    },
+    {
+      "command": "node scripts/run-wp-015c-flux2-max-text-idle-pilot.js --dry-run",
+      "status": "pass",
+      "detail": "The separately authorized text-only diagnostic dry run verified exact request contract docs/asset-briefs/wp-015c-animation-flux2-max-text-idle-request-v1.json (SHA-256 D15E7C475FAEAD2CFA3699CA090D8E5E3A0D64B5EA40EAC22AE9FA948E8852ED), no submitted images/references, FLUX.2 max endpoint, 1024x1024 PNG parameters, disabled prompt upsampling, fixed seed 15039002, and a distinct one-submission cap. Runner SHA-256: B04B0344B7176EEB7D90DB464D6C45050AACB82ECFF49FF4D678D5337ABB2BBE. No key was read and no media was uploaded."
+    },
+    {
+      "command": "WP-015C_Animation direct BFL FLUX.2 max text-only idle submission and provenance inspection",
+      "status": "pass external candidate; rejected for product admission",
+      "detail": "The separate no-reference contract D15E7C475FAEAD2CFA3699CA090D8E5E3A0D64B5EA40EAC22AE9FA948E8852ED completed on 2026-08-07 as BFL task 3c486d7b-95f1-480c-9b33-27556b3f2742. Initial quote: 7 credits, input 0 MP, output 1 MP; settled cost null. The untouched external PNG is 898,494 bytes, SHA-256 4D34F37EA85CF987E1CE330AFC2136086E82F784274C9E545923F8DB6DEC0F96. Its PNG chunks include caBX and contain C2PA/JUMBF markers. It is a successful isolation output but visually fails product admission: it is front-facing rather than the approved three-quarter identity, has pale hands, eyelash-like eyes, a pink mouth, a much larger yarn ball, and a drawn ground line. No normalization, repair, conditioning, staging, runtime path, or promotion follows."
     }
   ],
   "reviews": [
@@ -158,12 +179,36 @@
       "reviewer": "Codex",
       "decision": "pose guide created and inspected; owner approval pending",
       "detail": "Created one deterministic project-owned cast-preparation structure guide, exact SHA-256 17AC58E31834C9DAB434637A08B03DEAC72816F28D287C992D91BC4095E400FC. It is a plain flat diagram and contains no Wizard master or external pixels. Its y=902 baseline and (814,456) Loomseed marker preserve the exact 2x approved presentation-master geometry. It is registered in the closed conditioning manifest, but no BFL media request may proceed until the owner visually approves this guide and the complete prompt/request is separately frozen."
+    },
+    {
+      "role": "project owner",
+      "reviewer": "Jens Bernhardt",
+      "decision": "approved one no-guide idle-pose submission",
+      "detail": "On 2026-08-07, the owner superseded the proposed cast-preparation structure-guide request with the exact natural-idle prompt in hash-bound request contract AC1D79F6D1840CEF2ACAB4B90F08F22EF48EF3802841159C9876A7E1E61D97D8 and explicitly authorized its one direct FLUX.2 max API submission. Only the approved combined Wizard-with-Loomseed master may be submitted. The pose guide remains unsubmitted documentation-only history."
+    },
+    {
+      "role": "implementation",
+      "reviewer": "Codex",
+      "decision": "one-call gate closed; no candidate",
+      "detail": "The direct FLUX.2 max idle request reached BFL as task 9d825b3d-4533-4535-9bf4-07686ccd2f9e, then settled Request Moderated. Final inspection confirms no image result and null settled cost. The task and initial quote are recorded without URLs, secret material, or submitted image bytes. The planned external candidate review cannot occur because no candidate exists; the request cap prevents an autonomous retry."
+    },
+    {
+      "role": "project owner",
+      "reviewer": "Jens Bernhardt",
+      "decision": "approved one source-free text-only diagnostic",
+      "detail": "After task 9d825b3d-4533-4535-9bf4-07686ccd2f9e reported Protected Content, the owner authorized exactly one separately bounded FLUX.2 max text-only request: contract D15E7C475FAEAD2CFA3699CA090D8E5E3A0D64B5EA40EAC22AE9FA948E8852ED. It submits no source image, pose guide, protected-work/style request, brand, franchise, artist style, or third-party material. It is an isolation test only and cannot create a product path."
+    },
+    {
+      "role": "implementation",
+      "reviewer": "Codex",
+      "decision": "text-only diagnostic completed; external candidate rejected for admission",
+      "detail": "Task 3c486d7b-95f1-480c-9b33-27556b3f2742 completed and its untouched PNG retains C2PA/JUMBF provenance. The successful source-free request narrows, but does not conclusively isolate, the previous Protected Content finding because prompt wording changed alongside source removal. Visual inspection rejects the output as a product candidate for identity and presentation drift; it remains external quarantine only. The text-only one-call cap is consumed."
     }
   ],
   "skipped_checks": [
     "The project owner explicitly waived a replacement Ubuntu candidate for the focused V3 hitbox correction after passing real-phone acceptance. The prior pinned Ubuntu candidate remains technical evidence only; no Windows baseline was created or retained.",
     "The rejected external AutoSprite pilot has no product path and therefore does not trigger a new build, browser matrix, Ubuntu candidate, or phone test. Its separately completed frame, alpha, settings, source, and output-hash review is recorded above.",
-    "WP-015C_Animation has only registered/preflighted services; no media exists, so no candidate review, build, browser matrix, visual baseline, or phone test applies yet."
+    "The moderated image-edit pilot produced no media. The source-free diagnostic produced an external candidate but no product-admissible asset, so no browser matrix, visual baseline, or phone test applies. The normal build completed before submission; no product behavior changed."
   ],
   "residual_risks": [
     "The approved Wizard presentation is intentionally shared by player and Loomkeeper until WP-015D produces a distinct Loomkeeper; labels and team rings remain the distinction.",
@@ -172,6 +217,6 @@
     "The v3 body profile is intentionally valid only for the shared Wizard presentation. WP-015D must version a new profile rather than reuse it unchanged when it introduces distinct Calling or Loomkeeper visuals.",
     "V3 retains V2's historical 120 maximum Needlepoint damage, so a correct direct Needlepoint contact can resolve a full 100-Stitching target in one action. The owner accepted current V3 phone behavior, but WP-015D must separately version the planned low-damage Needlepoint tier.",
     "AutoSprite does not publish an exact inference model/version and has no fixed retention period. Its completed combined-Loomseed pilot failed the face-identity gate despite preserving the focus, so the route is closed and must not be treated as a production dependency.",
-    "The owner accepts BFL's service/training use only for the single documented FLUX.2 max pilot. Any additional input, model, request, or output requires a new decision. Even a passing FLUX.2 max key-pose still is opaque/external and would need a new alpha, identity, provenance, normalization, and product-admission gate."
+    "The owner accepts BFL's service/training use only for the moderated image-edit pilot and the separately authorized source-free text-only diagnostic. Both one-call caps are consumed. Any further input, model, request, or output requires a new decision. Even a later passing FLUX.2 max key-pose still would be opaque/external and need a new alpha, identity, provenance, normalization, and product-admission gate."
   ]
 }

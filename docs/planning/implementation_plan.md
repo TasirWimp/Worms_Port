@@ -28,16 +28,14 @@ Phaser/Socket.IO stack.
   the documented shared-Wizard direct-hit profile, while V1/V2 remain immutable.
 - **WP-015C_Animation FLUX.2 one-key-pose pilot:** this separate,
   non-production research gate does not reopen rejected AutoSprite animation or
-  use FLUX 3 video. The goal is one still **cast-preparation key pose**, not a
+  use FLUX 3 video. The goal is one still **idle key pose**, not a
   generated sprite sheet: FLUX.2 `max` receives the exact combined
-  Wizard-with-Loomseed master as its identity reference and the locally-created
-  pose guide `docs/images/art-direction/knotkin-wizard-cast-preparation-pose-guide-v1.png`
-  (`17AC58E3...00FC`, generator `C363A73D...6768`) as its structure reference.
-  The guide is a plain, original 1024x1024 project diagram: feet share y=902 and
-  its Loomseed marker is fixed at `(814,456)`, the 2x approved-master anchor.
-  It contains no third-party or generated pixels. Implementation inspection has
-  passed, but owner review and the complete request-contract freeze remain
-  required before upload. The direct API request is
+  Wizard-with-Loomseed master as its sole identity reference. The owner revised
+  the one permitted request to a relaxed idle pose and explicitly excludes the
+  newly created cast-preparation guide; it remains documentation-only historical
+  evidence. The exact prompt and submit-able parameters are frozen in
+  `docs/asset-briefs/wp-015c-animation-flux2-max-idle-request-v1.json`; the direct
+  API request is
   exactly one 1024x1024 `POST /v1/flux-2-max` edit, estimated from $0.07, with a
   white/plain background and full-body ground baseline. The Windows User-scoped
   `Flux_GameAssets_API_Key` is read only in the invoking process, never copied
@@ -47,9 +45,36 @@ Phaser/Socket.IO stack.
   it to chat threads, so it is not an implementation dependency. No Wizard
   image or edited output exists yet. On 2026-08-06 the owner accepted BFL's API
   input/output-use treatment, including training/improvement use, for this one
-  pilot only. The remaining source/pose-guide/prompt freeze is still required
-  before upload. The result remains external quarantine and cannot create a source asset,
+  pilot only. The source/prompt contract is now hash-bound and owner-authorized
+  for exactly one upload. The result remains external quarantine and cannot create a source asset,
   sprite sheet, normalizer, runtime path, product build, or player-visible change.
+  The pre-submit request file is hash-bound as
+  `AC1D79F6...97D8`; its only runner is
+  `scripts/run-wp-015c-flux2-max-idle-pilot.js` (`2222E4F7...48DA`), which
+  dry-run verified the exact source, one-request cap, no-guide declaration, and
+  locked parameters without reading a secret or uploading media.
+  That sole call was submitted on 2026-08-07 as BFL task
+  `9d825b3d-4533-4535-9bf4-07686ccd2f9e` and settled `Request Moderated` without
+  output or a settled cost. The initial quote was 10 credits for 0.25 MP input / 1
+  MP output. The one-call gate is closed: do not retry, change the prompt/model,
+  or send the pose guide. Any later investigation needs a new owner decision and
+  work-package contract.
+  The owner subsequently authorized one separate **text-only** diagnostic to
+  isolate that protected-content moderation finding. It submits no image, guide,
+  brand, franchise, artist-style request, or third-party material; it describes
+  only original crochet/fantasy properties in
+  `docs/asset-briefs/wp-015c-animation-flux2-max-text-idle-request-v1.json`.
+  It has a fresh one-call cap and cannot promote or integrate any output. Its
+  pre-submit request hash is `D15E7C47...52ED`; its only runner is
+  `scripts/run-wp-015c-flux2-max-text-idle-pilot.js` (`B04B0344...2BBE`), whose
+  dry run passed without accessing a secret or uploading media.
+  The sole source-free task `3c486d7b-95f1-480c-9b33-27556b3f2742` completed as
+  quarantined PNG `4D34F37E...0F96` (898,494 bytes, C2PA/JUMBF present). It proves
+  BFL accepted the changed text-only request, not that the original source image
+  alone caused the earlier moderation: its wording also changed. The result
+  visibly fails identity/production admission (front-facing doll, pale hands,
+  eyelash-like eyes, pink mouth, large ball, drawn ground line). No retry,
+  repair, conditioning, normalizer, or product path is authorized.
 - Background: both AutoSprite pilots remain rejected external evidence. The owner superseded
   the empty-palm overlay condition with a permanent held Loomseed and a separate
   temporary cast Threadball. B3C now has an exact Wizard-with-Loomseed
@@ -2732,26 +2757,25 @@ Sequential delivery slices:
   Needlepoint tier.
 - **WP-015C_Animation FLUX.2 one-key-pose pilot:** preserve the first playable
   slice's deterministic root-transform route while evaluating, but not
-  admitting, one still cast-preparation pose. The official BFL MCP is an
+  admitting, one still relaxed idle pose. The official BFL MCP is an
   OAuth-only FLUX.2 image connector, but Codex Desktop does not currently expose
   its remote tools to threads; it must not receive an API key and is not used by
   this work package. The direct helper reads only the Windows User-scoped
   `Flux_GameAssets_API_Key` at invocation time. It must require the prompt from
   its command arguments or a separately hash-bound request file, never conceal
   it as a default, and must never print or persist the key. Before the single
-  request, freeze the exact source hash `1CC252B4...9419C`, local original
-  pose guide `17AC58E3...00FC` (generator `C363A73D...6768`), positive
-  structured prompt, `flux-2-max` endpoint, 1024x1024 output, white/plain
-  background, full-body crop, and ground baseline. The pose guide is a flat
-  project diagram only: both feet rest at y=902 and the Loomseed marker stays at
-  `(814,456)`. The owner
+  request, freeze the exact source hash `1CC252B4...9419C`, no pose guide,
+  the exact prompt and parameters in
+  `docs/asset-briefs/wp-015c-animation-flux2-max-idle-request-v1.json`, the
+  `flux-2-max` endpoint, 1024x1024 output, white/plain background, full-body
+  crop, and ground baseline. The owner
   accepted BFL's documented service/training use of this pilot's submitted input
   and resulting output on 2026-08-06; that narrow decision does not authorize a
   second request or alter the other Terms. Retain the untouched image and service metadata externally and
   reject the result on any face, mouth, Loomseed, palm, anatomy, full-body
   framing, baseline, background, or identity drift. Record endpoint/model,
   request body excluding the key, service task/result identifiers, settings,
-  cost, timestamps, source/guide/output hashes, and retained content credentials.
+  cost, timestamps, source/no-guide/output hashes, and retained content credentials.
   There is no automatic retry, generated sheet, video, alpha removal, atlas,
   normalization, staging, runtime path, or visual-baseline update in this work
   package.

@@ -293,7 +293,7 @@ path, or player-visible change is authorized.
 This separate research gate does not reopen either AutoSprite route and
 supersedes the proposed FLUX 3 video lane. FLUX 3 can later serve as external
 motion reference, but its video output is not a sprite-production input. The
-first candidate is one still **cast-preparation** Wizard key pose; existing root
+first candidate is one still **idle** Wizard key pose; existing root
 transforms and deterministic Threadball effects remain the only approved runtime
 animation route.
 
@@ -311,15 +311,33 @@ that grant. On 2026-08-06, the owner accepted that treatment for one pilot only;
 the decision does not authorize further requests or any product path. The only
 first pilot is one direct
 `flux-2-max` 1024x1024 image-edit request (estimated from $0.07): exact combined
-master `1CC252B4...9419C` supplies identity, and the separately reviewable
-locally-created, hash-bound pose guide
-`docs/images/art-direction/knotkin-wizard-cast-preparation-pose-guide-v1.png`
-(`17AC58E3...00FC`, generator `C363A73D...6768`) supplies only the
-cast-preparation lean. It is an opaque 1024x1024 project-owned flat diagram:
-both feet meet y=902 and its Loomseed marker stays at `(814,456)`, the exact
-two-times transform of the combined master's `(407,228)` anchor. No source-
-master, generated, third-party, or runtime pixels appear in it. Owner review of
-the guide and the complete request contract still precedes upload.
+master `1CC252B4...9419C` is the sole identity reference. The owner selected a
+natural relaxed idle posture rather than cast preparation, so no structure guide
+is submitted. The exact prompt and settings, including `disable_pup: true`, seed
+`15039001`, safety tolerance `2`, and PNG output, are frozen in
+`docs/asset-briefs/wp-015c-animation-flux2-max-idle-request-v1.json`. The guide
+`17AC58E3...00FC` remains project-owned documentation-only historical evidence;
+it contributes no pixels or conditioning to this request.
+
+The owner-authorized one request ran on 2026-08-07 as BFL task
+`9d825b3d-4533-4535-9bf4-07686ccd2f9e`. It was accepted, initially quoted at
+10 credits, and then settled `Request Moderated` with no output and no settled
+cost returned. This consumes the single request; no prompt repair, second call,
+model substitution, or pose-guide submission is authorized.
+
+The owner then authorized one separately bounded text-only diagnostic to isolate
+that result. It uses no image/reference and describes original crochet/fantasy
+properties rather than requesting a protected work or style. Its exact contract
+is `docs/asset-briefs/wp-015c-animation-flux2-max-text-idle-request-v1.json`.
+
+The text-only task `3c486d7b-95f1-480c-9b33-27556b3f2742` completed as an
+external 1024x1024 PNG, 898,494 bytes, SHA-256 `4D34F37E...0F96`, with C2PA/JUMBF
+metadata retained in its `caBX` PNG chunk. It proves only that BFL accepted the
+revised source-free request. It is not a candidate master: it visibly drifts
+from the approved right-facing Wizard identity to a front-facing doll with pale
+hands, eyelash-like eyes, a pink mouth, a much larger ball, and a drawn ground
+line. Keep it in external quarantine; no crop, normalizer, repair, conditioning,
+runtime, or product path is authorized.
 The output requires a white/plain background, full body, and one ground
 baseline. It is external quarantine, never a source master, atlas, runtime copy,
 or product input. Preserve the untouched image/download and service metadata

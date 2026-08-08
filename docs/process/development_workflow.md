@@ -1811,8 +1811,8 @@ retry, edit the prompt, repair, normalize, stage, manifest, or integrate it.
 This is a separate, external-quarantine research lane, not a retry, repair, or
 replacement of AutoSprite. It supersedes the proposed FLUX 3 video lane: video
 may later provide motion-reference material, but it is not a sprite-production
-route. The first target is one still **cast-preparation** key pose which can be
-reviewed as a normal raster candidate before any later normalization decision.
+route. The first target is one still **idle** key pose which can be reviewed as
+a normal raster candidate before any later normalization decision.
 The existing deterministic root-transform/Threadball presentation remains the
 only approved runtime animation route.
 
@@ -1838,9 +1838,10 @@ BFL's API Service Terms (reviewed 2026-08-06) grant it broad rights to use
 inputs and outputs, including training/improving its products. Its published
 privacy-page training opt-out must not be assumed to amend those API terms.
 On 2026-08-06, the project owner affirmatively accepted that treatment for this
-one direct FLUX.2 `max` key-pose pilot. It covers the recorded Wizard input,
-original pose guide, prompt, and resulting output only; it does not authorize a
-second request or relax any review, provenance, or product-admission rule. Do
+one direct FLUX.2 `max` key-pose pilot. On 2026-08-07, the owner selected the
+final single-request scope: a natural idle pose, using the recorded combined
+Wizard input alone and no pose guide. It does not authorize a second request or
+relax any review, provenance, or product-admission rule. Do
 not upload the raw empty-handed Wizard, a runtime copy, a rejected AutoSprite
 sheet, or any third-party image.
 
@@ -1848,36 +1849,72 @@ After that decision, freeze a single direct `POST /v1/flux-2-max` edit contract:
 
 1. **Identity reference:** exact combined Wizard-with-Loomseed master
    `1CC252B45C93D2553AC733DAA6AA49D05D6351DCC85E61EA559ECED458C9419C`.
-2. **Structure reference:** exact project-owned, opaque 1024x1024 pose-guide
-   `docs/images/art-direction/knotkin-wizard-cast-preparation-pose-guide-v1.png`
-   (`17AC58E31834C9DAB434637A08B03DEAC72816F28D287C992D91BC4095E400FC`,
-   17,478 bytes), deterministically rendered by
-   `scripts/generate-wizard-cast-preparation-pose-guide.js`
-   (`C363A73DD009116CFCD0FAE9804392AA29AC7211FD2CBDB9CD96214210C96768`). It
-   is an original plain diagram for a subtle right-facing cast-preparation lean,
-   with both feet on y=902 and its marked Loomseed center at `(814,456)`, the
-   exact two-times transform of the approved master anchor `(407,228)`. It
-   contains no third-party or generated pixels. Implementation inspection passed;
-   project-owner visual approval remains required before the request.
+2. **No structure reference:** the project-owned cast-preparation pose guide is
+   retained as documentation-only history and is explicitly not submitted. The
+   owner selected a natural relaxed idle stance from the identity reference alone.
 3. **Request:** exactly one `flux-2-max` image-edit output at 1024x1024 on a
-   white/plain background, full body visible on one ground baseline. The helper
-   must take the exact positive structured prompt as a required command argument
-   or from one hash-bound external request file; it has no hidden/default prompt.
-   Do not ask for a sprite sheet, animation, video, alpha channel, projectile,
-   new object, or extra character.
+   white/plain background, full body visible on one ground baseline. The exact
+   prompt and every submit-able setting are frozen in the tracked request file
+   `docs/asset-briefs/wp-015c-animation-flux2-max-idle-request-v1.json`; no hidden
+   prompt/default is permitted. It fixes `disable_pup: true`, seed `15039001`,
+   safety tolerance `2`, and PNG output. Do not create a sprite sheet, animation,
+   video, alpha treatment, projectile, new object, or extra character.
+   Its exact pre-submit SHA-256 is
+   `AC1D79F6D1840CEF2ACAB4B90F08F22EF48EF3802841159C9876A7E1E61D97D8`.
+   Only `scripts/run-wp-015c-flux2-max-idle-pilot.js`
+   (`2222E4F7FD1CFFA184BC947BF5B7627454798060D3F1DDACBF3FCF2D42C348DA`)
+   may make that one request; its dry run re-verifies both exact source and
+   contract without accessing the key or uploading media.
 4. **Budget and preservation:** record the current quoted estimate (from $0.07),
-   endpoint/model, source/guide hashes, prompt/request body excluding the key,
+   endpoint/model, source hash/no-guide declaration, prompt/request body excluding the key,
    result/task identifiers, settings, timestamps, cost, raw output hash, and
    content credentials. Download the untouched image externally before any URL
    expiry.
 5. **Review:** reject the complete pilot on any change to the two glossy black
-   bead eyes, small stitched mouth, permanent Loomseed, raised palm/arm, body
+   bead eyes, small stitched mouth, permanent Loomseed, relaxed open hand, body
    identity, full-body crop, baseline, or plain background. A visual pass is
    evidence only.
 
 There is no automatic retry, generated sheet, video, alpha removal, normalizer,
 atlas, test staging, runtime path, product build, or phone-baseline update
 without a new work-package decision.
+
+The sole approved submission was made on 2026-08-07 with request contract
+`AC1D79F6...97D8` and BFL task id `9d825b3d-4533-4535-9bf4-07686ccd2f9e`.
+BFL accepted the request and initially quoted 10 credits for its 0.25 MP input /
+1 MP output, then settled it as `Request Moderated` with no image and no settled
+cost returned. The ignored quarantine contains sanitized submission metadata but
+no output media. The one-submission cap is consumed: do not retry, reword,
+switch model, or submit the pose guide. A fresh owner decision and work-package
+contract would be required to investigate a later candidate route.
+
+On 2026-08-07, the owner supplied that fresh, narrow decision: one text-only
+diagnostic using no source image or pose guide. The exact non-branded original
+description, seed `15039002`, endpoint, output settings, and one-call cap are
+frozen in `docs/asset-briefs/wp-015c-animation-flux2-max-text-idle-request-v1.json`.
+The text-only request is an isolation test only; it cannot claim to reproduce a
+protected work/style or create a product path.
+Its pre-submit SHA-256 is
+`D15E7C475FAEAD2CFA3699CA090D8E5E3A0D64B5EA40EAC22AE9FA948E8852ED`.
+Only `scripts/run-wp-015c-flux2-max-text-idle-pilot.js`
+(`B04B0344B7176EEB7D90DB464D6C45050AACB82ECFF49FF4D678D5337ABB2BBE`)
+may make that one source-free request; its dry run validates the exact prompt,
+parameters, no-reference declaration, output boundary, and one-call cap without
+reading the key or uploading media.
+
+That text-only request completed on 2026-08-07 as BFL task
+`3c486d7b-95f1-480c-9b33-27556b3f2742`. The initial quote was 7 credits for a
+1 MP output (no input image); final task cost was not returned. The untouched
+external-quarantine PNG is 898,494 bytes, SHA-256
+`4D34F37EA85CF987E1CE330AFC2136086E82F784274C9E545923F8DB6DEC0F96`.
+Its PNG `caBX` chunk contains C2PA/JUMBF provenance metadata. It is an
+unapproved external candidate only: the text-only output is visibly a different,
+front-facing character with exposed pale hands, eyelash-like eyes, a pink mouth,
+a large ball, and a drawn ground line. Do not normalize, edit, stage, integrate,
+or use it to condition another generation. The diagnostic establishes only that
+BFL accepted this changed text-only request; because the original request also
+used different wording, it does not prove which prior input field caused the
+`Protected Content` finding.
 
 Acceptance requires one deterministic player-and-Loomkeeper exchange through
 move, aim, fire, projectile flight, impact, Stitching damage, and result at every
