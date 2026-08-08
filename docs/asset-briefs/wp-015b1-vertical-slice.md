@@ -570,6 +570,22 @@ origin. The static Loomseed-Wizard is retained if any sheet fails to load.
 These controls do not change simulation position, collision, health, damage,
 replay, turn timing, reward eligibility, or result authority.
 
+On 2026-08-08, real-phone review found both shared Wizards too small and the
+approved Patch material compressed beyond readable textile detail. The bounded
+WP-015C presentation refinement uniformly enlarges the static fallback and all
+Wizard sheet frames by 30 percent around their unchanged ground root; the
+Loomseed/aim/projectile anchor inherits that same transform, and the floating
+Stitching cards move above the enlarged hat. It leaves Cloud placement and scale
+unchanged. Terrain remains the same authoritative solid-cell geometry, but its
+approved 256px interior and 256x64 top materials now render at a stable
+one-world-unit-per-source-pixel material scale, aligned across terrain runs; the
+top material extends its full 64px designed depth into existing solid ground so
+the grass, felt edge, and restrained gold stitching can be read. No master,
+runtime-copy byte, collision, deformation, simulation, replay, reward, or V3
+historical hitbox value changes. The v3 direct target deliberately remains
+historical code-owned replay data; a later collision-profile adjustment requires
+a separately versioned ruleset rather than a silent scale-coupled change.
+
 | State | Frames | Timing | Trigger |
 | --- | ---: | --- | --- |
 | `idle` | 1 source + root loop | B3C-configured | Minimal deterministic breathing/bob; stable held Loomseed |

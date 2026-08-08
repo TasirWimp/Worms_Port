@@ -248,6 +248,16 @@
       "command": "npm run check:types && npm run test:combat && npm run build && npm run test:browser:matrix && npm run check:bundle-budget",
       "status": "pass",
       "detail": "Passed both TypeScript projects, all 20 combat tests including Needlepoint/Spoolburst cast ordering, full build/compliance/runtime-copy checks, and the full zero-retry mobile matrix: 95 passed in 6.9 minutes with 60 reviewed policy skips. Windows visual pixel comparison remained omitted because pinned Ubuntu CI is authoritative. Largest initial JavaScript was 1,450,728 / 1,500,000 bytes and initial JavaScript plus CSS gzip was 402,252 / 430,000 bytes."
+    },
+    {
+      "command": "WP-015C real-phone presentation-scale refinement",
+      "status": "pass pending final device acceptance",
+      "detail": "The shared static and sheet-based Wizard presentation is uniformly 30 percent larger around its unchanged ground root for player and Loomkeeper. Loomseed, aim, temporary projectile, and floating Stitching-card presentation derive from the same transform. The Cloud remains unchanged. The approved Terrain Interior and Terrain Top runtime copies remain byte-identical, while their decorative material mapping now uses one world unit per source pixel so the felt weave, grass edge, and sparse gold stitching are readable. Existing terrain geometry, collision, deformation, simulation, projectile authority, replay, rewards, and fixed historical v3 direct-hit profile remain unchanged."
+    },
+    {
+      "command": "npm run check:types && npm run test:combat && npm run check:compliance && npm run test:browser:matrix && npm run test:browser:performance && npm run check:bundle-budget",
+      "status": "pass",
+      "detail": "Passed both TypeScript projects, all 20 combat tests, asset/import/package/work-package compliance, and the full zero-retry mobile matrix: 95 passed in 7.1 minutes with 60 reviewed policy skips. Windows visual pixel comparison remained omitted because pinned Ubuntu CI is authoritative. The five-sample Chromium 390x844 performance probe passed with 46.2ms median cast feedback, 2,205.5ms median visible-projectile delay, and 8,630.6ms median complete response; it reported no page/console errors or lazy SDK requests. The final bundle budget passed at 1,450,829 / 1,500,000 bytes for the largest initial JavaScript chunk and 402,367 / 430,000 bytes for initial JavaScript plus CSS gzip."
     }
   ],
   "reviews": [
@@ -286,6 +296,12 @@
       "reviewer": "Jens Bernhardt",
       "decision": "real-phone regression finding; all starting Relics need completed cast before flight",
       "detail": "After accepting the continuous Loomseed arcs on phone, the owner found that only Threadball waited for the completed Wizard spell; Needlepoint and Spoolburst still began flight immediately after Fire. The owner requires those two starting Relics to complete the same standard-motion two-second cast before their generic projectile visuals begin. Threadball's approved temporary formation source remains exclusive to Threadball."
+    },
+    {
+      "role": "project owner",
+      "reviewer": "Jens Bernhardt",
+      "decision": "real-phone presentation-scale refinement requested",
+      "detail": "After accepting the completed-cast behavior on phone, the owner found both shared Wizards too small and the ground texture too compressed to read its repaired stitching. The owner requested a 30 percent scale increase for both Wizards and a larger decorative ground-material presentation while explicitly retaining the Cloud presentation. This authorizes only the bounded runtime transform/mapping refinement; all source masters, byte-identical runtime copies, terrain geometry, collision, simulation, replay, rewards, and historical v3 hitbox remain unchanged."
     },
     {
       "role": "project owner",
@@ -345,6 +361,7 @@
   "skipped_checks": [
     "The project owner explicitly waived a replacement Ubuntu candidate for the focused V3 hitbox correction after passing real-phone acceptance. The prior pinned Ubuntu candidate remains technical evidence only; no Windows baseline was created or retained.",
     "The first rejected external AutoSprite pilot has no product path. The later four owner-supplied sheets do change player-visible presentation, so they require the normal build, browser matrix, Ubuntu candidate workflow, and separate real-phone acceptance; only the Linux candidate workflow can update visual baselines.",
+    "This presentation-scale refinement changes player-visible composition. Windows visual pixel comparison is intentionally omitted; the implementation PR must produce a pinned Ubuntu visual-baseline candidate for owner inspection before any committed snapshot update.",
     "The moderated image-edit pilot produced no media. The source-free diagnostic remains rejected for product admission and is not a runtime input."
   ],
   "residual_risks": [
@@ -352,6 +369,7 @@
     "The current deterministic Loomkeeper exchange may select Needlepoint or Spoolburst, which deliberately use bounded procedural placeholder presentation until their own approved asset families exist.",
     "Visual baselines will change and must be generated and inspected only through the pinned Ubuntu candidate workflow before any baseline commit.",
     "The v3 body profile is intentionally valid only for the shared Wizard presentation. WP-015D must version a new profile rather than reuse it unchanged when it introduces distinct Calling or Loomkeeper visuals.",
+    "The enlarged Wizard deliberately retains the existing historical v3 direct-hit profile. Real-phone acceptance must confirm that this still reads correctly; any collision adjustment needs a separately versioned ruleset rather than a presentation-coupled change.",
     "V3 retains V2's historical 120 maximum Needlepoint damage, so a correct direct Needlepoint contact can resolve a full 100-Stitching target in one action. The owner accepted current V3 phone behavior, but WP-015D must separately version the planned low-damage Needlepoint tier.",
     "AutoSprite does not publish an exact inference model/version and the four admitted PNG exports carry no prompt, job ID, or model/version metadata. The exact-file hashes and owner authorization support this bounded admission, but a future regeneration cannot be treated as equivalent without a new asset review.",
     "The owner accepts BFL's service/training use only for the moderated image-edit pilot and the separately authorized source-free text-only diagnostic. Both one-call caps are consumed. Any further input, model, request, or output requires a new decision. Even a later passing FLUX.2 max key-pose still would be opaque/external and need a new alpha, identity, provenance, normalization, and product-admission gate."

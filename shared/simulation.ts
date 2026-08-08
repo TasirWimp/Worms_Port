@@ -61,10 +61,10 @@ export type DirectProjectileHitbox = Readonly<{
 
 /**
  * V1/V2 retain the original 24 by 24 direct-hit square centred on the unit.
- * V3 maps the current shared Wizard presentation once into fixed world units:
- * its opaque source bounds are (134..441, 32..452), rooted at (256,451) and
- * rendered at a constant 0.23 world scale. This is deliberately code-owned
- * replay data, never runtime image analysis.
+ * V3 records the historical shared-Wizard direct target in fixed world units.
+ * It is deliberately code-owned replay data, never runtime image analysis or
+ * a dependency on presentation scale. Later visual-only scaling must retain
+ * this historical profile unless a separately versioned ruleset is approved.
  */
 export const DIRECT_PROJECTILE_HITBOXES: Readonly<Record<SimulationRulesetId, DirectProjectileHitbox>> = Object.freeze({
     [LEGACY_RULESET_ID]: Object.freeze({

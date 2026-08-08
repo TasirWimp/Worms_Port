@@ -3,7 +3,11 @@ import test from 'node:test';
 
 import { computeActorStatusLayout, computeCombatLayout } from '../../client/src/combat/layout';
 import { CombatInputController } from '../../client/src/combat/input';
-import { loomseedScreenPoint, traceFromLoomseedOrigin } from '../../client/src/combat/loomseed-origin';
+import {
+    WIZARD_ANIMATION_SCALE_IN_WORLD,
+    loomseedScreenPoint,
+    traceFromLoomseedOrigin
+} from '../../client/src/combat/loomseed-origin';
 import { trajectoryPreview } from '../../client/src/combat/preview';
 import {
     applySimulationCommand,
@@ -129,8 +133,9 @@ test('Loomseed presentation anchor smoothly offsets a trace while preserving its
     const anchor = loomseedScreenPoint(root, layout, 'animation-sheet');
     const displayed = traceFromLoomseedOrigin(trace, root, layout, 'animation-sheet');
 
-    assert.equal(anchor.x, root.x + 30 * Math.max(0.1, layout.worldScale * 0.56));
-    assert.equal(anchor.y, root.y - 106 * Math.max(0.1, layout.worldScale * 0.56));
+    const wizardScale = Math.max(0.1, layout.worldScale * WIZARD_ANIMATION_SCALE_IN_WORLD);
+    assert.equal(anchor.x, root.x + 30 * wizardScale);
+    assert.equal(anchor.y, root.y - 106 * wizardScale);
     assert.equal(displayed[0].x * layout.worldScale + layout.battlefield.x, anchor.x);
     assert.equal(displayed[0].y * layout.worldScale + layout.battlefield.y, anchor.y);
     assert.equal(displayed[1].x, trace[1].x + (displayed[0].x - trace[0].x) * 0.25);

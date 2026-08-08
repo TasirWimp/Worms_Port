@@ -57,7 +57,11 @@ export type CombatVisualPhase =
         unraveling: SimulationActor[];
       };
 
-const INTERIOR_SOURCE_SIZE = 256;
+// The 256px Patch materials used to be compressed into every 8-unit terrain
+// cell. Render them at a stable world material scale instead, so the approved
+// felt weave and sparse gold stitching remain readable on a phone.
+const TERRAIN_MATERIAL_SCALE_IN_WORLD = 1;
+const TERRAIN_TOP_SOURCE_HEIGHT = 64;
 
 export class CombatRenderer {
     private readonly scene: Phaser.Scene;
@@ -177,6 +181,7 @@ export class CombatRenderer {
 
     private updateTerrain(state: SimulationState, layout: CombatLayout): void {
         const cell = state.terrain.cellSize * layout.worldScale;
+        const materialScale = layout.worldScale * TERRAIN_MATERIAL_SCALE_IN_WORLD;
         const field = layout.battlefield;
         let interiorIndex = 0;
         let topIndex = 0;
@@ -193,7 +198,11 @@ export class CombatRenderer {
                     );
                     tile.setPosition(field.x + runStart * cell, field.y + y * cell)
                         .setSize((x - runStart) * cell + 0.5, cell + 0.5)
-                        .setTileScale(cell / INTERIOR_SOURCE_SIZE, cell / INTERIOR_SOURCE_SIZE)
+                        .setTileScale(materialScale, materialScale)
+                        .setTilePosition(
+                            runStart * cell / materialScale,
+                            y * cell / materialScale
+                        )
                         .setVisible(true);
                     runStart = -1;
                 }
@@ -208,11 +217,20 @@ export class CombatRenderer {
                 const tile = this.terrainTopTiles[topIndex++] ?? this.createTerrainTile(
                     APPROVED_COMBAT_ASSETS.terrainTop.key,
                     this.terrainTopTiles
-                );
-                tile.setPosition(field.x + x * cell, field.y + y * cell)
-                    .setSize(cell + 0.5, Math.max(2, cell * 0.34))
-                    .setTileScale(cell / INTERIOR_SOURCE_SIZE, cell / INTERIOR_SOURCE_SIZE)
-                    .setVisible(true);
+                    );
+                    tile.setPosition(field.x + x * cell, field.y + y * cell)
+                        .setSize(
+                            cell + 0.5,
+                            Math.max(
+                                2,
+                                layout.worldScale * TERRAIN_TOP_SOURCE_HEIGHT * TERRAIN_MATERIAL_SCALE_IN_WORLD
+                            )
+                        )
+                        .setTileScale(materialScale, materialScale)
+                        // Each surface segment starts at the grass edge while
+                        // retaining a single horizontally aligned material run.
+                        .setTilePosition(x * cell / materialScale, 0)
+                        .setVisible(true);
                 break;
             }
         }

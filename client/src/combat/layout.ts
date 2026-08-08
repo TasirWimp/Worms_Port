@@ -1,6 +1,7 @@
 import { SIM_RULES } from '../../../shared/simulation';
 import type { SimulationUnit } from '../../../shared/simulation';
 import type { Rect, SafeAreaInsets } from './contracts';
+import { WIZARD_PRESENTATION_TOP_IN_WORLD } from './loomseed-origin';
 
 export type CombatLayout = {
     orientation: 'portrait' | 'landscape';
@@ -84,7 +85,10 @@ export function computeActorStatusLayout(
     const width = Math.min(108, Math.max(78, layout.battlefield.width * 0.16));
     const height = 32;
     const edge = 6;
-    const actorOffset = Math.max(36, SIM_RULES.actorRadius * layout.worldScale * 1.8 + 25);
+    const actorOffset = Math.max(
+        36,
+        (SIM_RULES.actorRadius + WIZARD_PRESENTATION_TOP_IN_WORLD) * layout.worldScale + 12
+    );
     const field = layout.battlefield;
     const rectFor = (unit: SimulationUnit): Rect => ({
         x: clamp(field.x + unit.x * layout.worldScale - width / 2, field.x + edge, field.x + field.width - width - edge),

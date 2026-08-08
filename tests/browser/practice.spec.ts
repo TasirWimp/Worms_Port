@@ -15,7 +15,7 @@ test.beforeEach(async ({ page }) => {
 });
 
 test('live practice supports authoritative pause, full player turn, and fresh retry', async ({ page }, testInfo) => {
-  test.setTimeout(60_000);
+  test.setTimeout(90_000);
   await page.getByRole('button', { name: /Warrior/ }).tap();
   await page.getByRole('button', { name: 'Start Practice' }).tap();
   const ui = page.locator('.combat-ui');
@@ -51,7 +51,10 @@ test('live practice supports authoritative pause, full player turn, and fresh re
       ? 'ready'
       : 'waiting';
   }, {
-    timeout: 15_000
+    // A live exchange now includes normal-motion casts for both actors and,
+    // when terminal, the two-second Unraveling presentation. Match the
+    // existing per-turn lifecycle allowance used by completeCurrentClash.
+    timeout: 30_000
   }).toMatch(/^(ready|result)$/);
   const terminalAfterReply = await page.locator('.result-shell').count() > 0;
   if (terminalAfterReply) {

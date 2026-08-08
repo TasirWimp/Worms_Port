@@ -4,11 +4,17 @@ export type CombatWorldPoint = Readonly<{ x: number; y: number }>;
 export type WizardRoot = Readonly<{ x: number; y: number; facing: -1 | 1 }>;
 export type WizardPresentationGeometry = 'static-master' | 'animation-sheet';
 
+// WP-015C phone-scale read: both shared Wizard presentations are enlarged by
+// thirty percent without changing their ground root or their source geometry.
+export const WIZARD_PRESENTATION_SCALE_MULTIPLIER = 1.3;
 export const WIZARD_STATIC_ROOT_ORIGIN_Y = 451 / 512;
-export const WIZARD_STATIC_SCALE_IN_WORLD = 0.23;
+export const WIZARD_STATIC_SCALE_IN_WORLD = 0.23 * WIZARD_PRESENTATION_SCALE_MULTIPLIER;
 export const WIZARD_ANIMATION_ROOT_ORIGIN_Y = 212 / 256;
 export const WIZARD_UNRAVEL_ROOT_ORIGIN_Y = 229 / 256;
-export const WIZARD_ANIMATION_SCALE_IN_WORLD = 0.56;
+export const WIZARD_ANIMATION_SCALE_IN_WORLD = 0.56 * WIZARD_PRESENTATION_SCALE_MULTIPLIER;
+// The idle/cast sheet's hat begins near y=40. This keeps unit status cards
+// visibly above the enlarged shared Wizard while preserving its ground root.
+export const WIZARD_PRESENTATION_TOP_IN_WORLD = (212 - 40) * WIZARD_ANIMATION_SCALE_IN_WORLD;
 
 const STATIC_LOOMSEED_OFFSET = { x: 151, y: -223 };
 // The final retained spell frame puts the Loomseed centre at (158, 106)
