@@ -213,6 +213,21 @@
       "command": "npm run check:bundle-budget",
       "status": "pass",
       "detail": "After the delayed-launch refinement, the largest initial JavaScript chunk is 1,449,614 / 1,500,000 bytes and initial JavaScript plus CSS gzip is 401,980 / 430,000 bytes."
+    },
+    {
+      "command": "WP-015C Loomseed visual-origin correction",
+      "status": "pass",
+      "detail": "Real-phone acceptance found that the dashed aim guide and temporary projectile began below the permanent Loomseed. The 256px retained spell frame has a distinct Loomseed center at (158,106) relative to root (128,212), so the client now transforms that animation-specific hand anchor rather than reusing the 512px static-master scale. It replaces only the first displayed trace point and holds the first visible projectile frame at that point; all later trace points, impacts, collision, damage, replay, rewards, and server authority remain unchanged."
+    },
+    {
+      "command": "npm run check:types && npm run test:combat",
+      "status": "pass",
+      "detail": "Passed both TypeScript projects and all 19 combat tests, including the new pure geometry proof that the display trace starts at the animation-sheet Loomseed anchor while preserving every remaining authoritative point and the input trace."
+    },
+    {
+      "command": "npm run build && npm run test:browser:matrix && npm run test:browser:performance && npm run check:bundle-budget",
+      "status": "pass",
+      "detail": "Build passed compliance, types, server/client bundling, and exact copying of all 11 approved runtime assets. The full zero-retry mobile matrix passed 95 results in 10.7 minutes with 60 reviewed policy skips; Windows visual pixel comparison remained omitted because pinned Ubuntu CI is authoritative. The five-sample Chromium 390x844 performance probe passed: cast feedback median 45.4ms; visible projectile 2,172.3ms minimum / 2,189.8ms median / 2,209.6ms maximum; complete response 6,374.6ms median / 6,460.2ms maximum; no page/console errors or lazy SDK requests. Largest initial JavaScript was 1,450,223 / 1,500,000 bytes and initial JavaScript plus CSS gzip was 402,137 / 430,000 bytes."
     }
   ],
   "reviews": [
@@ -233,6 +248,12 @@
       "reviewer": "Jens Bernhardt",
       "decision": "clarification; projectile launches after the completed spell",
       "detail": "Real-phone follow-up confirmed the longer animation but found that the Threadball still launched immediately. The owner clarified the intended causal order: standard-motion Threadball casting must visibly complete its two-second spell sheet before the projectile begins flight. This supersedes the former overlap interpretation. Defeat remains a separate fully opaque two-second Unraveling; reduced motion remains compact."
+    },
+    {
+      "role": "project owner",
+      "reviewer": "Jens Bernhardt",
+      "decision": "real-phone visual-origin finding; repair authorized",
+      "detail": "After deploying the delayed-launch refinement on Render, the owner found that both the dashed aiming trajectory and launched Threadball appeared to originate below the held Loomseed. The owner requested that both visibly originate from the Loomseed in the Wizard's hand. The scoped repair is presentation-only and must retain the authoritative simulation trace after its first displayed point."
     },
     {
       "role": "project owner",

@@ -516,8 +516,12 @@ export default class CombatScene extends Phaser.Scene {
     ): Promise<void> {
         const frames = reducedMotion ? 3 : Math.min(12, Math.max(6, step.trace.length));
         this.renderState = cloneSimulation(working);
-        for (let frame = 1; frame <= frames; frame += 1) {
-            const points = Math.max(2, Math.ceil(step.trace.length * frame / frames));
+        for (let frame = 0; frame < frames; frame += 1) {
+            // Hold the first visible projectile frame at the Loomseed before it
+            // advances along the authoritative trace on following frames.
+            const points = frame === 0
+                ? 1
+                : Math.max(2, Math.ceil(step.trace.length * frame / (frames - 1)));
             this.projectileTrace = step.trace.slice(0, points).map((point) => ({ ...point }));
             this.visualPhase = {
                 kind: 'projectile',

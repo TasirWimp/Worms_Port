@@ -15,6 +15,15 @@ import {
     approvedWizardAnimationsLoaded
 } from './approved-assets';
 import type { CombatLayout } from './layout';
+import {
+    WIZARD_ANIMATION_ROOT_ORIGIN_Y,
+    WIZARD_ANIMATION_SCALE_IN_WORLD,
+    WIZARD_STATIC_ROOT_ORIGIN_Y,
+    WIZARD_STATIC_SCALE_IN_WORLD,
+    WIZARD_UNRAVEL_ROOT_ORIGIN_Y,
+    loomseedScreenPoint,
+    traceFromLoomseedOrigin
+} from './loomseed-origin';
 
 export type CombatVisualPhase =
     | {
@@ -48,12 +57,6 @@ export type CombatVisualPhase =
         unraveling: SimulationActor[];
       };
 
-const WIZARD_ROOT_ORIGIN_Y = 451 / 512;
-const WIZARD_SCALE_IN_WORLD = 0.23;
-const WIZARD_ANIMATION_ROOT_ORIGIN_Y = 212 / 256;
-const WIZARD_UNRAVEL_ROOT_ORIGIN_Y = 229 / 256;
-const WIZARD_ANIMATION_SCALE_IN_WORLD = 0.56;
-const EMISSION_OFFSET = { x: 151, y: -223 };
 const INTERIOR_SOURCE_SIZE = 256;
 
 export class CombatRenderer {
@@ -127,7 +130,7 @@ export class CombatRenderer {
         if (this.usingApprovedAssets) this.drawTeamCues(state.units, layout);
 
         this.effects.clear();
-        this.drawTrace(preview, layout, 0xE9B213, 0.95, true);
+        this.drawTrace(this.traceFromLoomseed(preview, 'player', layout), layout, 0xE9B213, 0.95, true);
         this.drawVisualPhase(visualPhase, layout);
 
         g.lineStyle(2, 0x1F2348, 0.65);
@@ -154,7 +157,7 @@ export class CombatRenderer {
             .setDepth(3)
             .setOrigin(0.5, this.usingWizardAnimations
                 ? WIZARD_ANIMATION_ROOT_ORIGIN_Y
-                : WIZARD_ROOT_ORIGIN_Y);
+                : WIZARD_STATIC_ROOT_ORIGIN_Y);
     }
 
     private updateClouds(layout: CombatLayout): void {
@@ -239,7 +242,7 @@ export class CombatRenderer {
     ): void {
         const scale = Math.max(0.1, layout.worldScale * (this.usingWizardAnimations
             ? WIZARD_ANIMATION_SCALE_IN_WORLD
-            : WIZARD_SCALE_IN_WORLD));
+            : WIZARD_STATIC_SCALE_IN_WORLD));
         for (const unit of units) {
             const sprite = this.wizardSprites[unit.id];
             if (!sprite) continue;
@@ -310,10 +313,11 @@ export class CombatRenderer {
             return;
         }
         if (visualPhase.kind === 'projectile') {
+            const trace = this.traceFromLoomseed(visualPhase.trace, visualPhase.actor, layout);
             if (visualPhase.relicId === 'threadball' && this.usingApprovedAssets) {
-                this.drawThreadballProjectile(visualPhase.trace, layout);
+                this.drawThreadballProjectile(trace, layout);
             } else {
-                this.drawGenericProjectile(visualPhase.relicId, visualPhase.trace, layout);
+                this.drawGenericProjectile(visualPhase.relicId, trace, layout);
             }
             return;
         }
@@ -461,11 +465,26 @@ export class CombatRenderer {
         root: { x: number; y: number; facing: -1 | 1 },
         layout: CombatLayout
     ): { x: number; y: number } {
-        const scale = Math.max(0.1, layout.worldScale * WIZARD_SCALE_IN_WORLD);
-        return {
-            x: root.x + root.facing * EMISSION_OFFSET.x * scale,
-            y: root.y + EMISSION_OFFSET.y * scale
-        };
+        return loomseedScreenPoint(
+            root,
+            layout,
+            this.usingWizardAnimations ? 'animation-sheet' : 'static-master'
+        );
+    }
+
+    private traceFromLoomseed(
+        trace: { x: number; y: number }[],
+        actor: SimulationActor,
+        layout: CombatLayout
+    ): { x: number; y: number }[] {
+        const root = this.rootForActor(actor, layout);
+        if (!root) return trace.map((point) => ({ ...point }));
+        return traceFromLoomseedOrigin(
+            trace,
+            root,
+            layout,
+            this.usingWizardAnimations ? 'animation-sheet' : 'static-master'
+        );
     }
 
     private actorRoot(unit: SimulationUnit, layout: CombatLayout): { x: number; y: number } {

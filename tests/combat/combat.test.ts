@@ -3,6 +3,7 @@ import test from 'node:test';
 
 import { computeActorStatusLayout, computeCombatLayout } from '../../client/src/combat/layout';
 import { CombatInputController } from '../../client/src/combat/input';
+import { loomseedScreenPoint, traceFromLoomseedOrigin } from '../../client/src/combat/loomseed-origin';
 import { trajectoryPreview } from '../../client/src/combat/preview';
 import {
     applySimulationCommand,
@@ -119,6 +120,21 @@ test('trajectory preview exactly matches cloned v2 resolution and leaves its sou
     assert.deepEqual(preview, fired.state.lastProjectile?.trace);
     assert.equal(canonicalSimulationJson(state), before);
     assert.equal(preview.length >= 2, true);
+});
+
+test('Loomseed presentation anchor replaces only a trace start and keeps its authoritative flight intact', () => {
+    const layout = computeCombatLayout(844, 390, { top: 0, right: 0, bottom: 0, left: 0 });
+    const root = { x: 220, y: 310, facing: 1 as const };
+    const trace = [{ x: 24, y: 42 }, { x: 55, y: 30 }, { x: 88, y: 48 }];
+    const anchor = loomseedScreenPoint(root, layout, 'animation-sheet');
+    const displayed = traceFromLoomseedOrigin(trace, root, layout, 'animation-sheet');
+
+    assert.equal(anchor.x, root.x + 30 * Math.max(0.1, layout.worldScale * 0.56));
+    assert.equal(anchor.y, root.y - 106 * Math.max(0.1, layout.worldScale * 0.56));
+    assert.equal(displayed[0].x * layout.worldScale + layout.battlefield.x, anchor.x);
+    assert.equal(displayed[0].y * layout.worldScale + layout.battlefield.y, anchor.y);
+    assert.deepEqual(displayed.slice(1), trace.slice(1));
+    assert.deepEqual(trace, [{ x: 24, y: 42 }, { x: 55, y: 30 }, { x: 88, y: 48 }]);
 });
 
 function overlaps(a: { x: number; y: number; width: number; height: number }, b: typeof a): boolean {

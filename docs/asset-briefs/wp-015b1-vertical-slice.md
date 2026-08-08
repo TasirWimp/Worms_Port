@@ -556,9 +556,14 @@ formed-spell stage for one second, then launches the temporary Threadball only
 after the character sheet has completed. A newly defeated unit plays its
 25-frame Unraveling for two seconds in standard motion, remains fully opaque,
 then holds its terminal frame. Reduced motion retains its 250ms compact
-presentation. The static Loomseed-Wizard is retained if any sheet fails to
-load. These controls do not change simulation position, collision, health,
-damage, replay, turn timing, reward eligibility, or result authority.
+presentation. The retained spell frame has its own 256px-root Loomseed center
+at `(158,106)` relative to root `(128,212)`, rather than the static 512px
+master coordinate. Presentation maps the first displayed aim/flight trace point
+to that root-transformed hand anchor; all later trace points, including impact,
+remain authoritative simulation coordinates. The static Loomseed-Wizard is
+retained if any sheet fails to load. These controls do not change simulation
+position, collision, health, damage, replay, turn timing, reward eligibility,
+or result authority.
 
 | State | Frames | Timing | Trigger |
 | --- | ---: | --- | --- |
