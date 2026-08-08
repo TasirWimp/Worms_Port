@@ -52,6 +52,18 @@
     },
     {
       "file": "combat.spec.ts",
+      "title": "V4 opening survey continuously zooms to the player view",
+      "runsOn": ["chromium-390x844"],
+      "reason": "One canonical portrait phone explicitly switches from the matrix's reduced-motion default to verify the three-second continuous opening survey."
+    },
+    {
+      "file": "combat.spec.ts",
+      "title": "V4 actor Stitching cards remain at their Wizard anchors and disappear off-screen",
+      "runsOn": ["chromium-844x390"],
+      "reason": "The compact landscape viewport has sufficient vertical room to prove both world-anchored cards without conflating the intentional narrow-portrait card hiding rule."
+    },
+    {
+      "file": "combat.spec.ts",
       "title": "Threadball preserves the approved cast order before the authoritative trace",
       "runsOn": ["chromium-390x844"],
       "reason": "The asset-bound Threadball spell sequence is frozen on one canonical portrait phone while the unit plan verifies both actors and reduced-motion timing."

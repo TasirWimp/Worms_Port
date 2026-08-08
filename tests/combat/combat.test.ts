@@ -6,7 +6,9 @@ import {
     cameraDirectionToWorldX,
     clampCombatCamera,
     createCombatCamera,
+    createCombatOverviewCamera,
     focusCombatCamera,
+    interpolateCombatCamera,
     panCombatCamera,
     revealCombatCameraPoint
 } from '../../client/src/combat/camera';
@@ -176,11 +178,29 @@ test('V4 camera pans over the doubled arena without changing the phone-sized com
     assert.equal(statuses.loomkeeper, undefined);
 });
 
+test('V4 opening survey continuously contracts from the full arena to the normal player view', () => {
+    const state = createLatestSimulation(0xC0FFEE11, 'wizard');
+    const overview = createCombatOverviewCamera(state);
+    const playerView = createCombatCamera(state);
+    assert.deepEqual(overview, { left: 0, top: -288, width: 2048, height: 1152 });
+    assert.equal(cameraDirectionToWorldX(overview, state.units[1].x), null);
+    assert.deepEqual(interpolateCombatCamera(state, overview, playerView, 0.5), {
+        left: 0, top: -144, width: 1536, height: 864
+    });
+    assert.deepEqual(interpolateCombatCamera(state, overview, playerView, 1), playerView);
+
+    const layout = computeCombatLayout(844, 390, undefined, overview);
+    const statuses = computeActorStatusLayout(layout, state.units);
+    assert.notEqual(statuses.player, undefined);
+    assert.notEqual(statuses.loomkeeper, undefined);
+});
+
 test('historical arenas remain a full-width zero-range camera', () => {
     const historical = createSimulation(0xC0FFEE11, 'wizard', 'nimble-knots-artillery-v3');
     const camera = createCombatCamera(historical);
     assert.deepEqual(camera, { left: 0, top: 0, width: 1024, height: 576 });
     assert.deepEqual(panCombatCamera(historical, camera, 100), camera);
+    assert.deepEqual(createCombatOverviewCamera(historical), camera);
 });
 
 test('Loomseed presentation anchor smoothly offsets a trace while preserving its authoritative impact', () => {

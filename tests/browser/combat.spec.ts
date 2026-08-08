@@ -264,10 +264,28 @@ test('touch movement, Relic selection, aim lock, and explicit Fire stay separate
   expect(presentation.maximumProjectilePoints).toBeGreaterThan(1);
 });
 
-test('V4 follows a live preview edge, recentres a locked aim, and preserves post-lock panning', async ({ page }) => {
+test('V4 opening survey continuously zooms to the player view', async ({ page }, testInfo) => {
+  test.skip(testInfo.project.name !== 'chromium-390x844', 'One phone viewport verifies the timed opening survey.');
+  await page.emulateMedia({ reducedMotion: 'no-preference' });
+  await page.goto('/?combat-preview=1&sideways=off');
+  await expect(page.locator('.combat-ui')).toBeVisible();
   const ui = page.locator('.combat-ui');
+  const startWidth = Number(await ui.getAttribute('data-camera-width'));
+  expect(startWidth).toBeGreaterThan(1_500);
+  await page.waitForTimeout(1_000);
+  const middleWidth = Number(await ui.getAttribute('data-camera-width'));
+  expect(middleWidth).toBeLessThan(startWidth);
+  expect(middleWidth).toBeGreaterThan(1_024);
+  await expect.poll(async () => Number(await ui.getAttribute('data-camera-width')), {
+    timeout: 4_000
+  }).toBe(1_024);
   await expect(ui).toHaveAttribute('data-camera-left', '0.00');
   await expect(page.getByText('← Swipe left to find Loomkeeper')).toBeVisible();
+});
+
+test('V4 follows a live preview edge, preserves a locked aim, and preserves post-lock panning', async ({ page }) => {
+  const ui = page.locator('.combat-ui');
+  await expect(ui).toHaveAttribute('data-camera-left', '0.00');
 
   // The long arc remains an editable preview while the thumb is down. Its
   // terrain endpoint moves into the view at the outgoing edge; no command has
@@ -275,6 +293,7 @@ test('V4 follows a live preview edge, recentres a locked aim, and preserves post
   await pointer(page, '.aim-zone', 'pointerdown', 43, 0.5, 0.55);
   await pointer(page, '.aim-zone', 'pointermove', 43, 0.99, 0.27);
   await expect(ui).toHaveAttribute('data-phase', 'aiming');
+  await expect(ui).toHaveAttribute('data-camera-width', '1024');
   await expect.poll(async () => Number(await ui.getAttribute('data-camera-left'))).toBeGreaterThan(20);
   await expect(ui).not.toHaveAttribute('data-last-command', 'aim');
   const previewCamera = Number(await ui.getAttribute('data-camera-left'));
@@ -296,9 +315,12 @@ test('V4 follows a live preview edge, recentres a locked aim, and preserves post
   await expect(page.locator('.fire-button')).toBeEnabled();
 });
 
-test('V4 actor Stitching cards remain at their Wizard anchors and disappear off-screen', async ({ page }) => {
+test('V4 actor Stitching cards remain at their Wizard anchors and disappear off-screen', async ({ page }, testInfo) => {
+  test.skip(testInfo.project.name !== 'chromium-844x390', 'The compact landscape viewport has room for both world-anchored cards.');
   const ui = page.locator('.combat-ui');
-  await expect(page.locator('.player-status')).toBeVisible();
+  await expect.poll(async () => Number(await ui.getAttribute('data-camera-width')), {
+    timeout: 4_000
+  }).toBe(1_024);
   await expect(page.locator('.loomkeeper-status')).toBeHidden();
 
   await dragBattlefield(page, 47, 0.82, 0.3, 0.08, 0.3);

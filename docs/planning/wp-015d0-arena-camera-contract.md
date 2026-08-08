@@ -7,11 +7,12 @@ tactical terrain, Relic tiers, or asset work.
 ## Purpose
 
 WP-015C made the shared Wizard and textile terrain materially readable. The
-remaining fixed 1024 by 576 arena then makes the 30-percent-larger Wizards read
-as neighbours rather than artillery opponents. V4 establishes a wider world
-while keeping the same phone-readable camera scale: the player views a 1024 by
-576 window of a 2048 by 576 arena and can pan horizontally before and after
-locking aim.
+remaining fixed 1024 by 576 decision view then makes the 30-percent-larger
+Wizards read as neighbours rather than artillery opponents. V4 establishes a
+wider world while keeping that same phone-readable decision scale: an
+opening-only continuous survey first shows the 2048-unit arena, then eases into
+the player's usual 1024 by 576 view. The player can pan horizontally before and
+after locking aim.
 This leaves genuine world space for a later, separately versioned tactical
 arena package; D1 itself adds no obstacles or tactical terrain.
 
@@ -50,35 +51,47 @@ The camera is presentation-only client state. It is never serialized in a
 snapshot or replay, sent to the server, used by the Loomkeeper, or consulted by
 collision, damage, terrain deformation, rewards, or command validation.
 
-The V4 camera window is exactly 1024 by 576 world units, with fixed zoom 1.0:
-there is no pinch, dynamic zoom, zoom button, or AI-specific zoom. Responsive
-CSS only fits that 16:9 window inside the existing safe battlefield rectangle.
-At the accepted 844 by 390 logical Samsung viewport, this preserves the current
-approximately 665 by 374 CSS-pixel arena and its approximately 0.6493 screen
-pixels per world unit. It therefore displays 1/2 of the V4 width at the same
-character/material scale, rather than shrinking the whole 2048-unit arena.
+The normal V4 decision camera is exactly 1024 by 576 world units, with fixed
+zoom 1.0. V4 alone has one non-interactive opening survey: it starts at 2048 by
+1152 world units, centered vertically at `top = -288`, then continuously eases
+to the normal player view over three seconds. The taller survey only reveals
+sky around the existing 576-unit world; it does not add world, collision, or
+terrain space. There is no pinch, manual/dynamic zoom, zoom button, or
+AI-specific zoom. Responsive CSS fits the current 16:9 camera window inside the
+existing safe battlefield rectangle. At the accepted 844 by 390 logical Samsung
+viewport, the normal decision view preserves the current approximately 665 by
+374 CSS-pixel arena and its approximately 0.6493 screen pixels per world unit.
+It therefore displays 1/2 of the V4 width at the same character/material scale,
+rather than shrinking the whole 2048-unit arena.
 
 ```text
 authoritative V4 terrain width = terrain.width * terrain.cellSize = 2048
-cameraWindow.width = 1024
-camera.left in [0, terrainWorldWidth - cameraWindow.width] = [0, 1024]
-camera.top = 0
+normalCamera = { left: 0, top: 0, width: 1024, height: 576 }
+openingSurvey = { left: 0, top: -288, width: 2048, height: 1152 }
+camera.left in [0, terrainWorldWidth - camera.width]
+camera.top = (terrainWorldHeight - camera.height) / 2
 
 screen.x = battlefield.x + (world.x - camera.left) * worldScale
 screen.y = battlefield.y + (world.y - camera.top) * worldScale
-worldScale = min(battlefield.width / cameraWindow.width,
-                 battlefield.height / cameraWindow.height)
+worldScale = min(battlefield.width / camera.width,
+                 battlefield.height / camera.height)
 ```
 
 All D1 camera bounds must derive from the authoritative terrain width and cell
-size plus this named V4 camera-window contract. Renderer, layout, terrain
+size plus this named normal-camera/opening-survey contract. Renderer, layout, terrain
 tiling, actor/status anchors, Loomseed origin, aim dashes, projectile, impact,
 and the clipping mask use the same transform. They must not retain a hidden
 1024-world-width assumption. V1/V2/V3 continue to present their full 1024 by
 576 arena with a zero horizontal camera range.
 
-Camera `left` is clamped after every snapshot, resize, orientation change,
-reconnect, and scene reset. Approved Cloud sprites are a distant clipped
+Camera `left` and the aspect-preserving camera height are clamped after every
+snapshot, resize, orientation change, reconnect, and scene reset. The opening
+survey uses an ease-in-out interpolation for exactly 3000ms; reduced motion
+sets its normal destination immediately. Any deliberate player input (a
+control interaction or a valid battlefield pan) cancels the remaining survey
+and adopts the normal active-Wizard framing immediately. No command,
+simulation event, or AI decision can extend, replay, or otherwise control that
+survey. Approved Cloud sprites are a distant clipped
 presentation layer with horizontal parallax factor 0.25; they never supply
 terrain, collision, or concealment truth. Patch Top and Interior scroll at
 world rate, remain byte-identical runtime copies, and continue to reflect only
@@ -117,6 +130,11 @@ or presentation is pending. It remains available after aim is locked.
    discard the camera pointer without producing a move, aim,
    Relic selection, Fire, or server request.
 
+During the one opening survey, a legal first canvas pointer or any command
+control interaction cancels the remaining survey and uses the normal player
+view before it processes that interaction. It does not turn a tap into a pan or
+change the authoritative state.
+
 The Aim pad remains the sole angle/power input. A player pans toward the
 Loomkeeper until it is visible, adjusts aim with that target in view, and
 releases to lock. While the player is actively dragging Aim, an authoritative
@@ -140,19 +158,22 @@ window and must never intercept a pointer or communicate simulation truth.
 
 ## Automatic framing phases
 
-`focus(unit)` means `camera.left = clamp(unit.x - 512, 0, 1024)`. Normal
-automatic focus uses a 150ms presentation-only ease; reduced motion applies it
-immediately. Projectile follow uses the current displayed authoritative trace
+`focus(unit)` means normal-camera `left = clamp(unit.x - 512, 0, 1024)`. The
+opening survey uses one three-second smooth continuous ease. Later automatic
+caster return uses a 650ms presentation-only smooth continuous ease; reduced
+motion applies either destination immediately. Projectile follow uses the
+current displayed authoritative trace
 point as its focus subject without additional lag, so the visible projectile,
 tail, arc, and impact remain aligned.
 
 | Phase | Camera behavior |
 | --- | --- |
-| New challenge, retry, recovered snapshot, player decision | Focus the active Wizard. The initial player spawn clamps to left 0. |
+| New V4 challenge or retry | Start at the opening survey (both Wizards visible), then continuously reach the normal active-Wizard view after 3000ms. The initial player spawn clamps to left 0. |
+| Recovered snapshot or player decision after the survey | Focus the active Wizard in the normal view. |
 | Player free decision before aim lock | Preserve the player-selected pan. |
 | Aim drag | Preserve the selected pan while its endpoint remains outside the 64-unit edge inset. Once it enters that inset, follow only far enough to keep it 64 units inside the outgoing edge. A direct Loomkeeper-hit preview receives no target snap, lock, or submission. |
 | Aim lock | Preserve the exact camera position reached during the drag. A later aim drag may advance its own edge-follow view; manual horizontal panning remains available. |
-| Accepted Fire and cast | Cancel manual pan and focus the caster before/through the two-second cast. |
+| Accepted Fire and cast | Cancel manual pan and smoothly return to the caster over 650ms before/through the two-second cast. This is never a single-frame jump. |
 | Projectile / impact | Follow the displayed authoritative projectile to the impact; hold impact framing through its presentation. |
 | Next active turn | Focus the new active Wizard. |
 | Loomkeeper turn | Apply the same caster, projectile, impact, and next-turn rules. No player gesture can interfere. |
@@ -187,14 +208,16 @@ schemas. It must not otherwise broaden transport input limits.
 
 ## Required D1 proof
 
-- Pure camera tests cover dimensions, min/max clamp, centre focus, manual drag,
-  actor off-screen status hiding, resize/recovery reset, and logical sideways
-  delta conversion for right, left, off, and real landscape modes.
+- Pure camera tests cover normal and opening-survey dimensions, interpolation,
+  min/max clamp, centre focus, manual drag, actor off-screen status hiding,
+  resize/recovery reset, and logical sideways delta conversion for right, left,
+  off, and real landscape modes.
 - Versioned simulation/protocol/replay tests prove V4's 256 by 72 state and
   deterministic reconstruction while retaining V1/V2/V3 golden bytes.
 - Browser matrix covers every maintained viewport: 360 by 640, 390 by 844,
   412 by 915, 844 by 390, and WebKit 390 by 844. It proves canvas-only pan,
-  protected control routing, aim-lock view preservation, caster focus,
+  protected control routing, continuous opening survey, aim-lock view
+  preservation, continuous caster return,
   player/Loomkeeper projectile follow, reduced motion, pause/reconnect/retry,
   and no page errors or accidental commands.
 - Generate a pinned Ubuntu visual-candidate artifact before a committed visual
@@ -207,7 +230,8 @@ schemas. It must not otherwise broaden transport input limits.
 ## Approved implementation authorization
 
 The project owner approved this exact V4 `2048 by 576`, `256 by 72`, `512/1152`
-spawn, fixed `1024 by 576` camera window, `0..1024` horizontal range,
-swipe-to-find hint, aim-lock-to-preview-endpoint recentering, post-lock panning,
+spawn, opening-only `2048 by 1152` continuous three-second survey, normal fixed
+`1024 by 576` camera window with `0..1024` horizontal range, swipe-to-find
+hint, aim-lock view preservation, post-lock panning, continuous caster return,
 and caster/projectile/impact follow contract. Obstacles and tactical terrain
 remain outside WP-015D.

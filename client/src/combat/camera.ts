@@ -1,8 +1,9 @@
 import type { SimulationActor, SimulationState } from '../../../shared/simulation';
 
 /**
- * The physical combat window stays at the V3 1024 by 576 dimensions. V4 makes
- * the authoritative terrain wider; it does not make mobile controls smaller.
+ * Normal combat returns to the V3 1024 by 576 presentation window. V4 also
+ * permits one bounded opening overview; it never exposes a user-controlled
+ * zoom or changes authoritative world geometry.
  */
 export const COMBAT_CAMERA_WINDOW = Object.freeze({ width: 1024, height: 576 });
 
@@ -17,11 +18,27 @@ export type CombatCamera = Readonly<{
 }>;
 
 export function createCombatCamera(state: Pick<SimulationState, 'terrain'>): CombatCamera {
+    const standard = standardCameraWindow(state);
     return clampCombatCamera(state, {
         left: 0,
         top: 0,
-        width: Math.min(COMBAT_CAMERA_WINDOW.width, worldWidth(state)),
-        height: Math.min(COMBAT_CAMERA_WINDOW.height, worldHeight(state))
+        ...standard
+    });
+}
+
+/**
+ * V4's opening-only survey. It preserves the normal 16:9 presentation aspect
+ * while fitting the full authoritative width, which places the extra vertical
+ * sky around the existing world without extending simulation space.
+ */
+export function createCombatOverviewCamera(state: Pick<SimulationState, 'terrain'>): CombatCamera {
+    const standard = standardCameraWindow(state);
+    const width = Math.max(standard.width, worldWidth(state));
+    return clampCombatCamera(state, {
+        left: 0,
+        top: 0,
+        width,
+        height: width * standard.height / standard.width
     });
 }
 
@@ -29,14 +46,30 @@ export function clampCombatCamera(
     state: Pick<SimulationState, 'terrain'>,
     camera: CombatCamera
 ): CombatCamera {
-    const width = Math.min(COMBAT_CAMERA_WINDOW.width, worldWidth(state));
-    const height = Math.min(COMBAT_CAMERA_WINDOW.height, worldHeight(state));
+    const standard = standardCameraWindow(state);
+    const width = clamp(camera.width, standard.width, Math.max(standard.width, worldWidth(state)));
+    const height = width * standard.height / standard.width;
     return {
         left: clamp(camera.left, 0, Math.max(0, worldWidth(state) - width)),
-        top: 0,
+        top: (worldHeight(state) - height) / 2,
         width,
         height
     };
+}
+
+export function interpolateCombatCamera(
+    state: Pick<SimulationState, 'terrain'>,
+    from: CombatCamera,
+    to: CombatCamera,
+    progress: number
+): CombatCamera {
+    const amount = clamp(progress, 0, 1);
+    return clampCombatCamera(state, {
+        left: from.left + (to.left - from.left) * amount,
+        top: from.top + (to.top - from.top) * amount,
+        width: from.width + (to.width - from.width) * amount,
+        height: from.height + (to.height - from.height) * amount
+    });
 }
 
 export function focusCombatCamera(
@@ -99,6 +132,13 @@ function worldWidth(state: Pick<SimulationState, 'terrain'>): number {
 
 function worldHeight(state: Pick<SimulationState, 'terrain'>): number {
     return state.terrain.height * state.terrain.cellSize;
+}
+
+function standardCameraWindow(state: Pick<SimulationState, 'terrain'>): Pick<CombatCamera, 'width' | 'height'> {
+    return {
+        width: Math.min(COMBAT_CAMERA_WINDOW.width, worldWidth(state)),
+        height: Math.min(COMBAT_CAMERA_WINDOW.height, worldHeight(state))
+    };
 }
 
 function clamp(value: number, minimum: number, maximum: number): number {

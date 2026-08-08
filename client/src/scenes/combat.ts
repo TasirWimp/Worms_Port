@@ -24,7 +24,9 @@ import {
     cameraForActor,
     clampCombatCamera,
     createCombatCamera,
+    createCombatOverviewCamera,
     focusCombatCamera,
+    interpolateCombatCamera,
     panCombatCamera,
     revealCombatCameraPoint,
     type CombatCamera
@@ -39,6 +41,16 @@ import { trajectoryPreview } from '../combat/preview';
 import { CombatRenderer, type CombatVisualPhase } from '../combat/renderer';
 
 const MAX_PRESENTATION_SNAPSHOTS = 32;
+const OPENING_CAMERA_DURATION_MS = 3_000;
+const AUTOMATIC_CAMERA_FOCUS_DURATION_MS = 650;
+
+type CameraTransition = Readonly<{
+    kind: 'opening' | 'focus';
+    from: CombatCamera;
+    to: CombatCamera;
+    startedAt: number;
+    durationMs: number;
+}>;
 
 export default class CombatScene extends Phaser.Scene {
     private args: CombatSceneArgs;
@@ -59,6 +71,8 @@ export default class CombatScene extends Phaser.Scene {
     private transitioning = false;
     private fullscreenUnavailable = false;
     private presentationEpoch = 0;
+    private cameraTransition?: CameraTransition;
+    private cameraAnimationFrame?: number;
     private cameraPointer?: {
         id: number;
         start: { x: number; y: number };
@@ -85,7 +99,7 @@ export default class CombatScene extends Phaser.Scene {
         this.snapshot = structuredClone(this.args.snapshot);
         this.authoritativeSnapshot = structuredClone(this.args.snapshot);
         this.renderState = cloneSimulation(this.snapshot.simulation as SimulationState);
-        this.camera = createCombatCamera(this.renderState);
+        this.camera = createCombatOverviewCamera(this.renderState);
         this.preview = [];
         this.projectileTrace = [];
         this.visualPhase = undefined;
@@ -95,6 +109,7 @@ export default class CombatScene extends Phaser.Scene {
         this.presenting = false;
         this.transitioning = false;
         this.fullscreenUnavailable = false;
+        this.cancelCameraTransition();
         this.presentationEpoch += 1;
     }
 
@@ -107,6 +122,9 @@ export default class CombatScene extends Phaser.Scene {
             onCommand: (command) => void this.submit(command),
             onMovement: (direction, steps) => void this.submitMovement(direction, steps),
             onAimPreview: (aim) => {
+                if (aim && this.controls.input.phase === 'aiming') {
+                    this.completeOpeningCameraIntro();
+                }
                 this.preview = aim
                     ? trajectoryPreview(this.snapshot.simulation as SimulationState, aim)
                     : [];
@@ -173,6 +191,11 @@ export default class CombatScene extends Phaser.Scene {
             this.unsubscribers.push(this.args.onError((message) => this.controls.setMessage(message)));
         }
         this.onResize();
+        this.camera = createCombatOverviewCamera(this.renderState);
+        this.layout = computeCombatLayout(this.scale.width, this.scale.height, readSafeArea(), this.camera);
+        this.controls.setLayout(this.layout);
+        this.render();
+        this.beginOpeningCameraIntro();
     }
 
     public preload(): void {
@@ -181,6 +204,7 @@ export default class CombatScene extends Phaser.Scene {
 
     private async submit(command: SimulationCommand): Promise<void> {
         this.cancelCameraPointer();
+        this.completeOpeningCameraIntro();
         if (this.pendingCommand) return;
         if (this.authoritativeSnapshot.simulation.activeActor !== 'player' ||
             this.authoritativeSnapshot.simulation.phase !== 'awaiting_command') return;
@@ -189,7 +213,7 @@ export default class CombatScene extends Phaser.Scene {
         this.controls.root.dataset.lastCommand = command.type;
         if (command.type === 'fire') {
             this.preview = [];
-            this.focusCameraOnActor('player');
+            this.focusCameraOnActor('player', true);
             this.render();
         }
         try {
@@ -214,6 +238,7 @@ export default class CombatScene extends Phaser.Scene {
 
     private async submitMovement(direction: -1 | 1, requestedSteps: number): Promise<void> {
         this.cancelCameraPointer();
+        this.completeOpeningCameraIntro();
         if (this.pendingCommand || this.presenting) return;
         if (this.authoritativeSnapshot.simulation.activeActor !== 'player' ||
             this.authoritativeSnapshot.simulation.phase !== 'awaiting_command') return;
@@ -338,17 +363,22 @@ export default class CombatScene extends Phaser.Scene {
 
     private onResize(): void {
         this.cancelCameraPointer();
+        const resumeOpeningSurvey = this.cameraTransition?.kind === 'opening';
+        this.cancelCameraTransition();
         const width = this.scale.width;
         const height = this.scale.height;
-        this.camera = cameraForActor(
-            this.renderState,
-            clampCombatCamera(this.renderState, this.camera),
-            this.snapshot.simulation.activeActor
-        );
+        this.camera = resumeOpeningSurvey
+            ? clampCombatCamera(this.renderState, this.camera)
+            : cameraForActor(
+                this.renderState,
+                createCombatCamera(this.renderState),
+                this.snapshot.simulation.activeActor
+            );
         this.layout = computeCombatLayout(width, height, readSafeArea(), this.camera);
         this.controls.setLayout(this.layout);
         this.controls.cancelTransient();
         this.render();
+        if (resumeOpeningSurvey) this.beginOpeningCameraIntro();
     }
 
     private onViewportChange(): void {
@@ -372,12 +402,14 @@ export default class CombatScene extends Phaser.Scene {
 
     private onWindowBlur(): void {
         this.cancelCameraPointer();
+        if (this.cameraTransition?.kind !== 'opening') this.settleCameraAfterInterruption();
         this.controls.cancelTransient();
     }
 
     private onVisibility(): void {
         if (document.hidden) {
             this.cancelCameraPointer();
+            if (this.cameraTransition?.kind !== 'opening') this.settleCameraAfterInterruption();
             this.controls.cancelTransient();
         }
     }
@@ -411,6 +443,7 @@ export default class CombatScene extends Phaser.Scene {
         this.controls.root.dataset.previewPoints = String(this.preview.length);
         this.controls.root.dataset.projectilePoints = String(this.projectileTrace.length);
         this.controls.root.dataset.cameraLeft = this.camera.left.toFixed(2);
+        this.controls.root.dataset.cameraTop = this.camera.top.toFixed(2);
         this.controls.root.dataset.cameraWidth = String(this.camera.width);
         this.controls.setLayout(this.layout);
         this.controls.setUnitPositions(this.renderState.units);
@@ -439,6 +472,7 @@ export default class CombatScene extends Phaser.Scene {
         this.game.canvas.removeEventListener('pointerup', this.onCameraPointerEnd);
         this.game.canvas.removeEventListener('pointercancel', this.onCameraPointerEnd);
         this.cancelCameraPointer();
+        this.cancelCameraTransition();
         for (const unsubscribe of this.unsubscribers.splice(0)) unsubscribe();
         this.presentationEpoch += 1;
         this.snapshotQueue.splice(0);
@@ -492,7 +526,7 @@ export default class CombatScene extends Phaser.Scene {
                 await this.waitForPresentation(step.durationMs, epoch);
             } else if (step.kind === 'cast-charge') {
                 this.renderState = cloneSimulation(working);
-                this.focusCameraOnActor(step.actor);
+                this.focusCameraOnActor(step.actor, true);
                 this.preview = [];
                 this.projectileTrace = [];
                 this.visualPhase = {
@@ -570,6 +604,7 @@ export default class CombatScene extends Phaser.Scene {
         epoch: number,
         reducedMotion: boolean
     ): Promise<void> {
+        this.cancelCameraTransition();
         const frames = reducedMotion ? 3 : Math.min(12, Math.max(6, step.trace.length));
         this.renderState = cloneSimulation(working);
         for (let frame = 0; frame < frames; frame += 1) {
@@ -639,12 +674,13 @@ export default class CombatScene extends Phaser.Scene {
             ? trajectoryPreview(this.renderState, this.controls.input.lockedAim)
             : [];
         if (!this.controls.input.lockedAim) {
-            this.focusCameraOnActor(this.snapshot.simulation.activeActor);
+            this.focusCameraOnActor(this.snapshot.simulation.activeActor, true);
         }
         this.render();
     }
 
     private resetForChallenge(next: ChallengeSnapshot): void {
+        this.cancelCameraTransition();
         this.presentationEpoch += 1;
         this.snapshotQueue.splice(0);
         this.presenting = false;
@@ -653,7 +689,7 @@ export default class CombatScene extends Phaser.Scene {
         this.snapshot = structuredClone(next);
         this.authoritativeSnapshot = structuredClone(next);
         this.renderState = cloneSimulation(next.simulation as SimulationState);
-        this.camera = cameraForActor(this.renderState, this.camera, next.simulation.activeActor);
+        this.camera = createCombatOverviewCamera(this.renderState);
         this.preview = [];
         this.projectileTrace = [];
         this.visualPhase = undefined;
@@ -663,9 +699,11 @@ export default class CombatScene extends Phaser.Scene {
         this.controls.update(this.snapshot);
         this.controls.clearAimLock();
         this.render();
+        this.beginOpeningCameraIntro();
     }
 
     private interruptPresentation(): void {
+        this.cancelCameraTransition();
         this.presentationEpoch += 1;
         this.snapshotQueue.splice(0);
         this.presenting = false;
@@ -690,13 +728,117 @@ export default class CombatScene extends Phaser.Scene {
         this.setCamera(revealCombatCameraPoint(this.renderState, this.camera, endpoint.x));
     }
 
-    private focusCameraOnActor(actor: SimulationActor): void {
-        this.setCamera(cameraForActor(this.renderState, this.camera, actor));
+    private beginOpeningCameraIntro(): void {
+        const destination = cameraForActor(
+            this.renderState,
+            createCombatCamera(this.renderState),
+            this.snapshot.simulation.activeActor
+        );
+        if (this.camera.width <= destination.width) {
+            this.setCamera(destination);
+            return;
+        }
+        this.transitionCameraTo(destination, OPENING_CAMERA_DURATION_MS, 'opening');
+    }
+
+    private completeOpeningCameraIntro(): void {
+        if (this.cameraTransition?.kind !== 'opening') return;
+        this.cancelCameraTransition();
+        this.setCamera(cameraForActor(
+            this.renderState,
+            createCombatCamera(this.renderState),
+            this.snapshot.simulation.activeActor
+        ));
+    }
+
+    private focusCameraOnActor(actor: SimulationActor, continuous = false): void {
+        const target = cameraForActor(
+            this.renderState,
+            createCombatCamera(this.renderState),
+            actor
+        );
+        if (continuous) {
+            this.transitionCameraTo(target, AUTOMATIC_CAMERA_FOCUS_DURATION_MS, 'focus');
+        } else {
+            this.cancelCameraTransition();
+            this.setCamera(target);
+        }
+    }
+
+    private settleCameraAfterInterruption(): void {
+        this.cancelCameraTransition();
+        this.setCamera(cameraForActor(
+            this.renderState,
+            createCombatCamera(this.renderState),
+            this.snapshot.simulation.activeActor
+        ));
     }
 
     private setCamera(camera: CombatCamera): void {
+        const previous = this.camera;
         this.camera = clampCombatCamera(this.renderState, camera);
-        if (this.layout) this.layout = { ...this.layout, camera: this.camera };
+        if (!this.layout) return;
+        if (previous.width !== this.camera.width || previous.height !== this.camera.height) {
+            this.layout = computeCombatLayout(
+                this.scale.width,
+                this.scale.height,
+                readSafeArea(),
+                this.camera
+            );
+            return;
+        }
+        this.layout = { ...this.layout, camera: this.camera };
+    }
+
+    private transitionCameraTo(
+        target: CombatCamera,
+        durationMs: number,
+        kind: CameraTransition['kind']
+    ): void {
+        this.cancelCameraTransition();
+        const destination = clampCombatCamera(this.renderState, target);
+        const from = this.camera;
+        if (sameCamera(from, destination) ||
+            window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+            this.setCamera(destination);
+            this.render();
+            return;
+        }
+        this.cameraTransition = {
+            kind,
+            from,
+            to: destination,
+            startedAt: performance.now(),
+            durationMs
+        };
+        const advance = (now: number) => {
+            const transition = this.cameraTransition;
+            if (!transition || !this.scene.isActive()) return;
+            const progress = Math.min(1, Math.max(0, (now - transition.startedAt) / transition.durationMs));
+            const eased = progress * progress * (3 - 2 * progress);
+            this.setCamera(interpolateCombatCamera(
+                this.renderState,
+                transition.from,
+                transition.to,
+                eased
+            ));
+            this.render();
+            if (progress < 1) {
+                this.cameraAnimationFrame = window.requestAnimationFrame(advance);
+            } else {
+                this.cameraTransition = undefined;
+                this.cameraAnimationFrame = undefined;
+            }
+        };
+        this.cameraAnimationFrame = window.requestAnimationFrame(advance);
+    }
+
+    private cancelCameraTransition(): void {
+        if (this.cameraAnimationFrame !== undefined) {
+            window.cancelAnimationFrame(this.cameraAnimationFrame);
+        }
+        this.cameraAnimationFrame = undefined;
+        this.cameraTransition = undefined;
     }
 
     private updateCameraHint(): void {
@@ -713,6 +855,7 @@ export default class CombatScene extends Phaser.Scene {
 
     private onCameraPointerDown(event: PointerEvent): void {
         if (event.button > 0 || !this.canPanCamera() || !this.layout) return;
+        this.completeOpeningCameraIntro();
         const point = this.cameraPoint(event);
         const field = this.layout.battlefield;
         if (point.x < field.x || point.x > field.x + field.width ||
@@ -737,6 +880,7 @@ export default class CombatScene extends Phaser.Scene {
             pointer.panning = true;
         }
         event.preventDefault();
+        this.cancelCameraTransition();
         this.setCamera(panCombatCamera(
             this.renderState,
             pointer.camera,
@@ -806,4 +950,9 @@ function readSafeArea(): SafeAreaInsets {
 function cssPixels(value: string): number {
     const parsed = Number.parseFloat(value);
     return Number.isFinite(parsed) ? Math.max(0, parsed) : 0;
+}
+
+function sameCamera(left: CombatCamera, right: CombatCamera): boolean {
+    return left.left === right.left && left.top === right.top &&
+        left.width === right.width && left.height === right.height;
 }
