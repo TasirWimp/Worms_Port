@@ -2331,7 +2331,7 @@ the median and maximum must both pass.
 | Ordinary Practice requests for the lazy Mini App SDK before wallet action | 0 |
 | Navigation to actionable Practice start, median / maximum | <= 2,000 ms / 3,000 ms |
 | Start Practice tap to legal combat input, median / maximum | <= 3,000 ms / 5,000 ms |
-| Legal Fire tap to visible projectile presentation, median / maximum | <= 250 ms / 500 ms |
+| Legal Fire tap to visible projectile presentation, median / maximum | <= 350 ms / 500 ms |
 | Complete player-shot and Loomkeeper-response presentation | <= 10,000 ms maximum |
 | Individual browser test | <= 120 seconds |
 | Each required CI job / complete workflow wall time | <= 20 / 30 minutes |

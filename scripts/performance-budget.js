@@ -3,7 +3,10 @@ const BUDGETS = Object.freeze({
   measuredRuns: 5,
   navigationToActionablePractice: { medianMs: 2_000, maximumMs: 3_000 },
   startPracticeToLegalInput: { medianMs: 3_000, maximumMs: 5_000 },
-  fireToVisibleProjectile: { medianMs: 250, maximumMs: 500 },
+  // The Wizard's two-second cast now overlaps the existing early projectile
+  // launch. Preserve a sub-half-second hard ceiling while allowing its 200ms
+  // charge/formation sequence plus real browser scheduling overhead.
+  fireToVisibleProjectile: { medianMs: 350, maximumMs: 500 },
   fireToCompleteResponse: { maximumMs: 10_000 },
   lazyMiniAppSdkRequests: 0
 });

@@ -204,7 +204,15 @@ function installTimingRecorder(): void {
         movement.getAttribute('aria-disabled') !== 'true') {
       state.legalInputAt = performance.now();
     }
-    if (state.fireTapAt !== null && combat) {
+    if (state.fireTapAt !== null) {
+      // A deterministic exchange can end the Clash. The terminal result is as
+      // complete a response as a returned player turn, and is reached only
+      // after the same authoritative presentation finishes.
+      if (document.querySelector('.result-shell') && state.responseAt === null) {
+        state.responseAt = performance.now();
+        return;
+      }
+      if (!combat) return;
       if (combat.dataset.presentation === 'player-projectile' &&
           Number(combat.dataset.projectilePoints || 0) > 1 && state.projectileAt === null) {
         state.projectileAt = performance.now();

@@ -65,6 +65,9 @@ export const WIZARD_ANIMATION_KEYS = {
     unravel: 'wp015c-wizard-unravel'
 } as const;
 
+export const WIZARD_CAST_DURATION_MS = 2_000;
+export const WIZARD_UNRAVEL_DURATION_MS = 2_000;
+
 type WizardAnimationDefinition = {
     key: string;
     texture: string;
@@ -117,8 +120,8 @@ export function createApprovedWizardAnimations(scene: Phaser.Scene): boolean {
         { key: WIZARD_ANIMATION_KEYS.walk, texture: APPROVED_COMBAT_ASSETS.wizardWalk.key, frameRate: 18, repeat: -1 },
         // The final eight source frames include an in-frame projectile. The authoritative
         // projectile renderer owns flight, so the character pose stops just before it.
-        { key: WIZARD_ANIMATION_KEYS.cast, texture: APPROVED_COMBAT_ASSETS.wizardCast.key, frameRate: 34, end: 16 },
-        { key: WIZARD_ANIMATION_KEYS.unravel, texture: APPROVED_COMBAT_ASSETS.wizardUnravel.key, frameRate: 30 }
+        { key: WIZARD_ANIMATION_KEYS.cast, texture: APPROVED_COMBAT_ASSETS.wizardCast.key, frameRate: 8.5, end: 16 },
+        { key: WIZARD_ANIMATION_KEYS.unravel, texture: APPROVED_COMBAT_ASSETS.wizardUnravel.key, frameRate: 12.5 }
     ];
     for (const animation of animations) {
         if (scene.anims.exists(animation.key)) continue;

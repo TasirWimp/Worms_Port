@@ -410,7 +410,9 @@ async function installPresentationGate(page: Page): Promise<void> {
     } = { target: null };
     window.setTimeout = ((handler: TimerHandler, timeout = 0, ...args: unknown[]) => {
       const phase = document.querySelector<HTMLElement>('.combat-ui')?.dataset.presentation;
-      if (phase && phase === state.target && timeout <= 1_000 && !state.blocked) {
+      // Standard-motion casting and Unraveling can intentionally hold a
+      // presentation phase for up to two seconds.
+      if (phase && phase === state.target && timeout <= 2_500 && !state.blocked) {
         document.documentElement.dataset.visualCheckpoint = phase;
         state.blocked = () => nativeSetTimeout(handler, 0, ...args);
         return 0;

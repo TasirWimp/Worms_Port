@@ -46,6 +46,7 @@ export type CombatVisualPhase =
         relicId: RelicId;
         trace: { x: number; y: number }[];
         unraveling: SimulationActor[];
+        casterFinishing: boolean;
       };
 
 const WIZARD_ROOT_ORIGIN_Y = 451 / 512;
@@ -247,7 +248,7 @@ export class CombatRenderer {
             sprite.setPosition(root.x, root.y)
                 .setScale(scale)
                 .setFlipX(unit.facing < 0)
-                .setAlpha(unit.alive ? 1 : 0.35)
+                .setAlpha(1)
                 .setVisible(true);
             this.updateWizardAnimation(sprite, unit, visualPhase);
         }
@@ -278,6 +279,8 @@ export class CombatRenderer {
             if (visualPhase.kind === 'movement') return WIZARD_ANIMATION_KEYS.walk;
             if (visualPhase.kind === 'cast-charge' || visualPhase.kind === 'cast-formation' ||
                 visualPhase.kind === 'projectile') return WIZARD_ANIMATION_KEYS.cast;
+            if (visualPhase.kind === 'impact' && visualPhase.relicId === 'threadball' &&
+                visualPhase.casterFinishing) return WIZARD_ANIMATION_KEYS.cast;
         }
         return WIZARD_ANIMATION_KEYS.idle;
     }

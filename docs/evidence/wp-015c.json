@@ -173,6 +173,26 @@
       "command": "npm run test:browser:combat && npm run test:browser:matrix",
       "status": "pass",
       "detail": "Focused combat passed all 50 applicable Chromium/WebKit phone results. After the terminal Unraveling-frame correction, the full zero-retry matrix passed 95 results in 5.9 minutes with 60 reviewed policy skips. Non-Linux visual comparison was explicitly omitted; pinned Ubuntu CI remains the baseline authority."
+    },
+    {
+      "command": "WP-015C standard-motion animation timing refinement",
+      "status": "pass",
+      "detail": "Owner-requested client-only adjustment: the 17 selected Loomseed-spell frames run at 8.5fps for 2,000ms and continue over the existing impact hold; the 25-frame Unraveling sheet runs at 12.5fps for 2,000ms, stays fully opaque, and retains its final frame. Reduced motion remains compact. The exact 200ms charge/formation remains unchanged, but measured browser scheduling made the former 250ms median projectile-visibility target unrealistically narrower than the approved presentation; the documented median target is therefore 350ms while the original 500ms hard cap remains. No asset byte, simulation, collision, replay, reward, or authoritative timing changed."
+    },
+    {
+      "command": "npm run test:browser:performance",
+      "status": "pass",
+      "detail": "Passed five measured Chromium 390x844 samples after correcting the probe to recognize a terminal result as a completed authoritative response. Fire-to-visible-projectile median was 323.3ms (350ms median / 500ms maximum budget); complete response median was 5,413.3ms (5,501.9ms maximum), with no page/console errors or lazy SDK requests."
+    },
+    {
+      "command": "npm run test:browser:matrix",
+      "status": "pass",
+      "detail": "Passed 95 zero-retry Chromium/WebKit mobile results in 6.1 minutes with 60 reviewed policy skips after the two-second visual checkpoint allowance. Windows visual pixel comparison remained omitted; pinned Ubuntu CI is still authoritative."
+    },
+    {
+      "command": "npm run check:bundle-budget",
+      "status": "pass",
+      "detail": "After the timing refinement, the largest initial JavaScript chunk is 1,449,851 / 1,500,000 bytes and initial JavaScript plus CSS gzip is 402,050 / 430,000 bytes."
     }
   ],
   "reviews": [
@@ -181,6 +201,12 @@
       "reviewer": "Jens Bernhardt",
       "decision": "finding",
       "detail": "Real-phone WP-015C acceptance found that the completed solid trajectory line overlaid the cast/impact presentation, while Needlepoint and Spoolburst lacked a discrete in-flight visual. The scoped repair removes the completed trajectory line, retains the dashed aim guide, and renders compact procedural projectile/impact visuals for the two unapproved Relic families. The focused re-check then found that Threadball retained one short gold line below the first projectile: its intended blue tail was overdrawn by a gold segment. The final in-scope correction removes that segment and narrows the source-free effect grammar to a blue-only short tail. The next real-phone check found that the large shared Wizard's visible upper body is outside the v1/v2 lower-body direct-hit target. The project owner authorized the bounded v3 correction: new challenges use a fixed body profile (`halfWidth: 32`, `top: 85`, `bottom: 13`) for direct projectile contact; v1/v2 replay behavior remains immutable. The project owner subsequently tested the hitbox on phone and accepted it; the focused Ubuntu replacement was explicitly waived."
+    },
+    {
+      "role": "project owner",
+      "reviewer": "Jens Bernhardt",
+      "decision": "accepted; presentation timing refinement requested",
+      "detail": "After deploying the exact four-sheet implementation to Render and testing on phone, the owner accepted the animation integration and requested a standard-motion timing refinement only: spell casting should play for about two seconds, Unraveling should play for two seconds, and the defeated Wizard must remain fully opaque. The existing early projectile launch, reduced-motion compact path, source pixels, collision, simulation, replay, rewards, and authority remain unchanged."
     },
     {
       "role": "project owner",
