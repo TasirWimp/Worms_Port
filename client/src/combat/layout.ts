@@ -88,7 +88,6 @@ export function computeActorStatusLayout(
 ): { player?: Rect; loomkeeper?: Rect } {
     const width = Math.min(108, Math.max(78, layout.battlefield.width * 0.16));
     const height = 32;
-    const edge = 6;
     const actorOffset = Math.max(
         36,
         (SIM_RULES.actorRadius + WIZARD_PRESENTATION_TOP_IN_WORLD) * layout.worldScale + 12
@@ -96,33 +95,21 @@ export function computeActorStatusLayout(
     const field = layout.battlefield;
     const rectFor = (unit: SimulationUnit): Rect | undefined => {
         const worldX = unit.x - layout.camera.left;
-        if (worldX < -SIM_RULES.actorRadius || worldX > layout.camera.width + SIM_RULES.actorRadius) {
-            return undefined;
-        }
-        return {
-        x: clamp(field.x + worldX * layout.worldScale - width / 2, field.x + edge, field.x + field.width - width - edge),
-        y: clamp(field.y + unit.y * layout.worldScale - actorOffset - height, field.y + edge, field.y + field.height - height - edge),
-        width,
-        height
+        const status = {
+            x: field.x + worldX * layout.worldScale - width / 2,
+            y: field.y + unit.y * layout.worldScale - actorOffset - height,
+            width,
+            height
         };
+        // Never clamp a card to the viewport edge: that makes it look detached
+        // from its Wizard while the camera moves. Hide it once its true anchor
+        // is no longer fully in the visible battlefield.
+        return status.x < field.x || status.x + status.width > field.x + field.width ||
+            status.y < field.y || status.y + status.height > field.y + field.height
+            ? undefined
+            : status;
     };
     const player = rectFor(units[0]);
     const loomkeeper = rectFor(units[1]);
-    if (player && loomkeeper && overlaps(player, loomkeeper)) {
-        player.x = field.x + edge;
-        loomkeeper.x = field.x + field.width - width - edge;
-        const sharedY = Math.min(player.y, loomkeeper.y);
-        player.y = sharedY;
-        loomkeeper.y = sharedY;
-    }
     return { player, loomkeeper };
-}
-
-function clamp(value: number, minimum: number, maximum: number): number {
-    return Math.min(Math.max(value, minimum), Math.max(minimum, maximum));
-}
-
-function overlaps(a: Rect, b: Rect): boolean {
-    return a.x < b.x + b.width && a.x + a.width > b.x &&
-        a.y < b.y + b.height && a.y + a.height > b.y;
 }

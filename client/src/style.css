@@ -427,6 +427,10 @@ input {
     pointer-events: none;
 }
 
+.combat-unit-status[hidden] {
+    display: none;
+}
+
 .combat-camera-hint {
     position: absolute;
     z-index: 4;

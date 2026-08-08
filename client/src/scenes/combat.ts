@@ -4,6 +4,7 @@ import type { ChallengeResult, ChallengeSnapshot } from '../../../shared/protoco
 import {
     LATEST_RULESET_ID,
     cloneSimulation,
+    directProjectileHitboxFor,
     type SimulationCommand,
     type SimulationActor,
     type SimulationState
@@ -26,6 +27,7 @@ import {
     createCombatCamera,
     focusCombatCamera,
     panCombatCamera,
+    revealCombatCameraPoint,
     type CombatCamera
 } from '../combat/camera';
 import { computeCombatLayout, type CombatLayout } from '../combat/layout';
@@ -109,6 +111,9 @@ export default class CombatScene extends Phaser.Scene {
                 this.preview = aim
                     ? trajectoryPreview(this.snapshot.simulation as SimulationState, aim)
                     : [];
+                if (aim && this.controls.input.phase === 'aiming') {
+                    this.followCameraForAimPreview();
+                }
                 this.render();
             },
             onAimLocked: (aim) => this.centerCameraOnAim(aim),
@@ -691,6 +696,27 @@ export default class CombatScene extends Phaser.Scene {
         if (!endpoint) return;
         this.setCamera(focusCombatCamera(this.renderState, this.camera, endpoint.x));
         this.render();
+    }
+
+    private followCameraForAimPreview(): void {
+        const endpoint = this.preview.at(-1);
+        if (!endpoint) return;
+        // A direct authoritative hit preview deserves target framing, but it
+        // remains only a preview: the player still owns release, re-aim, and
+        // the later Fire command.
+        if (this.previewDirectlyHitsLoomkeeper(endpoint)) {
+            this.setCamera(focusCombatCamera(this.renderState, this.camera, endpoint.x));
+            return;
+        }
+        this.setCamera(revealCombatCameraPoint(this.renderState, this.camera, endpoint.x));
+    }
+
+    private previewDirectlyHitsLoomkeeper(endpoint: { x: number; y: number }): boolean {
+        const target = this.renderState.units[1];
+        if (!target?.alive) return false;
+        const hitbox = directProjectileHitboxFor(this.renderState.rulesetId);
+        return Math.abs(target.x - endpoint.x) <= hitbox.halfWidth &&
+            endpoint.y >= target.y - hitbox.top && endpoint.y <= target.y + hitbox.bottom;
     }
 
     private focusCameraOnActor(actor: SimulationActor): void {

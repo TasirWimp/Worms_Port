@@ -52,6 +52,25 @@ export function panCombatCamera(
     return clampCombatCamera(state, { ...camera, left: camera.left + deltaWorldX });
 }
 
+/**
+ * Keeps an off-screen predicted impact just inside the view while a player is
+ * still dragging the Aim pad. This is presentation navigation only: it never
+ * changes the aim, simulation, or target selection.
+ */
+export function revealCombatCameraPoint(
+    state: Pick<SimulationState, 'terrain'>,
+    camera: CombatCamera,
+    worldX: number
+): CombatCamera {
+    if (worldX > camera.left + camera.width) {
+        return clampCombatCamera(state, { ...camera, left: worldX - camera.width });
+    }
+    if (worldX < camera.left) {
+        return clampCombatCamera(state, { ...camera, left: worldX });
+    }
+    return clampCombatCamera(state, camera);
+}
+
 export function cameraForActor(
     state: Pick<SimulationState, 'terrain' | 'units'>,
     camera: CombatCamera,

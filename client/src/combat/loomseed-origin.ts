@@ -50,8 +50,11 @@ export function traceFromLoomseedOrigin(
     if (trace.length === 0 || layout.worldScale <= 0) return trace.map((point) => ({ ...point }));
     const anchor = loomseedScreenPoint(root, layout, geometry);
     const origin = {
-        x: (anchor.x - layout.battlefield.x) / layout.worldScale,
-        y: (anchor.y - layout.battlefield.y) / layout.worldScale
+        // `anchor` is in screen space. Restore the camera origin before
+        // comparing it with authoritative world-space trace samples; omitting
+        // this was invisible at camera.left = 0 but shifted a panned preview.
+        x: (anchor.x - layout.battlefield.x) / layout.worldScale + layout.camera.left,
+        y: (anchor.y - layout.battlefield.y) / layout.worldScale + layout.camera.top
     };
     if (trace.length === 1) return [origin];
     const delta = { x: origin.x - trace[0].x, y: origin.y - trace[0].y };

@@ -264,15 +264,27 @@ test('touch movement, Relic selection, aim lock, and explicit Fire stay separate
   expect(presentation.maximumProjectilePoints).toBeGreaterThan(1);
 });
 
-test('V4 pans to the Loomkeeper, recentres a locked aim, and preserves post-lock panning', async ({ page }) => {
+test('V4 follows a live preview edge, recentres a locked aim, and preserves post-lock panning', async ({ page }) => {
   const ui = page.locator('.combat-ui');
   await expect(ui).toHaveAttribute('data-camera-left', '0.00');
   await expect(page.getByText('← Swipe left to find Loomkeeper')).toBeVisible();
 
+  // The long arc remains an editable preview while the thumb is down. Its
+  // terrain endpoint moves into the view at the outgoing edge; no command has
+  // been submitted yet.
+  await pointer(page, '.aim-zone', 'pointerdown', 43, 0.5, 0.55);
+  await pointer(page, '.aim-zone', 'pointermove', 43, 0.99, 0.27);
+  await expect(ui).toHaveAttribute('data-phase', 'aiming');
+  await expect.poll(async () => Number(await ui.getAttribute('data-camera-left'))).toBeGreaterThan(20);
+  await expect(ui).not.toHaveAttribute('data-last-command', 'aim');
+  await pointer(page, '.aim-zone', 'pointerup', 43, 0.99, 0.27);
+  await expect(ui).toHaveAttribute('data-phase', 'aim_locked');
+  await expect.poll(async () => Number(await ui.getAttribute('data-camera-left'))).toBeGreaterThan(400);
+
   await dragBattlefield(page, 44, 0.74, 0.22, 0.35, 0.22);
   await expect.poll(async () => Number(await ui.getAttribute('data-camera-left'))).toBeGreaterThan(120);
   await expect(page.locator('.combat-camera-hint')).toBeHidden();
-  await expect(ui).not.toHaveAttribute('data-last-command', /move|aim|fire/);
+  await expect(ui).toHaveAttribute('data-last-command', 'aim');
 
   await dragPad(page, '.aim-zone', 45, 0.3, -0.34);
   await expect(ui).toHaveAttribute('data-phase', 'aim_locked');
@@ -281,6 +293,17 @@ test('V4 pans to the Loomkeeper, recentres a locked aim, and preserves post-lock
   await expect.poll(async () => Number(await ui.getAttribute('data-camera-left'))).not.toBe(lockedCamera);
   await expect(ui).toHaveAttribute('data-phase', 'aim_locked');
   await expect(page.locator('.fire-button')).toBeEnabled();
+});
+
+test('V4 actor Stitching cards remain at their Wizard anchors and disappear off-screen', async ({ page }) => {
+  const ui = page.locator('.combat-ui');
+  await expect(page.locator('.player-status')).toBeVisible();
+  await expect(page.locator('.loomkeeper-status')).toBeHidden();
+
+  await dragBattlefield(page, 47, 0.82, 0.3, 0.08, 0.3);
+  await expect.poll(async () => Number(await ui.getAttribute('data-camera-left'))).toBeGreaterThan(650);
+  await expect(page.locator('.player-status')).toBeHidden();
+  await expect(page.locator('.loomkeeper-status')).toBeVisible();
 });
 
 test('Threadball preserves the approved cast order before the authoritative trace', async ({ page }, testInfo) => {
