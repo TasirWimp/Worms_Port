@@ -15,6 +15,34 @@ const expectedRuntimeInventory = Object.freeze([
     bytes: 196974
   },
   {
+    id: 'knotkin-wizard-autosprite-idle-owned-original-master-v1',
+    file: 'assets/masters/characters/knotkin/wizard/animation/knotkin-wizard-autosprite-idle-master-v1.png',
+    sha256: '0CC0EF8ECED7B3BC24ED1AA678F164BFBB28554E8EC8E58745472F07EB447471',
+    runtime_path: 'assets/product/characters/knotkin/wizard/animation/idle-v1.png',
+    bytes: 156855
+  },
+  {
+    id: 'knotkin-wizard-autosprite-walk-owned-original-master-v1',
+    file: 'assets/masters/characters/knotkin/wizard/animation/knotkin-wizard-autosprite-walk-master-v1.png',
+    sha256: '5FD4FCE8129D17D45D6EACD0434D8C823400398D79D2DF780924D7C60B0C00B7',
+    runtime_path: 'assets/product/characters/knotkin/wizard/animation/walk-v1.png',
+    bytes: 202558
+  },
+  {
+    id: 'knotkin-wizard-autosprite-loomseed-spell-owned-original-master-v1',
+    file: 'assets/masters/characters/knotkin/wizard/animation/knotkin-wizard-autosprite-loomseed-spell-master-v1.png',
+    sha256: '0205356C56A51EA289B1BD4F911658EBD4BA4DE090F1664F1B8DF8ACE0C5A0F4',
+    runtime_path: 'assets/product/characters/knotkin/wizard/animation/loomseed-spell-v1.png',
+    bytes: 182204
+  },
+  {
+    id: 'knotkin-wizard-autosprite-unravel-owned-original-master-v1',
+    file: 'assets/masters/characters/knotkin/wizard/animation/knotkin-wizard-autosprite-unravel-master-v1.png',
+    sha256: 'BED622A33F7308C498661862F81351A5D1698F2BD52A6D803D3EAC5999D88F1D',
+    runtime_path: 'assets/product/characters/knotkin/wizard/animation/unravel-v1.png',
+    bytes: 253535
+  },
+  {
     id: 'relic-threadball-cast-formation-start-presentation-owned-original-master-v1',
     file: 'assets/masters/relics/threadball/relic-threadball-cast-formation-start-presentation-master-v1.png',
     sha256: 'C189A2060BE92DFAE75B8FDDB2F6038DBB209808B764197C9F93473A8908FDD0',
@@ -73,7 +101,7 @@ function validateB3cRuntimeInventory(document, root = repoRoot) {
   const expectedById = new Map(expectedRuntimeInventory.map((item) => [item.id, item]));
 
   if (runtimeAssets.length !== expectedRuntimeInventory.length) {
-    errors.push(`expected exactly ${expectedRuntimeInventory.length} B3C.1 runtime assets, found ${runtimeAssets.length}.`);
+    errors.push(`expected exactly ${expectedRuntimeInventory.length} approved WP-015C runtime assets, found ${runtimeAssets.length}.`);
   }
 
   for (const asset of runtimeAssets) {
@@ -84,7 +112,7 @@ function validateB3cRuntimeInventory(document, root = repoRoot) {
     }
     for (const field of ['file', 'sha256', 'runtime_path']) {
       if (asset[field] !== expected[field]) {
-        errors.push(`${asset.id}: ${field} must remain the frozen B3C.1 value.`);
+        errors.push(`${asset.id}: ${field} must remain the approved WP-015C value.`);
       }
     }
     if (asset.file.startsWith('assets/product/')) {
@@ -106,15 +134,15 @@ function validateB3cRuntimeInventory(document, root = repoRoot) {
 
   for (const expected of expectedRuntimeInventory) {
     const asset = runtimeAssets.find((candidate) => candidate.id === expected.id);
-    if (!asset) errors.push(`${expected.id}: required B3C.1 runtime asset is missing.`);
+    if (!asset) errors.push(`${expected.id}: required approved WP-015C runtime asset is missing.`);
   }
 
   const totalBytes = inventoryTotalBytes();
-  if (totalBytes !== 607427) {
-    errors.push(`B3C.1 runtime source total must remain 607427 bytes, received ${totalBytes}.`);
+  if (totalBytes !== 1402579) {
+    errors.push(`WP-015C runtime source total must remain 1402579 bytes, received ${totalBytes}.`);
   }
   if (totalBytes > initialMediaByteCeiling) {
-    errors.push(`B3C.1 runtime source total exceeds ${initialMediaByteCeiling} bytes.`);
+    errors.push(`WP-015C runtime source total exceeds ${initialMediaByteCeiling} bytes.`);
   }
 
   return errors;
@@ -124,12 +152,12 @@ function main() {
   const document = JSON.parse(fs.readFileSync(manifestPath, 'utf8'));
   const errors = validateB3cRuntimeInventory(document);
   if (errors.length > 0) {
-    console.error('B3C.1 runtime inventory check failed:');
+    console.error('WP-015C runtime inventory check failed:');
     for (const error of errors) console.error(`- ${error}`);
     process.exitCode = 1;
     return;
   }
-  console.log(`B3C.1 runtime inventory passed (${expectedRuntimeInventory.length} assets, ${inventoryTotalBytes()} source bytes).`);
+  console.log(`WP-015C runtime inventory passed (${expectedRuntimeInventory.length} assets, ${inventoryTotalBytes()} source bytes).`);
 }
 
 if (require.main === module) main();

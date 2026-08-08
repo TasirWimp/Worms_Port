@@ -16,11 +16,11 @@ const repoRoot = path.resolve(__dirname, '..', '..');
 const manifestPath = path.join(repoRoot, 'legal', 'asset-manifest.json');
 const assetRoot = path.join(repoRoot, 'assets');
 
-test('B3C.1 closes the runtime inventory to seven exact source masters below budget', () => {
+test('WP-015C closes the runtime inventory to eleven exact source masters below budget', () => {
   const manifest = JSON.parse(fs.readFileSync(manifestPath, 'utf8'));
   assert.deepEqual(validateB3cRuntimeInventory(manifest), []);
-  assert.equal(expectedRuntimeInventory.length, 7);
-  assert.equal(inventoryTotalBytes(), 607427);
+  assert.equal(expectedRuntimeInventory.length, 11);
+  assert.equal(inventoryTotalBytes(), 1402579);
   assert.ok(inventoryTotalBytes() <= initialMediaByteCeiling);
 
   const invalid = structuredClone(manifest);
@@ -28,18 +28,18 @@ test('B3C.1 closes the runtime inventory to seven exact source masters below bud
     .runtime_path = 'assets/product/characters/unexpected.png';
   assert.match(
     validateB3cRuntimeInventory(invalid).join('\n'),
-    /runtime_path must remain the frozen B3C\.1 value/
+    /runtime_path must remain the approved WP-015C value/
   );
 
   invalid.assets.find((asset) => asset.id === expectedRuntimeInventory[0].id)
     .runtime_path = undefined;
   assert.match(
     validateB3cRuntimeInventory(invalid).join('\n'),
-    /required B3C\.1 runtime asset is missing/
+    /required approved WP-015C runtime asset is missing/
   );
 });
 
-test('B3C.1 build copies exactly the closed runtime inventory', () => {
+test('WP-015C build copies exactly the closed runtime inventory', () => {
   const buildRoot = fs.mkdtempSync(path.join(os.tmpdir(), 'nimble-knots-b3c-runtime-'));
   try {
     const copied = copyApprovedAssets({ manifest: manifestPath, assetRoot, buildRoot });

@@ -326,14 +326,17 @@ each centered at its local origin. They add no invented glow, loose fibers,
 tail, impact, animation, runtime path, or integration. The separate source-free
 effects contract now freezes a procedural halo, inward threads, short tail, and
 four-loop Unraveling effect for later client presentation only. Before WP-015C,
-WP-015B3C.1 has added only byte-identical build-copy runtime paths for the exact
-seven already approved presentation/Patch masters (607,427 source bytes total),
-without new pixels or scene code. WP-015C is now the gate that may actually
-integrate them. Its one free-tier external-quarantine idle pilot used only the
-approved combined Wizard-with-Loomseed presentation, but is rejected because it
-rewrites the Wizard's two black bead eyes and stitched mouth as one oversized
-cartoon eye. It adds no runtime asset and cannot replace the deterministic
-presentation route or authorize another request. WP-015C
+WP-015B3C.1 added only byte-identical build-copy runtime paths for the exact
+seven approved presentation/Patch masters (607,427 source bytes total), without
+new pixels or scene code. On 2026-08-08, WP-015C separately admitted four
+owner-supplied AutoSprite Wizard sheets—idle, walk, Loomseed spell, and
+non-graphic Unraveling—as exact manifest-bound sources. The current eleven-file
+runtime inventory totals 1,402,579 source bytes below the 1.5 MB ceiling; Phaser
+slices the 5x5/256px grids without editing pixels and retains the static
+Loomseed-Wizard as fallback. The earlier free-tier external-quarantine idle
+pilot is still rejected because it rewrites the Wizard's two black bead eyes and
+stitched mouth as one oversized cartoon eye; it supplies no pixels or
+conditioning to the admitted exports. WP-015C
 will reuse the one approved Wizard
 presentation for both the player and the AI Loomkeeper. A distinct Loomkeeper
 asset belongs to the wider character roster in WP-015D.

@@ -8,10 +8,19 @@ import {
     type SimulationState,
     type SimulationUnit
 } from '../../../shared/simulation';
-import { APPROVED_COMBAT_ASSETS, approvedCombatAssetsLoaded } from './approved-assets';
+import {
+    APPROVED_COMBAT_ASSETS,
+    WIZARD_ANIMATION_KEYS,
+    approvedCombatAssetsLoaded,
+    approvedWizardAnimationsLoaded
+} from './approved-assets';
 import type { CombatLayout } from './layout';
 
 export type CombatVisualPhase =
+    | {
+        kind: 'movement';
+        actor: SimulationActor;
+      }
     | {
         kind: 'cast-charge';
         actor: SimulationActor;
@@ -36,10 +45,14 @@ export type CombatVisualPhase =
         actor: SimulationActor;
         relicId: RelicId;
         trace: { x: number; y: number }[];
+        unraveling: SimulationActor[];
       };
 
 const WIZARD_ROOT_ORIGIN_Y = 451 / 512;
 const WIZARD_SCALE_IN_WORLD = 0.23;
+const WIZARD_ANIMATION_ROOT_ORIGIN_Y = 212 / 256;
+const WIZARD_UNRAVEL_ROOT_ORIGIN_Y = 229 / 256;
+const WIZARD_ANIMATION_SCALE_IN_WORLD = 0.56;
 const EMISSION_OFFSET = { x: 151, y: -223 };
 const INTERIOR_SOURCE_SIZE = 256;
 
@@ -48,13 +61,14 @@ export class CombatRenderer {
     private readonly background: Phaser.GameObjects.Graphics;
     private readonly teamCues: Phaser.GameObjects.Graphics;
     private readonly effects: Phaser.GameObjects.Graphics;
-    private readonly wizardSprites: Partial<Record<SimulationActor, Phaser.GameObjects.Image>> = {};
+    private readonly wizardSprites: Partial<Record<SimulationActor, Phaser.GameObjects.Sprite>> = {};
     private readonly cloudSprites: Phaser.GameObjects.Image[] = [];
     private readonly terrainInteriorTiles: Phaser.GameObjects.TileSprite[] = [];
     private readonly terrainTopTiles: Phaser.GameObjects.TileSprite[] = [];
     private readonly formationSprite?: Phaser.GameObjects.Image;
     private readonly projectileSprite?: Phaser.GameObjects.Image;
     private readonly usingApprovedAssets: boolean;
+    private readonly usingWizardAnimations: boolean;
 
     public constructor(scene: Phaser.Scene) {
         this.scene = scene;
@@ -62,6 +76,7 @@ export class CombatRenderer {
         this.teamCues = scene.add.graphics().setDepth(4);
         this.effects = scene.add.graphics().setDepth(6);
         this.usingApprovedAssets = approvedCombatAssetsLoaded(scene);
+        this.usingWizardAnimations = approvedWizardAnimationsLoaded(scene);
 
         if (!this.usingApprovedAssets) return;
         this.wizardSprites.player = this.createWizardSprite();
@@ -101,7 +116,7 @@ export class CombatRenderer {
         if (this.usingApprovedAssets) {
             this.updateClouds(layout);
             this.updateTerrain(state, layout);
-            this.updateWizardSprites(state.units, layout);
+            this.updateWizardSprites(state.units, layout, visualPhase);
         } else {
             this.drawFallbackClouds(layout);
             this.drawFallbackTerrain(state, layout);
@@ -131,10 +146,15 @@ export class CombatRenderer {
         this.projectileSprite?.destroy();
     }
 
-    private createWizardSprite(): Phaser.GameObjects.Image {
-        return this.scene.add.image(0, 0, APPROVED_COMBAT_ASSETS.wizard.key)
+    private createWizardSprite(): Phaser.GameObjects.Sprite {
+        const texture = this.usingWizardAnimations
+            ? APPROVED_COMBAT_ASSETS.wizardIdle.key
+            : APPROVED_COMBAT_ASSETS.wizard.key;
+        return this.scene.add.sprite(0, 0, texture)
             .setDepth(3)
-            .setOrigin(0.5, WIZARD_ROOT_ORIGIN_Y);
+            .setOrigin(0.5, this.usingWizardAnimations
+                ? WIZARD_ANIMATION_ROOT_ORIGIN_Y
+                : WIZARD_ROOT_ORIGIN_Y);
     }
 
     private updateClouds(layout: CombatLayout): void {
@@ -212,8 +232,14 @@ export class CombatRenderer {
         for (let index = used; index < tiles.length; index += 1) tiles[index].setVisible(false);
     }
 
-    private updateWizardSprites(units: readonly SimulationUnit[], layout: CombatLayout): void {
-        const scale = Math.max(0.1, layout.worldScale * WIZARD_SCALE_IN_WORLD);
+    private updateWizardSprites(
+        units: readonly SimulationUnit[],
+        layout: CombatLayout,
+        visualPhase?: CombatVisualPhase
+    ): void {
+        const scale = Math.max(0.1, layout.worldScale * (this.usingWizardAnimations
+            ? WIZARD_ANIMATION_SCALE_IN_WORLD
+            : WIZARD_SCALE_IN_WORLD));
         for (const unit of units) {
             const sprite = this.wizardSprites[unit.id];
             if (!sprite) continue;
@@ -223,7 +249,37 @@ export class CombatRenderer {
                 .setFlipX(unit.facing < 0)
                 .setAlpha(unit.alive ? 1 : 0.35)
                 .setVisible(true);
+            this.updateWizardAnimation(sprite, unit, visualPhase);
         }
+    }
+
+    private updateWizardAnimation(
+        sprite: Phaser.GameObjects.Sprite,
+        unit: SimulationUnit,
+        visualPhase?: CombatVisualPhase
+    ): void {
+        if (!this.usingWizardAnimations) return;
+        const animation = this.wizardAnimationFor(unit.id, unit.alive, visualPhase);
+        sprite.setOrigin(0.5, animation === WIZARD_ANIMATION_KEYS.unravel
+            ? WIZARD_UNRAVEL_ROOT_ORIGIN_Y
+            : WIZARD_ANIMATION_ROOT_ORIGIN_Y);
+        if (sprite.anims.currentAnim?.key !== animation) sprite.play(animation);
+    }
+
+    private wizardAnimationFor(
+        actor: SimulationActor,
+        alive: boolean,
+        visualPhase?: CombatVisualPhase
+    ): string {
+        // Once a unit is defeated, keep the terminal Unraveling frame rather than
+        // returning it to an idle pose after the short impact presentation ends.
+        if (!alive) return WIZARD_ANIMATION_KEYS.unravel;
+        if (visualPhase?.actor === actor) {
+            if (visualPhase.kind === 'movement') return WIZARD_ANIMATION_KEYS.walk;
+            if (visualPhase.kind === 'cast-charge' || visualPhase.kind === 'cast-formation' ||
+                visualPhase.kind === 'projectile') return WIZARD_ANIMATION_KEYS.cast;
+        }
+        return WIZARD_ANIMATION_KEYS.idle;
     }
 
     private drawTeamCues(units: readonly SimulationUnit[], layout: CombatLayout): void {
@@ -242,6 +298,8 @@ export class CombatRenderer {
         this.formationSprite?.setVisible(false);
         this.projectileSprite?.setVisible(false);
         if (!visualPhase) return;
+
+        if (visualPhase.kind === 'movement') return;
 
         if (visualPhase.kind === 'cast-charge') {
             this.drawCastCharge(visualPhase.actor, layout);

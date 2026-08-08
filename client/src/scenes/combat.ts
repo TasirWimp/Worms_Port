@@ -5,10 +5,11 @@ import {
     LATEST_RULESET_ID,
     cloneSimulation,
     type SimulationCommand,
+    type SimulationActor,
     type SimulationState
 } from '../../../shared/simulation';
 import { CombatControls } from '../combat/controls';
-import { preloadApprovedCombatAssets } from '../combat/approved-assets';
+import { createApprovedWizardAnimations, preloadApprovedCombatAssets } from '../combat/approved-assets';
 import type { CombatSceneArgs, SafeAreaInsets } from '../combat/contracts';
 import { createCombatFixture } from '../combat/fixture';
 import { canRequestFullscreen, toggleGameFullscreen } from '../combat/fullscreen';
@@ -74,6 +75,7 @@ export default class CombatScene extends Phaser.Scene {
     public create(): void {
         const parent = document.getElementById('game');
         if (!parent) throw new Error('Combat scene requires the #game host.');
+        createApprovedWizardAnimations(this);
         this.combatRenderer = new CombatRenderer(this);
         this.controls = new CombatControls(parent, this.snapshot, {
             onCommand: (command) => void this.submit(command),
@@ -464,11 +466,17 @@ export default class CombatScene extends Phaser.Scene {
                     relicId: next.simulation.lastProjectile && 'relicId' in next.simulation.lastProjectile
                         ? next.simulation.lastProjectile.relicId
                         : 'threadball',
-                    trace: this.projectileTrace.map((point) => ({ ...point }))
+                    trace: this.projectileTrace.map((point) => ({ ...point })),
+                    unraveling: newlyUnraveledActors(working, next.simulation as SimulationState)
                 };
                 this.controls.update(next);
                 this.render();
-                await this.waitForPresentation(step.durationMs, epoch);
+                await this.waitForPresentation(
+                    this.visualPhase.unraveling.length > 0
+                        ? Math.max(step.durationMs, reducedMotion ? 250 : 850)
+                        : step.durationMs,
+                    epoch
+                );
             }
         }
         if (epoch === this.presentationEpoch) this.commitPresentedSnapshot(next, playerMoved);
@@ -488,7 +496,7 @@ export default class CombatScene extends Phaser.Scene {
             this.renderState = cloneSimulation(working);
             this.preview = [];
             this.projectileTrace = [];
-            this.visualPhase = undefined;
+            this.visualPhase = { kind: 'movement', actor: step.actor };
             this.render();
             await this.waitForPresentation(step.durationMs / frames, epoch);
             if (epoch !== this.presentationEpoch) return;
@@ -611,6 +619,15 @@ export default class CombatScene extends Phaser.Scene {
             if (epoch !== this.presentationEpoch) return;
         });
     }
+}
+
+function newlyUnraveledActors(
+    before: SimulationState,
+    after: SimulationState
+): SimulationActor[] {
+    return after.units
+        .filter((unit, index) => !unit.alive && before.units[index]?.alive)
+        .map((unit) => unit.id);
 }
 
 function readSafeArea(): SafeAreaInsets {

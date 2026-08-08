@@ -12,7 +12,7 @@
     "worms_port_reviewer"
   ],
   "scope": [
-    "Load only the seven manifest-approved WP-015B3C.1 runtime copies, with a visible procedural fallback if the fixed inventory cannot load",
+    "Load the eleven manifest-approved WP-015C runtime copies, retaining the static Loomseed Wizard and the existing procedural fallback if a runtime image or animation sheet cannot load",
     "Present the same approved Wizard-with-Loomseed for player and Loomkeeper while retaining code-owned actor labels, team cues, positions, rules, and authority",
     "Tile the approved Cloud, Terrain Top, and Terrain Interior as decorative layers over the existing code-owned terrain geometry only",
     "Bind the approved Threadball charge, formation-start, formation-ready, projectile, blue-only short tail, and Unraveling impact grammar to existing authoritative Threadball presentation events",
@@ -23,9 +23,10 @@
     "Create, hash, and implementation-review the original WP-015C_Animation cast-preparation pose guide as documentation-only history without submitting source media or changing product behavior",
     "Freeze and submit exactly one owner-authorized FLUX.2 max natural-idle-pose edit from the approved combined Wizard-with-Loomseed master alone; retain its untouched output only in external quarantine and do not change product behavior",
     "After its documented Protected Content moderation outcome, freeze and submit exactly one separately owner-authorized FLUX.2 max text-only idle-pose diagnostic using no image, pose guide, brand, franchise, artist-style request, or third-party reference"
+    ,"Admit four owner-supplied and visually reviewed transparent AutoSprite Wizard sprite sheets as exact immutable source masters and byte-identical runtime copies: idle, walk, Loomseed spell, and non-graphic Unraveling"
   ],
   "non_goals": [
-    "Generate, alter, or approve any source raster, atlas, animation, or additional runtime asset, other than the separately documented external-quarantine pilot",
+    "Generate, alter, or approve any source raster, atlas, animation, or additional runtime asset beyond the four exact owner-supplied AutoSprite sheets",
     "Change v1/v2 simulation, collision, damage, projectile paths, replay, turn timing, AI policy, rewards, or their rulesets",
     "Change V3 Relic constants, terrain footprint, movement, projectile launch, gravity, splash damage, Loomkeeper policy, or reward eligibility",
     "Derive hitboxes dynamically from image pixels or promote, alter, or generate any asset",
@@ -47,7 +48,7 @@
     "npm run build",
     "npm run check:bundle-budget",
     "npm run test:browser:matrix",
-    "completed AutoSprite pilot evidence review: settings, source/output hash, every-frame Loomseed/identity/baseline review, and durable export",
+    "completed AutoSprite pilot evidence review: output hashes, 5x5/256px topology, alpha, baseline, visual/IP review, manifest admission, and durable source copies",
     "WP-015C_Animation FLUX.2 key-pose evidence review: recorded owner terms decision, source hash/no-guide declaration or text-only/no-reference declaration, prompt/request body excluding key, endpoint/model/settings/cost, durable raw output when present, and identity/baseline/plain-background review",
     "separate real-phone acceptance before any later animated production asset"
   ],
@@ -91,7 +92,7 @@
     {
       "command": "npm run test:tooling",
       "status": "pass",
-      "detail": "Passed 61 tests; the closed seven-file runtime inventory remains exact."
+      "detail": "Historical result before the animation admission. The current 2026-08-08 tooling result is recorded below."
     },
     {
       "command": "node --import tsx --test tests/reward/runtime.test.ts",
@@ -147,6 +148,31 @@
       "command": "WP-015C_Animation direct BFL FLUX.2 max text-only idle submission and provenance inspection",
       "status": "pass external candidate; rejected for product admission",
       "detail": "The separate no-reference contract D15E7C475FAEAD2CFA3699CA090D8E5E3A0D64B5EA40EAC22AE9FA948E8852ED completed on 2026-08-07 as BFL task 3c486d7b-95f1-480c-9b33-27556b3f2742. Initial quote: 7 credits, input 0 MP, output 1 MP; settled cost null. The untouched external PNG is 898,494 bytes, SHA-256 4D34F37EA85CF987E1CE330AFC2136086E82F784274C9E545923F8DB6DEC0F96. Its PNG chunks include caBX and contain C2PA/JUMBF markers. It is a successful isolation output but visually fails product admission: it is front-facing rather than the approved three-quarter identity, has pale hands, eyelash-like eyes, a pink mouth, a much larger yarn ball, and a drawn ground line. No normalization, repair, conditioning, staging, runtime path, or promotion follows."
+    },
+    {
+      "command": "WP-015C owner-provided AutoSprite sprite-sheet intake",
+      "status": "pass",
+      "detail": "The owner supplied four exact transparent 1280x1280 5x5 indexed-PNG sheets on 2026-08-08: idle 0CC0EF8ECED7B3BC24ED1AA678F164BFBB28554E8EC8E58745472F07EB447471 (156,855 bytes), walk 5FD4FCE8129D17D45D6EACD0434D8C823400398D79D2DF780924D7C60B0C00B7 (202,558 bytes), Loomseed spell 0205356C56A51EA289B1BD4F911658EBD4BA4DE090F1664F1B8DF8ACE0C5A0F4 (182,204 bytes), and Unraveling BED622A33F7308C498661862F81351A5D1698F2BD52A6D803D3EAC5999D88F1D (253,535 bytes). Every sheet has 25 256px cells and transparent corners. Idle is stable at y=210-211; walk y=211-217; spell selected frames 0-16 y=211-212; Unraveling y=228-229 with its own presentation-only origin. The outputs have no embedded prompt/job/model metadata; this deliberate exact-file admission records that reproducibility gap. Visual/IP review found no text, logo, official Nimiq art, recognizable third-party character, or Sorcerers material. AutoSprite Terms state user ownership subject to input rights, and the owner authorized use."
+    },
+    {
+      "command": "npm run build",
+      "status": "pass",
+      "detail": "Passed after the exact four-sheet admission: compliance, types, server/client builds, and byte-identical copying of all eleven approved runtime files succeeded."
+    },
+    {
+      "command": "npm run test:combat && npm run test:tooling",
+      "status": "pass",
+      "detail": "Passed 18 combat tests and all 61 tooling tests. The tooling gate now proves the eleven exact approved source masters total 1,402,579 bytes below the 1.5 MB ceiling and every build copy is byte-identical."
+    },
+    {
+      "command": "npm run check:bundle-budget",
+      "status": "pass",
+      "detail": "Largest initial JavaScript chunk: 1,449,575 / 1,500,000 bytes; initial JavaScript plus CSS gzip: 401,956 / 430,000 bytes."
+    },
+    {
+      "command": "npm run test:browser:combat && npm run test:browser:matrix",
+      "status": "pass",
+      "detail": "Focused combat passed all 50 applicable Chromium/WebKit phone results. After the terminal Unraveling-frame correction, the full zero-retry matrix passed 95 results in 5.9 minutes with 60 reviewed policy skips. Non-Linux visual comparison was explicitly omitted; pinned Ubuntu CI remains the baseline authority."
     }
   ],
   "reviews": [
@@ -203,12 +229,18 @@
       "reviewer": "Codex",
       "decision": "text-only diagnostic completed; external candidate rejected for admission",
       "detail": "Task 3c486d7b-95f1-480c-9b33-27556b3f2742 completed and its untouched PNG retains C2PA/JUMBF provenance. The successful source-free request narrows, but does not conclusively isolate, the previous Protected Content finding because prompt wording changed alongside source removal. Visual inspection rejects the output as a product candidate for identity and presentation drift; it remains external quarantine only. The text-only one-call cap is consumed."
+    },
+    {
+      "role": "project owner",
+      "reviewer": "Jens Bernhardt",
+      "decision": "authorized production admission",
+      "detail": "On 2026-08-08, the owner supplied the downloaded AutoSprite idle, walk, Loomseed spell, and defeat/Unraveling sheets and explicitly requested their implementation. This direct authorization admits only the four exact reviewed files recorded in legal/asset-manifest.json. It does not rehabilitate either earlier rejected AutoSprite pilot, change the BFL text-only candidate's rejected status, authorize another generation, or relax asset review for later sheets."
     }
   ],
   "skipped_checks": [
     "The project owner explicitly waived a replacement Ubuntu candidate for the focused V3 hitbox correction after passing real-phone acceptance. The prior pinned Ubuntu candidate remains technical evidence only; no Windows baseline was created or retained.",
-    "The rejected external AutoSprite pilot has no product path and therefore does not trigger a new build, browser matrix, Ubuntu candidate, or phone test. Its separately completed frame, alpha, settings, source, and output-hash review is recorded above.",
-    "The moderated image-edit pilot produced no media. The source-free diagnostic produced an external candidate but no product-admissible asset, so no browser matrix, visual baseline, or phone test applies. The normal build completed before submission; no product behavior changed."
+    "The first rejected external AutoSprite pilot has no product path. The later four owner-supplied sheets do change player-visible presentation, so they require the normal build, browser matrix, Ubuntu candidate workflow, and separate real-phone acceptance; only the Linux candidate workflow can update visual baselines.",
+    "The moderated image-edit pilot produced no media. The source-free diagnostic remains rejected for product admission and is not a runtime input."
   ],
   "residual_risks": [
     "The approved Wizard presentation is intentionally shared by player and Loomkeeper until WP-015D produces a distinct Loomkeeper; labels and team rings remain the distinction.",
@@ -216,7 +248,7 @@
     "Visual baselines will change and must be generated and inspected only through the pinned Ubuntu candidate workflow before any baseline commit.",
     "The v3 body profile is intentionally valid only for the shared Wizard presentation. WP-015D must version a new profile rather than reuse it unchanged when it introduces distinct Calling or Loomkeeper visuals.",
     "V3 retains V2's historical 120 maximum Needlepoint damage, so a correct direct Needlepoint contact can resolve a full 100-Stitching target in one action. The owner accepted current V3 phone behavior, but WP-015D must separately version the planned low-damage Needlepoint tier.",
-    "AutoSprite does not publish an exact inference model/version and has no fixed retention period. Its completed combined-Loomseed pilot failed the face-identity gate despite preserving the focus, so the route is closed and must not be treated as a production dependency.",
+    "AutoSprite does not publish an exact inference model/version and the four admitted PNG exports carry no prompt, job ID, or model/version metadata. The exact-file hashes and owner authorization support this bounded admission, but a future regeneration cannot be treated as equivalent without a new asset review.",
     "The owner accepts BFL's service/training use only for the moderated image-edit pilot and the separately authorized source-free text-only diagnostic. Both one-call caps are consumed. Any further input, model, request, or output requires a new decision. Even a later passing FLUX.2 max key-pose still would be opaque/external and need a new alpha, identity, provenance, normalization, and product-admission gate."
   ]
 }

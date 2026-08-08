@@ -1733,14 +1733,20 @@ integrating.
    `check:b3c-runtime-inventory` gate, its focused tests, tooling suite,
    compliance, production build, audit, and diff check have passed.
 
-WP-015C may now use B3C.1's manifest-approved runtime inventory to express one
-complete exchange without generation, manual source repair, or unapproved test
-paths. B3 changes no gameplay rules and integrates no product media into the
-combat scene.
+WP-015C began from B3C.1's seven manifest-approved runtime copies. On
+2026-08-08, a separate owner-authorized exact-file admission added four
+transparent AutoSprite Wizard sheets (idle, walk, Loomseed spell, and
+non-graphic Unraveling), bringing the current fixed inventory to eleven sources
+and 1,402,579 bytes below the 1.5 MB ceiling. The original B3C.1 seven-file
+record remains historical fact; the current `check:b3c-runtime-inventory` gate
+validates the eleven-file WP-015C inventory. No source generation, manual source
+repair, or unapproved path is implied. B3 changes no gameplay rules and
+integrates no product media into the combat scene.
 
 ### WP-015C First Playable Visual-Slice Re-entry
 
-WP-015C is integration-only except for one separately quarantined service pilot.
+WP-015C is integration-only except for its historical quarantined service pilots
+and the separately owner-supplied, exact-file AutoSprite sheet admission.
 Its runtime inputs are the runtime-copy-approved B3 Wizard
 presentation, Threadball derivatives, Patch layers, shared minimum effects, and
 their manifest metadata. It instantiates the same Wizard presentation for the player and AI
@@ -1814,7 +1820,9 @@ may later provide motion-reference material, but it is not a sprite-production
 route. The first target is one still **idle** key pose which can be reviewed as
 a normal raster candidate before any later normalization decision.
 The existing deterministic root-transform/Threadball presentation remains the
-only approved runtime animation route.
+fallback route. The separately admitted exact AutoSprite sheets are now the
+approved first-slice client animation route; they do not alter source masters or
+authoritative state.
 
 The official global `FLUX` MCP connector remains registered at
 `https://mcp.bfl.ai` and separately authenticated with BFL OAuth. It exposes
@@ -2095,7 +2103,10 @@ Use this exact handoff for each visual asset family:
    identity-control, and durable-evidence review before uploading the approved
    isolated character master. AutoSprite's two B3B raw-source pilots remain
    closed and may not be retried. WP-015C's one combined-Loomseed pilot is a
-   separately documented external experiment, not an approved dependency.
+   separately documented external experiment, not an approved dependency. The
+   four owner-provided AutoSprite sheets admitted on 2026-08-08 are the sole
+   exception: they are exact-file manifest-bound runtime inputs, never a license
+   to retry, regenerate, or treat a different export as equivalent.
 7. **Deterministic runtime normalization:** normalize runtime frame size, pivot,
    baseline, padding, alpha, naming, timing, and atlas metadata through a
    versioned script and configuration hash. Preserve every untouched service
@@ -2113,11 +2124,12 @@ Use this exact handoff for each visual asset family:
 
 ### Basic Animation Contract
 
-The initial Wizard route does not require a generated character atlas. It uses
-the intact approved source master with deterministic root transforms and a
-separately composed permanent Loomseed; all presentation transforms inherit the
-same root and cannot move authoritative actor position. A later raster-animation
-route requires a separate admission gate. The initial state contract is:
+The initial Wizard route uses four separately admitted transparent 5x5/256px
+AutoSprite sheets for the client-only idle, movement, spell, and Unraveling
+states. The intact approved source master remains the fallback, while the
+separately composed permanent Loomseed, emission origin, and all authoritative
+actor positions remain simulation-independent. A later raster-animation route
+requires its own exact-file admission gate. The initial state contract is:
 
 | State | Frames | Loop | Required behavior |
 | --- | ---: | --- | --- |

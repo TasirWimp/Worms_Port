@@ -12,17 +12,20 @@ Phaser/Socket.IO stack.
   plus bounded V3 hitbox stabilization:** implementation is in progress on
   `codex/wp-015-production-assets`;
   its evidence carrier is `docs/evidence/wp-015c.json`. WP-015B3C.1 completed
-  on 2026-08-05. Its closed inventory assigns
-  `runtime_path` only to seven existing approved masters and the build copier
-  now produces their byte-identical copies below `assets/product/` (607,427
-  source bytes, below the 1.5 MB ceiling). It created no source asset, atlas,
-  scene code, or player-visible change. The raw empty-handed Wizard, raw
-  Threadball, and rejected FLUX Terrain Interior remain excluded. WP-015C may
-  now integrate only that fixed inventory. The one documented, free-tier
-  AutoSprite **external-quarantine** idle pilot used only the approved
-  Wizard-with-Loomseed presentation and is rejected for a whole-sheet face-
-  identity failure. It may not create a runtime path, replace the deterministic
-  root-transform presentation, or authorize another request.
+  on 2026-08-05. Its first closed inventory assigned `runtime_path` only to
+  seven existing approved masters and the build copier produced their
+  byte-identical copies below `assets/product/` (607,427 source bytes). On
+  2026-08-08 the owner supplied and authorized four separately reviewed
+  AutoSprite 5x5/256px Wizard sheets for idle, walk, Loomseed spell, and
+  non-graphic Unraveling. They expand the fixed runtime inventory to eleven
+  immutable sources totaling 1,402,579 bytes, still below the 1.5 MB ceiling.
+  Phaser slices those sheets at runtime without generating an atlas or editing
+  pixels; the static Loomseed Wizard remains the fallback if a sheet cannot
+  load. The raw empty-handed Wizard, raw Threadball, rejected FLUX Terrain
+  Interior, and earlier rejected AutoSprite pilot remain excluded. The first
+  documented free-tier AutoSprite idle pilot is still rejected for a whole-sheet
+  face-identity failure and does not provide pixels or conditioning to the new
+  owner-supplied exports.
   The owner additionally authorized the single versioned rules exception after
   real-device testing: new challenges may use `nimble-knots-artillery-v3` with
   the documented shared-Wizard direct-hit profile, while V1/V2 remain immutable.

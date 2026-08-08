@@ -294,8 +294,8 @@ This separate research gate does not reopen either AutoSprite route and
 supersedes the proposed FLUX 3 video lane. FLUX 3 can later serve as external
 motion reference, but its video output is not a sprite-production input. The
 first candidate is one still **idle** Wizard key pose; existing root
-transforms and deterministic Threadball effects remain the only approved runtime
-animation route.
+transforms and deterministic Threadball effects remained the only approved runtime
+animation route until the separately documented owner-provided sheet admission below.
 
 The official global BFL `FLUX` MCP registration at `https://mcp.bfl.ai` uses
 OAuth and FLUX.2 image tools only. Its OAuth login is complete, but Codex
@@ -346,7 +346,7 @@ anatomy, crop, baseline, or background drift. No automatic retry, generated
 sheet, video, alpha treatment, normalizer, staging, manifest update, or runtime
 integration is authorized.
 
-The first presentation route remains a root transform of that intact combined
+The original first presentation route remains a root transform of that intact combined
 master plus separately composed effects: root bob, lean, tint, or squash may
 move the Wizard, Loomseed anchor, and emission origin together, but may not
 reshape the raised hand or synthesize character frames. B3C now records only
@@ -522,8 +522,39 @@ Aim pose selection follows the authoritative locked angle:
 
 The first presentation route freezes these state allowances and triggers. It
 does not require a generated character atlas: the intact Wizard source master
-can receive only deterministic root transforms, and the Loomseed/effects must
+could receive only deterministic root transforms, and the Loomseed/effects had to
 inherit the same root transform without changing authoritative actor position.
+
+#### WP-015C owner-provided AutoSprite animation admission (2026-08-08)
+
+The project owner subsequently supplied and explicitly authorized four fresh
+AutoSprite exports for the first playable slice. This is a new exact-file asset
+admission, not a retry or rehabilitation of either rejected pilot and does not
+use their pixels or conditioning. The four 1280x1280 transparent indexed-PNG
+sheets each contain a 5x5 grid of 25 frames at 256x256:
+
+- `idle`, SHA-256 `0CC0EF8E...447471`, 156,855 bytes;
+- `walk`, SHA-256 `5FD4FCE8...0C00B7`, 202,558 bytes;
+- `Loomseed spell`, SHA-256 `0205356C...C5A0F4`, 182,204 bytes; and
+- non-graphic `Unraveling`, SHA-256 `BED622A3...D88F1D`, 253,535 bytes.
+
+Their immutable source masters, byte-identical runtime paths, commercial-use
+evidence, dimensions, baseline review, and direct-user provenance are in
+`legal/asset-manifest.json`. AutoSprite's Terms state that the user owns
+spritesheet outputs subject to underlying input rights; the owner supplied and
+authorized this exact output set. The PNG exports have no embedded prompt, job
+ID, model/version, or third-party metadata, so this is an explicitly
+non-reproducible exact-file admission. Visual review found no text, logo,
+official Nimiq art, recognizable third-party character, or Sorcerers input.
+
+WP-015C uses the sheets only for client presentation. Idle loops while a unit is
+ready; the walk cycle plays during accepted movement; source spell frames 0-16
+play across a cast (later baked-projectile frames are excluded because the
+authoritative trace and approved temporary Threadball own flight); and a newly
+defeated unit plays Unraveling for 850ms normal / 250ms reduced motion. The
+static Loomseed-Wizard is retained if any sheet fails to load. These controls do
+not change simulation position, collision, health, damage, replay, turn timing,
+reward eligibility, or result authority.
 
 | State | Frames | Timing | Trigger |
 | --- | ---: | --- | --- |

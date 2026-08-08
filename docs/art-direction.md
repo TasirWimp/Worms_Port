@@ -666,10 +666,14 @@ Blocked:
 
 - If an official Nimiq logo, icon, font, or other brand file is proposed later,
   archive its separate written permission and exact-file provenance before use.
-- The one external AutoSprite combined-Loomseed idle pilot preserved the focus
-  but failed Wizard face identity, so root transforms remain the only approved
-  Wizard animation route for the first playable slice. Produce and validate the distinct Loomkeeper
-  later in WP-015D with Thief and Warrior.
+- The first external AutoSprite combined-Loomseed idle pilot preserved the focus
+  but failed Wizard face identity and remains rejected. On 2026-08-08 the owner
+  separately supplied and approved four transparent 5x5 Wizard sheets for the
+  first playable slice: idle, walk, Loomseed spell, and non-graphic Unraveling.
+  They share a generic crochet-Wizard presentation for both actors, are exact-file
+  manifest-bound, and fall back to the static Loomseed Wizard if they cannot load.
+  Produce and validate the distinct Loomkeeper later in WP-015D with Thief and
+  Warrior.
 - Validate Patch 01 tiling, phone composition, and code-owned circular
   destruction before producing additional Patches or decorative layers.
 - Keep Cloudwater non-mechanical through WP-015; a playable water Relic or
