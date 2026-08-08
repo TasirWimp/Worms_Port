@@ -63,12 +63,20 @@ test('live practice supports authoritative pause, full player turn, and fresh re
   }
   const presentation = await readPresentationRecorder(page);
   expect(presentation.phases).toEqual(expect.arrayContaining([
+    'player-cast-charge',
+    'player-cast-formation',
     'player-projectile',
     'player-impact',
     'loomkeeper-aim',
     'loomkeeper-projectile',
     'loomkeeper-impact'
   ]));
+  expect(presentation.phases.indexOf('player-cast-charge')).toBeLessThan(
+    presentation.phases.indexOf('player-cast-formation')
+  );
+  expect(presentation.phases.indexOf('player-cast-formation')).toBeLessThan(
+    presentation.phases.indexOf('player-projectile')
+  );
   expect(presentation.maximumProjectilePoints).toBeGreaterThan(1);
   expect(presentation.projectileVisuals).toContainEqual({
     phase: 'player-projectile',

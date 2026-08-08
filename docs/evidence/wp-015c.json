@@ -238,6 +238,16 @@
       "command": "npm run check:types && npm run test:combat && npm run build && npm run test:browser:matrix && npm run check:bundle-budget",
       "status": "pass",
       "detail": "Passed both TypeScript projects, all 19 combat tests, full build/compliance/runtime-copy checks, and the full zero-retry mobile matrix: 95 passed in 6.1 minutes with 60 reviewed policy skips. Windows visual pixel comparison remained omitted because pinned Ubuntu CI is authoritative. Largest initial JavaScript was 1,450,341 / 1,500,000 bytes and initial JavaScript plus CSS gzip was 402,193 / 430,000 bytes."
+    },
+    {
+      "command": "WP-015C all-Relic delayed-launch correction",
+      "status": "pass",
+      "detail": "Needlepoint and Spoolburst now follow the same standard-motion two-second Wizard cast order as Threadball: one second of charge, one second of formed spell, then projectile flight and impact. Threadball alone uses its approved temporary formation source; the two unapproved Relic families use bounded source-free focus rings before their existing generic projectile visuals. Reduced motion remains compact. Presentation timing and labels changed only; source pixels, collision, simulation, replay, rewards, and authority remain unchanged."
+    },
+    {
+      "command": "npm run check:types && npm run test:combat && npm run build && npm run test:browser:matrix && npm run check:bundle-budget",
+      "status": "pass",
+      "detail": "Passed both TypeScript projects, all 20 combat tests including Needlepoint/Spoolburst cast ordering, full build/compliance/runtime-copy checks, and the full zero-retry mobile matrix: 95 passed in 6.9 minutes with 60 reviewed policy skips. Windows visual pixel comparison remained omitted because pinned Ubuntu CI is authoritative. Largest initial JavaScript was 1,450,728 / 1,500,000 bytes and initial JavaScript plus CSS gzip was 402,252 / 430,000 bytes."
     }
   ],
   "reviews": [
@@ -270,6 +280,12 @@
       "reviewer": "Jens Bernhardt",
       "decision": "real-phone regression finding; continuous player and Loomkeeper arcs required",
       "detail": "After deploying the first visual-origin repair, the owner found a low-angle discontinuity between the first player aim dash and the remaining trajectory, and found the opponent firing as a straight line. The owner requires the expected continuous parabolic reading for both actors while retaining the Loomseed origin. This supersedes the first-point-only display interpretation."
+    },
+    {
+      "role": "project owner",
+      "reviewer": "Jens Bernhardt",
+      "decision": "real-phone regression finding; all starting Relics need completed cast before flight",
+      "detail": "After accepting the continuous Loomseed arcs on phone, the owner found that only Threadball waited for the completed Wizard spell; Needlepoint and Spoolburst still began flight immediately after Fire. The owner requires those two starting Relics to complete the same standard-motion two-second cast before their generic projectile visuals begin. Threadball's approved temporary formation source remains exclusive to Threadball."
     },
     {
       "role": "project owner",

@@ -25,7 +25,7 @@ export type CombatPresentationStep =
         kind: 'cast-charge';
         phase: `${SimulationActor}-cast-charge`;
         actor: SimulationActor;
-        relicId: 'threadball';
+        relicId: RelicId;
         trace: PresentationPoint[];
         durationMs: number;
       }
@@ -33,7 +33,7 @@ export type CombatPresentationStep =
         kind: 'cast-formation';
         phase: `${SimulationActor}-cast-formation`;
         actor: SimulationActor;
-        relicId: 'threadball';
+        relicId: RelicId;
         trace: PresentationPoint[];
         durationMs: number;
       }
@@ -67,7 +67,7 @@ export function planCombatPresentation(
         : {
             movement: 240,
             aim: 320,
-            // The spell sheet completes before its temporary Threadball launches:
+            // The spell sheet completes before any Relic projectile launches:
             // one second of gathering followed by one second of formed spell.
             castCharge: WIZARD_CAST_DURATION_MS / 2,
             castFormation: WIZARD_CAST_DURATION_MS / 2,
@@ -103,24 +103,22 @@ export function planCombatPresentation(
             durationMs: durations.aim
         });
     }
-    if (relicId === 'threadball') {
-        steps.push({
-            kind: 'cast-charge',
-            phase: `${actor}-cast-charge`,
-            actor,
-            relicId,
-            trace,
-            durationMs: durations.castCharge
-        });
-        steps.push({
-            kind: 'cast-formation',
-            phase: `${actor}-cast-formation`,
-            actor,
-            relicId,
-            trace,
-            durationMs: durations.castFormation
-        });
-    }
+    steps.push({
+        kind: 'cast-charge',
+        phase: `${actor}-cast-charge`,
+        actor,
+        relicId,
+        trace,
+        durationMs: durations.castCharge
+    });
+    steps.push({
+        kind: 'cast-formation',
+        phase: `${actor}-cast-formation`,
+        actor,
+        relicId,
+        trace,
+        durationMs: durations.castFormation
+    });
     steps.push({
         kind: 'projectile',
         phase: `${actor}-projectile`,
@@ -143,7 +141,7 @@ export function presentationLabel(step: CombatPresentationStep): string {
     if (step.kind === 'movement') return `${actor} moves`;
     if (step.kind === 'aim') return `Loomkeeper aims ${relicName(step.relicId)}`;
     if (step.kind === 'cast-charge') return `${actor} gathers Worldweave`;
-    if (step.kind === 'cast-formation') return `${actor} forms Threadball`;
+    if (step.kind === 'cast-formation') return `${actor} forms ${relicName(step.relicId)} spell`;
     if (step.kind === 'projectile') return `${actor} fires ${relicName(step.relicId)}`;
     return `${actor} impact`;
 }

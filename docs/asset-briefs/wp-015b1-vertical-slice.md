@@ -549,11 +549,14 @@ official Nimiq art, recognizable third-party character, or Sorcerers input.
 
 WP-015C uses the sheets only for client presentation. Idle loops while a unit is
 ready; the walk cycle plays during accepted movement; and source spell frames
-0-16 play for two seconds in standard motion (later baked-projectile frames are
-excluded because the authoritative trace and approved temporary Threadball own
+0-16 play for two seconds in standard motion for all three starting Relics
+(later baked-projectile frames are excluded because the authoritative trace owns
 flight). Standard motion holds the gathering stage for one second and the
-formed-spell stage for one second, then launches the temporary Threadball only
-after the character sheet has completed. A newly defeated unit plays its
+formed-spell stage for one second, then launches Threadball, Needlepoint, or
+Spoolburst only after the character sheet has completed. Threadball alone uses
+its approved temporary formation asset; Needlepoint and Spoolburst use only the
+existing source-free focus rings before their existing generic projectile
+visuals. A newly defeated unit plays its
 25-frame Unraveling for two seconds in standard motion, remains fully opaque,
 then holds its terminal frame. Reduced motion retains its 250ms compact
 presentation. The retained spell frame has its own 256px-root Loomseed center

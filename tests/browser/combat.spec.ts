@@ -250,9 +250,17 @@ test('touch movement, Relic selection, aim lock, and explicit Fire stay separate
   await expect(page.locator('.fire-button')).toBeDisabled();
   const presentation = await readPresentationRecorder(page);
   expect(presentation.phases).toEqual(expect.arrayContaining([
+    'player-cast-charge',
+    'player-cast-formation',
     'player-projectile',
     'player-impact'
   ]));
+  expect(presentation.phases.indexOf('player-cast-charge')).toBeLessThan(
+    presentation.phases.indexOf('player-cast-formation')
+  );
+  expect(presentation.phases.indexOf('player-cast-formation')).toBeLessThan(
+    presentation.phases.indexOf('player-projectile')
+  );
   expect(presentation.maximumProjectilePoints).toBeGreaterThan(1);
 });
 

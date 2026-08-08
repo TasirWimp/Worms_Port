@@ -33,13 +33,13 @@ export type CombatVisualPhase =
     | {
         kind: 'cast-charge';
         actor: SimulationActor;
-        relicId: 'threadball';
+        relicId: RelicId;
         trace: { x: number; y: number }[];
       }
     | {
         kind: 'cast-formation';
         actor: SimulationActor;
-        relicId: 'threadball';
+        relicId: RelicId;
         stage: 'start' | 'ready';
         trace: { x: number; y: number }[];
       }
@@ -351,10 +351,14 @@ export class CombatRenderer {
         visualPhase: Extract<CombatVisualPhase, { kind: 'cast-formation' }>,
         layout: CombatLayout
     ): void {
-        if (!this.usingApprovedAssets || !this.formationSprite) return;
         const root = this.rootForActor(visualPhase.actor, layout);
         if (!root) return;
         const point = this.emissionPoint(root, layout);
+        if (visualPhase.relicId !== 'threadball') {
+            this.drawGenericCastFormation(visualPhase.relicId, point, layout);
+            return;
+        }
+        if (!this.usingApprovedAssets || !this.formationSprite) return;
         const key = visualPhase.stage === 'start'
             ? APPROVED_COMBAT_ASSETS.formationStart.key
             : APPROVED_COMBAT_ASSETS.formationReady.key;
@@ -368,6 +372,19 @@ export class CombatRenderer {
             this.effects.lineStyle(Math.max(1, layout.worldScale * 1.8), 0xE9B213, 0.25);
             this.effects.strokeCircle(point.x, point.y, Math.max(6, layout.worldScale * 12));
         }
+    }
+
+    private drawGenericCastFormation(
+        relicId: Exclude<RelicId, 'threadball'>,
+        point: { x: number; y: number },
+        layout: CombatLayout
+    ): void {
+        const color = relicId === 'needlepoint' ? 0xDDFBFF : 0xFA7268;
+        const radius = Math.max(6, layout.worldScale * 13);
+        this.effects.lineStyle(Math.max(1, layout.worldScale * 1.8), color, 0.72);
+        this.effects.strokeCircle(point.x, point.y, radius);
+        this.effects.lineStyle(Math.max(1, layout.worldScale * 1.1), 0xE9B213, 0.5);
+        this.effects.strokeCircle(point.x, point.y, radius * 0.58);
     }
 
     private drawThreadballProjectile(trace: { x: number; y: number }[], layout: CombatLayout): void {
