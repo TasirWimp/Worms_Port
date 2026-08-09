@@ -425,9 +425,23 @@ event allowance, so a strict 12 KiB event ceiling remains below the unchanged
 16 KiB Socket.IO transport cap. This increase accommodates only authoritative
 snapshot delivery; command schemas and all other rate/size guards are unchanged.
 
+### Tactical Model Before Basic Relic Ruleset V5
+
+WP-015D2A now precedes V5. Its contract is
+`docs/planning/wp-015d2a-tactical-game-model-contract.md`. It formalizes the
+V4/V5 decision model and uses a deterministic Python analysis harness to
+explore explicit integer configurations and transparent policies. It measures
+mirrored initiative advantage, range counterplay, action diversity, terminal
+rate, and bounded forced-opening risk, then cross-checks any production
+candidate against the authoritative TypeScript simulation. Python is an
+analytical tool only: it cannot validate live commands, generate replays,
+control the Loomkeeper, or override TypeScript truth. Defense, action-economy,
+and overtime/convergence ideas are exploratory candidates until an owner
+approves a separate versioned implementation package.
+
 ### Planned Basic Relic Ruleset V5
 
-After the separately versioned V4 wider-arena/camera slice, WP-015D2 prepares
+After WP-015D2A's owner decision, WP-015D2 prepares
 `nimble-knots-artillery-v5` for the first range/damage differentiation slice.
 V1 through V4 constants, identifiers, replay hashes, and policy behavior remain
 immutable. The exact owner-approved V4 `2048 by 576` arena and camera contract is recorded in
@@ -448,12 +462,15 @@ secondary effects, and Calling modifiers on one shared basic baseline. These
 dimensions are deferred so the first real-device evaluation measures the
 assembled artillery loop rather than a large balance matrix.
 
-The implementation slice freezes exact integer values and deterministic
-fixed-shot tests before v5 becomes a challenge default. The tier ordering is a
-product identity, not final balance. The Loomkeeper receives the same public
-range and damage model as the player; visuals never provide simulation
-authority. A later precision mechanic must be deterministic and disclosed and
-requires another versioned ruleset if it changes replay outcomes.
+The implementation slice freezes exact integer values, analytical
+TypeScript/Python transcript parity, and deterministic fixed-shot tests before
+v5 becomes a challenge default. The tier ordering is a product identity, not
+final balance. The Loomkeeper receives the same public range and damage model
+as the player; visuals never provide simulation authority. V5 remains
+values-only unless a separately approved tactical-core package adds a different
+action economy, defense, or convergence rule. A later precision mechanic must
+be deterministic and disclosed and requires another versioned ruleset if it
+changes replay outcomes.
 
 ### Hosting Contract
 

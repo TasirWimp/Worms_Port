@@ -349,7 +349,12 @@ sheet, normalization, or runtime path is part of this gate.
 WP-015C and WP-015D1 are complete. The simplified vertical-slice inventory is
 manifest-approved; WP-015D0 froze the V4 arena/camera contract, and D1
 delivered the accepted wider arena, pan camera, and horizontal-only opening
-survey. WP-015D2 is next.
+survey. WP-015D2A is next: it documents and tests the tactical decision model
+with a deterministic Python analysis harness while keeping TypeScript
+authoritative. Its evidence will determine whether the subsequent V5 Relic
+slice can remain values-only or needs a separately versioned tactical-core
+package. The contract is
+`docs/planning/wp-015d2a-tactical-game-model-contract.md`.
 The Celestial Spinning Mill, Worldweave,
 Air/Draft, Fire/Loomspark, and Water/Cloudwater story is recorded in
 `docs/art-direction.md`; exact gates and re-entry order are in the Execution
@@ -598,8 +603,9 @@ direct-projectile Wizard body profile, so the visible torso, head, hat, and
 feet can register a hit while the extended palm/Loomseed remains outside the
 target. It doubles only the authoritative arena width to 2048 world units;
 the mobile client still presents a 1024-by-576 camera window that can pan
-horizontally. V1/v2/v3 replay behavior is unchanged. WP-015D2 later prepares
-a separate v5 ruleset in which
+horizontally. V1/v2/v3 replay behavior is unchanged. WP-015D2A first evaluates
+the tactical model and candidate values without changing live gameplay. The
+subsequent WP-015D2 prepares a separate v5 ruleset in which
 Threadball has medium range and damage, Needlepoint has the highest range and
 lowest damage, and Spoolburst has the lowest range and highest damage. Other
 weapon dimensions and fine tuning are deferred. Their planned visual grammar is

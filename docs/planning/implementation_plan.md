@@ -8,9 +8,14 @@ Phaser/Socket.IO stack.
 ## Execution Pointer
 
 - Active target: mobile-first single-player Nimiq Pay competition release.
-- Active work package: **WP-015D2 V5 basic Relic range and damage tiers:** refine
-  the three starting Relics without changing accepted V1 through V4 replay
-  behavior. **WP-015D1 V4 wider arena and pan camera completed on 2026-08-08**
+- Active work package: **WP-015D2A Tactical Game Model and Simulation Harness:**
+  establish and test the decision model that precedes V5 Relic values without
+  changing accepted V1 through V4 replay behavior. The contract is
+  [WP-015D2A Tactical Game Model and Simulation Harness](wp-015d2a-tactical-game-model-contract.md).
+  It keeps TypeScript authoritative and makes Python an analytical tool only;
+  action-economy, defense, and convergence candidates require an explicit later
+  versioned decision rather than becoming hidden V5 rules. **WP-015D1 V4 wider
+  arena and pan camera completed on 2026-08-08**
   on `codex/wp-015-production-assets`: V4 preserves historical replays while
   admitting no obstacle, tactical-terrain, balance, or asset work.
   **WP-015C First playable visual slice — integration plus bounded V3 hitbox
@@ -2834,18 +2839,39 @@ Sequential delivery slices:
   phone-browser plus Samsung real-device camera acceptance. The accepted
   delivery includes the fixed-vertical, horizontal-only opening survey
   correction.
-- **WP-015D2 V5 basic Relic range and damage tiers:** after D1 acceptance,
-  freeze exact range and maximum direct-damage values for Threadball (medium /
-  medium), Needlepoint (long / low), and Spoolburst (short / high), then add
-  `nimble-knots-artillery-v5`. The split deliberately makes this V5 rather than
-  mutating the accepted V4 arena rules: V1 through V4 replay behavior and
-  reconstruction remain byte-for-byte. Use the current shared Wizard and the
-  current approved/procedural Relic presentation while deriving the revised
-  legal range and deterministic Loomkeeper policy from V5 only. Radius,
-  precision, falloff, ammo, cooldowns, status effects, Calling modifiers,
-  terrain tactics, obstacles, and source-media work remain deferred. Close with
-  exact tier/range/replay/AI ordering tests, compliance, build, full browser
-  matrix, and real-device pacing acceptance.
+- **WP-015D2A Tactical Game Model and Simulation Harness:** after D1
+  acceptance, formalize the V4/V5 tactical decision tree before freezing V5
+  values. The model treats a Clash as a finite sequential perfect-information
+  game: an observed cast, relocation, or any separately proposed defense is a
+  commitment whose opponent response must be evaluated. It records the MDA
+  progression from desired agency/tension/mastery, through pressure,
+  approach/retreat, survival windows, and convergence, to candidate rules. A
+  deterministic Python analysis harness explores bounded transparent policies
+  and integer-only configurations, reports mirrored first-actor advantage,
+  counterplay, action diversity, convergence, and dominated actions, and
+  cross-checks production candidates against TypeScript scenario transcripts.
+  TypeScript remains the sole live/replay authority. The exact contract is
+  [wp-015d2a-tactical-game-model-contract.md](wp-015d2a-tactical-game-model-contract.md).
+  D2A can test movement/action economy, a Brace-like defense, and
+  Loom-Tightening-style overtime only as labelled candidates. It authorizes no
+  gameplay change, V5 default, new asset, terrain tactic, reward change, or
+  silent defense/overtime rule. It closes with an owner decision to proceed
+  values-only or to separately version a tactical-core follow-up.
+- **WP-015D2 V5 basic Relic range and damage tiers:** after D2A's owner
+  decision, freeze exact range and maximum direct-damage values for Threadball
+  (medium / medium), Needlepoint (long / low), and Spoolburst (short / high),
+  then add `nimble-knots-artillery-v5`. The split deliberately makes this V5
+  rather than mutating the accepted V4 arena rules: V1 through V4 replay
+  behavior and reconstruction remain byte-for-byte. Unless a separately
+  approved tactical-core package says otherwise, V5 remains values-only: it
+  uses the current move/turn economy, current shared Wizard, and current
+  approved/procedural Relic presentation while deriving the revised legal range
+  and deterministic Loomkeeper policy from V5 only. Radius, precision, falloff,
+  ammo, cooldowns, status effects, Calling modifiers, terrain tactics,
+  obstacles, defense, convergence/overtime, and source-media work remain
+  deferred. Close with exact tier/range/replay/AI ordering tests, analytical
+  transcript parity, compliance, build, full browser matrix, and real-device
+  pacing acceptance.
 - **WP-015D3 Needlepoint and Spoolburst visual identity:** after D2 acceptance,
   create, exact-file review, and integrate the small approved UI/effect families
   for Needlepoint's Air/Draft grammar and Spoolburst's Fire/Loomspark grammar.
@@ -3728,7 +3754,7 @@ types, build, full browser matrix, and independent payout security review.
 WP-005 -> WP-006 -> WP-007 -> WP-008 -> WP-009 -> WP-010 -> WP-011 -> WP-011A
 WP-011A -> WP-011B -> WP-011C -> WP-011D -> WP-011E (presentation path)
 WP-011E -> WP-012 -> WP-013 -> WP-014
-WP-010 + WP-014 -> WP-015C -> WP-015D0 -> WP-015D1 -> WP-015D2 -> WP-015D3 -> WP-015E
+WP-010 + WP-014 -> WP-015C -> WP-015D0 -> WP-015D1 -> WP-015D2A -> WP-015D2 -> WP-015D3 -> WP-015E
 WP-013 + WP-015E -----------------------------------------------------------> WP-016 -> WP-017
 WP-017 -> WP-017A (post-release character roster; non-blocking)
 WP-017 -> WP-018 -> WP-019 -> WP-021
