@@ -18,12 +18,12 @@ from typing import Any, Literal
 
 Actor = Literal["player", "loomkeeper"]
 Winner = Actor | Literal["draw"] | None
-ActionKind = Literal["cast", "relocate", "wait"]
+ActionKind = Literal["cast", "relocate", "brace", "wait"]
 ActionEconomy = Literal["move_and_cast", "committed"]
 SeamPinActivation = Literal["any_direct_hit", "advance_only"]
 RetreatCastRule = Literal["allowed", "forbidden"]
 
-CONFIG_SCHEMA_VERSIONS = {1, 2, 3, 4}
+CONFIG_SCHEMA_VERSIONS = {1, 2, 3, 4, 5}
 RELIC_ORDER = ("threadball", "needlepoint", "spoolburst")
 BASE_POLICY_NAMES = (
     "range_pressure",
@@ -33,6 +33,7 @@ BASE_POLICY_NAMES = (
     "best_response",
 )
 SEAM_PIN_POLICY = "seam_pin_pressure"
+BRACE_POLICY = "brace_counter"
 
 
 class TacticalModelError(ValueError):
@@ -67,6 +68,14 @@ class EscapeSlack:
 
 
 @dataclass(frozen=True)
+class Brace:
+    """One-use, public damage-reduction stance for an exploratory defensive candidate."""
+
+    damage_reduction_percent: int
+    uses_per_actor: int
+
+
+@dataclass(frozen=True)
 class TacticalConfig:
     identifier: str
     label: str
@@ -88,6 +97,7 @@ class TacticalConfig:
     opening_search_depth: int
     seam_pin: SeamPin | None = None
     escape_slack: EscapeSlack | None = None
+    brace: Brace | None = None
 
     def relic(self, identifier: str) -> Relic:
         for relic in self.relics:
@@ -104,6 +114,8 @@ class ActorState:
     seam_pin_turns: int = 0
     seam_pin_cooldown: int = 0
     escape_slack_remaining: int = 0
+    brace_turns: int = 0
+    brace_uses_remaining: int = 0
 
 
 @dataclass(frozen=True)
@@ -174,16 +186,22 @@ def load_config(path: Path) -> TacticalConfig:
         relics.append(Relic(identifier, minimum_range, maximum_range, direct_damage))
 
     seam_pin: SeamPin | None = None
-    if schema_version in {2, 3, 4}:
+    if schema_version in {2, 3, 4, 5}:
         tactical_core = _require_object(raw["tactical_core"], f"{path}.tactical_core")
         _require_exact_keys(
             tactical_core,
-            {"seam_pin"} if schema_version in {2, 3} else {"seam_pin", "escape_slack"},
+            (
+                {"seam_pin"}
+                if schema_version in {2, 3}
+                else {"seam_pin", "escape_slack"}
+                if schema_version == 4
+                else {"seam_pin", "escape_slack", "brace"}
+            ),
             f"{path}.tactical_core",
         )
         seam_pin_raw = _require_object(tactical_core["seam_pin"], f"{path}.tactical_core.seam_pin")
         seam_pin_keys = {"relic_id", "maximum_separation_increase", "target_turns", "cooldown_actor_turns"}
-        if schema_version in {3, 4}:
+        if schema_version in {3, 4, 5}:
             seam_pin_keys |= {"activation", "retreat_cast_rule"}
         _require_exact_keys(
             seam_pin_raw,
@@ -228,13 +246,34 @@ def load_config(path: Path) -> TacticalConfig:
         )
 
     escape_slack: EscapeSlack | None = None
-    if schema_version == 4:
+    if schema_version in {4, 5}:
         escape_slack_raw = _require_object(raw["tactical_core"]["escape_slack"], f"{path}.tactical_core.escape_slack")
         _require_exact_keys(escape_slack_raw, {"per_actor"}, f"{path}.tactical_core.escape_slack")
         escape_slack = EscapeSlack(
             per_actor=_require_positive_integer(
                 escape_slack_raw["per_actor"], f"{path}.tactical_core.escape_slack.per_actor", allow_zero=True
             )
+        )
+
+    brace: Brace | None = None
+    if schema_version == 5:
+        brace_raw = _require_object(raw["tactical_core"]["brace"], f"{path}.tactical_core.brace")
+        _require_exact_keys(
+            brace_raw,
+            {"damage_reduction_percent", "uses_per_actor"},
+            f"{path}.tactical_core.brace",
+        )
+        damage_reduction_percent = _require_positive_integer(
+            brace_raw["damage_reduction_percent"],
+            f"{path}.tactical_core.brace.damage_reduction_percent",
+        )
+        if damage_reduction_percent >= 100:
+            raise TacticalModelError(f"{path}.tactical_core.brace.damage_reduction_percent: expected below 100")
+        brace = Brace(
+            damage_reduction_percent=damage_reduction_percent,
+            uses_per_actor=_require_positive_integer(
+                brace_raw["uses_per_actor"], f"{path}.tactical_core.brace.uses_per_actor"
+            ),
         )
 
     config = TacticalConfig(
@@ -258,6 +297,7 @@ def load_config(path: Path) -> TacticalConfig:
         opening_search_depth=_require_positive_integer(raw["opening_search_depth"], f"{path}.opening_search_depth"),
         seam_pin=seam_pin,
         escape_slack=escape_slack,
+        brace=brace,
     )
     if not (config.actor_margin <= config.player_x < config.world_width - config.actor_margin):
         raise TacticalModelError(f"{path}: player spawn lies outside legal world bounds")
@@ -324,9 +364,20 @@ def initial_state(
         player_x = config.world_width - player_x
         loomkeeper_x = config.world_width - loomkeeper_x
     escape_slack = config.escape_slack.per_actor if config.escape_slack is not None else 0
+    brace_uses = config.brace.uses_per_actor if config.brace is not None else 0
     return TacticalState(
-        player=ActorState(player_x, config.maximum_stitching, escape_slack_remaining=escape_slack),
-        loomkeeper=ActorState(loomkeeper_x, config.maximum_stitching, escape_slack_remaining=escape_slack),
+        player=ActorState(
+            player_x,
+            config.maximum_stitching,
+            escape_slack_remaining=escape_slack,
+            brace_uses_remaining=brace_uses,
+        ),
+        loomkeeper=ActorState(
+            loomkeeper_x,
+            config.maximum_stitching,
+            escape_slack_remaining=escape_slack,
+            brace_uses_remaining=brace_uses,
+        ),
         active_actor=first_actor or config.default_first_actor,
         completed_turns=0,
     )
@@ -337,7 +388,12 @@ def distance(state: TacticalState) -> int:
 
 
 def policy_names(config: TacticalConfig) -> tuple[str, ...]:
-    return BASE_POLICY_NAMES + ((SEAM_PIN_POLICY,) if config.seam_pin is not None else ())
+    candidate_policies: tuple[str, ...] = ()
+    if config.seam_pin is not None:
+        candidate_policies += (SEAM_PIN_POLICY,)
+    if config.brace is not None:
+        candidate_policies += (BRACE_POLICY,)
+    return BASE_POLICY_NAMES + candidate_policies
 
 
 def legal_actions(state: TacticalState, config: TacticalConfig) -> tuple[Action, ...]:
@@ -358,6 +414,8 @@ def legal_actions(state: TacticalState, config: TacticalConfig) -> tuple[Action,
     for direction in (-1, 1):
         if _move_actor(state, state.active_actor, direction, config) != state:
             actions.add(Action("relocate", direction))
+    if config.brace is not None and actor_state(state, state.active_actor).brace_uses_remaining > 0:
+        actions.add(Action("brace"))
     if not actions:
         actions.add(Action("wait"))
     return tuple(sorted(actions, key=action_key))
@@ -369,7 +427,7 @@ def apply_action(state: TacticalState, action: Action, config: TacticalConfig) -
     if state.finished:
         raise TacticalModelError("Cannot act after a terminal result")
 
-    if action.kind == "wait":
+    if action.kind in ("wait", "brace"):
         moved_state = state
     else:
         moved_state = _move_actor(state, state.active_actor, action.direction, config)
@@ -378,30 +436,56 @@ def apply_action(state: TacticalState, action: Action, config: TacticalConfig) -
     # only after the action completes; the tether caster's cooldown also counts
     # only their own completed turns.
     next_state = _complete_active_actor_turn(moved_state, state.active_actor)
-    if action.kind == "cast":
-        assert action.relic_id is not None
-        relic = config.relic(action.relic_id)
-        if not relic.minimum_range <= distance(next_state) <= relic.maximum_range:
-            raise TacticalModelError("Cast left its declared range band")
-        target = other_actor(state.active_actor)
-        target_state = actor_state(next_state, target)
+    if action.kind == "brace":
+        if config.brace is None:
+            raise TacticalModelError("Brace action requires a configured candidate")
+        braced_actor = actor_state(next_state, state.active_actor)
         next_state = replace_actor(
             next_state,
-            target,
-            replace(target_state, stitching=max(0, target_state.stitching - relic.direct_damage)),
-        )
-        if actor_state(next_state, target).stitching == 0:
-            return replace(next_state, completed_turns=state.completed_turns + 1,
-                           winner=state.active_actor, finish_reason="unravelled")
-        next_state = _apply_seam_pin_if_configured(
-            next_state,
             state.active_actor,
-            target,
-            relic,
-            before_movement=state,
-            after_movement=moved_state,
-            config=config,
+            replace(
+                braced_actor,
+                brace_turns=1,
+                brace_uses_remaining=braced_actor.brace_uses_remaining - 1,
+            ),
         )
+    else:
+        target = other_actor(state.active_actor)
+        target_state = actor_state(next_state, target)
+        target_is_braced = target_state.brace_turns > 0
+        if action.kind == "cast":
+            assert action.relic_id is not None
+            relic = config.relic(action.relic_id)
+            if not relic.minimum_range <= distance(next_state) <= relic.maximum_range:
+                raise TacticalModelError("Cast left its declared range band")
+            damage = relic.direct_damage
+            if target_is_braced:
+                if config.brace is None:
+                    raise TacticalModelError("Active Brace state requires a configured candidate")
+                damage = damage * (100 - config.brace.damage_reduction_percent) // 100
+            next_state = replace_actor(
+                next_state,
+                target,
+                replace(
+                    target_state,
+                    stitching=max(0, target_state.stitching - damage),
+                    brace_turns=0,
+                ),
+            )
+            if actor_state(next_state, target).stitching == 0:
+                return replace(next_state, completed_turns=state.completed_turns + 1,
+                               winner=state.active_actor, finish_reason="unravelled")
+            next_state = _apply_seam_pin_if_configured(
+                next_state,
+                state.active_actor,
+                target,
+                relic,
+                before_movement=state,
+                after_movement=moved_state,
+                config=config,
+            )
+        elif target_is_braced:
+            next_state = replace_actor(next_state, target, replace(target_state, brace_turns=0))
 
     completed_turns = state.completed_turns + 1
     if completed_turns >= config.maximum_turns:
@@ -462,6 +546,16 @@ def choose_action(policy: str, state: TacticalState, config: TacticalConfig) -> 
                 -abs(action.direction),
             ))
         return _select_relocation_away(actions, state, config)
+
+    if policy == BRACE_POLICY:
+        brace_action = next((action for action in actions if action.kind == "brace"), None)
+        opponent_damage = _largest_legal_damage_for_actor(state, other_actor(actor), config)
+        own_stitching = actor_state(state, actor).stitching
+        if brace_action is not None and config.brace is not None:
+            braced_damage = opponent_damage * (100 - config.brace.damage_reduction_percent) // 100
+            if opponent_damage >= own_stitching and braced_damage < own_stitching:
+                return brace_action
+        return _best_response_action(state, config)
 
     if policy == SEAM_PIN_POLICY:
         seam_pin_casts = tuple(
@@ -532,6 +626,10 @@ def simulate_match(
             "loomkeeperSeamPinCooldown": state.loomkeeper.seam_pin_cooldown,
             "playerEscapeSlack": state.player.escape_slack_remaining,
             "loomkeeperEscapeSlack": state.loomkeeper.escape_slack_remaining,
+            "playerBraceTurns": state.player.brace_turns,
+            "loomkeeperBraceTurns": state.loomkeeper.brace_turns,
+            "playerBraceUses": state.player.brace_uses_remaining,
+            "loomkeeperBraceUses": state.loomkeeper.brace_uses_remaining,
         })
     return {
         "firstActor": first_actor,
@@ -566,6 +664,17 @@ def run_experiment(config: TacticalConfig, *, starting_distance: int | None = No
             for player_policy, loomkeeper_policy in (
                 (SEAM_PIN_POLICY, "retreat_kite"),
                 ("retreat_kite", SEAM_PIN_POLICY),
+            ):
+                candidate_policy_probes.append(simulate_match(
+                    config, player_policy, loomkeeper_policy,
+                    first_actor=first_actor, mirrored=mirrored,
+                    starting_distance=starting_distance,
+                ))
+    if config.brace is not None:
+        for first_actor, mirrored in (("player", False), ("loomkeeper", True)):
+            for player_policy, loomkeeper_policy in (
+                (BRACE_POLICY, "range_pressure"),
+                ("range_pressure", BRACE_POLICY),
             ):
                 candidate_policy_probes.append(simulate_match(
                     config, player_policy, loomkeeper_policy,
@@ -629,10 +738,19 @@ def run_experiment(config: TacticalConfig, *, starting_distance: int | None = No
             "escapeSlack": None if config.escape_slack is None else {
                 "perActor": config.escape_slack.per_actor,
             },
+            "brace": None if config.brace is None else {
+                "damageReductionPercent": config.brace.damage_reduction_percent,
+                "usesPerActor": config.brace.uses_per_actor,
+            },
         },
         "policySets": {
             "primaryMatrix": list(BASE_POLICY_NAMES),
-            "candidateOnlyProbe": [SEAM_PIN_POLICY] if config.seam_pin is not None else [],
+            "candidateOnlyProbe": [
+                policy for policy, active in (
+                    (SEAM_PIN_POLICY, config.seam_pin is not None),
+                    (BRACE_POLICY, config.brace is not None),
+                ) if active
+            ],
         },
         "startingScenario": {
             "kind": "authority_spawn" if starting_distance is None else "centered_distance",

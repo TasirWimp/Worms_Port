@@ -91,3 +91,13 @@ move, it chooses its best legal cast instead of moving toward the opponent
 under a misleading retreat label. This keeps policy traces useful as bounded
 strategy evidence; it does not claim a human or production Loomkeeper will
 make the same choice.
+
+`v5-range-damage-forward-seam-pin-escape-slack-brace-candidate-d1.json` is a
+separate schema-version 5 defensive probe. Each actor has one public `brace`
+action: it ends the turn and reduces the next opposing direct hit by 50%; it
+expires if that opponent instead relocates. It has no healing, damage return,
+turn-order change, opening protection, runtime path, or production authority.
+Its `brace_counter` probe policy spends the action only when that reduction
+makes the opponent's currently legal hit nonlethal. D1 is recorded as rejected
+negative evidence: a post-hit, damage-only Brace does not counter the
+first-actor direct-hit race in this model.

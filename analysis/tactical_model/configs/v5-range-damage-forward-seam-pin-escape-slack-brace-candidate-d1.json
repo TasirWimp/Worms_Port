@@ -1,0 +1,36 @@
+{
+  "schema_version": 5,
+  "id": "v5-range-damage-forward-seam-pin-escape-slack-brace-candidate-d1",
+  "label": "Exploratory V5 forward-Seam-Pin with Escape Slack and one-use Brace candidate D1",
+  "analysis_status": "exploratory",
+  "source_ruleset_id": "nimble-knots-artillery-v4",
+  "authority_fixture": "analysis/tactical_model/fixtures/v4-authoritative-baseline-v1.json",
+  "assumptions": [
+    "This is not nimble-knots-artillery-v5 and has no runtime, replay, protocol, reward, UI, or asset authority.",
+    "It keeps Candidate C4's ideal-direct-hit range/damage, forward-Stitch, and equal 128-unit non-refilling Escape Slack rules.",
+    "Each actor has one public Brace action for the match. Brace consumes the whole turn and reduces only the next opposing direct hit by 50%; it expires if that opposing turn contains no cast.",
+    "Brace does not heal, reflect damage, block movement, change turn order, or protect an actor before their first turn. Terrain, aim, splash, animation, and production counter-effects remain excluded."
+  ],
+  "world": { "width": 2048, "actor_margin": 12 },
+  "initial": { "seed": 3237998097, "player_x": 512, "loomkeeper_x": 1152, "first_actor": "player" },
+  "turn": { "maximum_turns": 16, "movement_per_turn": 64, "action_economy": "move_and_cast" },
+  "stitching": { "maximum": 100 },
+  "relics": {
+    "threadball": { "minimum_range": 0, "maximum_range": 576, "direct_damage": 45 },
+    "needlepoint": { "minimum_range": 0, "maximum_range": 640, "direct_damage": 30 },
+    "spoolburst": { "minimum_range": 0, "maximum_range": 512, "direct_damage": 80 }
+  },
+  "opening_search_depth": 3,
+  "tactical_core": {
+    "seam_pin": {
+      "relic_id": "needlepoint",
+      "maximum_separation_increase": 32,
+      "target_turns": 1,
+      "cooldown_actor_turns": 1,
+      "activation": "advance_only",
+      "retreat_cast_rule": "forbidden"
+    },
+    "escape_slack": { "per_actor": 128 },
+    "brace": { "damage_reduction_percent": 50, "uses_per_actor": 1 }
+  }
+}

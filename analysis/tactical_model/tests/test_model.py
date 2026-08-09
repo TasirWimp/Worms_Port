@@ -184,6 +184,32 @@ class TacticalModelTests(unittest.TestCase):
             [{"kind": "centered_distance", "startingDistance": value} for value in distances],
         )
 
+    def test_one_use_brace_reduces_one_hit_then_expires_on_the_opponent_turn(self) -> None:
+        config = load_config(CONFIGS / "v5-range-damage-forward-seam-pin-escape-slack-brace-candidate-d1.json")
+        state = initial_state(config)
+        self.assertIn("brace_counter", policy_names(config))
+        self.assertIn(Action("brace"), legal_actions(state, config))
+
+        state = apply_action(state, Action("brace"), config)
+        self.assertEqual((state.player.brace_turns, state.player.brace_uses_remaining), (1, 0))
+        state = apply_action(state, Action("cast", -1, "needlepoint"), config)
+        self.assertEqual(state.player.stitching, 85, "Brace halves the 30-damage Needlepoint hit")
+        self.assertEqual(state.player.brace_turns, 0)
+        self.assertNotIn(Action("brace"), legal_actions(state, config), "Brace is a one-use candidate action")
+
+        expiry = apply_action(initial_state(config), Action("brace"), config)
+        expiry = apply_action(expiry, Action("relocate", 1), config)
+        self.assertEqual(expiry.player.brace_turns, 0, "a non-cast opposing turn consumes the public Brace window")
+
+    def test_brace_counter_uses_brace_only_when_it_turns_a_lethal_hit_nonlethal(self) -> None:
+        config = load_config(CONFIGS / "v5-range-damage-forward-seam-pin-escape-slack-brace-candidate-d1.json")
+        threatened = replace(
+            initial_state(config),
+            player=ActorState(800, 45, escape_slack_remaining=128, brace_uses_remaining=1),
+            loomkeeper=ActorState(1248, config.maximum_stitching, escape_slack_remaining=128, brace_uses_remaining=1),
+        )
+        self.assertEqual(action_key(choose_action("brace_counter", threatened, config)), "brace:-:stay")
+
 
 if __name__ == "__main__":
     unittest.main()

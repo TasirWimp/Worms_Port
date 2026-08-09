@@ -84,9 +84,9 @@ and makes no rendering, network, wallet, reward, or asset decision.
 | Authoritative V4 terrain width, legal arena bounds, and current separation | required; no obstacle or terrain-tactic interpretation |
 | Per-Relic launch band and direct-damage candidate values | required and configuration-driven |
 | Movement/action budget | required; compare its consequences explicitly rather than assuming move-plus-full-cast is harmless |
-| Defense state and its cost | optional candidate only; no Brace mechanic is approved or implemented by this contract |
+| Defense state and its cost | optional candidate only; Candidate D1 models one public one-use, damage-only Brace as rejected analytical evidence; no live Brace mechanic is approved |
 | Overtime/convergence state | optional candidate only; Candidate C models equal non-refilling Escape Slack as an analytical soft-boundary hypothesis; no live Loom Tightening, timeout rule, or meter is approved |
-| Radius, precision, falloff, ammo, cooldown, status effects, Calling modifiers, obstacles, destructible terrain, rewards | excluded unless separately versioned and authorized; Candidates B/B2/C authorize only analysis-only Needlepoint tether/cooldown and Escape Slack hypotheses, never a live rule |
+| Radius, precision, falloff, ammo, cooldown, status effects, Calling modifiers, obstacles, destructible terrain, rewards | excluded unless separately versioned and authorized; Candidates B/B2/C/D1 authorize only analysis-only Needlepoint tether/cooldown, Escape Slack, and rejected Brace hypotheses, never a live rule |
 
 All model transitions must be deterministic. An experiment may sample a policy
 or a listed starting scenario, but given its configuration, policy choice, and
@@ -360,3 +360,32 @@ direction is decisive enough to block a values-only V5 decision. The next D2A
 question is initiative counterplay: a defense/brace candidate, first-turn
 action restriction, or another reversible commitment mechanic must be compared
 against C4 before any live tactical-core work is scoped.
+
+## Candidate D1 basic Brace result - 2026-08-09
+
+D1 tests the smallest conventional defense that could be read on a mobile
+screen: each actor receives one public `brace` action; it spends the entire
+turn and halves only the next opposing direct hit. The stance clears after that
+opponent acts, whether they cast or merely relocate. D1 deliberately adds no
+heal, recoil, displacement, new turn, initial guard, or change to C4's 128
+Escape Slack / forward-Seam-Pin contract. Its `brace_counter` probe uses Brace
+only if an opponent's currently legal hit would otherwise be lethal but becomes
+nonlethal after the reduction.
+
+This is **rejected negative evidence**. At the canonical 640 spawn D1 retains
+C4's 52% first-actor rate and 50/50 Unraveling outcome, with a slightly shorter
+6.04-turn mean. Only two Brace actions appear in the primary matrix. In the
+448/512/576/640/704 sweep it retains exactly the same 64%/60%/64%/52%/76%
+first-actor rates; its Brace policy probes do not spend Brace because the
+50%-reduced hit is either already nonlethal or still lethal. D1 has no
+turn-limit result, but it does not improve the identified initiative residue.
+
+The bounded forced-opening action counts shrink because the search can now
+consider a future Brace state, but forced outcomes remain at 448, 512, and 576:
+Spoolburst still supplies three, two, and one direct-cast forced actions per
+mirrored side, respectively. A defense selected only after the opponent's first
+attack cannot resolve a deterministic direct-hit damage race. Do not tune D1's
+percentage or add it to V5. Any later defense exploration must be separately
+authorized as a **reaction/turn-order** mechanic (or be supported by real
+aim/terrain evidence), rather than disguising a larger action-economy change as
+a simple Brace button.
