@@ -434,8 +434,15 @@ def choose_action(policy: str, state: TacticalState, config: TacticalConfig) -> 
     if policy == "retreat_kite":
         opponent_damage = _largest_legal_damage_for_actor(state, other_actor(actor), config)
         relocations = tuple(action for action in actions if action.kind == "relocate")
-        if opponent_damage > 0 and relocations:
-            return _select_best(relocations, lambda action: (distance(_move_actor(state, actor, action.direction, config)),))
+        separating_relocations = tuple(
+            action for action in relocations
+            if distance(_move_actor(state, actor, action.direction, config)) > distance(state)
+        )
+        if opponent_damage > 0 and separating_relocations:
+            return _select_best(
+                separating_relocations,
+                lambda action: (distance(_move_actor(state, actor, action.direction, config)),),
+            )
         if casts:
             return _select_best(casts, lambda action: (
                 config.relic(action.relic_id or "").maximum_range,

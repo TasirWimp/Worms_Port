@@ -69,3 +69,10 @@ budget: it never freezes a pursuer merely because they have already moved.
 Seam Pin applies first, so a tethered 32-unit retreat consumes exactly 32
 Escape Slack, not the attempted 64. Candidate C remains analytical only and
 does not authorize a live meter, rule, UI, replay field, or status effect.
+
+The `retreat_kite` policy is deliberately constrained to label only a real
+separation-increasing relocation as a retreat. If Escape Slack prevents such a
+move, it chooses its best legal cast instead of moving toward the opponent
+under a misleading retreat label. This keeps policy traces useful as bounded
+strategy evidence; it does not claim a human or production Loomkeeper will
+make the same choice.

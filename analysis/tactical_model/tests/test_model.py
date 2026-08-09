@@ -151,6 +151,21 @@ class TacticalModelTests(unittest.TestCase):
             self.assertEqual(config.escape_slack.per_actor, amount)
             self.assertEqual((state.player.escape_slack_remaining, state.loomkeeper.escape_slack_remaining), (amount, amount))
 
+    def test_retreat_kite_casts_when_escape_slack_prevents_a_real_retreat(self) -> None:
+        config = load_config(CONFIGS / "v5-range-damage-forward-seam-pin-escape-slack-128-candidate-c4.json")
+        self.assertEqual(action_key(choose_action("retreat_kite", initial_state(config), config)), "relocate:-:left")
+
+        no_escape_state = replace(
+            initial_state(config),
+            player=ActorState(512, config.maximum_stitching, escape_slack_remaining=0),
+            loomkeeper=ActorState(1152, config.maximum_stitching, escape_slack_remaining=0),
+        )
+        self.assertEqual(
+            action_key(choose_action("retreat_kite", no_escape_state, config)),
+            "cast:needlepoint:stay",
+            "the policy must cast rather than label an approach as a retreat",
+        )
+
 
 if __name__ == "__main__":
     unittest.main()
