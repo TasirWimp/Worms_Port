@@ -20,8 +20,10 @@ Actor = Literal["player", "loomkeeper"]
 Winner = Actor | Literal["draw"] | None
 ActionKind = Literal["cast", "relocate", "wait"]
 ActionEconomy = Literal["move_and_cast", "committed"]
+SeamPinActivation = Literal["any_direct_hit", "advance_only"]
+RetreatCastRule = Literal["allowed", "forbidden"]
 
-CONFIG_SCHEMA_VERSIONS = {1, 2}
+CONFIG_SCHEMA_VERSIONS = {1, 2, 3}
 RELIC_ORDER = ("threadball", "needlepoint", "spoolburst")
 BASE_POLICY_NAMES = (
     "range_pressure",
@@ -53,6 +55,8 @@ class SeamPin:
     maximum_separation_increase: int
     target_turns: int
     cooldown_actor_turns: int
+    activation: SeamPinActivation
+    retreat_cast_rule: RetreatCastRule
 
 
 @dataclass(frozen=True)
@@ -161,13 +165,16 @@ def load_config(path: Path) -> TacticalConfig:
         relics.append(Relic(identifier, minimum_range, maximum_range, direct_damage))
 
     seam_pin: SeamPin | None = None
-    if schema_version == 2:
+    if schema_version in {2, 3}:
         tactical_core = _require_object(raw["tactical_core"], f"{path}.tactical_core")
         _require_exact_keys(tactical_core, {"seam_pin"}, f"{path}.tactical_core")
         seam_pin_raw = _require_object(tactical_core["seam_pin"], f"{path}.tactical_core.seam_pin")
+        seam_pin_keys = {"relic_id", "maximum_separation_increase", "target_turns", "cooldown_actor_turns"}
+        if schema_version == 3:
+            seam_pin_keys |= {"activation", "retreat_cast_rule"}
         _require_exact_keys(
             seam_pin_raw,
-            {"relic_id", "maximum_separation_increase", "target_turns", "cooldown_actor_turns"},
+            seam_pin_keys,
             f"{path}.tactical_core.seam_pin",
         )
         relic_id = _require_string(seam_pin_raw["relic_id"], f"{path}.tactical_core.seam_pin.relic_id")
@@ -192,6 +199,18 @@ def load_config(path: Path) -> TacticalConfig:
                 seam_pin_raw["cooldown_actor_turns"],
                 f"{path}.tactical_core.seam_pin.cooldown_actor_turns",
                 allow_zero=True,
+            ),
+            activation=(
+                "any_direct_hit" if schema_version == 2 else
+                _require_seam_pin_activation(
+                    seam_pin_raw["activation"], f"{path}.tactical_core.seam_pin.activation"
+                )
+            ),
+            retreat_cast_rule=(
+                "allowed" if schema_version == 2 else
+                _require_retreat_cast_rule(
+                    seam_pin_raw["retreat_cast_rule"], f"{path}.tactical_core.seam_pin.retreat_cast_rule"
+                )
             ),
         )
 
@@ -294,6 +313,8 @@ def legal_actions(state: TacticalState, config: TacticalConfig) -> tuple[Action,
         for relic in config.relics:
             if _seam_pin_is_on_cooldown(state, state.active_actor, relic.identifier, config):
                 continue
+            if _seam_pin_forbids_retreat_cast(state, moved_state, relic.identifier, config):
+                continue
             if relic.minimum_range <= projected_distance <= relic.maximum_range:
                 actions.add(Action("cast", direction, relic.identifier))
     for direction in (-1, 1):
@@ -334,7 +355,15 @@ def apply_action(state: TacticalState, action: Action, config: TacticalConfig) -
         if actor_state(next_state, target).stitching == 0:
             return replace(next_state, completed_turns=state.completed_turns + 1,
                            winner=state.active_actor, finish_reason="unravelled")
-        next_state = _apply_seam_pin_if_configured(next_state, state.active_actor, target, relic, config)
+        next_state = _apply_seam_pin_if_configured(
+            next_state,
+            state.active_actor,
+            target,
+            relic,
+            before_movement=state,
+            after_movement=moved_state,
+            config=config,
+        )
 
     completed_turns = state.completed_turns + 1
     if completed_turns >= config.maximum_turns:
@@ -532,6 +561,8 @@ def run_experiment(config: TacticalConfig) -> dict[str, Any]:
                 "maximumSeparationIncrease": config.seam_pin.maximum_separation_increase,
                 "targetTurns": config.seam_pin.target_turns,
                 "cooldownActorTurns": config.seam_pin.cooldown_actor_turns,
+                "activation": config.seam_pin.activation,
+                "retreatCastRule": config.seam_pin.retreat_cast_rule,
             },
         },
         "policySets": {
@@ -639,14 +670,36 @@ def _seam_pin_is_on_cooldown(state: TacticalState, actor: Actor, relic_id: str, 
     )
 
 
+def _seam_pin_forbids_retreat_cast(
+    before_movement: TacticalState,
+    after_movement: TacticalState,
+    relic_id: str,
+    config: TacticalConfig,
+) -> bool:
+    return (
+        config.seam_pin is not None and
+        relic_id == config.seam_pin.relic_id and
+        config.seam_pin.retreat_cast_rule == "forbidden" and
+        distance(after_movement) > distance(before_movement)
+    )
+
+
 def _apply_seam_pin_if_configured(
     state: TacticalState,
     caster: Actor,
     target: Actor,
     relic: Relic,
+    *,
+    before_movement: TacticalState,
+    after_movement: TacticalState,
     config: TacticalConfig,
 ) -> TacticalState:
     if config.seam_pin is None or relic.identifier != config.seam_pin.relic_id:
+        return state
+    if (
+        config.seam_pin.activation == "advance_only" and
+        distance(after_movement) >= distance(before_movement)
+    ):
         return state
     target_state = actor_state(state, target)
     caster_state = actor_state(state, caster)
@@ -805,4 +858,16 @@ def _require_actor(value: Any, label: str) -> Actor:
 def _require_action_economy(value: Any, label: str) -> ActionEconomy:
     if value not in ("move_and_cast", "committed"):
         raise TacticalModelError(f"{label}: expected move_and_cast or committed")
+    return value
+
+
+def _require_seam_pin_activation(value: Any, label: str) -> SeamPinActivation:
+    if value not in ("any_direct_hit", "advance_only"):
+        raise TacticalModelError(f"{label}: expected any_direct_hit or advance_only")
+    return value
+
+
+def _require_retreat_cast_rule(value: Any, label: str) -> RetreatCastRule:
+    if value not in ("allowed", "forbidden"):
+        raise TacticalModelError(f"{label}: expected allowed or forbidden")
     return value

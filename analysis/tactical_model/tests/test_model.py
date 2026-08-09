@@ -1,10 +1,12 @@
 from __future__ import annotations
 
+from dataclasses import replace
 from pathlib import Path
 import unittest
 
 from analysis.tactical_model.model import (
     Action,
+    ActorState,
     action_key,
     apply_action,
     choose_action,
@@ -91,6 +93,20 @@ class TacticalModelTests(unittest.TestCase):
             action.kind == "cast" and action.relic_id == "needlepoint"
             for action in legal_actions(state, config)
         ), "the caster's immediately following turn observes the configured cooldown")
+
+    def test_forward_seam_pin_requires_advance_and_forbids_retreating_needlepoint(self) -> None:
+        config = load_config(CONFIGS / "v5-range-damage-forward-seam-pin-candidate-b2.json")
+        stationary = apply_action(initial_state(config), Action("cast", 0, "needlepoint"), config)
+        self.assertEqual(stationary.loomkeeper.seam_pin_turns, 0)
+        self.assertEqual(stationary.player.seam_pin_cooldown, 0)
+
+        in_range = replace(initial_state(config), player=ActorState(576, config.maximum_stitching))
+        self.assertIn(Action("cast", 0, "needlepoint"), legal_actions(in_range, config))
+        self.assertNotIn(Action("cast", -1, "needlepoint"), legal_actions(in_range, config))
+
+        advancing = apply_action(in_range, Action("cast", 1, "needlepoint"), config)
+        self.assertEqual(advancing.loomkeeper.seam_pin_turns, 1)
+        self.assertEqual(advancing.player.seam_pin_cooldown, 1)
 
 
 if __name__ == "__main__":

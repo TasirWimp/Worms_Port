@@ -43,3 +43,11 @@ The report's `aggregate` always uses the original five-policy mirrored 50-match
 matrix, so its metrics remain comparable between configurations. Candidate-only
 policies appear separately in `candidatePolicyProbes` rather than silently
 changing the headline sample.
+
+`v5-range-damage-forward-seam-pin-candidate-b2.json` tests the narrower
+forward-stitch rule: a stationary Needlepoint cast still deals its low ideal
+direct damage but creates no tether, a cast after movement away from the target
+is unavailable, and only an advancing cast can apply Seam Pin. It preserves the
+same no-post-shot-movement turn economy as every other model configuration.
+Candidate B2 has no production authority and is evaluated against the same
+primary five-policy matrix as Candidates A and B.

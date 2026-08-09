@@ -86,7 +86,7 @@ and makes no rendering, network, wallet, reward, or asset decision.
 | Movement/action budget | required; compare its consequences explicitly rather than assuming move-plus-full-cast is harmless |
 | Defense state and its cost | optional candidate only; no Brace mechanic is approved or implemented by this contract |
 | Overtime/convergence state | optional candidate only; no Loom Tightening or timeout rule is approved or implemented by this contract |
-| Radius, precision, falloff, ammo, cooldown, status effects, Calling modifiers, obstacles, destructible terrain, rewards | excluded unless separately versioned and authorized; Candidate B alone authorizes an analysis-only Needlepoint tether/cooldown hypothesis, never a live rule |
+| Radius, precision, falloff, ammo, cooldown, status effects, Calling modifiers, obstacles, destructible terrain, rewards | excluded unless separately versioned and authorized; Candidates B/B2 alone authorize analysis-only Needlepoint tether/cooldown hypotheses, never a live rule |
 
 All model transitions must be deterministic. An experiment may sample a policy
 or a listed starting scenario, but given its configuration, policy choice, and
@@ -126,7 +126,7 @@ D2A starts with transparent, bounded policies rather than an opaque optimizer:
 - medium-band hold (seek Threadball's effective band),
 - short-range approach (seek Spoolburst's effective band),
 - retreat/kite (increase separation when threatened),
-- Candidate B-only Seam-Pin pressure (advance while applying the configured
+- Candidate B/B2-only Seam-Pin pressure (advance while applying the configured
   Needlepoint tether, then prefer the strongest currently legal cast),
 - any approved defensive policy only when its candidate action exists, and
 - a bounded-lookahead best-response policy whose evaluation function and depth
@@ -209,6 +209,7 @@ records two intentionally limited comparison configurations:
 | `v4-baseline-abstract-v1` | Needlepoint directly dominates Threadball and Spoolburst under the common 640-unit ideal range; its 120 direct damage has an immediate forced opening in the bounded search. | 60% | 2.84 | 48 Unraveling / 2 turn-limit draws |
 | `v5-range-damage-candidate-a` | The exploratory 640/576/512 range and 30/45/80 damage tiers have no ideal-direct-cast dominance and no bounded forced opening. | 48% | 6.72 | 42 Unraveling / 8 turn-limit draws |
 | `v5-range-damage-seam-pin-candidate-b` | Candidate A's values plus one ideal direct Needlepoint Seam Pin: the target's next distance-increasing movement is capped at 32, and the caster cannot immediately reapply it. No bounded forced opening appears. | 56% | 6.88 | 40 Unraveling / 10 turn-limit draws |
+| `v5-range-damage-forward-seam-pin-candidate-b2` | Candidate B's tether only after the Needlepoint caster advances; a stationary shot deals low direct damage only, and retreat-plus-Needlepoint is unavailable. No bounded forced opening appears. | 48% | 7.12 | 40 Unraveling / 10 turn-limit draws |
 
 Candidate A is not a V5 proposal or an approved values table. Its short-range
 approach versus retreat/kite trace repeatedly oscillates between 576 and 640
@@ -248,3 +249,30 @@ does not yet establish global convergence, final pacing, production accuracy,
 or acceptable initiative balance. It has no TypeScript, replay, client,
 Loomkeeper, asset, or reward path. Any playable Seam Pin remains a separately
 scoped tactical-core work package after owner review.
+
+## Candidate B2 forward-Stitch result â€” 2026-08-09
+
+Candidate B2 tests the narrower response to Candidate B's 56% first-actor
+rate. It preserves the same one target-turn, 32-unit retreat-cap, one-own-turn
+cooldown, candidate-A range/damage table, and `move -> fire -> turn ends`
+economy. It changes only Needlepoint's directional cast rule:
+
+- movement that reduces separation plus a direct Needlepoint hit applies Seam
+  Pin;
+- a stationary direct Needlepoint hit deals its low 30 direct damage but adds
+  no status or cooldown; and
+- a Needlepoint cast that would increase separation is unavailable for that
+  turn. The actor may instead retreat without casting, hold and cast, or
+  advance and cast.
+
+The same four mirrored Seam-Pin-pressure versus retreat/kite probes still give
+the Seam-Pin user a win: five turns when that user acts first and eight when it
+acts second. The key pursuit trace remains 640 -> 576 after an advancing
+Needlepoint cast, then only 608 after the tethered retreat rather than the old
+640 reset. However, the comparable primary matrix returns the first-actor rate
+to 48%, matching Candidate A and removing Candidate B's measured 56%
+initiative increase. It still has 10 turn-limit draws out of 50 and a longer
+7.12-turn mean, so forward-Stitch improves the local initiative residue but
+does not solve global convergence or establish final pacing. B2 remains
+analysis-only and cannot become a live V5 rule without a separately scoped
+tactical-core decision.
