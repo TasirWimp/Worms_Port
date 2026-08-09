@@ -136,9 +136,15 @@ class TacticalModelTests(unittest.TestCase):
                          "an exhausted actor cannot gain additional separation")
 
     def test_escape_slack_candidates_load_with_their_declared_equal_reserves(self) -> None:
-        for amount in (192, 256, 320):
+        candidates = {
+            "v5-range-damage-forward-seam-pin-escape-slack-128-candidate-c4.json": 128,
+            "v5-range-damage-forward-seam-pin-escape-slack-192-candidate-c1.json": 192,
+            "v5-range-damage-forward-seam-pin-escape-slack-256-candidate-c2.json": 256,
+            "v5-range-damage-forward-seam-pin-escape-slack-320-candidate-c3.json": 320,
+        }
+        for filename, amount in candidates.items():
             config = load_config(
-                CONFIGS / f"v5-range-damage-forward-seam-pin-escape-slack-{amount}-candidate-c{(amount - 128) // 64}.json"
+                CONFIGS / filename
             )
             state = initial_state(config)
             self.assertIsNotNone(config.escape_slack)

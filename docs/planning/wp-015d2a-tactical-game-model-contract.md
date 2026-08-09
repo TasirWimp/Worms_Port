@@ -210,6 +210,7 @@ records two intentionally limited comparison configurations:
 | `v5-range-damage-candidate-a` | The exploratory 640/576/512 range and 30/45/80 damage tiers have no ideal-direct-cast dominance and no bounded forced opening. | 48% | 6.72 | 42 Unraveling / 8 turn-limit draws |
 | `v5-range-damage-seam-pin-candidate-b` | Candidate A's values plus one ideal direct Needlepoint Seam Pin: the target's next distance-increasing movement is capped at 32, and the caster cannot immediately reapply it. No bounded forced opening appears. | 56% | 6.88 | 40 Unraveling / 10 turn-limit draws |
 | `v5-range-damage-forward-seam-pin-candidate-b2` | Candidate B's tether only after the Needlepoint caster advances; a stationary shot deals low direct damage only, and retreat-plus-Needlepoint is unavailable. No bounded forced opening appears. | 48% | 7.12 | 40 Unraveling / 10 turn-limit draws |
+| `v5-range-damage-forward-seam-pin-escape-slack-128-candidate-c4` | Candidate B2 plus 128 equal non-refilling Escape Slack per actor. No ideal direct-cast dominance or bounded forced opening appears. | 52% | 6.20 | 48 Unraveling / 2 turn-limit draws |
 | `v5-range-damage-forward-seam-pin-escape-slack-192-candidate-c1` | Candidate B2 plus 192 equal non-refilling Escape Slack per actor. No ideal direct-cast dominance or bounded forced opening appears. | 52% | 6.52 | 48 Unraveling / 2 turn-limit draws |
 | `v5-range-damage-forward-seam-pin-escape-slack-256-candidate-c2` | Candidate B2 plus 256 equal non-refilling Escape Slack per actor. No ideal direct-cast dominance or bounded forced opening appears. | 52% | 6.76 | 46 Unraveling / 4 turn-limit draws |
 | `v5-range-damage-forward-seam-pin-escape-slack-320-candidate-c3` | Candidate B2 plus 320 equal non-refilling Escape Slack per actor. No ideal direct-cast dominance or bounded forced opening appears. | 52% | 7.00 | 46 Unraveling / 4 turn-limit draws |
@@ -292,28 +293,30 @@ approach and cast but can no longer move farther away. The reserve is private
 and symmetric, not a shared race. A Seam-Pinned 32-unit retreat consumes only
 32 units because the Seam Pin cap is applied before Escape Slack accounting.
 
-The 192, 256, and 320-unit configurations correspond to at most three, four,
-and five unpinned 64-unit separation-increasing moves per actor, respectively.
-All retain B2's advance-only Needlepoint, one-turn tether/cooldown, and
-`move -> fire -> turn ends` economy. They are schema-versioned analysis
-configurations only; neither an on-screen reserve nor a live combat rule has
-been designed or approved.
+The 128, 192, 256, and 320-unit configurations correspond to at most two,
+three, four, and five unpinned 64-unit separation-increasing moves per actor,
+respectively. All retain B2's advance-only Needlepoint, one-turn
+tether/cooldown, and `move -> fire -> turn ends` economy. They are
+schema-versioned analysis configurations only; neither an on-screen reserve nor
+a live combat rule has been designed or approved.
 
-In the comparable 50-match mirrored primary matrix, C1 is the strongest of the
-three bounded samples: it reduces B2's 10 turn-limit outcomes to 2 while
-keeping 48 Unraveling outcomes, and its 52% first-actor rate is materially
-lower than Candidate B's 56% but higher than B2's 48%. C2 and C3 both produce
-four turn-limit outcomes and longer average matches, so more escape capacity is
-not better in this model. All three retain no direct-cast dominance and no
-bounded-depth forced opening. The existing four Seam-Pin-pressure versus
-retreat/kite probes still resolve in five or eight turns because their short
-traces do not exhaust even C1's reserve.
+In the comparable 50-match mirrored primary matrix, C4 and C1 are the
+strongest bounded samples: each reduces B2's 10 turn-limit outcomes to 2 while
+keeping 48 Unraveling outcomes, and each has a 52% first-actor rate. C4 is the
+narrower reserve and reaches terminal results in 6.20 turns on average, versus
+C1's 6.52. C2 and C3 both produce four turn-limit outcomes and longer average
+matches, so more escape capacity is not better in this model. All four retain
+no direct-cast dominance and no bounded-depth forced opening. The existing four
+Seam-Pin-pressure versus retreat/kite probes still resolve in five or eight
+turns because their short traces do not exhaust even C4's reserve.
 
-C1 resolves the earlier short-approach versus retreat/kite and other
+C4 resolves the earlier short-approach versus retreat/kite and other
 pressure-versus-kite turn-limit cases in this policy sample. Its two remaining
-timeouts are the mirrored retreat/kite versus retreat/kite pair: both
-heuristics continue to avoid a firing commitment after their reserves are
-spent. This is important residue, not a reason to call C1 convergent or ready
-for production. A subsequent candidate must test whether a readable defensive
-commitment, a later-game pressure rule, or a different policy model produces
-better counterplay without turning the reserve into a hidden forced march.
+timeouts are the mirrored retreat/kite versus retreat/kite pair, exactly as in
+C1: both heuristics continue to avoid a firing commitment after their reserves
+are spent. Reducing the reserve from 192 to 128 therefore shortens the resolved
+matches but does not settle a voluntary mutual retreat. This is important
+residue, not a reason to call C4 convergent or ready for production. A
+subsequent candidate must test whether a readable defensive commitment, a
+later-game pressure rule, or a different policy model produces better
+counterplay without turning the reserve into a hidden forced march.

@@ -90,7 +90,7 @@
     "Candidate A is useful negative evidence, not an approved V5 values table. Its 576/640 pursuit-retreat oscillation led to separately versioned Candidate B analysis, not a V5 rule.",
     "Candidate B demonstrates a direct-hit Needlepoint counter to the specific equal-retreat trace, but its comparable primary matrix has 10 turn-limit draws out of 50 matches and a 56% first-actor rate. It is not approved for production or sufficient evidence of global convergence.",
     "Candidate B2 preserves the direct counter trace and returns its comparable first-actor rate to 48%, but still records 10 turn-limit draws out of 50 and an average 7.12 turns. It is not approved for production or sufficient evidence of global convergence.",
-    "Candidate C1's equal 192-unit per-actor Escape Slack reduces the same bounded policy matrix to 2 turn-limit draws out of 50, but raises the first-actor rate to 52%; C2/C3 each retain 4 draw outcomes. The remaining C1 mutual-retreat policy pair and the model's ideal-hit/heuristic limits mean no Escape Slack value is approved for production.",
+    "Candidate C4's equal 128-unit per-actor Escape Slack reduces the same bounded policy matrix to 2 turn-limit draws out of 50 with a 52% first-actor rate and 6.20 average turns; C1 reaches the same terminal mix at 6.52 turns, while C2/C3 each retain 4 draw outcomes. The remaining C4/C1 mutual-retreat policy pair and the model's ideal-hit/heuristic limits mean no Escape Slack value is approved for production.",
     "npm audit reports the existing high-severity nanoid advisory through vite -> postcss; D2A did not alter the dependency graph or lockfile."
   ]
 }
