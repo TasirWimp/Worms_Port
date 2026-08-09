@@ -211,3 +211,19 @@ result across all 250 cross-band matches, but first-actor wins fall to 44.0%
 first-turn-only initiative compensation can close the hard structural failures,
 but all-Relic full damage negation is too strong. No Opening Weave UI, replay,
 server, reward, or V5 rule is approved.
+
+`v5-range-damage-forward-seam-pin-escape-slack-opening-weave-paid-second-actor-candidate-h2.json`
+is the schema-version 13 paid follow-up. The second actor may spend one full
+64-unit Escape-Slack step to absorb one opening direct hit, rather than having
+the hit cancelled automatically. The primary policy spends only against
+Threadball or Spoolburst (45+ direct damage), but the bounded opening search
+also evaluates the legal paid response to every Relic. This keeps the decision
+and its movement-reserve residue explicit.
+
+H2 closes forced openings, recurrence, and turn limits across the 250-match
+cross-band sweep, with 48.8% first-actor wins overall. Its range bands remain
+materially uneven (44%/40%/44%/40%/76% by ascending start), so it is rejected
+as a live balance candidate rather than tuned further. It is useful evidence
+that a priced opening response can be structurally sound, but cannot by itself
+fix the long-range asymmetry. No Opening Weave UI, replay, server, reward, or
+V5 rule is approved.

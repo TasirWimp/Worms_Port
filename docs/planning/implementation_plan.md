@@ -42,6 +42,13 @@ Phaser/Socket.IO stack.
   turn-limit outcomes, but flips initiative to a 44.0% first-actor rate; full
   damage negation is therefore rejected as overcompensation. No second-actor
   status, UI, replay, reward, or V5 rule is approved.
+  Candidate H2 makes that opening response optional and prices a use at one
+  existing 64-unit Escape-Slack step. It removes the forced-opening,
+  recurrence, and turn-limit witnesses with a 48.8% aggregate first-actor rate,
+  but leaves a 44%/40%/44%/40%/76% distance-band split. It is therefore
+  rejected as a live compensation rule: a price resolves neither the short-
+  range second-actor advantage nor the long-range first-actor advantage. No
+  Opening Weave status, UI, replay, reward, or V5 rule is approved.
   **WP-015D1 V4 wider
   arena and pan camera completed on 2026-08-08**
   on `codex/wp-015-production-assets`: V4 preserves historical replays while

@@ -633,6 +633,49 @@ the hard openings, but it must be weaker or more conditional than total damage
 negation. No Opening Weave status, UI, replay field, server rule, reward change,
 or V5 rule is approved.
 
+## Candidate H2 paid second-actor Opening Weave - 2026-08-09
+
+H2 is the narrow cost follow-up to H1. It retains plain C4 and H1's exact
+second-actor assignment and first-response expiry, but makes use optional and
+priced. When a direct cast hits during the first actor's opening action, the
+second actor may either accept normal damage or spend one full existing
+64-unit Escape-Slack step to absorb it. The Weave then consumes; if unused, it
+still expires after its owner's first normal action. This creates a readable
+trade: preserve current Stitching against a strong opening, or preserve later
+retreat capacity after the opponent has seen the choice.
+
+The live-player choice is not reduced to the model's heuristic. For a stable
+primary matrix, every transparent policy uses the documented threshold of 45
+or more direct damage: it spends against Threadball or Spoolburst but not
+Needlepoint. The bounded opening search separately grants the second actor both
+legal outcomes whenever the reserve permits, so the candidate cannot hide a
+forced opening behind that threshold. The 64 cost exactly matches one normal
+movement step and uses the existing C4 reserve; no health tax, lost turn, new
+meter, or hidden handicap is introduced. H2 is schema version 13 and remains
+analysis-only pending canonical and cross-band results.
+
+### Candidate H2 result - 2026-08-09
+
+The paid choice fixes H1's structural result without returning to an automatic
+shield: all 250 centered 448/512/576/640/704 matches Unravel, the recurrence
+gate records zero non-terminal witnesses, and the reaction-aware opening search
+finds no bounded forced action at any start. The canonical 640 start also has
+50/50 Unraveling results, zero recurrence or forced-opening witnesses, a 6.56
+turn mean, and a 40% first-actor rate. The opening search now explicitly tests
+both the normal policy's 45-or-more-damage choice and the legal costly response
+to every direct Relic hit; the latter prevents a policy threshold from being
+mistaken for a missing player option.
+
+Its cross-band aggregate is near parity at **48.8% first-actor wins**
+(44%/40%/44%/40%/76% by ascending start) with a 5.928-turn mean. That mean is
+not sufficient evidence of a balanced rule: H2 trades H1's global second-actor
+overcompensation for a distance-dependent result. It strongly favors the
+second actor through 640, while the first actor still has a 76% advantage at
+704. The one-step price is therefore useful calibration and a valid response
+contract, but it does not repair the underlying range-band asymmetry. H2 is
+rejected as a live balance candidate; no Opening Weave status, UI, replay
+field, server rule, reward change, or V5 rule is approved.
+
 ## G0 Opening and reaction contract - 2026-08-09
 
 The remaining problem is now more precise than a generic “first actor

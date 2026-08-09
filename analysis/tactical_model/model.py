@@ -23,7 +23,7 @@ ActionEconomy = Literal["move_and_cast", "committed"]
 SeamPinActivation = Literal["any_direct_hit", "advance_only"]
 RetreatCastRule = Literal["allowed", "forbidden"]
 
-CONFIG_SCHEMA_VERSIONS = {1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12}
+CONFIG_SCHEMA_VERSIONS = {1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13}
 RELIC_ORDER = ("threadball", "needlepoint", "spoolburst")
 BASE_POLICY_NAMES = (
     "range_pressure",
@@ -35,6 +35,7 @@ BASE_POLICY_NAMES = (
 SEAM_PIN_POLICY = "seam_pin_pressure"
 BRACE_POLICY = "brace_counter"
 THREADSTEP_POLICY = "threadstep_counter"
+OPENING_WEAVE_POLICY = "opening_weave_counter"
 
 
 class TacticalModelError(ValueError):
@@ -131,6 +132,9 @@ class OpeningWeave:
     beneficiary: Literal["second_actor"]
     absorbed_hits: int
     expiry: Literal["after_beneficiary_first_action"]
+    activation: Literal["automatic", "optional"] = "automatic"
+    escape_slack_cost: int = 0
+    counter_policy_minimum_damage: int = 0
 
 
 @dataclass(frozen=True)
@@ -253,7 +257,7 @@ def load_config(path: Path) -> TacticalConfig:
         relics.append(Relic(identifier, minimum_range, maximum_range, direct_damage))
 
     seam_pin: SeamPin | None = None
-    if schema_version in {2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12}:
+    if schema_version in {2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13}:
         tactical_core = _require_object(raw["tactical_core"], f"{path}.tactical_core")
         _require_exact_keys(
             tactical_core,
@@ -277,12 +281,14 @@ def load_config(path: Path) -> TacticalConfig:
                 else {"seam_pin", "escape_slack", "spoolburst_preparation", "spoolburst_cocoon", "spoolburst_threadback"}
                 if schema_version == 11
                 else {"seam_pin", "escape_slack", "opening_weave"}
+                if schema_version == 12
+                else {"seam_pin", "escape_slack", "opening_weave"}
             ),
             f"{path}.tactical_core",
         )
         seam_pin_raw = _require_object(tactical_core["seam_pin"], f"{path}.tactical_core.seam_pin")
         seam_pin_keys = {"relic_id", "maximum_separation_increase", "target_turns", "cooldown_actor_turns"}
-        if schema_version in {3, 4, 5, 6, 7, 8, 9, 10, 11, 12}:
+        if schema_version in {3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13}:
             seam_pin_keys |= {"activation", "retreat_cast_rule"}
         _require_exact_keys(
             seam_pin_raw,
@@ -327,7 +333,7 @@ def load_config(path: Path) -> TacticalConfig:
         )
 
     escape_slack: EscapeSlack | None = None
-    if schema_version in {4, 5, 6, 7, 8, 9, 10, 11, 12}:
+    if schema_version in {4, 5, 6, 7, 8, 9, 10, 11, 12, 13}:
         escape_slack_raw = _require_object(raw["tactical_core"]["escape_slack"], f"{path}.tactical_core.escape_slack")
         _require_exact_keys(escape_slack_raw, {"per_actor"}, f"{path}.tactical_core.escape_slack")
         escape_slack = EscapeSlack(
@@ -501,14 +507,21 @@ def load_config(path: Path) -> TacticalConfig:
         cast_threadstep = CastThreadstep(separation_increase=separation_increase)
 
     opening_weave: OpeningWeave | None = None
-    if schema_version == 12:
+    if schema_version in {12, 13}:
         opening_weave_raw = _require_object(
             raw["tactical_core"]["opening_weave"],
             f"{path}.tactical_core.opening_weave",
         )
         _require_exact_keys(
             opening_weave_raw,
-            {"beneficiary", "absorbed_hits", "expiry"},
+            (
+                {"beneficiary", "absorbed_hits", "expiry"}
+                if schema_version == 12
+                else {
+                    "beneficiary", "absorbed_hits", "expiry", "activation",
+                    "escape_slack_cost", "counter_policy_minimum_damage",
+                }
+            ),
             f"{path}.tactical_core.opening_weave",
         )
         beneficiary = _require_string(
@@ -529,10 +542,37 @@ def load_config(path: Path) -> TacticalConfig:
             raise TacticalModelError(
                 f"{path}.tactical_core.opening_weave: requires exactly one absorbed direct hit"
             )
+        activation = "automatic" if schema_version == 12 else _require_string(
+            opening_weave_raw["activation"], f"{path}.tactical_core.opening_weave.activation"
+        )
+        if activation not in {"automatic", "optional"}:
+            raise TacticalModelError(
+                f"{path}.tactical_core.opening_weave.activation: expected automatic or optional"
+            )
+        escape_slack_cost = 0 if schema_version == 12 else _require_positive_integer(
+            opening_weave_raw["escape_slack_cost"],
+            f"{path}.tactical_core.opening_weave.escape_slack_cost",
+            allow_zero=True,
+        )
+        counter_policy_minimum_damage = 0 if schema_version == 12 else _require_positive_integer(
+            opening_weave_raw["counter_policy_minimum_damage"],
+            f"{path}.tactical_core.opening_weave.counter_policy_minimum_damage",
+        )
+        if schema_version == 13:
+            movement_per_turn = _require_positive_integer(
+                turn["movement_per_turn"], f"{path}.turn.movement_per_turn"
+            )
+            if activation != "optional" or escape_slack_cost != movement_per_turn:
+                raise TacticalModelError(
+                    f"{path}.tactical_core.opening_weave: requires optional use at one full movement-step cost"
+                )
         opening_weave = OpeningWeave(
             beneficiary="second_actor",
             absorbed_hits=absorbed_hits,
             expiry="after_beneficiary_first_action",
+            activation=activation,
+            escape_slack_cost=escape_slack_cost,
+            counter_policy_minimum_damage=counter_policy_minimum_damage,
         )
 
     config = TacticalConfig(
@@ -586,6 +626,15 @@ def load_config(path: Path) -> TacticalConfig:
             raise TacticalModelError(f"{path}.tactical_core.spoolburst_threadback: requires Escape Slack")
     if config.cast_threadstep is not None and config.escape_slack is None:
         raise TacticalModelError(f"{path}.tactical_core.cast_threadstep: requires Escape Slack")
+    if (
+        config.opening_weave is not None and
+        config.opening_weave.escape_slack_cost > 0 and
+        (
+            config.escape_slack is None or
+            config.opening_weave.escape_slack_cost > config.escape_slack.per_actor
+        )
+    ):
+        raise TacticalModelError(f"{path}.tactical_core.opening_weave: cost exceeds available opening Escape Slack")
     return config
 
 
@@ -733,6 +782,8 @@ def policy_names(config: TacticalConfig) -> tuple[str, ...]:
         candidate_policies += (BRACE_POLICY,)
     if config.cast_threadstep is not None:
         candidate_policies += (THREADSTEP_POLICY,)
+    if config.opening_weave is not None and config.opening_weave.activation == "optional":
+        candidate_policies += (OPENING_WEAVE_POLICY,)
     return BASE_POLICY_NAMES + candidate_policies
 
 
@@ -860,9 +911,14 @@ def apply_action(
             cast_evaded = not relic.minimum_range <= distance(next_state) <= relic.maximum_range
             if cast_evaded and config.cast_threadstep is None:
                 raise TacticalModelError("Cast unexpectedly left its declared range band")
-            damage = 0 if cast_evaded else relic.direct_damage
             cocoon_absorbs = _spoolburst_cocoon_absorbs_cast(target_state, relic, config)
-            opening_weave_absorbs = _opening_weave_absorbs_cast(target_state, config)
+            opening_weave_absorbs = _opening_weave_should_absorb(
+                target_state,
+                relic,
+                target_reaction_policy,
+                config,
+            )
+            damage = 0 if cast_evaded else relic.direct_damage
             if (cocoon_absorbs or opening_weave_absorbs) and not cast_evaded:
                 damage = 0
             if target_is_braced and not cast_evaded:
@@ -894,6 +950,11 @@ def apply_action(
                         target_state.opening_weave_hits_remaining - 1
                         if opening_weave_absorbs and not cast_evaded
                         else target_state.opening_weave_hits_remaining
+                    ),
+                    escape_slack_remaining=(
+                        target_state.escape_slack_remaining - config.opening_weave.escape_slack_cost
+                        if opening_weave_absorbs and not cast_evaded and config.opening_weave is not None
+                        else target_state.escape_slack_remaining
                     ),
                 ),
             )
@@ -1189,6 +1250,15 @@ def simulate_match(
                 actor_state(before, target).opening_weave_hits_remaining >
                 actor_state(state, target).opening_weave_hits_remaining
             ) else None,
+            "openingWeaveEscapeSlackCost": (
+                actor_state(before, target).escape_slack_remaining -
+                actor_state(state, target).escape_slack_remaining
+                if action.kind == "cast" and
+                config.opening_weave is not None and
+                actor_state(before, target).opening_weave_hits_remaining >
+                actor_state(state, target).opening_weave_hits_remaining
+                else 0
+            ),
         })
         if not state.finished:
             state_key = tactical_state_key(state)
@@ -1250,6 +1320,17 @@ def run_experiment(config: TacticalConfig, *, starting_distance: int | None = No
             for player_policy, loomkeeper_policy in (
                 (THREADSTEP_POLICY, "range_pressure"),
                 ("range_pressure", THREADSTEP_POLICY),
+            ):
+                candidate_policy_probes.append(simulate_match(
+                    config, player_policy, loomkeeper_policy,
+                    first_actor=first_actor, mirrored=mirrored,
+                    starting_distance=starting_distance,
+                ))
+    if config.opening_weave is not None and config.opening_weave.activation == "optional":
+        for first_actor, mirrored in (("player", False), ("loomkeeper", True)):
+            for player_policy, loomkeeper_policy in (
+                (OPENING_WEAVE_POLICY, "range_pressure"),
+                ("range_pressure", OPENING_WEAVE_POLICY),
             ):
                 candidate_policy_probes.append(simulate_match(
                     config, player_policy, loomkeeper_policy,
@@ -1370,6 +1451,11 @@ def run_experiment(config: TacticalConfig, *, starting_distance: int | None = No
                 "absorbedHits": config.opening_weave.absorbed_hits,
                 "expiry": config.opening_weave.expiry,
                 "absorbedRelics": list(RELIC_ORDER),
+                **({
+                    "activation": config.opening_weave.activation,
+                    "escapeSlackCost": config.opening_weave.escape_slack_cost,
+                    "counterPolicyMinimumDamage": config.opening_weave.counter_policy_minimum_damage,
+                } if config.opening_weave.activation == "optional" else {}),
             },
         },
         "policySets": {
@@ -1379,6 +1465,10 @@ def run_experiment(config: TacticalConfig, *, starting_distance: int | None = No
                     (SEAM_PIN_POLICY, config.seam_pin is not None),
                     (BRACE_POLICY, config.brace is not None),
                     (THREADSTEP_POLICY, config.cast_threadstep is not None),
+                    (
+                        OPENING_WEAVE_POLICY,
+                        config.opening_weave is not None and config.opening_weave.activation == "optional",
+                    ),
                 ) if active
             ],
         },
@@ -1531,6 +1621,19 @@ def _forced_action_outcomes(
         )
         if threaded != outcomes[0]:
             outcomes.append(threaded)
+    if (
+        action.kind == "cast" and
+        config.opening_weave is not None and
+        config.opening_weave.activation == "optional"
+    ):
+        woven = apply_action(
+            state,
+            action,
+            config,
+            target_reaction_policy=OPENING_WEAVE_POLICY,
+        )
+        if woven not in outcomes:
+            outcomes.append(woven)
     return tuple(outcomes)
 
 
@@ -1732,10 +1835,26 @@ def _spoolburst_cocoon_absorbs_cast(
     )
 
 
-def _opening_weave_absorbs_cast(target_state: ActorState, config: TacticalConfig) -> bool:
+def _opening_weave_should_absorb(
+    target_state: ActorState,
+    relic: Relic,
+    target_reaction_policy: str | None,
+    config: TacticalConfig,
+) -> bool:
+    """Resolve H1's automatic guard or H2's optional, priced counter choice."""
+
+    opening_weave = config.opening_weave
+    if opening_weave is None or target_state.opening_weave_hits_remaining <= 0:
+        return False
+    if opening_weave.activation == "automatic":
+        return True
+    if target_reaction_policy == OPENING_WEAVE_POLICY:
+        return target_state.escape_slack_remaining >= opening_weave.escape_slack_cost
+    if target_reaction_policy not in BASE_POLICY_NAMES:
+        return False
     return (
-        config.opening_weave is not None and
-        target_state.opening_weave_hits_remaining > 0
+        target_state.escape_slack_remaining >= opening_weave.escape_slack_cost and
+        relic.direct_damage >= opening_weave.counter_policy_minimum_damage
     )
 
 

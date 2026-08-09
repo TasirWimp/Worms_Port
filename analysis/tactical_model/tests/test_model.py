@@ -455,6 +455,98 @@ class TacticalModelTests(unittest.TestCase):
             self.assertEqual(scenario["aggregate"]["openingSearch"]["loomkeeper"]["forcedWinActionsWithinDepth"], [])
             self.assertTrue(scenario["tacticalVoyage"]["recurrenceGate"]["passesFixedWitness"])
 
+    def test_h2_opening_weave_makes_a_priced_choice_between_stitching_and_future_retreat(self) -> None:
+        config = load_config(
+            CONFIGS / "v5-range-damage-forward-seam-pin-escape-slack-opening-weave-paid-second-actor-candidate-h2.json"
+        )
+        close_opening = initial_state(config, starting_distance=512)
+
+        accepted = apply_action(close_opening, Action("cast", 0, "spoolburst"), config)
+        self.assertEqual(
+            (accepted.loomkeeper.stitching, accepted.loomkeeper.escape_slack_remaining,
+             accepted.loomkeeper.opening_weave_hits_remaining),
+            (20, 128, 1),
+        )
+
+        woven = apply_action(
+            close_opening,
+            Action("cast", 0, "spoolburst"),
+            config,
+            target_reaction_policy="opening_weave_counter",
+        )
+        self.assertEqual(
+            (woven.loomkeeper.stitching, woven.loomkeeper.escape_slack_remaining,
+             woven.loomkeeper.opening_weave_hits_remaining),
+            (100, 64, 0),
+        )
+
+        needle_opening = initial_state(config)
+        needle = apply_action(
+            needle_opening,
+            Action("cast", 0, "needlepoint"),
+            config,
+            target_reaction_policy="retreat_kite",
+        )
+        self.assertEqual(
+            (needle.loomkeeper.stitching, needle.loomkeeper.escape_slack_remaining,
+             needle.loomkeeper.opening_weave_hits_remaining),
+            (70, 128, 1),
+            "the recorded policy preserves mobility against the low-damage Needlepoint opening",
+        )
+
+        needle_countered = apply_action(
+            needle_opening,
+            Action("cast", 0, "needlepoint"),
+            config,
+            target_reaction_policy="opening_weave_counter",
+        )
+        self.assertEqual(
+            (needle_countered.loomkeeper.stitching, needle_countered.loomkeeper.escape_slack_remaining,
+             needle_countered.loomkeeper.opening_weave_hits_remaining),
+            (100, 64, 0),
+            "the opening search must retain the costly response as a legal player choice",
+        )
+
+        insufficient_slack = replace(
+            close_opening,
+            loomkeeper=replace(close_opening.loomkeeper, escape_slack_remaining=32),
+        )
+        unavailable = apply_action(
+            insufficient_slack,
+            Action("cast", 0, "spoolburst"),
+            config,
+            target_reaction_policy="opening_weave_counter",
+        )
+        self.assertEqual((unavailable.loomkeeper.stitching, unavailable.loomkeeper.opening_weave_hits_remaining), (20, 1))
+
+    def test_h2_opening_search_includes_spending_the_optional_opening_weave(self) -> None:
+        config = load_config(
+            CONFIGS / "v5-range-damage-forward-seam-pin-escape-slack-opening-weave-paid-second-actor-candidate-h2.json"
+        )
+        report = run_experiment(config, starting_distance=512)
+        self.assertIn("opening_weave_counter", report["policySets"]["candidateOnlyProbe"])
+        self.assertEqual(len(report["candidatePolicyProbes"]), 8,
+                         "H2 retains C4 Seam-Pin probes and adds four optional-Opening-Weave probes")
+        self.assertEqual(report["tacticalCore"]["openingWeave"]["escapeSlackCost"], 64)
+        self.assertEqual(report["tacticalCore"]["openingWeave"]["counterPolicyMinimumDamage"], 45)
+
+    def test_h2_paid_opening_weave_closes_openings_but_leaves_distance_band_imbalance(self) -> None:
+        config = load_config(
+            CONFIGS / "v5-range-damage-forward-seam-pin-escape-slack-opening-weave-paid-second-actor-candidate-h2.json"
+        )
+        report = run_starting_distance_sweep(config, (448, 512, 576, 640, 704))
+        self.assertEqual(report["aggregate"]["terminalReasons"], {"unravelled": 250})
+        self.assertEqual(report["aggregate"]["firstActorWinRate"], 0.488)
+        self.assertEqual(report["aggregate"]["averageTurns"], 5.928)
+        self.assertEqual(
+            [scenario["aggregate"]["firstActorWinRate"] for scenario in report["scenarioReports"]],
+            [0.44, 0.4, 0.44, 0.4, 0.76],
+        )
+        for scenario in report["scenarioReports"]:
+            self.assertEqual(scenario["aggregate"]["openingSearch"]["player"]["forcedWinActionsWithinDepth"], [])
+            self.assertEqual(scenario["aggregate"]["openingSearch"]["loomkeeper"]["forcedWinActionsWithinDepth"], [])
+            self.assertTrue(scenario["tacticalVoyage"]["recurrenceGate"]["passesFixedWitness"])
+
     def test_threadback_candidate_passes_the_fixed_recurrence_gate_but_still_reports_its_initiative_risk(self) -> None:
         config = load_config(
             CONFIGS / "v5-range-damage-forward-seam-pin-escape-slack-spoolburst-preparation-threadback-unweave-candidate-f3.json"
