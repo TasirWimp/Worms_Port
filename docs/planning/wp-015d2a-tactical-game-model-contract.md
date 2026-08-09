@@ -86,11 +86,38 @@ and makes no rendering, network, wallet, reward, or asset decision.
 | Movement/action budget | required; compare its consequences explicitly rather than assuming move-plus-full-cast is harmless |
 | Defense state and its cost | optional candidate only; Candidate D1 models one public one-use, damage-only Brace as rejected analytical evidence; no live Brace mechanic is approved |
 | Overtime/convergence state | optional candidate only; Candidate C models equal non-refilling Escape Slack as an analytical soft-boundary hypothesis; no live Loom Tightening, timeout rule, or meter is approved |
-| Radius, precision, falloff, ammo, cooldown, status effects, Calling modifiers, obstacles, destructible terrain, rewards | excluded unless separately versioned and authorized; Candidates B/B2/C/D1/E/F1/F2 authorize only analysis-only Needlepoint tether/cooldown, Escape Slack, rejected Brace/self-backlash, and rejected prepared-Spoolburst/Threadball response hypotheses, never a live rule |
+| Radius, precision, falloff, ammo, cooldown, status effects, Calling modifiers, obstacles, destructible terrain, rewards | excluded unless separately versioned and authorized; Candidates B/B2/C/D1/E/F1/F2/F3 authorize only analysis-only Needlepoint tether/cooldown, Escape Slack, rejected Brace/self-backlash, and rejected prepared-Spoolburst/Threadball response hypotheses, never a live rule |
 
 All model transitions must be deterministic. An experiment may sample a policy
 or a listed starting scenario, but given its configuration, policy choice, and
 seed it must reproduce the same trace and result.
+
+## Tactical voyage recurrence gate - 2026-08-09
+
+This is a bounded L4+ CRPM-inspired analytical lens, adapted under the
+project's existing method-only CRPM reference boundary. It is not a runtime
+dependency, player model, balance proof, or production rule. Each simulated
+state is viewed through a fixed tactical cut consisting of the active actor,
+both positions, Stitching, temporary tactical states, and bounded reserves.
+Completed-turn count is intentionally excluded: reaching the turn limit does
+not count as tactical progress.
+
+The protected family is intentionally narrow:
+
+1. a visible commitment has a credible response;
+2. that response leaves a changed tactical state rather than a free
+   non-terminal return; and
+3. the fixed policy witness reaches Unraveling instead of relying on a turn
+   limit.
+
+The model records the first repeated non-terminal state for every match. A
+candidate fails this recurrence gate whenever one appears in its declared
+fixed-policy witness. This is a deterministic diagnostic for the stated
+state-cut and policies only; it does not prove absence of loops in real play or
+in unmodelled terrain/aim scenarios. It makes F2's prior trace diagnosis
+machine-checkable and requires any later response candidate to leave visible
+residue in a bounded state carrier such as position, Stitching, Escape Slack,
+or another explicitly versioned finite resource.
 
 ## Analytical Python harness
 
@@ -479,3 +506,28 @@ improved initiative headline. A later candidate must price, limit, or otherwise
 make a successful Unweave alter the board/health state without reinstating an
 immediate first-shot race. No live Cocoon, Unweave, 100-damage Spoolburst,
 status/UI/replay field, or V5 rule is approved.
+
+## Candidate F3 Threadback Unweave result - 2026-08-09
+
+F3 is the narrow recurrence-gate follow-up. It returns to C4's 80-damage
+prepared Spoolburst and removes F2's Cocoon entirely, so Cocoon absorption
+cannot confound the result. A normal 45-damage Threadball Strike leaves a
+preparation intact. The separate zero-damage Threadball Unweave clears the
+preparation only when the counter-caster can take one full 64-unit step away
+from the prepared opponent. That forced Threadback spends exactly 64 of the
+counter-caster's existing Escape Slack; with less than one full legal step,
+Unweave is unavailable. It introduces no fresh meter, damage, reaction timing,
+or live action-economy claim.
+
+F3 passes the declared fixed recurrence gate: every 448/512/576/640/704
+scenario has zero repeated non-terminal tactical states and all 250 matches
+end by Unraveling. The corresponding first-actor rates are
+72%/68%/72%/56%/76%, or 68.8% overall with a 7.072-turn mean. This is worse
+than C4's 63.0% and F2's 58.4%, even though it repairs F2's 20 turn-limit
+results.
+
+F3 is therefore **rejected negative evidence**. The recurrence gate correctly
+distinguishes the repaired convergence carrier from an acceptable balance
+landfall: a visible, bounded residue is necessary, but alone does not repair
+initiative fairness. No Threadback, forced movement, charge state, UI, replay
+field, or V5 rule is approved.

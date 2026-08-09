@@ -303,6 +303,63 @@ class TacticalModelTests(unittest.TestCase):
         self.assertEqual(resolved.player.spoolburst_cocoon_hits_remaining, 0,
                          "The Cocoon is gone when its owner releases or abandons the charge")
 
+    def test_f2_recurrence_gate_exposes_the_non_terminal_prepare_unweave_return(self) -> None:
+        config = load_config(
+            CONFIGS / "v5-range-damage-forward-seam-pin-escape-slack-spun-cocoon-threadball-unweave-candidate-f2.json"
+        )
+        match = simulate_match(
+            config,
+            "medium_hold",
+            "short_approach",
+            first_actor="player",
+            mirrored=False,
+            starting_distance=576,
+        )
+        self.assertEqual((match["winner"], match["finishReason"]), ("draw", "turn_limit"))
+        recurrence = match["nonterminalRecurrence"]
+        self.assertIsNotNone(recurrence)
+        assert recurrence is not None
+        self.assertEqual(recurrence["cycleTurns"], 2)
+        self.assertEqual(recurrence["state"]["activeActor"], "player")
+        self.assertEqual(recurrence["state"]["player"]["escapeSlack"], 128)
+        self.assertEqual(recurrence["state"]["loomkeeper"]["escapeSlack"], 128)
+
+    def test_threadback_unweave_reorganizes_the_board_using_existing_escape_slack(self) -> None:
+        config = load_config(
+            CONFIGS / "v5-range-damage-forward-seam-pin-escape-slack-spoolburst-preparation-threadback-unweave-candidate-f3.json"
+        )
+        opening = initial_state(config, starting_distance=448)
+        prepared = apply_action(opening, Action("prepare_spoolburst", 0), config)
+        self.assertIn(Action("unweave_spoolburst", 0, "threadball"), legal_actions(prepared, config))
+        self.assertIn(Action("cast", 0, "threadball"), legal_actions(prepared, config))
+
+        struck = apply_action(prepared, Action("cast", 0, "threadball"), config)
+        self.assertEqual((struck.player.stitching, struck.player.spoolburst_preparation_turns), (55, 1),
+                         "F3 isolates Threadback: a normal Threadball Strike must not also cancel preparation")
+
+        unwoven = apply_action(prepared, Action("unweave_spoolburst", 0, "threadball"), config)
+        self.assertEqual(distance(unwoven), 512)
+        self.assertEqual(unwoven.loomkeeper.escape_slack_remaining, 64)
+        self.assertEqual(unwoven.player.escape_slack_remaining, 128)
+        self.assertEqual(unwoven.player.spoolburst_preparation_turns, 0)
+        self.assertEqual(unwoven.loomkeeper.stitching, 100)
+
+        no_slack = replace(prepared, loomkeeper=replace(prepared.loomkeeper, escape_slack_remaining=0))
+        self.assertNotIn(Action("unweave_spoolburst", 0, "threadball"), legal_actions(no_slack, config),
+                         "A Threadback cannot become a zero-cost cancellation after Escape Slack is exhausted")
+
+    def test_threadback_candidate_passes_the_fixed_recurrence_gate_but_still_reports_its_initiative_risk(self) -> None:
+        config = load_config(
+            CONFIGS / "v5-range-damage-forward-seam-pin-escape-slack-spoolburst-preparation-threadback-unweave-candidate-f3.json"
+        )
+        report = run_starting_distance_sweep(config, (448, 512, 576, 640, 704))
+        self.assertEqual(report["aggregate"]["terminalReasons"], {"unravelled": 250})
+        self.assertEqual(report["aggregate"]["firstActorWinRate"], 0.688)
+        for scenario in report["scenarioReports"]:
+            gate = scenario["tacticalVoyage"]["recurrenceGate"]
+            self.assertTrue(gate["passesFixedWitness"])
+            self.assertEqual(gate["nonterminalRecurrenceMatchCount"], 0)
+
 
 if __name__ == "__main__":
     unittest.main()

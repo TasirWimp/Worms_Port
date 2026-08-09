@@ -20,7 +20,13 @@ Phaser/Socket.IO stack.
   prepared-Spoolburst/Threadball disruption proves an answerable commitment
   loop but is also rejected as a balance solution. Candidate F2 Cocoon/Unweave
   lowers the cross-band first-actor rate but creates a deterministic denial loop,
-  so it too is rejected as a balance solution. **WP-015D1 V4 wider
+  so it too is rejected as a balance solution. A bounded L4+ CRPM-inspired
+  recurrence gate now records the first repeated non-terminal state under a
+  declared tactical cut; it is analysis governance only, not a runtime
+  dependency or game doctrine. Candidate F3 Threadback-Unweave removes F2's
+  loop by spending existing Escape Slack through forced separation, but worsens
+  cross-band initiative to 68.8%, so it too is rejected negative evidence.
+  **WP-015D1 V4 wider
   arena and pan camera completed on 2026-08-08**
   on `codex/wp-015-production-assets`: V4 preserves historical replays while
   admitting no obstacle, tactical-terrain, balance, or asset work.

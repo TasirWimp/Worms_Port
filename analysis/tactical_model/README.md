@@ -143,3 +143,21 @@ first-actor rate below C4, but produces a pure prepare/Unweave loop in every
 medium-hold versus short-approach pairing. It remains rejected analysis-only
 evidence: no Cocoon, 100-damage Spoolburst, Unweave action, UI, replay field,
 or V5 ruleset is approved.
+
+`v5-range-damage-forward-seam-pin-escape-slack-spoolburst-preparation-threadback-unweave-candidate-f3.json`
+is the isolated schema-version 9 follow-up. It deliberately removes F2's Cocoon
+so the test asks one question only: can an Unweave remain a readable counter
+without returning the duel to the same tactical state? A zero-damage Threadball
+Unweave clears a prepared Spoolburst only when its caster can take one full
+64-unit step away using their existing Escape Slack. Normal Threadball damage
+does not clear preparation. The report's `tacticalVoyage.recurrenceGate` uses a
+declared tactical-state cut—active actor, position, Stitching, temporary state,
+and bounded reserves, but not elapsed turns—to surface repeated non-terminal
+states in the fixed policy witness. This is an L4+ CRPM-inspired analytical
+lens, not a runtime dependency, player model, or production design authority.
+
+F3 removes F2's repeated-state witnesses and all 250 cross-band matches
+Unravel, but its cross-band first-actor rate rises to 68.8%. It is therefore
+rejected negative evidence: a visible residual can repair convergence without
+repairing initiative fairness. No Threadback, forced movement, charge state,
+UI, replay field, or V5 rule is approved.
