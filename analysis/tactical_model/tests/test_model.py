@@ -402,6 +402,59 @@ class TacticalModelTests(unittest.TestCase):
             self.assertEqual(scenario["aggregate"]["openingSearch"]["loomkeeper"]["forcedWinActionsWithinDepth"], [])
             self.assertTrue(scenario["tacticalVoyage"]["recurrenceGate"]["passesFixedWitness"])
 
+    def test_h1_opening_weave_is_public_to_the_second_actor_and_expires_after_the_response_turn(self) -> None:
+        config = load_config(
+            CONFIGS / "v5-range-damage-forward-seam-pin-escape-slack-opening-weave-second-actor-candidate-h1.json"
+        )
+        opening = initial_state(config)
+        self.assertEqual((opening.player.opening_weave_hits_remaining, opening.loomkeeper.opening_weave_hits_remaining), (0, 1))
+
+        absorbed = apply_action(opening, Action("cast", 0, "needlepoint"), config)
+        self.assertEqual((absorbed.loomkeeper.stitching, absorbed.loomkeeper.opening_weave_hits_remaining), (100, 0))
+
+        mirrored = initial_state(config, first_actor="loomkeeper", mirrored=True)
+        self.assertEqual((mirrored.player.opening_weave_hits_remaining, mirrored.loomkeeper.opening_weave_hits_remaining), (1, 0))
+
+        unanswered = apply_action(opening, Action("relocate", -1), config)
+        self.assertEqual(unanswered.loomkeeper.opening_weave_hits_remaining, 1)
+        expired = apply_action(unanswered, Action("relocate", 1), config)
+        self.assertEqual(expired.loomkeeper.opening_weave_hits_remaining, 0,
+                         "the guard cannot be carried after its owner receives the first normal response turn")
+
+    def test_h1_opening_weave_is_part_of_the_tactical_state_cut_and_report(self) -> None:
+        config = load_config(
+            CONFIGS / "v5-range-damage-forward-seam-pin-escape-slack-opening-weave-second-actor-candidate-h1.json"
+        )
+        report = run_experiment(config)
+        self.assertEqual(report["tacticalCore"]["openingWeave"], {
+            "beneficiary": "second_actor",
+            "absorbedHits": 1,
+            "expiry": "after_beneficiary_first_action",
+            "absorbedRelics": ["threadball", "needlepoint", "spoolburst"],
+        })
+        self.assertTrue(any(
+            step["openingWeaveAbsorbedFor"] is not None
+            for match in report["matches"]
+            for step in match["trace"]
+        ))
+
+    def test_h1_removes_openings_without_recurrence_but_overcompensates_the_second_actor(self) -> None:
+        config = load_config(
+            CONFIGS / "v5-range-damage-forward-seam-pin-escape-slack-opening-weave-second-actor-candidate-h1.json"
+        )
+        report = run_starting_distance_sweep(config, (448, 512, 576, 640, 704))
+        self.assertEqual(report["aggregate"]["terminalReasons"], {"unravelled": 250})
+        self.assertEqual(report["aggregate"]["firstActorWinRate"], 0.44)
+        self.assertEqual(report["aggregate"]["averageTurns"], 6.152)
+        self.assertEqual(
+            [scenario["aggregate"]["firstActorWinRate"] for scenario in report["scenarioReports"]],
+            [0.4, 0.36, 0.4, 0.36, 0.68],
+        )
+        for scenario in report["scenarioReports"]:
+            self.assertEqual(scenario["aggregate"]["openingSearch"]["player"]["forcedWinActionsWithinDepth"], [])
+            self.assertEqual(scenario["aggregate"]["openingSearch"]["loomkeeper"]["forcedWinActionsWithinDepth"], [])
+            self.assertTrue(scenario["tacticalVoyage"]["recurrenceGate"]["passesFixedWitness"])
+
     def test_threadback_candidate_passes_the_fixed_recurrence_gate_but_still_reports_its_initiative_risk(self) -> None:
         config = load_config(
             CONFIGS / "v5-range-damage-forward-seam-pin-escape-slack-spoolburst-preparation-threadback-unweave-candidate-f3.json"

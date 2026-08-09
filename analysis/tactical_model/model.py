@@ -23,7 +23,7 @@ ActionEconomy = Literal["move_and_cast", "committed"]
 SeamPinActivation = Literal["any_direct_hit", "advance_only"]
 RetreatCastRule = Literal["allowed", "forbidden"]
 
-CONFIG_SCHEMA_VERSIONS = {1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11}
+CONFIG_SCHEMA_VERSIONS = {1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12}
 RELIC_ORDER = ("threadball", "needlepoint", "spoolburst")
 BASE_POLICY_NAMES = (
     "range_pressure",
@@ -125,6 +125,15 @@ class CastThreadstep:
 
 
 @dataclass(frozen=True)
+class OpeningWeave:
+    """A public one-hit opening guard held only by the actor who acts second."""
+
+    beneficiary: Literal["second_actor"]
+    absorbed_hits: int
+    expiry: Literal["after_beneficiary_first_action"]
+
+
+@dataclass(frozen=True)
 class TacticalConfig:
     identifier: str
     label: str
@@ -152,6 +161,7 @@ class TacticalConfig:
     spoolburst_cocoon: SpoolburstCocoon | None = None
     spoolburst_threadback: SpoolburstThreadback | None = None
     cast_threadstep: CastThreadstep | None = None
+    opening_weave: OpeningWeave | None = None
 
     def relic(self, identifier: str) -> Relic:
         for relic in self.relics:
@@ -172,6 +182,7 @@ class ActorState:
     brace_uses_remaining: int = 0
     spoolburst_preparation_turns: int = 0
     spoolburst_cocoon_hits_remaining: int = 0
+    opening_weave_hits_remaining: int = 0
 
 
 @dataclass(frozen=True)
@@ -242,7 +253,7 @@ def load_config(path: Path) -> TacticalConfig:
         relics.append(Relic(identifier, minimum_range, maximum_range, direct_damage))
 
     seam_pin: SeamPin | None = None
-    if schema_version in {2, 3, 4, 5, 6, 7, 8, 9, 10, 11}:
+    if schema_version in {2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12}:
         tactical_core = _require_object(raw["tactical_core"], f"{path}.tactical_core")
         _require_exact_keys(
             tactical_core,
@@ -264,12 +275,14 @@ def load_config(path: Path) -> TacticalConfig:
                 else {"seam_pin", "escape_slack", "cast_threadstep"}
                 if schema_version == 10
                 else {"seam_pin", "escape_slack", "spoolburst_preparation", "spoolburst_cocoon", "spoolburst_threadback"}
+                if schema_version == 11
+                else {"seam_pin", "escape_slack", "opening_weave"}
             ),
             f"{path}.tactical_core",
         )
         seam_pin_raw = _require_object(tactical_core["seam_pin"], f"{path}.tactical_core.seam_pin")
         seam_pin_keys = {"relic_id", "maximum_separation_increase", "target_turns", "cooldown_actor_turns"}
-        if schema_version in {3, 4, 5, 6, 7, 8, 9, 10, 11}:
+        if schema_version in {3, 4, 5, 6, 7, 8, 9, 10, 11, 12}:
             seam_pin_keys |= {"activation", "retreat_cast_rule"}
         _require_exact_keys(
             seam_pin_raw,
@@ -314,7 +327,7 @@ def load_config(path: Path) -> TacticalConfig:
         )
 
     escape_slack: EscapeSlack | None = None
-    if schema_version in {4, 5, 6, 7, 8, 9, 10, 11}:
+    if schema_version in {4, 5, 6, 7, 8, 9, 10, 11, 12}:
         escape_slack_raw = _require_object(raw["tactical_core"]["escape_slack"], f"{path}.tactical_core.escape_slack")
         _require_exact_keys(escape_slack_raw, {"per_actor"}, f"{path}.tactical_core.escape_slack")
         escape_slack = EscapeSlack(
@@ -487,6 +500,41 @@ def load_config(path: Path) -> TacticalConfig:
             )
         cast_threadstep = CastThreadstep(separation_increase=separation_increase)
 
+    opening_weave: OpeningWeave | None = None
+    if schema_version == 12:
+        opening_weave_raw = _require_object(
+            raw["tactical_core"]["opening_weave"],
+            f"{path}.tactical_core.opening_weave",
+        )
+        _require_exact_keys(
+            opening_weave_raw,
+            {"beneficiary", "absorbed_hits", "expiry"},
+            f"{path}.tactical_core.opening_weave",
+        )
+        beneficiary = _require_string(
+            opening_weave_raw["beneficiary"], f"{path}.tactical_core.opening_weave.beneficiary"
+        )
+        expiry = _require_string(
+            opening_weave_raw["expiry"], f"{path}.tactical_core.opening_weave.expiry"
+        )
+        if beneficiary != "second_actor" or expiry != "after_beneficiary_first_action":
+            raise TacticalModelError(
+                f"{path}.tactical_core.opening_weave: requires a second-actor, first-action-expiring guard"
+            )
+        absorbed_hits = _require_positive_integer(
+            opening_weave_raw["absorbed_hits"],
+            f"{path}.tactical_core.opening_weave.absorbed_hits",
+        )
+        if absorbed_hits != 1:
+            raise TacticalModelError(
+                f"{path}.tactical_core.opening_weave: requires exactly one absorbed direct hit"
+            )
+        opening_weave = OpeningWeave(
+            beneficiary="second_actor",
+            absorbed_hits=absorbed_hits,
+            expiry="after_beneficiary_first_action",
+        )
+
     config = TacticalConfig(
         identifier=_require_string(raw["id"], f"{path}.id"),
         label=_require_string(raw["label"], f"{path}.label"),
@@ -514,6 +562,7 @@ def load_config(path: Path) -> TacticalConfig:
         spoolburst_cocoon=spoolburst_cocoon,
         spoolburst_threadback=spoolburst_threadback,
         cast_threadstep=cast_threadstep,
+        opening_weave=opening_weave,
     )
     if not (config.actor_margin <= config.player_x < config.world_width - config.actor_margin):
         raise TacticalModelError(f"{path}: player spawn lies outside legal world bounds")
@@ -597,20 +646,25 @@ def initial_state(
         loomkeeper_x = config.world_width - loomkeeper_x
     escape_slack = config.escape_slack.per_actor if config.escape_slack is not None else 0
     brace_uses = config.brace.uses_per_actor if config.brace is not None else 0
+    active_actor = first_actor or config.default_first_actor
+    second_actor = other_actor(active_actor)
+    opening_weave_hits = config.opening_weave.absorbed_hits if config.opening_weave is not None else 0
     return TacticalState(
         player=ActorState(
             player_x,
             config.maximum_stitching,
             escape_slack_remaining=escape_slack,
             brace_uses_remaining=brace_uses,
+            opening_weave_hits_remaining=opening_weave_hits if second_actor == "player" else 0,
         ),
         loomkeeper=ActorState(
             loomkeeper_x,
             config.maximum_stitching,
             escape_slack_remaining=escape_slack,
             brace_uses_remaining=brace_uses,
+            opening_weave_hits_remaining=opening_weave_hits if second_actor == "loomkeeper" else 0,
         ),
-        active_actor=first_actor or config.default_first_actor,
+        active_actor=active_actor,
         completed_turns=0,
     )
 
@@ -640,6 +694,7 @@ def tactical_state_key(state: TacticalState) -> tuple[Any, ...]:
             actor.brace_uses_remaining,
             actor.spoolburst_preparation_turns,
             actor.spoolburst_cocoon_hits_remaining,
+            actor.opening_weave_hits_remaining,
         )
 
     return (state.active_actor, actor_key(state.player), actor_key(state.loomkeeper))
@@ -660,6 +715,7 @@ def tactical_state_snapshot(state: TacticalState) -> dict[str, Any]:
             "braceUses": actor.brace_uses_remaining,
             "spoolburstPreparationTurns": actor.spoolburst_preparation_turns,
             "spoolburstCocoonHits": actor.spoolburst_cocoon_hits_remaining,
+            "openingWeaveHits": actor.opening_weave_hits_remaining,
         }
 
     return {
@@ -806,7 +862,8 @@ def apply_action(
                 raise TacticalModelError("Cast unexpectedly left its declared range band")
             damage = 0 if cast_evaded else relic.direct_damage
             cocoon_absorbs = _spoolburst_cocoon_absorbs_cast(target_state, relic, config)
-            if cocoon_absorbs and not cast_evaded:
+            opening_weave_absorbs = _opening_weave_absorbs_cast(target_state, config)
+            if (cocoon_absorbs or opening_weave_absorbs) and not cast_evaded:
                 damage = 0
             if target_is_braced and not cast_evaded:
                 if config.brace is None:
@@ -832,6 +889,11 @@ def apply_action(
                     spoolburst_cocoon_hits_remaining=(
                         target_state.spoolburst_cocoon_hits_remaining - 1
                         if cocoon_absorbs and not cast_evaded else target_state.spoolburst_cocoon_hits_remaining
+                    ),
+                    opening_weave_hits_remaining=(
+                        target_state.opening_weave_hits_remaining - 1
+                        if opening_weave_absorbs and not cast_evaded
+                        else target_state.opening_weave_hits_remaining
                     ),
                 ),
             )
@@ -1073,6 +1135,8 @@ def simulate_match(
             "loomkeeperSpoolburstPreparationTurns": state.loomkeeper.spoolburst_preparation_turns,
             "playerSpoolburstCocoonHits": state.player.spoolburst_cocoon_hits_remaining,
             "loomkeeperSpoolburstCocoonHits": state.loomkeeper.spoolburst_cocoon_hits_remaining,
+            "playerOpeningWeaveHits": state.player.opening_weave_hits_remaining,
+            "loomkeeperOpeningWeaveHits": state.loomkeeper.opening_weave_hits_remaining,
             "spoolburstPreparationStartedBy": actor if (
                 actor_state(before, actor).spoolburst_preparation_turns == 0 and
                 actor_state(state, actor).spoolburst_preparation_turns > 0
@@ -1118,6 +1182,12 @@ def simulate_match(
             "spoolburstCocoonAbsorbedFor": target if (
                 actor_state(before, target).spoolburst_cocoon_hits_remaining >
                 actor_state(state, target).spoolburst_cocoon_hits_remaining
+            ) else None,
+            "openingWeaveAbsorbedFor": target if (
+                action.kind == "cast" and
+                config.opening_weave is not None and
+                actor_state(before, target).opening_weave_hits_remaining >
+                actor_state(state, target).opening_weave_hits_remaining
             ) else None,
         })
         if not state.finished:
@@ -1294,6 +1364,12 @@ def run_experiment(config: TacticalConfig, *, starting_distance: int | None = No
                 "requiresFullEscapeSlack": True,
                 "resolutionWindow": "after declared caster movement and before direct damage",
                 "activation": "selected defensive policy only when the exact step evades the cast",
+            },
+            "openingWeave": None if config.opening_weave is None else {
+                "beneficiary": config.opening_weave.beneficiary,
+                "absorbedHits": config.opening_weave.absorbed_hits,
+                "expiry": config.opening_weave.expiry,
+                "absorbedRelics": list(RELIC_ORDER),
             },
         },
         "policySets": {
@@ -1656,6 +1732,13 @@ def _spoolburst_cocoon_absorbs_cast(
     )
 
 
+def _opening_weave_absorbs_cast(target_state: ActorState, config: TacticalConfig) -> bool:
+    return (
+        config.opening_weave is not None and
+        target_state.opening_weave_hits_remaining > 0
+    )
+
+
 def _spoolburst_backlash_prevents_cast(
     state: TacticalState,
     actor: Actor,
@@ -1729,6 +1812,7 @@ def _complete_active_actor_turn(state: TacticalState, actor: Actor) -> TacticalS
             current.spoolburst_cocoon_hits_remaining
             if current.spoolburst_preparation_turns > 0 else 0
         ),
+        opening_weave_hits_remaining=0,
     )
     return replace_actor(state, actor, completed)
 

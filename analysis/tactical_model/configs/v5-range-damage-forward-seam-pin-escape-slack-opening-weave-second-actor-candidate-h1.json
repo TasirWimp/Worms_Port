@@ -1,0 +1,41 @@
+{
+  "schema_version": 12,
+  "id": "v5-range-damage-forward-seam-pin-escape-slack-opening-weave-second-actor-candidate-h1",
+  "label": "Exploratory V5 C4 with second-actor Opening Weave candidate H1",
+  "analysis_status": "exploratory",
+  "source_ruleset_id": "nimble-knots-artillery-v4",
+  "authority_fixture": "analysis/tactical_model/fixtures/v4-authoritative-baseline-v1.json",
+  "assumptions": [
+    "This is not nimble-knots-artillery-v5 and has no runtime, replay, protocol, reward, UI, or asset authority.",
+    "It retains Candidate C4's ideal-direct-hit range/damage values, forward-only Needlepoint Seam Pin, and equal non-refilling 128-unit Escape Slack reserve.",
+    "Only the actor assigned the second normal turn starts with one public Opening Weave. It absorbs one incoming ideal direct cast from any Relic during the first actor's opening action, then is consumed.",
+    "If the first actor does not cast, the Opening Weave expires when its owner completes that owner's first normal action. It cannot be refilled, held after that response opportunity, stacked, or used as a later combat shield.",
+    "Fire still ends the caster's turn. Terrain, aim, splash, animation, UI, and production counter-effects remain excluded."
+  ],
+  "world": { "width": 2048, "actor_margin": 12 },
+  "initial": { "seed": 3237998097, "player_x": 512, "loomkeeper_x": 1152, "first_actor": "player" },
+  "turn": { "maximum_turns": 16, "movement_per_turn": 64, "action_economy": "move_and_cast" },
+  "stitching": { "maximum": 100 },
+  "relics": {
+    "threadball": { "minimum_range": 0, "maximum_range": 576, "direct_damage": 45 },
+    "needlepoint": { "minimum_range": 0, "maximum_range": 640, "direct_damage": 30 },
+    "spoolburst": { "minimum_range": 0, "maximum_range": 512, "direct_damage": 80 }
+  },
+  "opening_search_depth": 3,
+  "tactical_core": {
+    "seam_pin": {
+      "relic_id": "needlepoint",
+      "maximum_separation_increase": 32,
+      "target_turns": 1,
+      "cooldown_actor_turns": 1,
+      "activation": "advance_only",
+      "retreat_cast_rule": "forbidden"
+    },
+    "escape_slack": { "per_actor": 128 },
+    "opening_weave": {
+      "beneficiary": "second_actor",
+      "absorbed_hits": 1,
+      "expiry": "after_beneficiary_first_action"
+    }
+  }
+}

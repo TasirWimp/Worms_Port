@@ -195,3 +195,19 @@ forced opening, recurrence witness, or turn-limit result across all 250
 cross-band matches, but its 63.2% first-actor rate is slightly worse than C4's
 63.0% and rises to 80% at the 704 start. No Cocoon, preparation, Unweave,
 Threadback, UI, replay field, or V5 rule is approved.
+
+`v5-range-damage-forward-seam-pin-escape-slack-opening-weave-second-actor-candidate-h1.json`
+is the schema-version 12 second-actor compensation probe. Only the actor that
+takes the second normal turn begins with one public Opening Weave. It absorbs
+one direct hit from any Relic during the first actor's opening action; if that
+action does not cast, it expires when its owner completes the first normal
+response action. It cannot be saved, refilled, stacked, or applied after that
+opening exchange, and its state is included in the recurrence cut.
+
+H1 is rejected analysis-only evidence because the full one-hit protection
+overcompensates. It has no forced opening, recurrence witness, or turn-limit
+result across all 250 cross-band matches, but first-actor wins fall to 44.0%
+(including 36% at the 512 and 640 starts). It proves that a public,
+first-turn-only initiative compensation can close the hard structural failures,
+but all-Relic full damage negation is too strong. No Opening Weave UI, replay,
+server, reward, or V5 rule is approved.

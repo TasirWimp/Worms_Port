@@ -86,7 +86,7 @@ and makes no rendering, network, wallet, reward, or asset decision.
 | Movement/action budget | required; compare its consequences explicitly rather than assuming move-plus-full-cast is harmless |
 | Defense state and its cost | optional candidate only; Candidate D1 models one public one-use, damage-only Brace as rejected analytical evidence; no live Brace mechanic is approved |
 | Overtime/convergence state | optional candidate only; Candidate C models equal non-refilling Escape Slack as an analytical soft-boundary hypothesis; no live Loom Tightening, timeout rule, or meter is approved |
-| Radius, precision, falloff, ammo, cooldown, status effects, Calling modifiers, obstacles, destructible terrain, rewards | excluded unless separately versioned and authorized; Candidates B/B2/C/D1/E/F1/F2/F3 authorize only analysis-only Needlepoint tether/cooldown, Escape Slack, rejected Brace/self-backlash, and rejected prepared-Spoolburst/Threadball response hypotheses, never a live rule |
+| Radius, precision, falloff, ammo, cooldown, status effects, Calling modifiers, obstacles, destructible terrain, rewards | excluded unless separately versioned and authorized; Candidates B/B2/C/D1/E/F1/F2/F3/F4/G1/H1 authorize only analysis-only Needlepoint tether/cooldown, Escape Slack, rejected Brace/self-backlash, prepared-Spoolburst/Threadball/Cocoon/Threadback response hypotheses, pre-hit Threadstep, and second-actor opening compensation, never a live rule |
 
 All model transitions must be deterministic. An experiment may sample a policy
 or a listed starting scenario, but given its configuration, policy choice, and
@@ -589,6 +589,49 @@ that the F2/F3 recombination solves forced-openings and recurrence without yet
 repairing initiative across the full distance family. Retain it as the leading
 structural reference, but authorize no Cocoon, preparation, Unweave,
 Threadback, UI, replay, or V5 rule.
+
+## Candidate H1 second-actor Opening Weave - 2026-08-09
+
+H1 tests an explicit, public initiative compensation rather than attempting to
+make every Relic independently erase first-actor tempo. It returns to plain C4
+and therefore does not combine with F4's preparation, Cocoon, or Threadback.
+The actor assigned the second normal turn begins with exactly one Opening
+Weave. A cast on the first actor's opening action deals no direct damage to
+that actor and consumes the Weave. If the first actor instead relocates, holds,
+or otherwise declines a cast, the Weave expires when its owner completes that
+owner's first normal action. The owner has then received the promised response
+opportunity and cannot carry the protection into later combat.
+
+This is a bounded side-assignment rule, not a hidden handicap: the recipient,
+one-hit capacity, all-Relic coverage, and expiry are public model state. It
+cannot stack, refill, convert to movement, change a later cast, or absorb a
+second hit. A consumed or expired Weave is included in the tactical recurrence
+cut. H1 is schema version 12, analysis-only, and introduces no UI, replay,
+server, reward, or V5 authority. The experiment must demonstrate no forced
+opening, no non-terminal recurrence, no turn-limit terminal result, and a
+credible improvement in the mirrored first-actor family before any later owner
+decision.
+
+### Candidate H1 result - 2026-08-09
+
+H1 cleanly closes the original opening and convergence failures: every one of
+the 250 centered 448/512/576/640/704 matches Unravels, the recurrence gate has
+zero witnesses, and the reaction-aware opening search reports no bounded forced
+action at any start. The Opening Weave is active evidence rather than inert
+configuration: it absorbs 160 first-action direct casts across the primary
+cross-band traces. The canonical 640 start also has 50/50 Unraveling results,
+zero recurrence witnesses, no forced opening, and a 6.76-turn mean.
+
+It nevertheless **overcompensates and is rejected as a balance candidate**.
+The cross-band first-actor rate falls to 44.0%
+(40%/36%/40%/36%/68% by ascending start), which reverses the systematic side
+advantage rather than bringing it toward parity. The canonical first-actor rate
+is 36%. A full all-Relic absorbed hit is therefore too large an opening komi
+under the ideal-direct-hit model—even though it is bounded, public, and free of
+loops. The result is useful calibration: an initiative compensation can solve
+the hard openings, but it must be weaker or more conditional than total damage
+negation. No Opening Weave status, UI, replay field, server rule, reward change,
+or V5 rule is approved.
 
 ## G0 Opening and reaction contract - 2026-08-09
 

@@ -37,6 +37,11 @@ Phaser/Socket.IO stack.
   every cross-band start, but its 63.2% aggregate first-actor rate (including
   80% at 704) does not improve C4's 63.0%; it remains a structural reference
   only, with no V5 rule approved.
+  Candidate H1 supplies only the second actor a public, first-turn-only
+  all-Relic Opening Weave. It also removes all forced openings, recurrence, and
+  turn-limit outcomes, but flips initiative to a 44.0% first-actor rate; full
+  damage negation is therefore rejected as overcompensation. No second-actor
+  status, UI, replay, reward, or V5 rule is approved.
   **WP-015D1 V4 wider
   arena and pan camera completed on 2026-08-08**
   on `codex/wp-015-production-assets`: V4 preserves historical replays while
