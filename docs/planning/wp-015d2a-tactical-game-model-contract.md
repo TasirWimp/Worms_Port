@@ -86,7 +86,7 @@ and makes no rendering, network, wallet, reward, or asset decision.
 | Movement/action budget | required; compare its consequences explicitly rather than assuming move-plus-full-cast is harmless |
 | Defense state and its cost | optional candidate only; no Brace mechanic is approved or implemented by this contract |
 | Overtime/convergence state | optional candidate only; no Loom Tightening or timeout rule is approved or implemented by this contract |
-| Radius, precision, falloff, ammo, cooldown, status effects, Calling modifiers, obstacles, destructible terrain, rewards | excluded from D2A candidates unless separately versioned and authorized |
+| Radius, precision, falloff, ammo, cooldown, status effects, Calling modifiers, obstacles, destructible terrain, rewards | excluded unless separately versioned and authorized; Candidate B alone authorizes an analysis-only Needlepoint tether/cooldown hypothesis, never a live rule |
 
 All model transitions must be deterministic. An experiment may sample a policy
 or a listed starting scenario, but given its configuration, policy choice, and
@@ -126,6 +126,8 @@ D2A starts with transparent, bounded policies rather than an opaque optimizer:
 - medium-band hold (seek Threadball's effective band),
 - short-range approach (seek Spoolburst's effective band),
 - retreat/kite (increase separation when threatened),
+- Candidate B-only Seam-Pin pressure (advance while applying the configured
+  Needlepoint tether, then prefer the strongest currently legal cast),
 - any approved defensive policy only when its candidate action exists, and
 - a bounded-lookahead best-response policy whose evaluation function and depth
   are recorded.
@@ -206,6 +208,7 @@ records two intentionally limited comparison configurations:
 | --- | --- | ---: | ---: | --- |
 | `v4-baseline-abstract-v1` | Needlepoint directly dominates Threadball and Spoolburst under the common 640-unit ideal range; its 120 direct damage has an immediate forced opening in the bounded search. | 60% | 2.84 | 48 Unraveling / 2 turn-limit draws |
 | `v5-range-damage-candidate-a` | The exploratory 640/576/512 range and 30/45/80 damage tiers have no ideal-direct-cast dominance and no bounded forced opening. | 48% | 6.72 | 42 Unraveling / 8 turn-limit draws |
+| `v5-range-damage-seam-pin-candidate-b` | Candidate A's values plus one ideal direct Needlepoint Seam Pin: the target's next distance-increasing movement is capped at 32, and the caster cannot immediately reapply it. No bounded forced opening appears. | 56% | 6.88 | 40 Unraveling / 10 turn-limit draws |
 
 Candidate A is not a V5 proposal or an approved values table. Its short-range
 approach versus retreat/kite trace repeatedly oscillates between 576 and 640
@@ -214,3 +217,34 @@ can remove direct-cast dominance and still leave the current move-and-cast
 economy unable to resolve a pursuit/retreat loop. The next D2A decision is
 therefore whether to test a separately versioned tactical-core candidate before
 authorizing any values-only V5 implementation.
+
+## Candidate B Seam Pin result â€” 2026-08-09
+
+Candidate B is a schema-versioned, exploratory tactical-core experiment. It
+keeps Candidate A's 640/576/512 range and 30/45/80 direct-damage table exactly,
+so its only changed analytical variable is a Needlepoint control effect:
+
+- an ideal direct Needlepoint hit gives the target one Seam-Pinned target turn;
+- that target may still cast, hold, or move toward the caster, but may increase
+  its separation by at most 32 units instead of the ordinary 64;
+- the effect clears after that target turn; and
+- the caster cannot use Needlepoint on its immediately following own turn.
+
+The canonical anti-kite probe has the Seam-Pin pressure policy advance from
+640 to 576 while casting Needlepoint. The retreat/kite reply may still move,
+but reaches 608 rather than restoring 640. The next two actions are a
+Threadball advance to 544 and one ordinary retreat to 608; the next advancing
+Needlepoint cast returns to 544 and resolves the probe in five turns. When the
+evader acts first, the same direct-hit probe resolves in eight turns. The four
+mirrored role/initiative probes all give the Seam-Pin user a win, rather than
+the old indefinitely repeatable 576/640 movement loop.
+
+This is useful counterplay evidence, **not** an approval result. The comparable
+five-policy primary matrix still records 10 turn-limit draws out of 50 matches
+(Candidate A had 8), and its first-actor rate rises from 48% to 56%. Candidate
+B therefore shows that a successful, low-damage control shot can counter a
+specific evasion strategy without a hard stun or immediate forced opening; it
+does not yet establish global convergence, final pacing, production accuracy,
+or acceptable initiative balance. It has no TypeScript, replay, client,
+Loomkeeper, asset, or reward path. Any playable Seam Pin remains a separately
+scoped tactical-core work package after owner review.

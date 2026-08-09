@@ -14,13 +14,13 @@
   "scope": [
     "Create an isolated deterministic Python tactical-analysis model with versioned integer-only configurations, transparent policies, compact match traces, and aggregate strategy metrics.",
     "Export and verify a V4 structural authority fixture from the TypeScript simulation without changing V1 through V4 gameplay, replay, protocol, or Loomkeeper behavior.",
-    "Record the V4 ideal-direct-hit baseline and one explicitly non-production V5 range/damage candidate so design can inspect dominance, initiative, counterplay, and convergence hypotheses.",
+    "Record the V4 ideal-direct-hit baseline, one explicitly non-production V5 range/damage candidate, and one separately schema-versioned Needlepoint Seam Pin tactical-core hypothesis so design can inspect dominance, initiative, counterplay, and convergence hypotheses.",
     "Provide reproducible Python and TypeScript tests plus a local report command; generated reports remain ignored outside the product runtime."
   ],
   "non_goals": [
     "Create, activate, or change nimble-knots-artillery-v5 or any V1 through V4 rule, replay, protocol, client, server, reward, asset, or Loomkeeper behavior.",
     "Treat the analytical model as a second game authority, a full ballistic/terrain reimplementation, proof of player behavior, or a source of live command validation.",
-    "Add a defense action, action-economy change, Loom Tightening, tie-break, obstacle, destructible terrain, Calling modifier, source media, dependency, or Sorcerers material."
+    "Add a live defense/status action, action-economy change, Loom Tightening, tie-break, obstacle, destructible terrain, Calling modifier, source media, dependency, or Sorcerers material. Candidate B models a configuration-bound analytical tether only."
   ],
   "planned_checks": [
     "npm run test:tactical-model",
@@ -39,7 +39,7 @@
     {
       "command": "npm run test:tactical-model",
       "status": "pass",
-      "detail": "Strict TypeScript checking for the fixture exporter/test, one TypeScript fixture-parity test, and four standard-library Python model tests passed."
+      "detail": "Strict TypeScript checking for the fixture exporter/test, one TypeScript fixture-parity test, and five standard-library Python model tests passed, including the Candidate B one-turn tether/cooldown regression and stable primary-matrix sample size."
     },
     {
       "command": "npm run check:types",
@@ -87,7 +87,8 @@
   ],
   "residual_risks": [
     "The analysis assumes ideal direct hits on a level-ground range projection. It cannot predict real mobile aim, terrain collision, splash, or actual Loomkeeper play.",
-    "Candidate A is useful negative evidence, not an approved V5 values table. Its 576/640 pursuit-retreat oscillation requires an owner decision about a separately versioned tactical-core candidate before V5 can be selected safely.",
+    "Candidate A is useful negative evidence, not an approved V5 values table. Its 576/640 pursuit-retreat oscillation led to separately versioned Candidate B analysis, not a V5 rule.",
+    "Candidate B demonstrates a direct-hit Needlepoint counter to the specific equal-retreat trace, but its comparable primary matrix has 10 turn-limit draws out of 50 matches and a 56% first-actor rate. It is not approved for production or sufficient evidence of global convergence.",
     "npm audit reports the existing high-severity nanoid advisory through vite -> postcss; D2A did not alter the dependency graph or lockfile."
   ]
 }

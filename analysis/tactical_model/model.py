@@ -21,15 +21,16 @@ Winner = Actor | Literal["draw"] | None
 ActionKind = Literal["cast", "relocate", "wait"]
 ActionEconomy = Literal["move_and_cast", "committed"]
 
-CONFIG_SCHEMA_VERSION = 1
+CONFIG_SCHEMA_VERSIONS = {1, 2}
 RELIC_ORDER = ("threadball", "needlepoint", "spoolburst")
-POLICY_NAMES = (
+BASE_POLICY_NAMES = (
     "range_pressure",
     "medium_hold",
     "short_approach",
     "retreat_kite",
     "best_response",
 )
+SEAM_PIN_POLICY = "seam_pin_pressure"
 
 
 class TacticalModelError(ValueError):
@@ -42,6 +43,16 @@ class Relic:
     minimum_range: int
     maximum_range: int
     direct_damage: int
+
+
+@dataclass(frozen=True)
+class SeamPin:
+    """A candidate-only movement constraint attached by one explicitly named Relic."""
+
+    relic_id: str
+    maximum_separation_increase: int
+    target_turns: int
+    cooldown_actor_turns: int
 
 
 @dataclass(frozen=True)
@@ -64,6 +75,7 @@ class TacticalConfig:
     maximum_stitching: int
     relics: tuple[Relic, ...]
     opening_search_depth: int
+    seam_pin: SeamPin | None = None
 
     def relic(self, identifier: str) -> Relic:
         for relic in self.relics:
@@ -76,6 +88,9 @@ class TacticalConfig:
 class ActorState:
     x: int
     stitching: int
+    seam_pin_source: Actor | None = None
+    seam_pin_turns: int = 0
+    seam_pin_cooldown: int = 0
 
 
 @dataclass(frozen=True)
@@ -105,13 +120,16 @@ def repository_root() -> Path:
 
 def load_config(path: Path) -> TacticalConfig:
     raw = _load_json(path)
-    _require_exact_keys(raw, {
+    common_keys = {
         "schema_version", "id", "label", "analysis_status", "source_ruleset_id",
         "authority_fixture", "assumptions", "world", "initial", "turn",
         "stitching", "relics", "opening_search_depth",
-    }, str(path))
-    if raw["schema_version"] != CONFIG_SCHEMA_VERSION:
+    }
+    schema_version = raw.get("schema_version")
+    if schema_version not in CONFIG_SCHEMA_VERSIONS:
         raise TacticalModelError(f"{path}: unsupported schema_version")
+    expected_keys = common_keys if schema_version == 1 else common_keys | {"tactical_core"}
+    _require_exact_keys(raw, expected_keys, str(path))
     if raw["analysis_status"] not in {"baseline", "exploratory"}:
         raise TacticalModelError(f"{path}: analysis_status must be baseline or exploratory")
 
@@ -142,6 +160,41 @@ def load_config(path: Path) -> TacticalConfig:
             raise TacticalModelError(f"{path}.relics.{identifier}: minimum_range exceeds maximum_range")
         relics.append(Relic(identifier, minimum_range, maximum_range, direct_damage))
 
+    seam_pin: SeamPin | None = None
+    if schema_version == 2:
+        tactical_core = _require_object(raw["tactical_core"], f"{path}.tactical_core")
+        _require_exact_keys(tactical_core, {"seam_pin"}, f"{path}.tactical_core")
+        seam_pin_raw = _require_object(tactical_core["seam_pin"], f"{path}.tactical_core.seam_pin")
+        _require_exact_keys(
+            seam_pin_raw,
+            {"relic_id", "maximum_separation_increase", "target_turns", "cooldown_actor_turns"},
+            f"{path}.tactical_core.seam_pin",
+        )
+        relic_id = _require_string(seam_pin_raw["relic_id"], f"{path}.tactical_core.seam_pin.relic_id")
+        if relic_id not in RELIC_ORDER:
+            raise TacticalModelError(f"{path}.tactical_core.seam_pin.relic_id: expected known Relic")
+        maximum_separation_increase = _require_positive_integer(
+            seam_pin_raw["maximum_separation_increase"],
+            f"{path}.tactical_core.seam_pin.maximum_separation_increase",
+            allow_zero=True,
+        )
+        if maximum_separation_increase > _require_positive_integer(
+            turn["movement_per_turn"], f"{path}.turn.movement_per_turn"
+        ):
+            raise TacticalModelError(f"{path}.tactical_core.seam_pin: retreat cap exceeds movement budget")
+        seam_pin = SeamPin(
+            relic_id=relic_id,
+            maximum_separation_increase=maximum_separation_increase,
+            target_turns=_require_positive_integer(
+                seam_pin_raw["target_turns"], f"{path}.tactical_core.seam_pin.target_turns"
+            ),
+            cooldown_actor_turns=_require_positive_integer(
+                seam_pin_raw["cooldown_actor_turns"],
+                f"{path}.tactical_core.seam_pin.cooldown_actor_turns",
+                allow_zero=True,
+            ),
+        )
+
     config = TacticalConfig(
         identifier=_require_string(raw["id"], f"{path}.id"),
         label=_require_string(raw["label"], f"{path}.label"),
@@ -161,6 +214,7 @@ def load_config(path: Path) -> TacticalConfig:
         maximum_stitching=_require_positive_integer(stitching["maximum"], f"{path}.stitching.maximum"),
         relics=tuple(relics),
         opening_search_depth=_require_positive_integer(raw["opening_search_depth"], f"{path}.opening_search_depth"),
+        seam_pin=seam_pin,
     )
     if not (config.actor_margin <= config.player_x < config.world_width - config.actor_margin):
         raise TacticalModelError(f"{path}: player spawn lies outside legal world bounds")
@@ -225,6 +279,10 @@ def distance(state: TacticalState) -> int:
     return abs(state.player.x - state.loomkeeper.x)
 
 
+def policy_names(config: TacticalConfig) -> tuple[str, ...]:
+    return BASE_POLICY_NAMES + ((SEAM_PIN_POLICY,) if config.seam_pin is not None else ())
+
+
 def legal_actions(state: TacticalState, config: TacticalConfig) -> tuple[Action, ...]:
     if state.finished:
         return ()
@@ -234,6 +292,8 @@ def legal_actions(state: TacticalState, config: TacticalConfig) -> tuple[Action,
         moved_state = _move_actor(state, state.active_actor, direction, config)
         projected_distance = distance(moved_state)
         for relic in config.relics:
+            if _seam_pin_is_on_cooldown(state, state.active_actor, relic.identifier, config):
+                continue
             if relic.minimum_range <= projected_distance <= relic.maximum_range:
                 actions.add(Action("cast", direction, relic.identifier))
     for direction in (-1, 1):
@@ -255,7 +315,10 @@ def apply_action(state: TacticalState, action: Action, config: TacticalConfig) -
     else:
         moved_state = _move_actor(state, state.active_actor, action.direction, config)
 
-    next_state = moved_state
+    # Movement observes any active tether. Its holder spends/clears that tether
+    # only after the action completes; the tether caster's cooldown also counts
+    # only their own completed turns.
+    next_state = _complete_active_actor_turn(moved_state, state.active_actor)
     if action.kind == "cast":
         assert action.relic_id is not None
         relic = config.relic(action.relic_id)
@@ -271,6 +334,7 @@ def apply_action(state: TacticalState, action: Action, config: TacticalConfig) -
         if actor_state(next_state, target).stitching == 0:
             return replace(next_state, completed_turns=state.completed_turns + 1,
                            winner=state.active_actor, finish_reason="unravelled")
+        next_state = _apply_seam_pin_if_configured(next_state, state.active_actor, target, relic, config)
 
     completed_turns = state.completed_turns + 1
     if completed_turns >= config.maximum_turns:
@@ -286,7 +350,7 @@ def action_key(action: Action) -> str:
 
 
 def choose_action(policy: str, state: TacticalState, config: TacticalConfig) -> Action:
-    if policy not in POLICY_NAMES:
+    if policy not in policy_names(config):
         raise TacticalModelError(f"Unknown policy: {policy}")
     actions = legal_actions(state, config)
     casts = tuple(action for action in actions if action.kind == "cast")
@@ -325,6 +389,27 @@ def choose_action(policy: str, state: TacticalState, config: TacticalConfig) -> 
             ))
         return _select_relocation_away(actions, state, config)
 
+    if policy == SEAM_PIN_POLICY:
+        seam_pin_casts = tuple(
+            action for action in casts
+            if _is_seam_pin_cast(action, config)
+        )
+        if seam_pin_casts:
+            return _select_best(seam_pin_casts, lambda action: (
+                -distance(_move_actor(state, actor, action.direction, config)),
+                -abs(action.direction),
+            ))
+        spoolburst = tuple(action for action in casts if action.relic_id == "spoolburst")
+        if spoolburst:
+            return _select_best(spoolburst, lambda action: (-abs(action.direction),))
+        if casts:
+            return _select_best(casts, lambda action: (
+                config.relic(action.relic_id or "").direct_damage,
+                config.relic(action.relic_id or "").maximum_range,
+                -abs(action.direction),
+            ))
+        return _select_relocation_to_distance(actions, state, config, config.relic("spoolburst").maximum_range)
+
     return _best_response_action(state, config)
 
 
@@ -355,6 +440,15 @@ def simulate_match(
             "damage": actor_state(before, target).stitching - actor_state(state, target).stitching,
             "playerStitching": state.player.stitching,
             "loomkeeperStitching": state.loomkeeper.stitching,
+            "actorWasSeamPinned": actor_state(before, actor).seam_pin_turns > 0,
+            "seamPinAppliedTo": target if (
+                actor_state(state, target).seam_pin_source == actor and
+                actor_state(state, target).seam_pin_turns > 0
+            ) else None,
+            "playerSeamPinTurns": state.player.seam_pin_turns,
+            "loomkeeperSeamPinTurns": state.loomkeeper.seam_pin_turns,
+            "playerSeamPinCooldown": state.player.seam_pin_cooldown,
+            "loomkeeperSeamPinCooldown": state.loomkeeper.seam_pin_cooldown,
         })
     return {
         "firstActor": first_actor,
@@ -370,11 +464,25 @@ def simulate_match(
 
 def run_experiment(config: TacticalConfig) -> dict[str, Any]:
     validate_world_against_authority_fixture(config)
+    # Keep this 5x5 policy matrix stable across candidates so aggregate results
+    # remain comparable with the original V4 and Candidate A reports.
     matches: list[dict[str, Any]] = []
     for first_actor, mirrored in (("player", False), ("loomkeeper", True)):
-        for player_policy in POLICY_NAMES:
-            for loomkeeper_policy in POLICY_NAMES:
+        for player_policy in BASE_POLICY_NAMES:
+            for loomkeeper_policy in BASE_POLICY_NAMES:
                 matches.append(simulate_match(
+                    config, player_policy, loomkeeper_policy,
+                    first_actor=first_actor, mirrored=mirrored,
+                ))
+
+    candidate_policy_probes: list[dict[str, Any]] = []
+    if config.seam_pin is not None:
+        for first_actor, mirrored in (("player", False), ("loomkeeper", True)):
+            for player_policy, loomkeeper_policy in (
+                (SEAM_PIN_POLICY, "retreat_kite"),
+                ("retreat_kite", SEAM_PIN_POLICY),
+            ):
+                candidate_policy_probes.append(simulate_match(
                     config, player_policy, loomkeeper_policy,
                     first_actor=first_actor, mirrored=mirrored,
                 ))
@@ -406,7 +514,7 @@ def run_experiment(config: TacticalConfig) -> dict[str, Any]:
         opening[first_actor] = {"mirrored": mirrored, "forcedWinActionsWithinDepth": forced}
 
     return {
-        "schemaVersion": 1,
+        "schemaVersion": 2,
         "configId": config.identifier,
         "label": config.label,
         "analysisStatus": config.analysis_status,
@@ -418,6 +526,18 @@ def run_experiment(config: TacticalConfig) -> dict[str, Any]:
             "Policies are transparent deterministic heuristics. The bounded search is not a proof that real players or the Loomkeeper will choose the same action.",
             "Only current move-and-cast and the explicitly configured abstract action economy are modelled; no defense or overtime mechanic is active unless a later candidate adds one.",
         ],
+        "tacticalCore": {
+            "seamPin": None if config.seam_pin is None else {
+                "relicId": config.seam_pin.relic_id,
+                "maximumSeparationIncrease": config.seam_pin.maximum_separation_increase,
+                "targetTurns": config.seam_pin.target_turns,
+                "cooldownActorTurns": config.seam_pin.cooldown_actor_turns,
+            },
+        },
+        "policySets": {
+            "primaryMatrix": list(BASE_POLICY_NAMES),
+            "candidateOnlyProbe": [SEAM_PIN_POLICY] if config.seam_pin is not None else [],
+        },
         "aggregate": {
             "matchCount": len(matches),
             "firstActorWins": first_actor_wins,
@@ -429,6 +549,7 @@ def run_experiment(config: TacticalConfig) -> dict[str, Any]:
             "directCastDominance": direct_cast_dominance(config),
             "openingSearch": opening,
         },
+        "candidatePolicyProbes": candidate_policy_probes,
         "matches": matches,
     }
 
@@ -502,6 +623,56 @@ def other_actor(actor: Actor) -> Actor:
     return "loomkeeper" if actor == "player" else "player"
 
 
+def _is_seam_pin_cast(action: Action, config: TacticalConfig) -> bool:
+    return (
+        action.kind == "cast" and
+        config.seam_pin is not None and
+        action.relic_id == config.seam_pin.relic_id
+    )
+
+
+def _seam_pin_is_on_cooldown(state: TacticalState, actor: Actor, relic_id: str, config: TacticalConfig) -> bool:
+    return (
+        config.seam_pin is not None and
+        relic_id == config.seam_pin.relic_id and
+        actor_state(state, actor).seam_pin_cooldown > 0
+    )
+
+
+def _apply_seam_pin_if_configured(
+    state: TacticalState,
+    caster: Actor,
+    target: Actor,
+    relic: Relic,
+    config: TacticalConfig,
+) -> TacticalState:
+    if config.seam_pin is None or relic.identifier != config.seam_pin.relic_id:
+        return state
+    target_state = actor_state(state, target)
+    caster_state = actor_state(state, caster)
+    pinned_target = replace(
+        target_state,
+        seam_pin_source=caster,
+        seam_pin_turns=config.seam_pin.target_turns,
+    )
+    cooled_caster = replace(caster_state, seam_pin_cooldown=config.seam_pin.cooldown_actor_turns)
+    return replace_actor(replace_actor(state, target, pinned_target), caster, cooled_caster)
+
+
+def _complete_active_actor_turn(state: TacticalState, actor: Actor) -> TacticalState:
+    """Expire the active actor's own temporary state after that actor acts."""
+
+    current = actor_state(state, actor)
+    next_turns = max(0, current.seam_pin_turns - 1)
+    completed = replace(
+        current,
+        seam_pin_source=current.seam_pin_source if next_turns else None,
+        seam_pin_turns=next_turns,
+        seam_pin_cooldown=max(0, current.seam_pin_cooldown - 1),
+    )
+    return replace_actor(state, actor, completed)
+
+
 def _move_actor(state: TacticalState, actor: Actor, direction: int, config: TacticalConfig) -> TacticalState:
     if direction not in (-1, 0, 1):
         raise TacticalModelError("Direction must be -1, 0, or 1")
@@ -517,6 +688,15 @@ def _move_actor(state: TacticalState, actor: Actor, direction: int, config: Tact
         candidate = min(candidate, opponent.x - separation)
     else:
         candidate = max(candidate, opponent.x + separation)
+    if current.seam_pin_turns > 0:
+        if config.seam_pin is None:
+            raise TacticalModelError("Active Seam Pin state requires a configured candidate")
+        current_distance = abs(current.x - opponent.x)
+        maximum_distance = current_distance + config.seam_pin.maximum_separation_increase
+        if current.x < opponent.x:
+            candidate = max(candidate, opponent.x - maximum_distance)
+        else:
+            candidate = min(candidate, opponent.x + maximum_distance)
     return replace_actor(state, actor, replace(current, x=candidate))
 
 

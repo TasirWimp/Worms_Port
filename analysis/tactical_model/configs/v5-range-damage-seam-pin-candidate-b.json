@@ -1,0 +1,58 @@
+{
+  "schema_version": 2,
+  "id": "v5-range-damage-seam-pin-candidate-b",
+  "label": "Exploratory V5 range/damage/Seam Pin candidate B",
+  "analysis_status": "exploratory",
+  "source_ruleset_id": "nimble-knots-artillery-v4",
+  "authority_fixture": "analysis/tactical_model/fixtures/v4-authoritative-baseline-v1.json",
+  "assumptions": [
+    "This is not nimble-knots-artillery-v5 and has no runtime, replay, protocol, or reward authority.",
+    "It keeps candidate A's level-ground ideal-direct-hit range/damage projection so the only comparison variable is the explicitly configured Needlepoint Seam Pin tactical-core hypothesis.",
+    "Every legal Needlepoint cast is an ideal direct hit: it deals low direct damage and applies one target-turn tether that caps only the target's distance-increasing movement at 32 units; the target may still cast, hold, or move toward the caster.",
+    "The caster cannot apply another Seam Pin on their immediately following turn; terrain, aim, splash, animation, and a production counter-effect are intentionally excluded."
+  ],
+  "world": {
+    "width": 2048,
+    "actor_margin": 12
+  },
+  "initial": {
+    "seed": 3237998097,
+    "player_x": 512,
+    "loomkeeper_x": 1152,
+    "first_actor": "player"
+  },
+  "turn": {
+    "maximum_turns": 16,
+    "movement_per_turn": 64,
+    "action_economy": "move_and_cast"
+  },
+  "stitching": {
+    "maximum": 100
+  },
+  "relics": {
+    "threadball": {
+      "minimum_range": 0,
+      "maximum_range": 576,
+      "direct_damage": 45
+    },
+    "needlepoint": {
+      "minimum_range": 0,
+      "maximum_range": 640,
+      "direct_damage": 30
+    },
+    "spoolburst": {
+      "minimum_range": 0,
+      "maximum_range": 512,
+      "direct_damage": 80
+    }
+  },
+  "opening_search_depth": 3,
+  "tactical_core": {
+    "seam_pin": {
+      "relic_id": "needlepoint",
+      "maximum_separation_increase": 32,
+      "target_turns": 1,
+      "cooldown_actor_turns": 1
+    }
+  }
+}

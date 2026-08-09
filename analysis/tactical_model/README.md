@@ -30,3 +30,16 @@ the accepted V4 values. `v5-range-damage-candidate-a.json` is a comparison
 candidate only: it has no ruleset identifier, runtime path, replay authority,
 or approval to become V5. Reports name their assumptions and policy limits;
 they are design evidence, not a prediction of real-player behavior.
+
+`v5-range-damage-seam-pin-candidate-b.json` is a separately schema-versioned
+exploratory tactical-core candidate. It keeps Candidate A's range/damage table,
+then lets a direct Needlepoint hit cap only the target's next
+distance-increasing movement at 32 units, for one target turn. The target may
+still cast, hold, or move toward the caster; its caster has a one-own-turn
+Needlepoint cooldown. This is analysis-only, uses ideal direct hits, and does
+not authorize a status effect, production ruleset, replay field, UI, or asset.
+
+The report's `aggregate` always uses the original five-policy mirrored 50-match
+matrix, so its metrics remain comparable between configurations. Candidate-only
+policies appear separately in `candidatePolicyProbes` rather than silently
+changing the headline sample.
