@@ -676,6 +676,49 @@ contract, but it does not repair the underlying range-band asymmetry. H2 is
 rejected as a live balance candidate; no Opening Weave status, UI, replay
 field, server rule, reward change, or V5 rule is approved.
 
+## Candidate H3 counterable Opening Weave - 2026-08-09
+
+H3 tests the coupled response pattern suggested by H2's residual rather than
+another global price adjustment. It retains plain C4, the second actor's one
+optional opening Weave, and H2's 64-unit Escape-Slack price. A use now halves,
+rather than cancels, the first direct hit. It also marks the defender with a
+public Frayed Seam until the opening caster completes that caster's next
+action. The defender receives a normal intervening turn. If the caster then
+moves forward and casts Needlepoint while that window is open, the existing
+one-turn Seam Pin becomes a zero-separation bind for the target's response
+turn. The Frayed Seam then expires regardless of whether the caster chose to
+use that counter.
+
+This makes the three-stage claim explicit under a narrow cut: an attacker may
+open with damage; the defender can trade damage for bounded future retreat;
+then the attacker can choose a forward Needlepoint bind rather than a second
+damage cast. The target's intervening action remains a live reply, so the
+counter is neither automatic damage nor a skipped turn. The normal policy uses
+the Weave against 45-or-more damage; the force search still grants the target
+the costly response to every direct Relic. H3 adds a dedicated
+`frayed_seam_pressure` probe to prove that the attacker-side bind is reachable
+in a complete match trace. H3 is schema version 14, analysis-only, and creates
+no UI, status display, replay field, server rule, or V5 authority.
+
+### Candidate H3 result - 2026-08-09
+
+The counterplay is real but insufficient. The dedicated paired probes each
+show an Opening Weave use, a Frayed Seam, the defender's normal intervening
+action, and the originator's advancing Needlepoint zero-separation bind. All
+250 cross-band primary matches Unravel and the recurrence gate reports zero
+witnesses. But the full primary result reverts exactly to C4's 63.2%
+first-actor rate and 5.336-turn mean (64%/60%/64%/52%/76% by ascending start).
+At 448, 512, and 576 the bounded search still finds forced Spoolburst and/or
+Threadball openings despite the defender's legal partial response.
+
+H3 is therefore **rejected as a live balance candidate**. It provides the
+right form of a priced, visible, counterable interaction, but its delayed
+Needlepoint aperture cannot neutralize the immediate short-range loss tree.
+The next hypothesis must alter the opening threat and response together at the
+same decision point, rather than asking a later bind to repair a forced direct
+cast. No Frayed Seam, strengthened Seam Pin, Opening Weave, UI, replay, server,
+reward, or V5 rule is approved.
+
 ## G0 Opening and reaction contract - 2026-08-09
 
 The remaining problem is now more precise than a generic “first actor

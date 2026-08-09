@@ -23,7 +23,7 @@ ActionEconomy = Literal["move_and_cast", "committed"]
 SeamPinActivation = Literal["any_direct_hit", "advance_only"]
 RetreatCastRule = Literal["allowed", "forbidden"]
 
-CONFIG_SCHEMA_VERSIONS = {1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13}
+CONFIG_SCHEMA_VERSIONS = {1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14}
 RELIC_ORDER = ("threadball", "needlepoint", "spoolburst")
 BASE_POLICY_NAMES = (
     "range_pressure",
@@ -36,6 +36,7 @@ SEAM_PIN_POLICY = "seam_pin_pressure"
 BRACE_POLICY = "brace_counter"
 THREADSTEP_POLICY = "threadstep_counter"
 OPENING_WEAVE_POLICY = "opening_weave_counter"
+FRAYED_SEAM_POLICY = "frayed_seam_pressure"
 
 
 class TacticalModelError(ValueError):
@@ -135,6 +136,15 @@ class OpeningWeave:
     activation: Literal["automatic", "optional"] = "automatic"
     escape_slack_cost: int = 0
     counter_policy_minimum_damage: int = 0
+    damage_reduction_percent: int = 100
+
+
+@dataclass(frozen=True)
+class FrayedSeam:
+    """A short post-Weave exposure that an advancing Needlepoint can bind."""
+
+    needlepoint_binding_maximum_separation_increase: int
+    expiry: Literal["after_originator_next_action"]
 
 
 @dataclass(frozen=True)
@@ -166,6 +176,7 @@ class TacticalConfig:
     spoolburst_threadback: SpoolburstThreadback | None = None
     cast_threadstep: CastThreadstep | None = None
     opening_weave: OpeningWeave | None = None
+    frayed_seam: FrayedSeam | None = None
 
     def relic(self, identifier: str) -> Relic:
         for relic in self.relics:
@@ -187,6 +198,9 @@ class ActorState:
     spoolburst_preparation_turns: int = 0
     spoolburst_cocoon_hits_remaining: int = 0
     opening_weave_hits_remaining: int = 0
+    seam_pin_maximum_separation_increase: int | None = None
+    frayed_seam_source: Actor | None = None
+    frayed_seam_turns: int = 0
 
 
 @dataclass(frozen=True)
@@ -257,7 +271,7 @@ def load_config(path: Path) -> TacticalConfig:
         relics.append(Relic(identifier, minimum_range, maximum_range, direct_damage))
 
     seam_pin: SeamPin | None = None
-    if schema_version in {2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13}:
+    if schema_version in {2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14}:
         tactical_core = _require_object(raw["tactical_core"], f"{path}.tactical_core")
         _require_exact_keys(
             tactical_core,
@@ -283,12 +297,14 @@ def load_config(path: Path) -> TacticalConfig:
                 else {"seam_pin", "escape_slack", "opening_weave"}
                 if schema_version == 12
                 else {"seam_pin", "escape_slack", "opening_weave"}
+                if schema_version == 13
+                else {"seam_pin", "escape_slack", "opening_weave", "frayed_seam"}
             ),
             f"{path}.tactical_core",
         )
         seam_pin_raw = _require_object(tactical_core["seam_pin"], f"{path}.tactical_core.seam_pin")
         seam_pin_keys = {"relic_id", "maximum_separation_increase", "target_turns", "cooldown_actor_turns"}
-        if schema_version in {3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13}:
+        if schema_version in {3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14}:
             seam_pin_keys |= {"activation", "retreat_cast_rule"}
         _require_exact_keys(
             seam_pin_raw,
@@ -333,7 +349,7 @@ def load_config(path: Path) -> TacticalConfig:
         )
 
     escape_slack: EscapeSlack | None = None
-    if schema_version in {4, 5, 6, 7, 8, 9, 10, 11, 12, 13}:
+    if schema_version in {4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14}:
         escape_slack_raw = _require_object(raw["tactical_core"]["escape_slack"], f"{path}.tactical_core.escape_slack")
         _require_exact_keys(escape_slack_raw, {"per_actor"}, f"{path}.tactical_core.escape_slack")
         escape_slack = EscapeSlack(
@@ -507,7 +523,7 @@ def load_config(path: Path) -> TacticalConfig:
         cast_threadstep = CastThreadstep(separation_increase=separation_increase)
 
     opening_weave: OpeningWeave | None = None
-    if schema_version in {12, 13}:
+    if schema_version in {12, 13, 14}:
         opening_weave_raw = _require_object(
             raw["tactical_core"]["opening_weave"],
             f"{path}.tactical_core.opening_weave",
@@ -520,6 +536,12 @@ def load_config(path: Path) -> TacticalConfig:
                 else {
                     "beneficiary", "absorbed_hits", "expiry", "activation",
                     "escape_slack_cost", "counter_policy_minimum_damage",
+                }
+                if schema_version == 13
+                else {
+                    "beneficiary", "absorbed_hits", "expiry", "activation",
+                    "escape_slack_cost", "counter_policy_minimum_damage",
+                    "damage_reduction_percent",
                 }
             ),
             f"{path}.tactical_core.opening_weave",
@@ -558,7 +580,15 @@ def load_config(path: Path) -> TacticalConfig:
             opening_weave_raw["counter_policy_minimum_damage"],
             f"{path}.tactical_core.opening_weave.counter_policy_minimum_damage",
         )
-        if schema_version == 13:
+        damage_reduction_percent = 100 if schema_version in {12, 13} else _require_positive_integer(
+            opening_weave_raw["damage_reduction_percent"],
+            f"{path}.tactical_core.opening_weave.damage_reduction_percent",
+        )
+        if damage_reduction_percent > 100:
+            raise TacticalModelError(
+                f"{path}.tactical_core.opening_weave.damage_reduction_percent: expected at most 100"
+            )
+        if schema_version in {13, 14}:
             movement_per_turn = _require_positive_integer(
                 turn["movement_per_turn"], f"{path}.turn.movement_per_turn"
             )
@@ -566,6 +596,10 @@ def load_config(path: Path) -> TacticalConfig:
                 raise TacticalModelError(
                     f"{path}.tactical_core.opening_weave: requires optional use at one full movement-step cost"
                 )
+        if schema_version == 14 and damage_reduction_percent != 50:
+            raise TacticalModelError(
+                f"{path}.tactical_core.opening_weave: H3 requires a 50 percent direct-damage reduction"
+            )
         opening_weave = OpeningWeave(
             beneficiary="second_actor",
             absorbed_hits=absorbed_hits,
@@ -573,6 +607,39 @@ def load_config(path: Path) -> TacticalConfig:
             activation=activation,
             escape_slack_cost=escape_slack_cost,
             counter_policy_minimum_damage=counter_policy_minimum_damage,
+            damage_reduction_percent=damage_reduction_percent,
+        )
+
+    frayed_seam: FrayedSeam | None = None
+    if schema_version == 14:
+        frayed_seam_raw = _require_object(
+            raw["tactical_core"]["frayed_seam"],
+            f"{path}.tactical_core.frayed_seam",
+        )
+        _require_exact_keys(
+            frayed_seam_raw,
+            {"needlepoint_binding_maximum_separation_increase", "expiry"},
+            f"{path}.tactical_core.frayed_seam",
+        )
+        binding_increase = _require_positive_integer(
+            frayed_seam_raw["needlepoint_binding_maximum_separation_increase"],
+            f"{path}.tactical_core.frayed_seam.needlepoint_binding_maximum_separation_increase",
+            allow_zero=True,
+        )
+        if seam_pin is None or binding_increase > seam_pin.maximum_separation_increase:
+            raise TacticalModelError(
+                f"{path}.tactical_core.frayed_seam: binding must tighten the configured Needlepoint Seam Pin"
+            )
+        expiry = _require_string(
+            frayed_seam_raw["expiry"], f"{path}.tactical_core.frayed_seam.expiry"
+        )
+        if expiry != "after_originator_next_action":
+            raise TacticalModelError(
+                f"{path}.tactical_core.frayed_seam.expiry: expected after_originator_next_action"
+            )
+        frayed_seam = FrayedSeam(
+            needlepoint_binding_maximum_separation_increase=binding_increase,
+            expiry="after_originator_next_action",
         )
 
     config = TacticalConfig(
@@ -603,6 +670,7 @@ def load_config(path: Path) -> TacticalConfig:
         spoolburst_threadback=spoolburst_threadback,
         cast_threadstep=cast_threadstep,
         opening_weave=opening_weave,
+        frayed_seam=frayed_seam,
     )
     if not (config.actor_margin <= config.player_x < config.world_width - config.actor_margin):
         raise TacticalModelError(f"{path}: player spawn lies outside legal world bounds")
@@ -635,6 +703,8 @@ def load_config(path: Path) -> TacticalConfig:
         )
     ):
         raise TacticalModelError(f"{path}.tactical_core.opening_weave: cost exceeds available opening Escape Slack")
+    if config.frayed_seam is not None and config.opening_weave is None:
+        raise TacticalModelError(f"{path}.tactical_core.frayed_seam: requires an Opening Weave")
     return config
 
 
@@ -744,6 +814,9 @@ def tactical_state_key(state: TacticalState) -> tuple[Any, ...]:
             actor.spoolburst_preparation_turns,
             actor.spoolburst_cocoon_hits_remaining,
             actor.opening_weave_hits_remaining,
+            actor.seam_pin_maximum_separation_increase,
+            actor.frayed_seam_source,
+            actor.frayed_seam_turns,
         )
 
     return (state.active_actor, actor_key(state.player), actor_key(state.loomkeeper))
@@ -765,6 +838,9 @@ def tactical_state_snapshot(state: TacticalState) -> dict[str, Any]:
             "spoolburstPreparationTurns": actor.spoolburst_preparation_turns,
             "spoolburstCocoonHits": actor.spoolburst_cocoon_hits_remaining,
             "openingWeaveHits": actor.opening_weave_hits_remaining,
+            "seamPinMaximumSeparationIncrease": actor.seam_pin_maximum_separation_increase,
+            "frayedSeamSource": actor.frayed_seam_source,
+            "frayedSeamTurns": actor.frayed_seam_turns,
         }
 
     return {
@@ -784,6 +860,8 @@ def policy_names(config: TacticalConfig) -> tuple[str, ...]:
         candidate_policies += (THREADSTEP_POLICY,)
     if config.opening_weave is not None and config.opening_weave.activation == "optional":
         candidate_policies += (OPENING_WEAVE_POLICY,)
+    if config.frayed_seam is not None:
+        candidate_policies += (FRAYED_SEAM_POLICY,)
     return BASE_POLICY_NAMES + candidate_policies
 
 
@@ -908,6 +986,10 @@ def apply_action(
                 next_state = _apply_cast_threadstep(next_state, target, config)
                 target_state = actor_state(next_state, target)
                 target_is_braced = target_state.brace_turns > 0
+            frayed_before_cast = (
+                target_state.frayed_seam_source == state.active_actor and
+                target_state.frayed_seam_turns > 0
+            )
             cast_evaded = not relic.minimum_range <= distance(next_state) <= relic.maximum_range
             if cast_evaded and config.cast_threadstep is None:
                 raise TacticalModelError("Cast unexpectedly left its declared range band")
@@ -919,8 +1001,12 @@ def apply_action(
                 config,
             )
             damage = 0 if cast_evaded else relic.direct_damage
-            if (cocoon_absorbs or opening_weave_absorbs) and not cast_evaded:
+            if cocoon_absorbs and not cast_evaded:
                 damage = 0
+            if opening_weave_absorbs and not cast_evaded:
+                if config.opening_weave is None:
+                    raise TacticalModelError("Active Opening Weave state requires a configured candidate")
+                damage = damage * (100 - config.opening_weave.damage_reduction_percent) // 100
             if target_is_braced and not cast_evaded:
                 if config.brace is None:
                     raise TacticalModelError("Active Brace state requires a configured candidate")
@@ -956,6 +1042,16 @@ def apply_action(
                         if opening_weave_absorbs and not cast_evaded and config.opening_weave is not None
                         else target_state.escape_slack_remaining
                     ),
+                    frayed_seam_source=(
+                        state.active_actor
+                        if opening_weave_absorbs and not cast_evaded and config.frayed_seam is not None
+                        else target_state.frayed_seam_source
+                    ),
+                    frayed_seam_turns=(
+                        1
+                        if opening_weave_absorbs and not cast_evaded and config.frayed_seam is not None
+                        else target_state.frayed_seam_turns
+                    ),
                 ),
             )
             next_state = _apply_spoolburst_backlash_if_configured(
@@ -982,6 +1078,7 @@ def apply_action(
                     relic,
                     before_movement=state,
                     after_movement=moved_state,
+                    bind_frayed_target=frayed_before_cast,
                     config=config,
                 )
         elif action.kind == "prepare_spoolburst":
@@ -1029,6 +1126,7 @@ def apply_action(
             replace(caster_state, spoolburst_cocoon_hits_remaining=0),
         )
 
+    next_state = _expire_frayed_seam_after_originator_action(next_state, state, state.active_actor)
     completed_turns = state.completed_turns + 1
     if completed_turns >= config.maximum_turns:
         return replace(next_state, completed_turns=completed_turns,
@@ -1126,6 +1224,24 @@ def choose_action(policy: str, state: TacticalState, config: TacticalConfig) -> 
             ))
         return _select_relocation_to_distance(actions, state, config, config.relic("spoolburst").maximum_range)
 
+    if policy == FRAYED_SEAM_POLICY:
+        target_state = actor_state(state, other_actor(actor))
+        binding_casts = tuple(
+            action for action in casts
+            if (
+                _is_seam_pin_cast(action, config) and
+                target_state.frayed_seam_source == actor and
+                target_state.frayed_seam_turns > 0 and
+                distance(_move_actor(state, actor, action.direction, config)) < distance(state)
+            )
+        )
+        if binding_casts:
+            return _select_best(binding_casts, lambda action: (
+                -distance(_move_actor(state, actor, action.direction, config)),
+                -abs(action.direction),
+            ))
+        return _best_response_action(state, config)
+
     return _best_response_action(state, config)
 
 
@@ -1198,6 +1314,8 @@ def simulate_match(
             "loomkeeperSpoolburstCocoonHits": state.loomkeeper.spoolburst_cocoon_hits_remaining,
             "playerOpeningWeaveHits": state.player.opening_weave_hits_remaining,
             "loomkeeperOpeningWeaveHits": state.loomkeeper.opening_weave_hits_remaining,
+            "playerFrayedSeamTurns": state.player.frayed_seam_turns,
+            "loomkeeperFrayedSeamTurns": state.loomkeeper.frayed_seam_turns,
             "spoolburstPreparationStartedBy": actor if (
                 actor_state(before, actor).spoolburst_preparation_turns == 0 and
                 actor_state(state, actor).spoolburst_preparation_turns > 0
@@ -1259,6 +1377,30 @@ def simulate_match(
                 actor_state(state, target).opening_weave_hits_remaining
                 else 0
             ),
+            "openingWeaveDamageReductionPercent": (
+                config.opening_weave.damage_reduction_percent
+                if action.kind == "cast" and
+                config.opening_weave is not None and
+                actor_state(before, target).opening_weave_hits_remaining >
+                actor_state(state, target).opening_weave_hits_remaining
+                else 0
+            ),
+            "frayedSeamAppliedTo": target if (
+                action.kind == "cast" and
+                config.frayed_seam is not None and
+                actor_state(before, target).frayed_seam_turns == 0 and
+                actor_state(state, target).frayed_seam_source == actor and
+                actor_state(state, target).frayed_seam_turns > 0
+            ) else None,
+            "frayedSeamBoundFor": target if (
+                action.kind == "cast" and
+                config.frayed_seam is not None and
+                actor_state(before, target).frayed_seam_source == actor and
+                actor_state(before, target).frayed_seam_turns > 0 and
+                actor_state(state, target).seam_pin_source == actor and
+                actor_state(state, target).seam_pin_maximum_separation_increase ==
+                config.frayed_seam.needlepoint_binding_maximum_separation_increase
+            ) else None,
         })
         if not state.finished:
             state_key = tactical_state_key(state)
@@ -1337,6 +1479,21 @@ def run_experiment(config: TacticalConfig, *, starting_distance: int | None = No
                     first_actor=first_actor, mirrored=mirrored,
                     starting_distance=starting_distance,
                 ))
+    if config.frayed_seam is not None:
+        for first_actor, mirrored in (("player", False), ("loomkeeper", True)):
+            player_policy, loomkeeper_policy = (
+                (FRAYED_SEAM_POLICY, OPENING_WEAVE_POLICY)
+                if first_actor == "player"
+                else (OPENING_WEAVE_POLICY, FRAYED_SEAM_POLICY)
+            )
+            candidate_policy_probes.append(simulate_match(
+                config,
+                player_policy,
+                loomkeeper_policy,
+                first_actor=first_actor,
+                mirrored=mirrored,
+                starting_distance=starting_distance,
+            ))
     if config.brace is not None:
         for first_actor, mirrored in (("player", False), ("loomkeeper", True)):
             for player_policy, loomkeeper_policy in (
@@ -1456,6 +1613,15 @@ def run_experiment(config: TacticalConfig, *, starting_distance: int | None = No
                     "escapeSlackCost": config.opening_weave.escape_slack_cost,
                     "counterPolicyMinimumDamage": config.opening_weave.counter_policy_minimum_damage,
                 } if config.opening_weave.activation == "optional" else {}),
+                **({
+                    "damageReductionPercent": config.opening_weave.damage_reduction_percent,
+                } if config.frayed_seam is not None else {}),
+            },
+            "frayedSeam": None if config.frayed_seam is None else {
+                "needlepointBindingMaximumSeparationIncrease": (
+                    config.frayed_seam.needlepoint_binding_maximum_separation_increase
+                ),
+                "expiry": config.frayed_seam.expiry,
             },
         },
         "policySets": {
@@ -1469,6 +1635,7 @@ def run_experiment(config: TacticalConfig, *, starting_distance: int | None = No
                         OPENING_WEAVE_POLICY,
                         config.opening_weave is not None and config.opening_weave.activation == "optional",
                     ),
+                    (FRAYED_SEAM_POLICY, config.frayed_seam is not None),
                 ) if active
             ],
         },
@@ -1896,6 +2063,7 @@ def _apply_seam_pin_if_configured(
     *,
     before_movement: TacticalState,
     after_movement: TacticalState,
+    bind_frayed_target: bool = False,
     config: TacticalConfig,
 ) -> TacticalState:
     if config.seam_pin is None or relic.identifier != config.seam_pin.relic_id:
@@ -1907,10 +2075,16 @@ def _apply_seam_pin_if_configured(
         return state
     target_state = actor_state(state, target)
     caster_state = actor_state(state, caster)
+    maximum_separation_increase = config.seam_pin.maximum_separation_increase
+    if bind_frayed_target:
+        if config.frayed_seam is None:
+            raise TacticalModelError("Frayed Seam binding requires a configured Frayed Seam candidate")
+        maximum_separation_increase = config.frayed_seam.needlepoint_binding_maximum_separation_increase
     pinned_target = replace(
         target_state,
         seam_pin_source=caster,
         seam_pin_turns=config.seam_pin.target_turns,
+        seam_pin_maximum_separation_increase=maximum_separation_increase,
     )
     cooled_caster = replace(caster_state, seam_pin_cooldown=config.seam_pin.cooldown_actor_turns)
     return replace_actor(replace_actor(state, target, pinned_target), caster, cooled_caster)
@@ -1925,6 +2099,9 @@ def _complete_active_actor_turn(state: TacticalState, actor: Actor) -> TacticalS
         current,
         seam_pin_source=current.seam_pin_source if next_turns else None,
         seam_pin_turns=next_turns,
+        seam_pin_maximum_separation_increase=(
+            current.seam_pin_maximum_separation_increase if next_turns else None
+        ),
         seam_pin_cooldown=max(0, current.seam_pin_cooldown - 1),
         spoolburst_preparation_turns=max(0, current.spoolburst_preparation_turns - 1),
         spoolburst_cocoon_hits_remaining=(
@@ -1934,6 +2111,30 @@ def _complete_active_actor_turn(state: TacticalState, actor: Actor) -> TacticalS
         opening_weave_hits_remaining=0,
     )
     return replace_actor(state, actor, completed)
+
+
+def _expire_frayed_seam_after_originator_action(
+    state: TacticalState,
+    before: TacticalState,
+    originator: Actor,
+) -> TacticalState:
+    """Clear H3's exposure after, not before, its originator's next action.
+
+    The `before` cut distinguishes that next action from the opening action
+    which created the Frayed Seam. This lets an advancing Needlepoint bind the
+    exposed target during the intended one-action window.
+    """
+
+    target = other_actor(originator)
+    target_before = actor_state(before, target)
+    if target_before.frayed_seam_source != originator or target_before.frayed_seam_turns <= 0:
+        return state
+    target_after = actor_state(state, target)
+    return replace_actor(
+        state,
+        target,
+        replace(target_after, frayed_seam_source=None, frayed_seam_turns=0),
+    )
 
 
 def _move_actor(state: TacticalState, actor: Actor, direction: int, config: TacticalConfig) -> TacticalState:
@@ -1955,7 +2156,11 @@ def _move_actor(state: TacticalState, actor: Actor, direction: int, config: Tact
         if config.seam_pin is None:
             raise TacticalModelError("Active Seam Pin state requires a configured candidate")
         current_distance = abs(current.x - opponent.x)
-        maximum_distance = current_distance + config.seam_pin.maximum_separation_increase
+        maximum_distance = current_distance + (
+            current.seam_pin_maximum_separation_increase
+            if current.seam_pin_maximum_separation_increase is not None
+            else config.seam_pin.maximum_separation_increase
+        )
         if current.x < opponent.x:
             candidate = max(candidate, opponent.x - maximum_distance)
         else:

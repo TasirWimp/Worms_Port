@@ -227,3 +227,19 @@ as a live balance candidate rather than tuned further. It is useful evidence
 that a priced opening response can be structurally sound, but cannot by itself
 fix the long-range asymmetry. No Opening Weave UI, replay, server, reward, or
 V5 rule is approved.
+
+`v5-range-damage-forward-seam-pin-escape-slack-counterable-opening-weave-candidate-h3.json`
+is the schema-version 14 coupled follow-up. A paid Opening Weave halves the
+first direct hit and marks its user with one public Frayed Seam. After the
+defender's normal intervening action, an advancing Needlepoint from the opening
+caster can turn the existing one-turn Seam Pin into a zero-separation bind;
+the Frayed Seam then expires. The separate `frayed_seam_pressure` probe proves
+that this attacker-side counterplay is reachable without putting it into the
+stable primary policy matrix.
+
+H3 is rejected analysis-only evidence. All 250 cross-band matches Unravel and
+have no recurrence witness, but the candidate returns to C4's 63.2%
+first-actor rate and leaves forced Spoolburst/Threadball openings at the
+448/512/576 starts. A delayed, counterable vulnerability cannot repair an
+immediate forced direct-cast line. No Frayed Seam, strengthened Seam Pin,
+Opening Weave, UI, replay, server, reward, or V5 rule is approved.

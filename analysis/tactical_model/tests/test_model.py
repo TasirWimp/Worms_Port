@@ -547,6 +547,84 @@ class TacticalModelTests(unittest.TestCase):
             self.assertEqual(scenario["aggregate"]["openingSearch"]["loomkeeper"]["forcedWinActionsWithinDepth"], [])
             self.assertTrue(scenario["tacticalVoyage"]["recurrenceGate"]["passesFixedWitness"])
 
+    def test_h3_paid_partial_opening_weave_leaves_a_counterable_needlepoint_window(self) -> None:
+        config = load_config(
+            CONFIGS / "v5-range-damage-forward-seam-pin-escape-slack-counterable-opening-weave-candidate-h3.json"
+        )
+        opening = initial_state(config, starting_distance=512)
+        woven = apply_action(
+            opening,
+            Action("cast", 0, "spoolburst"),
+            config,
+            target_reaction_policy="opening_weave_counter",
+        )
+        self.assertEqual(
+            (
+                woven.loomkeeper.stitching,
+                woven.loomkeeper.escape_slack_remaining,
+                woven.loomkeeper.opening_weave_hits_remaining,
+                woven.loomkeeper.frayed_seam_source,
+                woven.loomkeeper.frayed_seam_turns,
+            ),
+            (60, 64, 0, "player", 1),
+            "H3 halves the opening hit, spends one full Escape-Slack step, and leaves public residue",
+        )
+
+        reply = apply_action(woven, Action("cast", 0, "needlepoint"), config)
+        self.assertEqual(reply.active_actor, "player", "the Frayed Seam survives one normal intervening reply")
+        bound = apply_action(reply, Action("cast", 1, "needlepoint"), config)
+        self.assertEqual(
+            (
+                bound.loomkeeper.stitching,
+                bound.loomkeeper.seam_pin_turns,
+                bound.loomkeeper.seam_pin_maximum_separation_increase,
+                bound.loomkeeper.frayed_seam_turns,
+            ),
+            (30, 1, 0, 0),
+            "an advancing Needlepoint consumes the Frayed Seam window and applies the tighter pin",
+        )
+        self.assertNotIn(
+            Action("relocate", 1),
+            legal_actions(bound, config),
+            "the zero-increase H3 pin prevents the exposed target from retreating on that response turn",
+        )
+
+        report = run_experiment(config, starting_distance=512)
+        self.assertEqual(report["tacticalCore"]["openingWeave"]["damageReductionPercent"], 50)
+        self.assertEqual(
+            report["tacticalCore"]["frayedSeam"]["needlepointBindingMaximumSeparationIncrease"], 0,
+        )
+        self.assertIn("frayed_seam_pressure", report["policySets"]["candidateOnlyProbe"])
+        self.assertEqual(len(report["candidatePolicyProbes"]), 10)
+        self.assertTrue(any(
+            step["frayedSeamBoundFor"] is not None
+            for match in report["candidatePolicyProbes"]
+            for step in match["trace"]
+        ), "the dedicated H3 probe must exercise the attacker-side Needlepoint counterplay")
+
+    def test_h3_counterable_weave_still_leaves_short_range_forced_openings(self) -> None:
+        config = load_config(
+            CONFIGS / "v5-range-damage-forward-seam-pin-escape-slack-counterable-opening-weave-candidate-h3.json"
+        )
+        report = run_starting_distance_sweep(config, (448, 512, 576, 640, 704))
+        self.assertEqual(report["aggregate"]["terminalReasons"], {"unravelled": 250})
+        self.assertEqual(report["aggregate"]["firstActorWinRate"], 0.632)
+        self.assertEqual(report["aggregate"]["averageTurns"], 5.336)
+        self.assertEqual(
+            [scenario["aggregate"]["firstActorWinRate"] for scenario in report["scenarioReports"]],
+            [0.64, 0.6, 0.64, 0.52, 0.76],
+        )
+        for scenario in report["scenarioReports"]:
+            self.assertTrue(scenario["tacticalVoyage"]["recurrenceGate"]["passesFixedWitness"])
+        self.assertTrue(
+            report["scenarioReports"][0]["aggregate"]["openingSearch"]["player"]["forcedWinActionsWithinDepth"],
+            "H3's partial reduction cannot answer the 448 short-range opening",
+        )
+        self.assertEqual(
+            report["scenarioReports"][3]["aggregate"]["openingSearch"]["player"]["forcedWinActionsWithinDepth"],
+            [],
+        )
+
     def test_threadback_candidate_passes_the_fixed_recurrence_gate_but_still_reports_its_initiative_risk(self) -> None:
         config = load_config(
             CONFIGS / "v5-range-damage-forward-seam-pin-escape-slack-spoolburst-preparation-threadback-unweave-candidate-f3.json"

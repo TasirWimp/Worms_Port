@@ -49,6 +49,14 @@ Phaser/Socket.IO stack.
   rejected as a live compensation rule: a price resolves neither the short-
   range second-actor advantage nor the long-range first-actor advantage. No
   Opening Weave status, UI, replay, reward, or V5 rule is approved.
+  Candidate H3 couples that paid response to a visible Frayed Seam and an
+  advancing-Needlepoint zero-separation bind after the defender's normal reply.
+  Dedicated probes prove the attacker can use that counterplay, and all 250
+  cross-band matches converge without recurrence. But H3 returns to C4's 63.2%
+  first-actor rate and retains forced Spoolburst/Threadball openings at the
+  448/512/576 starts. It is rejected as a live rule: a delayed counter cannot
+  repair an immediate forced opening. No Frayed Seam, strengthened Seam Pin,
+  Opening Weave status, UI, replay, reward, or V5 rule is approved.
   **WP-015D1 V4 wider
   arena and pan camera completed on 2026-08-08**
   on `codex/wp-015-production-assets`: V4 preserves historical replays while
