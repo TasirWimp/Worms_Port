@@ -180,3 +180,18 @@ turns. But its one-step response cannot escape a caster who first moves closer:
 the 448 start keeps six forced casts and the 512 start keeps three advancing
 forced casts. It authorizes no reaction timing, UI, replay field, movement
 rule, or V5 change.
+
+`v5-range-damage-forward-seam-pin-escape-slack-spoolburst-preparation-spun-cocoon-threadback-unweave-candidate-f4.json`
+is the schema-version 11 F2/F3 recombination. It keeps F3's prepared
+80-damage Spoolburst and compulsory full-Escape-Slack Threadback Unweave, then
+restores only F2's one-hit Spun Cocoon against Needlepoint and Spoolburst. A
+normal Threadball Strike stays a 45-damage non-cancelling choice; the separate
+zero-damage Unweave clears Cocoon plus preparation only while its caster can
+take the full 64-unit Threadback. Thus it introduces neither F2's free
+prepare/Unweave loop nor its 100-damage Spoolburst value.
+
+F4 is the leading structural reference, not a production candidate. It has no
+forced opening, recurrence witness, or turn-limit result across all 250
+cross-band matches, but its 63.2% first-actor rate is slightly worse than C4's
+63.0% and rises to 80% at the 704 start. No Cocoon, preparation, Unweave,
+Threadback, UI, replay field, or V5 rule is approved.

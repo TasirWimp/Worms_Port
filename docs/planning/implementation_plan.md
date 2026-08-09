@@ -31,7 +31,12 @@ Phaser/Socket.IO stack.
   cross-band rate to 60.8%, but cannot counter a move-and-cast opener that
   first closes distance; it therefore leaves forced openings at the 448/512
   starts and is also rejected negative evidence. No reaction, movement, or V5
-  rule is approved.
+  rule is approved. Candidate F4 recombines F2's one-hit Spun Cocoon with F3's
+  costly Threadback Unweave while retaining C4's 80-damage prepared Spoolburst.
+  It is the first candidate to remove both bounded openings and recurrence at
+  every cross-band start, but its 63.2% aggregate first-actor rate (including
+  80% at 704) does not improve C4's 63.0%; it remains a structural reference
+  only, with no V5 rule approved.
   **WP-015D1 V4 wider
   arena and pan camera completed on 2026-08-08**
   on `codex/wp-015-production-assets`: V4 preserves historical replays while

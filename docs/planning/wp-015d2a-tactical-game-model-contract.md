@@ -532,6 +532,64 @@ landfall: a visible, bounded residue is necessary, but alone does not repair
 initiative fairness. No Threadback, forced movement, charge state, UI, replay
 field, or V5 rule is approved.
 
+## Candidate F4 Spun Cocoon / Threadback Unweave recombination - 2026-08-09
+
+F4 is the owner-approved narrow recombination of the useful, separately tested
+parts of F2 and F3. It does **not** revive either rejected candidate unchanged:
+it retains C4's 80-damage Spoolburst rather than F2's 100-damage value, and it
+retains F3's compulsory 64-unit Escape-Slack Threadback rather than F2's free
+Unweave. The single question is whether F2's one-hit Spun Cocoon can improve
+the defended charge's initiative behavior when F3 prevents the
+prepare/Unweave non-terminal return.
+
+The rule-order contract is fixed before measurement:
+
+1. An in-range actor spends one whole turn preparing its normal 80-damage
+   stationary Spoolburst release.
+2. Preparation creates one Cocoon that absorbs the next Needlepoint or
+   Spoolburst direct hit, but a normal 45-damage Threadball Strike passes
+   through it and leaves preparation intact.
+3. A separate zero-damage Threadball Unweave clears both Cocoon and
+   preparation only if its caster can take one full legal 64-unit step away,
+   spending that actor's existing Escape Slack. The target's Cocoon cannot be
+   cleared for free, and a normal Threadball Strike is never secretly also an
+   Unweave.
+
+F4 adds no new meter, reaction timing, action-economy exception, UI, replay
+field, server rule, or V5 authority. It is schema version 11 and must pass the
+existing recurrence gate, have no analytical turn-limit result, and remove
+bounded direct openings before its first-actor rate can be considered. Its
+results are recorded below only after the canonical and centered cross-band
+sweeps complete.
+
+### Candidate F4 result - 2026-08-09
+
+F4 passes every structural gate that F2 and F3 could not satisfy together. At
+the canonical 640 spawn, all 50 matches Unravel with no bounded forced opening,
+no repeated non-terminal state, a 60% first-actor rate, and a 7.88-turn mean.
+Across the centered 448/512/576/640/704 sweep, all 250 matches Unravel and
+there are zero recurrence witnesses or bounded opening actions at every start.
+The recombined loop is genuinely exercised rather than dead configuration:
+the primary traces contain 212 preparations, 130 Cocoon absorptions, 36
+Unweaves, 36 matching Threadbacks, and 154 released Spoolbursts.
+
+The required Threadback is the decisive convergence repair. Each cancellation
+spends an existing 64 Escape Slack and changes separation, so it cannot return
+to F2's protected-equivalent prepare/Unweave cut. The Cocoon also supplies a
+real defensive window that G1's one-step pre-hit retreat could not provide at
+close range.
+
+F4 is nevertheless **not promoted as a balance candidate**. Its cross-band
+first-actor rate is 63.2% (60%/56%/60%/60%/80% by ascending start), fractionally
+worse than C4's 63.0% and with an unacceptable-looking 80% residue at the 704
+long-distance start. Its 7.304-turn mean is also slower than C4's 5.336. The
+project has deliberately not declared a final numerical acceptance threshold,
+so this is not a claim that 63.2% proves a live rule invalid. It does prove
+that the F2/F3 recombination solves forced-openings and recurrence without yet
+repairing initiative across the full distance family. Retain it as the leading
+structural reference, but authorize no Cocoon, preparation, Unweave,
+Threadback, UI, replay, or V5 rule.
+
 ## G0 Opening and reaction contract - 2026-08-09
 
 The remaining problem is now more precise than a generic “first actor

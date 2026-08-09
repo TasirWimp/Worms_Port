@@ -23,7 +23,7 @@ ActionEconomy = Literal["move_and_cast", "committed"]
 SeamPinActivation = Literal["any_direct_hit", "advance_only"]
 RetreatCastRule = Literal["allowed", "forbidden"]
 
-CONFIG_SCHEMA_VERSIONS = {1, 2, 3, 4, 5, 6, 7, 8, 9, 10}
+CONFIG_SCHEMA_VERSIONS = {1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11}
 RELIC_ORDER = ("threadball", "needlepoint", "spoolburst")
 BASE_POLICY_NAMES = (
     "range_pressure",
@@ -242,7 +242,7 @@ def load_config(path: Path) -> TacticalConfig:
         relics.append(Relic(identifier, minimum_range, maximum_range, direct_damage))
 
     seam_pin: SeamPin | None = None
-    if schema_version in {2, 3, 4, 5, 6, 7, 8, 9, 10}:
+    if schema_version in {2, 3, 4, 5, 6, 7, 8, 9, 10, 11}:
         tactical_core = _require_object(raw["tactical_core"], f"{path}.tactical_core")
         _require_exact_keys(
             tactical_core,
@@ -262,12 +262,14 @@ def load_config(path: Path) -> TacticalConfig:
                 else {"seam_pin", "escape_slack", "spoolburst_preparation", "spoolburst_threadback"}
                 if schema_version == 9
                 else {"seam_pin", "escape_slack", "cast_threadstep"}
+                if schema_version == 10
+                else {"seam_pin", "escape_slack", "spoolburst_preparation", "spoolburst_cocoon", "spoolburst_threadback"}
             ),
             f"{path}.tactical_core",
         )
         seam_pin_raw = _require_object(tactical_core["seam_pin"], f"{path}.tactical_core.seam_pin")
         seam_pin_keys = {"relic_id", "maximum_separation_increase", "target_turns", "cooldown_actor_turns"}
-        if schema_version in {3, 4, 5, 6, 7, 8, 9, 10}:
+        if schema_version in {3, 4, 5, 6, 7, 8, 9, 10, 11}:
             seam_pin_keys |= {"activation", "retreat_cast_rule"}
         _require_exact_keys(
             seam_pin_raw,
@@ -312,7 +314,7 @@ def load_config(path: Path) -> TacticalConfig:
         )
 
     escape_slack: EscapeSlack | None = None
-    if schema_version in {4, 5, 6, 7, 8, 9, 10}:
+    if schema_version in {4, 5, 6, 7, 8, 9, 10, 11}:
         escape_slack_raw = _require_object(raw["tactical_core"]["escape_slack"], f"{path}.tactical_core.escape_slack")
         _require_exact_keys(escape_slack_raw, {"per_actor"}, f"{path}.tactical_core.escape_slack")
         escape_slack = EscapeSlack(
@@ -361,7 +363,7 @@ def load_config(path: Path) -> TacticalConfig:
         )
 
     spoolburst_preparation: SpoolburstPreparation | None = None
-    if schema_version in {7, 8, 9}:
+    if schema_version in {7, 8, 9, 11}:
         preparation_raw = _require_object(
             raw["tactical_core"]["spoolburst_preparation"],
             f"{path}.tactical_core.spoolburst_preparation",
@@ -392,7 +394,7 @@ def load_config(path: Path) -> TacticalConfig:
         )
 
     spoolburst_cocoon: SpoolburstCocoon | None = None
-    if schema_version == 8:
+    if schema_version in {8, 11}:
         cocoon_raw = _require_object(
             raw["tactical_core"]["spoolburst_cocoon"],
             f"{path}.tactical_core.spoolburst_cocoon",
@@ -428,7 +430,7 @@ def load_config(path: Path) -> TacticalConfig:
         )
 
     spoolburst_threadback: SpoolburstThreadback | None = None
-    if schema_version == 9:
+    if schema_version in {9, 11}:
         threadback_raw = _require_object(
             raw["tactical_core"]["spoolburst_threadback"],
             f"{path}.tactical_core.spoolburst_threadback",
