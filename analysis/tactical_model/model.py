@@ -304,9 +304,22 @@ def validate_world_against_authority_fixture(config: TacticalConfig) -> None:
                 raise TacticalModelError("Baseline direct damage diverges from V4 authority fixture")
 
 
-def initial_state(config: TacticalConfig, *, first_actor: Actor | None = None, mirrored: bool = False) -> TacticalState:
-    player_x = config.player_x
-    loomkeeper_x = config.loomkeeper_x
+def initial_state(
+    config: TacticalConfig,
+    *,
+    first_actor: Actor | None = None,
+    mirrored: bool = False,
+    starting_distance: int | None = None,
+) -> TacticalState:
+    """Create either the authority-bound spawn or one centered analytical distance scenario."""
+
+    if starting_distance is None:
+        player_x = config.player_x
+        loomkeeper_x = config.loomkeeper_x
+    else:
+        _require_starting_distance(starting_distance, config)
+        player_x = (config.world_width - starting_distance) // 2
+        loomkeeper_x = player_x + starting_distance
     if mirrored:
         player_x = config.world_width - player_x
         loomkeeper_x = config.world_width - loomkeeper_x
@@ -481,8 +494,15 @@ def simulate_match(
     *,
     first_actor: Actor,
     mirrored: bool,
+    starting_distance: int | None = None,
 ) -> dict[str, Any]:
-    state = initial_state(config, first_actor=first_actor, mirrored=mirrored)
+    state = initial_state(
+        config,
+        first_actor=first_actor,
+        mirrored=mirrored,
+        starting_distance=starting_distance,
+    )
+    initial_distance = distance(state)
     trace: list[dict[str, Any]] = []
     while not state.finished:
         actor = state.active_actor
@@ -516,6 +536,7 @@ def simulate_match(
     return {
         "firstActor": first_actor,
         "mirrored": mirrored,
+        "startingDistance": initial_distance,
         "playerPolicy": player_policy,
         "loomkeeperPolicy": loomkeeper_policy,
         "winner": state.winner,
@@ -525,7 +546,7 @@ def simulate_match(
     }
 
 
-def run_experiment(config: TacticalConfig) -> dict[str, Any]:
+def run_experiment(config: TacticalConfig, *, starting_distance: int | None = None) -> dict[str, Any]:
     validate_world_against_authority_fixture(config)
     # Keep this 5x5 policy matrix stable across candidates so aggregate results
     # remain comparable with the original V4 and Candidate A reports.
@@ -536,6 +557,7 @@ def run_experiment(config: TacticalConfig) -> dict[str, Any]:
                 matches.append(simulate_match(
                     config, player_policy, loomkeeper_policy,
                     first_actor=first_actor, mirrored=mirrored,
+                    starting_distance=starting_distance,
                 ))
 
     candidate_policy_probes: list[dict[str, Any]] = []
@@ -548,6 +570,7 @@ def run_experiment(config: TacticalConfig) -> dict[str, Any]:
                 candidate_policy_probes.append(simulate_match(
                     config, player_policy, loomkeeper_policy,
                     first_actor=first_actor, mirrored=mirrored,
+                    starting_distance=starting_distance,
                 ))
 
     first_actor_wins = sum(match["winner"] == match["firstActor"] for match in matches)
@@ -571,7 +594,12 @@ def run_experiment(config: TacticalConfig) -> dict[str, Any]:
 
     opening = {}
     for first_actor, mirrored in (("player", False), ("loomkeeper", True)):
-        state = initial_state(config, first_actor=first_actor, mirrored=mirrored)
+        state = initial_state(
+            config,
+            first_actor=first_actor,
+            mirrored=mirrored,
+            starting_distance=starting_distance,
+        )
         forced = [action_key(action) for action in legal_actions(state, config)
                   if can_force_win(apply_action(state, action, config), first_actor, config.opening_search_depth - 1, config)]
         opening[first_actor] = {"mirrored": mirrored, "forcedWinActionsWithinDepth": forced}
@@ -606,6 +634,10 @@ def run_experiment(config: TacticalConfig) -> dict[str, Any]:
             "primaryMatrix": list(BASE_POLICY_NAMES),
             "candidateOnlyProbe": [SEAM_PIN_POLICY] if config.seam_pin is not None else [],
         },
+        "startingScenario": {
+            "kind": "authority_spawn" if starting_distance is None else "centered_distance",
+            "startingDistance": distance(initial_state(config, starting_distance=starting_distance)),
+        },
         "aggregate": {
             "matchCount": len(matches),
             "firstActorWins": first_actor_wins,
@@ -619,6 +651,46 @@ def run_experiment(config: TacticalConfig) -> dict[str, Any]:
         },
         "candidatePolicyProbes": candidate_policy_probes,
         "matches": matches,
+    }
+
+
+def run_starting_distance_sweep(config: TacticalConfig, starting_distances: tuple[int, ...]) -> dict[str, Any]:
+    """Run complete mirrored matrices over explicitly named centered distance scenarios."""
+
+    if not starting_distances:
+        raise TacticalModelError("Starting-distance sweep requires at least one scenario")
+    if len(set(starting_distances)) != len(starting_distances):
+        raise TacticalModelError("Starting-distance sweep must not repeat a scenario")
+    for starting_distance in starting_distances:
+        _require_starting_distance(starting_distance, config)
+
+    scenario_reports = [
+        run_experiment(config, starting_distance=starting_distance)
+        for starting_distance in starting_distances
+    ]
+    matches = [match for report in scenario_reports for match in report["matches"]]
+    first_actor_wins = sum(match["winner"] == match["firstActor"] for match in matches)
+    terminal_reasons: dict[str, int] = {}
+    for match in matches:
+        terminal_reasons[match["finishReason"]] = terminal_reasons.get(match["finishReason"], 0) + 1
+
+    return {
+        "schemaVersion": 1,
+        "reportKind": "starting_distance_sweep",
+        "configId": config.identifier,
+        "label": config.label,
+        "analysisStatus": config.analysis_status,
+        "sourceRulesetId": config.source_ruleset_id,
+        "authorityFixture": config.authority_fixture,
+        "startingDistances": list(starting_distances),
+        "scenarioReports": scenario_reports,
+        "aggregate": {
+            "matchCount": len(matches),
+            "firstActorWins": first_actor_wins,
+            "firstActorWinRate": first_actor_wins / len(matches),
+            "averageTurns": sum(match["turns"] for match in matches) / len(matches),
+            "terminalReasons": terminal_reasons,
+        },
     }
 
 
@@ -904,6 +976,17 @@ def _require_actor(value: Any, label: str) -> Actor:
     if value not in ("player", "loomkeeper"):
         raise TacticalModelError(f"{label}: expected player or loomkeeper")
     return value
+
+
+def _require_starting_distance(value: int, config: TacticalConfig) -> None:
+    if isinstance(value, bool) or not isinstance(value, int):
+        raise TacticalModelError("Starting-distance scenario must be an integer")
+    minimum = config.actor_margin * 2
+    maximum = config.world_width - minimum
+    if not minimum <= value <= maximum:
+        raise TacticalModelError(
+            f"Starting-distance scenario must be between {minimum} and {maximum} inclusive"
+        )
 
 
 def _require_action_economy(value: Any, label: str) -> ActionEconomy:

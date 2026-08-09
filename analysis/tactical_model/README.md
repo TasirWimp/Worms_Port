@@ -17,6 +17,21 @@ Run the complete D2A harness:
 npm run test:tactical-model
 ```
 
+Run the fixed C4 cross-band starting-distance sweep:
+
+```powershell
+python -m analysis.tactical_model.run `
+  --config analysis/tactical_model/configs/v5-range-damage-forward-seam-pin-escape-slack-128-candidate-c4.json `
+  --starting-distances 448 512 576 640 704 `
+  --output test-results/tactical-model/v5-range-damage-forward-seam-pin-escape-slack-128-c4-starting-distance-sweep-report.json
+```
+
+Each supplied distance creates a centered, open-ground analytical scenario,
+then mirrors actor positions and first actor. These scenarios are not altered
+V4 spawns and do not claim TypeScript replay parity; they are controlled
+counterfactuals that test how the candidate behaves at the Spoolburst,
+Threadball, Needlepoint, and out-of-range boundaries.
+
 Write an ignored, reproducible report for one configuration:
 
 ```powershell

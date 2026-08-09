@@ -329,3 +329,34 @@ first-actor result, real aim/terrain, human strategy, and defensive-counterplay
 questions remain open. A later candidate may still test a readable defensive
 commitment or a later-game pressure rule, but it must demonstrate value beyond a
 problem the corrected policy model has already resolved.
+
+## C4 cross-band starting-distance result - 2026-08-09
+
+The canonical V4 spawn remains 640 units and remains the only
+TypeScript-authority-bound initial state. To test whether C4's result only held
+there, the analytical harness now accepts an explicit list of starting
+distances. Each is centered in the otherwise featureless 2048-unit world, then
+mirrored and run through the same 50-match policy matrix. These are controlled
+counterfactuals, not replay scenarios, new live spawn rules, or terrain/aim
+claims. The fixed initial sweep covers 448 (inside Spoolburst range), 512
+(Spoolburst boundary), 576 (Threadball boundary), 640 (Needlepoint boundary and
+current spawn), and 704 (outside all direct launch bands).
+
+| Starting distance | First-actor rate | Mean turns | Terminal results | Bounded depth-3 opening result |
+| ---: | ---: | ---: | --- | --- |
+| 448 | 64% | 4.48 | 50 Unraveling / 0 turn-limit | 8 direct-cast forced-win actions per mirrored side |
+| 512 | 60% | 4.52 | 50 Unraveling / 0 turn-limit | 6 direct-cast forced-win actions per mirrored side |
+| 576 | 64% | 4.72 | 50 Unraveling / 0 turn-limit | 3 direct-cast forced-win actions per mirrored side |
+| 640 | 52% | 6.12 | 50 Unraveling / 0 turn-limit | none |
+| 704 | 76% | 6.84 | 50 Unraveling / 0 turn-limit | none |
+
+Across all 250 matches, C4 has no turn-limit result, a 63% first-actor rate,
+and a 5.336-turn mean. Thus Escape Slack is useful narrow convergence evidence,
+but not sufficient balance evidence. The canonical 640 spawn is the only tested
+band without a bounded forced opening, and even the out-of-range 704 scenario
+has an excessive 76% first-actor rate under these heuristics. The ideal-hit
+assumption makes the exact rates non-predictive for mobile play, but the
+direction is decisive enough to block a values-only V5 decision. The next D2A
+question is initiative counterplay: a defense/brace candidate, first-turn
+action restriction, or another reversible commitment mechanic must be compared
+against C4 before any live tactical-core work is scoped.

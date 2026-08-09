@@ -16,6 +16,7 @@ from analysis.tactical_model.model import (
     load_config,
     policy_names,
     run_experiment,
+    run_starting_distance_sweep,
     simulate_match,
     validate_world_against_authority_fixture,
 )
@@ -164,6 +165,23 @@ class TacticalModelTests(unittest.TestCase):
             action_key(choose_action("retreat_kite", no_escape_state, config)),
             "cast:needlepoint:stay",
             "the policy must cast rather than label an approach as a retreat",
+        )
+
+    def test_c4_centered_starting_distance_sweep_is_repeatable_and_keeps_authority_spawn_separate(self) -> None:
+        config = load_config(CONFIGS / "v5-range-damage-forward-seam-pin-escape-slack-128-candidate-c4.json")
+        centered = initial_state(config, starting_distance=448)
+        mirrored = initial_state(config, mirrored=True, starting_distance=448)
+        self.assertEqual((centered.player.x, centered.loomkeeper.x, distance(centered)), (800, 1248, 448))
+        self.assertEqual((mirrored.player.x, mirrored.loomkeeper.x, distance(mirrored)), (1248, 800, 448))
+
+        distances = (448, 512, 576, 640, 704)
+        report = run_starting_distance_sweep(config, distances)
+        self.assertEqual(report, run_starting_distance_sweep(config, distances))
+        self.assertEqual(report["startingDistances"], list(distances))
+        self.assertEqual(report["aggregate"]["matchCount"], 250)
+        self.assertEqual(
+            [scenario["startingScenario"] for scenario in report["scenarioReports"]],
+            [{"kind": "centered_distance", "startingDistance": value} for value in distances],
         )
 
 
