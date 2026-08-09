@@ -86,7 +86,7 @@ and makes no rendering, network, wallet, reward, or asset decision.
 | Movement/action budget | required; compare its consequences explicitly rather than assuming move-plus-full-cast is harmless |
 | Defense state and its cost | optional candidate only; Candidate D1 models one public one-use, damage-only Brace as rejected analytical evidence; no live Brace mechanic is approved |
 | Overtime/convergence state | optional candidate only; Candidate C models equal non-refilling Escape Slack as an analytical soft-boundary hypothesis; no live Loom Tightening, timeout rule, or meter is approved |
-| Radius, precision, falloff, ammo, cooldown, status effects, Calling modifiers, obstacles, destructible terrain, rewards | excluded unless separately versioned and authorized; Candidates B/B2/C/D1/E authorize only analysis-only Needlepoint tether/cooldown, Escape Slack, rejected Brace, and rejected Spoolburst self-backlash hypotheses, never a live rule |
+| Radius, precision, falloff, ammo, cooldown, status effects, Calling modifiers, obstacles, destructible terrain, rewards | excluded unless separately versioned and authorized; Candidates B/B2/C/D1/E/F1/F2 authorize only analysis-only Needlepoint tether/cooldown, Escape Slack, rejected Brace/self-backlash, and rejected prepared-Spoolburst/Threadball response hypotheses, never a live rule |
 
 All model transitions must be deterministic. An experiment may sample a policy
 or a listed starting scenario, but given its configuration, policy choice, and
@@ -418,3 +418,64 @@ or less convergent. Do not combine it with a Threadball effect yet: that would
 confound this result. Any future Threadball control or defense candidate needs
 its own narrow hypothesis and must be compared against the C4 baseline rather
 than inheriting Candidate E.
+
+## Candidate F1 prepared Spoolburst / Threadball disruption result - 2026-08-09
+
+F1 separately tests the first version of an answerable weapon commitment. It
+keeps C4's values, forward-Seam-Pin, and Escape Slack, and discards Candidate
+E's self-cost entirely. Spoolburst is unavailable as an immediate cast. While
+in its normal 512-unit launch band, an actor instead spends one full turn on a
+visible preparation; the charge survives exactly the opposing action and can be
+cast only as a stationary release on the preparer's immediately following turn
+if the target remains in range. A direct Threadball hit while a charge is active clears it and still
+deals the normal 45 ideal damage. This is a rule-order model only, with no UI,
+animation, projectile, replay, or runtime claim.
+
+The loop occurs in ordinary policy traces: at the canonical 640 start, the
+50-match matrix contains 36 preparations, 12 Threadball disruptions, and 14
+completed Spoolburst casts. All 50 matches Unravel, with no bounded direct
+forced opening, a 56% first-actor rate, and a 7.20-turn mean. Across the
+448/512/576/640/704 centered sweep it has 46/48/46/36/30 preparations and
+16/16/16/12/10 disruptions. It resolves all 250 matches and has no bounded
+opening action, but the respective first-actor rates are
+72%/68%/72%/56%/76%: 68.8% overall and 6.784 mean turns, worse than C4's 63.0%
+and 5.336.
+
+Therefore **F1 is rejected as a values/activation candidate**, while retaining
+one useful design finding: telegraphing a strong action and giving the opponent
+a distinct medium-range response produces genuine observable counterplay.
+That alone does not solve initiative in the ideal-hit model. Do not add a live
+charge, disruption, status field, UI, or Threadball effect. Any later candidate
+must make the defender's response materially alter the damage race, not merely
+erase one option from the attacker's future turn.
+
+## Candidate F2 Spun Cocoon / Threadball Unweave result - 2026-08-09
+
+F2 tests the next, still analytical response contract. It retains C4's forward
+Seam Pin and Escape Slack, but treats a prepared Spoolburst as a decisive
+100-damage threat. Preparation stays one turn and releases stationary on the
+caster's next turn. It also creates one Spun Cocoon hit: the next incoming
+Needlepoint or Spoolburst direct damage is absorbed completely without clearing
+the charge. Threadball has two deliberately separate effects. A normal Strike
+deals 45 damage through the Cocoon but leaves the charge intact; a distinct
+zero-damage Unweave uses the Threadball range to clear both Cocoon and charge.
+This makes the counter a real choice rather than F1's combined damage-plus-
+disruption result.
+
+The headline moves in the desired direction but does not converge. At the
+canonical 640 spawn, F2 has a 56% first-actor rate and 7.52 average turns, but
+4/50 turn-limit results. Its primary traces contain 46 preparations, 28
+Unweaves, 38 Cocoon absorptions, and 16 released Spoolbursts. In the fixed
+448/512/576/640/704 sweep it reaches 56%/52%/56%/56%/72% first-actor rates:
+58.4% overall, lower than C4's 63.0%, but with 20/250 turn limits and a 6.968-
+turn mean. All five distance scenarios have the same four draws.
+
+Trace inspection identifies the exact residue: every draw is a mirrored
+medium-hold versus short-approach pairing. Once in Threadball range, the trace
+repeats `prepare_spoolburst` then zero-damage `unweave_spoolburst`; neither
+action spends Escape Slack or Stitching, so neither combatant is forced toward
+a terminal state. F2 is therefore **rejected negative evidence**, despite the
+improved initiative headline. A later candidate must price, limit, or otherwise
+make a successful Unweave alter the board/health state without reinstating an
+immediate first-shot race. No live Cocoon, Unweave, 100-damage Spoolburst,
+status/UI/replay field, or V5 rule is approved.

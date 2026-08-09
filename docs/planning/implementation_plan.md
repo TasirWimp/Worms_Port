@@ -16,7 +16,11 @@ Phaser/Socket.IO stack.
   action-economy, defense, and convergence candidates require an explicit later
   versioned decision rather than becoming hidden V5 rules. Candidate D1 basic
   Brace and Candidate E1/E2/E3 Spoolburst self-backlash are recorded only as
-  rejected analysis evidence; neither authorizes a live mechanic. **WP-015D1 V4 wider
+  rejected analysis evidence; neither authorizes a live mechanic. Candidate F1
+  prepared-Spoolburst/Threadball disruption proves an answerable commitment
+  loop but is also rejected as a balance solution. Candidate F2 Cocoon/Unweave
+  lowers the cross-band first-actor rate but creates a deterministic denial loop,
+  so it too is rejected as a balance solution. **WP-015D1 V4 wider
   arena and pan camera completed on 2026-08-08**
   on `codex/wp-015-production-assets`: V4 preserves historical replays while
   admitting no obstacle, tactical-terrain, balance, or asset work.

@@ -119,3 +119,27 @@ evidence: each cost removes the bounded direct Spoolburst forced actions, but
 10 reintroduces timeouts and 20/30 increase the cross-band first-actor rate.
 It does not authorize a live self-damage rule, Threadball effect, UI, replay
 field, or V5 ruleset.
+
+`v5-range-damage-forward-seam-pin-escape-slack-spoolburst-preparation-threadball-disruption-candidate-f1.json`
+is the separate schema-version 7 follow-up to that rejected result. It restores
+Spoolburst's full direct damage, but a caster must spend one full in-range turn
+on `prepare_spoolburst`; the charge is usable only on that caster's immediately
+following turn as a stationary release, so a one-step retreat really can escape
+the threat. A direct Threadball hit during the window clears the charge and
+still deals its ordinary 45 direct damage. Compact traces record the charge,
+its start, and disruption separately. F1 proves that the telegraphed
+preparation/disruption loop occurs in the fixed policy matrix, but it is also
+rejected analysis-only evidence: it removes bounded forced openings and
+timeouts while worsening cross-band first-actor bias. It authorizes no live
+charge state, Threadball status, UI, replay field, or V5 ruleset.
+
+`v5-range-damage-forward-seam-pin-escape-slack-spun-cocoon-threadball-unweave-candidate-f2.json`
+is the separate schema-version 8 response-contract probe. It gives the prepared
+Spoolburst a decisive 100 direct damage and a one-hit Spun Cocoon that absorbs
+Needlepoint or Spoolburst damage. Threadball has a deliberately separated
+choice: a normal 45-damage Strike leaves the Cocoon/charge intact, whereas the
+zero-damage `unweave_spoolburst` action clears both. F2 reduces the cross-band
+first-actor rate below C4, but produces a pure prepare/Unweave loop in every
+medium-hold versus short-approach pairing. It remains rejected analysis-only
+evidence: no Cocoon, 100-damage Spoolburst, Unweave action, UI, replay field,
+or V5 ruleset is approved.

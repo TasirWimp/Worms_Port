@@ -18,12 +18,12 @@ from typing import Any, Literal
 
 Actor = Literal["player", "loomkeeper"]
 Winner = Actor | Literal["draw"] | None
-ActionKind = Literal["cast", "relocate", "brace", "wait"]
+ActionKind = Literal["cast", "relocate", "brace", "prepare_spoolburst", "unweave_spoolburst", "wait"]
 ActionEconomy = Literal["move_and_cast", "committed"]
 SeamPinActivation = Literal["any_direct_hit", "advance_only"]
 RetreatCastRule = Literal["allowed", "forbidden"]
 
-CONFIG_SCHEMA_VERSIONS = {1, 2, 3, 4, 5, 6}
+CONFIG_SCHEMA_VERSIONS = {1, 2, 3, 4, 5, 6, 7, 8}
 RELIC_ORDER = ("threadball", "needlepoint", "spoolburst")
 BASE_POLICY_NAMES = (
     "range_pressure",
@@ -83,6 +83,23 @@ class SpoolburstBacklash:
 
 
 @dataclass(frozen=True)
+class SpoolburstPreparation:
+    """A visible one-turn charge that a named medium Relic can disrupt."""
+
+    relic_id: str
+    preparation_turns: int
+    disruption_relic_id: str
+
+
+@dataclass(frozen=True)
+class SpoolburstCocoon:
+    """A one-hit charge guard and a separate no-damage Threadball counterspell."""
+
+    absorbed_relic_ids: tuple[str, ...]
+    unweave_relic_id: str
+
+
+@dataclass(frozen=True)
 class TacticalConfig:
     identifier: str
     label: str
@@ -106,6 +123,8 @@ class TacticalConfig:
     escape_slack: EscapeSlack | None = None
     brace: Brace | None = None
     spoolburst_backlash: SpoolburstBacklash | None = None
+    spoolburst_preparation: SpoolburstPreparation | None = None
+    spoolburst_cocoon: SpoolburstCocoon | None = None
 
     def relic(self, identifier: str) -> Relic:
         for relic in self.relics:
@@ -124,6 +143,8 @@ class ActorState:
     escape_slack_remaining: int = 0
     brace_turns: int = 0
     brace_uses_remaining: int = 0
+    spoolburst_preparation_turns: int = 0
+    spoolburst_cocoon_hits_remaining: int = 0
 
 
 @dataclass(frozen=True)
@@ -194,7 +215,7 @@ def load_config(path: Path) -> TacticalConfig:
         relics.append(Relic(identifier, minimum_range, maximum_range, direct_damage))
 
     seam_pin: SeamPin | None = None
-    if schema_version in {2, 3, 4, 5, 6}:
+    if schema_version in {2, 3, 4, 5, 6, 7, 8}:
         tactical_core = _require_object(raw["tactical_core"], f"{path}.tactical_core")
         _require_exact_keys(
             tactical_core,
@@ -206,12 +227,16 @@ def load_config(path: Path) -> TacticalConfig:
                 else {"seam_pin", "escape_slack", "brace"}
                 if schema_version == 5
                 else {"seam_pin", "escape_slack", "spoolburst_backlash"}
+                if schema_version == 6
+                else {"seam_pin", "escape_slack", "spoolburst_preparation"}
+                if schema_version == 7
+                else {"seam_pin", "escape_slack", "spoolburst_preparation", "spoolburst_cocoon"}
             ),
             f"{path}.tactical_core",
         )
         seam_pin_raw = _require_object(tactical_core["seam_pin"], f"{path}.tactical_core.seam_pin")
         seam_pin_keys = {"relic_id", "maximum_separation_increase", "target_turns", "cooldown_actor_turns"}
-        if schema_version in {3, 4, 5, 6}:
+        if schema_version in {3, 4, 5, 6, 7, 8}:
             seam_pin_keys |= {"activation", "retreat_cast_rule"}
         _require_exact_keys(
             seam_pin_raw,
@@ -256,7 +281,7 @@ def load_config(path: Path) -> TacticalConfig:
         )
 
     escape_slack: EscapeSlack | None = None
-    if schema_version in {4, 5, 6}:
+    if schema_version in {4, 5, 6, 7, 8}:
         escape_slack_raw = _require_object(raw["tactical_core"]["escape_slack"], f"{path}.tactical_core.escape_slack")
         _require_exact_keys(escape_slack_raw, {"per_actor"}, f"{path}.tactical_core.escape_slack")
         escape_slack = EscapeSlack(
@@ -304,6 +329,73 @@ def load_config(path: Path) -> TacticalConfig:
             )
         )
 
+    spoolburst_preparation: SpoolburstPreparation | None = None
+    if schema_version in {7, 8}:
+        preparation_raw = _require_object(
+            raw["tactical_core"]["spoolburst_preparation"],
+            f"{path}.tactical_core.spoolburst_preparation",
+        )
+        _require_exact_keys(
+            preparation_raw,
+            {"relic_id", "preparation_turns", "disruption_relic_id"},
+            f"{path}.tactical_core.spoolburst_preparation",
+        )
+        relic_id = _require_string(
+            preparation_raw["relic_id"], f"{path}.tactical_core.spoolburst_preparation.relic_id"
+        )
+        disruption_relic_id = _require_string(
+            preparation_raw["disruption_relic_id"],
+            f"{path}.tactical_core.spoolburst_preparation.disruption_relic_id",
+        )
+        if relic_id != "spoolburst" or disruption_relic_id != "threadball":
+            raise TacticalModelError(
+                f"{path}.tactical_core.spoolburst_preparation: requires Spoolburst prepared by Threadball disruption"
+            )
+        spoolburst_preparation = SpoolburstPreparation(
+            relic_id=relic_id,
+            preparation_turns=_require_positive_integer(
+                preparation_raw["preparation_turns"],
+                f"{path}.tactical_core.spoolburst_preparation.preparation_turns",
+            ),
+            disruption_relic_id=disruption_relic_id,
+        )
+
+    spoolburst_cocoon: SpoolburstCocoon | None = None
+    if schema_version == 8:
+        cocoon_raw = _require_object(
+            raw["tactical_core"]["spoolburst_cocoon"],
+            f"{path}.tactical_core.spoolburst_cocoon",
+        )
+        _require_exact_keys(
+            cocoon_raw,
+            {"absorbed_relic_ids", "unweave_relic_id"},
+            f"{path}.tactical_core.spoolburst_cocoon",
+        )
+        absorbed_relic_ids = tuple(
+            _require_string(
+                item,
+                f"{path}.tactical_core.spoolburst_cocoon.absorbed_relic_ids[{index}]",
+            )
+            for index, item in enumerate(
+                _require_list(
+                    cocoon_raw["absorbed_relic_ids"],
+                    f"{path}.tactical_core.spoolburst_cocoon.absorbed_relic_ids",
+                )
+            )
+        )
+        unweave_relic_id = _require_string(
+            cocoon_raw["unweave_relic_id"],
+            f"{path}.tactical_core.spoolburst_cocoon.unweave_relic_id",
+        )
+        if absorbed_relic_ids != ("needlepoint", "spoolburst") or unweave_relic_id != "threadball":
+            raise TacticalModelError(
+                f"{path}.tactical_core.spoolburst_cocoon: requires Needlepoint/Spoolburst absorption and Threadball Unweave"
+            )
+        spoolburst_cocoon = SpoolburstCocoon(
+            absorbed_relic_ids=absorbed_relic_ids,
+            unweave_relic_id=unweave_relic_id,
+        )
+
     config = TacticalConfig(
         identifier=_require_string(raw["id"], f"{path}.id"),
         label=_require_string(raw["label"], f"{path}.label"),
@@ -327,6 +419,8 @@ def load_config(path: Path) -> TacticalConfig:
         escape_slack=escape_slack,
         brace=brace,
         spoolburst_backlash=spoolburst_backlash,
+        spoolburst_preparation=spoolburst_preparation,
+        spoolburst_cocoon=spoolburst_cocoon,
     )
     if not (config.actor_margin <= config.player_x < config.world_width - config.actor_margin):
         raise TacticalModelError(f"{path}: player spawn lies outside legal world bounds")
@@ -341,6 +435,8 @@ def load_config(path: Path) -> TacticalConfig:
         raise TacticalModelError(
             f"{path}.tactical_core.spoolburst_backlash: cost must leave a full-Stitching actor able to cast"
         )
+    if config.spoolburst_cocoon is not None and config.spoolburst_preparation is None:
+        raise TacticalModelError(f"{path}.tactical_core.spoolburst_cocoon: requires Spoolburst preparation")
     return config
 
 
@@ -437,11 +533,18 @@ def legal_actions(state: TacticalState, config: TacticalConfig) -> tuple[Action,
         return ()
     movement_directions = (0,) if config.action_economy == "committed" else (-1, 0, 1)
     actions: set[Action] = set()
-    for direction in movement_directions:
-        moved_state = _move_actor(state, state.active_actor, direction, config)
-        projected_distance = distance(moved_state)
-        for relic in config.relics:
+    for relic in config.relics:
+        cast_directions = (
+            (0,)
+            if _spoolburst_preparation_requires_stationary_release(relic, config)
+            else movement_directions
+        )
+        for direction in cast_directions:
+            moved_state = _move_actor(state, state.active_actor, direction, config)
+            projected_distance = distance(moved_state)
             if _seam_pin_is_on_cooldown(state, state.active_actor, relic.identifier, config):
+                continue
+            if _spoolburst_preparation_prevents_cast(state, state.active_actor, relic.identifier, config):
                 continue
             if _spoolburst_backlash_prevents_cast(state, state.active_actor, relic.identifier, config):
                 continue
@@ -449,6 +552,24 @@ def legal_actions(state: TacticalState, config: TacticalConfig) -> tuple[Action,
                 continue
             if relic.minimum_range <= projected_distance <= relic.maximum_range:
                 actions.add(Action("cast", direction, relic.identifier))
+    if (
+        config.spoolburst_preparation is not None and
+        actor_state(state, state.active_actor).spoolburst_preparation_turns == 0
+    ):
+        preparation_relic = config.relic(config.spoolburst_preparation.relic_id)
+        for direction in movement_directions:
+            moved_state = _move_actor(state, state.active_actor, direction, config)
+            if preparation_relic.minimum_range <= distance(moved_state) <= preparation_relic.maximum_range:
+                actions.add(Action("prepare_spoolburst", direction))
+    if (
+        config.spoolburst_cocoon is not None and
+        actor_state(state, other_actor(state.active_actor)).spoolburst_preparation_turns > 0
+    ):
+        unweave_relic = config.relic(config.spoolburst_cocoon.unweave_relic_id)
+        for direction in movement_directions:
+            moved_state = _move_actor(state, state.active_actor, direction, config)
+            if unweave_relic.minimum_range <= distance(moved_state) <= unweave_relic.maximum_range:
+                actions.add(Action("unweave_spoolburst", direction, unweave_relic.identifier))
     for direction in (-1, 1):
         if _move_actor(state, state.active_actor, direction, config) != state:
             actions.add(Action("relocate", direction))
@@ -497,6 +618,9 @@ def apply_action(state: TacticalState, action: Action, config: TacticalConfig) -
             if not relic.minimum_range <= distance(next_state) <= relic.maximum_range:
                 raise TacticalModelError("Cast left its declared range band")
             damage = relic.direct_damage
+            cocoon_absorbs = _spoolburst_cocoon_absorbs_cast(target_state, relic, config)
+            if cocoon_absorbs:
+                damage = 0
             if target_is_braced:
                 if config.brace is None:
                     raise TacticalModelError("Active Brace state requires a configured candidate")
@@ -508,6 +632,18 @@ def apply_action(state: TacticalState, action: Action, config: TacticalConfig) -
                     target_state,
                     stitching=max(0, target_state.stitching - damage),
                     brace_turns=0,
+                    spoolburst_preparation_turns=(
+                        0
+                        if (
+                            config.spoolburst_cocoon is None and
+                            _is_spoolburst_preparation_disruption(relic, config)
+                        )
+                        else target_state.spoolburst_preparation_turns
+                    ),
+                    spoolburst_cocoon_hits_remaining=(
+                        target_state.spoolburst_cocoon_hits_remaining - 1
+                        if cocoon_absorbs else target_state.spoolburst_cocoon_hits_remaining
+                    ),
                 ),
             )
             next_state = _apply_spoolburst_backlash_if_configured(
@@ -516,6 +652,13 @@ def apply_action(state: TacticalState, action: Action, config: TacticalConfig) -
                 relic,
                 config,
             )
+            if actor_state(state, state.active_actor).spoolburst_preparation_turns > 0:
+                caster_state = actor_state(next_state, state.active_actor)
+                next_state = replace_actor(
+                    next_state,
+                    state.active_actor,
+                    replace(caster_state, spoolburst_cocoon_hits_remaining=0),
+                )
             if actor_state(next_state, target).stitching == 0:
                 return replace(next_state, completed_turns=state.completed_turns + 1,
                                winner=state.active_actor, finish_reason="unravelled")
@@ -528,8 +671,49 @@ def apply_action(state: TacticalState, action: Action, config: TacticalConfig) -
                 after_movement=moved_state,
                 config=config,
             )
+        elif action.kind == "prepare_spoolburst":
+            if config.spoolburst_preparation is None:
+                raise TacticalModelError("Spoolburst preparation requires a configured candidate")
+            caster_state = actor_state(next_state, state.active_actor)
+            next_state = replace_actor(
+                next_state,
+                state.active_actor,
+                replace(
+                    caster_state,
+                    spoolburst_preparation_turns=config.spoolburst_preparation.preparation_turns,
+                    spoolburst_cocoon_hits_remaining=1 if config.spoolburst_cocoon is not None else 0,
+                ),
+            )
+            if target_is_braced:
+                next_state = replace_actor(next_state, target, replace(target_state, brace_turns=0))
+        elif action.kind == "unweave_spoolburst":
+            if config.spoolburst_cocoon is None:
+                raise TacticalModelError("Spoolburst Unweave requires a configured Cocoon candidate")
+            if action.relic_id != config.spoolburst_cocoon.unweave_relic_id:
+                raise TacticalModelError("Spoolburst Unweave requires the configured Threadball Relic")
+            next_state = replace_actor(
+                next_state,
+                target,
+                replace(
+                    target_state,
+                    brace_turns=0,
+                    spoolburst_preparation_turns=0,
+                    spoolburst_cocoon_hits_remaining=0,
+                ),
+            )
         elif target_is_braced:
             next_state = replace_actor(next_state, target, replace(target_state, brace_turns=0))
+
+    if (
+        action.kind != "prepare_spoolburst" and
+        actor_state(state, state.active_actor).spoolburst_preparation_turns > 0
+    ):
+        caster_state = actor_state(next_state, state.active_actor)
+        next_state = replace_actor(
+            next_state,
+            state.active_actor,
+            replace(caster_state, spoolburst_cocoon_hits_remaining=0),
+        )
 
     completed_turns = state.completed_turns + 1
     if completed_turns >= config.maximum_turns:
@@ -561,6 +745,9 @@ def choose_action(policy: str, state: TacticalState, config: TacticalConfig) -> 
         return _select_relocation_toward(actions, state, config)
 
     if policy == "medium_hold":
+        unweave = tuple(action for action in actions if action.kind == "unweave_spoolburst")
+        if unweave:
+            return _select_best(unweave, lambda action: (-abs(action.direction),))
         threadball = tuple(action for action in casts if action.relic_id == "threadball")
         if threadball:
             return _select_best(threadball, lambda action: (-abs(distance(_move_actor(state, actor, action.direction, config)) - config.relic("threadball").maximum_range), -abs(action.direction)))
@@ -570,6 +757,9 @@ def choose_action(policy: str, state: TacticalState, config: TacticalConfig) -> 
         spoolburst = tuple(action for action in casts if action.relic_id == "spoolburst")
         if spoolburst:
             return _select_best(spoolburst, lambda action: (-abs(action.direction),))
+        preparations = tuple(action for action in actions if action.kind == "prepare_spoolburst")
+        if preparations:
+            return _select_best(preparations, lambda action: (-abs(action.direction),))
         return _select_relocation_to_distance(actions, state, config, config.relic("spoolburst").maximum_range)
 
     if policy == "retreat_kite":
@@ -675,6 +865,28 @@ def simulate_match(
             "loomkeeperBraceTurns": state.loomkeeper.brace_turns,
             "playerBraceUses": state.player.brace_uses_remaining,
             "loomkeeperBraceUses": state.loomkeeper.brace_uses_remaining,
+            "playerSpoolburstPreparationTurns": state.player.spoolburst_preparation_turns,
+            "loomkeeperSpoolburstPreparationTurns": state.loomkeeper.spoolburst_preparation_turns,
+            "playerSpoolburstCocoonHits": state.player.spoolburst_cocoon_hits_remaining,
+            "loomkeeperSpoolburstCocoonHits": state.loomkeeper.spoolburst_cocoon_hits_remaining,
+            "spoolburstPreparationStartedBy": actor if (
+                actor_state(before, actor).spoolburst_preparation_turns == 0 and
+                actor_state(state, actor).spoolburst_preparation_turns > 0
+            ) else None,
+            "spoolburstPreparationDisruptedFor": target if (
+                actor_state(before, target).spoolburst_preparation_turns > 0 and
+                actor_state(state, target).spoolburst_preparation_turns == 0 and
+                action.kind == "cast" and
+                action.relic_id == (
+                    config.spoolburst_preparation.disruption_relic_id
+                    if config.spoolburst_preparation is not None else None
+                )
+            ) else None,
+            "spoolburstUnwovenFor": target if action.kind == "unweave_spoolburst" else None,
+            "spoolburstCocoonAbsorbedFor": target if (
+                actor_state(before, target).spoolburst_cocoon_hits_remaining >
+                actor_state(state, target).spoolburst_cocoon_hits_remaining
+            ) else None,
         })
     return {
         "firstActor": first_actor,
@@ -791,6 +1003,16 @@ def run_experiment(config: TacticalConfig, *, starting_distance: int | None = No
                 "relicId": "spoolburst",
                 "selfStitchingCost": config.spoolburst_backlash.self_stitching_cost,
                 "requiresStitchingAboveCost": True,
+            },
+            "spoolburstPreparation": None if config.spoolburst_preparation is None else {
+                "relicId": config.spoolburst_preparation.relic_id,
+                "preparationTurns": config.spoolburst_preparation.preparation_turns,
+                "disruptionRelicId": config.spoolburst_preparation.disruption_relic_id,
+            },
+            "spoolburstCocoon": None if config.spoolburst_cocoon is None else {
+                "absorbedRelicIds": list(config.spoolburst_cocoon.absorbed_relic_ids),
+                "unweaveRelicId": config.spoolburst_cocoon.unweave_relic_id,
+                "unweaveDamage": 0,
             },
         },
         "policySets": {
@@ -961,6 +1183,45 @@ def _seam_pin_forbids_retreat_cast(
     )
 
 
+def _spoolburst_preparation_prevents_cast(
+    state: TacticalState,
+    actor: Actor,
+    relic_id: str,
+    config: TacticalConfig,
+) -> bool:
+    return (
+        config.spoolburst_preparation is not None and
+        relic_id == config.spoolburst_preparation.relic_id and
+        actor_state(state, actor).spoolburst_preparation_turns <= 0
+    )
+
+
+def _spoolburst_preparation_requires_stationary_release(relic: Relic, config: TacticalConfig) -> bool:
+    return (
+        config.spoolburst_preparation is not None and
+        relic.identifier == config.spoolburst_preparation.relic_id
+    )
+
+
+def _is_spoolburst_preparation_disruption(relic: Relic, config: TacticalConfig) -> bool:
+    return (
+        config.spoolburst_preparation is not None and
+        relic.identifier == config.spoolburst_preparation.disruption_relic_id
+    )
+
+
+def _spoolburst_cocoon_absorbs_cast(
+    target_state: ActorState,
+    relic: Relic,
+    config: TacticalConfig,
+) -> bool:
+    return (
+        config.spoolburst_cocoon is not None and
+        target_state.spoolburst_cocoon_hits_remaining > 0 and
+        relic.identifier in config.spoolburst_cocoon.absorbed_relic_ids
+    )
+
+
 def _spoolburst_backlash_prevents_cast(
     state: TacticalState,
     actor: Actor,
@@ -1029,6 +1290,11 @@ def _complete_active_actor_turn(state: TacticalState, actor: Actor) -> TacticalS
         seam_pin_source=current.seam_pin_source if next_turns else None,
         seam_pin_turns=next_turns,
         seam_pin_cooldown=max(0, current.seam_pin_cooldown - 1),
+        spoolburst_preparation_turns=max(0, current.spoolburst_preparation_turns - 1),
+        spoolburst_cocoon_hits_remaining=(
+            current.spoolburst_cocoon_hits_remaining
+            if current.spoolburst_preparation_turns > 0 else 0
+        ),
     )
     return replace_actor(state, actor, completed)
 

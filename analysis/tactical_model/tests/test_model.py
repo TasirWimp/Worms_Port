@@ -243,6 +243,66 @@ class TacticalModelTests(unittest.TestCase):
             "Spoolburst must never make its caster unravel in the same action",
         )
 
+    def test_spoolburst_preparation_requires_a_visible_turn_and_threadball_can_disrupt_it(self) -> None:
+        config = load_config(
+            CONFIGS / "v5-range-damage-forward-seam-pin-escape-slack-spoolburst-preparation-threadball-disruption-candidate-f1.json"
+        )
+        opening = initial_state(config, starting_distance=448)
+        self.assertNotIn(Action("cast", 0, "spoolburst"), legal_actions(opening, config))
+        self.assertIn(Action("prepare_spoolburst", 0), legal_actions(opening, config))
+
+        prepared = apply_action(opening, Action("prepare_spoolburst", 0), config)
+        self.assertEqual(prepared.player.spoolburst_preparation_turns, 1)
+        disrupted = apply_action(prepared, Action("cast", 0, "threadball"), config)
+        self.assertEqual(disrupted.player.spoolburst_preparation_turns, 0)
+        self.assertEqual(disrupted.player.stitching, 55)
+        self.assertNotIn(Action("cast", 0, "spoolburst"), legal_actions(disrupted, config))
+
+        unanswered = apply_action(opening, Action("prepare_spoolburst", 0), config)
+        unanswered = apply_action(unanswered, Action("relocate", 1), config)
+        self.assertIn(
+            Action("cast", 0, "spoolburst"),
+            legal_actions(unanswered, config),
+            "The charge remains available only through the caster's immediately following turn",
+        )
+
+        escaped = apply_action(initial_state(config, starting_distance=512), Action("prepare_spoolburst", 0), config)
+        escaped = apply_action(escaped, Action("relocate", 1), config)
+        self.assertNotIn(
+            Action("cast", 0, "spoolburst"),
+            legal_actions(escaped, config),
+            "A prepared Spoolburst cannot chase a one-step retreat on its release turn",
+        )
+
+    def test_spun_cocoon_absorbs_one_non_threadball_hit_and_threadball_unweaves_without_damage(self) -> None:
+        config = load_config(
+            CONFIGS / "v5-range-damage-forward-seam-pin-escape-slack-spun-cocoon-threadball-unweave-candidate-f2.json"
+        )
+        opening = initial_state(config, starting_distance=448)
+        prepared = apply_action(opening, Action("prepare_spoolburst", 0), config)
+        self.assertEqual((prepared.player.spoolburst_preparation_turns, prepared.player.spoolburst_cocoon_hits_remaining), (1, 1))
+
+        guarded = apply_action(prepared, Action("cast", 0, "needlepoint"), config)
+        self.assertEqual((guarded.player.stitching, guarded.player.spoolburst_cocoon_hits_remaining), (100, 0))
+        self.assertEqual(guarded.player.spoolburst_preparation_turns, 1)
+
+        struck = apply_action(prepared, Action("cast", 0, "threadball"), config)
+        self.assertEqual((struck.player.stitching, struck.player.spoolburst_preparation_turns), (55, 1))
+        self.assertEqual(struck.player.spoolburst_cocoon_hits_remaining, 1,
+                         "Threadball Strike is damage-only and does not collapse the Cocoon")
+
+        prepared_again = apply_action(opening, Action("prepare_spoolburst", 0), config)
+        self.assertIn(Action("unweave_spoolburst", 0, "threadball"), legal_actions(prepared_again, config))
+        unwoven = apply_action(prepared_again, Action("unweave_spoolburst", 0, "threadball"), config)
+        self.assertEqual((unwoven.player.stitching, unwoven.player.spoolburst_preparation_turns, unwoven.player.spoolburst_cocoon_hits_remaining), (100, 0, 0))
+        self.assertEqual(unwoven.loomkeeper.stitching, 100, "Unweave trades Threadball damage for cancellation")
+
+        charged = apply_action(prepared_again, Action("relocate", 1), config)
+        resolved = apply_action(charged, Action("cast", 0, "spoolburst"), config)
+        self.assertEqual((resolved.winner, resolved.loomkeeper.stitching), ("player", 0))
+        self.assertEqual(resolved.player.spoolburst_cocoon_hits_remaining, 0,
+                         "The Cocoon is gone when its owner releases or abandons the charge")
+
 
 if __name__ == "__main__":
     unittest.main()
