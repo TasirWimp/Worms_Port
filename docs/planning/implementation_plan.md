@@ -14,7 +14,9 @@ Phaser/Socket.IO stack.
   [WP-015D2A Tactical Game Model and Simulation Harness](wp-015d2a-tactical-game-model-contract.md).
   It keeps TypeScript authoritative and makes Python an analytical tool only;
   action-economy, defense, and convergence candidates require an explicit later
-  versioned decision rather than becoming hidden V5 rules. **WP-015D1 V4 wider
+  versioned decision rather than becoming hidden V5 rules. Candidate D1 basic
+  Brace and Candidate E1/E2/E3 Spoolburst self-backlash are recorded only as
+  rejected analysis evidence; neither authorizes a live mechanic. **WP-015D1 V4 wider
   arena and pan camera completed on 2026-08-08**
   on `codex/wp-015-production-assets`: V4 preserves historical replays while
   admitting no obstacle, tactical-terrain, balance, or asset work.

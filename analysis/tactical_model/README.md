@@ -101,3 +101,21 @@ Its `brace_counter` probe policy spends the action only when that reduction
 makes the opponent's currently legal hit nonlethal. D1 is recorded as rejected
 negative evidence: a post-hit, damage-only Brace does not counter the
 first-actor direct-hit race in this model.
+
+The three schema-version 6 Candidate E configurations keep C4's forward Seam
+Pin and 128-unit Escape Slack, then make **Spoolburst** pay a self-Stitching
+cost. A cast is legal only when the caster has more Stitching than the cost, so
+it always leaves the caster at one or more Stitching and cannot create a
+simultaneous self-Unraveling:
+
+- `v5-range-damage-forward-seam-pin-escape-slack-spoolburst-backlash-10-candidate-e1.json`
+- `v5-range-damage-forward-seam-pin-escape-slack-spoolburst-backlash-20-candidate-e2.json`
+- `v5-range-damage-forward-seam-pin-escape-slack-spoolburst-backlash-30-candidate-e3.json`
+
+The compact trace now records `actorBacklashDamage` independently from the
+target's `damage`; the report declares the candidate under
+`tacticalCore.spoolburstBacklash`. Candidate E is rejected analysis-only
+evidence: each cost removes the bounded direct Spoolburst forced actions, but
+10 reintroduces timeouts and 20/30 increase the cross-band first-actor rate.
+It does not authorize a live self-damage rule, Threadball effect, UI, replay
+field, or V5 ruleset.

@@ -210,6 +210,39 @@ class TacticalModelTests(unittest.TestCase):
         )
         self.assertEqual(action_key(choose_action("brace_counter", threatened, config)), "brace:-:stay")
 
+    def test_spoolburst_backlash_variants_load_with_a_non_terminal_cost(self) -> None:
+        candidates = {
+            "v5-range-damage-forward-seam-pin-escape-slack-spoolburst-backlash-10-candidate-e1.json": 10,
+            "v5-range-damage-forward-seam-pin-escape-slack-spoolburst-backlash-20-candidate-e2.json": 20,
+            "v5-range-damage-forward-seam-pin-escape-slack-spoolburst-backlash-30-candidate-e3.json": 30,
+        }
+        for filename, cost in candidates.items():
+            config = load_config(CONFIGS / filename)
+            self.assertIsNotNone(config.spoolburst_backlash)
+            self.assertEqual(config.spoolburst_backlash.self_stitching_cost, cost)
+
+    def test_spoolburst_backlash_is_paid_on_a_lethal_cast_and_blocks_a_terminal_self_cost(self) -> None:
+        config = load_config(
+            CONFIGS / "v5-range-damage-forward-seam-pin-escape-slack-spoolburst-backlash-20-candidate-e2.json"
+        )
+        lethal_target = replace(
+            initial_state(config, starting_distance=512),
+            loomkeeper=ActorState(1248, 80, escape_slack_remaining=128),
+        )
+        resolved = apply_action(lethal_target, Action("cast", 0, "spoolburst"), config)
+        self.assertEqual((resolved.player.stitching, resolved.loomkeeper.stitching), (80, 0))
+        self.assertEqual((resolved.winner, resolved.finish_reason), ("player", "unravelled"))
+
+        exhausted = replace(
+            initial_state(config, starting_distance=512),
+            player=ActorState(800, 20, escape_slack_remaining=128),
+        )
+        self.assertNotIn(
+            Action("cast", 0, "spoolburst"),
+            legal_actions(exhausted, config),
+            "Spoolburst must never make its caster unravel in the same action",
+        )
+
 
 if __name__ == "__main__":
     unittest.main()

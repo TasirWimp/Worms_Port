@@ -86,7 +86,7 @@ and makes no rendering, network, wallet, reward, or asset decision.
 | Movement/action budget | required; compare its consequences explicitly rather than assuming move-plus-full-cast is harmless |
 | Defense state and its cost | optional candidate only; Candidate D1 models one public one-use, damage-only Brace as rejected analytical evidence; no live Brace mechanic is approved |
 | Overtime/convergence state | optional candidate only; Candidate C models equal non-refilling Escape Slack as an analytical soft-boundary hypothesis; no live Loom Tightening, timeout rule, or meter is approved |
-| Radius, precision, falloff, ammo, cooldown, status effects, Calling modifiers, obstacles, destructible terrain, rewards | excluded unless separately versioned and authorized; Candidates B/B2/C/D1 authorize only analysis-only Needlepoint tether/cooldown, Escape Slack, and rejected Brace hypotheses, never a live rule |
+| Radius, precision, falloff, ammo, cooldown, status effects, Calling modifiers, obstacles, destructible terrain, rewards | excluded unless separately versioned and authorized; Candidates B/B2/C/D1/E authorize only analysis-only Needlepoint tether/cooldown, Escape Slack, rejected Brace, and rejected Spoolburst self-backlash hypotheses, never a live rule |
 
 All model transitions must be deterministic. An experiment may sample a policy
 or a listed starting scenario, but given its configuration, policy choice, and
@@ -389,3 +389,32 @@ percentage or add it to V5. Any later defense exploration must be separately
 authorized as a **reaction/turn-order** mechanic (or be supported by real
 aim/terrain evidence), rather than disguising a larger action-economy change as
 a simple Brace button.
+
+## Candidate E Spoolburst backlash result - 2026-08-09
+
+Candidate E tests whether the short-range heavy Relic can counter the remaining
+opening residue by committing its caster to a visible cost, rather than adding a
+new defensive action. Each schema-version 6 candidate keeps C4's 128-unit
+Escape Slack and forward-only Needlepoint Seam Pin. A legal Spoolburst cast
+deals its existing ideal 80 direct damage and then pays its own caster either
+10 (E1), 20 (E2), or 30 (E3) Stitching. It is unavailable at or below that
+cost, so the model never creates a same-action self-Unraveling or tie. The cost
+is still paid when the target is Unraveled. No Threadball change, rule-order
+change, cooldown, UI, replay field, or runtime behavior is included.
+
+All three costs remove the depth-three direct Spoolburst forced actions at the
+448/512/576 centered starts. That local result is not sufficient: E1 produces
+2 turn-limit outcomes in each distance scenario (10/250 overall) and a 63.2%
+cross-band first-actor rate. E2 and E3 finish all 250 cross-band matches, but
+their first-actor rates rise to 70.4% and 67.2% respectively, versus C4's
+63.0%. At the canonical 640 spawn, E2 and E3 still have 56% first-actor wins
+and 6.00 mean turns; E1 rises to 64% and has 2/50 turn limits. The corresponding
+448/512/576/640/704 first-actor rates are 64%/60%/64%/64%/64% for E1,
+76%/72%/80%/56%/68% for E2, and 68%/64%/72%/56%/76% for E3.
+
+Therefore **E1, E2, and E3 are rejected negative evidence**. A self-cost can
+remove a formal forced opening while making ordinary policy outcomes less fair
+or less convergent. Do not combine it with a Threadball effect yet: that would
+confound this result. Any future Threadball control or defense candidate needs
+its own narrow hypothesis and must be compared against the C4 baseline rather
+than inheriting Candidate E.

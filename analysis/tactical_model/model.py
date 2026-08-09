@@ -23,7 +23,7 @@ ActionEconomy = Literal["move_and_cast", "committed"]
 SeamPinActivation = Literal["any_direct_hit", "advance_only"]
 RetreatCastRule = Literal["allowed", "forbidden"]
 
-CONFIG_SCHEMA_VERSIONS = {1, 2, 3, 4, 5}
+CONFIG_SCHEMA_VERSIONS = {1, 2, 3, 4, 5, 6}
 RELIC_ORDER = ("threadball", "needlepoint", "spoolburst")
 BASE_POLICY_NAMES = (
     "range_pressure",
@@ -76,6 +76,13 @@ class Brace:
 
 
 @dataclass(frozen=True)
+class SpoolburstBacklash:
+    """A self-Stitching cost paid by an exploratory heavy short-range Relic."""
+
+    self_stitching_cost: int
+
+
+@dataclass(frozen=True)
 class TacticalConfig:
     identifier: str
     label: str
@@ -98,6 +105,7 @@ class TacticalConfig:
     seam_pin: SeamPin | None = None
     escape_slack: EscapeSlack | None = None
     brace: Brace | None = None
+    spoolburst_backlash: SpoolburstBacklash | None = None
 
     def relic(self, identifier: str) -> Relic:
         for relic in self.relics:
@@ -186,7 +194,7 @@ def load_config(path: Path) -> TacticalConfig:
         relics.append(Relic(identifier, minimum_range, maximum_range, direct_damage))
 
     seam_pin: SeamPin | None = None
-    if schema_version in {2, 3, 4, 5}:
+    if schema_version in {2, 3, 4, 5, 6}:
         tactical_core = _require_object(raw["tactical_core"], f"{path}.tactical_core")
         _require_exact_keys(
             tactical_core,
@@ -196,12 +204,14 @@ def load_config(path: Path) -> TacticalConfig:
                 else {"seam_pin", "escape_slack"}
                 if schema_version == 4
                 else {"seam_pin", "escape_slack", "brace"}
+                if schema_version == 5
+                else {"seam_pin", "escape_slack", "spoolburst_backlash"}
             ),
             f"{path}.tactical_core",
         )
         seam_pin_raw = _require_object(tactical_core["seam_pin"], f"{path}.tactical_core.seam_pin")
         seam_pin_keys = {"relic_id", "maximum_separation_increase", "target_turns", "cooldown_actor_turns"}
-        if schema_version in {3, 4, 5}:
+        if schema_version in {3, 4, 5, 6}:
             seam_pin_keys |= {"activation", "retreat_cast_rule"}
         _require_exact_keys(
             seam_pin_raw,
@@ -246,7 +256,7 @@ def load_config(path: Path) -> TacticalConfig:
         )
 
     escape_slack: EscapeSlack | None = None
-    if schema_version in {4, 5}:
+    if schema_version in {4, 5, 6}:
         escape_slack_raw = _require_object(raw["tactical_core"]["escape_slack"], f"{path}.tactical_core.escape_slack")
         _require_exact_keys(escape_slack_raw, {"per_actor"}, f"{path}.tactical_core.escape_slack")
         escape_slack = EscapeSlack(
@@ -276,6 +286,24 @@ def load_config(path: Path) -> TacticalConfig:
             ),
         )
 
+    spoolburst_backlash: SpoolburstBacklash | None = None
+    if schema_version == 6:
+        backlash_raw = _require_object(
+            raw["tactical_core"]["spoolburst_backlash"],
+            f"{path}.tactical_core.spoolburst_backlash",
+        )
+        _require_exact_keys(
+            backlash_raw,
+            {"self_stitching_cost"},
+            f"{path}.tactical_core.spoolburst_backlash",
+        )
+        spoolburst_backlash = SpoolburstBacklash(
+            self_stitching_cost=_require_positive_integer(
+                backlash_raw["self_stitching_cost"],
+                f"{path}.tactical_core.spoolburst_backlash.self_stitching_cost",
+            )
+        )
+
     config = TacticalConfig(
         identifier=_require_string(raw["id"], f"{path}.id"),
         label=_require_string(raw["label"], f"{path}.label"),
@@ -298,6 +326,7 @@ def load_config(path: Path) -> TacticalConfig:
         seam_pin=seam_pin,
         escape_slack=escape_slack,
         brace=brace,
+        spoolburst_backlash=spoolburst_backlash,
     )
     if not (config.actor_margin <= config.player_x < config.world_width - config.actor_margin):
         raise TacticalModelError(f"{path}: player spawn lies outside legal world bounds")
@@ -305,6 +334,13 @@ def load_config(path: Path) -> TacticalConfig:
         raise TacticalModelError(f"{path}: Loomkeeper spawn lies outside legal world bounds")
     if abs(config.player_x - config.loomkeeper_x) < config.actor_margin * 2:
         raise TacticalModelError(f"{path}: initial actors overlap")
+    if (
+        config.spoolburst_backlash is not None and
+        config.spoolburst_backlash.self_stitching_cost >= config.maximum_stitching
+    ):
+        raise TacticalModelError(
+            f"{path}.tactical_core.spoolburst_backlash: cost must leave a full-Stitching actor able to cast"
+        )
     return config
 
 
@@ -407,6 +443,8 @@ def legal_actions(state: TacticalState, config: TacticalConfig) -> tuple[Action,
         for relic in config.relics:
             if _seam_pin_is_on_cooldown(state, state.active_actor, relic.identifier, config):
                 continue
+            if _spoolburst_backlash_prevents_cast(state, state.active_actor, relic.identifier, config):
+                continue
             if _seam_pin_forbids_retreat_cast(state, moved_state, relic.identifier, config):
                 continue
             if relic.minimum_range <= projected_distance <= relic.maximum_range:
@@ -471,6 +509,12 @@ def apply_action(state: TacticalState, action: Action, config: TacticalConfig) -
                     stitching=max(0, target_state.stitching - damage),
                     brace_turns=0,
                 ),
+            )
+            next_state = _apply_spoolburst_backlash_if_configured(
+                next_state,
+                state.active_actor,
+                relic,
+                config,
             )
             if actor_state(next_state, target).stitching == 0:
                 return replace(next_state, completed_turns=state.completed_turns + 1,
@@ -613,6 +657,7 @@ def simulate_match(
             "action": action_key(action),
             "distanceAfter": distance(state),
             "damage": actor_state(before, target).stitching - actor_state(state, target).stitching,
+            "actorBacklashDamage": actor_state(before, actor).stitching - actor_state(state, actor).stitching,
             "playerStitching": state.player.stitching,
             "loomkeeperStitching": state.loomkeeper.stitching,
             "actorWasSeamPinned": actor_state(before, actor).seam_pin_turns > 0,
@@ -741,6 +786,11 @@ def run_experiment(config: TacticalConfig, *, starting_distance: int | None = No
             "brace": None if config.brace is None else {
                 "damageReductionPercent": config.brace.damage_reduction_percent,
                 "usesPerActor": config.brace.uses_per_actor,
+            },
+            "spoolburstBacklash": None if config.spoolburst_backlash is None else {
+                "relicId": "spoolburst",
+                "selfStitchingCost": config.spoolburst_backlash.self_stitching_cost,
+                "requiresStitchingAboveCost": True,
             },
         },
         "policySets": {
@@ -909,6 +959,36 @@ def _seam_pin_forbids_retreat_cast(
         config.seam_pin.retreat_cast_rule == "forbidden" and
         distance(after_movement) > distance(before_movement)
     )
+
+
+def _spoolburst_backlash_prevents_cast(
+    state: TacticalState,
+    actor: Actor,
+    relic_id: str,
+    config: TacticalConfig,
+) -> bool:
+    """Keep the self-cost non-terminal: a legal cast must leave one Stitching."""
+
+    return (
+        config.spoolburst_backlash is not None and
+        relic_id == "spoolburst" and
+        actor_state(state, actor).stitching <= config.spoolburst_backlash.self_stitching_cost
+    )
+
+
+def _apply_spoolburst_backlash_if_configured(
+    state: TacticalState,
+    caster: Actor,
+    relic: Relic,
+    config: TacticalConfig,
+) -> TacticalState:
+    if config.spoolburst_backlash is None or relic.identifier != "spoolburst":
+        return state
+    caster_state = actor_state(state, caster)
+    stitching = caster_state.stitching - config.spoolburst_backlash.self_stitching_cost
+    if stitching < 1:
+        raise TacticalModelError("A legal Spoolburst cast must leave the caster above zero Stitching")
+    return replace_actor(state, caster, replace(caster_state, stitching=stitching))
 
 
 def _apply_seam_pin_if_configured(
