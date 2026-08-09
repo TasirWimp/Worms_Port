@@ -531,3 +531,87 @@ distinguishes the repaired convergence carrier from an acceptable balance
 landfall: a visible, bounded residue is necessary, but alone does not repair
 initiative fairness. No Threadback, forced movement, charge state, UI, replay
 field, or V5 rule is approved.
+
+## G0 Opening and reaction contract - 2026-08-09
+
+The remaining problem is now more precise than a generic “first actor
+advantage.” At a declared opening cut, an actor may be able to convert a
+move-and-cast into meaningful direct damage before the other actor has a
+credible response. The design task is to test a response window without
+quietly changing normal-turn action economy or granting a cost-free damage
+negation.
+
+For the D2A model, the cut is deliberately narrow: the attacker has already
+chosen and completed the cast's permitted voluntary movement; the chosen Relic
+and resulting launch band are public; direct damage has not yet resolved. The
+target may either accept that cast or use a separately configured reaction. A
+reaction must satisfy all of the following:
+
+1. It is an explicit target choice, not an automatic hit cancel or a hidden
+   change to the attacker's action.
+2. It changes a finite state carrier already represented by the recurrence
+   cut—at least world position and an existing bounded reserve—so it cannot
+   recreate F2's non-terminal return.
+3. It is legal only under a precise movement/bounds/tether condition and has a
+   deterministic post-reaction range check.
+4. The opening search quantifies the target's legal reaction as a counter:
+   an opening cast is “forced” only when it wins through every available target
+   response, not merely through a cooperative target.
+5. The candidate is analysis-only. It cannot add a reaction button, animation,
+   replay field, server rule, or V5 rule until an owner separately accepts both
+   the design and an implementation work package.
+
+G0 retains the recurrence hard gate and the existing 16-turn analytical cap.
+The latter remains a diagnostic, never an acceptable terminal result for a
+candidate. A later owner decision must set the acceptable initiative tolerance;
+D2A will report the mirrored rate but will not invent a threshold. A candidate
+also fails when it leaves bounded direct openings at the declared cross-band
+starts, or when it reaches that result by free/automatic cancellation rather
+than a readable residual.
+
+### Candidate G1 Cast Threadstep hypothesis
+
+G1 is the smallest response test under that contract. It retains C4 unchanged
+and adds no new meter. Against one declared in-band direct cast, the target may
+take one full ordinary 64-unit movement step away before damage resolves. The
+step spends exactly 64 units of that target's existing Escape Slack, obeys
+normal arena and active Seam-Pin limits, and is used only when it takes the
+target fully outside the declared Relic's launch band. If the reaction cannot
+make the cast miss, it is unavailable; it therefore cannot buy a partial
+reduction or become a free no-op.
+
+The transparent `retreat_kite`, `best_response`, and candidate-only
+`threadstep_counter` policies elect that optional reaction when it evades the
+cast. Other baseline policies decline it, preserving their stated aggressive
+strategy. Separately, the bounded force search grants the target both legal
+choices; this prevents a heuristic policy from hiding an opening that a
+credible reaction would answer. G1 is schema version 10 and has no live
+authority.
+
+### Candidate G1 Cast Threadstep result - 2026-08-09
+
+G1 validates the response-window machinery without creating a recurrence: all
+250 centered 448/512/576/640/704 primary-matrix matches Unravel, and the fixed
+recurrence gate records no repeated non-terminal state. The reaction appears
+132 times in primary traces and 20 times in the candidate probes. It produces
+a real visible residue—target position shifts by 64 and that target's Escape
+Slack falls by 64—and a missed cast neither deals damage nor attaches Seam Pin.
+
+It is nevertheless **rejected negative evidence**. A full Threadstep only
+beats a cast already sitting at the far edge of a launch band. Under the
+unchanged move-and-cast economy, the opening actor can first step 64 units
+toward the target. At the 512 start, for example, a Spoolburst cast from 448
+remains in range after the target's 64-unit Threadstep restores separation only
+to 512. The reaction therefore cannot answer the three move-and-cast forced
+openings (`needlepoint`, `threadball`, and `spoolburst`) at the 512 start; all
+six stationary/advancing casts remain forced at the 448 start. The search has
+made that limitation explicit rather than hiding it behind a fixed policy.
+
+The cross-band first-actor rate is 60.8% (64%/56%/60%/52%/72% by ascending
+start), better than C4’s 63.0% but still paired with the unresolved direct
+opening residue. Mean duration is 5.952 turns. Thus a bounded pre-hit retreat
+can improve ordinary trace fairness and convergence while failing the more
+important opening-response contract. No Cast Threadstep, reaction UI, replay
+field, status, forced movement, or V5 rule is approved. Any later candidate
+must address the attacker’s move-and-cast compression directly rather than
+making the target’s single step stronger by tuning alone.

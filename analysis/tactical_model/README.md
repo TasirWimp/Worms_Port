@@ -161,3 +161,22 @@ Unravel, but its cross-band first-actor rate rises to 68.8%. It is therefore
 rejected negative evidence: a visible residual can repair convergence without
 repairing initiative fairness. No Threadback, forced movement, charge state,
 UI, replay field, or V5 rule is approved.
+
+`v5-range-damage-forward-seam-pin-escape-slack-cast-threadstep-reaction-candidate-g1.json`
+is the isolated schema-version 10 opening-response probe. After an otherwise
+legal cast's voluntary movement but before ideal direct damage resolves, its
+target may use one full normal 64-unit movement step away. It spends that
+target's existing Escape Slack and only occurs when the resulting position is
+outside the declared Relic range; a successful Threadstep therefore leaves
+visible position/reserve residue and the cast deals no damage or Seam Pin. The
+transparent `retreat_kite`, `best_response`, and candidate-only
+`threadstep_counter` policies elect the optional reaction only when it evades;
+the bounded opening search instead considers both target choices so it cannot
+hide a forced opening behind a heuristic.
+
+G1 is rejected analysis-only evidence. It passes the recurrence gate and all
+250 cross-band matches Unravel, with a 60.8% first-actor rate and 5.952 mean
+turns. But its one-step response cannot escape a caster who first moves closer:
+the 448 start keeps six forced casts and the 512 start keeps three advancing
+forced casts. It authorizes no reaction timing, UI, replay field, movement
+rule, or V5 change.

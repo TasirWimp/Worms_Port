@@ -26,6 +26,12 @@ Phaser/Socket.IO stack.
   dependency or game doctrine. Candidate F3 Threadback-Unweave removes F2's
   loop by spending existing Escape Slack through forced separation, but worsens
   cross-band initiative to 68.8%, so it too is rejected negative evidence.
+  Candidate G1 tests a target-selected pre-hit Threadstep using the same
+  bounded Escape Slack. It passes the recurrence gate and improves the
+  cross-band rate to 60.8%, but cannot counter a move-and-cast opener that
+  first closes distance; it therefore leaves forced openings at the 448/512
+  starts and is also rejected negative evidence. No reaction, movement, or V5
+  rule is approved.
   **WP-015D1 V4 wider
   arena and pan camera completed on 2026-08-08**
   on `codex/wp-015-production-assets`: V4 preserves historical replays while

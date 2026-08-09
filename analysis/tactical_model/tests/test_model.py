@@ -360,6 +360,58 @@ class TacticalModelTests(unittest.TestCase):
             self.assertTrue(gate["passesFixedWitness"])
             self.assertEqual(gate["nonterminalRecurrenceMatchCount"], 0)
 
+    def test_cast_threadstep_spends_existing_escape_slack_only_to_evade_a_declared_cast(self) -> None:
+        config = load_config(
+            CONFIGS / "v5-range-damage-forward-seam-pin-escape-slack-cast-threadstep-reaction-candidate-g1.json"
+        )
+        opening = initial_state(config)
+        self.assertIn("threadstep_counter", policy_names(config))
+
+        unanswered = apply_action(opening, Action("cast", 0, "needlepoint"), config)
+        self.assertEqual((distance(unanswered), unanswered.loomkeeper.stitching), (640, 70))
+
+        evaded = apply_action(
+            opening,
+            Action("cast", 0, "needlepoint"),
+            config,
+            target_reaction_policy="threadstep_counter",
+        )
+        self.assertEqual(distance(evaded), 704)
+        self.assertEqual((evaded.loomkeeper.stitching, evaded.loomkeeper.escape_slack_remaining), (100, 64))
+        self.assertEqual(evaded.loomkeeper.seam_pin_turns, 0,
+                         "a cast that misses after Threadstep cannot attach Seam Pin")
+
+        no_full_step = replace(
+            opening,
+            loomkeeper=replace(opening.loomkeeper, escape_slack_remaining=32),
+        )
+        constrained = apply_action(
+            no_full_step,
+            Action("cast", 0, "needlepoint"),
+            config,
+            target_reaction_policy="threadstep_counter",
+        )
+        self.assertEqual((distance(constrained), constrained.loomkeeper.stitching), (640, 70))
+
+    def test_cast_threadstep_rewrites_the_opening_search_without_hiding_move_and_cast_openings(self) -> None:
+        config = load_config(
+            CONFIGS / "v5-range-damage-forward-seam-pin-escape-slack-cast-threadstep-reaction-candidate-g1.json"
+        )
+        report = run_experiment(config, starting_distance=512)
+        expected_forced = [
+            "cast:needlepoint:right",
+            "cast:spoolburst:right",
+            "cast:threadball:right",
+        ]
+        self.assertEqual(report["aggregate"]["openingSearch"]["player"]["forcedWinActionsWithinDepth"], expected_forced)
+        self.assertEqual(report["aggregate"]["openingSearch"]["loomkeeper"]["forcedWinActionsWithinDepth"], expected_forced)
+        self.assertEqual(len(report["candidatePolicyProbes"]), 8,
+                         "G1 retains C4's Seam-Pin probes and adds four Threadstep probes")
+        self.assertEqual(
+            report["tacticalCore"]["castThreadstep"]["resolutionWindow"],
+            "after declared caster movement and before direct damage",
+        )
+
 
 if __name__ == "__main__":
     unittest.main()

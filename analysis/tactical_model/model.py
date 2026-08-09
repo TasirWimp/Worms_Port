@@ -23,7 +23,7 @@ ActionEconomy = Literal["move_and_cast", "committed"]
 SeamPinActivation = Literal["any_direct_hit", "advance_only"]
 RetreatCastRule = Literal["allowed", "forbidden"]
 
-CONFIG_SCHEMA_VERSIONS = {1, 2, 3, 4, 5, 6, 7, 8, 9}
+CONFIG_SCHEMA_VERSIONS = {1, 2, 3, 4, 5, 6, 7, 8, 9, 10}
 RELIC_ORDER = ("threadball", "needlepoint", "spoolburst")
 BASE_POLICY_NAMES = (
     "range_pressure",
@@ -34,6 +34,7 @@ BASE_POLICY_NAMES = (
 )
 SEAM_PIN_POLICY = "seam_pin_pressure"
 BRACE_POLICY = "brace_counter"
+THREADSTEP_POLICY = "threadstep_counter"
 
 
 class TacticalModelError(ValueError):
@@ -112,6 +113,18 @@ class SpoolburstThreadback:
 
 
 @dataclass(frozen=True)
+class CastThreadstep:
+    """A target-selected, pre-resolution retreat against one declared cast.
+
+    The reaction is available only in the analysis candidate. It spends one
+    full existing Escape-Slack step and is useful only when that exact step
+    takes the target outside the declared cast's launch band.
+    """
+
+    separation_increase: int
+
+
+@dataclass(frozen=True)
 class TacticalConfig:
     identifier: str
     label: str
@@ -138,6 +151,7 @@ class TacticalConfig:
     spoolburst_preparation: SpoolburstPreparation | None = None
     spoolburst_cocoon: SpoolburstCocoon | None = None
     spoolburst_threadback: SpoolburstThreadback | None = None
+    cast_threadstep: CastThreadstep | None = None
 
     def relic(self, identifier: str) -> Relic:
         for relic in self.relics:
@@ -228,7 +242,7 @@ def load_config(path: Path) -> TacticalConfig:
         relics.append(Relic(identifier, minimum_range, maximum_range, direct_damage))
 
     seam_pin: SeamPin | None = None
-    if schema_version in {2, 3, 4, 5, 6, 7, 8, 9}:
+    if schema_version in {2, 3, 4, 5, 6, 7, 8, 9, 10}:
         tactical_core = _require_object(raw["tactical_core"], f"{path}.tactical_core")
         _require_exact_keys(
             tactical_core,
@@ -246,12 +260,14 @@ def load_config(path: Path) -> TacticalConfig:
                 else {"seam_pin", "escape_slack", "spoolburst_preparation", "spoolburst_cocoon"}
                 if schema_version == 8
                 else {"seam_pin", "escape_slack", "spoolburst_preparation", "spoolburst_threadback"}
+                if schema_version == 9
+                else {"seam_pin", "escape_slack", "cast_threadstep"}
             ),
             f"{path}.tactical_core",
         )
         seam_pin_raw = _require_object(tactical_core["seam_pin"], f"{path}.tactical_core.seam_pin")
         seam_pin_keys = {"relic_id", "maximum_separation_increase", "target_turns", "cooldown_actor_turns"}
-        if schema_version in {3, 4, 5, 6, 7, 8, 9}:
+        if schema_version in {3, 4, 5, 6, 7, 8, 9, 10}:
             seam_pin_keys |= {"activation", "retreat_cast_rule"}
         _require_exact_keys(
             seam_pin_raw,
@@ -296,7 +312,7 @@ def load_config(path: Path) -> TacticalConfig:
         )
 
     escape_slack: EscapeSlack | None = None
-    if schema_version in {4, 5, 6, 7, 8, 9}:
+    if schema_version in {4, 5, 6, 7, 8, 9, 10}:
         escape_slack_raw = _require_object(raw["tactical_core"]["escape_slack"], f"{path}.tactical_core.escape_slack")
         _require_exact_keys(escape_slack_raw, {"per_actor"}, f"{path}.tactical_core.escape_slack")
         escape_slack = EscapeSlack(
@@ -445,6 +461,30 @@ def load_config(path: Path) -> TacticalConfig:
             separation_increase=separation_increase,
         )
 
+    cast_threadstep: CastThreadstep | None = None
+    if schema_version == 10:
+        threadstep_raw = _require_object(
+            raw["tactical_core"]["cast_threadstep"],
+            f"{path}.tactical_core.cast_threadstep",
+        )
+        _require_exact_keys(
+            threadstep_raw,
+            {"separation_increase"},
+            f"{path}.tactical_core.cast_threadstep",
+        )
+        separation_increase = _require_positive_integer(
+            threadstep_raw["separation_increase"],
+            f"{path}.tactical_core.cast_threadstep.separation_increase",
+        )
+        movement_per_turn = _require_positive_integer(
+            turn["movement_per_turn"], f"{path}.turn.movement_per_turn"
+        )
+        if separation_increase != movement_per_turn:
+            raise TacticalModelError(
+                f"{path}.tactical_core.cast_threadstep: requires one full movement-budget step"
+            )
+        cast_threadstep = CastThreadstep(separation_increase=separation_increase)
+
     config = TacticalConfig(
         identifier=_require_string(raw["id"], f"{path}.id"),
         label=_require_string(raw["label"], f"{path}.label"),
@@ -471,6 +511,7 @@ def load_config(path: Path) -> TacticalConfig:
         spoolburst_preparation=spoolburst_preparation,
         spoolburst_cocoon=spoolburst_cocoon,
         spoolburst_threadback=spoolburst_threadback,
+        cast_threadstep=cast_threadstep,
     )
     if not (config.actor_margin <= config.player_x < config.world_width - config.actor_margin):
         raise TacticalModelError(f"{path}: player spawn lies outside legal world bounds")
@@ -492,6 +533,8 @@ def load_config(path: Path) -> TacticalConfig:
             raise TacticalModelError(f"{path}.tactical_core.spoolburst_threadback: requires Spoolburst preparation")
         if config.escape_slack is None:
             raise TacticalModelError(f"{path}.tactical_core.spoolburst_threadback: requires Escape Slack")
+    if config.cast_threadstep is not None and config.escape_slack is None:
+        raise TacticalModelError(f"{path}.tactical_core.cast_threadstep: requires Escape Slack")
     return config
 
 
@@ -630,6 +673,8 @@ def policy_names(config: TacticalConfig) -> tuple[str, ...]:
         candidate_policies += (SEAM_PIN_POLICY,)
     if config.brace is not None:
         candidate_policies += (BRACE_POLICY,)
+    if config.cast_threadstep is not None:
+        candidate_policies += (THREADSTEP_POLICY,)
     return BASE_POLICY_NAMES + candidate_policies
 
 
@@ -690,11 +735,26 @@ def legal_actions(state: TacticalState, config: TacticalConfig) -> tuple[Action,
     return tuple(sorted(actions, key=action_key))
 
 
-def apply_action(state: TacticalState, action: Action, config: TacticalConfig) -> TacticalState:
+def apply_action(
+    state: TacticalState,
+    action: Action,
+    config: TacticalConfig,
+    *,
+    target_reaction_policy: str | None = None,
+) -> TacticalState:
+    """Apply one declared action, optionally resolving the target's G1 reaction.
+
+    Ordinary callers pass no reaction policy and therefore retain the existing
+    deterministic transition. G1 match simulation supplies the target policy;
+    its reaction is a separate post-declaration, pre-damage decision rather
+    than a new normal-turn action.
+    """
     if action not in legal_actions(state, config):
         raise TacticalModelError(f"Illegal tactical action: {action_key(action)}")
     if state.finished:
         raise TacticalModelError("Cannot act after a terminal result")
+    if target_reaction_policy is not None and target_reaction_policy not in policy_names(config):
+        raise TacticalModelError(f"Unknown target reaction policy: {target_reaction_policy}")
 
     if action.kind in ("wait", "brace"):
         moved_state = state
@@ -729,11 +789,24 @@ def apply_action(state: TacticalState, action: Action, config: TacticalConfig) -
             relic = config.relic(action.relic_id)
             if not relic.minimum_range <= distance(next_state) <= relic.maximum_range:
                 raise TacticalModelError("Cast left its declared range band")
-            damage = relic.direct_damage
+            if _cast_threadstep_should_react(
+                next_state,
+                target,
+                relic,
+                target_reaction_policy,
+                config,
+            ):
+                next_state = _apply_cast_threadstep(next_state, target, config)
+                target_state = actor_state(next_state, target)
+                target_is_braced = target_state.brace_turns > 0
+            cast_evaded = not relic.minimum_range <= distance(next_state) <= relic.maximum_range
+            if cast_evaded and config.cast_threadstep is None:
+                raise TacticalModelError("Cast unexpectedly left its declared range band")
+            damage = 0 if cast_evaded else relic.direct_damage
             cocoon_absorbs = _spoolburst_cocoon_absorbs_cast(target_state, relic, config)
-            if cocoon_absorbs:
+            if cocoon_absorbs and not cast_evaded:
                 damage = 0
-            if target_is_braced:
+            if target_is_braced and not cast_evaded:
                 if config.brace is None:
                     raise TacticalModelError("Active Brace state requires a configured candidate")
                 damage = damage * (100 - config.brace.damage_reduction_percent) // 100
@@ -747,6 +820,7 @@ def apply_action(state: TacticalState, action: Action, config: TacticalConfig) -
                     spoolburst_preparation_turns=(
                         0
                         if (
+                            not cast_evaded and
                             config.spoolburst_cocoon is None and
                             config.spoolburst_threadback is None and
                             _is_spoolburst_preparation_disruption(relic, config)
@@ -755,7 +829,7 @@ def apply_action(state: TacticalState, action: Action, config: TacticalConfig) -
                     ),
                     spoolburst_cocoon_hits_remaining=(
                         target_state.spoolburst_cocoon_hits_remaining - 1
-                        if cocoon_absorbs else target_state.spoolburst_cocoon_hits_remaining
+                        if cocoon_absorbs and not cast_evaded else target_state.spoolburst_cocoon_hits_remaining
                     ),
                 ),
             )
@@ -775,15 +849,16 @@ def apply_action(state: TacticalState, action: Action, config: TacticalConfig) -
             if actor_state(next_state, target).stitching == 0:
                 return replace(next_state, completed_turns=state.completed_turns + 1,
                                winner=state.active_actor, finish_reason="unravelled")
-            next_state = _apply_seam_pin_if_configured(
-                next_state,
-                state.active_actor,
-                target,
-                relic,
-                before_movement=state,
-                after_movement=moved_state,
-                config=config,
-            )
+            if not cast_evaded:
+                next_state = _apply_seam_pin_if_configured(
+                    next_state,
+                    state.active_actor,
+                    target,
+                    relic,
+                    before_movement=state,
+                    after_movement=moved_state,
+                    config=config,
+                )
         elif action.kind == "prepare_spoolburst":
             if config.spoolburst_preparation is None:
                 raise TacticalModelError("Spoolburst preparation requires a configured candidate")
@@ -958,8 +1033,14 @@ def simulate_match(
         policy = player_policy if actor == "player" else loomkeeper_policy
         before = state
         action = choose_action(policy, before, config)
-        state = apply_action(before, action, config)
         target = other_actor(actor)
+        target_policy = player_policy if target == "player" else loomkeeper_policy
+        state = apply_action(
+            before,
+            action,
+            config,
+            target_reaction_policy=target_policy,
+        )
         trace.append({
             "turn": before.completed_turns,
             "actor": actor,
@@ -1012,6 +1093,26 @@ def simulate_match(
                 if action.kind == "unweave_spoolburst" and config.spoolburst_threadback is not None
                 else 0
             ),
+            "castThreadstepAppliedFor": target if (
+                action.kind == "cast" and
+                config.cast_threadstep is not None and
+                actor_state(before, target).escape_slack_remaining -
+                actor_state(state, target).escape_slack_remaining ==
+                config.cast_threadstep.separation_increase
+            ) else None,
+            "castThreadstepEvadedFor": target if (
+                action.kind == "cast" and
+                config.cast_threadstep is not None and
+                actor_state(before, target).escape_slack_remaining -
+                actor_state(state, target).escape_slack_remaining ==
+                config.cast_threadstep.separation_increase and
+                action.relic_id is not None and
+                not (
+                    config.relic(action.relic_id).minimum_range <=
+                    distance(state) <=
+                    config.relic(action.relic_id).maximum_range
+                )
+            ) else None,
             "spoolburstCocoonAbsorbedFor": target if (
                 actor_state(before, target).spoolburst_cocoon_hits_remaining >
                 actor_state(state, target).spoolburst_cocoon_hits_remaining
@@ -1072,6 +1173,17 @@ def run_experiment(config: TacticalConfig, *, starting_distance: int | None = No
                     first_actor=first_actor, mirrored=mirrored,
                     starting_distance=starting_distance,
                 ))
+    if config.cast_threadstep is not None:
+        for first_actor, mirrored in (("player", False), ("loomkeeper", True)):
+            for player_policy, loomkeeper_policy in (
+                (THREADSTEP_POLICY, "range_pressure"),
+                ("range_pressure", THREADSTEP_POLICY),
+            ):
+                candidate_policy_probes.append(simulate_match(
+                    config, player_policy, loomkeeper_policy,
+                    first_actor=first_actor, mirrored=mirrored,
+                    starting_distance=starting_distance,
+                ))
     if config.brace is not None:
         for first_actor, mirrored in (("player", False), ("loomkeeper", True)):
             for player_policy, loomkeeper_policy in (
@@ -1112,8 +1224,17 @@ def run_experiment(config: TacticalConfig, *, starting_distance: int | None = No
             mirrored=mirrored,
             starting_distance=starting_distance,
         )
-        forced = [action_key(action) for action in legal_actions(state, config)
-                  if can_force_win(apply_action(state, action, config), first_actor, config.opening_search_depth - 1, config)]
+        forced = [
+            action_key(action)
+            for action in legal_actions(state, config)
+            if can_force_win_after_declared_action(
+                state,
+                action,
+                first_actor,
+                config.opening_search_depth - 1,
+                config,
+            )
+        ]
         opening[first_actor] = {"mirrored": mirrored, "forcedWinActionsWithinDepth": forced}
 
     return {
@@ -1166,6 +1287,12 @@ def run_experiment(config: TacticalConfig, *, starting_distance: int | None = No
                 "requiresFullEscapeSlack": True,
                 "unweaveDamage": 0,
             },
+            "castThreadstep": None if config.cast_threadstep is None else {
+                "separationIncrease": config.cast_threadstep.separation_increase,
+                "requiresFullEscapeSlack": True,
+                "resolutionWindow": "after declared caster movement and before direct damage",
+                "activation": "selected defensive policy only when the exact step evades the cast",
+            },
         },
         "policySets": {
             "primaryMatrix": list(BASE_POLICY_NAMES),
@@ -1173,6 +1300,7 @@ def run_experiment(config: TacticalConfig, *, starting_distance: int | None = No
                 policy for policy, active in (
                     (SEAM_PIN_POLICY, config.seam_pin is not None),
                     (BRACE_POLICY, config.brace is not None),
+                    (THREADSTEP_POLICY, config.cast_threadstep is not None),
                 ) if active
             ],
         },
@@ -1302,8 +1430,48 @@ def direct_cast_dominance(config: TacticalConfig) -> list[dict[str, Any]]:
     return findings
 
 
+def _forced_action_outcomes(
+    state: TacticalState,
+    action: Action,
+    config: TacticalConfig,
+) -> tuple[TacticalState, ...]:
+    """Enumerate target choices in the G1 pre-resolution response window.
+
+    This deliberately differs from a policy trace: forced-win search gives the
+    target every legal response, including declining an otherwise useful
+    Threadstep. That makes an opening action forced only when it survives both
+    observable choices.
+    """
+
+    outcomes = [apply_action(state, action, config)]
+    if action.kind == "cast" and config.cast_threadstep is not None:
+        threaded = apply_action(
+            state,
+            action,
+            config,
+            target_reaction_policy=THREADSTEP_POLICY,
+        )
+        if threaded != outcomes[0]:
+            outcomes.append(threaded)
+    return tuple(outcomes)
+
+
+def can_force_win_after_declared_action(
+    state: TacticalState,
+    action: Action,
+    perspective: Actor,
+    depth: int,
+    config: TacticalConfig,
+) -> bool:
+    """Evaluate a named opening after the other actor's reaction choice."""
+
+    outcomes = _forced_action_outcomes(state, action, config)
+    values = tuple(can_force_win(outcome, perspective, depth, config) for outcome in outcomes)
+    return all(values) if state.active_actor == perspective else any(values)
+
+
 def can_force_win(state: TacticalState, perspective: Actor, depth: int, config: TacticalConfig) -> bool:
-    """Bounded, deterministic forced-win test; it intentionally has no heuristic leaf score."""
+    """Bounded deterministic forced-win test with G1 reaction choices included."""
 
     @lru_cache(maxsize=None)
     def visit(cached_state: TacticalState, remaining_depth: int) -> bool:
@@ -1311,9 +1479,18 @@ def can_force_win(state: TacticalState, perspective: Actor, depth: int, config: 
             return cached_state.winner == perspective
         if remaining_depth <= 0:
             return False
-        outcomes = tuple(visit(apply_action(cached_state, action, config), remaining_depth - 1)
-                         for action in legal_actions(cached_state, config))
-        return any(outcomes) if cached_state.active_actor == perspective else all(outcomes)
+        action_values = []
+        for action in legal_actions(cached_state, config):
+            outcomes = tuple(
+                visit(outcome, remaining_depth - 1)
+                for outcome in _forced_action_outcomes(cached_state, action, config)
+            )
+            action_values.append(
+                all(outcomes)
+                if cached_state.active_actor == perspective
+                else any(outcomes)
+            )
+        return any(action_values) if cached_state.active_actor == perspective else all(action_values)
 
     return visit(state, depth)
 
@@ -1415,6 +1592,54 @@ def _apply_threadback(state: TacticalState, actor: Actor, config: TacticalConfig
     if not _threadback_is_legal(state, actor, config):
         raise TacticalModelError("Threadback requires one full legal Escape-Slack separation step")
     return _move_actor(state, actor, _threadback_direction(state, actor), config)
+
+
+def _threadstep_direction(state: TacticalState, actor: Actor) -> int:
+    """Return the one movement direction that moves a reacting target away."""
+
+    return _threadback_direction(state, actor)
+
+
+def _cast_threadstep_is_legal(state: TacticalState, actor: Actor, config: TacticalConfig) -> bool:
+    if config.cast_threadstep is None:
+        return False
+    current = actor_state(state, actor)
+    if current.escape_slack_remaining < config.cast_threadstep.separation_increase:
+        return False
+    moved = _move_actor(state, actor, _threadstep_direction(state, actor), config)
+    return distance(moved) - distance(state) == config.cast_threadstep.separation_increase
+
+
+def _apply_cast_threadstep(state: TacticalState, actor: Actor, config: TacticalConfig) -> TacticalState:
+    if not _cast_threadstep_is_legal(state, actor, config):
+        raise TacticalModelError("Cast Threadstep requires one full legal Escape-Slack separation step")
+    return _move_actor(state, actor, _threadstep_direction(state, actor), config)
+
+
+def _policy_uses_cast_threadstep(policy: str | None, config: TacticalConfig) -> bool:
+    """Declare which transparent policies elect the optional G1 reaction."""
+
+    return (
+        config.cast_threadstep is not None and
+        policy in {"retreat_kite", "best_response", THREADSTEP_POLICY}
+    )
+
+
+def _cast_threadstep_should_react(
+    state: TacticalState,
+    target: Actor,
+    relic: Relic,
+    target_reaction_policy: str | None,
+    config: TacticalConfig,
+) -> bool:
+    """Use Threadstep only when the selected policy can turn this cast into a miss."""
+
+    if not _policy_uses_cast_threadstep(target_reaction_policy, config):
+        return False
+    if not _cast_threadstep_is_legal(state, target, config):
+        return False
+    stepped = _apply_cast_threadstep(state, target, config)
+    return not relic.minimum_range <= distance(stepped) <= relic.maximum_range
 
 
 def _spoolburst_cocoon_absorbs_cast(
