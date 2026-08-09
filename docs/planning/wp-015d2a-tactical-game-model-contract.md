@@ -1,9 +1,10 @@
 # WP-015D2A Tactical Game Model and Simulation Harness Contract
 
-Status: planned. This is the active planning and analytical predecessor to
-WP-015D2 V5. It may build a deterministic analysis harness, but it does not
-change a playable ruleset, client, server, protocol, replay, reward condition,
-or product asset.
+Status: in progress. This is the active planning and analytical predecessor to
+WP-015D2 V5. Its first deterministic analysis harness is implemented, but the
+owner decision for the next versioned ruleset remains open. It does not change
+a playable ruleset, client, server, protocol, replay, reward condition, or
+product asset.
 
 ## Purpose
 
@@ -187,3 +188,29 @@ TypeScript/Python transcript parity checks, `npm run build`, and
 real-device pacing acceptance for any subsequent playable ruleset change.
 Documentation-only refinement of this contract requires no build or browser
 run.
+
+## Initial harness result — 2026-08-09
+
+The project-owned implementation is under `analysis/tactical_model/`; it has
+no runtime import path. `scripts/export-tactical-v4-baseline.ts` generates the
+checked-in structural fixture from the current TypeScript authority, and a
+TypeScript test rejects fixture drift. The Python model validates shared V4
+arena, spawn, Stitching, movement, and turn facts before it runs. It deliberately
+does **not** claim terrain or ballistic parity: it is a level-ground,
+ideal-direct-hit range model.
+
+The initial 50-match policy matrix, mirrored for first actor and arena side,
+records two intentionally limited comparison configurations:
+
+| Configuration | Direct-cast finding | First-actor rate | Mean turns | Terminal results |
+| --- | --- | ---: | ---: | --- |
+| `v4-baseline-abstract-v1` | Needlepoint directly dominates Threadball and Spoolburst under the common 640-unit ideal range; its 120 direct damage has an immediate forced opening in the bounded search. | 60% | 2.84 | 48 Unraveling / 2 turn-limit draws |
+| `v5-range-damage-candidate-a` | The exploratory 640/576/512 range and 30/45/80 damage tiers have no ideal-direct-cast dominance and no bounded forced opening. | 48% | 6.72 | 42 Unraveling / 8 turn-limit draws |
+
+Candidate A is not a V5 proposal or an approved values table. Its short-range
+approach versus retreat/kite trace repeatedly oscillates between 576 and 640
+units until the 16-turn limit. That is useful negative evidence: values alone
+can remove direct-cast dominance and still leave the current move-and-cast
+economy unable to resolve a pursuit/retreat loop. The next D2A decision is
+therefore whether to test a separately versioned tactical-core candidate before
+authorizing any values-only V5 implementation.

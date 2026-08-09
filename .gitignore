@@ -2,6 +2,10 @@
 node_modules/
 npm-debug.log*
 
+# Python analytical-tool caches
+__pycache__/
+*.py[cod]
+
 # parcel
 .cache/
 client/dist/

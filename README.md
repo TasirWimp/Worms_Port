@@ -349,7 +349,7 @@ sheet, normalization, or runtime path is part of this gate.
 WP-015C and WP-015D1 are complete. The simplified vertical-slice inventory is
 manifest-approved; WP-015D0 froze the V4 arena/camera contract, and D1
 delivered the accepted wider arena, pan camera, and horizontal-only opening
-survey. WP-015D2A is next: it documents and tests the tactical decision model
+survey. WP-015D2A is active: it documents and tests the tactical decision model
 with a deterministic Python analysis harness while keeping TypeScript
 authoritative. Its evidence will determine whether the subsequent V5 Relic
 slice can remain values-only or needs a separately versioned tactical-core

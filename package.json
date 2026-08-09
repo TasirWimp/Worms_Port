@@ -30,6 +30,8 @@
     "test:simulation": "node --import tsx --test tests/simulation/*.test.ts",
     "test:loomkeeper": "node --import tsx --test tests/loomkeeper/*.test.ts",
     "test:relics": "node --import tsx --test tests/relics/*.test.ts",
+    "check:tactical-model-types": "tsc --noEmit --target ES2022 --module ESNext --moduleResolution Bundler --strict --skipLibCheck scripts/export-tactical-v4-baseline.ts tests/tactical-model/authoritative-v4-baseline.test.ts",
+    "test:tactical-model": "npm run check:tactical-model-types && node --import tsx --test tests/tactical-model/*.test.ts && python -m unittest analysis.tactical_model.tests.test_model -v",
     "test:combat": "node --import tsx --test tests/combat/*.test.ts",
     "test:practice": "node --import tsx --test tests/practice/*.test.ts",
     "test:identity": "node --import tsx --test tests/identity/*.test.ts",
@@ -53,6 +55,7 @@
     "verify:quality": "npm run build && npm run check:identity-bundles && npm run check:reward-security && npm run test:browser:matrix && npm run test:browser:performance && npm run check:bundle-budget",
     "verify:postgres": "npm run test:reward:postgres && npm run test:browser:reward:postgres",
     "verify:full": "npm run verify:fast && npm run verify:runtime && npm run verify:quality && node scripts/report-postgres-quality-prerequisite.js && npm audit",
+    "analyze:tactical-model": "python -m analysis.tactical_model.run --config analysis/tactical_model/configs/v4-baseline-abstract-v1.json --output test-results/tactical-model/v4-baseline-report.json",
     "start": "node server/build/server.js",
     "dev-client": "vite --config vite.client.config.ts --host 0.0.0.0",
     "dev-server": "tsx watch server/src/server.ts"

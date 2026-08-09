@@ -1,0 +1,93 @@
+{
+  "id": "WP-015D2A",
+  "status": "in_progress",
+  "starting_commit": "99cb25b9c1233f771fc65263b7f131c41be8aee2",
+  "branch": "codex/wp-015-production-assets",
+  "initial_worktree": "clean",
+  "starting_lock_sha256": "E3E461C3D97BEA4EAA18C87ABA4C83FB8B5286EC10A4235BE789679EFC8F0412",
+  "owning_roles": [
+    "worms_port_planner",
+    "worms_port_base_game_worker",
+    "worms_port_test_worker",
+    "worms_port_docs_keeper"
+  ],
+  "scope": [
+    "Create an isolated deterministic Python tactical-analysis model with versioned integer-only configurations, transparent policies, compact match traces, and aggregate strategy metrics.",
+    "Export and verify a V4 structural authority fixture from the TypeScript simulation without changing V1 through V4 gameplay, replay, protocol, or Loomkeeper behavior.",
+    "Record the V4 ideal-direct-hit baseline and one explicitly non-production V5 range/damage candidate so design can inspect dominance, initiative, counterplay, and convergence hypotheses.",
+    "Provide reproducible Python and TypeScript tests plus a local report command; generated reports remain ignored outside the product runtime."
+  ],
+  "non_goals": [
+    "Create, activate, or change nimble-knots-artillery-v5 or any V1 through V4 rule, replay, protocol, client, server, reward, asset, or Loomkeeper behavior.",
+    "Treat the analytical model as a second game authority, a full ballistic/terrain reimplementation, proof of player behavior, or a source of live command validation.",
+    "Add a defense action, action-economy change, Loom Tightening, tie-break, obstacle, destructible terrain, Calling modifier, source media, dependency, or Sorcerers material."
+  ],
+  "planned_checks": [
+    "npm run test:tactical-model",
+    "npm run check:types",
+    "npm run check:compliance",
+    "npm run build",
+    "npm audit",
+    "D2A analytical-model and authority-boundary review"
+  ],
+  "deterministic_seeds": [
+    "3237998097"
+  ],
+  "sorcerers_reference_used": false,
+  "clean_room_records": [],
+  "check_results": [
+    {
+      "command": "npm run test:tactical-model",
+      "status": "pass",
+      "detail": "Strict TypeScript checking for the fixture exporter/test, one TypeScript fixture-parity test, and four standard-library Python model tests passed."
+    },
+    {
+      "command": "npm run check:types",
+      "status": "pass",
+      "detail": "Both production TypeScript projects passed; D2A adds no production import path."
+    },
+    {
+      "command": "npm run check:compliance",
+      "status": "pass",
+      "detail": "Asset, runtime inventory, generation, import-boundary, package-license, work-package evidence, and clean-room gates passed with the D2A record."
+    },
+    {
+      "command": "npm run build",
+      "status": "pass",
+      "detail": "The production server/client build passed and copied only the existing eleven approved runtime assets."
+    },
+    {
+      "command": "npm audit",
+      "status": "reported",
+      "detail": "Reported one high-severity advisory for transitive development dependency nanoid@3.3.16 via vite -> postcss. D2A changed no dependency or lockfile; remediation needs a separately scoped dependency update."
+    },
+    {
+      "command": "D2A analytical-model and authority-boundary review",
+      "status": "pass",
+      "detail": "The Python package is isolated below analysis/, reports its ideal-direct-hit limitations, has no client/server/shared runtime import, and checks structural V4 facts through a TypeScript-generated fixture."
+    }
+  ],
+  "reviews": [
+    {
+      "role": "worms_port_planner",
+      "reviewer": "Codex",
+      "decision": "pass",
+      "detail": "Confirmed D2A remains an analytical predecessor: no V5 activation, action-economy, defense, overtime, terrain tactic, or reward change was introduced."
+    },
+    {
+      "role": "worms_port_test_worker",
+      "reviewer": "Codex",
+      "decision": "pass",
+      "detail": "Confirmed deterministic config validation, TypeScript fixture parity, Python repeatability, and ignored report generation; the full browser matrix is not applicable because no player-visible behavior changed."
+    }
+  ],
+  "skipped_checks": [
+    "The full phone-browser matrix and real-device acceptance were not run because D2A adds no client, server, shared-gameplay, protocol, asset, or visible behavior. They remain required for a later playable V5 or tactical-core ruleset.",
+    "No full ballistic, terrain, or replay-equivalence claim is made for the Python model. The checked V4 authority link is structural only; production candidates require TypeScript scenario transcript parity before activation."
+  ],
+  "residual_risks": [
+    "The analysis assumes ideal direct hits on a level-ground range projection. It cannot predict real mobile aim, terrain collision, splash, or actual Loomkeeper play.",
+    "Candidate A is useful negative evidence, not an approved V5 values table. Its 576/640 pursuit-retreat oscillation requires an owner decision about a separately versioned tactical-core candidate before V5 can be selected safely.",
+    "npm audit reports the existing high-severity nanoid advisory through vite -> postcss; D2A did not alter the dependency graph or lockfile."
+  ]
+}

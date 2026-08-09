@@ -1,0 +1,92 @@
+{
+  "schemaVersion": 1,
+  "fixtureId": "v4-authoritative-baseline-v1",
+  "source": "shared/simulation.ts",
+  "ruleset": {
+    "id": "nimble-knots-artillery-v4",
+    "version": 4,
+    "formatVersion": 4
+  },
+  "arena": {
+    "worldWidth": 2048,
+    "worldHeight": 576,
+    "terrainCellSize": 8,
+    "terrainWidth": 256,
+    "terrainHeight": 72,
+    "playerSpawnX": 512,
+    "loomkeeperSpawnX": 1152
+  },
+  "stitching": {
+    "maximum": 100
+  },
+  "turn": {
+    "maximumTurns": 16,
+    "movementPerTurn": 64,
+    "movementStep": 8
+  },
+  "ballistics": {
+    "fixedPointScale": 256,
+    "gravityPerTick": 80,
+    "minimumShotSpeed": 1536,
+    "maximumShotSpeed": 5120,
+    "levelGroundMaximumRange": 640
+  },
+  "directHitbox": {
+    "halfWidth": 32,
+    "top": 85,
+    "bottom": 13
+  },
+  "relics": {
+    "threadball": {
+      "craterRadius": 40,
+      "damageRadius": 64,
+      "maximumDamage": 70
+    },
+    "needlepoint": {
+      "craterRadius": 16,
+      "damageRadius": 32,
+      "maximumDamage": 120
+    },
+    "spoolburst": {
+      "craterRadius": 64,
+      "damageRadius": 88,
+      "maximumDamage": 45
+    }
+  },
+  "initial": {
+    "seed": 3237998097,
+    "activeActor": "player",
+    "turn": 0,
+    "movementRemaining": 64,
+    "selectedRelic": "threadball",
+    "player": {
+      "x": 512,
+      "stitching": 100
+    },
+    "loomkeeper": {
+      "x": 1152,
+      "stitching": 100
+    }
+  },
+  "structuralMoveTranscript": {
+    "actor": "player",
+    "command": {
+      "type": "move",
+      "direction": 1
+    },
+    "repetitions": 8,
+    "after": {
+      "activeActor": "player",
+      "turn": 0,
+      "movementRemaining": 0,
+      "player": {
+        "x": 576,
+        "stitching": 100
+      },
+      "loomkeeper": {
+        "x": 1152,
+        "stitching": 100
+      }
+    }
+  }
+}
