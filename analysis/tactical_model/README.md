@@ -51,3 +51,20 @@ is unavailable, and only an advancing cast can apply Seam Pin. It preserves the
 same no-post-shot-movement turn economy as every other model configuration.
 Candidate B2 has no production authority and is evaluated against the same
 primary five-policy matrix as Candidates A and B.
+
+The three schema-version 4 Candidate C configurations add an equal,
+non-refilling **Escape Slack** reserve to Candidate B2:
+
+- `v5-range-damage-forward-seam-pin-escape-slack-192-candidate-c1.json`
+- `v5-range-damage-forward-seam-pin-escape-slack-256-candidate-c2.json`
+- `v5-range-damage-forward-seam-pin-escape-slack-320-candidate-c3.json`
+
+Each actor begins with the declared reserve for the whole match. Only the
+actual portion of a move that increases separation spends that actor's own
+reserve; approaching, holding, and casts cost none. Once it is exhausted, the
+actor can still approach and cast but cannot increase separation. This is a
+soft, symmetric arena-convergence hypothesis rather than a total movement
+budget: it never freezes a pursuer merely because they have already moved.
+Seam Pin applies first, so a tethered 32-unit retreat consumes exactly 32
+Escape Slack, not the attempted 64. Candidate C remains analytical only and
+does not authorize a live meter, rule, UI, replay field, or status effect.

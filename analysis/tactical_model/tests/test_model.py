@@ -108,6 +108,43 @@ class TacticalModelTests(unittest.TestCase):
         self.assertEqual(advancing.loomkeeper.seam_pin_turns, 1)
         self.assertEqual(advancing.player.seam_pin_cooldown, 1)
 
+    def test_escape_slack_is_equal_non_refilling_and_charges_only_actual_retreat(self) -> None:
+        config = load_config(CONFIGS / "v5-range-damage-forward-seam-pin-escape-slack-192-candidate-c1.json")
+        state = initial_state(config)
+        self.assertEqual((state.player.escape_slack_remaining, state.loomkeeper.escape_slack_remaining), (192, 192))
+
+        state = apply_action(state, Action("cast", 1, "needlepoint"), config)
+        self.assertEqual(distance(state), 576, "the forward cast closes distance without spending Escape Slack")
+        self.assertEqual(state.player.escape_slack_remaining, 192)
+        self.assertEqual(state.loomkeeper.escape_slack_remaining, 192)
+
+        state = apply_action(state, Action("relocate", 1), config)
+        self.assertEqual(distance(state), 608, "the tether still caps the first retreat at 32 units")
+        self.assertEqual(state.loomkeeper.escape_slack_remaining, 160,
+                         "only the actual tether-capped separation increase spends Escape Slack")
+
+        state = apply_action(state, Action("relocate", 1), config)
+        self.assertEqual(distance(state), 544, "approaching with the player does not spend its reserve")
+        self.assertEqual(state.player.escape_slack_remaining, 192)
+
+        exhausted = initial_state(config)
+        for _ in range(3):
+            exhausted = apply_action(exhausted, Action("relocate", -1), config)
+            exhausted = apply_action(exhausted, Action("relocate", -1), config)
+        self.assertEqual(exhausted.player.escape_slack_remaining, 0)
+        self.assertNotIn(Action("relocate", -1), legal_actions(exhausted, config),
+                         "an exhausted actor cannot gain additional separation")
+
+    def test_escape_slack_candidates_load_with_their_declared_equal_reserves(self) -> None:
+        for amount in (192, 256, 320):
+            config = load_config(
+                CONFIGS / f"v5-range-damage-forward-seam-pin-escape-slack-{amount}-candidate-c{(amount - 128) // 64}.json"
+            )
+            state = initial_state(config)
+            self.assertIsNotNone(config.escape_slack)
+            self.assertEqual(config.escape_slack.per_actor, amount)
+            self.assertEqual((state.player.escape_slack_remaining, state.loomkeeper.escape_slack_remaining), (amount, amount))
+
 
 if __name__ == "__main__":
     unittest.main()

@@ -23,7 +23,7 @@ ActionEconomy = Literal["move_and_cast", "committed"]
 SeamPinActivation = Literal["any_direct_hit", "advance_only"]
 RetreatCastRule = Literal["allowed", "forbidden"]
 
-CONFIG_SCHEMA_VERSIONS = {1, 2, 3}
+CONFIG_SCHEMA_VERSIONS = {1, 2, 3, 4}
 RELIC_ORDER = ("threadball", "needlepoint", "spoolburst")
 BASE_POLICY_NAMES = (
     "range_pressure",
@@ -60,6 +60,13 @@ class SeamPin:
 
 
 @dataclass(frozen=True)
+class EscapeSlack:
+    """Equal, non-refilling movement capacity used only for a candidate endgame model."""
+
+    per_actor: int
+
+
+@dataclass(frozen=True)
 class TacticalConfig:
     identifier: str
     label: str
@@ -80,6 +87,7 @@ class TacticalConfig:
     relics: tuple[Relic, ...]
     opening_search_depth: int
     seam_pin: SeamPin | None = None
+    escape_slack: EscapeSlack | None = None
 
     def relic(self, identifier: str) -> Relic:
         for relic in self.relics:
@@ -95,6 +103,7 @@ class ActorState:
     seam_pin_source: Actor | None = None
     seam_pin_turns: int = 0
     seam_pin_cooldown: int = 0
+    escape_slack_remaining: int = 0
 
 
 @dataclass(frozen=True)
@@ -165,12 +174,16 @@ def load_config(path: Path) -> TacticalConfig:
         relics.append(Relic(identifier, minimum_range, maximum_range, direct_damage))
 
     seam_pin: SeamPin | None = None
-    if schema_version in {2, 3}:
+    if schema_version in {2, 3, 4}:
         tactical_core = _require_object(raw["tactical_core"], f"{path}.tactical_core")
-        _require_exact_keys(tactical_core, {"seam_pin"}, f"{path}.tactical_core")
+        _require_exact_keys(
+            tactical_core,
+            {"seam_pin"} if schema_version in {2, 3} else {"seam_pin", "escape_slack"},
+            f"{path}.tactical_core",
+        )
         seam_pin_raw = _require_object(tactical_core["seam_pin"], f"{path}.tactical_core.seam_pin")
         seam_pin_keys = {"relic_id", "maximum_separation_increase", "target_turns", "cooldown_actor_turns"}
-        if schema_version == 3:
+        if schema_version in {3, 4}:
             seam_pin_keys |= {"activation", "retreat_cast_rule"}
         _require_exact_keys(
             seam_pin_raw,
@@ -214,6 +227,16 @@ def load_config(path: Path) -> TacticalConfig:
             ),
         )
 
+    escape_slack: EscapeSlack | None = None
+    if schema_version == 4:
+        escape_slack_raw = _require_object(raw["tactical_core"]["escape_slack"], f"{path}.tactical_core.escape_slack")
+        _require_exact_keys(escape_slack_raw, {"per_actor"}, f"{path}.tactical_core.escape_slack")
+        escape_slack = EscapeSlack(
+            per_actor=_require_positive_integer(
+                escape_slack_raw["per_actor"], f"{path}.tactical_core.escape_slack.per_actor", allow_zero=True
+            )
+        )
+
     config = TacticalConfig(
         identifier=_require_string(raw["id"], f"{path}.id"),
         label=_require_string(raw["label"], f"{path}.label"),
@@ -234,6 +257,7 @@ def load_config(path: Path) -> TacticalConfig:
         relics=tuple(relics),
         opening_search_depth=_require_positive_integer(raw["opening_search_depth"], f"{path}.opening_search_depth"),
         seam_pin=seam_pin,
+        escape_slack=escape_slack,
     )
     if not (config.actor_margin <= config.player_x < config.world_width - config.actor_margin):
         raise TacticalModelError(f"{path}: player spawn lies outside legal world bounds")
@@ -286,9 +310,10 @@ def initial_state(config: TacticalConfig, *, first_actor: Actor | None = None, m
     if mirrored:
         player_x = config.world_width - player_x
         loomkeeper_x = config.world_width - loomkeeper_x
+    escape_slack = config.escape_slack.per_actor if config.escape_slack is not None else 0
     return TacticalState(
-        player=ActorState(player_x, config.maximum_stitching),
-        loomkeeper=ActorState(loomkeeper_x, config.maximum_stitching),
+        player=ActorState(player_x, config.maximum_stitching, escape_slack_remaining=escape_slack),
+        loomkeeper=ActorState(loomkeeper_x, config.maximum_stitching, escape_slack_remaining=escape_slack),
         active_actor=first_actor or config.default_first_actor,
         completed_turns=0,
     )
@@ -478,6 +503,8 @@ def simulate_match(
             "loomkeeperSeamPinTurns": state.loomkeeper.seam_pin_turns,
             "playerSeamPinCooldown": state.player.seam_pin_cooldown,
             "loomkeeperSeamPinCooldown": state.loomkeeper.seam_pin_cooldown,
+            "playerEscapeSlack": state.player.escape_slack_remaining,
+            "loomkeeperEscapeSlack": state.loomkeeper.escape_slack_remaining,
         })
     return {
         "firstActor": first_actor,
@@ -563,6 +590,9 @@ def run_experiment(config: TacticalConfig) -> dict[str, Any]:
                 "cooldownActorTurns": config.seam_pin.cooldown_actor_turns,
                 "activation": config.seam_pin.activation,
                 "retreatCastRule": config.seam_pin.retreat_cast_rule,
+            },
+            "escapeSlack": None if config.escape_slack is None else {
+                "perActor": config.escape_slack.per_actor,
             },
         },
         "policySets": {
@@ -750,7 +780,21 @@ def _move_actor(state: TacticalState, actor: Actor, direction: int, config: Tact
             candidate = max(candidate, opponent.x - maximum_distance)
         else:
             candidate = min(candidate, opponent.x + maximum_distance)
-    return replace_actor(state, actor, replace(current, x=candidate))
+    current_distance = abs(current.x - opponent.x)
+    escape_slack_remaining = current.escape_slack_remaining
+    if config.escape_slack is not None:
+        maximum_distance = current_distance + current.escape_slack_remaining
+        if current.x < opponent.x:
+            candidate = max(candidate, opponent.x - maximum_distance)
+        else:
+            candidate = min(candidate, opponent.x + maximum_distance)
+        separation_increase = max(0, abs(candidate - opponent.x) - current_distance)
+        escape_slack_remaining -= separation_increase
+    return replace_actor(state, actor, replace(
+        current,
+        x=candidate,
+        escape_slack_remaining=escape_slack_remaining,
+    ))
 
 
 def _select_best(actions: tuple[Action, ...], score: Any) -> Action:

@@ -85,8 +85,8 @@ and makes no rendering, network, wallet, reward, or asset decision.
 | Per-Relic launch band and direct-damage candidate values | required and configuration-driven |
 | Movement/action budget | required; compare its consequences explicitly rather than assuming move-plus-full-cast is harmless |
 | Defense state and its cost | optional candidate only; no Brace mechanic is approved or implemented by this contract |
-| Overtime/convergence state | optional candidate only; no Loom Tightening or timeout rule is approved or implemented by this contract |
-| Radius, precision, falloff, ammo, cooldown, status effects, Calling modifiers, obstacles, destructible terrain, rewards | excluded unless separately versioned and authorized; Candidates B/B2 alone authorize analysis-only Needlepoint tether/cooldown hypotheses, never a live rule |
+| Overtime/convergence state | optional candidate only; Candidate C models equal non-refilling Escape Slack as an analytical soft-boundary hypothesis; no live Loom Tightening, timeout rule, or meter is approved |
+| Radius, precision, falloff, ammo, cooldown, status effects, Calling modifiers, obstacles, destructible terrain, rewards | excluded unless separately versioned and authorized; Candidates B/B2/C authorize only analysis-only Needlepoint tether/cooldown and Escape Slack hypotheses, never a live rule |
 
 All model transitions must be deterministic. An experiment may sample a policy
 or a listed starting scenario, but given its configuration, policy choice, and
@@ -126,7 +126,7 @@ D2A starts with transparent, bounded policies rather than an opaque optimizer:
 - medium-band hold (seek Threadball's effective band),
 - short-range approach (seek Spoolburst's effective band),
 - retreat/kite (increase separation when threatened),
-- Candidate B/B2-only Seam-Pin pressure (advance while applying the configured
+- Candidate B/B2/C-only Seam-Pin pressure (advance while applying the configured
   Needlepoint tether, then prefer the strongest currently legal cast),
 - any approved defensive policy only when its candidate action exists, and
 - a bounded-lookahead best-response policy whose evaluation function and depth
@@ -210,6 +210,9 @@ records two intentionally limited comparison configurations:
 | `v5-range-damage-candidate-a` | The exploratory 640/576/512 range and 30/45/80 damage tiers have no ideal-direct-cast dominance and no bounded forced opening. | 48% | 6.72 | 42 Unraveling / 8 turn-limit draws |
 | `v5-range-damage-seam-pin-candidate-b` | Candidate A's values plus one ideal direct Needlepoint Seam Pin: the target's next distance-increasing movement is capped at 32, and the caster cannot immediately reapply it. No bounded forced opening appears. | 56% | 6.88 | 40 Unraveling / 10 turn-limit draws |
 | `v5-range-damage-forward-seam-pin-candidate-b2` | Candidate B's tether only after the Needlepoint caster advances; a stationary shot deals low direct damage only, and retreat-plus-Needlepoint is unavailable. No bounded forced opening appears. | 48% | 7.12 | 40 Unraveling / 10 turn-limit draws |
+| `v5-range-damage-forward-seam-pin-escape-slack-192-candidate-c1` | Candidate B2 plus 192 equal non-refilling Escape Slack per actor. No ideal direct-cast dominance or bounded forced opening appears. | 52% | 6.52 | 48 Unraveling / 2 turn-limit draws |
+| `v5-range-damage-forward-seam-pin-escape-slack-256-candidate-c2` | Candidate B2 plus 256 equal non-refilling Escape Slack per actor. No ideal direct-cast dominance or bounded forced opening appears. | 52% | 6.76 | 46 Unraveling / 4 turn-limit draws |
+| `v5-range-damage-forward-seam-pin-escape-slack-320-candidate-c3` | Candidate B2 plus 320 equal non-refilling Escape Slack per actor. No ideal direct-cast dominance or bounded forced opening appears. | 52% | 7.00 | 46 Unraveling / 4 turn-limit draws |
 
 Candidate A is not a V5 proposal or an approved values table. Its short-range
 approach versus retreat/kite trace repeatedly oscillates between 576 and 640
@@ -276,3 +279,41 @@ initiative increase. It still has 10 turn-limit draws out of 50 and a longer
 does not solve global convergence or establish final pacing. B2 remains
 analysis-only and cannot become a live V5 rule without a separately scoped
 tactical-core decision.
+
+## Candidate C Escape Slack sweep result - 2026-08-09
+
+Candidate C explores the owner's global-movement-budget goal without imposing a
+total-movement cap. A total budget would eventually prevent an approaching
+player from reaching a retreating player. Instead, each actor receives the same
+non-refilling **Escape Slack** reserve at match start, and only an actual
+increase in their current separation spends it. Moving toward the opponent,
+holding, and firing are free; an actor with no remaining reserve can still
+approach and cast but can no longer move farther away. The reserve is private
+and symmetric, not a shared race. A Seam-Pinned 32-unit retreat consumes only
+32 units because the Seam Pin cap is applied before Escape Slack accounting.
+
+The 192, 256, and 320-unit configurations correspond to at most three, four,
+and five unpinned 64-unit separation-increasing moves per actor, respectively.
+All retain B2's advance-only Needlepoint, one-turn tether/cooldown, and
+`move -> fire -> turn ends` economy. They are schema-versioned analysis
+configurations only; neither an on-screen reserve nor a live combat rule has
+been designed or approved.
+
+In the comparable 50-match mirrored primary matrix, C1 is the strongest of the
+three bounded samples: it reduces B2's 10 turn-limit outcomes to 2 while
+keeping 48 Unraveling outcomes, and its 52% first-actor rate is materially
+lower than Candidate B's 56% but higher than B2's 48%. C2 and C3 both produce
+four turn-limit outcomes and longer average matches, so more escape capacity is
+not better in this model. All three retain no direct-cast dominance and no
+bounded-depth forced opening. The existing four Seam-Pin-pressure versus
+retreat/kite probes still resolve in five or eight turns because their short
+traces do not exhaust even C1's reserve.
+
+C1 resolves the earlier short-approach versus retreat/kite and other
+pressure-versus-kite turn-limit cases in this policy sample. Its two remaining
+timeouts are the mirrored retreat/kite versus retreat/kite pair: both
+heuristics continue to avoid a firing commitment after their reserves are
+spent. This is important residue, not a reason to call C1 convergent or ready
+for production. A subsequent candidate must test whether a readable defensive
+commitment, a later-game pressure rule, or a different policy model produces
+better counterplay without turning the reserve into a hidden forced march.
