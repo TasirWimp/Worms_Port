@@ -12,6 +12,7 @@ const privateQuarantineToken = '.' + 'quarantine';
 const sorcerersQuarantineRoot = [assetQuarantineToken, 'sorcerers'].join('/') + '/';
 const privateQuarantineRoot = privateQuarantineToken + '/';
 const productCodeRoots = ['client/', 'server/', 'shared/', 'scripts/', 'tests/'];
+const productionRuntimeRoots = ['client/', 'server/', 'shared/'];
 const productCodeFiles = [
   'package.json',
   'package-lock.json',
@@ -73,6 +74,10 @@ function isProductCodePath(file) {
     productCodeFiles.includes(file);
 }
 
+function isProductionRuntimePath(file) {
+  return productionRuntimeRoots.some((rootPath) => file.startsWith(rootPath));
+}
+
 const errors = [];
 const sourceManifest = readJson(sourceManifestPath);
 const turtle = sourceManifest.sources.find((source) => source.repository === 'TurtlePU/worms-ii');
@@ -117,6 +122,9 @@ for (const file of trackedOrWorkingFiles()) {
     if ([quarantinedRepository, assetQuarantineToken, privateQuarantineToken]
       .some((token) => lowerText.includes(token.toLowerCase()))) {
       errors.push(`${file}: product code must not depend on or import from Sorcerers.`);
+    }
+    if (isProductionRuntimePath(file) && lowerText.includes('analysis/crpm_world')) {
+      errors.push(`${file}: production runtime code must not import the analysis-only CRPM-world package.`);
     }
   }
 }

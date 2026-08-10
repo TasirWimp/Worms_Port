@@ -9,6 +9,7 @@
   },
   "include": [
     "./**/*.ts",
-    "../../tests/crpm-world/*.ts"
+    "../../tests/crpm-world/*.ts",
+    "../../scripts/run-crpm-world-design.ts"
   ]
 }

@@ -50,6 +50,15 @@ adapter, but it is not a server, gameplay system, or candidate implementation.
   accumulate residue/obligations, and support deterministic authority re-entry.
 - `kernel/assess-return.ts` evaluates six separate return classifications
   without collapsing them into one loop flag.
+- `design-port/registry.ts` is the closed offline registry for only
+  `v4_authority` and `d2a_tactical`; it contains no dynamic module or executable
+  operator registration.
+- `design-port/validate-request.ts` defines the strict offline request envelope
+  and rejects undeclared domains, incompatible cuts/configs, forbidden ports,
+  live activation, malformed seeds, and arbitrary fields.
+- `design-port/execute-request.ts` executes the registered V4 transcript or the
+  fixed D2A Python exporter boundary, validates the result, and restricts file
+  output to ignored `test-results/crpm-world/` JSON files.
 
 The core records are `WorldCarrierReference`, `WorldCutDefinition`,
 `PortContract`, `WorldTransitionEdge`, `TransitionWitness`, `ResidualLedger`,
@@ -196,10 +205,42 @@ python -m analysis.crpm_world.adapters.d2a_export
 npm run test:d2a-adapter
 ```
 
+## Offline World Design Port
+
+The offline port is an analysis CLI/library boundary. It is not a UI, server
+route, Socket.IO event, network endpoint, protocol message, or production
+simulation API. Its registry admits only `v4_authority@1` and
+`d2a_tactical@1`. Requests are declarative strict JSON: no request field can
+select a module path, shell command, script, callback, `eval`, or executable
+operator.
+
+The V4 executor creates the registered V4 baseline, wraps every declared
+command through `adaptSimulationCommand`, composes a voyage, and emits bounded
+analysis-side replay/re-entry and authority-cut projection evidence. The D2A
+executor invokes only `python -m analysis.crpm_world.adapters.d2a_export` with
+a registry-derived F2/F3/F4/H2/H3 case id, then validates and rebinds its strict
+`WorldDesignResult`; user input never supplies the executable, module, config
+path, or command line.
+
+Generated output defaults below the ignored `test-results/crpm-world/` root.
+The writer rejects non-JSON output paths and every path outside that root, so
+it cannot overwrite a source, configuration, protocol, reward, client, or
+server file. The two reviewed example requests can be run with:
+
+```powershell
+npm run analyze:crpm-world -- --request analysis/crpm_world/examples/v4-transcript-request.json --output test-results/crpm-world/v4-transcript-result.json
+npm run analyze:crpm-world -- --request analysis/crpm_world/examples/d2a-f3-pressure-request.json --output test-results/crpm-world/d2a-f3-pressure-result.json
+```
+
+Omit `--output` to use
+`test-results/crpm-world/<request-id>-result.json`. Identical request content
+produces identical request/result digests; object-key order is irrelevant and
+command/policy list order remains meaningful.
+
 ## Deliberately deferred
 
 - concrete production or candidate catalogs;
-- a request-driven offline World Design Port CLI and formatted human reports;
+- formatted human reports or interactive tooling;
 - player/live-ballistics evidence or a TypeScript rewrite of the tactical
   model; and
 - any product-authority change above bounded `authority-adapter-parity`.
@@ -212,6 +253,7 @@ shape will not make V4 and D2A share authority or dynamics.
 ```powershell
 npm run check:crpm-world-types
 npm run test:crpm-world
+npm run test:crpm-world-design
 ```
 
 The focused scripts are intentionally not part of `verify:full` at this seed

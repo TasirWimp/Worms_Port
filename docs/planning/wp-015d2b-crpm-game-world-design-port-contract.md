@@ -2,7 +2,7 @@
 
 ## Status
 
-- **State:** owner-requested, in progress, D2A analytical-adapter gate complete
+- **State:** owner-requested, in progress, offline World Design Port gate complete
 - **Relationship:** analysis-only child of the active WP-015D2A tactical-game-model decision line
 - **Current carrier maturity:** `M2 local use` for the core contracts and bounded historical simulation authority adapter; no `M3` claim
 - **Current product authority:** `authority-adapter parity` for declared, tested V4 transition witnesses only; D2A evidence remains `none`
@@ -17,7 +17,9 @@ authority adapter, a closed cut registry, a finite quotient-transport checker,
 and witnessed voyage/composition/return kernels now exist under
 `analysis/crpm_world/` with focused tests. A closed Python D2A export adapter
 now emits deterministic, TypeScript-validated evidence for F2, F3, F4, H2, and
-H3 without changing the tactical model. No request-driven design CLI, runtime
+H3 without changing the tactical model. A closed offline library/CLI now
+admits only the V4 authority and D2A tactical adapters and writes deterministic
+results only below ignored test output. No UI, network endpoint, runtime
 service, M3 landfall, ruleset approval, production activation, or broad
 simulation-equivalence result exists at this gate.
 

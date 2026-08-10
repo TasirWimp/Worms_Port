@@ -32,6 +32,7 @@
     "test:relics": "node --import tsx --test tests/relics/*.test.ts",
     "check:crpm-world-types": "tsc -p analysis/crpm_world/tsconfig.json",
     "test:crpm-world": "node --import tsx --test tests/crpm-world/*.test.ts",
+    "test:crpm-world-design": "node --import tsx --test tests/crpm-world/design-port.test.ts",
     "test:d2a-adapter": "python -m unittest analysis.crpm_world.adapters.tests.test_d2a_export -v && node --import tsx --test tests/crpm-world/d2a-adapter.test.ts",
     "check:tactical-model-types": "tsc --noEmit --target ES2022 --module ESNext --moduleResolution Bundler --strict --skipLibCheck scripts/export-tactical-v4-baseline.ts tests/tactical-model/authoritative-v4-baseline.test.ts",
     "test:tactical-model": "npm run check:tactical-model-types && node --import tsx --test tests/tactical-model/*.test.ts && python -m unittest analysis.tactical_model.tests.test_model -v",
@@ -59,6 +60,7 @@
     "verify:postgres": "npm run test:reward:postgres && npm run test:browser:reward:postgres",
     "verify:full": "npm run verify:fast && npm run verify:runtime && npm run verify:quality && node scripts/report-postgres-quality-prerequisite.js && npm audit",
     "analyze:tactical-model": "python -m analysis.tactical_model.run --config analysis/tactical_model/configs/v4-baseline-abstract-v1.json --output test-results/tactical-model/v4-baseline-report.json",
+    "analyze:crpm-world": "tsx scripts/run-crpm-world-design.ts",
     "start": "node server/build/server.js",
     "dev-client": "vite --config vite.client.config.ts --host 0.0.0.0",
     "dev-server": "tsx watch server/src/server.ts"

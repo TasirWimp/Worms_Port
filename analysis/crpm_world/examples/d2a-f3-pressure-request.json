@@ -1,0 +1,79 @@
+{
+  "schemaVersion": 1,
+  "requestId": "d2a-f3-pressure-example",
+  "requestVersion": 1,
+  "profileVersion": 1,
+  "adapter": {
+    "id": "d2a_tactical",
+    "version": 1
+  },
+  "baseline": {
+    "kind": "d2a_config",
+    "id": "v5-range-damage-forward-seam-pin-escape-slack-spoolburst-preparation-threadback-unweave-candidate-f3",
+    "version": 9
+  },
+  "scenarioDomain": {
+    "schemaVersion": 1,
+    "scenarioIds": [
+      "d2a-f3-distance-448",
+      "d2a-f3-distance-512",
+      "d2a-f3-distance-576",
+      "d2a-f3-distance-640",
+      "d2a-f3-distance-704"
+    ],
+    "actionFamilies": [
+      "d2a-pressure-export"
+    ],
+    "policyFamilies": [
+      "registered-pressure-suite"
+    ],
+    "seeds": [
+      3237998097
+    ],
+    "constraints": [
+      "Only the registered F3 five-distance deterministic sweep is requested.",
+      "The Python tactical model remains the analytical source and is not rewritten in TypeScript."
+    ]
+  },
+  "cut": {
+    "id": "d2a_tactical_recurrence_v1",
+    "version": 1
+  },
+  "protectedFamily": [
+    "The exact registered D2A configuration, scenario family, policies, actions, report digest, and historical status remain recoverable.",
+    "D2A evidence remains analytical only and cannot activate gameplay or acquire product authority."
+  ],
+  "sequence": [
+    {
+      "sequence": 0,
+      "kind": "policy",
+      "configId": "v5-range-damage-forward-seam-pin-escape-slack-spoolburst-preparation-threadback-unweave-candidate-f3",
+      "policyFamily": "registered-pressure-suite"
+    }
+  ],
+  "seeds": [
+    3237998097
+  ],
+  "outputDetailLevel": "witnesses",
+  "requestedScalarProbes": [
+    "f3.threadback_distance",
+    "f3.escape_slack_spent",
+    "f3.first_actor_win_rate"
+  ],
+  "requestedPorts": [
+    "analysis-result",
+    "tactical-voyage",
+    "transition-witness",
+    "recurrence-evidence",
+    "opening-search-evidence",
+    "projection-evidence",
+    "diagnostic-profile",
+    "scalar-probes",
+    "residual-ledger"
+  ],
+  "activation": "offline_only",
+  "explicitExclusions": [
+    "Terrain, aim, trajectory, splash, player skill, live Loomkeeper, UI, replay, and reward remain unmodelled.",
+    "Recurrence repair does not establish initiative fairness, empirical player behavior, or product authority."
+  ]
+}
