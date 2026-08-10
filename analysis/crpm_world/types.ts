@@ -7,6 +7,7 @@ import type {
     ContractCatalogsSchema,
     DiagnosticAxisSchema,
     DiagnosticProfileSchema,
+    EdgePortBindingsSchema,
     EvidenceOriginSchema,
     FixedFrameSchema,
     PortContractSchema,
@@ -27,7 +28,9 @@ import type {
     WorldDesignRequestSchema,
     WorldDesignResultPayloadSchema,
     WorldDesignResultSchema,
-    WorldTransitionEdgeSchema
+    WorldTransitionEdgeSchema,
+    WorldTransitionEdgeV1Schema,
+    WorldTransitionEdgeV2Schema
 } from './schemas';
 
 export type AdapterReference = z.infer<typeof AdapterReferenceSchema>;
@@ -36,6 +39,7 @@ export type CarrierMaturity = z.infer<typeof CarrierMaturitySchema>;
 export type ContractCatalogs = z.infer<typeof ContractCatalogsSchema>;
 export type DiagnosticAxis = z.infer<typeof DiagnosticAxisSchema>;
 export type DiagnosticProfile = z.infer<typeof DiagnosticProfileSchema>;
+export type EdgePortBindings = z.infer<typeof EdgePortBindingsSchema>;
 export type EvidenceOrigin = z.infer<typeof EvidenceOriginSchema>;
 export type FixedFrame = z.infer<typeof FixedFrameSchema>;
 export type PortContract = z.infer<typeof PortContractSchema>;
@@ -57,5 +61,7 @@ export type WorldDesignRequest = z.infer<typeof WorldDesignRequestSchema>;
 export type WorldDesignResultPayload = z.infer<typeof WorldDesignResultPayloadSchema>;
 export type WorldDesignResult = z.infer<typeof WorldDesignResultSchema>;
 export type WorldTransitionEdge = z.infer<typeof WorldTransitionEdgeSchema>;
+export type WorldTransitionEdgeV1 = z.infer<typeof WorldTransitionEdgeV1Schema>;
+export type WorldTransitionEdgeV2 = z.infer<typeof WorldTransitionEdgeV2Schema>;
 
 export type { JsonPrimitive, JsonValue } from './canonical';

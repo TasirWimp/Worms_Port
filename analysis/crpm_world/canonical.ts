@@ -122,3 +122,8 @@ export function canonicalJson(value: unknown): string {
 export function sha256Digest(value: unknown): string {
     return createHash('sha256').update(canonicalJson(value), 'utf8').digest('hex');
 }
+
+/** Returns the lowercase SHA-256 digest of an already-canonical UTF-8 string. */
+export function sha256Text(value: string): string {
+    return createHash('sha256').update(value, 'utf8').digest('hex');
+}

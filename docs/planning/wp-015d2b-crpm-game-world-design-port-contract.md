@@ -2,18 +2,20 @@
 
 ## Status
 
-- **State:** owner-requested, in progress, contract gate only
+- **State:** owner-requested, in progress, authority-adapter gate complete
 - **Relationship:** analysis-only child of the active WP-015D2A tactical-game-model decision line
-- **Current carrier maturity:** `M1 declaration`
-- **Current product authority:** `none`
+- **Current carrier maturity:** `M2 local use` for the core contracts and bounded historical simulation authority adapter; no `M3` claim
+- **Current product authority:** `authority-adapter parity` for declared, tested transition witnesses only
 - **Worms_Port base:** `af23717e61fea6995bf3b7209211ae1aaa2bb855` on `codex/wp-015d2b-crpm-world-design-port`
 - **CRPM source lock:** `995236df60924f790506cf5badec3c102abf3fd1` on `main`
 - **Contract date:** 2026-08-10
 
-This document licenses a later bounded implementation gate. It does not claim
-that WP-015D2A is closed, and it does not move the Execution Pointer away from
-WP-015D2A. No D2B schema, adapter, checker, CLI, evidence record, or acceptance
-result exists at this gate.
+This document licenses bounded implementation gates. It does not claim that
+WP-015D2A is closed, and it does not move the Execution Pointer away from
+WP-015D2A. The core TypeScript contracts and a read-only historical simulation
+authority adapter now exist under `analysis/crpm_world/` with focused tests.
+No D2A adapter, CLI, runtime service, M3 landfall, ruleset approval, production
+activation, or broad simulation-equivalence result exists at this gate.
 
 ## Strongest Licensed Claim
 
@@ -354,7 +356,10 @@ A Worms_Port-local L4+ heuristic, not universal CRPM maturity doctrine:
 - `M3 bounded design landfall` — a reviewed, reproducible local carrier with
   declared support, residue, and transfer-back for its target.
 
-This contract is `M1 declaration`. It does not establish M2 or M3.
+The contract and bounded historical simulation authority adapter are now `M2
+local use`: they are tested within the declared analysis-only transition-witness
+scope. This does not establish `M3 bounded design landfall`, complete carrier
+support, broad replay equivalence, or production sufficiency.
 
 ### `ProductAuthority`
 
@@ -369,7 +374,9 @@ A separate Worms_Port governance status:
 `authority-adapter parity` means a checked relationship to existing authority,
 not newly created authority. Owner review, versioned ruleset approval, and
 production activation require separate recorded decisions. M3 design landfall
-never activates production by itself. The current D2B status is `none`.
+never activates production by itself. The current D2B status is
+`authority-adapter parity` only for the declared, tested historical simulation
+transition domain; it does not change the authority in `shared/simulation.ts`.
 
 ## Required Cuts
 

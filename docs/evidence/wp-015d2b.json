@@ -13,17 +13,20 @@
   "scope": [
     "Implement the owner-accepted WP-015D2B M1 contract as strict, versioned, JSON-serializable TypeScript and Zod records below analysis/crpm_world only.",
     "Provide deterministic non-mutating canonical JSON, deep-sort, and SHA-256 helpers that reject non-JSON values, unsafe numeric values, negative zero, unstable timestamp fields, sparse arrays, cycles, and non-plain objects.",
-    "Provide focused Node/tsx tests, narrow package scripts, and an analysis-only README while preserving the exact Worms_Port base af23717e61fea6995bf3b7209211ae1aaa2bb855 and read-only CRPM source lock 995236df60924f790506cf5badec3c102abf3fd1."
+    "Provide focused Node/tsx tests, narrow package scripts, and an analysis-only README while preserving the exact Worms_Port base af23717e61fea6995bf3b7209211ae1aaa2bb855 and read-only CRPM source lock 995236df60924f790506cf5badec3c102abf3fd1.",
+    "Wrap exported historical shared/simulation.ts command transitions at Worms_Port gate base 0ca98ac32f9f7a265888ae342a3f3254269d61d9 in strict authority-edge and witness records without changing or importing analysis into production authority."
   ],
   "non_goals": [
-    "Implement a V4 authority adapter, D2A analytical adapter, CLI, report generator, runtime service, gameplay candidate, range-entry commitment, or any V5 rule.",
+    "Implement a D2A analytical adapter, CLI, report generator, runtime service, gameplay candidate, range-entry commitment, or any V5 rule.",
     "Change shared, client, server, protocol, replay, Loomkeeper, reward, asset, or V1 through V4 behavior, or create a runtime import from those paths into analysis.",
     "Vendor, import, depend on, or edit CRPM; promote this bounded Worms_Port L4+ application profile into CRPM schema, graph safety, ontology, or doctrine."
   ],
   "planned_checks": [
     "npm run check:crpm-world-types",
     "npm run test:crpm-world",
+    "npm run test:simulation",
     "npm run test:tactical-model",
+    "npm run check:types",
     "npm run check:compliance",
     "npm run build",
     "npm audit",
@@ -43,12 +46,22 @@
     {
       "command": "npm run test:crpm-world",
       "status": "pass",
-      "detail": "All 18 focused Node/tsx tests passed, covering strict versioned records, canonical ordering and digests, non-mutation, rejected nondeterministic values and timestamps, closed adapter/config/cut admission, typed edges, projection alias witnesses, voyage compatibility, separate return kinds, non-scalar diagnostics, and evidence lineage."
+      "detail": "All 26 focused Node/tsx tests passed. In addition to the core contracts and canonical helpers, the suite proves direct authority parity for V1 and V4 accepted movement, rejected wrong-actor movement, Relic selection, aim, deterministic fire, fire without aim, terminal rejection, caller immutability, repeated digest stability, compact terrain residue, and separation of gameplay motifs from optional CRPM interpretation."
+    },
+    {
+      "command": "npm run test:simulation",
+      "status": "pass",
+      "detail": "All 31 existing direct simulation tests passed unchanged; shared/simulation.ts and shared/protocol.ts were not edited."
     },
     {
       "command": "npm run test:tactical-model",
       "status": "pass",
       "detail": "The existing authoritative V4 structural fixture test and all 31 Python D2A tactical-model tests passed unchanged."
+    },
+    {
+      "command": "npm run check:types",
+      "status": "pass",
+      "detail": "Existing server and client TypeScript checks passed with no production-side analysis import."
     },
     {
       "command": "npm run check:compliance",
@@ -76,27 +89,27 @@
       "role": "worms_port_planner",
       "reviewer": "Codex",
       "decision": "pass",
-      "detail": "Confirmed the gate implements only analysis-side contracts and deterministic helpers, keeps WP-015D2A active, and introduces no adapter, CLI, candidate, V5 rule, or production authority."
+      "detail": "Confirmed the gate adds only the bounded analysis-side authority adapter, retains shared/simulation.ts as sole production authority, keeps WP-015D2A active, and introduces no D2A adapter, CLI, candidate, V5 rule, or runtime import."
     },
     {
       "role": "worms_port_test_worker",
       "reviewer": "Codex",
       "decision": "pass",
-      "detail": "Confirmed strict v1 schemas, digest binding, closed-catalog request admission, finite projection and voyage guards, return separation, focused regression coverage, and the required repository checks."
+      "detail": "Confirmed strict versioned schemas, exact direct-versus-wrapped transition parity across V1 and V4, rejected-transition witness semantics, input immutability, deterministic digests, compact residual extraction, and the required repository checks."
     },
     {
       "role": "worms_port_docs_keeper",
       "reviewer": "Codex",
       "decision": "pass",
-      "detail": "Confirmed the README, accepted contract, source locks, evidence record, dependency boundary, deferred fields, and M1/ProductAuthority-none status agree."
+      "detail": "Confirmed the README, accepted contract, source locks, evidence record, dependency boundary, deferred gates, M2-local-use scope, and authority-adapter-parity non-promotion guard agree."
     }
   ],
   "skipped_checks": [
-    "V4 adapter parity, thin/repaired V4 projection, D2A pressure reconstruction, edge/voyage report generation, and deterministic CLI output tests were not run because those implementations are explicitly deferred to later gates.",
+    "Thin/repaired V4 projection, D2A pressure reconstruction, edge/voyage report generation, and deterministic CLI output tests were not run because those implementations are explicitly deferred to later gates.",
     "Browser matrix and physical Android/iOS testing were not run because this package has no runtime-facing or player-visible import path or behavior."
   ],
   "residual_risks": [
-    "The package remains M1 declaration with ProductAuthority none. Its only registered adapter in tests is a local synthetic fixture; no V4 or D2A adapter, production catalog, or generated design result exists.",
+    "The core contracts and bounded historical simulation authority adapter are M2 local use with authority-adapter parity only. No D2A adapter, ambient production catalog, generated design result, M3 landfall, ruleset approval, or production activation exists.",
     "Strict schemas can validate declared structure, scope, lineage, and catalog membership but cannot prove that a deterministic-continuation, preservation, maturity, or authority claim is semantically true; later bounded witnesses and owner decisions remain mandatory.",
     "The canonical format is the local WP-015D2B v1 contract, not a CRPM schema, ontology, graph-safe exchange standard, or claim of independent empirical evidence.",
     "npm audit continues to report the existing high-severity nanoid advisory through Vite; this gate changes no dependency or lockfile."

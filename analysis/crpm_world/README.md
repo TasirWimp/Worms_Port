@@ -2,8 +2,8 @@
 
 `analysis/crpm_world` is the analysis-only WP-015D2B contract layer. It defines
 strict, versioned JSON records for the bounded Worms_Port Game-World Profile and
-offline World Design Port. It is not a server, gameplay system, adapter, or
-candidate implementation.
+offline World Design Port. It includes one read-only simulation-authority
+adapter, but it is not a server, gameplay system, or candidate implementation.
 
 ## Authority and dependency boundary
 
@@ -27,6 +27,12 @@ candidate implementation.
   catalog validation for design requests.
 - `types.ts` exports TypeScript types inferred from the Zod contracts so the
   runtime validator and compile-time surface cannot drift independently.
+- `adapters/v4-authority-adapter.ts` clones and validates caller inputs, calls
+  exported `applySimulationCommand` directly, returns its exact transition, and
+  renders a compact authority-edge/witness projection for historical V1 through
+  V4 states. Its name records the gate that introduced it; its adapter identity
+  explicitly covers the versioned simulation authority rather than pretending
+  V4 is the only historical ruleset.
 
 The core records are `WorldCarrierReference`, `WorldCutDefinition`,
 `PortContract`, `WorldTransitionEdge`, `TransitionWitness`, `ResidualLedger`,
@@ -36,8 +42,10 @@ maturity and product authority remain separate enums.
 
 ## Deterministic artifact rules
 
-All top-level contracts use `schemaVersion: 1`, reject unknown fields, and are
-JSON-serializable. Canonicalization:
+Top-level seed contracts use `schemaVersion: 1`, reject unknown fields, and are
+JSON-serializable. `WorldTransitionEdge` retains its accepted v1 shape and adds
+v2 for mandatory explicit context/action/response/evidence/support/return port
+bindings; the authority adapter emits v2. Canonicalization:
 
 - sorts object keys lexicographically at every depth;
 - preserves array order;
@@ -59,16 +67,37 @@ field is not self-referential. Parsing rejects a mismatched digest.
 `parseRegisteredWorldDesignRequest` additionally checks the request's adapter,
 ruleset/configuration, and cut against the supplied strict `PortContract`
 catalog. The core package intentionally has no ambient global registry and no
-registered production adapter. Tests use a local synthetic catalog only.
+runtime registration or activation path. Contract tests use a local synthetic
+catalog only.
+
+## Simulation authority adapter
+
+The adapter is source-locked to Worms_Port gate base
+`0ca98ac32f9f7a265888ae342a3f3254269d61d9` and
+`shared/simulation.ts` blob `c9279c6f3b5d708ad0e54d32d2dca6d97234b4c0`.
+It performs no shared, protocol, replay, client, or server mutation.
+
+Each invocation returns the exact `SimulationTransition` alongside canonical
+pre/post state JSON and digests, an ordered-event digest, a v2
+`WorldTransitionEdge`, a `TransitionWitness`, and deterministic edge/witness
+digests. The edge response retains exact authoritative events and result flags
+but references the full states through authority carrier digests, so packed
+terrain words are not flattened into the human-readable residual ledger.
+Rejected commands use `rejected_command` plus a rejected-witness edge kind;
+they are not represented as successful state edges. Domain motifs never imply
+a CRPM cut-effect interpretation.
+
+An emitted edge may carry `authority-adapter-parity`, meaning only a checked
+relationship to the existing authority result. It creates no ruleset,
+production activation, gameplay authority, replay parity, or balance claim.
 
 ## Deliberately deferred
 
-- V4 authority adapter and bounded transition-parity fixtures;
 - D2A analytical adapter and F2/F3/F4/H2/H3 reconstruction;
 - concrete production or candidate catalogs;
 - thin/repaired V4 projection assessments;
 - voyage/report generation and the offline CLI; and
-- any product-authority change above `none`.
+- any product-authority change above bounded `authority-adapter-parity`.
 
 Those require their separately named implementation gates. A common result
 shape will not make V4 and D2A share authority or dynamics.

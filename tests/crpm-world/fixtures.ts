@@ -111,11 +111,19 @@ export function makeTransitionEdge() {
     const sourceCarrier = makeCarrier(0, 'source');
     const targetCarrier = makeCarrier(1, 'target');
     return WorldTransitionEdgeSchema.parse({
-        schemaVersion: 1,
+        schemaVersion: 2,
         edgeId: 'authority-projection-edge',
         edgeVersion: 1,
         edgeKind: 'authority-projection',
         domainMotif: 'move',
+        portBindings: {
+            contextPorts: ['authority-state'],
+            actionPorts: ['simulation-command'],
+            responsePorts: ['simulation-transition'],
+            evidencePorts: ['transition-witness'],
+            supportPorts: ['authority-carrier'],
+            returnPorts: ['authority-reentry']
+        },
         sourceCarrier,
         targetCarrier,
         sourceCutId: 'authority-contract-cut',

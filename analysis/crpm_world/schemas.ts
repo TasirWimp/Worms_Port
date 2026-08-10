@@ -271,8 +271,16 @@ export const FixedFrameSchema = z.strictObject({
     expectedRevisionOrStep: NonNegativeSafeIntegerSchema
 });
 
-export const WorldTransitionEdgeSchema = z.strictObject({
-    schemaVersion: SchemaVersionSchema,
+export const EdgePortBindingsSchema = z.strictObject({
+    contextPorts: NonEmptyIdentifierListSchema,
+    actionPorts: NonEmptyIdentifierListSchema,
+    responsePorts: NonEmptyIdentifierListSchema,
+    evidencePorts: NonEmptyIdentifierListSchema,
+    supportPorts: NonEmptyIdentifierListSchema,
+    returnPorts: NonEmptyIdentifierListSchema
+});
+
+const WorldTransitionEdgeBaseShape = {
     edgeId: IdentifierSchema,
     edgeVersion: VersionSchema,
     edgeKind: IdentifierSchema,
@@ -308,7 +316,23 @@ export const WorldTransitionEdgeSchema = z.strictObject({
     supportStatus: SupportStatusSchema,
     productAuthority: ProductAuthoritySchema,
     authorityMutationObserved: z.literal(false)
-}).superRefine((edge, context) => {
+};
+
+export const WorldTransitionEdgeV1Schema = z.strictObject({
+    schemaVersion: SchemaVersionSchema,
+    ...WorldTransitionEdgeBaseShape
+});
+
+export const WorldTransitionEdgeV2Schema = z.strictObject({
+    schemaVersion: z.literal(2),
+    ...WorldTransitionEdgeBaseShape,
+    portBindings: EdgePortBindingsSchema
+});
+
+export const WorldTransitionEdgeSchema = z.discriminatedUnion('schemaVersion', [
+    WorldTransitionEdgeV1Schema,
+    WorldTransitionEdgeV2Schema
+]).superRefine((edge, context) => {
     if (edge.crpmTransitionInterpretation && !edge.crpmInterpretationJustification) {
         context.addIssue({ code: 'custom', path: ['crpmInterpretationJustification'], message: 'A CRPM transition interpretation requires an explicit bounded justification.' });
     }

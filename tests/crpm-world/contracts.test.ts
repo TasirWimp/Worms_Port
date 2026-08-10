@@ -33,7 +33,7 @@ import {
     makeWorldDesignResultPayload
 } from './fixtures';
 
-test('all core v1 records accept their strict bounded fixtures', () => {
+test('all core versioned records accept their strict bounded fixtures', () => {
     const result = makeWorldDesignResult();
     const samples: Array<[string, { safeParse(input: unknown): { success: boolean } }, unknown]> = [
         ['WorldCarrierReference', WorldCarrierReferenceSchema, makeCarrier()],
@@ -53,7 +53,7 @@ test('all core v1 records accept their strict bounded fixtures', () => {
     for (const [name, schema, sample] of samples) {
         assert.equal(schema.safeParse(sample).success, true, name);
         assert.equal(schema.safeParse({ ...(sample as object), unknownField: true }).success, false, `${name} strictness`);
-        assert.equal(schema.safeParse({ ...(sample as object), schemaVersion: 2 }).success, false, `${name} version`);
+        assert.equal(schema.safeParse({ ...(sample as object), schemaVersion: 99 }).success, false, `${name} version`);
     }
 });
 
