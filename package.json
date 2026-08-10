@@ -32,6 +32,7 @@
     "test:relics": "node --import tsx --test tests/relics/*.test.ts",
     "check:crpm-world-types": "tsc -p analysis/crpm_world/tsconfig.json",
     "test:crpm-world": "node --import tsx --test tests/crpm-world/*.test.ts",
+    "test:d2a-adapter": "python -m unittest analysis.crpm_world.adapters.tests.test_d2a_export -v && node --import tsx --test tests/crpm-world/d2a-adapter.test.ts",
     "check:tactical-model-types": "tsc --noEmit --target ES2022 --module ESNext --moduleResolution Bundler --strict --skipLibCheck scripts/export-tactical-v4-baseline.ts tests/tactical-model/authoritative-v4-baseline.test.ts",
     "test:tactical-model": "npm run check:tactical-model-types && node --import tsx --test tests/tactical-model/*.test.ts && python -m unittest analysis.tactical_model.tests.test_model -v",
     "test:combat": "node --import tsx --test tests/combat/*.test.ts",

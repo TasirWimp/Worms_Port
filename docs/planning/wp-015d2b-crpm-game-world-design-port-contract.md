@@ -2,10 +2,10 @@
 
 ## Status
 
-- **State:** owner-requested, in progress, cut/projection gate complete
+- **State:** owner-requested, in progress, D2A analytical-adapter gate complete
 - **Relationship:** analysis-only child of the active WP-015D2A tactical-game-model decision line
 - **Current carrier maturity:** `M2 local use` for the core contracts and bounded historical simulation authority adapter; no `M3` claim
-- **Current product authority:** `authority-adapter parity` for declared, tested transition witnesses only
+- **Current product authority:** `authority-adapter parity` for declared, tested V4 transition witnesses only; D2A evidence remains `none`
 - **Worms_Port base:** `af23717e61fea6995bf3b7209211ae1aaa2bb855` on `codex/wp-015d2b-crpm-world-design-port`
 - **CRPM source lock:** `995236df60924f790506cf5badec3c102abf3fd1` on `main`
 - **Contract date:** 2026-08-10
@@ -13,10 +13,13 @@
 This document licenses bounded implementation gates. It does not claim that
 WP-015D2A is closed, and it does not move the Execution Pointer away from
 WP-015D2A. The core TypeScript contracts, a read-only historical simulation
-authority adapter, a closed cut registry, and a finite quotient-transport
-checker now exist under `analysis/crpm_world/` with focused tests. No D2A
-adapter, CLI, runtime service, M3 landfall, ruleset approval, production
-activation, or broad simulation-equivalence result exists at this gate.
+authority adapter, a closed cut registry, a finite quotient-transport checker,
+and witnessed voyage/composition/return kernels now exist under
+`analysis/crpm_world/` with focused tests. A closed Python D2A export adapter
+now emits deterministic, TypeScript-validated evidence for F2, F3, F4, H2, and
+H3 without changing the tactical model. No request-driven design CLI, runtime
+service, M3 landfall, ruleset approval, production activation, or broad
+simulation-equivalence result exists at this gate.
 
 ## Strongest Licensed Claim
 
@@ -175,7 +178,7 @@ parity test must name an exact scenario and command domain.
 
 ### 4. D2A analytical adapter
 
-A separate read-only adapter may expose existing Python model configurations,
+The implemented separate read-only adapter exposes registered existing Python model configurations,
 policies, traces, reports, recurrence, and opening-search results through the
 same `WorldDesignResult` envelope. It must transfer back to the exact D2A
 configuration/report/trace carrier, never to a TypeScript gameplay state. A

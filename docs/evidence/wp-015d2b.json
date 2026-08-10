@@ -16,16 +16,22 @@
     "Provide focused Node/tsx tests, narrow package scripts, and an analysis-only README while preserving the exact Worms_Port base af23717e61fea6995bf3b7209211ae1aaa2bb855 and read-only CRPM source lock 995236df60924f790506cf5badec3c102abf3fd1.",
     "Wrap exported historical shared/simulation.ts command transitions at Worms_Port gate base 0ca98ac32f9f7a265888ae342a3f3254269d61d9 in strict authority-edge and witness records without changing or importing analysis into production authority.",
     "At Worms_Port gate base 91515546e96820b27a7f06f4ca9f7b0e7361ca81 and read-only CRPM method lock 995236df60924f790506cf5badec3c102abf3fd1, declare a closed five-cut registry and independently implement the observer method's finite quotient-transport idea in TypeScript, including complete alias-class transition rows, explicit witness pairs, and a bounded non-proof warning.",
-    "Witness the V4 movement support twin at seed 3237998097: one versus four position-returning cycles retain the same thin visible readout while movement budgets 48 versus 0 make the same right move accepted versus rejected; repair only the declared finite movement domain."
+    "Witness the V4 movement support twin at seed 3237998097: one versus four position-returning cycles retain the same thin visible readout while movement budgets 48 versus 0 make the same right move accepted versus rejected; repair only the declared finite movement domain.",
+    "At Worms_Port voyage gate base 5ff42a0e26ecd9cee80cb4c17f86404d5d1dc64d, compose witnessed authority edges under explicit carrier, revision/turn, ruleset/adapter, cut, port, forbidden-port, obligation, and residual checks while retaining structured incompatible attempts and the valid prefix.",
+    "Trace accepted and rejected command paths with deterministic authority re-entry, and assess visible equality, protected equivalence, recursive-carrier return, invariant-region return, finite exact return, and paired-route mismatch as separate classifications.",
+    "At Worms_Port D2A-adapter gate base 5ff42a0e26ecd9cee80cb4c17f86404d5d1dc64d, invoke only registered public Python tactical-model functions, fail closed on config schema or whole-report digest drift, and emit deterministic JSON that validates as a strict CRPM-world WorldDesignResult.",
+    "Reconstruct compact F2, F3, and H3 action voyages and digest-bound F4/H2 aggregate diagnostics while preserving all five historical statuses, one shared evidence covariance group, explicit unmodelled ports, and ProductAuthority none."
   ],
   "non_goals": [
-    "Implement a D2A analytical adapter, CLI, report generator, runtime service, gameplay candidate, range-entry commitment, or any V5 rule.",
+    "Rewrite the tactical model in TypeScript, change any tactical-model policy/action/transition/opening/recurrence/aggregate result, check all 250 traces per case into Git, or treat a D2A adapter as production authority.",
+    "Implement a request-driven design CLI, runtime service, gameplay candidate, range-entry commitment, or any V5 rule.",
     "Change shared, client, server, protocol, replay, Loomkeeper, reward, asset, or V1 through V4 behavior, or create a runtime import from those paths into analysis.",
     "Vendor, import, depend on, or edit CRPM; promote this bounded Worms_Port L4+ application profile into CRPM schema, graph safety, ontology, or doctrine."
   ],
   "planned_checks": [
     "npm run check:crpm-world-types",
     "npm run test:crpm-world",
+    "npm run test:d2a-adapter",
     "npm run test:simulation",
     "npm run test:tactical-model",
     "npm run check:types",
@@ -43,12 +49,17 @@
     {
       "command": "npm run check:crpm-world-types",
       "status": "pass",
-      "detail": "The dedicated strict TypeScript project passed for canonical helpers, Zod contracts, inferred types, the closed cut registry, generic project/transport kernels, focused fixtures, and focused tests."
+      "detail": "The dedicated strict TypeScript project passed for canonical helpers, Zod contracts, inferred types, cut/project/transport and voyage/composition/return kernels, plus cross-language D2A schema-validation tests."
     },
     {
       "command": "npm run test:crpm-world",
       "status": "pass",
-      "detail": "All 32 focused Node/tsx tests passed. Coverage includes the core contracts/canonical helpers, direct V1/V4 authority parity, all five strict domain-declared cuts, detached registry reads, action-family rejection, empty-domain rejection, one explicit pair per aliased class, and the V4 thin-versus-bounded movement support-twin assessment."
+      "detail": "All 43 focused Node/tsx tests passed. The prior 39 contract, authority, cut/projection, and voyage/composition/return tests remain green; four cross-language tests validate the Python result, byte/digest determinism, unknown-config rejection, and strict unknown-field rejection."
+    },
+    {
+      "command": "npm run test:d2a-adapter",
+      "status": "pass",
+      "detail": "Eight Python exporter regressions and four Node/tsx cross-language tests passed. They bind unchanged whole-report digests, reconstruct F2/F3/H3 action evidence, preserve F4/H2 aggregates, reject config/schema drift, and validate the deterministic result through the strict Zod schema."
     },
     {
       "command": "npm run test:simulation",
@@ -58,7 +69,7 @@
     {
       "command": "npm run test:tactical-model",
       "status": "pass",
-      "detail": "The existing authoritative V4 structural fixture test and all 31 Python D2A tactical-model tests passed unchanged."
+      "detail": "The existing authoritative V4 structural fixture test and all 31 Python D2A tactical-model tests passed both before and after adapter work; model.py and its existing reports/traces remain unchanged."
     },
     {
       "command": "npm run check:types",
@@ -91,28 +102,30 @@
       "role": "worms_port_planner",
       "reviewer": "Codex",
       "decision": "pass",
-      "detail": "Confirmed the gate adds only bounded analysis-side cuts, projections, and a finite assessment kernel, retains shared/simulation.ts as sole production authority, keeps WP-015D2A active, and introduces no D2A adapter, CLI, candidate, V5 rule, or runtime import."
+      "detail": "Confirmed the D2A exporter remains analysis-only, calls stable public Python functions, emits evidence rather than a second model/server, retains shared/simulation.ts as sole production authority, and introduces no candidate, V5 rule, or production import."
     },
     {
       "role": "worms_port_test_worker",
       "reviewer": "Codex",
       "decision": "pass",
-      "detail": "Confirmed strict versioned schemas, exact authority parity, five cut declarations, input/registry immutability, per-class alias pairs, empty-domain rejection, the accepted-versus-rejected support twin, bounded repair, deterministic records, and the required repository checks."
+      "detail": "Confirmed exact full-report digest regression locks, compact per-action pre/post carriers and residues, strict Python-to-Zod validation, deterministic bytes/digests, config/schema rejection, and preservation of all five pressure-case facts."
     },
     {
       "role": "worms_port_docs_keeper",
       "reviewer": "Codex",
       "decision": "pass",
-      "detail": "Confirmed the README, accepted contract, source locks, evidence record, CRPM observer attribution, dependency boundary, finite-domain limits, deferred gates, M2-local-use scope, and authority-adapter-parity non-promotion guard agree."
+      "detail": "Confirmed the README, accepted contract, exact source/config/report locks, evidence covariance, D2A ProductAuthority none, analysis/production boundary, deferred request-driven CLI, and non-promotion guards agree."
     }
   ],
   "skipped_checks": [
-    "D2A pressure reconstruction, edge/voyage report generation, and deterministic CLI output tests were not run because those implementations are explicitly deferred to later gates.",
+    "A request-driven offline design CLI and formatted human reports were not implemented because this gate exposes only the bounded D2A exporter and deterministic JSON stdout boundary.",
     "Browser matrix and physical Android/iOS testing were not run because this package has no runtime-facing or player-visible import path or behavior."
   ],
   "residual_risks": [
-    "The core contracts and bounded historical simulation authority adapter are M2 local use with authority-adapter parity only. No D2A adapter, ambient production catalog, generated design result, M3 landfall, ruleset approval, or production activation exists.",
+    "The core contracts and bounded historical simulation authority adapter are M2 local use with authority-adapter parity only. The D2A exporter is M2 local analytical use with ProductAuthority none. No ambient production catalog, M3 landfall, ruleset approval, or production activation exists.",
+    "F2/F3/F4/H2/H3 reuse the same tactical model, related policy/scenario assumptions, and authority fixture; their five reports, seven action witnesses, probes, rerenders, and reviewer agreement do not multiply independent empirical weight.",
     "The repaired movement-support cut passes only for two supplied states and one declared move command at seed 3237998097. It is not proof of a unique, minimal, all-command, all-seed, or globally support-complete carrier.",
+    "Protected-equivalent and invariant-region rows can classify supplied decoder/membership evidence, but this gate provides no domain-specific decoder proof or invariant-region predicate. Unprovided evidence remains not_assessed rather than inferred.",
     "Strict schemas can validate declared structure, scope, lineage, and catalog membership but cannot prove that a deterministic-continuation, preservation, maturity, or authority claim is semantically true; later bounded witnesses and owner decisions remain mandatory.",
     "The canonical format is the local WP-015D2B v1 contract, not a CRPM schema, ontology, graph-safe exchange standard, or claim of independent empirical evidence.",
     "npm audit continues to report the existing high-severity nanoid advisory through Vite; this gate changes no dependency or lockfile."

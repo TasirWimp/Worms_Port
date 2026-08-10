@@ -360,6 +360,67 @@ export const WorldTransitionEdgeSchema = z.discriminatedUnion('schemaVersion', [
     }
 });
 
+export const CompositionIssueCodeSchema = z.enum([
+    'carrier-state-mismatch',
+    'carrier-reference-mismatch',
+    'revision-order-mismatch',
+    'turn-order-mismatch',
+    'ruleset-mismatch',
+    'adapter-mismatch',
+    'cut-mismatch',
+    'missing-input-port',
+    'forbidden-port-crossing',
+    'obligation-not-propagated'
+]);
+
+export const CompositionIssueSchema = z.strictObject({
+    code: CompositionIssueCodeSchema,
+    message: TrimmedStringSchema,
+    details: DeterministicJsonValueSchema
+});
+
+export const CompositionWitnessSchema = z.strictObject({
+    schemaVersion: SchemaVersionSchema,
+    witnessId: IdentifierSchema,
+    witnessVersion: VersionSchema,
+    firstEdgeId: IdentifierSchema,
+    secondEdgeId: IdentifierSchema,
+    compatible: z.boolean(),
+    checkedConditions: NonEmptyIdentifierListSchema,
+    requiredInputPorts: IdentifierListSchema,
+    availableInputPorts: IdentifierListSchema,
+    forbiddenPortsCrossed: IdentifierListSchema,
+    issues: z.array(CompositionIssueSchema).max(64)
+}).superRefine((witness, context) => {
+    if (witness.compatible && witness.issues.length > 0) {
+        context.addIssue({ code: 'custom', path: ['issues'], message: 'Compatible composition witnesses cannot contain issues.' });
+    }
+    if (!witness.compatible && witness.issues.length === 0) {
+        context.addIssue({ code: 'custom', path: ['issues'], message: 'Incompatible composition witnesses require at least one issue.' });
+    }
+});
+
+export const EdgeCompositionResultSchema = z.strictObject({
+    schemaVersion: SchemaVersionSchema,
+    compatible: z.boolean(),
+    partialValidEdges: z.array(WorldTransitionEdgeSchema).min(1).max(2),
+    attemptedEdge: WorldTransitionEdgeSchema,
+    accumulatedResidual: ResidualLedgerSchema,
+    carriedObligations: IdentifierListSchema,
+    unresolvedObligations: IdentifierListSchema,
+    witness: CompositionWitnessSchema
+}).superRefine((result, context) => {
+    if (result.compatible !== result.witness.compatible) {
+        context.addIssue({ code: 'custom', path: ['witness', 'compatible'], message: 'Composition result and witness compatibility must agree.' });
+    }
+    if (result.compatible && result.partialValidEdges.length !== 2) {
+        context.addIssue({ code: 'custom', path: ['partialValidEdges'], message: 'Compatible composition must retain both edges.' });
+    }
+    if (!result.compatible && result.partialValidEdges.length !== 1) {
+        context.addIssue({ code: 'custom', path: ['partialValidEdges'], message: 'Incompatible composition must retain the valid prefix and separate attempted edge.' });
+    }
+});
+
 export const TransitionWitnessSchema = z.strictObject({
     schemaVersion: SchemaVersionSchema,
     witnessId: IdentifierSchema,
@@ -432,8 +493,7 @@ export const ReplaySupportSchema = z.strictObject({
     limitations: DescriptionListSchema
 });
 
-export const VoyageTraceSchema = z.strictObject({
-    schemaVersion: SchemaVersionSchema,
+const VoyageTraceBaseShape = {
     voyageId: IdentifierSchema,
     voyageVersion: VersionSchema,
     initialCarrier: WorldCarrierReferenceSchema,
@@ -445,29 +505,106 @@ export const VoyageTraceSchema = z.strictObject({
     recurrenceWitnesses: z.array(WitnessReferenceSchema).max(256),
     returnWitnesses: z.array(WitnessReferenceSchema).max(256),
     replaySupport: ReplaySupportSchema
-}).superRefine((voyage, context) => {
+};
+
+export const VoyageTraceV1Schema = z.strictObject({
+    schemaVersion: SchemaVersionSchema,
+    ...VoyageTraceBaseShape
+});
+
+export const VoyageEdgeAttemptSchema = z.strictObject({
+    sequence: NonNegativeSafeIntegerSchema,
+    outcome: z.enum(['accepted', 'rejected', 'incompatible']),
+    edge: WorldTransitionEdgeSchema,
+    compositionWitness: CompositionWitnessSchema.nullable()
+});
+
+export const VoyageCommandPathEntrySchema = z.strictObject({
+    sequence: NonNegativeSafeIntegerSchema,
+    edgeId: IdentifierSchema,
+    outcome: VoyageEdgeAttemptSchema.shape.outcome,
+    commandOrDeclaration: DeterministicJsonValueSchema
+});
+
+export const VoyageCutChangeSchema = z.strictObject({
+    sequence: NonNegativeSafeIntegerSchema,
+    sourceCutId: IdentifierSchema,
+    targetCutId: IdentifierSchema
+}).refine((change) => change.sourceCutId !== change.targetCutId, {
+    message: 'Cut-change entries require distinct source and target cuts.'
+});
+
+export const VoyageObligationHistorySchema = z.strictObject({
+    opened: IdentifierListSchema,
+    carried: IdentifierListSchema,
+    discharged: IdentifierListSchema,
+    unresolved: IdentifierListSchema
+});
+
+export const VoyageTraceV2Schema = z.strictObject({
+    schemaVersion: z.literal(2),
+    ...VoyageTraceBaseShape,
+    edgeAttempts: z.array(VoyageEdgeAttemptSchema).max(1_024),
+    commandPath: z.array(VoyageCommandPathEntrySchema).max(1_024),
+    cutChanges: z.array(VoyageCutChangeSchema).max(1_024),
+    witnessReferences: z.array(WitnessReferenceSchema).max(4_096),
+    obligationHistory: VoyageObligationHistorySchema,
+    reentryInstructions: NonEmptyDescriptionListSchema,
+    excludedClaims: NonEmptyDescriptionListSchema
+});
+
+export const VoyageTraceSchema = z.discriminatedUnion('schemaVersion', [
+    VoyageTraceV1Schema,
+    VoyageTraceV2Schema
+]).superRefine((voyage, context) => {
     const mismatches: string[] = [];
-    const digest = (carrier: z.infer<typeof WorldCarrierReferenceSchema>) => sha256Digest(carrier);
+    const carrierMatches = (
+        left: z.infer<typeof WorldCarrierReferenceSchema>,
+        right: z.infer<typeof WorldCarrierReferenceSchema>
+    ) => left.stateDigest === right.stateDigest &&
+        left.baselineDigest === right.baselineDigest &&
+        left.revisionOrStep === right.revisionOrStep &&
+        left.carrierKind === right.carrierKind &&
+        left.rulesetOrConfigId === right.rulesetOrConfigId &&
+        left.adapter.id === right.adapter.id &&
+        left.adapter.version === right.adapter.version &&
+        left.sourceReference
+            ?.replace(/#(?:pre|post)$/, '')
+            .replace(/:(?:pre|post):[0-9a-f]{64}$/, '') ===
+        right.sourceReference
+            ?.replace(/#(?:pre|post)$/, '')
+            .replace(/:(?:pre|post):[0-9a-f]{64}$/, '');
     if (voyage.transitionEdges.length === 0) {
-        if (digest(voyage.initialCarrier) !== digest(voyage.finalCarrier)) {
+        if (!carrierMatches(voyage.initialCarrier, voyage.finalCarrier)) {
             mismatches.push('An empty voyage must retain the initial carrier.');
         }
     } else {
-        if (digest(voyage.transitionEdges[0].sourceCarrier) !== digest(voyage.initialCarrier)) {
+        if (!carrierMatches(voyage.transitionEdges[0].sourceCarrier, voyage.initialCarrier)) {
             mismatches.push('The first edge source does not match the initial carrier.');
         }
         for (let index = 1; index < voyage.transitionEdges.length; index += 1) {
             const previous = voyage.transitionEdges[index - 1];
             const current = voyage.transitionEdges[index];
-            if (digest(previous.targetCarrier) !== digest(current.sourceCarrier)) {
+            if (!carrierMatches(previous.targetCarrier, current.sourceCarrier)) {
                 mismatches.push(`Carrier mismatch before edge ${current.edgeId}.`);
             }
-            if (previous.targetCutId !== current.sourceCutId) {
+            const composedAttempts = voyage.schemaVersion === 2
+                ? voyage.edgeAttempts.filter((attempt) => attempt.outcome !== 'incompatible')
+                : [];
+            const currentAttemptSequence = voyage.schemaVersion === 2
+                ? composedAttempts[index]?.sequence
+                : index;
+            const declaredCutChange = voyage.schemaVersion === 2 && voyage.cutChanges.some((change) =>
+                change.sequence === currentAttemptSequence &&
+                change.sourceCutId === previous.targetCutId &&
+                change.targetCutId === current.sourceCutId
+            );
+            if (previous.targetCutId !== current.sourceCutId && !declaredCutChange) {
                 mismatches.push(`Cut mismatch before edge ${current.edgeId}.`);
             }
         }
         const lastEdge = voyage.transitionEdges[voyage.transitionEdges.length - 1];
-        if (digest(lastEdge.targetCarrier) !== digest(voyage.finalCarrier)) {
+        if (!carrierMatches(lastEdge.targetCarrier, voyage.finalCarrier)) {
             mismatches.push('The last edge target does not match the final carrier.');
         }
     }
@@ -475,6 +612,74 @@ export const VoyageTraceSchema = z.strictObject({
         for (const message of mismatches) {
             context.addIssue({ code: 'custom', path: ['compatibilityResult'], message });
         }
+    }
+    if (voyage.schemaVersion === 1) return;
+
+    for (let index = 0; index < voyage.edgeAttempts.length; index += 1) {
+        const attempt = voyage.edgeAttempts[index];
+        if (attempt.sequence !== index) {
+            context.addIssue({ code: 'custom', path: ['edgeAttempts', index, 'sequence'], message: 'Voyage attempt sequence must be contiguous.' });
+        }
+        const command = voyage.commandPath[index];
+        if (!command || command.sequence !== index || command.edgeId !== attempt.edge.edgeId ||
+            command.outcome !== attempt.outcome ||
+            canonicalJson(command.commandOrDeclaration) !== canonicalJson(attempt.edge.commandOrDeclaration)) {
+            context.addIssue({ code: 'custom', path: ['commandPath', index], message: 'Command path must exactly preserve every edge attempt.' });
+        }
+        if (attempt.outcome === 'incompatible' && !attempt.compositionWitness) {
+            context.addIssue({ code: 'custom', path: ['edgeAttempts', index, 'compositionWitness'], message: 'Incompatible attempts require a structured composition witness.' });
+        }
+    }
+    if (voyage.commandPath.length !== voyage.edgeAttempts.length) {
+        context.addIssue({ code: 'custom', path: ['commandPath'], message: 'Command path length must match edge attempts.' });
+    }
+    const composedIds = voyage.edgeAttempts
+        .filter((attempt) => attempt.outcome !== 'incompatible')
+        .map((attempt) => attempt.edge.edgeId);
+    if (canonicalJson(composedIds) !== canonicalJson(voyage.transitionEdges.map((edge) => edge.edgeId))) {
+        context.addIssue({ code: 'custom', path: ['transitionEdges'], message: 'Transition edges must retain every compatible accepted or rejected attempt in order.' });
+    }
+});
+
+export const ReturnClassificationSchema = z.enum([
+    'visible_equal',
+    'protected_equivalent',
+    'recursive_carrier_return',
+    'invariant_region_return',
+    'finite_exact_return',
+    'route_mismatch'
+]);
+
+export const ReturnClassAssessmentSchema = z.strictObject({
+    classification: ReturnClassificationSchema,
+    status: z.enum(['satisfied', 'not_satisfied', 'not_assessed']),
+    declaredCutOrRegionId: IdentifierSchema.nullable(),
+    witnessRefs: DescriptionListSchema,
+    declaredExclusions: DescriptionListSchema,
+    rationale: TrimmedStringSchema
+});
+
+export const ReturnAssessmentSchema = z.strictObject({
+    schemaVersion: SchemaVersionSchema,
+    assessmentId: IdentifierSchema,
+    assessmentVersion: VersionSchema,
+    sourceCarrier: WorldCarrierReferenceSchema,
+    targetCarrier: WorldCarrierReferenceSchema,
+    declaredDomain: ScenarioDomainSchema,
+    classifications: z.array(ReturnClassAssessmentSchema).length(6),
+    satisfiedClassifications: z.array(ReturnClassificationSchema).max(6),
+    blockedClaims: NonEmptyDescriptionListSchema
+}).superRefine((assessment, context) => {
+    const expected = ReturnClassificationSchema.options;
+    const actual = assessment.classifications.map((item) => item.classification);
+    if (canonicalJson(actual) !== canonicalJson(expected)) {
+        context.addIssue({ code: 'custom', path: ['classifications'], message: 'Return assessments must retain all six classifications in canonical order.' });
+    }
+    const satisfied = assessment.classifications
+        .filter((item) => item.status === 'satisfied')
+        .map((item) => item.classification);
+    if (canonicalJson(satisfied) !== canonicalJson(assessment.satisfiedClassifications)) {
+        context.addIssue({ code: 'custom', path: ['satisfiedClassifications'], message: 'Satisfied return classifications must match their assessment rows.' });
     }
 });
 

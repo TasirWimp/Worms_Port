@@ -33,6 +33,11 @@ adapter, but it is not a server, gameplay system, or candidate implementation.
   V4 states. Its name records the gate that introduced it; its adapter identity
   explicitly covers the versioned simulation authority rather than pretending
   V4 is the only historical ruleset.
+- `adapters/d2a_export.py` invokes only the existing public tactical-model
+  functions, verifies exact registered whole-report digests, and emits compact
+  action witnesses plus non-scalar pressure diagnostics as a strict
+  `WorldDesignResult`. Python remains the analytical source; TypeScript only
+  validates the deterministic JSON boundary.
 - `cuts/v4-cuts.ts` defines five bounded V4/offline cut declarations, while
   `cuts/registry.ts` exposes detached copies from a closed versioned registry.
 - `kernel/project-cut.ts` provides non-mutating generic projection plus V4
@@ -40,6 +45,11 @@ adapter, but it is not a server, gameplay system, or candidate implementation.
 - `kernel/assess-quotient-transport.ts` implements the small finite-sample
   quotient-transport check independently in TypeScript. CRPM
   `emergence_lab_crpm/observer.py` is a read-only method reference only.
+- `kernel/compose-edges.ts`, `residual-ledger.ts`, and `trace-voyage.ts`
+  compose witnessed paths without discarding rejected or incompatible attempts,
+  accumulate residue/obligations, and support deterministic authority re-entry.
+- `kernel/assess-return.ts` evaluates six separate return classifications
+  without collapsing them into one loop flag.
 
 The core records are `WorldCarrierReference`, `WorldCutDefinition`,
 `PortContract`, `WorldTransitionEdge`, `TransitionWitness`, `ResidualLedger`,
@@ -132,11 +142,66 @@ move is therefore accepted versus rejected. The thin cut aliases those states;
 the movement-support cut distinguishes them. This is not state return,
 recurrence, or global carrier completeness.
 
+## Voyage composition and return
+
+Two edges compose only when carrier state/support references, revision and turn
+ordering, ruleset/adapter identity, cut transitions, ports, forbidden-port
+policy, obligations, and residue all remain compatible. Context ports may carry
+forward after their carrier/frame checks pass; command/action ports must be
+listed as externally supplied rather than silently produced by the prior edge.
+Failure returns a structured composition witness plus the valid prefix and
+attempted edge.
+
+`VoyageTrace` retains its accepted v1 shape and adds v2 for ordered accepted,
+rejected, and incompatible attempts; command history; explicit cut changes;
+edge and composition witnesses; residual and obligation history; final carrier;
+terminal status; exclusions; and re-entry instructions. Rejected attempts are
+part of the compatible transition path only when their carrier remains
+unchanged. Incompatible attempts remain visible but do not advance that path.
+
+The return kernel always reports six independent rows:
+`visible_equal`, `protected_equivalent`, `recursive_carrier_return`,
+`invariant_region_return`, `finite_exact_return`, and `route_mismatch`.
+Visible, recursive-key, exact-carrier, and paired-route comparisons execute
+directly. Protected equivalence and invariant-region classification also
+execute when a caller supplies a declared decoder or region-membership result;
+this gate does not invent domain-specific decoders or invariant predicates.
+Recurrence keys are caller-supplied under a named cut/domain, so elapsed turn,
+tick, and revision fields are never removed globally.
+
+## D2A analytical exporter
+
+The closed export registry contains only the existing F2, F3, F4, H2, and H3
+configuration files at schema versions 8, 9, 11, 13, and 14. Every export
+reruns the unchanged public `run_starting_distance_sweep` function over 448,
+512, 576, 640, and 704, then rejects any whole-report digest drift before
+rendering evidence. No tactical-model function, policy, action generator,
+transition, opening search, recurrence rule, aggregate, or candidate status is
+reimplemented by the adapter.
+
+The emitted result keeps one covariance group for the shared model/policy/
+scenario family. It includes compact action voyages for F2's exact
+prepare/Unweave recurrence, F3's 64-unit Threadback and 64 Escape-Slack residue,
+and H3's opening/partial-response/intervening-action/later-counter order. F4 and
+H2 remain digest-bound aggregate diagnostics rather than checked-in copies of
+all 250 traces. The exporter records `productAuthority: none`; exact analytical
+re-entry is not simulation parity, empirical evidence, candidate approval, or
+gameplay activation.
+
+The module writes no file by default. Its stdout is deterministic JSON, and
+callers may place transient output only under ignored test-results paths:
+
+```powershell
+python -m analysis.crpm_world.adapters.d2a_export
+npm run test:d2a-adapter
+```
+
 ## Deliberately deferred
 
-- D2A analytical adapter and F2/F3/F4/H2/H3 reconstruction;
 - concrete production or candidate catalogs;
-- voyage/report generation and the offline CLI; and
+- a request-driven offline World Design Port CLI and formatted human reports;
+- player/live-ballistics evidence or a TypeScript rewrite of the tactical
+  model; and
 - any product-authority change above bounded `authority-adapter-parity`.
 
 Those require their separately named implementation gates. A common result

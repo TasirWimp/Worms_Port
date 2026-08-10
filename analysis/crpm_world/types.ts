@@ -5,10 +5,14 @@ import type {
     AliasingWitnessSchema,
     AliasingWitnessPairSchema,
     CarrierMaturitySchema,
+    CompositionIssueCodeSchema,
+    CompositionIssueSchema,
+    CompositionWitnessSchema,
     ContractCatalogsSchema,
     DiagnosticAxisSchema,
     DiagnosticProfileSchema,
     EdgePortBindingsSchema,
+    EdgeCompositionResultSchema,
     EvidenceOriginSchema,
     FixedFrameSchema,
     PortContractSchema,
@@ -19,12 +23,17 @@ import type {
     ProjectionTransportAssessmentV1Schema,
     ProjectionTransportAssessmentV2Schema,
     ResidualLedgerSchema,
+    ReturnAssessmentSchema,
+    ReturnClassAssessmentSchema,
+    ReturnClassificationSchema,
     ReturnObligationSchema,
     ScenarioDomainSchema,
     SourceLockSchema,
     SupportStatusSchema,
     TransitionWitnessSchema,
     VoyageTraceSchema,
+    VoyageTraceV1Schema,
+    VoyageTraceV2Schema,
     WorldCarrierReferenceSchema,
     WorldCutDefinitionSchema,
     WorldDesignRequestPayloadSchema,
@@ -40,10 +49,14 @@ export type AdapterReference = z.infer<typeof AdapterReferenceSchema>;
 export type AliasingWitness = z.infer<typeof AliasingWitnessSchema>;
 export type AliasingWitnessPair = z.infer<typeof AliasingWitnessPairSchema>;
 export type CarrierMaturity = z.infer<typeof CarrierMaturitySchema>;
+export type CompositionIssueCode = z.infer<typeof CompositionIssueCodeSchema>;
+export type CompositionIssue = z.infer<typeof CompositionIssueSchema>;
+export type CompositionWitness = z.infer<typeof CompositionWitnessSchema>;
 export type ContractCatalogs = z.infer<typeof ContractCatalogsSchema>;
 export type DiagnosticAxis = z.infer<typeof DiagnosticAxisSchema>;
 export type DiagnosticProfile = z.infer<typeof DiagnosticProfileSchema>;
 export type EdgePortBindings = z.infer<typeof EdgePortBindingsSchema>;
+export type EdgeCompositionResult = z.infer<typeof EdgeCompositionResultSchema>;
 export type EvidenceOrigin = z.infer<typeof EvidenceOriginSchema>;
 export type FixedFrame = z.infer<typeof FixedFrameSchema>;
 export type PortContract = z.infer<typeof PortContractSchema>;
@@ -54,12 +67,17 @@ export type ProjectionTransportAssessment = z.infer<typeof ProjectionTransportAs
 export type ProjectionTransportAssessmentV1 = z.infer<typeof ProjectionTransportAssessmentV1Schema>;
 export type ProjectionTransportAssessmentV2 = z.infer<typeof ProjectionTransportAssessmentV2Schema>;
 export type ResidualLedger = z.infer<typeof ResidualLedgerSchema>;
+export type ReturnAssessment = z.infer<typeof ReturnAssessmentSchema>;
+export type ReturnClassAssessment = z.infer<typeof ReturnClassAssessmentSchema>;
+export type ReturnClassification = z.infer<typeof ReturnClassificationSchema>;
 export type ReturnObligation = z.infer<typeof ReturnObligationSchema>;
 export type ScenarioDomain = z.infer<typeof ScenarioDomainSchema>;
 export type SourceLock = z.infer<typeof SourceLockSchema>;
 export type SupportStatus = z.infer<typeof SupportStatusSchema>;
 export type TransitionWitness = z.infer<typeof TransitionWitnessSchema>;
 export type VoyageTrace = z.infer<typeof VoyageTraceSchema>;
+export type VoyageTraceV1 = z.infer<typeof VoyageTraceV1Schema>;
+export type VoyageTraceV2 = z.infer<typeof VoyageTraceV2Schema>;
 export type WorldCarrierReference = z.infer<typeof WorldCarrierReferenceSchema>;
 export type WorldCutDefinition = z.infer<typeof WorldCutDefinitionSchema>;
 export type WorldDesignRequestPayload = z.infer<typeof WorldDesignRequestPayloadSchema>;
