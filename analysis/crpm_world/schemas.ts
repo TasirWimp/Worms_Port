@@ -491,20 +491,46 @@ export const AliasingWitnessSchema = z.strictObject({
     targetItemRef: TrimmedStringSchema
 });
 
-export const ProjectionTransportAssessmentSchema = z.strictObject({
-    schemaVersion: SchemaVersionSchema,
+export const AliasingWitnessPairSchema = z.strictObject({
+    left: AliasingWitnessSchema,
+    right: AliasingWitnessSchema
+});
+
+export const ObservedProjectionTransitionSchema = z.strictObject({
+    sourceClassKey: IdentifierSchema,
+    targetClassKeys: NonEmptyIdentifierListSchema
+});
+
+const ProjectionTransportAssessmentBaseShape = {
     assessmentId: IdentifierSchema,
     assessmentVersion: VersionSchema,
     sourceClasses: z.array(ProjectionClassSchema).min(1).max(1_024),
     targetClasses: z.array(ProjectionClassSchema).min(1).max(1_024),
     deterministicMapEligibility: z.boolean(),
     aliasingKeys: IdentifierListSchema,
-    leftAliasingWitness: AliasingWitnessSchema.nullable(),
-    rightAliasingWitness: AliasingWitnessSchema.nullable(),
     recommendedShape: z.enum(['map', 'relation_or_kernel']),
     sampledDomain: ScenarioDomainSchema,
     blockedClaims: NonEmptyDescriptionListSchema
-}).superRefine((assessment, context) => {
+};
+
+export const ProjectionTransportAssessmentV1Schema = z.strictObject({
+    schemaVersion: SchemaVersionSchema,
+    ...ProjectionTransportAssessmentBaseShape,
+    leftAliasingWitness: AliasingWitnessSchema.nullable(),
+    rightAliasingWitness: AliasingWitnessSchema.nullable()
+});
+
+export const ProjectionTransportAssessmentV2Schema = z.strictObject({
+    schemaVersion: z.literal(2),
+    ...ProjectionTransportAssessmentBaseShape,
+    observedTransitions: z.array(ObservedProjectionTransitionSchema).min(1).max(1_024),
+    aliasingWitnessPairs: z.array(AliasingWitnessPairSchema).max(1_024)
+});
+
+export const ProjectionTransportAssessmentSchema = z.discriminatedUnion('schemaVersion', [
+    ProjectionTransportAssessmentV1Schema,
+    ProjectionTransportAssessmentV2Schema
+]).superRefine((assessment, context) => {
     for (const [field, classes] of [
         ['sourceClasses', assessment.sourceClasses],
         ['targetClasses', assessment.targetClasses]
@@ -517,29 +543,90 @@ export const ProjectionTransportAssessmentSchema = z.strictObject({
             keys.add(classes[index].classKey);
         }
     }
-    const left = assessment.leftAliasingWitness;
-    const right = assessment.rightAliasingWitness;
+
+    const pairs = assessment.schemaVersion === 1
+        ? assessment.leftAliasingWitness && assessment.rightAliasingWitness
+            ? [{ left: assessment.leftAliasingWitness, right: assessment.rightAliasingWitness }]
+            : []
+        : assessment.aliasingWitnessPairs;
+
     if (assessment.deterministicMapEligibility) {
-        if (assessment.recommendedShape !== 'map' || assessment.aliasingKeys.length > 0 || left || right) {
+        if (assessment.recommendedShape !== 'map' || assessment.aliasingKeys.length > 0 || pairs.length > 0) {
             context.addIssue({ code: 'custom', message: 'Map-eligible assessments cannot contain alias witnesses.' });
         }
-        return;
-    }
-    if (assessment.recommendedShape !== 'relation_or_kernel' || assessment.aliasingKeys.length === 0 || !left || !right) {
+    } else if (assessment.recommendedShape !== 'relation_or_kernel' ||
+        assessment.aliasingKeys.length === 0 || pairs.length === 0) {
         context.addIssue({ code: 'custom', message: 'Ineligible assessments require explicit left/right aliases and relation_or_kernel.' });
         return;
     }
-    if (left.sourceClassKey !== right.sourceClassKey || left.targetClassKey === right.targetClassKey) {
-        context.addIssue({ code: 'custom', message: 'Aliasing witnesses must share one source class and split into different target classes.' });
-    }
-    if (!assessment.aliasingKeys.includes(left.sourceClassKey)) {
-        context.addIssue({ code: 'custom', path: ['aliasingKeys'], message: 'Aliasing keys must include the witnessed source class.' });
-    }
+
     const sourceKeys = new Set(assessment.sourceClasses.map((item) => item.classKey));
     const targetKeys = new Set(assessment.targetClasses.map((item) => item.classKey));
-    if (!sourceKeys.has(left.sourceClassKey) || !sourceKeys.has(right.sourceClassKey) ||
-        !targetKeys.has(left.targetClassKey) || !targetKeys.has(right.targetClassKey)) {
-        context.addIssue({ code: 'custom', message: 'Aliasing witnesses must reference declared source and target classes.' });
+    const pairedSourceKeys = new Set<string>();
+    for (let index = 0; index < pairs.length; index += 1) {
+        const { left, right } = pairs[index];
+        if (left.sourceClassKey !== right.sourceClassKey || left.targetClassKey === right.targetClassKey) {
+            context.addIssue({
+                code: 'custom',
+                path: [assessment.schemaVersion === 1 ? 'leftAliasingWitness' : 'aliasingWitnessPairs', index],
+                message: 'Aliasing witnesses must share one source class and split into different target classes.'
+            });
+        }
+        if (!assessment.aliasingKeys.includes(left.sourceClassKey)) {
+            context.addIssue({ code: 'custom', path: ['aliasingKeys'], message: 'Aliasing keys must include every witnessed source class.' });
+        }
+        if (!sourceKeys.has(left.sourceClassKey) || !sourceKeys.has(right.sourceClassKey) ||
+            !targetKeys.has(left.targetClassKey) || !targetKeys.has(right.targetClassKey)) {
+            context.addIssue({ code: 'custom', message: 'Aliasing witnesses must reference declared source and target classes.' });
+        }
+        if (pairedSourceKeys.has(left.sourceClassKey)) {
+            context.addIssue({ code: 'custom', message: 'Each aliased source class may have only one explicit witness pair.' });
+        }
+        pairedSourceKeys.add(left.sourceClassKey);
+    }
+
+    if (assessment.schemaVersion === 1) {
+        if ((assessment.leftAliasingWitness === null) !== (assessment.rightAliasingWitness === null)) {
+            context.addIssue({ code: 'custom', message: 'V1 alias witnesses must be both present or both null.' });
+        }
+        return;
+    }
+
+    const transitionSources = new Set<string>();
+    for (let index = 0; index < assessment.observedTransitions.length; index += 1) {
+        const transition = assessment.observedTransitions[index];
+        if (!sourceKeys.has(transition.sourceClassKey) ||
+            transition.targetClassKeys.some((key) => !targetKeys.has(key))) {
+            context.addIssue({
+                code: 'custom',
+                path: ['observedTransitions', index],
+                message: 'Observed transitions must reference declared source and target classes.'
+            });
+        }
+        if (transitionSources.has(transition.sourceClassKey)) {
+            context.addIssue({
+                code: 'custom',
+                path: ['observedTransitions', index, 'sourceClassKey'],
+                message: 'Observed transitions must contain one row per source class.'
+            });
+        }
+        transitionSources.add(transition.sourceClassKey);
+        const isAliased = transition.targetClassKeys.length > 1;
+        if (isAliased !== assessment.aliasingKeys.includes(transition.sourceClassKey)) {
+            context.addIssue({
+                code: 'custom',
+                path: ['observedTransitions', index, 'targetClassKeys'],
+                message: 'Aliasing keys must exactly identify source classes with multiple observed target classes.'
+            });
+        }
+    }
+    if (transitionSources.size !== sourceKeys.size ||
+        [...sourceKeys].some((key) => !transitionSources.has(key))) {
+        context.addIssue({ code: 'custom', path: ['observedTransitions'], message: 'Every source class requires an observed transition row.' });
+    }
+    if (pairedSourceKeys.size !== assessment.aliasingKeys.length ||
+        assessment.aliasingKeys.some((key) => !pairedSourceKeys.has(key))) {
+        context.addIssue({ code: 'custom', path: ['aliasingWitnessPairs'], message: 'Every aliased source class requires one explicit witness pair.' });
     }
 });
 

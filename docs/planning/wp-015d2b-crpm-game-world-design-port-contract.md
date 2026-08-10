@@ -2,7 +2,7 @@
 
 ## Status
 
-- **State:** owner-requested, in progress, authority-adapter gate complete
+- **State:** owner-requested, in progress, cut/projection gate complete
 - **Relationship:** analysis-only child of the active WP-015D2A tactical-game-model decision line
 - **Current carrier maturity:** `M2 local use` for the core contracts and bounded historical simulation authority adapter; no `M3` claim
 - **Current product authority:** `authority-adapter parity` for declared, tested transition witnesses only
@@ -12,9 +12,10 @@
 
 This document licenses bounded implementation gates. It does not claim that
 WP-015D2A is closed, and it does not move the Execution Pointer away from
-WP-015D2A. The core TypeScript contracts and a read-only historical simulation
-authority adapter now exist under `analysis/crpm_world/` with focused tests.
-No D2A adapter, CLI, runtime service, M3 landfall, ruleset approval, production
+WP-015D2A. The core TypeScript contracts, a read-only historical simulation
+authority adapter, a closed cut registry, and a finite quotient-transport
+checker now exist under `analysis/crpm_world/` with focused tests. No D2A
+adapter, CLI, runtime service, M3 landfall, ruleset approval, production
 activation, or broad simulation-equivalence result exists at this gate.
 
 ## Strongest Licensed Claim
