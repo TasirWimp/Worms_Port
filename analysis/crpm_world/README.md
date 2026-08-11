@@ -24,6 +24,8 @@ adapter, but it is not a server, gameplay system, or candidate implementation.
   `af23717e61fea6995bf3b7209211ae1aaa2bb855`.
 - Implementation tip before this documentation integration:
   `f34317c5008e3171718705a9d8277437aae8d00d`.
+- Documentation/evidence closure predecessor before adversarial hardening:
+  `7655b1c27b54ce6d6ee0a2279beaba8ec1939811`.
 - Read-only CRPM source lock:
   `995236df60924f790506cf5badec3c102abf3fd1`.
 - CRPM port/flow, cut-transition, edge/re-entry, voyage, evaluation, and local-
@@ -34,7 +36,8 @@ adapter, but it is not a server, gameplay system, or candidate implementation.
   composed-route return.
 - No CRPM code or repository content is vendored or copied, and CRPM is not a
   runtime, Python, npm, or package dependency. Exact paths and Git blob
-  identities are recorded in the work-package contract.
+  identities are recorded in the work-package contract, and the separate
+  reference-only upstream pin is recorded in `legal/source-manifest.json`.
 
 ## Architecture
 
@@ -235,9 +238,12 @@ reimplemented by the adapter.
 The emitted result keeps one covariance group for the shared model/policy/
 scenario family. It includes compact action voyages for F2's exact
 prepare/Unweave recurrence, F3's 64-unit Threadback and 64 Escape-Slack residue,
-and H3's opening/partial-response/intervening-action/later-counter order. F4 and
-H2 remain digest-bound aggregate diagnostics rather than checked-in copies of
-all 250 traces. The exporter records `productAuthority: none`; exact analytical
+and H3's opening/partial-response/intervening-action/later-counter order. The
+H3 residual ledger carries `loomkeeper.frayed_seam_turns` across the intervening
+edge and records its later discharge, so voyage compatibility cannot hide the
+delayed-response support. F4 and H2 remain digest-bound aggregate diagnostics
+rather than checked-in copies of all 250 traces. The exporter records
+`productAuthority: none`; exact analytical
 re-entry is not simulation parity, empirical evidence, candidate approval, or
 gameplay activation.
 
@@ -285,10 +291,17 @@ a registry-derived F2/F3/F4/H2/H3 case id, then validates and rebinds its strict
 `WorldDesignResult`; user input never supplies the executable, module, config
 path, or command line.
 
+This version registers exactly one seed (`3237998097`) for both reviewed
+execution families and exactly one output-detail mode (`witnesses`). Requests
+that declare extra or different seeds, `summary`, or `full` fail closed rather
+than claiming execution or disclosure behavior the adapter did not perform.
+
 Generated output defaults below the ignored `test-results/crpm-world/` root.
-The writer rejects non-JSON output paths and every path outside that root, so
-it cannot overwrite a source, configuration, protocol, reward, client, or
-server file. The two reviewed example requests can be run with:
+The writer rejects non-JSON output paths, every path outside that root, and
+symbolic-link or junction traversal; request reads receive the same link check.
+It therefore cannot redirect output onto a source, configuration, protocol,
+reward, client, or server file. The two reviewed example requests can be run
+with:
 
 ```powershell
 npm run analyze:crpm-world -- --request analysis/crpm_world/examples/v4-transcript-request.json --output test-results/crpm-world/v4-transcript-result.json
@@ -308,8 +321,9 @@ use the checked example files above for complete input:
 }
 ```
 
-The strict full example also requires protected family, ordered sequence,
-output detail, requested probes/ports, and explicit exclusions; unknown fields
+The complete request example also requires protected family, ordered sequence,
+the registered `witnesses` output detail, requested probes/ports, and explicit
+exclusions; unknown fields
 fail closed. Results carry the canonical request digest, source locks, traces,
 witnesses, projection/return evidence, the primary v2 diagnostic, retained
 source diagnostics, residual ledger, blocked claims, maturity, authority,
@@ -367,8 +381,10 @@ decision reference is supplied.
 
 For a V4 result:
 
-1. Check out the recorded Worms_Port commit and verify the recorded
-   `shared/simulation.ts` source/blob identity.
+1. Retain implementation tip `f34317c5008e3171718705a9d8277437aae8d00d`
+   (or a reviewed descendant) for the adapter/profile code. Verify the recorded
+   historical `shared/simulation.ts` source/blob identity at its separate
+   authority lock without checking out that pre-adapter commit to run the port.
 2. Recreate the registered ruleset, seed, and Calling with `createSimulation`.
 3. Replay the exact ordered actor, expected-turn, and command declarations.
 4. Compare accepted/mutated/error values, canonical post-state digest, ordered
@@ -378,7 +394,10 @@ For a V4 result:
 
 For a D2A result:
 
-1. Check out the recorded Worms_Port commit and exact registered config/schema.
+1. Retain implementation tip `f34317c5008e3171718705a9d8277437aae8d00d`
+   (or a reviewed descendant) for the exporter/profile code. Verify the exact
+   model and registered config/schema blobs at their separate D2A source lock;
+   that historical lock predates this adapter and is not the execution checkout.
 2. Run `python -m analysis.crpm_world.adapters.d2a_export --case <f2|f3|f4|h2|h3>`.
 3. Verify the registered whole-report digest before consuming compact evidence.
 4. Validate stdout through `WorldDesignResultSchema`, then follow config,

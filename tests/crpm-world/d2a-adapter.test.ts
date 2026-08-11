@@ -30,6 +30,15 @@ test('Python D2A export validates as a strict CRPM-world design result', () => {
         'd2a-h3-pressure-voyage'
     ]);
     assert.equal(result.transitionWitnesses.length, 7);
+    const h3 = result.traces.find((trace) => trace.voyageId === 'd2a-h3-pressure-voyage');
+    assert.ok(h3);
+    assert.equal(h3.compatibilityResult.compatible, true);
+    assert.ok(h3.transitionEdges[1].residual.unresolvedObligations.includes(
+        'loomkeeper.frayed_seam_turns'
+    ));
+    assert.ok(h3.transitionEdges[2].residual.dischargedObligations.includes(
+        'loomkeeper.frayed_seam_turns'
+    ));
     const { resultDigest, ...payload } = result;
     assert.equal(resultDigest, sha256Digest(payload));
 });

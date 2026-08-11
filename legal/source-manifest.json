@@ -1,5 +1,5 @@
 {
-  "checked_date": "2026-07-31",
+  "checked_date": "2026-08-11",
   "sources": [
     {
       "id": "turtlepu-worms-ii",
@@ -97,6 +97,44 @@
         "claim that CRPM empirically validates the game design"
       ],
       "notes": "The implementation plan adapts a bounded L4+ governance method only. CRPM remains an external design reference and is not a runtime dependency, player model, optimization theorem, or source of empirical player evidence."
+    },
+    {
+      "id": "tasirwimp-crpm-game-world-profile-method",
+      "role": "design_governance_method_reference",
+      "repository": "TasirWimp/CRPM",
+      "url": "https://github.com/TasirWimp/CRPM",
+      "commit": "995236df60924f790506cf5badec3c102abf3fd1",
+      "license": "MIT",
+      "license_evidence": "https://github.com/TasirWimp/CRPM/blob/995236df60924f790506cf5badec3c102abf3fd1/LICENSE",
+      "decision": "method_adapted_no_code_import",
+      "copied_into": [],
+      "referenced_paths": [
+        "docs/architecture/Start_Here_Canonical.md",
+        "docs/architecture/CRPM_Port_Flow_Mapping_Note_v0.md",
+        "docs/architecture/CRPM_Port_Flow_Boundary_Interface_Run_v0.md",
+        "docs/architecture/CRPM_Cut_Transition_Translation_Note_v0.md",
+        "docs/architecture/CRPM_Edge_Scoped_Cut_Roles_Reentry_Protection_v0.md",
+        "docs/architecture/CRPM_Edge_Anatomy_Reentry_Graph_Relation_v0.md",
+        "docs/architecture/CRPM_Typed_Reentry_Edge_Tooling_Playbook_v0.md",
+        "docs/architecture/voyage_graphs/research_notes/CRPM_Voyage_Edge_Graph_Recursive_Cut_Transition_Dynamics_Design_Note_v0.md",
+        "docs/architecture/CRPM_Evaluation_Language_Operational_Note_v0.md",
+        "docs/case_studies/Ported_Local_Subsystem_Case_Template.md",
+        "emergence_lab_crpm/observer.py",
+        "tests/automation/test_observer.py",
+        "emergence_lab_crpm/dynamic_return_obligation_crosswalk_source.py"
+      ],
+      "allowed_uses": [
+        "bounded Worms_Port L4+ game-world port, cut, edge, voyage, re-entry, and evaluation method adaptation",
+        "independent TypeScript reimplementation of the generic finite quotient-transport checker purpose",
+        "source-attributed contract, test, evidence, and transfer-back discipline"
+      ],
+      "blocked_uses": [
+        "CRPM code copy, vendoring, runtime import, or package dependency",
+        "promotion into a universal schema, graph-safe format, ontology, doctrine, or source-history recovery claim",
+        "claim that CRPM supplies empirical game evidence or production gameplay authority",
+        "multiplication of evidentiary weight from correlated documents, rows, adapters, reruns, or reviewer agreement"
+      ],
+      "notes": "WP-015D2B independently implements a bounded Worms_Port application profile from the exact referenced CRPM commit. CRPM remains read-only methodological source material; copied_into is empty, the generated canonical start-here is navigation only, and no CRPM code or dependency enters production or analysis runtime paths."
     },
     {
       "id": "phaserjs-examples-mobile-input",

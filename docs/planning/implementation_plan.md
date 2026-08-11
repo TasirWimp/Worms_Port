@@ -61,7 +61,8 @@ Phaser/Socket.IO stack.
   on 2026-08-11** as a bounded analysis-only subordinate package on
   `codex/wp-015d2b-crpm-world-design-port`. It is rooted at Worms_Port base
   `af23717e61fea6995bf3b7209211ae1aaa2bb855`, implemented through
-  `f34317c5008e3171718705a9d8277437aae8d00d`, and source-locks the read-only
+  `f34317c5008e3171718705a9d8277437aae8d00d`, closed in documentation/evidence
+  predecessor `7655b1c27b54ce6d6ee0a2279beaba8ec1939811`, and source-locks the read-only
   CRPM methodology checkout at `995236df60924f790506cf5badec3c102abf3fd1`.
   Its strict contracts, V4/D2A adapters, five-cut registry, projection/voyage/
   return kernels, closed offline CLI, and witness-linked evaluation lens are

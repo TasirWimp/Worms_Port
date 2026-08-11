@@ -1,6 +1,17 @@
 import assert from 'node:assert/strict';
-import { existsSync, readFileSync, readdirSync } from 'node:fs';
-import { join, relative } from 'node:path';
+import {
+    existsSync,
+    mkdirSync,
+    mkdtempSync,
+    readFileSync,
+    readdirSync,
+    rmSync,
+    rmdirSync,
+    symlinkSync,
+    unlinkSync
+} from 'node:fs';
+import { tmpdir } from 'node:os';
+import { join, relative, resolve } from 'node:path';
 import test from 'node:test';
 
 import {
@@ -150,6 +161,36 @@ test('incompatible cut, malformed seed, and undeclared domain fail closed', () =
     }));
 });
 
+test('registered adapters reject unexecuted or extra seed claims', () => {
+    for (const payload of [rawRequest(V4_REQUEST_PATH), rawRequest(D2A_REQUEST_PATH)]) {
+        const registeredSeed = payload.seeds[0];
+        const unregisteredSeed = registeredSeed + 1;
+        assert.throws(() => buildOfflineWorldDesignRequest({
+            ...payload,
+            seeds: [unregisteredSeed],
+            scenarioDomain: { ...payload.scenarioDomain, seeds: [unregisteredSeed] }
+        }), /requires exactly the registered/);
+        assert.throws(() => buildOfflineWorldDesignRequest({
+            ...payload,
+            seeds: [registeredSeed, unregisteredSeed],
+            scenarioDomain: {
+                ...payload.scenarioDomain,
+                seeds: [registeredSeed, unregisteredSeed]
+            }
+        }), /requires exactly the registered/);
+    }
+});
+
+test('unimplemented output-detail levels fail closed', () => {
+    const payload = rawRequest(V4_REQUEST_PATH);
+    for (const outputDetailLevel of ['summary', 'full'] as const) {
+        assert.throws(() => buildOfflineWorldDesignRequest({
+            ...payload,
+            outputDetailLevel
+        }), /Only the registered witnesses output-detail level/);
+    }
+});
+
 test('arbitrary code/operator fields and mismatched supplied digests fail closed', () => {
     const payload = rawRequest(D2A_REQUEST_PATH);
     assert.throws(() => buildOfflineWorldDesignRequest({ ...payload, operator: 'eval(userCode)' }));
@@ -175,6 +216,34 @@ test('generated output is restricted below the ignored CRPM-world result root', 
         'analysis/crpm_world/examples/v4-transcript-request.json'
     ), /below test-results\/crpm-world/);
     assert.throws(() => resolveWorldDesignOutputPath('test-results/crpm-world/not-json.txt'));
+});
+
+test('generated output rejects a symlink or junction escape', (context) => {
+    const allowedRoot = resolve('test-results/crpm-world');
+    mkdirSync(allowedRoot, { recursive: true });
+    const linkPath = mkdtempSync(join(allowedRoot, 'link-test-'));
+    const outside = mkdtempSync(join(tmpdir(), 'crpm-world-output-link-'));
+    rmdirSync(linkPath);
+    try {
+        symlinkSync(outside, linkPath, process.platform === 'win32' ? 'junction' : 'dir');
+    } catch (error) {
+        rmSync(outside, { recursive: true, force: true });
+        context.skip(`The platform does not permit a directory link for this boundary test: ${String(error)}`);
+        return;
+    }
+    try {
+        assert.throws(
+            () => resolveWorldDesignOutputPath(join(linkPath, 'escaped-result.json')),
+            /must not traverse symbolic links or junctions/
+        );
+        assert.throws(
+            () => readWorldDesignRequestFile(join(linkPath, 'escaped-request.json')),
+            /must not traverse symbolic links or junctions/
+        );
+    } finally {
+        unlinkSync(linkPath);
+        rmSync(outside, { recursive: true, force: true });
+    }
 });
 
 function sourceFiles(root: string): string[] {

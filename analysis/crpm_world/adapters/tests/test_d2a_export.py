@@ -113,6 +113,22 @@ class D2AExportTests(unittest.TestCase):
         )
         reply = voyage["transitionEdges"][1]["response"]["postTacticalCarrier"]
         self.assertEqual((reply["activeActor"], reply["loomkeeper"]["frayedSeamTurns"]), ("player", 1))
+        obligation = "loomkeeper.frayed_seam_turns"
+        first_residual = voyage["transitionEdges"][0]["residual"]
+        reply_residual = voyage["transitionEdges"][1]["residual"]
+        bound_residual = voyage["transitionEdges"][2]["residual"]
+        self.assertIn(obligation, first_residual["openedObligations"])
+        self.assertIn(obligation, first_residual["unresolvedObligations"])
+        self.assertNotIn(obligation, reply_residual["openedObligations"])
+        self.assertIn(obligation, reply_residual["unresolvedObligations"])
+        self.assertIn(obligation, bound_residual["dischargedObligations"])
+        self.assertNotIn(obligation, bound_residual["unresolvedObligations"])
+        self.assertNotIn(obligation, voyage["accumulatedResidual"]["unresolvedObligations"])
+        self.assertEqual(voyage["compatibilityResult"], {
+            "compatible": True,
+            "checkedEdgeIds": [edge["edgeId"] for edge in voyage["transitionEdges"]],
+            "issues": [],
+        })
         bound = voyage["transitionEdges"][2]["response"]["postTacticalCarrier"]["loomkeeper"]
         self.assertEqual((bound["stitching"], bound["seamPinTurns"], bound["seamPinMaximumSeparationIncrease"], bound["frayedSeamTurns"]), (30, 1, 0, 0))
         values = probes(self.result, "h3")

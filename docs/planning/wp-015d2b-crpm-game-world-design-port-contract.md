@@ -8,6 +8,7 @@
 - **Current product authority:** `authority-adapter parity` for declared, tested V4 transition witnesses only; D2A evidence remains `none`
 - **Worms_Port base:** `af23717e61fea6995bf3b7209211ae1aaa2bb855` on `codex/wp-015d2b-crpm-world-design-port`
 - **Implementation tip before documentation integration:** `f34317c5008e3171718705a9d8277437aae8d00d`
+- **Documentation/evidence closure predecessor before adversarial hardening:** `7655b1c27b54ce6d6ee0a2279beaba8ec1939811`
 - **CRPM source lock:** `995236df60924f790506cf5badec3c102abf3fd1` on `main`
 - **Contract date:** 2026-08-10
 - **Documentation/evidence closure date:** 2026-08-11
@@ -210,7 +211,10 @@ only sealed baseline references, registered adapters, bounded
 scenario domains, declared cuts, protected families, bounded seed sets, and
 registered declarative candidate configurations. It emits deterministic
 traces, witnesses, residues, diagnostics, scalar annotations, and blocked
-claims. It cannot activate gameplay.
+claims. The current closed registry admits exactly seed `3237998097` and the
+`witnesses` output-detail level for both execution families; other seed sets
+or output-detail levels fail closed until separately implemented and tested.
+It cannot activate gameplay.
 
 ### 6. Production boundary
 
@@ -229,7 +233,7 @@ behavior or add or activate V5. It must not become a runtime or network service.
 | D2A adapter | `analysis/crpm_world/adapters/d2a_export.py` and `adapters/tests/` | Exact registered F2/F3/F4/H2/H3 report-digest checks and compact deterministic evidence; `analysis/tactical_model/model.py` is unchanged |
 | Offline design port | `analysis/crpm_world/design-port/`, `analysis/crpm_world/examples/`, `scripts/run-crpm-world-design.ts` | Closed `v4_authority@1` and `d2a_tactical@1` execution only; output confined below ignored `test-results/crpm-world/` |
 | Evaluation | `analysis/crpm_world/evaluation/` | V2 witness-linked qualitative profile, six false-closure rules, separate scalar probes, and deterministic M0–M3 gating |
-| Verification and boundary | `tests/crpm-world/`, `scripts/check-import-boundary.js`, `package.json` | 60 focused tests plus existing simulation/tactical/build/compliance gates; production imports from analysis remain forbidden |
+| Verification and boundary | `tests/crpm-world/`, `scripts/check-import-boundary.js`, `package.json`, `legal/source-manifest.json` | 64 focused tests plus existing simulation/tactical/build/compliance gates; the exact reference-only CRPM method pin is manifest-recorded and production imports from analysis remain forbidden |
 
 The reviewed example artifacts at implementation tip
 `f34317c5008e3171718705a9d8277437aae8d00d` are:
@@ -601,7 +605,7 @@ reopening, registering, or promoting a gameplay candidate:
 | F3 residue-bearing repair | `v5-range-damage-forward-seam-pin-escape-slack-spoolburst-preparation-threadback-unweave-candidate-f3.json` | Reconstruct removed recurrence together with visible Threadback/Escape-Slack residue and 68.8% first-actor rate; preserve `rejected`, not general repair success. |
 | F4 structural reference | `v5-range-damage-forward-seam-pin-escape-slack-spoolburst-preparation-spun-cocoon-threadback-unweave-candidate-f4.json` | Reconstruct no bounded openings, recurrence, or turn-limit results in the 250-match sweep together with 63.2% aggregate and 80% first-actor rate at distance 704; retain structural-reference-only status and initiative residue. |
 | H2 aggregate-parity false closure | `v5-range-damage-forward-seam-pin-escape-slack-opening-weave-paid-second-actor-candidate-h2.json` | Reconstruct 48.8% aggregate together with distance bands 44/40/44/40/76%; preserve `rejected` and expose distance-conditioned closure risk. |
-| H3 delayed-response failure | `v5-range-damage-forward-seam-pin-escape-slack-counterable-opening-weave-candidate-h3.json` | Reconstruct convergence/no recurrence together with forced openings at distances 448/512/576 and 63.2% aggregate first-actor rate; preserve `rejected`: delayed response cannot repair an already completed forced edge. |
+| H3 delayed-response failure | `v5-range-damage-forward-seam-pin-escape-slack-counterable-opening-weave-candidate-h3.json` | Reconstruct convergence/no recurrence together with forced openings at distances 448/512/576 and 63.2% aggregate first-actor rate; carry the active Frayed Seam obligation across the intervening edge and record its later discharge; preserve `rejected`: delayed response cannot repair an already completed forced edge. |
 
 No acceptance case changes D2A history, declares a final threshold, proves live
 ballistics or player balance, or activates V5.

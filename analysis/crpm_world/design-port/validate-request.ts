@@ -1,6 +1,7 @@
 import { z } from 'zod';
 
 import { canonicalJson, sha256Digest } from '../canonical';
+import { V4_SUPPORT_TWIN_SEED } from '../cuts/v4-cuts';
 import { ScenarioDomainSchema } from '../schemas';
 import {
     D2A_PRESSURE_ACTION_FAMILY,
@@ -10,6 +11,7 @@ import {
     OFFLINE_DESIGN_PROFILE_VERSION,
     OFFLINE_DESIGN_REQUEST_VERSION,
     REGISTERED_PRESSURE_DISTANCES,
+    REGISTERED_PRESSURE_SEED,
     getD2AConfigRegistration,
     getOfflineAdapterRegistration
 } from './registry';
@@ -132,6 +134,9 @@ function sameSet(left: readonly string[], right: readonly string[]): boolean {
 
 function validateDeclaredScope(request: OfflineWorldDesignRequest): void {
     const registration = getOfflineAdapterRegistration(request.adapter.id, request.adapter.version);
+    if (request.outputDetailLevel !== 'witnesses') {
+        throw new RangeError('Only the registered witnesses output-detail level is implemented in this gate.');
+    }
     if (request.baseline.kind !== registration.baselineKind ||
         !registration.rulesetsOrConfigs.includes(request.baseline.id)) {
         throw new RangeError(`Baseline/config ${request.baseline.id} is not registered for ${request.adapter.id}.`);
@@ -169,6 +174,9 @@ function validateDeclaredScope(request: OfflineWorldDesignRequest): void {
         if (!sameSet(request.scenarioDomain.scenarioIds, ['v4-authority-c0ffee11'])) {
             throw new RangeError('The V4 request is outside the registered scenario domain.');
         }
+        if (request.seeds.length !== 1 || request.seeds[0] !== V4_SUPPORT_TWIN_SEED) {
+            throw new RangeError(`v4_authority requires exactly the registered seed ${V4_SUPPORT_TWIN_SEED}.`);
+        }
         const allowedProbes = ['v4.accepted_commands', 'v4.rejected_commands', 'v4.mutated_commands', 'v4.event_count'];
         if (request.requestedScalarProbes.some((probe) => !allowedProbes.includes(probe))) {
             throw new RangeError('Unknown V4 scalar probe requested.');
@@ -192,6 +200,9 @@ function validateDeclaredScope(request: OfflineWorldDesignRequest): void {
     const expectedScenarios = REGISTERED_PRESSURE_DISTANCES.map((distance) => `d2a-${config.caseId}-distance-${distance}`);
     if (!sameSet(request.scenarioDomain.scenarioIds, expectedScenarios)) {
         throw new RangeError('The D2A pressure request must declare the complete registered five-distance domain.');
+    }
+    if (request.seeds.length !== 1 || request.seeds[0] !== REGISTERED_PRESSURE_SEED) {
+        throw new RangeError(`d2a_tactical requires exactly the registered pressure seed ${REGISTERED_PRESSURE_SEED}.`);
     }
     if (request.requestedScalarProbes.some((probe) => !config.scalarProbes.includes(probe))) {
         throw new RangeError(`Unknown scalar probe for registered D2A config ${config.configId}.`);

@@ -1,4 +1,4 @@
-import { canonicalJson } from '../canonical';
+import { canonicalJson, compareCanonicalText } from '../canonical';
 import { WorldCutDefinitionSchema } from '../schemas';
 import type { WorldCutDefinition } from '../types';
 import { V4_CUT_DEFINITIONS, type V4CutId } from './v4-cuts';
@@ -28,7 +28,7 @@ export function getCutDefinition(cutId: V4CutId, cutVersion = 1): WorldCutDefini
 
 export function listCutDefinitions(): WorldCutDefinition[] {
     return [...encodedCuts.entries()]
-        .sort(([left], [right]) => left.localeCompare(right))
+        .sort(([left], [right]) => compareCanonicalText(left, right))
         .map(([, encoded]) => decodeCut(encoded));
 }
 

@@ -25,10 +25,11 @@
     "Execute V4 commands only through the existing authority adapter and D2A requests only through the fixed registered Python exporter module, then emit strict digest-bound WorldDesignResult JSON only below ignored test-results/crpm-world output.",
     "At Worms_Port evaluation-gate base 683a4d9cbbdd58ff074a711d68383083dc89af8b, make a strict v2 witness-linked qualitative DiagnosticProfile the primary evaluation surface while retaining v1 source-diagnostic compatibility and moving scalar probes into a separate digest-bound evaluation bundle field.",
     "Detect H2 aggregate port-split, F3 recurrence-versus-balance, F4 structural-versus-initiative, H3 delayed-response, V4 adapter-parity, and compact-trace false closure; gate M0 through M3 deterministically without a generic balance threshold or automatic product-authority promotion.",
-    "Complete the implementation through Worms_Port commit f34317c5008e3171718705a9d8277437aae8d00d while retaining af23717e61fea6995bf3b7209211ae1aaa2bb855 as the package base and 995236df60924f790506cf5badec3c102abf3fd1 as the exact read-only CRPM methodological source lock.",
+    "Complete the initial implementation through Worms_Port commit f34317c5008e3171718705a9d8277437aae8d00d and the documentation/evidence closure predecessor 7655b1c27b54ce6d6ee0a2279beaba8ec1939811 while retaining af23717e61fea6995bf3b7209211ae1aaa2bb855 as the package base and 995236df60924f790506cf5badec3c102abf3fd1 as the exact read-only CRPM methodological source lock.",
+    "Apply the complete-verification adversarial hardening in the same bounded package: use host-locale-independent ordinal ordering, admit only the exact registered seed and witnesses output mode, reject symbolic-link/junction file traversal, and carry every active D2A after-state obligation until explicit discharge.",
     "Bind CRPM port/flow methodology to docs/architecture/CRPM_Port_Flow_Mapping_Note_v0.md and CRPM_Port_Flow_Boundary_Interface_Run_v0.md; typed transitions to CRPM_Cut_Transition_Translation_Note_v0.md; edge/re-entry support to CRPM_Edge_Scoped_Cut_Roles_Reentry_Protection_v0.md, CRPM_Edge_Anatomy_Reentry_Graph_Relation_v0.md, and CRPM_Typed_Reentry_Edge_Tooling_Playbook_v0.md; voyage design to the recursive cut-transition voyage design note; evaluation to CRPM_Evaluation_Language_Operational_Note_v0.md; and local transfer-back to Ported_Local_Subsystem_Case_Template.md.",
     "Use emergence_lab_crpm/observer.py and tests/automation/test_observer.py only as read-only behavioral references for an independently written generic TypeScript finite quotient-transport checker, and use dynamic_return_obligation_crosswalk_source.py only to keep return meanings distinct; copy no CRPM code and add no CRPM runtime, Python, npm, vendor, or package dependency.",
-    "Changed-path inventory: analysis/crpm_world/README.md, canonical.ts, schemas.ts, types.ts, tsconfig.json, adapters/, cuts/, kernel/, design-port/, evaluation/, and examples/; tests/crpm-world/; scripts/run-crpm-world-design.ts; scripts/check-import-boundary.js; package.json; docs/planning/wp-015d2b-crpm-game-world-design-port-contract.md; docs/planning/implementation_plan.md; and docs/evidence/wp-015d2b.json.",
+    "Changed-path inventory: analysis/crpm_world/README.md, canonical.ts, schemas.ts, types.ts, tsconfig.json, adapters/, cuts/, kernel/, design-port/, evaluation/, and examples/; tests/crpm-world/; scripts/run-crpm-world-design.ts; scripts/check-import-boundary.js; package.json; legal/source-manifest.json; docs/planning/wp-015d2b-crpm-game-world-design-port-contract.md; docs/planning/implementation_plan.md; and docs/evidence/wp-015d2b.json.",
     "Record deterministic reviewed examples: V4 request 64aa8c085f07dde2cba98e134f96e8e0c46ace450f1f48e7cafb73cf313cc462 -> result def96e0c597e1fb4ac7de88394f832962720b0f241298bc29e62b68f8257867b; D2A F3 request 226e0c42b6134d26c195bf2410b804c6acd37cad825af94a90c7d385ff1c420f -> result 53c32ac1de6f6adcc5bff804830bc1901b56e9be36dbdff35b5abb34346d83a7.",
     "Bind unchanged D2A whole-report digests: F2 6a2ac3a1b8bc13c299ebf20a926eb5af0ac5e3fb057a841febc2f13fcb5ffbea; F3 9f5cd9574cc88fb2e885b631a7f9119a105ccdeb323eae1b1f0299e989a30332; F4 414e42735e97717f36b7583ffa80cb8130bf812259d598084416c4fd192247a6; H2 f47fa00f6731254c62a115214e370ebdc363429499b9d2891b1c3cf0c0bc705c; H3 4f148ce8ec2d50598ca7638b9cd74c820eb3cb3b7b2934a09867df51f2745d14.",
     "Preserve pressure outcomes without promotion: F2 exact prepare/Unweave recursive-carrier return with 20 recurrence-bearing turn limits; F3 64-unit Threadback and 64 Escape-Slack spend with no selected recurrence but 68.8 percent first-actor rate; F4 no bounded opening/recurrence/turn limit but 63.2 percent aggregate and 80 percent at 704; H2 48.8 percent aggregate masking 44/40/44/40/76 percent bands; H3 later counterplay after an intervening action with forced openings at 448/512/576 and 63.2 percent aggregate.",
@@ -70,12 +71,12 @@
     {
       "command": "npm run test:crpm-world",
       "status": "pass",
-      "detail": "All 60 focused Node/tsx tests passed. The prior 53 contract, authority, cut/projection, voyage/composition/return, D2A, and offline-port tests remain green; seven evaluation tests cover H2/F3/F4/H3/V4 false closure, compact-trace guarding, deterministic witness-linked blocked claims, scalar separation, and M0 through M3 authority gating."
+      "detail": "All 64 focused Node/tsx tests passed. The 57 contract, authority, cut/projection, voyage/composition/return, D2A, offline-port, ordinal-order, exact-seed/detail, and link-boundary tests remain green; seven evaluation tests cover H2/F3/F4/H3/V4 false closure, compact-trace guarding, deterministic witness-linked blocked claims, scalar separation, and M0 through M3 authority gating."
     },
     {
       "command": "npm run test:crpm-world-design",
       "status": "pass",
-      "detail": "All 10 focused offline-port tests passed: known V4 and D2A requests, repeat determinism, object-key versus action-order digest semantics, unknown adapter/config, live/forbidden ports, cut/seed/domain rejection, arbitrary operator rejection, output confinement, and production import isolation."
+      "detail": "All 13 focused offline-port tests passed: known V4 and D2A requests, repeat determinism, object-key versus action-order digest semantics, unknown adapter/config, live/forbidden ports, exact registered seed and witnesses-only detail admission, cut/domain rejection, arbitrary operator rejection, lexical and link-aware file confinement, and production import isolation."
     },
     {
       "command": "npm run test:crpm-world-evaluation",
@@ -90,7 +91,7 @@
     {
       "command": "npm run test:d2a-adapter",
       "status": "pass",
-      "detail": "Eight Python exporter regressions and four Node/tsx cross-language tests passed. They bind unchanged whole-report digests, reconstruct F2/F3/H3 action evidence, preserve F4/H2 aggregates, reject config/schema drift, and validate the deterministic result through the strict Zod schema."
+      "detail": "Eight Python exporter regressions and four Node/tsx cross-language tests passed. They bind unchanged whole-report digests, reconstruct F2/F3/H3 action evidence including H3's carried and discharged Frayed Seam obligation, preserve F4/H2 aggregates, reject config/schema drift, and validate the deterministic result through the strict Zod schema."
     },
     {
       "command": "npm run test:simulation",
@@ -125,7 +126,7 @@
     {
       "command": "git diff --check",
       "status": "pass",
-      "detail": "Tracked diff checking passed; a separate trailing-whitespace scan covered the new untracked contract, analysis, test, and evidence files."
+      "detail": "Working-tree diff checking passed after the complete-verification review fixes."
     }
   ],
   "reviews": [
@@ -146,6 +147,12 @@
       "reviewer": "Codex",
       "decision": "pass",
       "detail": "Confirmed the completed README, contract, subordinate implementation-plan entry, and evidence record agree on exact implementation/source locks, actual paths and deviations, deterministic example/report digests, evaluation language, pressure-case history, covariance, re-entry, M2 maturity, and non-promotion guards."
+    },
+    {
+      "role": "worms_port_reviewer",
+      "reviewer": "Codex adversarial review",
+      "decision": "pass",
+      "detail": "After fixes, all fourteen shadow-authority, dependency, runtime, protocol/reward, arbitrary-execution, determinism, cut/support, return, false-closure, CRPM-promotion, D2A-regression, re-entry, and repository-boundary categories passed. The review fixed ordinal ordering, exact seed/detail admission, link-aware file confinement, H3 obligation propagation and derived voyage compatibility, re-entry/source-lock wording, verification counts, and the exact CRPM method-reference manifest pin."
     }
   ],
   "skipped_checks": [
@@ -161,6 +168,7 @@
     "Protected-equivalent and invariant-region rows can classify supplied decoder/membership evidence, but this gate provides no domain-specific decoder proof or invariant-region predicate. Unprovided evidence remains not_assessed rather than inferred.",
     "Strict schemas can validate declared structure, scope, lineage, and catalog membership but cannot prove that a deterministic-continuation, preservation, maturity, or authority claim is semantically true; later bounded witnesses and owner decisions remain mandatory.",
     "The canonical format is the versioned local WP-015D2B contract, not a CRPM schema, ontology, graph-safe exchange standard, or claim of independent empirical evidence.",
+    "The ProductAuthority label authority-adapter-parity is a bounded governance/evidence relationship only. Future consumers must not interpret every non-none enum member as permission to activate production behavior.",
     "npm audit continues to report the existing high-severity nanoid advisory through Vite; this gate changes no dependency or lockfile.",
     "The next permitted action is owner review and commit of this documentation/evidence closure. Any new adapter, domain, gameplay candidate, range-entry commitment, live reaction/status, V5 rule, or product-authority promotion requires a separately authorized versioned package and applicable TypeScript/replay/protocol/runtime verification."
   ]

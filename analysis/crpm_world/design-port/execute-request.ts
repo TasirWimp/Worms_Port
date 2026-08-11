@@ -1,6 +1,6 @@
 import { execFileSync } from 'node:child_process';
-import { mkdirSync, readFileSync, writeFileSync } from 'node:fs';
-import { dirname, extname, isAbsolute, relative, resolve } from 'node:path';
+import { existsSync, lstatSync, mkdirSync, readFileSync, writeFileSync } from 'node:fs';
+import { dirname, extname, isAbsolute, relative, resolve, sep } from 'node:path';
 import { fileURLToPath } from 'node:url';
 
 import {
@@ -389,6 +389,17 @@ function within(parent: string, target: string): boolean {
     return pathFromParent !== '' && !pathFromParent.startsWith('..') && !isAbsolute(pathFromParent);
 }
 
+function assertNoLinkTraversal(target: string): void {
+    const pathFromRepository = relative(REPOSITORY_ROOT, target);
+    let cursor = REPOSITORY_ROOT;
+    for (const segment of pathFromRepository.split(sep)) {
+        cursor = resolve(cursor, segment);
+        if (existsSync(cursor) && lstatSync(cursor).isSymbolicLink()) {
+            throw new RangeError('World-design file paths must not traverse symbolic links or junctions.');
+        }
+    }
+}
+
 export function resolveWorldDesignOutputPath(outputPath: string): string {
     if (typeof outputPath !== 'string' || outputPath.trim() !== outputPath || outputPath.length === 0) {
         throw new TypeError('Output path must be a non-empty trimmed path.');
@@ -398,6 +409,7 @@ export function resolveWorldDesignOutputPath(outputPath: string): string {
     if (!within(allowedRoot, target) || extname(target).toLowerCase() !== '.json') {
         throw new RangeError(`World-design output must be a JSON file below ${CRPM_WORLD_RESULT_ROOT}.`);
     }
+    assertNoLinkTraversal(target);
     return target;
 }
 
@@ -409,6 +421,7 @@ export function writeWorldDesignResult(outputPath: string, resultInput: unknown)
     const result = WorldDesignResultSchema.parse(resultInput);
     const target = resolveWorldDesignOutputPath(outputPath);
     mkdirSync(dirname(target), { recursive: true });
+    assertNoLinkTraversal(target);
     writeFileSync(target, `${JSON.stringify(deepSortJson(result), null, 2)}\n`, { encoding: 'utf8' });
     return target;
 }
@@ -421,6 +434,7 @@ export function readWorldDesignRequestFile(requestPath: string): unknown {
     if (!within(REPOSITORY_ROOT, target) || extname(target).toLowerCase() !== '.json') {
         throw new RangeError('World-design request must be a repository-local JSON file.');
     }
+    assertNoLinkTraversal(target);
     return JSON.parse(readFileSync(target, 'utf8'));
 }
 

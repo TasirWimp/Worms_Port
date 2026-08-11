@@ -1,4 +1,4 @@
-import { canonicalJson, sha256Digest } from '../canonical';
+import { canonicalJson, compareCanonicalText, sha256Digest } from '../canonical';
 import {
     ProjectionTransportAssessmentV2Schema,
     ScenarioDomainSchema
@@ -117,16 +117,22 @@ export function assessQuotientTransport<TSource, TTarget>(
     }
 
     const sourceClasses = [...sourceMembers.entries()]
-        .sort(([left], [right]) => left.localeCompare(right))
-        .map(([classKeyValue, refs]) => ({ classKey: classKeyValue, memberRefs: [...refs].sort() }));
+        .sort(([left], [right]) => compareCanonicalText(left, right))
+        .map(([classKeyValue, refs]) => ({
+            classKey: classKeyValue,
+            memberRefs: [...refs].sort(compareCanonicalText)
+        }));
     const targetClasses = [...targetMembers.entries()]
-        .sort(([left], [right]) => left.localeCompare(right))
-        .map(([classKeyValue, refs]) => ({ classKey: classKeyValue, memberRefs: [...refs].sort() }));
+        .sort(([left], [right]) => compareCanonicalText(left, right))
+        .map(([classKeyValue, refs]) => ({
+            classKey: classKeyValue,
+            memberRefs: [...refs].sort(compareCanonicalText)
+        }));
     const observedTransitions = [...transitions.entries()]
-        .sort(([left], [right]) => left.localeCompare(right))
+        .sort(([left], [right]) => compareCanonicalText(left, right))
         .map(([sourceClassKey, targets]) => ({
             sourceClassKey,
-            targetClassKeys: [...targets].sort()
+            targetClassKeys: [...targets].sort(compareCanonicalText)
         }));
     const aliasingKeys = observedTransitions
         .filter((transition) => transition.targetClassKeys.length > 1)
@@ -134,10 +140,10 @@ export function assessQuotientTransport<TSource, TTarget>(
     const aliasingWitnessPairs = aliasingKeys.map((sourceClassKey, pairIndex) => {
         const targetKeys = transitions.get(sourceClassKey);
         if (!targetKeys) throw new Error('Internal quotient transition index is incomplete.');
-        const [leftTarget, rightTarget] = [...targetKeys].sort();
+        const [leftTarget, rightTarget] = [...targetKeys].sort(compareCanonicalText);
         const candidates = observations
             .filter((item) => item.sourceClassKey === sourceClassKey)
-            .sort((left, right) => left.itemRef.localeCompare(right.itemRef));
+            .sort((left, right) => compareCanonicalText(left.itemRef, right.itemRef));
         const left = candidates.find((item) => item.targetClassKey === leftTarget);
         const right = candidates.find((item) => item.targetClassKey === rightTarget);
         if (!left || !right) throw new Error('Internal quotient alias witness index is incomplete.');
@@ -149,7 +155,7 @@ export function assessQuotientTransport<TSource, TTarget>(
     const deterministicMapEligibility = aliasingKeys.length === 0;
     const blockedClaims = [
         FINITE_SAMPLE_TRANSPORT_LIMIT,
-        ...[...(options.blockedClaims ?? [])].sort()
+        ...[...(options.blockedClaims ?? [])].sort(compareCanonicalText)
     ].filter((value, index, values) => values.indexOf(value) === index);
 
     return ProjectionTransportAssessmentV2Schema.parse({

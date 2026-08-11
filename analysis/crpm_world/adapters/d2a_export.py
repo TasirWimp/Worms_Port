@@ -214,6 +214,7 @@ def _residual(before: TacticalState, after: TacticalState) -> dict[str, Any]:
     expired: list[str] = []
     opened: list[str] = []
     discharged: list[str] = []
+    unresolved: list[str] = []
 
     actor_fields = (
         "seam_pin_source",
@@ -252,10 +253,12 @@ def _residual(before: TacticalState, after: TacticalState) -> dict[str, Any]:
         for field in actor_fields:
             old = getattr(before_actor, field)
             new = getattr(after_actor, field)
+            obligation_id = f"{actor}.{field}"
+            if field in obligation_fields and isinstance(new, int) and new > 0:
+                unresolved.append(obligation_id)
             if old == new:
                 continue
             statuses.append(_delta(f"{actor}.{field}", old, new, "Visible tactical support or status change."))
-            obligation_id = f"{actor}.{field}"
             if field in obligation_fields and old == 0 and isinstance(new, int) and new > 0:
                 opened.append(obligation_id)
             if field in obligation_fields and isinstance(old, int) and old > 0 and new == 0:
@@ -277,7 +280,7 @@ def _residual(before: TacticalState, after: TacticalState) -> dict[str, Any]:
         "expiredRights": list(dict.fromkeys(expired)),
         "openedObligations": list(dict.fromkeys(opened)),
         "dischargedObligations": list(dict.fromkeys(discharged)),
-        "unresolvedObligations": list(dict.fromkeys(opened)),
+        "unresolvedObligations": list(dict.fromkeys(unresolved)),
         "excludedUnmodelledResidue": list(UNMODELLED_PORTS),
     }
 
@@ -305,10 +308,7 @@ def _accumulate_residual(ledgers: Iterable[dict[str, Any]]) -> dict[str, Any]:
             result[field].extend(ledger[field])
         for field in ("expiredRights", "openedObligations", "dischargedObligations"):
             result[field] = list(dict.fromkeys([*result[field], *ledger[field]]))
-    result["unresolvedObligations"] = [
-        obligation for obligation in result["openedObligations"]
-        if obligation not in result["dischargedObligations"]
-    ]
+        result["unresolvedObligations"] = list(ledger["unresolvedObligations"])
     return result
 
 
@@ -582,6 +582,28 @@ def _voyage(
             "digest": sha256_digest(recurrence),
         })
     accumulated = _accumulate_residual(edge["residual"] for edge in edges)
+    compatibility_issues: list[str] = []
+    for index, edge in enumerate(edges):
+        if edge["pathPosition"] != index:
+            compatibility_issues.append(
+                f"Edge {edge['edgeId']} has path position {edge['pathPosition']}, expected {index}."
+            )
+        if index == 0:
+            continue
+        previous = edges[index - 1]
+        if previous["targetCarrier"] != edge["sourceCarrier"]:
+            compatibility_issues.append(
+                f"Carrier mismatch before edge {edge['edgeId']}."
+            )
+        prior_open = set(previous["residual"]["unresolvedObligations"])
+        carried_or_discharged = {
+            *edge["residual"]["unresolvedObligations"],
+            *edge["residual"]["dischargedObligations"],
+        }
+        for obligation in sorted(prior_open - carried_or_discharged):
+            compatibility_issues.append(
+                f"Edge {edge['edgeId']} neither carries nor discharges obligation {obligation}."
+            )
     return {
         "schemaVersion": 1,
         "voyageId": f"d2a-{case_id}-pressure-voyage",
@@ -590,9 +612,9 @@ def _voyage(
         "transitionEdges": edges,
         "finalCarrier": edges[-1]["targetCarrier"],
         "compatibilityResult": {
-            "compatible": True,
+            "compatible": not compatibility_issues,
             "checkedEdgeIds": [edge["edgeId"] for edge in edges],
-            "issues": [],
+            "issues": compatibility_issues,
         },
         "accumulatedResidual": accumulated,
         "terminalResult": {

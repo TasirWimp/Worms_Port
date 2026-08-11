@@ -1,6 +1,6 @@
 import { z } from 'zod';
 
-import { sha256Digest } from '../canonical';
+import { compareCanonicalText, sha256Digest } from '../canonical';
 import {
     DiagnosticProfileV2Schema,
     ScalarProbeSchema,
@@ -38,7 +38,7 @@ function sortedUnique<T>(items: readonly T[], key: (item: T) => string): T[] {
     const byKey = new Map<string, T>();
     for (const item of items) byKey.set(key(item), item);
     return [...byKey.entries()]
-        .sort(([left], [right]) => left.localeCompare(right))
+        .sort(([left], [right]) => compareCanonicalText(left, right))
         .map(([, item]) => item);
 }
 
@@ -77,7 +77,7 @@ function scalarProbes(result: WorldDesignResult) {
         }
         byId.set(probe.probeId, probe);
     }
-    return [...byId.values()].sort((left, right) => left.probeId.localeCompare(right.probeId));
+    return [...byId.values()].sort((left, right) => compareCanonicalText(left.probeId, right.probeId));
 }
 
 function falseClosureReason(

@@ -3,9 +3,17 @@ import test from 'node:test';
 
 import {
     canonicalJson,
+    compareCanonicalText,
     deepSortJson,
     sha256Digest
 } from '../../analysis/crpm_world/canonical';
+
+test('canonical text ordering uses ordinal code-unit order', () => {
+    assert.deepEqual(
+        ['z', 'ä', 'a', '2', '10'].sort(compareCanonicalText),
+        ['10', '2', 'a', 'z', 'ä']
+    );
+});
 
 test('canonical JSON sorts object keys recursively and preserves array order', () => {
     const value = {
