@@ -4,8 +4,9 @@
 strict, versioned JSON records for the bounded Worms_Port Game-World Profile and
 offline World Design Port. It includes one read-only simulation-authority
 adapter, but it is not a server, gameplay system, or candidate implementation.
-WP-015D2B is currently `in_progress` after external implementation-review
-repairs and awaits repeated external review; it is not a completed package.
+WP-015D2B completed on 2026-08-11 after its implementation, adversarial,
+sealing, and final external reviews. Completion preserves the analysis-only
+boundary, `M2 local use` ceiling, and `ProductAuthority: none`.
 
 ## Authority and dependency boundary
 
@@ -402,7 +403,7 @@ blob graph, and the current same-repository authority/model/config blobs. A
 self-consistent invented receipt therefore remains structural data and cannot
 earn source-bound M2 evaluation.
 
-After the current in-progress implementation-review repairs:
+Final reviewed example artifacts:
 
 | Example | Request digest | Result digest |
 | --- | --- | --- |
@@ -534,5 +535,5 @@ npm run test:crpm-world-evaluation
 ```
 
 The focused scripts are intentionally not part of broad `verify:full`. The
-work-package evidence record and repository-level compliance/build checks
-govern this reopened, in-progress analysis-only package.
+completed work-package evidence record and repository-level compliance/build
+checks govern this analysis-only package.

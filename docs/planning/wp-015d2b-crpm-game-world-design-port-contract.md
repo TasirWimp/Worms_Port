@@ -2,7 +2,7 @@
 
 ## Status
 
-- **State:** in progress; reopened for the external implementation-review repairs
+- **State:** complete on 2026-08-11 after implementation, adversarial, sealing, and final external review
 - **Relationship:** analysis-only child of the active WP-015D2A tactical-game-model decision line
 - **Current carrier maturity:** `M2 local use` for the core contracts, bounded adapters, offline design port, and evaluation lens; no `M3` claim
 - **Current product authority:** `none`; tested V4 adapter parity is authority-derived witness/support provenance only
@@ -246,8 +246,18 @@ behavior or add or activate V5. It must not become a runtime or network service.
 | Evaluation | `analysis/crpm_world/evaluation/` | V2 witness-linked qualitative profile, seven false-closure rules, exact D2A bundle and edge-derived V4 probe binding, authenticated source/implementation maturity, and an M2/ProductAuthority-none ceiling |
 | Verification and boundary | `tests/crpm-world/`, `scripts/check-import-boundary.js`, `package.json`, `package-lock.json`, `legal/source-manifest.json` | Focused destructive and parity tests plus existing simulation/tactical/build/compliance gates; the exact reference-only CRPM method pin is manifest-recorded, Nano ID is patched to 3.3.18, and production imports from analysis remain forbidden |
 
-The reviewed example artifacts after the current in-progress
-implementation-review repairs are:
+The final base-to-HEAD inspection covered 47 changed files from
+`af23717e61fea6995bf3b7209211ae1aaa2bb855` through the final closure range.
+Range diff checking passed; `shared/`, `client/`, `server/`, protocol, reward,
+wallet, and production rules were unchanged; no production path imports
+`analysis/crpm_world`; no generated `test-results` file is tracked; and CRPM
+remains an unvendored read-only method source. The only subprocess paths are
+the closed registered D2A Python module invocation and fixed Git-object
+verification. Outside the bounded package/tests/docs/manifests, the two shared
+compliance scripts only enforce the analysis import boundary and distinguish
+the machine implementation lock from ordinary work-package evidence.
+
+The final reviewed example artifacts are:
 
 | Example | Request digest | Result digest | Maturity / authority |
 | --- | --- | --- | --- |
