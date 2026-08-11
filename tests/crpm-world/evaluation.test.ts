@@ -232,7 +232,7 @@ test('caller-authored decisions, pass flags, and synthetic locks cannot mint mat
     const synthetic = rebuildResult(result, {
         sourceLocks: [{
             repositoryId: 'worms-port',
-            commit: '1111111111111111111111111111111111111111',
+            commit: '5a4c8d2d5098134acdc5ff4206a6cede9a29f155',
             paths: ['analysis/tactical_model/model.py']
         }]
     });
@@ -269,8 +269,9 @@ test('caller-authored decisions, pass flags, and synthetic locks cannot mint mat
         path,
         blobOid: '3'.repeat(40)
     }));
+    const { resultDigest: _fakeReceiptResultDigest, ...realReceiptBase } = result.executionReceipt;
     const fakeReceipt = {
-        ...result.executionReceipt,
+        ...realReceiptBase,
         implementationCommit: fakeCommit,
         implementationTree: fakeTree,
         implementationFileBlobs: fakeBlobs,

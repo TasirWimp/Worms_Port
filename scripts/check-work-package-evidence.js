@@ -4,6 +4,9 @@ const fs = require('node:fs');
 const path = require('node:path');
 
 const repoRoot = path.resolve(__dirname, '..');
+const nonWorkPackageEvidenceFiles = new Set([
+  'wp-015d2b-implementation-lock.json'
+]);
 const allowedFields = new Set([
   'id', 'status', 'starting_commit', 'branch', 'initial_worktree',
   'starting_lock_sha256', 'owning_roles', 'scope', 'non_goals',
@@ -143,7 +146,9 @@ function validateEvidence(
 
 function main() {
   const evidenceRoot = path.join(repoRoot, 'docs', 'evidence');
-  const files = fs.readdirSync(evidenceRoot).filter((file) => file.endsWith('.json'));
+  const files = fs.readdirSync(evidenceRoot).filter((file) =>
+    file.endsWith('.json') && !nonWorkPackageEvidenceFiles.has(file)
+  );
   const records = files.map((file) => JSON.parse(fs.readFileSync(path.join(evidenceRoot, file), 'utf8')));
   const cleanRoom = JSON.parse(fs.readFileSync(path.join(repoRoot, 'legal', 'clean-room-records.json'), 'utf8'));
   const allowUnresolvedHistory =

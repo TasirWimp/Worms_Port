@@ -24,12 +24,17 @@ repairs and awaits repeated external review; it is not a completed package.
 
 - Worms_Port implementation base:
   `af23717e61fea6995bf3b7209211ae1aaa2bb855`.
-- Frozen sealing implementation commit:
-  `1ce572247a0eb3c948900fd3b4cb5178b0ae0f84`.
+- Frozen authentication-repair implementation commit:
+  `50aaf7d433bd8f131f71d6cff4d7a73636e256b6`.
 - Frozen implementation tree:
-  `fbe4c6c12ff4bbac68a68da31f4a6d20c04cfc45`.
-- Canonical 22-file implementation-bundle digest:
-  `659a74ab914e3f4923e4442f9e8e67ae738cf9e4c76758ad23c95bcd7da9f106`.
+  `dca114f2d1bae266bbdeeda77f870c20f7552fbd`.
+- Canonical 25-file implementation-bundle digest:
+  `133a4dcc3c474f167d67e7ab92528129dfbdf557ae3dc9d7a2cadf754490464f`.
+- Approved direct-child implementation lock commit:
+  `f0a006dc87562d7617d7553fe094ceceb71a8a63`.
+  The named lock JSON is machine evidence authenticated by the evaluator, not
+  a second work-package record; the work-package checker excludes only that
+  exact filename while continuing to validate all 24 package records.
 - Read-only CRPM source lock:
   `995236df60924f790506cf5badec3c102abf3fd1`.
 - CRPM port/flow, cut-transition, edge/re-entry, voyage, evaluation, and local-
@@ -131,9 +136,10 @@ different versions do not compose.
 
 ## Deterministic artifact rules
 
-The sealed executable envelope uses profile, adapter, request, result, cut, and
-evaluation version 2; `VoyageTrace` version 3; and `ResidualLedger` and
-`WorldObligation` version 2. Pre-sealing v1 request/result/profile/adapter/cut
+The sealed executable envelope uses profile, adapter, request, cut, and
+evaluation version 2; result version 3; `VoyageTrace` version 4; and
+`ResidualLedger` and `WorldObligation` version 2. Pre-sealing v1/v2 results and
+v1 request/profile/adapter/cut
 records are unsupported pre-release artifacts and are rejected by the current
 closed registry. Lower-level stable seed records that still say
 `schemaVersion: 1` retain their narrow original meaning; they are not alternate
@@ -235,11 +241,16 @@ listed as externally supplied rather than silently produced by the prior edge.
 Failure returns a structured composition witness plus the valid prefix and
 attempted edge.
 
-`VoyageTrace` version 3 records ordered accepted, rejected, and incompatible
-attempts; command history; explicit cut changes; edge and composition witnesses;
+`VoyageTrace` version 4 records ordered accepted, rejected, and incompatible
+attempts; command history; explicit cut changes; edge and v2 composition witnesses;
 initial obligations; derived residue and obligation history; final carrier;
 terminal status; exclusions; and re-entry instructions. Pre-sealing voyage v1/v2
-records are unsupported by the sealed result schema. Rejected attempts are
+and reduced-composition v3 records are unsupported by the sealed result schema.
+Every trace carries a versioned composition contract with declared external
+inputs, forbidden ports, and cut-bridge policy. Validation recomputes first-edge
+admission and every later edge boundary through the same pure compatibility
+function used by `composeEdges`, checks exact edge digests and witness issues,
+and admits only v2 edges with explicit port bindings. Rejected attempts are
 part of the compatible transition path only when their carrier remains
 unchanged. Incompatible attempts remain visible but do not advance that path.
 
@@ -290,6 +301,11 @@ rather than checked-in copies of all 250 traces. The exporter records
 `productAuthority: none`; exact analytical
 re-entry is not simulation parity, empirical evidence, candidate approval, or
 gameplay activation.
+The standalone request digest binds the tactical cut id/version, profile,
+protected-family digest, every requested config/schema/report identity, seed,
+distance set, and output mode. Both standalone and design-port results preserve
+the exact execution chain `d2a_tactical@2 -> d2a_analytical_export@2`; consuming
+the Python result no longer erases the exporter stage.
 
 The module writes no file by default. Its stdout is deterministic JSON, and
 callers may place transient output only under ignored test-results paths:
@@ -376,15 +392,22 @@ witnesses, projection/return evidence, the primary v2 diagnostic, retained
 source diagnostics, residual ledger, blocked claims, maturity, authority,
 covariance/deduplication identity, a closed Git-derived execution receipt, and
 result digest. The receipt binds the exact implementation commit/tree, closed
-path inventory, per-file blobs, bundle digest, adapter/profile/request/result
-versions, source locks, and request/result digests.
+25-path inventory (including `package.json`, `package-lock.json`, and the
+analysis TypeScript configuration), per-file blobs, bundle digest, exact
+adapter chain, profile/request/result versions, source locks, and request/result
+digests. `verifyRegisteredExecutionReceipt` authenticates those values against
+the committed machine-readable
+`docs/evidence/wp-015d2b-implementation-lock.json`, the actual Git commit/tree/
+blob graph, and the current same-repository authority/model/config blobs. A
+self-consistent invented receipt therefore remains structural data and cannot
+earn source-bound M2 evaluation.
 
 After the current in-progress implementation-review repairs:
 
 | Example | Request digest | Result digest |
 | --- | --- | --- |
-| V4 transcript | `2af351b11b8ca0e438035a3309f6b88b9d383cc9601f916f5ccacf7106209b36` | `60ea723359484bbfb4bf23574f4dcab3537022a95270c99395d5ec04c1444539` |
-| D2A F3 pressure | `b1f2dcd40d6ae24495738499a7254a90372fc6af79276616f8b30f1d6460609d` | `0192e0a3471dfdc00e202c2be855fde16e2aeef2ba4d967fed87c5bf29fff4d7` |
+| V4 transcript | `2af351b11b8ca0e438035a3309f6b88b9d383cc9601f916f5ccacf7106209b36` | `0d41d1b209020ccba9323630f2e363466b6e9b68f1c8b3796a5bd49f2058cd3d` |
+| D2A F3 pressure | `b1f2dcd40d6ae24495738499a7254a90372fc6af79276616f8b30f1d6460609d` | `87ff1b67e2d7015825fc738d116e9d4af4a45874bdcb84bb3497324c870217aa` |
 
 Omit `--output` to use
 `test-results/crpm-world/<request-id>-result.json`. Identical request content
@@ -419,10 +442,16 @@ does not average axes or encode a general win-rate threshold. First-actor and
 distance rates, forced openings, recurrence, turn limits, mean turns, action or
 Relic frequency, resource use, and policy-pair results remain independent
 scalar probes.
+For V4, accepted, rejected, and mutated command counts and authoritative-event
+count are re-derived from contained edge responses and compared as exact
+id/value/unit/scope records. Altering a displayed value while retaining its id,
+receipt, and result digest downgrades evaluation to M1 just as a D2A probe-bundle
+mismatch does.
 
 Maturity is source-bound and non-promotional. The current evaluator accepts only
 registered historical pressure results, verifies exact source locks, report or
-transition witnesses, the sealed execution receipt, versioned cut, full
+transition witnesses, the approved and Git-authenticated execution receipt,
+versioned cut, full
 protected family, and the complete mandatory evidence family. Each D2A case
 also binds the canonical probe bundleâ€”probe ID, value, unit, and scopeâ€”by
 SHA-256 before false-closure evaluation. The F2/F3/F4/H2/H3 bundle digests are
@@ -446,8 +475,8 @@ an arbitrary identifier is never sufficient.
 For a V4 result:
 
 1. Retain the exact receipt-bound implementation commit
-   `1ce572247a0eb3c948900fd3b4cb5178b0ae0f84`, tree, per-file blobs, and bundle
-   digest for the adapter/profile code. Verify the recorded
+   `50aaf7d433bd8f131f71d6cff4d7a73636e256b6`, tree, per-file blobs, bundle
+   digest, and direct-child machine lock for the adapter/profile code. Verify the recorded
    historical `shared/simulation.ts` source/blob identity at its separate
    authority lock without checking out that pre-adapter commit to run the port.
 2. Recreate the registered ruleset, seed, and Calling with `createSimulation`.
@@ -460,8 +489,8 @@ For a V4 result:
 For a D2A result:
 
 1. Retain the exact receipt-bound implementation commit
-   `1ce572247a0eb3c948900fd3b4cb5178b0ae0f84`, tree, per-file blobs, and bundle
-   digest for the exporter/profile code. Verify the exact
+   `50aaf7d433bd8f131f71d6cff4d7a73636e256b6`, tree, per-file blobs, bundle
+   digest, and direct-child machine lock for the exporter/profile code. Verify the exact
    model and registered config/schema blobs at their separate D2A source lock;
    that historical lock predates this adapter and is not the execution checkout.
 2. Run `python -m analysis.crpm_world.adapters.d2a_export --case <f2|f3|f4|h2|h3>`.

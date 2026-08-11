@@ -61,14 +61,18 @@ Phaser/Socket.IO stack.
   on 2026-08-11** for the external implementation-review repairs as a bounded
   analysis-only subordinate package on
   `codex/wp-015d2b-crpm-world-design-port`. It is rooted at Worms_Port base
-  `af23717e61fea6995bf3b7209211ae1aaa2bb855`, with the final sealing
-  implementation frozen at `1ce572247a0eb3c948900fd3b4cb5178b0ae0f84`,
-  tree `fbe4c6c12ff4bbac68a68da31f4a6d20c04cfc45`, and bundle digest
-  `659a74ab914e3f4923e4442f9e8e67ae738cf9e4c76758ad23c95bcd7da9f106`.
+  `af23717e61fea6995bf3b7209211ae1aaa2bb855`, with the
+  authentication-repair implementation frozen at
+  `50aaf7d433bd8f131f71d6cff4d7a73636e256b6`, tree
+  `dca114f2d1bae266bbdeeda77f870c20f7552fbd`, and 25-file bundle digest
+  `133a4dcc3c474f167d67e7ab92528129dfbdf557ae3dc9d7a2cadf754490464f`,
+  authenticated by the direct-child machine lock at
+  `f0a006dc87562d7617d7553fe094ceceb71a8a63`.
   It source-locks the read-only
   CRPM methodology checkout at `995236df60924f790506cf5badec3c102abf3fd1`.
-  Its v2 strict contracts and adapters, v3 voyage, seven-cut versioned registry,
-  Git-derived execution receipt, canonical edge-derived summaries, explicit
+  Its v2 strict contracts/adapters, v3 result envelope, v4 full-composition
+  voyage, seven-cut versioned registry, Git-derived and approved-lock-authenticated
+  execution receipt, canonical edge-derived summaries, explicit
   obligation expiration, closed offline CLI, and exact-probe-bound historical
   evaluation lens are under review at `M2 local use`. Mandatory evidence is
   registry-fixed, world obligations and return assessments are separate,

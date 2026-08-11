@@ -7,9 +7,10 @@
 - **Current carrier maturity:** `M2 local use` for the core contracts, bounded adapters, offline design port, and evaluation lens; no `M3` claim
 - **Current product authority:** `none`; tested V4 adapter parity is authority-derived witness/support provenance only
 - **Worms_Port base:** `af23717e61fea6995bf3b7209211ae1aaa2bb855` on `codex/wp-015d2b-crpm-world-design-port`
-- **Frozen sealing implementation commit:** `1ce572247a0eb3c948900fd3b4cb5178b0ae0f84`
-- **Frozen implementation tree:** `fbe4c6c12ff4bbac68a68da31f4a6d20c04cfc45`
-- **Canonical 22-file implementation-bundle digest:** `659a74ab914e3f4923e4442f9e8e67ae738cf9e4c76758ad23c95bcd7da9f106`
+- **Frozen authentication-repair implementation commit:** `50aaf7d433bd8f131f71d6cff4d7a73636e256b6`
+- **Frozen implementation tree:** `dca114f2d1bae266bbdeeda77f870c20f7552fbd`
+- **Canonical 25-file implementation-bundle digest:** `133a4dcc3c474f167d67e7ab92528129dfbdf557ae3dc9d7a2cadf754490464f`
+- **Approved machine-readable lock:** `docs/evidence/wp-015d2b-implementation-lock.json`, committed as direct child `f0a006dc87562d7617d7553fe094ceceb71a8a63`
 - **CRPM source lock:** `995236df60924f790506cf5badec3c102abf3fd1` on `main`
 - **Contract date:** 2026-08-10
 - **Documentation/evidence closure date:** 2026-08-11
@@ -239,10 +240,10 @@ behavior or add or activate V5. It must not become a runtime or network service.
 | Canonical contracts | `analysis/crpm_world/canonical.ts`, `schemas.ts`, `types.ts`, `tsconfig.json` | Strict versioned JSON records, canonical key sorting with array-order preservation, and SHA-256 digests; unsafe numeric/non-JSON/timestamp content fails closed |
 | V4 authority adapter | `analysis/crpm_world/adapters/v4-authority-adapter.ts` | Exact direct transition parity for the declared V1/V4 scenarios without a `shared/` edit |
 | Cuts and projection | `analysis/crpm_world/cuts/`, `kernel/project-cut.ts`, `kernel/assess-quotient-transport.ts` | Seven closed versioned cuts, explicit authority-to-projection bridge edges, and an independently written finite quotient-transport checker with explicit alias pairs |
-| Voyage and return | `kernel/compose-edges.ts`, `trace-voyage.ts`, `derive-voyage-evidence.ts`, `residual-ledger.ts`, `assess-return.ts` | Schema/profile-aware composition, canonical edge-derived summaries, explicit expiration, referentially closed typed world obligations, and six separate return classes |
+| Voyage and return | `kernel/compose-edges.ts`, `trace-voyage.ts`, `derive-voyage-evidence.ts`, `residual-ledger.ts`, `assess-return.ts` | One shared full compatibility assessment, v4 digest-bound per-attempt witnesses, canonical edge-derived summaries, explicit expiration, referentially closed typed world obligations, and six separate return classes |
 | D2A adapter | `analysis/crpm_world/adapters/d2a_export.py` and `adapters/tests/` | Exact registered F2/F3/F4/H2/H3 report-digest checks and compact deterministic evidence; `analysis/tactical_model/model.py` is unchanged |
-| Offline design port | `analysis/crpm_world/design-port/`, `analysis/crpm_world/implementation-lock.ts`, `analysis/crpm_world/examples/`, `scripts/run-crpm-world-design.ts` | Closed `v4_authority@2` and `d2a_tactical@2` execution with a Git-derived receipt only; output confined below ignored `test-results/crpm-world/` |
-| Evaluation | `analysis/crpm_world/evaluation/` | V2 witness-linked qualitative profile, seven false-closure rules, exact value/unit/scope probe-bundle binding, and a source-bound historical evaluator capped at M2/ProductAuthority none |
+| Offline design port | `analysis/crpm_world/design-port/`, `analysis/crpm_world/implementation-lock.ts`, `analysis/crpm_world/examples/`, `scripts/run-crpm-world-design.ts`, `docs/evidence/wp-015d2b-implementation-lock.json` | Closed `v4_authority@2` and `d2a_tactical@2` execution with Git-derived receipts authenticated against an approved direct-child lock; output confined below ignored `test-results/crpm-world/` |
+| Evaluation | `analysis/crpm_world/evaluation/` | V2 witness-linked qualitative profile, seven false-closure rules, exact D2A bundle and edge-derived V4 probe binding, authenticated source/implementation maturity, and an M2/ProductAuthority-none ceiling |
 | Verification and boundary | `tests/crpm-world/`, `scripts/check-import-boundary.js`, `package.json`, `legal/source-manifest.json` | Focused destructive and parity tests plus existing simulation/tactical/build/compliance gates; the exact reference-only CRPM method pin is manifest-recorded and production imports from analysis remain forbidden |
 
 The reviewed example artifacts after the current in-progress
@@ -250,18 +251,19 @@ implementation-review repairs are:
 
 | Example | Request digest | Result digest | Maturity / authority |
 | --- | --- | --- | --- |
-| V4 four-command transcript | `2af351b11b8ca0e438035a3309f6b88b9d383cc9601f916f5ccacf7106209b36` | `60ea723359484bbfb4bf23574f4dcab3537022a95270c99395d5ec04c1444539` | `M2_local_use` / `none` |
-| D2A F3 pressure request | `b1f2dcd40d6ae24495738499a7254a90372fc6af79276616f8b30f1d6460609d` | `0192e0a3471dfdc00e202c2be855fde16e2aeef2ba4d967fed87c5bf29fff4d7` | `M2_local_use` / `none` |
+| V4 four-command transcript | `2af351b11b8ca0e438035a3309f6b88b9d383cc9601f916f5ccacf7106209b36` | `0d41d1b209020ccba9323630f2e363466b6e9b68f1c8b3796a5bd49f2058cd3d` | `M2_local_use` / `none` |
+| D2A F3 pressure request | `b1f2dcd40d6ae24495738499a7254a90372fc6af79276616f8b30f1d6460609d` | `87ff1b67e2d7015825fc738d116e9d4af4a45874bdcb84bb3497324c870217aa` | `M2_local_use` / `none` |
 
 ### Recorded deviations from the provisional design
 
 - Core contracts remain at the package root rather than a nested `contracts/`
   directory because `schemas.ts`, `types.ts`, and `canonical.ts` are already a
   cohesive local source surface.
-- The sealed executable envelope uses profile, adapter, request, result, cut,
-  and evaluation version 2, VoyageTrace version 3, and ResidualLedger and
-  WorldObligation version 2. Incompatible pre-sealing v1 request/result/profile/
-  adapter/cut records and voyage v1/v2 records are unsupported pre-release
+- The sealed executable envelope uses profile, adapter, request, cut, and
+  evaluation version 2, result version 3, VoyageTrace version 4, and
+  ResidualLedger and WorldObligation version 2. Incompatible pre-sealing v1
+  request/profile/adapter/cut records, result v1/v2 records, and voyage v1/v2/v3
+  records are unsupported pre-release
   artifacts rather than alternate meanings of the durable contract.
 - The D2A adapter is Python rather than a TypeScript model rewrite. It invokes
   stable public tactical-model functions and emits deterministic JSON for Zod
@@ -284,6 +286,13 @@ implementation-review repairs are:
 - Mandatory evidence probes are fixed by the adapter/config registry and always
   evaluated before optional scalar display selection. Each registered D2A case
   binds probe id, value, unit, and scope in one canonical bundle digest.
+  V4 transcript probe values are instead derived from the contained accepted,
+  rejected, mutated, and authoritative-event edge response fields and compared
+  as the same exact id/value/unit/scope records.
+- The final D2A execution receipt preserves the exact ordered chain
+  `d2a_tactical@2 -> d2a_analytical_export@2`. Its standalone request digest
+  binds the cut id/version, profile, protected-family digest, config schema,
+  and whole-report identity rather than a cut name alone.
 - World support obligations are typed separately from return assessments, may
   originate at an edge or initial carrier, use scenario/voyage/origin-scoped
   IDs, and are validated through opening, carry, discharge, or expiration.
@@ -413,12 +422,18 @@ The executable F2 recurrence is emitted in `returnAssessments`, never in
 
 ### `VoyageTrace`
 
-Version 3 stores ordered transition edges and accepted/rejected/incompatible
+Version 4 stores only v2 transition edges plus ordered accepted/rejected/incompatible
 attempts, command history, explicit cut changes, witness references, initial
 obligations, edge-derived accumulated residue and obligation history, final
 carrier and compatibility, replay support, terminal status, excluded claims,
-and re-entry instructions. One canonical derivation is shared by tracing and
-validation; result residue is derived from all contained traces. Composition
+re-entry instructions, and a versioned composition contract declaring external
+inputs, forbidden ports, and the cut-bridge policy. One pure compatibility
+assessment is shared by composition, tracing, derivation, and schema validation;
+every attempt carries a recomputable v2 witness bound to both exact edge digests
+and that contract. First-edge admission, ports, forbidden crossings, fixed-frame
+revision, turn ordering, rejected mutation, obligation propagation, and residual
+visibility are rechecked on imported traces. Result residue is derived from all
+contained traces. Composition
 fails closed with a structured witness while
 retaining the valid prefix and attempted edge. This package does not claim CRPM
 voyage-v2/v3 implementation, global recovery geometry, holonomy, or a graph-safe
@@ -462,11 +477,14 @@ bound to an exact source lock and transition witnesses. It cannot change the
 separate `productAuthority: none` field.
 
 The nested `RegisteredExecutionReceipt` is not caller-authored evaluation
-metadata. It is derived from Git and the closed implementation inventory and
+metadata. It is derived from Git and the closed 25-path implementation inventory and
 binds repository, implementation commit/tree, paths and blob OIDs, bundle
 digest, adapter/profile/request/result versions, source locks, request digest,
-and result digest. Result validation checks both the receipt binding and the
-outer digest.
+and result digest. The evaluator additionally verifies it against the approved
+machine-readable lock, actual Git commit/tree/path blobs, the exact adapter
+chain, and current same-repository source blobs. Structural schema validity or
+an internally consistent fictitious receipt cannot satisfy this authentication
+gate. Result validation checks both the receipt binding and the outer digest.
 
 ### `DiagnosticProfile`
 
