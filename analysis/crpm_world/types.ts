@@ -11,6 +11,9 @@ import type {
     ContractCatalogsSchema,
     DiagnosticAxisSchema,
     DiagnosticProfileSchema,
+    DiagnosticProfileV1Schema,
+    DiagnosticProfileV2Schema,
+    EvaluationObjectKindSchema,
     EdgePortBindingsSchema,
     EdgeCompositionResultSchema,
     EvidenceOriginSchema,
@@ -55,6 +58,9 @@ export type CompositionWitness = z.infer<typeof CompositionWitnessSchema>;
 export type ContractCatalogs = z.infer<typeof ContractCatalogsSchema>;
 export type DiagnosticAxis = z.infer<typeof DiagnosticAxisSchema>;
 export type DiagnosticProfile = z.infer<typeof DiagnosticProfileSchema>;
+export type DiagnosticProfileV1 = z.infer<typeof DiagnosticProfileV1Schema>;
+export type DiagnosticProfileV2 = z.infer<typeof DiagnosticProfileV2Schema>;
+export type EvaluationObjectKind = z.infer<typeof EvaluationObjectKindSchema>;
 export type EdgePortBindings = z.infer<typeof EdgePortBindingsSchema>;
 export type EdgeCompositionResult = z.infer<typeof EdgeCompositionResultSchema>;
 export type EvidenceOrigin = z.infer<typeof EvidenceOriginSchema>;

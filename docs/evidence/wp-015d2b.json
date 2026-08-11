@@ -22,7 +22,9 @@
     "At Worms_Port D2A-adapter gate base 5ff42a0e26ecd9cee80cb4c17f86404d5d1dc64d, invoke only registered public Python tactical-model functions, fail closed on config schema or whole-report digest drift, and emit deterministic JSON that validates as a strict CRPM-world WorldDesignResult.",
     "Reconstruct compact F2, F3, and H3 action voyages and digest-bound F4/H2 aggregate diagnostics while preserving all five historical statuses, one shared evidence covariance group, explicit unmodelled ports, and ProductAuthority none.",
     "At Worms_Port offline-port gate base abd4d6be3e49e86bc8b3dc9f468d82167df3dcef, admit only v4_authority@1 and d2a_tactical@1 through a strict deterministic request envelope with closed baseline/config, cut, scenario, seed, probe, port, activation, and declarative sequence validation.",
-    "Execute V4 commands only through the existing authority adapter and D2A requests only through the fixed registered Python exporter module, then emit strict digest-bound WorldDesignResult JSON only below ignored test-results/crpm-world output."
+    "Execute V4 commands only through the existing authority adapter and D2A requests only through the fixed registered Python exporter module, then emit strict digest-bound WorldDesignResult JSON only below ignored test-results/crpm-world output.",
+    "At Worms_Port evaluation-gate base 683a4d9cbbdd58ff074a711d68383083dc89af8b, make a strict v2 witness-linked qualitative DiagnosticProfile the primary evaluation surface while retaining v1 source-diagnostic compatibility and moving scalar probes into a separate digest-bound evaluation bundle field.",
+    "Detect H2 aggregate port-split, F3 recurrence-versus-balance, F4 structural-versus-initiative, H3 delayed-response, V4 adapter-parity, and compact-trace false closure; gate M0 through M3 deterministically without a generic balance threshold or automatic product-authority promotion."
   ],
   "non_goals": [
     "Rewrite the tactical model in TypeScript, change any tactical-model policy/action/transition/opening/recurrence/aggregate result, check all 250 traces per case into Git, or treat a D2A adapter as production authority.",
@@ -34,6 +36,7 @@
     "npm run check:crpm-world-types",
     "npm run test:crpm-world",
     "npm run test:crpm-world-design",
+    "npm run test:crpm-world-evaluation",
     "npm run test:d2a-adapter",
     "npm run test:simulation",
     "npm run test:tactical-model",
@@ -52,17 +55,22 @@
     {
       "command": "npm run check:crpm-world-types",
       "status": "pass",
-      "detail": "The dedicated strict TypeScript project passed for canonical helpers, Zod contracts, inferred types, cut/project/transport and voyage/composition/return kernels, the closed offline registry/request/executor, CLI entry point, and all focused tests."
+      "detail": "The dedicated strict TypeScript project passed for canonical helpers, versioned Zod contracts, inferred types, cut/project/transport and voyage/composition/return kernels, the closed offline port, the v2 diagnostic/evaluation bundle, false-closure rules, maturity gates, CLI entry point, and all focused tests."
     },
     {
       "command": "npm run test:crpm-world",
       "status": "pass",
-      "detail": "All 53 focused Node/tsx tests passed. The prior 43 contract, authority, cut/projection, voyage/composition/return, and D2A cross-language tests remain green; ten offline-port tests cover both registered executors, digest/order behavior, admission failures, output confinement, and the production import boundary."
+      "detail": "All 60 focused Node/tsx tests passed. The prior 53 contract, authority, cut/projection, voyage/composition/return, D2A, and offline-port tests remain green; seven evaluation tests cover H2/F3/F4/H3/V4 false closure, compact-trace guarding, deterministic witness-linked blocked claims, scalar separation, and M0 through M3 authority gating."
     },
     {
       "command": "npm run test:crpm-world-design",
       "status": "pass",
       "detail": "All 10 focused offline-port tests passed: known V4 and D2A requests, repeat determinism, object-key versus action-order digest semantics, unknown adapter/config, live/forbidden ports, cut/seed/domain rejection, arbitrary operator rejection, output confinement, and production import isolation."
+    },
+    {
+      "command": "npm run test:crpm-world-evaluation",
+      "status": "pass",
+      "detail": "All seven focused evaluation tests passed. H2 aggregate parity, F3 recurrence repair, F4 structural success, H3 delayed response, and V4 adapter parity remain blocked from M3; compact output stays source-reference-bearing, and an otherwise clean M3 retains ProductAuthority none without a separate owner decision."
     },
     {
       "command": "npm run test:d2a-adapter",
@@ -110,19 +118,19 @@
       "role": "worms_port_planner",
       "reviewer": "Codex",
       "decision": "pass",
-      "detail": "Confirmed the offline port remains a closed analysis library/CLI with exactly two adapters, no dynamic executable surface, no runtime endpoint, no candidate/V5 rule, and no production-side analysis import."
+      "detail": "Confirmed the offline port and evaluation lens remain closed analysis surfaces with exactly two adapters, no dynamic executable surface, no runtime endpoint, no candidate/V5 rule, no scalar pass threshold, and no production-side analysis import."
     },
     {
       "role": "worms_port_test_worker",
       "reviewer": "Codex",
       "decision": "pass",
-      "detail": "Confirmed strict request/digest validation, fixed V4 and Python execution paths, voyage/replay/projection evidence, deterministic output, fail-closed adapter/config/cut/domain/seed/port/operator checks, and source-file overwrite prevention."
+      "detail": "Confirmed strict request/digest validation, fixed V4 and Python execution paths, deterministic v2 qualitative profiles, separate probes, six witness-linked false-closure rules, M0 through M3 gates, fail-closed admission checks, and source-file overwrite prevention."
     },
     {
       "role": "worms_port_docs_keeper",
       "reviewer": "Codex",
       "decision": "pass",
-      "detail": "Confirmed the README, example commands, contract status, source/config locks, output path policy, evidence covariance, V4 versus D2A authority distinction, and non-promotion guards agree."
+      "detail": "Confirmed the README, contract status, source/config locks, evaluation language, scalar-probe separation, pressure-case history, maturity/product-authority distinction, evidence covariance, and non-promotion guards agree."
     }
   ],
   "skipped_checks": [
@@ -133,6 +141,7 @@
     "The core contracts and bounded historical simulation authority adapter are M2 local use with authority-adapter parity only. The D2A exporter is M2 local analytical use with ProductAuthority none. No ambient production catalog, M3 landfall, ruleset approval, or production activation exists.",
     "F2/F3/F4/H2/H3 reuse the same tactical model, related policy/scenario assumptions, and authority fixture; their five reports, seven action witnesses, probes, rerenders, and reviewer agreement do not multiply independent empirical weight.",
     "The offline registry is deliberately static. Adding an adapter, config, cut, scenario family, probe, port, or executable path requires a reviewed code change rather than request-time registration.",
+    "The v2 evaluation profile is structured and deterministic but qualitative. Its reasons, witnesses, false-closure detections, and maturity gates preserve review discipline; they do not replace owner judgment, validate live player balance, or convert correlated D2A sweeps into independent evidence.",
     "The repaired movement-support cut passes only for two supplied states and one declared move command at seed 3237998097. It is not proof of a unique, minimal, all-command, all-seed, or globally support-complete carrier.",
     "Protected-equivalent and invariant-region rows can classify supplied decoder/membership evidence, but this gate provides no domain-specific decoder proof or invariant-region predicate. Unprovided evidence remains not_assessed rather than inferred.",
     "Strict schemas can validate declared structure, scope, lineage, and catalog membership but cannot prove that a deterministic-continuation, preservation, maturity, or authority claim is semantically true; later bounded witnesses and owner decisions remain mandatory.",

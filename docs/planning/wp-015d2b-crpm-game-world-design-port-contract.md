@@ -2,9 +2,9 @@
 
 ## Status
 
-- **State:** owner-requested, in progress, offline World Design Port gate complete
+- **State:** owner-requested, in progress, evaluation gate complete
 - **Relationship:** analysis-only child of the active WP-015D2A tactical-game-model decision line
-- **Current carrier maturity:** `M2 local use` for the core contracts and bounded historical simulation authority adapter; no `M3` claim
+- **Current carrier maturity:** `M2 local use` for the core contracts, bounded adapters, offline design port, and evaluation lens; no `M3` claim
 - **Current product authority:** `authority-adapter parity` for declared, tested V4 transition witnesses only; D2A evidence remains `none`
 - **Worms_Port base:** `af23717e61fea6995bf3b7209211ae1aaa2bb855` on `codex/wp-015d2b-crpm-world-design-port`
 - **CRPM source lock:** `995236df60924f790506cf5badec3c102abf3fd1` on `main`
@@ -21,7 +21,9 @@ H3 without changing the tactical model. A closed offline library/CLI now
 admits only the V4 authority and D2A tactical adapters and writes deterministic
 results only below ignored test output. No UI, network endpoint, runtime
 service, M3 landfall, ruleset approval, production activation, or broad
-simulation-equivalence result exists at this gate.
+simulation-equivalence result exists at this gate. The primary v2 diagnostic
+surface now keeps qualitative, witness-linked axes separate from scalar probes
+and applies six explicit false-closure rules plus deterministic maturity gates.
 
 ## Strongest Licensed Claim
 
@@ -348,9 +350,12 @@ excluded claims, and these non-scalar axes:
 - `return_strength`; and
 - `closure_risk`.
 
-Scalar probes are subordinate annotations. Aggregate parity, stability,
-cleanliness, or low visible residue cannot independently prove preservation,
-balance, sufficient return, or landfall.
+The v2 implementation gives every axis a closed qualitative value, reason,
+digest-bearing witness references, visible residue, and structured blocked-
+claim references. Scalar probes remain outside that profile in the evaluation
+bundle. Aggregate parity, stability, cleanliness, or low visible residue cannot
+independently prove preservation, balance, sufficient return, or landfall, and
+the evaluator does not encode a generic balance-rate threshold.
 
 ### `CarrierMaturity`
 
@@ -362,10 +367,13 @@ A Worms_Port-local L4+ heuristic, not universal CRPM maturity doctrine:
 - `M3 bounded design landfall` — a reviewed, reproducible local carrier with
   declared support, residue, and transfer-back for its target.
 
-The contract and bounded historical simulation authority adapter are now `M2
-local use`: they are tested within the declared analysis-only transition-witness
-scope. This does not establish `M3 bounded design landfall`, complete carrier
-support, broad replay equivalence, or production sufficiency.
+The contracts, bounded adapters, offline design port, and evaluation lens are
+now `M2 local use`: they are tested within their declared analysis-only scope.
+This does not establish `M3 bounded design landfall`, complete carrier support,
+broad replay equivalence, or production sufficiency. M3 requires all declared
+acceptance pressure cases to pass with re-enterable evidence and no active
+false-closure rule; it still leaves ProductAuthority `none` without a separate
+owner-approved versioned-ruleset decision.
 
 ### `ProductAuthority`
 
@@ -511,12 +519,12 @@ An exact-commit reviewer must be able to reproduce or re-inspect the path.
 
 ## Acceptance Pressure Cases
 
-The future seed implementation must reproduce these bounded cases without
+The executable analysis package reproduces these bounded cases without
 reopening, registering, or promoting a gameplay candidate:
 
 | Case | Registered source | Required result and blocked inference |
 | --- | --- | --- |
-| V4 authority parity | `shared/simulation.ts`, exporter, authoritative fixture, and TS test | Compare exact declared state/actor/command/turn and accepted/mutated/state/ordered-events/error result. Existing structural fixture is not general parity; the stronger bounded result remains future work. |
+| V4 authority parity | `shared/simulation.ts`, exporter, authoritative fixture, and TS test | Exact declared state/actor/command/turn and accepted/mutated/state/ordered-events/error results now match in bounded V1 and V4 tests. This is not general simulation or replay parity. |
 | Thin V4 projection | Required reachable movement witness pair above | Emit the explicit same-source-key/different-target-key pair and classify as `relation_or_kernel`; never select a representative. |
 | Repaired V4 projection | Same witness support, repaired cut including `movementRemaining` | Remove only that witnessed split over the declared one-step movement domain; do not claim global or minimal state sufficiency. |
 | F2 recurrence | `v5-range-damage-forward-seam-pin-escape-slack-spun-cocoon-threadball-unweave-candidate-f2.json` | Reconstruct the exact prepare/Unweave recurrence and preserve `rejected` status. |
@@ -548,9 +556,9 @@ The following promotions are explicitly blocked:
 - M3 or `authority-adapter parity` into production activation; and
 - a domain motif into an undeclared CRPM transition kind.
 
-This package makes no claim of an implemented port or adapter, general V4
-parity, a globally support-complete carrier, deterministic continuation outside
-a declared family, a graph-safe CRPM schema, a universal edge/return taxonomy,
+This package makes no claim of general V4 parity beyond declared transcripts, a
+globally support-complete carrier, deterministic continuation outside a
+declared family, a graph-safe CRPM schema, a universal edge/return taxonomy,
 source-history recovery, realized voyage/holonomy, D2A closure, or product
 authority.
 
@@ -577,18 +585,13 @@ Stop and reopen the contract before implementation if work would require:
 - promoting this application profile into CRPM schema, ontology, graph safety,
   or doctrine.
 
-## Future Implementation and Verification Gates
+## Implementation and Verification Gates
 
-Before the first executable D2B edit, owner acceptance of this contract must be
-recorded and the implementation step must freeze exact analysis package paths,
-cut field lists, registered adapter/configuration catalogs, admissible
-scenario/action/policy/seed domains, witness identities, deterministic
-serialization/digest rules, output path, and test fixtures. At that point—not
-at this contract-only gate—create `docs/evidence/wp-015d2b.json` with the exact
-starting commit, branch, CRPM source lock, contract reference, verification
-commands, and eventual result.
-
-The later implementation must pass these explicit gates:
+Owner acceptance was recorded before executable D2B work. Exact analysis paths,
+cut fields, closed adapter/config catalogs, bounded domains, witness identities,
+canonical digest rules, output confinement, and fixtures are recorded in the
+implementation and `docs/evidence/wp-015d2b.json`. The implementation must
+continue to pass these explicit gates:
 
 1. **Contract/schema tests:** validate every required object, closed catalog,
    scope, mandatory transition field, evidence lineage, blocked claim, and
@@ -614,6 +617,6 @@ Browser and physical-device tests are not required while no runtime-facing code
 changes. Any later runtime-facing package must reopen the verification plan and
 apply the repository's browser matrix and release-device rules.
 
-This step ends after the sole contract file and applicable documentation and
-work-package checks. It intentionally creates no D2B evidence record, changes
-no Execution Pointer, and starts no implementation.
+The Execution Pointer remains on WP-015D2A. This implementation creates no
+runtime import path, player-visible change, candidate activation, or product
+authority.

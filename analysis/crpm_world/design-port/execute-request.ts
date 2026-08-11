@@ -16,6 +16,8 @@ import { V4_CUT_IDS } from '../cuts/v4-cuts';
 import { assessQuotientTransport } from '../kernel/assess-quotient-transport';
 import { projectV4CommandSample, projectV4SimulationState, type V4CommandSample } from '../kernel/project-cut';
 import { traceVoyage } from '../kernel/trace-voyage';
+import { evaluateWorldDesignResult } from '../evaluation/evaluate';
+import type { EvaluationBundle, EvaluationDeclaration } from '../evaluation/schemas';
 import {
     VoyageTraceV2Schema,
     WorldDesignResultSchema,
@@ -23,7 +25,7 @@ import {
 } from '../schemas';
 import type {
     DiagnosticAxis,
-    DiagnosticProfile,
+    DiagnosticProfileV1,
     ProjectionTransportAssessment,
     WorldDesignResult
 } from '../types';
@@ -66,7 +68,7 @@ function v4Diagnostic(
     mutated: number,
     eventCount: number,
     witnessIds: readonly string[]
-): DiagnosticProfile {
+): DiagnosticProfileV1 {
     const values = new Map<string, number>([
         ['v4.accepted_commands', accepted],
         ['v4.rejected_commands', rejected],
@@ -238,11 +240,14 @@ function executeD2A(request: OfflineWorldDesignRequest): WorldDesignResult {
         }
     );
     const analytical = WorldDesignResultSchema.parse(JSON.parse(encoded));
-    const diagnostics = analytical.diagnostics.map((diagnostic) => ({
-        ...diagnostic,
-        scalarProbes: diagnostic.scalarProbes.filter((probe) => request.requestedScalarProbes.includes(probe.probeId)),
-        excludedClaims: unique([...diagnostic.excludedClaims, ...request.explicitExclusions])
-    }));
+    const diagnostics = analytical.diagnostics.map((diagnostic) => diagnostic.schemaVersion === 1
+        ? {
+            ...diagnostic,
+            scalarProbes: diagnostic.scalarProbes.filter((probe) => request.requestedScalarProbes.includes(probe.probeId)),
+            excludedClaims: unique([...diagnostic.excludedClaims, ...request.explicitExclusions])
+        }
+        : diagnostic
+    );
     const provisional = WorldDesignResultSchema.parse(analytical);
     const projectionAssessments = uniqueAssessments([
         ...provisional.projectionAssessments,
@@ -277,11 +282,106 @@ function uniqueAssessments(assessments: readonly ProjectionTransportAssessment[]
     });
 }
 
-export function executeWorldDesignRequest(input: unknown): WorldDesignResult {
+function executeWorldDesignRequestBase(input: unknown): {
+    request: OfflineWorldDesignRequest;
+    result: WorldDesignResult;
+} {
     const request = parseOrBuildOfflineWorldDesignRequest(input);
-    return request.adapter.id === OFFLINE_ADAPTER_IDS.v4Authority
+    const result = request.adapter.id === OFFLINE_ADAPTER_IDS.v4Authority
         ? executeV4(request)
         : executeD2A(request);
+    return { request, result };
+}
+
+function evaluationDeclaration(
+    request: OfflineWorldDesignRequest,
+    result: WorldDesignResult
+): EvaluationDeclaration {
+    const sourceDigest = sha256Digest({
+        sourceLocks: result.sourceLocks,
+        deduplicationIdentity: result.deduplicationIdentity
+    });
+    const witnessReferences = [{
+        witnessId: `evaluation-source-${sourceDigest.slice(0, 24)}`,
+        digest: sourceDigest
+    }];
+    const pressureCaseId = request.adapter.id === OFFLINE_ADAPTER_IDS.v4Authority
+        ? 'v4_adapter' as const
+        : getD2AConfigRegistration(request.baseline.id).caseId;
+    const residueDeclaration = unique([
+        ...result.residualLedger.excludedUnmodelledResidue,
+        ...result.residualLedger.unresolvedObligations.map((item) => `Unresolved obligation: ${item}.`),
+        'The declared scope, source authority, and product-authority boundary remain visible residue.'
+    ]);
+    return {
+        schemaVersion: 1,
+        evaluationId: `${request.requestId}-evaluation`,
+        evaluationVersion: 1,
+        object: {
+            kind: 'candidate_design_result',
+            objectRef: result.resultId
+        },
+        activeFrame: {
+            frameRef: `${request.requestId}/frame`,
+            cutId: request.cut.id,
+            cutVersion: request.cut.version,
+            admissibleScope: request.scenarioDomain
+        },
+        protectedFamily: request.protectedFamily,
+        excludedClaims: request.explicitExclusions,
+        pressureCaseId,
+        witnessReferences,
+        residueDeclaration,
+        returnDeclaration: request.adapter.id === OFFLINE_ADAPTER_IDS.v4Authority
+            ? 'Re-enter the exact authority seed and replay the ordered actor, expected-turn, and command declarations.'
+            : 'Re-enter the registered config and schema version through the fixed D2A exporter, then verify report and witness digests.',
+        boundedExecution: {
+            passed: true,
+            reason: 'The registered adapter completed the declared bounded request and produced a schema-valid deterministic result.',
+            witnessReferences
+        },
+        acceptancePressureCases: pressureCaseId === 'v4_adapter'
+            ? []
+            : [{
+                caseId: pressureCaseId,
+                status: 'not_tested',
+                reenterable: true,
+                reason: 'The historical pressure result is preserved, but this gate does not promote it into an acceptance pass.',
+                witnessReferences
+            }],
+        assertedClaims: [],
+        ownerDecision: {
+            versionedRulesetApproved: false,
+            decisionRef: null
+        }
+    };
+}
+
+export function executeWorldDesignEvaluation(input: unknown): {
+    result: WorldDesignResult;
+    evaluation: EvaluationBundle;
+} {
+    const { request, result: baseResult } = executeWorldDesignRequestBase(input);
+    const declaration = evaluationDeclaration(request, baseResult);
+    const preliminaryEvaluation = evaluateWorldDesignResult(declaration, baseResult);
+    const { resultDigest: _baseDigest, ...basePayload } = baseResult;
+    const result = buildWorldDesignResult({
+        ...basePayload,
+        diagnostics: [preliminaryEvaluation.diagnosticProfile, ...baseResult.diagnostics],
+        blockedClaims: unique([
+            ...baseResult.blockedClaims,
+            ...preliminaryEvaluation.falseClosureDetections
+                .filter((detection) => detection.triggered)
+                .map((detection) => `${detection.blockedClaimId}: ${detection.reason}`)
+        ]),
+        maturity: preliminaryEvaluation.maturityAssessment.maturity
+    });
+    const evaluation = evaluateWorldDesignResult(declaration, result);
+    return { result, evaluation };
+}
+
+export function executeWorldDesignRequest(input: unknown): WorldDesignResult {
+    return executeWorldDesignEvaluation(input).result;
 }
 
 function within(parent: string, target: string): boolean {

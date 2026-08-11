@@ -849,7 +849,7 @@ export const ScalarProbeSchema = z.strictObject({
     scope: TrimmedStringSchema
 });
 
-export const DiagnosticProfileSchema = z.strictObject({
+export const DiagnosticProfileV1Schema = z.strictObject({
     schemaVersion: SchemaVersionSchema,
     diagnosticId: IdentifierSchema,
     diagnosticVersion: VersionSchema,
@@ -867,6 +867,128 @@ export const DiagnosticProfileSchema = z.strictObject({
     blockedClaims: NonEmptyDescriptionListSchema,
     excludedClaims: DescriptionListSchema
 });
+
+export const EvaluationObjectKindSchema = z.enum([
+    'transition',
+    'voyage',
+    'candidate_design_result'
+]);
+
+export const DiagnosticWitnessReferenceSchema = z.strictObject({
+    witnessId: IdentifierSchema,
+    digest: DigestSchema
+});
+
+export const WitnessLinkedBlockedClaimSchema = z.strictObject({
+    claimId: IdentifierSchema,
+    reason: TrimmedStringSchema,
+    witnessReferences: z.array(DiagnosticWitnessReferenceSchema).min(1).max(256)
+});
+
+function qualitativeAxis<T extends [string, ...string[]]>(values: T) {
+    return z.strictObject({
+        value: z.enum(values),
+        reason: TrimmedStringSchema,
+        witnessReferences: z.array(DiagnosticWitnessReferenceSchema).min(1).max(256),
+        visibleResidue: DescriptionListSchema,
+        blockedClaimIds: IdentifierListSchema
+    });
+}
+
+export const PathPressureAxisSchema = qualitativeAxis([
+    'viable_routes',
+    'mixed_routes',
+    'forced_route_pressure',
+    'blocked_continuation',
+    'not_assessed'
+]);
+
+export const ResidueVisibilityAxisSchema = qualitativeAxis([
+    'explicit',
+    'partial',
+    'hidden',
+    'not_assessed'
+]);
+
+export const LocalReorganizationAxisSchema = qualitativeAxis([
+    'material_reorganization',
+    'partial_reorganization',
+    'delay_only',
+    'same_line',
+    'not_assessed'
+]);
+
+export const CutFidelityAxisSchema = qualitativeAxis([
+    'within_cut',
+    'boundary_residue',
+    'cut_violation',
+    'not_assessed'
+]);
+
+export const ReturnStrengthAxisSchema = qualitativeAxis([
+    'reenterable',
+    'partially_reenterable',
+    'not_reenterable',
+    'not_assessed'
+]);
+
+export const ClosureRiskAxisSchema = qualitativeAxis([
+    'low',
+    'present',
+    'high',
+    'blocked_landfall'
+]);
+
+export const DiagnosticProfileV2Schema = z.strictObject({
+    schemaVersion: z.literal(2),
+    diagnosticId: IdentifierSchema,
+    diagnosticVersion: VersionSchema,
+    evaluationObject: z.strictObject({
+        kind: EvaluationObjectKindSchema,
+        objectRef: IdentifierSchema
+    }),
+    activeFrame: z.strictObject({
+        frameRef: IdentifierSchema,
+        cutId: IdentifierSchema,
+        cutVersion: VersionSchema,
+        admissibleScope: ScenarioDomainSchema
+    }),
+    protectedFamily: NonEmptyDescriptionListSchema,
+    excludedClaims: NonEmptyDescriptionListSchema,
+    pathPressure: PathPressureAxisSchema,
+    residueVisibility: ResidueVisibilityAxisSchema,
+    localReorganization: LocalReorganizationAxisSchema,
+    cutFidelity: CutFidelityAxisSchema,
+    returnStrength: ReturnStrengthAxisSchema,
+    closureRisk: ClosureRiskAxisSchema,
+    blockedClaims: z.array(WitnessLinkedBlockedClaimSchema).min(1).max(256)
+}).superRefine((profile, context) => {
+    const claimIds = new Set(profile.blockedClaims.map((claim) => claim.claimId));
+    const axes = [
+        profile.pathPressure,
+        profile.residueVisibility,
+        profile.localReorganization,
+        profile.cutFidelity,
+        profile.returnStrength,
+        profile.closureRisk
+    ];
+    for (let axisIndex = 0; axisIndex < axes.length; axisIndex += 1) {
+        for (const claimId of axes[axisIndex].blockedClaimIds) {
+            if (!claimIds.has(claimId)) {
+                context.addIssue({
+                    code: 'custom',
+                    path: [['pathPressure', 'residueVisibility', 'localReorganization', 'cutFidelity', 'returnStrength', 'closureRisk'][axisIndex], 'blockedClaimIds'],
+                    message: `Axis references undeclared blocked claim ${claimId}.`
+                });
+            }
+        }
+    }
+});
+
+export const DiagnosticProfileSchema = z.discriminatedUnion('schemaVersion', [
+    DiagnosticProfileV1Schema,
+    DiagnosticProfileV2Schema
+]);
 
 export const DesignStepSchema = z.strictObject({
     sequence: NonNegativeSafeIntegerSchema,

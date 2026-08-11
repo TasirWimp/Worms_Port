@@ -23,8 +23,8 @@ adapter, but it is not a server, gameplay system, or candidate implementation.
 - `canonical.ts` validates deterministic JSON, deep-copies object content in
   sorted-key order, serializes canonical JSON, and produces lowercase SHA-256
   content digests.
-- `schemas.ts` contains the strict Zod v1 contracts, digest builders, and closed
-  catalog validation for design requests.
+- `schemas.ts` contains the strict versioned Zod contracts, digest builders,
+  and closed catalog validation for design requests.
 - `types.ts` exports TypeScript types inferred from the Zod contracts so the
   runtime validator and compile-time surface cannot drift independently.
 - `adapters/v4-authority-adapter.ts` clones and validates caller inputs, calls
@@ -59,6 +59,13 @@ adapter, but it is not a server, gameplay system, or candidate implementation.
 - `design-port/execute-request.ts` executes the registered V4 transcript or the
   fixed D2A Python exporter boundary, validates the result, and restricts file
   output to ignored `test-results/crpm-world/` JSON files.
+- `evaluation/schemas.ts` defines the strict, digest-bound evaluation
+  declaration, six false-closure detections, maturity assessment, and
+  evaluation bundle.
+- `evaluation/evaluate.ts` renders the v2 witness-linked qualitative profile,
+  keeps scalar probes in the bundle beside rather than inside that profile,
+  and applies deterministic M0 through M3 gates without inventing a balance
+  threshold.
 
 The core records are `WorldCarrierReference`, `WorldCutDefinition`,
 `PortContract`, `WorldTransitionEdge`, `TransitionWitness`, `ResidualLedger`,
@@ -69,7 +76,10 @@ maturity and product authority remain separate enums.
 ## Deterministic artifact rules
 
 Top-level seed contracts use `schemaVersion: 1`, reject unknown fields, and are
-JSON-serializable. `WorldTransitionEdge` retains its accepted v1 shape and adds
+JSON-serializable. `DiagnosticProfile` retains its source-compatible v1 shape
+and adds v2 for the primary structured qualitative evaluation; scalar probes
+are deliberately absent from v2 and remain a separate evaluation-bundle field.
+`WorldTransitionEdge` retains its accepted v1 shape and adds
 v2 for mandatory explicit context/action/response/evidence/support/return port
 bindings; the authority adapter emits v2. `ProjectionTransportAssessment`
 retains its accepted v1 shape and adds v2 so every aliased source class carries
@@ -237,6 +247,42 @@ Omit `--output` to use
 produces identical request/result digests; object-key order is irrelevant and
 command/policy list order remains meaningful.
 
+## Evaluation lens
+
+Every v2 diagnostic declares the evaluated transition, voyage, or candidate
+design result; active frame and cut; admissible scenario scope; protected
+family; and excluded claims. Its six axes use closed qualitative values with a
+reason, digest-bearing witness references, visible residue, and references to
+structured blocked claims:
+
+- `pathPressure` distinguishes viable/mixed routes, forced-route pressure, and
+  blocked continuation;
+- `residueVisibility` keeps resource, position, status, damage, timing,
+  authority, and unmodelled residue explicit;
+- `localReorganization` distinguishes material reorganization from partial,
+  delayed, or same-line continuation;
+- `cutFidelity` records whether the conclusion remains within the declared
+  terrain, aim, policy, distance, information, and authority boundary;
+- `returnStrength` records deterministic re-entry support without inferring a
+  stronger return class; and
+- `closureRisk` blocks local coherence from becoming design landfall while
+  distance, timing, support, policy, or authority residue remains.
+
+The evaluator implements the named H2 aggregate-port-split, F3
+recurrence-versus-balance, F4 structural-versus-initiative, H3 delayed-response,
+V4 parity-versus-landfall, and rendered-trace-versus-full-relation rules. It
+does not average axes or encode a general win-rate threshold. First-actor and
+distance rates, forced openings, recurrence, turn limits, mean turns, action or
+Relic frequency, resource use, and policy-pair results remain independent
+scalar probes.
+
+Maturity is deterministic but non-promotional: M0 requires coherent output,
+M1 the declared cut/family/domain/witness/residue/return package, M2 passing
+bounded execution, and M3 re-enterable success across every declared acceptance
+pressure case with no active false closure. Even M3 returns
+`productAuthority: none` unless a separate owner-approved versioned-ruleset
+decision reference is supplied.
+
 ## Deliberately deferred
 
 - concrete production or candidate catalogs;
@@ -254,6 +300,7 @@ shape will not make V4 and D2A share authority or dynamics.
 npm run check:crpm-world-types
 npm run test:crpm-world
 npm run test:crpm-world-design
+npm run test:crpm-world-evaluation
 ```
 
 The focused scripts are intentionally not part of `verify:full` at this seed

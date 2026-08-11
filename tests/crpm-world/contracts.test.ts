@@ -262,6 +262,8 @@ test('return obligations remain separately typed and do not imply product author
 
 test('diagnostic axes stay non-scalar while scalar probes remain subordinate', () => {
     const profile = makeWorldDesignResult().diagnostics[0];
+    assert.equal(profile.schemaVersion, 1);
+    if (profile.schemaVersion !== 1) throw new Error('Fixture requires the v1 compatibility profile.');
     assert.equal(DiagnosticProfileSchema.safeParse(profile).success, true);
     assert.equal(DiagnosticProfileSchema.safeParse({
         ...profile,

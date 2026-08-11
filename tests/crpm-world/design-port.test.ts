@@ -44,8 +44,11 @@ test('known V4 transcript executes through authority, voyage, replay, and projec
     assert.equal(result.traces[0].replaySupport.stateHashRefs.length, 5);
     assert.equal(result.projectionAssessments.length, 1);
     assert.equal(result.projectionAssessments[0].deterministicMapEligibility, true);
+    assert.equal(result.diagnostics[0].schemaVersion, 2);
+    const sourceDiagnostic = result.diagnostics.find((diagnostic) => diagnostic.schemaVersion === 1);
+    assert.ok(sourceDiagnostic);
     assert.deepEqual(
-        result.diagnostics[0].scalarProbes.map((probe) => probe.value),
+        sourceDiagnostic.scalarProbes.map((probe) => probe.value),
         [4, 0, 4, 6]
     );
 });
@@ -60,8 +63,11 @@ test('known D2A pressure request invokes only the registered analytical exporter
     assert.deepEqual(result.traces.map((trace) => trace.voyageId), ['d2a-f3-pressure-voyage']);
     assert.equal(result.transitionWitnesses.length, 2);
     assert.equal(result.projectionAssessments.length, 1);
+    assert.equal(result.diagnostics[0].schemaVersion, 2);
+    const sourceDiagnostic = result.diagnostics.find((diagnostic) => diagnostic.schemaVersion === 1);
+    assert.ok(sourceDiagnostic);
     assert.deepEqual(
-        result.diagnostics[0].scalarProbes.map((probe) => [probe.probeId, probe.value]),
+        sourceDiagnostic.scalarProbes.map((probe) => [probe.probeId, probe.value]),
         [
             ['f3.threadback_distance', 64],
             ['f3.escape_slack_spent', 64],
