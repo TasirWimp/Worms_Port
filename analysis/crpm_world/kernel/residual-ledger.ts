@@ -20,7 +20,7 @@ function appendUnique(target: string[], values: readonly string[]): void {
 
 export function emptyResidualLedger(): ResidualLedger {
     return ResidualLedgerSchema.parse({
-        schemaVersion: 1,
+        schemaVersion: 2,
         positionDeltas: [],
         resourceDeltas: [],
         healthDeltas: [],
@@ -47,9 +47,18 @@ export function mergeResidualLedgers(ledgers: readonly ResidualLedger[]): Residu
     for (let index = 0; index < parsed.length; index += 1) {
         const ledger = parsed[index];
         const priorOutstanding = [...outstanding];
+        const simultaneousClosure = ledger.dischargedObligations.filter((obligationId) =>
+            ledger.expiredRights.includes(obligationId)
+        );
+        for (const obligationId of simultaneousClosure) {
+            propagationIssues.push({
+                obligationId,
+                message: `Obligation ${obligationId} cannot discharge and expire in residual ledger ${index}.`
+            });
+        }
         if (index > 0) {
             for (const obligationId of priorOutstanding) {
-                if (ledger.dischargedObligations.includes(obligationId)) continue;
+                if (ledger.dischargedObligations.includes(obligationId) || ledger.expiredRights.includes(obligationId)) continue;
                 if (ledger.carriedObligations.includes(obligationId) &&
                     ledger.unresolvedObligations.includes(obligationId)) {
                     if (!carriedObligations.includes(obligationId)) carriedObligations.push(obligationId);
@@ -57,7 +66,24 @@ export function mergeResidualLedgers(ledgers: readonly ResidualLedger[]): Residu
                 }
                 propagationIssues.push({
                     obligationId,
-                    message: `Obligation ${obligationId} was neither carried nor explicitly discharged by residual ledger ${index}.`
+                    message: `Obligation ${obligationId} was neither carried nor explicitly discharged/expired by residual ledger ${index}.`
+                });
+            }
+        }
+
+        for (const obligationId of [...ledger.dischargedObligations, ...ledger.expiredRights]) {
+            if (!outstanding.has(obligationId)) {
+                propagationIssues.push({
+                    obligationId,
+                    message: `Obligation ${obligationId} closed before opening in residual ledger ${index}.`
+                });
+            }
+        }
+        for (const obligationId of ledger.carriedObligations) {
+            if (!outstanding.has(obligationId) && !ledger.openedObligations.includes(obligationId)) {
+                propagationIssues.push({
+                    obligationId,
+                    message: `Obligation ${obligationId} was carried before opening or after closure in residual ledger ${index}.`
                 });
             }
         }
@@ -74,11 +100,11 @@ export function mergeResidualLedgers(ledgers: readonly ResidualLedger[]): Residu
         appendUnique(aggregate.dischargedObligations, ledger.dischargedObligations);
         appendUnique(aggregate.excludedUnmodelledResidue, ledger.excludedUnmodelledResidue);
 
-        for (const obligationId of ledger.dischargedObligations) outstanding.delete(obligationId);
         for (const obligationId of ledger.openedObligations) outstanding.add(obligationId);
         for (const obligationId of ledger.carriedObligations) outstanding.add(obligationId);
         for (const obligationId of ledger.unresolvedObligations) outstanding.add(obligationId);
         for (const obligationId of ledger.dischargedObligations) outstanding.delete(obligationId);
+        for (const obligationId of ledger.expiredRights) outstanding.delete(obligationId);
     }
 
     aggregate.unresolvedObligations.push(...[...outstanding].sort());

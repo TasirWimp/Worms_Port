@@ -17,6 +17,7 @@ import {
 } from '../../analysis/crpm_world/cuts/registry';
 import {
     V4_CUT_IDS,
+    V4_CUT_VERSION,
     V4_SUPPORT_TWIN_SEED
 } from '../../analysis/crpm_world/cuts/v4-cuts';
 import {
@@ -96,10 +97,10 @@ test('the closed registry exposes all strict, detached, domain-declared cuts', (
         assert.equal(hasCutDefinition(cut.cutId, cut.cutVersion), true);
     }
 
-    const first = getCutDefinition(V4_CUT_IDS.thinVisibleDuel);
+    const first = getCutDefinition(V4_CUT_IDS.thinVisibleDuel, V4_CUT_VERSION);
     first.protectedFamily[0] = 'caller mutation';
     assert.notEqual(
-        getCutDefinition(V4_CUT_IDS.thinVisibleDuel).protectedFamily[0],
+        getCutDefinition(V4_CUT_IDS.thinVisibleDuel, V4_CUT_VERSION).protectedFamily[0],
         'caller mutation'
     );
     assert.throws(
@@ -109,13 +110,13 @@ test('the closed registry exposes all strict, detached, domain-declared cuts', (
 });
 
 test('cuts cannot silently omit their admissible domain', () => {
-    const { admissibleDomain: _omitted, ...invalid } = getCutDefinition(V4_CUT_IDS.authority);
+    const { admissibleDomain: _omitted, ...invalid } = getCutDefinition(V4_CUT_IDS.authority, V4_CUT_VERSION);
     assert.equal(WorldCutDefinitionSchema.safeParse(invalid).success, false);
 });
 
 test('the thin control is relational while repaired movement support remains action-bounded', () => {
-    const thin = getCutDefinition(V4_CUT_IDS.thinVisibleDuel);
-    const repaired = getCutDefinition(V4_CUT_IDS.boundedCommandSupport);
+    const thin = getCutDefinition(V4_CUT_IDS.thinVisibleDuel, V4_CUT_VERSION);
+    const repaired = getCutDefinition(V4_CUT_IDS.boundedCommandSupport, V4_CUT_VERSION);
     assert.equal(thin.deterministicContinuationClaim, 'relational');
     assert.match(thin.excludedClaims.join(' '), /intentionally incomplete/i);
     assert.equal(repaired.deterministicContinuationClaim, 'bounded');
@@ -142,7 +143,7 @@ test('empty quotient witness domains fail closed', () => {
             (item) => item,
             {
                 assessmentId: 'empty-domain',
-                sampledDomain: getCutDefinition(V4_CUT_IDS.thinVisibleDuel).admissibleDomain
+                sampledDomain: getCutDefinition(V4_CUT_IDS.thinVisibleDuel, V4_CUT_VERSION).admissibleDomain
             }
         ),
         /requires at least one witnessed item/
@@ -167,7 +168,7 @@ test('assessment records one explicit pair for every aliased source class', () =
         (item) => item.target,
         {
             assessmentId: 'two-alias-classes',
-            sampledDomain: getCutDefinition(V4_CUT_IDS.thinVisibleDuel).admissibleDomain,
+            sampledDomain: getCutDefinition(V4_CUT_IDS.thinVisibleDuel, V4_CUT_VERSION).admissibleDomain,
             itemReference: (item) => item.ref
         }
     );
@@ -213,7 +214,7 @@ test('V4 movement support twins expose thin aliasing and pass after bounded repa
         thinTargetKey,
         {
             assessmentId: 'v4-thin-movement-support-twin',
-            sampledDomain: getCutDefinition(V4_CUT_IDS.thinVisibleDuel).admissibleDomain,
+            sampledDomain: getCutDefinition(V4_CUT_IDS.thinVisibleDuel, V4_CUT_VERSION).admissibleDomain,
             itemReference: (sample) => sample.state.movementRemaining === 48
                 ? 'one-position-returning-cycle-budget-48'
                 : 'four-position-returning-cycles-budget-0',
@@ -250,7 +251,7 @@ test('V4 movement support twins expose thin aliasing and pass after bounded repa
         thinTargetKey,
         {
             assessmentId: 'v4-bounded-movement-support-repair',
-            sampledDomain: getCutDefinition(V4_CUT_IDS.boundedCommandSupport).admissibleDomain,
+            sampledDomain: getCutDefinition(V4_CUT_IDS.boundedCommandSupport, V4_CUT_VERSION).admissibleDomain,
             itemReference: (_sample, index) => `bounded-movement-item-${index}`
         }
     );

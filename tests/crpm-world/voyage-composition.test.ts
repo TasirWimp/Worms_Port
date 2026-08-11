@@ -24,6 +24,7 @@ import {
 } from '../../analysis/crpm_world/cuts/v4-cuts';
 import { assessReturn } from '../../analysis/crpm_world/kernel/assess-return';
 import { composeEdges } from '../../analysis/crpm_world/kernel/compose-edges';
+import { mergeResidualLedgers } from '../../analysis/crpm_world/kernel/residual-ledger';
 import {
     projectV4CommandSample,
     type V4CommandSample
@@ -35,7 +36,7 @@ import {
 import {
     ResidualLedgerSchema,
     ReturnAssessmentSchema,
-    VoyageTraceV2Schema,
+    VoyageTraceV3Schema,
     WorldTransitionEdgeV2Schema
 } from '../../analysis/crpm_world/schemas';
 import type {
@@ -117,7 +118,7 @@ test('move, select, aim, and fire edges compose into a deterministic re-enterabl
         voyageId: 'v4-move-select-aim-fire-voyage',
         ...COMPOSITION_POLICY
     });
-    assert.equal(VoyageTraceV2Schema.safeParse(voyage).success, true);
+    assert.equal(VoyageTraceV3Schema.safeParse(voyage).success, true);
     assert.equal(voyage.compatibilityResult.compatible, true);
     assert.deepEqual(voyage.edgeAttempts.map((attempt) => attempt.outcome), [
         'accepted', 'accepted', 'accepted', 'accepted'
@@ -191,8 +192,9 @@ test('state and revision incompatibilities return structured partial traces', ()
 test('cross-profile composition requires an explicit carrier-profile migration edge', () => {
     const { outputs } = authorityTranscript();
     const baseSuccessor = outputs[1].edge;
-    const profileTwoSource = { ...baseSuccessor.sourceCarrier, profileVersion: 2 };
-    const profileTwoTarget = { ...baseSuccessor.targetCarrier, profileVersion: 2 };
+    const migratedProfileVersion = baseSuccessor.sourceCarrier.profileVersion + 1;
+    const profileTwoSource = { ...baseSuccessor.sourceCarrier, profileVersion: migratedProfileVersion };
+    const profileTwoTarget = { ...baseSuccessor.targetCarrier, profileVersion: migratedProfileVersion };
     const profileTwoSuccessor = WorldTransitionEdgeV2Schema.parse({
         ...baseSuccessor,
         sourceCarrier: profileTwoSource,
@@ -203,10 +205,10 @@ test('cross-profile composition requires an explicit carrier-profile migration e
     assert.equal(withoutMigration.compatible, false);
     assert.ok(withoutMigration.witness.issues.some((item) => item.code === 'carrier-reference-mismatch'));
 
-    const migrationTarget = { ...baseSuccessor.sourceCarrier, profileVersion: 2 };
+    const migrationTarget = { ...baseSuccessor.sourceCarrier, profileVersion: migratedProfileVersion };
     const migration = WorldTransitionEdgeV2Schema.parse({
         ...baseSuccessor,
-        edgeId: 'carrier-profile-migration-v1-to-v2',
+        edgeId: 'carrier-profile-migration-v2-to-v3',
         edgeKind: 'carrier-profile-migration',
         domainMotif: 'migrate_carrier_profile',
         sourceCarrier: baseSuccessor.sourceCarrier,
@@ -231,7 +233,7 @@ test('cut mismatches and forbidden ports fail closed unless the cut boundary is 
         sourceCut: thinCut,
         targetCut: thinCut,
         fixedFrame: { ...outputs[1].edge.fixedFrame, sourceCut: thinCut, targetCut: thinCut },
-        protectedFamily: getCutDefinition(V4_CUT_IDS.thinVisibleDuel).protectedFamily
+        protectedFamily: getCutDefinition(V4_CUT_IDS.thinVisibleDuel, V4_CUT_VERSION).protectedFamily
     });
     const cutMismatch = composeEdges(outputs[0].edge, disguisedThinEdge, COMPOSITION_POLICY);
     assert.equal(cutMismatch.compatible, false);
@@ -320,6 +322,47 @@ test('residuals accumulate and obligations must be carried or discharged explici
     assert.deepEqual(dischargedComposition.accumulatedResidual.dischargedObligations, [obligationId]);
 });
 
+test('obligations may open, carry, and expire but cannot close or continue out of order', () => {
+    const obligationId = 'synthetic.expiring-right';
+    const base = ResidualLedgerSchema.parse({
+        ...authorityTranscript().outputs[0].edge.residual,
+        positionDeltas: [], resourceDeltas: [], healthDeltas: [], statusDeltas: [], terrainDeltas: [], authorityDeltas: []
+    });
+    const open = ResidualLedgerSchema.parse({
+        ...base,
+        openedObligations: [obligationId],
+        unresolvedObligations: [obligationId]
+    });
+    const carry = ResidualLedgerSchema.parse({
+        ...base,
+        carriedObligations: [obligationId],
+        unresolvedObligations: [obligationId]
+    });
+    const expire = ResidualLedgerSchema.parse({
+        ...base,
+        expiredRights: [obligationId]
+    });
+    const valid = mergeResidualLedgers([open, carry, expire]);
+    assert.deepEqual(valid.ledger.unresolvedObligations, []);
+    assert.deepEqual(valid.ledger.expiredRights, [obligationId]);
+    assert.deepEqual(valid.propagationIssues, []);
+
+    assert.ok(mergeResidualLedgers([expire]).propagationIssues.some((issue) =>
+        /closed before opening/.test(issue.message)
+    ));
+    assert.ok(mergeResidualLedgers([open, expire, carry]).propagationIssues.some((issue) =>
+        /carried nor explicitly discharged\/expired|carried before opening/.test(issue.message)
+    ));
+    const simultaneous = ResidualLedgerSchema.parse({
+        ...base,
+        dischargedObligations: [obligationId],
+        expiredRights: [obligationId]
+    });
+    assert.ok(mergeResidualLedgers([open, simultaneous]).propagationIssues.some((issue) =>
+        /cannot discharge and expire/.test(issue.message)
+    ));
+});
+
 test('visible equality remains distinct from recursive carrier and finite exact return', () => {
     const oneCycle = afterPositionReturningCycles(1);
     const fourCycles = afterPositionReturningCycles(4);
@@ -335,12 +378,12 @@ test('visible equality remains distinct from recursive carrier and finite exact 
         assessmentId: 'v4-visible-versus-recursive-return',
         sourceCarrier: leftCarrier,
         targetCarrier: rightCarrier,
-        declaredDomain: getCutDefinition(V4_CUT_IDS.boundedCommandSupport).admissibleDomain,
+        declaredDomain: getCutDefinition(V4_CUT_IDS.boundedCommandSupport, V4_CUT_VERSION).admissibleDomain,
         visibleProjection: {
             cut: { id: V4_CUT_IDS.thinVisibleDuel, version: V4_CUT_VERSION },
             sourceKey: projectV4CommandSample(V4_CUT_IDS.thinVisibleDuel, leftSample).projectedValue,
             targetKey: projectV4CommandSample(V4_CUT_IDS.thinVisibleDuel, rightSample).projectedValue,
-            declaredExclusions: getCutDefinition(V4_CUT_IDS.thinVisibleDuel)
+            declaredExclusions: getCutDefinition(V4_CUT_IDS.thinVisibleDuel, V4_CUT_VERSION)
                 .intentionallyForgottenDistinctions
         },
         protectedEquivalence: {
@@ -354,7 +397,7 @@ test('visible equality remains distinct from recursive carrier and finite exact 
             supportCompleteForDeclaredDomain: true,
             sourceKey: projectV4CommandSample(V4_CUT_IDS.boundedCommandSupport, leftSample).projectedValue,
             targetKey: projectV4CommandSample(V4_CUT_IDS.boundedCommandSupport, rightSample).projectedValue,
-            declaredExclusions: getCutDefinition(V4_CUT_IDS.boundedCommandSupport)
+            declaredExclusions: getCutDefinition(V4_CUT_IDS.boundedCommandSupport, V4_CUT_VERSION)
                 .intentionallyForgottenDistinctions
         },
         invariantRegion: {
@@ -380,14 +423,14 @@ test('finite exact return and route mismatch remain separately executable', () =
         assessmentId: 'finite-exact-carrier-return',
         sourceCarrier: carrier,
         targetCarrier: carrier,
-        declaredDomain: getCutDefinition(V4_CUT_IDS.authority).admissibleDomain
+        declaredDomain: getCutDefinition(V4_CUT_IDS.authority, V4_CUT_VERSION).admissibleDomain
     });
     assert.deepEqual(exact.satisfiedClassifications, ['finite_exact_return']);
     const versionMismatch = assessReturn({
         assessmentId: 'finite-exact-profile-mismatch',
         sourceCarrier: carrier,
         targetCarrier: { ...carrier, profileVersion: carrier.profileVersion + 1 },
-        declaredDomain: getCutDefinition(V4_CUT_IDS.authority).admissibleDomain
+        declaredDomain: getCutDefinition(V4_CUT_IDS.authority, V4_CUT_VERSION).admissibleDomain
     });
     assert.equal(
         versionMismatch.classifications.find((item) => item.classification === 'finite_exact_return')?.status,
@@ -410,7 +453,7 @@ test('finite exact return and route mismatch remain separately executable', () =
         assessmentId: 'paired-route-mismatch',
         sourceCarrier: leftVoyage.initialCarrier,
         targetCarrier: leftVoyage.finalCarrier,
-        declaredDomain: getCutDefinition(V4_CUT_IDS.authority).admissibleDomain,
+        declaredDomain: getCutDefinition(V4_CUT_IDS.authority, V4_CUT_VERSION).admissibleDomain,
         routeComparison: {
             leftVoyage,
             rightVoyage,

@@ -19,6 +19,7 @@ import {
     evaluateWorldDesignResult
 } from '../../analysis/crpm_world/evaluation/evaluate';
 import { DiagnosticProfileV2Schema, buildWorldDesignResult } from '../../analysis/crpm_world/schemas';
+import type { WorldDesignResult, WorldDesignResultPayload } from '../../analysis/crpm_world/types';
 import type {
     EvaluationBundle,
     EvaluationPressureCase,
@@ -28,6 +29,23 @@ import type {
 const D2A_TEMPLATE = 'analysis/crpm_world/examples/d2a-f3-pressure-request.json';
 const V4_TEMPLATE = 'analysis/crpm_world/examples/v4-transcript-request.json';
 const cache = new Map<string, ReturnType<typeof executeWorldDesignEvaluation>>();
+
+function rebuildResult(
+    result: WorldDesignResult,
+    overrides: Partial<WorldDesignResultPayload>
+): WorldDesignResult {
+    const { resultDigest: _resultDigest, executionReceipt, ...base } = result;
+    const { resultDigest: _receiptResultDigest, ...receiptBase } = executionReceipt;
+    const next = { ...base, ...overrides };
+    return buildWorldDesignResult({
+        ...next,
+        executionReceipt: {
+            ...receiptBase,
+            sourceLocks: next.sourceLocks,
+            requestDigest: next.requestDigest
+        }
+    });
+}
 
 function d2aRequest(
     registration: D2AConfigRegistration,
@@ -210,9 +228,7 @@ test('caller-authored decisions, pass flags, and synthetic locks cannot mint mat
         acceptancePressureCases: [{ status: 'passed', reenterable: true }]
     }, result));
 
-    const { resultDigest: _digest, ...payload } = result;
-    const synthetic = buildWorldDesignResult({
-        ...payload,
+    const synthetic = rebuildResult(result, {
         sourceLocks: [{
             repositoryId: 'worms-port',
             commit: '1111111111111111111111111111111111111111',
@@ -245,4 +261,24 @@ test('caller-authored decisions, pass flags, and synthetic locks cannot mint mat
     }, result);
     assert.equal(genericEvidence.maturityAssessment.maturity, 'M1_declaration');
     assert.equal(genericEvidence.maturityAssessment.gates.reenterableEvidence, false);
+});
+
+test('registered probe bundle values are source-bound and cannot be altered under valid ids and locks', () => {
+    for (const caseId of ['f2', 'f4', 'h2', 'h3'] as const) {
+        const { result, evaluation } = executeD2A(caseId);
+        const diagnostics = result.diagnostics.map((diagnostic) => {
+            if (diagnostic.schemaVersion !== 1 || diagnostic.scalarProbes.length === 0) return diagnostic;
+            return {
+                ...diagnostic,
+                scalarProbes: diagnostic.scalarProbes.map((probe, index) => index === 0
+                    ? { ...probe, value: probe.value + 1 }
+                    : probe)
+            };
+        });
+        const altered = rebuildResult(result, { diagnostics });
+        const reassessed = evaluateWorldDesignResult(evaluation.declaration, altered);
+        assert.equal(reassessed.maturityAssessment.maturity, 'M1_declaration', caseId);
+        assert.equal(reassessed.maturityAssessment.gates.registeredSourceBinding, false, caseId);
+        assert.equal(reassessed.maturityAssessment.productAuthority, 'none', caseId);
+    }
 });

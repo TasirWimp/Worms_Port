@@ -2,7 +2,7 @@ import { WorldCutDefinitionSchema } from '../schemas';
 import type { ScenarioDomain, WorldCutDefinition } from '../types';
 
 export const V4_SUPPORT_TWIN_SEED = 0xC0FFEE11;
-export const V4_CUT_VERSION = 1;
+export const V4_CUT_VERSION = 2;
 
 export const V4_CUT_IDS = Object.freeze({
     authority: 'authority_v4',

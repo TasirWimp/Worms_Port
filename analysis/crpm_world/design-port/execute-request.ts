@@ -17,9 +17,12 @@ import { assessQuotientTransport } from '../kernel/assess-quotient-transport';
 import { projectV4CommandSample, projectV4SimulationState, type V4CommandSample } from '../kernel/project-cut';
 import { traceVoyage } from '../kernel/trace-voyage';
 import { evaluateWorldDesignResult } from '../evaluation/evaluate';
+import { buildRegisteredExecutionReceiptBase } from '../implementation-lock';
 import type { EvaluationBundle, EvaluationDeclaration } from '../evaluation/schemas';
 import {
-    VoyageTraceV2Schema,
+    VoyageTraceV3Schema,
+    WORLD_DESIGN_REQUEST_SCHEMA_VERSION,
+    WORLD_DESIGN_RESULT_SCHEMA_VERSION,
     WorldDesignResultSchema,
     buildWorldDesignResult
 } from '../schemas';
@@ -137,7 +140,7 @@ function executeV4(request: OfflineWorldDesignRequest): WorldDesignResult {
             'Replay the exact actor, expectedTurn, and command declarations in sequence order.'
         ]
     });
-    const voyage = VoyageTraceV2Schema.parse({
+    const voyage = VoyageTraceV3Schema.parse({
         ...baseVoyage,
         replaySupport: {
             supported: true,
@@ -169,9 +172,9 @@ function executeV4(request: OfflineWorldDesignRequest): WorldDesignResult {
     const eventCount = outputs.reduce((total, output) => total + output.transition.events.length, 0);
     const witnessIds = outputs.map((output) => output.witness.witnessId);
     return buildWorldDesignResult({
-        schemaVersion: 1,
+        schemaVersion: WORLD_DESIGN_RESULT_SCHEMA_VERSION,
         resultId: `${request.requestId}-result`,
-        resultVersion: 1,
+        resultVersion: 2,
         requestDigest: request.requestDigest,
         sourceLocks: outputs[0].edge.fixedFrame.sourceLocks,
         traces: [voyage],
@@ -205,8 +208,25 @@ function executeV4(request: OfflineWorldDesignRequest): WorldDesignResult {
         deduplicationIdentity: sha256Digest({
             requestDigest: request.requestDigest,
             witnesses: outputs.map((output) => output.witness.deduplicationIdentity)
+        }),
+        executionReceipt: buildRegisteredExecutionReceiptBase({
+            adapterVersions: [
+                request.adapter,
+                outputs[0].edge.fixedFrame.adapter
+            ],
+            profileVersion: request.profileVersion,
+            requestSchemaVersion: WORLD_DESIGN_REQUEST_SCHEMA_VERSION,
+            resultSchemaVersion: WORLD_DESIGN_RESULT_SCHEMA_VERSION,
+            sourceLocks: outputs[0].edge.fixedFrame.sourceLocks,
+            requestDigest: request.requestDigest
         })
     });
+}
+
+function stripResultDigests(result: WorldDesignResult) {
+    const { resultDigest: _resultDigest, executionReceipt, ...rest } = result;
+    const { resultDigest: _receiptResultDigest, ...receiptBase } = executionReceipt;
+    return { ...rest, executionReceipt: receiptBase };
 }
 
 function d2aProjectionAssessment(
@@ -265,7 +285,7 @@ function executeD2A(request: OfflineWorldDesignRequest): WorldDesignResult {
         ...provisional.projectionAssessments,
         ...d2aProjectionAssessment(request, provisional)
     ]);
-    const { resultDigest: _analyticalResultDigest, ...analyticalPayload } = analytical;
+    const analyticalPayload = stripResultDigests(analytical);
     return buildWorldDesignResult({
         ...analyticalPayload,
         resultId: `${request.requestId}-result`,
@@ -280,6 +300,14 @@ function executeD2A(request: OfflineWorldDesignRequest): WorldDesignResult {
         deduplicationIdentity: sha256Digest({
             requestDigest: request.requestDigest,
             analyticalDeduplicationIdentity: analytical.deduplicationIdentity
+        }),
+        executionReceipt: buildRegisteredExecutionReceiptBase({
+            adapterVersions: [request.adapter],
+            profileVersion: request.profileVersion,
+            requestSchemaVersion: WORLD_DESIGN_REQUEST_SCHEMA_VERSION,
+            resultSchemaVersion: WORLD_DESIGN_RESULT_SCHEMA_VERSION,
+            sourceLocks: analytical.sourceLocks,
+            requestDigest: request.requestDigest
         })
     });
 }
@@ -336,7 +364,7 @@ function evaluationDeclaration(
         'The declared scope, source authority, and product-authority boundary remain visible residue.'
     ]);
     return {
-        schemaVersion: 1,
+        schemaVersion: 2,
         evaluationId: `${request.requestId}-evaluation`,
         evaluationVersion: 1,
         evaluationMode: 'registered_historical_pressure',
@@ -374,7 +402,7 @@ export function executeWorldDesignEvaluation(input: unknown): {
     const { request, result: baseResult } = executeWorldDesignRequestBase(input);
     const declaration = evaluationDeclaration(request, baseResult);
     const preliminaryEvaluation = evaluateWorldDesignResult(declaration, baseResult);
-    const { resultDigest: _baseDigest, ...basePayload } = baseResult;
+    const basePayload = stripResultDigests(baseResult);
     const result = buildWorldDesignResult({
         ...basePayload,
         diagnostics: [preliminaryEvaluation.diagnosticProfile, ...baseResult.diagnostics],

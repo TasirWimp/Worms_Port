@@ -12,6 +12,7 @@ import argparse
 import hashlib
 import json
 import math
+import subprocess
 import sys
 from typing import Any, Iterable, Sequence
 
@@ -37,11 +38,11 @@ from analysis.tactical_model.model import (
 
 
 ADAPTER_ID = "d2a_analytical_export"
-ADAPTER_VERSION = 1
-PROFILE_VERSION = 1
-RESULT_VERSION = 1
+ADAPTER_VERSION = 2
+PROFILE_VERSION = 2
+RESULT_VERSION = 2
 TACTICAL_CUT_ID = "d2a_tactical_recurrence_v1"
-TACTICAL_CUT_VERSION = 1
+TACTICAL_CUT_VERSION = 2
 STARTING_DISTANCES = (448, 512, 576, 640, 704)
 WORMS_SOURCE_COMMIT = "af23717e61fea6995bf3b7209211ae1aaa2bb855"
 CRPM_SOURCE_COMMIT = "995236df60924f790506cf5badec3c102abf3fd1"
@@ -55,6 +56,30 @@ D2A_PROTECTED_FAMILY = (
     "The exact registered D2A configuration, scenario family, policies, actions, report digest, and historical status remain recoverable.",
     "D2A evidence remains analytical only and cannot activate gameplay or acquire product authority.",
 )
+CRPM_WORLD_IMPLEMENTATION_PATHS = tuple(sorted((
+    "analysis/crpm_world/adapters/d2a_export.py",
+    "analysis/crpm_world/adapters/v4-authority-adapter.ts",
+    "analysis/crpm_world/canonical.ts",
+    "analysis/crpm_world/cuts/d2a-cuts.ts",
+    "analysis/crpm_world/cuts/registry.ts",
+    "analysis/crpm_world/cuts/v4-cuts.ts",
+    "analysis/crpm_world/design-port/execute-request.ts",
+    "analysis/crpm_world/design-port/registry.ts",
+    "analysis/crpm_world/design-port/validate-request.ts",
+    "analysis/crpm_world/evaluation/evaluate.ts",
+    "analysis/crpm_world/evaluation/schemas.ts",
+    "analysis/crpm_world/implementation-lock.ts",
+    "analysis/crpm_world/kernel/assess-quotient-transport.ts",
+    "analysis/crpm_world/kernel/assess-return.ts",
+    "analysis/crpm_world/kernel/compose-edges.ts",
+    "analysis/crpm_world/kernel/derive-voyage-evidence.ts",
+    "analysis/crpm_world/kernel/project-cut.ts",
+    "analysis/crpm_world/kernel/residual-ledger.ts",
+    "analysis/crpm_world/kernel/trace-voyage.ts",
+    "analysis/crpm_world/schemas.ts",
+    "analysis/crpm_world/types.ts",
+    "scripts/run-crpm-world-design.ts",
+)))
 
 
 class D2AExportError(RuntimeError):
@@ -123,6 +148,60 @@ def sha256_digest(value: Any) -> str:
     return hashlib.sha256(canonical_json(value).encode("utf-8")).hexdigest()
 
 
+def _git(*args: str) -> str:
+    completed = subprocess.run(
+        ["git", *args],
+        cwd=repository_root(),
+        check=True,
+        capture_output=True,
+        text=True,
+    )
+    return completed.stdout.strip()
+
+
+def _execution_receipt_base(
+    source_locks: Sequence[dict[str, Any]],
+    request_digest: str,
+) -> dict[str, Any]:
+    implementation_commit = _git(
+        "log", "-1", "--format=%H", "--", *CRPM_WORLD_IMPLEMENTATION_PATHS,
+    )
+    implementation_tree = _git("show", "-s", "--format=%T", implementation_commit)
+    blobs: list[dict[str, str]] = []
+    for path in CRPM_WORLD_IMPLEMENTATION_PATHS:
+        committed_blob = _git("rev-parse", f"{implementation_commit}:{path}")
+        current_blob = _git("hash-object", path)
+        if committed_blob != current_blob:
+            raise D2AExportError(
+                f"CRPM-world implementation path is not frozen at {implementation_commit}: {path}"
+            )
+        blobs.append({"path": path, "blobOid": committed_blob})
+    bundle_digest = sha256_digest({
+        "repositoryId": "worms-port",
+        "implementationCommit": implementation_commit,
+        "implementationTree": implementation_tree,
+        "implementationFileBlobs": blobs,
+    })
+    return {
+        "schemaVersion": 1,
+        "repositoryId": "worms-port",
+        "implementationCommit": implementation_commit,
+        "implementationTree": implementation_tree,
+        "implementationPaths": list(CRPM_WORLD_IMPLEMENTATION_PATHS),
+        "implementationFileBlobs": blobs,
+        "implementationBundleDigest": bundle_digest,
+        "adapterVersions": [
+            {"id": ADAPTER_ID, "version": ADAPTER_VERSION},
+            {"id": "d2a_tactical", "version": ADAPTER_VERSION},
+        ],
+        "profileVersion": PROFILE_VERSION,
+        "requestSchemaVersion": 2,
+        "resultSchemaVersion": 2,
+        "sourceLocks": list(source_locks),
+        "requestDigest": request_digest,
+    }
+
+
 def _read_registered_case(case_id: str) -> tuple[TacticalConfig, dict[str, Any], dict[str, Any]]:
     registration = REGISTERED_CASES.get(case_id)
     if registration is None:
@@ -169,7 +248,7 @@ def _state_payload(
     loomkeeper_policy: str,
 ) -> dict[str, Any]:
     return {
-        "schemaVersion": 1,
+        "schemaVersion": 2,
         "caseId": case_id,
         "configId": config.identifier,
         "configSchemaVersion": config_schema_version,
@@ -211,7 +290,97 @@ def _delta(subject: str, before: Any, after: Any, description: str) -> dict[str,
     return {"subject": subject, "before": before, "after": after, "description": description}
 
 
-def _residual(case_id: str, before: TacticalState, after: TacticalState) -> dict[str, Any]:
+OBLIGATION_FIELD_TYPES = {
+    "spoolburst_preparation_turns": "spoolburst_preparation",
+    "spoolburst_cocoon_hits_remaining": "spun_cocoon",
+    "opening_weave_hits_remaining": "opening_weave",
+    "frayed_seam_turns": "frayed_seam",
+    "seam_pin_turns": "seam_pin",
+    "brace_turns": "brace",
+}
+
+
+def _obligation_instance_id(
+    case_id: str,
+    scenario_identity: str,
+    origin_identity: str,
+    actor: str,
+    obligation_type: str,
+) -> str:
+    return f"d2a.{case_id}.{scenario_identity}.{origin_identity}.{actor}.{obligation_type}"
+
+
+def _initial_obligation_instances(
+    case_id: str,
+    scenario_identity: str,
+    state: TacticalState,
+) -> dict[tuple[str, str], str]:
+    active: dict[tuple[str, str], str] = {}
+    for actor in ("player", "loomkeeper"):
+        state_actor = actor_state(state, actor)
+        for field, obligation_type in OBLIGATION_FIELD_TYPES.items():
+            if getattr(state_actor, field) > 0:
+                active[(actor, field)] = _obligation_instance_id(
+                    case_id,
+                    scenario_identity,
+                    f"initial-step-{state.completed_turns}",
+                    actor,
+                    obligation_type,
+                )
+    return active
+
+
+def _obligation_closure(
+    field: str,
+    *,
+    before: TacticalState,
+    action: Action,
+    acting_actor: str,
+    affected_actor: str,
+    trace_step: dict[str, Any] | None,
+) -> str:
+    target = other_actor(acting_actor)
+    if field == "frayed_seam_turns":
+        bound_by_action = (
+            action.kind == "cast" and
+            action.relic_id == "needlepoint" and
+            affected_actor == target and
+            actor_state(before, affected_actor).frayed_seam_source == acting_actor
+        )
+        return "discharged" if bound_by_action or (
+            trace_step and trace_step.get("frayedSeamBoundFor") == affected_actor
+        ) else "expired"
+    if field == "seam_pin_turns":
+        return "expired"
+    if field == "opening_weave_hits_remaining":
+        return "discharged" if action.kind == "cast" and affected_actor == target else "expired"
+    if field == "spoolburst_cocoon_hits_remaining":
+        if affected_actor == target and action.kind in ("cast", "unweave_spoolburst"):
+            return "discharged"
+        return "expired"
+    if field == "spoolburst_preparation_turns":
+        if affected_actor == target and action.kind in ("cast", "unweave_spoolburst"):
+            return "discharged"
+        if affected_actor == acting_actor and action.kind == "cast":
+            return "discharged"
+        return "expired"
+    if field == "brace_turns":
+        return "discharged" if affected_actor == target and action.kind == "cast" else "expired"
+    raise D2AExportError(f"Unknown obligation field {field}")
+
+
+def _residual(
+    case_id: str,
+    before: TacticalState,
+    after: TacticalState,
+    *,
+    scenario_identity: str,
+    path_position: int,
+    action: Action,
+    acting_actor: str,
+    trace_step: dict[str, Any] | None,
+    active_obligations: dict[tuple[str, str], str],
+) -> dict[str, Any]:
     positions: list[dict[str, Any]] = []
     resources: list[dict[str, Any]] = []
     health: list[dict[str, Any]] = []
@@ -236,12 +405,6 @@ def _residual(case_id: str, before: TacticalState, after: TacticalState) -> dict
         "frayed_seam_turns",
     )
     resource_fields = ("escape_slack_remaining",)
-    obligation_fields = {
-        "seam_pin_turns",
-        "brace_turns",
-        "spoolburst_preparation_turns",
-        "frayed_seam_turns",
-    }
     for actor in ("player", "loomkeeper"):
         before_actor = actor_state(before, actor)
         after_actor = actor_state(after, actor)
@@ -257,25 +420,51 @@ def _residual(case_id: str, before: TacticalState, after: TacticalState) -> dict
         for field in actor_fields:
             old = getattr(before_actor, field)
             new = getattr(after_actor, field)
-            obligation_id = f"d2a.{case_id}.{actor}.{field}"
-            if field in obligation_fields and isinstance(new, int) and new > 0:
-                unresolved.append(obligation_id)
-                if isinstance(old, int) and old > 0:
+            obligation_type = OBLIGATION_FIELD_TYPES.get(field)
+            obligation_key = (actor, field)
+            obligation_id = active_obligations.get(obligation_key)
+            if obligation_type and old > 0 and obligation_id is None:
+                raise D2AExportError(f"Missing active obligation identity for {actor}.{field}")
+            if obligation_type and new > 0:
+                if old == 0:
+                    obligation_id = _obligation_instance_id(
+                        case_id,
+                        scenario_identity,
+                        f"edge-{path_position:03d}",
+                        actor,
+                        obligation_type,
+                    )
+                    active_obligations[obligation_key] = obligation_id
+                    opened.append(obligation_id)
+                else:
+                    assert obligation_id is not None
                     carried.append(obligation_id)
+                unresolved.append(obligation_id)
             if old == new:
                 continue
             statuses.append(_delta(f"{actor}.{field}", old, new, "Visible tactical support or status change."))
-            if field in obligation_fields and old == 0 and isinstance(new, int) and new > 0:
-                opened.append(obligation_id)
-            if field in obligation_fields and isinstance(old, int) and old > 0 and new == 0:
-                discharged.append(obligation_id)
+            if obligation_type and old > 0 and new == 0:
+                assert obligation_id is not None
+                closure = _obligation_closure(
+                    field,
+                    before=before,
+                    action=action,
+                    acting_actor=acting_actor,
+                    affected_actor=actor,
+                    trace_step=trace_step,
+                )
+                if closure == "discharged":
+                    discharged.append(obligation_id)
+                else:
+                    expired.append(obligation_id)
+                active_obligations.pop(obligation_key, None)
     for field in ("active_actor", "winner", "finish_reason"):
         old = getattr(before, field)
         new = getattr(after, field)
         if old != new:
             statuses.append(_delta(f"tactical.{field}", old, new, "Turn ownership or terminal status change."))
     return {
-        "schemaVersion": 1,
+        "schemaVersion": 2,
         "positionDeltas": positions,
         "resourceDeltas": resources,
         "healthDeltas": health,
@@ -293,7 +482,7 @@ def _residual(case_id: str, before: TacticalState, after: TacticalState) -> dict
 
 def _accumulate_residual(ledgers: Iterable[dict[str, Any]]) -> dict[str, Any]:
     result = {
-        "schemaVersion": 1,
+        "schemaVersion": 2,
         "positionDeltas": [],
         "resourceDeltas": [],
         "healthDeltas": [],
@@ -305,7 +494,7 @@ def _accumulate_residual(ledgers: Iterable[dict[str, Any]]) -> dict[str, Any]:
         "carriedObligations": [],
         "dischargedObligations": [],
         "unresolvedObligations": [],
-        "excludedUnmodelledResidue": list(UNMODELLED_PORTS),
+        "excludedUnmodelledResidue": [],
     }
     for ledger in ledgers:
         for field in (
@@ -313,9 +502,29 @@ def _accumulate_residual(ledgers: Iterable[dict[str, Any]]) -> dict[str, Any]:
             "terrainDeltas", "authorityDeltas",
         ):
             result[field].extend(ledger[field])
-        for field in ("expiredRights", "openedObligations", "carriedObligations", "dischargedObligations"):
+        for field in (
+            "expiredRights", "openedObligations", "carriedObligations",
+            "dischargedObligations", "excludedUnmodelledResidue",
+        ):
             result[field] = list(dict.fromkeys([*result[field], *ledger[field]]))
         result["unresolvedObligations"] = list(ledger["unresolvedObligations"])
+    return result
+
+
+def _aggregate_trace_residuals(traces: Sequence[dict[str, Any]]) -> dict[str, Any]:
+    result = _accumulate_residual(())
+    for trace in traces:
+        ledger = trace["accumulatedResidual"]
+        for field in (
+            "positionDeltas", "resourceDeltas", "healthDeltas", "statusDeltas",
+            "terrainDeltas", "authorityDeltas",
+        ):
+            result[field].extend(ledger[field])
+        for field in (
+            "expiredRights", "openedObligations", "carriedObligations",
+            "dischargedObligations", "unresolvedObligations", "excludedUnmodelledResidue",
+        ):
+            result[field] = list(dict.fromkeys([*result[field], *ledger[field]]))
     return result
 
 
@@ -374,6 +583,8 @@ def _edge_and_witness(
     path_position: int,
     trace_step: dict[str, Any] | None,
     opening_search_witness: dict[str, Any] | None,
+    scenario_identity: str,
+    active_obligations: dict[tuple[str, str], str],
 ) -> tuple[dict[str, Any], dict[str, Any]]:
     source_ref = (
         f"{config_path};case={case_id};distance={starting_distance};"
@@ -409,7 +620,17 @@ def _edge_and_witness(
         "traceStep": trace_step,
     }
     witness_digest = sha256_digest(witness_evidence)
-    residual = _residual(case_id, before, after)
+    residual = _residual(
+        case_id,
+        before,
+        after,
+        scenario_identity=scenario_identity,
+        path_position=path_position,
+        action=action,
+        acting_actor=actor,
+        trace_step=trace_step,
+        active_obligations=active_obligations,
+    )
     response = {
         "targetReactionPolicy": target_policy,
         "preTacticalCarrier": before_payload,
@@ -578,6 +799,7 @@ def _voyage(
     edges: list[dict[str, Any]],
     recurrence: dict[str, Any] | None,
     terminal_summary: str,
+    initial_obligation_ids: Sequence[str],
 ) -> dict[str, Any]:
     recurrence_refs = []
     if recurrence is not None:
@@ -610,7 +832,7 @@ def _voyage(
                 f"Edge {edge['edgeId']} neither carries nor discharges obligation {obligation}."
             )
     return {
-        "schemaVersion": 1,
+        "schemaVersion": 3,
         "voyageId": f"d2a-{case_id}-pressure-voyage",
         "voyageVersion": 1,
         "initialCarrier": edges[0]["sourceCarrier"],
@@ -638,6 +860,43 @@ def _voyage(
                 "Re-enter through the exact config, scenario, policies, and action path recorded on each edge.",
             ],
         },
+        "edgeAttempts": [
+            {
+                "sequence": index,
+                "outcome": "accepted",
+                "edge": edge,
+                "compositionWitness": None,
+            }
+            for index, edge in enumerate(edges)
+        ],
+        "commandPath": [
+            {
+                "sequence": index,
+                "edgeId": edge["edgeId"],
+                "outcome": "accepted",
+                "commandOrDeclaration": edge["commandOrDeclaration"],
+            }
+            for index, edge in enumerate(edges)
+        ],
+        "cutChanges": [],
+        "witnessReferences": [
+            reference
+            for edge in edges
+            for reference in edge["witnessReferences"]
+        ],
+        "initialObligationIds": list(initial_obligation_ids),
+        "obligationHistory": {
+            "opened": list(dict.fromkeys([*initial_obligation_ids, *accumulated["openedObligations"]])),
+            "carried": accumulated["carriedObligations"],
+            "discharged": accumulated["dischargedObligations"],
+            "expired": accumulated["expiredRights"],
+            "unresolved": accumulated["unresolvedObligations"],
+        },
+        "reentryInstructions": [
+            "Re-enter through the exact initial tactical carrier, registered config, policies, and ordered action declarations.",
+            "Compare every edge carrier, obligation transition, witness, and final carrier; reopen on the first mismatch.",
+        ],
+        "excludedClaims": list(UNMODELLED_PORTS),
     }
 
 
@@ -647,36 +906,111 @@ def _world_obligations(traces: Sequence[dict[str, Any]]) -> list[dict[str, Any]]
     records: list[dict[str, Any]] = []
     for trace in traces:
         edges = trace["transitionEdges"]
+        origin_rows: list[tuple[str, dict[str, Any], dict[str, Any], dict[str, Any], int]] = []
+        if edges:
+            initial_payload = edges[0]["response"]["preTacticalCarrier"]
+            for obligation_id in trace["initialObligationIds"]:
+                origin_rows.append((
+                    obligation_id,
+                    {"kind": "initial_carrier", "carrier": trace["initialCarrier"]},
+                    trace["initialCarrier"],
+                    initial_payload,
+                    0,
+                ))
         for edge_index, edge in enumerate(edges):
             for obligation_id in edge["residual"]["openedObligations"]:
-                parts = obligation_id.split(".")
-                bearer = parts[2]
-                obligation_type = parts[3]
-                later_ledgers = [item["residual"] for item in edges[edge_index:]]
-                if any(obligation_id in ledger["dischargedObligations"] for ledger in later_ledgers):
-                    lifecycle = "discharged"
-                elif any(obligation_id in ledger["expiredRights"] for ledger in later_ledgers):
-                    lifecycle = "expired"
-                elif any(obligation_id in ledger["carriedObligations"] for ledger in later_ledgers):
-                    lifecycle = "carried"
-                else:
-                    lifecycle = "open"
-                records.append({
-                    "schemaVersion": 1,
-                    "obligationId": obligation_id,
-                    "obligationVersion": 1,
-                    "obligationType": obligation_type,
-                    "originEdgeId": edge["edgeId"],
+                origin_rows.append((
+                    obligation_id,
+                    {"kind": "edge", "edgeId": edge["edgeId"]},
+                    edge["targetCarrier"],
+                    edge["response"]["postTacticalCarrier"],
+                    edge_index,
+                ))
+
+        for obligation_id, origin, support_carrier, support_state, origin_index in origin_rows:
+            parts = obligation_id.split(".")
+            bearer = parts[-2]
+            obligation_type = parts[-1]
+            bearer_state = support_state[bearer]
+            if obligation_type == "frayed_seam":
+                originator = bearer_state.get("frayedSeamSource")
+                beneficiary = originator or bearer
+                eligible = list(dict.fromkeys([bearer, originator or other_actor(bearer)]))
+                legal = [
+                    "The exposed bearer may continue only through actions admitted by the locked H3 configuration.",
+                    "The recorded originator may bind the exposure with the configured advancing Needlepoint action.",
+                ]
+                expiry = "The exposure naturally expires after the recorded originator completes the allowed response-window action."
+                discharge = "A configured same-line Needlepoint bind consumes the exposed Frayed Seam support."
+            elif obligation_type == "seam_pin":
+                originator = bearer_state.get("seamPinSource")
+                beneficiary = originator or bearer
+                eligible = list(dict.fromkeys([bearer, originator or other_actor(bearer)]))
+                legal = ["The bearer may move only within the configured Seam Pin separation bound until its own turn expiry."]
+                expiry = "The bearer completes the configured number of pinned turns."
+                discharge = "No early discharge is claimed unless a locked transition explicitly clears the pin."
+            elif obligation_type == "spoolburst_preparation":
+                originator = bearer
+                beneficiary = bearer
+                eligible = [bearer, other_actor(bearer)]
+                legal = [
+                    "The bearer may complete the prepared cast under the locked policy.",
+                    "The opponent may use only the configured disruption or Unweave response.",
+                ]
+                expiry = "The preparation counter reaches zero without a represented completion or counter transition."
+                discharge = "The prepared cast is completed or the registered disruption/Unweave transition clears preparation."
+            elif obligation_type == "spun_cocoon":
+                originator = bearer
+                beneficiary = bearer
+                eligible = [bearer, other_actor(bearer)]
+                legal = ["The Cocoon may absorb only the configured eligible hit or be removed by the registered Unweave path."]
+                expiry = "The preparation window ends and the retained Cocoon support is cleared without absorption."
+                discharge = "An eligible hit is absorbed or the registered Unweave transition consumes the Cocoon."
+            elif obligation_type == "opening_weave":
+                originator = None
+                beneficiary = bearer
+                eligible = [bearer, other_actor(bearer)]
+                legal = ["The bearer may spend Opening Weave only on the configured eligible opening response."]
+                expiry = "The bearer completes the response turn without consuming the one-hit Opening Weave right."
+                discharge = "The configured opening response consumes the one-hit right and any recorded Escape Slack cost."
+            elif obligation_type == "brace":
+                originator = bearer
+                beneficiary = bearer
+                eligible = [bearer, other_actor(bearer)]
+                legal = ["Brace may reduce only the next configured eligible hit during its represented window."]
+                expiry = "The represented Brace window closes without an eligible hit."
+                discharge = "An eligible hit consumes the one-use Brace protection."
+            else:
+                raise D2AExportError(f"Unknown obligation type {obligation_type}")
+
+            later_ledgers = [item["residual"] for item in edges[origin_index:]]
+            if any(obligation_id in ledger["dischargedObligations"] for ledger in later_ledgers):
+                lifecycle = "discharged"
+            elif any(obligation_id in ledger["expiredRights"] for ledger in later_ledgers):
+                lifecycle = "expired"
+            elif any(obligation_id in ledger["carriedObligations"] for ledger in later_ledgers):
+                lifecycle = "carried"
+            else:
+                lifecycle = "open"
+            records.append({
+                "schemaVersion": 2,
+                "obligationId": obligation_id,
+                "obligationVersion": 2,
+                "obligationType": obligation_type,
+                "origin": origin,
+                "roles": {
+                    "owner": bearer,
                     "bearer": bearer,
-                    "beneficiary": other_actor(bearer),
-                    "supportCarrier": edge["targetCarrier"],
-                    "legalResponses": [
-                        "Only responses represented by the locked D2A configuration and existing transition functions are legal."
-                    ],
-                    "expiryCondition": "The locked tactical transition decrements the represented support to zero.",
-                    "dischargeCondition": "The locked tactical transition consumes, counters, or otherwise clears the represented support.",
-                    "lifecycleStatus": lifecycle,
-                })
+                    "beneficiary": beneficiary,
+                    "originator": originator,
+                    "eligibleResponders": eligible,
+                },
+                "supportCarrier": support_carrier,
+                "legalResponses": legal,
+                "expiryCondition": expiry,
+                "dischargeCondition": discharge,
+                "lifecycleStatus": lifecycle,
+            })
     return records
 
 
@@ -818,6 +1152,13 @@ def _compact_match_voyage(
     report_digest = REGISTERED_CASES[case_id]["report_digest"]
     edges: list[dict[str, Any]] = []
     witnesses: list[dict[str, Any]] = []
+    first_before = replay[selected_indices[0]][0]
+    scenario_identity = (
+        f"distance-{match['startingDistance']}-first-{match['firstActor']}-"
+        f"mirror-{str(match['mirrored']).lower()}"
+    )
+    active_obligations = _initial_obligation_instances(case_id, scenario_identity, first_before)
+    initial_obligation_ids = list(active_obligations.values())
     for path_position, replay_index in enumerate(selected_indices):
         before, action, after, policy, target_policy, trace_step = replay[replay_index]
         edge, witness = _edge_and_witness(
@@ -831,12 +1172,15 @@ def _compact_match_voyage(
             starting_distance=match["startingDistance"], path_position=path_position,
             trace_step=trace_step,
             opening_search_witness=scenario["aggregate"]["openingSearch"] if path_position == 0 else None,
+            scenario_identity=scenario_identity,
+            active_obligations=active_obligations,
         )
         edges.append(edge)
         witnesses.append(witness)
     return _voyage(
         case_id=case_id, edges=edges, recurrence=match["nonterminalRecurrence"],
         terminal_summary=terminal_summary,
+        initial_obligation_ids=initial_obligation_ids,
     ), witnesses
 
 
@@ -861,6 +1205,9 @@ def _h3_declared_voyage(
     report_digest = REGISTERED_CASES["h3"]["report_digest"]
     edges: list[dict[str, Any]] = []
     witnesses: list[dict[str, Any]] = []
+    scenario_identity = "distance-512-first-player-mirror-false"
+    active_obligations = _initial_obligation_instances("h3", scenario_identity, states_and_actions[0][0])
+    initial_obligation_ids = list(active_obligations.values())
     for index, (before, action, reaction) in enumerate(states_and_actions):
         after = apply_action(before, action, config, target_reaction_policy=reaction)
         policy = "declared_opening_sequence"
@@ -874,12 +1221,15 @@ def _h3_declared_voyage(
             first_actor="player", mirrored=False, starting_distance=512,
             path_position=index, trace_step=None,
             opening_search_witness=scenario["aggregate"]["openingSearch"] if index == 0 else None,
+            scenario_identity=scenario_identity,
+            active_obligations=active_obligations,
         )
         edges.append(edge)
         witnesses.append(witness)
     return _voyage(
         case_id="h3", edges=edges, recurrence=None,
         terminal_summary="Nonterminal declared H3 sequence: partial response is followed by one normal action before the later Frayed Seam bind.",
+        initial_obligation_ids=initial_obligation_ids,
     ), witnesses
 
 
@@ -941,7 +1291,7 @@ def export_pressure_suite(case_ids: Sequence[str] = tuple(REGISTERED_CASES)) -> 
         for case_id in requested
     ]
     request_descriptor = {
-        "schemaVersion": 1,
+        "schemaVersion": 2,
         "adapter": {"id": ADAPTER_ID, "version": ADAPTER_VERSION},
         "cases": requested,
         "startingDistances": list(STARTING_DISTANCES),
@@ -949,11 +1299,12 @@ def export_pressure_suite(case_ids: Sequence[str] = tuple(REGISTERED_CASES)) -> 
         "outputDetailLevel": "witnesses",
         "cutId": TACTICAL_CUT_ID,
     }
+    request_digest = sha256_digest(request_descriptor)
     payload = {
-        "schemaVersion": 1,
+        "schemaVersion": 2,
         "resultId": "d2a-pressure-suite-" + "-".join(requested),
         "resultVersion": RESULT_VERSION,
-        "requestDigest": sha256_digest(request_descriptor),
+        "requestDigest": request_digest,
         "sourceLocks": all_locks,
         "traces": traces,
         "transitionWitnesses": witnesses,
@@ -961,9 +1312,7 @@ def export_pressure_suite(case_ids: Sequence[str] = tuple(REGISTERED_CASES)) -> 
         "worldObligations": _world_obligations(traces),
         "returnAssessments": _return_assessments(traces),
         "diagnostics": diagnostics,
-        "residualLedger": _accumulate_residual(
-            edge["residual"] for trace in traces for edge in trace["transitionEdges"]
-        ),
+        "residualLedger": _aggregate_trace_residuals(traces),
         "blockedClaims": [
             "These correlated deterministic cases reuse one D2A model, policy family, scenario family, and authority fixture; row count does not multiply empirical weight.",
             "The common WorldDesignResult envelope does not create common dynamics or authority between D2A and TypeScript simulation.",
@@ -975,8 +1324,14 @@ def export_pressure_suite(case_ids: Sequence[str] = tuple(REGISTERED_CASES)) -> 
         "evidenceOrigin": "analysis-derived",
         "covarianceGroup": "d2a-fixed-model-policy-domain-v1",
         "deduplicationIdentity": sha256_digest(report_identities),
+        "executionReceipt": _execution_receipt_base(all_locks, request_digest),
     }
-    return {**payload, "resultDigest": sha256_digest(payload)}
+    result_digest = sha256_digest(payload)
+    return {
+        **payload,
+        "executionReceipt": {**payload["executionReceipt"], "resultDigest": result_digest},
+        "resultDigest": result_digest,
+    }
 
 
 def main(argv: Sequence[str] | None = None) -> int:

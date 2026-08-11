@@ -1,8 +1,11 @@
 import { z } from 'zod';
 
 import { canonicalJson, compareCanonicalText, sha256Digest, type JsonValue } from './canonical';
+import { deriveVoyageEvidence, deriveWorldDesignResidual } from './kernel/derive-voyage-evidence';
 
 export const CRPM_WORLD_SCHEMA_VERSION = 1 as const;
+export const WORLD_DESIGN_REQUEST_SCHEMA_VERSION = 2 as const;
+export const WORLD_DESIGN_RESULT_SCHEMA_VERSION = 2 as const;
 
 const SchemaVersionSchema = z.literal(CRPM_WORLD_SCHEMA_VERSION);
 const IsoWallClockValuePattern = /\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}(?:\.\d+)?(?:Z|[+-]\d{2}:\d{2})/;
@@ -25,6 +28,7 @@ const SourcePathSchema = z.string()
         'Source paths must be trimmed repository-relative POSIX paths.');
 const DigestSchema = z.string().regex(/^[0-9a-f]{64}$/);
 const CommitShaSchema = z.string().regex(/^[0-9a-f]{40}$/);
+const GitObjectIdSchema = z.string().regex(/^[0-9a-f]{40}$/);
 const VersionSchema = z.number().int().min(1).max(Number.MAX_SAFE_INTEGER)
     .refine((value) => !Object.is(value, -0));
 const NonNegativeSafeIntegerSchema = z.number().int().min(0).max(Number.MAX_SAFE_INTEGER)
@@ -114,6 +118,56 @@ export const SourceLockSchema = z.strictObject({
     commit: CommitShaSchema,
     paths: uniqueStringArray(SourcePathSchema, 1, 128)
 });
+
+export const ImplementationFileBlobSchema = z.strictObject({
+    path: SourcePathSchema,
+    blobOid: GitObjectIdSchema
+});
+
+const RegisteredExecutionReceiptBaseShape = {
+    schemaVersion: z.literal(1),
+    repositoryId: z.literal('worms-port'),
+    implementationCommit: CommitShaSchema,
+    implementationTree: GitObjectIdSchema,
+    implementationPaths: uniqueStringArray(SourcePathSchema, 1, 128),
+    implementationFileBlobs: z.array(ImplementationFileBlobSchema).min(1).max(128),
+    implementationBundleDigest: DigestSchema,
+    adapterVersions: z.array(AdapterReferenceSchema).min(1).max(16),
+    profileVersion: VersionSchema,
+    requestSchemaVersion: z.literal(WORLD_DESIGN_REQUEST_SCHEMA_VERSION),
+    resultSchemaVersion: z.literal(WORLD_DESIGN_RESULT_SCHEMA_VERSION),
+    sourceLocks: z.array(SourceLockSchema).min(1).max(16),
+    requestDigest: DigestSchema
+};
+
+function validateExecutionReceipt(
+    receipt: z.infer<z.ZodObject<typeof RegisteredExecutionReceiptBaseShape>>,
+    context: z.RefinementCtx
+) {
+    const paths = [...receipt.implementationPaths].sort(compareCanonicalText);
+    const blobs = [...receipt.implementationFileBlobs]
+        .sort((left, right) => compareCanonicalText(left.path, right.path));
+    if (canonicalJson(paths) !== canonicalJson(blobs.map((blob) => blob.path))) {
+        context.addIssue({ code: 'custom', path: ['implementationFileBlobs'], message: 'Implementation paths and per-file blobs must match exactly.' });
+    }
+    const expected = sha256Digest({
+        repositoryId: receipt.repositoryId,
+        implementationCommit: receipt.implementationCommit,
+        implementationTree: receipt.implementationTree,
+        implementationFileBlobs: blobs
+    });
+    if (expected !== receipt.implementationBundleDigest) {
+        context.addIssue({ code: 'custom', path: ['implementationBundleDigest'], message: 'Implementation bundle digest does not match the registered Git objects.' });
+    }
+}
+
+export const RegisteredExecutionReceiptBaseSchema = z.strictObject(RegisteredExecutionReceiptBaseShape)
+    .superRefine(validateExecutionReceipt);
+
+export const RegisteredExecutionReceiptSchema = z.strictObject({
+    ...RegisteredExecutionReceiptBaseShape,
+    resultDigest: DigestSchema
+}).superRefine(validateExecutionReceipt);
 
 export const ScenarioDomainSchema = z.strictObject({
     schemaVersion: SchemaVersionSchema,
@@ -240,7 +294,7 @@ export const AuthorityDeltaSchema = z.strictObject({
 });
 
 export const ResidualLedgerSchema = z.strictObject({
-    schemaVersion: SchemaVersionSchema,
+    schemaVersion: z.literal(2),
     positionDeltas: z.array(DeltaSchema).max(256),
     resourceDeltas: z.array(DeltaSchema).max(256),
     healthDeltas: z.array(DeltaSchema).max(256),
@@ -469,14 +523,39 @@ export const TransitionWitnessSchema = z.strictObject({
     }
 });
 
-export const WorldObligationSchema = z.strictObject({
-    schemaVersion: SchemaVersionSchema,
-    obligationId: IdentifierSchema,
-    obligationVersion: VersionSchema,
-    obligationType: IdentifierSchema,
-    originEdgeId: IdentifierSchema,
+export const WorldObligationOriginSchema = z.discriminatedUnion('kind', [
+    z.strictObject({
+        kind: z.literal('edge'),
+        edgeId: IdentifierSchema
+    }),
+    z.strictObject({
+        kind: z.literal('initial_carrier'),
+        carrier: WorldCarrierReferenceSchema
+    })
+]);
+
+export const WorldObligationRoleSchema = z.strictObject({
+    owner: IdentifierSchema,
     bearer: IdentifierSchema,
     beneficiary: IdentifierSchema,
+    originator: IdentifierSchema.nullable(),
+    eligibleResponders: NonEmptyIdentifierListSchema
+});
+
+export const WorldObligationSchema = z.strictObject({
+    schemaVersion: z.literal(2),
+    obligationId: IdentifierSchema,
+    obligationVersion: VersionSchema,
+    obligationType: z.enum([
+        'spoolburst_preparation',
+        'spun_cocoon',
+        'opening_weave',
+        'frayed_seam',
+        'seam_pin',
+        'brace'
+    ]),
+    origin: WorldObligationOriginSchema,
+    roles: WorldObligationRoleSchema,
     supportCarrier: WorldCarrierReferenceSchema,
     legalResponses: NonEmptyDescriptionListSchema,
     expiryCondition: TrimmedStringSchema,
@@ -556,6 +635,7 @@ export const VoyageObligationHistorySchema = z.strictObject({
     opened: IdentifierListSchema,
     carried: IdentifierListSchema,
     discharged: IdentifierListSchema,
+    expired: IdentifierListSchema,
     unresolved: IdentifierListSchema
 });
 
@@ -571,9 +651,23 @@ export const VoyageTraceV2Schema = z.strictObject({
     excludedClaims: NonEmptyDescriptionListSchema
 });
 
+export const VoyageTraceV3Schema = z.strictObject({
+    schemaVersion: z.literal(3),
+    ...VoyageTraceBaseShape,
+    edgeAttempts: z.array(VoyageEdgeAttemptSchema).max(1_024),
+    commandPath: z.array(VoyageCommandPathEntrySchema).max(1_024),
+    cutChanges: z.array(VoyageCutChangeSchema).max(1_024),
+    witnessReferences: z.array(WitnessReferenceSchema).max(4_096),
+    initialObligationIds: IdentifierListSchema,
+    obligationHistory: VoyageObligationHistorySchema,
+    reentryInstructions: NonEmptyDescriptionListSchema,
+    excludedClaims: NonEmptyDescriptionListSchema
+});
+
 export const VoyageTraceSchema = z.discriminatedUnion('schemaVersion', [
     VoyageTraceV1Schema,
-    VoyageTraceV2Schema
+    VoyageTraceV2Schema,
+    VoyageTraceV3Schema
 ]).superRefine((voyage, context) => {
     const mismatches: string[] = [];
     const carrierMatches = (
@@ -608,13 +702,13 @@ export const VoyageTraceSchema = z.discriminatedUnion('schemaVersion', [
             if (!carrierMatches(previous.targetCarrier, current.sourceCarrier)) {
                 mismatches.push(`Carrier mismatch before edge ${current.edgeId}.`);
             }
-            const composedAttempts = voyage.schemaVersion === 2
+            const composedAttempts = voyage.schemaVersion !== 1
                 ? voyage.edgeAttempts.filter((attempt) => attempt.outcome !== 'incompatible')
                 : [];
-            const currentAttemptSequence = voyage.schemaVersion === 2
+            const currentAttemptSequence = voyage.schemaVersion !== 1
                 ? composedAttempts[index]?.sequence
                 : index;
-            const declaredCutChange = voyage.schemaVersion === 2 && voyage.cutChanges.some((change) =>
+            const declaredCutChange = voyage.schemaVersion !== 1 && voyage.cutChanges.some((change) =>
                 change.sequence === currentAttemptSequence &&
                 change.bridgeEdgeId === current.edgeId &&
                 canonicalJson(change.sourceCut) === canonicalJson(previous.targetCut) &&
@@ -659,6 +753,19 @@ export const VoyageTraceSchema = z.discriminatedUnion('schemaVersion', [
         .map((attempt) => attempt.edge.edgeId);
     if (canonicalJson(composedIds) !== canonicalJson(voyage.transitionEdges.map((edge) => edge.edgeId))) {
         context.addIssue({ code: 'custom', path: ['transitionEdges'], message: 'Transition edges must retain every compatible accepted or rejected attempt in order.' });
+    }
+    if (voyage.schemaVersion === 3) {
+        const derived = deriveVoyageEvidence(voyage.edgeAttempts, voyage.initialCarrier, voyage.initialObligationIds);
+        for (const [field, declared, expected] of [
+            ['accumulatedResidual', voyage.accumulatedResidual, derived.accumulatedResidual],
+            ['obligationHistory', voyage.obligationHistory, derived.obligationHistory],
+            ['finalCarrier', voyage.finalCarrier, derived.finalCarrier],
+            ['compatibilityResult', voyage.compatibilityResult, derived.compatibility]
+        ] as const) {
+            if (canonicalJson(declared) !== canonicalJson(expected)) {
+                context.addIssue({ code: 'custom', path: [field], message: `${field} must equal the canonical edge-derived voyage summary.` });
+            }
+        }
     }
 });
 
@@ -1019,7 +1126,7 @@ export const DesignStepSchema = z.strictObject({
 });
 
 export const WorldDesignRequestPayloadSchema = z.strictObject({
-    schemaVersion: SchemaVersionSchema,
+    schemaVersion: z.literal(WORLD_DESIGN_REQUEST_SCHEMA_VERSION),
     requestId: IdentifierSchema,
     requestVersion: VersionSchema,
     profileVersion: VersionSchema,
@@ -1093,7 +1200,7 @@ export const WorldDesignRequestSchema = z.strictObject({
 });
 
 export const WorldDesignResultPayloadSchema = z.strictObject({
-    schemaVersion: SchemaVersionSchema,
+    schemaVersion: z.literal(WORLD_DESIGN_RESULT_SCHEMA_VERSION),
     resultId: IdentifierSchema,
     resultVersion: VersionSchema,
     requestDigest: DigestSchema,
@@ -1111,16 +1218,59 @@ export const WorldDesignResultPayloadSchema = z.strictObject({
     authorityProvenance: AuthorityProvenanceSchema,
     evidenceOrigin: EvidenceOriginSchema,
     covarianceGroup: IdentifierSchema,
-    deduplicationIdentity: DigestSchema
+    deduplicationIdentity: DigestSchema,
+    executionReceipt: RegisteredExecutionReceiptBaseSchema
 });
 
 export const WorldDesignResultSchema = z.strictObject({
-    ...WorldDesignResultPayloadSchema.shape,
+    schemaVersion: z.literal(WORLD_DESIGN_RESULT_SCHEMA_VERSION),
+    resultId: IdentifierSchema,
+    resultVersion: VersionSchema,
+    requestDigest: DigestSchema,
+    sourceLocks: z.array(SourceLockSchema).min(1).max(16),
+    traces: z.array(VoyageTraceSchema).max(1_024),
+    transitionWitnesses: z.array(TransitionWitnessSchema).max(4_096),
+    projectionAssessments: z.array(ProjectionTransportAssessmentSchema).max(1_024),
+    worldObligations: z.array(WorldObligationSchema).max(1_024),
+    returnAssessments: z.array(ReturnAssessmentSchema).max(1_024),
+    diagnostics: z.array(DiagnosticProfileSchema).max(1_024),
+    residualLedger: ResidualLedgerSchema,
+    blockedClaims: NonEmptyDescriptionListSchema,
+    maturity: z.enum(['M0_appearance', 'M1_declaration', 'M2_local_use']),
+    productAuthority: z.literal('none'),
+    authorityProvenance: AuthorityProvenanceSchema,
+    evidenceOrigin: EvidenceOriginSchema,
+    covarianceGroup: IdentifierSchema,
+    deduplicationIdentity: DigestSchema,
+    executionReceipt: RegisteredExecutionReceiptSchema,
     resultDigest: DigestSchema
 }).superRefine((result, context) => {
-    const { resultDigest, ...payload } = result;
+    const { resultDigest, executionReceipt, ...rest } = result;
+    const { resultDigest: receiptResultDigest, ...receiptBase } = executionReceipt;
+    const payload = { ...rest, executionReceipt: receiptBase };
     if (sha256Digest(payload) !== resultDigest) {
         context.addIssue({ code: 'custom', path: ['resultDigest'], message: 'Result digest does not match canonical result content.' });
+    }
+    if (receiptResultDigest !== resultDigest) {
+        context.addIssue({ code: 'custom', path: ['executionReceipt', 'resultDigest'], message: 'Execution receipt must bind the exact result digest.' });
+    }
+    if (executionReceipt.requestDigest !== result.requestDigest) {
+        context.addIssue({ code: 'custom', path: ['executionReceipt', 'requestDigest'], message: 'Execution receipt must bind the exact request digest.' });
+    }
+    if (canonicalJson(executionReceipt.sourceLocks) !== canonicalJson(result.sourceLocks)) {
+        context.addIssue({ code: 'custom', path: ['executionReceipt', 'sourceLocks'], message: 'Execution receipt source locks must match the result source locks.' });
+    }
+    if (executionReceipt.profileVersion !== 2 || executionReceipt.requestSchemaVersion !== 2 || executionReceipt.resultSchemaVersion !== 2) {
+        context.addIssue({ code: 'custom', path: ['executionReceipt'], message: 'Only the sealed v2 profile/request/result execution receipt is supported.' });
+    }
+    for (let index = 0; index < result.traces.length; index += 1) {
+        if (result.traces[index].schemaVersion !== 3) {
+            context.addIssue({ code: 'custom', path: ['traces', index, 'schemaVersion'], message: 'Pre-sealing voyage records are unsupported; results require VoyageTrace v3.' });
+        }
+    }
+    const derivedResidual = deriveWorldDesignResidual(result.traces);
+    if (canonicalJson(result.residualLedger) !== canonicalJson(derivedResidual)) {
+        context.addIssue({ code: 'custom', path: ['residualLedger'], message: 'Result residual ledger must equal the canonical aggregation of all contained traces.' });
     }
     if (result.authorityProvenance.relationship === 'authority_adapter_parity') {
         const provenance = result.authorityProvenance;
@@ -1148,11 +1298,19 @@ export const WorldDesignResultSchema = z.strictObject({
     const edgesById = new Map(edges.map((edge) => [edge.edgeId, edge]));
     for (let index = 0; index < result.worldObligations.length; index += 1) {
         const obligation = result.worldObligations[index];
-        const origin = edgesById.get(obligation.originEdgeId);
-        if (!origin) {
-            context.addIssue({ code: 'custom', path: ['worldObligations', index, 'originEdgeId'], message: 'World-obligation origin edge must exist in the result.' });
-        } else if (canonicalJson(obligation.supportCarrier) !== canonicalJson(origin.targetCarrier)) {
-            context.addIssue({ code: 'custom', path: ['worldObligations', index, 'supportCarrier'], message: 'World-obligation support carrier must be the origin edge target carrier.' });
+        if (obligation.origin.kind === 'edge') {
+            const origin = edgesById.get(obligation.origin.edgeId);
+            if (!origin) {
+                context.addIssue({ code: 'custom', path: ['worldObligations', index, 'origin', 'edgeId'], message: 'World-obligation origin edge must exist in the result.' });
+            } else if (canonicalJson(obligation.supportCarrier) !== canonicalJson(origin.targetCarrier)) {
+                context.addIssue({ code: 'custom', path: ['worldObligations', index, 'supportCarrier'], message: 'Edge-origin obligation support carrier must be the origin edge target carrier.' });
+            }
+        } else {
+            const initialCarrier = obligation.origin.carrier;
+            const initialExists = result.traces.some((trace) => canonicalJson(trace.initialCarrier) === canonicalJson(initialCarrier));
+            if (!initialExists || canonicalJson(obligation.supportCarrier) !== canonicalJson(initialCarrier)) {
+                context.addIssue({ code: 'custom', path: ['worldObligations', index, 'origin', 'carrier'], message: 'Initial-carrier obligation must reference an exact trace initial carrier and matching support carrier.' });
+            }
         }
     }
 
@@ -1182,11 +1340,28 @@ export const WorldDesignResultSchema = z.strictObject({
     const observedLifecycle = new Map<string, 'open' | 'carried' | 'discharged' | 'expired'>();
     for (let traceIndex = 0; traceIndex < result.traces.length; traceIndex += 1) {
         const trace = result.traces[traceIndex];
-        const live = new Set<string>();
+        const initialObligations = result.worldObligations.filter((obligation) => {
+            const origin = obligation.origin;
+            return origin.kind === 'initial_carrier' &&
+                canonicalJson(origin.carrier) === canonicalJson(trace.initialCarrier);
+        });
+        const live = new Set(initialObligations.map((obligation) => obligation.obligationId));
+        for (const obligation of initialObligations) observedLifecycle.set(obligation.obligationId, 'open');
+        if (trace.schemaVersion === 3) {
+            const expectedInitial = [...live].sort(compareCanonicalText);
+            const declaredInitial = [...trace.initialObligationIds].sort(compareCanonicalText);
+            if (canonicalJson(expectedInitial) !== canonicalJson(declaredInitial)) {
+                context.addIssue({ code: 'custom', path: ['traces', traceIndex, 'initialObligationIds'], message: 'Trace initial obligations must match typed initial-carrier obligation records.' });
+            }
+        }
         for (let edgeIndex = 0; edgeIndex < trace.transitionEdges.length; edgeIndex += 1) {
             const edge = trace.transitionEdges[edgeIndex];
             const ledger = edge.residual;
             visitLedger(ledger, ['traces', traceIndex, 'transitionEdges', edgeIndex, 'residual']);
+            const simultaneousClosure = ledger.dischargedObligations.filter((id) => ledger.expiredRights.includes(id));
+            if (simultaneousClosure.length > 0) {
+                context.addIssue({ code: 'custom', path: ['traces', traceIndex, 'transitionEdges', edgeIndex, 'residual'], message: 'An obligation cannot discharge and expire on the same edge.' });
+            }
             const closing = new Set([...ledger.dischargedObligations, ...ledger.expiredRights]);
             const expectedCarried = [...live].filter((obligationId) => !closing.has(obligationId)).sort(compareCanonicalText);
             const declaredCarried = [...ledger.carriedObligations].sort(compareCanonicalText);
@@ -1199,7 +1374,7 @@ export const WorldDesignResultSchema = z.strictObject({
             }
             for (const obligationId of ledger.openedObligations) {
                 const obligation = obligations.get(obligationId);
-                if (live.has(obligationId) || obligation?.originEdgeId !== edge.edgeId) {
+                if (live.has(obligationId) || obligation?.origin.kind !== 'edge' || obligation.origin.edgeId !== edge.edgeId) {
                     context.addIssue({ code: 'custom', path: ['traces', traceIndex, 'transitionEdges', edgeIndex, 'residual', 'openedObligations'], message: `Obligation ${obligationId} must open exactly once on its declared origin edge.` });
                 }
                 live.add(obligationId);
@@ -1256,7 +1431,12 @@ export function buildWorldDesignRequest(input: unknown) {
 
 export function buildWorldDesignResult(input: unknown) {
     const payload = WorldDesignResultPayloadSchema.parse(input);
-    return WorldDesignResultSchema.parse({ ...payload, resultDigest: sha256Digest(payload) });
+    const resultDigest = sha256Digest(payload);
+    return WorldDesignResultSchema.parse({
+        ...payload,
+        executionReceipt: { ...payload.executionReceipt, resultDigest },
+        resultDigest
+    });
 }
 
 export function parseRegisteredWorldDesignRequest(input: unknown, portContractInput: unknown) {

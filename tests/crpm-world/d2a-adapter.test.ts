@@ -33,23 +33,26 @@ test('Python D2A export validates as a strict CRPM-world design result', () => {
     assert.deepEqual(result.returnAssessments[0].satisfiedClassifications, ['recursive_carrier_return']);
     const h3 = result.traces.find((trace) => trace.voyageId === 'd2a-h3-pressure-voyage');
     assert.ok(h3);
+    assert.equal(h3.schemaVersion, 3);
+    if (h3.schemaVersion !== 3) throw new Error('Sealed D2A results require VoyageTrace v3.');
     assert.equal(h3.compatibilityResult.compatible, true);
-    assert.ok(h3.transitionEdges[1].residual.unresolvedObligations.includes(
-        'd2a.h3.loomkeeper.frayed_seam_turns'
-    ));
-    assert.ok(h3.transitionEdges[1].residual.carriedObligations.includes(
-        'd2a.h3.loomkeeper.frayed_seam_turns'
-    ));
-    assert.ok(h3.transitionEdges[2].residual.dischargedObligations.includes(
-        'd2a.h3.loomkeeper.frayed_seam_turns'
-    ));
     const h3Obligation = result.worldObligations.find((item) =>
-        item.obligationId === 'd2a.h3.loomkeeper.frayed_seam_turns'
+        item.obligationType === 'frayed_seam' && item.origin.kind === 'edge' &&
+        item.origin.edgeId === h3.transitionEdges[0].edgeId
     );
     assert.ok(h3Obligation);
+    const obligationId = h3Obligation.obligationId;
+    assert.ok(h3.transitionEdges[1].residual.unresolvedObligations.includes(obligationId));
+    assert.ok(h3.transitionEdges[1].residual.carriedObligations.includes(obligationId));
+    assert.ok(h3.transitionEdges[2].residual.dischargedObligations.includes(obligationId));
     assert.equal(h3Obligation.lifecycleStatus, 'discharged');
-    const { resultDigest, ...payload } = result;
-    assert.equal(resultDigest, sha256Digest(payload));
+    assert.ok(result.worldObligations.some((item) =>
+        item.obligationType === 'opening_weave' && item.origin.kind === 'initial_carrier'
+    ));
+    const { resultDigest, executionReceipt, ...payload } = result;
+    const { resultDigest: receiptResultDigest, ...receiptBase } = executionReceipt;
+    assert.equal(receiptResultDigest, resultDigest);
+    assert.equal(resultDigest, sha256Digest({ ...payload, executionReceipt: receiptBase }));
 });
 
 test('identical Python D2A exports have identical bytes and digests', () => {

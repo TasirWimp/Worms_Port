@@ -49,7 +49,12 @@ class D2AExportTests(unittest.TestCase):
         first = export_pressure_suite(("f2",))
         second = export_pressure_suite(("f2",))
         self.assertEqual(first, second)
-        self.assertEqual(first["resultDigest"], sha256_digest({key: value for key, value in first.items() if key != "resultDigest"}))
+        payload = {key: value for key, value in first.items() if key != "resultDigest"}
+        payload["executionReceipt"] = {
+            key: value for key, value in payload["executionReceipt"].items() if key != "resultDigest"
+        }
+        self.assertEqual(first["resultDigest"], sha256_digest(payload))
+        self.assertEqual(first["executionReceipt"]["resultDigest"], first["resultDigest"])
         reversed_cases = export_pressure_suite(("h2", "f4"))
         forward_cases = export_pressure_suite(("f4", "h2"))
         self.assertNotEqual(reversed_cases["resultDigest"], forward_cases["resultDigest"])
@@ -115,7 +120,12 @@ class D2AExportTests(unittest.TestCase):
         )
         reply = voyage["transitionEdges"][1]["response"]["postTacticalCarrier"]
         self.assertEqual((reply["activeActor"], reply["loomkeeper"]["frayedSeamTurns"]), ("player", 1))
-        obligation = "d2a.h3.loomkeeper.frayed_seam_turns"
+        typed = next(
+            item for item in self.result["worldObligations"]
+            if item["obligationType"] == "frayed_seam" and
+            item["origin"] == {"kind": "edge", "edgeId": voyage["transitionEdges"][0]["edgeId"]}
+        )
+        obligation = typed["obligationId"]
         first_residual = voyage["transitionEdges"][0]["residual"]
         reply_residual = voyage["transitionEdges"][1]["residual"]
         bound_residual = voyage["transitionEdges"][2]["residual"]
@@ -127,10 +137,16 @@ class D2AExportTests(unittest.TestCase):
         self.assertIn(obligation, bound_residual["dischargedObligations"])
         self.assertNotIn(obligation, bound_residual["unresolvedObligations"])
         self.assertNotIn(obligation, voyage["accumulatedResidual"]["unresolvedObligations"])
-        typed = next(item for item in self.result["worldObligations"] if item["obligationId"] == obligation)
-        self.assertEqual(typed["originEdgeId"], voyage["transitionEdges"][0]["edgeId"])
+        self.assertEqual(typed["origin"], {"kind": "edge", "edgeId": voyage["transitionEdges"][0]["edgeId"]})
         self.assertEqual(typed["supportCarrier"], voyage["transitionEdges"][0]["targetCarrier"])
         self.assertEqual(typed["lifecycleStatus"], "discharged")
+        self.assertEqual(typed["roles"]["originator"], "player")
+        opening_weave = next(
+            item for item in self.result["worldObligations"]
+            if item["obligationType"] == "opening_weave" and item["obligationId"] in voyage["initialObligationIds"]
+        )
+        self.assertEqual(opening_weave["origin"]["kind"], "initial_carrier")
+        self.assertEqual(opening_weave["lifecycleStatus"], "discharged")
         self.assertEqual(voyage["compatibilityResult"], {
             "compatible": True,
             "checkedEdgeIds": [edge["edgeId"] for edge in voyage["transitionEdges"]],

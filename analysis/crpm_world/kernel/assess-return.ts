@@ -8,7 +8,7 @@ import type {
     ReturnAssessment,
     ReturnClassAssessment,
     ScenarioDomain,
-    VoyageTraceV2,
+    VoyageTraceV3,
     WorldCarrierReference,
     CutReference
 } from '../types';
@@ -47,8 +47,8 @@ export type ReturnAssessmentInput = Readonly<{
         declaredExclusions?: readonly string[];
     }>;
     routeComparison?: Readonly<{
-        leftVoyage: VoyageTraceV2;
-        rightVoyage: VoyageTraceV2;
+        leftVoyage: VoyageTraceV3;
+        rightVoyage: VoyageTraceV3;
         leftTargetProjectionKey: unknown;
         rightTargetProjectionKey: unknown;
         witnessRefs?: readonly string[];

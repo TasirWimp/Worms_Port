@@ -27,6 +27,8 @@ import type {
     ProjectionTransportAssessmentSchema,
     ProjectionTransportAssessmentV1Schema,
     ProjectionTransportAssessmentV2Schema,
+    RegisteredExecutionReceiptBaseSchema,
+    RegisteredExecutionReceiptSchema,
     ResidualLedgerSchema,
     ReturnAssessmentSchema,
     ReturnClassAssessmentSchema,
@@ -39,6 +41,7 @@ import type {
     VoyageTraceSchema,
     VoyageTraceV1Schema,
     VoyageTraceV2Schema,
+    VoyageTraceV3Schema,
     WorldCarrierReferenceSchema,
     WorldCutDefinitionSchema,
     WorldDesignRequestPayloadSchema,
@@ -76,6 +79,8 @@ export type ProjectionClass = z.infer<typeof ProjectionClassSchema>;
 export type ProjectionTransportAssessment = z.infer<typeof ProjectionTransportAssessmentSchema>;
 export type ProjectionTransportAssessmentV1 = z.infer<typeof ProjectionTransportAssessmentV1Schema>;
 export type ProjectionTransportAssessmentV2 = z.infer<typeof ProjectionTransportAssessmentV2Schema>;
+export type RegisteredExecutionReceiptBase = z.infer<typeof RegisteredExecutionReceiptBaseSchema>;
+export type RegisteredExecutionReceipt = z.infer<typeof RegisteredExecutionReceiptSchema>;
 export type ResidualLedger = z.infer<typeof ResidualLedgerSchema>;
 export type ReturnAssessment = z.infer<typeof ReturnAssessmentSchema>;
 export type ReturnClassAssessment = z.infer<typeof ReturnClassAssessmentSchema>;
@@ -88,6 +93,7 @@ export type TransitionWitness = z.infer<typeof TransitionWitnessSchema>;
 export type VoyageTrace = z.infer<typeof VoyageTraceSchema>;
 export type VoyageTraceV1 = z.infer<typeof VoyageTraceV1Schema>;
 export type VoyageTraceV2 = z.infer<typeof VoyageTraceV2Schema>;
+export type VoyageTraceV3 = z.infer<typeof VoyageTraceV3Schema>;
 export type WorldCarrierReference = z.infer<typeof WorldCarrierReferenceSchema>;
 export type WorldCutDefinition = z.infer<typeof WorldCutDefinitionSchema>;
 export type WorldDesignRequestPayload = z.infer<typeof WorldDesignRequestPayloadSchema>;

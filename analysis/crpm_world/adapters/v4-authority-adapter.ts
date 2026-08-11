@@ -39,7 +39,7 @@ import type {
 } from '../types';
 
 export const SIMULATION_AUTHORITY_ADAPTER_ID = 'nimble-knots-simulation-authority-adapter';
-export const SIMULATION_AUTHORITY_ADAPTER_VERSION = 1;
+export const SIMULATION_AUTHORITY_ADAPTER_VERSION = 2;
 export const DEFAULT_AUTHORITY_CUT = Object.freeze({ id: V4_CUT_IDS.authority, version: V4_CUT_VERSION });
 
 export type AuthorityProjectionOutput = Readonly<{
@@ -186,7 +186,7 @@ function carrierReference(
 ): WorldCarrierReference {
     return WorldCarrierReferenceSchema.parse({
         schemaVersion: 1,
-        profileVersion: 1,
+        profileVersion: 2,
         carrierKind: 'authority',
         adapter: {
             id: SIMULATION_AUTHORITY_ADAPTER_ID,
@@ -246,7 +246,7 @@ function extractResidual(before: SimulationState, after: SimulationState, reject
     });
 
     return ResidualLedgerSchema.parse({
-        schemaVersion: 1,
+        schemaVersion: 2,
         positionDeltas,
         resourceDeltas: [
             delta('state.tick', before.tick, after.tick, 'Authoritative simulation tick.'),
@@ -536,7 +536,7 @@ export function projectSimulationAuthorityCut(
     const projectedDigest = sha256Digest(projection.projectedValue);
     const targetCarrier = WorldCarrierReferenceSchema.parse({
         schemaVersion: 1,
-        profileVersion: 1,
+        profileVersion: 2,
         carrierKind: targetDefinition.sourceCarrierKind,
         adapter: sourceCarrier.adapter,
         rulesetOrConfigId: sourceCarrier.rulesetOrConfigId,
@@ -623,7 +623,7 @@ export function projectSimulationAuthorityCut(
         forgotten: targetDefinition.intentionallyForgottenDistinctions,
         newlyVisible: ['The projection boundary is an explicit edge rather than a silently replaced authority carrier.'],
         residual: ResidualLedgerSchema.parse({
-            schemaVersion: 1,
+            schemaVersion: 2,
             positionDeltas: [], resourceDeltas: [], healthDeltas: [], statusDeltas: [], terrainDeltas: [], authorityDeltas: [],
             expiredRights: [], openedObligations: [], carriedObligations: [], dischargedObligations: [], unresolvedObligations: [],
             excludedUnmodelledResidue: targetDefinition.intentionallyForgottenDistinctions

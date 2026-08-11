@@ -58,7 +58,7 @@ export const FalseClosureRuleSchema = z.enum([
  * are derived from the result and the closed registry in evaluate.ts.
  */
 export const EvaluationDeclarationSchema = z.strictObject({
-    schemaVersion: z.literal(1),
+    schemaVersion: z.literal(2),
     evaluationId: IdentifierSchema,
     evaluationVersion: VersionSchema,
     evaluationMode: z.literal('registered_historical_pressure'),
@@ -99,7 +99,7 @@ export const EvaluationDeclarationSchema = z.strictObject({
 });
 
 export const FalseClosureDetectionSchema = z.strictObject({
-    schemaVersion: z.literal(1),
+    schemaVersion: z.literal(2),
     rule: FalseClosureRuleSchema,
     primaryPressureCase: EvaluationPressureCaseSchema,
     triggered: z.boolean(),
@@ -109,7 +109,7 @@ export const FalseClosureDetectionSchema = z.strictObject({
 });
 
 export const MaturityAssessmentSchema = z.strictObject({
-    schemaVersion: z.literal(1),
+    schemaVersion: z.literal(2),
     maturity: CarrierMaturitySchema.exclude(['M3_bounded_design_landfall']),
     gates: z.strictObject({
         coherentOutput: z.boolean(),
@@ -126,7 +126,7 @@ export const MaturityAssessmentSchema = z.strictObject({
 });
 
 export const EvaluationBundlePayloadSchema = z.strictObject({
-    schemaVersion: z.literal(1),
+    schemaVersion: z.literal(2),
     evaluationId: IdentifierSchema,
     evaluationVersion: VersionSchema,
     declaration: EvaluationDeclarationSchema,

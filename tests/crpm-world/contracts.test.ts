@@ -2,6 +2,7 @@ import assert from 'node:assert/strict';
 import test from 'node:test';
 
 import { sha256Digest } from '../../analysis/crpm_world/canonical';
+import { traceVoyage } from '../../analysis/crpm_world/kernel/trace-voyage';
 import {
     buildWorldDesignRequest,
     buildWorldDesignResult,
@@ -44,13 +45,15 @@ test('all core versioned records accept their strict bounded fixtures', () => {
         ['TransitionWitness', TransitionWitnessSchema, result.transitionWitnesses[0]],
         ['ResidualLedger', ResidualLedgerSchema, makeResidualLedger()],
         ['WorldObligation', WorldObligationSchema, {
-            schemaVersion: 1,
+            schemaVersion: 2,
             obligationId: 'synthetic.open-obligation',
-            obligationVersion: 1,
-            obligationType: 'synthetic_support',
-            originEdgeId: result.traces[0].transitionEdges[0].edgeId,
-            bearer: 'player',
-            beneficiary: 'loomkeeper',
+            obligationVersion: 2,
+            obligationType: 'brace',
+            origin: { kind: 'edge', edgeId: result.traces[0].transitionEdges[0].edgeId },
+            roles: {
+                owner: 'player', bearer: 'player', beneficiary: 'player', originator: 'player',
+                eligibleResponders: ['player', 'loomkeeper']
+            },
             supportCarrier: result.traces[0].transitionEdges[0].targetCarrier,
             legalResponses: ['Use only the declared synthetic response.'],
             expiryCondition: 'The declared support expires.',
@@ -82,8 +85,10 @@ test('request and result digests bind meaningful content but exclude their own d
     }).success, false);
 
     const result = makeWorldDesignResult();
-    const { resultDigest, ...resultPayload } = result;
-    assert.equal(resultDigest, sha256Digest(resultPayload));
+    const { resultDigest, executionReceipt, ...resultPayload } = result;
+    const { resultDigest: receiptResultDigest, ...receiptBase } = executionReceipt;
+    assert.equal(receiptResultDigest, resultDigest);
+    assert.equal(resultDigest, sha256Digest({ ...resultPayload, executionReceipt: receiptBase }));
     assert.equal(WorldDesignResultSchema.safeParse({
         ...result,
         blockedClaims: [...result.blockedClaims, 'A meaningful change.']
@@ -293,26 +298,25 @@ test('result obligations are referentially closed and cannot discharge before op
     });
     const openEdge = WorldTransitionEdgeSchema.parse({ ...baseEdge, residual: openLedger });
     const obligation = {
-        schemaVersion: 1 as const,
+        schemaVersion: 2 as const,
         obligationId,
-        obligationVersion: 1,
-        obligationType: 'synthetic_support',
-        originEdgeId: openEdge.edgeId,
-        bearer: 'player',
-        beneficiary: 'loomkeeper',
+        obligationVersion: 2,
+        obligationType: 'brace' as const,
+        origin: { kind: 'edge' as const, edgeId: openEdge.edgeId },
+        roles: {
+            owner: 'player', bearer: 'player', beneficiary: 'player', originator: 'player',
+            eligibleResponders: ['player', 'loomkeeper']
+        },
         supportCarrier: openEdge.targetCarrier,
         legalResponses: ['Carry or discharge this exact synthetic obligation.'],
         expiryCondition: 'The synthetic right expires.',
         dischargeCondition: 'The synthetic obligation is discharged.',
         lifecycleStatus: 'open' as const
     };
+    const openTrace = traceVoyage([openEdge], { voyageId: 'synthetic-open-voyage' });
     const validPayload = {
         ...payload,
-        traces: [{
-            ...payload.traces[0],
-            transitionEdges: [openEdge],
-            accumulatedResidual: openLedger
-        }],
+        traces: [openTrace],
         residualLedger: openLedger,
         worldObligations: [obligation]
     };
@@ -323,9 +327,11 @@ test('result obligations are referentially closed and cannot discharge before op
         openedObligations: ['synthetic.unknown.obligation'],
         unresolvedObligations: ['synthetic.unknown.obligation']
     });
+    const unknownEdge = WorldTransitionEdgeSchema.parse({ ...openEdge, residual: unknownLedger });
+    const unknownTrace = traceVoyage([unknownEdge], { voyageId: 'synthetic-unknown-voyage' });
     assert.throws(() => buildWorldDesignResult({
         ...validPayload,
-        traces: [{ ...validPayload.traces[0], transitionEdges: [{ ...openEdge, residual: unknownLedger }], accumulatedResidual: unknownLedger }],
+        traces: [unknownTrace],
         residualLedger: unknownLedger
     }), /no typed world-obligation record/);
 
@@ -335,12 +341,54 @@ test('result obligations are referentially closed and cannot discharge before op
         dischargedObligations: [obligationId],
         unresolvedObligations: []
     });
+    const prematureEdge = WorldTransitionEdgeSchema.parse({ ...openEdge, residual: prematureLedger });
+    const prematureTrace = traceVoyage([prematureEdge], { voyageId: 'synthetic-premature-voyage' });
     assert.throws(() => buildWorldDesignResult({
         ...validPayload,
-        traces: [{ ...validPayload.traces[0], transitionEdges: [{ ...openEdge, residual: prematureLedger }], accumulatedResidual: prematureLedger }],
+        traces: [prematureTrace],
         residualLedger: prematureLedger,
         worldObligations: [{ ...obligation, lifecycleStatus: 'discharged' }]
     }), /cannot discharge before it opens/);
+});
+
+test('voyage and result summaries are derived from edges and reject caller-only mutations', () => {
+    const payload = makeWorldDesignResultPayload();
+    const trace = payload.traces[0];
+    assert.throws(() => buildWorldDesignResult({
+        ...payload,
+        traces: [{
+            ...trace,
+            accumulatedResidual: {
+                ...trace.accumulatedResidual,
+                excludedUnmodelledResidue: [
+                    ...trace.accumulatedResidual.excludedUnmodelledResidue,
+                    'Caller-only trace residue mutation.'
+                ]
+            }
+        }]
+    }), /accumulatedResidual must equal the canonical edge-derived voyage summary/);
+
+    assert.throws(() => buildWorldDesignResult({
+        ...payload,
+        traces: [{
+            ...trace,
+            obligationHistory: {
+                ...trace.obligationHistory,
+                carried: ['caller-only-obligation']
+            }
+        }]
+    }), /obligationHistory must equal the canonical edge-derived voyage summary/);
+
+    assert.throws(() => buildWorldDesignResult({
+        ...payload,
+        residualLedger: {
+            ...payload.residualLedger,
+            excludedUnmodelledResidue: [
+                ...payload.residualLedger.excludedUnmodelledResidue,
+                'Caller-only result residue mutation.'
+            ]
+        }
+    }), /Result residual ledger must equal the canonical aggregation/);
 });
 
 test('diagnostic axes stay non-scalar while scalar probes remain subordinate', () => {

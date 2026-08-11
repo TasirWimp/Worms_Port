@@ -1,11 +1,11 @@
 {
-  "schemaVersion": 1,
+  "schemaVersion": 2,
   "requestId": "d2a-f3-pressure-example",
-  "requestVersion": 1,
-  "profileVersion": 1,
+  "requestVersion": 2,
+  "profileVersion": 2,
   "adapter": {
     "id": "d2a_tactical",
-    "version": 1
+    "version": 2
   },
   "baseline": {
     "kind": "d2a_config",
@@ -37,7 +37,7 @@
   },
   "cut": {
     "id": "d2a_tactical_recurrence_v1",
-    "version": 1
+    "version": 2
   },
   "protectedFamily": [
     "The exact registered D2A configuration, scenario family, policies, actions, report digest, and historical status remain recoverable.",

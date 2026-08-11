@@ -2,7 +2,7 @@ import { WorldCutDefinitionSchema } from '../schemas';
 import type { WorldCutDefinition } from '../types';
 
 export const D2A_TACTICAL_CUT_ID = 'd2a_tactical_recurrence_v1';
-export const D2A_TACTICAL_CUT_VERSION = 1;
+export const D2A_TACTICAL_CUT_VERSION = 2;
 export const D2A_PRESSURE_SEED = 3_237_998_097;
 
 export const D2A_TACTICAL_PROTECTED_FAMILY = Object.freeze([

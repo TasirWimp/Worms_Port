@@ -18,7 +18,7 @@ function decodeCut(encoded: string): WorldCutDefinition {
     return WorldCutDefinitionSchema.parse(JSON.parse(encoded));
 }
 
-export function getCutDefinition(cutId: string, cutVersion = 1): WorldCutDefinition {
+export function getCutDefinition(cutId: string, cutVersion: number): WorldCutDefinition {
     const key = `${cutId}@${cutVersion}`;
     const encoded = encodedCuts.get(key);
     if (!encoded) {

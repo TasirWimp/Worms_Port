@@ -16,6 +16,7 @@ import {
     getD2AConfigRegistration,
     getOfflineAdapterRegistration
 } from './registry';
+import { WORLD_DESIGN_REQUEST_SCHEMA_VERSION } from '../schemas';
 
 const IdentifierSchema = z.string().min(1).max(160).regex(/^[A-Za-z0-9][A-Za-z0-9._:/-]*$/);
 const VersionSchema = z.number().int().min(1).max(Number.MAX_SAFE_INTEGER)
@@ -96,7 +97,7 @@ const SequenceSchema = z.array(z.discriminatedUnion('kind', [
 });
 
 export const OfflineWorldDesignRequestPayloadSchema = z.strictObject({
-    schemaVersion: z.literal(1),
+    schemaVersion: z.literal(WORLD_DESIGN_REQUEST_SCHEMA_VERSION),
     requestId: IdentifierSchema,
     requestVersion: z.literal(OFFLINE_DESIGN_REQUEST_VERSION),
     profileVersion: z.literal(OFFLINE_DESIGN_PROFILE_VERSION),
@@ -143,7 +144,7 @@ function validateDeclaredScope(request: OfflineWorldDesignRequest): void {
         !registration.rulesetsOrConfigs.includes(request.baseline.id)) {
         throw new RangeError(`Baseline/config ${request.baseline.id} is not registered for ${request.adapter.id}.`);
     }
-    if (!registration.cutIds.includes(request.cut.id) || request.cut.version !== 1) {
+    if (!registration.cutIds.includes(request.cut.id)) {
         throw new RangeError(`Cut ${request.cut.id}@${request.cut.version} is incompatible with ${request.adapter.id}.`);
     }
     const cutDefinition = getCutDefinition(request.cut.id, request.cut.version);

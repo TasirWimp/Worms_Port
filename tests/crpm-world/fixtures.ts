@@ -10,10 +10,11 @@ import {
     WorldTransitionEdgeSchema
 } from '../../analysis/crpm_world/schemas';
 import { assessReturn } from '../../analysis/crpm_world/kernel/assess-return';
+import { traceVoyage } from '../../analysis/crpm_world/kernel/trace-voyage';
 
 export const TEST_SEED = 3_237_998_097;
 export const TEST_COMMIT = 'af23717e61fea6995bf3b7209211ae1aaa2bb855';
-export const TEST_ADAPTER = Object.freeze({ id: 'contract-test-adapter', version: 1 });
+export const TEST_ADAPTER = Object.freeze({ id: 'contract-test-adapter', version: 2 });
 export const TEST_RULESET = 'nimble-knots-artillery-v4';
 
 export function digestLabel(label: string): string {
@@ -34,7 +35,7 @@ export function makeScenarioDomain() {
 export function makeCarrier(revisionOrStep = 0, stateLabel = 'source') {
     return WorldCarrierReferenceSchema.parse({
         schemaVersion: 1,
-        profileVersion: 1,
+        profileVersion: 2,
         carrierKind: 'authority',
         adapter: TEST_ADAPTER,
         rulesetOrConfigId: TEST_RULESET,
@@ -47,7 +48,7 @@ export function makeCarrier(revisionOrStep = 0, stateLabel = 'source') {
 
 export function makeResidualLedger() {
     return ResidualLedgerSchema.parse({
-        schemaVersion: 1,
+        schemaVersion: 2,
         positionDeltas: [],
         resourceDeltas: [],
         healthDeltas: [],
@@ -86,7 +87,7 @@ export function makePortContract() {
     const port = (id: string, description: string) => ({ id, description, required: true });
     return PortContractSchema.parse({
         schemaVersion: 1,
-        profileVersion: 1,
+        profileVersion: 2,
         portContractId: 'crpm-world-contract-test-port',
         portContractVersion: 1,
         catalogs: {
@@ -170,10 +171,10 @@ export function makeWorldDesignRequestPayload() {
     const cut = makeCut();
     const domain = makeScenarioDomain();
     return {
-        schemaVersion: 1 as const,
+        schemaVersion: 2 as const,
         requestId: 'world-design-request-test',
-        requestVersion: 1,
-        profileVersion: 1,
+        requestVersion: 2,
+        profileVersion: 2,
         registeredAdapter: TEST_ADAPTER,
         baselineOrConfigReference: makeCarrier(),
         scenarioDomain: domain,
@@ -207,41 +208,43 @@ function makeDiagnosticAxis(assessment: string) {
 export function makeWorldDesignResultPayload() {
     const request = makeWorldDesignRequest();
     const edge = makeTransitionEdge();
-    const residual = makeResidualLedger();
     const witnessRef = edge.witnessReferences[0];
-    return {
+    const trace = traceVoyage([edge], {
+        voyageId: 'voyage-test',
+        terminalStatus: 'completed',
+        terminalSummary: 'The bounded synthetic edge composed.',
+        excludedClaims: ['No production voyage or return is claimed.']
+    });
+    const implementationPaths = ['analysis/crpm_world/schemas.ts'];
+    const implementationFileBlobs = [{ path: implementationPaths[0], blobOid: 'a'.repeat(40) }];
+    const sourceLocks = edge.fixedFrame.sourceLocks;
+    const executionReceipt = {
         schemaVersion: 1 as const,
+        repositoryId: 'worms-port' as const,
+        implementationCommit: TEST_COMMIT,
+        implementationTree: 'b'.repeat(40),
+        implementationPaths,
+        implementationFileBlobs,
+        implementationBundleDigest: sha256Digest({
+            repositoryId: 'worms-port',
+            implementationCommit: TEST_COMMIT,
+            implementationTree: 'b'.repeat(40),
+            implementationFileBlobs
+        }),
+        adapterVersions: [TEST_ADAPTER],
+        profileVersion: 2,
+        requestSchemaVersion: 2 as const,
+        resultSchemaVersion: 2 as const,
+        sourceLocks,
+        requestDigest: request.requestDigest
+    };
+    return {
+        schemaVersion: 2 as const,
         resultId: 'world-design-result-test',
-        resultVersion: 1,
+        resultVersion: 2,
         requestDigest: request.requestDigest,
-        sourceLocks: edge.fixedFrame.sourceLocks,
-        traces: [{
-            schemaVersion: 1 as const,
-            voyageId: 'voyage-test',
-            voyageVersion: 1,
-            initialCarrier: edge.sourceCarrier,
-            transitionEdges: [edge],
-            finalCarrier: edge.targetCarrier,
-            compatibilityResult: {
-                compatible: true,
-                checkedEdgeIds: [edge.edgeId],
-                issues: []
-            },
-            accumulatedResidual: residual,
-            terminalResult: {
-                status: 'completed' as const,
-                summary: 'The bounded synthetic edge composed.',
-                excludedClaims: ['No production voyage or return is claimed.']
-            },
-            recurrenceWitnesses: [],
-            returnWitnesses: [],
-            replaySupport: {
-                supported: false,
-                replayRecordRefs: [],
-                stateHashRefs: [],
-                limitations: ['No replay adapter exists in this gate.']
-            }
-        }],
+        sourceLocks,
+        traces: [trace],
         transitionWitnesses: [{
             schemaVersion: 1 as const,
             witnessId: witnessRef.witnessId,
@@ -307,14 +310,15 @@ export function makeWorldDesignResultPayload() {
             blockedClaims: ['No scalar probe establishes landfall.'],
             excludedClaims: ['No gameplay, balance, or empirical claim.']
         }],
-        residualLedger: residual,
+        residualLedger: trace.accumulatedResidual,
         blockedClaims: ['No live gameplay activation.'],
         maturity: 'M1_declaration' as const,
         productAuthority: 'none' as const,
         authorityProvenance: { relationship: 'none' as const },
         evidenceOrigin: 'synthetic-contract-test' as const,
         covarianceGroup: 'contract-test-lineage',
-        deduplicationIdentity: digestLabel('result-deduplication')
+        deduplicationIdentity: digestLabel('result-deduplication'),
+        executionReceipt
     };
 }
 

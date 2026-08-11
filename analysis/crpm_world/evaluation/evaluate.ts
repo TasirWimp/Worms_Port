@@ -11,6 +11,7 @@ import type {
 import {
     D2A_CONFIG_REGISTRATIONS,
     OFFLINE_ADAPTER_IDS,
+    REGISTERED_MANDATORY_PROBE_BUNDLES,
     getOfflineAdapterRegistration
 } from '../design-port/registry';
 import { D2A_TACTICAL_CUT_ID, D2A_TACTICAL_CUT_VERSION } from '../cuts/d2a-cuts';
@@ -57,7 +58,7 @@ function resultWitnesses(result: WorldDesignResult): DiagnosticWitnessReference[
         ...result.traces.flatMap((trace) => [
             ...trace.recurrenceWitnesses,
             ...trace.returnWitnesses,
-            ...(trace.schemaVersion === 2 ? trace.witnessReferences : [])
+            ...(trace.schemaVersion !== 1 ? trace.witnessReferences : [])
         ]),
         ...result.diagnostics.flatMap((diagnostic) => diagnostic.schemaVersion === 1
             ? diagnostic.pathPressure.evidenceRefs.map(witnessForReference)
@@ -110,10 +111,11 @@ function registeredEvaluationBinding(
     let expectedProtectedFamily: readonly string[] = [];
     let expectedCut = { id: 'unregistered', version: 1 };
     let sourceBound = false;
+    let mandatoryProbeBundleBound = declaration.pressureCaseId === 'v4_adapter';
     let registeredAcceptancePassed = false;
 
     if (declaration.pressureCaseId === 'v4_adapter') {
-        const registration = getOfflineAdapterRegistration(OFFLINE_ADAPTER_IDS.v4Authority, 1);
+        const registration = getOfflineAdapterRegistration(OFFLINE_ADAPTER_IDS.v4Authority, 2);
         expectedProbeIds = registration.mandatoryEvidenceProbes;
         expectedProtectedFamily = registration.mandatoryProtectedFamily;
         expectedCut = { id: V4_CUT_IDS.authority, version: V4_CUT_VERSION };
@@ -144,6 +146,13 @@ function registeredEvaluationBinding(
                     'docs/architecture/CRPM_Evaluation_Language_Operational_Note_v0.md',
                     'emergence_lab_crpm/dynamic_return_obligation_crosswalk_source.py'
                 ]);
+            const actualBundle = availableProbes
+                .filter((probe) => registration.mandatoryEvidenceProbes.includes(probe.probeId))
+                .sort((left, right) => compareCanonicalText(left.probeId, right.probeId));
+            mandatoryProbeBundleBound =
+                sha256Digest(actualBundle) === registration.mandatoryEvidenceBundleDigest &&
+                sha256Digest(REGISTERED_MANDATORY_PROBE_BUNDLES[registration.caseId]) ===
+                    registration.mandatoryEvidenceBundleDigest;
             // Every currently registered D2A pressure case is historical rejected
             // evidence. A future acceptance can only be introduced by changing this
             // closed source registry with reviewed witness requirements.
@@ -160,7 +169,10 @@ function registeredEvaluationBinding(
         ) && result.traces.flatMap((trace) => trace.transitionEdges).every((edge) =>
             sameStringSet(edge.protectedFamily, expectedProtectedFamily)
         );
-    sourceBound = sourceBound && protectedFamilyBound;
+    const executionReceiptBound = result.executionReceipt.implementationPaths.includes(
+        'analysis/crpm_world/evaluation/evaluate.ts'
+    ) && result.executionReceipt.adapterVersions.length > 0;
+    sourceBound = sourceBound && protectedFamilyBound && mandatoryProbeBundleBound && executionReceiptBound;
     const mandatoryEvidenceComplete = declarationMatchesRegistry &&
         expectedProbeIds.every((probeId) => actualProbeIds.includes(probeId));
     return {
@@ -233,7 +245,7 @@ function detectFalseClosures(
     return FalseClosureRuleSchema.options.map((rule) => {
         const triggered = conditions[rule] || asserted.has(rule);
         return {
-            schemaVersion: 1,
+            schemaVersion: 2,
             rule,
             primaryPressureCase: caseId,
             triggered,
@@ -259,7 +271,7 @@ function assessRegisteredEvaluationMaturity(
         'This evaluator cannot grant product authority; a separate closed owner-decision record is required.'
     ];
     return MaturityAssessmentSchema.parse({
-        schemaVersion: 1,
+        schemaVersion: 2,
         maturity,
         gates: {
             coherentOutput: true,
@@ -414,7 +426,7 @@ export function evaluateWorldDesignResult(
     const diagnosticProfile = buildProfile(declaration, result, witnesses, detections, registered.reenterableEvidence);
     const displayed = new Set(declaration.optionalDisplayedScalarProbeIds);
     return buildEvaluationBundle({
-        schemaVersion: 1,
+        schemaVersion: 2,
         evaluationId: declaration.evaluationId,
         evaluationVersion: declaration.evaluationVersion,
         declaration,

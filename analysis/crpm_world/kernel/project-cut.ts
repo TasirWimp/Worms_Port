@@ -8,7 +8,7 @@ import {
 
 import { canonicalJson, deepSortJson, sha256Digest, sha256Text, type JsonValue } from '../canonical';
 import { getCutDefinition } from '../cuts/registry';
-import { V4_CUT_IDS, type V4SimulationStateCutId } from '../cuts/v4-cuts';
+import { V4_CUT_IDS, V4_CUT_VERSION, type V4SimulationStateCutId } from '../cuts/v4-cuts';
 import { WorldCutDefinitionSchema } from '../schemas';
 import type { WorldCutDefinition } from '../types';
 
@@ -106,7 +106,7 @@ export function projectV4SimulationState(
     state: SimulationState
 ): CutProjection {
     assertV4State(state);
-    const cut = getCutDefinition(cutId);
+    const cut = getCutDefinition(cutId, V4_CUT_VERSION);
     if (cutId === V4_CUT_IDS.authority || cutId === V4_CUT_IDS.historicalAuthority) {
         return projectCut(cut, state, authorityProjection);
     }
@@ -124,7 +124,7 @@ export function projectV4CommandSample(
     if (!Number.isSafeInteger(sample.expectedTurn) || Object.is(sample.expectedTurn, -0) || sample.expectedTurn < 0) {
         throw new TypeError('Expected turn must be a non-negative deterministic safe integer.');
     }
-    const cut = getCutDefinition(cutId);
+    const cut = getCutDefinition(cutId, V4_CUT_VERSION);
     if (!cut.admissibleDomain.actionFamilies.includes(sample.command.type)) {
         throw new RangeError(`Command family ${sample.command.type} is outside cut ${cutId}.`);
     }

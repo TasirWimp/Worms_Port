@@ -8,11 +8,11 @@ import {
 
 import { adaptSimulationCommand } from '../adapters/v4-authority-adapter';
 import { canonicalJson, sha256Digest, sha256Text } from '../canonical';
-import { VoyageTraceV2Schema, WorldTransitionEdgeSchema } from '../schemas';
+import { VoyageTraceV3Schema, WorldTransitionEdgeSchema } from '../schemas';
 import type {
     CompositionIssue,
     CompositionWitness,
-    VoyageTraceV2,
+    VoyageTraceV3,
     WorldCarrierReference,
     WorldTransitionEdge
 } from '../types';
@@ -22,7 +22,7 @@ import {
     makeCompositionWitness,
     type CompositionPolicy
 } from './compose-edges';
-import { emptyResidualLedger, mergeResidualLedgers } from './residual-ledger';
+import { deriveVoyageEvidence } from './derive-voyage-evidence';
 
 export type VoyageTraceOptions = CompositionPolicy & Readonly<{
     voyageId: string;
@@ -30,8 +30,9 @@ export type VoyageTraceOptions = CompositionPolicy & Readonly<{
     initialCarrier?: WorldCarrierReference;
     terminalStatus?: 'completed' | 'blocked' | 'nonterminal' | 'failed';
     terminalSummary?: string;
-    recurrenceWitnesses?: VoyageTraceV2['recurrenceWitnesses'];
-    returnWitnesses?: VoyageTraceV2['returnWitnesses'];
+    recurrenceWitnesses?: VoyageTraceV3['recurrenceWitnesses'];
+    returnWitnesses?: VoyageTraceV3['returnWitnesses'];
+    initialObligationIds?: readonly string[];
     reentryInstructions?: readonly string[];
     excludedClaims?: readonly string[];
 }>;
@@ -91,16 +92,15 @@ function unique(values: readonly string[]): string[] {
 export function traceVoyage(
     edgeInputs: readonly WorldTransitionEdge[],
     options: VoyageTraceOptions
-): VoyageTraceV2 {
+): VoyageTraceV3 {
     const edges = edgeInputs.map((edge) => WorldTransitionEdgeSchema.parse(edge));
     if (edges.length === 0 && !options.initialCarrier) {
         throw new RangeError('An empty voyage requires an explicit initial carrier.');
     }
     const initialCarrier = options.initialCarrier ?? edges[0].sourceCarrier;
     const transitionEdges: WorldTransitionEdge[] = [];
-    const edgeAttempts: VoyageTraceV2['edgeAttempts'] = [];
-    const commandPath: VoyageTraceV2['commandPath'] = [];
-    const compatibilityIssues: string[] = [];
+    const edgeAttempts: VoyageTraceV3['edgeAttempts'] = [];
+    const commandPath: VoyageTraceV3['commandPath'] = [];
     let previousCompatibleEdge: WorldTransitionEdge | undefined;
 
     for (let sequence = 0; sequence < edges.length; sequence += 1) {
@@ -125,26 +125,15 @@ export function traceVoyage(
         });
 
         if (incompatible && compositionWitness) {
-            compatibilityIssues.push(...compositionWitness.issues.map((item) => item.message));
             continue;
         }
         transitionEdges.push(edge);
         previousCompatibleEdge = edge;
     }
 
-    const residualMerge = transitionEdges.length > 0
-        ? mergeResidualLedgers(transitionEdges.map((edge) => edge.residual))
-        : {
-            ledger: emptyResidualLedger(),
-            carriedObligations: [],
-            propagationIssues: []
-        };
-    compatibilityIssues.push(...residualMerge.propagationIssues.map((item) => item.message));
-    const compatible = compatibilityIssues.length === 0;
-    const finalCarrier = transitionEdges.length > 0
-        ? transitionEdges[transitionEdges.length - 1].targetCarrier
-        : initialCarrier;
-    const cutChanges: VoyageTraceV2['cutChanges'] = [];
+    const derived = deriveVoyageEvidence(edgeAttempts, initialCarrier, options.initialObligationIds ?? []);
+    const compatible = derived.compatibility.compatible;
+    const cutChanges: VoyageTraceV3['cutChanges'] = [];
     const appendCutChange = (
         sequence: number,
         sourceCut: WorldTransitionEdge['sourceCut'],
@@ -186,19 +175,15 @@ export function traceVoyage(
         ...(options.reentryInstructions ?? [])
     ]);
 
-    return VoyageTraceV2Schema.parse({
-        schemaVersion: 2,
+    return VoyageTraceV3Schema.parse({
+        schemaVersion: 3,
         voyageId: options.voyageId,
         voyageVersion: options.voyageVersion ?? 1,
         initialCarrier,
         transitionEdges,
-        finalCarrier,
-        compatibilityResult: {
-            compatible,
-            checkedEdgeIds: unique(transitionEdges.map((edge) => edge.edgeId)),
-            issues: unique(compatibilityIssues)
-        },
-        accumulatedResidual: residualMerge.ledger,
+        finalCarrier: derived.finalCarrier,
+        compatibilityResult: derived.compatibility,
+        accumulatedResidual: derived.accumulatedResidual,
         terminalResult: {
             status: compatible ? options.terminalStatus ?? 'nonterminal' : 'blocked',
             summary: options.terminalSummary ?? (compatible
@@ -220,12 +205,8 @@ export function traceVoyage(
         commandPath,
         cutChanges,
         witnessReferences,
-        obligationHistory: {
-            opened: residualMerge.ledger.openedObligations,
-            carried: residualMerge.carriedObligations,
-            discharged: residualMerge.ledger.dischargedObligations,
-            unresolved: residualMerge.ledger.unresolvedObligations
-        },
+        initialObligationIds: options.initialObligationIds ?? [],
+        obligationHistory: derived.obligationHistory,
         reentryInstructions,
         excludedClaims
     });
@@ -254,9 +235,9 @@ function commandDeclaration(edge: WorldTransitionEdge): {
 
 export function reenterSimulationVoyage(
     callerInitialState: SimulationState,
-    voyage: VoyageTraceV2
+    voyage: VoyageTraceV3
 ): SimulationVoyageReentryResult {
-    const trace = VoyageTraceV2Schema.parse(voyage);
+    const trace = VoyageTraceV3Schema.parse(voyage);
     const callerBefore = canonicalSimulationJson(callerInitialState);
     let state = cloneSimulation(callerInitialState);
     const issues: string[] = [];

@@ -1,11 +1,11 @@
 {
-  "schemaVersion": 1,
+  "schemaVersion": 2,
   "requestId": "v4-authority-transcript-example",
-  "requestVersion": 1,
-  "profileVersion": 1,
+  "requestVersion": 2,
+  "profileVersion": 2,
   "adapter": {
     "id": "v4_authority",
-    "version": 1
+    "version": 2
   },
   "baseline": {
     "kind": "ruleset",
@@ -37,7 +37,7 @@
   },
   "cut": {
     "id": "authority_v4",
-    "version": 1
+    "version": 2
   },
   "protectedFamily": [
     "The canonical V4 authority state remains recoverable by its source reference and digest.",
