@@ -2,6 +2,7 @@ import type { z } from 'zod';
 
 import type {
     AdapterReferenceSchema,
+    AuthorityProvenanceSchema,
     AliasingWitnessSchema,
     AliasingWitnessPairSchema,
     CarrierMaturitySchema,
@@ -9,6 +10,7 @@ import type {
     CompositionIssueSchema,
     CompositionWitnessSchema,
     ContractCatalogsSchema,
+    CutReferenceSchema,
     DiagnosticAxisSchema,
     DiagnosticProfileSchema,
     DiagnosticProfileV1Schema,
@@ -29,7 +31,7 @@ import type {
     ReturnAssessmentSchema,
     ReturnClassAssessmentSchema,
     ReturnClassificationSchema,
-    ReturnObligationSchema,
+    WorldObligationSchema,
     ScenarioDomainSchema,
     SourceLockSchema,
     SupportStatusSchema,
@@ -49,6 +51,7 @@ import type {
 } from './schemas';
 
 export type AdapterReference = z.infer<typeof AdapterReferenceSchema>;
+export type AuthorityProvenance = z.infer<typeof AuthorityProvenanceSchema>;
 export type AliasingWitness = z.infer<typeof AliasingWitnessSchema>;
 export type AliasingWitnessPair = z.infer<typeof AliasingWitnessPairSchema>;
 export type CarrierMaturity = z.infer<typeof CarrierMaturitySchema>;
@@ -56,6 +59,7 @@ export type CompositionIssueCode = z.infer<typeof CompositionIssueCodeSchema>;
 export type CompositionIssue = z.infer<typeof CompositionIssueSchema>;
 export type CompositionWitness = z.infer<typeof CompositionWitnessSchema>;
 export type ContractCatalogs = z.infer<typeof ContractCatalogsSchema>;
+export type CutReference = z.infer<typeof CutReferenceSchema>;
 export type DiagnosticAxis = z.infer<typeof DiagnosticAxisSchema>;
 export type DiagnosticProfile = z.infer<typeof DiagnosticProfileSchema>;
 export type DiagnosticProfileV1 = z.infer<typeof DiagnosticProfileV1Schema>;
@@ -76,7 +80,7 @@ export type ResidualLedger = z.infer<typeof ResidualLedgerSchema>;
 export type ReturnAssessment = z.infer<typeof ReturnAssessmentSchema>;
 export type ReturnClassAssessment = z.infer<typeof ReturnClassAssessmentSchema>;
 export type ReturnClassification = z.infer<typeof ReturnClassificationSchema>;
-export type ReturnObligation = z.infer<typeof ReturnObligationSchema>;
+export type WorldObligation = z.infer<typeof WorldObligationSchema>;
 export type ScenarioDomain = z.infer<typeof ScenarioDomainSchema>;
 export type SourceLock = z.infer<typeof SourceLockSchema>;
 export type SupportStatus = z.infer<typeof SupportStatusSchema>;

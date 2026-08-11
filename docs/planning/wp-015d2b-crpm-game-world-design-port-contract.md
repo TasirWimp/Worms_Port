@@ -2,10 +2,10 @@
 
 ## Status
 
-- **State:** complete as a bounded analysis-only subordinate package
+- **State:** in progress; reopened for the external implementation-review repairs
 - **Relationship:** analysis-only child of the active WP-015D2A tactical-game-model decision line
 - **Current carrier maturity:** `M2 local use` for the core contracts, bounded adapters, offline design port, and evaluation lens; no `M3` claim
-- **Current product authority:** `authority-adapter parity` for declared, tested V4 transition witnesses only; D2A evidence remains `none`
+- **Current product authority:** `none`; tested V4 adapter parity is authority-derived witness/support provenance only
 - **Worms_Port base:** `af23717e61fea6995bf3b7209211ae1aaa2bb855` on `codex/wp-015d2b-crpm-world-design-port`
 - **Implementation tip before documentation integration:** `f34317c5008e3171718705a9d8277437aae8d00d`
 - **Documentation/evidence closure predecessor before adversarial hardening:** `7655b1c27b54ce6d6ee0a2279beaba8ec1939811`
@@ -26,7 +26,7 @@ results only below ignored test output. No UI, network endpoint, runtime
 service, M3 landfall, ruleset approval, production activation, or broad
 simulation-equivalence result exists at this gate. The primary v2 diagnostic
 surface now keeps qualitative, witness-linked axes separate from scalar probes
-and applies six explicit false-closure rules plus deterministic maturity gates.
+and applies seven explicit false-closure rules plus source-bound maturity gates.
 
 ## Strongest Licensed Claim
 
@@ -228,20 +228,20 @@ behavior or add or activate V5. It must not become a runtime or network service.
 | --- | --- | --- |
 | Canonical contracts | `analysis/crpm_world/canonical.ts`, `schemas.ts`, `types.ts`, `tsconfig.json` | Strict versioned JSON records, canonical key sorting with array-order preservation, and SHA-256 digests; unsafe numeric/non-JSON/timestamp content fails closed |
 | V4 authority adapter | `analysis/crpm_world/adapters/v4-authority-adapter.ts` | Exact direct transition parity for the declared V1/V4 scenarios without a `shared/` edit |
-| Cuts and projection | `analysis/crpm_world/cuts/`, `kernel/project-cut.ts`, `kernel/assess-quotient-transport.ts` | Five closed cuts and an independently written finite quotient-transport checker with explicit alias pairs |
-| Voyage and return | `kernel/compose-edges.ts`, `trace-voyage.ts`, `residual-ledger.ts`, `assess-return.ts` | Structured compatible/incompatible composition, retained rejected attempts, accumulated residue/obligations, and six non-collapsed return classes |
+| Cuts and projection | `analysis/crpm_world/cuts/`, `kernel/project-cut.ts`, `kernel/assess-quotient-transport.ts` | Seven closed versioned cuts, explicit authority-to-projection bridge edges, and an independently written finite quotient-transport checker with explicit alias pairs |
+| Voyage and return | `kernel/compose-edges.ts`, `trace-voyage.ts`, `residual-ledger.ts`, `assess-return.ts` | Schema/profile-aware composition, explicit migration edges, referentially closed typed world obligations, and six separate return classes |
 | D2A adapter | `analysis/crpm_world/adapters/d2a_export.py` and `adapters/tests/` | Exact registered F2/F3/F4/H2/H3 report-digest checks and compact deterministic evidence; `analysis/tactical_model/model.py` is unchanged |
 | Offline design port | `analysis/crpm_world/design-port/`, `analysis/crpm_world/examples/`, `scripts/run-crpm-world-design.ts` | Closed `v4_authority@1` and `d2a_tactical@1` execution only; output confined below ignored `test-results/crpm-world/` |
-| Evaluation | `analysis/crpm_world/evaluation/` | V2 witness-linked qualitative profile, six false-closure rules, separate scalar probes, and deterministic M0–M3 gating |
-| Verification and boundary | `tests/crpm-world/`, `scripts/check-import-boundary.js`, `package.json`, `legal/source-manifest.json` | 64 focused tests plus existing simulation/tactical/build/compliance gates; the exact reference-only CRPM method pin is manifest-recorded and production imports from analysis remain forbidden |
+| Evaluation | `analysis/crpm_world/evaluation/` | V2 witness-linked qualitative profile, seven false-closure rules, mandatory evidence separated from optional display, and a source-bound historical evaluator capped at M2/ProductAuthority none |
+| Verification and boundary | `tests/crpm-world/`, `scripts/check-import-boundary.js`, `package.json`, `legal/source-manifest.json` | 71 focused tests plus existing simulation/tactical/build/compliance gates; the exact reference-only CRPM method pin is manifest-recorded and production imports from analysis remain forbidden |
 
-The reviewed example artifacts at implementation tip
-`f34317c5008e3171718705a9d8277437aae8d00d` are:
+The reviewed example artifacts after the current in-progress
+implementation-review repairs are:
 
 | Example | Request digest | Result digest | Maturity / authority |
 | --- | --- | --- | --- |
-| V4 four-command transcript | `64aa8c085f07dde2cba98e134f96e8e0c46ace450f1f48e7cafb73cf313cc462` | `def96e0c597e1fb4ac7de88394f832962720b0f241298bc29e62b68f8257867b` | `M2_local_use` / `authority-adapter-parity` |
-| D2A F3 pressure request | `226e0c42b6134d26c195bf2410b804c6acd37cad825af94a90c7d385ff1c420f` | `53c32ac1de6f6adcc5bff804830bc1901b56e9be36dbdff35b5abb34346d83a7` | `M2_local_use` / `none` |
+| V4 four-command transcript | `d40a4dcbeb0a59ed5a52cd340315dd9ae962ebf2455dd57863333ba6656dc98f` | `209a6813201ea7b0db53919f8b68b17a7b5bbefac7116ec3ce4f80ca90490187` | `M2_local_use` / `none` |
+| D2A F3 pressure request | `8d2fc97e2fe8576b72c417d303bd4e3e5160de90b0eea2a1947dd8a161703cda` | `11f83e1512dff94287181bdf25d76eeb5ec34595cc1818237a4a8697ee776c55` | `M2_local_use` / `none` |
 
 ### Recorded deviations from the provisional design
 
@@ -261,6 +261,19 @@ The reviewed example artifacts at implementation tip
   separately digested evaluation bundle. Its v2 primary profile contains no
   scalar probes, while retained v1 source diagnostics preserve analytical
   provenance and allow probes to be extracted beside the profile.
+- External implementation review replaced caller-declared acceptance,
+  re-entry, owner-decision, and authority inputs with closed source/report/
+  witness verification. Current result/evaluation schema versions cannot emit
+  M3, owner-reviewed, approved, or production-active authority.
+- Cut ids on edges, frames, voyages, composition, return, and evaluation were
+  replaced by versioned references. Ordinary authority command edges cannot be
+  silently retyped as thin-cut edges; authority projection uses a separate
+  bridge edge. Carrier continuation includes schema/profile identity and any
+  version change requires an explicit migration edge.
+- Mandatory evidence probes are fixed by the adapter/config registry and always
+  evaluated before optional scalar display selection. World support obligations
+  are typed separately from return assessments and validated across their full
+  lifecycle.
 - Terrain remains digest-backed rather than expanded into every report, and
   compact aggregate cases retain report/source references rather than checking
   all 250 traces into Git.
@@ -277,11 +290,14 @@ serialization.
 
 ### `WorldCarrierReference`
 
-Stores profile version, carrier kind, adapter id/version, ruleset or config id,
+Stores schema/profile version, carrier kind, adapter id/version, ruleset or config id,
 baseline and state digests, revision or step, and an optional opaque source
 reference. Domain, decoder, witness, path, residue, and reopening data remain
 edge/voyage-scoped instead of being duplicated into every carrier. No carrier
 field licenses an unqualified support-complete claim.
+Exact continuation and finite exact return compare both schema and profile
+versions. A version change requires an explicit `carrier-profile-migration`
+edge; it is never accepted as equality by a matching state digest alone.
 
 ### `WorldCutDefinition`
 
@@ -300,7 +316,7 @@ adapters, candidates, cuts, or domain widening fail closed.
 
 ### `WorldTransitionEdge`
 
-Declares an edge id/version, `sourceCutId`, `targetCutId`, a mandatory Worms-local
+Declares an edge id/version, versioned `sourceCut` and `targetCut` references, a mandatory Worms-local
 `edgeKind`, a mandatory Worms domain motif, and an
 optional bounded CRPM transition interpretation. If the latter is present, it
 must be justified as exactly one source-locked primitive—`refine`, `compress`,
@@ -331,6 +347,10 @@ edge-scoped mandatory data, not prose-only metadata. Cuts and domain entities
 must not acquire timeless intrinsic roles. A domain motif such as `move`,
 `cast`, or `impact` is not automatically a CRPM transition interpretation; any
 such interpretation requires this full packet.
+The authority adapter accepts only registered versioned authority cuts. A
+projection to `thin_visible_duel_v0` or `bounded_command_support_v1` is a
+separate `authority-cut-projection` edge and cannot relabel an ordinary command
+edge.
 
 ### `TransitionWitness`
 
@@ -344,28 +364,31 @@ same source-cut key and different target-transition keys.
 ### `ResidualLedger`
 
 Stores structured position, resource, health, status, terrain, and authority
-deltas; expired rights; opened, discharged, and unresolved obligations; and
+deltas; expired rights; opened, carried, discharged, and unresolved obligations; and
 excluded/unmodelled residue. Edge/path identity, support status, blocked claims,
 and reopening conditions remain on their owning records. An empty ledger over
 a finite sample is not a global no-residue claim.
 
-### `ReturnObligation`
+### `WorldObligation` and `ReturnAssessment`
 
-Represents separately typed and separately evaluated obligations:
+`WorldObligation` represents a gameplay/design support duty with a typed id,
+origin edge, bearer/beneficiary, support carrier, legal responses, expiry and
+discharge conditions, and witnessed lifecycle. Every opened, carried,
+unresolved, discharged, or expired id must resolve to one typed record; its
+origin edge and support carrier must exist, discharge cannot precede opening,
+and an open obligation must be carried or explicitly closed on each following
+edge.
 
-1. current/public readout equality;
-2. recursive carrier sufficiency or continuation congruence under a fixed
-   continuation family;
-3. invariant-set membership;
-4. finite state/carrier return under a declared equality or decoder and a
-   bounded horizon; and
-5. composed-route return or route mismatch under paired paths, a decoder, and
-   accumulated residue.
+`ReturnAssessment` separately evaluates `visible_equal`,
+`protected_equivalent`, `recursive_carrier_return`, `invariant_region_return`,
+`finite_exact_return`, and `route_mismatch`.
 
-No one obligation implies another. A base/readout return is not carrier or
+No one return class implies another. A base/readout return is not carrier or
 support return. D2A recurrence—repetition of `tactical_state_key` in one
 nonterminal fixed-policy trace—is recorded separately and is not a proof of
 finite return, convergence, or voyage return.
+The executable F2 recurrence is emitted in `returnAssessments`, never in
+`worldObligations`; H3 Frayed Seam support is the typed world obligation.
 
 ### `VoyageTrace`
 
@@ -395,19 +418,24 @@ of recurrence, balance, or global convergence.
 The core request contract stores registered adapter, baseline/config carrier,
 cut, scenario/action/policy/seed domain, protected family, ordered design steps,
 output detail, exclusions, and canonical digest. The stricter offline envelope
-in `design-port/validate-request.ts` additionally binds requested probes/ports
-and `offline_only` activation. Arbitrary executable overlays and user-supplied
+in `design-port/validate-request.ts` additionally binds the complete mandatory
+evidence-probe family, optional displayed scalar probes, requested ports, and
+`offline_only` activation. Arbitrary executable overlays and user-supplied
 module, script, shell, or operator paths are forbidden.
 
 ### `WorldDesignResult`
 
 Stores request digest, source locks, voyage traces, transition witnesses,
-projection assessments, return obligations, diagnostics, residual ledger,
+projection assessments, typed world obligations, return assessments,
+diagnostics, residual ledger,
 blocked claims, maturity, product authority, evidence origin/covariance/
 deduplication information, and deterministic result digest. Adapter/config/cut
 and sampled-domain identities remain in the nested carriers, fixed frames,
 traces, assessments, and diagnostics. A unified shape never unifies the
 authority of its inputs.
+V4 result parity appears only in the typed `authorityProvenance` relationship,
+bound to an exact source lock and transition witnesses. It cannot change the
+separate `productAuthority: none` field.
 
 ### `DiagnosticProfile`
 
@@ -441,14 +469,17 @@ A Worms_Port-local L4+ heuristic, not universal CRPM maturity doctrine:
 The contracts, bounded adapters, offline design port, and evaluation lens are
 now `M2 local use`: they are tested within their declared analysis-only scope.
 This does not establish `M3 bounded design landfall`, complete carrier support,
-broad replay equivalence, or production sufficiency. M3 requires all declared
-acceptance pressure cases to pass with re-enterable evidence and no active
-false-closure rule; it still leaves ProductAuthority `none` without a separate
-owner-approved versioned-ruleset decision.
+broad replay equivalence, or production sufficiency. The current evaluator is
+restricted to a closed historical-pressure registry and emits at most M2. It
+derives source binding, mandatory evidence completeness, and re-enterability;
+callers cannot submit pass, owner-decision, M3, or authority assertions. A
+future M3 registration requires a new source-bound, witness-verified contract
+version after every required pressure case passes with no active false closure.
 
 ### `ProductAuthority`
 
-A separate Worms_Port governance status:
+A separate Worms_Port governance vocabulary. Current executable edge, result,
+and evaluation schemas admit only `none`:
 
 - `none`;
 - `authority-adapter parity`;
@@ -456,12 +487,16 @@ A separate Worms_Port governance status:
 - `versioned ruleset approved`; and
 - `production active`.
 
-`authority-adapter parity` means a checked relationship to existing authority,
-not newly created authority. Owner review, versioned ruleset approval, and
-production activation require separate recorded decisions. M3 design landfall
-never activates production by itself. The current D2B status is
-`authority-adapter parity` only for the declared, tested historical simulation
-transition domain; it does not change the authority in `shared/simulation.ts`.
+`authority-adapter parity` is retained only as a descriptive provenance/support
+relationship to existing authority, not as current ProductAuthority. Owner
+review, versioned ruleset approval, and production activation require separate
+closed, source-bound decision records outside this evaluator. M3 design
+landfall never activates production by itself. Current D2B ProductAuthority is
+`none` for V4 and D2A alike.
+A future governance record must be a separately versioned closed schema binding
+repository, commit, repository-relative path, content digest, ruleset id and
+version, admissible scope, and decision identity. No arbitrary string reference
+or field on `EvaluationDeclaration` can substitute for that record.
 
 ## Implemented Cuts
 
@@ -474,14 +509,15 @@ continuation class.
 | Cut id | Bounded purpose | Required guardrail |
 | --- | --- | --- |
 | `authority_v4` | Digest-backed complete canonical V4 authority carrier for the registered command domain | No claim beyond `shared/simulation.ts` or the finite registered seed |
+| `authority_historical_v1_v4` | Digest-backed V1-through-V4 parity carrier for the registered historical seed | No historical ruleset promotion or all-state claim |
 | `thin_visible_duel_v0` | Active actor, positions, and Stitching only; destructive aliasing control | Explicitly relational/incomplete; matching readout is not state return or recurrence |
 | `bounded_command_support_v1` | Movement-only continuation support including movement budget, terrain, occupancy, bounds, actor, and expected turn | Bounded to supplied states and `move`; no fire/aim/selection/global completeness claim |
 | `replay_v4` | Initial authority support, ordered existing replay operations, state hashes, and reconstruction semantics | No replay ABI change; ordered events are not serialized in existing replay records |
 | `world_design_v0` | Offline profile/adapter/config/exclusion/evidence/authority references | No live mutation channel or shared-dynamics inference |
+| `d2a_tactical_recurrence_v1` | Registered F2/F3/F4/H2/H3 analytical support and recurrence carrier | Analytical only; exact config/report/domain binding and no production-state claim |
 
-The separate D2A adapter uses the declared analytical cut id
-`d2a_tactical_recurrence_v1`; it remains tied to registered config/report/trace
-carriers and is not a production-state cut.
+The D2A cut is part of the same closed versioned registry and remains tied to
+registered config/report/trace carriers; it is not a production-state cut.
 
 A cut may claim deterministic continuation only over its declared admissible
 action/domain family. If one projected source class contains states that produce
@@ -575,14 +611,14 @@ Every route must retain, as applicable:
 
 - source commit, path, ruleset/configuration id, and source/content digest;
 - admissible scenario/action/policy/seed family;
-- from/to cut ids and protected family;
+- versioned from/to cut references and the exact mandatory protected family;
 - exact before state, actor, command, expected turn, after state, and ordered
   event/error values or digests for V4;
 - exact config/report/trace-step digest and indices for D2A;
 - decoder/restriction rule id;
 - `exact`, `mismatch`, or `not_tested` status;
 - mismatch residue and witness references;
-- `authorityMutationObserved: false`; and
+- `authorityDefinitionMutationObserved: false`; and
 - a concrete reopening trigger.
 
 Reopen on source-lock or path drift, authority/fixture/config/digest mismatch,
@@ -620,6 +656,8 @@ The following promotions are explicitly blocked:
 - one non-splitting projection sample into all-domain state completeness;
 - a repaired cut into unique, minimal, or globally sufficient state;
 - recurrence absence into finite/global return, convergence, or balance;
+- F2 recursive-carrier return into successful recurrence repair, balance, or
+  design landfall;
 - F4 structural strength into initiative or production landfall;
 - H2 aggregate parity over its distance-conditioned imbalance;
 - H3 visible counterplay into timely repair;
@@ -627,7 +665,7 @@ The following promotions are explicitly blocked:
 - a common result shape into common authority or dynamics;
 - correlated cases, rows, adapters, reruns, or reviewers into independent
   evidence;
-- M3 or `authority-adapter parity` into production activation; and
+- M3 or authority-adapter parity provenance into ProductAuthority or production activation; and
 - a domain motif into an undeclared CRPM transition kind.
 
 This package makes no claim of general V4 parity beyond declared transcripts, a

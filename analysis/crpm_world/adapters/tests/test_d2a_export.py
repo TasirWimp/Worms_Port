@@ -65,6 +65,8 @@ class D2AExportTests(unittest.TestCase):
             voyage["transitionEdges"][-1]["response"]["postRecurrenceKey"],
         )
         self.assertEqual(len(voyage["recurrenceWitnesses"]), 1)
+        assessment = self.result["returnAssessments"][0]
+        self.assertEqual(assessment["satisfiedClassifications"], ["recursive_carrier_return"])
         self.assertEqual(diagnostic(self.result, "f2")["returnStrength"]["assessment"], "recursive_carrier_return")
         self.assertEqual(probes(self.result, "f2")["f2.recurrence_matches"], 20)
 
@@ -113,17 +115,22 @@ class D2AExportTests(unittest.TestCase):
         )
         reply = voyage["transitionEdges"][1]["response"]["postTacticalCarrier"]
         self.assertEqual((reply["activeActor"], reply["loomkeeper"]["frayedSeamTurns"]), ("player", 1))
-        obligation = "loomkeeper.frayed_seam_turns"
+        obligation = "d2a.h3.loomkeeper.frayed_seam_turns"
         first_residual = voyage["transitionEdges"][0]["residual"]
         reply_residual = voyage["transitionEdges"][1]["residual"]
         bound_residual = voyage["transitionEdges"][2]["residual"]
         self.assertIn(obligation, first_residual["openedObligations"])
         self.assertIn(obligation, first_residual["unresolvedObligations"])
         self.assertNotIn(obligation, reply_residual["openedObligations"])
+        self.assertIn(obligation, reply_residual["carriedObligations"])
         self.assertIn(obligation, reply_residual["unresolvedObligations"])
         self.assertIn(obligation, bound_residual["dischargedObligations"])
         self.assertNotIn(obligation, bound_residual["unresolvedObligations"])
         self.assertNotIn(obligation, voyage["accumulatedResidual"]["unresolvedObligations"])
+        typed = next(item for item in self.result["worldObligations"] if item["obligationId"] == obligation)
+        self.assertEqual(typed["originEdgeId"], voyage["transitionEdges"][0]["edgeId"])
+        self.assertEqual(typed["supportCarrier"], voyage["transitionEdges"][0]["targetCarrier"])
+        self.assertEqual(typed["lifecycleStatus"], "discharged")
         self.assertEqual(voyage["compatibilityResult"], {
             "compatible": True,
             "checkedEdgeIds": [edge["edgeId"] for edge in voyage["transitionEdges"]],

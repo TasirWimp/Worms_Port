@@ -1,6 +1,6 @@
 import { z } from 'zod';
 
-import { canonicalJson, sha256Digest, type JsonValue } from './canonical';
+import { canonicalJson, compareCanonicalText, sha256Digest, type JsonValue } from './canonical';
 
 export const CRPM_WORLD_SCHEMA_VERSION = 1 as const;
 
@@ -234,8 +234,8 @@ export const DeltaSchema = z.strictObject({
 
 export const AuthorityDeltaSchema = z.strictObject({
     subject: IdentifierSchema,
-    before: ProductAuthoritySchema,
-    after: ProductAuthoritySchema,
+    before: z.literal('none'),
+    after: z.literal('none'),
     rationale: TrimmedStringSchema
 });
 
@@ -249,6 +249,7 @@ export const ResidualLedgerSchema = z.strictObject({
     authorityDeltas: z.array(AuthorityDeltaSchema).max(64),
     expiredRights: IdentifierListSchema,
     openedObligations: IdentifierListSchema,
+    carriedObligations: IdentifierListSchema,
     dischargedObligations: IdentifierListSchema,
     unresolvedObligations: IdentifierListSchema,
     excludedUnmodelledResidue: DescriptionListSchema
@@ -259,14 +260,27 @@ export const WitnessReferenceSchema = z.strictObject({
     digest: DigestSchema
 });
 
+export const AuthorityProvenanceSchema = z.discriminatedUnion('relationship', [
+    z.strictObject({
+        relationship: z.literal('none')
+    }),
+    z.strictObject({
+        relationship: z.literal('authority_adapter_parity'),
+        authoritySource: SourceLockSchema,
+        witnessReferences: z.array(WitnessReferenceSchema).min(1).max(4_096),
+        scope: TrimmedStringSchema,
+        excludedClaims: NonEmptyDescriptionListSchema
+    })
+]);
+
 export const FixedFrameSchema = z.strictObject({
     schemaVersion: SchemaVersionSchema,
     sourceLocks: z.array(SourceLockSchema).min(1).max(16),
     baselineOrConfigId: IdentifierSchema,
     adapter: AdapterReferenceSchema,
     scenarioDomain: ScenarioDomainSchema,
-    sourceCutId: IdentifierSchema,
-    targetCutId: IdentifierSchema,
+    sourceCut: CutReferenceSchema,
+    targetCut: CutReferenceSchema,
     actorOrPolicy: IdentifierSchema,
     expectedRevisionOrStep: NonNegativeSafeIntegerSchema
 });
@@ -295,8 +309,8 @@ const WorldTransitionEdgeBaseShape = {
     crpmInterpretationJustification: TrimmedStringSchema.optional(),
     sourceCarrier: WorldCarrierReferenceSchema,
     targetCarrier: WorldCarrierReferenceSchema,
-    sourceCutId: IdentifierSchema,
-    targetCutId: IdentifierSchema,
+    sourceCut: CutReferenceSchema,
+    targetCut: CutReferenceSchema,
     fixedFrame: FixedFrameSchema,
     commandOrDeclaration: DeterministicJsonValueSchema,
     response: DeterministicJsonValueSchema.optional(),
@@ -314,8 +328,8 @@ const WorldTransitionEdgeBaseShape = {
     returnCondition: TrimmedStringSchema,
     reopeningCondition: TrimmedStringSchema,
     supportStatus: SupportStatusSchema,
-    productAuthority: ProductAuthoritySchema,
-    authorityMutationObserved: z.literal(false)
+    productAuthority: z.literal('none'),
+    authorityDefinitionMutationObserved: z.literal(false)
 };
 
 export const WorldTransitionEdgeV1Schema = z.strictObject({
@@ -339,11 +353,11 @@ export const WorldTransitionEdgeSchema = z.discriminatedUnion('schemaVersion', [
     if (!edge.crpmTransitionInterpretation && edge.crpmInterpretationJustification) {
         context.addIssue({ code: 'custom', path: ['crpmInterpretationJustification'], message: 'CRPM interpretation justification is not allowed without an interpretation.' });
     }
-    if (edge.sourceCutId !== edge.fixedFrame.sourceCutId) {
-        context.addIssue({ code: 'custom', path: ['fixedFrame', 'sourceCutId'], message: 'Fixed frame source cut must match the edge.' });
+    if (canonicalJson(edge.sourceCut) !== canonicalJson(edge.fixedFrame.sourceCut)) {
+        context.addIssue({ code: 'custom', path: ['fixedFrame', 'sourceCut'], message: 'Fixed frame source cut must match the edge.' });
     }
-    if (edge.targetCutId !== edge.fixedFrame.targetCutId) {
-        context.addIssue({ code: 'custom', path: ['fixedFrame', 'targetCutId'], message: 'Fixed frame target cut must match the edge.' });
+    if (canonicalJson(edge.targetCut) !== canonicalJson(edge.fixedFrame.targetCut)) {
+        context.addIssue({ code: 'custom', path: ['fixedFrame', 'targetCut'], message: 'Fixed frame target cut must match the edge.' });
     }
     if (edge.sourceCarrier.adapter.id !== edge.fixedFrame.adapter.id ||
         edge.sourceCarrier.adapter.version !== edge.fixedFrame.adapter.version) {
@@ -351,6 +365,15 @@ export const WorldTransitionEdgeSchema = z.discriminatedUnion('schemaVersion', [
     }
     if (edge.sourceCarrier.rulesetOrConfigId !== edge.fixedFrame.baselineOrConfigId) {
         context.addIssue({ code: 'custom', path: ['fixedFrame', 'baselineOrConfigId'], message: 'Fixed frame baseline/config must match the source carrier.' });
+    }
+    const carrierVersionChanges = edge.sourceCarrier.schemaVersion !== edge.targetCarrier.schemaVersion ||
+        edge.sourceCarrier.profileVersion !== edge.targetCarrier.profileVersion;
+    if (carrierVersionChanges && edge.edgeKind !== 'carrier-profile-migration') {
+        context.addIssue({
+            code: 'custom',
+            path: ['edgeKind'],
+            message: 'A schema/profile carrier change requires an explicit carrier-profile-migration edge.'
+        });
     }
     const requiredCarrierDigests = [sha256Digest(edge.sourceCarrier), sha256Digest(edge.targetCarrier)];
     for (const digest of requiredCarrierDigests) {
@@ -446,17 +469,11 @@ export const TransitionWitnessSchema = z.strictObject({
     }
 });
 
-export const ReturnObligationSchema = z.strictObject({
+export const WorldObligationSchema = z.strictObject({
     schemaVersion: SchemaVersionSchema,
     obligationId: IdentifierSchema,
     obligationVersion: VersionSchema,
-    obligationKind: z.enum([
-        'current_readout_equality',
-        'recursive_carrier_congruence',
-        'invariant_membership',
-        'finite_return',
-        'route_composition_return'
-    ]),
+    obligationType: IdentifierSchema,
     originEdgeId: IdentifierSchema,
     bearer: IdentifierSchema,
     beneficiary: IdentifierSchema,
@@ -464,7 +481,7 @@ export const ReturnObligationSchema = z.strictObject({
     legalResponses: NonEmptyDescriptionListSchema,
     expiryCondition: TrimmedStringSchema,
     dischargeCondition: TrimmedStringSchema,
-    currentStatus: z.enum(['open', 'discharged', 'expired', 'blocked'])
+    lifecycleStatus: z.enum(['open', 'carried', 'discharged', 'expired'])
 });
 
 export const CompatibilityResultSchema = z.strictObject({
@@ -528,9 +545,10 @@ export const VoyageCommandPathEntrySchema = z.strictObject({
 
 export const VoyageCutChangeSchema = z.strictObject({
     sequence: NonNegativeSafeIntegerSchema,
-    sourceCutId: IdentifierSchema,
-    targetCutId: IdentifierSchema
-}).refine((change) => change.sourceCutId !== change.targetCutId, {
+    sourceCut: CutReferenceSchema,
+    targetCut: CutReferenceSchema,
+    bridgeEdgeId: IdentifierSchema
+}).refine((change) => canonicalJson(change.sourceCut) !== canonicalJson(change.targetCut), {
     message: 'Cut-change entries require distinct source and target cuts.'
 });
 
@@ -563,6 +581,8 @@ export const VoyageTraceSchema = z.discriminatedUnion('schemaVersion', [
         right: z.infer<typeof WorldCarrierReferenceSchema>
     ) => left.stateDigest === right.stateDigest &&
         left.baselineDigest === right.baselineDigest &&
+        left.schemaVersion === right.schemaVersion &&
+        left.profileVersion === right.profileVersion &&
         left.revisionOrStep === right.revisionOrStep &&
         left.carrierKind === right.carrierKind &&
         left.rulesetOrConfigId === right.rulesetOrConfigId &&
@@ -596,10 +616,11 @@ export const VoyageTraceSchema = z.discriminatedUnion('schemaVersion', [
                 : index;
             const declaredCutChange = voyage.schemaVersion === 2 && voyage.cutChanges.some((change) =>
                 change.sequence === currentAttemptSequence &&
-                change.sourceCutId === previous.targetCutId &&
-                change.targetCutId === current.sourceCutId
+                change.bridgeEdgeId === current.edgeId &&
+                canonicalJson(change.sourceCut) === canonicalJson(previous.targetCut) &&
+                canonicalJson(change.targetCut) === canonicalJson(current.sourceCut)
             );
-            if (previous.targetCutId !== current.sourceCutId && !declaredCutChange) {
+            if (canonicalJson(previous.targetCut) !== canonicalJson(current.sourceCut) && !declaredCutChange) {
                 mismatches.push(`Cut mismatch before edge ${current.edgeId}.`);
             }
         }
@@ -653,7 +674,8 @@ export const ReturnClassificationSchema = z.enum([
 export const ReturnClassAssessmentSchema = z.strictObject({
     classification: ReturnClassificationSchema,
     status: z.enum(['satisfied', 'not_satisfied', 'not_assessed']),
-    declaredCutOrRegionId: IdentifierSchema.nullable(),
+    declaredCut: CutReferenceSchema.nullable(),
+    declaredRegionId: IdentifierSchema.nullable(),
     witnessRefs: DescriptionListSchema,
     declaredExclusions: DescriptionListSchema,
     rationale: TrimmedStringSchema
@@ -854,7 +876,7 @@ export const DiagnosticProfileV1Schema = z.strictObject({
     diagnosticId: IdentifierSchema,
     diagnosticVersion: VersionSchema,
     evaluationObjectRef: IdentifierSchema,
-    cutId: IdentifierSchema,
+    cut: CutReferenceSchema,
     protectedFamily: NonEmptyDescriptionListSchema,
     scope: TrimmedStringSchema,
     pathPressure: DiagnosticAxisSchema,
@@ -949,8 +971,7 @@ export const DiagnosticProfileV2Schema = z.strictObject({
     }),
     activeFrame: z.strictObject({
         frameRef: IdentifierSchema,
-        cutId: IdentifierSchema,
-        cutVersion: VersionSchema,
+        cut: CutReferenceSchema,
         admissibleScope: ScenarioDomainSchema
     }),
     protectedFamily: NonEmptyDescriptionListSchema,
@@ -1025,8 +1046,10 @@ export const WorldDesignRequestPayloadSchema = z.strictObject({
     if (request.cut.sourceCarrierKind !== request.baselineOrConfigReference.carrierKind) {
         context.addIssue({ code: 'custom', path: ['cut', 'sourceCarrierKind'], message: 'Cut source carrier kind must match the baseline/config carrier.' });
     }
-    if (request.protectedFamily.some((item) => !request.cut.protectedFamily.includes(item))) {
-        context.addIssue({ code: 'custom', path: ['protectedFamily'], message: 'Request protected family must remain inside the cut protected family.' });
+    const requestProtected = [...request.protectedFamily].sort(compareCanonicalText);
+    const cutProtected = [...request.cut.protectedFamily].sort(compareCanonicalText);
+    if (canonicalJson(requestProtected) !== canonicalJson(cutProtected)) {
+        context.addIssue({ code: 'custom', path: ['protectedFamily'], message: 'Request protected family must exactly match the declared cut protected family.' });
     }
     const requestSeeds = [...request.seeds].sort((left, right) => left - right);
     const domainSeeds = [...request.scenarioDomain.seeds].sort((left, right) => left - right);
@@ -1078,12 +1101,14 @@ export const WorldDesignResultPayloadSchema = z.strictObject({
     traces: z.array(VoyageTraceSchema).max(1_024),
     transitionWitnesses: z.array(TransitionWitnessSchema).max(4_096),
     projectionAssessments: z.array(ProjectionTransportAssessmentSchema).max(1_024),
-    returnObligations: z.array(ReturnObligationSchema).max(1_024),
+    worldObligations: z.array(WorldObligationSchema).max(1_024),
+    returnAssessments: z.array(ReturnAssessmentSchema).max(1_024),
     diagnostics: z.array(DiagnosticProfileSchema).max(1_024),
     residualLedger: ResidualLedgerSchema,
     blockedClaims: NonEmptyDescriptionListSchema,
-    maturity: CarrierMaturitySchema,
-    productAuthority: ProductAuthoritySchema,
+    maturity: z.enum(['M0_appearance', 'M1_declaration', 'M2_local_use']),
+    productAuthority: z.literal('none'),
+    authorityProvenance: AuthorityProvenanceSchema,
     evidenceOrigin: EvidenceOriginSchema,
     covarianceGroup: IdentifierSchema,
     deduplicationIdentity: DigestSchema
@@ -1096,6 +1121,131 @@ export const WorldDesignResultSchema = z.strictObject({
     const { resultDigest, ...payload } = result;
     if (sha256Digest(payload) !== resultDigest) {
         context.addIssue({ code: 'custom', path: ['resultDigest'], message: 'Result digest does not match canonical result content.' });
+    }
+    if (result.authorityProvenance.relationship === 'authority_adapter_parity') {
+        const provenance = result.authorityProvenance;
+        if (result.evidenceOrigin !== 'authority-derived') {
+            context.addIssue({ code: 'custom', path: ['authorityProvenance'], message: 'Authority-adapter parity provenance requires authority-derived evidence.' });
+        }
+        if (!result.sourceLocks.some((lock) => canonicalJson(lock) === canonicalJson(provenance.authoritySource))) {
+            context.addIssue({ code: 'custom', path: ['authorityProvenance', 'authoritySource'], message: 'Authority provenance source lock must be present in the result source locks.' });
+        }
+        const actualWitnesses = new Set(result.transitionWitnesses.map((witness) =>
+            canonicalJson({ witnessId: witness.witnessId, digest: sha256Digest(witness) })
+        ));
+        for (let index = 0; index < provenance.witnessReferences.length; index += 1) {
+            if (!actualWitnesses.has(canonicalJson(provenance.witnessReferences[index]))) {
+                context.addIssue({ code: 'custom', path: ['authorityProvenance', 'witnessReferences', index], message: 'Authority provenance must reference an exact transition witness in this result.' });
+            }
+        }
+    }
+
+    const obligations = new Map(result.worldObligations.map((obligation) => [obligation.obligationId, obligation]));
+    if (obligations.size !== result.worldObligations.length) {
+        context.addIssue({ code: 'custom', path: ['worldObligations'], message: 'World-obligation ids must be unique.' });
+    }
+    const edges = result.traces.flatMap((trace) => trace.transitionEdges);
+    const edgesById = new Map(edges.map((edge) => [edge.edgeId, edge]));
+    for (let index = 0; index < result.worldObligations.length; index += 1) {
+        const obligation = result.worldObligations[index];
+        const origin = edgesById.get(obligation.originEdgeId);
+        if (!origin) {
+            context.addIssue({ code: 'custom', path: ['worldObligations', index, 'originEdgeId'], message: 'World-obligation origin edge must exist in the result.' });
+        } else if (canonicalJson(obligation.supportCarrier) !== canonicalJson(origin.targetCarrier)) {
+            context.addIssue({ code: 'custom', path: ['worldObligations', index, 'supportCarrier'], message: 'World-obligation support carrier must be the origin edge target carrier.' });
+        }
+    }
+
+    const referencedIds = new Set<string>();
+    const visitLedger = (ledger: z.infer<typeof ResidualLedgerSchema>, path: (string | number)[]) => {
+        for (const field of [
+            'openedObligations',
+            'carriedObligations',
+            'dischargedObligations',
+            'unresolvedObligations',
+            'expiredRights'
+        ] as const) {
+            for (let index = 0; index < ledger[field].length; index += 1) {
+                const obligationId = ledger[field][index];
+                referencedIds.add(obligationId);
+                if (!obligations.has(obligationId)) {
+                    context.addIssue({
+                        code: 'custom',
+                        path: [...path, field, index],
+                        message: `Residual obligation ${obligationId} has no typed world-obligation record.`
+                    });
+                }
+            }
+        }
+    };
+    visitLedger(result.residualLedger, ['residualLedger']);
+    const observedLifecycle = new Map<string, 'open' | 'carried' | 'discharged' | 'expired'>();
+    for (let traceIndex = 0; traceIndex < result.traces.length; traceIndex += 1) {
+        const trace = result.traces[traceIndex];
+        const live = new Set<string>();
+        for (let edgeIndex = 0; edgeIndex < trace.transitionEdges.length; edgeIndex += 1) {
+            const edge = trace.transitionEdges[edgeIndex];
+            const ledger = edge.residual;
+            visitLedger(ledger, ['traces', traceIndex, 'transitionEdges', edgeIndex, 'residual']);
+            const closing = new Set([...ledger.dischargedObligations, ...ledger.expiredRights]);
+            const expectedCarried = [...live].filter((obligationId) => !closing.has(obligationId)).sort(compareCanonicalText);
+            const declaredCarried = [...ledger.carriedObligations].sort(compareCanonicalText);
+            if (canonicalJson(expectedCarried) !== canonicalJson(declaredCarried)) {
+                context.addIssue({
+                    code: 'custom',
+                    path: ['traces', traceIndex, 'transitionEdges', edgeIndex, 'residual', 'carriedObligations'],
+                    message: 'Every previously open obligation must be explicitly carried or closed on the next edge.'
+                });
+            }
+            for (const obligationId of ledger.openedObligations) {
+                const obligation = obligations.get(obligationId);
+                if (live.has(obligationId) || obligation?.originEdgeId !== edge.edgeId) {
+                    context.addIssue({ code: 'custom', path: ['traces', traceIndex, 'transitionEdges', edgeIndex, 'residual', 'openedObligations'], message: `Obligation ${obligationId} must open exactly once on its declared origin edge.` });
+                }
+                live.add(obligationId);
+                observedLifecycle.set(obligationId, 'open');
+            }
+            for (const obligationId of ledger.carriedObligations) {
+                if (!live.has(obligationId)) {
+                    context.addIssue({ code: 'custom', path: ['traces', traceIndex, 'transitionEdges', edgeIndex, 'residual', 'carriedObligations'], message: `Obligation ${obligationId} cannot be carried before it opens.` });
+                } else {
+                    observedLifecycle.set(obligationId, 'carried');
+                }
+            }
+            for (const obligationId of ledger.dischargedObligations) {
+                if (!live.has(obligationId)) {
+                    context.addIssue({ code: 'custom', path: ['traces', traceIndex, 'transitionEdges', edgeIndex, 'residual'], message: `Obligation ${obligationId} cannot discharge before it opens.` });
+                }
+                live.delete(obligationId);
+                observedLifecycle.set(obligationId, 'discharged');
+            }
+            for (const obligationId of ledger.expiredRights) {
+                if (!live.has(obligationId)) {
+                    context.addIssue({ code: 'custom', path: ['traces', traceIndex, 'transitionEdges', edgeIndex, 'residual'], message: `Obligation ${obligationId} cannot expire before it opens.` });
+                }
+                live.delete(obligationId);
+                observedLifecycle.set(obligationId, 'expired');
+            }
+            const unresolved = [...ledger.unresolvedObligations].sort(compareCanonicalText);
+            const expected = [...live].sort(compareCanonicalText);
+            if (canonicalJson(unresolved) !== canonicalJson(expected)) {
+                context.addIssue({ code: 'custom', path: ['traces', traceIndex, 'transitionEdges', edgeIndex, 'residual', 'unresolvedObligations'], message: 'Every open obligation must be carried forward or explicitly discharged/expired on the next edge.' });
+            }
+        }
+    }
+    for (let index = 0; index < result.worldObligations.length; index += 1) {
+        const obligation = result.worldObligations[index];
+        if (!referencedIds.has(obligation.obligationId)) {
+            context.addIssue({ code: 'custom', path: ['worldObligations', index], message: 'Typed world-obligation records must be referenced by result residue.' });
+        }
+        const observed = observedLifecycle.get(obligation.obligationId);
+        if (observed !== obligation.lifecycleStatus) {
+            context.addIssue({
+                code: 'custom',
+                path: ['worldObligations', index, 'lifecycleStatus'],
+                message: `World-obligation lifecycle status must match its witnessed edge history (${observed ?? 'unobserved'}).`
+            });
+        }
     }
 });
 

@@ -21,12 +21,17 @@ import {
     type JsonValue
 } from '../canonical';
 import {
+    CutReferenceSchema,
     ResidualLedgerSchema,
     TransitionWitnessSchema,
     WorldCarrierReferenceSchema,
     WorldTransitionEdgeV2Schema
 } from '../schemas';
+import { getCutDefinition } from '../cuts/registry';
+import { V4_CUT_IDS, V4_CUT_VERSION, type V4SimulationStateCutId } from '../cuts/v4-cuts';
+import { projectV4SimulationState } from '../kernel/project-cut';
 import type {
+    CutReference,
     ResidualLedger,
     TransitionWitness,
     WorldCarrierReference,
@@ -35,7 +40,14 @@ import type {
 
 export const SIMULATION_AUTHORITY_ADAPTER_ID = 'nimble-knots-simulation-authority-adapter';
 export const SIMULATION_AUTHORITY_ADAPTER_VERSION = 1;
-export const DEFAULT_AUTHORITY_CUT_ID = 'authority-transition-cut-v1';
+export const DEFAULT_AUTHORITY_CUT = Object.freeze({ id: V4_CUT_IDS.authority, version: V4_CUT_VERSION });
+
+export type AuthorityProjectionOutput = Readonly<{
+    edge: WorldTransitionEdgeV2;
+    witness: TransitionWitness;
+    edgeDigest: string;
+    witnessDigest: string;
+}>;
 export const WORMS_PORT_AUTHORITY_COMMIT = '0ca98ac32f9f7a265888ae342a3f3254269d61d9';
 export const SIMULATION_AUTHORITY_BLOB = 'c9279c6f3b5d708ad0e54d32d2dca6d97234b4c0';
 
@@ -69,8 +81,6 @@ const RULESET_VERSIONS: Readonly<Record<SimulationRulesetId, SimulationState['ru
     [V3_RULESET_ID]: 3,
     [V4_RULESET_ID]: 4
 });
-
-const CUT_ID_PATTERN = /^[A-Za-z0-9][A-Za-z0-9._:/-]{0,159}$/;
 
 function assertSafeInteger(value: number, label: string, minimum?: number): void {
     if (!Number.isSafeInteger(value) || Object.is(value, -0) ||
@@ -262,12 +272,13 @@ function extractResidual(before: SimulationState, after: SimulationState, reject
         ],
         authorityDeltas: [{
             subject: 'simulation-authority',
-            before: 'authority-adapter-parity',
-            after: 'authority-adapter-parity',
-            rationale: 'The adapter witnesses authority without creating, replacing, or activating it.'
+            before: 'none',
+            after: 'none',
+            rationale: 'Exact adapter parity is authority-derived support provenance; it does not create product authority.'
         }],
         expiredRights: [],
         openedObligations: [],
+        carriedObligations: [],
         dischargedObligations: [],
         unresolvedObligations: [],
         excludedUnmodelledResidue: [
@@ -301,22 +312,34 @@ export function adaptSimulationCommand(
     actor: SimulationActor,
     command: SimulationCommand,
     expectedTurn: number,
-    declaredCutId = DEFAULT_AUTHORITY_CUT_ID
+    declaredCutInput?: CutReference
 ): AuthorityAdapterOutput {
     if (actor !== 'player' && actor !== 'loomkeeper') {
         throw new TypeError('Actor must be player or loomkeeper.');
     }
     assertSafeInteger(expectedTurn, 'Expected turn');
-    if (!CUT_ID_PATTERN.test(declaredCutId)) {
-        throw new TypeError('Declared cut id is not a valid bounded profile identifier.');
-    }
-
     const callerStateJson = canonicalSimulationJson(inputState);
     const validated = cloneAndValidateState(inputState);
     if (callerStateJson !== validated.authorityJson) {
         throw new TypeError('Cloned authority state diverged from the caller state.');
     }
     const commandCopy = cloneAndValidateCommand(command);
+    const declaredCut = CutReferenceSchema.parse(declaredCutInput ?? (
+        validated.state.rulesetId === V4_RULESET_ID
+            ? DEFAULT_AUTHORITY_CUT
+            : { id: V4_CUT_IDS.historicalAuthority, version: V4_CUT_VERSION }
+    ));
+    const cutDefinition = getCutDefinition(declaredCut.id, declaredCut.version);
+    const compatibleCutId = validated.state.rulesetId === V4_RULESET_ID
+        ? V4_CUT_IDS.authority
+        : V4_CUT_IDS.historicalAuthority;
+    if (declaredCut.id !== compatibleCutId || cutDefinition.sourceCarrierKind !== 'authority') {
+        throw new RangeError(`Cut ${declaredCut.id}@${declaredCut.version} is not compatible with ${validated.state.rulesetId} authority transitions.`);
+    }
+    if (!cutDefinition.admissibleDomain.seeds.includes(validated.state.seed) ||
+        !cutDefinition.admissibleDomain.actionFamilies.includes(commandCopy.type)) {
+        throw new RangeError('Authority state seed or command family is outside the registered cut domain.');
+    }
     const preStateJson = validated.authorityJson;
     const preStateDigest = sha256Text(preStateJson);
 
@@ -345,7 +368,7 @@ export function adaptSimulationCommand(
     const inputDigest = sha256Digest({
         adapterId: SIMULATION_AUTHORITY_ADAPTER_ID,
         adapterVersion: SIMULATION_AUTHORITY_ADAPTER_VERSION,
-        cutId: declaredCutId,
+        cut: declaredCut,
         preStateDigest,
         commandDeclaration
     });
@@ -402,8 +425,8 @@ export function adaptSimulationCommand(
         },
         sourceCarrier,
         targetCarrier,
-        sourceCutId: declaredCutId,
-        targetCutId: declaredCutId,
+        sourceCut: declaredCut,
+        targetCut: declaredCut,
         fixedFrame: {
             schemaVersion: 1,
             sourceLocks: [{
@@ -418,7 +441,7 @@ export function adaptSimulationCommand(
             },
             scenarioDomain: {
                 schemaVersion: 1,
-                scenarioIds: [`${inputState.rulesetId}-seed-${inputState.seed}-revision-${inputState.revision}`],
+                scenarioIds: [...cutDefinition.admissibleDomain.scenarioIds],
                 actionFamilies: [commandCopy.type],
                 policyFamilies: [],
                 seeds: [inputState.seed],
@@ -426,17 +449,14 @@ export function adaptSimulationCommand(
                     'One direct applySimulationCommand invocation under the supplied actor and expected turn.'
                 ]
             },
-            sourceCutId: declaredCutId,
-            targetCutId: declaredCutId,
+            sourceCut: declaredCut,
+            targetCut: declaredCut,
             actorOrPolicy: actor,
             expectedRevisionOrStep: inputState.revision
         },
         commandOrDeclaration: commandDeclaration,
         response: projectedResponse,
-        protectedFamily: [
-            'The exact accepted, mutated, state, ordered-events, and error result remains authority-owned and unchanged.',
-            'The caller state, gameplay timing, terrain, replay behavior, and protocol remain unchanged.'
-        ],
+        protectedFamily: cutDefinition.protectedFamily,
         sourceRefs,
         witnessReferences: [{ witnessId, digest: witnessDigest }],
         decoderRefs,
@@ -461,8 +481,8 @@ export function adaptSimulationCommand(
         returnCondition: 'Re-enter through the exact authority commit, carrier digest, command declaration, and ordered result digest.',
         reopeningCondition: 'Reopen on any authority source, state, event, error, digest, cut, adapter, or parity mismatch.',
         supportStatus: 'witnessed',
-        productAuthority: 'authority-adapter-parity',
-        authorityMutationObserved: false
+        productAuthority: 'none',
+        authorityDefinitionMutationObserved: false
     });
     const edgeDigest = sha256Digest(edge);
 
@@ -482,4 +502,138 @@ export function adaptSimulationCommand(
         edge,
         witness
     });
+}
+
+/**
+ * Render an explicit authority-to-projection bridge.  A thin or repaired
+ * readout is never substituted for an authority transition edge.
+ */
+export function projectSimulationAuthorityCut(
+    inputState: SimulationState,
+    targetCutInput: CutReference
+): AuthorityProjectionOutput {
+    const validated = cloneAndValidateState(inputState);
+    if (validated.state.rulesetId !== V4_RULESET_ID) {
+        throw new RangeError('Authority projection edges are registered only for V4 states.');
+    }
+    const sourceCut: CutReference = { id: V4_CUT_IDS.authority, version: V4_CUT_VERSION };
+    const targetCut = CutReferenceSchema.parse(targetCutInput);
+    if (targetCut.id === sourceCut.id && targetCut.version === sourceCut.version) {
+        throw new RangeError('An authority projection edge requires a distinct target cut.');
+    }
+    const targetDefinition = getCutDefinition(targetCut.id, targetCut.version);
+    if (![V4_CUT_IDS.thinVisibleDuel, V4_CUT_IDS.boundedCommandSupport].includes(
+        targetCut.id as typeof V4_CUT_IDS.thinVisibleDuel | typeof V4_CUT_IDS.boundedCommandSupport
+    )) {
+        throw new RangeError(`Cut ${targetCut.id}@${targetCut.version} is not a registered V4 authority projection target.`);
+    }
+    if (!targetDefinition.admissibleDomain.seeds.includes(validated.state.seed)) {
+        throw new RangeError('Authority projection state is outside the target cut seed domain.');
+    }
+    const authorityDigest = sha256Text(validated.authorityJson);
+    const sourceCarrier = carrierReference(validated.state, authorityDigest, 'pre');
+    const projection = projectV4SimulationState(targetCut.id as V4SimulationStateCutId, validated.state);
+    const projectedDigest = sha256Digest(projection.projectedValue);
+    const targetCarrier = WorldCarrierReferenceSchema.parse({
+        schemaVersion: 1,
+        profileVersion: 1,
+        carrierKind: targetDefinition.sourceCarrierKind,
+        adapter: sourceCarrier.adapter,
+        rulesetOrConfigId: sourceCarrier.rulesetOrConfigId,
+        baselineDigest: sourceCarrier.baselineDigest,
+        stateDigest: projectedDigest,
+        revisionOrStep: sourceCarrier.revisionOrStep,
+        sourceReference: `${sourceCarrier.sourceReference};projection=${targetCut.id}@${targetCut.version};authority=${authorityDigest}`
+    });
+    const declaration = canonicalClone({ type: 'authority_projection', sourceCut, targetCut });
+    const inputDigest = sha256Digest({ sourceCarrier, declaration });
+    const outputDigest = sha256Digest({ targetCarrier, projectedValue: projection.projectedValue });
+    const edgeId = `authority-projection-edge-${sha256Digest({ inputDigest, outputDigest }).slice(0, 24)}`;
+    const witnessId = `authority-projection-witness-${sha256Digest({ edgeId, authorityDigest, projectedDigest }).slice(0, 24)}`;
+    const sourceRefs = [
+        `worms-port@${WORMS_PORT_AUTHORITY_COMMIT}:shared/simulation.ts`,
+        `source-authority-carrier:${authorityDigest}`,
+        `target-cut:${targetCut.id}@${targetCut.version}`
+    ];
+    const decoderRefs = ['authoritative-simulation-state-v1', `cut-projection-${targetCut.id}-v${targetCut.version}`];
+    const witness = TransitionWitnessSchema.parse({
+        schemaVersion: 1,
+        witnessId,
+        witnessVersion: 1,
+        edgeId,
+        evidenceOrigin: 'authority-derived',
+        covarianceGroup: `simulation-authority-projection-${targetCut.id}`,
+        deduplicationIdentity: sha256Digest({ authorityDigest, targetCut, projectedDigest }),
+        sourceRefs,
+        decoderRefs,
+        inputDigest,
+        outputDigest,
+        status: 'exact',
+        excludedClaims: [
+            'Projection equality is not authority-state equality, recurrence, return, or global continuation.',
+            'This projection edge does not execute or mutate gameplay authority.'
+        ]
+    });
+    const witnessDigest = sha256Digest(witness);
+    const edge = WorldTransitionEdgeV2Schema.parse({
+        schemaVersion: 2,
+        edgeId,
+        edgeVersion: 1,
+        edgeKind: 'authority-cut-projection',
+        domainMotif: 'project_authority_readout',
+        portBindings: {
+            contextPorts: ['authority-state', 'ruleset', 'declared-cut'],
+            actionPorts: ['projection-declaration'],
+            responsePorts: ['projected-readout'],
+            evidencePorts: ['authority-state-digest', 'projected-state-digest', 'transition-witness'],
+            supportPorts: ['source-carrier', 'target-carrier', 'authority-source-lock'],
+            returnPorts: ['authority-state-reentry']
+        },
+        sourceCarrier,
+        targetCarrier,
+        sourceCut,
+        targetCut,
+        fixedFrame: {
+            schemaVersion: 1,
+            sourceLocks: [{
+                repositoryId: 'worms-port',
+                commit: WORMS_PORT_AUTHORITY_COMMIT,
+                paths: ['shared/simulation.ts']
+            }],
+            baselineOrConfigId: validated.state.rulesetId,
+            adapter: sourceCarrier.adapter,
+            scenarioDomain: targetDefinition.admissibleDomain,
+            sourceCut,
+            targetCut,
+            actorOrPolicy: 'projection',
+            expectedRevisionOrStep: validated.state.revision
+        },
+        commandOrDeclaration: declaration,
+        response: canonicalClone({ projectedValue: projection.projectedValue, classKey: projection.classKey }),
+        protectedFamily: targetDefinition.protectedFamily,
+        sourceRefs,
+        witnessReferences: [{ witnessId, digest: witnessDigest }],
+        decoderRefs,
+        carrierRefs: [sha256Digest(sourceCarrier), sha256Digest(targetCarrier)],
+        pathPosition: validated.state.revision,
+        preserved: [
+            'The authority carrier remains re-enterable by source reference and digest.',
+            'The exact registered target-cut projection and cut version remain digest-bound.'
+        ],
+        forgotten: targetDefinition.intentionallyForgottenDistinctions,
+        newlyVisible: ['The projection boundary is an explicit edge rather than a silently replaced authority carrier.'],
+        residual: ResidualLedgerSchema.parse({
+            schemaVersion: 1,
+            positionDeltas: [], resourceDeltas: [], healthDeltas: [], statusDeltas: [], terrainDeltas: [], authorityDeltas: [],
+            expiredRights: [], openedObligations: [], carriedObligations: [], dischargedObligations: [], unresolvedObligations: [],
+            excludedUnmodelledResidue: targetDefinition.intentionallyForgottenDistinctions
+        }),
+        reversibility: 'repair_dependent',
+        returnCondition: 'Return requires the retained source authority reference and digest; the projected readout alone is insufficient.',
+        reopeningCondition: 'Reopen on source-lock drift, cut-version drift, projection mismatch, aliasing, or missing authority re-entry support.',
+        supportStatus: 'witnessed',
+        productAuthority: 'none',
+        authorityDefinitionMutationObserved: false
+    });
+    return Object.freeze({ edge, witness, edgeDigest: sha256Digest(edge), witnessDigest });
 }

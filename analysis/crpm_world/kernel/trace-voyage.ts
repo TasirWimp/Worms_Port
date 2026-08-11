@@ -145,27 +145,33 @@ export function traceVoyage(
         ? transitionEdges[transitionEdges.length - 1].targetCarrier
         : initialCarrier;
     const cutChanges: VoyageTraceV2['cutChanges'] = [];
-    const appendCutChange = (sequence: number, sourceCutId: string, targetCutId: string) => {
-        if (sourceCutId === targetCutId || cutChanges.some((change) =>
+    const appendCutChange = (
+        sequence: number,
+        sourceCut: WorldTransitionEdge['sourceCut'],
+        targetCut: WorldTransitionEdge['targetCut'],
+        bridgeEdgeId: string
+    ) => {
+        if (canonicalJson(sourceCut) === canonicalJson(targetCut) || cutChanges.some((change) =>
             change.sequence === sequence &&
-            change.sourceCutId === sourceCutId &&
-            change.targetCutId === targetCutId
+            change.bridgeEdgeId === bridgeEdgeId &&
+            canonicalJson(change.sourceCut) === canonicalJson(sourceCut) &&
+            canonicalJson(change.targetCut) === canonicalJson(targetCut)
         )) return;
-        cutChanges.push({ sequence, sourceCutId, targetCutId });
+        cutChanges.push({ sequence, sourceCut, targetCut, bridgeEdgeId });
     };
     const compatibleAttempts = edgeAttempts.filter((attempt) => attempt.outcome !== 'incompatible');
     for (let index = 0; index < compatibleAttempts.length; index += 1) {
         const attempt = compatibleAttempts[index];
         if (index > 0) {
-            const previousTarget = compatibleAttempts[index - 1].edge.targetCutId;
-            if (previousTarget !== attempt.edge.sourceCutId) {
-                appendCutChange(attempt.sequence, previousTarget, attempt.edge.sourceCutId);
+            const previousTarget = compatibleAttempts[index - 1].edge.targetCut;
+            if (canonicalJson(previousTarget) !== canonicalJson(attempt.edge.sourceCut)) {
+                appendCutChange(attempt.sequence, previousTarget, attempt.edge.sourceCut, attempt.edge.edgeId);
             }
         }
-        appendCutChange(attempt.sequence, attempt.edge.sourceCutId, attempt.edge.targetCutId);
+        appendCutChange(attempt.sequence, attempt.edge.sourceCut, attempt.edge.targetCut, attempt.edge.edgeId);
     }
     for (const attempt of edgeAttempts.filter((item) => item.outcome === 'incompatible')) {
-        appendCutChange(attempt.sequence, attempt.edge.sourceCutId, attempt.edge.targetCutId);
+        appendCutChange(attempt.sequence, attempt.edge.sourceCut, attempt.edge.targetCut, attempt.edge.edgeId);
     }
     const witnessReferences = edgeAttempts.flatMap((attempt) => attempt.edge.witnessReferences);
     const excludedClaims = unique([
@@ -275,7 +281,7 @@ export function reenterSimulationVoyage(
             declaration.actor,
             declaration.command,
             declaration.expectedTurn,
-            attempt.edge.sourceCutId
+            attempt.edge.sourceCut
         );
         const reproducedDigest = sha256Digest(reproduced.edge);
         reproducedEdgeDigests.push(reproducedDigest);

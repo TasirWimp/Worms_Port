@@ -1,6 +1,7 @@
 import { z } from 'zod';
 
 import { canonicalJson, sha256Digest } from '../canonical';
+import { getCutDefinition } from '../cuts/registry';
 import { V4_SUPPORT_TWIN_SEED } from '../cuts/v4-cuts';
 import { ScenarioDomainSchema } from '../schemas';
 import {
@@ -108,7 +109,8 @@ export const OfflineWorldDesignRequestPayloadSchema = z.strictObject({
     seeds: z.array(z.number().int().min(0).max(Number.MAX_SAFE_INTEGER)
         .refine((value) => !Object.is(value, -0))).min(1).max(1_024),
     outputDetailLevel: z.enum(['summary', 'witnesses', 'full']),
-    requestedScalarProbes: UniqueIdentifiersSchema.min(1),
+    mandatoryEvidenceProbes: UniqueIdentifiersSchema.min(1),
+    optionalDisplayedScalarProbes: UniqueIdentifiersSchema,
     requestedPorts: UniqueIdentifiersSchema.min(1),
     activation: z.literal('offline_only'),
     explicitExclusions: NonEmptyDescriptionsSchema
@@ -144,8 +146,22 @@ function validateDeclaredScope(request: OfflineWorldDesignRequest): void {
     if (!registration.cutIds.includes(request.cut.id) || request.cut.version !== 1) {
         throw new RangeError(`Cut ${request.cut.id}@${request.cut.version} is incompatible with ${request.adapter.id}.`);
     }
-    if (request.protectedFamily.some((claim) => !registration.requiredProtectedFamily.includes(claim))) {
-        throw new RangeError('The request protected family exceeds the registered adapter/cut family.');
+    const cutDefinition = getCutDefinition(request.cut.id, request.cut.version);
+    const expectedCarrierKind = request.adapter.id === OFFLINE_ADAPTER_IDS.v4Authority
+        ? 'authority'
+        : 'tactical-analysis';
+    if (cutDefinition.sourceCarrierKind !== expectedCarrierKind) {
+        throw new RangeError(`Cut ${request.cut.id}@${request.cut.version} has an incompatible source carrier kind.`);
+    }
+    if (!sameSet(request.protectedFamily, registration.mandatoryProtectedFamily) ||
+        !sameSet(request.protectedFamily, cutDefinition.protectedFamily)) {
+        throw new RangeError('The request protected family must exactly match the mandatory registered adapter/cut family.');
+    }
+    if (request.scenarioDomain.scenarioIds.some((item) => !cutDefinition.admissibleDomain.scenarioIds.includes(item)) ||
+        request.scenarioDomain.actionFamilies.some((item) => !cutDefinition.admissibleDomain.actionFamilies.includes(item)) ||
+        request.scenarioDomain.policyFamilies.some((item) => !cutDefinition.admissibleDomain.policyFamilies.includes(item)) ||
+        request.scenarioDomain.seeds.some((item) => !cutDefinition.admissibleDomain.seeds.includes(item))) {
+        throw new RangeError('The request domain is outside the registered versioned cut domain.');
     }
     const forbidden = request.requestedPorts.filter((port) =>
         (FORBIDDEN_DESIGN_PORTS as readonly string[]).includes(port)
@@ -177,9 +193,11 @@ function validateDeclaredScope(request: OfflineWorldDesignRequest): void {
         if (request.seeds.length !== 1 || request.seeds[0] !== V4_SUPPORT_TWIN_SEED) {
             throw new RangeError(`v4_authority requires exactly the registered seed ${V4_SUPPORT_TWIN_SEED}.`);
         }
-        const allowedProbes = ['v4.accepted_commands', 'v4.rejected_commands', 'v4.mutated_commands', 'v4.event_count'];
-        if (request.requestedScalarProbes.some((probe) => !allowedProbes.includes(probe))) {
-            throw new RangeError('Unknown V4 scalar probe requested.');
+        if (!sameSet(request.mandatoryEvidenceProbes, registration.mandatoryEvidenceProbes)) {
+            throw new RangeError('V4 mandatory evidence probes must exactly match the registered evidence set.');
+        }
+        if (request.optionalDisplayedScalarProbes.some((probe) => !registration.mandatoryEvidenceProbes.includes(probe))) {
+            throw new RangeError('Unknown optional V4 scalar probe requested for display.');
         }
         return;
     }
@@ -204,8 +222,11 @@ function validateDeclaredScope(request: OfflineWorldDesignRequest): void {
     if (request.seeds.length !== 1 || request.seeds[0] !== REGISTERED_PRESSURE_SEED) {
         throw new RangeError(`d2a_tactical requires exactly the registered pressure seed ${REGISTERED_PRESSURE_SEED}.`);
     }
-    if (request.requestedScalarProbes.some((probe) => !config.scalarProbes.includes(probe))) {
-        throw new RangeError(`Unknown scalar probe for registered D2A config ${config.configId}.`);
+    if (!sameSet(request.mandatoryEvidenceProbes, config.mandatoryEvidenceProbes)) {
+        throw new RangeError(`Mandatory evidence probes must exactly match registered D2A config ${config.configId}.`);
+    }
+    if (request.optionalDisplayedScalarProbes.some((probe) => !config.mandatoryEvidenceProbes.includes(probe))) {
+        throw new RangeError(`Unknown optional displayed probe for registered D2A config ${config.configId}.`);
     }
 }
 

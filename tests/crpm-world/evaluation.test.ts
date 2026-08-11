@@ -1,6 +1,8 @@
 import assert from 'node:assert/strict';
 import test from 'node:test';
 
+import { sha256Digest } from '../../analysis/crpm_world/canonical';
+
 import {
     executeWorldDesignEvaluation,
     readWorldDesignRequestFile
@@ -14,10 +16,9 @@ import {
     type OfflineWorldDesignRequestPayload
 } from '../../analysis/crpm_world/design-port/validate-request';
 import {
-    assessEvaluationMaturity,
     evaluateWorldDesignResult
 } from '../../analysis/crpm_world/evaluation/evaluate';
-import { DiagnosticProfileV2Schema } from '../../analysis/crpm_world/schemas';
+import { DiagnosticProfileV2Schema, buildWorldDesignResult } from '../../analysis/crpm_world/schemas';
 import type {
     EvaluationBundle,
     EvaluationPressureCase,
@@ -28,7 +29,10 @@ const D2A_TEMPLATE = 'analysis/crpm_world/examples/d2a-f3-pressure-request.json'
 const V4_TEMPLATE = 'analysis/crpm_world/examples/v4-transcript-request.json';
 const cache = new Map<string, ReturnType<typeof executeWorldDesignEvaluation>>();
 
-function d2aRequest(registration: D2AConfigRegistration): OfflineWorldDesignRequestPayload {
+function d2aRequest(
+    registration: D2AConfigRegistration,
+    optionalDisplayedScalarProbes: readonly string[] = registration.mandatoryEvidenceProbes
+): OfflineWorldDesignRequestPayload {
     const template = structuredClone(
         readWorldDesignRequestFile(D2A_TEMPLATE) as OfflineWorldDesignRequestPayload
     );
@@ -56,7 +60,8 @@ function d2aRequest(registration: D2AConfigRegistration): OfflineWorldDesignRequ
             configId: registration.configId,
             policyFamily: 'registered-pressure-suite'
         }],
-        requestedScalarProbes: [...registration.scalarProbes]
+        mandatoryEvidenceProbes: [...registration.mandatoryEvidenceProbes],
+        optionalDisplayedScalarProbes: [...optionalDisplayedScalarProbes]
     };
 }
 
@@ -76,70 +81,74 @@ function detection(bundle: EvaluationBundle, rule: FalseClosureRule) {
     return found;
 }
 
-function claimAttempt(bundle: EvaluationBundle, caseId: 'f2' | 'f3' | 'f4' | 'h2' | 'h3') {
-    return {
-        ...bundle.declaration,
-        acceptancePressureCases: [{
-            caseId,
-            status: 'passed' as const,
-            reenterable: true,
-            reason: 'Test pressure: pretend the local scalar or structural result was accepted.',
-            witnessReferences: bundle.declaration.witnessReferences
-        }]
-    };
-}
-
 test('H2 aggregate parity remains a separate probe and cannot yield design landfall', () => {
-    const { result, evaluation } = executeD2A('h2');
-    const attempted = evaluateWorldDesignResult(claimAttempt(evaluation, 'h2'), result);
-    const rule = detection(attempted, 'aggregate_parity_masks_port_split');
+    const registration = D2A_CONFIG_REGISTRATIONS.find((item) => item.caseId === 'h2')!;
+    const request = buildOfflineWorldDesignRequest(d2aRequest(registration, [
+        'h2.aggregate_first_actor_win_rate'
+    ]));
+    const { evaluation } = executeWorldDesignEvaluation(request);
+    const rule = detection(evaluation, 'aggregate_parity_masks_port_split');
 
     assert.equal(rule.triggered, true);
-    assert.equal(attempted.maturityAssessment.maturity, 'M2_local_use');
-    assert.equal(attempted.maturityAssessment.productAuthority, 'none');
-    assert.equal(attempted.diagnosticProfile.closureRisk.value, 'blocked_landfall');
-    assert.equal(attempted.scalarProbes.find((probe) => probe.probeId === 'h2.aggregate_first_actor_win_rate')?.value, 0.488);
-    assert.equal(attempted.scalarProbes.find((probe) => probe.probeId === 'h2.distance_704_first_actor_win_rate')?.value, 0.76);
-    assert.equal('scalarProbes' in attempted.diagnosticProfile, false);
+    assert.equal(evaluation.maturityAssessment.maturity, 'M2_local_use');
+    assert.equal(evaluation.maturityAssessment.productAuthority, 'none');
+    assert.equal(evaluation.diagnosticProfile.closureRisk.value, 'blocked_landfall');
+    assert.deepEqual(evaluation.scalarProbes.map((probe) => probe.probeId), ['h2.aggregate_first_actor_win_rate']);
+    assert.equal('scalarProbes' in evaluation.diagnosticProfile, false);
     assert.equal(DiagnosticProfileV2Schema.safeParse({
-        ...attempted.diagnosticProfile,
-        scalarProbes: attempted.scalarProbes
+        ...evaluation.diagnosticProfile,
+        scalarProbes: evaluation.scalarProbes
     }).success, false);
 });
 
+test('mandatory historical evidence cannot be filtered out by a request', () => {
+    for (const caseId of ['h2', 'f4', 'h3'] as const) {
+        const registration = D2A_CONFIG_REGISTRATIONS.find((item) => item.caseId === caseId)!;
+        const payload = d2aRequest(registration);
+        assert.throws(() => buildOfflineWorldDesignRequest({
+            ...payload,
+            mandatoryEvidenceProbes: [registration.mandatoryEvidenceProbes[0]]
+        }), /must exactly match registered D2A config/);
+    }
+});
+
+test('F2 recursive carrier return remains failure pressure and cannot yield M3', () => {
+    const { evaluation } = executeD2A('f2');
+    assert.equal(detection(evaluation, 'recursive_return_claimed_as_landfall').triggered, true);
+    assert.equal(evaluation.maturityAssessment.maturity, 'M2_local_use');
+    assert.equal(evaluation.maturityAssessment.gates.registeredAcceptancePressureCases, false);
+});
+
 test('F3 recurrence repair is material reorganization without initiative success', () => {
-    const { result, evaluation } = executeD2A('f3');
-    const attempted = evaluateWorldDesignResult(claimAttempt(evaluation, 'f3'), result);
-    const rule = detection(attempted, 'recurrence_repair_claimed_as_balance');
+    const { evaluation } = executeD2A('f3');
+    const rule = detection(evaluation, 'recurrence_repair_claimed_as_balance');
 
     assert.equal(rule.triggered, true);
-    assert.equal(attempted.diagnosticProfile.localReorganization.value, 'material_reorganization');
-    assert.match(attempted.diagnosticProfile.localReorganization.reason, /does not establish initiative fairness/);
-    assert.equal(attempted.maturityAssessment.maturity, 'M2_local_use');
+    assert.equal(evaluation.diagnosticProfile.localReorganization.value, 'material_reorganization');
+    assert.match(evaluation.diagnosticProfile.localReorganization.reason, /does not establish initiative fairness/);
+    assert.equal(evaluation.maturityAssessment.maturity, 'M2_local_use');
 });
 
 test('F4 structural success retains the 704 initiative warning', () => {
-    const { result, evaluation } = executeD2A('f4');
-    const attempted = evaluateWorldDesignResult(claimAttempt(evaluation, 'f4'), result);
-    const rule = detection(attempted, 'structural_success_claimed_as_initiative_repair');
+    const { evaluation } = executeD2A('f4');
+    const rule = detection(evaluation, 'structural_success_claimed_as_initiative_repair');
 
     assert.equal(rule.triggered, true);
     assert.match(rule.reason, /704/);
-    assert.match(attempted.diagnosticProfile.localReorganization.reason, /704-band/);
-    assert.equal(attempted.scalarProbes.find((probe) => probe.probeId === 'f4.distance_704_first_actor_win_rate')?.value, 0.8);
-    assert.equal(attempted.maturityAssessment.maturity, 'M2_local_use');
+    assert.match(evaluation.diagnosticProfile.localReorganization.reason, /704-band/);
+    assert.equal(evaluation.scalarProbes.find((probe) => probe.probeId === 'f4.distance_704_first_actor_win_rate')?.value, 0.8);
+    assert.equal(evaluation.maturityAssessment.maturity, 'M2_local_use');
 });
 
 test('H3 retains the same-horizon response failure', () => {
-    const { result, evaluation } = executeD2A('h3');
-    const attempted = evaluateWorldDesignResult(claimAttempt(evaluation, 'h3'), result);
-    const rule = detection(attempted, 'delayed_response_claimed_as_immediate_counter');
+    const { evaluation } = executeD2A('h3');
+    const rule = detection(evaluation, 'delayed_response_claimed_as_immediate_counter');
 
     assert.equal(rule.triggered, true);
-    assert.equal(attempted.diagnosticProfile.pathPressure.value, 'forced_route_pressure');
-    assert.equal(attempted.diagnosticProfile.localReorganization.value, 'delay_only');
-    assert.match(attempted.diagnosticProfile.localReorganization.reason, /intervening normal action/);
-    assert.equal(attempted.maturityAssessment.maturity, 'M2_local_use');
+    assert.equal(evaluation.diagnosticProfile.pathPressure.value, 'forced_route_pressure');
+    assert.equal(evaluation.diagnosticProfile.localReorganization.value, 'delay_only');
+    assert.match(evaluation.diagnosticProfile.localReorganization.reason, /intervening normal action/);
+    assert.equal(evaluation.maturityAssessment.maturity, 'M2_local_use');
 });
 
 test('V4 adapter parity is primary qualitative evidence but cannot produce M3 gameplay landfall', () => {
@@ -154,7 +163,9 @@ test('V4 adapter parity is primary qualitative evidence but cannot produce M3 ga
     assert.equal(evaluation.diagnosticProfile.pathPressure.value, 'not_assessed');
     assert.equal(evaluation.maturityAssessment.maturity, 'M2_local_use');
     assert.equal(evaluation.maturityAssessment.productAuthority, 'none');
-    assert.equal(result.productAuthority, 'authority-adapter-parity');
+    assert.equal(result.productAuthority, 'none');
+    assert.equal(result.evidenceOrigin, 'authority-derived');
+    assert.equal(result.authorityProvenance.relationship, 'authority_adapter_parity');
 });
 
 test('rendered full-relation claims fail closed and blocked claims are deterministic and witness-linked', () => {
@@ -187,31 +198,51 @@ test('rendered full-relation claims fail closed and blocked claims are determini
     }
 });
 
-test('maturity gates are deterministic and M3 remains authority-none without a separate owner decision', () => {
-    const base = {
-        coherentOutput: true,
-        declaredContract: true,
-        boundedExecution: true,
-        acceptancePressureCases: true,
-        reenterableEvidence: true,
-        activeFalseClosureRules: [],
-        ownerDecision: { versionedRulesetApproved: false, decisionRef: null }
-    };
-    const withoutDecision = assessEvaluationMaturity(base);
-    assert.equal(withoutDecision.maturity, 'M3_bounded_design_landfall');
-    assert.equal(withoutDecision.productAuthority, 'none');
+test('caller-authored decisions, pass flags, and synthetic locks cannot mint maturity or authority', () => {
+    const { result, evaluation } = executeD2A('f3');
+    assert.throws(() => evaluateWorldDesignResult({
+        ...evaluation.declaration,
+        ownerDecision: { versionedRulesetApproved: true, decisionRef: 'arbitrary-decision' }
+    }, result));
+    assert.throws(() => evaluateWorldDesignResult({
+        ...evaluation.declaration,
+        boundedExecution: { ...evaluation.declaration.boundedExecution, passed: true },
+        acceptancePressureCases: [{ status: 'passed', reenterable: true }]
+    }, result));
 
-    const withDecision = assessEvaluationMaturity({
-        ...base,
-        ownerDecision: {
-            versionedRulesetApproved: true,
-            decisionRef: 'owner-decision/ruleset-v-next'
-        }
+    const { resultDigest: _digest, ...payload } = result;
+    const synthetic = buildWorldDesignResult({
+        ...payload,
+        sourceLocks: [{
+            repositoryId: 'worms-port',
+            commit: '1111111111111111111111111111111111111111',
+            paths: ['analysis/tactical_model/model.py']
+        }]
     });
-    assert.equal(withDecision.maturity, 'M3_bounded_design_landfall');
-    assert.equal(withDecision.productAuthority, 'versioned-ruleset-approved');
+    const assessed = evaluateWorldDesignResult(evaluation.declaration, synthetic);
+    assert.equal(assessed.maturityAssessment.maturity, 'M1_declaration');
+    assert.equal(assessed.maturityAssessment.productAuthority, 'none');
+    assert.equal(assessed.maturityAssessment.gates.registeredSourceBinding, false);
 
-    assert.equal(assessEvaluationMaturity({ ...base, declaredContract: false }).maturity, 'M0_appearance');
-    assert.equal(assessEvaluationMaturity({ ...base, boundedExecution: false }).maturity, 'M1_declaration');
-    assert.equal(assessEvaluationMaturity({ ...base, acceptancePressureCases: false }).maturity, 'M2_local_use');
+    const shortenedProtectedFamily = evaluateWorldDesignResult({
+        ...evaluation.declaration,
+        protectedFamily: [evaluation.declaration.protectedFamily[0]]
+    }, result);
+    assert.equal(shortenedProtectedFamily.maturityAssessment.maturity, 'M1_declaration');
+    assert.equal(shortenedProtectedFamily.maturityAssessment.gates.registeredSourceBinding, false);
+
+    const genericReference = {
+        witnessId: 'generic-evidence-string',
+        digest: sha256Digest('generic evidence is not a re-entry witness')
+    };
+    const genericEvidence = evaluateWorldDesignResult({
+        ...evaluation.declaration,
+        witnessReferences: [genericReference],
+        boundedExecution: {
+            ...evaluation.declaration.boundedExecution,
+            witnessReferences: [genericReference]
+        }
+    }, result);
+    assert.equal(genericEvidence.maturityAssessment.maturity, 'M1_declaration');
+    assert.equal(genericEvidence.maturityAssessment.gates.reenterableEvidence, false);
 });

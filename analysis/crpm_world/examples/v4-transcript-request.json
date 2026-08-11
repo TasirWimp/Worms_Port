@@ -89,7 +89,13 @@
     3237998097
   ],
   "outputDetailLevel": "witnesses",
-  "requestedScalarProbes": [
+  "mandatoryEvidenceProbes": [
+    "v4.accepted_commands",
+    "v4.rejected_commands",
+    "v4.mutated_commands",
+    "v4.event_count"
+  ],
+  "optionalDisplayedScalarProbes": [
     "v4.accepted_commands",
     "v4.rejected_commands",
     "v4.mutated_commands",

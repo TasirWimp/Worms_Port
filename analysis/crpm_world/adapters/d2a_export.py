@@ -41,6 +41,7 @@ ADAPTER_VERSION = 1
 PROFILE_VERSION = 1
 RESULT_VERSION = 1
 TACTICAL_CUT_ID = "d2a_tactical_recurrence_v1"
+TACTICAL_CUT_VERSION = 1
 STARTING_DISTANCES = (448, 512, 576, 640, 704)
 WORMS_SOURCE_COMMIT = "af23717e61fea6995bf3b7209211ae1aaa2bb855"
 CRPM_SOURCE_COMMIT = "995236df60924f790506cf5badec3c102abf3fd1"
@@ -49,6 +50,10 @@ UNMODELLED_PORTS = (
     "Aim, trajectory, splash, and projectile physics are unmodelled.",
     "Player skill and live Loomkeeper behavior are unmodelled.",
     "UI, replay, reward, protocol, and runtime mutation ports are unmodelled and forbidden.",
+)
+D2A_PROTECTED_FAMILY = (
+    "The exact registered D2A configuration, scenario family, policies, actions, report digest, and historical status remain recoverable.",
+    "D2A evidence remains analytical only and cannot activate gameplay or acquire product authority.",
 )
 
 
@@ -206,13 +211,14 @@ def _delta(subject: str, before: Any, after: Any, description: str) -> dict[str,
     return {"subject": subject, "before": before, "after": after, "description": description}
 
 
-def _residual(before: TacticalState, after: TacticalState) -> dict[str, Any]:
+def _residual(case_id: str, before: TacticalState, after: TacticalState) -> dict[str, Any]:
     positions: list[dict[str, Any]] = []
     resources: list[dict[str, Any]] = []
     health: list[dict[str, Any]] = []
     statuses: list[dict[str, Any]] = []
     expired: list[str] = []
     opened: list[str] = []
+    carried: list[str] = []
     discharged: list[str] = []
     unresolved: list[str] = []
 
@@ -234,8 +240,6 @@ def _residual(before: TacticalState, after: TacticalState) -> dict[str, Any]:
         "seam_pin_turns",
         "brace_turns",
         "spoolburst_preparation_turns",
-        "spoolburst_cocoon_hits_remaining",
-        "opening_weave_hits_remaining",
         "frayed_seam_turns",
     }
     for actor in ("player", "loomkeeper"):
@@ -253,16 +257,17 @@ def _residual(before: TacticalState, after: TacticalState) -> dict[str, Any]:
         for field in actor_fields:
             old = getattr(before_actor, field)
             new = getattr(after_actor, field)
-            obligation_id = f"{actor}.{field}"
+            obligation_id = f"d2a.{case_id}.{actor}.{field}"
             if field in obligation_fields and isinstance(new, int) and new > 0:
                 unresolved.append(obligation_id)
+                if isinstance(old, int) and old > 0:
+                    carried.append(obligation_id)
             if old == new:
                 continue
             statuses.append(_delta(f"{actor}.{field}", old, new, "Visible tactical support or status change."))
             if field in obligation_fields and old == 0 and isinstance(new, int) and new > 0:
                 opened.append(obligation_id)
             if field in obligation_fields and isinstance(old, int) and old > 0 and new == 0:
-                expired.append(obligation_id)
                 discharged.append(obligation_id)
     for field in ("active_actor", "winner", "finish_reason"):
         old = getattr(before, field)
@@ -279,6 +284,7 @@ def _residual(before: TacticalState, after: TacticalState) -> dict[str, Any]:
         "authorityDeltas": [],
         "expiredRights": list(dict.fromkeys(expired)),
         "openedObligations": list(dict.fromkeys(opened)),
+        "carriedObligations": list(dict.fromkeys(carried)),
         "dischargedObligations": list(dict.fromkeys(discharged)),
         "unresolvedObligations": list(dict.fromkeys(unresolved)),
         "excludedUnmodelledResidue": list(UNMODELLED_PORTS),
@@ -296,6 +302,7 @@ def _accumulate_residual(ledgers: Iterable[dict[str, Any]]) -> dict[str, Any]:
         "authorityDeltas": [],
         "expiredRights": [],
         "openedObligations": [],
+        "carriedObligations": [],
         "dischargedObligations": [],
         "unresolvedObligations": [],
         "excludedUnmodelledResidue": list(UNMODELLED_PORTS),
@@ -306,7 +313,7 @@ def _accumulate_residual(ledgers: Iterable[dict[str, Any]]) -> dict[str, Any]:
             "terrainDeltas", "authorityDeltas",
         ):
             result[field].extend(ledger[field])
-        for field in ("expiredRights", "openedObligations", "dischargedObligations"):
+        for field in ("expiredRights", "openedObligations", "carriedObligations", "dischargedObligations"):
             result[field] = list(dict.fromkeys([*result[field], *ledger[field]]))
         result["unresolvedObligations"] = list(ledger["unresolvedObligations"])
     return result
@@ -402,7 +409,7 @@ def _edge_and_witness(
         "traceStep": trace_step,
     }
     witness_digest = sha256_digest(witness_evidence)
-    residual = _residual(before, after)
+    residual = _residual(case_id, before, after)
     response = {
         "targetReactionPolicy": target_policy,
         "preTacticalCarrier": before_payload,
@@ -457,25 +464,22 @@ def _edge_and_witness(
         },
         "sourceCarrier": source_carrier,
         "targetCarrier": target_carrier,
-        "sourceCutId": TACTICAL_CUT_ID,
-        "targetCutId": TACTICAL_CUT_ID,
+        "sourceCut": {"id": TACTICAL_CUT_ID, "version": TACTICAL_CUT_VERSION},
+        "targetCut": {"id": TACTICAL_CUT_ID, "version": TACTICAL_CUT_VERSION},
         "fixedFrame": {
             "schemaVersion": 1,
             "sourceLocks": locks,
             "baselineOrConfigId": config.identifier,
             "adapter": {"id": ADAPTER_ID, "version": ADAPTER_VERSION},
             "scenarioDomain": domain,
-            "sourceCutId": TACTICAL_CUT_ID,
-            "targetCutId": TACTICAL_CUT_ID,
+            "sourceCut": {"id": TACTICAL_CUT_ID, "version": TACTICAL_CUT_VERSION},
+            "targetCut": {"id": TACTICAL_CUT_ID, "version": TACTICAL_CUT_VERSION},
             "actorOrPolicy": f"{actor}:{policy}",
             "expectedRevisionOrStep": before.completed_turns,
         },
         "commandOrDeclaration": _action_payload(action, actor, policy),
         "response": response,
-        "protectedFamily": [
-            "The exact registered D2A config, scenario, mirror, first actor, policies, action order, and tactical carrier remain recoverable.",
-            "The historical analytical result and candidate status remain analysis-only and unchanged.",
-        ],
+        "protectedFamily": list(D2A_PROTECTED_FAMILY),
         "sourceRefs": [config_path, "analysis/tactical_model/model.py", f"report-sha256:{report_digest}"],
         "witnessReferences": [{"witnessId": witness_id, "digest": witness_digest}],
         "decoderRefs": ["d2a.tactical_state_snapshot.v1", "d2a.tactical_state_key.v1"],
@@ -496,7 +500,7 @@ def _edge_and_witness(
         "reopeningCondition": "Reopen on config/schema/report digest drift, replay mismatch, domain widening, hidden residue, or candidate-status change.",
         "supportStatus": "verified",
         "productAuthority": "none",
-        "authorityMutationObserved": False,
+        "authorityDefinitionMutationObserved": False,
     }
     witness = {
         "schemaVersion": 1,
@@ -597,8 +601,9 @@ def _voyage(
             )
         prior_open = set(previous["residual"]["unresolvedObligations"])
         carried_or_discharged = {
-            *edge["residual"]["unresolvedObligations"],
+            *edge["residual"]["carriedObligations"],
             *edge["residual"]["dischargedObligations"],
+            *edge["residual"]["expiredRights"],
         }
         for obligation in sorted(prior_open - carried_or_discharged):
             compatibility_issues.append(
@@ -634,6 +639,86 @@ def _voyage(
             ],
         },
     }
+
+
+def _world_obligations(traces: Sequence[dict[str, Any]]) -> list[dict[str, Any]]:
+    """Materialize every residual obligation as a referentially closed record."""
+
+    records: list[dict[str, Any]] = []
+    for trace in traces:
+        edges = trace["transitionEdges"]
+        for edge_index, edge in enumerate(edges):
+            for obligation_id in edge["residual"]["openedObligations"]:
+                parts = obligation_id.split(".")
+                bearer = parts[2]
+                obligation_type = parts[3]
+                later_ledgers = [item["residual"] for item in edges[edge_index:]]
+                if any(obligation_id in ledger["dischargedObligations"] for ledger in later_ledgers):
+                    lifecycle = "discharged"
+                elif any(obligation_id in ledger["expiredRights"] for ledger in later_ledgers):
+                    lifecycle = "expired"
+                elif any(obligation_id in ledger["carriedObligations"] for ledger in later_ledgers):
+                    lifecycle = "carried"
+                else:
+                    lifecycle = "open"
+                records.append({
+                    "schemaVersion": 1,
+                    "obligationId": obligation_id,
+                    "obligationVersion": 1,
+                    "obligationType": obligation_type,
+                    "originEdgeId": edge["edgeId"],
+                    "bearer": bearer,
+                    "beneficiary": other_actor(bearer),
+                    "supportCarrier": edge["targetCarrier"],
+                    "legalResponses": [
+                        "Only responses represented by the locked D2A configuration and existing transition functions are legal."
+                    ],
+                    "expiryCondition": "The locked tactical transition decrements the represented support to zero.",
+                    "dischargeCondition": "The locked tactical transition consumes, counters, or otherwise clears the represented support.",
+                    "lifecycleStatus": lifecycle,
+                })
+    return records
+
+
+def _return_assessments(traces: Sequence[dict[str, Any]]) -> list[dict[str, Any]]:
+    """Keep D2A recursive return separate from gameplay-support obligations."""
+
+    f2 = next((trace for trace in traces if trace["voyageId"] == "d2a-f2-pressure-voyage"), None)
+    if f2 is None:
+        return []
+    witness_refs = [item["witnessId"] for item in f2["recurrenceWitnesses"]]
+    cut = {"id": TACTICAL_CUT_ID, "version": TACTICAL_CUT_VERSION}
+    rows = [
+        ("visible_equal", "not_assessed", None, "No separate visible-readout equality was declared."),
+        ("protected_equivalent", "not_assessed", None, "No broader protected-equivalence decoder was declared."),
+        ("recursive_carrier_return", "satisfied", cut, "The exact declared tactical_state_key repeats in the selected nonterminal fixed-policy trace."),
+        ("invariant_region_return", "not_assessed", None, "No invariant region was declared."),
+        ("finite_exact_return", "not_satisfied", None, "The carrier revision/step advances even though the tactical recurrence key repeats."),
+        ("route_mismatch", "not_assessed", None, "No paired route comparison was declared."),
+    ]
+    classifications = [{
+        "classification": classification,
+        "status": status,
+        "declaredCut": declared_cut,
+        "declaredRegionId": None,
+        "witnessRefs": witness_refs if classification == "recursive_carrier_return" else [],
+        "declaredExclusions": ["Completed-turn count is excluded only by the existing D2A tactical recurrence contract."] if classification == "recursive_carrier_return" else [],
+        "rationale": rationale,
+    } for classification, status, declared_cut, rationale in rows]
+    return [{
+        "schemaVersion": 1,
+        "assessmentId": "d2a-f2-registered-return-assessment",
+        "assessmentVersion": 1,
+        "sourceCarrier": f2["initialCarrier"],
+        "targetCarrier": f2["finalCarrier"],
+        "declaredDomain": f2["transitionEdges"][0]["fixedFrame"]["scenarioDomain"],
+        "classifications": classifications,
+        "satisfiedClassifications": ["recursive_carrier_return"],
+        "blockedClaims": [
+            "The F2 recurrence is rejected historical pressure, not balance, convergence, design landfall, or product authority.",
+            "No return classification implies another classification or a production-state loop."
+        ],
+    }]
 
 
 def _axis(assessment: str, report_digest: str, residue: Sequence[str], blocked: Sequence[str]) -> dict[str, Any]:
@@ -701,11 +786,8 @@ def _diagnostic(
         "diagnosticId": f"d2a-{case_id}-pressure-diagnostic",
         "diagnosticVersion": 1,
         "evaluationObjectRef": config.identifier,
-        "cutId": TACTICAL_CUT_ID,
-        "protectedFamily": [
-            "Exact registered config/report identity and historical candidate status.",
-            "Recurrence, continuation support, return, aggregate pressure, and production authority remain distinct.",
-        ],
+        "cut": {"id": TACTICAL_CUT_ID, "version": TACTICAL_CUT_VERSION},
+        "protectedFamily": list(D2A_PROTECTED_FAMILY),
         "scope": "Five centered distances 448, 512, 576, 640, and 704; 50 mirrored fixed-policy matches per distance.",
         "pathPressure": _axis(path, report_digest, residue, common_blocked),
         "residueVisibility": _axis("Resource, status, opening, recurrence, terminal, aggregate, and distance-conditioned residue remain explicit.", report_digest, residue, common_blocked),
@@ -876,7 +958,8 @@ def export_pressure_suite(case_ids: Sequence[str] = tuple(REGISTERED_CASES)) -> 
         "traces": traces,
         "transitionWitnesses": witnesses,
         "projectionAssessments": [],
-        "returnObligations": [],
+        "worldObligations": _world_obligations(traces),
+        "returnAssessments": _return_assessments(traces),
         "diagnostics": diagnostics,
         "residualLedger": _accumulate_residual(
             edge["residual"] for trace in traces for edge in trace["transitionEdges"]
@@ -888,6 +971,7 @@ def export_pressure_suite(case_ids: Sequence[str] = tuple(REGISTERED_CASES)) -> 
         ],
         "maturity": "M2_local_use",
         "productAuthority": "none",
+        "authorityProvenance": {"relationship": "none"},
         "evidenceOrigin": "analysis-derived",
         "covarianceGroup": "d2a-fixed-model-policy-domain-v1",
         "deduplicationIdentity": sha256_digest(report_identities),

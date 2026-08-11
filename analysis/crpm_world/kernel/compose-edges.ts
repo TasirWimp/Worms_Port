@@ -1,4 +1,4 @@
-import { sha256Digest } from '../canonical';
+import { canonicalJson, sha256Digest } from '../canonical';
 import {
     CompositionWitnessSchema,
     EdgeCompositionResultSchema,
@@ -14,15 +14,9 @@ import type {
 } from '../types';
 import { mergeResidualLedgers } from './residual-ledger';
 
-export type AllowedCutTransition = Readonly<{
-    targetCutId: string;
-    sourceCutId: string;
-}>;
-
 export type CompositionPolicy = Readonly<{
     externallySuppliedInputPorts?: readonly string[];
     forbiddenPortIds?: readonly string[];
-    allowedCutTransitions?: readonly AllowedCutTransition[];
 }>;
 
 const CHECKED_CONDITIONS = [
@@ -51,6 +45,8 @@ export function carrierContinuationMatches(
 ): boolean {
     return target.stateDigest === source.stateDigest &&
         target.baselineDigest === source.baselineDigest &&
+        target.schemaVersion === source.schemaVersion &&
+        target.profileVersion === source.profileVersion &&
         target.revisionOrStep === source.revisionOrStep &&
         target.carrierKind === source.carrierKind &&
         target.rulesetOrConfigId === source.rulesetOrConfigId &&
@@ -87,12 +83,8 @@ function issue(code: CompositionIssue['code'], message: string, details: unknown
     return { code, message, details: details as CompositionIssue['details'] };
 }
 
-function cutsCompatible(first: WorldTransitionEdge, second: WorldTransitionEdge, policy: CompositionPolicy): boolean {
-    if (first.targetCutId === second.sourceCutId) return true;
-    return (policy.allowedCutTransitions ?? []).some((transition) =>
-        transition.targetCutId === first.targetCutId &&
-        transition.sourceCutId === second.sourceCutId
-    );
+function cutsCompatible(first: WorldTransitionEdge, second: WorldTransitionEdge): boolean {
+    return canonicalJson(first.targetCut) === canonicalJson(second.sourceCut);
 }
 
 export function makeCompositionWitness(
@@ -186,10 +178,10 @@ export function composeEdges(
             secondAdapter: second.sourceCarrier.adapter
         }));
     }
-    if (!cutsCompatible(first, second, policy)) {
+    if (!cutsCompatible(first, second)) {
         issues.push(issue('cut-mismatch', 'Target/source cuts are neither equal nor explicitly compatible.', {
-            firstTargetCutId: first.targetCutId,
-            secondSourceCutId: second.sourceCutId
+            firstTargetCut: first.targetCut,
+            secondSourceCut: second.sourceCut
         }));
     }
 

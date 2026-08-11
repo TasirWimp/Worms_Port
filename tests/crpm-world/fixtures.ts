@@ -9,6 +9,7 @@ import {
     WorldCutDefinitionSchema,
     WorldTransitionEdgeSchema
 } from '../../analysis/crpm_world/schemas';
+import { assessReturn } from '../../analysis/crpm_world/kernel/assess-return';
 
 export const TEST_SEED = 3_237_998_097;
 export const TEST_COMMIT = 'af23717e61fea6995bf3b7209211ae1aaa2bb855';
@@ -55,6 +56,7 @@ export function makeResidualLedger() {
         authorityDeltas: [],
         expiredRights: [],
         openedObligations: [],
+        carriedObligations: [],
         dischargedObligations: [],
         unresolvedObligations: [],
         excludedUnmodelledResidue: ['No adapter or gameplay parity is claimed by this synthetic fixture.']
@@ -126,8 +128,8 @@ export function makeTransitionEdge() {
         },
         sourceCarrier,
         targetCarrier,
-        sourceCutId: 'authority-contract-cut',
-        targetCutId: 'authority-contract-cut',
+        sourceCut: { id: 'authority-contract-cut', version: 1 },
+        targetCut: { id: 'authority-contract-cut', version: 1 },
         fixedFrame: {
             schemaVersion: 1,
             sourceLocks: [{
@@ -138,14 +140,14 @@ export function makeTransitionEdge() {
             baselineOrConfigId: TEST_RULESET,
             adapter: TEST_ADAPTER,
             scenarioDomain: makeScenarioDomain(),
-            sourceCutId: 'authority-contract-cut',
-            targetCutId: 'authority-contract-cut',
+            sourceCut: { id: 'authority-contract-cut', version: 1 },
+            targetCut: { id: 'authority-contract-cut', version: 1 },
             actorOrPolicy: 'player',
             expectedRevisionOrStep: 0
         },
         commandOrDeclaration: { type: 'move', direction: 1 },
         response: { accepted: true, mutated: true },
-        protectedFamily: ['Existing V4 authority remains unchanged.'],
+        protectedFamily: makeCut().protectedFamily,
         sourceRefs: [`worms-port@${TEST_COMMIT}:shared/simulation.ts`],
         witnessReferences: [{ witnessId: 'authority-witness-0', digest: digestLabel('witness') }],
         decoderRefs: ['authority-state-decoder-v1'],
@@ -160,7 +162,7 @@ export function makeTransitionEdge() {
         reopeningCondition: 'Reopen on any state, event, source-lock, or digest mismatch.',
         supportStatus: 'declared',
         productAuthority: 'none',
-        authorityMutationObserved: false
+        authorityDefinitionMutationObserved: false
     });
 }
 
@@ -176,7 +178,7 @@ export function makeWorldDesignRequestPayload() {
         baselineOrConfigReference: makeCarrier(),
         scenarioDomain: domain,
         cut,
-        protectedFamily: ['Existing V4 authority remains unchanged.'],
+        protectedFamily: cut.protectedFamily,
         policyOrCommandSequence: [{
             sequence: 0,
             kind: 'command' as const,
@@ -269,26 +271,25 @@ export function makeWorldDesignResultPayload() {
             sampledDomain: makeScenarioDomain(),
             blockedClaims: ['Finite support does not prove a globally complete state map.']
         }],
-        returnObligations: [{
-            schemaVersion: 1 as const,
-            obligationId: 'current-readout-check',
-            obligationVersion: 1,
-            obligationKind: 'current_readout_equality' as const,
-            originEdgeId: edge.edgeId,
-            bearer: 'world-design-port',
-            beneficiary: 'repository-reviewer',
-            supportCarrier: edge.targetCarrier,
-            legalResponses: ['Recompute the declared target readout.'],
-            expiryCondition: 'The bound source lock or declared domain changes.',
-            dischargeCondition: 'The target readout matches under the declared decoder.',
-            currentStatus: 'open' as const
-        }],
+        worldObligations: [],
+        returnAssessments: [assessReturn({
+            assessmentId: 'current-readout-check',
+            sourceCarrier: edge.sourceCarrier,
+            targetCarrier: edge.targetCarrier,
+            declaredDomain: makeScenarioDomain(),
+            visibleProjection: {
+                cut: edge.targetCut,
+                sourceKey: 'visible-duel',
+                targetKey: 'visible-duel',
+                witnessRefs: [edge.witnessReferences[0].witnessId]
+            }
+        })],
         diagnostics: [{
             schemaVersion: 1 as const,
             diagnosticId: 'diagnostic-test',
             diagnosticVersion: 1,
             evaluationObjectRef: edge.edgeId,
-            cutId: edge.targetCutId,
+            cut: edge.targetCut,
             protectedFamily: edge.protectedFamily,
             scope: 'One synthetic contract edge.',
             pathPressure: makeDiagnosticAxis('No path pressure inferred.'),
@@ -310,6 +311,7 @@ export function makeWorldDesignResultPayload() {
         blockedClaims: ['No live gameplay activation.'],
         maturity: 'M1_declaration' as const,
         productAuthority: 'none' as const,
+        authorityProvenance: { relationship: 'none' as const },
         evidenceOrigin: 'synthetic-contract-test' as const,
         covarianceGroup: 'contract-test-lineage',
         deduplicationIdentity: digestLabel('result-deduplication')

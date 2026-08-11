@@ -1,11 +1,12 @@
 import { canonicalJson, compareCanonicalText } from '../canonical';
 import { WorldCutDefinitionSchema } from '../schemas';
 import type { WorldCutDefinition } from '../types';
-import { V4_CUT_DEFINITIONS, type V4CutId } from './v4-cuts';
+import { D2A_CUT_DEFINITIONS } from './d2a-cuts';
+import { V4_CUT_DEFINITIONS } from './v4-cuts';
 
 const encodedCuts = new Map<string, string>();
 
-for (const definition of V4_CUT_DEFINITIONS) {
+for (const definition of [...V4_CUT_DEFINITIONS, ...D2A_CUT_DEFINITIONS]) {
     const key = `${definition.cutId}@${definition.cutVersion}`;
     if (encodedCuts.has(key)) {
         throw new Error(`Duplicate CRPM-world cut registration ${key}.`);
@@ -17,7 +18,7 @@ function decodeCut(encoded: string): WorldCutDefinition {
     return WorldCutDefinitionSchema.parse(JSON.parse(encoded));
 }
 
-export function getCutDefinition(cutId: V4CutId, cutVersion = 1): WorldCutDefinition {
+export function getCutDefinition(cutId: string, cutVersion = 1): WorldCutDefinition {
     const key = `${cutId}@${cutVersion}`;
     const encoded = encodedCuts.get(key);
     if (!encoded) {

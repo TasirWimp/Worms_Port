@@ -6,6 +6,7 @@ export const V4_CUT_VERSION = 1;
 
 export const V4_CUT_IDS = Object.freeze({
     authority: 'authority_v4',
+    historicalAuthority: 'authority_historical_v1_v4',
     thinVisibleDuel: 'thin_visible_duel_v0',
     boundedCommandSupport: 'bounded_command_support_v1',
     replay: 'replay_v4',
@@ -15,6 +16,7 @@ export const V4_CUT_IDS = Object.freeze({
 export type V4CutId = typeof V4_CUT_IDS[keyof typeof V4_CUT_IDS];
 export type V4SimulationStateCutId =
     | typeof V4_CUT_IDS.authority
+    | typeof V4_CUT_IDS.historicalAuthority
     | typeof V4_CUT_IDS.thinVisibleDuel
     | typeof V4_CUT_IDS.boundedCommandSupport;
 
@@ -42,6 +44,39 @@ function cut(definition: Omit<WorldCutDefinition, 'schemaVersion' | 'cutVersion'
 }
 
 export const V4_CUT_DEFINITIONS: readonly WorldCutDefinition[] = Object.freeze([
+    cut({
+        cutId: V4_CUT_IDS.historicalAuthority,
+        sourceCarrierKind: 'authority',
+        projectionDescription: 'Retain a digest-backed historical V1 through V4 authority carrier for the registered parity seed.',
+        admissibleDomain: domain(
+            'historical-authority-c0ffee11',
+            ['move', 'select_relic', 'aim', 'fire'],
+            [
+                'Only shared/simulation.ts historical ruleset transitions are authoritative.',
+                'This cut exists solely for the registered V1 through V4 adapter-parity witnesses.'
+            ]
+        ),
+        protectedFamily: [
+            'The historical authority state remains recoverable by source reference, schema/profile version, and digest.',
+            'Command acceptance, mutation, state, events, and error remain owned by shared/simulation.ts.'
+        ],
+        includedSupport: [
+            'complete-authority-state-digest',
+            'authority-source-reference',
+            'ruleset-identity',
+            'schema-version',
+            'profile-version',
+            'revision'
+        ],
+        intentionallyForgottenDistinctions: [
+            'Presentation-only detail and source-code layout outside the canonical historical carrier.'
+        ],
+        excludedClaims: [
+            'No historical ruleset is changed, activated, or promoted by this parity cut.',
+            'The registered seed does not prove all-seed or all-state equivalence.'
+        ],
+        deterministicContinuationClaim: 'bounded'
+    }),
     cut({
         cutId: V4_CUT_IDS.authority,
         sourceCarrierKind: 'authority',

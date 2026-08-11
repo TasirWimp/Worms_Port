@@ -44,7 +44,8 @@ test('known V4 transcript executes through authority, voyage, replay, and projec
     const result = WorldDesignResultSchema.parse(executeWorldDesignRequest(request));
 
     assert.equal(result.requestDigest, request.requestDigest);
-    assert.equal(result.productAuthority, 'authority-adapter-parity');
+    assert.equal(result.productAuthority, 'none');
+    assert.equal(result.authorityProvenance.relationship, 'authority_adapter_parity');
     assert.equal(result.traces.length, 1);
     assert.equal(result.traces[0].transitionEdges.length, 4);
     assert.deepEqual(
@@ -169,7 +170,7 @@ test('registered adapters reject unexecuted or extra seed claims', () => {
             ...payload,
             seeds: [unregisteredSeed],
             scenarioDomain: { ...payload.scenarioDomain, seeds: [unregisteredSeed] }
-        }), /requires exactly the registered/);
+        }), /requires exactly the registered|outside the registered versioned cut domain/);
         assert.throws(() => buildOfflineWorldDesignRequest({
             ...payload,
             seeds: [registeredSeed, unregisteredSeed],
@@ -177,7 +178,7 @@ test('registered adapters reject unexecuted or extra seed claims', () => {
                 ...payload.scenarioDomain,
                 seeds: [registeredSeed, unregisteredSeed]
             }
-        }), /requires exactly the registered/);
+        }), /requires exactly the registered|outside the registered versioned cut domain/);
     }
 });
 

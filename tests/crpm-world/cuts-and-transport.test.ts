@@ -78,11 +78,13 @@ function thinTargetKey(transition: SimulationTransition) {
     };
 }
 
-test('the closed registry exposes five strict, detached, domain-declared cuts', () => {
+test('the closed registry exposes all strict, detached, domain-declared cuts', () => {
     const cuts = listCutDefinitions();
     assert.deepEqual(cuts.map((cut) => cut.cutId), [
+        V4_CUT_IDS.historicalAuthority,
         V4_CUT_IDS.authority,
         V4_CUT_IDS.boundedCommandSupport,
+        'd2a_tactical_recurrence_v1',
         V4_CUT_IDS.replay,
         V4_CUT_IDS.thinVisibleDuel,
         V4_CUT_IDS.worldDesign

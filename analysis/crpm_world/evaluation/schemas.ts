@@ -3,10 +3,10 @@ import { z } from 'zod';
 import { sha256Digest } from '../canonical';
 import {
     CarrierMaturitySchema,
+    CutReferenceSchema,
     DiagnosticProfileV2Schema,
     DiagnosticWitnessReferenceSchema,
     EvaluationObjectKindSchema,
-    ProductAuthoritySchema,
     ScalarProbeSchema,
     ScenarioDomainSchema
 } from '../schemas';
@@ -22,6 +22,15 @@ const TrimmedStringSchema = z.string().min(1).max(4_096).refine(
 const VersionSchema = z.number().int().min(1).max(Number.MAX_SAFE_INTEGER)
     .refine((value) => !Object.is(value, -0));
 const DigestSchema = z.string().regex(/^[0-9a-f]{64}$/);
+const ProbeIdListSchema = z.array(IdentifierSchema).max(256).superRefine((values, context) => {
+    const seen = new Set<string>();
+    for (let index = 0; index < values.length; index += 1) {
+        if (seen.has(values[index])) {
+            context.addIssue({ code: 'custom', path: [index], message: `Duplicate probe id ${values[index]}.` });
+        }
+        seen.add(values[index]);
+    }
+});
 
 export const EvaluationPressureCaseSchema = z.enum([
     'none',
@@ -34,6 +43,7 @@ export const EvaluationPressureCaseSchema = z.enum([
 ]);
 
 export const FalseClosureRuleSchema = z.enum([
+    'recursive_return_claimed_as_landfall',
     'aggregate_parity_masks_port_split',
     'recurrence_repair_claimed_as_balance',
     'structural_success_claimed_as_initiative_repair',
@@ -42,26 +52,23 @@ export const FalseClosureRuleSchema = z.enum([
     'rendered_trace_claimed_as_full_relation'
 ]);
 
-export const AcceptancePressureCaseSchema = z.strictObject({
-    caseId: EvaluationPressureCaseSchema.exclude(['none', 'v4_adapter']),
-    status: z.enum(['passed', 'failed', 'not_tested']),
-    reenterable: z.boolean(),
-    reason: TrimmedStringSchema,
-    witnessReferences: z.array(DiagnosticWitnessReferenceSchema).min(1).max(256)
-});
-
+/**
+ * A caller declares what registered historical surface to evaluate.  It cannot
+ * declare acceptance, maturity, re-enterability, or product authority; those
+ * are derived from the result and the closed registry in evaluate.ts.
+ */
 export const EvaluationDeclarationSchema = z.strictObject({
     schemaVersion: z.literal(1),
     evaluationId: IdentifierSchema,
     evaluationVersion: VersionSchema,
+    evaluationMode: z.literal('registered_historical_pressure'),
     object: z.strictObject({
         kind: EvaluationObjectKindSchema,
         objectRef: IdentifierSchema
     }),
     activeFrame: z.strictObject({
         frameRef: IdentifierSchema,
-        cutId: IdentifierSchema,
-        cutVersion: VersionSchema,
+        cut: CutReferenceSchema,
         admissibleScope: ScenarioDomainSchema
     }),
     protectedFamily: z.array(TrimmedStringSchema).min(1).max(256),
@@ -71,30 +78,23 @@ export const EvaluationDeclarationSchema = z.strictObject({
     residueDeclaration: z.array(TrimmedStringSchema).min(1).max(256),
     returnDeclaration: TrimmedStringSchema,
     boundedExecution: z.strictObject({
-        passed: z.boolean(),
         reason: TrimmedStringSchema,
-        witnessReferences: z.array(DiagnosticWitnessReferenceSchema).max(256)
+        witnessReferences: z.array(DiagnosticWitnessReferenceSchema).min(1).max(256)
     }),
-    acceptancePressureCases: z.array(AcceptancePressureCaseSchema).max(16),
-    assertedClaims: z.array(FalseClosureRuleSchema).max(6),
-    ownerDecision: z.strictObject({
-        versionedRulesetApproved: z.boolean(),
-        decisionRef: IdentifierSchema.nullable()
-    })
+    mandatoryEvidenceProbeIds: ProbeIdListSchema.min(1),
+    optionalDisplayedScalarProbeIds: ProbeIdListSchema,
+    assertedClaims: z.array(FalseClosureRuleSchema).max(7)
 }).superRefine((declaration, context) => {
-    if (declaration.boundedExecution.passed && declaration.boundedExecution.witnessReferences.length === 0) {
-        context.addIssue({
-            code: 'custom',
-            path: ['boundedExecution', 'witnessReferences'],
-            message: 'Passing bounded execution requires a witness.'
-        });
-    }
-    if (declaration.ownerDecision.versionedRulesetApproved !== (declaration.ownerDecision.decisionRef !== null)) {
-        context.addIssue({
-            code: 'custom',
-            path: ['ownerDecision'],
-            message: 'A versioned ruleset approval and its decision reference must be declared together.'
-        });
+    const mandatory = new Set(declaration.mandatoryEvidenceProbeIds);
+    for (let index = 0; index < declaration.optionalDisplayedScalarProbeIds.length; index += 1) {
+        const probeId = declaration.optionalDisplayedScalarProbeIds[index];
+        if (!mandatory.has(probeId)) {
+            context.addIssue({
+                code: 'custom',
+                path: ['optionalDisplayedScalarProbeIds', index],
+                message: 'Displayed scalar probes must be selected from the mandatory evaluated evidence set.'
+            });
+        }
     }
 });
 
@@ -110,16 +110,18 @@ export const FalseClosureDetectionSchema = z.strictObject({
 
 export const MaturityAssessmentSchema = z.strictObject({
     schemaVersion: z.literal(1),
-    maturity: CarrierMaturitySchema,
+    maturity: CarrierMaturitySchema.exclude(['M3_bounded_design_landfall']),
     gates: z.strictObject({
         coherentOutput: z.boolean(),
         declaredContract: z.boolean(),
         boundedExecution: z.boolean(),
-        acceptancePressureCases: z.boolean(),
+        registeredSourceBinding: z.boolean(),
+        mandatoryEvidenceComplete: z.boolean(),
+        registeredAcceptancePressureCases: z.boolean(),
         reenterableEvidence: z.boolean()
     }),
     blockingReasons: z.array(TrimmedStringSchema).max(256),
-    productAuthority: ProductAuthoritySchema,
+    productAuthority: z.literal('none'),
     productAuthorityReason: TrimmedStringSchema
 });
 
@@ -130,7 +132,7 @@ export const EvaluationBundlePayloadSchema = z.strictObject({
     declaration: EvaluationDeclarationSchema,
     diagnosticProfile: DiagnosticProfileV2Schema,
     scalarProbes: z.array(ScalarProbeSchema).max(256),
-    falseClosureDetections: z.array(FalseClosureDetectionSchema).length(6),
+    falseClosureDetections: z.array(FalseClosureDetectionSchema).length(7),
     maturityAssessment: MaturityAssessmentSchema
 });
 

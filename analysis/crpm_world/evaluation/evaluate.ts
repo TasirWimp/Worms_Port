@@ -1,6 +1,4 @@
-import { z } from 'zod';
-
-import { compareCanonicalText, sha256Digest } from '../canonical';
+import { canonicalJson, compareCanonicalText, sha256Digest } from '../canonical';
 import {
     DiagnosticProfileV2Schema,
     ScalarProbeSchema,
@@ -10,6 +8,14 @@ import type {
     DiagnosticProfileV2,
     WorldDesignResult
 } from '../types';
+import {
+    D2A_CONFIG_REGISTRATIONS,
+    OFFLINE_ADAPTER_IDS,
+    getOfflineAdapterRegistration
+} from '../design-port/registry';
+import { D2A_TACTICAL_CUT_ID, D2A_TACTICAL_CUT_VERSION } from '../cuts/d2a-cuts';
+import { getCutDefinition } from '../cuts/registry';
+import { V4_CUT_IDS, V4_CUT_VERSION } from '../cuts/v4-cuts';
 import {
     EvaluationDeclarationSchema,
     FalseClosureRuleSchema,
@@ -23,16 +29,11 @@ import {
 } from './schemas';
 
 type DiagnosticWitnessReference = EvaluationDeclaration['witnessReferences'][number];
+type ScalarProbe = ReturnType<typeof ScalarProbeSchema.parse>;
 
-const MaturityGateInputSchema = z.strictObject({
-    coherentOutput: z.boolean(),
-    declaredContract: z.boolean(),
-    boundedExecution: z.boolean(),
-    acceptancePressureCases: z.boolean(),
-    reenterableEvidence: z.boolean(),
-    activeFalseClosureRules: z.array(FalseClosureRuleSchema).max(6),
-    ownerDecision: EvaluationDeclarationSchema.shape.ownerDecision
-});
+const D2A_SOURCE_COMMIT = 'af23717e61fea6995bf3b7209211ae1aaa2bb855';
+const V4_SOURCE_COMMIT = '0ca98ac32f9f7a265888ae342a3f3254269d61d9';
+const CRPM_SOURCE_COMMIT = '995236df60924f790506cf5badec3c102abf3fd1';
 
 function sortedUnique<T>(items: readonly T[], key: (item: T) => string): T[] {
     const byKey = new Map<string, T>();
@@ -65,7 +66,7 @@ function resultWitnesses(result: WorldDesignResult): DiagnosticWitnessReference[
     return sortedUnique(references, (reference) => `${reference.witnessId}:${reference.digest}`);
 }
 
-function scalarProbes(result: WorldDesignResult) {
+function scalarProbes(result: WorldDesignResult): ScalarProbe[] {
     const probes = result.diagnostics.flatMap((diagnostic) =>
         diagnostic.schemaVersion === 1 ? diagnostic.scalarProbes : []
     );
@@ -80,6 +81,97 @@ function scalarProbes(result: WorldDesignResult) {
     return [...byId.values()].sort((left, right) => compareCanonicalText(left.probeId, right.probeId));
 }
 
+function sameStringSet(left: readonly string[], right: readonly string[]): boolean {
+    return canonicalJson([...left].sort(compareCanonicalText)) ===
+        canonicalJson([...right].sort(compareCanonicalText));
+}
+
+function containsSourceLock(
+    result: WorldDesignResult,
+    repositoryId: string,
+    commit: string,
+    requiredPaths: readonly string[]
+): boolean {
+    return result.sourceLocks.some((lock) => lock.repositoryId === repositoryId &&
+        lock.commit === commit && requiredPaths.every((path) => lock.paths.includes(path)));
+}
+
+function registeredEvaluationBinding(
+    declaration: EvaluationDeclaration,
+    result: WorldDesignResult,
+    availableProbes: readonly ScalarProbe[],
+    availableWitnesses: readonly DiagnosticWitnessReference[]
+) {
+    const witnessKeys = new Set(availableWitnesses.map((item) => canonicalJson(item)));
+    const declaredWitnessesBound = declaration.witnessReferences.every((item) => witnessKeys.has(canonicalJson(item))) &&
+        declaration.boundedExecution.witnessReferences.every((item) => witnessKeys.has(canonicalJson(item)));
+    const actualProbeIds = availableProbes.map((probe) => probe.probeId);
+    let expectedProbeIds: readonly string[] = [];
+    let expectedProtectedFamily: readonly string[] = [];
+    let expectedCut = { id: 'unregistered', version: 1 };
+    let sourceBound = false;
+    let registeredAcceptancePassed = false;
+
+    if (declaration.pressureCaseId === 'v4_adapter') {
+        const registration = getOfflineAdapterRegistration(OFFLINE_ADAPTER_IDS.v4Authority, 1);
+        expectedProbeIds = registration.mandatoryEvidenceProbes;
+        expectedProtectedFamily = registration.mandatoryProtectedFamily;
+        expectedCut = { id: V4_CUT_IDS.authority, version: V4_CUT_VERSION };
+        sourceBound = containsSourceLock(result, 'worms-port', V4_SOURCE_COMMIT, ['shared/simulation.ts']) &&
+            result.transitionWitnesses.length > 0 && result.evidenceOrigin === 'authority-derived';
+    } else if (declaration.pressureCaseId !== 'none') {
+        const registration = D2A_CONFIG_REGISTRATIONS.find((item) => item.caseId === declaration.pressureCaseId);
+        if (registration) {
+            expectedProbeIds = registration.mandatoryEvidenceProbes;
+            expectedProtectedFamily = getCutDefinition(D2A_TACTICAL_CUT_ID, D2A_TACTICAL_CUT_VERSION).protectedFamily;
+            expectedCut = { id: D2A_TACTICAL_CUT_ID, version: D2A_TACTICAL_CUT_VERSION };
+            const diagnostic = result.diagnostics.find((item) => item.schemaVersion === 1 &&
+                item.evaluationObjectRef === registration.configId);
+            const reportBound = diagnostic?.schemaVersion === 1 && [
+                diagnostic.pathPressure,
+                diagnostic.residueVisibility,
+                diagnostic.localReorganization,
+                diagnostic.cutFidelity,
+                diagnostic.returnStrength,
+                diagnostic.closureRisk
+            ].every((axis) => axis.evidenceRefs.includes(registration.reportDigest));
+            sourceBound = Boolean(reportBound) && result.evidenceOrigin === 'analysis-derived' &&
+                containsSourceLock(result, 'worms-port', D2A_SOURCE_COMMIT, [
+                    'analysis/tactical_model/model.py',
+                    'analysis/tactical_model/run.py',
+                    registration.sourcePath
+                ]) && containsSourceLock(result, 'crpm', CRPM_SOURCE_COMMIT, [
+                    'docs/architecture/CRPM_Evaluation_Language_Operational_Note_v0.md',
+                    'emergence_lab_crpm/dynamic_return_obligation_crosswalk_source.py'
+                ]);
+            // Every currently registered D2A pressure case is historical rejected
+            // evidence. A future acceptance can only be introduced by changing this
+            // closed source registry with reviewed witness requirements.
+            registeredAcceptancePassed = false;
+        }
+    }
+    const declarationMatchesRegistry = sameStringSet(declaration.mandatoryEvidenceProbeIds, expectedProbeIds);
+    const relevantDiagnostics = result.diagnostics.filter((item) => item.schemaVersion === 1);
+    const protectedFamilyBound = expectedProtectedFamily.length > 0 &&
+        sameStringSet(declaration.protectedFamily, expectedProtectedFamily) &&
+        canonicalJson(declaration.activeFrame.cut) === canonicalJson(expectedCut) &&
+        relevantDiagnostics.length > 0 && relevantDiagnostics.every((item) =>
+            sameStringSet(item.protectedFamily, expectedProtectedFamily)
+        ) && result.traces.flatMap((trace) => trace.transitionEdges).every((edge) =>
+            sameStringSet(edge.protectedFamily, expectedProtectedFamily)
+        );
+    sourceBound = sourceBound && protectedFamilyBound;
+    const mandatoryEvidenceComplete = declarationMatchesRegistry &&
+        expectedProbeIds.every((probeId) => actualProbeIds.includes(probeId));
+    return {
+        sourceBound,
+        mandatoryEvidenceComplete,
+        boundedExecution: sourceBound && mandatoryEvidenceComplete && declaredWitnessesBound,
+        reenterableEvidence: sourceBound && declaredWitnessesBound && availableWitnesses.length > 0,
+        registeredAcceptancePassed
+    };
+}
+
 function falseClosureReason(
     rule: FalseClosureRule,
     pressureCase: EvaluationPressureCase,
@@ -87,6 +179,8 @@ function falseClosureReason(
 ): string {
     const prefix = triggered ? 'Triggered' : 'Guard retained';
     switch (rule) {
+        case 'recursive_return_claimed_as_landfall':
+            return `${prefix}: F2 recursive carrier return is a witnessed failure pressure, not a design-landfall acceptance.`;
         case 'aggregate_parity_masks_port_split':
             return `${prefix}: H2 aggregate first-actor rate cannot hide its distance-conditioned 704-band residue.`;
         case 'recurrence_repair_claimed_as_balance':
@@ -122,6 +216,8 @@ function detectFalseClosures(
         .filter(([id]) => id.startsWith('h2.distance_') && id.endsWith('_first_actor_win_rate'))
         .map(([, value]) => value);
     const conditions: Record<FalseClosureRule, boolean> = {
+        recursive_return_claimed_as_landfall: caseId === 'f2' &&
+            probes.has('f2.recurrence_matches') && Number(probes.get('f2.recurrence_matches')) > 0,
         aggregate_parity_masks_port_split: caseId === 'h2' &&
             probes.has('h2.aggregate_first_actor_win_rate') && new Set(h2BandValues).size > 1,
         recurrence_repair_claimed_as_balance: caseId === 'f3',
@@ -130,8 +226,8 @@ function detectFalseClosures(
         delayed_response_claimed_as_immediate_counter: caseId === 'h3' &&
             [...probes.entries()].some(([id, value]) => id.startsWith('h3.distance_') &&
                 id.endsWith('_forced_opening_actions') && value > 0),
-        adapter_parity_claimed_as_design_landfall: caseId === 'v4_adapter' ||
-            result.productAuthority === 'authority-adapter-parity',
+        adapter_parity_claimed_as_design_landfall: caseId === 'v4_adapter' &&
+            result.evidenceOrigin === 'authority-derived',
         rendered_trace_claimed_as_full_relation: missingRenderedReferences
     };
     return FalseClosureRuleSchema.options.map((rule) => {
@@ -148,42 +244,35 @@ function detectFalseClosures(
     });
 }
 
-export function assessEvaluationMaturity(input: unknown) {
-    const gates = MaturityGateInputSchema.parse(input);
-    if (!gates.coherentOutput) throw new Error('M0 requires a coherent deterministic output.');
-    const activeFalseClosures = gates.activeFalseClosureRules.length > 0;
-    const maturity = gates.declaredContract
-        ? gates.boundedExecution
-            ? gates.acceptancePressureCases && gates.reenterableEvidence && !activeFalseClosures
-                ? 'M3_bounded_design_landfall'
-                : 'M2_local_use'
-            : 'M1_declaration'
-        : 'M0_appearance';
-    const approved = maturity === 'M3_bounded_design_landfall' &&
-        gates.ownerDecision.versionedRulesetApproved && gates.ownerDecision.decisionRef !== null;
+function assessRegisteredEvaluationMaturity(
+    gates: ReturnType<typeof registeredEvaluationBinding>,
+    activeFalseClosureRules: readonly FalseClosureRule[]
+) {
+    const maturity = gates.boundedExecution ? 'M2_local_use' : 'M1_declaration';
     const blockingReasons = [
-        ...(!gates.declaredContract ? ['Cut, protected family, domain, witness, residue, or return declaration is incomplete.'] : []),
         ...(!gates.boundedExecution ? ['Bounded adapter execution and its tests are not witnessed as passing.'] : []),
-        ...(!gates.acceptancePressureCases ? ['All acceptance pressure cases for the declared scope have not passed.'] : []),
+        ...(!gates.sourceBound ? ['The result does not match the closed source-lock and report-witness registry.'] : []),
+        ...(!gates.mandatoryEvidenceComplete ? ['The complete registered mandatory evidence family is not present.'] : []),
+        ...(!gates.registeredAcceptancePassed ? ['The registered historical pressure case is not an acceptance pass.'] : []),
         ...(!gates.reenterableEvidence ? ['The declared evidence is not fully re-enterable.'] : []),
-        ...gates.activeFalseClosureRules.map((rule) => `False-closure rule remains active: ${rule}.`),
-        ...(!approved ? ['No separate owner-approved versioned-ruleset decision grants product authority.'] : [])
+        ...activeFalseClosureRules.map((rule) => `False-closure rule remains active: ${rule}.`),
+        'This evaluator cannot grant product authority; a separate closed owner-decision record is required.'
     ];
     return MaturityAssessmentSchema.parse({
         schemaVersion: 1,
         maturity,
         gates: {
-            coherentOutput: gates.coherentOutput,
-            declaredContract: gates.declaredContract,
+            coherentOutput: true,
+            declaredContract: true,
             boundedExecution: gates.boundedExecution,
-            acceptancePressureCases: gates.acceptancePressureCases,
+            registeredSourceBinding: gates.sourceBound,
+            mandatoryEvidenceComplete: gates.mandatoryEvidenceComplete,
+            registeredAcceptancePressureCases: gates.registeredAcceptancePassed,
             reenterableEvidence: gates.reenterableEvidence
         },
         blockingReasons,
-        productAuthority: approved ? 'versioned-ruleset-approved' : 'none',
-        productAuthorityReason: approved
-            ? `Product authority is limited to the separately recorded decision ${gates.ownerDecision.decisionRef}.`
-            : 'Maturity, adapter parity, scalar probes, and pressure-case results do not create product authority.'
+        productAuthority: 'none',
+        productAuthorityReason: 'Maturity, adapter parity, scalar probes, and pressure-case results do not create product authority.'
     });
 }
 
@@ -313,34 +402,26 @@ export function evaluateWorldDesignResult(
 ): EvaluationBundle {
     const declaration = EvaluationDeclarationSchema.parse(declarationInput);
     const result = WorldDesignResultSchema.parse(resultInput);
-    const witnesses = sortedUnique(
-        [...resultWitnesses(result), ...declaration.witnessReferences],
-        (reference) => `${reference.witnessId}:${reference.digest}`
-    );
+    if (declaration.object.objectRef !== result.resultId) {
+        throw new Error('Evaluation object reference must match the supplied registered result.');
+    }
+    const witnesses = resultWitnesses(result);
+    const probes = scalarProbes(result);
+    const registered = registeredEvaluationBinding(declaration, result, probes, witnesses);
     const detections = detectFalseClosures(declaration, result, witnesses);
-    const allAcceptanceCasesPass = declaration.acceptancePressureCases.length > 0 &&
-        declaration.acceptancePressureCases.every((pressureCase) => pressureCase.status === 'passed');
-    const reenterable = result.sourceLocks.length > 0 && witnesses.length > 0 &&
-        declaration.acceptancePressureCases.every((pressureCase) => pressureCase.reenterable);
     const activeRules = detections.filter((detection) => detection.triggered).map((detection) => detection.rule);
-    const maturityAssessment = assessEvaluationMaturity({
-        coherentOutput: true,
-        declaredContract: true,
-        boundedExecution: declaration.boundedExecution.passed,
-        acceptancePressureCases: allAcceptanceCasesPass,
-        reenterableEvidence: reenterable,
-        activeFalseClosureRules: activeRules,
-        ownerDecision: declaration.ownerDecision
-    });
-    const diagnosticProfile = buildProfile(declaration, result, witnesses, detections, reenterable);
+    const maturityAssessment = assessRegisteredEvaluationMaturity(registered, activeRules);
+    const diagnosticProfile = buildProfile(declaration, result, witnesses, detections, registered.reenterableEvidence);
+    const displayed = new Set(declaration.optionalDisplayedScalarProbeIds);
     return buildEvaluationBundle({
         schemaVersion: 1,
         evaluationId: declaration.evaluationId,
         evaluationVersion: declaration.evaluationVersion,
         declaration,
         diagnosticProfile,
-        scalarProbes: scalarProbes(result),
+        scalarProbes: probes.filter((probe) => displayed.has(probe.probeId)),
         falseClosureDetections: detections,
         maturityAssessment
     });
 }
+import type { z } from 'zod';

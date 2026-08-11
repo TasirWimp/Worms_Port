@@ -9,12 +9,13 @@ import type {
     ReturnClassAssessment,
     ScenarioDomain,
     VoyageTraceV2,
-    WorldCarrierReference
+    WorldCarrierReference,
+    CutReference
 } from '../types';
 import { carrierContinuationMatches } from './compose-edges';
 
 type EqualityDeclaration = Readonly<{
-    cutId: string;
+    cut: CutReference;
     sourceKey: unknown;
     targetKey: unknown;
     witnessRefs?: readonly string[];
@@ -29,7 +30,7 @@ export type ReturnAssessmentInput = Readonly<{
     declaredDomain: ScenarioDomain;
     visibleProjection?: EqualityDeclaration;
     protectedEquivalence?: Readonly<{
-        cutId: string;
+        cut: CutReference;
         decodable: boolean;
         witnessRefs?: readonly string[];
         declaredExclusions?: readonly string[];
@@ -63,7 +64,8 @@ function equal(left: unknown, right: unknown): boolean {
 function row(
     classification: ReturnClassAssessment['classification'],
     status: ReturnClassAssessment['status'],
-    declaredCutOrRegionId: string | null,
+    declaredCut: CutReference | null,
+    declaredRegionId: string | null,
     rationale: string,
     witnessRefs: readonly string[] = [],
     declaredExclusions: readonly string[] = []
@@ -71,7 +73,8 @@ function row(
     return {
         classification,
         status,
-        declaredCutOrRegionId,
+        declaredCut,
+        declaredRegionId,
         witnessRefs: [...witnessRefs],
         declaredExclusions: [...declaredExclusions],
         rationale
@@ -122,7 +125,8 @@ export function assessReturn(input: ReturnAssessmentInput): ReturnAssessment {
         row(
             'visible_equal',
             visibleStatus,
-            input.visibleProjection?.cutId ?? null,
+            input.visibleProjection?.cut ?? null,
+            null,
             input.visibleProjection
                 ? visibleStatus === 'satisfied'
                     ? 'Source and target keys are equal under the declared visible projection; no stronger return is implied.'
@@ -136,7 +140,8 @@ export function assessReturn(input: ReturnAssessmentInput): ReturnAssessment {
             input.protectedEquivalence
                 ? input.protectedEquivalence.decodable ? 'satisfied' : 'not_satisfied'
                 : 'not_assessed',
-            input.protectedEquivalence?.cutId ?? null,
+            input.protectedEquivalence?.cut ?? null,
+            null,
             input.protectedEquivalence
                 ? input.protectedEquivalence.decodable
                     ? 'The declared protected family remains decodable; full carrier equality is not implied.'
@@ -148,7 +153,8 @@ export function assessReturn(input: ReturnAssessmentInput): ReturnAssessment {
         row(
             'recursive_carrier_return',
             recursiveStatus,
-            input.recursiveCarrier?.cutId ?? null,
+            input.recursiveCarrier?.cut ?? null,
+            null,
             input.recursiveCarrier
                 ? recursiveStatus === 'satisfied'
                     ? 'The exact declared cut/domain-specific support-complete recursive carrier key repeats.'
@@ -162,6 +168,7 @@ export function assessReturn(input: ReturnAssessmentInput): ReturnAssessment {
         row(
             'invariant_region_return',
             invariantStatus,
+            null,
             input.invariantRegion?.regionId ?? null,
             input.invariantRegion
                 ? invariantStatus === 'satisfied'
@@ -174,7 +181,8 @@ export function assessReturn(input: ReturnAssessmentInput): ReturnAssessment {
         row(
             'finite_exact_return',
             exact ? 'satisfied' : 'not_satisfied',
-            input.sourceCarrier.carrierKind,
+            null,
+            null,
             exact
                 ? 'The full declared carrier support, authority state digest, revision/step, ruleset, adapter, and source lineage repeat.'
                 : 'The full declared carrier support does not repeat.',
@@ -184,6 +192,7 @@ export function assessReturn(input: ReturnAssessmentInput): ReturnAssessment {
         row(
             'route_mismatch',
             routeStatus,
+            null,
             input.routeComparison ? 'paired-voyage-route' : null,
             routeRationale,
             input.routeComparison?.witnessRefs,

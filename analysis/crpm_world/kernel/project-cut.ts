@@ -107,7 +107,7 @@ export function projectV4SimulationState(
 ): CutProjection {
     assertV4State(state);
     const cut = getCutDefinition(cutId);
-    if (cutId === V4_CUT_IDS.authority) {
+    if (cutId === V4_CUT_IDS.authority || cutId === V4_CUT_IDS.historicalAuthority) {
         return projectCut(cut, state, authorityProjection);
     }
     if (cutId === V4_CUT_IDS.thinVisibleDuel) {

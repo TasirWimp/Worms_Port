@@ -9,13 +9,14 @@ import {
     PortContractSchema,
     ProjectionTransportAssessmentSchema,
     ResidualLedgerSchema,
-    ReturnObligationSchema,
+    ReturnAssessmentSchema,
     TransitionWitnessSchema,
     VoyageTraceSchema,
     WorldCarrierReferenceSchema,
     WorldCutDefinitionSchema,
     WorldDesignRequestSchema,
     WorldDesignResultSchema,
+    WorldObligationSchema,
     WorldTransitionEdgeSchema,
     parseRegisteredWorldDesignRequest
 } from '../../analysis/crpm_world/schemas';
@@ -42,7 +43,21 @@ test('all core versioned records accept their strict bounded fixtures', () => {
         ['WorldTransitionEdge', WorldTransitionEdgeSchema, makeTransitionEdge()],
         ['TransitionWitness', TransitionWitnessSchema, result.transitionWitnesses[0]],
         ['ResidualLedger', ResidualLedgerSchema, makeResidualLedger()],
-        ['ReturnObligation', ReturnObligationSchema, result.returnObligations[0]],
+        ['WorldObligation', WorldObligationSchema, {
+            schemaVersion: 1,
+            obligationId: 'synthetic.open-obligation',
+            obligationVersion: 1,
+            obligationType: 'synthetic_support',
+            originEdgeId: result.traces[0].transitionEdges[0].edgeId,
+            bearer: 'player',
+            beneficiary: 'loomkeeper',
+            supportCarrier: result.traces[0].transitionEdges[0].targetCarrier,
+            legalResponses: ['Use only the declared synthetic response.'],
+            expiryCondition: 'The declared support expires.',
+            dischargeCondition: 'The declared support is discharged.',
+            lifecycleStatus: 'open'
+        }],
+        ['ReturnAssessment', ReturnAssessmentSchema, result.returnAssessments[0]],
         ['VoyageTrace', VoyageTraceSchema, result.traces[0]],
         ['ProjectionTransportAssessment', ProjectionTransportAssessmentSchema, result.projectionAssessments[0]],
         ['DiagnosticProfile', DiagnosticProfileSchema, result.diagnostics[0]],
@@ -238,26 +253,94 @@ test('voyage compatibility checks ordered carrier and cut composition', () => {
     }).success, false, 'the edge itself still fails because its bound carrierRefs no longer match');
 });
 
-test('return obligations remain separately typed and do not imply product authority', () => {
-    const base = makeWorldDesignResult().returnObligations[0];
-    for (const obligationKind of [
-        'current_readout_equality',
-        'recursive_carrier_congruence',
-        'invariant_membership',
-        'finite_return',
-        'route_composition_return'
-    ] as const) {
-        assert.equal(ReturnObligationSchema.safeParse({ ...base, obligationKind }).success, true);
-    }
-
+test('return assessments remain separate from world obligations and cannot mint landfall or authority', () => {
+    const assessment = makeWorldDesignResult().returnAssessments[0];
+    assert.deepEqual(
+        assessment.classifications.map((item) => item.classification),
+        ['visible_equal', 'protected_equivalent', 'recursive_carrier_return', 'invariant_region_return', 'finite_exact_return', 'route_mismatch']
+    );
     const payload = makeWorldDesignResultPayload();
-    const landfallWithoutAuthority = buildWorldDesignResult({
+    assert.throws(() => buildWorldDesignResult({
         ...payload,
-        maturity: 'M3_bounded_design_landfall',
-        productAuthority: 'none'
+        maturity: 'M3_bounded_design_landfall'
+    }));
+    assert.throws(() => buildWorldDesignResult({
+        ...payload,
+        productAuthority: 'versioned-ruleset-approved'
+    }));
+});
+
+test('carrier schema/profile changes require an explicit migration edge', () => {
+    const edge = makeTransitionEdge();
+    const migratedTarget = { ...edge.targetCarrier, profileVersion: edge.targetCarrier.profileVersion + 1 };
+    const changed = {
+        ...edge,
+        targetCarrier: migratedTarget,
+        carrierRefs: [sha256Digest(edge.sourceCarrier), sha256Digest(migratedTarget)]
+    };
+    assert.equal(WorldTransitionEdgeSchema.safeParse(changed).success, false);
+    assert.equal(WorldTransitionEdgeSchema.safeParse({ ...changed, edgeKind: 'carrier-profile-migration' }).success, true);
+});
+
+test('result obligations are referentially closed and cannot discharge before opening', () => {
+    const payload = makeWorldDesignResultPayload();
+    const baseEdge = payload.traces[0].transitionEdges[0];
+    const obligationId = 'synthetic.fixture.obligation';
+    const openLedger = ResidualLedgerSchema.parse({
+        ...baseEdge.residual,
+        openedObligations: [obligationId],
+        unresolvedObligations: [obligationId]
     });
-    assert.equal(landfallWithoutAuthority.maturity, 'M3_bounded_design_landfall');
-    assert.equal(landfallWithoutAuthority.productAuthority, 'none');
+    const openEdge = WorldTransitionEdgeSchema.parse({ ...baseEdge, residual: openLedger });
+    const obligation = {
+        schemaVersion: 1 as const,
+        obligationId,
+        obligationVersion: 1,
+        obligationType: 'synthetic_support',
+        originEdgeId: openEdge.edgeId,
+        bearer: 'player',
+        beneficiary: 'loomkeeper',
+        supportCarrier: openEdge.targetCarrier,
+        legalResponses: ['Carry or discharge this exact synthetic obligation.'],
+        expiryCondition: 'The synthetic right expires.',
+        dischargeCondition: 'The synthetic obligation is discharged.',
+        lifecycleStatus: 'open' as const
+    };
+    const validPayload = {
+        ...payload,
+        traces: [{
+            ...payload.traces[0],
+            transitionEdges: [openEdge],
+            accumulatedResidual: openLedger
+        }],
+        residualLedger: openLedger,
+        worldObligations: [obligation]
+    };
+    assert.doesNotThrow(() => buildWorldDesignResult(validPayload));
+
+    const unknownLedger = ResidualLedgerSchema.parse({
+        ...openLedger,
+        openedObligations: ['synthetic.unknown.obligation'],
+        unresolvedObligations: ['synthetic.unknown.obligation']
+    });
+    assert.throws(() => buildWorldDesignResult({
+        ...validPayload,
+        traces: [{ ...validPayload.traces[0], transitionEdges: [{ ...openEdge, residual: unknownLedger }], accumulatedResidual: unknownLedger }],
+        residualLedger: unknownLedger
+    }), /no typed world-obligation record/);
+
+    const prematureLedger = ResidualLedgerSchema.parse({
+        ...openLedger,
+        openedObligations: [],
+        dischargedObligations: [obligationId],
+        unresolvedObligations: []
+    });
+    assert.throws(() => buildWorldDesignResult({
+        ...validPayload,
+        traces: [{ ...validPayload.traces[0], transitionEdges: [{ ...openEdge, residual: prematureLedger }], accumulatedResidual: prematureLedger }],
+        residualLedger: prematureLedger,
+        worldObligations: [{ ...obligation, lifecycleStatus: 'discharged' }]
+    }), /cannot discharge before it opens/);
 });
 
 test('diagnostic axes stay non-scalar while scalar probes remain subordinate', () => {

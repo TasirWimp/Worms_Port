@@ -14,11 +14,13 @@ import {
     type SimulationState
 } from '../../shared/simulation';
 import {
-    DEFAULT_AUTHORITY_CUT_ID,
+    DEFAULT_AUTHORITY_CUT,
     SIMULATION_AUTHORITY_ADAPTER_ID,
     SIMULATION_AUTHORITY_ADAPTER_VERSION,
-    adaptSimulationCommand
+    adaptSimulationCommand,
+    projectSimulationAuthorityCut
 } from '../../analysis/crpm_world/adapters/v4-authority-adapter';
+import { V4_CUT_IDS, V4_CUT_VERSION } from '../../analysis/crpm_world/cuts/v4-cuts';
 import { sha256Digest, sha256Text } from '../../analysis/crpm_world/canonical';
 import {
     TransitionWitnessSchema,
@@ -31,12 +33,12 @@ function assertDirectParity(
     actor: SimulationActor,
     command: SimulationCommand,
     expectedTurn: number,
-    declaredCutId?: string
+    declaredCut?: { id: string; version: number }
 ) {
     const stateSnapshot = structuredClone(state);
     const commandSnapshot = structuredClone(command);
     const direct = applySimulationCommand(state, actor, command, expectedTurn);
-    const adapted = adaptSimulationCommand(state, actor, command, expectedTurn, declaredCutId);
+    const adapted = adaptSimulationCommand(state, actor, command, expectedTurn, declaredCut);
 
     assert.deepEqual(adapted.transition, direct);
     assert.equal(adapted.transition.accepted, direct.accepted);
@@ -76,7 +78,7 @@ test('accepted movement has exact direct parity for historical V1 and current V4
         assert.equal(adapted.edge.domainMotif, 'move');
         assert.equal(adapted.edge.edgeKind, 'authority-state-transition');
         assert.equal(adapted.edge.schemaVersion, 2);
-        assert.equal(adapted.edge.productAuthority, 'authority-adapter-parity');
+        assert.equal(adapted.edge.productAuthority, 'none');
     }
 });
 
@@ -116,10 +118,10 @@ test('deterministic fire transcript preserves exact authoritative events and com
     const aimed = applySimulationCommand(initial, 'player', {
         type: 'aim', angleMilliDegrees: 45_000, powerPermille: 1_000
     }, 0).state;
-    const adapted = assertDirectParity(aimed, 'player', { type: 'fire' }, 0, 'declared-fire-cut-v1');
+    const adapted = assertDirectParity(aimed, 'player', { type: 'fire' }, 0, DEFAULT_AUTHORITY_CUT);
     const response = adapted.edge.response as Record<string, unknown>;
 
-    assert.equal(adapted.edge.sourceCutId, 'declared-fire-cut-v1');
+    assert.deepEqual(adapted.edge.sourceCut, DEFAULT_AUTHORITY_CUT);
     assert.equal(adapted.edge.domainMotif, 'fire');
     assert.equal(adapted.transition.accepted, true);
     assert.ok(adapted.transition.events.some((event) => event.type === 'projectile'));
@@ -168,7 +170,7 @@ test('fire without aim is an exact rejected-command witness', () => {
 });
 
 test('commands against a terminal authority state remain exact rejected witnesses', () => {
-    const state = createSimulation(1, 'wizard', V4_RULESET_ID);
+    const state = createSimulation(0xC0FFEE11, 'wizard', V4_RULESET_ID);
     const terminal = advanceSimulationTicks(
         state,
         SIM_RULES.turnTicks * SIM_RULES.maximumTurns
@@ -185,8 +187,8 @@ test('commands against a terminal authority state remain exact rejected witnesse
 test('repeated adapter execution produces identical edge and witness records and digests', () => {
     const state = createSimulation(0xC0FFEE11, 'wizard', V4_RULESET_ID);
     const command = { type: 'aim', angleMilliDegrees: 30_000, powerPermille: 500 } as const;
-    const first = adaptSimulationCommand(state, 'player', command, 0, DEFAULT_AUTHORITY_CUT_ID);
-    const second = adaptSimulationCommand(state, 'player', command, 0, DEFAULT_AUTHORITY_CUT_ID);
+    const first = adaptSimulationCommand(state, 'player', command, 0, DEFAULT_AUTHORITY_CUT);
+    const second = adaptSimulationCommand(state, 'player', command, 0, DEFAULT_AUTHORITY_CUT);
 
     assert.deepEqual(first.transition, second.transition);
     assert.deepEqual(first.edge, second.edge);
@@ -195,6 +197,40 @@ test('repeated adapter execution produces identical edge and witness records and
     assert.equal(first.witnessDigest, second.witnessDigest);
     assert.equal(first.adapterId, SIMULATION_AUTHORITY_ADAPTER_ID);
     assert.equal(first.adapterVersion, SIMULATION_AUTHORITY_ADAPTER_VERSION);
+});
+
+test('authority-to-thin projection is an explicit versioned bridge edge', () => {
+    const state = createSimulation(0xC0FFEE11, 'wizard', V4_RULESET_ID);
+    const projected = projectSimulationAuthorityCut(state, {
+        id: V4_CUT_IDS.thinVisibleDuel,
+        version: V4_CUT_VERSION
+    });
+
+    assert.deepEqual(projected.edge.sourceCut, DEFAULT_AUTHORITY_CUT);
+    assert.deepEqual(projected.edge.targetCut, { id: V4_CUT_IDS.thinVisibleDuel, version: V4_CUT_VERSION });
+    assert.equal(projected.edge.edgeKind, 'authority-cut-projection');
+    assert.equal(projected.edge.sourceCarrier.carrierKind, 'authority');
+    assert.equal(projected.edge.targetCarrier.carrierKind, 'player-public');
+    assert.notEqual(projected.edge.sourceCarrier.stateDigest, projected.edge.targetCarrier.stateDigest);
+    assert.match(projected.edge.returnCondition, /source authority reference and digest/i);
+});
+
+test('authority adapter rejects arbitrary or wrong-version cut references', () => {
+    const state = createSimulation(0xC0FFEE11, 'wizard', V4_RULESET_ID);
+    assert.throws(() => adaptSimulationCommand(
+        state,
+        'player',
+        { type: 'move', direction: 1 },
+        0,
+        { id: V4_CUT_IDS.thinVisibleDuel, version: V4_CUT_VERSION }
+    ), /not compatible/);
+    assert.throws(() => adaptSimulationCommand(
+        state,
+        'player',
+        { type: 'move', direction: 1 },
+        0,
+        { id: V4_CUT_IDS.authority, version: 99 }
+    ), /Unknown or unversioned/);
 });
 
 test('domain motifs do not silently acquire CRPM cut-effect interpretations', () => {

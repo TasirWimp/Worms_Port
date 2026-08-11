@@ -88,7 +88,7 @@ function v4Diagnostic(
         diagnosticId: `${request.requestId}-v4-diagnostic`,
         diagnosticVersion: 1,
         evaluationObjectRef: request.baseline.id,
-        cutId: request.cut.id,
+        cut: request.cut,
         protectedFamily: request.protectedFamily,
         scope: `Offline request ${request.requestId}; scenarios ${request.scenarioDomain.scenarioIds.join(', ')}; seeds ${request.seeds.join(', ')}.`,
         pathPressure: diagnosticAxis('The ordered authoritative command path remains explicit.', witnessIds, residue, blocked),
@@ -97,7 +97,7 @@ function v4Diagnostic(
         cutFidelity: diagnosticAxis('The complete digest-backed V4 authority cut is used for the declared transcript.', witnessIds, residue, blocked),
         returnStrength: diagnosticAxis('Deterministic transcript re-entry is supported; no recurrence or exact return is inferred.', witnessIds, residue, blocked),
         closureRisk: diagnosticAxis('Finite parity and projection checks remain bounded evidence.', witnessIds, residue, blocked),
-        scalarProbes: request.requestedScalarProbes.map((probeId) => ({
+        scalarProbes: request.mandatoryEvidenceProbes.map((probeId) => ({
             probeId,
             value: values.get(probeId)!,
             unit: probeId === 'v4.event_count' ? 'events' : 'commands',
@@ -121,7 +121,7 @@ function executeV4(request: OfflineWorldDesignRequest): WorldDesignResult {
             expectedTurn: step.expectedTurn
         };
         samples.push(sample);
-        const output = adaptSimulationCommand(state, step.actor, step.command, step.expectedTurn, request.cut.id);
+        const output = adaptSimulationCommand(state, step.actor, step.command, step.expectedTurn, request.cut);
         state = output.transition.state;
         return output;
     });
@@ -177,7 +177,8 @@ function executeV4(request: OfflineWorldDesignRequest): WorldDesignResult {
         traces: [voyage],
         transitionWitnesses: outputs.map((output) => output.witness),
         projectionAssessments: [projection],
-        returnObligations: [],
+        worldObligations: [],
+        returnAssessments: [],
         diagnostics: [v4Diagnostic(request, accepted, rejected, mutated, eventCount, witnessIds)],
         residualLedger: voyage.accumulatedResidual,
         blockedClaims: [
@@ -186,7 +187,19 @@ function executeV4(request: OfflineWorldDesignRequest): WorldDesignResult {
             ...request.explicitExclusions
         ],
         maturity: 'M2_local_use',
-        productAuthority: 'authority-adapter-parity',
+        productAuthority: 'none',
+        authorityProvenance: {
+            relationship: 'authority_adapter_parity',
+            authoritySource: outputs[0].edge.fixedFrame.sourceLocks[0],
+            witnessReferences: outputs.map((output) => ({
+                witnessId: output.witness.witnessId,
+                digest: sha256Digest(output.witness)
+            })),
+            scope: 'Exact accepted, mutated, state, ordered-event, and error parity for the registered finite V4 transcript.',
+            excludedClaims: [
+                'This provenance relation is not ProductAuthority, design landfall, replay-ABI equivalence, balance, or production activation.'
+            ]
+        },
         evidenceOrigin: 'authority-derived',
         covarianceGroup: `offline-v4-${request.baseline.id}`,
         deduplicationIdentity: sha256Digest({
@@ -243,7 +256,6 @@ function executeD2A(request: OfflineWorldDesignRequest): WorldDesignResult {
     const diagnostics = analytical.diagnostics.map((diagnostic) => diagnostic.schemaVersion === 1
         ? {
             ...diagnostic,
-            scalarProbes: diagnostic.scalarProbes.filter((probe) => request.requestedScalarProbes.includes(probe.probeId)),
             excludedClaims: unique([...diagnostic.excludedClaims, ...request.explicitExclusions])
         }
         : diagnostic
@@ -297,14 +309,24 @@ function evaluationDeclaration(
     request: OfflineWorldDesignRequest,
     result: WorldDesignResult
 ): EvaluationDeclaration {
-    const sourceDigest = sha256Digest({
-        sourceLocks: result.sourceLocks,
-        deduplicationIdentity: result.deduplicationIdentity
-    });
-    const witnessReferences = [{
-        witnessId: `evaluation-source-${sourceDigest.slice(0, 24)}`,
-        digest: sourceDigest
-    }];
+    const reportEvidence = result.diagnostics.flatMap((diagnostic) => diagnostic.schemaVersion === 1
+        ? diagnostic.pathPressure.evidenceRefs.map((reference) => {
+            const digest = /^[0-9a-f]{64}$/.test(reference) ? reference : sha256Digest(reference);
+            return { witnessId: `source-evidence-${digest.slice(0, 24)}`, digest };
+        })
+        : []);
+    const witnessReferences = [
+        ...result.transitionWitnesses.map((witness) => ({
+            witnessId: witness.witnessId,
+            digest: sha256Digest(witness)
+        })),
+        ...reportEvidence
+    ].filter((reference, index, all) => all.findIndex((candidate) =>
+        candidate.witnessId === reference.witnessId && candidate.digest === reference.digest
+    ) === index);
+    if (witnessReferences.length === 0) {
+        throw new Error('Registered evaluation requires result-bound witness references.');
+    }
     const pressureCaseId = request.adapter.id === OFFLINE_ADAPTER_IDS.v4Authority
         ? 'v4_adapter' as const
         : getD2AConfigRegistration(request.baseline.id).caseId;
@@ -317,14 +339,14 @@ function evaluationDeclaration(
         schemaVersion: 1,
         evaluationId: `${request.requestId}-evaluation`,
         evaluationVersion: 1,
+        evaluationMode: 'registered_historical_pressure',
         object: {
             kind: 'candidate_design_result',
             objectRef: result.resultId
         },
         activeFrame: {
             frameRef: `${request.requestId}/frame`,
-            cutId: request.cut.id,
-            cutVersion: request.cut.version,
+            cut: request.cut,
             admissibleScope: request.scenarioDomain
         },
         protectedFamily: request.protectedFamily,
@@ -336,24 +358,12 @@ function evaluationDeclaration(
             ? 'Re-enter the exact authority seed and replay the ordered actor, expected-turn, and command declarations.'
             : 'Re-enter the registered config and schema version through the fixed D2A exporter, then verify report and witness digests.',
         boundedExecution: {
-            passed: true,
             reason: 'The registered adapter completed the declared bounded request and produced a schema-valid deterministic result.',
             witnessReferences
         },
-        acceptancePressureCases: pressureCaseId === 'v4_adapter'
-            ? []
-            : [{
-                caseId: pressureCaseId,
-                status: 'not_tested',
-                reenterable: true,
-                reason: 'The historical pressure result is preserved, but this gate does not promote it into an acceptance pass.',
-                witnessReferences
-            }],
-        assertedClaims: [],
-        ownerDecision: {
-            versionedRulesetApproved: false,
-            decisionRef: null
-        }
+        mandatoryEvidenceProbeIds: request.mandatoryEvidenceProbes,
+        optionalDisplayedScalarProbeIds: request.optionalDisplayedScalarProbes,
+        assertedClaims: []
     };
 }
 

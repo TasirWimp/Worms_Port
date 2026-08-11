@@ -29,6 +29,7 @@ export function emptyResidualLedger(): ResidualLedger {
         authorityDeltas: [],
         expiredRights: [],
         openedObligations: [],
+        carriedObligations: [],
         dischargedObligations: [],
         unresolvedObligations: [],
         excludedUnmodelledResidue: []
@@ -49,7 +50,8 @@ export function mergeResidualLedgers(ledgers: readonly ResidualLedger[]): Residu
         if (index > 0) {
             for (const obligationId of priorOutstanding) {
                 if (ledger.dischargedObligations.includes(obligationId)) continue;
-                if (ledger.unresolvedObligations.includes(obligationId)) {
+                if (ledger.carriedObligations.includes(obligationId) &&
+                    ledger.unresolvedObligations.includes(obligationId)) {
                     if (!carriedObligations.includes(obligationId)) carriedObligations.push(obligationId);
                     continue;
                 }
@@ -68,11 +70,13 @@ export function mergeResidualLedgers(ledgers: readonly ResidualLedger[]): Residu
         aggregate.authorityDeltas.push(...ledger.authorityDeltas);
         appendUnique(aggregate.expiredRights, ledger.expiredRights);
         appendUnique(aggregate.openedObligations, ledger.openedObligations);
+        appendUnique(aggregate.carriedObligations, ledger.carriedObligations);
         appendUnique(aggregate.dischargedObligations, ledger.dischargedObligations);
         appendUnique(aggregate.excludedUnmodelledResidue, ledger.excludedUnmodelledResidue);
 
         for (const obligationId of ledger.dischargedObligations) outstanding.delete(obligationId);
         for (const obligationId of ledger.openedObligations) outstanding.add(obligationId);
+        for (const obligationId of ledger.carriedObligations) outstanding.add(obligationId);
         for (const obligationId of ledger.unresolvedObligations) outstanding.add(obligationId);
         for (const obligationId of ledger.dischargedObligations) outstanding.delete(obligationId);
     }

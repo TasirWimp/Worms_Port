@@ -55,7 +55,12 @@
     3237998097
   ],
   "outputDetailLevel": "witnesses",
-  "requestedScalarProbes": [
+  "mandatoryEvidenceProbes": [
+    "f3.threadback_distance",
+    "f3.escape_slack_spent",
+    "f3.first_actor_win_rate"
+  ],
+  "optionalDisplayedScalarProbes": [
     "f3.threadback_distance",
     "f3.escape_slack_spent",
     "f3.first_actor_win_rate"

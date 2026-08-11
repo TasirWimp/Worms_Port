@@ -4,6 +4,8 @@
 strict, versioned JSON records for the bounded Worms_Port Game-World Profile and
 offline World Design Port. It includes one read-only simulation-authority
 adapter, but it is not a server, gameplay system, or candidate implementation.
+WP-015D2B is currently `in_progress` after external implementation-review
+repairs and awaits repeated external review; it is not a completed package.
 
 ## Authority and dependency boundary
 
@@ -75,8 +77,9 @@ dynamics, empirical weight, or product authority.
   action witnesses plus non-scalar pressure diagnostics as a strict
   `WorldDesignResult`. Python remains the analytical source; TypeScript only
   validates the deterministic JSON boundary.
-- `cuts/v4-cuts.ts` defines five bounded V4/offline cut declarations, while
-  `cuts/registry.ts` exposes detached copies from a closed versioned registry.
+- `cuts/v4-cuts.ts` defines six bounded historical/V4/offline cuts,
+  `cuts/d2a-cuts.ts` defines the registered analytical cut, and
+  `cuts/registry.ts` exposes detached copies from one closed versioned registry.
 - `kernel/project-cut.ts` provides non-mutating generic projection plus V4
   authority, thin-visible, and movement-support projections.
 - `kernel/assess-quotient-transport.ts` implements the small finite-sample
@@ -96,19 +99,25 @@ dynamics, empirical weight, or product authority.
 - `design-port/execute-request.ts` executes the registered V4 transcript or the
   fixed D2A Python exporter boundary, validates the result, and restricts file
   output to ignored `test-results/crpm-world/` JSON files.
-- `evaluation/schemas.ts` defines the strict, digest-bound evaluation
-  declaration, six false-closure detections, maturity assessment, and
+- `evaluation/schemas.ts` defines the strict, digest-bound historical-pressure
+  declaration, seven false-closure detections, maturity assessment, and
   evaluation bundle.
 - `evaluation/evaluate.ts` renders the v2 witness-linked qualitative profile,
   keeps scalar probes in the bundle beside rather than inside that profile,
-  and applies deterministic M0 through M3 gates without inventing a balance
-  threshold.
+  and applies source-bound M1/M2 gates without accepting caller-authored pass,
+  re-entry, owner-decision, M3, or product-authority assertions.
 
 The core records are `WorldCarrierReference`, `WorldCutDefinition`,
 `PortContract`, `WorldTransitionEdge`, `TransitionWitness`, `ResidualLedger`,
-`ReturnObligation`, `VoyageTrace`, `ProjectionTransportAssessment`,
+`WorldObligation`, `ReturnAssessment`, `VoyageTrace`, `ProjectionTransportAssessment`,
 `DiagnosticProfile`, `WorldDesignRequest`, and `WorldDesignResult`. Carrier
 maturity and product authority remain separate enums.
+
+Carrier continuation and finite exact return include schema/profile identity.
+Cross-profile transport requires an explicit `carrier-profile-migration` edge.
+Edges, fixed frames, voyage cut changes, composition bridges, return rows, and
+evaluation frames use versioned cut references; matching cut names with
+different versions do not compose.
 
 ## Deterministic artifact rules
 
@@ -163,9 +172,10 @@ Rejected commands use `rejected_command` plus a rejected-witness edge kind;
 they are not represented as successful state edges. Domain motifs never imply
 a CRPM cut-effect interpretation.
 
-An emitted edge may carry `authority-adapter-parity`, meaning only a checked
-relationship to the existing authority result. It creates no ruleset,
-production activation, gameplay authority, replay parity, or balance claim.
+Exact authority-adapter parity is carried only as authority-derived witness and
+support provenance. Every current edge, result, and evaluation retains
+`productAuthority: none`; parity creates no ruleset, production activation,
+gameplay authority, replay parity, or balance claim.
 
 ## Cut registry and quotient transport
 
@@ -173,16 +183,23 @@ The closed registry contains:
 
 - `authority_v4`, a complete canonical-state digest reference bounded to the
   declared V4 authority domain;
+- `authority_historical_v1_v4`, a source-referenced V1-through-V4 parity
+  carrier for the registered historical seed;
 - `thin_visible_duel_v0`, an intentionally incomplete destructive control;
 - `bounded_command_support_v1`, a movement-only support cut;
 - `replay_v4`, a declared-transcript replay support cut; and
 - `world_design_v0`, an offline evidence/identity cut with no live mutation
   channel.
+- `d2a_tactical_recurrence_v1`, the source-bound analytical pressure cut for
+  the five registered historical D2A cases.
 
 Every cut declares its scenario and action domain, protected family, included
 support, forgotten distinctions, excluded claims, and continuation strength.
 Projection functions clone caller data before use and bind class keys to the
 cut ID/version plus projected content.
+Ordinary V4 command edges remain on the registered authority cut. Projection
+to a thin/player-public or repaired readout is emitted as its own
+`authority-cut-projection` edge with an authority re-entry reference.
 
 `assessQuotientTransport` groups a supplied finite domain by source projection,
 advances detached full items, records observed target classes, and emits one
@@ -225,6 +242,12 @@ this gate does not invent domain-specific decoders or invariant predicates.
 Recurrence keys are caller-supplied under a named cut/domain, so elapsed turn,
 tick, and revision fields are never removed globally.
 
+`WorldObligation` is separate from those return rows. Every opened, carried,
+unresolved, discharged, or expired id in a result must resolve to a typed
+record whose origin edge and support carrier exist. Result validation rejects
+discharge before opening and any compatible next edge that neither carries nor
+closes a live obligation.
+
 ## D2A analytical exporter
 
 The closed export registry contains only the existing F2, F3, F4, H2, and H3
@@ -239,9 +262,11 @@ The emitted result keeps one covariance group for the shared model/policy/
 scenario family. It includes compact action voyages for F2's exact
 prepare/Unweave recurrence, F3's 64-unit Threadback and 64 Escape-Slack residue,
 and H3's opening/partial-response/intervening-action/later-counter order. The
-H3 residual ledger carries `loomkeeper.frayed_seam_turns` across the intervening
-edge and records its later discharge, so voyage compatibility cannot hide the
-delayed-response support. F4 and H2 remain digest-bound aggregate diagnostics
+H3 residual ledger opens typed obligation
+`d2a.h3.loomkeeper.frayed_seam_turns`, carries it across the intervening edge,
+and records its later discharge, so voyage compatibility cannot hide the
+delayed-response support. F2 recurrence is a separate `ReturnAssessment`, not a
+gameplay-support obligation. F4 and H2 remain digest-bound aggregate diagnostics
 rather than checked-in copies of all 250 traces. The exporter records
 `productAuthority: none`; exact analytical
 re-entry is not simulation parity, empirical evidence, candidate approval, or
@@ -322,19 +347,20 @@ use the checked example files above for complete input:
 ```
 
 The complete request example also requires protected family, ordered sequence,
-the registered `witnesses` output detail, requested probes/ports, and explicit
+the registered `witnesses` output detail, the complete mandatory evidence-probe
+family, optional displayed scalar probes, requested ports, and explicit
 exclusions; unknown fields
 fail closed. Results carry the canonical request digest, source locks, traces,
 witnesses, projection/return evidence, the primary v2 diagnostic, retained
 source diagnostics, residual ledger, blocked claims, maturity, authority,
 covariance/deduplication identity, and result digest.
 
-At implementation tip `f34317c5008e3171718705a9d8277437aae8d00d`:
+After the current in-progress implementation-review repairs:
 
 | Example | Request digest | Result digest |
 | --- | --- | --- |
-| V4 transcript | `64aa8c085f07dde2cba98e134f96e8e0c46ace450f1f48e7cafb73cf313cc462` | `def96e0c597e1fb4ac7de88394f832962720b0f241298bc29e62b68f8257867b` |
-| D2A F3 pressure | `226e0c42b6134d26c195bf2410b804c6acd37cad825af94a90c7d385ff1c420f` | `53c32ac1de6f6adcc5bff804830bc1901b56e9be36dbdff35b5abb34346d83a7` |
+| V4 transcript | `d40a4dcbeb0a59ed5a52cd340315dd9ae962ebf2455dd57863333ba6656dc98f` | `209a6813201ea7b0db53919f8b68b17a7b5bbefac7116ec3ce4f80ca90490187` |
+| D2A F3 pressure | `8d2fc97e2fe8576b72c417d303bd4e3e5160de90b0eea2a1947dd8a161703cda` | `11f83e1512dff94287181bdf25d76eeb5ec34595cc1818237a4a8697ee776c55` |
 
 Omit `--output` to use
 `test-results/crpm-world/<request-id>-result.json`. Identical request content
@@ -362,7 +388,7 @@ structured blocked claims:
 - `closureRisk` blocks local coherence from becoming design landfall while
   distance, timing, support, policy, or authority residue remains.
 
-The evaluator implements the named H2 aggregate-port-split, F3
+The evaluator implements the named F2 recursive-return-versus-landfall, H2 aggregate-port-split, F3
 recurrence-versus-balance, F4 structural-versus-initiative, H3 delayed-response,
 V4 parity-versus-landfall, and rendered-trace-versus-full-relation rules. It
 does not average axes or encode a general win-rate threshold. First-actor and
@@ -370,12 +396,18 @@ distance rates, forced openings, recurrence, turn limits, mean turns, action or
 Relic frequency, resource use, and policy-pair results remain independent
 scalar probes.
 
-Maturity is deterministic but non-promotional: M0 requires coherent output,
-M1 the declared cut/family/domain/witness/residue/return package, M2 passing
-bounded execution, and M3 re-enterable success across every declared acceptance
-pressure case with no active false closure. Even M3 returns
-`productAuthority: none` unless a separate owner-approved versioned-ruleset
-decision reference is supplied.
+Maturity is source-bound and non-promotional. The current evaluator accepts only
+registered historical pressure results, verifies exact source locks, report or
+transition witnesses, versioned cut, full protected family, and the complete
+mandatory evidence family, and emits at most M2. Callers cannot supply pass,
+re-entry, owner-decision, M3, or authority fields. All registered D2A cases
+remain historical failures or structural pressure and V4 parity remains
+wrapping evidence, so no M3 acceptance registration exists. A future owner
+decision requires a separate closed, source-bound record and is not an input to
+this evaluator.
+Such a future governance record must bind repository, commit, path, digest,
+ruleset id/version, scope, and decision identity in its own reviewed schema;
+an arbitrary identifier is never sufficient.
 
 ## Re-entry instructions
 
@@ -416,7 +448,7 @@ from treating generated JSON as new authority.
 - formatted human reports or interactive tooling;
 - player/live-ballistics evidence or a TypeScript rewrite of the tactical
   model; and
-- any product-authority change above bounded `authority-adapter-parity`.
+- any product-authority change above `none`.
 
 Those require their separately named implementation gates. A common result
 shape will not make V4 and D2A share authority or dynamics.
@@ -440,4 +472,4 @@ npm run test:crpm-world-evaluation
 
 The focused scripts are intentionally not part of broad `verify:full`. The
 work-package evidence record and repository-level compliance/build checks
-govern this completed analysis-only package.
+govern this reopened, in-progress analysis-only package.
