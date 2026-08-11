@@ -18,6 +18,40 @@ adapter, but it is not a server, gameplay system, or candidate implementation.
 - Nothing in this package activates V5, a candidate, gameplay, replay, protocol,
   Loomkeeper, reward, UI, or asset behavior.
 
+## Implementation and source identity
+
+- Worms_Port implementation base:
+  `af23717e61fea6995bf3b7209211ae1aaa2bb855`.
+- Implementation tip before this documentation integration:
+  `f34317c5008e3171718705a9d8277437aae8d00d`.
+- Read-only CRPM source lock:
+  `995236df60924f790506cf5badec3c102abf3fd1`.
+- CRPM port/flow, cut-transition, edge/re-entry, voyage, evaluation, and local-
+  subsystem documents supply bounded L4+ methodology. `observer.py` supplies
+  only the purpose of the generic finite quotient-transport check, which is
+  independently implemented in TypeScript. The dynamic-return source supplies
+  distinctions between readout, recursive-carrier, invariant, finite, and
+  composed-route return.
+- No CRPM code or repository content is vendored or copied, and CRPM is not a
+  runtime, Python, npm, or package dependency. Exact paths and Git blob
+  identities are recorded in the work-package contract.
+
+## Architecture
+
+```text
+strict offline request
+  -> closed adapter/config/cut validation
+    -> V4 TypeScript authority adapter OR D2A Python evidence exporter
+      -> witnessed edges, cuts, projection and voyage/return kernels
+        -> v2 qualitative evaluation + separate scalar probes
+          -> digest-bound WorldDesignResult and evaluation bundle
+```
+
+The V4 route calls the existing TypeScript authority directly. The D2A route
+reruns the registered analytical model and crosses into TypeScript only as
+deterministic JSON. Both share an evidence envelope, not state ontology,
+dynamics, empirical weight, or product authority.
+
 ## Files
 
 - `canonical.ts` validates deterministic JSON, deep-copies object content in
@@ -215,6 +249,25 @@ python -m analysis.crpm_world.adapters.d2a_export
 npm run test:d2a-adapter
 ```
 
+### Registered pressure cases
+
+| Case | Bound result | Blocked promotion |
+| --- | --- | --- |
+| F2 | Exact prepare-Spoolburst/Unweave nonterminal `tactical_state_key` recurrence; 20 recurrence-bearing/turn-limit matches | Recursive-carrier return is negative evidence, not a harmless loop or convergence proof |
+| F3 | Threadback moves 64 units and spends 64 Escape Slack, breaking the selected F2 carrier; 68.8% first-actor rate remains | Recurrence repair is not initiative balance |
+| F4 | No bounded opening, recurrence, or turn-limit result in the 250-match sweep; 63.2% aggregate and 80% at distance 704 | Structural reference is not initiative repair or production approval |
+| H2 | 48.8% aggregate with 44/40/44/40/76% distance bands | Aggregate parity cannot hide the distance-conditioned port split |
+| H3 | Later Frayed Seam counter follows a partial response and intervening normal action; forced openings remain at 448/512/576 and aggregate is 63.2% | Delayed counterplay cannot repair an already completed forced edge |
+
+The bound whole-report SHA-256 digests are respectively
+`6a2ac3a1b8bc13c299ebf20a926eb5af0ac5e3fb057a841febc2f13fcb5ffbea`,
+`9f5cd9574cc88fb2e885b631a7f9119a105ccdeb323eae1b1f0299e989a30332`,
+`414e42735e97717f36b7583ffa80cb8130bf812259d598084416c4fd192247a6`,
+`f47fa00f6731254c62a115214e370ebdc363429499b9d2891b1c3cf0c0bc705c`,
+and `4f148ce8ec2d50598ca7638b9cd74c820eb3cb3b7b2934a09867df51f2745d14`.
+These cases share one deterministic harness and related policy/domain
+assumptions; five reports are not five independent experiments.
+
 ## Offline World Design Port
 
 The offline port is an analysis CLI/library boundary. It is not a UI, server
@@ -241,6 +294,33 @@ server file. The two reviewed example requests can be run with:
 npm run analyze:crpm-world -- --request analysis/crpm_world/examples/v4-transcript-request.json --output test-results/crpm-world/v4-transcript-result.json
 npm run analyze:crpm-world -- --request analysis/crpm_world/examples/d2a-f3-pressure-request.json --output test-results/crpm-world/d2a-f3-pressure-result.json
 ```
+
+An abridged, non-executable field map shows the deterministic request boundary;
+use the checked example files above for complete input:
+
+```json
+{
+  "adapter": { "id": "v4_authority", "version": 1 },
+  "baseline": { "kind": "ruleset", "id": "nimble-knots-artillery-v4", "version": 4, "calling": "wizard" },
+  "scenarioDomain": { "schemaVersion": 1, "scenarioIds": ["v4-authority-c0ffee11"], "actionFamilies": ["move", "select_relic", "aim", "fire"], "policyFamilies": ["declared-command-sequence"], "seeds": [3237998097], "constraints": ["One reviewed transcript."] },
+  "cut": { "id": "authority_v4", "version": 1 },
+  "activation": "offline_only"
+}
+```
+
+The strict full example also requires protected family, ordered sequence,
+output detail, requested probes/ports, and explicit exclusions; unknown fields
+fail closed. Results carry the canonical request digest, source locks, traces,
+witnesses, projection/return evidence, the primary v2 diagnostic, retained
+source diagnostics, residual ledger, blocked claims, maturity, authority,
+covariance/deduplication identity, and result digest.
+
+At implementation tip `f34317c5008e3171718705a9d8277437aae8d00d`:
+
+| Example | Request digest | Result digest |
+| --- | --- | --- |
+| V4 transcript | `64aa8c085f07dde2cba98e134f96e8e0c46ace450f1f48e7cafb73cf313cc462` | `def96e0c597e1fb4ac7de88394f832962720b0f241298bc29e62b68f8257867b` |
+| D2A F3 pressure | `226e0c42b6134d26c195bf2410b804c6acd37cad825af94a90c7d385ff1c420f` | `53c32ac1de6f6adcc5bff804830bc1901b56e9be36dbdff35b5abb34346d83a7` |
 
 Omit `--output` to use
 `test-results/crpm-world/<request-id>-result.json`. Identical request content
@@ -283,7 +363,35 @@ pressure case with no active false closure. Even M3 returns
 `productAuthority: none` unless a separate owner-approved versioned-ruleset
 decision reference is supplied.
 
-## Deliberately deferred
+## Re-entry instructions
+
+For a V4 result:
+
+1. Check out the recorded Worms_Port commit and verify the recorded
+   `shared/simulation.ts` source/blob identity.
+2. Recreate the registered ruleset, seed, and Calling with `createSimulation`.
+3. Replay the exact ordered actor, expected-turn, and command declarations.
+4. Compare accepted/mutated/error values, canonical post-state digest, ordered
+   events/digest, revision, carrier references, and voyage path.
+5. Reopen the result on any source-lock, adapter, digest, event-order, cut,
+   domain, or authority mismatch.
+
+For a D2A result:
+
+1. Check out the recorded Worms_Port commit and exact registered config/schema.
+2. Run `python -m analysis.crpm_world.adapters.d2a_export --case <f2|f3|f4|h2|h3>`.
+3. Verify the registered whole-report digest before consuming compact evidence.
+4. Validate stdout through `WorldDesignResultSchema`, then follow config,
+   report, voyage, edge, witness, trace-index, covariance, and deduplication
+   references back to the Python analytical carrier.
+5. Reopen on config/schema/report drift, changed policy or model behavior,
+   missing residue, widened domain, or any attempted authority promotion.
+
+Generated files below `test-results/crpm-world/` are disposable derived
+artifacts. Re-entry begins from committed request/config/source carriers, not
+from treating generated JSON as new authority.
+
+## Limitations and promotion boundary
 
 - concrete production or candidate catalogs;
 - formatted human reports or interactive tooling;
@@ -294,6 +402,14 @@ decision reference is supplied.
 Those require their separately named implementation gates. A common result
 shape will not make V4 and D2A share authority or dynamics.
 
+Completion explicitly creates no V5, new gameplay mechanic, range-entry
+commitment candidate, live defense/reaction, new player status, protocol/replay
+field, reward change, Loomkeeper change, client UI, server route, runtime
+endpoint, or asset change. It creates no graph-safe CRPM schema and makes no
+claim that the tactical game is solved. Any gameplay promotion requires a
+separate owner-reviewed package, versioned TypeScript ruleset decision, and the
+applicable simulation/replay/protocol/runtime verification.
+
 ## Focused checks
 
 ```powershell
@@ -303,6 +419,6 @@ npm run test:crpm-world-design
 npm run test:crpm-world-evaluation
 ```
 
-The focused scripts are intentionally not part of `verify:full` at this seed
-gate. The work-package evidence record and repository-level compliance/build
-checks still govern completion of the implementation slice.
+The focused scripts are intentionally not part of broad `verify:full`. The
+work-package evidence record and repository-level compliance/build checks
+govern this completed analysis-only package.

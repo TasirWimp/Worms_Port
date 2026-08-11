@@ -2,13 +2,15 @@
 
 ## Status
 
-- **State:** owner-requested, in progress, evaluation gate complete
+- **State:** complete as a bounded analysis-only subordinate package
 - **Relationship:** analysis-only child of the active WP-015D2A tactical-game-model decision line
 - **Current carrier maturity:** `M2 local use` for the core contracts, bounded adapters, offline design port, and evaluation lens; no `M3` claim
 - **Current product authority:** `authority-adapter parity` for declared, tested V4 transition witnesses only; D2A evidence remains `none`
 - **Worms_Port base:** `af23717e61fea6995bf3b7209211ae1aaa2bb855` on `codex/wp-015d2b-crpm-world-design-port`
+- **Implementation tip before documentation integration:** `f34317c5008e3171718705a9d8277437aae8d00d`
 - **CRPM source lock:** `995236df60924f790506cf5badec3c102abf3fd1` on `main`
 - **Contract date:** 2026-08-10
+- **Documentation/evidence closure date:** 2026-08-11
 
 This document licenses bounded implementation gates. It does not claim that
 WP-015D2A is closed, and it does not move the Execution Pointer away from
@@ -91,6 +93,11 @@ methodological readings in this contract are bound to commit
 `995236df60924f790506cf5badec3c102abf3fd1` and the following paths and Git blob
 identities:
 
+No CRPM source code was copied. The small generic quotient-transport purpose
+from `observer.py` was independently reimplemented in TypeScript against local
+Worms_Port types and tests; all other CRPM use is bounded methodological
+translation and source attribution.
+
 | CRPM path | Blob at source lock | Bounded use |
 | --- | --- | --- |
 | `docs/architecture/Start_Here_Canonical.md` | `490bd3fad6d6adaeafe6f709c631436b9203bf35` | Deterministic navigation projection only; not a source of truth or independent support |
@@ -135,7 +142,7 @@ for its analytical claims.
 - `observer.py` and its tests support a small generic finite checker. An
   independent TypeScript implementation provides code independence, not new
   empirical evidence.
-- The existing V4 export/fixture/test and a future V4 adapter are all derived
+- The existing V4 export/fixture/test and implemented V4 adapter are all derived
   from `shared/simulation.ts`. Adapter parity is a correlated authority witness,
   not a new gameplay authority or an independent experiment.
 - The D2A adapter and F2/F3/F4/H2/H3 cases reuse one deterministic analytical
@@ -146,7 +153,7 @@ for its analytical claims.
   ballistics, or production evidence.
 - Independent review improves governance coverage only.
 
-Future `TransitionWitness` and `WorldDesignResult` records must declare an
+Implemented `TransitionWitness` and `WorldDesignResult` records declare an
 evidence origin, covariance group, and deduplication identity derived from the
 source commit, adapter/configuration, scenario, seed, trace, and witness index.
 
@@ -162,36 +169,44 @@ them.
 
 ### 2. CRPM Game-World Profile
 
-A future analysis-only TypeScript package may define local types, validation
-schemas, cuts, edge packets, voyage traces, projection checks, and evaluation
-records. Its dependency direction may be analysis-side adapter to `shared/`.
-No reverse dependency is permitted.
+The analysis-only package under `analysis/crpm_world/` defines local types,
+strict validation schemas, cuts, edge packets, voyage traces, projection
+checks, and evaluation records. Its only production-facing dependency direction
+is the read-only V4 adapter to `shared/simulation.ts`; the strengthened import-
+boundary check forbids reverse dependencies from `shared/`, `client/`, or
+`server/`.
 
 ### 3. V4 authority adapter
 
-A future read-only adapter may invoke or consume existing V4 TypeScript
-transitions and normalize their shape into witnesses without changing their
-result. It must retain exact before-state, actor, command, expected turn,
+`analysis/crpm_world/adapters/v4-authority-adapter.ts` directly invokes the
+existing exported `applySimulationCommand`, clones caller data, and normalizes
+the exact transition into witnesses without changing its result. It retains
+before-state, actor, command, expected turn,
 accepted/mutated status, after-state, ordered events, error, ruleset, seed,
 scenario, and source digest information required by its declared parity cut.
 
-The present V4 fixture proves authoritative constants and one eight-step
-movement transcript. It is structural authority linkage, not general
-transition or replay parity. Generalized parity is not claimed; every future
-parity test must name an exact scenario and command domain.
+Direct parity tests cover accepted movement in V1 and V4, wrong-actor movement,
+Relic selection, aim, deterministic fire, fire without aim, terminal rejection,
+input immutability, and repeatable edge/witness digests. The older V4 fixture
+still proves only authoritative constants plus one eight-step movement
+transcript. Neither test family establishes general transition or replay
+parity outside its named scenarios and command domains.
 
 ### 4. D2A analytical adapter
 
-The implemented separate read-only adapter exposes registered existing Python model configurations,
-policies, traces, reports, recurrence, and opening-search results through the
-same `WorldDesignResult` envelope. It must transfer back to the exact D2A
+`analysis/crpm_world/adapters/d2a_export.py` exposes only registered existing
+Python model configurations, policies, traces, reports, recurrence, and
+opening-search results through the same `WorldDesignResult` envelope. It
+transfers back to the exact D2A
 configuration/report/trace carrier, never to a TypeScript gameplay state. A
 common output envelope does not imply a common state ontology, dynamics, or
 authority.
 
 ### 5. Offline World Design Port
 
-The port accepts only sealed baseline references, registered adapters, bounded
+The closed registry, validator, executor, and CLI under
+`analysis/crpm_world/design-port/` and `scripts/run-crpm-world-design.ts` accept
+only sealed baseline references, registered adapters, bounded
 scenario domains, declared cuts, protected families, bounded seed sets, and
 registered declarative candidate configurations. It emits deterministic
 traces, witnesses, residues, diagnostics, scalar annotations, and blocked
@@ -203,27 +218,74 @@ claims. It cannot activate gameplay.
 paths must not import the analysis package. This package must not change V1–V4
 behavior or add or activate V5. It must not become a runtime or network service.
 
-## Required Worms_Port Contract Objects
+## Implemented Paths and Results
 
-These names describe future local contracts. They do not assert that the
-objects already exist or that CRPM prescribes these names or one universal
+| Surface | Implemented paths | Bounded result |
+| --- | --- | --- |
+| Canonical contracts | `analysis/crpm_world/canonical.ts`, `schemas.ts`, `types.ts`, `tsconfig.json` | Strict versioned JSON records, canonical key sorting with array-order preservation, and SHA-256 digests; unsafe numeric/non-JSON/timestamp content fails closed |
+| V4 authority adapter | `analysis/crpm_world/adapters/v4-authority-adapter.ts` | Exact direct transition parity for the declared V1/V4 scenarios without a `shared/` edit |
+| Cuts and projection | `analysis/crpm_world/cuts/`, `kernel/project-cut.ts`, `kernel/assess-quotient-transport.ts` | Five closed cuts and an independently written finite quotient-transport checker with explicit alias pairs |
+| Voyage and return | `kernel/compose-edges.ts`, `trace-voyage.ts`, `residual-ledger.ts`, `assess-return.ts` | Structured compatible/incompatible composition, retained rejected attempts, accumulated residue/obligations, and six non-collapsed return classes |
+| D2A adapter | `analysis/crpm_world/adapters/d2a_export.py` and `adapters/tests/` | Exact registered F2/F3/F4/H2/H3 report-digest checks and compact deterministic evidence; `analysis/tactical_model/model.py` is unchanged |
+| Offline design port | `analysis/crpm_world/design-port/`, `analysis/crpm_world/examples/`, `scripts/run-crpm-world-design.ts` | Closed `v4_authority@1` and `d2a_tactical@1` execution only; output confined below ignored `test-results/crpm-world/` |
+| Evaluation | `analysis/crpm_world/evaluation/` | V2 witness-linked qualitative profile, six false-closure rules, separate scalar probes, and deterministic M0–M3 gating |
+| Verification and boundary | `tests/crpm-world/`, `scripts/check-import-boundary.js`, `package.json` | 60 focused tests plus existing simulation/tactical/build/compliance gates; production imports from analysis remain forbidden |
+
+The reviewed example artifacts at implementation tip
+`f34317c5008e3171718705a9d8277437aae8d00d` are:
+
+| Example | Request digest | Result digest | Maturity / authority |
+| --- | --- | --- | --- |
+| V4 four-command transcript | `64aa8c085f07dde2cba98e134f96e8e0c46ace450f1f48e7cafb73cf313cc462` | `def96e0c597e1fb4ac7de88394f832962720b0f241298bc29e62b68f8257867b` | `M2_local_use` / `authority-adapter-parity` |
+| D2A F3 pressure request | `226e0c42b6134d26c195bf2410b804c6acd37cad825af94a90c7d385ff1c420f` | `53c32ac1de6f6adcc5bff804830bc1901b56e9be36dbdff35b5abb34346d83a7` | `M2_local_use` / `none` |
+
+### Recorded deviations from the provisional design
+
+- Core contracts remain at the package root rather than a nested `contracts/`
+  directory because `schemas.ts`, `types.ts`, and `canonical.ts` are already a
+  cohesive local source surface.
+- Compatibility-bearing records evolved through discriminated v1/v2 schemas:
+  v2 adds explicit edge port bindings, complete projection transition rows,
+  voyage attempts/re-entry, and witness-linked qualitative diagnostics without
+  invalidating checked v1 D2A source records.
+- The D2A adapter is Python rather than a TypeScript model rewrite. It invokes
+  stable public tactical-model functions and emits deterministic JSON for Zod
+  validation; production TypeScript never invokes Python.
+- No shared pure helper was needed. `shared/simulation.ts` and
+  `shared/protocol.ts` were not edited.
+- The CLI persists `WorldDesignResult`; the library additionally returns a
+  separately digested evaluation bundle. Its v2 primary profile contains no
+  scalar probes, while retained v1 source diagnostics preserve analytical
+  provenance and allow probes to be extracted beside the profile.
+- Terrain remains digest-backed rather than expanded into every report, and
+  compact aggregate cases retain report/source references rather than checking
+  all 250 traces into Git.
+- Existing Zod, TypeScript, tsx, Node test/crypto, and Python standard-library
+  surfaces were sufficient. No Ajv, code generator, package dependency, CRPM
+  vendor copy, or broad `verify:full` integration was added.
+
+## Implemented Worms_Port Contract Objects
+
+These names are implemented as strict local Zod schemas in
+`analysis/crpm_world/schemas.ts` with inferred types in `types.ts`. They remain
+Worms_Port vocabulary; CRPM does not prescribe these names or this
 serialization.
 
 ### `WorldCarrierReference`
 
-References a versioned carrier together with its source commit, path/blob or
-content digest, target claim, cut, admissible domain, action/policy family,
-decoder, witness references, path position, exclusions, support status,
-residue, and reopening condition. `supportCompleteFor` must name the bounded
-target; an unqualified `supportComplete` claim is forbidden.
+Stores profile version, carrier kind, adapter id/version, ruleset or config id,
+baseline and state digests, revision or step, and an optional opaque source
+reference. Domain, decoder, witness, path, residue, and reopening data remain
+edge/voyage-scoped instead of being duplicated into every carrier. No carrier
+field licenses an unqualified support-complete claim.
 
 ### `WorldCutDefinition`
 
-Declares a cut id/version, observer or design stance, source carrier kind,
-visible fields/projection key, intentionally hidden fields, admissible
-scenario/action/policy/seed domain, protected family, target readout/decoder,
-known residue, and reopening conditions. A cut is not an intrinsic CRPM node
-role.
+Stores cut id/version, source carrier kind, projection description, admissible
+scenario/action/policy/seed domain, protected family, included support,
+intentionally forgotten distinctions, excluded claims, and continuation class
+`complete`, `bounded`, `relational`, or `none`. Reopening and decoder data are
+carried by witnessed edges/voyages. A cut is not an intrinsic CRPM node role.
 
 ### `PortContract`
 
@@ -234,8 +296,8 @@ adapters, candidates, cuts, or domain widening fail closed.
 
 ### `WorldTransitionEdge`
 
-Declares an edge id/version, `fromCutId`, `toCutId`, a mandatory Worms-local
-`edgeKind` from the closed profile catalog, an optional domain motif, and an
+Declares an edge id/version, `sourceCutId`, `targetCutId`, a mandatory Worms-local
+`edgeKind`, a mandatory Worms domain motif, and an
 optional bounded CRPM transition interpretation. If the latter is present, it
 must be justified as exactly one source-locked primitive—`refine`, `compress`,
 `decompress`, `reorganize`, or `overlap-move`—and must not be inferred from the
@@ -268,17 +330,19 @@ such interpretation requires this full packet.
 
 ### `TransitionWitness`
 
-Carries exact source references and indices, before/input/after/output values or
-digests, ordered events where applicable, decoder and cut ids, evidence origin,
-covariance group, deduplication identity, parity/status, mismatch residue, and
-reopening trigger. A projection-alias witness must name at least two source
-items with the same source-cut key and different target-transition keys.
+Carries edge id, source and decoder references, input/output digests, optional
+ordered-events digest, evidence origin, covariance group, deduplication
+identity, exact/mismatch/not-tested status, optional mismatch residual, and
+excluded claims. Edge and voyage records carry the cut/path/reopening route. A
+projection-alias witness separately names at least two source items with the
+same source-cut key and different target-transition keys.
 
 ### `ResidualLedger`
 
-Records visible loss, ambiguity, unsupported cases, exclusions, obligations,
-blocked claims, responsible edge/path position, severity/status, and the
-specific evidence or domain change that reopens the item. An empty ledger over
+Stores structured position, resource, health, status, terrain, and authority
+deltas; expired rights; opened, discharged, and unresolved obligations; and
+excluded/unmodelled residue. Edge/path identity, support status, blocked claims,
+and reopening conditions remain on their owning records. An empty ledger over
 a finite sample is not a global no-residue claim.
 
 ### `ReturnObligation`
@@ -301,12 +365,13 @@ finite return, convergence, or voyage return.
 
 ### `VoyageTrace`
 
-Stores an ordered list of licensed edge ids and versions; compatible boundary
-cuts and protected families; carried source, witness, decoder, and path history;
-accumulated residue; return obligations; and reopening conditions. Composition
-must fail closed on incompatible frames or protected families. This package
-does not claim CRPM voyage-v2/v3 implementation, global recovery geometry,
-holonomy, or a graph-safe schema.
+V2 stores ordered transition edges and accepted/rejected/incompatible attempts,
+command history, explicit cut changes, witness references, accumulated residue,
+obligation history, replay support, terminal status, excluded claims, and
+re-entry instructions. Composition fails closed with a structured witness while
+retaining the valid prefix and attempted edge. This package does not claim CRPM
+voyage-v2/v3 implementation, global recovery geometry, holonomy, or a graph-safe
+schema.
 
 ### `ProjectionTransportAssessment`
 
@@ -323,20 +388,22 @@ of recurrence, balance, or global convergence.
 
 ### `WorldDesignRequest`
 
-Contains only registered baseline, adapter, transition/operator, cut,
-candidate/configuration, and evaluation ids; bounded scenario/action/policy and
-seed domains; protected family; requested witnesses; deterministic ordering and
-serialization version; and exclusions. The canonical request produces the
-compiled request digest. Arbitrary executable overlays are forbidden.
+The core request contract stores registered adapter, baseline/config carrier,
+cut, scenario/action/policy/seed domain, protected family, ordered design steps,
+output detail, exclusions, and canonical digest. The stricter offline envelope
+in `design-port/validate-request.ts` additionally binds requested probes/ports
+and `offline_only` activation. Arbitrary executable overlays and user-supplied
+module, script, shell, or operator paths are forbidden.
 
 ### `WorldDesignResult`
 
-Contains the request digest, source locks, adapter/config/cut ids, sampled
-domain, ordered trace and witness references, projection and return
-assessments, residue ledger, diagnostic profile, scalar probes, blocked claims,
-evidence origin/covariance/deduplication information, carrier maturity, product
-authority, deterministic result digest, and transfer-back status. A unified
-shape never unifies the authority of its inputs.
+Stores request digest, source locks, voyage traces, transition witnesses,
+projection assessments, return obligations, diagnostics, residual ledger,
+blocked claims, maturity, product authority, evidence origin/covariance/
+deduplication information, and deterministic result digest. Adapter/config/cut
+and sampled-domain identities remain in the nested carriers, fixed frames,
+traces, assessments, and diagnostics. A unified shape never unifies the
+authority of its inputs.
 
 ### `DiagnosticProfile`
 
@@ -392,20 +459,25 @@ never activates production by itself. The current D2B status is
 `authority-adapter parity` only for the declared, tested historical simulation
 transition domain; it does not change the authority in `shared/simulation.ts`.
 
-## Required Cuts
+## Implemented Cuts
 
-Each cut must define an exact projection key, decoder/readout, admissible
-scenario/action/policy/seed family, protected family, visible fields, forgotten
-fields, residue, and reopening condition.
+`analysis/crpm_world/cuts/v4-cuts.ts` defines the following version-1 records;
+`cuts/registry.ts` returns detached copies from a closed registry. Each record
+declares its admissible scenario/action/policy/seed family, protected family,
+included support, forgotten distinctions, excluded claims, and bounded
+continuation class.
 
-| Cut | Bounded purpose | Required guardrail |
+| Cut id | Bounded purpose | Required guardrail |
 | --- | --- | --- |
-| Authority cut | Full authoritative V4 state, actor, command, expected turn, transition result, ordered events, and error | Source of production truth; adapter cannot rewrite it |
-| Replay cut | Exact existing replay-record operations, state hashes, and reconstruction semantics for a declared replay/version domain | No ABI or replay change; existing records do not serialize ordered events, although a separate transition-parity witness may compare recomputed ordered events under its own cut |
-| Player-public cut | State and outcomes legitimately visible to the player at a declared UI/ruleset cut | Hidden authority distinctions remain residue; no UI change is licensed |
-| Presentation cut | Existing presentation-consumable event/readout information | Visual equivalence cannot establish gameplay-state equivalence |
-| Tactical-analysis cut | Exact D2A tactical state, policy, action, trace/report fields, scenario/configuration, and model assumptions | Analytical only; cannot claim live simulation or empirical parity |
-| World-design cut | Normalized request/result references, edge/voyage evidence, diagnostics, residue, and blocked claims | Shared envelope does not imply shared ontology or dynamics |
+| `authority_v4` | Digest-backed complete canonical V4 authority carrier for the registered command domain | No claim beyond `shared/simulation.ts` or the finite registered seed |
+| `thin_visible_duel_v0` | Active actor, positions, and Stitching only; destructive aliasing control | Explicitly relational/incomplete; matching readout is not state return or recurrence |
+| `bounded_command_support_v1` | Movement-only continuation support including movement budget, terrain, occupancy, bounds, actor, and expected turn | Bounded to supplied states and `move`; no fire/aim/selection/global completeness claim |
+| `replay_v4` | Initial authority support, ordered existing replay operations, state hashes, and reconstruction semantics | No replay ABI change; ordered events are not serialized in existing replay records |
+| `world_design_v0` | Offline profile/adapter/config/exclusion/evidence/authority references | No live mutation channel or shared-dynamics inference |
+
+The separate D2A adapter uses the declared analytical cut id
+`d2a_tactical_recurrence_v1`; it remains tied to registered config/report/trace
+carriers and is not a production-state cut.
 
 A cut may claim deterministic continuation only over its declared admissible
 action/domain family. If one projected source class contains states that produce
@@ -413,33 +485,31 @@ different target classes under the declared transition, the projection is an
 aliasing `relation_or_kernel` candidate, not a complete deterministic state
 map.
 
-### Required thin and repaired V4 pressure cuts
+### Thin and repaired V4 pressure result
 
-The implementation gate must construct an exact reachable V4 witness pair
+The implemented tests construct an exact reachable V4 witness pair
 under one sealed seed/scenario on terrain that permits a position-returning
 right/left two-command movement sequence:
 
-- the deliberately thin source cut retains the continuation-relevant V4
-  identity, turn, active actor, phase, unit/terrain, selection, and aim readout
-  but deliberately omits `movementRemaining` and observational `revision`;
-- at the locked source, the intended acceptance witness uses V4 seed
+- the deliberately thin source cut retains only active actor, unit positions,
+  and visible Stitching and deliberately omits all remaining authority support;
+- at the locked source, the acceptance witness uses V4 seed
   `0xC0FFEE11` after one versus four position-returning right/left pairs: the
-  thin keys must match while authoritative movement budgets and revisions
-  remain different; and
-- the same bounded `move` command must then produce distinct target classes,
-  such as accepted movement versus `COMMAND_REJECTED` for exhausted movement.
+  thin keys match while authoritative movement budgets are 48 versus 0 and
+  revisions are 2 versus 8; and
+- the same bounded right `move` command produces accepted movement versus
+  `COMMAND_REJECTED` for exhausted movement.
 
 The movement sequence returns position, not authoritative state; its consumed
 movement budget and advanced revision are the deliberately hidden residue. It
 must not be described as a state return or recurrence.
 
-The repaired cut adds `movementRemaining` and is assessed only for the exact V4
-scenario and one-step `move` command family declared by the acceptance test. It
-must remove the witnessed split over that finite support. It does not establish
-global completeness, minimality, uniqueness, all-command parity, or a
-recursively sufficient carrier outside that domain. If this concrete reachable
-pair cannot be produced without modifying authority, the test must fail and the
-cut design must reopen.
+The repaired movement-support cut includes `movementRemaining` and the other
+declared movement inputs and passes only for the exact V4 scenario and one-step
+`move` family in the acceptance test. It removes the witnessed split over that
+finite support. It does not establish global completeness, minimality,
+uniqueness, all-command parity, or a recursively sufficient carrier outside
+that domain.
 
 ## Offline World Design Port
 
@@ -568,7 +638,13 @@ WP-015D2B must not implement a new gameplay candidate, including a range-entry
 commitment candidate. It creates only the design and evidence port needed to
 test a separately authorized candidate later.
 
-Stop and reopen the contract before implementation if work would require:
+Completion therefore means: no V5; no new gameplay mechanic or range-entry
+commitment candidate; no live defense or reaction; no new player status; no
+protocol or replay field; no reward, Loomkeeper, client UI, server, or asset
+change; no graph-safe CRPM schema; and no claim that the tactical game is
+solved.
+
+Stop and reopen the contract before any follow-on change if work would require:
 
 - changing `shared/`, client, server, protocol, replay, Loomkeeper, reward, or
   asset behavior;

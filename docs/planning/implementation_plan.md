@@ -57,6 +57,18 @@ Phaser/Socket.IO stack.
   448/512/576 starts. It is rejected as a live rule: a delayed counter cannot
   repair an immediate forced opening. No Frayed Seam, strengthened Seam Pin,
   Opening Weave status, UI, replay, reward, or V5 rule is approved.
+  **WP-015D2B CRPM Game-World Profile and Offline World Design Port completed
+  on 2026-08-11** as a bounded analysis-only subordinate package on
+  `codex/wp-015d2b-crpm-world-design-port`. It is rooted at Worms_Port base
+  `af23717e61fea6995bf3b7209211ae1aaa2bb855`, implemented through
+  `f34317c5008e3171718705a9d8277437aae8d00d`, and source-locks the read-only
+  CRPM methodology checkout at `995236df60924f790506cf5badec3c102abf3fd1`.
+  Its strict contracts, V4/D2A adapters, five-cut registry, projection/voyage/
+  return kernels, closed offline CLI, and witness-linked evaluation lens are
+  `M2 local use`; V4 wrapping is `authority-adapter-parity` only and D2A product
+  authority remains `none`. It creates no V5, mechanic, status, live reaction,
+  protocol/replay/reward/UI/Loomkeeper change, CRPM runtime dependency, or
+  graph-safe schema. The Execution Pointer remains on WP-015D2A.
   **WP-015D1 V4 wider
   arena and pan camera completed on 2026-08-08**
   on `codex/wp-015-production-assets`: V4 preserves historical replays while
