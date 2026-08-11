@@ -5,7 +5,7 @@ import { deriveVoyageEvidence, deriveWorldDesignResidual } from './kernel/derive
 
 export const CRPM_WORLD_SCHEMA_VERSION = 1 as const;
 export const WORLD_DESIGN_REQUEST_SCHEMA_VERSION = 2 as const;
-export const WORLD_DESIGN_RESULT_SCHEMA_VERSION = 2 as const;
+export const WORLD_DESIGN_RESULT_SCHEMA_VERSION = 3 as const;
 
 const SchemaVersionSchema = z.literal(CRPM_WORLD_SCHEMA_VERSION);
 const IsoWallClockValuePattern = /\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}(?:\.\d+)?(?:Z|[+-]\d{2}:\d{2})/;
@@ -456,8 +456,16 @@ export const CompositionIssueSchema = z.strictObject({
     details: DeterministicJsonValueSchema
 });
 
-export const CompositionWitnessSchema = z.strictObject({
-    schemaVersion: SchemaVersionSchema,
+export const CompositionContractSchema = z.strictObject({
+    schemaVersion: z.literal(1),
+    contractId: z.literal('crpm-world-edge-composition'),
+    contractVersion: z.literal(1),
+    externallySuppliedInputPorts: IdentifierListSchema,
+    forbiddenPortIds: IdentifierListSchema,
+    cutBridgePolicy: z.literal('explicit_bridge_edge_only')
+});
+
+const CompositionWitnessBaseShape = {
     witnessId: IdentifierSchema,
     witnessVersion: VersionSchema,
     firstEdgeId: IdentifierSchema,
@@ -468,7 +476,25 @@ export const CompositionWitnessSchema = z.strictObject({
     availableInputPorts: IdentifierListSchema,
     forbiddenPortsCrossed: IdentifierListSchema,
     issues: z.array(CompositionIssueSchema).max(64)
-}).superRefine((witness, context) => {
+};
+
+export const CompositionWitnessV1Schema = z.strictObject({
+    schemaVersion: SchemaVersionSchema,
+    ...CompositionWitnessBaseShape
+});
+
+export const CompositionWitnessV2Schema = z.strictObject({
+    schemaVersion: z.literal(2),
+    ...CompositionWitnessBaseShape,
+    firstEdgeDigest: DigestSchema,
+    secondEdgeDigest: DigestSchema,
+    compositionContract: CompositionContractSchema
+});
+
+export const CompositionWitnessSchema = z.discriminatedUnion('schemaVersion', [
+    CompositionWitnessV1Schema,
+    CompositionWitnessV2Schema
+]).superRefine((witness, context) => {
     if (witness.compatible && witness.issues.length > 0) {
         context.addIssue({ code: 'custom', path: ['issues'], message: 'Compatible composition witnesses cannot contain issues.' });
     }
@@ -664,10 +690,61 @@ export const VoyageTraceV3Schema = z.strictObject({
     excludedClaims: NonEmptyDescriptionListSchema
 });
 
+export const VoyageEdgeAttemptV4Schema = z.strictObject({
+    sequence: NonNegativeSafeIntegerSchema,
+    outcome: z.enum(['accepted', 'rejected', 'incompatible']),
+    edge: WorldTransitionEdgeV2Schema,
+    compositionWitness: CompositionWitnessV2Schema
+});
+
+export const VoyageTraceV4Schema = z.strictObject({
+    schemaVersion: z.literal(4),
+    ...VoyageTraceBaseShape,
+    transitionEdges: z.array(WorldTransitionEdgeV2Schema).max(1_024),
+    edgeAttempts: z.array(VoyageEdgeAttemptV4Schema).max(1_024),
+    commandPath: z.array(VoyageCommandPathEntrySchema).max(1_024),
+    cutChanges: z.array(VoyageCutChangeSchema).max(1_024),
+    witnessReferences: z.array(WitnessReferenceSchema).max(4_096),
+    compositionContract: CompositionContractSchema,
+    initialObligationIds: IdentifierListSchema,
+    obligationHistory: VoyageObligationHistorySchema,
+    reentryInstructions: NonEmptyDescriptionListSchema,
+    excludedClaims: NonEmptyDescriptionListSchema
+}).superRefine((voyage, context) => {
+    const derived = deriveVoyageEvidence(
+        voyage.edgeAttempts,
+        voyage.initialCarrier,
+        voyage.initialObligationIds,
+        voyage.compositionContract
+    );
+    for (let index = 0; index < derived.attemptValidations.length; index += 1) {
+        const validation = derived.attemptValidations[index];
+        if (!validation.valid) {
+            context.addIssue({
+                code: 'custom',
+                path: ['edgeAttempts', index],
+                message: validation.issues.join(' ')
+            });
+        }
+    }
+    for (const [field, declared, expected] of [
+        ['transitionEdges', voyage.transitionEdges, derived.transitionEdges],
+        ['accumulatedResidual', voyage.accumulatedResidual, derived.accumulatedResidual],
+        ['obligationHistory', voyage.obligationHistory, derived.obligationHistory],
+        ['finalCarrier', voyage.finalCarrier, derived.finalCarrier],
+        ['compatibilityResult', voyage.compatibilityResult, derived.compatibility]
+    ] as const) {
+        if (canonicalJson(declared) !== canonicalJson(expected)) {
+            context.addIssue({ code: 'custom', path: [field], message: `${field} must equal the canonical full-composition voyage derivation.` });
+        }
+    }
+});
+
 export const VoyageTraceSchema = z.discriminatedUnion('schemaVersion', [
     VoyageTraceV1Schema,
     VoyageTraceV2Schema,
-    VoyageTraceV3Schema
+    VoyageTraceV3Schema,
+    VoyageTraceV4Schema
 ]).superRefine((voyage, context) => {
     const mismatches: string[] = [];
     const carrierMatches = (
@@ -754,8 +831,23 @@ export const VoyageTraceSchema = z.discriminatedUnion('schemaVersion', [
     if (canonicalJson(composedIds) !== canonicalJson(voyage.transitionEdges.map((edge) => edge.edgeId))) {
         context.addIssue({ code: 'custom', path: ['transitionEdges'], message: 'Transition edges must retain every compatible accepted or rejected attempt in order.' });
     }
-    if (voyage.schemaVersion === 3) {
-        const derived = deriveVoyageEvidence(voyage.edgeAttempts, voyage.initialCarrier, voyage.initialObligationIds);
+    if (voyage.schemaVersion === 4) {
+        const derived = deriveVoyageEvidence(
+            voyage.edgeAttempts,
+            voyage.initialCarrier,
+            voyage.initialObligationIds,
+            voyage.compositionContract
+        );
+        for (let index = 0; index < derived.attemptValidations.length; index += 1) {
+            const validation = derived.attemptValidations[index];
+            if (!validation.valid) {
+                context.addIssue({
+                    code: 'custom',
+                    path: ['edgeAttempts', index],
+                    message: validation.issues.join(' ')
+                });
+            }
+        }
         for (const [field, declared, expected] of [
             ['accumulatedResidual', voyage.accumulatedResidual, derived.accumulatedResidual],
             ['obligationHistory', voyage.obligationHistory, derived.obligationHistory],
@@ -1260,12 +1352,37 @@ export const WorldDesignResultSchema = z.strictObject({
     if (canonicalJson(executionReceipt.sourceLocks) !== canonicalJson(result.sourceLocks)) {
         context.addIssue({ code: 'custom', path: ['executionReceipt', 'sourceLocks'], message: 'Execution receipt source locks must match the result source locks.' });
     }
-    if (executionReceipt.profileVersion !== 2 || executionReceipt.requestSchemaVersion !== 2 || executionReceipt.resultSchemaVersion !== 2) {
-        context.addIssue({ code: 'custom', path: ['executionReceipt'], message: 'Only the sealed v2 profile/request/result execution receipt is supported.' });
+    if (executionReceipt.profileVersion !== 2 || executionReceipt.requestSchemaVersion !== 2 || executionReceipt.resultSchemaVersion !== 3) {
+        context.addIssue({ code: 'custom', path: ['executionReceipt'], message: 'Only the authenticated profile-v2/request-v2/result-v3 execution receipt is supported.' });
+    }
+    const expectedAdapterChain = result.evidenceOrigin === 'authority-derived'
+        ? [
+            { id: 'v4_authority', version: 2 },
+            { id: 'nimble-knots-simulation-authority-adapter', version: 2 }
+        ]
+        : result.evidenceOrigin === 'analysis-derived'
+            ? [
+                { id: 'd2a_tactical', version: 2 },
+                { id: 'd2a_analytical_export', version: 2 }
+            ]
+            : null;
+    if (expectedAdapterChain && canonicalJson(executionReceipt.adapterVersions) !== canonicalJson(expectedAdapterChain)) {
+        context.addIssue({ code: 'custom', path: ['executionReceipt', 'adapterVersions'], message: 'Execution receipt must contain the exact registered adapter chain in execution order.' });
+    }
+    const receiptAdapters = new Set(executionReceipt.adapterVersions.map((adapter) => canonicalJson(adapter)));
+    const referencedAdapters = result.traces.flatMap((trace) => trace.transitionEdges.flatMap((edge) => [
+        edge.sourceCarrier.adapter,
+        edge.targetCarrier.adapter,
+        edge.fixedFrame.adapter
+    ]));
+    for (const adapter of referencedAdapters) {
+        if (!receiptAdapters.has(canonicalJson(adapter))) {
+            context.addIssue({ code: 'custom', path: ['executionReceipt', 'adapterVersions'], message: `Receipt omits adapter ${adapter.id}@${adapter.version} referenced by an edge carrier or fixed frame.` });
+        }
     }
     for (let index = 0; index < result.traces.length; index += 1) {
-        if (result.traces[index].schemaVersion !== 3) {
-            context.addIssue({ code: 'custom', path: ['traces', index, 'schemaVersion'], message: 'Pre-sealing voyage records are unsupported; results require VoyageTrace v3.' });
+        if (result.traces[index].schemaVersion !== 4) {
+            context.addIssue({ code: 'custom', path: ['traces', index, 'schemaVersion'], message: 'Pre-authentication voyage records are unsupported; results require VoyageTrace v4.' });
         }
     }
     const derivedResidual = deriveWorldDesignResidual(result.traces);

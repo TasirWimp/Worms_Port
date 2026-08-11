@@ -24,6 +24,7 @@ import {
 } from '../../analysis/crpm_world/cuts/v4-cuts';
 import { assessReturn } from '../../analysis/crpm_world/kernel/assess-return';
 import { composeEdges } from '../../analysis/crpm_world/kernel/compose-edges';
+import { deriveVoyageEvidence } from '../../analysis/crpm_world/kernel/derive-voyage-evidence';
 import { mergeResidualLedgers } from '../../analysis/crpm_world/kernel/residual-ledger';
 import {
     projectV4CommandSample,
@@ -36,7 +37,8 @@ import {
 import {
     ResidualLedgerSchema,
     ReturnAssessmentSchema,
-    VoyageTraceV3Schema,
+    VoyageTraceSchema,
+    VoyageTraceV4Schema,
     WorldTransitionEdgeV2Schema
 } from '../../analysis/crpm_world/schemas';
 import type {
@@ -118,7 +120,7 @@ test('move, select, aim, and fire edges compose into a deterministic re-enterabl
         voyageId: 'v4-move-select-aim-fire-voyage',
         ...COMPOSITION_POLICY
     });
-    assert.equal(VoyageTraceV3Schema.safeParse(voyage).success, true);
+    assert.equal(VoyageTraceV4Schema.safeParse(voyage).success, true);
     assert.equal(voyage.compatibilityResult.compatible, true);
     assert.deepEqual(voyage.edgeAttempts.map((attempt) => attempt.outcome), [
         'accepted', 'accepted', 'accepted', 'accepted'
@@ -497,4 +499,136 @@ test('rejected attempts remain visible and do not mutate the composed carrier', 
     assert.equal(reentry.matched, true);
     assert.equal(reentry.reproducedEdgeDigests.length, 2);
     assert.equal(canonicalSimulationJson(reentry.finalState), accepted.postStateJson);
+});
+
+test('sealed voyages recompute every composition witness and reject manually accepted boundary violations', () => {
+    const { initialState, outputs } = authorityTranscript();
+    const honest = traceVoyage(outputs.slice(0, 2).map((output) => output.edge), {
+        voyageId: 'sealed-composition-destructive-controls',
+        ...COMPOSITION_POLICY
+    });
+
+    const assertRejected = (
+        label: string,
+        edges: readonly WorldTransitionEdgeV2[],
+        expectedIssueCode: string
+    ) => {
+        const attempts = honest.edgeAttempts.map((attempt, index) => ({
+            ...attempt,
+            edge: edges[index]
+        }));
+        const derived = deriveVoyageEvidence(
+            attempts,
+            honest.initialCarrier,
+            honest.initialObligationIds,
+            honest.compositionContract
+        );
+        assert.ok(derived.attemptValidations.some((validation) =>
+            validation.expectedWitness.issues.some((issue) => issue.code === expectedIssueCode)
+        ), label);
+        const imported = {
+            ...honest,
+            transitionEdges: [...edges],
+            edgeAttempts: attempts,
+            commandPath: attempts.map((attempt, sequence) => ({
+                sequence,
+                edgeId: attempt.edge.edgeId,
+                outcome: attempt.outcome,
+                commandOrDeclaration: attempt.edge.commandOrDeclaration
+            }))
+        };
+        assert.equal(VoyageTraceSchema.safeParse(imported).success, false, label);
+    };
+
+    const second = outputs[1].edge;
+    const forbidden = WorldTransitionEdgeV2Schema.parse({
+        ...second,
+        portBindings: {
+            ...second.portBindings,
+            actionPorts: [...second.portBindings.actionPorts, 'production-activation']
+        }
+    });
+    assertRejected('forbidden port crossing', [outputs[0].edge, forbidden], 'forbidden-port-crossing');
+
+    const missingInput = WorldTransitionEdgeV2Schema.parse({
+        ...second,
+        portBindings: {
+            ...second.portBindings,
+            actionPorts: [...second.portBindings.actionPorts, 'missing-declared-support']
+        }
+    });
+    assertRejected('missing input port', [outputs[0].edge, missingInput], 'missing-input-port');
+
+    const backwardsFirst = WorldTransitionEdgeV2Schema.parse({
+        ...outputs[0].edge,
+        commandOrDeclaration: {
+            ...(outputs[0].edge.commandOrDeclaration as Record<string, unknown>),
+            expectedTurn: 1
+        }
+    });
+    assertRejected('backwards expected turn', [backwardsFirst, second], 'turn-order-mismatch');
+
+    const wrongRevision = WorldTransitionEdgeV2Schema.parse({
+        ...second,
+        fixedFrame: {
+            ...second.fixedFrame,
+            expectedRevisionOrStep: second.fixedFrame.expectedRevisionOrStep + 1
+        }
+    });
+    assertRejected('wrong expected revision', [outputs[0].edge, wrongRevision], 'revision-order-mismatch');
+
+    const rejected = adaptSimulationCommand(
+        initialState,
+        'player',
+        { type: 'fire' },
+        0,
+        DEFAULT_AUTHORITY_CUT
+    ).edge;
+    const mutatedRejected = WorldTransitionEdgeV2Schema.parse({
+        ...rejected,
+        targetCarrier: outputs[0].edge.targetCarrier,
+        carrierRefs: [sha256Digest(rejected.sourceCarrier), sha256Digest(outputs[0].edge.targetCarrier)]
+    });
+    const rejectedVoyage = traceVoyage([rejected], {
+        voyageId: 'honest-rejected-destructive-control',
+        ...COMPOSITION_POLICY
+    });
+    const mutatedAttempt = [{
+        ...rejectedVoyage.edgeAttempts[0],
+        edge: mutatedRejected,
+        outcome: 'accepted' as const
+    }];
+    const rejectedDerived = deriveVoyageEvidence(
+        mutatedAttempt,
+        rejectedVoyage.initialCarrier,
+        rejectedVoyage.initialObligationIds,
+        rejectedVoyage.compositionContract
+    );
+    assert.ok(rejectedDerived.attemptValidations[0].expectedWitness.issues.some((issue) =>
+        issue.code === 'carrier-state-mismatch'
+    ));
+    assert.equal(VoyageTraceSchema.safeParse({
+        ...rejectedVoyage,
+        transitionEdges: [mutatedRejected],
+        edgeAttempts: mutatedAttempt,
+        finalCarrier: mutatedRejected.targetCarrier,
+        commandPath: [{
+            sequence: 0,
+            edgeId: mutatedRejected.edgeId,
+            outcome: 'accepted',
+            commandOrDeclaration: mutatedRejected.commandOrDeclaration
+        }]
+    }).success, false);
+
+    const legacyEdge = structuredClone(outputs[1].edge) as Record<string, unknown>;
+    legacyEdge.schemaVersion = 1;
+    delete legacyEdge.portBindings;
+    assert.equal(VoyageTraceSchema.safeParse({
+        ...honest,
+        transitionEdges: [outputs[0].edge, legacyEdge],
+        edgeAttempts: honest.edgeAttempts.map((attempt, index) => ({
+            ...attempt,
+            edge: index === 1 ? legacyEdge : attempt.edge
+        }))
+    }).success, false, 'v1 edge injection');
 });

@@ -40,7 +40,7 @@ from analysis.tactical_model.model import (
 ADAPTER_ID = "d2a_analytical_export"
 ADAPTER_VERSION = 2
 PROFILE_VERSION = 2
-RESULT_VERSION = 2
+RESULT_VERSION = 3
 TACTICAL_CUT_ID = "d2a_tactical_recurrence_v1"
 TACTICAL_CUT_VERSION = 2
 STARTING_DISTANCES = (448, 512, 576, 640, 704)
@@ -78,8 +78,31 @@ CRPM_WORLD_IMPLEMENTATION_PATHS = tuple(sorted((
     "analysis/crpm_world/kernel/trace-voyage.ts",
     "analysis/crpm_world/schemas.ts",
     "analysis/crpm_world/types.ts",
+    "analysis/crpm_world/tsconfig.json",
+    "package-lock.json",
+    "package.json",
     "scripts/run-crpm-world-design.ts",
 )))
+
+D2A_COMPOSITION_CONTRACT = {
+    "schemaVersion": 1,
+    "contractId": "crpm-world-edge-composition",
+    "contractVersion": 1,
+    "externallySuppliedInputPorts": ["d2a.action.declaration"],
+    "forbiddenPortIds": sorted((
+        "client-mutation", "live-activation", "network-endpoint",
+        "protocol-mutation", "reward-mutation", "runtime-simulation-mutation",
+        "server-mutation", "socketio-event",
+    )),
+    "cutBridgePolicy": "explicit_bridge_edge_only",
+}
+
+COMPOSITION_CHECKED_CONDITIONS = [
+    "carrier-state", "carrier-reference", "revision-order", "turn-order",
+    "ruleset-identity", "adapter-identity", "cut-contract",
+    "port-satisfaction", "forbidden-port-boundary", "obligation-propagation",
+    "residual-preservation",
+]
 
 
 class D2AExportError(RuntimeError):
@@ -191,12 +214,12 @@ def _execution_receipt_base(
         "implementationFileBlobs": blobs,
         "implementationBundleDigest": bundle_digest,
         "adapterVersions": [
-            {"id": ADAPTER_ID, "version": ADAPTER_VERSION},
             {"id": "d2a_tactical", "version": ADAPTER_VERSION},
+            {"id": ADAPTER_ID, "version": ADAPTER_VERSION},
         ],
         "profileVersion": PROFILE_VERSION,
         "requestSchemaVersion": 2,
-        "resultSchemaVersion": 2,
+        "resultSchemaVersion": 3,
         "sourceLocks": list(source_locks),
         "requestDigest": request_digest,
     }
@@ -793,6 +816,101 @@ def _find_match(report: dict[str, Any], predicate: Any) -> tuple[dict[str, Any],
     raise D2AExportError("Required registered pressure witness was not found")
 
 
+def _bound_ports(edge: dict[str, Any]) -> list[str]:
+    bindings = edge["portBindings"]
+    return sorted(set(
+        bindings["contextPorts"] + bindings["actionPorts"] +
+        bindings["responsePorts"] + bindings["evidencePorts"] +
+        bindings["supportPorts"] + bindings["returnPorts"]
+    ))
+
+
+def _composition_witness(
+    first: dict[str, Any],
+    second: dict[str, Any],
+    *,
+    initial: bool,
+) -> dict[str, Any]:
+    contract = D2A_COMPOSITION_CONTRACT
+    if initial:
+        if first is not second:
+            raise D2AExportError("Initial composition witness must bind one edge twice")
+        required = sorted(set(second["portBindings"]["actionPorts"]))
+        available = sorted(set(
+            second["portBindings"]["contextPorts"] +
+            contract["externallySuppliedInputPorts"]
+        ))
+        if second["fixedFrame"]["expectedRevisionOrStep"] != second["sourceCarrier"]["revisionOrStep"]:
+            raise D2AExportError("D2A first-edge fixed-frame revision mismatch")
+    else:
+        if first["targetCarrier"] != second["sourceCarrier"]:
+            raise D2AExportError("D2A voyage carrier composition mismatch")
+        if first["targetCut"] != second["sourceCut"]:
+            raise D2AExportError("D2A voyage cut composition mismatch")
+        if first["fixedFrame"]["baselineOrConfigId"] != second["fixedFrame"]["baselineOrConfigId"]:
+            raise D2AExportError("D2A voyage config composition mismatch")
+        if first["fixedFrame"]["adapter"] != second["fixedFrame"]["adapter"]:
+            raise D2AExportError("D2A voyage adapter composition mismatch")
+        if second["fixedFrame"]["expectedRevisionOrStep"] != second["sourceCarrier"]["revisionOrStep"]:
+            raise D2AExportError("D2A voyage fixed-frame revision mismatch")
+        required = sorted(set(
+            second["portBindings"]["contextPorts"] +
+            second["portBindings"]["actionPorts"]
+        ))
+        available = sorted(set(
+            first["portBindings"]["contextPorts"] +
+            first["portBindings"]["responsePorts"] +
+            first["portBindings"]["evidencePorts"] +
+            first["portBindings"]["supportPorts"] +
+            first["portBindings"]["returnPorts"] +
+            contract["externallySuppliedInputPorts"]
+        ))
+        prior_open = set(first["residual"]["unresolvedObligations"])
+        carried_or_closed = {
+            *second["residual"]["carriedObligations"],
+            *second["residual"]["dischargedObligations"],
+            *second["residual"]["expiredRights"],
+        }
+        if prior_open - carried_or_closed:
+            raise D2AExportError("D2A voyage obligation composition mismatch")
+    if set(required) - set(available):
+        raise D2AExportError("D2A voyage input-port composition mismatch")
+    crossed = sorted(
+        (set(_bound_ports(first)) | set(_bound_ports(second))) &
+        set(contract["forbiddenPortIds"])
+    )
+    if crossed:
+        raise D2AExportError("D2A voyage crosses a forbidden design port")
+    identity = {
+        "firstEdgeId": first["edgeId"],
+        "secondEdgeId": second["edgeId"],
+        "firstEdgeDigest": sha256_digest(first),
+        "secondEdgeDigest": sha256_digest(second),
+        "compositionContract": contract,
+        "compatible": True,
+        "issues": [],
+        "requiredInputPorts": required,
+        "availableInputPorts": available,
+        "forbiddenPortsCrossed": crossed,
+    }
+    return {
+        "schemaVersion": 2,
+        "witnessId": f"composition-{sha256_digest(identity)[:32]}",
+        "witnessVersion": 2,
+        "firstEdgeId": first["edgeId"],
+        "secondEdgeId": second["edgeId"],
+        "firstEdgeDigest": sha256_digest(first),
+        "secondEdgeDigest": sha256_digest(second),
+        "compositionContract": contract,
+        "compatible": True,
+        "checkedConditions": COMPOSITION_CHECKED_CONDITIONS,
+        "requiredInputPorts": required,
+        "availableInputPorts": available,
+        "forbiddenPortsCrossed": crossed,
+        "issues": [],
+    }
+
+
 def _voyage(
     *,
     case_id: str,
@@ -809,14 +927,17 @@ def _voyage(
         })
     accumulated = _accumulate_residual(edge["residual"] for edge in edges)
     compatibility_issues: list[str] = []
+    composition_witnesses: list[dict[str, Any]] = []
     for index, edge in enumerate(edges):
         if edge["pathPosition"] != index:
             compatibility_issues.append(
                 f"Edge {edge['edgeId']} has path position {edge['pathPosition']}, expected {index}."
             )
         if index == 0:
+            composition_witnesses.append(_composition_witness(edge, edge, initial=True))
             continue
         previous = edges[index - 1]
+        composition_witnesses.append(_composition_witness(previous, edge, initial=False))
         if previous["targetCarrier"] != edge["sourceCarrier"]:
             compatibility_issues.append(
                 f"Carrier mismatch before edge {edge['edgeId']}."
@@ -832,7 +953,7 @@ def _voyage(
                 f"Edge {edge['edgeId']} neither carries nor discharges obligation {obligation}."
             )
     return {
-        "schemaVersion": 3,
+        "schemaVersion": 4,
         "voyageId": f"d2a-{case_id}-pressure-voyage",
         "voyageVersion": 1,
         "initialCarrier": edges[0]["sourceCarrier"],
@@ -865,7 +986,7 @@ def _voyage(
                 "sequence": index,
                 "outcome": "accepted",
                 "edge": edge,
-                "compositionWitness": None,
+                "compositionWitness": composition_witnesses[index],
             }
             for index, edge in enumerate(edges)
         ],
@@ -884,6 +1005,7 @@ def _voyage(
             for edge in edges
             for reference in edge["witnessReferences"]
         ],
+        "compositionContract": D2A_COMPOSITION_CONTRACT,
         "initialObligationIds": list(initial_obligation_ids),
         "obligationHistory": {
             "opened": list(dict.fromkeys([*initial_obligation_ids, *accumulated["openedObligations"]])),
@@ -1293,15 +1415,26 @@ def export_pressure_suite(case_ids: Sequence[str] = tuple(REGISTERED_CASES)) -> 
     request_descriptor = {
         "schemaVersion": 2,
         "adapter": {"id": ADAPTER_ID, "version": ADAPTER_VERSION},
+        "profileVersion": PROFILE_VERSION,
         "cases": requested,
+        "caseBindings": [
+            {
+                "caseId": case_id,
+                "configId": loaded[case_id][0].identifier,
+                "configSchemaVersion": REGISTERED_CASES[case_id]["schema_version"],
+                "reportDigest": REGISTERED_CASES[case_id]["report_digest"],
+            }
+            for case_id in requested
+        ],
         "startingDistances": list(STARTING_DISTANCES),
         "seeds": list(dict.fromkeys(loaded[case_id][0].seed for case_id in requested)),
         "outputDetailLevel": "witnesses",
-        "cutId": TACTICAL_CUT_ID,
+        "cut": {"id": TACTICAL_CUT_ID, "version": TACTICAL_CUT_VERSION},
+        "protectedFamilyDigest": sha256_digest(list(D2A_PROTECTED_FAMILY)),
     }
     request_digest = sha256_digest(request_descriptor)
     payload = {
-        "schemaVersion": 2,
+        "schemaVersion": 3,
         "resultId": "d2a-pressure-suite-" + "-".join(requested),
         "resultVersion": RESULT_VERSION,
         "requestDigest": request_digest,

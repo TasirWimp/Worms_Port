@@ -8,6 +8,8 @@ import type {
     CarrierMaturitySchema,
     CompositionIssueCodeSchema,
     CompositionIssueSchema,
+    CompositionContractSchema,
+    CompositionWitnessV2Schema,
     CompositionWitnessSchema,
     ContractCatalogsSchema,
     CutReferenceSchema,
@@ -42,6 +44,7 @@ import type {
     VoyageTraceV1Schema,
     VoyageTraceV2Schema,
     VoyageTraceV3Schema,
+    VoyageTraceV4Schema,
     WorldCarrierReferenceSchema,
     WorldCutDefinitionSchema,
     WorldDesignRequestPayloadSchema,
@@ -60,7 +63,9 @@ export type AliasingWitnessPair = z.infer<typeof AliasingWitnessPairSchema>;
 export type CarrierMaturity = z.infer<typeof CarrierMaturitySchema>;
 export type CompositionIssueCode = z.infer<typeof CompositionIssueCodeSchema>;
 export type CompositionIssue = z.infer<typeof CompositionIssueSchema>;
+export type CompositionContract = z.infer<typeof CompositionContractSchema>;
 export type CompositionWitness = z.infer<typeof CompositionWitnessSchema>;
+export type CompositionWitnessV2 = z.infer<typeof CompositionWitnessV2Schema>;
 export type ContractCatalogs = z.infer<typeof ContractCatalogsSchema>;
 export type CutReference = z.infer<typeof CutReferenceSchema>;
 export type DiagnosticAxis = z.infer<typeof DiagnosticAxisSchema>;
@@ -94,6 +99,7 @@ export type VoyageTrace = z.infer<typeof VoyageTraceSchema>;
 export type VoyageTraceV1 = z.infer<typeof VoyageTraceV1Schema>;
 export type VoyageTraceV2 = z.infer<typeof VoyageTraceV2Schema>;
 export type VoyageTraceV3 = z.infer<typeof VoyageTraceV3Schema>;
+export type VoyageTraceV4 = z.infer<typeof VoyageTraceV4Schema>;
 export type WorldCarrierReference = z.infer<typeof WorldCarrierReferenceSchema>;
 export type WorldCutDefinition = z.infer<typeof WorldCutDefinitionSchema>;
 export type WorldDesignRequestPayload = z.infer<typeof WorldDesignRequestPayloadSchema>;

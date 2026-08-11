@@ -33,8 +33,9 @@ test('Python D2A export validates as a strict CRPM-world design result', () => {
     assert.deepEqual(result.returnAssessments[0].satisfiedClassifications, ['recursive_carrier_return']);
     const h3 = result.traces.find((trace) => trace.voyageId === 'd2a-h3-pressure-voyage');
     assert.ok(h3);
-    assert.equal(h3.schemaVersion, 3);
-    if (h3.schemaVersion !== 3) throw new Error('Sealed D2A results require VoyageTrace v3.');
+    assert.equal(h3.schemaVersion, 4);
+    if (h3.schemaVersion !== 4) throw new Error('Sealed D2A results require VoyageTrace v4.');
+    assert.ok(h3.edgeAttempts.every((attempt) => attempt.compositionWitness.schemaVersion === 2));
     assert.equal(h3.compatibilityResult.compatible, true);
     const h3Obligation = result.worldObligations.find((item) =>
         item.obligationType === 'frayed_seam' && item.origin.kind === 'edge' &&
@@ -52,6 +53,10 @@ test('Python D2A export validates as a strict CRPM-world design result', () => {
     const { resultDigest, executionReceipt, ...payload } = result;
     const { resultDigest: receiptResultDigest, ...receiptBase } = executionReceipt;
     assert.equal(receiptResultDigest, resultDigest);
+    assert.deepEqual(result.executionReceipt.adapterVersions, [
+        { id: 'd2a_tactical', version: 2 },
+        { id: 'd2a_analytical_export', version: 2 }
+    ]);
     assert.equal(resultDigest, sha256Digest({ ...payload, executionReceipt: receiptBase }));
 });
 

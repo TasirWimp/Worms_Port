@@ -19,6 +19,7 @@ import {
     WorldDesignResultSchema,
     WorldObligationSchema,
     WorldTransitionEdgeSchema,
+    WorldTransitionEdgeV2Schema,
     parseRegisteredWorldDesignRequest
 } from '../../analysis/crpm_world/schemas';
 import {
@@ -296,7 +297,7 @@ test('result obligations are referentially closed and cannot discharge before op
         openedObligations: [obligationId],
         unresolvedObligations: [obligationId]
     });
-    const openEdge = WorldTransitionEdgeSchema.parse({ ...baseEdge, residual: openLedger });
+    const openEdge = WorldTransitionEdgeV2Schema.parse({ ...baseEdge, residual: openLedger });
     const obligation = {
         schemaVersion: 2 as const,
         obligationId,
@@ -313,7 +314,10 @@ test('result obligations are referentially closed and cannot discharge before op
         dischargeCondition: 'The synthetic obligation is discharged.',
         lifecycleStatus: 'open' as const
     };
-    const openTrace = traceVoyage([openEdge], { voyageId: 'synthetic-open-voyage' });
+    const openTrace = traceVoyage([openEdge], {
+        voyageId: 'synthetic-open-voyage',
+        externallySuppliedInputPorts: ['simulation-command']
+    });
     const validPayload = {
         ...payload,
         traces: [openTrace],
@@ -327,8 +331,11 @@ test('result obligations are referentially closed and cannot discharge before op
         openedObligations: ['synthetic.unknown.obligation'],
         unresolvedObligations: ['synthetic.unknown.obligation']
     });
-    const unknownEdge = WorldTransitionEdgeSchema.parse({ ...openEdge, residual: unknownLedger });
-    const unknownTrace = traceVoyage([unknownEdge], { voyageId: 'synthetic-unknown-voyage' });
+    const unknownEdge = WorldTransitionEdgeV2Schema.parse({ ...openEdge, residual: unknownLedger });
+    const unknownTrace = traceVoyage([unknownEdge], {
+        voyageId: 'synthetic-unknown-voyage',
+        externallySuppliedInputPorts: ['simulation-command']
+    });
     assert.throws(() => buildWorldDesignResult({
         ...validPayload,
         traces: [unknownTrace],
@@ -341,8 +348,11 @@ test('result obligations are referentially closed and cannot discharge before op
         dischargedObligations: [obligationId],
         unresolvedObligations: []
     });
-    const prematureEdge = WorldTransitionEdgeSchema.parse({ ...openEdge, residual: prematureLedger });
-    const prematureTrace = traceVoyage([prematureEdge], { voyageId: 'synthetic-premature-voyage' });
+    const prematureEdge = WorldTransitionEdgeV2Schema.parse({ ...openEdge, residual: prematureLedger });
+    const prematureTrace = traceVoyage([prematureEdge], {
+        voyageId: 'synthetic-premature-voyage',
+        externallySuppliedInputPorts: ['simulation-command']
+    });
     assert.throws(() => buildWorldDesignResult({
         ...validPayload,
         traces: [prematureTrace],

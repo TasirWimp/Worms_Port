@@ -7,7 +7,8 @@ import {
     ScenarioDomainSchema,
     WorldCarrierReferenceSchema,
     WorldCutDefinitionSchema,
-    WorldTransitionEdgeSchema
+    WorldTransitionEdgeSchema,
+    WorldTransitionEdgeV2Schema
 } from '../../analysis/crpm_world/schemas';
 import { assessReturn } from '../../analysis/crpm_world/kernel/assess-return';
 import { traceVoyage } from '../../analysis/crpm_world/kernel/trace-voyage';
@@ -113,7 +114,7 @@ export function makePortContract() {
 export function makeTransitionEdge() {
     const sourceCarrier = makeCarrier(0, 'source');
     const targetCarrier = makeCarrier(1, 'target');
-    return WorldTransitionEdgeSchema.parse({
+    return WorldTransitionEdgeV2Schema.parse({
         schemaVersion: 2,
         edgeId: 'authority-projection-edge',
         edgeVersion: 1,
@@ -211,6 +212,7 @@ export function makeWorldDesignResultPayload() {
     const witnessRef = edge.witnessReferences[0];
     const trace = traceVoyage([edge], {
         voyageId: 'voyage-test',
+        externallySuppliedInputPorts: ['simulation-command'],
         terminalStatus: 'completed',
         terminalSummary: 'The bounded synthetic edge composed.',
         excludedClaims: ['No production voyage or return is claimed.']
@@ -234,12 +236,12 @@ export function makeWorldDesignResultPayload() {
         adapterVersions: [TEST_ADAPTER],
         profileVersion: 2,
         requestSchemaVersion: 2 as const,
-        resultSchemaVersion: 2 as const,
+        resultSchemaVersion: 3 as const,
         sourceLocks,
         requestDigest: request.requestDigest
     };
     return {
-        schemaVersion: 2 as const,
+        schemaVersion: 3 as const,
         resultId: 'world-design-result-test',
         resultVersion: 2,
         requestDigest: request.requestDigest,

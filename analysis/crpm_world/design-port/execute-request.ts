@@ -17,10 +17,13 @@ import { assessQuotientTransport } from '../kernel/assess-quotient-transport';
 import { projectV4CommandSample, projectV4SimulationState, type V4CommandSample } from '../kernel/project-cut';
 import { traceVoyage } from '../kernel/trace-voyage';
 import { evaluateWorldDesignResult } from '../evaluation/evaluate';
-import { buildRegisteredExecutionReceiptBase } from '../implementation-lock';
+import {
+    REGISTERED_EXECUTION_ADAPTER_CHAINS,
+    buildRegisteredExecutionReceiptBase
+} from '../implementation-lock';
 import type { EvaluationBundle, EvaluationDeclaration } from '../evaluation/schemas';
 import {
-    VoyageTraceV3Schema,
+    VoyageTraceV4Schema,
     WORLD_DESIGN_REQUEST_SCHEMA_VERSION,
     WORLD_DESIGN_RESULT_SCHEMA_VERSION,
     WorldDesignResultSchema,
@@ -140,7 +143,7 @@ function executeV4(request: OfflineWorldDesignRequest): WorldDesignResult {
             'Replay the exact actor, expectedTurn, and command declarations in sequence order.'
         ]
     });
-    const voyage = VoyageTraceV3Schema.parse({
+    const voyage = VoyageTraceV4Schema.parse({
         ...baseVoyage,
         replaySupport: {
             supported: true,
@@ -210,10 +213,7 @@ function executeV4(request: OfflineWorldDesignRequest): WorldDesignResult {
             witnesses: outputs.map((output) => output.witness.deduplicationIdentity)
         }),
         executionReceipt: buildRegisteredExecutionReceiptBase({
-            adapterVersions: [
-                request.adapter,
-                outputs[0].edge.fixedFrame.adapter
-            ],
+            adapterVersions: REGISTERED_EXECUTION_ADAPTER_CHAINS.v4_authority,
             profileVersion: request.profileVersion,
             requestSchemaVersion: WORLD_DESIGN_REQUEST_SCHEMA_VERSION,
             resultSchemaVersion: WORLD_DESIGN_RESULT_SCHEMA_VERSION,
@@ -302,7 +302,7 @@ function executeD2A(request: OfflineWorldDesignRequest): WorldDesignResult {
             analyticalDeduplicationIdentity: analytical.deduplicationIdentity
         }),
         executionReceipt: buildRegisteredExecutionReceiptBase({
-            adapterVersions: [request.adapter],
+            adapterVersions: REGISTERED_EXECUTION_ADAPTER_CHAINS.d2a_tactical,
             profileVersion: request.profileVersion,
             requestSchemaVersion: WORLD_DESIGN_REQUEST_SCHEMA_VERSION,
             resultSchemaVersion: WORLD_DESIGN_RESULT_SCHEMA_VERSION,

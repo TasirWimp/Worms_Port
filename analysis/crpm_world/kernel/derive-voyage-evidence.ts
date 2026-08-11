@@ -1,49 +1,17 @@
 import { canonicalJson, compareCanonicalText } from '../canonical';
-
-type Carrier = Readonly<{
-    schemaVersion: number;
-    profileVersion: number;
-    carrierKind: string;
-    adapter: Readonly<{ id: string; version: number }>;
-    rulesetOrConfigId: string;
-    baselineDigest: string;
-    stateDigest: string;
-    revisionOrStep: number;
-    sourceReference?: string;
-}>;
-
-type Residual = Readonly<{
-    schemaVersion: number;
-    positionDeltas: readonly unknown[];
-    resourceDeltas: readonly unknown[];
-    healthDeltas: readonly unknown[];
-    statusDeltas: readonly unknown[];
-    terrainDeltas: readonly unknown[];
-    authorityDeltas: readonly unknown[];
-    expiredRights: readonly string[];
-    openedObligations: readonly string[];
-    carriedObligations: readonly string[];
-    dischargedObligations: readonly string[];
-    unresolvedObligations: readonly string[];
-    excludedUnmodelledResidue: readonly string[];
-}>;
-
-type Edge = Readonly<{
-    edgeId: string;
-    sourceCarrier: Carrier;
-    targetCarrier: Carrier;
-    sourceCut: unknown;
-    targetCut: unknown;
-    residual: Residual;
-}>;
+import type {
+    CompositionContract,
+    CompositionWitnessV2,
+    ResidualLedger as Residual,
+    WorldCarrierReference as Carrier,
+    WorldTransitionEdgeV2 as Edge
+} from '../types';
+import { assessEdgeCompatibility, assessInitialEdgeCompatibility } from './compose-edges';
 
 export type DerivableVoyageAttempt = Readonly<{
     outcome: 'accepted' | 'rejected' | 'incompatible';
     edge: Edge;
-    compositionWitness?: Readonly<{
-        compatible: boolean;
-        issues: readonly Readonly<{ message: string }>[];
-    }> | null;
+    compositionWitness: CompositionWitnessV2;
 }>;
 
 export type DerivedVoyageEvidence = Readonly<{
@@ -62,6 +30,12 @@ export type DerivedVoyageEvidence = Readonly<{
         checkedEdgeIds: readonly string[];
         issues: readonly string[];
     }>;
+    attemptValidations: readonly Readonly<{
+        valid: boolean;
+        expectedOutcome: 'accepted' | 'rejected' | 'incompatible';
+        expectedWitness: CompositionWitnessV2;
+        issues: readonly string[];
+    }>[];
 }>;
 
 function appendUnique<T>(target: T[], values: readonly T[]): void {
@@ -70,28 +44,15 @@ function appendUnique<T>(target: T[], values: readonly T[]): void {
     }
 }
 
-function normalizedSourceReference(value: string | undefined): string | undefined {
-    return value
-        ?.replace(/#(?:pre|post)$/, '')
-        .replace(/:(?:pre|post):[0-9a-f]{64}$/, '');
+function responseAccepted(edge: Edge): boolean | undefined {
+    const response = edge.response;
+    if (!response || typeof response !== 'object' || Array.isArray(response)) return undefined;
+    return typeof response.accepted === 'boolean' ? response.accepted : undefined;
 }
 
-function carrierMatches(left: Carrier, right: Carrier): boolean {
-    return left.stateDigest === right.stateDigest &&
-        left.baselineDigest === right.baselineDigest &&
-        left.schemaVersion === right.schemaVersion &&
-        left.profileVersion === right.profileVersion &&
-        left.revisionOrStep === right.revisionOrStep &&
-        left.carrierKind === right.carrierKind &&
-        left.rulesetOrConfigId === right.rulesetOrConfigId &&
-        left.adapter.id === right.adapter.id &&
-        left.adapter.version === right.adapter.version &&
-        normalizedSourceReference(left.sourceReference) === normalizedSourceReference(right.sourceReference);
-}
-
-function emptyResidual(schemaVersion: number): Residual {
+function emptyResidual(): Residual {
     return {
-        schemaVersion,
+        schemaVersion: 2,
         positionDeltas: [],
         resourceDeltas: [],
         healthDeltas: [],
@@ -111,37 +72,46 @@ function emptyResidual(schemaVersion: number): Residual {
 export function deriveVoyageEvidence(
     attempts: readonly DerivableVoyageAttempt[],
     initialCarrier: Carrier,
-    initialObligationIds: readonly string[] = []
+    initialObligationIds: readonly string[] = [],
+    compositionContract: CompositionContract
 ): DerivedVoyageEvidence {
-    const transitionEdges = attempts.filter((attempt) => attempt.outcome !== 'incompatible').map((attempt) => attempt.edge);
-    const schemaVersion = transitionEdges[0]?.residual.schemaVersion ?? 2;
-    const aggregate = emptyResidual(schemaVersion) as {
+    const transitionEdges: Edge[] = [];
+    const aggregate = emptyResidual() as {
         -readonly [K in keyof Residual]: Residual[K] extends readonly (infer T)[] ? T[] : Residual[K]
     };
     const live = new Set<string>(initialObligationIds);
     const historyOpened = [...initialObligationIds];
     const issues: string[] = [];
+    const attemptValidations: DerivedVoyageEvidence['attemptValidations'][number][] = [];
     let previous: Edge | undefined;
 
     for (const attempt of attempts) {
-        if (attempt.outcome === 'incompatible') {
-            const witnessIssues = attempt.compositionWitness?.issues.map((issue) => issue.message) ?? [];
-            appendUnique(issues, witnessIssues.length > 0 ? witnessIssues : [`Edge ${attempt.edge.edgeId} is incompatible.`]);
+        const expectedWitness = previous
+            ? assessEdgeCompatibility(previous, attempt.edge, compositionContract).witness
+            : assessInitialEdgeCompatibility(initialCarrier, attempt.edge, compositionContract);
+        const expectedOutcome = expectedWitness.compatible
+            ? responseAccepted(attempt.edge) === false ? 'rejected' : 'accepted'
+            : 'incompatible';
+        const validationIssues: string[] = [];
+        if (attempt.outcome !== expectedOutcome) {
+            validationIssues.push(`Attempt ${attempt.edge.edgeId} declares ${attempt.outcome} but recomputes as ${expectedOutcome}.`);
+        }
+        if (canonicalJson(attempt.compositionWitness) !== canonicalJson(expectedWitness)) {
+            validationIssues.push(`Attempt ${attempt.edge.edgeId} composition witness does not match the edge digests and declared composition contract.`);
+        }
+        attemptValidations.push({
+            valid: validationIssues.length === 0,
+            expectedOutcome,
+            expectedWitness,
+            issues: validationIssues
+        });
+        appendUnique(issues, validationIssues);
+        if (!expectedWitness.compatible) {
+            appendUnique(issues, expectedWitness.issues.map((item) => item.message));
             continue;
         }
         const edge = attempt.edge;
-        if (!previous) {
-            if (!carrierMatches(initialCarrier, edge.sourceCarrier)) {
-                appendUnique(issues, [`Initial carrier mismatch before edge ${edge.edgeId}.`]);
-            }
-        } else {
-            if (!carrierMatches(previous.targetCarrier, edge.sourceCarrier)) {
-                appendUnique(issues, [`Carrier mismatch before edge ${edge.edgeId}.`]);
-            }
-            if (canonicalJson(previous.targetCut) !== canonicalJson(edge.sourceCut)) {
-                appendUnique(issues, [`Cut mismatch before edge ${edge.edgeId}.`]);
-            }
-        }
+        transitionEdges.push(edge);
         previous = edge;
         const ledger = edge.residual;
         for (const field of [
@@ -212,14 +182,14 @@ export function deriveVoyageEvidence(
             compatible: issues.length === 0,
             checkedEdgeIds: transitionEdges.map((edge) => edge.edgeId),
             issues
-        }
+        },
+        attemptValidations
     };
 }
 
 /** Aggregate trace residue without inventing propagation across voyage boundaries. */
 export function deriveWorldDesignResidual(traces: readonly Readonly<{ accumulatedResidual: Residual }>[]): Residual {
-    const schemaVersion = traces[0]?.accumulatedResidual.schemaVersion ?? 2;
-    const aggregate = emptyResidual(schemaVersion) as {
+    const aggregate = emptyResidual() as {
         -readonly [K in keyof Residual]: Residual[K] extends readonly (infer T)[] ? T[] : Residual[K]
     };
     for (const trace of traces) {

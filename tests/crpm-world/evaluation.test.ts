@@ -37,10 +37,11 @@ function rebuildResult(
     const { resultDigest: _resultDigest, executionReceipt, ...base } = result;
     const { resultDigest: _receiptResultDigest, ...receiptBase } = executionReceipt;
     const next = { ...base, ...overrides };
+    const suppliedReceipt = overrides.executionReceipt ?? receiptBase;
     return buildWorldDesignResult({
         ...next,
         executionReceipt: {
-            ...receiptBase,
+            ...suppliedReceipt,
             sourceLocks: next.sourceLocks,
             requestDigest: next.requestDigest
         }
@@ -261,6 +262,29 @@ test('caller-authored decisions, pass flags, and synthetic locks cannot mint mat
     }, result);
     assert.equal(genericEvidence.maturityAssessment.maturity, 'M1_declaration');
     assert.equal(genericEvidence.maturityAssessment.gates.reenterableEvidence, false);
+
+    const fakeCommit = '1'.repeat(40);
+    const fakeTree = '2'.repeat(40);
+    const fakeBlobs = result.executionReceipt.implementationPaths.map((path) => ({
+        path,
+        blobOid: '3'.repeat(40)
+    }));
+    const fakeReceipt = {
+        ...result.executionReceipt,
+        implementationCommit: fakeCommit,
+        implementationTree: fakeTree,
+        implementationFileBlobs: fakeBlobs,
+        implementationBundleDigest: sha256Digest({
+            repositoryId: 'worms-port',
+            implementationCommit: fakeCommit,
+            implementationTree: fakeTree,
+            implementationFileBlobs: fakeBlobs
+        })
+    };
+    const selfConsistentFiction = rebuildResult(result, { executionReceipt: fakeReceipt });
+    const fictionAssessment = evaluateWorldDesignResult(evaluation.declaration, selfConsistentFiction);
+    assert.equal(fictionAssessment.maturityAssessment.maturity, 'M1_declaration');
+    assert.equal(fictionAssessment.maturityAssessment.gates.registeredSourceBinding, false);
 });
 
 test('registered probe bundle values are source-bound and cannot be altered under valid ids and locks', () => {
@@ -281,4 +305,25 @@ test('registered probe bundle values are source-bound and cannot be altered unde
         assert.equal(reassessed.maturityAssessment.gates.registeredSourceBinding, false, caseId);
         assert.equal(reassessed.maturityAssessment.productAuthority, 'none', caseId);
     }
+});
+
+test('V4 mandatory probe values are derived from authoritative edge responses', () => {
+    const request = buildOfflineWorldDesignRequest(
+        readWorldDesignRequestFile(V4_TEMPLATE) as OfflineWorldDesignRequestPayload
+    );
+    const { result, evaluation } = executeWorldDesignEvaluation(request);
+    const diagnostics = result.diagnostics.map((diagnostic) => {
+        if (diagnostic.schemaVersion !== 1) return diagnostic;
+        return {
+            ...diagnostic,
+            scalarProbes: diagnostic.scalarProbes.map((probe) =>
+                probe.probeId === 'v4.event_count' ? { ...probe, value: probe.value + 1 } : probe
+            )
+        };
+    });
+    const altered = rebuildResult(result, { diagnostics });
+    const reassessed = evaluateWorldDesignResult(evaluation.declaration, altered);
+    assert.equal(reassessed.maturityAssessment.maturity, 'M1_declaration');
+    assert.equal(reassessed.maturityAssessment.gates.registeredSourceBinding, false);
+    assert.equal(reassessed.maturityAssessment.productAuthority, 'none');
 });

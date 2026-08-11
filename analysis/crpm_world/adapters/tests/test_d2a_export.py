@@ -59,6 +59,20 @@ class D2AExportTests(unittest.TestCase):
         forward_cases = export_pressure_suite(("f4", "h2"))
         self.assertNotEqual(reversed_cases["resultDigest"], forward_cases["resultDigest"])
 
+    def test_receipt_chain_and_voyage_composition_are_explicit(self) -> None:
+        self.assertEqual(self.result["schemaVersion"], 3)
+        self.assertEqual(self.result["executionReceipt"]["adapterVersions"], [
+            {"id": "d2a_tactical", "version": 2},
+            {"id": "d2a_analytical_export", "version": 2},
+        ])
+        for voyage in self.result["traces"]:
+            self.assertEqual(voyage["schemaVersion"], 4)
+            self.assertEqual(voyage["compositionContract"]["cutBridgePolicy"], "explicit_bridge_edge_only")
+            self.assertTrue(all(
+                attempt["compositionWitness"]["schemaVersion"] == 2
+                for attempt in voyage["edgeAttempts"]
+            ))
+
     def test_f2_exact_prepare_unweave_cycle_is_recursive_carrier_return(self) -> None:
         voyage = next(item for item in self.result["traces"] if item["voyageId"] == "d2a-f2-pressure-voyage")
         self.assertEqual(

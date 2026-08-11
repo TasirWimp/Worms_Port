@@ -17,6 +17,7 @@ import {
 import { D2A_TACTICAL_CUT_ID, D2A_TACTICAL_CUT_VERSION } from '../cuts/d2a-cuts';
 import { getCutDefinition } from '../cuts/registry';
 import { V4_CUT_IDS, V4_CUT_VERSION } from '../cuts/v4-cuts';
+import { verifyRegisteredExecutionReceipt } from '../implementation-lock';
 import {
     EvaluationDeclarationSchema,
     FalseClosureRuleSchema,
@@ -97,6 +98,34 @@ function containsSourceLock(
         lock.commit === commit && requiredPaths.every((path) => lock.paths.includes(path)));
 }
 
+function deriveV4MandatoryProbeBundle(result: WorldDesignResult): ScalarProbe[] | null {
+    let accepted = 0;
+    let rejected = 0;
+    let mutated = 0;
+    let eventCount = 0;
+    const edges = result.traces.flatMap((trace) => trace.transitionEdges);
+    if (edges.length === 0) return null;
+    for (const edge of edges) {
+        const response = edge.response;
+        if (!response || typeof response !== 'object' || Array.isArray(response) ||
+            typeof response.accepted !== 'boolean' || typeof response.mutated !== 'boolean' ||
+            !Array.isArray(response.authoritativeEvents)) {
+            return null;
+        }
+        if (response.accepted) accepted += 1;
+        else rejected += 1;
+        if (response.mutated) mutated += 1;
+        eventCount += response.authoritativeEvents.length;
+    }
+    const scope = 'Declared offline V4 authority transcript only.';
+    return [
+        { probeId: 'v4.accepted_commands', value: accepted, unit: 'commands', scope },
+        { probeId: 'v4.event_count', value: eventCount, unit: 'events', scope },
+        { probeId: 'v4.mutated_commands', value: mutated, unit: 'commands', scope },
+        { probeId: 'v4.rejected_commands', value: rejected, unit: 'commands', scope }
+    ].sort((left, right) => compareCanonicalText(left.probeId, right.probeId));
+}
+
 function registeredEvaluationBinding(
     declaration: EvaluationDeclaration,
     result: WorldDesignResult,
@@ -111,7 +140,7 @@ function registeredEvaluationBinding(
     let expectedProtectedFamily: readonly string[] = [];
     let expectedCut = { id: 'unregistered', version: 1 };
     let sourceBound = false;
-    let mandatoryProbeBundleBound = declaration.pressureCaseId === 'v4_adapter';
+    let mandatoryProbeBundleBound = false;
     let registeredAcceptancePassed = false;
 
     if (declaration.pressureCaseId === 'v4_adapter') {
@@ -121,6 +150,12 @@ function registeredEvaluationBinding(
         expectedCut = { id: V4_CUT_IDS.authority, version: V4_CUT_VERSION };
         sourceBound = containsSourceLock(result, 'worms-port', V4_SOURCE_COMMIT, ['shared/simulation.ts']) &&
             result.transitionWitnesses.length > 0 && result.evidenceOrigin === 'authority-derived';
+        const expectedBundle = deriveV4MandatoryProbeBundle(result);
+        const actualBundle = availableProbes
+            .filter((probe) => expectedProbeIds.includes(probe.probeId))
+            .sort((left, right) => compareCanonicalText(left.probeId, right.probeId));
+        mandatoryProbeBundleBound = expectedBundle !== null &&
+            canonicalJson(actualBundle) === canonicalJson(expectedBundle);
     } else if (declaration.pressureCaseId !== 'none') {
         const registration = D2A_CONFIG_REGISTRATIONS.find((item) => item.caseId === declaration.pressureCaseId);
         if (registration) {
@@ -169,9 +204,13 @@ function registeredEvaluationBinding(
         ) && result.traces.flatMap((trace) => trace.transitionEdges).every((edge) =>
             sameStringSet(edge.protectedFamily, expectedProtectedFamily)
         );
-    const executionReceiptBound = result.executionReceipt.implementationPaths.includes(
-        'analysis/crpm_world/evaluation/evaluate.ts'
-    ) && result.executionReceipt.adapterVersions.length > 0;
+    let executionReceiptBound = false;
+    try {
+        verifyRegisteredExecutionReceipt(result.executionReceipt);
+        executionReceiptBound = true;
+    } catch {
+        executionReceiptBound = false;
+    }
     sourceBound = sourceBound && protectedFamilyBound && mandatoryProbeBundleBound && executionReceiptBound;
     const mandatoryEvidenceComplete = declarationMatchesRegistry &&
         expectedProbeIds.every((probeId) => actualProbeIds.includes(probeId));

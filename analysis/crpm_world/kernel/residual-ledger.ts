@@ -1,4 +1,3 @@
-import { ResidualLedgerSchema } from '../schemas';
 import type { ResidualLedger } from '../types';
 
 export type ResidualPropagationIssue = Readonly<{
@@ -19,7 +18,7 @@ function appendUnique(target: string[], values: readonly string[]): void {
 }
 
 export function emptyResidualLedger(): ResidualLedger {
-    return ResidualLedgerSchema.parse({
+    return {
         schemaVersion: 2,
         positionDeltas: [],
         resourceDeltas: [],
@@ -33,12 +32,12 @@ export function emptyResidualLedger(): ResidualLedger {
         dischargedObligations: [],
         unresolvedObligations: [],
         excludedUnmodelledResidue: []
-    });
+    } as ResidualLedger;
 }
 
 /** Accumulates every residual entry and checks obligation transfer edge by edge. */
 export function mergeResidualLedgers(ledgers: readonly ResidualLedger[]): ResidualMergeResult {
-    const parsed = ledgers.map((ledger) => ResidualLedgerSchema.parse(ledger));
+    const parsed = ledgers;
     const aggregate = emptyResidualLedger();
     const outstanding = new Set<string>();
     const carriedObligations: string[] = [];
@@ -109,7 +108,7 @@ export function mergeResidualLedgers(ledgers: readonly ResidualLedger[]): Residu
 
     aggregate.unresolvedObligations.push(...[...outstanding].sort());
     return Object.freeze({
-        ledger: ResidualLedgerSchema.parse(aggregate),
+        ledger: aggregate,
         carriedObligations: carriedObligations.sort(),
         propagationIssues
     });

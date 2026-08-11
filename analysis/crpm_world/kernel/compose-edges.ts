@@ -1,12 +1,8 @@
-import { canonicalJson, sha256Digest } from '../canonical';
-import {
-    CompositionWitnessSchema,
-    EdgeCompositionResultSchema,
-    WorldTransitionEdgeSchema
-} from '../schemas';
+import { canonicalJson, compareCanonicalText, sha256Digest } from '../canonical';
 import type {
     CompositionIssue,
-    CompositionWitness,
+    CompositionContract,
+    CompositionWitnessV2,
     EdgeCompositionResult,
     WorldCarrierReference,
     WorldTransitionEdge,
@@ -17,6 +13,7 @@ import { mergeResidualLedgers } from './residual-ledger';
 export type CompositionPolicy = Readonly<{
     externallySuppliedInputPorts?: readonly string[];
     forbiddenPortIds?: readonly string[];
+    cutBridgePolicy?: 'explicit_bridge_edge_only';
 }>;
 
 const CHECKED_CONDITIONS = [
@@ -76,7 +73,7 @@ function allBoundPorts(edge: WorldTransitionEdgeV2): string[] {
         ...edge.portBindings.evidencePorts,
         ...edge.portBindings.supportPorts,
         ...edge.portBindings.returnPorts
-    ])].sort();
+    ])].sort(compareCanonicalText);
 }
 
 function issue(code: CompositionIssue['code'], message: string, details: unknown): CompositionIssue {
@@ -87,46 +84,75 @@ function cutsCompatible(first: WorldTransitionEdge, second: WorldTransitionEdge)
     return canonicalJson(first.targetCut) === canonicalJson(second.sourceCut);
 }
 
+export function normalizeCompositionContract(policy: CompositionPolicy = {}): CompositionContract {
+    return Object.freeze({
+        schemaVersion: 1,
+        contractId: 'crpm-world-edge-composition',
+        contractVersion: 1,
+        externallySuppliedInputPorts: [...new Set(policy.externallySuppliedInputPorts ?? [])].sort(compareCanonicalText),
+        forbiddenPortIds: [...new Set(policy.forbiddenPortIds ?? [])].sort(compareCanonicalText),
+        cutBridgePolicy: policy.cutBridgePolicy ?? 'explicit_bridge_edge_only'
+    });
+}
+
 export function makeCompositionWitness(
-    firstEdgeId: string,
-    secondEdgeId: string,
+    first: WorldTransitionEdge,
+    second: WorldTransitionEdge,
     issues: readonly CompositionIssue[],
+    compositionContract: CompositionContract,
     requiredInputPorts: readonly string[] = [],
     availableInputPorts: readonly string[] = [],
     forbiddenPortsCrossed: readonly string[] = []
-): CompositionWitness {
+): CompositionWitnessV2 {
     const compatible = issues.length === 0;
     const identity = {
-        firstEdgeId,
-        secondEdgeId,
+        firstEdgeId: first.edgeId,
+        secondEdgeId: second.edgeId,
+        firstEdgeDigest: sha256Digest(first),
+        secondEdgeDigest: sha256Digest(second),
+        compositionContract,
         compatible,
         issues,
         requiredInputPorts,
         availableInputPorts,
         forbiddenPortsCrossed
     };
-    return CompositionWitnessSchema.parse({
-        schemaVersion: 1,
+    return {
+        schemaVersion: 2,
         witnessId: `composition-${sha256Digest(identity).slice(0, 32)}`,
-        witnessVersion: 1,
-        firstEdgeId,
-        secondEdgeId,
+        witnessVersion: 2,
+        firstEdgeId: first.edgeId,
+        secondEdgeId: second.edgeId,
+        firstEdgeDigest: sha256Digest(first),
+        secondEdgeDigest: sha256Digest(second),
+        compositionContract,
         compatible,
         checkedConditions: [...CHECKED_CONDITIONS],
-        requiredInputPorts: [...requiredInputPorts].sort(),
-        availableInputPorts: [...availableInputPorts].sort(),
-        forbiddenPortsCrossed: [...forbiddenPortsCrossed].sort(),
-        issues
-    });
+        requiredInputPorts: [...requiredInputPorts].sort(compareCanonicalText),
+        availableInputPorts: [...availableInputPorts].sort(compareCanonicalText),
+        forbiddenPortsCrossed: [...forbiddenPortsCrossed].sort(compareCanonicalText),
+        issues: [...issues]
+    };
 }
 
-export function composeEdges(
+export function assessEdgeCompatibility(
     firstInput: WorldTransitionEdge,
     secondInput: WorldTransitionEdge,
     policy: CompositionPolicy = {}
-): EdgeCompositionResult {
-    const first = WorldTransitionEdgeSchema.parse(firstInput);
-    const second = WorldTransitionEdgeSchema.parse(secondInput);
+): Readonly<{
+    first: WorldTransitionEdge;
+    second: WorldTransitionEdge;
+    compositionContract: CompositionContract;
+    issues: readonly CompositionIssue[];
+    requiredInputPorts: readonly string[];
+    availableInputPorts: readonly string[];
+    forbiddenPortsCrossed: readonly string[];
+    residual: ReturnType<typeof mergeResidualLedgers>;
+    witness: CompositionWitnessV2;
+}> {
+    const first = firstInput;
+    const second = secondInput;
+    const compositionContract = normalizeCompositionContract(policy);
     const issues: CompositionIssue[] = [];
 
     if (first.targetCarrier.stateDigest !== second.sourceCarrier.stateDigest) {
@@ -185,14 +211,14 @@ export function composeEdges(
         }));
     }
 
-    const externalPorts = [...new Set(policy.externallySuppliedInputPorts ?? [])];
+    const externalPorts = [...compositionContract.externallySuppliedInputPorts];
     let requiredInputPorts: string[] = [];
     let availableInputPorts: string[] = [];
     if (first.schemaVersion === 2 && second.schemaVersion === 2) {
         requiredInputPorts = [...new Set([
             ...second.portBindings.contextPorts,
             ...second.portBindings.actionPorts
-        ])].sort();
+        ])].sort(compareCanonicalText);
         availableInputPorts = [...new Set([
             ...first.portBindings.contextPorts,
             ...first.portBindings.responsePorts,
@@ -200,7 +226,7 @@ export function composeEdges(
             ...first.portBindings.supportPorts,
             ...first.portBindings.returnPorts,
             ...externalPorts
-        ])].sort();
+        ])].sort(compareCanonicalText);
         const missing = requiredInputPorts.filter((port) => !availableInputPorts.includes(port));
         if (missing.length > 0) {
             issues.push(issue('missing-input-port', 'Prior outputs/carried context and explicit external inputs do not satisfy the next edge.', { missingPorts: missing }));
@@ -212,21 +238,30 @@ export function composeEdges(
         }));
     }
 
-    const forbidden = [...new Set(policy.forbiddenPortIds ?? [])].sort();
+    const forbidden = [...compositionContract.forbiddenPortIds];
     const crossed = first.schemaVersion === 2 && second.schemaVersion === 2
         ? [...new Set([...allBoundPorts(first), ...allBoundPorts(second)])]
             .filter((port) => forbidden.includes(port))
-            .sort()
+            .sort(compareCanonicalText)
         : [];
     if (crossed.length > 0) {
         issues.push(issue('forbidden-port-crossing', 'Composition crosses one or more forbidden ports.', { forbiddenPorts: crossed }));
     }
 
     const residual = mergeResidualLedgers([first.residual, second.residual]);
-    for (const propagationIssue of residual.propagationIssues) {
-        issues.push(issue('obligation-not-propagated', propagationIssue.message, {
-            obligationId: propagationIssue.obligationId
-        }));
+    const secondClosing = new Set([
+        ...second.residual.dischargedObligations,
+        ...second.residual.expiredRights
+    ]);
+    for (const obligationId of first.residual.unresolvedObligations) {
+        if (secondClosing.has(obligationId)) continue;
+        if (second.residual.carriedObligations.includes(obligationId) &&
+            second.residual.unresolvedObligations.includes(obligationId)) continue;
+        issues.push(issue(
+            'obligation-not-propagated',
+            `Obligation ${obligationId} was neither carried nor explicitly discharged/expired across the edge boundary.`,
+            { obligationId }
+        ));
     }
 
     const secondAccepted = edgeAccepted(second);
@@ -243,21 +278,109 @@ export function composeEdges(
     }
 
     const witness = makeCompositionWitness(
-        first.edgeId,
-        second.edgeId,
+        first,
+        second,
         issues,
+        compositionContract,
         requiredInputPorts,
         availableInputPorts,
         crossed
     );
-    return EdgeCompositionResultSchema.parse({
-        schemaVersion: 1,
-        compatible: issues.length === 0,
-        partialValidEdges: issues.length === 0 ? [first, second] : [first],
-        attemptedEdge: second,
-        accumulatedResidual: residual.ledger,
-        carriedObligations: residual.carriedObligations,
-        unresolvedObligations: residual.ledger.unresolvedObligations,
+    return Object.freeze({
+        first,
+        second,
+        compositionContract,
+        issues,
+        requiredInputPorts,
+        availableInputPorts,
+        forbiddenPortsCrossed: crossed,
+        residual,
         witness
     });
+}
+
+export function assessInitialEdgeCompatibility(
+    initialCarrier: WorldCarrierReference,
+    edge: WorldTransitionEdge,
+    policy: CompositionPolicy = {}
+): CompositionWitnessV2 {
+    const compositionContract = normalizeCompositionContract(policy);
+    const issues: CompositionIssue[] = [];
+    if (!carrierContinuationMatches(initialCarrier, edge.sourceCarrier)) {
+        issues.push(issue(
+            initialCarrier.stateDigest === edge.sourceCarrier.stateDigest
+                ? 'carrier-reference-mismatch'
+                : 'carrier-state-mismatch',
+            'Voyage initial carrier does not match the first edge source carrier.',
+            { initialCarrier, edgeSourceCarrier: edge.sourceCarrier }
+        ));
+    }
+    if (edge.fixedFrame.expectedRevisionOrStep !== edge.sourceCarrier.revisionOrStep ||
+        edge.targetCarrier.revisionOrStep < edge.sourceCarrier.revisionOrStep) {
+        issues.push(issue('revision-order-mismatch', 'First-edge revision/step ordering does not match its fixed frame.', {
+            sourceRevision: edge.sourceCarrier.revisionOrStep,
+            expectedRevision: edge.fixedFrame.expectedRevisionOrStep,
+            targetRevision: edge.targetCarrier.revisionOrStep
+        }));
+    }
+    let requiredInputPorts: string[] = [];
+    let availableInputPorts = [...compositionContract.externallySuppliedInputPorts];
+    let crossed: string[] = [];
+    if (edge.schemaVersion === 2) {
+        requiredInputPorts = [...new Set(edge.portBindings.actionPorts)].sort(compareCanonicalText);
+        availableInputPorts = [...new Set([
+            ...edge.portBindings.contextPorts,
+            ...compositionContract.externallySuppliedInputPorts
+        ])].sort(compareCanonicalText);
+        const missing = requiredInputPorts.filter((port) => !availableInputPorts.includes(port));
+        if (missing.length > 0) {
+            issues.push(issue('missing-input-port', 'Explicit external inputs do not satisfy the first edge action ports.', { missingPorts: missing }));
+        }
+        crossed = allBoundPorts(edge).filter((port) => compositionContract.forbiddenPortIds.includes(port));
+        if (crossed.length > 0) {
+            issues.push(issue('forbidden-port-crossing', 'First-edge admission crosses one or more forbidden ports.', { forbiddenPorts: crossed }));
+        }
+    } else {
+        issues.push(issue('missing-input-port', 'Sealed voyage admission requires explicit v2 port bindings.', {
+            edgeSchemaVersion: edge.schemaVersion
+        }));
+    }
+    if (edgeAccepted(edge) === false && (
+        edge.sourceCarrier.stateDigest !== edge.targetCarrier.stateDigest ||
+        edge.sourceCarrier.revisionOrStep !== edge.targetCarrier.revisionOrStep
+    )) {
+        issues.push(issue('carrier-state-mismatch', 'A rejected first edge must retain its source carrier without mutation.', {
+            sourceStateDigest: edge.sourceCarrier.stateDigest,
+            targetStateDigest: edge.targetCarrier.stateDigest,
+            sourceRevision: edge.sourceCarrier.revisionOrStep,
+            targetRevision: edge.targetCarrier.revisionOrStep
+        }));
+    }
+    return makeCompositionWitness(
+        edge,
+        edge,
+        issues,
+        compositionContract,
+        requiredInputPorts,
+        availableInputPorts,
+        crossed
+    );
+}
+
+export function composeEdges(
+    firstInput: WorldTransitionEdge,
+    secondInput: WorldTransitionEdge,
+    policy: CompositionPolicy = {}
+): EdgeCompositionResult {
+    const assessed = assessEdgeCompatibility(firstInput, secondInput, policy);
+    return {
+        schemaVersion: 1,
+        compatible: assessed.issues.length === 0,
+        partialValidEdges: assessed.issues.length === 0 ? [assessed.first, assessed.second] : [assessed.first],
+        attemptedEdge: assessed.second,
+        accumulatedResidual: assessed.residual.ledger,
+        carriedObligations: assessed.residual.carriedObligations,
+        unresolvedObligations: assessed.residual.ledger.unresolvedObligations,
+        witness: assessed.witness
+    } as EdgeCompositionResult;
 }
