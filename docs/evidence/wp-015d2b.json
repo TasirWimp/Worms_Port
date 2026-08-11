@@ -21,21 +21,25 @@
     "Trace accepted and rejected command paths with deterministic authority re-entry, and assess visible equality, protected equivalence, recursive-carrier return, invariant-region return, finite exact return, and paired-route mismatch as separate classifications.",
     "At Worms_Port D2A-adapter gate base 5ff42a0e26ecd9cee80cb4c17f86404d5d1dc64d, invoke only registered public Python tactical-model functions, fail closed on config schema or whole-report digest drift, and emit deterministic JSON that validates as a strict CRPM-world WorldDesignResult.",
     "Reconstruct compact F2, F3, and H3 action voyages and digest-bound F4/H2 aggregate diagnostics while preserving all five historical statuses, one shared evidence covariance group, explicit unmodelled ports, and ProductAuthority none.",
-    "At Worms_Port offline-port gate base abd4d6be3e49e86bc8b3dc9f468d82167df3dcef, admit only v4_authority@1 and d2a_tactical@1 through a strict deterministic request envelope with closed baseline/config, cut, scenario, seed, probe, port, activation, and declarative sequence validation.",
+    "At Worms_Port offline-port gate base abd4d6be3e49e86bc8b3dc9f468d82167df3dcef, admit only v4_authority@2 and d2a_tactical@2 through the sealed strict request-v2 envelope with closed baseline/config, cut, scenario, seed, probe, port, activation, and declarative sequence validation; pre-sealing v1 envelopes are unsupported pre-release records.",
     "Execute V4 commands only through the existing authority adapter and D2A requests only through the fixed registered Python exporter module, then emit strict digest-bound WorldDesignResult JSON only below ignored test-results/crpm-world output.",
     "At Worms_Port evaluation-gate base 683a4d9cbbdd58ff074a711d68383083dc89af8b, make a strict v2 witness-linked qualitative DiagnosticProfile the primary evaluation surface while retaining v1 source-diagnostic compatibility and moving scalar probes into a separate digest-bound evaluation bundle field.",
     "Detect F2 recursive-return-versus-landfall, H2 aggregate port-split, F3 recurrence-versus-balance, F4 structural-versus-initiative, H3 delayed-response, V4 adapter-parity, and compact-trace false closure without a generic balance threshold or automatic product-authority promotion.",
-    "Complete the initial implementation through Worms_Port commit f34317c5008e3171718705a9d8277437aae8d00d and the documentation/evidence closure predecessor 7655b1c27b54ce6d6ee0a2279beaba8ec1939811 while retaining af23717e61fea6995bf3b7209211ae1aaa2bb855 as the package base and 995236df60924f790506cf5badec3c102abf3fd1 as the exact read-only CRPM methodological source lock.",
+    "Freeze the final sealing implementation at Worms_Port commit 1ce572247a0eb3c948900fd3b4cb5178b0ae0f84, tree fbe4c6c12ff4bbac68a68da31f4a6d20c04cfc45, and canonical 22-file implementation-bundle digest 659a74ab914e3f4923e4442f9e8e67ae738cf9e4c76758ad23c95bcd7da9f106 while retaining af23717e61fea6995bf3b7209211ae1aaa2bb855 as the package base and 995236df60924f790506cf5badec3c102abf3fd1 as the exact read-only CRPM methodological source lock.",
     "Apply the complete-verification adversarial hardening in the same bounded package: use host-locale-independent ordinal ordering, admit only the exact registered seed and witnesses output mode, reject symbolic-link/junction file traversal, and carry every active D2A after-state obligation until explicit discharge.",
     "Bind CRPM port/flow methodology to docs/architecture/CRPM_Port_Flow_Mapping_Note_v0.md and CRPM_Port_Flow_Boundary_Interface_Run_v0.md; typed transitions to CRPM_Cut_Transition_Translation_Note_v0.md; edge/re-entry support to CRPM_Edge_Scoped_Cut_Roles_Reentry_Protection_v0.md, CRPM_Edge_Anatomy_Reentry_Graph_Relation_v0.md, and CRPM_Typed_Reentry_Edge_Tooling_Playbook_v0.md; voyage design to the recursive cut-transition voyage design note; evaluation to CRPM_Evaluation_Language_Operational_Note_v0.md; and local transfer-back to Ported_Local_Subsystem_Case_Template.md.",
     "Use emergence_lab_crpm/observer.py and tests/automation/test_observer.py only as read-only behavioral references for an independently written generic TypeScript finite quotient-transport checker, and use dynamic_return_obligation_crosswalk_source.py only to keep return meanings distinct; copy no CRPM code and add no CRPM runtime, Python, npm, vendor, or package dependency.",
     "Changed-path inventory: analysis/crpm_world/README.md, canonical.ts, schemas.ts, types.ts, tsconfig.json, adapters/, cuts/, kernel/, design-port/, evaluation/, and examples/; tests/crpm-world/; scripts/run-crpm-world-design.ts; scripts/check-import-boundary.js; package.json; legal/source-manifest.json; docs/planning/wp-015d2b-crpm-game-world-design-port-contract.md; docs/planning/implementation_plan.md; and docs/evidence/wp-015d2b.json.",
-    "Record deterministic reviewed examples after implementation-review repair: V4 request d40a4dcbeb0a59ed5a52cd340315dd9ae962ebf2455dd57863333ba6656dc98f -> result 209a6813201ea7b0db53919f8b68b17a7b5bbefac7116ec3ce4f80ca90490187; D2A F3 request 8d2fc97e2fe8576b72c417d303bd4e3e5160de90b0eea2a1947dd8a161703cda -> result 11f83e1512dff94287181bdf25d76eeb5ec34595cc1818237a4a8697ee776c55.",
+    "Record deterministic sealing examples: V4 request 2af351b11b8ca0e438035a3309f6b88b9d383cc9601f916f5ccacf7106209b36 -> result 60ea723359484bbfb4bf23574f4dcab3537022a95270c99395d5ec04c1444539; D2A F3 request b1f2dcd40d6ae24495738499a7254a90372fc6af79276616f8b30f1d6460609d -> result 0192e0a3471dfdc00e202c2be855fde16e2aeef2ba4d967fed87c5bf29fff4d7.",
     "Bind unchanged D2A whole-report digests: F2 6a2ac3a1b8bc13c299ebf20a926eb5af0ac5e3fb057a841febc2f13fcb5ffbea; F3 9f5cd9574cc88fb2e885b631a7f9119a105ccdeb323eae1b1f0299e989a30332; F4 414e42735e97717f36b7583ffa80cb8130bf812259d598084416c4fd192247a6; H2 f47fa00f6731254c62a115214e370ebdc363429499b9d2891b1c3cf0c0bc705c; H3 4f148ce8ec2d50598ca7638b9cd74c820eb3cb3b7b2934a09867df51f2745d14.",
     "Preserve pressure outcomes without promotion: F2 exact prepare/Unweave recursive-carrier return with 20 recurrence-bearing turn limits; F3 64-unit Threadback and 64 Escape-Slack spend with no selected recurrence but 68.8 percent first-actor rate; F4 no bounded opening/recurrence/turn limit but 63.2 percent aggregate and 80 percent at 704; H2 48.8 percent aggregate masking 44/40/44/40/76 percent bands; H3 later counterplay after an intervening action with forced openings at 448/512/576 and 63.2 percent aggregate.",
     "Reopen WP-015D2B for external implementation-review repair while retaining M2 local-use evidence: current ProductAuthority is none everywhere, V4 adapter parity is an explicit read-only authority-provenance relation, and no production module imports or receives authority from analysis/crpm_world.",
     "Bind evaluation maturity to the closed historical source/report/witness registry; remove caller-authored acceptance, re-entry, owner-decision, M3, and authority inputs; require the complete mandatory probe family before optional display filtering; and keep current result/evaluation schema versions capped at M2 and ProductAuthority none.",
-    "Enforce versioned cut references and explicit authority-projection/profile-migration edges; include schema/profile versions in carrier continuity and finite exact return; separate typed WorldObligation lifecycle records from ReturnAssessment classifications; and rename authorityDefinitionMutationObserved to avoid collision with SimulationTransition.mutated."
+    "Enforce versioned cut references and explicit authority-projection/profile-migration edges; include schema/profile versions in carrier continuity and finite exact return; separate typed WorldObligation lifecycle records from ReturnAssessment classifications; and rename authorityDefinitionMutationObserved to avoid collision with SimulationTransition.mutated.",
+    "Bind every sealed result to a Git-derived execution receipt containing repository, implementation commit/tree, closed paths and per-file blobs, canonical bundle digest, adapter/profile/request/result versions, source locks, and request/result digests; fail closed on dirty or mismatched implementation files.",
+    "Represent Spoolburst preparation, Spun Cocoon, Opening Weave, Frayed Seam, Seam Pin, and Brace with unique scenario/voyage/origin-scoped WorldObligation records whose origin is discriminated between an edge and initial carrier and whose roles, responses, expiry, and discharge semantics are type-specific.",
+    "Treat expiration as an explicit closure distinct from discharge and reject expiration before opening, carry after closure, and simultaneous discharge/expiration; derive each voyage summary and the result residual ledger canonically from contained edges/traces and reject caller-authored summary drift.",
+    "Bind the exact F2/F3/F4/H2/H3 mandatory probe id/value/unit/scope bundles by canonical SHA-256 digests 6ea65264f90d72a28c769c9d590fc3803e55f89e3c4e65d6822ae1b8264ad157, 88c789e1d7638fecb9ce9cdbe01d3329b9e9932870ac4fc3d310ab40086aa4c3, 5adbe24fb3235e666c02a672a6b8e9077e5543756f845d43ead55288174098bb, 4774532bf4cc31a957cb7ed986752f576c7bcdec63f33ec89aa72c34202b91cd, and 106d21390a4453faab5d25162eed3d77b8299b08edaef981a9700879240f6a21 before granting M2 evaluation."
   ],
   "non_goals": [
     "Rewrite the tactical model in TypeScript, change any tactical-model policy/action/transition/opening/recurrence/aggregate result, check all 250 traces per case into Git, or treat a D2A adapter as production authority.",
@@ -57,7 +61,8 @@
     "npm run check:work-packages",
     "npm run check:compliance",
     "npm run build",
-    "git diff --check"
+    "git diff --check",
+    "npm audit"
   ],
   "deterministic_seeds": [
     "3237998097"
@@ -73,7 +78,7 @@
     {
       "command": "npm run test:crpm-world",
       "status": "pass",
-      "detail": "All 71 focused Node/tsx tests passed. Sixty-two contract, authority, versioned-cut/projection, voyage/composition/return, typed-obligation, D2A, offline-port, ordinal-order, exact-seed/detail, migration, and link-boundary tests remain green; nine evaluation tests cover F2/H2/F3/F4/H3/V4 false closure, mandatory-evidence retention, source-bound maturity, and caller-forged decision/pass/lock rejection."
+      "detail": "All 74 focused Node/tsx tests passed. Sixty-four contract, authority, versioned-cut/projection, voyage/composition/return, typed-obligation, D2A, offline-port, ordinal-order, exact-seed/detail, migration, and link-boundary tests include destructive summary and expiration cases; ten evaluation tests cover F2/H2/F3/F4/H3/V4 false closure, exact mandatory-probe bundle values, source-bound maturity, and caller-forged decision/pass/lock rejection."
     },
     {
       "command": "npm run test:crpm-world-design",
@@ -83,17 +88,17 @@
     {
       "command": "npm run test:crpm-world-evaluation",
       "status": "pass",
-      "detail": "All nine focused evaluation tests passed. F2 recurrence, H2 aggregate parity, F3 recurrence repair, F4 structural success, H3 delayed response, and V4 adapter parity remain blocked from M3; callers cannot supply acceptance, re-entry, owner-decision, M3, or authority claims; current ProductAuthority remains none."
+      "detail": "All ten focused evaluation tests passed. F2 recurrence, H2 aggregate parity, F3 recurrence repair, F4 structural success, H3 delayed response, and V4 adapter parity remain blocked from M3; altered registered probe values with retained ids/source locks/report strings and rebuilt result digests downgrade to M1; current ProductAuthority remains none."
     },
     {
       "command": "npm run analyze:crpm-world -- --request <reviewed-example> --output test-results/crpm-world/<result>.json",
       "status": "pass",
-      "detail": "The V4 example reproduced request/result digests d40a4dcbeb0a59ed5a52cd340315dd9ae962ebf2455dd57863333ba6656dc98f / 209a6813201ea7b0db53919f8b68b17a7b5bbefac7116ec3ce4f80ca90490187. The D2A F3 example reproduced 8d2fc97e2fe8576b72c417d303bd4e3e5160de90b0eea2a1947dd8a161703cda / 11f83e1512dff94287181bdf25d76eeb5ec34595cc1818237a4a8697ee776c55. Both outputs remained ignored derived artifacts below test-results/crpm-world."
+      "detail": "The sealed V4 example reproduced request/result digests 2af351b11b8ca0e438035a3309f6b88b9d383cc9601f916f5ccacf7106209b36 / 60ea723359484bbfb4bf23574f4dcab3537022a95270c99395d5ec04c1444539. The D2A F3 example reproduced b1f2dcd40d6ae24495738499a7254a90372fc6af79276616f8b30f1d6460609d / 0192e0a3471dfdc00e202c2be855fde16e2aeef2ba4d967fed87c5bf29fff4d7. Both receipts bind implementation commit 1ce572247a0eb3c948900fd3b4cb5178b0ae0f84, tree fbe4c6c12ff4bbac68a68da31f4a6d20c04cfc45, and bundle digest 659a74ab914e3f4923e4442f9e8e67ae738cf9e4c76758ad23c95bcd7da9f106."
     },
     {
       "command": "npm run test:d2a-adapter",
       "status": "pass",
-      "detail": "Eight Python exporter regressions and four Node/tsx cross-language tests passed. They bind unchanged whole-report digests, reconstruct F2/F3/H3 action evidence including H3's carried and discharged Frayed Seam obligation, preserve F4/H2 aggregates, reject config/schema drift, and validate the deterministic result through the strict Zod schema."
+      "detail": "Eight Python exporter regressions and four Node/tsx cross-language tests passed. They bind unchanged whole-report digests, reconstruct scenario-scoped F2 preparation/Cocoon and H3 initial Opening Weave plus opened/carried/discharged Frayed Seam and opened Seam Pin obligations, preserve F3/F4/H2 results, reject config/schema drift, and validate deterministic v2 results and v3 voyages through the strict Zod schema."
     },
     {
       "command": "npm run test:simulation",
@@ -128,7 +133,12 @@
     {
       "command": "git diff --check",
       "status": "pass",
-      "detail": "Working-tree diff checking passed after the complete-verification review fixes."
+      "detail": "Working-tree diff checking passed after the final sealing review fixes."
+    },
+    {
+      "command": "npm audit",
+      "status": "reported",
+      "detail": "Reported the existing one high-severity nanoid <3.3.17 advisory through Vite. WP-015D2B changed no dependency or lockfile; remediation requires a separately scoped dependency update."
     }
   ],
   "reviews": [
@@ -160,7 +170,7 @@
       "role": "worms_port_reviewer",
       "reviewer": "External implementation review",
       "decision": "repaired-awaiting-rereview",
-      "detail": "Reopened WP-015D2B and repaired source-bound maturity/authority, non-filterable mandatory evidence, versioned cuts and explicit projection/migration edges, version-safe carrier identity, typed world-obligation lifecycle integrity, exact protected-family admission, and the authorityDefinitionMutationObserved naming. Package status remains in_progress pending repeated external review."
+      "detail": "Applied the final sealing findings: Git-derived implementation receipts, durable v2 envelope versions and v3 voyages, edge/initial-carrier typed obligations with unique identities and type-specific roles, explicit expiration, canonical voyage/result derivation with destructive mutation checks, and exact registered probe-value bundles. Package status remains in_progress at M2/ProductAuthority none pending repeated external review."
     }
   ],
   "skipped_checks": [
@@ -178,6 +188,6 @@
     "The canonical format is the versioned local WP-015D2B contract, not a CRPM schema, ontology, graph-safe exchange standard, or claim of independent empirical evidence.",
     "Authority-adapter parity is a read-only authorityProvenance relationship, not ProductAuthority. Current executable result/evaluation schemas cannot emit owner-reviewed, versioned-ruleset-approved, or production-active authority.",
     "npm audit continues to report the existing high-severity nanoid advisory through Vite; this gate changes no dependency or lockfile.",
-    "The next permitted action is repeat external review of these in-progress repairs. Do not mark complete, commit, push, or open a PR before that review. Any new adapter, domain, gameplay candidate, range-entry commitment, live reaction/status, V5 rule, or product-authority promotion requires a separately authorized versioned package and applicable TypeScript/replay/protocol/runtime verification."
+    "The next permitted action is repeat external review of these committed in-progress repairs. Do not mark complete, push, or open a PR before that review. Any new adapter, domain, gameplay candidate, range-entry commitment, live reaction/status, V5 rule, or product-authority promotion requires a separately authorized versioned package and applicable TypeScript/replay/protocol/runtime verification."
   ]
 }

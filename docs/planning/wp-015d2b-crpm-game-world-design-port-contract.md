@@ -7,8 +7,9 @@
 - **Current carrier maturity:** `M2 local use` for the core contracts, bounded adapters, offline design port, and evaluation lens; no `M3` claim
 - **Current product authority:** `none`; tested V4 adapter parity is authority-derived witness/support provenance only
 - **Worms_Port base:** `af23717e61fea6995bf3b7209211ae1aaa2bb855` on `codex/wp-015d2b-crpm-world-design-port`
-- **Implementation tip before documentation integration:** `f34317c5008e3171718705a9d8277437aae8d00d`
-- **Documentation/evidence closure predecessor before adversarial hardening:** `7655b1c27b54ce6d6ee0a2279beaba8ec1939811`
+- **Frozen sealing implementation commit:** `1ce572247a0eb3c948900fd3b4cb5178b0ae0f84`
+- **Frozen implementation tree:** `fbe4c6c12ff4bbac68a68da31f4a6d20c04cfc45`
+- **Canonical 22-file implementation-bundle digest:** `659a74ab914e3f4923e4442f9e8e67ae738cf9e4c76758ad23c95bcd7da9f106`
 - **CRPM source lock:** `995236df60924f790506cf5badec3c102abf3fd1` on `main`
 - **Contract date:** 2026-08-10
 - **Documentation/evidence closure date:** 2026-08-11
@@ -136,6 +137,15 @@ in particular, these existing sources:
 The external plan and owner request authorize this gate; they are not evidence
 for its analytical claims.
 
+Every sealed `WorldDesignResult` also carries a strict Git-derived execution
+receipt. It binds repository id, implementation commit and tree, the closed
+22-path implementation inventory, every path's blob OID, a canonical bundle
+digest, adapter/profile/request/result versions, source authority/model locks,
+and the request/result digests. The implementation commit above was frozen
+before this later documentation/evidence binding, so the receipt has no commit
+self-reference. A working implementation file that differs from its recorded
+blob fails closed.
+
 ### Evidence covariance
 
 - The CRPM architecture notes form a linked methodological cluster, not
@@ -229,29 +239,30 @@ behavior or add or activate V5. It must not become a runtime or network service.
 | Canonical contracts | `analysis/crpm_world/canonical.ts`, `schemas.ts`, `types.ts`, `tsconfig.json` | Strict versioned JSON records, canonical key sorting with array-order preservation, and SHA-256 digests; unsafe numeric/non-JSON/timestamp content fails closed |
 | V4 authority adapter | `analysis/crpm_world/adapters/v4-authority-adapter.ts` | Exact direct transition parity for the declared V1/V4 scenarios without a `shared/` edit |
 | Cuts and projection | `analysis/crpm_world/cuts/`, `kernel/project-cut.ts`, `kernel/assess-quotient-transport.ts` | Seven closed versioned cuts, explicit authority-to-projection bridge edges, and an independently written finite quotient-transport checker with explicit alias pairs |
-| Voyage and return | `kernel/compose-edges.ts`, `trace-voyage.ts`, `residual-ledger.ts`, `assess-return.ts` | Schema/profile-aware composition, explicit migration edges, referentially closed typed world obligations, and six separate return classes |
+| Voyage and return | `kernel/compose-edges.ts`, `trace-voyage.ts`, `derive-voyage-evidence.ts`, `residual-ledger.ts`, `assess-return.ts` | Schema/profile-aware composition, canonical edge-derived summaries, explicit expiration, referentially closed typed world obligations, and six separate return classes |
 | D2A adapter | `analysis/crpm_world/adapters/d2a_export.py` and `adapters/tests/` | Exact registered F2/F3/F4/H2/H3 report-digest checks and compact deterministic evidence; `analysis/tactical_model/model.py` is unchanged |
-| Offline design port | `analysis/crpm_world/design-port/`, `analysis/crpm_world/examples/`, `scripts/run-crpm-world-design.ts` | Closed `v4_authority@1` and `d2a_tactical@1` execution only; output confined below ignored `test-results/crpm-world/` |
-| Evaluation | `analysis/crpm_world/evaluation/` | V2 witness-linked qualitative profile, seven false-closure rules, mandatory evidence separated from optional display, and a source-bound historical evaluator capped at M2/ProductAuthority none |
-| Verification and boundary | `tests/crpm-world/`, `scripts/check-import-boundary.js`, `package.json`, `legal/source-manifest.json` | 71 focused tests plus existing simulation/tactical/build/compliance gates; the exact reference-only CRPM method pin is manifest-recorded and production imports from analysis remain forbidden |
+| Offline design port | `analysis/crpm_world/design-port/`, `analysis/crpm_world/implementation-lock.ts`, `analysis/crpm_world/examples/`, `scripts/run-crpm-world-design.ts` | Closed `v4_authority@2` and `d2a_tactical@2` execution with a Git-derived receipt only; output confined below ignored `test-results/crpm-world/` |
+| Evaluation | `analysis/crpm_world/evaluation/` | V2 witness-linked qualitative profile, seven false-closure rules, exact value/unit/scope probe-bundle binding, and a source-bound historical evaluator capped at M2/ProductAuthority none |
+| Verification and boundary | `tests/crpm-world/`, `scripts/check-import-boundary.js`, `package.json`, `legal/source-manifest.json` | Focused destructive and parity tests plus existing simulation/tactical/build/compliance gates; the exact reference-only CRPM method pin is manifest-recorded and production imports from analysis remain forbidden |
 
 The reviewed example artifacts after the current in-progress
 implementation-review repairs are:
 
 | Example | Request digest | Result digest | Maturity / authority |
 | --- | --- | --- | --- |
-| V4 four-command transcript | `d40a4dcbeb0a59ed5a52cd340315dd9ae962ebf2455dd57863333ba6656dc98f` | `209a6813201ea7b0db53919f8b68b17a7b5bbefac7116ec3ce4f80ca90490187` | `M2_local_use` / `none` |
-| D2A F3 pressure request | `8d2fc97e2fe8576b72c417d303bd4e3e5160de90b0eea2a1947dd8a161703cda` | `11f83e1512dff94287181bdf25d76eeb5ec34595cc1818237a4a8697ee776c55` | `M2_local_use` / `none` |
+| V4 four-command transcript | `2af351b11b8ca0e438035a3309f6b88b9d383cc9601f916f5ccacf7106209b36` | `60ea723359484bbfb4bf23574f4dcab3537022a95270c99395d5ec04c1444539` | `M2_local_use` / `none` |
+| D2A F3 pressure request | `b1f2dcd40d6ae24495738499a7254a90372fc6af79276616f8b30f1d6460609d` | `0192e0a3471dfdc00e202c2be855fde16e2aeef2ba4d967fed87c5bf29fff4d7` | `M2_local_use` / `none` |
 
 ### Recorded deviations from the provisional design
 
 - Core contracts remain at the package root rather than a nested `contracts/`
   directory because `schemas.ts`, `types.ts`, and `canonical.ts` are already a
   cohesive local source surface.
-- Compatibility-bearing records evolved through discriminated v1/v2 schemas:
-  v2 adds explicit edge port bindings, complete projection transition rows,
-  voyage attempts/re-entry, and witness-linked qualitative diagnostics without
-  invalidating checked v1 D2A source records.
+- The sealed executable envelope uses profile, adapter, request, result, cut,
+  and evaluation version 2, VoyageTrace version 3, and ResidualLedger and
+  WorldObligation version 2. Incompatible pre-sealing v1 request/result/profile/
+  adapter/cut records and voyage v1/v2 records are unsupported pre-release
+  artifacts rather than alternate meanings of the durable contract.
 - The D2A adapter is Python rather than a TypeScript model rewrite. It invokes
   stable public tactical-model functions and emits deterministic JSON for Zod
   validation; production TypeScript never invokes Python.
@@ -271,9 +282,14 @@ implementation-review repairs are:
   bridge edge. Carrier continuation includes schema/profile identity and any
   version change requires an explicit migration edge.
 - Mandatory evidence probes are fixed by the adapter/config registry and always
-  evaluated before optional scalar display selection. World support obligations
-  are typed separately from return assessments and validated across their full
-  lifecycle.
+  evaluated before optional scalar display selection. Each registered D2A case
+  binds probe id, value, unit, and scope in one canonical bundle digest.
+- World support obligations are typed separately from return assessments, may
+  originate at an edge or initial carrier, use scenario/voyage/origin-scoped
+  IDs, and are validated through opening, carry, discharge, or expiration.
+- Voyage residue, obligation history, final carrier, and compatibility now have
+  one edge-derived implementation, and the result ledger is derived from all
+  contained traces. Caller-authored summary drift is rejected.
 - Terrain remains digest-backed rather than expanded into every report, and
   compact aggregate cases retain report/source references rather than checking
   all 250 traces into Git.
@@ -371,13 +387,18 @@ a finite sample is not a global no-residue claim.
 
 ### `WorldObligation` and `ReturnAssessment`
 
-`WorldObligation` represents a gameplay/design support duty with a typed id,
-origin edge, bearer/beneficiary, support carrier, legal responses, expiry and
-discharge conditions, and witnessed lifecycle. Every opened, carried,
-unresolved, discharged, or expired id must resolve to one typed record; its
-origin edge and support carrier must exist, discharge cannot precede opening,
-and an open obligation must be carried or explicitly closed on each following
-edge.
+`WorldObligation` version 2 represents a gameplay/design support duty with a
+scenario/voyage/origin-scoped unique id; a discriminated `edge` or
+`initial_carrier` origin; type-specific owner, bearer, beneficiary, originator,
+and eligible responders; support carrier; legal responses; expiry/discharge
+conditions; and witnessed lifecycle. The closed inventory covers Spoolburst
+preparation, Spun Cocoon, Opening Weave, Frayed Seam, Seam Pin, and Brace,
+including cocoon/opening hit counters where selected evidence carries them.
+Every opened, carried, unresolved, discharged, or expired id must resolve to
+one typed record and valid origin/support carrier. Expiration is an explicit
+closure distinct from discharge; validation rejects closure before opening,
+carry after closure, simultaneous discharge/expiration, or an open obligation
+that a following edge neither carries nor closes.
 
 `ReturnAssessment` separately evaluates `visible_equal`,
 `protected_equivalent`, `recursive_carrier_return`, `invariant_region_return`,
@@ -392,10 +413,13 @@ The executable F2 recurrence is emitted in `returnAssessments`, never in
 
 ### `VoyageTrace`
 
-V2 stores ordered transition edges and accepted/rejected/incompatible attempts,
-command history, explicit cut changes, witness references, accumulated residue,
-obligation history, replay support, terminal status, excluded claims, and
-re-entry instructions. Composition fails closed with a structured witness while
+Version 3 stores ordered transition edges and accepted/rejected/incompatible
+attempts, command history, explicit cut changes, witness references, initial
+obligations, edge-derived accumulated residue and obligation history, final
+carrier and compatibility, replay support, terminal status, excluded claims,
+and re-entry instructions. One canonical derivation is shared by tracing and
+validation; result residue is derived from all contained traces. Composition
+fails closed with a structured witness while
 retaining the valid prefix and attempted edge. This package does not claim CRPM
 voyage-v2/v3 implementation, global recovery geometry, holonomy, or a graph-safe
 schema.
@@ -437,6 +461,13 @@ V4 result parity appears only in the typed `authorityProvenance` relationship,
 bound to an exact source lock and transition witnesses. It cannot change the
 separate `productAuthority: none` field.
 
+The nested `RegisteredExecutionReceipt` is not caller-authored evaluation
+metadata. It is derived from Git and the closed implementation inventory and
+binds repository, implementation commit/tree, paths and blob OIDs, bundle
+digest, adapter/profile/request/result versions, source locks, request digest,
+and result digest. Result validation checks both the receipt binding and the
+outer digest.
+
 ### `DiagnosticProfile`
 
 Binds the evaluation object, fixed frame/cut, protected family, scope,
@@ -455,6 +486,11 @@ claim references. Scalar probes remain outside that profile in the evaluation
 bundle. Aggregate parity, stability, cleanliness, or low visible residue cannot
 independently prove preservation, balance, sufficient return, or landfall, and
 the evaluator does not encode a generic balance-rate threshold.
+Registered D2A evaluation additionally verifies one canonical mandatory-probe
+bundle digest over exact probe id, value, unit, and scope before applying
+false-closure rules or granting M2. Altering a value while retaining ids, source
+locks, report digest strings, and a rebuilt outer digest therefore downgrades
+the evaluation to M1.
 
 ### `CarrierMaturity`
 
@@ -500,7 +536,7 @@ or field on `EvaluationDeclaration` can substitute for that record.
 
 ## Implemented Cuts
 
-`analysis/crpm_world/cuts/v4-cuts.ts` defines the following version-1 records;
+`analysis/crpm_world/cuts/v4-cuts.ts` defines the following version-2 records;
 `cuts/registry.ts` returns detached copies from a closed registry. Each record
 declares its admissible scenario/action/policy/seed family, protected family,
 included support, forgotten distinctions, excluded claims, and bounded
@@ -642,6 +678,13 @@ reopening, registering, or promoting a gameplay candidate:
 | F4 structural reference | `v5-range-damage-forward-seam-pin-escape-slack-spoolburst-preparation-spun-cocoon-threadback-unweave-candidate-f4.json` | Reconstruct no bounded openings, recurrence, or turn-limit results in the 250-match sweep together with 63.2% aggregate and 80% first-actor rate at distance 704; retain structural-reference-only status and initiative residue. |
 | H2 aggregate-parity false closure | `v5-range-damage-forward-seam-pin-escape-slack-opening-weave-paid-second-actor-candidate-h2.json` | Reconstruct 48.8% aggregate together with distance bands 44/40/44/40/76%; preserve `rejected` and expose distance-conditioned closure risk. |
 | H3 delayed-response failure | `v5-range-damage-forward-seam-pin-escape-slack-counterable-opening-weave-candidate-h3.json` | Reconstruct convergence/no recurrence together with forced openings at distances 448/512/576 and 63.2% aggregate first-actor rate; carry the active Frayed Seam obligation across the intervening edge and record its later discharge; preserve `rejected`: delayed response cannot repair an already completed forced edge. |
+
+The canonical mandatory-probe bundle digests for F2, F3, F4, H2, and H3 are,
+respectively, `6ea65264f90d72a28c769c9d590fc3803e55f89e3c4e65d6822ae1b8264ad157`,
+`88c789e1d7638fecb9ce9cdbe01d3329b9e9932870ac4fc3d310ab40086aa4c3`,
+`5adbe24fb3235e666c02a672a6b8e9077e5543756f845d43ead55288174098bb`,
+`4774532bf4cc31a957cb7ed986752f576c7bcdec63f33ec89aa72c34202b91cd`,
+and `106d21390a4453faab5d25162eed3d77b8299b08edaef981a9700879240f6a21`.
 
 No acceptance case changes D2A history, declares a final threshold, proves live
 ballistics or player balance, or activates V5.

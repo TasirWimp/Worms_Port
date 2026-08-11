@@ -61,16 +61,19 @@ Phaser/Socket.IO stack.
   on 2026-08-11** for the external implementation-review repairs as a bounded
   analysis-only subordinate package on
   `codex/wp-015d2b-crpm-world-design-port`. It is rooted at Worms_Port base
-  `af23717e61fea6995bf3b7209211ae1aaa2bb855`, implemented through
-  `f34317c5008e3171718705a9d8277437aae8d00d`, closed in documentation/evidence
-  predecessor `7655b1c27b54ce6d6ee0a2279beaba8ec1939811`, and source-locks the read-only
+  `af23717e61fea6995bf3b7209211ae1aaa2bb855`, with the final sealing
+  implementation frozen at `1ce572247a0eb3c948900fd3b4cb5178b0ae0f84`,
+  tree `fbe4c6c12ff4bbac68a68da31f4a6d20c04cfc45`, and bundle digest
+  `659a74ab914e3f4923e4442f9e8e67ae738cf9e4c76758ad23c95bcd7da9f106`.
+  It source-locks the read-only
   CRPM methodology checkout at `995236df60924f790506cf5badec3c102abf3fd1`.
-  Its strict contracts, V4/D2A adapters, seven-cut versioned registry,
-  projection/voyage/return kernels, closed offline CLI, and source-bound
-  historical evaluation lens are under review at `M2 local use`. Mandatory
-  evidence is registry-fixed, world obligations and return assessments are
-  separate, current ProductAuthority is `none`, and V4 parity is provenance
-  only. It creates no V5, mechanic, status, live reaction,
+  Its v2 strict contracts and adapters, v3 voyage, seven-cut versioned registry,
+  Git-derived execution receipt, canonical edge-derived summaries, explicit
+  obligation expiration, closed offline CLI, and exact-probe-bound historical
+  evaluation lens are under review at `M2 local use`. Mandatory evidence is
+  registry-fixed, world obligations and return assessments are separate,
+  current ProductAuthority is `none`, and V4 parity is provenance only. It
+  creates no V5, mechanic, status, live reaction,
   protocol/replay/reward/UI/Loomkeeper change, CRPM runtime dependency, or
   graph-safe schema. The Execution Pointer remains on WP-015D2A.
   **WP-015D1 V4 wider

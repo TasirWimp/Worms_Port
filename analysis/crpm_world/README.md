@@ -24,10 +24,12 @@ repairs and awaits repeated external review; it is not a completed package.
 
 - Worms_Port implementation base:
   `af23717e61fea6995bf3b7209211ae1aaa2bb855`.
-- Implementation tip before this documentation integration:
-  `f34317c5008e3171718705a9d8277437aae8d00d`.
-- Documentation/evidence closure predecessor before adversarial hardening:
-  `7655b1c27b54ce6d6ee0a2279beaba8ec1939811`.
+- Frozen sealing implementation commit:
+  `1ce572247a0eb3c948900fd3b4cb5178b0ae0f84`.
+- Frozen implementation tree:
+  `fbe4c6c12ff4bbac68a68da31f4a6d20c04cfc45`.
+- Canonical 22-file implementation-bundle digest:
+  `659a74ab914e3f4923e4442f9e8e67ae738cf9e4c76758ad23c95bcd7da9f106`.
 - Read-only CRPM source lock:
   `995236df60924f790506cf5badec3c102abf3fd1`.
 - CRPM port/flow, cut-transition, edge/re-entry, voyage, evaluation, and local-
@@ -64,6 +66,11 @@ dynamics, empirical weight, or product authority.
   content digests.
 - `schemas.ts` contains the strict versioned Zod contracts, digest builders,
   and closed catalog validation for design requests.
+- `implementation-lock.ts` derives a receipt from the newest Git commit that
+  touched the closed implementation-path inventory, verifies every working
+  implementation file against its recorded blob, and binds the commit, tree,
+  per-file blob OIDs, bundle digest, versions, source locks, and request/result
+  digests into each result.
 - `types.ts` exports TypeScript types inferred from the Zod contracts so the
   runtime validator and compile-time surface cannot drift independently.
 - `adapters/v4-authority-adapter.ts` clones and validates caller inputs, calls
@@ -88,6 +95,9 @@ dynamics, empirical weight, or product authority.
 - `kernel/compose-edges.ts`, `residual-ledger.ts`, and `trace-voyage.ts`
   compose witnessed paths without discarding rejected or incompatible attempts,
   accumulate residue/obligations, and support deterministic authority re-entry.
+- `kernel/derive-voyage-evidence.ts` is the sole canonical derivation of voyage
+  edges, residue, obligation history, final carrier, and compatibility, and it
+  also derives the result ledger from all contained traces.
 - `kernel/assess-return.ts` evaluates six separate return classifications
   without collapsing them into one loop flag.
 - `design-port/registry.ts` is the closed offline registry for only
@@ -121,16 +131,16 @@ different versions do not compose.
 
 ## Deterministic artifact rules
 
-Top-level seed contracts use `schemaVersion: 1`, reject unknown fields, and are
-JSON-serializable. `DiagnosticProfile` retains its source-compatible v1 shape
-and adds v2 for the primary structured qualitative evaluation; scalar probes
-are deliberately absent from v2 and remain a separate evaluation-bundle field.
-`WorldTransitionEdge` retains its accepted v1 shape and adds
-v2 for mandatory explicit context/action/response/evidence/support/return port
-bindings; the authority adapter emits v2. `ProjectionTransportAssessment`
-retains its accepted v1 shape and adds v2 so every aliased source class carries
-an observed target-class row and one explicit left/right witness pair. The
-quotient checker emits v2. Canonicalization:
+The sealed executable envelope uses profile, adapter, request, result, cut, and
+evaluation version 2; `VoyageTrace` version 3; and `ResidualLedger` and
+`WorldObligation` version 2. Pre-sealing v1 request/result/profile/adapter/cut
+records are unsupported pre-release artifacts and are rejected by the current
+closed registry. Lower-level stable seed records that still say
+`schemaVersion: 1` retain their narrow original meaning; they are not alternate
+v1 design-port envelopes. `WorldTransitionEdge` v2 requires explicit
+context/action/response/evidence/support/return bindings, and
+`ProjectionTransportAssessment` v2 requires complete observed target rows and
+explicit alias witnesses. Canonicalization:
 
 - sorts object keys lexicographically at every depth;
 - preserves array order;
@@ -225,10 +235,11 @@ listed as externally supplied rather than silently produced by the prior edge.
 Failure returns a structured composition witness plus the valid prefix and
 attempted edge.
 
-`VoyageTrace` retains its accepted v1 shape and adds v2 for ordered accepted,
-rejected, and incompatible attempts; command history; explicit cut changes;
-edge and composition witnesses; residual and obligation history; final carrier;
-terminal status; exclusions; and re-entry instructions. Rejected attempts are
+`VoyageTrace` version 3 records ordered accepted, rejected, and incompatible
+attempts; command history; explicit cut changes; edge and composition witnesses;
+initial obligations; derived residue and obligation history; final carrier;
+terminal status; exclusions; and re-entry instructions. Pre-sealing voyage v1/v2
+records are unsupported by the sealed result schema. Rejected attempts are
 part of the compatible transition path only when their carrier remains
 unchanged. Incompatible attempts remain visible but do not advance that path.
 
@@ -242,11 +253,17 @@ this gate does not invent domain-specific decoders or invariant predicates.
 Recurrence keys are caller-supplied under a named cut/domain, so elapsed turn,
 tick, and revision fields are never removed globally.
 
-`WorldObligation` is separate from those return rows. Every opened, carried,
-unresolved, discharged, or expired id in a result must resolve to a typed
-record whose origin edge and support carrier exist. Result validation rejects
-discharge before opening and any compatible next edge that neither carries nor
-closes a live obligation.
+`WorldObligation` is separate from those return rows. Version 2 uses a
+discriminated `edge` or `initial_carrier` origin, scenario/voyage/origin-scoped
+unique IDs, and type-specific owner, bearer, beneficiary, originator, eligible
+responder, legal-response, expiry, and discharge semantics. The closed types
+cover Spoolburst preparation, Spun Cocoon, Opening Weave, Frayed Seam, Seam Pin,
+and Brace. Every opened, carried, unresolved, discharged, or expired id in a
+result must resolve to one such record and a valid origin/support carrier.
+Expiration is an explicit closure distinct from discharge. Canonical derivation
+rejects closure before opening, carrying after closure, simultaneous discharge
+and expiration, or a compatible edge that neither carries nor closes a live
+obligation.
 
 ## D2A analytical exporter
 
@@ -262,11 +279,13 @@ The emitted result keeps one covariance group for the shared model/policy/
 scenario family. It includes compact action voyages for F2's exact
 prepare/Unweave recurrence, F3's 64-unit Threadback and 64 Escape-Slack residue,
 and H3's opening/partial-response/intervening-action/later-counter order. The
-H3 residual ledger opens typed obligation
-`d2a.h3.loomkeeper.frayed_seam_turns`, carries it across the intervening edge,
-and records its later discharge, so voyage compatibility cannot hide the
-delayed-response support. F2 recurrence is a separate `ReturnAssessment`, not a
-gameplay-support obligation. F4 and H2 remain digest-bound aggregate diagnostics
+H3 residual ledger starts from an initial-carrier Opening Weave obligation,
+opens a scenario/voyage/edge-scoped Frayed Seam obligation, carries it across
+the intervening edge, records its later discharge, and then opens the resulting
+Seam Pin obligation, so voyage compatibility cannot hide delayed-response
+support. F2 exposes preparation and Spun Cocoon support obligations while its
+recurrence remains a separate `ReturnAssessment`, not a gameplay-support
+obligation. F4 and H2 remain digest-bound aggregate diagnostics
 rather than checked-in copies of all 250 traces. The exporter records
 `productAuthority: none`; exact analytical
 re-entry is not simulation parity, empirical evidence, candidate approval, or
@@ -303,8 +322,8 @@ assumptions; five reports are not five independent experiments.
 
 The offline port is an analysis CLI/library boundary. It is not a UI, server
 route, Socket.IO event, network endpoint, protocol message, or production
-simulation API. Its registry admits only `v4_authority@1` and
-`d2a_tactical@1`. Requests are declarative strict JSON: no request field can
+simulation API. Its registry admits only `v4_authority@2` and
+`d2a_tactical@2`. Requests are declarative strict JSON: no request field can
 select a module path, shell command, script, callback, `eval`, or executable
 operator.
 
@@ -338,10 +357,12 @@ use the checked example files above for complete input:
 
 ```json
 {
-  "adapter": { "id": "v4_authority", "version": 1 },
+  "schemaVersion": 2,
+  "profileVersion": 2,
+  "adapter": { "id": "v4_authority", "version": 2 },
   "baseline": { "kind": "ruleset", "id": "nimble-knots-artillery-v4", "version": 4, "calling": "wizard" },
   "scenarioDomain": { "schemaVersion": 1, "scenarioIds": ["v4-authority-c0ffee11"], "actionFamilies": ["move", "select_relic", "aim", "fire"], "policyFamilies": ["declared-command-sequence"], "seeds": [3237998097], "constraints": ["One reviewed transcript."] },
-  "cut": { "id": "authority_v4", "version": 1 },
+  "cut": { "id": "authority_v4", "version": 2 },
   "activation": "offline_only"
 }
 ```
@@ -353,14 +374,17 @@ exclusions; unknown fields
 fail closed. Results carry the canonical request digest, source locks, traces,
 witnesses, projection/return evidence, the primary v2 diagnostic, retained
 source diagnostics, residual ledger, blocked claims, maturity, authority,
-covariance/deduplication identity, and result digest.
+covariance/deduplication identity, a closed Git-derived execution receipt, and
+result digest. The receipt binds the exact implementation commit/tree, closed
+path inventory, per-file blobs, bundle digest, adapter/profile/request/result
+versions, source locks, and request/result digests.
 
 After the current in-progress implementation-review repairs:
 
 | Example | Request digest | Result digest |
 | --- | --- | --- |
-| V4 transcript | `d40a4dcbeb0a59ed5a52cd340315dd9ae962ebf2455dd57863333ba6656dc98f` | `209a6813201ea7b0db53919f8b68b17a7b5bbefac7116ec3ce4f80ca90490187` |
-| D2A F3 pressure | `8d2fc97e2fe8576b72c417d303bd4e3e5160de90b0eea2a1947dd8a161703cda` | `11f83e1512dff94287181bdf25d76eeb5ec34595cc1818237a4a8697ee776c55` |
+| V4 transcript | `2af351b11b8ca0e438035a3309f6b88b9d383cc9601f916f5ccacf7106209b36` | `60ea723359484bbfb4bf23574f4dcab3537022a95270c99395d5ec04c1444539` |
+| D2A F3 pressure | `b1f2dcd40d6ae24495738499a7254a90372fc6af79276616f8b30f1d6460609d` | `0192e0a3471dfdc00e202c2be855fde16e2aeef2ba4d967fed87c5bf29fff4d7` |
 
 Omit `--output` to use
 `test-results/crpm-world/<request-id>-result.json`. Identical request content
@@ -398,8 +422,16 @@ scalar probes.
 
 Maturity is source-bound and non-promotional. The current evaluator accepts only
 registered historical pressure results, verifies exact source locks, report or
-transition witnesses, versioned cut, full protected family, and the complete
-mandatory evidence family, and emits at most M2. Callers cannot supply pass,
+transition witnesses, the sealed execution receipt, versioned cut, full
+protected family, and the complete mandatory evidence family. Each D2A case
+also binds the canonical probe bundleâ€”probe ID, value, unit, and scopeâ€”by
+SHA-256 before false-closure evaluation. The F2/F3/F4/H2/H3 bundle digests are
+respectively `6ea65264f90d72a28c769c9d590fc3803e55f89e3c4e65d6822ae1b8264ad157`,
+`88c789e1d7638fecb9ce9cdbe01d3329b9e9932870ac4fc3d310ab40086aa4c3`,
+`5adbe24fb3235e666c02a672a6b8e9077e5543756f845d43ead55288174098bb`,
+`4774532bf4cc31a957cb7ed986752f576c7bcdec63f33ec89aa72c34202b91cd`,
+and `106d21390a4453faab5d25162eed3d77b8299b08edaef981a9700879240f6a21`.
+It emits at most M2. Callers cannot supply pass,
 re-entry, owner-decision, M3, or authority fields. All registered D2A cases
 remain historical failures or structural pressure and V4 parity remains
 wrapping evidence, so no M3 acceptance registration exists. A future owner
@@ -413,8 +445,9 @@ an arbitrary identifier is never sufficient.
 
 For a V4 result:
 
-1. Retain implementation tip `f34317c5008e3171718705a9d8277437aae8d00d`
-   (or a reviewed descendant) for the adapter/profile code. Verify the recorded
+1. Retain the exact receipt-bound implementation commit
+   `1ce572247a0eb3c948900fd3b4cb5178b0ae0f84`, tree, per-file blobs, and bundle
+   digest for the adapter/profile code. Verify the recorded
    historical `shared/simulation.ts` source/blob identity at its separate
    authority lock without checking out that pre-adapter commit to run the port.
 2. Recreate the registered ruleset, seed, and Calling with `createSimulation`.
@@ -426,8 +459,9 @@ For a V4 result:
 
 For a D2A result:
 
-1. Retain implementation tip `f34317c5008e3171718705a9d8277437aae8d00d`
-   (or a reviewed descendant) for the exporter/profile code. Verify the exact
+1. Retain the exact receipt-bound implementation commit
+   `1ce572247a0eb3c948900fd3b4cb5178b0ae0f84`, tree, per-file blobs, and bundle
+   digest for the exporter/profile code. Verify the exact
    model and registered config/schema blobs at their separate D2A source lock;
    that historical lock predates this adapter and is not the execution checkout.
 2. Run `python -m analysis.crpm_world.adapters.d2a_export --case <f2|f3|f4|h2|h3>`.
@@ -453,7 +487,7 @@ from treating generated JSON as new authority.
 Those require their separately named implementation gates. A common result
 shape will not make V4 and D2A share authority or dynamics.
 
-Completion explicitly creates no V5, new gameplay mechanic, range-entry
+This in-progress sealing repair creates no V5, new gameplay mechanic, range-entry
 commitment candidate, live defense/reaction, new player status, protocol/replay
 field, reward change, Loomkeeper change, client UI, server route, runtime
 endpoint, or asset change. It creates no graph-safe CRPM schema and makes no
