@@ -24,14 +24,14 @@ repairs and awaits repeated external review; it is not a completed package.
 
 - Worms_Port implementation base:
   `af23717e61fea6995bf3b7209211ae1aaa2bb855`.
-- Frozen authentication-repair implementation commit:
-  `50aaf7d433bd8f131f71d6cff4d7a73636e256b6`.
+- Frozen dependency-repair implementation commit:
+  `ca7bce03f132da6344b9b46c1743d055f65cba07`.
 - Frozen implementation tree:
-  `dca114f2d1bae266bbdeeda77f870c20f7552fbd`.
+  `029fb669cb1fee85eed322163d951aec5614d135`.
 - Canonical 25-file implementation-bundle digest:
-  `133a4dcc3c474f167d67e7ab92528129dfbdf557ae3dc9d7a2cadf754490464f`.
+  `ab843f2d35d6814b6837c7ae037f64d59cac00e19dfa57099538545a75742010`.
 - Approved direct-child implementation lock commit:
-  `f0a006dc87562d7617d7553fe094ceceb71a8a63`.
+  `b7937615ca72b7ac74de038c74ef78a64c0e1962`.
   The named lock JSON is machine evidence authenticated by the evaluator, not
   a second work-package record; the work-package checker excludes only that
   exact filename while continuing to validate all 24 package records.
@@ -406,8 +406,8 @@ After the current in-progress implementation-review repairs:
 
 | Example | Request digest | Result digest |
 | --- | --- | --- |
-| V4 transcript | `2af351b11b8ca0e438035a3309f6b88b9d383cc9601f916f5ccacf7106209b36` | `0d41d1b209020ccba9323630f2e363466b6e9b68f1c8b3796a5bd49f2058cd3d` |
-| D2A F3 pressure | `b1f2dcd40d6ae24495738499a7254a90372fc6af79276616f8b30f1d6460609d` | `87ff1b67e2d7015825fc738d116e9d4af4a45874bdcb84bb3497324c870217aa` |
+| V4 transcript | `2af351b11b8ca0e438035a3309f6b88b9d383cc9601f916f5ccacf7106209b36` | `6e19b56da202d4a6006289fd01db1ffe5412de48a312ffb1ee2b72b2a4856fb6` |
+| D2A F3 pressure | `b1f2dcd40d6ae24495738499a7254a90372fc6af79276616f8b30f1d6460609d` | `65e25fbedf35fee738f479cf1ddc835b78991e87d7041bc156c6ef8e4337028d` |
 
 Omit `--output` to use
 `test-results/crpm-world/<request-id>-result.json`. Identical request content
@@ -475,7 +475,7 @@ an arbitrary identifier is never sufficient.
 For a V4 result:
 
 1. Retain the exact receipt-bound implementation commit
-   `50aaf7d433bd8f131f71d6cff4d7a73636e256b6`, tree, per-file blobs, bundle
+   `ca7bce03f132da6344b9b46c1743d055f65cba07`, tree, per-file blobs, bundle
    digest, and direct-child machine lock for the adapter/profile code. Verify the recorded
    historical `shared/simulation.ts` source/blob identity at its separate
    authority lock without checking out that pre-adapter commit to run the port.
@@ -489,7 +489,7 @@ For a V4 result:
 For a D2A result:
 
 1. Retain the exact receipt-bound implementation commit
-   `50aaf7d433bd8f131f71d6cff4d7a73636e256b6`, tree, per-file blobs, bundle
+   `ca7bce03f132da6344b9b46c1743d055f65cba07`, tree, per-file blobs, bundle
    digest, and direct-child machine lock for the exporter/profile code. Verify the exact
    model and registered config/schema blobs at their separate D2A source lock;
    that historical lock predates this adapter and is not the execution checkout.

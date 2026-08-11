@@ -7,10 +7,10 @@
 - **Current carrier maturity:** `M2 local use` for the core contracts, bounded adapters, offline design port, and evaluation lens; no `M3` claim
 - **Current product authority:** `none`; tested V4 adapter parity is authority-derived witness/support provenance only
 - **Worms_Port base:** `af23717e61fea6995bf3b7209211ae1aaa2bb855` on `codex/wp-015d2b-crpm-world-design-port`
-- **Frozen authentication-repair implementation commit:** `50aaf7d433bd8f131f71d6cff4d7a73636e256b6`
-- **Frozen implementation tree:** `dca114f2d1bae266bbdeeda77f870c20f7552fbd`
-- **Canonical 25-file implementation-bundle digest:** `133a4dcc3c474f167d67e7ab92528129dfbdf557ae3dc9d7a2cadf754490464f`
-- **Approved machine-readable lock:** `docs/evidence/wp-015d2b-implementation-lock.json`, committed as direct child `f0a006dc87562d7617d7553fe094ceceb71a8a63`
+- **Frozen dependency-repair implementation commit:** `ca7bce03f132da6344b9b46c1743d055f65cba07`
+- **Frozen implementation tree:** `029fb669cb1fee85eed322163d951aec5614d135`
+- **Canonical 25-file implementation-bundle digest:** `ab843f2d35d6814b6837c7ae037f64d59cac00e19dfa57099538545a75742010`
+- **Approved machine-readable lock:** `docs/evidence/wp-015d2b-implementation-lock.json`, committed as direct child `b7937615ca72b7ac74de038c74ef78a64c0e1962`
 - **CRPM source lock:** `995236df60924f790506cf5badec3c102abf3fd1` on `main`
 - **Contract date:** 2026-08-10
 - **Documentation/evidence closure date:** 2026-08-11
@@ -244,15 +244,15 @@ behavior or add or activate V5. It must not become a runtime or network service.
 | D2A adapter | `analysis/crpm_world/adapters/d2a_export.py` and `adapters/tests/` | Exact registered F2/F3/F4/H2/H3 report-digest checks and compact deterministic evidence; `analysis/tactical_model/model.py` is unchanged |
 | Offline design port | `analysis/crpm_world/design-port/`, `analysis/crpm_world/implementation-lock.ts`, `analysis/crpm_world/examples/`, `scripts/run-crpm-world-design.ts`, `docs/evidence/wp-015d2b-implementation-lock.json` | Closed `v4_authority@2` and `d2a_tactical@2` execution with Git-derived receipts authenticated against an approved direct-child lock; output confined below ignored `test-results/crpm-world/` |
 | Evaluation | `analysis/crpm_world/evaluation/` | V2 witness-linked qualitative profile, seven false-closure rules, exact D2A bundle and edge-derived V4 probe binding, authenticated source/implementation maturity, and an M2/ProductAuthority-none ceiling |
-| Verification and boundary | `tests/crpm-world/`, `scripts/check-import-boundary.js`, `package.json`, `legal/source-manifest.json` | Focused destructive and parity tests plus existing simulation/tactical/build/compliance gates; the exact reference-only CRPM method pin is manifest-recorded and production imports from analysis remain forbidden |
+| Verification and boundary | `tests/crpm-world/`, `scripts/check-import-boundary.js`, `package.json`, `package-lock.json`, `legal/source-manifest.json` | Focused destructive and parity tests plus existing simulation/tactical/build/compliance gates; the exact reference-only CRPM method pin is manifest-recorded, Nano ID is patched to 3.3.18, and production imports from analysis remain forbidden |
 
 The reviewed example artifacts after the current in-progress
 implementation-review repairs are:
 
 | Example | Request digest | Result digest | Maturity / authority |
 | --- | --- | --- | --- |
-| V4 four-command transcript | `2af351b11b8ca0e438035a3309f6b88b9d383cc9601f916f5ccacf7106209b36` | `0d41d1b209020ccba9323630f2e363466b6e9b68f1c8b3796a5bd49f2058cd3d` | `M2_local_use` / `none` |
-| D2A F3 pressure request | `b1f2dcd40d6ae24495738499a7254a90372fc6af79276616f8b30f1d6460609d` | `87ff1b67e2d7015825fc738d116e9d4af4a45874bdcb84bb3497324c870217aa` | `M2_local_use` / `none` |
+| V4 four-command transcript | `2af351b11b8ca0e438035a3309f6b88b9d383cc9601f916f5ccacf7106209b36` | `6e19b56da202d4a6006289fd01db1ffe5412de48a312ffb1ee2b72b2a4856fb6` | `M2_local_use` / `none` |
+| D2A F3 pressure request | `b1f2dcd40d6ae24495738499a7254a90372fc6af79276616f8b30f1d6460609d` | `65e25fbedf35fee738f479cf1ddc835b78991e87d7041bc156c6ef8e4337028d` | `M2_local_use` / `none` |
 
 ### Recorded deviations from the provisional design
 
