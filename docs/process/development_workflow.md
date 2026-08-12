@@ -439,6 +439,17 @@ control the Loomkeeper, or override TypeScript truth. Defense, action-economy,
 and overtime/convergence ideas are exploratory candidates until an owner
 approves a separate versioned implementation package.
 
+The completed WP-015D2B offline World Design Port remains a sealed
+analysis-only carrier. Use
+`docs/process/crpm-world-operational-governance.md` when reproducing its
+registered evidence or proposing a later gameplay-world hypothesis. The
+governance classifies observation, candidate admission, profile migration,
+product proposal, and out-of-model escalation as separate lanes; requires a
+candidate contract before model or registry edits; preserves historical
+statuses and source locks; and keeps analytical disposition orthogonal to
+ProductAuthority. Novel candidates must use a separately versioned admission
+package rather than an arbitrary request to the D2B registry.
+
 ### Planned Basic Relic Ruleset V5
 
 After WP-015D2A's owner decision, WP-015D2 prepares

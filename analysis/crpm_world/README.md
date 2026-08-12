@@ -8,6 +8,11 @@ WP-015D2B completed on 2026-08-11 after its implementation, adversarial,
 sealing, and final external reviews. Completion preserves the analysis-only
 boundary, `M2 local use` ceiling, and `ProductAuthority: none`.
 
+Operational use and admission of any later gameplay hypothesis are governed by
+[`docs/process/crpm-world-operational-governance.md`](../../docs/process/crpm-world-operational-governance.md).
+The current registry is sealed to its named historical cases; that process
+explains when a new candidate requires a separately versioned admission layer.
+
 ## Authority and dependency boundary
 
 - `shared/simulation.ts` remains the sole deterministic production gameplay
@@ -517,7 +522,7 @@ from treating generated JSON as new authority.
 Those require their separately named implementation gates. A common result
 shape will not make V4 and D2A share authority or dynamics.
 
-This in-progress sealing repair creates no V5, new gameplay mechanic, range-entry
+The completed package creates no V5, new gameplay mechanic, range-entry
 commitment candidate, live defense/reaction, new player status, protocol/replay
 field, reward change, Loomkeeper change, client UI, server route, runtime
 endpoint, or asset change. It creates no graph-safe CRPM schema and makes no

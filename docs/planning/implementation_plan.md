@@ -80,6 +80,13 @@ Phaser/Socket.IO stack.
   creates no V5, mechanic, status, live reaction,
   protocol/replay/reward/UI/Loomkeeper change, CRPM runtime dependency, or
   graph-safe schema. The Execution Pointer remains on WP-015D2A.
+  Follow-on operational use is governed by
+  [CRPM World Operational Governance](../process/crpm-world-operational-governance.md):
+  registered reproduction remains closed, while every new tactical hypothesis
+  requires a declared lane, candidate admission record, version/source impact,
+  complete domain, non-scalar evaluation, and separate analytical disposition.
+  The first range-entry idea is recorded there only as a speculative pressure
+  profile; it is not an approved candidate or V5 rule.
   **WP-015D1 V4 wider
   arena and pan camera completed on 2026-08-08**
   on `codex/wp-015-production-assets`: V4 preserves historical replays while
