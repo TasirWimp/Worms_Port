@@ -279,3 +279,29 @@ report digest is
 `1dbefbedf8aa55e68002b91b6ed6c743085f5edbe5655a97f146d8161b053fa4`.
 No World Design Port registration, range-entry rule, UI, replay, server,
 reward, or V5 behavior is approved.
+
+`v5-range-damage-forward-seam-pin-escape-slack-spoolburst-preparation-spun-cocoon-threadback-unweave-entry-seam-pin-candidate-i2.json`
+is the schema-version 16 F4 child. A movement-created Needlepoint entry keeps
+the combined action and normal 30 damage but applies no Seam Pin and starts no
+caster cooldown. Needlepoint already legal before movement retains F4's
+ordinary `advance_only` behavior. I2 adds no state, resource, reaction, delayed
+cast, or product authority.
+
+I2 passes its declared twelve-distance Phase A gate. All 1,200 matches end in
+Unraveling with no forced opening or non-terminal recurrence. It records 416
+entry Seam-Pin suppressions; the 120 affected opening routes at 641, 703, and
+704 split into 84 first-actor and 36 second-actor wins rather than F4's 120/0
+or I1's full-turn reversal. Its distance family is
+56/56/60/60/60/60/60/60/56/56/56/44 percent, with 57 percent aggregate. The
+canonical report digest is
+`31e341944d0490d531e989463804f8402c32c191e7dd1d4fe205081ef0ce099d`.
+
+An exploratory 333-class scan across the full legal coordinate-distance range
+does not extend the accepted domain. Starts at 769 expose the inherited
+16-turn horizon: F4 has four turn limits and I2 has eight, including four new
+`retreat_kite` mirrors whose entry suppression occurs only at turn 10. A
+post-hoc 96-class slice from 24 through 768 has 9,600/9,600 Unraveling results,
+no recurrence/forced opening, and 44-to-60-percent rates, but it is supporting
+diagnostic evidence rather than a promotion gate. I2 is therefore a bounded
+Phase A structural survivor with explicit horizon residue. World Design Port,
+V5, UI, replay, server, reward, and production registration remain unopened.

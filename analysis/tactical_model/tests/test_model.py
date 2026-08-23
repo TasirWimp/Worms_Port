@@ -859,6 +859,164 @@ class TacticalModelTests(unittest.TestCase):
                 )
                 self.assertEqual(scenario_704["firstActorWinRate"], rate_at_704)
 
+    def test_i2_suppresses_only_entry_generated_needlepoint_seam_pin(self) -> None:
+        f4 = load_config(
+            CONFIGS /
+            "v5-range-damage-forward-seam-pin-escape-slack-spoolburst-preparation-spun-cocoon-threadback-unweave-candidate-f4.json"
+        )
+        i2 = load_config(
+            CONFIGS /
+            "v5-range-damage-forward-seam-pin-escape-slack-spoolburst-preparation-spun-cocoon-threadback-unweave-entry-seam-pin-candidate-i2.json"
+        )
+        entry_state = initial_state(i2, starting_distance=704)
+        entry_action = Action("cast", 1, "needlepoint")
+
+        self.assertEqual(legal_actions(entry_state, i2), legal_actions(initial_state(f4, starting_distance=704), f4))
+        f4_after = apply_action(initial_state(f4, starting_distance=704), entry_action, f4)
+        i2_after = apply_action(entry_state, entry_action, i2)
+        self.assertEqual(i2_after.player.x, f4_after.player.x)
+        self.assertEqual(i2_after.loomkeeper.stitching, 70)
+        self.assertEqual(f4_after.loomkeeper.stitching, i2_after.loomkeeper.stitching)
+        self.assertEqual(f4_after.loomkeeper.seam_pin_turns, 1)
+        self.assertEqual(f4_after.player.seam_pin_cooldown, 1)
+        self.assertEqual(i2_after.loomkeeper.seam_pin_turns, 0)
+        self.assertEqual(i2_after.player.seam_pin_cooldown, 0)
+
+        already_in_band = initial_state(i2, starting_distance=576)
+        ordinary_advance = apply_action(
+            already_in_band,
+            Action("cast", 1, "needlepoint"),
+            i2,
+        )
+        self.assertEqual(ordinary_advance.loomkeeper.stitching, 70)
+        self.assertEqual(ordinary_advance.loomkeeper.seam_pin_turns, 1)
+        self.assertEqual(ordinary_advance.player.seam_pin_cooldown, 1)
+
+    def test_i2_trace_binds_the_suppressed_pin_without_hiding_damage_or_response(self) -> None:
+        config = load_config(
+            CONFIGS /
+            "v5-range-damage-forward-seam-pin-escape-slack-spoolburst-preparation-spun-cocoon-threadback-unweave-entry-seam-pin-candidate-i2.json"
+        )
+        match = simulate_match(
+            config,
+            "range_pressure",
+            "range_pressure",
+            first_actor="player",
+            mirrored=False,
+            starting_distance=704,
+        )
+        entry, response = match["trace"][0:2]
+        self.assertEqual(entry["action"], "cast:needlepoint:right")
+        self.assertEqual(entry["distanceBefore"], 704)
+        self.assertEqual(entry["distanceAfter"], 640)
+        self.assertEqual(entry["damage"], 30)
+        self.assertEqual(entry["entrySeamPinSuppression"], {
+            "target": "loomkeeper",
+            "relicId": "needlepoint",
+        })
+        self.assertIsNone(entry["seamPinAppliedTo"])
+        self.assertEqual(entry["loomkeeperSeamPinTurns"], 0)
+        self.assertEqual(entry["playerSeamPinCooldown"], 0)
+        self.assertEqual(response["actor"], "loomkeeper")
+        self.assertEqual(response["turn"], 1)
+
+    def test_i2_boundary_sweep_survives_the_declared_phase_a_gates(self) -> None:
+        config = load_config(
+            CONFIGS /
+            "v5-range-damage-forward-seam-pin-escape-slack-spoolburst-preparation-spun-cocoon-threadback-unweave-entry-seam-pin-candidate-i2.json"
+        )
+        distances = (511, 512, 513, 575, 576, 577, 639, 640, 641, 703, 704, 705)
+        report = run_range_entry_boundary_sweep(config, distances)
+        canonical = json.dumps(
+            report,
+            sort_keys=True,
+            separators=(",", ":"),
+            ensure_ascii=False,
+        ).encode("utf-8")
+
+        self.assertEqual(hashlib.sha256(canonical).hexdigest(),
+                         "31e341944d0490d531e989463804f8402c32c191e7dd1d4fe205081ef0ce099d")
+        self.assertEqual(report["aggregate"]["matchCount"], 1200)
+        self.assertEqual(report["aggregate"]["terminalReasons"], {"unravelled": 1200})
+        self.assertEqual(report["aggregate"]["nonterminalRecurrenceMatchCount"], 0)
+        self.assertEqual(report["aggregate"]["forcedOpeningScenarioCount"], 0)
+        self.assertEqual(report["aggregate"]["firstActorWins"], 684)
+        self.assertEqual(report["aggregate"]["entrySeamPinSuppressions"], {
+            "total": 416,
+            "byRelic": {"threadball": 0, "needlepoint": 416, "spoolburst": 0},
+            "openingRouteResults": {
+                "total": 120,
+                "firstActorWins": 84,
+                "secondActorWins": 36,
+                "turnLimitResults": 0,
+            },
+        })
+        self.assertEqual(
+            [scenario["firstActorWins"] for scenario in report["scenarioReports"]],
+            [56, 56, 60, 60, 60, 60, 60, 60, 56, 56, 56, 44],
+        )
+        for starting_distance in (641, 703, 704):
+            scenario = next(
+                item for item in report["scenarioReports"]
+                if item["startingDistance"] == starting_distance
+            )
+            self.assertEqual(
+                scenario["entrySeamPinSuppressions"]["openingRouteResults"],
+                {
+                    "total": 40,
+                    "firstActorWins": 28,
+                    "secondActorWins": 12,
+                    "turnLimitResults": 0,
+                },
+            )
+        for scenario in report["scenarioReports"]:
+            for match in scenario["matches"]:
+                for step in match["trace"]:
+                    if step["entrySeamPinSuppression"] is None:
+                        continue
+                    self.assertIsNone(step["seamPinAppliedTo"])
+                    actor_cooldown = (
+                        step["playerSeamPinCooldown"]
+                        if step["actor"] == "player"
+                        else step["loomkeeperSeamPinCooldown"]
+                    )
+                    self.assertEqual(actor_cooldown, 0)
+
+    def test_i2_extended_horizon_witness_stays_outside_the_declared_gate(self) -> None:
+        f4 = load_config(
+            CONFIGS /
+            "v5-range-damage-forward-seam-pin-escape-slack-spoolburst-preparation-spun-cocoon-threadback-unweave-candidate-f4.json"
+        )
+        i2 = load_config(
+            CONFIGS /
+            "v5-range-damage-forward-seam-pin-escape-slack-spoolburst-preparation-spun-cocoon-threadback-unweave-entry-seam-pin-candidate-i2.json"
+        )
+        f4_report = run_range_entry_boundary_sweep(f4, (768, 769))
+        i2_report = run_range_entry_boundary_sweep(i2, (768, 769))
+
+        self.assertEqual(
+            [scenario["terminalReasons"] for scenario in f4_report["scenarioReports"]],
+            [{"unravelled": 100}, {"unravelled": 96, "turn_limit": 4}],
+        )
+        self.assertEqual(
+            [scenario["terminalReasons"] for scenario in i2_report["scenarioReports"]],
+            [{"unravelled": 100}, {"unravelled": 92, "turn_limit": 8}],
+        )
+        i2_timeouts = [
+            match
+            for match in i2_report["scenarioReports"][1]["matches"]
+            if match["finishReason"] == "turn_limit"
+        ]
+        self.assertEqual(sum(
+            match["playerPolicy"] == "retreat_kite" and
+            match["loomkeeperPolicy"] == "retreat_kite"
+            for match in i2_timeouts
+        ), 4)
+        self.assertEqual(sum(
+            any(step["entrySeamPinSuppression"] is not None for step in match["trace"])
+            for match in i2_timeouts
+        ), 4)
+
 
 if __name__ == "__main__":
     unittest.main()

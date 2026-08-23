@@ -753,6 +753,32 @@ horizon. Phase B World Design Port registration is blocked. Any revision must
 be a separately contracted child candidate; no I1 rule, UI, replay, server,
 reward, or V5 behavior is approved.
 
+## Candidate I2 entry Seam-Pin exclusion - 2026-08-23
+
+I2 is the separately contracted F4 child in
+`docs/planning/wp-015d2d-entry-seam-pin-candidate-contract.md`. It keeps a
+movement-created Needlepoint cast and its normal 30 damage, but applies no Seam
+Pin or caster cooldown when Needlepoint was beyond 640 before that movement.
+Already-in-band Needlepoint, Threadball, Spoolburst preparation/release,
+Unweave, Threadback, values, policies, and tactical state remain unchanged.
+
+The declared 1,200-match boundary gate records 684 first-actor wins, 1,200
+Unraveling results, zero forced-opening scenarios, and zero non-terminal
+recurrences. Rates by distance are
+56/56/60/60/60/60/60/60/56/56/56/44 percent. At each of 641, 703, and 704,
+the 40 affected opening routes change from F4's 40/0 first-/second-actor split
+to 28/12, retaining a real entry attack without preserving the complete edge.
+The exact canonical report digest is
+`31e341944d0490d531e989463804f8402c32c191e7dd1d4fe205081ef0ce099d`.
+
+I2 therefore survives its predeclared Phase A structural gate, unlike I1. It
+is not design landfall. An exploratory extended-distance audit finds that the
+inherited 16-turn horizon first fails at start 769: F4 has four turn limits and
+I2 has eight, four of them new retreat-kite mirrors whose suppressed entry does
+not occur until turn 10. That domain was not part of the accepted twelve-start
+gate, but the residue remains explicit and blocks automatic Phase B or product
+promotion. I2 remains analysis-only with ProductAuthority none.
+
 ## G0 Opening and reaction contract - 2026-08-09
 
 The remaining problem is now more precise than a generic “first actor

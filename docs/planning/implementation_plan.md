@@ -93,6 +93,16 @@ Phaser/Socket.IO stack.
   but four 705 matches reach the turn limit and the 54.3% aggregate masks a
   68%-to-32% boundary reversal. I1 is rejected; Phase B World Design Port
   registration is blocked; no range-entry rule or V5 behavior is approved.
+  The next separately bounded experiment is
+  [WP-015D2D Entry Seam-Pin Candidate Contract](wp-015d2d-entry-seam-pin-candidate-contract.md).
+  I2 keeps the F4 movement-created Needlepoint hit and removes only the Seam
+  Pin/cooldown created when Needlepoint was outside range before that movement.
+  Its 1,200-match Phase A gate passes with all matches terminal, no forced
+  opening/recurrence, 57% aggregate, and 56% at 641/703/704; affected openings
+  split 28/12 per target distance. An exploratory audit also exposes an
+  inherited horizon boundary at start 769, where F4 has four turn limits and
+  I2 has eight. I2 is a bounded structural survivor with explicit horizon
+  residue; no World Design Port, V5, or production promotion is opened.
   **WP-015D1 V4 wider
   arena and pan camera completed on 2026-08-08**
   on `codex/wp-015-production-assets`: V4 preserves historical replays while

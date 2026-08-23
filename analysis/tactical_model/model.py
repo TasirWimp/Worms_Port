@@ -23,8 +23,9 @@ ActionEconomy = Literal["move_and_cast", "committed"]
 SeamPinActivation = Literal["any_direct_hit", "advance_only"]
 RetreatCastRule = Literal["allowed", "forbidden"]
 RangeEntryDirectCastMode = Literal["commit_relocation"]
+EntrySeamPinSuppression = Literal["pre_movement_out_of_range"]
 
-CONFIG_SCHEMA_VERSIONS = {1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15}
+CONFIG_SCHEMA_VERSIONS = {1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16}
 RELIC_ORDER = ("threadball", "needlepoint", "spoolburst")
 BASE_POLICY_NAMES = (
     "range_pressure",
@@ -161,6 +162,14 @@ class RangeEntryCommitment:
 
 
 @dataclass(frozen=True)
+class EntrySeamPinRule:
+    """Suppress Seam Pin only on a movement-created Needlepoint range entry."""
+
+    relic_id: str
+    suppression: EntrySeamPinSuppression
+
+
+@dataclass(frozen=True)
 class TacticalConfig:
     identifier: str
     label: str
@@ -191,6 +200,7 @@ class TacticalConfig:
     opening_weave: OpeningWeave | None = None
     frayed_seam: FrayedSeam | None = None
     range_entry_commitment: RangeEntryCommitment | None = None
+    entry_seam_pin: EntrySeamPinRule | None = None
 
     def relic(self, identifier: str) -> Relic:
         for relic in self.relics:
@@ -285,7 +295,7 @@ def load_config(path: Path) -> TacticalConfig:
         relics.append(Relic(identifier, minimum_range, maximum_range, direct_damage))
 
     seam_pin: SeamPin | None = None
-    if schema_version in {2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15}:
+    if schema_version in {2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16}:
         tactical_core = _require_object(raw["tactical_core"], f"{path}.tactical_core")
         _require_exact_keys(
             tactical_core,
@@ -319,12 +329,18 @@ def load_config(path: Path) -> TacticalConfig:
                     "spoolburst_cocoon", "spoolburst_threadback",
                     "range_entry_commitment",
                 }
+                if schema_version == 15
+                else {
+                    "seam_pin", "escape_slack", "spoolburst_preparation",
+                    "spoolburst_cocoon", "spoolburst_threadback",
+                    "entry_seam_pin",
+                }
             ),
             f"{path}.tactical_core",
         )
         seam_pin_raw = _require_object(tactical_core["seam_pin"], f"{path}.tactical_core.seam_pin")
         seam_pin_keys = {"relic_id", "maximum_separation_increase", "target_turns", "cooldown_actor_turns"}
-        if schema_version in {3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15}:
+        if schema_version in {3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16}:
             seam_pin_keys |= {"activation", "retreat_cast_rule"}
         _require_exact_keys(
             seam_pin_raw,
@@ -369,7 +385,7 @@ def load_config(path: Path) -> TacticalConfig:
         )
 
     escape_slack: EscapeSlack | None = None
-    if schema_version in {4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15}:
+    if schema_version in {4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16}:
         escape_slack_raw = _require_object(raw["tactical_core"]["escape_slack"], f"{path}.tactical_core.escape_slack")
         _require_exact_keys(escape_slack_raw, {"per_actor"}, f"{path}.tactical_core.escape_slack")
         escape_slack = EscapeSlack(
@@ -418,7 +434,7 @@ def load_config(path: Path) -> TacticalConfig:
         )
 
     spoolburst_preparation: SpoolburstPreparation | None = None
-    if schema_version in {7, 8, 9, 11, 15}:
+    if schema_version in {7, 8, 9, 11, 15, 16}:
         preparation_raw = _require_object(
             raw["tactical_core"]["spoolburst_preparation"],
             f"{path}.tactical_core.spoolburst_preparation",
@@ -449,7 +465,7 @@ def load_config(path: Path) -> TacticalConfig:
         )
 
     spoolburst_cocoon: SpoolburstCocoon | None = None
-    if schema_version in {8, 11, 15}:
+    if schema_version in {8, 11, 15, 16}:
         cocoon_raw = _require_object(
             raw["tactical_core"]["spoolburst_cocoon"],
             f"{path}.tactical_core.spoolburst_cocoon",
@@ -485,7 +501,7 @@ def load_config(path: Path) -> TacticalConfig:
         )
 
     spoolburst_threadback: SpoolburstThreadback | None = None
-    if schema_version in {9, 11, 15}:
+    if schema_version in {9, 11, 15, 16}:
         threadback_raw = _require_object(
             raw["tactical_core"]["spoolburst_threadback"],
             f"{path}.tactical_core.spoolburst_threadback",
@@ -686,6 +702,35 @@ def load_config(path: Path) -> TacticalConfig:
             direct_cast_mode="commit_relocation",
         )
 
+    entry_seam_pin: EntrySeamPinRule | None = None
+    if schema_version == 16:
+        entry_seam_pin_raw = _require_object(
+            raw["tactical_core"]["entry_seam_pin"],
+            f"{path}.tactical_core.entry_seam_pin",
+        )
+        _require_exact_keys(
+            entry_seam_pin_raw,
+            {"relic_id", "suppression"},
+            f"{path}.tactical_core.entry_seam_pin",
+        )
+        entry_relic_id = _require_string(
+            entry_seam_pin_raw["relic_id"],
+            f"{path}.tactical_core.entry_seam_pin.relic_id",
+        )
+        suppression = _require_string(
+            entry_seam_pin_raw["suppression"],
+            f"{path}.tactical_core.entry_seam_pin.suppression",
+        )
+        if suppression != "pre_movement_out_of_range":
+            raise TacticalModelError(
+                f"{path}.tactical_core.entry_seam_pin.suppression: "
+                "expected pre_movement_out_of_range"
+            )
+        entry_seam_pin = EntrySeamPinRule(
+            relic_id=entry_relic_id,
+            suppression="pre_movement_out_of_range",
+        )
+
     config = TacticalConfig(
         identifier=_require_string(raw["id"], f"{path}.id"),
         label=_require_string(raw["label"], f"{path}.label"),
@@ -716,6 +761,7 @@ def load_config(path: Path) -> TacticalConfig:
         opening_weave=opening_weave,
         frayed_seam=frayed_seam,
         range_entry_commitment=range_entry_commitment,
+        entry_seam_pin=entry_seam_pin,
     )
     if not (config.actor_margin <= config.player_x < config.world_width - config.actor_margin):
         raise TacticalModelError(f"{path}: player spawn lies outside legal world bounds")
@@ -754,6 +800,19 @@ def load_config(path: Path) -> TacticalConfig:
         raise TacticalModelError(
             f"{path}.tactical_core.range_entry_commitment: requires move_and_cast action economy"
         )
+    if config.entry_seam_pin is not None:
+        if config.action_economy != "move_and_cast":
+            raise TacticalModelError(
+                f"{path}.tactical_core.entry_seam_pin: requires move_and_cast action economy"
+            )
+        if (
+            config.seam_pin is None or
+            config.entry_seam_pin.relic_id != config.seam_pin.relic_id or
+            config.seam_pin.activation != "advance_only"
+        ):
+            raise TacticalModelError(
+                f"{path}.tactical_core.entry_seam_pin: requires the advance-only Seam Pin Relic"
+            )
     return config
 
 
@@ -958,6 +1017,22 @@ def movement_created_direct_cast_relics(
         if not _spoolburst_preparation_requires_stationary_release(relic, config)
         if not relic.minimum_range <= before_distance <= relic.maximum_range
         and _direct_cast_is_legal_after_movement(state, moved_state, relic, config)
+    )
+
+
+def _entry_seam_pin_is_suppressed(
+    before_movement: TacticalState,
+    after_movement: TacticalState,
+    relic: Relic,
+    config: TacticalConfig,
+) -> bool:
+    rule = config.entry_seam_pin
+    return (
+        rule is not None and
+        relic.identifier == rule.relic_id and
+        distance(before_movement) > relic.maximum_range and
+        relic.minimum_range <= distance(after_movement) <= relic.maximum_range and
+        distance(after_movement) < distance(before_movement)
     )
 
 
@@ -1402,6 +1477,22 @@ def simulate_match(
             if config.range_entry_commitment is not None
             else ()
         )
+        entry_seam_pin_projection = (
+            _move_actor(before, actor, action.direction, config)
+            if config.entry_seam_pin is not None and action.kind == "cast"
+            else before
+        )
+        entry_seam_pin_suppressed = (
+            config.entry_seam_pin is not None and
+            action.kind == "cast" and
+            action.relic_id is not None and
+            _entry_seam_pin_is_suppressed(
+                before,
+                entry_seam_pin_projection,
+                config.relic(action.relic_id),
+                config,
+            )
+        )
         state = apply_action(
             before,
             action,
@@ -1533,6 +1624,13 @@ def simulate_match(
                 "rangeEntryCommitmentRelics": list(range_entry_relics),
                 "rangeEntryCommitmentStartedBy": actor if range_entry_relics else None,
             } if config.range_entry_commitment is not None else {}),
+            **({
+                "entrySeamPinSuppression": (
+                    {"target": target, "relicId": action.relic_id}
+                    if entry_seam_pin_suppressed and actor_state(state, target).stitching > 0
+                    else None
+                ),
+            } if config.entry_seam_pin is not None else {}),
         })
         if not state.finished:
             state_key = tactical_state_key(state)
@@ -1763,6 +1861,14 @@ def run_experiment(config: TacticalConfig, *, starting_distance: int | None = No
                     "persistentState": False,
                 },
             } if config.range_entry_commitment is not None else {}),
+            **({
+                "entrySeamPin": {
+                    "relicId": config.entry_seam_pin.relic_id,
+                    "suppression": config.entry_seam_pin.suppression,
+                    "preservesDamage": True,
+                    "persistentState": False,
+                },
+            } if config.entry_seam_pin is not None else {}),
         },
         "policySets": {
             "primaryMatrix": list(BASE_POLICY_NAMES),
@@ -1877,6 +1983,13 @@ def _range_entry_route_summary(
         "terminal_before_actor_return": 0,
         "missing_opponent_response": 0,
     }
+    seam_pin_suppressions = {identifier: 0 for identifier in RELIC_ORDER}
+    opening_suppression_routes = {
+        "total": 0,
+        "firstActorWins": 0,
+        "secondActorWins": 0,
+        "turnLimitResults": 0,
+    }
 
     for match in matches:
         trace = match["trace"]
@@ -1889,6 +2002,18 @@ def _range_entry_route_summary(
                     relic.minimum_range <= step["distanceAfter"] <= relic.maximum_range
                 ):
                     movement_created_casts[relic_id] += 1
+
+            suppression = step.get("entrySeamPinSuppression")
+            if suppression is not None:
+                seam_pin_suppressions[suppression["relicId"]] += 1
+                if index == 0:
+                    opening_suppression_routes["total"] += 1
+                    if match["winner"] == match["firstActor"]:
+                        opening_suppression_routes["firstActorWins"] += 1
+                    elif match["winner"] == other_actor(match["firstActor"]):
+                        opening_suppression_routes["secondActorWins"] += 1
+                    else:
+                        opening_suppression_routes["turnLimitResults"] += 1
 
             entered_relics = tuple(step.get("rangeEntryCommitmentRelics", ()))
             if not entered_relics:
@@ -1933,6 +2058,13 @@ def _range_entry_route_summary(
             "byRelic": entry_relocations,
             "routeResults": route_results,
         },
+        **({
+            "entrySeamPinSuppressions": {
+                "total": sum(seam_pin_suppressions.values()),
+                "byRelic": seam_pin_suppressions,
+                "openingRouteResults": opening_suppression_routes,
+            },
+        } if config.entry_seam_pin is not None else {}),
     }
 
 
@@ -1940,7 +2072,7 @@ def run_range_entry_boundary_sweep(
     config: TacticalConfig,
     starting_distances: tuple[int, ...],
 ) -> dict[str, Any]:
-    """Run the I1 boundary frame over both first actors and both mirrors.
+    """Run the range-entry boundary frame over both first actors and both mirrors.
 
     This report is separate from the historical paired-orientation sweep so it
     cannot silently change any D2A report digest or candidate status.
@@ -2407,6 +2539,8 @@ def _apply_seam_pin_if_configured(
     config: TacticalConfig,
 ) -> TacticalState:
     if config.seam_pin is None or relic.identifier != config.seam_pin.relic_id:
+        return state
+    if _entry_seam_pin_is_suppressed(before_movement, after_movement, relic, config):
         return state
     if (
         config.seam_pin.activation == "advance_only" and

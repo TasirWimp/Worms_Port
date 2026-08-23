@@ -557,6 +557,23 @@ The exact admission and result record is
 revision must be a new child candidate; the failed I1 domain is not narrowed or
 tuned in place.
 
+The separately contracted I2 child performs the smallest failure-derived
+ablation: retain the movement-created Needlepoint hit and 30 damage, but
+suppress only the Seam Pin/cooldown created when Needlepoint was out of range
+before that movement. Its declared twelve-distance frame has 1,200 terminal
+results, no forced opening/recurrence, 57 percent aggregate, and 56 percent at
+641/703/704. Each target distance's 40 affected openings split 28/12 rather
+than F4's 40/0 or I1's full-turn reversal.
+
+That local coherence is not promoted. A broader diagnostic scan identifies a
+starting-carrier/horizon boundary at 769: F4 already has four turn limits and
+I2 has eight, including four new retreat-kite mirrors whose entry edge occurs
+at turn 10. Legal coordinate distance is therefore not silently treated as an
+admissible full-resource starting domain. I2 remains a bounded Phase A
+structural survivor with the horizon residue carried forward; Phase B and
+ProductAuthority remain unopened. The exact contract/result carrier is
+`docs/planning/wp-015d2d-entry-seam-pin-candidate-contract.md`.
+
 ### Config-only value candidate
 
 A pure damage/range/resource change may reuse the existing state and edge
