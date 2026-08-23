@@ -87,6 +87,12 @@ Phaser/Socket.IO stack.
   complete domain, non-scalar evaluation, and separate analytical disposition.
   The first range-entry idea is recorded there only as a speculative pressure
   profile; it is not an approved candidate or V5 rule.
+  Its proposed Candidate Admission Record is
+  [WP-015D2C Range-Entry Commitment Candidate Contract](wp-015d2c-range-entry-commitment-candidate-contract.md).
+  D2C freezes a direct-cast-only interpretation, the twelve-distance boundary
+  domain, comparators, probes, falsifiers, and phased source/profile migration;
+  it remains `proposed`, and no model or registry implementation begins before
+  owner acceptance of that exact rule.
   **WP-015D1 V4 wider
   arena and pan camera completed on 2026-08-08**
   on `codex/wp-015-production-assets`: V4 preserves historical replays while

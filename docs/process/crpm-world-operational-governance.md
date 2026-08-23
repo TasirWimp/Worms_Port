@@ -507,8 +507,8 @@ A bounded child such as `I1` should use:
 - comparators: C4 for value structure, F4 for close-band structure, and H2 for
   aggregate-parity false-closure pressure;
 - boundary distances: `511/512/513`, `575/576/577`, `639/640/641`, and
-  `703/704/705`; `705` is the required negative control omitted by the initial
-  proposal;
+  `703/704/705`; `705` is the required first-action negative control omitted by
+  the initial proposal, not a whole-match no-effect promise;
 - both mirrors, both first actors, the registered policy family plus any new
   response policy, the exact deterministic seed set, and the same horizon for
   every comparator;
@@ -543,6 +543,11 @@ World Design Port:
 - create a new implementation/source lock rather than altering D2B's sealed
   lock; and
 - prove every existing D2A report digest remains unchanged.
+
+The proposed exact admission record is
+`docs/planning/wp-015d2c-range-entry-commitment-candidate-contract.md`. It keeps
+the mechanic at `proposed` until the owner accepts its precise direct-cast-only
+semantics.
 
 ### Config-only value candidate
 
