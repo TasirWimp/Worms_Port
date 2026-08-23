@@ -32,6 +32,21 @@ V4 spawns and do not claim TypeScript replay parity; they are controlled
 counterfactuals that test how the candidate behaves at the Spoolburst,
 Threadball, Needlepoint, and out-of-range boundaries.
 
+Run the complete I1 boundary frame over both first actors and both mirrors:
+
+```powershell
+python -m analysis.tactical_model.run `
+  --config analysis/tactical_model/configs/v5-range-damage-forward-seam-pin-escape-slack-spoolburst-preparation-spun-cocoon-threadback-unweave-range-entry-commitment-candidate-i1.json `
+  --starting-distances 511 512 513 575 576 577 639 640 641 703 704 705 `
+  --range-entry-boundary-sweep `
+  --output test-results/tactical-model/i1-range-entry-boundary-sweep-report.json
+```
+
+This report intentionally differs from the historical paired-orientation
+sweep: it crosses both first actors with both spatial mirrors and all 25
+ordered primary-policy pairs, producing 100 matches per distance. It does not
+alter any historical report or digest.
+
 Write an ignored, reproducible report for one configuration:
 
 ```powershell
@@ -243,3 +258,24 @@ first-actor rate and leaves forced Spoolburst/Threadball openings at the
 448/512/576 starts. A delayed, counterable vulnerability cannot repair an
 immediate forced direct-cast line. No Frayed Seam, strengthened Seam Pin,
 Opening Weave, UI, replay, server, reward, or V5 rule is approved.
+
+`v5-range-damage-forward-seam-pin-escape-slack-spoolburst-preparation-spun-cocoon-threadback-unweave-range-entry-commitment-candidate-i1.json`
+is the schema-version 15 F4 child. It removes only an ordinary direct cast that
+is illegal before movement and made legal by that cast's own movement. The
+actor may instead relocate, ending its turn; the opponent receives one normal
+turn; and the original actor may cast later only if the later state remains in
+band. Stationary and already-in-band casts, Spoolburst preparation/release,
+Unweave, Threadback, values, policies, and state are unchanged. The commitment
+is trace/path evidence, not a new status, right, meter, or reserved cast.
+
+I1 is rejected analysis-only evidence. Its complete 12-distance,
+four-orientation primary frame executes 1,188 entry commitments and records no
+forced opening or non-terminal recurrence, but four `retreat_kite` versus
+`retreat_kite` matches at 705 reach the 16-turn limit. Its superficially
+attractive 54.3% aggregate first-actor rate hides a discontinuous
+60/60/56/56/56/68/68/68/32/32/32/64% distance family. In particular, F4's
+80% at 704 flips to 32% rather than becoming a stable repair. The deterministic
+report digest is
+`1dbefbedf8aa55e68002b91b6ed6c743085f5edbe5655a97f146d8161b053fa4`.
+No World Design Port registration, range-entry rule, UI, replay, server,
+reward, or V5 behavior is approved.

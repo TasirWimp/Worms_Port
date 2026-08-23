@@ -1,7 +1,7 @@
 # WP-015D2C Range-Entry Commitment Candidate Contract
 
-Status: proposed Candidate Admission Record; owner acceptance required before
-implementation.
+Status: Phase A implemented and evaluated on 2026-08-23; I1 rejected; Phase B
+World Design Port admission blocked.
 
 - **Operational lane:** Lane 1 analytical candidate. A later D2B profile
   migration is a separate gated phase and occurs only if the direct analytical
@@ -17,8 +17,8 @@ implementation.
   `995236df60924f790506cf5badec3c102abf3fd1`; the current clean CRPM checkout
   was observed at `053c6fc0a90ed48d8667016b18a1d10106a7a2bc`, but this package
   does not silently rebind the completed D2B method source.
-- **Carrier maturity:** `M1_declaration` only after owner acceptance;
-  otherwise `proposed` process state.
+- **Carrier maturity:** `M2_local_use` for the bounded Phase A model/config,
+  transition witnesses, and deterministic boundary report only.
 - **ProductAuthority:** `none`.
 - **Execution Pointer:** remains WP-015D2A.
 
@@ -92,8 +92,10 @@ diagnostic family.
 - **Candidate ID:**
   `v5-range-damage-forward-seam-pin-escape-slack-spoolburst-preparation-spun-cocoon-threadback-unweave-range-entry-commitment-candidate-i1`.
 - **Short ID:** `I1`.
-- **Initial lifecycle state:** `proposed`.
-- **Permitted transition after owner acceptance:** `contracted`.
+- **Lifecycle:** `proposed -> contracted -> implemented -> executed ->
+  evaluated -> rejected`.
+- **Owner acceptance:** the project owner accepted the exact direct-cast-only
+  Phase A rule on 2026-08-23.
 - **Parent:** F4, unchanged and still `structural_reference` only.
 - **Comparator statuses:** C4 remains analytical baseline; H2 remains rejected;
   neither is reopened or promoted.
@@ -108,6 +110,59 @@ later cast, may create timely counterplay without changing values or adding a
 defensive status.
 
 This is a falsifiable hypothesis, not a causal conclusion.
+
+## Phase A result and decision
+
+I1 is **rejected analytical evidence**. Phase B is not permitted for this
+candidate.
+
+The complete declared boundary frame ran 1,200 primary matches: twelve
+distances, both first actors, both spatial mirrors, and all 25 ordered primary
+policy pairings. The deterministic canonical report digest is
+`1dbefbedf8aa55e68002b91b6ed6c743085f5edbe5655a97f146d8161b053fa4`.
+
+I1 preserves several structural members:
+
+- zero bounded forced-opening scenarios;
+- zero non-terminal recurrence witnesses;
+- 1,196 Unraveling results;
+- 1,188 executed range-entry commitments, consisting of 536 Threadball and
+  652 Needlepoint entries;
+- an ordinary opponent response after every recorded entry; and
+- 508 later affected-Relic casts, 468 legal alternative actions, and 212 routes
+  where the affected cast was no longer legal.
+
+It fails the declared hard gate because four 705-distance
+`retreat_kite`-versus-`retreat_kite` matches reach the 16-turn limit, one under
+each first-actor/mirror orientation. The path spends ten turns on long-range
+relocation before reaching the direct-cast exchange; it is not a repeated
+non-terminal tactical carrier, but it resolves too late for the fixed horizon.
+
+The scalar profile also demonstrates aggregate false closure. I1 records 652
+first-actor wins, or 54.3% overall, but its distance family is:
+
+```text
+511  512  513  575  576  577  639  640  641  703  704  705
+60%  60%  56%  56%  56%  68%  68%  68%  32%  32%  32%  64%
+```
+
+The proposed rule therefore does not produce a stable initiative repair. It
+changes F4's 80% first-actor result at 704 into a 32% result, transferring the
+edge to the second actor across the 641-through-704 family, then flips again at
+705. This is a materially reorganized path, but it is discontinuous
+overcompensation plus a convergence failure, not design landfall.
+
+Expanded-domain comparator bindings are:
+
+| Comparator | Report digest | Aggregate result | Relevant pressure |
+| --- | --- | --- | --- |
+| C4 | `65a7e4f9300f9bcc51715a670760d0e74d5a25f09c1b70e5ff061b118d0e7dac` | 60.0% first actor; 1,200/1,200 Unravel; forced openings at six short-boundary scenarios | Values alone retain opening pressure |
+| F4 | `8e0605617d63b25474da6df059455d0c365b93f657bf0260295788a854cd17dd` | 61.0% first actor; 1,200/1,200 Unravel; no forced opening/recurrence | Parent structure survives but has 80% at 641/703/704 and 20% at 705 |
+| H2 | `e99091ad9a75104c16136d55d73d95dc92dcca1d266369455efeb73c9316f2fe` | 48.7% first actor; 1,200/1,200 Unravel; no forced opening/recurrence | Near-parity aggregate still masks 76% at 641/703/704 and 24% at 705 |
+| I1 | `1dbefbedf8aa55e68002b91b6ed6c743085f5edbe5655a97f146d8161b053fa4` | 54.3% first actor; 1,196 Unravel/4 turn limits; no forced opening/recurrence | Entry commitment overcompensates and fails the terminal gate |
+
+All four reports reuse the same deterministic model and policy family. Their
+digest rows improve comparison/re-entry but do not multiply empirical weight.
 
 ## Exact candidate semantics
 
@@ -400,34 +455,36 @@ No result is player-behavior or live-ballistics evidence.
 
 ## Phased implementation and stop gates
 
-### Phase A - candidate-only D2A implementation
+### Phase A - candidate-only D2A implementation (complete)
 
-Expected paths:
+Implemented paths:
 
 - `analysis/tactical_model/model.py`;
 - one new schema-versioned I1 config under
   `analysis/tactical_model/configs/`;
 - `analysis/tactical_model/tests/test_model.py`;
-- focused boundary-sweep/report tests or helpers under the same analytical
-  package; and
+- `analysis/tactical_model/run.py` and the new deterministic full-orientation
+  boundary report;
 - the tactical README and bounded planning/evidence artifacts after results
   exist.
 
-The implementation should add an optional strict config record for I1, filter
-only the declared newly-legal direct casts, and make before/after legality plus
-entry-path evidence explicit. Because I1 adds no persistent state, it must not
+The implementation adds an optional strict config record for I1, filters
+only the declared newly-legal direct casts, and makes before/after legality plus
+entry-path evidence explicit. Because I1 adds no persistent state, it does not
 invent a status field merely to resemble a graph node.
 
-Run the complete existing `npm run test:tactical-model` before and after.
-Every existing report digest and all historical candidate statuses must remain
-unchanged. Stop Phase A and record negative evidence if a cheapest or hard
-structural gate fails.
+The complete existing `npm run test:tactical-model` remains the regression
+gate. Every existing report digest and all historical candidate statuses remain
+unchanged. The four 705 turn-limit results trigger the contracted stop, and
+Phase A closes as negative evidence.
 
-### Phase B - versioned World Design Port admission
+### Phase B - versioned World Design Port admission (blocked)
 
-Start only after Phase A produces a deterministic, structurally admissible
-candidate result. Inspect the actual serialized delta before freezing versions.
-At minimum the phase must:
+Phase B required a deterministic, structurally admissible Phase A result. I1
+does not meet that condition, so no D2B adapter, cut, schema, registry,
+evaluation, request, result, implementation-lock, or example change is
+authorized. If a different child candidate later passes its own Phase A gate,
+its separately accepted phase must:
 
 - add C4 and I1 as exact closed registrations without reopening F4 or H2;
 - register the complete twelve-distance/four-orientation boundary domain;
@@ -447,11 +504,11 @@ change, retain its version only with explicit compatibility tests. Catalog,
 cut, adapter, evaluation, and request versions still advance where their closed
 meaning changes.
 
-### Phase C - evaluation and owner decision
+### Phase C - evaluation and owner decision (complete for Phase A)
 
-Run the full four-config comparison, diagnostic profile, false-closure rules,
-re-entry checks, focused and regression suites, compliance, type/build checks,
-and adversarial review. Record one analytical disposition and stop.
+The full four-config comparison, false-closure pressure, re-entry bindings, and
+focused/regression checks record the `rejected` analytical disposition. No
+World Design Port evaluation record is claimed because Phase B never opened.
 
 No TypeScript gameplay implementation occurs in D2C. Any selected product
 proposal is a new Lane 3 work package with its own V5, simulation, replay,
@@ -484,9 +541,9 @@ nondeterministic output, an obligation/path discontinuity, comparator mismatch,
 historical-status drift, new excluded-port dependence, or any attempted product
 authority escalation.
 
-## Owner acceptance gate
+## Owner acceptance and closure
 
-Implementation is authorized only after the owner accepts this exact reading:
+The owner authorized Phase A by accepting this exact reading:
 
 > I1 changes only ordinary direct casts made newly legal by their own movement.
 > Such an action becomes an ordinary relocation that ends the turn; the
@@ -494,6 +551,7 @@ Implementation is authorized only after the owner accepts this exact reading:
 > if that later carrier still makes the cast legal. I1 adds no status, resource,
 > guaranteed cast, special reaction, or change to Spoolburst preparation.
 
-Acceptance of this contract authorizes Phase A analysis only. It does not
-accept the candidate result, authorize Phase B automatically after a failed
-hard gate, approve V5, or grant ProductAuthority.
+That acceptance authorized Phase A analysis only. The resulting evidence
+rejects I1 and blocks Phase B. Any revised range-entry rule must use a new child
+candidate ID and admission record; I1 is not tuned in place. Nothing here
+approves V5 or grants ProductAuthority.

@@ -85,14 +85,14 @@ Phaser/Socket.IO stack.
   registered reproduction remains closed, while every new tactical hypothesis
   requires a declared lane, candidate admission record, version/source impact,
   complete domain, non-scalar evaluation, and separate analytical disposition.
-  The first range-entry idea is recorded there only as a speculative pressure
-  profile; it is not an approved candidate or V5 rule.
-  Its proposed Candidate Admission Record is
+  The first range-entry idea is recorded there as a bounded pressure profile
+  and was contracted through
   [WP-015D2C Range-Entry Commitment Candidate Contract](wp-015d2c-range-entry-commitment-candidate-contract.md).
-  D2C freezes a direct-cast-only interpretation, the twelve-distance boundary
-  domain, comparators, probes, falsifiers, and phased source/profile migration;
-  it remains `proposed`, and no model or registry implementation begins before
-  owner acceptance of that exact rule.
+  Owner-accepted Phase A implements only the direct-cast-only I1 interpretation
+  in D2A. Its 1,200-match boundary frame has no forced opening or recurrence,
+  but four 705 matches reach the turn limit and the 54.3% aggregate masks a
+  68%-to-32% boundary reversal. I1 is rejected; Phase B World Design Port
+  registration is blocked; no range-entry rule or V5 behavior is approved.
   **WP-015D1 V4 wider
   arena and pan camera completed on 2026-08-08**
   on `codex/wp-015-production-assets`: V4 preserves historical replays while

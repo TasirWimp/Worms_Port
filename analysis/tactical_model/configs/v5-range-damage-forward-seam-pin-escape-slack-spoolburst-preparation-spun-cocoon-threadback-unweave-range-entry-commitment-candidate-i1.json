@@ -1,0 +1,53 @@
+{
+  "schema_version": 15,
+  "id": "v5-range-damage-forward-seam-pin-escape-slack-spoolburst-preparation-spun-cocoon-threadback-unweave-range-entry-commitment-candidate-i1",
+  "label": "Exploratory V5 F4 with direct-cast range-entry commitment candidate I1",
+  "analysis_status": "exploratory",
+  "source_ruleset_id": "nimble-knots-artillery-v4",
+  "authority_fixture": "analysis/tactical_model/fixtures/v4-authoritative-baseline-v1.json",
+  "assumptions": [
+    "This is not nimble-knots-artillery-v5 and has no runtime, replay, protocol, reward, UI, asset, or product authority.",
+    "It keeps Candidate F4's complete ideal-direct-hit values and tactical core: 30/45/80 damage, 640/576/512 ranges, forward Seam Pin, equal 128 Escape Slack, prepared Spoolburst, Spun Cocoon, and compulsory 64-unit Threadback Unweave.",
+    "An ordinary direct cast that is illegal before movement but legal after its own movement is unavailable as a combined action. The actor may instead relocate, ending the turn; the opponent receives one ordinary turn; and a later cast is legal only if the later tactical carrier remains in band.",
+    "The commitment is a witnessed path role, not a status or reserved future cast. It adds no resource, special response, reaction action, or persistent tactical-state field.",
+    "Stationary and already-in-band direct casts remain ordinary move-and-cast actions. Spoolburst preparation, stationary release, Threadball Unweave, Threadback, Seam Pin, Escape Slack, values, movement, policies, and search depth are unchanged.",
+    "Terrain, aim, trajectory, splash, player skill, live Loomkeeper behavior, animation, UI, replay, reward, and production counter-effects remain excluded."
+  ],
+  "world": { "width": 2048, "actor_margin": 12 },
+  "initial": { "seed": 3237998097, "player_x": 512, "loomkeeper_x": 1152, "first_actor": "player" },
+  "turn": { "maximum_turns": 16, "movement_per_turn": 64, "action_economy": "move_and_cast" },
+  "stitching": { "maximum": 100 },
+  "relics": {
+    "threadball": { "minimum_range": 0, "maximum_range": 576, "direct_damage": 45 },
+    "needlepoint": { "minimum_range": 0, "maximum_range": 640, "direct_damage": 30 },
+    "spoolburst": { "minimum_range": 0, "maximum_range": 512, "direct_damage": 80 }
+  },
+  "opening_search_depth": 3,
+  "tactical_core": {
+    "seam_pin": {
+      "relic_id": "needlepoint",
+      "maximum_separation_increase": 32,
+      "target_turns": 1,
+      "cooldown_actor_turns": 1,
+      "activation": "advance_only",
+      "retreat_cast_rule": "forbidden"
+    },
+    "escape_slack": { "per_actor": 128 },
+    "spoolburst_preparation": {
+      "relic_id": "spoolburst",
+      "preparation_turns": 1,
+      "disruption_relic_id": "threadball"
+    },
+    "spoolburst_cocoon": {
+      "absorbed_relic_ids": ["needlepoint", "spoolburst"],
+      "unweave_relic_id": "threadball"
+    },
+    "spoolburst_threadback": {
+      "unweave_relic_id": "threadball",
+      "separation_increase": 64
+    },
+    "range_entry_commitment": {
+      "direct_cast_mode": "commit_relocation"
+    }
+  }
+}

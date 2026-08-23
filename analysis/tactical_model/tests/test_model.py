@@ -1,6 +1,8 @@
 from __future__ import annotations
 
 from dataclasses import replace
+import hashlib
+import json
 from pathlib import Path
 import unittest
 
@@ -14,8 +16,10 @@ from analysis.tactical_model.model import (
     initial_state,
     legal_actions,
     load_config,
+    movement_created_direct_cast_relics,
     policy_names,
     run_experiment,
+    run_range_entry_boundary_sweep,
     run_starting_distance_sweep,
     simulate_match,
     validate_world_against_authority_fixture,
@@ -688,6 +692,172 @@ class TacticalModelTests(unittest.TestCase):
             report["tacticalCore"]["castThreadstep"]["resolutionWindow"],
             "after declared caster movement and before direct damage",
         )
+
+    def test_i1_splits_only_movement_created_direct_cast_legality(self) -> None:
+        config = load_config(
+            CONFIGS /
+            "v5-range-damage-forward-seam-pin-escape-slack-spoolburst-preparation-spun-cocoon-threadback-unweave-range-entry-commitment-candidate-i1.json"
+        )
+
+        at_704 = initial_state(config, starting_distance=704)
+        self.assertEqual(movement_created_direct_cast_relics(at_704, 1, config), ("needlepoint",))
+        self.assertNotIn(Action("cast", 1, "needlepoint"), legal_actions(at_704, config))
+        self.assertIn(Action("relocate", 1), legal_actions(at_704, config))
+
+        at_640 = initial_state(config, starting_distance=640)
+        self.assertIn(Action("cast", 0, "needlepoint"), legal_actions(at_640, config))
+        self.assertIn(Action("cast", 1, "needlepoint"), legal_actions(at_640, config))
+        self.assertEqual(movement_created_direct_cast_relics(at_640, 1, config), ("threadball",))
+        self.assertNotIn(Action("cast", 1, "threadball"), legal_actions(at_640, config))
+
+        at_511 = initial_state(config, starting_distance=511)
+        self.assertNotIn(Action("cast", 0, "spoolburst"), legal_actions(at_511, config))
+        self.assertEqual(movement_created_direct_cast_relics(at_511, 1, config), ())
+
+        at_705 = initial_state(config, starting_distance=705)
+        self.assertEqual(movement_created_direct_cast_relics(at_705, 1, config), ())
+        self.assertFalse(any(action.kind == "cast" for action in legal_actions(at_705, config)))
+
+    def test_i1_does_not_double_wrap_spoolburst_preparation(self) -> None:
+        config = load_config(
+            CONFIGS /
+            "v5-range-damage-forward-seam-pin-escape-slack-spoolburst-preparation-spun-cocoon-threadback-unweave-range-entry-commitment-candidate-i1.json"
+        )
+        state = initial_state(config, starting_distance=513)
+        self.assertIn(Action("prepare_spoolburst", 1), legal_actions(state, config))
+        self.assertEqual(movement_created_direct_cast_relics(state, 1, config), ())
+
+        prepared = apply_action(state, Action("prepare_spoolburst", 1), config)
+        self.assertEqual(prepared.player.spoolburst_preparation_turns, 1)
+        self.assertEqual(distance(prepared), 449)
+
+    def test_i1_trace_exposes_entry_then_an_ordinary_opponent_turn(self) -> None:
+        config = load_config(
+            CONFIGS /
+            "v5-range-damage-forward-seam-pin-escape-slack-spoolburst-preparation-spun-cocoon-threadback-unweave-range-entry-commitment-candidate-i1.json"
+        )
+        match = simulate_match(
+            config,
+            "range_pressure",
+            "range_pressure",
+            first_actor="player",
+            mirrored=False,
+            starting_distance=704,
+        )
+        entry, response = match["trace"][0:2]
+        self.assertEqual(entry["action"], "relocate:-:right")
+        self.assertEqual(entry["rangeEntryCommitmentRelics"], ["needlepoint"])
+        self.assertEqual(entry["rangeEntryCommitmentStartedBy"], "player")
+        self.assertEqual(entry["directCastRelicsLegalBefore"], [])
+        self.assertEqual(entry["directCastRelicsLegalAfterMovement"], ["needlepoint"])
+        self.assertEqual(response["actor"], "loomkeeper")
+        self.assertEqual(response["turn"], entry["turn"] + 1)
+        self.assertIsNone(response["rangeEntryCommitmentStartedBy"])
+
+    def test_f4_parent_keeps_its_existing_combined_range_entry_cast(self) -> None:
+        config = load_config(
+            CONFIGS /
+            "v5-range-damage-forward-seam-pin-escape-slack-spoolburst-preparation-spun-cocoon-threadback-unweave-candidate-f4.json"
+        )
+        state = initial_state(config, starting_distance=704)
+        self.assertIn(Action("cast", 1, "needlepoint"), legal_actions(state, config))
+
+    def test_i1_boundary_sweep_rejects_aggregate_false_closure_and_timeouts(self) -> None:
+        config = load_config(
+            CONFIGS /
+            "v5-range-damage-forward-seam-pin-escape-slack-spoolburst-preparation-spun-cocoon-threadback-unweave-range-entry-commitment-candidate-i1.json"
+        )
+        distances = (511, 512, 513, 575, 576, 577, 639, 640, 641, 703, 704, 705)
+        report = run_range_entry_boundary_sweep(config, distances)
+        canonical = json.dumps(
+            report,
+            sort_keys=True,
+            separators=(",", ":"),
+            ensure_ascii=False,
+        ).encode("utf-8")
+
+        self.assertEqual(hashlib.sha256(canonical).hexdigest(),
+                         "1dbefbedf8aa55e68002b91b6ed6c743085f5edbe5655a97f146d8161b053fa4")
+        self.assertEqual(report["aggregate"]["matchCount"], 1200)
+        self.assertEqual(report["aggregate"]["terminalReasons"], {
+            "unravelled": 1196,
+            "turn_limit": 4,
+        })
+        self.assertEqual(report["aggregate"]["nonterminalRecurrenceMatchCount"], 0)
+        self.assertEqual(report["aggregate"]["forcedOpeningScenarioCount"], 0)
+        self.assertEqual(report["aggregate"]["firstActorWins"], 652)
+        self.assertEqual(report["aggregate"]["rangeEntryCommitments"], {
+            "total": 1188,
+            "byRelic": {"threadball": 536, "needlepoint": 652, "spoolburst": 0},
+            "routeResults": {
+                "later_direct_cast": 508,
+                "later_alternative_action": 468,
+                "later_cast_unavailable": 212,
+                "terminal_before_actor_return": 0,
+                "missing_opponent_response": 0,
+            },
+        })
+        self.assertEqual(
+            [scenario["firstActorWinRate"] for scenario in report["scenarioReports"]],
+            [0.6, 0.6, 0.56, 0.56, 0.56, 0.68, 0.68, 0.68, 0.32, 0.32, 0.32, 0.64],
+        )
+        self.assertEqual(report["scenarioReports"][-1]["terminalReasons"], {
+            "unravelled": 96,
+            "turn_limit": 4,
+        })
+        self.assertFalse(any(
+            step["action"].startswith("relocate:") and
+            "spoolburst" in step["directCastRelicsLegalAfterMovement"]
+            for scenario in report["scenarioReports"]
+            for match in scenario["matches"]
+            for step in match["trace"]
+        ))
+
+    def test_i1_boundary_comparators_are_locked_to_the_same_frame(self) -> None:
+        distances = (511, 512, 513, 575, 576, 577, 639, 640, 641, 703, 704, 705)
+        cases = (
+            (
+                "v5-range-damage-forward-seam-pin-escape-slack-128-candidate-c4.json",
+                "65a7e4f9300f9bcc51715a670760d0e74d5a25f09c1b70e5ff061b118d0e7dac",
+                720,
+                6,
+                0.76,
+            ),
+            (
+                "v5-range-damage-forward-seam-pin-escape-slack-spoolburst-preparation-spun-cocoon-threadback-unweave-candidate-f4.json",
+                "8e0605617d63b25474da6df059455d0c365b93f657bf0260295788a854cd17dd",
+                732,
+                0,
+                0.8,
+            ),
+            (
+                "v5-range-damage-forward-seam-pin-escape-slack-opening-weave-paid-second-actor-candidate-h2.json",
+                "e99091ad9a75104c16136d55d73d95dc92dcca1d266369455efeb73c9316f2fe",
+                584,
+                0,
+                0.76,
+            ),
+        )
+        for filename, expected_digest, first_actor_wins, forced_scenarios, rate_at_704 in cases:
+            with self.subTest(config=filename):
+                report = run_range_entry_boundary_sweep(load_config(CONFIGS / filename), distances)
+                canonical = json.dumps(
+                    report,
+                    sort_keys=True,
+                    separators=(",", ":"),
+                    ensure_ascii=False,
+                ).encode("utf-8")
+                self.assertEqual(hashlib.sha256(canonical).hexdigest(), expected_digest)
+                self.assertEqual(report["aggregate"]["matchCount"], 1200)
+                self.assertEqual(report["aggregate"]["terminalReasons"], {"unravelled": 1200})
+                self.assertEqual(report["aggregate"]["nonterminalRecurrenceMatchCount"], 0)
+                self.assertEqual(report["aggregate"]["firstActorWins"], first_actor_wins)
+                self.assertEqual(report["aggregate"]["forcedOpeningScenarioCount"], forced_scenarios)
+                scenario_704 = next(
+                    scenario for scenario in report["scenarioReports"]
+                    if scenario["startingDistance"] == 704
+                )
+                self.assertEqual(scenario_704["firstActorWinRate"], rate_at_704)
 
 
 if __name__ == "__main__":

@@ -12,6 +12,7 @@ from .model import (
     load_config,
     repository_root,
     run_experiment,
+    run_range_entry_boundary_sweep,
     run_starting_distance_sweep,
 )
 
@@ -26,15 +27,23 @@ def main() -> int:
         type=int,
         help="Run a centered, mirrored sweep over these explicit analytical starting distances.",
     )
+    parser.add_argument(
+        "--range-entry-boundary-sweep",
+        action="store_true",
+        help="Cross both first actors and both mirrors over --starting-distances for the I1 boundary frame.",
+    )
     args = parser.parse_args()
     try:
         config_path = args.config if args.config.is_absolute() else repository_root() / args.config
         config = load_config(config_path)
-        report = (
-            run_starting_distance_sweep(config, tuple(args.starting_distances))
-            if args.starting_distances is not None
-            else run_experiment(config)
-        )
+        if args.range_entry_boundary_sweep and args.starting_distances is None:
+            raise TacticalModelError("--range-entry-boundary-sweep requires --starting-distances")
+        if args.range_entry_boundary_sweep:
+            report = run_range_entry_boundary_sweep(config, tuple(args.starting_distances))
+        elif args.starting_distances is not None:
+            report = run_starting_distance_sweep(config, tuple(args.starting_distances))
+        else:
+            report = run_experiment(config)
         encoded = json.dumps(report, indent=2, sort_keys=True) + "\n"
         if args.output is None:
             sys.stdout.write(encoded)

@@ -22,8 +22,9 @@ ActionKind = Literal["cast", "relocate", "brace", "prepare_spoolburst", "unweave
 ActionEconomy = Literal["move_and_cast", "committed"]
 SeamPinActivation = Literal["any_direct_hit", "advance_only"]
 RetreatCastRule = Literal["allowed", "forbidden"]
+RangeEntryDirectCastMode = Literal["commit_relocation"]
 
-CONFIG_SCHEMA_VERSIONS = {1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14}
+CONFIG_SCHEMA_VERSIONS = {1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15}
 RELIC_ORDER = ("threadball", "needlepoint", "spoolburst")
 BASE_POLICY_NAMES = (
     "range_pressure",
@@ -148,6 +149,18 @@ class FrayedSeam:
 
 
 @dataclass(frozen=True)
+class RangeEntryCommitment:
+    """Require newly in-range direct casts to begin as a relocation.
+
+    This candidate adds no persistent tactical state.  The commitment is the
+    witnessed path from the entry relocation through the opponent's ordinary
+    turn to any later cast that remains legal.
+    """
+
+    direct_cast_mode: RangeEntryDirectCastMode
+
+
+@dataclass(frozen=True)
 class TacticalConfig:
     identifier: str
     label: str
@@ -177,6 +190,7 @@ class TacticalConfig:
     cast_threadstep: CastThreadstep | None = None
     opening_weave: OpeningWeave | None = None
     frayed_seam: FrayedSeam | None = None
+    range_entry_commitment: RangeEntryCommitment | None = None
 
     def relic(self, identifier: str) -> Relic:
         for relic in self.relics:
@@ -271,7 +285,7 @@ def load_config(path: Path) -> TacticalConfig:
         relics.append(Relic(identifier, minimum_range, maximum_range, direct_damage))
 
     seam_pin: SeamPin | None = None
-    if schema_version in {2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14}:
+    if schema_version in {2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15}:
         tactical_core = _require_object(raw["tactical_core"], f"{path}.tactical_core")
         _require_exact_keys(
             tactical_core,
@@ -299,12 +313,18 @@ def load_config(path: Path) -> TacticalConfig:
                 else {"seam_pin", "escape_slack", "opening_weave"}
                 if schema_version == 13
                 else {"seam_pin", "escape_slack", "opening_weave", "frayed_seam"}
+                if schema_version == 14
+                else {
+                    "seam_pin", "escape_slack", "spoolburst_preparation",
+                    "spoolburst_cocoon", "spoolburst_threadback",
+                    "range_entry_commitment",
+                }
             ),
             f"{path}.tactical_core",
         )
         seam_pin_raw = _require_object(tactical_core["seam_pin"], f"{path}.tactical_core.seam_pin")
         seam_pin_keys = {"relic_id", "maximum_separation_increase", "target_turns", "cooldown_actor_turns"}
-        if schema_version in {3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14}:
+        if schema_version in {3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15}:
             seam_pin_keys |= {"activation", "retreat_cast_rule"}
         _require_exact_keys(
             seam_pin_raw,
@@ -349,7 +369,7 @@ def load_config(path: Path) -> TacticalConfig:
         )
 
     escape_slack: EscapeSlack | None = None
-    if schema_version in {4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14}:
+    if schema_version in {4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15}:
         escape_slack_raw = _require_object(raw["tactical_core"]["escape_slack"], f"{path}.tactical_core.escape_slack")
         _require_exact_keys(escape_slack_raw, {"per_actor"}, f"{path}.tactical_core.escape_slack")
         escape_slack = EscapeSlack(
@@ -398,7 +418,7 @@ def load_config(path: Path) -> TacticalConfig:
         )
 
     spoolburst_preparation: SpoolburstPreparation | None = None
-    if schema_version in {7, 8, 9, 11}:
+    if schema_version in {7, 8, 9, 11, 15}:
         preparation_raw = _require_object(
             raw["tactical_core"]["spoolburst_preparation"],
             f"{path}.tactical_core.spoolburst_preparation",
@@ -429,7 +449,7 @@ def load_config(path: Path) -> TacticalConfig:
         )
 
     spoolburst_cocoon: SpoolburstCocoon | None = None
-    if schema_version in {8, 11}:
+    if schema_version in {8, 11, 15}:
         cocoon_raw = _require_object(
             raw["tactical_core"]["spoolburst_cocoon"],
             f"{path}.tactical_core.spoolburst_cocoon",
@@ -465,7 +485,7 @@ def load_config(path: Path) -> TacticalConfig:
         )
 
     spoolburst_threadback: SpoolburstThreadback | None = None
-    if schema_version in {9, 11}:
+    if schema_version in {9, 11, 15}:
         threadback_raw = _require_object(
             raw["tactical_core"]["spoolburst_threadback"],
             f"{path}.tactical_core.spoolburst_threadback",
@@ -642,6 +662,30 @@ def load_config(path: Path) -> TacticalConfig:
             expiry="after_originator_next_action",
         )
 
+    range_entry_commitment: RangeEntryCommitment | None = None
+    if schema_version == 15:
+        commitment_raw = _require_object(
+            raw["tactical_core"]["range_entry_commitment"],
+            f"{path}.tactical_core.range_entry_commitment",
+        )
+        _require_exact_keys(
+            commitment_raw,
+            {"direct_cast_mode"},
+            f"{path}.tactical_core.range_entry_commitment",
+        )
+        direct_cast_mode = _require_string(
+            commitment_raw["direct_cast_mode"],
+            f"{path}.tactical_core.range_entry_commitment.direct_cast_mode",
+        )
+        if direct_cast_mode != "commit_relocation":
+            raise TacticalModelError(
+                f"{path}.tactical_core.range_entry_commitment.direct_cast_mode: "
+                "expected commit_relocation"
+            )
+        range_entry_commitment = RangeEntryCommitment(
+            direct_cast_mode="commit_relocation",
+        )
+
     config = TacticalConfig(
         identifier=_require_string(raw["id"], f"{path}.id"),
         label=_require_string(raw["label"], f"{path}.label"),
@@ -671,6 +715,7 @@ def load_config(path: Path) -> TacticalConfig:
         cast_threadstep=cast_threadstep,
         opening_weave=opening_weave,
         frayed_seam=frayed_seam,
+        range_entry_commitment=range_entry_commitment,
     )
     if not (config.actor_margin <= config.player_x < config.world_width - config.actor_margin):
         raise TacticalModelError(f"{path}: player spawn lies outside legal world bounds")
@@ -705,6 +750,10 @@ def load_config(path: Path) -> TacticalConfig:
         raise TacticalModelError(f"{path}.tactical_core.opening_weave: cost exceeds available opening Escape Slack")
     if config.frayed_seam is not None and config.opening_weave is None:
         raise TacticalModelError(f"{path}.tactical_core.frayed_seam: requires an Opening Weave")
+    if config.range_entry_commitment is not None and config.action_economy != "move_and_cast":
+        raise TacticalModelError(
+            f"{path}.tactical_core.range_entry_commitment: requires move_and_cast action economy"
+        )
     return config
 
 
@@ -865,6 +914,53 @@ def policy_names(config: TacticalConfig) -> tuple[str, ...]:
     return BASE_POLICY_NAMES + candidate_policies
 
 
+def _direct_cast_is_legal_after_movement(
+    state: TacticalState,
+    moved_state: TacticalState,
+    relic: Relic,
+    config: TacticalConfig,
+) -> bool:
+    """Evaluate the existing ordinary direct-cast contract at one moved state."""
+
+    if moved_state != state and _spoolburst_preparation_requires_stationary_release(relic, config):
+        return False
+    if _seam_pin_is_on_cooldown(state, state.active_actor, relic.identifier, config):
+        return False
+    if _spoolburst_preparation_prevents_cast(state, state.active_actor, relic.identifier, config):
+        return False
+    if _spoolburst_backlash_prevents_cast(state, state.active_actor, relic.identifier, config):
+        return False
+    if _seam_pin_forbids_retreat_cast(state, moved_state, relic.identifier, config):
+        return False
+    return relic.minimum_range <= distance(moved_state) <= relic.maximum_range
+
+
+def movement_created_direct_cast_relics(
+    state: TacticalState,
+    direction: int,
+    config: TacticalConfig,
+) -> tuple[str, ...]:
+    """Return direct Relics made legal only by the declared movement.
+
+    Spoolburst preparation and Unweave are separate action kinds, so this
+    helper deliberately reports ordinary direct casts only.
+    """
+
+    if direction == 0:
+        return ()
+    moved_state = _move_actor(state, state.active_actor, direction, config)
+    if moved_state == state:
+        return ()
+    before_distance = distance(state)
+    return tuple(
+        relic.identifier
+        for relic in config.relics
+        if not _spoolburst_preparation_requires_stationary_release(relic, config)
+        if not relic.minimum_range <= before_distance <= relic.maximum_range
+        and _direct_cast_is_legal_after_movement(state, moved_state, relic, config)
+    )
+
+
 def legal_actions(state: TacticalState, config: TacticalConfig) -> tuple[Action, ...]:
     if state.finished:
         return ()
@@ -878,17 +974,14 @@ def legal_actions(state: TacticalState, config: TacticalConfig) -> tuple[Action,
         )
         for direction in cast_directions:
             moved_state = _move_actor(state, state.active_actor, direction, config)
-            projected_distance = distance(moved_state)
-            if _seam_pin_is_on_cooldown(state, state.active_actor, relic.identifier, config):
+            if not _direct_cast_is_legal_after_movement(state, moved_state, relic, config):
                 continue
-            if _spoolburst_preparation_prevents_cast(state, state.active_actor, relic.identifier, config):
+            if (
+                config.range_entry_commitment is not None and
+                relic.identifier in movement_created_direct_cast_relics(state, direction, config)
+            ):
                 continue
-            if _spoolburst_backlash_prevents_cast(state, state.active_actor, relic.identifier, config):
-                continue
-            if _seam_pin_forbids_retreat_cast(state, moved_state, relic.identifier, config):
-                continue
-            if relic.minimum_range <= projected_distance <= relic.maximum_range:
-                actions.add(Action("cast", direction, relic.identifier))
+            actions.add(Action("cast", direction, relic.identifier))
     if (
         config.spoolburst_preparation is not None and
         actor_state(state, state.active_actor).spoolburst_preparation_turns == 0
@@ -1276,6 +1369,39 @@ def simulate_match(
         action = choose_action(policy, before, config)
         target = other_actor(actor)
         target_policy = player_policy if target == "player" else loomkeeper_policy
+        range_entry_projection = (
+            _move_actor(before, actor, action.direction, config)
+            if config.range_entry_commitment is not None
+            else before
+        )
+        range_entry_relics = (
+            movement_created_direct_cast_relics(before, action.direction, config)
+            if config.range_entry_commitment is not None and action.kind == "relocate"
+            else ()
+        )
+        direct_cast_relics_before = (
+            tuple(
+                relic.identifier
+                for relic in config.relics
+                if _direct_cast_is_legal_after_movement(before, before, relic, config)
+            )
+            if config.range_entry_commitment is not None
+            else ()
+        )
+        direct_cast_relics_after_movement = (
+            tuple(
+                relic.identifier
+                for relic in config.relics
+                if _direct_cast_is_legal_after_movement(
+                    before,
+                    range_entry_projection,
+                    relic,
+                    config,
+                )
+            )
+            if config.range_entry_commitment is not None
+            else ()
+        )
         state = apply_action(
             before,
             action,
@@ -1401,6 +1527,12 @@ def simulate_match(
                 actor_state(state, target).seam_pin_maximum_separation_increase ==
                 config.frayed_seam.needlepoint_binding_maximum_separation_increase
             ) else None,
+            **({
+                "directCastRelicsLegalBefore": list(direct_cast_relics_before),
+                "directCastRelicsLegalAfterMovement": list(direct_cast_relics_after_movement),
+                "rangeEntryCommitmentRelics": list(range_entry_relics),
+                "rangeEntryCommitmentStartedBy": actor if range_entry_relics else None,
+            } if config.range_entry_commitment is not None else {}),
         })
         if not state.finished:
             state_key = tactical_state_key(state)
@@ -1623,6 +1755,14 @@ def run_experiment(config: TacticalConfig, *, starting_distance: int | None = No
                 ),
                 "expiry": config.frayed_seam.expiry,
             },
+            **({
+                "rangeEntryCommitment": {
+                    "directCastMode": config.range_entry_commitment.direct_cast_mode,
+                    "scope": "ordinary direct casts made legal only by their own movement",
+                    "responseWindow": "opponent ordinary next turn before any later cast",
+                    "persistentState": False,
+                },
+            } if config.range_entry_commitment is not None else {}),
         },
         "policySets": {
             "primaryMatrix": list(BASE_POLICY_NAMES),
@@ -1720,6 +1860,206 @@ def run_starting_distance_sweep(config: TacticalConfig, starting_distances: tupl
             "firstActorWinRate": first_actor_wins / len(matches),
             "averageTurns": sum(match["turns"] for match in matches) / len(matches),
             "terminalReasons": terminal_reasons,
+        },
+    }
+
+
+def _range_entry_route_summary(
+    matches: list[dict[str, Any]],
+    config: TacticalConfig,
+) -> dict[str, Any]:
+    movement_created_casts = {identifier: 0 for identifier in RELIC_ORDER}
+    entry_relocations = {identifier: 0 for identifier in RELIC_ORDER}
+    route_results = {
+        "later_direct_cast": 0,
+        "later_alternative_action": 0,
+        "later_cast_unavailable": 0,
+        "terminal_before_actor_return": 0,
+        "missing_opponent_response": 0,
+    }
+
+    for match in matches:
+        trace = match["trace"]
+        for index, step in enumerate(trace):
+            action_kind, relic_id, direction = step["action"].split(":", 2)
+            if action_kind == "cast" and direction != "stay":
+                relic = config.relic(relic_id)
+                if (
+                    not relic.minimum_range <= step["distanceBefore"] <= relic.maximum_range and
+                    relic.minimum_range <= step["distanceAfter"] <= relic.maximum_range
+                ):
+                    movement_created_casts[relic_id] += 1
+
+            entered_relics = tuple(step.get("rangeEntryCommitmentRelics", ()))
+            if not entered_relics:
+                continue
+            for entered_relic in entered_relics:
+                entry_relocations[entered_relic] += 1
+
+            response_index = index + 1
+            if response_index >= len(trace) or trace[response_index]["actor"] == step["actor"]:
+                route_results["missing_opponent_response"] += 1
+                continue
+
+            later_step = next(
+                (
+                    candidate
+                    for candidate in trace[response_index + 1:]
+                    if candidate["actor"] == step["actor"]
+                ),
+                None,
+            )
+            if later_step is None:
+                route_results["terminal_before_actor_return"] += 1
+                continue
+
+            later_kind, later_relic, _ = later_step["action"].split(":", 2)
+            if later_kind == "cast" and later_relic in entered_relics:
+                route_results["later_direct_cast"] += 1
+                continue
+            later_legal = set(later_step.get("directCastRelicsLegalBefore", ()))
+            if later_legal.intersection(entered_relics):
+                route_results["later_alternative_action"] += 1
+            else:
+                route_results["later_cast_unavailable"] += 1
+
+    return {
+        "movementCreatedDirectCasts": {
+            "total": sum(movement_created_casts.values()),
+            "byRelic": movement_created_casts,
+        },
+        "rangeEntryCommitments": {
+            "total": sum(entry_relocations.values()),
+            "byRelic": entry_relocations,
+            "routeResults": route_results,
+        },
+    }
+
+
+def run_range_entry_boundary_sweep(
+    config: TacticalConfig,
+    starting_distances: tuple[int, ...],
+) -> dict[str, Any]:
+    """Run the I1 boundary frame over both first actors and both mirrors.
+
+    This report is separate from the historical paired-orientation sweep so it
+    cannot silently change any D2A report digest or candidate status.
+    """
+
+    validate_world_against_authority_fixture(config)
+    if not starting_distances:
+        raise TacticalModelError("Range-entry boundary sweep requires at least one scenario")
+    if len(set(starting_distances)) != len(starting_distances):
+        raise TacticalModelError("Range-entry boundary sweep must not repeat a scenario")
+    for starting_distance in starting_distances:
+        _require_starting_distance(starting_distance, config)
+
+    scenario_reports: list[dict[str, Any]] = []
+    all_matches: list[dict[str, Any]] = []
+    for starting_distance in starting_distances:
+        matches = [
+            simulate_match(
+                config,
+                player_policy,
+                loomkeeper_policy,
+                first_actor=first_actor,
+                mirrored=mirrored,
+                starting_distance=starting_distance,
+            )
+            for first_actor in ("player", "loomkeeper")
+            for mirrored in (False, True)
+            for player_policy in BASE_POLICY_NAMES
+            for loomkeeper_policy in BASE_POLICY_NAMES
+        ]
+        all_matches.extend(matches)
+        terminal_reasons: dict[str, int] = {}
+        for match in matches:
+            terminal_reasons[match["finishReason"]] = terminal_reasons.get(match["finishReason"], 0) + 1
+
+        forced_openings = []
+        for first_actor in ("player", "loomkeeper"):
+            for mirrored in (False, True):
+                state = initial_state(
+                    config,
+                    first_actor=first_actor,
+                    mirrored=mirrored,
+                    starting_distance=starting_distance,
+                )
+                forced_actions = [
+                    action_key(action)
+                    for action in legal_actions(state, config)
+                    if can_force_win_after_declared_action(
+                        state,
+                        action,
+                        first_actor,
+                        config.opening_search_depth - 1,
+                        config,
+                    )
+                ]
+                if forced_actions:
+                    forced_openings.append({
+                        "firstActor": first_actor,
+                        "mirrored": mirrored,
+                        "actions": forced_actions,
+                    })
+
+        first_actor_wins = sum(match["winner"] == match["firstActor"] for match in matches)
+        scenario_reports.append({
+            "startingDistance": starting_distance,
+            "matchCount": len(matches),
+            "firstActorWins": first_actor_wins,
+            "firstActorWinRate": first_actor_wins / len(matches),
+            "averageTurns": sum(match["turns"] for match in matches) / len(matches),
+            "terminalReasons": terminal_reasons,
+            "nonterminalRecurrenceMatchCount": sum(
+                match["nonterminalRecurrence"] is not None for match in matches
+            ),
+            "forcedOpenings": forced_openings,
+            **_range_entry_route_summary(matches, config),
+            "matches": matches,
+        })
+
+    terminal_reasons: dict[str, int] = {}
+    for match in all_matches:
+        terminal_reasons[match["finishReason"]] = terminal_reasons.get(match["finishReason"], 0) + 1
+    first_actor_wins = sum(match["winner"] == match["firstActor"] for match in all_matches)
+    return {
+        "schemaVersion": 1,
+        "reportKind": "range_entry_boundary_sweep",
+        "configId": config.identifier,
+        "label": config.label,
+        "analysisStatus": config.analysis_status,
+        "sourceRulesetId": config.source_ruleset_id,
+        "authorityFixture": config.authority_fixture,
+        "startingDistances": list(starting_distances),
+        "firstActors": ["player", "loomkeeper"],
+        "mirrored": [False, True],
+        "policyPairs": [
+            [player_policy, loomkeeper_policy]
+            for player_policy in BASE_POLICY_NAMES
+            for loomkeeper_policy in BASE_POLICY_NAMES
+        ],
+        "seed": config.seed,
+        "maximumTurns": config.maximum_turns,
+        "openingSearchDepth": config.opening_search_depth,
+        "excludedClaims": [
+            "The ideal-direct-hit model does not establish terrain, aim, trajectory, splash, player-skill, or live-Loomkeeper behavior.",
+            "The deterministic policy matrix does not establish global balance, optimal play, player fun, V5 approval, or production authority.",
+        ],
+        "scenarioReports": scenario_reports,
+        "aggregate": {
+            "matchCount": len(all_matches),
+            "firstActorWins": first_actor_wins,
+            "firstActorWinRate": first_actor_wins / len(all_matches),
+            "averageTurns": sum(match["turns"] for match in all_matches) / len(all_matches),
+            "terminalReasons": terminal_reasons,
+            "nonterminalRecurrenceMatchCount": sum(
+                match["nonterminalRecurrence"] is not None for match in all_matches
+            ),
+            "forcedOpeningScenarioCount": sum(
+                bool(scenario["forcedOpenings"]) for scenario in scenario_reports
+            ),
+            **_range_entry_route_summary(all_matches, config),
         },
     }
 

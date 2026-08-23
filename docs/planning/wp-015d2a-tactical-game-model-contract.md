@@ -719,6 +719,40 @@ same decision point, rather than asking a later bind to repair a forced direct
 cast. No Frayed Seam, strengthened Seam Pin, Opening Weave, UI, replay, server,
 reward, or V5 rule is approved.
 
+## Candidate I1 direct-cast range-entry commitment - 2026-08-23
+
+I1 is the owner-accepted Phase A test contracted in
+`docs/planning/wp-015d2c-range-entry-commitment-candidate-contract.md`. It is a
+child of F4 and changes one action boundary only: an ordinary direct cast that
+is illegal before movement but made legal by that cast's own movement is
+removed as a combined action. The actor may relocate instead, ending the turn;
+the opponent takes one ordinary turn; and a later cast is legal only if the
+later state remains in band. I1 adds no status, resource, guaranteed cast,
+special reaction, or change to Spoolburst preparation, Unweave, Threadback,
+values, policies, or tactical state.
+
+The new schema-version 15 config and deterministic boundary report cross the
+distances 511/512/513, 575/576/577, 639/640/641, and 703/704/705 over both
+first actors, both mirrors, and all 25 ordered primary-policy pairs. The 1,200
+matches execute 1,188 range-entry commitments with an ordinary opponent action
+after every entry. There are no forced-opening scenarios or non-terminal
+recurrence witnesses.
+
+I1 nevertheless **fails its hard terminal gate and is rejected**. Four
+retreat-kite-versus-retreat-kite matches at 705 reach the 16-turn limit. Its
+54.3% aggregate first-actor rate also hides a
+60/60/56/56/56/68/68/68/32/32/32/64% distance family: F4's 80% at 704 flips
+to 32% rather than becoming a stable repair, and the direction flips again at
+705. The exact report digest is
+`1dbefbedf8aa55e68002b91b6ed6c743085f5edbe5655a97f146d8161b053fa4`.
+
+The result is useful negative evidence that exposing every movement-created
+direct-cast entry is too blunt: it creates real response paths but transfers
+initiative discontinuously and delays some long-range routes past the fixed
+horizon. Phase B World Design Port registration is blocked. Any revision must
+be a separately contracted child candidate; no I1 rule, UI, replay, server,
+reward, or V5 behavior is approved.
+
 ## G0 Opening and reaction contract - 2026-08-09
 
 The remaining problem is now more precise than a generic “first actor

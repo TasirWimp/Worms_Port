@@ -492,8 +492,9 @@ are classified.
 
 ### Range-entry commitment around 704
 
-Status: speculative candidate profile, not an approved mechanic. A contract must
-still freeze the exact meaning of “commitment” before implementation.
+Status: I1 Phase A implemented and rejected on 2026-08-23; not an approved
+mechanic. The candidate contract froze commitment as a direct-cast-only path
+split with no new status, resource, or special response.
 
 The current evidence licenses this question: F4 is the strongest structural
 reference but retains 80% first-actor wins at distance 704, and the current
@@ -501,7 +502,7 @@ reference but retains 80% first-actor wins at distance 704, and the current
 action. It does not yet license a causal claim that range entry is the sole
 source of the initiative split.
 
-A bounded child such as `I1` should use:
+The bounded I1 child used:
 
 - parent: F4;
 - comparators: C4 for value structure, F4 for close-band structure, and H2 for
@@ -531,8 +532,15 @@ available at the entry edge rather than after the forced outcome. The owner
 must predeclare the intended gameplay meaning and later judge the full profile;
 no generic win-rate threshold supplies acceptance.
 
-Repository-specific admission work is required before this can run through the
-World Design Port:
+The candidate-only Phase A implementation added the strict D2A config/model,
+full-orientation boundary report, transition annotations, and regression tests.
+Its 1,200-match result has no forced opening or recurrence, but four 705
+retreat-kite mirrors hit the turn limit and its 54.3% aggregate hides a
+68%-to-32% boundary reversal. I1 is rejected under the predeclared hard and
+false-closure gates.
+
+The following World Design Port admission work was planned but is now blocked
+for I1:
 
 - add the candidate to the tactical model/config schema without editing V4;
 - register C4 and the new candidate in a new D2A registry/cut/domain version;
@@ -544,10 +552,10 @@ World Design Port:
   lock; and
 - prove every existing D2A report digest remains unchanged.
 
-The proposed exact admission record is
-`docs/planning/wp-015d2c-range-entry-commitment-candidate-contract.md`. It keeps
-the mechanic at `proposed` until the owner accepts its precise direct-cast-only
-semantics.
+The exact admission and result record is
+`docs/planning/wp-015d2c-range-entry-commitment-candidate-contract.md`. Any
+revision must be a new child candidate; the failed I1 domain is not narrowed or
+tuned in place.
 
 ### Config-only value candidate
 
