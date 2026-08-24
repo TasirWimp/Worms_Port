@@ -1,6 +1,7 @@
 # WP-015D2G Relational Gameplay Navigation Review
 
-Status: in progress; manual navigation carrier v0 seeded on 2026-08-24.
+Status: in progress; manual navigation carrier v1 and initial Phase 2 review
+recorded on 2026-08-24.
 
 - **Operational class:** pre-candidate, documentation-only evidence synthesis.
 - **Parent:** completed WP-015D2F I2 policy-conditioned closure audit.
@@ -178,7 +179,7 @@ decision that preserves the prior version and explains the change.
 
 These horizons orient navigation but cannot certify an analytical route.
 
-## Manual navigation carrier v0
+## Manual navigation carrier v1
 
 ### Current chart position
 
@@ -187,8 +188,9 @@ These horizons orient navigation but cannot certify an analytical route.
   combination of convergence, recurrence, and bounded-opening properties.
 - **Latest returned route:** I2. Its rule is absent from the home carrier, but
   its policy-conditioned and range-entry witnesses remain active landmarks.
-- **Active next direction:** none selected. The chart must be reviewed before
-  another candidate is contracted.
+- **Active gameplay direction:** none selected. The initial Phase 2 review
+  favors a route-reachable carrier probe before another candidate is
+  contracted, subject to the review gate below.
 
 ### Route reconstruction
 
@@ -277,6 +279,101 @@ into sole causes:
 
 This field orients the next review. It does not yet select a candidate family.
 
+## Phase 2 initial pressure-basin review
+
+The reconstructed routes do not support compressing the surviving pressure
+into one defect or one tuning dimension. They expose several coupled basins.
+The basins are navigation groupings: they say where a probe wake must remain
+visible, not what ultimately causes the gameplay result.
+
+| Pressure basin | Principal landmarks | Stable bounded reading | Residue that remains open |
+| --- | --- | --- | --- |
+| Convergence and recurrence | A, B, B2, C4, F2, F3, F4 | Bounded resource, motion, and status residue can change whether a denial route repeats or finishes. | A convergence repair does not establish useful initiative, pacing, or player-facing play. |
+| Response horizon and geometry | D1, F1, F3, G1, F4, H3 | A response is edge-scoped: legality after the decisive hit, or motion that the caster can erase before acting, is not the same relation as a credible same-horizon response. | D2A cannot establish how terrain, aiming, timing, or human anticipation change response credibility. |
+| Initiative allocation | C4, F4, H1, H2, I1, I2 | Pressure can move, reverse, or split across distance, actor, policy, and route even when aggregate results improve. | No scalar or fixed-policy result identifies a generally useful allocation of initiative. |
+| Range entry and path history | I1, I2, D2F | An initial carrier at a separation and a later voyage re-entering that separation are not interchangeable. Entry support can alter later action availability without altering the opening at spawn 640. | The smallest route-reachable carrier that predicts the important continuation splits has not been established. |
+| Analytical-cut and authority fit | all D2A routes | The ideal-direct cut is useful for exposing action, resource, status, policy, and recurrence relations. | Terrain, aim, trajectory, execution, live policy adaptation, readability, and fun remain outside the cut; their point of materiality is unknown. |
+
+These basins interact rather than form a pipeline with a single root. A
+typical observed route has the following coupled relation:
+
+```text
+starting carrier + accumulated path
+  -> legal actions and active support
+  -> policy-conditioned selection
+  -> response horizon and residual
+  -> later reachable carriers
+  -> terminal, recurrent, or redirected route
+```
+
+Changing one relation can therefore reorganize several downstream surfaces
+without the change being a general repair. This is why F3 can repair
+recurrence while worsening initiative, H2 can improve aggregate parity while
+preserving a distance split, and I2 can change cross-policy action selection
+without changing any same-policy mirror.
+
+### Current cut finding
+
+Starting distance is an important initial coordinate, but it is not a
+support-complete tactical carrier for route continuation. The D2F evidence is
+the sharpest current witness:
+
+- at exact production spawn 640, F4 and I2 remain 60/40, with no I2 opening
+  suppression;
+- the same start still produces 28 later separation/re-entry suppressions;
+- across the declared entry routes, 72/120 matched routes change the original
+  caster's next action and 36/120 change outcome; and
+- every same-policy mirror remains outcome-identical while ordered
+  cross-policy routes redistribute the aggregate result.
+
+The source-supported facts are the counts and trace-bound classifications in
+WP-015D2F. The L4+ interpretation is narrower: the present distance/policy
+summary projection is incomplete for choosing the next gameplay rule. This
+does **not** prove that path history is the cause of initiative pressure, that
+I2 is a useful rule, or that a richer cut will yield a clean explanation.
+
+### Directions retained for triangulation
+
+#### R1 - route-reachable carrier chart around spawn 640
+
+Hold F4 and the existing policy family fixed. Re-enter a small number of
+existing spawn-640 traces and chart the carriers actually reached before and
+after the pressure edges. Retain actor, path prefix, positions/separation,
+Stitching, Escape Slack, preparation/Cocoon/Seam-Pin/cooldown support, legal
+action set, selected action, and terminal/recurrence relation. Test whether
+temptingly similar visible carriers split once route support is restored.
+
+- **Why it is currently favored:** it is the nearest reversible observation
+  step, does not invent a mechanic, and directly addresses the distinction
+  between the unchanged opening and 28 later I2 uses at the real spawn.
+- **Advance condition:** a small, reproducible family of reachable carrier
+  motifs distinguishes continuation pressure across more than one declared
+  route without erasing policy or residual differences.
+- **Return/demotion condition:** no repeated motif survives re-entry, the
+  result merely restates individual traces, or omitted authority ports become
+  the dominant distinction.
+
+#### R2 - policy-choice relation
+
+Keep mechanics fixed and compare what the present policies can observe and
+select at the same route-reachable carriers. This may reveal that a mechanical
+wake is being amplified or hidden by the policy cut. It remains secondary to
+R1 because changing the policy before charting the carriers would change two
+parts of the navigation relation at once. A new policy would be another model
+probe, not a player model or balance authority.
+
+#### R3 - authority/playtest escalation
+
+If R1 cannot retain a useful distinction without terrain, aim, execution, or
+adaptation, stop extending the D2A explanation. Name the missing port and
+design a separate V4 instrumentation or human-playtest cut. This direction is
+an explicit escape from analytical overfitting, not a failed navigation
+outcome.
+
+R1 is a proposed analytical direction, not an accepted gameplay direction.
+No rule, value, candidate config, policy, or authority surface is authorized
+by this review.
+
 ## Phased plan and stop gates
 
 ### Phase 0 - source lock and boundary
@@ -289,7 +386,8 @@ evidence drift.
 
 ### Phase 1 - manual chart reconstruction
 
-Status: in progress; initial complete lineage seeded above.
+Status: complete; the full candidate lineage and its scoped dispositions are
+represented above.
 
 Audit every row against the historical contract, config, and report surface.
 Check that route grouping does not erase mixed effects, policy limitations, or
@@ -297,7 +395,8 @@ domain differences. Do not run a new mechanic.
 
 ### Phase 2 - pressure and landmark review
 
-Status: pending.
+Status: in progress; the initial coupled-basin review and cut finding are
+recorded above. Owner confirmation or revision remains open.
 
 Review the protected family, cross-route anchors/guides/warnings/negative
 landmarks, and unresolved pressure with the owner. Revise only with an explicit
@@ -308,18 +407,21 @@ ports.
 
 Status: pending.
 
-Select one nearby direction from multiple landmarks. Record a directional
-wager, coherent intervention class, expected relational wake, coarse first
-probe, advance/return conditions, and authority-escalation trigger. Do not
-choose by one scalar or claim the path set is complete.
+Select among R1, R2, R3, or an owner-supplied direction from multiple
+landmarks. Record a directional wager, coherent intervention class, expected
+relational wake, coarse first probe, advance/return conditions, and
+authority-escalation trigger. Do not choose by one scalar or claim the path
+set is complete.
 
-### Phase 4 - child probe contract
+### Phase 4 - bounded child probe contract
 
 Status: blocked until Phase 2 and Phase 3 owner review.
 
-Create a separate Lane 1 candidate contract only after the direction is
-accepted. The candidate itself may serve as a navigational probe; it gains no
-production authority and need not be a product proposal.
+Create a separate analysis or candidate contract only after the direction is
+accepted. R1 would begin as an observation/cut probe over unchanged carriers;
+it must not be mislabeled as a gameplay candidate. A later candidate may serve
+as a navigational probe only when an earlier wake supports that step. Neither
+form gains production authority or needs to be a product proposal.
 
 ## Re-entry instructions
 
