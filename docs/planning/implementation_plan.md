@@ -107,9 +107,20 @@ Phaser/Socket.IO stack.
   while keeping production spawn authority at 640. D2E registers only the
   twelve D2D pressure starts, retains 769 as an excluded-start warning, and
   adds a parallel source-locked profile-v3 adapter/cut/request/result chain so
-  sealed D2B remains byte-identical. Its working-tree implementation is in
-  progress; final M2 execution awaits the required implementation commit and
-  direct-child evidence lock. No V5 or production promotion is opened.
+  sealed D2B remains byte-identical. **WP-015D2E completed on 2026-08-24** at
+  `M2_local_use`, analytical disposition `structural_reference`, and
+  ProductAuthority `none`. Implementation commit
+  `74e1b724478d576ae2c3b6bdd181c6e2ab20efe8`, tree
+  `45af9f7c6aa8e9515c8b466db378e4e30b0081a5`, and 16-file bundle digest
+  `2cae366f4842538db78c5a388bf5e210731e4e4e240c06911a6380e30bed1b69`
+  are authenticated by direct-child lock commit
+  `8be185fb7eb2fb58cdc35959ac7ce60975f7e75e`. Two sealed runs reproduced
+  request `10a09ea047e1e00b2526618314d16cc97713f098ea41c767c6f84bf83547565f`,
+  analytical export
+  `9648b3aa42f4892334c7c2ee6e73afc55c317e8d47148020e6fea8a871ff2dca`,
+  and result `6cebc0559466a72e969a2d2e151ad04691b9e03a352764bb3bf15bf1d1779789`.
+  The start-769 warning remains blocking; no V5 or production promotion is
+  opened, and the Execution Pointer remains WP-015D2A.
   **WP-015D1 V4 wider
   arena and pan camera completed on 2026-08-08**
   on `codex/wp-015-production-assets`: V4 preserves historical replays while

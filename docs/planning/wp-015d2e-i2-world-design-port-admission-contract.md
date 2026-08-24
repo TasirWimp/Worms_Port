@@ -1,6 +1,6 @@
 # WP-015D2E I2 World Design Port Admission Contract
 
-Status: contracted and implementation in progress on 2026-08-23.
+Status: complete at M2 local use on 2026-08-24.
 
 - **Operational lane:** Lane 2 profile/tooling migration for one already
   implemented Lane 1 candidate.
@@ -189,6 +189,36 @@ The diagnostic profile must retain:
 No 45-55 threshold or scalar aggregate can promote I2. Successful admission
 ends at `M2_local_use`, analytical disposition `structural_reference`, and
 ProductAuthority `none`.
+
+## Completion result
+
+The implementation is frozen at commit
+`74e1b724478d576ae2c3b6bdd181c6e2ab20efe8`, tree
+`45af9f7c6aa8e9515c8b466db378e4e30b0081a5`, and canonical 16-file bundle
+digest `2cae366f4842538db78c5a388bf5e210731e4e4e240c06911a6380e30bed1b69`.
+Direct-child lock commit `8be185fb7eb2fb58cdc35959ac7ce60975f7e75e`
+authenticates that identity and every registered implementation blob.
+
+Two independent sealed CLI executions produced byte-identical 366,673-byte
+JSON results with file SHA-256
+`f4812e9c39bc3d16d5546629770443c1bc1468650afd23958ac449a0a91a2870`.
+Both bind:
+
+- request digest
+  `10a09ea047e1e00b2526618314d16cc97713f098ea41c767c6f84bf83547565f`;
+- analytical export digest
+  `9648b3aa42f4892334c7c2ee6e73afc55c317e8d47148020e6fea8a871ff2dca`;
+  and
+- result digest
+  `6cebc0559466a72e969a2d2e151ad04691b9e03a352764bb3bf15bf1d1779789`.
+
+The admitted result contains 1,200 terminal Unraveling matches, no forced
+opening, no nonterminal recurrence, no registered-domain turn limit, a
+57-percent aggregate first-actor rate, and 84/36 first-/second-actor outcomes
+across the affected opening routes. It retains the excluded start-769 warning:
+F4 has four and I2 eight turn limits there. This completion therefore closes
+only the admission/tooling package; I2 remains a structural reference with
+ProductAuthority none and no V5 activation.
 
 ## Planned implementation paths
 

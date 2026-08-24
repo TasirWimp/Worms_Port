@@ -596,3 +596,20 @@ Successful sealed execution ends at `M2_local_use`, analytical disposition
 `structural_reference`, and ProductAuthority `none`. It does not establish
 global distance support, initiative fairness, player fun, V5 approval, a
 runtime ruleset, or product landfall.
+
+WP-015D2E completed this admission on 2026-08-24. The sealed implementation is
+commit `74e1b724478d576ae2c3b6bdd181c6e2ab20efe8`, authenticated by direct-child
+lock commit `8be185fb7eb2fb58cdc35959ac7ce60975f7e75e`, with implementation bundle
+digest `2cae366f4842538db78c5a388bf5e210731e4e4e240c06911a6380e30bed1b69`.
+Two independent invocations of the command above produced identical request,
+analytical export, and result digests:
+
+```text
+request     10a09ea047e1e00b2526618314d16cc97713f098ea41c767c6f84bf83547565f
+analytical  9648b3aa42f4892334c7c2ee6e73afc55c317e8d47148020e6fea8a871ff2dca
+result      6cebc0559466a72e969a2d2e151ad04691b9e03a352764bb3bf15bf1d1779789
+```
+
+Generated result files remain ignored and disposable. Re-entry starts from the
+committed request, implementation lock, source/report bindings, and the CLI
+above rather than from a checked-in generated result.
