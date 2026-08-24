@@ -100,6 +100,16 @@ function detection(bundle: EvaluationBundle, rule: FalseClosureRule) {
     return found;
 }
 
+function assertHistoricalD2ASourceDowngrade(evaluation: EvaluationBundle): void {
+    // WP-015D2B authenticates the pre-candidate tactical-model blob. D2C/D2D
+    // intentionally advanced that analytical source, so a current-checkout
+    // historical reproduction retains its qualitative findings but cannot
+    // claim the sealed package's source-bound M2 receipt.
+    assert.equal(evaluation.maturityAssessment.maturity, 'M1_declaration');
+    assert.equal(evaluation.maturityAssessment.gates.registeredSourceBinding, false);
+    assert.equal(evaluation.maturityAssessment.productAuthority, 'none');
+}
+
 test('H2 aggregate parity remains a separate probe and cannot yield design landfall', () => {
     const registration = D2A_CONFIG_REGISTRATIONS.find((item) => item.caseId === 'h2')!;
     const request = buildOfflineWorldDesignRequest(d2aRequest(registration, [
@@ -109,8 +119,7 @@ test('H2 aggregate parity remains a separate probe and cannot yield design landf
     const rule = detection(evaluation, 'aggregate_parity_masks_port_split');
 
     assert.equal(rule.triggered, true);
-    assert.equal(evaluation.maturityAssessment.maturity, 'M2_local_use');
-    assert.equal(evaluation.maturityAssessment.productAuthority, 'none');
+    assertHistoricalD2ASourceDowngrade(evaluation);
     assert.equal(evaluation.diagnosticProfile.closureRisk.value, 'blocked_landfall');
     assert.deepEqual(evaluation.scalarProbes.map((probe) => probe.probeId), ['h2.aggregate_first_actor_win_rate']);
     assert.equal('scalarProbes' in evaluation.diagnosticProfile, false);
@@ -134,7 +143,7 @@ test('mandatory historical evidence cannot be filtered out by a request', () => 
 test('F2 recursive carrier return remains failure pressure and cannot yield M3', () => {
     const { evaluation } = executeD2A('f2');
     assert.equal(detection(evaluation, 'recursive_return_claimed_as_landfall').triggered, true);
-    assert.equal(evaluation.maturityAssessment.maturity, 'M2_local_use');
+    assertHistoricalD2ASourceDowngrade(evaluation);
     assert.equal(evaluation.maturityAssessment.gates.registeredAcceptancePressureCases, false);
 });
 
@@ -145,7 +154,7 @@ test('F3 recurrence repair is material reorganization without initiative success
     assert.equal(rule.triggered, true);
     assert.equal(evaluation.diagnosticProfile.localReorganization.value, 'material_reorganization');
     assert.match(evaluation.diagnosticProfile.localReorganization.reason, /does not establish initiative fairness/);
-    assert.equal(evaluation.maturityAssessment.maturity, 'M2_local_use');
+    assertHistoricalD2ASourceDowngrade(evaluation);
 });
 
 test('F4 structural success retains the 704 initiative warning', () => {
@@ -156,7 +165,7 @@ test('F4 structural success retains the 704 initiative warning', () => {
     assert.match(rule.reason, /704/);
     assert.match(evaluation.diagnosticProfile.localReorganization.reason, /704-band/);
     assert.equal(evaluation.scalarProbes.find((probe) => probe.probeId === 'f4.distance_704_first_actor_win_rate')?.value, 0.8);
-    assert.equal(evaluation.maturityAssessment.maturity, 'M2_local_use');
+    assertHistoricalD2ASourceDowngrade(evaluation);
 });
 
 test('H3 retains the same-horizon response failure', () => {
@@ -167,7 +176,7 @@ test('H3 retains the same-horizon response failure', () => {
     assert.equal(evaluation.diagnosticProfile.pathPressure.value, 'forced_route_pressure');
     assert.equal(evaluation.diagnosticProfile.localReorganization.value, 'delay_only');
     assert.match(evaluation.diagnosticProfile.localReorganization.reason, /intervening normal action/);
-    assert.equal(evaluation.maturityAssessment.maturity, 'M2_local_use');
+    assertHistoricalD2ASourceDowngrade(evaluation);
 });
 
 test('V4 adapter parity is primary qualitative evidence but cannot produce M3 gameplay landfall', () => {

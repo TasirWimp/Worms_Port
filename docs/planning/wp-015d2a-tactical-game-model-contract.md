@@ -779,6 +779,13 @@ not occur until turn 10. That domain was not part of the accepted twelve-start
 gate, but the residue remains explicit and blocks automatic Phase B or product
 promotion. I2 remains analysis-only with ProductAuthority none.
 
+The owner subsequently opened only the separately versioned
+[WP-015D2E I2 World Design Port Admission](wp-015d2e-i2-world-design-port-admission-contract.md).
+Production spawn authority remains 640; D2E admits the existing twelve starts
+as pressure carriers and preserves 769 as an excluded-start warning. It does
+not change this tactical result, rotate the sealed D2B implementation lock,
+authorize V5, or create product authority.
+
 ## G0 Opening and reaction contract - 2026-08-09
 
 The remaining problem is now more precise than a generic “first actor

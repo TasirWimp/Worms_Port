@@ -681,6 +681,18 @@ contract and its exact semantics, followed by a separately versioned Lane 1/2
 implementation package. It is not to pass a novel request to the sealed D2B
 CLI.
 
+That range-entry sequence has now produced two separately bounded packages:
+rejected I1 under WP-015D2C and the I2 structural survivor under WP-015D2D.
+The owner has opened WP-015D2E as the Lane 2 admission package for I2 only.
+D2E does not widen the sealed D2B CLI or registry. It uses profile-v3
+`d2e_i2_world_design@1 -> d2e_i2_analytical_export@1`, the exact twelve D2D
+pressure starts, seed 3237998097, both first actors/mirrors, all 25 ordered base
+policy pairs, and the inherited 16-turn horizon. Production spawn authority
+remains 640. Full-resource start 769 remains excluded from the request and is
+mandatory blocking evidence. D2E execution remains unsealed until its
+implementation commit is followed directly by the reviewed machine lock;
+ProductAuthority remains `none` throughout.
+
 ## Source and claim status
 
 Source-supported methodological constraints come from the two read-only CRPM

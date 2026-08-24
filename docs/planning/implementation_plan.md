@@ -102,7 +102,14 @@ Phaser/Socket.IO stack.
   split 28/12 per target distance. An exploratory audit also exposes an
   inherited horizon boundary at start 769, where F4 has four turn limits and
   I2 has eight. I2 is a bounded structural survivor with explicit horizon
-  residue; no World Design Port, V5, or production promotion is opened.
+  residue. The owner subsequently opened the separate
+  [WP-015D2E I2 World Design Port Admission Contract](wp-015d2e-i2-world-design-port-admission-contract.md)
+  while keeping production spawn authority at 640. D2E registers only the
+  twelve D2D pressure starts, retains 769 as an excluded-start warning, and
+  adds a parallel source-locked profile-v3 adapter/cut/request/result chain so
+  sealed D2B remains byte-identical. Its working-tree implementation is in
+  progress; final M2 execution awaits the required implementation commit and
+  direct-child evidence lock. No V5 or production promotion is opened.
   **WP-015D1 V4 wider
   arena and pan camera completed on 2026-08-08**
   on `codex/wp-015-production-assets`: V4 preserves historical replays while

@@ -5,7 +5,8 @@ const path = require('node:path');
 
 const repoRoot = path.resolve(__dirname, '..');
 const nonWorkPackageEvidenceFiles = new Set([
-  'wp-015d2b-implementation-lock.json'
+  'wp-015d2b-implementation-lock.json',
+  'wp-015d2e-implementation-lock.json'
 ]);
 const allowedFields = new Set([
   'id', 'status', 'starting_commit', 'branch', 'initial_worktree',

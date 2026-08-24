@@ -542,3 +542,57 @@ npm run test:crpm-world-evaluation
 The focused scripts are intentionally not part of broad `verify:full`. The
 completed work-package evidence record and repository-level compliance/build
 checks govern this analysis-only package.
+
+## WP-015D2E I2 admission follow-on
+
+WP-015D2B above remains a sealed historical-analysis carrier. Its registry,
+schemas, implementation lock, CLI, F2/F3/F4/H2/H3 outputs, and example digests
+are not changed to pretend I2 was part of that package.
+
+The separately contracted WP-015D2E layer lives below
+`analysis/crpm_world/admissions/i2/` and adds only the registered I2
+spawn-pressure request. It binds:
+
+- D2A schema-16 source commit
+  `9da87c9aeec8d9d34cfbb2ff053f69e4cf035d40`;
+- production spawn authority reference 640;
+- analytical starts 511/512/513, 575/576/577, 639/640/641, and
+  703/704/705;
+- both first actors, both mirrors, all 25 ordered base-policy pairs, seed
+  3237998097, and the existing 16-turn horizon;
+- C4/F4/H2/I1/I2 report digests from WP-015D2D; and
+- an excluded full-resource start-769 warning, where F4 records four and I2
+  eight turn-limit results.
+
+The Python adapter is
+`analysis/crpm_world/adapters/d2e_i2_export.py`. It reruns the complete
+registered comparator frame and emits reviewed compact evidence for three
+separate movement-entry/response voyages at 641, 703, and 704 plus one
+already-in-band Needlepoint control. The TypeScript admission layer validates
+that evidence, emits explicit CRPM-world transition/voyage/residual/obligation
+surfaces, and applies the non-scalar profile. No Python path is called by
+production TypeScript.
+
+The request example is
+`analysis/crpm_world/examples/d2e-i2-spawn-pressure-request.json`. Because the
+sealed D2B implementation surface includes `package.json`, D2E intentionally
+does not add or change an npm script. After its two-commit implementation/evidence
+seal, invoke it with:
+
+```powershell
+npx tsx scripts/run-crpm-world-design-i2.ts --request analysis/crpm_world/examples/d2e-i2-spawn-pressure-request.json --output test-results/crpm-world/d2e-i2/i2-result.json
+```
+
+Before the implementation commit and direct-child approved lock exist, that
+command fails closed before invoking Python. Working-tree contract checks use:
+
+```powershell
+python -m unittest analysis.crpm_world.adapters.tests.test_d2e_i2_export -v
+node --import tsx --test tests/crpm-world/d2e-i2-admission.test.ts
+npx tsc -p analysis/crpm_world/tsconfig.json
+```
+
+Successful sealed execution ends at `M2_local_use`, analytical disposition
+`structural_reference`, and ProductAuthority `none`. It does not establish
+global distance support, initiative fairness, player fun, V5 approval, a
+runtime ruleset, or product landfall.

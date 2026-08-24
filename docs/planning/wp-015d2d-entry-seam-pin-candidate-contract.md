@@ -1,7 +1,9 @@
 # WP-015D2D Entry Seam-Pin Candidate Contract
 
 Status: Phase A implemented and evaluated on 2026-08-23; declared gate passes;
-extended horizon residue recorded; Phase B not opened.
+extended horizon residue recorded. The owner subsequently opened the separate
+WP-015D2E Phase B admission package; this D2D record remains closed and
+unchanged as its source candidate.
 
 - **Operational lane:** Lane 1 analytical candidate.
 - **Candidate:** `I2 entry Seam-Pin exclusion`.
@@ -120,9 +122,11 @@ no forced opening/recurrence, and rates between 44 and 60 percent, but it was
 not the contracted acceptance domain and cannot upgrade maturity.
 
 The analytical disposition is **bounded structural survivor with explicit
-horizon residue**. Phase B remains unopened pending a separate owner decision
-about the declared starting-carrier domain and the 769 witness. ProductAuthority
-remains `none`.
+horizon residue**. At D2D closure, Phase B remained unopened pending a separate
+owner decision about the declared starting-carrier domain and the 769 witness.
+The later owner decision keeps production spawn authority at 640, admits only
+the twelve existing pressure starts, and carries 769 as an excluded-start
+warning under WP-015D2E. ProductAuthority remains `none`.
 
 ## Protected family and residue
 
@@ -209,13 +213,13 @@ production simulation/type/build/compliance gates.
 No declared hard or route-level falsifier fires. The separately discovered 769
 horizon witness is retained as non-promotional residue.
 
-### Phase B - World Design Port admission (not opened)
+### Phase B - World Design Port admission (opened separately)
 
-Phase A survives, but admission is not automatic. A later owner-authorized
-phase would still require a
-separately reviewed version/source migration because WP-015D2B authenticates
-the pre-candidate tactical-model Git blob. Do not rotate that lock or register
-I2 automatically.
+Phase A survival did not open admission automatically. The owner later
+authorized the separate
+[WP-015D2E I2 World Design Port Admission Contract](wp-015d2e-i2-world-design-port-admission-contract.md).
+D2E preserves this record and the WP-015D2B lock, uses a parallel versioned
+adapter/cut/request/result chain, and retains 769 as explicit blocking residue.
 
 ### Phase C - any production proposal
 
@@ -229,3 +233,8 @@ On 2026-08-23 the owner instructed Codex to proceed with the proposed narrow
 candidate: preserve movement and Needlepoint damage, suppress only
 entry-generated Seam Pin, derive the result from matched boundary witnesses,
 and stop before World Design Port or production promotion.
+
+After reviewing the D2D result, the owner separately instructed Codex to keep
+the starting domain around the existing spawn and proceed with the proposed
+World Design Port admission. That later instruction opens only WP-015D2E and
+does not amend I2 mechanics or authorize production promotion.
