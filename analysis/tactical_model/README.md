@@ -328,4 +328,7 @@ The canonical audit digest is
 This does not rewrite I2's historical structural result; it blocks interpreting
 that result as robust initiative repair. No I2 rule or V5 behavior is approved.
 The next permitted action is a review of the complete candidate history and
-policy limitations before another mechanic is contracted.
+policy limitations before another mechanic is contracted. That review is now
+the documentation-only
+[`WP-015D2G` manual navigation carrier](../../docs/planning/wp-015d2g-relational-gameplay-navigation-review.md),
+which preserves this model and every historical config unchanged.

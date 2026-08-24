@@ -136,6 +136,15 @@ Phaser/Socket.IO stack.
   ProductAuthority none. The next permitted action is a cross-candidate and
   policy-model review before another Lane 1 mechanic is contracted; the
   Execution Pointer remains WP-015D2A.
+  **WP-015D2G Relational Gameplay Navigation Review is now in progress** on
+  `codex/wp-015d2g-relational-navigation-chart`. Its
+  [manual navigation carrier](wp-015d2g-relational-gameplay-navigation-review.md)
+  reconstructs V4/A/B/B2/C/D/E/F/G/H/I candidate routes as source-bound anchor,
+  guide, warning, horizon, and negative landmarks. D2G begins from a bounded
+  directional wager rather than requiring one compressed causal explanation,
+  records advance/return and chart-revision rules, and stops before a new
+  candidate. It changes no model, config, World Design Port schema, production
+  behavior, or ProductAuthority. The Execution Pointer remains WP-015D2A.
   **WP-015D1 V4 wider
   arena and pan camera completed on 2026-08-08**
   on `codex/wp-015-production-assets`: V4 preserves historical replays while

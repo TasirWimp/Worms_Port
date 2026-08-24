@@ -1,23 +1,24 @@
 # CRPM World Operational Governance
 
-Status: active Worms_Port process, version 1.
+Status: active Worms_Port process, version 2.
 
-Scope: analysis-only operation of `analysis/crpm_world` and admission of later
-gameplay-world hypotheses.
+Scope: analysis-only evidence navigation, operation of `analysis/crpm_world`,
+and admission of later gameplay-world hypotheses or directional probes.
 
 Current executable ceiling: `M2_local_use`; `ProductAuthority: none`.
 
 ## Purpose
 
 This document governs how Worms_Port uses the completed WP-015D2B Game-World
-Profile and offline World Design Port. It covers two different operations:
+Profile and offline World Design Port. It covers three different operations:
 
-1. reproducing and comparing evidence that the closed D2B registry already
+1. reconstructing existing evidence as a pre-candidate navigation carrier;
+2. reproducing and comparing evidence that the closed D2B registry already
    admits; and
-2. admitting a new tactical hypothesis through a separately versioned analysis
-   package.
+3. admitting a new tactical hypothesis or directional probe through a
+   separately versioned analysis package.
 
-The second operation is not an arbitrary request to the existing port. D2B is a
+The third operation is not an arbitrary request to the existing port. D2B is a
 sealed historical-analysis carrier. A new candidate must declare its change,
 domain, cuts, witnesses, falsifiers, implementation impact, and promotion
 boundary before any registry or model change.
@@ -84,6 +85,32 @@ Lane 0 never widens its request. Lane 1 never edits production authority. Lane
 2 never smuggles in a candidate. Lane 3 never treats analysis acceptance as
 activation. Lane 4 never gets approximated silently inside D2A.
 
+## Pre-candidate navigation review
+
+An owner-authorized, documentation-only navigation review may run before the
+executable lanes when existing evidence is insufficient to justify another
+candidate family. It does not execute a new request or change a candidate,
+model, config, schema, registry, adapter, historical result, or disposition.
+
+Its starting commitment is a bounded directional wager, not necessarily a
+sole-cause hypothesis. It must:
+
+- state the current gameplay and navigation carriers;
+- preserve a versioned protected family;
+- reconstruct source-bound anchor, guide, warning, horizon, and negative
+  landmarks;
+- retain context-indexed mixed effects rather than force one explanation;
+- define probe wake, lookback, chart revision, return, and reopening rules;
+- keep failed probes as scoped negative landmarks; and
+- stop before implementation until one direction has a separate Lane 1 or
+  Lane 2 contract.
+
+A manual planning carrier is preferred before adding a navigation schema. If a
+future probe returns to its parent gameplay config, the navigation carrier must
+still retain what changed, why the route was demoted, and which new route or
+residue became visible. The first bounded instance is
+`docs/planning/wp-015d2g-relational-gameplay-navigation-review.md`.
+
 ## Candidate lifecycle
 
 The candidate lifecycle and ProductAuthority are orthogonal. A candidate may
@@ -94,7 +121,7 @@ finish its analytical lifecycle while ProductAuthority remains `none`.
 | State | Meaning | Permitted next state |
 | --- | --- | --- |
 | `proposed` | A gameplay-world question exists, but semantics or scope may still be open | `contracted`, `withdrawn` |
-| `contracted` | Parent, hypothesis, domain, protected family, change class, falsifiers, and implementation impact are frozen | `implemented`, `withdrawn` |
+| `contracted` | Parent, directional wager or bounded hypothesis, domain, protected family, change class, falsifiers, and implementation impact are frozen | `implemented`, `withdrawn` |
 | `implemented` | Analysis code/config exists and the parent regression is unchanged | `registered`, `reopened` |
 | `registered` | Exact IDs, versions, cuts, source locks, probes, and request domain are fail-closed in the new port layer | `executed`, `reopened` |
 | `executed` | Deterministic evidence and re-entry records exist for the complete declared domain | `evaluated`, `reopened` |
@@ -139,7 +166,8 @@ Before an edit:
 - record the immutable parent candidate and comparators;
 - classify the request into one operational lane and one or more change
   classes from the use-case matrix below;
-- identify the cheapest discriminating failure test; and
+- identify the cheapest bounded probe that can expose or reorganize relevant
+  residue; and
 - state whether the question is source-supported, Worms-specific
   interpretation, or still speculative.
 
@@ -280,7 +308,7 @@ record version
 candidate id and version
 lifecycle state
 parent and comparator ids
-one-sentence hypothesis
+one-sentence directional wager or bounded hypothesis; no sole-cause claim required
 change classes and operational lane
 Worms_Port base/source locks and CRPM method lock
 authority and analysis source paths
@@ -706,6 +734,12 @@ reference pins already recorded in `legal/source-manifest.json`:
   evaluation methods; and
 - commit `7eee60e1e5bfb5d46e975c6df36ec107f43cbb19` for the L4+
   transformation-admissibility and operating-layer governance references.
+
+The pre-candidate navigation review additionally uses read-only CRPM commit
+`053c6fc0a90ed48d8667016b18a1d10106a7a2bc` for the exploratory L4+ Unknown
+Source Ocean Navigation bundle, grouped transitions, probe/carrier discipline,
+landfall/re-entry profile, and source-ocean role model. That later pin does not
+rewrite the two historical locks or extend the executable D2B profile.
 
 The operational lanes, lifecycle labels, version-impact table, gameplay
 use-case matrix, and range-entry worked profile are Worms_Port interpretations.

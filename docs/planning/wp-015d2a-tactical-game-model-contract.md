@@ -811,6 +811,21 @@ structural evidence remains valid and source-bound, but it cannot support a
 claim of robust initiative repair or a Lane 3 proposal. The next step is a
 cross-candidate review, not another automatic parameter or mechanic change.
 
+## WP-015D2G relational gameplay navigation review - 2026-08-24
+
+The owner opened the documentation-only
+[WP-015D2G review](wp-015d2g-relational-gameplay-navigation-review.md) from the
+completed D2F carrier. It reconstructs the complete candidate lineage as a
+manual navigation chart before another gameplay rule is proposed.
+
+D2G preserves C4 as the value/convergence anchor, F4 as the structural home
+carrier, and I2 as a returned route whose policy-conditioned and range-entry
+witnesses remain active landmarks. A future experiment begins with a bounded
+directional wager and explicit advance/return conditions rather than a claim
+that one compressed cause explains the system. D2G changes no model, config,
+historical result, World Design Port surface, V5 rule, or ProductAuthority.
+The Execution Pointer remains WP-015D2A.
+
 ## G0 Opening and reaction contract - 2026-08-09
 
 The remaining problem is now more precise than a generic “first actor

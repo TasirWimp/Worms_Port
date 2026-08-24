@@ -137,6 +137,40 @@
       "notes": "WP-015D2B independently implements a bounded Worms_Port application profile from the exact referenced CRPM commit. CRPM remains read-only methodological source material; copied_into is empty, the generated canonical start-here is navigation only, and no CRPM code or dependency enters production or analysis runtime paths."
     },
     {
+      "id": "tasirwimp-crpm-unknown-source-navigation-method",
+      "role": "design_governance_method_reference",
+      "repository": "TasirWimp/CRPM",
+      "url": "https://github.com/TasirWimp/CRPM",
+      "commit": "053c6fc0a90ed48d8667016b18a1d10106a7a2bc",
+      "license": "MIT",
+      "license_evidence": "https://github.com/TasirWimp/CRPM/blob/053c6fc0a90ed48d8667016b18a1d10106a7a2bc/LICENSE",
+      "decision": "method_adapted_no_code_import",
+      "copied_into": [],
+      "referenced_paths": [
+        "docs/architecture/spectral_theory_of_residue/Unknown_Source_Ocean_Navigation/README.md",
+        "docs/architecture/spectral_theory_of_residue/Unknown_Source_Ocean_Navigation/Unknown_Source_Ocean_Exploration_Protocol_v0.md",
+        "docs/architecture/spectral_theory_of_residue/Unknown_Source_Ocean_Navigation/Grouped_Cut_Transition_Navigation_v0.md",
+        "docs/architecture/spectral_theory_of_residue/Unknown_Source_Ocean_Navigation/Null_Space_Guided_Cut_Transition_Search_Protocol_v0.md",
+        "docs/architecture/spectral_theory_of_residue/Unknown_Source_Ocean_Navigation/Witness_Probe_Carrier_Generalization_v0.md",
+        "docs/architecture/spectral_theory_of_residue/Unknown_Source_Ocean_Navigation/Landfall_Reentry_Diagnostic_Profile_v0.md",
+        "docs/architecture/voyage_graphs/research_notes/CRPM_Voyage_Source_Ocean_Preobject_Field_Model_v0.md",
+        "docs/case_studies/Historical_Physics_Residue_Route_Selection_Pressure_Case_v0.md"
+      ],
+      "allowed_uses": [
+        "bounded Worms_Port L4+ pre-candidate navigation review",
+        "manual source-bound landmark, probe-wake, lookback, chart-revision, return, and reopening discipline",
+        "directional gameplay probing without sole-cause or scalar-optimization claims",
+        "source-attributed planning and re-entry documentation"
+      ],
+      "blocked_uses": [
+        "CRPM code or prose copy, vendoring, runtime import, or package dependency",
+        "promotion into a universal search algorithm, game ontology, graph-safe schema, or automatic design authority",
+        "claim that CRPM supplies empirical gameplay evidence, causal proof, balance proof, or player-behavior evidence",
+        "treating a generated route set, landmark, local improvement, or lower pressure as landfall"
+      ],
+      "notes": "WP-015D2G uses the exploratory L4+ navigation bundle only to govern a manual cross-candidate Worms_Port chart. It preserves prior CRPM locks, adds no executable CRPM-world schema, and grants no gameplay or product authority."
+    },
+    {
       "id": "phaserjs-examples-mobile-input",
       "role": "technical_code_reference_only",
       "repository": "phaserjs/examples",
