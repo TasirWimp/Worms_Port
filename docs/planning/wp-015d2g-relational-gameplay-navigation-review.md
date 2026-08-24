@@ -1,7 +1,7 @@
 # WP-015D2G Relational Gameplay Navigation Review
 
-Status: in progress; manual navigation carrier v1 and initial Phase 2 review
-recorded on 2026-08-24.
+Status: complete; R1 selected for a separate bounded observation/cut contract
+on 2026-08-24.
 
 - **Operational class:** pre-candidate, documentation-only evidence synthesis.
 - **Parent:** completed WP-015D2F I2 policy-conditioned closure audit.
@@ -188,9 +188,10 @@ These horizons orient navigation but cannot certify an analytical route.
   combination of convergence, recurrence, and bounded-opening properties.
 - **Latest returned route:** I2. Its rule is absent from the home carrier, but
   its policy-conditioned and range-entry witnesses remain active landmarks.
-- **Active gameplay direction:** none selected. The initial Phase 2 review
-  favors a route-reachable carrier probe before another candidate is
-  contracted, subject to the review gate below.
+- **Active gameplay direction:** none selected.
+- **Accepted analytical direction:** R1, a route-reachable carrier probe over
+  unchanged F4/I2 traces at production spawn 640. Its separate proposed child
+  contract is WP-015D2H.
 
 ### Route reconstruction
 
@@ -370,9 +371,43 @@ design a separate V4 instrumentation or human-playtest cut. This direction is
 an explicit escape from analytical overfitting, not a failed navigation
 outcome.
 
-R1 is a proposed analytical direction, not an accepted gameplay direction.
-No rule, value, candidate config, policy, or authority surface is authorized
-by this review.
+The owner accepted R1 as the next analytical direction on 2026-08-24. This is
+not acceptance of a gameplay direction. No rule, value, candidate config,
+policy, or authority surface is authorized by this review.
+
+### R1 triangulation record
+
+- **Current carrier:** unchanged F4 structural reference; unchanged I2 is
+  retained only as a returned-route witness and comparator.
+- **Directional wager:** pressure near the real spawn may become more
+  navigable when states reached along a route are grouped by their actual
+  tactical support rather than only by starting distance and policy summary.
+  This wager may fail without requiring a replacement sole-cause story.
+- **Anchor:** production spawn 640 and F4's convergent, non-recurrent response
+  structure.
+- **Guides:** D2F's 28 later spawn-640 I2 suppressions and the changed
+  post-entry action selections.
+- **Warnings:** the tactical model is Markovian; path history is provenance,
+  not hidden gameplay state once complete current state, policy, and action
+  support are equal. A passing finite support cut may also be vacuous if it
+  contains no repeated source classes.
+- **Negative landmark:** I2 remains residualized and absent from the home
+  gameplay carrier; the probe may use it only to expose a projection wake.
+- **Horizon:** if the useful distinction requires terrain, aim, execution, or
+  adaptation, return from R1 and escalate to a separately owned authority or
+  playtest cut.
+- **Intervention class:** observation/cut only. Reconstruct existing states,
+  legal actions, selected actions, successors, residues, and route references;
+  do not change how any of them are produced.
+- **First probe:** exact spawn 640, F4/I2, both first actors, both mirrors, and
+  the existing 25 ordered policy pairs under the inherited horizon and seed.
+- **Advance condition:** explicit, reproducible aliasing witnesses identify a
+  small family of route-reachable support distinctions that can orient a
+  later probe without erasing policy or residue.
+- **Return condition:** the grouping only restates individual traces, a
+  repaired cut has no repeated twins, or excluded authority ports dominate.
+- **Next carrier:** the proposed
+  `wp-015d2h-production-spawn-reachable-carrier-probe-contract.md`.
 
 ## Phased plan and stop gates
 
@@ -395,8 +430,8 @@ domain differences. Do not run a new mechanic.
 
 ### Phase 2 - pressure and landmark review
 
-Status: in progress; the initial coupled-basin review and cut finding are
-recorded above. Owner confirmation or revision remains open.
+Status: complete; the owner continued with R1 on 2026-08-24 while leaving R2
+and R3 as explicit return routes.
 
 Review the protected family, cross-route anchors/guides/warnings/negative
 landmarks, and unresolved pressure with the owner. Revise only with an explicit
@@ -405,7 +440,7 @@ ports.
 
 ### Phase 3 - directional triangulation
 
-Status: pending.
+Status: complete; the R1 triangulation record is frozen above.
 
 Select among R1, R2, R3, or an owner-supplied direction from multiple
 landmarks. Record a directional wager, coherent intervention class, expected
@@ -415,7 +450,9 @@ set is complete.
 
 ### Phase 4 - bounded child probe contract
 
-Status: blocked until Phase 2 and Phase 3 owner review.
+Status: complete as a D2G handoff. WP-015D2H now carries the proposed exact
+observation/cut contract; its implementation remains blocked until that
+contract is owner-accepted.
 
 Create a separate analysis or candidate contract only after the direction is
 accepted. R1 would begin as an observation/cut probe over unchanged carriers;
@@ -439,8 +476,9 @@ From a fresh session:
 7. Treat the manual chart as the current navigation carrier, not as a new
    schema or proof. Preserve its source-supported facts separately from its
    Worms-specific landmark interpretations.
-8. Resume at the first non-complete phase. Do not implement a candidate while
-   Phase 2 or Phase 3 remains pending.
+8. Continue with the proposed WP-015D2H contract. Do not implement its Lane 2
+   tooling until the owner accepts that exact contract, and do not substitute
+   a gameplay candidate for the observation/cut probe.
 
 Generated reports remain ignored. If historical facts require reproduction,
 use the committed commands in `analysis/tactical_model/README.md` and compare
@@ -448,8 +486,8 @@ canonical digests; never recover chart state from an untracked report alone.
 
 ## Completion condition
 
-WP-015D2G completes only when the owner has reviewed the chart and one of these
-bounded outcomes is recorded:
+WP-015D2G completed when the owner reviewed the chart and the first of these
+bounded outcomes was recorded:
 
 - one directional probe is sufficiently triangulated for a separate child
   contract;
