@@ -633,3 +633,35 @@ with navigation disposition `retain_and_refine` and ProductAuthority `none`.
 Generated raw/result JSON remains ignored. Re-entry begins from the D2H
 contract, source/report digests, tests, and fixed command rather than from those
 disposable files.
+
+### WP-015D2I Cocoon formation and ordered-transport voyage audit
+
+D2I is a parallel Lane 2 consumer of the frozen D2H raw export. It first
+reconstructs the exact D2H raw/result digests, then separates policy selection,
+matched-action visible descent, tactical recurrence, exact carrier, and
+terminal targets. It follows every existing `prepare_spoolburst` formation edge
+through the opponent response and the preparer's resolution. It does not edit
+the tactical model or any sealed design-port path.
+
+Run the fixed offline audit with:
+
+```powershell
+npx tsx scripts/run-cocoon-voyage-audit.ts --output test-results/crpm-world/d2i-cocoon-voyages/cocoon-voyage-audit-result.json
+```
+
+The result partitions 68 D2H policy-visible representatives per config into 34
+policy-selection splits, 10 Cocoon-bound visible descent defects, 12
+recurrence-support splits, and 12 exact-time residues. It reconstructs 80
+Cocoon voyages per config. Formation and release/Unweave totals are symmetric
+by actor phase, but eight exact interleaved witnesses per config preserve this
+ordered route: second actor prepares, first actor counter-prepares, second actor
+releases for zero into the new Cocoon, then the first actor releases for 80 or
+the remaining 20. The four unique affected matches per config all finish for
+the first actor on turn nine.
+
+F4 and I2 return the same pattern, so F4 remains the home carrier and I2 remains
+a comparator. Result digest
+`ff29c8a1d18a201ca9047e72f458e919151ec53cd581567219b307e393a4b7b0`
+returns `advance_to_candidate_question` with ProductAuthority `none`. That wake
+permits only owner review and possible drafting of a later contract about the
+interleaved Cocoon formation/expiry interface.

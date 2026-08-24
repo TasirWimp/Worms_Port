@@ -730,9 +730,26 @@ completes that exact-spawn Lane 2 probe through new parallel files only. Its
 policy-visible cuts expose 68 alias classes per config, while the full
 exact-time cut has no repeated twins and is explicitly
 `unexercised_no_twins`. D2H closes as `retain_and_refine`. The next permitted
-operation is owner review of a smaller recurrence-support twin contract that
-keeps tactical recurrence separate from exact timeout/replay progress. No new
-candidate, policy, registry admission, or production authority is open.
+operation was owner review of a smaller recurrence-support twin contract that
+keeps tactical recurrence separate from exact timeout/replay progress. The
+owner accepted a target-typed refinement as WP-015D2I: an F4-home, I2-comparator
+Cocoon formation and ordered-transport voyage audit over the same frozen spawn
+carriers. D2I must separate policy selection, matched-action visible descent,
+tactical recurrence, exact carrier, and terminal targets before interpreting
+route residue. No new candidate, policy, registry admission, or production
+authority is open.
+
+D2I's executed audit retains 34 policy-selection splits, 10 matched-action
+Cocoon visible splits, 12 recurrence-support splits, and 12 exact-time residues
+per config. It reconstructs 80 formation voyages per config. Formation and
+release/Unweave totals are phase-symmetric, while eight exact interleaved
+short-approach witnesses per config show the first actor counter-forming a
+Cocoon before the second actor releases. The second release is absorbed, the
+earlier Cocoon expires on that release, and the first actor's following release
+lands. Four unique matches per config carry the route and all end for the first
+actor on turn nine. F4/I2 equality keeps the result in their shared F4 carrier.
+The D2I disposition `advance_to_candidate_question` opens only owner review of
+a later formation/expiry-interface contract; it opens no implementation.
 
 ## Source and claim status
 

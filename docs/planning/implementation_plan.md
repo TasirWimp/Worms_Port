@@ -157,7 +157,21 @@ Phaser/Socket.IO stack.
   `cd83a46c68f2d5968fa0d3e7af5e73bcefbe5acb18df110d1a686f9e5d8f9658`
   closes D2H as `retain_and_refine`. The next permitted action is owner review
   of a smaller recurrence-support twin question, not a policy or gameplay
-  change. Neither package changes a model, config, sealed World Design Port,
+  change. On 2026-08-24 the owner accepted the target-typed refinement as
+  [WP-015D2I Cocoon Formation and Ordered Transport Voyage Audit](wp-015d2i-cocoon-transport-voyage-audit-contract.md).
+  **WP-015D2I completed on 2026-08-24** as a Lane 2 observation over the frozen D2H spawn carriers. It
+  separates policy selection, matched-action visible descent, tactical
+  recurrence, exact carrier, and terminal targets, then follows each existing
+  F4 Cocoon from public preparation through response and resolution. I2 remains
+  a returned comparator. Its deterministic result digest
+  `ff29c8a1d18a201ca9047e72f458e919151ec53cd581567219b307e393a4b7b0`
+  reconstructs 80 voyages per config and returns
+  `advance_to_candidate_question`: eight exact interleaved witnesses per config
+  show a later first-actor preparation forming the Cocoon that absorbs the
+  second actor's release before the first actor's own release lands. The four
+  unique short-approach matches per config all finish for the first actor on
+  turn nine. This opens only owner review of a later formation/expiry-interface
+  contract. Neither package changes a model, config, sealed World Design Port,
   production behavior, or ProductAuthority. The Execution Pointer remains
   WP-015D2A.
   **WP-015D1 V4 wider

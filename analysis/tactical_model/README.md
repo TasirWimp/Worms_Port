@@ -350,3 +350,21 @@ only in completed turns and 56 also differ through preparation/Cocoon or Escape
 Slack; 34 select different actions. The exact-time full-support carrier has no
 repeated twins, so its finite eligibility remains unexercised. D2H returns
 `retain_and_refine`, not a mechanic or balance result.
+
+WP-015D2I consumes that strict export without changing this Python model. Its
+TypeScript audit separates D2H's combined successor comparison into policy
+selection, matched-action visible result, tactical recurrence, exact carrier,
+and terminal targets. Ten same-action pairs per config have a genuinely
+different visible successor: eight Needlepoint and two Spoolburst witnesses are
+absorbed by an existing Cocoon on one side only. Twelve other pairs differ only
+at recurrence support, and twelve differ only by completed turns.
+
+The audit also follows all 80 `prepare_spoolburst` events per config through
+their immediate response and resolution. Forty are first-phase and forty are
+second-phase preparations; both phases release 32 times and are Unwoven eight
+times. In eight exact short-approach interleavings per config, however, the
+first actor counter-prepares after the second actor, absorbs the second actor's
+release, and then lands the following release after the earlier Cocoon expires.
+The four unique matches per config all end for the first actor on turn nine.
+This is a source-bound policy-domain route witness, not proof of optimal play or
+authorization for a Cocoon rule.

@@ -432,6 +432,33 @@ refined: a future child should keep tactical recurrence support and exact
 turn-limit/replay progress as separate cuts, then seek actual support twins.
 No child package, policy change, or mechanic is authorized by this addendum.
 
+### WP-015D2I accepted refinement
+
+After D2H completed, the owner accepted a target-typed refinement prompted by
+CRPM's recent candidate-mathematical-spine calibration. The D2H witness set must
+now be read through separate policy-selection, matched-action visible,
+tactical-recurrence, exact-carrier, and terminal targets. The preliminary
+read-only split identifies Cocoon as the only support distinction that changes
+the immediate visible result under the same action; completed-turn-only and
+recurrence-support-only differences remain separate residue.
+
+The new bounded child is
+[WP-015D2I Cocoon Formation and Ordered Transport Voyage Audit](wp-015d2i-cocoon-transport-voyage-audit-contract.md).
+It remains in R1 and Lane 2. It follows existing F4 Cocoon formation through the
+opponent response and the preparer's resolution at spawn 640. It may identify a
+later candidate question, but it cannot add a mechanic or change policy.
+
+The implemented result reconstructs 80 voyages per config and returns
+`advance_to_candidate_question`. Formation and release/Unweave totals are equal
+between first- and second-phase preparers. The discriminating route is instead
+an interleaving: in eight witnesses per config, the first actor counter-prepares
+after the second actor, absorbs the second actor's release with the newly formed
+Cocoon, and then lands the following release after the earlier Cocoon expires.
+These witnesses occupy four unique short-approach mirror matches per config;
+all finish for the first actor on turn nine. F4/I2 equality again returns I2 as
+a comparator and locates the question in their shared F4 carrier. Result digest
+`ff29c8a1d18a201ca9047e72f458e919151ec53cd581567219b307e393a4b7b0`.
+
 ## Phased plan and stop gates
 
 ### Phase 0 - source lock and boundary

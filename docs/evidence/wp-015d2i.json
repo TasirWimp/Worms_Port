@@ -1,0 +1,137 @@
+{
+  "id": "WP-015D2I",
+  "status": "complete",
+  "starting_commit": "38f432fb59a37eb37d19b3aa7de1ccde9598388d",
+  "branch": "codex/wp-015d2i-cocoon-transport-voyage-audit",
+  "initial_worktree": "clean",
+  "starting_lock_sha256": "D4DAC6AE09A3D2F6C5A7EAA11520BAC43F1628320C5331575BCF1E1857073D73",
+  "owning_roles": [
+    "worms_port_planner",
+    "worms_port_test_worker",
+    "worms_port_docs_keeper"
+  ],
+  "scope": [
+    "Record the owner-accepted D2H refinement as a re-enterable Lane 2 contract before implementation, using the recent CRPM candidate-mathematical-spine work only as bounded role grammar.",
+    "Re-enter the exact D2H raw export and result digests, then separate policy selection, matched-action visible descent, tactical recurrence, exact carrier, and terminal targets for all 136 representative witness records.",
+    "Reconstruct every existing F4/I2 production-spawn Spoolburst preparation as a strict formation-response-resolution Cocoon voyage with exact carrier, path, residue, recurrence, terminal, and re-entry references.",
+    "Bind the interleaved short-approach route in which a later first-actor preparation forms the Cocoon that absorbs the second-actor release before the first-actor release lands.",
+    "Emit strict deterministic schemas, canonical digests, one fixed offline runner, focused fail-closed tests, documentation, evidence, and a bounded navigation disposition.",
+    "Preserve F4 as the gameplay home carrier, I2 as a returned comparator, ProductAuthority none, and all production, sealed-port, clean-room, and import boundaries."
+  ],
+  "non_goals": [
+    "Change model.py, any tactical config, policy selection, legal action, transition, recurrence key, report aggregate, opening search, spawn distance, seed, or horizon.",
+    "Treat CRPM calibration cases as transferred evidence, a universal ontology, a graph-safe schema, or proof of a mathematical noncommutative operator in the game.",
+    "Claim that the ordered Cocoon route causes the complete first-actor rate, establishes optimal or human play, or selects a unique/minimal recursive carrier.",
+    "Edit or reseal D2B/D2E, widen a registry/CLI, add a package dependency or npm script, or expose arbitrary executable input.",
+    "Add V5, a mechanic, value, status, protocol/replay field, client/server path, live Loomkeeper behavior, reward, wallet, UI, asset, or production authority.",
+    "Vendor, import, depend on, or edit CRPM or Sorcerers."
+  ],
+  "planned_checks": [
+    "node --import tsx --test tests/crpm-world/cocoon-voyage-audit.test.ts",
+    "npx tsx scripts/run-cocoon-voyage-audit.ts --output test-results/crpm-world/d2i-cocoon-voyages/cocoon-voyage-audit-result.json",
+    "npm run test:crpm-world",
+    "npm run test:tactical-model",
+    "npm run test:simulation",
+    "npm run check:crpm-world-types",
+    "npm run check:types",
+    "npm run check:compliance",
+    "npm run build",
+    "git diff --check",
+    "final model/config, sealed-surface, production-import, arbitrary-execution, CRPM-vendoring, and generated-output boundary inspection"
+  ],
+  "deterministic_seeds": [
+    "3237998097"
+  ],
+  "sorcerers_reference_used": false,
+  "clean_room_records": [],
+  "check_results": [
+    {
+      "command": "node --import tsx --test tests/crpm-world/cocoon-voyage-audit.test.ts",
+      "status": "pass",
+      "detail": "All seven focused tests passed in 30.5 seconds. They prove the exhaustive 136-witness target partition, exact Cocoon damage witnesses, 160 strict voyages, 16 ordered-route witnesses, deterministic non-mutation, fixed source binding, strict schema rejection, and runner confinement."
+    },
+    {
+      "command": "npx tsx scripts/run-cocoon-voyage-audit.ts --output test-results/crpm-world/d2i-cocoon-voyages/cocoon-voyage-audit-result.json",
+      "status": "pass",
+      "detail": "The fixed runner reproduced D2H raw/result digests and emitted ignored D2I result digest ff29c8a1d18a201ca9047e72f458e919151ec53cd581567219b307e393a4b7b0 with navigation disposition advance_to_candidate_question and ProductAuthority none."
+    },
+    {
+      "command": "npm run test:crpm-world",
+      "status": "pass",
+      "detail": "The complete CRPM-world suite passed 95 tests with one reviewed existing unsealed-D2E skip and zero failures in 215.2 seconds, including every sealed historical contract, adapter, voyage, evaluation, D2H probe, and the new D2I audit."
+    },
+    {
+      "command": "npm run test:tactical-model",
+      "status": "pass",
+      "detail": "The authoritative TypeScript fixture and all 41 Python tactical tests passed both before and after implementation. The post-implementation Python run completed in 67.9 seconds with no model, config, policy, result, or report change."
+    },
+    {
+      "command": "npm run test:simulation",
+      "status": "pass",
+      "detail": "All 31 production simulation tests passed; V1 through V4 state, terrain, replay, projectile, timing, and rejection behavior remain unchanged."
+    },
+    {
+      "command": "npm run check:crpm-world-types",
+      "status": "pass",
+      "detail": "The complete strict analysis/crpm_world TypeScript project, including the D2I schemas, assessor, runner import, and tests, passed type checking."
+    },
+    {
+      "command": "npm run check:types",
+      "status": "pass",
+      "detail": "Server and client TypeScript checks passed with no production dependency on the analysis-only D2I path."
+    },
+    {
+      "command": "npm run check:compliance",
+      "status": "pass",
+      "detail": "Asset, runtime inventory, generation-component, import-boundary, package-license, work-package-evidence, and clean-room compliance passed before evidence insertion and again after the final D2I record."
+    },
+    {
+      "command": "npm run build",
+      "status": "pass",
+      "detail": "The complete compliance/type/server/client build and approved-asset copy passed; only the existing Vite chunk-size warning remains."
+    },
+    {
+      "command": "git diff --check",
+      "status": "pass",
+      "detail": "The final analysis/test/documentation/evidence diff has no whitespace errors; Git line-ending messages are configuration notices."
+    },
+    {
+      "command": "final model/config, sealed-surface, production-import, arbitrary-execution, CRPM-vendoring, and generated-output boundary inspection",
+      "status": "pass",
+      "detail": "No model/config, D2B/D2E sealed implementation, package metadata, shared/client/server/protocol/replay/reward/wallet/asset, CRPM, or Sorcerers source changed. Production code does not import D2I; the runner invokes one fixed Python module and accepts no executable operator; generated output remains ignored and untracked."
+    }
+  ],
+  "reviews": [
+    {
+      "role": "worms_port_planner",
+      "reviewer": "Codex",
+      "decision": "pass",
+      "detail": "Confirmed the recent CRPM work is used only to separate formation, transport, target descent, residue, and re-entry roles; D2I remains F4-local analysis and opens only a later owner-reviewed candidate question."
+    },
+    {
+      "role": "worms_port_test_worker",
+      "reviewer": "Codex",
+      "decision": "pass",
+      "detail": "Confirmed 34/10/12/12 target classes per config, 80 voyages per config, exact response/disposition totals, eight ordered witnesses across four first-actor-win matches per config, stable digests, non-mutation, and fail-closed source/output boundaries."
+    },
+    {
+      "role": "worms_port_docs_keeper",
+      "reviewer": "Codex",
+      "decision": "pass",
+      "detail": "Confirmed D2A, D2G, D2H, D2I, both analysis READMEs, operational governance, implementation plan, and evidence retain identical results, limitations, ProductAuthority none, and the next owner-review gate."
+    }
+  ],
+  "skipped_checks": [
+    "npm audit was not rerun because package.json and package-lock.json remain Git-identical to the starting commit and dependency changes were out of scope.",
+    "Browser matrix and physical Android/iOS testing were not run because D2I is offline analysis tooling with no runtime-facing or player-visible path."
+  ],
+  "residual_risks": [
+    "The representative D2H alias pair per source class is a deterministic witness, not an independent sample, causal weight, or frequency estimate.",
+    "The five fixed policies are correlated analytical probes rather than optimal strategies, live Loomkeeper evidence, human behavior, or a strategy-complete game ocean.",
+    "All ordered witnesses come from short-approach-versus-short-approach routes at spawn 640; the formation/expiry relation has not been pressure-tested across the full distance or policy family as a candidate intervention.",
+    "The four unique affected matches per config all end for the first actor, but this does not establish that the interleaving causes the complete 60/40 aggregate or that changing it improves other pressure basins.",
+    "F4 and I2 return identical D2I patterns, so I2 supplies no independent support and remains a comparator only.",
+    "The 10 matched-action visible defects establish Cocoon relevance to immediate damage, not unique/minimal carrier sufficiency or general closure.",
+    "Terrain, aim, trajectory, splash, hidden information, player execution, UI, replay, networking, rewards, assets, and production state remain outside D2A."
+  ]
+}

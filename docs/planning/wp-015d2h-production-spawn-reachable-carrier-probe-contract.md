@@ -372,3 +372,25 @@ npx tsx scripts/run-reachable-carrier-probe.ts --output test-results/crpm-world/
 The next permitted action is owner review of this wake and, if accepted, a
 separate smaller recurrence-support twin contract. Do not widen it into a
 gameplay candidate.
+
+## Post-completion target-typing wake
+
+On 2026-08-24 the owner accepted a refinement after a read-only comparison with
+CRPM's candidate-mathematical-spine calibration. That review does not change
+this package's completed evidence or digests. It clarifies that D2H's phrase
+"same action but different successor" combines exact-time residue,
+tactical-recurrence support, and genuine matched-action visible descent.
+
+A read-only reconstruction found that the 34 same-action representatives per
+config provisionally separate into 12 exact-time-only pairs, 12 pairs whose
+visible successor agrees while recurrence support differs, and 10 pairs whose
+visible successor differs through Cocoon absorption. The separate 34
+different-action representatives remain policy-selection splits. These pilot
+counts are correlated reuse of the D2H witnesses, not new independent evidence.
+
+The accepted successor is the separate
+[WP-015D2I Cocoon Formation and Ordered Transport Voyage Audit](wp-015d2i-cocoon-transport-voyage-audit-contract.md).
+It must independently reconstruct the target partition, trace public Cocoon
+formation through response and resolution, and keep ordered-route residue
+separate from any gameplay recommendation. No model, config, policy, V5, or
+production change is authorized.

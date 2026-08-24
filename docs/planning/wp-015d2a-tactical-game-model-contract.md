@@ -849,6 +849,35 @@ existing tactical recurrence carrier from exact timeout/replay progress before
 another policy or gameplay change. No child, V5 rule, or ProductAuthority is
 approved.
 
+## WP-015D2I Cocoon formation and ordered-transport voyage audit - 2026-08-24
+
+After D2H completed, the owner accepted the separate
+[WP-015D2I contract](wp-015d2i-cocoon-transport-voyage-audit-contract.md).
+D2I changes no tactical state, policy, action, config, or report. It re-enters
+the frozen D2H carriers and separates policy-selection, matched-action visible,
+tactical-recurrence, exact-carrier, and terminal targets.
+
+Per config, the 68 D2H policy-visible representatives divide into 34 different
+policy selections, 10 Cocoon-bound immediate visible splits, 12
+recurrence-support-only splits, and 12 completed-turn-only residues. The ten
+visible splits are eight Needlepoint 30-to-zero absorptions and two Spoolburst
+80-to-zero absorptions.
+
+The 80 Cocoon formation voyages per config divide evenly by first/second actor
+phase, with identical 32-release/eight-Unweave totals. Eight interleaved
+short-approach route witnesses per config expose a narrower order relation: the
+first actor counter-prepares after the second actor, its new Cocoon absorbs the
+second actor's release, the earlier Cocoon expires on that release, and the
+first actor's following release lands. The four unique matches per config all
+finish for the first actor on turn nine. F4 and I2 are identical here, so this
+is shared F4-carrier evidence rather than I2 repair evidence.
+
+Result digest
+`ff29c8a1d18a201ca9047e72f458e919151ec53cd581567219b307e393a4b7b0`
+returns `advance_to_candidate_question`. Only owner review of a later contract
+about the interleaved Cocoon formation/expiry interface is opened. No model,
+config, V5 rule, UI/status, or ProductAuthority is approved.
+
 ## G0 Opening and reaction contract - 2026-08-09
 
 The remaining problem is now more precise than a generic “first actor
