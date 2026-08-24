@@ -665,3 +665,20 @@ a comparator. Result digest
 returns `advance_to_candidate_question` with ProductAuthority `none`. That wake
 permits only owner review and possible drafting of a later contract about the
 interleaved Cocoon formation/expiry interface.
+
+### WP-015D2J candidate-question screening
+
+D2J performs the permitted owner review as a documentation-bound Gate 1
+screen, not as a new design-port registration. Its two temporary, read-only
+counterfactuals preserve the sealed D2B/D2E layers and leave the tactical model
+unchanged. Contested formation improves the exact 639/640 scalar but worsens
+641 and leaves an existing winning Unweave response; preparation-entry
+commitment improves 641 while worsening 639/640 and changes a broader policy
+route family. Neither selects a coherent local mechanic.
+
+The D2J lifecycle is `proposed -> withdrawn`. Its negative and boundary
+landmarks remain re-enterable through the
+[`WP-015D2J` review](../../docs/planning/wp-015d2j-cocoon-formation-timing-candidate-question.md).
+The next permitted operation is a separate mechanics-fixed Lane 2 audit of the
+D2G R2 policy-choice relation, not a Cocoon rule, new policy, or production
+proposal.

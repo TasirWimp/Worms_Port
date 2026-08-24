@@ -751,6 +751,18 @@ actor on turn nine. F4/I2 equality keeps the result in their shared F4 carrier.
 The D2I disposition `advance_to_candidate_question` opens only owner review of
 a later formation/expiry-interface contract; it opens no implementation.
 
+The owner review ran as WP-015D2J and exercised Gate 1's cheapest-falsifier
+rule before any Lane 1 admission. A contested-formation counterfactual swapped
+later-preparer advantage for earlier-preparer advantage across the 639/640/641
+entry boundary, while the existing paid Unweave path retained responder
+support. A preparation-entry counterfactual moved more policy routes but
+worsened the exact 639/640 side. D2J therefore moved only from `proposed` to
+`withdrawn`; no candidate semantics, model/config edit, registration, or
+evidence envelope was created. Its exact return point is D2G R2: a separate
+Lane 2, mechanics-fixed policy-choice relation audit. This is an example of a
+candidate question returning knowledge to the navigation carrier without
+requiring a rejected implementation.
+
 ## Source and claim status
 
 Source-supported methodological constraints come from the two read-only CRPM

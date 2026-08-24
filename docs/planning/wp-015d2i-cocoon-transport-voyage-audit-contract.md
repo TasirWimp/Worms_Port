@@ -345,3 +345,10 @@ npx tsx scripts/run-cocoon-voyage-audit.ts --output test-results/crpm-world/d2i-
 After Phase 4 closes, the next permitted action is owner review of whether the
 exact interleaved route is sufficient to contract one candidate question. No
 model or config edit is automatic.
+
+That owner review subsequently ran as
+[WP-015D2J](wp-015d2j-cocoon-formation-timing-candidate-question.md). Its two
+read-only falsifiers showed that the cheapest timing interpretations exchange
+earlier/later preparation priority or move pressure across the 639/640/641
+entry seam. D2J withdrew before contract and reopened the mechanics-fixed R2
+policy-choice relation; it did not revise this completed audit.

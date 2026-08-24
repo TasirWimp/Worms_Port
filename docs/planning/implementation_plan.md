@@ -174,6 +174,20 @@ Phaser/Socket.IO stack.
   contract. Neither package changes a model, config, sealed World Design Port,
   production behavior, or ProductAuthority. The Execution Pointer remains
   WP-015D2A.
+  The owner then opened the bounded
+  [WP-015D2J Cocoon Formation-Timing Candidate Question Review](wp-015d2j-cocoon-formation-timing-candidate-question.md).
+  **WP-015D2J withdrew the question before contract on 2026-08-24** after two
+  read-only falsifiers. Suppressing the newer Cocoon changes F4 first-actor
+  wins at 639/640/641 from `60/60/80` to `56/56/84`: it merely replaces the
+  later-preparer privilege with an earlier-preparer privilege, while existing
+  paid Unweave still gives the responder a winning continuation. Requiring a
+  separate range-entry action before movement-created preparation changes the
+  same local profile to `64/64/76`, improving the far side while worsening the
+  exact production-spawn side. No unique role-neutral timing transition is
+  selected, so no candidate, config, model, policy, or port change is made.
+  The next permitted direction is D2G R2: a separate mechanics-fixed Lane 2
+  policy-choice relation audit around 639/640/641. The Execution Pointer
+  remains WP-015D2A and ProductAuthority remains `none`.
   **WP-015D1 V4 wider
   arena and pan camera completed on 2026-08-08**
   on `codex/wp-015-production-assets`: V4 preserves historical replays while

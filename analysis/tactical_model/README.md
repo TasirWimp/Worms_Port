@@ -368,3 +368,12 @@ release, and then lands the following release after the earlier Cocoon expires.
 The four unique matches per config all end for the first actor on turn nine.
 This is a source-bound policy-domain route witness, not proof of optimal play or
 authorization for a Cocoon rule.
+
+WP-015D2J screens that candidate question without changing this model. Removing
+the newer Cocoon in an interleaved preparation changes the four-orientation F4
+profile at 639/640/641 from `60/60/80` to `56/56/84` first-actor wins per 100
+matches. It swaps later-preparer for earlier-preparer priority; paid Unweave
+still preserves the responder's winning continuation. Requiring separate range
+entry before movement-created preparation instead produces `64/64/76` and
+worsens the exact 639/640 side. D2J is therefore withdrawn before contract.
+No config, parser, model, action, state, policy, trace, or report changed.

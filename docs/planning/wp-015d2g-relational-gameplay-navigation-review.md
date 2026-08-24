@@ -459,6 +459,27 @@ all finish for the first actor on turn nine. F4/I2 equality again returns I2 as
 a comparator and locates the question in their shared F4 carrier. Result digest
 `ff29c8a1d18a201ca9047e72f458e919151ec53cd581567219b307e393a4b7b0`.
 
+### WP-015D2J candidate-question return
+
+The owner opened D2I's candidate question as the documentation-only
+[WP-015D2J Cocoon Formation-Timing Candidate Question Review](wp-015d2j-cocoon-formation-timing-candidate-question.md).
+It stopped at Gate 1 rather than selecting a mechanic. The cheapest
+contested-formation probe changes the local 639/640/641 F4 profile from
+`60/60/80` first-actor wins per 100 four-orientation matches to `56/56/84`.
+The intervention swaps later-preparer advantage for earlier-preparer advantage;
+the identity of that actor reverses across the one-unit entry boundary. An
+existing paid Unweave route also preserves the responder's win, so the 640
+scalar movement is specific to the fixed `short_approach` selection rather
+than removal of response support.
+
+A second probe requiring a separate range-entry action before
+movement-created preparation changes the profile to `64/64/76`. It touches
+more policy routes, improves 641, and worsens 639/640. D2J therefore withdraws
+before contract and returns a new negative/boundary landmark to this chart.
+R1 is complete for the current cut. R2 is now the next reversible direction:
+hold F4 mechanics fixed and compare the available and selected response paths
+at the interleaved carriers before another gameplay rule is considered.
+
 ## Phased plan and stop gates
 
 ### Phase 0 - source lock and boundary
