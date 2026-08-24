@@ -247,6 +247,9 @@ Evaluation must cover:
 - recurrence and all separately relevant return classes;
 - obligation timing and response-window order;
 - aggregate and per-port/per-distance splits;
+- actor-relative policy and ordered policy-pair splits, including same-policy
+  mirrors and post-transition action-selection changes when a candidate alters
+  cooldown or action availability;
 - covariance and evidence deduplication; and
 - all blocked claims.
 

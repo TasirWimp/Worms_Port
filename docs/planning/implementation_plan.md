@@ -121,6 +121,21 @@ Phaser/Socket.IO stack.
   and result `6cebc0559466a72e969a2d2e151ad04691b9e03a352764bb3bf15bf1d1779789`.
   The start-769 warning remains blocking; no V5 or production promotion is
   opened, and the Execution Pointer remains WP-015D2A.
+  **WP-015D2F I2 Policy-Conditioned Closure Audit completed on 2026-08-24**
+  without changing I2, F4, their configs/reports, or either sealed World Design
+  Port layer. Its 2,400 matched-carrier audit shows the 61-to-57-percent
+  aggregate change is cross-policy redistribution: first-actor-policy deltas
+  are `-36/+8/+8/-36/+8`, while all five same-policy mirrors remain unchanged
+  and best-response versus best-response stays 44/48 first-actor wins. Seventy-
+  two of 120 matched opening routes change the caster's next action and 36
+  change outcome. Exact spawn 640 keeps the same 60/40 aggregate and has no
+  opening suppression, while 28 later re-entry suppressions remain explicit.
+  Audit digest
+  `476735407135b11f1d3805a7b7a4b22c5d7c8a46a1f6ac972f2d134fb3ff1657`
+  closes I2 as `residualized` for `policy_fragile` evidence with
+  ProductAuthority none. The next permitted action is a cross-candidate and
+  policy-model review before another Lane 1 mechanic is contracted; the
+  Execution Pointer remains WP-015D2A.
   **WP-015D1 V4 wider
   arena and pan camera completed on 2026-08-08**
   on `codex/wp-015-production-assets`: V4 preserves historical replays while

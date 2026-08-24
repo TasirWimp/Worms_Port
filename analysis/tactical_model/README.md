@@ -305,3 +305,27 @@ no recurrence/forced opening, and 44-to-60-percent rates, but it is supporting
 diagnostic evidence rather than a promotion gate. I2 is therefore a bounded
 Phase A structural survivor with explicit horizon residue. World Design Port,
 V5, UI, replay, server, reward, and production registration remain unopened.
+
+WP-015D2E later admitted that exact evidence through a sealed analysis-only
+World Design Port profile. WP-015D2F then audited the unchanged F4/I2 reports
+by policy rather than treating the 61-to-57-percent aggregate shift as a
+single result. The deterministic audit is implemented by
+`analysis/tactical_model/policy_closure_audit.py`; generated JSON remains below
+ignored `test-results/tactical-model/`.
+
+The D2F audit residualizes I2 as `policy_fragile`. Its five first-actor-policy
+contributions are `-36/+8/+8/-36/+8` wins for range pressure, medium hold,
+short approach, retreat kite, and best response. Every same-policy mirror is
+outcome-identical between F4 and I2; best-response versus best-response remains
+44 first-actor wins in 48 matches. On the 120 matched 641/703/704 opening
+entries, 72 routes change the caster's next action and 36 flip to the second
+actor. At exact production spawn 640 the opening rule is unused and the
+aggregate stays 60/40, although 28 later separation/re-entry suppressions
+remain explicit.
+
+The canonical audit digest is
+`476735407135b11f1d3805a7b7a4b22c5d7c8a46a1f6ac972f2d134fb3ff1657`.
+This does not rewrite I2's historical structural result; it blocks interpreting
+that result as robust initiative repair. No I2 rule or V5 behavior is approved.
+The next permitted action is a review of the complete candidate history and
+policy limitations before another mechanic is contracted.

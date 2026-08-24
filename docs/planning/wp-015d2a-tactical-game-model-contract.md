@@ -786,6 +786,31 @@ as pressure carriers and preserves 769 as an excluded-start warning. It does
 not change this tactical result, rotate the sealed D2B implementation lock,
 authorize V5, or create product authority.
 
+## WP-015D2F I2 policy-conditioned closure audit - 2026-08-24
+
+The separately contracted
+[WP-015D2F audit](wp-015d2f-i2-policy-conditioned-closure-audit-contract.md)
+does not change I2, F4, a config, policy semantics, or a historical digest. It
+re-runs the same 1,200 matched carriers per config and derives policy-
+conditioned evidence from their existing traces.
+
+F4 records 732 first-actor wins and I2 684. That aggregate delta of -48 is not
+uniform: the five first-actor-policy contributions are
+`-36/+8/+8/-36/+8` in base policy order. Every same-policy mirror is unchanged,
+including best-response versus best-response at 44/48 first-actor wins for
+both configs. Of the 120 matched opening entry routes, 72 change the original
+caster's next action and the 36 outcome flips occur inside that action-
+selection reorganization. At exact production spawn 640, I2 does not alter the
+opening edge or the 60/40 aggregate; 28 later separation/re-entry suppressions
+remain visible as distinct carriers.
+
+Audit digest
+`476735407135b11f1d3805a7b7a4b22c5d7c8a46a1f6ac972f2d134fb3ff1657`
+therefore closes I2 as `residualized` with reason `policy_fragile`. Its earlier
+structural evidence remains valid and source-bound, but it cannot support a
+claim of robust initiative repair or a Lane 3 proposal. The next step is a
+cross-candidate review, not another automatic parameter or mechanic change.
+
 ## G0 Opening and reaction contract - 2026-08-09
 
 The remaining problem is now more precise than a generic “first actor
