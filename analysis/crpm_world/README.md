@@ -613,3 +613,23 @@ result      6cebc0559466a72e969a2d2e151ad04691b9e03a352764bb3bf15bf1d1779789
 Generated result files remain ignored and disposable. Re-entry starts from the
 committed request, implementation lock, source/report bindings, and the CLI
 above rather than from a checked-in generated result.
+
+### WP-015D2H production-spawn reachable-carrier probe
+
+The separate D2H Lane 2 extension uses new files below
+`analysis/crpm_world/navigation/` and does not edit the sealed D2B/D2E path
+sets. Its fixed runner invokes only the new deterministic tactical extractor;
+it accepts no config, module, operator, command, or executable path:
+
+```powershell
+npx tsx scripts/run-reachable-carrier-probe.ts --output test-results/crpm-world/d2h-reachable-carriers/reachable-carrier-result.json
+```
+
+The probe validates 1,544 exact transitions from unchanged F4/I2 spawn-640
+traces, projects three continuation cuts, retains route provenance separately,
+and calls the existing generic quotient-transport assessor. The result digest
+is `cd83a46c68f2d5968fa0d3e7af5e73bcefbe5acb18df110d1a686f9e5d8f9658`
+with navigation disposition `retain_and_refine` and ProductAuthority `none`.
+Generated raw/result JSON remains ignored. Re-entry begins from the D2H
+contract, source/report digests, tests, and fixed command rather than from those
+disposable files.

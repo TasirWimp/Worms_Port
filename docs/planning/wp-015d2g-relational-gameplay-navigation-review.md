@@ -192,6 +192,8 @@ These horizons orient navigation but cannot certify an analytical route.
 - **Accepted analytical direction:** R1, a route-reachable carrier probe over
   unchanged F4/I2 traces at production spawn 640. Its separate proposed child
   contract is WP-015D2H.
+- **Latest probe wake:** WP-015D2H completed as `retain_and_refine`; it exposes
+  support-bearing aliases but no exercised full-carrier twins.
 
 ### Route reconstruction
 
@@ -409,6 +411,27 @@ policy, or authority surface is authorized by this review.
 - **Next carrier:** the proposed
   `wp-015d2h-production-spawn-reachable-carrier-probe-contract.md`.
 
+### WP-015D2H wake addendum
+
+The accepted R1 child replays 100 F4 and 100 I2 matches from exact spawn 640,
+covering 1,544 transitions. Visible state plus config and both policies still
+aliases 68 source classes per config; 40 per config span multiple match routes.
+Half of the representative pairs choose a different action. The omitted
+support is not one field: completed-turn progress appears in every pair, while
+preparation/Cocoon and Escape Slack form the additional tactical residue.
+
+F4 and I2 expose exactly the same policy-visible support-difference counts.
+This demotes I2 as a unique guide for the current route: its historical
+range-entry wake remains valid, but the newly visible carrier organization
+belongs to their shared F4 family. F4 remains the gameplay home carrier.
+
+The full exact-time support cut produces no repeated source class in either
+config. Its finite eligibility is therefore unexercised rather than proof that
+the cut is minimal or generally complete. The R1 direction stays active but is
+refined: a future child should keep tactical recurrence support and exact
+turn-limit/replay progress as separate cuts, then seek actual support twins.
+No child package, policy change, or mechanic is authorized by this addendum.
+
 ## Phased plan and stop gates
 
 ### Phase 0 - source lock and boundary
@@ -476,9 +499,9 @@ From a fresh session:
 7. Treat the manual chart as the current navigation carrier, not as a new
    schema or proof. Preserve its source-supported facts separately from its
    Worms-specific landmark interpretations.
-8. Continue with the proposed WP-015D2H contract. Do not implement its Lane 2
-   tooling until the owner accepts that exact contract, and do not substitute
-   a gameplay candidate for the observation/cut probe.
+8. Read the completed WP-015D2H contract and reproduce its ignored result if
+   needed. Resume from its `retain_and_refine` wake; do not substitute a
+   gameplay candidate for the proposed recurrence-support observation.
 
 Generated reports remain ignored. If historical facts require reproduction,
 use the committed commands in `analysis/tactical_model/README.md` and compare

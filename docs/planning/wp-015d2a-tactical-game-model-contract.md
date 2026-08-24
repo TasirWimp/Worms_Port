@@ -826,6 +826,29 @@ that one compressed cause explains the system. D2G changes no model, config,
 historical result, World Design Port surface, V5 rule, or ProductAuthority.
 The Execution Pointer remains WP-015D2A.
 
+## WP-015D2H production-spawn reachable-carrier probe - 2026-08-24
+
+The owner selected D2G direction R1 and accepted the separate
+[WP-015D2H contract](wp-015d2h-production-spawn-reachable-carrier-probe-contract.md).
+It changes no tactical state or transition. A deterministic Python extractor
+replays the exact F4/I2 distance-640 subset, and a parallel TypeScript layer
+uses the existing CRPM-world quotient assessor without editing the sealed
+D2B/D2E surfaces.
+
+The 200 matches contain 1,544 transition carriers. Visible state plus config
+and policies aliases 68 source classes per config; 34 representative pairs
+select different actions. The omitted carrier residue is completed-turn
+progress together with Spoolburst preparation/Cocoon and Escape Slack. The
+full exact-time support cut contains no repeated twins, so its apparent finite
+eligibility is explicitly `unexercised_no_twins`.
+
+Result digest
+`cd83a46c68f2d5968fa0d3e7af5e73bcefbe5acb18df110d1a686f9e5d8f9658`
+closes D2H as `retain_and_refine`. The next permitted question separates the
+existing tactical recurrence carrier from exact timeout/replay progress before
+another policy or gameplay change. No child, V5 rule, or ProductAuthority is
+approved.
+
 ## G0 Opening and reaction contract - 2026-08-09
 
 The remaining problem is now more precise than a generic “first actor

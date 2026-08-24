@@ -1,7 +1,7 @@
 # WP-015D2H Production-Spawn Reachable Carrier Probe Contract
 
-Status: proposed for owner review on 2026-08-24; implementation is blocked
-until this exact contract is accepted.
+Status: complete with navigation disposition `retain_and_refine` on
+2026-08-24.
 
 - **Operational lane:** Lane 2 observation-cut/tooling extension; no tactical
   candidate or policy change.
@@ -154,9 +154,17 @@ no deterministic-continuation claim and must never substitute path identity
 for current tactical support.
 
 For transport assessment, the target projection includes the selected action,
-exact successor carrier, and terminal/recurrence relation. Assessments run per
-config as well as over the combined declared domain so config-dependent splits
-cannot be mistaken for within-config hidden support.
+exact successor carrier, and terminal/recurrence relation. The two destructive
+cuts run per config. The thin cut also runs over the combined declared domain
+because it intentionally forgets config and can expose a cross-config alias.
+The policy-aware cut already includes config identity, so its combined form
+would only union disjoint results. The bounded-support cut runs per config and
+active-actor partition: config identity and active actor are both already in
+its source key, so equal source classes cannot cross either partition. The
+redundant combined/unpartitioned inventories exceed the sealed generic
+assessment's 1,024-class envelope without adding a cross-partition comparison.
+This repository-specific limit was confirmed by fail-closed implementation
+runs and is retained as explicit residue.
 
 ## Planned implementation surface
 
@@ -287,13 +295,80 @@ blocked. Browser/device testing is not required because the package is
 analysis-only and runtime-inert, and must be reported as skipped rather than
 passed.
 
+## Completion result
+
+The implementation used the planned parallel file structure. It did not edit
+`model.py`, a config, package metadata, or any D2B/D2E implementation-lock
+path. The fixed Python exporter reproduces the full frozen reports before
+replaying the exact spawn subset. It emits:
+
+- 100 F4 matches and 788 transition items;
+- 100 I2 matches and 756 transition items;
+- 60 first-actor wins for each config at spawn 640;
+- raw export digest
+  `5ff3ed7d77acf29a55da422f9f7e02f8ad875349a8104f08076890179746f60f`;
+  and
+- final result digest
+  `cd83a46c68f2d5968fa0d3e7af5e73bcefbe5acb18df110d1a686f9e5d8f9658`.
+
+The nine bounded assessments record:
+
+| Scope / cut | Source classes | Repeated | Aliased | Multi-route aliases | Coverage status |
+| --- | ---: | ---: | ---: | ---: | --- |
+| F4 visible | 452 | 160 | 132 | 104 | `aliased` |
+| F4 policy-visible | 716 | 68 | 68 | 40 | `aliased` |
+| F4 full support, player active | 394 | 0 | 0 | 0 | `unexercised_no_twins` |
+| F4 full support, Loomkeeper active | 394 | 0 | 0 | 0 | `unexercised_no_twins` |
+| I2 visible | 404 | 180 | 144 | 116 | `aliased` |
+| I2 policy-visible | 684 | 68 | 68 | 40 | `aliased` |
+| I2 full support, player active | 378 | 0 | 0 | 0 | `unexercised_no_twins` |
+| I2 full support, Loomkeeper active | 378 | 0 | 0 | 0 | `unexercised_no_twins` |
+| Combined visible | 460 | 408 | 188 | 188 | `aliased` |
+
+Each config has the same 68 policy-visible alias witnesses. For each config:
+
+- 34 witness pairs select different actions and 34 retain the same action;
+- 12 differ only by completed-turn progress;
+- 56 also differ through preparation, Cocoon, or Escape-Slack support;
+- preparation differs in 24 Loomkeeper and 21 player witness pairs;
+- Cocoon differs in 13 witness pairs per actor; and
+- Escape Slack differs in 12 witness pairs per actor.
+
+These counts are projection witnesses, not independent empirical samples or
+causal weights. Their exact equality between F4 and I2 shows that this
+spawn-640 carrier structure is not an I2-specific repair signal. I2 remains a
+returned comparator; F4 remains the gameplay home carrier.
+
+The full exact-time carrier separates every sampled transition, leaving no
+repeated support twins. Its deterministic-map eligibility is therefore labeled
+`unexercised_no_twins`, not support sufficiency. The result is
+`retain_and_refine`: the next bounded observation should compare the existing
+completed-turn-excluding tactical recurrence carrier with exact turn-limit and
+replay progress. This does not yet authorize that child contract, a policy
+change, or a gameplay candidate.
+
+### Implementation deviation retained as residue
+
+The sealed generic quotient-transport schema admits at most 1,024 source
+classes. Fail-closed runs showed that the redundant combined policy-aware and
+unpartitioned full-support inventories exceed that envelope. The final lossless
+partitioning is declared above: config identity separates policy-aware cuts,
+while config and active actor separate full-support cuts. Both fields already
+belong to their respective source keys, so an equal source class cannot cross
+the partition. Only the thin cut, which intentionally forgets config, keeps a
+combined assessment.
+
 ## Re-entry and owner gate
 
 From a fresh session, follow `AGENTS.md`, inspect the Execution Pointer and Git
 state, then read D2A, D2F, D2G, and this contract. Verify the two report digests,
-the D2F audit digest, the D2B/D2E locks, and the CRPM method lock before
-implementation.
+the D2F audit digest, the D2B/D2E locks, and the CRPM method lock. Reproduce the
+ignored result with:
 
-The next permitted action is owner acceptance or revision of this exact
-contract. Until then, do not create the planned analyzer, schemas, runner,
-tests, result, evidence record, or gameplay candidate.
+```powershell
+npx tsx scripts/run-reachable-carrier-probe.ts --output test-results/crpm-world/d2h-reachable-carriers/reachable-carrier-result.json
+```
+
+The next permitted action is owner review of this wake and, if accepted, a
+separate smaller recurrence-support twin contract. Do not widen it into a
+gameplay candidate.

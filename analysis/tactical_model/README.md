@@ -332,3 +332,21 @@ policy limitations before another mechanic is contracted. That review is now
 the documentation-only
 [`WP-015D2G` manual navigation carrier](../../docs/planning/wp-015d2g-relational-gameplay-navigation-review.md),
 which preserves this model and every historical config unchanged.
+
+WP-015D2H implements the first selected observation direction without changing
+the model. `reachable_carrier_probe.py` reproduces the complete frozen F4/I2
+reports, then replays only the 100 matches per config starting at production
+spawn 640. It exports 788 F4 and 756 I2 transition carriers with complete
+current state, legal actions, selected action, successor, and route provenance.
+Generate the ignored strict raw export with:
+
+```powershell
+python -m analysis.tactical_model.reachable_carrier_probe --output test-results/crpm-world/d2h-reachable-carriers/raw-carrier-export.json
+```
+
+The CRPM-world layer assesses visible, policy-visible, full-support, and
+provenance cuts. Each config exposes 68 policy-visible alias pairs: 12 differ
+only in completed turns and 56 also differ through preparation/Cocoon or Escape
+Slack; 34 select different actions. The exact-time full-support carrier has no
+repeated twins, so its finite eligibility remains unexercised. D2H returns
+`retain_and_refine`, not a mechanic or balance result.

@@ -147,9 +147,17 @@ Phaser/Socket.IO stack.
   inspect route-reachable carriers at the real spawn 640 before changing a
   policy or mechanic. The separate
   [WP-015D2H Production-Spawn Reachable Carrier Probe Contract](wp-015d2h-production-spawn-reachable-carrier-probe-contract.md)
-  is proposed as a Lane 2 observation/cut extension over unchanged F4/I2
-  traces. D2H implementation remains blocked until its exact contract is
-  accepted. Neither package changes a model, config, sealed World Design Port,
+  completed on 2026-08-24 as a Lane 2 observation/cut extension over unchanged
+  F4/I2 traces. Its 200 exact-spawn matches expose 1,544 transition carriers.
+  Each config has 68 policy-visible alias classes, including 40 across multiple
+  routes; 34 witness pairs select different actions. Completed-turn progress,
+  Spoolburst preparation/Cocoon, and Escape Slack remain explicit residue. The
+  full exact-time carrier has no repeated twins, so finite map eligibility is
+  `unexercised_no_twins`, not proof. Result digest
+  `cd83a46c68f2d5968fa0d3e7af5e73bcefbe5acb18df110d1a686f9e5d8f9658`
+  closes D2H as `retain_and_refine`. The next permitted action is owner review
+  of a smaller recurrence-support twin question, not a policy or gameplay
+  change. Neither package changes a model, config, sealed World Design Port,
   production behavior, or ProductAuthority. The Execution Pointer remains
   WP-015D2A.
   **WP-015D1 V4 wider
