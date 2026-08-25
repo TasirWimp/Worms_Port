@@ -708,3 +708,30 @@ absolute-left `best_response` tie, remains the narrower question. The return is
 `retain_mechanics_refine_policy_question`, ProductAuthority `none`. Generated
 JSON remains ignored, and no model, config, policy, design-port seal, or
 production path changes.
+
+### WP-015D2L policy-transport falsifier
+
+D2L follows the D2K wake through a separate Lane 1 analytical comparator. It
+does not register a policy or edit the tactical model. A strict Python export
+runs baseline, terminal-residue tie cleanup, preparation-response lethal
+guard, and global lethal guard over 1,000 historical cross-band matches plus
+1,200 independent boundary-orientation matches. TypeScript validates the full
+selection paths, substitutions, carriers, residue, recurrence, outcomes, and
+actor-relative transport before issuing a disposition.
+
+Run:
+
+```powershell
+npx tsx scripts/run-policy-transport-falsifier.ts --output test-results/crpm-world/d2l-policy-transport/policy-transport-result.json
+```
+
+Raw digest
+`49a7effcf241fa3b7db519cb498ed54e83705030c365dc4986eeceaa1e018eac`
+and result digest
+`24b24c7595a1902b2a38070fc97cbf4e0ff4a41e381ca5338b70c51f85eff8bd`
+bind the rejected result. Tie cleanup changes terminal residue only. The
+response guard repairs the local short/short omission but changes the wider
+F4 vector from `30/28/30/30/40` to `34/32/34/30/36`; the guarded benefit
+follows the actor owning the response edge. The global control amplifies that
+transport to `38/36/38/40/32`. ProductAuthority remains `none`; generated JSON
+is ignored and no sealed design-port or production path changes.

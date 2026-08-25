@@ -206,6 +206,21 @@ Phaser/Socket.IO stack.
   is owner review of a separate analytical policy-probe contract; no policy,
   mechanic, Loomkeeper, or production change is approved. The Execution
   Pointer remains WP-015D2A and ProductAuthority remains `none`.
+  The owner opened that analytical wake as
+  [WP-015D2L Policy-Transport Falsifier](wp-015d2l-policy-transport-falsifier-contract.md).
+  **WP-015D2L completed and rejected on 2026-08-25** without editing F4,
+  `model.py`, or an existing policy. Its raw digest
+  `49a7effcf241fa3b7db519cb498ed54e83705030c365dc4986eeceaa1e018eac`
+  binds 2,200 baseline/shadow matches. Residue-only terminal tie cleanup changes
+  214 primary actions but no outcome. The preparation-response guard repairs
+  the exact later short/short omission yet changes F4 from 158/250 to 166/250
+  first-actor wins, with distance vector `34/32/34/30/36`; 24 changed witnesses
+  terminate for the actor owning the response edge. The global guard amplifies
+  the problem to 184/250. Result digest
+  `24b24c7595a1902b2a38070fc97cbf4e0ff4a41e381ca5338b70c51f85eff8bd`
+  returns this direction to D2G as a response-phase negative/boundary landmark.
+  No policy, Loomkeeper, mechanic, V5, or production change is approved. The
+  Execution Pointer remains WP-015D2A and ProductAuthority remains `none`.
   **WP-015D1 V4 wider
   arena and pan camera completed on 2026-08-08**
   on `codex/wp-015-production-assets`: V4 preserves historical replays while

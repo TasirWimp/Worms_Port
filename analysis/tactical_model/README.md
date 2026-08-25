@@ -389,3 +389,13 @@ slower routes. The `best_response` tie selects literal `left`, so mirroring can
 change an otherwise lethal action from approach to a 64-Slack retreat. This is
 analysis-policy residue, not permission to change `choose_action`, F4, or the
 live Loomkeeper.
+
+WP-015D2L tests that residue as a separate shadow-policy falsifier without
+editing this module. `policy_transport_probe.py` applies four fixed selection
+variants over the historical F4 five-distance frame and the complete
+639/640/641 orientation boundary. The response-only guard repairs the exact
+later `short_approach` omission but raises first-actor wins from 158/250 to
+166/250: close bands favor the first responder, 704 favors the second
+responder, and 640 hides equal and opposite changed routes. The broader guard
+rises to 184/250. Both are rejected; this is responder-phase evidence, not a
+new policy. `model.py`, F4, and every existing report remain unchanged.

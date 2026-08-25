@@ -776,6 +776,18 @@ absolute-direction policy tie. Its return
 Lane 1 analytical policy probe. It does not alter the live Loomkeeper or
 authorize gameplay mechanics.
 
+The owner opened that wake as WP-015D2L. Its fixed comparative Lane 1 probe
+uses shadow selection only: baseline, terminal-residue tie cleanup, an exact
+preparation-response lethal guard, and a global lethal guard. The local guard
+repairs every declared later short/short omission while preserving the first
+Cocoon cycle, but wider transport changes 24 outcomes according to responder
+phase and raises F4 first-actor wins from 158/250 to 166/250. The broad control
+rises to 184/250. D2L therefore closes `rejected` and returns a new governance
+warning: an obvious local policy improvement is not role-neutral when the
+route decides which turn role owns its triggering edge. The unchanged 640
+aggregate is explicit false-closure pressure because four outcomes move each
+way. No policy, model, config, live Loomkeeper, or production surface changes.
+
 ## Source and claim status
 
 Source-supported methodological constraints come from the two read-only CRPM

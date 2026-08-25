@@ -265,6 +265,13 @@ actor-relative and avoid passing over an immediate non-spending lethal action,
 while leaving the non-dominated first-cycle Cocoon choice intact. D2K itself
 does not authorize that policy, any Loomkeeper change, or a gameplay mechanic.
 
+The owner opened that question as WP-015D2L. Its complete transport falsifier
+preserves the first cycle and repairs the local second-cycle omission, but the
+guard raises F4 first-actor wins from 158/250 to 166/250 because the benefit
+follows responder phase. The global control rises to 184/250. D2L therefore
+rejects the lethal-first direction and returns its exact witnesses to D2G; this
+does not revise D2K's source relation or authorize a policy.
+
 ## Expected implementation surface
 
 New parallel paths may include:

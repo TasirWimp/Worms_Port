@@ -507,6 +507,34 @@ probe, not another Cocoon mechanic. R3 remains the return route if ranking the
 first-cycle non-dominated alternatives requires human adaptation, terrain,
 aim, or execution.
 
+### WP-015D2L response-phase transport return
+
+The owner opened the D2K wake as the separately contracted
+[WP-015D2L Policy-Transport Falsifier](wp-015d2l-policy-transport-falsifier-contract.md).
+It compares unchanged F4 with residue-only terminal tie cleanup, a guard limited
+to the exact preparation-response carrier, and a broad lethal-first destructive
+control. The complete execution contains 2,200 matches.
+
+The local result is coherent: the response guard leaves the first
+100/100-Stitching Cocoon cycle alone and selects stationary Threadball at every
+later short/short omission. Transport changes the meaning. Across the original
+five-distance F4 matrix, 24 outcomes change according to the actor owning the
+response edge: four first-actor gains at each of 448/512/576, four gains for
+each role at 640, and four second-actor gains at 704. First-actor wins rise
+from 158/250 to 166/250. The global control rises to 184/250.
+
+This returns R2 as a negative/boundary landmark rather than a policy candidate:
+
+> Improving an available response transfers advantage to the responder; the
+> distance-conditioned path determines whether that responder is first or
+> second actor.
+
+The unchanged 640 scalar is a route-cancellation witness, not landfall. The
+704 improvement cannot close the 448/512/576 regressions. Residue-only tie
+cleanup restores terminal orientation symmetry but has no recursive carrier
+after the game ends. The next reversible direction must be selected from this
+revised chart; no lethal-first policy, Loomkeeper change, or mechanic follows.
+
 ## Phased plan and stop gates
 
 ### Phase 0 - source lock and boundary
