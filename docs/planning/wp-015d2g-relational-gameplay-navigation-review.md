@@ -570,6 +570,43 @@ predictions distinguish formation, maintenance, and phase transport. Without
 a paired closed route and decoder, the observed route action is not promoted
 to holonomy.
 
+### WP-015D2N F4 bridge-calibration return
+
+The owner accepted a pre-expansion calibration rather than moving immediately
+to a wider chart:
+[WP-015D2N F4 Bridge Calibration](wp-015d2n-f4-bridge-calibration-contract.md).
+D2N holds F4 and every policy fixed and refines the two aliased D2M source
+classes with twelve distinctions already present in the D2K carrier.
+
+The finite wake has three parts:
+
+- responder phase, completed-turn position, path-kind history, and path
+  history plus current formation all induce the same four-class partition and
+  make continuation transport congruent;
+- exact separation also makes transport congruent, but creates six classes and
+  separates all eight 639/640 matched controls whose protected continuations
+  are equal; and
+- current formation lifetime, current resources, policy selection, scenario
+  orientation, and policy plus orientation retain explicit aliases.
+
+All eight aligned 640/641 carriers first diverge at predecessor path index one:
+640 prepares Spoolburst while 641 performs an additional relocation. The seam
+simultaneously changes route history, completed turns, responder phase, and
+separation while current formation and resource support remain equal. This
+locates a co-formed interface family, not one compressed explanation.
+
+The revised navigation instruction is therefore:
+
+> Preserve the successful interface coordinates as a covariant family until
+> reachable matched twins decorrelate them; do not select phase, route, turn
+> count, or geometry by representative choice.
+
+D2N returns `covariant_bridge_family_requires_decorrelation`. A later Lane 2
+package may search existing F4 reachability for the three declared matched-twin
+forms. It may not synthesize tactical states. If the needed twins are absent,
+the route returns to review of a V4/playtest-backed cut. No candidate mechanic,
+expanded chart, holonomy claim, or production authority follows.
+
 ## Phased plan and stop gates
 
 ### Phase 0 - source lock and boundary
@@ -637,10 +674,11 @@ From a fresh session:
 7. Treat the manual chart as the current navigation carrier, not as a new
    schema or proof. Preserve its source-supported facts separately from its
    Worms-specific landmark interpretations.
-8. Read D2H through D2M in order and reproduce the ignored D2M result digest
-   when needed. Resume from D2M's target-indexed assembly obstruction; do not
-   substitute a gameplay candidate, one scalar, or a global ownership claim
-   for the separately required interface probe.
+8. Read D2H through D2N in order and reproduce the ignored D2N result digest
+   when needed. Resume from D2N's covariant bridge family and matched-twin
+   requirements; do not substitute a gameplay candidate, one scalar, a chosen
+   representative, or a global ownership claim for the required mechanics-fixed
+   decorrelation search.
 
 Generated reports remain ignored. If historical facts require reproduction,
 use the committed commands in `analysis/tactical_model/README.md` and compare

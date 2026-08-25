@@ -769,3 +769,39 @@ route-action evidence is not a realized closed-cycle or holonomy witness.
 Generated JSON remains ignored. Re-enter through the exact D2I/D2K/D2L
 digests, model/config hashes, chart/carrier references, and the
 [D2M contract](../../docs/planning/wp-015d2m-target-indexed-tactical-order-atlas-contract.md).
+
+### WP-015D2N F4 bridge calibration
+
+D2N calibrates the 640/641 D2M interface before admitting a wider relational
+chart. It reuses the exact 24 D2K response carriers and 6,000 continuation
+voyages, changes no mechanic or policy, and compares twelve declared
+refinements of the aliased immediate-response projection.
+
+Run:
+
+```powershell
+npx tsx scripts/run-f4-bridge-calibration.ts --output test-results/crpm-world/d2n-f4-bridge-calibration/f4-bridge-calibration-result.json
+```
+
+Result digest
+`5c554344271e2543cc6811fa579b28d85054da19b067acb8d12e7c60bed03dc8`
+binds twelve refinement assessments, six label-independent partition families,
+21 explicit alias witnesses, 16 equal-target over-refinement witnesses, and
+eight matched 640/641 predecessor seams. Responder phase, completed turns,
+path-kind history, and path history plus current formation induce the same
+four-class finite target-congruent partition. No member is selected as the
+cause or preferred carrier. Exact separation is also congruent but splits all
+eight known-equal 639/640 controls; current formation and resources add no
+partition beyond the aliased base.
+
+Every matched 640/641 pair first diverges at path index one: 640 prepares
+Spoolburst while 641 takes one additional relocation. That step co-forms route
+history, completed-turn position, responder phase, and separation before the
+response carrier. D2N therefore returns
+`covariant_bridge_family_requires_decorrelation`, with ProductAuthority
+`none`. The next permitted move is a separately contracted mechanics-fixed
+reachability search for naturally reachable matched twins. Synthetic states,
+one selected bridge axis, a new mechanic, and a holonomy/global-order claim
+remain blocked. Re-enter through the exact partition families and seam witness
+references in the
+[D2N contract](../../docs/planning/wp-015d2n-f4-bridge-calibration-contract.md).

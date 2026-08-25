@@ -833,6 +833,17 @@ calibration, and current insight-log carriers at that same commit only as L4+
 target-indexed assembly review grammar; their exact blobs are bound in the D2M
 result and they supply no gameplay evidence.
 
+WP-015D2N uses that same clean method lock to calibrate the D2M bridge before
+any chart expansion. It additionally binds the compatibility-fibre and generic
+quotient-observer carriers as read-only methodological pressure. Over the exact
+24 D2K carriers, phase, completed turns, path history, and route plus current
+formation induce one target-congruent partition; separation is congruent but
+over-refines known-equal controls; current formation/resources, policy, and
+orientation remain insufficient. Equal partitions are retained as a covariant
+family rather than collapsed to one representative. The package permits only a
+mechanics-fixed search for naturally reachable matched twins and provides no
+causal, gameplay, geometry, holonomy, or production authority.
+
 The operational lanes, lifecycle labels, version-impact table, gameplay
 use-case matrix, and range-entry worked profile are Worms_Port interpretations.
 The precise future range-entry mechanic remains speculative until the owner

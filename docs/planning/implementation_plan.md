@@ -236,6 +236,23 @@ Phaser/Socket.IO stack.
   permitted direction is one separately contracted mechanics-fixed interface
   probe returned through D2G. The Execution Pointer remains WP-015D2A and
   ProductAuthority remains `none`.
+  The owner opened that calibration as
+  [WP-015D2N F4 Bridge Calibration](wp-015d2n-f4-bridge-calibration-contract.md).
+  **WP-015D2N completed on 2026-08-25** without changing F4, `model.py`, a
+  config, or a policy. Result digest
+  `5c554344271e2543cc6811fa579b28d85054da19b067acb8d12e7c60bed03dc8`
+  binds twelve refinements, six label-independent partition families, 21
+  alias witnesses, 16 over-refinement controls, and eight exact 640/641
+  predecessor seams. Phase, completed turns, path history, and route plus
+  current formation share one target-congruent finite partition, while exact
+  separation unnecessarily splits all known-equal 639/640 controls. Current
+  formation/resources, policy selection, and orientation remain insufficient.
+  No representative bridge axis is licensed. The next permitted direction is
+  a separately contracted mechanics-fixed reachability search for natural
+  matched twins that decorrelate route, phase, turn position, and geometry; if
+  those twins are unreachable, the authority cut must be reviewed instead of
+  synthesizing evidence. The Execution Pointer remains WP-015D2A and
+  ProductAuthority remains `none`.
   **WP-015D1 V4 wider
   arena and pan camera completed on 2026-08-08**
   on `codex/wp-015-production-assets`: V4 preserves historical replays while
