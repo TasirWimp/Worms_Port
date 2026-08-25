@@ -607,6 +607,45 @@ forms. It may not synthesize tactical states. If the needed twins are absent,
 the route returns to review of a V4/playtest-backed cut. No candidate mechanic,
 expanded chart, holonomy claim, or production authority follows.
 
+### WP-015D2O natural matched-twin return
+
+The owner accepted that mechanics-fixed reachability search as
+[WP-015D2O F4 Natural Matched-Twin Reachability](wp-015d2o-f4-natural-matched-twin-reachability-contract.md).
+D2O enumerates every legal prefix through four actions from the twelve
+639/640/641 actor/mirror starts and stops each branch at its first naturally
+reached preparation-response carrier. It preserves all 2,100 route
+occurrences, evaluates the 1,520 distinct full states through every legal
+response and 25 continuation-policy contexts, and constructs no tactical state.
+
+The finite matched-control wake decorrelates the D2N family:
+
+- all 1,728 route-order pairs are continuation-equal once current support,
+  separation, phase, and completed turns are held fixed;
+- geometry has both 12,816 continuation-equal and 24,416 continuation-split
+  controls, including 24,224 splits not mediated by the turn limit;
+- all 304 split first/second-phase controls involve the 16-turn analytical
+  horizon, while 1,984 phase controls are equal; and
+- all 32 same-phase exact completed-turn controls are equal.
+
+All 319 actor-relative current-carrier classes are target-congruent over the
+declared prefix, yielding 122 protected continuation relations. That bounded
+congruence does not make the carrier globally complete or make route trace
+disposable.
+
+The revised navigation instruction is therefore:
+
+> Expand the D2A relational chart with route history as trace/re-entry support,
+> geometry as a conditional target-relative coordinate, phase only as finite-
+> horizon parity, and exact completed turns omitted only where the declared
+> same-phase target permits it.
+
+D2O returns `d2a_axes_calibrated_authority_horizon_review_required`. The D2A
+chart may now widen, but it may not be mistaken for production gameplay
+authority. Before proposing a player-facing interaction rule from this chart,
+open a separate V4/playtest cut for real timing, information, and response-edge
+ownership. No mechanic, gameplay phase, V5, holonomy, or ProductAuthority
+claim follows.
+
 ## Phased plan and stop gates
 
 ### Phase 0 - source lock and boundary
@@ -674,11 +713,11 @@ From a fresh session:
 7. Treat the manual chart as the current navigation carrier, not as a new
    schema or proof. Preserve its source-supported facts separately from its
    Worms-specific landmark interpretations.
-8. Read D2H through D2N in order and reproduce the ignored D2N result digest
-   when needed. Resume from D2N's covariant bridge family and matched-twin
-   requirements; do not substitute a gameplay candidate, one scalar, a chosen
-   representative, or a global ownership claim for the required mechanics-fixed
-   decorrelation search.
+8. Read D2H through D2O in order and reproduce the ignored D2O raw/result
+   digests when needed. Resume from D2O's calibrated axis roles and authority-
+   horizon review gate; do not discard route provenance, globalize conditional
+   geometry, promote turn parity into gameplay, or skip the separate V4/
+   playtest cut before a production-facing proposal.
 
 Generated reports remain ignored. If historical facts require reproduction,
 use the committed commands in `analysis/tactical_model/README.md` and compare

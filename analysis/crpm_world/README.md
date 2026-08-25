@@ -805,3 +805,53 @@ one selected bridge axis, a new mechanic, and a holonomy/global-order claim
 remain blocked. Re-enter through the exact partition families and seam witness
 references in the
 [D2N contract](../../docs/planning/wp-015d2n-f4-bridge-calibration-contract.md).
+
+### WP-015D2O F4 natural matched-twin reachability
+
+D2O executes the mechanics-fixed decorrelation search licensed by D2N. It
+starts unchanged F4 at 639/640/641 for both first actors and mirrors, follows
+every action returned by `legal_actions` through at most four calls to
+`apply_action`, and stops each branch at its first preparation-response
+carrier. It never constructs or patches a tactical state. Every legal response
+from each collected full state is then continued through all 25 ordered base-
+policy pairs.
+
+Run:
+
+```powershell
+python -m analysis.tactical_model.natural_matched_twin_probe --output test-results/crpm-world/d2o-natural-matched-twins/raw.json
+npx tsx scripts/run-natural-matched-twin-search.ts --output test-results/crpm-world/d2o-natural-matched-twins/natural-matched-twin-result.json
+```
+
+Raw digest
+`edafdd5c3a7f094eb522a29b4994b40d3b7de0ce0abce0e4589cea565bb6213f`
+binds 2,100 reached carrier occurrences, 1,520 distinct full states, 319
+actor-relative current-carrier classes, and 122 protected continuation
+relations. All full states in each of those 319 classes share one target
+relation. This is finite congruence over the declared four-action prefix, not
+proof of a globally complete F4 carrier.
+
+Result digest
+`bc131d3fa0065cb8e1a93790d297813c243744124dad7bb079ccf0ffb851162e`
+binds four natural matched-pair families and six explicit witnesses:
+
+- geometry is conditionally target-relevant: 12,816 of 37,232 pairs are equal
+  and 24,416 split, including 24,224 non-timeout tactical splits;
+- all 1,728 route-order controls are continuation-equal once current support,
+  geometry, phase, and completed turns are fixed, so route remains trace and
+  re-entry support rather than bounded recursive state;
+- 1,984 of 2,288 first/second phase controls are equal and all 304 splits are
+  exhausted by the finite 16-turn horizon, so phase remains an analytical
+  turn-parity label rather than a gameplay status; and
+- all 32 same-phase completed-turn controls are equal, making exact turn count
+  over-fine only inside that declared control family.
+
+D2O returns `d2a_axes_calibrated_authority_horizon_review_required`. It permits
+an expanded D2A relational chart with those calibrated roles. It does not
+permit a new mechanic, scalar range rule, gameplay phase, V5, or production
+claim. Before the chart informs a production-facing interaction proposal, a
+separate V4/playtest cut must establish real timing and response ownership.
+ProductAuthority remains `none`; generated JSON remains ignored. Re-enter
+through the exact source locks, family counts, witness references, and commands
+in the
+[D2O contract](../../docs/planning/wp-015d2o-f4-natural-matched-twin-reachability-contract.md).

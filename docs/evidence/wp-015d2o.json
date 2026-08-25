@@ -1,0 +1,145 @@
+{
+  "id": "WP-015D2O",
+  "status": "complete",
+  "starting_commit": "3a1d844fce9be09ed8ec51e39fe0f94632f43fe5",
+  "branch": "codex/wp-015d2o-f4-natural-matched-twin-search",
+  "initial_worktree": "clean",
+  "starting_lock_sha256": "D4DAC6AE09A3D2F6C5A7EAA11520BAC43F1628320C5331575BCF1E1857073D73",
+  "owning_roles": [
+    "worms_port_planner",
+    "worms_port_test_worker",
+    "worms_port_docs_keeper"
+  ],
+  "scope": [
+    "Contract and execute a Lane 2 mechanics-fixed natural matched-twin search over unchanged F4 from the exact D2N covariance return.",
+    "Enumerate every legal action prefix through four completed actions from the 12 starts at 639/640/641, stopping each branch at its first preparation-response carrier or terminal state.",
+    "Evaluate every collected actor-relative carrier through every legal response and all 25 ordered base-policy continuations without constructing or mutating tactical states outside public model transitions.",
+    "Separate geometry, route order, responder-phase/horizon parity, and completed-turn controls with explicit continuation-equal and continuation-split witnesses.",
+    "Bind Worms_Port base 3a1d844fce9be09ed8ec51e39fe0f94632f43fe5, D2N result digest 5c554344271e2543cc6811fa579b28d85054da19b067acb8d12e7c60bed03dc8, clean CRPM commit 053c6fc0a90ed48d8667016b18a1d10106a7a2bc, unchanged model/config hashes, seed 3237998097, and 16-turn horizon.",
+    "Return calibrated D2A relational axes and an explicit V4/playtest horizon-review gate with ProductAuthority none."
+  ],
+  "non_goals": [
+    "Change F4, model.py, a config, action, policy, transition, expiry, recurrence key, seed, horizon, or any historical D2K/D2M/D2N result.",
+    "Claim exhaustive F4 reachability beyond the declared four-action prefix, synthesize states, add a random/learned search, or optimize a gameplay scalar.",
+    "Promote responder phase or turn-limit parity into a gameplay status, mechanic, causal explanation, or global interaction law.",
+    "Add or alter V5, live Loomkeeper behavior, protocol/replay, client/server, rewards/wallets, UI, assets, packages, or production authority.",
+    "Import, vendor, edit, or depend on CRPM or Sorcerers; promote the bounded result into universal doctrine, geometry, graph-safe schema, or empirical game evidence."
+  ],
+  "planned_checks": [
+    "node --import tsx --test tests/crpm-world/natural-matched-twin-search.test.ts",
+    "npx tsx scripts/run-natural-matched-twin-search.ts --output test-results/crpm-world/d2o-natural-matched-twins/natural-matched-twin-result.json",
+    "npm run test:crpm-world",
+    "npm run test:tactical-model",
+    "npm run test:simulation",
+    "npm run check:crpm-world-types",
+    "npm run check:types",
+    "npm run check:compliance",
+    "npm run build",
+    "npm audit",
+    "git diff --check",
+    "final mechanics, sealed-surface, production-import, arbitrary-execution, CRPM-vendoring, source-binding, generated-output, horizon-artifact, and reachability-overclaim inspection"
+  ],
+  "deterministic_seeds": [
+    "3237998097"
+  ],
+  "sorcerers_reference_used": false,
+  "clean_room_records": [],
+  "check_results": [
+    {
+      "command": "node --import tsx --test tests/crpm-world/natural-matched-twin-search.test.ts",
+      "status": "pass",
+      "detail": "All seven focused tests passed in 612.8 seconds. They bind raw digest edafdd5c3a7f094eb522a29b4994b40d3b7de0ce0abce0e4589cea565bb6213f and result digest bc131d3fa0065cb8e1a93790d297813c243744124dad7bb079ccf0ffb851162e; reproduce the exact 2,100/1,520/319/122 census; prove bounded quotient congruence; classify 37,232 geometry, 1,728 route-order, 2,288 phase/horizon, and 32 completed-turn pairs; retain six explicit witnesses; and verify strict deterministic schemas, non-mutation, fixed execution, arbitrary-operator rejection, and link-aware output confinement."
+    },
+    {
+      "command": "npx tsx scripts/run-natural-matched-twin-search.ts --output test-results/crpm-world/d2o-natural-matched-twins/natural-matched-twin-result.json",
+      "status": "pass",
+      "detail": "The fixed fresh-shell runner invoked only analysis.tactical_model.natural_matched_twin_probe and reproduced result digest bc131d3fa0065cb8e1a93790d297813c243744124dad7bb079ccf0ffb851162e with disposition d2a_axes_calibrated_authority_horizon_review_required and ProductAuthority none."
+    },
+    {
+      "command": "npm run test:crpm-world",
+      "status": "pass",
+      "detail": "The complete suite passed 133 of 134 tests with zero failures and the one reviewed existing unsealed-D2E expected skip in 678.4 seconds. It includes every sealed contract, adapter, cut, voyage, evaluation pressure case, prior navigation audit, and the new exhaustive D2O matched-twin gate."
+    },
+    {
+      "command": "npm run test:tactical-model",
+      "status": "pass",
+      "detail": "The authoritative TypeScript fixture test and all 41 Python tactical-model tests passed. model.py, F4 schema 11, candidates, actions, policies, recurrence, opening search, seed, and horizon remain unchanged."
+    },
+    {
+      "command": "npm run test:simulation",
+      "status": "pass",
+      "detail": "All 31 production simulation tests passed; V1 through V4 command, replay, terrain, projectile, timing, rejection, and terminal behavior remain unchanged."
+    },
+    {
+      "command": "npm run check:crpm-world-types",
+      "status": "pass",
+      "detail": "The strict analysis/crpm_world TypeScript project passed with the new raw/result schemas, matched-pair assessment, fixed runner import, and focused tests."
+    },
+    {
+      "command": "npm run check:types",
+      "status": "pass",
+      "detail": "Server and client TypeScript checks passed with no production dependency on analysis/crpm_world."
+    },
+    {
+      "command": "npm run check:compliance",
+      "status": "pass",
+      "detail": "Asset, runtime inventory, generation-component, import-boundary, package-license, 35-record work-package evidence, and clean-room compliance passed. The CRPM source manifest records only bounded read-only methodological use."
+    },
+    {
+      "command": "npm run build",
+      "status": "pass",
+      "detail": "The full compliance/type/server/client build and approved-asset copy passed. The existing Vite large-chunk warning remains informational; D2O has no production import or build output."
+    },
+    {
+      "command": "npm audit",
+      "status": "pass",
+      "detail": "npm reported zero vulnerabilities. package.json and package-lock.json retain the exact starting Git blobs 1bdf5c92f51b0b74a938028b8509f4c09137a442 and ff3987b1224d4160a0b25fffe7952cce3364b880."
+    },
+    {
+      "command": "git diff --check",
+      "status": "pass",
+      "detail": "The analysis, test, documentation, manifest, and evidence diff has no whitespace errors; Git line-ending messages are configuration notices."
+    },
+    {
+      "command": "final mechanics, sealed-surface, production-import, arbitrary-execution, CRPM-vendoring, source-binding, generated-output, horizon-artifact, and reachability-overclaim inspection",
+      "status": "pass",
+      "detail": "No model/config, D2B/D2E sealed implementation, package metadata, shared/client/server/protocol/replay/reward/wallet/asset, CRPM, or Sorcerers source changed. Production code has no analysis/crpm_world import. The probe reaches states only through initial_state, legal_actions, and apply_action; the runner invokes one literal Python module, accepts no executable operator, and rejects lexical and symbolic-link/junction output escape. Worms base, D2N, model/config, CRPM commit/blob, seed, horizon, and package locks reproduce. Generated test-results remain ignored and untracked. The 7,456 open-frontier branches and all horizon exclusions remain explicit, so the four-action result cannot claim global F4 reachability or a gameplay phase."
+    }
+  ],
+  "reviews": [
+    {
+      "role": "worms_port_planner",
+      "reviewer": "Codex",
+      "decision": "pass",
+      "detail": "Confirmed D2O is a Lane 2 mechanics-fixed matched-control calibration returned through D2G. It licenses an expanded D2A relational chart only with route as trace/re-entry support, geometry conditional, phase as analytical horizon parity, and completed-turn exclusion scoped to same-phase controls; it requires a separate V4/playtest authority cut before gameplay design."
+    },
+    {
+      "role": "worms_port_test_worker",
+      "reviewer": "Codex",
+      "decision": "pass",
+      "detail": "Confirmed the exhaustive priced-domain topology, 319-class quotient congruence, all four exact pair-family counts, six linked witnesses, all 304 phase splits as turn-limit-only, stable raw/result digests, strict linkage/count validation, fixed execution, source drift failures, and complete regression coverage."
+    },
+    {
+      "role": "worms_port_docs_keeper",
+      "reviewer": "Codex",
+      "decision": "pass",
+      "detail": "Confirmed the D2O contract, D2G chart, operational governance, implementation plan, analysis README, CRPM source manifest, and evidence agree on calibrated axis roles, bounded reachability, ProductAuthority none, V4/playtest escalation, and exact re-entry commands/digests."
+    }
+  ],
+  "skipped_checks": [
+    "The browser matrix was not run because D2O changes only offline analysis, tests, planning/evidence, and an existing source-manifest method record; it has no browser-facing or player-visible path.",
+    "Physical Android and iOS testing was not run because D2O has no runtime-facing behavior and no separate device-testing environment was required."
+  ],
+  "residual_risks": [
+    "The four-action legal-prefix tree is exhaustive only inside its priced cut. The 7,456 open frontier branches preserve the undeclared deeper F4 reachability residue.",
+    "The 319-class quotient congruence is target- and domain-relative. It does not identify a globally complete or minimal tactical carrier and must be reassessed for another target, action family, policy set, horizon, or domain.",
+    "Route-order equality means current support suffices for the protected continuation relation in these controls; route actions remain mandatory provenance and re-entry evidence.",
+    "Geometry has both equal and split controls. It cannot be discarded globally or compressed into one scalar threshold without a new target-relative assessment.",
+    "All 304 observed responder-phase splits involve the finite 16-turn horizon. This classifies an analysis artifact; it does not prove phase is irrelevant under another horizon and must not create a gameplay phase or timing rule.",
+    "Exact completed-turn count is over-fine only for the 32 same-phase controls. Replay/time authority and cross-phase analytical horizon support remain outside that exclusion.",
+    "The five fixed policies and deterministic D2A model are not strategy-complete, player-behavior, fun, usability, or empirical balance evidence.",
+    "Terrain, aim, trajectory, splash, hidden information, simultaneous timing, human execution/adaptation, live Loomkeeper behavior, UI, replay, networking, rewards, assets, and production state remain outside D2A.",
+    "The expanded D2A chart may orient a later question but cannot supply a production-facing interaction proposal until a separately contracted V4/playtest cut establishes real timing, information, and response-edge ownership.",
+    "D2O establishes no causal explanation, gameplay mechanic, V5 approval, global geometry, holonomy, source-history recovery, game balance, or product landfall."
+  ]
+}

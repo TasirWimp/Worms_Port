@@ -844,6 +844,30 @@ family rather than collapsed to one representative. The package permits only a
 mechanics-fixed search for naturally reachable matched twins and provides no
 causal, gameplay, geometry, holonomy, or production authority.
 
+WP-015D2O executes that search over unchanged F4 without synthesizing states.
+Its priced domain exhausts every legal prefix through four actions from the
+twelve 639/640/641 actor/mirror starts, then evaluates every legal response and
+all 25 ordered base-policy continuations. The 319 normalized current-carrier
+classes are target-congruent over the resulting 1,520 full states, but that
+finite fact is not global carrier completeness.
+
+The matched controls calibrate how later D2A charts must treat the bridge axes:
+route history remains mandatory trace/re-entry evidence but is not recursive
+state in the bounded controls; geometry remains conditionally target-relevant;
+first/second responder phase remains analytical turn-horizon parity because
+every observed phase split involves `turn_limit`; and exact completed turns
+are over-fine only in the declared same-phase controls. These roles may be used
+in an expanded analytical chart without a new cut only for the same protected
+target and bounded support. Generalizing them to another action family, target,
+horizon, or domain requires a new cut-domain review and quotient assessment.
+
+D2O also adds an authority escalation rule: an expanded D2A chart may orient
+the next question, but before it supplies a production-facing interaction
+proposal, a separate V4/playtest cut must establish real timing, information,
+and response-edge ownership. D2A phase labels must not become gameplay phases,
+and finite-horizon artifacts must not be repaired as mechanics. ProductAuthority
+remains `none`.
+
 The operational lanes, lifecycle labels, version-impact table, gameplay
 use-case matrix, and range-entry worked profile are Worms_Port interpretations.
 The precise future range-entry mechanic remains speculative until the owner

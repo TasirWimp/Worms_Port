@@ -253,6 +253,26 @@ Phaser/Socket.IO stack.
   those twins are unreachable, the authority cut must be reviewed instead of
   synthesizing evidence. The Execution Pointer remains WP-015D2A and
   ProductAuthority remains `none`.
+  The owner accepted that search as
+  [WP-015D2O F4 Natural Matched-Twin Reachability](wp-015d2o-f4-natural-matched-twin-reachability-contract.md).
+  **WP-015D2O completed on 2026-08-25** without changing F4, `model.py`, a
+  config, policy, horizon, or production surface. Raw digest
+  `edafdd5c3a7f094eb522a29b4994b40d3b7de0ce0abce0e4589cea565bb6213f`
+  binds an exhaustive four-action legal-prefix census of 2,100 natural
+  response-carrier occurrences, 1,520 full states, 319 actor-relative current-
+  carrier classes, and 122 continuation relations. Every full state in each
+  normalized class has the same protected relation. Result digest
+  `bc131d3fa0065cb8e1a93790d297813c243744124dad7bb079ccf0ffb851162e`
+  separates four matched-twin families: route-order controls are all equal and
+  remain trace/re-entry support; geometry has both equal and tactical-split
+  twins and remains conditional; all 304 first/second-phase splits involve the
+  finite turn limit; and all 32 same-phase completed-turn controls are equal.
+  The disposition `d2a_axes_calibrated_authority_horizon_review_required`
+  permits an expanded D2A relational chart only with those calibrated roles.
+  Before any production-facing gameplay proposal, a separate V4/playtest cut
+  must review real timing and response ownership. No gameplay phase, mechanic,
+  V5, or product authority is approved. The Execution Pointer remains
+  WP-015D2A and ProductAuthority remains `none`.
   **WP-015D1 V4 wider
   arena and pan camera completed on 2026-08-08**
   on `codex/wp-015-production-assets`: V4 preserves historical replays while
