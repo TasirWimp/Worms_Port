@@ -221,6 +221,21 @@ Phaser/Socket.IO stack.
   returns this direction to D2G as a response-phase negative/boundary landmark.
   No policy, Loomkeeper, mechanic, V5, or production change is approved. The
   Execution Pointer remains WP-015D2A and ProductAuthority remains `none`.
+  The owner then opened the mechanics-fixed composition wake as
+  [WP-015D2M Target-Indexed Tactical-Order Atlas](wp-015d2m-target-indexed-tactical-order-atlas-contract.md).
+  **WP-015D2M completed on 2026-08-25** over the exact D2I, D2K, and D2L
+  parents without changing F4 or a policy. Result digest
+  `882534e69ddae101d3d1e1463ddca467f2a95899be2a8e826eb14cb1dd5a55c2`
+  binds six local charts and four overlaps. Both 640/641 cycles retain the same
+  normalized immediate-response projection but split complete continuation
+  and responder phase; cycle two also splits policy selection. Four protected
+  targets survive bounded or with residue, while ordered composition and
+  actor-role transport fail descent. The global disposition is
+  `role_neutral_global_order_not_assembled`. No closed-route decoder exists,
+  so no holonomy, candidate, mechanic, V5, or product claim follows. The next
+  permitted direction is one separately contracted mechanics-fixed interface
+  probe returned through D2G. The Execution Pointer remains WP-015D2A and
+  ProductAuthority remains `none`.
   **WP-015D1 V4 wider
   arena and pan camera completed on 2026-08-08**
   on `codex/wp-015-production-assets`: V4 preserves historical replays while

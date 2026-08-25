@@ -735,3 +735,37 @@ F4 vector from `30/28/30/30/40` to `34/32/34/30/36`; the guarded benefit
 follows the actor owning the response edge. The global control amplifies that
 transport to `38/36/38/40/32`. ProductAuthority remains `none`; generated JSON
 is ignored and no sealed design-port or production path changes.
+
+### WP-015D2M target-indexed tactical-order atlas
+
+D2M is a mechanics-fixed Lane 2 composition audit over the exact D2I, D2K,
+and D2L parents. It does not add a tactical rule or rank carriers by one score.
+It builds six charts over starts 639/640/641 and response cycles one/two, keeps
+four actor/mirror replicas in each chart, and evaluates six protected targets
+separately: local answerability, local reorganization, ordered composition,
+recursive terminal closure, actor-role transport, and authority re-entry.
+
+Run:
+
+```powershell
+npx tsx scripts/run-tactical-order-atlas.ts --output test-results/crpm-world/d2m-tactical-order-atlas/tactical-order-atlas-result.json
+```
+
+Result digest
+`882534e69ddae101d3d1e1463ddca467f2a95899be2a8e826eb14cb1dd5a55c2`
+binds six local charts, four adjacent overlaps, two explicit 640/641 aliasing
+witnesses, the D2I Cocoon formation/release carrier, and D2L wider phase
+transport. Both aliases have one normalized immediate response class and two
+complete continuation classes, so their shape remains `relation_or_kernel`.
+Cycle two additionally splits policy selection. At production spawn, eight
+D2L routes change while four gains per actor role cancel in the unchanged
+first-actor scalar.
+
+Local answerability, local reorganization, bounded terminal closure, and
+authority re-entry survive. Ordered composition and actor-role transport do
+not descend. The global disposition is
+`role_neutral_global_order_not_assembled`, ProductAuthority is `none`, and the
+route-action evidence is not a realized closed-cycle or holonomy witness.
+Generated JSON remains ignored. Re-enter through the exact D2I/D2K/D2L
+digests, model/config hashes, chart/carrier references, and the
+[D2M contract](../../docs/planning/wp-015d2m-target-indexed-tactical-order-atlas-contract.md).

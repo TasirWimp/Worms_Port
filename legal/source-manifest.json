@@ -154,13 +154,19 @@
         "docs/architecture/spectral_theory_of_residue/Unknown_Source_Ocean_Navigation/Witness_Probe_Carrier_Generalization_v0.md",
         "docs/architecture/spectral_theory_of_residue/Unknown_Source_Ocean_Navigation/Landfall_Reentry_Diagnostic_Profile_v0.md",
         "docs/architecture/voyage_graphs/research_notes/CRPM_Voyage_Source_Ocean_Preobject_Field_Model_v0.md",
-        "docs/case_studies/Historical_Physics_Residue_Route_Selection_Pressure_Case_v0.md"
+        "docs/case_studies/Historical_Physics_Residue_Route_Selection_Pressure_Case_v0.md",
+        "docs/architecture/CRPM_Candidate_Mathematical_Spine_Implementation_Goal_v0.md",
+        "docs/architecture/CRPM_Candidate_Mathematical_Spine_Calibration_Report_v0.md",
+        "docs/architecture/voyage_graphs/research_notes/CRPM_Voyage_Edge_Graph_Recursive_Cut_Transition_Dynamics_Design_Note_v0.md",
+        "emergence_lab_crpm/operational_memory_m9_formation_calibration.py",
+        "logs/CRPM-Insight-Log.md"
       ],
       "allowed_uses": [
         "bounded Worms_Port L4+ pre-candidate navigation review",
         "manual source-bound landmark, probe-wake, lookback, chart-revision, return, and reopening discipline",
         "directional gameplay probing without sole-cause or scalar-optimization claims",
-        "source-attributed planning and re-entry documentation"
+        "source-attributed planning and re-entry documentation",
+        "bounded target-indexed local-to-global assembly, quotient-transport, route-action, and formation calibration"
       ],
       "blocked_uses": [
         "CRPM code or prose copy, vendoring, runtime import, or package dependency",
@@ -168,7 +174,7 @@
         "claim that CRPM supplies empirical gameplay evidence, causal proof, balance proof, or player-behavior evidence",
         "treating a generated route set, landmark, local improvement, or lower pressure as landfall"
       ],
-      "notes": "WP-015D2G uses the exploratory L4+ navigation bundle only to govern a manual cross-candidate Worms_Port chart. It preserves prior CRPM locks, adds no executable CRPM-world schema, and grants no gameplay or product authority."
+      "notes": "WP-015D2G uses the exploratory L4+ navigation bundle to govern a manual cross-candidate Worms_Port chart. WP-015D2M independently implements a bounded target-indexed atlas over existing Worms_Port evidence, using the later mathematical-spine, voyage, formation-calibration, and insight carriers only as L4+ review grammar. It preserves prior CRPM locks, copies and imports no CRPM code, and grants no gameplay or product authority."
     },
     {
       "id": "phaserjs-examples-mobile-input",

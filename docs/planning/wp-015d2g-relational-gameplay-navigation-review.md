@@ -535,6 +535,41 @@ cleanup restores terminal orientation symmetry but has no recursive carrier
 after the game ends. The next reversible direction must be selected from this
 revised chart; no lethal-first policy, Loomkeeper change, or mechanic follows.
 
+### WP-015D2M target-indexed assembly return
+
+The owner returned the D2L wake to a mechanics-fixed Lane 2 composition audit:
+[WP-015D2M Target-Indexed Tactical-Order Atlas](wp-015d2m-target-indexed-tactical-order-atlas-contract.md).
+D2M binds the exact D2I, D2K, and D2L results and asks six separate protected
+questions instead of looking for one compressed cause or score.
+
+The six local charts retain rich answerability, reorganization paths, complete
+bounded terminal closure, and re-entry references. The four overlaps sharpen
+the surviving obstruction. Both 639/640 overlaps preserve immediate, policy,
+and continuation relations despite exact-carrier residue. Across 640/641, the
+same normalized immediate-response relation advances to a different complete
+continuation relation and a different responder phase in both response cycles;
+cycle two also changes policy selection. These are two explicit quotient-
+transport aliases, not a preferred representative.
+
+The D2I formation carrier and D2L wider transport agree only as correlated
+route-order pressure: phase-symmetric formation/release counts still compose
+into four first-actor wins, while responder strengthening follows whichever
+role owns the edge. At production spawn, four gains in each direction cancel
+in the unchanged scalar even though eight routes change.
+
+The revised chart therefore records:
+
+> Local response relations and terminal closure survive, but ordered
+> composition and actor-role transport do not descend through the current
+> 640/641 interface.
+
+This is an assembly obstruction, not a sole cause. It does not select Cocoon,
+a response payoff, a policy, or a global owner. The next reversible direction
+is one separately contracted mechanics-fixed interface probe whose competing
+predictions distinguish formation, maintenance, and phase transport. Without
+a paired closed route and decoder, the observed route action is not promoted
+to holonomy.
+
 ## Phased plan and stop gates
 
 ### Phase 0 - source lock and boundary
@@ -602,9 +637,10 @@ From a fresh session:
 7. Treat the manual chart as the current navigation carrier, not as a new
    schema or proof. Preserve its source-supported facts separately from its
    Worms-specific landmark interpretations.
-8. Read the completed WP-015D2H contract and reproduce its ignored result if
-   needed. Resume from its `retain_and_refine` wake; do not substitute a
-   gameplay candidate for the proposed recurrence-support observation.
+8. Read D2H through D2M in order and reproduce the ignored D2M result digest
+   when needed. Resume from D2M's target-indexed assembly obstruction; do not
+   substitute a gameplay candidate, one scalar, or a global ownership claim
+   for the separately required interface probe.
 
 Generated reports remain ignored. If historical facts require reproduction,
 use the committed commands in `analysis/tactical_model/README.md` and compare

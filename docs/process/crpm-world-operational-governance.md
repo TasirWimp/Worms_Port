@@ -788,6 +788,30 @@ route decides which turn role owns its triggering edge. The unchanged 640
 aggregate is explicit false-closure pressure because four outcomes move each
 way. No policy, model, config, live Loomkeeper, or production surface changes.
 
+WP-015D2M returns that warning through a mechanics-fixed target-indexed atlas.
+It composes the exact D2I formation carrier, D2K 639/640/641 response relation,
+and D2L wider transport without rerunning them as independent evidence. Six
+local charts preserve four actor/mirror replicas each; four overlaps preserve
+source-to-successor correspondence instead of comparing unordered digest sets
+alone.
+
+Both 640/641 overlaps have the same normalized immediate-response projection
+and different complete continuation projections. Their deterministic-map
+claim therefore fails and the bounded shape remains `relation_or_kernel`.
+Cycle two also splits policy selection. D2I supplies equal phase formation and
+release totals but order-sensitive first-actor resolution; D2L supplies
+responder-phase outcome transport and an eight-route cancellation hidden by
+the unchanged 640 aggregate.
+
+The atlas passes local answerability, local reorganization, bounded terminal
+closure, and authority re-entry separately. Ordered composition and actor-role
+transport fail descent. Its global result
+`role_neutral_global_order_not_assembled` is an L4+ Worms_Port diagnostic, not
+a universal mathematical object or gameplay decision. A later probe must name
+one obstructed target, predicted interface wake, return condition, and excluded
+ports before changing mechanics. D2M provides no paired closed route and
+decoder, so candidate route action is not a realized holonomy witness.
+
 ## Source and claim status
 
 Source-supported methodological constraints come from the two read-only CRPM
@@ -803,7 +827,11 @@ The pre-candidate navigation review additionally uses read-only CRPM commit
 `053c6fc0a90ed48d8667016b18a1d10106a7a2bc` for the exploratory L4+ Unknown
 Source Ocean Navigation bundle, grouped transitions, probe/carrier discipline,
 landfall/re-entry profile, and source-ocean role model. That later pin does not
-rewrite the two historical locks or extend the executable D2B profile.
+rewrite the two historical locks or extend the executable D2B profile. D2M
+uses the mathematical-spine goal/calibration, voyage dynamics, M9 formation
+calibration, and current insight-log carriers at that same commit only as L4+
+target-indexed assembly review grammar; their exact blobs are bound in the D2M
+result and they supply no gameplay evidence.
 
 The operational lanes, lifecycle labels, version-impact table, gameplay
 use-case matrix, and range-entry worked profile are Worms_Port interpretations.
