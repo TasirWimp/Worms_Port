@@ -270,6 +270,14 @@ From a fresh session:
 6. Do not implement either screened rule. Start any continuation from R2 with
    mechanics fixed and a separate source-locked Lane 2 contract.
 
+The owner subsequently opened that continuation as
+[WP-015D2K](wp-015d2k-policy-choice-relation-audit-contract.md). D2K confirms
+that first-cycle counter-preparation is a non-dominated supported branch, while
+the later 20-Stitching carrier exposes immediate lethal Threadball choices that
+several fixed policies pass over. That result preserves this withdrawal and
+refines the next question toward analytical response selection rather than
+reopening either timing rule.
+
 No V5 rule, candidate config, action, policy, state field, status, protocol,
 replay, reward, UI, asset, runtime dependency, or production authority was
 created by WP-015D2J.

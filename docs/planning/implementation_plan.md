@@ -188,6 +188,24 @@ Phaser/Socket.IO stack.
   The next permitted direction is D2G R2: a separate mechanics-fixed Lane 2
   policy-choice relation audit around 639/640/641. The Execution Pointer
   remains WP-015D2A and ProductAuthority remains `none`.
+  The owner opened that route as
+  [WP-015D2K Mechanics-Fixed Policy-Choice Relation Audit](wp-015d2k-policy-choice-relation-audit-contract.md).
+  **WP-015D2K completed on 2026-08-24** over unchanged F4. Its raw digest
+  `47ef25b6557edaa1f477f0bdde80b0b1d8b041399adb844a22c8746f1314e769`
+  binds 12 baseline routes, 24 discovered preparation-response carriers, ten
+  legal responses per carrier, and all 25 continuation-policy contexts per
+  response: 6,000 terminal voyages with no recurrence. Every carrier already
+  exposes five policy-selected response families. The first-cycle
+  `short_approach` counter-preparation is not terminally dominated, while the
+  second cycle reaches an opponent at 20 Stitching where every Threadball
+  direction is immediately lethal but several heuristics still select slower
+  routes. The `best_response` lethal tie also chooses absolute `left`, creating
+  12 mirror-sensitive position/Escape-Slack residues. Result digest
+  `5c544f6822744ac63a595ca4458bb2dfb72696836468a47bf494c628b5573832`
+  returns `retain_mechanics_refine_policy_question`. The next permitted action
+  is owner review of a separate analytical policy-probe contract; no policy,
+  mechanic, Loomkeeper, or production change is approved. The Execution
+  Pointer remains WP-015D2A and ProductAuthority remains `none`.
   **WP-015D1 V4 wider
   arena and pan camera completed on 2026-08-08**
   on `codex/wp-015-production-assets`: V4 preserves historical replays while

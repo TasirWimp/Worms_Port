@@ -682,3 +682,29 @@ landmarks remain re-enterable through the
 The next permitted operation is a separate mechanics-fixed Lane 2 audit of the
 D2G R2 policy-choice relation, not a Cocoon rule, new policy, or production
 proposal.
+
+### WP-015D2K mechanics-fixed policy-choice relation
+
+D2K implements the D2G R2 observation in new parallel paths. A strict Python
+export discovers every F4 interleaved preparation response carrier on the
+639/640/641 short-approach mirrors. The TypeScript assessment validates every
+legal response under all 25 ordered continuation-policy contexts and keeps
+exact carrier, actor-relative support, selection, terminal vector, resource,
+path, and boundary relations separate.
+
+Run:
+
+```powershell
+npx tsx scripts/run-policy-choice-relation-audit.ts --output test-results/crpm-world/d2k-policy-choice/policy-choice-relation-result.json
+```
+
+Raw digest
+`47ef25b6557edaa1f477f0bdde80b0b1d8b041399adb844a22c8746f1314e769`
+and result digest
+`5c544f6822744ac63a595ca4458bb2dfb72696836468a47bf494c628b5573832`
+bind 24 carriers and 6,000 terminal voyages. Existing F4 response support is
+rich; policy selection, particularly later low-Stitching choices and an
+absolute-left `best_response` tie, remains the narrower question. The return is
+`retain_mechanics_refine_policy_question`, ProductAuthority `none`. Generated
+JSON remains ignored, and no model, config, policy, design-port seal, or
+production path changes.

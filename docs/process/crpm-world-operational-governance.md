@@ -763,6 +763,19 @@ Lane 2, mechanics-fixed policy-choice relation audit. This is an example of a
 candidate question returning knowledge to the navigation carrier without
 requiring a rejected implementation.
 
+The owner opened the returned R2 route as WP-015D2K. Its parallel Lane 2
+export/assessment leaves F4 and all policies unchanged while enumerating 24
+interleaved carriers, 240 legal responses, 120 selections, and 6,000 forced
+continuation voyages around 639/640/641. The audit demonstrates two governance
+distinctions: a non-dominated selected branch must not be removed merely to
+change an aggregate, while a terminally dominated selection remains only a
+bounded policy-regret witness when path/resource residue is excluded. D2K also
+separates actor-relative legal-support equivariance from a mirror-sensitive
+absolute-direction policy tie. Its return
+`retain_mechanics_refine_policy_question` permits only owner review of a new
+Lane 1 analytical policy probe. It does not alter the live Loomkeeper or
+authorize gameplay mechanics.
+
 ## Source and claim status
 
 Source-supported methodological constraints come from the two read-only CRPM

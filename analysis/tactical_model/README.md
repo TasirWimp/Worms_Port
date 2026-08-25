@@ -377,3 +377,15 @@ still preserves the responder's winning continuation. Requiring separate range
 entry before movement-created preparation instead produces `64/64/76` and
 worsens the exact 639/640 side. D2J is therefore withdrawn before contract.
 No config, parser, model, action, state, policy, trace, or report changed.
+
+WP-015D2K keeps that boundary and uses the public functions in this module to
+discover both existing interleaved response cycles at 639/640/641. Its strict
+export contains 12 routes, 24 carriers, ten legal responses per carrier, five
+unchanged selections per carrier, and 6,000 forced continuations. The
+first-cycle `short_approach` counter-preparation is not terminally dominated.
+At the second cycle, however, the preparer has 20 Stitching and all three
+Threadball directions are immediately lethal, while some heuristics choose
+slower routes. The `best_response` tie selects literal `left`, so mirroring can
+change an otherwise lethal action from approach to a 64-Slack retreat. This is
+analysis-policy residue, not permission to change `choose_action`, F4, or the
+live Loomkeeper.

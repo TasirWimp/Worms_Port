@@ -480,6 +480,33 @@ R1 is complete for the current cut. R2 is now the next reversible direction:
 hold F4 mechanics fixed and compare the available and selected response paths
 at the interleaved carriers before another gameplay rule is considered.
 
+### WP-015D2K R2 policy-choice wake
+
+The owner opened R2 as the mechanics-fixed
+[WP-015D2K Policy-Choice Relation Audit](wp-015d2k-policy-choice-relation-audit-contract.md).
+It reconstructs both interleaved response cycles on every F4
+short-approach mirror at 639/640/641, then forces all ten legal responses
+through all 25 ordered continuation-policy pairs. The 24 carriers produce
+6,000 terminal voyages and no recurrence.
+
+The relation is richer than the D2I selected path: all carriers expose five
+policy-selected response families. At the first 100/100-Stitching cycle,
+counter-preparation remains terminally non-dominated over the fixed
+continuation set, so removing Cocoon would erase a supported branch. At the
+second cycle the preparer has 20 Stitching; every Threadball direction is
+immediately lethal in all continuations, yet three policies select slower
+Needlepoint, relocation, or preparation paths. The fixed `best_response` tie
+also selects absolute `left`, which becomes approach or a 64-Slack retreat
+under mirror reversal.
+
+Legal support and actor-relative continuation relations reproduce across all
+four orientations. Exact carrier and 640/641 continuation equality do not.
+This advances R2 only to `retain_mechanics_refine_policy_question`: the next
+reversible step is owner review of one separate analytical response-policy
+probe, not another Cocoon mechanic. R3 remains the return route if ranking the
+first-cycle non-dominated alternatives requires human adaptation, terrain,
+aim, or execution.
+
 ## Phased plan and stop gates
 
 ### Phase 0 - source lock and boundary
