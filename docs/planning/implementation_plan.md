@@ -282,6 +282,14 @@ Phaser/Socket.IO stack.
   remain closed pending separate review/authorization. Existing source locks,
   D2O results, V4 gameplay and closed PR #2 are unchanged. The active
   Execution Pointer remains WP-015D2A; this sidecar has ProductAuthority `none`.
+  **WP-015D2Q / WPV4-COMMAND-01A (2026-08-28):** after approval of D2P,
+  the owner authorized the [V4 Actor/Turn Command-Gate Pressure child](wp-015d2q-v4-command-gate-pressure-contract.md):
+  contract, isolated implementation, exact execution and report. Only four
+  independently initialized one-move V4 actor/expectedTurn declarations are
+  admitted. CRPM remains frozen; aim/fire, timing, player observation,
+  gameplay changes and P5 stay closed. The child must return its source-bound
+  report for review; it does not satisfy D2O's player-authority gate or advance
+  the parent WP-015D2A execution pointer.
   **WP-015D1 V4 wider
   arena and pan camera completed on 2026-08-08**
   on `codex/wp-015-production-assets`: V4 preserves historical replays while

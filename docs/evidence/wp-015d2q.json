@@ -1,0 +1,92 @@
+{
+  "id": "WP-015D2Q",
+  "status": "in_progress",
+  "starting_commit": "3a3cca8c720f89251cad56029b9f7b1c69d87146",
+  "branch": "codex/wp-015d2q-v4-command-gate-pressure",
+  "initial_worktree": "clean",
+  "starting_lock_sha256": "D4DAC6AE09A3D2F6C5A7EAA11520BAC43F1628320C5331575BCF1E1857073D73",
+  "owning_roles": [
+    "worms_port_planner",
+    "worms_port_test_worker",
+    "worms_port_docs_keeper"
+  ],
+  "scope": [
+    "Owner authorized the full bounded WPV4-COMMAND-01A child after external documentation review: contract, implementation, execution and report; Lane 2, Worms_Port sole execution owner.",
+    "Exactly four independently initialized single-step V4 move requests at seed 3237998097, wizard, turn 0: player/0, player/1, loomkeeper/0 and loomkeeper/1. T_COMMAND only, no tick advancement.",
+    "Derive actor/expectedTurn observational omission/restoration and guard-precedence readouts from exact acceptance, mutation, error, ordered event and state evidence; do not delete actual authority inputs or use post-state-only quotient output as the command-response verdict.",
+    "Preserve all existing production/analysis executors, cuts, schemas, registries, source locks and historical results. CRPM is frozen at c9bf511f67ffbe518cd9f9603916bb26e1527736.",
+    "Allowed outputs: docs/evidence/wp-015d2q.json; docs/planning/wp-015d2q-v4-command-gate-pressure-contract.md; analysis/crpm_world/navigation/v4-command-gate-registration.json; analysis/crpm_world/navigation/assess-v4-command-gates.ts; scripts/run-v4-command-gate-pressure.ts; tests/crpm-world/v4-command-gate-pressure.test.ts; docs/planning/wp-015d2q-v4-command-gate-pressure-report.md; docs/evidence/wp-015d2q/review-return.json; docs/planning/implementation_plan.md; docs/planning/wp-015d2g-relational-gameplay-navigation-review.md; analysis/crpm_world/README.md.",
+    "Freeze the contract/registration before implementation, then execute from durable source and close with an exact range/status/mode/blob audit plus executor/Markdown/JSON-return parity."
+  ],
+  "non_goals": [
+    "No aim/fire, tick or wall-clock experiment, network scheduling, UI or player observation, instrumentation, playtest, new seed, initial state mutation, or expanded command family.",
+    "No gameplay, shared/client/server/protocol/replay/reward/asset/dependency change; no edit of sealed adapters, cuts, schemas, registries, executors or locks.",
+    "No CRPM file edit/import/dependency, mathematical admission or placement, P5, claim of empirical independence, global minimality, or D2O real-player authority-gate completion.",
+    "No push, new PR, reopening or merging PR #2, or advancement of the parent WP-015D2A execution pointer."
+  ],
+  "planned_checks": [
+    "npm run test:tactical-model (baseline and final)",
+    "npm run test:simulation (baseline and final)",
+    "npm run check:compliance (baseline, preregistration and final)",
+    "npm run check:crpm-world-types (baseline and final)",
+    "node --import tsx --test tests/crpm-world/v4-authority-adapter.test.ts tests/crpm-world/canonical.test.ts (baseline)",
+    "node --import tsx --test tests/crpm-world/v4-command-gate-pressure.test.ts",
+    "node --import tsx scripts/run-v4-command-gate-pressure.ts (two durable-source executions and publication verification)",
+    "npm run test:crpm-world",
+    "npm run check:types",
+    "npm run build",
+    "git diff --check",
+    "exact source/range/status/mode/blob, historical-preservation, output-confinement, duplicate-key/row, printed-digest and executor/report/return parity checks",
+    "ordinary read-only source, implementation and result review"
+  ],
+  "deterministic_seeds": [
+    "3237998097"
+  ],
+  "sorcerers_reference_used": false,
+  "clean_room_records": [],
+  "check_results": [
+    {
+      "command": "npm run test:tactical-model (baseline)",
+      "status": "pass",
+      "detail": "One authoritative TypeScript fixture and all 41 Python tactical tests passed on the entry source."
+    },
+    {
+      "command": "npm run test:simulation (baseline)",
+      "status": "pass",
+      "detail": "All 31 existing production simulation tests passed."
+    },
+    {
+      "command": "npm run check:compliance (baseline)",
+      "status": "pass",
+      "detail": "All seven components passed with 36 existing work-package records."
+    },
+    {
+      "command": "npm run check:crpm-world-types (baseline)",
+      "status": "pass",
+      "detail": "Existing analysis TypeScript project passed."
+    },
+    {
+      "command": "node --import tsx --test tests/crpm-world/v4-authority-adapter.test.ts tests/crpm-world/canonical.test.ts (baseline)",
+      "status": "pass",
+      "detail": "All 17 existing adapter/canonical tests passed."
+    },
+    {
+      "command": "preregistration source/request/contract checks",
+      "status": "pass",
+      "detail": "Sixteen source blob/SHA bindings, four valid existing-schema requests and all printed registration/context/case/source digests reproduce; the plan is insertion-only."
+    }
+  ],
+  "reviews": [
+    {
+      "role": "worms_port_planner",
+      "reviewer": "Codex /root/worms_current_work — read-only preregistration reviewer",
+      "decision": "pass",
+      "detail": "No blockers. Exact four fresh requests, conditional controls, adapter-only target, component authentication and all exclusion/review gates are explicit; no case was executed by the reviewer."
+    }
+  ],
+  "skipped_checks": [],
+  "residual_risks": [
+    "The proposed exact command-gate outcomes remain unexecuted at preregistration; source-supported expectations are not result verdicts.",
+    "Even a positive bounded command-response result does not establish player information/response opportunity or discharge D2O's authority-horizon gate."
+  ]
+}
