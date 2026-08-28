@@ -646,6 +646,24 @@ open a separate V4/playtest cut for real timing, information, and response-edge
 ownership. No mechanic, gameplay phase, V5, holonomy, or ProductAuthority
 claim follows.
 
+### WP-015D2P documentation-only successor (2026-08-28)
+
+The owner authorized [WP-015D2P V4 Observation and External-Pressure Contract](wp-015d2p-v4-observation-pressure-contract.md)
+as a documentation-only sidecar to the D2O return. It binds current Worms_Port
+`224b6b8af6f63308d653ba20b6ddeabc1783460d` and a separate durable CRPM
+placement-unit contract without rewriting any historical method lock. The
+D2G re-entry step requiring CRPM at its old method pin remains a historical
+reproduction instruction; D2P resolves that old commit with Git and binds its
+new method source separately. Do not reset a live checkout to the old pin.
+
+D2P separates exact next-command support from actual player-visible timing
+and information. Existing movement twins are retrospective calibration, not
+independent prospective discovery; abstract F4 phases are not V4 mechanics.
+Review the contracts and coordination return before any new pressure
+implementation or playtest. D2O's authority-horizon gate is still unresolved,
+the Execution Pointer stays WP-015D2A, ProductAuthority is `none`, and PR #2
+remains closed/unmerged. No P5, gameplay change or executable lane is opened.
+
 ## Phased plan and stop gates
 
 ### Phase 0 - source lock and boundary

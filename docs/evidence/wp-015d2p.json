@@ -1,0 +1,83 @@
+{
+  "id": "WP-015D2P",
+  "status": "complete",
+  "starting_commit": "224b6b8af6f63308d653ba20b6ddeabc1783460d",
+  "branch": "codex/wp-015d2p-v4-observation-contract",
+  "initial_worktree": "clean",
+  "starting_lock_sha256": "D4DAC6AE09A3D2F6C5A7EAA11520BAC43F1628320C5331575BCF1E1857073D73",
+  "owning_roles": [
+    "worms_port_planner",
+    "worms_port_docs_keeper",
+    "cross_repository_coordinator"
+  ],
+  "scope": [
+    "Documentation-first preregistration only: a Worms-owned V4 observation/pressure contract, source provenance, and discovery from the existing WP-015D2A/D2G route.",
+    "Bind the actual Worms_Port starting HEAD and the separately committed CRPM placement-unit contract; preserve all historical method pins, sealed executors, and D2O outcomes.",
+    "Allowed paths: docs/planning/wp-015d2p-v4-observation-pressure-contract.md; docs/evidence/wp-015d2p.json; docs/planning/implementation_plan.md; docs/planning/wp-015d2g-relational-gameplay-navigation-review.md; legal/source-manifest.json.",
+    "Complete means this documentation milestone is ready for review, not that any proposed case, observation request, migration, or playtest has been approved or executed."
+  ],
+  "non_goals": [
+    "Execute new pressure cases, widen registered observation requests, instrument V4, conduct browser sessions or playtests, or infer empirical independence from reused CRPM-influenced sources.",
+    "Change gameplay, production authority, sealed executors, schemas, registries, adapters, model/config/policy/seed/horizon, assets, dependencies, or historical locks and results.",
+    "Advance the active WP-015D2A execution pointer, reopen or merge PR #2, create a PR, push either repository, or treat contract authoring as product approval.",
+    "Edit CRPM L1-L3, philosophy, formal, graph/schema owners, issue new placement verdicts, or author/open P5."
+  ],
+  "planned_checks": [
+    "npm run check:compliance",
+    "git diff --check",
+    "source-bound documentation and exact changed-path/status/mode/blob audit",
+    "read-only documentation review"
+  ],
+  "deterministic_seeds": [],
+  "sorcerers_reference_used": false,
+  "clean_room_records": [],
+  "check_results": [
+    {
+      "command": "npm run check:compliance",
+      "status": "pass",
+      "detail": "All seven existing components passed: asset manifest, runtime inventory, generation components, import boundary, package licenses, work-package evidence (36 records), and clean-room records. The external CRPM pin is verified separately below, not implied by generic compliance."
+    },
+    {
+      "command": "git diff --check",
+      "status": "pass",
+      "detail": "Working and staged documentation diffs passed, including the new files. The final staged delta has exactly five allowed A/M paths with regular-file mode 100644; no deletion, rename, executable mode or unlisted file is admitted."
+    },
+    {
+      "command": "source-bound documentation and exact changed-path/status/mode/blob audit",
+      "status": "pass",
+      "detail": "All 15 Worms source blob/SHA pairs and the CRPM b66036e9184612ee7b70d2412e0620ba16665093 contract identity reproduce. Canonical contract digest 409462beb039f6b7e1a3c8b0b573611301dc1dec377752d5f07a2d891dfbc15e; case-set digest fcdeaefcf784a74af0c7ed24c631a3815032327e565b94533edea242bd1752e1; source digest 915d80e9a50a4dc280c70e7e27b45d18d29ea45e39c7fade3fd137cb5aa222df. Six unique families are not_tested/not_authorized. All ten old source-manifest records and existing planning text are unchanged. Duplicate cases/JSON keys, unknown method units, unearned results, source drift and an opened playtest gate were rejected on document copies. Staged path/status/mode/blob audit passed; the coordinator return owns the separate final committed-range receipt."
+    },
+    {
+      "command": "read-only documentation review",
+      "status": "pass",
+      "detail": "An ordinary read-only reviewer independently checked source recovery, authority lanes, case/context typing, historical preservation, minimal documentation placement and the review stop. This is correlated source analysis, not empirical independence or gameplay/CRPM placement acceptance."
+    }
+  ],
+  "reviews": [
+    {
+      "role": "cross_repository_coordinator",
+      "reviewer": "Codex main writer — self-review",
+      "decision": "pass",
+      "detail": "Confirmed the five-path documentation/provenance scope, source-owned V4 questions, all closed execution/product/P5 gates, unchanged WP-015D2A pointer, and additive rather than replacement method lineage."
+    },
+    {
+      "role": "worms_port_docs_keeper",
+      "reviewer": "Codex /root/worms_current_work — read-only documentation reviewer",
+      "decision": "pass",
+      "detail": "No blocking or misleading contract found. All15 source identities, CRPM contract digests/unit IDs, six not_tested families, old source records and insertion-only planning changes reproduce. Review is documentation-only, not game evidence or a cross-world verdict."
+    }
+  ],
+  "skipped_checks": [
+    "Build, typecheck and gameplay/simulation/tactical-model/CRPM-world execution suites were not run: no executable, schema, dependency or runtime surface changed. Existing test source was read only as historical lineage.",
+    "No new pressure case, widened observation request, instrumentation, browser session, browser matrix or playtest was executed or authorized.",
+    "Physical Android/iOS testing and human-player observation were not run; the exact environment, public information/timing boundary, consent and data handling remain unbound.",
+    "No push, new PR, reopening or merge was performed. Read-only PR #2 inspection returned CLOSED, mergedAt null, and unchanged head 224b6b8af6f63308d653ba20b6ddeabc1783460d."
+  ],
+  "residual_risks": [
+    "Documentation completion does not satisfy D2O's V4/playtest authority-horizon gate or open a Lane 2/4 execution. The owner must review and explicitly authorize a separately source-bound executable/observation scope.",
+    "The two movement/return families are retrospective calibration; the four prospective families are source-pressure questions with incomplete exact input/environment boundaries, not registered requests.",
+    "CRPM unit references are methodological questions, not Worms realizations or empirical validation. Shared facts, adapters, documents and reviewers remain correlated.",
+    "Public information, response opportunity, public replay access, source formation, concrete payload expiry and stronger-target recovery remain untested or underdetermined. No witness quota is imposed.",
+    "Both new contracts remain on local scoped branches. Their committed identities are recoverable locally, but no remote publication, PR operation, gameplay change or CRPM P5 is authorized."
+  ]
+}

@@ -273,6 +273,15 @@ Phaser/Socket.IO stack.
   must review real timing and response ownership. No gameplay phase, mechanic,
   V5, or product authority is approved. The Execution Pointer remains
   WP-015D2A and ProductAuthority remains `none`.
+  **WP-015D2P documentation-only sidecar (2026-08-28):** the owner authorized
+  [V4 Observation and External-Pressure Contract](wp-015d2p-v4-observation-pressure-contract.md)
+  and a source-bound cross-repository coordination return. This preregisters
+  separate simulation-continuation and actual player-observation questions;
+  it does not satisfy D2O's V4/playtest gate or authorize execution.
+  New pressure cases, observation requests, instrumentation and playtests
+  remain closed pending separate review/authorization. Existing source locks,
+  D2O results, V4 gameplay and closed PR #2 are unchanged. The active
+  Execution Pointer remains WP-015D2A; this sidecar has ProductAuthority `none`.
   **WP-015D1 V4 wider
   arena and pan camera completed on 2026-08-08**
   on `codex/wp-015-production-assets`: V4 preserves historical replays while
