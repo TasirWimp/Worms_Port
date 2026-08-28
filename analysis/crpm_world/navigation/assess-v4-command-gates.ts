@@ -621,9 +621,10 @@ export function reportProjection(result: D2QResult) {
 export function renderD2QReport(result: D2QResult): string {
     const projection = reportProjection(result);
     const table = projection.cases.map((row) => `| ${row.caseId} | ${row.observedClass} | ${row.readout.accepted} | ${row.readout.mutated} | ${row.verdict} |`).join('\n');
+    // Canonical nested rows survive a saved-result JSON round trip byte-for-byte.
     // One digest-bound row per case/ablation avoids duplicating the raw tree.
     const compact = '{\n' + Object.entries(projection).map(([key, value]) =>
-        `  ${JSON.stringify(key)}: ${Array.isArray(value) ? '[\n    ' + value.map((row) => JSON.stringify(row)).join(',\n    ') + '\n  ]' : JSON.stringify(value)}`
+        `  ${JSON.stringify(key)}: ${Array.isArray(value) ? '[\n    ' + value.map((row) => canonicalJson(row)).join(',\n    ') + '\n  ]' : canonicalJson(value)}`
     ).join(',\n') + '\n}';
     const actorControl = result.analysis.ablations.find((row) => row.fieldId === 'actor');
     const turnControl = result.analysis.ablations.find((row) => row.fieldId === 'expectedTurn');

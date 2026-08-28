@@ -539,6 +539,18 @@ test('D2Q report and review receipt reproduce executor rows and printed digests 
     assert.doesNotMatch(report, /WPV4-COMMAND-01 survived/);
 });
 
+test('D2Q canonical JSON round trip preserves report bytes and review-return parity', async () => {
+    const original = await baseline();
+    const parsed = parseStrictJson(canonicalJson(original)) as D2QResult;
+    const originalReport = renderD2QReport(original);
+    assert.equal(renderD2QReport(parsed), originalReport);
+    assert.equal(canonicalJson(reportProjection(parsed)), canonicalJson(reportProjection(original)));
+    const receipt = buildD2QReviewReturn(parsed, originalReport, {
+        scope: 'unit_test_fixture', status: 'fixture_only'
+    });
+    assert.doesNotThrow(() => verifyD2QReviewReturn(parsed, originalReport, receipt));
+});
+
 test('D2Q blocked context produces scoped-failure prose instead of an unconditional pressure claim', async () => {
     const changed = copy(await baseline());
     changed.stages[0].ablated.context.tolerance = {
