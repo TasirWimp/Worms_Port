@@ -1,6 +1,6 @@
 {
   "id": "WP-015D2Q",
-  "status": "in_progress",
+  "status": "complete",
   "starting_commit": "3a3cca8c720f89251cad56029b9f7b1c69d87146",
   "branch": "codex/wp-015d2q-v4-command-gate-pressure",
   "initial_worktree": "clean",
@@ -46,34 +46,69 @@
   "clean_room_records": [],
   "check_results": [
     {
-      "command": "npm run test:tactical-model (baseline)",
+      "command": "npm run test:tactical-model (baseline and final)",
       "status": "pass",
-      "detail": "One authoritative TypeScript fixture and all 41 Python tactical tests passed on the entry source."
+      "detail": "Baseline and final checks passed: one authoritative TypeScript fixture and all 41 Python tactical tests. Final execution is bound to source 85f6ea945bd2b5b2aacb6b61cc2af52fe0c09ebb; existing model/config/action/horizon owners are unchanged."
     },
     {
-      "command": "npm run test:simulation (baseline)",
+      "command": "npm run test:simulation (baseline and final)",
       "status": "pass",
-      "detail": "All 31 existing production simulation tests passed."
+      "detail": "All 31 existing production simulation tests passed before and after the child. No gameplay, timing, projectile, replay or terminal rule was changed."
     },
     {
-      "command": "npm run check:compliance (baseline)",
+      "command": "npm run check:compliance (baseline, preregistration and final)",
       "status": "pass",
-      "detail": "All seven components passed with 36 existing work-package records."
+      "detail": "All seven compliance components passed at baseline, preregistration and final source (37 work-package records). Completed-evidence compliance is checked again during publication."
     },
     {
-      "command": "npm run check:crpm-world-types (baseline)",
+      "command": "npm run check:crpm-world-types (baseline and final)",
       "status": "pass",
-      "detail": "Existing analysis TypeScript project passed."
+      "detail": "Strict analysis TypeScript project passed at baseline, before each source commit and on final source; no shared schema or tsconfig change was needed."
     },
     {
       "command": "node --import tsx --test tests/crpm-world/v4-authority-adapter.test.ts tests/crpm-world/canonical.test.ts (baseline)",
       "status": "pass",
-      "detail": "All 17 existing adapter/canonical tests passed."
+      "detail": "All 17 original authority-adapter and canonical tests passed before implementation."
     },
     {
-      "command": "preregistration source/request/contract checks",
+      "command": "node --import tsx --test tests/crpm-world/v4-command-gate-pressure.test.ts",
       "status": "pass",
-      "detail": "Sixteen source blob/SHA bindings, four valid existing-schema requests and all printed registration/context/case/source digests reproduce; the plan is insertion-only."
+      "detail": "All 28 focused/destructive tests passed with zero failures/skips on final source. Controls cover coherent source/error/witness forgeries, actual-context and omission/restoration drift, source paths/modes/intermediate changes, duplicate JSON/rows, output links, printed/parity digests, saved-JSON report round trip and coherently empty publication validation."
+    },
+    {
+      "command": "node --import tsx scripts/run-v4-command-gate-pressure.ts (two durable-source executions and publication verification)",
+      "status": "pass",
+      "detail": "Two separate-process final-source runs reproduced identical 182213-byte canonical results and identical Markdown. Raw file SHA-256 bf0256085837284ebaa2bcdbb3011ce7f57ab9c2817d9eb4c5f8a98417197e7f; result b538f5b6da82dc3b6655a9c0d89404e3b20592191886a9bb4280d6fe481d1615. Saved JSON/report/receipt recovery passed. The terminal commit/blob/range verification is a separate post-commit return, not self-asserted by this source-stage validation digest."
+    },
+    {
+      "command": "npm run test:crpm-world",
+      "status": "pass",
+      "detail": "Complete final-source suite: 161 passed of 162 tests, zero failures/cancellations and exactly one existing reviewed unsealed-D2E skip (836.3 seconds). All 28 new D2Q controls also passed inside the full suite. Historical wider cases are regressions, not new child pressure declarations."
+    },
+    {
+      "command": "npm run check:types",
+      "status": "pass",
+      "detail": "Both server and client TypeScript projects passed. Production code retains no dependency on the child."
+    },
+    {
+      "command": "npm run build",
+      "status": "pass",
+      "detail": "Compliance, types, server/client build and all 11 approved asset copies passed. The existing Vite large-chunk warning is informational; no production source or dependency was changed."
+    },
+    {
+      "command": "git diff --check",
+      "status": "pass",
+      "detail": "Whitespace checks passed before contract/source/repair commits and are repeated for the scoped closeout. Git line-ending notices are configuration-only."
+    },
+    {
+      "command": "exact source/range/status/mode/blob, historical-preservation, output-confinement, duplicate-key/row, printed-digest and executor/report/return parity checks",
+      "status": "pass",
+      "detail": "All 22 source bindings and exact endpoint/intermediate source-range records reproduce. Registration/context/case/source printed digests, evidence/analysis digests, full/ablated/restored projection membership, report/JSON parity and output guards passed. The final publication range and exact containing return blob are audited after its commit to avoid circular identities."
+    },
+    {
+      "command": "ordinary read-only source, implementation and result review",
+      "status": "pass",
+      "detail": "Identified read-only preregistration, implementation, source/result and publication-readiness reviews passed. The single saved-report ordering defect was fixed at 85f6ea9 and rerun; evidence covariance stays correlated_reuse, mathematical placement/ProductAuthority none, and successor execution closed."
     }
   ],
   "reviews": [
@@ -82,11 +117,34 @@
       "reviewer": "Codex /root/worms_current_work — read-only preregistration reviewer",
       "decision": "pass",
       "detail": "No blockers. Exact four fresh requests, conditional controls, adapter-only target, component authentication and all exclusion/review gates are explicit; no case was executed by the reviewer."
+    },
+    {
+      "role": "worms_port_reviewer",
+      "reviewer": "Codex /root/worms_current_work — read-only source/result reviewer",
+      "decision": "pass",
+      "detail": "WP-015D2Q-RESULT-REVIEW-R1: source 85f6ea945bd2b5b2aacb6b61cc2af52fe0c09ebb and result b538f5b6da82dc3b6655a9c0d89404e3b20592191886a9bb4280d6fe481d1615. Verified two byte-identical results, canonical saved-JSON/report/receipt recovery, all 22 committed source bindings and exact source-range records, conditional actor no-witness and error-only turn split. Historical rendering defect is resolved. Evidence remains correlated_reuse, structural_reference only; no authority, placement, P5 or successor execution. Reviewer ran no pressure cases."
+    },
+    {
+      "role": "worms_port_reviewer",
+      "reviewer": "Codex /root/worms_evidence_seam — read-only publication reviewer",
+      "decision": "pass",
+      "detail": "Publication-readiness review bound to source 85f6ea945bd2b5b2aacb6b61cc2af52fe0c09ebb: corrected r1-run result/report identities, conditional/no-witness controls, no-authority scope and noncircular source/terminal boundary pass. The immutable planned-check, identified-review and two-run gate rejects coherent incomplete validation; raw output remains confined. Final durable validation/parity and terminal range are checked separately after this readiness review. No pressure execution by reviewer."
     }
   ],
-  "skipped_checks": [],
+  "skipped_checks": [
+    "The existing unsealed-D2E negative test is an expected historical skip after D2E sealing; no D2Q test is skipped.",
+    "Browser matrix, UI/player observation, physical Android/iOS testing and playtests were not run: this is an offline-only analysis child with those lanes explicitly closed.",
+    "npm audit was not run because package.json and package-lock.json are unchanged and no dependency work was authorized.",
+    "The initial broad regression on superseded source 469bd9b was canceled for the saved-report repair and is not counted as passing; full validation was restarted at 85f6ea9."
+  ],
   "residual_risks": [
-    "The proposed exact command-gate outcomes remain unexecuted at preregistration; source-supported expectations are not result verdicts.",
-    "Even a positive bounded command-response result does not establish player information/response opportunity or discharge D2O's authority-horizon gate."
+    "The four declarations are an explicitly incomplete case set, not all commands, seeds, states, actor roles or horizons.",
+    "Actor relevance is conditional on expected-turn match; the mismatch pair retains no_omission_witness_found. Exact error readout, not post-state equality alone, carries the expectedTurn rejection split.",
+    "All executable facts, checks, repeats and reviewers reuse the same frozen authority and are correlated_reuse, not independent empirical evidence.",
+    "D2O's real player timing/information/response-edge authority gate remains unsatisfied. Aim/fire, ticks, network scheduling, UI, public formation, expiry and playtesting are outside this child.",
+    "No global carrier minimality, gameplay rule, CRPM placement, L1-L3/graph/schema change or P5 follows. CRPM and every historical source/lock remain unchanged.",
+    "Source-stage report/receipt identities deliberately do not self-hash their containing commit. Re-entry must also run the terminal publication verifier and retain its external commit/blob/range binding.",
+    "Existing client large-chunk build warning remains. This child has no production import or runtime behavior.",
+    "New child commits remain local and unpushed at closeout; review-only successor. Earlier documentation publication is operational history, with semantic/evidence effect none."
   ]
 }

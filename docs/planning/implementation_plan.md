@@ -290,6 +290,17 @@ Phaser/Socket.IO stack.
   gameplay changes and P5 stay closed. The child must return its source-bound
   report for review; it does not satisfy D2O's player-authority gate or advance
   the parent WP-015D2A execution pointer.
+  **WP-015D2Q bounded closeout (2026-08-28):** the
+  [four-case report](wp-015d2q-v4-command-gate-pressure-report.md) and
+  [source-bound review return](../evidence/wp-015d2q/review-return.json)
+  close only the actor/expectedTurn child at executable source
+  `85f6ea945bd2b5b2aacb6b61cc2af52fe0c09ebb`.
+  Actor pressure is conditional on a matching turn; the mismatched-turn actor
+  control is no-witness. Expected turn also separates two rejection errors
+  with equal post-state. Disposition is `structural_reference`, not player
+  authority or a full COMMAND-family result. Review only: no aim/fire child,
+  playtest, gameplay change, CRPM/P5 continuation, PR operation or push is opened.
+
   **WP-015D1 V4 wider
   arena and pan camera completed on 2026-08-08**
   on `codex/wp-015-production-assets`: V4 preserves historical replays while

@@ -54,6 +54,39 @@ explains when a new candidate requires a separately versioned admission layer.
   identities are recorded in the work-package contract, and the separate
   reference-only upstream pin is recorded in `legal/source-manifest.json`.
 
+## WP-015D2Q: bounded V4 actor/turn pressure
+
+The [child contract](../../docs/planning/wp-015d2q-v4-command-gate-pressure-contract.md)
+and [frozen registration](navigation/v4-command-gate-registration.json)
+define only four fresh, one-move authority requests. The
+[report](../../docs/planning/wp-015d2q-v4-command-gate-pressure-report.md),
+[review receipt](../../docs/evidence/wp-015d2q/review-return.json) and
+[validation record](../../docs/evidence/wp-015d2q.json) close the child at
+source `85f6ea945bd2b5b2aacb6b61cc2af52fe0c09ebb`.
+
+`navigation/assess-v4-command-gates.ts` compares complete command responses
+rather than the legacy post-state-only quotient. It authenticates the existing
+sealed authority component without changing that executor, adapter, cut,
+schema, registry or source lock. Full/ablated/restored observations exclude
+case/request provenance from class keys and retain a conditional actor
+no-witness control plus an equal-post-state/different-error turn witness.
+
+Reproduce the frozen case set with
+`node --import tsx scripts/run-v4-command-gate-pressure.ts`; generated JSON
+and report previews stay below ignored
+`test-results/crpm-world/d2q-v4-command-gates/`. Run the focused destructive
+tests with
+`node --import tsx --test tests/crpm-world/v4-command-gate-pressure.test.ts`.
+`node --import tsx scripts/run-v4-command-gate-pressure.ts --verify-return`
+replays the committed source, validates report/receipt/work-package parity
+and audits every endpoint/intermediate changed path, status, mode and blob.
+
+Result: `structural_reference` for the registered actor/expectedTurn cut;
+evidence `correlated_reuse`; ProductAuthority and mathematical placement
+implication `none`. CRPM remains a frozen reference, not a runtime dependency.
+Stop for review. No aim/fire, timing, UI/player observation, gameplay, P5 or
+successor execution is authorized.
+
 ## Architecture
 
 ```text

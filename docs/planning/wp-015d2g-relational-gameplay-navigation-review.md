@@ -664,6 +664,40 @@ implementation or playtest. D2O's authority-horizon gate is still unresolved,
 the Execution Pointer stays WP-015D2A, ProductAuthority is `none`, and PR #2
 remains closed/unmerged. No P5, gameplay change or executable lane is opened.
 
+### WP-015D2Q actor/turn child return (2026-08-28)
+
+The owner subsequently authorized the full [actor/turn command-gate child](wp-015d2q-v4-command-gate-pressure-contract.md),
+not the entire COMMAND family. Its [compact report](wp-015d2q-v4-command-gate-pressure-report.md)
+and [review return](../evidence/wp-015d2q/review-return.json) bind executable
+source `85f6ea945bd2b5b2aacb6b61cc2af52fe0c09ebb`, the immutable four-case
+registration, exact response/edge/witness identities, validation and parity.
+
+Four independently initialized V4 move declarations reproduce accepted move,
+LATE_TURN, NOT_YOUR_TURN and LATE_TURN respectively. The last declaration
+has both a mismatching expected turn and wrong actor; at initial turn 0,
+expectedTurn 1 is a future mismatch, not a stale turn.
+
+| Omitted observation coordinate | Exact bounded finding | Preserved limit |
+| --- | --- | --- |
+| actor | Target split when expected turn matches | No omission witness in the turn-mismatch pair |
+| expectedTurn | Success/rejection split and an exact-error split | The two rejection post-states and event lists remain equal |
+
+The actual command inputs are never omitted from authority execution. Full
+and restored observations separate all four declarations; each ablation has
+two classes. This is Worms-owned `correlated_reuse` and only
+`structural_reference` for this T_COMMAND cut. It is not new gameplay
+semantics, empirical independence, a carrier minimum or CRPM placement.
+
+CRPM stays frozen at `c9bf511f67ffbe518cd9f9603916bb26e1527736`.
+The earlier documentation branches were published; that operational fact
+has semantic/evidence effect `none` and does not revise historical local-only
+statements. This child is local and unpushed at closeout. PR #2 is untouched.
+D2O's player-information/timing/response-edge authority gate remains
+unsatisfied; no player-observation execution lane is opened. The parent
+Execution Pointer remains WP-015D2A, ProductAuthority is `none`, and P5
+remains closed. Stop for review; another command child or playtest needs
+separate authorization.
+
 ## Phased plan and stop gates
 
 ### Phase 0 - source lock and boundary
