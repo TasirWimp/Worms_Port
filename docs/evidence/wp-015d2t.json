@@ -1,0 +1,42 @@
+{
+  "id": "WP-015D2T",
+  "status": "in_progress",
+  "starting_commit": "6e88418a6a90281976dd5f6dcf2e6db55d9e4009",
+  "branch": "codex/wp-015d2r-stage-b-execution-v1",
+  "initial_worktree": "clean",
+  "starting_lock_sha256": "D4DAC6AE09A3D2F6C5A7EAA11520BAC43F1628320C5331575BCF1E1857073D73",
+  "owning_roles": [
+    "worms_port_executor",
+    "worms_port_reviewer",
+    "cross_repository_coordinator"
+  ],
+  "scope": [
+    "pilot_activation: not_required. This pass executes one bounded Worms-owned L4+ pressure question and accepts no cross-world return, witness promotion, placement, ProductAuthority or P5 claim.",
+    "Execute only parent WP-015D2R child WPV4-NAVIGATOR-01B Stage B from immutable preregistration source 65b2153714f237964354da3791fe4af4694a0594 and terminal 6e88418a6a90281976dd5f6dcf2e6db55d9e4009.",
+    "Implement exactly six new regular tracked outputs: this WP-015D2T evidence; the registered executor; runner; focused/destructive test; human report; and machine result.",
+    "Execute the complete registered 276-word domain in exact shortlex order, exclude both calibration words before any authority call, retain every exclusion, rejection, pruned word, eligible endpoint, alias pair, equality, typed split and frame failure, and never stop at a positive.",
+    "Write raw execution records only to the five registered ignored JSONL paths under test-results/crpm-world/wp-015d2r-stage-b-v1/.",
+    "Report the preregistered primary outcomes without modification and add only the non-authoritative descriptive cross-tab by endpoint-depth pair, same/cross depth, pre-budget pair, post-budget pair and primary outcome.",
+    "Call movementRemaining inequality a continuation-support-coordinate split only; preserve TAU-WPV4-RETURN-01A as candidate_unlicensed and stop before Stage C."
+  ],
+  "non_goals": [
+    "Do not modify either Stage B preregistration source file or any D2P, D2Q, Stage A, cut, schema, authority, adapter, sealed executor, gameplay, CRPM, dependency, asset, lock, product or historical evidence file.",
+    "Do not alter the primary outcome enum, adaptively widen the seed/domain/depth/decoder, inject state, replay either exact calibration occurrence, suppress negatives or stop at the first positive.",
+    "Do not call a movementRemaining split recursive continuation closure, license Tau, select a next carrier transformation, revise the chart, claim landfall, perform the Stage C return, issue ProductAuthority or placement, open P5, create a PR or push."
+  ],
+  "planned_checks": [
+    "npm run check:compliance (baseline, source and final)",
+    "focused Stage B contract and destructive-control tests",
+    "affected bounded CRPM-world validation lineage",
+    "strict executor/result/report/evidence parity and duplicate rejection",
+    "exact source binding plus preregistration/predecessor preservation audit",
+    "exact execution result-range changed-path/status/mode/blob audit",
+    "git diff --check",
+    "identified read-only execution, governance and boundary review"
+  ],
+  "deterministic_seeds": [
+    "3237998097 (0xC0FFEE11), exactly the sole preregistered cut-domain seed"
+  ],
+  "sorcerers_reference_used": false,
+  "clean_room_records": []
+}
