@@ -1,6 +1,6 @@
 {
   "id": "WP-015D2R",
-  "status": "in_progress",
+  "status": "complete",
   "starting_commit": "4fc88d947a98d737cbcdfd22d31d36c4bd5843eb",
   "branch": "codex/wp-015d2r-residue-round-trip-navigator",
   "initial_worktree": "clean",
@@ -34,8 +34,78 @@
   "deterministic_seeds": [],
   "sorcerers_reference_used": false,
   "clean_room_records": [],
-  "check_results": [],
-  "reviews": [],
-  "skipped_checks": [],
-  "residual_risks": []
+  "check_results": [
+    {
+      "command": "npm run check:compliance (baseline and final)",
+      "status": "pass",
+      "detail": "All seven compliance components passed after preregistration correction, at durable source, and on the complete closeout draft. Work-package evidence includes 38 records. The first attempted baseline correctly rejected a checkout-byte package-lock hash; the preregistration was corrected to the committed Git-byte SHA-256 before any other Stage A artifact was created."
+    },
+    {
+      "command": "strict JSON and contract/registry/return semantic parity audit",
+      "status": "pass",
+      "detail": "Strict parsing rejects duplicate JSON keys. Package/child IDs, protected target, six unique candidate rows, selected transition, canonical five primitives, source IDs, evidence class, public-access boundary, residue, authorization state, allowed outputs and reopening condition agree across the contract, registry, work evidence and compact review return. Candidate set is incomplete and non-executable; Stage B/C remain closed."
+    },
+    {
+      "command": "exact source binding and historical predecessor preservation audit",
+      "status": "pass",
+      "detail": "All 14 registry source rows reproduce their exact repository, commit, path, regular mode, blob and Git-byte SHA-256. The CRPM handoff, historical D2P coordination receipt, durable P2/P3 returns, D2Q terminal/result identities and Worms calibration remain separate. All eleven pre-existing source-manifest records are parsed-object identical; D2P, D2Q, locks, executors and CRPM are untouched."
+    },
+    {
+      "command": "exact result-range changed-path/status/mode/blob audit",
+      "status": "pass",
+      "detail": "Base 4fc88d947a98d737cbcdfd22d31d36c4bd5843eb to source b2b1822c6714c992c95776d8a6440a667ba72f5d contains exactly six declared A/M regular-100644 paths. The closeout draft contains exactly the seventh allowed nested return plus the work-evidence update. Endpoint and every intermediate delta reject unlisted paths, deletes, renames and nonregular modes. The actual containing commit and terminal seven-path digest are verified and reported after commit to avoid circular self-identity."
+    },
+    {
+      "command": "git diff --check",
+      "status": "pass",
+      "detail": "Working, source-range and staged closeout whitespace checks passed. Existing Git line-ending notices are configuration-only; source hashes bind committed Git bytes. The implementation-plan and D2G updates are insertion-only."
+    },
+    {
+      "command": "ordinary read-only documentation and boundary review",
+      "status": "pass",
+      "detail": "Identified read-only governance, source-binding, preregistration and committed-source reviews found no blocker. They confirmed the exact source asymmetry, durable predecessor roles, narrow authority target, D2Q immutability, calibration/holdout separation, incomplete non-executable registry and all closed execution/product/placement gates. Reviewers ran no pressure case and made no mutation."
+    }
+  ],
+  "reviews": [
+    {
+      "role": "worms_port_planner",
+      "reviewer": "Codex /root/stage_a_governance — read-only governance reviewer",
+      "decision": "pass",
+      "detail": "Validated the seven-path documentation-only shape, new additive CRPM source record, planning-only registry placement, work-package requirements, required audits and forbidden executable/schema homes. No files or pressure cases were changed or run."
+    },
+    {
+      "role": "cross_repository_coordinator",
+      "reviewer": "Codex /root/stage_a_crpm_bindings — read-only source-binding reviewer",
+      "decision": "pass",
+      "detail": "Resolved canonical Git-byte identities and roles for the handoff, existing navigator, CutTransition, witness interface, durable P2/P3 returns and placement-unit boundary. Distinguished current handoff, canonical method, noncanonical L4+ source and durable predecessor fact."
+    },
+    {
+      "role": "worms_port_reviewer",
+      "reviewer": "Codex /root/stage_a_prereg_review — read-only preregistration and source-commit reviewer",
+      "decision": "pass",
+      "detail": "WP-015D2R-STAGE-A-SOURCE-COMMIT-REVIEW-01 bound b2b1822c6714c992c95776d8a6440a667ba72f5d. Exact six-path source range, reviewed blobs, 14 bindings, historical preservation, CRPM freeze and D2Q immutability passed. No blocker, mutation, pressure execution or push."
+    },
+    {
+      "role": "cross_repository_coordinator",
+      "reviewer": "Codex main writer — self-review",
+      "decision": "pass",
+      "detail": "Confirmed that the generic navigator remains CRPM-owned method source while WP-015D2R is only a Worms adapter/question contract. The selected target excludes credible response, keeps public formation underdetermined, treats the known movement twin as calibration, and stops before Stage B."
+    }
+  ],
+  "skipped_checks": [
+    "Build, production/analysis typechecks, gameplay/simulation/tactical/CRPM-world suites and D2Q pressure execution were not run because Stage A changes no executable, schema, dependency, gameplay or runtime surface. The durable D2Q return is verified as an immutable Git object instead of replayed as new evidence.",
+    "Browser matrix, UI/player observation, physical Android/iOS testing and playtests were not run because the PUBLIC, timing and credible-response lanes remain closed and their environment/consent/data boundary is unbound.",
+    "npm audit was not run because package.json and package-lock.json are unchanged and no dependency work is in scope.",
+    "Historical HEAD-sensitive D2P/D2Q validators were not run from the descendant Stage A branch. Their exact commits, blobs, digests and ranges were checked through committed objects without rewriting their historical boundary.",
+    "No push, PR creation, PR #2 reopen/merge, gameplay activation, CRPM return, placement review or P5 operation was performed."
+  ],
+  "residual_risks": [
+    "The six-row transformation chart and all future route sets are explicitly incomplete; selection is a bounded question-forming decision, not a global ranking.",
+    "The Stage B route domain, enumeration, holdout role, failure retention and output allow-list remain deliberately unbound. No route search is licensed until a separate exact owner authorization.",
+    "The one/four-cycle movement witness and D2Q share source lineage with this question and remain correlated_reuse. They cannot count as fresh validation or establish movementRemaining, revision or route history as globally necessary or minimal.",
+    "Authority-readable state is not automatically player-visible or publicly formable. Player-public formation, credible response, timing, aim/fire, gameplay effects and product meaning remain underdetermined or not tested.",
+    "No round trip has occurred. Protected recovery, survival/loss/gain/vanishing, landfall, chart revision and a post-result successor remain not evaluated.",
+    "ProductAuthority and mathematical placement implication remain none; the active Execution Pointer stays WP-015D2A and P5 remains closed.",
+    "The tracked receipt binds the durable Stage A source but cannot self-hash its own containing commit. Re-entry must retain the externally verified terminal commit, return blob and exact seven-path range digest."
+  ]
 }

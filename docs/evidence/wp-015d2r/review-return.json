@@ -1,0 +1,385 @@
+{
+  "schemaVersion": 1,
+  "packageId": "WP-015D2R",
+  "childId": "WPV4-NAVIGATOR-01A",
+  "stage": "A",
+  "status": "stopped_for_review",
+  "pilotActivation": {
+    "status": "not_required",
+    "reason": "Stage A forms one Worms-owned question and issues no cross-world return, placement, promotion or executable result."
+  },
+  "source": {
+    "baseCommit": "4fc88d947a98d737cbcdfd22d31d36c4bd5843eb",
+    "sourceCommit": "b2b1822c6714c992c95776d8a6440a667ba72f5d",
+    "sourceTree": "dd8bd11749064734de514f4e08b75fe53570d864",
+    "sourceDigest": "5de6b5caa9cb2db3c0c875f5bb910b927e68476b37f4127f2f170451f214e6ea",
+    "sourceDigestDefinition": {
+      "method": "SHA-256 over the UTF-8 canonical JSON preimage below, with recursively sorted object keys and array order preserved.",
+      "preimage": {
+        "baseCommit": "4fc88d947a98d737cbcdfd22d31d36c4bd5843eb",
+        "sourceCommit": "b2b1822c6714c992c95776d8a6440a667ba72f5d",
+        "sourceTree": "dd8bd11749064734de514f4e08b75fe53570d864",
+        "contract": {
+          "path": "docs/planning/wp-015d2r-residue-driven-round-trip-navigator-contract.md",
+          "mode": "100644",
+          "blob": "38f27751d97c6087bb1e314c6ecc31611435a974",
+          "sha256": "956ab24cdf152d7db3185784b5d012c407ab5f4b23cee7366077df9a3703874b"
+        },
+        "registry": {
+          "path": "docs/planning/wp-015d2r-residue-driven-round-trip-candidate-registry.json",
+          "mode": "100644",
+          "blob": "d3002ef29f748964a4bfcdce4199d8075a6f57ce",
+          "sha256": "e88b4f76404cca15dadad14a5b24ae5509ff8ea715449533e897aa3d22cc5106"
+        },
+        "registryDigest": "9b924a995f5e731882212af4f103794690ee94bdcccef89ad8889f3fe91393e3",
+        "candidateChartDigest": "78620d9d1641668b006d571988421706ad978992aebfc0e8e0ed74dc33fe55f5",
+        "selectedTransitionDigest": "41346c4c8a92de874bfef5232254eeacea0501f07e7be3667f5ccbe8835e8f31",
+        "sourceBindingsDigest": "ca6c35017294cb5e13cd369d9bf5b1f69497ff63a725b74a16eed12056a9c1af",
+        "sourceRangeDigest": "edd88f8dc8721147b791a8668ac9fa4ba7f672e0412ad483f5c7f6ad53390034"
+      }
+    },
+    "contract": {
+      "path": "docs/planning/wp-015d2r-residue-driven-round-trip-navigator-contract.md",
+      "mode": "100644",
+      "blob": "38f27751d97c6087bb1e314c6ecc31611435a974",
+      "sha256": "956ab24cdf152d7db3185784b5d012c407ab5f4b23cee7366077df9a3703874b"
+    },
+    "registry": {
+      "path": "docs/planning/wp-015d2r-residue-driven-round-trip-candidate-registry.json",
+      "mode": "100644",
+      "blob": "d3002ef29f748964a4bfcdce4199d8075a6f57ce",
+      "sha256": "e88b4f76404cca15dadad14a5b24ae5509ff8ea715449533e897aa3d22cc5106",
+      "canonicalDigest": "9b924a995f5e731882212af4f103794690ee94bdcccef89ad8889f3fe91393e3"
+    },
+    "preregistrationEvidence": {
+      "path": "docs/evidence/wp-015d2r.json",
+      "mode": "100644",
+      "blob": "defdf72116aa9edf5bf03e5dba9ba6b54ed9202f",
+      "sha256": "5e234aa7c9bd7aa32272375b19ad280b09be280cdd61343d82031b4b4a2bd7bb",
+      "role": "initial_in_progress_record_at_durable_source"
+    },
+    "sourceBindings": {
+      "count": 14,
+      "canonicalDigest": "ca6c35017294cb5e13cd369d9bf5b1f69497ff63a725b74a16eed12056a9c1af",
+      "exactRowsStoredAt": "docs/planning/wp-015d2r-residue-driven-round-trip-candidate-registry.json#source_bindings",
+      "ids": [
+        "CRPM_NAVIGATOR_HANDOFF",
+        "CRPM_NAVIGATOR_BUNDLE",
+        "CRPM_CUT_TRANSITION",
+        "CRPM_WITNESS_INTERFACE",
+        "DTAP_P2_GOAL_LINEAGE",
+        "DTAP_P2_DURABLE_RETURN",
+        "DTAP_P3_GOAL_LINEAGE",
+        "DTAP_P3_DURABLE_RETURN",
+        "CRPM_PLACEMENT_UNIT_CONTRACT",
+        "WORMS_D2G_PROTECTED_FAMILY",
+        "WORMS_D2P_QUESTION_REGISTRY",
+        "WORMS_D2Q_RETURN",
+        "WORMS_MOVEMENT_CALIBRATION",
+        "WORMS_OPERATIONAL_GOVERNANCE"
+      ]
+    },
+    "sourceRange": {
+      "baseCommit": "4fc88d947a98d737cbcdfd22d31d36c4bd5843eb",
+      "resultCommit": "b2b1822c6714c992c95776d8a6440a667ba72f5d",
+      "canonicalDigest": "edd88f8dc8721147b791a8668ac9fa4ba7f672e0412ad483f5c7f6ad53390034",
+      "rows": [
+        {
+          "path": "docs/evidence/wp-015d2r.json",
+          "status": "A",
+          "oldMode": null,
+          "oldBlob": null,
+          "newMode": "100644",
+          "newBlob": "defdf72116aa9edf5bf03e5dba9ba6b54ed9202f"
+        },
+        {
+          "path": "docs/planning/implementation_plan.md",
+          "status": "M",
+          "oldMode": "100644",
+          "oldBlob": "fc2e81c623f88c57202c4bf41ee3fff378c0fab6",
+          "newMode": "100644",
+          "newBlob": "6f77486b7fd10f1fcde1bc51ef9837dfe16839a9"
+        },
+        {
+          "path": "docs/planning/wp-015d2g-relational-gameplay-navigation-review.md",
+          "status": "M",
+          "oldMode": "100644",
+          "oldBlob": "56d00779f9c0a331046df325abcbb7fab9b5d3d1",
+          "newMode": "100644",
+          "newBlob": "f28bcfd9e9384594e1226b6bccc9b65c36259369"
+        },
+        {
+          "path": "docs/planning/wp-015d2r-residue-driven-round-trip-candidate-registry.json",
+          "status": "A",
+          "oldMode": null,
+          "oldBlob": null,
+          "newMode": "100644",
+          "newBlob": "d3002ef29f748964a4bfcdce4199d8075a6f57ce"
+        },
+        {
+          "path": "docs/planning/wp-015d2r-residue-driven-round-trip-navigator-contract.md",
+          "status": "A",
+          "oldMode": null,
+          "oldBlob": null,
+          "newMode": "100644",
+          "newBlob": "38f27751d97c6087bb1e314c6ecc31611435a974"
+        },
+        {
+          "path": "legal/source-manifest.json",
+          "status": "M",
+          "oldMode": "100644",
+          "oldBlob": "fcec6f7591942b8e49aebab73f1cb9e41e303c1e",
+          "newMode": "100644",
+          "newBlob": "ccf55e690d1a56f9890d70de50d9e81a885fb826"
+        }
+      ]
+    }
+  },
+  "projection": {
+    "protectedTarget": {
+      "id": "T_RETURN_COORDINATES",
+      "boundedSubcoreId": "K_WP_ONE_NEXT_COMMAND_RETURN",
+      "statement": "At two naturally reached V4 movement prefixes, determine whether equality under one declared thin authority projection preserves the exact one-next-command continuation readout after route, actor, turn and support are held fixed.",
+      "excluded": [
+        "credible player response",
+        "player-visible information",
+        "wall-clock or human response time",
+        "aim or fire resolution",
+        "gameplay balance",
+        "ProductAuthority",
+        "CRPM placement"
+      ]
+    },
+    "candidateSet": {
+      "identity": "WP-015D2R:stage-a-transformations:v0",
+      "declaredComplete": false,
+      "executable": false,
+      "executionRegistration": false,
+      "candidateChartDigest": "78620d9d1641668b006d571988421706ad978992aebfc0e8e0ed74dc33fe55f5",
+      "rows": [
+        {
+          "candidateId": "TAU-WPV4-RETURN-01A",
+          "type": "reorganize",
+          "status": "selected_for_stage_a_contract_only"
+        },
+        {
+          "candidateId": "TAU-WPV4-MOVEMENT-SUPPORT-OMISSION",
+          "type": "compress",
+          "status": "historical_calibration_already_exposes_one_split"
+        },
+        {
+          "candidateId": "TAU-WPV4-ACTOR-TURN-REFINEMENT",
+          "type": "refine",
+          "status": "source_supported_but_not_selected"
+        },
+        {
+          "candidateId": "TAU-WPV4-TRACE-FORMATION",
+          "type": "reorganize",
+          "status": "support_dependent_not_selected"
+        },
+        {
+          "candidateId": "TAU-WPV4-AUTHORITY-TIME",
+          "type": "refine",
+          "status": "blocked_source_or_domain"
+        },
+        {
+          "candidateId": "TAU-WPV4-PUBLIC-RESPONSE",
+          "type": "overlap-move",
+          "status": "blocked_source_or_domain"
+        }
+      ]
+    },
+    "selectedTransition": {
+      "transitionId": "TAU-WPV4-RETURN-01A",
+      "type": "reorganize",
+      "from": "C_D2Q_COMMAND_GATE",
+      "to": "C_ONE_NEXT_COMMAND_CONTINUATION",
+      "canonicalDigest": "41346c4c8a92de874bfef5232254eeacea0501f07e7be3667f5ccbe8835e8f31",
+      "fixedFrame": {
+        "world": "unchanged nimble-knots-artillery-v4 authority",
+        "cut": "thin authority equality versus one-next-command continuation-bearing return",
+        "protectedTarget": "T_RETURN_COORDINATES/K_WP_ONE_NEXT_COMMAND_RETURN",
+        "domain": "A future exact finite set of naturally reached accepted-movement prefixes; unbound and not executable in Stage A.",
+        "routes": "Legal V4 commands only; the historical one/four-cycle pair is a calibration sentinel excluded from fresh-validation count.",
+        "horizon": "One declared next command after each prefix; no tick advancement.",
+        "support": [
+          "exact V4 ruleset and seed",
+          "full initial state and legal prefix",
+          "actor and expectedTurn",
+          "movementRemaining",
+          "revision and state/trace provenance",
+          "unchanged authoritative command path"
+        ],
+        "tolerance": "exact canonical equality only",
+        "oracleInputBoundary": "Authority-readable source state may verify reachability and target output; case IDs, expected verdicts, selected-pair labels and reviewer knowledge may not enter projection or selection keys."
+      },
+      "preserved": [
+        "the immutable four-case D2Q result and its conditional actor/expectedTurn scope",
+        "exact V4 authority, command, error and event semantics",
+        "the WP-015D2 protected gameplay family as an unsatisfied wider boundary",
+        "source, route, support and evidence covariance provenance"
+      ],
+      "forgotten": [
+        "D2Q case identifiers as live continuation coordinates",
+        "the suggestion that one-command gate coverage alone answers K_WP",
+        "post-state-only equality as a sufficient command/return readout"
+      ],
+      "newlyVisible": [
+        "natural prefix route and ordered movement trace",
+        "movement budget and revision at the return endpoint",
+        "one-next-command continuation equality or split",
+        "support debt between authority response and wider gameplay response"
+      ],
+      "residual": [
+        "credible player response and initiative",
+        "aim/fire and projectile resolution",
+        "authority tick, wall-clock and human timing",
+        "player-public observation and formation",
+        "global carrier minimality and gameplay authority"
+      ],
+      "reversibility": {
+        "kind": "protected-equivalent",
+        "status": "declared_not_earned",
+        "condition": "A future return must recover the D2Q protected readout from immutable provenance while preserving the new continuation result and explicit residue."
+      }
+    },
+    "realizationQuery": {
+      "predictedWorldSignature": "Outside the known calibration sentinel, two naturally reached legal prefixes alias under the declared thin projection but differ under the exact one-next-command continuation readout while the fixed frame passes.",
+      "knownCalibrationRole": "The one/four right-left-cycle pair at seed 3237998097 proves only that the harness can recover the historical budget/revision split; it cannot count as a fresh selected witness.",
+      "negativeWitnessCondition": "A preregistered exhaustive finite search finds no eligible holdout pair, or every apparent split disappears when target, route, horizon, support and oracle boundary are held fixed.",
+      "searchDomainStatus": "unbound_stage_b_authorization_required",
+      "naturalReachability": "required",
+      "hiddenStateInjection": "forbidden",
+      "adaptiveCaseWidening": "forbidden"
+    },
+    "witnessInterface": {
+      "W": "Future naturally reached paired-prefix and one-next-command records; currently absent. The historical movement twin is calibration only.",
+      "O_W": "Declared thin projection plus exact continuation readout; case IDs, expected verdicts and omission provenance excluded.",
+      "B_W": "Fresh deterministic V4 initialization followed only by accepted public authority commands in a preregistered finite route domain.",
+      "Omega_W": "World, cut, target, domain, route, horizon, support, tolerance and authority/public access boundary.",
+      "K_target": "K_WP_ONE_NEXT_COMMAND_RETURN only.",
+      "P_W": "Exact alias/split, natural reachability and protected return comparison over the preregistered domain.",
+      "N_W": "Unsearched routes, player perception, time, aim/fire, alternative policies/seeds and stronger continuation targets.",
+      "S_W": "V4 authority plus declared route, actor/turn, budget, revision, trace and decoder support; no hidden-state injection.",
+      "J_W": "incomplete"
+    },
+    "supportAndReturn": {
+      "evidenceClass": "correlated_reuse",
+      "authorityReadable": [
+        "full simulation state",
+        "movementRemaining",
+        "revision",
+        "exact events/errors",
+        "route history"
+      ],
+      "playerPublic": "underdetermined",
+      "publicFormation": "underdetermined",
+      "worldVoyage": "not_authorized",
+      "landfallStatus": "not_evaluated",
+      "protectedCoreRecovery": "not_tested",
+      "closureAllowed": false,
+      "nextTransitionCandidate": null
+    },
+    "governance": {
+      "activeExecutionPointer": "WP-015D2A",
+      "mathematicalPlacementImplication": "none",
+      "productAuthority": "none",
+      "p5Open": false,
+      "reopeningCondition": "A changed source, target, cut, candidate set, route domain, horizon, support, oracle/access boundary, owner decision or missing recoverable artifact requires a new source-bound review. Stage B opens only through separate explicit authorization."
+    }
+  },
+  "authorizationState": {
+    "stageAContractAndRegistry": "complete",
+    "stageAPublication": "stopped_for_human_or_chat_review",
+    "stageBRealizationSearch": "not_authorized",
+    "stageCIndependentReviewAndCrossRepositoryReturn": "not_authorized",
+    "newPressureExecution": false,
+    "playerObservationLane": false,
+    "gameplayChange": false,
+    "productAuthorityDecision": false,
+    "placementOrP5": false,
+    "stopStatement": "WP-015D2R Stage A stopped; Stage B not opened."
+  },
+  "validation": {
+    "allowedOutputs": [
+      "docs/evidence/wp-015d2r.json",
+      "docs/evidence/wp-015d2r/review-return.json",
+      "docs/planning/wp-015d2r-residue-driven-round-trip-navigator-contract.md",
+      "docs/planning/wp-015d2r-residue-driven-round-trip-candidate-registry.json",
+      "docs/planning/implementation_plan.md",
+      "docs/planning/wp-015d2g-relational-gameplay-navigation-review.md",
+      "legal/source-manifest.json"
+    ],
+    "checks": [
+      {
+        "command": "npm run check:compliance (baseline and final)",
+        "status": "pass"
+      },
+      {
+        "command": "strict JSON and contract/registry/return semantic parity audit",
+        "status": "pass"
+      },
+      {
+        "command": "exact source binding and historical predecessor preservation audit",
+        "status": "pass"
+      },
+      {
+        "command": "exact result-range changed-path/status/mode/blob audit",
+        "status": "pass"
+      },
+      {
+        "command": "git diff --check",
+        "status": "pass"
+      },
+      {
+        "command": "ordinary read-only documentation and boundary review",
+        "status": "pass"
+      }
+    ],
+    "reviews": [
+      {
+        "id": "STAGE-A-GOVERNANCE-REVIEW-01",
+        "role": "read_only_governance",
+        "decision": "pass"
+      },
+      {
+        "id": "STAGE-A-CRPM-SOURCE-BINDING-REVIEW-01",
+        "role": "read_only_source_binding",
+        "decision": "pass"
+      },
+      {
+        "id": "WP-015D2R-STAGE-A-SOURCE-COMMIT-REVIEW-01",
+        "role": "read_only_preregistration_and_source_commit",
+        "decision": "pass"
+      },
+      {
+        "id": "STAGE-A-MAIN-WRITER-SELF-REVIEW-01",
+        "role": "governing_writer_self_review",
+        "decision": "pass"
+      }
+    ],
+    "skipped": [
+      "executable pressure, build, typecheck and gameplay suites: no executable surface changed",
+      "browser, physical-device and playtest lanes: public observation boundary remains unbound",
+      "dependency audit: package manifests unchanged",
+      "PR and push operations: outside Stage A authorization"
+    ],
+    "sourceReviewVerdict": "pass",
+    "executionPerformed": false,
+    "stageBOpened": false
+  },
+  "publicationBoundary": {
+    "durableSourceCommit": "b2b1822c6714c992c95776d8a6440a667ba72f5d",
+    "containingCommit": null,
+    "returnBlob": null,
+    "terminalRangeDigest": null,
+    "bindingMethod": "The containing commit, return blob and exact base-to-terminal seven-path range digest are verified externally after commit; they are intentionally not self-attested inside this receipt."
+  },
+  "digests": {
+    "method": "SHA-256 over UTF-8 canonical JSON with recursively sorted object keys and array order preserved.",
+    "validationDigest": "f550570af4c2cd14b657fa6ca53eca0708b95c176f4564e39e0cac6fdb1286bc",
+    "parityDigest": "c883ebddeac194f199b74d67d6c3a43092537601a7674c27a1467e6da22b3376",
+    "receiptDigest": "7af49665367e955045385780e960e31ef9e829c32599975589a6db9c9e2c66ca",
+    "receiptExclusion": "$.digests.receiptDigest"
+  }
+}
