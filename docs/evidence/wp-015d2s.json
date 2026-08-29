@@ -1,6 +1,6 @@
 {
   "id": "WP-015D2S",
-  "status": "in_progress",
+  "status": "complete",
   "starting_commit": "4bcb213c9a1a2619d8699f3fed275e6afa71f03e",
   "branch": "codex/wp-015d2r-stage-b-preregistration-v0",
   "initial_worktree": "clean",
@@ -37,5 +37,80 @@
     "3237998097 (0xC0FFEE11), preregistered only; no route or calibration execution performed"
   ],
   "sorcerers_reference_used": false,
-  "clean_room_records": []
+  "clean_room_records": [],
+  "check_results": [
+    {
+      "command": "npm run check:compliance (baseline, source and final)",
+      "status": "pass",
+      "detail": "All seven compliance components passed at the clean Stage A terminal baseline, before source commit, at repaired durable source 65b2153714f237964354da3791fe4af4694a0594, and on the complete closeout draft. The work-package check recognizes 39 records. One intermediate draft correctly rejected a non-schema preregistration_binding field; the field was removed before either source commit and no compliance script or schema was changed."
+    },
+    {
+      "command": "strict JSON and human/machine/evidence semantic parity audit",
+      "status": "pass",
+      "detail": "Strict parsing rejects duplicate JSON keys and duplicate binding/output/holdout identities. The Markdown parity block exactly matches the machine registration for package/support/child IDs, Stage A commits, cut/chart distinction, route domain, seed/alphabet/depths/count, two exclusions, next command, actor/turn, horizon, tolerance, outcome order, witness states, Tau, covariance, current allow-list, closed gates and stop. Evidence scope binds the same facts. Durable source tree 4f0cc39665cd903c279fa5e9f415120edba53a97; source digest 982f9684b27ccc8416e3759fd0cdc95cb07c69b1560f59ce5682a6152062dc13; registration digest 7b611815be524a78d41389d8ed45767c7630a7a63c16fc677f26d832493842e9; parity digest fa96db39f416456d3932fc076d6b4ee7ac274139395250e4899be1a84e1001a4."
+    },
+    {
+      "command": "exact source binding plus Stage A and D2P/D2Q preservation audit",
+      "status": "pass",
+      "detail": "All seven source rows reproduce their terminal commit, regular mode, blob and Git-byte SHA-256; source-bindings digest 74598bc4b0b1e3a449969b4e4bb012ceef9fff52f50da56b1f5e410938d70647 and embedded cut-definition digest 8323c4051e5e56e92852a0a2930e55c977d3493d1560b8403c4ca979cca6d8b1 reproduce exactly. All four bound Stage A artifacts and all ten listed D2P/D2Q artifacts preserve their registered mode/blob. No CRPM, existing Worms, gameplay, cut, schema, adapter, executor, script or test path changed."
+    },
+    {
+      "command": "exact preregistration result-range changed-path/status/mode/blob audit",
+      "status": "pass",
+      "detail": "Stage A terminal 4bcb213c9a1a2619d8699f3fed275e6afa71f03e through repaired source 65b2153714f237964354da3791fe4af4694a0594 has exactly three endpoint A rows, regular mode 100644. Both intermediate raw deltas are bound: f82a2b3 adds the three declared files; 65b2153 modifies only the contract and registration to close review findings. Source-range digest db5e06d59215cc6f6c2601703041a4b89bdd976cbf2fe47ccc561b2cbc9abe2c. The closeout draft changes only this evidence path; the containing commit and terminal endpoint digest are verified externally after commit to avoid circular self-identity."
+    },
+    {
+      "command": "git diff --check",
+      "status": "pass",
+      "detail": "Working, staged, source-range and repair-range whitespace checks passed. Line-ending notices are checkout configuration only; every canonical identity uses committed Git bytes."
+    },
+    {
+      "command": "identified read-only source, governance and boundary review",
+      "status": "pass",
+      "detail": "Three identified read-only reviewers passed repaired source 65b2153714f237964354da3791fe4af4694a0594. The initial f82a2b3 review correctly blocked unreachable no_target_relevant_split semantics and too-late calibration filtering. The repair makes route history audit-only and exact holdout words metadata-only before any authority call. Reviewers confirmed the source/cut boundary, finite generator, outcome non-vacuity, preservation, allow-lists, witness semantics, covariance and every closed execution/product/placement gate."
+    }
+  ],
+  "reviews": [
+    {
+      "role": "worms_port_source_and_cut_reviewer",
+      "reviewer": "Codex /root/stage_b_cut_audit — WP-015D2R-STAGE-B-PREREG-SOURCE-CUT-R2",
+      "decision": "pass",
+      "detail": "Bound commit 65b2153714f237964354da3791fe4af4694a0594 and tree 4f0cc39665cd903c279fa5e9f415120edba53a97. Reproduced the exact thin projection, seven source bindings, D2Q separation, prospective witness states, pre-authority calibration exclusions, route-history non-promotion and all 14 predecessor artifact identities. No route, test, search, simulation or calibration was executed."
+    },
+    {
+      "role": "worms_port_route_and_outcome_reviewer",
+      "reviewer": "Codex /root/stage_b_route_audit — WP-015D2R-STAGE-B-V1-REPAIRED-COMMITTED-SOURCE-REVIEW-01",
+      "decision": "pass",
+      "detail": "Bound commit 65b2153714f237964354da3791fe4af4694a0594. Confirmed both initial blockers closed, the exact 276/274 finite-domain counts, fresh accepted/mutated routes, actor/turn rule, fixed next command, one-call horizon, reachable outcome partition, exhaustive negative retention and carrier/Tau non-promotion. No route, search, test or calibration was executed."
+    },
+    {
+      "role": "worms_port_governance_and_boundary_reviewer",
+      "reviewer": "Codex /root/stage_b_governance — repaired committed-source governance review",
+      "decision": "pass",
+      "detail": "Bound commit 65b2153714f237964354da3791fe4af4694a0594. Confirmed exact three-path endpoint range, Stage A/D2P/D2Q preservation, current/future allow-lists, correlated_reuse, W/Omega/P/N/J semantics, Tau candidate_unlicensed and every Stage B execution, Stage C, player/timing, gameplay, sealed-executor, ProductAuthority, placement and P5 gate closed. Licensed evidence closeout only."
+    },
+    {
+      "role": "cross_repository_coordinator",
+      "reviewer": "Codex main writer — governing self-review",
+      "decision": "pass",
+      "detail": "Confirmed that this package remains Worms-owned and source-only, uses the cut's sole admitted seed rather than inventing an out-of-domain seed, preserves the calibration limitation as residue, creates no CRPM or existing-file mutation, and stops before execution, PR or push."
+    }
+  ],
+  "skipped_checks": [
+    "Build, production/analysis typechecks, unit/integration/gameplay/simulation/tactical/CRPM-world suites and the future Stage B executor test were not run because this pass adds only non-executable documentation/JSON registration and must not enumerate routes or execute the search.",
+    "The historical cuts-and-transport calibration sentinel and D2Q pressure executor were not replayed. Their committed blobs serve only as correlated source/calibration lineage; both exact holdout words are metadata exclusions before any authority call in the future contract.",
+    "Browser, UI, player-observation, timing, physical-device and playtest lanes were not run because their information, consent, timing and product boundaries remain closed.",
+    "npm audit was not run because package.json and package-lock.json are unchanged and no dependency work is in scope.",
+    "No CRPM edit, cross-repository return, Stage C operation, gameplay activation, sealed-executor change, ProductAuthority or placement review, P5 operation, PR creation/reopen/merge or push was performed."
+  ],
+  "residual_risks": [
+    "No route has been enumerated and no Stage B witness exists. W is absent; Omega_W, observed P_W and observed N_W remain not_evaluated; J_W is not_applicable; every result outcome remains unobserved.",
+    "The selected thin cut admits only seed 3237998097. Remaining routes therefore reuse the same authority, cut domain, seed and calibration lineage and are correlated_reuse rather than empirically independent.",
+    "Committed calibration artifacts expose route words but not endpoint-state digests. Exact route-occurrence exclusion is bound, but a state-equivalent calibration-neighborhood holdout cannot be formed without the forbidden replay. Changed holdout evidence requires a new preregistration version.",
+    "The source label player-public and visible-Stitching projection do not establish actual HUD/player visibility or public formation. Player observation, credible response and timing remain untested and closed.",
+    "The finite depths 2/4/8 and one MOVE +1 horizon answer only the declared bounded authority question. They cannot establish all-seed completeness, global carrier minimality, wider gameplay response or placement.",
+    "TAU-WPV4-RETURN-01A remains candidate_unlicensed. Decodability across the move, D2Q protected-core recovery, re-entry, landfall and any successor are not evaluated and require separate result review.",
+    "Future execution requires new owner authorization and may add only the separately frozen WP-015D2T executor/runner/test/report/result outputs. Stage C, ProductAuthority, mathematical placement and P5 remain closed.",
+    "This tracked evidence binds the durable source but cannot self-hash its own containing commit. Re-entry must retain the externally verified terminal commit, evidence blob and exact base-to-terminal range digest."
+  ]
 }
