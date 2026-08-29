@@ -211,6 +211,37 @@
       "notes": "Added 2026-08-28 for WP-015D2P only. The exact contract commit is local and deliberately unpushed; resolve it in the CRPM checkout. Its P4 sources are recommendation-only L4+ records. This additional pin does not replace the D2B, D2E or D2G-D2O method locks. No CRPM code/prose is copied into Worms and no executable or product authority is granted."
     },
     {
+      "id": "tasirwimp-crpm-residue-driven-round-trip-navigator-handoff",
+      "role": "design_governance_method_reference",
+      "repository": "TasirWimp/CRPM",
+      "url": "https://github.com/TasirWimp/CRPM",
+      "commit": "8c64353f4c8f5504af3e30ca175d9422ca7ae608",
+      "license": "MIT",
+      "license_evidence": "https://github.com/TasirWimp/CRPM/blob/8c64353f4c8f5504af3e30ca175d9422ca7ae608/LICENSE",
+      "decision": "method_adapted_no_code_import",
+      "copied_into": [],
+      "referenced_paths": [
+        "docs/architecture/definition_target_admission/DTAP_Worms_Port_Residue_Driven_Round_Trip_Navigator_Handoff_v0.md",
+        "docs/architecture/definition_target_admission/CRPM_Definition_Target_Admission_P2_Thick_Carrier_And_Lifecycle_Goal_v0.md",
+        "docs/architecture/definition_target_admission/returns/DTAP-P2_Review_Return_2026-08-27_v0.yaml",
+        "docs/architecture/definition_target_admission/CRPM_Definition_Target_Admission_P3_Independent_Reconstruction_And_Successor_Horizon_Goal_v0.md",
+        "docs/architecture/definition_target_admission/returns/DTAP-P3_Review_Return_2026-08-28_v0.yaml"
+      ],
+      "allowed_uses": [
+        "WP-015D2R documentation-only Worms question formation",
+        "bounded L4+ transition, witness, carrier, residue, lifecycle, re-entry, and successor-horizon vocabulary",
+        "explicitly incomplete candidate chart and one-next-command continuation/return Stage A seed",
+        "source-attributed planning, negative-witness, support-ledger, and review-stop discipline"
+      ],
+      "blocked_uses": [
+        "CRPM code or prose copy, vendoring, runtime import, or package dependency",
+        "pressure execution, route search, gameplay change, player observation, or timing measurement without separate authorization",
+        "widening immutable D2Q or replacing historical D2P, D2B, D2E, or D2G-D2O source locks and results",
+        "claim that CRPM supplies Worms world evidence, ProductAuthority, placement, P5, a universal navigator, or empirical independence"
+      ],
+      "notes": "Added 2026-08-29 for WP-015D2R Stage A only. Commit 8c64353 contains the new L4+ handoff and is distinct from historical method parent/coordination commit c9bf511. Durable P2/P3 returns are predecessor facts; their goal packets are lineage. CRPM supplies no Worms world-evidence or product authority. No CRPM code/prose is copied, and Stage B remains closed."
+    },
+    {
       "id": "phaserjs-examples-mobile-input",
       "role": "technical_code_reference_only",
       "repository": "phaserjs/examples",

@@ -1,0 +1,398 @@
+{
+  "schemaVersion": 1,
+  "packageId": "WP-015D2R",
+  "childId": "WPV4-NAVIGATOR-01A",
+  "title": "Residue-Driven Round-Trip Navigator Stage A Candidate Registry",
+  "ownerRepository": "Worms_Port",
+  "registryKind": "documentation_only_planning_carrier",
+  "executable": false,
+  "status": "stage_a_contracted_execution_closed",
+  "pilot_activation": {
+    "status": "not_required",
+    "reason": "Stage A forms one Worms-owned question and issues no cross-world return, placement, promotion or executable result."
+  },
+  "entry_boundary": {
+    "wormsBaseCommit": "4fc88d947a98d737cbcdfd22d31d36c4bd5843eb",
+    "wormsBaseTree": "f3f10ca3d2661b64b6614cbc32054675767fb1a1",
+    "crpmHandoffCommit": "8c64353f4c8f5504af3e30ca175d9422ca7ae608",
+    "crpmHandoffTree": "2f12aa11b796231a33540ca02b6081035b6e1751",
+    "activeExecutionPointer": "WP-015D2A",
+    "productAuthority": "none",
+    "mathematicalPlacementImplication": "none",
+    "p5Open": false
+  },
+  "lineage": {
+    "historicalD2PCoordination": {
+      "commit": "c9bf511f67ffbe518cd9f9603916bb26e1527736",
+      "path": "docs/architecture/definition_target_admission/returns/DTAP-WP_Documentation_Coordination_Return_2026-08-28_v0.yaml",
+      "blob": "b1ea9bcb321a0062ceedf3c8ce6189f64e7406f4",
+      "sha256": "32cc36e3dee0b4ace59b5383fb6a79ce1d2418bb62fe2042ba71a8b78549348a",
+      "role": "historical_documentation_coordination_only"
+    },
+    "d2qTerminalResult": {
+      "commit": "4fc88d947a98d737cbcdfd22d31d36c4bd5843eb",
+      "executableSourceCommit": "85f6ea945bd2b5b2aacb6b61cc2af52fe0c09ebb",
+      "sourceDigest": "fe7ca058361de18aa9f09c97ecf5cd4a00b0fd9b109fd2d1bca27b2172d28a69",
+      "resultDigest": "b538f5b6da82dc3b6655a9c0d89404e3b20592191886a9bb4280d6fe481d1615",
+      "reportBlob": "0f42af7a539c5dc2d2c85072189da2d02cc021c6",
+      "returnBlob": "f992202b2be4d8e47e293a81325537ee28474f47",
+      "terminalRangeDigest": "b64df433d3d3b3d26571c9b1141486b60f120386a7f28404c26ebcf14f9f5d3c",
+      "role": "immutable_bounded_command_gate_chart"
+    }
+  },
+  "source_bindings": [
+    {
+      "id": "CRPM_NAVIGATOR_HANDOFF",
+      "repository": "CRPM",
+      "commit": "8c64353f4c8f5504af3e30ca175d9422ca7ae608",
+      "path": "docs/architecture/definition_target_admission/DTAP_Worms_Port_Residue_Driven_Round_Trip_Navigator_Handoff_v0.md",
+      "blob": "efad460594428c8a2c12a391486af7cc1e460e4a",
+      "sha256": "715866958180e34e0df5a1bc09a507d320b2913da713330cd57173e32266d903",
+      "role": "current_l4_plus_worms_adapter_handoff"
+    },
+    {
+      "id": "CRPM_NAVIGATOR_BUNDLE",
+      "repository": "CRPM",
+      "commit": "fd7b054332b7c326e47b2cf34cc1bf0c43fa25cf",
+      "path": "docs/architecture/spectral_theory_of_residue/Unknown_Source_Ocean_Navigation/README.md",
+      "blob": "81fbbe2ef03f4640a165dc2e7124c2cfb2ec7058",
+      "sha256": "69566f2bac3e3d79949834719de7f2a33381b936e8172dc9082987475ed9011b",
+      "role": "existing_exploratory_l4_plus_navigator_not_new_doctrine"
+    },
+    {
+      "id": "CRPM_CUT_TRANSITION",
+      "repository": "CRPM",
+      "commit": "a75b4120c931758ba25539fddf9f8f4a687649c7",
+      "path": "docs/architecture/CRPM_Cut_Transition_Translation_Note_v0.md",
+      "blob": "0263f6b03816f006927ee8530eebab912649955e",
+      "sha256": "a4501698fd686a4b5612a102bf1b7b01c1c04cd49918b015cd453837da3f1412",
+      "role": "canonical_five_primitive_cut_transition_source"
+    },
+    {
+      "id": "CRPM_WITNESS_INTERFACE",
+      "repository": "CRPM",
+      "commit": "ee3a05935db543c0d743445963d190ed067fbc99",
+      "path": "docs/architecture/CRPM_Witness_Sufficiency_Interface_Target_v0.md",
+      "blob": "380a39eae384f66cc837742ee3769339465fda3f",
+      "sha256": "d7d4e767985802110cedb4af1a551cb3e8b06aa02f3afc5a3dcddc02e167db6e",
+      "role": "noncanonical_l4_plus_witness_interface_source"
+    },
+    {
+      "id": "DTAP_P2_GOAL_LINEAGE",
+      "repository": "CRPM",
+      "commit": "e73f1308b70e516f950f53cfd1dff0eaf21002af",
+      "path": "docs/architecture/definition_target_admission/CRPM_Definition_Target_Admission_P2_Thick_Carrier_And_Lifecycle_Goal_v0.md",
+      "blob": "d5d0866a47ad323c17a2397e6f60ca2ef2807902",
+      "sha256": "b41a6a13bdcee6ed0b02288281c4ff46b85f809b25628840604792220231197e",
+      "role": "carrier_lifecycle_goal_lineage_not_predecessor_result"
+    },
+    {
+      "id": "DTAP_P2_DURABLE_RETURN",
+      "repository": "CRPM",
+      "commit": "54a1ff146ec1a8bd85bd61f1d4404ea1b6b65df6",
+      "path": "docs/architecture/definition_target_admission/returns/DTAP-P2_Review_Return_2026-08-27_v0.yaml",
+      "blob": "b5682158c586fd22a2ba782a20ccac5229eaa78c",
+      "sha256": "7293ffd92163ba7ed4b629014da8ee88f7ccc4d4b6f075ee2ae7bac1ec10cf2f",
+      "role": "durable_carrier_lifecycle_predecessor_fact"
+    },
+    {
+      "id": "DTAP_P3_GOAL_LINEAGE",
+      "repository": "CRPM",
+      "commit": "e73f1308b70e516f950f53cfd1dff0eaf21002af",
+      "path": "docs/architecture/definition_target_admission/CRPM_Definition_Target_Admission_P3_Independent_Reconstruction_And_Successor_Horizon_Goal_v0.md",
+      "blob": "74b12965be8b4958b982c108782d70af01200c54",
+      "sha256": "0e38ac48d0b11b710be072c6da9f7bd0f7b1a3522c9b8bc5bce0b2bf6fe6ae64",
+      "role": "reconstruction_successor_horizon_goal_lineage_not_predecessor_result"
+    },
+    {
+      "id": "DTAP_P3_DURABLE_RETURN",
+      "repository": "CRPM",
+      "commit": "05f6858b285b4114bcd34eb122261709ab7e8f14",
+      "path": "docs/architecture/definition_target_admission/returns/DTAP-P3_Review_Return_2026-08-28_v0.yaml",
+      "blob": "16861d322186f9ce2152536e6d9b6e14a121d852",
+      "sha256": "fad6ccc549f9f657dd4835bd996e405b577c5caaa245438039ab2685c126425f",
+      "role": "durable_reconstruction_successor_horizon_predecessor_fact"
+    },
+    {
+      "id": "CRPM_PLACEMENT_UNIT_CONTRACT",
+      "repository": "CRPM",
+      "commit": "b66036e9184612ee7b70d2412e0620ba16665093",
+      "path": "docs/architecture/definition_target_admission/CRPM_Definition_Target_Placement_Unit_Contract_v0.md",
+      "blob": "7b672e603d86e9d85bf7b95dcc80dcdb9b6ffbae",
+      "sha256": "c38a3b9908e427e68d499be1e8b2d8661b8c45585c7aa45c594e3e2d68821508",
+      "role": "l4_plus_source_and_owner_boundary_contract"
+    },
+    {
+      "id": "WORMS_D2G_PROTECTED_FAMILY",
+      "repository": "Worms_Port",
+      "commit": "4fc88d947a98d737cbcdfd22d31d36c4bd5843eb",
+      "path": "docs/planning/wp-015d2g-relational-gameplay-navigation-review.md",
+      "blob": "56d00779f9c0a331046df325abcbb7fab9b5d3d1",
+      "sha256": "b0938e10e4971e3f9aca2296b612d22d0a68913e8f0db24f38cd3a216ff7ad72",
+      "role": "worms_owned_protected_gameplay_family"
+    },
+    {
+      "id": "WORMS_D2P_QUESTION_REGISTRY",
+      "repository": "Worms_Port",
+      "commit": "3a3cca8c720f89251cad56029b9f7b1c69d87146",
+      "path": "docs/planning/wp-015d2p-v4-observation-pressure-contract.md",
+      "blob": "c7b5d1adf6759f8f1ca0a26ccce49009ba03fa19",
+      "sha256": "d060aa18c0ee575ec87ed53c1e90f83feed1517eca7068a054aae24afea325f5",
+      "role": "immutable_documentation_question_registry"
+    },
+    {
+      "id": "WORMS_D2Q_RETURN",
+      "repository": "Worms_Port",
+      "commit": "4fc88d947a98d737cbcdfd22d31d36c4bd5843eb",
+      "path": "docs/evidence/wp-015d2q/review-return.json",
+      "blob": "f992202b2be4d8e47e293a81325537ee28474f47",
+      "sha256": "e951bbdf74bfceb781f20794ebde5786e848b5992c8de2aeab8486dde447e308",
+      "role": "immutable_d2q_terminal_return"
+    },
+    {
+      "id": "WORMS_MOVEMENT_CALIBRATION",
+      "repository": "Worms_Port",
+      "commit": "1ce572247a0eb3c948900fd3b4cb5178b0ae0f84",
+      "path": "tests/crpm-world/cuts-and-transport.test.ts",
+      "blob": "f79ffe6a9c502120811b61bf92708cde03f9ec71",
+      "sha256": "6975338b0d12b14ad31b868d2f7fd0d7980e4c7fd56b106194ebd98cf69dd990",
+      "role": "retrospective_correlated_calibration_not_stage_b_result"
+    },
+    {
+      "id": "WORMS_OPERATIONAL_GOVERNANCE",
+      "repository": "Worms_Port",
+      "commit": "224b6b8af6f63308d653ba20b6ddeabc1783460d",
+      "path": "docs/process/crpm-world-operational-governance.md",
+      "blob": "7e95b14b8d07e608d83c7716026c61330370ebc6",
+      "sha256": "146c28c871a990aa4b88b30fa653591f18ed81dcc28f66a3b9cd0bc8d42e1152",
+      "role": "worms_owner_and_lane_boundary"
+    }
+  ],
+  "protected_target": {
+    "id": "T_RETURN_COORDINATES",
+    "bounded_subcore_id": "K_WP_ONE_NEXT_COMMAND_RETURN",
+    "statement": "At two naturally reached V4 movement prefixes, determine whether equality under one declared thin authority projection preserves the exact one-next-command continuation readout after route, actor, turn and support are held fixed.",
+    "target_readout": [
+      "command acceptance",
+      "mutation",
+      "exact error code and message or explicit null",
+      "ordered authoritative events",
+      "post-state digest",
+      "revision",
+      "movementRemaining"
+    ],
+    "excluded_from_target": [
+      "credible player response",
+      "player-visible information",
+      "wall-clock or human response time",
+      "aim or fire resolution",
+      "gameplay balance",
+      "ProductAuthority",
+      "CRPM placement"
+    ]
+  },
+  "candidate_set": {
+    "identity": "WP-015D2R:stage-a-transformations:v0",
+    "declared_complete": false,
+    "execution_registration": false,
+    "selection_rule": "Select one transition from target-relevant D2Q residue and the Worms protected family; familiarity, field adjacency and narrative appeal are not selection evidence.",
+    "selected_candidate_id": "TAU-WPV4-RETURN-01A",
+    "candidates": [
+      {
+        "candidate_id": "TAU-WPV4-RETURN-01A",
+        "type": "reorganize",
+        "from": "C_D2Q_COMMAND_GATE",
+        "to": "C_ONE_NEXT_COMMAND_CONTINUATION",
+        "status": "selected_for_stage_a_contract_only",
+        "reason": "It joins D2Q's bounded command residue to the already registered MOVE/RETURN basin while keeping the authority-side target narrower than credible player response."
+      },
+      {
+        "candidate_id": "TAU-WPV4-MOVEMENT-SUPPORT-OMISSION",
+        "type": "compress",
+        "from": "C_ONE_NEXT_COMMAND_CONTINUATION",
+        "to": "C_THIN_VISIBLE",
+        "status": "historical_calibration_already_exposes_one_split",
+        "reason": "The one/four-cycle pair is a correlated sentinel, not fresh Stage B evidence or global necessity."
+      },
+      {
+        "candidate_id": "TAU-WPV4-ACTOR-TURN-REFINEMENT",
+        "type": "refine",
+        "from": "C_D2Q_COMMAND_GATE",
+        "to": "C_D2Q_STRATUM_INDEXED_COMMAND_GATE",
+        "status": "source_supported_but_not_selected",
+        "reason": "D2Q already bounds actor relevance to the matching-turn stratum and preserves the mismatch no-witness control."
+      },
+      {
+        "candidate_id": "TAU-WPV4-TRACE-FORMATION",
+        "type": "reorganize",
+        "from": "C_ORDERED_AUTHORITY_TRACE",
+        "to": "C_RECURSIVE_CONTINUATION_CANDIDATE",
+        "status": "support_dependent_not_selected",
+        "reason": "Trace-to-carrier formation is a composition under a decoder/support contract, not a new primitive; public formation is underdetermined."
+      },
+      {
+        "candidate_id": "TAU-WPV4-AUTHORITY-TIME",
+        "type": "refine",
+        "from": "C_COMMAND_GATE",
+        "to": "C_AUTHORITY_TICK_HORIZON",
+        "status": "blocked_source_or_domain",
+        "reason": "WPV4-TIME-01 is not authorized and simulation tick time is not player time."
+      },
+      {
+        "candidate_id": "TAU-WPV4-PUBLIC-RESPONSE",
+        "type": "overlap-move",
+        "from": "C_AUTHORITY_CONTINUATION",
+        "to": "C_PLAYER_VISIBLE_RESPONSE",
+        "status": "blocked_source_or_domain",
+        "reason": "WPV4-PUBLIC-01 requires a separate Lane 4 environment, observation, timing, consent and data contract."
+      }
+    ]
+  },
+  "selected_transition": {
+    "transition_id": "TAU-WPV4-RETURN-01A",
+    "type": "reorganize",
+    "C_from": "C_D2Q_COMMAND_GATE",
+    "C_to": "C_ONE_NEXT_COMMAND_CONTINUATION",
+    "fixed_frame": {
+      "world": "unchanged nimble-knots-artillery-v4 authority",
+      "cut": "thin authority equality versus one-next-command continuation-bearing return",
+      "protected_target": "T_RETURN_COORDINATES/K_WP_ONE_NEXT_COMMAND_RETURN",
+      "domain": "A future exact finite set of naturally reached accepted-movement prefixes; unbound and not executable in Stage A.",
+      "routes": "Legal V4 commands only; the historical one/four-cycle pair is a calibration sentinel excluded from fresh-validation count.",
+      "horizon": "One declared next command after each prefix; no tick advancement.",
+      "support": [
+        "exact V4 ruleset and seed",
+        "full initial state and legal prefix",
+        "actor and expectedTurn",
+        "movementRemaining",
+        "revision and state/trace provenance",
+        "unchanged authoritative command path"
+      ],
+      "tolerance": "exact canonical equality only",
+      "oracle_input_boundary": "Authority-readable source state may verify reachability and target output; case IDs, expected verdicts, selected-pair labels and reviewer knowledge may not enter projection or selection keys."
+    },
+    "preserved": [
+      "the immutable four-case D2Q result and its conditional actor/expectedTurn scope",
+      "exact V4 authority, command, error and event semantics",
+      "the WP-015D2 protected gameplay family as an unsatisfied wider boundary",
+      "source, route, support and evidence covariance provenance"
+    ],
+    "forgotten": [
+      "D2Q case identifiers as live continuation coordinates",
+      "the suggestion that one-command gate coverage alone answers K_WP",
+      "post-state-only equality as a sufficient command/return readout"
+    ],
+    "newly_visible": [
+      "natural prefix route and ordered movement trace",
+      "movement budget and revision at the return endpoint",
+      "one-next-command continuation equality or split",
+      "support debt between authority response and wider gameplay response"
+    ],
+    "residual": [
+      "credible player response and initiative",
+      "aim/fire and projectile resolution",
+      "authority tick, wall-clock and human timing",
+      "player-public observation and formation",
+      "global carrier minimality and gameplay authority"
+    ],
+    "reversibility": {
+      "kind": "protected-equivalent",
+      "status": "declared_not_earned",
+      "condition": "A future return must recover the D2Q protected readout from immutable provenance while preserving the new continuation result and explicit residue."
+    }
+  },
+  "witness_interface": {
+    "W": "Future naturally reached paired-prefix and one-next-command records; currently absent. The historical movement twin is calibration only.",
+    "O_W": "Declared thin projection plus exact continuation readout; case IDs, expected verdicts and omission provenance excluded.",
+    "B_W": "Fresh deterministic V4 initialization followed only by accepted public authority commands in a preregistered finite route domain.",
+    "Omega_W": "World, cut, target, domain, route, horizon, support, tolerance and authority/public access boundary.",
+    "K_target": "K_WP_ONE_NEXT_COMMAND_RETURN only.",
+    "P_W": "Exact alias/split, natural reachability and protected return comparison over the preregistered domain.",
+    "N_W": "Unsearched routes, player perception, time, aim/fire, alternative policies/seeds and stronger continuation targets.",
+    "S_W": "V4 authority plus declared route, actor/turn, budget, revision, trace and decoder support; no hidden-state injection.",
+    "J_W": "incomplete"
+  },
+  "realization_query": {
+    "predicted_world_signature": "Outside the known calibration sentinel, two naturally reached legal prefixes alias under the declared thin projection but differ under the exact one-next-command continuation readout while the fixed frame passes.",
+    "known_calibration_role": "The one/four right-left-cycle pair at seed 3237998097 proves only that the harness can recover the historical budget/revision split; it cannot count as a fresh selected witness.",
+    "negative_witness_condition": "A preregistered exhaustive finite search finds no eligible holdout pair, or every apparent split disappears when target, route, horizon, support and oracle boundary are held fixed.",
+    "search_domain_status": "unbound_stage_b_authorization_required",
+    "natural_reachability": "required",
+    "hidden_state_injection": "forbidden",
+    "adaptive_case_widening": "forbidden"
+  },
+  "support_ledger": {
+    "source_supported": [
+      "D2Q command-gate outcomes and exclusions",
+      "historical naturally reached one/four-cycle movement-support split",
+      "D2P MOVE/RETURN question families",
+      "canonical five-kind CutTransition grammar",
+      "witness, support, residue, lifecycle, re-entry and successor-horizon field grammar"
+    ],
+    "interpretive": [
+      "using one residue-driven round trip as the Worms question-forming adapter",
+      "selecting the authority-side continuation reorganization as the first search basin"
+    ],
+    "not_tested": [
+      "any holdout natural-route split",
+      "formation of a smaller recursive Worms carrier",
+      "credible player response or gameplay improvement",
+      "public formation, expiry, minimality or placement"
+    ],
+    "access_boundary": {
+      "authority_readable": [
+        "full simulation state",
+        "movementRemaining",
+        "revision",
+        "exact events/errors",
+        "route history"
+      ],
+      "player_public": "underdetermined",
+      "public_formation": "underdetermined"
+    },
+    "evidence_class": "correlated_reuse"
+  },
+  "round_trip": {
+    "outbound_transition": "TAU-WPV4-RETURN-01A declared only",
+    "world_voyage": "not_authorized",
+    "return_transition": "Compress or overlap only after a future legal voyage, preserving D2Q provenance and the continuation result.",
+    "comparison_machinery": "Compare survived, lost, gained, vanished, residual and support debt separately; no scalar landfall score.",
+    "landfall_status": "not_evaluated",
+    "closure_allowed": false
+  },
+  "return_test": {
+    "protected_core_recovery": "not_tested",
+    "survived": [],
+    "lost": [],
+    "gained": [],
+    "vanished": [],
+    "residual": [
+      "all Stage B world evidence",
+      "all player/timing/product questions"
+    ],
+    "chart_revision": "not_evaluated",
+    "next_transition_candidate": null
+  },
+  "authorization_state": {
+    "stage_a_contract_and_registry": "authorized",
+    "stage_a_publication": "pending_validation_and_review_return",
+    "stage_b_realization_search": "not_authorized",
+    "stage_c_independent_review_and_cross_repository_return": "not_authorized",
+    "new_pressure_execution": false,
+    "player_observation_lane": false,
+    "gameplay_change": false,
+    "product_authority_decision": false,
+    "placement_or_p5": false
+  },
+  "allowed_outputs": [
+    "docs/evidence/wp-015d2r.json",
+    "docs/evidence/wp-015d2r/review-return.json",
+    "docs/planning/wp-015d2r-residue-driven-round-trip-navigator-contract.md",
+    "docs/planning/wp-015d2r-residue-driven-round-trip-candidate-registry.json",
+    "docs/planning/implementation_plan.md",
+    "docs/planning/wp-015d2g-relational-gameplay-navigation-review.md",
+    "legal/source-manifest.json"
+  ],
+  "first_governed_stop": "Commit and validate Stage A documentation, then stop for human/chat review before any route search or pressure execution.",
+  "reopening_condition": "A changed source, target, cut, candidate set, route domain, horizon, support, oracle/access boundary, owner decision or missing recoverable artifact requires a new source-bound review. Stage B opens only through separate explicit authorization."
+}

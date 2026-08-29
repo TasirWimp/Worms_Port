@@ -698,6 +698,28 @@ Execution Pointer remains WP-015D2A, ProductAuthority is `none`, and P5
 remains closed. Stop for review; another command child or playtest needs
 separate authorization.
 
+### WP-015D2R residue-driven navigator Stage A (2026-08-29)
+
+The owner authorized only the [Stage A navigator contract](wp-015d2r-residue-driven-round-trip-navigator-contract.md)
+and its [planning-only candidate registry](wp-015d2r-residue-driven-round-trip-candidate-registry.json)
+on a new child branch from D2Q terminal `4fc88d947a98d737cbcdfd22d31d36c4bd5843eb`.
+The contract binds the later CRPM handoff at `8c64353f4c8f5504af3e30ca175d9422ca7ae608`
+without changing the older D2P coordination receipt or any D2Q artifact.
+
+The candidate set is explicitly incomplete and non-executable. Its only
+selected packet reorganizes the bounded D2Q command-gate chart into an
+authority-side one-next-command continuation/return question under
+`T_RETURN_COORDINATES`. The existing one/four-cycle movement-budget witness is
+a retrospective `correlated_reuse` sentinel; any later positive search would
+need a separately preregistered holdout domain and natural route. Player-public
+formation remains `underdetermined`. Credible response, aim/fire, ticks, real
+time, UI/player observation, gameplay, ProductAuthority, placement and P5 are
+outside this target.
+
+Stage A stops after source/range/parity validation and a compact review return.
+Stage B and Stage C remain not authorized. The active Execution Pointer stays
+WP-015D2A and D2O's player-information/timing gate remains unsatisfied.
+
 ## Phased plan and stop gates
 
 ### Phase 0 - source lock and boundary

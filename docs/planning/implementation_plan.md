@@ -300,6 +300,17 @@ Phaser/Socket.IO stack.
   with equal post-state. Disposition is `structural_reference`, not player
   authority or a full COMMAND-family result. Review only: no aim/fire child,
   playtest, gameplay change, CRPM/P5 continuation, PR operation or push is opened.
+  **WP-015D2R residue-driven round-trip navigator Stage A (2026-08-29):** the
+  owner authorized the [documentation-only navigator contract](wp-015d2r-residue-driven-round-trip-navigator-contract.md)
+  and its [frozen incomplete planning registry](wp-015d2r-residue-driven-round-trip-candidate-registry.json)
+  from D2Q terminal `4fc88d947a98d737cbcdfd22d31d36c4bd5843eb`
+  and CRPM handoff `8c64353f4c8f5504af3e30ca175d9422ca7ae608`.
+  It selects only a question-forming reorganization from the D2Q command chart
+  to a one-next-command authority-side continuation/return chart. The known
+  one/four-cycle movement twin remains retrospective correlated calibration,
+  not fresh evidence. Stage B route search, credible player response, timing,
+  gameplay, ProductAuthority, placement and P5 remain closed. The active
+  Execution Pointer stays WP-015D2A.
 
   **WP-015D1 V4 wider
   arena and pan camera completed on 2026-08-08**

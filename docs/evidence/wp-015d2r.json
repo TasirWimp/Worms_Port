@@ -1,0 +1,41 @@
+{
+  "id": "WP-015D2R",
+  "status": "in_progress",
+  "starting_commit": "4fc88d947a98d737cbcdfd22d31d36c4bd5843eb",
+  "branch": "codex/wp-015d2r-residue-round-trip-navigator",
+  "initial_worktree": "clean",
+  "starting_lock_sha256": "D4DAC6AE09A3D2F6C5A7EAA11520BAC43F1628320C5331575BCF1E1857073D73",
+  "owning_roles": [
+    "worms_port_planner",
+    "worms_port_docs_keeper",
+    "cross_repository_coordinator"
+  ],
+  "scope": [
+    "Implement only documentation-first Stage A: form one Worms-owned residue-driven round-trip navigator question from the current protected WP-015D2 family, immutable D2Q result, and source-bound CRPM method handoff.",
+    "Create a new navigator contract and a frozen, explicitly incomplete planning registry; select exactly one authority-side transformation packet with its natural-world signature, negative witness, support ledger, return comparison, residue, and governed stop.",
+    "Bind the actual CRPM handoff source, durable DTAP P2/P3 predecessor returns, canonical method carriers, historical D2P coordination result, and durable D2Q source/result identities without rewriting any predecessor.",
+    "Allowed outputs: docs/evidence/wp-015d2r.json; docs/evidence/wp-015d2r/review-return.json; docs/planning/wp-015d2r-residue-driven-round-trip-navigator-contract.md; docs/planning/wp-015d2r-residue-driven-round-trip-candidate-registry.json; docs/planning/implementation_plan.md; docs/planning/wp-015d2g-relational-gameplay-navigation-review.md; legal/source-manifest.json.",
+    "Complete means the source contract, incomplete candidate chart, selected transition packet, source-bound review return, and exact documentation range are ready for human/chat review. Stage B remains closed."
+  ],
+  "non_goals": [
+    "Do not execute a pressure case, replay D2Q as new evidence, search a route, run a playtest, instrument V4, or authorize Stage B.",
+    "Do not change gameplay, shared/client/server source, adapters, cuts, schemas, executable registries, scripts, tests, dependencies, assets, sealed executors, historical implementation locks, D2P, or D2Q artifacts.",
+    "Do not treat authority-readable state as player-public information; credible response, aim/fire, ticks, real timing, UI/player observation, public formation, expiry, and ProductAuthority remain closed or underdetermined.",
+    "Do not edit CRPM, import CRPM code or prose into a runtime dependency, issue mathematical placement, alter L1-L3 or graph/schema/formal/philosophy owners, open P5, advance the WP-015D2A Execution Pointer, or open/reopen/merge a PR."
+  ],
+  "planned_checks": [
+    "npm run check:compliance (baseline and final)",
+    "strict JSON and contract/registry/return semantic parity audit",
+    "exact source binding and historical predecessor preservation audit",
+    "exact result-range changed-path/status/mode/blob audit",
+    "git diff --check",
+    "ordinary read-only documentation and boundary review"
+  ],
+  "deterministic_seeds": [],
+  "sorcerers_reference_used": false,
+  "clean_room_records": [],
+  "check_results": [],
+  "reviews": [],
+  "skipped_checks": [],
+  "residual_risks": []
+}
