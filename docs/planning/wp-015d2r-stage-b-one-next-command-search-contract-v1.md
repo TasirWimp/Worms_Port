@@ -106,13 +106,13 @@ The definition is complete and finite; its observed reachable endpoint set is `n
 The future generator must:
 
 1. Construct the 276 words without consulting outcomes.
-2. Skip simulation for any word extending a previously retained rejected prefix, recording `pruned_by_rejected_prefix`.
-3. Otherwise start that word from a fresh initialization and replay directions in order.
-4. At each step derive the actor and expected turn from the current state and call the exact MOVE command.
-5. Retain the first ordinary command rejection and stop that word. Such rows are domain-formation negatives, not pair outcomes or frame failures.
-6. Require every accepted prefix to be mutated and to preserve the registered frame. An accepted-but-nonmutated transition or source/frame drift is `frame_support_failure`.
-7. Admit a source item only at depth 2, 4, or 8 after every prefix passed. The empty/D2Q prefix and other depths are never source items.
-8. Apply the calibration exclusions before source projection or next-command decoding.
+2. Before any authority call, turn either exact calibration word into a metadata-only `excluded_calibration_occurrence` row. Do not initialize, prefix-replay, project, or decode that exact word.
+3. Skip simulation for any other word extending a previously retained rejected prefix, recording `pruned_by_rejected_prefix`.
+4. Otherwise start that word from a fresh initialization and replay directions in order.
+5. At each step derive the actor and expected turn from the current state and call the exact MOVE command.
+6. Retain the first ordinary command rejection and stop that word. Such rows are domain-formation negatives, not pair outcomes or frame failures.
+7. Require every accepted prefix to be mutated and to preserve the registered frame. An accepted-but-nonmutated transition or source/frame drift is `frame_support_failure`.
+8. Admit a source item only at depth 2, 4, or 8 after every prefix passed. The empty/D2Q prefix and other depths are never source items.
 9. Project remaining endpoints, group by exact thin value, and form every unordered pair of distinct route occurrences in ascending route-ID order.
 10. Decode each eligible endpoint once and compare every pair, retaining every negative and failure.
 
@@ -125,7 +125,7 @@ Exclude both exact occurrences individually:
 - `[+1, -1]`; and
 - `[+1, -1, +1, -1, +1, -1, +1, -1]`.
 
-Neither occurrence may become a source item, receive the registered next-command readout, occur in an eligible pair, count as a witness, or run separately as a sentinel. The two-step route may be traversed only as an internal prefix required by another longer registered word. After the two exclusions, at most 274 endpoint occurrences remain before legality filtering.
+Before any authority call for either exact word, the generator records only a metadata `excluded_calibration_occurrence` row. It performs no initialization, prefix replay, projection, or decoding for that word. Neither occurrence may become a source item, receive the registered next-command readout, occur in an eligible pair, count as a witness, or run separately as a sentinel. The two-step route may be traversed only as an internal prefix required by another longer registered word. After the two exclusions, at most 274 endpoint occurrences remain before legality filtering.
 
 The committed calibration artifacts do not publish endpoint-state digests. A state-equivalence holdout cannot be preregistered without the forbidden replay; exact route-occurrence exclusion is therefore the strongest source-bound holdout. Other routes at the cut's sole admitted seed remain `correlated_reuse`, never empirically independent.
 
@@ -159,8 +159,8 @@ Every eligible pair receives exactly one primary outcome in this precedence orde
 1. `frame_support_failure`: a registered source, frame, legality, completeness, actor/turn, support, decoder, tolerance, holdout, oracle, immutability, or retention condition failed. Ordinary rejected prefixes are not this outcome.
 2. `command_semantic_split`: the frame passes and command-semantic tuples differ.
 3. `continuation_support_split`: command semantics agree but post-command `movementRemaining` differs.
-4. `provenance_exact_state_only_split`: semantics and continuation support agree, but revision, canonical state digest, or exact route provenance differs.
-5. `no_target_relevant_split`: protected readouts agree; distinct route history alone does not elevate the result.
+4. `provenance_exact_state_only_split`: semantics and continuation support agree, but at least one pre/post revision or canonical state digest differs. Route inequality alone does not trigger this outcome.
+5. `no_target_relevant_split`: semantics, continuation support, revisions, and canonical state digests agree. Distinct route history remains recorded audit provenance but does not elevate the result.
 
 Component equality flags are retained independently. Revision inequality, state-digest inequality, route inequality, or their combination alone never sets `targetRelevant: true`, certifies a continuation-bearing carrier, or licenses the selected transition. A command-semantic or continuation-support split is only a candidate result for later review.
 

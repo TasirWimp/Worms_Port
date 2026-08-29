@@ -332,13 +332,13 @@
     "routeId": "route-${sha256(canonicalJson({seed:3237998097,calling:'wizard',rulesetId:'nimble-knots-artillery-v4',directions:[...]}))}",
     "generator": [
       "Construct the exact 276 direction words in registered shortlex order without consulting outcomes.",
-      "If a word extends a prefix already retained in the rejected-prefix ledger, retain a pruned_by_rejected_prefix row and perform no simulation for that word.",
+      "Before any authority call, if the exact word is one of the two registered holdout occurrences, retain a metadata-only excluded_calibration_occurrence row and perform no initialization, prefix replay, source projection or next-command decoding for that word.",
+      "Otherwise, if a word extends a prefix already retained in the rejected-prefix ledger, retain a pruned_by_rejected_prefix row and perform no simulation for that word.",
       "Otherwise initialize a fresh V4 state for that word and replay its directions from the first element.",
       "At each prefix step derive actor from current state.activeActor and expectedTurn from current state.turn, then call applySimulationCommand(current, actor, {type:'move',direction}, expectedTurn).",
       "Require accepted true, mutated true, absent error and the registered current actor/turn rule. On first ordinary command rejection, retain the exact rejected prefix and transition, stop that word and prune all extensions.",
       "An accepted transition that violates the registered mutation, actor/turn, source, invariant or input-immutability rule is a frame_support_failure, not an ordinary rejected-prefix row.",
       "An endpoint is naturally reachable only when every route prefix passed. The empty prefix and nonregistered depths never become source items.",
-      "Before source projection or next-command decoding, remove each exact calibration occurrence listed in holdoutExclusion from source-item eligibility.",
       "Project every remaining endpoint with thin_visible_duel_v0@2 and retain both exact projected value and class key.",
       "Group endpoints by exact projected value, then form every unordered pair of distinct route occurrences within each class in canonical ascending routeId order.",
       "Decode every eligible endpoint once with the fixed next command, compare every eligible pair, and exhaust the entire domain even after a positive split."
@@ -392,7 +392,7 @@
         "role": "historical_four_cycle_calibration_occurrence"
       }
     ],
-    "exclusionSemantics": "Exclude each occurrence individually. Neither may become a source item, receive the registered next-command readout, occur in an eligible pair, count as a witness or be run separately as a sentinel. Traversing the two-step word only as an internal prefix of another longer registered word is permitted.",
+    "exclusionSemantics": "Exclude each occurrence individually before any authority call for that exact word. Retain only a metadata-only excluded_calibration_occurrence row; do not initialize, prefix-replay, project or decode the exact word. Neither may become a source item, receive the registered next-command readout, occur in an eligible pair, count as a witness or be run separately as a sentinel. Traversing the two-step word only as an internal prefix of another longer registered word is permitted.",
     "maximumEligibleEndpointOccurrencesBeforeLegality": 274,
     "emptyPrefixD2QExclusion": "The fresh initialization and all D2Q cases are not Stage B source items.",
     "stateEquivalenceHoldout": "not_preregisterable_from_committed_calibration_artifacts",
@@ -459,13 +459,13 @@
       "ordered authoritativeEvents"
     ],
     "continuationSupportCoordinate": "post-command movementRemaining",
-    "provenanceCoordinates": [
+    "exactStateComparisonCoordinates": [
       "pre-command revision",
       "post-command revision",
       "pre-command canonical state digest",
-      "post-command canonical state digest",
-      "exact route history"
+      "post-command canonical state digest"
     ],
+    "recordedRouteProvenanceOnly": "Exact route history and routeId are always retained but never trigger provenance_exact_state_only_split by themselves.",
     "tolerance": {
       "numeric": 0,
       "comparison": "exact canonical JSON equality",
@@ -484,8 +484,8 @@
       "frame_support_failure": "A bound source, world, cut, domain, legality, completeness, actor/turn, fixed support, input immutability, decoder, tolerance, holdout, oracle or output-retention condition fails. Ordinary rejected route prefixes are not frame failures.",
       "command_semantic_split": "The frame passes and the exact command-semantic tuples differ.",
       "continuation_support_split": "The frame and command-semantic tuple pass equally, but post-command movementRemaining differs.",
-      "provenance_exact_state_only_split": "The frame, command semantics and continuation-support coordinate agree, but a registered revision, canonical state digest or exact route-provenance coordinate differs.",
-      "no_target_relevant_split": "The frame passes and command semantics plus continuation support agree; route distinction alone does not elevate the outcome."
+      "provenance_exact_state_only_split": "The frame, command semantics and continuation-support coordinate agree, but at least one pre/post revision or canonical state digest differs. Route inequality alone does not trigger this outcome.",
+      "no_target_relevant_split": "The frame, command semantics, continuation support, revisions and canonical state digests agree. Distinct route history is retained as audit provenance but does not elevate the outcome."
     },
     "componentBooleansRetained": [
       "commandSemanticEqual",
@@ -510,6 +510,7 @@
     "failClosedRule": "On source, frame, decoder, completeness or retention drift, stop execution, retain all partial records and classify the package invalid with frame_support_failure; do not salvage a positive pair.",
     "adaptiveWidening": false,
     "negativeResultsRetained": [
+      "metadata-only excluded_calibration_occurrence rows with no authority call",
       "ordinary rejected-prefix and pruned-extension rows",
       "no eligible naturally reachable endpoint",
       "no eligible alias class after the exact holdout",
