@@ -1,0 +1,41 @@
+{
+  "id": "WP-015D2S",
+  "status": "in_progress",
+  "starting_commit": "4bcb213c9a1a2619d8699f3fed275e6afa71f03e",
+  "branch": "codex/wp-015d2r-stage-b-preregistration-v0",
+  "initial_worktree": "clean",
+  "starting_lock_sha256": "D4DAC6AE09A3D2F6C5A7EAA11520BAC43F1628320C5331575BCF1E1857073D73",
+  "owning_roles": [
+    "worms_port_planner",
+    "worms_port_docs_keeper",
+    "cross_repository_coordinator"
+  ],
+  "scope": [
+    "Act only as the source-only work-evidence carrier for parent WP-015D2R child WPV4-NAVIGATOR-01B preregistration version 1; do not retarget the Stage A question or imply Stage B execution.",
+    "Create one human Stage B one-next-command search contract and one strict non-executable machine registration that bind Stage A source b2b1822c6714c992c95776d8a6440a667ba72f5d and terminal 4bcb213c9a1a2619d8699f3fed275e6afa71f03e.",
+    "Bind thin_visible_duel_v0@2 and its exact Git bytes as the alias-producing observation cut while preserving immutable D2Q as a distinct authority_v4@2 command-gate anchor chart.",
+    "Freeze the finite natural-route domain, generator, seed, next command, actor and expected-turn rule, horizon, decoder, exact tolerance, calibration exclusion, stopping rule, negative retention, typed outcomes, candidate-unlicensed Tau state, prospective witness semantics and future execution allow-list.",
+    "Freeze route-domain identity WP-015D2R:stage-b-natural-move-words:v1 at seed 3237998097, calling wizard, alphabet [-1,+1], endpoint depths [2,4,8], 276 attempted words, exact exclusions [+1,-1] and [+1,-1,+1,-1,+1,-1,+1,-1], next MOVE +1, current-state actor/turn, one authority call and zero tolerance.",
+    "Freeze primary outcome precedence frame_support_failure; command_semantic_split; continuation_support_split; provenance_exact_state_only_split; no_target_relevant_split. Revision, digest or route inequality alone is non-target-relevant.",
+    "Record W absent; Omega_W, P_W and N_W not_evaluated; J_W not_applicable; evidence correlated_reuse; TAU-WPV4-RETURN-01A candidate_unlicensed; execution, Stage C, ProductAuthority, placement and P5 closed.",
+    "Current-pass allowed outputs are exactly docs/evidence/wp-015d2s.json; docs/planning/wp-015d2r-stage-b-one-next-command-search-contract-v1.md; analysis/crpm_world/navigation/wp-015d2r-stage-b-one-next-command-search-registration-v1.json."
+  ],
+  "non_goals": [
+    "Do not enumerate or execute any route, search, pressure case, D2Q case, calibration sentinel, simulation, playtest, browser/device lane or player observation/timing protocol.",
+    "Do not edit Stage A, D2P, D2Q, implementation-plan, D2G, source-manifest, cut, schema, authority, adapter, executor, script, test, gameplay, shared/client/server, dependency, asset, lock or sealed artifact bytes.",
+    "Do not license TAU-WPV4-RETURN-01A, claim a witness, infer actual player-public formation, issue ProductAuthority or mathematical placement, open P5 or Stage C, create a PR, or push."
+  ],
+  "planned_checks": [
+    "npm run check:compliance (baseline, source and final)",
+    "strict JSON and human/machine/evidence semantic parity audit",
+    "exact source binding plus Stage A and D2P/D2Q preservation audit",
+    "exact preregistration result-range changed-path/status/mode/blob audit",
+    "git diff --check",
+    "identified read-only source, governance and boundary review"
+  ],
+  "deterministic_seeds": [
+    "3237998097 (0xC0FFEE11), preregistered only; no route or calibration execution performed"
+  ],
+  "sorcerers_reference_used": false,
+  "clean_room_records": []
+}

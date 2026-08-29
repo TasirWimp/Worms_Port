@@ -1,0 +1,687 @@
+{
+  "schemaVersion": 1,
+  "packageId": "WP-015D2R",
+  "supportWorkPackageId": "WP-015D2S",
+  "childId": "WPV4-NAVIGATOR-01B",
+  "registrationId": "WP-015D2R:stage-b-one-next-command-search:v1",
+  "registrationVersion": 1,
+  "title": "Stage B One-Next-Command Natural-Route Search Preregistration",
+  "ownerRepository": "Worms_Port",
+  "registryKind": "documentation_only_non_executable_preregistration",
+  "executable": false,
+  "status": "preregistered_execution_closed",
+  "pilotActivation": {
+    "status": "not_required",
+    "reason": "This source-only pass preregisters one Worms-owned L4+ question and accepts no witness, cross-world return, placement, promotion, ProductAuthority or P5 claim."
+  },
+  "entryBoundary": {
+    "stageASourceCommit": "b2b1822c6714c992c95776d8a6440a667ba72f5d",
+    "stageASourceTree": "dd8bd11749064734de514f4e08b75fe53570d864",
+    "stageATerminalCommit": "4bcb213c9a1a2619d8699f3fed275e6afa71f03e",
+    "stageATerminalTree": "8921a538dacdabe688e7ddbe3b4d7770cadb8316",
+    "stageASourceDigest": "5de6b5caa9cb2db3c0c875f5bb910b927e68476b37f4127f2f170451f214e6ea",
+    "stageAValidationDigest": "f550570af4c2cd14b657fa6ca53eca0708b95c176f4564e39e0cac6fdb1286bc",
+    "stageAParityDigest": "c883ebddeac194f199b74d67d6c3a43092537601a7674c27a1467e6da22b3376",
+    "stageAReceiptDigest": "7af49665367e955045385780e960e31ef9e829c32599975589a6db9c9e2c66ca",
+    "stageATerminalRangeDigest": "1e67f1af5a68074b5b06d04b7068a48024c62ffe6c95b9a050a5c2d2c3b4612a",
+    "activeExecutionPointer": "WP-015D2A",
+    "productAuthority": "none",
+    "mathematicalPlacementImplication": "none",
+    "p5Open": false
+  },
+  "stageAFrozenArtifacts": [
+    {
+      "path": "docs/planning/wp-015d2r-residue-driven-round-trip-navigator-contract.md",
+      "sourceCommit": "b2b1822c6714c992c95776d8a6440a667ba72f5d",
+      "mode": "100644",
+      "blob": "38f27751d97c6087bb1e314c6ecc31611435a974",
+      "sha256": "956ab24cdf152d7db3185784b5d012c407ab5f4b23cee7366077df9a3703874b",
+      "role": "immutable_stage_a_human_contract"
+    },
+    {
+      "path": "docs/planning/wp-015d2r-residue-driven-round-trip-candidate-registry.json",
+      "sourceCommit": "b2b1822c6714c992c95776d8a6440a667ba72f5d",
+      "mode": "100644",
+      "blob": "d3002ef29f748964a4bfcdce4199d8075a6f57ce",
+      "sha256": "e88b4f76404cca15dadad14a5b24ae5509ff8ea715449533e897aa3d22cc5106",
+      "role": "immutable_stage_a_machine_registry"
+    },
+    {
+      "path": "docs/evidence/wp-015d2r.json",
+      "sourceCommit": "4bcb213c9a1a2619d8699f3fed275e6afa71f03e",
+      "mode": "100644",
+      "blob": "299142b170b591eadbc49bba9340337c627e38e5",
+      "sha256": "df906f62b8264494b99a571657c47dd11c0c1accedd1530430e1986ccaac4591",
+      "role": "immutable_stage_a_terminal_work_evidence"
+    },
+    {
+      "path": "docs/evidence/wp-015d2r/review-return.json",
+      "sourceCommit": "4bcb213c9a1a2619d8699f3fed275e6afa71f03e",
+      "mode": "100644",
+      "blob": "1a55777608da47b20b4bb06128edaa7e9ed90e1a",
+      "sha256": "5989e11341ca41bdc2387a3830a67d9cfc2a7f3677a5860c7fb1e8915c2add6d",
+      "role": "immutable_stage_a_terminal_return"
+    }
+  ],
+  "immutableD2PAndD2QArtifacts": {
+    "boundCommit": "4bcb213c9a1a2619d8699f3fed275e6afa71f03e",
+    "rows": [
+      {
+        "path": "docs/evidence/wp-015d2p.json",
+        "mode": "100644",
+        "blob": "e64ba67656733b6f64536883a95312f14f1328a7",
+        "sha256": "54e9b95e9c8629010b476e027e9bd36b664a0a9a8c6605ba146feb96c47611fd"
+      },
+      {
+        "path": "docs/planning/wp-015d2p-v4-observation-pressure-contract.md",
+        "mode": "100644",
+        "blob": "c7b5d1adf6759f8f1ca0a26ccce49009ba03fa19",
+        "sha256": "d060aa18c0ee575ec87ed53c1e90f83feed1517eca7068a054aae24afea325f5"
+      },
+      {
+        "path": "docs/evidence/wp-015d2q.json",
+        "mode": "100644",
+        "blob": "59c4a6c233c36983a56b5e00cc5fbd89779bbc3c",
+        "sha256": "7e5c7e21ba9dd14c995795db89a0909bd87b7e9c302bf6a2411e753c3f6dfb73"
+      },
+      {
+        "path": "docs/evidence/wp-015d2q/review-return.json",
+        "mode": "100644",
+        "blob": "f992202b2be4d8e47e293a81325537ee28474f47",
+        "sha256": "e951bbdf74bfceb781f20794ebde5786e848b5992c8de2aeab8486dde447e308"
+      },
+      {
+        "path": "docs/planning/wp-015d2q-v4-command-gate-pressure-contract.md",
+        "mode": "100644",
+        "blob": "7a0f0d18bd6ec0320aabf22964c2fc7ace9192b4",
+        "sha256": "eb15cc01f331609fd5b0a95bef15389a414e05ff587f21df3dff1c6ebc0345bc"
+      },
+      {
+        "path": "docs/planning/wp-015d2q-v4-command-gate-pressure-report.md",
+        "mode": "100644",
+        "blob": "0f42af7a539c5dc2d2c85072189da2d02cc021c6",
+        "sha256": "fda428b369cb719f684f9a0844bcef8df2bf8671ae48d702e6d7200a7cea2bc3"
+      },
+      {
+        "path": "analysis/crpm_world/navigation/v4-command-gate-registration.json",
+        "mode": "100644",
+        "blob": "58c88cd8056b63456b7fd8a83888b0843da0904d",
+        "sha256": "0f4e5b13fcbeed895924675d8ee593a808c5d8745ac4198b37e32392c86e29c6"
+      },
+      {
+        "path": "analysis/crpm_world/navigation/assess-v4-command-gates.ts",
+        "mode": "100644",
+        "blob": "aedb3db22695af6e7c8062b0f5d4696155782dcd",
+        "sha256": "1c2e948a9b2f297a47ea902f3b2eb94a91431962a344883bb3f8e489cb9c2ab8"
+      },
+      {
+        "path": "scripts/run-v4-command-gate-pressure.ts",
+        "mode": "100644",
+        "blob": "49789fb9d174b5257ec810055a525c11d9dba8b9",
+        "sha256": "8b05424dcfa6a26956c14a53a3ec228457b0aaf84b6dee598763b81b71c4e497"
+      },
+      {
+        "path": "tests/crpm-world/v4-command-gate-pressure.test.ts",
+        "mode": "100644",
+        "blob": "6e1b8e0ad526ebc45f6ec3cf14403d92f3a4ec21",
+        "sha256": "5ebac549894c49ce5b6c7e828b0bc9599cfb1ae853eb06a7b36fb79db5e46dec"
+      }
+    ]
+  },
+  "sourceBindings": {
+    "boundCommit": "4bcb213c9a1a2619d8699f3fed275e6afa71f03e",
+    "byteDefinition": "Git blob bytes at the bound commit; checkout line-ending transformations are not source bytes.",
+    "rows": [
+      {
+        "id": "V4_CUT_DEFINITIONS",
+        "path": "analysis/crpm_world/cuts/v4-cuts.ts",
+        "mode": "100644",
+        "blob": "769d6fc2ca689eeedfe9bba680b9d24aa37fc67e",
+        "sha256": "0e404a6316630ee12203889bf9c2ea97357865a12832a1252f5b1c2274f2a3f2",
+        "role": "cut_id_version_domain_and_claim_boundary"
+      },
+      {
+        "id": "V4_CUT_REGISTRY",
+        "path": "analysis/crpm_world/cuts/registry.ts",
+        "mode": "100644",
+        "blob": "1da5c43710ad1a42b07122640fe0bd41f3a148ba",
+        "sha256": "cfd39dbb396ffd226478051daa7209493090f43ee17ef99c39f90a1806064dfb",
+        "role": "cut_lookup_and_detached_definition"
+      },
+      {
+        "id": "V4_CUT_PROJECTOR",
+        "path": "analysis/crpm_world/kernel/project-cut.ts",
+        "mode": "100644",
+        "blob": "228844df7d1544091e3007e706c51316be185ba2",
+        "sha256": "700d21899e7d65b65143033630d5744cc885c7cca3d86d401c7fbc7c3c59467c",
+        "role": "exact_thin_projection_and_class_key"
+      },
+      {
+        "id": "CANONICAL_JSON",
+        "path": "analysis/crpm_world/canonical.ts",
+        "mode": "100644",
+        "blob": "f52effc9560d9cc2fb2227080208f4e99a58ca52",
+        "sha256": "df093ac1934f4ed88ba02986399b09276c2a696e55c8f415a3bd6018767d5e67",
+        "role": "canonical_json_and_sha256_rules"
+      },
+      {
+        "id": "CUT_SCHEMAS",
+        "path": "analysis/crpm_world/schemas.ts",
+        "mode": "100644",
+        "blob": "2c385a784d775bbb4e9bb50d0aeaf47e6bbab086",
+        "sha256": "9ffd7826bc125b7a7800b43499479d8ed00088778d87859c29b73a7f3fcbf75e",
+        "role": "cut_definition_validation_boundary"
+      },
+      {
+        "id": "V4_AUTHORITY",
+        "path": "shared/simulation.ts",
+        "mode": "100644",
+        "blob": "c9279c6f3b5d708ad0e54d32d2dca6d97234b4c0",
+        "sha256": "4f559090e41ef0428e9a6e5795f5ad666dbb780981283ebdc34dd7b93e392fb2",
+        "role": "initialization_command_transition_and_canonical_state"
+      },
+      {
+        "id": "MOVEMENT_CALIBRATION_SOURCE",
+        "path": "tests/crpm-world/cuts-and-transport.test.ts",
+        "mode": "100644",
+        "blob": "f79ffe6a9c502120811b61bf92708cde03f9ec71",
+        "sha256": "6975338b0d12b14ad31b868d2f7fd0d7980e4c7fd56b106194ebd98cf69dd990",
+        "role": "correlated_historical_calibration_exclusion_only"
+      }
+    ]
+  },
+  "aliasObservationCut": {
+    "cutId": "thin_visible_duel_v0",
+    "cutVersion": 2,
+    "canonicalName": "thin_visible_duel_v0@2",
+    "sourceCarrierKindLabel": "player-public",
+    "sourceLabelCaveat": "The source label and the word visible do not establish actual HUD or player visibility; D2P expressly keeps this authority-side cut distinct from the player's HUD.",
+    "cutDefinitionCanonicalDigest": "8323c4051e5e56e92852a0a2930e55c977d3493d1560b8403c4ca979cca6d8b1",
+    "cutDefinition": {
+      "schemaVersion": 1,
+      "cutVersion": 2,
+      "cutId": "thin_visible_duel_v0",
+      "sourceCarrierKind": "player-public",
+      "projectionDescription": "Retain only active actor, unit positions, and visible Stitching as a deliberately destructive control.",
+      "admissibleDomain": {
+        "schemaVersion": 1,
+        "scenarioIds": [
+          "v4-movement-support-twin-c0ffee11"
+        ],
+        "actionFamilies": [
+          "move"
+        ],
+        "policyFamilies": [
+          "declared-command-sequence"
+        ],
+        "seeds": [
+          3237998097
+        ],
+        "constraints": [
+          "One declared V4 move command is applied to each supplied full authority state."
+        ]
+      },
+      "protectedFamily": [
+        "Only the tempting visible duel readout is compared.",
+        "Any future split hidden by this readout must remain explicit aliasing residue."
+      ],
+      "includedSupport": [
+        "active-actor",
+        "unit-position",
+        "unit-stitching"
+      ],
+      "intentionallyForgottenDistinctions": [
+        "Movement budget, turn and revision counters, selected Relic, aim, alive flags, facing, phase, terrain, RNG state, projectile state, and terminal result."
+      ],
+      "excludedClaims": [
+        "This cut is intentionally incomplete and cannot establish deterministic continuation.",
+        "Matching visible duel readouts do not establish equal authority state, recurrence, or return."
+      ],
+      "deterministicContinuationClaim": "relational"
+    },
+    "exactProjection": {
+      "activeActor": "state.activeActor",
+      "units": "state.units.map in source array order",
+      "unitFieldsInSourceOrder": [
+        "id",
+        "x",
+        "y",
+        "stitching"
+      ]
+    },
+    "projectionSemantics": {
+      "activeActorMeaning": "authority state activeActor, not the submitted command actor",
+      "unitOrder": "preserve source state.units array order; do not sort by id",
+      "objectKeys": "deep-sort by UTF-16 code-unit comparison before canonical serialization",
+      "arrays": "preserve array order",
+      "classKey": "cut-${sha256(canonicalJson({cutId,cutVersion,projectedValue}))}",
+      "classEquality": "exact equality of cutId, cutVersion and the retained projected value; class-key equality is checked against retained values",
+      "excludedFromClassKey": [
+        "submitted actor",
+        "expectedTurn",
+        "next command",
+        "route id and route history",
+        "case or verdict labels",
+        "omission provenance",
+        "movementRemaining",
+        "revision",
+        "full-state digest"
+      ]
+    }
+  },
+  "immutableD2QAnchorChart": {
+    "role": "correlated_reuse_command_gate_anchor_only_not_alias_source",
+    "cut": "authority_v4@2",
+    "childObservation": "d2q-command-declaration@1",
+    "executableSourceCommit": "85f6ea945bd2b5b2aacb6b61cc2af52fe0c09ebb",
+    "resultDigest": "b538f5b6da82dc3b6655a9c0d89404e3b20592191886a9bb4280d6fe481d1615",
+    "terminalReturnBlob": "f992202b2be4d8e47e293a81325537ee28474f47",
+    "terminalReportBlob": "0f42af7a539c5dc2d2c85072189da2d02cc021c6",
+    "observationCoordinates": [
+      "world",
+      "initialStateDigest",
+      "command",
+      "submitted actor",
+      "expectedTurn"
+    ],
+    "stageBUse": "immutable structural anchor and source lineage only",
+    "forbiddenUse": "D2Q cases, outputs or verdicts must not form Stage B source equivalence classes, count as new evidence or enter the Stage B selection key"
+  },
+  "fixedFrame": {
+    "world": {
+      "rulesetId": "nimble-knots-artillery-v4",
+      "rulesetVersion": 4,
+      "formatVersion": 4,
+      "authoritySource": "shared/simulation.ts at bound Git bytes"
+    },
+    "cut": "thin_visible_duel_v0@2 source equality versus one-next-command authority readout",
+    "protectedTarget": "T_RETURN_COORDINATES/K_WP_ONE_NEXT_COMMAND_RETURN",
+    "domain": "The complete finite attempted-word domain and its naturally reachable accepted-prefix subset defined by routeDomain below.",
+    "routes": "Movement-only legal prefix words generated in registered shortlex order; no injected state and no empty-prefix source item.",
+    "horizon": "Exactly one applySimulationCommand call after each eligible endpoint; zero tick, network, UI, browser, device or playtest steps.",
+    "support": "Bound V4 source, fresh deterministic initialization, accepted and mutated legal prefixes, exact actor/turn derivation, immutable input, and complete route/pair retention.",
+    "tolerance": "Exact canonical equality with numeric tolerance 0 and no fuzzy, semantic, locale or timestamp comparison.",
+    "oracleInputBoundary": "Authority state may establish reachability, source class and protected readout. Calibration labels, D2Q case IDs, expected outcomes, reviewer knowledge and selected-pair labels may not enter generation, classing, decoding or outcome choice."
+  },
+  "routeDomain": {
+    "identity": "WP-015D2R:stage-b-natural-move-words:v1",
+    "definitionDeclaredComplete": true,
+    "observedReachableEndpointSet": "not_evaluated",
+    "seedSet": [
+      3237998097
+    ],
+    "seedHex": "0xC0FFEE11",
+    "calling": "wizard",
+    "initialization": "createSimulation(3237998097, 'wizard', V4_RULESET_ID)",
+    "commandAlphabet": [
+      -1,
+      1
+    ],
+    "forbiddenDirections": [
+      0
+    ],
+    "alphabetOrder": "-1 before +1",
+    "eligibleEndpointDepths": [
+      2,
+      4,
+      8
+    ],
+    "wordOrder": "shortlex: depth 2, then 4, then 8; lexicographic within a depth using -1 before +1",
+    "theoreticalAttemptedWordCountBeforeLegalityAndHoldout": 276,
+    "countDerivation": "2^2 + 2^4 + 2^8",
+    "routeId": "route-${sha256(canonicalJson({seed:3237998097,calling:'wizard',rulesetId:'nimble-knots-artillery-v4',directions:[...]}))}",
+    "generator": [
+      "Construct the exact 276 direction words in registered shortlex order without consulting outcomes.",
+      "If a word extends a prefix already retained in the rejected-prefix ledger, retain a pruned_by_rejected_prefix row and perform no simulation for that word.",
+      "Otherwise initialize a fresh V4 state for that word and replay its directions from the first element.",
+      "At each prefix step derive actor from current state.activeActor and expectedTurn from current state.turn, then call applySimulationCommand(current, actor, {type:'move',direction}, expectedTurn).",
+      "Require accepted true, mutated true, absent error and the registered current actor/turn rule. On first ordinary command rejection, retain the exact rejected prefix and transition, stop that word and prune all extensions.",
+      "An accepted transition that violates the registered mutation, actor/turn, source, invariant or input-immutability rule is a frame_support_failure, not an ordinary rejected-prefix row.",
+      "An endpoint is naturally reachable only when every route prefix passed. The empty prefix and nonregistered depths never become source items.",
+      "Before source projection or next-command decoding, remove each exact calibration occurrence listed in holdoutExclusion from source-item eligibility.",
+      "Project every remaining endpoint with thin_visible_duel_v0@2 and retain both exact projected value and class key.",
+      "Group endpoints by exact projected value, then form every unordered pair of distinct route occurrences within each class in canonical ascending routeId order.",
+      "Decode every eligible endpoint once with the fixed next command, compare every eligible pair, and exhaust the entire domain even after a positive split."
+    ],
+    "actorExpectedTurnRule": {
+      "prefixActor": "current state.activeActor",
+      "prefixExpectedTurn": "current state.turn",
+      "nextCommandActor": "endpoint state.activeActor",
+      "nextCommandExpectedTurn": "endpoint state.turn",
+      "requiredValuesThroughoutThisDomain": {
+        "activeActor": "player",
+        "turn": 0
+      },
+      "driftDisposition": "frame_support_failure"
+    },
+    "naturalReachability": {
+      "acceptedEveryPrefix": true,
+      "mutatedEveryAcceptedPrefix": true,
+      "stateInjection": false,
+      "adaptiveWidening": false,
+      "ordinaryRejectedPrefixRole": "domain_formation_negative_not_pair_outcome",
+      "firstRejectionRetained": true,
+      "rejectedBranchExtended": false
+    }
+  },
+  "holdoutExclusion": {
+    "identity": "WP-015D2R:stage-b-calibration-route-exclusion:v1",
+    "excludedOccurrences": [
+      {
+        "seed": 3237998097,
+        "calling": "wizard",
+        "directions": [
+          1,
+          -1
+        ],
+        "role": "historical_one_cycle_calibration_occurrence"
+      },
+      {
+        "seed": 3237998097,
+        "calling": "wizard",
+        "directions": [
+          1,
+          -1,
+          1,
+          -1,
+          1,
+          -1,
+          1,
+          -1
+        ],
+        "role": "historical_four_cycle_calibration_occurrence"
+      }
+    ],
+    "exclusionSemantics": "Exclude each occurrence individually. Neither may become a source item, receive the registered next-command readout, occur in an eligible pair, count as a witness or be run separately as a sentinel. Traversing the two-step word only as an internal prefix of another longer registered word is permitted.",
+    "maximumEligibleEndpointOccurrencesBeforeLegality": 274,
+    "emptyPrefixD2QExclusion": "The fresh initialization and all D2Q cases are not Stage B source items.",
+    "stateEquivalenceHoldout": "not_preregisterable_from_committed_calibration_artifacts",
+    "stateEquivalenceResidue": "The committed calibration artifacts publish route words and historical readouts but no endpoint-state digests. Excluding every state-equivalent occurrence would require the forbidden replay, so exact route-occurrence exclusion is the strongest current source-bound holdout.",
+    "evidenceIndependence": "All remaining routes reuse the same bound source, cut domain and seed and are correlated_reuse, never empirically independent."
+  },
+  "heldFixedAndAllowedVariation": {
+    "heldFixedByRegistration": [
+      "all bound Git source bytes and source identities",
+      "ruleset id/version/format, seed, calling and fresh initialization",
+      "cut id/version/projection/canonicalization/class-key algorithm",
+      "direction alphabet, order, endpoint depths and route generator",
+      "accepted-prefix and rejected-prefix rules",
+      "actor and expectedTurn derivation and required values",
+      "fixed next command and one-command horizon",
+      "decoder fields, outcome precedence and exact zero tolerance",
+      "holdout exclusion, stopping rule and negative retention",
+      "oracle/input boundary and output allow-lists"
+    ],
+    "heldFixedFromLegalPrefixHistory": [
+      "world and V4 authority implementation",
+      "seed and generated terrain",
+      "calling and unit identity/order",
+      "activeActor player, turn 0, tick 0 and awaiting_command phase",
+      "RNG state, selected Relic, aim, projectile and terminal-result coordinates unless a MOVE-only transition unexpectedly changes them",
+      "alive and Stitching values unless a MOVE-only transition unexpectedly changes them"
+    ],
+    "allowedToVaryNaturallyAcrossEligibleEndpoints": [
+      "ordered legal prefix word and registered endpoint depth",
+      "unit positions across source classes, while exact positions must agree inside one source class",
+      "facing",
+      "movementRemaining",
+      "revision",
+      "canonical full-state digest and exact route provenance"
+    ],
+    "unexpectedFixedCoordinateChange": "frame_support_failure"
+  },
+  "nextCommandAndDecoder": {
+    "nextCommand": {
+      "type": "move",
+      "direction": 1
+    },
+    "horizonAuthorityCalls": 1,
+    "horizonTickCalls": 0,
+    "invocation": "applySimulationCommand(endpointState, endpointState.activeActor, {type:'move',direction:1}, endpointState.turn)",
+    "sourceInputMutationAllowed": false,
+    "recordPerEndpoint": [
+      "route payload and routeId",
+      "endpoint canonical state digest, revision and movementRemaining before the next command",
+      "exact thin projected value and class key",
+      "derived actor and expectedTurn",
+      "accepted",
+      "mutated",
+      "error normalized to null or exact {code,message}",
+      "ordered exact authoritative events and their canonical digest",
+      "post-command canonical state digest, revision and movementRemaining",
+      "post-command thin projected value",
+      "proof that endpoint input canonical bytes were unchanged"
+    ],
+    "commandSemanticTuple": [
+      "accepted",
+      "mutated",
+      "error:null|{code,message}",
+      "ordered authoritativeEvents"
+    ],
+    "continuationSupportCoordinate": "post-command movementRemaining",
+    "provenanceCoordinates": [
+      "pre-command revision",
+      "post-command revision",
+      "pre-command canonical state digest",
+      "post-command canonical state digest",
+      "exact route history"
+    ],
+    "tolerance": {
+      "numeric": 0,
+      "comparison": "exact canonical JSON equality",
+      "hashRole": "identify exact retained bytes; hashes never substitute for decoded equality"
+    }
+  },
+  "outcomeContract": {
+    "primaryOutcomeEnumInPrecedenceOrder": [
+      "frame_support_failure",
+      "command_semantic_split",
+      "continuation_support_split",
+      "provenance_exact_state_only_split",
+      "no_target_relevant_split"
+    ],
+    "definitions": {
+      "frame_support_failure": "A bound source, world, cut, domain, legality, completeness, actor/turn, fixed support, input immutability, decoder, tolerance, holdout, oracle or output-retention condition fails. Ordinary rejected route prefixes are not frame failures.",
+      "command_semantic_split": "The frame passes and the exact command-semantic tuples differ.",
+      "continuation_support_split": "The frame and command-semantic tuple pass equally, but post-command movementRemaining differs.",
+      "provenance_exact_state_only_split": "The frame, command semantics and continuation-support coordinate agree, but a registered revision, canonical state digest or exact route-provenance coordinate differs.",
+      "no_target_relevant_split": "The frame passes and command semantics plus continuation support agree; route distinction alone does not elevate the outcome."
+    },
+    "componentBooleansRetained": [
+      "commandSemanticEqual",
+      "postMovementRemainingEqual",
+      "preRevisionEqual",
+      "postRevisionEqual",
+      "preStateDigestEqual",
+      "postStateDigestEqual",
+      "routeHistoryEqual"
+    ],
+    "targetRelevant": {
+      "command_semantic_split": true,
+      "continuation_support_split": true,
+      "provenance_exact_state_only_split": false,
+      "no_target_relevant_split": false,
+      "frame_support_failure": false
+    },
+    "carrierGuard": "Revision inequality, pre/post state-digest inequality, route inequality or their combination alone never certifies a continuation-bearing carrier, licenses Tau or sets targetRelevant true. A target-relevant split only creates a candidate result for later review."
+  },
+  "stoppingAndRetention": {
+    "normalStoppingRule": "Exhaust the complete registered attempted-word domain, every eligible source class and every eligible pair; never stop at the first positive.",
+    "failClosedRule": "On source, frame, decoder, completeness or retention drift, stop execution, retain all partial records and classify the package invalid with frame_support_failure; do not salvage a positive pair.",
+    "adaptiveWidening": false,
+    "negativeResultsRetained": [
+      "ordinary rejected-prefix and pruned-extension rows",
+      "no eligible naturally reachable endpoint",
+      "no eligible alias class after the exact holdout",
+      "eligible alias classes exist but every pair has no_target_relevant_split",
+      "only provenance_exact_state_only_split outcomes",
+      "every command-semantic and continuation-support comparison with exact equality",
+      "all frame/support failures and partial results"
+    ],
+    "noResultSuppression": true,
+    "noSelectedWitnessBeforeCompleteEnumeration": true,
+    "reopeningRule": "Any changed source byte, seed, calling, cut, projection, route alphabet/order/depth, reachability rule, holdout, next command, horizon, decoder, tolerance, oracle boundary, outcome rule, retention rule or output path requires a new preregistration version before execution."
+  },
+  "prospectiveWitnessInterface": {
+    "observed": {
+      "W": null,
+      "W_status": "absent",
+      "Omega_W": null,
+      "Omega_W_status": "not_evaluated",
+      "P_W": null,
+      "P_W_status": "not_evaluated",
+      "N_W": null,
+      "N_W_status": "not_evaluated",
+      "J_W": "not_applicable"
+    },
+    "plannedWitnessContract": {
+      "O_W": "thin_visible_duel_v0@2 exact projected value and source class plus the exact one-next-command decoder record",
+      "B_W": "fresh V4 initialization and only accepted, mutated MOVE prefixes from the complete registered finite attempted-word domain",
+      "S_W": "bound authority/cut bytes, legal route provenance, exact actor/turn derivation, endpoint support, decoder provenance and immutable input",
+      "plannedOmega_W": "the registered world, cut, target, domain, routes, horizon, support, zero tolerance and oracle/input boundary"
+    },
+    "desiredProtectedFamily": [
+      "one-next-command accepted/mutated/error/event semantics",
+      "post-command movementRemaining as declared continuation support",
+      "recoverable exact route and state provenance without promoting provenance-only differences"
+    ],
+    "anticipatedResidue": [
+      "state-equivalent calibration-neighborhood exclusion is unavailable without forbidden replay",
+      "player-public visibility and public formation",
+      "credible player response and timing",
+      "aim/fire, projectile, tick, network, UI, browser/device and playtest behavior",
+      "global carrier minimality, ProductAuthority, mathematical placement and P5"
+    ]
+  },
+  "selectedTransition": {
+    "transitionId": "TAU-WPV4-RETURN-01A",
+    "type": "reorganize",
+    "status": "candidate_unlicensed",
+    "from": "C_D2Q_COMMAND_GATE",
+    "to": "C_ONE_NEXT_COMMAND_CONTINUATION",
+    "decodabilityAcrossMove": "not_evaluated",
+    "witnessSupport": "absent",
+    "automaticLicenseFromTargetRelevantSplit": false,
+    "licenseCondition": "Only a later separately reviewed result may determine whether the D2Q protected readout and new continuation record remain decodable/re-enterable across the move while residue and provenance remain recoverable."
+  },
+  "evidenceCovariance": {
+    "class": "correlated_reuse",
+    "reason": "Stage B reuses the bound V4 authority, thin-cut source, sole admitted seed and calibration lineage. New deterministic route records may improve discrimination and recoverability but do not become empirically independent merely because they are newly executed.",
+    "d2qRole": "immutable_structural_reference",
+    "calibrationRole": "excluded_hypothesis_and_harness_source_not_fresh_result"
+  },
+  "outputContracts": {
+    "currentPreregistrationPass": {
+      "authorization": true,
+      "allowedTrackedOutputs": [
+        {
+          "path": "docs/evidence/wp-015d2s.json",
+          "status": "A",
+          "mode": "100644"
+        },
+        {
+          "path": "docs/planning/wp-015d2r-stage-b-one-next-command-search-contract-v1.md",
+          "status": "A",
+          "mode": "100644"
+        },
+        {
+          "path": "analysis/crpm_world/navigation/wp-015d2r-stage-b-one-next-command-search-registration-v1.json",
+          "status": "A",
+          "mode": "100644"
+        }
+      ],
+      "existingPathChangesAllowed": false
+    },
+    "futureExecutionPass": {
+      "authorization": false,
+      "requiredNewOwnerAuthorization": true,
+      "requiredStartingSource": "durable committed Stage B v1 preregistration source plus its reviewed terminal evidence",
+      "allowedTrackedOutputs": [
+        {
+          "path": "docs/evidence/wp-015d2t.json",
+          "status": "A",
+          "mode": "100644",
+          "role": "separate_execution_work_evidence"
+        },
+        {
+          "path": "analysis/crpm_world/navigation/assess-wp-015d2r-stage-b-one-next-command-search-v1.ts",
+          "status": "A",
+          "mode": "100644",
+          "role": "new_bounded_executor"
+        },
+        {
+          "path": "scripts/run-wp-015d2r-stage-b-one-next-command-search-v1.ts",
+          "status": "A",
+          "mode": "100644",
+          "role": "new_bounded_runner"
+        },
+        {
+          "path": "tests/crpm-world/wp-015d2r-stage-b-one-next-command-search-v1.test.ts",
+          "status": "A",
+          "mode": "100644",
+          "role": "new_contract_and_destructive_control_test"
+        },
+        {
+          "path": "docs/planning/wp-015d2r-stage-b-one-next-command-search-report-v1.md",
+          "status": "A",
+          "mode": "100644",
+          "role": "human_result_report"
+        },
+        {
+          "path": "docs/evidence/wp-015d2r-stage-b-v1/result.json",
+          "status": "A",
+          "mode": "100644",
+          "role": "machine_result"
+        }
+      ],
+      "allowedIgnoredRawOutputs": [
+        "test-results/crpm-world/wp-015d2r-stage-b-v1/route-attempts.jsonl",
+        "test-results/crpm-world/wp-015d2r-stage-b-v1/rejected-prefixes.jsonl",
+        "test-results/crpm-world/wp-015d2r-stage-b-v1/eligible-endpoints.jsonl",
+        "test-results/crpm-world/wp-015d2r-stage-b-v1/alias-pairs.jsonl",
+        "test-results/crpm-world/wp-015d2r-stage-b-v1/frame-support-failures.jsonl"
+      ],
+      "preregistrationFilesMutable": false,
+      "existingD2PD2QStageAOrSealedExecutorChangesAllowed": false,
+      "stageCReviewReturnIncluded": false
+    }
+  },
+  "authorizationState": {
+    "stageBPreregistrationSource": "authorized",
+    "stageBPreregistrationPublication": "pending_commit_and_read_only_review",
+    "stageBRouteEnumeration": "not_authorized",
+    "stageBSearchExecution": "not_authorized",
+    "stageBCalibrationReplay": "not_authorized",
+    "stageBResultOrReport": "not_authorized",
+    "stageCIndependentReviewOrCrossRepositoryReturn": "not_authorized",
+    "playerObservationOrTimingLane": "not_authorized",
+    "gameplayChange": false,
+    "sealedExecutorChange": false,
+    "productAuthorityDecision": false,
+    "placementOrP5": false
+  },
+  "validationContract": {
+    "strictJson": "reject duplicate keys, duplicate IDs, duplicate source rows, duplicate output rows and duplicate holdout occurrences",
+    "parity": "compare package/support/child IDs, source and terminal commits, cut and projection, route domain/generator, holdout, next command, actor/turn, horizon, decoder, tolerance, fixed/varying coordinates, outcomes, witness states, Tau status, evidence class, output lists, authorization and stop across machine registration, human contract and work evidence",
+    "sourceAudit": "recompute each bound commit/path/mode/blob/Git-byte SHA-256 and the embedded cut-definition canonical digest",
+    "preservationAudit": "require every Stage A and listed D2P/D2Q artifact at the preregistration terminal to retain the exact bound mode and blob",
+    "rangeAudit": "bind every raw changed-path/status/mode/blob row from Stage A terminal through source and terminal commits; reject renames, deletes, nonregular modes and undeclared paths at endpoints and intermediate commits",
+    "governedChecks": [
+      "npm run check:compliance",
+      "git diff --check",
+      "identified read-only committed-source review"
+    ],
+    "executionEvidenceExpected": false
+  },
+  "firstGovernedStop": {
+    "condition": "The three source-only preregistration artifacts are committed, exact audits pass, identified read-only review is recorded, and the evidence carrier is closed without execution.",
+    "stopStatement": "WP-015D2R Stage B preregistration stopped; Stage B execution not opened.",
+    "W": "absent",
+    "tau": "candidate_unlicensed",
+    "stageBExecution": "closed",
+    "stageC": "closed",
+    "productAuthority": "none",
+    "mathematicalPlacementImplication": "none",
+    "p5": "closed"
+  }
+}
