@@ -1,6 +1,6 @@
 {
   "id": "WP-015D2U",
-  "status": "in_progress",
+  "status": "complete",
   "starting_commit": "6e47d42b691effe5d34c5c050302def40ae40181",
   "branch": "codex/wp-015d2r-stage-c-reconstruction-v1",
   "initial_worktree": "clean",
@@ -13,7 +13,7 @@
   "scope": [
     "pilot_activation: required. Stage C can accept a material cross-world witness re-entry and revise a carrier chart, so one read-only crpm_route_tracer, crpm_covariance_auditor and crpm_reentry_reviewer must inspect the same fixed source boundary before governing synthesis; their overlap is correlated_reuse, not empirical independence or a vote.",
     "The actual entry pilot completed before source edits at Worms HEAD 6e47d42b691effe5d34c5c050302def40ae40181/tree 098d17d9d2598406a0c1a9222c07bd94f5c29aab and CRPM method HEAD 8c64353f4c8f5504af3e30ca175d9422ca7ae608. Route trace, covariance and re-entry returns independently matched the bounded Stage B facts, found no substantive disagreement, preserved target-relative live-carrier wording residue, classified every combined fact as correlated_reuse and kept HT11/Tau/admission stopped. Their exact normalized returns are recorded in the machine registration and human contract.",
-    "A fresh post-result three-role audit is still mandatory. The review return must record actual reviewer-authored returns bound to the committed source/result/report; role names, templates, expected findings, the entry audit or machine-derived defaults cannot substitute for that evidence.",
+    "The fresh post-result three-role audit completed against committed source e09b253356843342bd8077403668911cad539b46 and result 0dda7a7d91d32dcd8815ba6fd0beec2065bed220. The durable review return records all three actual reviewer-authored returns, exact shared identities and the main-agent governing synthesis; templates, expected findings, the entry audit and machine-derived defaults were not substituted for that evidence.",
     "Ordering disclosure: the clean entry HEAD and worktree were inspected first, but this in-progress evidence file was patched immediately after the contract and registration in the same source-authoring turn instead of before them. No reconstructor, runner, test, result, authority, route or gameplay action preceded the evidence file; review must retain and disposition this workflow-ordering deviation rather than conceal it.",
     "Implement only parent WP-015D2R child WPV4-NAVIGATOR-01B Stage C from entry commit 6e47d42b691effe5d34c5c050302def40ae40181, binding preregistration source 65b2153714f237964354da3791fe4af4694a0594, preregistration terminal 6e88418a6a90281976dd5f6dcf2e6db55d9e4009, execution source 439bba3d92a4b4ab3216ad3fa987e90b983dd2c0, result d340a2286598a1fd399dfa23ba55426185f0e96d, terminal evidence 6e47d42b691effe5d34c5c050302def40ae40181 and result digest db073dfe67e0687253fe284832b45fad051b463edfd2e8ac9d3fb862b86c3a11.",
     "Create exactly nine additive tracked outputs across four durable stages: six source outputs (this evidence carrier, human contract, machine registration, independent reconstructor, runner and focused/destructive test); two separately committed result outputs (machine result and compact human report); and one post-result review return at docs/evidence/wp-015d2r-stage-c-v1/review-return.json. Do not create the review return before the result commit and audit.",
@@ -57,11 +57,158 @@
   ],
   "sorcerers_reference_used": false,
   "clean_room_records": [],
+  "check_results": [
+    {
+      "command": "exact Git-object source binding and immutable-predecessor audit",
+      "status": "pass",
+      "detail": "Source commit e09b253356843342bd8077403668911cad539b46/tree b9c02fa5c3ad4b8ce0f9ee0f6fa1c3abea6071ab contains exactly six A/100644 source outputs and source digest 1981a2340ce9c9fde6c8146c2f092c41874c548234696af870d046f5dd7a8ef5. All fifteen Stage A, Stage B, D2Q, cut and canonical predecessor identities remained exact; no authority, gameplay, dependency, product or CRPM byte changed."
+    },
+    {
+      "command": "focused Stage C contract, independence and destructive-control tests",
+      "status": "pass",
+      "detail": "Retained targeted evidence passed the exact registration/output group 2/2, D2Q/Omega/result group 6/6, admitted/blocked review group 2/2, and previously completed reconstruction, lifecycle, range, parity, witness, carrier, Tau and chart controls. The separate 32-test aggregate is explicitly interrupted_no_tap and is not counted as this pass."
+    },
+    {
+      "command": "strict duplicate-key, duplicate-row, duplicate-ID and output-path rejection",
+      "status": "pass",
+      "detail": "Targeted strict-JSON and mutation controls rejected duplicate keys, endpoint/pair/cross-tab rows, identifiers, unauthorized output paths, coherent rehash attacks and review-return reservation drift."
+    },
+    {
+      "command": "destructive fixed-frame and independent-boundary mutations across world, cut, target, domain, routes, horizon, support, numeric-zero tolerance, oracle/input boundary and every prohibited import/action",
+      "status": "pass",
+      "detail": "The registration and source-boundary controls froze every declared fixed-frame coordinate, numeric tolerance 0 and each prohibited import/action. Mutations withdrew readiness; the implementation imports no Stage B builder/semantic helper and performs no authority, route-generation, tick or raw-output operation."
+    },
+    {
+      "command": "independent endpoint/class/pair/outcome/cross-tab/constraint reconstruction",
+      "status": "pass",
+      "detail": "Committed Stage B result bytes independently reproduced 274 eligible endpoints, 9 thin source classes, 7 aliased classes, all 7,378 pair identities, counts 0/1099/14/2983/3282, the ten-row cross-tab, 1,113 target-relevant unequal-pre-budget pairs, and zero same-depth or equal-pre-budget target-relevant pairs. Result semantic digest is fce3bbdb8061d6fc758973eb0bc7d51b5ca579cc0048f920dbb564c55993cbd4."
+    },
+    {
+      "command": "non-vacuous Q_support and narrower Q_command implication controls",
+      "status": "pass",
+      "detail": "Q_support retains 6,265 equality pairs with zero complete registered one-command target counterexamples on the finite domain and is explicitly nonunique. Q_command retains 6,279 equality pairs with zero command-semantic failures and fourteen separately retained continuation-support-coordinate failures."
+    },
+    {
+      "command": "witness, semantic-readiness, carrier-role, Tau-obligation, candidate-chart and residue derivation controls",
+      "status": "pass",
+      "detail": "The result derives W present, Omega_W evaluated_exact, P_W/N_W observed and J_W complete only for the bounded registered audit while admission stays pending before review. Review commit 0581694b568461ecc556d79a236fe5ade46746d8 then derives navigatorAdmission reviewed_bounded, Tau licensed_for_bounded_stage_c_reentry_only and chart reviewed_bounded while every successor and promotion gate remains closed."
+    },
+    {
+      "command": "state-material separation and destructive withdrawal across audit predecessor provenance, domain-transition provenance, re-entry material, absent live recursive state and bounded nonrecursive pre-command budget",
+      "status": "pass",
+      "detail": "The exact separation ledger digest 2816591a3e6a5188971bab0cd63b9404378812751e92b1a59413cb3be5a7d6a6 binds fifteen authenticated predecessor sources, route-history/revision transition provenance, exact-state re-entry support, absent live recursive state and pre-command movementRemaining as a bounded nonrecursive live carrier. Category mutations withdraw readiness."
+    },
+    {
+      "command": "strictly derived D2Q four-readout and actor/expectedTurn verdict comparison",
+      "status": "pass",
+      "detail": "Stage C strictly parsed the immutable D2Q review return and recovered every case/readout/control value plus complete actor and expectedTurn ablations without replay. Artifact, blob, row-digest or result-digest presence alone was insufficient; value mutations were rejected."
+    },
+    {
+      "command": "staged source; executable/result/report; result/report/review-return; and review-return/final-evidence parity",
+      "status": "pass",
+      "detail": "Source, generated result/report and separate review-return stages preserved exact parity. Result/report parity digest is f9d1d3c696d5530f0e9a9ab46d3e0ea1a748888980496814702625a297d8df2d; review parity digest is c883ad3920fe913833b8d39730060a917763496a87dd2d70557d54aa3e71ec02; review-return digest is ba8c2a5533f64eeed89df7235f5ca8b66946bc039bb0768c3885302a4c9c26ba."
+    },
+    {
+      "command": "exact source/result/review-return/terminal changed-path/status/mode/blob range audit with endpoint and intermediate status enforcement",
+      "status": "pass",
+      "detail": "Source-to-result and entry-to-result digests are ddc2db77e6bfb18316fd5e8254f2b0c8066588ebb48eca64928fe5cc8185ff10 and c97486e789db7828323efb6282a1bb8c2fa48a98172b4db29cd93819084a17ec. Result-to-review adds only review-return.json as A/100644 with digest c45cf50fcdf0814e6ec0add9347df71a9dad2dffb43228caa5811fdec26729d1; entry-to-review contains exactly nine A/100644 paths with digest fb3fa4da792b6a9d5b59979eb648381410d9b508624c99d11a31a22f97eeab7c. Terminal closeout modifies only this already-added evidence path and is verified externally after commit to avoid circular self-identity."
+    },
+    {
+      "command": "npm run check:crpm-world-types",
+      "status": "pass",
+      "detail": "The project CRPM-world TypeScript check passed on the stabilized source and final closeout tree."
+    },
+    {
+      "command": "affected bounded canonical validation lineage without Stage B or calibration replay",
+      "status": "pass",
+      "detail": "The affected bounded Stage C source groups and both committed no-authority verifiers passed without executing Stage B, replaying calibration, enumerating routes or calling the simulation authority. The complete aggregate coexistence lane remains the separately recorded accepted gap."
+    },
+    {
+      "command": "npm run check:compliance",
+      "status": "pass",
+      "detail": "Compliance passed on the stabilized source, after the durable result/review, and on terminal closeout. No compliance, schema, dependency, lock, authority or gameplay file changed."
+    },
+    {
+      "command": "npm run build",
+      "status": "pass",
+      "detail": "Production server/client build passed. Vite emitted only the repository's existing large-chunk advisory."
+    },
+    {
+      "command": "git diff --check",
+      "status": "pass",
+      "detail": "Working, staged, source, result, review-return and terminal whitespace checks passed; checkout line-ending notices do not alter committed Git-byte identities."
+    },
+    {
+      "command": "completed entry-HEAD three-role CRPM pilot plus fresh post-result three-role reviewer-authored returns, actual governing synthesis, and identified committed-source, result, review-return and boundary reviews",
+      "status": "pass",
+      "detail": "Both required three-role panels completed. The fresh route, covariance and re-entry returns bind identical source/result/report/range/predecessor identities, classify overlap as correlated_reuse, report no blockers or substantive disagreement, preserve the aggregate gap as a reopening condition and support only bounded Stage C admission/Tau licensing. The main-agent synthesis used no vote."
+    }
+  ],
+  "reviews": [
+    {
+      "role": "crpm_entry_route_tracer",
+      "reviewer": "Codex /root/stage_c_route_trace — entry-HEAD route audit",
+      "decision": "pass",
+      "detail": "At 6e47d42b691effe5d34c5c050302def40ae40181, reconstructed the exact Stage B route, bounded counts and Q_support/Q_command residue while keeping W/Tau/admission stopped before source implementation."
+    },
+    {
+      "role": "crpm_entry_covariance_auditor",
+      "reviewer": "Codex /root/stage_c_covariance — entry-HEAD covariance audit",
+      "decision": "pass",
+      "detail": "Classified every combined support path as correlated_reuse, retained route-depth/budget/admissibility/revision co-formation and rejected empirical, causal, minimal or recursive promotion."
+    },
+    {
+      "role": "crpm_entry_reentry_reviewer",
+      "reviewer": "Codex /root/stage_c_reentry — entry-HEAD re-entry audit",
+      "decision": "pass",
+      "detail": "Confirmed that no current exact Stage C artifact existed at entry and kept navigator admission, Tau, landfall, ProductAuthority, placement and successor execution closed pending durable source/result/review."
+    },
+    {
+      "role": "worms_port_committed_source_reviewer",
+      "reviewer": "Codex /root/stage_c_final_source_audit — committed source audit",
+      "decision": "pass",
+      "detail": "Confirmed numeric tolerance 0, value-by-value D2Q recovery, complete registration frame/boundary binding and consistently closed successor execution; found no source blocker and changed no file."
+    },
+    {
+      "role": "crpm_post_result_route_tracer",
+      "reviewer": "Codex /root/stage_c_route_trace — committed result route audit",
+      "decision": "pass",
+      "detail": "Bound e09b253356843342bd8077403668911cad539b46 to 0dda7a7d91d32dcd8815ba6fd0beec2065bed220, reproduced exact identities and ranges, and supported only reviewed_bounded admission and narrow Tau re-entry licensing."
+    },
+    {
+      "role": "crpm_post_result_covariance_auditor",
+      "reviewer": "Codex /root/stage_c_covariance — committed result covariance audit",
+      "decision": "pass",
+      "detail": "Confirmed Q_support is finite and nonunique, D2Q and Stage B support remain correlated reuse, and the interrupted aggregate is a reopening condition rather than new evidence or a wider license."
+    },
+    {
+      "role": "crpm_post_result_reentry_reviewer",
+      "reviewer": "Codex /root/stage_c_reentry — committed result re-entry audit",
+      "decision": "pass",
+      "detail": "Falsified broader return claims, accepted W/Omega/P/N/J only in the bounded frame, found no role blocker and supported the separate review-return state while leaving every successor, recursion, product and placement gate closed."
+    },
+    {
+      "role": "cross_repository_coordinator",
+      "reviewer": "Codex main writer — governing Stage C synthesis",
+      "decision": "pass",
+      "detail": "Admitted the exact composition without vote as support_qualified_for_bounded_stage_c_reentry_only. The aggregate coverage waiver is explicit, mathematical evidence remains correlated_reuse, CRPM is untouched, and no successor world execution or wider promotion is opened."
+    }
+  ],
+  "skipped_checks": [
+    "The complete 32-top-level-test Stage C aggregate invocation was terminated at the user's explicit direction after PT2H35M53S of stable responsive CPU-bound work with no emitted TAP. Its disposition is interrupted_no_tap, never pass; incomplete aggregate coexistence coverage is accepted only for this exact bounded return and must reopen after harness-runtime repair, on source drift or before wider reuse.",
+    "Stage B execution, the Stage B semantic builder/runner, route enumeration, authority simulation, calibration replay, D2Q replay and ignored raw outputs were not run or used as the Stage C reconstruction answer.",
+    "Browser, UI, player-observation, timing, physical-device and playtest lanes were not run because public formation, credible response, gameplay and player-facing boundaries remain closed.",
+    "npm audit was not run because package.json and package-lock.json are unchanged and dependency work is outside the allowed Stage C output set.",
+    "No gameplay, authority, adapter, sealed-executor, cut, schema, dependency, product, CRPM, L1-L3, graph or formal owner was changed. No P5 or successor contract was authored, no successor execution occurred, and no PR, merge or push was performed."
+  ],
   "residual_risks": [
-    "At entry HEAD no exact Stage C composition exists; the strongest preimplementation claim is support_qualified. The result can establish only readiness for committed review while navigator admission stays pending and TAU-WPV4-RETURN-01A stays candidate_unlicensed; only a later review return can change those states.",
-    "The independent implementation path reuses the same Stage B observations, source cut, seed and authority lineage. Its mathematical evidence remains correlated_reuse rather than empirically independent.",
-    "The finite source perfectly co-forms route depth, pre/post movement budget, next-move admissibility and revision patterns. Stage C can test finite sufficiency but cannot identify causation or unique/global minimality from that covariance.",
+    "The independent implementation route reuses the same Stage B observations, cut, seed and authority lineage. Its mathematical evidence and all reviewer agreement remain correlated_reuse rather than empirically independent.",
+    "The finite source perfectly co-forms route depth, pre/post movement budget, next-move admissibility and revision. Q_support is sufficient and nonunique only for the exact registered one-command domain; Stage C cannot identify causation or unique/global minimality from this covariance.",
+    "The complete 32-test aggregate emitted no TAP before user-authorized termination after PT2H35M53S. Targeted controls, committed verification and source review passed, but aggregate coexistence coverage remains incomplete; reopen after harness-runtime repair, on any source change after e09b253356843342bd8077403668911cad539b46, or before wider reuse.",
     "Public formation, other seeds/routes/actions, longer horizons, recursive continuation, player observation/timing, UI/browser/device and playtest behavior remain closed residue.",
-    "The complete 32-test aggregate invocation did not finish and emitted no TAP before user-authorized termination. Targeted controls and source review passed, but aggregate coexistence coverage remains incomplete under an explicit coordinator waiver; reopen after harness-runtime repair, on any post-source-commit Stage C source change, or before wider reuse."
+    "TAU-WPV4-QSUPPORT-LONGER-HORIZON-01 is recommendation-only. Its separate preregistration is the sole suggested next transition; Stage C does not author or execute it.",
+    "TAU-WPV4-RETURN-01A is licensed only for bounded Stage C navigator re-entry. This is not landfall, gameplay authority, ProductAuthority, mathematical placement, a public carrier, recursive closure or a wider WP-015D2 return.",
+    "The source-authoring evidence-order deviation remains disclosed: contract and registration were patched immediately before the in-progress evidence file in the same authoring turn. No executable, result or external operation preceded the evidence carrier.",
+    "This tracked evidence preserves source, result and review commits, blobs, semantic/parity/range digests and the accepted coverage gap, but cannot self-hash its own containing terminal commit. Re-entry must retain the externally verified terminal commit, evidence blob and exact entry-to-terminal range digest."
   ]
 }
