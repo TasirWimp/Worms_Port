@@ -1,6 +1,6 @@
 {
   "id": "WP-015D2W",
-  "status": "in_progress",
+  "status": "complete",
   "starting_commit": "7f8fe6108ae26a0e25bb3ca185dab6c1f86c662f",
   "branch": "codex/wp-015d2w-lane-g-contract-v0",
   "initial_worktree": "clean",
@@ -18,6 +18,10 @@
     "Current allowed CRPM outputs are exactly docs/architecture/definition_target_admission/returns/DTAP-WP015D2W_Lane_G_Documentation_Review_Return_2026-08-30_v0.yaml, docs/architecture/definition_target_admission/README.md, and logs/CRPM-Work-Log.md.",
     "Preserve legal/source-manifest.json byte-identical at blob 8d6ab2cae64a13f367bd3d7fef59368c13888c91 and SHA-256 ab3da23b9d25f18cd128cb932df6f1038231b3f81f8031d770aaca1547ff5328; no external source row is needed.",
     "pilot_activation: not_required because this pass preregisters only a future Worms-owned observation boundary, accepts no material cross-world witness, and changes no verdict.",
+    "Durable Worms source commit f0f3c53d2eec2546cd8dbc145b6a7e99ddc31368/tree 02ce3bf469934b802c28c904149aafeda5eb519d is a clean direct child of the bound Worms entry. Its exact four-path canonical range digest is b42079fda691e5973a99ceae15c442b47b74a7b4540e5421a431dad9007f4e45.",
+    "Worms source Git-byte identities: this evidence b5678fc0f10522307fdd9e4af39c4980943cfecb/18d3b54b76a1f1f607c686705c2f16e17c22343835fc1542a464eed227bae3b6; implementation_plan.md 8ad1b41aec96698981d2b7b47ddee807c5843752/5bacb83a5ef634e8ac6d564f6c6551145c8de52540a8fba4660038368ac93444; D2G review f91e368437ce8d144e36633324e6696613f9ff13/0ab4f7e06f091d6d8f1bbb1e661f01eca4317ece5c723f2b05e0a0414ce019fc; Lane G contract 2d8fb7847aca011c5522f9bc1142f41a0fbb6d50/d913cee3682ba8747f160c867ddef8345554dd1922a488367bb1e6e233e4a7bc.",
+    "Durable CRPM review commit d00a79d9fd895d29fa5d7e7fc44c7a52dade075d/tree 623d2ecb329add4e422cd53f99a484b732f41ba9 is a clean direct child of the bound CRPM entry. Its exact three-path canonical range digest is 8c81a6dafaacb5b722224be5ac429338f67bc90eda11bedb092c3d6966e7f948; the review return is blob b4afea69f4db9933ad103b405b952afdbb3832d4/SHA-256 d5efbff783e951189ae5478d73131a3c223c94a153754a59664fe6c7aef71b14.",
+    "The source-bound coordinator review passed for preregistration only. It is correlated_reuse for recoverability and anti-promotion control, not player evidence, empirical independence, a D2O verdict, or execution authority.",
     "lane_g_preregistration_parity:{\"record_id\":\"WP-015D2W-LANE-G-PREREGISTRATION-v0\",\"milestone_id\":\"WP-015D2W\",\"target\":\"player_visible_formation_and_credible_response_timing\",\"method\":\"separately_bound_player_observation_and_timing_contract\",\"source_entry\":{\"crpm_commit\":\"e14b661ff521cbc398b0bd6245e8f54f0388a37b\",\"worms_commit\":\"7f8fe6108ae26a0e25bb3ca185dab6c1f86c662f\"},\"environment_id\":\"LG-SGS22-NIMIQPAY-SIDEWAYS-RIGHT-v0\",\"build_source\":\"7f8fe6108ae26a0e25bb3ca185dab6c1f86c662f\",\"client\":{\"route\":\"/\",\"mode\":\"practice\",\"calling\":\"wizard\",\"ruleset\":\"nimble-knots-artillery-v4\",\"loomkeeper_difficulty\":\"standard\"},\"formation_event\":\"first_two_consecutive_frames_of_loomkeeper_cast_formation_ready_with_matching_visible_status\",\"response_window_start\":\"first_frame_after_formation_with_an_existing_player_gameplay_control_visible_and_enabled\",\"response_window_stop\":\"earlier_of_authority_acceptance_of_an_effective_response_or_authoritative_threat_resolution\",\"credible_response\":\"at_least_one_predeclared_effective_existing_v4_gameplay_command_authority_accepted_before_the_threatened_shot_becomes_unavoidable\",\"trial_domain\":\"first_naturally_occurring_damaging_loomkeeper_shot_in_each_new_practice_clash\",\"stopping_rule\":\"three_usable_trials_or_six_attempts_or_PT20M_whichever_occurs_first\",\"Lane_G_identity_recorded\":true,\"Lane_G_current_evidence\":\"none\",\"Lane_G_execution_open\":false,\"D2O_player_information_timing_gate\":\"unsatisfied\",\"active_execution_pointer\":\"WP-015D2A\",\"aggregate_debt\":\"interrupted_no_tap\",\"ProductAuthority\":\"none\",\"mathematical_placement_implication\":\"none\",\"gameplay_change\":false,\"P5_open\":false,\"landfall_claim\":false,\"pilot_activation\":\"not_required\",\"parity_digest\":\"7da9340551ecae4df7a29bf7287759fd0cb655444dc3c9057456175ad065c1b1\"}"
   ],
   "non_goals": [
@@ -40,14 +44,70 @@
   "deterministic_seeds": [],
   "sorcerers_reference_used": false,
   "clean_room_records": [],
-  "check_results": [],
-  "reviews": [],
-  "skipped_checks": [],
+  "check_results": [
+    {
+      "command": "strict JSON and YAML duplicate-key rejection",
+      "status": "pass",
+      "detail": "Strict loaders accepted the evidence JSON, three Markdown YAML parity blocks, and CRPM YAML review return without duplicate keys. The focused CRPM orbit entry also passes its required metadata schema."
+    },
+    {
+      "command": "exact CRPM and Worms source identity verification",
+      "status": "pass",
+      "detail": "Both expected entry commits and trees resolve exactly after fresh origin fetch. The Worms source commit and CRPM review commit are clean direct children of those entries, and every declared path blob and raw Git-byte SHA-256 reproduces."
+    },
+    {
+      "command": "exact Worms source, CRPM review, and Worms terminal changed-path/range audits",
+      "status": "pass",
+      "detail": "The Worms entry-to-source range contains exactly four allowed documentation paths and recomputes digest b42079fda691e5973a99ceae15c442b47b74a7b4540e5421a431dad9007f4e45. The CRPM entry-to-review range contains exactly three allowed documentation paths and recomputes digest 8c81a6dafaacb5b722224be5ac429338f67bc90eda11bedb092c3d6966e7f948. Terminal staging modifies only this already-added evidence path; its containing commit, blob, and exact terminal range are verified externally to avoid self-reference."
+    },
+    {
+      "command": "semantic parity and canonical digest verification across all carriers",
+      "status": "pass",
+      "detail": "The contract, implementation plan, D2G navigation surface, source evidence, and CRPM review return contain deep-equal Lane G parity objects whose canonical digest is 7da9340551ecae4df7a29bf7287759fd0cb655444dc3c9057456175ad065c1b1."
+    },
+    {
+      "command": "byte-identical legal/source-manifest.json and parent-artifact preservation",
+      "status": "pass",
+      "detail": "legal/source-manifest.json remains byte-identical at blob 8d6ab2cae64a13f367bd3d7fef59368c13888c91/SHA-256 ab3da23b9d25f18cd128cb932df6f1038231b3f81f8031d770aaca1547ff5328. The source-bound parent handoff/return artifacts and compact parent parity records are outside both exact changed-path ranges."
+    },
+    {
+      "command": "npm run check:compliance",
+      "status": "pass",
+      "detail": "The work-package registry accepts WP-015D2W and the full asset, runtime-inventory, generation-component, import-boundary, package-license, work-package, and clean-room compliance suite passes."
+    },
+    {
+      "command": "source-bound coordinator review with pilot_activation not_required",
+      "status": "pass",
+      "detail": "The exact e14b661-to-d00a79d range passed whitespace, strict run-registry, and active-governance lifecycle checks. The repository-wide orbit checker retains 53 historical baseline errors, but the new entry passes in isolation and adds zero errors; all 12 orbit-checker unit tests pass."
+    },
+    {
+      "command": "git diff --check in both repositories",
+      "status": "pass",
+      "detail": "CRPM and Worms source ranges pass whitespace validation, and the terminal Worms staging allow-list contains only docs/evidence/wp-015d2w.json. Checkout line-ending notices do not alter verified Git object bytes."
+    }
+  ],
+  "reviews": [
+    {
+      "role": "source_bound_lane_g_preregistration_reviewer",
+      "reviewer": "Codex /root primary coordinator",
+      "decision": "pass",
+      "scope_decision": "pass_for_preregistration_only",
+      "evidence_class": "correlated_reuse",
+      "detail": "Verified that the separately versioned contract defines every required pre-observation boundary, retains negative and unusable outcomes, binds source/range/digest/parity controls, preserves D2O as unsatisfied, records pilot_activation not_required, and opens no observation or execution."
+    }
+  ],
+  "skipped_checks": [
+    "No Stage C aggregate execution or harness repair, and no Lane M implementation or execution: both are outside this Lane G documentation milestone.",
+    "No player observation, interview, playtest, browser/device session, timing collection, instrumentation, telemetry, gameplay test, phone matrix, or build: the milestone is documentation-only and execution remains closed.",
+    "No npm audit: dependencies and lockfiles are unchanged.",
+    "No real Android/iOS testing: no separately authorized release-testing or participant-observation environment was opened."
+  ],
   "residual_risks": [
     "Lane G begins with no player-observation evidence and remains execution closed.",
     "The exact private Android/Nimiq Pay/WebView/deployment activation values do not exist yet; any future attempt without a separately authorized frozen activation row is unusable.",
     "Unchanged V4 source ordering may place authoritative threat commitment before the player-visible formation, producing a valid negative rather than a response window.",
     "D2O's player-information/timing gate remains unsatisfied.",
-    "The Stage C aggregate remains interrupted_no_tap; it is unrelated to Lane G documentation and still blocks Lane M wider reuse."
+    "The Stage C aggregate remains interrupted_no_tap; it is unrelated to Lane G documentation and still blocks Lane M wider reuse.",
+    "This tracked evidence binds the durable source and review commits but cannot self-hash its own terminal commit. Re-entry must retain the externally verified terminal commit, evidence blob, Git-byte SHA-256, and exact source-to-terminal and entry-to-terminal range digests."
   ]
 }
