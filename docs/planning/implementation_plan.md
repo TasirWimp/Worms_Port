@@ -373,6 +373,59 @@ Phaser/Socket.IO stack.
       no Lane M or Lane G execution opened.
   ```
 
+  **WP-015D2W Lane G documentation contract (2026-08-30):** the
+  [source-bound contract](wp-015d2w-lane-g-player-visible-formation-and-credible-response-timing-contract.md)
+  separately preregisters player-visible Loomkeeper cast formation and credible
+  response timing on unchanged V4. It freezes the pre-observation environment,
+  build/client/device/display activation row, public support, exact events and
+  clocks, latency/tolerance, participant/reviewer/consent/privacy/retention
+  boundary, trial domain, negative-result classifications, stopping rule, and
+  future output boundary. It conducts no observation and creates no participant
+  data. D2P remains the broader question registry; D2V remains immutable route
+  provenance. Lane G has evidence 'none' and execution remains closed.
+  The active Execution Pointer stays WP-015D2A, D2O remains unsatisfied, the
+  Stage C aggregate remains 'interrupted_no_tap', and Lane M does not lend
+  evidence or prerequisites to this documentation pass. ProductAuthority,
+  placement, gameplay change, P5, and landfall remain closed.
+
+  ~~~yaml
+  lane_g_preregistration_parity:
+    record_id: WP-015D2W-LANE-G-PREREGISTRATION-v0
+    milestone_id: WP-015D2W
+    target: player_visible_formation_and_credible_response_timing
+    method: separately_bound_player_observation_and_timing_contract
+    source_entry:
+      crpm_commit: e14b661ff521cbc398b0bd6245e8f54f0388a37b
+      worms_commit: 7f8fe6108ae26a0e25bb3ca185dab6c1f86c662f
+    environment_id: LG-SGS22-NIMIQPAY-SIDEWAYS-RIGHT-v0
+    build_source: 7f8fe6108ae26a0e25bb3ca185dab6c1f86c662f
+    client:
+      route: "/"
+      mode: practice
+      calling: wizard
+      ruleset: nimble-knots-artillery-v4
+      loomkeeper_difficulty: standard
+    formation_event: first_two_consecutive_frames_of_loomkeeper_cast_formation_ready_with_matching_visible_status
+    response_window_start: first_frame_after_formation_with_an_existing_player_gameplay_control_visible_and_enabled
+    response_window_stop: earlier_of_authority_acceptance_of_an_effective_response_or_authoritative_threat_resolution
+    credible_response: at_least_one_predeclared_effective_existing_v4_gameplay_command_authority_accepted_before_the_threatened_shot_becomes_unavoidable
+    trial_domain: first_naturally_occurring_damaging_loomkeeper_shot_in_each_new_practice_clash
+    stopping_rule: three_usable_trials_or_six_attempts_or_PT20M_whichever_occurs_first
+    Lane_G_identity_recorded: true
+    Lane_G_current_evidence: none
+    Lane_G_execution_open: false
+    D2O_player_information_timing_gate: unsatisfied
+    active_execution_pointer: WP-015D2A
+    aggregate_debt: interrupted_no_tap
+    ProductAuthority: none
+    mathematical_placement_implication: none
+    gameplay_change: false
+    P5_open: false
+    landfall_claim: false
+    pilot_activation: not_required
+    parity_digest: 7da9340551ecae4df7a29bf7287759fd0cb655444dc3c9057456175ad065c1b1
+  ~~~
+
   **WP-015D1 V4 wider
   arena and pan camera completed on 2026-08-08**
   on `codex/wp-015-production-assets`: V4 preserves historical replays while

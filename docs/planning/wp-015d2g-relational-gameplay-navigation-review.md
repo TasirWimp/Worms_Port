@@ -790,6 +790,70 @@ parent_reentry_parity:
     no Lane M or Lane G execution opened.
 ```
 
+### WP-015D2W Lane G documentation contract (2026-08-30)
+
+The [source-bound Lane G contract](wp-015d2w-lane-g-player-visible-formation-and-credible-response-timing-contract.md)
+implements the separately authorized documentation step after D2V. It narrows
+D2P's unbound public-observation family to the first naturally occurring
+damaging Loomkeeper shot on one frozen Samsung Galaxy S22 / Nimiq Pay / default
+sideways-right Practice boundary. Before any observation it requires an exact
+private activation row for the runtime build, deployed artifacts, Android,
+Nimiq Pay, WebView, viewport, capture, and clocks.
+
+The contract freezes the visible 'loomkeeper-cast-formation' /
+'formation-ready' event, response-window start and stop, authoritative threat
+commitment, clock alignment and tolerances, public support, participant/reviewer
+separation, consent/privacy/retention, inclusion/exclusion, failure/ambiguity/
+interruption/unusable classes, negative-result retention, and a three-usable /
+six-attempt / PT20M stop. Existing V4 may supply no legal response before its
+authoritative shot is committed; that is a retained negative, not permission to
+move the target or window.
+
+No observation, interview, playtest, device/browser session, timing collection,
+instrumentation, telemetry, participant data, gameplay change, or Lane M work
+occurs. Lane G evidence remains 'none', execution remains closed, D2O remains
+unsatisfied, WP-015D2A remains active, the Stage C aggregate stays
+'interrupted_no_tap', and every ProductAuthority, placement, P5, and landfall
+gate remains closed.
+
+~~~yaml
+lane_g_preregistration_parity:
+  record_id: WP-015D2W-LANE-G-PREREGISTRATION-v0
+  milestone_id: WP-015D2W
+  target: player_visible_formation_and_credible_response_timing
+  method: separately_bound_player_observation_and_timing_contract
+  source_entry:
+    crpm_commit: e14b661ff521cbc398b0bd6245e8f54f0388a37b
+    worms_commit: 7f8fe6108ae26a0e25bb3ca185dab6c1f86c662f
+  environment_id: LG-SGS22-NIMIQPAY-SIDEWAYS-RIGHT-v0
+  build_source: 7f8fe6108ae26a0e25bb3ca185dab6c1f86c662f
+  client:
+    route: "/"
+    mode: practice
+    calling: wizard
+    ruleset: nimble-knots-artillery-v4
+    loomkeeper_difficulty: standard
+  formation_event: first_two_consecutive_frames_of_loomkeeper_cast_formation_ready_with_matching_visible_status
+  response_window_start: first_frame_after_formation_with_an_existing_player_gameplay_control_visible_and_enabled
+  response_window_stop: earlier_of_authority_acceptance_of_an_effective_response_or_authoritative_threat_resolution
+  credible_response: at_least_one_predeclared_effective_existing_v4_gameplay_command_authority_accepted_before_the_threatened_shot_becomes_unavoidable
+  trial_domain: first_naturally_occurring_damaging_loomkeeper_shot_in_each_new_practice_clash
+  stopping_rule: three_usable_trials_or_six_attempts_or_PT20M_whichever_occurs_first
+  Lane_G_identity_recorded: true
+  Lane_G_current_evidence: none
+  Lane_G_execution_open: false
+  D2O_player_information_timing_gate: unsatisfied
+  active_execution_pointer: WP-015D2A
+  aggregate_debt: interrupted_no_tap
+  ProductAuthority: none
+  mathematical_placement_implication: none
+  gameplay_change: false
+  P5_open: false
+  landfall_claim: false
+  pilot_activation: not_required
+  parity_digest: 7da9340551ecae4df7a29bf7287759fd0cb655444dc3c9057456175ad065c1b1
+~~~
+
 ## Phased plan and stop gates
 
 ### Phase 0 - source lock and boundary

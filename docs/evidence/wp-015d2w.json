@@ -1,0 +1,53 @@
+{
+  "id": "WP-015D2W",
+  "status": "in_progress",
+  "starting_commit": "7f8fe6108ae26a0e25bb3ca185dab6c1f86c662f",
+  "branch": "codex/wp-015d2w-lane-g-contract-v0",
+  "initial_worktree": "clean",
+  "starting_lock_sha256": "D4DAC6AE09A3D2F6C5A7EAA11520BAC43F1628320C5331575BCF1E1857073D73",
+  "owning_roles": [
+    "worms_port_docs_keeper",
+    "worms_port_reviewer",
+    "cross_repository_coordinator"
+  ],
+  "scope": [
+    "Documentation-only Lane G preregistration from clean Worms commit 7f8fe6108ae26a0e25bb3ca185dab6c1f86c662f/tree 07c5d8ace8e0c604ad1d27745797a17e6cf10640 and clean CRPM commit e14b661ff521cbc398b0bd6245e8f54f0388a37b/tree ae2d50f96745c163b924edd1b2b1fe76a569626f.",
+    "Protected target player_visible_formation_and_credible_response_timing with method separately_bound_player_observation_and_timing_contract.",
+    "Freeze the exact pre-observation environment/build/client/device/display activation requirements, visible formation and response-window events, clock/tolerance boundary, participant/reviewer/consent/privacy/retention boundary, public support, scenario domain, classifications, negative retention, stopping rule, future output boundary, and D2O non-satisfaction boundary.",
+    "Current allowed Worms outputs are exactly docs/planning/wp-015d2w-lane-g-player-visible-formation-and-credible-response-timing-contract.md, this evidence file, docs/planning/implementation_plan.md, and docs/planning/wp-015d2g-relational-gameplay-navigation-review.md.",
+    "Current allowed CRPM outputs are exactly docs/architecture/definition_target_admission/returns/DTAP-WP015D2W_Lane_G_Documentation_Review_Return_2026-08-30_v0.yaml, docs/architecture/definition_target_admission/README.md, and logs/CRPM-Work-Log.md.",
+    "Preserve legal/source-manifest.json byte-identical at blob 8d6ab2cae64a13f367bd3d7fef59368c13888c91 and SHA-256 ab3da23b9d25f18cd128cb932df6f1038231b3f81f8031d770aaca1547ff5328; no external source row is needed.",
+    "pilot_activation: not_required because this pass preregisters only a future Worms-owned observation boundary, accepts no material cross-world witness, and changes no verdict.",
+    "lane_g_preregistration_parity:{\"record_id\":\"WP-015D2W-LANE-G-PREREGISTRATION-v0\",\"milestone_id\":\"WP-015D2W\",\"target\":\"player_visible_formation_and_credible_response_timing\",\"method\":\"separately_bound_player_observation_and_timing_contract\",\"source_entry\":{\"crpm_commit\":\"e14b661ff521cbc398b0bd6245e8f54f0388a37b\",\"worms_commit\":\"7f8fe6108ae26a0e25bb3ca185dab6c1f86c662f\"},\"environment_id\":\"LG-SGS22-NIMIQPAY-SIDEWAYS-RIGHT-v0\",\"build_source\":\"7f8fe6108ae26a0e25bb3ca185dab6c1f86c662f\",\"client\":{\"route\":\"/\",\"mode\":\"practice\",\"calling\":\"wizard\",\"ruleset\":\"nimble-knots-artillery-v4\",\"loomkeeper_difficulty\":\"standard\"},\"formation_event\":\"first_two_consecutive_frames_of_loomkeeper_cast_formation_ready_with_matching_visible_status\",\"response_window_start\":\"first_frame_after_formation_with_an_existing_player_gameplay_control_visible_and_enabled\",\"response_window_stop\":\"earlier_of_authority_acceptance_of_an_effective_response_or_authoritative_threat_resolution\",\"credible_response\":\"at_least_one_predeclared_effective_existing_v4_gameplay_command_authority_accepted_before_the_threatened_shot_becomes_unavoidable\",\"trial_domain\":\"first_naturally_occurring_damaging_loomkeeper_shot_in_each_new_practice_clash\",\"stopping_rule\":\"three_usable_trials_or_six_attempts_or_PT20M_whichever_occurs_first\",\"Lane_G_identity_recorded\":true,\"Lane_G_current_evidence\":\"none\",\"Lane_G_execution_open\":false,\"D2O_player_information_timing_gate\":\"unsatisfied\",\"active_execution_pointer\":\"WP-015D2A\",\"aggregate_debt\":\"interrupted_no_tap\",\"ProductAuthority\":\"none\",\"mathematical_placement_implication\":\"none\",\"gameplay_change\":false,\"P5_open\":false,\"landfall_claim\":false,\"pilot_activation\":\"not_required\",\"parity_digest\":\"7da9340551ecae4df7a29bf7287759fd0cb655444dc3c9057456175ad065c1b1\"}"
+  ],
+  "non_goals": [
+    "No Stage C aggregate execution or harness repair.",
+    "No Lane M contract, preregistration, execution, or evidence reuse.",
+    "No player observation, interview, playtest, browser/device session, timing collection, raw/derived participant data, instrumentation, or telemetry.",
+    "No gameplay, simulation, client, server, authority, schema, executor, test, asset, dependency, lock, source-manifest, or execution-pointer change.",
+    "No claim of public formation, credible response, D2O satisfaction, gameplay authority, ProductAuthority, mathematical placement, P5, landfall, PR operation, merge, or push."
+  ],
+  "planned_checks": [
+    "strict JSON and YAML duplicate-key rejection",
+    "exact CRPM and Worms source identity verification",
+    "exact Worms source, CRPM review, and Worms terminal changed-path/range audits",
+    "semantic parity and canonical digest verification across all carriers",
+    "byte-identical legal/source-manifest.json and parent-artifact preservation",
+    "npm run check:compliance",
+    "git diff --check in both repositories",
+    "source-bound coordinator review with pilot_activation not_required"
+  ],
+  "deterministic_seeds": [],
+  "sorcerers_reference_used": false,
+  "clean_room_records": [],
+  "check_results": [],
+  "reviews": [],
+  "skipped_checks": [],
+  "residual_risks": [
+    "Lane G begins with no player-observation evidence and remains execution closed.",
+    "The exact private Android/Nimiq Pay/WebView/deployment activation values do not exist yet; any future attempt without a separately authorized frozen activation row is unusable.",
+    "Unchanged V4 source ordering may place authoritative threat commitment before the player-visible formation, producing a valid negative rather than a response window.",
+    "D2O's player-information/timing gate remains unsatisfied.",
+    "The Stage C aggregate remains interrupted_no_tap; it is unrelated to Lane G documentation and still blocks Lane M wider reuse."
+  ]
+}
