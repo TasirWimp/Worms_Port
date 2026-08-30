@@ -1,6 +1,6 @@
 {
   "id": "WP-015D2V",
-  "status": "in_progress",
+  "status": "complete",
   "starting_commit": "19e69073c63966374a9c91b3973340752e787546",
   "branch": "codex/wp-015d2v-parent-reentry-v0-r2",
   "initial_worktree": "clean",
@@ -17,6 +17,9 @@
     "Allowed outputs are exactly docs/planning/wp-015d2v-parent-reentry-and-dual-lane-handoff.md, this evidence file, docs/planning/implementation_plan.md, docs/planning/wp-015d2g-relational-gameplay-navigation-review.md and legal/source-manifest.json.",
     "Baseline parent blobs: implementation plan 6f77486b7fd10f1fcde1bc51ef9837dfe16839a9, D2G f28bcfd9e9384594e1226b6bccc9b65c36259369, source manifest ccf55e690d1a56f9890d70de50d9e81a885fb826. Preserve all twelve source-manifest predecessor rows deep-equal and in order, then append exactly one method_adapted_no_code_import record with copied_into empty.",
     "pilot_activation: required because parent closure is a material bounded cross-repository return. The read-only route tracer /root/parent_reentry_route, covariance auditor /root/stage_c_final_source_audit and re-entry reviewer /root/stage_c_code all returned support-qualified with no substantive disagreement. Their overlap is correlated_reuse, never a vote or empirical independence.",
+    "Durable Worms source commit 651afdb6f51e8dcc8cc18fddce5b5aea8ae93f75/tree fee140be9c9313b99dd734094a4498ee09b4eeaf is a clean direct child of the bound entry. Its exact five-path canonical range digest is a3b09bb82d75c1c7c4c7f39e8a551104a1c9eddc4ada26e94ae458dab01dfbe3.",
+    "Source Git-byte identities: docs/evidence/wp-015d2v.json a681225b6e64956a2d5d7195a760aaee0d971800/74b4542f59292e6887aa64d39a813dc3c5f86130296e27776e7d3b3762785923; implementation_plan.md 305688ded5385ec31f190b3b5b77f9049a18a868/d0ffe781e8c3ee8d2d2227702e3692915b40215e1d49976c38d66ea043f245a9; D2G review ddf4eb76c59405ed63a8850ba9c8edd6c1fe2768/b9629ffe6f742b7f0d213fe63b76285346362b36c1a890c257ce513fb6141865; parent handoff 348f11c9a6fce16f710d23b40f0572f5a5eedebd/140c6d6573f5051231caba64460d664d84451573911d21929fd4e9bb1c8c1dcf; source manifest 8d6ab2cae64a13f367bd3d7fef59368c13888c91/ab3da23b9d25f18cd128cb932df6f1038231b3f81f8031d770aaca1547ff5328.",
+    "The R2 postimplementation CRPM source, Worms parent-route/governance, and cross-repository binding reviews all passed against the corrected raw Git-byte identities. Each review is correlated_reuse and adds recoverability and anti-promotion control, not empirical weight.",
     "Close only the nested WP-015D2R Stage A/B/C navigation voyage. Keep the wider WP-015D2 gameplay line open, WP-015D2A active, D2O unsatisfied, interrupted_no_tap visible, ProductAuthority none, placement none, P5 closed and both successor lanes registration/execution closed.",
     "parent_reentry_parity:{\"record_id\":\"DTAP-WP015D2R-STAGE-C-PARENT-REENTRY-v0\",\"crpm_source_commit\":\"85e86d6699d49e16495f7761669341028ec2f720\",\"crpm_return_commit\":\"6f3abc11323b7e842ca4cb51a768fdefe6c1ec8f\",\"stage_c_source_commit\":\"e09b253356843342bd8077403668911cad539b46\",\"stage_c_result_commit\":\"0dda7a7d91d32dcd8815ba6fd0beec2065bed220\",\"stage_c_review_commit\":\"0581694b568461ecc556d79a236fe5ade46746d8\",\"stage_c_terminal_commit\":\"19e69073c63966374a9c91b3973340752e787546\",\"nested_round_trip_status\":\"complete_inner_navigation_voyage_only\",\"bounded_reentry\":\"reviewed_bounded\",\"q_support_verdict\":\"sufficient_for_complete_registered_one_command_target_on_finite_domain_nonunique\",\"q_support_equality_pairs\":6265,\"q_support_counterexamples\":0,\"q_support_recursive_closure\":\"not_tested\",\"q_command_verdict\":\"sufficient_for_registered_command_semantics_only_not_continuation_support\",\"q_command_equality_pairs\":6279,\"q_command_continuation_support_counterexamples\":14,\"aggregate_status\":\"interrupted_no_tap\",\"wider_reuse_blocked_until_repair\":true,\"lane_m\":{\"target\":\"longer_horizon_congruence_of_frozen_Q_support\",\"prerequisite\":\"repaired_and_reviewed_stage_c_aggregate_harness\",\"registration_open\":false,\"execution_open\":false},\"lane_g\":{\"target\":\"player_visible_formation_and_credible_response_timing\",\"D2O_player_information_timing_gate\":\"unsatisfied\",\"registration_open\":false,\"execution_open\":false},\"active_execution_pointer\":\"WP-015D2A\",\"WP-015D2R_parent_navigation_status\":\"closed_after_stage_c\",\"wider_WP-015D2_gameplay_line\":\"open\",\"evidence_class\":\"correlated_reuse\",\"ProductAuthority\":\"none\",\"mathematical_placement_implication\":\"none\",\"gameplay_change\":false,\"P5_open\":false,\"successor_world_execution_open\":false,\"parity_digest\":\"7d1992c6c4fb353286cf4939757225caf8c57d306eb043c49f7580e68ffa8efb\",\"stop_statement\":\"WP-015D2R parent re-entry and dual-lane handoff documented; no Lane M or Lane G execution opened.\"}"
   ],
@@ -40,8 +43,71 @@
   "deterministic_seeds": [],
   "sorcerers_reference_used": false,
   "clean_room_records": [],
-  "check_results": [],
-  "reviews": [],
+  "check_results": [
+    {
+      "command": "strict duplicate-key and duplicate-row rejection",
+      "status": "pass",
+      "detail": "Strict YAML and JSON loaders accepted the two CRPM and five Worms surfaces without duplicate keys. Source-manifest IDs are unique and all parity carriers contain exactly one record."
+    },
+    {
+      "command": "exact CRPM and Stage C source mode/blob/Git-byte SHA-256 verification",
+      "status": "pass",
+      "detail": "Every declared commit/tree/path/mode/blob resolves. Raw git cat-file bytes independently reproduce CRPM source SHA-256 dbdca548183fcb863bec9a7b231df016e7f86dfd772ef2583f59e720e22eee73 and return SHA-256 2869afac730240faa0866badb5eccc77dcbf4ea814847be45c59d1867d539373; all immutable Stage C identities remain exact."
+    },
+    {
+      "command": "parsed-object preservation of all twelve source-manifest predecessor rows",
+      "status": "pass",
+      "detail": "The manifest header and all twelve predecessor rows are deep-equal and order-preserved relative to 19e69073c63966374a9c91b3973340752e787546. Exactly one unique method_adapted_no_code_import row with copied_into empty was appended."
+    },
+    {
+      "command": "exact five-path source range and one-path terminal range audit",
+      "status": "pass",
+      "detail": "Entry-to-source is the exact linear five-path A/M documentation range bound by a3b09bb82d75c1c7c4c7f39e8a551104a1c9eddc4ada26e94ae458dab01dfbe3. Terminal staging modifies only this already-added evidence path; its containing commit, blob, and final exact range digest are verified externally to avoid self-reference."
+    },
+    {
+      "command": "semantic parity across the two CRPM and five Worms surfaces",
+      "status": "pass",
+      "detail": "The CRPM source and return records are deep-equal with canonical digest 96c812e3aaee65155dc8274b1c87db139d71b64b0d3e073320ed0ea52c47898f. All five Worms compact records are deep-equal, project exactly from CRPM, and recompute to 7d1992c6c4fb353286cf4939757225caf8c57d306eb043c49f7580e68ffa8efb."
+    },
+    {
+      "command": "npm run check:compliance",
+      "status": "pass",
+      "detail": "Asset, runtime-inventory, generation-component, import-boundary, package-license, work-package, and clean-room compliance passed on the corrected source and terminal closeout."
+    },
+    {
+      "command": "git diff --check",
+      "status": "pass",
+      "detail": "CRPM source/return, Worms source, and terminal-only evidence ranges pass whitespace validation. Checkout line-ending notices do not alter the verified Git object bytes."
+    },
+    {
+      "command": "identified read-only CRPM source, Worms parent-route, and cross-repository binding reviews",
+      "status": "pass",
+      "detail": "The R2 route tracer, Worms parent-route/governance reviewer, and covariance auditor each passed the same corrected committed boundary without a vote. All classify their shared evidence as correlated_reuse and preserve every declared stop."
+    }
+  ],
+  "reviews": [
+    {
+      "role": "crpm_source_route_reviewer",
+      "reviewer": "Codex /root/parent_reentry_route — R2 committed source/return review",
+      "decision": "pass",
+      "evidence_class": "correlated_reuse",
+      "detail": "Verified linear CRPM source/return publication, exact raw Git-byte hashes, record parity, repaired reviewed-bounded wording, HT10/HT11 scope, residue, and all closed authority and lane gates."
+    },
+    {
+      "role": "worms_port_parent_route_governance_reviewer",
+      "reviewer": "Codex /root/stage_c_code — R2 committed Worms source review",
+      "decision": "pass",
+      "evidence_class": "correlated_reuse",
+      "detail": "Verified the exact five-path range, twelve-plus-one manifest preservation, compact parity, inner-voyage-only closure, active WP-015D2A pointer, unsatisfied D2O gate, validation debt, and closed successor lanes."
+    },
+    {
+      "role": "cross_repository_covariance_auditor",
+      "reviewer": "Codex /root/stage_c_final_source_audit — R2 cross-repository binding review",
+      "decision": "pass",
+      "evidence_class": "correlated_reuse",
+      "detail": "Verified raw object bytes, exact CRPM and Worms ranges, two-plus-five parity, predecessor preservation, evidence separation, and absence of sealed, empirical, gameplay, ProductAuthority, placement, P5, landfall, or execution promotion."
+    }
+  ],
   "skipped_checks": [
     "No Stage B or Stage C execution, route search, simulation, aggregate rerun, browser/device session, player observation, gameplay test, or playtest: this milestone is documentation-only.",
     "No build or full browser matrix: executable, dependency, asset, gameplay, client, server, and runtime surfaces are unchanged."
@@ -51,6 +117,7 @@
     "Q_support longer-horizon and recursive closure remain not tested.",
     "Lane G has no player-visible formation, timing, or credible-response evidence.",
     "The compact parent return omits the full endpoint/pair evidence tree; exact Stage C source identities remain required for recovery.",
-    "No causation, global or unique minimality, gameplay authority, ProductAuthority, placement, P5, landfall, or successor execution is established."
+    "No causation, global or unique minimality, gameplay authority, ProductAuthority, placement, P5, landfall, or successor execution is established.",
+    "This tracked evidence binds the durable source and reviews but cannot self-hash its own terminal commit. Re-entry must retain the externally verified terminal commit, evidence blob, Git-byte SHA-256, and exact entry-to-terminal range digest."
   ]
 }
