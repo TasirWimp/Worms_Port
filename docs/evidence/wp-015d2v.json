@@ -1,0 +1,56 @@
+{
+  "id": "WP-015D2V",
+  "status": "in_progress",
+  "starting_commit": "19e69073c63966374a9c91b3973340752e787546",
+  "branch": "codex/wp-015d2v-parent-reentry-v0-r2",
+  "initial_worktree": "clean",
+  "starting_lock_sha256": "D4DAC6AE09A3D2F6C5A7EAA11520BAC43F1628320C5331575BCF1E1857073D73",
+  "owning_roles": [
+    "worms_port_docs_keeper",
+    "worms_port_reviewer",
+    "cross_repository_coordinator"
+  ],
+  "scope": [
+    "Documentation-only parent re-entry from clean Worms commit 19e69073c63966374a9c91b3973340752e787546/tree 92be50a7464a29908f6b444e8d0963f5f54faaad and CRPM entry 3c9a704f17e97e76095987d71299683728bd35c6/tree aca8bd22b0a90876cfb5a4ecac9883f364b52e0f.",
+    "Bind CRPM successor source 85e86d6699d49e16495f7761669341028ec2f720/blob 10bfe714ec56327476f53e3d5c4833d93af1582a/SHA-256 dbdca548183fcb863bec9a7b231df016e7f86dfd772ef2583f59e720e22eee73 and return 6f3abc11323b7e842ca4cb51a768fdefe6c1ec8f/blob d54bafe1dd019cb41cc91261d556f4592211159e/SHA-256 2869afac730240faa0866badb5eccc77dcbf4ea814847be45c59d1867d539373; CRPM entry-to-return range digest 63ab2f6647be2c00103589bb29ee0d49d8fa635f154ec109cebfc5865a3c9b49.",
+    "Bind Stage C source e09b253356843342bd8077403668911cad539b46, result 0dda7a7d91d32dcd8815ba6fd0beec2065bed220, review 0581694b568461ecc556d79a236fe5ade46746d8, terminal 19e69073c63966374a9c91b3973340752e787546, result digest fce3bbdb8061d6fc758973eb0bc7d51b5ca579cc0048f920dbb564c55993cbd4, review digest ba8c2a5533f64eeed89df7235f5ca8b66946bc039bb0768c3885302a4c9c26ba and terminal range digest b85b947e9724fd1af14191a536247a39bf5d1ef106bdbe07f904f999b7589388.",
+    "Allowed outputs are exactly docs/planning/wp-015d2v-parent-reentry-and-dual-lane-handoff.md, this evidence file, docs/planning/implementation_plan.md, docs/planning/wp-015d2g-relational-gameplay-navigation-review.md and legal/source-manifest.json.",
+    "Baseline parent blobs: implementation plan 6f77486b7fd10f1fcde1bc51ef9837dfe16839a9, D2G f28bcfd9e9384594e1226b6bccc9b65c36259369, source manifest ccf55e690d1a56f9890d70de50d9e81a885fb826. Preserve all twelve source-manifest predecessor rows deep-equal and in order, then append exactly one method_adapted_no_code_import record with copied_into empty.",
+    "pilot_activation: required because parent closure is a material bounded cross-repository return. The read-only route tracer /root/parent_reentry_route, covariance auditor /root/stage_c_final_source_audit and re-entry reviewer /root/stage_c_code all returned support-qualified with no substantive disagreement. Their overlap is correlated_reuse, never a vote or empirical independence.",
+    "Close only the nested WP-015D2R Stage A/B/C navigation voyage. Keep the wider WP-015D2 gameplay line open, WP-015D2A active, D2O unsatisfied, interrupted_no_tap visible, ProductAuthority none, placement none, P5 closed and both successor lanes registration/execution closed.",
+    "parent_reentry_parity:{\"record_id\":\"DTAP-WP015D2R-STAGE-C-PARENT-REENTRY-v0\",\"crpm_source_commit\":\"85e86d6699d49e16495f7761669341028ec2f720\",\"crpm_return_commit\":\"6f3abc11323b7e842ca4cb51a768fdefe6c1ec8f\",\"stage_c_source_commit\":\"e09b253356843342bd8077403668911cad539b46\",\"stage_c_result_commit\":\"0dda7a7d91d32dcd8815ba6fd0beec2065bed220\",\"stage_c_review_commit\":\"0581694b568461ecc556d79a236fe5ade46746d8\",\"stage_c_terminal_commit\":\"19e69073c63966374a9c91b3973340752e787546\",\"nested_round_trip_status\":\"complete_inner_navigation_voyage_only\",\"bounded_reentry\":\"reviewed_bounded\",\"q_support_verdict\":\"sufficient_for_complete_registered_one_command_target_on_finite_domain_nonunique\",\"q_support_equality_pairs\":6265,\"q_support_counterexamples\":0,\"q_support_recursive_closure\":\"not_tested\",\"q_command_verdict\":\"sufficient_for_registered_command_semantics_only_not_continuation_support\",\"q_command_equality_pairs\":6279,\"q_command_continuation_support_counterexamples\":14,\"aggregate_status\":\"interrupted_no_tap\",\"wider_reuse_blocked_until_repair\":true,\"lane_m\":{\"target\":\"longer_horizon_congruence_of_frozen_Q_support\",\"prerequisite\":\"repaired_and_reviewed_stage_c_aggregate_harness\",\"registration_open\":false,\"execution_open\":false},\"lane_g\":{\"target\":\"player_visible_formation_and_credible_response_timing\",\"D2O_player_information_timing_gate\":\"unsatisfied\",\"registration_open\":false,\"execution_open\":false},\"active_execution_pointer\":\"WP-015D2A\",\"WP-015D2R_parent_navigation_status\":\"closed_after_stage_c\",\"wider_WP-015D2_gameplay_line\":\"open\",\"evidence_class\":\"correlated_reuse\",\"ProductAuthority\":\"none\",\"mathematical_placement_implication\":\"none\",\"gameplay_change\":false,\"P5_open\":false,\"successor_world_execution_open\":false,\"parity_digest\":\"7d1992c6c4fb353286cf4939757225caf8c57d306eb043c49f7580e68ffa8efb\",\"stop_statement\":\"WP-015D2R parent re-entry and dual-lane handoff documented; no Lane M or Lane G execution opened.\"}"
+  ],
+  "non_goals": [
+    "No harness repair or aggregate rerun.",
+    "No Lane M preregistration or execution.",
+    "No Lane G observation contract or player observation.",
+    "No gameplay, simulation, authority, adapter, cut, schema, registry, sealed executor, asset, dependency, lock, or product change.",
+    "No ProductAuthority, mathematical placement, P5, landfall, PR operation, or push."
+  ],
+  "planned_checks": [
+    "strict duplicate-key and duplicate-row rejection",
+    "exact CRPM and Stage C source mode/blob/Git-byte SHA-256 verification",
+    "parsed-object preservation of all twelve source-manifest predecessor rows",
+    "exact five-path source range and one-path terminal range audit",
+    "semantic parity across the two CRPM and five Worms surfaces",
+    "npm run check:compliance",
+    "git diff --check",
+    "identified read-only CRPM source, Worms parent-route, and cross-repository binding reviews"
+  ],
+  "deterministic_seeds": [],
+  "sorcerers_reference_used": false,
+  "clean_room_records": [],
+  "check_results": [],
+  "reviews": [],
+  "skipped_checks": [
+    "No Stage B or Stage C execution, route search, simulation, aggregate rerun, browser/device session, player observation, gameplay test, or playtest: this milestone is documentation-only.",
+    "No build or full browser matrix: executable, dependency, asset, gameplay, client, server, and runtime surfaces are unchanged."
+  ],
+  "residual_risks": [
+    "The 32-test aggregate remains interrupted_no_tap and blocks wider reuse and Lane M preregistration until repair and review.",
+    "Q_support longer-horizon and recursive closure remain not tested.",
+    "Lane G has no player-visible formation, timing, or credible-response evidence.",
+    "The compact parent return omits the full endpoint/pair evidence tree; exact Stage C source identities remain required for recovery.",
+    "No causation, global or unique minimality, gameplay authority, ProductAuthority, placement, P5, landfall, or successor execution is established."
+  ]
+}

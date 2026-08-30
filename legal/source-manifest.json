@@ -355,6 +355,79 @@
         "code copy without exact-path traceability and MIT notice"
       ],
       "notes": "Focused integration reference only. Use it to understand the minimum Phaser scene and Rex joystick wiring. NIMble Knots must emit typed touch intent instead of mutating keyboard cursor state and must use reviewed Phaser 3.90-compatible APIs."
+    },
+    {
+      "id": "tasirwimp-crpm-post-stage-c-parent-reentry-method",
+      "role": "design_governance_method_reference",
+      "repository": "TasirWimp/CRPM",
+      "url": "https://github.com/TasirWimp/CRPM",
+      "commit": "6f3abc11323b7e842ca4cb51a768fdefe6c1ec8f",
+      "license": "MIT",
+      "license_evidence": "https://github.com/TasirWimp/CRPM/blob/6f3abc11323b7e842ca4cb51a768fdefe6c1ec8f/LICENSE",
+      "decision": "method_adapted_no_code_import",
+      "copied_into": [],
+      "referenced_paths": [
+        "docs/architecture/definition_target_admission/DTAP_Worms_Port_Post_Stage_C_Parent_Reentry_And_Dual_Lane_Handoff_v0.md",
+        "docs/architecture/definition_target_admission/returns/DTAP-WP015D2R_Stage_C_Parent_Reentry_Return_2026-08-30_v0.yaml",
+        "docs/architecture/definition_target_admission/CRPM_Worms_Port_Post_Stage_C_Parent_Reentry_And_Dual_Lane_Handoff_Goal_v0.md",
+        "docs/architecture/definition_target_admission/DTAP_Worms_Port_Residue_Driven_Round_Trip_Navigator_Handoff_v0.md"
+      ],
+      "allowed_uses": [
+        "WP-015D2V documentation-only closure of the nested WP-015D2R Stage A/B/C navigation voyage",
+        "bounded reviewed Stage C return to the parent WP-015D2 chart",
+        "registration of evidence-separated execution-closed Lane M and Lane G routes",
+        "source-attributed carrier-role, validation-debt, covariance, re-entry, and reopening discipline"
+      ],
+      "blocked_uses": [
+        "CRPM code or prose copy, vendoring, runtime import, package dependency, world ontology, or empirical validation",
+        "aggregate-harness repair, longer-horizon execution, player observation, timing measurement, gameplay change, or playtest without separate authorization",
+        "evidence inheritance or empirical-independence claims across Lane M and Lane G",
+        "changing WP-015D2A, satisfying D2O, or granting gameplay authority, ProductAuthority, placement, P5, landfall, or successor execution"
+      ],
+      "notes": "Added 2026-08-30 for WP-015D2V only. CRPM successor source 85e86d6699d49e16495f7761669341028ec2f720 and return 6f3abc11323b7e842ca4cb51a768fdefe6c1ec8f route the already reviewed-bounded Stage C result; they add no Worms world evidence. The historical Stage-A-only CRPM row remains unchanged. No CRPM code or prose is copied, and both successor lanes remain closed.",
+      "parent_reentry": {
+        "record_id": "DTAP-WP015D2R-STAGE-C-PARENT-REENTRY-v0",
+        "crpm_source_commit": "85e86d6699d49e16495f7761669341028ec2f720",
+        "crpm_return_commit": "6f3abc11323b7e842ca4cb51a768fdefe6c1ec8f",
+        "stage_c_source_commit": "e09b253356843342bd8077403668911cad539b46",
+        "stage_c_result_commit": "0dda7a7d91d32dcd8815ba6fd0beec2065bed220",
+        "stage_c_review_commit": "0581694b568461ecc556d79a236fe5ade46746d8",
+        "stage_c_terminal_commit": "19e69073c63966374a9c91b3973340752e787546",
+        "nested_round_trip_status": "complete_inner_navigation_voyage_only",
+        "bounded_reentry": "reviewed_bounded",
+        "q_support_verdict": "sufficient_for_complete_registered_one_command_target_on_finite_domain_nonunique",
+        "q_support_equality_pairs": 6265,
+        "q_support_counterexamples": 0,
+        "q_support_recursive_closure": "not_tested",
+        "q_command_verdict": "sufficient_for_registered_command_semantics_only_not_continuation_support",
+        "q_command_equality_pairs": 6279,
+        "q_command_continuation_support_counterexamples": 14,
+        "aggregate_status": "interrupted_no_tap",
+        "wider_reuse_blocked_until_repair": true,
+        "lane_m": {
+          "target": "longer_horizon_congruence_of_frozen_Q_support",
+          "prerequisite": "repaired_and_reviewed_stage_c_aggregate_harness",
+          "registration_open": false,
+          "execution_open": false
+        },
+        "lane_g": {
+          "target": "player_visible_formation_and_credible_response_timing",
+          "D2O_player_information_timing_gate": "unsatisfied",
+          "registration_open": false,
+          "execution_open": false
+        },
+        "active_execution_pointer": "WP-015D2A",
+        "WP-015D2R_parent_navigation_status": "closed_after_stage_c",
+        "wider_WP-015D2_gameplay_line": "open",
+        "evidence_class": "correlated_reuse",
+        "ProductAuthority": "none",
+        "mathematical_placement_implication": "none",
+        "gameplay_change": false,
+        "P5_open": false,
+        "successor_world_execution_open": false,
+        "parity_digest": "7d1992c6c4fb353286cf4939757225caf8c57d306eb043c49f7580e68ffa8efb",
+        "stop_statement": "WP-015D2R parent re-entry and dual-lane handoff documented; no Lane M or Lane G execution opened."
+      }
     }
   ]
 }

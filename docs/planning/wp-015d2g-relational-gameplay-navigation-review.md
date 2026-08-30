@@ -720,6 +720,76 @@ Stage A stops after source/range/parity validation and a compact review return.
 Stage B and Stage C remain not authorized. The active Execution Pointer stays
 WP-015D2A and D2O's player-information/timing gate remains unsatisfied.
 
+### WP-015D2V parent re-entry and dual-lane handoff (2026-08-30)
+
+The reviewed [WP-015D2V handoff](wp-015d2v-parent-reentry-and-dual-lane-handoff.md)
+supersedes only the parent-navigation status left after the historical Stage A
+section above. It does not rewrite that Stage A boundary. The nested
+`WP-015D2R` Stage A/B/C voyage is now complete and `reviewed_bounded`; the
+wider WP-015D2 gameplay line remains open.
+
+The returned chart retains bounded, finite and nonunique one-command
+`Q_support` sufficiency, the narrower command-semantic `Q_command` result,
+the split carrier/provenance/re-entry roles, and every negative residue.
+`TAU-WPV4-RETURN-01A` is licensed only for this bounded parent re-entry.
+
+Lane M freezes `Q_support` for a separately preregistered longer-horizon
+congruence test, but aggregate-harness repair and review are prerequisites.
+Lane G owns player-visible formation and credible response timing and currently
+has no player evidence. The lanes are evidence-separated and independently
+governed, not empirically independent. Both registration and execution remain
+closed.
+
+The Stage C aggregate remains `interrupted_no_tap`, never pass. The active
+Execution Pointer remains WP-015D2A; D2O's player-information/timing/response-
+edge gate remains unsatisfied. ProductAuthority is `none`. No gameplay,
+placement, P5, landfall, successor execution, or PR operation is opened.
+
+```yaml
+parent_reentry_parity:
+  record_id: DTAP-WP015D2R-STAGE-C-PARENT-REENTRY-v0
+  crpm_source_commit: 85e86d6699d49e16495f7761669341028ec2f720
+  crpm_return_commit: 6f3abc11323b7e842ca4cb51a768fdefe6c1ec8f
+  stage_c_source_commit: e09b253356843342bd8077403668911cad539b46
+  stage_c_result_commit: 0dda7a7d91d32dcd8815ba6fd0beec2065bed220
+  stage_c_review_commit: 0581694b568461ecc556d79a236fe5ade46746d8
+  stage_c_terminal_commit: 19e69073c63966374a9c91b3973340752e787546
+  nested_round_trip_status: complete_inner_navigation_voyage_only
+  bounded_reentry: reviewed_bounded
+  q_support_verdict: sufficient_for_complete_registered_one_command_target_on_finite_domain_nonunique
+  q_support_equality_pairs: 6265
+  q_support_counterexamples: 0
+  q_support_recursive_closure: not_tested
+  q_command_verdict: sufficient_for_registered_command_semantics_only_not_continuation_support
+  q_command_equality_pairs: 6279
+  q_command_continuation_support_counterexamples: 14
+  aggregate_status: interrupted_no_tap
+  wider_reuse_blocked_until_repair: true
+  lane_m:
+    target: longer_horizon_congruence_of_frozen_Q_support
+    prerequisite: repaired_and_reviewed_stage_c_aggregate_harness
+    registration_open: false
+    execution_open: false
+  lane_g:
+    target: player_visible_formation_and_credible_response_timing
+    D2O_player_information_timing_gate: unsatisfied
+    registration_open: false
+    execution_open: false
+  active_execution_pointer: WP-015D2A
+  WP-015D2R_parent_navigation_status: closed_after_stage_c
+  wider_WP-015D2_gameplay_line: open
+  evidence_class: correlated_reuse
+  ProductAuthority: none
+  mathematical_placement_implication: none
+  gameplay_change: false
+  P5_open: false
+  successor_world_execution_open: false
+  parity_digest: 7d1992c6c4fb353286cf4939757225caf8c57d306eb043c49f7580e68ffa8efb
+  stop_statement: >-
+    WP-015D2R parent re-entry and dual-lane handoff documented;
+    no Lane M or Lane G execution opened.
+```
+
 ## Phased plan and stop gates
 
 ### Phase 0 - source lock and boundary

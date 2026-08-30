@@ -312,6 +312,67 @@ Phaser/Socket.IO stack.
   gameplay, ProductAuthority, placement and P5 remain closed. The active
   Execution Pointer stays WP-015D2A.
 
+  **WP-015D2V parent re-entry and dual-lane handoff (2026-08-30):** the
+  reviewed [WP-015D2V handoff](wp-015d2v-parent-reentry-and-dual-lane-handoff.md)
+  returns the completed nested WP-015D2R Stage A/B/C navigator to the parent
+  chart. Stage C remains `reviewed_bounded`; `TAU-WPV4-RETURN-01A` is
+  licensed only for that bounded re-entry. This closes the inner navigation
+  voyage, not the wider WP-015D2 gameplay line. The active Execution Pointer
+  remains WP-015D2A, D2O's player-information/timing/response-edge gate remains
+  unsatisfied, and ProductAuthority remains `none`.
+  Lane M freezes `Q_support` for a future separately preregistered
+  longer-horizon congruence test but is blocked on aggregate-harness repair and
+  review. Lane G owns player-visible formation and credible response timing and
+  currently has no player evidence. Both lanes are evidence-separated,
+  independently governed, and execution closed. The Stage C aggregate remains
+  `interrupted_no_tap`, never pass. No gameplay, P5, placement, landfall, or
+  successor execution is opened.
+
+  ```yaml
+  parent_reentry_parity:
+    record_id: DTAP-WP015D2R-STAGE-C-PARENT-REENTRY-v0
+    crpm_source_commit: 85e86d6699d49e16495f7761669341028ec2f720
+    crpm_return_commit: 6f3abc11323b7e842ca4cb51a768fdefe6c1ec8f
+    stage_c_source_commit: e09b253356843342bd8077403668911cad539b46
+    stage_c_result_commit: 0dda7a7d91d32dcd8815ba6fd0beec2065bed220
+    stage_c_review_commit: 0581694b568461ecc556d79a236fe5ade46746d8
+    stage_c_terminal_commit: 19e69073c63966374a9c91b3973340752e787546
+    nested_round_trip_status: complete_inner_navigation_voyage_only
+    bounded_reentry: reviewed_bounded
+    q_support_verdict: sufficient_for_complete_registered_one_command_target_on_finite_domain_nonunique
+    q_support_equality_pairs: 6265
+    q_support_counterexamples: 0
+    q_support_recursive_closure: not_tested
+    q_command_verdict: sufficient_for_registered_command_semantics_only_not_continuation_support
+    q_command_equality_pairs: 6279
+    q_command_continuation_support_counterexamples: 14
+    aggregate_status: interrupted_no_tap
+    wider_reuse_blocked_until_repair: true
+    lane_m:
+      target: longer_horizon_congruence_of_frozen_Q_support
+      prerequisite: repaired_and_reviewed_stage_c_aggregate_harness
+      registration_open: false
+      execution_open: false
+    lane_g:
+      target: player_visible_formation_and_credible_response_timing
+      D2O_player_information_timing_gate: unsatisfied
+      registration_open: false
+      execution_open: false
+    active_execution_pointer: WP-015D2A
+    WP-015D2R_parent_navigation_status: closed_after_stage_c
+    wider_WP-015D2_gameplay_line: open
+    evidence_class: correlated_reuse
+    ProductAuthority: none
+    mathematical_placement_implication: none
+    gameplay_change: false
+    P5_open: false
+    successor_world_execution_open: false
+    parity_digest: 7d1992c6c4fb353286cf4939757225caf8c57d306eb043c49f7580e68ffa8efb
+    stop_statement: >-
+      WP-015D2R parent re-entry and dual-lane handoff documented;
+      no Lane M or Lane G execution opened.
+  ```
+
   **WP-015D1 V4 wider
   arena and pan camera completed on 2026-08-08**
   on `codex/wp-015-production-assets`: V4 preserves historical replays while
