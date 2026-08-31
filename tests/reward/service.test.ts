@@ -63,29 +63,26 @@ test('a reconstructed authoritative win becomes one wallet-bound queued claim', 
         1,
         'wizard'
     );
-    coordinator.apply(
-        reservation.challengeId,
-        'player',
-        { type: 'aim', angleMilliDegrees: 35_000, powerPermille: 1_000 },
-        0
-    );
-    coordinator.apply(reservation.challengeId, 'player', { type: 'fire' }, 0);
-    coordinator.advance(reservation.challengeId, SIM_RULES.turnTicks);
-    const secondTurn = coordinator.get(reservation.challengeId)!.state;
-    assert.equal(secondTurn.activeActor, 'player');
-    assert.equal(secondTurn.turn, 2);
-    coordinator.apply(
-        reservation.challengeId,
-        'player',
-        { type: 'aim', angleMilliDegrees: 35_000, powerPermille: 1_000 },
-        secondTurn.turn
-    );
-    coordinator.apply(
-        reservation.challengeId,
-        'player',
-        { type: 'fire' },
-        secondTurn.turn
-    );
+    for (let shot = 1; shot <= 4; shot += 1) {
+        const playerTurn = coordinator.get(reservation.challengeId)!.state;
+        assert.equal(playerTurn.activeActor, 'player');
+        assert.equal(playerTurn.turn, (shot - 1) * 2);
+        coordinator.apply(
+            reservation.challengeId,
+            'player',
+            { type: 'aim', angleMilliDegrees: 35_000, powerPermille: 1_000 },
+            playerTurn.turn
+        );
+        coordinator.apply(
+            reservation.challengeId,
+            'player',
+            { type: 'fire' },
+            playerTurn.turn
+        );
+        if (shot < 4) {
+            coordinator.advance(reservation.challengeId, SIM_RULES.turnTicks);
+        }
+    }
     const terminal = coordinator.get(reservation.challengeId)!;
     assert.equal(terminal.state.phase, 'finished');
     assert.equal(terminal.state.winner, 'player');
