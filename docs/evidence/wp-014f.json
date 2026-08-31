@@ -16,8 +16,9 @@
     "Preserve all performance budgets, one warm-up plus five measured fresh contexts, zero retries, visual thresholds, project coverage, expected-skip policy, and gameplay behavior.",
     "Disable trace, screenshot, and video capture only for the measured performance project so Ubuntu software rendering is not timed together with failure-artifact recording; retain sanitized timing JSON as its required evidence.",
     "Increase only the outer performance evidence-collection timeout and the bounded single-exchange Practice poll so slow CI produces a verdict instead of an opaque timeout.",
+    "Increase only the outer timeout of the multi-navigation visual geometry test from 30 to 60 seconds after the first Ubuntu candidate pass proved that continuing beyond the formerly failing combat comparison exhausts the default allowance on chromium-412x915.",
     "Generate replacement Linux screenshots only through the pinned Ubuntu 24.04 Visual baseline candidates workflow, inspect every changed candidate explicitly, and commit only reviewed exact candidate bytes.",
-    "Allowed outputs are exactly docs/evidence/wp-014f.json, docs/planning/implementation_plan.md, README.md, playwright.config.ts, tests/browser/performance.spec.ts, tests/browser/practice.spec.ts, and reviewed files below tests/browser/visual.spec.ts-snapshots/."
+    "Allowed outputs are exactly docs/evidence/wp-014f.json, docs/planning/implementation_plan.md, README.md, playwright.config.ts, tests/browser/performance.spec.ts, tests/browser/practice.spec.ts, tests/browser/visual.spec.ts, and reviewed files below tests/browser/visual.spec.ts-snapshots/."
   ],
   "non_goals": [
     "No gameplay, simulation, client, server, protocol, authority, asset, dependency, package-lock, schema, executor, performance-budget, retry, visual-threshold, expected-skip, or active-execution-pointer change.",

@@ -7,6 +7,9 @@ import {
 } from './support/safe-area';
 
 test('visual geometry baselines cover start, combat, result, and recovery', async ({ page }) => {
+  // Once a stale combat snapshot no longer stops the test, Ubuntu must still have
+  // enough outer time to visit and capture every remaining geometry state.
+  test.setTimeout(60_000);
   const errors = captureErrors(page);
 
   await page.goto('/');

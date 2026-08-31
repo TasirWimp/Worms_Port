@@ -2820,6 +2820,10 @@ allowance cannot be reassigned to JavaScript.
    screenshot, and video capture only from the measured performance project,
    raises only the outer evidence-collection allowance to 180 seconds, and gives
    the single-exchange Practice poll a bounded 15-second CI scheduling margin.
+   The first Ubuntu candidate run then proved that the multi-navigation geometry
+   test needs a 60-second outer allowance to finish after its formerly failing
+   combat comparison; no visual wait, comparison threshold, retry, or project
+   coverage changes.
    Replacement Linux baselines remain blocked until the pinned Ubuntu 24.04
    artifact-only workflow generates them and every changed candidate is
    explicitly inspected. Evidence is open in `docs/evidence/wp-014f.json`.
