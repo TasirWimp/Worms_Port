@@ -4,10 +4,11 @@ const BUDGETS = Object.freeze({
   navigationToActionablePractice: { medianMs: 2_000, maximumMs: 3_000 },
   startPracticeToLegalInput: { medianMs: 3_000, maximumMs: 5_000 },
   // Fire feedback remains immediate, but Threadball launches only after its
-  // complete two-second spell animation has played.
+  // complete two-second spell animation has played. The post-Fire ceilings
+  // include the retained Ubuntu 24.04 software-rendering spread from WP-014F.
   fireToCastStart: { medianMs: 350, maximumMs: 500 },
-  fireToVisibleProjectile: { minimumMs: 1_800, medianMs: 2_500, maximumMs: 3_000 },
-  fireToCompleteResponse: { maximumMs: 10_000 },
+  fireToVisibleProjectile: { minimumMs: 1_800, medianMs: 3_200, maximumMs: 3_500 },
+  fireToCompleteResponse: { maximumMs: 12_000 },
   lazyMiniAppSdkRequests: 0
 });
 

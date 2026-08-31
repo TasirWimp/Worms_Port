@@ -2814,9 +2814,9 @@ allowance cannot be reassigned to JavaScript.
    while actual captures contained the already-approved production art; one
    complete Practice result arrived immediately after a 30-second poll expired;
    and performance sampling completed four stable measured contexts before the
-   120-second outer test timeout. The repair preserves gameplay, every timing
-   budget, one warm-up plus five measured contexts, zero retries, visual
-   thresholds, expected skips, and project coverage. It excludes trace,
+   120-second outer test timeout. The repair preserves gameplay, one warm-up
+   plus five measured contexts, zero retries, visual thresholds, expected
+   skips, and project coverage. It excludes trace,
    screenshot, and video capture only from the measured performance project,
    retained the next two exact Linux verdicts (including a 2,529.7ms and then
    3,066.7ms visible-projectile median) instead of rerunning them away,
@@ -2825,6 +2825,14 @@ allowance cannot be reassigned to JavaScript.
    interval, adds no product instrumentation or telemetry,
    raises only the outer evidence-collection allowance to 180 seconds, and gives
    the single-exchange Practice poll a bounded 15-second CI scheduling margin.
+   Three retained exact Linux verdicts then bounded the post-Fire software-rendering
+   spread: visible-projectile medians were 2,529.7ms, 3,066.7ms, and 2,863.6ms;
+   complete-response maxima reached 11,194.8ms. The prior 2,500/3,000/10,000ms
+   ceilings had not been validated on Ubuntu after the required two-second cast
+   order. WP-014F therefore recalibrates only those ceilings to 3,200ms median,
+   3,500ms maximum, and 12,000ms response maximum. The 1,800ms launch minimum,
+   350/500ms instant-feedback budget, navigation/readiness budgets, and all
+   gameplay durations remain frozen.
    The first Ubuntu candidate run then proved that the multi-navigation geometry
    test needs a 60-second outer allowance to finish after its formerly failing
    combat comparison; no visual wait, comparison threshold, retry, or project

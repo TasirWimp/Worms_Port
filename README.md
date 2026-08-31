@@ -421,9 +421,16 @@ test-only recorder timestamps the existing actionable, legal-input, cast,
 visible-projectile, and complete-response DOM boundaries at mutation delivery;
 it adds no product instrumentation or telemetry and avoids charging a
 software-rendered animation-frame sampling interval to those events. Its
-180-second outer collection allowance changes no timing ceiling, sample count,
+180-second outer collection allowance by itself changes no timing ceiling, sample count,
 retry rule, or full-motion behavior; it only lets a slow runner return the exact
 budget violations instead of an opaque suite timeout.
+
+The post-Fire full-motion ceilings include the retained Ubuntu 24.04 spread
+after the required two-second cast order: visible projectile must remain no
+earlier than 1.8 seconds and at or below a 3.2-second median / 3.5-second
+maximum; complete response must remain at or below 12 seconds. Instant Fire
+feedback remains independently capped at a 350ms median / 500ms maximum. These
+are test budgets only and do not change presentation durations or gameplay.
 
 `npm run verify:quality` performs a fresh build followed by the bundle,
 identity/reward-security, complete browser matrix, and performance gates.
