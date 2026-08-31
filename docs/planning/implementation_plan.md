@@ -8,21 +8,25 @@ Phaser/Socket.IO stack.
 ## Execution Pointer
 
 - Active target: mobile-first single-player Nimiq Pay competition release.
-- Active work package: **WP-015D2X V5 Marketing Candidate:** implement the
-  separately versioned, values-only
-  `nimble-knots-artillery-v5` candidate authorized by the owner on 2026-08-31.
+- Active work package: **WP-015D2X V5 Marketing Candidate — complete, awaiting
+  owner review:** the separately versioned, values-only
+  `nimble-knots-artillery-v5` candidate authorized by the owner on 2026-08-31
+  passed its bounded automated gates and is now the new-challenge default.
   The source-bound contract is
   [WP-015D2X V5 Marketing Candidate Contract](wp-015d2x-v5-marketing-candidate-contract.md).
   It starts from D2A Candidate A's `640/576/512` ideal maximum-range and
   `30/45/80` maximum-direct-damage hypothesis, but must calibrate exact integer
-  launch-speed bands in the authoritative TypeScript simulation. V5 may become
-  the new-challenge default only after the declared production-spawn
-  plausibility, historical replay, protocol, reward-safety, build, and browser
-  gates pass. At most three profiles may run. V1-V4 remain immutable; rejected
+  launch-speed bands in the authoritative TypeScript simulation. Profile zero
+  was the only profile run: 50/50 matches terminated by Unraveling, first-actor
+  share was 62 percent, all Relics were used, recurrence was zero, and every
+  declared replay, protocol, reward-safety, build, and browser gate passed.
+  V1-V4 remain immutable; rejected
   tactical-core mechanics, player observation, Lane G/Lane M execution, Stage
   C repair, rewards activation, new assets, and dependencies remain excluded.
-  ProductAuthority remains `none` until a separately recorded completion and
-  owner review.
+  ProductAuthority remains `none`; human balance, Linux visual inspection,
+  real-device pacing, and any V5-bound Lane G preregistration remain separate
+  owner-directed follow-ups. The next implementation slice is not opened by
+  this completion record.
 - Parent analytical record: **WP-015D2A Tactical Game Model and Simulation Harness:**
   establish and test the decision model that precedes V5 Relic values without
   changing accepted V1 through V4 replay behavior. The contract is

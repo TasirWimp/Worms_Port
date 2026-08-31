@@ -594,8 +594,8 @@ inclusion to macro-block finality, and sends expired/ambiguous cases to
 
 ## Deterministic Simulation Foundation
 
-Practice challenges use the product-owned
-`nimble-knots-artillery-v4` ruleset. The authoritative model is independent of
+New Practice challenges use the product-owned
+`nimble-knots-artillery-v5` ruleset. The authoritative model is independent of
 Phaser and uses integer fixed ticks, an explicit uint32 seed, a packed collision
 mask, bounded Relic physics, canonical SHA-256 state hashes, and replay records.
 Client commands include both their transport sequence and expected simulation
@@ -621,11 +621,12 @@ direct-projectile Wizard body profile, so the visible torso, head, hat, and
 feet can register a hit while the extended palm/Loomseed remains outside the
 target. It doubles only the authoritative arena width to 2048 world units;
 the mobile client still presents a 1024-by-576 camera window that can pan
-horizontally. V1/v2/v3 replay behavior is unchanged. WP-015D2A first evaluates
-the tactical model and candidate values without changing live gameplay. The
-subsequent WP-015D2 prepares a separate v5 ruleset in which
-Threadball has medium range and damage, Needlepoint has the highest range and
-lowest damage, and Spoolburst has the lowest range and highest damage. Other
+horizontally. V1/v2/v3 replay behavior is unchanged. WP-015D2X has now added
+V5 without mutating V4: Threadball uses medium range and 45 maximum direct
+damage, Needlepoint uses the highest range and 30 damage, and Spoolburst uses
+the lowest range and 80 damage. Their calibrated ideal maximum-range targets
+are 576, 640, and 512 world units respectively. These are a bounded automated
+playability candidate, not a claim of final or human-validated balance. Other
 weapon dimensions and fine tuning are deferred. Their planned visual grammar is
 Worldweave for Threadball, Air/Draft for Needlepoint, and Fire/Loomspark for
 Spoolburst. Cloudwater establishes water in the world but adds no release Relic

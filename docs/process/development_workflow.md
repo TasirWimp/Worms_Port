@@ -406,7 +406,10 @@ alter v3.
 
 ### Ruleset V4 Arena and Camera
 
-`nimble-knots-artillery-v4` is the current new-challenge ruleset. It preserves
+`nimble-knots-artillery-v5` is the current new-challenge ruleset. It retains
+V4's arena and direct-contact profile while adding only the separately
+versioned per-Relic range and maximum direct-damage values recorded below.
+Explicit V4 replay remains immutable. V4 itself preserves
 all V3 projectile, Relic, movement, direct-hit, Loomkeeper-policy, reward, and
 turn rules, but records a new deterministic 2048 by 576 authoritative arena:
 256 by 72 terrain cells at 8 world units, 576 packed uint32 words, and initial
@@ -450,9 +453,9 @@ statuses and source locks; and keeps analytical disposition orthogonal to
 ProductAuthority. Novel candidates must use a separately versioned admission
 package rather than an arbitrary request to the D2B registry.
 
-### Planned Basic Relic Ruleset V5
+### Active Basic Relic Ruleset V5
 
-After WP-015D2A's owner decision, WP-015D2 prepares
+After WP-015D2A's owner decision, WP-015D2X implemented
 `nimble-knots-artillery-v5` for the first range/damage differentiation slice.
 V1 through V4 constants, identifiers, replay hashes, and policy behavior remain
 immutable. The exact owner-approved V4 `2048 by 576` arena and camera contract is recorded in
@@ -461,9 +464,9 @@ change Relic tiers.
 
 | Relic ID | Range tier | Direct Stitching damage tier |
 | --- | --- | --- |
-| `threadball` | medium | medium |
-| `needlepoint` | highest | lowest |
-| `spoolburst` | lowest | highest |
+| `threadball` | medium, target 576 | 45 |
+| `needlepoint` | highest, target 640 | 30 |
+| `spoolburst` | lowest, target 512 | 80 |
 
 Range is expressed through one deterministic per-Relic launch-speed band while
 gravity, angle and power inputs, flight lifetime, collision authority,
@@ -473,10 +476,12 @@ secondary effects, and Calling modifiers on one shared basic baseline. These
 dimensions are deferred so the first real-device evaluation measures the
 assembled artillery loop rather than a large balance matrix.
 
-The implementation slice freezes exact integer values, analytical
+The implementation slice froze exact integer values, analytical
 TypeScript/Python transcript parity, and deterministic fixed-shot tests before
-v5 becomes a challenge default. The tier ordering is a product identity, not
-final balance. The Loomkeeper receives the same public range and damage model
+V5 became the new-challenge default. Profile zero passed its 50-match mirrored
+automated plausibility gate and no later profile was opened. The tier ordering
+is a product identity and plausible intermediate candidate, not final or
+player-observed balance. The Loomkeeper receives the same public range and damage model
 as the player; visuals never provide simulation authority. V5 remains
 values-only unless a separately approved tactical-core package adds a different
 action economy, defense, or convergence rule. A later precision mechanic must

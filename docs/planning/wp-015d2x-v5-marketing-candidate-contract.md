@@ -1,10 +1,11 @@
 # WP-015D2X V5 Marketing Candidate Contract
 
-Status: in progress. The project owner authorized this bounded implementation
-package on 2026-08-31. It may implement and, only after the gates below pass,
-activate `nimble-knots-artillery-v5` for new challenges. It is not a claim of
-global balance, player fun, D2O satisfaction, Lane G evidence, release
-readiness, or final ProductAuthority.
+Status: complete on 2026-08-31. The project owner authorized this bounded
+implementation package, and profile zero passed every declared automated gate
+before `nimble-knots-artillery-v5` was activated for new challenges in the
+separate activation commit. This is not a claim of global balance, player fun,
+D2O satisfaction, Lane G evidence, release readiness, or final
+ProductAuthority.
 
 ## Purpose and protected outcome
 
@@ -223,3 +224,27 @@ WP-015D2X stops after a source-bound, reproducible V5 marketing candidate and
 its review evidence. It does not claim final balance, conduct player
 observation, open Lane G or Lane M execution, activate rewards, or approve the
 competition release.
+
+## Completion result
+
+Profile `v5-marketing-candidate-v0` was the first and only profile run. Its
+authoritative 50-match mirrored matrix produced 50 Unraveling terminals, zero
+draws, a 62 percent first-actor win share, zero declared recurrence witnesses,
+and use of all three Relics within the existing policy budgets. Fixed-shot
+checks directly hit the declared `576/640/512` bands but not the next 64-unit
+band, with exact V5 direct damage `45/30/80`.
+
+The implementation commit is
+`893a3f5ff3bbf09b0f5b528b52ca8f88d8faa286`. The separate activation commit is
+`eadbf47d568581d54d847c941ee1bf07b1360226`, tree
+`5a65219e9fa014dcc9f5fbb2b5ae08bd072ba5b8`; the V5-aware reward proof fixture
+is commit `2f95ee27dea412eb8b7d34681d0e222af1313b31`. V5 is now the default only for
+new challenges; V1 through V4 strict snapshots and replay reconstruction
+remain available by their explicit ruleset identities. Reward configuration
+remains unchanged and paused.
+
+The five-project phone-browser quality gate passed all 170 project results on
+Windows: 102 executed and 68 policy-approved skips. Per project policy, Linux
+visual comparison, real Android/iOS testing, and player observation were not
+performed. The exact check record and remaining limits are in
+`docs/evidence/wp-015d2x.json`.
