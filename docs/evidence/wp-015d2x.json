@@ -44,7 +44,8 @@
     "WP-015D2X exact changed-path, source-identity, historical-replay, evidence, and diff review"
   ],
   "deterministic_seeds": [
-    "3237998097"
+    "3237998097",
+    "0xC0FFEE11 + i*0x9E3779B9 mod 2^32 for i=0..24"
   ],
   "sorcerers_reference_used": false,
   "clean_room_records": [],
@@ -53,6 +54,21 @@
       "command": "npm run verify:fast",
       "status": "pass",
       "detail": "Pre-edit baseline passed compliance, types, tooling, protocol, simulation, Loomkeeper, Relic, combat, Practice, identity, and reward suites from exact starting commit 14cf9d490d7cf7b23e22918f608a694bb3028005."
+    },
+    {
+      "command": "npm run test:v5-balance",
+      "status": "pass",
+      "detail": "Profile zero passed without opening profiles one or two. Two repeat runs were identical: 50/50 Unraveling terminals, 0 draws, 31/50 first-actor wins (62%), 0 declared recurrence witnesses, Relic selections Threadball 118 / Needlepoint 95 / Spoolburst 58, maximum 128 evaluated candidates, 805 simulated transitions and 11 commands. Flat 45-degree full-power ground distances were 584/646/518 for Threadball/Needlepoint/Spoolburst; each directly hit its declared 576/640/512 target and did not directly hit the next 64-unit band. Direct damage was exactly 45/30/80. Config SHA-256 2828254E2D84762B88D37D32997E7FB535B7BE905F3A753D47A15A1E37F6A66B; ignored report SHA-256 F8653CA6EC92E2BE827B412A1CD29346C3C48BB79AFAF8B4553849A6972FF1FF."
+    },
+    {
+      "command": "npm run test:simulation && npm run test:relics && npm run test:loomkeeper && npm run test:protocol",
+      "status": "pass",
+      "detail": "Explicit non-default V5 snapshot, range, damage, policy-budget and replay reconstruction support passed while the existing simulation, historical Relic, Loomkeeper and strict protocol suites remained green."
+    },
+    {
+      "command": "npm run test:tactical-model",
+      "status": "pass",
+      "detail": "The V4 authority fixture, strict TypeScript calibration types, repeatable V5 profile gate and all 41 historical Python tactical-model tests passed."
     }
   ],
   "reviews": [],

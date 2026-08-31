@@ -7,6 +7,9 @@ export const V3_RULESET_ID = 'nimble-knots-artillery-v3' as const;
 export const V3_RULESET_VERSION = 3 as const;
 export const V4_RULESET_ID = 'nimble-knots-artillery-v4' as const;
 export const V4_RULESET_VERSION = 4 as const;
+export const V5_RULESET_ID = 'nimble-knots-artillery-v5' as const;
+export const V5_RULESET_VERSION = 5 as const;
+// V5 remains explicit-only until WP-015D2X's plausibility gates pass.
 export const LATEST_RULESET_ID = V4_RULESET_ID;
 export const LATEST_RULESET_VERSION = V4_RULESET_VERSION;
 
@@ -14,7 +17,8 @@ export type SimulationRulesetId =
     | typeof RULESET_ID
     | typeof V2_RULESET_ID
     | typeof V3_RULESET_ID
-    | typeof LATEST_RULESET_ID;
+    | typeof V4_RULESET_ID
+    | typeof V5_RULESET_ID;
 export type RelicId = 'threadball' | 'needlepoint' | 'spoolburst';
 
 export const RELIC_IDS = Object.freeze([
@@ -23,14 +27,43 @@ export const RELIC_IDS = Object.freeze([
     'spoolburst'
 ] as const);
 
-export const RELIC_RULES: Readonly<Record<RelicId, {
+export type RelicRules = Readonly<{
     craterRadius: number;
     damageRadius: number;
     maximumDamage: number;
-}>> = Object.freeze({
+}>;
+
+export type LaunchSpeedRules = Readonly<{
+    minimumShotSpeed: number;
+    maximumShotSpeed: number;
+}>;
+
+/** Immutable V2/V3/V4 Relic rules retained for historical replay. */
+export const RELIC_RULES: Readonly<Record<RelicId, RelicRules>> = Object.freeze({
     threadball: Object.freeze({ craterRadius: 40, damageRadius: 64, maximumDamage: 70 }),
     needlepoint: Object.freeze({ craterRadius: 16, damageRadius: 32, maximumDamage: 120 }),
     spoolburst: Object.freeze({ craterRadius: 64, damageRadius: 88, maximumDamage: 45 })
+});
+
+/**
+ * WP-015D2X profile zero. V5 differentiates launch speed and maximum direct
+ * damage only; radius and terrain deformation share Threadball's basic V4
+ * baseline so they do not become an undeclared third role axis.
+ */
+export const V5_RELIC_RULES: Readonly<Record<RelicId, RelicRules>> = Object.freeze({
+    threadball: Object.freeze({ craterRadius: 40, damageRadius: 64, maximumDamage: 45 }),
+    needlepoint: Object.freeze({ craterRadius: 40, damageRadius: 64, maximumDamage: 30 }),
+    spoolburst: Object.freeze({ craterRadius: 40, damageRadius: 64, maximumDamage: 80 })
+});
+
+/**
+ * Integer speed bands target ideal level-ground maxima of approximately
+ * 576/640/512 world units. The power curve remains linear and deterministic.
+ */
+export const V5_LAUNCH_SPEED_RULES: Readonly<Record<RelicId, LaunchSpeedRules>> = Object.freeze({
+    threadball: Object.freeze({ minimumShotSpeed: 1459, maximumShotSpeed: 4864 }),
+    needlepoint: Object.freeze({ minimumShotSpeed: 1536, maximumShotSpeed: 5120 }),
+    spoolburst: Object.freeze({ minimumShotSpeed: 1373, maximumShotSpeed: 4576 })
 });
 
 export const SIM_RULES = Object.freeze({
@@ -95,7 +128,9 @@ export const V4_ARENA_RULES: ArenaRules = Object.freeze({
 });
 
 export function arenaRulesFor(rulesetId: SimulationRulesetId): ArenaRules {
-    return rulesetId === V4_RULESET_ID ? V4_ARENA_RULES : HISTORICAL_ARENA_RULES;
+    return rulesetId === V4_RULESET_ID || rulesetId === V5_RULESET_ID
+        ? V4_ARENA_RULES
+        : HISTORICAL_ARENA_RULES;
 }
 
 export type DirectProjectileHitbox = Readonly<{
@@ -123,7 +158,8 @@ export const DIRECT_PROJECTILE_HITBOXES: Readonly<Record<SimulationRulesetId, Di
         bottom: SIM_RULES.actorRadius
     }),
     [V3_RULESET_ID]: Object.freeze({ halfWidth: 32, top: 85, bottom: 13 }),
-    [V4_RULESET_ID]: Object.freeze({ halfWidth: 32, top: 85, bottom: 13 })
+    [V4_RULESET_ID]: Object.freeze({ halfWidth: 32, top: 85, bottom: 13 }),
+    [V5_RULESET_ID]: Object.freeze({ halfWidth: 32, top: 85, bottom: 13 })
 });
 
 export type SimulationActor = 'player' | 'loomkeeper';
@@ -165,9 +201,9 @@ export type ProjectileSummary = {
 };
 
 export type SimulationState = {
-    formatVersion: 1 | 2 | 3 | 4;
+    formatVersion: 1 | 2 | 3 | 4 | 5;
     rulesetId: SimulationRulesetId;
-    rulesetVersion: 1 | 2 | 3 | 4;
+    rulesetVersion: 1 | 2 | 3 | 4 | 5;
     seed: number;
     rngState: number;
     tick: number;
@@ -358,6 +394,25 @@ export function directProjectileHitboxFor(rulesetId: SimulationRulesetId): Direc
     return DIRECT_PROJECTILE_HITBOXES[rulesetId];
 }
 
+export function relicRulesFor(
+    rulesetId: SimulationRulesetId,
+    relicId: RelicId
+): RelicRules {
+    return rulesetId === V5_RULESET_ID ? V5_RELIC_RULES[relicId] : RELIC_RULES[relicId];
+}
+
+export function launchSpeedRulesFor(
+    rulesetId: SimulationRulesetId,
+    relicId: RelicId
+): LaunchSpeedRules {
+    return rulesetId === V5_RULESET_ID
+        ? V5_LAUNCH_SPEED_RULES[relicId]
+        : {
+            minimumShotSpeed: SIM_RULES.minimumShotSpeed,
+            maximumShotSpeed: SIM_RULES.maximumShotSpeed
+        };
+}
+
 function availableRelics(state: SimulationState): readonly RelicId[] {
     return relicsForRuleset(state.rulesetId);
 }
@@ -408,13 +463,15 @@ export function assertSimulationInvariants(state: SimulationState): void {
         state.rulesetVersion === V3_RULESET_VERSION && state.formatVersion === 3;
     const v4 = state.rulesetId === V4_RULESET_ID &&
         state.rulesetVersion === V4_RULESET_VERSION && state.formatVersion === 4;
-    if (!legacy && !v2 && !v3 && !v4) {
+    const v5 = state.rulesetId === V5_RULESET_ID &&
+        state.rulesetVersion === V5_RULESET_VERSION && state.formatVersion === 5;
+    if (!legacy && !v2 && !v3 && !v4 && !v5) {
         throw new Error('Unknown deterministic simulation ruleset.');
     }
     if (!availableRelics(state).includes(state.selectedRelic)) {
         throw new Error('Selected Relic is unavailable in this ruleset.');
     }
-    if (state.lastProjectile && (v2 || v3 || v4) && !state.lastProjectile.relicId) {
+    if (state.lastProjectile && (v2 || v3 || v4 || v5) && !state.lastProjectile.relicId) {
         throw new Error('Current-ruleset projectile lacks its Relic identifier.');
     }
     if (state.lastProjectile && legacy && state.lastProjectile.relicId) {
@@ -453,11 +510,12 @@ function normalizeSeed(seed: number): number {
     return normalized === 0 ? 0x6D2B79F5 : normalized;
 }
 
-function rulesetVersionFor(rulesetId: SimulationRulesetId): 1 | 2 | 3 | 4 {
+function rulesetVersionFor(rulesetId: SimulationRulesetId): 1 | 2 | 3 | 4 | 5 {
     if (rulesetId === LEGACY_RULESET_ID) return RULESET_VERSION;
     if (rulesetId === V2_RULESET_ID) return V2_RULESET_VERSION;
     if (rulesetId === V3_RULESET_ID) return V3_RULESET_VERSION;
-    return V4_RULESET_VERSION;
+    if (rulesetId === V4_RULESET_ID) return V4_RULESET_VERSION;
+    return V5_RULESET_VERSION;
 }
 
 function nextRandom(state: number): number {
@@ -550,9 +608,11 @@ function resolveProjectile(
     const scale = SIM_RULES.fixedPointScale;
     const aim = state.aim!;
     const relicId = state.selectedRelic;
-    const relicRules = RELIC_RULES[relicId];
-    const speed = SIM_RULES.minimumShotSpeed + Math.trunc(
-        (SIM_RULES.maximumShotSpeed - SIM_RULES.minimumShotSpeed) * aim.powerPermille / 1000
+    const relicRules = relicRulesFor(state.rulesetId, relicId);
+    const launchSpeedRules = launchSpeedRulesFor(state.rulesetId, relicId);
+    const speed = launchSpeedRules.minimumShotSpeed + Math.trunc(
+        (launchSpeedRules.maximumShotSpeed - launchSpeedRules.minimumShotSpeed) *
+        aim.powerPermille / 1000
     );
     const horizontal = 90_000 - Math.abs(aim.angleMilliDegrees);
     let vx = Math.trunc(speed * horizontal / 90_000) * shooter.facing;
@@ -581,7 +641,8 @@ function resolveProjectile(
         if (tick % 8 === 0 && trace.length < 40) trace.push({ x: endX, y: endY });
         if (collision) {
             impact = collision.target;
-            if ((state.rulesetId === V3_RULESET_ID || state.rulesetId === V4_RULESET_ID) &&
+            if ((state.rulesetId === V3_RULESET_ID || state.rulesetId === V4_RULESET_ID ||
+                state.rulesetId === V5_RULESET_ID) &&
                 (collision.target === 'player' || collision.target === 'loomkeeper')) {
                 directTarget = collision.target;
             }
@@ -646,7 +707,7 @@ function applyDamage(
     state: SimulationState,
     x: number,
     y: number,
-    relicRules: (typeof RELIC_RULES)[RelicId],
+    relicRules: RelicRules,
     events: SimulationEvent[],
     directTarget?: SimulationActor
 ): void {
