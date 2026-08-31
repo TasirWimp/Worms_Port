@@ -1,0 +1,66 @@
+{
+  "id": "WP-015D2X",
+  "status": "in_progress",
+  "starting_commit": "14cf9d490d7cf7b23e22918f608a694bb3028005",
+  "branch": "codex/wp-015d2-v5-marketing-candidate-v0",
+  "initial_worktree": "clean",
+  "starting_lock_sha256": "D4DAC6AE09A3D2F6C5A7EAA11520BAC43F1628320C5331575BCF1E1857073D73",
+  "owning_roles": [
+    "worms_port_planner",
+    "worms_port_base_game_worker",
+    "worms_port_network_worker",
+    "worms_port_test_worker",
+    "worms_port_compliance_keeper",
+    "worms_port_docs_keeper",
+    "worms_port_reviewer"
+  ],
+  "scope": [
+    "Implement a separately versioned values-only nimble-knots-artillery-v5 candidate from the D2A 640/576/512 ideal-range and 30/45/80 maximum-direct-damage starting hypothesis.",
+    "Calibrate exact per-Relic integer launch-speed bands against the authoritative TypeScript simulation with at most three declared profiles and activate V5 only if the production-start plausibility gates pass.",
+    "Preserve V1 through V4 replay behavior, extend strict snapshot/protocol/reconstruction support for V5, retain equal player/Loomkeeper rules, and disclose the compact Relic roles without adding media."
+  ],
+  "non_goals": [
+    "Claim global or human balance, fun, D2O satisfaction, ProductAuthority, placement, P5, landfall, or release readiness.",
+    "Add Seam Pin, Escape Slack, Brace, preparation, Cocoon, Unweave, Threadback, Opening Weave, Threadstep, reactions, overtime, ammo, cooldown, precision, status, Calling differences, obstacles, tactical terrain, telemetry, or a new Loomkeeper policy.",
+    "Execute Lane G or Lane M, repair the Stage C aggregate harness, conduct player observation or device sessions, activate rewards, change dependencies or assets, import Sorcerers material, or modify historical source-bound carriers."
+  ],
+  "planned_checks": [
+    "npm run verify:fast",
+    "npm run test:v5-balance",
+    "npm run test:tactical-model",
+    "npm run test:simulation",
+    "npm run test:relics",
+    "npm run test:loomkeeper",
+    "npm run test:protocol",
+    "npm run test:combat",
+    "npm run test:practice",
+    "npm run test:reward",
+    "npm run check:reward-security",
+    "npm run verify:runtime",
+    "npm run test:browser:matrix",
+    "npm run test:browser:performance",
+    "npm run check:bundle-budget",
+    "npm audit",
+    "WP-015D2X exact changed-path, source-identity, historical-replay, evidence, and diff review"
+  ],
+  "deterministic_seeds": [
+    "3237998097"
+  ],
+  "sorcerers_reference_used": false,
+  "clean_room_records": [],
+  "check_results": [
+    {
+      "command": "npm run verify:fast",
+      "status": "pass",
+      "detail": "Pre-edit baseline passed compliance, types, tooling, protocol, simulation, Loomkeeper, Relic, combat, Practice, identity, and reward suites from exact starting commit 14cf9d490d7cf7b23e22918f608a694bb3028005."
+    }
+  ],
+  "reviews": [],
+  "skipped_checks": [
+    "Real Android/iOS testing and formal player observation are outside this autonomous package and remain not run."
+  ],
+  "residual_risks": [
+    "D2A Candidate A is an ideal-direct-hit analytical hypothesis, not player evidence; exact TypeScript terrain, aim, splash, Loomkeeper, and pacing behavior may reject it.",
+    "The declared activation domain is the real 640-unit production start. Adjacent-distance checks remain safety residue and cannot establish global balance."
+  ]
+}
