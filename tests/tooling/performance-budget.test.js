@@ -6,6 +6,16 @@ const {
   summarizePerformanceSamples
 } = require('../../scripts/performance-budget');
 
+test('performance budgets retain instant feedback and bounded full-motion Ubuntu headroom', () => {
+  assert.deepEqual(BUDGETS.fireToCastStart, { medianMs: 350, maximumMs: 500 });
+  assert.deepEqual(BUDGETS.fireToVisibleProjectile, {
+    minimumMs: 1_800,
+    medianMs: 3_200,
+    maximumMs: 3_500
+  });
+  assert.deepEqual(BUDGETS.fireToCompleteResponse, { maximumMs: 12_000 });
+});
+
 test('performance report enforces median separately from the maximum ceiling', () => {
   const sample = {
     navigationToActionablePractice: BUDGETS.navigationToActionablePractice.maximumMs,

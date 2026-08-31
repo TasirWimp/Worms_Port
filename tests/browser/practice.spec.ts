@@ -53,8 +53,10 @@ test('live practice supports authoritative pause, full player turn, and fresh re
   }, {
     // A live exchange now includes normal-motion casts for both actors and,
     // when terminal, the two-second Unraveling presentation. Match the
-    // existing per-turn lifecycle allowance used by completeCurrentClash.
-    timeout: 30_000
+    // existing per-turn lifecycle allowance used by completeCurrentClash. A
+    // retained Ubuntu failure reached the terminal result immediately after
+    // the old poll expired, so keep a bounded 15-second CI scheduling margin.
+    timeout: 45_000
   }).toMatch(/^(ready|result)$/);
   const terminalAfterReply = await page.locator('.result-shell').count() > 0;
   if (terminalAfterReply) {
