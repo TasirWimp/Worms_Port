@@ -203,7 +203,7 @@ function installTimingRecorder(): void {
       state.fireTapAt = performance.now();
     }
   }, true);
-  const observe = () => {
+  const measure = () => {
     const start = document.querySelector<HTMLButtonElement>('.practice-start');
     if (state.actionableAt === null && start && !start.disabled &&
         start.getBoundingClientRect().width > 0 && start.getBoundingClientRect().height > 0) {
@@ -238,9 +238,26 @@ function installTimingRecorder(): void {
         state.responseAt = performance.now();
       }
     }
-    requestAnimationFrame(observe);
   };
-  requestAnimationFrame(observe);
+  // Record the same player-visible DOM boundaries at mutation delivery instead
+  // of charging up to one software-rendered animation frame to every sample.
+  const observer = new MutationObserver(measure);
+  observer.observe(document, {
+    childList: true,
+    subtree: true,
+    attributes: true,
+    attributeFilter: [
+      'aria-disabled',
+      'class',
+      'data-active-actor',
+      'data-presentation',
+      'data-presenting',
+      'data-projectile-points',
+      'disabled'
+    ]
+  });
+  document.addEventListener('DOMContentLoaded', measure, { once: true });
+  requestAnimationFrame(measure);
 }
 
 async function dragPad(

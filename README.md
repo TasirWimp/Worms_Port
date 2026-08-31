@@ -417,6 +417,10 @@ the exact ignored byte report.
 The performance project disables Playwright trace, screenshot, and video
 capture so Ubuntu software-rendering overhead is not charged to the timing
 budgets. It retains the sanitized timing JSON on both success and failure. Its
+test-only recorder timestamps the existing actionable, legal-input, cast,
+visible-projectile, and complete-response DOM boundaries at mutation delivery;
+it adds no product instrumentation or telemetry and avoids charging a
+software-rendered animation-frame sampling interval to those events. Its
 180-second outer collection allowance changes no timing ceiling, sample count,
 retry rule, or full-motion behavior; it only lets a slow runner return the exact
 budget violations instead of an opaque suite timeout.

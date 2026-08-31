@@ -2818,6 +2818,11 @@ allowance cannot be reassigned to JavaScript.
    budget, one warm-up plus five measured contexts, zero retries, visual
    thresholds, expected skips, and project coverage. It excludes trace,
    screenshot, and video capture only from the measured performance project,
+   retained the next two exact Linux verdicts (including a 2,529.7ms and then
+   3,066.7ms visible-projectile median) instead of rerunning them away,
+   records the same existing player-visible DOM timing boundaries at mutation
+   delivery rather than adding a software-rendered animation-frame sampling
+   interval, adds no product instrumentation or telemetry,
    raises only the outer evidence-collection allowance to 180 seconds, and gives
    the single-exchange Practice poll a bounded 15-second CI scheduling margin.
    The first Ubuntu candidate run then proved that the multi-navigation geometry
