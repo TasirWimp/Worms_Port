@@ -20,7 +20,10 @@ const outputPath = path.resolve('test-results', 'wp014-performance.json');
 test('ordinary Practice meets the pinned Chromium timing and lazy SDK budgets', async ({
   browser
 }, testInfo) => {
-  test.setTimeout(120_000);
+  // Six fresh full-motion contexts can exceed two minutes on Ubuntu software
+  // rendering. The timing budgets below remain unchanged; this outer allowance
+  // exists only so every sample can return a precise budget verdict.
+  test.setTimeout(180_000);
   expect(testInfo.project.name).toBe('chromium-390x844');
 
   const lazyMiniAppSdkPath = findLazyMiniAppSdkPath();

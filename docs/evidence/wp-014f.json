@@ -1,0 +1,56 @@
+{
+  "id": "WP-014F",
+  "status": "in_progress",
+  "starting_commit": "7f8fe6108ae26a0e25bb3ca185dab6c1f86c662f",
+  "branch": "codex/wp-014f-quality-gate-repair-v0",
+  "initial_worktree": "clean",
+  "starting_lock_sha256": "D4DAC6AE09A3D2F6C5A7EAA11520BAC43F1628320C5331575BCF1E1857073D73",
+  "owning_roles": [
+    "worms_port_test_worker",
+    "worms_port_docs_keeper",
+    "worms_port_reviewer"
+  ],
+  "scope": [
+    "Repair the unrelated red WP-014 browser-quality and performance gates reported by GitHub Actions Verify run 33420614409 without changing Lane G source or evidence.",
+    "Classify the red baseline before editing: current production visuals are compared with pre-production-art Linux snapshots; one complete Practice response reached the result immediately after a 30-second poll expired; and the full-motion performance test completed four of five stable samples before its 120-second outer timeout.",
+    "Preserve all performance budgets, one warm-up plus five measured fresh contexts, zero retries, visual thresholds, project coverage, expected-skip policy, and gameplay behavior.",
+    "Disable trace, screenshot, and video capture only for the measured performance project so Ubuntu software rendering is not timed together with failure-artifact recording; retain sanitized timing JSON as its required evidence.",
+    "Increase only the outer performance evidence-collection timeout and the bounded single-exchange Practice poll so slow CI produces a verdict instead of an opaque timeout.",
+    "Generate replacement Linux screenshots only through the pinned Ubuntu 24.04 Visual baseline candidates workflow, inspect every changed candidate explicitly, and commit only reviewed exact candidate bytes.",
+    "Allowed outputs are exactly docs/evidence/wp-014f.json, docs/planning/implementation_plan.md, README.md, playwright.config.ts, tests/browser/performance.spec.ts, tests/browser/practice.spec.ts, and reviewed files below tests/browser/visual.spec.ts-snapshots/."
+  ],
+  "non_goals": [
+    "No gameplay, simulation, client, server, protocol, authority, asset, dependency, package-lock, schema, executor, performance-budget, retry, visual-threshold, expected-skip, or active-execution-pointer change.",
+    "No Windows screenshot promotion and no automatic acceptance of Ubuntu candidates.",
+    "No player observation, Lane G execution, Lane M work, Stage C aggregate execution or harness repair, ProductAuthority, mathematical placement, P5, or landfall claim.",
+    "No Sorcerers inspection or material."
+  ],
+  "planned_checks": [
+    "npm run check:compliance",
+    "npm run check:types",
+    "npm run test:tooling",
+    "npm run build",
+    "npm run smoke:built",
+    "npm run test:browser:practice",
+    "npm run test:browser:performance",
+    "npm run test:browser:matrix",
+    "npm audit",
+    "Ubuntu visual baseline candidate generation and explicit review",
+    "GitHub Actions Verify",
+    "self-review"
+  ],
+  "deterministic_seeds": [
+    "1",
+    "3735928559"
+  ],
+  "sorcerers_reference_used": false,
+  "clean_room_records": [],
+  "check_results": [],
+  "reviews": [],
+  "skipped_checks": [],
+  "residual_risks": [
+    "The first red run is attributable to pre-existing quality-gate debt, not the documentation-only Lane G diff.",
+    "Authoritative Linux baseline replacement remains blocked until a pinned Ubuntu candidate artifact is generated and explicitly inspected.",
+    "Physical Android/iOS and Nimiq Pay WebView behavior remain outside automated browser evidence."
+  ]
+}

@@ -2808,6 +2808,21 @@ allowance cannot be reassigned to JavaScript.
    time was 9m09s. Exact Ubuntu bundle and timing measurements, expected-skip,
    security, self-review, and residual risks are recorded in
    `docs/evidence/wp-014e.json`.
+6. **WP-014F Quality-gate repair - in progress 2026-08-31:** ordinary Verify
+   run `33420614409` on a documentation-only Lane G PR exposed pre-existing
+   quality debt. Its Linux visual baselines still showed the placeholder arena
+   while actual captures contained the already-approved production art; one
+   complete Practice result arrived immediately after a 30-second poll expired;
+   and performance sampling completed four stable measured contexts before the
+   120-second outer test timeout. The repair preserves gameplay, every timing
+   budget, one warm-up plus five measured contexts, zero retries, visual
+   thresholds, expected skips, and project coverage. It excludes trace,
+   screenshot, and video capture only from the measured performance project,
+   raises only the outer evidence-collection allowance to 180 seconds, and gives
+   the single-exchange Practice poll a bounded 15-second CI scheduling margin.
+   Replacement Linux baselines remain blocked until the pinned Ubuntu 24.04
+   artifact-only workflow generates them and every changed candidate is
+   explicitly inspected. Evidence is open in `docs/evidence/wp-014f.json`.
 
 #### Acceptance
 

@@ -414,6 +414,13 @@ check:bundle-budget` reads the fresh Vite manifest, follows only the initial
 static entry graph, deterministically gzips its JavaScript and CSS, and records
 the exact ignored byte report.
 
+The performance project disables Playwright trace, screenshot, and video
+capture so Ubuntu software-rendering overhead is not charged to the timing
+budgets. It retains the sanitized timing JSON on both success and failure. Its
+180-second outer collection allowance changes no timing ceiling, sample count,
+retry rule, or full-motion behavior; it only lets a slow runner return the exact
+budget violations instead of an opaque suite timeout.
+
 `npm run verify:quality` performs a fresh build followed by the bundle,
 identity/reward-security, complete browser matrix, and performance gates.
 `npm run verify:full` adds the fast funnel, built runtime smoke, and audit. It

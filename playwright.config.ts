@@ -42,9 +42,12 @@ export default defineConfig({
   },
   use: {
     baseURL,
-    trace: 'retain-on-failure',
-    screenshot: 'only-on-failure',
-    video: 'retain-on-failure'
+    // The performance project measures full-motion wall-clock behavior. Do not
+    // charge Ubuntu software rendering for trace, screenshot, or video capture;
+    // its sanitized timing JSON remains the authoritative failure artifact.
+    trace: performanceGate ? 'off' : 'retain-on-failure',
+    screenshot: performanceGate ? 'off' : 'only-on-failure',
+    video: performanceGate ? 'off' : 'retain-on-failure'
   },
   projects: (performanceGate ? [
     {
