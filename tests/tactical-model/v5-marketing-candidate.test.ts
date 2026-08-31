@@ -17,8 +17,8 @@ import {
     V5_MARKETING_PROFILE
 } from '../../scripts/run-v5-balance-candidate';
 
-test('V5 profile zero is explicit-only and preserves the frozen V4 starting hash', () => {
-    assert.equal(LATEST_RULESET_ID, V4_RULESET_ID);
+test('V5 profile zero is active and preserves the frozen V4 starting hash', () => {
+    assert.equal(LATEST_RULESET_ID, V5_RULESET_ID);
     assert.equal(V5_MARKETING_PROFILE.id, 'v5-marketing-candidate-v0');
     assert.deepEqual(V5_RELIC_RULES, {
         threadball: { craterRadius: 40, damageRadius: 64, maximumDamage: 45 },
@@ -36,7 +36,7 @@ test('V5 profile zero is explicit-only and preserves the frozen V4 starting hash
     );
 });
 
-test('V5 has a strict version-five snapshot identity before activation', () => {
+test('V5 has a strict version-five snapshot identity after activation', () => {
     const state = createSimulation(0xC0FFEE11, 'wizard', V5_RULESET_ID);
     assert.equal(state.rulesetId, V5_RULESET_ID);
     assert.equal(state.rulesetVersion, 5);

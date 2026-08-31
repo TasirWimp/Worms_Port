@@ -381,13 +381,18 @@ test('floating pads appear at the active thumb and Relics expand in place', asyn
   await trigger.tap();
   await expect(trigger).toHaveAttribute('aria-expanded', 'true');
   await expect(page.locator('.relic-chooser')).toBeVisible();
+  await expect(page.locator('.relic-needlepoint .relic-role')).toHaveText('Long · 30');
+  await expect(page.locator('.relic-threadball .relic-role')).toHaveText('Medium · 45');
+  await expect(page.locator('.relic-spoolburst .relic-role')).toHaveText('Short · 80');
   for (const button of await page.locator('.relic-chooser button').all()) {
     const relicBox = await button.boundingBox();
     expect(relicBox).not.toBeNull();
     expect(relicBox!.width).toBeGreaterThanOrEqual(48);
     expect(relicBox!.height).toBeGreaterThanOrEqual(48);
   }
-  await page.getByRole('button', { name: 'Select Spoolburst' }).tap();
+  await page.getByRole('button', {
+    name: 'Select Spoolburst, short range, 80 maximum damage'
+  }).tap();
   await expect(page.locator('.combat-ui')).toHaveAttribute('data-selected-relic', 'spoolburst');
   await expect(page.locator('.relic-chooser')).toBeHidden();
 });

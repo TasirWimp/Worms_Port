@@ -11,11 +11,11 @@ import {
     SIM_RULES
 } from '../../shared/simulation';
 
-test('V4 doubles only authoritative arena width and remains deterministic', () => {
+test('V5 retains the V4 arena expansion and remains deterministic', () => {
     const first = createLatestSimulation(0xC0FFEE11, 'wizard');
     const second = createLatestSimulation(0xC0FFEE11, 'wizard');
-    assert.equal(first.rulesetId, 'nimble-knots-artillery-v4');
-    assert.equal(first.formatVersion, 4);
+    assert.equal(first.rulesetId, 'nimble-knots-artillery-v5');
+    assert.equal(first.formatVersion, 5);
     assert.deepEqual(
         { width: first.terrain.width, height: first.terrain.height, cellSize: first.terrain.cellSize, words: first.terrain.words.length },
         { width: 256, height: 72, cellSize: 8, words: 576 }

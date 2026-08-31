@@ -128,8 +128,12 @@ export class CombatControls {
             button.type = 'button';
             button.className = `relic-button relic-${relicId}`;
             button.dataset.relic = relicId;
-            button.setAttribute('aria-label', `Select ${relicName(relicId)}`);
-            button.innerHTML = `<span class="relic-shape" aria-hidden="true"></span><small>${relicName(relicId)}</small>`;
+            const role = relicRole(relicId);
+            button.setAttribute(
+                'aria-label',
+                `Select ${relicName(relicId)}, ${role.range} range, ${role.damage} maximum damage`
+            );
+            button.innerHTML = `<span class="relic-shape" aria-hidden="true"></span><small><span>${relicName(relicId)}</span><span class="relic-role">${role.label} · ${role.damage}</span></small>`;
             button.addEventListener('click', () => {
                 if (!this.canSubmit()) return;
                 this.relicChooserOpen = false;
@@ -510,4 +514,14 @@ function relicName(relicId: RelicId): string {
     if (relicId === 'threadball') return 'Threadball';
     if (relicId === 'needlepoint') return 'Needlepoint';
     return 'Spoolburst';
+}
+
+function relicRole(relicId: RelicId): {
+    range: 'short' | 'medium' | 'long';
+    label: 'Short' | 'Medium' | 'Long';
+    damage: 30 | 45 | 80;
+} {
+    if (relicId === 'threadball') return { range: 'medium', label: 'Medium', damage: 45 };
+    if (relicId === 'needlepoint') return { range: 'long', label: 'Long', damage: 30 };
+    return { range: 'short', label: 'Short', damage: 80 };
 }

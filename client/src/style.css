@@ -659,6 +659,16 @@ input {
     text-overflow: ellipsis;
 }
 
+.relic-chooser .relic-role {
+    display: block;
+    margin-top: 1px;
+    color: #fff7ce;
+    font-size: 0.4rem;
+    font-weight: 800;
+    line-height: 1;
+    white-space: nowrap;
+}
+
 .combat-actions .fire-button:disabled {
     opacity: 0.42;
 }

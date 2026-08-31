@@ -51,7 +51,7 @@ export type V5BalanceReport = {
     }>;
     directDamage: Record<RelicId, number>;
     gates: {
-        historicalDefaultStillV4: boolean;
+        historicalV4ReplayIdentity: boolean;
         profileConfigParity: boolean;
         terminalRate: boolean;
         firstActorShare: boolean;
@@ -300,8 +300,10 @@ export function createV5BalanceReport(): V5BalanceReport {
     const achievedDistances = RELIC_IDS.map(
         (relicId) => flatRangeChecks[relicId].achievedGroundDistance
     );
+    const historicalV4 = createSimulation(BASE_SEED, 'wizard', V4_RULESET_ID);
     const gates = {
-        historicalDefaultStillV4: LATEST_RULESET_ID === V4_RULESET_ID,
+        historicalV4ReplayIdentity: historicalV4.rulesetId === V4_RULESET_ID &&
+            historicalV4.rulesetVersion === 4 && historicalV4.formatVersion === 4,
         profileConfigParity: profileConfigParity(),
         terminalRate: terminalRatePercent >= 90,
         firstActorShare: firstActorWinSharePercent >= 35 && firstActorWinSharePercent <= 65,

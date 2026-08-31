@@ -13,9 +13,13 @@ import {
     LATEST_RULESET_ID,
     RELIC_IDS,
     RELIC_RULES,
+    relicRulesFor,
     SIM_RULES,
     V2_RULESET_ID,
     V3_RULESET_ID,
+    V4_RULESET_ID,
+    V5_RELIC_RULES,
+    V5_RULESET_ID,
     type RelicId,
     type SimulationActor,
     type SimulationState
@@ -63,7 +67,7 @@ function populationCount(input: number): number {
     return (((value + (value >>> 4)) & 0x0F0F0F0F) * 0x01010101) >>> 24;
 }
 
-test('V4 defaults new challenges while preserving the v2/V3 Relic constants and strict snapshot identity', () => {
+test('V5 defaults new challenges while preserving historical Relic constants and strict snapshot identity', () => {
     assert.deepEqual(RELIC_IDS, ['threadball', 'needlepoint', 'spoolburst']);
     assert.deepEqual(RELIC_RULES, {
         threadball: { craterRadius: 40, damageRadius: 64, maximumDamage: 70 },
@@ -71,9 +75,15 @@ test('V4 defaults new challenges while preserving the v2/V3 Relic constants and 
         spoolburst: { craterRadius: 64, damageRadius: 88, maximumDamage: 45 }
     });
     const state = createLatestSimulation(1, 'wizard');
-    assert.equal(state.formatVersion, 4);
+    assert.deepEqual(V5_RELIC_RULES, {
+        threadball: { craterRadius: 40, damageRadius: 64, maximumDamage: 45 },
+        needlepoint: { craterRadius: 40, damageRadius: 64, maximumDamage: 30 },
+        spoolburst: { craterRadius: 40, damageRadius: 64, maximumDamage: 80 }
+    });
+    assert.equal(LATEST_RULESET_ID, V5_RULESET_ID);
+    assert.equal(state.formatVersion, 5);
     assert.equal(state.rulesetId, LATEST_RULESET_ID);
-    assert.equal(state.rulesetVersion, 4);
+    assert.equal(state.rulesetVersion, 5);
     assert.deepEqual(DIRECT_PROJECTILE_HITBOXES[LATEST_RULESET_ID], {
         halfWidth: 32,
         top: 85,
@@ -137,7 +147,11 @@ test('Needlepoint rewards direct precision while Spoolburst removes the most ter
 
     const remainingTerrain = new Map<RelicId, number>();
     for (const relicId of RELIC_IDS) {
-        const result = fire(createLatestSimulation(0xC0FFEE11, 'wizard'), 'player', relicId);
+        const result = fire(
+            createSimulation(0xC0FFEE11, 'wizard', V2_RULESET_ID),
+            'player',
+            relicId
+        );
         remainingTerrain.set(relicId, solidCells(result.state));
     }
     assert.equal(remainingTerrain.get('spoolburst')! < remainingTerrain.get('threadball')!, true);
@@ -193,9 +207,10 @@ test('every Relic crater radius clips safely and remains idempotent at world edg
         const worldHeight = state.terrain.height * state.terrain.cellSize;
         for (const [x, y] of [[0, 0], [worldWidth - 1, 0], [0, worldHeight - 1], [worldWidth - 1, worldHeight - 1]] as const) {
             const state = createLatestSimulation(1, 'wizard');
-            deformTerrain(state.terrain, x, y, RELIC_RULES[relicId].craterRadius);
+            const craterRadius = relicRulesFor(state.rulesetId, relicId).craterRadius;
+            deformTerrain(state.terrain, x, y, craterRadius);
             const once = [...state.terrain.words];
-            deformTerrain(state.terrain, x, y, RELIC_RULES[relicId].craterRadius);
+            deformTerrain(state.terrain, x, y, craterRadius);
             assert.deepEqual(state.terrain.words, once, `${relicId}/${x},${y}`);
             assert.equal(state.terrain.words.length, 576);
             assert.equal(state.terrain.words.every(
@@ -205,17 +220,22 @@ test('every Relic crater radius clips safely and remains idempotent at world edg
     }
 });
 
-test('replays carry V4 by default, preserve explicit v2, and reconstruct legacy records as v1', () => {
+test('replays carry V5 by default and preserve explicit V4, v2, and legacy reconstruction', () => {
     const current = new SimulationCoordinator();
     try {
-        const created = current.create('v4-challenge', 'v4-session', 1, 'wizard');
-        current.apply('v4-challenge', 'player', {
+        const created = current.create('v5-challenge', 'v5-session', 1, 'wizard');
+        current.apply('v5-challenge', 'player', {
             type: 'select_relic', relicId: 'spoolburst'
         }, 0);
-        const replay = current.replay('v4-challenge')!;
+        const replay = current.replay('v5-challenge')!;
         assert.equal(replay.rulesetId, LATEST_RULESET_ID);
-        assert.equal(current.reconstructAndVerify(replay).stateHash, current.get('v4-challenge')!.stateHash);
+        assert.equal(current.reconstructAndVerify(replay).stateHash, current.get('v5-challenge')!.stateHash);
         assert.equal(created.state.rulesetId, LATEST_RULESET_ID);
+
+        const v4 = current.create('v4-challenge', 'v4-session', 4, 'wizard', V4_RULESET_ID);
+        const v4Replay = current.replay('v4-challenge')!;
+        assert.equal(v4Replay.rulesetId, V4_RULESET_ID);
+        assert.equal(current.reconstructAndVerify(v4Replay).stateHash, v4.stateHash);
 
         const v2 = current.create('v2-challenge', 'v2-session', 2, 'wizard', V2_RULESET_ID);
         const v2Replay = current.replay('v2-challenge')!;

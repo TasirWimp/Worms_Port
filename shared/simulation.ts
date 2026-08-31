@@ -9,9 +9,9 @@ export const V4_RULESET_ID = 'nimble-knots-artillery-v4' as const;
 export const V4_RULESET_VERSION = 4 as const;
 export const V5_RULESET_ID = 'nimble-knots-artillery-v5' as const;
 export const V5_RULESET_VERSION = 5 as const;
-// V5 remains explicit-only until WP-015D2X's plausibility gates pass.
-export const LATEST_RULESET_ID = V4_RULESET_ID;
-export const LATEST_RULESET_VERSION = V4_RULESET_VERSION;
+// WP-015D2X's bounded calibration gates passed; new challenges now use V5.
+export const LATEST_RULESET_ID = V5_RULESET_ID;
+export const LATEST_RULESET_VERSION = V5_RULESET_VERSION;
 
 export type SimulationRulesetId =
     | typeof RULESET_ID
