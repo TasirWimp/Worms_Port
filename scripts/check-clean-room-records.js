@@ -28,7 +28,9 @@ function validateRecords(records, root = repoRoot) {
       if (!allowedFields.has(field)) errors.push(`${record.id || '<missing id>'}: unexpected field ${field}.`);
     }
     if (!/^[a-z0-9-]+$/.test(record.id || '')) errors.push(`${record.id || '<missing id>'}: invalid id.`);
-    if (!/^WP-\d{3}$/.test(record.work_package || '')) errors.push(`${record.id}: invalid work_package.`);
+    if (!/^WP-\d{3}(?:[A-Z]|[A-Z]\d[A-Z])?$/.test(record.work_package || '')) {
+      errors.push(`${record.id}: invalid work_package.`);
+    }
     if (!['observed', 'complete'].includes(record.status)) errors.push(`${record.id}: invalid status.`);
     if (!/^[0-9A-F]{64}$/.test(record.behavior_record_sha256 || '')) {
       errors.push(`${record.id}: invalid behavior_record_sha256.`);

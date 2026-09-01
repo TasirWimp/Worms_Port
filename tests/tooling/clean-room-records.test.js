@@ -15,7 +15,7 @@ test('clean-room records fail closed on hash and role-separation errors', () => 
 
   const valid = {
     id: 'bounded-observation',
-    work_package: 'WP-999',
+    work_package: 'WP-999D2Z',
     source_commit: sourceCommit,
     observed_material: ['visible running behavior'],
     behavior_record: 'behavior.md',
@@ -49,6 +49,7 @@ test('clean-room records fail closed on hash and role-separation errors', () => 
     assert.match(validateRecords([{ ...valid, behavior_record_sha256: '0'.repeat(64) }], root).join('\n'), /hash mismatch/);
     assert.match(validateRecords([{ ...valid, reviewer: valid.implementer }], root).join('\n'), /separate identities/);
     assert.match(validateRecords([{ ...valid, id: 'Invalid_ID' }], root).join('\n'), /invalid id/);
+    assert.match(validateRecords([{ ...valid, work_package: 'WP-999-D2Z' }], root).join('\n'), /invalid work_package/);
     assert.match(validateRecords([{ ...valid, unexpected: true }], root).join('\n'), /unexpected field/);
     assert.match(validateRecords([{ ...valid, behavioral_tests: [] }], root).join('\n'), /must be non-empty/);
   } finally {

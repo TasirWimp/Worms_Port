@@ -8,8 +8,20 @@ Phaser/Socket.IO stack.
 ## Execution Pointer
 
 - Active target: mobile-first single-player Nimiq Pay competition release.
-- Active work package: **WP-015D2Y V6 Movement Corrections — complete,
-  awaiting owner deployment/review:** the separately versioned
+- Active work package: **WP-015D2Z V7 Tactical Arena Candidate —
+  preregistered, clean-room implementation handoff pending:** V7 is bounded to
+  deterministic surface-only terrain profiles and terrain-derived,
+  balance-aware opening pairs under the actual V6 movement and V5 Relic rules.
+  Its source-bound contract and exact changed-path allow-list are
+  [WP-015D2Z V7 Tactical Arena Candidate Contract](wp-015d2z-v7-tactical-arena-contract.md).
+  The Sorcerers reference observation is frozen as behavior-only evidence; a
+  distinct implementation identity must not access that source, and a third
+  identity must complete the similarity review before V7 can become latest.
+  V1 through V6 replay behavior remains protected. No player observation,
+  Lane G/Lane M execution, Stage C repair, reward, asset, dependency,
+  telemetry, CRPM, authority, or analytical-pointer change is admitted.
+  ProductAuthority remains `none` and D2O remains unsatisfied.
+- Completed product predecessor: **WP-015D2Y V6 Movement Corrections:** the separately versioned
   `nimble-knots-artillery-v6` correction authorized by the owner on 2026-09-01
   preserves V5's Relic balance profile while making an acquired movement drag
   commit its clamped intent beyond the visible ring, adding a free
@@ -20,7 +32,7 @@ Phaser/Socket.IO stack.
   V1 through V5 replay semantics and the sealed analytical carriers remain
   immutable. Lane G/Lane M execution, player observation, Stage C repair,
   balance retuning, rewards, assets, dependencies, telemetry, CRPM, and the
-  analytical execution pointer remain excluded. ProductAuthority remains
+  analytical execution pointer remained excluded. ProductAuthority remains
   `none`; D2O remains unsatisfied. Implementation commit
   `601b05ee454811bf9e39417ef99e8b338a417201` passed the strict five-project
   phone-browser rerun with 103 executed checks and 72 policy-approved skips,

@@ -15,7 +15,7 @@ test('clean-room observation and work-package completion advance together', () =
 
   const observed = {
     id: 'lifecycle-observation',
-    work_package: 'WP-999',
+    work_package: 'WP-999D2Z',
     source_commit: sourceCommit,
     observed_material: ['visible behavior'],
     behavior_record: 'behavior.md',
@@ -24,7 +24,7 @@ test('clean-room observation and work-package completion advance together', () =
     status: 'observed'
   };
   const inProgress = {
-    id: 'WP-999',
+    id: 'WP-999D2Z',
     status: 'in_progress',
     starting_commit: 'abcdef0',
     branch: 'codex/test',

@@ -1,0 +1,41 @@
+{
+  "id": "WP-015D2Z",
+  "status": "in_progress",
+  "starting_commit": "17bd15ed9925168c4920d619415053a2c694feb6",
+  "branch": "codex/wp-015d2z-v7-tactical-arena-v0",
+  "initial_worktree": "clean",
+  "starting_lock_sha256": "D4DAC6AE09A3D2F6C5A7EAA11520BAC43F1628320C5331575BCF1E1857073D73",
+  "owning_roles": [
+    "worms_port_planner",
+    "worms_port_base_game_worker",
+    "worms_port_test_worker",
+    "worms_port_compliance_keeper",
+    "worms_port_docs_keeper",
+    "worms_port_reviewer"
+  ],
+  "scope": [
+    "Add a separately versioned nimble-knots-artillery-v7 candidate with deterministic surface-only terrain profiles and terrain-derived, balance-aware actor spawn pairs.",
+    "Preserve exact V1 through V6 replay behavior while retaining V5 Relic values, V6 movement semantics, and the current client/server authority boundary.",
+    "Complete the Sorcerers-informed clean-room lifecycle from a frozen behavior-only record without copying reference code, algorithms, constants, identifiers, assets, or expressive sequences."
+  ],
+  "non_goals": [
+    "Add caves, tunnels, ladders, islands, water, gaps, obstacles, props, jumping, climbing mechanics, Calling differentiation, rewards, assets, dependencies, telemetry, instrumentation, or player observation.",
+    "Retune V5 Relic values, V6 movement allowance/quantum/climb, Loomkeeper policy, turn timing, damage, physics, rewards, or the analytical model.",
+    "Execute Lane G or Lane M, repair Stage C, change CRPM, advance the active analytical execution pointer, or claim D2O, ProductAuthority, placement, P5, landfall, final balance, fun, or release readiness."
+  ],
+  "planned_checks": [
+    "focused V7 simulation and strict protocol red/green tests",
+    "npm run verify:feature",
+    "focused historical replay, Relic, Loomkeeper, protocol, and tactical-model preservation checks",
+    "WP-015D2Z clean-room lifecycle, duplicate-key, exact changed-path, git-diff, source-identity, package-lock, and legal-manifest digest review"
+  ],
+  "deterministic_seeds": [
+    "1",
+    "0xC0FFEE11",
+    "0xDEADBEEF"
+  ],
+  "sorcerers_reference_used": true,
+  "clean_room_records": [
+    "wp-015d2z-v7-terrain-actor-placement"
+  ]
+}
