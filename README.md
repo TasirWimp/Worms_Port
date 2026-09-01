@@ -386,6 +386,7 @@ npm run test:browser:reward
 npm run test:browser:reward:postgres
 npm run test:browser:resilience
 npm run test:browser:visual
+npm run test:browser:focused
 npm run test:browser:performance
 npm run test:browser:matrix
 npm run check:bundle-budget
@@ -401,8 +402,14 @@ The browser client builds with Vite into `client/build/`. The Node server builds
 with esbuild into `server/build/server.js`. The smoke command performs a fresh
 build, starts that server on an available local port, and verifies the game
 page, built overlays, approved-asset plumbing, and room join-ID API.
-`npm run test:browser:smoke` performs a fresh build and runs the phone-sized
-Chromium and WebKit touch journey. `npm run test:browser:matrix` is the
+Every normal browser command accepts only a deterministic build proof whose
+declared source/lock inputs and exact client/server outputs still match. A
+missing or stale proof triggers a full production rebuild automatically;
+unchanged repeated runs reuse the verified output. `npm run
+test:browser:focused` is the gameplay edit-loop gate: it runs smoke, combat,
+and Practice on canonical Chromium 390x844 without replacing final matrix
+coverage. `npm run test:browser:smoke` runs the phone-sized Chromium and WebKit
+touch journey. `npm run test:browser:matrix` is the
 zero-retry WP-014 release gate for all maintained browser suites at Chromium
 360x640, 390x844, 412x915, and 844x390 plus WebKit 390x844. It fails on an
 unexpected project skip or omitted critical journey. `npm run
@@ -431,6 +438,14 @@ earlier than 1.8 seconds and at or below a 3.2-second median / 3.5-second
 maximum; complete response must remain at or below 12 seconds. Instant Fire
 feedback remains independently capped at a 350ms median / 500ms maximum. These
 are test budgets only and do not change presentation durations or gameplay.
+
+Use the fail-fast funnel while iterating: run the affected unit suite, then the
+affected browser spec/project (or `test:browser:focused` for a gameplay change),
+then `verify:fast` before the final full matrix. Run the five-project matrix and
+performance gate once after the candidate is stable. The release gates remain
+one worker per existing CI project shard; a quality/performance worker override
+above one fails before browser startup rather than risking resource exhaustion
+or weakening reproducibility.
 
 `npm run verify:quality` performs a fresh build followed by the bundle,
 identity/reward-security, complete browser matrix, and performance gates.

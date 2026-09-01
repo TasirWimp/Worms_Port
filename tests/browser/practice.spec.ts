@@ -1,6 +1,9 @@
 import { expect, test, type Page } from '@playwright/test';
 
-test.beforeEach(async ({ page }) => {
+import { skipExcludedProjectBeforeSetup } from './support/project-routing';
+
+test.beforeEach(async ({ page }, testInfo) => {
+  skipExcludedProjectBeforeSetup('practice.spec.ts', testInfo);
   const pageErrors: string[] = [];
   const consoleErrors: string[] = [];
   page.on('pageerror', (error) => pageErrors.push(error.message));
@@ -133,7 +136,6 @@ test('calling controls and live combat actions remain phone-safe', async ({ page
 });
 
 test('default sideways mode carries the live practice journey into virtual landscape', async ({ page }, testInfo) => {
-  test.skip(testInfo.project.name !== 'chromium-390x844', 'One portrait viewport is sufficient.');
   await page.goto('/');
   await expect(page.getByRole('heading', { name: 'Practice Clash' })).toBeVisible();
   await expect(page.locator('html')).toHaveAttribute('data-sideways', 'right');
@@ -153,9 +155,8 @@ test('default sideways mode carries the live practice journey into virtual lands
   await expect.poll(async () => Number(await ui.getAttribute('data-player-x'))).toBeGreaterThan(startX);
 });
 
-test('two consecutive completed Clashes each show a result and use fresh authority', async ({ page }, testInfo) => {
+test('two consecutive completed Clashes each show a result and use fresh authority', async ({ page }) => {
   test.setTimeout(120_000);
-  test.skip(testInfo.project.name !== 'chromium-390x844', 'One deterministic live journey is sufficient.');
   await page.getByRole('button', { name: 'Start Practice' }).tap();
   const ui = page.locator('.combat-ui');
   await expect(ui).toBeVisible();
@@ -178,9 +179,8 @@ test('two consecutive completed Clashes each show a result and use fresh authori
   await expect(page.getByRole('button', { name: 'Change Calling' })).toBeVisible();
 });
 
-test('a full-screen match retains an exit toggle on the result screen', async ({ page }, testInfo) => {
+test('a full-screen match retains an exit toggle on the result screen', async ({ page }) => {
   test.setTimeout(90_000);
-  test.skip(testInfo.project.name !== 'chromium-844x390', 'One landscape journey is sufficient.');
   await installFullscreenStub(page);
   await page.getByRole('button', { name: 'Start Practice' }).tap();
   await expect(page.locator('.combat-ui')).toBeVisible();

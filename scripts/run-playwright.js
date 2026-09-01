@@ -21,9 +21,10 @@ async function main() {
   const qualityGate = rawArgs.includes('--quality-gate');
   const qualityShard = rawArgs.includes('--quality-shard');
   const performanceGate = rawArgs.includes('--performance-gate');
+  const reuseBuild = rawArgs.includes('--reuse-build');
   const args = rawArgs.filter((argument) =>
     argument !== '--quality-gate' && argument !== '--quality-shard' &&
-    argument !== '--performance-gate'
+    argument !== '--performance-gate' && argument !== '--reuse-build'
   );
   if (qualityShard && !qualityGate) {
     throw new Error('A quality shard requires --quality-gate.');
@@ -31,6 +32,7 @@ async function main() {
   if (qualityShard && !args.some((argument) => argument.startsWith('--project='))) {
     throw new Error('A quality shard requires at least one explicit --project=<name>.');
   }
+  assertSerialGateWorkers(args, { qualityGate, performanceGate });
   const qualityProjects = args
     .filter((argument) => argument.startsWith('--project='))
     .map((argument) => argument.slice('--project='.length))
@@ -54,6 +56,7 @@ async function main() {
       env: {
         ...process.env,
         PLAYWRIGHT_PORT: String(port),
+        ...(reuseBuild ? { PLAYWRIGHT_REUSE_BUILD: 'true' } : {}),
         ...(qualityGate ? { PLAYWRIGHT_QUALITY_GATE: 'true' } : {}),
         ...(qualityShard ? { PLAYWRIGHT_QUALITY_SHARD: 'true' } : {}),
         ...(qualityShard ? { PLAYWRIGHT_QUALITY_PROJECTS: qualityProjects.join(',') } : {}),
@@ -77,6 +80,30 @@ async function main() {
   });
   if (result.signal) process.kill(process.pid, result.signal);
   else process.exit(result.code ?? 1);
+}
+
+function workerOverrides(args) {
+  const values = [];
+  for (let index = 0; index < args.length; index += 1) {
+    const argument = args[index];
+    if (argument === '--workers' || argument === '-j') {
+      values.push(args[index + 1] || '');
+      index += 1;
+    } else if (argument.startsWith('--workers=')) {
+      values.push(argument.slice('--workers='.length));
+    } else if (argument.startsWith('-j=')) {
+      values.push(argument.slice('-j='.length));
+    }
+  }
+  return values;
+}
+
+function assertSerialGateWorkers(args, { qualityGate, performanceGate }) {
+  if (!qualityGate && !performanceGate) return;
+  const invalid = workerOverrides(args).filter((value) => value !== '1');
+  if (invalid.length > 0) {
+    throw new Error('WP-014 quality and performance gates require exactly one worker per project shard.');
+  }
 }
 
 function assertQualityGateEnvironment(env) {
@@ -106,4 +133,4 @@ if (require.main === module) {
   });
 }
 
-module.exports = { assertQualityGateEnvironment };
+module.exports = { assertQualityGateEnvironment, assertSerialGateWorkers, workerOverrides };

@@ -6,8 +6,10 @@ import {
   SYNTHETIC_SAFE_AREA,
   ZERO_SAFE_AREA
 } from './support/safe-area';
+import { skipExcludedProjectBeforeSetup } from './support/project-routing';
 
-test.beforeEach(async ({ page }) => {
+test.beforeEach(async ({ page }, testInfo) => {
+  skipExcludedProjectBeforeSetup('combat.spec.ts', testInfo);
   const pageErrors: string[] = [];
   const consoleErrors: string[] = [];
   page.on('pageerror', (error) => pageErrors.push(error.message));
@@ -96,9 +98,7 @@ test('safe-area fixture applies deterministic zero and synthetic insets', async 
   expect(status!.y).toBeGreaterThanOrEqual(SYNTHETIC_SAFE_AREA.top - 1);
 });
 
-test('landscape offers a user-activated full-screen probe with a safe exit', async ({ page }, testInfo) => {
-  test.skip(testInfo.project.name !== 'chromium-844x390', 'Landscape capability probe');
-
+test('landscape offers a user-activated full-screen probe with a safe exit', async ({ page }) => {
   await page.evaluate(() => {
     let active: Element | null = null;
     Object.defineProperty(document, 'fullscreenEnabled', { configurable: true, get: () => true });
@@ -155,7 +155,6 @@ test('landscape offers a user-activated full-screen probe with a safe exit', asy
 
 test('default sideways mode creates touch-safe landscape in a portrait viewport', async ({ page }, testInfo) => {
   test.setTimeout(60_000);
-  test.skip(testInfo.project.name !== 'chromium-390x844', 'One portrait viewport is sufficient.');
   await page.goto('/?combat-preview=1');
   const ui = page.locator('.combat-ui');
   await expect(ui).toBeVisible();
@@ -264,8 +263,7 @@ test('touch movement, Relic selection, aim lock, and explicit Fire stay separate
   expect(presentation.maximumProjectilePoints).toBeGreaterThan(1);
 });
 
-test('V4 opening survey continuously zooms to the player view', async ({ page }, testInfo) => {
-  test.skip(testInfo.project.name !== 'chromium-390x844', 'One phone viewport verifies the timed opening survey.');
+test('V4 opening survey continuously zooms to the player view', async ({ page }) => {
   await page.emulateMedia({ reducedMotion: 'no-preference' });
   await page.goto('/?combat-preview=1&sideways=off');
   await expect(page.locator('.combat-ui')).toBeVisible();
@@ -323,8 +321,7 @@ test('V4 follows a live preview edge, preserves a locked aim, and preserves post
   await expect(page.locator('.fire-button')).toBeEnabled();
 });
 
-test('V4 actor Stitching cards remain at their Wizard anchors and disappear off-screen', async ({ page }, testInfo) => {
-  test.skip(testInfo.project.name !== 'chromium-844x390', 'The compact landscape viewport has room for both world-anchored cards.');
+test('V4 actor Stitching cards remain at their Wizard anchors and disappear off-screen', async ({ page }) => {
   const ui = page.locator('.combat-ui');
   await expect.poll(async () => Number(await ui.getAttribute('data-camera-width')), {
     timeout: 4_000
@@ -337,8 +334,7 @@ test('V4 actor Stitching cards remain at their Wizard anchors and disappear off-
   await expect(page.locator('.loomkeeper-status')).toBeVisible();
 });
 
-test('Threadball preserves the approved cast order before the authoritative trace', async ({ page }, testInfo) => {
-  test.skip(testInfo.project.name !== 'chromium-390x844', 'One phone viewport verifies the asset-bound sequence.');
+test('Threadball preserves the approved cast order before the authoritative trace', async ({ page }) => {
   await installPresentationRecorder(page);
   await dragPad(page, '.aim-zone', 91, 0.3, -0.34);
   await expect(page.locator('.fire-button')).toBeEnabled();
@@ -404,9 +400,8 @@ test('compact landscape visual viewport keeps every control visible and separate
   await page.screenshot({ path: testInfo.outputPath('wp-011a-compact-landscape.png') });
 });
 
-test('V6 overlong movement commits in both directions, turns, and shows its budget', async ({ page }, testInfo) => {
+test('V6 overlong movement commits in both directions, turns, and shows its budget', async ({ page }) => {
   test.setTimeout(90_000);
-  test.skip(testInfo.project.name !== 'chromium-390x844', 'One phone project covers ordinary and sideways input.');
 
   const ui = page.locator('.combat-ui');
   const label = page.locator('.movement-zone .pad-label');

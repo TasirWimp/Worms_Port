@@ -5,7 +5,9 @@ const {
   evaluateQualityRun
 } = require('../../scripts/playwright-quality-policy');
 const {
-  assertQualityGateEnvironment
+  assertQualityGateEnvironment,
+  assertSerialGateWorkers,
+  workerOverrides
 } = require('../../scripts/run-playwright');
 
 const policy = {
@@ -97,4 +99,26 @@ test('quality runner rejects inherited chain, database, RPC, and key authority',
       new RegExp(name)
     );
   }
+});
+
+test('quality and performance gates preserve one worker per project shard', () => {
+  assert.deepEqual(workerOverrides(['--workers=1']), ['1']);
+  assert.deepEqual(workerOverrides(['--workers', '2']), ['2']);
+  assert.deepEqual(workerOverrides(['-j=3']), ['3']);
+  assert.doesNotThrow(() => assertSerialGateWorkers([], { qualityGate: true, performanceGate: false }));
+  assert.doesNotThrow(() => assertSerialGateWorkers(['--workers=1'], {
+    qualityGate: false,
+    performanceGate: true
+  }));
+  assert.throws(
+    () => assertSerialGateWorkers(['--workers', '2'], {
+      qualityGate: true,
+      performanceGate: false
+    }),
+    /require exactly one worker/
+  );
+  assert.doesNotThrow(() => assertSerialGateWorkers(['--workers=2'], {
+    qualityGate: false,
+    performanceGate: false
+  }));
 });

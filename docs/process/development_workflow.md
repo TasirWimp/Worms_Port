@@ -705,6 +705,19 @@ ordinary pointer mapping when the capped game surface is centered inside a
 larger viewport. WP-014B owns committed visual baselines and layout-state
 captures; do not add them retroactively to WP-014A.
 
+WP-014G keeps that release verdict unchanged while shortening repeated edit
+loops. Normal browser scripts request verified build reuse: the harness hashes
+the declared package/lock, client, server, shared, asset, legal, and build-script
+inputs plus the exact client/server outputs after every successful production
+build. It reuses only an exact proof match and otherwise rebuilds automatically.
+Reviewed combat and Practice project exclusions are applied from the existing
+quality-policy allowlist before shared navigation, so excluded results remain
+visible to the reporter without opening application sockets. Use the affected
+unit suite and browser spec/project during iteration, `test:browser:focused` for
+the canonical gameplay loop, and the complete matrix/performance gates once the
+candidate is stable. CI retains its three isolated project shards, one worker
+per shard, zero retries, and the complete expected-skip accounting.
+
 WP-014B completed with deterministic, visibly labeled result/reward
 preview states with fake in-memory transitions only, a visual test covering
 start/combat/result geometry and recovery on all five projects, canonical

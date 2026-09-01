@@ -2916,6 +2916,20 @@ allowance cannot be reassigned to JavaScript.
    Replacement Linux baselines remain blocked until the pinned Ubuntu 24.04
    artifact-only workflow generates them and every changed candidate is
    explicitly inspected. Evidence is open in `docs/evidence/wp-014f.json`.
+7. **WP-014G Browser-harness optimization - complete 2026-09-01:** preserves
+   the five maintained projects, zero retries, one worker per existing CI shard,
+   expected-skip accounting, visual thresholds, timing budgets, and fresh-build
+   authority while reducing repeated local setup. A deterministic build proof
+   binds declared production inputs and exact client/server outputs; every
+   browser command rebuilds on a missing or stale proof and may reuse only an
+   exact match. Combat and Practice apply their reviewed project routes before
+   shared navigation, and a canonical focused gameplay command supports the
+   edit loop without substituting for final matrix coverage. Evidence is open
+   in `docs/evidence/wp-014g.json`. The final local matrix retained all 175
+   results (103 passed, 72 approved skips) and improved from 11.3 to 10.7
+   minutes; the canonical five-case edit-loop gate passed in 32.5 seconds from
+   an unchanged verified build and in 50.8 seconds when a stale proof correctly
+   triggered a rebuild.
 
 #### Acceptance
 
