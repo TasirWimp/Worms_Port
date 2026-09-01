@@ -13,7 +13,21 @@
       "behavior_record": "docs/evidence/wp-015d2z-v7-terrain-and-placement-behavior-record.md",
       "behavior_record_sha256": "3E8343F2FF5C88F97EA8406363B2382130A51AE829BB9F90DAD350E8730514B5",
       "observer": "Codex primary /root reference-observer 2026-09-01",
-      "status": "observed"
+      "status": "complete",
+      "implementer": "Codex agent /root/v7_implementer",
+      "reviewer": "Codex agent /root/v7_reviewer_final",
+      "implementation_declaration": "Implemented only from the frozen behavior record, source-bound V7 contract, current Worms_Port V6 code/tests/docs, and approved Turtle-derived product code. The implementer did not access Sorcerers, quarantine material, prior observer transcripts, or reference internals and did not copy reference code, algorithms, constants, identifiers, assets, or expressive sequences.",
+      "similarity_review": "pass",
+      "behavioral_tests": [
+        "npm run test:simulation",
+        "npm run test:protocol",
+        "npm run test:relics",
+        "npm run test:loomkeeper",
+        "npm run test:combat",
+        "npm run test:reward",
+        "npm run test:tactical-model",
+        "npm run verify:feature"
+      ]
     }
   ]
 }

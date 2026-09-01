@@ -8,19 +8,23 @@ Phaser/Socket.IO stack.
 ## Execution Pointer
 
 - Active target: mobile-first single-player Nimiq Pay competition release.
-- Active work package: **WP-015D2Z V7 Tactical Arena Candidate —
-  preregistered, clean-room implementation handoff pending:** V7 is bounded to
+- Active work package: **WP-015D2Z V7 Tactical Arena Candidate — complete,
+  awaiting owner deployment/review:** V7 is bounded to
   deterministic surface-only terrain profiles and terrain-derived,
   balance-aware opening pairs under the actual V6 movement and V5 Relic rules.
   Its source-bound contract and exact changed-path allow-list are
   [WP-015D2Z V7 Tactical Arena Candidate Contract](wp-015d2z-v7-tactical-arena-contract.md).
-  The Sorcerers reference observation is frozen as behavior-only evidence; a
-  distinct implementation identity must not access that source, and a third
-  identity must complete the similarity review before V7 can become latest.
+  The Sorcerers reference observation is frozen as behavior-only evidence;
+  distinct implementer and reviewer identities completed the clean-room
+  lifecycle with `similarity_review: pass` and no reference code or assets.
   V1 through V6 replay behavior remains protected. No player observation,
   Lane G/Lane M execution, Stage C repair, reward, asset, dependency,
   telemetry, CRPM, authority, or analytical-pointer change is admitted.
-  ProductAuthority remains `none` and D2O remains unsatisfied.
+  ProductAuthority remains `none` and D2O remains unsatisfied. Implementation
+  commit `b086479ca736200db3daca438c8698403b306569` and repair commit
+  `3654c2bf2eb4c0d85229384b97984b28003a9fc6` passed the per-feature phone
+  gate, historical runtime checks, the restored V4 analytical export, clean-
+  room compliance, and independent source-boundary review.
 - Completed product predecessor: **WP-015D2Y V6 Movement Corrections:** the separately versioned
   `nimble-knots-artillery-v6` correction authorized by the owner on 2026-09-01
   preserves V5's Relic balance profile while making an acquired movement drag

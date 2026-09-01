@@ -1,6 +1,9 @@
 # WP-015D2Z V7 Tactical Arena Candidate Contract
 
-Status: preregistered on 2026-09-01; runtime implementation has not started.
+Status: complete on 2026-09-01. Implementation commit
+`b086479ca736200db3daca438c8698403b306569` and bounded repair commit
+`3654c2bf2eb4c0d85229384b97984b28003a9fc6` passed the declared feature,
+historical, analytical-reentry, clean-room, and source-boundary gates.
 
 ## Purpose and protected outcome
 
@@ -193,3 +196,28 @@ Stop with V7 separately versioned and new challenges routed to it only after
 the clean-room lifecycle is complete, focused and feature gates pass, and the
 source-bound review is durable. Otherwise retain V6 as latest and leave this
 package `in_progress`.
+
+## Completion result
+
+V7 is the latest ruleset for new challenges with strict format/ruleset identity
+`7`. It provides three deterministic integer-only surface profiles and a
+bounded terrain-derived opening-pair selection that enforces exact 640-unit
+separation, safe margins, body-clear support, bidirectional local movement,
+continuous V6-climb-valid reachability, and at most 24 units of opening height
+difference. V1 through V6 remain explicitly reconstructable under their
+historical identities; V7 inherits V5 Relic values and V6 movement/turn
+semantics.
+
+The distinct implementer declaration, distinct reviewer, passing similarity
+review, behavioral tests, exact commits, check results, skipped checks, and
+residual risks are recorded in `legal/clean-room-records.json` and
+`docs/evidence/wp-015d2z.json`. Independent review found one V7-triggered V4
+exporter coupling and one missing V7 direct-hit test; repair commit `3654c2b`
+bound the exporter explicitly to V4 and added the exact 30-damage Needlepoint
+direct-hit regression without changing V7 runtime bytes.
+
+No Sorcerers code or asset entered the product. No player observation, Lane G
+execution, telemetry, reward, asset, dependency, ProductAuthority, placement,
+P5, landfall, D2O, CRPM verdict, or analytical execution-pointer change was
+made. The end-of-day `verify:daily`, real-device testing, and Linux visual
+baseline approval remain separate later gates.
