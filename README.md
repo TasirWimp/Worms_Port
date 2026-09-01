@@ -392,9 +392,11 @@ npm run test:browser:matrix
 npm run check:bundle-budget
 npm run check:identity-bundles
 npm run check:reward-security
+npm run verify:feature
 npm run verify:quality
 npm run verify:postgres
 npm run verify:full
+npm run verify:daily
 npm start
 ```
 
@@ -439,13 +441,16 @@ maximum; complete response must remain at or below 12 seconds. Instant Fire
 feedback remains independently capped at a 350ms median / 500ms maximum. These
 are test budgets only and do not change presentation durations or gameplay.
 
-Use the fail-fast funnel while iterating: run the affected unit suite, then the
-affected browser spec/project (or `test:browser:focused` for a gameplay change),
-then `verify:fast` before the final full matrix. Run the five-project matrix and
-performance gate once after the candidate is stable. The release gates remain
-one worker per existing CI project shard; a quality/performance worker override
-above one fails before browser startup rather than risking resource exhaustion
-or weakening reproducibility.
+Use `npm run verify:feature` for every shipped feature. It runs the fast
+deterministic suites, creates current production outputs without repeating the
+already-passed compliance/type checks, smokes the built server, and runs the
+five-case canonical browser gate. Use `npm run verify:daily` once at the
+end-of-day checkpoint; it is an alias for the unchanged complete `verify:full`
+gate. Run the full gate earlier only for a release boundary or when focused
+diagnosis requires it. The release gate remains one worker per existing CI
+project shard; a quality/performance worker override above one fails before
+browser startup rather than risking resource exhaustion or weakening
+reproducibility.
 
 `npm run verify:quality` performs a fresh build followed by the bundle,
 identity/reward-security, complete browser matrix, and performance gates.

@@ -75,9 +75,14 @@ If the user asks only for planning, review, or brainstorming, do not edit code.
 - Package changes should run `npm audit`.
 - Server/client runtime changes should include a smoke test when practical.
 - After WP-005, browser-facing changes should run the Playwright phone smoke.
-- Gameplay, identity, or reward UI changes must run the full automated
-  phone-browser matrix with `npm run test:browser:matrix`; WP-014A provides the
-  five-project zero-retry gate and reviewed expected-skip policy.
+- Each shipped gameplay, identity, reward UI, or other browser-facing feature
+  must pass `npm run verify:feature`. This is the normal edit-loop gate and does
+  not substitute for the daily release gate.
+- Run `npm run verify:daily` once at the end-of-day checkpoint and at an explicit
+  release boundary. It retains the full automated five-project, zero-retry
+  phone-browser matrix, performance, security, bundle, audit, and reviewed
+  expected-skip policy. Do not rerun it after every feature unless a focused
+  failure requires full-matrix diagnosis.
 - Visual baseline candidates must come from the pinned Ubuntu 24.04
   artifact-only workflow on the implementation PR, be inspected explicitly,
   and then pass ordinary comparison CI. After the workflow exists on the

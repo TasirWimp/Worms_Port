@@ -89,6 +89,9 @@ activation.
 The planned scripts may evolve during WP-005, but their responsibilities are:
 
 ```text
+verify:feature
+  verify:fast -> current build outputs -> built smoke -> canonical browser smoke
+
 verify:fast
   compliance -> types -> unit -> deterministic simulation
 
@@ -100,7 +103,17 @@ verify:quality
 
 verify:full
   verify:fast -> verify:runtime -> verify:quality -> explicit PostgreSQL status -> audit
+
+verify:daily
+  verify:full
 ```
+
+Operational cadence: every shipped feature must pass `verify:feature`. Run
+`verify:daily` once at the end-of-day checkpoint and at explicit release
+boundaries. A focused failure may justify an earlier full gate, but ordinary
+feature iteration must not repeatedly pay for the complete five-project matrix.
+The daily alias changes frequency only; it does not remove or weaken any full
+gate.
 
 Built smoke tests must rebuild or prove that output metadata matches the current
 source and lockfile. Passing against stale ignored build output is not evidence.
@@ -717,6 +730,13 @@ unit suite and browser spec/project during iteration, `test:browser:focused` for
 the canonical gameplay loop, and the complete matrix/performance gates once the
 candidate is stable. CI retains its three isolated project shards, one worker
 per shard, zero retries, and the complete expected-skip accounting.
+
+WP-014H makes that two-tier funnel operational. `verify:feature` is the required
+per-feature gate and reuses the already-passed compliance/type stage when
+producing current build outputs. `verify:daily` remains exactly `verify:full`
+and runs once at the end-of-day checkpoint. Tooling assertions fail if the quick
+gate silently gains the full matrix/performance/audit work or if the daily alias
+drifts away from the complete gate.
 
 WP-014B completed with deterministic, visibly labeled result/reward
 preview states with fake in-memory transitions only, a visual test covering

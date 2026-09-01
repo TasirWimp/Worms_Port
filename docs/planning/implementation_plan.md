@@ -2930,6 +2930,16 @@ allowance cannot be reassigned to JavaScript.
    minutes; the canonical five-case edit-loop gate passed in 32.5 seconds from
    an unchanged verified build and in 50.8 seconds when a stale proof correctly
    triggered a rebuild.
+8. **WP-014H Feature/daily verification cadence - complete 2026-09-01:**
+   operationalizes the owner-selected two-tier cadence without weakening release
+   evidence. Every shipped feature runs the fast deterministic checks, current
+   output build, built smoke, and five-case canonical browser gate through
+   `verify:feature`. One end-of-day checkpoint runs the unchanged complete gate
+   through `verify:daily`, which must remain an exact alias for `verify:full`.
+   GitHub release CI remains unchanged. The quick gate passed in about one
+   minute, the daily alias entered the full gate successfully in its bounded
+   startup probe, and local automation `worms-port-daily-verification` is active
+   for 22:00. Evidence is closed in `docs/evidence/wp-014h.json`.
 
 #### Acceptance
 
