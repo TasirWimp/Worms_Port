@@ -1,6 +1,6 @@
 # WP-015D2Y V6 Movement Corrections Contract
 
-Status: preregistered for implementation on 2026-09-01. The project owner
+Status: complete on 2026-09-01. The project owner
 authorized this bounded correction after deployment testing established that
 ordinary left and right movement work, but an acquired movement drag is
 discarded when released beyond the control boundary and no deliberate
@@ -136,6 +136,7 @@ tests/relics/relics.test.ts
 tests/protocol/schemas.test.ts
 tests/protocol/runtime.test.ts
 tests/browser/combat.spec.ts
+tests/browser/quality-policy.json
 ```
 
 `package.json`, `package-lock.json`, `shared/loomkeeper.ts`, server source,
@@ -170,3 +171,19 @@ WP-015D2Y stops after the durable V6 movement correction and source-bound
 engineering review. Lane G evidence remains `none`, Lane G execution remains
 closed, D2O remains unsatisfied, and the analytical return path remains
 available at its existing checkpoint without inheriting this gameplay result.
+
+## Completion result
+
+Implementation commit `601b05ee454811bf9e39417ef99e8b338a417201`
+(tree `ad2a0e8fb033be6382cd839d8cac6a6953999361`) activates V6 for new
+challenges. The strict five-project phone-browser rerun passed all 175 routed
+results: 103 executed and 72 policy-approved skips. The performance, bundle,
+reward-security, audit, compliance, type, build, smoke, protocol, simulation,
+Loomkeeper, Relic, Practice, identity, historical V5, and analytical re-entry
+gates passed. Exact results and the classified transient first-run Windows
+socket failure are recorded in `docs/evidence/wp-015d2y.json`.
+
+No real Android/iOS session or formal player observation was run. Linux visual
+comparison remains reserved for its pinned Ubuntu workflow. V6 is a movement
+correction over the plausible V5 candidate, not a final balance or release
+claim.

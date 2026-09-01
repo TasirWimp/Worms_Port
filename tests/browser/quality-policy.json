@@ -69,6 +69,12 @@
       "reason": "The asset-bound Threadball spell sequence is frozen on one canonical portrait phone while the unit plan verifies both actors and reduced-motion timing."
     },
     {
+      "file": "combat.spec.ts",
+      "title": "V6 overlong movement commits in both directions, turns, and shows its budget",
+      "runsOn": ["chromium-390x844"],
+      "reason": "One canonical portrait phone covers ordinary and default-sideways overlong movement in both directions, the free exhausted-budget turn, and authoritative budget disclosure."
+    },
+    {
       "file": "identity.spec.ts",
       "title": "signing rejection is cancelled and the same account can retry immediately",
       "runsOn": ["chromium-390x844"],

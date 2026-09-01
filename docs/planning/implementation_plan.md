@@ -8,8 +8,8 @@ Phaser/Socket.IO stack.
 ## Execution Pointer
 
 - Active target: mobile-first single-player Nimiq Pay competition release.
-- Active work package: **WP-015D2Y V6 Movement Corrections — implementation
-  and verification in progress:** the separately versioned
+- Active work package: **WP-015D2Y V6 Movement Corrections — complete,
+  awaiting owner deployment/review:** the separately versioned
   `nimble-knots-artillery-v6` correction authorized by the owner on 2026-09-01
   preserves V5's Relic balance profile while making an acquired movement drag
   commit its clamped intent beyond the visible ring, adding a free
@@ -21,7 +21,11 @@ Phaser/Socket.IO stack.
   immutable. Lane G/Lane M execution, player observation, Stage C repair,
   balance retuning, rewards, assets, dependencies, telemetry, CRPM, and the
   analytical execution pointer remain excluded. ProductAuthority remains
-  `none`; D2O remains unsatisfied.
+  `none`; D2O remains unsatisfied. Implementation commit
+  `601b05ee454811bf9e39417ef99e8b338a417201` passed the strict five-project
+  phone-browser rerun with 103 executed checks and 72 policy-approved skips,
+  plus the declared simulation, protocol, historical V5, analytical, runtime,
+  performance, bundle, reward-security, audit, and compliance gates.
 - Completed product predecessor: **WP-015D2X V5 Marketing Candidate:** the
   values-only V5 profile passed its bounded automated gates at the production
   start and is preserved unchanged as V6's balance base. Its source-bound

@@ -1,6 +1,6 @@
 {
   "id": "WP-015D2Y",
-  "status": "in_progress",
+  "status": "complete",
   "starting_commit": "cc79129edf4ba35e363957f19d99faeb59fa46b3",
   "branch": "codex/wp-015d2y-v6-movement-corrections-v0",
   "initial_worktree": "clean",
@@ -29,7 +29,7 @@
     "npm run test:tactical-model",
     "npm run test:simulation && npm run test:relics && npm run test:loomkeeper && npm run test:protocol",
     "npm run test:combat && npm run test:practice",
-    "npm run build && npm run verify:runtime",
+    "npm run verify:runtime",
     "npm run test:browser:matrix",
     "npm run test:browser:performance && npm run check:bundle-budget",
     "npm run check:reward-security && npm audit",
@@ -41,8 +41,69 @@
   ],
   "sorcerers_reference_used": false,
   "clean_room_records": [],
-  "check_results": [],
-  "reviews": [],
-  "skipped_checks": [],
-  "residual_risks": []
+  "check_results": [
+    {
+      "command": "npm run verify:fast",
+      "status": "pass",
+      "detail": "The exact pre-edit baseline cc79129edf4ba35e363957f19d99faeb59fa46b3 and the completed V6 implementation both passed compliance, types, tooling, protocol, simulation, Loomkeeper, Relic, combat, Practice, identity, and reward suites. The final suite included 32 simulation, 38 protocol, 11 Loomkeeper, 9 Relic, 24 combat, 5 Practice, 22 identity, and 24 reward tests."
+    },
+    {
+      "command": "npm run test:tactical-model",
+      "status": "pass",
+      "detail": "All 5 TypeScript authority/profile tests and 41 historical Python tactical-model tests passed. V5 profile zero remains frozen, V4's starting hash remains f319a603ccc9f1cce95a4affb0ab54219bf8963c620e88fc3a07de52cf496f4d, and no analytical code, configuration, evidence, cut, adapter, or execution pointer changed."
+    },
+    {
+      "command": "npm run test:simulation && npm run test:relics && npm run test:loomkeeper && npm run test:protocol",
+      "status": "pass",
+      "detail": "All 32 simulation, 9 Relic, 11 Loomkeeper, and 38 protocol tests passed. V6 strict identity, free turn-in-place at full and exhausted movement budgets, authoritative aim clearing, V5 neutral-move preservation, explicit V5 replay reconstruction, unchanged Loomkeeper budgets, and live strict snapshot transport passed."
+    },
+    {
+      "command": "npm run test:combat && npm run test:practice",
+      "status": "pass",
+      "detail": "All 24 combat and 5 Practice unit tests passed. The canonical Chromium 390x844 browser case separately proved ordinary and default-sideways overlong movement in both directions, the four-quantum clamp, 180-degree facing changes, zero-budget turning, and visible/accessibility budget transitions from 8/8 to 0/8."
+    },
+    {
+      "command": "npm run verify:runtime",
+      "status": "pass",
+      "detail": "Compliance, server/client types, clean server bundle, Vite production client build, exact approved-asset copying, and the built-server route/overlay/asset smoke passed. The largest production JavaScript chunk built as 1,464,067 bytes before the separate budget gate."
+    },
+    {
+      "command": "npm run test:browser:matrix",
+      "status": "pass",
+      "detail": "The clean rerun passed the strict five-project Windows phone-browser policy: 175 project results, 103 executed and 72 policy-approved skips. An initial run had one pre-test Chromium ERR_NO_BUFFER_SPACE navigation failure and correctly exposed four undeclared project skips for the new V6 test. The isolated navigation rerun was clean; the exact V6 expected-skip policy was added; no runtime code was changed for that host-resource failure; and the complete rerun passed."
+    },
+    {
+      "command": "npm run test:browser:performance && npm run check:bundle-budget",
+      "status": "pass",
+      "detail": "The pinned Chromium Practice performance gate passed. Largest initial JavaScript was 1,464,067/1,500,000 bytes and initial JavaScript plus CSS gzip was 405,330/430,000 bytes."
+    },
+    {
+      "command": "npm run check:reward-security && npm audit",
+      "status": "pass",
+      "detail": "Reward security found no payout key, wallet proof, session token, or server-only marker leak. npm audit reported 0 vulnerabilities."
+    },
+    {
+      "command": "WP-015D2Y exact changed-path, source-identity, manifest-preservation, historical-replay, duplicate-key, and git-diff review",
+      "status": "pass",
+      "detail": "Implementation commit 601b05ee454811bf9e39417ef99e8b338a417201/tree ad2a0e8fb033be6382cd839d8cac6a6953999361 is scoped to the preregistered correction. Every changed path is allow-listed. Git-byte package-lock SHA-256 remains D4DAC6AE09A3D2F6C5A7EAA11520BAC43F1628320C5331575BCF1E1857073D73. Source, asset, allowed-license, and dependency-override manifests remain byte-identical at SHA-256 AB3DA23B9D25F18CD128CB932DF6F1038231B3F81F8031D770AACA1547FF5328, 7344F43F728F17FA2E640FBBDC1F8E7189AB316F82A803CD2A0FC7E91EA9274B, 48485C8C9AF8E861170E878D37166BC520D44CEB085519D581312545483C1D82, and EC4CFBD1F8A0EED4CDA4ABE5637C664CAAE492B93E900C58AA9BA301B9E34084. JSON duplicate-key validation and git diff checks passed."
+    }
+  ],
+  "reviews": [
+    {
+      "role": "bounded_implementation_and_source_reviewer",
+      "reviewer": "Codex primary-agent exact-diff review",
+      "decision": "pass",
+      "evidence_class": "deterministic_automated_engineering_evidence",
+      "detail": "Reviewed V6-versus-V5 dispatch, turn and movement state mutation, pointer commit/cancellation boundaries, authoritative budget derivation, strict snapshot identity, historical replay preservation, client/server sequencing, quality routing, source boundaries, and stop conditions. No undeclared balance, policy, reward, asset, dependency, telemetry, observation, CRPM, Lane G/Lane M, Stage C, or analytical change entered the implementation."
+    }
+  ],
+  "skipped_checks": [
+    "Real Android/iOS testing and formal player observation were not run; they are outside this autonomous package.",
+    "Linux visual comparison was omitted by the Windows quality policy. The pinned Ubuntu 24.04 artifact workflow remains the only admissible source for reviewed visual baselines."
+  ],
+  "residual_risks": [
+    "The new gesture semantics passed deterministic browser automation, not a new formal player-observation session. Perceived turn/movement feel on real touch hardware remains an owner release-test question.",
+    "V6 deliberately preserves the plausible intermediate V5 balance profile; it does not prove final human balance, fun, accessibility, or marketing readiness.",
+    "ProductAuthority remains none, D2O remains unsatisfied, Lane G evidence remains none and execution closed, rewards remain paused/disabled, and the analytical return path remains separately available."
+  ]
 }
