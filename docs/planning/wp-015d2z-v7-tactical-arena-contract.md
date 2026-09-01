@@ -153,11 +153,13 @@ tests/tactical-model/v5-marketing-candidate.test.ts
 tests/combat/combat.test.ts
 tests/combat/presentation.test.ts
 tests/reward/service.test.ts
+scripts/export-tactical-v4-baseline.ts
 ```
 
 `package.json`, `package-lock.json`, `shared/loomkeeper.ts`, server source,
 assets, dependencies, source/asset/license manifests, CRPM, analytical
-code/configuration/evidence, Lane G/Lane M/Stage C carriers, deployment files,
+code/configuration/evidence other than the allow-listed V4 exporter binding,
+Lane G/Lane M/Stage C carriers, deployment files,
 visual baselines, rewards, authority, schemas other than the clean-room work
 package identifier repair, and the active analytical pointer are excluded.
 
@@ -165,6 +167,11 @@ The clean-room schema/checker/test paths are admitted only to make their
 work-package identifier grammar match the already accepted evidence grammar
 (`WP-015D2Z`). They may not weaken hash, pin, role-separation, similarity, or
 reverse-link checks.
+
+The V4 exporter is admitted only to replace its accidental latest-ruleset
+lookup with the explicit immutable V4 identity already named by the exporter
+and its fixture. It may not change V4 runtime behavior, the fixture, the
+analytical model, or any accepted result.
 
 ## Planned verification
 

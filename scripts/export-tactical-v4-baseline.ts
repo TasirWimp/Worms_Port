@@ -6,13 +6,13 @@ import {
     V4_RULESET_ID,
     V4_RULESET_VERSION,
     applySimulationCommand,
-    createLatestSimulation
+    createSimulation
 } from '../shared/simulation';
 
 const BASELINE_SEED = 0xC0FFEE11;
 
 export function buildAuthoritativeV4BaselineFixture() {
-    let state = createLatestSimulation(BASELINE_SEED, 'wizard');
+    let state = createSimulation(BASELINE_SEED, 'wizard', V4_RULESET_ID);
     const initial = {
         seed: state.seed,
         activeActor: state.activeActor,

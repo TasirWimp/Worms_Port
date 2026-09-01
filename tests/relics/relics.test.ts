@@ -168,6 +168,20 @@ test('Needlepoint rewards direct precision while Spoolburst removes the most ter
     assert.equal(remainingTerrain.get('threadball')! < remainingTerrain.get('needlepoint')!, true);
 });
 
+test('V7 Needlepoint direct hits use the inherited V5 maximum damage', () => {
+    const source = createSimulation(1, 'wizard', V7_RULESET_ID);
+    const initialStitching = source.units[1].stitching;
+    const result = fire(source, 'player', 'needlepoint', 33_000, 1_000);
+
+    assert.equal(result.accepted, true);
+    assert.equal(result.state.lastProjectile?.impact, 'loomkeeper');
+    assert.equal(
+        initialStitching - result.state.units[1].stitching,
+        V5_RELIC_RULES.needlepoint.maximumDamage
+    );
+    assert.equal(result.state.units[1].stitching, 70);
+});
+
 test('player and Loomkeeper have identical legal selection and effect rules', () => {
     for (const relicId of RELIC_IDS) {
         const playerState = createLatestSimulation(0x13579BDF, 'wizard');
