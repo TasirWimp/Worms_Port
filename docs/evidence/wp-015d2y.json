@@ -1,0 +1,48 @@
+{
+  "id": "WP-015D2Y",
+  "status": "in_progress",
+  "starting_commit": "cc79129edf4ba35e363957f19d99faeb59fa46b3",
+  "branch": "codex/wp-015d2y-v6-movement-corrections-v0",
+  "initial_worktree": "clean",
+  "starting_lock_sha256": "D4DAC6AE09A3D2F6C5A7EAA11520BAC43F1628320C5331575BCF1E1857073D73",
+  "owning_roles": [
+    "worms_port_planner",
+    "worms_port_base_game_worker",
+    "worms_port_network_worker",
+    "worms_port_test_worker",
+    "worms_port_compliance_keeper",
+    "worms_port_docs_keeper",
+    "worms_port_reviewer"
+  ],
+  "scope": [
+    "Add separately versioned nimble-knots-artillery-v6 movement semantics while preserving the exact V1 through V5 replay identities and V5 Relic balance profile.",
+    "Make an acquired movement drag commit its bounded one-to-four-step intent even when pointer release is beyond the visible movement ring, while retaining pointer-cancel, blur, visibility, resize, and unsafe aim-release cancellation.",
+    "Provide an authoritative free turn-in-place transition before opposite-direction movement and disclose the authoritative remaining movement budget in step quanta on the movement control."
+  ],
+  "non_goals": [
+    "Retune V5 ranges, damage, terrain, physics, movement allowance, movement quantum, Loomkeeper policy, rewards, assets, dependencies, instrumentation, telemetry, or the analytical model.",
+    "Execute or rebind Lane G, conduct player observation or device sessions, satisfy D2O, repair the Stage C aggregate, execute Lane M, change the active analytical execution pointer, or claim ProductAuthority, P5, placement, landfall, final balance, or release readiness.",
+    "Modify CRPM, historical source-bound parent-return artifacts, compact parity records, legal manifests, package-lock.json, visual baselines, or deployment configuration."
+  ],
+  "planned_checks": [
+    "npm run verify:fast",
+    "npm run test:tactical-model",
+    "npm run test:simulation && npm run test:relics && npm run test:loomkeeper && npm run test:protocol",
+    "npm run test:combat && npm run test:practice",
+    "npm run build && npm run verify:runtime",
+    "npm run test:browser:matrix",
+    "npm run test:browser:performance && npm run check:bundle-budget",
+    "npm run check:reward-security && npm audit",
+    "WP-015D2Y exact changed-path, source-identity, manifest-preservation, historical-replay, duplicate-key, and git-diff review"
+  ],
+  "deterministic_seeds": [
+    "0xC0FFEE11",
+    "1"
+  ],
+  "sorcerers_reference_used": false,
+  "clean_room_records": [],
+  "check_results": [],
+  "reviews": [],
+  "skipped_checks": [],
+  "residual_risks": []
+}
