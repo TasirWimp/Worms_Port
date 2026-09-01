@@ -377,13 +377,24 @@ const V6SimulationSnapshotSchema = z.object({
     lastProjectile: CurrentProjectileSummarySchema.nullable()
 }).strict();
 
+const V7SimulationSnapshotSchema = z.object({
+    formatVersion: z.literal(7),
+    rulesetId: z.literal('nimble-knots-artillery-v7'),
+    rulesetVersion: z.literal(7),
+    ...SimulationSnapshotFields,
+    terrain: V4TerrainSchema,
+    selectedRelic: z.enum(['threadball', 'needlepoint', 'spoolburst']),
+    lastProjectile: CurrentProjectileSummarySchema.nullable()
+}).strict();
+
 export const SimulationSnapshotSchema = z.discriminatedUnion('formatVersion', [
     LegacySimulationSnapshotSchema,
     V2SimulationSnapshotSchema,
     V3SimulationSnapshotSchema,
     V4SimulationSnapshotSchema,
     V5SimulationSnapshotSchema,
-    V6SimulationSnapshotSchema
+    V6SimulationSnapshotSchema,
+    V7SimulationSnapshotSchema
 ]);
 
 const ChallengeSnapshotFields = {
@@ -416,7 +427,8 @@ export const ChallengeSnapshotSchema = z.union([
             V3SimulationSnapshotSchema,
             V4SimulationSnapshotSchema,
             V5SimulationSnapshotSchema,
-            V6SimulationSnapshotSchema
+            V6SimulationSnapshotSchema,
+            V7SimulationSnapshotSchema
         ])
     }).strict()
 ]);

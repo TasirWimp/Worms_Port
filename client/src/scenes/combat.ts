@@ -4,6 +4,7 @@ import type { ChallengeResult, ChallengeSnapshot } from '../../../shared/protoco
 import {
     LATEST_RULESET_ID,
     V6_RULESET_ID,
+    V7_RULESET_ID,
     cloneSimulation,
     type SimulationCommand,
     type SimulationActor,
@@ -252,7 +253,8 @@ export default class CombatScene extends Phaser.Scene {
         let turned = false;
         try {
             const initial = this.authoritativeSnapshot;
-            if (initial.simulation.rulesetId === V6_RULESET_ID &&
+            if ((initial.simulation.rulesetId === V6_RULESET_ID ||
+                initial.simulation.rulesetId === V7_RULESET_ID) &&
                 initial.simulation.units[0].facing !== direction) {
                 const next = await this.args.submitCommand(
                     { type: 'move', direction: 0 },

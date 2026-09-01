@@ -150,6 +150,9 @@ tests/protocol/schemas.test.ts
 tests/protocol/runtime.test.ts
 tests/relics/relics.test.ts
 tests/tactical-model/v5-marketing-candidate.test.ts
+tests/combat/combat.test.ts
+tests/combat/presentation.test.ts
+tests/reward/service.test.ts
 ```
 
 `package.json`, `package-lock.json`, `shared/loomkeeper.ts`, server source,

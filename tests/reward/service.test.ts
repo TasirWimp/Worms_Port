@@ -63,7 +63,7 @@ test('a reconstructed authoritative win becomes one wallet-bound queued claim', 
         1,
         'wizard'
     );
-    for (let shot = 1; shot <= 4; shot += 1) {
+    for (let shot = 1; shot <= 5; shot += 1) {
         const playerTurn = coordinator.get(reservation.challengeId)!.state;
         assert.equal(playerTurn.activeActor, 'player');
         assert.equal(playerTurn.turn, (shot - 1) * 2);
@@ -79,7 +79,7 @@ test('a reconstructed authoritative win becomes one wallet-bound queued claim', 
             { type: 'fire' },
             playerTurn.turn
         );
-        if (shot < 4) {
+        if (shot < 5) {
             coordinator.advance(reservation.challengeId, SIM_RULES.turnTicks);
         }
     }

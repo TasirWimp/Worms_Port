@@ -11,6 +11,7 @@ import {
     deformTerrain,
     LEGACY_RULESET_ID,
     LATEST_RULESET_ID,
+    launchSpeedRulesFor,
     RELIC_IDS,
     RELIC_RULES,
     relicRulesFor,
@@ -18,9 +19,11 @@ import {
     V2_RULESET_ID,
     V3_RULESET_ID,
     V4_RULESET_ID,
+    V5_LAUNCH_SPEED_RULES,
     V5_RELIC_RULES,
     V5_RULESET_ID,
     V6_RULESET_ID,
+    V7_RULESET_ID,
     type RelicId,
     type SimulationActor,
     type SimulationState
@@ -68,7 +71,7 @@ function populationCount(input: number): number {
     return (((value + (value >>> 4)) & 0x0F0F0F0F) * 0x01010101) >>> 24;
 }
 
-test('V6 defaults new challenges while preserving V5 balance and strict snapshot identity', () => {
+test('V7 defaults new challenges while preserving V5 balance and strict snapshot identity', () => {
     assert.deepEqual(RELIC_IDS, ['threadball', 'needlepoint', 'spoolburst']);
     assert.deepEqual(RELIC_RULES, {
         threadball: { craterRadius: 40, damageRadius: 64, maximumDamage: 70 },
@@ -81,10 +84,16 @@ test('V6 defaults new challenges while preserving V5 balance and strict snapshot
         needlepoint: { craterRadius: 40, damageRadius: 64, maximumDamage: 30 },
         spoolburst: { craterRadius: 40, damageRadius: 64, maximumDamage: 80 }
     });
-    assert.equal(LATEST_RULESET_ID, V6_RULESET_ID);
-    assert.equal(state.formatVersion, 6);
+    assert.equal(LATEST_RULESET_ID, V7_RULESET_ID);
+    assert.equal(state.formatVersion, 7);
     assert.equal(state.rulesetId, LATEST_RULESET_ID);
-    assert.equal(state.rulesetVersion, 6);
+    assert.equal(state.rulesetVersion, 7);
+    for (const relicId of RELIC_IDS) {
+        assert.deepEqual(relicRulesFor(V7_RULESET_ID, relicId), V5_RELIC_RULES[relicId]);
+        assert.deepEqual(relicRulesFor(V6_RULESET_ID, relicId), V5_RELIC_RULES[relicId]);
+        assert.deepEqual(launchSpeedRulesFor(V7_RULESET_ID, relicId), V5_LAUNCH_SPEED_RULES[relicId]);
+        assert.deepEqual(launchSpeedRulesFor(V6_RULESET_ID, relicId), V5_LAUNCH_SPEED_RULES[relicId]);
+    }
     assert.deepEqual(DIRECT_PROJECTILE_HITBOXES[LATEST_RULESET_ID], {
         halfWidth: 32,
         top: 85,
@@ -221,17 +230,22 @@ test('every Relic crater radius clips safely and remains idempotent at world edg
     }
 });
 
-test('replays carry V6 by default and preserve explicit V5, V4, v2, and legacy reconstruction', () => {
+test('replays carry V7 by default and preserve explicit V6 through V1 reconstruction', () => {
     const current = new SimulationCoordinator();
     try {
-        const created = current.create('v6-challenge', 'v6-session', 1, 'wizard');
-        current.apply('v6-challenge', 'player', {
+        const created = current.create('v7-challenge', 'v7-session', 1, 'wizard');
+        current.apply('v7-challenge', 'player', {
             type: 'select_relic', relicId: 'spoolburst'
         }, 0);
-        const replay = current.replay('v6-challenge')!;
+        const replay = current.replay('v7-challenge')!;
         assert.equal(replay.rulesetId, LATEST_RULESET_ID);
-        assert.equal(current.reconstructAndVerify(replay).stateHash, current.get('v6-challenge')!.stateHash);
+        assert.equal(current.reconstructAndVerify(replay).stateHash, current.get('v7-challenge')!.stateHash);
         assert.equal(created.state.rulesetId, LATEST_RULESET_ID);
+
+        const v6 = current.create('v6-challenge', 'v6-session', 6, 'wizard', V6_RULESET_ID);
+        const v6Replay = current.replay('v6-challenge')!;
+        assert.equal(v6Replay.rulesetId, V6_RULESET_ID);
+        assert.equal(current.reconstructAndVerify(v6Replay).stateHash, v6.stateHash);
 
         const v5 = current.create('v5-challenge', 'v5-session', 5, 'wizard', V5_RULESET_ID);
         const v5Replay = current.replay('v5-challenge')!;
@@ -242,6 +256,11 @@ test('replays carry V6 by default and preserve explicit V5, V4, v2, and legacy r
         const v4Replay = current.replay('v4-challenge')!;
         assert.equal(v4Replay.rulesetId, V4_RULESET_ID);
         assert.equal(current.reconstructAndVerify(v4Replay).stateHash, v4.stateHash);
+
+        const v3 = current.create('v3-challenge', 'v3-session', 3, 'wizard', V3_RULESET_ID);
+        const v3Replay = current.replay('v3-challenge')!;
+        assert.equal(v3Replay.rulesetId, V3_RULESET_ID);
+        assert.equal(current.reconstructAndVerify(v3Replay).stateHash, v3.stateHash);
 
         const v2 = current.create('v2-challenge', 'v2-session', 2, 'wizard', V2_RULESET_ID);
         const v2Replay = current.replay('v2-challenge')!;

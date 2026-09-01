@@ -904,7 +904,8 @@ test('protocol commands mutate authoritative simulation once and reconstruct fro
             calling: 'wizard'
         });
         assert.equal(ChallengeSnapshotSchema.safeParse(created.data).success, true);
-        assert.equal(created.data.simulation.rulesetId, 'nimble-knots-artillery-v6');
+        assert.equal(created.data.simulation.rulesetId, 'nimble-knots-artillery-v7');
+        assert.equal(created.data.simulation.rulesetVersion, 7);
         assert.equal(created.data.loomkeeperPolicyId, 'nimble-knots-loomkeeper-v2');
         assert.ok(Buffer.byteLength(JSON.stringify(created.data), 'utf8') <= 8 * 1024);
         const initialHash = created.data.stateHash;
@@ -1041,8 +1042,8 @@ test('player fire produces one automated Loomkeeper resolution and records only 
         };
         const fired = await emitAck(socket, protocolEvents.commandSubmit, firePayload);
         assert.equal(fired.ok, true);
-        assert.equal(fired.data.simulation.rulesetId, 'nimble-knots-artillery-v6');
-        assert.equal(fired.data.simulation.rulesetVersion, 6);
+        assert.equal(fired.data.simulation.rulesetId, 'nimble-knots-artillery-v7');
+        assert.equal(fired.data.simulation.rulesetVersion, 7);
         assert.equal(fired.data.simulation.activeActor, 'loomkeeper');
         assert.equal(fired.data.simulation.turn, 1);
         const reply = await automated;
@@ -1214,7 +1215,7 @@ test('authoritative victory emits one final result and duplicate fire is inert',
         const session = runtime.sessions.getBound(socket.id!);
         assert.ok(session);
         let sequence = 1;
-        for (let shot = 1; shot <= 3; shot += 1) {
+        for (let shot = 1; shot <= 4; shot += 1) {
             const expectedTurn = (shot - 1) * 2;
             await emitAck(socket, protocolEvents.commandSubmit, {
                 requestId: `victory_aim_0${shot}`, sequence: sequence++,
@@ -1235,15 +1236,15 @@ test('authoritative victory emits one final result and duplicate fire is inert',
             assert.equal('code' in afterTimeout, false);
         }
         await emitAck(socket, protocolEvents.commandSubmit, {
-            requestId: 'victory_aim_04', sequence: sequence++,
-            challengeId: created.data.challengeId, expectedTurn: 6,
+            requestId: 'victory_aim_05', sequence: sequence++,
+            challengeId: created.data.challengeId, expectedTurn: 8,
             command: { type: 'aim', angleMilliDegrees: 35_000, powerPermille: 1_000 }
         });
         const results: any[] = [];
         socket.on(protocolEvents.result, (result) => results.push(result));
         const finalPayload = {
-            requestId: 'victory_fire_04', sequence,
-            challengeId: created.data.challengeId, expectedTurn: 6,
+            requestId: 'victory_fire_05', sequence,
+            challengeId: created.data.challengeId, expectedTurn: 8,
             command: { type: 'fire' }
         };
         const final = await emitAck(socket, protocolEvents.commandSubmit, finalPayload);

@@ -615,12 +615,12 @@ inclusion to macro-block finality, and sends expired/ambiguous cases to
 ## Deterministic Simulation Foundation
 
 New Practice challenges use the product-owned
-`nimble-knots-artillery-v6` ruleset. The authoritative model is independent of
+`nimble-knots-artillery-v7` ruleset. The authoritative model is independent of
 Phaser and uses integer fixed ticks, an explicit uint32 seed, a packed collision
 mask, bounded Relic physics, canonical SHA-256 state hashes, and replay records.
 Client commands include both their transport sequence and expected simulation
 turn; delayed, duplicated, conflicting, or wrong-turn commands cannot silently
-apply to a later state. V1 through V5 replay hashes and reconstruction remain
+apply to a later state. V1 through V6 replay hashes and reconstruction remain
 supported under their explicit identities.
 
 Simulation state is currently in-process. It is suitable for the selected
@@ -660,6 +660,19 @@ Once a movement drag owns the pointer and leaves its dead zone, releasing beyond
 the visible ring still commits the direction and clamped one-to-four-step
 intent. Pointer cancellation, interruption, and release outside the aim pad
 remain inert.
+
+WP-015D2Z adds separately versioned V7 terrain and opening placement without
+retuning V5 Relics or changing V6 turn and movement semantics. A bounded family
+of seed-selected integer surface profiles fills every terrain column from one
+upper surface downward. V7 derives both starts from that generated surface,
+then selects an exact 640-unit pair with body-clear support, safe margins,
+left/right opening movement, a continuous V6-climb-valid route, and at most 24
+units of height difference. The deterministic score minimizes height bias,
+maximizes combined local mobility, prefers the arena centre, and uses a
+seed-derived stable tie break. Generation fails closed when no valid pair
+exists; it never retries with time, falls back to historical fixed spawns, or
+adds caves, islands, ladders, water, or obstacle entities. This is an automated
+tactical-arena candidate, not final balance or player-validation evidence.
 
 ## Complete Practice Clash
 

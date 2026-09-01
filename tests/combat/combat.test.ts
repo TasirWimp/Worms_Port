@@ -72,7 +72,7 @@ test('actor Stitching cards keep their world anchor or hide instead of clamping 
     );
 
     const pannedLayout = computeCombatLayout(844, 390, undefined, {
-        left: 512, top: 0, width: 1024, height: 576
+        left: state.units[0].x + 64, top: 0, width: 1024, height: 576
     });
     const statuses = computeActorStatusLayout(pannedLayout, state.units);
     assert.equal(statuses.player, undefined);
@@ -87,7 +87,7 @@ test('actor Stitching cards keep their world anchor or hide instead of clamping 
 test('actor Stitching cards do not claim a false in-field position near a camera edge', () => {
     const state = createLatestSimulation(0xC0FFEE11, 'wizard');
     const layout = computeCombatLayout(844, 390, undefined, {
-        left: 480, top: 0, width: 1024, height: 576
+        left: state.units[0].x - 32, top: 0, width: 1024, height: 576
     });
     const statuses = computeActorStatusLayout(layout, state.units);
     assert.equal(statuses.player, undefined);
@@ -153,7 +153,7 @@ test('trajectory preview exactly matches cloned v2 resolution and leaves its sou
     assert.equal(preview.length >= 2, true);
 });
 
-test('V4 camera pans over the doubled arena without changing the phone-sized combat window', () => {
+test('current camera pans over the doubled arena without changing the phone-sized combat window', () => {
     const state = createLatestSimulation(0xC0FFEE11, 'wizard');
     const initial = createCombatCamera(state);
     assert.deepEqual(initial, { left: 0, top: 0, width: 1024, height: 576 });
@@ -162,7 +162,7 @@ test('V4 camera pans over the doubled arena without changing the phone-sized com
         left: 1024, top: 0, width: 1024, height: 576
     });
     assert.deepEqual(focusCombatCamera(state, initial, state.units[1].x), {
-        left: 640, top: 0, width: 1024, height: 576
+        left: state.units[1].x - 512, top: 0, width: 1024, height: 576
     });
     assert.deepEqual(revealCombatCameraPoint(state, initial, 1068), {
         left: 108, top: 0, width: 1024, height: 576

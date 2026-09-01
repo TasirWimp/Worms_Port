@@ -1,6 +1,11 @@
 import assert from 'node:assert/strict';
 import test from 'node:test';
-import { createLatestSimulation, createSimulation } from '../../shared/simulation';
+import {
+    createLatestSimulation,
+    createSimulation,
+    V6_RULESET_ID,
+    V7_RULESET_ID
+} from '../../shared/simulation';
 
 import {
     ChallengeCreateRequestSchema,
@@ -243,6 +248,13 @@ test('response schemas are strict and carry versioned timing metadata', () => {
         simulation: createLatestSimulation(1, 'wizard')
     } as const;
     assert.equal(ChallengeSnapshotSchema.safeParse(currentSnapshot).success, true);
+    assert.equal(currentSnapshot.simulation.rulesetId, V7_RULESET_ID);
+    const v6Snapshot = {
+        ...snapshot,
+        loomkeeperPolicyId: 'nimble-knots-loomkeeper-v2',
+        simulation: createSimulation(1, 'wizard', V6_RULESET_ID)
+    } as const;
+    assert.equal(ChallengeSnapshotSchema.safeParse(v6Snapshot).success, true);
     const v5Snapshot = {
         ...snapshot,
         loomkeeperPolicyId: 'nimble-knots-loomkeeper-v2',
@@ -261,7 +273,14 @@ test('response schemas are strict and carry versioned timing metadata', () => {
         ...currentSnapshot,
         simulation: {
             ...createLatestSimulation(1, 'wizard'),
-            rulesetVersion: 1
+            rulesetVersion: 6
+        }
+    }).success, false);
+    assert.equal(ChallengeSnapshotSchema.safeParse({
+        ...currentSnapshot,
+        simulation: {
+            ...createLatestSimulation(1, 'wizard'),
+            rulesetId: V6_RULESET_ID
         }
     }).success, false);
     assert.equal(ChallengeResultSchema.safeParse(result).success, true);

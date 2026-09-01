@@ -10,6 +10,12 @@ import {
     cloneSimulation,
     createSimulation,
     deformTerrain,
+    LEGACY_RULESET_ID,
+    V2_RULESET_ID,
+    V3_RULESET_ID,
+    V4_RULESET_ID,
+    V5_RULESET_ID,
+    V6_RULESET_ID,
     type SimulationActor,
     type SimulationCommand,
     type SimulationState
@@ -54,6 +60,24 @@ test('golden replay freezes every command checkpoint through deterministic victo
     assert.equal(state.winner, fixture.final.winner);
     assert.equal(state.tick, fixture.final.tick);
     assert.equal(hashSimulationState(state), fixture.final.stateHash);
+});
+
+test('V1 through V6 historical starting hashes remain frozen after V7 activation', () => {
+    const expected = new Map([
+        [LEGACY_RULESET_ID, 'fc1d6bb92a1f61b4209eb4a944a564c5d755ec4039762827b009dc69f31de365'],
+        [V2_RULESET_ID, 'b8b0426facf697190c0c82a9947560b3a8641e8b30037bbf888548b4b9593966'],
+        [V3_RULESET_ID, '6e8c98992ce7e0e5ad3de7379be4bdc4f120676631a92a188af2fe6d9f755f92'],
+        [V4_RULESET_ID, 'f319a603ccc9f1cce95a4affb0ab54219bf8963c620e88fc3a07de52cf496f4d'],
+        [V5_RULESET_ID, '4b4412982a35f8cb17cdd7479af2031592ec9fde0fb280391b3dbefc04bfc237'],
+        [V6_RULESET_ID, '4bb79ced91c346722b975133055096e6627f911a44af2a7af367ac34917adebf']
+    ] as const);
+    for (const [rulesetId, hash] of expected) {
+        assert.equal(
+            hashSimulationState(createSimulation(0xC0FFEE11, 'wizard', rulesetId)),
+            hash,
+            rulesetId
+        );
+    }
 });
 
 test('property traces repeat and survive JSON reconstruction for every evidence seed', () => {
