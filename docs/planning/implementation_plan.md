@@ -8,25 +8,25 @@ Phaser/Socket.IO stack.
 ## Execution Pointer
 
 - Active target: mobile-first single-player Nimiq Pay competition release.
-- Active work package: **WP-015D2X V5 Marketing Candidate — complete, awaiting
-  owner review:** the separately versioned, values-only
-  `nimble-knots-artillery-v5` candidate authorized by the owner on 2026-08-31
-  passed its bounded automated gates and is now the new-challenge default.
-  The source-bound contract is
+- Active work package: **WP-015D2Y V6 Movement Corrections — implementation
+  and verification in progress:** the separately versioned
+  `nimble-knots-artillery-v6` correction authorized by the owner on 2026-09-01
+  preserves V5's Relic balance profile while making an acquired movement drag
+  commit its clamped intent beyond the visible ring, adding a free
+  turn-in-place transition before opposite movement, and exposing the
+  authoritative `8/8` movement-step budget on the pad. The source-bound
+  contract is
+  [WP-015D2Y V6 Movement Corrections Contract](wp-015d2y-v6-movement-corrections-contract.md).
+  V1 through V5 replay semantics and the sealed analytical carriers remain
+  immutable. Lane G/Lane M execution, player observation, Stage C repair,
+  balance retuning, rewards, assets, dependencies, telemetry, CRPM, and the
+  analytical execution pointer remain excluded. ProductAuthority remains
+  `none`; D2O remains unsatisfied.
+- Completed product predecessor: **WP-015D2X V5 Marketing Candidate:** the
+  values-only V5 profile passed its bounded automated gates at the production
+  start and is preserved unchanged as V6's balance base. Its source-bound
+  record is
   [WP-015D2X V5 Marketing Candidate Contract](wp-015d2x-v5-marketing-candidate-contract.md).
-  It starts from D2A Candidate A's `640/576/512` ideal maximum-range and
-  `30/45/80` maximum-direct-damage hypothesis, but must calibrate exact integer
-  launch-speed bands in the authoritative TypeScript simulation. Profile zero
-  was the only profile run: 50/50 matches terminated by Unraveling, first-actor
-  share was 62 percent, all Relics were used, recurrence was zero, and every
-  declared replay, protocol, reward-safety, build, and browser gate passed.
-  V1-V4 remain immutable; rejected
-  tactical-core mechanics, player observation, Lane G/Lane M execution, Stage
-  C repair, rewards activation, new assets, and dependencies remain excluded.
-  ProductAuthority remains `none`; human balance, Linux visual inspection,
-  real-device pacing, and any V5-bound Lane G preregistration remain separate
-  owner-directed follow-ups. The next implementation slice is not opened by
-  this completion record.
 - Parent analytical record: **WP-015D2A Tactical Game Model and Simulation Harness:**
   establish and test the decision model that precedes V5 Relic values without
   changing accepted V1 through V4 replay behavior. The contract is

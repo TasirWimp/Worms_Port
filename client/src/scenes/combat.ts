@@ -3,6 +3,7 @@ import Phaser from 'phaser';
 import type { ChallengeResult, ChallengeSnapshot } from '../../../shared/protocol';
 import {
     LATEST_RULESET_ID,
+    V6_RULESET_ID,
     cloneSimulation,
     type SimulationCommand,
     type SimulationActor,
@@ -248,7 +249,18 @@ export default class CombatScene extends Phaser.Scene {
         this.controls.clearAimLock();
         this.preview = [];
         let acceptedSteps = 0;
+        let turned = false;
         try {
+            const initial = this.authoritativeSnapshot;
+            if (initial.simulation.rulesetId === V6_RULESET_ID &&
+                initial.simulation.units[0].facing !== direction) {
+                const next = await this.args.submitCommand(
+                    { type: 'move', direction: 0 },
+                    initial.simulation.turn
+                );
+                this.acceptSnapshot(next);
+                turned = next.simulation.units[0].facing === direction;
+            }
             for (let index = 0; index < Math.min(4, requestedSteps); index += 1) {
                 const basis = this.authoritativeSnapshot;
                 if (basis.simulation.activeActor !== 'player' ||
@@ -262,11 +274,17 @@ export default class CombatScene extends Phaser.Scene {
                 if (next.simulation.units[0].x === beforeX) break;
                 acceptedSteps += 1;
             }
+            const directionLabel = direction < 0 ? 'left' : 'right';
             this.controls.setMessage(acceptedSteps > 0
-                ? `Moved ${direction < 0 ? 'left' : 'right'} · aim again`
-                : 'The Knotkin could not move farther');
+                ? `${turned ? `Turned ${directionLabel} · ` : ''}Moved ${directionLabel} · aim again`
+                : turned
+                    ? `Turned ${directionLabel} · the Knotkin could not move farther`
+                    : 'The Knotkin could not move farther');
         } catch (error) {
-            this.controls.setMessage(error instanceof Error ? error.message : 'Movement failed.');
+            const message = error instanceof Error ? error.message : 'Movement failed.';
+            this.controls.setMessage(turned
+                ? `Turned ${direction < 0 ? 'left' : 'right'} · ${message}`
+                : message);
         } finally {
             this.pendingCommand = false;
             this.controls.setBusy(false);

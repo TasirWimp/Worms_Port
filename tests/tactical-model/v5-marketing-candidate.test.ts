@@ -4,7 +4,6 @@ import test from 'node:test';
 import { SimulationSnapshotSchema } from '../../shared/protocol';
 import {
     createSimulation,
-    LATEST_RULESET_ID,
     V4_RULESET_ID,
     V5_LAUNCH_SPEED_RULES,
     V5_RELIC_RULES,
@@ -17,8 +16,7 @@ import {
     V5_MARKETING_PROFILE
 } from '../../scripts/run-v5-balance-candidate';
 
-test('V5 profile zero is active and preserves the frozen V4 starting hash', () => {
-    assert.equal(LATEST_RULESET_ID, V5_RULESET_ID);
+test('V5 profile zero remains frozen and preserves the V4 starting hash', () => {
     assert.equal(V5_MARKETING_PROFILE.id, 'v5-marketing-candidate-v0');
     assert.deepEqual(V5_RELIC_RULES, {
         threadball: { craterRadius: 40, damageRadius: 64, maximumDamage: 45 },

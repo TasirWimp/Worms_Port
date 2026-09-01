@@ -404,6 +404,56 @@ test('compact landscape visual viewport keeps every control visible and separate
   await page.screenshot({ path: testInfo.outputPath('wp-011a-compact-landscape.png') });
 });
 
+test('V6 overlong movement commits in both directions, turns, and shows its budget', async ({ page }, testInfo) => {
+  test.setTimeout(90_000);
+  test.skip(testInfo.project.name !== 'chromium-390x844', 'One phone project covers ordinary and sideways input.');
+
+  const ui = page.locator('.combat-ui');
+  const label = page.locator('.movement-zone .pad-label');
+  await expect(label).toHaveText('Move 8/8');
+  await expect(page.locator('.movement-zone')).toHaveAttribute(
+    'aria-label',
+    'Movement pad. 8 of 8 steps remaining.'
+  );
+  const startX = Number(await ui.getAttribute('data-player-x'));
+
+  await dragPad(page, '.movement-zone', 90, 1.4, 0);
+  await expect.poll(async () => Number(await ui.getAttribute('data-player-x'))).toBe(startX + 32);
+  await expect(label).toHaveText('Move 4/8');
+  await expect(ui).toHaveAttribute('data-player-facing', 'right');
+
+  await dragPad(page, '.movement-zone', 91, -1.4, 0);
+  await expect.poll(async () => Number(await ui.getAttribute('data-player-x'))).toBe(startX);
+  await expect(label).toHaveText('Move 0/8');
+  await expect(ui).toHaveAttribute('data-player-facing', 'left');
+
+  const exhaustedX = Number(await ui.getAttribute('data-player-x'));
+  await dragPad(page, '.movement-zone', 92, 1.4, 0);
+  await expect(ui).toHaveAttribute('data-player-facing', 'right');
+  await expect.poll(async () => Number(await ui.getAttribute('data-player-x'))).toBe(exhaustedX);
+  await expect(label).toHaveText('Move 0/8');
+
+  await page.goto('/?combat-preview=1');
+  const sidewaysUi = page.locator('.combat-ui');
+  const sidewaysLabel = page.locator('.movement-zone .pad-label');
+  await expect(page.locator('html')).toHaveAttribute('data-sideways', 'right');
+  await expect(sidewaysLabel).toHaveText('Move 8/8');
+  const sidewaysStartX = Number(await sidewaysUi.getAttribute('data-player-x'));
+
+  await dragPad(page, '.movement-zone', 93, 0, 1.4);
+  await expect.poll(async () => Number(
+    await sidewaysUi.getAttribute('data-player-x')
+  )).toBe(sidewaysStartX + 32);
+  await expect(sidewaysLabel).toHaveText('Move 4/8');
+
+  await dragPad(page, '.movement-zone', 94, 0, -1.4);
+  await expect.poll(async () => Number(
+    await sidewaysUi.getAttribute('data-player-x')
+  )).toBe(sidewaysStartX);
+  await expect(sidewaysLabel).toHaveText('Move 0/8');
+  await expect(sidewaysUi).toHaveAttribute('data-player-facing', 'left');
+});
+
 test('pointer transfer, cancellation, release outside, pause, and retry fail safe', async ({ page }) => {
   await pointer(page, '.movement-zone', 'pointerdown', 10, 0.5, 0.5);
   await pointer(page, '.aim-zone', 'pointerdown', 11, 0.5, 0.5);

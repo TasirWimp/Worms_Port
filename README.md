@@ -595,13 +595,13 @@ inclusion to macro-block finality, and sends expired/ambiguous cases to
 ## Deterministic Simulation Foundation
 
 New Practice challenges use the product-owned
-`nimble-knots-artillery-v5` ruleset. The authoritative model is independent of
+`nimble-knots-artillery-v6` ruleset. The authoritative model is independent of
 Phaser and uses integer fixed ticks, an explicit uint32 seed, a packed collision
 mask, bounded Relic physics, canonical SHA-256 state hashes, and replay records.
 Client commands include both their transport sequence and expected simulation
 turn; delayed, duplicated, conflicting, or wrong-turn commands cannot silently
-apply to a later state. Legacy v1 replay hashes and reconstruction remain
-supported.
+apply to a later state. V1 through V5 replay hashes and reconstruction remain
+supported under their explicit identities.
 
 Simulation state is currently in-process. It is suitable for the selected
 single-instance persistent Node deployment, but it is not durable across
@@ -632,6 +632,15 @@ Worldweave for Threadball, Air/Draft for Needlepoint, and Fire/Loomspark for
 Spoolburst. Cloudwater establishes water in the world but adds no release Relic
 or mechanic. No production Relic art is shipped yet.
 
+WP-015D2Y adds V6 without retuning that V5 balance profile. An opposite
+movement gesture first turns the Knotkin 180 degrees in place for no movement
+cost, then attempts the requested movement. The movement pad shows the
+authoritative whole-step budget remaining in the turn (`8/8` down to `0/8`).
+Once a movement drag owns the pointer and leaves its dead zone, releasing beyond
+the visible ring still commits the direction and clamped one-to-four-step
+intent. Pointer cancellation, interruption, and release outside the aim pad
+remain inert.
+
 ## Complete Practice Clash
 
 The default `/` journey is the first complete playable: choose Wizard, Thief,
@@ -660,8 +669,10 @@ impacts, and the resulting terrain and Stitching changes in causal order.
 Controls remain suspended during those presentation phases; reduced-motion
 users receive the same causal phases with shorter timing.
 
-Touch movement converts drag strength into one to four existing authoritative
-movement commands, visibly animates each accepted displacement, and clears the
+Touch movement converts drag strength into one to four authoritative movement
+quanta. V6 may prefix one free turn-in-place transition when the gesture points
+opposite the authoritative facing. Each accepted displacement is visibly
+animated, the movement budget is disclosed on the pad, and movement clears the
 old aim so the player must deliberately aim again. Advisory trajectories clear
 on Fire, movement, turn changes, disconnect, result, and challenge replacement.
 The combat shell follows the usable `visualViewport` and gives the fixed 16:9

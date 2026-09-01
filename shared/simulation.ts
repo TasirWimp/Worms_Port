@@ -9,16 +9,19 @@ export const V4_RULESET_ID = 'nimble-knots-artillery-v4' as const;
 export const V4_RULESET_VERSION = 4 as const;
 export const V5_RULESET_ID = 'nimble-knots-artillery-v5' as const;
 export const V5_RULESET_VERSION = 5 as const;
-// WP-015D2X's bounded calibration gates passed; new challenges now use V5.
-export const LATEST_RULESET_ID = V5_RULESET_ID;
-export const LATEST_RULESET_VERSION = V5_RULESET_VERSION;
+export const V6_RULESET_ID = 'nimble-knots-artillery-v6' as const;
+export const V6_RULESET_VERSION = 6 as const;
+// WP-015D2Y preserves V5 balance while correcting movement interaction semantics.
+export const LATEST_RULESET_ID = V6_RULESET_ID;
+export const LATEST_RULESET_VERSION = V6_RULESET_VERSION;
 
 export type SimulationRulesetId =
     | typeof RULESET_ID
     | typeof V2_RULESET_ID
     | typeof V3_RULESET_ID
     | typeof V4_RULESET_ID
-    | typeof V5_RULESET_ID;
+    | typeof V5_RULESET_ID
+    | typeof V6_RULESET_ID;
 export type RelicId = 'threadball' | 'needlepoint' | 'spoolburst';
 
 export const RELIC_IDS = Object.freeze([
@@ -128,7 +131,8 @@ export const V4_ARENA_RULES: ArenaRules = Object.freeze({
 });
 
 export function arenaRulesFor(rulesetId: SimulationRulesetId): ArenaRules {
-    return rulesetId === V4_RULESET_ID || rulesetId === V5_RULESET_ID
+    return rulesetId === V4_RULESET_ID || rulesetId === V5_RULESET_ID ||
+        rulesetId === V6_RULESET_ID
         ? V4_ARENA_RULES
         : HISTORICAL_ARENA_RULES;
 }
@@ -159,7 +163,8 @@ export const DIRECT_PROJECTILE_HITBOXES: Readonly<Record<SimulationRulesetId, Di
     }),
     [V3_RULESET_ID]: Object.freeze({ halfWidth: 32, top: 85, bottom: 13 }),
     [V4_RULESET_ID]: Object.freeze({ halfWidth: 32, top: 85, bottom: 13 }),
-    [V5_RULESET_ID]: Object.freeze({ halfWidth: 32, top: 85, bottom: 13 })
+    [V5_RULESET_ID]: Object.freeze({ halfWidth: 32, top: 85, bottom: 13 }),
+    [V6_RULESET_ID]: Object.freeze({ halfWidth: 32, top: 85, bottom: 13 })
 });
 
 export type SimulationActor = 'player' | 'loomkeeper';
@@ -201,9 +206,9 @@ export type ProjectileSummary = {
 };
 
 export type SimulationState = {
-    formatVersion: 1 | 2 | 3 | 4 | 5;
+    formatVersion: 1 | 2 | 3 | 4 | 5 | 6;
     rulesetId: SimulationRulesetId;
-    rulesetVersion: 1 | 2 | 3 | 4 | 5;
+    rulesetVersion: 1 | 2 | 3 | 4 | 5 | 6;
     seed: number;
     rngState: number;
     tick: number;
@@ -224,6 +229,7 @@ export type SimulationState = {
 
 export type SimulationEvent =
     | { type: 'moved'; actor: SimulationActor; x: number; y: number }
+    | { type: 'turned'; actor: SimulationActor; facing: -1 | 1 }
     | { type: 'aimed'; actor: SimulationActor; angleMilliDegrees: number; powerPermille: number }
     | { type: 'relic_selected'; actor: SimulationActor; relicId: RelicId }
     | { type: 'projectile'; actor: SimulationActor; trace: { x: number; y: number }[] }
@@ -310,7 +316,9 @@ export function applySimulationCommand(
         if (moved.accepted === false) {
             return rejected(current, 'COMMAND_REJECTED', moved.message);
         }
-        events.push({ type: 'moved', actor, x: moved.unit.x, y: moved.unit.y });
+        events.push(moved.action === 'turned'
+            ? { type: 'turned', actor, facing: moved.unit.facing }
+            : { type: 'moved', actor, x: moved.unit.x, y: moved.unit.y });
     } else if (command.type === 'select_relic') {
         const relicId = command.relicId as RelicId;
         if (!availableRelics(state).includes(relicId)) {
@@ -398,14 +406,16 @@ export function relicRulesFor(
     rulesetId: SimulationRulesetId,
     relicId: RelicId
 ): RelicRules {
-    return rulesetId === V5_RULESET_ID ? V5_RELIC_RULES[relicId] : RELIC_RULES[relicId];
+    return rulesetId === V5_RULESET_ID || rulesetId === V6_RULESET_ID
+        ? V5_RELIC_RULES[relicId]
+        : RELIC_RULES[relicId];
 }
 
 export function launchSpeedRulesFor(
     rulesetId: SimulationRulesetId,
     relicId: RelicId
 ): LaunchSpeedRules {
-    return rulesetId === V5_RULESET_ID
+    return rulesetId === V5_RULESET_ID || rulesetId === V6_RULESET_ID
         ? V5_LAUNCH_SPEED_RULES[relicId]
         : {
             minimumShotSpeed: SIM_RULES.minimumShotSpeed,
@@ -465,13 +475,15 @@ export function assertSimulationInvariants(state: SimulationState): void {
         state.rulesetVersion === V4_RULESET_VERSION && state.formatVersion === 4;
     const v5 = state.rulesetId === V5_RULESET_ID &&
         state.rulesetVersion === V5_RULESET_VERSION && state.formatVersion === 5;
-    if (!legacy && !v2 && !v3 && !v4 && !v5) {
+    const v6 = state.rulesetId === V6_RULESET_ID &&
+        state.rulesetVersion === V6_RULESET_VERSION && state.formatVersion === 6;
+    if (!legacy && !v2 && !v3 && !v4 && !v5 && !v6) {
         throw new Error('Unknown deterministic simulation ruleset.');
     }
     if (!availableRelics(state).includes(state.selectedRelic)) {
         throw new Error('Selected Relic is unavailable in this ruleset.');
     }
-    if (state.lastProjectile && (v2 || v3 || v4 || v5) && !state.lastProjectile.relicId) {
+    if (state.lastProjectile && (v2 || v3 || v4 || v5 || v6) && !state.lastProjectile.relicId) {
         throw new Error('Current-ruleset projectile lacks its Relic identifier.');
     }
     if (state.lastProjectile && legacy && state.lastProjectile.relicId) {
@@ -510,12 +522,13 @@ function normalizeSeed(seed: number): number {
     return normalized === 0 ? 0x6D2B79F5 : normalized;
 }
 
-function rulesetVersionFor(rulesetId: SimulationRulesetId): 1 | 2 | 3 | 4 | 5 {
+function rulesetVersionFor(rulesetId: SimulationRulesetId): 1 | 2 | 3 | 4 | 5 | 6 {
     if (rulesetId === LEGACY_RULESET_ID) return RULESET_VERSION;
     if (rulesetId === V2_RULESET_ID) return V2_RULESET_VERSION;
     if (rulesetId === V3_RULESET_ID) return V3_RULESET_VERSION;
     if (rulesetId === V4_RULESET_ID) return V4_RULESET_VERSION;
-    return V5_RULESET_VERSION;
+    if (rulesetId === V5_RULESET_ID) return V5_RULESET_VERSION;
+    return V6_RULESET_VERSION;
 }
 
 function nextRandom(state: number): number {
@@ -568,12 +581,18 @@ function moveUnit(
     state: SimulationState,
     actor: SimulationActor,
     direction: -1 | 0 | 1
-): { accepted: true; unit: SimulationUnit } | { accepted: false; message: string } {
+): { accepted: true; action: 'moved' | 'turned'; unit: SimulationUnit } |
+    { accepted: false; message: string } {
     const unit = state.units[actor === 'player' ? 0 : 1];
     if (!unit.alive) return { accepted: false, message: 'Unravelled actors cannot move.' };
     if (direction === 0) {
+        if (state.rulesetId === V6_RULESET_ID) {
+            unit.facing = unit.facing === 1 ? -1 : 1;
+            state.aim = null;
+            return { accepted: true, action: 'turned', unit };
+        }
         settleUnit(state, unit);
-        return { accepted: true, unit };
+        return { accepted: true, action: 'moved', unit };
     }
     if (state.movementRemaining < SIM_RULES.movementStep) {
         return { accepted: false, message: 'The movement budget is exhausted.' };
@@ -596,7 +615,8 @@ function moveUnit(
     unit.y = targetY;
     unit.facing = direction;
     state.movementRemaining -= SIM_RULES.movementStep;
-    return { accepted: true, unit };
+    if (state.rulesetId === V6_RULESET_ID) state.aim = null;
+    return { accepted: true, action: 'moved', unit };
 }
 
 function resolveProjectile(
@@ -642,7 +662,7 @@ function resolveProjectile(
         if (collision) {
             impact = collision.target;
             if ((state.rulesetId === V3_RULESET_ID || state.rulesetId === V4_RULESET_ID ||
-                state.rulesetId === V5_RULESET_ID) &&
+                state.rulesetId === V5_RULESET_ID || state.rulesetId === V6_RULESET_ID) &&
                 (collision.target === 'player' || collision.target === 'loomkeeper')) {
                 directTarget = collision.target;
             }

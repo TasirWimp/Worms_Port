@@ -192,7 +192,9 @@ snapshot has been presented, then appears exactly once for that challenge. This
 rule applies equally to the first match, Play Again, and in-scene Retry.
 
 Movement drag strength maps to at most four ordinary authoritative movement
-commands; it does not introduce a new simulation command or change replay rules.
+commands. V6 may prefix one neutral movement command as its separately
+versioned, free turn-in-place transition; this does not expand the transport
+command schema or alter V1 through V5 replay rules.
 Accepted movement clears the locked aim and requires a new aim before Fire.
 Advisory trajectories exist only for the current legal player aim and clear on
 movement, Fire, turn change, disconnect, result, and challenge replacement.
@@ -406,9 +408,9 @@ alter v3.
 
 ### Ruleset V4 Arena and Camera
 
-`nimble-knots-artillery-v5` is the current new-challenge ruleset. It retains
-V4's arena and direct-contact profile while adding only the separately
-versioned per-Relic range and maximum direct-damage values recorded below.
+`nimble-knots-artillery-v6` is the current new-challenge ruleset. It retains
+V5's range and damage profile plus V4's arena and direct-contact profile while
+adding only the separately versioned movement corrections recorded below.
 Explicit V4 replay remains immutable. V4 itself preserves
 all V3 projectile, Relic, movement, direct-hit, Loomkeeper-policy, reward, and
 turn rules, but records a new deterministic 2048 by 576 authoritative arena:
@@ -487,6 +489,24 @@ values-only unless a separately approved tactical-core package adds a different
 action economy, defense, or convergence rule. A later precision mechanic must
 be deterministic and disclosed and requires another versioned ruleset if it
 changes replay outcomes.
+
+### Active Movement-Corrected Ruleset V6
+
+WP-015D2Y adds `nimble-knots-artillery-v6` without retuning any V5 Relic,
+arena, terrain, physics, hitbox, turn-limit, Loomkeeper-policy, or reward value.
+For V6 only, the existing neutral `move` command is an authoritative
+turn-in-place transition: it flips facing, clears aim, consumes no movement
+budget, changes no position, and ends no turn. The player client prefixes this
+transition when a movement gesture points opposite the accepted facing, then
+submits the gesture's one-to-four ordinary displacement quanta. V1 through V5
+retain their exact neutral and nonzero movement semantics.
+
+The floating movement pad derives and displays its remaining whole-step budget
+from each accepted snapshot. Once that pad owns a pointer, pointer-up at any
+distance commits the direction and clamped strength; continuing beyond the
+visible ring cannot cancel the command or exceed four quanta. Pointer cancel,
+blur, hidden-document, resize, reconnect, pause, and challenge replacement
+remain inert. Aim still requires release inside its own control boundary.
 
 ### Hosting Contract
 

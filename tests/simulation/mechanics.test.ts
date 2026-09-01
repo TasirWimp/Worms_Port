@@ -8,14 +8,16 @@ import {
     canonicalSimulationJson,
     createSimulation,
     createLatestSimulation,
-    SIM_RULES
+    SIM_RULES,
+    V5_RULESET_ID,
+    V6_RULESET_ID
 } from '../../shared/simulation';
 
-test('V5 retains the V4 arena expansion and remains deterministic', () => {
+test('V6 retains the V5 arena and balance profile while remaining deterministic', () => {
     const first = createLatestSimulation(0xC0FFEE11, 'wizard');
     const second = createLatestSimulation(0xC0FFEE11, 'wizard');
-    assert.equal(first.rulesetId, 'nimble-knots-artillery-v5');
-    assert.equal(first.formatVersion, 5);
+    assert.equal(first.rulesetId, V6_RULESET_ID);
+    assert.equal(first.formatVersion, 6);
     assert.deepEqual(
         { width: first.terrain.width, height: first.terrain.height, cellSize: first.terrain.cellSize, words: first.terrain.words.length },
         { width: 256, height: 72, cellSize: 8, words: 576 }
@@ -29,6 +31,68 @@ test('V5 retains the V4 arena expansion and remains deterministic', () => {
         { width: 128, height: 72, cellSize: 8, words: 288 }
     );
     assert.deepEqual(historical.units.map((unit) => unit.x), [192, 832]);
+});
+
+test('V6 turns in place for free before opposite movement and clears locked aim', () => {
+    let state = createSimulation(0xC0FFEE11, 'wizard', V6_RULESET_ID);
+    state = applySimulationCommand(state, 'player', {
+        type: 'aim', angleMilliDegrees: 45_000, powerPermille: 700
+    }, 0).state;
+    const beforeX = state.units[0].x;
+    const beforeY = state.units[0].y;
+    const beforeBudget = state.movementRemaining;
+
+    const turned = applySimulationCommand(state, 'player', { type: 'move', direction: 0 }, 0);
+    assert.equal(turned.accepted, true);
+    assert.equal(turned.state.units[0].facing, -1);
+    assert.equal(turned.state.units[0].x, beforeX);
+    assert.equal(turned.state.units[0].y, beforeY);
+    assert.equal(turned.state.movementRemaining, beforeBudget);
+    assert.equal(turned.state.aim, null);
+    assert.deepEqual(turned.events, [{ type: 'turned', actor: 'player', facing: -1 }]);
+
+    const reaimed = applySimulationCommand(turned.state, 'player', {
+        type: 'aim', angleMilliDegrees: 30_000, powerPermille: 500
+    }, 0);
+    const moved = applySimulationCommand(
+        reaimed.state,
+        'player',
+        { type: 'move', direction: -1 },
+        0
+    );
+    assert.equal(moved.accepted, true);
+    assert.equal(moved.state.units[0].x, beforeX - SIM_RULES.movementStep);
+    assert.equal(moved.state.movementRemaining, beforeBudget - SIM_RULES.movementStep);
+    assert.equal(moved.state.units[0].facing, -1);
+    assert.equal(moved.state.aim, null);
+
+    const exhausted = createSimulation(1, 'wizard', V6_RULESET_ID);
+    exhausted.movementRemaining = 0;
+    const exhaustedTurn = applySimulationCommand(
+        exhausted,
+        'player',
+        { type: 'move', direction: 0 },
+        0
+    );
+    assert.equal(exhaustedTurn.accepted, true);
+    assert.equal(exhaustedTurn.state.units[0].facing, -1);
+    assert.equal(exhaustedTurn.state.movementRemaining, 0);
+
+    const historicalV5 = createSimulation(0xC0FFEE11, 'wizard', V5_RULESET_ID);
+    const historicalNeutral = applySimulationCommand(
+        historicalV5,
+        'player',
+        { type: 'move', direction: 0 },
+        0
+    );
+    assert.equal(historicalNeutral.state.units[0].facing, 1);
+    assert.equal(historicalNeutral.state.units[0].x, historicalV5.units[0].x);
+    assert.deepEqual(historicalNeutral.events, [{
+        type: 'moved',
+        actor: 'player',
+        x: historicalV5.units[0].x,
+        y: historicalNeutral.state.units[0].y
+    }]);
 });
 
 test('move, aim, and fire form an authoritative fixed-turn transition', () => {

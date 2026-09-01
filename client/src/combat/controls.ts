@@ -26,6 +26,7 @@ export class CombatControls {
     private readonly movementZone: HTMLDivElement;
     private readonly aimZone: HTMLDivElement;
     private readonly movementKnob: HTMLSpanElement;
+    private readonly movementLabel: HTMLSpanElement;
     private readonly aimKnob: HTMLSpanElement;
     private readonly fireButton: HTMLButtonElement;
     private readonly pauseButton: HTMLButtonElement;
@@ -110,6 +111,7 @@ export class CombatControls {
         this.movementZone = this.root.querySelector('.movement-zone');
         this.aimZone = this.root.querySelector('.aim-zone');
         this.movementKnob = this.movementZone.querySelector('.pad-knob');
+        this.movementLabel = this.movementZone.querySelector('.pad-label');
         this.aimKnob = this.aimZone.querySelector('.pad-knob');
         this.actions = this.root.querySelector('.combat-actions');
 
@@ -321,7 +323,9 @@ export class CombatControls {
             const rect = zone.getBoundingClientRect();
             const inside = event.clientX >= rect.left && event.clientX <= rect.right &&
                 event.clientY >= rect.top && event.clientY <= rect.bottom;
-            const command = this.input.end(event.pointerId, inside);
+            // An acquired movement drag is bounded by movementSteps(), not by
+            // the release coordinate. Aim retains release-inside fail safety.
+            const command = this.input.end(event.pointerId, kind === 'movement' || inside);
             this.resetPad(zone, knob);
             if (kind === 'aim') {
                 this.callbacks.onAimPreview(this.input.lockedAim);
@@ -382,6 +386,8 @@ export class CombatControls {
         const seconds = Math.max(0, Math.ceil(
             (simulation.turnDeadlineTick - displayedTick) / SIM_RULES.tickRate
         ));
+        const maximumMovementSteps = SIM_RULES.movementPerTurn / SIM_RULES.movementStep;
+        const remainingMovementSteps = simulation.movementRemaining / SIM_RULES.movementStep;
         this.status.textContent = this.presentationStatus || (this.paused
             ? 'Practice paused'
             : simulation.activeActor === 'player' ? 'Your turn' : 'Loomkeeper weaving');
@@ -403,6 +409,13 @@ export class CombatControls {
         this.root.dataset.presenting = String(this.presenting);
         this.root.dataset.activeActor = simulation.activeActor;
         this.root.dataset.playerX = String(player.x);
+        this.root.dataset.playerFacing = player.facing < 0 ? 'left' : 'right';
+        this.root.dataset.movementStepsRemaining = String(remainingMovementSteps);
+        this.movementLabel.textContent = `Move ${remainingMovementSteps}/${maximumMovementSteps}`;
+        this.movementZone.setAttribute(
+            'aria-label',
+            `Movement pad. ${remainingMovementSteps} of ${maximumMovementSteps} steps remaining.`
+        );
         this.root.classList.toggle('is-paused', this.paused);
         const canSubmit = this.canSubmit();
         this.root.dataset.commandControls = String(canSubmit);

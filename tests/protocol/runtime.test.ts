@@ -904,7 +904,7 @@ test('protocol commands mutate authoritative simulation once and reconstruct fro
             calling: 'wizard'
         });
         assert.equal(ChallengeSnapshotSchema.safeParse(created.data).success, true);
-        assert.equal(created.data.simulation.rulesetId, 'nimble-knots-artillery-v5');
+        assert.equal(created.data.simulation.rulesetId, 'nimble-knots-artillery-v6');
         assert.equal(created.data.loomkeeperPolicyId, 'nimble-knots-loomkeeper-v2');
         assert.ok(Buffer.byteLength(JSON.stringify(created.data), 'utf8') <= 8 * 1024);
         const initialHash = created.data.stateHash;
@@ -1041,8 +1041,8 @@ test('player fire produces one automated Loomkeeper resolution and records only 
         };
         const fired = await emitAck(socket, protocolEvents.commandSubmit, firePayload);
         assert.equal(fired.ok, true);
-        assert.equal(fired.data.simulation.rulesetId, 'nimble-knots-artillery-v5');
-        assert.equal(fired.data.simulation.rulesetVersion, 5);
+        assert.equal(fired.data.simulation.rulesetId, 'nimble-knots-artillery-v6');
+        assert.equal(fired.data.simulation.rulesetVersion, 6);
         assert.equal(fired.data.simulation.activeActor, 'loomkeeper');
         assert.equal(fired.data.simulation.turn, 1);
         const reply = await automated;

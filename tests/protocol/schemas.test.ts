@@ -243,6 +243,12 @@ test('response schemas are strict and carry versioned timing metadata', () => {
         simulation: createLatestSimulation(1, 'wizard')
     } as const;
     assert.equal(ChallengeSnapshotSchema.safeParse(currentSnapshot).success, true);
+    const v5Snapshot = {
+        ...snapshot,
+        loomkeeperPolicyId: 'nimble-knots-loomkeeper-v2',
+        simulation: createSimulation(1, 'wizard', 'nimble-knots-artillery-v5')
+    } as const;
+    assert.equal(ChallengeSnapshotSchema.safeParse(v5Snapshot).success, true);
     assert.equal(ChallengeSnapshotSchema.safeParse({
         ...snapshot,
         loomkeeperPolicyId: 'nimble-knots-loomkeeper-v2'
