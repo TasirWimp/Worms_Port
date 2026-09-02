@@ -10,8 +10,8 @@ Phaser/Socket.IO stack.
 - Active target: mobile-first single-player Nimiq Pay competition release.
 - Active product package: **WP-015D3A V8 Action-Turn Candidate — V8A finite
   rules/acceptance contract complete and independently reviewed; V8B authoritative
-  foundation complete and independently reviewed; V8C touch presentation next,
-  not started. Live V7 unchanged.**
+  foundation complete and independently reviewed; V8C touch presentation
+  complete, verified and independently reviewed. Live V7 unchanged.**
   The owner opened V8A after the independently reviewed preparation and shared-
   ruleset correction. The
   [V8 preparation contract and roadmap](wp-015d3a-v8-action-turns-contract.md)
@@ -38,12 +38,21 @@ Phaser/Socket.IO stack.
   and separate quick-correctness versus full-assessment gates. Contract
   `wp-015d3a-v8a-rules-v0` passed independent design and arithmetic review;
   B's collision/phase/replay integration now passes 67 V8 tests and distinct
-  review; the final feature gate, built smoke and five canonical phone-browser
-  checks pass. Touch feel and balance are not yet verified.
-  Next is V8C's touch controls and presentation, using the existing A7 C
-  allow-list and fresh clean-room implementer. V8D still owns automated V8 AI,
-  complete rewarded lifecycle, assessment and shared promotion. Production
-  remains V7 in both modes until all activation gates pass.
+  review. C adds clamped hold/release walking, one-tap forward Jump, free facing,
+  separate aim/Fire, phase/time HUD, bounded V8 client transport and interruption
+  recovery. Its 30 new focused V8 tests pass alongside legacy combat/Practice.
+  Final feature gate, built smoke, five standard phone-browser checks and four
+  final small-phone/WebKit V8 combat checks pass. Earlier all-five-profile V8
+  behavior coverage is separately source-bound before the final readability
+  CSS fix. Real-device touch feel and balance remain unverified.
+  The owner opened V8C's touch controls and presentation from freshly fetched,
+  clean V8B commit `87ae3dad358f752ba64540e54d21a96b134d1e42`, using the
+  existing A7 C allow-list and fresh clean-room implementers. The explicit
+  `?combat-preview=v8` route is engineering-only with no AI policy, wallet or
+  reward; ordinary creation and the legacy preview are unchanged. V8D is the
+  next bounded slice and has not started: it owns automated V8 AI, complete
+  rewarded lifecycle, assessment and shared promotion. Production remains V7
+  in both modes until all activation gates pass.
   The analytical execution pointer remains **WP-015D2A**;
   Stage C debt remains `interrupted_no_tap`, Lane G/Lane M execution remains
   closed, Lane G evidence remains none, D2O remains unsatisfied, and

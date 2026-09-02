@@ -2,10 +2,11 @@
 
 Date: 2026-09-02. Status: V8A v0 finite rules contract complete and independently
 reviewed; V8B authoritative foundation complete and independently reviewed,
-with live V7 unchanged. V8C touch presentation is next, not started.
+with live V7 unchanged. V8C touch presentation is complete as a bounded
+engineering slice, verified and independently reviewed.
 WP-015D3A remains `in_progress`; its reference record is only `observed`.
-V8B delivered candidate-only engineering implementation, not player observation
-or production activation. Its source-bound review return is in section B.
+V8B/C delivered candidate-only engineering implementation, not player observation
+or production activation. Source-bound review returns are in sections B/C.
 
 ## Purpose and source boundary
 
@@ -13,8 +14,8 @@ Prepare the owner-approved, Sorcerers-inspired action-turn migration on the
 existing MIT game, preserving a practical V7 fallback and the analytical route.
 This is an intermediate playable-candidate plan, not a balance proof or a port
 of Sorcerers. V8A's finite contract and V8B's authoritative foundation are
-complete; the next bounded step is V8C's touch presentation, with production
-promotion deferred until all B-D gates pass.
+complete and V8C's touch presentation is implemented and verified. V8D AI and
+full lifecycle are next, with production promotion deferred until all B-D gates pass.
 
 - Product base: `dc66d2ac0f02b1b7c47f6949816a7cbc6e48e286`, freshly verified
   clean on `codex/wp-015d2z-v7-tactical-arena-v0`; `git fetch origin` confirmed
@@ -767,7 +768,48 @@ fairness, release or player-observation claim is made. The package stays
 
 ### C. Touch controls and presentation
 
-Next bounded slice after B; not started or activated by the B review return.
+Entry: the owner separately opened V8C after pushing B. Fresh `git fetch origin`
+confirmed clean local/remote HEAD `87ae3dad358f752ba64540e54d21a96b134d1e42`;
+work is isolated on `codex/wp-015d3a-v8c-touch-presentation-v0`. This authorizes
+only A7's C rows plus this contract, implementation-plan navigation and the
+existing package evidence. Before implementation, the two new C test carriers
+did not exist; search found legacy combat/Practice tests but no suitable V8-specific
+ownership, interpolation or transport test carrier. No new runtime module or
+document is needed. Reuse all existing C integration homes.
+
+Exact maximum allow-list: the thirteen existing C client paths and five C test
+paths named in A7, plus the three planning/evidence carriers (21 paths). No B
+server/shared module, selector, legacy schema/AI, asset, manifest, package,
+test harness, analytical carrier or CRPM change is authorized. If inspection
+finds a missing necessary integration path, review a bounded amendment before
+editing it. The explicit V8 fixture is engineering-only; ordinary Practice
+and rewarded creation must remain V7. C does not implement D's AI, reward
+lifecycle, candidate assessment or joint promotion.
+
+Fresh no-history client/presentation and client-transport implementers receive
+only the frozen handoff and MIT product docs/source/tests. Root owns docs and
+verification, not runtime code. Write focused red tests before behavior,
+then run the V8 combat/transport tests, final `verify:feature`, focused V8
+phone/sideways/interruption checks, bundle/security/compliance and independent
+review. Preserve A4/A5's one-request/one-refresh bound, 250-ms timeout, neutral
+lane, nine-tick lease, two-sample/three-tick interpolation and six-tick stale
+cutoff. Do not replace deterministic unit clocks with real-time waits or run
+the full daily matrix in the feature loop. Real devices remain outside this
+autonomous slice.
+
+**C integration boundary (reviewed before wiring):** keep legacy scene/client
+callers intact and add a `kind: 'v8'` scene-argument variant with strict V8
+snapshot, intent, cancellation and lifecycle callbacks. A separate
+`ActionTurnsV8Client` adapter lives alongside the existing `PracticeClient` in
+its current carrier; C does not change the latter's public creation/reward
+API. Session bootstrap may retain bounded dedicated V8 snapshots/results for
+the candidate adapter, but `v1:session.open` remains schema-exact. Use the
+already present combat-preview entry with explicit `?combat-preview=v8`;
+default/`=1` stays legacy. No `script.ts` or new product entry point is needed.
+The distinct reviewer confirmed this integration fits the existing allow-list.
+Keep candidate-only imports lazy where needed to preserve the initial bundle
+ceiling; no server/Node code may enter the browser bundle. Fixture-local
+simulation is only an engineering adapter, not client authority for live play.
 
 Hold to walk and release to stop; overlong drags remain clamped and usable.
 Provide jump without a required two-finger chord, precision gesture, hover, or
@@ -782,6 +824,107 @@ define input ownership, interpolation/reconciliation, and queue bounds without
 client-authoritative movement, damage, or aim. Blur, hidden document, cancel,
 resize, rotation, wallet interruption, disconnect, pause, and challenge/turn
 replacement cancel intent and require fresh input after recovery.
+
+#### C source-bound implementation and review return
+
+Source base is the freshly verified V8B commit above. The changed range uses
+20 of the 21 allowed paths: all listed C paths except unchanged
+`client/src/combat/camera.ts`. Only the two version-specific unit-test files
+are new; runtime, browser-test, planning and evidence homes are reused.
+The 17 non-document implementation/test paths have source-bound SHA-256
+`d19e2c120f20cd1a622021369f1b2258d9082786371b83cc08bfa8b10936f7ab`.
+Reproduce it using B's lexicographically sorted `{path,gitBlob}` rows and
+SHA-256 of UTF-8 `JSON.stringify(rows)` without newline. Excluding the three
+review documents and their commit identity keeps the return non-self-referential.
+
+Fresh implementers `Codex agent /root/v8c_client` and
+`Codex agent /root/v8c_transport` declared only operating/product documents,
+the frozen behavior handoff and MIT product source/tests. Their detailed
+source declarations are in the package evidence. Neither accessed external
+sources, Sorcerers/quarantine, observer transcripts or prior implementation
+history. Root coordinated documentation, build/browser validation and review,
+and made no runtime edits. B server/shared behavior, legacy schemas/AI,
+manifests/assets/packages, test harness/baselines, frozen handoff, recovery
+checkpoints/archives and analytical carriers remain unchanged.
+
+Delivered candidate-only behavior:
+
+- Hold/release walking survives same-epoch snapshots, clamps overlong drags,
+  and stops on release. Free facing, one-tap forward Jump, separate aim lock
+  and Fire use touch targets of at least 48 CSS pixels. Releasing Jump does
+  not cancel an accepted impulse; an interrupted press cannot fire later.
+- V8-only action/retreat time and phase feedback, fixed-point render
+  projection, bounded interpolation and immediate retreat camera recentering.
+  Stale authority suspends input; duplicate snapshots do not refresh its clock.
+  Portrait/sideways/landscape preserve safe areas and readable Relic labels.
+- Bounded dedicated V8 transport and resume buffering; one normal request,
+  one coalesced refresh, independent cancellation, 250-ms timeout recovery,
+  no action retries, and strict identity/revision/cursor/lifecycle binding.
+  Snapshot-before-ack and lost-ack Fire cases reconcile without inventing a
+  rejected or repeated cast. Old async completions cannot enter a new scene.
+- Explicit `?combat-preview=v8` local engineering fixture using the unchanged
+  V8 core. Its visible label states no AI policy, wallet or reward. Ordinary
+  Practice/reward creation and default/`?combat-preview=1` stay V7. Hiding the
+  page cancels intent but does not pause combat; only acknowledged permitted
+  Practice pause freezes it. Fresh input is required after interruptions.
+
+Focused helper/fixture tests pass 11 V8 plus 25 legacy cases; transport passes
+19 V8 plus five legacy cases, including an actual injected B runtime round
+trip. Project and focused test typechecks pass. Independent reviewer
+`Codex agent /root/v8c_review` reran the 11 V8 combat and 24 transport/legacy
+cases and checked source/preservation boundaries.
+
+Negative results remain in the package evidence: red scaffolds, fixture debt
+and freshness regressions, transport ordering/recovery races, legacy empty-
+scene-argument regression, incorrect sideways test expectations, and narrow-
+phone Relic clipping. Fixes preserve numerical rules and existing test policy.
+An initial anchored browser grep selected no tests; it is not a behavior pass.
+
+Final-source checks:
+
+- `npm run verify:feature` passed the complete normal chain: compliance,
+  server/client types, all fast suites, production build, built-server smoke
+  and 5/5 canonical phone-browser checks (34.7 seconds), zero browser skips.
+- The earlier four V8 scenarios passed across all five maintained profiles,
+  20/20 in 2.2 minutes, at pre-presentation-fix implementation/test digest
+  `e92039fcc44669b9215881b62f6bd0acded77ecfeeea44c5695eca5fa8ea18fe`.
+  They cover hold/release/Jump/Fire/retreat, right/left/off/landscape mapping,
+  interruption/fresh input and public wallet-free V7 preservation. After the
+  V8-only label/message CSS correction and added readability assertions, the
+  two combat scenarios passed again on Chromium 360x640 and WebKit 390x844,
+  4/4 in 35.5 seconds, against the final digest above. This focused rerun is
+  not a claim that all 20 cases or the full daily matrix ran on final CSS.
+- Final screenshots were inspected for small-phone portrait and both WebKit
+  sideways orientations. Relic text fits (wrapping on the small portrait),
+  the engineering message does not overlap actions, and touch controls remain
+  visible. These ignored candidate screenshots are not release baselines,
+  physical-device acceptance or a player-observation record.
+- Reward-security, identity-bundle and bundle-budget checks passed. Largest
+  initial JS is 1492829/1500000 bytes (7171 bytes headroom); initial JS/CSS
+  gzip is 412651/430000 bytes. Eleven approved runtime asset copies remain
+  unchanged. Node `v23.6.0` build proof verifies inputs
+  `8483205aa16fca08aec72dcc6e48f07c16e43c974488098a5189cf28189a2b0d`
+  and outputs
+  `9ebc430ba51d5cdd2b7f549ffa22f5df956940f0236b314e51fe7c8b7defcdf3`.
+- Exact 20-path range, 23 protected source/package/legal/handoff files,
+  duplicate-key/JSON Schema checks, six local contract links, frozen handoff,
+  both checkpoint targets/archive hashes, compliance and diff checks pass.
+  Documentation finalization does not change the implementation or build digest.
+
+Distinct reviewer `Codex agent /root/v8c_review` returned **pass**, no remaining
+findings, on the exact 20-path range and implementation digest above, including
+the three review carriers. Independently reran 35/35 focused V8 combat,
+transport and legacy Practice tests, zero skips; confirmed exact scope,
+protected-path preservation and digest. Reviewed input/cancellation, late/lost
+acknowledgements, reconnect recovery, freshness/interpolation, Jump semantics,
+fixture cleanup and public V7 preservation. Final feature/browser/security
+results are coordinator-owned and accurately distinguished from the earlier
+20-case browser result. C is complete only as this bounded engineering slice.
+V8D still owns automated V8 AI, complete rewarded lifecycle, 240-match candidate
+assessment and joint public promotion. No player observation, real-device
+acceptance, balance/fairness or release claim follows from C engineering tests.
+The package remains `in_progress` and its clean-room record `observed`; human
+similarity review is not replaced by automated source review.
 
 ### D. Loomkeeper, full lifecycle, and candidate acceptance
 

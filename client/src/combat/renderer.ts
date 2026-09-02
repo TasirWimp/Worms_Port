@@ -5,9 +5,9 @@ import {
     terrainSolid,
     type RelicId,
     type SimulationActor,
-    type SimulationState,
     type SimulationUnit
 } from '../../../shared/simulation';
+import type { CombatRenderState } from './presentation';
 import {
     APPROVED_COMBAT_ASSETS,
     WIZARD_ANIMATION_KEYS,
@@ -115,7 +115,7 @@ export class CombatRenderer {
     }
 
     public render(
-        state: SimulationState,
+        state: CombatRenderState,
         layout: CombatLayout,
         preview: { x: number; y: number }[],
         projectileTrace: { x: number; y: number }[] = [],
@@ -195,7 +195,7 @@ export class CombatRenderer {
         }
     }
 
-    private updateTerrain(state: SimulationState, layout: CombatLayout): void {
+    private updateTerrain(state: CombatRenderState, layout: CombatLayout): void {
         const cellX = state.terrain.cellSize * layout.worldScaleX;
         const cellY = state.terrain.cellSize * layout.worldScaleY;
         const materialScaleX = layout.worldScaleX * TERRAIN_MATERIAL_SCALE_IN_WORLD;
@@ -558,7 +558,7 @@ export class CombatRenderer {
         ]) g.fillCircle(field.x + field.width * x, field.y + field.height * y, radius);
     }
 
-    private drawFallbackTerrain(state: SimulationState, layout: CombatLayout): void {
+    private drawFallbackTerrain(state: CombatRenderState, layout: CombatLayout): void {
         const g = this.background;
         const field = layout.battlefield;
         const cellX = state.terrain.cellSize * layout.worldScaleX;

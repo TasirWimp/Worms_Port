@@ -427,6 +427,36 @@ input {
     pointer-events: none;
 }
 
+.combat-v8 .v8-extra {
+    position: absolute;
+    pointer-events: auto;
+    min-width: 48px;
+    min-height: 48px;
+    padding: 4px;
+    color: #1f2348;
+    background: rgb(255 255 255 / 92%);
+    border: 2px solid #5f4b8b;
+    border-radius: 14px;
+    font-weight: 800;
+    touch-action: none;
+}
+
+.combat-v8 .v8-extra:disabled { opacity: 0.45; }
+
+/* V8 uses a plain label, not the legacy icon/text/caret grid. */
+.combat-v8 .combat-actions .relic-trigger {
+    display: block;
+    padding: 0.2rem 0.1rem;
+    white-space: normal;
+    overflow-wrap: anywhere;
+    line-height: 1.15;
+}
+
+.combat-v8[data-orientation='portrait'] .combat-message {
+    top: calc(max(8px, var(--safe-area-top)) + 52px);
+    bottom: auto;
+}
+
 .combat-unit-status[hidden] {
     display: none;
 }

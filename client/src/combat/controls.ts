@@ -7,9 +7,254 @@ import {
     type SimulationUnit
 } from '../../../shared/simulation';
 import { activeSidewaysMode, clientPointToGame } from '../lib/sideways';
-import { CombatInputController } from './input';
+import { CombatInputController, ActionTurnsInputController } from './input';
 import type { AimIntent } from './input';
-import { computeActorStatusLayout, type CombatLayout } from './layout';
+import { computeActorStatusLayout, computeV8ExtraControls, type CombatLayout } from './layout';
+import type { ChallengeSnapshotV8 } from '../../../shared/protocol-v8';
+import type { SimulationIntentV8 } from '../../../shared/simulation-v8';
+
+type ControlsCallbacksV8 = {
+    onIntent: (intent: SimulationIntentV8) => void;
+    onCancel: () => void;
+    onAimPreview: (aim: AimIntent | null) => void;
+    onPause: (paused: boolean) => void;
+};
+
+/** V8 has continuous owned input, not the legacy accepted-command animation queue. */
+export class ActionTurnsControls {
+    public readonly input = new ActionTurnsInputController();
+    public readonly root: HTMLDivElement;
+    private snapshot: ChallengeSnapshotV8;
+    private busy = false;
+    private suspended = false;
+    private direction: -1 | 0 | 1 = 0;
+    private jumpPointer?: number;
+    private layout?: CombatLayout;
+    private chooserOpen = false;
+
+    constructor(parent: HTMLElement, snapshot: ChallengeSnapshotV8, private readonly callbacks: ControlsCallbacksV8) {
+        this.snapshot = snapshot;
+        this.root = document.createElement('div');
+        this.root.className = 'combat-ui combat-v8';
+        this.root.dataset.ruleset = snapshot.rulesetId;
+        this.root.innerHTML = `
+            <section class="combat-status"><strong class="combat-turn" aria-live="polite"></strong><span class="combat-timer"></span></section>
+            <div class="combat-unit-status player-status" data-unit="player" role="group"><span class="unit-status-name">You</span><strong class="unit-status-value"></strong></div>
+            <div class="combat-unit-status loomkeeper-status" data-unit="loomkeeper" role="group"><span class="unit-status-name">Loomkeeper</span><strong class="unit-status-value"></strong></div>
+            <button type="button" class="pause-button">Pause</button>
+            <div class="combat-touch-zone movement-zone" role="group" aria-label="Movement pad. Hold to walk, release to stop."><span class="pad-label">Hold to walk</span><span class="pad-ring"></span><span class="pad-knob"></span></div>
+            <div class="combat-touch-zone aim-zone" role="group" aria-label="Aim and power pad"><span class="pad-label">Aim · release locks</span><span class="pad-ring"></span><span class="pad-knob"></span></div>
+            <button type="button" class="jump-button v8-extra" aria-label="Jump forward">Jump</button>
+            <button type="button" class="face-left v8-extra" aria-label="Face left">←</button>
+            <button type="button" class="face-right v8-extra" aria-label="Face right">→</button>
+            <nav class="combat-actions" aria-label="Combat actions"><button type="button" class="relic-trigger" aria-expanded="false">Threadball</button><div class="relic-chooser" role="group" aria-label="Choose Relic" hidden></div><button type="button" class="fire-button">Fire</button></nav>
+            <div class="combat-message" aria-live="polite"></div>`;
+        parent.appendChild(this.root);
+        for (const relicId of RELIC_IDS) {
+            const button = actionButton(this.element('.relic-chooser'), relicName(relicId), `relic-button relic-${relicId}`);
+            button.dataset.relic = relicId;
+            button.setAttribute('aria-label', `Select ${relicName(relicId)}`);
+            button.addEventListener('click', () => {
+                if (!this.canOffend()) return;
+                this.chooserOpen = false;
+                this.callbacks.onIntent({ type: 'select_relic', relicId });
+            });
+        }
+        this.button('.relic-trigger').addEventListener('click', () => {
+            if (!this.canOffend()) return; this.chooserOpen = !this.chooserOpen; this.refresh();
+        });
+        this.button('.fire-button').addEventListener('click', () => {
+            if (!this.canOffend() || !this.snapshot.simulation.aim || this.input.phase !== 'aim_locked') return;
+            this.callbacks.onIntent({ type: 'fire', aimId: this.snapshot.simulation.aimId });
+        });
+        for (const [selector, direction] of [['.face-left', -1], ['.face-right', 1]] as const) {
+            this.button(selector).addEventListener('click', () => {
+                if (this.canMove() && !this.input.ownedPointer()) this.callbacks.onIntent({ type: 'face', direction });
+            });
+        }
+        const jump = this.button('.jump-button');
+        jump.addEventListener('pointerdown', (event) => {
+            if (event.button > 0 || !this.canMove() || this.input.ownedPointer()) return;
+            this.jumpPointer = event.pointerId;
+            try { jump.setPointerCapture(event.pointerId); } catch {}
+        });
+        // Normal release commits one impulse; it must not send the movement-pad neutral barrier.
+        jump.addEventListener('pointerup', (event) => {
+            const owned = this.jumpPointer === event.pointerId;
+            this.jumpPointer = undefined;
+            if (owned && this.canMove() && !this.input.ownedPointer() && this.snapshot.simulation.units[0].grounded) {
+                this.callbacks.onIntent({ type: 'jump' });
+            }
+            try { jump.releasePointerCapture(event.pointerId); } catch {}
+        });
+        for (const eventName of ['pointercancel', 'lostpointercapture']) jump.addEventListener(eventName, () => {
+            if (this.jumpPointer === undefined) return;
+            this.interrupt(); this.callbacks.onCancel();
+        });
+        this.button('.pause-button').addEventListener('click', () => {
+            if (this.canPause()) this.callbacks.onPause(!this.snapshot.paused);
+        });
+        this.bindPad('movement'); this.bindPad('aim'); this.update(snapshot);
+    }
+
+    public update(snapshot: ChallengeSnapshotV8): void {
+        this.snapshot = snapshot;
+        if (this.input.synchronize(snapshot)) { this.direction = 0; this.jumpPointer = undefined; this.resetPads(); }
+        this.input.syncAuthoritativeAim(snapshot.simulation.aim);
+        this.refresh();
+    }
+    public setBusy(busy: boolean): void { this.busy = busy; this.refresh(); }
+    public setSuspended(suspended: boolean): void {
+        if (suspended && !this.suspended) this.interrupt();
+        this.suspended = suspended; this.refresh();
+    }
+    public interrupt(): void {
+        this.input.interrupt(); this.direction = 0; this.jumpPointer = undefined;
+        this.chooserOpen = false; this.resetPads(); this.callbacks.onAimPreview(null); this.refresh();
+    }
+    public setMessage(message: string): void { this.element('.combat-message').textContent = message; }
+    public setLayout(layout: CombatLayout): void {
+        this.layout = layout;
+        const extra = computeV8ExtraControls(layout);
+        for (const [selector, rect] of [
+            ['.movement-zone', layout.movementZone], ['.aim-zone', layout.aimZone],
+            ['.combat-actions', layout.actionZone], ['.combat-status', layout.statusZone],
+            ['.pause-button', layout.pauseZone], ['.jump-button', extra.jump],
+            ['.face-left', extra.faceLeft], ['.face-right', extra.faceRight]
+        ] as const) place(this.element(selector), rect);
+        this.root.dataset.orientation = layout.orientation;
+        this.root.dataset.battlefieldWidth = String(layout.battlefield.width);
+        this.root.dataset.battlefieldHeight = String(layout.battlefield.height);
+    }
+    public setUnitPositions(units: readonly SimulationUnit[]): void {
+        if (!this.layout) return;
+        const positions = computeActorStatusLayout(this.layout, units);
+        placeOptional(this.element('.player-status'), positions.player);
+        placeOptional(this.element('.loomkeeper-status'), positions.loomkeeper);
+    }
+    public destroy(): void { this.root.remove(); }
+
+    private bindPad(kind: 'movement' | 'aim'): void {
+        const zone = this.element(`.${kind}-zone`);
+        zone.addEventListener('pointerdown', (event) => {
+            if (event.button > 0 || this.jumpPointer !== undefined ||
+                !(kind === 'movement' ? this.canMove() : this.canOffend())) return;
+            event.preventDefault();
+            const point = this.point(event);
+            if (!this.input.begin(kind, event.pointerId, point, 48)) return;
+            try { zone.setPointerCapture(event.pointerId); } catch {}
+            zone.style.setProperty('--pad-x', `${point.x - Number.parseFloat(zone.style.left)}px`);
+            zone.style.setProperty('--pad-y', `${point.y - Number.parseFloat(zone.style.top)}px`);
+            zone.classList.add('is-active'); this.refresh();
+        });
+        zone.addEventListener('pointermove', (event) => {
+            const owner = this.input.ownedPointer();
+            if (!owner || owner.id !== event.pointerId || owner.kind !== kind) return;
+            event.preventDefault(); const point = this.point(event); this.input.move(event.pointerId, point);
+            const dx = point.x - owner.origin.x; const dy = point.y - owner.origin.y;
+            const factor = Math.min(1, owner.radius / (Math.hypot(dx, dy) || 1));
+            zone.querySelector<HTMLElement>('.pad-knob')!.style.transform =
+                `translate(calc(-50% + ${dx * factor}px), calc(-50% + ${dy * factor}px))`;
+            if (kind === 'aim') this.callbacks.onAimPreview(this.input.aimIntent());
+            else {
+                const next = this.input.movementDirection();
+                if (next !== this.direction) {
+                    if (this.direction !== 0) {
+                        // Direction reversal is a new gesture, never a queued post-barrier start.
+                        this.interrupt(); this.callbacks.onCancel();
+                    } else if (next !== 0 && !this.busy) {
+                        this.direction = next; this.callbacks.onIntent({ type: 'walk_start', direction: next });
+                    }
+                }
+            }
+        });
+        zone.addEventListener('pointerup', (event) => {
+            const owner = this.input.ownedPointer();
+            if (!owner || owner.id !== event.pointerId || owner.kind !== kind) return;
+            event.preventDefault();
+            if (kind === 'movement') {
+                this.input.releaseMovement(event.pointerId); this.interrupt(); this.callbacks.onCancel();
+            } else {
+                this.input.move(event.pointerId, this.point(event));
+                const rect = zone.getBoundingClientRect();
+                const inside = event.clientX >= rect.left && event.clientX <= rect.right &&
+                    event.clientY >= rect.top && event.clientY <= rect.bottom;
+                const command = this.input.end(event.pointerId, inside);
+                this.resetPads();
+                if (command?.type === 'aim') this.callbacks.onIntent(command);
+                else { this.interrupt(); this.callbacks.onCancel(); }
+            }
+            try { zone.releasePointerCapture(event.pointerId); } catch {}
+            this.refresh();
+        });
+        for (const name of ['pointercancel', 'lostpointercapture']) zone.addEventListener(name, (event: PointerEvent) => {
+            if (this.input.ownedPointer()?.id !== event.pointerId) return;
+            this.interrupt(); this.callbacks.onCancel();
+        });
+    }
+    private canMove(): boolean {
+        const s = this.snapshot.simulation;
+        return !this.busy && !this.suspended && !this.snapshot.paused && this.snapshot.status === 'active' &&
+            s.activeActor === 'player' && (s.phase === 'action' || s.phase === 'retreat');
+    }
+    private canOffend(): boolean {
+        const s = this.snapshot.simulation;
+        return this.canMove() && s.phase === 'action' && s.heldDirection === 0 &&
+            this.input.ownedPointer()?.kind !== 'movement' &&
+            [s.units[0], s.units[1]].every((unit) => unit.alive && unit.grounded && unit.vxFp === 0 && unit.vyFp === 0);
+    }
+    private canPause(): boolean {
+        return !this.busy && !this.suspended && this.snapshot.mode === 'practice' && this.snapshot.status === 'active' &&
+            this.snapshot.simulation.activeActor === 'player' && this.snapshot.simulation.phase === 'action' &&
+            [this.snapshot.simulation.units[0], this.snapshot.simulation.units[1]].every((unit) => unit.alive && unit.grounded);
+    }
+    private refresh(): void {
+        const s = this.snapshot.simulation; const canMove = this.canMove(); const offense = this.canOffend();
+        const phase = { action: 'Action', projectile: 'Cast in flight', settling: 'Settling',
+            retreat: 'Retreat · movement only', finished: 'Clash complete' }[s.phase];
+        this.element('.combat-turn').textContent = this.snapshot.paused ? 'Practice paused' :
+            `${s.activeActor === 'player' ? 'Your' : 'Loomkeeper'} · ${phase}`;
+        this.element('.combat-timer').textContent = s.phase === 'action' || s.phase === 'retreat'
+            ? `${Math.max(0, Math.ceil((s.phaseDeadlineTick - s.tick) / 30))}s` : phase;
+        Object.assign(this.root.dataset, { phase: this.input.phase, combatPhase: s.phase,
+            simulationTick: String(s.tick), revision: String(s.revision), inputEpoch: String(s.inputEpoch),
+            turn: String(s.turn), activeActor: s.activeActor, playerX: String(s.units[0].xFp / 256),
+            playerY: String(s.units[0].yFp / 256), playerXFp: String(s.units[0].xFp),
+            playerGrounded: String(s.units[0].grounded), playerFacing: s.units[0].facing < 0 ? 'left' : 'right',
+            heldDirection: String(s.heldDirection), selectedRelic: s.selectedRelic,
+            paused: String(this.snapshot.paused), suspended: String(this.suspended),
+            commandControls: String(canMove), challengeId: this.snapshot.challengeId, mode: this.snapshot.mode });
+        for (const [selector, unit] of [['.player-status', s.units[0]], ['.loomkeeper-status', s.units[1]]] as const) {
+            this.element(selector).setAttribute('aria-label', `${unit.id === 'player' ? 'Player' : 'Loomkeeper'} Stitching ${unit.stitching} of 100`);
+            this.element(`${selector} .unit-status-value`).textContent = String(unit.stitching);
+        }
+        this.element('.movement-zone').setAttribute('aria-disabled', String(!canMove));
+        this.element('.aim-zone').setAttribute('aria-disabled', String(!offense));
+        this.button('.jump-button').disabled = !canMove || !s.units[0].grounded || Boolean(this.input.ownedPointer());
+        this.button('.face-left').disabled = this.button('.face-right').disabled = !canMove || Boolean(this.input.ownedPointer());
+        this.button('.fire-button').disabled = !offense || !s.aim || this.input.phase !== 'aim_locked';
+        this.button('.pause-button').disabled = !this.canPause();
+        this.button('.pause-button').textContent = this.snapshot.paused ? 'Resume' : 'Pause';
+        this.button('.pause-button').setAttribute('aria-label', this.snapshot.paused ? 'Resume Practice' : 'Pause Practice');
+        this.button('.relic-trigger').disabled = !offense;
+        this.button('.relic-trigger').textContent = relicName(s.selectedRelic);
+        this.button('.relic-trigger').setAttribute('aria-expanded', String(this.chooserOpen));
+        this.element('.relic-chooser').hidden = !this.chooserOpen || !offense;
+        for (const button of this.root.querySelectorAll<HTMLButtonElement>('.relic-button')) button.disabled = !offense;
+    }
+    private resetPads(): void {
+        for (const zone of this.root.querySelectorAll<HTMLElement>('.combat-touch-zone')) {
+            zone.classList.remove('is-active'); zone.style.removeProperty('--pad-x'); zone.style.removeProperty('--pad-y');
+            zone.querySelector<HTMLElement>('.pad-knob')!.style.transform = 'translate(-50%, -50%)';
+        }
+    }
+    private point(event: PointerEvent): { x: number; y: number } {
+        const game = this.root.parentElement!;
+        return clientPointToGame({ x: event.clientX, y: event.clientY }, game.getBoundingClientRect(), activeSidewaysMode());
+    }
+    private element(selector: string): HTMLElement { return this.root.querySelector<HTMLElement>(selector)!; }
+    private button(selector: string): HTMLButtonElement { return this.root.querySelector<HTMLButtonElement>(selector)!; }
+}
 
 type CombatControlsCallbacks = {
     onCommand: (command: SimulationCommand) => void;

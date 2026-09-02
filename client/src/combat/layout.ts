@@ -28,6 +28,14 @@ const ACTION_WIDTH = 212;
 const ACTION_HEIGHT = 56;
 const STATUS_HEIGHT = 46;
 
+export function computeV8ExtraControls(layout: CombatLayout): { jump: Rect; faceLeft: Rect; faceRight: Rect } {
+    // One extra row above the pads, away from the centre Relic/Fire strip.
+    const y = layout.movementZone.y - 56;
+    return { jump: { x: layout.movementZone.x, y, width: 104, height: 48 },
+        faceLeft: { x: layout.aimZone.x + layout.aimZone.width - 104, y, width: 48, height: 48 },
+        faceRight: { x: layout.aimZone.x + layout.aimZone.width - 48, y, width: 48, height: 48 } };
+}
+
 export function computeCombatLayout(
     width: number,
     height: number,

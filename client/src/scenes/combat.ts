@@ -10,15 +10,17 @@ import {
     type SimulationActor,
     type SimulationState
 } from '../../../shared/simulation';
-import { CombatControls } from '../combat/controls';
+import { CombatControls, ActionTurnsControls } from '../combat/controls';
 import type { AimIntent } from '../combat/input';
 import {
     WIZARD_UNRAVEL_DURATION_MS,
     createApprovedWizardAnimations,
     preloadApprovedCombatAssets
 } from '../combat/approved-assets';
-import type { CombatSceneArgs, SafeAreaInsets } from '../combat/contracts';
-import { createCombatFixture } from '../combat/fixture';
+import type { CombatSceneArgs, LegacyCombatSceneArgs, CombatSceneArgsV8, SafeAreaInsets } from '../combat/contracts';
+import { createCombatFixture, createActionTurnsV8Fixture } from '../combat/fixture';
+import type { ChallengeSnapshotV8 } from '../../../shared/protocol-v8';
+import type { SimulationIntentV8 } from '../../../shared/simulation-v8';
 import { canRequestFullscreen, toggleGameFullscreen } from '../combat/fullscreen';
 import { activeSidewaysMode, clientPointToGame } from '../lib/sideways';
 import {
@@ -37,9 +39,11 @@ import { computeCombatLayout, type CombatLayout } from '../combat/layout';
 import {
     planCombatPresentation,
     presentationLabel,
+    V8SnapshotBuffer,
+    projectCombatV8,
     type CombatPresentationStep
 } from '../combat/presentation';
-import { trajectoryPreview } from '../combat/preview';
+import { trajectoryPreview, trajectoryPreviewV8 } from '../combat/preview';
 import { CombatRenderer, type CombatVisualPhase } from '../combat/renderer';
 
 const MAX_PRESENTATION_SNAPSHOTS = 32;
@@ -55,7 +59,10 @@ type CameraTransition = Readonly<{
 }>;
 
 export default class CombatScene extends Phaser.Scene {
-    private args: CombatSceneArgs;
+    private args: LegacyCombatSceneArgs;
+    private v8Args?: CombatSceneArgsV8;
+    private v8Preview = false;
+    private initializationGeneration = 0;
     private snapshot: ChallengeSnapshot;
     private authoritativeSnapshot: ChallengeSnapshot;
     private combatRenderer: CombatRenderer;
@@ -97,7 +104,11 @@ export default class CombatScene extends Phaser.Scene {
     }
 
     public init(args?: CombatSceneArgs): void {
-        this.args = args?.snapshot ? args : createCombatFixture();
+        this.initializationGeneration++;
+        this.v8Args = args?.kind === 'v8' ? args : undefined;
+        this.v8Preview = !args?.snapshot && new URLSearchParams(window.location.search).get('combat-preview') === 'v8';
+        if (this.v8Args || this.v8Preview) return;
+        this.args = args?.snapshot && args.kind !== 'v8' ? args : createCombatFixture();
         this.snapshot = structuredClone(this.args.snapshot);
         this.authoritativeSnapshot = structuredClone(this.args.snapshot);
         this.renderState = cloneSimulation(this.snapshot.simulation as SimulationState);
@@ -116,6 +127,10 @@ export default class CombatScene extends Phaser.Scene {
     }
 
     public create(): void {
+        if (this.v8Args || this.v8Preview) {
+            void this.createV8();
+            return;
+        }
         const parent = document.getElementById('game');
         if (!parent) throw new Error('Combat scene requires the #game host.');
         createApprovedWizardAnimations(this);
@@ -202,6 +217,16 @@ export default class CombatScene extends Phaser.Scene {
 
     public preload(): void {
         preloadApprovedCombatAssets(this);
+    }
+
+    private async createV8(): Promise<void> {
+        const generation = this.initializationGeneration;
+        let mounted = true;
+        this.events.once(Phaser.Scenes.Events.SHUTDOWN, () => { mounted = false; });
+        const args = this.v8Args ?? await createActionTurnsV8Fixture();
+        if (!mounted || generation !== this.initializationGeneration || !this.scene.isActive()) return;
+        const controller = new ActionTurnsScene(this, args);
+        this.events.once(Phaser.Scenes.Events.SHUTDOWN, () => controller.destroy());
     }
 
     private async submit(command: SimulationCommand): Promise<void> {
@@ -945,6 +970,231 @@ export default class CombatScene extends Phaser.Scene {
         }).then(() => {
             if (epoch !== this.presentationEpoch) return;
         });
+    }
+}
+
+/** An explicit V8 presentation branch; legacy result/snapshot schemas stay untouched. */
+class ActionTurnsScene {
+    private readonly buffer = new V8SnapshotBuffer();
+    private readonly controls: ActionTurnsControls;
+    private readonly renderer: CombatRenderer;
+    private readonly cleanup: (() => void)[] = [];
+    private snapshot: ChallengeSnapshotV8;
+    private camera: CombatCamera;
+    private layout: CombatLayout;
+    private preview: { x: number; y: number }[] = [];
+    private previewGeneration = 0;
+    private requestGeneration = 0;
+    private normalPending = false;
+    private neutralPending = false;
+    private connected = true;
+    private focused = true;
+    private stale = false;
+    private terminal = false;
+    private destroyed = false;
+    private frameId?: number;
+    private cameraPointer?: { id: number; x: number; left: number };
+
+    constructor(private readonly scene: Phaser.Scene, private readonly args: CombatSceneArgsV8) {
+        this.snapshot = structuredClone(args.snapshot);
+        this.buffer.accept(this.snapshot, performance.now());
+        const state = projectCombatV8(this.snapshot.simulation);
+        this.camera = cameraForActor(state, createCombatCamera(state), state.activeActor);
+        createApprovedWizardAnimations(scene);
+        this.renderer = new CombatRenderer(scene);
+        this.controls = new ActionTurnsControls(document.getElementById('game')!, this.snapshot, {
+            onIntent: (intent) => void this.submit(intent), onCancel: () => void this.neutralize(),
+            onAimPreview: (aim) => void this.aim(aim), onPause: (paused) => void this.pause(paused)
+        });
+        this.controls.root.dataset.visualAssets = this.renderer.assetState;
+        if (args.previewLabel) this.controls.root.dataset.preview = args.previewLabel;
+        this.controls.setMessage(args.previewLabel ?? '');
+        if (args.onSnapshot) this.cleanup.push(args.onSnapshot((next) => this.accept(next)));
+        if (args.onResult) this.cleanup.push(args.onResult((result) => {
+            if (result.challengeId !== this.snapshot.challengeId) return;
+            this.terminal = true; this.interrupt(); this.controls.setSuspended(true);
+            this.controls.setMessage(`Clash ended · ${result.outcome.replaceAll('_', ' ')}`);
+        }));
+        if (args.onConnection) this.cleanup.push(args.onConnection((connection) => {
+            this.connected = connection === 'connected';
+            if (!this.connected) { this.interrupt(); void this.neutralize(); }
+            this.suspension();
+        }));
+        if (args.onUnavailable) this.cleanup.push(args.onUnavailable((message) => {
+            this.terminal = true; this.interrupt(); this.suspension(); this.controls.setMessage(message);
+        }));
+        if (args.onError) this.cleanup.push(args.onError((message) => this.controls.setMessage(message)));
+        this.listen(window, 'blur', () => { this.focused = false; this.interrupt(); void this.neutralize(); this.suspension(); });
+        this.listen(window, 'focus', () => { this.focused = true; this.suspension(); });
+        this.listen(window, 'nimble-knots:wallet-boundary', () => { this.interrupt(); void this.neutralize(); });
+        this.listen(document, 'visibilitychange', () => {
+            this.interrupt(); void this.neutralize(); this.suspension();
+        });
+        const resize = () => { this.interrupt(); void this.neutralize(); this.resize(); };
+        this.listen(window, 'resize', resize); this.listen(window, 'orientationchange', resize);
+        if (window.visualViewport) {
+            this.listen(window.visualViewport, 'resize', resize); this.listen(window.visualViewport, 'scroll', resize);
+        }
+        scene.scale.on(Phaser.Scale.Events.RESIZE, resize);
+        this.cleanup.push(() => scene.scale.off(Phaser.Scale.Events.RESIZE, resize));
+        const canvas = scene.game.canvas;
+        this.listen(canvas, 'pointerdown', (event: PointerEvent) => {
+            if (event.button > 0 || !this.available()) return;
+            const point = this.point(event); const field = this.layout.battlefield;
+            if (point.y < field.y || point.y > field.y + field.height) return;
+            this.cameraPointer = { id: event.pointerId, x: point.x, left: this.camera.left };
+            try { canvas.setPointerCapture(event.pointerId); } catch {}
+        });
+        this.listen(canvas, 'pointermove', (event: PointerEvent) => {
+            if (this.cameraPointer?.id !== event.pointerId) return;
+            this.camera = clampCombatCamera(state, { ...this.camera,
+                left: this.cameraPointer.left - (this.point(event).x - this.cameraPointer.x) / this.layout.worldScaleX });
+        });
+        this.listen(canvas, 'pointerup', () => { this.cameraPointer = undefined; });
+        for (const event of ['pointercancel', 'lostpointercapture']) this.listen(canvas, event, () => {
+            if (!this.cameraPointer) return;
+            this.interrupt(); void this.neutralize();
+        });
+        this.resize();
+        const frame = () => {
+            if (this.destroyed) return;
+            this.render(); this.frameId = window.requestAnimationFrame(frame);
+        };
+        frame();
+    }
+
+    public destroy(): void {
+        this.destroyed = true; this.interrupt();
+        void this.args.cancelInput().catch(() => {});
+        if (this.frameId !== undefined) window.cancelAnimationFrame(this.frameId);
+        for (const remove of this.cleanup.splice(0)) remove();
+        this.controls.destroy(); this.renderer.destroy();
+    }
+
+    private accept(next: ChallengeSnapshotV8): void {
+        if (this.destroyed) return;
+        const outcome = this.buffer.accept(next, performance.now());
+        if (!outcome.accepted) return;
+        if (outcome.boundary) { this.requestGeneration++; this.interrupt(); }
+        const old = this.snapshot;
+        this.snapshot = structuredClone(next);
+        if (next.challengeId !== old.challengeId) this.terminal = false;
+        if (next.simulation.activeActor !== old.simulation.activeActor || next.challengeId !== old.challengeId ||
+            (next.simulation.phase !== old.simulation.phase &&
+                (next.simulation.phase === 'retreat' || next.simulation.phase === 'action'))) {
+            const state = projectCombatV8(next.simulation);
+            this.camera = cameraForActor(state, createCombatCamera(state), state.activeActor);
+        }
+        this.controls.update(next);
+        this.stale = this.buffer.frame(performance.now()).stale; this.suspension();
+        // Phase and terminal facts reach the renderer in this callback, never a queued shot.
+        this.render();
+    }
+
+    private async submit(intent: SimulationIntentV8): Promise<void> {
+        if (!this.available() || this.normalPending || this.neutralPending) return;
+        const generation = this.requestGeneration;
+        const challenge = this.snapshot.challengeId;
+        this.normalPending = true; this.busy();
+        this.controls.root.dataset.lastCommand = intent.type;
+        if (intent.type !== 'aim') { this.previewGeneration++; this.preview = []; }
+        try {
+            const next = await this.args.submitIntent(intent);
+            if (!this.destroyed && generation === this.requestGeneration && this.snapshot.challengeId === challenge) this.accept(next);
+        } catch (error) {
+            if (!this.destroyed && generation === this.requestGeneration && this.snapshot.challengeId === challenge) {
+                this.controls.setMessage(error instanceof Error ? error.message : 'Intent failed.');
+                this.interrupt(); void this.neutralize();
+            }
+        } finally { this.normalPending = false; if (!this.destroyed) this.busy(); }
+    }
+
+    private async neutralize(): Promise<void> {
+        this.interrupt(); this.requestGeneration++;
+        if (this.neutralPending || this.destroyed) return;
+        const challenge = this.snapshot.challengeId;
+        this.neutralPending = true; this.busy();
+        try { const next = await this.args.cancelInput(); if (next && !this.destroyed && this.snapshot.challengeId === challenge) this.accept(next); }
+        catch { /* Server lease also bounds a lost barrier; transport owns resynchronization. */ }
+        finally { this.neutralPending = false; if (!this.destroyed) this.busy(); }
+    }
+
+    private async pause(paused: boolean): Promise<void> {
+        if (!this.args.setPaused || this.normalPending || this.neutralPending) return;
+        const challenge = this.snapshot.challengeId;
+        const turn = this.snapshot.simulation.turn;
+        const phase = this.snapshot.simulation.phase;
+        await this.neutralize();
+        if (this.destroyed || challenge !== this.snapshot.challengeId || turn !== this.snapshot.simulation.turn ||
+            phase !== this.snapshot.simulation.phase) return;
+        const generation = this.requestGeneration;
+        this.normalPending = true; this.busy();
+        try {
+            const next = await this.args.setPaused(paused);
+            if (!this.destroyed && generation === this.requestGeneration && challenge === this.snapshot.challengeId) this.accept(next);
+        } catch (error) {
+            if (!this.destroyed && generation === this.requestGeneration && challenge === this.snapshot.challengeId) {
+                this.controls.setMessage(error instanceof Error ? error.message : 'Pause failed.');
+            }
+        }
+        finally { this.normalPending = false; if (!this.destroyed) this.busy(); }
+    }
+
+    private async aim(aim: AimIntent | null): Promise<void> {
+        const generation = ++this.previewGeneration;
+        if (!aim) { this.preview = []; return; }
+        const points = await trajectoryPreviewV8(this.snapshot.simulation, aim);
+        if (generation !== this.previewGeneration || this.destroyed) return;
+        this.preview = points;
+        const end = points.at(-1);
+        if (end) this.camera = revealCombatCameraPoint(this.snapshot.simulation, this.camera, end.x);
+    }
+
+    private interrupt(): void {
+        this.previewGeneration++; this.preview = []; this.cameraPointer = undefined;
+        this.buffer.flush(); this.controls?.interrupt();
+    }
+
+    private available(): boolean {
+        return this.connected && this.focused && !document.hidden && !this.stale && !this.terminal &&
+            this.snapshot.status === 'active' && !this.snapshot.paused;
+    }
+    private suspension(): void {
+        this.controls.setSuspended(!this.connected || !this.focused || document.hidden || this.stale || this.terminal);
+    }
+    private busy(): void { this.controls.setBusy(this.normalPending || this.neutralPending); }
+    private resize(): void {
+        this.layout = computeCombatLayout(this.scene.scale.width, this.scene.scale.height, readSafeArea(), this.camera);
+        this.controls.setLayout(this.layout);
+    }
+    private render(): void {
+        if (!this.layout || this.destroyed) return;
+        const frame = this.buffer.frame(performance.now());
+        if (frame.stale && !this.stale) { this.stale = true; void this.neutralize(); this.suspension(); }
+        const s = this.snapshot.simulation;
+        let visual: CombatVisualPhase | undefined;
+        let trace: { x: number; y: number }[] = [];
+        if (!this.terminal && s.projectile) {
+            trace = [...s.projectile.trace, { x: s.projectile.xFp / 256, y: s.projectile.yFp / 256 }];
+            visual = { kind: 'projectile', actor: s.projectile.actor, relicId: s.projectile.relicId, trace };
+            this.camera = focusCombatCamera(s, this.camera, trace.at(-1)!.x);
+        } else if (!this.terminal && [s.units[0], s.units[1]].some((unit) => unit.vxFp !== 0 || unit.vyFp !== 0)) {
+            visual = { kind: 'movement', actor: s.activeActor };
+            this.camera = revealCombatCameraPoint(s, this.camera, frame.state.units[s.activeActor === 'player' ? 0 : 1].x);
+        }
+        this.layout = { ...this.layout, camera: this.camera };
+        this.controls.setLayout(this.layout); this.controls.setUnitPositions(frame.state.units);
+        Object.assign(this.controls.root.dataset, { interpolationSamples: String(this.buffer.sampleCount),
+            renderPlayerX: String(frame.state.units[0].x), cameraLeft: String(this.camera.left),
+            cameraWidth: String(this.camera.width), previewPoints: String(this.preview.length),
+            presentation: visual?.kind ?? 'none' });
+        this.renderer.render(frame.state, this.layout, this.preview, trace, visual);
+    }
+    private point(event: PointerEvent): { x: number; y: number } {
+        return clientPointToGame({ x: event.clientX, y: event.clientY }, document.getElementById('game')!.getBoundingClientRect(), activeSidewaysMode());
+    }
+    private listen(target: EventTarget, event: string, listener: (event: any) => void): void {
+        target.addEventListener(event, listener); this.cleanup.push(() => target.removeEventListener(event, listener));
     }
 }
 

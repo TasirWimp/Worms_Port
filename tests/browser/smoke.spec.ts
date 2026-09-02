@@ -1,5 +1,16 @@
 import { expect, test } from '@playwright/test';
 
+test('V8 engineering preview does not replace ordinary wallet-free V7 Practice', async ({ page }) => {
+  await page.goto('/?combat-preview=v8&sideways=off');
+  await expect(page.locator('.combat-v8')).toBeVisible();
+  await page.goto('/?sideways=off');
+  await page.getByRole('button', { name: 'Start Practice' }).tap();
+  await expect(page.locator('.combat-ui')).toBeVisible();
+  await expect(page.locator('.combat-v8')).toHaveCount(0);
+  await expect(page.locator('.movement-zone')).toHaveAttribute('aria-label', /8 of 8 steps remaining/);
+  await expect(page.locator('.jump-button')).toHaveCount(0);
+});
+
 test('built phone journey starts wallet-free live practice and accepts touch', async ({ page }) => {
   const pageErrors: string[] = [];
   const consoleErrors: string[] = [];

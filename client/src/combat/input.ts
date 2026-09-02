@@ -1,5 +1,6 @@
 import type { SimulationCommand } from '../../../shared/simulation';
 import type { Point } from './contracts';
+import type { ChallengeSnapshotV8 } from '../../../shared/protocol-v8';
 
 export type CombatInputPhase =
     | 'idle'
@@ -172,4 +173,32 @@ export class CombatInputController {
                 : Math.round(Math.min(1, distance / owner.radius) * 1000)
         };
     }
+}
+
+/** Gesture ownership only: neither a lease nor simulated movement lives here. */
+export class ActionTurnsInputController extends CombatInputController {
+    private boundary?: string;
+
+    public synchronize(snapshot: ChallengeSnapshotV8): boolean {
+        const next = inputBoundaryV8(snapshot);
+        const changed = this.boundary !== undefined && next !== this.boundary;
+        this.boundary = next;
+        if (changed) this.interrupt();
+        return changed;
+    }
+
+    public releaseMovement(pointerId: number): boolean {
+        return this.ownedPointer()?.kind === 'movement' && this.cancel(pointerId);
+    }
+
+    public interrupt(): void {
+        this.cancel();
+        this.clearAim();
+    }
+}
+
+export function inputBoundaryV8(snapshot: ChallengeSnapshotV8): string {
+    const state = snapshot.simulation;
+    return [snapshot.challengeId, state.turn, state.activeActor, state.phase,
+        state.inputEpoch, snapshot.paused, snapshot.status].join(':');
 }

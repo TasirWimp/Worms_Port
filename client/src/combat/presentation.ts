@@ -1,6 +1,71 @@
 import type { ChallengeSnapshot } from '../../../shared/protocol';
 import type { RelicId, SimulationActor } from '../../../shared/simulation';
 import { WIZARD_CAST_DURATION_MS } from './approved-assets';
+import type { ChallengeSnapshotV8 } from '../../../shared/protocol-v8';
+import type { SimulationStateV8 } from '../../../shared/simulation-v8';
+import type { SimulationState, SimulationUnit } from '../../../shared/simulation';
+import { inputBoundaryV8 } from './input';
+
+/** A deliberately non-authoritative, version-independent rendering surface. */
+export type CombatRenderState = Pick<SimulationState, 'terrain' | 'units' | 'activeActor' | 'selectedRelic'>;
+
+export function projectCombatV8(state: SimulationStateV8 | ChallengeSnapshotV8['simulation']): CombatRenderState {
+    const unit = (body: SimulationStateV8['units'][number] | ChallengeSnapshotV8['simulation']['units'][0]): SimulationUnit => ({
+        id: body.id, calling: body.calling, x: body.xFp / 256, y: body.yFp / 256,
+        facing: body.facing, stitching: body.stitching, alive: body.alive
+    });
+    return { terrain: state.terrain, activeActor: state.activeActor, selectedRelic: state.selectedRelic,
+        units: [unit(state.units[0]), unit(state.units[1])] };
+}
+
+/** Latest authority wins; interpolation never integrates velocity or delays a phase. */
+export class V8SnapshotBuffer {
+    private samples: { snapshot: ChallengeSnapshotV8; receivedAt: number }[] = [];
+    private progressAt = 0;
+    public get sampleCount(): number { return this.samples.length; }
+
+    public accept(snapshot: ChallengeSnapshotV8, now: number): { accepted: boolean; boundary: boolean } {
+        const previous = this.samples.at(-1);
+        const sameChallenge = previous?.snapshot.challengeId === snapshot.challengeId;
+        if (sameChallenge && snapshot.simulation.revision <= previous.snapshot.simulation.revision) {
+            return { accepted: false, boundary: false };
+        }
+        const boundary = !previous || inputBoundaryV8(previous.snapshot) !== inputBoundaryV8(snapshot);
+        if (boundary || snapshot.simulation.tick > previous.snapshot.simulation.tick) this.progressAt = now;
+        const next = { snapshot: structuredClone(snapshot), receivedAt: now };
+        if (boundary || snapshot.simulation.tick - previous.snapshot.simulation.tick > 3) {
+            this.samples = [next];
+        } else if (snapshot.simulation.tick === previous.snapshot.simulation.tick) {
+            // Revision-only acknowledgements must not restart interpolation or freshness.
+            next.receivedAt = previous.receivedAt;
+            this.samples[this.samples.length - 1] = next;
+        } else {
+            this.samples = [previous, next];
+        }
+        return { accepted: true, boundary };
+    }
+
+    public flush(): void { this.samples = this.samples.slice(-1); }
+
+    public frame(now: number): { state: CombatRenderState; stale: boolean } {
+        const latest = this.samples.at(-1);
+        if (!latest) throw new Error('V8 rendering needs an authoritative snapshot.');
+        const state = projectCombatV8(latest.snapshot.simulation);
+        const previous = this.samples.length === 2 ? this.samples[0] : undefined;
+        if (previous) {
+            const duration = (latest.snapshot.simulation.tick - previous.snapshot.simulation.tick) * 1000 / 30;
+            const amount = Math.max(0, Math.min(1, (now - latest.receivedAt) / duration));
+            for (const i of [0, 1] as const) {
+                const from = previous.snapshot.simulation.units[i];
+                const to = latest.snapshot.simulation.units[i];
+                state.units[i].x = (from.xFp + (to.xFp - from.xFp) * amount) / 256;
+                state.units[i].y = (from.yFp + (to.yFp - from.yFp) * amount) / 256;
+            }
+        }
+        return { state, stale: !latest.snapshot.paused && latest.snapshot.status === 'active' &&
+            now - this.progressAt > 200 };
+    }
+}
 
 export type PresentationPoint = { x: number; y: number };
 

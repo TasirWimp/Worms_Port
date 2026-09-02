@@ -264,6 +264,110 @@ test('touch movement, Relic selection, aim lock, and explicit Fire stay separate
   expect(presentation.maximumProjectilePoints).toBeGreaterThan(1);
 });
 
+test('V8 hold survives snapshots, release stops, forward Jump and separate Fire reveal retreat', async ({ page }, testInfo) => {
+  await page.goto('/?combat-preview=v8&sideways=off');
+  const ui = page.locator('.combat-v8');
+  await expect(ui).toHaveAttribute('data-ruleset', 'nimble-knots-artillery-v8');
+  await expect(ui).toHaveAttribute('data-visual-assets', 'approved-runtime-copies');
+  await expect(page.locator('.fire-button')).toBeDisabled();
+  for (const relic of ['Needlepoint', 'Spoolburst', 'Threadball'] as const) {
+    await selectRelic(page, relic);
+    await expect(page.locator('.relic-trigger')).toHaveText(relic);
+    const fit = await page.locator('.relic-trigger').evaluate((element) => {
+      const box = element.getBoundingClientRect();
+      const range = document.createRange(); range.selectNodeContents(element);
+      return element.scrollWidth <= element.clientWidth && element.scrollHeight <= element.clientHeight &&
+        Array.from(range.getClientRects()).every((line) => line.left >= box.left && line.right <= box.right &&
+          line.top >= box.top && line.bottom <= box.bottom);
+    });
+    expect(fit, `${relic} must be completely readable inside its touch target`).toBe(true);
+  }
+  const messageBox = await page.locator('.combat-message').boundingBox();
+  const actionsBox = await page.locator('.combat-actions').boundingBox();
+  expect(messageBox).not.toBeNull(); expect(actionsBox).not.toBeNull();
+  expect(overlaps(messageBox!, actionsBox!)).toBe(false);
+  await page.screenshot({ path: testInfo.outputPath('v8-portrait-candidate.png') });
+  const tick = Number(await ui.getAttribute('data-simulation-tick'));
+  const start = Number(await ui.getAttribute('data-player-x'));
+  await pointer(page, '.movement-zone', 'pointerdown', 201, 0.5, 0.5);
+  await pointer(page, '.movement-zone', 'pointermove', 201, 2.2, 0.5);
+  await expect(ui).toHaveAttribute('data-held-direction', '1');
+  await expect.poll(async () => Number(await ui.getAttribute('data-simulation-tick'))).toBeGreaterThan(tick + 12);
+  await expect(page.locator('.movement-zone')).toHaveClass(/is-active/);
+  expect(Number(await ui.getAttribute('data-player-x'))).toBeGreaterThan(start);
+  expect(Number(await ui.getAttribute('data-interpolation-samples'))).toBeLessThanOrEqual(2);
+  await pointer(page, '.movement-zone', 'pointerup', 201, 2.2, 0.5);
+  await expect(ui).toHaveAttribute('data-held-direction', '0');
+  const released = Number(await ui.getAttribute('data-player-x'));
+  const releaseTick = Number(await ui.getAttribute('data-simulation-tick'));
+  await expect.poll(async () => Number(await ui.getAttribute('data-simulation-tick'))).toBeGreaterThan(releaseTick + 6);
+  expect(Number(await ui.getAttribute('data-player-x'))).toBe(released);
+  await page.getByRole('button', { name: 'Face left', exact: true }).tap();
+  await expect(ui).toHaveAttribute('data-player-facing', 'left');
+  expect(Number(await ui.getAttribute('data-player-x'))).toBe(released);
+  const jump = page.getByRole('button', { name: 'Jump forward' });
+  const jumpBox = await jump.boundingBox();
+  expect(jumpBox!.width).toBeGreaterThanOrEqual(48); expect(jumpBox!.height).toBeGreaterThanOrEqual(48);
+  await jump.tap();
+  await expect(ui).toHaveAttribute('data-player-grounded', 'false');
+  await expect.poll(async () => Number(await ui.getAttribute('data-player-x'))).toBeLessThan(released - 3);
+  await expect(ui).toHaveAttribute('data-held-direction', '0');
+  await expect(ui).toHaveAttribute('data-player-grounded', 'true', { timeout: 5000 });
+  await dragPad(page, '.aim-zone', 202, 0.3, 0);
+  await expect(page.locator('.fire-button')).toBeEnabled();
+  await expect(ui).toHaveAttribute('data-combat-phase', 'action');
+  await page.locator('.fire-button').tap();
+  await expect(ui).toHaveAttribute('data-combat-phase', 'retreat', { timeout: 6000 });
+  await expect(ui).not.toHaveAttribute('data-presentation', 'projectile');
+  await expect(page.locator('.combat-turn')).toContainText('Retreat');
+  await expect(page.locator('.fire-button')).toBeDisabled();
+  const actorX = Number(await ui.getAttribute('data-player-x'));
+  const left = Number(await ui.getAttribute('data-camera-left'));
+  expect(actorX).toBeGreaterThanOrEqual(left); expect(actorX).toBeLessThanOrEqual(left + 1024);
+});
+
+test('V8 right left off and actual-landscape keep safe touch targets and rotation mapping', async ({ page }, testInfo) => {
+  for (const mode of ['right', 'left', 'off'] as const) {
+    await page.setViewportSize({ width: 390, height: 844 });
+    await page.goto(`/?combat-preview=v8&sideways=${mode}`);
+    const ui = page.locator('.combat-v8');
+    await expect(ui).toBeVisible();
+    if (mode === 'off') await applySyntheticSafeArea(page, SYNTHETIC_SAFE_AREA);
+    else {
+      // The existing helper deliberately expects an unrotated composition.
+      // Inject native insets here, then assert their exact logical rotation.
+      await page.evaluate((native) => {
+        for (const side of ['top', 'right', 'bottom', 'left'] as const) {
+          document.documentElement.style.setProperty(`--native-safe-area-${side}`, `${native[side]}px`);
+        }
+        window.dispatchEvent(new Event('resize'));
+      }, SYNTHETIC_SAFE_AREA);
+      await expect.poll(() => readSafeArea(page)).toEqual(mode === 'right'
+        ? { top: 14, right: 22, bottom: 12, left: 18 }
+        : { top: 12, right: 18, bottom: 14, left: 22 });
+    }
+    await assertControlsFit(page);
+    for (const control of ['.jump-button', '.face-left', '.face-right']) {
+      const box = await page.locator(control).boundingBox();
+      expect(box!.width).toBeGreaterThanOrEqual(48); expect(box!.height).toBeGreaterThanOrEqual(48);
+      expect(box!.x).toBeGreaterThanOrEqual(0); expect(box!.y).toBeGreaterThanOrEqual(0);
+      expect(box!.x + box!.width).toBeLessThanOrEqual(391);
+      expect(box!.y + box!.height).toBeLessThanOrEqual(845);
+    }
+    await pointer(page, '.movement-zone', 'pointerdown', 203, 0.5, 0.5);
+    await pointer(page, '.movement-zone', 'pointermove', 203,
+      mode === 'off' ? 1.8 : 0.5, mode === 'right' ? 1.8 : mode === 'left' ? -0.8 : 0.5);
+    await expect(ui).toHaveAttribute('data-held-direction', '1');
+    await pointer(page, '.movement-zone', 'pointerup', 203, 0.5, 0.5);
+    await expect(ui).toHaveAttribute('data-held-direction', '0');
+    await page.screenshot({ path: testInfo.outputPath(`v8-${mode}-candidate.png`) });
+    await page.setViewportSize({ width: 844, height: 390 });
+    await expect(page.locator('html')).not.toHaveAttribute('data-sideways', /.+/);
+    await expect(ui).toHaveAttribute('data-orientation', 'landscape');
+    await assertControlsFit(page);
+  }
+});
+
 test('current opening survey continuously zooms to the player view', async ({ page }) => {
   await page.emulateMedia({ reducedMotion: 'no-preference' });
   await page.goto('/?combat-preview=1&sideways=off');
