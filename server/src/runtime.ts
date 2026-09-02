@@ -4,6 +4,7 @@ import path from 'path';
 import { Server as SocketIOServer } from 'socket.io';
 
 import { protocolEvents } from '../../shared/protocol';
+import { protocolEventsV8 } from '../../shared/protocol-v8';
 
 import { setup_game_api } from './game/api';
 import {
@@ -125,6 +126,15 @@ export function createRuntimeServer(options: RuntimeServerOptions = {}) {
     };
     sessions = new SessionRegistry({
         ...options.sessionRegistry,
+        // Internal V8 fixtures never enter the legacy reward completion/verifier route.
+        onChallengeSnapshotV8: (snapshot,socketId) => {
+            if (socketId) io.sockets.sockets.get(socketId)?.emit(protocolEventsV8.snapshot,snapshot);
+            options.sessionRegistry?.onChallengeSnapshotV8?.(snapshot,socketId);
+        },
+        onChallengeCompletedV8: (result,socketId) => {
+            if (socketId) io.sockets.sockets.get(socketId)?.emit(protocolEventsV8.result,result);
+            options.sessionRegistry?.onChallengeCompletedV8?.(result,socketId);
+        },
         onSessionClosed: (sessionId, socketId) => {
             identity?.cancelSession(sessionId);
             RoomWatcher.instance.removePlayer(sessionId);

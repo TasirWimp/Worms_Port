@@ -9,8 +9,9 @@ Phaser/Socket.IO stack.
 
 - Active target: mobile-first single-player Nimiq Pay competition release.
 - Active product package: **WP-015D3A V8 Action-Turn Candidate — V8A finite
-  rules/acceptance contract complete and independently reviewed; V8B runtime
-  implementation is next, not started.**
+  rules/acceptance contract complete and independently reviewed; V8B authoritative
+  foundation complete and independently reviewed; V8C touch presentation next,
+  not started. Live V7 unchanged.**
   The owner opened V8A after the independently reviewed preparation and shared-
   ruleset correction. The
   [V8 preparation contract and roadmap](wp-015d3a-v8-action-turns-contract.md)
@@ -26,17 +27,23 @@ Phaser/Socket.IO stack.
   historical matches/replays keep their own recorded version. See the
   contract's owner-correction section, which supersedes the earlier split
   without rewriting the frozen reference observation.
-  Current runtime remains V7 at `dc66d2ac0f02b1b7c47f6949816a7cbc6e48e286`,
-  preserved by local tag `checkpoint/v7-before-v8-2026-09-02` and separately
-  hashed local source/build archives. No runtime, reward, asset, dependency,
-  schema, analytical, or deployment change is made. V8A froze product-authored
+  Public gameplay remains V7 in both modes. The pre-V8 runtime checkpoint
+  `dc66d2ac0f02b1b7c47f6949816a7cbc6e48e286` is preserved by local tag
+  `checkpoint/v7-before-v8-2026-09-02` and separately hashed local source/build
+  archives. Preparation and V8A made no runtime, reward, asset, dependency,
+  schema, analytical, or deployment change. V8B adds an internal injected-only
+  versioned foundation, not joint activation. V8A froze product-authored
   15-second action, 30-unit/s walking, a one-tap forward hop and 2-second
   retreat, with explicit phase/input/replay/AI bounds, future exact paths,
   and separate quick-correctness versus full-assessment gates. Contract
   `wp-015d3a-v8a-rules-v0` passed independent design and arithmetic review;
-  touch feel, collision integration and balance are not yet verified.
-  Next is V8B's versioned authoritative movement/phase/replay foundation;
-  production remains V7 in both modes until the B-D activation gates pass.
+  B's collision/phase/replay integration now passes 67 V8 tests and distinct
+  review; the final feature gate, built smoke and five canonical phone-browser
+  checks pass. Touch feel and balance are not yet verified.
+  Next is V8C's touch controls and presentation, using the existing A7 C
+  allow-list and fresh clean-room implementer. V8D still owns automated V8 AI,
+  complete rewarded lifecycle, assessment and shared promotion. Production
+  remains V7 in both modes until all activation gates pass.
   The analytical execution pointer remains **WP-015D2A**;
   Stage C debt remains `interrupted_no_tap`, Lane G/Lane M execution remains
   closed, Lane G evidence remains none, D2O remains unsatisfied, and

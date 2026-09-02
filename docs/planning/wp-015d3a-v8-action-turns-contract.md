@@ -1,18 +1,20 @@
 # WP-015D3A V8 Action-Turn Preparation And Contract
 
 Date: 2026-09-02. Status: V8A v0 finite rules contract complete and independently
-reviewed; V8B runtime implementation is next, not started. WP-015D3A remains
-`in_progress`; its reference record is only
-`observed`. This pass implements no gameplay and opens no observation session.
+reviewed; V8B authoritative foundation complete and independently reviewed,
+with live V7 unchanged. V8C touch presentation is next, not started.
+WP-015D3A remains `in_progress`; its reference record is only `observed`.
+V8B delivered candidate-only engineering implementation, not player observation
+or production activation. Its source-bound review return is in section B.
 
 ## Purpose and source boundary
 
 Prepare the owner-approved, Sorcerers-inspired action-turn migration on the
 existing MIT game, preserving a practical V7 fallback and the analytical route.
 This is an intermediate playable-candidate plan, not a balance proof or a port
-of Sorcerers. V8A has finished the finite contract; the next bounded step is
-V8B's authoritative foundation, with production promotion deferred until B-D
-pass their gates.
+of Sorcerers. V8A's finite contract and V8B's authoritative foundation are
+complete; the next bounded step is V8C's touch presentation, with production
+promotion deferred until all B-D gates pass.
 
 - Product base: `dc66d2ac0f02b1b7c47f6949816a7cbc6e48e286`, freshly verified
   clean on `codex/wp-015d2z-v7-tactical-arena-v0`; `git fetch origin` confirmed
@@ -64,9 +66,10 @@ Only these generated files and the named local checkpoint tag are allowed:
 checkpoint/v7-before-v8-2026-09-02
 ```
 
-No client/server/shared code, test, script, package, asset, schema, automation,
-other legal manifest, analytical carrier, or CRPM file may change. No branch
-is pushed, no PR is created, and no service is deployed in this pass.
+That historical preparation pass allowed no client/server/shared code, test,
+script, package, asset, schema, automation, other legal manifest, analytical
+carrier, or CRPM change. It pushed no branch, created no PR and deployed no
+service. V8B's later separate scope and source boundary are recorded below.
 
 ## Owner correction: shared Practice and rewarded combat rules
 
@@ -492,8 +495,9 @@ asset and clean-room manifest changes are not smuggled through this source list.
 
 #### A8. Frozen acceptance domain and stop criteria
 
-Red tests below must be written before the corresponding runtime behavior;
-**none is a V8 result yet**. Exact seed domain is
+Red tests below must be written before the corresponding runtime behavior.
+At the V8A freeze, none was a V8 result; B's executed subset is now recorded
+in its own review return, without claiming the remaining C/D gates. Exact seed domain is
 `[1,2,3,4,17,42,1337,65535,2147483648,4294967295]`. Existing V7 read-only
 generation confirms coverage of all three profile IDs. Use Wizard, Thief and
 Warrior for shared-mode parity; no additional random seeds or tuned reruns.
@@ -604,6 +608,75 @@ Detailed declarations and check facts remain in the linked package evidence.
 
 ### B. Authoritative movement, phases, and replay
 
+Entry: owner continuation on 2026-09-02, freshly fetched clean V8A HEAD
+`5025fbc7187d1aa6d57e6e16277f8be391592fbd`, isolated branch
+`codex/wp-015d3a-v8b-authoritative-foundation-v0`. Only A7's B paths and the
+three existing planning/evidence carriers are open. No suitable V8 source/test
+carrier exists; the five new modules isolate a distinct version rather than
+widening legacy behavior. Root owns documentation and verification, not V8
+runtime implementation. Fresh no-history implementers and a distinct reviewer
+apply the clean-room entry gate below. V8 remains injectable/test-only; C touch,
+D AI/reward completion and joint promotion remain later gates. No V8 automated
+opponent or reward-policy completion is claimed by this foundation.
+
+**B integration clarification (reviewed before wiring):** an explicitly
+injected internal test seam may create V8 fixtures with either mode's metadata.
+Ordinary validated public challenge creation stays on shared V7 in both modes;
+there is no request flag, environment switch or Practice-only rollout. Separate
+V8 callbacks must not enter legacy policy-V2 snapshots or the legacy reward
+verifier/payout path. Foundation replays reserve the exact A6 V3 policy/profile
+identity, but contain only accepted combat operations, not an implemented AI
+plan or chosen-plan verification. D still owns that verification, full public
+reward lifecycle/parity and joint promotion. This is an integration boundary,
+not a numerical rules change or a waiver of D's gates. Independent reviewer
+`Codex agent /root/v8b_review` confirmed this B seam and the need for a neutral
+lane that ordinary traffic cannot exhaust.
+
+Fixture pause/leave also use V8-specific events and typed V8 acknowledgements;
+the existing authenticated/ordered internal lifecycle operations can be reused,
+but a V1 pause/leave event must not return a legacy acknowledgement wrapping a
+V8 snapshot/result. Public V1 session creation, challenge creation and reward
+eligibility remain unchanged. The reviewer confirmed this response boundary;
+it does not add a production V8 entry point.
+
+**B replay representation clarification:** a base intent/tick record that
+neutralizes input automatically is followed by one non-mutating `automatic`
+annotation per lease-expiry or phase boundary. Each annotation consumes one
+of the same 32,768 record slots; it records the reason, authoritative tick,
+final input epoch (and resulting phase for a phase boundary), with the same
+post-operation hash. It does not represent an intermediate state or add a
+physics tick/revision/external lifecycle charge. Base plus all annotations
+must fit atomically while preserving the terminal reserve; boundary ticks
+cannot coalesce across their annotations. Verification derives the exact
+ordered annotations from the actual transition and rejects missing, extra,
+duplicate or forged annotations. A self-contained terminal safety record
+already records its neutralization and needs no extra annotation/reserve.
+`Codex agent /root/v8b_review` approved this representation subject to these
+checks. Frozen numerical limits and combat rules are unchanged.
+
+**B clock-unit clarification:** catch-up debt means whole already-due ticks,
+`floor(credit/1000000)`. Fractional credit is retained remainder, not another
+due tick. Thirty due ticks plus a fraction can catch up; 31 due ticks expire.
+A4's "1 s" denotes 30 ticks at the nominal rate, not an independent wall-time
+cutoff that discards remainder. From zero credit, test elapsed microseconds
+`1000000`, `1000001`, `1033333` (30 due) and `1033334` (31 due).
+`Codex agent /root/v8b_review` confirmed this interpretation against A8's
+explicit due-tick domain; the 30-due-tick cap and all phase durations stay fixed.
+
+**Reachable replay-size bound:** at most 8192 accepted intents (16 x 512),
+16800 tick base records, 128 external lifecycle barriers, 1866 lease-expiry
+annotations (each requires at least nine elapsed ticks), a conservative 96 phase
+annotations (six per turn, including extra allowance for entry/termination),
+and one reserved terminal record give a 27083-record upper bound. With at most
+512 bytes per record plus commas and a 1024-byte envelope, this is at most
+13894603 bytes, below 16 MiB. These bounds
+include automatic annotations and assume the frozen legal operation domain;
+they are not evidence of a successful natural 32768-record/16-MiB session.
+Verify the full raw-input ceilings at their exact boundaries and use lowered
+test-only limits through the same live/detached code path to exercise atomic
+reserve exhaustion. The distinct reviewer independently checked a tighter
+80-phase-annotation bound; this return retains the implementer's larger bound.
+
 Implement a separately identified `nimble-knots-artillery-v8` candidate and
 compatible versioned transport/snapshot/replay boundaries. Preserve V1-V7
 hashes, accepted command meanings, and replay reconstruction; do not widen
@@ -627,7 +700,74 @@ pause, reconnect, disconnect, and phase changes need explicit legal outcomes.
 Old matches retain their ruleset identity; incompatible sessions are never
 silently upgraded. Cross-process continuity remains outside the present design.
 
+#### B review return — complete foundation, no activation
+
+Source base is the freshly verified V8A commit above. The exact changed range
+contains A7's eleven B implementation/test paths and the three existing
+planning/evidence carriers, fourteen paths total. The source-bound SHA-256 is
+`88d2fd2d919760d8dd96be0fd5a8efc516376371b8177756ad00bbb43a72814e`.
+To reproduce it, lexicographically sort those eleven non-document paths,
+construct rows `{path,gitBlob}` using each path's normalized
+`git hash-object --path=<path> <path>`, then hash the UTF-8 bytes of
+`JSON.stringify(rows)` without a trailing newline. This excludes the review
+documents and their own commit identity, avoiding self-reference.
+
+Fresh implementers `Codex agent /root/v8b_physics` and
+`Codex agent /root/v8b_authority` declared only operating/product documents,
+the frozen handoff and MIT product source/tests as inputs. They did not inspect
+Sorcerers source, quarantine, observer transcripts, prior task history or
+external sources; they changed only their two and nine assigned paths.
+The coordinator made no V8 runtime implementation edits. Source/asset/package
+and clean-room manifests, the frozen handoff, legacy simulation/protocol/AI/
+coordinator and all analytical carriers remain unchanged.
+
+Delivered: deterministic fixed-point walking/hopping/collisions, bounded
+action/projectile/settling/retreat phases, leases and intent epochs, strict V8
+transport/snapshot/replay identities, monotonic scheduler catch-up, atomic
+replay reserves and detached reconstruction. Authenticated injected fixtures
+cover both modes; independent cancellation survives input saturation, stale
+queued packets cannot transfer through a cancel/disconnect/rebind, and player
+lifecycle events do not cancel AI-owned input. Terminal results survive a
+disconnect and deliver once after resume. Separate V8 callbacks do not enter
+the legacy monetary verifier. AI-held test intents are not an implemented V8
+Loomkeeper policy or a D reward-lifecycle result.
+
+Checks and review:
+
+- All 32 V8 physics tests and 35 V8 authority/protocol tests pass, zero skips.
+  The focused suites include exact contract boundaries, legacy projectile
+  parity, all ten seeds/three Callings/both injected modes, replay tampering
+  and caps, and identical 10-second/600-second pause histories plus next tick.
+  Initial red tests and regressions found during review are retained in the
+  evidence record, not waived or converted into relaxed limits.
+- Independent physics/test audit `Codex agent /root/v8b_test` passed 45 focused
+  V8/legacy checks, 80 bounded turn probes and 360 extra V7/V8 shot comparisons.
+  Distinct reviewer `Codex agent /root/v8b_review` returned final **pass**, no
+  blocking findings, after fixes and independent targeted reruns. The last
+  three regressions cover the bound session's failure cursor, AI input
+  isolation and pause-wall-time invariance.
+- Final-source `npm run verify:feature` passed: compliance, project typechecks,
+  existing fast suites, production build, built-server smoke and all five
+  canonical phone-browser tests (33.3 seconds for the browser portion).
+  Reward-security, identity-bundle and bundle-budget checks also passed.
+  The largest initial JS chunk is 1467842/1500000 bytes; initial JS/CSS gzip is
+  406613/430000 bytes. Build proof matches exact declared inputs and outputs.
+- Exact range, JSON duplicate keys/schema, local navigation, frozen digest,
+  Git-byte legacy/manifest preservation, both checkpoint tags and archive
+  hashes, and diff checks passed. Documentation finalization does not change
+  the eleven-file implementation digest.
+
+B is complete only as the injected authoritative foundation. Public creation
+still uses V7 and standard AI for both modes. C touch integration, D automated
+AI/full rewarded lifecycle/240-match admission assessment/shared activation,
+the daily/release matrix, PostgreSQL integration, physical devices and human
+similarity review remain open or deferred to their proper gates. No balance,
+fairness, release or player-observation claim is made. The package stays
+`in_progress` and its clean-room record stays `observed`.
+
 ### C. Touch controls and presentation
+
+Next bounded slice after B; not started or activated by the B review return.
 
 Hold to walk and release to stop; overlong drags remain clamped and usable.
 Provide jump without a required two-finger chord, precision gesture, hover, or
@@ -678,7 +818,7 @@ clearance or silently waive owner/human review.
 
 ## Verification and balance learning
 
-For this documentation-only pass: verify V7 HEAD/tag and archive contents,
+For the historical documentation-only preparation pass: verify V7 HEAD/tag and archive contents,
 existing build proof and built smoke; check compliance, strict JSON duplicate
 keys/schema, links, frozen-record digest, exact paths, unchanged manifest and
 predecessor bytes, and Git diff; obtain independent preparation review. No new
@@ -777,9 +917,10 @@ observation was performed. Detailed check and skipped-check facts are in the
 linked evidence record. The owner's later shared-ruleset correction supersedes
 the mode-isolation part of that historical review. Its then-next bounded step,
 V8A's finite product-authored parameter/phase table and implementation allow-list,
-is now recorded in section A for design review. B/C/D runtime remains future-only;
-the owner request to start V8A does not itself open V8B implementation, Lane G/
-Lane M execution, observation, push, PR, or deployment.
+is now recorded in section A. At that V8A return, B/C/D runtime remained
+future-only; the subsequent owner continuation separately opened B as recorded
+above. Neither return opens Lane G/Lane M execution, observation, push, PR or
+deployment.
 
 Owner-correction review return: `Codex agent /root/v8_preparation_reviewer`
 returned `pass` with no findings on the three-document diff from

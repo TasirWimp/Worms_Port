@@ -29,6 +29,8 @@ import type { CoordinatorReplay } from '../simulation/coordinator';
 import { ackFor, SessionRegistry } from '../session/registry';
 import { eventFits, TokenBucket } from './guards';
 import { failure } from './errors';
+import { protocolEventsV8, V8_INPUT_BYTES, jsonBytesV8, InputRequestV8Schema, InputCancelV8Schema,
+    ChallengePauseV8Schema, ChallengeLeaveV8Schema, type InputAckV8 } from '../../../shared/protocol-v8';
 
 type Ack = (response: ProtocolAck<unknown>) => void;
 
@@ -68,6 +70,8 @@ export function setupProtocol(
         }, options.sessionOpenTimeoutMs ?? 5_000);
         authenticationTimer.unref();
         const eventLimiter = new TokenBucket(30, 20 / 1000);
+        const inputLimiterV8 = new TokenBucket(20, 20 / 1000);
+        const cancelLimiterV8 = new TokenBucket(2, 4 / 1000);
         const invalidLimiter = new TokenBucket(5, 5 / 10_000);
         const rewardInfoLimiter = new TokenBucket(8, 8 / 60_000);
         const rewardReserveLimiter = new TokenBucket(3, 3 / 60_000);
@@ -95,12 +99,19 @@ export function setupProtocol(
             if (oldest === undefined) break;
             rewardReserveIpLimiters.delete(oldest);
         }
+        const ownedInputCursor = (payload: unknown): number => {
+            const session=registry.getBound(socket.id);
+            const challengeId=(payload && typeof payload==='object') ? (payload as {challengeId?:unknown}).challengeId : undefined;
+            return session && typeof challengeId==='string' ? registry.inputCursorV8(session,challengeId) : 0;
+        };
+        const inputFailure = (payload: unknown,code: ProtocolError['code'],message: string): InputAckV8 =>
+            failureV8(payload,code,message,ownedInputCursor(payload));
 
         socket.use((packet, next) => {
             const event = packet[0];
             const payload = packet[1];
             const ack = typeof packet[packet.length - 1] === 'function'
-                ? packet[packet.length - 1] as Ack
+                ? packet[packet.length - 1] as (response: unknown) => void
                 : undefined;
             if (!ALLOWED_CLIENT_EVENTS.has(event)) {
                 ack?.(failure('invalid-request', 'BAD_REQUEST', 'Unknown protocol event.'));
@@ -110,7 +121,24 @@ export function setupProtocol(
                 next(new Error('Unknown protocol event.'));
                 return;
             }
-            if (!eventLimiter.take()) {
+            const v8 = event === protocolEventsV8.input || event === protocolEventsV8.cancel ||
+                event === protocolEventsV8.pause || event === protocolEventsV8.leave;
+            if (v8 && jsonBytesV8(payload) > V8_INPUT_BYTES) {
+                ack?.(wireFailureV8(event,payload,'PAYLOAD_TOO_LARGE','V8 payload exceeds 1024 bytes.',registry.getBound(socket.id)?.nextSequence ?? 0,ownedInputCursor(payload)));
+                if (!invalidLimiter.take()) socket.disconnect(true);
+                next(new Error('V8 payload is too large.')); return;
+            }
+            // Neutral cancellation has its own small lane: normal flooding cannot spend its tokens.
+            if (event === protocolEventsV8.cancel) {
+                if (!cancelLimiterV8.take()) {
+                    ack?.(inputFailure(payload,'RATE_LIMITED','V8 neutral lane is rate limited.'));
+                    next(new Error('V8 neutral rate limit exceeded.')); return;
+                }
+            } else if (!eventLimiter.take()) {
+                if (v8) {
+                    ack?.(wireFailureV8(event,payload,'RATE_LIMITED','Too many protocol events.',registry.getBound(socket.id)?.nextSequence ?? 0,ownedInputCursor(payload)));
+                    next(new Error('Event rate limit exceeded.')); return;
+                }
                 ack?.(failure(
                     requestIdOf(payload),
                     'RATE_LIMITED',
@@ -119,6 +147,10 @@ export function setupProtocol(
                 ));
                 next(new Error('Event rate limit exceeded.'));
                 return;
+            }
+            if (event === protocolEventsV8.input && !inputLimiterV8.take()) {
+                ack?.(inputFailure(payload,'RATE_LIMITED','V8 normal input is rate limited.'));
+                next(new Error('V8 input rate limit exceeded.')); return;
             }
             if (!eventFits(payload)) {
                 ack?.(failure(
@@ -134,6 +166,54 @@ export function setupProtocol(
             }
             next();
         });
+
+        for (const event of [protocolEventsV8.input,protocolEventsV8.cancel]) {
+            socket.on(event,(payload: unknown,ack?: (response: InputAckV8) => void) => {
+                if (typeof ack !== 'function') { guard(socket,payload,undefined,invalidLimiter); return; }
+                const session = registry.getBound(socket.id);
+                if (!session) { ack(inputFailure(payload,'UNAUTHORIZED','Open or resume a session first.')); return; }
+                const schema = event === protocolEventsV8.cancel ? InputCancelV8Schema : InputRequestV8Schema;
+                if (!schema.safeParse(payload).success) {
+                    ack(inputFailure(payload,'BAD_REQUEST','Invalid V8 input envelope.'));
+                    if (!invalidLimiter.take()) socket.disconnect(true);
+                    return;
+                }
+                if (event === protocolEventsV8.cancel) {
+                    ack(registry.cancelInputV8(session,payload)); return;
+                }
+                void registry.submitInputV8(session,payload).then(ack).catch(() => {
+                    ack(inputFailure(payload,'INTERNAL_ERROR','V8 input could not be completed.'));
+                });
+            });
+        }
+
+        for (const event of [protocolEventsV8.pause,protocolEventsV8.leave]) {
+            socket.on(event,(payload: unknown,ack?: (response: unknown) => void) => {
+                if (typeof ack !== 'function') { guard(socket,payload,undefined,invalidLimiter); return; }
+                const session = registry.getBound(socket.id);
+                const parsed = (event === protocolEventsV8.pause ? ChallengePauseV8Schema : ChallengeLeaveV8Schema).safeParse(payload);
+                if (!parsed.success || !session) {
+                    ack({protocolVersion:8,requestId:requestIdOf(payload),nextSequence:session?.nextSequence ?? 0,ok:false,
+                        error:{code:session ? 'BAD_REQUEST' : 'UNAUTHORIZED',message:'A valid owned V8 lifecycle request is required.',retryable:false}});
+                    if (session && !invalidLimiter.take()) socket.disconnect(true);
+                    return;
+                }
+                const packet = parsed.data;
+                // Reuse only the existing internal ordered session cursor/cache, not a V1 wire response.
+                void registry.sequenceAsync(session,packet.requestId,packet.sequence,{event,...packet},async () => {
+                    if (registry.getBound(socket.id) !== session) return failure(packet.requestId,'UNAUTHORIZED','The lifecycle request transport disconnected.');
+                    const result = event === protocolEventsV8.pause
+                        ? await registry.setChallengePausedV8(session,packet.challengeId,ChallengePauseV8Schema.parse(payload).paused)
+                        : registry.leaveChallengeV8(session,packet.challengeId);
+                    return ackFor(packet.requestId,result);
+                }).then(response => {
+                    ack({protocolVersion:8,requestId:packet.requestId,nextSequence:response.ok ? packet.sequence+1 : session.nextSequence,
+                        ok:response.ok,...('data' in response ? {data:response.data} : {error:response.error})});
+                    if (response.ok && event === protocolEventsV8.pause) socket.emit(protocolEventsV8.snapshot,response.data);
+                }).catch(() => ack({protocolVersion:8,requestId:packet.requestId,nextSequence:session.nextSequence,ok:false,
+                    error:{code:'INTERNAL_ERROR',message:'V8 lifecycle operation failed.',retryable:false}}));
+            });
+        }
 
         socket.on(protocolEvents.sessionOpen, (payload: unknown, ack?: Ack) => {
             if (!guard(socket, payload, ack, invalidLimiter)) {
@@ -209,6 +289,7 @@ export function setupProtocol(
             }
             const reboundSession = registry.getBound(socket.id);
             if (reboundSession) {
+                registry.deliverCurrentV8(reboundSession);
                 const activeSnapshot = registry.activeSnapshot(reboundSession);
                 if (activeSnapshot) {
                     socket.emit(protocolEvents.snapshot, activeSnapshot);
@@ -921,6 +1002,10 @@ function authorizationIdOf(payload: unknown): string | undefined {
 }
 
 const ALLOWED_CLIENT_EVENTS = new Set([
+    protocolEventsV8.input,
+    protocolEventsV8.cancel,
+    protocolEventsV8.pause,
+    protocolEventsV8.leave,
     protocolEvents.sessionOpen,
     protocolEvents.identityBegin,
     protocolEvents.identityComplete,
@@ -940,3 +1025,14 @@ const ALLOWED_CLIENT_EVENTS = new Set([
     'client:game#join',
     'client:game#ready'
 ]);
+
+function failureV8(payload: unknown,code: ProtocolError['code'],message: string,nextInputSequence=0): InputAckV8 {
+    return { protocolVersion:8,requestId:requestIdOf(payload),nextInputSequence,ok:false,
+        error:{code,message,retryable:code === 'RATE_LIMITED'} };
+}
+function wireFailureV8(event: string,payload: unknown,code: ProtocolError['code'],message: string,nextSequence: number,nextInputSequence: number): unknown {
+    const response=failureV8(payload,code,message,nextInputSequence);
+    if(event!==protocolEventsV8.pause && event!==protocolEventsV8.leave) return response;
+    return {protocolVersion:8,requestId:requestIdOf(payload),nextSequence,ok:false,
+        error:{code,message,retryable:code==='RATE_LIMITED'}};
+}

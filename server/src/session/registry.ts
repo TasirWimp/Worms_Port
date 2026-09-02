@@ -8,7 +8,7 @@ import type {
     SessionOpenData,
     WalletIdentity
 } from '../../../shared/protocol';
-import { PROTOCOL_VERSION } from '../../../shared/protocol';
+import { PROTOCOL_VERSION, RequestIdSchema } from '../../../shared/protocol';
 import { failure, success } from '../protocol/errors';
 import {
     SimulationCoordinator,
@@ -27,6 +27,12 @@ import {
     type LoomkeeperDifficulty
 } from '../../../shared/loomkeeper';
 import { issueToken, opaqueId, tokenDigest } from './token';
+import { CURRENT_COMBAT_RULESET_ID, V8_LOOMKEEPER_POLICY_ID, V8_LOOMKEEPER_PROFILE_ID } from '../../../shared/combat-version';
+import { V8_RULESET_ID, type SimulationIntentV8 } from '../../../shared/simulation-v8';
+import { InputRequestV8Schema, InputCancelV8Schema, V8_INPUT_BYTES, jsonBytesV8,
+    type ChallengeSnapshotV8, type ChallengeResultV8, type InputAckV8 } from '../../../shared/protocol-v8';
+import { VersionedSimulationCoordinator } from '../simulation/versioned-coordinator';
+import type { CoordinatorUpdateV8, CoordinatorReplayV8, SimulationCoordinatorV8Options } from '../simulation/coordinator-v8';
 
 const DEFAULT_SESSION_TTL_MS = 30 * 60_000;
 const DEFAULT_RECONNECT_GRACE_MS = 2 * 60_000;
@@ -52,6 +58,8 @@ type CachedRequest = {
 
 export type Challenge = {
     id: string;
+    /** Absent on historical in-memory entries; V8 never enters a legacy snapshot. */
+    rulesetId?: SimulationRulesetId | typeof V8_RULESET_ID;
     mode: 'practice' | 'reward';
     calling: 'wizard' | 'thief' | 'warrior';
     loomkeeperDifficulty: LoomkeeperDifficulty;
@@ -104,6 +112,10 @@ export type SessionRegistryOptions = {
     seedSource?: (sessionId: string, practiceIndex: number) => number;
     loomkeeperEnabled?: boolean;
     loomkeeperDifficulty?: LoomkeeperDifficulty;
+    /** Explicit dependency-injection fixture only. No environment/client activation. */
+    v8TestOnly?: Pick<SimulationCoordinatorV8Options, 'nowUs' | 'yieldBatch' | 'tickIntervalMs' | 'maxReplayRecords' | 'maxReplayBytes'>;
+    onChallengeSnapshotV8?: (snapshot: ChallengeSnapshotV8, socketId?: string) => void;
+    onChallengeCompletedV8?: (result: ChallengeResultV8, socketId?: string) => void;
 };
 
 export class SessionRegistry {
@@ -130,6 +142,14 @@ export class SessionRegistry {
     private readonly runningLoomkeeperTurns = new Set<string>();
     private readonly sequenceLocks = new Map<string, Promise<void>>();
     private inOrderedSimulation = false;
+    private readonly versions: VersionedSimulationCoordinator;
+    private readonly v8Enabled: boolean;
+    private readonly onChallengeSnapshotV8?: SessionRegistryOptions['onChallengeSnapshotV8'];
+    private readonly onChallengeCompletedV8?: SessionRegistryOptions['onChallengeCompletedV8'];
+    private readonly v8Inputs = new Map<string, { next: number; admission: object;
+        cache: Map<string, { hash: string; ack: InputAckV8 }>; cancels: Map<string,string> }>();
+    private readonly v8Locks = new Map<string, Promise<void>>();
+    private readonly v8InInput = new Set<string>();
 
     public constructor(options: SessionRegistryOptions = {}) {
         this.now = options.now || Date.now;
@@ -143,7 +163,10 @@ export class SessionRegistry {
         this.onChallengeSnapshot = options.onChallengeSnapshot;
         this.onChallengeCompleted = options.onChallengeCompleted;
         this.seedSource = options.seedSource || (() => randomBytes(4).readUInt32BE(0));
-        this.simulationRulesetId = options.simulationRulesetId ?? LATEST_RULESET_ID;
+        this.simulationRulesetId = options.simulationRulesetId ?? CURRENT_COMBAT_RULESET_ID;
+        this.v8Enabled = options.v8TestOnly !== undefined;
+        this.onChallengeSnapshotV8 = options.onChallengeSnapshotV8;
+        this.onChallengeCompletedV8 = options.onChallengeCompletedV8;
         this.loomkeeperEnabled = options.loomkeeperEnabled ?? true;
         this.loomkeeperDifficulty = options.loomkeeperDifficulty ?? 'standard';
         if (this.loomkeeperEnabled && options.simulationMaxReplayRecords !== undefined &&
@@ -153,14 +176,17 @@ export class SessionRegistry {
                 'while automated Loomkeeper turns are enabled.'
             );
         }
-        this.coordinator = new SimulationCoordinator({
+        this.versions = new VersionedSimulationCoordinator({ legacy: {
             maxReplayRecords: options.simulationMaxReplayRecords,
             tickIntervalMs: options.simulationTickIntervalMs === false
                 ? undefined
                 : options.simulationTickIntervalMs ?? 1_000,
             ticksPerInterval: options.simulationTicksPerInterval ?? 30,
             onTransition: (update) => this.onSimulationTransition(update)
-        });
+        }, v8: { ...options.v8TestOnly,
+            tickIntervalMs: options.v8TestOnly ? options.v8TestOnly.tickIntervalMs ?? 10 : undefined,
+            onTransition: update => this.onSimulationTransitionV8(update) } });
+        this.coordinator = this.versions.legacy;
         this.sweepTimer = setInterval(
             () => this.sweep(),
             options.sweepIntervalMs || 15_000
@@ -240,6 +266,7 @@ export class SessionRegistry {
             this.sessionsBySocket.delete(previousSocketId);
         }
         this.sessionsBySocket.set(socketId, session.id);
+        this.connectionBarrierV8(session, 'reconnect');
         return {
             data: this.openData(session, replacement, true),
             previousSocketId: previousSocketId === socketId ? undefined : previousSocketId
@@ -292,6 +319,7 @@ export class SessionRegistry {
         if (!session) {
             return;
         }
+        this.connectionBarrierV8(session, 'disconnect');
         session.socketId = undefined;
         this.sessionsBySocket.delete(socketId);
         session.disconnectedDeadline = this.now() + this.reconnectGraceMs;
@@ -315,6 +343,7 @@ export class SessionRegistry {
                 this.expireChallenge(session, existing, session.nextSequence + 1);
             }
             if (existing.status === 'active' && existing.expiresAt > this.now()) {
+                if (existing.rulesetId === V8_RULESET_ID) return v8Error('COMMAND_REJECTED', 'An internal V8 fixture is already active.');
                 return this.snapshot(session, existing);
             }
         }
@@ -324,7 +353,8 @@ export class SessionRegistry {
         while (closedIds.length > 1) {
             const removedId = closedIds.shift()!;
             session.challenges.delete(removedId);
-            this.coordinator.delete(removedId);
+            this.versions.delete(removedId);
+            this.v8Inputs.delete(removedId);
         }
         const challengeId = reward?.challengeId ?? opaqueId();
         const seed = reward?.seed ?? this.seedSource(
@@ -368,6 +398,7 @@ export class SessionRegistry {
         if (isProtocolError(challenge)) {
             return challenge;
         }
+        if (challenge.rulesetId === V8_RULESET_ID) return v8Error('COMMAND_REJECTED', 'V8 requires its dedicated input protocol.');
         if (challenge.paused) {
             return {
                 code: 'COMMAND_REJECTED',
@@ -478,7 +509,7 @@ export class SessionRegistry {
     }
 
     public activeSnapshot(session: Session): ChallengeSnapshot | undefined {
-        const challenges = [...session.challenges.values()];
+        const challenges = [...session.challenges.values()].filter(challenge => challenge.rulesetId !== V8_RULESET_ID);
         const challenge = challenges.find((candidate) => candidate.status === 'active') ||
             challenges.reverse().find((candidate) => candidate.status === 'completed');
         return challenge && this.coordinator.get(challenge.id)
@@ -488,7 +519,7 @@ export class SessionRegistry {
 
     public replayForChallenge(session: Session, challengeId: string): CoordinatorReplay | undefined {
         const challenge = session.challenges.get(challengeId);
-        return challenge ? this.coordinator.replay(challenge.id) : undefined;
+        return challenge && challenge.rulesetId !== V8_RULESET_ID ? this.coordinator.replay(challenge.id) : undefined;
     }
 
     public replayForSessionChallenge(
@@ -542,6 +573,7 @@ export class SessionRegistry {
     ): ChallengeSnapshot | ProtocolError {
         const challenge = this.activeChallenge(session, challengeId);
         if (isProtocolError(challenge)) return challenge;
+        if (challenge.rulesetId === V8_RULESET_ID) return v8Error('COMMAND_REJECTED', 'V8 requires its dedicated authority.');
         if (challenge.paused) {
             return {
                 code: 'COMMAND_REJECTED',
@@ -560,6 +592,7 @@ export class SessionRegistry {
         if (isProtocolError(challenge)) {
             return challenge;
         }
+        if (challenge.rulesetId === V8_RULESET_ID) return v8Error('COMMAND_REJECTED', 'V8 requires its dedicated lifecycle.');
         challenge.status = 'left';
         challenge.revision += 1;
         const result: ChallengeResult = {
@@ -584,6 +617,7 @@ export class SessionRegistry {
     ): ChallengeSnapshot | ProtocolError {
         const challenge = this.activeChallenge(session, challengeId);
         if (isProtocolError(challenge)) return challenge;
+        if (challenge.rulesetId === V8_RULESET_ID) return v8Error('COMMAND_REJECTED', 'V8 requires its dedicated lifecycle.');
         if (challenge.mode !== 'practice') {
             return {
                 code: 'COMMAND_REJECTED',
@@ -718,7 +752,8 @@ export class SessionRegistry {
         }
         this.sessions.delete(sessionId);
         this.sequenceLocks.delete(sessionId);
-        this.coordinator.deleteForSession(sessionId);
+        this.versions.deleteForSession(sessionId);
+        for (const id of session.challenges.keys()) { this.v8Inputs.delete(id); this.v8Locks.delete(id); }
         this.onSessionClosed?.(session.id, session.socketId);
     }
 
@@ -748,11 +783,237 @@ export class SessionRegistry {
         this.sessions.clear();
         this.sessionsByDigest.clear();
         this.sessionsBySocket.clear();
-        this.coordinator.dispose();
+        this.versions.dispose();
+        this.v8Inputs.clear(); this.v8Locks.clear();
     }
 
     public get size(): number {
         return this.sessions.size;
+    }
+
+    /** Internal B fixture: one injected configuration for BOTH modes; never called by public creation. */
+    public createChallengeV8ForTest(session: Session, mode: Challenge['mode'], calling: Challenge['calling']): ChallengeSnapshotV8 | ProtocolError {
+        if (!this.v8Enabled) return v8Error('FEATURE_UNAVAILABLE', 'V8 test injection is disabled.');
+        if (!this.boundSessionV8(session)) return v8Error('UNAUTHORIZED', 'The session is not bound.');
+        this.sweep();
+        for (const challenge of session.challenges.values()) {
+            if (challenge.status === 'active') return v8Error('COMMAND_REJECTED', 'Finish or leave the current match first.');
+        }
+        const closed = [...session.challenges.keys()];
+        while (closed.length > 1) {
+            const id = closed.shift()!;
+            session.challenges.delete(id); this.versions.delete(id); this.v8Inputs.delete(id);
+        }
+        const id = opaqueId();
+        const snapshot = this.versions.create(id, session.id, this.seedSource(session.id,session.practiceSeedIndex++) >>> 0, calling, V8_RULESET_ID);
+        const challenge: Challenge = { id, rulesetId: V8_RULESET_ID, mode, calling,
+            loomkeeperDifficulty: 'standard', status: 'active', paused: false,
+            revision: 0, simulationRevision: 0, simulationStateHash: snapshot.stateHash,
+            expiresAt: Math.min(this.now()+this.challengeTtlMs,session.expiresAt), resultEmitted: false,
+            playerCommandTurn: 0, playerCommandCount: 0 };
+        session.challenges.set(id,challenge);
+        this.v8Inputs.set(id,{next:0,admission:{},cache:new Map(),cancels:new Map()});
+        return this.snapshotV8(session,challenge);
+    }
+
+    public hasChallengeV8(session: Session, id: string): boolean {
+        return session.challenges.get(id)?.rulesetId === V8_RULESET_ID;
+    }
+    public inputCursorV8(session: Session,id: string): number {
+        return this.boundSessionV8(session) && this.hasChallengeV8(session,id) ? this.v8Inputs.get(id)?.next ?? 0 : 0;
+    }
+    public activeSnapshotV8(session: Session): ChallengeSnapshotV8 | undefined {
+        const candidates = [...session.challenges.values()].filter(challenge => challenge.rulesetId === V8_RULESET_ID);
+        const challenge = candidates.find(candidate => candidate.status === 'active') ?? candidates.at(-1);
+        return challenge && this.versions.v8.get(challenge.id) ? this.snapshotV8(session,challenge) : undefined;
+    }
+    public deliverCurrentV8(session: Session): void {
+        if (!this.boundSessionV8(session)) return;
+        const current = this.activeSnapshotV8(session);
+        if (current) this.publishV8(session,session.challenges.get(current.challengeId)!);
+    }
+    public replayForChallengeV8(session: Session, id: string): CoordinatorReplayV8 | undefined {
+        return this.hasChallengeV8(session,id) ? this.versions.v8.replay(id) : undefined;
+    }
+
+    public async submitInputV8(session: Session, payload: unknown): Promise<InputAckV8> {
+        const raw = payload as Record<string, unknown> | undefined;
+        const requestId = safeRequestIdV8(raw?.requestId);
+        const id = typeof raw?.challengeId === 'string' ? raw.challengeId : '';
+        const failure = (code: ProtocolError['code'], message: string): InputAckV8 =>
+            this.inputFailureV8(requestId,id,code,message);
+        if (jsonBytesV8(payload) > V8_INPUT_BYTES) return failure('PAYLOAD_TOO_LARGE','V8 input exceeds 1024 bytes.');
+        const parsed = InputRequestV8Schema.safeParse(payload);
+        if (!parsed.success) return failure('BAD_REQUEST','Invalid V8 intent envelope.');
+        if (!this.boundSessionV8(session) || !this.hasChallengeV8(session,id)) return failure('UNAUTHORIZED','The V8 challenge is not owned by this session.');
+        const socketId = session.socketId;
+        const admission = this.v8Inputs.get(id)!.admission;
+        return this.serialV8(id,async () => {
+            if (!this.boundSessionV8(session) || session.socketId !== socketId || !this.hasChallengeV8(session,id)) return failure('UNAUTHORIZED','The V8 session is no longer bound.');
+            const cursor = this.v8Inputs.get(id)!;
+            const packet = parsed.data;
+            const hash = requestHash(packet);
+            const cached = cursor.cache.get(requestId);
+            if (cached) return cached.hash === hash ? structuredClone(cached.ack) : failure('REPLAY_CONFLICT','The request ID has different content.');
+            if (packet.inputSequence !== cursor.next) return failure(packet.inputSequence < cursor.next ? 'STALE_SEQUENCE' : 'SEQUENCE_GAP','V8 input sequence is not the next cursor.');
+            if (cursor.next === 0xFFFFFFFF) {
+                this.versions.v8.safety(id,'sequence_limit');
+                return failure('CHALLENGE_CLOSED','The V8 input sequence is exhausted.');
+            }
+            // Catch up real elapsed time BEFORE legality checks. Packets cannot supply clock credit.
+            try { await this.versions.v8.catchUp(id); }
+            catch { return failure('CHALLENGE_CLOSED','The V8 match is no longer available.'); }
+            if (!this.boundSessionV8(session) || session.socketId !== socketId)
+                return failure('UNAUTHORIZED','The input belongs to a disconnected transport.');
+            let response: InputAckV8;
+            this.v8InInput.add(id);
+            try {
+                const challenge = this.activeChallenge(session,id);
+                cursor.next += 1;
+                if (cursor.admission !== admission) response = failure('COMMAND_REJECTED','Pending input was cancelled.');
+                else if (isProtocolError(challenge)) response = failure(challenge.code,challenge.message);
+                else {
+                    const update = this.versions.v8.apply(id,'player',packet.intent as SimulationIntentV8,packet.expectedTurn,packet.expectedPhase,packet.inputEpoch);
+                    response = update.transition.accepted
+                        ? { protocolVersion:8, requestId, nextInputSequence:cursor.next, ok:true, data:this.snapshotV8(session,challenge) }
+                        : failure('COMMAND_REJECTED',update.transition.error?.message ?? 'V8 intent rejected.');
+                }
+            } finally { this.v8InInput.delete(id); }
+            cursor.cache.set(requestId,{hash,ack:structuredClone(response)});
+            while (cursor.cache.size > 256) cursor.cache.delete(cursor.cache.keys().next().value!);
+            const challenge = session.challenges.get(id);
+            if (challenge) this.publishV8(session,challenge);
+            return response;
+        });
+    }
+
+    /** Independent neutral-only lane. It never waits for a cursor, a normal request, or timer catch-up. */
+    public cancelInputV8(session: Session, payload: unknown): InputAckV8 {
+        const raw = payload as Record<string, unknown> | undefined;
+        const requestId = safeRequestIdV8(raw?.requestId);
+        const id = typeof raw?.challengeId === 'string' ? raw.challengeId : '';
+        if (jsonBytesV8(payload) > V8_INPUT_BYTES) return this.inputFailureV8(requestId,id,'PAYLOAD_TOO_LARGE','V8 cancel exceeds 1024 bytes.');
+        const parsed = InputCancelV8Schema.safeParse(payload);
+        if (!parsed.success) return this.inputFailureV8(requestId,id,'BAD_REQUEST','Invalid V8 cancel envelope.');
+        if (!this.boundSessionV8(session) || !this.hasChallengeV8(session,id))
+            return this.inputFailureV8(requestId,id,'UNAUTHORIZED','The V8 challenge is not owned by this session.');
+        const challenge = session.challenges.get(id)!;
+        const cursor = this.v8Inputs.get(id)!;
+        const hash = requestHash(parsed.data);
+        const cached = cursor.cancels.get(requestId);
+        if (cached && cached !== hash) return this.inputFailureV8(requestId,id,'REPLAY_CONFLICT','Cancel request ID has different content.');
+        const state = this.versions.v8.get(id)!.state;
+        if (!cached && state.activeActor === 'player' && (state.phase === 'action' || state.phase === 'retreat') &&
+            state.turn === parsed.data.expectedTurn && state.inputEpoch === parsed.data.inputEpoch) {
+            // Transport-only admission marker cancels even a not-yet-applied Jump while keeping
+            // an already-neutral combat state/replay inert. Exact/stale cancels never change it.
+            cursor.admission = {};
+            cursor.cancels.set(requestId,hash);
+            while (cursor.cancels.size > 256) cursor.cancels.delete(cursor.cancels.keys().next().value!);
+            this.versions.v8.barrier(id,{reason:'cancel',actor:'player',expectedTurn:parsed.data.expectedTurn,expectedEpoch:parsed.data.inputEpoch});
+        }
+        return { protocolVersion:8,requestId,nextInputSequence:this.v8Inputs.get(id)!.next,ok:true,data:this.snapshotV8(session,challenge) };
+    }
+
+    public async setChallengePausedV8(session: Session,id: string,paused: boolean): Promise<ChallengeSnapshotV8 | ProtocolError> {
+        if (!this.boundSessionV8(session) || !this.hasChallengeV8(session,id)) return v8Error('UNAUTHORIZED','V8 ownership required.');
+        const socketId = session.socketId;
+        return this.serialV8(id,async () => {
+            const challenge = this.activeChallenge(session,id);
+            if (isProtocolError(challenge)) return challenge;
+            if (challenge.mode !== 'practice') return v8Error('COMMAND_REJECTED','Rewarded V8 matches cannot pause.');
+            try {
+                await this.versions.v8.catchUp(id);
+                if (!this.boundSessionV8(session) || session.socketId !== socketId) return v8Error('UNAUTHORIZED','The pause transport disconnected.');
+                const current = this.versions.v8.get(id)!;
+                if (current.paused !== paused) {
+                    const update = this.versions.v8.barrier(id,{reason:paused ? 'pause' : 'resume',actor:'player',
+                        expectedTurn:current.state.turn,expectedEpoch:current.state.inputEpoch});
+                    if (!update.transition.accepted) return v8Error('COMMAND_REJECTED','Pause needs grounded player action with no timer debt.');
+                }
+                return this.snapshotV8(session,challenge);
+            } catch { return v8Error('COMMAND_REJECTED','Pause needs grounded player action with no timer debt.'); }
+        });
+    }
+
+    public leaveChallengeV8(session: Session,id: string): ChallengeResultV8 | ProtocolError {
+        if (!this.boundSessionV8(session) || !this.hasChallengeV8(session,id)) return v8Error('UNAUTHORIZED','V8 ownership required.');
+        const challenge = this.activeChallenge(session,id);
+        if (isProtocolError(challenge)) return challenge;
+        this.v8InInput.add(id);
+        try { this.versions.v8.safety(id,'left'); challenge.status = 'left'; }
+        finally { this.v8InInput.delete(id); }
+        this.publishV8(session,challenge);
+        return this.resultV8(session,challenge,'left');
+    }
+
+    public advanceChallengeTicksV8ForTest(session: Session,id: string,count: number): ChallengeSnapshotV8 {
+        if (!this.v8Enabled || !this.hasChallengeV8(session,id)) throw new Error('V8 test fixture required.');
+        this.versions.v8.advance(id,count);
+        return this.snapshotV8(session,session.challenges.get(id)!);
+    }
+    public applyIntentV8ForTest(session: Session,id: string,intent: SimulationIntentV8): ChallengeSnapshotV8 {
+        if (!this.v8Enabled || !this.hasChallengeV8(session,id)) throw new Error('V8 test fixture required.');
+        const state = this.versions.v8.get(id)!.state;
+        const update = this.versions.v8.apply(id,state.activeActor,intent,state.turn,state.phase,state.inputEpoch);
+        if (!update.transition.accepted) throw new Error(update.transition.error?.message);
+        return this.snapshotV8(session,session.challenges.get(id)!);
+    }
+    private snapshotV8(session: Session,challenge: Challenge): ChallengeSnapshotV8 {
+        const current = this.versions.v8.get(challenge.id)!;
+        return { protocolVersion:8,serverTimeMs:this.now(),sessionId:session.id,challengeId:challenge.id,
+            rulesetId:V8_RULESET_ID,loomkeeperPolicyId:V8_LOOMKEEPER_POLICY_ID,loomkeeperProfileId:V8_LOOMKEEPER_PROFILE_ID,
+            nextInputSequence:this.v8Inputs.get(challenge.id)!.next,nextSequence:session.nextSequence,
+            mode:challenge.mode,calling:challenge.calling,status:challenge.status,paused:current.paused,
+            expiresAt:new Date(challenge.expiresAt).toISOString(),simulation:current.state as ChallengeSnapshotV8['simulation'],stateHash:current.stateHash };
+    }
+    private resultV8(session: Session,challenge: Challenge,outcome: ChallengeResultV8['outcome']): ChallengeResultV8 {
+        const snapshot = this.snapshotV8(session,challenge);
+        return { protocolVersion:8,serverTimeMs:this.now(),sessionId:session.id,challengeId:challenge.id,
+            rulesetId:V8_RULESET_ID,loomkeeperPolicyId:V8_LOOMKEEPER_POLICY_ID,loomkeeperProfileId:V8_LOOMKEEPER_PROFILE_ID,
+            nextInputSequence:snapshot.nextInputSequence,outcome,finalTick:snapshot.simulation.tick,finalStateHash:snapshot.stateHash };
+    }
+    private inputFailureV8(requestId: string,id: string,code: ProtocolError['code'],message: string): InputAckV8 {
+        return { protocolVersion:8,requestId,nextInputSequence:this.v8Inputs.get(id)?.next ?? 0,ok:false,error:v8Error(code,message) };
+    }
+    private boundSessionV8(session: Session): boolean {
+        return Boolean(session.socketId && this.getBound(session.socketId) === session);
+    }
+    private connectionBarrierV8(session: Session,reason: 'disconnect' | 'reconnect'): void {
+        for (const challenge of session.challenges.values()) {
+            if (challenge.rulesetId !== V8_RULESET_ID || challenge.status !== 'active') continue;
+            const state = this.versions.v8.get(challenge.id)!.state;
+            this.versions.v8.barrier(challenge.id,{reason,actor:'player',expectedTurn:state.turn,expectedEpoch:state.inputEpoch});
+        }
+    }
+    private onSimulationTransitionV8(update: CoordinatorUpdateV8): void {
+        const session = this.sessions.get(update.sessionId);
+        const challenge = session?.challenges.get(update.challengeId);
+        if (!session || !challenge) return;
+        challenge.simulationStateHash = update.stateHash; challenge.simulationRevision = update.state.revision;
+        challenge.paused = update.paused;
+        if (update.state.phase === 'finished') challenge.status = update.unavailable ? 'expired' : 'completed';
+        if (!this.v8InInput.has(challenge.id)) this.publishV8(session,challenge);
+    }
+    private publishV8(session: Session,challenge: Challenge): void {
+        if (this.v8InInput.has(challenge.id)) return;
+        const snapshot = this.snapshotV8(session,challenge);
+        this.onChallengeSnapshotV8?.(snapshot,session.socketId);
+        if (snapshot.simulation.phase !== 'finished' || challenge.resultEmitted || !this.boundSessionV8(session)) return;
+        challenge.resultEmitted = true;
+        const outcome = challenge.status === 'expired' ? 'expired' : challenge.status === 'left' ? 'left'
+            : snapshot.simulation.winner === 'player' ? 'player_win' : snapshot.simulation.winner === 'loomkeeper' ? 'loomkeeper_win' : 'draw';
+        this.onChallengeCompletedV8?.(this.resultV8(session,challenge,outcome),session.socketId);
+    }
+    private async serialV8<T>(id: string,operation: () => Promise<T>): Promise<T> {
+        const previous = this.v8Locks.get(id) ?? Promise.resolve();
+        let release!: () => void;
+        const current = new Promise<void>(resolve => { release = resolve; });
+        const queued = previous.then(() => current);
+        this.v8Locks.set(id,queued);
+        await previous;
+        try { return await operation(); }
+        finally { release(); if (this.v8Locks.get(id) === queued) this.v8Locks.delete(id); }
     }
 
     private activeChallenge(session: Session, id: string): Challenge | ProtocolError {
@@ -783,6 +1044,12 @@ export class SessionRegistry {
         nextSequence = session.nextSequence
     ): void {
         if (challenge.status !== 'active') {
+            return;
+        }
+        if (challenge.rulesetId === V8_RULESET_ID) {
+            this.versions.v8.safety(challenge.id, 'expiry');
+            challenge.status = 'expired';
+            this.publishV8(session, challenge);
             return;
         }
         challenge.status = 'expired';
@@ -965,4 +1232,12 @@ export function ackFor<T>(requestId: string, value: T | ProtocolError): Protocol
 
 function isErrorValue(value: unknown): value is ProtocolError {
     return Boolean(value && typeof value === 'object' && 'code' in value);
+}
+
+function v8Error(code: ProtocolError['code'],message: string): ProtocolError {
+    return { code,message,retryable:false };
+}
+function safeRequestIdV8(value: unknown): string {
+    const parsed = RequestIdSchema.safeParse(value);
+    return parsed.success ? parsed.data : 'invalid-request';
 }

@@ -8,11 +8,15 @@
   "owning_roles": [
     "worms_port_planner",
     "worms_port_base_game_worker",
+    "worms_port_network_worker",
+    "worms_port_test_worker",
     "worms_port_docs_keeper",
     "worms_port_compliance_keeper",
     "worms_port_reviewer"
   ],
   "scope": [
+    "V8B opened by owner continuation on 2026-09-02 from freshly fetched clean local/remote V8A HEAD 5025fbc7187d1aa6d57e6e16277f8be391592fbd, on isolated branch codex/wp-015d3a-v8b-authoritative-foundation-v0. Implement only A7 B authoritative movement, phase, strict protocol, scheduler and replay foundation; live shared selector remains V7. Historical preparation/V8A scope below records earlier passes, not current runtime prohibitions. Root coordinates docs/checks only; fresh no-history implementation workers consume the frozen handoff and MIT product sources, with distinct review.",
+    "V8B exact allow-list: shared/simulation-v8.ts, shared/protocol-v8.ts, shared/combat-version.ts, server/src/simulation/coordinator-v8.ts, server/src/simulation/versioned-coordinator.ts, server/src/session/registry.ts, server/src/protocol/socket.ts, server/src/runtime.ts, tests/simulation/action-turns-v8.test.ts, tests/simulation/action-turns-v8-replay.test.ts, tests/protocol/action-turns-v8.test.ts, docs/planning/wp-015d3a-v8-action-turns-contract.md, docs/planning/implementation_plan.md, docs/evidence/wp-015d3a.json. Carrier search confirms no V8 source/test modules exist; A7 records their distinct version-specific roles. Legacy simulation/protocol/AI/coordinator, all legal manifests, frozen handoff, assets and package files remain unchanged.",
     "V8A opened by owner on 2026-09-02 from clean, freshly fetched local/remote HEAD f70cff9be71ea8ed47fa259ea0f6d4c5e92ac241, on isolated branch codex/wp-015d3a-v8a-rules-contract-v0. Freeze independently authored finite movement/jump/phase, input/replay/AI limits, shared-mode promotion and future exact implementation path/test contract. V8A changes only docs/planning/wp-015d3a-v8-action-turns-contract.md, docs/planning/implementation_plan.md, and this evidence record. No new carrier or runtime/test edit; V8B implementation remains a later step.",
     "Owner correction on 2026-09-02 from clean, freshly fetched local/remote HEAD 170f0bf47d2fed94dd6240424e91f2ba99681f67: require one shared combat ruleset and AI configuration for Practice and rewarded matches; remove the proposed V8/V7 mode split. Correction edits only docs/planning/wp-015d3a-v8-action-turns-contract.md, docs/planning/implementation_plan.md, and this evidence record. Frozen handoff, registry, runtime, and recovery artifacts remain unchanged.",
     "Prepare, but do not implement, the V8 action-turn candidate: preserve exact V7 source/build, freeze a behavior-only reference handoff, define version/reward/analytical boundaries, and sequence V8 through V11.",
@@ -21,7 +25,7 @@
     "Keep this package in_progress and its reference record observed until separately authorized implementation and distinct implementation/review gates complete. Preparation readiness is recorded in the contract, not as a claim of shipped V8."
   ],
   "non_goals": [
-    "Change runtime, gameplay, tests, dependencies, assets, reward configuration, schemas, analytical carriers, or CRPM; implement V8, V9, V10, or V11.",
+    "During V8B, implement touch controls (C), automated V8 Loomkeeper or reward-service promotion (D), V9-V11, or activate V8 for users. Do not change legacy schemas/behavior/hashes, dependencies, assets, reward policy, analytical carriers or CRPM. Runtime/test changes are limited to the B allow-list; historical preparation and V8A passes were documentation-only.",
     "Run player observation, Lane G, Lane M, Stage C aggregate/repair, the full daily suite, or deployment; claim balance, D2O, ProductAuthority, placement, P5, or landfall.",
     "Import Sorcerers code, algorithms, constants, names, assets, or expressive sequences; mark the unimplemented clean-room lifecycle complete."
   ],
@@ -32,12 +36,39 @@
     "Independent preparation scope, rollback, version/reward boundary, and clean-room handoff review",
     "git diff --check",
     "2026-09-02 shared-ruleset correction: current-mode parity diagnostic, documentation/schema/scope/preservation checks, compliance, and independent review",
-    "V8A finite parameter/phase contract: independent product design, bounded arithmetic/coverage review, source and exact-path preservation, JSON/schema/links, compliance, and distinct review"
+    "V8A finite parameter/phase contract: independent product design, bounded arithmetic/coverage review, source and exact-path preservation, JSON/schema/links, compliance, and distinct review",
+    "V8B baseline compliance/types/legacy simulation and protocol; red-first V8 focused simulation, replay, scheduler and protocol tests; npm run verify:feature (includes build outputs and built/browser smoke)",
+    "V8B independent implementation/security/test review; source identity, exact paths, JSON duplicate-key/schema/navigation, frozen digest, legacy/manifests/checkpoint preservation and git diff validation"
   ],
   "deterministic_seeds": ["1", "2", "3", "4", "17", "42", "1337", "65535", "2147483648", "4294967295"],
   "sorcerers_reference_used": true,
   "clean_room_records": ["wp-015d3a-v8-action-turns"],
   "check_results": [
+    {
+      "command": "V8B final authority/protocol implementation and red-first regressions",
+      "status": "pass",
+      "detail": "Fresh no-history implementer /root/v8b_authority changed only its nine assigned modules/tests. Final focused authority and protocol run passed 35/35 tests, zero skips, in 18.4 seconds, plus server types and diff checks. Together with 32 physics tests this gives 67 V8 tests. Covers all ten seeds x three Callings x both injected modes, accepted combat operations through 360 ticks and detached replay parity; strict schemas and legacy dispatch; sequence/cache/lease/size/rate/cap boundaries; explicit automatic replay annotations and atomic reserves; 30/31 due-tick scheduling; offline terminal delivery; separate V8 pause/leave envelopes; stale queued input and lifecycle ownership; AI-held walk/aim/retreat isolation; exact 10-second/600-second pause-history invariance. Review exposed and fixed neutral-lane starvation, queued-input/rebind races, terminal delivery, malformed acknowledgement IDs, missing invalid-input strikes, legacy-envelope mismatch, delayed same-enum turn-handover snapshots and incorrect failure cursor. The last failure-cursor regression reproduced 0 versus required 2 before the fix. No limit or test policy was relaxed. Implementer declared only operating/product docs, frozen handoff and MIT product/peer V8 source/tests; no Sorcerers, quarantine, observer history, external source, asset or dependency input. The V3 AI label is reserved, not implemented AI or reward-policy verification."
+    },
+    {
+      "command": "V8B final-source npm run verify:feature; reward-security, identity-bundle and bundle-budget checks; exact build proof",
+      "status": "pass",
+      "detail": "Final source passed the complete normal feature chain: compliance, server/client types, tooling/protocol/simulation/legacy AI/Relic/combat/Practice/identity/reward fast suites, production server/client build, built-server smoke and 5/5 canonical Chromium phone-browser tests in 33.3 seconds, zero browser skips. This final rerun supersedes an earlier green feature run whose build became stale after review fixes; no full daily matrix was run. All 11 approved runtime asset copies were retained. Reward-security and identity-bundle inspections passed; largest initial JS chunk 1467842/1500000 bytes, initial JS/CSS gzip 406613/430000 bytes. Build proof verified exact declared inputs 14ef0293b468b9e6a60afb11262f29e884afe00bb4f4318637448772dd649b04 and outputs 58cdbe72464648bede2f6a18f5555385957776a56379a5032a85e1f7803985f6 on Node v23.6.0. An optional standalone strict transitive test-type probe encountered unchanged legacy room/game strictness errors and a missing JSON-import flag, not a configured project-gate failure; project-equivalent explicit flags passed and no config was weakened. The unsupported build-proof CLI --check probe returned usage only; verification used the existing read-only verifyBuildProof API."
+    },
+    {
+      "command": "V8B final source identity, exact range, duplicate keys/schema/navigation, preservation and diff validation",
+      "status": "pass",
+      "detail": "From clean V8A base 5025fbc7187d1aa6d57e6e16277f8be391592fbd, the final range contains exactly the 14 preregistered paths. The 11 non-document implementation/test paths have source-bound SHA-256 88d2fd2d919760d8dd96be0fd5a8efc516376371b8177756ad00bbb43a72814e: sort paths lexicographically, form {path,gitBlob} rows using git hash-object --path=<path> <path>, hash UTF-8 JSON.stringify(rows) without newline. Excluding the three review documents and their commit identity avoids self-reference. JSON duplicate-key and Draft 2020-12 schema validation passed; all six local contract links resolve. Twelve protected source/package/legal/handoff files match baseline Git blobs. Frozen handoff SHA-256 remains 0B9B93C02213DC37BF3FE3A96E7A34EBD814BC73F50F26E67B14E50F75C23AD8; both checkpoint tag targets and saved source/build archive SHA-256s remain exact. No other assets, tests, scripts, legacy or analytical carriers changed. Compliance and git diff validation passed. Documentation finalization leaves the implementation digest and build proof unchanged."
+    },
+    {
+      "command": "V8B pure simulation red-first implementation and focused physics verification",
+      "status": "pass",
+      "detail": "Fresh no-history implementer /root/v8b_physics changed only shared/simulation-v8.ts and tests/simulation/action-turns-v8.test.ts. The initial23 concrete tests failed against the throwing scaffold before implementation; final32 pass with strict standalone TypeScript and diff checks. Includes30 seed/Calling starts,90 V7 projectile trace/damage/terrain comparisons, exact gait/hop/gap/step/crater/body/world fixtures, input and phase limits, terminal ordering and automatic boundary events. Coordinator independently reran the initial23 green in0.83s; distinct reviewer independently passed expanded31 before the final automatic-event test. A repeated walk_start lease-cadence loophole was reproduced and fixed with a targeted regression. Implementer declared only operating/product docs, frozen contract/handoff, MIT shared/simulation.ts and local product tests/package inspected; no reference source, quarantine, observer transcript, external source or old task. Integrated authority checks and overall clean-room completion are separate later gates."
+    },
+    {
+      "command": "V8B pre-implementation baseline: npm run check:compliance; npm run check:types; npm run test:simulation; npm run test:protocol",
+      "status": "pass",
+      "detail": "Freshly fetched V8A HEAD 5025fbc7187d1aa6d57e6e16277f8be391592fbd was clean and matched origin before branching. Before any V8 source/test files existed, compliance and both server/client types passed; all 36 legacy simulation tests and 38 protocol tests passed with zero skips. Baseline runs do not establish V8 behavior."
+    },
     {
       "command": "V7 source identity, build-proof validation, built-server smoke, and exact rollback archive verification",
       "status": "pass",
@@ -76,6 +107,18 @@
   ],
   "reviews": [
     {
+      "role": "independent_v8b_authority_protocol_and_scope_reviewer",
+      "reviewer": "Codex agent /root/v8b_review",
+      "decision": "pass",
+      "detail": "Final read-only review against V8A base 5025fbc7187d1aa6d57e6e16277f8be391592fbd and the separately recorded eleven-file implementation digest: no remaining blocking findings. Independently checked physics, protocol/lifecycle ownership, scheduler, replay annotation/cap/reserve semantics, legacy/public-V7 preservation and the injected-only/no-monetary-verifier boundary. Final targeted regressions passed 3/3 with no skips: bound owner failure cursor under saturation/cancel, AI-held walk/aim/retreat across player cancel/disconnect/reconnect, and identical 10-second/600-second pause histories plus next tick. Reviewed debt-unit and automatic-annotation clarifications without changing numerical rules. Independently derived the tighter 27067-record/13886395-byte reachable replay bound; contract conservatively retains the implementer's 27083-record/13894603-byte bound. Approval is for B foundation only, not C touch, D AI/reward/joint promotion, human similarity/legal clearance or release approval."
+    },
+    {
+      "role": "independent_v8b_physics_test_and_preservation_audit",
+      "reviewer": "Codex agent /root/v8b_test",
+      "decision": "pass",
+      "detail": "Read-only audit:45/45 focused V8 plus legacy golden/determinism tests, zero skips. Additional inline engineering probes used only the ten frozen seeds:80 one-turn movement/jump/deadline scenarios totaling38490 ticks, and360 V7/V8 shot comparisons over both actors, three Relics, negative angles and boundary powers; zero invariant or parity failures and no post-deadline horizontal travel. Protected legacy sources/tests, manifests, assets, lock Git bytes, analysis, scripts, browser baselines, V7 records and frozen handoff are unchanged. No files, build, browser, full suite or player observation. Authority byte-boundary-test and explicit V7 checkpoint coverage notes were forwarded to its implementer; this is a physics/preservation pass, not final authority or V8 activation clearance."
+    },
+    {
       "role": "independent_v8a_contract_reviewer",
       "reviewer": "Codex agent /root/v8_preparation_reviewer",
       "decision": "pass",
@@ -95,13 +138,14 @@
     }
   ],
   "skipped_checks": [
+    "V8B scope excludes C touch controls, D automated V8 AI/public reward lifecycle/joint activation and the 240-match admission assessment. Full daily/release matrix and performance browser run are deferred to that cadence, not silently replaced by feature smoke. PostgreSQL integration was not run (no isolated test database configured); physical devices, Windows visual-baseline approval and player observation were not run. No package change required a fresh npm audit. Automated candidate engineering tests are not player observation. Historical skip entries below apply to their named earlier passes.",
     "V8A is contract-only: no new build, verify:feature, V8 simulation/collision implementation, browser/device session, daily/full suite, PostgreSQL integration, assessment run or deployment. Future test cases and synthetic mirrored scenarios are preregistered, not executed results. No new archive was generated; existing archive hashes were rechecked.",
-    "V8 implementation, player observation, and browser/device sessions are not started.",
-    "No new build, feature gate, full daily suite, PostgreSQL integration, or visual-baseline approval: this pass changes only documentation and Git hygiene. The existing V7 build is verified before archiving.",
+    "Historical preparation: V8 implementation, player observation, and browser/device sessions were not started.",
+    "Historical preparation: no new build, feature gate, full daily suite, PostgreSQL integration, or visual-baseline approval; that pass changed only documentation and Git hygiene. The existing V7 build was verified before archiving.",
     "No push, PR, deployment, real-fund activation, or CRPM execution."
   ],
   "residual_risks": [
-    "V8A freezes candidate parameters and phase/input/replay/AI bounds, but collision integration, touch/network behavior, AI CPU cost and quality, shared-mode runtime parity, and balance remain unverified until B-D. A failed gate requires an explicit versioned contract amendment, not silent retuning.",
+    "V8B foundation passes finite collision/phase/input/replay and injected-mode parity gates; this does not establish C touch behavior, real-latency fairness, D automated AI CPU cost/quality, public rewarded lifecycle, full shared activation or balance. V8C is next and not started. A failed numerical gate requires an explicit versioned contract amendment, not silent retuning. Overall package remains in_progress and the clean-room record observed until remaining implementation and distinct human similarity gates are complete.",
     "Current rewarded and Practice creation correctly share V7 and standard AI. Future promotion must keep both modes on one approved combat version while binding old matches/replays to their original identities; do not introduce a V8 Practice/V7 rewarded split.",
     "The latest full daily result remains red historical evidence despite focused repairs. A new full daily/release gate and the separate PostgreSQL gate remain due.",
     "Local source/build archives are not off-device backups or a tested Render image; runtime dependencies and deployment secrets are intentionally excluded."
