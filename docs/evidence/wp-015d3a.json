@@ -12,6 +12,7 @@
     "worms_port_reviewer"
   ],
   "scope": [
+    "Owner correction on 2026-09-02 from clean, freshly fetched local/remote HEAD 170f0bf47d2fed94dd6240424e91f2ba99681f67: require one shared combat ruleset and AI configuration for Practice and rewarded matches; remove the proposed V8/V7 mode split. Correction edits only docs/planning/wp-015d3a-v8-action-turns-contract.md, docs/planning/implementation_plan.md, and this evidence record. Frozen handoff, registry, runtime, and recovery artifacts remain unchanged.",
     "Prepare, but do not implement, the V8 action-turn candidate: preserve exact V7 source/build, freeze a behavior-only reference handoff, define version/reward/analytical boundaries, and sequence V8 through V11.",
     "Documentation output allow-list: .gitignore, .gitattributes, docs/planning/implementation_plan.md, docs/planning/wp-015d3a-v8-action-turns-contract.md, docs/evidence/wp-015d3a.json, docs/evidence/wp-015d3a-v8-action-turns-behavior-record.md, legal/clean-room-records.json.",
     "Local generated output allow-list: .local-artifacts/rollback/v7-dc66d2a/source.zip and .local-artifacts/rollback/v7-dc66d2a/built-runtime.zip; local checkpoint tag checkpoint/v7-before-v8-2026-09-02. No push or deployment.",
@@ -27,9 +28,10 @@
     "npm run check:compliance",
     "Preparation JSON duplicate-key/schema, local navigation, frozen digest, exact changed-path, Git-byte manifest and predecessor preservation checks",
     "Independent preparation scope, rollback, version/reward boundary, and clean-room handoff review",
-    "git diff --check"
+    "git diff --check",
+    "2026-09-02 shared-ruleset correction: current-mode parity diagnostic, documentation/schema/scope/preservation checks, compliance, and independent review"
   ],
-  "deterministic_seeds": [],
+  "deterministic_seeds": ["1 (owner-correction current-mode parity diagnostic only)"],
   "sorcerers_reference_used": true,
   "clean_room_records": ["wp-015d3a-v8-action-turns"],
   "check_results": [
@@ -51,20 +53,31 @@
     {
       "command": "Independent preparation scope, rollback, version/reward boundary, and clean-room handoff review",
       "status": "pass",
-      "detail": "Codex agent /root/v8_preparation_reviewer returned pass with no findings on the seven-path preparation diff from the recorded V7 base. Independently verified checkpoint tag type/targets, rollback ignore rules, runtime archive inventory, and baseline selection/timing/schema facts. Confirmed explicit future reward isolation, preserved V1-V7/analytical identities, fresh implementer requirement, behavior-only handoff, and no fairness or player-evidence claims. Not an implementation or similarity clearance."
+      "detail": "Historical preparation review at 170f0bf, before the owner's same-ruleset correction: Codex agent /root/v8_preparation_reviewer returned pass with no findings on the seven-path preparation diff from the recorded V7 base. Independently verified checkpoint tag type/targets, rollback ignore rules, runtime archive inventory, and baseline selection/timing/schema facts. Confirmed the then-proposed future reward isolation, preserved V1-V7/analytical identities, fresh implementer requirement, behavior-only handoff, and no fairness or player-evidence claims. The mode-split proposal is now superseded by the owner's shared-ruleset requirement. Not an implementation or similarity clearance."
     },
     {
       "command": "git diff --check",
       "status": "pass",
       "detail": "Preparation whitespace/error-marker check passed; final staged scope remains the seven declared documentation/Git-hygiene paths."
+    },
+    {
+      "command": "2026-09-02 shared-ruleset correction: current-mode parity diagnostic, documentation/schema/scope/preservation checks, compliance, and independent review",
+      "status": "pass",
+      "detail": "Source inspection confirms both modes use the same registry ruleset selection, currently V7, and standard AI. An isolated in-memory seed-1 Wizard diagnostic compared six checkpoints (creation, move right, select Threadball, aim 35000/700, fire, Loomkeeper reply): simulation states and hashes matched exactly in Practice and reward mode. No reward service, wallet, payout, network, browser, or player observation was involved. Initial diagnostic launch failed before execution because an ESM named import did not match the existing CommonJS module; rerunning with the existing CommonJS/tsx loader passed without source edits. JSON duplicate-key and Draft 2020-12 schema validation, nine local links, exact three-path correction scope, frozen LF/hash and registry/manifests preservation, no runtime/test/analytical diff, compliance, and Git diff checks passed. Independent reviewer Codex agent /root/v8_preparation_reviewer returned pass, no findings. No fresh build or full-suite run was needed for this documentation-only correction; future V8 mode parity remains unimplemented."
     }
   ],
   "reviews": [
     {
+      "role": "independent_shared_ruleset_correction_reviewer",
+      "reviewer": "Codex agent /root/v8_preparation_reviewer",
+      "decision": "pass",
+      "detail": "Reviewed the complete three-document diff from 170f0bf, source selection/default-AI facts, terminology, scope and git diff --check. No findings. Joint mode promotion and historical match/replay identities are explicit; no combat split is hidden in reward policy. Frozen handoff precedence and historical review status are clear. Coordinator owns the bounded diagnostic/compliance/schema/link checks. V8 parity remains a future gate; no implementation or similarity clearance is claimed."
+    },
+    {
       "role": "independent_preparation_reviewer",
       "reviewer": "Codex agent /root/v8_preparation_reviewer",
       "decision": "pass",
-      "detail": "Read-only source-bound preparation review; no concrete findings. Archive hashes, JSON/schema and navigation validation were coordinator-owned. Saved-output restoration, numerical V8 parameter design, reward isolation implementation, behavioral tests, and implementation/similarity review remain future gates."
+      "detail": "Historical read-only source-bound preparation review at 170f0bf; no concrete findings then. Archive hashes, JSON/schema and navigation validation were coordinator-owned. The then-proposed reward isolation gate was subsequently superseded by owner-required shared combat rules. Saved-output restoration, numerical V8 parameter design, shared-mode parity tests, and implementation/similarity review remain future gates."
     }
   ],
   "skipped_checks": [
@@ -73,8 +86,8 @@
     "No push, PR, deployment, real-fund activation, or CRPM execution."
   ],
   "residual_risks": [
-    "V8 numeric timing/movement parameters, protocol/state design, and reward-mode isolation must be frozen and verified before V8 activation.",
-    "Current rewarded and Practice creation share the configured ruleset; explicit mode-specific pinning is a future prerequisite, not an implemented safeguard.",
+    "V8 numeric timing/movement parameters, protocol/state design, and shared Practice/reward gameplay parity must be frozen and verified before V8 activation in either mode.",
+    "Current rewarded and Practice creation correctly share V7 and standard AI. Future promotion must keep both modes on one approved combat version while binding old matches/replays to their original identities; do not introduce a V8 Practice/V7 rewarded split.",
     "The latest full daily result remains red historical evidence despite focused repairs. A new full daily/release gate and the separate PostgreSQL gate remain due.",
     "Local source/build archives are not off-device backups or a tested Render image; runtime dependencies and deployment secrets are intentionally excluded."
   ]

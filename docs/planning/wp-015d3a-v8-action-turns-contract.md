@@ -1,7 +1,7 @@
 # WP-015D3A V8 Action-Turn Preparation And Contract
 
-Date: 2026-09-02. Status: preparation complete and independently reviewed;
-stopped for owner review before V8 implementation. WP-015D3A remains
+Date: 2026-09-02. Status: preparation complete; owner's shared-ruleset
+correction independently reviewed; V8 implementation not started. WP-015D3A remains
 `in_progress`; its reference record is only
 `observed`. This pass implements no gameplay and opens no observation session.
 
@@ -66,6 +66,34 @@ No client/server/shared code, test, script, package, asset, schema, automation,
 other legal manifest, analytical carrier, or CRPM file may change. No branch
 is pushed, no PR is created, and no service is deployed in this pass.
 
+## Owner correction: shared Practice and rewarded combat rules
+
+On 2026-09-02 the owner clarified that Practice and rewarded matches must use
+the same ruleset; a mode-specific gameplay split is a bug, not a feature.
+This supersedes the original proposal to activate V8 in Practice while keeping
+rewarded matches on V7. The original preparation/review at `170f0bf` is retained
+as history, not current authorization for that split.
+
+Correction base: freshly fetched, clean local and remote HEAD
+`170f0bf47d2fed94dd6240424e91f2ba99681f67`. The exact correction allow-list is
+this contract, `docs/planning/implementation_plan.md`, and
+`docs/evidence/wp-015d3a.json`; the owning roles are planning, docs, and review.
+No new carrier is needed. The frozen reference handoff and its registry hash
+remain unchanged. Its product-authored phrase "reward-mode pinning" now means
+binding each match/replay to the shared approved version, **not** retaining
+different current combat versions per mode. This owner correction takes
+precedence over that historical product wording; source observations do not
+change.
+
+At this base, both modes already use `LATEST_RULESET_ID` =
+`nimble-knots-artillery-v7` through the same `SessionRegistry` and both use
+`standard` Loomkeeper difficulty. No current mode-specific ruleset defect was
+found. Reward eligibility, daily seed selection, identity, entitlement, and
+payout are mode policies around the shared combat engine. Existing Practice
+pause remains a documented convenience, not a second combat ruleset. Do not
+introduce different nominal turn clocks, movement budgets, Relic values,
+terrain-generation rules, or AI behavior just because a match is rewarded.
+
 ## V7 recovery package
 
 The annotated local tag `checkpoint/v7-before-v8-2026-09-02` peels to exactly
@@ -123,7 +151,7 @@ drain/restart policy, not an invented live-match conversion.
 
 | Version | Product increment | Boundary |
 | --- | --- | --- |
-| V8 | Timed hold-to-walk, touch jump, one offensive cast, short movement-only retreat, visible turn/phase state, corresponding AI | Keep three existing Relics with V5 combat tuning, V7 terrain/opening generation, one actor per side; Practice candidate first |
+| V8 | Timed hold-to-walk, touch jump, one offensive cast, short movement-only retreat, visible turn/phase state, corresponding AI | Keep three existing Relics with V5 combat tuning, V7 terrain/opening generation, one actor per side; one shared ruleset for Practice and rewarded matches |
 | V9 | Turn income/carry-over resource, affordable basic cast and differentiated costly options, one defense and one mobility utility | Separately contract economy, ballistics, stacking bounds, and AI; no copied reference tables |
 | V10 | Movement-aware terrain and map-specific starts with useful exposure, cover, elevation, and reachable routes | Validate actual opening shots and replies; replace the fixed separation policy only here; first substantial marketing-preview checkpoint, not automatic release |
 | V11 | Initially two actors per side, rotating active actors and shared team resources | Separately version team state, selection, elimination, UI, replay, and AI |
@@ -136,7 +164,7 @@ at a separate release checkpoint.
 
 ## V8 internal sequence
 
-### A. Freeze the rules and isolate activation
+### A. Freeze the rules and preserve shared activation
 
 Before runtime edits, the independent implementer proposes and records the
 finite V8 parameter/transition table and its exact source/test path allow-list
@@ -152,14 +180,22 @@ AI work budget. Record movement per full turn and retreat alongside weapon
 reach so V8 does not accidentally turn every opening into trivial contact.
 No unreviewed parameter or unlimited work loop may be hidden in implementation.
 
-Explicitly separate Practice selection from rewarded-match selection before
-enabling a V8 candidate. At the pinned baseline, `server/src/session/registry.ts`
-uses one `simulationRulesetId` for both modes and defaults it to
-`LATEST_RULESET_ID`; that is **not yet an explicit reward pin**. Changing a
-global latest alias alone is prohibited. Reward creation and replay
-verification must remain explicitly on V7 (or their separately approved
-existing identity), with regression tests proving V8 cannot enter that path.
-Do not change reward eligibility, amounts, payout, ledger, or identity policy.
+Preserve one approved combat ruleset and AI configuration for both Practice
+and rewarded matches. At the pinned baseline,
+`server/src/session/registry.ts` correctly uses one `simulationRulesetId` for
+both modes and defaults it to `LATEST_RULESET_ID`. Do not introduce per-mode
+version selectors or use the reward flag to alter combat rules.
+
+V8 promotion must update new matches in both modes together only after their
+shared gameplay and reward-lifecycle compatibility gates pass. Changing a
+latest alias alone is not sufficient verification. Keep each already-created
+match and historical replay bound to its original identity; replay validation
+uses that recorded identity, not whichever version is current later. A V7
+match finishing after promotion is version preservation, not a mode split.
+Candidate testing can keep payouts disabled and exercise rewarded-mode
+compatibility with the existing no-fund test facilities; this does not require
+different Practice combat rules or authorize real-fund activation. Do not
+change reward eligibility, amounts, payout, ledger, or identity policy.
 
 ### B. Authoritative movement, phases, and replay
 
@@ -211,9 +247,11 @@ extra time, hidden information, or perfect unbounded search. Keep existing
 policies/replays reproducible and test deterministic tie breaks/work bounds.
 
 Finish Practice start, retry, win/loss, timeout, pause, reconnect, and server
-expiry before candidate activation. Ship only after the quick feature gate,
-focused V8 lifecycle/security tests, and distinct review pass. This package is
-not done merely because a walking/jumping demo works.
+expiry, plus rewarded-match creation, completion and replay compatibility with
+the same ruleset, before candidate activation. Ship only after the quick
+feature gate, focused shared-mode parity and V8 lifecycle/security tests, and
+distinct review pass. This package is not done merely because a
+walking/jumping demo works.
 
 ## Clean-room roles and entry gate
 
@@ -245,7 +283,13 @@ observation is required or performed here.
 V8 acceptance must cover repeatable movement/jumps/collisions, phase edges,
 one-cast enforcement, timeout/airborne/death/settling cases, AI parity,
 lost-release expiry, stale input/version rejection, replay reconstruction,
-reward isolation, and all legacy golden hashes. Run `npm run verify:feature`
+Practice/reward combat parity, and all legacy golden hashes. For identical
+seed, Calling, AI configuration, accepted commands and simulation tick
+advances, both modes must produce identical simulation states and hashes;
+session/reward metadata and different chosen seeds are not combat rules.
+Cover shared version selection, turn/phase limits, movement/jumps, Relics,
+damage, terrain, AI replies and terminal outcomes, plus historical replay
+identity preservation. Run `npm run verify:feature`
 for each shipped increment plus focused affected tests. Keep `verify:daily`
 at end-of-day and release boundaries, with the separate PostgreSQL gate and
 existing expected-skip policy; do not weaken them or rerun the full matrix
@@ -305,7 +349,8 @@ response, or D2O satisfaction is claimed.
 
 ## Preparation review return
 
-Independent reviewer `Codex agent /root/v8_preparation_reviewer` returned
+Historical preparation review at `170f0bf`: independent reviewer
+`Codex agent /root/v8_preparation_reviewer` returned
 `pass`, with no concrete findings, against the seven-path preparation diff
 from `dc66d2ac0f02b1b7c47f6949816a7cbc6e48e286`. Review covered scope,
 annotated V7 checkpoint and analytical checkpoint targets, rollback ignore
@@ -324,8 +369,23 @@ failure was corrected and its complete inventory rechecked, not waived.
 No restore/deployment drill, fresh build, feature/full browser run, PostgreSQL
 integration, Linux visual approval, physical-device session, or player
 observation was performed. Detailed check and skipped-check facts are in the
-linked evidence record. The next bounded step, after owner review, is V8A's
-finite product-authored parameter/phase table, exact implementation allow-list,
-and Practice/reward version-selection isolation under independent review.
+linked evidence record. The owner's later shared-ruleset correction supersedes
+the mode-isolation part of that historical review. The next bounded step is
+V8A's finite product-authored parameter/phase table, exact implementation
+allow-list, and shared Practice/reward combat-parity gate under independent
+review.
 Stop here: no V8 runtime implementation, Lane G/Lane M execution, observation,
 push, PR, or deployment is opened by this preparation return.
+
+Owner-correction review return: `Codex agent /root/v8_preparation_reviewer`
+returned `pass` with no findings on the three-document diff from
+`170f0bf47d2fed94dd6240424e91f2ba99681f67`. The coordinator also verified six
+paired V7 checkpoints in an in-memory seed-1 Wizard diagnostic: creation,
+movement, Relic selection, aim, fire, and Loomkeeper reply produced identical
+simulation states/hashes and standard AI in both modes. This used no wallet,
+reward service, real entitlement, payout, network, or browser session.
+Compliance, JSON duplicate-key/schema validation, nine local links, exact
+three-path scope, unchanged frozen hash/registry/manifests, runtime/analytical
+preservation, and diff checks passed. No current combat-mode divergence was
+found; no runtime fix, fresh build, or full-suite run was needed. V8 parity is
+still a future implementation gate, not a result established by this V7 check.

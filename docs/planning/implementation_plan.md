@@ -14,10 +14,16 @@ Phaser/Socket.IO stack.
   [V8 preparation contract and roadmap](wp-015d3a-v8-action-turns-contract.md)
   binds exact V7 source/build recovery, the
   [frozen behavior-only handoff](../evidence/wp-015d3a-v8-action-turns-behavior-record.md),
-  mode-specific reward isolation, immutable replay identities, clean-room
-  roles, and the feature/daily verification cadence. The
+  owner-required shared Practice/reward combat rules, immutable replay
+  identities, clean-room roles, and the feature/daily verification cadence. The
   [evidence record](../evidence/wp-015d3a.json) stays `in_progress` and the
   clean-room record stays `observed`; neither asserts completed V8.
+  The owner corrected the initial mode-split proposal: both current modes
+  already use V7 and standard AI, and V8 must promote one shared combat
+  version for both. Eligibility/payout remain separate mode policies;
+  historical matches/replays keep their own recorded version. See the
+  contract's owner-correction section, which supersedes the earlier split
+  without rewriting the frozen reference observation.
   Current runtime remains V7 at `dc66d2ac0f02b1b7c47f6949816a7cbc6e48e286`,
   preserved by local tag `checkpoint/v7-before-v8-2026-09-02` and separately
   hashed local source/build archives. No runtime, reward, asset, dependency,
