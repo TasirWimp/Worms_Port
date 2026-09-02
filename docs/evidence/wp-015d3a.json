@@ -1,0 +1,81 @@
+{
+  "id": "WP-015D3A",
+  "status": "in_progress",
+  "starting_commit": "dc66d2ac0f02b1b7c47f6949816a7cbc6e48e286",
+  "branch": "codex/wp-015d3a-v8-preparation-v0",
+  "initial_worktree": "clean",
+  "starting_lock_sha256": "D4DAC6AE09A3D2F6C5A7EAA11520BAC43F1628320C5331575BCF1E1857073D73",
+  "owning_roles": [
+    "worms_port_planner",
+    "worms_port_docs_keeper",
+    "worms_port_compliance_keeper",
+    "worms_port_reviewer"
+  ],
+  "scope": [
+    "Prepare, but do not implement, the V8 action-turn candidate: preserve exact V7 source/build, freeze a behavior-only reference handoff, define version/reward/analytical boundaries, and sequence V8 through V11.",
+    "Documentation output allow-list: .gitignore, .gitattributes, docs/planning/implementation_plan.md, docs/planning/wp-015d3a-v8-action-turns-contract.md, docs/evidence/wp-015d3a.json, docs/evidence/wp-015d3a-v8-action-turns-behavior-record.md, legal/clean-room-records.json.",
+    "Local generated output allow-list: .local-artifacts/rollback/v7-dc66d2a/source.zip and .local-artifacts/rollback/v7-dc66d2a/built-runtime.zip; local checkpoint tag checkpoint/v7-before-v8-2026-09-02. No push or deployment.",
+    "Keep this package in_progress and its reference record observed until separately authorized implementation and distinct implementation/review gates complete. Preparation readiness is recorded in the contract, not as a claim of shipped V8."
+  ],
+  "non_goals": [
+    "Change runtime, gameplay, tests, dependencies, assets, reward configuration, schemas, analytical carriers, or CRPM; implement V8, V9, V10, or V11.",
+    "Run player observation, Lane G, Lane M, Stage C aggregate/repair, the full daily suite, or deployment; claim balance, D2O, ProductAuthority, placement, P5, or landfall.",
+    "Import Sorcerers code, algorithms, constants, names, assets, or expressive sequences; mark the unimplemented clean-room lifecycle complete."
+  ],
+  "planned_checks": [
+    "V7 source identity, build-proof validation, built-server smoke, and exact rollback archive verification",
+    "npm run check:compliance",
+    "Preparation JSON duplicate-key/schema, local navigation, frozen digest, exact changed-path, Git-byte manifest and predecessor preservation checks",
+    "Independent preparation scope, rollback, version/reward boundary, and clean-room handoff review",
+    "git diff --check"
+  ],
+  "deterministic_seeds": [],
+  "sorcerers_reference_used": true,
+  "clean_room_records": ["wp-015d3a-v8-action-turns"],
+  "check_results": [
+    {
+      "command": "V7 source identity, build-proof validation, built-server smoke, and exact rollback archive verification",
+      "status": "pass",
+      "detail": "Freshly fetched origin; clean V7 local/remote HEAD dc66d2ac0f02b1b7c47f6949816a7cbc6e48e286. Annotated local checkpoint/v7-before-v8-2026-09-02 peels to that commit; the analytical checkpoint still peels to 14cf9d490d7cf7b23e22918f608a694bb3028005. Before legal edits, existing Node v23.6.0 build proof passed (inputs 6a8a78c00ed325cbad75528ee010455c4beeab17e29bed74df27596391bd8864, outputs af3116474ad8c1baafdddf653ae500d55a7fd5f3551bebb8a3d543132beb6b2d) and npm run smoke:built passed. All 42 built-runtime.zip files match original bytes. Initial source archive comparison exposed core.autocrlf conversion; regenerated with git -c core.autocrlf=false archive and verified all 524 files against exact Git blob hashes. Source ZIP SHA-256 1125A60869BBE5D644FBA9FFBBFA1EF4911FC15BE8D985E04D53BDA2A3146BA5; runtime ZIP SHA-256 270C5F82E0A2B1F48237C5F878BE1D2FA4EDBD9086B7C05025439DF43D982A8C. Both archives are ignored local artifacts, not off-device backups or deployed images. Saved-output restoration was not executed. The subsequent registry edit legitimately makes the old build proof stale for the preparation tree; no proof was rewritten."
+    },
+    {
+      "command": "npm run check:compliance",
+      "status": "pass",
+      "detail": "Asset manifest, runtime inventory, generation components, import boundary, dependency licenses, all 50 work-package records, and both clean-room records passed. V8 remains in_progress/observed; no schema or compliance gate was relaxed."
+    },
+    {
+      "command": "Preparation JSON duplicate-key/schema, local navigation, frozen digest, exact changed-path, Git-byte manifest and predecessor preservation checks",
+      "status": "pass",
+      "detail": "Strict duplicate-key checking passed for both edited JSON records; Draft 2020-12 validation passed for the package and both registry rows. Nine local navigation links resolve. Frozen handoff is LF with SHA-256 0B9B93C02213DC37BF3FE3A96E7A34EBD814BC73F50F26E67B14E50F75C23AD8 and an exact LF Git attribute. All seven tracked paths match the preregistered allow-list. Previous registry row/policy are unchanged. Runtime, tests, scripts, analytical sources/carriers, assets, package files, other manifests, schemas, and V7 contract/evidence are unchanged. Git-byte SHA-256 remains package-lock D4DAC6AE09A3D2F6C5A7EAA11520BAC43F1628320C5331575BCF1E1857073D73, source manifest AB3DA23B9D25F18CD128CB932DF6F1038231B3F81F8031D770AACA1547FF5328, asset manifest 7344F43F728F17FA2E640FBBDC1F8E7189AB316F82A803CD2A0FC7E91EA9274B. No analytical verdict, player-evidence status, or execution authority changes."
+    },
+    {
+      "command": "Independent preparation scope, rollback, version/reward boundary, and clean-room handoff review",
+      "status": "pass",
+      "detail": "Codex agent /root/v8_preparation_reviewer returned pass with no findings on the seven-path preparation diff from the recorded V7 base. Independently verified checkpoint tag type/targets, rollback ignore rules, runtime archive inventory, and baseline selection/timing/schema facts. Confirmed explicit future reward isolation, preserved V1-V7/analytical identities, fresh implementer requirement, behavior-only handoff, and no fairness or player-evidence claims. Not an implementation or similarity clearance."
+    },
+    {
+      "command": "git diff --check",
+      "status": "pass",
+      "detail": "Preparation whitespace/error-marker check passed; final staged scope remains the seven declared documentation/Git-hygiene paths."
+    }
+  ],
+  "reviews": [
+    {
+      "role": "independent_preparation_reviewer",
+      "reviewer": "Codex agent /root/v8_preparation_reviewer",
+      "decision": "pass",
+      "detail": "Read-only source-bound preparation review; no concrete findings. Archive hashes, JSON/schema and navigation validation were coordinator-owned. Saved-output restoration, numerical V8 parameter design, reward isolation implementation, behavioral tests, and implementation/similarity review remain future gates."
+    }
+  ],
+  "skipped_checks": [
+    "V8 implementation, player observation, and browser/device sessions are not started.",
+    "No new build, feature gate, full daily suite, PostgreSQL integration, or visual-baseline approval: this pass changes only documentation and Git hygiene. The existing V7 build is verified before archiving.",
+    "No push, PR, deployment, real-fund activation, or CRPM execution."
+  ],
+  "residual_risks": [
+    "V8 numeric timing/movement parameters, protocol/state design, and reward-mode isolation must be frozen and verified before V8 activation.",
+    "Current rewarded and Practice creation share the configured ruleset; explicit mode-specific pinning is a future prerequisite, not an implemented safeguard.",
+    "The latest full daily result remains red historical evidence despite focused repairs. A new full daily/release gate and the separate PostgreSQL gate remain due.",
+    "Local source/build archives are not off-device backups or a tested Render image; runtime dependencies and deployment secrets are intentionally excluded."
+  ]
+}

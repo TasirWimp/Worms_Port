@@ -2,6 +2,19 @@
   "policy": "Sorcerers-informed work starts with an observed frozen behavior record and completes only after separated implementation/review roles, an implementation declaration, a passing similarity review, and behavioral-test evidence.",
   "records": [
     {
+      "id": "wp-015d3a-v8-action-turns",
+      "work_package": "WP-015D3A",
+      "source_commit": "0f45c4920321c0a3a14de30fe5cf44131a38da89",
+      "observed_material": [
+        "preceding pinned-source investigation of directional movement and jumping behavior",
+        "timed turn, attack completion, remaining movement, and control-handover behavior; no runtime session or timing measurement"
+      ],
+      "behavior_record": "docs/evidence/wp-015d3a-v8-action-turns-behavior-record.md",
+      "behavior_record_sha256": "0B9B93C02213DC37BF3FE3A96E7A34EBD814BC73F50F26E67B14E50F75C23AD8",
+      "observer": "Codex primary /root reference-observer 2026-09-02",
+      "status": "observed"
+    },
+    {
       "id": "wp-015d2z-v7-terrain-actor-placement",
       "work_package": "WP-015D2Z",
       "source_commit": "0f45c4920321c0a3a14de30fe5cf44131a38da89",

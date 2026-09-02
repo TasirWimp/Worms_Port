@@ -19,6 +19,9 @@ playwright-report/
 blob-report/
 .playwright-cache/
 
+# local rollback archives; never use the disposable browser-test output home
+.local-artifacts/rollback/
+
 # local-only upstream review material
 .quarantine/
 assets-quarantine/sorcerers/raw/**

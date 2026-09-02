@@ -8,7 +8,26 @@ Phaser/Socket.IO stack.
 ## Execution Pointer
 
 - Active target: mobile-first single-player Nimiq Pay competition release.
-- Active work package: **WP-015D2Z V7 Tactical Arena Candidate — complete,
+- Active product package: **WP-015D3A V8 Action-Turn Candidate — preparation
+  complete and independently reviewed; implementation not started.** The owner approved the V8-through-V11
+  migration direction and requested preparation before V8 code. The
+  [V8 preparation contract and roadmap](wp-015d3a-v8-action-turns-contract.md)
+  binds exact V7 source/build recovery, the
+  [frozen behavior-only handoff](../evidence/wp-015d3a-v8-action-turns-behavior-record.md),
+  mode-specific reward isolation, immutable replay identities, clean-room
+  roles, and the feature/daily verification cadence. The
+  [evidence record](../evidence/wp-015d3a.json) stays `in_progress` and the
+  clean-room record stays `observed`; neither asserts completed V8.
+  Current runtime remains V7 at `dc66d2ac0f02b1b7c47f6949816a7cbc6e48e286`,
+  preserved by local tag `checkpoint/v7-before-v8-2026-09-02` and separately
+  hashed local source/build archives. No runtime, reward, asset, dependency,
+  schema, analytical, or deployment change is made. Stop for preparation
+  review before starting V8A's finite parameter/phase contract and independent
+  implementation. The analytical execution pointer remains **WP-015D2A**;
+  Stage C debt remains `interrupted_no_tap`, Lane G/Lane M execution remains
+  closed, Lane G evidence remains none, D2O remains unsatisfied, and
+  ProductAuthority remains none.
+- Completed product predecessor: **WP-015D2Z V7 Tactical Arena Candidate — complete,
   awaiting owner deployment/review:** V7 is bounded to
   deterministic surface-only terrain profiles and terrain-derived,
   balance-aware opening pairs under the actual V6 movement and V5 Relic rules.
