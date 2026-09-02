@@ -25,6 +25,13 @@ Phaser/Socket.IO stack.
   `3654c2bf2eb4c0d85229384b97984b28003a9fc6` passed the per-feature phone
   gate, historical runtime checks, the restored V4 analytical export, clean-
   room compliance, and independent source-boundary review.
+  The 2026-09-02 test-only follow-up corrected six daily camera assertions
+  that still assumed V4's fixed spawn while exercising V7. Spawn-relative
+  framing now passes the affected five-project checks and the quick feature
+  gate; performance, bundle/security, and audit checks also pass. Gameplay is
+  unchanged. The prior red daily result is retained in the V7 contract and
+  evidence; a fresh complete daily matrix and the separate PostgreSQL gate
+  remain due (no local test database was configured).
 - Completed product predecessor: **WP-015D2Y V6 Movement Corrections:** the separately versioned
   `nimble-knots-artillery-v6` correction authorized by the owner on 2026-09-01
   preserves V5's Relic balance profile while making an acquired movement drag

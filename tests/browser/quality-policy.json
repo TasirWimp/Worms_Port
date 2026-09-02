@@ -52,7 +52,7 @@
     },
     {
       "file": "combat.spec.ts",
-      "title": "V4 opening survey continuously zooms to the player view",
+      "title": "current opening survey continuously zooms to the player view",
       "runsOn": ["chromium-390x844"],
       "reason": "One canonical portrait phone explicitly switches from the matrix's reduced-motion default to verify the three-second continuous opening survey."
     },

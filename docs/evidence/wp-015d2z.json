@@ -24,6 +24,7 @@
     "Execute Lane G or Lane M, repair Stage C, change CRPM, advance the active analytical execution pointer, or claim D2O, ProductAuthority, placement, P5, landfall, final balance, fun, or release readiness."
   ],
   "planned_checks": [
+    "2026-09-02 follow-up: focused five-project camera regressions, combat/policy unit tests, verify:feature, and the previously unreached performance/bundle/PostgreSQL-prerequisite/audit tail",
     "focused V7 simulation and strict protocol red/green tests",
     "npm run verify:feature",
     "focused historical replay, Relic, Loomkeeper, protocol, and tactical-model preservation checks",
@@ -39,6 +40,11 @@
     "wp-015d2z-v7-terrain-actor-placement"
   ],
   "check_results": [
+    {
+      "command": "2026-09-02 follow-up: focused five-project camera regressions, combat/policy unit tests, verify:feature, and the previously unreached performance/bundle/PostgreSQL-prerequisite/audit tail",
+      "status": "pass",
+      "detail": "Test-only continuation from clean HEAD 984dac2ab8654d9eac95631e854135f003c05c9a on the recorded V7 branch. Retained daily result: 97 passes, 72 expected skips, six stale V4 camera-left assertions against current V7 seed 1. Canonical Chromium reproduced expected 0.00 versus actual 192.00 with player x=704 before repair. Spawn-relative browser framing, actual relative preview/pan movement, explicit historical V4 unit binding, and five-seed V7 camera coverage now pass. Focused five-project camera/layout run: 12 passed, 8 unchanged policy exclusions, zero retries; all six reported failures covered. Independent combat tests: 25 passed; policy tests: 7 passed; cadence tests: 2 passed. verify:feature passed compliance, types, all unit/simulation suites, production build, built-server smoke, and all 5 canonical phone journeys, including the final missing-attribute guard. Previously unreached performance gate passed (one warmup and five samples); bundle budgets passed at 1467842/1500000 raw JavaScript bytes and 406613/430000 gzip bytes; identity-bundle and reward-security checks passed; npm audit found zero vulnerabilities. PostgreSQL prerequisite reporting completed and truthfully reported WP014_TEST_DATABASE_URL unavailable: database integration was not executed or counted as passing. Initial feature preflight rejected the still-complete evidence status while the follow-up was pending; the record was kept in_progress during verification and completed only after the declared checks. Duplicate-key validation, local navigation links, exact repair allow-list, title-only policy parity, Git diff, source identity, and Git-byte lock/legal-manifest preservation passed. No runtime, simulation, asset, dependency, baseline, analytical, or gameplay change. Full daily matrix remains a separate later gate."
+    },
     {
       "command": "focused V7 simulation and strict protocol red/green tests",
       "status": "pass",
@@ -62,6 +68,12 @@
   ],
   "reviews": [
     {
+      "role": "independent_test_repair_reviewer",
+      "reviewer": "Codex agent /root/v7_reviewer_final",
+      "decision": "pass",
+      "detail": "2026-09-02: spawn-relative framing matches cameraForActor; preview/pan thresholds require actual movement; V4 is explicitly pinned and V7 covers five seeds; policy diff is title-only with no project, skip, retry, or threshold changes; runtime and source boundaries are unchanged. Reviewer independently passed 25 combat and 7 policy tests plus diff validation. The sole low-priority missing-attribute oracle concern was corrected by checking numeric text before Number conversion, then re-reviewed with no outstanding findings. Browser/build verification was owned by the coordinator."
+    },
+    {
       "role": "independent_clean_room_source_and_implementation_reviewer",
       "reviewer": "Codex agent /root/v7_reviewer_final",
       "decision": "pass",
@@ -70,7 +82,8 @@
     }
   ],
   "skipped_checks": [
-    "npm run verify:daily was not run because this is the per-feature loop, not the requested end-of-day or release checkpoint; the full five-project matrix, performance, bundle, security, and audit gate remains due at that checkpoint.",
+    "At initial V7 completion, verify:daily was deferred to the end-of-day checkpoint. That checkpoint subsequently returned 97 passed, 72 expected skips, and six failures. The 2026-09-02 test-only repair reran the affected five-project checks, feature gate, and previously unreached tail, not the entire daily matrix; it does not replace or relabel the retained red daily result. The next full daily/release gate remains required.",
+    "2026-09-02 PostgreSQL integration was not run: prerequisite reporting confirmed WP014_TEST_DATABASE_URL is unavailable locally. The separate verify:postgres GitHub Actions gate remains mandatory.",
     "Real Android/iOS testing and formal player observation were not run; they remain outside this autonomous engineering package and do not become Lane G evidence.",
     "Linux visual-baseline approval was not run; the pinned Ubuntu 24.04 artifact workflow remains the only admissible baseline source."
   ],

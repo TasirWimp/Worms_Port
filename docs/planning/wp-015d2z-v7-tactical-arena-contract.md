@@ -155,6 +155,8 @@ tests/relics/relics.test.ts
 tests/tactical-model/v5-marketing-candidate.test.ts
 tests/combat/combat.test.ts
 tests/combat/presentation.test.ts
+tests/browser/combat.spec.ts
+tests/browser/quality-policy.json
 tests/reward/service.test.ts
 scripts/export-tactical-v4-baseline.ts
 ```
@@ -189,6 +191,45 @@ analytical model, or any accepted result.
 
 No real Android/iOS session, formal player observation, or Linux visual
 baseline approval is authorized by this contract.
+
+### 2026-09-02 daily camera regression repair
+
+The first daily run on `984dac2ab8654d9eac95631e854135f003c05c9a`
+reported 97 passes, 72 expected skips, and six failures: current combat-preview
+tests still expected V4's fixed camera left `0`, although V7 seed `1` starts
+the player at x=704 and correctly centres the 1024-unit view at left `192`.
+A focused canonical Chromium run reproduced the exact `0.00`/`192.00` failure.
+
+This test-only continuation uses the existing contract and evidence carriers.
+Its exact repair scope is `tests/browser/combat.spec.ts`,
+`tests/browser/quality-policy.json`, `tests/combat/combat.test.ts`, this contract,
+`docs/evidence/wp-015d2z.json`, and `docs/planning/implementation_plan.md`.
+The test-worker role owns the correction; an independent reviewer checks it.
+Current browser checks must assert spawn-relative framing and actual preview/
+pan movement, while historical V4 unit coverage binds explicitly to V4.
+The existing quick-smoke layout case must also check player-centred framing.
+Quality-policy edits may rename the corresponding test only, preserving every
+project inclusion, exclusion, retry, and threshold. No runtime, simulation,
+asset, dependency, baseline, or analytical change is admitted.
+
+Verification: focused camera tests across all five projects, combat and policy
+unit tests, `npm run verify:feature`, and the previously unreached performance,
+bundle, PostgreSQL-prerequisite report, and audit checks. The complete daily
+matrix is not repeated for this bounded test-only correction; its prior red
+result is retained and the next daily run remains a separate gate.
+
+Repair result: complete. All six reported failures passed in the focused
+five-project run (12 passes, 8 unchanged expected exclusions, zero retries).
+The feature gate passed all unit/simulation, compliance/type, production-build,
+built-smoke, and five canonical phone checks, including the new quick-smoke
+camera assertion and missing-attribute safeguard. Performance, bundle budgets,
+identity-bundle/reward-security inspection, and audit passed (zero
+vulnerabilities). PostgreSQL prerequisite reporting ran but found no local
+`WP014_TEST_DATABASE_URL`; database integration remains unrun, not green.
+Independent review returned pass after its one oracle-hardening note was
+resolved. No gameplay/runtime, asset, dependency, manifest, analytical,
+authority, or baseline bytes changed. Exact check and review results are in
+`docs/evidence/wp-015d2z.json`; the earlier red daily result is not overwritten.
 
 ## Stop condition
 

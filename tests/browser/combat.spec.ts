@@ -31,6 +31,7 @@ test('portrait/landscape layout is touch-safe and renders deterministic combat',
   await expect(page.getByText('Your turn')).toBeVisible();
   await expect(page.locator('.player-status')).toHaveAttribute('aria-label', /Player Stitching 100/);
   await expect(page.locator('.loomkeeper-status')).toHaveAttribute('aria-label', /Loomkeeper Stitching 100/);
+  await expectPlayerCamera(page);
   if (viewport.width === 844 && viewport.height === 390) {
     expect(Number(await ui.getAttribute('data-battlefield-width'))).toBeGreaterThanOrEqual(660);
     expect(Number(await ui.getAttribute('data-battlefield-height'))).toBeGreaterThanOrEqual(370);
@@ -263,7 +264,7 @@ test('touch movement, Relic selection, aim lock, and explicit Fire stay separate
   expect(presentation.maximumProjectilePoints).toBeGreaterThan(1);
 });
 
-test('V4 opening survey continuously zooms to the player view', async ({ page }) => {
+test('current opening survey continuously zooms to the player view', async ({ page }) => {
   await page.emulateMedia({ reducedMotion: 'no-preference' });
   await page.goto('/?combat-preview=1&sideways=off');
   await expect(page.locator('.combat-ui')).toBeVisible();
@@ -282,16 +283,16 @@ test('V4 opening survey continuously zooms to the player view', async ({ page })
   await expect.poll(async () => Number(await ui.getAttribute('data-camera-width')), {
     timeout: 4_000
   }).toBe(1_024);
-  await expect(ui).toHaveAttribute('data-camera-left', '0.00');
+  await expectPlayerCamera(page);
   await expect(ui).toHaveAttribute('data-camera-top', '0.00');
   await expect(ui).toHaveAttribute('data-battlefield-height', battlefieldHeight!);
   await expect(ui).toHaveAttribute('data-world-scale', verticalScale!);
   await expect(page.getByText('← Swipe left to find Loomkeeper')).toBeVisible();
 });
 
-test('V4 follows a live preview edge, preserves a locked aim, and preserves post-lock panning', async ({ page }) => {
+test('current camera follows a live preview edge, preserves a locked aim, and preserves post-lock panning', async ({ page }) => {
   const ui = page.locator('.combat-ui');
-  await expect(ui).toHaveAttribute('data-camera-left', '0.00');
+  const initialCamera = await expectPlayerCamera(page);
 
   // The long arc remains an editable preview while the thumb is down. Its
   // terrain endpoint moves into the view at the outgoing edge; no command has
@@ -300,7 +301,7 @@ test('V4 follows a live preview edge, preserves a locked aim, and preserves post
   await pointer(page, '.aim-zone', 'pointermove', 43, 0.99, 0.27);
   await expect(ui).toHaveAttribute('data-phase', 'aiming');
   await expect(ui).toHaveAttribute('data-camera-width', '1024');
-  await expect.poll(async () => Number(await ui.getAttribute('data-camera-left'))).toBeGreaterThan(20);
+  await expect.poll(async () => Number(await ui.getAttribute('data-camera-left'))).toBeGreaterThan(initialCamera + 20);
   await expect(ui).not.toHaveAttribute('data-last-command', 'aim');
   const previewCamera = Number(await ui.getAttribute('data-camera-left'));
   await pointer(page, '.aim-zone', 'pointerup', 43, 0.99, 0.27);
@@ -308,7 +309,7 @@ test('V4 follows a live preview edge, preserves a locked aim, and preserves post
   await expect.poll(async () => Number(await ui.getAttribute('data-camera-left'))).toBe(previewCamera);
 
   await dragBattlefield(page, 44, 0.74, 0.22, 0.35, 0.22);
-  await expect.poll(async () => Number(await ui.getAttribute('data-camera-left'))).toBeGreaterThan(120);
+  await expect.poll(async () => Number(await ui.getAttribute('data-camera-left'))).toBeGreaterThan(previewCamera + 120);
   await expect(page.locator('.combat-camera-hint')).toBeHidden();
   await expect(ui).toHaveAttribute('data-last-command', 'aim');
 
@@ -546,6 +547,21 @@ async function pointer(
       clientY: rect.top + rect.height * args.yRatio
     }));
   }, { type, pointerId, xRatio, yRatio });
+}
+
+async function expectPlayerCamera(page: Page): Promise<number> {
+  const ui = page.locator('.combat-ui');
+  // The current preview follows the latest ruleset. V7 derives its spawn from
+  // terrain, so V4's fixed left=0 is not the current player-view contract.
+  const playerXAttribute = await ui.getAttribute('data-player-x');
+  expect(playerXAttribute).toMatch(/^\d+(?:\.\d+)?$/);
+  const playerX = Number(playerXAttribute);
+  expect(Number.isFinite(playerX)).toBe(true);
+  const expectedLeft = Math.max(0, Math.min(2_048 - 1_024, playerX - 1_024 / 2));
+  await expect(ui).toHaveAttribute('data-camera-width', '1024', { timeout: 4_000 });
+  await expect(ui).toHaveAttribute('data-camera-left', expectedLeft.toFixed(2));
+  await expect(ui).toHaveAttribute('data-camera-top', '0.00');
+  return expectedLeft;
 }
 
 async function dragBattlefield(
