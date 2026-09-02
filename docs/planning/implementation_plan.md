@@ -8,9 +8,11 @@ Phaser/Socket.IO stack.
 ## Execution Pointer
 
 - Active target: mobile-first single-player Nimiq Pay competition release.
-- Active product package: **WP-015D3A V8 Action-Turn Candidate — preparation
-  complete and independently reviewed; implementation not started.** The owner approved the V8-through-V11
-  migration direction and requested preparation before V8 code. The
+- Active product package: **WP-015D3A V8 Action-Turn Candidate — V8A finite
+  rules/acceptance contract complete and independently reviewed; V8B runtime
+  implementation is next, not started.**
+  The owner opened V8A after the independently reviewed preparation and shared-
+  ruleset correction. The
   [V8 preparation contract and roadmap](wp-015d3a-v8-action-turns-contract.md)
   binds exact V7 source/build recovery, the
   [frozen behavior-only handoff](../evidence/wp-015d3a-v8-action-turns-behavior-record.md),
@@ -27,9 +29,15 @@ Phaser/Socket.IO stack.
   Current runtime remains V7 at `dc66d2ac0f02b1b7c47f6949816a7cbc6e48e286`,
   preserved by local tag `checkpoint/v7-before-v8-2026-09-02` and separately
   hashed local source/build archives. No runtime, reward, asset, dependency,
-  schema, analytical, or deployment change is made. Stop for preparation
-  review before starting V8A's finite parameter/phase contract and independent
-  implementation. The analytical execution pointer remains **WP-015D2A**;
+  schema, analytical, or deployment change is made. V8A froze product-authored
+  15-second action, 30-unit/s walking, a one-tap forward hop and 2-second
+  retreat, with explicit phase/input/replay/AI bounds, future exact paths,
+  and separate quick-correctness versus full-assessment gates. Contract
+  `wp-015d3a-v8a-rules-v0` passed independent design and arithmetic review;
+  touch feel, collision integration and balance are not yet verified.
+  Next is V8B's versioned authoritative movement/phase/replay foundation;
+  production remains V7 in both modes until the B-D activation gates pass.
+  The analytical execution pointer remains **WP-015D2A**;
   Stage C debt remains `interrupted_no_tap`, Lane G/Lane M execution remains
   closed, Lane G evidence remains none, D2O remains unsatisfied, and
   ProductAuthority remains none.

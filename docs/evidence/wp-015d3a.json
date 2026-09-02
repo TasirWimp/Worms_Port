@@ -7,11 +7,13 @@
   "starting_lock_sha256": "D4DAC6AE09A3D2F6C5A7EAA11520BAC43F1628320C5331575BCF1E1857073D73",
   "owning_roles": [
     "worms_port_planner",
+    "worms_port_base_game_worker",
     "worms_port_docs_keeper",
     "worms_port_compliance_keeper",
     "worms_port_reviewer"
   ],
   "scope": [
+    "V8A opened by owner on 2026-09-02 from clean, freshly fetched local/remote HEAD f70cff9be71ea8ed47fa259ea0f6d4c5e92ac241, on isolated branch codex/wp-015d3a-v8a-rules-contract-v0. Freeze independently authored finite movement/jump/phase, input/replay/AI limits, shared-mode promotion and future exact implementation path/test contract. V8A changes only docs/planning/wp-015d3a-v8-action-turns-contract.md, docs/planning/implementation_plan.md, and this evidence record. No new carrier or runtime/test edit; V8B implementation remains a later step.",
     "Owner correction on 2026-09-02 from clean, freshly fetched local/remote HEAD 170f0bf47d2fed94dd6240424e91f2ba99681f67: require one shared combat ruleset and AI configuration for Practice and rewarded matches; remove the proposed V8/V7 mode split. Correction edits only docs/planning/wp-015d3a-v8-action-turns-contract.md, docs/planning/implementation_plan.md, and this evidence record. Frozen handoff, registry, runtime, and recovery artifacts remain unchanged.",
     "Prepare, but do not implement, the V8 action-turn candidate: preserve exact V7 source/build, freeze a behavior-only reference handoff, define version/reward/analytical boundaries, and sequence V8 through V11.",
     "Documentation output allow-list: .gitignore, .gitattributes, docs/planning/implementation_plan.md, docs/planning/wp-015d3a-v8-action-turns-contract.md, docs/evidence/wp-015d3a.json, docs/evidence/wp-015d3a-v8-action-turns-behavior-record.md, legal/clean-room-records.json.",
@@ -29,9 +31,10 @@
     "Preparation JSON duplicate-key/schema, local navigation, frozen digest, exact changed-path, Git-byte manifest and predecessor preservation checks",
     "Independent preparation scope, rollback, version/reward boundary, and clean-room handoff review",
     "git diff --check",
-    "2026-09-02 shared-ruleset correction: current-mode parity diagnostic, documentation/schema/scope/preservation checks, compliance, and independent review"
+    "2026-09-02 shared-ruleset correction: current-mode parity diagnostic, documentation/schema/scope/preservation checks, compliance, and independent review",
+    "V8A finite parameter/phase contract: independent product design, bounded arithmetic/coverage review, source and exact-path preservation, JSON/schema/links, compliance, and distinct review"
   ],
-  "deterministic_seeds": ["1 (owner-correction current-mode parity diagnostic only)"],
+  "deterministic_seeds": ["1", "2", "3", "4", "17", "42", "1337", "65535", "2147483648", "4294967295"],
   "sorcerers_reference_used": true,
   "clean_room_records": ["wp-015d3a-v8-action-turns"],
   "check_results": [
@@ -64,9 +67,20 @@
       "command": "2026-09-02 shared-ruleset correction: current-mode parity diagnostic, documentation/schema/scope/preservation checks, compliance, and independent review",
       "status": "pass",
       "detail": "Source inspection confirms both modes use the same registry ruleset selection, currently V7, and standard AI. An isolated in-memory seed-1 Wizard diagnostic compared six checkpoints (creation, move right, select Threadball, aim 35000/700, fire, Loomkeeper reply): simulation states and hashes matched exactly in Practice and reward mode. No reward service, wallet, payout, network, browser, or player observation was involved. Initial diagnostic launch failed before execution because an ESM named import did not match the existing CommonJS module; rerunning with the existing CommonJS/tsx loader passed without source edits. JSON duplicate-key and Draft 2020-12 schema validation, nine local links, exact three-path correction scope, frozen LF/hash and registry/manifests preservation, no runtime/test/analytical diff, compliance, and Git diff checks passed. Independent reviewer Codex agent /root/v8_preparation_reviewer returned pass, no findings. No fresh build or full-suite run was needed for this documentation-only correction; future V8 mode parity remains unimplemented."
+    },
+    {
+      "command": "V8A finite parameter/phase contract: independent product design, bounded arithmetic/coverage review, source and exact-path preservation, JSON/schema/links, compliance, and distinct review",
+      "status": "pass",
+      "detail": "Contract wp-015d3a-v8a-rules-v0 was independently authored by fresh Codex agent /root/v8a_contract_designer from the frozen behavior handoff and MIT product sources/docs/tests, without reference source, quarantine, observer transcript or external access. Candidate: 30 Hz, 450-tick/15-second action, 30-unit/s gait, 60-tick/2-second retreat; fixed-point hop impulse -2048 and gravity64 yields 124-unit apex and level landing at tick63. Designer, coordinator and reviewer arithmetic agree on 1050 ticks/turn, 16800 ticks/match, and 180 AI candidates/189000 rollout ticks. Coordinator additionally checked all20 starting actor rectangles over the ten declared V7 seeds for square-body clearance; all three terrain profiles occur. These are read-only V7/arithmetic checks, not V8 collision or gameplay execution. Distinct reviewer /root/v8_preparation_reviewer passed the revised contract after correction of the out-of-world fixture, deadline ordering and player-cancel-during-AI risks. Jump impulse versus walk lease, separate pause-duration hash invariance, shared-mode parity, legacy identities, reward-verifier caps and non-default 240-match assessment cadence are explicit. Exact three-document scope, source/tags/archive hashes, frozen reference/registry/manifests, no runtime/test/analytical diff, duplicate keys, JSON Schema, nine local links, compliance and diff checks passed. V8A is complete; overall package remains in_progress and clean-room record observed until B-D implementation, behavioral tests and implementation/similarity review."
     }
   ],
   "reviews": [
+    {
+      "role": "independent_v8a_contract_reviewer",
+      "reviewer": "Codex agent /root/v8_preparation_reviewer",
+      "decision": "pass",
+      "detail": "Source-bound design review against f70cff9be71ea8ed47fa259ea0f6d4c5e92ac241: three reported blockers resolved (interior gap fixture, post-integration deadline checks, player lifecycle/cancel barriers cannot mutate AI intent). Independently reproduced movement/jump, turn/match and AI arithmetic bounds. Reviewed joint mode promotion, old match/replay identities, verifier capacity, future exact paths and finite acceptance/cadence rules. No remaining blocking findings. Design approval only, not runtime verification or implementation/similarity clearance."
+    },
     {
       "role": "independent_shared_ruleset_correction_reviewer",
       "reviewer": "Codex agent /root/v8_preparation_reviewer",
@@ -81,12 +95,13 @@
     }
   ],
   "skipped_checks": [
+    "V8A is contract-only: no new build, verify:feature, V8 simulation/collision implementation, browser/device session, daily/full suite, PostgreSQL integration, assessment run or deployment. Future test cases and synthetic mirrored scenarios are preregistered, not executed results. No new archive was generated; existing archive hashes were rechecked.",
     "V8 implementation, player observation, and browser/device sessions are not started.",
     "No new build, feature gate, full daily suite, PostgreSQL integration, or visual-baseline approval: this pass changes only documentation and Git hygiene. The existing V7 build is verified before archiving.",
     "No push, PR, deployment, real-fund activation, or CRPM execution."
   ],
   "residual_risks": [
-    "V8 numeric timing/movement parameters, protocol/state design, and shared Practice/reward gameplay parity must be frozen and verified before V8 activation in either mode.",
+    "V8A freezes candidate parameters and phase/input/replay/AI bounds, but collision integration, touch/network behavior, AI CPU cost and quality, shared-mode runtime parity, and balance remain unverified until B-D. A failed gate requires an explicit versioned contract amendment, not silent retuning.",
     "Current rewarded and Practice creation correctly share V7 and standard AI. Future promotion must keep both modes on one approved combat version while binding old matches/replays to their original identities; do not introduce a V8 Practice/V7 rewarded split.",
     "The latest full daily result remains red historical evidence despite focused repairs. A new full daily/release gate and the separate PostgreSQL gate remain due.",
     "Local source/build archives are not off-device backups or a tested Render image; runtime dependencies and deployment secrets are intentionally excluded."

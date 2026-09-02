@@ -1,7 +1,7 @@
 # WP-015D3A V8 Action-Turn Preparation And Contract
 
-Date: 2026-09-02. Status: preparation complete; owner's shared-ruleset
-correction independently reviewed; V8 implementation not started. WP-015D3A remains
+Date: 2026-09-02. Status: V8A v0 finite rules contract complete and independently
+reviewed; V8B runtime implementation is next, not started. WP-015D3A remains
 `in_progress`; its reference record is only
 `observed`. This pass implements no gameplay and opens no observation session.
 
@@ -10,7 +10,9 @@ correction independently reviewed; V8 implementation not started. WP-015D3A rema
 Prepare the owner-approved, Sorcerers-inspired action-turn migration on the
 existing MIT game, preserving a practical V7 fallback and the analytical route.
 This is an intermediate playable-candidate plan, not a balance proof or a port
-of Sorcerers. The next owner handoff is preparation review, before V8 code.
+of Sorcerers. V8A has finished the finite contract; the next bounded step is
+V8B's authoritative foundation, with production promotion deferred until B-D
+pass their gates.
 
 - Product base: `dc66d2ac0f02b1b7c47f6949816a7cbc6e48e286`, freshly verified
   clean on `codex/wp-015d2z-v7-tactical-arena-v0`; `git fetch origin` confirmed
@@ -36,7 +38,7 @@ plan is navigation, not a frozen reference handoff. WP-016 already owns
 retention/distribution. A separate versioned contract and reference lifecycle
 therefore belong in the existing planning/evidence homes.
 
-Tracked changes are limited to these seven paths:
+The historical preparation changes were limited to these seven paths:
 
 ```text
 .gitignore
@@ -164,21 +166,404 @@ at a separate release checkpoint.
 
 ## V8 internal sequence
 
-### A. Freeze the rules and preserve shared activation
+### A. V8A v0 finite product contract
 
-Before runtime edits, the independent implementer proposes and records the
-finite V8 parameter/transition table and its exact source/test path allow-list
-in this contract, then obtains scoped design review. The initial product
-baseline is V7's 30 fixed ticks/second, 30-second action clock, three Relics,
-one actor per side, and 16-turn safety cap. These are Worms_Port values, not
-reference constants; the cap is a safety limit, not evidence of good pacing.
+Contract identity: `wp-015d3a-v8a-rules-v0`, authored on branch
+`codex/wp-015d3a-v8a-rules-contract-v0` from
+`f70cff9be71ea8ed47fa259ea0f6d4c5e92ac241`. Designer:
+`Codex agent /root/v8a_contract_designer`, a fresh independent worker given
+only the frozen behavior handoff, this contract, repository operating docs,
+and MIT product code/tests. No reference source, quarantine, observer
+transcript, external source, or historical agent was accessed. Values below
+are product-authored candidate decisions, not observed reference constants
+or validated balance. V8A edits only this existing carrier plus coordinator-
+owned evidence/navigation; **B/C/D paths below are future-only**, not authority
+to implement them during A. A distinct design review precedes B.
 
-Choose and freeze product-authored horizontal speed, jump launch/gravity and
-landing rules, retreat duration, input-lease/refresh limits, maximum tick
-catch-up, replay capacity, command/rate limits, pause/resume semantics, and
-AI work budget. Record movement per full turn and retreat alongside weapon
-reach so V8 does not accidentally turn every opening into trivial contact.
-No unreviewed parameter or unlimited work loop may be hidden in implementation.
+#### A1. Numerical rules and useful movement
+
+| Item | Frozen V8 value |
+| --- | --- |
+| Combat identity | `nimble-knots-artillery-v8`; state/replay format and ruleset version `8` |
+| World/start/Relics | Exact V7 generator, normalized seed/RNG, terrain words and opening pair; 2048 x 576 world, 8-unit cells; V5 Relic launch bands, damage, crater/damage radii and V3 direct-hit body; two actors, 100 Stitching, same Calling statistics |
+| Clock | 30 ticks/s; action **450 ticks / 15 s**; retreat **60 ticks / 2 s**; projectile at most 300 ticks; each settling phase at most 120 ticks; 16 completed turns |
+| Motion | Scale 256; horizontal velocity `-256`, `0`, or `256` fixed units/tick (30 world units/s); no acceleration, analog speed, sprint or movement-distance budget |
+| Jump | Forward hop in current facing: `vxFp = facing * 256`, `vyFp = -2048`; gravity `+64` each airborne tick, downward velocity capped at `2048`; airborne episode cap 120 ticks; no air jump, input buffering, coyote time, jump-charge, or cooldown resource |
+| Locomotion collision | Half-open 24 x 24 world-unit square about the actor root; 8-unit automatic grounded step-up; terrain and live actors block; no pushing or body penetration |
+| Turn bounds | At most `450+300+120+60+120 = 1050` ticks / 35 s per turn; at most 16,800 combat ticks / 560 s per match; pause time is excluded, expiry is not |
+
+The 15-second action candidate explicitly supersedes preparation's **initial**
+30-second starting assumption; V1-V7 remain unchanged. At 30 units/s a
+64-unit approach takes 64 ticks (2.13 s), leaving substantial aim time. A full
+action travels at most 450 units; from the 640-unit opening, the stationary
+opponent remains at least 190 centre units away (contact requires less than
+24). Retreat travels at most 60 units, near the unchanged 64-unit damage
+radius. V5's ideal maximum ranges remain Threadball 576, Needlepoint 640 and
+Spoolburst 512: travel is meaningful beside those ranges without guaranteeing
+an opening contact. Across action and earned retreat the maximum horizontal
+travel is 510 units; projectile and settling add **zero horizontal travel**.
+These are path-length upper bounds, not guaranteed traversable routes or
+claims of fair opening damage. Camera-window speed is 30/1024 of its logical
+width per second; touch feel remains untested.
+
+On a clear level floor at `y=320` (roots `y=308`, clear overhead) the hop rises
+124 units, has zero vertical velocity at tick 32, and returns on tick 63,
+travelling 63 units. A canonical 80-unit
+rectangular opening `[800,880)` is crossable from centre `x=807` to `x=870`: the
+24-unit footprint initially overlaps the left support by 5 units and finally
+the right support by 2. Merely touching the far edge is not support. This
+requires a near-edge launch, not an automatic full-crater clearance from any
+position. Height is useful against V7's 24-unit relief and a 40-unit-radius
+crater lip; circular-crater routes still require the A8 tests, not inference
+from this rectangular proof. No map or spawn rule is retuned to hide a failure.
+
+#### A2. Integer update and collision order
+
+`SimulationStateV8` is a separate type, not an extension that widens legacy
+state validators. It keeps seed, RNG, turn, active actor, Stitching, selected
+Relic, aim, terrain and terminal facts, but replaces `movementRemaining` and
+`turnDeadlineTick` with phase state. Its hash includes `tick`, per-mutation
+`revision`, `phase`, `phaseStartedTick`, `phaseDeadlineTick`, `settleReason`,
+`castUsed`, `inputEpoch`, held direction/lease expiry, accepted-intent and
+lifecycle-barrier counters, aim identifier and the
+two units' `xFp`, `yFp`, `vxFp`, `vyFp`, grounded/support identity, `airTicks`
+and `airDrive` (`jump`, `walk_fall` or null). A live
+projectile also includes its fixed-point position/velocity, flight tick and
+bounded trace. Coordinates in snapshots stay fixed-point; derived render
+coordinates never overwrite them. Hash canonicalization uses sorted JSON
+object keys, retained array order and integer values, followed by SHA-256.
+No wall time, socket, mode, reward, input-packet cursor or animation field enters
+the combat hash. Tick is bounded by 16,800, turn by 16, revision/epoch/aim ID
+by 65,535; sequence exhaustion fails closed before uint32 wrap. Root x is
+bounded to `[12,2036]*256`, root y to `[12,596]*256` (the final below-world
+step can overshoot the death threshold by less than 8 units), and actor
+velocities to `[-2048,2048]`; all must be safe integers. No silent unknown-
+field acceptance or mixed identity is legal.
+
+At state tick `t`, a validated intent changes intent state but advances no
+physics. Advancing one tick performs steps 1-5, sets `tick=t+1`, then applies
+step 6 and A3 against that **post-integration tick**. Increment `revision` once
+for the complete tick including its zero-tick boundary transitions; accepted
+mutating intents increment revision once. Thus step 449->450 is the last
+action movement step, and the state at tick 450 has already timed out:
+
+1. If finished, do nothing. Expire a lease when `t >= leaseExpiresTick`,
+   clearing held input and changing its epoch before movement. It also zeros
+   walking/`walk_fall` horizontal velocity, but not an accepted `jump` impulse.
+   A lease accepted
+   at `t` with expiry `t+9` can affect exactly steps `t` through `t+8`.
+2. In action/retreat, a grounded actor uses the held direction as horizontal
+   velocity. A jump sets airborne velocity immediately; it cannot jump again
+   before a later landing. Airborne horizontal velocity is the take-off
+   velocity: no steering or added speed from subsequent packets. A neutral/
+   cancel barrier sets horizontal velocity to zero even in air; gravity remains.
+3. Resolve horizontal movement first, then vertical. For each axis sweep the
+   half-open body rectangle against intersecting 8-unit terrain rectangles and
+   the other live body. Clip to the nearest blocking boundary exactly in
+   fixed-point integers; positive-area overlap blocks, edge contact alone does
+   not. No endpoint-only sampling, floating epsilon or pixel rounding. Terrain
+   wins an equal-distance tie, then actor ID (`player` before `loomkeeper`).
+   Inspect only cells intersecting the swept rectangle, within the 256 x 72
+   mask; no unbounded search or recursive collision loop.
+4. A grounded blocked horizontal move may try **one** 8-unit lift: both the
+   vertical lift and the lifted horizontal sweep must be clear, and the final
+   bottom must have support. Otherwise retain the ordinary clipped result.
+   There is no lift in air and no downward snap. If support disappears, retain
+   the last horizontal velocity with `airDrive=walk_fall` and fall. Jump uses
+   `airDrive=jump`. Start either airborne episode at `airTicks=0`; each airborne
+   integration increments it. For an airborne vertical step set
+   `vyFp=min(vyFp+64,2048)`, then sweep by `vyFp`. Upward contact sets `vyFp=0`;
+   downward contact sets `vyFp=0` and grounded only with stable support.
+5. Stable support is positive horizontal overlap at exact bottom/top contact
+   with terrain, or with the other live grounded actor. Process the lower
+   root first, then actor ID; reevaluate supports after terrain/death changes.
+   Two unsupported bodies cannot support each other in a cycle. Landing zeros
+   horizontal velocity and clears airDrive/airTicks; held input can move again
+   on the next tick. The live
+   bodies may touch or stack, never overlap or push one another.
+6. Sweeps already enforce world sides `[12,2036]` and ceiling `y>=12`.
+   With `tick` now `t+1`, check below-world removal, support/death, airborne
+   and phase deadlines in that order. Stable landing/death on airborne tick120
+   wins over its cap; still unsupported at120 finishes draw `simulation_limit`.
+   The bottom is open. A body whose top reaches `576` is removed with zero
+   Stitching. There is no landing/fall damage, bounce, water or knockback.
+   Apply the remaining phase/death ordering in A3; a hard phase boundary
+   clears horizontal velocity, held input and aim and increments `inputEpoch`.
+
+For unchanged V5 projectile/radial math only, project a root with
+`floor(xFp/256), floor(yFp/256)`. Preserve the product's launch offset,
+integer launch-speed curve, `+80` projectile gravity, per-world-unit swept
+collision order, first-three-flight-tick shooter immunity, direct-hit profile,
+integer-square-root damage and terrain deformation. The V8 projectile loop
+performs one of those old flight iterations per authoritative tick instead of
+calling V7's synchronous turn-changing resolver. Actor bodies are stationary
+during flight. Motion gravity is not projectile gravity. A V7/V8 comparison
+from identical integer grounded roots/aim must match projectile trace, impact,
+damage and terrain, although clocks/phases/hashes deliberately differ.
+
+#### A3. Complete phase and result table
+
+Turn zero starts with the player, `action`, no held input/aim, `castUsed=false`,
+and deadline `tick+450`. Each action/retreat phase is half-open: inputs are legal
+only while `tick < phaseDeadlineTick`. A timer callback and a packet run through
+one per-match serial authority; all already-due ticks precede that packet.
+
+| Current condition/event | Deterministic result |
+| --- | --- |
+| Action: walk/face/jump | Legal for the living active actor; start/turn/motion clears aim. Facing costs no tick and changes no position; Jump needs ground and uses current facing, including from rest. |
+| Action: select/aim/Fire | Selection and aim require both living actors grounded, neutral walk and zero velocity. Fire additionally requires the acknowledged current aim ID and `castUsed=false`; rejection never queues a future cast. |
+| Accepted Fire at `t < deadline` | Set `castUsed=true`, clear input/aim after capturing launch parameters, enter projectile at `t`; first projectile integration is the next tick. No second Fire or movement is admitted during flight. |
+| Projectile impact/world exit/lifetime | Terrain then damage use pre-settling roots; mark every resulting death before checking terminal state. Clear unsupported ground flags. Enter `settling(post_shot)` if any survivor lacks support; otherwise immediately apply the next row. World exit/lifetime cause no crater/damage. |
+| Post-shot consequences stable | Both dead => draw; exactly one alive => its win. Otherwise the surviving caster enters a fresh 60-tick retreat. An already terminal result never creates retreat. |
+| Action deadline, including airborne | Do not Fire, grant retreat, extend action, or transfer control in mid-air. Neutralize horizontal motion; enter `settling(action_timeout)` if needed, otherwise hand over. A Fire received at exactly the deadline loses to timeout. |
+| Retreat | Only walk, free face and grounded jump. Aim/select/Fire reject; no buffered cast can reappear. At deadline neutralize horizontal motion and settle if needed, then hand over. |
+| Settling, any reason | Vertical physics only for all unsupported survivors; no input or AI attack. Stable state applies all deaths, then either post-shot retreat or timeout handover. At tick 120, stability/deaths are checked first; still unstable => terminal draw `simulation_limit`, no snap-to-ground/teleport or endless timer. |
+| Death outside shot | Finish immediately once all surviving bodies are stable (or both dead); if an unsupported survivor remains, bounded settling resolves it before awarding a winner. No dead actor acts or gets retreat. |
+| Handover (zero-tick transition) | Evaluate terminal deaths first; increment completed turn count. On count 16 finish draw `turn_limit`; otherwise swap active actor, reset cast/aim/input and enter action with 450 ticks. No separate free AI turn or hidden animation time. |
+| Finished | Exactly one result/hash; all later input/tick/cancel operations are inert or rejected without mutation. Terminal damage/death takes precedence over a coincident time limit. |
+
+Horizontal motion is zero throughout both settling reasons and projectile:
+jumping just before a deadline cannot buy extra travel or a mid-air attack.
+Timeout on the final airborne step still resolves landing/death before the
+turn-limit result. Exhausting a safety cap produces `simulation_limit`, never
+a rewarded player win. There are at most two settling phases per turn.
+
+#### A4. Input lease, packet order, scheduler and replay bounds
+
+Use separately strict V8 input/snapshot/replay schemas and V8 event names;
+legacy `v1:command.submit` retains its exact accepted meaning. Session identity,
+challenge creation and reward eligibility continue through their existing
+validated operations. An owned V8 match has a dedicated ordered input cursor;
+it does not wait behind the legacy client's 5-second mutation acknowledgement.
+
+| Boundary | Frozen V8 rule |
+| --- | --- |
+| Intent envelope | At most 1024 UTF-8 bytes; exact challenge/ruleset, expected turn, expected phase, server `inputEpoch`, uint32 input sequence and request ID; intent only (`walk_start`, `walk_refresh`, `face`, `jump`, `select_relic`, `aim`, `fire`). No position, elapsed time, target tick, duration or caller-supplied lease. |
+| Lease | 9 ticks / 300 ms, server-issued. Client refresh target every 3 ticks / 100 ms; at most one lease extension per 3 simulation ticks. Refresh requires a currently live hold in the same epoch, never starts one. Release/cancel/expiry ends the hold; expired refresh must not resurrect it. |
+| Neutral barrier | Separate `v8:input.cancel`, bound to player identity/challenge/current player turn and epoch but not blocked by an input sequence gap or pending acknowledgement. It clears only player-owned held/airborne horizontal motion and aim, increments that active-input epoch, and returns current cursors. Duplicate/old-epoch cancel and cancel during AI ownership are inert. It cannot jump, move, pause, aim, Fire or advance time. |
+| Packet limits | V8 normal-input bucket: burst 20, refill 20/s, within existing 30-burst/20-per-second socket safeguards. Neutral-only lane: burst 2, refill 4/s, independent of the normal-input queue/bucket; excess is inert and the lease still expires. Existing authentication/origin/size protections remain. |
+| Intent/replay budgets | 512 accepted normal intents per turn, including mutating refreshes, shared by player/AI; a limit rejection neutralizes only the authorized active submitter's input but grants no action/time. Identity/turn/phase checks precede that budget effect. At most 128 accepted lifecycle barriers per match; subsequent lifecycle abuse expires the match without a win. Neutralization never waits for ordinary budget. |
+| Input ordering | Require exact next input sequence. Exact cached request+payload retry returns its original acknowledgement without replay, lease refresh or budget charge; changed-payload reuse rejects. Gap/stale/malformed input never applies later. Retain 256 request acknowledgements; older input remains stale. Well-formed expected-sequence rejection consumes the cursor, not a simulation tick. |
+| Client pending bound | At most one normal request in flight and one coalesced unsent walk refresh; do not queue a Fire/jump for later replay. After 250 ms without acknowledgement cancel locally and best-effort send the neutral barrier, then resynchronize; no automatic movement/jump/Fire retry. Cancellation is independent of the pending request. |
+| Tick scheduler | Monotonic server elapsed microseconds accrue integer credit `elapsedUs*30`; consume 1,000,000 credit per simulation tick. At most 6 ticks per callback, yield before another batch. Keep remainder/debt rather than rounding a 33 ms interval or dropping ticks. Input cannot advance the clock. |
+| Catch-up failure | Debt exceeding 30 ticks / 1 s neutralizes and expires the match as unavailable, with no win. While debt is 1..30, catch up before admitting normal input. No late packet is retroactively inserted into missed ticks and no AI/planner work freezes its turn clock. |
+| Replay | Format 8, exact ruleset/policy IDs, initial hash, contiguous accepted-intent/barrier/tick records with post-record hashes; maximum 32,768 records and 16 MiB UTF-8 JSON; each operation record at most 512 bytes. Adjacent ticks may coalesce, bounded by 16,800 total ticks. Reserve a terminal safety record/512 bytes. |
+| Exhaustion/verification | Refuse oversized input before applying it; replay-cap failure records terminal draw `simulation_limit` in the reserve, never freezes an active match. Runtime **and** detached/reward replay verification use these same V8 caps; V1-V7 retain their existing caps and validators. |
+
+Every accepted safety neutralization is an explicit canonical barrier; repeated
+already-neutral cancels do not grow replay. Tick batching must produce the same
+state/revision as the equivalent single steps; rejected packets are not replay
+operations. Reconstruct from recorded authoritative operation order, not packet
+arrival times, browser frames or a new latest alias. Replay format 8 cannot be
+parsed as 7 or carry a V2 AI label. Budget accounting includes AI refreshes
+and timeout completion; automatic phase/lease-expiry neutralizations count
+toward the global replay cap but not the 128 external lifecycle barriers.
+Reserve exhaustion
+must be tested, not solved by silently increasing a limit during implementation.
+
+#### A5. Pause, interruption and presentation
+
+Practice retains an explicit convenience pause only in **player action with
+both living actors grounded**, no pending projectile and no timer debt. The
+server first catches up, then neutralizes and records the pause boundary;
+there is no tick advancement while acknowledged paused. Resume reanchors only
+wall-time credit, preserves remaining action ticks and increments the input
+epoch. Pause/resume each use the lifecycle budget. Rewarded combat cannot
+pause; this is the sole Practice convenience, not different combat tuning.
+
+Hidden document, blur, pointer cancel/lost capture, resize/rotation, wallet
+interruption and disconnect immediately cancel local ownership and normal
+refreshes and attempt the neutral barrier. **Hidden is not automatic pause**
+in either mode. Disconnection neutralizes server-side when detected; otherwise
+lease expiry bounds walking/edge-fall horizontal intent to nine more steps.
+A one-tap Jump is a committed impulse, not a held lease: releasing the Jump
+button does not cancel it and no refresh/chord is required. It can complete
+its 63-tick flat hop (at most 120 airborne ticks / 120 horizontal units before
+landing, bottom removal or the airborne cap). A movement-pad release, explicit
+cancel, detected disconnect or phase boundary zeros **all** horizontal motion,
+including Jump; vertical physics continues. A lost connection not yet detected
+can therefore finish the already accepted Jump, but cannot start another, and
+never travels past the action/retreat deadline. Unpaused matches continue through
+AI and timeout; an acknowledged Practice pause survives reconnect. Existing
+30-minute session/challenge TTL and 2-minute reconnect grace still apply.
+Player-origin cancel/disconnect/reconnect during the AI turn cannot reset its
+epoch, motion, aim, selected plan or clock; only the server's AI/phase authority
+can do that. Player connection bookkeeping then stays outside combat state.
+Reconnect retains the match/version, advances an input epoch only while the
+player owns active input and returns a
+fresh snapshot/cursors; all held gestures and unsent actions are discarded.
+Missing in-memory state offers a fresh match, never reconstruction as recovery.
+No wallet prompt is initiated during live unpaused combat: authorization is
+before creation and claiming after the result; unexpected host interruption
+has the same neutralization rule, not a rewarded clock extension.
+
+V8 walking snapshots coalesce to newest authority, not the V7 causal movement
+queue. Send periodic snapshots every 3 ticks plus every phase/terminal barrier;
+keep at most two interpolation samples, with at most 3 ticks of normal visual
+lag. Phase/terminal changes immediately flush old samples and old shot animation;
+never hide a live retreat behind a finished projectile. At more than 6 ticks
+of stale authority, suspend controls/refreshes and reconcile to a new snapshot.
+Owned hold survives ordinary same-epoch snapshots; interruption/phase change
+requires a fresh press. No client extrapolation changes collision or health.
+Walk is hold/release; a separate minimum-48-CSS-pixel Jump tap hops forward in
+current facing without a chord; aim lock and explicit Fire remain separate.
+Keep existing safe-area, right/left/off sideways and actual-landscape behavior.
+
+#### A6. Bounded shared Loomkeeper policy
+
+Pin V8 to `nimble-knots-loomkeeper-v3`, profile ID `standard-v8-0` and disclosed
+difficulty `standard`; both modes and all Callings use them. V1 retains policy
+v1; V2-V7 retain v2, including labels in
+old snapshots/replays. No generic non-V1-to-latest policy dispatch is allowed.
+
+At action start, freeze the public state and enumerate exactly 180 plans in
+this stable order: six motion scripts x three existing Relics (Threadball,
+Needlepoint, Spoolburst) x five angles `[15000,30000,45000,60000,75000]` x two
+powers `[700,1000]`. Scripts are stay, toward 90 ticks, toward 180, away 90,
+toward 90 with a Jump on its first movement tick, and away 90 with that Jump.
+Toward means the opponent's root side at planning start; equality prefers the
+current facing. At movement start, face the script direction, start its hold,
+then apply its optional Jump. Movement duration includes airborne ticks; no
+script grants a speed bonus. After movement, neutralize, face toward the opponent, lock aim
+and dwell 15 ticks before Fire. If not grounded when the script needs aim,
+wait for landing within the existing action clock; otherwise timeout, never
+cast later from retreat. Every nonterminal selected cast uses the same retreat
+script: walk away for at most its 60 legal ticks, no retreat jump.
+
+Evaluate six plans per authoritative planning tick for 30 ticks; the actor
+stays neutral while that **one second is charged to its action clock**. Each
+detached rollout includes those 30 neutral ticks, its legal intent/refresh
+schedule, the 15-tick aim dwell, and all shot/settle/retreat consequences.
+Maximum 1050 rollout ticks per candidate (189,000 total), at most 512 intents
+per candidate, one planning pass per AI turn and no opponent-turn lookahead.
+Clones cannot consume live RNG, replay or clock. Apply deterministic aim error
+before evaluation/execution: angle `((seed+97*turn)%5001)-2500`, power
+`((seed+53*turn)%101)-50`, clamped to existing aim/power bounds. Rank plans
+lexicographically by outcome (own win 3, ongoing 2, draw 1, loss 0),
+`targetDamage-2*selfDamage`, final centre separation capped at 640, negative
+movement ticks, then negative enumeration ordinal. Score is a bounded policy
+decision, not a balance metric. A candidate requiring an illegal offensive
+intent is discarded but still consumes its evaluation slot; if none remains,
+the AI stays neutral until its ordinary deadline.
+
+Execute only the chosen plan on later real authoritative ticks with the same
+leases, validators and phase limits as human intent. No instant batch of movement
+or AI-only clock advancement. Expected latest Fire is tick `30+180+15=225`
+on level ground; any actual landing wait consumes the remaining action clock.
+Planning/work failure yields neutral timeout, not a replacement search, extra
+time or hidden shot. Record at most 16 turn-indexed chosen ordinals and
+policy/profile in the V8 replay envelope; only committed legal intents mutate
+the combat state. Deterministic
+reconstruction validates policy identity and recomputes the chosen plan at
+each AI turn before accepting its recorded intents.
+
+#### A7. Exact future implementation paths (not V8A edits)
+
+Inspection found the legacy one-second/30-tick registry timer, 16-command turn
+cap, 2048-record coordinator, synchronous Fire/handover, immediate socket AI
+driver, latest-only scene filter, and reward service's fresh legacy verifier.
+Do not merely increase their global limits. Use separate V8 modules and a
+versioned facade; keep `shared/simulation.ts`, `shared/protocol.ts`,
+`shared/loomkeeper.ts` and `server/src/simulation/coordinator.ts` behavior and
+legacy validators/hashes unchanged. The new facade owns the current shared
+combat selector; existing historical exports continue to mean their old versions.
+
+Each row is a closed source/test allow-list for that later slice. New modules
+have a distinct V8 execution/validation role; existing carriers are reused for
+integration. Any missing path requires a reviewed contract amendment first.
+
+| Future slice | Exact paths | Bounded purpose |
+| --- | --- | --- |
+| B core (new) | `shared/simulation-v8.ts`; `shared/protocol-v8.ts`; `shared/combat-version.ts`; `server/src/simulation/coordinator-v8.ts`; `server/src/simulation/versioned-coordinator.ts` | V8 rules/types/strict schemas, tick/replay engine and discriminated dispatch; current selector remains V7 during B/C. The facade supplies common legacy/V8 snapshot/result/replay unions without widening old schemas. |
+| B wiring (existing) | `server/src/session/registry.ts`; `server/src/protocol/socket.ts`; `server/src/runtime.ts` | V8-owned match creation, input/cancel lane, timer, phase dispatch, snapshots and injectable test clock; legacy operation paths remain unchanged. No automatic V8 creation for users yet. |
+| B tests (new) | `tests/simulation/action-turns-v8.test.ts`; `tests/simulation/action-turns-v8-replay.test.ts`; `tests/protocol/action-turns-v8.test.ts` | A1-A5 arithmetic, phases, bounded replay and wire rejection tests using existing test globs. |
+| C touch (existing) | `client/src/combat/contracts.ts`; `client/src/combat/input.ts`; `client/src/combat/controls.ts`; `client/src/combat/layout.ts`; `client/src/combat/renderer.ts`; `client/src/combat/presentation.ts`; `client/src/combat/preview.ts`; `client/src/combat/fixture.ts`; `client/src/combat/camera.ts`; `client/src/scenes/combat.ts`; `client/src/practice/client.ts`; `client/src/lib/session.ts`; `client/src/style.css` | Versioned view/command projection, fixed-point rendering, hold/Jump/Fire ownership, bounded reconciliation and legacy scene retention; explicit V8 fixture only until D. Reuse approved art unchanged. |
+| C tests | New `tests/combat/action-turns-v8.test.ts`, `tests/practice/action-turns-v8-client.test.ts`; existing `tests/browser/combat.spec.ts`, `tests/browser/resilience.spec.ts`, `tests/browser/smoke.spec.ts` | Touch/phase/lease/interruption cases and V8 fixture coverage; keep legacy cases explicitly version-bound. No Windows screenshot-baseline changes. |
+| D AI/lifecycle | New `shared/loomkeeper-v8.ts`; existing `shared/combat-version.ts`, `shared/protocol-v8.ts`, `server/src/simulation/coordinator-v8.ts`, `server/src/simulation/versioned-coordinator.ts`, `server/src/session/registry.ts`, `server/src/protocol/socket.ts`, `server/src/reward/service.ts`, `server/src/reward/types.ts`, `client/src/practice/client.ts`, `client/src/scenes/practice.ts`, `client/src/scenes/result.ts` | Pin policy, timed execution, joint selector promotion, old-version retention and exact ruleset-selected reward verifier/replay type only. No reward amounts, eligibility, ledger, migrations, signer or payout-policy change. |
+| D tests | New `tests/loomkeeper/action-turns-v8.test.ts`, `tests/reward/action-turns-v8.test.ts`; existing `tests/protocol/runtime.test.ts`, `tests/protocol/schemas.test.ts`, `tests/practice/practice-client.test.ts`, `tests/reward/runtime.test.ts`, `tests/reward/service.test.ts`, `tests/browser/practice.spec.ts`, `tests/browser/reward.spec.ts`, `tests/browser-postgres/reward-postgres.spec.ts` | Shared-version/parity and complete lifecycle, legacy compatibility, no-fund replay-verified reward completion and database acceptance. |
+| D admission assessment (new) | `tests/loomkeeper/action-turns-v8.assessment.ts` | Explicit non-default-glob entry for the 240-match paired plausibility assessment and full AI domain below; never implicitly run per ordinary feature edit. |
+| D gate wiring | `package.json` | Add `assess:v8` invoking the named assessment with the existing Node/tsx test runner; add named V8 browser cases to the focused feature selector if necessary. No dependencies, removed tests, relaxed gates or expected-skip changes. |
+
+The same new B/C tests may be extended in D for its stated purpose. Existing
+golden fixtures/tests are read/run unchanged; new V8 replay tests add explicit
+V7 frozen checkpoints without replacing old expected hashes. Normal evidence,
+this contract and implementation-plan navigation are updated per slice; source,
+asset and clean-room manifest changes are not smuggled through this source list.
+
+#### A8. Frozen acceptance domain and stop criteria
+
+Red tests below must be written before the corresponding runtime behavior;
+**none is a V8 result yet**. Exact seed domain is
+`[1,2,3,4,17,42,1337,65535,2147483648,4294967295]`. Existing V7 read-only
+generation confirms coverage of all three profile IDs. Use Wizard, Thief and
+Warrior for shared-mode parity; no additional random seeds or tuned reruns.
+Geometry fixtures are separate product test inputs: fill terrain from `y=320`
+downward, root `y=308`, with clear space above. The openings clear columns
+`[800,880)` or `[800,888)` all the way to the bottom, starting the jumper at
+`(807,308)`. The ledge adds solid `[824,832)` from `y=296` down to the floor;
+the 8/16-unit walking-step fixtures instead raise the floor from `x=824`
+rightward to `y=312`/`304`. The crater fixture calls the unchanged product
+deformation at `(832,320)` with radius40; settle the actor over its centre
+before the jump-out check. All have safe world margins and enough headroom;
+they are not new V7 production maps.
+
+| Gate | Finite cases and pass boundary |
+| --- | --- |
+| Integer motion | Level floor holds of 1, 3, 9, 30 and 450 ticks; exact travel equals ticks in world units with lease refreshes. Repeated render conversions preserve an injected fixed-point remainder of 1/256. Mirrored movement and tick batches `[1]`, `[3]`, `[6]` agree at every common tick/hash. |
+| Jump/collision | Level hop: tick 1 `vy=-1984`, tick 31 height 124, tick 32 `vy=0`, tick 63 landing/travel 63. Test the explicit 80-unit opening from x=807 (lands at870), and an 88-unit opening from x=807 (no same-height support at870); edge-only support fails. Test 8-unit step succeeds, 16-unit step blocks walking but a grounded jump crosses a 24-unit-high/8-unit-wide ledge. Use product `deformTerrain(...,40)` on a level floor for crater entry, jump out of its floor and lip landing; 0 penetration, no teleport. Test ceiling, side clamps, unsupported bottom death, live-body side block/stack and dead-body removal. |
+| Phases | Cross action ticks 449/450/451, retreat 59/60/61, projectile 299/300 and settling 119/120/121 with grounded, ascending, descending, one dead and both dead fixtures. Fire at449 accepted if otherwise legal; at450 rejected; no second cast; no retreat after uncast timeout; all outcomes within1050 ticks/turn and16800/match. |
+| Input safety | Lease refresh at t+2/+3/+8/+9; lost release; jump from rest with no refresh; explicit mid-jump cancel versus Jump-button release; exact retry, changed-payload retry, sequence gap, wrong turn/phase/epoch/ruleset, stale pre-pause/pre-reconnect packet. 512th accepted intent versus513th; cancel despite saturation/pending request; 256/257 cached requests; 128/129 lifecycle barriers. Player cancel/disconnect/reconnect during AI planning/walking/aim/retreat must change no AI combat field or clock. Zero extra position, time or revived input from rejected/duplicate traffic. |
+| Scheduler/replay | Fake elapsed intervals of 33,333/33,334 microseconds; 6/7/30/31 due ticks; delayed input must follow catch-up. Exact caps at record32767/32768/32769, operation512/513 bytes and replay16MiB boundary, total16800/16801 ticks. Runtime and detached reward verifier agree, including legitimate replay longer than2048 entries. Reserved terminal slot always works. Tampered identity/hash/order/cap rejected; all legacy golden hashes unchanged. |
+| AI | Feature correctness uses seeds1/2/3, both actor-side assignments and Wizard (six cases); explicit admission assessment extends to all ten seeds and three Callings. At most180 candidates/189000 rollout ticks, one plan/turn, charged30 planning and15 aim ticks. Repeat plan and executed hash sequence twice; every AI intent must pass human-equivalent validation. No live RNG/replay mutation by search, stale chosen plan or extra Fire. |
+| Shared modes | For all ten seeds x three Callings replay identical authoritative combat operations/ticks through Practice and no-fund reward matches: compare every combat state/hash, AI plan, damage/terrain/phase/terminal field. Exercise creation, Fire/retreat, death/draw, reconnect, leave, expiry, retry and replay-verified reward result. Separately replay the same Practice pause/resume operations with 10-second versus 10-minute wall pauses: resumed state/hash must agree. Do not compare hashes from different operation histories (e.g. a Practice pause versus no rewarded pause); different mode metadata alone never changes combat. |
+| Touch | Canonical phone feature gate plus focused right/left/off-sideways and actual-landscape cases: one-finger walk, release, Jump, aim/Fire; held pointer survives regular snapshots; blur/hidden/rotation/disconnect cancels; no stale Fire. At most two interpolation samples, 3-tick usual lag, suspend after6 stale ticks; retreat visible immediately on its authoritative phase. |
+
+Bounded plausibility assessment in D: ten seeds x two map orientations
+(original/reflected terrain and roots) x both starting actors x three opponent
+scripts = **120 matches for V8**, paired with 120 V7 controls of the same
+scenario provenance. Opponent scripts are stationary all-Relic aim lattice,
+toward 90 ticks then that lattice, and toward 90 with one Jump then that lattice;
+V7 controls use nearest legal V7 distance (64 units), omit unavailable Jump and
+retreat, and retain the V7 action clock, explicitly recorded as version
+differences. The opponent lattice and choice
+rule are A6's fixed aim/Relic lattice/ranking; both starting orders apply it
+to the opponent of standard Loomkeeper. These synthetic mirrored/starting-order
+fixtures are assessment-only and never production map/start options. Keep this
+assessment in `tests/loomkeeper/action-turns-v8.assessment.ts`, explicitly run
+with `npm run assess:v8` at candidate admission and a daily/release checkpoint,
+not in the normal `*.test.ts` feature glob. Outputs stay only under ignored
+`test-results/`; these are engineering scenarios, not an analytical adapter or
+player observation. The assessment and correctness tests use injected clocks
+and deterministic tick advancement, charging the same simulation time without
+real-time 15-second waits. Preserve the180-candidate/1050-tick work bounds and
+stop on any invariant, cap, replay or parity failure; do not replace them with
+wall-time-driven truncated search. Full assessment must not inflate every
+feature edit into a daily matrix run.
+
+Candidate promotion requires zero invalid starts, penetrations, stuck/aborted
+simulations, mixed versions or illegal AI actions; all120 V8 matches terminal
+within 16 turns; at most 12/120 turn-limit draws; no orientation/start/script
+group of ten may have more than3 turn-limit draws. Record opening damage and
+legal reply/cast availability, completed-turn counts, first-actor win/draw
+splits per group and aggregate, and each policy's outcome. No preset win-rate
+claim is made. A group with ten first-actor wins is a mandatory design-review
+stop, not a reason to silently retune; otherwise these are bounded candidate
+engineering gates, not fairness approval. Any failed numerical/playability
+gate needs an explicit versioned contract amendment before changing values.
+
+V8A checks actually run by the designer: read-only MIT source/path inspection,
+V7 generation over the ten declared seeds, and arithmetic-only Node probes.
+The revised hop probe computed apex 124, landing tick 63 and the stated 2-unit
+far-edge overlap; full motion/collision integration is **not** implemented or
+tested. The earlier 11.25-unit/s, 31-tick/11.625-unit hop arithmetic was rejected
+as too narrow for useful product geometry; it is not a frozen option. No
+build, V8 test suite, browser, physical-device session, observation, asset,
+dependency, analytical execution or deployment ran in this documentation-only
+slice. Remaining risks are touch pace, ledge/crater reach under the complete
+collision solver, bounded-AI quality/CPU cost, network fairness under real
+latency, and game balance; B-D's gates must resolve or report them.
+
+#### A9. Shared activation remains one decision
 
 Preserve one approved combat ruleset and AI configuration for both Practice
 and rewarded matches. At the pinned baseline,
@@ -196,6 +581,26 @@ Candidate testing can keep payouts disabled and exercise rewarded-mode
 compatibility with the existing no-fund test facilities; this does not require
 different Practice combat rules or authorize real-fund activation. Do not
 change reward eligibility, amounts, payout, ledger, or identity policy.
+
+#### A10. V8A design review return
+
+`Codex agent /root/v8_preparation_reviewer` returned `pass` against the V8A
+diff from `f70cff9be71ea8ed47fa259ea0f6d4c5e92ac241`, after correction of
+the out-of-world jump fixture, deadline off-by-one ambiguity, and the risk
+of player cancellation affecting AI-owned input. Jump/lease semantics,
+pause-history comparisons and the non-default assessment cadence were also
+clarified. Reviewer and coordinator independently reproduced the arithmetic;
+coordinator also verified square-body clearance for all 20 V7 starts in the
+ten-seed domain. The interior fixture clears the ceiling throughout the
+numerical hop. Full V8 collision integration is still untested.
+
+Exact three-document scope, frozen reference/registry/manifests, historical
+runtime/analytical paths, checkpoints/archive hashes, JSON/schema/navigation,
+compliance and diff checks passed. V8A is complete **as a design contract**,
+not shipped gameplay or implementation/similarity clearance. The package stays
+`in_progress` and reference record `observed`. No V8B runtime edit, full suite,
+browser/device session, player observation, push, PR or deployment occurred.
+Detailed declarations and check facts remain in the linked package evidence.
 
 ### B. Authoritative movement, phases, and replay
 
@@ -341,7 +746,7 @@ P5_open: false
 landfall_claim: false
 ```
 
-These facts describe this preparation pass. Lane M and Stage C execution also
+These facts describe the preparation and V8A contract-only passes. Lane M and Stage C execution also
 remain closed here. Stage C harness repair is a prerequisite for Lane M, not
 a global prerequisite for product documentation or Lane G documentation. No
 mathematical evidence transfers to Lane G, and no public formation, credible
@@ -370,12 +775,11 @@ No restore/deployment drill, fresh build, feature/full browser run, PostgreSQL
 integration, Linux visual approval, physical-device session, or player
 observation was performed. Detailed check and skipped-check facts are in the
 linked evidence record. The owner's later shared-ruleset correction supersedes
-the mode-isolation part of that historical review. The next bounded step is
-V8A's finite product-authored parameter/phase table, exact implementation
-allow-list, and shared Practice/reward combat-parity gate under independent
-review.
-Stop here: no V8 runtime implementation, Lane G/Lane M execution, observation,
-push, PR, or deployment is opened by this preparation return.
+the mode-isolation part of that historical review. Its then-next bounded step,
+V8A's finite product-authored parameter/phase table and implementation allow-list,
+is now recorded in section A for design review. B/C/D runtime remains future-only;
+the owner request to start V8A does not itself open V8B implementation, Lane G/
+Lane M execution, observation, push, PR, or deployment.
 
 Owner-correction review return: `Codex agent /root/v8_preparation_reviewer`
 returned `pass` with no findings on the three-document diff from
