@@ -10,7 +10,7 @@ import { activeSidewaysMode, clientPointToGame } from '../lib/sideways';
 import { CombatInputController, ActionTurnsInputController, UnifiedMovementInputController } from './input';
 import type { AimIntent, MovementFactsR1 } from './input';
 import { computeActorStatusLayout, computeV8ExtraControls, type CombatLayout } from './layout';
-import type { ChallengeSnapshotV8Family as ChallengeSnapshotV8 } from '../../../shared/protocol-v8';
+import type { ChallengeSnapshotV8Runtime as ChallengeSnapshotV8 } from '../../../shared/protocol-v8';
 import type { SimulationIntentV8Family as SimulationIntentV8 } from '../../../shared/simulation-v8';
 
 type ControlsCallbacksV8 = {
@@ -21,6 +21,7 @@ type ControlsCallbacksV8 = {
     inputFlight?: () => 'locomotion' | 'blocked' | null;
     onAimPreview: (aim: AimIntent | null) => void;
     onPause: (paused: boolean) => void;
+    onRetry?: () => void;
 };
 
 /** V8 has continuous owned input, not the legacy accepted-command animation queue. */
@@ -55,6 +56,9 @@ export class ActionTurnsControls {
             <button type="button" class="face-left v8-extra" aria-label="Face left">←</button>
             <button type="button" class="face-right v8-extra" aria-label="Face right">→</button>`}
             <nav class="combat-actions" aria-label="Combat actions"><button type="button" class="relic-trigger" aria-expanded="false">Threadball</button><div class="relic-chooser" role="group" aria-label="Choose Relic" hidden></div><button type="button" class="fire-button">Fire</button></nav>
+            <section class="combat-pause-sheet" aria-label="Paused Practice controls" aria-hidden="true" hidden>
+                <strong>Practice paused</strong><button type="button" class="retry-button">Retry</button>
+            </section>
             <div class="combat-message" aria-live="polite"></div>`;
         parent.appendChild(this.root);
         for (const relicId of RELIC_IDS) {
@@ -103,6 +107,10 @@ export class ActionTurnsControls {
         this.button('.pause-button').addEventListener('click', () => {
             if (this.canPause()) this.callbacks.onPause(!this.snapshot.paused);
         });
+        this.button('.retry-button').addEventListener('click', () => {
+            if (this.snapshot.paused) this.callbacks.onRetry?.();
+        });
+        this.button('.retry-button').hidden = !this.callbacks.onRetry;
         this.bindPad('movement'); this.bindPad('aim'); this.update(snapshot);
     }
 
@@ -280,6 +288,9 @@ export class ActionTurnsControls {
         this.button('.pause-button').disabled = !this.canPause();
         this.button('.pause-button').textContent = this.snapshot.paused ? 'Resume' : 'Pause';
         this.button('.pause-button').setAttribute('aria-label', this.snapshot.paused ? 'Resume Practice' : 'Pause Practice');
+        const pauseSheet = this.element('.combat-pause-sheet');
+        pauseSheet.hidden = !this.snapshot.paused;
+        pauseSheet.setAttribute('aria-hidden', String(!this.snapshot.paused));
         this.button('.relic-trigger').disabled = !offense;
         this.button('.relic-trigger').textContent = relicName(s.selectedRelic);
         this.button('.relic-trigger').setAttribute('aria-expanded', String(this.chooserOpen));

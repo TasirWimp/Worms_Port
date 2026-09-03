@@ -1209,18 +1209,343 @@ unchanged. No push, PR or deployment is included in this slice.
 
 ### D. Loomkeeper, full lifecycle, and candidate acceptance
 
-Introduce a separately identified policy if the current bounded command-plan
-policy cannot express V8 time/movement. The AI must obey the same time,
-movement, jump, collision, offensive-cast, and retreat limits. It may not gain
-extra time, hidden information, or perfect unbounded search. Keep existing
-policies/replays reproducible and test deterministic tie breaks/work bounds.
+#### D1. Entry, ownership and exact output boundary
 
-Finish Practice start, retry, win/loss, timeout, pause, reconnect, and server
-expiry, plus rewarded-match creation, completion and replay compatibility with
-the same ruleset, before candidate activation. Ship only after the quick
-feature gate, focused shared-mode parity and V8 lifecycle/security tests, and
-distinct review pass. This package is not done merely because a
-walking/jumping demo works.
+The owner accepted the C.1 phone behavior and opened D on 2026-09-03. That
+feedback is ordinary product acceptance, not a Lane G session or evidence.
+Fresh `git fetch origin`, HEAD/upstream comparison and clean-worktree checks
+bound D to `3fc33a33049a7e61bc0ab8ee7e3f340917e3b136`. Work is isolated on
+`codex/wp-015d3a-v8d-loomkeeper-lifecycle-v0`. The historical package starting
+commit and earlier source-bound returns remain unchanged.
+
+D implements A6's timed standard Loomkeeper and complete Practice/reward
+lifecycle on **`nimble-knots-artillery-v8-r1`**. It does not change the C.1
+mechanics. Public creation stays V7 during implementation and verification.
+Joint activation is a separate final decision requiring every A8/A9 gate,
+including the finite assessment, CPU/scheduler evidence, release quality,
+PostgreSQL compatibility and the separate human similarity gate. Missing or
+failed gates leave the injected candidate unpromoted; they do not authorize a
+mode split, reduced search, retuning, relaxed tests, or a claim of complete V8.
+
+Before creating any file, path search found no dedicated V8 AI module, AI
+test/assessment, automated reward test or separately loadable V8 transport.
+The existing planning/evidence carriers and runtime/test directories are the
+suitable homes. Five new files below have distinct policy, assessment,
+automated-verification or lazy-loading roles; no new document is needed.
+
+This reviewed D entry is an explicit additive amendment to A7, not a change
+to B/C's historical ranges. Maximum **37 exact paths**; no other edits:
+
+| Owner | Exact paths |
+| --- | --- |
+| Fresh no-history `/root/v8d_ai` | New `shared/loomkeeper-v8.ts`, `tests/loomkeeper/action-turns-v8.test.ts`, `tests/loomkeeper/action-turns-v8.assessment.ts`; existing `shared/combat-version.ts`, `server/src/simulation/coordinator-v8.ts`, `server/src/simulation/versioned-coordinator.ts`, `tests/simulation/action-turns-v8-replay.test.ts` |
+| Fresh no-history `/root/v8d_lifecycle` — runtime | `shared/protocol-v8.ts`, `server/src/session/registry.ts`, `server/src/protocol/socket.ts`, `server/src/runtime.ts`, `server/src/reward/service.ts`, `server/src/reward/types.ts`, `client/src/practice/client.ts`, new `client/src/practice/action-turns-v8.ts`, `client/src/script.ts`, `client/src/scenes/practice.ts`, `client/src/scenes/result.ts`, `client/src/scenes/combat.ts`, `client/src/combat/contracts.ts`, `client/src/combat/controls.ts` |
+| Same lifecycle owner — tests | `tests/protocol/action-turns-v8.test.ts`, `tests/protocol/runtime.test.ts`, `tests/protocol/schemas.test.ts`, `tests/practice/practice-client.test.ts`, `tests/practice/action-turns-v8-client.test.ts`, `tests/practice/action-turns-v8-r1-client.test.ts`, new `tests/reward/action-turns-v8.test.ts`, `tests/reward/runtime.test.ts`, `tests/reward/service.test.ts`, `tests/browser/practice.spec.ts`, `tests/browser/reward.spec.ts`, `tests/browser-postgres/reward-postgres.spec.ts` |
+| Root coordinator — documentation/gate wiring only | This contract, `docs/planning/implementation_plan.md`, `docs/evidence/wp-015d3a.json`, `package.json` |
+
+Root remains the reference observer and does not author runtime, tests or the
+assessment. Implementers read only the frozen handoff and current MIT product
+sources/operating instructions; no observer transcript, external reference or
+quarantine. They preserve each other's changes. `/root/v8c1_client` performs
+read-only independent D review with no D authorship; its earlier C.1 client
+authorship is disclosed, not represented as fresh D implementation. The
+clean-room registry stays `observed`; automated review is not the human gate.
+
+Unchanged: both simulation modules, legacy protocol/AI/coordinator behavior,
+assets, all legal manifests, frozen handoff, dependency versions/lockfile,
+reward amounts/eligibility/ledger/stores/migrations/signing, analytical
+carriers and checkpoints. No push, PR, deployment, funded payout, formal
+observation or real-device session is part of this autonomous implementation.
+
+#### D2. Additive identity and lifecycle contract
+
+Original V8 and r1 foundation envelopes already contain reserved v3 AI labels;
+those labels are **not automated-policy evidence**. Preserve their strict
+schemas, constructors, replay semantics and hashes. Add separately named
+automated r1 branches with mandatory
+`automationId: 'wp-015d3a-v8d-r1-v1'`, exact v3 policy/`standard-v8-0` profile,
+and strict automated snapshot/result/input/cancel/release/pause/leave/ack/replay
+envelopes. Explicit runtime unions dispatch both foundation and automated
+branches without silently widening old exports. A named `createAutomated`
+constructor fixes r1; original `create` remains a foundation constructor.
+The automation marker belongs to envelopes, not the combat-state hash.
+
+The replay has at most 16 turn-indexed policy selection records. Verification
+recomputes policy selection and checks the exact AI intent/barrier sequence
+and authoritative tick of every operation, not only the selected ordinal or
+terminal hash. A selected plan, no legal plan, and work failure are distinct;
+work failure produces neutral timeout and cannot establish a reward proof.
+Reward verification dispatches only by the recorded exact automation,
+ruleset, policy/profile, challenge/session and tick/hash identities. Reserved
+foundation labels alone must never authorize an automated reward result.
+
+Add strict `v8:challenge.create` with existing mode/Calling and optional
+reward-eligibility fields, request ID and session sequence, **no client
+ruleset or automation selector**. Its strict versioned acknowledgement tags
+legacy versus automated snapshots. One server selector governs both modes
+and both creation endpoints. Under V7 the old endpoint remains unchanged;
+when an automated candidate is injected, the V1-only endpoint rejects with
+`FEATURE_UNAVAILABLE` before consuming eligibility. No false V1 envelope or
+fallback V7 match. Request-cache identity includes the event as well as the
+request; cross-endpoint ID reuse with a different payload conflicts.
+
+Separate once-only authoritative completion/forfeit from once-only socket
+delivery. Disconnected expiry and runtime close settle the challenge before
+replay/session deletion; reconnect can still receive its terminal result.
+Preserve idempotency under retries and repeated expiry/close. Existing reward
+stores can retain the versioned replay without a schema or database migration.
+
+The client has one authoritative session-sequence cursor across legacy
+reservation and versioned creation, pause, leave and retry. Preserve the old
+Practice client API and foundation adapter behavior. Move the existing V8
+adapter into the new lazy module **without a runtime re-export** from the
+initial client module; the two foundation transport tests change imports,
+not expected behavior. An awaited connection factory and bootstrap permit
+tagged creation and buffered automated resume without bundling V8 transport
+into the initial download. Scenes consume actual versioned snapshots/results,
+not fabricated legacy results. Retry disposes the old adapter, suppresses its
+expected late leave result and starts a fresh match. A lost in-memory session
+returns to fresh Practice. No CSS, assets or deployment flag is added.
+
+Candidate browser cases use injected ephemeral loopback runtimes within the
+named existing specs. Production has no new environment or URL activation
+switch. PostgreSQL acceptance must use isolated existing disposable facilities;
+do not broaden the runner's one-entitlement assertions or edit its harness.
+An unavailable prerequisite is explicitly not run and blocks promotion.
+
+#### D3. Exact assessment and execution clarifications
+
+These clarify A6/A8 before implementation, without changing its work, seed or
+match counts. The paired **120 V8 + 120 V7** matches use **Wizard**. Separately,
+AI correctness covers ten seeds x original/reflected actor-side assignments x
+three Callings, 60 cases each repeated twice; the ordinary feature subset is
+the first three seeds x two sides x Wizard, repeated twice.
+
+An assessment-only reflection reverses terrain columns (`255-x`), maps each
+root to `worldWidth*FP-xFp`, negates facing, and preserves IDs and Y. Recompute
+canonical support at tick zero from public terrain queries, then validate the
+fixture: never mirror the old support index, because support is leftmost-first.
+Starting-actor fixtures have a clean turn-zero action epoch/deadline. Initial
+fixture plus operation history is reconstructed only inside the assessment;
+product seed-based replay constructors/schemas accept no custom initial state.
+
+The V8 scripted opponent has its one declared motion script and exactly the
+30 Relic/angle/power lattice choices. It uses A6's same 30 charged planning
+ticks (one candidate per tick), deterministic error, ranking, 15 aim ticks,
+landing wait bounded by the ordinary action deadline, and away-60-tick
+post-cast retreat. V7's scripted opponent uses the same shot lattice/error
+and nearest legal 64-unit move, with no Jump or retreat. V7 retains its
+900-tick action clock and instantaneous legal command transitions, with no
+invented planning/dwell charge; its existing standard v2 AI is untouched.
+These are explicit version differences, not claims of identical mechanics.
+
+Pre-assessment API clarification, independently reviewed before any paired
+run: V7 has no single 64-unit command. Its existing move accepts direction
+only, advances/charges 8 units when legal, and has a 64-unit turn budget.
+The scripted counterpart attempts at most eight sequential 8-unit moves
+toward the direction frozen at script start. Stop at the first rejection,
+retain the accepted prefix and run the unchanged 30-shot lattice from there.
+No retry, reversal, alternate route or extra distance. Before select/aim,
+all scripts face the current opponent, using the existing zero-direction
+turn only when facing differs. A blocked legal prefix does not discard every
+shot candidate. This fixes the API mapping, not an assessment-driven value.
+
+For policy ranking, movement ticks are scheduled 0/90/180 ticks, including
+blocked/airborne time, not distance moved. Separation uses fixed-point centre
+distance capped at `640*FP`. An r1 Jump specifies the script direction.
+At the movement boundary use hard cancellation, not r1 soft release, so a
+committed hop cannot extend the selected motion duration; record a barrier
+only if state actually mutates. Waiting for legal grounding still consumes
+the action clock. No input is retroactively committed during planning.
+
+Freeze public state at AI action entry T. Charged planning ticks 1..30 each
+evaluate their six fixed slots, then advance one ordinary simulation tick.
+After tick T+30 and its automatic annotations, commit the selection and apply
+face/hold/optional Jump in that order; first displacement is T+31. At
+T+30+scheduled-motion-ticks cancel, then face/select/aim if the public
+offensive validators permit it; otherwise wait legal ticks for readiness.
+Fire follows exactly 15 integrated aim ticks. At retreat entry R apply
+face-away/hold, then move on R+1..R+60 with legal lease refreshes, never after
+handover. Each zero-time intent validates the current sequential epoch/aim
+identity. Only the authoritative advance/pump/catch-up path drains AI work;
+packets do not add planning passes. Publish after that tick's AI drain.
+An interrupted prefix before 30 charged ticks has no fabricated selection;
+if still active, record its selected/no-legal/work-failure status at T+30.
+
+Record selected ordinal or a null ordinal with `no_legal_plan`/`work_failure`
+status. Recompute `no_legal_plan`; work failure is retained but never valid
+reward proof. No alternate search, silent truncation or replacement plan.
+
+Opening damage is each actor's HP loss over the first actor's complete turn,
+including shot/settle/retreat. Reply availability is a living opponent with
+an admitted action at the first actual handover. Cast availability uses only
+detached first-handover state: test each of the 30 shot-lattice choices,
+face opponent, select/aim with the same deterministic error, dwell 15 legal
+ticks and attempt Fire; no movement or extra landing wait. Record whether
+any Fire is legal. No handover or death before reply means both are false.
+These probes never mutate match state. For V7, use the corresponding legal
+legacy lattice without adding V8 dwell. Completed turns count actual
+actor-changing handovers; also retain terminal reason and final turn because
+a turn-limit termination need not hand over. Record per-group and aggregate
+first-actor wins/losses/draws, both policies' outcomes, and A8's exact stops.
+
+#### D4. Verification staging and retained preflight
+
+Red tests precede their runtime behavior. Normal feature verification remains
+the fast suites, production build, built-server smoke and canonical phone
+smoke; focused automated lifecycle/parity/replay/security/browser checks are
+additional D gates. `assess:v8` invokes only the explicit non-default-glob
+assessment. Its ignored outputs retain failures and full finite-domain data.
+Do not silently reduce work to accelerate a gate. Run the full daily/release
+chain at activation, not after every edit; without it activation stays closed.
+
+Before D edits, `npm run verify:fast` passed with zero skips. Existing build
+proof was valid on Node v23.6.0, inputs
+`76eee1ca2fd971d217e479650aa24f15c41c108a743178b514d96f0ce4cae9ff`,
+outputs `d96436d89cfacc13b0e747f4a2d647a98afda7b25c156f515bf427fac98d1fd7`.
+Git-byte lock SHA-256 remains
+`D4DAC6AE09A3D2F6C5A7EAA11520BAC43F1628320C5331575BCF1E1857073D73`.
+The prior initial-JS budget has only 1,621 bytes of headroom; genuine lazy
+extraction, not a larger budget, is required.
+
+A fixed read-only feasibility probe used seed1/Wizard/r1 and six representative
+legal rollouts: 1,113 ticks, 274 intents, three hard barriers, zero rejected
+intents, all six fired, 26.9ms total. Six separate 1,050-neutral-tick probes
+took 67.2ms for 6,300 ticks. Source state was unchanged. Typical work narrowly
+fits one 33.3ms interval while the latter exceeds it: neither proves live
+scheduler debt safety, deployment CPU or concurrent capacity. Actual bounded
+implementation work/cadence remains a gate; no search bound was changed.
+
+#### D5. Source-bound assessment return (not activation)
+
+The explicit `npm run assess:v8` completed once in 148.5 seconds, zero skips:
+all 60 all-Calling/side correctness cases repeated twice and all 240 paired
+scenarios completed. The 120 V8 matches terminated within 16 turns, with four
+turn-limit draws (cap 12), at most one draw per ten-case group (cap three),
+and no group of ten first-actor wins. No invariant, cap, reconstruction or
+illegal-action failure occurred. No values were tuned or run retried.
+
+V8 aggregate first-actor wins/losses/draws were **86/30/4**; AI outcomes were
+**80/36/4**. Paired V7 outcomes were **90/30/0**, AI **48/72/0**. This passes
+the frozen engineering admission thresholds, not a claim of fairness or
+balanced human gameplay: first-actor wins remain common and the bounded
+scripts are not player observations.
+
+The run was bound before and verified unchanged afterward to SHA-256
+`6a7c3de26e5502f0c25e4b3483aa685ecbfb82a696f86ed1f061817b308ee199`:
+lexicographically sorted `{path,gitBlob}` rows for tracked `shared/` and
+`server/src/simulation/`, plus new `shared/loomkeeper-v8.ts`, the two new
+AI test/assessment files, `tests/simulation/action-turns-v8-replay.test.ts`
+and `package.json`; hash UTF-8 `JSON.stringify(rows)` without a newline.
+This 15-path assessment-input binding is distinct from the final whole-slice
+source/test digest and excludes review documents/containing commit.
+
+The first run wrote ignored `test-results/wp-015d3a-v8-assessment.json`,
+17,403,641 bytes of
+fixtures, legal operation histories, reconstruction/correctness hashes,
+per-scenario/group metrics and outcome data, SHA-256
+`cb071f37a9e14ff661bab9fa30d6c6bed0bc8a0407cab524b4cfdbeb4ffc3721`.
+Its existence/hash were verified immediately, but the subsequent canonical
+Playwright run cleared its configured `test-results/` output directory and
+removed this first raw report. The numerical/source-bound return above is
+retained; do not claim that first raw file still exists. Regenerate the
+unchanged assessment after the final browser runs to leave a retained raw
+artifact, recording the reason and new digest separately. This is artifact
+recovery, not numerical retuning or a failed assessment retry. Local outputs
+are not committed evidence schemas or off-device backups; future default
+Playwright runs can clear them again.
+Public V7 remains unchanged; lifecycle, release/DB/human activation gates
+remain separate from this passed assessment.
+
+After the last browser check, one unchanged artifact-recovery run passed in
+145.3 seconds, again all 60 correctness cases repeated twice and all 240
+scenarios, zero skips. Its before/after 15-path binding is the same
+`6a7c3de26e5502f0c25e4b3483aa685ecbfb82a696f86ed1f061817b308ee199`.
+The recorded outcome totals and group limits match the first summary; no
+source, threshold or policy was changed. The **currently retained** ignored
+report at the same path is 17,403,641 bytes, SHA-256
+`66ee02f07dd560884dabf4c2782ac070a902da3c6fea750a9bf0ff7aaab4e3b1`.
+Timing metadata changes its whole-file hash legitimately. No further browser
+cleanup ran after this recovery.
+
+#### D6. Implementation and review return — unpromoted candidate
+
+V8D's injected automated r1 candidate is implemented and independently source
+reviewed. The final range from C.1 contains **35 paths**, within D1's 37-path
+maximum: five new files, 32 non-document paths and the three existing review
+documents. `tests/protocol/schemas.test.ts` and `tests/reward/service.test.ts`
+were allowed but did not need edits. Non-document source/test SHA-256 is
+`ab3fccd12684aa7e3a425397c770c6decf21c44730f8e8590e6d57c0ebc3438b`:
+sort changed paths lexicographically, form `{path,gitBlob}` using
+`git hash-object --path=<path> <path>`, hash UTF-8 `JSON.stringify(rows)`
+without newline, excluding these three review documents and containing commit.
+
+Delivered: bounded v3 timed planning/execution, mandatory automated provenance,
+exact AI-operation reconstruction, one shared version selector, strict
+versioned creation, complete Practice/reward transport, pause/reload/retry and
+terminal recovery, disconnected/close settlement limited to automated matches,
+and replay-verified no-fund win/claim persistence. Active matches are refused
+before consuming reward eligibility. V1-V7 and original V8/r1 foundations
+retain their strict historical identities and behavior; both simulation files
+remain byte-identical to C.1.
+
+Final `npm run verify:feature` passed the full configured fast chain, production
+build, built-server smoke and **5/5** canonical phone checks (37.6s browser
+portion), zero skips. The two new candidate lifecycle cases separately passed
+**10/10 across all five profiles** in 1.1 minutes, zero retries/skips. The
+30 seed/Calling shared-mode cases run 60 complete matches and compare snapshots,
+hashes, exact replay operations/AI selections and terminal outcomes. Genuine
+legal player-win reconstruction, tampering rejection, durable record-only
+claim recovery and idempotency pass. The 240-match assessment is separately
+source-bound in D5; it is not implicitly run by every feature edit.
+
+Final reward-security and identity-bundle inspections pass. Production build
+proof is valid on Node v23.6.0, inputs
+`bb4beec3779aa8af3432c4d2e1e757a995d17cb246d07b9be84331c17128ca9f`,
+outputs `5a98ba07f43b7ea68c1bdfd3d6e9fb57ee99822d88ca254c5a28c38dde4fc84b`.
+Initial raw JavaScript is **1,499,582/1,500,000 bytes**, and initial JS/CSS gzip
+is **414,682/430,000**. The remaining 418 raw bytes are a future engineering
+risk, not permission to raise the budget. V8 lifecycle and optional reward/
+leave request bodies are genuinely lazy; no startup-eager dynamic import was
+used to disguise initial work. All 11 approved runtime assets remain exact.
+
+Retained red/review corrections include later-AI-turn stale selection,
+mixed-identity legacy replay admission, interrupted/removed/shifted policy
+operations, exact rollout caps, eligibility-before-active-match checking,
+replacement-session acknowledgement cursors, once-only buffered results,
+strict versioned error envelopes and automated-only settlement. Three early
+bundle probes failed at 1,504,658, 1,501,582 and 1,500,118 bytes before the
+two-file lazy corrections passed. The first live candidate browser run exposed
+a Phaser CREATING/RUNNING mount race: supplied live arguments skipped a
+conditional yield, unlike previews. Both paths now yield before the unchanged
+generation/mounted/active guards; the failed cases then passed with explicit
+visible controls and page-error checks. No gameplay constant, validation guard,
+timeout, baseline, expected-skip policy or test harness was weakened.
+
+The fresh implementers declared only the required operating/product docs,
+frozen behavior handoff and local MIT product sources/tests. They accessed no
+Sorcerers/quarantine, observer history or external source. The distinct D
+reviewer made no implementation edits and approved the final lifecycle,
+replay, packaging and mount fixes. Automated review is not the separate human
+similarity gate, and the clean-room record remains `observed`.
+
+**Activation decision: not promoted.** Shared public creation is still V7.
+`npm audit` ran and failed on inherited moderate `qs@6.15.3` advisories
+`GHSA-x5fp-wj9c-mxmx` and `GHSA-4mjr-xmp4-gh2g`; dependencies and lockfile
+were not changed. Address that in a separately scoped dependency fix. The
+isolated PostgreSQL candidate test is implemented/discoverable but was not
+run because `WP014_TEST_DATABASE_URL` is unavailable. Full daily/release
+quality/performance, deployment/concurrent CPU capacity, human similarity and
+real-device acceptance remain outstanding. A local cadence sample completed
+30 planning batches in 1,085ms, maximum derived debt three ticks and no expiry;
+its 44.57ms maximum batch is host evidence, not deployment capacity proof.
+
+Next work is closing these activation gates, not automatically starting V9 or
+promoting one mode alone. Overall WP-015D3A remains `in_progress`. No push, PR,
+deployment, real-fund activation or formal observation was performed. The
+analytical pointer remains WP-015D2A; Stage C debt remains `interrupted_no_tap`,
+Lane G evidence remains none, Lane G/M execution remains closed, D2O remains
+unsatisfied, and ProductAuthority/placement/P5/landfall remain unclaimed.
 
 ## Clean-room roles and entry gate
 

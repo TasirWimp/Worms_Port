@@ -3,7 +3,6 @@ import Phaser from 'phaser';
 import type { RewardInfoData } from '../../../shared/protocol';
 import type { PlayerCalling } from '../../../shared/simulation';
 import {
-    liveCombatArgs,
     PRACTICE_CLIENT_REGISTRY_KEY,
     type PracticeClient
 } from '../practice/client';
@@ -79,7 +78,7 @@ export default class PracticeScene extends Phaser.Scene {
         if (identityPreview && identityServices) {
             this.mountIdentity(identityServices, false);
         }
-        const current = this.client.currentSnapshot();
+        const current = this.client.currentCombatSnapshot();
         if (current) this.calling = current.calling;
         if (current?.status === 'active') {
             this.startButton().textContent = current.paused ? 'Resume Paused Clash' : 'Resume Practice';
@@ -108,8 +107,8 @@ export default class PracticeScene extends Phaser.Scene {
             this.setMessage(message);
         }));
         this.unsubscribers.push(this.client.onError((message) => this.setMessage(message)));
-        this.unsubscribers.push(this.client.onResult((result) => {
-            const snapshot = this.client.currentSnapshot();
+        this.unsubscribers.push(this.client.onCombatResult((result) => {
+            const snapshot = this.client.currentCombatSnapshot();
             this.scene.start('result', {
                 result,
                 calling: this.calling,
@@ -203,8 +202,8 @@ export default class PracticeScene extends Phaser.Scene {
         this.refreshStartAvailability();
         this.setDailyMessage("Reserving today's fixed sponsor reward...");
         try {
-            const snapshot = await this.client.startReward(this.calling);
-            this.scene.start('combat', liveCombatArgs(this.client, snapshot));
+            const snapshot = await this.client.startRewardCombat(this.calling);
+            this.scene.start('combat', await this.client.combatArgs(snapshot));
         } catch (error) {
             this.setDailyMessage(
                 error instanceof Error
@@ -222,8 +221,8 @@ export default class PracticeScene extends Phaser.Scene {
         button.disabled = true;
         this.setMessage('Weaving the Patch…');
         try {
-            const snapshot = await this.client.start(this.calling);
-            this.scene.start('combat', liveCombatArgs(this.client, snapshot));
+            const snapshot = await this.client.startCombat(this.calling);
+            this.scene.start('combat', await this.client.combatArgs(snapshot));
         } catch (error) {
             this.refreshStartAvailability();
             this.setMessage(error instanceof Error ? error.message : 'Practice could not start.');

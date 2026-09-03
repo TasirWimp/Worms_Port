@@ -1,13 +1,14 @@
 import { SimulationCoordinator, type CoordinatorReplay, type CoordinatorSnapshot,
     type CoordinatorTerminalResult, type SimulationCoordinatorOptions } from './coordinator';
-import { SimulationCoordinatorV8, type CoordinatorReplayV8Family, type CoordinatorSnapshotV8Family,
+import { SimulationCoordinatorV8, type CoordinatorReplayV8Runtime, type CoordinatorSnapshotV8Family,
     type CoordinatorSnapshotV8, type CoordinatorTerminalResultV8Family, type SimulationCoordinatorV8Options } from './coordinator-v8';
 import { CURRENT_COMBAT_RULESET_ID, type CombatRulesetId } from '../../../shared/combat-version';
-import { isV8RulesetId, type V8RulesetId } from '../../../shared/simulation-v8';
+import { V8_AUTOMATION_ID } from '../../../shared/combat-version';
+import { isV8RulesetId, V8_R1_RULESET_ID, type V8RulesetId } from '../../../shared/simulation-v8';
 import { LEGACY_RULESET_ID, type PlayerCalling, type SimulationRulesetId } from '../../../shared/simulation';
 
 export type VersionedCoordinatorSnapshot = CoordinatorSnapshot | CoordinatorSnapshotV8Family;
-export type VersionedCoordinatorReplay = CoordinatorReplay | CoordinatorReplayV8Family;
+export type VersionedCoordinatorReplay = CoordinatorReplay | CoordinatorReplayV8Runtime;
 export type VersionedCoordinatorResult = CoordinatorTerminalResult | CoordinatorTerminalResultV8Family;
 
 /** Dispatch by recorded identity, never by the current selector when reading a historical replay. */
@@ -28,6 +29,11 @@ export class VersionedSimulationCoordinator {
         return isV8RulesetId(rulesetId) ? this.v8.create(challengeId, sessionId, seed, calling, rulesetId)
             : this.legacy.create(challengeId, sessionId, seed, calling, rulesetId);
     }
+    public createAutomated(challengeId:string,sessionId:string,seed:number,calling:PlayerCalling):
+        CoordinatorSnapshotV8<typeof V8_R1_RULESET_ID> & {automationId:typeof V8_AUTOMATION_ID}{
+        if(this.get(challengeId))throw new Error('Duplicate versioned challenge.');
+        return this.v8.createAutomated(challengeId,sessionId,seed,calling);
+    }
     public get(challengeId: string): VersionedCoordinatorSnapshot | undefined {
         return this.v8.get(challengeId) ?? this.legacy.get(challengeId);
     }
@@ -40,7 +46,8 @@ export class VersionedSimulationCoordinator {
             throw new Error('Replay identity mismatch.');
         if (isV8RulesetId(replay.rulesetId))
             return this.v8.reconstructAndVerify(replay, expected);
-        if ('formatVersion' in replay) throw new Error('Unknown or mixed combat ruleset.');
+        if ('formatVersion' in replay || 'automationId' in replay || 'chosenPlans' in replay)
+            throw new Error('Unknown or mixed combat ruleset.');
         // Historical V1 replay alone may omit its identity, exactly as in the untouched legacy verifier.
         if (replay.rulesetId !== undefined && !/^nimble-knots-artillery-v[1-7]$/.test(replay.rulesetId))
             throw new Error('Unknown combat ruleset.');

@@ -107,7 +107,7 @@ window.onload = async () => {
     socket.on(protocolEvents.snapshot, bufferSnapshot);
     socket.on(protocolEvents.result, bufferResult);
     const session = await bootstrapSession(socket);
-    const client = new PracticeClient(socket, session, initialSnapshots, initialResults);
+    const client = await PracticeClient.connect(socket, session, initialSnapshots, initialResults);
     socket.off(protocolEvents.snapshot, bufferSnapshot);
     socket.off(protocolEvents.result, bufferResult);
     const game = new NimbleKnotsGame();

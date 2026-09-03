@@ -7,3 +7,5 @@ export type CombatRulesetId = SimulationRulesetId | V8RulesetId;
 // Reserved A6 identity only. No V8 automated policy is implemented in B.
 export const V8_LOOMKEEPER_POLICY_ID = 'nimble-knots-loomkeeper-v3' as const;
 export const V8_LOOMKEEPER_PROFILE_ID = 'standard-v8-0' as const;
+/** Required provenance for D's automated r1 envelope; reserved labels alone are not proof. */
+export const V8_AUTOMATION_ID = 'wp-015d3a-v8d-r1-v1' as const;

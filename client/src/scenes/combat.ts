@@ -19,7 +19,7 @@ import {
 } from '../combat/approved-assets';
 import type { CombatSceneArgs, LegacyCombatSceneArgs, CombatSceneArgsV8, SafeAreaInsets } from '../combat/contracts';
 import { createCombatFixture, createActionTurnsV8Fixture } from '../combat/fixture';
-import type { ChallengeSnapshotV8Family as ChallengeSnapshotV8 } from '../../../shared/protocol-v8';
+import type { ChallengeSnapshotV8Runtime as ChallengeSnapshotV8 } from '../../../shared/protocol-v8';
 import type { SimulationIntentV8Family as SimulationIntentV8 } from '../../../shared/simulation-v8';
 import { canRequestFullscreen, toggleGameFullscreen } from '../combat/fullscreen';
 import { activeSidewaysMode, clientPointToGame } from '../lib/sideways';
@@ -224,8 +224,10 @@ export default class CombatScene extends Phaser.Scene {
         const generation = this.initializationGeneration;
         let mounted = true;
         this.events.once(Phaser.Scenes.Events.SHUTDOWN, () => { mounted = false; });
-        const args = this.v8Args ?? await createActionTurnsV8Fixture(1, 'wizard', undefined,
-            this.v8Preview === 'v8-r1' ? 'nimble-knots-artillery-v8-r1' : 'nimble-knots-artillery-v8');
+        // Phaser marks the scene active after create() returns. Live arguments
+        // must yield too, before applying the same stale-mount guards as previews.
+        const args = await (this.v8Args ?? createActionTurnsV8Fixture(1, 'wizard', undefined,
+            this.v8Preview === 'v8-r1' ? 'nimble-knots-artillery-v8-r1' : 'nimble-knots-artillery-v8'));
         if (!mounted || generation !== this.initializationGeneration || !this.scene.isActive()) return;
         const controller = new ActionTurnsScene(this, args);
         this.events.once(Phaser.Scenes.Events.SHUTDOWN, () => controller.destroy());
@@ -977,7 +979,7 @@ export default class CombatScene extends Phaser.Scene {
 
 /** An explicit V8 presentation branch; legacy result/snapshot schemas stay untouched. */
 class ActionTurnsScene {
-    private readonly buffer = new V8SnapshotBuffer();
+    private buffer = new V8SnapshotBuffer();
     private readonly controls: ActionTurnsControls;
     private readonly renderer: CombatRenderer;
     private readonly cleanup: (() => void)[] = [];
@@ -1009,6 +1011,7 @@ class ActionTurnsScene {
         this.controls = new ActionTurnsControls(document.getElementById('game')!, this.snapshot, {
             onIntent: (intent) => this.trySubmit(intent), onCancel: () => void this.neutralize(),
             onRelease: () => void this.releaseMovement(),
+            onRetry: this.args.restart ? () => void this.retry() : undefined,
             inputReady: () => this.available() && !this.normalPending && !this.neutralPending && !this.releasePending && (this.args.inputReady?.() ?? true),
             inputFlight: () => {
                 if (!this.available() || this.neutralPending || this.releasePending) return 'blocked';
@@ -1026,6 +1029,8 @@ class ActionTurnsScene {
             if (result.challengeId !== this.snapshot.challengeId || result.rulesetId !== this.snapshot.rulesetId) return;
             this.terminal = true; this.interrupt(); this.controls.setSuspended(true);
             this.controls.setMessage(`Clash ended · ${result.outcome.replaceAll('_', ' ')}`);
+            this.scene.scene.start('result', { result, calling: this.snapshot.calling,
+                rewarded: this.snapshot.mode === 'reward' });
         }));
         if (args.onConnection) this.cleanup.push(args.onConnection((connection) => {
             this.connected = connection === 'connected';
@@ -1034,6 +1039,8 @@ class ActionTurnsScene {
         }));
         if (args.onUnavailable) this.cleanup.push(args.onUnavailable((message) => {
             this.terminal = true; this.interrupt(); this.suspension(); this.controls.setMessage(message);
+            this.scene.scene.start('result', { calling: this.snapshot.calling,
+                rewarded: this.snapshot.mode === 'reward', message });
         }));
         if (args.onError) this.cleanup.push(args.onError((message) => this.controls.setMessage(message)));
         this.listen(window, 'blur', () => { this.focused = false; this.interrupt(); void this.neutralize(); this.suspension(); });
@@ -1171,6 +1178,17 @@ class ActionTurnsScene {
             }
         }
         finally { this.normalPending = false; if (!this.destroyed) this.busy(); }
+    }
+
+    private async retry(): Promise<void> {
+        if (!this.args.restart || this.normalPending || this.neutralPending || this.releasePending) return;
+        this.interrupt();
+        try {
+            const nextArgs = await this.args.restart();
+            this.scene.scene.restart(nextArgs);
+        } catch (error) {
+            this.controls.setMessage(error instanceof Error ? error.message : 'Retry failed.');
+        }
     }
 
     private async aim(aim: AimIntent | null): Promise<void> {

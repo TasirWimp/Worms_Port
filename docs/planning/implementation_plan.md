@@ -12,7 +12,9 @@ Phaser/Socket.IO stack.
   rules/acceptance contract complete and independently reviewed; V8B authoritative
   foundation complete and independently reviewed; V8C touch presentation
   complete, verified and independently reviewed; V8C.1 combined controls and
-  traversal correction complete and independently reviewed. Live V7 unchanged.**
+  traversal correction complete and owner-accepted; V8D automated Loomkeeper/
+  lifecycle implemented and verified as an unpromoted candidate. Live V7
+  unchanged.**
   The owner opened V8A after the independently reviewed preparation and shared-
   ruleset correction. The
   [V8 preparation contract and roadmap](wp-015d3a-v8-action-turns-contract.md)
@@ -61,11 +63,22 @@ Phaser/Socket.IO stack.
   stepping and wall-flush jump recovery. Original `?combat-preview=v8` remains
   unchanged. Core 89/89 and selected client 70/70 tests, the final feature gate,
   20/20 targeted five-profile browser checks, security/bundle/preservation checks
-  and distinct source review pass. Phone owner acceptance remains separate.
-  No public activation is authorized. V8D follows C.1 and has not
-  started: it owns automated V8 AI, complete
-  rewarded lifecycle, assessment and shared promotion. Production remains V7
-  in both modes until all activation gates pass.
+  and distinct source review pass. The owner then confirmed C.1 works as
+  expected on their phone and opened V8D; this is not Lane G evidence.
+  D started from freshly fetched clean local/upstream
+  `3fc33a33049a7e61bc0ab8ee7e3f340917e3b136`, on isolated branch
+  `codex/wp-015d3a-v8d-loomkeeper-lifecycle-v0`. The existing contract's D
+  section owns the exact 37-path preregistration and 35-path source-bound
+  return, fresh implementation roles, independent review and explicitly
+  automated r1 identity. Timed standard AI, complete Practice/reward lifecycle,
+  60-match shared-mode parity, the 240-match paired assessment, final feature
+  gate and 10/10 five-profile candidate browser checks pass. Bundle and
+  reward/identity security checks pass; initial raw JS has 418 bytes headroom.
+  Production remains V7 in both modes. Next: close activation gates, including
+  a separately scoped fix for inherited moderate qs audit findings, isolated
+  PostgreSQL execution, full daily/release quality/performance, deployment CPU,
+  human similarity and real-device acceptance. Do not promote automatically
+  or begin V9 merely because the injected candidate passes engineering tests.
   The analytical execution pointer remains **WP-015D2A**;
   Stage C debt remains `interrupted_no_tap`, Lane G/Lane M execution remains
   closed, Lane G evidence remains none, D2O remains unsatisfied, and

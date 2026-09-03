@@ -29,9 +29,11 @@ import type { CoordinatorReplay } from '../simulation/coordinator';
 import { ackFor, SessionRegistry } from '../session/registry';
 import { eventFits, TokenBucket } from './guards';
 import { failure } from './errors';
-import { protocolEventsV8, V8_INPUT_BYTES, jsonBytesV8, InputRequestV8FamilySchema as InputRequestV8Schema, InputCancelV8FamilySchema as InputCancelV8Schema,
-    InputReleaseV8R1Schema,
-    ChallengePauseV8FamilySchema as ChallengePauseV8Schema, ChallengeLeaveV8FamilySchema as ChallengeLeaveV8Schema, type InputAckV8Family as InputAckV8 } from '../../../shared/protocol-v8';
+import { protocolEventsV8, V8_AUTOMATION_ID, V8_INPUT_BYTES, jsonBytesV8,
+    InputRequestV8RuntimeSchema as InputRequestV8Schema, InputCancelV8RuntimeSchema as InputCancelV8Schema,
+    InputReleaseV8AutomatedSchema, InputReleaseV8R1Schema,
+    ChallengePauseV8RuntimeSchema as ChallengePauseV8Schema, ChallengeLeaveV8RuntimeSchema as ChallengeLeaveV8Schema,
+    ChallengeCreateV8Schema, type ChallengeCreateAckV8, type InputAckV8Runtime as InputAckV8 } from '../../../shared/protocol-v8';
 
 type Ack = (response: ProtocolAck<unknown>) => void;
 
@@ -123,7 +125,7 @@ export function setupProtocol(
                 next(new Error('Unknown protocol event.'));
                 return;
             }
-            const v8 = event === protocolEventsV8.input || event === protocolEventsV8.cancel || event === protocolEventsV8.release ||
+            const v8 = event === protocolEventsV8.create || event === protocolEventsV8.input || event === protocolEventsV8.cancel || event === protocolEventsV8.release ||
                 event === protocolEventsV8.pause || event === protocolEventsV8.leave;
             if (v8 && jsonBytesV8(payload) > V8_INPUT_BYTES) {
                 ack?.(wireFailureV8(event,payload,'PAYLOAD_TOO_LARGE','V8 payload exceeds 1024 bytes.',registry.getBound(socket.id)?.nextSequence ?? 0,ownedInputCursor(payload)));
@@ -176,7 +178,10 @@ export function setupProtocol(
                 const session = registry.getBound(socket.id);
                 if (!session) { ack(inputFailure(payload,'UNAUTHORIZED','Open or resume a session first.')); return; }
                 const schema = event === protocolEventsV8.cancel ? InputCancelV8Schema
-                    : event === protocolEventsV8.release ? InputReleaseV8R1Schema : InputRequestV8Schema;
+                    : event === protocolEventsV8.release
+                        ? ((payload as { automationId?: unknown })?.automationId === V8_AUTOMATION_ID
+                            ? InputReleaseV8AutomatedSchema : InputReleaseV8R1Schema)
+                        : InputRequestV8Schema;
                 if (!schema.safeParse(payload).success) {
                     ack(inputFailure(payload,'BAD_REQUEST','Invalid V8 input envelope.'));
                     if (!invalidLimiter.take()) socket.disconnect(true);
@@ -208,7 +213,7 @@ export function setupProtocol(
                 const packet = parsed.data;
                 // Reuse only the existing internal ordered session cursor/cache, not a V1 wire response.
                 void registry.sequenceAsync(session,packet.requestId,packet.sequence,{event,...packet},async () => {
-                    if (registry.getBound(socket.id) !== session || !registry.hasChallengeV8(session,packet.challengeId,packet.rulesetId))
+                    if (registry.getBound(socket.id) !== session || !registry.ownsChallengePacketV8(session,packet.challengeId,packet))
                         return failure(packet.requestId,'UNAUTHORIZED','The exact lifecycle match/transport is not owned.');
                     const result = event === protocolEventsV8.pause
                         ? await registry.setChallengePausedV8(session,packet.challengeId,ChallengePauseV8Schema.parse(payload).paused)
@@ -327,7 +332,7 @@ export function setupProtocol(
                     ));
                     return;
                 }
-                if (registry.activeSnapshot(session)?.status === 'active') {
+                if (registry.hasActiveCombat(session)) {
                     ack(failure(
                         parsed.data.requestId,
                         'BAD_REQUEST',
@@ -372,7 +377,7 @@ export function setupProtocol(
                     ));
                     return;
                 }
-                if (registry.activeSnapshot(session)?.status === 'active') {
+                if (registry.hasActiveCombat(session)) {
                     options.identity.cancelSession(session.id);
                     ack(failure(
                         parsed.data.requestId,
@@ -505,8 +510,7 @@ export function setupProtocol(
                     ));
                     return;
                 }
-                const active = registry.activeSnapshot(session);
-                if (active?.status === 'active') {
+                if (registry.hasActiveCombat(session)) {
                     ack(failure(
                         parsed.data.requestId,
                         'BAD_REQUEST',
@@ -616,6 +620,63 @@ export function setupProtocol(
             });
         });
 
+        socket.on(protocolEventsV8.create, (payload: unknown, ack?: (response: ChallengeCreateAckV8) => void) => {
+            if (typeof ack !== 'function') { guard(socket, payload, undefined, invalidLimiter); return; }
+            const parsed = ChallengeCreateV8Schema.safeParse(payload);
+            const session = registry.getBound(socket.id);
+            const reject = (code: ProtocolError['code'], message: string): ChallengeCreateAckV8 => ({
+                protocolVersion: 8, requestId: requestIdOf(payload), nextSequence: session?.nextSequence ?? 0,
+                ok: false, error: { code, message, retryable: false }
+            });
+            if (!parsed.success || !session) {
+                ack(reject(session ? 'BAD_REQUEST' : 'UNAUTHORIZED', 'A valid versioned creation request is required.'));
+                if (!parsed.success && !invalidLimiter.take()) socket.disconnect(true);
+                return;
+            }
+            const request = parsed.data;
+            void registry.sequenceAsync(session, request.requestId, request.sequence,
+                { event: protocolEventsV8.create, ...request }, async () => {
+                    if (registry.getBound(socket.id) !== session)
+                        return failure(request.requestId, 'UNAUTHORIZED', 'The creation transport is no longer bound.');
+                    let entitlement: Awaited<ReturnType<RewardService['start']>> | undefined;
+                    try {
+                        if (request.mode === 'reward') {
+                            if (registry.hasActiveCombat(session)) return failure(request.requestId,
+                                'BAD_REQUEST', 'Finish or leave the active Clash before starting a reward match.');
+                            if (!options.rewards) return failure(request.requestId, 'REWARD_UNAVAILABLE', 'Sponsor rewards are unavailable.');
+                            entitlement = await options.rewards.start(session.identity,
+                                request.eligibility.challengeId, request.eligibility.token);
+                        }
+                        const selected = registry.createSelectedChallenge(session, request.mode, request.calling,
+                            entitlement ? { challengeId: entitlement.challengeId, seed: entitlement.seed } : undefined);
+                        if ('code' in selected && entitlement) {
+                            await options.rewards!.completeMatch({ protocolVersion: 1, serverTimeMs: Date.now(),
+                                sessionId: session.id, challengeId: entitlement.challengeId, outcome: 'left', revision: 0,
+                                nextSequence: session.nextSequence + 1, finalTick: null, finalStateHash: null });
+                        }
+                        return ackFor(request.requestId, selected);
+                    } catch (error) {
+                        if (entitlement) {
+                            await options.rewards!.completeMatch({ protocolVersion: 1, serverTimeMs: Date.now(),
+                                sessionId: session.id, challengeId: entitlement.challengeId, outcome: 'left', revision: 0,
+                                nextSequence: session.nextSequence + 1, finalTick: null, finalStateHash: null }).catch(() => undefined);
+                        }
+                        return rewardFailure(request.requestId, error);
+                    }
+                }).then(response => {
+                    let wire: ChallengeCreateAckV8;
+                    if (response.ok === false) wire = { protocolVersion:8, requestId:request.requestId,
+                        nextSequence:session.nextSequence, ok:false, error:response.error };
+                    else wire = { protocolVersion:8, requestId:request.requestId, nextSequence:request.sequence+1,
+                        ok:true, data:response.data as any };
+                    ack(wire);
+                    if (wire.ok) {
+                        const snapshot = wire.data.snapshot;
+                        socket.emit(wire.data.kind === 'v8' ? protocolEventsV8.snapshot : protocolEvents.snapshot, snapshot);
+                    }
+                }).catch(() => ack(reject('INTERNAL_ERROR', 'Versioned creation failed.')));
+        });
+
         socket.on(protocolEvents.challengeCreate, (payload: unknown, ack?: Ack) => {
             if (!guard(socket, payload, ack, invalidLimiter)) {
                 return;
@@ -626,6 +687,11 @@ export function setupProtocol(
                 return;
             }
             withSessionAsync(socket, registry, parsed.data.requestId, ack, async (session) => {
+                if (!registry.legacyCreationAvailable()) {
+                    ack(failure(parsed.data.requestId, 'FEATURE_UNAVAILABLE',
+                        'Use the versioned creation protocol for this combat candidate.'));
+                    return;
+                }
                 if (parsed.data.mode === 'reward') {
                     const rewardRequest = parsed.data;
                     if (!options.rewards) {
@@ -1010,6 +1076,7 @@ function authorizationIdOf(payload: unknown): string | undefined {
 }
 
 const ALLOWED_CLIENT_EVENTS = new Set([
+    protocolEventsV8.create,
     protocolEventsV8.input,
     protocolEventsV8.cancel,
     protocolEventsV8.release,
@@ -1041,7 +1108,7 @@ function failureV8(payload: unknown,code: ProtocolError['code'],message: string,
 }
 function wireFailureV8(event: string,payload: unknown,code: ProtocolError['code'],message: string,nextSequence: number,nextInputSequence: number): unknown {
     const response=failureV8(payload,code,message,nextInputSequence);
-    if(event!==protocolEventsV8.pause && event!==protocolEventsV8.leave) return response;
+    if(event!==protocolEventsV8.create && event!==protocolEventsV8.pause && event!==protocolEventsV8.leave) return response;
     return {protocolVersion:8,requestId:requestIdOf(payload),nextSequence,ok:false,
         error:{code,message,retryable:code==='RATE_LIMITED'}};
 }

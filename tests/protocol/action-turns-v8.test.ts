@@ -12,6 +12,95 @@ import { protocolEvents } from '../../shared/protocol';
 import { protocolEventsV8, InputAckV8Schema } from '../../shared/protocol-v8';
 import { LifecycleAckV8Schema, jsonBytesV8 } from '../../shared/protocol-v8';
 import { SimulationCoordinatorV8 } from '../../server/src/simulation/coordinator-v8';
+import * as automatedWire from '../../shared/protocol-v8';
+
+test('V8 D creation and automated envelopes are additive and strict', () => {
+    const wire = automatedWire as any;
+    const create = { requestId: 'automated_create_01', sequence: 0, mode: 'practice', calling: 'wizard' };
+    assert.equal(wire.ChallengeCreateV8Schema.safeParse(create).success, true);
+    assert.equal(wire.ChallengeCreateV8Schema.safeParse({ ...create, rulesetId: V8_R1_RULESET_ID }).success, false);
+    const input = { requestId: 'automated_input_01', inputSequence: 0, challengeId: 'automated_match_01',
+        rulesetId: V8_R1_RULESET_ID, automationId: 'wp-015d3a-v8d-r1-v1', expectedTurn: 0,
+        expectedPhase: 'action', inputEpoch: 0, intent: { type: 'jump', direction: 1 } };
+    assert.equal(wire.InputRequestV8AutomatedSchema.safeParse(input).success, true);
+    assert.equal(wire.InputRequestV8FamilySchema.safeParse(input).success, false);
+    assert.equal(wire.InputRequestV8AutomatedSchema.safeParse({ ...input, automationId: undefined }).success, false);
+    assert.equal(wire.InputRequestV8AutomatedSchema.safeParse({ ...input, rulesetId: V8_RULESET_ID }).success, false);
+});
+
+test('V8 D selected creation is shared and V1 fails closed without a fallback match', async () => {
+    const registry = new SessionRegistry({ simulationRulesetId: V8_R1_RULESET_ID as any,
+        simulationTickIntervalMs: false, v8TestOnly: { nowUs: () => 0 } });
+    try {
+        registry.create('automated_create_socket');
+        const session = registry.getBound('automated_create_socket')!;
+        assert.equal((registry.createChallenge(session, 'practice', 'wizard') as any).code, 'FEATURE_UNAVAILABLE');
+        assert.equal(session.challenges.size, 0);
+        const created = (registry as any).createSelectedChallenge(session, 'practice', 'wizard');
+        assert.equal(created.kind, 'v8');
+        assert.equal(created.snapshot.automationId, 'wp-015d3a-v8d-r1-v1');
+        assert.equal(created.snapshot.rulesetId, V8_R1_RULESET_ID);
+    } finally { registry.dispose(); }
+});
+
+test('V8 D close settlement is automated-only; historical legacy and foundation close remain inert', () => {
+    for (const family of ['legacy', 'foundation', 'automated'] as const) {
+        let settled = 0; let expired = 0;
+        const registry = new SessionRegistry({ simulationTickIntervalMs: false,
+            ...(family === 'automated' ? { simulationRulesetId: V8_R1_RULESET_ID } : {}),
+            v8TestOnly: { nowUs: () => 0 }, onChallengeSettledV8: () => { settled++; },
+            onChallengeExpired: () => { expired++; } });
+        try {
+            registry.create('close_scope_socket'); const session = registry.getBound('close_scope_socket')!;
+            if (family === 'legacy') registry.createChallenge(session, 'practice', 'wizard');
+            else if (family === 'foundation') registry.createChallengeV8ForTest(session, 'practice', 'wizard', V8_R1_RULESET_ID);
+            else registry.createSelectedChallenge(session, 'practice', 'wizard');
+            registry.close(session.id); registry.close(session.id);
+            assert.equal(settled, family === 'automated' ? 1 : 0);
+            assert.equal(expired, 0);
+        } finally { registry.dispose(); }
+    }
+});
+
+for (const seed of [1, 2, 3, 4, 17, 42, 1337, 65535, 2147483648, 4294967295]) {
+    for (const calling of ['wizard', 'thief', 'warrior'] as const) {
+        test(`V8 D automated parity seed ${seed} Calling ${calling} matches complete Practice and reward authority`, { timeout: 90_000 }, () => {
+            const outcomes = new Map<string, string>();
+            const registry = new SessionRegistry({ simulationRulesetId: V8_R1_RULESET_ID,
+                simulationTickIntervalMs: false, seedSource: () => seed, v8TestOnly: { nowUs: () => 0 },
+                onChallengeCompletedV8: result => { outcomes.set(result.challengeId, result.outcome); } });
+            try {
+                registry.create('parity_practice_socket'); registry.create('parity_reward_socket');
+                const practiceSession = registry.getBound('parity_practice_socket')!;
+                const rewardSession = registry.getBound('parity_reward_socket')!;
+                const practice = registry.createSelectedChallenge(practiceSession, 'practice', calling);
+                const reward = registry.createSelectedChallenge(rewardSession, 'reward', calling,
+                    { challengeId: `parity_reward_${seed}_${calling}`, seed });
+                assert.ok(!('code' in practice) && practice.kind === 'v8');
+                assert.ok(!('code' in reward) && reward.kind === 'v8');
+                let left = practice.snapshot; let right = reward.snapshot;
+                for (let batch = 0; batch < 20 && left.simulation.phase !== 'finished'; batch++) {
+                    assert.equal(left.stateHash, right.stateHash);
+                    assert.deepEqual(left.simulation, right.simulation);
+                    left = registry.advanceChallengeTicksV8ForTest(practiceSession, left.challengeId, 900);
+                    right = registry.advanceChallengeTicksV8ForTest(rewardSession, right.challengeId, 900);
+                }
+                assert.equal(left.simulation.phase, 'finished');
+                assert.notEqual(left.simulation.finishReason, 'simulation_limit');
+                assert.equal(left.stateHash, right.stateHash);
+                assert.deepEqual(left.simulation, right.simulation);
+                const leftReplay = registry.replayForChallengeV8(practiceSession, left.challengeId)!;
+                const rightReplay = registry.replayForChallengeV8(rewardSession, right.challengeId)!;
+                assert.ok('automationId' in leftReplay && 'automationId' in rightReplay);
+                assert.deepEqual(leftReplay.records, rightReplay.records);
+                assert.deepEqual(leftReplay.chosenPlans, rightReplay.chosenPlans);
+                assert.ok(leftReplay.chosenPlans.length > 0);
+                assert.equal(outcomes.get(left.challengeId), outcomes.get(right.challengeId));
+                assert.equal(outcomes.size, 2);
+            } finally { registry.dispose(); }
+        });
+    }
+}
 
 const request = {
     requestId: 'v8_request_0001', inputSequence: 0, challengeId: 'v8_challenge_fixture',

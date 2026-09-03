@@ -8,6 +8,7 @@ import { SimulationCoordinatorV8, V8_REPLAY_LIMITS } from '../../server/src/simu
 import { VersionedSimulationCoordinator } from '../../server/src/simulation/versioned-coordinator';
 import { CoordinatorReplayV8Schema, jsonBytesV8 } from '../../shared/protocol-v8';
 import { SimulationCoordinator } from '../../server/src/simulation/coordinator';
+import { V8_AUTOMATION_ID } from '../../shared/combat-version';
 
 const challengeId = 'v8_challenge_fixture';
 const sessionId = 'v8_session_fixture';
@@ -27,9 +28,61 @@ test('V8 R1 shared coordinator retains explicit identity and strictly reconstruc
         assert.throws(() => facade.reconstructAndVerify({ ...replay, rulesetId: r1+'-unknown' } as any));
         assert.equal(CoordinatorReplayV8Schema.safeParse(replay).success, false);
         facade.v8.safety(challengeId, 'left');
-        assert.equal(facade.get(challengeId)!.terminalResult!.rulesetId, r1);
+        assert.equal(facade.v8.get(challengeId)!.terminalResult!.rulesetId, r1);
         assert.equal(facade.reconstructAndVerify(facade.replay(challengeId)!).stateHash, facade.get(challengeId)!.stateHash);
     } finally { facade.dispose(); }
+});
+
+test('automated r1 replay requires its distinct proof and exact policy-derived records', () => {
+    const coordinator=new SimulationCoordinatorV8({nowUs:()=>0});
+    try{
+        const id='automated_replay_fixture';
+        coordinator.createAutomated(id,'automated_session_fixture',2,'wizard');
+        coordinator.advance(id,480);
+        const replay=coordinator.replay(id)! as any;
+        assert.equal(replay.automationId,V8_AUTOMATION_ID);
+        assert.equal(replay.chosenPlans.length,1);
+        assert.equal(coordinator.reconstructAndVerify(replay).stateHash,coordinator.get(id)!.stateHash);
+        const removed=structuredClone(replay);delete removed.chosenPlans;
+        assert.throws(()=>coordinator.reconstructAndVerify(removed));
+        const duplicate=structuredClone(replay);duplicate.chosenPlans.push({...duplicate.chosenPlans[0]});
+        assert.throws(()=>coordinator.reconstructAndVerify(duplicate));
+        const missingChoice=structuredClone(replay);missingChoice.chosenPlans=[];
+        assert.throws(()=>coordinator.reconstructAndVerify(missingChoice));
+        const extraChoice=structuredClone(replay);extraChoice.chosenPlans.push({...extraChoice.chosenPlans[0],turn:3});
+        assert.throws(()=>coordinator.reconstructAndVerify(extraChoice));
+        const wrongTurn=structuredClone(replay);wrongTurn.chosenPlans[0].turn=2;
+        assert.throws(()=>coordinator.reconstructAndVerify(wrongTurn));
+        const wrongTiming=structuredClone(replay);
+        const ai=wrongTiming.records.find((record:any)=>record.operation.kind==='intent'&&record.operation.actor==='loomkeeper');
+        ai.operation.expectedEpoch+=1;
+        assert.throws(()=>coordinator.reconstructAndVerify(wrongTiming));
+        const shifted=structuredClone(replay);
+        const firstAi=shifted.records.findIndex((record:any)=>record.operation.kind==='intent'&&record.operation.actor==='loomkeeper');
+        const previousTicks=shifted.records.slice(0,firstAi).findLast((record:any)=>record.operation.kind==='ticks');
+        previousTicks.operation.count+=1;
+        assert.throws(()=>coordinator.reconstructAndVerify(shifted));
+        const missingOperation=structuredClone(replay);missingOperation.records.splice(firstAi,1);
+        missingOperation.records.forEach((record:any,index:number)=>{record.index=index;});
+        assert.throws(()=>coordinator.reconstructAndVerify(missingOperation));
+        const failed=structuredClone(replay);failed.chosenPlans[0]={turn:1,status:'work_failure',ordinal:null};
+        assert.throws(()=>coordinator.reconstructAndVerify(failed));
+    }finally{coordinator.dispose();}
+});
+
+test('automated replay accepts a genuinely interrupted planning prefix without a fabricated choice',()=>{
+    const coordinator=new SimulationCoordinatorV8({nowUs:()=>0});
+    try{
+        const id='partial_planning_fixture';coordinator.createAutomated(id,sessionId,1,'wizard');
+        coordinator.advance(id,479);
+        const prefix=coordinator.replay(id)! as any;assert.deepEqual(prefix.chosenPlans,[]);
+        assert.equal(coordinator.reconstructAndVerify(prefix).stateHash,coordinator.get(id)!.stateHash);
+        const fabricated=structuredClone(prefix);fabricated.chosenPlans=[{turn:1,status:'selected',ordinal:0}];
+        assert.throws(()=>coordinator.reconstructAndVerify(fabricated));
+        coordinator.safety(id,'left');
+        const interrupted=coordinator.replay(id)! as any;assert.deepEqual(interrupted.chosenPlans,[]);
+        assert.equal(coordinator.reconstructAndVerify(interrupted).stateHash,coordinator.get(id)!.stateHash);
+    }finally{coordinator.dispose();}
 });
 
 test('V8 R1 forced neutral releases obey unchanged lifecycle and reserved replay caps', () => {
@@ -167,6 +220,18 @@ test('versioned facade keeps production V7 and verifies by explicit identity', (
     facade.dispose();
 });
 
+test('versioned facade rejects automated proof fields on a historical V7 replay',()=>{
+    const facade=new VersionedSimulationCoordinator();
+    try{
+        const id='mixed_automation_legacy';const initial=facade.create(id,sessionId,1,'wizard');
+        const replay=facade.replay(id)!;
+        assert.equal(facade.reconstructAndVerify(replay).stateHash,initial.stateHash);
+        for(const patch of [{automationId:V8_AUTOMATION_ID},{chosenPlans:[]},
+            {automationId:V8_AUTOMATION_ID,chosenPlans:[]}])
+            assert.throws(()=>facade.reconstructAndVerify({...replay,...patch} as any));
+    }finally{facade.dispose();}
+});
+
 test('V8 per-turn accepted intent 512/513 and lifecycle 128/129 fail closed with replayable barriers', () => {
     const coordinator = fixture();
     for (let index = 0; index < 512; index++) assert.equal(face(coordinator, index % 2 ? 1 : -1).transition.accepted, true);
@@ -255,7 +320,7 @@ test('V8 automatic lease and phase boundaries have explicit ordered replay recor
     assert.equal(coordinator.get(challengeId)!.state.revision,451);
     assert.equal(coordinator.reconstructAndVerify(replay).stateHash,coordinator.get(challengeId)!.stateHash);
     for (const variant of ['missing','extra','forged']) {
-        const changed=structuredClone(replay);
+        const changed=CoordinatorReplayV8Schema.parse(structuredClone(replay));
         const index=changed.records.findIndex(record=>record.operation.kind==='automatic');
         if(variant==='missing')changed.records.splice(index,1);
         else if(variant==='extra')changed.records.splice(index,0,structuredClone(changed.records[index]));

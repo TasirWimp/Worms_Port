@@ -1,12 +1,14 @@
 import { z } from 'zod';
-import { RequestIdSchema, ProtocolErrorSchema } from './protocol';
+import { RequestIdSchema, ProtocolErrorSchema, ChallengeCreateRequestSchema, ChallengeSnapshotSchema } from './protocol';
 import { V8_RULESET_ID, V8_R1_RULESET_ID, assertSimulationInvariantsV8Family, type SimulationStateV8Family } from './simulation-v8';
-import { V8_LOOMKEEPER_POLICY_ID, V8_LOOMKEEPER_PROFILE_ID } from './combat-version';
+import { V8_AUTOMATION_ID, V8_LOOMKEEPER_POLICY_ID, V8_LOOMKEEPER_PROFILE_ID } from './combat-version';
+export { V8_AUTOMATION_ID } from './combat-version';
 
 export const V8_REPLAY_LIMITS = Object.freeze({ records: 32_768, bytes: 16 * 1024 * 1024,
     operationBytes: 512, ticks: 16_800, terminalBytes: 512 });
 export const V8_INPUT_BYTES = 1024;
 export const protocolEventsV8 = Object.freeze({ input: 'v8:input.submit', cancel: 'v8:input.cancel', release: 'v8:input.release',
+    create: 'v8:challenge.create',
     pause: 'v8:challenge.pause', leave: 'v8:challenge.leave',
     snapshot: 'v8:challenge.snapshot', result: 'v8:challenge.result' });
 const integer = (minimum: number, maximum: number) => z.number().int().min(minimum).max(maximum);
@@ -149,6 +151,30 @@ export type CoordinatorReplayV8Family = z.infer<typeof CoordinatorReplayV8Family
 export type ReplayOperationV8Family = z.infer<typeof ReplayOperationV8FamilySchema>;
 export type ReplayOperationV8 = z.infer<typeof ReplayOperationV8Schema>;
 
+const automatedIdentity = {
+    rulesetId: z.literal(V8_R1_RULESET_ID), automationId: z.literal(V8_AUTOMATION_ID),
+    loomkeeperPolicyId: z.literal(V8_LOOMKEEPER_POLICY_ID), loomkeeperProfileId: z.literal(V8_LOOMKEEPER_PROFILE_ID)
+};
+const chosenPlan = z.object({ turn: integer(0, 15),
+    status: z.enum(['selected', 'no_legal_plan', 'work_failure']), ordinal: integer(0, 179).nullable() }).strict()
+    .superRefine((value, context) => {
+        if ((value.status === 'selected') !== (value.ordinal !== null))
+            context.addIssue({ code: 'custom', message: 'Selected status and ordinal must agree.' });
+    });
+export const CoordinatorReplayV8AutomatedSchema = CoordinatorReplayV8R1Schema.extend({
+    ...automatedIdentity, chosenPlans: z.array(chosenPlan).max(16)
+}).strict().superRefine((value, context) => {
+    for (let index = 0; index < value.chosenPlans.length; index += 1) {
+        if (value.chosenPlans[index].turn <= (value.chosenPlans[index - 1]?.turn ?? -1))
+            context.addIssue({ code: 'custom', message: 'Chosen plans must have unique increasing turns.' });
+    }
+});
+export const CoordinatorReplayV8RuntimeSchema = z.union([
+    CoordinatorReplayV8FamilySchema, CoordinatorReplayV8AutomatedSchema
+]);
+export type CoordinatorReplayV8Automated = z.infer<typeof CoordinatorReplayV8AutomatedSchema>;
+export type CoordinatorReplayV8Runtime = z.infer<typeof CoordinatorReplayV8RuntimeSchema>;
+
 const snapshotMetadata = { protocolVersion: z.literal(8), serverTimeMs: integer(0,Number.MAX_SAFE_INTEGER),
     sessionId: id, challengeId: id, rulesetId: z.literal(V8_RULESET_ID),
     loomkeeperPolicyId: z.literal(V8_LOOMKEEPER_POLICY_ID), loomkeeperProfileId: z.literal(V8_LOOMKEEPER_PROFILE_ID),
@@ -170,6 +196,31 @@ export type ChallengeSnapshotV8Family = z.infer<typeof ChallengeSnapshotV8Family
 export type ChallengeResultV8Family = z.infer<typeof ChallengeResultV8FamilySchema>;
 export type ChallengeSnapshotV8 = z.infer<typeof ChallengeSnapshotV8Schema>;
 export type ChallengeResultV8 = z.infer<typeof ChallengeResultV8Schema>;
+
+export const ChallengeSnapshotV8AutomatedSchema = ChallengeSnapshotV8R1Schema.extend(automatedIdentity).strict();
+export const ChallengeResultV8AutomatedSchema = ChallengeResultV8R1Schema.extend(automatedIdentity).strict();
+export const ChallengeSnapshotV8RuntimeSchema = z.union([
+    ChallengeSnapshotV8FamilySchema, ChallengeSnapshotV8AutomatedSchema
+]);
+export const ChallengeResultV8RuntimeSchema = z.union([
+    ChallengeResultV8FamilySchema, ChallengeResultV8AutomatedSchema
+]);
+export type ChallengeSnapshotV8Automated = z.infer<typeof ChallengeSnapshotV8AutomatedSchema>;
+export type ChallengeResultV8Automated = z.infer<typeof ChallengeResultV8AutomatedSchema>;
+export type ChallengeSnapshotV8Runtime = z.infer<typeof ChallengeSnapshotV8RuntimeSchema>;
+export type ChallengeResultV8Runtime = z.infer<typeof ChallengeResultV8RuntimeSchema>;
+
+export const InputRequestV8AutomatedSchema = InputRequestV8R1Schema.extend({ automationId: z.literal(V8_AUTOMATION_ID) }).strict();
+export const InputCancelV8AutomatedSchema = InputCancelV8R1Schema.extend({ automationId: z.literal(V8_AUTOMATION_ID) }).strict();
+export const InputReleaseV8AutomatedSchema = InputReleaseV8R1Schema.extend({ automationId: z.literal(V8_AUTOMATION_ID) }).strict();
+export const ChallengePauseV8AutomatedSchema = ChallengePauseV8R1Schema.extend({ automationId: z.literal(V8_AUTOMATION_ID) }).strict();
+export const ChallengeLeaveV8AutomatedSchema = ChallengeLeaveV8R1Schema.extend({ automationId: z.literal(V8_AUTOMATION_ID) }).strict();
+export const InputRequestV8RuntimeSchema = z.union([InputRequestV8FamilySchema, InputRequestV8AutomatedSchema]);
+export const InputCancelV8RuntimeSchema = z.union([InputCancelV8FamilySchema, InputCancelV8AutomatedSchema]);
+export const ChallengePauseV8RuntimeSchema = z.union([ChallengePauseV8FamilySchema, ChallengePauseV8AutomatedSchema]);
+export const ChallengeLeaveV8RuntimeSchema = z.union([ChallengeLeaveV8FamilySchema, ChallengeLeaveV8AutomatedSchema]);
+export type InputRequestV8Runtime = z.infer<typeof InputRequestV8RuntimeSchema>;
+export type InputCancelV8Runtime = z.infer<typeof InputCancelV8RuntimeSchema>;
 export function InputAckV8Schema() {
     const metadata = { protocolVersion: z.literal(8), requestId: RequestIdSchema, nextInputSequence: uint32 };
     return z.union([
@@ -185,6 +236,17 @@ export function InputAckV8FamilySchema() {
     ]);
 }
 export type InputAckV8Family = z.infer<ReturnType<typeof InputAckV8FamilySchema>>;
+export function InputAckV8AutomatedSchema() {
+    const metadata = { protocolVersion: z.literal(8), requestId: RequestIdSchema, nextInputSequence: uint32 };
+    return z.union([
+        z.object({ ...metadata, ok: z.literal(true), data: ChallengeSnapshotV8AutomatedSchema }).strict(),
+        z.object({ ...metadata, ok: z.literal(false), error: ProtocolErrorSchema }).strict()
+    ]);
+}
+export function InputAckV8RuntimeSchema() {
+    return z.union([InputAckV8FamilySchema(), InputAckV8AutomatedSchema()]);
+}
+export type InputAckV8Runtime = z.infer<ReturnType<typeof InputAckV8RuntimeSchema>>;
 export const LifecycleAckV8Schema = z.union([
     z.object({ protocolVersion:z.literal(8),requestId:RequestIdSchema,nextSequence:uint32,ok:z.literal(true),
         data:z.union([ChallengeSnapshotV8Schema,ChallengeResultV8Schema]) }).strict(),
@@ -196,6 +258,25 @@ export const LifecycleAckV8FamilySchema = z.union([
     LifecycleAckV8Schema.options[0].extend({ data: z.union([ChallengeSnapshotV8FamilySchema, ChallengeResultV8FamilySchema]) }).strict(),
     LifecycleAckV8Schema.options[1]
 ]);
+
+export const LifecycleAckV8AutomatedSchema = z.union([
+    z.object({ protocolVersion:z.literal(8),requestId:RequestIdSchema,nextSequence:uint32,ok:z.literal(true),
+        data:z.union([ChallengeSnapshotV8AutomatedSchema,ChallengeResultV8AutomatedSchema]) }).strict(),
+    LifecycleAckV8Schema.options[1]
+]);
+export const LifecycleAckV8RuntimeSchema = z.union([LifecycleAckV8FamilySchema, LifecycleAckV8AutomatedSchema]);
+
+export const ChallengeCreateV8Schema = ChallengeCreateRequestSchema;
+export const ChallengeCreateAckV8Schema = z.union([
+    z.object({ protocolVersion:z.literal(8),requestId:RequestIdSchema,nextSequence:uint32,ok:z.literal(true),
+        data:z.union([
+            z.object({ kind:z.literal('legacy'),snapshot:ChallengeSnapshotSchema }).strict(),
+            z.object({ kind:z.literal('v8'),snapshot:ChallengeSnapshotV8AutomatedSchema }).strict()
+        ]) }).strict(),
+    z.object({ protocolVersion:z.literal(8),requestId:RequestIdSchema,nextSequence:uint32,ok:z.literal(false),
+        error:ProtocolErrorSchema }).strict()
+]);
+export type ChallengeCreateAckV8 = z.infer<typeof ChallengeCreateAckV8Schema>;
 
 /** Browser-safe byte count. Size-check untrusted payloads before parsing or applying. */
 export function jsonBytesV8(value: unknown): number {

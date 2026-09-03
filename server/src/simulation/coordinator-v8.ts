@@ -7,20 +7,24 @@ import {
 } from '../../../shared/simulation-v8';
 import type { PlayerCalling, SimulationActor } from '../../../shared/simulation';
 import {
-    CoordinatorReplayV8FamilySchema, ReplayOperationV8Schema, ReplayOperationV8R1Schema,
-    V8_REPLAY_LIMITS, jsonBytesV8, type CoordinatorReplayV8Family, type ReplayOperationV8Family
+    CoordinatorReplayV8FamilySchema, CoordinatorReplayV8AutomatedSchema, ReplayOperationV8Schema, ReplayOperationV8R1Schema,
+    V8_REPLAY_LIMITS, jsonBytesV8, type CoordinatorReplayV8Runtime, type ReplayOperationV8Family
 } from '../../../shared/protocol-v8';
-import { V8_LOOMKEEPER_POLICY_ID, V8_LOOMKEEPER_PROFILE_ID } from '../../../shared/combat-version';
+import { V8_AUTOMATION_ID, V8_LOOMKEEPER_POLICY_ID, V8_LOOMKEEPER_PROFILE_ID } from '../../../shared/combat-version';
+import { LoomkeeperExecutionV8, LoomkeeperPlannerV8, type LoomkeeperSelectionV8 } from '../../../shared/loomkeeper-v8';
 
 export { V8_REPLAY_LIMITS } from '../../../shared/protocol-v8';
-export type { CoordinatorReplayV8, CoordinatorReplayV8Family } from '../../../shared/protocol-v8';
+export type { CoordinatorReplayV8, CoordinatorReplayV8Family, CoordinatorReplayV8Automated,
+    CoordinatorReplayV8Runtime } from '../../../shared/protocol-v8';
 export type CoordinatorTerminalResultV8<R extends V8RulesetId = typeof V8_RULESET_ID> = {
     rulesetId: R; challengeId: string; sessionId: string;
     winner: SimulationStateV8['winner']; reason: string; tick: number; stateHash: string;
+    automationId?: typeof V8_AUTOMATION_ID;
 };
 export type CoordinatorSnapshotV8<R extends V8RulesetId = typeof V8_RULESET_ID> = {
     challengeId: string; sessionId: string; state: SimulationStateV8<R>;
     stateHash: string; replayLength: number; paused: boolean; unavailable: boolean;
+    automationId?: typeof V8_AUTOMATION_ID;
     terminalResult?: CoordinatorTerminalResultV8<R>;
 };
 export type CoordinatorUpdateV8<R extends V8RulesetId = typeof V8_RULESET_ID> = CoordinatorSnapshotV8<R> & { transition: SimulationTransitionV8<R> };
@@ -34,13 +38,17 @@ export type SimulationCoordinatorV8Options = {
     tickIntervalMs?: number;
     /** Test seams may only LOWER the frozen limits. */
     maxReplayRecords?: number; maxReplayBytes?: number;
+    /** Deterministic fault injection for the frozen work-failure path. */
+    plannerFactory?: (state:SimulationStateV8<V8RulesetId>)=>LoomkeeperPlannerV8;
     onTransition?: (update: CoordinatorUpdateV8Family) => void;
     onTerminal?: (result: CoordinatorTerminalResultV8Family) => void;
 };
 type Entry = {
-    replay: CoordinatorReplayV8Family; state: SimulationStateV8<V8RulesetId>; stateHash: string;
+    replay: CoordinatorReplayV8Runtime; state: SimulationStateV8<V8RulesetId>; stateHash: string;
     bytes: number; paused: boolean; unavailable: boolean;
     anchorUs: number; credit: bigint;
+    automated: boolean; aiTurn?: number; planningElapsed?: number;
+    planner?: LoomkeeperPlannerV8; planningFailed?: boolean; execution?: LoomkeeperExecutionV8;
     terminalResult?: CoordinatorTerminalResultV8Family; pendingTerminal?: CoordinatorTerminalResultV8Family;
 };
 
@@ -74,10 +82,26 @@ export class SimulationCoordinatorV8 {
             rulesetId, loomkeeperPolicyId: V8_LOOMKEEPER_POLICY_ID,
             loomkeeperProfileId: V8_LOOMKEEPER_PROFILE_ID, initialStateHash: stateHash, records: [] });
         const entry: Entry = { replay, state, stateHash, bytes: jsonBytesV8(replay), paused: false,
-            unavailable: false, anchorUs: this.clock(), credit: 0n };
+            unavailable: false, anchorUs: this.clock(), credit: 0n, automated: false };
         if (entry.bytes + V8_REPLAY_LIMITS.terminalBytes > this.maxBytes) throw new Error('No terminal replay reserve.');
         this.matches.set(challengeId, entry);
         return this.snapshot(entry) as CoordinatorSnapshotV8<R>;
+    }
+
+    public createAutomated(challengeId: string, sessionId: string, seed: number,
+        calling: PlayerCalling): CoordinatorSnapshotV8<typeof V8_R1_RULESET_ID> & { automationId: typeof V8_AUTOMATION_ID } {
+        if (this.matches.has(challengeId)) throw new Error('Duplicate V8 challenge.');
+        const state = createSimulationV8(seed, calling, V8_R1_RULESET_ID);
+        const stateHash = hashSimulationStateV8(state);
+        const replay = CoordinatorReplayV8AutomatedSchema.parse({ formatVersion:8,challengeId,sessionId,seed,calling,
+            rulesetId:V8_R1_RULESET_ID,automationId:V8_AUTOMATION_ID,
+            loomkeeperPolicyId:V8_LOOMKEEPER_POLICY_ID,loomkeeperProfileId:V8_LOOMKEEPER_PROFILE_ID,
+            initialStateHash:stateHash,records:[],chosenPlans:[] });
+        const entry: Entry = { replay,state,stateHash,bytes:jsonBytesV8(replay),paused:false,unavailable:false,
+            anchorUs:this.clock(),credit:0n,automated:true };
+        if (entry.bytes + V8_REPLAY_LIMITS.terminalBytes > this.maxBytes) throw new Error('No terminal replay reserve.');
+        this.matches.set(challengeId,entry);
+        return this.snapshot(entry) as CoordinatorSnapshotV8<typeof V8_R1_RULESET_ID> & { automationId: typeof V8_AUTOMATION_ID };
     }
 
     public get(challengeId: string): CoordinatorSnapshotV8Family | undefined {
@@ -133,7 +157,14 @@ export class SimulationCoordinatorV8 {
         if (entry.paused) return this.rejected(entry, 'The match is paused.');
         let update = this.noop(entry);
         for (let index = 0; index < count && !entry.terminalResult; index++) {
-            update = this.accept(entry, advanceSimulationTicksV8(entry.state, 1), { kind: 'ticks', count: 1 });
+            if (entry.automated) this.prepareAutomatedTick(entry);
+            const oldPhase=entry.state.phase, oldTick=entry.state.tick;
+            update = this.accept(entry, advanceSimulationTicksV8(entry.state, 1), { kind: 'ticks', count: 1 }, false, !entry.automated);
+            if (entry.automated) {
+                update = this.drainAutomated(entry,update);
+                if (entry.state.tick % 3 === 0 || oldPhase !== entry.state.phase || oldTick === entry.state.tick)
+                    this.options.onTransition?.(structuredClone(update));
+            }
         }
         return update;
     }
@@ -174,7 +205,7 @@ export class SimulationCoordinatorV8 {
         return this.accept(entry, forceSimulationLimitV8(entry.state), operation, true);
     }
 
-    public replay(challengeId: string): CoordinatorReplayV8Family | undefined {
+    public replay(challengeId: string): CoordinatorReplayV8Runtime | undefined {
         const entry = this.matches.get(challengeId);
         return entry && structuredClone(entry.replay);
     }
@@ -183,11 +214,13 @@ export class SimulationCoordinatorV8 {
         expected?: { challengeId: string; sessionId: string }): CoordinatorSnapshotV8Family {
         // All size caps precede reconstruction (including allocation of replay copies by Zod).
         if (jsonBytesV8(input) > this.maxBytes) throw new Error('V8 replay byte limit exceeded.');
-        const raw = input as CoordinatorReplayV8Family;
+        const raw = input as CoordinatorReplayV8Runtime;
         if (!raw || !Array.isArray(raw.records) || raw.records.length > this.maxRecords)
             throw new Error('V8 replay record limit exceeded.');
         for (const record of raw.records) if (jsonBytesV8(record) > V8_REPLAY_LIMITS.operationBytes)
             throw new Error('V8 operation record byte limit exceeded.');
+        if ((raw as {automationId?:unknown}).automationId === V8_AUTOMATION_ID)
+            return this.reconstructAutomated(input,expected);
         const replay = CoordinatorReplayV8FamilySchema.parse(input);
         if (expected && (expected.challengeId !== replay.challengeId || expected.sessionId !== replay.sessionId))
             throw new Error('V8 replay ownership mismatch.');
@@ -231,6 +264,48 @@ export class SimulationCoordinatorV8 {
         } finally { verifier.dispose(); }
     }
 
+    private reconstructAutomated(input: unknown,
+        expected?: { challengeId: string; sessionId: string }): CoordinatorSnapshotV8Family {
+        const replay = CoordinatorReplayV8AutomatedSchema.parse(input);
+        if (expected && (expected.challengeId !== replay.challengeId || expected.sessionId !== replay.sessionId))
+            throw new Error('V8 replay ownership mismatch.');
+        if (replay.chosenPlans.some(plan => plan.status === 'work_failure'))
+            throw new Error('A V8 planning work failure is not automated-policy proof.');
+        let totalTicks=0;
+        for(const record of replay.records)if(record.operation.kind==='ticks')totalTicks+=record.operation.count;
+        if(totalTicks>V8_REPLAY_LIMITS.ticks)throw new Error('V8 replay tick limit exceeded.');
+        const verifier=new SimulationCoordinatorV8({nowUs:()=>0,maxReplayRecords:this.maxRecords,maxReplayBytes:this.maxBytes});
+        try {
+            const initial=verifier.createAutomated(replay.challengeId,replay.sessionId,replay.seed,replay.calling);
+            if(initial.stateHash!==replay.initialStateHash)throw new Error('V8 initial hash mismatch.');
+            let cursor=0;
+            while(cursor<replay.records.length){
+                const generated=verifier.require(replay.challengeId).replay.records[cursor];
+                if(generated){
+                    if(JSON.stringify(generated)!==JSON.stringify(replay.records[cursor]))
+                        throw new Error(`V8 automated replay divergence at ${cursor}.`);
+                    cursor+=1;continue;
+                }
+                const op=replay.records[cursor].operation;
+                if(op.kind==='automatic'||(op.kind==='intent'&&op.actor==='loomkeeper')||
+                    (op.kind==='barrier'&&op.barrier.actor==='loomkeeper'))
+                    throw new Error(`Missing generated V8 policy operation at ${cursor}.`);
+                if(verifier.get(replay.challengeId)!.state.phase==='finished')throw new Error('V8 replay extends beyond terminal state.');
+                if(op.kind==='intent')verifier.apply(replay.challengeId,op.actor,op.intent as SimulationIntentV8Family,op.expectedTurn,op.expectedPhase,op.expectedEpoch);
+                else if(op.kind==='barrier')verifier.barrier(replay.challengeId,op.barrier);
+                else if(op.kind==='ticks')verifier.advance(replay.challengeId,op.count);
+                else verifier.safety(replay.challengeId,op.reason);
+                if(!verifier.require(replay.challengeId).replay.records[cursor])
+                    throw new Error(`V8 replay operation did not mutate at ${cursor}.`);
+            }
+            const regenerated=verifier.require(replay.challengeId).replay;
+            if(JSON.stringify(regenerated.records)!==JSON.stringify(replay.records)||
+                !('chosenPlans'in regenerated)||JSON.stringify(regenerated.chosenPlans)!==JSON.stringify(replay.chosenPlans))
+                throw new Error('V8 automated policy proof is incomplete or changed.');
+            return verifier.get(replay.challengeId)!;
+        } finally {verifier.dispose();}
+    }
+
     public takePendingTerminalResult(challengeId: string): CoordinatorTerminalResultV8Family | undefined {
         const entry = this.matches.get(challengeId);
         const result = entry?.pendingTerminal;
@@ -244,7 +319,7 @@ export class SimulationCoordinatorV8 {
     public dispose(): void { if (this.timer) clearInterval(this.timer); this.matches.clear(); }
 
     private accept(entry: Entry, transition: SimulationTransitionV8<V8RulesetId>, operation: ReplayOperationV8Family,
-        reserve = false): CoordinatorUpdateV8Family {
+        reserve = false, notify = true): CoordinatorUpdateV8Family {
         if (!transition.accepted || !transition.mutated) return { ...this.snapshot(entry), transition: structuredClone(transition) };
         const stateHash = hashSimulationStateV8(transition.state);
         const automatic: ReplayOperationV8Family[] = reserve ? [] : transition.events.filter(event => event.type === 'input_barrier')
@@ -272,20 +347,21 @@ export class SimulationCoordinatorV8 {
             entry.anchorUs = this.clock(); entry.credit = 0n;
         }
         // Creation and operationSchema bind this mutable family's records to the entry's exact identity.
-        const records: CoordinatorReplayV8Family['records'][number][] = entry.replay.records;
+        const records = entry.replay.records as Array<{index:number;operation:ReplayOperationV8Family;stateHash:string}>;
         if (coalesce) records[records.length-1] = record;
         else records.push(record);
         records.push(...annotations);
         if (entry.state.phase === 'finished' && !entry.terminalResult) {
             entry.terminalResult = { rulesetId: entry.state.rulesetId, challengeId: entry.replay.challengeId,
                 sessionId: entry.replay.sessionId, winner: entry.state.winner,
-                reason: entry.state.finishReason!, tick: entry.state.tick, stateHash };
+                reason: entry.state.finishReason!, tick: entry.state.tick, stateHash,
+                ...(entry.automated ? {automationId:V8_AUTOMATION_ID}: {}) };
             entry.pendingTerminal = entry.terminalResult;
             this.options.onTerminal?.(structuredClone(entry.terminalResult));
         }
         const update = { ...this.snapshot(entry), transition: structuredClone(transition) };
-        if (operation.kind !== 'ticks' || entry.state.tick % 3 === 0 || oldPhase !== entry.state.phase ||
-            transition.events.some(event => event.type === 'phase_changed'))
+        if (notify && (operation.kind !== 'ticks' || entry.state.tick % 3 === 0 || oldPhase !== entry.state.phase ||
+            transition.events.some(event => event.type === 'phase_changed')))
             this.options.onTransition?.(update);
         return update;
     }
@@ -293,6 +369,7 @@ export class SimulationCoordinatorV8 {
         return { challengeId: entry.replay.challengeId, sessionId: entry.replay.sessionId,
             state: structuredClone(entry.state), stateHash: entry.stateHash, replayLength: entry.replay.records.length,
             paused: entry.paused, unavailable: entry.unavailable,
+            ...(entry.automated ? {automationId:V8_AUTOMATION_ID}: {}),
             ...(entry.terminalResult ? { terminalResult: structuredClone(entry.terminalResult) } : {}) };
     }
     private noop(entry: Entry): CoordinatorUpdateV8Family {
@@ -309,6 +386,54 @@ export class SimulationCoordinatorV8 {
         const entry = this.matches.get(id);
         if (!entry) throw new Error('No V8 simulation for this challenge.');
         return entry;
+    }
+    private prepareAutomatedTick(entry:Entry):void{
+        if(!entry.automated||entry.state.phase!=='action'||entry.state.activeActor!=='loomkeeper')return;
+        if(entry.aiTurn!==entry.state.turn){
+            entry.aiTurn=entry.state.turn;entry.planningElapsed=0;entry.planningFailed=false;entry.execution=undefined;
+            try{entry.planner=this.options.plannerFactory?.(structuredClone(entry.state))??new LoomkeeperPlannerV8(entry.state);}
+            catch{entry.planningFailed=true;entry.planner=undefined;}
+        }
+        if((entry.planningElapsed??0)>=30)return;
+        if(!entry.planningFailed){try{entry.planner!.step();}catch{entry.planningFailed=true;}}
+        entry.planningElapsed=(entry.planningElapsed??0)+1;
+    }
+    private drainAutomated(entry:Entry,initial:CoordinatorUpdateV8Family):CoordinatorUpdateV8Family{
+        if(!entry.automated||entry.state.phase==='finished')return initial;
+        if(entry.state.phase==='action'&&entry.state.activeActor==='loomkeeper'&&entry.aiTurn===entry.state.turn&&entry.planningElapsed===30&&
+            !this.hasSelection(entry,entry.state.turn)){
+            const selection:LoomkeeperSelectionV8=entry.planningFailed?{status:'work_failure',ordinal:null}:entry.planner!.selection;
+            if(!this.recordSelection(entry,entry.state.turn,selection))return this.safety(entry.replay.challengeId,'replay_limit');
+            if(selection.status==='selected')entry.execution=new LoomkeeperExecutionV8(entry.planner!.selectedCandidate()!,entry.state);
+        }
+        if(!entry.execution)return initial;
+        let update=initial;
+        for(let count=0;count<8;count++){
+            const operation=entry.execution.next(entry.state);if(!operation)break;
+            const before=entry.state;
+            const transition=operation.kind==='intent'
+                ? applySimulationIntentV8(before,'loomkeeper',operation.intent,before.turn,before.phase,before.inputEpoch)
+                : applySimulationBarrierV8(before,operation.barrier);
+            if(!transition.accepted)throw new Error(`Authoritative V8 policy emitted an illegal operation: ${transition.error?.message??'unknown'}`);
+            if(!transition.mutated)continue;
+            const replayOperation=operation.kind==='intent'
+                ? {kind:'intent',actor:'loomkeeper',intent:operation.intent,expectedTurn:before.turn,
+                    expectedPhase:before.phase,expectedEpoch:before.inputEpoch}
+                : {kind:'barrier',barrier:operation.barrier};
+            update=this.accept(entry,transition,this.operationSchema(entry).parse(replayOperation) as ReplayOperationV8Family,false,false);
+        }
+        return update;
+    }
+    private hasSelection(entry:Entry,turn:number):boolean{
+        return 'chosenPlans'in entry.replay&&entry.replay.chosenPlans.some(plan=>plan.turn===turn);
+    }
+    private recordSelection(entry:Entry,turn:number,selection:LoomkeeperSelectionV8):boolean{
+        if(!('chosenPlans'in entry.replay))throw new Error('Foundation replay cannot record automated selection.');
+        const old=entry.replay.chosenPlans;
+        entry.replay.chosenPlans=[...old,{turn,...selection}];
+        const bytes=jsonBytesV8(entry.replay);
+        if(bytes>this.maxBytes-V8_REPLAY_LIMITS.terminalBytes){entry.replay.chosenPlans=old;return false;}
+        entry.bytes=bytes;return true;
     }
     private clock(): number { return bounded(this.nowUs(), 0, Number.MAX_SAFE_INTEGER); }
     private accrue(entry: Entry): void {

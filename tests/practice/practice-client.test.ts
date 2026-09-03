@@ -1,12 +1,160 @@
 import assert from 'node:assert/strict';
 import test from 'node:test';
-import type { Socket } from 'socket.io-client';
+import { io, type Socket } from 'socket.io-client';
 
 import type { ChallengeResult, ChallengeSnapshot, SessionOpenData } from '../../shared/protocol';
 import { PROTOCOL_VERSION, protocolEvents } from '../../shared/protocol';
 import { createLatestSimulation } from '../../shared/simulation';
-import { adoptSession } from '../../client/src/lib/session';
+import { adoptSession, bootstrapSession } from '../../client/src/lib/session';
 import { PracticeClient } from '../../client/src/practice/client';
+import { createRuntimeServer } from '../../server/src/runtime';
+import { V8_R1_RULESET_ID } from '../../shared/simulation-v8';
+import { V8_AUTOMATION_ID } from '../../shared/combat-version';
+
+test('automated Practice uses the shared session cursor and retry rebinds all live callbacks', async () => {
+    installBrowserStorage();
+    const runtime = createRuntimeServer({ allowMissingOrigin: true,
+        sessionRegistry: { simulationRulesetId: V8_R1_RULESET_ID, simulationTickIntervalMs: false,
+            v8TestOnly: { nowUs: () => 0 } } });
+    const port = await runtime.listen();
+    const socket = io(`http://127.0.0.1:${port}`, { transports: ['websocket'] });
+    let client: PracticeClient | undefined;
+    try {
+        const opened = await bootstrapSession(socket);
+        client = await PracticeClient.connect(socket, opened);
+        const results: unknown[] = [];
+        client.onCombatResult(value => results.push(value));
+        const first = await client.startCombat('wizard');
+        assert.equal(first.protocolVersion, 8);
+        assert.equal('automationId' in first && first.automationId, V8_AUTOMATION_ID);
+        assert.equal(first.nextSequence, 1);
+        const args = await client.combatArgs(first);
+        assert.equal(args.kind, 'v8');
+        if (args.kind !== 'v8') throw new Error('Expected V8 scene args.');
+        assert.equal((await args.setPaused!(true)).paused, true);
+        assert.equal((await args.setPaused!(false)).paused, false);
+        const next = await args.restart!();
+        assert.notEqual(next.snapshot.challengeId, first.challengeId);
+        assert.equal(next.snapshot.rulesetId, V8_R1_RULESET_ID);
+        const faced = await next.submitIntent({ type: 'face', direction: -1 });
+        assert.equal(faced.challengeId, next.snapshot.challengeId);
+        assert.equal(faced.simulation.units[0].facing, -1);
+        assert.equal((await next.setPaused!(true)).paused, true);
+        assert.deepEqual(results, []);
+    } finally { client?.dispose(); socket.close(); await runtime.close(); }
+});
+
+test('automated buffered resume re-enters the same paused challenge without creation', async () => {
+    installBrowserStorage();
+    const runtime = createRuntimeServer({ allowMissingOrigin: true, sessionRegistry: {
+        simulationRulesetId: V8_R1_RULESET_ID, simulationTickIntervalMs: false, v8TestOnly: { nowUs: () => 0 } } });
+    const port = await runtime.listen();
+    const sockets: Socket[] = [];
+    let client: PracticeClient | undefined;
+    try {
+        const firstSocket = io(`http://127.0.0.1:${port}`, { transports: ['websocket'] }); sockets.push(firstSocket);
+        const opened = await bootstrapSession(firstSocket);
+        client = await PracticeClient.connect(firstSocket, opened);
+        const first = await client.startCombat('wizard');
+        const args = await client.combatArgs(first);
+        await args.setPaused!(true);
+        client.dispose(); firstSocket.disconnect();
+        const socket = io(`http://127.0.0.1:${port}`, { transports: ['websocket'] }); sockets.push(socket);
+        const resumed = await bootstrapSession(socket);
+        await new Promise(resolve => setTimeout(resolve, 10));
+        client = await PracticeClient.connect(socket, resumed);
+        const before = runtime.sessions.getBound(socket.id!)!.nextSequence;
+        const current = await client.startCombat('warrior');
+        assert.equal(current.challengeId, first.challengeId);
+        assert.equal(current.calling, 'wizard');
+        assert.equal(current.paused, true);
+        assert.equal(runtime.sessions.getBound(socket.id!)!.nextSequence, before);
+        assert.equal((await (await client.combatArgs(current)).setPaused!(false)).paused, false);
+    } finally { client?.dispose(); for (const socket of sockets) socket.close(); await runtime.close(); }
+});
+
+test('automated buffered terminal survives awaited connection and is consumed once by real scene listeners', async () => {
+    installBrowserStorage();
+    let now = Date.now();
+    const runtime = createRuntimeServer({ allowMissingOrigin: true, sessionRegistry: { now: () => now,
+        challengeTtlMs: 1000, simulationRulesetId: V8_R1_RULESET_ID, simulationTickIntervalMs: false,
+        v8TestOnly: { nowUs: () => 0 } } });
+    const port = await runtime.listen(); const sockets: Socket[] = [];
+    let client: PracticeClient | undefined;
+    try {
+        const firstSocket = io(`http://127.0.0.1:${port}`, { transports: ['websocket'] }); sockets.push(firstSocket);
+        client = await PracticeClient.connect(firstSocket, await bootstrapSession(firstSocket));
+        const first = await client.startCombat('wizard');
+        const disconnected = new Promise<void>(resolve => runtime.io.sockets.sockets.get(firstSocket.id!)!.once('disconnect', () => resolve()));
+        client.dispose(); firstSocket.disconnect(); await disconnected;
+        now += 1001; runtime.sessions.sweep();
+        const socket = io(`http://127.0.0.1:${port}`, { transports: ['websocket'] }); sockets.push(socket);
+        const resumed = await bootstrapSession(socket);
+        await new Promise(resolve => setTimeout(resolve, 10));
+        client = await PracticeClient.connect(socket, resumed);
+        await Promise.resolve();
+        const delivered: unknown[] = [];
+        const unsubscribe = client.onCombatResult(value => delivered.push(value));
+        await Promise.resolve();
+        assert.equal(delivered.length, 1);
+        assert.equal((delivered[0] as any).challengeId, first.challengeId);
+        assert.equal((delivered[0] as any).outcome, 'expired');
+        unsubscribe();
+        const later: unknown[] = []; client.onCombatResult(value => later.push(value));
+        await Promise.resolve(); assert.deepEqual(later, []);
+    } finally { client?.dispose(); for (const socket of sockets) socket.close(); await runtime.close(); }
+});
+
+test('automated lost session abandons its old cursor and retries fresh at sequence zero', async () => {
+    installBrowserStorage();
+    const runtime = createRuntimeServer({ allowMissingOrigin: true, sessionRegistry: {
+        simulationRulesetId: V8_R1_RULESET_ID, simulationTickIntervalMs: false, v8TestOnly: { nowUs: () => 0 } } });
+    const port = await runtime.listen();
+    const socket = io(`http://127.0.0.1:${port}`, { transports: ['websocket'] });
+    let client: PracticeClient | undefined;
+    try {
+        const opened = await bootstrapSession(socket);
+        client = await PracticeClient.connect(socket, opened);
+        const first = await client.startCombat('wizard');
+        const args = await client.combatArgs(first);
+        await args.setPaused!(true);
+        const unavailable = new Promise<void>(resolve => args.onUnavailable!(() => resolve()));
+        socket.disconnect(); runtime.sessions.close(opened.sessionId); socket.connect();
+        await unavailable;
+        const next = await client.retryCombat('wizard');
+        assert.notEqual(next.sessionId, opened.sessionId);
+        assert.notEqual(next.challengeId, first.challengeId);
+        assert.equal(next.nextSequence, 1);
+    } finally { client?.dispose(); socket.close(); await runtime.close(); }
+});
+
+test('a delayed versioned create error cannot write an old session cursor into a replacement session', async () => {
+    installBrowserStorage();
+    const requests: { body: any; reply: (error: null, ack: unknown) => void }[] = [];
+    const socket = new FakeSocket() as FakeSocket & { timeout: () => unknown; emit: (...args: any[]) => boolean };
+    socket.timeout = () => socket;
+    socket.emit = (_event, body, reply) => { requests.push({ body, reply }); return true; };
+    adoptSession(socket as unknown as Socket, session());
+    const client = new PracticeClient(socket as unknown as Socket, session());
+    try {
+        const old = client.startCombat('wizard');
+        const rejected = assert.rejects(old, /previous session/);
+        while (!requests.length) await new Promise(resolve => setTimeout(resolve, 0));
+        const nextSession = { ...session(), sessionId: 'replacement_session_01' };
+        adoptSession(socket as unknown as Socket, nextSession); socket.trigger('connect', undefined);
+        await Promise.resolve(); await Promise.resolve();
+        requests[0].reply(null, { protocolVersion: 8, ok: false, requestId: requests[0].body.requestId,
+            nextSequence: 9, error: { code: 'BAD_REQUEST', message: 'Old request failed.', retryable: false } });
+        await rejected;
+        const fresh = client.startCombat('wizard');
+        while (requests.length < 2) await new Promise(resolve => setTimeout(resolve, 0));
+        assert.equal(requests[1].body.sequence, 0);
+        requests[1].reply(null, { protocolVersion: 8, ok: true, requestId: requests[1].body.requestId,
+            nextSequence: 1, data: { kind: 'legacy', snapshot: { ...snapshot(0, 'a', false),
+                sessionId: nextSession.sessionId, nextSequence: 1 } } });
+        assert.equal((await fresh).sessionId, nextSession.sessionId);
+    } finally { client.dispose(); }
+});
 
 test('practice client rejects stale/conflicting snapshots and delivers one terminal result', () => {
     const socket = new FakeSocket();

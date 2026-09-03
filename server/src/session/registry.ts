@@ -27,13 +27,14 @@ import {
     type LoomkeeperDifficulty
 } from '../../../shared/loomkeeper';
 import { issueToken, opaqueId, tokenDigest } from './token';
-import { CURRENT_COMBAT_RULESET_ID, V8_LOOMKEEPER_POLICY_ID, V8_LOOMKEEPER_PROFILE_ID } from '../../../shared/combat-version';
+import { CURRENT_COMBAT_RULESET_ID, V8_AUTOMATION_ID, V8_LOOMKEEPER_POLICY_ID, V8_LOOMKEEPER_PROFILE_ID, type CombatRulesetId } from '../../../shared/combat-version';
 import { V8_RULESET_ID, V8_R1_RULESET_ID, isV8RulesetId, type V8RulesetId, type SimulationIntentV8Family as SimulationIntentV8 } from '../../../shared/simulation-v8';
-import { InputRequestV8FamilySchema as InputRequestV8Schema, InputCancelV8FamilySchema as InputCancelV8Schema,
-    InputReleaseV8R1Schema, V8_INPUT_BYTES, jsonBytesV8,
-    type ChallengeSnapshotV8Family as ChallengeSnapshotV8, type ChallengeResultV8Family as ChallengeResultV8, type InputAckV8Family as InputAckV8 } from '../../../shared/protocol-v8';
+import { InputRequestV8RuntimeSchema as InputRequestV8Schema, InputCancelV8RuntimeSchema as InputCancelV8Schema,
+    InputReleaseV8AutomatedSchema, InputReleaseV8R1Schema, V8_INPUT_BYTES, jsonBytesV8,
+    type ChallengeSnapshotV8Runtime as ChallengeSnapshotV8, type ChallengeResultV8Runtime as ChallengeResultV8,
+    type CoordinatorReplayV8Runtime, type InputAckV8Runtime as InputAckV8 } from '../../../shared/protocol-v8';
 import { VersionedSimulationCoordinator } from '../simulation/versioned-coordinator';
-import type { CoordinatorUpdateV8Family as CoordinatorUpdateV8, CoordinatorReplayV8Family as CoordinatorReplayV8, SimulationCoordinatorV8Options } from '../simulation/coordinator-v8';
+import type { CoordinatorUpdateV8Family as CoordinatorUpdateV8, SimulationCoordinatorV8Options } from '../simulation/coordinator-v8';
 
 const DEFAULT_SESSION_TTL_MS = 30 * 60_000;
 const DEFAULT_RECONNECT_GRACE_MS = 2 * 60_000;
@@ -71,6 +72,8 @@ export type Challenge = {
     simulationStateHash: string;
     expiresAt: number;
     resultEmitted: boolean;
+    settlementEmitted?: boolean;
+    automationId?: typeof V8_AUTOMATION_ID;
     playerCommandTurn: number;
     playerCommandCount: number;
 };
@@ -109,7 +112,7 @@ export type SessionRegistryOptions = {
      * Internal deterministic-test seam. Production challenges always use the
      * current ruleset when this is omitted.
      */
-    simulationRulesetId?: SimulationRulesetId;
+    simulationRulesetId?: CombatRulesetId;
     seedSource?: (sessionId: string, practiceIndex: number) => number;
     loomkeeperEnabled?: boolean;
     loomkeeperDifficulty?: LoomkeeperDifficulty;
@@ -117,6 +120,7 @@ export type SessionRegistryOptions = {
     v8TestOnly?: Pick<SimulationCoordinatorV8Options, 'nowUs' | 'yieldBatch' | 'tickIntervalMs' | 'maxReplayRecords' | 'maxReplayBytes'>;
     onChallengeSnapshotV8?: (snapshot: ChallengeSnapshotV8, socketId?: string) => void;
     onChallengeCompletedV8?: (result: ChallengeResultV8, socketId?: string) => void;
+    onChallengeSettledV8?: (result: ChallengeResultV8, replay: CoordinatorReplayV8Runtime) => void;
 };
 
 export class SessionRegistry {
@@ -135,7 +139,7 @@ export class SessionRegistry {
     private readonly onChallengeSnapshot?: (snapshot: ChallengeSnapshot, socketId?: string) => void;
     private readonly onChallengeCompleted?: (result: ChallengeResult, socketId?: string) => void;
     private readonly coordinator: SimulationCoordinator;
-    private readonly simulationRulesetId: SimulationRulesetId;
+    private readonly simulationRulesetId: CombatRulesetId;
     private readonly seedSource: (sessionId: string, practiceIndex: number) => number;
     private readonly loomkeeperEnabled: boolean;
     private readonly loomkeeperDifficulty: LoomkeeperDifficulty;
@@ -147,6 +151,7 @@ export class SessionRegistry {
     private readonly v8Enabled: boolean;
     private readonly onChallengeSnapshotV8?: SessionRegistryOptions['onChallengeSnapshotV8'];
     private readonly onChallengeCompletedV8?: SessionRegistryOptions['onChallengeCompletedV8'];
+    private readonly onChallengeSettledV8?: SessionRegistryOptions['onChallengeSettledV8'];
     private readonly v8Inputs = new Map<string, { next: number; admission: object;
         cache: Map<string, { hash: string; ack: InputAckV8 }>; cancels: Map<string,string>; releases: Map<string,string> }>();
     private readonly v8Locks = new Map<string, Promise<void>>();
@@ -168,6 +173,7 @@ export class SessionRegistry {
         this.v8Enabled = options.v8TestOnly !== undefined;
         this.onChallengeSnapshotV8 = options.onChallengeSnapshotV8;
         this.onChallengeCompletedV8 = options.onChallengeCompletedV8;
+        this.onChallengeSettledV8 = options.onChallengeSettledV8;
         this.loomkeeperEnabled = options.loomkeeperEnabled ?? true;
         this.loomkeeperDifficulty = options.loomkeeperDifficulty ?? 'standard';
         if (this.loomkeeperEnabled && options.simulationMaxReplayRecords !== undefined &&
@@ -332,6 +338,13 @@ export class SessionRegistry {
         calling: 'wizard' | 'thief' | 'warrior',
         reward?: { challengeId: string; seed: number }
     ): ChallengeSnapshot | ProtocolError {
+        if (isV8RulesetId(this.simulationRulesetId)) {
+            return {
+                code: 'FEATURE_UNAVAILABLE',
+                message: 'This combat version requires the versioned creation protocol.',
+                retryable: false
+            };
+        }
         if (mode === 'reward' && !reward) {
             return {
                 code: 'FEATURE_UNAVAILABLE',
@@ -387,6 +400,79 @@ export class SessionRegistry {
         challenge.expiresAt = Math.min(challenge.expiresAt, session.expiresAt);
         session.challenges.set(challenge.id, challenge);
         return this.snapshot(session, challenge);
+    }
+
+    public legacyCreationAvailable(): boolean {
+        return !isV8RulesetId(this.simulationRulesetId);
+    }
+
+    public createSelectedChallenge(
+        session: Session,
+        mode: Challenge['mode'],
+        calling: Challenge['calling'],
+        reward?: { challengeId: string; seed: number }
+    ): { kind: 'legacy'; snapshot: ChallengeSnapshot } |
+       { kind: 'v8'; snapshot: ChallengeSnapshotV8 } | ProtocolError {
+        if (!isV8RulesetId(this.simulationRulesetId)) {
+            const snapshot = this.createChallenge(session, mode, calling, reward);
+            return 'code' in snapshot ? snapshot : { kind: 'legacy', snapshot };
+        }
+        if (this.simulationRulesetId !== V8_R1_RULESET_ID || !this.v8Enabled) {
+            return v8Error('FEATURE_UNAVAILABLE', 'The selected combat candidate is unavailable.');
+        }
+        const snapshot = this.createChallengeAutomated(session, mode, calling, reward);
+        return 'code' in snapshot ? snapshot : { kind: 'v8', snapshot: { ...snapshot, nextSequence: session.nextSequence + 1 } };
+    }
+
+    private createChallengeAutomated(
+        session: Session,
+        mode: Challenge['mode'],
+        calling: Challenge['calling'],
+        reward?: { challengeId: string; seed: number }
+    ): ChallengeSnapshotV8 | ProtocolError {
+        if (mode === 'reward' && !reward) {
+            return v8Error('FEATURE_UNAVAILABLE', 'A durable reward reservation is required.');
+        }
+        if (!this.boundSessionV8(session)) return v8Error('UNAUTHORIZED', 'The session is not bound.');
+        this.sweep();
+        for (const existing of session.challenges.values()) {
+            if (existing.status === 'active') {
+                return v8Error('COMMAND_REJECTED', 'Finish or leave the current match first.');
+            }
+        }
+        const closed = [...session.challenges.keys()];
+        while (closed.length > 1) {
+            const id = closed.shift()!;
+            session.challenges.delete(id);
+            this.versions.delete(id);
+            this.v8Inputs.delete(id);
+        }
+        const id = reward?.challengeId ?? opaqueId();
+        const seed = reward?.seed ?? this.seedSource(session.id, session.practiceSeedIndex++) >>> 0;
+        const snapshot = this.versions.createAutomated(id, session.id, seed, calling);
+        const challenge: Challenge = {
+            id,
+            rulesetId: V8_R1_RULESET_ID,
+            automationId: V8_AUTOMATION_ID,
+            mode,
+            calling,
+            loomkeeperDifficulty: 'standard',
+            status: 'active',
+            paused: false,
+            revision: 0,
+            simulationRevision: 0,
+            simulationStateHash: snapshot.stateHash,
+            expiresAt: Math.min(this.now() + this.challengeTtlMs, session.expiresAt),
+            resultEmitted: false,
+            settlementEmitted: false,
+            playerCommandTurn: 0,
+            playerCommandCount: 0
+        };
+        session.challenges.set(id, challenge);
+        this.v8Inputs.set(id, {
+            next: 0, admission: {}, cache: new Map(), cancels: new Map(), releases: new Map()
+        });
+        return this.snapshotV8(session, challenge);
     }
 
     public submitCommand(
@@ -516,6 +602,10 @@ export class SessionRegistry {
         return challenge && this.coordinator.get(challenge.id)
             ? this.snapshot(session, challenge, session.nextSequence)
             : undefined;
+    }
+
+    public hasActiveCombat(session: Session): boolean {
+        return [...session.challenges.values()].some(challenge => challenge.status === 'active');
     }
 
     public replayForChallenge(session: Session, challengeId: string): CoordinatorReplay | undefined {
@@ -744,6 +834,10 @@ export class SessionRegistry {
         if (!session) {
             return;
         }
+        for (const challenge of session.challenges.values()) {
+            if (challenge.automationId === V8_AUTOMATION_ID && challenge.status === 'active')
+                this.expireChallenge(session, challenge);
+        }
         this.sessionsByDigest.delete(session.tokenDigest);
         if (session.previousTokenDigest) {
             this.sessionsByDigest.delete(session.previousTokenDigest);
@@ -781,6 +875,10 @@ export class SessionRegistry {
 
     public dispose(): void {
         clearInterval(this.sweepTimer);
+        for (const session of this.sessions.values()) for (const challenge of session.challenges.values()) {
+            if (challenge.automationId === V8_AUTOMATION_ID && challenge.status === 'active')
+                this.expireChallenge(session, challenge);
+        }
         this.sessions.clear();
         this.sessionsByDigest.clear();
         this.sessionsBySocket.clear();
@@ -823,6 +921,11 @@ export class SessionRegistry {
         const stored = session.challenges.get(id)?.rulesetId;
         return isV8RulesetId(stored) && (rulesetId === undefined || stored === rulesetId);
     }
+    public ownsChallengePacketV8(session: Session, id: string,
+        packet: { rulesetId: V8RulesetId; automationId?: unknown }): boolean {
+        const challenge = session.challenges.get(id);
+        return this.boundSessionV8(session) && !!challenge && this.packetOwnsV8(challenge, packet);
+    }
     public inputCursorV8(session: Session,id: string): number {
         return this.boundSessionV8(session) && this.hasChallengeV8(session,id) ? this.v8Inputs.get(id)?.next ?? 0 : 0;
     }
@@ -836,7 +939,7 @@ export class SessionRegistry {
         const current = this.activeSnapshotV8(session);
         if (current) this.publishV8(session,session.challenges.get(current.challengeId)!);
     }
-    public replayForChallengeV8(session: Session, id: string): CoordinatorReplayV8 | undefined {
+    public replayForChallengeV8(session: Session, id: string): CoordinatorReplayV8Runtime | undefined {
         return this.hasChallengeV8(session,id) ? this.versions.v8.replay(id) : undefined;
     }
 
@@ -849,7 +952,7 @@ export class SessionRegistry {
         if (jsonBytesV8(payload) > V8_INPUT_BYTES) return failure('PAYLOAD_TOO_LARGE','V8 input exceeds 1024 bytes.');
         const parsed = InputRequestV8Schema.safeParse(payload);
         if (!parsed.success) return failure('BAD_REQUEST','Invalid V8 intent envelope.');
-        if (!this.boundSessionV8(session) || !this.hasChallengeV8(session,id) || session.challenges.get(id)!.rulesetId !== parsed.data.rulesetId)
+        if (!this.boundSessionV8(session) || !this.hasChallengeV8(session,id) || !this.packetOwnsV8(session.challenges.get(id)!, parsed.data))
             return failure('UNAUTHORIZED','The exact V8 challenge is not owned by this session.');
         const socketId = session.socketId;
         const admission = this.v8Inputs.get(id)!.admission;
@@ -906,7 +1009,7 @@ export class SessionRegistry {
         if (jsonBytesV8(payload) > V8_INPUT_BYTES) return this.inputFailureV8(requestId,id,'PAYLOAD_TOO_LARGE','V8 cancel exceeds 1024 bytes.');
         const parsed = InputCancelV8Schema.safeParse(payload);
         if (!parsed.success) return this.inputFailureV8(requestId,id,'BAD_REQUEST','Invalid V8 cancel envelope.');
-        if (!this.boundSessionV8(session) || !this.hasChallengeV8(session,id) || session.challenges.get(id)!.rulesetId !== parsed.data.rulesetId)
+        if (!this.boundSessionV8(session) || !this.hasChallengeV8(session,id) || !this.packetOwnsV8(session.challenges.get(id)!, parsed.data))
             return this.inputFailureV8(requestId,id,'UNAUTHORIZED','The exact V8 challenge is not owned by this session.');
         const challenge = session.challenges.get(id)!;
         const cursor = this.v8Inputs.get(id)!;
@@ -932,9 +1035,10 @@ export class SessionRegistry {
         const requestId = safeRequestIdV8(raw?.requestId);
         const id = typeof raw?.challengeId === 'string' ? raw.challengeId : '';
         if (jsonBytesV8(payload) > V8_INPUT_BYTES) return this.inputFailureV8(requestId,id,'PAYLOAD_TOO_LARGE','V8 release exceeds 1024 bytes.');
-        const parsed = InputReleaseV8R1Schema.safeParse(payload);
+        const parsed = (raw?.automationId === V8_AUTOMATION_ID
+            ? InputReleaseV8AutomatedSchema : InputReleaseV8R1Schema).safeParse(payload);
         if (!parsed.success) return this.inputFailureV8(requestId,id,'BAD_REQUEST','Invalid V8 R1 release envelope.');
-        if (!this.boundSessionV8(session) || session.challenges.get(id)?.rulesetId !== V8_R1_RULESET_ID)
+        if (!this.boundSessionV8(session) || !session.challenges.has(id) || !this.packetOwnsV8(session.challenges.get(id)!, parsed.data))
             return this.inputFailureV8(requestId,id,'UNAUTHORIZED','The R1 challenge is not owned by this session.');
         const challenge = session.challenges.get(id)!;
         const cursor = this.v8Inputs.get(id)!;
@@ -1002,19 +1106,25 @@ export class SessionRegistry {
             rulesetId:current.state.rulesetId,loomkeeperPolicyId:V8_LOOMKEEPER_POLICY_ID,loomkeeperProfileId:V8_LOOMKEEPER_PROFILE_ID,
             nextInputSequence:this.v8Inputs.get(challenge.id)!.next,nextSequence:session.nextSequence,
             mode:challenge.mode,calling:challenge.calling,status:challenge.status,paused:current.paused,
-            expiresAt:new Date(challenge.expiresAt).toISOString(),simulation:current.state as ChallengeSnapshotV8['simulation'],stateHash:current.stateHash } as ChallengeSnapshotV8;
+            expiresAt:new Date(challenge.expiresAt).toISOString(),simulation:current.state as ChallengeSnapshotV8['simulation'],stateHash:current.stateHash,
+            ...(challenge.automationId ? { automationId: challenge.automationId } : {}) } as ChallengeSnapshotV8;
     }
     private resultV8(session: Session,challenge: Challenge,outcome: ChallengeResultV8['outcome']): ChallengeResultV8 {
         const snapshot = this.snapshotV8(session,challenge);
         return { protocolVersion:8,serverTimeMs:this.now(),sessionId:session.id,challengeId:challenge.id,
             rulesetId:snapshot.rulesetId,loomkeeperPolicyId:V8_LOOMKEEPER_POLICY_ID,loomkeeperProfileId:V8_LOOMKEEPER_PROFILE_ID,
-            nextInputSequence:snapshot.nextInputSequence,outcome,finalTick:snapshot.simulation.tick,finalStateHash:snapshot.stateHash };
+            ...('automationId' in snapshot ? { automationId: snapshot.automationId } : {}),
+            nextInputSequence:snapshot.nextInputSequence,outcome,finalTick:snapshot.simulation.tick,finalStateHash:snapshot.stateHash } as ChallengeResultV8;
     }
     private inputFailureV8(requestId: string,id: string,code: ProtocolError['code'],message: string): InputAckV8 {
         return { protocolVersion:8,requestId,nextInputSequence:this.v8Inputs.get(id)?.next ?? 0,ok:false,error:v8Error(code,message) };
     }
     private boundSessionV8(session: Session): boolean {
         return Boolean(session.socketId && this.getBound(session.socketId) === session);
+    }
+    private packetOwnsV8(challenge: Challenge, packet: { rulesetId: V8RulesetId; automationId?: unknown }): boolean {
+        const automationId = 'automationId' in packet ? packet.automationId : undefined;
+        return challenge.rulesetId === packet.rulesetId && challenge.automationId === automationId;
     }
     private connectionBarrierV8(session: Session,reason: 'disconnect' | 'reconnect'): void {
         for (const challenge of session.challenges.values()) {
@@ -1036,11 +1146,18 @@ export class SessionRegistry {
         if (this.v8InInput.has(challenge.id)) return;
         const snapshot = this.snapshotV8(session,challenge);
         this.onChallengeSnapshotV8?.(snapshot,session.socketId);
-        if (snapshot.simulation.phase !== 'finished' || challenge.resultEmitted || !this.boundSessionV8(session)) return;
-        challenge.resultEmitted = true;
+        if (snapshot.simulation.phase !== 'finished') return;
         const outcome = challenge.status === 'expired' ? 'expired' : challenge.status === 'left' ? 'left'
             : snapshot.simulation.winner === 'player' ? 'player_win' : snapshot.simulation.winner === 'loomkeeper' ? 'loomkeeper_win' : 'draw';
-        this.onChallengeCompletedV8?.(this.resultV8(session,challenge,outcome),session.socketId);
+        const result = this.resultV8(session,challenge,outcome);
+        if (!challenge.settlementEmitted) {
+            challenge.settlementEmitted = true;
+            const replay = this.versions.v8.replay(challenge.id);
+            if (replay) this.onChallengeSettledV8?.(result,replay);
+        }
+        if (challenge.resultEmitted || !this.boundSessionV8(session)) return;
+        challenge.resultEmitted = true;
+        this.onChallengeCompletedV8?.(result,session.socketId);
     }
     private async serialV8<T>(id: string,operation: () => Promise<T>): Promise<T> {
         const previous = this.v8Locks.get(id) ?? Promise.resolve();

@@ -18,8 +18,63 @@ import { GameWatcher } from '../../server/src/game/watcher';
 import { SessionRegistry } from '../../server/src/session/registry';
 import { SimulationCoordinator } from '../../server/src/simulation/coordinator';
 import { SIM_RULES } from '../../shared/simulation';
+import { V8_R1_RULESET_ID } from '../../shared/simulation-v8';
+import { ChallengeCreateAckV8Schema, protocolEventsV8 } from '../../shared/protocol-v8';
 
 type Ack = Record<string, any>;
+
+test('versioned creation shares selection and keeps cross-endpoint caches separate', async () => {
+    for (const candidate of [false, true]) {
+        const { runtime, url } = await start(candidate ? { sessionRegistry: {
+            simulationRulesetId: V8_R1_RULESET_ID, simulationTickIntervalMs: false,
+            v8TestOnly: { nowUs: () => 0 } } } : {});
+        const socket = await connect(url);
+        try {
+            await openSession(socket);
+            const request = { requestId: 'shared_creation_01', sequence: 0, mode: 'practice', calling: 'wizard' };
+            const created = await emitAck(socket, protocolEventsV8.create, request);
+            assert.equal(ChallengeCreateAckV8Schema.safeParse(created).success, true);
+            assert.equal(created.ok, true);
+            assert.equal(created.data.kind, candidate ? 'v8' : 'legacy');
+            assert.deepEqual(await emitAck(socket, protocolEventsV8.create, request), created);
+            const legacy = await emitAck(socket, protocolEvents.challengeCreate, request);
+            assert.equal(legacy.protocolVersion, 1);
+            assert.equal(legacy.ok, false);
+            assert.equal(legacy.error.code, candidate ? 'FEATURE_UNAVAILABLE' : 'REPLAY_CONFLICT');
+            assert.equal(runtime.sessions.getBound(socket.id!)!.challenges.size, 1);
+            assert.equal(runtime.sessions.getBound(socket.id!)!.nextSequence, 1);
+        } finally { await closeAll(runtime, [socket]); }
+    }
+});
+
+test('versioned creation refusals retain strict V8 acknowledgements and consume no authority', async () => {
+    const { runtime, url } = await start({ sessionRegistry: { simulationRulesetId: V8_R1_RULESET_ID,
+        simulationTickIntervalMs: false, v8TestOnly: { nowUs: () => 0 } } });
+    const socket = await connect(url);
+    try {
+        const request = { requestId: 'guard_creation_01', sequence: 0, mode: 'practice', calling: 'wizard' };
+        const unauthorized = await emitAck(socket, protocolEventsV8.create, request);
+        assert.equal(ChallengeCreateAckV8Schema.safeParse(unauthorized).success, true);
+        assert.equal(unauthorized.error.code, 'UNAUTHORIZED');
+        await openSession(socket);
+        for (const [payload, code] of [[{ ...request, rulesetId: V8_R1_RULESET_ID }, 'BAD_REQUEST'],
+            [{ ...request, padding: 'x'.repeat(1024) }, 'PAYLOAD_TOO_LARGE']] as const) {
+            const ack = await emitAck(socket, protocolEventsV8.create, payload);
+            assert.equal(ChallengeCreateAckV8Schema.safeParse(ack).success, true);
+            assert.equal(ack.error.code, code);
+        }
+        let limited = false;
+        for (let index = 0; index < 90; index++) {
+            const ack = await emitAck(socket, protocolEventsV8.create,
+                { ...request, requestId: `guard_rate_${index}`, sequence: 1 });
+            assert.equal(ChallengeCreateAckV8Schema.safeParse(ack).success, true);
+            limited ||= ack.error.code === 'RATE_LIMITED';
+        }
+        assert.equal(limited, true);
+        assert.equal(runtime.sessions.getBound(socket.id!)!.nextSequence, 0);
+        assert.equal(runtime.sessions.getBound(socket.id!)!.challenges.size, 0);
+    } finally { await closeAll(runtime, [socket]); }
+});
 
 async function start(options: Parameters<typeof createRuntimeServer>[0] = {}) {
     const runtime = createRuntimeServer({ allowMissingOrigin: true, ...options });

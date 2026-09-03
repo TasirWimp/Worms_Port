@@ -7,15 +7,19 @@ import type {
     RewardUpdateData,
     WalletIdentity
 } from '../../../shared/protocol';
+import { ChallengeResultV8AutomatedSchema,
+    type ChallengeResultV8Automated } from '../../../shared/protocol-v8';
 import type { PlayerCalling } from '../../../shared/simulation';
 import type { CoordinatorReplay } from '../simulation/coordinator';
 import { SimulationCoordinator } from '../simulation/coordinator';
+import { VersionedSimulationCoordinator } from '../simulation/versioned-coordinator';
 import { opaqueId, tokenDigest } from '../session/token';
 import {
     RewardStoreError,
     entitlementUpdate,
     type RewardConfig,
     type RewardEntitlement,
+    type RewardCoordinatorReplay,
     type RewardStore
 } from './types';
 
@@ -145,11 +149,38 @@ export class RewardService {
     }
 
     public async completeMatch(
-        result: ChallengeResult,
-        replay?: CoordinatorReplay
+        result: ChallengeResult | ChallengeResultV8Automated,
+        replay?: RewardCoordinatorReplay
     ): Promise<RewardUpdateData | undefined> {
         if (!this.store) return undefined;
-        if (result.outcome === 'player_win') {
+        if (result.protocolVersion === 8 || 'automationId' in result || (replay && 'formatVersion' in replay)) {
+            const parsedResult = ChallengeResultV8AutomatedSchema.safeParse(result);
+            if (!parsedResult.success || !replay || !('automationId' in replay) ||
+                replay.challengeId !== parsedResult.data.challengeId ||
+                replay.sessionId !== parsedResult.data.sessionId ||
+                replay.rulesetId !== parsedResult.data.rulesetId ||
+                replay.automationId !== parsedResult.data.automationId ||
+                replay.loomkeeperPolicyId !== parsedResult.data.loomkeeperPolicyId ||
+                replay.loomkeeperProfileId !== parsedResult.data.loomkeeperProfileId) {
+                throw new RewardStoreError('unavailable', 'Authoritative automated reward evidence is incomplete.');
+            }
+            try {
+                // The coordinator applies byte/record caps before strict schema allocation.
+                const verified = new VersionedSimulationCoordinator().reconstructAndVerify(
+                    replay, { challengeId: result.challengeId, sessionId: result.sessionId }
+                );
+                const expectedWinner = result.outcome === 'player_win' ? 'player'
+                    : result.outcome === 'loomkeeper_win' ? 'loomkeeper'
+                    : result.outcome === 'draw' ? 'draw' : null;
+                if (verified.state.phase !== 'finished' ||
+                    (expectedWinner !== null && verified.state.winner !== expectedWinner) ||
+                    verified.state.tick !== result.finalTick || verified.stateHash !== result.finalStateHash) {
+                    throw new Error('The automated replay does not prove the reported result.');
+                }
+            } catch {
+                throw new RewardStoreError('unavailable', 'Authoritative automated reward evidence failed verification.');
+            }
+        } else if (result.outcome === 'player_win') {
             if (!replay || replay.challengeId !== result.challengeId ||
                 replay.sessionId !== result.sessionId ||
                 result.finalTick === null || !result.finalStateHash) {
@@ -159,7 +190,7 @@ export class RewardService {
                 );
             }
             try {
-                const verified = new SimulationCoordinator().reconstructAndVerify(replay);
+                const verified = new SimulationCoordinator().reconstructAndVerify(replay as CoordinatorReplay);
                 if (verified.state.phase !== 'finished' ||
                     verified.state.winner !== 'player' ||
                     verified.state.tick !== result.finalTick ||

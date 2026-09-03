@@ -1,17 +1,17 @@
 import Phaser from 'phaser';
 
 import type { ChallengeResult, RewardUpdateData } from '../../../shared/protocol';
+import type { ChallengeResultV8Automated } from '../../../shared/protocol-v8';
 import type { PlayerCalling } from '../../../shared/simulation';
 import { canRequestFullscreen, toggleGameFullscreen } from '../combat/fullscreen';
 import { activeSidewaysMode } from '../lib/sideways';
 import {
-    liveCombatArgs,
     PRACTICE_CLIENT_REGISTRY_KEY,
     type PracticeClient
 } from '../practice/client';
 
 export type ResultSceneArgs = {
-    result?: ChallengeResult;
+    result?: ChallengeResult | ChallengeResultV8Automated;
     calling: PlayerCalling;
     message?: string;
     rewarded?: boolean;
@@ -187,8 +187,8 @@ export default class ResultScene extends Phaser.Scene {
         button.disabled = true;
         message.textContent = 'Weaving a fresh Practice Clash…';
         try {
-            const snapshot = await this.client.retry(this.args.calling);
-            const combatArgs = liveCombatArgs(this.client, snapshot);
+            const snapshot = await this.client.retryCombat(this.args.calling);
+            const combatArgs = await this.client.combatArgs(snapshot);
             if (this.args.previewLabel) combatArgs.previewLabel = this.args.previewLabel;
             this.scene.start('combat', combatArgs);
         } catch (error) {

@@ -1,6 +1,6 @@
 import type { ChallengeResult, ChallengeSnapshot } from '../../../shared/protocol';
 import type { SimulationCommand } from '../../../shared/simulation';
-import type { ChallengeSnapshotV8Family as ChallengeSnapshotV8, ChallengeResultV8Family as ChallengeResultV8 } from '../../../shared/protocol-v8';
+import type { ChallengeSnapshotV8Runtime as ChallengeSnapshotV8, ChallengeResultV8Runtime as ChallengeResultV8 } from '../../../shared/protocol-v8';
 import type { SimulationIntentV8Family as SimulationIntentV8 } from '../../../shared/simulation-v8';
 
 export type CombatCommandSubmitter = (
@@ -32,7 +32,7 @@ export type CombatSceneArgsV8 = {
     inputFlight?: () => 'locomotion' | 'blocked' | null;
     onInputReady?: (listener: () => void) => () => void;
     setPaused?: (paused: boolean) => Promise<ChallengeSnapshotV8>;
-    retry?: () => Promise<ChallengeSnapshotV8>;
+    restart?: () => Promise<CombatSceneArgsV8>;
     onSnapshot?: (listener: (snapshot: ChallengeSnapshotV8) => void) => () => void;
     onResult?: (listener: (result: ChallengeResultV8) => void) => () => void;
     onConnection?: LegacyCombatSceneArgs['onConnection'];

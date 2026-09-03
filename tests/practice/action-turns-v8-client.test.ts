@@ -2,7 +2,7 @@ import assert from 'node:assert/strict';
 import test from 'node:test';
 import type { Socket } from 'socket.io-client';
 import { io } from 'socket.io-client';
-import { ActionTurnsV8Client, type ActionTurnsV8Clock } from '../../client/src/practice/client';
+import { ActionTurnsV8Client, type ActionTurnsV8Clock } from '../../client/src/practice/action-turns-v8';
 import { adoptSession, bootstrapSession, whenSessionReady } from '../../client/src/lib/session';
 import { protocolEvents, type SessionOpenData } from '../../shared/protocol';
 import { protocolEventsV8, SimulationSnapshotV8Schema, type ChallengeSnapshotV8, type ChallengeResultV8 } from '../../shared/protocol-v8';

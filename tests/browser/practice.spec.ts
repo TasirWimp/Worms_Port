@@ -1,6 +1,53 @@
 import { expect, test, type Page } from '@playwright/test';
 
 import { skipExcludedProjectBeforeSetup } from './support/project-routing';
+import path from 'node:path';
+import { createRuntimeServer } from '../../server/src/runtime';
+import { V8_R1_RULESET_ID } from '../../shared/simulation-v8';
+
+test('injected automated Practice reloads paused authority, retries, and shows the actual expired result', async ({ page }) => {
+  const pageErrors: string[] = [];
+  page.on('pageerror', error => pageErrors.push(error.stack ?? error.message));
+  let now = Date.now();
+  const runtime = createRuntimeServer({ clientDir: path.resolve('client/build'), sessionRegistry: {
+    now: () => now, challengeTtlMs: 60_000, simulationRulesetId: V8_R1_RULESET_ID,
+    simulationTickIntervalMs: false, v8TestOnly: {} } });
+  const port = await runtime.listen();
+  try {
+    await page.goto(`http://127.0.0.1:${port}/?sideways=off`);
+    await page.getByRole('button', { name: 'Start Practice' }).tap();
+    const ui = page.locator('.combat-v8');
+    // Live scene arguments must mount after Phaser's synchronous create phase.
+    await expect(ui).toBeVisible();
+    await expect(ui).toHaveAttribute('data-ruleset', V8_R1_RULESET_ID);
+    const first = await ui.getAttribute('data-challenge-id');
+    await page.locator('.pause-button').tap();
+    await expect(ui).toHaveAttribute('data-paused', 'true');
+    await page.reload();
+    await page.getByRole('button', { name: 'Resume Paused Clash' }).tap();
+    await expect(ui).toHaveAttribute('data-challenge-id', first!);
+    await expect(ui).toHaveAttribute('data-paused', 'true');
+    await page.locator('.pause-button').tap();
+    await expect(ui).toHaveAttribute('data-paused', 'false');
+    await page.locator('.pause-button').tap();
+    await expect(ui).toHaveAttribute('data-paused', 'true');
+    await page.locator('.retry-button').tap();
+    await expect(ui).not.toHaveAttribute('data-challenge-id', first!);
+    await expect(ui).toHaveAttribute('data-ruleset', V8_R1_RULESET_ID);
+    await expect(page.locator('.result-shell')).toHaveCount(0);
+    now += 60_001; runtime.sessions.sweep();
+    await expect(page.locator('.result-shell')).toHaveAttribute('data-outcome', 'expired');
+    await expect(page.locator('.result-shell')).toHaveAttribute('data-final-hash', /^[a-f0-9]{64}$/);
+    await page.getByRole('button', { name: 'Change Calling' }).tap();
+    await expect(page.getByRole('heading', { name: 'Practice Clash' })).toBeVisible();
+    await expect(page.locator('.result-shell')).toHaveCount(0);
+    await page.getByRole('button', { name: 'Start Practice' }).tap();
+    await expect(ui).toHaveAttribute('data-ruleset', V8_R1_RULESET_ID);
+  } finally {
+    expect.soft(pageErrors, 'Automated Practice must not raise browser page errors.').toEqual([]);
+    await page.goto('about:blank'); await runtime.close();
+  }
+});
 
 test.beforeEach(async ({ page }, testInfo) => {
   skipExcludedProjectBeforeSetup('practice.spec.ts', testInfo);

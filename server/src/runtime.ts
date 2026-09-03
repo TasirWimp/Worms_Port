@@ -5,6 +5,7 @@ import { Server as SocketIOServer } from 'socket.io';
 
 import { protocolEvents } from '../../shared/protocol';
 import { protocolEventsV8 } from '../../shared/protocol-v8';
+import type { ChallengeResultV8Runtime, CoordinatorReplayV8Automated, CoordinatorReplayV8Runtime } from '../../shared/protocol-v8';
 
 import { setup_game_api } from './game/api';
 import {
@@ -104,6 +105,7 @@ export function createRuntimeServer(options: RuntimeServerOptions = {}) {
         ? new IdentityAuthorizationRegistry(options.identity)
         : undefined;
     let sessions!: SessionRegistry;
+    const rewardSettlementTasks = new Set<Promise<void>>();
     const emitRewardUpdate = (update: Awaited<ReturnType<RewardService['status']>>) => {
         for (const socketId of sessions.socketIdsForWallet(update.recipient)) {
             io.sockets.sockets.get(socketId)?.emit(protocolEvents.rewardUpdate, update);
@@ -111,18 +113,22 @@ export function createRuntimeServer(options: RuntimeServerOptions = {}) {
     };
     const processRewardResult = (result: Parameters<NonNullable<
         SessionRegistryOptions['onChallengeCompleted']
-    >>[0]) => {
+    >>[0] | ChallengeResultV8Runtime, replayOverride?: CoordinatorReplayV8Runtime) => {
+        if (result.protocolVersion === 8 && !('automationId' in result)) return;
         if (!options.rewards ||
             sessions.challengeMode(result.sessionId, result.challengeId) !== 'reward') return;
-        const replay = sessions.replayForSessionChallenge(
+        const replay = replayOverride
+            ? ('automationId' in replayOverride ? replayOverride as CoordinatorReplayV8Automated : undefined)
+            : sessions.replayForSessionChallenge(
             result.sessionId,
             result.challengeId
         );
-        void options.rewards.completeMatch(result, replay).then((update) => {
+        const task = options.rewards.completeMatch(result, replay).then((update) => {
             if (update) emitRewardUpdate(update);
         }).catch(() => {
             // The durable in-progress entitlement remains recoverable for operator review.
-        });
+        }).finally(() => rewardSettlementTasks.delete(task));
+        rewardSettlementTasks.add(task);
     };
     sessions = new SessionRegistry({
         ...options.sessionRegistry,
@@ -134,6 +140,10 @@ export function createRuntimeServer(options: RuntimeServerOptions = {}) {
         onChallengeCompletedV8: (result,socketId) => {
             if (socketId) io.sockets.sockets.get(socketId)?.emit(protocolEventsV8.result,result);
             options.sessionRegistry?.onChallengeCompletedV8?.(result,socketId);
+        },
+        onChallengeSettledV8: (result,replay) => {
+            processRewardResult(result,replay);
+            options.sessionRegistry?.onChallengeSettledV8?.(result,replay);
         },
         onSessionClosed: (sessionId, socketId) => {
             identity?.cancelSession(sessionId);
@@ -203,6 +213,7 @@ export function createRuntimeServer(options: RuntimeServerOptions = {}) {
         sessions.dispose();
         identity?.dispose();
         await options.rewardWorker?.close();
+        await Promise.allSettled([...rewardSettlementTasks]);
         await options.rewards?.close();
         await new Promise<void>((resolve, reject) => {
             io.close(() => {

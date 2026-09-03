@@ -4,6 +4,9 @@ import type {
     RewardUpdateData
 } from '../../../shared/protocol';
 import type { CoordinatorReplay } from '../simulation/coordinator';
+import type { CoordinatorReplayV8Automated } from '../../../shared/protocol-v8';
+
+export type RewardCoordinatorReplay = CoordinatorReplay | CoordinatorReplayV8Automated;
 
 export type RewardMode = 'disabled' | 'record-only' | 'testnet' | 'mainnet';
 
@@ -40,7 +43,7 @@ export type RewardEntitlement = {
     reservationExpiresAt: Date;
     finalTick?: number;
     finalStateHash?: string;
-    replay?: CoordinatorReplay;
+    replay?: RewardCoordinatorReplay;
     signedTransaction?: string;
     transactionHash?: string;
     validityStartHeight?: number;
@@ -70,7 +73,7 @@ export type RewardMatchEvidence = {
     outcome: 'left' | 'expired' | 'player_win' | 'loomkeeper_win' | 'draw';
     finalTick: number | null;
     finalStateHash: string | null;
-    replay?: CoordinatorReplay;
+    replay?: RewardCoordinatorReplay;
     claimNonceDigest?: string;
     claimNonceExpiresAt?: Date;
     now: Date;
