@@ -7,6 +7,11 @@ import {
 
 /** Product-owned V8 contract wp-015d3a-v8a-rules-v0; legacy exports stay frozen. */
 export const V8_RULESET_ID = 'nimble-knots-artillery-v8' as const;
+export const V8_R1_RULESET_ID = 'nimble-knots-artillery-v8-r1' as const;
+export type V8RulesetId = typeof V8_RULESET_ID | typeof V8_R1_RULESET_ID;
+export function isV8RulesetId(value: unknown): value is V8RulesetId {
+    return value === V8_RULESET_ID || value === V8_R1_RULESET_ID;
+}
 export const V8_RULESET_VERSION = 8 as const;
 export const V8_SIM_RULES = Object.freeze({
     worldWidth: 2048, worldHeight: 576, terrainCellSize: 8,
@@ -38,8 +43,8 @@ export type ProjectileV8 = {
     flightTicks: number; startX: number; startY: number;
     trace: { x: number; y: number }[];
 };
-export type SimulationStateV8 = {
-    formatVersion: 8; rulesetId: typeof V8_RULESET_ID; rulesetVersion: 8;
+export type SimulationStateV8<R extends V8RulesetId = typeof V8_RULESET_ID> = {
+    formatVersion: 8; rulesetId: R; rulesetVersion: 8;
     seed: number; rngState: number; tick: number; revision: number; turn: number;
     activeActor: SimulationActor; phase: SimulationPhaseV8;
     phaseStartedTick: number; phaseDeadlineTick: number;
@@ -54,6 +59,8 @@ export type SimulationStateV8 = {
     units: [SimulationUnitV8, SimulationUnitV8]; terrain: PackedTerrain;
     projectile: ProjectileV8 | null; lastProjectile: ProjectileSummary | null;
 };
+export type SimulationStateV8Family = SimulationStateV8<V8RulesetId>;
+export type SimulationStateV8R1 = SimulationStateV8<typeof V8_R1_RULESET_ID>;
 export type SimulationIntentV8 =
     | { type: 'walk_start'; direction: -1 | 1 }
     | { type: 'walk_refresh' }
@@ -62,9 +69,15 @@ export type SimulationIntentV8 =
     | { type: 'select_relic'; relicId: RelicId }
     | { type: 'aim'; angleMilliDegrees: number; powerPermille: number }
     | { type: 'fire'; aimId: number };
+export type SimulationIntentV8R1 = Exclude<SimulationIntentV8, { type: 'jump' }>
+    | { type: 'jump'; direction: -1 | 1 } | { type: 'walk_stop' };
+export type SimulationIntentV8Family = SimulationIntentV8 | SimulationIntentV8R1;
 export type SimulationBarrierV8 = {
     reason: 'cancel' | 'disconnect' | 'reconnect' | 'pause' | 'resume' | 'intent_limit';
     actor: SimulationActor; expectedTurn: number; expectedEpoch: number;
+};
+export type SimulationBarrierV8Family = Omit<SimulationBarrierV8, 'reason'> & {
+    reason: SimulationBarrierV8['reason'] | 'walk_stop';
 };
 export type SimulationEventV8 =
     | { type: 'phase_changed'; phase: SimulationPhaseV8; tick: number }
@@ -72,17 +85,21 @@ export type SimulationEventV8 =
     | { type: 'impact'; x: number; y: number; target: ProjectileSummary['impact'] }
     | { type: 'damaged'; actor: SimulationActor; amount: number; stitching: number }
     | { type: 'finished'; winner: SimulationWinner; reason: NonNullable<SimulationStateV8['finishReason']> };
-export type SimulationTransitionV8 = {
-    accepted: boolean; mutated: boolean; state: SimulationStateV8; events: SimulationEventV8[];
+export type SimulationTransitionV8<R extends V8RulesetId = typeof V8_RULESET_ID> = {
+    accepted: boolean; mutated: boolean; state: SimulationStateV8<R>; events: SimulationEventV8[];
     error?: { code: 'COMMAND_REJECTED' | 'NOT_YOUR_TURN' | 'LATE_TURN' | 'STALE_INPUT' |
         'INTENT_LIMIT' | 'LIFECYCLE_LIMIT'; message: string };
 };
 
-export function createSimulationV8(seed: number, calling: PlayerCalling): SimulationStateV8 {
+export type SimulationTransitionV8Family = SimulationTransitionV8<V8RulesetId>;
+
+export function createSimulationV8<R extends V8RulesetId = typeof V8_RULESET_ID>(
+    seed: number, calling: PlayerCalling, rulesetId: R = V8_RULESET_ID as R): SimulationStateV8<R> {
+    if (!isV8RulesetId(rulesetId)) throw new Error('Unknown V8 ruleset.');
     if (!['wizard', 'thief', 'warrior'].includes(calling)) throw new Error('Invalid V8 Calling.');
     const legacy = createSimulation(seed, calling, V7_RULESET_ID);
-    const state: SimulationStateV8 = {
-        formatVersion: 8, rulesetId: V8_RULESET_ID, rulesetVersion: 8,
+    const state: SimulationStateV8<R> = {
+        formatVersion: 8, rulesetId, rulesetVersion: 8,
         seed: legacy.seed, rngState: legacy.rngState, tick: 0, revision: 0, turn: 0,
         activeActor: 'player', phase: 'action', phaseStartedTick: 0, phaseDeadlineTick: 450,
         settleReason: null, castUsed: false, inputEpoch: 0, heldDirection: 0,
@@ -97,25 +114,29 @@ export function createSimulationV8(seed: number, calling: PlayerCalling): Simula
         terrain: legacy.terrain, projectile: null, lastProjectile: null
     };
     reevaluateSupports(state);
-    assertSimulationInvariantsV8(state);
+    assertSimulationInvariantsV8Family(state);
     return state;
 }
-export function applySimulationIntentV8(current: SimulationStateV8, actor: SimulationActor,
-    intent: SimulationIntentV8, expectedTurn: number, expectedPhase = current.phase,
-    expectedEpoch = current.inputEpoch): SimulationTransitionV8 {
+export function applySimulationIntentV8<R extends V8RulesetId>(current: SimulationStateV8<R>, actor: SimulationActor,
+    intent: SimulationIntentV8Family, expectedTurn: number, expectedPhase = current.phase,
+    expectedEpoch = current.inputEpoch): SimulationTransitionV8<R> {
     if (current.phase === 'finished') return reject(current, 'COMMAND_REJECTED', 'The match is finished.');
     if (expectedTurn !== current.turn) return reject(current, 'LATE_TURN', 'Different turn.');
     if (actor !== current.activeActor) return reject(current, 'NOT_YOUR_TURN', 'Different active actor.');
     if (expectedPhase !== current.phase || expectedEpoch !== current.inputEpoch) {
         return reject(current, 'STALE_INPUT', 'Different phase or input epoch.');
     }
-    if (!validIntent(intent)) return reject(current, 'COMMAND_REJECTED', 'Invalid V8 intent.');
+    if (!validIntent(intent, current.rulesetId)) return reject(current, 'COMMAND_REJECTED', 'Invalid V8 intent.');
     if (!movingPhase(current) || current.tick >= current.phaseDeadlineTick || !activeUnit(current).alive) {
         return reject(current, 'COMMAND_REJECTED', 'Input is not legal in this phase.');
     }
     if (current.acceptedIntentCount >= 512) return reject(current, 'INTENT_LIMIT', 'Turn intent budget exhausted.');
     const unit = activeUnit(current);
-    if (intent.type === 'walk_start' && current.heldDirection !== 0) {
+    if (intent.type === 'walk_start' && current.rulesetId === V8_R1_RULESET_ID && !unit.grounded)
+        return reject(current, 'COMMAND_REJECTED', 'Walking cannot be buffered in air.');
+    if (intent.type === 'walk_start' && current.heldDirection !== 0 &&
+        (current.rulesetId !== V8_R1_RULESET_ID || intent.direction === current.heldDirection ||
+            current.leaseExpiresTick === null || current.tick >= current.leaseExpiresTick)) {
         return reject(current, 'COMMAND_REJECTED', 'Release the existing hold before starting another.');
     }
     if (intent.type === 'walk_refresh' && (current.heldDirection === 0 || current.leaseExpiresTick === null ||
@@ -140,16 +161,26 @@ export function applySimulationIntentV8(current: SimulationStateV8, actor: Simul
     const events: SimulationEventV8[] = [];
     switch (intent.type) {
     case 'walk_start':
+        if (state.heldDirection === 0 || state.lastLeaseRefreshTick === null ||
+            state.tick - state.lastLeaseRefreshTick >= 3) {
+            state.leaseExpiresTick = state.tick + 9;
+            state.lastLeaseRefreshTick = state.tick;
+        }
         state.heldDirection = intent.direction;
-        state.leaseExpiresTick = state.tick + 9;
-        state.lastLeaseRefreshTick = state.tick;
         body.facing = intent.direction; state.aim = null;
+        break;
+    case 'walk_stop':
+        stopWalking(state);
         break;
     case 'walk_refresh':
         state.leaseExpiresTick = state.tick + 9; state.lastLeaseRefreshTick = state.tick;
         break;
     case 'face': body.facing = intent.direction; state.aim = null; break;
     case 'jump':
+        if ('direction' in intent) {
+            body.facing = intent.direction;
+            if (state.heldDirection !== 0) state.heldDirection = intent.direction;
+        }
         body.grounded = false; body.support = null;
         body.vxFp = body.facing * 256; body.vyFp = -2048;
         body.airTicks = 0; body.airDrive = 'jump'; state.aim = null;
@@ -167,10 +198,10 @@ export function applySimulationIntentV8(current: SimulationStateV8, actor: Simul
     }
     state.acceptedIntentCount += 1;
     state.revision += 1;
-    assertSimulationInvariantsV8(state);
+    assertSimulationInvariantsV8Family(state);
     return { accepted: true, mutated: true, state, events };
 }
-export function advanceSimulationTicksV8(current: SimulationStateV8, count: number): SimulationTransitionV8 {
+export function advanceSimulationTicksV8<R extends V8RulesetId>(current: SimulationStateV8<R>, count: number): SimulationTransitionV8<R> {
     if (!integer(count, 0, 16800)) return reject(current, 'COMMAND_REJECTED', 'Tick batch exceeds the V8 bound.');
     if (current.phase === 'finished' || count === 0) return unchanged(current);
     const state = cloneSimulationV8(current);
@@ -189,16 +220,16 @@ export function advanceSimulationTicksV8(current: SimulationStateV8, count: numb
         if (state.winner === null && state.tick >= 16800) finish(state, 'draw', 'simulation_limit', events);
         state.revision += 1;
     }
-    assertSimulationInvariantsV8(state);
+    assertSimulationInvariantsV8Family(state);
     return { accepted: true, mutated: true, state, events };
 }
-export function applySimulationBarrierV8(current: SimulationStateV8, barrier: SimulationBarrierV8): SimulationTransitionV8 {
+export function applySimulationBarrierV8<R extends V8RulesetId>(current: SimulationStateV8<R>, barrier: SimulationBarrierV8Family): SimulationTransitionV8<R> {
     if (!exactKeys(barrier, ['reason', 'actor', 'expectedTurn', 'expectedEpoch']) ||
-        !['cancel', 'disconnect', 'reconnect', 'pause', 'resume', 'intent_limit'].includes(barrier.reason) ||
+        !['cancel', 'disconnect', 'reconnect', 'pause', 'resume', 'intent_limit', ...(current.rulesetId === V8_R1_RULESET_ID ? ['walk_stop'] : [])].includes(barrier.reason) ||
         !['player', 'loomkeeper'].includes(barrier.actor)) return reject(current, 'COMMAND_REJECTED', 'Invalid barrier.');
     if (current.phase === 'finished' || barrier.actor !== current.activeActor || barrier.expectedTurn !== current.turn ||
         barrier.expectedEpoch !== current.inputEpoch) return unchanged(current);
-    const forced = barrier.reason === 'reconnect' || barrier.reason === 'pause' || barrier.reason === 'resume';
+    const forced = barrier.reason === 'reconnect' || barrier.reason === 'pause' || barrier.reason === 'resume' || barrier.reason === 'walk_stop';
     // Connection-only events during flight/settling own no active input. Pause is stricter.
     if (!movingPhase(current)) return unchanged(current);
     if (barrier.reason === 'pause' && (current.activeActor !== 'player' || current.phase !== 'action' ||
@@ -209,20 +240,22 @@ export function applySimulationBarrierV8(current: SimulationStateV8, barrier: Si
     if (current.lifecycleBarrierCount >= 128) return reject(current, 'LIFECYCLE_LIMIT', 'Lifecycle budget exhausted.');
     if (countersExhausted(current)) return forceSimulationLimitV8(current);
     const state = cloneSimulationV8(current);
+    const jumpVx = barrier.reason === 'walk_stop' && activeUnit(state).airDrive === 'jump' ? activeUnit(state).vxFp : 0;
     clearInput(state, false);
+    activeUnit(state).vxFp = jumpVx;
     state.lifecycleBarrierCount += 1; state.revision += 1;
-    assertSimulationInvariantsV8(state);
+    assertSimulationInvariantsV8Family(state);
     return { accepted: true, mutated: true, state, events: [] };
 }
-export function forceSimulationLimitV8(current: SimulationStateV8): SimulationTransitionV8 {
+export function forceSimulationLimitV8<R extends V8RulesetId>(current: SimulationStateV8<R>): SimulationTransitionV8<R> {
     if (current.phase === 'finished') return unchanged(current);
     const state = cloneSimulationV8(current); const events: SimulationEventV8[] = [];
     finish(state, 'draw', 'simulation_limit', events);
     state.revision = Math.min(65535, state.revision + 1);
-    assertSimulationInvariantsV8(state);
+    assertSimulationInvariantsV8Family(state);
     return { accepted: true, mutated: true, state, events };
 }
-export function cloneSimulationV8(state: SimulationStateV8): SimulationStateV8 {
+export function cloneSimulationV8<R extends V8RulesetId>(state: SimulationStateV8<R>): SimulationStateV8<R> {
     return {
         ...state, aim: state.aim ? { ...state.aim } : null,
         units: [{ ...state.units[0] }, { ...state.units[1] }],
@@ -236,13 +269,21 @@ export function canonicalSimulationJsonV8(state: SimulationStateV8): string {
     assertSimulationInvariantsV8(state);
     return canonicalJson(state);
 }
+export function canonicalSimulationJsonV8Family(state: SimulationStateV8Family): string {
+    assertSimulationInvariantsV8Family(state);
+    return canonicalJson(state);
+}
 export function assertSimulationInvariantsV8(state: SimulationStateV8): void {
+    if (state.rulesetId !== V8_RULESET_ID) throw new Error('Invalid original V8 identity.');
+    assertSimulationInvariantsV8Family(state);
+}
+export function assertSimulationInvariantsV8Family(state: SimulationStateV8Family): void {
     const fail = (condition: boolean, message: string): void => { if (!condition) throw new Error(`Invalid V8 state: ${message}`); };
     fail(exactKeys(state, ['formatVersion', 'rulesetId', 'rulesetVersion', 'seed', 'rngState', 'tick', 'revision', 'turn',
         'activeActor', 'phase', 'phaseStartedTick', 'phaseDeadlineTick', 'settleReason', 'castUsed', 'inputEpoch',
         'heldDirection', 'leaseExpiresTick', 'lastLeaseRefreshTick', 'acceptedIntentCount', 'lifecycleBarrierCount',
         'aimId', 'selectedRelic', 'aim', 'winner', 'finishReason', 'units', 'terrain', 'projectile', 'lastProjectile']), 'keys');
-    fail(state.formatVersion === 8 && state.rulesetVersion === 8 && state.rulesetId === V8_RULESET_ID, 'identity');
+    fail(state.formatVersion === 8 && state.rulesetVersion === 8 && isV8RulesetId(state.rulesetId), 'identity');
     fail(integer(state.seed, 1, 0xffffffff) && integer(state.rngState, 1, 0xffffffff), 'RNG');
     fail(integer(state.tick, 0, 16800) && integer(state.turn, 0, 16), 'clock/turn');
     fail(['revision', 'inputEpoch', 'aimId'].every(key => integer(state[key as 'revision'], 0, 65535)), 'counter');
@@ -317,8 +358,8 @@ export function assertSimulationInvariantsV8(state: SimulationStateV8): void {
 const RADIUS_FP = 12 * 256;
 const CELL_FP = 8 * 256;
 type Rect = { left: number; right: number; top: number; bottom: number };
-function activeUnit(state: SimulationStateV8): SimulationUnitV8 { return state.units[state.activeActor === 'player' ? 0 : 1]; }
-function movingPhase(state: SimulationStateV8): boolean { return state.phase === 'action' || state.phase === 'retreat'; }
+function activeUnit(state: SimulationStateV8Family): SimulationUnitV8 { return state.units[state.activeActor === 'player' ? 0 : 1]; }
+function movingPhase(state: SimulationStateV8Family): boolean { return state.phase === 'action' || state.phase === 'retreat'; }
 function integer(value: unknown, minimum: number, maximum: number): value is number {
     return Number.isSafeInteger(value) && (value as number) >= minimum && (value as number) <= maximum;
 }
@@ -327,11 +368,14 @@ function exactKeys(value: unknown, keys: string[]): boolean {
     const actual = Object.keys(value);
     return actual.length === keys.length && keys.every(key => Object.prototype.hasOwnProperty.call(value, key));
 }
-function validIntent(intent: SimulationIntentV8): boolean {
+function validIntent(intent: SimulationIntentV8Family, rulesetId: V8RulesetId): boolean {
     if (!intent || typeof intent !== 'object') return false;
     switch (intent.type) {
     case 'walk_start': case 'face': return exactKeys(intent, ['type', 'direction']) && [-1, 1].includes(intent.direction);
-    case 'walk_refresh': case 'jump': return exactKeys(intent, ['type']);
+    case 'walk_refresh': return exactKeys(intent, ['type']);
+    case 'walk_stop': return rulesetId === V8_R1_RULESET_ID && exactKeys(intent, ['type']);
+    case 'jump': return rulesetId === V8_RULESET_ID ? exactKeys(intent, ['type'])
+        : exactKeys(intent, ['type', 'direction']) && 'direction' in intent && [-1, 1].includes(intent.direction);
     case 'select_relic': return exactKeys(intent, ['type', 'relicId']) && RELIC_IDS.includes(intent.relicId);
     case 'aim': return exactKeys(intent, ['type', 'angleMilliDegrees', 'powerPermille']) && integer(intent.angleMilliDegrees, -90000, 90000) && integer(intent.powerPermille, 0, 1000);
     case 'fire': return exactKeys(intent, ['type', 'aimId']) && integer(intent.aimId, 1, 65535);
@@ -342,18 +386,22 @@ function validTrace(trace: { x: number; y: number }[], maximum: number): boolean
     return Array.isArray(trace) && trace.length >= 1 && trace.length <= maximum && trace.every(point =>
         exactKeys(point, ['x', 'y']) && integer(point.x, -4096, 4096) && integer(point.y, -4096, 4096));
 }
-function unchanged(state: SimulationStateV8): SimulationTransitionV8 { return { accepted: true, mutated: false, state, events: [] }; }
-function reject(state: SimulationStateV8, code: NonNullable<SimulationTransitionV8['error']>['code'], message: string): SimulationTransitionV8 {
+function unchanged<R extends V8RulesetId>(state: SimulationStateV8<R>): SimulationTransitionV8<R> { return { accepted: true, mutated: false, state, events: [] }; }
+function reject<R extends V8RulesetId>(state: SimulationStateV8<R>, code: NonNullable<SimulationTransitionV8['error']>['code'], message: string): SimulationTransitionV8<R> {
     return { accepted: false, mutated: false, state, events: [], error: { code, message } };
 }
-function countersExhausted(state: SimulationStateV8): boolean { return state.revision >= 65534 || state.inputEpoch >= 65534; }
-function clearInput(state: SimulationStateV8, allBodies: boolean): void {
+function countersExhausted(state: SimulationStateV8Family): boolean { return state.revision >= 65534 || state.inputEpoch >= 65534; }
+function stopWalking(state: SimulationStateV8Family): void {
+    state.heldDirection = 0; state.leaseExpiresTick = null; state.lastLeaseRefreshTick = null; state.aim = null;
+    if (activeUnit(state).airDrive !== 'jump') activeUnit(state).vxFp = 0;
+}
+function clearInput(state: SimulationStateV8Family, allBodies: boolean): void {
     state.heldDirection = 0; state.leaseExpiresTick = null; state.lastLeaseRefreshTick = null;
     state.aim = null; state.inputEpoch = Math.min(65535, state.inputEpoch + 1);
     if (allBodies) state.units.forEach(unit => { unit.vxFp = 0; });
     else activeUnit(state).vxFp = 0;
 }
-function expireLease(state: SimulationStateV8, events: SimulationEventV8[]): void {
+function expireLease(state: SimulationStateV8Family, events: SimulationEventV8[]): void {
     if (state.leaseExpiresTick !== null && state.tick >= state.leaseExpiresTick) {
         const unit = activeUnit(state); const jumpVx = unit.airDrive === 'jump' ? unit.vxFp : 0;
         clearInput(state, false); unit.vxFp = jumpVx;
@@ -367,7 +415,7 @@ function bodyRect(unit: SimulationUnitV8): Rect {
 function rectanglesOverlap(a: Rect, b: Rect): boolean {
     return a.left < b.right && a.right > b.left && a.top < b.bottom && a.bottom > b.top;
 }
-function terrainRects(state: SimulationStateV8, rect: Rect, visit: (obstacle: Rect) => void): void {
+function terrainRects(state: SimulationStateV8Family, rect: Rect, visit: (obstacle: Rect) => void): void {
     const left = Math.max(0, Math.floor(rect.left / CELL_FP));
     const right = Math.min(255, Math.ceil(rect.right / CELL_FP) - 1);
     const top = Math.max(0, Math.floor(rect.top / CELL_FP));
@@ -377,12 +425,12 @@ function terrainRects(state: SimulationStateV8, rect: Rect, visit: (obstacle: Re
             top: cy * CELL_FP, bottom: (cy + 1) * CELL_FP });
     }
 }
-function terrainOverlaps(state: SimulationStateV8, rect: Rect): boolean {
+function terrainOverlaps(state: SimulationStateV8Family, rect: Rect): boolean {
     let result = false; terrainRects(state, rect, obstacle => { if (rectanglesOverlap(rect, obstacle)) result = true; });
     return result;
 }
 /** A bounded swept rectangle, terrain first then stable actor ID. No endpoint sampling. */
-function sweep(state: SimulationStateV8, unit: SimulationUnitV8, axis: 'x' | 'y', delta: number): number {
+function sweep(state: SimulationStateV8Family, unit: SimulationUnitV8, axis: 'x' | 'y', delta: number): number {
     if (delta === 0) return 0;
     const body = bodyRect(unit);
     const area = { ...body };
@@ -406,7 +454,7 @@ function sweep(state: SimulationStateV8, unit: SimulationUnitV8, axis: 'x' | 'y'
     for (const other of state.units) if (other.alive && other.id !== unit.id) inspect(bodyRect(other));
     return clipped;
 }
-function findSupport(state: SimulationStateV8, unit: SimulationUnitV8): SimulationUnitV8['support'] {
+function findSupport(state: SimulationStateV8Family, unit: SimulationUnitV8): SimulationUnitV8['support'] {
     const rect = bodyRect(unit);
     if (rect.bottom % CELL_FP === 0) {
         const cy = rect.bottom / CELL_FP;
@@ -421,14 +469,14 @@ function findSupport(state: SimulationStateV8, unit: SimulationUnitV8): Simulati
     }
     return null;
 }
-function orderedBodies(state: SimulationStateV8): SimulationUnitV8[] {
+function orderedBodies(state: SimulationStateV8Family): SimulationUnitV8[] {
     return [...state.units].sort((a, b) => b.yFp - a.yFp || (a.id === 'player' ? -1 : 1));
 }
 function land(unit: SimulationUnitV8, support: NonNullable<SimulationUnitV8['support']>): void {
     unit.grounded = true; unit.support = support; unit.vxFp = 0; unit.vyFp = 0;
     unit.airTicks = 0; unit.airDrive = null;
 }
-function reevaluateSupports(state: SimulationStateV8): void {
+function reevaluateSupports(state: SimulationStateV8Family): void {
     for (const unit of orderedBodies(state)) {
         if (!unit.alive) {
             unit.grounded = false; unit.support = null; unit.vxFp = 0; unit.vyFp = 0;
@@ -443,7 +491,7 @@ function reevaluateSupports(state: SimulationStateV8): void {
         }
     }
 }
-function integrateBodies(state: SimulationStateV8): void {
+function integrateBodies(state: SimulationStateV8Family): void {
     reevaluateSupports(state);
     for (const unit of orderedBodies(state)) {
         if (!unit.alive) continue;
@@ -452,16 +500,20 @@ function integrateBodies(state: SimulationStateV8): void {
         const grounded = unit.grounded;
         const wanted = unit.vxFp;
         let dx = sweep(state, unit, 'x', wanted);
-        if (grounded && dx !== wanted && wanted !== 0 && sweep(state, unit, 'y', -CELL_FP) === -CELL_FP) {
-            const lifted = { ...unit, yFp: unit.yFp - CELL_FP };
-            if (sweep(state, lifted, 'x', wanted) === wanted) {
+        if (grounded && dx !== wanted && wanted !== 0) {
+            // Try the smallest supported clear lift. The original V8 profile remains one 8-unit lift.
+            for (const lift of state.rulesetId === V8_R1_RULESET_ID ? [CELL_FP, 2 * CELL_FP] : [CELL_FP]) {
+                if (sweep(state, unit, 'y', -lift) !== -lift) continue;
+                const lifted = { ...unit, yFp: unit.yFp - lift };
+                if (sweep(state, lifted, 'x', wanted) !== wanted) continue;
                 lifted.xFp += wanted;
                 const support = findSupport(state, lifted);
-                if (support !== null) { unit.yFp = lifted.yFp; unit.support = support; dx = wanted; }
+                if (support !== null) { unit.yFp = lifted.yFp; unit.support = support; dx = wanted; break; }
             }
         }
         unit.xFp += dx;
-        if (dx !== wanted) unit.vxFp = 0;
+        const committedJump = state.rulesetId === V8_R1_RULESET_ID && !grounded && unit.airDrive === 'jump';
+        if (dx !== wanted && !committedJump) unit.vxFp = 0;
         if (dx !== 0) state.aim = null;
         if (unit.grounded) {
             unit.support = findSupport(state, unit);
@@ -472,6 +524,13 @@ function integrateBodies(state: SimulationStateV8): void {
             unit.vyFp = Math.min(unit.vyFp + 64, 2048);
             const dy = sweep(state, unit, 'y', unit.vyFp);
             unit.yFp += dy;
+            // Retry only the unspent signed displacement, once and only after actual rise.
+            // vx is the committed drive, never restored from facing or held input after cancellation.
+            if (committedJump && dy < 0 && dx !== wanted) {
+                const retry = sweep(state, unit, 'x', wanted - dx);
+                unit.xFp += retry;
+                if (retry !== 0) state.aim = null;
+            }
             const wasDownward = unit.vyFp >= 0;
             if (dy !== unit.vyFp) unit.vyFp = 0;
             const support = wasDownward ? findSupport(state, unit) : null;
@@ -479,19 +538,19 @@ function integrateBodies(state: SimulationStateV8): void {
         }
     }
 }
-function removeBelowWorld(state: SimulationStateV8): void {
+function removeBelowWorld(state: SimulationStateV8Family): void {
     for (const unit of state.units) if (unit.alive && unit.yFp - RADIUS_FP >= 576 * 256) {
         unit.alive = false; unit.stitching = 0;
     }
     reevaluateSupports(state);
 }
-function hasUnsupported(state: SimulationStateV8): boolean { return state.units.some(unit => unit.alive && !unit.grounded); }
-function deathResult(state: SimulationStateV8, events: SimulationEventV8[]): boolean {
+function hasUnsupported(state: SimulationStateV8Family): boolean { return state.units.some(unit => unit.alive && !unit.grounded); }
+function deathResult(state: SimulationStateV8Family, events: SimulationEventV8[]): boolean {
     if (state.units.every(unit => unit.alive) || hasUnsupported(state)) return false;
     finish(state, state.units[0].alive ? 'player' : state.units[1].alive ? 'loomkeeper' : 'draw', 'unravelled', events);
     return true;
 }
-function resolveBodyBoundaries(state: SimulationStateV8, events: SimulationEventV8[]): void {
+function resolveBodyBoundaries(state: SimulationStateV8Family, events: SimulationEventV8[]): void {
     removeBelowWorld(state);
     if (deathResult(state, events)) return;
     if (state.units.some(unit => unit.alive && !unit.grounded && unit.airTicks >= 120)) {
@@ -504,7 +563,7 @@ function resolveBodyBoundaries(state: SimulationStateV8, events: SimulationEvent
         enterPhase(state, 'settling', 120, 'death', events);
     }
 }
-function resolvePhaseDeadline(state: SimulationStateV8, events: SimulationEventV8[]): void {
+function resolvePhaseDeadline(state: SimulationStateV8Family, events: SimulationEventV8[]): void {
     if (state.tick < state.phaseDeadlineTick) return;
     if (state.phase === 'action' || state.phase === 'retreat') {
         if (hasUnsupported(state)) enterPhase(state, 'settling', 120,
@@ -512,14 +571,14 @@ function resolvePhaseDeadline(state: SimulationStateV8, events: SimulationEventV
         else handover(state, events);
     } else if (state.phase === 'settling') finish(state, 'draw', 'simulation_limit', events);
 }
-function enterPhase(state: SimulationStateV8, phase: SimulationPhaseV8, ticks: number,
+function enterPhase(state: SimulationStateV8Family, phase: SimulationPhaseV8, ticks: number,
     reason: SettleReasonV8 | null, events: SimulationEventV8[]): void {
     clearInput(state, true); state.phase = phase; state.phaseStartedTick = state.tick;
     state.phaseDeadlineTick = state.tick + ticks; state.settleReason = reason;
     events.push({ type: 'input_barrier', reason: 'phase', tick: state.tick });
     events.push({ type: 'phase_changed', phase, tick: state.tick });
 }
-function handover(state: SimulationStateV8, events: SimulationEventV8[]): void {
+function handover(state: SimulationStateV8Family, events: SimulationEventV8[]): void {
     if (deathResult(state, events)) return;
     state.turn += 1;
     if (state.turn >= 16) { finish(state, 'draw', 'turn_limit', events); return; }
@@ -527,8 +586,8 @@ function handover(state: SimulationStateV8, events: SimulationEventV8[]): void {
     state.castUsed = false; state.acceptedIntentCount = 0;
     enterPhase(state, 'action', 450, null, events);
 }
-function finish(state: SimulationStateV8, winner: SimulationWinner,
-    reason: NonNullable<SimulationStateV8['finishReason']>, events: SimulationEventV8[]): void {
+function finish(state: SimulationStateV8Family, winner: SimulationWinner,
+    reason: NonNullable<SimulationStateV8Family['finishReason']>, events: SimulationEventV8[]): void {
     if (state.phase === 'finished') return;
     state.projectile = null;
     enterPhase(state, 'finished', 0, null, events);
@@ -538,7 +597,7 @@ function finish(state: SimulationStateV8, winner: SimulationWinner,
 
 // The following launch/sweep/radial expressions preserve the MIT product's V5/V7
 // math in shared/simulation.ts. Only flight scheduling and physical settling differ.
-function launchProjectile(state: SimulationStateV8): ProjectileV8 {
+function launchProjectile(state: SimulationStateV8Family): ProjectileV8 {
     const unit = activeUnit(state); const aim = state.aim!;
     const band = V5_LAUNCH_SPEED_RULES[state.selectedRelic];
     const speed = band.minimumShotSpeed + Math.trunc((band.maximumShotSpeed - band.minimumShotSpeed) * aim.powerPermille / 1000);
@@ -550,7 +609,7 @@ function launchProjectile(state: SimulationStateV8): ProjectileV8 {
         vyFp: -Math.trunc(speed * aim.angleMilliDegrees / 90000), flightTicks: 0,
         startX, startY, trace: [{ x: startX, y: startY }] };
 }
-function projectileCollision(state: SimulationStateV8, shot: ProjectileV8, oldX: number, oldY: number):
+function projectileCollision(state: SimulationStateV8Family, shot: ProjectileV8, oldX: number, oldY: number):
     { x: number; y: number; target: ProjectileSummary['impact'] } | null {
     const hitbox = directProjectileHitboxFor(V7_RULESET_ID);
     const x0 = Math.trunc(oldX / 256); const y0 = Math.trunc(oldY / 256);
@@ -568,7 +627,7 @@ function projectileCollision(state: SimulationStateV8, shot: ProjectileV8, oldX:
     }
     return null;
 }
-function advanceProjectile(state: SimulationStateV8, events: SimulationEventV8[]): void {
+function advanceProjectile(state: SimulationStateV8Family, events: SimulationEventV8[]): void {
     const shot = state.projectile!;
     const oldX = shot.xFp; const oldY = shot.yFp;
     shot.vyFp += 80; shot.xFp += shot.vxFp; shot.yFp += shot.vyFp; shot.flightTicks += 1;

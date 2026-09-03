@@ -23,8 +23,8 @@ import {
     type WalletIdentity
 } from '../../../shared/protocol';
 import type { PlayerCalling, SimulationCommand } from '../../../shared/simulation';
-import type { ChallengeSnapshotV8, ChallengeResultV8 } from '../../../shared/protocol-v8';
-import type { SimulationIntentV8 } from '../../../shared/simulation-v8';
+import type { ChallengeSnapshotV8Family as ChallengeSnapshotV8, ChallengeResultV8Family as ChallengeResultV8 } from '../../../shared/protocol-v8';
+import type { SimulationIntentV8Family as SimulationIntentV8, V8RulesetId } from '../../../shared/simulation-v8';
 import type { CombatSceneArgs, CombatSceneArgsV8 } from '../combat/contracts';
 import { reconnectSession, takeActionTurnsV8SessionEvents, whenSessionReady } from '../lib/session';
 
@@ -540,14 +540,16 @@ const actionTurnsClock: ActionTurnsV8Clock = {
     clearTimeout: handle => globalThis.clearTimeout(handle as ReturnType<typeof setTimeout>)
 };
 type V8Wire = typeof import('../../../shared/protocol-v8');
+type SnapshotForV8<R extends V8RulesetId> = Extract<ChallengeSnapshotV8, { rulesetId: R }>;
+type ResultForV8<R extends V8RulesetId> = Extract<ChallengeResultV8, { rulesetId: R }>;
 type PendingV8 = { valid: boolean; timer?: unknown; reject: (error: Error) => void;
-    inputSequence?: number; intentType?: SimulationIntentV8['type']; turn?: number; committedFire?: boolean };
+    inputSequence?: number; intentType?: SimulationIntentV8['type']; turn?: number; epoch?: number; committedFire?: boolean };
 
 /** Internal, explicitly attached V8 transport. It has no create/reward/retry path.
  * Load validators only when this candidate adapter is requested; public V7
  * PracticeClient and its 5-second idempotent mutation path remain unchanged.
  */
-export class ActionTurnsV8Client {
+export class ActionTurnsV8Client<R extends V8RulesetId = 'nimble-knots-artillery-v8'> {
     private snapshot?: ChallengeSnapshotV8;
     private challengeId?: string;
     private nextInputSequence = 0;
@@ -561,6 +563,13 @@ export class ActionTurnsV8Client {
     private lifecycle?: PendingV8;
     private neutral?: Promise<ChallengeSnapshotV8 | void>;
     private neutralRequest?: PendingV8;
+    private releaseRequest?: PendingV8;
+    private releasePromise?: Promise<ChallengeSnapshotV8 | void>;
+    private releaseFenceEpoch = -1;
+    private softFence?: { challengeId: string; turn: number; epoch: number };
+    private softRecovery = false;
+    private hardAfterRelease = false;
+    private readinessScheduled = false;
     private resynchronizing = false;
     private stale = false;
     private lastAuthorityAt = 0;
@@ -574,16 +583,18 @@ export class ActionTurnsV8Client {
     private bufferedSnapshots: unknown[] = [];
     private bufferedResults: unknown[] = [];
     private readonly snapshotListeners = new Set<(value: ChallengeSnapshotV8) => void>();
+    private readonly inputReadyListeners = new Set<() => void>();
     private readonly resultListeners = new Set<(value: ChallengeResultV8) => void>();
     private readonly connectionListeners = new Set<(value: PracticeConnectionState) => void>();
     private readonly unavailableListeners = new Set<(value: string) => void>();
     private readonly errorListeners = new Set<(value: string) => void>();
 
-    public static async attach(socket: Socket, session: SessionOpenData,
+    public static async attach<R extends V8RulesetId = 'nimble-knots-artillery-v8'>(socket: Socket, session: SessionOpenData,
         initialSnapshots: readonly unknown[] = [], initialResults: readonly unknown[] = [],
-        clock: ActionTurnsV8Clock = actionTurnsClock): Promise<ActionTurnsV8Client> {
+        clock: ActionTurnsV8Clock = actionTurnsClock,
+        rulesetId: R = 'nimble-knots-artillery-v8' as R): Promise<ActionTurnsV8Client<R>> {
         const wire = await import('../../../shared/protocol-v8');
-        const client = new ActionTurnsV8Client(socket, session.sessionId, wire, clock);
+        const client = new ActionTurnsV8Client<R>(socket, session.sessionId, wire, clock, rulesetId);
         const buffered = takeActionTurnsV8SessionEvents(socket);
         for (const value of [...initialSnapshots, ...buffered.snapshots]) client.onSnapshotEvent(value);
         for (const value of [...initialResults, ...buffered.results]) client.onResultEvent(value);
@@ -591,7 +602,7 @@ export class ActionTurnsV8Client {
     }
 
     private constructor(private readonly socket: Socket, private readonly sessionId: string,
-        private readonly wire: V8Wire, private readonly clock: ActionTurnsV8Clock) {
+        private readonly wire: V8Wire, private readonly clock: ActionTurnsV8Clock, private readonly rulesetId: R) {
         this.connected = socket.connected;
         socket.on(wire.protocolEventsV8.snapshot, this.onSnapshotEvent);
         socket.on(wire.protocolEventsV8.result, this.onResultEvent);
@@ -599,27 +610,49 @@ export class ActionTurnsV8Client {
         socket.on('connect', this.onConnect);
     }
 
-    public currentSnapshot(): ChallengeSnapshotV8 | undefined {
-        return this.snapshot ? structuredClone(this.snapshot) : undefined;
+    public currentSnapshot(): SnapshotForV8<R> | undefined {
+        // Every acceptance path checks this adapter's immutable exact identity.
+        return this.snapshot ? structuredClone(this.snapshot) as SnapshotForV8<R> : undefined;
     }
 
-    public async submitIntent(intent: SimulationIntentV8): Promise<ChallengeSnapshotV8> {
+    public inputReady(): boolean {
+        try { this.requireInput(); } catch { return false; }
+        return !this.normal && !this.lifecycle && !this.neutral && !this.releasePromise &&
+            !this.resynchronizing && this.uncertainInput === undefined;
+    }
+    public inputFlight(): 'locomotion' | 'blocked' | null {
+        if (this.lifecycle || this.neutral || this.releasePromise || this.resynchronizing || this.stale || !this.connected) return 'blocked';
+        if (!this.normal) return null;
+        return this.normal.valid && ['walk_start', 'walk_refresh', 'walk_stop'].includes(this.normal.intentType ?? '')
+            ? 'locomotion' : 'blocked';
+    }
+    public onInputReady(listener: () => void): Unsubscribe {
+        this.inputReadyListeners.add(listener); return () => this.inputReadyListeners.delete(listener);
+    }
+
+    public submitIntent(intent: SimulationIntentV8): Promise<SnapshotForV8<R>> {
+        // Return the actual lane Promise, so consumers finish this request before
+        // the readiness microtask offers the lane to a live gesture or refresh.
+        try { return this.startIntent(intent); }
+        catch (error) { return Promise.reject(error); }
+    }
+
+    private startIntent(intent: SimulationIntentV8): Promise<SnapshotForV8<R>> {
         const snapshot = this.requireInput();
         if (this.normal) throw new Error('A V8 input acknowledgement is still pending.');
-        if (this.lifecycle || this.resynchronizing || this.neutral || this.uncertainInput !== undefined)
+        if (this.lifecycle || this.resynchronizing || this.neutral || this.releasePromise || this.uncertainInput !== undefined)
             throw new Error('V8 input is resynchronizing.');
-        const parsedIntent = this.wire.SimulationIntentV8Schema.safeParse(intent);
-        if (!parsedIntent.success) throw new Error('Invalid V8 intent.');
         if (intent.type === 'walk_refresh' && !this.hold) throw new Error('No owned V8 walk to refresh.');
-        const request = this.wire.InputRequestV8Schema.parse({ ...this.ownership(),
-            inputSequence: this.nextInputSequence, expectedPhase: snapshot.simulation.phase, intent: parsedIntent.data });
+        const request = this.wire.InputRequestV8FamilySchema.parse({ ...this.ownership(),
+            inputSequence: this.nextInputSequence, expectedPhase: snapshot.simulation.phase, intent });
+        this.softRecovery = false;
         if (intent.type === 'walk_start') {
             this.hold = { turn: snapshot.simulation.turn, epoch: snapshot.simulation.inputEpoch, confirmed: false };
             this.scheduleRefresh();
         }
         return new Promise((resolve, reject) => {
             const pending: PendingV8 = { valid: true, reject, inputSequence: request.inputSequence,
-                intentType: intent.type, turn: request.expectedTurn };
+                intentType: intent.type, turn: request.expectedTurn, epoch: request.inputEpoch };
             this.normal = pending;
             const complete = (error?: Error, raw?: unknown) => {
                 if (this.normal !== pending) return;
@@ -628,9 +661,12 @@ export class ActionTurnsV8Client {
                 // A missing acknowledgement does not prove server consumption.
                 // Retain its floor until neutral authority proves consumption or
                 // a new socket/session binding makes the old packet inert.
-                if (error && this.nextInputSequence <= request.inputSequence) this.uncertainInput = request.inputSequence;
+                const fenced = snapshot.rulesetId === 'nimble-knots-artillery-v8-r1' && this.releaseFenceEpoch > request.inputEpoch;
+                if (error && !fenced && this.nextInputSequence <= request.inputSequence) this.uncertainInput = request.inputSequence;
                 if (!pending.valid || this.disposed) {
-                    if (this.resynchronizing && !this.neutral) this.bestEffortNeutral();
+                    if (fenced) { this.uncertainInput = undefined; this.resynchronizing = !!this.neutral || !!this.releasePromise; }
+                    else if (this.resynchronizing && !this.neutral && !this.releasePromise) this.bestEffortNeutral();
+                    this.scheduleInputReady();
                     return;
                 }
                 if (error) {
@@ -638,7 +674,7 @@ export class ActionTurnsV8Client {
                     this.bestEffortCancel();
                     return;
                 }
-                const parsed = this.wire.InputAckV8Schema().safeParse(raw);
+                const parsed = this.wire.InputAckV8FamilySchema().safeParse(raw);
                 if (!parsed.success || parsed.data.requestId !== request.requestId) {
                     this.uncertainInput = request.inputSequence;
                     reject(new Error('Invalid V8 input acknowledgement.'));
@@ -661,7 +697,7 @@ export class ActionTurnsV8Client {
                     return;
                 }
                 resolve(this.currentSnapshot()!);
-                this.flushRefresh();
+                this.scheduleInputReady();
             };
             pending.timer = this.clock.setTimeout(() => complete(new Error('V8 input acknowledgement timed out after 250 ms.')), 250);
             this.socket.timeout(250).emit(this.wire.protocolEventsV8.input, request,
@@ -671,6 +707,8 @@ export class ActionTurnsV8Client {
 
     /** Independent neutral-only lane: local ownership ends before any await. */
     public cancelInput(): Promise<ChallengeSnapshotV8 | void> {
+        this.softRecovery = false;
+        if (this.releasePromise) this.hardAfterRelease = true;
         this.clearOwnership('V8 input cancelled.');
         if (this.disposed || !this.connected || !this.socket.connected || !this.playerOwnsInput()) {
             if (this.uncertainInput !== undefined) this.rebindUncertainInput();
@@ -678,6 +716,16 @@ export class ActionTurnsV8Client {
         }
         this.resynchronizing = true;
         return this.sendNeutral();
+    }
+
+    /** Soft release owns its own lane and proof; recovery must not hard-cancel a committed hop. */
+    public releaseMovement(): Promise<ChallengeSnapshotV8 | void> {
+        if (this.snapshot?.rulesetId !== 'nimble-knots-artillery-v8-r1') return this.cancelInput();
+        this.softRecovery = true;
+        this.clearOwnership('V8 movement released.');
+        if (this.disposed || !this.connected || !this.socket.connected || !this.playerOwnsInput()) return Promise.resolve();
+        this.resynchronizing = true;
+        return this.sendRelease();
     }
 
     public async setPaused(paused: boolean): Promise<ChallengeSnapshotV8> {
@@ -692,16 +740,18 @@ export class ActionTurnsV8Client {
         return result;
     }
 
-    public onSnapshot(listener: (snapshot: ChallengeSnapshotV8) => void): Unsubscribe {
-        this.snapshotListeners.add(listener); return () => this.snapshotListeners.delete(listener);
+    public onSnapshot(listener: (snapshot: SnapshotForV8<R>) => void): Unsubscribe {
+        const receive = (value: ChallengeSnapshotV8) => listener(value as SnapshotForV8<R>);
+        this.snapshotListeners.add(receive); return () => this.snapshotListeners.delete(receive);
     }
-    public onResult(listener: (result: ChallengeResultV8) => void): Unsubscribe {
-        this.resultListeners.add(listener);
+    public onResult(listener: (result: ResultForV8<R>) => void): Unsubscribe {
+        const receive = (value: ChallengeResultV8) => listener(value as ResultForV8<R>);
+        this.resultListeners.add(receive);
         if (this.pendingTerminal) {
             this.pendingTerminal = false;
-            queueMicrotask(() => { if (this.resultListeners.has(listener)) listener(structuredClone(this.terminal!)); });
+            queueMicrotask(() => { if (this.resultListeners.has(receive)) receive(structuredClone(this.terminal!)); });
         }
-        return () => this.resultListeners.delete(listener);
+        return () => this.resultListeners.delete(receive);
     }
     public onConnection(listener: (state: PracticeConnectionState) => void): Unsubscribe {
         this.connectionListeners.add(listener); return () => this.connectionListeners.delete(listener);
@@ -729,7 +779,7 @@ export class ActionTurnsV8Client {
         this.socket.off(this.wire.protocolEventsV8.result, this.onResultEvent);
         this.socket.off('disconnect', this.onDisconnect);
         this.socket.off('connect', this.onConnect);
-        this.snapshotListeners.clear(); this.resultListeners.clear(); this.connectionListeners.clear();
+        this.snapshotListeners.clear(); this.inputReadyListeners.clear(); this.resultListeners.clear(); this.connectionListeners.clear();
         this.unavailableListeners.clear(); this.errorListeners.clear();
         this.bufferedSnapshots = []; this.bufferedResults = [];
     }
@@ -742,7 +792,7 @@ export class ActionTurnsV8Client {
 
     private sendNeutral(): Promise<ChallengeSnapshotV8 | void> {
         if (this.neutral) return this.neutral;
-        const request = this.wire.InputCancelV8Schema.parse(this.ownership());
+        const request = this.wire.InputCancelV8FamilySchema.parse(this.ownership());
         const promise = new Promise<ChallengeSnapshotV8>((resolve, reject) => {
             const pending: PendingV8 = { valid: true, reject };
             this.neutralRequest = pending;
@@ -751,7 +801,7 @@ export class ActionTurnsV8Client {
                 this.clock.clearTimeout(pending.timer);
                 this.neutralRequest = undefined;
                 if (!pending.valid || this.disposed) return;
-                const parsed = this.wire.InputAckV8Schema().safeParse(raw);
+                const parsed = this.wire.InputAckV8FamilySchema().safeParse(raw);
                 if (error || !parsed.success || parsed.data.requestId !== request.requestId) {
                     reject(error ?? new Error('Invalid V8 cancellation acknowledgement.')); return;
                 }
@@ -775,6 +825,51 @@ export class ActionTurnsV8Client {
         const settled = () => {
             if (this.neutral === promise) this.neutral = undefined;
             if (this.uncertainInput !== undefined && !this.normal) this.rebindUncertainInput();
+            this.escalateHardRelease();
+            this.scheduleInputReady();
+        };
+        void promise.then(settled, settled);
+        return promise;
+    }
+
+    private sendRelease(): Promise<ChallengeSnapshotV8 | void> {
+        if (this.releasePromise) return this.releasePromise;
+        const request = this.wire.InputReleaseV8R1Schema.parse(this.ownership());
+        this.softFence = { challengeId: request.challengeId, turn: request.expectedTurn, epoch: request.inputEpoch };
+        const promise = new Promise<ChallengeSnapshotV8 | void>((resolve, reject) => {
+            const pending: PendingV8 = { valid: true, reject }; this.releaseRequest = pending;
+            const complete = (error?: Error, raw?: unknown) => {
+                if (this.releaseRequest !== pending) return;
+                this.clock.clearTimeout(pending.timer); this.releaseRequest = undefined;
+                if (!pending.valid || this.disposed) return;
+                const parsed = this.wire.InputAckV8FamilySchema().safeParse(raw);
+                if (error || !parsed.success || parsed.data.requestId !== request.requestId) {
+                    reject(error ?? new Error('Invalid V8 release acknowledgement.')); return;
+                }
+                const ack = parsed.data;
+                if (ack.ok === false) { reject(new PracticeProtocolError(ack.error)); return; }
+                if (ack.data.rulesetId !== request.rulesetId || ack.data.challengeId !== request.challengeId ||
+                    ack.data.simulation.inputEpoch <= request.inputEpoch ||
+                    ack.nextInputSequence !== ack.data.nextInputSequence ||
+                    !(this.supersededAcknowledgement(ack.data) || this.acceptSnapshot(ack.data))) {
+                    reject(new Error('Stale V8 release acknowledgement.')); return;
+                }
+                this.releaseFenceEpoch = Math.max(this.releaseFenceEpoch, ack.data.simulation.inputEpoch);
+                this.uncertainInput = undefined;
+                resolve(this.currentSnapshot());
+            };
+            pending.timer = this.clock.setTimeout(() => complete(new Error('V8 release acknowledgement timed out.')), 250);
+            this.socket.timeout(250).emit(this.wire.protocolEventsV8.release, request,
+                (error: Error | null, raw: unknown) => complete(error ?? undefined, raw));
+        });
+        this.releasePromise = promise;
+        const settled = () => {
+            if (this.releasePromise === promise) this.releasePromise = undefined;
+            if (this.releaseFenceEpoch > request.inputEpoch) {
+                this.resynchronizing = !!this.normal || !!this.neutral || !!this.lifecycle;
+            }
+            this.scheduleInputReady();
+            this.escalateHardRelease();
         };
         void promise.then(settled, settled);
         return promise;
@@ -787,7 +882,7 @@ export class ActionTurnsV8Client {
         const hadOwnership = !!this.hold || !!this.normal;
         this.clearOwnership('V8 lifecycle cancelled input.');
         if (hadOwnership) this.bestEffortCancel();
-        const schema = event === this.wire.protocolEventsV8.pause ? this.wire.ChallengePauseV8Schema : this.wire.ChallengeLeaveV8Schema;
+        const schema = event === this.wire.protocolEventsV8.pause ? this.wire.ChallengePauseV8FamilySchema : this.wire.ChallengeLeaveV8FamilySchema;
         const request = schema.parse({ requestId: createRequestId(), challengeId: this.snapshot.challengeId,
             rulesetId: this.snapshot.rulesetId, sequence: this.nextSequence, ...body });
         return new Promise((resolve, reject) => {
@@ -796,7 +891,7 @@ export class ActionTurnsV8Client {
                 if (this.lifecycle !== pending) return;
                 this.clock.clearTimeout(pending.timer); this.lifecycle = undefined;
                 if (!pending.valid || this.disposed) return;
-                const parsed = this.wire.LifecycleAckV8Schema.safeParse(raw);
+                const parsed = this.wire.LifecycleAckV8FamilySchema.safeParse(raw);
                 if (error || !parsed.success || parsed.data.requestId !== request.requestId) {
                     reject(error ?? new Error('Invalid V8 lifecycle acknowledgement.'));
                     this.bestEffortCancel(); return;
@@ -824,11 +919,12 @@ export class ActionTurnsV8Client {
     }
 
     private acceptSnapshot(candidate: ChallengeSnapshotV8): boolean {
-        if (this.disposed || this.terminal || candidate.sessionId !== this.sessionId ||
+        if (candidate.rulesetId !== this.rulesetId || this.disposed || this.terminal || candidate.sessionId !== this.sessionId ||
             (this.challengeId && candidate.challengeId !== this.challengeId)) return false;
         const previous = this.snapshot;
         const current = candidate.simulation;
         if (previous) {
+            if (candidate.rulesetId !== previous.rulesetId) return false;
             if (candidate.mode !== previous.mode || candidate.calling !== previous.calling || current.seed !== previous.simulation.seed)
                 return false;
             if (current.revision < previous.simulation.revision || current.tick < previous.simulation.tick ||
@@ -854,22 +950,35 @@ export class ActionTurnsV8Client {
         this.challengeId = candidate.challengeId;
         this.snapshot = structuredClone(candidate);
         this.nextInputSequence = candidate.nextInputSequence;
+        if (candidate.rulesetId === 'nimble-knots-artillery-v8-r1' && this.softFence &&
+            candidate.challengeId === this.softFence.challengeId &&
+            current.inputEpoch > this.softFence.epoch) {
+            // New-epoch authority is itself a fence even when both wire acks are lost.
+            // Exact instance/session/challenge identity and monotonicity were checked above.
+            // A handover does not weaken that fence or consume the rejected old cursor.
+            this.releaseFenceEpoch = Math.max(this.releaseFenceEpoch, current.inputEpoch);
+            this.uncertainInput = undefined;
+        }
         if (this.uncertainInput !== undefined && candidate.nextInputSequence > this.uncertainInput)
             this.uncertainInput = undefined;
         this.nextSequence = Math.max(this.nextSequence, candidate.nextSequence);
-        if (!this.normal && !this.neutralRequest && !this.lifecycle && this.uncertainInput === undefined)
+        if (!this.normal && !this.neutralRequest && !this.releaseRequest && !this.lifecycle && this.uncertainInput === undefined)
             this.resynchronizing = false;
         if (boundary) this.clearOwnership('V8 phase or input ownership changed.', this.normal?.committedFire);
         else if (this.hold) {
             if (current.heldDirection !== 0) this.hold.confirmed = true;
-            else if (this.hold.confirmed) this.clearOwnership('V8 walk lease ended.');
+            else if (this.hold.confirmed) {
+                if (candidate.rulesetId === 'nimble-knots-artillery-v8-r1' && this.normal?.intentType === 'walk_stop' &&
+                    candidate.nextInputSequence === this.normal.inputSequence! + 1) this.clearHold();
+                else this.clearOwnership('V8 walk lease ended.');
+            }
         }
         if (progressed) {
             this.stale = false; this.lastAuthorityAt = this.clock.now();
             this.scheduleStaleCheck();
         }
         if (progressed || boundary) for (const listener of this.snapshotListeners) listener(structuredClone(candidate));
-        this.flushRefresh();
+        this.scheduleInputReady();
         return true;
     }
 
@@ -883,7 +992,8 @@ export class ActionTurnsV8Client {
     }
 
     private acceptResult(candidate: ChallengeResultV8): boolean {
-        if (candidate.sessionId !== this.sessionId || (this.challengeId && candidate.challengeId !== this.challengeId)) return false;
+        if (candidate.rulesetId !== this.rulesetId || candidate.sessionId !== this.sessionId || (this.challengeId && candidate.challengeId !== this.challengeId)) return false;
+        if (this.snapshot && candidate.rulesetId !== this.snapshot.rulesetId) return false;
         if (this.terminal) return candidate.outcome === this.terminal.outcome && candidate.finalTick === this.terminal.finalTick &&
             candidate.finalStateHash === this.terminal.finalStateHash;
         if (this.snapshot && (candidate.finalTick < this.snapshot.simulation.tick || candidate.nextInputSequence < this.nextInputSequence ||
@@ -900,13 +1010,13 @@ export class ActionTurnsV8Client {
 
     private onSnapshotEvent = (raw: unknown): void => {
         if (!this.connected) { this.buffer(this.bufferedSnapshots, raw); return; }
-        const parsed = this.wire.ChallengeSnapshotV8Schema.safeParse(raw);
+        const parsed = this.wire.ChallengeSnapshotV8FamilySchema.safeParse(raw);
         if (!parsed.success) this.notifyError('The server sent an invalid V8 snapshot.');
         else this.acceptSnapshot(parsed.data);
     };
     private onResultEvent = (raw: unknown): void => {
         if (!this.connected) { this.buffer(this.bufferedResults, raw); return; }
-        const parsed = this.wire.ChallengeResultV8Schema.safeParse(raw);
+        const parsed = this.wire.ChallengeResultV8FamilySchema.safeParse(raw);
         if (!parsed.success) this.notifyError('The server sent an invalid V8 result.');
         else this.acceptResult(parsed.data);
     };
@@ -938,7 +1048,7 @@ export class ActionTurnsV8Client {
                 const results = [...this.bufferedResults.splice(0), ...buffered.results];
                 let acceptedResume = false;
                 for (const value of snapshots) {
-                    const parsed = this.wire.ChallengeSnapshotV8Schema.safeParse(value);
+                    const parsed = this.wire.ChallengeSnapshotV8FamilySchema.safeParse(value);
                     if (parsed.success && this.acceptSnapshot(parsed.data)) acceptedResume = true;
                 }
                 for (const value of results) this.onResultEvent(value);
@@ -965,17 +1075,21 @@ export class ActionTurnsV8Client {
             (snapshot.simulation.phase === 'action' || snapshot.simulation.phase === 'retreat');
     }
     private clearOwnership(message: string, preserveCommittedFire = false): void {
+        this.clearHold();
+        if (this.normal?.valid && !preserveCommittedFire) { this.normal.valid = false; this.normal.reject(new Error(message)); }
+    }
+    private clearHold(): void {
         this.hold = undefined; this.refreshDue = false;
         this.clock.clearTimeout(this.refreshTimer); this.refreshTimer = undefined;
-        if (this.normal?.valid && !preserveCommittedFire) { this.normal.valid = false; this.normal.reject(new Error(message)); }
     }
     private clearPending(message: string): void {
         this.clearOwnership(message);
-        for (const pending of [this.normal, this.lifecycle, this.neutralRequest]) {
+        for (const pending of [this.normal, this.lifecycle, this.neutralRequest, this.releaseRequest]) {
             if (!pending) continue;
             pending.valid = false; this.clock.clearTimeout(pending.timer); pending.reject(new Error(message));
         }
         this.normal = undefined; this.lifecycle = undefined; this.neutralRequest = undefined; this.neutral = undefined;
+        this.releaseRequest = undefined; this.releasePromise = undefined;
     }
     private scheduleRefresh(): void {
         this.clock.clearTimeout(this.refreshTimer);
@@ -985,7 +1099,7 @@ export class ActionTurnsV8Client {
         }, 100);
     }
     private flushRefresh(): void {
-        if (!this.hold || !this.refreshDue || this.normal || this.lifecycle || this.neutral || this.resynchronizing || this.stale) return;
+        if (!this.hold || !this.refreshDue || this.normal || this.lifecycle || this.neutral || this.releasePromise || this.resynchronizing || this.stale) return;
         const state = this.snapshot?.simulation;
         if (!state || state.inputEpoch !== this.hold.epoch || state.turn !== this.hold.turn ||
             state.heldDirection === 0 || state.lastLeaseRefreshTick === null || state.tick - state.lastLeaseRefreshTick < 3) return;
@@ -1003,7 +1117,30 @@ export class ActionTurnsV8Client {
     private bestEffortCancel(): void { void this.cancelInput().catch(error => this.notifyError(error.message)); }
     private bestEffortNeutral(): void {
         if (!this.disposed && this.connected && this.socket.connected && this.playerOwnsInput())
-            void this.sendNeutral().catch(error => this.notifyError(error.message));
+            void (this.softRecovery ? this.sendRelease() : this.sendNeutral()).catch(error => this.notifyError(error.message));
+    }
+    private scheduleInputReady(): void {
+        if (this.snapshot?.rulesetId !== 'nimble-knots-artillery-v8-r1') { this.flushRefresh(); return; }
+        if (this.readinessScheduled) return;
+        this.readinessScheduled = true;
+        queueMicrotask(() => {
+            // A snapshot may arrive inside complete() before its Promise resolves.
+            // Let the scene clear that completed request before offering readiness.
+            queueMicrotask(() => {
+                this.readinessScheduled = false;
+                if (this.disposed) return;
+                if (this.inputReady()) for (const listener of this.inputReadyListeners) listener();
+                this.flushRefresh();
+            });
+        });
+    }
+    private escalateHardRelease(): void {
+        if (!this.hardAfterRelease || this.releasePromise || this.neutral || this.disposed || !this.playerOwnsInput()) return;
+        this.hardAfterRelease = false;
+        const state = this.snapshot!.simulation;
+        if (state.heldDirection === 0 && state.units[0].vxFp === 0 && !state.aim) return;
+        this.resynchronizing = true;
+        void this.sendNeutral().catch(error => this.notifyError(error.message));
     }
     private rebindUncertainInput(): void {
         if (this.disposed || this.rebindPending || !this.connected || !this.socket.connected) return;
@@ -1016,9 +1153,11 @@ export class ActionTurnsV8Client {
     private buffer(values: unknown[], value: unknown): void { values.push(value); if (values.length > 8) values.shift(); }
 }
 
-export function liveActionTurnsV8Args(client: ActionTurnsV8Client, snapshot: ChallengeSnapshotV8): CombatSceneArgsV8 {
+export function liveActionTurnsV8Args<R extends V8RulesetId>(client: ActionTurnsV8Client<R>, snapshot: SnapshotForV8<R>): CombatSceneArgsV8 {
     return { kind: 'v8', snapshot,
         submitIntent: intent => client.submitIntent(intent), cancelInput: () => client.cancelInput(),
+        releaseMovement: () => client.releaseMovement(), inputReady: () => client.inputReady(),
+        inputFlight: () => client.inputFlight(), onInputReady: listener => client.onInputReady(listener),
         setPaused: paused => client.setPaused(paused),
         onSnapshot: listener => client.onSnapshot(listener), onResult: listener => client.onResult(listener),
         onConnection: listener => client.onConnection(listener), onUnavailable: listener => client.onUnavailable(listener),

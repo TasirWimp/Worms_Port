@@ -368,6 +368,99 @@ test('V8 right left off and actual-landscape keep safe touch targets and rotatio
   }
 });
 
+test('V8 r1 unified pad taps, walks, centers, reverses, hops and keeps aim Fire separate', async ({ page }, testInfo) => {
+  await page.goto('/?combat-preview=v8-r1&sideways=off');
+  const ui = page.locator('.combat-v8-r1');
+  await expect(ui).toHaveAttribute('data-ruleset', 'nimble-knots-artillery-v8-r1');
+  await expect(page.locator('.jump-button, .face-left, .face-right')).toHaveCount(0);
+  await expect(page.locator('.movement-zone')).toHaveAttribute('aria-label', /Tap a side.*Push up/);
+  await assertControlsFit(page);
+  const start = Number(await ui.getAttribute('data-player-x'));
+  const epoch = await ui.getAttribute('data-input-epoch');
+  await r1Pointer(page, 'pointerdown', 301, -32, 0);
+  await r1Pointer(page, 'pointerup', 301, -32, 0);
+  await expect(ui).toHaveAttribute('data-player-facing', 'left');
+  expect(Number(await ui.getAttribute('data-player-x'))).toBe(start);
+  expect(await ui.getAttribute('data-input-epoch')).toBe(epoch);
+  await page.locator('.movement-zone').dispatchEvent('lostpointercapture', { pointerId: 301 });
+  expect(await ui.getAttribute('data-input-epoch')).toBe(epoch);
+  await r1Pointer(page, 'pointerdown', 302, 0, 0);
+  await r1Pointer(page, 'pointermove', 302, 10, 0);
+  await expect(ui).toHaveAttribute('data-held-direction', '1');
+  await r1Pointer(page, 'pointermove', 302, 180, 0);
+  const walkingTick = Number(await ui.getAttribute('data-simulation-tick'));
+  await expect.poll(async () => Number(await ui.getAttribute('data-simulation-tick'))).toBeGreaterThan(walkingTick + 6);
+  await expect(page.locator('.movement-zone')).toHaveClass(/is-active/);
+  expect(Number(await ui.getAttribute('data-player-x'))).toBeGreaterThan(start);
+  await r1Pointer(page, 'pointermove', 302, 0, 0);
+  await expect(ui).toHaveAttribute('data-held-direction', '0');
+  await expect(page.locator('.movement-zone')).toHaveClass(/is-active/);
+  expect(await ui.getAttribute('data-input-epoch')).toBe(epoch);
+  await r1Pointer(page, 'pointermove', 302, -30, 0);
+  await expect(ui).toHaveAttribute('data-held-direction', '-1');
+  await r1Pointer(page, 'pointermove', 302, 30, 0);
+  await expect(ui).toHaveAttribute('data-held-direction', '1');
+  await r1Pointer(page, 'pointermove', 302, -40, -40);
+  await expect(ui).toHaveAttribute('data-player-grounded', 'false');
+  await expect(ui).toHaveAttribute('data-player-facing', 'left');
+  await r1Pointer(page, 'pointerup', 302, -140, -140);
+  await expect(ui).toHaveAttribute('data-held-direction', '0');
+  const airborneX = Number(await ui.getAttribute('data-player-x'));
+  await expect.poll(async () => Number(await ui.getAttribute('data-player-x'))).toBeLessThan(airborneX - 2);
+  await expect(ui).toHaveAttribute('data-player-grounded', 'true', { timeout: 5000 });
+  await dragPad(page, '.aim-zone', 303, 0.3, 0);
+  await expect(page.locator('.fire-button')).toBeEnabled();
+  await page.screenshot({ path: testInfo.outputPath('v8-r1-unified-pad-candidate.png') });
+  await page.locator('.fire-button').tap();
+  await expect(ui).toHaveAttribute('data-combat-phase', 'retreat', { timeout: 6000 });
+  await expect(page.locator('.fire-button')).toBeDisabled();
+});
+
+test('V8 r1 right left off and actual landscape preserve pad axes and safe areas', async ({ page }, testInfo) => {
+  for (const mode of ['right', 'left', 'off'] as const) {
+    await page.setViewportSize({ width: 390, height: 844 });
+    await page.goto(`/?combat-preview=v8-r1&sideways=${mode}`);
+    const ui = page.locator('.combat-v8-r1'); await expect(ui).toBeVisible();
+    await page.evaluate(native => {
+      for (const side of ['top', 'right', 'bottom', 'left'] as const)
+        document.documentElement.style.setProperty(`--native-safe-area-${side}`, `${native[side]}px`);
+      window.dispatchEvent(new Event('resize'));
+    }, SYNTHETIC_SAFE_AREA);
+    await expect.poll(() => readSafeArea(page)).toEqual(mode === 'right'
+      ? { top: 14, right: 22, bottom: 12, left: 18 }
+      : mode === 'left' ? { top: 12, right: 18, bottom: 14, left: 22 } : SYNTHETIC_SAFE_AREA);
+    await assertControlsFit(page);
+    const pad = await page.locator('.movement-zone').boundingBox();
+    expect(pad!.width).toBeGreaterThanOrEqual(112); expect(pad!.height).toBeGreaterThanOrEqual(112);
+    await r1Pointer(page, 'pointerdown', 304, 0, 0);
+    await r1Pointer(page, 'pointermove', 304, 150, 0);
+    await expect(ui).toHaveAttribute('data-held-direction', '1');
+    await r1Pointer(page, 'pointerup', 304, 150, 0);
+    await expect(ui).toHaveAttribute('data-held-direction', '0');
+    await r1Pointer(page, 'pointerdown', 305, 0, 0);
+    await r1Pointer(page, 'pointermove', 305, 0, -30);
+    await expect(ui).toHaveAttribute('data-player-grounded', 'false');
+    await r1Pointer(page, 'pointerup', 305, 0, -30);
+    await page.screenshot({ path: testInfo.outputPath(`v8-r1-${mode}-candidate.png`) });
+    await page.setViewportSize({ width: 844, height: 390 });
+    await expect(page.locator('html')).not.toHaveAttribute('data-sideways', /.+/);
+    await expect(ui).toHaveAttribute('data-orientation', 'landscape');
+    await assertControlsFit(page);
+  }
+});
+
+async function r1Pointer(page: Page, type: 'pointerdown' | 'pointermove' | 'pointerup', pointerId: number, dx: number, dy: number): Promise<void> {
+  await page.locator('.movement-zone').evaluate((element, args) => {
+    const rect = element.getBoundingClientRect(); const mode = document.documentElement.dataset.sideways;
+    const x = mode === 'right' ? -args.dy : mode === 'left' ? args.dy : args.dx;
+    const y = mode === 'right' ? args.dx : mode === 'left' ? -args.dx : args.dy;
+    element.dispatchEvent(new PointerEvent(args.type, { bubbles: true, cancelable: true,
+      pointerId: args.pointerId, pointerType: 'touch', isPrimary: true, button: 0,
+      buttons: args.type === 'pointerup' ? 0 : 1, clientX: rect.left + rect.width / 2 + x,
+      clientY: rect.top + rect.height / 2 + y }));
+  }, { type, pointerId, dx, dy });
+}
+
 test('current opening survey continuously zooms to the player view', async ({ page }) => {
   await page.emulateMedia({ reducedMotion: 'no-preference' });
   await page.goto('/?combat-preview=1&sideways=off');

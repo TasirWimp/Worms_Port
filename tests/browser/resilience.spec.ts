@@ -63,6 +63,48 @@ test('V8 interruptions require fresh walking and Jump presses without pausing hi
   expect(errors).toEqual([]);
 });
 
+test('V8 r1 interrupted movement cannot reuse old upward input or pause hidden combat', async ({ page }) => {
+  const errors = captureErrors(page);
+  for (const interruption of ['blur', 'hidden', 'pointercancel', 'lostpointercapture', 'resize', 'rotation', 'wallet']) {
+    await page.goto('/?combat-preview=v8-r1&sideways=off');
+    const ui = page.locator('.combat-v8-r1'); await expect(ui).toBeVisible();
+    await pointer(page, '.movement-zone', 'pointerdown', 311, 0.5, 0.5);
+    await pointer(page, '.movement-zone', 'pointermove', 311, 1.8, 0.5);
+    await expect(ui).toHaveAttribute('data-held-direction', '1');
+    await page.evaluate(kind => {
+      if (kind === 'hidden') {
+        Object.defineProperty(document, 'hidden', { configurable: true, get: () => true });
+        document.dispatchEvent(new Event('visibilitychange'));
+      } else if (kind === 'pointercancel' || kind === 'lostpointercapture') {
+        document.querySelector('.movement-zone')!.dispatchEvent(new PointerEvent(kind, { pointerId: 311, bubbles: true }));
+      } else {
+        window.dispatchEvent(new Event(kind === 'rotation' ? 'orientationchange' : kind === 'wallet' ? 'nimble-knots:wallet-boundary' : kind));
+        window.dispatchEvent(new Event('focus'));
+      }
+    }, interruption);
+    await expect(ui).toHaveAttribute('data-held-direction', '0');
+    await expect(page.locator('.movement-zone')).not.toHaveClass(/is-active/);
+    if (interruption === 'hidden') {
+      const tick = Number(await ui.getAttribute('data-simulation-tick'));
+      await expect.poll(async () => Number(await ui.getAttribute('data-simulation-tick'))).toBeGreaterThan(tick + 3);
+      await page.evaluate(() => {
+        Reflect.deleteProperty(document, 'hidden');
+        document.dispatchEvent(new Event('visibilitychange')); window.dispatchEvent(new Event('focus'));
+      });
+    }
+    await pointer(page, '.movement-zone', 'pointermove', 311, 0.5, -0.5);
+    await pointer(page, '.movement-zone', 'pointerup', 311, 0.5, -0.5);
+    await expect(ui).toHaveAttribute('data-player-grounded', 'true');
+    await expect(ui).toHaveAttribute('data-paused', 'false');
+    await expect(ui).not.toHaveAttribute('data-last-command', 'jump');
+    await pointer(page, '.movement-zone', 'pointerdown', 312, 0.5, 0.5);
+    await pointer(page, '.movement-zone', 'pointermove', 312, 0.5, 0.1);
+    await expect(ui).toHaveAttribute('data-player-grounded', 'false');
+    await pointer(page, '.movement-zone', 'pointerup', 312, 0.5, 0.1);
+  }
+  expect(errors).toEqual([]);
+});
+
 test('constrained Chromium loading reaches actionable wallet-free Practice', async ({ page, context }, testInfo) => {
   test.setTimeout(60_000);
   test.skip(testInfo.project.name !== 'chromium-390x844', 'Chromium CDP provides the supported deterministic network control.');

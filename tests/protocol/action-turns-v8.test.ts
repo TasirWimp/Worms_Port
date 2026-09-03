@@ -1,7 +1,9 @@
 import assert from 'node:assert/strict';
 import test from 'node:test';
-import { InputRequestV8Schema, InputCancelV8Schema, SimulationSnapshotV8Schema } from '../../shared/protocol-v8';
-import { createSimulationV8, V8_RULESET_ID } from '../../shared/simulation-v8';
+import { InputRequestV8Schema, InputCancelV8Schema, SimulationSnapshotV8Schema,
+    InputRequestV8FamilySchema, InputReleaseV8R1Schema, ChallengeSnapshotV8Schema, ChallengeSnapshotV8FamilySchema,
+    InputAckV8FamilySchema, SimulationSnapshotV8R1Schema } from '../../shared/protocol-v8';
+import { createSimulationV8, V8_RULESET_ID, V8_R1_RULESET_ID } from '../../shared/simulation-v8';
 import { SimulationSnapshotSchema } from '../../shared/protocol';
 import { SessionRegistry } from '../../server/src/session/registry';
 import { createRuntimeServer } from '../../server/src/runtime';
@@ -16,6 +18,154 @@ const request = {
     rulesetId: V8_RULESET_ID, expectedTurn: 0, expectedPhase: 'action', inputEpoch: 0,
     intent: { type: 'walk_start', direction: 1 }
 };
+
+test('V8 R1 release fences neutral delayed input and caches retries without consuming the fenced cursor', async () => {
+    const r1 = V8_R1_RULESET_ID;
+    const registry = new SessionRegistry({ simulationTickIntervalMs: false, v8TestOnly: { nowUs: () => 0 } });
+    try {
+        registry.create('r1_socket'); const session = registry.getBound('r1_socket')!;
+        const initial = registry.createChallengeV8ForTest(session, 'practice', 'wizard', r1);
+        assert.ok(!('code' in initial));
+        assert.equal(initial.rulesetId, r1);
+        const release = { requestId: 'r1_release_001', challengeId: initial.challengeId, rulesetId: r1, expectedTurn: 0, inputEpoch: 0 };
+        const ack = registry.releaseInputV8(session, release);
+        assert.ok(ack.ok); assert.equal(ack.data.simulation.inputEpoch, 1); assert.equal(ack.nextInputSequence, 0);
+        const old = { ...request, challengeId: initial.challengeId, rulesetId: r1, intent: { type: 'jump', direction: 1 } };
+        assert.equal((await registry.submitInputV8(session, old)).ok, false);
+        assert.equal(registry.activeSnapshotV8(session)!.nextInputSequence, 0);
+        assert.equal(registry.activeSnapshotV8(session)!.stateHash, ack.data.stateHash);
+        assert.equal(registry.releaseInputV8(session, release).data.stateHash, ack.data.stateHash);
+        const fresh = await registry.submitInputV8(session, { ...old, requestId: 'r1_fresh_jump', inputEpoch: 1 });
+        assert.equal(fresh.ok, true); assert.equal(fresh.nextInputSequence, 1);
+        const stop = registry.releaseInputV8(session, { ...release, requestId: 'r1_release_002', inputEpoch: 1 });
+        assert.ok(stop.ok);
+        assert.equal(stop.data.simulation.units[0].vxFp, 256);
+        assert.equal(stop.nextInputSequence, 1);
+        // An exact accepted retry is returned before the now-stale epoch check; no cursor rewind.
+        assert.deepEqual(await registry.submitInputV8(session, { ...old, requestId: 'r1_fresh_jump', inputEpoch: 1 }), fresh);
+        registry.cancelInputV8(session, { ...release, requestId: 'r1_hard_cancel', inputEpoch: 2 });
+        assert.equal(registry.activeSnapshotV8(session)!.simulation.units[0].vxFp, 0);
+    } finally { registry.dispose(); }
+});
+
+test('V8 R1 independent release rejects in-flight Jump after catch-up without consuming its cursor', async () => {
+    let now = 0; let release!: () => void; let entered!: () => void;
+    const yielded = new Promise<void>(resolve => { entered = resolve; });
+    const registry = new SessionRegistry({ simulationTickIntervalMs: false, v8TestOnly: { nowUs: () => now,
+        tickIntervalMs: 1000, yieldBatch: async () => { entered(); await new Promise<void>(resolve => { release = resolve; }); } } });
+    try {
+        registry.create('r1_pending'); const session = registry.getBound('r1_pending')!;
+        const initial = registry.createChallengeV8ForTest(session, 'practice', 'wizard', 'nimble-knots-artillery-v8-r1');
+        assert.ok(!('code' in initial));
+        assert.equal(initial.rulesetId, V8_R1_RULESET_ID);
+        now = 233334;
+        const pending = registry.submitInputV8(session, { ...request, challengeId: initial.challengeId, rulesetId: initial.rulesetId,
+            intent: { type: 'jump', direction: 1 } });
+        await yielded;
+        const ack = registry.releaseInputV8(session, { requestId: 'r1_pending_release', challengeId: initial.challengeId,
+            rulesetId: initial.rulesetId, expectedTurn: 0, inputEpoch: 0 });
+        assert.equal(ack.nextInputSequence, 0);
+        release(); assert.equal((await pending).ok, false);
+        const after = registry.activeSnapshotV8(session)!;
+        assert.equal(after.nextInputSequence, 0); assert.equal(after.simulation.units[0].grounded, true);
+        const fresh = await registry.submitInputV8(session, { ...request, requestId: 'r1_pending_fresh', challengeId: initial.challengeId,
+            rulesetId: initial.rulesetId, inputEpoch: 1, intent: { type: 'jump', direction: -1 } });
+        assert.equal(fresh.ok, true);
+    } finally { release?.(); registry.dispose(); }
+});
+
+test('V8 R1 strict family envelopes reject old, unknown and mixed nested identities', () => {
+    const old = createSimulationV8(1, 'wizard');
+    const candidate = createSimulationV8(1, 'wizard', V8_R1_RULESET_ID);
+    assert.equal(SimulationSnapshotV8Schema.safeParse(candidate).success, false);
+    assert.equal(SimulationSnapshotV8R1Schema.safeParse(old).success, false);
+    const packet = { ...request, rulesetId: V8_R1_RULESET_ID, intent: { type: 'jump', direction: -1 } };
+    assert.equal(InputRequestV8FamilySchema.safeParse(packet).success, true);
+    assert.equal(InputRequestV8Schema.safeParse(packet).success, false);
+    assert.equal(InputRequestV8FamilySchema.safeParse({ ...packet, intent: { type: 'jump' } }).success, false);
+    assert.equal(InputRequestV8FamilySchema.safeParse({ ...packet, rulesetId: V8_RULESET_ID }).success, false);
+    assert.equal(InputRequestV8FamilySchema.safeParse({ ...packet, rulesetId: V8_R1_RULESET_ID+'-unknown' }).success, false);
+    const release = { requestId: request.requestId, challengeId: request.challengeId,
+        rulesetId: V8_R1_RULESET_ID, expectedTurn: 0, inputEpoch: 0 };
+    assert.equal(InputReleaseV8R1Schema.safeParse(release).success, true);
+    assert.equal(InputReleaseV8R1Schema.safeParse({ ...release, rulesetId: V8_RULESET_ID }).success, false);
+    assert.equal(InputReleaseV8R1Schema.safeParse({ ...release, inputSequence: 0 }).success, false);
+    const registry = new SessionRegistry({ simulationTickIntervalMs: false, v8TestOnly: { nowUs: () => 0 } });
+    try {
+        registry.create('r1_identity'); const session = registry.getBound('r1_identity')!;
+        const snapshot = registry.createChallengeV8ForTest(session, 'practice', 'wizard', V8_R1_RULESET_ID);
+        assert.ok(!('code' in snapshot));
+        assert.equal(ChallengeSnapshotV8FamilySchema.safeParse(snapshot).success, true);
+        assert.equal(ChallengeSnapshotV8Schema.safeParse(snapshot).success, false);
+        assert.equal(ChallengeSnapshotV8FamilySchema.safeParse({ ...snapshot, rulesetId: V8_RULESET_ID }).success, false);
+        assert.equal(ChallengeSnapshotV8FamilySchema.safeParse({ ...snapshot, simulation: old }).success, false);
+    } finally { registry.dispose(); }
+});
+
+test('V8 R1 release lane survives normal saturation, has its own cap, and cannot exhaust hard cancel', async () => {
+    const runtime = createRuntimeServer({ allowMissingOrigin: true, sessionRegistry: {
+        simulationTickIntervalMs: false, v8TestOnly: { nowUs: () => 0 } } });
+    let socket: Socket | undefined;
+    try {
+        const port = await runtime.listen();
+        socket = connectClient(`http://127.0.0.1:${port}`, { transports: ['websocket'], reconnection: false });
+        await new Promise<void>(resolve => socket!.once('connect', resolve));
+        await emit(socket, protocolEvents.sessionOpen, { requestId: 'r1_wire_session', action: 'create' });
+        const session = runtime.sessions.getBound(socket.id!)!;
+        const initial = runtime.sessions.createChallengeV8ForTest(session, 'practice', 'wizard', V8_R1_RULESET_ID);
+        assert.ok(!('code' in initial));
+        const packet = { ...request, challengeId: initial.challengeId, rulesetId: V8_R1_RULESET_ID };
+        assert.equal((await emit(socket, protocolEventsV8.input, { ...packet, intent: { type: 'jump', direction: 1 } })).ok, true);
+        let flood;
+        for (let n = 0; n < 35; n++) flood = await emit(socket, protocolEventsV8.input, {
+            ...packet, requestId: `r1_flood_${n}`, inputSequence: n+1, intent: { type: 'face', direction: 1 } });
+        assert.equal(flood.ok, false);
+        const release = { requestId: 'r1_wire_release1', challengeId: initial.challengeId,
+            rulesetId: V8_R1_RULESET_ID, expectedTurn: 0, inputEpoch: 0 };
+        const first = await emit(socket, protocolEventsV8.release, release);
+        assert.equal(first.ok, true); assert.equal(first.data.simulation.units[0].vxFp, 256);
+        assert.equal(InputAckV8FamilySchema().safeParse(first).success, true);
+        const second = await emit(socket, protocolEventsV8.release, { ...release, requestId: 'r1_wire_release2', inputEpoch: 1 });
+        assert.equal(second.ok, true);
+        const limited = await emit(socket, protocolEventsV8.release, { ...release, requestId: 'r1_wire_release3', inputEpoch: 2 });
+        assert.equal(limited.ok, false); assert.equal(limited.error.code, 'RATE_LIMITED');
+        const hard = await emit(socket, protocolEventsV8.cancel, { ...release, requestId: 'r1_wire_hard', inputEpoch: 2 });
+        assert.equal(hard.ok, true); assert.equal(hard.data.simulation.units[0].vxFp, 0);
+    } finally { socket?.close(); await runtime.close(); }
+});
+
+test('V8 R1 registry identity survives pause, reconnect, leave and TTL expiry; V1 paths refuse both revisions', async () => {
+    for (const ending of ['left', 'expired'] as const) {
+        let now = 0;
+        const registry = new SessionRegistry({ now: () => now, challengeTtlMs: 1000,
+            simulationTickIntervalMs: false, v8TestOnly: { nowUs: () => 0 } });
+        try {
+            const opened = registry.create('r1_lifecycle'); assert.ok(!('code' in opened));
+            const session = registry.getBound('r1_lifecycle')!;
+            const created = registry.createChallengeV8ForTest(session, 'practice', 'wizard', V8_R1_RULESET_ID);
+            assert.ok(!('code' in created));
+            assert.equal(registry.activeSnapshot(session), undefined);
+            const ordinary = registry.createChallenge(session, 'practice', 'wizard');
+            assert.ok('code' in ordinary);
+            const paused = await registry.setChallengePausedV8(session, created.challengeId, true);
+            assert.ok(!('code' in paused)); assert.equal(paused.rulesetId, V8_R1_RULESET_ID);
+            registry.disconnect('r1_lifecycle');
+            assert.ok(registry.resume(opened.token, 'r1_resumed').data);
+            assert.equal(registry.activeSnapshotV8(session)!.rulesetId, V8_R1_RULESET_ID);
+            await registry.setChallengePausedV8(session, created.challengeId, false);
+            if (ending === 'left') {
+                const result = registry.leaveChallengeV8(session, created.challengeId);
+                assert.ok(!('code' in result)); assert.equal(result.rulesetId, V8_R1_RULESET_ID);
+            } else { now = 1001; registry.sweep(); }
+            assert.equal(registry.activeSnapshotV8(session)!.status, ending);
+            const replay = registry.replayForChallengeV8(session, created.challengeId)!;
+            assert.equal(replay.rulesetId, V8_R1_RULESET_ID);
+            const verifier = new SimulationCoordinatorV8();
+            try { assert.equal(verifier.reconstructAndVerify(replay).stateHash, registry.activeSnapshotV8(session)!.stateHash); }
+            finally { verifier.dispose(); }
+        } finally { registry.dispose(); }
+    }
+});
 test('V8 separate strict intent and snapshot identities do not widen legacy validation', () => {
     assert.equal(InputRequestV8Schema.safeParse(request).success, true);
     for (const patch of [{ x: 1 }, { elapsedTime: 2 }, { duration: 9 }, { rulesetId: 'nimble-knots-artillery-v7' },

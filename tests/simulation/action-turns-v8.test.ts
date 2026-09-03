@@ -9,23 +9,25 @@ import {
     V8_RULESET_ID, V8_SIM_RULES, advanceSimulationTicksV8, applySimulationBarrierV8,
     applySimulationIntentV8, assertSimulationInvariantsV8, canonicalSimulationJsonV8,
     cloneSimulationV8, createSimulationV8, forceSimulationLimitV8,
-    type SimulationIntentV8, type SimulationStateV8
+    type SimulationIntentV8, type SimulationStateV8, type SimulationIntentV8Family,
+    type V8RulesetId, type SimulationStateV8R1, V8_R1_RULESET_ID, assertSimulationInvariantsV8Family
 } from '../../shared/simulation-v8';
 
 const SEEDS = [1, 2, 3, 4, 17, 42, 1337, 65535, 2147483648, 4294967295];
 const FP = 256;
-function tick(state: SimulationStateV8, count = 1): SimulationStateV8 {
+const R1 = V8_R1_RULESET_ID;
+function tick<R extends V8RulesetId>(state: SimulationStateV8<R>, count = 1): SimulationStateV8<R> {
     const next = advanceSimulationTicksV8(state, count);
     assert.equal(next.accepted, true, next.error?.message);
-    assertSimulationInvariantsV8(next.state);
+    assertSimulationInvariantsV8Family(next.state);
     return next.state;
 }
-function intent(state: SimulationStateV8, input: SimulationIntentV8): SimulationStateV8 {
+function intent<R extends V8RulesetId>(state: SimulationStateV8<R>, input: SimulationIntentV8Family): SimulationStateV8<R> {
     const next = applySimulationIntentV8(state, state.activeActor, input, state.turn, state.phase, state.inputEpoch);
     assert.equal(next.accepted, true, next.error?.message);
     return next.state;
 }
-function cancel(state: SimulationStateV8): SimulationStateV8 {
+function cancel<R extends V8RulesetId>(state: SimulationStateV8<R>): SimulationStateV8<R> {
     return applySimulationBarrierV8(state, {
         reason: 'cancel', actor: state.activeActor, expectedTurn: state.turn, expectedEpoch: state.inputEpoch
     }).state;
@@ -50,7 +52,7 @@ function hole(state: SimulationStateV8, left: number, right: number): void {
         for (let cx = left / 8; cx < right / 8; cx += 1) setTerrainSolid(state.terrain, cx, cy, false);
     }
 }
-function walk(state: SimulationStateV8, ticks: number, direction: -1 | 1 = 1): SimulationStateV8 {
+function walk<R extends V8RulesetId>(state: SimulationStateV8<R>, ticks: number, direction: -1 | 1 = 1): SimulationStateV8<R> {
     state = intent(state, { type: 'walk_start', direction });
     for (let elapsed = 0; elapsed < ticks; elapsed += 1) {
         if (elapsed > 0 && elapsed % 3 === 0) state = intent(state, { type: 'walk_refresh' });
@@ -70,6 +72,160 @@ function finishFlight(state: SimulationStateV8): SimulationStateV8 {
 function hash(state: SimulationStateV8): string {
     return createHash('sha256').update(canonicalSimulationJsonV8(state)).digest('hex');
 }
+
+test('original V8 operation history hashes remain frozen through blocked walking and wall-flush Jump', () => {
+    let state = createSimulationV8(1, 'wizard');
+    assert.equal(hash(state), 'b3db51fd44be63d9e8100c43b057eb4c3450fb1a7389539fda2dc1d0335fde5f');
+    state = walk(state, 24);
+    assert.equal(hash(state), '25765bb9e12b45f4d960c626ef18b6eca5f895df323a0e722f6ea35224019f5f');
+    state = tick(intent(state, { type: 'jump' }));
+    assert.equal(hash(state), '3e775a96f91148d48f2c66c42163f07b8a4773ff7f80b703bb48ece8631f5a74');
+    state = tick(state, 62);
+    assert.equal(hash(state), '2c24ab80d3935b4cb945517727c2056db052db1cee453e4eb0226270b123f01c');
+});
+
+// The family API is selected by an explicit identity, never by a changed default.
+function r1Floor(x = 600): SimulationStateV8R1 { return { ...floorFixture(x), rulesetId: R1 }; }
+function r1Intent(state: SimulationStateV8R1, input: SimulationIntentV8Family): SimulationStateV8R1 { return intent(state, input); }
+
+test('V8 R1 explicit creation and directional Jump are strict; old intent meanings stay old', () => {
+    const candidate = createSimulationV8(1, 'wizard', R1);
+    assert.equal(candidate.rulesetId, R1);
+    assert.equal(createSimulationV8(1, 'wizard').rulesetId, V8_RULESET_ID);
+    const apply = (state: SimulationStateV8<V8RulesetId>, input: SimulationIntentV8Family) => applySimulationIntentV8(state, 'player', input, 0, 'action', 0);
+    assert.equal(apply(candidate, { type: 'jump' }).accepted, false);
+    assert.equal(apply(createSimulationV8(1, 'wizard'), { type: 'jump', direction: -1 }).accepted, false);
+    assert.equal(apply(createSimulationV8(1, 'wizard'), { type: 'walk_stop' }).accepted, false);
+    const hop = r1Intent(r1Floor(), { type: 'jump', direction: -1 });
+    assert.equal(hop.units[0].facing, -1); assert.equal(hop.units[0].vxFp, -256);
+    assert.equal(hop.heldDirection, 0);
+    assert.equal(apply(hop, { type: 'jump', direction: 1 }).accepted, false);
+    assert.equal(apply(hop, { type: 'walk_start', direction: 1 }).accepted, false);
+});
+
+test('V8 R1 center, reversal and directed walking-hop preserve lease cadence and committed drive', () => {
+    let state = r1Intent(r1Floor(), { type: 'walk_start', direction: 1 });
+    state = tick(state);
+    state = r1Intent(state, { type: 'walk_start', direction: -1 });
+    assert.equal(state.heldDirection, -1); assert.equal(state.leaseExpiresTick, 9);
+    assert.equal(state.lastLeaseRefreshTick, 0);
+    state = tick(state, 2);
+    state = r1Intent(state, { type: 'walk_start', direction: 1 });
+    assert.equal(state.leaseExpiresTick, 12); assert.equal(state.lastLeaseRefreshTick, 3);
+    assert.equal(applySimulationIntentV8(state, 'player', { type: 'walk_start', direction: 1 }, 0).accepted, false);
+    state = r1Intent(state, { type: 'jump', direction: -1 });
+    assert.equal(state.heldDirection, -1); assert.equal(state.leaseExpiresTick, 12);
+    state = r1Intent(state, { type: 'walk_stop' });
+    assert.equal(state.heldDirection, 0); assert.equal(state.inputEpoch, 0);
+    assert.equal(state.lifecycleBarrierCount, 0); assert.equal(state.units[0].vxFp, -256);
+    state = r1Intent(state, { type: 'face', direction: 1 });
+    state = tick(state);
+    assert.equal(state.units[0].vxFp, -256);
+    const released = applySimulationBarrierV8(state, { reason: 'walk_stop', actor: 'player', expectedTurn: 0, expectedEpoch: 0 }).state;
+    assert.equal(released.inputEpoch, 1); assert.equal(released.units[0].vxFp, -256);
+    const stopped = cancel(released);
+    assert.equal(stopped.units[0].vxFp, 0);
+    assert.equal(tick(stopped, 20).units[0].xFp, stopped.units[0].xFp);
+    const neutral = applySimulationBarrierV8(r1Floor(), { reason: 'walk_stop', actor: 'player', expectedTurn: 0, expectedEpoch: 0 }).state;
+    assert.equal(neutral.inputEpoch, 1); assert.equal(neutral.lifecycleBarrierCount, 1);
+    assert.equal(applySimulationBarrierV8(neutral, { reason: 'walk_stop', actor: 'player', expectedTurn: 0, expectedEpoch: 0 }).mutated, false);
+    const expired = tick(r1Intent(r1Floor(), { type: 'walk_start', direction: 1 }), 9);
+    const rejected = applySimulationIntentV8(expired, 'player', { type: 'walk_start', direction: -1 }, 0);
+    assert.equal(rejected.accepted, false); assert.deepEqual(rejected.state, expired);
+    const live = tick(r1Intent(r1Floor(), { type: 'walk_start', direction: 1 }), 8);
+    const reversed = r1Intent(live, { type: 'walk_start', direction: -1 });
+    assert.equal(reversed.leaseExpiresTick, 17); assert.equal(reversed.inputEpoch, live.inputEpoch);
+});
+
+for (const direction of [-1, 1] as const) for (const height of [8, 16, 24]) {
+    test(`V8 R1 fractional ${direction} walking climbs ${height <= 16 ? '' : 'no '} ${height}-unit lip`, () => {
+        let state = r1Floor(824 - direction * 12 - direction / 2);
+        for (let cy = (320-height)/8; cy < 40; cy++) for (let cx = direction === 1 ? 103 : 0; cx < (direction === 1 ? 256 : 103); cx++)
+            setTerrainSolid(state.terrain, cx, cy, true);
+        if (direction === 1) {
+            state.units[1].yFp = (308-height)*FP;
+            state.units[1].support = ((320-height)/8)*256 + Math.floor((1400-12)/8);
+        }
+        state = tick(r1Intent(state, { type: 'walk_start', direction }));
+        assert.equal(state.units[0].yFp, (height <= 16 ? 308-height : 308)*FP);
+        assert.equal(state.units[0].xFp, (824-direction*12+(height<=16 ? direction/2 : 0))*FP);
+        assertSimulationInvariantsV8Family(state);
+    });
+}
+
+for (const direction of [-1, 1] as const) test(`V8 R1 seed1 wall-flush ${direction} hop keeps takeoff drive and swept one-unit bound`, () => {
+    let state = createSimulationV8(1, 'wizard', R1);
+    // Left is the 24 lip. The right 16 lip now walks, so stop on its original flush boundary explicitly.
+    state = walk(state, direction === 1 ? 12 : 60, direction);
+    state = r1Intent(state, { type: 'walk_stop' });
+    assert.equal(state.units[0].xFp/FP, direction === 1 ? 716 : 660);
+    const start = state.units[0].xFp;
+    state = r1Intent(state, { type: 'jump', direction });
+    for (let n = 0; n < 45; n++) {
+        const before = state.units[0].xFp;
+        state = tick(state);
+        assert.ok(Math.abs(state.units[0].xFp-before) <= FP);
+        assertSimulationInvariantsV8Family(state);
+    }
+    assert.ok(direction*(state.units[0].xFp-start) > 30*FP);
+});
+
+test('V8 R1 smallest supported lift respects ceiling and actor obstruction', () => {
+    const state = r1Floor(812);
+    // An 8-unit lip and overhead ceiling permit exactly the smaller lift, not a 16-unit rise.
+    setTerrainSolid(state.terrain, 103, 39, true);
+    for (let cx = 100; cx <= 102; cx++) setTerrainSolid(state.terrain, cx, 35, true);
+    const raised = tick(r1Intent(state, { type: 'walk_start', direction: 1 }));
+    assert.equal(raised.units[0].yFp, 300*FP); assert.equal(raised.units[0].xFp, 813*FP);
+    const ceiling = r1Floor(812);
+    setTerrainSolid(ceiling.terrain, 103, 38, true); setTerrainSolid(ceiling.terrain, 103, 39, true);
+    for (let cx = 100; cx <= 102; cx++) setTerrainSolid(ceiling.terrain, cx, 36, true);
+    const blocked = tick(r1Intent(ceiling, { type: 'walk_start', direction: 1 }));
+    assert.equal(blocked.units[0].yFp, 308*FP); assert.equal(blocked.units[0].xFp, 812*FP);
+    const bodies = r1Floor(812);
+    bodies.units[1].xFp = 836*FP; bodies.units[1].support = 40*256+103;
+    const bodyBlock = tick(r1Intent(bodies, { type: 'walk_start', direction: 1 }));
+    assert.equal(bodyBlock.units[0].xFp, 812*FP); assert.equal(bodyBlock.units[0].yFp, 308*FP);
+    // Retained hop drive may not tunnel through a ceiling or live body either.
+    const hop = tick(r1Intent(bodies, { type: 'jump', direction: 1 }));
+    assert.equal(hop.units[0].xFp, 812*FP); assert.equal(hop.units[0].vxFp, FP);
+    assertSimulationInvariantsV8Family(hop);
+});
+
+test('V8 R1 hard cancel permanently clears clipped jump drive; no face/lease/landing revival', () => {
+    let state = walk(createSimulationV8(1, 'wizard', R1), 60, -1);
+    state = r1Intent(state, { type: 'walk_stop' });
+    state = tick(r1Intent(state, { type: 'jump', direction: -1 }));
+    assert.equal(state.units[0].xFp, 660*FP); assert.equal(state.units[0].vxFp, -FP);
+    state = cancel(state);
+    state = r1Intent(state, { type: 'face', direction: -1 });
+    const x = state.units[0].xFp;
+    state = tick(state, 90);
+    assert.equal(state.units[0].xFp, x); assert.equal(state.units[0].vxFp, 0);
+    assert.equal(state.units[0].grounded, true); assert.equal(state.heldDirection, 0);
+});
+
+test('V8 R1 batched fractional motion agrees and action/retreat deadlines hard-stop committed hops', () => {
+    const initial = r1Floor(); initial.units[0].xFp++;
+    const hop = r1Intent(initial, { type: 'jump', direction: -1 });
+    let single = hop; let triple = hop; let six = hop;
+    for (let elapsed = 0; elapsed < 60; elapsed += 6) {
+        for (let n = 0; n < 6; n++) single = tick(single);
+        triple = tick(tick(triple, 3), 3); six = tick(six, 6);
+        assert.deepEqual(single, triple); assert.deepEqual(single, six);
+        assert.equal(single.units[0].xFp % FP, 1);
+    }
+    for (const phase of ['action', 'retreat'] as const) {
+        let state = r1Floor();
+        if (phase === 'retreat') { state.phase = 'retreat'; state.phaseDeadlineTick = 60; state.castUsed = true; }
+        state = tick(state, state.phaseDeadlineTick-1);
+        state = tick(r1Intent(state, { type: 'jump', direction: 1 }));
+        assert.equal(state.phase, 'settling'); assert.equal(state.units[0].vxFp, 0);
+        const x = state.units[0].xFp;
+        state = tick(state, 100);
+        assert.equal(state.units[0].xFp, x);
+    }
+});
 
 test('V8 preserves all ten V7 seeds, starts, RNG, terrain and three Calling statistics', () => {
     for (const seed of SEEDS) for (const calling of ['wizard', 'thief', 'warrior'] as PlayerCalling[]) {

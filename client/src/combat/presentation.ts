@@ -1,8 +1,8 @@
 import type { ChallengeSnapshot } from '../../../shared/protocol';
 import type { RelicId, SimulationActor } from '../../../shared/simulation';
 import { WIZARD_CAST_DURATION_MS } from './approved-assets';
-import type { ChallengeSnapshotV8 } from '../../../shared/protocol-v8';
-import type { SimulationStateV8 } from '../../../shared/simulation-v8';
+import type { ChallengeSnapshotV8Family as ChallengeSnapshotV8 } from '../../../shared/protocol-v8';
+import type { SimulationStateV8Family as SimulationStateV8 } from '../../../shared/simulation-v8';
 import type { SimulationState, SimulationUnit } from '../../../shared/simulation';
 import { inputBoundaryV8 } from './input';
 
@@ -27,6 +27,7 @@ export class V8SnapshotBuffer {
     public accept(snapshot: ChallengeSnapshotV8, now: number): { accepted: boolean; boundary: boolean } {
         const previous = this.samples.at(-1);
         const sameChallenge = previous?.snapshot.challengeId === snapshot.challengeId;
+        if (sameChallenge && previous.snapshot.rulesetId !== snapshot.rulesetId) return { accepted: false, boundary: false };
         if (sameChallenge && snapshot.simulation.revision <= previous.snapshot.simulation.revision) {
             return { accepted: false, boundary: false };
         }

@@ -7,7 +7,8 @@ import {
     type SimulationState
 } from '../../../shared/simulation';
 import type { LegacyCombatSceneArgs, CombatSceneArgsV8 } from './contracts';
-import type { ChallengeSnapshotV8 } from '../../../shared/protocol-v8';
+import type { ChallengeSnapshotV8Family as ChallengeSnapshotV8 } from '../../../shared/protocol-v8';
+import type { V8RulesetId } from '../../../shared/simulation-v8';
 
 type FixtureClockV8 = { now: () => number; every: (callback: () => void) => () => void };
 
@@ -16,11 +17,11 @@ export async function createActionTurnsV8Fixture(
     seed = 1, calling: PlayerCalling = 'wizard',
     clock: FixtureClockV8 = { now: () => performance.now(), every: (callback) => {
         const timer = window.setInterval(callback, 16); return () => window.clearInterval(timer);
-    } }
+    } }, rulesetId: V8RulesetId = 'nimble-knots-artillery-v8'
 ): Promise<CombatSceneArgsV8> {
     // Lazy loading keeps the candidate physics out of the ordinary V7 boot bundle.
     const sim = await import('../../../shared/simulation-v8');
-    let state = sim.createSimulationV8(seed, calling);
+    let state = sim.createSimulationV8(seed, calling, rulesetId);
     let paused = false;
     let localHold = false;
     let nextInputSequence = 0;
@@ -37,7 +38,7 @@ export async function createActionTurnsV8Fixture(
             projectileSummary = { ...lastProjectile, relicId };
         }
         return {
-        protocolVersion: 8, rulesetId: sim.V8_RULESET_ID, serverTimeMs: 0,
+        protocolVersion: 8, rulesetId, serverTimeMs: 0,
         sessionId: 'v8fixturesession00', challengeId: 'v8fixturechallenge',
         loomkeeperPolicyId: 'nimble-knots-loomkeeper-v3', loomkeeperProfileId: 'standard-v8-0',
         mode: 'practice', calling, paused, nextInputSequence, nextSequence: 0,
@@ -46,13 +47,17 @@ export async function createActionTurnsV8Fixture(
         simulation: { ...structuredClone(state), lastProjectile: projectileSummary, terrain: {
             width: 256, height: 72, cellSize: 8, words: [...state.terrain.words]
         } }
-    }; };
+    } as ChallengeSnapshotV8; };
     const publish = () => { const next = snapshot(); for (const listener of listeners) listener(next); };
-    const barrier = (reason: 'cancel' | 'pause' | 'resume') => {
+    const barrier = (reason: 'cancel' | 'walk_stop' | 'pause' | 'resume') => {
         localHold = false;
-        state = sim.applySimulationBarrierV8(state, {
+        const result = sim.applySimulationBarrierV8(state, {
             reason, actor: 'player', expectedTurn: state.turn, expectedEpoch: state.inputEpoch
-        }).state;
+        });
+        if (rulesetId === sim.V8_R1_RULESET_ID && !result.accepted) {
+            if (result.error?.code === 'LIFECYCLE_LIMIT') state = sim.forceSimulationLimitV8(state).state;
+            else throw new Error(result.error?.message || 'Preview barrier rejected.');
+        } else state = result.state;
     };
     const pump = () => {
         const now = clock.now(); const elapsed = Math.max(0, now - lastNow); lastNow = now;
@@ -77,7 +82,7 @@ export async function createActionTurnsV8Fixture(
     };
     return {
         kind: 'v8', snapshot: snapshot(),
-        previewLabel: 'V8 engineering preview · no AI policy, wallet or reward',
+        previewLabel: `${rulesetId === sim.V8_R1_RULESET_ID ? 'V8 r1' : 'V8'} engineering preview · no AI policy, wallet or reward`,
         submitIntent: async (intent) => {
             pump();
             if (credit >= 1000) throw new Error('Preview is catching up; use a fresh gesture.');
@@ -86,10 +91,14 @@ export async function createActionTurnsV8Fixture(
             if (!result.accepted) throw new Error(result.error?.message || 'Intent rejected.');
             state = result.state; nextInputSequence++;
             if (intent.type === 'walk_start') localHold = true;
+            if (intent.type === 'walk_stop') localHold = false;
             if (state.phase !== 'action' && state.phase !== 'retreat') localHold = false;
             publish(); return snapshot();
         },
         cancelInput: async () => { barrier('cancel'); publish(); return snapshot(); },
+        ...(rulesetId === sim.V8_R1_RULESET_ID ? {
+            releaseMovement: async () => { barrier('walk_stop'); publish(); return snapshot(); }
+        } : {}),
         setPaused: async (value) => {
             pump();
             if (credit >= 1000) throw new Error('Preview is catching up; request pause again.');

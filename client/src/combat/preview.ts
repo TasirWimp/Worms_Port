@@ -5,8 +5,8 @@ import {
     type SimulationState
 } from '../../../shared/simulation';
 import type { AimIntent } from './input';
-import type { SimulationStateV8 } from '../../../shared/simulation-v8';
-import type { ChallengeSnapshotV8 } from '../../../shared/protocol-v8';
+import type { SimulationStateV8Family as SimulationStateV8 } from '../../../shared/simulation-v8';
+import type { ChallengeSnapshotV8Family as ChallengeSnapshotV8 } from '../../../shared/protocol-v8';
 
 /** Local hint only. The server still validates the aim identifier and resolves Fire. */
 export async function trajectoryPreviewV8(snapshot: SimulationStateV8 | ChallengeSnapshotV8['simulation'], aim: AimIntent): Promise<{ x: number; y: number }[]> {

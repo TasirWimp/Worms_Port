@@ -19,8 +19,8 @@ import {
 } from '../combat/approved-assets';
 import type { CombatSceneArgs, LegacyCombatSceneArgs, CombatSceneArgsV8, SafeAreaInsets } from '../combat/contracts';
 import { createCombatFixture, createActionTurnsV8Fixture } from '../combat/fixture';
-import type { ChallengeSnapshotV8 } from '../../../shared/protocol-v8';
-import type { SimulationIntentV8 } from '../../../shared/simulation-v8';
+import type { ChallengeSnapshotV8Family as ChallengeSnapshotV8 } from '../../../shared/protocol-v8';
+import type { SimulationIntentV8Family as SimulationIntentV8 } from '../../../shared/simulation-v8';
 import { canRequestFullscreen, toggleGameFullscreen } from '../combat/fullscreen';
 import { activeSidewaysMode, clientPointToGame } from '../lib/sideways';
 import {
@@ -61,7 +61,7 @@ type CameraTransition = Readonly<{
 export default class CombatScene extends Phaser.Scene {
     private args: LegacyCombatSceneArgs;
     private v8Args?: CombatSceneArgsV8;
-    private v8Preview = false;
+    private v8Preview?: 'v8' | 'v8-r1';
     private initializationGeneration = 0;
     private snapshot: ChallengeSnapshot;
     private authoritativeSnapshot: ChallengeSnapshot;
@@ -106,7 +106,8 @@ export default class CombatScene extends Phaser.Scene {
     public init(args?: CombatSceneArgs): void {
         this.initializationGeneration++;
         this.v8Args = args?.kind === 'v8' ? args : undefined;
-        this.v8Preview = !args?.snapshot && new URLSearchParams(window.location.search).get('combat-preview') === 'v8';
+        const preview = new URLSearchParams(window.location.search).get('combat-preview');
+        this.v8Preview = !args?.snapshot && (preview === 'v8' || preview === 'v8-r1') ? preview : undefined;
         if (this.v8Args || this.v8Preview) return;
         this.args = args?.snapshot && args.kind !== 'v8' ? args : createCombatFixture();
         this.snapshot = structuredClone(this.args.snapshot);
@@ -223,7 +224,8 @@ export default class CombatScene extends Phaser.Scene {
         const generation = this.initializationGeneration;
         let mounted = true;
         this.events.once(Phaser.Scenes.Events.SHUTDOWN, () => { mounted = false; });
-        const args = this.v8Args ?? await createActionTurnsV8Fixture();
+        const args = this.v8Args ?? await createActionTurnsV8Fixture(1, 'wizard', undefined,
+            this.v8Preview === 'v8-r1' ? 'nimble-knots-artillery-v8-r1' : 'nimble-knots-artillery-v8');
         if (!mounted || generation !== this.initializationGeneration || !this.scene.isActive()) return;
         const controller = new ActionTurnsScene(this, args);
         this.events.once(Phaser.Scenes.Events.SHUTDOWN, () => controller.destroy());
@@ -986,6 +988,8 @@ class ActionTurnsScene {
     private previewGeneration = 0;
     private requestGeneration = 0;
     private normalPending = false;
+    private normalType?: SimulationIntentV8['type'];
+    private releasePending = false;
     private neutralPending = false;
     private connected = true;
     private focused = true;
@@ -1003,15 +1007,23 @@ class ActionTurnsScene {
         createApprovedWizardAnimations(scene);
         this.renderer = new CombatRenderer(scene);
         this.controls = new ActionTurnsControls(document.getElementById('game')!, this.snapshot, {
-            onIntent: (intent) => void this.submit(intent), onCancel: () => void this.neutralize(),
+            onIntent: (intent) => this.trySubmit(intent), onCancel: () => void this.neutralize(),
+            onRelease: () => void this.releaseMovement(),
+            inputReady: () => this.available() && !this.normalPending && !this.neutralPending && !this.releasePending && (this.args.inputReady?.() ?? true),
+            inputFlight: () => {
+                if (!this.available() || this.neutralPending || this.releasePending) return 'blocked';
+                if (this.normalPending) return ['walk_start', 'walk_refresh', 'walk_stop'].includes(this.normalType ?? '') ? 'locomotion' : 'blocked';
+                return this.args.inputFlight?.() ?? null;
+            },
             onAimPreview: (aim) => void this.aim(aim), onPause: (paused) => void this.pause(paused)
         });
         this.controls.root.dataset.visualAssets = this.renderer.assetState;
         if (args.previewLabel) this.controls.root.dataset.preview = args.previewLabel;
         this.controls.setMessage(args.previewLabel ?? '');
         if (args.onSnapshot) this.cleanup.push(args.onSnapshot((next) => this.accept(next)));
+        if (args.onInputReady) this.cleanup.push(args.onInputReady(() => this.controls.pollMovement()));
         if (args.onResult) this.cleanup.push(args.onResult((result) => {
-            if (result.challengeId !== this.snapshot.challengeId) return;
+            if (result.challengeId !== this.snapshot.challengeId || result.rulesetId !== this.snapshot.rulesetId) return;
             this.terminal = true; this.interrupt(); this.controls.setSuspended(true);
             this.controls.setMessage(`Clash ended · ${result.outcome.replaceAll('_', ' ')}`);
         }));
@@ -1073,6 +1085,7 @@ class ActionTurnsScene {
 
     private accept(next: ChallengeSnapshotV8): void {
         if (this.destroyed) return;
+        if (next.challengeId === this.snapshot.challengeId && next.rulesetId !== this.snapshot.rulesetId) return;
         const outcome = this.buffer.accept(next, performance.now());
         if (!outcome.accepted) return;
         if (outcome.boundary) { this.requestGeneration++; this.interrupt(); }
@@ -1091,11 +1104,16 @@ class ActionTurnsScene {
         this.render();
     }
 
+    private trySubmit(intent: SimulationIntentV8): boolean {
+        if (!this.available() || this.normalPending || this.neutralPending || this.releasePending ||
+            (this.snapshot.rulesetId === 'nimble-knots-artillery-v8-r1' && !(this.args.inputReady?.() ?? true))) return false;
+        void this.submit(intent); return true;
+    }
+
     private async submit(intent: SimulationIntentV8): Promise<void> {
-        if (!this.available() || this.normalPending || this.neutralPending) return;
         const generation = this.requestGeneration;
         const challenge = this.snapshot.challengeId;
-        this.normalPending = true; this.busy();
+        this.normalType = intent.type; this.normalPending = true; this.busy();
         this.controls.root.dataset.lastCommand = intent.type;
         if (intent.type !== 'aim') { this.previewGeneration++; this.preview = []; }
         try {
@@ -1106,7 +1124,22 @@ class ActionTurnsScene {
                 this.controls.setMessage(error instanceof Error ? error.message : 'Intent failed.');
                 this.interrupt(); void this.neutralize();
             }
-        } finally { this.normalPending = false; if (!this.destroyed) this.busy(); }
+        } finally {
+            this.normalPending = false; this.normalType = undefined;
+            if (!this.destroyed) { this.busy(); this.controls.pollMovement(); }
+        }
+    }
+
+    private async releaseMovement(): Promise<void> {
+        this.interrupt(); this.requestGeneration++;
+        if (this.releasePending || this.destroyed) return;
+        const challenge = this.snapshot.challengeId;
+        this.releasePending = true; this.busy();
+        try {
+            const next = await this.args.releaseMovement?.();
+            if (next && !this.destroyed && this.snapshot.challengeId === challenge) this.accept(next);
+        } catch { /* Soft release recovery stays in the transport's soft lane; no hard cancellation. */ }
+        finally { this.releasePending = false; if (!this.destroyed) this.busy(); }
     }
 
     private async neutralize(): Promise<void> {
@@ -1162,7 +1195,7 @@ class ActionTurnsScene {
     private suspension(): void {
         this.controls.setSuspended(!this.connected || !this.focused || document.hidden || this.stale || this.terminal);
     }
-    private busy(): void { this.controls.setBusy(this.normalPending || this.neutralPending); }
+    private busy(): void { this.controls.setBusy(this.normalPending || this.neutralPending || this.releasePending); }
     private resize(): void {
         this.layout = computeCombatLayout(this.scene.scale.width, this.scene.scale.height, readSafeArea(), this.camera);
         this.controls.setLayout(this.layout);

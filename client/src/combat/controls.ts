@@ -7,22 +7,26 @@ import {
     type SimulationUnit
 } from '../../../shared/simulation';
 import { activeSidewaysMode, clientPointToGame } from '../lib/sideways';
-import { CombatInputController, ActionTurnsInputController } from './input';
-import type { AimIntent } from './input';
+import { CombatInputController, ActionTurnsInputController, UnifiedMovementInputController } from './input';
+import type { AimIntent, MovementFactsR1 } from './input';
 import { computeActorStatusLayout, computeV8ExtraControls, type CombatLayout } from './layout';
-import type { ChallengeSnapshotV8 } from '../../../shared/protocol-v8';
-import type { SimulationIntentV8 } from '../../../shared/simulation-v8';
+import type { ChallengeSnapshotV8Family as ChallengeSnapshotV8 } from '../../../shared/protocol-v8';
+import type { SimulationIntentV8Family as SimulationIntentV8 } from '../../../shared/simulation-v8';
 
 type ControlsCallbacksV8 = {
-    onIntent: (intent: SimulationIntentV8) => void;
+    onIntent: (intent: SimulationIntentV8) => boolean | void;
     onCancel: () => void;
+    onRelease?: () => void;
+    inputReady?: () => boolean;
+    inputFlight?: () => 'locomotion' | 'blocked' | null;
     onAimPreview: (aim: AimIntent | null) => void;
     onPause: (paused: boolean) => void;
 };
 
 /** V8 has continuous owned input, not the legacy accepted-command animation queue. */
 export class ActionTurnsControls {
-    public readonly input = new ActionTurnsInputController();
+    public readonly input: ActionTurnsInputController;
+    private readonly unified?: UnifiedMovementInputController;
     public readonly root: HTMLDivElement;
     private snapshot: ChallengeSnapshotV8;
     private busy = false;
@@ -34,19 +38,22 @@ export class ActionTurnsControls {
 
     constructor(parent: HTMLElement, snapshot: ChallengeSnapshotV8, private readonly callbacks: ControlsCallbacksV8) {
         this.snapshot = snapshot;
+        const r1 = snapshot.rulesetId === 'nimble-knots-artillery-v8-r1';
+        this.unified = r1 ? new UnifiedMovementInputController() : undefined;
+        this.input = this.unified ?? new ActionTurnsInputController();
         this.root = document.createElement('div');
-        this.root.className = 'combat-ui combat-v8';
+        this.root.className = `combat-ui combat-v8${r1 ? ' combat-v8-r1' : ''}`;
         this.root.dataset.ruleset = snapshot.rulesetId;
         this.root.innerHTML = `
             <section class="combat-status"><strong class="combat-turn" aria-live="polite"></strong><span class="combat-timer"></span></section>
             <div class="combat-unit-status player-status" data-unit="player" role="group"><span class="unit-status-name">You</span><strong class="unit-status-value"></strong></div>
             <div class="combat-unit-status loomkeeper-status" data-unit="loomkeeper" role="group"><span class="unit-status-name">Loomkeeper</span><strong class="unit-status-value"></strong></div>
             <button type="button" class="pause-button">Pause</button>
-            <div class="combat-touch-zone movement-zone" role="group" aria-label="Movement pad. Hold to walk, release to stop."><span class="pad-label">Hold to walk</span><span class="pad-ring"></span><span class="pad-knob"></span></div>
+            <div class="combat-touch-zone movement-zone" role="group" aria-label="${r1 ? 'Movement pad. Tap a side to face. Drag sideways to walk. Push up to hop. Release stops walking.' : 'Movement pad. Hold to walk, release to stop.'}"><span class="pad-label">${r1 ? 'Drag to walk · ↑ hop' : 'Hold to walk'}</span>${r1 ? '<span class="pad-side pad-side-left" aria-hidden="true">←<small>Tap</small></span><span class="pad-side pad-side-right" aria-hidden="true">→<small>Tap</small></span>' : ''}<span class="pad-ring"></span><span class="pad-knob"></span></div>
             <div class="combat-touch-zone aim-zone" role="group" aria-label="Aim and power pad"><span class="pad-label">Aim · release locks</span><span class="pad-ring"></span><span class="pad-knob"></span></div>
-            <button type="button" class="jump-button v8-extra" aria-label="Jump forward">Jump</button>
+            ${r1 ? '' : `<button type="button" class="jump-button v8-extra" aria-label="Jump forward">Jump</button>
             <button type="button" class="face-left v8-extra" aria-label="Face left">←</button>
-            <button type="button" class="face-right v8-extra" aria-label="Face right">→</button>
+            <button type="button" class="face-right v8-extra" aria-label="Face right">→</button>`}
             <nav class="combat-actions" aria-label="Combat actions"><button type="button" class="relic-trigger" aria-expanded="false">Threadball</button><div class="relic-chooser" role="group" aria-label="Choose Relic" hidden></div><button type="button" class="fire-button">Fire</button></nav>
             <div class="combat-message" aria-live="polite"></div>`;
         parent.appendChild(this.root);
@@ -67,6 +74,7 @@ export class ActionTurnsControls {
             if (!this.canOffend() || !this.snapshot.simulation.aim || this.input.phase !== 'aim_locked') return;
             this.callbacks.onIntent({ type: 'fire', aimId: this.snapshot.simulation.aimId });
         });
+        if (!r1) {
         for (const [selector, direction] of [['.face-left', -1], ['.face-right', 1]] as const) {
             this.button(selector).addEventListener('click', () => {
                 if (this.canMove() && !this.input.ownedPointer()) this.callbacks.onIntent({ type: 'face', direction });
@@ -91,6 +99,7 @@ export class ActionTurnsControls {
             if (this.jumpPointer === undefined) return;
             this.interrupt(); this.callbacks.onCancel();
         });
+        }
         this.button('.pause-button').addEventListener('click', () => {
             if (this.canPause()) this.callbacks.onPause(!this.snapshot.paused);
         });
@@ -101,6 +110,7 @@ export class ActionTurnsControls {
         this.snapshot = snapshot;
         if (this.input.synchronize(snapshot)) { this.direction = 0; this.jumpPointer = undefined; this.resetPads(); }
         this.input.syncAuthoritativeAim(snapshot.simulation.aim);
+        this.unified?.observeGrounded(snapshot.simulation.units[0].grounded);
         this.refresh();
     }
     public setBusy(busy: boolean): void { this.busy = busy; this.refresh(); }
@@ -134,6 +144,22 @@ export class ActionTurnsControls {
     }
     public destroy(): void { this.root.remove(); }
 
+    public pollMovement(): void {
+        if (!this.unified) return;
+        const intent = this.unified.movementIntent(this.movementFacts(), performance.now());
+        if (intent && this.callbacks.onIntent(intent) === true) this.unified.submittedMovementIntent(intent);
+    }
+
+    private movementFacts(): MovementFactsR1 {
+        const state = this.snapshot.simulation;
+        const usable = !this.suspended && !this.snapshot.paused && this.snapshot.status === 'active' &&
+            state.activeActor === 'player' && (state.phase === 'action' || state.phase === 'retreat');
+        const ready = usable && !this.busy && (this.callbacks.inputReady?.() ?? true);
+        return { grounded: state.units[0].grounded, facing: state.units[0].facing,
+            heldDirection: state.heldDirection,
+            lane: ready ? 'ready' : usable ? this.callbacks.inputFlight?.() ?? 'blocked' : 'blocked' };
+    }
+
     private bindPad(kind: 'movement' | 'aim'): void {
         const zone = this.element(`.${kind}-zone`);
         zone.addEventListener('pointerdown', (event) => {
@@ -141,7 +167,11 @@ export class ActionTurnsControls {
                 !(kind === 'movement' ? this.canMove() : this.canOffend())) return;
             event.preventDefault();
             const point = this.point(event);
-            if (!this.input.begin(kind, event.pointerId, point, 48)) return;
+            if (this.unified && !(this.callbacks.inputReady?.() ?? true)) return;
+            const acquired = this.unified && kind === 'movement'
+                ? this.unified.beginMovement(event.pointerId, point, this.layout!.movementZone)
+                : this.input.begin(kind, event.pointerId, point, 48);
+            if (!acquired) return;
             try { zone.setPointerCapture(event.pointerId); } catch {}
             zone.style.setProperty('--pad-x', `${point.x - Number.parseFloat(zone.style.left)}px`);
             zone.style.setProperty('--pad-y', `${point.y - Number.parseFloat(zone.style.top)}px`);
@@ -150,12 +180,15 @@ export class ActionTurnsControls {
         zone.addEventListener('pointermove', (event) => {
             const owner = this.input.ownedPointer();
             if (!owner || owner.id !== event.pointerId || owner.kind !== kind) return;
-            event.preventDefault(); const point = this.point(event); this.input.move(event.pointerId, point);
+            event.preventDefault(); const point = this.point(event);
+            if (this.unified && kind === 'movement') this.unified.moveMovement(event.pointerId, point, this.movementFacts(), performance.now());
+            else this.input.move(event.pointerId, point);
             const dx = point.x - owner.origin.x; const dy = point.y - owner.origin.y;
             const factor = Math.min(1, owner.radius / (Math.hypot(dx, dy) || 1));
             zone.querySelector<HTMLElement>('.pad-knob')!.style.transform =
                 `translate(calc(-50% + ${dx * factor}px), calc(-50% + ${dy * factor}px))`;
             if (kind === 'aim') this.callbacks.onAimPreview(this.input.aimIntent());
+            else if (this.unified) this.pollMovement();
             else {
                 const next = this.input.movementDirection();
                 if (next !== this.direction) {
@@ -173,7 +206,16 @@ export class ActionTurnsControls {
             if (!owner || owner.id !== event.pointerId || owner.kind !== kind) return;
             event.preventDefault();
             if (kind === 'movement') {
-                this.input.releaseMovement(event.pointerId); this.interrupt(); this.callbacks.onCancel();
+                if (this.unified) {
+                    // Up updates displacement history but cannot introduce a new hop/action.
+                    this.unified.moveMovement(event.pointerId, this.point(event), { ...this.movementFacts(), lane: 'blocked' }, performance.now());
+                    const result = this.unified.finishMovement(event.pointerId);
+                    this.resetPads(); this.callbacks.onAimPreview(null);
+                    if (result?.face) this.callbacks.onIntent({ type: 'face', direction: result.face });
+                    else if (result?.release) this.callbacks.onRelease?.();
+                } else {
+                    this.input.releaseMovement(event.pointerId); this.interrupt(); this.callbacks.onCancel();
+                }
             } else {
                 this.input.move(event.pointerId, this.point(event));
                 const rect = zone.getBoundingClientRect();
@@ -230,8 +272,10 @@ export class ActionTurnsControls {
         }
         this.element('.movement-zone').setAttribute('aria-disabled', String(!canMove));
         this.element('.aim-zone').setAttribute('aria-disabled', String(!offense));
-        this.button('.jump-button').disabled = !canMove || !s.units[0].grounded || Boolean(this.input.ownedPointer());
-        this.button('.face-left').disabled = this.button('.face-right').disabled = !canMove || Boolean(this.input.ownedPointer());
+        if (!this.unified) {
+            this.button('.jump-button').disabled = !canMove || !s.units[0].grounded || Boolean(this.input.ownedPointer());
+            this.button('.face-left').disabled = this.button('.face-right').disabled = !canMove || Boolean(this.input.ownedPointer());
+        }
         this.button('.fire-button').disabled = !offense || !s.aim || this.input.phase !== 'aim_locked';
         this.button('.pause-button').disabled = !this.canPause();
         this.button('.pause-button').textContent = this.snapshot.paused ? 'Resume' : 'Pause';

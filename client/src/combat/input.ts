@@ -1,6 +1,7 @@
 import type { SimulationCommand } from '../../../shared/simulation';
-import type { Point } from './contracts';
-import type { ChallengeSnapshotV8 } from '../../../shared/protocol-v8';
+import type { Point, Rect } from './contracts';
+import type { ChallengeSnapshotV8Family as ChallengeSnapshotV8 } from '../../../shared/protocol-v8';
+import type { SimulationIntentV8R1 } from '../../../shared/simulation-v8';
 
 export type CombatInputPhase =
     | 'idle'
@@ -199,6 +200,84 @@ export class ActionTurnsInputController extends CombatInputController {
 
 export function inputBoundaryV8(snapshot: ChallengeSnapshotV8): string {
     const state = snapshot.simulation;
-    return [snapshot.challengeId, state.turn, state.activeActor, state.phase,
+    return [snapshot.rulesetId, snapshot.challengeId, state.turn, state.activeActor, state.phase,
         state.inputEpoch, snapshot.paused, snapshot.status].join(':');
+}
+
+export type MovementFactsR1 = {
+    grounded: boolean; facing: -1 | 1; heldDirection: -1 | 0 | 1;
+    lane: 'ready' | 'locomotion' | 'blocked';
+};
+
+/** Current pointer geometry only. No command queue, simulation or movement timer. */
+export class UnifiedMovementInputController extends ActionTurnsInputController {
+    private gesture?: { side: -1 | 0 | 1; maximumDistance: number; locomotion: boolean;
+        hop: 'unseen' | 'eligible' | 'discarded' | 'submitted'; deadline: number; motionEligible: boolean };
+
+    public beginMovement(id: number, point: Point, pad: Rect): boolean {
+        if (!this.begin('movement', id, point, 48)) return false;
+        const side = point.x - (pad.x + pad.width / 2);
+        this.gesture = { side: side < -8 ? -1 : side > 8 ? 1 : 0,
+            maximumDistance: 0, locomotion: false, hop: 'unseen', deadline: 0, motionEligible: true };
+        return true;
+    }
+
+    public moveMovement(id: number, point: Point, facts: MovementFactsR1, now: number): boolean {
+        if (!this.gesture || this.ownedPointer()?.kind !== 'movement' || !this.move(id, point)) return false;
+        const owner = this.ownedPointer()!; const gesture = this.gesture;
+        const dx = point.x - owner.origin.x; const dy = point.y - owner.origin.y;
+        gesture.maximumDistance = Math.max(gesture.maximumDistance, Math.hypot(dx, dy));
+        gesture.motionEligible = facts.grounded;
+        if (dy <= -24 && gesture.hop === 'unseen') {
+            gesture.hop = facts.grounded && facts.lane !== 'blocked' ? 'eligible' : 'discarded';
+            gesture.deadline = now + 250;
+        }
+        if (dy > -24 && gesture.hop === 'eligible') gesture.hop = 'discarded';
+        this.observeGrounded(facts.grounded);
+        this.expire(now);
+        return true;
+    }
+
+    public movementIntent(facts: MovementFactsR1, now: number): SimulationIntentV8R1 | null {
+        const owner = this.ownedPointer(); const gesture = this.gesture;
+        if (!gesture || owner?.kind !== 'movement') return null;
+        this.observeGrounded(facts.grounded); this.expire(now);
+        if (facts.lane === 'blocked' && gesture.hop === 'eligible') gesture.hop = 'discarded';
+        if (facts.lane !== 'ready') return null;
+        const dx = owner.current.x - owner.origin.x; const dy = owner.current.y - owner.origin.y;
+        const direction = Math.abs(dx) >= 10 ? (dx < 0 ? -1 : 1) : 0;
+        if (dy <= -24) {
+            return gesture.hop === 'eligible' && facts.grounded
+                ? { type: 'jump', direction: direction || facts.facing } : null;
+        }
+        if (!direction) return facts.heldDirection ? { type: 'walk_stop' } : null;
+        return facts.grounded && gesture.motionEligible && direction !== facts.heldDirection
+            ? { type: 'walk_start', direction } : null;
+    }
+
+    public submittedMovementIntent(intent: SimulationIntentV8R1): void {
+        if (!this.gesture) return;
+        this.gesture.locomotion = true;
+        if (intent.type === 'jump') { this.gesture.hop = 'submitted'; this.gesture.motionEligible = false; }
+    }
+
+    public observeGrounded(grounded: boolean): void {
+        if (grounded || !this.gesture) return;
+        this.gesture.motionEligible = false;
+        if (this.gesture.hop === 'eligible') this.gesture.hop = 'discarded';
+    }
+
+    public finishMovement(id: number): { face: -1 | 1 | null; release: boolean } | null {
+        if (!this.gesture || this.ownedPointer()?.id !== id || this.ownedPointer()?.kind !== 'movement') return null;
+        const gesture = this.gesture;
+        const face = !gesture.locomotion && gesture.hop === 'unseen' && gesture.maximumDistance < 10
+            ? gesture.side || null : null;
+        this.interrupt();
+        return { face, release: face === null };
+    }
+
+    public override interrupt(): void { this.gesture = undefined; super.interrupt(); }
+    private expire(now: number): void {
+        if (this.gesture?.hop === 'eligible' && now >= this.gesture.deadline) this.gesture.hop = 'discarded';
+    }
 }

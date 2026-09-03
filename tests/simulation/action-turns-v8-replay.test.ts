@@ -1,7 +1,7 @@
 import assert from 'node:assert/strict';
 import test from 'node:test';
 
-import { V8_RULESET_ID } from '../../shared/simulation-v8';
+import { V8_RULESET_ID, V8_R1_RULESET_ID } from '../../shared/simulation-v8';
 import { CURRENT_COMBAT_RULESET_ID } from '../../shared/combat-version';
 import { V7_RULESET_ID } from '../../shared/simulation';
 import { SimulationCoordinatorV8, V8_REPLAY_LIMITS } from '../../server/src/simulation/coordinator-v8';
@@ -11,6 +11,65 @@ import { SimulationCoordinator } from '../../server/src/simulation/coordinator';
 
 const challengeId = 'v8_challenge_fixture';
 const sessionId = 'v8_session_fixture';
+test('V8 R1 shared coordinator retains explicit identity and strictly reconstructs candidate-only operations', () => {
+    const r1 = V8_R1_RULESET_ID;
+    const facade = new VersionedSimulationCoordinator();
+    try {
+        const initial = facade.create(challengeId, sessionId, 1, 'wizard', r1);
+        assert.equal(initial.state.rulesetId, r1);
+        facade.v8.apply(challengeId, 'player', { type: 'jump', direction: -1 }, 0, 'action', 0);
+        facade.v8.advance(challengeId, 3);
+        facade.v8.barrier(challengeId, { reason: 'walk_stop', actor: 'player', expectedTurn: 0, expectedEpoch: 0 });
+        const replay = facade.replay(challengeId)!;
+        assert.equal(replay.rulesetId, r1);
+        assert.equal(facade.reconstructAndVerify(replay).stateHash, facade.get(challengeId)!.stateHash);
+        assert.throws(() => facade.reconstructAndVerify({ ...replay, rulesetId: V8_RULESET_ID } as any));
+        assert.throws(() => facade.reconstructAndVerify({ ...replay, rulesetId: r1+'-unknown' } as any));
+        assert.equal(CoordinatorReplayV8Schema.safeParse(replay).success, false);
+        facade.v8.safety(challengeId, 'left');
+        assert.equal(facade.get(challengeId)!.terminalResult!.rulesetId, r1);
+        assert.equal(facade.reconstructAndVerify(facade.replay(challengeId)!).stateHash, facade.get(challengeId)!.stateHash);
+    } finally { facade.dispose(); }
+});
+
+test('V8 R1 forced neutral releases obey unchanged lifecycle and reserved replay caps', () => {
+    for (const recordLimit of [3, V8_REPLAY_LIMITS.records]) {
+        const coordinator = new SimulationCoordinatorV8({ nowUs: () => 0, maxReplayRecords: recordLimit });
+        try {
+            coordinator.create(challengeId, sessionId, 1, 'wizard', V8_R1_RULESET_ID);
+            for (let n = 0; n < (recordLimit === 3 ? 3 : 129); n++) {
+                const state = coordinator.get(challengeId)!.state;
+                coordinator.barrier(challengeId, { reason: 'walk_stop', actor: 'player', expectedTurn: 0, expectedEpoch: state.inputEpoch });
+            }
+            const final = coordinator.get(challengeId)!;
+            assert.equal(final.state.winner, 'draw'); assert.equal(final.state.finishReason, 'simulation_limit');
+            assert.equal(final.state.lifecycleBarrierCount, recordLimit === 3 ? 2 : 128);
+            const replay = coordinator.replay(challengeId)!;
+            assert.equal(replay.records.at(-1)!.operation.kind, 'safety');
+            assert.equal(coordinator.reconstructAndVerify(replay).stateHash, final.stateHash);
+        } finally { coordinator.dispose(); }
+    }
+});
+
+test('original V8 coordinator replay retains frozen moving and clipped-hop history hashes', () => {
+    const coordinator = new SimulationCoordinatorV8({ nowUs: () => 0 });
+    try {
+        const initial = coordinator.create(challengeId, sessionId, 1, 'wizard');
+        assert.equal(initial.stateHash, 'b3db51fd44be63d9e8100c43b057eb4c3450fb1a7389539fda2dc1d0335fde5f');
+        coordinator.apply(challengeId, 'player', { type: 'walk_start', direction: 1 }, 0, 'action', 0);
+        for (let t = 0; t < 24; t++) {
+            if (t > 0 && t % 3 === 0) coordinator.apply(challengeId, 'player', { type: 'walk_refresh' }, 0, 'action', 0);
+            coordinator.advance(challengeId, 1);
+        }
+        assert.equal(coordinator.get(challengeId)!.stateHash, '25765bb9e12b45f4d960c626ef18b6eca5f895df323a0e722f6ea35224019f5f');
+        coordinator.apply(challengeId, 'player', { type: 'jump' }, 0, 'action', 0);
+        coordinator.advance(challengeId, 1);
+        assert.equal(coordinator.get(challengeId)!.stateHash, '3e775a96f91148d48f2c66c42163f07b8a4773ff7f80b703bb48ece8631f5a74');
+        coordinator.advance(challengeId, 62);
+        assert.equal(coordinator.get(challengeId)!.stateHash, '2c24ab80d3935b4cb945517727c2056db052db1cee453e4eb0226270b123f01c');
+        assert.equal(coordinator.reconstructAndVerify(coordinator.replay(challengeId)!).stateHash, coordinator.get(challengeId)!.stateHash);
+    } finally { coordinator.dispose(); }
+});
 function fixture(options: ConstructorParameters<typeof SimulationCoordinatorV8>[0] = {}) {
     const coordinator = new SimulationCoordinatorV8({ nowUs: () => 0, ...options });
     coordinator.create(challengeId, sessionId, 1, 'wizard');

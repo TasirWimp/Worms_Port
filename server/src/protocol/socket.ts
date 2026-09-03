@@ -29,8 +29,9 @@ import type { CoordinatorReplay } from '../simulation/coordinator';
 import { ackFor, SessionRegistry } from '../session/registry';
 import { eventFits, TokenBucket } from './guards';
 import { failure } from './errors';
-import { protocolEventsV8, V8_INPUT_BYTES, jsonBytesV8, InputRequestV8Schema, InputCancelV8Schema,
-    ChallengePauseV8Schema, ChallengeLeaveV8Schema, type InputAckV8 } from '../../../shared/protocol-v8';
+import { protocolEventsV8, V8_INPUT_BYTES, jsonBytesV8, InputRequestV8FamilySchema as InputRequestV8Schema, InputCancelV8FamilySchema as InputCancelV8Schema,
+    InputReleaseV8R1Schema,
+    ChallengePauseV8FamilySchema as ChallengePauseV8Schema, ChallengeLeaveV8FamilySchema as ChallengeLeaveV8Schema, type InputAckV8Family as InputAckV8 } from '../../../shared/protocol-v8';
 
 type Ack = (response: ProtocolAck<unknown>) => void;
 
@@ -72,6 +73,7 @@ export function setupProtocol(
         const eventLimiter = new TokenBucket(30, 20 / 1000);
         const inputLimiterV8 = new TokenBucket(20, 20 / 1000);
         const cancelLimiterV8 = new TokenBucket(2, 4 / 1000);
+        const releaseLimiterV8 = new TokenBucket(2, 4 / 1000);
         const invalidLimiter = new TokenBucket(5, 5 / 10_000);
         const rewardInfoLimiter = new TokenBucket(8, 8 / 60_000);
         const rewardReserveLimiter = new TokenBucket(3, 3 / 60_000);
@@ -121,7 +123,7 @@ export function setupProtocol(
                 next(new Error('Unknown protocol event.'));
                 return;
             }
-            const v8 = event === protocolEventsV8.input || event === protocolEventsV8.cancel ||
+            const v8 = event === protocolEventsV8.input || event === protocolEventsV8.cancel || event === protocolEventsV8.release ||
                 event === protocolEventsV8.pause || event === protocolEventsV8.leave;
             if (v8 && jsonBytesV8(payload) > V8_INPUT_BYTES) {
                 ack?.(wireFailureV8(event,payload,'PAYLOAD_TOO_LARGE','V8 payload exceeds 1024 bytes.',registry.getBound(socket.id)?.nextSequence ?? 0,ownedInputCursor(payload)));
@@ -129,8 +131,9 @@ export function setupProtocol(
                 next(new Error('V8 payload is too large.')); return;
             }
             // Neutral cancellation has its own small lane: normal flooding cannot spend its tokens.
-            if (event === protocolEventsV8.cancel) {
-                if (!cancelLimiterV8.take()) {
+            if (event === protocolEventsV8.cancel || event === protocolEventsV8.release) {
+                const limiter = event === protocolEventsV8.cancel ? cancelLimiterV8 : releaseLimiterV8;
+                if (!limiter.take()) {
                     ack?.(inputFailure(payload,'RATE_LIMITED','V8 neutral lane is rate limited.'));
                     next(new Error('V8 neutral rate limit exceeded.')); return;
                 }
@@ -167,12 +170,13 @@ export function setupProtocol(
             next();
         });
 
-        for (const event of [protocolEventsV8.input,protocolEventsV8.cancel]) {
+        for (const event of [protocolEventsV8.input,protocolEventsV8.cancel,protocolEventsV8.release]) {
             socket.on(event,(payload: unknown,ack?: (response: InputAckV8) => void) => {
                 if (typeof ack !== 'function') { guard(socket,payload,undefined,invalidLimiter); return; }
                 const session = registry.getBound(socket.id);
                 if (!session) { ack(inputFailure(payload,'UNAUTHORIZED','Open or resume a session first.')); return; }
-                const schema = event === protocolEventsV8.cancel ? InputCancelV8Schema : InputRequestV8Schema;
+                const schema = event === protocolEventsV8.cancel ? InputCancelV8Schema
+                    : event === protocolEventsV8.release ? InputReleaseV8R1Schema : InputRequestV8Schema;
                 if (!schema.safeParse(payload).success) {
                     ack(inputFailure(payload,'BAD_REQUEST','Invalid V8 input envelope.'));
                     if (!invalidLimiter.take()) socket.disconnect(true);
@@ -180,6 +184,9 @@ export function setupProtocol(
                 }
                 if (event === protocolEventsV8.cancel) {
                     ack(registry.cancelInputV8(session,payload)); return;
+                }
+                if (event === protocolEventsV8.release) {
+                    ack(registry.releaseInputV8(session,payload)); return;
                 }
                 void registry.submitInputV8(session,payload).then(ack).catch(() => {
                     ack(inputFailure(payload,'INTERNAL_ERROR','V8 input could not be completed.'));
@@ -201,7 +208,8 @@ export function setupProtocol(
                 const packet = parsed.data;
                 // Reuse only the existing internal ordered session cursor/cache, not a V1 wire response.
                 void registry.sequenceAsync(session,packet.requestId,packet.sequence,{event,...packet},async () => {
-                    if (registry.getBound(socket.id) !== session) return failure(packet.requestId,'UNAUTHORIZED','The lifecycle request transport disconnected.');
+                    if (registry.getBound(socket.id) !== session || !registry.hasChallengeV8(session,packet.challengeId,packet.rulesetId))
+                        return failure(packet.requestId,'UNAUTHORIZED','The exact lifecycle match/transport is not owned.');
                     const result = event === protocolEventsV8.pause
                         ? await registry.setChallengePausedV8(session,packet.challengeId,ChallengePauseV8Schema.parse(payload).paused)
                         : registry.leaveChallengeV8(session,packet.challengeId);
@@ -1004,6 +1012,7 @@ function authorizationIdOf(payload: unknown): string | undefined {
 const ALLOWED_CLIENT_EVENTS = new Set([
     protocolEventsV8.input,
     protocolEventsV8.cancel,
+    protocolEventsV8.release,
     protocolEventsV8.pause,
     protocolEventsV8.leave,
     protocolEvents.sessionOpen,

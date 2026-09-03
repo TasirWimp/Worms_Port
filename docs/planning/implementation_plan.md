@@ -11,7 +11,8 @@ Phaser/Socket.IO stack.
 - Active product package: **WP-015D3A V8 Action-Turn Candidate — V8A finite
   rules/acceptance contract complete and independently reviewed; V8B authoritative
   foundation complete and independently reviewed; V8C touch presentation
-  complete, verified and independently reviewed. Live V7 unchanged.**
+  complete, verified and independently reviewed; V8C.1 combined controls and
+  traversal correction complete and independently reviewed. Live V7 unchanged.**
   The owner opened V8A after the independently reviewed preparation and shared-
   ruleset correction. The
   [V8 preparation contract and roadmap](wp-015d3a-v8-action-turns-contract.md)
@@ -49,8 +50,20 @@ Phaser/Socket.IO stack.
   clean V8B commit `87ae3dad358f752ba64540e54d21a96b134d1e42`, using the
   existing A7 C allow-list and fresh clean-room implementers. The explicit
   `?combat-preview=v8` route is engineering-only with no AI policy, wallet or
-  reward; ordinary creation and the legacy preview are unchanged. V8D is the
-  next bounded slice and has not started: it owns automated V8 AI, complete
+  reward; ordinary creation and the legacy preview are unchanged. On 2026-09-03
+  the owner opened V8C.1 from freshly fetched clean local/upstream
+  `abc02026ae20a95b36369fa56c039b042914492d`, before V8D. It combines movement,
+  facing and Jump on one pad and corrects small-step/wall-flush-hop traversal,
+  under an explicit new candidate identity that preserves original V8 replays.
+  Its completed source-bound return is in the existing V8 contract. Explicit
+  `?combat-preview=v8-r1` adds tap-to-face, same-finger walk/neutral/reversal,
+  upward/diagonal hop, ordinary release preserving the hop, supported 8/16-unit
+  stepping and wall-flush jump recovery. Original `?combat-preview=v8` remains
+  unchanged. Core 89/89 and selected client 70/70 tests, the final feature gate,
+  20/20 targeted five-profile browser checks, security/bundle/preservation checks
+  and distinct source review pass. Phone owner acceptance remains separate.
+  No public activation is authorized. V8D follows C.1 and has not
+  started: it owns automated V8 AI, complete
   rewarded lifecycle, assessment and shared promotion. Production remains V7
   in both modes until all activation gates pass.
   The analytical execution pointer remains **WP-015D2A**;

@@ -4,9 +4,11 @@ Date: 2026-09-02. Status: V8A v0 finite rules contract complete and independentl
 reviewed; V8B authoritative foundation complete and independently reviewed,
 with live V7 unchanged. V8C touch presentation is complete as a bounded
 engineering slice, verified and independently reviewed.
+2026-09-03: V8C.1 combined-control/traversal correction is complete as a bounded,
+verified engineering slice, with original V8 identity and replay preserved.
 WP-015D3A remains `in_progress`; its reference record is only `observed`.
 V8B/C delivered candidate-only engineering implementation, not player observation
-or production activation. Source-bound review returns are in sections B/C.
+or production activation. Source-bound review returns are in sections B/C/C.1.
 
 ## Purpose and source boundary
 
@@ -14,8 +16,9 @@ Prepare the owner-approved, Sorcerers-inspired action-turn migration on the
 existing MIT game, preserving a practical V7 fallback and the analytical route.
 This is an intermediate playable-candidate plan, not a balance proof or a port
 of Sorcerers. V8A's finite contract and V8B's authoritative foundation are
-complete and V8C's touch presentation is implemented and verified. V8D AI and
-full lifecycle are next, with production promotion deferred until all B-D gates pass.
+complete; V8C and V8C.1 touch/traversal implementation is verified. V8D AI and
+full lifecycle are next but not started; production promotion remains deferred until
+all implementation and activation gates pass.
 
 - Product base: `dc66d2ac0f02b1b7c47f6949816a7cbc6e48e286`, freshly verified
   clean on `codex/wp-015d2z-v7-tactical-arena-v0`; `git fetch origin` confirmed
@@ -925,6 +928,284 @@ assessment and joint public promotion. No player observation, real-device
 acceptance, balance/fairness or release claim follows from C engineering tests.
 The package remains `in_progress` and its clean-room record `observed`; human
 similarity review is not replaced by automated source review.
+
+### C.1. Unified movement and traversal correction
+
+Owner authorization: 2026-09-03, after the read-only mobile-control research
+and diagnosis. Fresh `git fetch origin` confirmed clean local and upstream
+`abc02026ae20a95b36369fa56c039b042914492d`; isolated branch
+`codex/wp-015d3a-v8c1-unified-movement-v0`. This is a reviewed B+C amendment,
+not authority inferred from C's former client-only allow-list. Root owns only
+the three existing documentation carriers and verification; fresh no-history
+core/client implementers and a distinct read-only planning/replay reviewer
+must bind exact runtime/test paths and interfaces before implementation.
+
+Owner feedback is product input, not a preregistered Lane G observation or a
+timing dataset. Read-only engineering diagnosis at the exact C base confirmed
+8-unit ascent in both directions including fractional starts, but the seed-1
+first right/left lips are 16/24 units. Wall-flush Jump loses its horizontal
+velocity before rising and lands at its starting x; the old ledge test begins
+five units away and misses that case. Existing V8 behavior remains historical
+evidence, not silently corrected under the same replay identity.
+
+The owner accepted a single pad for stationary side-tap facing, immediate
+horizontal drag/hold walking, and one upward/directed-diagonal hop per gesture.
+Ordinary release must end walking while preserving an accepted hop; hard
+interruptions retain safe horizontal neutralization. Auto-step becomes at most
+16 units by trying the smallest supported clear lift among 8 and 16; 24-unit
+lips require Jump. A wall-blocked hop retains only its committed take-off drive
+for later clipped sweeps as vertical clearance opens, never wall penetration
+or restoration after cancellation. Exact numerical gesture thresholds,
+version/release ordering, path allow-list and acceptance gates are frozen below
+for independent entry review before runtime edits.
+
+#### C.1 preregistration: identity, input and traversal
+
+The exact new identity is `nimble-knots-artillery-v8-r1`, selected only by
+`?combat-preview=v8-r1` or an explicit injected engineering creation seam.
+`?combat-preview=v8`, original constructor defaults, strict original V8
+schemas/types, command meaning, state hashes and replay reconstruction remain
+original V8. Reuse the V8 state shape and `formatVersion: 8` /
+`rulesetVersion: 8`; exact `rulesetId` is the mandatory mechanics discriminator.
+Add strict r1 schemas plus explicitly named family unions without relaxing old
+schema exports. Snapshot, replay, result, resume, registry and coordinator all
+preserve the exact identity; reject unknown/mixed identities. The current
+public combat selector stays V7.
+
+For r1 only, Jump is exactly `{type: 'jump', direction: -1 | 1}`. Up alone
+captures authoritative facing at dispatch; diagonal-up supplies its indicated
+side atomically. Old V8 Jump remains exactly `{type: 'jump'}`. Accepted r1 Jump
+retargets any existing held direction without extending its lease. New normal
+`{type: 'walk_stop'}` clears held direction, lease, aim and non-jump horizontal
+drive, preserving an accepted hop. It consumes the ordinary sequence, budget
+and revision/count, not a new epoch/lifecycle transition. Center therefore
+stops movement without ending pointer ownership. An opposite grounded
+`walk_start` updates facing/direction immediately but retains the current live
+lease timestamps when less than three ticks have elapsed since refresh; only
+at that cadence may it extend the existing nine-tick lease. No air steering or
+new walk action may be buffered for landing.
+
+Actual release uses new r1-only `v8:input.release`, with strict `requestId`,
+`challengeId`, `rulesetId`, `expectedTurn`, `inputEpoch` and the existing
+acknowledgement/cursor shape. Its independent burst-two/refill-four lane bypasses
+the normal queue. A matching-epoch release is a forced soft barrier even when
+neutral: increment epoch/revision/lifecycle once, clear held/lease/aim and
+non-jump drive, retain committed jump velocity, invalidate pending normal
+admission tokens and fence later stale packets. Request caching/old epochs make
+duplicates inert. Replay records this lifecycle barrier as `walk_stop`, distinct
+from the ordinary intent of the same name. Keep the existing 128-event cap and
+terminal reserve. Hard interruptions remain hard and may escalate while a soft
+release is pending; an ordinary release recovery path must not implicitly call
+hard cancel and truncate the accepted hop. A Jump not applied before release
+is rejected; a Jump already applied finishes. A gesture that was exclusively a
+stationary side tap dispatches one face intent on release and no contradictory
+soft-release fence, provided no movement/up eligibility or locomotion flight
+belongs to that gesture.
+Acquire a pointer only when the actual transport lane is ready. For a pure tap,
+clear local pointer ownership before releasing capture and submitting face,
+so synthetic lost-capture cannot hard-cancel that face. Non-pure releases clear
+local ownership/eligibility before the independent release fence.
+
+Reviewed r1 cursor-fence clarification: preserve exact cached request/payload
+acknowledgements and changed-payload conflict handling first. For an uncached
+r1 request, stale epoch or an invalidated admission token rejects without
+consuming normal cursor, intent budget, replay or combat mutation; check before
+sequence handling and again after catch-up. Other expected-sequence rejection
+behavior remains as declared; original V8 is untouched. Thus release-first
+rejects queued or later old-epoch sequence N and allows new-epoch sequence N;
+accepted-input-first yields release cursor N+1. Test both catch-up orders,
+duplicates and no client cursor rewind. No reconnect is needed to reconcile
+this successful release fence.
+
+The r1 pad uses existing sideways-aware logical/CSS coordinates, a floating
+origin at pointer-down and a 48px radius. Horizontal displacement of at least
+10px walks immediately; upward displacement of at least 24px requests Jump,
+with up taking priority in a simultaneous threshold crossing. A side tap must
+stay strictly below 10px maximum displacement throughout the gesture. Its side
+comes from the static pad half at pointer-down, excluding the center strip
+within 8px of its midpoint. The pad stays at least 112px wide so each side is
+at least 48px wide. There is no hold-duration threshold. Return to center and
+grounded reversal keep the same pointer. Keep old V8's separate buttons; hide
+them only for r1. Preserve pointer capture, outside-ring tracking, accessible
+labels, aim/Fire separation and hard-interruption neutralization.
+
+One narrow, explicit live-gesture admission amendment avoids losing an upward
+push behind routine walking acknowledgements. Arm only the first upward
+crossing while authoritative active-player state is grounded. If blocked by one
+normal locomotion flight (`walk_start`, `walk_refresh` or `walk_stop`), retain
+eligibility for at most 250ms from that crossing, never extended. At actual
+readiness recompute intent from the still-held pointer/current vector and
+authoritative facing. Require the same challenge, turn, phase and epoch, fresh
+authority, still-up geometry and grounded actor. Release, lowering the stick,
+any airborne authority, timeout, recovery, disconnect, hard cancellation or
+boundary change permanently discards that gesture's eligibility. No stored
+command/payload, retry, timer-driven dispatch, after-release/landing action or
+deferral behind face/aim/Fire/lifecycle work is permitted. Allow one actual Jump
+attempt per gesture. Transport readiness includes automatic walk refreshes;
+notify after accepting authority and before coalesced refresh dispatch. Scene
+completion also re-evaluates the live gesture without synthesizing input.
+Optional scene hooks are `releaseMovement()`, `inputReady()`,
+`onInputReady(listener)` and read-only `inputFlight(): 'locomotion' | 'blocked' |
+null`. The flight classification distinguishes an allowed automatic walking
+refresh from forbidden face/aim/Fire work; a readiness boolean alone cannot
+enforce the preregistered admission boundary. Historical callers omit them.
+The live adapter remains a generic `ActionTurnsV8Client` with original V8 as
+its default. R1 attachment supplies its exact identity explicitly as the sixth
+attach argument; validate that immutable instance identity before accepting
+events, acknowledgements, resume state or results. Original typed callbacks
+must remain compatible. Existing untyped session-event buffers need no change.
+
+Auto-step attempts the smallest supported clear lift in `[8, 16]`, only from
+grounded state, checking upward/horizontal clearance and destination support.
+Retain ceilings, actor collision and all ordinary swept clipping. R1's blocked
+hop retains only its committed take-off `vx`; after actual upward motion it may
+retry the **unspent** signed horizontal displacement of that tick once. Total
+horizontal travel remains at most the original one world unit per tick. Never
+restore velocity from facing/input; hard cancel clears it permanently. Thus
+16-unit lips walk, 24-unit lips need Jump, and wall-flush hops can clear the lip
+as they rise without tunneling, a back-off requirement or extra per-tick speed.
+
+#### C.1 output ownership and acceptance
+
+Maximum allow-list is these 28 paths; any additional path requires a reviewed
+amendment before editing. Existing runtime and documentation carriers are
+reused. Search found only the original V8 combat/Practice test carriers, not
+r1 carriers; the two new files deliberately isolate revision-specific gesture
+and transport tests while retaining original tests unchanged. Core/replay/
+protocol regressions extend existing homes; no new runtime module is needed.
+
+- Fresh `/root/v8c1_core`: `shared/simulation-v8.ts`, `shared/protocol-v8.ts`,
+  `shared/combat-version.ts`, `server/src/simulation/coordinator-v8.ts`,
+  `server/src/simulation/versioned-coordinator.ts`, `server/src/session/registry.ts`,
+  `server/src/protocol/socket.ts`, `tests/simulation/action-turns-v8.test.ts`,
+  `tests/simulation/action-turns-v8-replay.test.ts`,
+  `tests/protocol/action-turns-v8.test.ts`.
+- Fresh `/root/v8c1_client`: `client/src/combat/contracts.ts`,
+  `client/src/combat/input.ts`, `client/src/combat/controls.ts`,
+  `client/src/combat/fixture.ts`, `client/src/combat/preview.ts`,
+  `client/src/combat/presentation.ts`, `client/src/scenes/combat.ts`,
+  `client/src/practice/client.ts`, `client/src/lib/session.ts`,
+  `client/src/style.css`, new `tests/combat/action-turns-v8-r1.test.ts`,
+  new `tests/practice/action-turns-v8-r1-client.test.ts`,
+  `tests/browser/combat.spec.ts`, `tests/browser/resilience.spec.ts`,
+  `tests/browser/smoke.spec.ts`.
+- Root, no runtime/test authorship: this contract,
+  `docs/planning/implementation_plan.md`, `docs/evidence/wp-015d3a.json`.
+  Independent `/root/v8c1_planner` owns read-only entry/final review.
+
+Workers use only this product amendment, the frozen handoff and MIT local
+sources; no Sorcerers/quarantine or observer transcript. Preserve parallel
+edits. Red-first tests precede implementation; retain failing baseline facts.
+Required tests include tap displacement history, sideways axes, overlong
+drag, immediate walk, center/reversal independent of event sampling, directed
+and walking-to-hop, one-hop/no-repeat/no-air-steer/no-landing-buffer, bounded
+live-up readiness and all invalidation paths; release before/after ack, neutral
+late packet fencing, duplicates/rate caps and hard-after-soft escalation;
+strict old/r1 dispatch/replay, fractional bidirectional 8/16 ascent, 24 blocking,
+ceilings/actors, flush jumps and one-unit sweep bound. Pin original V8 operation
+history hashes, not only its initial hash. Public Practice/reward V7 parity and
+legacy tests must stay green.
+
+Run the feature funnel once source is stable, then focused r1 phone/sideways
+browser regressions across the applicable five projects, security/bundle gates
+and exact build proof. Validate JSON duplicate keys/schema, navigation,
+source/range, changed-path digest, old replay parity, untouched manifests,
+frozen handoff, checkpoint/archive recovery and Git diff. The implementation
+digest is SHA-256 over UTF-8 `JSON.stringify` of lexically sorted
+`{path,gitBlob}` rows for changed non-document paths (`git hash-object --path`
+Git bytes), with no newline. Exclude the three review documents and containing
+commit identity to avoid self-reference. Record actual paths/results and
+independent review before the scoped commit. Full daily/release gates and real
+Android/iOS acceptance are not this feature loop; Windows screenshot candidates
+must not become approved baselines.
+
+Owner phone follow-up, only after separately deploying this candidate:
+
+1. Open `?combat-preview=v8-r1` and confirm the separate Jump/face buttons are
+   absent. Tap each side of the movement pad: facing changes, position does not.
+2. Hold/drag past the ring in each direction. Return to center and reverse
+   without lifting; movement stops/reverses without needing a new touch.
+3. Push up from rest, then diagonally up while walking. Verify one directed
+   hop; release during the hop must not truncate it or queue another hop.
+4. Walk the seed-1 right 16-unit lip; jump the left 24-unit lip from flush
+   contact without backing away. Larger walls must not become walkable.
+5. Repeat in default clockwise, `sideways=left`, `sideways=off` and actual
+   landscape as practical. Original `combat-preview=v8` must still retain its
+   earlier controls; ordinary Practice remains V7. This is ordinary product
+   acceptance, not preregistered Lane G observation or a balance claim.
+
+Public Practice/reward creation and standard AI stay V7. Original V8 remains
+addressable; C.1 gets an explicitly distinct recorded identity and an explicit
+engineering preview. No new assets, dependencies, test-harness policy, V9-D AI,
+reward activation, formal observation, analytical work, CRPM, push or deployment
+is authorized. The frozen reference handoff and all legal manifests stay exact.
+
+#### C.1 source-bound review return — 2026-09-03
+
+C.1 is complete for engineering review on
+`codex/wp-015d3a-v8c1-unified-movement-v0`, from clean, freshly fetched
+`abc02026ae20a95b36369fa56c039b042914492d`. Actual range is exactly 27 of the
+28 allowed paths: only `client/src/lib/session.ts` was unnecessary. The two
+dedicated r1 unit-test carriers are the only new files. The 24 changed
+non-document paths bind to implementation/test digest
+`8ad4254ff73aca3e4ac3881781fa2e367748dccbad9b082ab5baed570cfa0325`
+under the non-self-referential method above; this return and the other two
+review documents are excluded.
+
+Fresh no-history `/root/v8c1_core` and `/root/v8c1_client` implemented their
+declared paths from this product contract, frozen handoff and local MIT
+sources/tests only. Neither accessed external/reference/quarantine material,
+observer history, assets or dependencies. Root authored only the three review
+documents and ran verification. Distinct `/root/v8c1_planner` approved entry
+and the final source tree, with no unresolved findings. Review corrections
+retain red-first regressions for exact-expiry reversal, soft/hard release
+ordering, lost acknowledgements including turn handover, and preview barrier
+128/129 parity. Tests also corrected scene-completion refresh priority. These
+are product correctness findings, not player-observation evidence.
+
+Final checks:
+
+- Core/protocol/replay: 89/89, including all 67 originals and 22 new checks.
+  Selected client/transport coverage: 70/70, including 22 r1 checks. Project
+  types and strict new-unit-test types pass. Original operation-history golden
+  hashes remain exact; original strict schemas/defaults reject r1 operations.
+- Full `npm run verify:feature` passes: fast checks, production build, built
+  smoke and 5/5 canonical phone browser cases (34.0s). The first run was
+  deliberately interrupted during browsers for the final handover correction;
+  it is retained as incomplete evidence, not substituted for the final run.
+- Targeted `V8 r1` browser run: 20/20 in 2.8 minutes, zero retries/skips,
+  across all five configured projects. Covers combined controls, ordinary/hard
+  release, aim/Fire separation, right/left/off/actual-landscape safe areas,
+  interruptions, explicit preview identity and original V8/public V7 retention.
+  Small-phone portrait, clockwise, actual-landscape and WebKit counterclockwise
+  screenshots were inspected; controls fit and extra Jump/face buttons are absent.
+  Candidates remain ignored test output, never approved Windows baselines.
+- Reward/identity bundle security and bundle limits pass. Largest initial JS
+  is 1,498,379/1,500,000 bytes; initial JS/CSS gzip is 414,242/430,000 bytes.
+  Only 1,621 raw bytes of initial-chunk headroom remain; future work must
+  preserve the limit, not silently increase it.
+- Node `v23.6.0` build proof binds input
+  `76eee1ca2fd971d217e479650aa24f15c41c108a743178b514d96f0ce4cae9ff`
+  and output
+  `d96436d89cfacc13b0e747f4a2d647a98afda7b25c156f515bf427fac98d1fd7`.
+  Final browser checks reuse those exact outputs.
+- JSON duplicate keys/Draft 2020-12 schema, 36 local navigation links, exact
+  source/range/digest, 381 protected Git-byte paths, frozen handoff, both
+  checkpoint targets, both rollback archive hashes, compliance and diff pass.
+  All 11 approved runtime asset copies remain exact. No package, asset,
+  legal-manifest, harness, analytical, frozen-record or CRPM edit occurred.
+
+The corrected engineering URL is `?combat-preview=v8-r1`; original
+`?combat-preview=v8` remains original V8. Ordinary Practice and rewarded
+creation still share V7 and standard AI. C.1 adds no automated V8 AI, reward
+activation, assessment, balance/fairness claim, public promotion or deployment.
+The full daily/performance/release and separate PostgreSQL gates were not run;
+unchanged dependencies did not require a fresh audit. Real Android/iOS touch
+acceptance and distinct human similarity review remain separate. Overall
+WP-015D3A stays `in_progress`, its clean-room record stays `observed`, and V8D
+is next but not started. Analytical WP-015D2A, interrupted Stage C debt, closed
+Lane G/Lane M, no Lane G evidence, unsatisfied D2O and no ProductAuthority remain
+unchanged. No push, PR or deployment is included in this slice.
 
 ### D. Loomkeeper, full lifecycle, and candidate acceptance
 

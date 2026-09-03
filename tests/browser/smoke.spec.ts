@@ -11,6 +11,20 @@ test('V8 engineering preview does not replace ordinary wallet-free V7 Practice',
   await expect(page.locator('.jump-button')).toHaveCount(0);
 });
 
+test('V8 r1 preview is explicit and preserves original V8 and public wallet-free V7', async ({ page }) => {
+  await page.goto('/?combat-preview=v8-r1&sideways=off');
+  await expect(page.locator('.combat-v8-r1')).toHaveAttribute('data-ruleset', 'nimble-knots-artillery-v8-r1');
+  await expect(page.locator('.jump-button, .face-left, .face-right')).toHaveCount(0);
+  await page.goto('/?combat-preview=v8&sideways=off');
+  await expect(page.locator('.combat-v8')).toHaveAttribute('data-ruleset', 'nimble-knots-artillery-v8');
+  await expect(page.getByRole('button', { name: 'Jump forward' })).toBeVisible();
+  await page.goto('/?sideways=off');
+  await page.getByRole('button', { name: 'Start Practice' }).tap();
+  await expect(page.locator('.combat-ui')).toBeVisible();
+  await expect(page.locator('.combat-v8')).toHaveCount(0);
+  await expect(page.locator('.movement-zone')).toHaveAttribute('aria-label', /8 of 8 steps remaining/);
+});
+
 test('built phone journey starts wallet-free live practice and accepts touch', async ({ page }) => {
   const pageErrors: string[] = [];
   const consoleErrors: string[] = [];
