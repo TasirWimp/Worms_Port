@@ -1988,6 +1988,128 @@ has not yet tested these corrections on a physical phone or the live Render
 deployment. No push, PR, deployment, daily/release gate, formal player
 observation, human-similarity clearance or public/funded V8 activation occurred.
 
+### E — Reversible opponent focus (V8E, 2026-09-04)
+
+The owner accepted D.3 on the deployed phone and requested a clearer way to
+track an opponent outside the limited mobile view. `V8E` was searched across
+current planning, evidence, README, legal/package surfaces, local/remote branch
+names, tags and commit subjects before this section was created; no reserved or
+conflicting use was found. V9 economy, V10 terrain/starts and V11 teams retain
+their existing roadmap identities. V8E names this presentation follow-up only;
+it does not create a new simulation, protocol, replay, AI or reward identity.
+
+Fresh fetch verified clean local/upstream D.3 HEAD
+`7c228efc426dc670e45e52d065fa43d8569b3f6d`; isolated branch:
+`codex/wp-015d3a-v8e-opponent-focus-v0`. Carrier search found the existing lazy
+V8 scene, camera helpers, V8 controls/style, focused unit/browser suites and
+the four current documentation homes. Every required output already has a
+suitable carrier, so no new file is authorized. Exact maximum allow-list,
+frozen before runtime edits:
+
+- `client/src/combat/action-turns-scene.ts`
+- `client/src/combat/controls.ts`
+- `client/src/style.css`
+- `tests/combat/action-turns-v8-r1.test.ts`
+- `tests/browser/combat.spec.ts`
+- `README.md`
+- `docs/planning/implementation_plan.md`
+- `docs/planning/wp-015d3a-v8-action-turns-contract.md`
+- `docs/evidence/wp-015d3a.json`
+
+Root owns the four documentation paths and gate orchestration. A fresh
+no-history base-game implementer owns the five source/test paths and receives
+only this frozen product contract plus current MIT product sources/tests. A
+distinct read-only reviewer checks entry and final source. Neither implementer
+nor reviewer may fetch or inspect Sorcerers/quarantine material. Public mobile
+camera guidance informed the product requirements only; no external code,
+art, constants or expressive sequence is imported. The design inputs are
+Team17's description of mobile action tracking while retaining camera agency,
+Burigat et al.'s mobile off-screen visualization study, Apple's reduced-motion
+guidance, and Android's 48dp touch-target guidance.
+
+Required presentation behavior, shared by V8 Practice and reward presentation:
+
+- The ordinary camera preference remains the human player. When the living
+  Loomkeeper is horizontally outside the current battlefield window, expose a
+  side-correct edge button naming `Loomkeeper`, showing current authoritative
+  Stitching and a directional chevron. It updates without moving the camera.
+- Tapping that button moves the camera to the Loomkeeper with one deterministic
+  300ms smoothstep presentation transition. While the living player is outside
+  the resulting view, expose the mirrored `Back to You` edge button with current
+  Stitching and the correct direction. Both controls are real buttons with
+  accessible names and at least a 48 CSS-pixel target. Hide an actor's button
+  whenever that actor is already inside the battlefield window or is dead.
+- The selected actor view is reversible and never changes combat input, aim,
+  facing, simulation, clock, AI, network authority or replay. `prefers-reduced-
+  motion: reduce` completes the focus change immediately. Resizing/orientation
+  changes clamp the current view without inventing a combat event.
+- Existing horizontal battlefield swipe remains available. Beginning a manual
+  swipe cancels an in-flight focus transition at its current clamped viewport.
+  A drag becomes deliberate/free pan only when horizontal displacement in game
+  presentation coordinates is at least 12px and is greater than or equal to
+  absolute vertical displacement. Before that crossing, pointer release keeps
+  the current viewport and prior actor preference; it does not become free pan
+  or resume the cancelled transition. After crossing, focus mode is `free`, the
+  exact latest clamped manual viewport is retained, and off-screen buttons keep
+  offering explicit recovery to either actor. Tapping a focus button must not
+  leak through to movement/aim controls.
+- Projectile and terminal D.3 presentation retain priority. Projectile tracking
+  is temporary and does not rewrite actor/free preference. After the projectile
+  ends, restore the chosen living actor or the exact clamped pre-projectile free
+  viewport unless an authoritative new player action has begun; every new player
+  action predictably selects and recentres `You`. If a preferred actor is no
+  longer living, select the other living actor; if neither lives, D.3 terminal
+  overview owns the camera. Terminal Unravel framing and result timing remain
+  exactly D.3.
+- Cancel every focus animation and prevent any late frame/callback from changing
+  camera or controls on terminal arrival/result, blur or hidden state,
+  disconnect, unavailable session, challenge replacement, retry, scene stop or
+  destruction. Terminal D.3 framing takes ownership synchronously. A visible
+  reconnect/resume may render current authority but must not resurrect a prior
+  transition or leak state into the replacement scene/challenge.
+- No automatic Loomkeeper-turn recentering, opponent-facing screen realignment,
+  minimap, picture-in-picture, target lock, zoom, telemetry or observation is
+  admitted. A minimap/PiP remains a later option only if separate phone review
+  shows the reversible edge controls insufficient.
+
+Verification is red-first focused unit/browser coverage for visibility,
+direction, labels/current Stitching, 48px geometry, tap focus/back, 300ms and
+reduced-motion transitions, manual cancellation/free recovery, projectile
+priority/restoration, player-action recenter, resize/sideways variants,
+terminal-mid-transition and blur/hidden/disconnect/replacement/retry/unavailable/
+destroy cleanup, and D.3 terminal preservation. Include one schema-checked,
+injected reward-mode presentation parity case with no entitlement, payout,
+wallet, funds or production service; Practice-only browser evidence cannot
+establish the shared presentation claim. Then run client types, `npm run verify:feature`, a
+targeted zero-retry five-profile phone matrix, bundle and reward/identity
+security, compliance, strict JSON duplicate-key/schema and local navigation,
+exact nine-path range, non-self-referential source/test digest, protected
+manifests/checkpoints and `git diff --check`. Do not run the full daily suite,
+assessment, PostgreSQL or physical-device session in this feature loop; record
+those as separate release/owner gates. No push, PR, deployment or public/funded
+activation is authorized by implementation.
+
+V8E changes presentation navigation only. Default public V7, V8 mechanics and
+replay identities, D.3 feedback/terminal timing, deployment configuration,
+assets, dependencies, legal/source manifests and analytical carriers remain
+unchanged. Owner phone feedback is ordinary product acceptance, not Lane G
+player-observation evidence. WP-015D2A, interrupted Stage C debt, closed Lane
+G/M execution, no Lane G evidence, unsatisfied D2O and all authority,
+placement, P5 and landfall boundaries remain unchanged.
+
+#### E entry review return
+
+Distinct read-only reviewer `/root/v8e_focus_reviewer` initially stopped entry
+on four ambiguities: absent V8 pan-threshold semantics, undefined free-view
+projectile restoration, incomplete transition teardown and missing shared-mode
+presentation proof. The contract was amended before runtime edits to bind each
+point exactly. Re-review returned `GO`: the nine existing paths are sufficient,
+no D.3 conflict or source-boundary breach remains, and only the three authorized
+documentation carriers differ from D.3 HEAD. The reviewer used current MIT
+product sources/docs/tests only, did not access reference/quarantine/external
+material, and did not run browser/device work. Final source and gate review are
+still required; entry approval is not implementation or activation.
+
 ## Clean-room roles and entry gate
 
 The root coordinator is the reference observer and must not implement V8

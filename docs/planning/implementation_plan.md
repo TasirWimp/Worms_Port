@@ -89,11 +89,25 @@ Phaser/Socket.IO stack.
   terminal timelines. Initial rawJS is1492600/1500000 after the lazy scene-entry
   extraction. Independent source review has no blocking finding. No rules,
   replay, assets or deployment configuration change.
-  Next: owner push this branch, select it on the existing Render service without
-  changing the working D.2 environment, deploy, then perform README's four D.3
-  phone checks. Physical-device acceptance and public promotion remain open.
-  The working single-service deployment was owner-tested; this is ordinary
-  product acceptance, not Lane G evidence. Completed predecessor:
+  The owner pushed, deployed and accepted these D.3 corrections on their phone;
+  this is ordinary product acceptance, not Lane G evidence. Current bounded
+  follow-up: **V8E reversible opponent focus preregistered for implementation**
+  from freshly fetched clean local/upstream
+  `7c228efc426dc670e45e52d065fa43d8569b3f6d` on
+  `codex/wp-015d3a-v8e-opponent-focus-v0`. The existing V8 contract section E
+  freezes an exact nine-existing-path maximum and presentation-only behavior:
+  a side-correct off-screen Loomkeeper/Stitching button, reversible `Back to
+  You`, 300ms/reduced-motion focus, manual-pan cancellation/recovery, temporary
+  projectile priority and predictable player-action recenter. It creates no
+  new combat identity, automatic AI-turn camera, minimap/PiP, telemetry,
+  mechanics or authority. Fresh no-history client implementation and distinct
+  read-only review are required before the implementation return. Entry review
+  initially stopped four camera-state ambiguities; the amended exact threshold,
+  restore, teardown and injected shared-mode proof now have independent `GO`.
+  Next:
+  implement the frozen V8E client/test slice, run the feature and focused
+  five-profile phone gates, bind source and review; then return it for owner
+  phone testing. Completed predecessor:
   **V8D.2 single-service development profile complete and independently reviewed**,
   under section D.2 of the existing
   contract from clean `aa4f3e5` on `codex/wp-015d3a-v8d-single-service-v0`.
