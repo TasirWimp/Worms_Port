@@ -3,6 +3,7 @@ import path from 'node:path';
 import { writeFile } from 'node:fs/promises';
 import { createRuntimeServer } from '../../server/src/runtime';
 import { V8_R1_RULESET_ID } from '../../shared/simulation-v8';
+import { V8_AUTOMATION_ID } from '../../shared/combat-version';
 import { SIM_RULES } from '../../shared/simulation';
 import { protocolEventsV8, ChallengeSnapshotV8RuntimeSchema, ChallengeResultV8RuntimeSchema,
   type ChallengeSnapshotV8Runtime } from '../../shared/protocol-v8';
@@ -557,7 +558,294 @@ test('V8D presentation preserves accepted result through hidden unavailable reen
   } finally { await fixture.close(); }
 });
 
+test('V8E edge controls expose live Stitching and reversible 300ms or reduced-motion focus', async ({ page }) => {
+  const fixture = await presentationV8Fixture(page);
+  try {
+    const ui = page.locator('.combat-v8');
+    fixture.update(value => { value.simulation.units[1].stitching = 73; });
+    const loomkeeper = page.locator('.camera-focus-loomkeeper');
+    await expect(loomkeeper).toBeVisible();
+    await expect(loomkeeper).toHaveAttribute('data-side', 'right');
+    await expect(loomkeeper).toHaveAttribute('aria-label', 'Loomkeeper, 73 Stitching, off-screen right');
+    await expect(loomkeeper).toContainText('Loomkeeper · 73 Stitching ›');
+    const target = await loomkeeper.boundingBox();
+    expect(target!.width).toBeGreaterThanOrEqual(48);
+    expect(target!.height).toBeGreaterThanOrEqual(48);
+
+    await page.emulateMedia({ reducedMotion: 'no-preference' });
+    await armCameraTransitionRecorder(page);
+    await loomkeeper.tap();
+    await expectCameraTransitionObserved(page, 'loomkeeper');
+    await page.waitForTimeout(100);
+    const middle = Number(await ui.getAttribute('data-camera-left'));
+    expect(middle).toBeGreaterThan(0); expect(middle).toBeLessThan(1024);
+    await expect(ui).toHaveAttribute('data-camera-transition', 'none', { timeout: 700 });
+    const loomkeeperX = Number(await ui.getAttribute('data-render-loomkeeper-x'));
+    const loomkeeperLeft = Math.max(0, Math.min(1024, loomkeeperX - 512));
+    await expect.poll(async () => Number(await ui.getAttribute('data-camera-left'))).toBe(loomkeeperLeft);
+    const back = page.locator('.camera-focus-player');
+    await expect(back).toBeVisible();
+    await expect(back).toHaveAttribute('data-side', 'left');
+    await expect(back).toHaveAttribute('aria-label', 'Back to You, 100 Stitching, off-screen left');
+    await expect(ui).not.toHaveAttribute('data-last-command', /.+/);
+
+    await page.emulateMedia({ reducedMotion: 'reduce' });
+    await back.tap();
+    await expect(ui).toHaveAttribute('data-camera-transition', 'none');
+    const playerX = Number(await ui.getAttribute('data-render-player-x'));
+    const playerLeft = Math.max(0, Math.min(1024, playerX - 512));
+    await expect.poll(async () => Number(await ui.getAttribute('data-camera-left'))).toBe(playerLeft);
+  } finally { await fixture.close(); }
+});
+
+test('V8E ordinary Loomkeeper handover preserves an in-flight actor focus', async ({ page }) => {
+  const fixture = await presentationV8Fixture(page);
+  try {
+    const ui = page.locator('.combat-v8');
+    await page.emulateMedia({ reducedMotion: 'no-preference' });
+    const actorX = Number(await ui.getAttribute('data-render-loomkeeper-x'));
+    const loomkeeperLeft = Math.max(0, Math.min(1024, actorX - 512));
+    expect(await startVisibleCameraTransition(page)).toBe('loomkeeper');
+    expect(Number(await ui.getAttribute('data-camera-left'))).toBeLessThan(loomkeeperLeft);
+    fixture.update(value => {
+      const simulation = value.simulation;
+      simulation.turn++;
+      simulation.activeActor = 'loomkeeper';
+      simulation.phase = 'action';
+      simulation.phaseStartedTick = simulation.tick;
+      simulation.phaseDeadlineTick = simulation.tick + 450;
+      simulation.inputEpoch++;
+      simulation.heldDirection = 0;
+      simulation.leaseExpiresTick = null;
+      simulation.lastLeaseRefreshTick = null;
+      simulation.aim = null;
+    });
+    await expect(ui).toHaveAttribute('data-active-actor', 'loomkeeper');
+    await expect(ui).toHaveAttribute('data-camera-transition', 'none', { timeout: 700 });
+    await expect.poll(async () => Number(await ui.getAttribute('data-camera-left')))
+      .toBe(loomkeeperLeft);
+    await expect(ui).not.toHaveAttribute('data-last-command', /.+/);
+  } finally { await fixture.close(); }
+});
+
+test('V8E manual cancellation/free recovery and terminal priority are bounded', async ({ page }) => {
+  const fixture = await presentationV8Fixture(page);
+  try {
+    const ui = page.locator('.combat-v8');
+    await page.emulateMedia({ reducedMotion: 'reduce' });
+    await page.locator('.camera-focus-loomkeeper').tap();
+    const loomkeeperX = Number(await ui.getAttribute('data-render-loomkeeper-x'));
+    const loomkeeperLeft = Math.max(0, Math.min(1024, loomkeeperX - 512));
+    await expect.poll(async () => Number(await ui.getAttribute('data-camera-left'))).toBe(loomkeeperLeft);
+
+    await page.emulateMedia({ reducedMotion: 'no-preference' });
+    await page.locator('.camera-focus-player').tap();
+    await cameraPointer(page, 'pointerdown', 601, 0, 0);
+    const cancelledAt = Number(await ui.getAttribute('data-camera-left'));
+    await cameraPointer(page, 'pointermove', 601, 8, 6);
+    await cameraPointer(page, 'pointerup', 601, 8, 6);
+    await expect(ui).toHaveAttribute('data-camera-transition', 'none');
+    await expect(ui).toHaveAttribute('data-camera-anchor', 'player');
+    expect(Number(await ui.getAttribute('data-camera-left'))).toBe(cancelledAt);
+
+    await cameraPointer(page, 'pointerdown', 602, 0, 0);
+    await cameraPointer(page, 'pointermove', 602, 20, 21);
+    await cameraPointer(page, 'pointerup', 602, 20, 21);
+    await expect(ui).toHaveAttribute('data-camera-anchor', 'player');
+    await expect.poll(async () => Number(await ui.getAttribute('data-camera-left'))).toBe(cancelledAt);
+
+    const panDx = cancelledAt < 512 ? -160 : 160;
+    await cameraPointer(page, 'pointerdown', 603, 0, 0);
+    await cameraPointer(page, 'pointermove', 603, panDx, 30);
+    await cameraPointer(page, 'pointerup', 603, panDx, 30);
+    await expect(ui).toHaveAttribute('data-camera-anchor', 'free');
+    const freeLeft = Number(await ui.getAttribute('data-camera-left'));
+    expect(Math.abs(freeLeft - cancelledAt)).toBeGreaterThan(100);
+
+    await cameraPointer(page, 'pointerdown', 604, 0, 0);
+    await cameraPointer(page, 'pointermove', 604, panDx * 4, 30);
+    await cameraPointer(page, 'pointerup', 604, panDx * 4, 30);
+    await page.emulateMedia({ reducedMotion: 'no-preference' });
+    const recovery = page.locator('.camera-focus-button:visible').first();
+    await expect(recovery).toBeVisible();
+    await recovery.tap();
+    await expect(ui).not.toHaveAttribute('data-camera-transition', 'none');
+    fixture.defeat('player');
+    await expect(ui).toHaveAttribute('data-camera-transition', 'none');
+    await expect(page.locator('.camera-focus-button:visible')).toHaveCount(0);
+    await expect(ui).toHaveAttribute('data-presentation', 'unravel');
+    await expect(ui).toHaveAttribute('data-result-pending', 'true');
+  } finally { await fixture.close(); }
+});
+
+test('V8E actual Loomkeeper projectiles restore preselected actor and exact free views', async ({ page }) => {
+  test.setTimeout(45_000);
+  for (const preference of ['loomkeeper', 'free'] as const) {
+    const fixture = await presentationV8Fixture(page, { authoritative: true });
+    try {
+      const ui = page.locator('.combat-v8');
+      await page.emulateMedia({ reducedMotion: 'reduce' });
+      if (preference === 'loomkeeper') {
+        await page.locator('.camera-focus-loomkeeper').tap();
+      } else {
+        await cameraPointer(page, 'pointerdown', 620, 0, 0);
+        await cameraPointer(page, 'pointermove', 620, -180, 20);
+        await cameraPointer(page, 'pointerup', 620, -180, 20);
+      }
+      await expect(ui).toHaveAttribute('data-camera-anchor', preference);
+      const savedLeft = Number(await ui.getAttribute('data-camera-left'));
+      fixture.stop();
+
+      fixture.authorityAdvance(450);
+      for (let step = 0; step < 180 && !fixture.current().simulation.projectile; step++)
+        fixture.authorityAdvance(3);
+      expect(fixture.current().simulation.projectile?.actor).toBe('loomkeeper');
+      await expect(ui).toHaveAttribute('data-presentation', 'projectile');
+      let tracked = false;
+      for (let step = 0; step < 100 && fixture.current().simulation.projectile; step++) {
+        fixture.authorityAdvance(3);
+        tracked ||= fixture.current().simulation.projectile !== null;
+      }
+      expect(fixture.current().simulation.projectile).toBeNull();
+      expect(tracked).toBe(true);
+      await expect(ui).toHaveAttribute('data-simulation-tick', String(fixture.current().simulation.tick));
+      await expect(ui).not.toHaveAttribute('data-presentation', 'projectile');
+      await expect(ui).toHaveAttribute('data-camera-anchor', preference);
+      if (preference === 'free') {
+        await expect.poll(async () => Number(await ui.getAttribute('data-camera-left'))).toBe(savedLeft);
+      } else {
+        const actorX = Number(await ui.getAttribute('data-render-loomkeeper-x'));
+        await expect.poll(async () => Number(await ui.getAttribute('data-camera-left')))
+          .toBe(Math.max(0, Math.min(1024, actorX - 512)));
+      }
+    } finally { await fixture.close(); }
+  }
+});
+
+test('V8E actual player projectile endpoint recentres the new player retreat action', async ({ page }) => {
+  const fixture = await presentationV8Fixture(page, { authoritative: true });
+  try {
+    const ui = page.locator('.combat-v8');
+    await cameraPointer(page, 'pointerdown', 621, 0, 0);
+    await cameraPointer(page, 'pointermove', 621, -180, 20);
+    await cameraPointer(page, 'pointerup', 621, -180, 20);
+    await expect(ui).toHaveAttribute('data-camera-anchor', 'free');
+    fixture.stop();
+    fixture.authorityIntent({ type: 'aim', angleMilliDegrees: 45000, powerPermille: 1000 });
+    fixture.authorityIntent({ type: 'fire', aimId: fixture.current().simulation.aimId });
+    await expect(ui).toHaveAttribute('data-presentation', 'projectile');
+    for (let step = 0; step < 100 && fixture.current().simulation.projectile; step++)
+      fixture.authorityAdvance(3);
+    expect(fixture.current().simulation.projectile).toBeNull();
+    expect(fixture.current().simulation.activeActor).toBe('player');
+    expect(fixture.current().simulation.phase).toBe('retreat');
+    await expect(ui).toHaveAttribute('data-simulation-tick', String(fixture.current().simulation.tick));
+    await expect(ui).toHaveAttribute('data-camera-anchor', 'player');
+    const playerX = Number(await ui.getAttribute('data-render-player-x'));
+    await expect.poll(async () => Number(await ui.getAttribute('data-camera-left')))
+      .toBe(Math.max(0, Math.min(1024, playerX - 512)));
+  } finally { await fixture.close(); }
+});
+
+test('V8E injected reward scene has focus parity without wallet, entitlement, payout or service', async ({ page }) => {
+  test.setTimeout(45_000);
+  const fixture = await presentationV8Fixture(page, { reward: true, authoritative: true });
+  try {
+    const ui = page.locator('.combat-v8');
+    await expect(ui).toHaveAttribute('data-mode', 'reward');
+    await expect(ui).toHaveAttribute('data-ruleset', V8_R1_RULESET_ID);
+    const challenge = await ui.getAttribute('data-challenge-id');
+    const focus = page.locator('.camera-focus-loomkeeper');
+    await expect(focus).toHaveAttribute('aria-label', 'Loomkeeper, 100 Stitching, off-screen right');
+    const box = await focus.boundingBox();
+    expect(box!.width).toBeGreaterThanOrEqual(48); expect(box!.height).toBeGreaterThanOrEqual(48);
+    await page.emulateMedia({ reducedMotion: 'no-preference' });
+    await armCameraTransitionRecorder(page);
+    await focus.tap();
+    await expectCameraTransitionObserved(page, 'loomkeeper');
+    await expect(ui).toHaveAttribute('data-camera-transition', 'none', { timeout: 700 });
+    const loomkeeperX = Number(await ui.getAttribute('data-render-loomkeeper-x'));
+    await expect.poll(async () => Number(await ui.getAttribute('data-camera-left')))
+      .toBe(Math.max(0, Math.min(1024, loomkeeperX - 512)));
+    await expect(page.locator('.camera-focus-player')).toHaveAttribute('aria-label',
+      'Back to You, 100 Stitching, off-screen left');
+    await armCameraTransitionRecorder(page);
+    await page.locator('.camera-focus-player').tap();
+    await expectCameraTransitionObserved(page, 'player');
+    await expect(ui).toHaveAttribute('data-camera-transition', 'none', { timeout: 700 });
+    const playerX = Number(await ui.getAttribute('data-render-player-x'));
+    await expect.poll(async () => Number(await ui.getAttribute('data-camera-left')))
+      .toBe(Math.max(0, Math.min(1024, playerX - 512)));
+    await expect(ui).toHaveAttribute('data-challenge-id', challenge!);
+    await expect(ui).not.toHaveAttribute('data-last-command', /.+/);
+    await expect(page.locator('.wallet-card, .reward-result, .reward-claim, .daily-card')).toHaveCount(0);
+    expect(fixture.current().mode).toBe('reward');
+  } finally { await fixture.close(); }
+});
+
+test('V8E blur hidden and disconnect cancel focus without late resume mutation', async ({ page }) => {
+  test.setTimeout(30_000);
+  for (const event of ['blur', 'hidden', 'disconnect'] as const) {
+    const fixture = await presentationV8Fixture(page, { authoritative: true });
+    try {
+      const ui = page.locator('.combat-v8');
+      await page.emulateMedia({ reducedMotion: 'no-preference' });
+      await startVisibleCameraTransition(page, event === 'disconnect' ? undefined : event);
+      if (event === 'disconnect') fixture.disconnectTransport();
+      await expect(ui).toHaveAttribute('data-camera-transition', 'none');
+      await expect(ui).toHaveAttribute('data-suspended', 'true');
+      const stoppedLeft = Number(await ui.getAttribute('data-camera-left'));
+      if (event === 'blur') {
+        await page.evaluate(() => window.dispatchEvent(new Event('focus')));
+      } else if (event === 'hidden') {
+        await page.evaluate(() => {
+          Reflect.deleteProperty(document, 'hidden');
+          document.dispatchEvent(new Event('visibilitychange'));
+          window.dispatchEvent(new Event('focus'));
+        });
+      }
+      await expect(ui).toHaveAttribute('data-suspended', 'false', { timeout: 6000 });
+      await page.waitForTimeout(350);
+      expect(Number(await ui.getAttribute('data-camera-left'))).toBe(stoppedLeft);
+      await expect(ui).toHaveAttribute('data-camera-transition', 'none');
+    } finally { await fixture.close(); }
+  }
+});
+
+test('V8E unavailable retry replacement and scene destruction never resurrect detached focus', async ({ page }) => {
+  test.setTimeout(30_000);
+  for (const operation of ['unavailable', 'retry', 'destroy'] as const) {
+    const fixture = await presentationV8Fixture(page, operation === 'retry' ? { authoritative: true } : {});
+    try {
+      const ui = page.locator('.combat-v8');
+      const challenge = await ui.getAttribute('data-challenge-id');
+      await installDetachedCameraMonitor(page);
+      await startVisibleCameraTransition(page);
+      if (operation === 'unavailable') {
+        fixture.loseSession();
+        await expect(page.locator('.result-shell')).toBeVisible({ timeout: 6000 });
+      } else if (operation === 'retry') {
+        await page.locator('.pause-button').tap();
+        await expect(ui).toHaveAttribute('data-paused', 'true');
+        await expect(ui).toHaveAttribute('data-camera-transition', 'none');
+        await page.locator('.retry-button').tap();
+        await expect(page.locator('.combat-v8')).not.toHaveAttribute('data-challenge-id', challenge!, { timeout: 6000 });
+        await expect(page.locator('.combat-v8')).toHaveAttribute('data-camera-transition', 'none');
+      } else {
+        fixture.defeat('player');
+        await expect(ui).toHaveAttribute('data-camera-transition', 'none');
+        await expect(page.locator('.result-shell')).toBeVisible({ timeout: 6000 });
+      }
+      await expect.poll(() => detachedCameraEvidence(page)).toMatchObject({ connected: false });
+      const detached = await detachedCameraEvidence(page);
+      await page.waitForTimeout(400);
+      expect(await detachedCameraEvidence(page)).toEqual(detached);
+    } finally { await fixture.close(); }
+  }
+});
+
 test('V8 r1 right left off and actual landscape preserve pad axes and safe areas', async ({ page }, testInfo) => {
+  test.setTimeout(45_000);
   for (const mode of ['right', 'left', 'off'] as const) {
     await page.setViewportSize({ width: 390, height: 844 });
     await page.goto(`/?combat-preview=v8-r1&sideways=${mode}`);
@@ -571,6 +859,8 @@ test('V8 r1 right left off and actual landscape preserve pad axes and safe areas
       ? { top: 14, right: 22, bottom: 12, left: 18 }
       : mode === 'left' ? { top: 12, right: 18, bottom: 14, left: 22 } : SYNTHETIC_SAFE_AREA);
     await assertControlsFit(page);
+    await assertFocusTarget(page);
+    await assertFocusRoundTrip(page);
     const pad = await page.locator('.movement-zone').boundingBox();
     expect(pad!.width).toBeGreaterThanOrEqual(112); expect(pad!.height).toBeGreaterThanOrEqual(112);
     await r1Pointer(page, 'pointerdown', 304, 0, 0);
@@ -588,6 +878,8 @@ test('V8 r1 right left off and actual landscape preserve pad axes and safe areas
     await expect(page.locator('html')).not.toHaveAttribute('data-sideways', /.+/);
     await expect(ui).toHaveAttribute('data-orientation', 'landscape');
     await assertControlsFit(page);
+    await assertFocusTarget(page);
+    await assertFocusRoundTrip(page);
   }
 });
 
@@ -940,6 +1232,27 @@ async function dragBattlefield(
   await pointer(page, '#game canvas', 'pointerup', pointerId, ratios.toX, ratios.toY);
 }
 
+async function cameraPointer(
+  page: Page,
+  type: 'pointerdown' | 'pointermove' | 'pointerup',
+  pointerId: number,
+  dx: number,
+  dy: number
+): Promise<void> {
+  const ui = page.locator('.combat-ui');
+  const canvas = page.locator('#game canvas');
+  const [x, y, width, height, box] = await Promise.all([
+    ui.getAttribute('data-battlefield-x'), ui.getAttribute('data-battlefield-y'),
+    ui.getAttribute('data-battlefield-width'), ui.getAttribute('data-battlefield-height'),
+    canvas.boundingBox()
+  ]);
+  expect(box).not.toBeNull();
+  const originX = Number(x) + Number(width) / 2;
+  const originY = Number(y) + Number(height) * 0.25;
+  await pointer(page, '#game canvas', type, pointerId,
+    (originX + dx) / box!.width, (originY + dy) / box!.height);
+}
+
 function overlaps(
   a: { x: number; y: number; width: number; height: number },
   b: { x: number; y: number; width: number; height: number }
@@ -1013,19 +1326,170 @@ async function readPresentationRecorder(page: Page): Promise<{
   ).__combatPresentation);
 }
 
-/** Synthetic, schema-checked presentation receipts on the existing injected runtime.
- * They are not combat outcomes, replay evidence, or a production debug seam. */
-async function presentationV8Fixture(page: Page) {
+async function assertFocusTarget(page: Page): Promise<void> {
+  const button = page.locator('.camera-focus-button:visible').first();
+  await expect(button).toBeVisible();
+  const [box, viewport] = await Promise.all([button.boundingBox(), page.evaluate(() => ({
+    width: window.visualViewport?.width ?? innerWidth,
+    height: window.visualViewport?.height ?? innerHeight
+  }))]);
+  expect(box).not.toBeNull();
+  expect(box!.width).toBeGreaterThanOrEqual(48); expect(box!.height).toBeGreaterThanOrEqual(48);
+  expect(box!.x).toBeGreaterThanOrEqual(0); expect(box!.y).toBeGreaterThanOrEqual(0);
+  expect(box!.x + box!.width).toBeLessThanOrEqual(viewport.width + 1);
+  expect(box!.y + box!.height).toBeLessThanOrEqual(viewport.height + 1);
+}
+
+async function assertFocusRoundTrip(page: Page): Promise<void> {
+  const ui = page.locator('.combat-v8');
+  const command = await ui.getAttribute('data-last-command');
+  await page.emulateMedia({ reducedMotion: 'reduce' });
+  const loomkeeper = page.locator('.camera-focus-loomkeeper');
+  await expect(loomkeeper).toHaveAttribute('data-side', 'right');
+  await expect(loomkeeper).toHaveAttribute('aria-label', /Loomkeeper, \d+ Stitching, off-screen right/);
+  await loomkeeper.tap();
+  await expect(ui).toHaveAttribute('data-camera-anchor', 'loomkeeper');
+  await expect(ui).toHaveAttribute('data-camera-transition', 'none');
+  const player = page.locator('.camera-focus-player');
+  await expect(player).toHaveAttribute('data-side', 'left');
+  await expect(player).toHaveAttribute('aria-label', /Back to You, \d+ Stitching, off-screen left/);
+  await player.tap();
+  await expect(ui).toHaveAttribute('data-camera-anchor', 'player');
+  await expect(ui).toHaveAttribute('data-camera-transition', 'none');
+  expect(await ui.getAttribute('data-last-command')).toBe(command);
+}
+
+type CameraTransitionActor = 'player' | 'loomkeeper';
+
+async function armCameraTransitionRecorder(page: Page): Promise<void> {
+  await page.locator('.combat-v8').evaluate(element => {
+    const host = window as typeof window & {
+      __v8eCameraTransitionObserver?: MutationObserver;
+      __v8eCameraTransitions?: { actors: string[] };
+    };
+    host.__v8eCameraTransitionObserver?.disconnect();
+    const ui = element as HTMLElement;
+    const evidence = { actors: [] as string[] };
+    const recordActor = (actor: string | null | undefined) => {
+      if ((actor === 'player' || actor === 'loomkeeper') && !evidence.actors.includes(actor))
+        evidence.actors.push(actor);
+    };
+    const record = (records: MutationRecord[] = []) => {
+      for (const mutation of records) recordActor(mutation.oldValue);
+      const actor = ui.dataset.cameraTransition;
+      recordActor(actor);
+    };
+    const observer = new MutationObserver(record);
+    observer.observe(ui, {
+      attributes: true,
+      attributeFilter: ['data-camera-transition'],
+      attributeOldValue: true
+    });
+    host.__v8eCameraTransitionObserver = observer;
+    host.__v8eCameraTransitions = evidence;
+    record();
+  });
+}
+
+async function expectCameraTransitionObserved(
+  page: Page,
+  actor: CameraTransitionActor
+): Promise<void> {
+  await expect.poll(() => page.evaluate(expected => {
+    const evidence = (window as typeof window & {
+      __v8eCameraTransitions?: { actors: string[] };
+    }).__v8eCameraTransitions;
+    return evidence?.actors.includes(expected) ?? false;
+  }, actor)).toBe(true);
+}
+
+async function startVisibleCameraTransition(
+  page: Page,
+  interruption?: 'blur' | 'hidden'
+): Promise<CameraTransitionActor> {
+  const button = page.locator('.camera-focus-button:visible').first();
+  await expect(button).toBeVisible();
+  const actor = await button.evaluate(element => element.classList.contains('camera-focus-player')
+    ? 'player' : 'loomkeeper') as CameraTransitionActor;
+  await armCameraTransitionRecorder(page);
+  await button.evaluate((element, args) => new Promise<void>(resolve => {
+    const ui = document.querySelector<HTMLElement>('.combat-v8')!;
+    let observer: MutationObserver | undefined;
+    const observeStart = () => {
+      if (ui.dataset.cameraTransition !== args.actor) return;
+      observer?.disconnect();
+      if (args.interruption === 'blur') {
+        window.dispatchEvent(new Event('blur'));
+      } else if (args.interruption === 'hidden') {
+        Object.defineProperty(document, 'hidden', { configurable: true, get: () => true });
+        document.dispatchEvent(new Event('visibilitychange'));
+      }
+      resolve();
+    };
+    observer = new MutationObserver(observeStart);
+    observer.observe(ui, { attributes: true, attributeFilter: ['data-camera-transition'] });
+    (element as HTMLButtonElement).click();
+    observeStart();
+  }), { actor, interruption });
+  await expectCameraTransitionObserved(page, actor);
+  return actor;
+}
+
+async function installDetachedCameraMonitor(page: Page): Promise<void> {
+  await page.locator('.combat-v8').evaluate(element => {
+    const evidence = { connected: true, mutations: 0, cameraLeft: '', transition: '' };
+    const update = () => {
+      const ui = element as HTMLElement;
+      evidence.connected = ui.isConnected;
+      evidence.cameraLeft = ui.dataset.cameraLeft ?? '';
+      evidence.transition = ui.dataset.cameraTransition ?? '';
+    };
+    const observer = new MutationObserver(records => { evidence.mutations += records.length; update(); });
+    observer.observe(element, { attributes: true, subtree: true });
+    new MutationObserver(update).observe(document.body, { childList: true, subtree: true });
+    update();
+    (window as typeof window & { __v8eDetachedCamera?: typeof evidence }).__v8eDetachedCamera = evidence;
+  });
+}
+
+async function detachedCameraEvidence(page: Page): Promise<{
+  connected: boolean; mutations: number; cameraLeft: string; transition: string;
+}> {
+  return page.evaluate(() => ({
+    ...(window as typeof window & { __v8eDetachedCamera: {
+      connected: boolean; mutations: number; cameraLeft: string; transition: string;
+    } }).__v8eDetachedCamera
+  }));
+}
+
+/** Schema-checked presentation fixture on the real test-only runtime. Direct
+ * presentation receipts are not outcomes, replay evidence, or a product seam. */
+async function presentationV8Fixture(page: Page, options: { authoritative?: boolean; reward?: boolean } = {}) {
   const runtime = createRuntimeServer({ clientDir: path.resolve('client/build'), sessionRegistry: {
     simulationRulesetId: V8_R1_RULESET_ID, seedSource: () => 1,
     simulationTickIntervalMs: false, v8TestOnly: { nowUs: () => 0 }
   } });
   const port = await runtime.listen();
   await page.goto(`http://127.0.0.1:${port}/?sideways=off`);
-  await page.getByRole('button', { name: 'Start Practice' }).tap();
-  await expect(page.locator('.combat-v8')).toBeVisible();
-  const socket = [...runtime.io.sockets.sockets.values()][0];
-  const session = runtime.sessions.getBound(socket.id)!;
+  await expect(page.locator('.practice-shell')).toBeVisible();
+  let socket = [...runtime.io.sockets.sockets.values()][0];
+  let session = runtime.sessions.getBound(socket.id)!;
+  if (options.reward) {
+    const injected = runtime.sessions.createChallengeV8ForTest(session, 'reward', 'wizard', V8_R1_RULESET_ID);
+    if ('code' in injected) throw new Error(injected.message);
+    // Bind the test-only injected instance to the same exact automated adapter
+    // identity used by the product runtime; no reward service or eligibility is installed.
+    session.challenges.get(injected.challengeId)!.automationId = V8_AUTOMATION_ID;
+    ChallengeSnapshotV8RuntimeSchema.parse(runtime.sessions.activeSnapshotV8(session));
+    await page.reload();
+    await expect(page.locator('.practice-shell')).toBeVisible();
+    await page.locator('.practice-start').tap();
+  } else {
+    await page.getByRole('button', { name: 'Start Practice' }).tap();
+  }
+  await expect(page.locator('.combat-v8')).toBeVisible({ timeout: 10_000 });
+  socket = [...runtime.io.sockets.sockets.values()].find(candidate => runtime.sessions.getBound(candidate.id)?.id === session.id)!;
+  session = runtime.sessions.getBound(socket.id)!;
   let snapshot = structuredClone(runtime.sessions.activeSnapshotV8(session)!);
   const update = (mutate: (value: ChallengeSnapshotV8Runtime) => void) => {
     const next = structuredClone(snapshot);
@@ -1035,9 +1499,31 @@ async function presentationV8Fixture(page: Page) {
     snapshot = ChallengeSnapshotV8RuntimeSchema.parse(next);
     runtime.io.emit(protocolEventsV8.snapshot, snapshot);
   };
-  const timer = setInterval(() => { if (snapshot.status === 'active') update(() => {}); }, 60);
+  const timer = setInterval(() => {
+    if (snapshot.status !== 'active') return;
+    if (options.authoritative) {
+      snapshot = ChallengeSnapshotV8RuntimeSchema.parse(
+        runtime.sessions.advanceChallengeTicksV8ForTest(session, snapshot.challengeId, 3));
+      runtime.io.emit(protocolEventsV8.snapshot, snapshot);
+    } else update(() => {});
+  }, 60);
   return {
     current: () => structuredClone(snapshot), update, stop: () => clearInterval(timer),
+    authorityIntent: (intent: Parameters<typeof runtime.sessions.applyIntentV8ForTest>[2]) => {
+      if (!options.authoritative) throw new Error('Authoritative fixture option required.');
+      snapshot = ChallengeSnapshotV8RuntimeSchema.parse(
+        runtime.sessions.applyIntentV8ForTest(session, snapshot.challengeId, intent));
+      runtime.io.emit(protocolEventsV8.snapshot, snapshot);
+      return structuredClone(snapshot);
+    },
+    authorityAdvance: (count: number) => {
+      if (!options.authoritative) throw new Error('Authoritative fixture option required.');
+      snapshot = ChallengeSnapshotV8RuntimeSchema.parse(
+        runtime.sessions.advanceChallengeTicksV8ForTest(session, snapshot.challengeId, count));
+      runtime.io.emit(protocolEventsV8.snapshot, snapshot);
+      return structuredClone(snapshot);
+    },
+    disconnectTransport: () => socket.conn.close(),
     defeat: (actor: 'player' | 'loomkeeper' | 'both') => {
       update(value => {
         value.status = 'completed'; const s = value.simulation;

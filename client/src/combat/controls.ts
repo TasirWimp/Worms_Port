@@ -22,7 +22,51 @@ type ControlsCallbacksV8 = {
     onAimPreview: (aim: AimIntent | null) => void;
     onPause: (paused: boolean) => void;
     onRetry?: () => void;
+    onCameraFocus: (actor: 'player' | 'loomkeeper') => void;
 };
+
+export const CAMERA_FOCUS_DURATION_MS = 300;
+export const CAMERA_PAN_THRESHOLD = 12;
+export type CameraPreference = 'player' | 'loomkeeper' | 'free';
+
+type CameraActionFacts = { activeActor: 'player' | 'loomkeeper'; phase: string; turn: number };
+
+export function cameraFocusProgress(elapsedMs: number, reducedMotion = false): number {
+    if (reducedMotion) return 1;
+    const progress = Math.min(1, Math.max(0, elapsedMs / CAMERA_FOCUS_DURATION_MS));
+    return progress * progress * (3 - 2 * progress);
+}
+
+export function deliberateCameraPan(dx: number, dy: number): boolean {
+    return Math.abs(dx) >= CAMERA_PAN_THRESHOLD && Math.abs(dx) >= Math.abs(dy);
+}
+
+export function beginsPlayerCameraAction(previous: CameraActionFacts, next: CameraActionFacts): boolean {
+    const actionable = (phase: string) => phase === 'action' || phase === 'retreat';
+    return next.activeActor === 'player' && actionable(next.phase) &&
+        (previous.activeActor !== 'player' || !actionable(previous.phase) || next.turn !== previous.turn);
+}
+
+export function livingCameraPreference(
+    preference: CameraPreference,
+    playerAlive: boolean,
+    loomkeeperAlive: boolean
+): CameraPreference {
+    if (preference === 'player' && !playerAlive && loomkeeperAlive) return 'loomkeeper';
+    if (preference === 'loomkeeper' && !loomkeeperAlive && playerAlive) return 'player';
+    return preference;
+}
+
+export function projectileCameraRestoration<T>(
+    saved: { preference: CameraPreference; freeCamera?: T },
+    playerAlive: boolean,
+    loomkeeperAlive: boolean
+): { preference: CameraPreference; freeCamera?: T } {
+    const preference = livingCameraPreference(saved.preference, playerAlive, loomkeeperAlive);
+    return preference === 'free' && saved.freeCamera !== undefined
+        ? { preference, freeCamera: saved.freeCamera }
+        : { preference };
+}
 
 /** V8 has continuous owned input, not the legacy accepted-command animation queue. */
 export class ActionTurnsControls {
@@ -49,6 +93,8 @@ export class ActionTurnsControls {
             <section class="combat-status"><strong class="combat-turn" aria-live="polite"></strong><span class="combat-timer"></span></section>
             <div class="combat-unit-status player-status" data-unit="player" role="group"><span class="unit-status-name">You</span><strong class="unit-status-value"></strong></div>
             <div class="combat-unit-status loomkeeper-status" data-unit="loomkeeper" role="group"><span class="unit-status-name">Loomkeeper</span><strong class="unit-status-value"></strong></div>
+            <button type="button" class="camera-focus-button camera-focus-player" hidden></button>
+            <button type="button" class="camera-focus-button camera-focus-loomkeeper" hidden></button>
             <button type="button" class="pause-button">Pause</button>
             <div class="combat-touch-zone movement-zone" role="group" aria-label="${r1 ? 'Movement pad. Tap a side to face. Drag sideways to walk. Push up to hop. Release stops walking.' : 'Movement pad. Hold to walk, release to stop.'}"><span class="pad-label">${r1 ? 'Drag to walk · ↑ hop' : 'Hold to walk'}</span>${r1 ? '<span class="pad-side pad-side-left" aria-hidden="true">←<small>Tap</small></span><span class="pad-side pad-side-right" aria-hidden="true">→<small>Tap</small></span>' : ''}<span class="pad-ring"></span><span class="pad-knob"></span></div>
             <div class="combat-touch-zone aim-zone" role="group" aria-label="Aim and power pad"><span class="pad-label">Aim · release locks</span><span class="pad-ring"></span><span class="pad-knob"></span></div>
@@ -111,6 +157,18 @@ export class ActionTurnsControls {
             if (this.snapshot.paused) this.callbacks.onRetry?.();
         });
         this.button('.retry-button').hidden = !this.callbacks.onRetry;
+        for (const [selector, actor] of [
+            ['.camera-focus-player', 'player'], ['.camera-focus-loomkeeper', 'loomkeeper']
+        ] as const) {
+            const button = this.button(selector);
+            button.addEventListener('pointerdown', (event) => {
+                event.stopPropagation();
+            });
+            button.addEventListener('click', (event) => {
+                event.preventDefault(); event.stopPropagation();
+                if (!button.hidden && !button.disabled) this.callbacks.onCameraFocus(actor);
+            });
+        }
         this.bindPad('movement'); this.bindPad('aim'); this.update(snapshot);
     }
 
@@ -143,12 +201,39 @@ export class ActionTurnsControls {
         this.root.dataset.orientation = layout.orientation;
         this.root.dataset.battlefieldWidth = String(layout.battlefield.width);
         this.root.dataset.battlefieldHeight = String(layout.battlefield.height);
+        this.root.dataset.battlefieldX = String(layout.battlefield.x);
+        this.root.dataset.battlefieldY = String(layout.battlefield.y);
+        this.root.dataset.worldScaleX = String(layout.worldScaleX);
     }
     public setUnitPositions(units: readonly SimulationUnit[]): void {
         if (!this.layout) return;
         const positions = computeActorStatusLayout(this.layout, units);
         placeOptional(this.element('.player-status'), positions.player);
         placeOptional(this.element('.loomkeeper-status'), positions.loomkeeper);
+    }
+    public setCameraFocusControls(options: {
+        enabled: boolean;
+        player: { direction: 'left' | 'right' | null; stitching: number };
+        loomkeeper: { direction: 'left' | 'right' | null; stitching: number };
+    }): void {
+        for (const [selector, label, state] of [
+            ['.camera-focus-player', 'Back to You', options.player],
+            ['.camera-focus-loomkeeper', 'Loomkeeper', options.loomkeeper]
+        ] as const) {
+            const button = this.button(selector);
+            const visible = options.enabled && state.direction !== null;
+            button.hidden = !visible;
+            button.disabled = !visible;
+            if (!state.direction) continue;
+            button.dataset.side = state.direction;
+            const chevron = state.direction === 'left' ? '‹' : '›';
+            const text = state.direction === 'left'
+                ? `${chevron} ${label} · ${state.stitching} Stitching`
+                : `${label} · ${state.stitching} Stitching ${chevron}`;
+            if (button.textContent !== text) button.textContent = text;
+            button.setAttribute('aria-label',
+                `${label}, ${state.stitching} Stitching, off-screen ${state.direction}`);
+        }
     }
     public destroy(): void { this.root.remove(); }
 

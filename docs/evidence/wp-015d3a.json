@@ -15,7 +15,7 @@
     "worms_port_reviewer"
   ],
   "scope": [
-    "V8E reversible opponent focus opened 2026-09-04 from freshly fetched clean local/upstream 7c228efc426dc670e45e52d065fa43d8569b3f6d on codex/wp-015d3a-v8e-opponent-focus-v0. Existing contract section E freezes exactly nine existing paths, fresh no-history client implementation and distinct read-only review. Presentation-only edge focus exposes off-screen Loomkeeper/current Stitching and mirrored Back to You, 300ms/reduced-motion transition, manual-pan cancellation/free recovery, temporary projectile priority and new-player-action recenter. No new combat identity, gameplay/AI/server/replay/reward, assets/dependencies/manifests, telemetry, deployment, observation or authority change.",
+    "V8E reversible opponent focus implemented and independently reviewed 2026-09-04 from freshly fetched clean local/upstream 7c228efc426dc670e45e52d065fa43d8569b3f6d on codex/wp-015d3a-v8e-opponent-focus-v0. Exactly nine existing paths changed; five source/test paths bind to SHA-256 97ca418b44f8a9024dd885e5fb983eb1799ab117aeaae4321a33627186609b83. Presentation-only edge focus exposes off-screen Loomkeeper/current Stitching and mirrored Back to You, 300ms/reduced-motion transition, manual-pan cancellation/free recovery, temporary projectile priority and new-player-action recenter. Final feature, 40/40 five-profile browser, bundle/security and source-review gates pass. No new combat identity, gameplay/AI/server/replay/reward, assets/dependencies/manifests, telemetry, deployment, observation or authority change.",
     "D.3 slow-render correction preregistered within the same11paths: final phone trace showed actualframe23 then removedUI156ms later, proving a wall-time death+3000ms deadline cannot guarantee full Phaser playback/1000ms aftermath. Require actual matching Unravel completion for all observeddead actors, then1000ms cooldown; keep nominal2000ms minimum, livegameplay untouched, hidden/disconnect retirement and bounded explicitly degraded visual fallback. Add controlledslowengine and preinstalled browser-side timeline proof. Earlier runtime clearance is superseded pending this correction; no server/rules/asset/clock change.",
     "D.3 visual-review scope amendment before CSS edit: successful preflight screenshot shows suspended combat message covering the defeated actor. Admit existing client/src/style.css as path11 (seven source/test paths total) for Unravel-only message placement, retaining suspension and all authority; add browser overlap assertion. Stop the in-progress30case run after12started, not claim full pass; retain pre-correction screenshots/logs. No new carrier or gameplay change.",
     "D.3 presentation follow-up opened from freshly fetched clean local/upstream e86e1642d2cbdacfab9a037f4dfc7fee6925d1dc on codex/wp-015d3a-v8d-presentation-v0. Owner explicitly chose ongoing gameplay/clock with visible damage feedback, not a hit freeze. Existing contract D.3 preregisters ten exact paths, one justified lazy scene extraction, fresh no-history client implementer and independent reviewer. Entry review adds existing renderer for airborne idle ahead of cast. Retain authoritative HP/damage about2500ms, approved2000ms Unravel+1000ms aftermath and player-anchored camera; all mechanics/server/replay/deployment/assets/deps remain exact. Ordinary owner feedback is not Lane G evidence.",
@@ -70,6 +70,16 @@
   "sorcerers_reference_used": true,
   "clean_room_records": ["wp-015d3a-v8-action-turns"],
   "check_results": [
+    {
+      "command": "V8E final source, feature, five-profile browser, bundle and security gates",
+      "status": "pass",
+      "detail": "At five-path source/test digest 97ca418b44f8a9024dd885e5fb983eb1799ab117aeaae4321a33627186609b83, focused V8r1 units pass19/19 and complete combat passes55/55. npm run verify:feature passes compliance/types/all configured fast suites, production build, allthree built runtime profiles and5/5 canonical phone checks. Final dedicated V8E zero-retry matrix passes40/40 in4.3m across chromium360x640,390x844,412x915,844x390 and webkit390x844. Bundle passes1494469/1500000 rawJS and414254/430000 gzip; reward-security and identity-bundle pass. Exact Nodev23.6.0 build proof inputs8bf95eaffce01bf381430386417776737d153c566684af746de8a314b4d4eea7/outputs e45a8c95d5368b47536a10c1c9f52bf954e1d0c675f710330866e8e6a6f2c1d5 is valid. No retries, threshold or budget changes."
+    },
+    {
+      "command": "V8E WebKit native touch negative and correction",
+      "status": "pass",
+      "detail": "Retained focused negative: WebKit real .tap() reached the edge button but pointerdown.preventDefault suppressed its compatibility click, so focus/reward cases stayed at player camera. A test-only activation bridge was rejected. Minimal product correction removes only preventDefault from focus-button pointerdown while retaining propagation stop; click still prevents/stops and invokes only camera focus. Observer-backed real taps assert transition occurrence, exact endpoint and zero combat-command leakage. Exact focused WebKit5/5 and Chromium5/5 then pass; no product timing or retry change."
+    },
     {
       "command": "D.3 final source, build, feature and focused phone-browser gates",
       "status": "pass",
@@ -293,6 +303,12 @@
   ],
   "reviews": [
     {
+      "role": "independent_v8e_final_source_reviewer",
+      "reviewer": "Codex agent /root/v8e_focus_reviewer",
+      "decision": "pass",
+      "detail": "Final read-only review at five-path digest 97ca418b44f8a9024dd885e5fb983eb1799ab117aeaae4321a33627186609b83 found no blocker. Verified WebKit native click is restored while pointerdown/click propagation remains isolated, real tap plus transition/endpoint/no-command-leak coverage, and all prior manual-pan, projectile restoration, new-player recenter, ordinary Loomkeeper handover, lifecycle teardown and D.3 terminal-priority findings. Exact five source/test paths only; no import-boundary, asset, dependency, legal, protocol, reward-authority or bundle drift. Reviewer made no edits and accessed no Sorcerers/quarantine/external material."
+    },
+    {
       "role": "independent_v8e_entry_reviewer",
       "reviewer": "Codex agent /root/v8e_focus_reviewer",
       "decision": "pass",
@@ -387,6 +403,7 @@
     }
   ],
   "skipped_checks": [
+    "V8E: no full verify:daily/release/performance/visual-baseline run, PostgreSQL integration, fresh npm audit, physical Android/iOS acceptance or live Render deployment. This is a client presentation slice with unchanged packages, server, combat rules, rewards and assets. No player observation, Lane G/Lane M/Stage C/CRPM execution, human similarity clearance, public promotion, push or PR occurred.",
     "D.3: no full daily/release matrix, performance or baseline-approval run; no repeated balance assessment, PostgreSQL integration, fresh npm audit or supplementary strict legacy test-graph compilation. This is a client presentation slice with unchanged mechanics, server, packages and approved assets. Physical Android/iOS and live Render acceptance remain owner steps; no push, PR, deployment, formal player observation, analytical execution or human similarity clearance is performed. Inherited release/audit issues remain open.",
     "D.2: full daily/release performance, PostgreSQL, physical phone, live Render/deployment, npm audit, supplementary strict test-graph compilation, human similarity and240-match assessment not rerun for this development-only startup change. No package/mechanics/AI changes. Inherited audit/strict legacy typing and all public/funded activation gates remain unresolved; no production environment/secrets/ledger were read or changed by the agent.",
     "D.1 supplementary strict test-graph compilation was attempted and failed on four unchanged legacy diagnostics, not waived: npx tsc --noEmit --target ES2022 --module commonjs --moduleResolution node --strict --esModuleInterop --resolveJsonModule --skipLibCheck tests/protocol/staging-config.test.ts; server/src/game/api.ts31 TS2322 IGame/Game get_me undefined, game/class.ts37 TS2416 get_me return, game/watcher.ts12 and room/watcher.ts31 TS2564 io initialization. No new-test diagnostic; required repository-configured types and build passed. No legacy typing change is admitted here.",
@@ -408,6 +425,7 @@
     "No push, PR, deployment, real-fund activation, or CRPM execution."
   ],
   "residual_risks": [
+    "V8E leaves5531bytes of initial raw JavaScript headroom (1494469/1500000; gzip JavaScript plus CSS414254/430000). No budget or configuration was raised. Owner phone acceptance and the normal daily/release gates remain separate next steps.",
     "D.3 lazy scene entry leaves7400bytes of initial rawJS headroom (1492600/1500000; gzipJS+CSS413636/430000). No budget or config was raised. Future feature work still needs a deliberate loading-boundary review; do not weaken the gate.",
     "The V8D predecessor had only418bytes of initial rawJS headroom before D.3 extracted the existing V8 scene behind its actual asynchronous entry; retain that historical build fact only for its named source tree.",
     "V8D inherited dependency audit is nonpassing: moderate qs6.15.3 advisories. Do not treat passing source/security/bundle tests or the assessment as a clean dependency audit. Public promotion remains blocked pending the separately scoped fix and release revalidation.",

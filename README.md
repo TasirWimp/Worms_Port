@@ -840,6 +840,31 @@ commit, check on the phone:
 These are owner acceptance checks, not completed automated or real-device
 results. The source-bound implementation/review status lives in D.3.
 
+V8E adds reversible opponent focus to the same development profile. When the
+Loomkeeper is outside the battlefield window, a side-correct button shows its
+current Stitching; tap it to focus the opponent, then use **Back to You** to
+return. The buttons do not issue combat commands, and ordinary Loomkeeper turns
+do not pull the camera away from the player's chosen view. Manual battlefield
+panning remains available, while projectile and D.3 terminal presentation keep
+their existing priority. On the phone, verify:
+
+1. The off-screen button names the Loomkeeper, shows current Stitching, points
+   toward the correct side and remains comfortable to tap.
+2. Tap **Loomkeeper**, then **Back to You**. Each view change should feel short
+   and predictable; devices configured for reduced motion switch immediately.
+3. Begin a battlefield swipe during a view change, then pan freely. The swipe
+   must take over without moving, aiming or firing; either edge button must
+   recover an actor view.
+4. Fire and observe both actors' projectiles. Tracking may temporarily own the
+   camera, then it restores the selected actor or exact free view. A new player
+   action recentres the player.
+5. Repeat in the normal sideways phone layout and after rotating. Win/loss still
+   uses the complete D.3 Unraveling and aftermath before the result screen.
+
+These checks are ordinary owner acceptance, not Lane G player observation.
+The source-bound implementation/review return is in
+[V8 contract E](docs/planning/wp-015d3a-v8-action-turns-contract.md#e--reversible-opponent-focus-v8e-2026-09-04).
+
 This mode branches before all saved reward/identity configuration is parsed:
 no database connection, migration, key-file read, RPC, payout worker or pending
 transaction reconciliation runs. No saved setting is modified. Requiring

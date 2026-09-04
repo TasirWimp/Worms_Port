@@ -496,6 +496,43 @@ input {
     pointer-events: none;
 }
 
+.camera-focus-button {
+    position: absolute;
+    z-index: 10;
+    top: 45%;
+    min-width: 48px;
+    min-height: 48px;
+    max-width: min(38%, 152px);
+    padding: 0.35rem 0.5rem;
+    color: #fff;
+    font-size: clamp(0.58rem, 1.8vw, 0.72rem);
+    font-weight: 900;
+    line-height: 1.15;
+    background: rgb(31 35 72 / 94%);
+    border: 2px solid #e9b213;
+    border-radius: 12px;
+    box-shadow: 0 4px 12px rgb(31 35 72 / 34%);
+    transform: translateY(-50%);
+    pointer-events: auto;
+    touch-action: manipulation;
+}
+
+.camera-focus-button[data-side='left'] {
+    left: max(8px, var(--safe-area-left));
+    text-align: left;
+}
+
+.camera-focus-button[data-side='right'] {
+    right: max(8px, var(--safe-area-right));
+    text-align: right;
+}
+
+.camera-focus-button[hidden],
+.combat-ui[data-suspended='true'] .camera-focus-button,
+.combat-v8[data-presentation='unravel'] .camera-focus-button {
+    display: none;
+}
+
 .unit-status-name {
     overflow: hidden;
     font-weight: 800;
@@ -814,7 +851,8 @@ input {
 @media (prefers-reduced-motion: reduce) {
     .combat-touch-zone,
     .combat-actions,
-    .unit-status-track span {
+    .unit-status-track span,
+    .camera-focus-button {
         transition: none;
     }
 }

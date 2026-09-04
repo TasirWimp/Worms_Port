@@ -91,7 +91,8 @@ Phaser/Socket.IO stack.
   replay, assets or deployment configuration change.
   The owner pushed, deployed and accepted these D.3 corrections on their phone;
   this is ordinary product acceptance, not Lane G evidence. Current bounded
-  follow-up: **V8E reversible opponent focus preregistered for implementation**
+  follow-up: **V8E reversible opponent focus implemented, verified and
+  independently reviewed; owner phone acceptance is next**
   from freshly fetched clean local/upstream
   `7c228efc426dc670e45e52d065fa43d8569b3f6d` on
   `codex/wp-015d3a-v8e-opponent-focus-v0`. The existing V8 contract section E
@@ -101,13 +102,16 @@ Phaser/Socket.IO stack.
   projectile priority and predictable player-action recenter. It creates no
   new combat identity, automatic AI-turn camera, minimap/PiP, telemetry,
   mechanics or authority. Fresh no-history client implementation and distinct
-  read-only review are required before the implementation return. Entry review
-  initially stopped four camera-state ambiguities; the amended exact threshold,
-  restore, teardown and injected shared-mode proof now have independent `GO`.
-  Next:
-  implement the frozen V8E client/test slice, run the feature and focused
-  five-profile phone gates, bind source and review; then return it for owner
-  phone testing. Completed predecessor:
+  read-only review produced the implementation return. Entry review initially
+  stopped four camera-state ambiguities; the amended exact threshold, restore,
+  teardown and injected shared-mode proof received independent `GO`. The final
+  five source/test paths bind to SHA-256
+  `97ca418b44f8a9024dd885e5fb983eb1799ab117aeaae4321a33627186609b83`.
+  The feature gate, final 40/40 zero-retry five-profile V8E matrix, bundle and
+  security checks pass. A focused WebKit failure exposed and corrected native
+  click suppression without adding a test bridge; final independent review has
+  no blocker. Next: deploy this reviewed branch to the existing no-reward
+  development profile and run README's owner phone checklist. Completed predecessor:
   **V8D.2 single-service development profile complete and independently reviewed**,
   under section D.2 of the existing
   contract from clean `aa4f3e5` on `codex/wp-015d3a-v8d-single-service-v0`.

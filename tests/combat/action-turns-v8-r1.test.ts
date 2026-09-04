@@ -6,6 +6,14 @@ import { createActionTurnsV8Fixture } from '../../client/src/combat/fixture';
 import { V8SnapshotBuffer, V8PresentationFeedback, wizardAnimationFor, projectCombatV8 } from '../../client/src/combat/presentation';
 import { WIZARD_ANIMATION_KEYS } from '../../client/src/combat/approved-assets';
 import { ChallengeSnapshotV8FamilySchema } from '../../shared/protocol-v8';
+import {
+    CAMERA_FOCUS_DURATION_MS,
+    beginsPlayerCameraAction,
+    cameraFocusProgress,
+    deliberateCameraPan,
+    livingCameraPreference,
+    projectileCameraRestoration
+} from '../../client/src/combat/controls';
 
 const pad = { x: 100, y: 200, width: 112, height: 112 };
 const origin = { x: 156, y: 256 };
@@ -260,4 +268,46 @@ test('V8D airborne idle outranks walking and casting, while legacy and death ani
     assert.equal(wizardAnimationFor(unit, { kind: 'movement', actor: 'player' }), WIZARD_ANIMATION_KEYS.walk, 'legacy unchanged');
     unit.alive = false; unit.grounded = false;
     assert.equal(wizardAnimationFor(unit), WIZARD_ANIMATION_KEYS.unravel);
+});
+
+test('V8E camera focus uses the frozen 300ms smoothstep and exact reduced-motion endpoint', () => {
+    assert.equal(CAMERA_FOCUS_DURATION_MS, 300);
+    assert.equal(cameraFocusProgress(-1), 0);
+    assert.equal(cameraFocusProgress(0), 0);
+    assert.equal(cameraFocusProgress(75), 0.15625);
+    assert.equal(cameraFocusProgress(150), 0.5);
+    assert.equal(cameraFocusProgress(225), 0.84375);
+    assert.equal(cameraFocusProgress(300), 1);
+    assert.equal(cameraFocusProgress(999), 1);
+    assert.equal(cameraFocusProgress(1, true), 1);
+});
+
+test('V8E manual camera acquisition is >=12 game pixels and dominant-horizontal', () => {
+    for (const [dx, dy, expected] of [
+        [11.999, 0, false], [12, 0, true], [-12, 0, true],
+        [12, 12, true], [-12, -12, true], [12, 12.001, false],
+        [80, -81, false], [80, -79, true], [0, 100, false]
+    ] as const) assert.equal(deliberateCameraPan(dx, dy), expected, `${dx},${dy}`);
+});
+
+test('V8E authoritative player actions recenter while opponent phases never claim camera preference', () => {
+    const playerAction = { activeActor: 'player' as const, phase: 'action', turn: 2 };
+    assert.equal(beginsPlayerCameraAction({ activeActor: 'loomkeeper', phase: 'retreat', turn: 1 }, playerAction), true);
+    assert.equal(beginsPlayerCameraAction({ activeActor: 'player', phase: 'projectile', turn: 2 },
+        { ...playerAction, phase: 'retreat' }), true, 'post-projectile player retreat is a new actionable phase');
+    assert.equal(beginsPlayerCameraAction(playerAction, { ...playerAction, phase: 'retreat' }), false);
+    assert.equal(beginsPlayerCameraAction(playerAction,
+        { activeActor: 'loomkeeper', phase: 'action', turn: 3 }), false);
+});
+
+test('V8E dead actor preferences recover to the other living actor without rewriting free mode', () => {
+    assert.equal(livingCameraPreference('player', false, true), 'loomkeeper');
+    assert.equal(livingCameraPreference('loomkeeper', true, false), 'player');
+    assert.equal(livingCameraPreference('free', true, true), 'free');
+    assert.equal(livingCameraPreference('player', false, false), 'player', 'terminal overview owns neither actor');
+    const exactFree = { left: 317.25, top: 0, width: 1024, height: 576 };
+    assert.deepEqual(projectileCameraRestoration({ preference: 'free', freeCamera: exactFree }, true, true),
+        { preference: 'free', freeCamera: exactFree }, 'projectile tracking returns the exact free viewport');
+    assert.deepEqual(projectileCameraRestoration({ preference: 'loomkeeper', freeCamera: exactFree }, true, false),
+        { preference: 'player' }, 'dead preferred actor restores the other living actor');
 });

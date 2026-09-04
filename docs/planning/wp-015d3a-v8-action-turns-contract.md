@@ -2110,6 +2110,66 @@ product sources/docs/tests only, did not access reference/quarantine/external
 material, and did not run browser/device work. Final source and gate review are
 still required; entry approval is not implementation or activation.
 
+#### E source-bound implementation and review return
+
+Fresh no-history implementer `/root/v8e_focus_worker` changed exactly the five
+authorized source/test paths. The V8 scene now keeps a presentation-only camera
+preference (`player`, `loomkeeper`, or exact clamped `free` view), renders live
+side-correct 48px focus buttons, performs the frozen 300ms smoothstep or instant
+reduced-motion transition, and restores that preference after projectile
+tracking. Manual pointer acquisition cancels a transition; only the frozen
+12-game-pixel dominant-horizontal threshold enters free pan. New player actions,
+dead-actor fallback, D.3 terminal ownership and every declared lifecycle teardown
+follow the preregistered ordering. Practice and the schema-checked injected
+reward scene share this presentation without adding wallet, entitlement, payout
+or service behavior.
+
+The focused WebKit pass retained one useful negative result. A real touch tap
+reached the focus button but its initial `pointerdown.preventDefault()` suppressed
+WebKit's native compatibility click, so no camera transition occurred. No
+test-only activation bridge was accepted. The final correction keeps
+`stopPropagation()` on pointer down, allowing the native click while preventing
+the event from reaching battlefield pan or combat controls; the click remains
+default-prevented and propagation-stopped. Pre-armed mutation evidence now
+records the short transition without weakening the real `.tap()`, exact endpoint
+or no-command-leak assertions.
+
+Final verification on the frozen source tree:
+
+- V8 r1 focused unit tests pass 19/19; the complete combat suite passes 55/55.
+- `npm run verify:feature` passes compliance, both type checks, all configured
+  fast suites, production build, all three built runtime profiles and 5/5
+  canonical phone-browser checks.
+- The dedicated zero-retry V8E matrix passes 40/40 in 4.3 minutes across
+  Chromium 360x640, 390x844, 412x915 and 844x390 plus WebKit 390x844. It covers
+  actor focus/back, ordinary Loomkeeper handover, manual/free recovery,
+  authoritative projectiles, new-player recenter, injected reward parity and
+  lifecycle/scene teardown.
+- Bundle limits pass at 1,494,469/1,500,000 initial raw JavaScript bytes and
+  414,254/430,000 initial JavaScript-plus-CSS gzip bytes. Reward-security and
+  identity-bundle inspections pass. Exact Node v23.6.0 build proof is valid:
+  inputs `8bf95eaffce01bf381430386417776737d153c566684af746de8a314b4d4eea7`,
+  outputs `e45a8c95d5368b47536a10c1c9f52bf954e1d0c675f710330866e8e6a6f2c1d5`.
+- Sorted `{path,gitBlob}` rows for the five source/test paths, JSON-stringified
+  without a newline, bind to SHA-256
+  `97ca418b44f8a9024dd885e5fb983eb1799ab117aeaae4321a33627186609b83`.
+  The four documentation carriers and containing commit are excluded to avoid
+  self-reference.
+
+Distinct read-only reviewer `/root/v8e_focus_reviewer` returned final `PASS`
+after the WebKit correction: native button activation and propagation isolation,
+real-tap/no-command-leak coverage, prior transition/lifecycle/projectile/manual-
+pan/D.3 findings, exact five-path source scope and source boundaries have no
+remaining blocker. The reviewer made no edits and accessed no Sorcerers,
+quarantine or external material.
+
+This closes V8E engineering implementation for owner review only. The full
+daily/release/performance matrix, PostgreSQL, physical phone acceptance, live
+deployment, npm audit, player observation and public/funded V8 activation were
+not run. Default production selection, gameplay rules, clocks, AI, protocol,
+replays, rewards, assets, dependencies, manifests, authority and every Lane G/
+D2O/analytical boundary remain unchanged.
+
 ## Clean-room roles and entry gate
 
 The root coordinator is the reference observer and must not implement V8
