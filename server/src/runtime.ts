@@ -46,6 +46,12 @@ export type RuntimeServerOptions = {
 let legacyRuntimeActive = false;
 
 export function createRuntimeServer(options: RuntimeServerOptions = {}) {
+    if (options.sessionRegistry?.stagingPracticeV8 !== undefined &&
+        (options.identity || options.rewards !== undefined || options.rewardWorker !== undefined ||
+            options.allowMissingOrigin === true || process.env.ALLOW_MISSING_ORIGIN === 'true' ||
+            options.sessionOpenRateCapacity !== undefined)) {
+        throw new Error('V8D Practice staging refuses identity, reward services and transport shortcuts.');
+    }
     if (legacyRuntimeActive) {
         throw new Error('Only one legacy lobby runtime may exist in a process.');
     }

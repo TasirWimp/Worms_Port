@@ -1547,6 +1547,141 @@ analytical pointer remains WP-015D2A; Stage C debt remains `interrupted_no_tap`,
 Lane G evidence remains none, Lane G/M execution remains closed, D2O remains
 unsatisfied, and ProductAuthority/placement/P5/landfall remain unclaimed.
 
+### D.1 — Separate no-payout staging preparation (2026-09-04)
+
+Owner request: prepare staging to test full V8D on their phone. This is a new
+deployment-configuration follow-up, not a rewrite of D1-D6 or public promotion.
+Fresh fetch verified clean local/upstream HEAD
+`9e0427d7d310c17ae6962c00099078602967f917`; isolated implementation branch:
+`codex/wp-015d3a-v8d-staging-v0`. The existing build proof and built-server smoke
+passed before edits. Root coordinates documentation/checks only; fresh
+no-history `/root/v8d_staging_worker` owns server/test implementation and
+`/root/v8d_staging_reviewer` owns independent read-only review. Neither may
+access reference/quarantine sources. Human similarity clearance is not implied.
+
+Carrier search found existing startup/runtime/registry, built smoke and these
+planning/evidence/README homes, but no staging-policy module or staging tests.
+The two new carriers below have a distinct startup-safety and regression role;
+no additional document, blueprint or duplicated gameplay implementation is needed.
+Exact output allow-list (ten tracked paths maximum), before source edits:
+
+- `server/src/server.ts`
+- `server/src/runtime.ts`
+- `server/src/session/registry.ts`
+- `server/src/staging-config.ts` (new startup-policy boundary)
+- `tests/protocol/staging-config.test.ts` (new automatically discovered tests)
+- `scripts/smoke-built-server.js`
+- `README.md`
+- `docs/planning/implementation_plan.md`
+- `docs/planning/wp-015d3a-v8-action-turns-contract.md`
+- `docs/evidence/wp-015d3a.json`
+
+Activation is server-only: exact `NIMBLE_RUNTIME_PROFILE=staging-v8d-practice`,
+`NIMBLE_DEPLOYMENT=staging`, `NODE_ENV=production`, `REWARD_MODE=disabled`.
+Absent staging opt-in preserves shared public V7. Unknown or conflicting
+profile/deployment settings fail before listening. Staging admits only the
+already implemented automated r1 identity (`nimble-knots-artillery-v8-r1`,
+`wp-015d3a-v8d-r1-v1`, v3 standard AI), using ordinary seeds, real monotonic
+clock/cadence and unchanged gameplay limits. It must not activate `v8TestOnly`
+or accept deterministic injection overrides. No URL/request can select rules.
+Identity, reward creation, stores, adapters and payout workers stay unavailable;
+inherited wallet/database/reward/test-shortcut settings are rejected, not used.
+Render's automatically supplied external URL is metadata, not wallet activation.
+Origin and rate guards remain active. This is a service-level Practice-only
+availability policy, not different combat rules for Practice and rewarded play.
+
+Use a separate single-instance Render Web Service with no production environment
+group, secrets, database or custom production domain. Its URL is public unless
+separately access-controlled: an unshared URL is not authentication. Owner-only
+acceptance is not public marketing/reward release. Do not alter the production
+service, push, provision, deploy or create a PR in this preparation pass.
+
+Verification: config rejection/normal-default/runtime safeguards, real built
+production-process boot and V8D clock/AI protocol checks; `verify:feature`;
+selected existing candidate phone-browser tests; reward-security, bundle,
+duplicate-key/schema, exact-path/source digest, unchanged manifests/assets/
+dependencies/analytical checkpoints and `git diff --check`. Preserve D's raw
+assessment and three failed bundle reports byte-for-byte before browser cleanup
+in ignored `.local-artifacts/rollback/wp-015d3a-v8d-evidence/`, then restore their
+original paths after the final browser run. This existing rollback/archive home
+is distinct from disposable test output. Do not rerun the unchanged assessment
+solely to recover an artifact. No full daily, physical phone session, PostgreSQL,
+AI tuning, dependency fix or formal observation is part of this preparation.
+D6's failed inherited qs audit and remaining public-activation gates stay open.
+Lane G/M execution and all analytical boundaries remain unchanged.
+
+#### D.1 implementation and independent review return
+
+The ten-path preparation is implemented. Six source/test paths have SHA-256
+`348a861866c36a91db37a9b1686adce77207bc5f80f8153ce18cf759734d9856`:
+lexically sort changed non-document paths, obtain each `gitBlob` with
+`git hash-object --path=<path> <path>`, hash UTF-8 `JSON.stringify` of
+`{path,gitBlob}` rows without newline. The four review/navigation documents
+and containing commit are excluded. Current mechanics, AI policy, simulation
+identities and client bytes are reused; `CURRENT_COMBAT_RULESET_ID` remains V7.
+
+Fresh implementer `/root/v8d_staging_worker` declared only current MIT product
+sources/tests and required operating/product contract documents, with no
+reference/quarantine, observer history or external source access. Distinct
+read-only `/root/v8d_staging_reviewer` approved that exact source digest with
+no remaining blocking findings, independently passing the four staging tests.
+The clean-room registry remains `observed`, not human-similarity clearance.
+
+Staging now has a separate fixed-r1 admission, real clock/cadence and normal
+seeds. Test-helper creation, intent and tick advancement remain unavailable.
+No RewardService, store, identity service, adapter or payout worker is created.
+The normal root URL starts a live V8D Practice match; legacy/public V7 defaults,
+query rejection, origin/rate controls and existing preview routes are retained.
+The README Hosting section owns the exact separate-service Render setup,
+safe startup marker, phone checklist and suspend/remove-both-flags rollback.
+
+Final `npm run verify:feature` passed compliance, repository-configured types,
+all configured fast suites, production build, built smoke and **5/5 canonical
+phone-browser tests** (35.0s browser portion). The built smoke checks V7 default
+creation, staged automated r1 with a real-clock AI cast, unavailable identity/
+rewards, rejected caller selectors and **13 unsafe startup combinations**.
+A legal no-plan AI handback is permitted by the smoke; expiry and simulation
+safety-limit completion fail it. Deterministic policy tests still cover firing.
+Focused worker protocol/runtime/action-turns/staging checks passed **93/93**,
+zero skips. Final four staging tests explicitly reject the test-only APIs.
+Existing automated Practice/Daily browser cases separately passed **4/4**
+on Chromium and WebKit 390x844 in 26.1s, zero skips/retries, covering live UI,
+pause/reload/retry/result and historical no-fund shared-mode transport. These
+use the existing injected fixtures; the built-process smoke above separately
+proves actual staging startup. Reward availability on staging remains closed.
+All four archived D reports were hash-verified and restored to their original
+ignored `test-results/` paths after the last browser run; the retained
+assessment still has D5's `66ee02f0...aaab4e3b1` whole-file hash. Its archive
+copy also remains, without modifying the historical D return.
+Exact ten-path scope, 134 protected-file Git blobs, both checkpoint targets,
+strict JSON duplicate keys/schema and 37 local navigation links pass.
+
+Retained corrections: initial missing configuration carrier and Render-URL
+identity activation failed before implementation; a new negative regression
+caught accidental test-helper admission and now passes with the dedicated
+staging path. A smoke assertion initially read the wrong legacy ruleset field
+and was corrected to its existing nested location. Review also removed the
+random-seed assumption that every legal AI turn must cast, and explicitly
+excluded simulation-limit results. No gameplay, timeout or gate was weakened.
+
+Supplementary strict test-graph compilation failed on four unchanged legacy
+Game/Watcher diagnostics (TS2322, TS2416, two TS2564); required repo-configured
+types/build pass. No unrelated typing repair or release-gate waiver was made.
+Security/identity bundle inspections pass. Initial raw JavaScript remains
+1,499,582/1,500,000 bytes, initial JS/CSS gzip 414,682/430,000. Final build proof
+on Node v23.6.0: inputs
+`cff08cee801abda6b320d0530a2bbc7541c7fbdd4ecf5db0b5438e7bfbf720c3`, outputs
+`9918702b4011487af84527c647110756233c0aa228f8bc5c58eea5f524eef4d2`.
+
+This prepares staging, not a running Render deployment. No push, PR, cloud
+resource creation, production change or real-fund action is included. Human
+similarity, actual phone acceptance, deployment capacity, PostgreSQL and full
+daily/release gates remain separate; inherited qs findings remain unresolved.
+No assessment was rerun and no new balance claim is made. Analytical pointer
+WP-015D2A, debt `interrupted_no_tap`, closed Lane G/M execution, no Lane G
+evidence, unsatisfied D2O and unclaimed ProductAuthority/placement/P5/landfall
+are unchanged.
+
 ## Clean-room roles and entry gate
 
 The root coordinator is the reference observer and must not implement V8

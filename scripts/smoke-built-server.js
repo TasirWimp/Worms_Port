@@ -1,6 +1,8 @@
 const { spawn } = require('node:child_process');
 const net = require('node:net');
 const path = require('node:path');
+const assert = require('node:assert/strict');
+const { io } = require('socket.io-client');
 
 const root = path.resolve(__dirname, '..');
 const serverEntry = path.join(root, 'server', 'build', 'server.js');
@@ -70,19 +72,133 @@ async function stopServer(child) {
   ]);
 }
 
-async function main() {
+function isolatedEnvironment(overrides = {}) {
+  const environment = { ...process.env };
+  for (const name of Object.keys(environment)) {
+    if (/^(NIMBLE_|REWARD_|IDENTITY_|NIMIQ_|PRACTICE_TEST_|WP014_)/.test(name) ||
+        ['DATABASE_URL', 'RENDER_EXTERNAL_URL', 'ALLOWED_ORIGINS', 'ALLOW_MISSING_ORIGIN',
+          'SESSION_OPEN_RATE_CAPACITY'].includes(name)) delete environment[name];
+  }
+  return { ...environment, NODE_ENV: 'production', REWARD_MODE: 'disabled', ...overrides };
+}
+
+function emitAck(socket, event, payload) {
+  return new Promise((resolve, reject) => {
+    socket.timeout(2_000).emit(event, payload, (error, ack) => error ? reject(error) : resolve(ack));
+  });
+}
+
+async function checkCombat(baseUrl, staging) {
+  const socket = io(baseUrl, { transports: ['websocket'], reconnection: false,
+    autoConnect: false, timeout: 2_000, extraHeaders: { Origin: baseUrl },
+    // A query cannot activate or downgrade the server-selected ruleset.
+    query: { NIMBLE_RUNTIME_PROFILE: staging ? 'production-v7' : 'staging-v8d-practice' } });
+  try {
+    await new Promise((resolve, reject) => {
+      socket.once('connect', resolve);
+      socket.once('connect_error', reject);
+      socket.connect();
+    });
+    const opened = await emitAck(socket, 'v1:session.open', { requestId: 'smoke_session_01', action: 'create' });
+    assert.equal(opened.ok, true);
+    const request = { requestId: 'smoke_creation_01', sequence: 0, mode: 'practice', calling: 'wizard' };
+    for (const selector of [{ rulesetId: 'nimble-knots-artillery-v8-r1' },
+      { automationId: 'wp-015d3a-v8d-r1-v1' }]) {
+      const rejected = await emitAck(socket, 'v8:challenge.create', { ...request, ...selector });
+      assert.equal(rejected.ok, false);
+      assert.equal(rejected.error.code, 'BAD_REQUEST');
+    }
+    if (staging) {
+      const legacy = await emitAck(socket, 'v1:challenge.create', request);
+      assert.equal(legacy.ok, false);
+      assert.equal(legacy.error.code, 'FEATURE_UNAVAILABLE');
+      const identity = await emitAck(socket, 'v1:identity.begin', {
+        requestId: 'smoke_identity_01', address: 'NQ00 0000 0000 0000 0000 0000 0000 0000 0000' });
+      assert.equal(identity.ok, false);
+      assert.equal(identity.error.code, 'FEATURE_UNAVAILABLE');
+      const reward = await emitAck(socket, 'v8:challenge.create', { ...request,
+        requestId: 'smoke_reward_001', mode: 'reward',
+        eligibility: { challengeId: 'a'.repeat(32), token: 'a'.repeat(43) } });
+      assert.equal(reward.ok, false);
+      assert.equal(reward.error.code, 'REWARD_UNAVAILABLE');
+      request.sequence = reward.nextSequence;
+      const info = await emitAck(socket, 'v1:reward.info', { requestId: 'smoke_reward_info' });
+      assert.equal(info.ok, false);
+      assert.equal(info.error.code, 'REWARD_UNAVAILABLE');
+    }
+    const created = await emitAck(socket, 'v8:challenge.create', request);
+    assert.equal(created.ok, true);
+    assert.equal(created.data.kind, staging ? 'v8' : 'legacy');
+    const snapshot = created.data.snapshot;
+    assert.equal(staging ? snapshot.rulesetId : snapshot.simulation.rulesetId,
+      staging ? 'nimble-knots-artillery-v8-r1' : 'nimble-knots-artillery-v7');
+    if (staging) {
+      assert.equal(snapshot.automationId, 'wp-015d3a-v8d-r1-v1');
+      assert.equal(snapshot.loomkeeperPolicyId, 'nimble-knots-loomkeeper-v3');
+      assert.equal(snapshot.loomkeeperProfileId, 'standard-v8-0');
+      // No seeds, clock injection, artificial tick advance or player shortcuts:
+      // allow the actual 15s player timeout and observe live AI progression.
+      // A legal no-plan timeout is allowed by policy, not a flaky random-seed failure.
+      await new Promise((resolve, reject) => {
+        let aiObserved = false;
+        const done = (error) => {
+          clearTimeout(timer);
+          socket.off('v8:challenge.snapshot', onSnapshot);
+          socket.off('disconnect', onDisconnect);
+          socket.off('v8:challenge.result', onResult);
+          error ? reject(error) : resolve();
+        };
+        const onSnapshot = update => {
+          if (update.challengeId !== snapshot.challengeId || update.simulation.tick <= snapshot.simulation.tick) return;
+          if (update.status === 'expired') return done(new Error('Staging simulation expired during live AI.'));
+          if (update.simulation.finishReason === 'simulation_limit') {
+            return done(new Error('Staging simulation hit a safety limit during live AI.'));
+          }
+          if (update.simulation.activeActor === 'loomkeeper') {
+            aiObserved = true;
+            if (update.simulation.castUsed) {
+              console.log('Observed real-clock Loomkeeper cast.');
+              done();
+            }
+          } else if (aiObserved && update.status === 'active' && update.simulation.activeActor === 'player') {
+            console.log('Observed real-clock Loomkeeper turn handback without a cast.');
+            done();
+          }
+        };
+        const onResult = result => {
+          if (result.challengeId !== snapshot.challengeId) return;
+          if (aiObserved && ['player_win', 'loomkeeper_win', 'draw'].includes(result.outcome)) done();
+          else done(new Error('Staging ended without valid live AI progression.'));
+        };
+        const onDisconnect = () => done(new Error('Staging disconnected before live AI progression.'));
+        const timer = setTimeout(() => done(new Error('Staging real-clock AI progression was not observed within 40s.')), 40_000);
+        socket.on('v8:challenge.snapshot', onSnapshot);
+        socket.on('v8:challenge.result', onResult);
+        socket.once('disconnect', onDisconnect);
+      });
+      console.log('Validated production-runtime staging Practice: automated r1, live timer/AI, no identity/rewards.');
+    } else console.log('Validated ordinary production-runtime V7 creation; query cannot select V8.');
+  } finally { socket.close(); }
+}
+
+async function smokeProfile(staging) {
   const port = await getFreePort();
   const baseUrl = `http://127.0.0.1:${port}`;
   let stderr = '';
+  let stdout = '';
   const child = spawn(process.execPath, [serverEntry], {
     cwd: root,
-    env: { ...process.env, PORT: String(port) },
+    env: isolatedEnvironment({ PORT: String(port), ...(staging ? {
+      NIMBLE_RUNTIME_PROFILE: 'staging-v8d-practice', NIMBLE_DEPLOYMENT: 'staging',
+      RENDER_EXTERNAL_URL: 'https://staging.example', ALLOWED_ORIGINS: baseUrl
+    } : {}) }),
     stdio: ['ignore', 'pipe', 'pipe']
   });
 
   child.stderr.on('data', (chunk) => {
     stderr += chunk;
   });
+  child.stdout.on('data', chunk => { stdout += chunk; });
 
   try {
     const rootResponse = await waitForServer(`${baseUrl}/`, child);
@@ -111,7 +227,9 @@ async function main() {
       );
     }
 
-    console.log(`Built server smoke test passed on port ${port}.`);
+    await checkCombat(baseUrl, staging);
+    if (staging) assert.ok(stdout.includes('Runtime staging-v8d-practice / nimble-knots-artillery-v8-r1 / wp-015d3a-v8d-r1-v1 / rewards disabled'));
+    console.log(`Built server ${staging ? 'staging' : 'V7'} smoke test passed on port ${port}.`);
     console.log(`Validated /, built overlays, approved asset plumbing, and /.room.join_id (${roomId}).`);
   } finally {
     await stopServer(child);
@@ -119,6 +237,43 @@ async function main() {
       process.stderr.write(stderr);
     }
   }
+}
+
+async function rejectedStartup(overrides) {
+  const port = await getFreePort();
+  const child = spawn(process.execPath, [serverEntry], { cwd: root, stdio: ['ignore', 'pipe', 'pipe'],
+    env: isolatedEnvironment({ PORT: String(port), NIMBLE_RUNTIME_PROFILE: 'staging-v8d-practice',
+      NIMBLE_DEPLOYMENT: 'staging', ...overrides }) });
+  let stdout = '';
+  child.stdout.on('data', chunk => { stdout += chunk; });
+  child.stderr.resume();
+  try {
+    await new Promise((resolve, reject) => {
+      const timer = setTimeout(() => reject(new Error('Unsafe staging startup did not fail promptly.')), startupTimeoutMs);
+      child.once('error', error => { clearTimeout(timer); reject(error); });
+      child.once('exit', code => {
+        clearTimeout(timer);
+        code === 1 ? resolve() : reject(new Error('Unsafe staging startup did not exit with code 1.'));
+      });
+    });
+    assert.ok(!stdout.includes('Listening on') && !stdout.includes('Runtime staging-v8d-practice'));
+    await assert.rejects(fetch(`http://127.0.0.1:${port}/`));
+  } finally { await stopServer(child); }
+}
+
+async function main() {
+  await smokeProfile(false);
+  await smokeProfile(true);
+  for (const overrides of [
+    { NIMBLE_RUNTIME_PROFILE: 'unknown' }, { NIMBLE_DEPLOYMENT: 'production' },
+    { NODE_ENV: 'test', PRACTICE_TEST_SEEDS: '1' }, { REWARD_MODE: 'record-only' },
+    { REWARD_MODE: 'testnet' }, { REWARD_MODE: 'mainnet' },
+    { DATABASE_URL: 'postgres://invalid.invalid/must-not-connect' },
+    { NIMIQ_NETWORK: 'main-albatross' }, { IDENTITY_PUBLIC_ORIGIN: 'https://identity.example' },
+    { REWARD_PRIVATE_KEY_FILE: 'must-not-read' }, { REWARD_RPC_URL: 'https://must-not-contact.invalid' },
+    { PRACTICE_TEST_SEEDS: '1' }, { WP014_QUALITY_TEST: 'true' }
+  ]) await rejectedStartup(overrides);
+  console.log('Validated unsafe staging configurations exit before listening.');
 }
 
 main().catch((error) => {

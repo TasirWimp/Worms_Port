@@ -74,7 +74,17 @@ Phaser/Socket.IO stack.
   60-match shared-mode parity, the 240-match paired assessment, final feature
   gate and 10/10 five-profile candidate browser checks pass. Bundle and
   reward/identity security checks pass; initial raw JS has 418 bytes headroom.
-  Production remains V7 in both modes. Next: close activation gates, including
+  Production remains V7 in both modes. Current owner-opened follow-up:
+  **V8D.1 separate no-payout staging preparation complete and independently
+  reviewed**, governed by section D.1 in
+  the existing V8 contract, from clean `9e0427d` on
+  `codex/wp-015d3a-v8d-staging-v0`. Normal Start Practice access to full V8D is
+  ready for owner acceptance on a separate Render service. Feature gate,
+  real-clock built staging smoke, four selected candidate browser cases and
+  exact-source protections pass. See README Hosting for the environment and
+  phone checklist. Next: owner push and separate-service deployment/test;
+  no production promotion, wallet/reward activation or deployment in this pass.
+  Thereafter close public activation gates, including
   a separately scoped fix for inherited moderate qs audit findings, isolated
   PostgreSQL execution, full daily/release quality/performance, deployment CPU,
   human similarity and real-device acceptance. Do not promote automatically

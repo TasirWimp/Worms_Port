@@ -15,6 +15,7 @@
     "worms_port_reviewer"
   ],
   "scope": [
+    "V8D.1 staging preparation opened 2026-09-04 from freshly fetched clean local/upstream 9e0427d7d310c17ae6962c00099078602967f917 on codex/wp-015d3a-v8d-staging-v0. Existing contract D.1 preregisters ten exact paths, fresh server implementer /root/v8d_staging_worker, independent read-only reviewer /root/v8d_staging_reviewer and root documentation/gates. Explicit server-only production-clock automated-r1 staging, wallet-free Practice, payouts disabled; shared production V7 unchanged. No deployment, push or public promotion.",
     "V8D pre-assessment API clarification independently approved by /root/v8c1_client: V7's scripted nearest64 counterpart is at most eight sequential legal8-unit direction commands, stopping on first rejection and retaining the accepted prefix before the fixed30-shot lattice; face current opponent using existing zero-direction turn if needed. There is no single64 command in the legacy API. No extra distance, retry/reversal/alternative path, historical v2 change or assessment-driven retuning. Recorded in D3 before implementation and before any paired assessment run.",
     "V8D owner-opened after C.1 phone acceptance on 2026-09-03; freshly fetched clean local/upstream 3fc33a33049a7e61bc0ab8ee7e3f340917e3b136, isolated codex/wp-015d3a-v8d-loomkeeper-lifecycle-v0. Existing contract D1-D4 preregisters the exact 37-path maximum, five justified new code/test carriers, disjoint fresh no-history AI/lifecycle implementers, root documentation/gate ownership and independent read-only D reviewer. Automated r1 uses explicit wp-015d3a-v8d-r1-v1 provenance; original V8/r1 foundations and simulation behavior remain unchanged. Public shared V7 remains until all assessment, CPU/cadence, quality, PostgreSQL and human gates pass. Historical slice scope below remains source-bound to its named pass.",
     "V8D A6/A8 clarifications: Wizard for paired120V8+120V7, separate60 all-Calling/side correctness cases repeated; tick-zero reflected support recomputed canonically; explicit fixed scripted-opponent timing/error/retreat and V7 differences; scheduled motion-tick scoring, hard neutralization, null-plan/failure classes, detached finite30-shot reply probe and actual handover counting. No search or mechanics retuning. Strict additive creation and automation envelopes, exact policy-derived replay verification, one shared selector/session cursor, disconnected settlement separate from delivery, genuinely lazy client adapter. No reward-policy/store/ledger/migration change.",
@@ -41,6 +42,7 @@
     "Import Sorcerers code, algorithms, constants, names, assets, or expressive sequences; mark the unimplemented clean-room lifecycle complete."
   ],
   "planned_checks": [
+    "D.1: startup policy/default/rejection/runtime tests and real built-process V7/staging smoke; verify:feature plus selected existing V8D phone-browser cases, security/bundle, strict JSON duplicate/schema, exact ten-path bound, source digest and protected-source preservation. Archive existing D assessment and failed bundle reports byte-for-byte under .local-artifacts/rollback/wp-015d3a-v8d-evidence before disposable browser cleanup; restore after final browsers. Do not rerun assessment/full daily for this config-only follow-up.",
     "V7 source identity, build-proof validation, built-server smoke, and exact rollback archive verification",
     "npm run check:compliance",
     "Preparation JSON duplicate-key/schema, local navigation, frozen digest, exact changed-path, Git-byte manifest and predecessor preservation checks",
@@ -59,6 +61,16 @@
   "sorcerers_reference_used": true,
   "clean_room_records": ["wp-015d3a-v8-action-turns"],
   "check_results": [
+    {
+      "command": "D.1 final feature, browser, build and evidence retention gate",
+      "status": "pass",
+      "detail": "At final six-path digest348a861866c36a91db37a9b1686adce77207bc5f80f8153ce18cf759734d9856, npm run verify:feature passed full configured fast chain/compliance/types, production build, final built V7/staging smoke (actual real-clock AI cast, unavailable identity/rewards,13 rejected unsafe startups) and5/5 canonical phone cases in35.0s. Existing injected automated Practice/Daily cases separately4/4 Chromium/WebKit390x844 in26.1s, zero skips/retries; staging itself remains Practice-only. Final security/identity/bundle checks pass: raw1499582/1500000, gzip414682/430000. Valid Nodev23.6.0 build inputscff08cee801abda6b320d0530a2bbc7541c7fbdd4ecf5db0b5438e7bfbf720c3/output9918702b4011487af84527c647110756233c0aa228f8bc5c58eea5f524eef4d2. D assessment and3 failedbundle reports restored after final browsers from hash-verified .local-artifacts/rollback/wp-015d3a-v8d-evidence, preserving original hashes including assessment66ee02f07dd560884dabf4c2782ac070a902da3c6fea750a9bf0ff7aaab4e3b1. No reassessment/deployment/phone session or public promotion."
+    },
+    {
+      "command": "D.1 focused implementation checks and preserved boundaries",
+      "status": "pass",
+      "detail": "Fresh implementer /root/v8d_staging_worker: focused protocol/runtime/action-turns/staging 93/93 passed in95.0s with zero skips; final staging-specific4/4 and required repo types/build passed. Pre-final smoke passed production V7, full real-clock automated-r1 staging with an actual AI cast, unavailable identity/rewards, inert query/forged selectors, and13 unsafe-startup exits before listen. Subsequent smoke-only safety-limit rejection is covered by the coordinator final gate separately. Final six-path source/test digest348a861866c36a91db37a9b1686adce77207bc5f80f8153ce18cf759734d9856 excludes four docs and containing commit. Coordinator verified exact ten-path allow-list,134 protected legal/assets/analysis/shared/package paths, both rollback tags, strict duplicate keys, draft2020-12 evidence schema and37 local navigation links. No source/reference imports or dependencies changed."
+    },
     {
       "command": "V8D final source identity, exact range, schema/navigation and preservation",
       "status": "pass",
@@ -242,6 +254,11 @@
   ],
   "reviews": [
     {
+      "reviewer": "Codex agent /root/v8d_staging_reviewer",
+      "status": "pass",
+      "detail": "Independent read-only D.1 final source review at six-path digest348a861866c36a91db37a9b1686adce77207bc5f80f8153ce18cf759734d9856: no remaining blocking findings. Verified exact ten-path scope, strict server-only staging/default V7, unavailable wallet/reward/store/signer/test controls, ordinary clocks and automated identity, unsafe-startup rejection and no-shot lifecycle/simulation-limit smoke handling. Independently ran4/4 staging tests and diff check. No author edits or reference/quarantine inputs. Not human similarity, deployment capacity, real-device or public-release clearance."
+    },
+    {
       "role": "independent_v8d_final_closeout_reviewer",
       "reviewer": "Codex agent /root/v8c1_client",
       "decision": "pass",
@@ -309,6 +326,8 @@
     }
   ],
   "skipped_checks": [
+    "D.1 supplementary strict test-graph compilation was attempted and failed on four unchanged legacy diagnostics, not waived: npx tsc --noEmit --target ES2022 --module commonjs --moduleResolution node --strict --esModuleInterop --resolveJsonModule --skipLibCheck tests/protocol/staging-config.test.ts; server/src/game/api.ts31 TS2322 IGame/Game get_me undefined, game/class.ts37 TS2416 get_me return, game/watcher.ts12 and room/watcher.ts31 TS2564 io initialization. No new-test diagnostic; required repository-configured types and build passed. No legacy typing change is admitted here.",
+    "D.1 does not rerun full daily/release performance, PostgreSQL, physical-phone acceptance, human similarity, npm audit or the unchanged240-match assessment. This is isolated no-payout staging preparation without package changes or public promotion. D6's inherited failed qs audit and outstanding public-release gates remain unresolved. No push, PR, service provisioning or deployment is performed.",
     "V8D final stop is an unpromoted candidate, not a release: no full verify:daily/performance/visual release run this feature loop; no isolated PostgreSQL execution (test implemented/discovered, WP014_TEST_DATABASE_URL unavailable); no deployed concurrency/CPU proof, real Android/iOS V8D acceptance, human similarity clearance, Windows baseline approval, push/PR/deployment or real-fund activation. No formal player observation, Lane G/M/Stage C or CRPM execution. Existing public selector remains V7 for both modes.",
     "V8D first candidate browser run at source5ad2edb12d8dcc7652d653685606ac017c888b66f6e87450f7ccf46e0c57f2c1 failed both initial chromium360 Practice/Daily cases because no combat controls mounted; root interrupted while case3 started, so this was not a completed10case run. Trace showed canvas without UI and no pageerror; white screenshot came from finally/about:blank cleanup. Root confirmed no browser/test-server process remained. Independent diagnosis: live supplied args skipped a conditional await, causing the scene-active guard to run during Phaser CREATING and silently return; previews had yielded and passed. Preserve the guards, make both paths yield and add live-path regression before rerunning candidate cases. The earlier final-source feature smoke pass does not establish candidate browser acceptance.",
     "V8D second two-file optional reward-transport extraction passed45 focused tests/clienttypes; its early build/bundle recheck still FAILED narrowly at1500118/1500000 rawbytes (118over), gzip414765/430000. Preserve this negative packaging result; no budget/validation/gameplay change or broad feature/assessment rerun occurred during the failed probe.",

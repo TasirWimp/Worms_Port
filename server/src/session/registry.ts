@@ -113,6 +113,8 @@ export type SessionRegistryOptions = {
      * current ruleset when this is omitted.
      */
     simulationRulesetId?: CombatRulesetId;
+    /** Isolated no-wallet staging admission, never a client or fixture selector. */
+    stagingPracticeV8?: 'staging-v8d-practice';
     seedSource?: (sessionId: string, practiceIndex: number) => number;
     loomkeeperEnabled?: boolean;
     loomkeeperDifficulty?: LoomkeeperDifficulty;
@@ -149,6 +151,7 @@ export class SessionRegistry {
     private inOrderedSimulation = false;
     private readonly versions: VersionedSimulationCoordinator;
     private readonly v8Enabled: boolean;
+    private readonly stagingPracticeV8: boolean;
     private readonly onChallengeSnapshotV8?: SessionRegistryOptions['onChallengeSnapshotV8'];
     private readonly onChallengeCompletedV8?: SessionRegistryOptions['onChallengeCompletedV8'];
     private readonly onChallengeSettledV8?: SessionRegistryOptions['onChallengeSettledV8'];
@@ -158,6 +161,18 @@ export class SessionRegistry {
     private readonly v8InInput = new Set<string>();
 
     public constructor(options: SessionRegistryOptions = {}) {
+        if (options.stagingPracticeV8 !== undefined) {
+            const overrides: (keyof SessionRegistryOptions)[] = [
+                'simulationRulesetId', 'v8TestOnly', 'now', 'seedSource',
+                'simulationTickIntervalMs', 'simulationTicksPerInterval', 'simulationMaxReplayRecords',
+                'loomkeeperEnabled', 'loomkeeperDifficulty', 'sessionTtlMs', 'reconnectGraceMs',
+                'tokenRecoveryMs', 'challengeTtlMs', 'sweepIntervalMs'
+            ];
+            if (options.stagingPracticeV8 !== 'staging-v8d-practice' ||
+                overrides.some(name => options[name] !== undefined)) {
+                throw new Error('V8D Practice staging refuses conflicting simulation or fixture options.');
+            }
+        }
         this.now = options.now || Date.now;
         this.sessionTtlMs = options.sessionTtlMs || DEFAULT_SESSION_TTL_MS;
         this.reconnectGraceMs = options.reconnectGraceMs || DEFAULT_RECONNECT_GRACE_MS;
@@ -169,7 +184,9 @@ export class SessionRegistry {
         this.onChallengeSnapshot = options.onChallengeSnapshot;
         this.onChallengeCompleted = options.onChallengeCompleted;
         this.seedSource = options.seedSource || (() => randomBytes(4).readUInt32BE(0));
-        this.simulationRulesetId = options.simulationRulesetId ?? CURRENT_COMBAT_RULESET_ID;
+        this.stagingPracticeV8 = options.stagingPracticeV8 !== undefined;
+        this.simulationRulesetId = this.stagingPracticeV8
+            ? V8_R1_RULESET_ID : options.simulationRulesetId ?? CURRENT_COMBAT_RULESET_ID;
         this.v8Enabled = options.v8TestOnly !== undefined;
         this.onChallengeSnapshotV8 = options.onChallengeSnapshotV8;
         this.onChallengeCompletedV8 = options.onChallengeCompletedV8;
@@ -191,7 +208,8 @@ export class SessionRegistry {
             ticksPerInterval: options.simulationTicksPerInterval ?? 30,
             onTransition: (update) => this.onSimulationTransition(update)
         }, v8: { ...options.v8TestOnly,
-            tickIntervalMs: options.v8TestOnly ? options.v8TestOnly.tickIntervalMs ?? 10 : undefined,
+            tickIntervalMs: this.stagingPracticeV8 ? 10
+                : options.v8TestOnly ? options.v8TestOnly.tickIntervalMs ?? 10 : undefined,
             onTransition: update => this.onSimulationTransitionV8(update) } });
         this.coordinator = this.versions.legacy;
         this.sweepTimer = setInterval(
@@ -413,11 +431,14 @@ export class SessionRegistry {
         reward?: { challengeId: string; seed: number }
     ): { kind: 'legacy'; snapshot: ChallengeSnapshot } |
        { kind: 'v8'; snapshot: ChallengeSnapshotV8 } | ProtocolError {
+        if (this.stagingPracticeV8 && (mode !== 'practice' || reward !== undefined)) {
+            return v8Error('FEATURE_UNAVAILABLE', 'V8D staging admits wallet-free Practice only.');
+        }
         if (!isV8RulesetId(this.simulationRulesetId)) {
             const snapshot = this.createChallenge(session, mode, calling, reward);
             return 'code' in snapshot ? snapshot : { kind: 'legacy', snapshot };
         }
-        if (this.simulationRulesetId !== V8_R1_RULESET_ID || !this.v8Enabled) {
+        if (this.simulationRulesetId !== V8_R1_RULESET_ID || (!this.v8Enabled && !this.stagingPracticeV8)) {
             return v8Error('FEATURE_UNAVAILABLE', 'The selected combat candidate is unavailable.');
         }
         const snapshot = this.createChallengeAutomated(session, mode, calling, reward);

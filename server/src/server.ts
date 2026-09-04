@@ -15,6 +15,9 @@ import { PostgresRewardStore } from './reward/postgres-store';
 import { MemoryRewardStore } from './reward/memory-store';
 import { RewardService } from './reward/service';
 import type { RewardStore } from './reward/types';
+import { stagingPracticeFromEnvironment } from './staging-config';
+import { V8_AUTOMATION_ID } from '../../shared/combat-version';
+import { V8_R1_RULESET_ID } from '../../shared/simulation-v8';
 
 const port = Number(process.env.PORT) || 3000;
 const sessionOpenRateCapacity = Number(process.env.SESSION_OPEN_RATE_CAPACITY);
@@ -29,15 +32,16 @@ void main().catch((error) => {
 });
 
 async function main(): Promise<void> {
+    const stagingPractice = stagingPracticeFromEnvironment();
     assertRewardQualityTestEnvironment();
     const rewardConfig = rewardConfigFromEnvironment();
-    const identity = identityOptionsFromEnvironment(rewardConfig.mode !== 'disabled');
+    const identity = stagingPractice ? false : identityOptionsFromEnvironment(rewardConfig.mode !== 'disabled');
     const store = rewardStoreFromEnvironment(rewardConfig.mode);
     let rewardWorker: RewardPayoutWorker | undefined;
     const rewardTestSeed = process.env.NODE_ENV === 'test'
         ? Number(process.env.REWARD_TEST_SEED)
         : Number.NaN;
-    const rewards = new RewardService(rewardConfig, store, {
+    const rewards = stagingPractice ? undefined : new RewardService(rewardConfig, store, {
         onQueued: () => rewardWorker?.kick(),
         ...(Number.isSafeInteger(rewardTestSeed) &&
             rewardTestSeed >= 0 && rewardTestSeed <= 0xFFFFFFFF
@@ -58,7 +62,8 @@ async function main(): Promise<void> {
             sessionOpenRateCapacity > 0
             ? sessionOpenRateCapacity
             : undefined,
-        sessionRegistry: deterministicTestSeeds.length > 0 ? {
+        sessionRegistry: stagingPractice ? { stagingPracticeV8: 'staging-v8d-practice' }
+            : deterministicTestSeeds.length > 0 ? {
             seedSource: (_sessionId, practiceIndex) => deterministicTestSeeds[
                 practiceIndex % deterministicTestSeeds.length
             ]
@@ -69,6 +74,9 @@ async function main(): Promise<void> {
     });
     runtime = activeRuntime;
     await activeRuntime.listen(port, '0.0.0.0');
+    if (stagingPractice) {
+        console.log(`Runtime staging-v8d-practice / ${V8_R1_RULESET_ID} / ${V8_AUTOMATION_ID} / rewards disabled`);
+    }
     for (const ifaceinfo of Object.values(os.networkInterfaces())) {
         for (const iface of ifaceinfo || []) {
             if (!iface.internal && iface.family === 'IPv4') {

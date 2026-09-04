@@ -777,6 +777,86 @@ PostgreSQL database before using `record-only` or chain reward modes. See
 `docs/process/development_workflow.md` under **Hosting Contract** for activation,
 pause, outage, and key-response requirements.
 
+### V8D owner-test staging (separate service, no payouts)
+
+V8D.1 provides full automated V8D Practice through the ordinary start screen.
+It is not production promotion. Keep the existing production service and its
+environment unchanged; without the explicit staging opt-in, gameplay stays V7.
+The source-bound scope and review live in
+[V8 contract section D.1](docs/planning/wp-015d3a-v8-action-turns-contract.md#d1--separate-no-payout-staging-preparation-2026-09-04).
+
+After pushing the reviewed staging branch, create a **separate** Render Web
+Service from `TasirWimp/Worms_Port` (do not change the production service's
+branch). Use these settings:
+
+| Setting | Value |
+| --- | --- |
+| Branch | `codex/wp-015d3a-v8d-staging-v0` |
+| Runtime / root directory | Node / repository root (leave Root Directory empty) |
+| Build command | `npm ci --include=dev && npm run build` |
+| Start command | `npm start` |
+| Region / instances | Frankfurt / one, no horizontal autoscaling |
+| Health-check path | `/` (HTTP readiness only, not gameplay acceptance) |
+| Auto-deploy | Off during acceptance; manually deploy the reviewed commit |
+
+Set service-specific environment variables:
+
+```dotenv
+NODE_ENV=production
+NIMBLE_RUNTIME_PROFILE=staging-v8d-practice
+NIMBLE_DEPLOYMENT=staging
+REWARD_MODE=disabled
+ALLOW_SHALLOW_WORK_PACKAGE_EVIDENCE=true
+ALLOWED_ORIGINS=https://YOUR-STAGING-SERVICE.onrender.com
+```
+
+Replace the origin with this service's exact HTTPS origin (no path/query).
+Render supplies `PORT` and `RENDER_EXTERNAL_URL`; do not use a URL query as an
+environment-variable value. Explicit `--include=dev` keeps the TypeScript/Vite
+build tools installed when `NODE_ENV=production` is configured at build time.
+Render's [Web Service setup](https://render.com/docs/web-services) and
+[environment settings](https://render.com/docs/configure-environment-variables)
+describe service creation and saving/redeploying configuration.
+Confirm the deployed commit and this startup message in its Render logs:
+
+```text
+Runtime staging-v8d-practice / nimble-knots-artillery-v8-r1 / wp-015d3a-v8d-r1-v1 / rewards disabled
+```
+
+Do not attach a production environment group, database, signer secret file,
+wallet configuration or other reward settings. Staging rejects conflicting
+identity/Nimiq/database/reward/test settings before it listens; it constructs
+no identity service, reward store or payout worker. Rewards/Daily are unavailable,
+not simulated payouts. The ordinary real clock, seeds, limits and standard V8D
+AI run unchanged; no test-only clocks or deterministic seed override is enabled.
+The URL is public unless separately access-controlled: not sharing it is not
+authentication. Keep it for bounded owner acceptance and suspend it afterward.
+Free hosting may cold-start; do not interpret that as gameplay or production
+capacity evidence. Inherited qs audit findings and all public-release gates
+recorded in the V8 contract remain open.
+
+On the phone:
+
+1. Open the new staging URL **without `combat-preview`** and reload after deploy.
+2. Choose a Calling and tap **Start Practice**. You should get the V8 action
+   countdown and combined move/jump pad, followed by real Loomkeeper turns.
+3. Check moving, tap-to-face, diagonal jumping, aiming/firing, the short retreat,
+   opponent response, and return to your next turn. Also check pause/resume,
+   reload while paused, retry, and a full win/loss result with another match.
+4. Repeat with the other Callings. There must be no wallet/payout requirement.
+
+Keep the display workaround described at the top of this README: with portrait
+auto-rotation locked, hold the phone's top on the left. `?sideways=off` remains
+the normal-layout opt-out. The old `?combat-preview=v8-r1` is still only the
+movement fixture, **not** this live staging match.
+
+Rollback: suspend this separate staging service. To return its code/config to
+normal V7, remove both `NIMBLE_RUNTIME_PROFILE` and `NIMBLE_DEPLOYMENT` and use
+the normal hosting/identity configuration; merely removing one staging setting
+intentionally fails startup. Never change production as part of this rollback.
+Server restarts can end in-memory Practice matches. Phone feedback is ordinary
+product acceptance, not Lane G observation or proof of balance.
+
 ## World And Art Direction
 
 The planned product identity is **NIMble Knots: Cotton Clash**, a playful
