@@ -57,19 +57,23 @@ async function waitForServer(url, child) {
 }
 
 async function stopServer(child) {
-  if (child.exitCode !== null) {
+  if (child.exitCode !== null || child.signalCode !== null) {
     return;
   }
-
-  child.kill();
-  await Promise.race([
-    new Promise((resolve) => child.once('exit', resolve)),
-    delay(2_000).then(() => {
-      if (child.exitCode === null) {
-        child.kill('SIGKILL');
-      }
-    })
-  ]);
+  await new Promise((resolve, reject) => {
+    const force = setTimeout(() => child.kill('SIGKILL'), 2_000);
+    const deadline = setTimeout(() => {
+      child.off('exit', onExit);
+      reject(new Error('Built server child did not exit after forced shutdown.'));
+    }, 4_000);
+    const onExit = () => {
+      clearTimeout(force);
+      clearTimeout(deadline);
+      resolve();
+    };
+    child.once('exit', onExit);
+    child.kill();
+  });
 }
 
 function isolatedEnvironment(overrides = {}) {
@@ -181,16 +185,40 @@ async function checkCombat(baseUrl, staging) {
   } finally { socket.close(); }
 }
 
-async function smokeProfile(staging) {
+async function connectionTripwire() {
+  let contacts = 0;
+  const server = net.createServer(socket => { contacts++; socket.destroy(); });
+  await new Promise((resolve, reject) => {
+    server.once('error', reject);
+    server.listen(0, '127.0.0.1', resolve);
+  });
+  return { port: server.address().port, contacts: () => contacts,
+    close: () => new Promise((resolve, reject) => server.close(error => error ? reject(error) : resolve())) };
+}
+
+async function smokeProfile(profile) {
+  const practiceOnly = profile !== undefined;
+  const development = profile === 'development-v8d-practice';
   const port = await getFreePort();
   const baseUrl = `http://127.0.0.1:${port}`;
+  const database = development ? await connectionTripwire() : undefined;
+  const rpc = development ? await connectionTripwire() : undefined;
+  const dormantMarker = 'DORMANT_SECRET_SENTINEL';
   let stderr = '';
   let stdout = '';
   const child = spawn(process.execPath, [serverEntry], {
     cwd: root,
-    env: isolatedEnvironment({ PORT: String(port), ...(staging ? {
-      NIMBLE_RUNTIME_PROFILE: 'staging-v8d-practice', NIMBLE_DEPLOYMENT: 'staging',
+    env: isolatedEnvironment({ PORT: String(port), ...(practiceOnly ? {
+      NIMBLE_RUNTIME_PROFILE: profile, NIMBLE_DEPLOYMENT: development ? undefined : 'staging',
       RENDER_EXTERNAL_URL: 'https://staging.example', ALLOWED_ORIGINS: baseUrl
+    } : {}), ...(development ? {
+      REWARD_MODE: 'mainnet', REWARD_PAUSED: 'true', REWARD_NETWORK: 'main-albatross',
+      REWARD_LUNA: dormantMarker, REWARD_EXPECTED_SIGNER_ADDRESS: dormantMarker,
+      REWARD_PRIVATE_KEY_FILE: path.join(root, 'test-results', dormantMarker, 'nonexistent.key'),
+      REWARD_MAINNET_ACKNOWLEDGEMENT: dormantMarker,
+      REWARD_RPC_URL: `http://127.0.0.1:${rpc.port}/${dormantMarker}`,
+      DATABASE_URL: `postgres://unused:${dormantMarker}@127.0.0.1:${database.port}/unused`,
+      NIMIQ_NETWORK: dormantMarker, IDENTITY_PUBLIC_ORIGIN: dormantMarker
     } : {}) }),
     stdio: ['ignore', 'pipe', 'pipe']
   });
@@ -227,12 +255,23 @@ async function smokeProfile(staging) {
       );
     }
 
-    await checkCombat(baseUrl, staging);
-    if (staging) assert.ok(stdout.includes('Runtime staging-v8d-practice / nimble-knots-artillery-v8-r1 / wp-015d3a-v8d-r1-v1 / rewards disabled'));
-    console.log(`Built server ${staging ? 'staging' : 'V7'} smoke test passed on port ${port}.`);
+    await checkCombat(baseUrl, practiceOnly);
+    if (practiceOnly) assert.ok(stdout.includes(`Runtime ${profile} / nimble-knots-artillery-v8-r1 / wp-015d3a-v8d-r1-v1 / rewards disabled`));
+    console.log(`Built server ${profile ?? 'V7'} smoke test passed on port ${port}.`);
     console.log(`Validated /, built overlays, approved asset plumbing, and /.room.join_id (${roomId}).`);
   } finally {
-    await stopServer(child);
+    try {
+      await stopServer(child);
+    } finally {
+      if (development) await Promise.all([database.close(), rpc.close()]);
+    }
+    if (development) {
+      assert.equal(database.contacts(), 0, 'Development must never contact the dormant database, including shutdown.');
+      assert.equal(rpc.contacts(), 0, 'Development must never contact the dormant RPC, including shutdown.');
+      assert.ok(!stdout.includes(dormantMarker) && !stderr.includes(dormantMarker),
+        'Development must never log dormant setting values.');
+      console.log('Validated zero dormant DB/RPC contacts through shutdown and no dormant config-value logging.');
+    }
     if (stderr.trim()) {
       process.stderr.write(stderr);
     }
@@ -256,14 +295,15 @@ async function rejectedStartup(overrides) {
         code === 1 ? resolve() : reject(new Error('Unsafe staging startup did not exit with code 1.'));
       });
     });
-    assert.ok(!stdout.includes('Listening on') && !stdout.includes('Runtime staging-v8d-practice'));
+    assert.ok(!stdout.includes('Listening on') && !stdout.includes('Runtime '));
     await assert.rejects(fetch(`http://127.0.0.1:${port}/`));
   } finally { await stopServer(child); }
 }
 
 async function main() {
-  await smokeProfile(false);
-  await smokeProfile(true);
+  await smokeProfile();
+  await smokeProfile('staging-v8d-practice');
+  await smokeProfile('development-v8d-practice');
   for (const overrides of [
     { NIMBLE_RUNTIME_PROFILE: 'unknown' }, { NIMBLE_DEPLOYMENT: 'production' },
     { NODE_ENV: 'test', PRACTICE_TEST_SEEDS: '1' }, { REWARD_MODE: 'record-only' },
@@ -273,6 +313,17 @@ async function main() {
     { REWARD_PRIVATE_KEY_FILE: 'must-not-read' }, { REWARD_RPC_URL: 'https://must-not-contact.invalid' },
     { PRACTICE_TEST_SEEDS: '1' }, { WP014_QUALITY_TEST: 'true' }
   ]) await rejectedStartup(overrides);
+  for (const overrides of [
+    { REWARD_PAUSED: undefined }, { REWARD_PAUSED: 'false' }, { REWARD_PAUSED: ' true ' },
+    { NODE_ENV: 'test' }, { NIMBLE_DEPLOYMENT: 'staging' }, { NIMBLE_DEPLOYMENT: 'unknown' },
+    { REWARD_TEST_MEMORY_STORE: 'true' }, { REWARD_TEST_SEED: '1' },
+    { PRACTICE_TEST_SEEDS: '1' }, { WP014_QUALITY_TEST: 'true' },
+    { ALLOW_MISSING_ORIGIN: 'true' }, { SESSION_OPEN_RATE_CAPACITY: '100' }
+  ]) await rejectedStartup({ NIMBLE_RUNTIME_PROFILE: 'development-v8d-practice',
+    NIMBLE_DEPLOYMENT: undefined, REWARD_PAUSED: 'true', ...overrides });
+  // Removing the development selector restores ordinary parsing, not a sticky bypass.
+  await rejectedStartup({ NIMBLE_RUNTIME_PROFILE: undefined, NIMBLE_DEPLOYMENT: undefined,
+    REWARD_PAUSED: 'true', REWARD_LUNA: 'malformed-rollback-value' });
   console.log('Validated unsafe staging configurations exit before listening.');
 }
 

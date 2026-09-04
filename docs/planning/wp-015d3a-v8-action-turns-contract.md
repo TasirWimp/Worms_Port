@@ -1682,6 +1682,122 @@ WP-015D2A, debt `interrupted_no_tap`, closed Lane G/M execution, no Lane G
 evidence, unsatisfied D2O and unclaimed ProductAuthority/placement/P5/landfall
 are unchanged.
 
+### D.2 — Owner-authorized single-service development profile
+
+The owner reports that the existing production service is unused and explicitly
+requests using it for development instead of creating another service. This
+supersedes D.1's separate-service requirement only for the new explicit profile;
+D.1's source-bound return and strict staging behavior remain historical/intact.
+It does not approve funded V8D matches, marketing release or automatic promotion.
+Fresh fetch verified clean local/upstream
+`aa4f3e5f9e70870e18085eaec263b17db656ecf9`; implementation branch is
+`codex/wp-015d3a-v8d-single-service-v0`. Existing four staging tests and exact
+build proof passed before editing. No gameplay/AI change is needed.
+
+Carrier search: the existing D.1 startup-policy module, entry point, protocol
+tests, built smoke and four documentation homes fully cover the follow-up.
+No new file is justified. Exact eight-path maximum before implementation:
+
+- `server/src/staging-config.ts`
+- `server/src/server.ts`
+- `tests/protocol/staging-config.test.ts`
+- `scripts/smoke-built-server.js`
+- `README.md`
+- `docs/planning/implementation_plan.md`
+- `docs/planning/wp-015d3a-v8-action-turns-contract.md`
+- `docs/evidence/wp-015d3a.json`
+
+Existing clean-room implementer `/root/v8d_staging_worker` owns the four source/
+test paths, root owns the four docs/check orchestration, and distinct read-only
+`/root/v8d_staging_reviewer` reviews the final boundary. No reference/quarantine
+or observer-history input is admitted. Runtime/registry, client/shared mechanics,
+AI, assets, dependencies, manifests, schemas and analytical carriers stay exact.
+
+One explicit server-only selector: `NIMBLE_RUNTIME_PROFILE=development-v8d-practice`.
+Require `NODE_ENV=production` and existing `REWARD_PAUSED=true`; allow
+`NIMBLE_DEPLOYMENT` absent or `production`, never stale `staging`. Saved
+`REWARD_MODE=mainnet`, network, monetary limits, identity, database URL, signer
+path and RPC configuration can remain configured but are not parsed, validated,
+logged or used by this profile. `REWARD_PAUSED` is an entry/rollback safeguard,
+not the mechanism that disables subsystems. An early dedicated branch must
+return before normal reward/identity configuration and constructors, migration,
+signer-file reads, RPC, payout workers and transaction reconciliation. Reuse the
+existing fixed automated-r1 Practice-only admission with `identity:false` and no
+reward services. No process/environment mutation, seed/clock override, test API,
+reward entitlement or wallet request may be enabled. Explicit test overrides
+(`REWARD_TEST_*`, `PRACTICE_TEST_*`, `WP014_*`, missing-origin/rate overrides)
+still fail closed. Strict separate staging and normal V7 semantics are unchanged.
+
+This intentionally replaces gameplay at the existing public URL while selected;
+it is not an authentication boundary or a claim that nobody can reach the URL.
+It suspends all reward-ledger processing, including reconciliation, without
+altering stored state. Before restoring normal operation, keep rewards paused
+and review any pending entitlements/transactions; leaving development restores
+normal database/identity/reconciliation behavior, even while payouts are paused.
+Removing the profile and redeploying restores default V7. No automatic unpause,
+production credential deletion, cloud provisioning, push or deployment here.
+
+Verify exact policy/default/rollback/unsafe inputs, dormant malformed production
+settings and local DB/RPC connection tripwires, real built V8D clock/AI, disabled
+wallet/reward protocol and no config-value logging. Run `verify:feature`, security/
+identity/bundle checks, independent review, strict JSON duplicate/schema, links,
+exact paths/non-self-referential source digest and protected-byte/checkpoint checks.
+Preserve/restore D's four retained reports through D.1's existing hash-verified
+rollback archive before/after disposable browser output. No repeat balance
+assessment, full daily, live Render/physical phone session or PostgreSQL migration
+test is needed for this development-only config change. Existing qs audit,
+strict-graph legacy typing, human similarity and public-release gates stay open.
+Lane G/M execution, WP-015D2A, D2O and authority/placement claims remain unchanged.
+
+#### D.2 implementation and source-bound review return
+
+Implemented in the eight allowed existing files; no new carrier. Four source/
+test paths have SHA-256
+`eddcb64d4a91b7e709a153105c39e02e47378bb9791d33255796a4a2ac00fd28`, using
+lexically sorted `{path,gitBlob}` rows (`git hash-object --path=<path> <path>`),
+UTF-8 `JSON.stringify` without newline; exclude four review docs and containing
+commit. The tagged selector routes directly to the existing Practice-only r1
+runtime before the new unchanged-normal-path helper can parse or initialize
+any production subsystem. No saved values are changed or logged. Getter tests
+prove the selector does not even read dormant setting values. Normal V7 and
+strict separate staging remain available and unchanged in behavior.
+
+The existing clean-room implementer declared product docs/current MIT sources
+only, with no reference/quarantine/observer-history access. Distinct read-only
+reviewer `/root/v8d_staging_reviewer` independently checked this exact digest,
+passed seven focused tests and returned no remaining blocking findings. Review
+strengthened child-process shutdown proof: await actual exit (bounded force-kill
+fallback), close monitors on failure, and never report zero-contact success if
+shutdown fails. This is not human-similarity or separate-secret-environment
+clearance; the registry stays `observed`.
+
+Final `npm run verify:feature` passed compliance, repository-configured types,
+all configured fast suites, production build, complete three-profile built smoke
+and **5/5 canonical phone-browser tests** in 34.6s (browser portion), zero skips.
+Built smoke observed actual timed AI casts in both V8D profiles, zero dormant
+database/RPC connections through shutdown, no sentinel values in logs, unavailable
+wallet/reward protocol, 26 rejected unsafe/rollback startups and default V7.
+Seven focused tests separately pass, including getter/selector isolation;
+final configured types pass without unrelated strict legacy typing repair.
+No gameplay, clock, policy or safety threshold was changed.
+
+Final reward-security, identity-bundle and bundle gates pass; raw initial JS
+remains 1,499,582/1,500,000 bytes, JS/CSS gzip 414,682/430,000. Exact build proof
+on Node v23.6.0: input
+`2d7c7c47ec5f219fe3840e336964d5fb49a63904573e176410069524e4043ee3`, output
+`76f5e4113ee682d681b61c077da38ef2d4a755d9176e00f10b22f88d6a27cf85`.
+Eight-path/duplicate-key/schema checks, 38 local navigation links, 136 protected
+Git blobs (including runtime/registry), and both checkpoint tags pass. All four
+D reports were restored byte-for-byte after final browsers from the existing
+archive; the assessment still matches `66ee02f0...aaab4e3b1`. No reassessment.
+
+The README now leads with the owner's same-service setup and rollback. This
+local preparation did not access or change the live Render service, environment,
+secrets or ledger; no push, PR or deployment was performed. Full daily/release,
+actual phone/deployment capacity, PostgreSQL, human similarity and inherited
+audit/strict-typing issues remain separate. No funded V8 release, analytical
+execution, new Lane G evidence, D2O satisfaction or authority claim is made.
+
 ## Clean-room roles and entry gate
 
 The root coordinator is the reference observer and must not implement V8

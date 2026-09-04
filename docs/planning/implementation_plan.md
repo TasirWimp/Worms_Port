@@ -74,7 +74,21 @@ Phaser/Socket.IO stack.
   60-match shared-mode parity, the 240-match paired assessment, final feature
   gate and 10/10 five-profile candidate browser checks pass. Bundle and
   reward/identity security checks pass; initial raw JS has 418 bytes headroom.
-  Production remains V7 in both modes. Current owner-opened follow-up:
+  Production default remains V7 in both modes. Current owner-opened follow-up:
+  **V8D.2 single-service development profile complete and independently reviewed**,
+  under section D.2 of the existing
+  contract from clean `aa4f3e5` on `codex/wp-015d3a-v8d-single-service-v0`.
+  The owner says the existing production service is unused and elects to reuse
+  its URL for development. One explicit profile now runs full V8D Practice
+  while keeping saved production settings dormant: no reward/identity/database/
+  signer/RPC/reconciliation initialization. Keep rewards paused for rollback;
+  no deployment or public/funded release is performed in this preparation.
+  Final feature gate, seven focused tests, three-profile built smoke with zero
+  dormant DB/RPC contacts and five canonical phone-browser cases pass. Next:
+  owner push, select the new branch on the existing service, add
+  `NIMBLE_RUNTIME_PROFILE=development-v8d-practice`, keep `REWARD_PAUSED=true`
+  and `NODE_ENV=production`, and follow README's same-service phone checklist.
+  Completed predecessor:
   **V8D.1 separate no-payout staging preparation complete and independently
   reviewed**, governed by section D.1 in
   the existing V8 contract, from clean `9e0427d` on
@@ -82,7 +96,7 @@ Phaser/Socket.IO stack.
   ready for owner acceptance on a separate Render service. Feature gate,
   real-clock built staging smoke, four selected candidate browser cases and
   exact-source protections pass. See README Hosting for the environment and
-  phone checklist. Next: owner push and separate-service deployment/test;
+  phone checklist. Its then-next separate-service step is superseded by D.2;
   no production promotion, wallet/reward activation or deployment in this pass.
   Thereafter close public activation gates, including
   a separately scoped fix for inherited moderate qs audit findings, isolated

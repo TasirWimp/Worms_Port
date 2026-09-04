@@ -765,7 +765,8 @@ Render Free is limited to private previews because it may sleep and cold-start.
 
 Render's build checkout is shallow and does not expose the Git remote. Set
 `ALLOW_SHALLOW_WORK_PACKAGE_EVIDENCE=true` only on that service and use
-`npm ci && npm run build`. This preserves all current-tree compliance checks;
+`npm ci --include=dev && npm run build` so build tools remain installed with
+`NODE_ENV=production`. This preserves all current-tree compliance checks;
 only historical starting-commit lookup is skipped after the checker confirms
 the repository is actually shallow. GitHub Actions fetches full history and
 continues to enforce every historical lock pin before integration.
@@ -777,7 +778,68 @@ PostgreSQL database before using `record-only` or chain reward modes. See
 `docs/process/development_workflow.md` under **Hosting Contract** for activation,
 pause, outage, and key-response requirements.
 
-### V8D owner-test staging (separate service, no payouts)
+### V8D development on the existing service (current owner workflow)
+
+The owner has chosen to use the currently unused production service for
+development. **No second Render service, new URL, database setup or secret
+re-entry is required.** This new profile replaces gameplay on the existing URL
+with full V8D Practice and disables wallet/reward services entirely. It does not
+promote V8D as a funded or marketing-ready release. See
+[V8 contract D.2](docs/planning/wp-015d3a-v8-action-turns-contract.md#d2--owner-authorized-single-service-development-profile)
+for the source-bound implementation/review.
+
+After pushing `codex/wp-015d3a-v8d-single-service-v0`, use that branch on the
+**existing** service and set:
+
+```text
+Build Command: npm ci --include=dev && npm run build
+Start Command: npm start
+```
+
+Add this one environment variable:
+
+```dotenv
+NIMBLE_RUNTIME_PROFILE=development-v8d-practice
+```
+
+Keep `NODE_ENV=production` and `REWARD_PAUSED=true`. Leave saved production
+settings such as `REWARD_MODE=mainnet`, `REWARD_NETWORK=main-albatross`, identity,
+database, signer path and RPC values in place. **Do not change REWARD_MODE to
+disabled for this profile.** Remove any leftover `NIMBLE_DEPLOYMENT=staging`;
+the new profile needs no `NIMBLE_DEPLOYMENT` (explicit `production` is also
+accepted). Keep the existing URL/origin, Node version, shallow-checkout flag
+and one-instance hosting setup. Test-only overrides are still refused.
+
+Save and deploy the reviewed commit. The startup marker must name
+`development-v8d-practice`, `nimble-knots-artillery-v8-r1`,
+`wp-015d3a-v8d-r1-v1` and `rewards disabled`.
+Open the **same game URL without `combat-preview`** on the phone, reload, choose
+a Calling and tap **Start Practice**. Verify the action countdown, combined
+move/jump pad, real Loomkeeper turn, retreat, pause/resume, retry and match result.
+The normal sideways display policy remains unchanged. Daily/wallet/rewards are
+unavailable while development mode is active.
+
+This mode branches before all saved reward/identity configuration is parsed:
+no database connection, migration, key-file read, RPC, payout worker or pending
+transaction reconciliation runs. No saved setting is modified. Requiring
+`REWARD_PAUSED=true` helps keep rollback paused; pause itself is **not** the
+isolation mechanism. Saved secrets remain attached to the same hosting service,
+so this is an application-mode boundary, not a separate security environment.
+The URL remains publicly reachable; use it only for bounded development.
+
+To return to normal V7, remove `NIMBLE_RUNTIME_PROFILE` and redeploy, keeping
+`REWARD_PAUSED=true`. Normal startup will again use saved production configuration
+and may run migrations and transaction reconciliation even while paused. Review
+pending reward records before resuming normal service; **do not unpause payouts
+as part of rollback**. Existing in-memory Practice matches may end on redeploy.
+No existing ledger data is changed by development mode itself. Full daily/release,
+human similarity, device/capacity and inherited audit gates remain outstanding.
+
+### V8D owner-test staging (optional separate-service alternative)
+
+This is the earlier D.1 workflow. For the owner's current single-service setup,
+use the development profile above instead; these stricter settings are not
+interchangeable.
 
 V8D.1 provides full automated V8D Practice through the ordinary start screen.
 It is not production promotion. Keep the existing production service and its
