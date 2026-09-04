@@ -3,7 +3,8 @@ import test from 'node:test';
 import { UnifiedMovementInputController, type MovementFactsR1 } from '../../client/src/combat/input';
 import { clientPointToGame } from '../../client/src/lib/sideways';
 import { createActionTurnsV8Fixture } from '../../client/src/combat/fixture';
-import { V8SnapshotBuffer } from '../../client/src/combat/presentation';
+import { V8SnapshotBuffer, V8PresentationFeedback, wizardAnimationFor, projectCombatV8 } from '../../client/src/combat/presentation';
+import { WIZARD_ANIMATION_KEYS } from '../../client/src/combat/approved-assets';
 import { ChallengeSnapshotV8FamilySchema } from '../../shared/protocol-v8';
 
 const pad = { x: 100, y: 200, width: 112, height: 112 };
@@ -166,4 +167,97 @@ test('V8 r1 fixture expires at the129th lifecycle release instead of silently ig
     const expired = await args.releaseMovement!();
     assert.ok(expired); assert.equal(expired.simulation.phase, 'finished');
     assert.equal(expired.simulation.winner, 'draw'); assert.equal(expired.simulation.finishReason, 'simulation_limit');
+});
+
+test('V8D hit receipts last 2500ms while reporting newest authoritative health for either actor', async () => {
+    const before = (await createActionTurnsV8Fixture(1, 'wizard', { now: () => 0, every: () => () => {} }, 'nimble-knots-artillery-v8-r1')).snapshot;
+    const next = structuredClone(before); next.simulation.revision++;
+    next.simulation.units[0].stitching = 81; next.simulation.units[1].stitching = 68;
+    const feedback = new V8PresentationFeedback();
+    feedback.observe(before, next, 100, true);
+    assert.equal(feedback.message(next, 2599), 'You −19 · 81 Stitching | Loomkeeper −32 · 68 Stitching');
+    const latest = structuredClone(next); latest.simulation.units[0].stitching = 77;
+    assert.match(feedback.message(latest, 200), /You −19 · 77 Stitching/);
+    feedback.observe(next, next, 2000, true);
+    assert.equal(feedback.message(next, 2600), '', 'duplicate never extends receipt');
+    assert.equal(before.simulation.units[0].stitching, 100);
+});
+
+test('V8D observed defeat waits for actual completion and 1000ms aftermath only once', async () => {
+    const before = (await createActionTurnsV8Fixture(1, 'wizard', { now: () => 0, every: () => () => {} }, 'nimble-knots-artillery-v8-r1')).snapshot;
+    for (const actor of [0, 1] as const) {
+        const next = structuredClone(before); next.simulation.revision++;
+        next.status = 'completed'; next.simulation.phase = 'finished'; next.simulation.finishReason = 'unravelled';
+        next.simulation.units[actor].alive = false; next.simulation.units[actor].stitching = 0;
+        const feedback = new V8PresentationFeedback(); feedback.observe(before, next, 100, true);
+        assert.equal(feedback.resultReadyAt(next, 500), Infinity);
+        const duplicate = structuredClone(next); duplicate.simulation.revision++;
+        feedback.observe(next, duplicate, 2500, true);
+        const id = next.simulation.units[actor].id;
+        feedback.advanceDefeat({ [id]: { key: WIZARD_ANIMATION_KEYS.unravel, frame: 23, complete: false } }, 3100);
+        assert.equal(feedback.resultReadyAt(duplicate, 3100), Infinity, 'wall time cannot complete a slow engine animation');
+        assert.deepEqual(feedback.defeatedActors(4100), [id]);
+        feedback.advanceDefeat({ [id]: { key: WIZARD_ANIMATION_KEYS.unravel, frame: 25, complete: true } }, 4200);
+        assert.equal(feedback.resultReadyAt(duplicate, 4200), 5200);
+        feedback.advanceDefeat({ [id]: { key: WIZARD_ANIMATION_KEYS.unravel, frame: 25, complete: true } }, 4900);
+        assert.equal(feedback.resultReadyAt(duplicate, 5199), 5200, 'duplicate completion cannot extend aftermath');
+        assert.deepEqual(feedback.defeatedActors(5199), [id]);
+        assert.deepEqual(feedback.defeatedActors(5200), []);
+        feedback.clear(); assert.equal(feedback.resultReadyAt(next, 600), 600);
+        feedback.observe(before, next, 700, false);
+        assert.equal(feedback.resultReadyAt(next, 700), 700, 'unseen death has no playback delay');
+        feedback.observe(next, next, 800, true);
+        assert.equal(feedback.resultReadyAt(next, 800), 800, 'already-dead reconnect is not a new death');
+        const other = structuredClone(next); other.challengeId += 'next'; other.simulation.revision++;
+        feedback.observe(before, other, 900, true);
+        assert.equal(feedback.message(other, 900), '', 'new challenge cannot inherit damage');
+    }
+});
+
+test('V8D double defeat requires both completions; missing or stalled animation has an explicit bounded fallback', async () => {
+    const before = (await createActionTurnsV8Fixture(1, 'wizard', { now: () => 0, every: () => () => {} }, 'nimble-knots-artillery-v8-r1')).snapshot;
+    const next = structuredClone(before); next.simulation.revision++;
+    next.status = 'completed'; next.simulation.phase = 'finished'; next.simulation.finishReason = 'unravelled';
+    for (const unit of next.simulation.units) { unit.alive = false; unit.stitching = 0; }
+    const complete = { key: WIZARD_ANIMATION_KEYS.unravel, frame: 25, complete: true };
+    const playing = { ...complete, complete: false };
+    const feedback = new V8PresentationFeedback(); feedback.observe(before, next, 100, true);
+    feedback.advanceDefeat({ player: complete, loomkeeper: playing }, 3100);
+    assert.equal(feedback.resultReadyAt(next, 3100), Infinity, 'last frame while still playing is not completion');
+    feedback.advanceDefeat({ player: complete, loomkeeper: complete }, 4000);
+    assert.equal(feedback.resultReadyAt(next, 4000), 5000);
+    assert.equal(feedback.defeatPlayback(4999), 'aftermath');
+    assert.equal(feedback.defeatPlayback(5000), 'none');
+    feedback.clear(); feedback.observe(before, next, 100, true);
+    feedback.advanceDefeat({ player: complete, loomkeeper: complete }, 200);
+    assert.equal(feedback.resultReadyAt(next, 200), 3100, 'nominal 2000ms remains a minimum');
+    for (const missing of [false, true]) {
+        feedback.clear(); feedback.observe(before, next, 100, true);
+        const states = { player: playing, loomkeeper: missing ? { key: 'static', frame: 0, complete: false } : playing };
+        feedback.advanceDefeat(states, 8099);
+        assert.equal(feedback.resultReadyAt(next, 8099), missing ? 9099 : Infinity);
+        feedback.advanceDefeat(states, 8100);
+        assert.equal(feedback.defeatPlayback(8100), 'unavailable');
+        assert.equal(feedback.resultReadyAt(next, 8100), missing ? 9099 : 9100);
+        feedback.advanceDefeat({ player: complete, loomkeeper: complete }, 8500);
+        assert.equal(feedback.defeatPlayback(8500), 'unavailable', 'fallback never fabricates completion');
+        feedback.clear(); assert.equal(feedback.resultReadyAt(next, 8500), 8500);
+    }
+});
+
+test('V8D airborne idle outranks walking and casting, while legacy and death animation remain intact', async () => {
+    const state = (await createActionTurnsV8Fixture(1, 'wizard', { now: () => 0, every: () => () => {} }, 'nimble-knots-artillery-v8-r1')).snapshot.simulation;
+    state.units[0].grounded = false; state.units[0].vyFp = -256;
+    const unit = projectCombatV8(state).units[0];
+    assert.equal(unit.grounded, false);
+    for (const kind of ['movement', 'cast-charge', 'cast-formation', 'projectile'] as const) {
+        const visual = { kind, actor: 'player' as const, relicId: 'threadball' as const, trace: [], stage: 'start' as const };
+        assert.equal(wizardAnimationFor(unit, visual), WIZARD_ANIMATION_KEYS.idle, kind);
+    }
+    unit.grounded = true;
+    assert.equal(wizardAnimationFor(unit, { kind: 'movement', actor: 'player' }), WIZARD_ANIMATION_KEYS.walk);
+    delete unit.grounded;
+    assert.equal(wizardAnimationFor(unit, { kind: 'movement', actor: 'player' }), WIZARD_ANIMATION_KEYS.walk, 'legacy unchanged');
+    unit.alive = false; unit.grounded = false;
+    assert.equal(wizardAnimationFor(unit), WIZARD_ANIMATION_KEYS.unravel);
 });

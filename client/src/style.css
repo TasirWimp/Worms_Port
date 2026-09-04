@@ -745,6 +745,15 @@ input {
     transform: translate(-50%, -50%);
 }
 
+/* Terminal suspension must not cover the approved defeat animation. */
+.combat-v8[data-presentation='unravel'] .combat-message {
+    top: calc(max(8px, var(--safe-area-top)) + 52px);
+    bottom: auto;
+    padding: 0.45rem 0.7rem;
+    border: 0;
+    transform: translateX(-50%);
+}
+
 .combat-pause-sheet {
     position: absolute;
     z-index: 8;

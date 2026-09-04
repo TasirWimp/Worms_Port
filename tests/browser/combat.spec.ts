@@ -1,4 +1,12 @@
 import { expect, test, type Page } from '@playwright/test';
+import path from 'node:path';
+import { writeFile } from 'node:fs/promises';
+import { createRuntimeServer } from '../../server/src/runtime';
+import { V8_R1_RULESET_ID } from '../../shared/simulation-v8';
+import { SIM_RULES } from '../../shared/simulation';
+import { protocolEventsV8, ChallengeSnapshotV8RuntimeSchema, ChallengeResultV8RuntimeSchema,
+  type ChallengeSnapshotV8Runtime } from '../../shared/protocol-v8';
+import { WIZARD_ANIMATION_SCALE_IN_WORLD, WIZARD_UNRAVEL_ROOT_ORIGIN_Y } from '../../client/src/combat/loomseed-origin';
 
 import {
   applySyntheticSafeArea,
@@ -403,6 +411,7 @@ test('V8 r1 unified pad taps, walks, centers, reverses, hops and keeps aim Fire 
   await r1Pointer(page, 'pointermove', 302, -40, -40);
   await expect(ui).toHaveAttribute('data-player-grounded', 'false');
   await expect(ui).toHaveAttribute('data-player-facing', 'left');
+  await expect(ui).toHaveAttribute('data-player-animation', 'wp015c-wizard-idle');
   await r1Pointer(page, 'pointerup', 302, -140, -140);
   await expect(ui).toHaveAttribute('data-held-direction', '0');
   const airborneX = Number(await ui.getAttribute('data-player-x'));
@@ -414,6 +423,138 @@ test('V8 r1 unified pad taps, walks, centers, reverses, hops and keeps aim Fire 
   await page.locator('.fire-button').tap();
   await expect(ui).toHaveAttribute('data-combat-phase', 'retreat', { timeout: 6000 });
   await expect(page.locator('.fire-button')).toBeDisabled();
+});
+
+test('V8D presentation keeps hit receipts visible with live time and player framing', async ({ page }, testInfo) => {
+  const fixture = await presentationV8Fixture(page);
+  try {
+    const ui = page.locator('.combat-v8');
+    const camera = await ui.getAttribute('data-camera-left');
+    fixture.update(snapshot => {
+      snapshot.simulation.units[0].stitching = 81;
+      snapshot.simulation.units[1].stitching = 68;
+    });
+    await expect(page.locator('.combat-message')).toHaveText('You −19 · 81 Stitching | Loomkeeper −32 · 68 Stitching');
+    await expect(ui).toHaveAttribute('data-command-controls', 'true');
+    await expect(page.locator('.movement-zone')).toHaveAttribute('aria-disabled', 'false');
+    const tick = Number(await ui.getAttribute('data-simulation-tick'));
+    const timer = await page.locator('.combat-timer').textContent();
+    await expect.poll(async () => Number(await ui.getAttribute('data-simulation-tick'))).toBeGreaterThan(tick + 30);
+    await expect(page.locator('.combat-timer')).not.toHaveText(timer!);
+    await expect(ui).toHaveAttribute('data-hit-feedback', 'visible');
+    fixture.update(snapshot => {
+      const s = snapshot.simulation; s.turn++; s.inputEpoch++; s.activeActor = 'loomkeeper';
+      s.phaseStartedTick = s.tick; s.phaseDeadlineTick = s.tick + 450;
+      s.units[1].facing = -1; s.units[1].vxFp = -256;
+    });
+    await expect(ui).toHaveAttribute('data-active-actor', 'loomkeeper');
+    await expect(ui).toHaveAttribute('data-camera-left', camera!);
+    fixture.update(snapshot => { snapshot.simulation.units[1].facing = 1; snapshot.simulation.units[1].vxFp = 256; });
+    await expect(ui).toHaveAttribute('data-loomkeeper-animation', 'wp015c-wizard-walk');
+    await expect(ui).toHaveAttribute('data-camera-left', camera!);
+    await page.screenshot({ path: testInfo.outputPath('v8d-live-hit-feedback.png') });
+    await expect(ui).toHaveAttribute('data-hit-feedback', 'none', { timeout: 3000 });
+    await expect(page.locator('.combat-message')).not.toContainText('−');
+  } finally { await fixture.close(); }
+});
+
+test('V8D presentation shows visible full defeat and aftermath before either result', async ({ page }, testInfo) => {
+  test.setTimeout(45_000);
+  const originalViewport = page.viewportSize()!;
+  // Test-only engine timestamps: the scene's performance.now clock is untouched.
+  // A half-speed engine must still complete before its real-time aftermath starts.
+  await page.addInitScript(() => {
+    const nativeFrame = window.requestAnimationFrame.bind(window);
+    let previous = performance.now(), synthetic = previous;
+    window.requestAnimationFrame = callback => nativeFrame(time => {
+      const rate = (window as typeof window & { __v8AnimationRate?: number }).__v8AnimationRate ?? 1;
+      synthetic += (time - previous) * rate; previous = time; callback(synthetic);
+    });
+  });
+  for (const [defeated, viewport, slow] of [
+    ['both', { width: 844, height: 390 }, true],
+    ['player', originalViewport, false], ['loomkeeper', originalViewport, false],
+    ['both', { width: 390, height: 844 }, false]
+  ] as const) {
+    await page.setViewportSize(viewport);
+    await page.emulateMedia({ reducedMotion: defeated === 'both' ? 'reduce' : 'no-preference' });
+    const fixture = await presentationV8Fixture(page);
+    try {
+      if (slow) await page.evaluate(() => { (window as typeof window & { __v8AnimationRate?: number }).__v8AnimationRate = 0.5; });
+      const actors = defeated === 'both' ? ['player', 'loomkeeper'] : [defeated];
+      await installV8DefeatRecorder(page, fixture.current(), actors);
+      fixture.defeat(defeated);
+      await page.waitForFunction(() => (window as typeof window & { __v8Defeat: V8DefeatEvidence }).__v8Defeat.firstDeath !== undefined);
+      // Capture while animation is starting, not after an RPC chain consumes the aftermath.
+      await page.screenshot({ path: testInfo.outputPath(`v8d-${defeated}-${viewport.width}-unravel.png`) });
+      await expect(page.locator('.result-shell')).toHaveCount(0, { timeout: 100 });
+      await expect(page.locator('.result-shell')).toHaveAttribute('data-outcome', defeated === 'player' ? 'loomkeeper_win' : defeated === 'loomkeeper' ? 'player_win' : 'draw', { timeout: 9200 });
+      await expect(page.locator('.result-shell')).toHaveAttribute('data-final-hash', fixture.current().stateHash);
+      const proof = await page.evaluate(() => (window as typeof window & { __v8Defeat: V8DefeatEvidence }).__v8Defeat);
+      const proofPath = testInfo.outputPath(`v8d-${defeated}-${viewport.width}-timeline.json`);
+      await writeFile(proofPath, JSON.stringify(proof, null, 2));
+      await testInfo.attach(`v8d-${defeated}-${viewport.width}-timeline`, { path: proofPath, contentType: 'application/json' });
+      expect(proof.violations).toEqual([]); expect(proof.overflow).toBe(false);
+      expect(proof.samples.length).toBeGreaterThan(2);
+      expect(proof.samples.some(sample => sample.playback === 'unavailable')).toBe(false);
+      expect(proof.samples.some(sample => sample.pending)).toBe(true);
+      expect(proof.samples.every(sample => !sample.controls)).toBe(true);
+      if (defeated === 'both') expect(proof.samples.every(sample => sample.cameraWidth === 2048)).toBe(true);
+      for (const actor of actors) {
+        const frames = proof.samples.flatMap(sample => sample.actors.filter(value => value.actor === actor));
+        expect(frames.every(value => value.key === 'wp015c-wizard-unravel')).toBe(true);
+        expect(frames.some(value => value.frame > 0 && value.frame < 25)).toBe(true);
+        expect(frames.some(value => value.frame === 25 && value.complete)).toBe(true);
+        const completed = proof.samples.find(sample => sample.actors.some(value => value.actor === actor && value.complete));
+        expect(completed, `${actor} must actually finish before result`).toBeDefined();
+        // The recorder runs at the end of the same task as the render; allow at
+        // most one 60Hz observer/frame boundary, not a shortened cooldown.
+        expect(proof.resultAt! - completed!.at).toBeGreaterThanOrEqual(1000 - 17);
+        if (slow) expect(completed!.at - proof.firstDeath!).toBeGreaterThanOrEqual(3500);
+      }
+    } finally { await fixture.close(); }
+  }
+});
+
+test('V8D presentation retires interrupted aftermath without losing accepted result or leaking into retry', async ({ page }) => {
+  const fixture = await presentationV8Fixture(page);
+  try {
+    const ui = page.locator('.combat-v8'); fixture.defeat('loomkeeper');
+    await expect(ui).toHaveAttribute('data-result-pending', 'true');
+    await page.evaluate(() => window.dispatchEvent(new Event('blur')));
+    await expect(page.locator('.result-shell')).toHaveCount(0);
+    await page.evaluate(() => window.dispatchEvent(new Event('focus')));
+    await expect(page.locator('.result-shell')).toHaveAttribute('data-outcome', 'player_win');
+    await expect(page.locator('.result-shell')).toHaveAttribute('data-final-hash', fixture.current().stateHash);
+    fixture.stop();
+    fixture.releaseServerMatch();
+    await page.getByRole('button', { name: 'Change Calling' }).tap();
+    await page.getByRole('button', { name: 'Start Practice' }).tap();
+    await expect(ui).not.toHaveAttribute('data-challenge-id', fixture.current().challengeId);
+    await expect(ui).toHaveAttribute('data-hit-feedback', 'none');
+    await expect(page.locator('.result-shell')).toHaveCount(0);
+  } finally { await fixture.close(); }
+});
+
+test('V8D presentation preserves accepted result through hidden unavailable reentry', async ({ page }) => {
+  const fixture = await presentationV8Fixture(page);
+  try {
+    const ui = page.locator('.combat-v8'); fixture.defeat('player');
+    await expect(ui).toHaveAttribute('data-result-pending', 'true');
+    await page.evaluate(() => {
+      Object.defineProperty(document, 'hidden', { configurable: true, get: () => true });
+      document.dispatchEvent(new Event('visibilitychange'));
+    });
+    fixture.loseSession();
+    await expect.poll(() => fixture.sessionCount(), { timeout: 6000 }).toBe(1);
+    await expect(page.locator('.result-shell')).toHaveCount(0);
+    await page.evaluate(() => {
+      Reflect.deleteProperty(document, 'hidden'); document.dispatchEvent(new Event('visibilitychange'));
+      window.dispatchEvent(new Event('focus'));
+    });
+    await expect(page.locator('.result-shell')).toHaveAttribute('data-outcome', 'loomkeeper_win');
+    await expect(page.locator('.result-shell')).toHaveAttribute('data-final-hash', fixture.current().stateHash);
+  } finally { await fixture.close(); }
 });
 
 test('V8 r1 right left off and actual landscape preserve pad axes and safe areas', async ({ page }, testInfo) => {
@@ -440,6 +581,7 @@ test('V8 r1 right left off and actual landscape preserve pad axes and safe areas
     await r1Pointer(page, 'pointerdown', 305, 0, 0);
     await r1Pointer(page, 'pointermove', 305, 0, -30);
     await expect(ui).toHaveAttribute('data-player-grounded', 'false');
+    await expect(ui).toHaveAttribute('data-player-animation', 'wp015c-wizard-idle');
     await r1Pointer(page, 'pointerup', 305, 0, -30);
     await page.screenshot({ path: testInfo.outputPath(`v8-r1-${mode}-candidate.png`) });
     await page.setViewportSize({ width: 844, height: 390 });
@@ -869,4 +1011,136 @@ async function readPresentationRecorder(page: Page): Promise<{
       __combatPresentation: { phases: string[]; maximumProjectilePoints: number }
     }
   ).__combatPresentation);
+}
+
+/** Synthetic, schema-checked presentation receipts on the existing injected runtime.
+ * They are not combat outcomes, replay evidence, or a production debug seam. */
+async function presentationV8Fixture(page: Page) {
+  const runtime = createRuntimeServer({ clientDir: path.resolve('client/build'), sessionRegistry: {
+    simulationRulesetId: V8_R1_RULESET_ID, seedSource: () => 1,
+    simulationTickIntervalMs: false, v8TestOnly: { nowUs: () => 0 }
+  } });
+  const port = await runtime.listen();
+  await page.goto(`http://127.0.0.1:${port}/?sideways=off`);
+  await page.getByRole('button', { name: 'Start Practice' }).tap();
+  await expect(page.locator('.combat-v8')).toBeVisible();
+  const socket = [...runtime.io.sockets.sockets.values()][0];
+  const session = runtime.sessions.getBound(socket.id)!;
+  let snapshot = structuredClone(runtime.sessions.activeSnapshotV8(session)!);
+  const update = (mutate: (value: ChallengeSnapshotV8Runtime) => void) => {
+    const next = structuredClone(snapshot);
+    next.simulation.revision++; next.simulation.tick += 3; next.serverTimeMs++;
+    mutate(next);
+    next.stateHash = next.simulation.revision.toString(16).padStart(64, '0');
+    snapshot = ChallengeSnapshotV8RuntimeSchema.parse(next);
+    runtime.io.emit(protocolEventsV8.snapshot, snapshot);
+  };
+  const timer = setInterval(() => { if (snapshot.status === 'active') update(() => {}); }, 60);
+  return {
+    current: () => structuredClone(snapshot), update, stop: () => clearInterval(timer),
+    defeat: (actor: 'player' | 'loomkeeper' | 'both') => {
+      update(value => {
+        value.status = 'completed'; const s = value.simulation;
+        s.phase = 'finished'; s.finishReason = 'unravelled'; s.projectile = null;
+        s.phaseStartedTick = s.tick; s.phaseDeadlineTick = s.tick; s.settleReason = null;
+        s.heldDirection = 0; s.leaseExpiresTick = null; s.lastLeaseRefreshTick = null; s.aim = null;
+        s.winner = actor === 'player' ? 'loomkeeper' : actor === 'loomkeeper' ? 'player' : 'draw';
+        for (const unit of s.units) {
+          unit.vxFp = 0; unit.vyFp = 0;
+          if (actor === 'both' || actor === unit.id) {
+            unit.alive = false; unit.stitching = 0; unit.grounded = false;
+            unit.support = null; unit.airTicks = 0; unit.airDrive = null;
+          }
+        }
+      });
+      const result = ChallengeResultV8RuntimeSchema.parse({ protocolVersion: 8, serverTimeMs: snapshot.serverTimeMs,
+        sessionId: snapshot.sessionId, challengeId: snapshot.challengeId, rulesetId: snapshot.rulesetId,
+        loomkeeperPolicyId: snapshot.loomkeeperPolicyId, loomkeeperProfileId: snapshot.loomkeeperProfileId,
+        ...('automationId' in snapshot ? { automationId: snapshot.automationId } : {}),
+        nextInputSequence: snapshot.nextInputSequence,
+        outcome: actor === 'player' ? 'loomkeeper_win' : actor === 'loomkeeper' ? 'player_win' : 'draw',
+        finalTick: snapshot.simulation.tick, finalStateHash: snapshot.stateHash });
+      runtime.io.emit(protocolEventsV8.result, result);
+      runtime.io.emit(protocolEventsV8.result, result); // Duplicates must not reset the visible deadline.
+    },
+    loseSession: () => { socket.conn.close(); runtime.sessions.close(session.id); },
+    sessionCount: () => runtime.sessions.size,
+    releaseServerMatch: () => { runtime.sessions.leaveChallengeV8(session, snapshot.challengeId); },
+    close: async () => {
+      clearInterval(timer);
+      try { if (!page.isClosed()) await page.goto('about:blank', { timeout: 2000 }); }
+      finally { await runtime.close(); }
+    }
+  };
+}
+
+type V8DefeatEvidence = {
+  firstDeath?: number; resultAt?: number; overflow: boolean; violations: string[];
+  samples: { at: number; playback: string; pending: boolean; controls: boolean; cameraWidth: number;
+    actors: { actor: string; key: string; frame: number; complete: boolean }[] }[];
+};
+
+async function installV8DefeatRecorder(page: Page, snapshot: ChallengeSnapshotV8Runtime, actors: string[]) {
+  // Capture in the browser before receipt and retain after scene removal. Driver
+  // round trips cannot erase the finite animation, geometry or aftermath proof.
+  await page.evaluate(({ units, names, scale, origin, radius }) => {
+    const evidence: V8DefeatEvidence = { samples: [], violations: [], overflow: false };
+    (window as typeof window & { __v8Defeat: V8DefeatEvidence }).__v8Defeat = evidence;
+    let signature = '';
+    const violation = (message: string) => {
+      if (!evidence.violations.includes(message) && evidence.violations.length < 20) evidence.violations.push(message);
+    };
+    const record = () => {
+      const at = performance.now();
+      if (document.querySelector('.result-shell')) {
+        evidence.resultAt ??= at; observer.disconnect(); return;
+      }
+      const ui = document.querySelector<HTMLElement>('.combat-v8');
+      if (ui?.dataset.presentation !== 'unravel') return;
+      evidence.firstDeath ??= at;
+      const messageElement = document.querySelector('.combat-message'), canvasElement = document.querySelector('#game canvas');
+      if (!messageElement || !canvasElement) { violation('Missing defeat readout/canvas'); return; }
+      const message = messageElement.getBoundingClientRect(), canvas = canvasElement.getBoundingClientRect();
+      const width = Number(ui.dataset.battlefieldWidth), height = Number(ui.dataset.battlefieldHeight);
+      const left = Number(ui.dataset.cameraLeft), cameraWidth = Number(ui.dataset.cameraWidth);
+      const size = 256 * Math.max(0.1, height / 576 * scale);
+      const statuses = names.map(actor => document.querySelector(`.${actor}-status`)?.getBoundingClientRect());
+      for (const [index, actor] of names.entries()) {
+        const status = statuses[index], unit = units[actor === 'player' ? 0 : 1];
+        if (!status || status.width <= 0 || status.height <= 0) violation(`${actor} status missing`);
+        else if (message.bottom >= status.top) violation(`${actor} status overlaps message`);
+        if (!(unit.xFp / 256 > left + 30 && unit.xFp / 256 < left + cameraWidth - 30)) violation(`${actor} outside camera`);
+        // Exact approved 256px sheet bounds, including transparent padding and
+        // the renderer's actor-radius root offset (not the status label box).
+        const sprite = {
+          x: canvas.x + (canvas.width - width) / 2 + (unit.xFp / 256 - left) * width / cameraWidth - size / 2,
+          y: canvas.y + (canvas.height - height) / 2 + (unit.yFp / 256 + radius) * height / 576 - size * origin
+        };
+        if (message.x < sprite.x + size && message.right > sprite.x && message.y < sprite.y + size && message.bottom > sprite.y)
+          violation(`${actor} animation overlaps message`);
+        if (sprite.x < canvas.left || sprite.x + size > canvas.right || sprite.y < canvas.top || sprite.y + size > canvas.bottom)
+          violation(`${actor} animation outside canvas`);
+      }
+      if (names.length === 2 && statuses[0] && statuses[1] && statuses[0].right >= statuses[1].left)
+        violation('Double defeat statuses overlap');
+      const sample = { at, cameraWidth, playback: ui.dataset.defeatPlayback ?? '',
+        pending: ui.dataset.resultPending === 'true', controls: ui.dataset.commandControls === 'true',
+        actors: names.map(actor => ({ actor, key: ui.getAttribute(`data-${actor}-animation`) ?? '',
+          frame: Number(ui.getAttribute(`data-${actor}-animation-frame`)),
+          complete: ui.getAttribute(`data-${actor}-animation-complete`) === 'true' })) };
+      const nextSignature = JSON.stringify({ ...sample, at: 0, message: messageElement.textContent });
+      if (nextSignature !== signature) {
+        signature = nextSignature;
+        if (evidence.samples.length < 128) evidence.samples.push(sample); else evidence.overflow = true;
+      }
+    };
+    const observer = new MutationObserver(record);
+    observer.observe(document.body, { subtree: true, childList: true, attributes: true, attributeFilter: [
+      'data-presentation', 'data-result-pending', 'data-defeat-playback',
+      'data-player-animation-frame', 'data-loomkeeper-animation-frame',
+      'data-player-animation-complete', 'data-loomkeeper-animation-complete'
+    ] });
+    record();
+  }, { units: snapshot.simulation.units, names: actors, scale: WIZARD_ANIMATION_SCALE_IN_WORLD,
+    origin: WIZARD_UNRAVEL_ROOT_ORIGIN_Y, radius: SIM_RULES.actorRadius });
 }

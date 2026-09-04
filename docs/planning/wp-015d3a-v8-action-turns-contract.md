@@ -1798,6 +1798,196 @@ actual phone/deployment capacity, PostgreSQL, human similarity and inherited
 audit/strict-typing issues remain separate. No funded V8 release, analytical
 execution, new Lane G evidence, D2O satisfaction or authority claim is made.
 
+### D.3 — Owner-requested presentation corrections (2026-09-04)
+
+The owner accepted the working single-service development deployment and
+reported missed damage feedback, skipped defeat presentation, walking poses in
+mid-air and confusing AI-follow camera changes. They explicitly chose **keep
+gameplay running; retain visible feedback**, not an authoritative hit pause.
+This is ordinary product feedback, not formal Lane G observation or evidence.
+Fresh fetch verified clean local/upstream
+`e86e1642d2cbdacfab9a037f4dfc7fee6925d1dc`; isolated implementation branch:
+`codex/wp-015d3a-v8d-presentation-v0`. Existing exact build proof and 25 focused
+V8/presentation tests passed before editing.
+
+Carrier search found the existing V8 scene embedded in `scenes/combat.ts`,
+the pure presentation helpers and existing unit/browser suites. Reuse those
+and the four current documentation homes; no new document is needed. The one
+new module has a distinct lazy scene-entry role: move the existing V8 scene
+behind its actual asynchronous entry. With only 418 bytes of initial-JS budget
+headroom, do not add eager code or raise the budget. Entry review also requires
+airborne idle to override casting; a render-only grounded flag needs the existing
+renderer carrier, preserving legacy units that omit it. Successful first browser
+images then exposed the suspended message covering the defeated sprite. Before
+that correction, extend the scope to the existing stylesheet for an Unravel-only
+message-placement override and an overlap regression; suspension/authority must
+not be weakened to move the message. Exact eleven-path maximum,
+declared before creating that module:
+
+- `client/src/scenes/combat.ts`
+- `client/src/combat/action-turns-scene.ts` (only new file)
+- `client/src/combat/presentation.ts`
+- `client/src/combat/renderer.ts`
+- `client/src/style.css`
+- `tests/combat/action-turns-v8-r1.test.ts`
+- `tests/browser/combat.spec.ts`
+- `README.md`
+- `docs/planning/implementation_plan.md`
+- `docs/planning/wp-015d3a-v8-action-turns-contract.md`
+- `docs/evidence/wp-015d3a.json`
+
+Fresh no-history `/root/v8d_presentation_worker` owns the seven source/test paths;
+root owns four docs and gate orchestration. Distinct read-only
+`/root/v8d_staging_reviewer` reviews scope and final source. Product contract
+and current MIT sources/tests only; no reference/quarantine or observer-history
+input. No server/shared/protocol/transport, AI, replay, ruleset, registry,
+deployment, dependency, asset, animation-art, baseline or analytical edits.
+
+Required presentation behavior, shared by V8 Practice and reward presentation:
+
+- Retain exact authoritative damage/current-health feedback for approximately
+  2500ms after an observed health loss, readable even when the victim is off
+  screen. Continue accepting snapshots, HUD/clock updates and legal input.
+  Do not conceal a newly controllable player behind a victim-camera dwell;
+  projectile/impact tracking remains bounded and player interaction preempts it.
+  Subsequent hits may replace/refresh feedback, never infer an unobserved hit.
+- For an observed alive-to-dead transition, show the existing approved
+  25-frame Unraveling (nominally 2000ms), followed by 1000ms aftermath before the result
+  screen; terminal framing must show the defeated actor, including AI defeat.
+  This is an explicit terminal-only exception to the ordinary player anchor.
+  Accept terminal authority immediately and disable commands then;
+  delay only scene reveal. A later slow-render browser failure proved that
+  Phaser's smoothed animation clock may lag wall time: a fixed death+3000ms
+  deadline is insufficient. Before the corrective edit, require actual matching
+  Unravel completion for every observed defeated actor (not merely last-frame
+  selection), then start the 1000ms aftermath once. The nominal 2000ms remains
+  a minimum, not evidence of completion. Add controlled slow-render testing and
+  browser-side frame/completion/result observation before emitting the fixture
+  death, so driver latency cannot substitute for visible playback evidence.
+  Bound visible animation waiting to 8000ms from the first observed death.
+  Missing/static animation, or still-incomplete playback at that cutoff, uses
+  an explicitly degraded 1000ms notice, `Defeat animation unavailable · showing
+  clash result`, before revealing the accepted result. Mark it unavailable,
+  never completed; the normal path waits for actual completion then its full
+  1000ms aftermath. This is an animation-failure bound, not a changed turn clock.
+  A controlled browser regression may halve only test-page rAF timestamps,
+  leaving wall time, production code clocks and authoritative snapshots intact;
+  retain browser-local completion/geometry/result observations across scene exit.
+  Unit checks bind the exact 1000ms boundary; browser observation permits only
+  17ms for its render/microtask boundary. Its result wait is bounded to 9200ms
+  (8000ms failure bound + 1000ms notice + 200ms driver delivery), and normal/
+  slowed playback must complete without using fallback. Keep the existing
+  45-second overall multi-scenario test bound; do not raise it for retries.
+  No global production Phaser timing change or new debug endpoint. Duplicate
+  revisions/results must not restart the sequence. Late reconnect with
+  already-dead actors must not invent/replay a death; left, expired and
+  unavailable results remain immediate. Shutdown/retry/replacement cancel
+  scene-local pending feedback/results. Hidden/disconnected presentation must
+  not claim unseen playback: retire transient dwell and reveal retained terminal
+  authority at the next safe visible render. No next-turn clock runs after terminal.
+- Airborne actors use idle ahead of cast or walk; walk requires grounded
+  horizontal movement. A render-only grounded flag is not new authority. No new
+  jump asset, source pixels, animation configuration or physics is authorized.
+- Ordinary framing stays anchored to the human player, independent of the
+  Loomkeeper's facing/turn. Preserve per-actor sprite facing, projectile/impact
+  tracking, manual camera navigation and the sideways display workaround.
+
+Verification: focused red/green unit and controlled browser regressions for
+damage dwell with advancing authority/time, both deaths, duplicate/late results,
+interruption/retry, grounded/airborne poses and AI/player camera framing; final
+`verify:feature`, targeted five-profile phone browsers, bundle and reward/
+identity security, independent review, strict JSON duplicate keys/schema,
+navigation, exact paths, non-self-referential source digest and protected bytes/
+checkpoints. Source digest uses sorted `{path,gitBlob}` rows for the seven source/
+test paths, UTF-8 `JSON.stringify` without newline and SHA-256, excluding four
+docs and containing commit. Preserve D's four retained reports using D.1's
+existing hash-verified archive before/after browser cleanup. The same ignored
+archive's `presentation` child retains the D.3 failed preflight, successful
+pre-correction screenshots and interrupted phone-run outputs before the final
+feature gate clears disposable browser output; compare copied files by SHA-256.
+Do not rerun full
+daily, assessment, PostgreSQL or physical-device tests for this client slice;
+those remain separate release gates. No push, PR or deployment in this pass.
+Default V7, development isolation, all replay/mechanics, WP-015D2A, interrupted
+Stage C debt, closed Lane G/M, no Lane G evidence, unsatisfied D2O and all
+authority/placement/P5/landfall boundaries remain unchanged.
+
+#### D.3 source-bound implementation and review return
+
+The fresh clean-room implementer completed the seven source/test paths without
+opening reference or quarantine material. The retained hit receipt reports the
+exact observed damage and newest authoritative Stitching for 2500ms while the
+simulation, clock, controls and later snapshots continue. Ordinary camera
+framing remains anchored to the human player while Loomkeeper facing stays
+independent. Airborne actors select idle ahead of cast or walk; grounded
+horizontal motion remains the only walk case. No physics, turn timing, AI,
+server, protocol, replay, ruleset or asset changed.
+
+Terminal authority is accepted immediately and commands stop immediately. For
+each actor observed crossing alive-to-dead, the scene now waits for the matching
+25-frame Unravel animation to report actual completion, then latches one exact
+1000ms aftermath before revealing the accepted result. Double defeat waits for
+both actors and uses a full-arena frame. An absent, static or stalled animation
+cannot hide a result indefinitely: after 8000ms it is classified unavailable,
+shows the explicit degraded notice for 1000ms, and does not claim animation
+completion. Duplicate results cannot restart the sequence; hidden,
+disconnected, replaced or stopped scenes retire their transient dwell without
+losing already accepted terminal authority. The combat message moves above the
+actors only during this terminal presentation so it does not cover Unraveling.
+
+`scenes/combat.ts` now loads the existing V8 scene through the new bounded
+`combat/action-turns-scene.ts` asynchronous entry. This is packaging, not a new
+gameplay route; the post-await mount guard and failure handling remain. The
+final build measures 1,492,600/1,500,000 raw initial JavaScript bytes and
+413,636/430,000 gzip JavaScript-plus-CSS bytes. Exact build proof is
+`de054cb61f6d115bd629d2c4e531bd0cfcb9ab536252e83b76ad2b3c17b44218` /
+`e0ea47684f87b1d4c78eeba65cf690733a98525c62dde65b1f17b8538a03c75c`.
+No budget or build configuration was raised.
+
+Test-first evidence is retained rather than normalized away. Three helper
+regressions failed before implementation. The first browser fixture had an
+invalid synthetic phase origin and was corrected without relaxing product
+validation. Visual review then found message/sprite overlap and stopped the
+first 30-case run after 12 started. A later run stopped at 8 pass / 1 fail /
+21 not run when frame 23 was followed by scene removal 156ms later; a fixed
+death-plus-wall-time delay had not guaranteed animation completion. A
+controlled half-rate-render regression failed the old implementation, then
+passed after completion-based gating. One final feature attempt separately
+stalled in an unrelated legacy Wizard-image child; that exact test passed
+standalone in 0.7s and one bounded clean retry completed the canonical gate.
+
+Final-source verification passed:
+
+- focused presentation helpers 29/29; independent reviewer subset 15/15;
+- `npm run verify:feature`: 452 fast tests, production build, all three built
+  runtime-profile smokes and 5/5 canonical phone-browser checks;
+- focused presentation matrix 30/30 in 4.4 minutes across Chromium 360x640,
+  390x844, 412x915 and 844x390 plus WebKit 390x844, with zero retries or skips;
+- 20 terminal timelines had zero violations, overflow or fallback. Actual
+  animation completion ranged 1991.5-4230.0ms; the deliberately half-rate
+  landscape cases ranged 4006.8-4230.0ms. Observed aftermath ranged
+  1032.6-1079.0ms, above the exact 1000ms product boundary;
+- portrait and landscape screenshots were inspected: both defeated actors
+  remain visible and the suspended message does not cover them;
+- bundle, reward-security, identity-bundle, compliance, types, exact paths,
+  duplicate-key/schema/navigation, protected-byte/checkpoint and diff checks
+  pass. The seven source/test paths bind to SHA-256
+  `dc2c6630dc9672839c8684a04b5a66e4a955833583eb452313f6db22c53d4be8`.
+
+The ignored rollback archive retains SHA-256-verified copies of every failed,
+interrupted and successful D.3 browser output, including the final 86 test
+artifacts and 21-file HTML report. The four historical D reports remain
+byte-identical after hash-verified restoration from that archive following the
+final browser cleanup, including assessment
+`66ee02f07dd560884dabf4c2782ac070a902da3c6fea750a9bf0ff7aaab4e3b1`.
+Distinct read-only reviewer `/root/v8d_staging_reviewer` found no blocking
+source issue and approved actual-completion gating, double-defeat handling,
+interruption cleanup, truthful fallback and protected-source preservation at
+the same seven-path digest. This is D.3 engineering completion only: the owner
+has not yet tested these corrections on a physical phone or the live Render
+deployment. No push, PR, deployment, daily/release gate, formal player
+observation, human-similarity clearance or public/funded V8 activation occurred.
+
 ## Clean-room roles and entry gate
 
 The root coordinator is the reference observer and must not implement V8

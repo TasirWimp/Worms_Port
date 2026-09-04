@@ -788,7 +788,7 @@ promote V8D as a funded or marketing-ready release. See
 [V8 contract D.2](docs/planning/wp-015d3a-v8-action-turns-contract.md#d2--owner-authorized-single-service-development-profile)
 for the source-bound implementation/review.
 
-After pushing `codex/wp-015d3a-v8d-single-service-v0`, use that branch on the
+After pushing the reviewed `codex/wp-015d3a-v8d-presentation-v0` follow-up, use that branch on the
 **existing** service and set:
 
 ```text
@@ -818,6 +818,27 @@ a Calling and tap **Start Practice**. Verify the action countdown, combined
 move/jump pad, real Loomkeeper turn, retreat, pause/resume, retry and match result.
 The normal sideways display policy remains unchanged. Daily/wallet/rewards are
 unavailable while development mode is active.
+
+The owner-requested [D.3 presentation follow-up](docs/planning/wp-015d3a-v8-action-turns-contract.md#d3--owner-requested-presentation-corrections-2026-09-04)
+uses the same service and environment settings. After deploying its reviewed
+commit, check on the phone:
+
+1. Hit either actor: damage and remaining Stitching stay readable for about
+   2.5 seconds, including off-screen hits. The turn clock and legal controls
+   continue normally; there is no gameplay freeze.
+2. Win and lose a match: the defeated actor finishes the existing Unraveling
+   (normally two seconds), then holds for one second before the result screen.
+   Slow rendering must not cut playback short. Expiry,
+   leaving, unavailable matches and reconnecting after a finished match do not
+   replay a death that was never observed in the current scene.
+3. Jump vertically and diagonally: use idle in the air and walk only when
+   grounded and moving. No new jump animation is introduced.
+4. Let the Loomkeeper turn and walk: ordinary framing stays with the player;
+   projectile tracking and manual panning remain available. Actor sprites still
+   face their own movement/aim direction.
+
+These are owner acceptance checks, not completed automated or real-device
+results. The source-bound implementation/review status lives in D.3.
 
 This mode branches before all saved reward/identity configuration is parsed:
 no database connection, migration, key-file read, RPC, payout worker or pending

@@ -74,7 +74,26 @@ Phaser/Socket.IO stack.
   60-match shared-mode parity, the 240-match paired assessment, final feature
   gate and 10/10 five-profile candidate browser checks pass. Bundle and
   reward/identity security checks pass; initial raw JS has 418 bytes headroom.
-  Production default remains V7 in both modes. Current owner-opened follow-up:
+  Production default remains V7 in both modes. Current completed follow-up:
+  **V8D.3 presentation corrections implemented, verified and independently reviewed**,
+  from clean fetched `e86e164`
+  on `codex/wp-015d3a-v8d-presentation-v0`; exact eleven-path scope and checks in
+  [contract D.3](wp-015d3a-v8-action-turns-contract.md#d3--owner-requested-presentation-corrections-2026-09-04).
+  Owner chose continuous gameplay/clock with retained damage feedback, alongside
+  complete defeat/aftermath presentation, airborne idle and human-anchored
+  ordinary camera. Actual Unravel completion now precedes one second of aftermath,
+  double defeat waits for both actors, and an explicit bounded unavailable path
+  cannot falsely claim completion. Focused helpers pass29/29; the final feature
+  gate passes452 fast tests, allthree built-profile smokes and5/5 canonical
+  phone cases; the focused five-profile matrix passes30/30 with20 zero-violation
+  terminal timelines. Initial rawJS is1492600/1500000 after the lazy scene-entry
+  extraction. Independent source review has no blocking finding. No rules,
+  replay, assets or deployment configuration change.
+  Next: owner push this branch, select it on the existing Render service without
+  changing the working D.2 environment, deploy, then perform README's four D.3
+  phone checks. Physical-device acceptance and public promotion remain open.
+  The working single-service deployment was owner-tested; this is ordinary
+  product acceptance, not Lane G evidence. Completed predecessor:
   **V8D.2 single-service development profile complete and independently reviewed**,
   under section D.2 of the existing
   contract from clean `aa4f3e5` on `codex/wp-015d3a-v8d-single-service-v0`.

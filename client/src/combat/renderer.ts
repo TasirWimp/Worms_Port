@@ -7,7 +7,7 @@ import {
     type SimulationActor,
     type SimulationUnit
 } from '../../../shared/simulation';
-import type { CombatRenderState } from './presentation';
+import { wizardAnimationFor, type CombatAnimationState, type CombatRenderState } from './presentation';
 import {
     APPROVED_COMBAT_ASSETS,
     WIZARD_ANIMATION_KEYS,
@@ -112,6 +112,12 @@ export class CombatRenderer {
 
     public get assetState(): 'approved-runtime-copies' | 'procedural-fallback' {
         return this.usingApprovedAssets ? 'approved-runtime-copies' : 'procedural-fallback';
+    }
+
+    public animationState(actor: SimulationActor): CombatAnimationState {
+        const animation = this.wizardSprites[actor]?.anims;
+        return { key: animation?.currentAnim?.key ?? 'static', frame: animation?.currentFrame?.index ?? 0,
+            complete: Boolean(animation?.currentFrame?.isLast && !animation.isPlaying && !animation.isPaused) };
     }
 
     public render(
@@ -300,27 +306,11 @@ export class CombatRenderer {
         visualPhase?: CombatVisualPhase
     ): void {
         if (!this.usingWizardAnimations) return;
-        const animation = this.wizardAnimationFor(unit.id, unit.alive, visualPhase);
+        const animation = wizardAnimationFor(unit, visualPhase);
         sprite.setOrigin(0.5, animation === WIZARD_ANIMATION_KEYS.unravel
             ? WIZARD_UNRAVEL_ROOT_ORIGIN_Y
             : WIZARD_ANIMATION_ROOT_ORIGIN_Y);
         if (sprite.anims.currentAnim?.key !== animation) sprite.play(animation);
-    }
-
-    private wizardAnimationFor(
-        actor: SimulationActor,
-        alive: boolean,
-        visualPhase?: CombatVisualPhase
-    ): string {
-        // Once a unit is defeated, keep the terminal Unraveling frame rather than
-        // returning it to an idle pose after the short impact presentation ends.
-        if (!alive) return WIZARD_ANIMATION_KEYS.unravel;
-        if (visualPhase?.actor === actor) {
-            if (visualPhase.kind === 'movement') return WIZARD_ANIMATION_KEYS.walk;
-            if (visualPhase.kind === 'cast-charge' || visualPhase.kind === 'cast-formation' ||
-                visualPhase.kind === 'projectile') return WIZARD_ANIMATION_KEYS.cast;
-        }
-        return WIZARD_ANIMATION_KEYS.idle;
     }
 
     private drawTeamCues(units: readonly SimulationUnit[], layout: CombatLayout): void {
