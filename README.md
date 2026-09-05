@@ -442,6 +442,15 @@ work-package sequence.
 
 ## Codex Subagents
 
+The project default is GPT-6 Astra (`gpt-6-astra`) with `high` reasoning,
+configured in [`.codex/config.toml`](.codex/config.toml). This preserves the
+existing reasoning effort. Role agents have no model overrides and inherit
+the parent task's model settings. Explicit task or invocation overrides can
+select another model; the project config does not change a running task.
+Codex must trust the project to load its local configuration. See the
+[official configuration guide](https://learn.chatgpt.com/docs/config-file/config-basic)
+and [Astra migration guidance](https://developers.openai.com/api/docs/guides/latest-model#gpt-6-astra-update-api-and-model-parameters).
+
 Role-specific Codex agents live in `.codex/agents/`:
 
 - `worms_port_planner`
