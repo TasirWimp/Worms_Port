@@ -270,3 +270,179 @@ results. V9 values remain unassessed balance hypotheses.
 Next: V9B entry amendment and authoritative foundation under A5. The overall
 WP-015D3B evidence remains `in_progress`; completing A does not claim V9 gameplay
 or activation is complete.
+
+## B. V9B authoritative foundation entry amendment — 2026-09-05
+
+Status: entry designed by fresh `/root/v9b_entry_designer` on
+`gpt-5.6-terra` / `high` and independently approved by
+`/root/v9b_entry_reviewer` on `gpt-6-astra` / `high`. This amendment opens V9B from clean
+`d41df456696326f737e526e59f43aeae865a5681` on
+`codex/wp-015d3b-v9b-authoritative-foundation-v0`. Requested/configured model
+selection is recorded here; runtime-served model metadata is unavailable. The
+designer read only the contract, operating documents and local MIT product
+sources/tests, made no edits and did not access an external source or quarantine.
+The reviewer found and the coordinator corrected source-edit blockers for
+intent-limit neutralization, canonical hashing, closed mutable paths and V8-r1
+parity/collision fixtures. Review grants only B1's closed injected foundation;
+implementation correctness still needs red/green tests and final review.
+
+### B1. Closed source boundary and starting locks
+
+V9B may change only the three new source modules, these **three existing mutable
+dispatch paths**, and three new test modules listed in A5, plus this contract,
+`docs/evidence/wp-015d3b.json` and `docs/planning/implementation_plan.md`.
+`server/src/protocol/socket.ts` and `server/src/runtime.ts` are explicitly
+**excluded**: V9B has no Socket.IO, normal lifecycle, client, reward or runtime
+profile surface. A type-only change to either still needs an Astra-reviewed
+amendment before edit. No V8 source module, asset, dependency, package script,
+legal manifest, public selector or deployment configuration is in scope.
+
+The three mutable integration files must exactly match these source SHA-256
+values when their fresh implementer begins; otherwise stop for a reviewed
+amendment. The V8 source/test blobs below are **read-only predecessor locks**,
+not V9B paths. They are recovery evidence and never permission to modify files
+outside the closed list.
+
+| Mutable V9B path | SHA-256 at entry | Git blob at entry |
+| --- | --- | --- |
+| `shared/combat-version.ts` | `2FCF7770F318B55B9BAF486C45AB6BF3E312F6B10CB5E9D4C479843B8B4FA164` | `838598ff14306aaffdd0e5224d77573143fa4201` |
+| `server/src/simulation/versioned-coordinator.ts` | `E0B2827D884F8230A52A2BDBC026D6DB36A836D9DCAA245349FBBF6B38A0777E` | `13a78e4105fc0e6ed8672d332a0b8c81342779c6` |
+| `server/src/session/registry.ts` | `E546605FDA8E6D675D0495CE772F8BC06A04DF2303B02CA1F05F5493EEA22B59` | `947e907e41fd60dc58cd50b470d2b1e0d4e9b96d` |
+
+The V9 test files do not exist at entry. Read-only V8 source/test blobs are
+`shared/simulation-v8.ts` `0125fd4c7ea2e8d122531b55ebb07765aa6385ad`,
+`shared/protocol-v8.ts` `651777a08488dbd0fbdea867c94864d5ff746b2c`, and
+`server/src/simulation/coordinator-v8.ts`
+`d793a3927dbf4bb9e10a370d11aa1f27e2bd2b4e`; V8 regression test blobs are
+`e2ab6f08dde9e2f67815d0fceaadfa3873a01e95`,
+`9449b3de2f453099bf5c6d1827bd4853ecb0c6d0` and
+`c3cd6fa882cbbe7ab6ca6a5eaf455f6788cda569`. V9 must not widen their types,
+schemas, implementation or expected assertions.
+
+### B2. Strict V9 state, intent and replay contract
+
+Create only `V9_RULESET_ID = 'nimble-knots-artillery-v9'`,
+`V9_RULESET_VERSION = 9`, `SimulationStateV9`, `SimulationUnitV9` and V9-only
+schemas. There is no V9 family/r1 alias. The V9 state retains V8-r1 fields and
+adds exactly `utilityUsed` at state level; each unit adds integer `thread`
+`0..9`, `lastCreditedTurn` `-1..15`, `shield` `0..24`,
+`shieldExpiresTurn` null or `0..17`, and boolean `reinforcedLeap`. Keep
+`airDrive` unchanged. The marker is true only during an accepted airborne
+Threadleap and clears on landing, death and phase boundary. Invariants require
+`shield === 0` exactly when expiry is null; dead actors have zero/null shield
+and no reinforced leap.
+
+Creation's player action is already credited and hashes as
+`thread=3,lastCreditedTurn=0`; Loomkeeper starts `thread=0,lastCreditedTurn=-1`.
+This is initial state, never a forgeable replay operation. At a later action
+entry, after the tick's preceding phase transition, expire that actor's shield
+when its expiry equals the new turn, credit once if not already credited, reset
+the one shared utility slot, then admit fresh input. Resolve death/turn limit
+before entry, so no nonexistent action can credit Thread. Pause, snapshots,
+reconnects, retries and result handling do not mint Thread.
+
+`SimulationIntentV9` is the strict V8-r1 intent set plus exactly
+`{type:'threadguard'}` and `{type:'threadleap',direction:-1|1}`. Keep
+`walk_stop` and existing V8-r1 barrier reasons. V9 protocols must use strict
+discriminated snapshot, intent, barrier, replay-operation, record and replay
+schemas under format/version 9, exact V9 ruleset, policy
+`nimble-knots-loomkeeper-v4` and profile `standard-v9-0`; no automation field.
+They define no Socket.IO event, creation/lifecycle envelope or client ack in B.
+Replay operations remain only intent, barrier, ticks, automatic lease/phase and
+safety. Income, expiry and utility reset are reconstructed state effects.
+
+`canonicalSimulationJsonV9` first validates the entire exact V9 state, then
+serializes recursively: arrays retain their current order; every object key is
+lexicographically sorted and JSON-escaped; primitive values use JSON encoding.
+`hashSimulationStateV9` is the lowercase hexadecimal SHA-256 digest of those
+canonical UTF-8 bytes. It includes every V9 state field listed above, inherited
+simulation field, tuple order, terrain word and projectile trace; it excludes
+socket/session/wall-clock metadata, request cursors, UI and reward facts. The
+initial V9 state hash and one post-credit/utility/checkpoint hash for seed 1
+must be frozen as literals in V9 tests before green implementation. The V8
+canonical JSON and hash functions stay unmodified.
+
+V9 keeps all V8 replay limits and pre-parse checks: 32,768 records, 16 MiB
+JSON, 512 bytes per operation/record, 16,800 summed ticks and 512-byte terminal
+reserve. Preserve contiguous indexes, coalesced tick records, automatic-boundary
+regeneration and fail-closed safety terminalization. Mixed format/ruleset/
+policy/automation fields reject before reconstruction.
+
+### B3. Authoritative ordering
+
+Normal identity, active actor, turn, epoch, phase, deadline, intent budget and
+grounded checks precede a utility. It additionally needs action, no cast, unused
+utility, zero held walk and both live actors grounded/motionless. Validate all
+ordinary legality before affordability. Rejected, stale or duplicate actions
+do not debit Thread or change utility/cast state. Preserve the existing separate
+intent-limit rule: a validated request at the exhausted accepted-intent budget
+may append its canonical `intent_limit` barrier and perform its recorded input
+neutralization/epoch effects, including while airborne; it still must not debit,
+use a utility/cast, mint Thread or change a shield. Accepted utility costs two
+Thread, uses the slot, clears
+aim/lease/held input, increments epoch and consumes one intent; it leaves cast
+and deadline intact. A later Fire needs fresh acknowledged aim. Fire atomically
+checks `{threadball:2,needlepoint:3,spoolburst:5}` then debits and uses its cast.
+
+Threadguard sets shield 24 and expiry `turn+2`; it neither stacks nor refreshes.
+At projectile impact, calculate V5/V8 raw damage for both actors from the
+unmodified pre-settling roots, absorb independently, apply residual Stitching
+loss, then update every alive/dead result. Keep terrain deformation unchanged.
+Emit stable tuple-order `damage_resolved` events with raw, absorbed, residual
+Stitching loss, resulting Stitching and shield; this is authoritative evidence
+for later presentation, not a B client change.
+
+Threadleap first validates support, then debits and sets facing, `vxFp` to
+direction times 512, `vyFp=-2048`, unsupported/airborne state, zero air ticks,
+`airDrive='jump'` and `reinforcedLeap=true`. It uses V8-r1 horizontal/vertical
+sweeps and only the residual horizontal retry after actual upward movement.
+While marked, a clipped obstacle preserves the 512 impulse; soft walk-stop
+preserves it, while cancel/disconnect/reconnect/pause/resume/intent-limit and a
+phase transition zero it while gravity continues. Landing/death clear it.
+
+`SimulationCoordinatorV9` mirrors only V8's non-automated bounded API:
+creation, get, apply, barrier, advance, pump/catch-up, safety, replay,
+reconstruction/verification, deletion and disposal. It excludes planner,
+automated creation, chosen-plan records and automation provenance. The combat
+facade adds exact V9 dispatch while current selection stays V7 and every
+historical reconstruction path remains exact. Registry may expose explicitly
+test-only injected V9 creation/apply/advance/snapshot/replay seams behind a
+`v9TestOnly` option; no normal selection or reward settlement changes.
+
+### B4. Red-first acceptance fixtures
+
+Before runtime implementation, the three new V9 test modules must fail for the
+absent V9 modules, then cover: first credit and pause/resume; nine cap and
+carry-over; atomic Fire across unaffordable/stale/duplicate paths; shared utility
+and fresh aim; Threadguard partial/full/self damage and death/expiry; 63-tick
+126-unit clear-floor leap; wall/ceiling/actor/ledge and residual-rise retry;
+soft release/interruption/landing; deadline handover ordering; strict unknown/
+fractional/mixed-version rejection; replay corruption/cap reconstruction;
+injected Practice/reward parity; and exhausted-budget airborne-leap barrier
+neutralization without a debit. Use the existing frozen ten V8 seeds
+`1,2,3,4,17,42,1337,65535,2147483648,4294967295`, each Calling and unchanged
+V7 start/terrain/RNG generators for creation/parity coverage. For retained
+free-action behavior, normalize out only V9 resource fields and the intentional
+`formatVersion`, `rulesetId` and `rulesetVersion` identity fields, then compare V9
+against V8-r1 for the same seed/history through ordinary face/walk/reversal,
+lease, 8/16-unit step and 63-tick free-jump fixtures; V8-r1 remains the
+read-only oracle. Bind V9 geometry fixtures explicitly: clear level floor at
+root `x=800,y=308`; a wall occupying terrain cells `x=104..107,y=34..39`; the
+clipped-wall/residual-retry case starts player root at `x=820,y=308`, flush to
+the wall's left face at 832 after the 12-unit body radius; a
+ceiling `x=96..111,y=23..25`; and a 16-unit ledge `x=104..111,y=37..38`.
+Place the opposing root outside the swept test rectangle except in the named
+actor-collision case, which puts Loomkeeper at root `x=840,y=308`. Retain all
+V8 golden/hash assertions unchanged.
+
+Focused red/green command:
+
+```powershell
+node --import tsx --test tests/simulation/resource-turns-v9.test.ts tests/simulation/resource-turns-v9-replay.test.ts tests/protocol/resource-turns-v9.test.ts
+```
+
+After implementation, inspect the change-selected dry run and execute it with
+base `d41df456696326f737e526e59f43aeae865a5681`, plus types, clean build,
+built smoke, compliance, security/bundle and relevant canonical browser checks
+as selected/required. Full daily remains the 21:00 Europe/Berlin release gate;
+do not replace it with a V9B pass.

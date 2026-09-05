@@ -7,14 +7,17 @@
   "starting_lock_sha256": "D4DAC6AE09A3D2F6C5A7EAA11520BAC43F1628320C5331575BCF1E1857073D73",
   "owning_roles": ["worms_port_planner", "worms_port_docs_keeper", "worms_port_reviewer"],
   "scope": [
+    "V9B authoritative-foundation entry opened 2026-09-05 from clean d41df456696326f737e526e59f43aeae865a5681 on codex/wp-015d3b-v9b-authoritative-foundation-v0. Fresh /root/v9b_entry_designer configured gpt-5.6-terra/high read only the V9 contract, operating documents and local MIT V8 product sources/tests, then proposed strict V9 state/protocol/replay order, closed path hashes and red-first fixtures. Independent /root/v9b_entry_reviewer configured gpt-6-astra/high approved the corrected entry before a fresh implementation worker edits source. Requested/configured model data is not runtime-served metadata. No external/reference/quarantine access or runtime edit occurred during entry design.",
     "Owner reported V8E phone acceptance and explicitly requested starting V9 on 2026-09-05. V9A is the first bounded slice: a finite independently authored resource-and-utility contract, before runtime implementation.",
     "Exact V9A scope: docs/evidence/wp-015d3b.json, docs/planning/wp-015d3b-v9-resource-utilities-contract.md, docs/planning/implementation_plan.md, docs/planning/wp-015d3a-v8-action-turns-contract.md, docs/evidence/wp-015d3a.json and README.md. The new contract and evidence have a distinct V9 lifecycle; existing V8 carriers retain predecessor acceptance.",
     "The starting lock hash records canonical Git bytes; Windows checkout bytes have SHA256 1910F1419459E827A6ED5C8DC3BABD5189E6A9A6AC1D41D43E909E572F01BAB8. No dependency edit is authorized. Retain inherited V8 source/replay and clean-room obligations. No new reference observation is used for V9A."
   ],
   "non_goals": [
-    "V9 runtime, deployment, shared public selector promotion, funded activation, V10 terrain, V11 teams, new assets/dependencies, reference/quarantine access, analytical execution or formal player observation."
+    "V9A was contract-only. V9B authorizes only its separately bounded injected authoritative foundation; it excludes deployment, shared public selector promotion, funded activation, V9C/D lifecycle or UI, V10 terrain, V11 teams, new assets/dependencies, reference/quarantine access, analytical execution and formal player observation."
   ],
   "planned_checks": [
+    "Astra independent V9B entry review of strict version/replay, authority ordering, closed paths and source boundary before runtime edits.",
+    "V9B red-first/green focused simulation, replay and protocol tests; selected verification with base d41df456696326f737e526e59f43aeae865a5681; types, build, built smoke, compliance, security/bundle and selected browser checks after runtime implementation.",
     "Inspect change-selected verification dry run and execute the selected documentation/evidence gates.",
     "Validate local contract/navigation links, exact six-path scope and unchanged runtime/lock/frozen evidence.",
     "Distinct read-only contract review before freezing V9A."
@@ -46,6 +49,12 @@
       "reviewer": "/root/v9a_contract_review",
       "decision": "pass",
       "detail": "Distinct read-only review found no blocking six-document scope, ballistics, economy/utility, identity/replay, acceptance or release-boundary issue. B entry must bind strict schemas/hashes/fixtures; inherited same-tick residual horizontal retry is now explicit. No external/quarantine access or edits."
+    },
+    {
+      "role": "worms_port_reviewer",
+      "reviewer": "/root/v9b_entry_reviewer",
+      "decision": "pass",
+      "detail": "Configured Astra/high read-only entry review approved B1's closed source scope after verifying source locks, canonical hash, preserved intent-limit neutralization and concrete V8-r1 parity/collision fixtures. It grants no public activation, deployment, AI, UI or reward scope. Runtime-served model metadata unavailable; no edits or external/quarantine access."
     }
   ],
   "skipped_checks": [

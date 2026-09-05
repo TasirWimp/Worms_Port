@@ -10,7 +10,9 @@ Phaser/Socket.IO stack.
 - Active target: mobile-first single-player Nimiq Pay competition release.
 - Active product package: **WP-015D3B V9 Resource and Utilities — V9A rules
   contract complete and independently reviewed on 2026-09-05 after
-  owner-reported V8E phone acceptance. Next: V9B authoritative foundation.**
+  owner-reported V8E phone acceptance. V9B authoritative-foundation entry
+  amendment is independently approved; fresh Terra/high core implementation is
+  next.**
   The owner explicitly requested starting V9. The first bounded slice is the
   [V9 resource-and-utility contract](wp-015d3b-v9-resource-utilities-contract.md),
   with [separate V9 evidence](../evidence/wp-015d3b.json), from clean
@@ -18,9 +20,11 @@ Phaser/Socket.IO stack.
   `codex/wp-015d3b-v9a-rules-contract-v0`. A freezes Thread income/carry-over,
   cast costs, Threadguard, Threadleap, bounded deterministic AI and B's exact
   path allowance. Selected evidence/diff checks and independent design review
-  pass; no runtime is implemented. Next, bind B's source hashes, strict
-  state/protocol/replay layout and fixtures in an independently reviewed entry
-  amendment, then implement the injected-only authoritative foundation with
+  pass; no runtime is implemented. The fresh Terra/high entry designer has
+  bound B's source hashes, strict state/protocol/replay layout and red-first
+  fixtures in the V9 contract; an independent Astra/high reviewer approved the
+  entry. Fresh clean-room Terra/high implementers may now implement the
+  injected-only authoritative foundation with
   fresh clean-room workers. V8 public release gates remain independent;
   no automatic deployment, funded activation, V10 or V11 is implied.
 - Product predecessor: **WP-015D3A V8 Action-Turn Candidate — V8A finite
