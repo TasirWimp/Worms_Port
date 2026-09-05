@@ -72,7 +72,9 @@ If the user asks only for planning, review, or brainstorming, do not edit code.
 - Documentation-only changes do not require a full build; say that explicitly.
 - Use `npm run verify:changes -- --dry-run` to inspect the selected checks,
   then `npm run verify:changes` for the current edit. For a whole committed
-  slice, pass `-- --base <starting-commit>` to both commands.
+  slice, pass `-- --base <starting-commit>` to both commands. This selector is
+  the mandatory edit-loop baseline and CI plan, not an upper bound on an
+  independent Astra reviewer's test choice.
 - Runtime/build changes require types, current build outputs and built smoke.
   Documentation, Codex settings and test/verification-tool-only changes do not
   require a game build. Unknown paths receive conservative product coverage.
@@ -101,6 +103,42 @@ If the user asks only for planning, review, or brainstorming, do not edit code.
 - Real Android/iOS testing is outside the autonomous cycle. Report it as not run
   until a separate release-testing environment is provided.
 - Always report skipped checks and why.
+
+## Independent Astra Review
+
+The `worms_port_reviewer` is the independent GPT-6 Astra/high reviewer for a
+substantive gameplay, client, server, authority, security, asset, or
+cross-module slice. It stays read-only, but owns the final assessment of
+product continuity and evidence sufficiency. It must not approve merely
+because the changed paths match a contract or because the selector passes.
+
+Before a final verdict, the reviewer must inspect the selector's dry-run as a
+starting inventory, the implementation diff, the accepted predecessor journey,
+the current execution pointer, and the existing relevant tests. It then chooses
+and runs any focused, family, browser, build, security, or full-suite checks
+that the changed risk warrants. It may exceed the selector freely; it may run
+the full suite when the risk or a focused failure justifies diagnosis. The daily
+21:00 Europe/Berlin run remains the required scheduled release gate and is not
+silently replaced by an Astra review.
+
+The reviewer maintains a continuity ledger for relevant player-visible
+capabilities: `preserved`, `replaced`, `deferred` with a named waypoint, or
+`missing`. A missing classification is a blocking finding. This includes
+mobile layout and guidance, the complete playable loop, presentation feedback,
+opponent behavior, accessibility, lifecycle/authority feedback, and inherited
+features. A local preview cannot silently remove an accepted capability; it
+must preserve it, expose the limitation, or record an owner-approved future
+waypoint.
+
+When existing evidence is insufficient, Astra returns `FAIL — missing evidence`
+instead of accepting the slice. Its finding must name the suitable test carrier,
+setup, player journey or authority state, expected outcome, and regression the
+test must prevent. A Terra/high implementer owns the resulting bounded test and
+product correction; Astra reviews the correction independently. The reviewer
+reports the continuity ledger, commands run and outcomes, intentionally unrun
+checks with reasons, required new tests, residual risk, and a `PASS`, `FAIL`, or
+`BLOCKED` verdict. A PASS is not release, daily-suite, or real-device approval
+unless those are separately executed and recorded.
 
 ## Active Product Constraints
 
@@ -249,9 +287,10 @@ Astra/high entry/final reviewer. Keep the existing clean-room separation.
   CLI overrides and managed settings can supersede project defaults; editing
   config does not switch a running task. Check the task's model picker before
   its next turn when a different coordinator model is desired.
-- Keep selected verification and the 21:00 Europe/Berlin full-suite schedule
-  unchanged. Model routing is a cost/quality policy, not a guarantee of optimal
-  model choice or a substitute for independent review and passing checks.
+- Keep the selector baseline and the 21:00 Europe/Berlin full-suite schedule
+  unchanged. Astra may independently widen test coverage beyond selection;
+  model routing is a cost/quality policy, not a substitute for independent
+  review and passing checks.
 
 ## Git And Reporting
 

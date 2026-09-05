@@ -91,7 +91,7 @@ activation.
 
 ## Verification Funnels
 
-### Change-selected edit loop (2026-09-05)
+### Change-selected edit loop and independent Astra review (2026-09-05)
 
 Owner-requested optimization supersedes the blanket feature/tooling gates below
 and the historic WP-014H five-case feature funnel. Ownership: test worker for
@@ -104,6 +104,25 @@ paths of renames/deletions. Pass `-- --base <starting-commit>` for committed sli
 work; the comparison uses its merge base with HEAD plus current edits. CI supplies
 the PR base or push's previous commit. Missing/invalid bases fail; a clean tree
 explicitly selects nothing. Record the base with verification evidence.
+
+This is the mandatory implementer baseline and CI plan. It is not the upper
+bound of an independent Astra review. The read-only reviewer inspects the
+selection, the diff, the predecessor experience, and existing coverage, then
+freely chooses additional checks from the whole repository suite. It expands
+coverage for cross-module, authority, security, mobile, visual, continuity, or
+unresolved-risk findings; a focused failure may justify a full-matrix diagnosis.
+The daily full suite remains scheduled at 21:00 Europe/Berlin and remains a
+separate release gate.
+
+Before a final review PASS, Astra records a continuity ledger for relevant
+player-facing behavior: preserved, replaced, explicitly deferred to a named
+waypoint, or missing. It checks the complete phone journey rather than DOM
+presence alone: clear arena space, progressive feature guidance, touch layout,
+status and feedback, movement/combat presentation, opponent response,
+pause/resume, and terminal behavior. If a needed proof is absent, it returns a
+bounded missing-evidence finding for a Terra/high implementer: test carrier,
+setup, expected result, and regression protected. The reviewer then reassesses
+the correction without editing source itself.
 
 | Change | Edit-loop checks |
 | --- | --- |

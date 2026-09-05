@@ -442,7 +442,10 @@ feedback remains independently capped at a 350ms median / 500ms maximum. These
 are test budgets only and do not change presentation durations or gameplay.
 
 Use `npm run verify:changes -- --dry-run` to see the checks selected for staged,
-unstaged and untracked files, then `npm run verify:changes` to run them.
+unstaged and untracked files, then `npm run verify:changes` to run them. This is
+the mandatory edit-loop and CI baseline, not the ceiling for the independent
+GPT-6 Astra reviewer: it may run any additional repository checks warranted by
+the diff, predecessor behavior, mobile journey, or missing evidence.
 `verify:feature` is an alias for the same selector. Use
 `npm run verify:feature -- --base <starting-commit>` to validate an entire slice,
 including committed changes. An empty working tree selects nothing; an invalid
