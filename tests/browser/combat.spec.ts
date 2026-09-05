@@ -273,6 +273,59 @@ test('touch movement, Relic selection, aim lock, and explicit Fire stay separate
   expect(presentation.maximumProjectilePoints).toBeGreaterThan(1);
 });
 
+test('V9 resource engineering preview is local-only and keeps V7 Practice unselected', async ({ page }) => {
+  test.setTimeout(60_000);
+  const previewRequests: string[] = [];
+  page.on('request', request => previewRequests.push(request.url()));
+  await page.goto('/?combat-preview=v9');
+  const ui = page.locator('.combat-v9');
+  await expect(ui).toBeVisible();
+  await expect(ui).toHaveAttribute('data-preview', 'V9 resource engineering preview · local-only');
+  await expect(ui).toHaveAttribute('data-ruleset', 'nimble-knots-artillery-v9');
+  await expect(page.locator('.practice-shell')).toHaveCount(0);
+  expect(previewRequests.some(url => /socket\.io|\/(?:session|challenge|reward)(?:\/|$|\?)/.test(url))).toBe(false);
+  await expect(page.locator('.v9-thread')).toHaveText('Thread 3/9');
+  await expect(page.getByRole('button', { name: 'Spoolburst · 5' })).toBeVisible();
+  await expect(page.getByRole('button', { name: 'Spoolburst · 5' })).toBeEnabled();
+  await page.getByRole('button', { name: 'Spoolburst · 5' }).tap();
+  await expect(ui).toHaveAttribute('data-offense-allowed', 'true');
+  await dragPad(page, '.combat-v9 .aim-zone', 909, 0.35, -0.35);
+  await expect(ui).toHaveAttribute('data-aim-locked', 'true');
+  await expect(page.locator('.fire-button')).toBeDisabled();
+  for (const button of await page.locator('.combat-v9 .combat-actions button:visible').all()) {
+    const box = await button.boundingBox();
+    expect(box).not.toBeNull();
+    expect(box!.width).toBeGreaterThanOrEqual(48); expect(box!.height).toBeGreaterThanOrEqual(48);
+  }
+
+  await page.goto('/?combat-preview=v9');
+  await expect(page.locator('.combat-v9')).toBeVisible();
+  await page.getByRole('button', { name: 'Guard · 2 Thread' }).tap();
+  await expect(page.locator('.v9-thread')).toHaveText('Thread 1/9');
+  await expect(page.locator('.v9-player-shield')).toHaveText('You · Shield 24 · expires turn 2');
+
+  await page.goto('/?combat-preview=v9');
+  await expect(page.locator('.combat-v9')).toBeVisible();
+  await page.getByRole('button', { name: 'Leap · 2 Thread' }).tap();
+  await expect(page.locator('.combat-v9')).toHaveAttribute('data-player-airborne', 'true');
+  await page.locator('.pause-button').tap();
+  await expect(page.locator('.combat-v9')).toHaveAttribute('data-paused', 'true');
+  await expect(page.getByRole('button', { name: 'Resume' })).toBeEnabled();
+  await page.getByRole('button', { name: 'Resume' }).tap();
+  await expect(page.locator('.combat-v9')).toHaveAttribute('data-paused', 'false');
+
+  await page.goto('/?combat-preview=v9');
+  await expect(page.locator('.combat-v9')).toBeVisible();
+  await dragPad(page, '.combat-v9 .movement-zone', 910, 0.2, -0.5);
+  await expect(page.locator('.combat-v9')).toHaveAttribute('data-player-airborne', 'true');
+
+  await page.goto('/?sideways=off');
+  await page.getByRole('button', { name: 'Start Practice' }).tap();
+  await expect(page.locator('.combat-ui')).toBeVisible();
+  await expect(page.locator('.combat-v9')).toHaveCount(0);
+  await expect(page.locator('.movement-zone')).toHaveAttribute('aria-label', /8 of 8 steps remaining/);
+});
+
 test('V8 hold survives snapshots, release stops, forward Jump and separate Fire reveal retreat', async ({ page }, testInfo) => {
   await page.goto('/?combat-preview=v8&sideways=off');
   const ui = page.locator('.combat-v8');

@@ -2,6 +2,7 @@ import type { ChallengeResult, ChallengeSnapshot } from '../../../shared/protoco
 import type { SimulationCommand } from '../../../shared/simulation';
 import type { ChallengeSnapshotV8Runtime as ChallengeSnapshotV8, ChallengeResultV8Runtime as ChallengeResultV8 } from '../../../shared/protocol-v8';
 import type { SimulationIntentV8Family as SimulationIntentV8 } from '../../../shared/simulation-v8';
+import type { SimulationEventV9, SimulationIntentV9, SimulationStateV9 } from '../../../shared/simulation-v9';
 
 export type CombatCommandSubmitter = (
     command: SimulationCommand,
@@ -42,6 +43,37 @@ export type CombatSceneArgsV8 = {
 };
 
 export type CombatSceneArgs = LegacyCombatSceneArgs | CombatSceneArgsV8;
+
+/** Local-only V9C engineering preview contract. It carries no session or transport facts. */
+export type CombatSceneArgsV9 = {
+    kind: 'v9'; snapshot: SimulationStateV9; previewLabel: string;
+    submit: (intent: SimulationIntentV9) => Promise<SimulationStateV9>;
+    setPaused: (paused: boolean) => Promise<SimulationStateV9>;
+    cancelInput: () => Promise<SimulationStateV9>;
+    onSnapshot: (listener: (snapshot: SimulationStateV9, events: SimulationEventV9[]) => void) => () => void;
+    destroy: () => void;
+};
+
+/** Shared by the V9 scene's DOM and Phaser registrations so direct teardown is complete. */
+export class V9PreviewListenerCleanup {
+    private removers: (() => void)[] = [];
+    public dom(target: { addEventListener: (type: string, handler: (...args: any[]) => void) => void;
+        removeEventListener: (type: string, handler: (...args: any[]) => void) => void }, type: string,
+    handler: (...args: any[]) => void): void {
+        target.addEventListener(type, handler); this.removers.push(() => target.removeEventListener(type, handler));
+    }
+    public emitter(target: { on: (event: string, handler: (...args: any[]) => void) => void;
+        off: (event: string, handler: (...args: any[]) => void) => void }, event: string,
+    handler: (...args: any[]) => void): void {
+        target.on(event, handler); this.removers.push(() => target.off(event, handler));
+    }
+    public once(target: { once: (event: string, handler: (...args: any[]) => void) => void;
+        off: (event: string, handler: (...args: any[]) => void) => void }, event: string,
+    handler: (...args: any[]) => void): void {
+        target.once(event, handler); this.removers.push(() => target.off(event, handler));
+    }
+    public dispose(): void { for (const remove of this.removers.splice(0)) remove(); }
+}
 
 export type Point = { x: number; y: number };
 

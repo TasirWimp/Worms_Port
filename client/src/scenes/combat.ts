@@ -58,6 +58,7 @@ export default class CombatScene extends Phaser.Scene {
     private args: LegacyCombatSceneArgs;
     private v8Args?: CombatSceneArgsV8;
     private v8Preview?: 'v8' | 'v8-r1';
+    private v9Preview = false;
     private initializationGeneration = 0;
     private snapshot: ChallengeSnapshot;
     private authoritativeSnapshot: ChallengeSnapshot;
@@ -104,7 +105,8 @@ export default class CombatScene extends Phaser.Scene {
         this.v8Args = args?.kind === 'v8' ? args : undefined;
         const preview = new URLSearchParams(window.location.search).get('combat-preview');
         this.v8Preview = !args?.snapshot && (preview === 'v8' || preview === 'v8-r1') ? preview : undefined;
-        if (this.v8Args || this.v8Preview) return;
+        this.v9Preview = !args?.snapshot && preview === 'v9';
+        if (this.v8Args || this.v8Preview || this.v9Preview) return;
         this.args = args?.snapshot && args.kind !== 'v8' ? args : createCombatFixture();
         this.snapshot = structuredClone(this.args.snapshot);
         this.authoritativeSnapshot = structuredClone(this.args.snapshot);
@@ -128,6 +130,7 @@ export default class CombatScene extends Phaser.Scene {
             void this.createV8();
             return;
         }
+        if (this.v9Preview) { void this.createV9(); return; }
         const parent = document.getElementById('game');
         if (!parent) throw new Error('Combat scene requires the #game host.');
         createApprovedWizardAnimations(this);
@@ -237,6 +240,17 @@ export default class CombatScene extends Phaser.Scene {
             this.scene.start('result', { calling: args.snapshot.calling,
                 rewarded: args.snapshot.mode === 'reward', message: 'Combat presentation could not load. Please reload.' });
         }
+    }
+
+    private async createV9(): Promise<void> {
+        const generation = this.initializationGeneration; let mounted = true;
+        this.events.once(Phaser.Scenes.Events.SHUTDOWN, () => { mounted = false; });
+        const { createResourceTurnsV9Fixture } = await import('../combat/resource-turns-v9-fixture');
+        const args = await createResourceTurnsV9Fixture();
+        if (!mounted || generation !== this.initializationGeneration || !this.scene.isActive()) { args.destroy(); return; }
+        const { ResourceTurnsV9Scene } = await import('../combat/resource-turns-v9-scene');
+        if (!mounted || generation !== this.initializationGeneration || !this.scene.isActive()) { args.destroy(); return; }
+        new ResourceTurnsV9Scene(this, args);
     }
 
     private async submit(command: SimulationCommand): Promise<void> {

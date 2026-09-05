@@ -6,6 +6,7 @@ import type { ChallengeSnapshotV8Family as ChallengeSnapshotV8 } from '../../../
 import type { SimulationStateV8Family as SimulationStateV8 } from '../../../shared/simulation-v8';
 import type { SimulationState, SimulationUnit } from '../../../shared/simulation';
 import { inputBoundaryV8 } from './input';
+import type { SimulationEventV9, SimulationStateV9 } from '../../../shared/simulation-v9';
 
 /** A deliberately non-authoritative, version-independent rendering surface. */
 export type CombatRenderUnit = SimulationUnit & { grounded?: boolean };
@@ -20,6 +21,46 @@ export function projectCombatV8(state: SimulationStateV8 | ChallengeSnapshotV8['
     });
     return { terrain: state.terrain, activeActor: state.activeActor, selectedRelic: state.selectedRelic,
         units: [unit(state.units[0]), unit(state.units[1])] };
+}
+
+/** V9 resource copy is derived from the latest authority state only. */
+export function projectCombatV9(state: SimulationStateV9): CombatRenderState {
+    const unit = (body: SimulationStateV9['units'][number]): CombatRenderUnit => ({
+        id: body.id, calling: body.calling, x: body.xFp / 256, y: body.yFp / 256,
+        facing: body.facing, stitching: body.stitching, alive: body.alive, grounded: body.grounded
+    });
+    return { terrain: state.terrain, activeActor: state.activeActor, selectedRelic: state.selectedRelic,
+        units: [unit(state.units[0]), unit(state.units[1])] };
+}
+
+const V9_COSTS = { threadball: 2, needlepoint: 3, spoolburst: 5 } as const;
+
+/** The preview derives all offensive affordances from this one authority fact. */
+export function v9OffenseAllowed(state: SimulationStateV9, paused: boolean): boolean {
+    return state.phase === 'action' && state.activeActor === 'player' && state.winner === null && !paused &&
+        !state.castUsed && state.heldDirection === 0 &&
+        state.units.every(unit => unit.alive && unit.grounded && unit.vxFp === 0 && unit.vyFp === 0);
+}
+
+/** Damage receipts are append-only presentation history; event-free snapshots retain it. */
+export function appendV9DamageReceipts(receipts: readonly string[], events: readonly SimulationEventV9[]): string[] {
+    return [...receipts, ...events.filter(event => event.type === 'damage_resolved').map(event =>
+        `${event.actor} · raw ${event.raw} · ${event.absorbed} shield absorbed · ${event.stitchingLost} Stitching lost`
+    )].slice(-4);
+}
+
+export function projectCombatV9Resources(state: SimulationStateV9) {
+    const player = state.units[0];
+    const loomkeeper = state.units[1];
+    const resource = (unit: SimulationStateV9['units'][number]) => ({ thread: `${unit.thread}/9`, shield: unit.shield > 0
+        ? `Shield ${unit.shield} · expires turn ${unit.shieldExpiresTurn}` : 'Shield inactive' });
+    return {
+        player: { ...resource(player), airborne: !player.grounded, facing: player.facing },
+        loomkeeper: resource(loomkeeper),
+        relics: Object.fromEntries(Object.entries(V9_COSTS).map(([id, cost]) => [id, {
+            cost, affordable: player.thread >= cost
+        }])) as Record<keyof typeof V9_COSTS, { cost: number; affordable: boolean }>
+    };
 }
 
 /** Existing animation inventory only; V8's authoritative airborne fact wins over any pose. */

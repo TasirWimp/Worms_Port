@@ -443,6 +443,31 @@ input {
 
 .combat-v8 .v8-extra:disabled { opacity: 0.45; }
 
+.combat-v9 .v9-resource-readout {
+    position: absolute;
+    z-index: 6;
+    top: calc(max(8px, var(--safe-area-top)) + 34px);
+    left: 50%;
+    display: flex;
+    gap: 0.5rem;
+    transform: translateX(-50%);
+    color: #1f2348;
+    font-size: 0.68rem;
+    font-weight: 800;
+    pointer-events: none;
+}
+.combat-v9 .v9-actions { display: grid; grid-template-columns: repeat(3, minmax(48px, 1fr)); gap: 0.3rem; }
+.combat-v9 .v9-actions button { min-width: 48px; min-height: 48px; padding: 0.2rem; font-size: 0.66rem; touch-action: manipulation; }
+.combat-v9 .v9-guard, .combat-v9 .v9-leap { background: #e9b213; color: #1f2348; font-weight: 800; }
+.combat-v9 .combat-status { pointer-events: none; }
+.combat-v9 .combat-actions,
+.combat-v9[data-orientation='landscape'] .combat-actions { grid-template-columns: repeat(3, minmax(48px, 1fr)); grid-template-rows: repeat(3, 48px); pointer-events: auto; }
+.combat-v9 .combat-actions > button { min-width: 48px; min-height: 48px; pointer-events: auto; }
+
+/* Must follow the generic late two-column action override: V9 has nine core controls. */
+.combat-v9 .combat-actions,
+.combat-v9[data-orientation='landscape'] .combat-actions { grid-template-columns: repeat(3, minmax(48px, 1fr)) !important; grid-template-rows: repeat(3, 48px) !important; }
+
 .combat-v8-r1 .pad-side {
     position: absolute;
     top: 18%;
