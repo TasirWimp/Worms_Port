@@ -1,0 +1,59 @@
+{
+  "id": "WP-015D3B",
+  "status": "in_progress",
+  "starting_commit": "da1e7a9c1a1c19bcfa4385e3db28cb530f660ebb",
+  "branch": "codex/wp-015d3b-v9a-rules-contract-v0",
+  "initial_worktree": "clean",
+  "starting_lock_sha256": "D4DAC6AE09A3D2F6C5A7EAA11520BAC43F1628320C5331575BCF1E1857073D73",
+  "owning_roles": ["worms_port_planner", "worms_port_docs_keeper", "worms_port_reviewer"],
+  "scope": [
+    "Owner reported V8E phone acceptance and explicitly requested starting V9 on 2026-09-05. V9A is the first bounded slice: a finite independently authored resource-and-utility contract, before runtime implementation.",
+    "Exact V9A scope: docs/evidence/wp-015d3b.json, docs/planning/wp-015d3b-v9-resource-utilities-contract.md, docs/planning/implementation_plan.md, docs/planning/wp-015d3a-v8-action-turns-contract.md, docs/evidence/wp-015d3a.json and README.md. The new contract and evidence have a distinct V9 lifecycle; existing V8 carriers retain predecessor acceptance.",
+    "The starting lock hash records canonical Git bytes; Windows checkout bytes have SHA256 1910F1419459E827A6ED5C8DC3BABD5189E6A9A6AC1D41D43E909E572F01BAB8. No dependency edit is authorized. Retain inherited V8 source/replay and clean-room obligations. No new reference observation is used for V9A."
+  ],
+  "non_goals": [
+    "V9 runtime, deployment, shared public selector promotion, funded activation, V10 terrain, V11 teams, new assets/dependencies, reference/quarantine access, analytical execution or formal player observation."
+  ],
+  "planned_checks": [
+    "Inspect change-selected verification dry run and execute the selected documentation/evidence gates.",
+    "Validate local contract/navigation links, exact six-path scope and unchanged runtime/lock/frozen evidence.",
+    "Distinct read-only contract review before freezing V9A."
+  ],
+  "deterministic_seeds": [],
+  "sorcerers_reference_used": false,
+  "clean_room_records": [],
+  "check_results": [
+    {
+      "command": "npm.cmd run verify:changes -- --dry-run; npm.cmd run verify:changes",
+      "status": "pass",
+      "detail": "Exact six-document diff selected only check:work-packages. All 51 evidence records and working/index diff checks pass; no browser, PostgreSQL, performance or conservative fallback tasks selected. V9A contract is complete; overall V9 remains in_progress."
+    },
+    {
+      "command": "Local scope/navigation/lock preservation assertions",
+      "status": "pass",
+      "detail": "Exact six-path allowlist including both new carriers; all three V9 contract local links and heading anchor resolve. Canonical Git lock hash and initial Windows checkout byte hash match. Runtime, legal manifests, assets and frozen behavior record have no tracked changes."
+    }
+  ],
+  "reviews": [
+    {
+      "role": "worms_port_planner",
+      "reviewer": "/root/v9_contract_planner",
+      "decision": "pass",
+      "detail": "Fresh no-history local-MIT-only designer authored finite economy, utility and AI rules and exact future B paths; transcription self-review found no blocker. Explicit leap initialization, replay/tick caps and numeric ranking precision included. No external/quarantine access or runtime edits."
+    },
+    {
+      "role": "worms_port_reviewer",
+      "reviewer": "/root/v9a_contract_review",
+      "decision": "pass",
+      "detail": "Distinct read-only review found no blocking six-document scope, ballistics, economy/utility, identity/replay, acceptance or release-boundary issue. B entry must bind strict schemas/hashes/fixtures; inherited same-tick residual horizontal retry is now explicit. No external/quarantine access or edits."
+    }
+  ],
+  "skipped_checks": [
+    "Game build, unit/browser/full daily suite, dependency audit and PostgreSQL: documentation/evidence-only slice; existing daily full-suite schedule remains 21:00 Europe/Berlin.",
+    "New physical-device testing, deployment and human similarity: not part of V9A. V8E phone acceptance is owner-reported; no device/OS inventory was supplied."
+  ],
+  "residual_risks": [
+    "V9 economy/utility values are design defaults until implemented and assessed; owner V8E acceptance is not V9 balance approval.",
+    "V8 public release gates remain separate: dependency audit, PostgreSQL, release/performance/deployment capacity and human similarity."
+  ]
+}

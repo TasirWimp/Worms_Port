@@ -877,7 +877,10 @@ their existing priority. On the phone, verify:
 5. Repeat in the normal sideways phone layout and after rotating. Win/loss still
    uses the complete D.3 Unraveling and aftermath before the result screen.
 
-These checks are ordinary owner acceptance, not Lane G player observation.
+The owner reported completing this phone acceptance on 2026-09-05 with
+everything working as expected. These checks are ordinary owner acceptance,
+not Lane G player observation. V9 development now starts with the
+[resource-and-utility rules contract](docs/planning/wp-015d3b-v9-resource-utilities-contract.md).
 The source-bound implementation/review return is in
 [V8 contract E](docs/planning/wp-015d3a-v8-action-turns-contract.md#e--reversible-opponent-focus-v8e-2026-09-04).
 

@@ -8,7 +8,22 @@ Phaser/Socket.IO stack.
 ## Execution Pointer
 
 - Active target: mobile-first single-player Nimiq Pay competition release.
-- Active product package: **WP-015D3A V8 Action-Turn Candidate — V8A finite
+- Active product package: **WP-015D3B V9 Resource and Utilities — V9A rules
+  contract complete and independently reviewed on 2026-09-05 after
+  owner-reported V8E phone acceptance. Next: V9B authoritative foundation.**
+  The owner explicitly requested starting V9. The first bounded slice is the
+  [V9 resource-and-utility contract](wp-015d3b-v9-resource-utilities-contract.md),
+  with [separate V9 evidence](../evidence/wp-015d3b.json), from clean
+  `da1e7a9c1a1c19bcfa4385e3db28cb530f660ebb` on
+  `codex/wp-015d3b-v9a-rules-contract-v0`. A freezes Thread income/carry-over,
+  cast costs, Threadguard, Threadleap, bounded deterministic AI and B's exact
+  path allowance. Selected evidence/diff checks and independent design review
+  pass; no runtime is implemented. Next, bind B's source hashes, strict
+  state/protocol/replay layout and fixtures in an independently reviewed entry
+  amendment, then implement the injected-only authoritative foundation with
+  fresh clean-room workers. V8 public release gates remain independent;
+  no automatic deployment, funded activation, V10 or V11 is implied.
+- Product predecessor: **WP-015D3A V8 Action-Turn Candidate — V8A finite
   rules/acceptance contract complete and independently reviewed; V8B authoritative
   foundation complete and independently reviewed; V8C touch presentation
   complete, verified and independently reviewed; V8C.1 combined controls and
@@ -92,7 +107,7 @@ Phaser/Socket.IO stack.
   The owner pushed, deployed and accepted these D.3 corrections on their phone;
   this is ordinary product acceptance, not Lane G evidence. Current bounded
   follow-up: **V8E reversible opponent focus implemented, verified and
-  independently reviewed; owner phone acceptance is next**
+  independently reviewed; owner phone acceptance reported complete 2026-09-05**
   from freshly fetched clean local/upstream
   `7c228efc426dc670e45e52d065fa43d8569b3f6d` on
   `codex/wp-015d3a-v8e-opponent-focus-v0`. The existing V8 contract section E
@@ -110,8 +125,9 @@ Phaser/Socket.IO stack.
   The feature gate, final 40/40 zero-retry five-profile V8E matrix, bundle and
   security checks pass. A focused WebKit failure exposed and corrected native
   click suppression without adding a test bridge; final independent review has
-  no blocker. Next: deploy this reviewed branch to the existing no-reward
-  development profile and run README's owner phone checklist. Completed predecessor:
+  no blocker. The owner reports completing README's phone checklist with
+  everything working as expected and explicitly opens V9A above. This is
+  ordinary product acceptance; device/OS details were not supplied. Completed predecessor:
   **V8D.2 single-service development profile complete and independently reviewed**,
   under section D.2 of the existing
   contract from clean `aa4f3e5` on `codex/wp-015d3a-v8d-single-service-v0`.
@@ -139,7 +155,9 @@ Phaser/Socket.IO stack.
   a separately scoped fix for inherited moderate qs audit findings, isolated
   PostgreSQL execution, full daily/release quality/performance, deployment CPU,
   human similarity and real-device acceptance. Do not promote automatically
-  or begin V9 merely because the injected candidate passes engineering tests.
+  merely because the injected candidate passes engineering tests. The owner's
+  subsequent explicit V9 instruction is recorded above; it leaves these public
+  activation gates open.
   The analytical execution pointer remains **WP-015D2A**;
   Stage C debt remains `interrupted_no_tap`, Lane G/Lane M execution remains
   closed, Lane G evidence remains none, D2O remains unsatisfied, and

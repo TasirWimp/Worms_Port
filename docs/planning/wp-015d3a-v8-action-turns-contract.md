@@ -2170,6 +2170,23 @@ not run. Default production selection, gameplay rules, clocks, AI, protocol,
 replays, rewards, assets, dependencies, manifests, authority and every Lane G/
 D2O/analytical boundary remain unchanged.
 
+### E.1 Owner phone acceptance and V9 handoff — 2026-09-05
+
+The owner reports completing the phone acceptance with everything working as
+expected, and explicitly requests starting V9. This closes the outstanding
+V8E owner product-acceptance step against the existing README checklist. The
+report supplies no device/OS inventory or new automated test result; it is
+ordinary owner acceptance, not Lane G observation or human similarity clearance.
+The historical engineering checks and omissions above retain their original
+meaning.
+
+The next bounded slice is V9A's resource-and-utility rules contract under
+[WP-015D3B](wp-015d3b-v9-resource-utilities-contract.md). This explicit owner
+instruction opens V9 development independently of the still-open public release
+gates. It does not promote the shared production ruleset, activate payouts, or
+open V10/V11. Frozen V8 behavior records and existing replay identities remain
+unchanged.
+
 ## Clean-room roles and entry gate
 
 The root coordinator is the reference observer and must not implement V8
