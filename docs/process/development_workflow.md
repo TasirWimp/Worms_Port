@@ -121,8 +121,12 @@ presence alone: clear arena space, progressive feature guidance, touch layout,
 status and feedback, movement/combat presentation, opponent response,
 pause/resume, and terminal behavior. If a needed proof is absent, it returns a
 bounded missing-evidence finding for a Terra/high implementer: test carrier,
-setup, expected result, and regression protected. The reviewer then reassesses
-the correction without editing source itself.
+setup, expected result, and regression protected. Every blocking review finding
+also includes a read-only correction brief: affected source/test carriers and
+lines, existing components/fixtures/predecessor flow to reuse, required
+data/control flow, authority and boundary constraints, and acceptance checks.
+It separates required behavior from optional implementation choices. Terra owns
+the patch; Astra reassesses the correction without editing source itself.
 
 | Change | Edit-loop checks |
 | --- | --- |

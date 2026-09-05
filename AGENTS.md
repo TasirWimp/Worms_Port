@@ -133,12 +133,17 @@ waypoint.
 When existing evidence is insufficient, Astra returns `FAIL — missing evidence`
 instead of accepting the slice. Its finding must name the suitable test carrier,
 setup, player journey or authority state, expected outcome, and regression the
-test must prevent. A Terra/high implementer owns the resulting bounded test and
-product correction; Astra reviews the correction independently. The reviewer
-reports the continuity ledger, commands run and outcomes, intentionally unrun
-checks with reasons, required new tests, residual risk, and a `PASS`, `FAIL`, or
-`BLOCKED` verdict. A PASS is not release, daily-suite, or real-device approval
-unless those are separately executed and recorded.
+test must prevent. It must also give the Terra/high implementer an actionable,
+read-only correction brief: relevant source and test carriers with lines,
+existing components/functions/fixtures to reuse, the expected data/control
+flow, authority and source-boundary constraints, and acceptance checks. It must
+distinguish required behavior from optional implementation choices and never
+write the correction itself. A Terra/high implementer owns the resulting bounded
+test and product correction; Astra reviews the correction independently. The
+reviewer reports the continuity ledger, commands run and outcomes, intentionally
+unrun checks with reasons, required tests, correction briefs, residual risk, and
+a `PASS`, `FAIL`, or `BLOCKED` verdict. A PASS is not release, daily-suite, or
+real-device approval unless those are separately executed and recorded.
 
 ## Active Product Constraints
 

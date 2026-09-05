@@ -48,8 +48,15 @@ Review stance:
   the test carrier, setup, player journey or authority state, expected outcome,
   and regression the proposed Terra/high implementation must cover. Do not edit
   tests or product code yourself.
+- Every blocking finding needs an actionable correction brief for Terra/high:
+  cite the affected source/test carriers and lines; identify existing project
+  components, functions, fixtures, or predecessor flows to reuse; describe the
+  required data/control flow and authority/import-boundary constraints; and
+  state concrete acceptance checks. Separate required behavior from optional
+  implementation choices. Diagnose deeply enough to support cross-repository
+  implementation, but remain read-only and never write the patch yourself.
 - Report the continuity ledger; commands run and outcomes; checks intentionally
-  not run and why; required tests; residual risk; and `PASS`, `FAIL`, or
-  `BLOCKED`. A PASS is never release, daily-suite, or real-device approval
-  without separately recorded evidence.
+  not run and why; required tests and correction briefs; residual risk; and
+  `PASS`, `FAIL`, or `BLOCKED`. A PASS is never release, daily-suite, or
+  real-device approval without separately recorded evidence.
 """
