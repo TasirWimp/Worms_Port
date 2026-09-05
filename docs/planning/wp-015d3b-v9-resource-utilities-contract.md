@@ -647,3 +647,59 @@ owner's contextual action hierarchy. The historical branch
 carrier and contains the V9C commits; branch naming does not imply V9C closure.
 The daily 21:00 Europe/Berlin release gate and real-device testing remain
 separate.
+
+## C7. V9C continuity correction entry — 2026-09-05
+
+Status: **entry in preparation; no source edit is authorized by this section
+until independent Astra review passes.** This correction carries forward the
+accepted V8 phone journey where C6 regressed it. It keeps `?combat-preview=v9`
+local-only; V9D remains the sole owner of deterministic AI and complete shared
+lifecycle. V9C must visibly explain opponent waiting and preview terminal
+states rather than simulate AI.
+
+The correction may change only the current V9C carriers below. The entry locks
+are recovery evidence and must match when the fresh implementer begins.
+
+| Path | SHA-256 at C7 entry | Git blob at C7 entry | Purpose |
+| --- | --- | --- | --- |
+| `client/src/combat/contracts.ts` | `EDC11B542E38990B40EA46EB64A23275B895CC07F20FA34946F65D35573A10C5` | `f96e077387ec11b6742a07e360cd5ce5dd826558` | local V9 scene contract and presentation facts |
+| `client/src/combat/presentation.ts` | `17658AD6AD670751C4B89DC7BAEE63BF20BC5E313605BFE575BDCC9AFF2BAFF1` | `9fc387e4eb717f1df9b25469eba256d99313c500` | pure V9 render projection and trace adaptation |
+| `client/src/style.css` | `C45B3A0DB4F05D46D377C7B956AEC4822469118ABAB49724F7381FEEC1767653` | `b25799eb98d907629a22a6e3aeb18a641620d735` | preview layout, hierarchy and actor-card styling |
+| `client/src/combat/resource-turns-v9-fixture.ts` | `4715509E32998CAB3FD79813CDB597A8B642AA5E389E41B319070D98AD4F8998` | `7a816783a736c8e4b29ca440b06edac5f49961b0` | local fixture and authority-boundary notifications |
+| `client/src/combat/resource-turns-v9-controls.ts` | `337630523FDFC740F105FDB05E55FC30CB05BF8345E4B23D8D80B157DE80B9B6` | `0440e2cb320b55f41dbbba9a493ae7057ca0579e` | V9 touch controls and contextual copy |
+| `client/src/combat/resource-turns-v9-scene.ts` | `04918BC4EDF364D10C69C72A9C4C2BD163C82BED71A53F0C82DA32175F7E5010` | `160cde6e13cea666836ade2c7dda611bea909e31` | V9 local presentation adapter and camera use |
+| `tests/combat/resource-turns-v9.test.ts` | `C346724F3A215F26AA44107534F1A7BF2BF830BDF0C7A4E95C7D79166A55BEE5` | `7d199563bcee56dc1a4a287d025efdf0c2e270cc` | direct authority/control/presentation proof |
+| `tests/browser/combat.spec.ts` | `9DE0BEAA93B093C53B40D625DA6C1AD72E827680FFDCBE2E47E1FBAF894C06DE` | `52d2a31cde72c737975bcb45abf985e84b027930` | V9 phone journeys and V7 regression proof |
+
+It may read but not edit V8 `controls.ts`, `action-turns-scene.ts`, its V8
+projection helpers, input/camera/renderer modules, or V9 shared/server modules.
+No assets, packages, transport, session, reward, normal selector, or AI
+implementation changes are admitted.
+
+Required behavior and proof:
+
+1. Clear every local gesture/aim ownership on authority boundary
+   (turn/phase/input epoch/paused/terminal/utility acceptance); old pointer
+   release or polling cannot create a command, while a fresh touch can.
+2. Restore a phone-first hierarchy: lower-middle starts with a yellow Actions
+   button and adjacent red Use button; Actions unfolds contextual Attack and
+   Defense groups, then the chosen Relic/action. Only controls needed for the
+   current authority state are shown. Pause returns to the upper-left and no
+   visible control, heading, or status text overlaps at maintained phone sizes
+   and sideways modes.
+3. Reuse the established renderer/input/presentation seams so V9 displays aim
+   trajectory, movement/airborne/cast/projectile/impact feedback, and current
+   player/Loomkeeper Stitching and resource status above their actors. Reuse
+   V8E camera/focus behavior where its existing local client helpers apply.
+4. Explain actor, phase, remaining turn time, opponent-wait/V9D deferral, and
+   terminal/re-entry state accessibly. Relic selection must show name, cost,
+   affordability, and unavailable reason.
+5. Add direct regressions and canonical browser journeys for all above,
+   including overlap hit-target tests across sideways left/right/off and safe
+   areas; stale pointers across every authority boundary; unfolding Actions /
+   Attack / Defense / Use flow; visual movement/shot/impact feedback; actor
+   cards/camera; waiting/terminal copy; and unchanged ordinary V7 launch.
+
+Run the selector as inventory, then all checks independently chosen by Astra.
+The entry reviewer must provide a correction brief naming reuse points, data
+flow, authority constraints, and acceptance cases before Terra/high source work.
