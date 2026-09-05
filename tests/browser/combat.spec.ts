@@ -394,6 +394,37 @@ test('V9 resource engineering preview is local-only and keeps V7 Practice unsele
   await expect(page.locator('.movement-zone')).toHaveAttribute('aria-label', /8 of 8 steps remaining/);
 });
 
+test('V9 turn-two carried Spoolburst yields to legal pending Relic replacements', async ({ page }) => {
+  test.setTimeout(55_000);
+  await page.goto('/?combat-preview=v9&sideways=off');
+  const ui = page.locator('.combat-v9'); await expect(ui).toBeVisible();
+  await expect.poll(async () => ({
+    actor: await ui.getAttribute('data-active-actor'), phase: await ui.getAttribute('data-combat-phase'), thread: await ui.getAttribute('data-player-thread')
+  }), { timeout: 40_000 }).toEqual({ actor: 'player', phase: 'action', thread: '6' });
+
+  await page.getByRole('button', { name: 'Actions' }).tap();
+  await page.getByRole('button', { name: 'Attack' }).tap();
+  await page.getByRole('button', { name: 'Spoolburst · 5' }).tap();
+  await page.getByRole('button', { name: 'Use Spoolburst · 5' }).tap();
+  await expect(ui).toHaveAttribute('data-selected-relic', 'spoolburst');
+  await page.getByRole('button', { name: 'Actions' }).tap();
+  await page.getByRole('button', { name: 'Defense' }).tap();
+  await page.getByRole('button', { name: 'Guard · 2 Thread' }).tap();
+  await page.getByRole('button', { name: 'Use Guard · 2 Thread' }).tap();
+  await expect(ui).toHaveAttribute('data-player-thread', '4');
+  await dragPad(page, '.combat-v9 .aim-zone', 961, 0.35, -0.35);
+  const use = page.locator('.fire-button');
+  await expect(use).toBeDisabled();
+  await expect(use).toHaveAttribute('title', /Need 5 Thread for Spoolburst/);
+
+  for (const [relic, label] of [['Threadball', 'Use Threadball · 2'], ['Needlepoint', 'Use Needlepoint · 3']] as const) {
+    await page.getByRole('button', { name: 'Actions' }).tap();
+    await page.getByRole('button', { name: 'Attack' }).tap();
+    await page.getByRole('button', { name: `${relic} · ${relic === 'Threadball' ? 2 : 3}` }).tap();
+    await expectV9ArmedActionAfterAuthorityTick(page, ui, label);
+  }
+});
+
 test('V9 local re-entry retires paused and terminal adapters without a transport', async ({ page }) => {
   test.setTimeout(60_000);
   const errors: string[] = []; const requests: string[] = [];

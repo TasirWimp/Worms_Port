@@ -154,8 +154,11 @@ export class ResourceTurnsV9Controls {
     private choiceReason(choice: Exclude<ActionChoice, null>): string { return !this.choiceAffordable(choice)
         ? `Need ${this.choiceCost(choice)} Thread for ${relicOrUtilityLabel(choice)}.`
         : 'This Action is unavailable in the current authority state.'; }
-    private armedUseReason(): string | undefined { return this.choice && !this.choiceLegal(this.choice) ? this.choiceReason(this.choice) : this.state.aim && !this.choiceAffordable(this.state.selectedRelic)
-        ? `Need ${this.choiceCost(this.state.selectedRelic)} Thread for ${relicName(this.state.selectedRelic)}.` : undefined; }
+    private armedUseReason(): string | undefined {
+        if (this.choice) return this.choiceLegal(this.choice) ? undefined : this.choiceReason(this.choice);
+        return this.state.aim && !this.choiceAffordable(this.state.selectedRelic)
+            ? `Need ${this.choiceCost(this.state.selectedRelic)} Thread for ${relicName(this.state.selectedRelic)}.` : undefined;
+    }
     private offenseAllowed(state: SimulationStateV9): boolean { return v9OffenseAllowed(state, this.paused); }
     private pauseAllowed(): boolean { return this.state.activeActor === 'player' && this.state.phase === 'action' && !this.terminal(); }
     private movementFacts() { const player = this.state.units[0]; return { grounded: player.grounded, facing: player.facing, heldDirection: this.state.heldDirection, lane: this.canAct() ? (this.state.heldDirection ? 'locomotion' : 'ready') : 'blocked' } as const; }

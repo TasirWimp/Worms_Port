@@ -394,6 +394,50 @@ test('V9 controls keep every affordable armed action positive across an authorit
     } finally { fixture.destroy(); dom.restore(); }
 });
 
+test('V9 controls let a legal pending replacement supersede an insufficient carried Relic', async () => {
+    const dom = installControlDom(); const clock = createClock(); const fixture = await createResourceTurnsV9Fixture(1, 'wizard', clock);
+    try {
+        let controls: ResourceTurnsV9Controls;
+        controls = new ResourceTurnsV9Controls(dom.parent, fixture.snapshot, {
+            submit: async intent => { try { await fixture.submit(intent); return true; } catch { return false; } }, pause: () => {}, neutral: () => {}
+        });
+        const root = controls.root as unknown as FakeElement;
+        const armed = controls as unknown as { choice: 'threadball' | 'needlepoint' | 'spoolburst' | 'threadguard' | null };
+        const use = root.querySelector<HTMLButtonElement>('.fire-button')!;
+        const message = root.querySelector<HTMLElement>('.combat-message')!;
+        const stop = fixture.onSnapshot(snapshot => controls.update(snapshot));
+        try {
+            for (let batch = 0; batch < 30; batch += 1) advanceThirtyTicks(clock);
+            assert.equal(fixture.snapshot.turn, 2, 'the carry-over begins on the second player turn');
+            assert.equal(fixture.snapshot.activeActor, 'player');
+            assert.equal(fixture.snapshot.units[0].thread, 6);
+
+            await fixture.submit({ type: 'select_relic', relicId: 'spoolburst' });
+            armed.choice = 'threadguard'; controls.update(fixture.snapshot);
+            use.onclick!(); await Promise.resolve(); await Promise.resolve();
+            assert.equal(fixture.snapshot.selectedRelic, 'spoolburst');
+            assert.equal(fixture.snapshot.units[0].thread, 4, 'Guard leaves the carried Spoolburst unaffordable');
+
+            await fixture.submit({ type: 'aim', angleMilliDegrees: 20_000, powerPermille: 700 });
+            assert.equal(armed.choice, null, 'the authority boundary retires the used Guard choice');
+            assert.equal(use.disabled, true);
+            assert.match(use.title, /Need 5 Thread for Spoolburst/, 'no pending choice keeps the selected Relic reason');
+
+            for (const [choice, label] of [['threadball', 'Use Threadball · 2'], ['needlepoint', 'Use Needlepoint · 3']] as const) {
+                armed.choice = choice; controls.update(fixture.snapshot);
+                assert.equal(use.disabled, false, `${label} supersedes the stale Spoolburst affordability`);
+                assert.equal(use.title, '', `${label} has no stale unavailable title`);
+                assert.equal(message.textContent, `${label} is ready.`, `${label} supplies its own positive guidance`);
+                const beforeTick = fixture.snapshot.tick; clock.advance(34);
+                assert.ok(fixture.snapshot.tick > beforeTick, 'the fixture published an authority tick');
+                assert.equal(use.disabled, false, `${label} remains enabled after the authority tick`);
+                assert.equal(use.title, '', `${label} remains free of the stale title after the authority tick`);
+                assert.equal(message.textContent, `${label} is ready.`, `${label} retains current positive guidance after the authority tick`);
+            }
+        } finally { stop(); controls.destroy(); }
+    } finally { fixture.destroy(); dom.restore(); }
+});
+
 test('V9 scene-style snapshot render stays read-only while RAF refreshes one sustained held walk', async () => {
     const dom = installControlDom(); const clock = createClock(); const fixture = await createResourceTurnsV9Fixture(1, 'wizard', clock);
     const attempts: string[] = []; let frameNow = 0; let controls: ResourceTurnsV9Controls;
