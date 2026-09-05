@@ -97,6 +97,8 @@ npm run check:reward-security
 npm run verify:quality
 npm run verify:postgres
 npm run verify:full
+npm run verify:changes
+npm run verify:daily
 npm start
 ```
 
@@ -104,8 +106,10 @@ The browser client builds with Vite into `client/build/`. The Node server builds
 with esbuild into `server/build/server.js`. The smoke command performs a fresh
 build, starts that server on an available local port, and verifies the game
 page, built overlays, approved-asset plumbing, and room join-ID API.
-`npm run test:browser:smoke` performs a fresh build and runs the phone-sized
-Chromium and WebKit touch journey. `npm run test:browser:matrix` is the
+Browser commands reuse production outputs only when their exact input/output
+hashes and Node version match; stale or missing proof forces a fresh build.
+`npm run test:browser:smoke` runs the phone-sized Chromium and WebKit touch
+journey. `npm run test:browser:matrix` is the
 zero-retry WP-014 release gate for all maintained browser suites at Chromium
 360x640, 390x844, 412x915, and 844x390 plus WebKit 390x844. It fails on an
 unexpected project skip or omitted critical journey. `npm run
@@ -117,14 +121,35 @@ check:bundle-budget` reads the fresh Vite manifest, follows only the initial
 static entry graph, deterministically gzips its JavaScript and CSS, and records
 the exact ignored byte report.
 
+Use `npm run verify:changes -- --dry-run` to preview selected checks, then
+`npm run verify:changes` to run them. `verify:feature` invokes the same selector.
+Staged, unstaged and untracked files are included; use
+`npm run verify:feature -- --base <starting-commit>` for committed slice work.
+A clean tree selects nothing, invalid bases fail, and unclassified files select
+conservative product coverage. In Windows PowerShell, use `npm.cmd` for forwarded
+arguments or call `node scripts/verify-changes.js --dry-run` directly.
+Ordinary docs/Codex settings need no game build; runtime changes select relevant
+unit families, types, build/smoke/security and whole browser specs on Chromium
+390x844. Visual comparisons retain all five projects. See the mapping in
+[scripts/verify-changes.js](scripts/verify-changes.js) and the
+[development workflow](docs/process/development_workflow.md#verification-funnels).
+
+The existing daily automation runs the full product suite at **21:00
+Europe/Berlin** through `npm run verify:daily`. It runs compliance/types/build
+once, then reuses verified outputs for the full browser/security/performance
+gate and audit. PostgreSQL runs when its isolated local prerequisite is present;
+otherwise the missing coverage is explicit. Release boundaries still require
+the full gate and Ubuntu comparison CI.
+
 `npm run verify:quality` performs a fresh build followed by the bundle,
 identity/reward-security, complete browser matrix, and performance gates.
 `npm run verify:full` adds the fast funnel, built runtime smoke, and audit. It
 prints explicitly when local PostgreSQL authority is unavailable; that message
 is not PostgreSQL evidence. `npm run verify:postgres` remains the separate
 mandatory real-database gate and requires `WP014_TEST_DATABASE_URL`. GitHub
-Actions runs the complete browser matrix in reviewed project shards and runs
-PostgreSQL/reward-security plus performance/bundle as separate required jobs.
+Actions selects relevant jobs from the PR merge base or pushed commit range,
+cancelling superseded edit runs. Manually dispatch **Verify** for all reviewed
+Ubuntu browser shards, PostgreSQL/reward-security and performance/bundle jobs.
 Non-Linux `verify:quality` runs the complete logic matrix but explicitly omits
 visual comparison; ignored snapshots are rejected in CI, where the reviewed
 Linux baselines remain authoritative. The performance job retains its sanitized
@@ -152,6 +177,8 @@ GitHub Actions job is authoritative when local PostgreSQL is unavailable.
 
 WP-014 visual baselines are created only by the GitHub Actions workflow
 **Visual baseline candidates** on the implementation pull request. That
+PR must carry the `visual-baseline-candidate` label; ordinary UI edits no longer
+regenerate candidate images automatically. The
 artifact-only workflow runs the pinned Ubuntu 24.04 Chromium/WebKit revisions
 with `--update-snapshots` and uploads the candidate PNGs; it never commits
 them. After the workflow exists on `main`, it can also be dispatched manually

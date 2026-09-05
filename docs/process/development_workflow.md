@@ -86,9 +86,74 @@ activation.
 
 ## Verification Funnels
 
-The planned scripts may evolve during WP-005, but their responsibilities are:
+### Change-selected infrastructure on main (2026-09-05)
+
+The owner requested this isolated infrastructure port from development commit
+`da1e7a9`, including the build-proof prerequisites from `5333a90` and the daily
+cadence introduced by `17bd15e`. Owning roles: test worker and docs keeper.
+It preserves main's current game, assets, dependency lock, smoke tests, browser
+specs and baseline policy data. It does not promote later gameplay or analytical
+work packages. These instructions supersede the older blanket per-feature
+full-matrix requirement.
+
+Preview with `npm run verify:changes -- --dry-run`, then run
+`npm run verify:changes` (`verify:feature` is the same selector). In Windows
+PowerShell use `npm.cmd` for forwarded flags or invoke the Node script directly.
+Selection includes staged, unstaged and untracked files, both sides of renames
+and deleted paths. For committed work pass `-- --base <starting-commit>`; record
+that base with the results. Invalid or unavailable bases fail, while a clean
+tree explicitly selects nothing. CI uses the PR merge base or previous push SHA.
+
+| Changes | Required edit-loop coverage |
+| --- | --- |
+| Ordinary docs and Codex settings | Diff checks; no game build |
+| Evidence JSON / hash-bound behavior records | Work-package / clean-room checks |
+| Documentation images | Current checkout's generation-component gate, or explicit complete-compliance fallback when that gate is absent |
+| Combat presentation | Combat/Practice units, types/build/smoke/security/bundle and relevant phone specs |
+| Practice / identity / rewards | Related units and browser specs, including reward dependencies and database checks for authority changes |
+| Shared simulation / AI / server orchestration | All product unit families and relevant phone specs |
+| Tests / verification tooling | Relevant test family; build/browser when runtime or browser harness is affected |
+| Assets / legal | Compliance and tooling; runtime assets also build and compare visuals |
+| Packages / unknown paths | Conservative product coverage; dependencies also audit/performance/PostgreSQL |
+
+Maintain `scripts/verify-changes.js` alongside new modules and cross-module
+dependencies. Later analytical paths remain recognized, but missing required
+npm scripts fail explicitly rather than silently dropping coverage. This main
+port does not introduce the analytical harnesses or their source inputs.
+
+Selected ordinary browser specs run on Chromium 390x844. Visual specs separately
+cover all five maintained projects; the daily/release gate retains the entire
+five-project matrix, zero retries, serial quality workers, performance budgets
+and reviewed expected-skip policy. Exact source/output hashes and Node version
+govern build reuse; a changed or missing proof rebuilds. Never approve or update
+Linux baselines from Windows. Candidate capture requires an explicit
+`visual-baseline-candidate` PR label or manual workflow dispatch and owner review.
+
+The existing full-product automation runs at **21:00 Europe/Berlin** (CET/CEST),
+using `verify:daily` on its current checkout. Do not replace it with the selector.
+`verify:full` performs compliance/types/build once before the full quality gate
+and audit. If `WP014_TEST_DATABASE_URL` is configured, it also executes the
+isolated database gate; otherwise report the missing prerequisite. Main's
+manual **Verify** dispatch retains complete Ubuntu and PostgreSQL release CI.
+Real Android/iOS testing is outside the autonomous cycle.
+
+Port validation: 199 product/tooling tests passed, alongside compliance, types,
+build, the unchanged main smoke, identity/reward-security and bundle checks.
+Canonical browser logic passed 24 cases with two project exclusions; visual
+logic passed eight with twelve reviewed project exclusions; performance passed.
+Linux screenshot comparison was omitted on Windows, PostgreSQL lacked its local
+prerequisite, and actual Ubuntu CI/full daily/device runs were not claimed.
+Independent review confirmed the preservation boundary and script compatibility.
+Audit reported three pre-existing advisories in main's unchanged dependency lock
+(high: `nanoid`, `socket.io-parser`; moderate: `qs`). No threshold, audit policy,
+asset evidence or runtime behavior was changed to suppress those findings.
+
+Current command responsibilities:
 
 ```text
+verify:feature / verify:changes
+  changed paths -> relevant unit/build/browser/database/performance checks
+
 verify:fast
   compliance -> types -> unit -> deterministic simulation
 
@@ -99,7 +164,10 @@ verify:quality
   fresh build -> bundle/identity/reward security -> full browser matrix -> performance
 
 verify:full
-  verify:fast -> verify:runtime -> verify:quality -> explicit PostgreSQL status -> audit
+  verify:fast -> build:outputs -> built smoke -> verify:quality:built -> PostgreSQL gate/status -> audit
+
+verify:daily
+  verify:full
 ```
 
 Built smoke tests must rebuild or prove that output metadata matches the current
@@ -1214,5 +1282,5 @@ A slice is done when:
 - the import boundary still passes,
 - relevant manifests/docs are current,
 - planned checks have run,
-- `npm run build` passes for source/tooling changes,
+- selected checks pass, with a current build for runtime/build changes,
 - final reporting names remaining risks.

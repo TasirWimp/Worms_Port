@@ -28,6 +28,7 @@ async function main() {
         env: {
           ...process.env,
           PLAYWRIGHT_PORT: String(port),
+          PLAYWRIGHT_REUSE_BUILD: 'true',
           WP014_QUALITY_TEST: 'true',
           WP014_POSTGRES_BROWSER: 'true',
           DATABASE_URL: databaseUrl,

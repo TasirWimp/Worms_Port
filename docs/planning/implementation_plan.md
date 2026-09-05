@@ -7,6 +7,10 @@ Phaser/Socket.IO stack.
 
 ## Execution Pointer
 
+- Verification infrastructure: the isolated change-selection/build-reuse port
+  from `da1e7a9` follows the owner-requested 21:00 Berlin daily/full cadence.
+  See [Verification Funnels](../process/development_workflow.md#verification-funnels).
+  This changes verification policy only and does not advance the product package.
 - Active target: mobile-first single-player Nimiq Pay competition release.
 - Active work package: **WP-015 Production Art And Audio**. Produce the first
   approved runtime art/audio set through the exact-file asset review and

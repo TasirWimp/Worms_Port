@@ -4,12 +4,62 @@ on:
   push:
     branches: [main]
   pull_request:
+  workflow_dispatch:
+
+concurrency:
+  group: verify-${{ github.workflow }}-${{ github.event.pull_request.number || github.ref }}-${{ github.event_name == 'workflow_dispatch' && 'full' || 'changes' }}
+  cancel-in-progress: true
 
 permissions:
   contents: read
 
 jobs:
+  changes:
+    runs-on: ubuntu-24.04
+    outputs:
+      full: ${{ steps.plan.outputs.full }}
+      checks: ${{ steps.plan.outputs.checks }}
+      browser: ${{ steps.plan.outputs.browser }}
+      postgres: ${{ steps.plan.outputs.postgres }}
+      performance: ${{ steps.plan.outputs.performance }}
+      matrix: ${{ steps.matrix.outputs.matrix }}
+    steps:
+      - uses: actions/checkout@v5
+        with:
+          fetch-depth: 0
+      - uses: actions/setup-node@v6
+        with:
+          node-version: 20
+      - id: plan
+        env:
+          FULL: ${{ github.event_name == 'workflow_dispatch' }}
+          CHANGE_BASE: ${{ github.event.pull_request.base.sha || github.event.before }}
+        run: |
+          if [ "$FULL" = true ]; then
+            printf 'full=true\nchecks=true\nbrowser=true\npostgres=true\nperformance=true\n' >> "$GITHUB_OUTPUT"
+          else
+            echo 'full=false' >> "$GITHUB_OUTPUT"
+            node scripts/verify-changes.js --base "$CHANGE_BASE" --dry-run --github-output "$GITHUB_OUTPUT"
+            git diff --check "${CHANGE_BASE}...HEAD"
+          fi
+      - id: matrix
+        env:
+          FULL: ${{ steps.plan.outputs.full }}
+          VISUAL: ${{ steps.plan.outputs.visual }}
+        run: |
+          node <<'NODE'
+          const fs = require('node:fs');
+          const include = process.env.FULL === 'true' ? [
+            { name: 'chromium-small', browser: 'chromium', projects: '--project=chromium-360x640 --project=chromium-390x844' },
+            { name: 'chromium-large', browser: 'chromium', projects: '--project=chromium-412x915 --project=chromium-844x390' },
+            { name: 'webkit', browser: 'webkit', projects: '--project=webkit-390x844' }
+          ] : [{ name: 'chromium-small', browser: process.env.VISUAL === 'true' ? 'chromium webkit' : 'chromium', projects: '' }];
+          fs.appendFileSync(process.env.GITHUB_OUTPUT, `matrix=${JSON.stringify({ include })}\n`);
+          NODE
+
   fast:
+    needs: changes
+    if: needs.changes.outputs.checks == 'true'
     runs-on: ubuntu-24.04
     timeout-minutes: 20
     steps:
@@ -21,29 +71,23 @@ jobs:
           node-version: 20
           cache: npm
       - run: npm ci
-      - run: npm run verify:fast
-      - run: npm audit
-      - run: npm run build
-      - run: npm run smoke:built
-      - run: npm run check:identity-bundles
-      - run: npm run check:reward-security
+      - name: Relevant checks
+        if: needs.changes.outputs.full != 'true'
+        env:
+          CHANGE_BASE: ${{ github.event.pull_request.base.sha || github.event.before }}
+        run: node scripts/verify-changes.js --base "$CHANGE_BASE" --phase checks
+      - name: Full release checks
+        if: needs.changes.outputs.full == 'true'
+        run: npm run verify:fast && npm run build:outputs && npm run smoke:built && npm run check:identity-bundles && npm run check:reward-security && npm audit
 
   browser-quality:
+    needs: changes
+    if: needs.changes.outputs.browser == 'true'
     runs-on: ubuntu-24.04
     timeout-minutes: 20
     strategy:
       fail-fast: false
-      matrix:
-        include:
-          - name: chromium-small
-            browser: chromium
-            projects: --project=chromium-360x640 --project=chromium-390x844
-          - name: chromium-large
-            browser: chromium
-            projects: --project=chromium-412x915 --project=chromium-844x390
-          - name: webkit
-            browser: webkit
-            projects: --project=webkit-390x844
+      matrix: ${{ fromJSON(needs.changes.outputs.matrix) }}
     steps:
       - uses: actions/checkout@v5
         with:
@@ -54,7 +98,14 @@ jobs:
           cache: npm
       - run: npm ci
       - run: npx playwright install --with-deps ${{ matrix.browser }}
-      - run: node scripts/run-playwright.js --quality-gate --quality-shard ${{ matrix.projects }}
+      - name: Relevant browser specs
+        if: needs.changes.outputs.full != 'true'
+        env:
+          CHANGE_BASE: ${{ github.event.pull_request.base.sha || github.event.before }}
+        run: node scripts/verify-changes.js --base "$CHANGE_BASE" --phase browser
+      - name: Full release browser matrix
+        if: needs.changes.outputs.full == 'true'
+        run: node scripts/run-playwright.js --quality-gate --quality-shard ${{ matrix.projects }}
       - name: Upload browser failure evidence
         if: failure()
         uses: actions/upload-artifact@v6
@@ -67,6 +118,8 @@ jobs:
           retention-days: 14
 
   performance-bundle:
+    needs: changes
+    if: needs.changes.outputs.performance == 'true'
     runs-on: ubuntu-24.04
     timeout-minutes: 20
     steps:
@@ -106,6 +159,8 @@ jobs:
           retention-days: 14
 
   postgres-reward-security:
+    needs: changes
+    if: needs.changes.outputs.postgres == 'true'
     runs-on: ubuntu-24.04
     timeout-minutes: 20
     env:
@@ -135,11 +190,9 @@ jobs:
       - run: npm ci
       - run: npx playwright install --with-deps chromium
       - run: npm run test:reward:postgres
-      - run: npm run test:reward
       - run: npm run test:browser:reward:postgres
       - run: npm run check:identity-bundles
       - run: npm run check:reward-security
-      - run: npm audit
       - name: Upload PostgreSQL reward failure evidence
         if: failure()
         uses: actions/upload-artifact@v6
