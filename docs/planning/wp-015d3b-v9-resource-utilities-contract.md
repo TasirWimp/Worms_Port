@@ -786,3 +786,37 @@ The final reviewer also found that the broad selector was stopped before its
 quality-browser phase. It remains incomplete, not a pass; the next reviewer
 chooses the required verification freely. V9C remains unaccepted until this
 brief passes final Astra review.
+
+### C7.3 Second final-review correction brief
+
+The independent Astra/high review failed C7.2 at `5c29461`. It confirmed the
+due-clock and repeated-neutral fixes, but found four remaining blockers. They
+remain within the eight C7 carriers; do not amend outer dispatch, shared
+authority, selector or bundle limits.
+
+1. Make local **Start fresh preview** remount the V9 adapter within
+   `resource-turns-v9-scene.ts`: fully retire the old subscription, RAF,
+   listeners and fixture, then mount exactly one new local V9 fixture/adapter.
+   Do not pass V9 arguments into the legacy outer combat scene initializer.
+   Browser proof must cover paused and terminal re-entry, zero errors, fresh
+   tick/Thread, subsequent input and zero session/socket activity.
+2. Construct a presentation-only projectile trace that retains the
+   authoritative trace but ends at the current `xFp/256,yFp/256`. It must
+   follow every short/long, full/reduced-motion flight position while camera
+   follows/restores; never mutate authority or replay traces.
+3. Remove V9 simulation computation from the eager ordinary-combat
+   `presentation.ts` import path. Keep clone-only trajectory work behind the
+   V9 lazy preview seam in an allowed V9 carrier or guarded asynchronous import;
+   preserve cancellation ownership. Do not raise bundle limits. Fresh build,
+   bundle inspection and complete selected verification must pass.
+4. Apply selected-Relic affordability to the armed Use branch and show its
+   visible specific reason. Compact the upright actor-card value text to fit
+   its reserved box while preserving full accessible labels. Test Guard then
+   aim Use; utility/movement/retreat/fresh-turn variants; actor text containment
+   across focus/pan, safe areas and sideways/upright modes.
+
+The prior review independently passed all five maintained V9 profiles and
+confirmed V7/network/AI/public-selector boundaries. Its selector failed only
+at the mandatory bundle budget before remaining selected browsers; that failure
+must be resolved rather than bypassed. V9C remains unaccepted pending final
+Astra review.

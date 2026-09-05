@@ -108,6 +108,12 @@
       "reviewer": "/root/v9c_c7_final_astra_review",
       "decision": "fail",
       "detail": "Independent configured Astra/high final C7 review at 591e266 verified the closed eight-carrier scope and preserved V7/network/AI boundaries, but failed V9C. It reproduced Fire bypassing the due-clock fence, repeated interruption leaving aim locked, absent full-motion projectile/camera flight, hidden-card HUD leakage, incorrect action affordability/legality, and missing lifecycle journey evidence. Its C7.2 correction brief retains the same carrier scope; the stopped broad selector is incomplete, not a pass. No edits, external or quarantine access."
+    },
+    {
+      "role": "worms_port_reviewer",
+      "reviewer": "/root/v9c_c72_final_astra_review",
+      "decision": "fail",
+      "detail": "Independent configured Astra/high final C7.2 review at 5c29461 confirmed restored due-clock and repeated-neutral behavior and preserved all closed boundaries, but failed V9C for crashing local re-entry, sparse-trace projectile rendering, an eager V9 import exceeding the mandatory bundle budget, armed Use affordability/guidance, and upright actor-card text overflow. Five maintained V9 browser profiles passed separately; the full selected pipeline failed at bundle budget before remaining browsers. C7.3 retains the same carrier scope. No edits, external or quarantine access."
     }
   ],
   "skipped_checks": [
