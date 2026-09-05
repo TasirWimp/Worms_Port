@@ -15,7 +15,8 @@
     "Owner reported V8E phone acceptance and explicitly requested starting V9 on 2026-09-05. V9A is the first bounded slice: a finite independently authored resource-and-utility contract, before runtime implementation.",
     "Exact V9A scope: docs/evidence/wp-015d3b.json, docs/planning/wp-015d3b-v9-resource-utilities-contract.md, docs/planning/implementation_plan.md, docs/planning/wp-015d3a-v8-action-turns-contract.md, docs/evidence/wp-015d3a.json and README.md. The new contract and evidence have a distinct V9 lifecycle; existing V8 carriers retain predecessor acceptance.",
     "The starting lock hash records canonical Git bytes; Windows checkout bytes have SHA256 1910F1419459E827A6ED5C8DC3BABD5189E6A9A6AC1D41D43E909E572F01BAB8. No dependency edit is authorized. Retain inherited V8 source/replay and clean-room obligations. No new reference observation is used for V9A.",
-    "V9B authoritative foundation completed on 2026-09-05 within its closed nine source/test paths. It adds injected-only V9 state, strict protocol/replay and coordinator seams; the public selector remains V7. Final Astra source review passed after shield, tick-boundary, pause/resume, counter and B4 fixture corrections. No external/reference/quarantine access occurred."
+    "V9B authoritative foundation completed on 2026-09-05 within its closed nine source/test paths. It adds injected-only V9 state, strict protocol/replay and coordinator seams; the public selector remains V7. Final Astra source review passed after shield, tick-boundary, pause/resume, counter and B4 fixture corrections. No external/reference/quarantine access occurred.",
+    "V9C entry approved 2026-09-05 after the owner requested starting it: local query-gated resource/cost/utility touch presentation and engineering preview only. The exact nine source/test paths, V9B source locks, no-Socket/no-selector/no-AI/no-reward/no-asset boundary, and red-first acceptance fixtures are recorded in contract C1-C5. Independent Astra/high review grants implementation authority only within that closed scope."
   ],
   "non_goals": [
     "V9A was contract-only. V9B authorizes only its separately bounded injected authoritative foundation; it excludes deployment, shared public selector promotion, funded activation, V9C/D lifecycle or UI, V10 terrain, V11 teams, new assets/dependencies, reference/quarantine access, analytical execution and formal player observation."
@@ -25,7 +26,8 @@
     "V9B red-first/green focused simulation, replay and protocol tests; selected verification with base d41df456696326f737e526e59f43aeae865a5681; types, build, built smoke, compliance, security/bundle and selected browser checks after runtime implementation.",
     "Inspect change-selected verification dry run and execute the selected documentation/evidence gates.",
     "Validate local contract/navigation links, exact six-path scope and unchanged runtime/lock/frozen evidence.",
-    "Distinct read-only contract review before freezing V9A."
+    "Distinct read-only contract review before freezing V9A.",
+    "Independent Astra V9C entry review of C1-C5 before any source edit; then red-first V9 preview control/fixture tests, selected verification and required browser phone preview proof."
   ],
   "deterministic_seeds": [],
   "sorcerers_reference_used": false,
@@ -45,6 +47,11 @@
       "command": "npm.cmd run verify:changes -- --base d41df456696326f737e526e59f43aeae865a5681",
       "status": "pass",
       "detail": "Change-selected verification passed after the final source review: work-package/import-boundary/type checks, protocol and simulation suites, build outputs, built server smoke, identity/reward/bundle checks, and the chromium-390x844 matrix. Browser result: 50 passed, 3 skipped; PostgreSQL checks skipped because WP014_TEST_DATABASE_URL is absent. This does not replace the daily release gate."
+    },
+    {
+      "command": "git diff --check; npm.cmd run check:work-packages; npm.cmd run verify:changes -- --base 7435d5a63a5f0bbc4860b12a25bad8977989f34d --dry-run",
+      "status": "pass",
+      "detail": "V9C entry documentation is whitespace-clean and work-package evidence passes (51 records). Its exact three documentation files select only check:work-packages. Source, browser and daily checks are deferred until the bounded implementation changes exist."
     }
   ],
   "reviews": [
@@ -71,6 +78,12 @@
       "reviewer": "/root/v9b_final_reviewer",
       "decision": "pass",
       "detail": "Configured Astra/high final read-only review independently passed the focused V9 suite (35/35) and adversarial authority probes. It verified shield integrity, batch equivalence, counter terminalization, pause/resume lifecycle safety, B4 parity/geometry coverage, closed paths and retained V7 public selection. No external/quarantine access or edits."
+    },
+    {
+      "role": "worms_port_reviewer",
+      "reviewer": "/root/v9b_final_reviewer",
+      "decision": "pass",
+      "detail": "Configured Astra/high read-only V9C entry review approved current C1-C5. It verified the nine-path allowlist, preserved V9B/server/runtime/public-selector/reward/AI/asset boundaries, clock-before-input safety, pause/resume reanchoring, teardown protection, damage receipts and red-first phone coverage. It grants only bounded local-preview implementation authority; no source edits or runtime checks occurred."
     }
   ],
   "skipped_checks": [
@@ -81,6 +94,7 @@
   "residual_risks": [
     "V9 economy/utility values are design defaults until implemented and assessed; owner V8E acceptance is not V9 balance approval.",
     "V8 public release gates remain separate: dependency audit, PostgreSQL, release/performance/deployment capacity and human similarity.",
-    "V9B is injected-only authority. V9C requires separately approved lifecycle/presentation scope and must not treat this foundation as public activation or balance approval."
+    "V9B is injected-only authority. V9C requires separately approved lifecycle/presentation scope and must not treat this foundation as public activation or balance approval.",
+    "V9C is approved only for its query-gated local engineering preview. It cannot establish public V9 activation, lifecycle correctness, AI parity, reward eligibility, balance or phone acceptance."
   ]
 }

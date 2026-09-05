@@ -466,3 +466,157 @@ the latter passed 50 tests with three PostgreSQL skips because
 The daily 21:00 Europe/Berlin release gate remains required and separate.
 V9C needs a new bounded entry amendment before any lifecycle, presentation,
 AI, balance or public activation work.
+
+## C. V9C resource touch presentation and engineering preview entry — 2026-09-05
+
+Status: **independently approved entry.** The owner requested starting V9C after
+V9B closed. An independent Astra/high read-only review approved C1--C5 on
+2026-09-05. V9C is a local engineering preview of the
+already-authoritative V9B state, not normal match creation or a public V9
+launch. Its source base is commit
+`7435d5a63a5f0bbc4860b12a25bad8977989f34d`.
+
+### C1. Product boundary
+
+The sole entry is `?combat-preview=v9`, alongside the existing explicit
+engineering preview query. It must start a local V9 fixture and label the
+surface `V9 resource engineering preview · local-only`. It must never call
+Socket.IO, create a Session, access wallet/reward code, change the ordinary
+Practice/Daily selector, or make V9 selectable by a normal URL, room, reward,
+or runtime configuration. With no exact preview query, public play remains
+V7.
+
+The preview renders only authority facts from `SimulationStateV9`:
+
+- each actor's `Thread` bank as `n/9`, selected Relic cost, and affordability;
+- Threadguard's active shield and expiry turn;
+- Threadleap's current facing-direction action and authoritative airborne
+  state; and
+- each accepted `damage_resolved` receipt as raw damage, absorbed shield and
+  Stitching lost, so shield expiry is never presented as a hit.
+- the existing touch movement, aim, Relic, Fire, pause and camera controls.
+
+Guard and Leap are explicit touch buttons. Guard submits only `threadguard`;
+Leap submits only `threadleap` with the currently displayed facing direction.
+The UI derives disabled state from the latest local V9 state and never locally
+debits Thread, invents a shield, predicts an accepted utility, advances a turn,
+or supplies Loomkeeper actions. Cost and resource copy are presentation, not
+new balance rules. Existing approved runtime assets and generic renderer are
+reused; V9C adds no pixels, atlas, asset-manifest entry, third-party source, or
+dependency.
+
+### C2. Closed source boundary and locks
+
+The following are the maximum V9C source/test paths. New files have no entry
+blob. Existing files are mutable only after review; V8 and V9B authoritative
+modules stay read-only.
+
+| Path | SHA-256 at entry | Git blob at entry | Purpose |
+| --- | --- | --- | --- |
+| `client/src/scenes/combat.ts` | `8668B5DFEE7FB0B40CCA3D052F2A573B3C9F3B2E3371D8321856985A2F9D53E0` | `a1432ceff0e0a7ece79a9e53e213df9649207cae` | exact query dispatch only |
+| `client/src/combat/contracts.ts` | `78B3B78AE9EA92BA24CC1B69051B9217984BC5EE7A3E30C5D1615DFC2C238330` | `6410247e44829bb5352a71a2b0fb43ce51e11bfd` | local V9 scene contract |
+| `client/src/combat/presentation.ts` | `9AB1DD699435931FD001664ED5554C1056F7703DC6C02BAE060B06A73AFD422E` | `52e6b4b9e68fb2c2c28cffc913ca74bc36629435` | pure V9 render projection only |
+| `client/src/style.css` | `F68A64F4C1FDD8B83E3E94B0DC31B2C7E5AEEF3C78C21D2A433E06AFD728AECF` | `0ff8bb78708e1d3ea17b6d491395798a50ed576c` | preview resource-control styling |
+| `client/src/combat/resource-turns-v9-fixture.ts` | new | new | local fixture, no transport |
+| `client/src/combat/resource-turns-v9-controls.ts` | new | new | V9 resource touch controls |
+| `client/src/combat/resource-turns-v9-scene.ts` | new | new | V9 local presentation adapter |
+| `tests/combat/resource-turns-v9.test.ts` | new | new | unit/fixture/control proof |
+| `tests/browser/combat.spec.ts` | `8C974286701C8880D23D2E3DA9EFB5B85C09E243A4C182571E58B1FB638E12B3` | `11aa3af2f4c63942427e5b1552b39d28d5d4fb8a` | `?combat-preview=v9` phone proof |
+
+Only this contract, `docs/evidence/wp-015d3b.json`, and
+`docs/planning/implementation_plan.md` may change as V9C documentation
+carriers. `shared/simulation-v9.ts` is a read-only dependency: the fixture may
+import its existing `forceSimulationLimitV9` only for the C3 enumerated
+safety-terminal paths. `shared/protocol-v9.ts`, every server path,
+`client/src/combat/action-turns-scene.ts`, V8 controls/client/transport,
+runtime, Socket.IO, assets, packages, manifests and public selector are
+explicitly excluded. A needed change to an excluded path stops for a new Astra
+reviewed amendment.
+
+### C3. Interaction and authority rules
+
+The fixture may call only `createSimulationV9`, `applySimulationIntentV9`,
+`applySimulationBarrierV9`, `advanceSimulationTicksV9`, and the existing
+`forceSimulationLimitV9`. It must publish a deep-cloned state after an accepted
+transition and preserve the state returned for every ordinary rejection. It
+does not simulate AI, rewards, sessions, tickets, identities, wall-clock match
+expiry, replay persistence, or a normal lifecycle.
+
+Before every submit or pause request, the fixture accrues elapsed credit and
+processes due ticks first, one `advanceSimulationTicksV9(state, 1)` at a time,
+with at most six ticks in that callback. If more than 30 ticks are due, it calls
+`forceSimulationLimitV9` once, clears local hold/preview state, publishes that
+terminal result, and rejects the original gesture. A submit never races an
+unprocessed due tick: if one or more due ticks remain after the six-tick work
+cap, it publishes the catch-up result and rejects the original gesture. It uses
+only the post-catch-up turn/phase/epoch facts. If an intent returns
+`INTENT_LIMIT`, the fixture applies exactly one `intent_limit` barrier using
+the same actor/turn/epoch; if that barrier returns `LIFECYCLE_LIMIT`, or if any
+fixture barrier returns `LIFECYCLE_LIMIT`, it calls `forceSimulationLimitV9`
+once instead of leaving a saturated active local preview. All other rejected
+intent/barrier paths leave authority state, Thread, shield and input epoch
+unchanged and expose the returned authority message.
+
+The pause button uses only V9 barriers. `setPaused(value)` is idempotent when
+`value` equals the local paused flag and sends no barrier in that case. For a
+state change, it first completes the due-clock rule above, then applies exactly
+one `pause` or `resume` barrier with current actor/turn/epoch. Pause requires
+the current player action, while resume requires the locally paused preview;
+the exact committed Threadleap interruption shape is delegated to the existing
+V9 barrier. It flips the local paused flag only when that barrier is both
+accepted and mutated. Accepted-but-unmutated, stale, wrong-actor, phase or
+identity requests leave it unchanged and are reported as an authority refusal.
+A successful pause or resume reanchors elapsed credit to the current fixture
+clock, so paused wall time and the first resumed callback cannot create due
+ticks. A paused preview makes no tick progress; an invalid pause/resume leaves the
+displayed state unchanged and exposes the authority message. Interrupt, blur,
+hidden document and resize clear transient touch/aim presentation and issue at
+most the fixture's existing neutral barrier. Destruction first cancels the
+animation callback/timer, removes every listener and prevents a later async
+publish, then may issue its one neutral barrier. These paths cannot spend Thread
+or create a utility action.
+
+### C4. Red-first acceptance fixtures
+
+Before client source implementation, the new combat test must fail because the
+V9 fixture/controls/scene do not exist. It then covers:
+
+1. exact `combat-preview=v9` dispatch and explicit local-only label while no
+   preview keeps normal V7 Practice;
+2. Thread `n/9`, all three Relic costs and disabled unaffordable Fire;
+3. authoritative Guard/Leap submission, single utility use, shield expiry and
+   no local debit on rejection;
+4. latest-snapshot action enablement across aim, cast, airborne, pause,
+   interruption and terminal states;
+5. fixture batch/repeated tick parity, due-clock-before-input ordering,
+   idempotent pause/resume, no activity while paused, `INTENT_LIMIT` barrier
+   translation, lifecycle-limit safety terminalization, clock-debt safety,
+   full pause--resume--landing, counter exhaustion and stale async teardown;
+   plus partial/full absorbed `damage_resolved` receipt versus shield expiry;
+   and
+6. a `chromium-390x844` browser case using touch to open the V9 preview, read
+   the resource controls, use Guard and Leap in separate fresh fixtures,
+   verify sideways touch usability and zero socket/session activity, and confirm
+   ordinary V7 Practice still starts without V9 selection.
+
+Run focused red/green checks:
+
+```powershell
+node --import tsx --test tests/combat/resource-turns-v9.test.ts
+node scripts/run-playwright.js --reuse-build --project=chromium-390x844 --grep "V9 resource engineering preview" tests/browser/combat.spec.ts
+```
+
+After implementation, run the selected verification based on the C1 diff,
+types, a production build, built smoke and the selected phone browser suite.
+`npm run verify:daily` remains the 21:00 Europe/Berlin release gate.
+
+### C5. Entry review and handoff
+
+The entry reviewer must confirm that the path list is sufficient, the preview
+cannot become normal V9 selection, the fixture owns no lifecycle/AI authority,
+and the utility labels never imply a local outcome. A PASS authorizes a fresh
+Terra/high client implementer only within C2. Final source review remains
+Astra/high. The configured Astra/high entry review passed on 2026-09-05 after
+checking the closed paths, query-only boundary, ordering/terminalization,
+pause-clock reanchoring, async teardown and phone proof. V9D's deterministic AI, shared-mode lifecycle and assessment, and
+any public V9 promotion remain separately contracted work.
