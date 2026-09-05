@@ -13,7 +13,8 @@ Phaser/Socket.IO stack.
   reviewed on 2026-09-05 after owner-reported V8E phone acceptance. V9C touch
   presentation/engineering preview is committed on the historical V9B
   foundation branch, but its independent continuity review failed; a bounded
-  V9C continuity-correction entry is in preparation before source work.**
+  V9C continuity correction is implemented but failed final Astra review; its
+  bounded C7.2 correction brief is next before any acceptance.**
   The owner explicitly requested starting V9. The first bounded slice is the
   [V9 resource-and-utility contract](wp-015d3b-v9-resource-utilities-contract.md),
   with [separate V9 evidence](../evidence/wp-015d3b.json), from clean

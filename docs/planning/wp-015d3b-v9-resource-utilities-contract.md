@@ -747,3 +747,42 @@ The final direct and browser cases must cover stale aim/walk across every
 boundary, fresh gesture recovery, compact hierarchy/Use flow, overlap targets,
 visual movement/projectile/impact, actor-card/camera behavior, accurate waiting
 and terminal copy, re-entry teardown, and ordinary V7 launch.
+
+### C7.2 Final-review correction brief
+
+The independent Astra/high final review failed the first C7 implementation at
+`591e266`. Its direct, built and existing browser checks passed, but read-only
+injected-clock and Chromium/WebKit probes found authority and continuity gaps.
+The same eight C7 carriers remain sufficient; a fresh Terra/high worker may
+correct them only as follows before another final review.
+
+1. `resource-turns-v9-fixture.ts` must call its existing due-clock fence before
+   **every** intent, including Fire. A catch-up, deadline or lifecycle terminal
+   invalidates the stale aim and rejects that gesture without a debit or
+   projectile. Direct injected-clock tests must cover ordinary and over-six
+   due ticks, excessive debt and crossed action deadline.
+2. Scene neutralization must clear its own pending request after an accepted
+   snapshot advances the authority generation, without allowing an older
+   completion to clear a newer request. Test two successive aim/walk then
+   blur/visibility/resize/cancel cycles through real scene/fixture wiring.
+3. Authoritative projectile state, current trace/end point and camera must
+   drive the complete full- and reduced-motion flight. Cast and impact feedback
+   may accompany it but cannot erase flight or freeze camera. Test short and
+   long flight movement, follow/restore and impact; a cast-only assertion is
+   insufficient.
+4. The V9 actor-card CSS must honor `[hidden]`; hidden cards have no rectangle,
+   while visible 32px cards remain anchored to actors through pan/focus across
+   sideways left/right/off, safe areas and WebKit.
+5. Derive Actions/Use legality and copy from current authoritative phase,
+   grounded/movement, cast/utility usage, selection and Thread. After Guard,
+   unaffordable Threadball must be disabled with an accurate reason. Cover
+   utility spent, retreat, walking/airborne and fresh-turn recovery.
+6. Keep current lifecycle guidance visible independently from retained damage
+   receipts. After damage, waiting must disclose V9D deferral; terminal copy
+   must state the authoritative outcome. Add terminal/re-entry teardown proof:
+   one fresh fixture, no duplicate timer/listener, socket or session activity.
+
+The final reviewer also found that the broad selector was stopped before its
+quality-browser phase. It remains incomplete, not a pass; the next reviewer
+chooses the required verification freely. V9C remains unaccepted until this
+brief passes final Astra review.

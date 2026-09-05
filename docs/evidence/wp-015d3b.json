@@ -102,6 +102,12 @@
       "reviewer": "/root/v9c_c7_entry_reviewer",
       "decision": "pass",
       "detail": "Independent configured Astra/high C7 entry review at 0ab038a verified all eight correction-carrier SHA-256/blob locks, executed the documentation selector and direct V9 tests (12/12), and supplied a concrete Terra/high correction brief. It authorizes only the C7 carriers for stale-input, compact control, presentation/HUD/camera and truthful local-preview guidance corrections; V9C remains failed until final source review. No edits, external or quarantine access."
+    },
+    {
+      "role": "worms_port_reviewer",
+      "reviewer": "/root/v9c_c7_final_astra_review",
+      "decision": "fail",
+      "detail": "Independent configured Astra/high final C7 review at 591e266 verified the closed eight-carrier scope and preserved V7/network/AI boundaries, but failed V9C. It reproduced Fire bypassing the due-clock fence, repeated interruption leaving aim locked, absent full-motion projectile/camera flight, hidden-card HUD leakage, incorrect action affordability/legality, and missing lifecycle journey evidence. Its C7.2 correction brief retains the same carrier scope; the stopped broad selector is incomplete, not a pass. No edits, external or quarantine access."
     }
   ],
   "skipped_checks": [
