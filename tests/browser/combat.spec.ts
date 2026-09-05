@@ -294,7 +294,7 @@ test('V9 resource engineering preview is local-only and keeps V7 Practice unsele
   await expect(page.getByRole('button', { name: 'Threadball · 2' })).toBeVisible();
   await expect(page.getByRole('button', { name: 'Spoolburst · 5' })).toBeDisabled();
   await page.getByRole('button', { name: 'Threadball · 2' }).tap();
-  await expect(page.getByRole('button', { name: 'Use Threadball · 2' })).toBeEnabled();
+  await expectV9ArmedActionAfterAuthorityTick(page, ui, 'Use Threadball · 2');
   await page.getByRole('button', { name: 'Use Threadball · 2' }).tap();
   await expect(ui).toHaveAttribute('data-selected-relic', 'threadball');
   await expect(ui).toHaveAttribute('data-offense-allowed', 'true');
@@ -322,6 +322,7 @@ test('V9 resource engineering preview is local-only and keeps V7 Practice unsele
   await page.getByRole('button', { name: 'Actions' }).tap();
   await page.getByRole('button', { name: 'Defense' }).tap();
   await page.getByRole('button', { name: 'Guard · 2 Thread' }).tap();
+  await expectV9ArmedActionAfterAuthorityTick(page, page.locator('.combat-v9'), 'Use Guard · 2 Thread');
   await page.getByRole('button', { name: 'Use Guard · 2 Thread' }).tap();
   await expect(page.locator('.player-status')).toHaveAttribute('aria-label', /Shield 24 · expires turn 2/);
   await dragPad(page, '.combat-v9 .aim-zone', 933, 0.35, -0.35);
@@ -338,8 +339,16 @@ test('V9 resource engineering preview is local-only and keeps V7 Practice unsele
   await page.goto('/?combat-preview=v9');
   await expect(page.locator('.combat-v9')).toBeVisible();
   await page.getByRole('button', { name: 'Actions' }).tap();
+  await page.getByRole('button', { name: 'Attack' }).tap();
+  await page.getByRole('button', { name: 'Needlepoint · 3' }).tap();
+  await expectV9ArmedActionAfterAuthorityTick(page, page.locator('.combat-v9'), 'Use Needlepoint · 3');
+
+  await page.goto('/?combat-preview=v9');
+  await expect(page.locator('.combat-v9')).toBeVisible();
+  await page.getByRole('button', { name: 'Actions' }).tap();
   await page.getByRole('button', { name: 'Defense' }).tap();
   await page.getByRole('button', { name: 'Leap · 2 Thread' }).tap();
+  await expectV9ArmedActionAfterAuthorityTick(page, page.locator('.combat-v9'), 'Use Leap · 2 Thread');
   await page.getByRole('button', { name: 'Use Leap · 2 Thread' }).tap();
   await expect(page.locator('.combat-v9')).toHaveAttribute('data-player-airborne', 'true');
   await page.locator('.pause-button').tap();
@@ -1482,6 +1491,18 @@ async function assertControlsFit(page: Page): Promise<void> {
     expect(box!.x + box!.width).toBeLessThanOrEqual(viewport.width + 1);
     expect(box!.y + box!.height).toBeLessThanOrEqual(viewport.height + 1);
   }
+}
+
+async function expectV9ArmedActionAfterAuthorityTick(page: Page, ui: ReturnType<Page['locator']>, label: string): Promise<void> {
+  const use = page.getByRole('button', { name: label, exact: true });
+  await expect(use).toBeEnabled();
+  await expect(use).toHaveAttribute('title', '');
+  await expect(page.locator('.combat-message')).toHaveText(`${label} is ready.`);
+  const selectionTick = Number(await ui.getAttribute('data-simulation-tick'));
+  await expect.poll(async () => Number(await ui.getAttribute('data-simulation-tick'))).toBeGreaterThan(selectionTick);
+  await expect(use).toBeEnabled();
+  await expect(use).toHaveAttribute('title', '');
+  await expect(page.locator('.combat-message')).toHaveText(`${label} is ready.`);
 }
 
 async function selectRelic(page: Page, name: 'Threadball' | 'Needlepoint' | 'Spoolburst'): Promise<void> {

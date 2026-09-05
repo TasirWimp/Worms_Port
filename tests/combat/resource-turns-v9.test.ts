@@ -369,6 +369,31 @@ test('V9 controls derive action legality and lifecycle guidance from the latest 
     } finally { fixture.destroy(); dom.restore(); }
 });
 
+test('V9 controls keep every affordable armed action positive across an authority tick', async () => {
+    const dom = installControlDom(); const clock = createClock(); const fixture = await createResourceTurnsV9Fixture(1, 'wizard', clock);
+    try {
+        const controls = new ResourceTurnsV9Controls(dom.parent, fixture.snapshot, { submit: async () => true, pause: () => {}, neutral: () => {} });
+        const root = controls.root as unknown as FakeElement;
+        const armed = controls as unknown as { choice: 'threadguard' | 'threadleap' | 'threadball' | 'needlepoint' | null };
+        const use = root.querySelector<HTMLButtonElement>('.fire-button')!;
+        const message = root.querySelector<HTMLElement>('.combat-message')!;
+        const stop = fixture.onSnapshot(snapshot => controls.update(snapshot));
+        try {
+            for (const [choice, label] of [['threadguard', 'Use Guard · 2 Thread'], ['threadleap', 'Use Leap · 2 Thread'], ['threadball', 'Use Threadball · 2'], ['needlepoint', 'Use Needlepoint · 3']] as const) {
+                armed.choice = choice; controls.update(fixture.snapshot);
+                assert.equal(use.disabled, false, `${label} remains enabled when its choice is legal`);
+                assert.equal(use.title, '', `${label} has no contradictory unavailable title`);
+                assert.equal(message.textContent, `${label} is ready.`, `${label} gives positive current guidance`);
+                const beforeTick = fixture.snapshot.tick; clock.advance(34);
+                assert.ok(fixture.snapshot.tick > beforeTick, 'the fixture published an authority tick');
+                assert.equal(use.disabled, false, `${label} remains enabled after the authority tick`);
+                assert.equal(use.title, '', `${label} stays free of unavailable guidance after the authority tick`);
+                assert.equal(message.textContent, `${label} is ready.`, `${label} stays positively armed after the authority tick`);
+            }
+        } finally { stop(); controls.destroy(); }
+    } finally { fixture.destroy(); dom.restore(); }
+});
+
 test('V9 scene-style snapshot render stays read-only while RAF refreshes one sustained held walk', async () => {
     const dom = installControlDom(); const clock = createClock(); const fixture = await createResourceTurnsV9Fixture(1, 'wizard', clock);
     const attempts: string[] = []; let frameNow = 0; let controls: ResourceTurnsV9Controls;
