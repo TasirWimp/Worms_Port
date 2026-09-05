@@ -114,6 +114,12 @@
       "reviewer": "/root/v9c_c72_final_astra_review",
       "decision": "fail",
       "detail": "Independent configured Astra/high final C7.2 review at 5c29461 confirmed restored due-clock and repeated-neutral behavior and preserved all closed boundaries, but failed V9C for crashing local re-entry, sparse-trace projectile rendering, an eager V9 import exceeding the mandatory bundle budget, armed Use affordability/guidance, and upright actor-card text overflow. Five maintained V9 browser profiles passed separately; the full selected pipeline failed at bundle budget before remaining browsers. C7.3 retains the same carrier scope. No edits, external or quarantine access."
+    },
+    {
+      "role": "worms_port_reviewer",
+      "reviewer": "/root/v9c_c73_final_astra_review",
+      "decision": "fail",
+      "detail": "Independent configured Astra/high C7.3 review at 735c861 passed closed-boundary, selected family/build/smoke/security/budget checks, the 53-pass canonical browser continuation, cross-browser live-flight and serial re-entry probes. It failed only for contradictory unavailable guidance on an affordable selected action with Use enabled. C7.4 retains the same carrier scope for positive selected-action copy and regression proof. No edits, external or quarantine access."
     }
   ],
   "skipped_checks": [

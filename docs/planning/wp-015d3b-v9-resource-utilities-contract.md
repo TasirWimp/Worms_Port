@@ -820,3 +820,17 @@ confirmed V7/network/AI/public-selector boundaries. Its selector failed only
 at the mandatory bundle budget before remaining selected browsers; that failure
 must be resolved rather than bypassed. V9C remains unaccepted pending final
 Astra review.
+
+### C7.4 Final guidance correction
+
+The C7.3 final Astra review failed `735c861` only because affordable selected
+actions displayed unavailable guidance while their Use button was enabled.
+Within the same C7 carriers, a fresh Terra/high worker must make
+`armedUseReason()` return no unavailable reason for `choiceLegal(choice)` and
+show positive action name/cost/Use guidance instead. It must reuse the current
+authority predicates and retain specific disabled reasons. Add direct/browser
+proof for affordable Guard, Leap, Threadball and Needlepoint, including an
+authority tick after selection; preserve insufficient-Thread armed Use proof.
+No other scope changes are authorized. The final reviewer otherwise passed all
+selected verification, live-flight, remount, due-clock, card and boundary
+checks; V9C remains unaccepted until this correction is re-reviewed.
