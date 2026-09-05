@@ -621,18 +621,29 @@ checking the closed paths, query-only boundary, ordering/terminalization,
 pause-clock reanchoring, async teardown and phone proof. V9D's deterministic AI, shared-mode lifecycle and assessment, and
 any public V9 promotion remain separately contracted work.
 
-### C6. Implementation close — 2026-09-05
+### C6. Initial implementation record — superseded by continuity review
 
-V9C is complete within C2. `?combat-preview=v9` now mounts only a local,
+The initial implementation within C2 mounted only a local,
 query-gated V9 fixture with mobile resource/utility presentation; ordinary
 V7 selection remains unchanged. The fixture preserves V9 authority ordering,
 terminalization, pause timing, receipt history and destruction safety. Its
 controls use authoritative state, remain usable in sideways phone layout, and
 do not create a transport, session, reward, AI or public-selector path.
 
-The final Astra/high read-only review passed after direct regressions for
-reentrant publication, sustained movement, utility/offensive gating, damage
-receipts, stale callbacks and listener cleanup. Focused V9 combat tests passed
-12/12; the full build, import boundary and the exact `chromium-390x844` V9
-phone case passed. The daily 21:00 Europe/Berlin release gate and real-device
-testing remain separate.
+The first source review passed after direct regressions for reentrant
+publication, sustained movement, utility/offensive gating, damage receipts,
+stale callbacks and listener cleanup. It is superseded by the independent
+continuity review under the expanded Astra mandate: despite passing selected
+checks, the preview fails product continuity. The review reproduced stale input
+across authority boundaries, overlapping phone controls, absent movement/cast
+presentation, absent actor HUD/camera journey, and unexplained waiting/terminal
+states. AI and complete shared lifecycle remain deferred to V9D; the preview
+must explain that deferral.
+
+V9C is therefore **not complete**. Before source edits, C7 must register a
+bounded correction scope and tests for the review findings, including the
+owner's contextual action hierarchy. The historical branch
+`codex/wp-015d3b-v9b-authoritative-foundation-v0` remains the V9B foundation
+carrier and contains the V9C commits; branch naming does not imply V9C closure.
+The daily 21:00 Europe/Berlin release gate and real-device testing remain
+separate.

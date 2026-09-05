@@ -2,7 +2,7 @@
   "id": "WP-015D3B",
   "status": "in_progress",
   "starting_commit": "da1e7a9c1a1c19bcfa4385e3db28cb530f660ebb",
-  "branch": "codex/wp-015d3b-v9a-rules-contract-v0",
+  "branch": "codex/wp-015d3b-v9b-authoritative-foundation-v0",
   "initial_worktree": "clean",
   "starting_lock_sha256": "D4DAC6AE09A3D2F6C5A7EAA11520BAC43F1628320C5331575BCF1E1857073D73",
   "owning_roles": [
@@ -16,7 +16,7 @@
     "Exact V9A scope: docs/evidence/wp-015d3b.json, docs/planning/wp-015d3b-v9-resource-utilities-contract.md, docs/planning/implementation_plan.md, docs/planning/wp-015d3a-v8-action-turns-contract.md, docs/evidence/wp-015d3a.json and README.md. The new contract and evidence have a distinct V9 lifecycle; existing V8 carriers retain predecessor acceptance.",
     "The starting lock hash records canonical Git bytes; Windows checkout bytes have SHA256 1910F1419459E827A6ED5C8DC3BABD5189E6A9A6AC1D41D43E909E572F01BAB8. No dependency edit is authorized. Retain inherited V8 source/replay and clean-room obligations. No new reference observation is used for V9A.",
     "V9B authoritative foundation completed on 2026-09-05 within its closed nine source/test paths. It adds injected-only V9 state, strict protocol/replay and coordinator seams; the public selector remains V7. Final Astra source review passed after shield, tick-boundary, pause/resume, counter and B4 fixture corrections. No external/reference/quarantine access occurred.",
-    "V9C completed 2026-09-05: local query-gated resource/cost/utility touch presentation and engineering preview only. The exact nine source/test paths, V9B source locks, no-Socket/no-selector/no-AI/no-reward/no-asset boundary, and direct authority/teardown/mobile controls tests are recorded in contract C1-C6. Final Astra/high review passed within that closed scope."
+    "V9C initial local query-gated resource/cost/utility preview is committed on the historical V9B foundation branch. The expanded independent Astra continuity review failed it on 2026-09-05 despite passing selected verification: product continuity, phone usability, fresh-input boundaries, presentation/HUD, and truthful lifecycle guidance require a bounded C7 correction entry. The branch remains the V9B foundation carrier and its name does not imply V9C closure."
   ],
   "non_goals": [
     "V9A was contract-only. V9B authorizes only its separately bounded injected authoritative foundation; it excludes deployment, shared public selector promotion, funded activation, V9C/D lifecycle or UI, V10 terrain, V11 teams, new assets/dependencies, reference/quarantine access, analytical execution and formal player observation."
@@ -90,6 +90,12 @@
       "reviewer": "/root/v9b_final_reviewer",
       "decision": "pass",
       "detail": "Configured Astra/high final V9C read-only source review passed the current closed nine-path implementation. It independently verified 12 focused tests and clean diff, including reentrant publication, sustained movement, authority gating, receipt persistence and direct teardown. Build and phone results were reported separately."
+    },
+    {
+      "role": "worms_port_reviewer",
+      "reviewer": "/root/v9c_blind_astra_review",
+      "decision": "fail",
+      "detail": "Configured Astra/high independent continuity review under the updated reviewer mandate failed V9C despite selected verification passing. It independently reproduced stale movement/aim after authority boundaries, overlapping pause/action controls, missing movement/cast/projectile presentation, missing actor HUD/camera continuity, incomplete Relic feedback, and unexplained waiting/terminal states. It records concrete C7 test/correction briefs; V9D AI/shared lifecycle remains a named deferral. No edits or external/quarantine access."
     }
   ],
   "skipped_checks": [
@@ -101,6 +107,6 @@
     "V9 economy/utility values are design defaults until implemented and assessed; owner V8E acceptance is not V9 balance approval.",
     "V8 public release gates remain separate: dependency audit, PostgreSQL, release/performance/deployment capacity and human similarity.",
     "V9B is injected-only authority. V9C requires separately approved lifecycle/presentation scope and must not treat this foundation as public activation or balance approval.",
-    "V9C is complete only as a query-gated local engineering preview. It cannot establish public V9 activation, lifecycle correctness, AI parity, reward eligibility, balance or real-device phone acceptance."
+    "V9C is not accepted. A new C7 correction entry must resolve the independent continuity review findings before any V9C closure; it cannot establish public V9 activation, lifecycle correctness, AI parity, reward eligibility, balance or real-device phone acceptance."
   ]
 }

@@ -11,8 +11,9 @@ Phaser/Socket.IO stack.
 - Active product package: **WP-015D3B V9 Resource and Utilities — V9A rules
   contract and V9B injected authoritative foundation complete and independently
   reviewed on 2026-09-05 after owner-reported V8E phone acceptance. V9C touch
-  presentation/engineering-preview implementation is complete and independently
-  reviewed within its closed local-preview scope.**
+  presentation/engineering preview is committed on the historical V9B
+  foundation branch, but its independent continuity review failed; a bounded
+  V9C correction entry is next.**
   The owner explicitly requested starting V9. The first bounded slice is the
   [V9 resource-and-utility contract](wp-015d3b-v9-resource-utilities-contract.md),
   with [separate V9 evidence](../evidence/wp-015d3b.json), from clean
@@ -25,8 +26,9 @@ Phaser/Socket.IO stack.
   fixtures in the V9 contract; an independent Astra/high reviewer approved the
   entry. V9B now provides only test-injected V9 state, protocol/replay and
   coordinator authority; its selected verification and final Astra review pass.
-  V9C's local `?combat-preview=v9` touch surface is complete only within its
-  closed contract C1--C6;
+  V9C's local `?combat-preview=v9` touch surface is not accepted: continuity
+  review found stale gestures, overlapping controls, missing presentation/HUD,
+  and missing player guidance. Its correction needs a new bounded entry;
   the public selector remains V7. V8 public release gates remain independent;
   no automatic deployment, funded activation, V10 or V11 is implied.
 - Product predecessor: **WP-015D3A V8 Action-Turn Candidate — V8A finite
