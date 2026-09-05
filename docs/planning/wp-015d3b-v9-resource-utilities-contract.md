@@ -834,3 +834,15 @@ authority tick after selection; preserve insufficient-Thread armed Use proof.
 No other scope changes are authorized. The final reviewer otherwise passed all
 selected verification, live-flight, remount, due-clock, card and boundary
 checks; V9C remains unaccepted until this correction is re-reviewed.
+
+### C7.5 Carry-over selection guidance correction
+
+The C7.4 final review failed `8990170` only for a later-turn carry-over state:
+when a legal pending replacement choice exists, guidance must resolve that
+choice completely and never fall through to the previously selected Relic.
+In `armedUseReason()`, a non-null choice returns no unavailable reason when
+legal, or its own `choiceReason` when illegal; selected-Relic affordability is
+consulted only when there is no pending choice. Add direct and browser proof
+for player-turn-two Spoolburst → Guard → aim → affordable Threadball/Needlepoint
+after an authority tick, plus no-choice Spoolburst insufficient-Thread copy.
+The same control/test scope remains authorized; final Astra review is required.

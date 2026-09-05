@@ -120,6 +120,12 @@
       "reviewer": "/root/v9c_c73_final_astra_review",
       "decision": "fail",
       "detail": "Independent configured Astra/high C7.3 review at 735c861 passed closed-boundary, selected family/build/smoke/security/budget checks, the 53-pass canonical browser continuation, cross-browser live-flight and serial re-entry probes. It failed only for contradictory unavailable guidance on an affordable selected action with Use enabled. C7.4 retains the same carrier scope for positive selected-action copy and regression proof. No edits, external or quarantine access."
+    },
+    {
+      "role": "worms_port_reviewer",
+      "reviewer": "/root/v9c_c74_final_astra_review",
+      "decision": "fail",
+      "detail": "Independent configured Astra/high C7.4 review at 8990170 confirmed initial positive guidance but found legal replacement action guidance falling through to an older unaffordable Spoolburst. C7.5 retains the same controls/tests scope for the carry-over conditional and regression. No edits, external or quarantine access."
     }
   ],
   "skipped_checks": [
