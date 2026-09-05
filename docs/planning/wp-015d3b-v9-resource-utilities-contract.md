@@ -703,3 +703,47 @@ Required behavior and proof:
 Run the selector as inventory, then all checks independently chosen by Astra.
 The entry reviewer must provide a correction brief naming reuse points, data
 flow, authority constraints, and acceptance cases before Terra/high source work.
+
+### C7.1 Astra entry review and Terra/high correction brief
+
+The independent Astra/high reviewer passed C7 at commit `0ab038a` on
+2026-09-05: all eight entry SHA-256/blob locks matched, the change-selector
+inventory and execution passed, and the existing direct V9 suite passed 12/12.
+This pass authorizes a fresh Terra/high client worker only within the C7 table;
+it does not accept the existing preview or relax the final Astra review.
+
+The worker must follow this correction brief:
+
+1. In `resource-turns-v9-controls.ts` and `resource-turns-v9-scene.ts`, reuse
+   `input.ts` boundary synchronization and movement ownership. Compare turn,
+   active actor, phase, input epoch, paused, terminal and utility facts on each
+   snapshot; retire aim, movement, chooser and pending-preview ownership on a
+   genuine boundary. Guard asynchronous acknowledgements with a generation.
+   Existing uninterrupted walking may retain its epoch; it must keep working.
+2. In controls and `style.css`, position Pause directly from `pauseZone`, not
+   inside the action grid. Reuse the V8 chooser interaction as evidence: yellow
+   Actions plus red Use initially; explicit Attack/Defense expansion; selected
+   Relic/utility submits only through Use. Keep fresh, reachable tap-to-face
+   movement and collapse choices on boundary. Test physical target rectangles,
+   clipping and `elementFromPoint`, including sideways left/right/off, safe
+   areas and WebKit.
+3. In the V9 scene and pure `presentation.ts` carrier, feed the renderer's
+   existing preview, trace and visual-phase arguments from V9 authority facts.
+   Use clone-only V9 trajectory generation, never a V8 simulation disguise;
+   cancel obsolete results on aim/state/pause/teardown. Presentation cannot
+   delay ticks, authority, resource debits or outcomes.
+4. Reuse existing layout/camera seams to place authority-derived Stitching,
+   Thread and shield cards above each actor, hide offscreen cards, provide focus
+   controls, track a projectile and restore the saved view. Clean up pan and
+   focus work on interruption and resize while respecting reduced motion.
+5. Show actor, readable phase, `phaseDeadlineTick - tick` remaining time,
+   selection/cost and exact unavailable reason. State that Loomkeeper behavior
+   is deferred to V9D rather than implying an imminent response. Explain pause,
+   terminal and lifecycle-limit states, and provide local re-entry that destroys
+   old listeners/timers before the new fixture. Tests must prove no duplicate
+   callbacks or socket/session activity.
+
+The final direct and browser cases must cover stale aim/walk across every
+boundary, fresh gesture recovery, compact hierarchy/Use flow, overlap targets,
+visual movement/projectile/impact, actor-card/camera behavior, accurate waiting
+and terminal copy, re-entry teardown, and ordinary V7 launch.

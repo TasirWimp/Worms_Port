@@ -96,6 +96,12 @@
       "reviewer": "/root/v9c_blind_astra_review",
       "decision": "fail",
       "detail": "Configured Astra/high independent continuity review under the updated reviewer mandate failed V9C despite selected verification passing. It independently reproduced stale movement/aim after authority boundaries, overlapping pause/action controls, missing movement/cast/projectile presentation, missing actor HUD/camera continuity, incomplete Relic feedback, and unexplained waiting/terminal states. It records concrete C7 test/correction briefs; V9D AI/shared lifecycle remains a named deferral. No edits or external/quarantine access."
+    },
+    {
+      "role": "worms_port_reviewer",
+      "reviewer": "/root/v9c_c7_entry_reviewer",
+      "decision": "pass",
+      "detail": "Independent configured Astra/high C7 entry review at 0ab038a verified all eight correction-carrier SHA-256/blob locks, executed the documentation selector and direct V9 tests (12/12), and supplied a concrete Terra/high correction brief. It authorizes only the C7 carriers for stale-input, compact control, presentation/HUD/camera and truthful local-preview guidance corrections; V9C remains failed until final source review. No edits, external or quarantine access."
     }
   ],
   "skipped_checks": [
