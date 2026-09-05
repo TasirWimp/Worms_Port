@@ -48,6 +48,9 @@ waiting for routine implementation decisions:
 
 1. Read the execution pointer in `docs/planning/implementation_plan.md` and
    select only the named unblocked work package.
+   Run `npm run audit:housekeeping` at this transition and reconcile its report
+   with the current branch, package evidence, execution pointer, and latest
+   review before recording a new slice.
    Apply [task model routing](../../AGENTS.md#task-model-routing): announce the
    chosen model/effort and reason, inspect role pins, and preserve fresh
    implementer/distinct reviewer separation. Record those settings in the
@@ -68,6 +71,8 @@ waiting for routine implementation decisions:
    blocker without weakening a threshold or guardrail.
 9. Persist sanitized evidence, update source-of-truth documents, commit the
    bounded slice, and advance the execution pointer only after all gates pass.
+   Before a merge/release boundary or closing an in-progress package, rerun
+   `npm run audit:housekeeping`; it reports drift but never mutates Git.
 
 ### Work-Package Evidence
 

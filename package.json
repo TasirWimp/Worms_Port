@@ -17,6 +17,7 @@
     "check:identity-bundles": "node scripts/check-identity-bundles.js",
     "check:reward-security": "node scripts/check-reward-security.js",
     "check:bundle-budget": "node scripts/check-bundle-budget.js",
+    "audit:housekeeping": "node scripts/audit-housekeeping.js",
     "check:compliance": "npm run check:asset-manifest && npm run check:b3c-runtime-inventory && npm run check:generation-components && npm run check:import-boundary && npm run check:package-licenses && npm run check:work-packages && npm run check:clean-room",
     "asset:normalize:wizard": "node scripts/normalize-character-master.js",
     "asset:normalize:threadball": "node scripts/normalize-relic-master.js",

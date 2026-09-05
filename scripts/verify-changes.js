@@ -92,7 +92,7 @@ function planChanges(paths) {
       if (/^assets\/|^legal\/asset-manifest/.test(file)) {
         product(['combat', 'practice'], ['smoke', 'combat', 'practice', 'visual']);
       }
-    } else if (/^scripts\/(?:verify-changes|report-postgres-quality-prerequisite)\.js$/.test(file)) {
+    } else if (/^scripts\/(?:verify-changes|report-postgres-quality-prerequisite|audit-housekeeping)\.js$/.test(file)) {
       suites.add('test:tooling');
     } else if (/^scripts\/check-(?:identity-bundles|reward-security|bundle-budget)\.js$/.test(file)) {
       runtime = true;

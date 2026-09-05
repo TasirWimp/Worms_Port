@@ -62,6 +62,13 @@ test('test-only changes select their family and preserve browser fixture routing
   assert.equal(planChanges(['tests/browser/performance.spec.ts']).performance, true);
 });
 
+test('housekeeping audit changes select only tooling coverage', () => {
+  const plan = planChanges(['scripts/audit-housekeeping.js']);
+  assert.deepEqual(plan.tasks, ['test:tooling']);
+  assert.deepEqual(plan.browser, []);
+  assert.deepEqual(plan.fallback, []);
+});
+
 test('visual comparisons cover every baseline without multiplying ordinary browser work', () => {
   assert.deepEqual(browserRuns(['combat', 'reward', 'visual']), [
     { specs: ['combat', 'reward'], projects: ['--project=chromium-390x844'] },

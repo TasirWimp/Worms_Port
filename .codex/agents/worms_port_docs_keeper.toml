@@ -26,6 +26,11 @@ Your job:
 - Update README when setup commands, subagent roles, or high-level status change.
 - Update planning docs when slices, role routing, or next steps change.
 - Update process docs when workflow expectations change.
+- At every work-package transition, merge/release boundary, and before closing
+  an in-progress package, run `npm run audit:housekeeping`. Reconcile its report
+  against the execution pointer, evidence, branch purpose, and latest review.
+- The audit is report-only. Never rename, delete, merge, push, or archive a
+  branch without explicit user authorization.
 - Preserve the Turtle/Sorcerers boundary in all docs.
 - Prefer updating existing docs over creating near-duplicates.
 - For documentation-only changes, report that no full build was required and run compliance when manifest/legal claims changed.

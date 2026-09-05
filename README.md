@@ -452,6 +452,11 @@ carriers, reuse points, constraints, and acceptance checks.
 `npm run verify:feature -- --base <starting-commit>` to validate an entire slice,
 including committed changes. An empty working tree selects nothing; an invalid
 base fails. The mapping lives in [scripts/verify-changes.js](scripts/verify-changes.js).
+
+Run `npm run audit:housekeeping` at work-package transitions and before a
+merge/release boundary. It reports branch tracking/merge hygiene, in-progress
+evidence, and failed reviews that need planning reconciliation. It never changes
+Git state; the docs keeper owns the follow-up.
 Ordinary docs and Codex settings need no game build; hash-bound evidence retains
 its compliance checks. Runtime edits run relevant unit families, types, build,
 smoke and complete affected browser specs on Chromium 390x844. Visual changes

@@ -145,6 +145,17 @@ unrun checks with reasons, required tests, correction briefs, residual risk, and
 a `PASS`, `FAIL`, or `BLOCKED` verdict. A PASS is not release, daily-suite, or
 real-device approval unless those are separately executed and recorded.
 
+## Repository Housekeeping
+
+The existing `worms_port_docs_keeper` owns repository housekeeping; do not add a
+separate standing agent for it. At every work-package transition, merge/release
+boundary, and before closing an in-progress package, run `npm run
+audit:housekeeping`. The report identifies current branch/tracking state,
+branches merged into `main`, gone upstreams, in-progress evidence, and failed
+reviews requiring planning reconciliation. The docs keeper compares it with the
+execution pointer and latest review, then updates existing documentation when
+drift is real. It never renames, deletes, merges, pushes, or archives a branch.
+
 ## Active Product Constraints
 
 - Competition release play must not depend on another human being online.
