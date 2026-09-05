@@ -846,3 +846,18 @@ consulted only when there is no pending choice. Add direct and browser proof
 for player-turn-two Spoolburst → Guard → aim → affordable Threadball/Needlepoint
 after an authority tick, plus no-choice Spoolburst insufficient-Thread copy.
 The same control/test scope remains authorized; final Astra review is required.
+
+### C7.6 Final C7 result
+
+The independent Astra/high review passed C7.5 at `c713203`: pending legal
+actions now supersede carried Relic affordability, while no pending choice
+retains specific insufficient-Thread guidance. Direct and canonical browser
+proof cover turn-two Spoolburst → Guard → aim → Threadball/Needlepoint after an
+authority tick, plus preserved ordinary V7/V8 behavior and closed boundaries.
+The original serial baseline had one host `ERR_NO_BUFFER_SPACE` navigation
+failure before an unchanged V7 camera test began; its isolated rerun passed.
+Record the selector aggregate as incomplete rather than a clean pass, while
+retaining the individual passing required evidence. C7 is complete as a local
+V9C preview correction; V9D remains the separately bounded AI/shared-lifecycle
+work. Daily, performance, PostgreSQL, Ubuntu visual and physical-device gates
+remain separate.

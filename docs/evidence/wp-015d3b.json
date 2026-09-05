@@ -126,6 +126,12 @@
       "reviewer": "/root/v9c_c74_final_astra_review",
       "decision": "fail",
       "detail": "Independent configured Astra/high C7.4 review at 8990170 confirmed initial positive guidance but found legal replacement action guidance falling through to an older unaffordable Spoolburst. C7.5 retains the same controls/tests scope for the carry-over conditional and regression. No edits, external or quarantine access."
+    },
+    {
+      "role": "worms_port_reviewer",
+      "reviewer": "/root/v9c_c75_final_astra_review",
+      "decision": "pass",
+      "detail": "Independent configured Astra/high C7.5 review at c713203 passed the exact three-file carry-over guidance correction. Direct and browser proof cover turn-two Spoolburst to Guard to aim to affordable Threadball/Needlepoint after an authority tick and preserved no-choice insufficient-Thread guidance. Selected families/build/smoke/security/budget checks passed. The serial browser baseline had one host ERR_NO_BUFFER_SPACE navigation failure before an unchanged V7 camera test, whose isolated rerun passed; the aggregate selector is therefore recorded as incomplete, not clean. No edits, external or quarantine access."
     }
   ],
   "skipped_checks": [
