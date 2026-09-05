@@ -446,3 +446,23 @@ base `d41df456696326f737e526e59f43aeae865a5681`, plus types, clean build,
 built smoke, compliance, security/bundle and relevant canonical browser checks
 as selected/required. Full daily remains the 21:00 Europe/Berlin release gate;
 do not replace it with a V9B pass.
+
+### B5. Authoritative-foundation closure — 2026-09-05
+
+V9B is complete. The implementation remains injected-only: it adds V9 state,
+strict replay/protocol envelopes and a coordinator test seam in the B1 closed
+allowlist. The public combat selector remains V7; no Socket.IO, runtime,
+client, reward, asset, dependency or deployment path changed.
+
+The final read-only Astra review passed after adversarial checks of shield
+health isolation, per-tick batch equivalence, counter terminalization,
+Threadleap pause/resume lifecycle safety and B4's V8-r1 parity/collision
+fixtures. The focused three-module command passes 35 tests. Change-selected
+verification from `d41df456696326f737e526e59f43aeae865a5681` passed its
+selected type, source, build, smoke, security/bundle and Chromium phone suite;
+the latter passed 50 tests with three PostgreSQL skips because
+`WP014_TEST_DATABASE_URL` is unavailable.
+
+The daily 21:00 Europe/Berlin release gate remains required and separate.
+V9C needs a new bounded entry amendment before any lifecycle, presentation,
+AI, balance or public activation work.

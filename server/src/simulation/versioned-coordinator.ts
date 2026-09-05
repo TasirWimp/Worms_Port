@@ -2,32 +2,40 @@ import { SimulationCoordinator, type CoordinatorReplay, type CoordinatorSnapshot
     type CoordinatorTerminalResult, type SimulationCoordinatorOptions } from './coordinator';
 import { SimulationCoordinatorV8, type CoordinatorReplayV8Runtime, type CoordinatorSnapshotV8Family,
     type CoordinatorSnapshotV8, type CoordinatorTerminalResultV8Family, type SimulationCoordinatorV8Options } from './coordinator-v8';
+import { SimulationCoordinatorV9, type CoordinatorReplayV9, type CoordinatorSnapshotV9,
+    type CoordinatorTerminalResultV9, type SimulationCoordinatorV9Options } from './coordinator-v9';
 import { CURRENT_COMBAT_RULESET_ID, type CombatRulesetId } from '../../../shared/combat-version';
 import { V8_AUTOMATION_ID } from '../../../shared/combat-version';
 import { isV8RulesetId, V8_R1_RULESET_ID, type V8RulesetId } from '../../../shared/simulation-v8';
+import { V9_RULESET_ID } from '../../../shared/simulation-v9';
 import { LEGACY_RULESET_ID, type PlayerCalling, type SimulationRulesetId } from '../../../shared/simulation';
 
-export type VersionedCoordinatorSnapshot = CoordinatorSnapshot | CoordinatorSnapshotV8Family;
-export type VersionedCoordinatorReplay = CoordinatorReplay | CoordinatorReplayV8Runtime;
-export type VersionedCoordinatorResult = CoordinatorTerminalResult | CoordinatorTerminalResultV8Family;
+export type VersionedCoordinatorSnapshot = CoordinatorSnapshot | CoordinatorSnapshotV8Family | CoordinatorSnapshotV9;
+export type VersionedCoordinatorReplay = CoordinatorReplay | CoordinatorReplayV8Runtime | CoordinatorReplayV9;
+export type VersionedCoordinatorResult = CoordinatorTerminalResult | CoordinatorTerminalResultV8Family | CoordinatorTerminalResultV9;
 
 /** Dispatch by recorded identity, never by the current selector when reading a historical replay. */
 export class VersionedSimulationCoordinator {
     public readonly legacy: SimulationCoordinator;
     public readonly v8: SimulationCoordinatorV8;
-    public constructor(options: { legacy?: SimulationCoordinatorOptions; v8?: SimulationCoordinatorV8Options } = {}) {
+    public readonly v9: SimulationCoordinatorV9;
+    public constructor(options: { legacy?: SimulationCoordinatorOptions; v8?: SimulationCoordinatorV8Options; v9?: SimulationCoordinatorV9Options } = {}) {
         this.legacy = new SimulationCoordinator(options.legacy);
         this.v8 = new SimulationCoordinatorV8(options.v8);
+        this.v9 = new SimulationCoordinatorV9(options.v9);
     }
     public create(challengeId: string, sessionId: string, seed: number, calling: PlayerCalling,
         rulesetId?: SimulationRulesetId): CoordinatorSnapshot;
     public create<R extends V8RulesetId>(challengeId: string, sessionId: string, seed: number, calling: PlayerCalling,
         rulesetId: R): CoordinatorSnapshotV8<R>;
     public create(challengeId: string, sessionId: string, seed: number, calling: PlayerCalling,
+        rulesetId: typeof V9_RULESET_ID): CoordinatorSnapshotV9;
+    public create(challengeId: string, sessionId: string, seed: number, calling: PlayerCalling,
         rulesetId: CombatRulesetId = CURRENT_COMBAT_RULESET_ID): VersionedCoordinatorSnapshot {
         if (this.get(challengeId)) throw new Error('Duplicate versioned challenge.');
-        return isV8RulesetId(rulesetId) ? this.v8.create(challengeId, sessionId, seed, calling, rulesetId)
-            : this.legacy.create(challengeId, sessionId, seed, calling, rulesetId);
+        if (isV8RulesetId(rulesetId)) return this.v8.create(challengeId, sessionId, seed, calling, rulesetId);
+        if (rulesetId === V9_RULESET_ID) return this.v9.create(challengeId, sessionId, seed, calling);
+        return this.legacy.create(challengeId, sessionId, seed, calling, rulesetId);
     }
     public createAutomated(challengeId:string,sessionId:string,seed:number,calling:PlayerCalling):
         CoordinatorSnapshotV8<typeof V8_R1_RULESET_ID> & {automationId:typeof V8_AUTOMATION_ID}{
@@ -35,15 +43,16 @@ export class VersionedSimulationCoordinator {
         return this.v8.createAutomated(challengeId,sessionId,seed,calling);
     }
     public get(challengeId: string): VersionedCoordinatorSnapshot | undefined {
-        return this.v8.get(challengeId) ?? this.legacy.get(challengeId);
+        return this.v9.get(challengeId) ?? this.v8.get(challengeId) ?? this.legacy.get(challengeId);
     }
     public replay(challengeId: string): VersionedCoordinatorReplay | undefined {
-        return this.v8.replay(challengeId) ?? this.legacy.replay(challengeId);
+        return this.v9.replay(challengeId) ?? this.v8.replay(challengeId) ?? this.legacy.replay(challengeId);
     }
     public reconstructAndVerify(replay: VersionedCoordinatorReplay,
         expected?: { challengeId: string; sessionId: string }): VersionedCoordinatorSnapshot {
         if (expected && (expected.challengeId !== replay.challengeId || expected.sessionId !== replay.sessionId))
             throw new Error('Replay identity mismatch.');
+        if (replay.rulesetId === V9_RULESET_ID) return this.v9.reconstructAndVerify(replay, expected);
         if (isV8RulesetId(replay.rulesetId))
             return this.v8.reconstructAndVerify(replay, expected);
         if ('formatVersion' in replay || 'automationId' in replay || 'chosenPlans' in replay)
@@ -53,7 +62,7 @@ export class VersionedSimulationCoordinator {
             throw new Error('Unknown combat ruleset.');
         return this.legacy.reconstructAndVerify({ ...replay, rulesetId: replay.rulesetId ?? LEGACY_RULESET_ID });
     }
-    public delete(challengeId: string): void { this.legacy.delete(challengeId); this.v8.delete(challengeId); }
-    public deleteForSession(sessionId: string): void { this.legacy.deleteForSession(sessionId); this.v8.deleteForSession(sessionId); }
-    public dispose(): void { this.legacy.dispose(); this.v8.dispose(); }
+    public delete(challengeId: string): void { this.legacy.delete(challengeId); this.v8.delete(challengeId); this.v9.delete(challengeId); }
+    public deleteForSession(sessionId: string): void { this.legacy.deleteForSession(sessionId); this.v8.deleteForSession(sessionId); this.v9.deleteForSession(sessionId); }
+    public dispose(): void { this.legacy.dispose(); this.v8.dispose(); this.v9.dispose(); }
 }

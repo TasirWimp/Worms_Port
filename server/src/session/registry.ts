@@ -29,12 +29,15 @@ import {
 import { issueToken, opaqueId, tokenDigest } from './token';
 import { CURRENT_COMBAT_RULESET_ID, V8_AUTOMATION_ID, V8_LOOMKEEPER_POLICY_ID, V8_LOOMKEEPER_PROFILE_ID, type CombatRulesetId } from '../../../shared/combat-version';
 import { V8_RULESET_ID, V8_R1_RULESET_ID, isV8RulesetId, type V8RulesetId, type SimulationIntentV8Family as SimulationIntentV8 } from '../../../shared/simulation-v8';
+import { V9_RULESET_ID, type SimulationBarrierV9, type SimulationIntentV9, type SimulationStateV9 } from '../../../shared/simulation-v9';
 import { InputRequestV8RuntimeSchema as InputRequestV8Schema, InputCancelV8RuntimeSchema as InputCancelV8Schema,
     InputReleaseV8AutomatedSchema, InputReleaseV8R1Schema, V8_INPUT_BYTES, jsonBytesV8,
     type ChallengeSnapshotV8Runtime as ChallengeSnapshotV8, type ChallengeResultV8Runtime as ChallengeResultV8,
     type CoordinatorReplayV8Runtime, type InputAckV8Runtime as InputAckV8 } from '../../../shared/protocol-v8';
 import { VersionedSimulationCoordinator } from '../simulation/versioned-coordinator';
 import type { CoordinatorUpdateV8Family as CoordinatorUpdateV8, SimulationCoordinatorV8Options } from '../simulation/coordinator-v8';
+import type { CoordinatorReplayV9 } from '../../../shared/protocol-v9';
+import type { CoordinatorSnapshotV9, CoordinatorUpdateV9, SimulationCoordinatorV9Options } from '../simulation/coordinator-v9';
 
 const DEFAULT_SESSION_TTL_MS = 30 * 60_000;
 const DEFAULT_RECONNECT_GRACE_MS = 2 * 60_000;
@@ -120,6 +123,8 @@ export type SessionRegistryOptions = {
     loomkeeperDifficulty?: LoomkeeperDifficulty;
     /** Explicit dependency-injection fixture only. No environment/client activation. */
     v8TestOnly?: Pick<SimulationCoordinatorV8Options, 'nowUs' | 'yieldBatch' | 'tickIntervalMs' | 'maxReplayRecords' | 'maxReplayBytes'>;
+    /** Explicit V9B test seam only; it creates no socket, lifecycle, reward, or selector route. */
+    v9TestOnly?: Pick<SimulationCoordinatorV9Options, 'nowUs' | 'yieldBatch' | 'tickIntervalMs' | 'maxReplayRecords' | 'maxReplayBytes'>;
     onChallengeSnapshotV8?: (snapshot: ChallengeSnapshotV8, socketId?: string) => void;
     onChallengeCompletedV8?: (result: ChallengeResultV8, socketId?: string) => void;
     onChallengeSettledV8?: (result: ChallengeResultV8, replay: CoordinatorReplayV8Runtime) => void;
@@ -151,6 +156,7 @@ export class SessionRegistry {
     private inOrderedSimulation = false;
     private readonly versions: VersionedSimulationCoordinator;
     private readonly v8Enabled: boolean;
+    private readonly v9Enabled: boolean;
     private readonly stagingPracticeV8: boolean;
     private readonly onChallengeSnapshotV8?: SessionRegistryOptions['onChallengeSnapshotV8'];
     private readonly onChallengeCompletedV8?: SessionRegistryOptions['onChallengeCompletedV8'];
@@ -188,6 +194,7 @@ export class SessionRegistry {
         this.simulationRulesetId = this.stagingPracticeV8
             ? V8_R1_RULESET_ID : options.simulationRulesetId ?? CURRENT_COMBAT_RULESET_ID;
         this.v8Enabled = options.v8TestOnly !== undefined;
+        this.v9Enabled = options.v9TestOnly !== undefined;
         this.onChallengeSnapshotV8 = options.onChallengeSnapshotV8;
         this.onChallengeCompletedV8 = options.onChallengeCompletedV8;
         this.onChallengeSettledV8 = options.onChallengeSettledV8;
@@ -210,7 +217,8 @@ export class SessionRegistry {
         }, v8: { ...options.v8TestOnly,
             tickIntervalMs: this.stagingPracticeV8 ? 10
                 : options.v8TestOnly ? options.v8TestOnly.tickIntervalMs ?? 10 : undefined,
-            onTransition: update => this.onSimulationTransitionV8(update) } });
+            onTransition: update => this.onSimulationTransitionV8(update) },
+        v9: options.v9TestOnly });
         this.coordinator = this.versions.legacy;
         this.sweepTimer = setInterval(
             () => this.sweep(),
@@ -356,7 +364,7 @@ export class SessionRegistry {
         calling: 'wizard' | 'thief' | 'warrior',
         reward?: { challengeId: string; seed: number }
     ): ChallengeSnapshot | ProtocolError {
-        if (isV8RulesetId(this.simulationRulesetId)) {
+        if (isV8RulesetId(this.simulationRulesetId) || this.simulationRulesetId === V9_RULESET_ID) {
             return {
                 code: 'FEATURE_UNAVAILABLE',
                 message: 'This combat version requires the versioned creation protocol.',
@@ -421,7 +429,7 @@ export class SessionRegistry {
     }
 
     public legacyCreationAvailable(): boolean {
-        return !isV8RulesetId(this.simulationRulesetId);
+        return !isV8RulesetId(this.simulationRulesetId) && this.simulationRulesetId !== V9_RULESET_ID;
     }
 
     public createSelectedChallenge(
@@ -434,6 +442,9 @@ export class SessionRegistry {
         if (this.stagingPracticeV8 && (mode !== 'practice' || reward !== undefined)) {
             return v8Error('FEATURE_UNAVAILABLE', 'V8D staging admits wallet-free Practice only.');
         }
+        if (this.simulationRulesetId === V9_RULESET_ID) {
+            return v8Error('FEATURE_UNAVAILABLE', 'The selected combat candidate is unavailable.');
+        }
         if (!isV8RulesetId(this.simulationRulesetId)) {
             const snapshot = this.createChallenge(session, mode, calling, reward);
             return 'code' in snapshot ? snapshot : { kind: 'legacy', snapshot };
@@ -443,6 +454,35 @@ export class SessionRegistry {
         }
         const snapshot = this.createChallengeAutomated(session, mode, calling, reward);
         return 'code' in snapshot ? snapshot : { kind: 'v8', snapshot: { ...snapshot, nextSequence: session.nextSequence + 1 } };
+    }
+
+    /**
+     * V9B injection seam for server-only parity/replay tests. It never enters a
+     * Session challenge, protocol event, normal creation selector, or settlement.
+     */
+    public createV9TestChallenge(session: Session, mode: 'practice' | 'reward',
+        calling: Challenge['calling'], seed: number, challengeId = opaqueId()): CoordinatorSnapshotV9 {
+        this.requireV9TestOnly(session);
+        // Mode is intentionally accepted solely to prove both policy callers share the V9 core.
+        void mode;
+        return this.versions.v9.create(challengeId, session.id, seed >>> 0 || 1, calling);
+    }
+    public applyV9Test(challengeId: string, actor: 'player' | 'loomkeeper', intent: SimulationIntentV9,
+        expectedTurn: number, expectedPhase: SimulationStateV9['phase'], expectedEpoch: number): CoordinatorUpdateV9 {
+        this.requireV9TestOnly();
+        return this.versions.v9.apply(challengeId, actor, intent, expectedTurn, expectedPhase, expectedEpoch);
+    }
+    public barrierV9Test(challengeId: string, barrier: SimulationBarrierV9): CoordinatorUpdateV9 {
+        this.requireV9TestOnly(); return this.versions.v9.barrier(challengeId, barrier);
+    }
+    public advanceV9Test(challengeId: string, count: number): CoordinatorUpdateV9 {
+        this.requireV9TestOnly(); return this.versions.v9.advance(challengeId, count);
+    }
+    public snapshotV9Test(challengeId: string): CoordinatorSnapshotV9 | undefined {
+        this.requireV9TestOnly(); return this.versions.v9.get(challengeId);
+    }
+    public replayV9Test(challengeId: string): CoordinatorReplayV9 | undefined {
+        this.requireV9TestOnly(); return this.versions.v9.replay(challengeId);
     }
 
     private createChallengeAutomated(
@@ -1357,6 +1397,11 @@ export class SessionRegistry {
             challenge.simulationStateHash = update.stateHash;
         }
         challenge.simulationRevision = update.state.revision;
+    }
+
+    private requireV9TestOnly(session?: Session): void {
+        if (!this.v9Enabled || (session && this.sessions.get(session.id) !== session))
+            throw new Error('V9 test injection is unavailable.');
     }
 
     private openData(session: Session, token: string, resumed: boolean): SessionOpenData {
