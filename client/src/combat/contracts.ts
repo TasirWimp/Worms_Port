@@ -50,6 +50,10 @@ export type CombatSceneArgsV9 = {
     submit: (intent: SimulationIntentV9) => Promise<SimulationStateV9>;
     setPaused: (paused: boolean) => Promise<SimulationStateV9>;
     cancelInput: () => Promise<SimulationStateV9>;
+    /** Local presentation state only; V9 deliberately has no transport envelope. */
+    paused: () => boolean;
+    /** Re-entry creates a fresh local authority fixture after the old one is torn down. */
+    restart: () => Promise<CombatSceneArgsV9>;
     onSnapshot: (listener: (snapshot: SimulationStateV9, events: SimulationEventV9[]) => void) => () => void;
     destroy: () => void;
 };

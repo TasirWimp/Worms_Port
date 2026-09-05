@@ -2,7 +2,7 @@ import assert from 'node:assert/strict';
 import test from 'node:test';
 
 import { createResourceTurnsV9Fixture, type V9FixtureClock } from '../../client/src/combat/resource-turns-v9-fixture';
-import { appendV9DamageReceipts, projectCombatV9Resources, v9OffenseAllowed } from '../../client/src/combat/presentation';
+import { appendV9DamageReceipts, planV9Presentation, projectCombatV9Resources, trajectoryPreviewV9, v9OffenseAllowed } from '../../client/src/combat/presentation';
 import { UnifiedMovementInputController } from '../../client/src/combat/input';
 import { ResourceTurnsV9Controls } from '../../client/src/combat/resource-turns-v9-controls';
 import { V9PreviewListenerCleanup } from '../../client/src/combat/contracts';
@@ -223,6 +223,35 @@ test('V9 preview uses one offensive authority predicate and keeps all damage rec
         assert.deepEqual(appendV9DamageReceipts(receipts, []), receipts,
             'an immediate event-free authority snapshot cannot clear prior receipts');
     } finally { fixture.destroy(); }
+});
+
+test('V9 clone-only trajectory and authority receipt presentation never mutate the V9 state', async () => {
+    const fixture = await createResourceTurnsV9Fixture(1, 'wizard', createClock());
+    try {
+        const before = fixture.snapshot;
+        const trace = trajectoryPreviewV9(before, { angleMilliDegrees: 25_000, powerPermille: 700 });
+        assert.ok(trace.length > 1, 'the visual preview has a V9-generated trajectory');
+        assert.deepEqual(fixture.snapshot, before, 'trajectory projection cannot debit Thread, advance ticks, or alter authority');
+        const moving = structuredClone(before); moving.revision += 1; moving.units[0].xFp += 128;
+        assert.equal(planV9Presentation(before, moving, true)[0]?.visual.kind, 'movement');
+    } finally { fixture.destroy(); }
+});
+
+test('V9 controls retire a held gesture at an authority boundary and reject its stale completion', async () => {
+    const dom = installControlDom(); const fixture = await createResourceTurnsV9Fixture(1, 'wizard', createClock());
+    const attempts: string[] = [];
+    try {
+        const controls = new ResourceTurnsV9Controls(dom.parent, fixture.snapshot, {
+            submit: async intent => { attempts.push(intent.type); return true; }, pause: () => {}, neutral: () => {}
+        }, () => 0);
+        const root = controls.root as unknown as FakeElement;
+        const movement = root.querySelector<HTMLElement>('.movement-zone') as unknown as FakeElement;
+        movement.dispatch('pointerdown', 91, 60, 60); movement.dispatch('pointermove', 91, 102, 60);
+        controls.update({ ...fixture.snapshot, inputEpoch: fixture.snapshot.inputEpoch + 1 });
+        movement.dispatch('pointerup', 91, 102, 60);
+        assert.deepEqual(attempts, ['walk_start'], 'the pre-boundary pointer cannot submit a stale release');
+        controls.destroy();
+    } finally { fixture.destroy(); dom.restore(); }
 });
 
 test('V9 fixture latches its catch-up decision across a reentrant authority publication', async () => {

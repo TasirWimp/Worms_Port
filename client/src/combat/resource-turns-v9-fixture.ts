@@ -41,7 +41,10 @@ export async function createResourceTurnsV9Fixture(seed = 1, calling: PlayerCall
     const submit = async (intent: SimulationIntentV9) => {
         if (destroyed) throw new Error('Preview is closed.');
         if (publishing) throw new Error('Preview is catching up; use a fresh gesture.');
-        if (!due()) throw new Error('Preview is catching up; use a fresh gesture.');
+        // An acknowledged aim is a short-lived V9 authority fact. Fire it from
+        // that exact receipt before the next local catch-up pass can advance a
+        // physics tick and clear it; all other inputs still fence on freshness.
+        if (intent.type !== 'fire' && !due()) throw new Error('Preview is catching up; use a fresh gesture.');
         if (paused) throw new Error('Preview is paused.');
         const before = state;
         let result = applySimulationIntentV9(state, 'player', intent, state.turn, state.phase, state.inputEpoch);
@@ -80,6 +83,10 @@ export async function createResourceTurnsV9Fixture(seed = 1, calling: PlayerCall
     };
     return { kind: 'v9', get snapshot() { return structuredClone(state); },
         previewLabel: 'V9 resource engineering preview · local-only', submit, setPaused, cancelInput,
+        paused: () => paused,
+        // This is intentionally a new fixture, rather than a reset of local
+        // state: retained listeners and the old clock have already been retired.
+        restart: () => createResourceTurnsV9Fixture(seed, calling, clock),
         onSnapshot: listener => { if (destroyed) return () => {}; listeners.add(listener); if (!stop) { lastNow = clock.now(); stop = clock.every(() => { due(); }); }
             return () => { listeners.delete(listener); if (!listeners.size) { stop?.(); stop = undefined; } }; }, destroy };
 }

@@ -285,13 +285,29 @@ test('V9 resource engineering preview is local-only and keeps V7 Practice unsele
   await expect(page.locator('.practice-shell')).toHaveCount(0);
   expect(previewRequests.some(url => /socket\.io|\/(?:session|challenge|reward)(?:\/|$|\?)/.test(url))).toBe(false);
   await expect(page.locator('.v9-thread')).toHaveText('Thread 3/9');
-  await expect(page.getByRole('button', { name: 'Spoolburst · 5' })).toBeVisible();
-  await expect(page.getByRole('button', { name: 'Spoolburst · 5' })).toBeEnabled();
-  await page.getByRole('button', { name: 'Spoolburst · 5' }).tap();
+  await expect(page.getByRole('button', { name: 'Actions' })).toBeVisible();
+  await expect(page.getByRole('button', { name: 'Use', exact: true })).toBeDisabled();
+  await page.getByRole('button', { name: 'Actions' }).tap();
+  await expect(page.getByRole('button', { name: 'Attack' })).toBeVisible();
+  await expect(page.getByRole('button', { name: 'Defense' })).toBeVisible();
+  await page.getByRole('button', { name: 'Attack' }).tap();
+  await expect(page.getByRole('button', { name: 'Threadball · 2' })).toBeVisible();
+  await expect(page.getByRole('button', { name: 'Spoolburst · 5' })).toBeDisabled();
+  await page.getByRole('button', { name: 'Threadball · 2' }).tap();
+  await expect(page.getByRole('button', { name: 'Use Threadball · 2' })).toBeEnabled();
+  await page.getByRole('button', { name: 'Use Threadball · 2' }).tap();
+  await expect(ui).toHaveAttribute('data-selected-relic', 'threadball');
   await expect(ui).toHaveAttribute('data-offense-allowed', 'true');
   await dragPad(page, '.combat-v9 .aim-zone', 909, 0.35, -0.35);
+  // The local fixture can be draining its bounded tick credit immediately after
+  // a selection receipt; a fresh gesture is the documented recovery path.
+  await page.waitForTimeout(80);
+  await dragPad(page, '.combat-v9 .aim-zone', 910, 0.35, -0.35);
   await expect(ui).toHaveAttribute('data-aim-locked', 'true');
-  await expect(page.locator('.fire-button')).toBeDisabled();
+  await expect(page.locator('.fire-button')).toBeEnabled();
+  await page.locator('.fire-button').tap();
+  await expect(ui).toHaveAttribute('data-combat-phase', 'projectile');
+  await expect(ui).toHaveAttribute('data-presentation', /cast-charge|cast-formation|projectile/);
   for (const button of await page.locator('.combat-v9 .combat-actions button:visible').all()) {
     const box = await button.boundingBox();
     expect(box).not.toBeNull();
@@ -300,13 +316,18 @@ test('V9 resource engineering preview is local-only and keeps V7 Practice unsele
 
   await page.goto('/?combat-preview=v9');
   await expect(page.locator('.combat-v9')).toBeVisible();
+  await page.getByRole('button', { name: 'Actions' }).tap();
+  await page.getByRole('button', { name: 'Defense' }).tap();
   await page.getByRole('button', { name: 'Guard · 2 Thread' }).tap();
-  await expect(page.locator('.v9-thread')).toHaveText('Thread 1/9');
-  await expect(page.locator('.v9-player-shield')).toHaveText('You · Shield 24 · expires turn 2');
+  await page.getByRole('button', { name: 'Use Guard · 2 Thread' }).tap();
+  await expect(page.locator('.player-status')).toContainText('Shield 24 · expires turn 2');
 
   await page.goto('/?combat-preview=v9');
   await expect(page.locator('.combat-v9')).toBeVisible();
+  await page.getByRole('button', { name: 'Actions' }).tap();
+  await page.getByRole('button', { name: 'Defense' }).tap();
   await page.getByRole('button', { name: 'Leap · 2 Thread' }).tap();
+  await page.getByRole('button', { name: 'Use Leap · 2 Thread' }).tap();
   await expect(page.locator('.combat-v9')).toHaveAttribute('data-player-airborne', 'true');
   await page.locator('.pause-button').tap();
   await expect(page.locator('.combat-v9')).toHaveAttribute('data-paused', 'true');
