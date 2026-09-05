@@ -70,19 +70,29 @@ If the user asks only for planning, review, or brainstorming, do not edit code.
 ## Test Expectations
 
 - Documentation-only changes do not require a full build; say that explicitly.
-- Source/tooling changes should run `npm run build`.
+- Use `npm run verify:changes -- --dry-run` to inspect the selected checks,
+  then `npm run verify:changes` for the current edit. For a whole committed
+  slice, pass `-- --base <starting-commit>` to both commands.
+- Runtime/build changes require types, current build outputs and built smoke.
+  Documentation, Codex settings and test/verification-tool-only changes do not
+  require a game build. Unknown paths receive conservative product coverage.
 - Compliance-sensitive changes should run `npm run check:compliance`.
 - Package changes should run `npm audit`.
 - Server/client runtime changes should include a smoke test when practical.
 - After WP-005, browser-facing changes should run the Playwright phone smoke.
-- Each shipped gameplay, identity, reward UI, or other browser-facing feature
-  must pass `npm run verify:feature`. This is the normal edit-loop gate and does
-  not substitute for the daily release gate.
+- `npm run verify:feature` is the same change-selected entry point. Browser-facing
+  changes run complete relevant specs on the canonical phone, including V8 and
+  identity/reward cases where relevant. Visual changes compare all maintained
+  projects on Ubuntu. This does not substitute for the daily release gate.
 - Run `npm run verify:daily` once at the end-of-day checkpoint and at an explicit
   release boundary. It retains the full automated five-project, zero-retry
   phone-browser matrix, performance, security, bundle, audit, and reviewed
   expected-skip policy. Do not rerun it after every feature unless a focused
   failure requires full-matrix diagnosis.
+- The existing local daily automation runs at **21:00 Europe/Berlin**, including
+  daylight-saving changes. It runs the full product suite, not the selector.
+  Use the Verify workflow's manual dispatch for the full Ubuntu release matrix
+  and PostgreSQL gate. Normal PR/push CI uses change selection.
 - Visual baseline candidates must come from the pinned Ubuntu 24.04
   artifact-only workflow on the implementation PR, be inspected explicitly,
   and then pass ordinary comparison CI. After the workflow exists on the

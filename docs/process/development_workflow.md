@@ -86,11 +86,78 @@ activation.
 
 ## Verification Funnels
 
-The planned scripts may evolve during WP-005, but their responsibilities are:
+### Change-selected edit loop (2026-09-05)
+
+Owner-requested optimization supersedes the blanket feature/tooling gates below
+and the historic WP-014H five-case feature funnel. Ownership: test worker for
+selection/CI and docs keeper for these operating instructions.
+
+Before testing, run `npm run verify:changes -- --dry-run`, inspect the printed
+file/check selection, then run `npm run verify:changes`. `verify:feature` invokes
+the same runner. It includes staged, unstaged and untracked files, including both
+paths of renames/deletions. Pass `-- --base <starting-commit>` for committed slice
+work; the comparison uses its merge base with HEAD plus current edits. CI supplies
+the PR base or push's previous commit. Missing/invalid bases fail; a clean tree
+explicitly selects nothing. Record the base with verification evidence.
+
+| Change | Edit-loop checks |
+| --- | --- |
+| Ordinary docs / Codex configuration | Diff checks; no game build |
+| Evidence JSON, hash-bound behavior records / reference images | Work-package, clean-room or generation-component checks |
+| Combat presentation | Combat/Practice units, types/build/smoke/security/bundle, relevant phone specs |
+| Practice / identity / reward | Related unit families and browser specs, including cross-module reward dependencies; database gate for authority changes |
+| Shared simulation / AI / server orchestration | All product unit families and relevant browser specs |
+| Test-only / verification tooling | Corresponding test family; browser/build only when browser harness or build behavior is affected |
+| Assets / legal | Compliance and tooling; runtime asset changes also build and compare visuals |
+| Analysis | Corresponding analytical types/tests; no product browser |
+| Packages / unclassified paths | Conservative product fallback; dependency edits also audit/performance/database |
+
+The executable mapping is `scripts/verify-changes.js`; extend it when adding a
+new module or cross-module dependency. Unknown paths never silently skip tests.
+Selected browser work uses whole specs on Chromium 390x844, so V8, identity and
+reward cases are not excluded by a fixed legacy grep. Visual changes run all
+five maintained projects; Windows reports omitted Linux screenshot comparisons.
+Do not infer a full matrix verdict from an edit-loop pass. Add explicit focused
+cases when a feature introduces behavior that existing specs do not exercise.
+
+PR/push CI uses the same selection and cancels superseded runs. Its PostgreSQL
+service is provisioned only for database-relevant changes; performance runs for
+dependency/performance changes. A manual **Verify** dispatch preserves all Ubuntu
+quality shards, performance, security and PostgreSQL release checks. The separate
+artifact-only baseline workflow now requires the `visual-baseline-candidate` PR
+label or manual dispatch, followed by owner inspection and ordinary comparison CI.
+
+The existing local automation remains a full-product-suite run at **21:00
+Europe/Berlin** (CET/CEST). Its saved 22:00 setting was corrected on 2026-09-05.
+Do not substitute the change selector in that task. `verify:full` now performs
+one compliance/type pass and one build, then reuses exact hash-verified outputs
+for browser and PostgreSQL tests. PostgreSQL runs when its isolated local
+prerequisite is configured; otherwise the omission is explicit and Ubuntu CI
+remains required. Analytical tests and balance assessments retain their separate
+scope; real Android/iOS testing remains outside the automation.
+
+On Windows, use `npm.cmd` when forwarding `--dry-run` / `--base` / `--phase`,
+or invoke `node scripts/verify-changes.js` directly: `npm.ps1` can consume flags.
+The same review found missing LF checkout pins for existing SHA-bound normalizer
+scripts/configs, the cast-pose generator and V7 behavior record. `.gitattributes`
+now preserves their recorded bytes across Windows branch switches; no manifest
+hash, source algorithm or asset approval was changed.
+
+Validation of this optimization: product unit/tooling suites, compliance, types,
+build, all three built-runtime smokes, security and bundle checks passed. The
+focused selector/PostgreSQL-reporter tests passed 17/17; canonical browser checks
+passed 50 with three existing landscape-only exclusions; performance passed.
+Audit remains red on the existing moderate `qs` advisories (lockfile unchanged).
+Workflow YAML and agent TOML parsed, and independent source/CI review found no
+blocking issue. Full five-project/daily, actual Ubuntu CI and real-device runs
+were not repeated locally; PostgreSQL was explicitly omitted because its local
+database prerequisite was unavailable. The active 21:00 daily task is preserved.
+
+Current command responsibilities:
 
 ```text
 verify:feature
-  verify:fast -> current build outputs -> built smoke -> canonical browser smoke
+  verify:changes -> relevant checks / build / complete affected phone specs
 
 verify:fast
   compliance -> types -> unit -> deterministic simulation
@@ -102,7 +169,7 @@ verify:quality
   fresh build -> bundle/identity/reward security -> full browser matrix -> performance
 
 verify:full
-  verify:fast -> verify:runtime -> verify:quality -> explicit PostgreSQL status -> audit
+  verify:fast -> build:outputs -> built smoke -> verify:quality:built -> PostgreSQL gate/status -> audit
 
 verify:daily
   verify:full
@@ -2684,5 +2751,5 @@ A slice is done when:
 - the import boundary still passes,
 - relevant manifests/docs are current,
 - planned checks have run,
-- `npm run build` passes for source/tooling changes,
+- the change-selected checks pass, with a current build for runtime/build changes,
 - final reporting names remaining risks.

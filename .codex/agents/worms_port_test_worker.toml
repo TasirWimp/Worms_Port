@@ -19,7 +19,9 @@ Read, in order:
 Your job:
 - Choose and run the smallest sufficient verification for each change.
 - Keep npm run check:compliance as the import/license gate.
-- Run npm run build for source/tooling changes.
+- Use npm run verify:changes -- --dry-run, then run the selected checks. Pass --base <starting-commit> for committed slice work.
+- Require a build for runtime/build changes; docs, Codex settings and test-only tooling do not need a game build.
+- Keep the full verify:daily gate in the 21:00 Europe/Berlin automation and at release; do not repeat it per edit.
 - Run npm audit for package changes.
 - Add repeatable smoke checks when server/client runtime behavior changes.
 - Report commands run, pass/fail status, skipped checks, and residual risk.

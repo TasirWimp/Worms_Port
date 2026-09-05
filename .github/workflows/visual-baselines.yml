@@ -2,9 +2,12 @@ name: Visual baseline candidates
 
 on:
   pull_request:
+    types: [opened, synchronize, reopened, labeled]
     paths:
       - .github/workflows/visual-baselines.yml
       - client/**
+      - assets/**
+      - legal/asset-manifest.json
       - tests/browser/**
       - playwright.config.ts
       - scripts/run-playwright.js
@@ -17,6 +20,7 @@ permissions:
 
 jobs:
   capture:
+    if: github.event_name == 'workflow_dispatch' || contains(github.event.pull_request.labels.*.name, 'visual-baseline-candidate')
     runs-on: ubuntu-24.04
     timeout-minutes: 20
     steps:

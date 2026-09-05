@@ -1,5 +1,6 @@
 const assert = require('node:assert/strict');
 const test = require('node:test');
+const { spawnSync } = require('node:child_process');
 
 const {
   assertSafeEnvironment,
@@ -8,6 +9,31 @@ const {
 } = require('../../scripts/run-postgres-browser');
 
 const LOOPBACK_ADMIN = 'postgresql://tester:password@127.0.0.1:5432/postgres';
+
+test('daily PostgreSQL prerequisite reports omission or propagates the database gate result', () => {
+  const reporter = require.resolve('../../scripts/report-postgres-quality-prerequisite');
+  const missing = spawnSync(process.execPath, [reporter], {
+    env: { ...process.env, WP014_TEST_DATABASE_URL: '' }, encoding: 'utf8'
+  });
+  assert.equal(missing.status, 0);
+  assert.match(missing.stdout, /not run.*unavailable/);
+  for (const status of [0, 7]) {
+    const code = `
+      const assert = require('node:assert/strict');
+      require('node:child_process').spawnSync = (command, args) => {
+        assert.equal(command, 'npm');
+        assert.deepEqual(args, ['run', 'verify:postgres']);
+        return { status: ${status} };
+      };
+      require(${JSON.stringify(reporter)});
+    `;
+    const result = spawnSync(process.execPath, ['-e', code], {
+      env: { ...process.env, WP014_TEST_DATABASE_URL: LOOPBACK_ADMIN }, encoding: 'utf8'
+    });
+    assert.equal(result.status, status, result.stderr);
+    assert.match(result.stdout, /running the authoritative database gate/);
+  }
+});
 
 test('PostgreSQL browser gate accepts only isolated loopback record-only authority', () => {
   assert.doesNotThrow(() => assertSafeEnvironment({

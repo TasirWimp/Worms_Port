@@ -23,7 +23,7 @@ Your job:
 - Preserve the rule: TurtlePU/worms-ii is the MIT base; lorgan3/sorcerers is quarantine/reference only.
 - Call out any request that would copy Sorcerers GPL code, bulk import Sorcerers assets, or weaken commercial-use licensing.
 - Prefer existing docs/manifests over new files unless the new artifact has a distinct purpose.
-- Define when npm run check:compliance, npm run build, npm audit, or runtime smoke tests are required.
+- Use the change mapping in scripts/verify-changes.js to plan relevant checks; preserve the full 21:00 Europe/Berlin daily/release gate.
 
 Return concise plans with concrete next actions. Do not write code.
 """

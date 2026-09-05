@@ -441,16 +441,28 @@ maximum; complete response must remain at or below 12 seconds. Instant Fire
 feedback remains independently capped at a 350ms median / 500ms maximum. These
 are test budgets only and do not change presentation durations or gameplay.
 
-Use `npm run verify:feature` for every shipped feature. It runs the fast
-deterministic suites, creates current production outputs without repeating the
-already-passed compliance/type checks, smokes the built server, and runs the
-five-case canonical browser gate. Use `npm run verify:daily` once at the
-end-of-day checkpoint; it is an alias for the unchanged complete `verify:full`
-gate. Run the full gate earlier only for a release boundary or when focused
-diagnosis requires it. The release gate remains one worker per existing CI
-project shard; a quality/performance worker override above one fails before
-browser startup rather than risking resource exhaustion or weakening
-reproducibility.
+Use `npm run verify:changes -- --dry-run` to see the checks selected for staged,
+unstaged and untracked files, then `npm run verify:changes` to run them.
+`verify:feature` is an alias for the same selector. Use
+`npm run verify:feature -- --base <starting-commit>` to validate an entire slice,
+including committed changes. An empty working tree selects nothing; an invalid
+base fails. The mapping lives in [scripts/verify-changes.js](scripts/verify-changes.js).
+Ordinary docs and Codex settings need no game build; hash-bound evidence retains
+its compliance checks. Runtime edits run relevant unit families, types, build,
+smoke and complete affected browser specs on Chromium 390x844. Visual changes
+use all five maintained projects. Unknown paths select broad product checks.
+In Windows PowerShell, use `npm.cmd` for commands with forwarded arguments
+(for example `npm.cmd run verify:changes -- --dry-run`), or invoke
+`node scripts/verify-changes.js --dry-run` directly. The installed `npm.ps1`
+shim can consume flags such as `--dry-run` instead of forwarding them.
+
+The existing daily automation runs at **21:00 Europe/Berlin** and calls
+`npm run verify:daily`, the complete `verify:full` product gate. Compliance,
+types and build each run once before full browser/security/performance checks
+and audit. The full gate also applies at a release boundary or for focused
+failure diagnosis. One worker per reviewed browser shard and zero retries remain
+required. Analysis suites are selected for analytical changes; balance
+assessments such as `assess:v8` remain explicit experiments.
 
 `npm run verify:quality` performs a fresh build followed by the bundle,
 identity/reward-security, complete browser matrix, and performance gates.
@@ -458,8 +470,12 @@ identity/reward-security, complete browser matrix, and performance gates.
 prints explicitly when local PostgreSQL authority is unavailable; that message
 is not PostgreSQL evidence. `npm run verify:postgres` remains the separate
 mandatory real-database gate and requires `WP014_TEST_DATABASE_URL`. GitHub
-Actions runs the complete browser matrix in reviewed project shards and runs
-PostgreSQL/reward-security plus performance/bundle as separate required jobs.
+Actions selects checks from the PR merge base or pushed commit range. PostgreSQL
+and performance jobs run for relevant changes; ordinary changes use relevant
+phone-browser specs. Manually dispatch **Verify** at release to run the complete
+Ubuntu browser matrix, PostgreSQL and performance jobs. Screenshot candidate
+generation requires the `visual-baseline-candidate` PR label or manual dispatch;
+ordinary UI changes no longer regenerate baselines automatically.
 Non-Linux `verify:quality` runs the complete logic matrix but explicitly omits
 visual comparison; ignored snapshots are rejected in CI, where the reviewed
 Linux baselines remain authoritative. The performance job retains its sanitized
