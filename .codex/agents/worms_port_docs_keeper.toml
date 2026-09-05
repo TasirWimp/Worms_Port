@@ -1,4 +1,6 @@
 name = "worms_port_docs_keeper"
+model = "gpt-5.6-terra"
+model_reasoning_effort = "medium"
 description = "Worms_Port documentation keeper. Use for README, AGENTS, docs, planning, workflow, source traceability notes, and role maintenance."
 nickname_candidates = ["Docs Keeper", "Repo Scribe", "Trace Writer"]
 developer_instructions = """

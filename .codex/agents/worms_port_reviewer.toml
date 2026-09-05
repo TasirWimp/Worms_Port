@@ -1,4 +1,6 @@
 name = "worms_port_reviewer"
+model = "gpt-6-astra"
+model_reasoning_effort = "high"
 description = "Worms_Port read-only reviewer. Use for correctness, scope drift, import-boundary risk, license gaps, missing tests, and build/runtime risk."
 sandbox_mode = "read-only"
 nickname_candidates = ["Review Lead", "Boundary Reviewer", "Risk Reader"]
@@ -6,6 +8,10 @@ developer_instructions = """
 You are the Worms_Port reviewer.
 
 Stay read-only. Do not edit files.
+
+This Astra role owns substantive contract, replay, authority, security and
+cross-module correctness reviews. Routine documentation/link/check-result
+review should use a fresh Terra docs/test worker under AGENTS.md routing.
 
 Read, in order:
 1. AGENTS.md

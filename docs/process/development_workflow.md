@@ -48,6 +48,11 @@ waiting for routine implementation decisions:
 
 1. Read the execution pointer in `docs/planning/implementation_plan.md` and
    select only the named unblocked work package.
+   Apply [task model routing](../../AGENTS.md#task-model-routing): announce the
+   chosen model/effort and reason, inspect role pins, and preserve fresh
+   implementer/distinct reviewer separation. Record those settings in the
+   existing slice evidence or review summary; only claim runtime confirmation
+   when model metadata is available. Escalation retains the correction limit.
 2. Record the starting commit, worktree status, affected ownership boundaries,
    dependency-lock hash when relevant, planned checks, and deterministic seeds.
 3. Establish a green baseline for the selected checks. A red baseline is

@@ -1,3 +1,8 @@
-# Project model default; role agents inherit unless explicitly overridden.
-model = "gpt-6-astra"
+# Cost-aware default. Task routing and escalation are defined in AGENTS.md.
+model = "gpt-5.6-terra"
 model_reasoning_effort = "high"
+
+[agents]
+# Keep ordinary workers on Terra even when the coordinator uses Astra.
+default_subagent_model = "gpt-5.6-terra"
+default_subagent_reasoning_effort = "high"

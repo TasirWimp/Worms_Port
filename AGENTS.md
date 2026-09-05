@@ -135,6 +135,52 @@ Role-specific Codex agents live in `.codex/agents/`:
 Subagents coordinate through docs, manifests, commits, and completion summaries,
 not private handoff.
 
+## Task Model Routing
+
+Choose the model before each substantial slice or independent subtask; announce
+the model/effort and a short reason. This policy authorizes the explicit model
+overrides below when delegation is already required/useful under the workflow.
+It does not require an extra agent for every small edit.
+
+| Work | Model / effort |
+| --- | --- |
+| Bounded implementation from an approved contract, focused tests, ordinary planning, client/server integration | `gpt-5.6-terra` / `high` |
+| Documentation, inventory, link checks, routine verification and result summaries | `gpt-5.6-terra` / `medium` |
+| Ambiguous architecture or rules with coupled invariants; substantive independent replay, authoritative-state, security or cross-module review | `gpt-6-astra` / `high` |
+
+Project and ordinary subagent defaults are Terra/high. The docs role pins
+Terra/medium; the dedicated read-only reviewer pins Astra/high. Reserve that
+reviewer for substantive work; use a fresh Terra docs/test worker for routine
+reviews. For V9B, use fresh Terra/high implementers and an independent
+Astra/high entry/final reviewer. Keep the existing clean-room separation.
+
+- Use `fork_turns="none"` and explicit model/effort for fresh delegated work
+  where supported. Supply only the permitted source contract and exact file
+  ownership; workers must preserve others' edits. Do not use inherited-history
+  forks to choose a different model or cross a clean-room boundary.
+- Read the selected custom role's model pins before spawning: current Codex
+  applies those pins after spawn/default selection. For a needed override that
+  conflicts with a pin, use an unpinned worker/explorer with explicit settings
+  and the relevant role instructions; retain read-only review scope and never
+  delegate reference-contaminated context to a runtime implementer.
+- Escalate a reproducible failure to Astra after two unsuccessful Terra
+  corrections, or earlier when new ambiguity affects replay/authority/security.
+  Pass the minimal failing case and attempted fixes. Escalation does not reset
+  the workflow's three-correction stop, relax tests or authorize a wider slice.
+  Return routine work to Terra once the issue is resolved.
+- Record model, effort, role and selection/escalation reason in the existing
+  slice evidence/review summary. Distinguish requested/configured settings from
+  runtime-confirmed metadata. Never infer the served model from an agent's
+  self-description; disclose when actual metadata is unavailable.
+- Explicit user choices take precedence. If a requested model is unavailable,
+  report that fact rather than silently substituting. Existing task selections,
+  CLI overrides and managed settings can supersede project defaults; editing
+  config does not switch a running task. Check the task's model picker before
+  its next turn when a different coordinator model is desired.
+- Keep selected verification and the 21:00 Europe/Berlin full-suite schedule
+  unchanged. Model routing is a cost/quality policy, not a guarantee of optimal
+  model choice or a substitute for independent review and passing checks.
+
 ## Git And Reporting
 
 - Check status before edits and commits.

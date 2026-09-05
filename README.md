@@ -469,14 +469,21 @@ work-package sequence.
 
 ## Codex Subagents
 
-The project default is GPT-6 Astra (`gpt-6-astra`) with `high` reasoning,
-configured in [`.codex/config.toml`](.codex/config.toml). This preserves the
-existing reasoning effort. Role agents have no model overrides and inherit
-the parent task's model settings. Explicit task or invocation overrides can
-select another model; the project config does not change a running task.
-Codex must trust the project to load its local configuration. See the
-[official configuration guide](https://learn.chatgpt.com/docs/config-file/config-basic)
-and [Astra migration guidance](https://developers.openai.com/api/docs/guides/latest-model#gpt-6-astra-update-api-and-model-parameters).
+The project and ordinary subagent defaults are GPT-5.6 Terra (`gpt-5.6-terra`)
+with `high` reasoning, configured in [`.codex/config.toml`](.codex/config.toml).
+The docs keeper pins Terra/medium; the dedicated substantive reviewer pins
+GPT-6 Astra/high. [Task model routing](AGENTS.md#task-model-routing) selects by
+scope, requires a recorded reason and escalates difficult failures without
+weakening verification. V9B uses Terra implementers and an Astra reviewer.
+
+Codex must trust the project to load local settings. Existing task selections,
+explicit invocation overrides and managed settings can supersede project
+defaults; changing this file does not switch a running task. Custom role model
+pins take precedence over ordinary subagent spawn/default settings, so the
+routing policy explains how to handle deliberate exceptions. These are
+configured defaults, not proof of the model served on a particular turn. See
+the [official configuration guide](https://learn.chatgpt.com/docs/config-file/config-basic)
+and [subagent configuration](https://learn.chatgpt.com/docs/agent-configuration/subagents#custom-agents).
 
 Role-specific Codex agents live in `.codex/agents/`:
 
