@@ -3,7 +3,7 @@ import { V9PreviewListenerCleanup, type CombatSceneArgsV9, type SafeAreaInsets }
 import { createApprovedWizardAnimations } from './approved-assets';
 import { cameraDirectionToWorldX, cameraForActor, createCombatCamera, focusCombatCamera, interpolateCombatCamera, panCombatCamera, revealCombatCameraPoint, type CombatCamera } from './camera';
 import { computeCombatLayout, type CombatLayout } from './layout';
-import { planV9Presentation, projectCombatV9, trajectoryPreviewV9, type V9PresentationStep } from './presentation';
+import { liveProjectileTraceV9, planV9Presentation, projectCombatV9, trajectoryPreviewV9, type V9PresentationStep } from './resource-turns-v9-fixture';
 import { CombatRenderer, type CombatVisualPhase } from './renderer';
 import { ResourceTurnsV9Controls } from './resource-turns-v9-controls';
 import { cameraFocusProgress } from './controls';
@@ -85,7 +85,9 @@ export class ResourceTurnsV9Scene {
         if (this.destroyed) return;
         const next = await this.args.restart();
         if (this.destroyed) { next.destroy(); return; }
-        this.destroy(); this.scene.scene.restart(next);
+        // V9 is a local adapter, not an outer CombatScene argument. Retire every
+        // old listener, frame and fixture before mounting one replacement here.
+        this.destroy(); new ResourceTurnsV9Scene(this.scene, next);
     }
     private previewAim(aim: AimIntent | null): void {
         const generation = ++this.previewGeneration;
@@ -125,14 +127,14 @@ export class ResourceTurnsV9Scene {
         this.layout = computeCombatLayout(this.scene.scale.width, this.scene.scale.height, readSafeArea(), this.camera); this.controls.setLayout(this.layout); if (pollMovement) this.controls.pollMovement();
         const queuedVisual = this.visual(now); const visual: CombatVisualPhase | undefined = this.state.projectile ? {
             kind: 'projectile', actor: this.state.projectile.actor, relicId: this.state.projectile.relicId,
-            trace: this.state.projectile.trace.map(point => ({ ...point }))
+            trace: liveProjectileTraceV9(this.state.projectile)
         } : queuedVisual;
         this.controls.setCameraFocusControls({ enabled: !this.state.projectile && this.state.phase !== 'finished',
             player: { direction: cameraDirectionToWorldX(this.camera, this.state.units[0].xFp / 256), stitching: this.state.units[0].stitching },
             loomkeeper: { direction: cameraDirectionToWorldX(this.camera, this.state.units[1].xFp / 256), stitching: this.state.units[1].stitching } });
         this.renderer.render(projectCombatV9(this.state), this.layout, this.preview, visual?.kind === 'projectile' ? visual.trace : [], visual);
         Object.assign(this.controls.root.dataset, { simulationTick: String(this.state.tick), playerThread: String(this.state.units[0].thread), playerShield: String(this.state.units[0].shield),
-            cameraLeft: this.camera.left.toFixed(2), cameraWidth: String(this.camera.width), presentation: visual?.kind ?? 'none', projectilePoints: String(visual?.kind === 'projectile' ? visual.trace.length : 0), cameraTransition: this.cameraTransition?.actor ?? 'none' });
+            cameraLeft: this.camera.left.toFixed(2), cameraWidth: String(this.camera.width), presentation: visual?.kind ?? 'none', projectilePoints: String(visual?.kind === 'projectile' ? visual.trace.length : 0), projectileEndX: String(visual?.kind === 'projectile' ? visual.trace.at(-1)?.x ?? '' : ''), projectileEndY: String(visual?.kind === 'projectile' ? visual.trace.at(-1)?.y ?? '' : ''), cameraTransition: this.cameraTransition?.actor ?? 'none' });
     }
     private cancelPresentation(): void { this.presentation = undefined; }
     private cancelCameraTransition(): void { this.cameraTransition = undefined; }

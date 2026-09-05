@@ -1,11 +1,95 @@
 import {
-    advanceSimulationTicksV9, applySimulationBarrierV9, applySimulationIntentV9,
+    advanceSimulationTicksV9, applySimulationBarrierV9, applySimulationIntentV9, cloneSimulationV9,
     createSimulationV9, forceSimulationLimitV9, type SimulationEventV9, type SimulationIntentV9, type SimulationStateV9
 } from '../../../shared/simulation-v9';
 import type { PlayerCalling } from '../../../shared/simulation';
 import type { CombatSceneArgsV9 } from './contracts';
+import type { CombatRenderState } from './presentation';
+import { WIZARD_CAST_DURATION_MS } from './approved-assets';
+import type { CombatVisualPhase } from './renderer';
 
 export type V9FixtureClock = { now: () => number; every: (callback: () => void) => () => void };
+
+const V9_COSTS = { threadball: 2, needlepoint: 3, spoolburst: 5 } as const;
+export type V9PresentationStep = { visual: CombatVisualPhase; durationMs: number };
+
+/** V9 view projection stays behind the local preview's lazy fixture seam. */
+export function projectCombatV9(state: SimulationStateV9): CombatRenderState {
+    const unit = (body: SimulationStateV9['units'][number]) => ({
+        id: body.id, calling: body.calling, x: body.xFp / 256, y: body.yFp / 256,
+        facing: body.facing, stitching: body.stitching, alive: body.alive, grounded: body.grounded
+    });
+    return { terrain: state.terrain, activeActor: state.activeActor, selectedRelic: state.selectedRelic,
+        units: [unit(state.units[0]), unit(state.units[1])] };
+}
+
+export function v9OffenseAllowed(state: SimulationStateV9, paused: boolean): boolean {
+    return state.phase === 'action' && state.activeActor === 'player' && state.winner === null && !paused &&
+        !state.castUsed && state.heldDirection === 0 &&
+        state.units.every(unit => unit.alive && unit.grounded && unit.vxFp === 0 && unit.vyFp === 0);
+}
+
+export function appendV9DamageReceipts(receipts: readonly string[], events: readonly SimulationEventV9[]): string[] {
+    return [...receipts, ...events.filter(event => event.type === 'damage_resolved').map(event =>
+        `${event.actor} · raw ${event.raw} · ${event.absorbed} shield absorbed · ${event.stitchingLost} Stitching lost`
+    )].slice(-4);
+}
+
+export function projectCombatV9Resources(state: SimulationStateV9) {
+    const player = state.units[0]; const loomkeeper = state.units[1];
+    const resource = (unit: SimulationStateV9['units'][number]) => ({ thread: `${unit.thread}/9`, shield: unit.shield > 0
+        ? `Shield ${unit.shield} · expires turn ${unit.shieldExpiresTurn}` : 'Shield inactive' });
+    return { player: { ...resource(player), airborne: !player.grounded, facing: player.facing }, loomkeeper: resource(loomkeeper),
+        relics: Object.fromEntries(Object.entries(V9_COSTS).map(([id, cost]) => [id, { cost, affordable: player.thread >= cost }])) as Record<keyof typeof V9_COSTS, { cost: number; affordable: boolean }> };
+}
+
+/** Clone-only V9 trajectory work is loaded only with the local preview. */
+export function trajectoryPreviewV9(state: SimulationStateV9, aim: { angleMilliDegrees: number; powerPermille: number }): { x: number; y: number }[] {
+    if (!v9OffenseAllowed(state, false)) return [];
+    const source = cloneSimulationV9(state);
+    const aimed = applySimulationIntentV9(source, 'player', { type: 'aim', ...aim }, source.turn, source.phase, source.inputEpoch);
+    if (!aimed.accepted) return [];
+    const fired = applySimulationIntentV9(aimed.state, 'player', { type: 'fire', aimId: aimed.state.aimId }, aimed.state.turn, aimed.state.phase, aimed.state.inputEpoch);
+    if (!fired.accepted) return [];
+    let projected = fired.state;
+    for (let tick = 0; tick < 300 && projected.phase === 'projectile'; tick += 1) projected = advanceSimulationTicksV9(projected, 1).state;
+    return projected.lastProjectile?.trace.map(point => ({ ...point })) ?? [];
+}
+
+/** Preserve the authoritative sampled trace and append only a copied live endpoint. */
+export function liveProjectileTraceV9(projectile: NonNullable<SimulationStateV9['projectile']>): { x: number; y: number }[] {
+    const trace = projectile.trace.map(point => ({ ...point }));
+    const endpoint = { x: projectile.xFp / 256, y: projectile.yFp / 256 };
+    const last = trace.at(-1);
+    if (!last || last.x !== endpoint.x || last.y !== endpoint.y) trace.push(endpoint);
+    return trace;
+}
+
+export function planV9Presentation(previous: SimulationStateV9, next: SimulationStateV9, reducedMotion: boolean): V9PresentationStep[] {
+    if (next.revision <= previous.revision || next.turn < previous.turn) return [];
+    const duration = reducedMotion ? { movement: 70, charge: 40, formation: 50, projectile: 150, impact: 90 }
+        : { movement: 220, charge: WIZARD_CAST_DURATION_MS / 2, formation: WIZARD_CAST_DURATION_MS / 2, projectile: 640, impact: 280 };
+    const moving = ([0, 1] as const).find(index => previous.units[index].xFp !== next.units[index].xFp || previous.units[index].yFp !== next.units[index].yFp);
+    const steps: V9PresentationStep[] = moving === undefined ? [] : [{ visual: { kind: 'movement', actor: next.units[moving].id }, durationMs: duration.movement }];
+    const trace = (next.projectile ? liveProjectileTraceV9(next.projectile) : next.lastProjectile?.trace.map(point => ({ ...point })) ?? []);
+    const relicId = next.projectile?.relicId ?? next.lastProjectile?.relicId;
+    if (!relicId) return steps;
+    if (!previous.projectile && next.projectile) {
+        const actor = previous.activeActor;
+        steps.push({ visual: { kind: 'cast-charge', actor, relicId, trace }, durationMs: duration.charge },
+            { visual: { kind: 'cast-formation', actor, relicId, stage: 'ready', trace }, durationMs: duration.formation },
+            { visual: { kind: 'projectile', actor, relicId, trace }, durationMs: duration.projectile });
+    }
+    const priorSignature = previous.lastProjectile && v9ProjectileSignature(previous.lastProjectile);
+    const nextSignature = next.lastProjectile && v9ProjectileSignature(next.lastProjectile);
+    if (nextSignature && nextSignature !== priorSignature) steps.push({ visual: { kind: 'impact', actor: previous.activeActor, relicId, trace,
+        unraveling: next.units.filter(unit => !unit.alive).map(unit => unit.id) }, durationMs: duration.impact });
+    return steps;
+}
+
+function v9ProjectileSignature(projectile: NonNullable<SimulationStateV9['lastProjectile']>): string {
+    return [projectile.relicId, projectile.startX, projectile.startY, projectile.endX, projectile.endY, projectile.flightTicks, projectile.impact, projectile.trace.length].join(':');
+}
 
 /** Local C3 authority fixture. It owns no session, socket, replay, reward, or AI lifecycle. */
 export async function createResourceTurnsV9Fixture(seed = 1, calling: PlayerCalling = 'wizard',

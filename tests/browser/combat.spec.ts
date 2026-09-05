@@ -323,10 +323,15 @@ test('V9 resource engineering preview is local-only and keeps V7 Practice unsele
   await page.getByRole('button', { name: 'Defense' }).tap();
   await page.getByRole('button', { name: 'Guard · 2 Thread' }).tap();
   await page.getByRole('button', { name: 'Use Guard · 2 Thread' }).tap();
-  await expect(page.locator('.player-status')).toContainText('Shield 24 · expires turn 2');
+  await expect(page.locator('.player-status')).toHaveAttribute('aria-label', /Shield 24 · expires turn 2/);
+  await dragPad(page, '.combat-v9 .aim-zone', 933, 0.35, -0.35);
+  const armedUse = page.getByRole('button', { name: 'Use Threadball · 2' });
+  await expect(armedUse).toBeDisabled();
+  await expect(armedUse).toHaveAttribute('title', /Need 2 Thread for Threadball/);
+  await expect(page.locator('.combat-message')).toContainText('Need 2 Thread for Threadball');
   await page.getByRole('button', { name: 'Actions' }).tap();
   await page.getByRole('button', { name: 'Attack' }).tap();
-  const spentThreadball = page.getByRole('button', { name: 'Threadball · 2' });
+  const spentThreadball = page.getByRole('button', { name: 'Threadball · 2', exact: true });
   await expect(spentThreadball).toBeDisabled();
   await expect(spentThreadball).toHaveAttribute('title', /Need 2 Thread/);
 
@@ -340,6 +345,15 @@ test('V9 resource engineering preview is local-only and keeps V7 Practice unsele
   await page.locator('.pause-button').tap();
   await expect(page.locator('.combat-v9')).toHaveAttribute('data-paused', 'true');
   await expect(page.getByRole('button', { name: 'Resume' })).toBeEnabled();
+  await page.getByRole('button', { name: 'Start fresh preview' }).tap();
+  await expect(page.locator('.combat-v9')).toHaveAttribute('data-paused', 'false');
+  await expect(page.locator('.combat-v9')).toHaveAttribute('data-input-epoch', '0');
+  expect(Number(await page.locator('.combat-v9').getAttribute('data-simulation-tick'))).toBeLessThan(16);
+  await expect(page.locator('.v9-thread')).toHaveText('Thread 3/9');
+  await dragPad(page, '.combat-v9 .aim-zone', 934, 0.35, -0.35);
+  await expect(page.locator('.combat-v9')).toHaveAttribute('data-aim-locked', 'true');
+  await page.locator('.pause-button').tap();
+  await expect(page.locator('.combat-v9')).toHaveAttribute('data-paused', 'true');
   await page.getByRole('button', { name: 'Resume' }).tap();
   await expect(page.locator('.combat-v9')).toHaveAttribute('data-paused', 'false');
 
@@ -369,6 +383,66 @@ test('V9 resource engineering preview is local-only and keeps V7 Practice unsele
   await expect(page.locator('.combat-ui')).toBeVisible();
   await expect(page.locator('.combat-v9')).toHaveCount(0);
   await expect(page.locator('.movement-zone')).toHaveAttribute('aria-label', /8 of 8 steps remaining/);
+});
+
+test('V9 local re-entry retires paused and terminal adapters without a transport', async ({ page }) => {
+  test.setTimeout(60_000);
+  const errors: string[] = []; const requests: string[] = [];
+  page.on('pageerror', error => errors.push(error.message));
+  page.on('request', request => requests.push(request.url()));
+  await page.goto('/?combat-preview=v9&sideways=off');
+  const ui = page.locator('.combat-v9'); await expect(ui).toBeVisible();
+  await page.locator('.pause-button').tap(); await expect(ui).toHaveAttribute('data-paused', 'true');
+  const pausedAdapter = await ui.elementHandle();
+  await page.getByRole('button', { name: 'Start fresh preview' }).tap();
+  expect(await pausedAdapter!.evaluate(element => element.isConnected)).toBe(false);
+  await expect(ui).toHaveAttribute('data-input-epoch', '0');
+  await expect(ui).toHaveAttribute('data-player-thread', '3');
+  expect(Number(await ui.getAttribute('data-simulation-tick'))).toBeLessThan(16);
+
+  // Each paused/resumed local barrier is authoritative fixture work. The 65th
+  // pause reaches its documented lifecycle terminal without adding a test seam.
+  await page.evaluate(async () => {
+    const root = document.querySelector<HTMLElement>('.combat-v9')!;
+    const button = root.querySelector<HTMLButtonElement>('.pause-button')!;
+    const waitFor = (attribute: string, value: string) => new Promise<void>(resolve => {
+      if (root.dataset[attribute] === value) { resolve(); return; }
+      const observer = new MutationObserver(() => {
+        if (root.dataset[attribute] === value) { observer.disconnect(); resolve(); }
+      });
+      observer.observe(root, { attributes: true, attributeFilter: [`data-${attribute.replace(/[A-Z]/g, letter => `-${letter.toLowerCase()}`)}`] });
+    });
+    for (let cycle = 0; cycle < 64; cycle += 1) {
+      button.click(); await waitFor('paused', 'true'); button.click(); await waitFor('paused', 'false');
+    }
+    button.click(); await waitFor('terminal', 'true');
+  });
+  await expect(ui).toHaveAttribute('data-terminal', 'true');
+  await expect(page.getByRole('button', { name: 'Start fresh preview' })).toBeVisible();
+  await page.getByRole('button', { name: 'Start fresh preview' }).tap();
+  await expect(ui).toHaveAttribute('data-terminal', 'false');
+  await expect(ui).toHaveAttribute('data-input-epoch', '0');
+  await expect(ui).toHaveAttribute('data-player-thread', '3');
+  expect(Number(await ui.getAttribute('data-simulation-tick'))).toBeLessThan(16);
+  await dragPad(page, '.combat-v9 .aim-zone', 955, 0.35, -0.35);
+  await expect(ui).toHaveAttribute('data-aim-locked', 'true');
+  expect(errors).toEqual([]);
+  expect(requests.some(url => /socket\.io|\/(?:session|challenge|reward)(?:\/|$|\?)/.test(url))).toBe(false);
+});
+
+test('V9 actor cards keep compact visible values and full labels through phone modes', async ({ page }) => {
+  test.setTimeout(60_000);
+  for (const mode of ['right', 'left', 'off'] as const) {
+    await page.setViewportSize({ width: 390, height: 844 });
+    await page.goto(`/?combat-preview=v9&sideways=${mode}`);
+    if (mode === 'off') await applySyntheticSafeArea(page, SYNTHETIC_SAFE_AREA);
+    await assertV9ActorCardsFit(page);
+    const focus = page.locator('.combat-v9 .camera-focus-button:visible').first();
+    if (await focus.count()) { await focus.tap(); await page.waitForTimeout(350); await assertV9ActorCardsFit(page); }
+  }
+  await page.setViewportSize({ width: 844, height: 390 });
+  await page.goto('/?combat-preview=v9');
+  await assertV9ActorCardsFit(page);
 });
 
 test('V8 hold survives snapshots, release stops, forward Jump and separate Fire reveal retreat', async ({ page }, testInfo) => {
@@ -1357,6 +1431,29 @@ function overlaps(
 ): boolean {
   return a.x < b.x + b.width && a.x + a.width > b.x &&
     a.y < b.y + b.height && a.y + a.height > b.y;
+}
+
+async function assertV9ActorCardsFit(page: Page): Promise<void> {
+  await expect(page.locator('.combat-v9')).toBeVisible();
+  const evidence = await page.locator('.combat-v9').evaluate(root => Array.from(
+    root.querySelectorAll<HTMLElement>('.combat-unit-status')
+  ).map(card => {
+    const value = card.querySelector<HTMLElement>('.unit-status-value')!;
+    const range = document.createRange(); range.selectNodeContents(value);
+    const box = card.getBoundingClientRect();
+    const lines = Array.from(range.getClientRects());
+    return {
+      hidden: card.hidden, display: getComputedStyle(card).display, label: card.getAttribute('aria-label') ?? '',
+      width: box.width, height: box.height, logicalHeight: card.offsetHeight,
+      contained: lines.every(line => line.left >= box.left - 0.5 && line.right <= box.right + 0.5 && line.top >= box.top - 0.5 && line.bottom <= box.bottom + 0.5)
+    };
+  }));
+  for (const card of evidence) {
+    if (card.hidden) { expect(card.display).toBe('none'); continue; }
+    expect(card.width).toBeGreaterThan(0); expect(card.logicalHeight).toBe(32);
+    expect(card.contained).toBe(true);
+    expect(card.label).toMatch(/Stitching.*Thread.*Shield/);
+  }
 }
 
 async function assertControlsFit(page: Page): Promise<void> {

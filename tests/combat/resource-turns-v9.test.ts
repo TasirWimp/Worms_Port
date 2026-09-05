@@ -1,8 +1,7 @@
 import assert from 'node:assert/strict';
 import test from 'node:test';
 
-import { createResourceTurnsV9Fixture, type V9FixtureClock } from '../../client/src/combat/resource-turns-v9-fixture';
-import { appendV9DamageReceipts, planV9Presentation, projectCombatV9Resources, trajectoryPreviewV9, v9OffenseAllowed } from '../../client/src/combat/presentation';
+import { appendV9DamageReceipts, createResourceTurnsV9Fixture, liveProjectileTraceV9, planV9Presentation, projectCombatV9Resources, trajectoryPreviewV9, type V9FixtureClock, v9OffenseAllowed } from '../../client/src/combat/resource-turns-v9-fixture';
 import { UnifiedMovementInputController } from '../../client/src/combat/input';
 import { ResourceTurnsV9Controls } from '../../client/src/combat/resource-turns-v9-controls';
 import { V9PreviewListenerCleanup } from '../../client/src/combat/contracts';
@@ -234,6 +233,12 @@ test('V9 clone-only trajectory and authority receipt presentation never mutate t
         assert.deepEqual(fixture.snapshot, before, 'trajectory projection cannot debit Thread, advance ticks, or alter authority');
         const moving = structuredClone(before); moving.revision += 1; moving.units[0].xFp += 128;
         assert.equal(planV9Presentation(before, moving, true)[0]?.visual.kind, 'movement');
+        const live = structuredClone(before);
+        live.projectile = { actor: 'player', relicId: 'threadball', xFp: 100 * 256 + 64, yFp: 80 * 256 + 128,
+            vxFp: 1, vyFp: 1, flightTicks: 1, startX: 96, startY: 80, trace: [{ x: 96, y: 80 }] };
+        const projected = liveProjectileTraceV9(live.projectile);
+        assert.deepEqual(projected.at(-1), { x: 100.25, y: 80.5 }, 'the copied render trace ends at the live fixed-point projectile');
+        assert.deepEqual(live.projectile.trace, [{ x: 96, y: 80 }], 'presentation cannot mutate the authoritative trace');
     } finally { fixture.destroy(); }
 });
 
@@ -339,12 +344,22 @@ test('V9 controls derive action legality and lifecycle guidance from the latest 
         const root = controls.root as unknown as FakeElement;
         const state = structuredClone(fixture.snapshot);
         state.utilityUsed = true; state.units[0].thread = 1; state.phase = 'action'; state.activeActor = 'player';
+        state.aim = { angleMilliDegrees: 20_000, powerPermille: 700 }; state.aimId++;
         controls.update(state);
         root.querySelector<HTMLElement>('.v9-actions-button')!.dispatch('click');
         const actions = root.querySelector<HTMLElement>('.v9-actions-button')!;
         assert.equal(actions.getAttribute('aria-disabled'), 'false', 'Attack remains available so its authoritative affordability can be explained');
         const use = root.querySelector<HTMLElement>('.fire-button')!;
         assert.equal(use.getAttribute('aria-disabled'), 'true', 'Use cannot submit a stale or unaffordable selection');
+        assert.match((use as HTMLButtonElement).title, /Need 2 Thread for Threadball/, 'the armed Relic names its current affordability reason');
+        assert.match(root.querySelector<HTMLElement>('.combat-message')!.textContent ?? '', /Need 2 Thread for Threadball/);
+
+        state.heldDirection = 1; controls.update(state);
+        assert.equal(use.getAttribute('aria-disabled'), 'true', 'walking keeps the armed Relic disabled');
+        state.heldDirection = 0; state.phase = 'retreat'; controls.update(state);
+        assert.equal(use.getAttribute('aria-disabled'), 'true', 'retreat cannot use the armed Relic');
+        state.phase = 'action'; state.utilityUsed = false; state.units[0].thread = 3; controls.update(state);
+        assert.equal(use.getAttribute('aria-disabled'), 'false', 'a fresh affordable action turn restores armed Use');
 
         state.activeActor = 'loomkeeper'; state.phase = 'action'; controls.update(state, [{ type: 'damage_resolved', actor: 'player', raw: 4, absorbed: 0, stitchingLost: 4 }]);
         assert.match(root.querySelector<HTMLElement>('.combat-message')!.textContent ?? '', /deferred to V9D/, 'waiting guidance survives retained receipts');
