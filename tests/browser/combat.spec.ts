@@ -307,7 +307,10 @@ test('V9 resource engineering preview is local-only and keeps V7 Practice unsele
   await expect(page.locator('.fire-button')).toBeEnabled();
   await page.locator('.fire-button').tap();
   await expect(ui).toHaveAttribute('data-combat-phase', 'projectile');
-  await expect(ui).toHaveAttribute('data-presentation', /cast-charge|cast-formation|projectile/);
+  await expect(ui).toHaveAttribute('data-presentation', 'projectile');
+  const flightTick = Number(await ui.getAttribute('data-simulation-tick'));
+  await expect.poll(async () => Number(await ui.getAttribute('data-simulation-tick'))).toBeGreaterThan(flightTick);
+  await expect(ui).toHaveAttribute('data-projectile-points', /[2-9]\d*/);
   for (const button of await page.locator('.combat-v9 .combat-actions button:visible').all()) {
     const box = await button.boundingBox();
     expect(box).not.toBeNull();
@@ -321,6 +324,11 @@ test('V9 resource engineering preview is local-only and keeps V7 Practice unsele
   await page.getByRole('button', { name: 'Guard · 2 Thread' }).tap();
   await page.getByRole('button', { name: 'Use Guard · 2 Thread' }).tap();
   await expect(page.locator('.player-status')).toContainText('Shield 24 · expires turn 2');
+  await page.getByRole('button', { name: 'Actions' }).tap();
+  await page.getByRole('button', { name: 'Attack' }).tap();
+  const spentThreadball = page.getByRole('button', { name: 'Threadball · 2' });
+  await expect(spentThreadball).toBeDisabled();
+  await expect(spentThreadball).toHaveAttribute('title', /Need 2 Thread/);
 
   await page.goto('/?combat-preview=v9');
   await expect(page.locator('.combat-v9')).toBeVisible();
@@ -334,6 +342,22 @@ test('V9 resource engineering preview is local-only and keeps V7 Practice unsele
   await expect(page.getByRole('button', { name: 'Resume' })).toBeEnabled();
   await page.getByRole('button', { name: 'Resume' }).tap();
   await expect(page.locator('.combat-v9')).toHaveAttribute('data-paused', 'false');
+
+  // The scene owns neutralization across browser interruption. An old pointer
+  // release cannot become an aim after its cancel snapshot; a fresh touch can.
+  await page.goto('/?combat-preview=v9');
+  await expect(page.locator('.combat-v9')).toBeVisible();
+  for (const pointerId of [941, 942]) {
+    const aim = page.locator('.combat-v9 .aim-zone'); const box = await aim.boundingBox();
+    expect(box).not.toBeNull();
+    await aim.dispatchEvent('pointerdown', { pointerId, button: 0, clientX: box!.x + box!.width / 2, clientY: box!.y + box!.height / 2 });
+    await aim.dispatchEvent('pointermove', { pointerId, button: 0, clientX: box!.x + box!.width * 0.8, clientY: box!.y + box!.height * 0.25 });
+    await page.evaluate(() => window.dispatchEvent(new Event('blur')));
+    await aim.dispatchEvent('pointerup', { pointerId, button: 0, clientX: box!.x + box!.width * 0.8, clientY: box!.y + box!.height * 0.25 });
+    await expect(page.locator('.combat-v9')).toHaveAttribute('data-aim-locked', 'false');
+    await dragPad(page, '.combat-v9 .aim-zone', pointerId + 100, 0.35, -0.35);
+    await expect(page.locator('.combat-v9')).toHaveAttribute('data-aim-locked', 'true');
+  }
 
   await page.goto('/?combat-preview=v9');
   await expect(page.locator('.combat-v9')).toBeVisible();

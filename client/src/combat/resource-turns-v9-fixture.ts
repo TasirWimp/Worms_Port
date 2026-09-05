@@ -25,7 +25,10 @@ export async function createResourceTurnsV9Fixture(seed = 1, calling: PlayerCall
     const due = (): boolean => {
         if (destroyed) return true;
         const now = clock.now(); const elapsed = Math.max(0, now - lastNow); lastNow = now;
-        if (paused || state.phase === 'finished') return true;
+        // A paused clock has no outstanding debt. A terminal authority snapshot
+        // cannot be used as the basis for a fresh intent, though.
+        if (paused) return true;
+        if (state.phase === 'finished') return false;
         credit += elapsed * 30;
         if (Math.floor(credit / 1000) > 30) { terminal(); return false; }
         let count = 0; const events: SimulationEventV9[] = [];
@@ -41,10 +44,12 @@ export async function createResourceTurnsV9Fixture(seed = 1, calling: PlayerCall
     const submit = async (intent: SimulationIntentV9) => {
         if (destroyed) throw new Error('Preview is closed.');
         if (publishing) throw new Error('Preview is catching up; use a fresh gesture.');
-        // An acknowledged aim is a short-lived V9 authority fact. Fire it from
-        // that exact receipt before the next local catch-up pass can advance a
-        // physics tick and clear it; all other inputs still fence on freshness.
-        if (intent.type !== 'fire' && !due()) throw new Error('Preview is catching up; use a fresh gesture.');
+        // Every command, including Fire, is fenced behind the same due-clock
+        // pass. An acknowledged aim is an authority fact, never permission to
+        // skip a deadline, tick, or lifecycle transition.
+        if (!due()) throw new Error(state.phase === 'finished'
+            ? 'Preview ended before that gesture could be accepted.'
+            : 'Preview is catching up; use a fresh gesture.');
         if (paused) throw new Error('Preview is paused.');
         const before = state;
         let result = applySimulationIntentV9(state, 'player', intent, state.turn, state.phase, state.inputEpoch);

@@ -18,7 +18,7 @@ type CameraTransition = { actor: CameraActor; from: CombatCamera; to: CombatCame
 export class ResourceTurnsV9Scene {
     private state: CombatSceneArgsV9['snapshot']; private readonly renderer: CombatRenderer; private readonly controls: ResourceTurnsV9Controls;
     private camera: CombatCamera; private layout: CombatLayout; private frame?: number; private destroyed = false; private unsubscribe?: () => void;
-    private neutralPending = false; private requestGeneration = 0; private previewGeneration = 0; private preview: { x: number; y: number }[] = [];
+    private neutralPending = false; private neutralGeneration = 0; private requestGeneration = 0; private previewGeneration = 0; private preview: { x: number; y: number }[] = [];
     private presentation: { steps: V9PresentationStep[]; index: number; startedAt: number; generation: number } | undefined;
     private projectileCamera?: CombatCamera; private cameraTransition?: CameraTransition;
     private cameraPointer?: { id: number; x: number }; private readonly listeners = new V9PreviewListenerCleanup();
@@ -73,9 +73,13 @@ export class ResourceTurnsV9Scene {
         catch { if (!this.destroyed && generation === this.requestGeneration) this.controls.update(this.state, [], this.args.paused()); }
     }
     private async neutralize(): Promise<void> {
-        if (this.neutralPending || this.destroyed) return; const generation = this.requestGeneration; this.neutralPending = true;
+        if (this.neutralPending || this.destroyed) return; const generation = this.requestGeneration, neutralGeneration = ++this.neutralGeneration; this.neutralPending = true;
         try { const next = await this.args.cancelInput(); if (!this.destroyed && generation === this.requestGeneration) this.accept(next, []); }
-        finally { if (generation === this.requestGeneration) this.neutralPending = false; }
+        // accept() can legitimately advance requestGeneration for this very
+        // cancel snapshot. Neutral ownership has its own generation so that
+        // acknowledgement releases it, while an older completion cannot clear a
+        // later neutral request.
+        finally { if (neutralGeneration === this.neutralGeneration) this.neutralPending = false; }
     }
     private async restart(): Promise<void> {
         if (this.destroyed) return;
@@ -108,12 +112,22 @@ export class ResourceTurnsV9Scene {
         while (current.index < current.steps.length && now - current.startedAt >= current.steps[current.index].durationMs) { current.startedAt += current.steps[current.index].durationMs; current.index++; }
         if (current.index >= current.steps.length) { this.presentation = undefined; return undefined; }
         const visual = current.steps[current.index].visual;
-        return visual.kind === 'projectile' && this.state.projectile ? { ...visual, trace: this.state.projectile.trace.map(point => ({ ...point })) } : visual;
+        return visual;
     }
     private render(pollMovement: boolean): void {
-        if (this.destroyed) return; const now = performance.now(); this.advanceCamera(now);
+        if (this.destroyed) return; const now = performance.now();
+        // The live V9 projectile wins over the decorative cast queue. Track its
+        // current authority position on every frame in full and reduced motion.
+        if (this.state.projectile) {
+            this.projectileCamera ??= this.camera;
+            this.camera = focusCombatCamera(projectCombatV9(this.state), this.camera, this.state.projectile.xFp / 256);
+        } else this.advanceCamera(now);
         this.layout = computeCombatLayout(this.scene.scale.width, this.scene.scale.height, readSafeArea(), this.camera); this.controls.setLayout(this.layout); if (pollMovement) this.controls.pollMovement();
-        const visual = this.visual(now); this.controls.setCameraFocusControls({ enabled: !this.state.projectile && this.state.phase !== 'finished',
+        const queuedVisual = this.visual(now); const visual: CombatVisualPhase | undefined = this.state.projectile ? {
+            kind: 'projectile', actor: this.state.projectile.actor, relicId: this.state.projectile.relicId,
+            trace: this.state.projectile.trace.map(point => ({ ...point }))
+        } : queuedVisual;
+        this.controls.setCameraFocusControls({ enabled: !this.state.projectile && this.state.phase !== 'finished',
             player: { direction: cameraDirectionToWorldX(this.camera, this.state.units[0].xFp / 256), stitching: this.state.units[0].stitching },
             loomkeeper: { direction: cameraDirectionToWorldX(this.camera, this.state.units[1].xFp / 256), stitching: this.state.units[1].stitching } });
         this.renderer.render(projectCombatV9(this.state), this.layout, this.preview, visual?.kind === 'projectile' ? visual.trace : [], visual);

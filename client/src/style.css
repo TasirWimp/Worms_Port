@@ -872,6 +872,10 @@ input {
     pointer-events: none;
 }
 
+/* This selector follows the V9 placement rule above, so it must retain the
+ * native hidden contract instead of leaving an off-screen hit rectangle. */
+.combat-v9 .combat-unit-status[hidden] { display: none; }
+
 .combat-v9 .player-status { border-color: #e9b213; }
 .combat-v9 .loomkeeper-status { border-color: #fa7268; }
 .combat-v9 .unit-status-value { color: #fff; font-size: inherit; }

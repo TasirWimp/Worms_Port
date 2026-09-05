@@ -267,6 +267,44 @@ test('V9 fixture latches its catch-up decision across a reentrant authority publ
     } finally { stop(); fixture.destroy(); }
 });
 
+test('V9 due-clock fences Fire before an ordinary tick, bounded debt, and a terminal deadline', async () => {
+    const clock = createClock(); const fixture = await createResourceTurnsV9Fixture(1, 'wizard', clock);
+    const stop = fixture.onSnapshot(() => {});
+    try {
+        await fixture.submit({ type: 'select_relic', relicId: 'threadball' });
+        await fixture.submit({ type: 'aim', angleMilliDegrees: 20_000, powerPermille: 700 });
+        const aimId = fixture.snapshot.aimId;
+        clock.elapse(34);
+        await fixture.submit({ type: 'fire', aimId });
+        assert.equal(fixture.snapshot.tick, 1, 'Fire must process the due authority tick before its intent');
+        assert.equal(fixture.snapshot.phase, 'projectile');
+    } finally { stop(); fixture.destroy(); }
+
+    const debtClock = createClock(); const debt = await createResourceTurnsV9Fixture(1, 'wizard', debtClock); const debtStop = debt.onSnapshot(() => {});
+    try {
+        await debt.submit({ type: 'select_relic', relicId: 'threadball' });
+        await debt.submit({ type: 'aim', angleMilliDegrees: 20_000, powerPermille: 700 });
+        const thread = debt.snapshot.units[0].thread, aimId = debt.snapshot.aimId;
+        debtClock.elapse(400);
+        await assert.rejects(debt.submit({ type: 'fire', aimId }), /catching up/);
+        assert.equal(debt.snapshot.tick, 6, 'Fire cannot skip a six-tick catch-up fence');
+        assert.equal(debt.snapshot.units[0].thread, thread, 'rejected Fire cannot debit Thread');
+        assert.equal(debt.snapshot.projectile, null);
+    } finally { debtStop(); debt.destroy(); }
+
+    const deadlineClock = createClock(); const deadline = await createResourceTurnsV9Fixture(1, 'wizard', deadlineClock); const deadlineStop = deadline.onSnapshot(() => {});
+    try {
+        await deadline.submit({ type: 'select_relic', relicId: 'threadball' });
+        await deadline.submit({ type: 'aim', angleMilliDegrees: 20_000, powerPermille: 700 });
+        const thread = deadline.snapshot.units[0].thread, aimId = deadline.snapshot.aimId;
+        deadlineClock.elapse(1_034);
+        await assert.rejects(deadline.submit({ type: 'fire', aimId }), /ended|catching up/);
+        assert.equal(deadline.snapshot.phase, 'finished');
+        assert.equal(deadline.snapshot.units[0].thread, thread);
+        assert.equal(deadline.snapshot.projectile, null);
+    } finally { deadlineStop(); deadline.destroy(); }
+});
+
 test('V9 controls directly gate aim, synchronize pad aria state, and remove retained listeners', async () => {
     const dom = installControlDom(); const fixture = await createResourceTurnsV9Fixture(1, 'wizard', createClock());
     const attempts: string[] = [];
@@ -291,6 +329,28 @@ test('V9 controls directly gate aim, synchronize pad aria state, and remove reta
         controls.destroy(); aim.dispatch('pointerdown', 72, 60, 60); aim.dispatch('pointerup', 72, 96, 24);
         movement.dispatch('pointerdown', 73, 60, 60); movement.dispatch('pointermove', 73, 96, 60);
         assert.deepEqual(attempts, ['aim'], 'retained DOM references cannot submit after control teardown');
+    } finally { fixture.destroy(); dom.restore(); }
+});
+
+test('V9 controls derive action legality and lifecycle guidance from the latest authority snapshot', async () => {
+    const dom = installControlDom(); const fixture = await createResourceTurnsV9Fixture(1, 'wizard', createClock());
+    try {
+        const controls = new ResourceTurnsV9Controls(dom.parent, fixture.snapshot, { submit: async () => true, pause: () => {}, neutral: () => {} });
+        const root = controls.root as unknown as FakeElement;
+        const state = structuredClone(fixture.snapshot);
+        state.utilityUsed = true; state.units[0].thread = 1; state.phase = 'action'; state.activeActor = 'player';
+        controls.update(state);
+        root.querySelector<HTMLElement>('.v9-actions-button')!.dispatch('click');
+        const actions = root.querySelector<HTMLElement>('.v9-actions-button')!;
+        assert.equal(actions.getAttribute('aria-disabled'), 'false', 'Attack remains available so its authoritative affordability can be explained');
+        const use = root.querySelector<HTMLElement>('.fire-button')!;
+        assert.equal(use.getAttribute('aria-disabled'), 'true', 'Use cannot submit a stale or unaffordable selection');
+
+        state.activeActor = 'loomkeeper'; state.phase = 'action'; controls.update(state, [{ type: 'damage_resolved', actor: 'player', raw: 4, absorbed: 0, stitchingLost: 4 }]);
+        assert.match(root.querySelector<HTMLElement>('.combat-message')!.textContent ?? '', /deferred to V9D/, 'waiting guidance survives retained receipts');
+        state.phase = 'finished'; state.winner = 'player'; state.finishReason = 'unravelled'; controls.update(state);
+        assert.match(root.querySelector<HTMLElement>('.combat-message')!.textContent ?? '', /You won by authoritative unravelled outcome/);
+        controls.destroy();
     } finally { fixture.destroy(); dom.restore(); }
 });
 
