@@ -95,6 +95,27 @@ test('V9D charges the complete 180-slot lattice before selection and keeps the c
     coordinator.dispose();
 });
 
+test('V9D shared immutable prefixes preserve the frozen selected plan and automated replay trace', () => {
+    const cached = new SimulationCoordinatorV9();
+    const uncached = new SimulationCoordinatorV9({ plannerFactory: state => new LoomkeeperPlannerV9(state, { reuseIdenticalPrefixes: false }) });
+    try {
+        for (const coordinator of [cached, uncached]) {
+            coordinator.createAutomated('v9_prefix_parity', 'v9_prefix_parity_session', 1, 'wizard');
+            while (coordinator.get('v9_prefix_parity')!.state.activeActor !== 'loomkeeper') coordinator.advance('v9_prefix_parity', 1);
+            // Stop at this AI turn's handoff so the trace contains one full
+            // charged selection/execution but cannot begin a second AI plan.
+            while (coordinator.get('v9_prefix_parity')!.state.phase !== 'finished' &&
+                coordinator.get('v9_prefix_parity')!.state.activeActor === 'loomkeeper') coordinator.advance('v9_prefix_parity', 1);
+        }
+        const cachedReplay = cached.replay('v9_prefix_parity') as any;
+        const uncachedReplay = uncached.replay('v9_prefix_parity') as any;
+        assert.deepEqual(cachedReplay.chosenPlans, uncachedReplay.chosenPlans);
+        assert.deepEqual(cachedReplay.records, uncachedReplay.records);
+        assert.deepEqual(cached.get('v9_prefix_parity')!.state, uncached.get('v9_prefix_parity')!.state);
+        assert.ok(cachedReplay.chosenPlans.length > 0, 'the compared trace reaches a real charged selection');
+    } finally { cached.dispose(); uncached.dispose(); }
+});
+
 test('V9D published automated snapshots follow the charged batch without a duplicate intermediate callback', () => {
     const updates: number[] = [];
     const coordinator = new SimulationCoordinatorV9({ onTransition: update => updates.push(update.state.tick) });
