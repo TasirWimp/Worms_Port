@@ -23,6 +23,10 @@ Your job:
 - Prefer repeatable smoke tests for built server behavior.
 - Run npm run build for source changes and add/execute runtime smoke checks when practical.
 - Keep third-party runtime dependencies MIT/commercial-compatible.
+- Open reciprocal support for uncertain state ownership, history, protocol or
+  lifecycle dependencies while implementing. Local runtime evidence can correct
+  an advisor's hypothesis. Coordinate shared files and build/browser runs with
+  their owners; preserve consequential returns in the package evidence.
 
 Do not import Sorcerers server/client code. Do not add external services without source/license documentation.
 """

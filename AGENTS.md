@@ -72,7 +72,9 @@ If the user asks only for planning, review, or brainstorming, do not edit code.
 - Documentation-only changes do not require a full build; say that explicitly.
 - Use `npm run verify:changes -- --dry-run` to inspect the selected checks,
   then `npm run verify:changes` for the current edit. For a whole committed
-  slice, pass `-- --base <starting-commit>` to both commands.
+  slice, pass `-- --base <starting-commit>` to both commands. This selector is
+  the mandatory edit-loop baseline and CI plan, not an upper bound on an
+  independent Astra reviewer's test choice.
 - Runtime/build changes require types, current build outputs and built smoke.
   Documentation, Codex settings and test/verification-tool-only changes do not
   require a game build. Unknown paths receive conservative product coverage.
@@ -81,7 +83,7 @@ If the user asks only for planning, review, or brainstorming, do not edit code.
 - Server/client runtime changes should include a smoke test when practical.
 - After WP-005, browser-facing changes should run the Playwright phone smoke.
 - `npm run verify:feature` is the same change-selected entry point. Browser-facing
-  changes run complete relevant specs on the canonical phone, including
+  changes run complete relevant specs on the canonical phone, including V8 and
   identity/reward cases where relevant. Visual changes compare all maintained
   projects on Ubuntu. This does not substitute for the daily release gate.
 - Run `npm run verify:daily` once at the end-of-day checkpoint and at an explicit
@@ -102,6 +104,63 @@ If the user asks only for planning, review, or brainstorming, do not edit code.
   until a separate release-testing environment is provided.
 - Always report skipped checks and why.
 
+## Independent Astra Review
+
+The `worms_port_reviewer` is the independent GPT-6 Astra/high reviewer for a
+substantive gameplay, client, server, authority, security, asset, or
+cross-module slice. It stays read-only, but owns the final assessment of
+product continuity and evidence sufficiency. It must not approve merely
+because the changed paths match a contract or because the selector passes.
+
+An agent that helped form the solution through adaptive support is a contributor,
+even if it stayed read-only. Use a fresh identity for substantive final assessment;
+do not relabel that advisor as the independent reviewer. The final reviewer first
+reconstructs the claim, then reconciles the retained support/failure ledger.
+
+Before a final verdict, the reviewer must inspect the selector's dry-run as a
+starting inventory, the implementation diff, the accepted predecessor journey,
+the current execution pointer, and the existing relevant tests. It then chooses
+and runs any focused, family, browser, build, security, or full-suite checks
+that the changed risk warrants. It may exceed the selector freely; it may run
+the full suite when the risk or a focused failure justifies diagnosis. The daily
+21:00 Europe/Berlin run remains the required scheduled release gate and is not
+silently replaced by an Astra review.
+
+The reviewer maintains a continuity ledger for relevant player-visible
+capabilities: `preserved`, `replaced`, `deferred` with a named waypoint, or
+`missing`. A missing classification is a blocking finding. This includes
+mobile layout and guidance, the complete playable loop, presentation feedback,
+opponent behavior, accessibility, lifecycle/authority feedback, and inherited
+features. A local preview cannot silently remove an accepted capability; it
+must preserve it, expose the limitation, or record an owner-approved future
+waypoint.
+
+When existing evidence is insufficient, Astra returns `FAIL — missing evidence`
+instead of accepting the slice. Its finding must name the suitable test carrier,
+setup, player journey or authority state, expected outcome, and regression the
+test must prevent. It must also give the Terra/high implementer an actionable,
+read-only correction brief: relevant source and test carriers with lines,
+existing components/functions/fixtures to reuse, the expected data/control
+flow, authority and source-boundary constraints, and acceptance checks. It must
+distinguish required behavior from optional implementation choices and never
+write the correction itself. A Terra/high implementer owns the resulting bounded
+test and product correction; Astra reviews the correction independently. The
+reviewer reports the continuity ledger, commands run and outcomes, intentionally
+unrun checks with reasons, required tests, correction briefs, residual risk, and
+a `PASS`, `FAIL`, or `BLOCKED` verdict. A PASS is not release, daily-suite, or
+real-device approval unless those are separately executed and recorded.
+
+## Repository Housekeeping
+
+The existing `worms_port_docs_keeper` owns repository housekeeping; do not add a
+separate standing agent for it. At every work-package transition, merge/release
+boundary, and before closing an in-progress package, run `npm run
+audit:housekeeping`. The report identifies current branch/tracking state,
+branches merged into `main`, gone upstreams, in-progress evidence, and failed
+reviews requiring planning reconciliation. The docs keeper compares it with the
+execution pointer and latest review, then updates existing documentation when
+drift is real. It never renames, deletes, merges, pushes, or archives a branch.
+
 ## Active Product Constraints
 
 - Competition release play must not depend on another human being online.
@@ -115,9 +174,81 @@ If the user asks only for planning, review, or brainstorming, do not edit code.
   composition remains supported through `?sideways=off`, and actual landscape
   viewports must not be double-rotated. No core action may require hover,
   keyboard, or precision mouse.
-- Production artwork must follow
-  `docs/images/art-direction/knotkin-class-lineup-concept.png` while preserving
-  its documentation-only status until exact-file asset approval.
+- Production Calling colors, textile materials, and fantasy vocabulary continue
+  to follow `docs/images/art-direction/knotkin-class-lineup-concept.png`, but
+  WP-015B2G supersedes its angular anatomy with the owner-approved rounded
+  crochet-doll direction and upward-facing cupped Relic palm recorded in
+  `docs/art-direction.md`. The lineup and every external FLUX candidate remain
+  documentation/quarantine evidence until exact-file asset approval. WP-015B2H
+  approved only exact Wizard source master
+  `assets/masters/characters/knotkin/wizard/knotkin-wizard-source-master-v1.png`,
+  SHA-256 `7AF4864E...18A9`; it has no runtime path.
+- WP-015B3C.1 completed the closed runtime-copy admission on 2026-08-05. Existing Threadball candidate
+  `2BAE664F...F4089EB` is paused as historical structure evidence because it
+  reads as ordinary yarn rather than the compressed Worldweave spell. Do not
+  normalize, promote, delete, or use it as conditioning. The replacement gate
+  consumed one text-only request at seed `15035001`; exact external output
+  `1F41AF26...F56EC` is now deterministically approved as source master
+  `608F490C...D9B6F` with no runtime path. Supplied Gemini concept
+  `BD87405A...DA6699` remains external comparison-only evidence and contributes
+  no pixels or conditioning. Do not retry, regenerate, animate, or integrate
+  the Threadball. The separate Patch source contract is frozen: Cloud,
+  Terrain Top, and Terrain Interior use text-only/no-reference seeds
+  `15035002` through `15035004` under the pinned FLUX workflow. It authorizes
+  no Patch inference in the contract commit. Cloud's sole external candidate
+  `EA972B0B...FFE7` is owner-approved and deterministically promoted as
+  source master `7F327B51...4B23C`, with its sole B3C.1 runtime build-copy path.
+  Owner-approved
+  Terrain Top `BE5EB2E7...2B22` is deterministically promoted only as 256x64
+  source master `41511E63...7897`; its three-copy horizontal repeat proof has
+  exact edge difference zero and its sole B3C.1 runtime build-copy path. Terrain Interior's one
+  separately preflighted FLUX candidate `98091C73...50F9` remains rejected
+  historical evidence for visible directional quilt seams. The project owner
+  separately repaired it in external four-layer XCF `2E94BBE4...CDBC7B`; only
+  its exact GIMP 3.2.4 flattened export `6419C1E8...CF8095` may feed frozen
+  config `wp-015b3c-patch-terrain-interior-manual-v1`. Deterministic uniform
+  scaling plus fixed 32px horizontal/vertical reciprocal blends produced the
+  opaque 256x256 source master `D50C2C60...2E40E9` twice, with a 3x3 proof of
+  zero difference at both repeat boundaries and its sole B3C.1 runtime build-copy path. Do not
+  retry or otherwise reuse the original FLUX candidate; do not infer, paint
+  after the bound export, integrate, or generate a new Patch asset. FLUX and
+  manual sources require deterministic alpha/repeatability proof.
+  B3A may not generate a distinct Loomkeeper or silently generate another Wizard
+  or Threadball.
+  B3B's first Wizard preset-Idle pilot lowered/remade the raised cupped palm
+  (`6EA23DEE...4C718`), and the sole free-tier Custom successor replaced the
+  empty palm with a blue woven basket/cup-like object in its first frame. Both
+  remain external rejected evidence. No further AutoSprite request, paid pose
+  control, normalizer, or runtime use is authorized. The owner superseded the
+  empty-palm overlay requirement with a deterministic Wizard presentation: a
+  permanent Loomseed is composed only from approved Threadball lineage at palm
+  anchor `(407,228)`, while a separate temporary Threadball emits from that
+  origin. B3C has frozen config `wp-015b3c-wizard-loomseed-v1` and approved
+  source-only composition `1CC252B4...9419C`: it uses only the two approved
+  parents, layers the Loomseed above the palm, and leaves both source files
+  untouched. Its sole B3C.1 runtime build-copy path is the approved presentation copy. B3C now also approves three source-only
+  temporary cast stages derived only from the same Threadball parent: compact
+  `formation-start` (`C189A206...FDD0`), `formation-ready`
+  (`94F0DEDC...CCA9`), and `projectile` (`8ECA37C6...23E9`). Frozen config
+  `wp-015b3c-threadball-cast-v1` maps each local visual origin to `(32,32)` and
+  records the Wizard root-space emission offset `[151,-223]`. It creates no
+  glow, loose fibers, tail, impact, animation, runtime path, or gameplay
+  authority. Separate config `wp-015b3c-threadball-effects-v1`
+  (`2C9A827F...D34A`) now admits only later deterministic procedural halo,
+  inward thread-stroke, short-tail, and four-loop Unraveling rules; it binds
+  solely to the existing authoritative presentation events and creates no
+  effect-runtime path. Do not use either rejected pilot or modify Wizard source pixels.
+  B3C.1 assigned `runtime_path` only to byte-identical build copies of these
+  seven approved masters: Loomseed Wizard `1CC252B4...9419C`, cast stages
+  `C189A206...FDD0`, `94F0DEDC...CCA9`, and `8ECA37C6...23E9`, Cloud
+  `7F327B51...4B23C`, Terrain Top `41511E63...7897`, and Terrain Interior
+  `D50C2C60...2E40E9`. The copied output must stay below `assets/product/`,
+  exactly match the source hash, and total 607,427 source bytes. It must not
+  create a duplicate source file, promote the empty-handed Wizard/raw Threadball
+  master or rejected FLUX Terrain Interior, generate an atlas, add code, or make
+  player-visible changes. WP-015C is now the next integration-only slice and reuses the one
+  approved Wizard presentation for the player and AI Loomkeeper. Distinct
+  Loomkeeper production is deferred to the wider character roster in WP-015D.
 
 ## Codex Subagent Roles
 
@@ -130,10 +261,15 @@ Role-specific Codex agents live in `.codex/agents/`:
 - `worms_port_asset_curator` - Sorcerers quarantine review, asset manifests, and attribution.
 - `worms_port_compliance_keeper` - legal manifests, package/license gates, and MIT compatibility.
 - `worms_port_docs_keeper` - README, docs, AGENTS, planning, and role maintenance.
-- `worms_port_reviewer` - read-only review for boundary risk, bugs, and missing checks.
+- `worms_port_reviewer` - independent read-only review for boundary risk, bugs, and missing checks.
+- `worms_port_support_advisor` - read-only reciprocal support while implementation is forming;
+  model/effort selected for the current uncertainty, not pinned to a permanent expert tier.
 
-Subagents coordinate through docs, manifests, commits, and completion summaries,
-not private handoff.
+Subagents can exchange native messages directly while work is active. Persist
+consequential observations, boundary changes and support returns in the existing
+package evidence; transient messages alone are not a recoverable handoff. Use the
+[adaptive support protocol](docs/process/development_workflow.md#adaptive-support-during-implementation-wp-016)
+before declaring the implementation boundary settled.
 
 ## Task Model Routing
 
@@ -142,12 +278,17 @@ the model/effort and a short reason. This policy authorizes the explicit model
 overrides below when delegation is already required/useful under the workflow.
 It does not require an extra agent for every small edit.
 
-| Work | Model / effort |
+| Current situation | Initial model / effort and support arrangement |
 | --- | --- |
-| Bounded implementation from an approved contract, focused tests, ordinary planning, client/server integration | `gpt-5.6-terra` / `high` |
-| Documentation, inventory, link checks, routine verification and result summaries | `gpt-5.6-terra` / `medium` |
-| Ambiguous architecture or rules with coupled invariants; substantive independent replay, authoritative-state, security or cross-module review | `gpt-6-astra` / `high` |
+| Familiar implementation or focused tests with exercised dependencies | `gpt-5.6-terra` / `high` with an available support port; the work boundary remains revisable. |
+| Documentation, inventory and mechanical checks | `gpt-5.6-terra` / `medium`; request support when source meanings conflict. |
+| Several plausible interpretations or integration dependencies | A reciprocal support episode; `gpt-5.6-sol` / `medium` or `high` is a calibration candidate, not a required intermediate rung. |
+| Coupled temporal/authority/security or architectural ambiguity | `gpt-6-astra` / `high` support can open before a failed patch. Keep the implementer's local evidence in the exchange. |
+| Substantive independent final assessment | Fresh `gpt-6-astra` / `high` identity that did not contribute to the solution. |
 
+These are starting hypotheses, not intrinsic role identities or measured cost
+winners. Keep model/effort fixed when first evaluating a changed interaction;
+compare model or effort separately after the support mechanism is observable.
 Project and ordinary subagent defaults are Terra/high. The docs role pins
 Terra/medium; the dedicated read-only reviewer pins Astra/high. Reserve that
 reviewer for substantive work; use a fresh Terra docs/test worker for routine
@@ -164,10 +305,19 @@ Astra/high entry/final reviewer. Keep the existing clean-room separation.
   and the relevant role instructions; retain read-only review scope and never
   delegate reference-contaminated context to a runtime implementer.
 - Escalate a reproducible failure to Astra after two unsuccessful Terra
-  corrections, or earlier when new ambiguity affects replay/authority/security.
+  corrections if support has not already opened. The implementer, advisor,
+  affected peer or coordinator may open support earlier when a dependency,
+  contradictory observation or risky interface change appears. A worker need
+  not fully diagnose what it cannot yet see or wait for a review FAIL.
   Pass the minimal failing case and attempted fixes. Escalation does not reset
   the workflow's three-correction stop, relax tests or authorize a wider slice.
-  Return routine work to Terra once the issue is resolved.
+  Revise the work split when the dependency crosses it; preserve one writer per
+  shared file. Reduce support after retaining the recovered distinction,
+  evidence, continuing assumptions and reopening cue.
+- Any participant can correct another's hypothesis with evidence. Missing
+  observations call for a probe; reasoning difficulty may justify more effort
+  or a different model; host failures call for infrastructure diagnosis.
+  A stronger model's confidence is not a product or acceptance authority.
 - Record model, effort, role and selection/escalation reason in the existing
   slice evidence/review summary. Distinguish requested/configured settings from
   runtime-confirmed metadata. Never infer the served model from an agent's
@@ -177,9 +327,10 @@ Astra/high entry/final reviewer. Keep the existing clean-room separation.
   CLI overrides and managed settings can supersede project defaults; editing
   config does not switch a running task. Check the task's model picker before
   its next turn when a different coordinator model is desired.
-- Keep selected verification and the 21:00 Europe/Berlin full-suite schedule
-  unchanged. Model routing is a cost/quality policy, not a guarantee of optimal
-  model choice or a substitute for independent review and passing checks.
+- Keep the selector baseline and the 21:00 Europe/Berlin full-suite schedule
+  unchanged. Astra may independently widen test coverage beyond selection;
+  model routing is a cost/quality policy, not a substitute for independent
+  review and passing checks.
 
 ## Git And Reporting
 

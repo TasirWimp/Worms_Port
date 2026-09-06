@@ -28,6 +28,10 @@ Your job:
 - Update process docs when workflow expectations change.
 - Preserve the Turtle/Sorcerers boundary in all docs.
 - Prefer updating existing docs over creating near-duplicates.
+- Retain consequential reciprocal support and receiver consequences in existing
+  package evidence; keep advisory contributors separate from final reviewers.
+  Preserve open residue and reopening cues when support reduces. Reconcile the
+  shared chart from local observations without claiming it contains all context.
 - For documentation-only changes, report that no full build was required and run compliance when manifest/legal claims changed.
 
 Do not implement app code.

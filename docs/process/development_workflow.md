@@ -57,7 +57,9 @@ waiting for routine implementation decisions:
    dependency-lock hash when relevant, planned checks, and deterministic seeds.
 3. Establish a green baseline for the selected checks. A red baseline is
    reported separately and is not attributed to the candidate patch.
-4. Implement one bounded refinement in an isolated branch or worktree.
+4. Implement one refinement in an isolated branch or worktree. Keep file
+   ownership explicit, but revise the behavioral boundary when new dependencies
+   appear. Open reciprocal support during implementation using the protocol below.
 5. Run a fail-fast funnel: compliance, types, focused tests, clean build, built
    smoke, protocol/browser/visual/performance checks as applicable.
 6. Ask the implementing agent to review its own change, then request the
@@ -88,6 +90,110 @@ quarantine content.
 Never auto-approve screenshot baselines, asset licenses, attribution omissions,
 brand permissions, payment exceptions, security exceptions, or real-fund
 activation.
+
+### Adaptive Support During Implementation (WP-016)
+
+Use the existing Codex agent runtime first. This protocol authorizes useful
+native peer exchanges and role-specific model/effort selection within the
+approved slice. It does not install an external mail service, start a permanent
+expert team, or change a running task's model by editing configuration.
+
+The coordination unit is a relationship the product or tooling must preserve.
+For example, action label, enabled state, explanation and submitted intent must
+agree after a legal pending selection and an authority update. A worker's file
+allowance does not make that relationship independent of history or neighboring
+components. State the relationship, current source, relevant observations,
+allowed inputs/actions and unresolved dependency before treating a task as local.
+
+Possible arrangements follow the work:
+
+| Situation | Operational response |
+| --- | --- |
+| Familiar change with exercised dependencies | One implementer, support available; avoid extra agents for mechanical work. |
+| Ambiguous dependency or risky seam | Implementer and read-only advisor exchange observations before the patch is finished. Either side may initiate. |
+| Change crosses the work split | Affected participants revise the boundary and division together; preserve one writer per shared file. |
+| Relationship stabilizes | Reduce active advice, retaining the distinction, evidence, continuing assumptions and reopening cue. |
+| Candidate reaches final assessment | Fresh noncontributing reviewer reconstructs the claim, then reconciles the support/failure ledger and selected gates. |
+
+Native operation:
+
+1. Check which native spawn/message/continue capabilities the host exposes and
+   inspect the chosen role's pins. Announce requested model/effort and reason.
+   Supply the permitted source packet and participant identities; do not forward
+   quarantined context. `worms_port_support_advisor` is unpinned and read-only.
+2. Give implementer and advisor each other's target IDs. Where available, use
+   `collaboration.send_message` for an active peer and `followup_task` for an
+   idle peer that needs another turn. These names describe the current native
+   host, not an API guaranteed by every Codex client. If only parent relay is
+   available, transport the addressed observation with attribution; do not make
+   the parent solve the question first. Missing delivery capability is an
+   explicit limitation, not permission to invent an external agent service.
+3. Open one bounded support episode around a concrete uncertainty or expected
+   dependency change. A complete diagnosis is unnecessary. The implementer
+   exposes a source delta and local constraints; the advisor can proactively
+   challenge the seam. Agree one next discriminating probe and a stop/reframe
+   condition. Keep requested settings separate from unavailable runtime metadata.
+4. Exchange hypotheses and observed results directly. Any participant's evidence
+   can correct another's proposal. Send consequential changes to affected peers
+   and the coordinator: changed assumptions, invalidated receipts and required
+   next actions. Record whether a consequential recipient has responded with
+   its task consequence; a sent message alone does not settle the dependency.
+5. Continue independent work while a response is pending. Pause dependent edits
+   when their governing constraint is unresolved. If an exchange would repeat
+   the same explanation without a new observation, change the probe, regroup
+   the task boundary or record a blocker. Model changes do not reset correction
+   limits. New failure families can require reframing before the same-signature
+   three-correction limit is reached.
+6. The designated package writer retains consequential exchanges and the support
+   return in the existing work-package evidence. Do not copy all chat narration
+   or add a document per message. Reduced support retains what changed, what
+   checks protect it, continuing assumptions, deliberately omitted detail and
+   the condition that reopens it. A source change can reopen prior support
+   without deleting its historical return.
+
+Use the optional `support_episodes` record under the existing work-package
+schema when exercising this protocol. `node scripts/check-work-package-evidence.js`
+checks recorded consistency; `docs/evidence/wp-016.json` carries the first actual
+episode. A completed opted-in package needs an identified final reviewer who
+did not participate in its support solution. An advisor's useful return is not
+a review PASS. Missing support, observations or recipient consequences remain
+visible rather than being supplied from the coordinator's confidence.
+
+The checker cannot establish that messages were truthfully reported, that a
+model was actually served, or that a source binding describes the current
+uncommitted bytes. The final reviewer must inspect the actual candidate diff
+and relevant source-bound tests. Binding equality inside a record is not an
+independent currentness witness. Preserve the tested implementation commit and
+the paths whose changes would reopen support; unrelated later documentation
+commits must not invalidate all historical episodes.
+
+Keep local, joined and final claims separate. Local checks can pass while their
+meanings, source versions or histories disagree. Relevant integrated journeys
+must observe the coupled outcome. Pairwise agreement and multiple agents
+reusing one oracle do not add independent empirical evidence. Revise the
+relationship/transition matrix when implementation exposes a new distinction;
+the entry matrix is not a completeness claim.
+
+One named verification owner controls shared build/output/smoke/browser work.
+Before launching such work, peers request that slot and receive an explicit
+handoff or wait. Record run/source identity and completion or incomplete status;
+after interruption, establish owned-process cleanup before reusing outputs.
+This first native protocol is procedural, not an enforced cross-process lock.
+The daily job is not automatically connected to the peer protocol: inspect its
+run state before sharing outputs, or use isolated output directories/worktrees.
+Uncertain ownership blocks a shared-output run. Independent source reads and
+isolated tests may overlap. Do not change the daily schedule or skip its checks.
+
+The selector remains the required edit-loop baseline. Support probes can run
+focused checks during work; final verification uses the complete selected scope
+and any justified additional review checks. Product acceptance, selector
+aggregate, daily/release and real-device status remain separate.
+
+First-slice scope: WP-016 implements these instructions, the read-only advisor
+and narrow evidence controls. External messaging, automatic process leases and
+comparative cost/model trials require demonstrated need and a separately scoped
+continuation. CRPM tracks source commits and outcomes in its existing
+[pressure case](https://github.com/TasirWimp/CRPM/blob/main/docs/case_studies/Worms_Port_Agent_Coordination_And_Capability_Pressure_Case_v0.md).
 
 ## Verification Funnels
 

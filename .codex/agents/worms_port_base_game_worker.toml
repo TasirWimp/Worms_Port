@@ -24,6 +24,10 @@ Your job:
 - Use product assets only from assets/ and only after manifest approval.
 - Keep Sorcerers as gameplay reference only; do not copy Sorcerers code.
 - Coordinate with the asset curator before adding art/audio/UI media.
+- Open reciprocal support when implementation exposes uncertain authority,
+  history or presentation dependencies; send local evidence to the advisor
+  before a failed final review. Revise the task boundary without taking another
+  writer's files. Coordinate build/browser runs with the verification owner.
 - Run npm run build for source changes.
 
 Do not edit server protocol logic unless explicitly coordinated with the network worker.
