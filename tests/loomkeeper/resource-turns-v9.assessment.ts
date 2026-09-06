@@ -17,21 +17,27 @@ const PROFILES = [0, 1, 4] as const;
 const FP = 256;
 type Profile = (typeof PROFILES)[number];
 type Scenario = { seed: number; reflected: boolean; calling: PlayerCalling; opening: SimulationActor; profile: Profile };
-type Trace = { selection: LoomkeeperSelectionV9; hashes: string[]; operations: Array<{ tick: number; kind: string }> };
+type Trace = { selection: LoomkeeperSelectionV9; hashes: string[]; operations: Array<{ tick: number; kind: string }>;
+    workload: { slots: number; planningTicks: number; rolloutTicks: number; maximumRolloutTicks: number } };
 
 test('V9D assessment: fixed 196 scenarios and 272 deterministic executions', async t => {
     const started = performance.now();
     const groupA: unknown[] = [], groupB: unknown[] = [], groupC: unknown[] = [];
     let completedExecutions = 0;
-    let active: unknown = null;
+    let active: Record<string, unknown> | null = null, phase = 'group-A';
     const save = async (failure: string | null) => {
         const report = {
             assessmentId: 'wp-015d3b-v9d-v1', automationId: 'wp-015d3b-v9d-v1',
             sourceCommit: sourceCommit(), generatedAt: new Date().toISOString(),
             runtime: { node: process.version, platform: process.platform, arch: process.arch },
+            contract: { domain: { A: { seeds: [...SEEDS], reflections: 2, callings: [...CALLINGS], rows: 60, executions: 120 },
+                B: { seeds: [...SEEDS], reflections: 2, openings: ['player', 'loomkeeper'], profiles: [...PROFILES], rows: 120, executions: 120,
+                    playerLattice: { slots: 30, chargedTicks: 30, candidatesPerTick: 1 } },
+                C: { banks: [3, 4, 5, 7], stitching: [45, 46], separation: [640, 641], rows: 16, executions: 32 } },
+                caps: { loomkeeperSlots: 180, planningTicks: 30, candidatesPerTick: 6, rolloutTicks: 1_050, totalRolloutTicks: 189_000, operationsPerTick: 8 } },
             planned: { scenarios: 196, executions: 272, groupA: 60, groupB: 120, groupC: 16 },
             completed: { scenarios: groupA.length + groupB.length + groupC.length, executions: completedExecutions },
-            failure, failingRow: failure ? active : null,
+            failure: failure ? { message: failure, phase, row: active } : null, failingRow: failure ? active : null, failurePhase: failure ? phase : null,
             groups: { A: groupA, B: groupB, C: groupC },
             aggregate: aggregate(groupA, groupB, groupC),
             elapsedMs: Number((performance.now() - started).toFixed(3))
@@ -41,6 +47,7 @@ test('V9D assessment: fixed 196 scenarios and 272 deterministic executions', asy
         return report;
     };
     try {
+        phase = 'group-A';
         for (const seed of SEEDS) for (const reflected of [false, true]) for (const calling of CALLINGS) {
             active = { group: 'A', seed, reflected, calling, opening: 'loomkeeper' };
             const initial = canonicalOpening(fixture(seed, calling, reflected), 'loomkeeper');
@@ -53,6 +60,7 @@ test('V9D assessment: fixed 196 scenarios and 272 deterministic executions', asy
         }
         assert.equal(groupA.length, 60);
 
+        phase = 'group-B';
         for (const seed of SEEDS) for (const reflected of [false, true]) for (const opening of ['player', 'loomkeeper'] as const)
             for (const profile of PROFILES) {
                 const scenario: Scenario = { seed, reflected, calling: 'wizard', opening, profile };
@@ -65,6 +73,7 @@ test('V9D assessment: fixed 196 scenarios and 272 deterministic executions', asy
             }
         assert.equal(groupB.length, 120);
 
+        phase = 'group-C';
         for (const bank of [3, 4, 5, 7]) for (const stitching of [45, 46]) for (const distance of [640, 641]) {
             active = { group: 'C', seed: 1, calling: 'wizard', opening: 'loomkeeper', bank, stitching, distance };
             const initial = thresholdFixture(bank, stitching, distance);
@@ -78,7 +87,7 @@ test('V9D assessment: fixed 196 scenarios and 272 deterministic executions', asy
         }
         assert.equal(groupC.length, 16);
         assert.equal(completedExecutions, 272);
-        const report = await save(null);
+        phase = 'complete'; const report = await save(null);
         t.diagnostic(`assessment=${report.elapsedMs}ms scenarios=196 executions=272`);
     } catch (error) {
         await save(error instanceof Error ? error.message : String(error));
@@ -125,7 +134,8 @@ function correctness(initial: SimulationStateV9): Trace {
         state = advanceSimulationTicksV9(state, 1).state; hashes.push(hashSimulationStateV9(state));
         if (!progressed && state.tick - initial.tick >= 1_050) throw new Error('Detached V9 execution exceeded its turn cap.');
     }
-    return { selection, hashes, operations };
+    return { selection, hashes, operations, workload: { slots: planner.evaluatedCandidates, planningTicks: planner.planningTicks,
+        rolloutTicks: planner.rolloutTicks, maximumRolloutTicks: planner.rolloutTicks ? 1_050 : 0 } };
 }
 
 function fullMatch(scenario: Scenario) {
@@ -134,7 +144,7 @@ function fullMatch(scenario: Scenario) {
     const start = state.units.map(unit => unit.stitching);
     const selections: Array<{ turn: number; actor: SimulationActor; prefix: string; ordinal: number | null; status: string }> = [];
     const casts: Record<string, number> = {}, utility = { opportunities: 0, used: 0 };
-    let noLegalPlans = 0, workFailures = 0;
+    let noLegalPlans = 0, workFailures = 0, unaffordableCandidates = 0, playerSlots = 0, playerAffordableCandidates = 0;
     while (state.phase !== 'finished') {
         if (state.phase === 'action' && plannedTurn !== state.turn) {
             plannedTurn = state.turn;
@@ -148,8 +158,21 @@ function fullMatch(scenario: Scenario) {
                 if (planner.selection.status === 'no_legal_plan') noLegalPlans += 1;
                 assert.equal(planner.selection.status, 'selected'); candidate = planner.selectedCandidate()!; prefix = planner.selection.prefix;
                 selections.push({ turn: state.turn, actor, prefix, ordinal: planner.selection.ordinal, status: planner.selection.status });
-            } else { slots += 30; selections.push({ turn: state.turn, actor, prefix: 'none', ordinal: candidate.ordinal, status: 'selected' }); }
-            utility.opportunities += 1; if (prefix !== 'none') utility.used += 1;
+            } else {
+                // Assessment-only player policy: a fixed script-family row has
+                // one real candidate charged at every one of thirty planning
+                // ticks. It is intentionally narrower than production AI.
+                const lattice = Array.from({ length: 30 }, (_, slot) => candidateAt(scenario.profile * 30 + slot));
+                const ownThread = state.units[0].thread;
+                const affordable = lattice.filter(item => relicCost(item.relicId) <= ownThread);
+                playerSlots += lattice.length; slots += lattice.length; playerAffordableCandidates += affordable.length;
+                unaffordableCandidates += lattice.length - affordable.length;
+                if (!affordable.length) { noLegalPlans += 1; selections.push({ turn: state.turn, actor, prefix: 'none', ordinal: null, status: 'no_legal_plan' });
+                    state = advanceSimulationTicksV9(state, 30).state; continue; }
+                candidate = affordable[0]; selections.push({ turn: state.turn, actor, prefix: 'none', ordinal: candidate.ordinal, status: 'selected' });
+            }
+            if (state.units[actor === 'player' ? 0 : 1].thread >= 4) utility.opportunities += 1;
+            if (prefix !== 'none') utility.used += 1;
             state = advanceSimulationTicksV9(state, 30).state;
             assert.equal(state.tick, turnStart + 30, 'every assessment actor pays its charged planning window');
             const execution = new LoomkeeperExecutionV9(candidate, prefix, state);
@@ -172,9 +195,10 @@ function fullMatch(scenario: Scenario) {
     return { seed: scenario.seed, reflection: scenario.reflected, calling: scenario.calling, opening: scenario.opening,
         script: profileName(scenario.profile), initialHash: hashSimulationStateV9(canonicalOpening(fixture(scenario.seed, scenario.calling, scenario.reflected), scenario.opening)),
         finalHash: hashSimulationStateV9(state), selections, thread: { spent: threadSpent, banked: state.units.map(unit => unit.thread) },
-        casts, utility, unaffordableCandidates: 0, noLegalPlans, workFailures,
+        casts, utility, unaffordableCandidates, noLegalPlans, workFailures,
         ticks: state.tick, turns: state.turn, damage: { player: start[0] - state.units[0].stitching, loomkeeper: start[1] - state.units[1].stitching },
-        winner: state.winner, reason: state.finishReason, planning: { slots, totalPlanningMs: Number(totalPlanningMs.toFixed(3)), totalRolloutTicks, maximumRolloutTicks: maxRolloutTicks ? 1_050 : 0, maxSixSlotBatchMs: Number(maxBatchMs.toFixed(3)) } };
+        winner: state.winner, reason: state.finishReason, planning: { slots, playerSlots, playerAffordableCandidates, totalPlanningMs: Number(totalPlanningMs.toFixed(3)),
+            totalRolloutTicks, maximumRolloutTicks: maxRolloutTicks ? 1_050 : 0, maxSixSlotBatchMs: Number(maxBatchMs.toFixed(3)) } };
 }
 
 function thresholdFixture(bank: number, stitching: number, distance: number): SimulationStateV9 {
@@ -215,7 +239,8 @@ function reflectTerrain<T extends { width: number; height: number; cellSize: num
     return result;
 }
 function profileName(profile: Profile): string { return profile === 0 ? 'stationary' : profile === 1 ? 'toward-90' : 'toward-90-jump'; }
+function relicCost(relicId: ReturnType<typeof candidateAt>['relicId']): number { return relicId === 'threadball' ? 2 : relicId === 'needlepoint' ? 3 : 5; }
 function sourceCommit(): string { try { return execFileSync('git', ['rev-parse', 'HEAD'], { encoding: 'utf8' }).trim(); } catch { return 'unavailable'; } }
-function aggregate(a: unknown[], b: unknown[], c: unknown[]) { const full = b as Array<{ winner: string; opening: string; casts: Record<string, number>; planning: { slots: number; maxSixSlotBatchMs: number } }>;
-    return { groupCounts: { A: a.length, B: b.length, C: c.length }, outcomes: { playerWins: full.filter(row => row.winner === 'player').length, loomkeeperWins: full.filter(row => row.winner === 'loomkeeper').length, draws: full.filter(row => row.winner === 'draw').length, firstActorWins: full.filter(row => row.winner === row.opening).length }, firstActorBias: full.filter(row => row.winner === row.opening).length - full.filter(row => row.winner !== 'draw' && row.winner !== row.opening).length, expensiveCastStarvation: { spoolburstFired: full.filter(row => row.casts.spoolburst).length, unaffordableCandidates: 0 }, cpu: { maximumSixSlotBatchMs: Math.max(0, ...full.map(row => row.planning.maxSixSlotBatchMs)), totalSlots: full.reduce((sum, row) => sum + row.planning.slots, 0) } };
+function aggregate(a: unknown[], b: unknown[], c: unknown[]) { const full = b as Array<{ winner: string; opening: string; casts: Record<string, number>; unaffordableCandidates: number; utility: { opportunities: number; used: number }; planning: { slots: number; playerSlots: number; playerAffordableCandidates: number; maxSixSlotBatchMs: number } }>;
+    return { groupCounts: { A: a.length, B: b.length, C: c.length }, outcomes: { playerWins: full.filter(row => row.winner === 'player').length, loomkeeperWins: full.filter(row => row.winner === 'loomkeeper').length, draws: full.filter(row => row.winner === 'draw').length, firstActorWins: full.filter(row => row.winner === row.opening).length }, firstActorBias: full.filter(row => row.winner === row.opening).length - full.filter(row => row.winner !== 'draw' && row.winner !== row.opening).length, expensiveCastStarvation: { spoolburstFired: full.reduce((sum, row) => sum + (row.casts.spoolburst ?? 0), 0), unaffordableCandidates: full.reduce((sum, row) => sum + row.unaffordableCandidates, 0) }, utility: { opportunities: full.reduce((sum, row) => sum + row.utility.opportunities, 0), used: full.reduce((sum, row) => sum + row.utility.used, 0) }, cpu: { maximumSixSlotBatchMs: Math.max(0, ...full.map(row => row.planning.maxSixSlotBatchMs)), totalSlots: full.reduce((sum, row) => sum + row.planning.slots, 0), playerSlots: full.reduce((sum, row) => sum + row.planning.playerSlots, 0), playerAffordableCandidates: full.reduce((sum, row) => sum + row.planning.playerAffordableCandidates, 0) } };
 }

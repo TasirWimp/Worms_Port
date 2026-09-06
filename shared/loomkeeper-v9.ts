@@ -1,5 +1,6 @@
 import {
-    advanceSimulationTicksV9, applySimulationBarrierV9, applySimulationIntentV9, cloneSimulationV9,
+    advanceSimulationTicksV9DetachedRollout, applySimulationBarrierV9, applySimulationIntentV9,
+    completeDetachedSimulationRolloutV9, DetachedSimulationRolloutV9,
     type SimulationBarrierV9, type SimulationIntentV9, type SimulationStateV9
 } from './simulation-v9';
 import type { RelicId, SimulationActor } from './simulation';
@@ -49,7 +50,9 @@ export class LoomkeeperPlannerV9 {
         this.prefix = prefixFor(source);
         // The charged planning window is identical for every candidate. Keep
         // this immutable root and clone it for each candidate or shared prefix.
-        this.chargedSource = advanceSimulationTicksV9(cloneSimulationV9(source), V9_AI_PLANNING_TICKS).state;
+        const charged = DetachedSimulationRolloutV9.fromTrustedSource(source);
+        advanceSimulationTicksV9DetachedRollout(charged, V9_AI_PLANNING_TICKS);
+        this.chargedSource = completeDetachedSimulationRolloutV9(charged);
         this.reuseIdenticalPrefixes = options.reuseIdenticalPrefixes !== false;
     }
     public step(): void {
@@ -164,9 +167,10 @@ export function prefixFor(state: SimulationStateV9): V9Prefix {
 }
 function evaluateCandidate(source: SimulationStateV9, chargedSource: SimulationStateV9, candidate: LoomkeeperCandidateV9, prefix: V9Prefix): Evaluation | undefined {
     if (!candidateAffordable(source, candidate, prefix)) return undefined;
-    let state = cloneSimulationV9(chargedSource); let ticks = V9_AI_PLANNING_TICKS; const actor = source.activeActor;
+    const rollout = DetachedSimulationRolloutV9.fromTrustedSource(chargedSource);
+    const state = rollout.state; const ticks = V9_AI_PLANNING_TICKS;
     const execution = new LoomkeeperExecutionV9(candidate, prefix, state);
-    return finishEvaluation(source, candidate, state, ticks, execution);
+    return finishEvaluation(source, candidate, rollout, ticks, execution);
 }
 /**
  * Prefixes depend only on the chosen movement script and public action-entry
@@ -179,11 +183,12 @@ function preparePrefix(chargedSource: SimulationStateV9, candidate: LoomkeeperCa
     // has no complete relic-independent stopping state, so retain its full
     // candidate rollout rather than change that cursor timing.
     if (candidate.direction === 'stay') return undefined;
-    let state = cloneSimulationV9(chargedSource); let ticks = V9_AI_PLANNING_TICKS; const actor = state.activeActor;
+    const rollout = DetachedSimulationRolloutV9.fromTrustedSource(chargedSource);
+    let state = rollout.state; let ticks = V9_AI_PLANNING_TICKS; const actor = state.activeActor;
     const execution = new LoomkeeperExecutionV9(candidate, prefix, state);
     while (state.phase !== 'finished' && state.turn === chargedSource.turn && ticks < V9_AI_MAX_ROLLOUT_TICKS) {
         for (let count = 0; count < 8; count += 1) {
-            if (execution.readyForAim()) return { state: cloneSimulationV9(state), logicalTicks: ticks };
+            if (execution.readyForAim()) return { state: completeDetachedSimulationRolloutV9(rollout), logicalTicks: ticks };
             const operation = execution.next(state); if (!operation) break;
             const transition = operation.kind === 'intent'
                 ? applySimulationIntentV9(state, actor, operation.intent, state.turn, state.phase, state.inputEpoch)
@@ -192,35 +197,36 @@ function preparePrefix(chargedSource: SimulationStateV9, candidate: LoomkeeperCa
                 if (operation.kind === 'intent' && ['select_relic', 'aim', 'fire'].includes(operation.intent.type)) return undefined;
                 throw new Error('Illegal V9 policy operation.');
             }
-            state = transition.state;
+            rollout.replace(transition.state); state = rollout.state;
         }
-        if (execution.readyForAim()) return { state: cloneSimulationV9(state), logicalTicks: ticks };
+            if (execution.readyForAim()) return { state: completeDetachedSimulationRolloutV9(rollout), logicalTicks: ticks };
         if (state.phase === 'finished' || state.turn !== chargedSource.turn) break;
-        state = advanceSimulationTicksV9(state, 1).state; ticks += 1;
+        advanceSimulationTicksV9DetachedRollout(rollout, 1); state = rollout.state; ticks += 1;
     }
     return undefined;
 }
 function evaluatePreparedCandidate(source: SimulationStateV9, candidate: LoomkeeperCandidateV9, prefix: V9Prefix, prepared: PreparedPrefix): Evaluation | undefined {
-    const state = cloneSimulationV9(prepared.state);
-    return finishEvaluation(source, candidate, state, prepared.logicalTicks, new LoomkeeperExecutionV9(candidate, prefix, state, true));
+    const rollout = DetachedSimulationRolloutV9.fromTrustedSource(prepared.state);
+    return finishEvaluation(source, candidate, rollout, prepared.logicalTicks, new LoomkeeperExecutionV9(candidate, prefix, rollout.state, true));
 }
-function finishEvaluation(source: SimulationStateV9, candidate: LoomkeeperCandidateV9, initial: SimulationStateV9, initialTicks: number,
+function finishEvaluation(source: SimulationStateV9, candidate: LoomkeeperCandidateV9, rollout: DetachedSimulationRolloutV9, initialTicks: number,
     execution: LoomkeeperExecutionV9): Evaluation | undefined {
-    let state = initial, ticks = initialTicks; const actor = source.activeActor;
+    let state = rollout.state, ticks = initialTicks; const actor = source.activeActor;
     while (state.phase !== 'finished' && state.turn === source.turn && ticks < V9_AI_MAX_ROLLOUT_TICKS) {
         for (let count = 0; count < 8; count += 1) { const operation = execution.next(state); if (!operation) break;
             const transition = operation.kind === 'intent' ? applySimulationIntentV9(state, actor, operation.intent, state.turn, state.phase, state.inputEpoch) : applySimulationBarrierV9(state, operation.barrier);
             if (!transition.accepted) { if (operation.kind === 'intent' && ['select_relic', 'aim', 'fire'].includes(operation.intent.type)) return undefined; throw new Error('Illegal V9 policy operation.'); }
-            state = transition.state;
+            rollout.replace(transition.state); state = rollout.state;
         }
         if (state.phase === 'finished' || state.turn !== source.turn) break;
-        state = advanceSimulationTicksV9(state, 1).state; ticks += 1;
+        advanceSimulationTicksV9DetachedRollout(rollout, 1); state = rollout.state; ticks += 1;
     }
     if (ticks >= V9_AI_MAX_ROLLOUT_TICKS && state.phase !== 'finished' && state.turn === source.turn) throw new Error('V9 candidate exceeded its frozen work bound.');
-    const own = state.units[actor === 'player' ? 0 : 1], target = state.units[actor === 'player' ? 1 : 0];
-    return { candidate, logicalTicks: ticks, rank: [state.winner === actor ? 3 : state.phase !== 'finished' ? 2 : state.winner === 'draw' ? 1 : 0,
+    const completed = completeDetachedSimulationRolloutV9(rollout);
+    const own = completed.units[actor === 'player' ? 0 : 1], target = completed.units[actor === 'player' ? 1 : 0];
+    return { candidate, logicalTicks: ticks, rank: [completed.winner === actor ? 3 : completed.phase !== 'finished' ? 2 : completed.winner === 'draw' ? 1 : 0,
         source.units[actor === 'player' ? 1 : 0].stitching - target.stitching - 2 * (source.units[actor === 'player' ? 0 : 1].stitching - own.stitching),
-        own.thread, Math.min(640 * 256, Math.abs(state.units[0].xFp - state.units[1].xFp)), -candidate.movementTicks, -candidate.ordinal] };
+        own.thread, Math.min(640 * 256, Math.abs(completed.units[0].xFp - completed.units[1].xFp)), -candidate.movementTicks, -candidate.ordinal] };
 }
 function candidateAffordable(source: SimulationStateV9, candidate: LoomkeeperCandidateV9, prefix: V9Prefix): boolean {
     const actor = source.units[source.activeActor === 'player' ? 0 : 1];
