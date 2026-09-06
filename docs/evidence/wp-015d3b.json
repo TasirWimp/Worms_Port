@@ -71,6 +71,16 @@
       "command": "V9D lock-table audit at 1003666; git diff --check; npm.cmd run check:work-packages; npm.cmd run verify:changes -- --dry-run",
       "status": "pass",
       "detail": "All 11 listed SHA-256/blob pairs match the corresponding HEAD source files and every blob is exactly 40 lowercase hexadecimal characters, including server/src/protocol/socket.ts d5013a2c4d3f4f3c1d49e70f85e6f82bc5e2f0ef. Documentation-only selection remains check:work-packages."
+    },
+    {
+      "command": "npm.cmd run assess:v9; focused node --import tsx --test V9D Loomkeeper probes",
+      "status": "in_progress",
+      "detail": "Red baseline: assess:v9 was absent. The admitted assessment carrier and script now bind the fixed 196-scenario/272-execution domain and ignored first-failure report. Focused green evidence includes complete 180-slot/30-tick selection-before-debit parity, strict automated replay reconstruction, and synthetic-opening isolation from production reward proof. The exact non-default assessment has not completed because each frozen 180-plan production pass is materially expensive; do not treat this entry as an assessment pass."
+    },
+    {
+      "command": "npm.cmd run verify:changes -- --base 1a9e08a --dry-run; selected checks/browser/performance/postgres phases",
+      "status": "pass_with_expected_skip",
+      "detail": "Dry run selected compliance, types, all product unit families, outputs/smoke, identity/reward/bundle checks, canonical phone combat/identity/practice/resilience/reward/smoke suites, performance and PostgreSQL. The sequential selected checks reached fresh build and bundle artifacts after combat 73/73, Practice 41/41, identity 22/22 and reward 33/33; the six-suite phone run passed (57/57) and performance passed. PostgreSQL was intentionally skipped because WP014_TEST_DATABASE_URL is unavailable locally; CI must run it. Daily/release remains the scheduled 21:00 Europe/Berlin gate."
     }
   ],
   "reviews": [
@@ -312,7 +322,8 @@
         "evidence": [
           "V9B foundation replay is strict and intentionally has no automation envelope; injected V9 creation ignores mode and creates no Challenge lifecycle.",
           "V8 automated replay/reward guards show the required separate provenance pattern without authorizing V8 source reuse.",
-          "The amended V9D contract freezes the narrow controls projection, 196-scenario/272-execution assessment, prefix, charged planning, landing, reconstruction, lifecycle and forged-proof probes before source edits."
+          "The amended V9D contract freezes the narrow controls projection, 196-scenario/272-execution assessment, prefix, charged planning, landing, reconstruction, lifecycle and forged-proof probes before source edits.",
+          "At the V9D verification-writer handoff, read-only Astra support confirmed that the public V9 create/clone/invariant/hash/apply/barrier/advance APIs and planner/execution interfaces suffice for canonical synthetic openings, detached traces and genuine automated reconstruction. No product instrumentation or arbitrary-state production replay path is authorized; synthetic traces remain assessment-only."
         ],
         "support_assumptions": [
           "Requested model/effort is configured selection data; runtime-served metadata is unavailable.",

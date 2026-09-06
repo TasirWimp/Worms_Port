@@ -3,7 +3,7 @@ import test from 'node:test';
 
 import { V9_AUTOMATION_ID } from '../../shared/combat-version';
 import { V9_RULESET_ID } from '../../shared/simulation-v9';
-import { prefixFor } from '../../shared/loomkeeper-v9';
+import { LoomkeeperPlannerV9, prefixFor } from '../../shared/loomkeeper-v9';
 import { SimulationCoordinatorV9 } from '../../server/src/simulation/coordinator-v9';
 
 function coordinatorAtLoomkeeperAction(): SimulationCoordinatorV9 {
@@ -70,6 +70,28 @@ test('V9D prefix predicate uses inclusive Guard health and fixed-point Leap sepa
     assert.equal(prefixFor(state), 'threadleap');
     state.units[0].xFp = 480 * 256 + 640 * 256;
     assert.equal(prefixFor(state), 'none');
+    coordinator.dispose();
+});
+
+test('V9D charges the complete 180-slot lattice before selection and keeps the charged boundary at tick 30', () => {
+    const coordinator = coordinatorAtLoomkeeperAction();
+    const entry = (coordinator as any).matches.get('v9_automated_challenge');
+    entry.state.units[1].thread = 4;
+    entry.state.units[1].stitching = 45;
+    const detached = new LoomkeeperPlannerV9(structuredClone(entry.state));
+    for (let tick = 0; tick < 29; tick += 1) detached.step();
+    assert.equal(detached.planningTicks, 29);
+    assert.equal(detached.evaluatedCandidates, 174);
+    assert.equal(detached.rolloutTicks <= 189_000, true);
+    coordinator.advance('v9_automated_challenge', 29);
+    assert.deepEqual((coordinator.replay('v9_automated_challenge') as any).chosenPlans, []);
+    detached.step();
+    assert.equal(detached.planningTicks, 30);
+    assert.equal(detached.evaluatedCandidates, 180);
+    assert.equal(detached.selection.status, 'selected');
+    coordinator.advance('v9_automated_challenge', 1);
+    const scheduled = (coordinator.replay('v9_automated_challenge') as any).chosenPlans.at(-1);
+    assert.deepEqual(scheduled, { turn: 1, ...detached.selection });
     coordinator.dispose();
 });
 

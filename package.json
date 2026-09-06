@@ -32,6 +32,7 @@
     "test:simulation": "node --import tsx --test tests/simulation/*.test.ts",
     "test:loomkeeper": "node --import tsx --test tests/loomkeeper/*.test.ts",
     "assess:v8": "node --import tsx --test tests/loomkeeper/action-turns-v8.assessment.ts",
+    "assess:v9": "node --import tsx --test tests/loomkeeper/resource-turns-v9.assessment.ts",
     "test:relics": "node --import tsx --test tests/relics/*.test.ts",
     "check:crpm-world-types": "tsc -p analysis/crpm_world/tsconfig.json",
     "test:crpm-world": "node --import tsx --test tests/crpm-world/*.test.ts",
