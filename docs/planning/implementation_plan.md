@@ -8,6 +8,13 @@ Phaser/Socket.IO stack.
 ## Execution Pointer
 
 - Active target: mobile-first single-player Nimiq Pay competition release.
+- Active tooling package: **WP-016 native adaptive agent support**, owner-opened
+  on 2026-09-06 from `2d31aa0` in `codex/wp-016-adaptive-agent-support`.
+  [Entry evidence](../evidence/wp-016.json) and the
+  [operational protocol](../process/development_workflow.md#adaptive-support-during-implementation-wp-016)
+  own reciprocal support during implementation, revisable boundaries,
+  source-bound returns and independent final review. Implementation and
+  validation are in progress; this tooling detour does not open V9D gameplay.
 - Active product package: **WP-015D3B V9 Resource and Utilities — V9A rules
   contract and V9B injected authoritative foundation complete and independently
   reviewed on 2026-09-05 after owner-reported V8E phone acceptance. V9C touch
@@ -28,10 +35,11 @@ Phaser/Socket.IO stack.
   fixtures in the V9 contract; an independent Astra/high reviewer approved the
   entry. V9B now provides only test-injected V9 state, protocol/replay and
   coordinator authority; its selected verification and final Astra review pass.
-  V9C's local `?combat-preview=v9` touch surface is not accepted: continuity
-  review found stale gestures, overlapping controls, missing presentation/HUD,
-  and missing player guidance. Its correction needs a new bounded entry;
-  the public selector remains V7. V8 public release gates remain independent;
+  V9C's initial touch surface failed continuity review. C7.5 subsequently
+  accepted the bounded local-preview correction at `c713203`; closure at
+  `2d31aa0` retains an incomplete selector aggregate after a host navigation
+  failure and a passing isolated rerun. That historical correction needs no
+  new entry. The public selector remains V7. V8 public release gates remain independent;
   no automatic deployment, funded activation, V10 or V11 is implied.
 - Product predecessor: **WP-015D3A V8 Action-Turn Candidate — V8A finite
   rules/acceptance contract complete and independently reviewed; V8B authoritative

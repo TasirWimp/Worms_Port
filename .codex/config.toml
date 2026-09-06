@@ -3,6 +3,7 @@ model = "gpt-5.6-terra"
 model_reasoning_effort = "high"
 
 [agents]
-# Keep ordinary workers on Terra even when the coordinator uses Astra.
+# Initial execution setting; native reciprocal support can use another model.
+# AGENTS.md governs episode-specific capability/effort and review independence.
 default_subagent_model = "gpt-5.6-terra"
 default_subagent_reasoning_effort = "high"

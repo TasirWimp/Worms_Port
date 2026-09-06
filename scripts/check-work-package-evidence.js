@@ -13,7 +13,7 @@ const allowedFields = new Set([
   'starting_lock_sha256', 'owning_roles', 'scope', 'non_goals',
   'planned_checks', 'deterministic_seeds', 'sorcerers_reference_used',
   'clean_room_records', 'check_results', 'reviews', 'skipped_checks',
-  'residual_risks'
+  'residual_risks', 'support_episodes'
 ]);
 
 function canonicalLockHash(commit, root = repoRoot) {
@@ -44,6 +44,199 @@ function isShallowRepository(root = repoRoot) {
   }
 }
 
+function isNonEmptyString(value) {
+  return typeof value === 'string' && value.length > 0;
+}
+
+function isBoundSource(source) {
+  return source &&
+    /^[0-9a-f]{7,40}$/.test(source.commit || '') &&
+    Array.isArray(source.paths) && source.paths.length > 0 &&
+    source.paths.every(isNonEmptyString);
+}
+
+function sameBoundSource(left, right) {
+  return isBoundSource(left) && isBoundSource(right) &&
+    left.commit === right.commit &&
+    left.paths.length === right.paths.length &&
+    left.paths.every((entry, index) => entry === right.paths[index]);
+}
+
+function reportUnexpectedFields(value, allowed, label, errors) {
+  if (!value || typeof value !== 'object' || Array.isArray(value)) return;
+  for (const field of Object.keys(value)) {
+    if (!allowed.has(field)) errors.push(`${label}: unexpected field ${field}.`);
+  }
+}
+
+function validateSupportEpisodes(evidence, errors) {
+  const label = evidence.id || '<missing id>';
+  if (evidence.support_episodes === undefined) return;
+  if (!Array.isArray(evidence.support_episodes)) {
+    errors.push(`${label}: support_episodes must be an array when present.`);
+    return;
+  }
+
+  const episodeIds = new Set();
+  const supportParticipantIds = new Set();
+  const episodeStatuses = new Set(['open', 'reduced', 'blocked', 'reopened']);
+
+  for (const episode of evidence.support_episodes) {
+    const episodeLabel = `${label}: support episode ${episode?.id || '<missing id>'}`;
+    if (!episode || typeof episode !== 'object' || Array.isArray(episode)) {
+      errors.push(`${episodeLabel} must be an object.`);
+      continue;
+    }
+    reportUnexpectedFields(episode, new Set([
+      'id', 'status', 'participants', 'source_binding', 'exchanges', 'closure'
+    ]), episodeLabel, errors);
+    if (!isNonEmptyString(episode.id)) errors.push(`${episodeLabel}: missing id.`);
+    else if (episodeIds.has(episode.id)) errors.push(`${episodeLabel}: duplicate episode id.`);
+    else episodeIds.add(episode.id);
+    if (!episodeStatuses.has(episode.status)) errors.push(`${episodeLabel}: invalid status.`);
+
+    const participants = Array.isArray(episode.participants) ? episode.participants : [];
+    if (participants.length < 2) errors.push(`${episodeLabel}: requires at least two exchange participants.`);
+    const participantIds = new Set();
+    for (const participant of participants) {
+      if (!participant || typeof participant !== 'object' || !isNonEmptyString(participant.id)) {
+        errors.push(`${episodeLabel}: participant requires an id.`);
+        continue;
+      }
+      reportUnexpectedFields(participant, new Set(['id', 'requested', 'runtime']),
+        `${episodeLabel}: participant ${participant.id}`, errors);
+      reportUnexpectedFields(participant.requested, new Set(['model', 'effort']),
+        `${episodeLabel}: requested settings for ${participant.id}`, errors);
+      reportUnexpectedFields(participant.runtime, new Set(['status', 'model', 'effort']),
+        `${episodeLabel}: runtime settings for ${participant.id}`, errors);
+      if (participantIds.has(participant.id)) errors.push(`${episodeLabel}: duplicate participant ${participant.id}.`);
+      participantIds.add(participant.id);
+      supportParticipantIds.add(participant.id);
+      if (!isNonEmptyString(participant.requested?.model) || !isNonEmptyString(participant.requested?.effort)) {
+        errors.push(`${episodeLabel}: participant ${participant.id} requires requested model and effort.`);
+      }
+      if (!['unknown', 'reported'].includes(participant.runtime?.status)) {
+        errors.push(`${episodeLabel}: participant ${participant.id} requires runtime status unknown or reported.`);
+      } else if (participant.runtime.status === 'reported' &&
+          (!isNonEmptyString(participant.runtime.model) || !isNonEmptyString(participant.runtime.effort))) {
+        errors.push(`${episodeLabel}: reported runtime for ${participant.id} requires model and effort.`);
+      }
+    }
+
+    const sourceBinding = episode.source_binding;
+    reportUnexpectedFields(sourceBinding, new Set(['commit', 'paths', 'relationship']),
+      `${episodeLabel}: source binding`, errors);
+    if (!isBoundSource(sourceBinding) || !isNonEmptyString(sourceBinding?.relationship)) {
+      errors.push(`${episodeLabel}: requires same-repository source binding and relationship.`);
+    }
+
+    const exchanges = Array.isArray(episode.exchanges) ? episode.exchanges : [];
+    if (!Array.isArray(episode.exchanges)) {
+      errors.push(`${episodeLabel}: exchanges must be an array.`);
+    }
+    if (exchanges.length < 1) {
+      errors.push(`${episodeLabel}: requires at least one recorded exchange.`);
+    }
+    if (episode.status === 'reduced' && exchanges.length < 2) {
+      errors.push(`${episodeLabel}: reduced support requires reciprocal exchanges.`);
+    }
+    const exchangeIds = new Set();
+    const sentBy = new Set();
+    const receivedBy = new Set();
+    const pendingConsequential = [];
+    for (const exchange of exchanges) {
+      const exchangeLabel = `${episodeLabel}: exchange ${exchange?.id || '<missing id>'}`;
+      if (!exchange || typeof exchange !== 'object' || !isNonEmptyString(exchange.id)) {
+        errors.push(`${exchangeLabel} requires an id.`);
+        continue;
+      }
+      reportUnexpectedFields(exchange, new Set([
+        'id', 'from', 'to', 'source', 'probe', 'remaining_uncertainty', 'consequential', 'recipient_disposition'
+      ]), exchangeLabel, errors);
+      reportUnexpectedFields(exchange.source, new Set(['commit', 'paths']), `${exchangeLabel}: source`, errors);
+      if (exchangeIds.has(exchange.id)) errors.push(`${exchangeLabel}: duplicate exchange id.`);
+      exchangeIds.add(exchange.id);
+      if (!participantIds.has(exchange.from) || !participantIds.has(exchange.to) || exchange.from === exchange.to) {
+        errors.push(`${exchangeLabel}: from and to must be distinct episode participants.`);
+      } else {
+        sentBy.add(exchange.from);
+        receivedBy.add(exchange.to);
+      }
+      if (!isBoundSource(exchange.source) || !isNonEmptyString(exchange.probe) ||
+          !isNonEmptyString(exchange.remaining_uncertainty)) {
+        errors.push(`${exchangeLabel}: requires source, probe, and remaining uncertainty.`);
+      }
+      if (typeof exchange.consequential !== 'boolean') {
+        errors.push(`${exchangeLabel}: requires explicit consequential status.`);
+      } else if (exchange.consequential) {
+        const disposition = exchange.recipient_disposition;
+        reportUnexpectedFields(disposition, new Set(['status', 'detail']),
+          `${exchangeLabel}: recipient disposition`, errors);
+        if (!disposition || !['received', 'pending'].includes(disposition.status) || !isNonEmptyString(disposition.detail)) {
+          errors.push(`${exchangeLabel}: consequential exchange requires received or pending recipient disposition.`);
+        } else if (disposition.status === 'pending') {
+          pendingConsequential.push(exchange.id);
+        }
+      }
+    }
+    if (episode.status === 'reduced') {
+      for (const participantId of participantIds) {
+        if (!sentBy.has(participantId) || !receivedBy.has(participantId)) {
+          errors.push(`${episodeLabel}: reduced support participant ${participantId} must both send and receive an exchange.`);
+        }
+      }
+    }
+
+    const closure = episode.closure;
+    if (episode.status === 'reduced' && !closure) {
+      errors.push(`${episodeLabel}: reduced support requires closure evidence.`);
+    }
+    if (closure) {
+      reportUnexpectedFields(closure, new Set([
+        'source_currentness', 'distinction', 'evidence', 'support_assumptions', 'reopen_cue'
+      ]), `${episodeLabel}: closure`, errors);
+      if (!isNonEmptyString(closure.distinction) || !Array.isArray(closure.evidence) || closure.evidence.length === 0 ||
+          !closure.evidence.every(isNonEmptyString) || !Array.isArray(closure.support_assumptions) ||
+          closure.support_assumptions.length === 0 || !closure.support_assumptions.every(isNonEmptyString) ||
+          !isNonEmptyString(closure.reopen_cue)) {
+        errors.push(`${episodeLabel}: closure requires distinction, evidence, support assumptions, and reopen cue.`);
+      }
+      const currentness = closure.source_currentness;
+      reportUnexpectedFields(currentness, new Set(['commit', 'paths', 'manual_candidate_review']),
+        `${episodeLabel}: closure source currentness`, errors);
+      if (!isBoundSource(currentness) ||
+          !isNonEmptyString(currentness?.manual_candidate_review)) {
+        errors.push(`${episodeLabel}: closure requires bound source currentness and manual candidate review.`);
+      } else if (episode.status === 'reduced' &&
+          !sameBoundSource(currentness, sourceBinding)) {
+        errors.push(`${episodeLabel}: reduced closure source currentness must match the declared source binding.`);
+      }
+    }
+    if (episode.status === 'reduced' && pendingConsequential.length > 0) {
+      errors.push(`${episodeLabel}: reduced support has pending consequential exchanges: ${pendingConsequential.join(', ')}.`);
+    }
+  }
+
+  if (evidence.status === 'complete') {
+    if (evidence.support_episodes.some((episode) => episode?.status !== 'reduced')) {
+      errors.push(`${label}: completed evidence cannot retain open, blocked, or reopened support.`);
+    }
+    const reviews = Array.isArray(evidence.reviews) ? evidence.reviews : [];
+    const finalReviews = reviews.filter((review) => review?.review_type === 'final');
+    if (finalReviews.length === 0 || finalReviews.some((review) =>
+      review.decision !== 'pass' || !isNonEmptyString(review.participant_id) || supportParticipantIds.has(review.participant_id)
+    )) {
+      errors.push(`${label}: completed support evidence requires a passing final review by an identified non-support participant.`);
+    }
+  }
+  for (const review of Array.isArray(evidence.reviews) ? evidence.reviews : []) {
+    if (review?.review_type === 'final' &&
+        (!isNonEmptyString(review.participant_id) || supportParticipantIds.has(review.participant_id))) {
+      errors.push(`${label}: final review participant must be identified and distinct from support participants.`);
+    }
+  }
+}
+
 function validateEvidence(
   records,
   cleanRoomRecords,
@@ -70,7 +263,7 @@ function validateEvidence(
       if (!Array.isArray(evidence[field])) errors.push(`${label}: ${field} must be an array.`);
       else if (evidence[field].some((item) => typeof item !== 'string')) errors.push(`${label}: ${field} must contain strings.`);
     }
-    for (const field of ['check_results', 'reviews', 'skipped_checks', 'residual_risks']) {
+    for (const field of ['check_results', 'reviews', 'support_episodes', 'skipped_checks', 'residual_risks']) {
       if (evidence[field] !== undefined && !Array.isArray(evidence[field])) {
         errors.push(`${label}: ${field} must be an array when present.`);
       }
@@ -114,6 +307,8 @@ function validateEvidence(
         errors.push(`${label}: clean-room record ${recordId} must be complete.`);
       }
     }
+
+    validateSupportEpisodes(evidence, errors);
 
     if (evidence.status === 'complete') {
       for (const field of ['check_results', 'reviews', 'skipped_checks', 'residual_risks']) {

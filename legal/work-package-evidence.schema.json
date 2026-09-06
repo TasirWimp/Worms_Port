@@ -34,8 +34,120 @@
     "clean_room_records": { "type": "array", "items": { "type": "string" } },
     "check_results": { "type": "array" },
     "reviews": { "type": "array" },
+    "support_episodes": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["id", "status", "participants", "source_binding", "exchanges"],
+        "properties": {
+          "id": { "type": "string", "minLength": 1 },
+          "status": { "enum": ["open", "reduced", "blocked", "reopened"] },
+          "participants": {
+            "type": "array",
+            "minItems": 2,
+            "items": {
+              "type": "object",
+              "required": ["id", "requested", "runtime"],
+              "properties": {
+                "id": { "type": "string", "minLength": 1 },
+                "requested": {
+                  "type": "object",
+                  "required": ["model", "effort"],
+                  "properties": {
+                    "model": { "type": "string", "minLength": 1 },
+                    "effort": { "type": "string", "minLength": 1 }
+                  },
+                  "additionalProperties": false
+                },
+                "runtime": {
+                  "type": "object",
+                  "required": ["status"],
+                  "properties": {
+                    "status": { "enum": ["unknown", "reported"] },
+                    "model": { "type": "string", "minLength": 1 },
+                    "effort": { "type": "string", "minLength": 1 }
+                  },
+                  "additionalProperties": false
+                }
+              },
+              "additionalProperties": false
+            }
+          },
+          "source_binding": {
+            "type": "object",
+            "required": ["commit", "paths", "relationship"],
+            "properties": {
+              "commit": { "type": "string", "pattern": "^[0-9a-f]{7,40}$" },
+              "paths": { "type": "array", "minItems": 1, "items": { "type": "string", "minLength": 1 } },
+              "relationship": { "type": "string", "minLength": 1 }
+            },
+            "additionalProperties": false
+          },
+          "exchanges": {
+            "type": "array",
+            "minItems": 1,
+            "items": {
+              "type": "object",
+              "required": ["id", "from", "to", "source", "probe", "remaining_uncertainty", "consequential"],
+              "properties": {
+                "id": { "type": "string", "minLength": 1 },
+                "from": { "type": "string", "minLength": 1 },
+                "to": { "type": "string", "minLength": 1 },
+                "source": { "$ref": "#/$defs/boundSource" },
+                "probe": { "type": "string", "minLength": 1 },
+                "remaining_uncertainty": { "type": "string", "minLength": 1 },
+                "consequential": { "type": "boolean" },
+                "recipient_disposition": {
+                  "type": "object",
+                  "required": ["status", "detail"],
+                  "properties": {
+                    "status": { "enum": ["received", "pending"] },
+                    "detail": { "type": "string", "minLength": 1 }
+                  },
+                  "additionalProperties": false
+                }
+              },
+              "additionalProperties": false
+            }
+          },
+          "closure": {
+            "type": "object",
+            "required": ["source_currentness", "distinction", "evidence", "support_assumptions", "reopen_cue"],
+            "properties": {
+              "source_currentness": {
+                "type": "object",
+                "required": ["commit", "paths", "manual_candidate_review"],
+                "properties": {
+                  "commit": { "type": "string", "pattern": "^[0-9a-f]{7,40}$" },
+                  "paths": { "type": "array", "minItems": 1, "items": { "type": "string", "minLength": 1 } },
+                  "manual_candidate_review": { "type": "string", "minLength": 1 }
+                },
+                "additionalProperties": false
+              },
+              "distinction": { "type": "string", "minLength": 1 },
+              "evidence": { "type": "array", "minItems": 1, "items": { "type": "string", "minLength": 1 } },
+              "support_assumptions": { "type": "array", "minItems": 1, "items": { "type": "string", "minLength": 1 } },
+              "reopen_cue": { "type": "string", "minLength": 1 }
+            },
+            "additionalProperties": false
+          }
+        },
+        "additionalProperties": false
+      }
+    },
     "skipped_checks": { "type": "array" },
     "residual_risks": { "type": "array" }
+  },
+  "$defs": {
+    "boundSource": {
+      "type": "object",
+      "required": ["commit", "paths"],
+      "properties": {
+        "commit": { "type": "string", "pattern": "^[0-9a-f]{7,40}$" },
+        "paths": { "type": "array", "minItems": 1, "items": { "type": "string", "minLength": 1 } }
+      },
+      "additionalProperties": false
+    }
   },
   "additionalProperties": false
 }
