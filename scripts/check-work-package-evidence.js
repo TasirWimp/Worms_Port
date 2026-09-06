@@ -44,9 +44,13 @@ function isNonEmptyString(value) {
   return typeof value === 'string' && value.length > 0;
 }
 
+function isRecord(value) {
+  return Boolean(value) && typeof value === 'object' && !Array.isArray(value);
+}
+
 function isBoundSource(source) {
-  return source &&
-    /^[0-9a-f]{7,40}$/.test(source.commit || '') &&
+  return isRecord(source) &&
+    typeof source.commit === 'string' && /^[0-9a-f]{7,40}$/.test(source.commit) &&
     Array.isArray(source.paths) && source.paths.length > 0 &&
     source.paths.every(isNonEmptyString);
 }
@@ -59,7 +63,7 @@ function sameBoundSource(left, right) {
 }
 
 function reportUnexpectedFields(value, allowed, label, errors) {
-  if (!value || typeof value !== 'object' || Array.isArray(value)) return;
+  if (!isRecord(value)) return;
   for (const field of Object.keys(value)) {
     if (!allowed.has(field)) errors.push(`${label}: unexpected field ${field}.`);
   }
@@ -117,6 +121,11 @@ function validateSupportEpisodes(evidence, errors) {
           (!isNonEmptyString(participant.runtime.model) || !isNonEmptyString(participant.runtime.effort))) {
         errors.push(`${episodeLabel}: reported runtime for ${participant.id} requires model and effort.`);
       }
+      for (const field of ['model', 'effort']) {
+        if (participant.runtime?.[field] !== undefined && !isNonEmptyString(participant.runtime[field])) {
+          errors.push(`${episodeLabel}: runtime ${field} for ${participant.id} must be a non-empty string when present.`);
+        }
+      }
     }
 
     const sourceBinding = episode.source_binding;
@@ -164,15 +173,19 @@ function validateSupportEpisodes(evidence, errors) {
       }
       if (typeof exchange.consequential !== 'boolean') {
         errors.push(`${exchangeLabel}: requires explicit consequential status.`);
-      } else if (exchange.consequential) {
-        const disposition = exchange.recipient_disposition;
+      }
+      const disposition = exchange.recipient_disposition;
+      const hasDisposition = disposition !== undefined;
+      const validDisposition = isRecord(disposition) &&
+        ['received', 'pending'].includes(disposition.status) && isNonEmptyString(disposition.detail);
+      if (hasDisposition) {
         reportUnexpectedFields(disposition, new Set(['status', 'detail']),
           `${exchangeLabel}: recipient disposition`, errors);
-        if (!disposition || !['received', 'pending'].includes(disposition.status) || !isNonEmptyString(disposition.detail)) {
-          errors.push(`${exchangeLabel}: consequential exchange requires received or pending recipient disposition.`);
-        } else if (disposition.status === 'pending') {
-          pendingConsequential.push(exchange.id);
-        }
+        if (!validDisposition) errors.push(`${exchangeLabel}: recipient disposition requires received or pending status and detail.`);
+      }
+      if (exchange.consequential) {
+        if (!validDisposition) errors.push(`${exchangeLabel}: consequential exchange requires received or pending recipient disposition.`);
+        else if (disposition.status === 'pending') pendingConsequential.push(exchange.id);
       }
     }
     if (episode.status === 'reduced') {
@@ -184,10 +197,14 @@ function validateSupportEpisodes(evidence, errors) {
     }
 
     const closure = episode.closure;
-    if (episode.status === 'reduced' && !closure) {
+    const hasClosure = closure !== undefined;
+    if (hasClosure && !isRecord(closure)) {
+      errors.push(`${episodeLabel}: closure must be an object when present.`);
+    }
+    if (episode.status === 'reduced' && !isRecord(closure)) {
       errors.push(`${episodeLabel}: reduced support requires closure evidence.`);
     }
-    if (closure) {
+    if (isRecord(closure)) {
       reportUnexpectedFields(closure, new Set([
         'source_currentness', 'distinction', 'evidence', 'support_assumptions', 'reopen_cue'
       ]), `${episodeLabel}: closure`, errors);

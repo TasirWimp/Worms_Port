@@ -40,7 +40,36 @@
       "detail": "4/4 tests after schema/checker alignment, including negative lifecycle, receipt, source and final identity controls."
     }
   ],
-  "reviews": [],
+  "reviews": [
+    {
+      "role": "worms_port_reviewer",
+      "reviewer": "/root/support_final_review",
+      "participant_id": "/root/support_final_review",
+      "review_type": "final",
+      "decision": "fail",
+      "source_commit": "b3788393a39838d6156db996c47c7b98c8ed2741",
+      "requested_model": "gpt-6-astra",
+      "requested_effort": "high",
+      "runtime_metadata": "unavailable",
+      "findings": [
+        {
+          "id": "WP016-R1",
+          "severity": "P2",
+          "status": "open",
+          "detail": "Eleven schema-invalid mutations passed the checker: numeric commit coercion at three source locations, optional runtime value types under unknown, supplied nonconsequential disposition, and falsy optional closure. One bounded correction matrix; semantic/lifecycle design unchanged."
+        }
+      ],
+      "cold_reentry": "pass",
+      "checks": [
+        "Focused 4/4; fifteen additional lifecycle/independence controls pass.",
+        "Selector dry-run and diff whitespace pass; seven source-bound paths match b378839 after newline normalization."
+      ],
+      "limits": [
+        "Read-only review; no product/daily/release/real-device approval.",
+        "Truthful capture, contributor disclosure and actual runtime metadata are not authenticated by the record."
+      ]
+    }
+  ],
   "skipped_checks": [],
   "residual_risks": [
     "Initial tooling baseline: work-package evidence tests passed 2/2. Existing C7 historical failed reviews still appear in housekeeping; product pointer contains stale wording to reconcile from its recorded C7.5 closure.",
@@ -49,12 +78,13 @@
     "Root /root is also a solution contributor: it supplied the pre-review missing-final-identity guard, found premature reciprocity at episode opening, requested a single same-repo source boundary and caught empty-array schema drift. Root is not eligible for the independent final verdict. Pair episode records direct Terra/Astra exchanges; root contributions are retained here without inventing a symmetric advice transcript.",
     "Native direct messages and followup_task worked during this live tooling implementation. Re-entry through the retained record and independent candidate review are pending. Served-model telemetry is unavailable; requested settings only are recorded.",
     "Verification owner for WP-016 is /root. Only isolated focused tests overlap; no shared game build/browser run occurred. Automatic cross-process locking and historical C7 fail-resolution automation are not implemented.",
-    "The full selected pass before final one-line minimum-exchange alignment passed compliance and 87 tooling tests. The affected focused suite passed again after alignment; the final committed candidate will rerun its required selected funnel."
+    "The full selected pass before final one-line minimum-exchange alignment passed compliance and 87 tooling tests. The affected focused suite passed again after alignment; the final committed candidate will rerun its required selected funnel.",
+    "Support exchange IDs are sanitized record labels, not authenticated native transport receipts. The reviewer source b378839 returned a bounded P2 defect; its finding and later resolution will remain in this review series rather than being erased by an unrelated PASS."
   ],
   "support_episodes": [
     {
       "id": "SUP-016-A",
-      "status": "open",
+      "status": "reduced",
       "participants": [
         {
           "id": "/root/support_implementer",
@@ -78,11 +108,15 @@
         }
       ],
       "source_binding": {
-        "commit": "fb56d99b7b298a1b6efccbd7a067685651c6b109",
+        "commit": "b3788393a39838d6156db996c47c7b98c8ed2741",
         "paths": [
           "legal/work-package-evidence.schema.json",
           "scripts/check-work-package-evidence.js",
-          "tests/tooling/work-package-evidence.test.js"
+          "tests/tooling/work-package-evidence.test.js",
+          "AGENTS.md",
+          "docs/process/development_workflow.md",
+          ".codex/agents/worms_port_support_advisor.toml",
+          ".codex/agents/worms_port_reviewer.toml"
         ],
         "relationship": "A tooling support record must preserve the same episode through pending response, reciprocal refinement, source change, reduction and independent final review. No gameplay behavior changed."
       },
@@ -187,7 +221,34 @@
             "detail": "Astra reduced active advice and supplied reopening conditions; it explicitly gave no independent approval."
           }
         }
-      ]
+      ],
+      "closure": {
+        "source_currentness": {
+          "commit": "b3788393a39838d6156db996c47c7b98c8ed2741",
+          "paths": [
+            "legal/work-package-evidence.schema.json",
+            "scripts/check-work-package-evidence.js",
+            "tests/tooling/work-package-evidence.test.js",
+            "AGENTS.md",
+            "docs/process/development_workflow.md",
+            ".codex/agents/worms_port_support_advisor.toml",
+            ".codex/agents/worms_port_reviewer.toml"
+          ],
+          "manual_candidate_review": "Root self-review inspected the implementation diff and candidate b378839; no implementation edits remain after that commit. Independent final review is pending and is a separate package gate."
+        },
+        "distinction": "Open support records the first real pending request; only reduced support demands reciprocity, consequential recipient response and a compatible retained return. Reopened history may retain its older closure; reduction may not silently use it for a different source.",
+        "evidence": [
+          "b378839:tests/tooling/work-package-evidence.test.js; focused 4/4 including stale/reopened source, pending receipt, omitted reviewer identity, missing closure evidence/reopen cue and empty exchange controls.",
+          "Actual native messages summarized in SUP-016-A1/T1/A2/A4/T2; the advisor accepted a local implementer correction and later retracted premature reciprocity.",
+          "b378839:AGENTS.md and docs/process/development_workflow.md; participant attribution, source restrictions, single verification owner and final reviewer separation are operational instructions."
+        ],
+        "support_assumptions": [
+          "The package writer accurately reports consequential exchanges; JSON validation does not authenticate messages or served-model metadata.",
+          "Root is a solution contributor and may not provide the independent final verdict; the fresh reviewer must inspect actual candidate source and retained evidence.",
+          "The native host exposes peer send/followup tools; clients without them must disclose the limitation and use an attributed relay or hold the dependency pending."
+        ],
+        "reopen_cue": "Reopen if pending first-request persistence fails, reduction accepts missing receipts or stale binding, role/source scope changes, an implementation contributor can provide final approval, or a later observer needs hidden session context."
+      }
     }
   ]
 }
