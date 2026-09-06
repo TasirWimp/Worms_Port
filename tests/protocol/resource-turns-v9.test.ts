@@ -2,7 +2,7 @@ import assert from 'node:assert/strict';
 import test from 'node:test';
 
 import {
-    CoordinatorReplayV9Schema, SimulationBarrierV9Schema, SimulationIntentV9Schema,
+    ChallengeCreateV9Schema, ChallengeLeaveV9Schema, ChallengePauseV9Schema, CoordinatorReplayV9Schema, InputRequestV9Schema, SimulationBarrierV9Schema, SimulationIntentV9Schema,
     SimulationSnapshotV9Schema, V9_REPLAY_LIMITS
 } from '../../shared/protocol-v9';
 import { SimulationCoordinatorV9 } from '../../server/src/simulation/coordinator-v9';
@@ -28,6 +28,21 @@ test('V9 replay envelopes are strict and reconstruction is deterministic', () =>
             index: 0, operation: { kind: 'ticks', count: 1.5 }, stateHash: '0'.repeat(64)
         }] }).success, false);
     } finally { coordinator.dispose(); }
+});
+
+test('V9D candidate lifecycle envelopes are strict, tagged, and separate from V7', () => {
+    const base = { requestId: 'v9_lifecycle_request_01', challengeId: 'v9_lifecycle_challenge_01',
+        rulesetId: V9_RULESET_ID, automationId: 'wp-015d3b-v9d-v1' };
+    assert.equal(ChallengeCreateV9Schema.safeParse({ requestId: base.requestId, mode: 'practice', calling: 'wizard',
+        rulesetId: base.rulesetId, automationId: base.automationId }).success, true);
+    assert.equal(ChallengeCreateV9Schema.safeParse({ requestId: base.requestId, mode: 'practice', calling: 'wizard',
+        rulesetId: base.rulesetId }).success, false);
+    assert.equal(InputRequestV9Schema.safeParse({ ...base, inputSequence: 0, expectedTurn: 0, expectedPhase: 'action', inputEpoch: 0,
+        intent: { type: 'face', direction: 1 } }).success, true);
+    assert.equal(InputRequestV9Schema.safeParse({ ...base, inputSequence: 0, expectedTurn: 0, expectedPhase: 'action', inputEpoch: 0,
+        intent: { type: 'face', direction: 1 }, unknown: true }).success, false);
+    assert.equal(ChallengePauseV9Schema.safeParse({ ...base, sequence: 0, paused: true }).success, true);
+    assert.equal(ChallengeLeaveV9Schema.safeParse({ ...base, sequence: 0, automationId: 'stripped' }).success, false);
 });
 
 test('coordinator pause neutralizes an accepted airborne Threadleap and replays it', () => {
