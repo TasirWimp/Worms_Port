@@ -8,13 +8,16 @@ Phaser/Socket.IO stack.
 ## Execution Pointer
 
 - Active target: mobile-first single-player Nimiq Pay competition release.
-- Active tooling package: **WP-016 native adaptive agent support**, owner-opened
+- Completed tooling package: **WP-016 native adaptive agent support**, owner-opened
   on 2026-09-06 from `2d31aa0` in `codex/wp-016-adaptive-agent-support`.
   [Entry evidence](../evidence/wp-016.json) and the
   [operational protocol](../process/development_workflow.md#adaptive-support-during-implementation-wp-016)
   own reciprocal support during implementation, revisable boundaries,
-  source-bound returns and independent final review. Implementation and
-  validation are in progress; this tooling detour does not open V9D gameplay.
+  source-bound returns and independent final review. Candidate `f8f044d` passed
+  independent review after one optional-type correction bundle; selected compliance
+  and 102 tooling tests pass. Original review failure remains in the evidence
+  history. Use the protocol for subsequent packages; V9D gameplay is not opened
+  by this tooling completion.
 - Active product package: **WP-015D3B V9 Resource and Utilities — V9A rules
   contract and V9B injected authoritative foundation complete and independently
   reviewed on 2026-09-05 after owner-reported V8E phone acceptance. V9C touch

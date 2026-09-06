@@ -1,6 +1,6 @@
 {
   "id": "WP-016",
-  "status": "in_progress",
+  "status": "complete",
   "starting_commit": "2d31aa0775ef43b10cf2a4b42ed03aadf8579cbd",
   "branch": "codex/wp-016-adaptive-agent-support",
   "initial_worktree": "clean",
@@ -37,7 +37,32 @@
     {
       "command": "node --test tests/tooling/work-package-evidence.test.js",
       "status": "pass",
-      "detail": "4/4 tests after schema/checker alignment, including negative lifecycle, receipt, source and final identity controls."
+      "detail": "19/19 focused tests; independently rerun by final reviewer on f8f044d."
+    },
+    {
+      "command": "node scripts/verify-changes.js --base 2d31aa0 --dry-run",
+      "status": "pass",
+      "detail": "Direct node selector selects check:compliance and test:tooling only, with no product fallback."
+    },
+    {
+      "command": "node scripts/verify-changes.js --base 2d31aa0",
+      "status": "pass",
+      "detail": "Selected compliance and 102 tooling tests pass on corrected candidate f8f044d."
+    },
+    {
+      "command": "agent TOML, Markdown links, native support exchange and cold re-entry review",
+      "status": "pass",
+      "detail": "Root parsed ten TOML files and checked local links in four changed Markdown carriers. Live native reciprocal exchange recorded below; fresh independent cold re-entry PASS, retained in the final review series."
+    },
+    {
+      "command": "node scripts/audit-housekeeping.js",
+      "status": "pass",
+      "detail": "Report-only housekeeping reconciled with planning: WP-016 closes here; five historical C7 failed reviews remain explicitly unreclassified. No branch cleanup performed."
+    },
+    {
+      "command": "git diff --check",
+      "status": "pass",
+      "detail": "Whitespace check passes for implementation and closure."
     }
   ],
   "reviews": [
@@ -46,8 +71,8 @@
       "reviewer": "/root/support_final_review",
       "participant_id": "/root/support_final_review",
       "review_type": "final",
-      "decision": "fail",
-      "source_commit": "b3788393a39838d6156db996c47c7b98c8ed2741",
+      "decision": "pass",
+      "source_commit": "f8f044dfb40ccb0248ea4543e8ba97845c0d35ae",
       "requested_model": "gpt-6-astra",
       "requested_effort": "high",
       "runtime_metadata": "unavailable",
@@ -55,31 +80,55 @@
         {
           "id": "WP016-R1",
           "severity": "P2",
-          "status": "open",
-          "detail": "Eleven schema-invalid mutations passed the checker: numeric commit coercion at three source locations, optional runtime value types under unknown, supplied nonconsequential disposition, and falsy optional closure. One bounded correction matrix; semantic/lifecycle design unchanged."
+          "status": "resolved",
+          "detail": "Same independent reviewer rechecked f8f044d: all eleven original malformed-value reproductions are rejected; nineteen focused tests and retained lifecycle controls pass. Initial failed source and finding remain in history."
         }
       ],
       "cold_reentry": "pass",
       "checks": [
-        "Focused 4/4; fifteen additional lifecycle/independence controls pass.",
-        "Selector dry-run and diff whitespace pass; seven source-bound paths match b378839 after newline normalization."
+        "Independent focused tests 19/19; original eleven malformed-value reproductions rejected; fifteen retained lifecycle/identity/legacy controls plus optional-value and historical-closure controls pass.",
+        "Selector dry-run, README discovery and diff whitespace pass; seven bound source paths match f8f044d.",
+        "Cold re-entry PASS; no new blocking findings. Root separately executed selected compliance and 102 tooling tests successfully."
       ],
       "limits": [
         "Read-only review; no product/daily/release/real-device approval.",
         "Truthful capture, contributor disclosure and actual runtime metadata are not authenticated by the record."
+      ],
+      "history": [
+        {
+          "decision": "fail",
+          "source_commit": "b3788393a39838d6156db996c47c7b98c8ed2741",
+          "findings": [
+            {
+              "id": "WP016-R1",
+              "severity": "P2",
+              "status": "open",
+              "detail": "Eleven schema-invalid mutations passed the checker: numeric commit coercion at three source locations, optional runtime value types under unknown, supplied nonconsequential disposition, and falsy optional closure. One bounded correction matrix; semantic/lifecycle design unchanged."
+            }
+          ],
+          "cold_reentry": "pass",
+          "checks": [
+            "Focused 4/4; fifteen additional lifecycle/independence controls pass.",
+            "Selector dry-run and diff whitespace pass; seven source-bound paths match b378839 after newline normalization."
+          ]
+        }
       ]
     }
   ],
-  "skipped_checks": [],
+  "skipped_checks": [
+    {
+      "command": "game build, browser, verify:daily, PostgreSQL, real-device testing and npm audit",
+      "reason": "No product, asset, dependency or release-gate change. Tooling-selected verification applies; daily 21:00 Europe/Berlin remains separately required and no release approval is claimed."
+    }
+  ],
   "residual_risks": [
-    "Initial tooling baseline: work-package evidence tests passed 2/2. Existing C7 historical failed reviews still appear in housekeeping; product pointer contains stale wording to reconcile from its recorded C7.5 closure.",
-    "Live trial will measure operational support and recoverability only; no unseen gameplay discovery or comparative efficiency result is implied.",
-    "Shared dependencies use a local node_modules junction to the unchanged original checkout; build/output directories remain worktree-local.",
-    "Root /root is also a solution contributor: it supplied the pre-review missing-final-identity guard, found premature reciprocity at episode opening, requested a single same-repo source boundary and caught empty-array schema drift. Root is not eligible for the independent final verdict. Pair episode records direct Terra/Astra exchanges; root contributions are retained here without inventing a symmetric advice transcript.",
-    "Native direct messages and followup_task worked during this live tooling implementation. Re-entry through the retained record and independent candidate review are pending. Served-model telemetry is unavailable; requested settings only are recorded.",
-    "Verification owner for WP-016 is /root. Only isolated focused tests overlap; no shared game build/browser run occurred. Automatic cross-process locking and historical C7 fail-resolution automation are not implemented.",
-    "The full selected pass before final one-line minimum-exchange alignment passed compliance and 87 tooling tests. The affected focused suite passed again after alignment; the final committed candidate will rerun its required selected funnel.",
-    "Support exchange IDs are sanitized record labels, not authenticated native transport receipts. The reviewer source b378839 returned a bounded P2 defect; its finding and later resolution will remain in this review series rather than being erased by an unrelated PASS."
+    "One live tooling support episode establishes an operational path and recoverable record, not unseen gameplay discovery, comparative efficiency, optimal model routing or causal attribution.",
+    "Root /root is a solution contributor: it supplied the missing-final-identity guard, found premature reciprocity at opening, requested a single same-repo source boundary and caught empty-array schema drift. Root, implementer and advisor are ineligible for independent approval. Pair records summarize actual direct Terra/Astra exchanges without inventing a symmetric third-participant transcript.",
+    "Native send_message and followup_task worked on this host. Requested Terra/high and Astra/high settings are known; actual served-model telemetry is unavailable. Exchange IDs are sanitized record labels, not authenticated transport receipts.",
+    "Structural validation cannot authenticate truthful capture, complete contributor disclosure, semantic compatibility or actual uncommitted bytes. Source/diff review and receiver responsibility remain required.",
+    "Verification owner was /root. Only isolated focused tests overlapped; no shared game build/browser ran. Shared node_modules is a local junction to the unchanged original checkout; output paths are worktree-local. Automatic cross-process locking is not implemented.",
+    "Existing C7 historical failed reviews remain unchanged. WP-016 stores the same reviewer series with current PASS and explicit original FAIL/source/finding history; this does not implement generic historical finding-resolution automation.",
+    "Final review binds implementation candidate f8f044d; subsequent closure edits record that verdict and update the execution pointer only. Product/daily/release/real-device acceptance is unchanged."
   ],
   "support_episodes": [
     {
@@ -108,7 +157,7 @@
         }
       ],
       "source_binding": {
-        "commit": "b3788393a39838d6156db996c47c7b98c8ed2741",
+        "commit": "f8f044dfb40ccb0248ea4543e8ba97845c0d35ae",
         "paths": [
           "legal/work-package-evidence.schema.json",
           "scripts/check-work-package-evidence.js",
@@ -224,7 +273,7 @@
       ],
       "closure": {
         "source_currentness": {
-          "commit": "b3788393a39838d6156db996c47c7b98c8ed2741",
+          "commit": "f8f044dfb40ccb0248ea4543e8ba97845c0d35ae",
           "paths": [
             "legal/work-package-evidence.schema.json",
             "scripts/check-work-package-evidence.js",
@@ -234,13 +283,14 @@
             ".codex/agents/worms_port_support_advisor.toml",
             ".codex/agents/worms_port_reviewer.toml"
           ],
-          "manual_candidate_review": "Root self-review inspected the implementation diff and candidate b378839; no implementation edits remain after that commit. Independent final review is pending and is a separate package gate."
+          "manual_candidate_review": "Root inspected f8f044d and the independent final reviewer confirmed all seven bound paths match that commit. The same reviewer resolved WP016-R1 and returned scoped PASS; later evidence/planning closure records the outcome without altering the reviewed implementation."
         },
         "distinction": "Open support records the first real pending request; only reduced support demands reciprocity, consequential recipient response and a compatible retained return. Reopened history may retain its older closure; reduction may not silently use it for a different source.",
         "evidence": [
           "b378839:tests/tooling/work-package-evidence.test.js; focused 4/4 including stale/reopened source, pending receipt, omitted reviewer identity, missing closure evidence/reopen cue and empty exchange controls.",
           "Actual native messages summarized in SUP-016-A1/T1/A2/A4/T2; the advisor accepted a local implementer correction and later retracted premature reciprocity.",
-          "b378839:AGENTS.md and docs/process/development_workflow.md; participant attribution, source restrictions, single verification owner and final reviewer separation are operational instructions."
+          "b378839:AGENTS.md and docs/process/development_workflow.md; participant attribution, source restrictions, single verification owner and final reviewer separation are operational instructions.",
+          "f8f044d: bounded optional-type correction, focused 19/19 and selected compliance/102 tooling pass; independent reviewer resolved WP016-R1 and recovered the record without hidden solution-session context."
         ],
         "support_assumptions": [
           "The package writer accurately reports consequential exchanges; JSON validation does not authenticate messages or served-model metadata.",
