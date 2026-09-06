@@ -18,7 +18,8 @@
     "V9B authoritative foundation completed on 2026-09-05 within its closed nine source/test paths. It adds injected-only V9 state, strict protocol/replay and coordinator seams; the public selector remains V7. Final Astra source review passed after shield, tick-boundary, pause/resume, counter and B4 fixture corrections. No external/reference/quarantine access occurred.",
     "V9C initial local query-gated resource/cost/utility preview is committed on the historical V9B foundation branch. The expanded independent Astra continuity review failed it on 2026-09-05 despite passing selected verification. The owner authorized C7 continuity correction preparation: fresh-input boundaries, compact contextual actions, phone layout, presentation/HUD/camera, and truthful lifecycle guidance need an independently reviewed exact correction entry. The branch remains the V9B foundation carrier and its name does not imply V9C closure.",
     "V9C C7.5 is complete as a local preview correction. V9D is the approved-next documentation-only entry candidate at 2230a021c82bb16c00e92a7d088383d0a85fbf65: deterministic V9 Loomkeeper, strict automation/replay provenance, complete candidate-only shared Practice/reward lifecycle and bounded assessment. Its first independent entry review failed before source authorization; the next amended review then found the published Socket.IO blob malformed. The corrected entry retains the narrow live-controls seam and finite assessment matrix, and now records the exact Socket.IO lock. A fresh noncontributing Astra/high reviewer must approve it before any source edit; V9 remains unimplemented and public selection remains V7.",
-    "The V9D assessment is fixed at 196 scenarios and 272 executions: 120 repeated correctness executions, 120 full Wizard matches and 32 repeated threshold executions. It writes a partial or complete ignored report; changed rows, work caps, outcome thresholds or report/failure semantics require a reviewed amendment."
+    "The V9D assessment is fixed at 196 scenarios and 272 executions: 120 repeated correctness executions, 120 full Wizard matches and 32 repeated threshold executions. It writes a partial or complete ignored report; changed rows, work caps, outcome thresholds or report/failure semantics require a reviewed amendment.",
+    "V9D is in progress and blocked by fresh final Astra/high review at HEAD 121954e. The correction scope admits only shared/simulation-v9.ts and tests/simulation/resource-turns-v9.test.ts, owned by gameplay correction; docs retains only the existing contract, evidence and execution-pointer carriers. It may add a trusted detached-rollout advance seam to remove repeated V9 Zod validation while retaining adapter mechanics for mechanics-bearing ticks, with an optional strictly predicated inert-tick path. advanceSimulationTicksV9 remains unchanged as the differential oracle. No V8/general-kernel/clock-debt threshold/planner-search-or-cap/public-selector/lifecycle/reward change is authorized. Candidate/logical work charges remain, invalid detached result is work_failure, and correction proof requires the full per-tick state/event/hash matrix plus real-clock 30-batch/cast/handoff/replay cadence at unchanged debt; otherwise return a measured profile before broader scope."
   ],
   "non_goals": [
     "V9A was contract-only. V9B authorizes only its separately bounded injected authoritative foundation; it excludes deployment, shared public selector promotion, funded activation, V9C/D lifecycle or UI, V10 terrain, V11 teams, new assets/dependencies, reference/quarantine access, analytical execution and formal player observation.",
@@ -173,6 +174,18 @@
       "reviewer": "/root/v9d_amended_entry_reviewer",
       "decision": "fail",
       "detail": "Fresh configured Astra/high amended-entry review at 1003666 failed before source authorization because the Socket.IO Git blob in the V9D lock table was malformed. It found no authorization to edit runtime or tests. This correction changes that blob only to the source-verified 40-hex value; both prior failed reviews remain evidence and a fresh noncontributing Astra/high review is required."
+    },
+    {
+      "role": "worms_port_reviewer",
+      "reviewer": "/root/v9d_final_entry_reviewer",
+      "decision": "pass",
+      "detail": "Fresh configured Astra/high entry review at 1a9e08a passed the corrected entry boundary before V9D implementation. This identity was omitted from the prior evidence record; its entry PASS is historical authorization only and does not override the subsequent final failure."
+    },
+    {
+      "role": "worms_port_reviewer",
+      "reviewer": "/root/v9d_final_reviewer",
+      "decision": "fail",
+      "detail": "Fresh configured Astra/high final review at HEAD 121954e failed V9D. P1: V7 reward reservation consumed before V9 admission, disconnected settlement loss, real-clock planner failure, absent live V9 candidate journey, D3 semantic/evidence failure, and missing proof carriers. P2: foreign cursor leak. It retained the inherited housekeeping-audit advisory. Browser evidence was separately 54 passed plus 3 expected landscape skips, with a separate 3/3 passed browser check. assess:v9 executed 196/272 then failed with null; the result is semantically inadequate and its report was overwritten by Playwright. V9D remains blocked and unapproved."
     }
   ],
   "support_episodes": [
@@ -331,6 +344,65 @@
           "V9D implementation remains limited to local MIT product sources and does not access Sorcerers quarantine or external references."
         ],
         "reopen_cue": "Reopen at writer handoff, or earlier if lifecycle facts cross controls/contracts/scene boundaries, recovery lacks fresh authoritative synchronization, the fixed matrix or report semantics change, a required carrier/lock is missing, automation can downgrade, or frozen authority/version/clock/work caps or normal selector behavior is proposed to change."
+      }
+    },
+    {
+      "id": "SUP-V9D-02",
+      "status": "reopened",
+      "participants": [
+        {
+          "id": "/root/v9d_correction_support",
+          "requested": { "model": "gpt-6-astra", "effort": "high" },
+          "runtime": { "status": "unknown" }
+        },
+        {
+          "id": "/root/v9d_correction_gameplay",
+          "requested": { "model": "gpt-5.6-terra", "effort": "high" },
+          "runtime": { "status": "unknown" }
+        }
+      ],
+      "source_binding": {
+        "commit": "121954e79fc4f276d1a7a2dcbc32228bd8d948d6",
+        "paths": [
+          "shared/simulation-v9.ts",
+          "tests/simulation/resource-turns-v9.test.ts"
+        ],
+        "relationship": "The bounded correction may improve detached-rollout advancement only while public advanceSimulationTicksV9 remains the unchanged differential oracle and all work, timing and authority limits remain frozen."
+      },
+      "exchanges": [
+        {
+          "id": "SUP-V9D-02-A1",
+          "from": "/root/v9d_correction_gameplay",
+          "to": "/root/v9d_correction_support",
+          "source": {
+            "commit": "121954e79fc4f276d1a7a2dcbc32228bd8d948d6",
+            "paths": ["shared/simulation-v9.ts", "tests/simulation/resource-turns-v9.test.ts"]
+          },
+          "probe": "Determine whether a narrow trusted detached-rollout advance seam can repair real-clock planner cadence without changing public advancement, work charges, caps or lifecycle scope.",
+          "remaining_uncertainty": "The strict inert-tick predicate and full per-tick state/event/hash and real-clock differential proof remain for the gameplay correction.",
+          "consequential": true,
+          "recipient_disposition": {
+            "status": "received",
+            "detail": "Support opened because final review found coupled temporal planner and authority/evidence failures; it supplied no final approval."
+          }
+        }
+      ],
+      "closure": {
+        "source_currentness": {
+          "commit": "121954e79fc4f276d1a7a2dcbc32228bd8d948d6",
+          "paths": ["shared/simulation-v9.ts", "tests/simulation/resource-turns-v9.test.ts"],
+          "manual_candidate_review": "A fresh final reviewer must inspect the correction diff and evidence; support is advisory only."
+        },
+        "distinction": "A faster detached advancement seam is not authorization to change public advancement, lifecycle, reward, selector, work accounting or planner caps.",
+        "evidence": [
+          "Final review at 121954e found real-clock planner failure and missing differential proof carriers.",
+          "The correction is limited to the shared simulation seam and its direct simulation test carrier."
+        ],
+        "support_assumptions": [
+          "Requested model/effort is configured selection data; runtime-served metadata is unavailable.",
+          "The gameplay worker and fresh reviewer preserve the frozen source and authority boundary."
+        ],
+        "reopen_cue": "Reopen if the strict inert-tick predicate, per-tick differential matrix, real-clock 30-batch/cast/handoff/replay cadence, work accounting, or scope boundary is uncertain."
       }
     }
   ],

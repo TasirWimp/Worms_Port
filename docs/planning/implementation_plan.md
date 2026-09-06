@@ -20,13 +20,16 @@ Phaser/Socket.IO stack.
   presentation/engineering preview is committed on the historical V9B
   foundation branch, but its independent continuity review failed; a bounded
   V9C continuity correction is complete and independently reviewed at C7.5;
-  it remains a local `?combat-preview=v9` engineering preview. **V9D is the
-  approved-next entry candidate** for deterministic AI and the complete shared
-  candidate lifecycle/assessment; it is documentation-only and still requires
-  a fresh noncontributing Astra/high entry review before source edits. The
-  first two entry reviews failed, so the corrected candidate now locks the
-  narrow V9 live-controls seam, finite assessment matrix and exact Socket.IO
-  blob before another entry review.**
+  it remains a local `?combat-preview=v9` engineering preview. **V9D is
+  in progress and blocked by a fresh Astra/high final review at `121954e`.
+  The review found V7 reward reservation consumed before V9 admission,
+  disconnected-settlement loss, a real-clock planner failure, no live V9
+  candidate journey, semantically inadequate/overwritten D3 assessment
+  evidence, missing proof carriers, and a P2 foreign-cursor leak. A narrow
+  correction admits only `shared/simulation-v9.ts` and
+  `tests/simulation/resource-turns-v9.test.ts`; it must preserve the V7
+  selector, lifecycle scope and frozen planner/clock/work caps. No approval,
+  activation, release or payout claim follows.**
   The owner explicitly requested starting V9. The first bounded slice is the
   [V9 resource-and-utility contract](wp-015d3b-v9-resource-utilities-contract.md),
   with [separate V9 evidence](../evidence/wp-015d3b.json), from clean

@@ -864,11 +864,9 @@ remain separate.
 
 ## D. V9D deterministic Loomkeeper and shared candidate lifecycle entry
 
-Status: **approved-next entry candidate; not implemented.** This
-documentation-only amendment prepares the independently designed V9D boundary
-at `2230a021c82bb16c00e92a7d088383d0a85fbf65`. A fresh, noncontributing
-`worms_port_reviewer` on GPT-6 Astra/high must approve this entry before any
-V9D source edit. It is not V9 activation, release, deployment, payout
+Status: **in progress and blocked by fresh final review.** The independent
+configured Astra/high final review `/root/v9d_final_reviewer` failed at HEAD
+`121954e`. It is not V9 approval, activation, release, deployment, payout
 activation, balance approval, or a replacement for the 21:00 Europe/Berlin
 daily gate.
 
@@ -1091,3 +1089,42 @@ simulation, clock, version, budget or normal selector behavior is proposed to
 change. Broader control layout or granular AI-progress facts require explicit
 entry reconciliation. The support advisor gave no approval and did not edit
 code or run tests.
+
+### D5. Final-review failure and bounded correction amendment — 2026-09-06
+
+The fresh final reviewer `/root/v9d_final_reviewer` found V9D unapproved. Its
+P1 findings are: V7 reward reservation is consumed before V9 admission;
+disconnected settlement can be lost; real-clock planner cadence fails; there
+is no live V9 candidate journey; the D3 assessment has semantic/evidence
+failure; and required proof carriers are absent. The review also found a P2
+foreign-cursor leak and retained the inherited housekeeping-audit advisory.
+The browser result is separate evidence: actual browser execution was 54
+passed with 3 expected landscape skips, and the separate three-browser check
+was 3/3 passed. The assessment ran 196/272 and failed with `null`; that result
+is semantically inadequate, and its report was overwritten by Playwright. The
+entry PASS by `/root/v9d_final_entry_reviewer` at `1a9e08a` had been absent
+from package evidence and is now retained there. These facts do not make any
+unrun or failed proof pass.
+
+The correction scope is exclusively `shared/simulation-v9.ts` and
+`tests/simulation/resource-turns-v9.test.ts`, owned by the gameplay correction
+worker. Docs owns only the three existing documentation/evidence carriers.
+No V8 file, general kernel, clock-debt threshold, planner search/cap, public
+API, lifecycle, reward, selector, or source-boundary change is authorized.
+`advanceSimulationTicksV9` remains unchanged as the differential oracle.
+
+The permitted purpose is a trusted detached-rollout advance seam that may
+remove repeated V9 Zod validation while preserving adapter mechanics for
+mechanics-bearing ticks. An optional inert-tick path is allowed only behind a
+strict closed predicate. Candidate and logical work charges remain intact; an
+invalid detached result is `work_failure`. The correction must prove a full
+per-tick state/event/hash differential matrix and real-clock cadence through
+30 batches, cast, handoff and replay at the unchanged debt. If that proof is
+insufficient, return a measured profile before seeking broader scope.
+
+Fresh correction support is a configured `gpt-6-astra` / `high` read-only
+support-advisor episode, opened because the temporal planner/authority seam
+failed independent review. Runtime-served metadata is unavailable. Reopen
+support if the strict inert predicate, differential matrix, real-clock
+cadence, work accounting, or any proposed scope expansion is uncertain. N and
+G remain active owners; advisory support is not final review authority.
