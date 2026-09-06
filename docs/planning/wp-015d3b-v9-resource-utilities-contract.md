@@ -861,3 +861,172 @@ retaining the individual passing required evidence. C7 is complete as a local
 V9C preview correction; V9D remains the separately bounded AI/shared-lifecycle
 work. Daily, performance, PostgreSQL, Ubuntu visual and physical-device gates
 remain separate.
+
+## D. V9D deterministic Loomkeeper and shared candidate lifecycle entry
+
+Status: **approved-next entry candidate; not implemented.** This
+documentation-only amendment prepares the independently designed V9D boundary
+at `2230a021c82bb16c00e92a7d088383d0a85fbf65`. A fresh, noncontributing
+`worms_port_reviewer` on GPT-6 Astra/high must approve this entry before any
+V9D source edit. It is not V9 activation, release, deployment, payout
+activation, balance approval, or a replacement for the 21:00 Europe/Berlin
+daily gate.
+
+V9D adds the deterministic Loomkeeper and complete candidate-only Practice and
+reward lifecycles. It preserves V9A's finite rules and V9B's injected
+foundation. V9C remains a completed local `?combat-preview=v9` correction:
+its existing touch hierarchy, authority-boundary neutralization and truthful
+copy must be preserved while live V9 state replaces only the former
+Loomkeeper-deferral presentation. The public selector remains V7.
+
+### D1. Ownership, closed paths and entry locks
+
+A fresh Terra/high core/network lifecycle worker owns the runtime and test
+paths below; a fresh Terra/high `worms_port_test_worker` is the named
+verification owner and exclusively controls shared build, output, browser and
+PostgreSQL runs. They must preserve each other's edits. The final Astra/high
+reviewer must not have advised, implemented or tested the solution.
+
+New V9D files have no entry blob. V9D may change only these paths plus the
+three documentation/evidence carriers named in this amendment:
+
+```text
+shared/loomkeeper-v9.ts
+client/src/practice/resource-turns-v9.ts
+tests/loomkeeper/resource-turns-v9.test.ts
+tests/loomkeeper/resource-turns-v9.assessment.ts
+tests/practice/resource-turns-v9-client.test.ts
+tests/reward/resource-turns-v9.test.ts
+
+shared/combat-version.ts
+shared/protocol-v9.ts
+server/src/simulation/coordinator-v9.ts
+server/src/simulation/versioned-coordinator.ts
+server/src/session/registry.ts
+server/src/protocol/socket.ts
+server/src/runtime.ts
+server/src/reward/service.ts
+server/src/reward/types.ts
+client/src/practice/client.ts
+client/src/scenes/practice.ts
+client/src/scenes/combat.ts
+client/src/scenes/result.ts
+client/src/combat/contracts.ts
+client/src/combat/resource-turns-v9-scene.ts
+tests/simulation/resource-turns-v9-replay.test.ts
+tests/protocol/resource-turns-v9.test.ts
+tests/combat/resource-turns-v9.test.ts
+tests/protocol/runtime.test.ts
+tests/protocol/schemas.test.ts
+tests/practice/practice-client.test.ts
+tests/reward/runtime.test.ts
+tests/reward/service.test.ts
+tests/browser/combat.spec.ts
+tests/browser/practice.spec.ts
+tests/browser/reward.spec.ts
+tests/browser-postgres/reward-postgres.spec.ts
+package.json
+docs/planning/wp-015d3b-v9-resource-utilities-contract.md
+docs/evidence/wp-015d3b.json
+docs/planning/implementation_plan.md
+```
+
+The fresh worker must stop for amendment if any existing path differs from its
+entry lock. The principal authority, transport, reward and client seams are:
+
+| Path | SHA-256 | Git blob |
+| --- | --- | --- |
+| `shared/protocol-v9.ts` | `64F822D4978FD59BF4CDE076744E6E637AC7915CC90FF0D905C3BB1886D00952` | `d48f35fa7bf9976a06f2ad5d4606d4940f643b1d` |
+| `server/src/simulation/coordinator-v9.ts` | `411C28C87B17EA1479E5BEF3AA214F0448130F4330ABA01FE03A459FF4A1D285` | `14cd51868187cbb26a9540975775abc07e8cfb3b` |
+| `server/src/simulation/versioned-coordinator.ts` | `CE75BF9396A28F550CFD89C83778B95844B41E2AC51F5ED6D0CC3E8558A21658` | `8ced81edc9d5ba694529ea7a4459f05a4c9e5aa2` |
+| `server/src/session/registry.ts` | `88F388B381CEAB2583D874FECAAD37C4E6FBB0746CD81B691407F2776760EEF3` | `06fd4b477438142561d1b775b4402da9d0f00dbe` |
+| `server/src/protocol/socket.ts` | `5C2ED61111BEB73EC6E997B2D7F97CCCAD65B77DC146563623164BB2FDEA03FB` | `d5013a2c4d3f4c1d49e70f85e6f82bc5e2f0ef` |
+| `server/src/reward/service.ts` | `054A9C417BED510B97F052E0F45EAC65606845D53A2B61332C483E46D3CAA867` | `9a474dafe2d7665302674c3635c7223f756fb643` |
+| `client/src/practice/client.ts` | `1A620173C009F0764238FB05E45DA9251308A19BBB4CD245DBC4E8AC794FCE0D` | `2c8e177428799e458485d00f1a8733d5b6f813dc` |
+| `client/src/scenes/combat.ts` | `378041D6D0B6F4A8933C3C1A63913A4E4769D75709A7CBFA97A879DA72DC20DA` | `5bcaa5c248e84041858d39ea6dcd70ba4777f96f` |
+| `client/src/combat/resource-turns-v9-scene.ts` | `B4BC38FB81E72690B5A13AFC5333CE03AE33327F808C827E9F11A82100C7DF22` | `8fd442f04ccf6bbceb2dd33f819e1ee2fc808861` |
+| `package.json` | `2B98AD4B711022C4D784ED013C15641C613E4FB8322B58B876D1649A37F8D37F` | `1df30ee796ea637e567ad48d1bc5fce65342154b` |
+
+`client/src/combat/resource-turns-v9-fixture.ts` and
+`client/src/combat/resource-turns-v9-controls.ts` are read-only V9C locks.
+No V8/legacy simulation module, asset, legal manifest, dependency lock,
+reward amount/eligibility/ledger/schema/migration/signer, deployment setting,
+normal selector or Sorcerers material is in scope.
+
+### D2. Automated replay and lifecycle boundary
+
+Keep V9 state/replay version `9` and the exact B foundation
+`CoordinatorReplayV9Schema` unchanged. Add a separate strict automated V9
+envelope with only `automationId: 'wp-015d3b-v9d-v1'`, ruleset
+`nimble-knots-artillery-v9`, policy `nimble-knots-loomkeeper-v4` and profile
+`standard-v9-0`. The numeric replay version is not widened. Foundation labels
+or a stripped automation field must never become automated or reward evidence.
+
+The automated replay records each turn's utility prefix and selected ordinal,
+or exact `no_legal_plan`/`work_failure` status. Reconstruction regenerates the
+prefix, planning schedule and committed operation sequence. It rejects changed
+prefixes, ordinals, operation timing, identities, ownership, truncation or
+caps. A work failure is neutral until ordinary timeout and can never prove a
+reward result. The policy search remains Phaser-free, bounded to the frozen
+180 plans, 30 charged planning ticks, eight operations per tick, 1,050 ticks
+per rollout and 189,000 total rollout ticks; it may not add retries,
+utility-only fallback, extra time, hidden input or mode advantage.
+
+V9D creates candidate-only Practice and reward matches through strict tagged
+creation, snapshot, input, pause, leave, result and acknowledgement envelopes.
+Both modes use the same V9 authority and automated replay; reward policy stays
+separate. Completion/forfeit settlement is once-only and separate from socket
+delivery. Disconnect, expiry, leave and runtime close settle before replay or
+session deletion; reconnect receives the one terminal result. Practice
+pause/resume remains available only where authoritative V9 rules permit it;
+reward pause stays separately rejected. Normal V7 creation remains unchanged.
+
+### D3. Red-first fixtures and assessment
+
+Before AI or lifecycle edits, freeze direct tests for: Thread bank `3/4`,
+Stitching `45/46`, separation `640/641`, both-prefix predicate Guard priority,
+post-utility banks `4/5/7`, and tie direction from facing. Cover clear floor
+and inherited wall, ceiling, actor and ledge Threadleap fixtures: utility at
+charged tick 30, landing wait, fresh epoch/aim, 15-tick dwell, and no
+speculative debit. Detached rollout timing/state hashes must equal scheduled
+authority and regenerated replay.
+
+Charge all 180 candidate slots even when a plan is rejected or unaffordable.
+Prove no-plan and injected work-failure neutral timeout, no duplicate income or
+prefix, no extra search, and no reward proof. Compare single and batched ticks
+across planning tick 29/30, handoff and catch-up over six due ticks; cover stale
+Fire after a utility epoch, disconnect/reconnect while planning or leaping,
+Practice pause/resume, expiry/leave/terminal races, one result publication and
+one settlement. A genuine player-win automated replay must give one
+record-only recoverable idempotent claim; every forged proof leaves entitlement
+state unchanged.
+
+Assessment-only mirrored, threshold and first-actor fixtures must use a
+canonical V9 opening transform: reset both Thread banks, credit only the
+selected opening actor, and restore phase, epoch, utility, shield and support
+invariants. Never merely change `activeActor`; that would leave creation income
+on the wrong actor. Such synthetic fixtures are not production replay or reward
+proof. A genuine AI-first route reaches the Loomkeeper action through ordinary
+create-to-play history. Add explicit `assess:v9` wiring only for the bounded
+non-default assessment; record CPU/search caps, utility usage, expensive-cast
+starvation, no-plan/work-failure and first-actor outcomes. Do not inherit V8
+outcome thresholds without a V9-specific approved assessment contract.
+
+### D4. Verification and support disposition
+
+Run the selector dry run before edits, then the selected full product funnel:
+compliance, work-package evidence, types, product unit families, build outputs,
+built smoke, identity/reward/bundle checks, canonical phone browser suites,
+performance, audit and PostgreSQL when `WP014_TEST_DATABASE_URL` is present.
+Run the explicit V9 assessment separately. The daily/release `npm run
+verify:daily` remains the 21:00 Europe/Berlin full gate; Ubuntu visual and real
+Android/iOS evidence remain separate.
+
+SUP-V9D-01 is reduced after reciprocal support. It distinguishes four claims:
+valid V9 combat history, automated-policy proof, synthetic assessment and
+durable reward lifecycle. Reopen support at writer handoff to reconcile actual
+charged-prefix scheduling, snapshot/ack barriers and replay proof, or earlier
+if the closed list lacks an integration seam, a fixture grants the wrong
+income, automation can be stripped/downgraded, or simulation, clock, version,
+budget or normal selector behavior is proposed to change. The support advisor
+gave no approval and did not edit code or run tests.

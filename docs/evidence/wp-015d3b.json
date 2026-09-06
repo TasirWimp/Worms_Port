@@ -16,10 +16,12 @@
     "Exact V9A scope: docs/evidence/wp-015d3b.json, docs/planning/wp-015d3b-v9-resource-utilities-contract.md, docs/planning/implementation_plan.md, docs/planning/wp-015d3a-v8-action-turns-contract.md, docs/evidence/wp-015d3a.json and README.md. The new contract and evidence have a distinct V9 lifecycle; existing V8 carriers retain predecessor acceptance.",
     "The starting lock hash records canonical Git bytes; Windows checkout bytes have SHA256 1910F1419459E827A6ED5C8DC3BABD5189E6A9A6AC1D41D43E909E572F01BAB8. No dependency edit is authorized. Retain inherited V8 source/replay and clean-room obligations. No new reference observation is used for V9A.",
     "V9B authoritative foundation completed on 2026-09-05 within its closed nine source/test paths. It adds injected-only V9 state, strict protocol/replay and coordinator seams; the public selector remains V7. Final Astra source review passed after shield, tick-boundary, pause/resume, counter and B4 fixture corrections. No external/reference/quarantine access occurred.",
-    "V9C initial local query-gated resource/cost/utility preview is committed on the historical V9B foundation branch. The expanded independent Astra continuity review failed it on 2026-09-05 despite passing selected verification. The owner authorized C7 continuity correction preparation: fresh-input boundaries, compact contextual actions, phone layout, presentation/HUD/camera, and truthful lifecycle guidance need an independently reviewed exact correction entry. The branch remains the V9B foundation carrier and its name does not imply V9C closure."
+    "V9C initial local query-gated resource/cost/utility preview is committed on the historical V9B foundation branch. The expanded independent Astra continuity review failed it on 2026-09-05 despite passing selected verification. The owner authorized C7 continuity correction preparation: fresh-input boundaries, compact contextual actions, phone layout, presentation/HUD/camera, and truthful lifecycle guidance need an independently reviewed exact correction entry. The branch remains the V9B foundation carrier and its name does not imply V9C closure.",
+    "V9C C7.5 is complete as a local preview correction. V9D is the approved-next documentation-only entry candidate at 2230a021c82bb16c00e92a7d088383d0a85fbf65: deterministic V9 Loomkeeper, strict automation/replay provenance, complete candidate-only shared Practice/reward lifecycle and bounded assessment. A fresh noncontributing Astra/high entry reviewer must approve the exact boundary before any source edit; V9 remains unimplemented and public selection remains V7."
   ],
   "non_goals": [
-    "V9A was contract-only. V9B authorizes only its separately bounded injected authoritative foundation; it excludes deployment, shared public selector promotion, funded activation, V9C/D lifecycle or UI, V10 terrain, V11 teams, new assets/dependencies, reference/quarantine access, analytical execution and formal player observation."
+    "V9A was contract-only. V9B authorizes only its separately bounded injected authoritative foundation; it excludes deployment, shared public selector promotion, funded activation, V9C/D lifecycle or UI, V10 terrain, V11 teams, new assets/dependencies, reference/quarantine access, analytical execution and formal player observation.",
+    "V9D excludes public V9 activation, normal-selector changes, assets, dependencies or lockfile changes, Sorcerers/reference access, V8/legacy simulation edits, reward amounts/eligibility/ledger/schema/migration/signer changes, deployment, funded payout, balance approval, human similarity approval and physical-device acceptance."
   ],
   "planned_checks": [
     "Astra independent V9B entry review of strict version/replay, authority ordering, closed paths and source boundary before runtime edits.",
@@ -27,7 +29,8 @@
     "Inspect change-selected verification dry run and execute the selected documentation/evidence gates.",
     "Validate local contract/navigation links, exact six-path scope and unchanged runtime/lock/frozen evidence.",
     "Distinct read-only contract review before freezing V9A.",
-    "Independent Astra V9C entry review of C1-C5 before any source edit; then red-first V9 preview control/fixture tests, selected verification and required browser phone preview proof."
+    "Independent Astra V9C entry review of C1-C5 before any source edit; then red-first V9 preview control/fixture tests, selected verification and required browser phone preview proof.",
+    "Fresh independent Astra/high V9D entry review must inspect SUP-V9D-01, current exact locks, red-first deterministic AI/lifecycle/replay/assessment fixtures and V9C continuity preservation before source edits. After implementation, the named test owner runs the selected full product funnel and explicit assess:v9; the 21:00 Europe/Berlin daily/release gate remains separate."
   ],
   "deterministic_seeds": [],
   "sorcerers_reference_used": false,
@@ -52,6 +55,11 @@
       "command": "git diff --check; npm.cmd run check:work-packages; npm.cmd run verify:changes -- --base 7435d5a63a5f0bbc4860b12a25bad8977989f34d --dry-run",
       "status": "pass",
       "detail": "V9C entry documentation is whitespace-clean and work-package evidence passes (51 records). Its exact three documentation files select only check:work-packages. Source, browser and daily checks are deferred until the bounded implementation changes exist."
+    },
+    {
+      "command": "git diff --check; npm.cmd run check:work-packages; npm.cmd run verify:changes -- --dry-run",
+      "status": "pass",
+      "detail": "V9D entry documentation is whitespace-clean and work-package evidence passes (52 records). Its exact three documentation files select only check:work-packages; no browser, PostgreSQL, performance or fallback work is selected. Runtime, assessment, daily/release and physical-device checks remain deferred until the reviewed V9D implementation exists."
     }
   ],
   "reviews": [
@@ -134,6 +142,95 @@
       "detail": "Independent configured Astra/high C7.5 review at c713203 passed the exact three-file carry-over guidance correction. Direct and browser proof cover turn-two Spoolburst to Guard to aim to affordable Threadball/Needlepoint after an authority tick and preserved no-choice insufficient-Thread guidance. Selected families/build/smoke/security/budget checks passed. The serial browser baseline had one host ERR_NO_BUFFER_SPACE navigation failure before an unchanged V7 camera test, whose isolated rerun passed; the aggregate selector is therefore recorded as incomplete, not clean. No edits, external or quarantine access."
     }
   ],
+  "support_episodes": [
+    {
+      "id": "SUP-V9D-01",
+      "status": "reduced",
+      "participants": [
+        {
+          "id": "/root/v9d_entry_planner",
+          "requested": { "model": "gpt-5.6-terra", "effort": "high" },
+          "runtime": { "status": "unknown" }
+        },
+        {
+          "id": "/root/v9d_support_advisor",
+          "requested": { "model": "gpt-6-astra", "effort": "high" },
+          "runtime": { "status": "unknown" }
+        }
+      ],
+      "source_binding": {
+        "commit": "2230a021c82bb16c00e92a7d088383d0a85fbf65",
+        "paths": [
+          "docs/planning/wp-015d3b-v9-resource-utilities-contract.md",
+          "shared/protocol-v9.ts",
+          "server/src/simulation/coordinator-v9.ts",
+          "server/src/session/registry.ts",
+          "server/src/reward/service.ts"
+        ],
+        "relationship": "Automated-policy selection, authoritative scheduling, replay proof, Practice/reward lifecycle and settlement must agree without changing the V9B foundation ABI or V7 selector."
+      },
+      "exchanges": [
+        {
+          "id": "SUP-V9D-01-A1",
+          "from": "/root/v9d_entry_planner",
+          "to": "/root/v9d_support_advisor",
+          "source": {
+            "commit": "2230a021c82bb16c00e92a7d088383d0a85fbf65",
+            "paths": ["docs/planning/wp-015d3b-v9-resource-utilities-contract.md", "shared/protocol-v9.ts", "server/src/session/registry.ts"]
+          },
+          "probe": "Determine whether V9D may add AI to the local preview or needs a distinct automated replay and complete shared lifecycle boundary.",
+          "remaining_uncertainty": "Exact automated-envelope and lifecycle seams required confirmation.",
+          "consequential": true,
+          "recipient_disposition": { "status": "received", "detail": "Advisor found foundation V9 replay intentionally lacks automation and test injection does not create a Challenge or settlement." }
+        },
+        {
+          "id": "SUP-V9D-01-A2",
+          "from": "/root/v9d_support_advisor",
+          "to": "/root/v9d_entry_planner",
+          "source": {
+            "commit": "2230a021c82bb16c00e92a7d088383d0a85fbf65",
+            "paths": ["shared/protocol-v9.ts", "server/src/simulation/coordinator-v9.ts", "server/src/reward/service.ts", "tests/reward/action-turns-v8.test.ts"]
+          },
+          "probe": "Preserve numeric V9 replay version and exact foundation schema while requiring tagged automation proof, frozen prefix/landing/scheduling fixtures and forged-proof rejection.",
+          "remaining_uncertainty": "Implementation-specific schema factoring and exact client integration remain for the fresh worker.",
+          "consequential": true,
+          "recipient_disposition": { "status": "received", "detail": "Planner accepted the strict automation envelope, red-first matrix and no-downgrade reward proof requirement." }
+        },
+        {
+          "id": "SUP-V9D-01-A3",
+          "from": "/root/v9d_support_advisor",
+          "to": "/root/v9d_entry_planner",
+          "source": {
+            "commit": "2230a021c82bb16c00e92a7d088383d0a85fbf65",
+            "paths": ["shared/simulation-v9.ts", "tests/simulation/resource-turns-v9.test.ts", "tests/loomkeeper/action-turns-v8.assessment.ts"]
+          },
+          "probe": "Prevent an assessment first-actor fixture from falsely retaining player creation income after changing only activeActor.",
+          "remaining_uncertainty": "The fresh worker must encode the canonical assessment-only transform before implementation.",
+          "consequential": true,
+          "recipient_disposition": { "status": "received", "detail": "Planner accepted the required reset-and-credit opening transform and separation of synthetic assessment from genuine create-to-play reward evidence." }
+        }
+      ],
+      "closure": {
+        "source_currentness": {
+          "commit": "2230a021c82bb16c00e92a7d088383d0a85fbf65",
+          "paths": ["docs/planning/wp-015d3b-v9-resource-utilities-contract.md", "shared/protocol-v9.ts", "server/src/simulation/coordinator-v9.ts", "server/src/session/registry.ts", "server/src/reward/service.ts"],
+          "manual_candidate_review": "The future Astra entry reviewer must inspect current locks and diff; this record binds planning sources, not uncommitted implementation bytes."
+        },
+        "distinction": "Valid combat history, automated-policy proof, synthetic assessment and durable reward lifecycle are four separate claims.",
+        "evidence": [
+          "V9B foundation replay is strict and intentionally has no automation envelope; injected V9 creation ignores mode and creates no Challenge lifecycle.",
+          "V8 automated replay/reward guards show the required separate provenance pattern without authorizing V8 source reuse.",
+          "The retained V9D contract freezes prefix, charged planning, landing, reconstruction, lifecycle and forged-proof probes before source edits."
+        ],
+        "support_assumptions": [
+          "Requested model/effort is configured selection data; runtime-served metadata is unavailable.",
+          "The package writer accurately retained the consequential exchange; the final reviewer independently checks current source and tests.",
+          "V9D implementation remains limited to local MIT product sources and does not access Sorcerers quarantine or external references."
+        ],
+        "reopen_cue": "Reopen at writer handoff, or earlier if a required registry/socket/runtime/client/reward seam is outside the closed list, a fixture grants wrong Thread income, automation can downgrade, or simulation, clock, version, budget or normal selector behavior is proposed to change."
+      }
+    }
+  ],
   "skipped_checks": [
     "Game build, unit/browser/full daily suite, dependency audit and PostgreSQL: documentation/evidence-only slice; existing daily full-suite schedule remains 21:00 Europe/Berlin.",
     "New physical-device testing, deployment and human similarity: not part of V9A. V8E phone acceptance is owner-reported; no device/OS inventory was supplied.",
@@ -143,6 +240,6 @@
     "V9 economy/utility values are design defaults until implemented and assessed; owner V8E acceptance is not V9 balance approval.",
     "V8 public release gates remain separate: dependency audit, PostgreSQL, release/performance/deployment capacity and human similarity.",
     "V9B is injected-only authority. V9C requires separately approved lifecycle/presentation scope and must not treat this foundation as public activation or balance approval.",
-    "V9C is not accepted. A new C7 correction entry must resolve the independent continuity review findings before any V9C closure; it cannot establish public V9 activation, lifecycle correctness, AI parity, reward eligibility, balance or real-device phone acceptance."
+    "V9C C7.5 is accepted only as a local preview correction. V9D must preserve it while independently proving AI, shared lifecycle, reward eligibility and assessment before any V9 activation, balance or real-device claim."
   ]
 }

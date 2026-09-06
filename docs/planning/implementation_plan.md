@@ -20,8 +20,10 @@ Phaser/Socket.IO stack.
   presentation/engineering preview is committed on the historical V9B
   foundation branch, but its independent continuity review failed; a bounded
   V9C continuity correction is complete and independently reviewed at C7.5;
-  it remains a local `?combat-preview=v9` engineering preview. V9D retains
-  deterministic AI and the complete shared lifecycle as the next bounded work.**
+  it remains a local `?combat-preview=v9` engineering preview. **V9D is the
+  approved-next entry candidate** for deterministic AI and the complete shared
+  candidate lifecycle/assessment; it is documentation-only and still requires
+  a fresh noncontributing Astra/high entry review before source edits.**
   The owner explicitly requested starting V9. The first bounded slice is the
   [V9 resource-and-utility contract](wp-015d3b-v9-resource-utilities-contract.md),
   with [separate V9 evidence](../evidence/wp-015d3b.json), from clean
@@ -36,8 +38,9 @@ Phaser/Socket.IO stack.
   coordinator authority; its selected verification and final Astra review pass.
   V9C's local `?combat-preview=v9` touch surface is not accepted: continuity
   review found stale gestures, overlapping controls, missing presentation/HUD,
-  and missing player guidance. Its correction needs a new bounded entry;
-  the public selector remains V7. V8 public release gates remain independent;
+  and missing player guidance. Its correction is complete; V9D preserves that
+  local UI while replacing only the AI deferral through live candidate state.
+  The public selector remains V7. V8 public release gates remain independent;
   no automatic deployment, funded activation, V10 or V11 is implied.
 - Product predecessor: **WP-015D3A V8 Action-Turn Candidate — V8A finite
   rules/acceptance contract complete and independently reviewed; V8B authoritative
