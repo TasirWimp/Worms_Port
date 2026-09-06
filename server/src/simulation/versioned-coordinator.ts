@@ -5,7 +5,7 @@ import { SimulationCoordinatorV8, type CoordinatorReplayV8Runtime, type Coordina
 import { SimulationCoordinatorV9, type CoordinatorReplayV9, type CoordinatorSnapshotV9,
     type CoordinatorTerminalResultV9, type SimulationCoordinatorV9Options } from './coordinator-v9';
 import { CURRENT_COMBAT_RULESET_ID, type CombatRulesetId } from '../../../shared/combat-version';
-import { V8_AUTOMATION_ID } from '../../../shared/combat-version';
+import { V8_AUTOMATION_ID, V9_AUTOMATION_ID } from '../../../shared/combat-version';
 import { isV8RulesetId, V8_R1_RULESET_ID, type V8RulesetId } from '../../../shared/simulation-v8';
 import { V9_RULESET_ID } from '../../../shared/simulation-v9';
 import { LEGACY_RULESET_ID, type PlayerCalling, type SimulationRulesetId } from '../../../shared/simulation';
@@ -41,6 +41,11 @@ export class VersionedSimulationCoordinator {
         CoordinatorSnapshotV8<typeof V8_R1_RULESET_ID> & {automationId:typeof V8_AUTOMATION_ID}{
         if(this.get(challengeId))throw new Error('Duplicate versioned challenge.');
         return this.v8.createAutomated(challengeId,sessionId,seed,calling);
+    }
+    public createAutomatedV9(challengeId: string, sessionId: string, seed: number, calling: PlayerCalling):
+        CoordinatorSnapshotV9 & { automationId: typeof V9_AUTOMATION_ID } {
+        if (this.get(challengeId)) throw new Error('Duplicate versioned challenge.');
+        return this.v9.createAutomated(challengeId, sessionId, seed, calling);
     }
     public get(challengeId: string): VersionedCoordinatorSnapshot | undefined {
         return this.v9.get(challengeId) ?? this.v8.get(challengeId) ?? this.legacy.get(challengeId);

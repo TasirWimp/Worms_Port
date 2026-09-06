@@ -3,6 +3,7 @@ import {
     SimulationBarrierV9Schema, SimulationIntentV9Schema, SimulationStateV9Schema,
     V9_LOOMKEEPER_POLICY_ID, V9_LOOMKEEPER_PROFILE_ID, V9_RULESET_ID
 } from './simulation-v9';
+import { V9_AUTOMATION_ID } from './combat-version';
 
 /** V9 reuses the frozen bounded replay storage budget without sharing a wire ABI. */
 export const V9_REPLAY_LIMITS = Object.freeze({ records: 32_768, bytes: 16 * 1024 * 1024,
@@ -43,6 +44,30 @@ export const CoordinatorReplayV9Schema = z.object({
     records: z.array(ReplayRecordV9Schema).max(V9_REPLAY_LIMITS.records)
 }).strict();
 export type CoordinatorReplayV9 = z.infer<typeof CoordinatorReplayV9Schema>;
+
+/**
+ * Automation is deliberately a separate envelope.  A foundation V9 replay
+ * cannot be relabelled as policy evidence by adding or removing fields.
+ */
+export const LoomkeeperSelectionV9Schema = z.object({
+    turn: integer(0, 16),
+    prefix: z.enum(['threadguard', 'threadleap', 'none']),
+    status: z.enum(['selected', 'no_legal_plan', 'work_failure']),
+    ordinal: integer(0, 179).nullable()
+}).strict().superRefine((value, context) => {
+    if ((value.status === 'selected') !== (value.ordinal !== null)) context.addIssue({
+        code: z.ZodIssueCode.custom, message: 'Selected V9 plans require exactly one ordinal.'
+    });
+    if (value.status !== 'selected' && value.prefix !== 'none') context.addIssue({
+        code: z.ZodIssueCode.custom, message: 'Unselected V9 plans cannot spend a utility prefix.'
+    });
+});
+export type LoomkeeperSelectionV9Record = z.infer<typeof LoomkeeperSelectionV9Schema>;
+export const CoordinatorReplayV9AutomatedSchema = CoordinatorReplayV9Schema.extend({
+    automationId: z.literal(V9_AUTOMATION_ID),
+    chosenPlans: z.array(LoomkeeperSelectionV9Schema).max(16)
+}).strict();
+export type CoordinatorReplayV9Automated = z.infer<typeof CoordinatorReplayV9AutomatedSchema>;
 
 /** Strict V9 state/command schemas, without defining a V9 wire lifecycle. */
 export const SimulationSnapshotV9Schema = SimulationStateV9Schema;

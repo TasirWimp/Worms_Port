@@ -5,9 +5,11 @@ import {
 } from '../../../shared/simulation-v9';
 import type { PlayerCalling, SimulationActor } from '../../../shared/simulation';
 import {
-    CoordinatorReplayV9Schema, ReplayOperationV9Schema, V9_REPLAY_LIMITS, jsonBytesV9,
-    type CoordinatorReplayV9, type ReplayOperationV9
+    CoordinatorReplayV9Schema, CoordinatorReplayV9AutomatedSchema, ReplayOperationV9Schema, V9_REPLAY_LIMITS, jsonBytesV9,
+    type CoordinatorReplayV9, type CoordinatorReplayV9Automated, type ReplayOperationV9
 } from '../../../shared/protocol-v9';
+import { V9_AUTOMATION_ID } from '../../../shared/combat-version';
+import { LoomkeeperExecutionV9, LoomkeeperPlannerV9, type LoomkeeperSelectionV9 } from '../../../shared/loomkeeper-v9';
 
 export { V9_REPLAY_LIMITS } from '../../../shared/protocol-v9';
 export type { CoordinatorReplayV9 } from '../../../shared/protocol-v9';
@@ -15,26 +17,31 @@ export type { CoordinatorReplayV9 } from '../../../shared/protocol-v9';
 export type CoordinatorTerminalResultV9 = {
     rulesetId: typeof V9_RULESET_ID; challengeId: string; sessionId: string;
     winner: SimulationStateV9['winner']; reason: string; tick: number; stateHash: string;
+    automationId?: typeof V9_AUTOMATION_ID;
 };
 export type CoordinatorSnapshotV9 = {
     challengeId: string; sessionId: string; state: SimulationStateV9; stateHash: string;
     replayLength: number; paused: boolean; unavailable: boolean; terminalResult?: CoordinatorTerminalResultV9;
+    automationId?: typeof V9_AUTOMATION_ID;
 };
 export type CoordinatorUpdateV9 = CoordinatorSnapshotV9 & { transition: SimulationTransitionV9 };
 export type SimulationCoordinatorV9Options = {
     nowUs?: () => number; yieldBatch?: () => Promise<void>; tickIntervalMs?: number;
     /** Test seams may only lower frozen replay caps. */
     maxReplayRecords?: number; maxReplayBytes?: number;
+    plannerFactory?: (state: SimulationStateV9) => LoomkeeperPlannerV9;
     onTransition?: (update: CoordinatorUpdateV9) => void;
     onTerminal?: (result: CoordinatorTerminalResultV9) => void;
 };
 type Entry = {
-    replay: CoordinatorReplayV9; state: SimulationStateV9; stateHash: string; bytes: number;
+    replay: CoordinatorReplayV9 | CoordinatorReplayV9Automated; state: SimulationStateV9; stateHash: string; bytes: number;
     paused: boolean; unavailable: boolean; anchorUs: number; credit: bigint;
+    automated: boolean; aiTurn?: number; planningElapsed?: number; planner?: LoomkeeperPlannerV9;
+    planningFailed?: boolean; execution?: LoomkeeperExecutionV9;
     terminalResult?: CoordinatorTerminalResultV9; pendingTerminal?: CoordinatorTerminalResultV9;
 };
 
-/** Internal non-automated V9 authority. It has no Socket.IO, lifecycle, reward, or AI-policy route. */
+/** Candidate V9 authority. Ordinary V9 foundations and tagged automated matches remain distinct. */
 export class SimulationCoordinatorV9 {
     private readonly matches = new Map<string, Entry>();
     private readonly nowUs: () => number;
@@ -64,10 +71,22 @@ export class SimulationCoordinatorV9 {
             rulesetId: V9_RULESET_ID, loomkeeperPolicyId: 'nimble-knots-loomkeeper-v4',
             loomkeeperProfileId: 'standard-v9-0', initialStateHash: stateHash, records: [] });
         const entry: Entry = { replay, state, stateHash, bytes: jsonBytesV9(replay), paused: false,
-            unavailable: false, anchorUs: this.clock(), credit: 0n };
+            unavailable: false, anchorUs: this.clock(), credit: 0n, automated: false };
         if (entry.bytes + V9_REPLAY_LIMITS.terminalBytes > this.maxBytes) throw new Error('No terminal replay reserve.');
         this.matches.set(challengeId, entry);
         return this.snapshot(entry);
+    }
+
+    public createAutomated(challengeId: string, sessionId: string, seed: number, calling: PlayerCalling): CoordinatorSnapshotV9 & { automationId: typeof V9_AUTOMATION_ID } {
+        if (this.matches.has(challengeId)) throw new Error('Duplicate V9 challenge.');
+        const state = createState(seed, calling), stateHash = hashSimulationStateV9(state);
+        const replay = CoordinatorReplayV9AutomatedSchema.parse({ formatVersion: 9, challengeId, sessionId, seed, calling,
+            rulesetId: V9_RULESET_ID, loomkeeperPolicyId: 'nimble-knots-loomkeeper-v4', loomkeeperProfileId: 'standard-v9-0',
+            automationId: V9_AUTOMATION_ID, initialStateHash: stateHash, records: [], chosenPlans: [] });
+        const entry: Entry = { replay, state, stateHash, bytes: jsonBytesV9(replay), paused: false, unavailable: false,
+            anchorUs: this.clock(), credit: 0n, automated: true };
+        if (entry.bytes + V9_REPLAY_LIMITS.terminalBytes > this.maxBytes) throw new Error('No terminal replay reserve.');
+        this.matches.set(challengeId, entry); return this.snapshot(entry) as CoordinatorSnapshotV9 & { automationId: typeof V9_AUTOMATION_ID };
     }
 
     public get(challengeId: string): CoordinatorSnapshotV9 | undefined {
@@ -129,8 +148,11 @@ export class SimulationCoordinatorV9 {
         bounded(count, 0, V9_REPLAY_LIMITS.ticks); const entry = this.require(challengeId);
         if (entry.paused) return this.rejected(entry, 'The match is paused.');
         let update = this.noop(entry);
-        for (let index = 0; index < count && !entry.terminalResult; index++)
-            update = this.accept(entry, advanceSimulationTicksV9(entry.state, 1), { kind: 'ticks', count: 1 });
+        for (let index = 0; index < count && !entry.terminalResult; index++) {
+            if (entry.automated) this.prepareAutomatedTick(entry);
+            update = this.accept(entry, advanceSimulationTicksV9(entry.state, 1), { kind: 'ticks', count: 1 }, false, !entry.automated);
+            if (entry.automated) update = this.drainAutomated(entry, update);
+        }
         return update;
     }
 
@@ -155,7 +177,7 @@ export class SimulationCoordinatorV9 {
         entry.unavailable = reason !== 'replay_limit' && reason !== 'left'; entry.paused = false; entry.credit = 0n;
         return this.accept(entry, forceSimulationLimitV9(entry.state), { kind: 'safety', reason }, true);
     }
-    public replay(challengeId: string): CoordinatorReplayV9 | undefined {
+    public replay(challengeId: string): CoordinatorReplayV9 | CoordinatorReplayV9Automated | undefined {
         const entry = this.matches.get(challengeId); return entry && structuredClone(entry.replay);
     }
 
@@ -164,6 +186,7 @@ export class SimulationCoordinatorV9 {
         const raw = input as { records?: unknown[] };
         if (!raw || !Array.isArray(raw.records) || raw.records.length > this.maxRecords) throw new Error('V9 replay record limit exceeded.');
         for (const record of raw.records) if (jsonBytesV9(record) > V9_REPLAY_LIMITS.operationBytes) throw new Error('V9 operation record byte limit exceeded.');
+        if ((input as { automationId?: unknown })?.automationId === V9_AUTOMATION_ID) return this.reconstructAutomated(input, expected);
         const replay = CoordinatorReplayV9Schema.parse(input);
         if (expected && (expected.challengeId !== replay.challengeId || expected.sessionId !== replay.sessionId)) throw new Error('V9 replay ownership mismatch.');
         let totalTicks = 0;
@@ -195,6 +218,34 @@ export class SimulationCoordinatorV9 {
             return { ...result, replayLength: replay.records.length };
         } finally { verifier.dispose(); }
     }
+    private reconstructAutomated(input: unknown, expected?: { challengeId: string; sessionId: string }): CoordinatorSnapshotV9 {
+        const replay = CoordinatorReplayV9AutomatedSchema.parse(input);
+        if (expected && (expected.challengeId !== replay.challengeId || expected.sessionId !== replay.sessionId)) throw new Error('V9 replay ownership mismatch.');
+        if (replay.chosenPlans.some(plan => plan.status === 'work_failure')) throw new Error('A V9 work failure is not automated-policy proof.');
+        const verifier = new SimulationCoordinatorV9({ nowUs: () => 0, maxReplayRecords: this.maxRecords, maxReplayBytes: this.maxBytes });
+        try {
+            const initial = verifier.createAutomated(replay.challengeId, replay.sessionId, replay.seed, replay.calling);
+            if (initial.stateHash !== replay.initialStateHash) throw new Error('V9 initial hash mismatch.');
+            let cursor = 0;
+            while (cursor < replay.records.length) {
+                const generated = verifier.require(replay.challengeId).replay.records[cursor];
+                if (generated) { if (JSON.stringify(generated) !== JSON.stringify(replay.records[cursor])) throw new Error(`V9 automated replay divergence at ${cursor}.`); cursor += 1; continue; }
+                const operation = replay.records[cursor].operation;
+                if (operation.kind === 'automatic' || (operation.kind === 'intent' && operation.actor === 'loomkeeper') ||
+                    (operation.kind === 'barrier' && operation.barrier.actor === 'loomkeeper')) throw new Error(`Missing generated V9 policy operation at ${cursor}.`);
+                if (verifier.get(replay.challengeId)!.state.phase === 'finished') throw new Error('V9 replay extends beyond terminal state.');
+                if (operation.kind === 'intent') verifier.apply(replay.challengeId, operation.actor, operation.intent as SimulationIntentV9, operation.expectedTurn, operation.expectedPhase, operation.expectedEpoch);
+                else if (operation.kind === 'barrier') verifier.barrier(replay.challengeId, operation.barrier);
+                else if (operation.kind === 'ticks') verifier.advance(replay.challengeId, operation.count);
+                else verifier.safety(replay.challengeId, operation.reason);
+                if (!verifier.require(replay.challengeId).replay.records[cursor]) throw new Error(`V9 replay operation did not mutate at ${cursor}.`);
+            }
+            const regenerated = verifier.require(replay.challengeId).replay;
+            if (JSON.stringify(regenerated.records) !== JSON.stringify(replay.records) || !('chosenPlans' in regenerated) ||
+                JSON.stringify(regenerated.chosenPlans) !== JSON.stringify(replay.chosenPlans)) throw new Error('V9 automated policy proof is incomplete or changed.');
+            return verifier.get(replay.challengeId)!;
+        } finally { verifier.dispose(); }
+    }
     public takePendingTerminalResult(challengeId: string): CoordinatorTerminalResultV9 | undefined {
         const entry = this.matches.get(challengeId); const result = entry?.pendingTerminal; if (entry) entry.pendingTerminal = undefined;
         return result && structuredClone(result);
@@ -203,7 +254,7 @@ export class SimulationCoordinatorV9 {
     public deleteForSession(sessionId: string): void { for (const [id, entry] of this.matches) if (entry.replay.sessionId === sessionId) this.matches.delete(id); }
     public dispose(): void { if (this.timer) clearInterval(this.timer); this.matches.clear(); }
 
-    private accept(entry: Entry, transition: SimulationTransitionV9, operation: ReplayOperationV9, reserve = false): CoordinatorUpdateV9 {
+    private accept(entry: Entry, transition: SimulationTransitionV9, operation: ReplayOperationV9, reserve = false, notify = true): CoordinatorUpdateV9 {
         if (!transition.accepted || !transition.mutated) return { ...this.snapshot(entry), transition: structuredClone(transition) };
         const stateHash = hashSimulationStateV9(transition.state);
         const automatic: ReplayOperationV9[] = reserve ? [] : transition.events.filter(event => event.type === 'input_barrier').map(event =>
@@ -228,14 +279,15 @@ export class SimulationCoordinatorV9 {
         entry.replay.records.push(...annotations);
         if (entry.state.phase === 'finished' && !entry.terminalResult) {
             entry.terminalResult = { rulesetId: V9_RULESET_ID, challengeId: entry.replay.challengeId, sessionId: entry.replay.sessionId,
-                winner: entry.state.winner, reason: entry.state.finishReason!, tick: entry.state.tick, stateHash };
+                winner: entry.state.winner, reason: entry.state.finishReason!, tick: entry.state.tick, stateHash,
+                ...(entry.automated ? { automationId: V9_AUTOMATION_ID } : {}) };
             entry.pendingTerminal = entry.terminalResult; this.options.onTerminal?.(structuredClone(entry.terminalResult));
         }
         const update = { ...this.snapshot(entry), transition: structuredClone(transition) };
-        if (operation.kind !== 'ticks' || entry.state.tick % 3 === 0 || oldPhase !== entry.state.phase || transition.events.some(event => event.type === 'phase_changed')) this.options.onTransition?.(update);
+        if (notify && (operation.kind !== 'ticks' || entry.state.tick % 3 === 0 || oldPhase !== entry.state.phase || transition.events.some(event => event.type === 'phase_changed'))) this.options.onTransition?.(update);
         return update;
     }
-    private snapshot(entry: Entry): CoordinatorSnapshotV9 { return { challengeId: entry.replay.challengeId, sessionId: entry.replay.sessionId, state: structuredClone(entry.state), stateHash: entry.stateHash, replayLength: entry.replay.records.length, paused: entry.paused, unavailable: entry.unavailable, ...(entry.terminalResult ? { terminalResult: structuredClone(entry.terminalResult) } : {}) }; }
+    private snapshot(entry: Entry): CoordinatorSnapshotV9 { return { challengeId: entry.replay.challengeId, sessionId: entry.replay.sessionId, state: structuredClone(entry.state), stateHash: entry.stateHash, replayLength: entry.replay.records.length, paused: entry.paused, unavailable: entry.unavailable, ...(entry.automated ? { automationId: V9_AUTOMATION_ID } : {}), ...(entry.terminalResult ? { terminalResult: structuredClone(entry.terminalResult) } : {}) }; }
     private noop(entry: Entry): CoordinatorUpdateV9 { return { ...this.snapshot(entry), transition: { accepted: true, mutated: false, state: structuredClone(entry.state), events: [] } }; }
     private rejected(entry: Entry, message: string): CoordinatorUpdateV9 { return { ...this.snapshot(entry), transition: { accepted: false, mutated: false, state: structuredClone(entry.state), events: [], error: { code: 'COMMAND_REJECTED', message } } }; }
     private resumeInterruptedThreadleap(entry: Entry): SimulationTransitionV9 {
@@ -249,6 +301,52 @@ export class SimulationCoordinatorV9 {
         state.units[0].vxFp = 0; state.inputEpoch += 1; state.lifecycleBarrierCount += 1; state.revision += 1;
         assertSimulationInvariantsV9(state);
         return { accepted: true, mutated: true, state, events: [] };
+    }
+    private prepareAutomatedTick(entry: Entry): void {
+        if (!entry.automated || entry.state.phase !== 'action' || entry.state.activeActor !== 'loomkeeper') return;
+        if (entry.aiTurn !== entry.state.turn) {
+            entry.aiTurn = entry.state.turn; entry.planningElapsed = 0; entry.planningFailed = false; entry.execution = undefined;
+            try { entry.planner = this.options.plannerFactory?.(structuredClone(entry.state)) ?? new LoomkeeperPlannerV9(entry.state); }
+            catch { entry.planningFailed = true; entry.planner = undefined; }
+        }
+        if ((entry.planningElapsed ?? 0) >= 30) return;
+        if (!entry.planningFailed) { try { entry.planner!.step(); } catch { entry.planningFailed = true; } }
+        entry.planningElapsed = (entry.planningElapsed ?? 0) + 1;
+    }
+    private drainAutomated(entry: Entry, initial: CoordinatorUpdateV9): CoordinatorUpdateV9 {
+        if (!entry.automated || entry.state.phase === 'finished') return initial;
+        if (entry.state.phase === 'action' && entry.state.activeActor === 'loomkeeper' && entry.aiTurn === entry.state.turn &&
+            entry.planningElapsed === 30 && !this.hasSelection(entry, entry.state.turn)) {
+            const selection: LoomkeeperSelectionV9 = entry.planningFailed ? { prefix: 'none', status: 'work_failure', ordinal: null } : entry.planner!.selection;
+            // This write is the debit barrier: an execution is impossible until the plan is retained.
+            if (!this.recordSelection(entry, entry.state.turn, selection)) return this.safety(entry.replay.challengeId, 'replay_limit');
+            if (selection.status === 'selected') entry.execution = new LoomkeeperExecutionV9(entry.planner!.selectedCandidate()!, selection.prefix, entry.state);
+        }
+        if (!entry.execution) return initial;
+        let update = initial;
+        for (let count = 0; count < 8; count += 1) {
+            const operation = entry.execution.next(entry.state); if (!operation) break;
+            const before = entry.state;
+            const transition = operation.kind === 'intent'
+                ? applySimulationIntentV9(before, 'loomkeeper', operation.intent, before.turn, before.phase, before.inputEpoch)
+                : applySimulationBarrierV9(before, operation.barrier);
+            if (!transition.accepted) throw new Error(`Authoritative V9 policy emitted an illegal operation: ${transition.error?.message ?? 'unknown'}`);
+            if (!transition.mutated) continue;
+            const replayOperation: ReplayOperationV9 = operation.kind === 'intent'
+                ? { kind: 'intent', actor: 'loomkeeper', intent: operation.intent, expectedTurn: before.turn, expectedPhase: before.phase, expectedEpoch: before.inputEpoch }
+                : { kind: 'barrier', barrier: operation.barrier };
+            update = this.accept(entry, transition, ReplayOperationV9Schema.parse(replayOperation), false, false);
+        }
+        return update;
+    }
+    private hasSelection(entry: Entry, turn: number): boolean { return 'chosenPlans' in entry.replay && entry.replay.chosenPlans.some(plan => plan.turn === turn); }
+    private recordSelection(entry: Entry, turn: number, selection: LoomkeeperSelectionV9): boolean {
+        if (!('chosenPlans' in entry.replay)) throw new Error('Foundation replay cannot record automated selection.');
+        const previous = entry.replay.chosenPlans;
+        entry.replay.chosenPlans = [...previous, { turn, ...selection }];
+        const bytes = jsonBytesV9(entry.replay);
+        if (bytes > this.maxBytes - V9_REPLAY_LIMITS.terminalBytes) { entry.replay.chosenPlans = previous; return false; }
+        entry.bytes = bytes; return true;
     }
     private require(id: string): Entry { const entry = this.matches.get(id); if (!entry) throw new Error('No V9 simulation for this challenge.'); return entry; }
     private clock(): number { return bounded(this.nowUs(), 0, Number.MAX_SAFE_INTEGER); }

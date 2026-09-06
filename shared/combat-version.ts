@@ -10,3 +10,5 @@ export const V8_LOOMKEEPER_POLICY_ID = 'nimble-knots-loomkeeper-v3' as const;
 export const V8_LOOMKEEPER_PROFILE_ID = 'standard-v8-0' as const;
 /** Required provenance for D's automated r1 envelope; reserved labels alone are not proof. */
 export const V8_AUTOMATION_ID = 'wp-015d3a-v8d-r1-v1' as const;
+/** Strict V9D provenance; the numeric V9 replay version remains unchanged. */
+export const V9_AUTOMATION_ID = 'wp-015d3b-v9d-v1' as const;

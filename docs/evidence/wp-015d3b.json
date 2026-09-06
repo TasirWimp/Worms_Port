@@ -168,7 +168,7 @@
   "support_episodes": [
     {
       "id": "SUP-V9D-01",
-      "status": "reduced",
+      "status": "reopened",
       "participants": [
         {
           "id": "/root/v9d_entry_planner",
@@ -178,6 +178,11 @@
         {
           "id": "/root/v9d_support_advisor",
           "requested": { "model": "gpt-6-astra", "effort": "high" },
+          "runtime": { "status": "unknown" }
+        },
+        {
+          "id": "/root/v9d_implementation",
+          "requested": { "model": "gpt-5.6-terra", "effort": "high" },
           "runtime": { "status": "unknown" }
         }
       ],
@@ -259,6 +264,19 @@
           "remaining_uncertainty": "Implementation-specific type factoring and actual source integration remain for a fresh worker after entry approval.",
           "consequential": true,
           "recipient_disposition": { "status": "received", "detail": "Planner accepted the narrowed controls role, fixed matrix/report/failure semantics and support reopening cues; the episode reduced with no advisor approval." }
+        },
+        {
+          "id": "SUP-V9D-01-A6",
+          "from": "/root/v9d_implementation",
+          "to": "/root/v9d_support_advisor",
+          "source": {
+            "commit": "1a9e08a",
+            "paths": ["shared/loomkeeper-v9.ts", "shared/protocol-v9.ts", "server/src/simulation/coordinator-v9.ts", "tests/loomkeeper/resource-turns-v9.test.ts"]
+          },
+          "probe": "Compare tick 29/30, prefix epoch/debit, post-Leap landing and the first movement/aim trace across detached planning, authority batching and replay regeneration; identify whether a real prefix can precede selected-plan recording.",
+          "remaining_uncertainty": "Live candidate lifecycle projection, reward proof admission and the fixed assessment remain separate D1/D2/D3 work.",
+          "consequential": true,
+          "recipient_disposition": { "status": "received", "detail": "Advisor observed V8's prepare/tick/drain precedent and V9's immediate utility debit. The implementation records a strict V9 automated selection before constructing execution, applies prefixes only in planner clones before that barrier, waits for Leap landing before fresh-epoch aim/dwell, and tests tick 29/30 plus regeneration/tampering. The advisor's canonical Group C roots AI=(480,308), player=(480+separation,308), support formula and facing rule are accepted for later synthetic-only assessment work; no counterconstraint was found." }
         }
       ],
       "closure": {
