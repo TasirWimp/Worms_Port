@@ -17,7 +17,7 @@
     "The starting lock hash records canonical Git bytes; Windows checkout bytes have SHA256 1910F1419459E827A6ED5C8DC3BABD5189E6A9A6AC1D41D43E909E572F01BAB8. No dependency edit is authorized. Retain inherited V8 source/replay and clean-room obligations. No new reference observation is used for V9A.",
     "V9B authoritative foundation completed on 2026-09-05 within its closed nine source/test paths. It adds injected-only V9 state, strict protocol/replay and coordinator seams; the public selector remains V7. Final Astra source review passed after shield, tick-boundary, pause/resume, counter and B4 fixture corrections. No external/reference/quarantine access occurred.",
     "V9C initial local query-gated resource/cost/utility preview is committed on the historical V9B foundation branch. The expanded independent Astra continuity review failed it on 2026-09-05 despite passing selected verification. The owner authorized C7 continuity correction preparation: fresh-input boundaries, compact contextual actions, phone layout, presentation/HUD/camera, and truthful lifecycle guidance need an independently reviewed exact correction entry. The branch remains the V9B foundation carrier and its name does not imply V9C closure.",
-    "V9C C7.5 is complete as a local preview correction. V9D is the approved-next documentation-only entry candidate at 2230a021c82bb16c00e92a7d088383d0a85fbf65: deterministic V9 Loomkeeper, strict automation/replay provenance, complete candidate-only shared Practice/reward lifecycle and bounded assessment. Its first independent entry review failed before source authorization; the amended entry adds the narrow live-controls seam, finite assessment matrix and verified Socket.IO lock. A fresh noncontributing Astra/high reviewer must approve it before any source edit; V9 remains unimplemented and public selection remains V7.",
+    "V9C C7.5 is complete as a local preview correction. V9D is the approved-next documentation-only entry candidate at 2230a021c82bb16c00e92a7d088383d0a85fbf65: deterministic V9 Loomkeeper, strict automation/replay provenance, complete candidate-only shared Practice/reward lifecycle and bounded assessment. Its first independent entry review failed before source authorization; the next amended review then found the published Socket.IO blob malformed. The corrected entry retains the narrow live-controls seam and finite assessment matrix, and now records the exact Socket.IO lock. A fresh noncontributing Astra/high reviewer must approve it before any source edit; V9 remains unimplemented and public selection remains V7.",
     "The V9D assessment is fixed at 196 scenarios and 272 executions: 120 repeated correctness executions, 120 full Wizard matches and 32 repeated threshold executions. It writes a partial or complete ignored report; changed rows, work caps, outcome thresholds or report/failure semantics require a reviewed amendment."
   ],
   "non_goals": [
@@ -66,6 +66,11 @@
       "command": "git diff --check; npm.cmd run check:work-packages; npm.cmd run verify:changes -- --dry-run",
       "status": "pass",
       "detail": "The amended V9D entry is whitespace-clean and work-package evidence passes (52 records), including the reopened/reduced SUP-V9D-01 source-currentness binding. Its exact three documentation files select only check:work-packages; runtime, assessment, daily/release and physical-device checks remain deferred pending fresh Astra entry approval."
+    },
+    {
+      "command": "V9D lock-table audit at 1003666; git diff --check; npm.cmd run check:work-packages; npm.cmd run verify:changes -- --dry-run",
+      "status": "pass",
+      "detail": "All 11 listed SHA-256/blob pairs match the corresponding HEAD source files and every blob is exactly 40 lowercase hexadecimal characters, including server/src/protocol/socket.ts d5013a2c4d3f4f3c1d49e70f85e6f82bc5e2f0ef. Documentation-only selection remains check:work-packages."
     }
   ],
   "reviews": [
@@ -152,6 +157,12 @@
       "reviewer": "/root/v9d_entry_reviewer",
       "decision": "fail",
       "detail": "Fresh configured Astra/high entry review at 96e9887 failed before source authorization. It required a narrowly locked live-controls seam, an exact finite V9 assessment and a corrected Socket.IO blob lock. It did not approve runtime or test edits, public selection, activation, payout, deployment or release. The amended entry requires a new noncontributing Astra/high review."
+    },
+    {
+      "role": "worms_port_reviewer",
+      "reviewer": "/root/v9d_amended_entry_reviewer",
+      "decision": "fail",
+      "detail": "Fresh configured Astra/high amended-entry review at 1003666 failed before source authorization because the Socket.IO Git blob in the V9D lock table was malformed. It found no authorization to edit runtime or tests. This correction changes that blob only to the source-verified 40-hex value; both prior failed reviews remain evidence and a fresh noncontributing Astra/high review is required."
     }
   ],
   "support_episodes": [
@@ -234,7 +245,7 @@
           "probe": "Resolve the failed entry review's missing live-controls seam, finite assessment matrix and Socket.IO lock before another source authorization request.",
           "remaining_uncertainty": "Exact lifecycle fact projection and finite report/stop semantics required a targeted return.",
           "consequential": true,
-          "recipient_disposition": { "status": "received", "detail": "Advisor confirmed the controls and Socket.IO locks and supplied the bounded assessment domain, report fields and stop conditions." }
+          "recipient_disposition": { "status": "received", "detail": "Advisor confirmed the controls lock, identified the exact Socket.IO source blob for the malformed published lock, and supplied the bounded assessment domain, report fields and stop conditions." }
         },
         {
           "id": "SUP-V9D-01-A5",

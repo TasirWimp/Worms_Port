@@ -24,8 +24,9 @@ Phaser/Socket.IO stack.
   approved-next entry candidate** for deterministic AI and the complete shared
   candidate lifecycle/assessment; it is documentation-only and still requires
   a fresh noncontributing Astra/high entry review before source edits. The
-  first entry review failed, so the amended candidate now locks the narrow V9
-  live-controls seam, finite assessment matrix and verified Socket.IO blob.**
+  first two entry reviews failed, so the corrected candidate now locks the
+  narrow V9 live-controls seam, finite assessment matrix and exact Socket.IO
+  blob before another entry review.**
   The owner explicitly requested starting V9. The first bounded slice is the
   [V9 resource-and-utility contract](wp-015d3b-v9-resource-utilities-contract.md),
   with [separate V9 evidence](../evidence/wp-015d3b.json), from clean
