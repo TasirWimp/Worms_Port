@@ -164,7 +164,9 @@ export class PracticeClient {
         if (this.v9?.currentSnapshot()) {
             const current = this.v9.currentSnapshot()!;
             if (current.status === 'active') await this.v9.leave();
-            return this.v9.start(current.mode, calling);
+            // A reward entitlement is single-use. Result retry follows the
+            // existing Daily Challenge affordance back to wallet-free Practice.
+            return this.v9.start(current.mode === 'reward' ? 'practice' : current.mode, calling);
         }
         return (await this.getLifecycle()).retry(calling);
     }

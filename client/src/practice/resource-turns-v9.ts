@@ -109,7 +109,7 @@ export class ResourceTurnsV9Client {
             onUnavailable: listener => this.onUnavailable(listener), onError: listener => this.onError(listener),
             restart: async () => {
                 if (this.snapshot?.status === 'active') await this.leave();
-                const next = await this.start(mode, snapshot.calling);
+                const next = await this.start(mode === 'reward' ? 'practice' : mode, snapshot.calling);
                 return this.combatArgs(next);
             },
             destroy: () => undefined
