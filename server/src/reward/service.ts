@@ -9,6 +9,8 @@ import type {
 } from '../../../shared/protocol';
 import { ChallengeResultV8AutomatedSchema,
     type ChallengeResultV8Automated } from '../../../shared/protocol-v8';
+import { ChallengeResultV9Schema, type ChallengeResultV9,
+    type CoordinatorReplayV9Automated } from '../../../shared/protocol-v9';
 import type { PlayerCalling } from '../../../shared/simulation';
 import type { CoordinatorReplay } from '../simulation/coordinator';
 import { SimulationCoordinator } from '../simulation/coordinator';
@@ -149,11 +151,35 @@ export class RewardService {
     }
 
     public async completeMatch(
-        result: ChallengeResult | ChallengeResultV8Automated,
+        result: ChallengeResult | ChallengeResultV8Automated | ChallengeResultV9,
         replay?: RewardCoordinatorReplay
     ): Promise<RewardUpdateData | undefined> {
         if (!this.store) return undefined;
-        if (result.protocolVersion === 8 || 'automationId' in result || (replay && 'formatVersion' in replay)) {
+        if (result.protocolVersion === 9) {
+            const parsedResult = ChallengeResultV9Schema.safeParse(result);
+            const v9Replay = replay as CoordinatorReplayV9Automated | undefined;
+            if (!parsedResult.success || !v9Replay || v9Replay.automationId !== result.automationId ||
+                v9Replay.challengeId !== result.challengeId || v9Replay.sessionId !== result.sessionId ||
+                v9Replay.rulesetId !== result.rulesetId || v9Replay.loomkeeperPolicyId !== result.loomkeeperPolicyId ||
+                v9Replay.loomkeeperProfileId !== result.loomkeeperProfileId) {
+                throw new RewardStoreError('unavailable', 'Authoritative V9 reward evidence is incomplete.');
+            }
+            try {
+                const verified = new VersionedSimulationCoordinator().reconstructAndVerify(
+                    v9Replay, { challengeId: result.challengeId, sessionId: result.sessionId }
+                );
+                const expectedWinner = result.outcome === 'player_win' ? 'player'
+                    : result.outcome === 'loomkeeper_win' ? 'loomkeeper'
+                    : result.outcome === 'draw' ? 'draw' : null;
+                if (verified.state.phase !== 'finished' ||
+                    (expectedWinner !== null && verified.state.winner !== expectedWinner) ||
+                    verified.state.tick !== result.finalTick || verified.stateHash !== result.finalStateHash) {
+                    throw new Error('The V9 automated replay does not prove the reported result.');
+                }
+            } catch {
+                throw new RewardStoreError('unavailable', 'Authoritative V9 reward evidence failed verification.');
+            }
+        } else if (result.protocolVersion === 8 || 'automationId' in result || (replay && 'formatVersion' in replay)) {
             const parsedResult = ChallengeResultV8AutomatedSchema.safeParse(result);
             if (!parsedResult.success || !replay || !('automationId' in replay) ||
                 replay.challengeId !== parsedResult.data.challengeId ||

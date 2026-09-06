@@ -5,8 +5,9 @@ import type {
 } from '../../../shared/protocol';
 import type { CoordinatorReplay } from '../simulation/coordinator';
 import type { CoordinatorReplayV8Automated } from '../../../shared/protocol-v8';
+import type { CoordinatorReplayV9Automated } from '../../../shared/protocol-v9';
 
-export type RewardCoordinatorReplay = CoordinatorReplay | CoordinatorReplayV8Automated;
+export type RewardCoordinatorReplay = CoordinatorReplay | CoordinatorReplayV8Automated | CoordinatorReplayV9Automated;
 
 export type RewardMode = 'disabled' | 'record-only' | 'testnet' | 'mainnet';
 

@@ -20,6 +20,8 @@ import { SimulationCoordinator } from '../../server/src/simulation/coordinator';
 import { SIM_RULES } from '../../shared/simulation';
 import { V8_R1_RULESET_ID } from '../../shared/simulation-v8';
 import { ChallengeCreateAckV8Schema, protocolEventsV8 } from '../../shared/protocol-v8';
+import { CandidateAckV9Schema, ChallengeCreateAckV9Schema, protocolEventsV9 } from '../../shared/protocol-v9';
+import { V9_RULESET_ID } from '../../shared/simulation-v9';
 
 type Ack = Record<string, any>;
 
@@ -74,6 +76,84 @@ test('versioned creation refusals retain strict V8 acknowledgements and consume 
         assert.equal(runtime.sessions.getBound(socket.id!)!.nextSequence, 0);
         assert.equal(runtime.sessions.getBound(socket.id!)!.challenges.size, 0);
     } finally { await closeAll(runtime, [socket]); }
+});
+
+test('V9 candidate keeps strict ownership, sequence/cursor, pause and reconnect resync separate from V7', async () => {
+    const { runtime, url } = await start({ sessionRegistry: { simulationRulesetId: V9_RULESET_ID,
+        simulationTickIntervalMs: false, v9TestOnly: { nowUs: () => 0 } } });
+    const sockets: Socket[] = [];
+    try {
+        const original = await connect(url); sockets.push(original);
+        const opened = await openSession(original, 'v9_candidate_open_01');
+        const malformed = await emitAck(original, protocolEventsV9.create, {
+            requestId: 'v9_candidate_bad_01', sequence: 0, mode: 'practice', calling: 'wizard'
+        });
+        assert.equal(CandidateAckV9Schema.safeParse(malformed).success, true);
+        assert.equal(malformed.ok, false);
+        const created = await emitAck(original, protocolEventsV9.create, {
+            requestId: 'v9_candidate_create_01', sequence: 0, mode: 'practice', calling: 'wizard',
+            rulesetId: V9_RULESET_ID, automationId: 'wp-015d3b-v9d-v1'
+        });
+        assert.equal(ChallengeCreateAckV9Schema.safeParse(created).success, true);
+        assert.equal(created.ok, true);
+        assert.equal(created.data.nextSequence, 1);
+        const paused = await emitAck(original, protocolEventsV9.pause, {
+            requestId: 'v9_candidate_pause_01', sequence: 1, challengeId: created.data.challengeId,
+            rulesetId: V9_RULESET_ID, automationId: 'wp-015d3b-v9d-v1', paused: true
+        });
+        assert.equal(CandidateAckV9Schema.safeParse(paused).success, true);
+        assert.equal(paused.ok, true);
+        assert.equal(paused.data.paused, true);
+        const wrongCursor = await emitAck(original, protocolEventsV9.input, {
+            requestId: 'v9_candidate_input_01', challengeId: created.data.challengeId,
+            rulesetId: V9_RULESET_ID, automationId: 'wp-015d3b-v9d-v1', inputSequence: 1,
+            expectedTurn: 0, expectedPhase: 'action', inputEpoch: 0, intent: { type: 'face', direction: 1 }
+        });
+        assert.equal(CandidateAckV9Schema.safeParse(wrongCursor).success, true);
+        assert.equal(wrongCursor.ok, false);
+        assert.equal(wrongCursor.error.code, 'SEQUENCE_GAP');
+        original.close();
+        await new Promise(resolve => setTimeout(resolve, 10));
+        const resumed = await connect(url); sockets.push(resumed);
+        const resync = new Promise<any>(resolve => resumed.once(protocolEventsV9.snapshot, resolve));
+        const reopened = await emitAck(resumed, protocolEvents.sessionOpen, {
+            requestId: 'v9_candidate_resume_01', action: 'resume', token: opened.token
+        });
+        assert.equal(reopened.ok, true);
+        const fresh = await resync;
+        assert.equal(fresh.challengeId, created.data.challengeId);
+        assert.equal(fresh.paused, true);
+        assert.equal(fresh.nextSequence, 2);
+    } finally { await closeAll(runtime, sockets); }
+});
+
+test('V9 serialized input rechecks transport ownership after catch-up yields', async () => {
+    let nowUs = 0;
+    let release!: () => void;
+    let yielded!: () => void;
+    const yieldStarted = new Promise<void>(resolve => { yielded = resolve; });
+    const registry = new SessionRegistry({ simulationRulesetId: V9_RULESET_ID, simulationTickIntervalMs: false,
+        v9TestOnly: { nowUs: () => nowUs, yieldBatch: () => { yielded(); return new Promise<void>(resolve => { release = resolve; }); } } });
+    try {
+        registry.create('v9_owned_socket_01');
+        const session = registry.getBound('v9_owned_socket_01')!;
+        const created = registry.createChallengeAutomatedV9(session, 'practice', 'wizard');
+        assert.equal('code' in created, false);
+        if ('code' in created) return;
+        nowUs = 250_000;
+        const pending = registry.submitInputV9(session, {
+            requestId: 'v9_post_await_input_01', challengeId: created.challengeId,
+            rulesetId: V9_RULESET_ID, automationId: 'wp-015d3b-v9d-v1', inputSequence: 0,
+            expectedTurn: 0, expectedPhase: 'action', inputEpoch: 0, intent: { type: 'face', direction: 1 }
+        });
+        await yieldStarted;
+        registry.disconnect('v9_owned_socket_01');
+        release();
+        const response = await pending;
+        assert.equal(response.ok, false);
+        if (!response.ok) assert.equal(response.error.code, 'UNAUTHORIZED');
+        assert.equal(registry.inputCursorV9(session, created.challengeId), 0);
+    } finally { registry.dispose(); }
 });
 
 async function start(options: Parameters<typeof createRuntimeServer>[0] = {}) {

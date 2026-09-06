@@ -6,6 +6,7 @@ import { Server as SocketIOServer } from 'socket.io';
 import { protocolEvents } from '../../shared/protocol';
 import { protocolEventsV8 } from '../../shared/protocol-v8';
 import type { ChallengeResultV8Runtime, CoordinatorReplayV8Automated, CoordinatorReplayV8Runtime } from '../../shared/protocol-v8';
+import type { ChallengeResultV9, CoordinatorReplayV9Automated } from '../../shared/protocol-v9';
 
 import { setup_game_api } from './game/api';
 import {
@@ -119,12 +120,12 @@ export function createRuntimeServer(options: RuntimeServerOptions = {}) {
     };
     const processRewardResult = (result: Parameters<NonNullable<
         SessionRegistryOptions['onChallengeCompleted']
-    >>[0] | ChallengeResultV8Runtime, replayOverride?: CoordinatorReplayV8Runtime) => {
+    >>[0] | ChallengeResultV8Runtime | ChallengeResultV9, replayOverride?: CoordinatorReplayV8Runtime | CoordinatorReplayV9Automated) => {
         if (result.protocolVersion === 8 && !('automationId' in result)) return;
         if (!options.rewards ||
             sessions.challengeMode(result.sessionId, result.challengeId) !== 'reward') return;
         const replay = replayOverride
-            ? ('automationId' in replayOverride ? replayOverride as CoordinatorReplayV8Automated : undefined)
+            ? ('automationId' in replayOverride ? replayOverride as CoordinatorReplayV8Automated | CoordinatorReplayV9Automated : undefined)
             : sessions.replayForSessionChallenge(
             result.sessionId,
             result.challengeId
@@ -150,6 +151,18 @@ export function createRuntimeServer(options: RuntimeServerOptions = {}) {
         onChallengeSettledV8: (result,replay) => {
             processRewardResult(result,replay);
             options.sessionRegistry?.onChallengeSettledV8?.(result,replay);
+        },
+        onChallengeSnapshotV9: (snapshot, socketId) => {
+            if (socketId) io.sockets.sockets.get(socketId)?.emit('v9:challenge.snapshot', snapshot);
+            options.sessionRegistry?.onChallengeSnapshotV9?.(snapshot, socketId);
+        },
+        onChallengeCompletedV9: (result, socketId) => {
+            if (socketId) io.sockets.sockets.get(socketId)?.emit('v9:challenge.result', result);
+            options.sessionRegistry?.onChallengeCompletedV9?.(result, socketId);
+        },
+        onChallengeSettledV9: (result, replay) => {
+            processRewardResult(result, replay);
+            options.sessionRegistry?.onChallengeSettledV9?.(result, replay);
         },
         onSessionClosed: (sessionId, socketId) => {
             identity?.cancelSession(sessionId);

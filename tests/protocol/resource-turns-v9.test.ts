@@ -39,6 +39,9 @@ test('V9D candidate lifecycle envelopes are strict, tagged, and separate from V7
         rulesetId: base.rulesetId }).success, false);
     assert.equal(ChallengeCreateV9Schema.safeParse({ requestId: base.requestId, sequence: 0, mode: 'reward', calling: 'wizard',
         rulesetId: base.rulesetId, automationId: base.automationId }).success, false);
+    assert.equal(ChallengeCreateV9Schema.safeParse({ requestId: base.requestId, sequence: 0, mode: 'reward', calling: 'wizard',
+        challengeId: base.challengeId, rulesetId: base.rulesetId, automationId: base.automationId,
+        eligibilityToken: 't'.repeat(43) }).success, true);
     assert.equal(InputRequestV9Schema.safeParse({ ...base, inputSequence: 0, expectedTurn: 0, expectedPhase: 'action', inputEpoch: 0,
         intent: { type: 'face', direction: 1 } }).success, true);
     assert.equal(InputRequestV9Schema.safeParse({ ...base, inputSequence: 0, expectedTurn: 0, expectedPhase: 'action', inputEpoch: 0,

@@ -84,7 +84,7 @@ export const ChallengeCreateV9Schema = z.discriminatedUnion('mode', [
     z.object({ requestId: wireOwnership.requestId, sequence: wireSequence, mode: z.literal('practice'), calling,
         rulesetId: z.literal(V9_RULESET_ID), automationId: z.literal(V9_AUTOMATION_ID) }).strict(),
     z.object({ requestId: wireOwnership.requestId, sequence: wireSequence, mode: z.literal('reward'), calling,
-        rulesetId: z.literal(V9_RULESET_ID), automationId: z.literal(V9_AUTOMATION_ID), eligibilityToken: rewardEligibilityToken }).strict()
+        challengeId: wireOwnership.challengeId, rulesetId: z.literal(V9_RULESET_ID), automationId: z.literal(V9_AUTOMATION_ID), eligibilityToken: rewardEligibilityToken }).strict()
 ]);
 export const InputRequestV9Schema = z.object({ ...wireOwnership, inputSequence: wireSequence, expectedTurn: integer(0, 16),
     expectedPhase: phase, inputEpoch: integer(0, 65535), intent: SimulationIntentV9Schema }).strict();
@@ -97,19 +97,23 @@ export const ChallengeSnapshotV9Schema = z.object({ protocolVersion: z.literal(9
     loomkeeperPolicyId: z.literal(V9_LOOMKEEPER_POLICY_ID), loomkeeperProfileId: z.literal(V9_LOOMKEEPER_PROFILE_ID),
     mode: z.enum(['practice', 'reward']), calling, status: z.enum(['active', 'left', 'expired', 'completed']), paused: z.boolean(),
     nextSequence: wireSequence, nextInputSequence: wireSequence, expiresAt: z.string().datetime(), simulation: SimulationStateV9Schema, stateHash: hash }).strict();
+export type ChallengeSnapshotV9 = z.infer<typeof ChallengeSnapshotV9Schema>;
 export const ChallengeResultV9Schema = z.object({ protocolVersion: z.literal(9), serverTimeMs: integer(0, Number.MAX_SAFE_INTEGER),
     sessionId: id, challengeId: id, rulesetId: z.literal(V9_RULESET_ID), automationId: z.literal(V9_AUTOMATION_ID),
     loomkeeperPolicyId: z.literal(V9_LOOMKEEPER_POLICY_ID), loomkeeperProfileId: z.literal(V9_LOOMKEEPER_PROFILE_ID),
     nextSequence: wireSequence, nextInputSequence: wireSequence, outcome: z.enum(['player_win', 'loomkeeper_win', 'draw', 'left', 'expired']),
     finalTick: integer(0, V9_REPLAY_LIMITS.ticks), finalStateHash: hash }).strict();
+export type ChallengeResultV9 = z.infer<typeof ChallengeResultV9Schema>;
 const ackSuccess = z.object({ protocolVersion: z.literal(9), requestId: wireOwnership.requestId, nextSequence: wireSequence,
     nextInputSequence: wireSequence, ok: z.literal(true), data: z.union([ChallengeSnapshotV9Schema, ChallengeResultV9Schema]) }).strict();
 const ackFailure = z.object({ protocolVersion: z.literal(9), requestId: wireOwnership.requestId, nextSequence: wireSequence,
     nextInputSequence: wireSequence, ok: z.literal(false), error: ProtocolErrorSchema }).strict();
 export const CandidateAckV9Schema = z.union([ackSuccess, ackFailure]);
+export type CandidateAckV9 = z.infer<typeof CandidateAckV9Schema>;
 export const ChallengeCreateAckV9Schema = z.union([
     ackSuccess.extend({ data: ChallengeSnapshotV9Schema }).strict(), ackFailure
 ]);
+export type ChallengeCreateAckV9 = z.infer<typeof ChallengeCreateAckV9Schema>;
 
 /** Strict V9 state/command schemas, without defining a V9 wire lifecycle. */
 export const SimulationSnapshotV9Schema = SimulationStateV9Schema;
