@@ -64,14 +64,14 @@ export class LoomkeeperExecutionV9 {
     private readonly turn: number; private readonly actor: SimulationActor; private prefixPending = true;
     private stage: 'prefix' | 'start' | 'motion' | 'ground' | 'aim' | 'dwell' | 'resolution' = 'prefix';
     private queue: LoomkeeperOperationV9[] = []; private movementStart = 0; private movementEnd = 0;
-    private aimedAt = -1; private lastRefresh = -1;
+    private aimedAt = -1; private lastRefresh = -1; private retreatStart = -1; private lastRetreatRefresh = -1;
     public constructor(private readonly candidate: LoomkeeperCandidateV9, private readonly prefix: V9Prefix, source: SimulationStateV9) {
         this.turn = source.turn; this.actor = source.activeActor;
     }
     public next(state: SimulationStateV9): LoomkeeperOperationV9 | undefined {
         if (state.turn !== this.turn || state.activeActor !== this.actor || state.phase === 'finished') return undefined;
         if (this.queue.length) return this.queue.shift();
-        if (state.phase === 'retreat') return undefined;
+        if (state.phase === 'retreat') return this.retreat(state);
         if (state.phase !== 'action') return undefined;
         if (this.prefixPending) {
             this.prefixPending = false;
@@ -103,6 +103,19 @@ export class LoomkeeperExecutionV9 {
         if (this.stage === 'dwell' && state.tick >= this.aimedAt + 15) { this.stage = 'resolution'; return intent({ type: 'fire', aimId: state.aimId }); }
         return undefined;
     }
+    private retreat(state: SimulationStateV9): LoomkeeperOperationV9 | undefined {
+        if (this.retreatStart < 0) {
+            this.retreatStart = state.tick;
+            const direction = -toward(state) as -1 | 1;
+            this.queue.push(intent({ type: 'face', direction }), intent({ type: 'walk_start', direction }));
+            return this.queue.shift();
+        }
+        const elapsed = state.tick - this.retreatStart;
+        if (elapsed > 0 && elapsed < 60 && elapsed % 3 === 0 && state.heldDirection !== 0 && this.lastRetreatRefresh !== state.tick) {
+            this.lastRetreatRefresh = state.tick; return intent({ type: 'walk_refresh' });
+        }
+        return undefined;
+    }
 }
 
 export function candidateAt(ordinal: number): LoomkeeperCandidateV9 {
@@ -114,8 +127,8 @@ export function candidateAt(ordinal: number): LoomkeeperCandidateV9 {
 }
 export function prefixFor(state: SimulationStateV9): V9Prefix {
     const own = state.units[state.activeActor === 'player' ? 0 : 1], other = state.units[state.activeActor === 'player' ? 1 : 0];
-    if (own.thread < 4) return 'none'; if (own.stitching === 45) return 'threadguard';
-    return Math.abs(own.xFp - other.xFp) >= 641 * 256 ? 'threadleap' : 'none';
+    if (own.thread < 4) return 'none'; if (own.stitching <= 45) return 'threadguard';
+    return Math.abs(own.xFp - other.xFp) > 640 * 256 ? 'threadleap' : 'none';
 }
 function evaluateCandidate(source: SimulationStateV9, candidate: LoomkeeperCandidateV9, prefix: V9Prefix): Evaluation | undefined {
     let state = advanceSimulationTicksV9(cloneSimulationV9(source), 30).state; let ticks = 30; const actor = source.activeActor;
@@ -133,7 +146,7 @@ function evaluateCandidate(source: SimulationStateV9, candidate: LoomkeeperCandi
     const own = state.units[actor === 'player' ? 0 : 1], target = state.units[actor === 'player' ? 1 : 0];
     return { candidate, logicalTicks: ticks, rank: [state.winner === actor ? 3 : state.phase !== 'finished' ? 2 : state.winner === 'draw' ? 1 : 0,
         source.units[actor === 'player' ? 1 : 0].stitching - target.stitching - 2 * (source.units[actor === 'player' ? 0 : 1].stitching - own.stitching),
-        -candidate.movementTicks, -candidate.ordinal] };
+        own.thread, Math.min(640 * 256, Math.abs(state.units[0].xFp - state.units[1].xFp)), -candidate.movementTicks, -candidate.ordinal] };
 }
 function offenseReady(state: SimulationStateV9): boolean { return state.phase === 'action' && state.heldDirection === 0 && state.units.every(unit => unit.alive && unit.grounded && unit.vxFp === 0 && unit.vyFp === 0); }
 function toward(state: SimulationStateV9): -1 | 1 { const own = state.units[state.activeActor === 'player' ? 0 : 1], other = state.units[state.activeActor === 'player' ? 1 : 0]; return (Math.sign(other.xFp - own.xFp) || own.facing) as -1 | 1; }

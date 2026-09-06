@@ -270,13 +270,26 @@
           "from": "/root/v9d_implementation",
           "to": "/root/v9d_support_advisor",
           "source": {
-            "commit": "1a9e08a",
+            "commit": "4c3ac6d",
             "paths": ["shared/loomkeeper-v9.ts", "shared/protocol-v9.ts", "server/src/simulation/coordinator-v9.ts", "tests/loomkeeper/resource-turns-v9.test.ts"]
           },
           "probe": "Compare tick 29/30, prefix epoch/debit, post-Leap landing and the first movement/aim trace across detached planning, authority batching and replay regeneration; identify whether a real prefix can precede selected-plan recording.",
           "remaining_uncertainty": "Live candidate lifecycle projection, reward proof admission and the fixed assessment remain separate D1/D2/D3 work.",
           "consequential": true,
-          "recipient_disposition": { "status": "received", "detail": "Advisor observed V8's prepare/tick/drain precedent and V9's immediate utility debit. The implementation records a strict V9 automated selection before constructing execution, applies prefixes only in planner clones before that barrier, waits for Leap landing before fresh-epoch aim/dwell, and tests tick 29/30 plus regeneration/tampering. The advisor's canonical Group C roots AI=(480,308), player=(480+separation,308), support formula and facing rule are accepted for later synthetic-only assessment work; no counterconstraint was found." }
+          "recipient_disposition": { "status": "received", "detail": "Advisor observed V8's prepare/tick/drain precedent and V9's immediate utility debit. The committed source records a strict V9 automated selection before constructing execution, applies prefixes only in planner clones before that barrier, and waits for Leap landing before fresh-epoch aim/dwell. This is a source-ordering/design finding only: the then-current test used internal state mutation for synthetic ordering and lacked capacity-failure, Leap/batched trace and genuine-history prefix proof. The advisor's canonical Group C roots AI=(480,308), player=(480+separation,308), support formula and facing rule are accepted for later synthetic-only assessment work; no counterconstraint was found." }
+        },
+        {
+          "id": "SUP-V9D-01-A7",
+          "from": "/root/v9d_support_advisor",
+          "to": "/root/v9d_implementation",
+          "source": {
+            "commit": "4c3ac6d",
+            "paths": ["shared/loomkeeper-v9.ts", "server/src/simulation/coordinator-v9.ts", "tests/loomkeeper/resource-turns-v9.test.ts"]
+          },
+          "probe": "Source-review the first authority commit for frozen prefix predicates, ranking, retreat, authoritative update publication, automated replay total-tick preflight, and distinguish the committed tests from their claimed evidence.",
+          "remaining_uncertainty": "Detached/scheduled Leap trace parity, genuine-history prefix replay, lifecycle projection, reward admission and the bounded assessment remain open.",
+          "consequential": true,
+          "recipient_disposition": { "status": "received", "detail": "Accepted the required corrections: own Stitching <=45, separation >640*256, own-bank and capped-separation ranking tie-breakers, retained retreat start/refresh, post-drain authoritative publication, and total-tick preflight before automated reconstruction. Added direct fixed-point predicate, published-callback and capacity-failure tests. Lifecycle integration remains blocked on these focused corrections passing." }
         }
       ],
       "closure": {

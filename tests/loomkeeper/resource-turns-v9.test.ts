@@ -3,6 +3,7 @@ import test from 'node:test';
 
 import { V9_AUTOMATION_ID } from '../../shared/combat-version';
 import { V9_RULESET_ID } from '../../shared/simulation-v9';
+import { prefixFor } from '../../shared/loomkeeper-v9';
 import { SimulationCoordinatorV9 } from '../../server/src/simulation/coordinator-v9';
 
 function coordinatorAtLoomkeeperAction(): SimulationCoordinatorV9 {
@@ -57,4 +58,47 @@ test('V9D reconstruction regenerates the automation envelope and rejects strippi
     const changed = structuredClone(proof); changed.chosenPlans[0].ordinal = (changed.chosenPlans[0].ordinal + 1) % 180;
     assert.throws(() => verifier.reconstructAndVerify(changed, { challengeId: proof.challengeId, sessionId: proof.sessionId }));
     coordinator.dispose(); verifier.dispose();
+});
+
+test('V9D prefix predicate uses inclusive Guard health and fixed-point Leap separation', () => {
+    const coordinator = coordinatorAtLoomkeeperAction();
+    const state = coordinator.get('v9_automated_challenge')!.state;
+    state.units[1].thread = 4; state.units[1].stitching = 44;
+    state.units[1].xFp = 480 * 256; state.units[0].xFp = 480 * 256 + 640 * 256 + 1;
+    assert.equal(prefixFor(state), 'threadguard');
+    state.units[1].stitching = 46;
+    assert.equal(prefixFor(state), 'threadleap');
+    state.units[0].xFp = 480 * 256 + 640 * 256;
+    assert.equal(prefixFor(state), 'none');
+    coordinator.dispose();
+});
+
+test('V9D published automated snapshots follow the charged batch without a duplicate intermediate callback', () => {
+    const updates: number[] = [];
+    const coordinator = new SimulationCoordinatorV9({ onTransition: update => updates.push(update.state.tick) });
+    coordinator.createAutomated('v9_callback_challenge', 'v9_callback_session', 1, 'wizard');
+    while (coordinator.get('v9_callback_challenge')!.state.activeActor !== 'loomkeeper') coordinator.advance('v9_callback_challenge', 1);
+    updates.length = 0;
+    coordinator.advance('v9_callback_challenge', 30);
+    assert.deepEqual(updates, [...new Set(updates)]);
+    assert.ok(updates.includes(coordinator.get('v9_callback_challenge')!.state.tick));
+    assert.ok(updates.every((tick) => tick % 3 === 0));
+    coordinator.dispose();
+});
+
+test('V9D selection capacity failure terminalizes before a live prefix debit', () => {
+    const probe = coordinatorAtLoomkeeperAction();
+    const initialBytes = Buffer.byteLength(JSON.stringify(probe.replay('v9_automated_challenge')), 'utf8');
+    probe.dispose();
+    const coordinator = new SimulationCoordinatorV9({ maxReplayBytes: initialBytes + 512 });
+    coordinator.createAutomated('v9_capacity_challenge', 'v9_capacity_session', 1, 'wizard');
+    while (coordinator.get('v9_capacity_challenge')!.state.activeActor !== 'loomkeeper') coordinator.advance('v9_capacity_challenge', 1);
+    const entry = (coordinator as any).matches.get('v9_capacity_challenge'); entry.state.units[1].thread = 4; entry.state.units[1].stitching = 45;
+    coordinator.advance('v9_capacity_challenge', 30);
+    const state = coordinator.get('v9_capacity_challenge')!.state;
+    assert.equal(state.units[1].thread, 4);
+    assert.equal(state.utilityUsed, false);
+    assert.equal(state.phase, 'finished');
+    assert.deepEqual((coordinator.replay('v9_capacity_challenge') as any).chosenPlans, []);
+    coordinator.dispose();
 });

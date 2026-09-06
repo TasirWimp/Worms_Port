@@ -150,8 +150,13 @@ export class SimulationCoordinatorV9 {
         let update = this.noop(entry);
         for (let index = 0; index < count && !entry.terminalResult; index++) {
             if (entry.automated) this.prepareAutomatedTick(entry);
+            const oldPhase = entry.state.phase, oldTick = entry.state.tick;
             update = this.accept(entry, advanceSimulationTicksV9(entry.state, 1), { kind: 'ticks', count: 1 }, false, !entry.automated);
-            if (entry.automated) update = this.drainAutomated(entry, update);
+            if (entry.automated) {
+                update = this.drainAutomated(entry, update);
+                if (entry.state.tick % 3 === 0 || oldPhase !== entry.state.phase || oldTick === entry.state.tick)
+                    this.options.onTransition?.(structuredClone(update));
+            }
         }
         return update;
     }
@@ -186,10 +191,14 @@ export class SimulationCoordinatorV9 {
         const raw = input as { records?: unknown[] };
         if (!raw || !Array.isArray(raw.records) || raw.records.length > this.maxRecords) throw new Error('V9 replay record limit exceeded.');
         for (const record of raw.records) if (jsonBytesV9(record) > V9_REPLAY_LIMITS.operationBytes) throw new Error('V9 operation record byte limit exceeded.');
+        let totalTicks = 0;
+        for (const record of raw.records) if ((record as { operation?: { kind?: string; count?: unknown } }).operation?.kind === 'ticks')
+            totalTicks += (record as { operation: { count: number } }).operation.count;
+        if (totalTicks > V9_REPLAY_LIMITS.ticks) throw new Error('V9 replay tick limit exceeded.');
         if ((input as { automationId?: unknown })?.automationId === V9_AUTOMATION_ID) return this.reconstructAutomated(input, expected);
         const replay = CoordinatorReplayV9Schema.parse(input);
         if (expected && (expected.challengeId !== replay.challengeId || expected.sessionId !== replay.sessionId)) throw new Error('V9 replay ownership mismatch.');
-        let totalTicks = 0;
+        totalTicks = 0;
         for (const record of replay.records) if (record.operation.kind === 'ticks') totalTicks += record.operation.count;
         if (totalTicks > V9_REPLAY_LIMITS.ticks) throw new Error('V9 replay tick limit exceeded.');
         const verifier = new SimulationCoordinatorV9({ nowUs: () => 0, maxReplayRecords: this.maxRecords, maxReplayBytes: this.maxBytes });
