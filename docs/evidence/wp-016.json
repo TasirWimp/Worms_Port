@@ -1,0 +1,39 @@
+{
+  "id": "WP-016",
+  "status": "in_progress",
+  "starting_commit": "2d31aa0775ef43b10cf2a4b42ed03aadf8579cbd",
+  "branch": "codex/wp-016-adaptive-agent-support",
+  "initial_worktree": "clean",
+  "starting_lock_sha256": "D4DAC6AE09A3D2F6C5A7EAA11520BAC43F1628320C5331575BCF1E1857073D73",
+  "owning_roles": ["worms_port_docs_keeper", "worms_port_test_worker", "read-only adaptive support advisor", "independent final reviewer"],
+  "scope": [
+    "Owner-authorized tooling/workflow slice: native reciprocal agent support during implementation; revisable task boundaries, task-relative model/effort, one writer per shared artifact, independent final assessment.",
+    "Extend existing work-package evidence only as needed to retain actual support exchanges, source identity, unresolved obligations, support reduction and reopening conditions; executable validation and negative controls.",
+    "Use this tooling implementation as the first live support episode; retain model provenance and limitations. Track exact commits and results in the existing CRPM pressure case on main.",
+    "Update AGENTS.md, existing workflow/planning, applicable role instructions and a read-only support role. Preserve selected verification and the daily gate; one named owner for shared verification resources."
+  ],
+  "non_goals": [
+    "No gameplay, asset, protocol, reward, dependency, package-lock, or V9D implementation change; no product promotion or release.",
+    "No external messaging service, Codex app-server client, learned router, graph engine or mandatory permanent model hierarchy.",
+    "No retrospective C7 acceptance change, cost-saving claim, full automated resource-lock rollout or model-effort benchmark."
+  ],
+  "planned_checks": [
+    "node --test tests/tooling/work-package-evidence.test.js",
+    "node scripts/verify-changes.js --base 2d31aa0 --dry-run",
+    "node scripts/verify-changes.js --base 2d31aa0",
+    "agent TOML, Markdown links, native support exchange and cold re-entry review",
+    "node scripts/audit-housekeeping.js",
+    "git diff --check"
+  ],
+  "deterministic_seeds": [],
+  "sorcerers_reference_used": false,
+  "clean_room_records": [],
+  "check_results": [],
+  "reviews": [],
+  "skipped_checks": [],
+  "residual_risks": [
+    "Initial tooling baseline: work-package evidence tests passed 2/2. Existing C7 historical failed reviews still appear in housekeeping; product pointer contains stale wording to reconcile from its recorded C7.5 closure.",
+    "Live trial will measure operational support and recoverability only; no unseen gameplay discovery or comparative efficiency result is implied.",
+    "Shared dependencies use a local node_modules junction to the unchanged original checkout; build/output directories remain worktree-local."
+  ]
+}
