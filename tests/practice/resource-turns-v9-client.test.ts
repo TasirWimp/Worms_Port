@@ -21,7 +21,9 @@ test('V9D client lifecycle retires stale ownership and distinguishes Practice fr
     assert.equal(lifecycle.generation, before + 1);
     assert.equal(lifecycle.acceptSnapshot(snapshot('practice', 0), 'foreign_session'), undefined);
     assert.equal(lifecycle.pauseUnavailableReason(), 'Reconnect and wait for a fresh authoritative snapshot.');
-    lifecycle.acceptSnapshot(snapshot('reward', 1), 'v9_client_session_01');
-    assert.equal(lifecycle.canPause(), false);
-    assert.equal(lifecycle.pauseUnavailableReason(), 'Rewarded candidate matches cannot pause.');
+    assert.equal(lifecycle.acceptSnapshot(snapshot('reward', 1), 'v9_client_session_01'), undefined);
+    const rewarded = new ResourceTurnsV9Lifecycle();
+    rewarded.acceptSnapshot(snapshot('reward', 1), 'v9_client_session_01');
+    assert.equal(rewarded.canPause(), false);
+    assert.equal(rewarded.pauseUnavailableReason(), 'Rewarded candidate matches cannot pause.');
 });

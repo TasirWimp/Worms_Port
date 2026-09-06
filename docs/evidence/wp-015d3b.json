@@ -290,6 +290,16 @@
           "remaining_uncertainty": "Detached/scheduled Leap trace parity, genuine-history prefix replay, lifecycle projection, reward admission and the bounded assessment remain open.",
           "consequential": true,
           "recipient_disposition": { "status": "received", "detail": "Accepted the required corrections: own Stitching <=45, separation >640*256, own-bank and capped-separation ranking tie-breakers, retained retreat start/refresh, post-drain authoritative publication, and total-tick preflight before automated reconstruction. Added direct fixed-point predicate, published-callback and capacity-failure tests. Lifecycle integration remains blocked on these focused corrections passing." }
+        },
+        {
+          "id": "SUP-V9D-01-A8",
+          "from": "/root/v9d_support_advisor",
+          "to": "/root/v9d_implementation",
+          "source": { "commit": "76a8cf5", "paths": ["shared/protocol-v9.ts", "client/src/practice/resource-turns-v9.ts", "server/src/session/registry.ts", "server/src/protocol/socket.ts", "server/src/runtime.ts", "server/src/reward/service.ts"] },
+          "probe": "Review V9D lifecycle envelope/projection before live wiring and specify required registry/socket/reward/client ownership sequence.",
+          "remaining_uncertainty": "Actual registry, socket, runtime, reward and scene integration remains open after correcting the strict envelope and projection preconditions.",
+          "consequential": true,
+          "recipient_disposition": { "status": "received", "detail": "Accepted the brief. Creation now requires sequence and has discriminated Practice/reward envelopes, with a reward eligibility token and typed strict acknowledgement schemas. The client projection rejects foreign/replacement/stale/conflicting snapshots, requires a post-disconnect resync and uses authoritative Practice pause facts. No claim is made that final live server wiring or settlement is complete." }
         }
       ],
       "closure": {
