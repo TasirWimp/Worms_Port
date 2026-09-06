@@ -17,7 +17,8 @@
     "The starting lock hash records canonical Git bytes; Windows checkout bytes have SHA256 1910F1419459E827A6ED5C8DC3BABD5189E6A9A6AC1D41D43E909E572F01BAB8. No dependency edit is authorized. Retain inherited V8 source/replay and clean-room obligations. No new reference observation is used for V9A.",
     "V9B authoritative foundation completed on 2026-09-05 within its closed nine source/test paths. It adds injected-only V9 state, strict protocol/replay and coordinator seams; the public selector remains V7. Final Astra source review passed after shield, tick-boundary, pause/resume, counter and B4 fixture corrections. No external/reference/quarantine access occurred.",
     "V9C initial local query-gated resource/cost/utility preview is committed on the historical V9B foundation branch. The expanded independent Astra continuity review failed it on 2026-09-05 despite passing selected verification. The owner authorized C7 continuity correction preparation: fresh-input boundaries, compact contextual actions, phone layout, presentation/HUD/camera, and truthful lifecycle guidance need an independently reviewed exact correction entry. The branch remains the V9B foundation carrier and its name does not imply V9C closure.",
-    "V9C C7.5 is complete as a local preview correction. V9D is the approved-next documentation-only entry candidate at 2230a021c82bb16c00e92a7d088383d0a85fbf65: deterministic V9 Loomkeeper, strict automation/replay provenance, complete candidate-only shared Practice/reward lifecycle and bounded assessment. A fresh noncontributing Astra/high entry reviewer must approve the exact boundary before any source edit; V9 remains unimplemented and public selection remains V7."
+    "V9C C7.5 is complete as a local preview correction. V9D is the approved-next documentation-only entry candidate at 2230a021c82bb16c00e92a7d088383d0a85fbf65: deterministic V9 Loomkeeper, strict automation/replay provenance, complete candidate-only shared Practice/reward lifecycle and bounded assessment. Its first independent entry review failed before source authorization; the amended entry adds the narrow live-controls seam, finite assessment matrix and verified Socket.IO lock. A fresh noncontributing Astra/high reviewer must approve it before any source edit; V9 remains unimplemented and public selection remains V7.",
+    "The V9D assessment is fixed at 196 scenarios and 272 executions: 120 repeated correctness executions, 120 full Wizard matches and 32 repeated threshold executions. It writes a partial or complete ignored report; changed rows, work caps, outcome thresholds or report/failure semantics require a reviewed amendment."
   ],
   "non_goals": [
     "V9A was contract-only. V9B authorizes only its separately bounded injected authoritative foundation; it excludes deployment, shared public selector promotion, funded activation, V9C/D lifecycle or UI, V10 terrain, V11 teams, new assets/dependencies, reference/quarantine access, analytical execution and formal player observation.",
@@ -30,7 +31,7 @@
     "Validate local contract/navigation links, exact six-path scope and unchanged runtime/lock/frozen evidence.",
     "Distinct read-only contract review before freezing V9A.",
     "Independent Astra V9C entry review of C1-C5 before any source edit; then red-first V9 preview control/fixture tests, selected verification and required browser phone preview proof.",
-    "Fresh independent Astra/high V9D entry review must inspect SUP-V9D-01, current exact locks, red-first deterministic AI/lifecycle/replay/assessment fixtures and V9C continuity preservation before source edits. After implementation, the named test owner runs the selected full product funnel and explicit assess:v9; the 21:00 Europe/Berlin daily/release gate remains separate."
+    "Fresh independent Astra/high V9D entry review must inspect the failed prior entry review, reopened/reduced SUP-V9D-01, current exact locks including narrow live controls and Socket.IO, the fixed 196-scenario/272-execution assessment, red-first deterministic AI/lifecycle/replay fixtures and V9C continuity preservation before source edits. After implementation, the named test owner runs the selected full product funnel and explicit assess:v9; the 21:00 Europe/Berlin daily/release gate remains separate."
   ],
   "deterministic_seeds": [],
   "sorcerers_reference_used": false,
@@ -60,6 +61,11 @@
       "command": "git diff --check; npm.cmd run check:work-packages; npm.cmd run verify:changes -- --dry-run",
       "status": "pass",
       "detail": "V9D entry documentation is whitespace-clean and work-package evidence passes (52 records). Its exact three documentation files select only check:work-packages; no browser, PostgreSQL, performance or fallback work is selected. Runtime, assessment, daily/release and physical-device checks remain deferred until the reviewed V9D implementation exists."
+    },
+    {
+      "command": "git diff --check; npm.cmd run check:work-packages; npm.cmd run verify:changes -- --dry-run",
+      "status": "pass",
+      "detail": "The amended V9D entry is whitespace-clean and work-package evidence passes (52 records), including the reopened/reduced SUP-V9D-01 source-currentness binding. Its exact three documentation files select only check:work-packages; runtime, assessment, daily/release and physical-device checks remain deferred pending fresh Astra entry approval."
     }
   ],
   "reviews": [
@@ -140,6 +146,12 @@
       "reviewer": "/root/v9c_c75_final_astra_review",
       "decision": "pass",
       "detail": "Independent configured Astra/high C7.5 review at c713203 passed the exact three-file carry-over guidance correction. Direct and browser proof cover turn-two Spoolburst to Guard to aim to affordable Threadball/Needlepoint after an authority tick and preserved no-choice insufficient-Thread guidance. Selected families/build/smoke/security/budget checks passed. The serial browser baseline had one host ERR_NO_BUFFER_SPACE navigation failure before an unchanged V7 camera test, whose isolated rerun passed; the aggregate selector is therefore recorded as incomplete, not clean. No edits, external or quarantine access."
+    },
+    {
+      "role": "worms_port_reviewer",
+      "reviewer": "/root/v9d_entry_reviewer",
+      "decision": "fail",
+      "detail": "Fresh configured Astra/high entry review at 96e9887 failed before source authorization. It required a narrowly locked live-controls seam, an exact finite V9 assessment and a corrected Socket.IO blob lock. It did not approve runtime or test edits, public selection, activation, payout, deployment or release. The amended entry requires a new noncontributing Astra/high review."
     }
   ],
   "support_episodes": [
@@ -159,13 +171,15 @@
         }
       ],
       "source_binding": {
-        "commit": "2230a021c82bb16c00e92a7d088383d0a85fbf65",
+        "commit": "96e9887",
         "paths": [
           "docs/planning/wp-015d3b-v9-resource-utilities-contract.md",
+          "client/src/combat/resource-turns-v9-controls.ts",
           "shared/protocol-v9.ts",
           "server/src/simulation/coordinator-v9.ts",
           "server/src/session/registry.ts",
-          "server/src/reward/service.ts"
+          "server/src/reward/service.ts",
+          "server/src/protocol/socket.ts"
         ],
         "relationship": "Automated-policy selection, authoritative scheduling, replay proof, Practice/reward lifecycle and settlement must agree without changing the V9B foundation ABI or V7 selector."
       },
@@ -208,26 +222,52 @@
           "remaining_uncertainty": "The fresh worker must encode the canonical assessment-only transform before implementation.",
           "consequential": true,
           "recipient_disposition": { "status": "received", "detail": "Planner accepted the required reset-and-credit opening transform and separation of synthetic assessment from genuine create-to-play reward evidence." }
+        },
+        {
+          "id": "SUP-V9D-01-A4",
+          "from": "/root/v9d_entry_planner",
+          "to": "/root/v9d_support_advisor",
+          "source": {
+            "commit": "96e9887",
+            "paths": ["docs/planning/wp-015d3b-v9-resource-utilities-contract.md", "client/src/combat/resource-turns-v9-controls.ts", "server/src/protocol/socket.ts"]
+          },
+          "probe": "Resolve the failed entry review's missing live-controls seam, finite assessment matrix and Socket.IO lock before another source authorization request.",
+          "remaining_uncertainty": "Exact lifecycle fact projection and finite report/stop semantics required a targeted return.",
+          "consequential": true,
+          "recipient_disposition": { "status": "received", "detail": "Advisor confirmed the controls and Socket.IO locks and supplied the bounded assessment domain, report fields and stop conditions." }
+        },
+        {
+          "id": "SUP-V9D-01-A5",
+          "from": "/root/v9d_support_advisor",
+          "to": "/root/v9d_entry_planner",
+          "source": {
+            "commit": "96e9887",
+            "paths": ["client/src/combat/resource-turns-v9-controls.ts", "tests/loomkeeper/action-turns-v8.assessment.ts", "tests/simulation/resource-turns-v9.test.ts", "server/src/protocol/socket.ts"]
+          },
+          "probe": "Constrain controls to lifecycle presentation and freeze 196 scenarios/272 executions, cap semantics, ignored report and first-failure persistence without reusing V8 acceptance thresholds.",
+          "remaining_uncertainty": "Implementation-specific type factoring and actual source integration remain for a fresh worker after entry approval.",
+          "consequential": true,
+          "recipient_disposition": { "status": "received", "detail": "Planner accepted the narrowed controls role, fixed matrix/report/failure semantics and support reopening cues; the episode reduced with no advisor approval." }
         }
       ],
       "closure": {
         "source_currentness": {
-          "commit": "2230a021c82bb16c00e92a7d088383d0a85fbf65",
-          "paths": ["docs/planning/wp-015d3b-v9-resource-utilities-contract.md", "shared/protocol-v9.ts", "server/src/simulation/coordinator-v9.ts", "server/src/session/registry.ts", "server/src/reward/service.ts"],
+          "commit": "96e9887",
+          "paths": ["docs/planning/wp-015d3b-v9-resource-utilities-contract.md", "client/src/combat/resource-turns-v9-controls.ts", "shared/protocol-v9.ts", "server/src/simulation/coordinator-v9.ts", "server/src/session/registry.ts", "server/src/reward/service.ts", "server/src/protocol/socket.ts"],
           "manual_candidate_review": "The future Astra entry reviewer must inspect current locks and diff; this record binds planning sources, not uncommitted implementation bytes."
         },
         "distinction": "Valid combat history, automated-policy proof, synthetic assessment and durable reward lifecycle are four separate claims.",
         "evidence": [
           "V9B foundation replay is strict and intentionally has no automation envelope; injected V9 creation ignores mode and creates no Challenge lifecycle.",
           "V8 automated replay/reward guards show the required separate provenance pattern without authorizing V8 source reuse.",
-          "The retained V9D contract freezes prefix, charged planning, landing, reconstruction, lifecycle and forged-proof probes before source edits."
+          "The amended V9D contract freezes the narrow controls projection, 196-scenario/272-execution assessment, prefix, charged planning, landing, reconstruction, lifecycle and forged-proof probes before source edits."
         ],
         "support_assumptions": [
           "Requested model/effort is configured selection data; runtime-served metadata is unavailable.",
           "The package writer accurately retained the consequential exchange; the final reviewer independently checks current source and tests.",
           "V9D implementation remains limited to local MIT product sources and does not access Sorcerers quarantine or external references."
         ],
-        "reopen_cue": "Reopen at writer handoff, or earlier if a required registry/socket/runtime/client/reward seam is outside the closed list, a fixture grants wrong Thread income, automation can downgrade, or simulation, clock, version, budget or normal selector behavior is proposed to change."
+        "reopen_cue": "Reopen at writer handoff, or earlier if lifecycle facts cross controls/contracts/scene boundaries, recovery lacks fresh authoritative synchronization, the fixed matrix or report semantics change, a required carrier/lock is missing, automation can downgrade, or frozen authority/version/clock/work caps or normal selector behavior is proposed to change."
       }
     }
   ],

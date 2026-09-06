@@ -913,6 +913,7 @@ client/src/scenes/combat.ts
 client/src/scenes/result.ts
 client/src/combat/contracts.ts
 client/src/combat/resource-turns-v9-scene.ts
+client/src/combat/resource-turns-v9-controls.ts
 tests/simulation/resource-turns-v9-replay.test.ts
 tests/protocol/resource-turns-v9.test.ts
 tests/combat/resource-turns-v9.test.ts
@@ -945,10 +946,19 @@ entry lock. The principal authority, transport, reward and client seams are:
 | `client/src/practice/client.ts` | `1A620173C009F0764238FB05E45DA9251308A19BBB4CD245DBC4E8AC794FCE0D` | `2c8e177428799e458485d00f1a8733d5b6f813dc` |
 | `client/src/scenes/combat.ts` | `378041D6D0B6F4A8933C3C1A63913A4E4769D75709A7CBFA97A879DA72DC20DA` | `5bcaa5c248e84041858d39ea6dcd70ba4777f96f` |
 | `client/src/combat/resource-turns-v9-scene.ts` | `B4BC38FB81E72690B5A13AFC5333CE03AE33327F808C827E9F11A82100C7DF22` | `8fd442f04ccf6bbceb2dd33f819e1ee2fc808861` |
+| `client/src/combat/resource-turns-v9-controls.ts` | `DE1F57E3C35FB965ADC0754F06A0B76002A3C20E63252A419DCE66F085A9CA5E` | `ee784c2491e48d10f879a7b8c8fbe5b1b151850b` |
 | `package.json` | `2B98AD4B711022C4D784ED013C15641C613E4FB8322B58B876D1649A37F8D37F` | `1df30ee796ea637e567ad48d1bc5fce65342154b` |
 
-`client/src/combat/resource-turns-v9-fixture.ts` and
-`client/src/combat/resource-turns-v9-controls.ts` are read-only V9C locks.
+`client/src/combat/resource-turns-v9-fixture.ts` is a read-only V9C lock.
+Controls may change only to project current authoritative mode, connection,
+challenge/generation, pause/status/result and retry/exit facts. They must use
+the scene's existing `boundaryFor`/`retireOwnership` seam to retire held
+movement, aim, chooser, polling, previews and late acknowledgements on
+disconnect or challenge replacement. Input returns only after a current owned
+snapshot; Practice pause reflects server acceptance and reward pause remains
+unavailable. Do not redesign layout, recalculate resources or authority
+locally, invent granular AI progress, regress continuous movement, pending
+choice affordability, receipts, camera or the corrected touch hierarchy.
 No V8/legacy simulation module, asset, legal manifest, dependency lock,
 reward amount/eligibility/ledger/schema/migration/signer, deployment setting,
 normal selector or Sorcerers material is in scope.
@@ -1012,6 +1022,52 @@ non-default assessment; record CPU/search caps, utility usage, expensive-cast
 starvation, no-plan/work-failure and first-actor outcomes. Do not inherit V8
 outcome thresholds without a V9-specific approved assessment contract.
 
+The finite `assess:v9` domain is fixed as follows. Group A runs ten seeds
+`[1,2,3,4,17,42,1337,65535,2147483648,4294967295]` across two horizontal
+reflections and Wizard/Thief/Warrior: 60 canonical AI-opening correctness
+states, each twice (120 executions). Group B runs those ten seeds, two
+reflections, player/Loomkeeper opening actor and three frozen Wizard scripted
+profiles: 120 full matches once. Profiles use V8 ordinals/scripts `0`
+stationary, `1` toward-90 and `4` toward-90-jump only as assessment labels;
+the player has its restricted 30-candidate lattice, one slot for each of 30
+charged ticks, while production Loomkeeper planning remains the full 180
+candidate/six-slots-per-tick policy. Group C runs bank `[3,4,5,7]`, own
+Stitching `[45,46]` and separation `[640,641]`: 16 clear-floor seed-1 Wizard
+threshold states, each twice (32 executions). Its roots, facing, support and
+zero-velocity setup use the named V9 clear-floor test fixture; the canonical
+opening transform then establishes only the selected actor's income. Expected
+prefix is Guard at bank at least 4 and Stitching 45, otherwise Leap +1 at bank
+at least 4 and separation 641, otherwise none. The total is exactly 196
+scenarios and 272 executions. Prefix/work-failure/geometry/reward probes not
+in these groups remain named direct tests, not hidden assessment rows.
+
+Every full planning pass charges exactly 180 slots/30 ticks, at most 1,050
+logical ticks per rollout and 189,000 total; rejected slots consume 1,050.
+Restricted player work is 30 slots/30 ticks and at most 31,500 rollout ticks.
+Retain at most eight operations per tick, 512 intents per turn, inherited
+barrier bounds, 1,050 actual ticks per turn, 16 turns and 16,800 combat ticks
+per match. Group A/C repetitions must equal prefix/status/ordinal, committed
+operation timing and per-tick hashes; detached selected rollout must equal
+scheduled execution. Missing/duplicate rows, unequal repetitions, invalid
+opening resources/support, wrong prefix/affordability, illegal operation,
+excess work, nontermination/simulation limit, no-plan fallback or trace/hash
+divergence fail the assessment. Deterministic no-legal-plan is descriptive
+only when neutral timeout/handoff is correct. Work failure is expected only in
+named injected-negative tests; any uninjected assessment work failure stops.
+
+Write `test-results/wp-015d3b-v9-assessment.json` on success and on the first
+correctness failure. Bind the assessment/automation ID, source commit and
+available runtime/host metadata. Record planned/completed counts, failing row
+and phase; row seed/reflection/Calling/opening/script/bank/HP/distance;
+initial/final hashes; prefix/ordinal/status; Thread spent/banked; cast count by
+Relic; utility opportunities/use; unaffordable/no-plan/work-failure counts;
+turns/ticks, damage, winner/reason, planning total/max six-slot CPU batch and
+rollout counts. Group observations include reflection/opening/script outcomes,
+draw/win/first-actor bias and CPU. Spoolburst starvation is descriptive:
+affordable opportunities and selected/fired casts versus unaffordable
+candidates, with no invented minimum, balance, latency, deployment or V8
+threshold claim.
+
 ### D4. Verification and support disposition
 
 Run the selector dry run before edits, then the selected full product funnel:
@@ -1022,11 +1078,16 @@ Run the explicit V9 assessment separately. The daily/release `npm run
 verify:daily` remains the 21:00 Europe/Berlin full gate; Ubuntu visual and real
 Android/iOS evidence remain separate.
 
-SUP-V9D-01 is reduced after reciprocal support. It distinguishes four claims:
+SUP-V9D-01 was reopened after the first independent entry review found the
+missing controls seam, finite assessment matrix and socket-lock correction; it
+is now reduced after reciprocal support. It distinguishes four claims:
 valid V9 combat history, automated-policy proof, synthetic assessment and
 durable reward lifecycle. Reopen support at writer handoff to reconcile actual
 charged-prefix scheduling, snapshot/ack barriers and replay proof, or earlier
-if the closed list lacks an integration seam, a fixture grants the wrong
-income, automation can be stripped/downgraded, or simulation, clock, version,
-budget or normal selector behavior is proposed to change. The support advisor
-gave no approval and did not edit code or run tests.
+if lifecycle facts cross controls/contracts/scene boundaries, recovery lacks a
+fresh owned snapshot, matrix/fixture semantics or counts change, a carrier or
+lock is omitted/malformed, automation can be stripped/downgraded, or
+simulation, clock, version, budget or normal selector behavior is proposed to
+change. Broader control layout or granular AI-progress facts require explicit
+entry reconciliation. The support advisor gave no approval and did not edit
+code or run tests.
