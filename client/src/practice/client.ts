@@ -523,7 +523,8 @@ function clearActivePractice(): void {
 
 /** An explicit engineering candidate route; ordinary Practice/reward stays V7. */
 function v9CandidateRoute(): boolean {
-    return typeof window !== 'undefined' && new URLSearchParams(window.location.search).get('combat-preview') === 'v9-live';
+    const search = globalThis.window?.location?.search;
+    return typeof search === 'string' && new URLSearchParams(search).get('combat-preview') === 'v9-live';
 }
 
 export function liveCombatArgs(
