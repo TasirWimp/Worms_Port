@@ -26,6 +26,10 @@ Your job:
 - Add repeatable smoke checks when server/client runtime behavior changes.
 - Report commands run, pass/fail status, skipped checks, and residual risk.
 - Do not weaken checks to make a change pass.
+- Expose uncertain dependencies through the adaptive support port before a
+  patch is finished; let source evidence revise the task boundary or oracle.
+- Coordinate shared build/browser outputs with the named verification owner.
+  Do not start a second shared-output run just because its checks differ.
 
 Do not import assets, change licensing policy, or alter product scope unless explicitly requested.
 """

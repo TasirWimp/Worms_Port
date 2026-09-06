@@ -48,9 +48,6 @@ waiting for routine implementation decisions:
 
 1. Read the execution pointer in `docs/planning/implementation_plan.md` and
    select only the named unblocked work package.
-   Run `npm run audit:housekeeping` at this transition and reconcile its report
-   with the current branch, package evidence, execution pointer, and latest
-   review before recording a new slice.
    Apply [task model routing](../../AGENTS.md#task-model-routing): announce the
    chosen model/effort and reason, inspect role pins, and preserve fresh
    implementer/distinct reviewer separation. Record those settings in the
@@ -60,7 +57,9 @@ waiting for routine implementation decisions:
    dependency-lock hash when relevant, planned checks, and deterministic seeds.
 3. Establish a green baseline for the selected checks. A red baseline is
    reported separately and is not attributed to the candidate patch.
-4. Implement one bounded refinement in an isolated branch or worktree.
+4. Implement one refinement in an isolated branch or worktree. Keep file
+   ownership explicit, but revise the behavioral boundary when new dependencies
+   appear. Open reciprocal support during implementation using the protocol below.
 5. Run a fail-fast funnel: compliance, types, focused tests, clean build, built
    smoke, protocol/browser/visual/performance checks as applicable.
 6. Ask the implementing agent to review its own change, then request the
@@ -71,8 +70,6 @@ waiting for routine implementation decisions:
    blocker without weakening a threshold or guardrail.
 9. Persist sanitized evidence, update source-of-truth documents, commit the
    bounded slice, and advance the execution pointer only after all gates pass.
-   Before a merge/release boundary or closing an in-progress package, rerun
-   `npm run audit:housekeeping`; it reports drift but never mutates Git.
 
 ### Work-Package Evidence
 
@@ -94,103 +91,179 @@ Never auto-approve screenshot baselines, asset licenses, attribution omissions,
 brand permissions, payment exceptions, security exceptions, or real-fund
 activation.
 
+### Adaptive Support During Implementation (WP-016)
+
+Use the existing Codex agent runtime first. This protocol authorizes useful
+native peer exchanges and role-specific model/effort selection within the
+approved slice. It does not install an external mail service, start a permanent
+expert team, or change a running task's model by editing configuration.
+
+The coordination unit is a relationship the product or tooling must preserve.
+For example, action label, enabled state, explanation and submitted intent must
+agree after a legal pending selection and an authority update. A worker's file
+allowance does not make that relationship independent of history or neighboring
+components. State the relationship, current source, relevant observations,
+allowed inputs/actions and unresolved dependency before treating a task as local.
+
+Possible arrangements follow the work:
+
+| Situation | Operational response |
+| --- | --- |
+| Familiar change with exercised dependencies | One implementer, support available; avoid extra agents for mechanical work. |
+| Ambiguous dependency or risky seam | Implementer and read-only advisor exchange observations before the patch is finished. Either side may initiate. |
+| Change crosses the work split | Affected participants revise the boundary and division together; preserve one writer per shared file. |
+| Relationship stabilizes | Reduce active advice, retaining the distinction, evidence, continuing assumptions and reopening cue. |
+| Candidate reaches final assessment | Fresh noncontributing reviewer reconstructs the claim, then reconciles the support/failure ledger and selected gates. |
+
+Native operation:
+
+1. Check which native spawn/message/continue capabilities the host exposes and
+   inspect the chosen role's pins. Announce requested model/effort and reason.
+   Supply the permitted source packet and participant identities; do not forward
+   quarantined context. `worms_port_support_advisor` is unpinned and read-only.
+2. Give implementer and advisor each other's target IDs. Where available, use
+   `collaboration.send_message` for an active peer and `followup_task` for an
+   idle peer that needs another turn. These names describe the current native
+   host, not an API guaranteed by every Codex client. If only parent relay is
+   available, transport the addressed observation with attribution; do not make
+   the parent solve the question first. Missing delivery capability is an
+   explicit limitation, not permission to invent an external agent service.
+3. Open one bounded support episode around a concrete uncertainty or expected
+   dependency change. A complete diagnosis is unnecessary. The implementer
+   exposes a source delta and local constraints; the advisor can proactively
+   challenge the seam. Agree one next discriminating probe and a stop/reframe
+   condition. Keep requested settings separate from unavailable runtime metadata.
+4. Exchange hypotheses and observed results directly. Any participant's evidence
+   can correct another's proposal. Send consequential changes to affected peers
+   and the coordinator: changed assumptions, invalidated receipts and required
+   next actions. Record whether a consequential recipient has responded with
+   its task consequence; a sent message alone does not settle the dependency.
+5. Continue independent work while a response is pending. Pause dependent edits
+   when their governing constraint is unresolved. If an exchange would repeat
+   the same explanation without a new observation, change the probe, regroup
+   the task boundary or record a blocker. Model changes do not reset correction
+   limits. New failure families can require reframing before the same-signature
+   three-correction limit is reached.
+6. The designated package writer retains consequential exchanges and the support
+   return in the existing work-package evidence. Do not copy all chat narration
+   or add a document per message. Reduced support retains what changed, what
+   checks protect it, continuing assumptions, deliberately omitted detail and
+   the condition that reopens it. A source change can reopen prior support
+   without deleting its historical return.
+
+Use the optional `support_episodes` record under the existing work-package
+schema when exercising this protocol. `node scripts/check-work-package-evidence.js`
+checks recorded consistency; `docs/evidence/wp-016.json` carries the first actual
+episode. A completed opted-in package needs an identified final reviewer who
+did not participate in its support solution. An advisor's useful return is not
+a review PASS. Missing support, observations or recipient consequences remain
+visible rather than being supplied from the coordinator's confidence.
+
+The checker cannot establish that messages were truthfully reported, that a
+model was actually served, or that a source binding describes the current
+uncommitted bytes. The final reviewer must inspect the actual candidate diff
+and relevant source-bound tests. Binding equality inside a record is not an
+independent currentness witness. Preserve the tested implementation commit and
+the paths whose changes would reopen support; unrelated later documentation
+commits must not invalidate all historical episodes.
+
+Keep local, joined and final claims separate. Local checks can pass while their
+meanings, source versions or histories disagree. Relevant integrated journeys
+must observe the coupled outcome. Pairwise agreement and multiple agents
+reusing one oracle do not add independent empirical evidence. Revise the
+relationship/transition matrix when implementation exposes a new distinction;
+the entry matrix is not a completeness claim.
+
+One named verification owner controls shared build/output/smoke/browser work.
+Before launching such work, peers request that slot and receive an explicit
+handoff or wait. Record run/source identity and completion or incomplete status;
+after interruption, establish owned-process cleanup before reusing outputs.
+This first native protocol is procedural, not an enforced cross-process lock.
+The daily job is not automatically connected to the peer protocol: inspect its
+run state before sharing outputs, or use isolated output directories/worktrees.
+Uncertain ownership blocks a shared-output run. Independent source reads and
+isolated tests may overlap. Do not change the daily schedule or skip its checks.
+
+The selector remains the required edit-loop baseline. Support probes can run
+focused checks during work; final verification uses the complete selected scope
+and any justified additional review checks. Product acceptance, selector
+aggregate, daily/release and real-device status remain separate.
+
+First-slice scope: WP-016 implements these instructions, the read-only advisor
+and narrow evidence controls. External messaging, automatic process leases and
+comparative cost/model trials require demonstrated need and a separately scoped
+continuation. CRPM tracks source commits and outcomes in its existing
+[pressure case](https://github.com/TasirWimp/CRPM/blob/main/docs/case_studies/Worms_Port_Agent_Coordination_And_Capability_Pressure_Case_v0.md).
+
 ## Verification Funnels
 
-### Change-selected edit loop and independent Astra review (2026-09-05)
+### Change-selected infrastructure on main (2026-09-05)
 
-Owner-requested optimization supersedes the blanket feature/tooling gates below
-and the historic WP-014H five-case feature funnel. Ownership: test worker for
-selection/CI and docs keeper for these operating instructions.
+The owner requested this isolated infrastructure port from development commit
+`da1e7a9`, including the build-proof prerequisites from `5333a90` and the daily
+cadence introduced by `17bd15e`. Owning roles: test worker and docs keeper.
+It preserves main's current game, assets, dependency lock, smoke tests, browser
+specs and baseline policy data. It does not promote later gameplay or analytical
+work packages. These instructions supersede the older blanket per-feature
+full-matrix requirement.
 
-Before testing, run `npm run verify:changes -- --dry-run`, inspect the printed
-file/check selection, then run `npm run verify:changes`. `verify:feature` invokes
-the same runner. It includes staged, unstaged and untracked files, including both
-paths of renames/deletions. Pass `-- --base <starting-commit>` for committed slice
-work; the comparison uses its merge base with HEAD plus current edits. CI supplies
-the PR base or push's previous commit. Missing/invalid bases fail; a clean tree
-explicitly selects nothing. Record the base with verification evidence.
+Preview with `npm run verify:changes -- --dry-run`, then run
+`npm run verify:changes` (`verify:feature` is the same selector). In Windows
+PowerShell use `npm.cmd` for forwarded flags or invoke the Node script directly.
+Selection includes staged, unstaged and untracked files, both sides of renames
+and deleted paths. For committed work pass `-- --base <starting-commit>`; record
+that base with the results. Invalid or unavailable bases fail, while a clean
+tree explicitly selects nothing. CI uses the PR merge base or previous push SHA.
 
-This is the mandatory implementer baseline and CI plan. It is not the upper
-bound of an independent Astra review. The read-only reviewer inspects the
-selection, the diff, the predecessor experience, and existing coverage, then
-freely chooses additional checks from the whole repository suite. It expands
-coverage for cross-module, authority, security, mobile, visual, continuity, or
-unresolved-risk findings; a focused failure may justify a full-matrix diagnosis.
-The daily full suite remains scheduled at 21:00 Europe/Berlin and remains a
-separate release gate.
-
-Before a final review PASS, Astra records a continuity ledger for relevant
-player-facing behavior: preserved, replaced, explicitly deferred to a named
-waypoint, or missing. It checks the complete phone journey rather than DOM
-presence alone: clear arena space, progressive feature guidance, touch layout,
-status and feedback, movement/combat presentation, opponent response,
-pause/resume, and terminal behavior. If a needed proof is absent, it returns a
-bounded missing-evidence finding for a Terra/high implementer: test carrier,
-setup, expected result, and regression protected. Every blocking review finding
-also includes a read-only correction brief: affected source/test carriers and
-lines, existing components/fixtures/predecessor flow to reuse, required
-data/control flow, authority and boundary constraints, and acceptance checks.
-It separates required behavior from optional implementation choices. Terra owns
-the patch; Astra reassesses the correction without editing source itself.
-
-| Change | Edit-loop checks |
+| Changes | Required edit-loop coverage |
 | --- | --- |
-| Ordinary docs / Codex configuration | Diff checks; no game build |
-| Evidence JSON, hash-bound behavior records / reference images | Work-package, clean-room or generation-component checks |
-| Combat presentation | Combat/Practice units, types/build/smoke/security/bundle, relevant phone specs |
-| Practice / identity / reward | Related unit families and browser specs, including cross-module reward dependencies; database gate for authority changes |
-| Shared simulation / AI / server orchestration | All product unit families and relevant browser specs |
-| Test-only / verification tooling | Corresponding test family; browser/build only when browser harness or build behavior is affected |
-| Assets / legal | Compliance and tooling; runtime asset changes also build and compare visuals |
-| Analysis | Corresponding analytical types/tests; no product browser |
-| Packages / unclassified paths | Conservative product fallback; dependency edits also audit/performance/database |
+| Ordinary docs and Codex settings | Diff checks; no game build |
+| Evidence JSON / hash-bound behavior records | Work-package / clean-room checks |
+| Documentation images | Current checkout's generation-component gate, or explicit complete-compliance fallback when that gate is absent |
+| Combat presentation | Combat/Practice units, types/build/smoke/security/bundle and relevant phone specs |
+| Practice / identity / rewards | Related units and browser specs, including reward dependencies and database checks for authority changes |
+| Shared simulation / AI / server orchestration | All product unit families and relevant phone specs |
+| Tests / verification tooling | Relevant test family; build/browser when runtime or browser harness is affected |
+| Assets / legal | Compliance and tooling; runtime assets also build and compare visuals |
+| Packages / unknown paths | Conservative product coverage; dependencies also audit/performance/PostgreSQL |
 
-The executable mapping is `scripts/verify-changes.js`; extend it when adding a
-new module or cross-module dependency. Unknown paths never silently skip tests.
-Selected browser work uses whole specs on Chromium 390x844, so V8, identity and
-reward cases are not excluded by a fixed legacy grep. Visual changes run all
-five maintained projects; Windows reports omitted Linux screenshot comparisons.
-Do not infer a full matrix verdict from an edit-loop pass. Add explicit focused
-cases when a feature introduces behavior that existing specs do not exercise.
+Maintain `scripts/verify-changes.js` alongside new modules and cross-module
+dependencies. Later analytical paths remain recognized, but missing required
+npm scripts fail explicitly rather than silently dropping coverage. This main
+port does not introduce the analytical harnesses or their source inputs.
 
-PR/push CI uses the same selection and cancels superseded runs. Its PostgreSQL
-service is provisioned only for database-relevant changes; performance runs for
-dependency/performance changes. A manual **Verify** dispatch preserves all Ubuntu
-quality shards, performance, security and PostgreSQL release checks. The separate
-artifact-only baseline workflow now requires the `visual-baseline-candidate` PR
-label or manual dispatch, followed by owner inspection and ordinary comparison CI.
+Selected ordinary browser specs run on Chromium 390x844. Visual specs separately
+cover all five maintained projects; the daily/release gate retains the entire
+five-project matrix, zero retries, serial quality workers, performance budgets
+and reviewed expected-skip policy. Exact source/output hashes and Node version
+govern build reuse; a changed or missing proof rebuilds. Never approve or update
+Linux baselines from Windows. Candidate capture requires an explicit
+`visual-baseline-candidate` PR label or manual workflow dispatch and owner review.
 
-The existing local automation remains a full-product-suite run at **21:00
-Europe/Berlin** (CET/CEST). Its saved 22:00 setting was corrected on 2026-09-05.
-Do not substitute the change selector in that task. `verify:full` now performs
-one compliance/type pass and one build, then reuses exact hash-verified outputs
-for browser and PostgreSQL tests. PostgreSQL runs when its isolated local
-prerequisite is configured; otherwise the omission is explicit and Ubuntu CI
-remains required. Analytical tests and balance assessments retain their separate
-scope; real Android/iOS testing remains outside the automation.
+The existing full-product automation runs at **21:00 Europe/Berlin** (CET/CEST),
+using `verify:daily` on its current checkout. Do not replace it with the selector.
+`verify:full` performs compliance/types/build once before the full quality gate
+and audit. If `WP014_TEST_DATABASE_URL` is configured, it also executes the
+isolated database gate; otherwise report the missing prerequisite. Main's
+manual **Verify** dispatch retains complete Ubuntu and PostgreSQL release CI.
+Real Android/iOS testing is outside the autonomous cycle.
 
-On Windows, use `npm.cmd` when forwarding `--dry-run` / `--base` / `--phase`,
-or invoke `node scripts/verify-changes.js` directly: `npm.ps1` can consume flags.
-The same review found missing LF checkout pins for existing SHA-bound normalizer
-scripts/configs, the cast-pose generator and V7 behavior record. `.gitattributes`
-now preserves their recorded bytes across Windows branch switches; no manifest
-hash, source algorithm or asset approval was changed.
-
-Validation of this optimization: product unit/tooling suites, compliance, types,
-build, all three built-runtime smokes, security and bundle checks passed. The
-focused selector/PostgreSQL-reporter tests passed 17/17; canonical browser checks
-passed 50 with three existing landscape-only exclusions; performance passed.
-Audit remains red on the existing moderate `qs` advisories (lockfile unchanged).
-Workflow YAML and agent TOML parsed, and independent source/CI review found no
-blocking issue. Full five-project/daily, actual Ubuntu CI and real-device runs
-were not repeated locally; PostgreSQL was explicitly omitted because its local
-database prerequisite was unavailable. The active 21:00 daily task is preserved.
+Port validation: 199 product/tooling tests passed, alongside compliance, types,
+build, the unchanged main smoke, identity/reward-security and bundle checks.
+Canonical browser logic passed 24 cases with two project exclusions; visual
+logic passed eight with twelve reviewed project exclusions; performance passed.
+Linux screenshot comparison was omitted on Windows, PostgreSQL lacked its local
+prerequisite, and actual Ubuntu CI/full daily/device runs were not claimed.
+Independent review confirmed the preservation boundary and script compatibility.
+Audit reported three pre-existing advisories in main's unchanged dependency lock
+(high: `nanoid`, `socket.io-parser`; moderate: `qs`). No threshold, audit policy,
+asset evidence or runtime behavior was changed to suppress those findings.
 
 Current command responsibilities:
 
 ```text
-verify:feature
-  verify:changes -> relevant checks / build / complete affected phone specs
+verify:feature / verify:changes
+  changed paths -> relevant unit/build/browser/database/performance checks
 
 verify:fast
   compliance -> types -> unit -> deterministic simulation
@@ -207,13 +280,6 @@ verify:full
 verify:daily
   verify:full
 ```
-
-Operational cadence: every shipped feature must pass `verify:feature`. Run
-`verify:daily` once at the end-of-day checkpoint and at explicit release
-boundaries. A focused failure may justify an earlier full gate, but ordinary
-feature iteration must not repeatedly pay for the complete five-project matrix.
-The daily alias changes frequency only; it does not remove or weaken any full
-gate.
 
 Built smoke tests must rebuild or prove that output metadata matches the current
 source and lockfile. Passing against stale ignored build output is not evidence.
@@ -246,7 +312,7 @@ identity, and reward work:
   idempotent and reject conflicts, stale commands, and gaps before WP-007 adds
   simulation semantics.
 - Socket.IO transport payloads are capped at 16 KiB and event payloads at
-  12 KiB for V4's bounded 256x72 packed-terrain snapshot (still below the 16 KiB transport cap). Origin, event-rate, invalid-input, unauthenticated-open, reconnect,
+  8 KiB. Origin, event-rate, invalid-input, unauthenticated-open, reconnect,
   challenge, and session timeouts fail closed.
 - Transient disconnects preserve lobby/game membership through the reconnect
   grace period. Expiry performs authoritative cleanup, while challenge expiry
@@ -305,9 +371,7 @@ snapshot has been presented, then appears exactly once for that challenge. This
 rule applies equally to the first match, Play Again, and in-scene Retry.
 
 Movement drag strength maps to at most four ordinary authoritative movement
-commands. V6 may prefix one neutral movement command as its separately
-versioned, free turn-in-place transition; this does not expand the transport
-command schema or alter V1 through V5 replay rules.
+commands; it does not introduce a new simulation command or change replay rules.
 Accepted movement clears the locked aim and requires a new aim before Fire.
 Advisory trajectories exist only for the current legal player aim and clear on
 movement, Fire, turn change, disconnect, result, and challenge replacement.
@@ -491,135 +555,6 @@ stride sampler covers every declared movement, Relic, angle, and power axis
 within each fixed profile cap. Legacy v1 simulations retain the exact v1 policy
 identifier and sampling order so their decisions and golden evidence do not
 change.
-
-### Ruleset V3 Wizard Hitbox Stabilization
-
-Real-device WP-015C acceptance exposed a presentation/rules mismatch: the
-shared approved Wizard is substantially taller than the v1/v2 24 by 24 direct
-projectile target centred near the feet. `nimble-knots-artillery-v3` is the
-bounded corrective ruleset for new Practice and reward challenges. V1 and v2
-constants, identifiers, replay hashes, and policy behaviour remain immutable;
-a stored replay must always select the ruleset that created it.
-
-V3 retains the v2 Relic constants, terrain footprint, movement bounds, aim,
-launch, gravity, turn flow, damage radii, Loomkeeper v2 policy, and replay
-format. It changes only direct projectile contact against the current shared
-Wizard presentation. Its fixed integer body profile is measured from the
-authoritative unit centre: `halfWidth: 32`, `top: 85`, `bottom: 13` world
-units. It was derived once from the approved presentation's opaque bounds
-`(134..441, 32..452)`, ground pivot `(256,451)`, and fixed runtime scale
-`0.23`; it is code-owned replay data, not runtime image analysis. A direct
-collision inside this profile is zero-distance contact for that target's
-damage calculation. Splash behaviour for both actors remains unchanged.
-
-The profile covers the visible torso, head, hat, and feet while intentionally
-excluding the extended cupped palm/Loomseed rather than making a hand-held
-focus an oversized target. It is valid only while WP-015C presents the same
-Wizard for both combatants. A later distinct Calling or Loomkeeper visual
-requires its own reviewed profile in another ruleset; it must not silently
-alter v3.
-
-### Ruleset V4 Arena and Camera
-
-`nimble-knots-artillery-v6` is the current new-challenge ruleset. It retains
-V5's range and damage profile plus V4's arena and direct-contact profile while
-adding only the separately versioned movement corrections recorded below.
-Explicit V4 replay remains immutable. V4 itself preserves
-all V3 projectile, Relic, movement, direct-hit, Loomkeeper-policy, reward, and
-turn rules, but records a new deterministic 2048 by 576 authoritative arena:
-256 by 72 terrain cells at 8 world units, 576 packed uint32 words, and initial
-player/Loomkeeper positions 512/1152. V1/V2/V3 keep their exact 1024 by 576,
-128 by 72 terrain bytes, coordinates, state hashes, and replay reconstruction.
-
-The Phaser client owns only a 1024 by 576 horizontal camera window. Its clamped
-camera position, swipe input, off-screen Loomkeeper cue, aim-preview centering,
-and caster/projectile/impact framing are presentation state: never protocol,
-replay, collision, AI, reward, or command authority. The detailed frozen
-contract, including sideways coordinate conversion and control-routing rules,
-is `docs/planning/wp-015d0-arena-camera-contract.md`.
-
-V4's packed terrain plus a bounded projectile trace can exceed the old 8 KiB
-event allowance, so a strict 12 KiB event ceiling remains below the unchanged
-16 KiB Socket.IO transport cap. This increase accommodates only authoritative
-snapshot delivery; command schemas and all other rate/size guards are unchanged.
-
-### Tactical Model Before Basic Relic Ruleset V5
-
-WP-015D2A now precedes V5. Its contract is
-`docs/planning/wp-015d2a-tactical-game-model-contract.md`. It formalizes the
-V4/V5 decision model and uses a deterministic Python analysis harness to
-explore explicit integer configurations and transparent policies. It measures
-mirrored initiative advantage, range counterplay, action diversity, terminal
-rate, and bounded forced-opening risk, then cross-checks any production
-candidate against the authoritative TypeScript simulation. Python is an
-analytical tool only: it cannot validate live commands, generate replays,
-control the Loomkeeper, or override TypeScript truth. Defense, action-economy,
-and overtime/convergence ideas are exploratory candidates until an owner
-approves a separate versioned implementation package.
-
-The completed WP-015D2B offline World Design Port remains a sealed
-analysis-only carrier. Use
-`docs/process/crpm-world-operational-governance.md` when reproducing its
-registered evidence or proposing a later gameplay-world hypothesis. The
-governance classifies observation, candidate admission, profile migration,
-product proposal, and out-of-model escalation as separate lanes; requires a
-candidate contract before model or registry edits; preserves historical
-statuses and source locks; and keeps analytical disposition orthogonal to
-ProductAuthority. Novel candidates must use a separately versioned admission
-package rather than an arbitrary request to the D2B registry.
-
-### Active Basic Relic Ruleset V5
-
-After WP-015D2A's owner decision, WP-015D2X implemented
-`nimble-knots-artillery-v5` for the first range/damage differentiation slice.
-V1 through V4 constants, identifiers, replay hashes, and policy behavior remain
-immutable. The exact owner-approved V4 `2048 by 576` arena and camera contract is recorded in
-`docs/planning/wp-015d0-arena-camera-contract.md`; it deliberately does not
-change Relic tiers.
-
-| Relic ID | Range tier | Direct Stitching damage tier |
-| --- | --- | --- |
-| `threadball` | medium, target 576 | 45 |
-| `needlepoint` | highest, target 640 | 30 |
-| `spoolburst` | lowest, target 512 | 80 |
-
-Range is expressed through one deterministic per-Relic launch-speed band while
-gravity, angle and power inputs, flight lifetime, collision authority,
-movement, and turn completion remain common. WP-015 initially keeps damage
-radius, terrain radius, collision radius, precision, falloff, ammo, cooldowns,
-secondary effects, and Calling modifiers on one shared basic baseline. These
-dimensions are deferred so the first real-device evaluation measures the
-assembled artillery loop rather than a large balance matrix.
-
-The implementation slice froze exact integer values, analytical
-TypeScript/Python transcript parity, and deterministic fixed-shot tests before
-V5 became the new-challenge default. Profile zero passed its 50-match mirrored
-automated plausibility gate and no later profile was opened. The tier ordering
-is a product identity and plausible intermediate candidate, not final or
-player-observed balance. The Loomkeeper receives the same public range and damage model
-as the player; visuals never provide simulation authority. V5 remains
-values-only unless a separately approved tactical-core package adds a different
-action economy, defense, or convergence rule. A later precision mechanic must
-be deterministic and disclosed and requires another versioned ruleset if it
-changes replay outcomes.
-
-### Active Movement-Corrected Ruleset V6
-
-WP-015D2Y adds `nimble-knots-artillery-v6` without retuning any V5 Relic,
-arena, terrain, physics, hitbox, turn-limit, Loomkeeper-policy, or reward value.
-For V6 only, the existing neutral `move` command is an authoritative
-turn-in-place transition: it flips facing, clears aim, consumes no movement
-budget, changes no position, and ends no turn. The player client prefixes this
-transition when a movement gesture points opposite the accepted facing, then
-submits the gesture's one-to-four ordinary displacement quanta. V1 through V5
-retain their exact neutral and nonzero movement semantics.
-
-The floating movement pad derives and displays its remaining whole-step budget
-from each accepted snapshot. Once that pad owns a pointer, pointer-up at any
-distance commits the direction and clamped strength; continuing beyond the
-visible ring cannot cancel the command or exceed four quanta. Pointer cancel,
-blur, hidden-document, resize, reconnect, pause, and challenge replacement
-remain inert. Aim still requires release inside its own control boundary.
 
 ### Hosting Contract
 
@@ -818,26 +753,6 @@ ordinary pointer mapping when the capped game surface is centered inside a
 larger viewport. WP-014B owns committed visual baselines and layout-state
 captures; do not add them retroactively to WP-014A.
 
-WP-014G keeps that release verdict unchanged while shortening repeated edit
-loops. Normal browser scripts request verified build reuse: the harness hashes
-the declared package/lock, client, server, shared, asset, legal, and build-script
-inputs plus the exact client/server outputs after every successful production
-build. It reuses only an exact proof match and otherwise rebuilds automatically.
-Reviewed combat and Practice project exclusions are applied from the existing
-quality-policy allowlist before shared navigation, so excluded results remain
-visible to the reporter without opening application sockets. Use the affected
-unit suite and browser spec/project during iteration, `test:browser:focused` for
-the canonical gameplay loop, and the complete matrix/performance gates once the
-candidate is stable. CI retains its three isolated project shards, one worker
-per shard, zero retries, and the complete expected-skip accounting.
-
-WP-014H makes that two-tier funnel operational. `verify:feature` is the required
-per-feature gate and reuses the already-passed compliance/type stage when
-producing current build outputs. `verify:daily` remains exactly `verify:full`
-and runs once at the end-of-day checkpoint. Tooling assertions fail if the quick
-gate silently gains the full matrix/performance/audit work or if the daily alias
-drifts away from the complete gate.
-
 WP-014B completed with deterministic, visibly labeled result/reward
 preview states with fake in-memory transitions only, a visual test covering
 start/combat/result geometry and recovery on all five projects, canonical
@@ -940,1291 +855,26 @@ Production art follows this fail-closed sequence:
 
 ```text
 approved brief -> quarantined concept master -> controlled refinement
-  -> deterministic master normalization -> art/IP/provenance/master approval
-  -> animation/export -> deterministic runtime normalization
-  -> in-engine phone captures -> derivative review and manifest approval
-  -> assets/ promotion
+  -> animation/export -> deterministic normalization -> in-engine phone captures
+  -> art/IP/provenance review -> manifest approval -> assets/ promotion
 ```
 
 All Knotkin production briefs use
 `docs/images/art-direction/knotkin-class-lineup-concept.png` as the canonical
-Calling, palette, material, costume-vocabulary, and world-language reference.
-WP-015B2G supersedes its angular anatomy with the rounded crochet-doll family.
-The image remains documentation-only: it cannot be cropped, traced, or shipped
-directly. It may be supplied to an approved production tool as the user-selected
-creative conditioning reference only when the tracked path and SHA-256 are
-recorded in the generation evidence. This does not resolve rights to official
-Nimiq brand files. WP-015B0 separately records the project owner's attestation
-of Nimiq team/foundation encouragement and historical approval to explore the
-inspired body geometry; it is not a continuing geometry requirement. A brief
-must record all other inputs and explicitly block Sorcerers, Worms/Team17,
-realistic firearms, unlicensed logos, and recognizable third-party characters.
-
-Only a separately approved generation profile may produce a quarantined concept
-master or refinement. The current rounded Wizard direction came from the
-reviewed local FLUX.2 Klein profile; that does not automatically approve the
-same profile for a different purpose. AutoSprite is only a planned animation
-route until B3B establishes its current availability, commercial terms,
-input-retention/privacy behavior, output rights, export behavior, and evidence
-surface. Record prompts, negative constraints, workflow JSON and hash, seeds,
-model and custom-node versions and licenses, service/job IDs, parent/output
-hashes, postprocess configuration, and reviewer identity.
-
-### WP-015A Local ComfyUI Re-entry
-
-The verified workstation stack is external tooling, not part of the MIT
-product. Its reviewed inventory lives in
-`legal/generation-component-manifest.json`; the bridge's exact Windows Python
-environment lives in `scripts/comfy-mcp-requirements.lock`. The pinned stack is
-ComfyUI 0.27.1 at `c2638ce6c00e3426c48d56a775bc46e9a8464094`, the
-Apache-2.0 MCP bridge at
-`e0101b2312f30501664dabe4a74c1283c4268eb8`, and the Comfy-Org archived
-SD 1.5 FP16 checkpoint with SHA-256
-`E9476A13728CD75D8279F6EC8BAD753A66A1957CA375A1464DC63B37DB6E3916`.
-The GPL-3.0 ComfyUI program, Apache bridge, model, virtual environment, logs,
-and outputs remain outside this repository.
-
-Normal re-entry is five commands from the Worms_Port root:
-
-```powershell
-git status --short --branch
-powershell -NoProfile -ExecutionPolicy Bypass -File .\scripts\comfy-asset-pipeline.ps1 -Action Prepare
-powershell -NoProfile -ExecutionPolicy Bypass -File .\scripts\comfy-asset-pipeline.ps1 -Action Status -VerifyHashes
-powershell -NoProfile -ExecutionPolicy Bypass -File .\scripts\comfy-asset-pipeline.ps1 -Action Start
-powershell -NoProfile -ExecutionPolicy Bypass -File .\scripts\comfy-asset-pipeline.ps1 -Action Smoke
-```
-
-`Prepare` copies only the exact-hashed project img2img graph into the external
-MCP workflow directory and is safe while the services are stopped. `Status` is
-safe after that preparation. `Start` also prepares the graph, then refuses an
-unreviewed Git revision, changed Python package set, broken dependency
-environment, unexpected checkpoint, or unrelated process occupying either
-port. It starts hidden loopback-only processes and writes PID state plus logs
-under `%LOCALAPPDATA%\Worms_Port\comfy-pipeline`. `Smoke` uses seed 1 and a bounded
-256x256, four-step workflow; it proves transport, checkpoint loading, GPU
-execution, and output retrieval, not visual quality or production approval.
-`Stop` terminates only listener processes whose command ancestry matches the
-reviewed external paths. Use the same script with `-Action Stop` before moving
-or updating either checkout.
-
-The verified default machine layout is:
-
-```text
-E:\ComFy\TasirWimp\                         Comfy Desktop/ROCm root
-E:\ComFy\TasirWimp\ComfyUI\                pinned ComfyUI checkout
-E:\ComFy\TasirWimp\Worms_Port-models\      reviewed FLUX component root
-C:\Users\jensb\Desktop\Projects\comfyui-mcp-server\  pinned bridge checkout
-%LOCALAPPDATA%\Comfy-Desktop\ComfyUI-Shared\models\checkpoints\
-%USERPROFILE%\.config\comfy-mcp\config.json
-%USERPROFILE%\.codex\config.toml
-```
-
-If those paths move, set `WORMS_COMFY_ROOT`, `WORMS_COMFY_MCP_ROOT`,
-`WORMS_COMFY_SHARED_ROOT`, `WORMS_COMFY_MCP_CONFIG`, or
-`WORMS_CODEX_CONFIG` before invoking the script. Do not edit the manifest merely
-to accept local drift. Review the new source revision, license, model terms,
-and hashes first.
-
-For a clean-machine restoration:
-
-1. Install official Comfy Desktop (the verified setup used desktop 1.0.28),
-   choose the AMD ROCm environment, and place its workspace at
-   `E:\ComFy\TasirWimp`. Confirm the generated `start-comfy-api.bat` binds only
-   to `127.0.0.1:8188`.
-2. Check out ComfyUI at the manifest revision. Do not update to the fetched
-   default branch until a new component review changes the pin.
-3. Clone `https://github.com/joenorton/comfyui-mcp-server.git`, check out its
-   manifest revision, create a Python 3.10.6 virtual environment at `.venv`,
-   and install only `scripts/comfy-mcp-requirements.lock` into that external
-   environment. Run `python -m pip check`.
-4. Download the exact checkpoint URL from the generation-component manifest
-   into the shared `models\checkpoints` directory. Let `Status -VerifyHashes`
-   verify its size and SHA-256; never bypass a mismatch.
-5. Set `%USERPROFILE%\.config\comfy-mcp\config.json` so
-   `defaults.image.model` is `v1-5-pruned-emaonly-fp16.safetensors`.
-6. Register `[mcp_servers.comfyui]` with
-   `url = "http://127.0.0.1:9000/mcp"` in Codex config, run `Prepare`, and run
-   `Start`. Because the bridge registers workflow-specific tools when its server
-   starts, use `Stop` then `Start` after adding or changing a reviewed graph if
-   it was already running. Restart Codex only after that server restart so its
-   next task imports the live tool schema.
-
-WP-015B0 approves the exact archived SD 1.5 checkpoint and pinned text-to-image
-`workflows/generate_image.json` graph for quarantined production-candidate
-generation. The pipeline entry point verifies that workflow's
-`968A5B78766549BBAF374C1C27BE80B75E6BB389A01CCC237639DFB4EFCF3CD5`
-SHA-256 on every status/start/smoke preflight.
-
-The project-owned
-`scripts/comfy-workflows/generate_image_conditioned.json` graph adds ordinary
-VAE img2img: `LoadImage` and `VAEEncode` provide the initial latent while the
-same reviewed checkpoint, positive/negative CLIP text, KSampler, VAE decode,
-and SaveImage path remain deterministic. `Prepare` verifies its
-`C21BD9224D08E1708073C3C11BFF749E4B901F5BE20EFE32245DAE6B489D3060`
-SHA-256 and copies those exact bytes to the external MCP workflow directory.
-`StageInput` accepts only an explicit PNG/JPEG/WebP below tracked
-`docs/images/`, ignored `assets-quarantine/`, or the external ComfyUI output
-directory; it copies exact bytes under the external `input/wormsport/` folder
-and returns the safe relative `reference_image` value.
-
-The workflow-specific MCP tool is `generate_image_conditioned`. Its parameters
-include `reference_image`, positive and negative prompts, seed, steps, CFG,
-sampler, scheduler, denoise, and model. The generic `run_workflow` endpoint
-remains a fallback, but normal re-entry should use the dedicated tool so the
-reviewed parameter schema is visible before execution.
-
-This graph is not IP-Adapter, ControlNet, style transfer, or reference-only
-conditioning. Denoise controls how much input composition survives. For the
-production character path, first create and review an isolated 512x512 master,
-then stage that master for controlled refinement. Feeding the complete lineup
-directly into VAE img2img preserves its multi-character landscape composition
-and is not a substitute for master isolation.
-
-The MCP bridge exposes generic `publish_asset` behavior, but that path is
-blocked for Worms_Port: untouched outputs stay in external quarantine until
-the explicit review and promotion sequence below copies one exact approved
-file.
-
-### WP-015B2A Gate 1 Component-Only State
-
-Gate 1 admitted three exact external FLUX.2 files on 2026-08-03. They are
-installed on E: and registered as extra Comfy model directories as follows:
-
-```text
-E:\ComFy\TasirWimp\Worms_Port-models\diffusion_models\flux-2-klein-4b-fp8.safetensors
-  97ED34FE0567E436200F2FAEE3939B88F2B5D99F8AF2A4DC16532C4245C0CCB6
-E:\ComFy\TasirWimp\Worms_Port-models\text_encoders\qwen_3_4b_bfl_apache.safetensors
-  AD65083F0B6561CC84B9B6A42FF397EE749171E367C28D800C4A6FD612ABC169
-E:\ComFy\TasirWimp\Worms_Port-models\vae\flux2-vae.safetensors
-  D64F3A68E1CC4F9F4E29B6E0DA38A0204FE9A49F2D4053F0EC1FA1CA02F9C4B5
-```
-
-The ignored local file
-`E:\ComFy\TasirWimp\ComfyUI\extra_model_paths.yaml` retains the Desktop
-shared root and registers only the E: `diffusion_models`, `text_encoders`, and
-`vae` paths above. Its required SHA-256 is
-`D03C5A366C7291F161B30DDB6CF5002800B67380E6D32D7DCC410AEFD1B4A00D`.
-`Prepare`, `Status`, `Start`, and `Smoke` fail closed if that config drifts.
-
-Source/comparison evidence remains outside the repository at
-`E:\ComFy\TasirWimp\component-evidence\wp-015b2a`. The encoder is a
-deterministic single-file merge of the two exact BFL Apache-2.0 shards; its
-inputs and byte-preserving merge recipe are recorded in
-`legal/generation-component-manifest.json`. Rebuild only from those exact
-inputs and require the recorded output hash.
-
-Do not use the official Comfy guide's pre-release
-`qwen_3_4b.safetensors` mirror. Its bytes differ from canonical BFL/Qwen in two
-final-layer tensors, and its repository does not provide exact license or
-provenance linkage. It is retained only as rejected evidence.
-
-Gate 1 remained component-only. At Gate 2 close, the two exact source workflows
-described below were still absent from the runtime and the pipeline still
-described only SD 1.5. Gate 3 subsequently added the separate fail-closed
-profile; the historical Gate 1 boundary does not authorize changing the bridge
-default model or handing an arbitrary FLUX graph to `run_workflow`.
-
-### WP-015B2A Gate 2 Runtime-Disabled Workflow State
-
-The two project-owned Comfy API graphs are:
-
-```text
-scripts\comfy-workflows\generate_flux2_klein_text.json
-  626568CEAA47627F7D421D3BD1B0AA151E1643DBA8FBD631F5EB437666649E28
-scripts\comfy-workflows\generate_flux2_klein_reference_edit.json
-  A2BF8CD3C015D36646E73F2FA87F22741E4410D27B26D562331057B49CFF6C8E
-```
-
-They translate the official Comfy workflow templates pinned at
-`cebdebc9fc2febcb97a5db0dd291f59f5300b176` and use only core nodes available
-in the pinned ComfyUI 0.27.1 schema. Both bind the exact reviewed Gate 1 model
-filenames, four steps, CFG 1, Euler, and batch size one. The text route is fixed
-at 1024x1024. The edit route accepts one staged reference, bounds it to one
-megapixel, and derives the canvas size from that reference.
-
-At Gate 2 close, `legal/generation-component-manifest.json` intentionally
-recorded both with `runtime_enabled: false`; their `runtime_path` values only
-documented the proposed Gate 3 copy targets. Gate 3 subsequently switched the
-same exact-hashed records to profile-owned runtime installation. They still
-must not be copied manually or invoked through generic `run_workflow`; the named
-profile owns exact installation, removal, and drift rejection while leaving the
-SD 1.5 smoke profile unchanged.
-
-### WP-015B2A Gate 3 Closed Profile Re-entry
-
-Gate 3 defines exactly two runtime profiles in
-`legal/generation-component-manifest.json`:
-
-- `sd15` preserves the archived checkpoint, generic text workflow, and
-  project-owned VAE img2img workflow. It remains the default when `-Profile`
-  is omitted.
-- `flux2-klein` binds the three exact Gate 1 model components and the two exact
-  Gate 2 workflows. It starts ComfyUI with `--lowvram --preview-method none`,
-  which places the pinned runtime in LOW_VRAM mode and keeps the text encoder
-  offloaded when the runtime does not use dynamic VRAM.
-
-The PowerShell parameter uses an exact `ValidateSet`; the manifest compliance
-gate also rejects any third profile, component substitution, workflow
-substitution, tool-name drift, or launch-argument drift. The pipeline invokes
-that compliance gate before copying a workflow. Project workflow bytes are
-then copied only to their reviewed external MCP runtime names and rehashed.
-Model files are size-checked on every action and SHA-256 checked by `Prepare`,
-`Start`, `Smoke`, or `Status -VerifyHashes`.
-
-Re-enter the FLUX profile without inference:
-
-```powershell
-Set-Location "C:\Users\jensb\Desktop\Projects\Worms_Port"
-.\scripts\comfy-asset-pipeline.ps1 -Action Prepare -Profile flux2-klein -Json
-.\scripts\comfy-asset-pipeline.ps1 -Action Start -Profile flux2-klein -Json
-.\scripts\comfy-asset-pipeline.ps1 -Action Status -Profile flux2-klein -VerifyHashes -Json
-```
-
-`Prepare` installs and exact-hashes the two reviewed workflow copies but does
-not restart services. `Start` safely restarts only a reviewed loopback ComfyUI
-process when the required low-VRAM/no-preview arguments are absent, and only a
-reviewed loopback MCP process when the profile tools are not registered.
-`Status` reports the selected model/workflow chain, launch readiness, and MCP
-registration. The SD route can be rechecked independently with:
-
-```powershell
-.\scripts\comfy-asset-pipeline.ps1 -Action Status -Profile sd15 -VerifyHashes -Json
-```
-
-Do not use `-Action Smoke -Profile flux2-klein` during Gate 3: it deliberately
-submits the fixed Gate 4 technical prompt. Do not invoke the generic MCP
-`run_workflow` tool, hand-edit the external workflow copies, change the MCP
-default checkpoint, or add model/path overrides. A reference for a later
-approved diagnostic may be staged with `StageInput -Profile flux2-klein`; that
-action returns the reviewed single-reference workflow ID and never generates
-by itself.
-
-Gate 3 passed locally with both exact profile chains, ComfyUI 0.27.1 on the AMD
-Radeon RX 7600, LOW_VRAM startup, both FLUX MCP tools registered, an empty
-Comfy queue, and no new output file. Gate 4 then supplied the separately
-recorded first FLUX inference below.
-
-### WP-015B2A Gate 4 Technical-Smoke Re-entry
-
-Gate 4 passed on 2026-08-03 with exactly one fixed-seed request through
-`generate_flux2_klein_text`. Comfy terminal history for prompt
-`54eb2c85-54dc-44a9-a036-07f4fa2f8bd0` reported success in 254.42 seconds on
-the native AMD Radeon RX 7600. The reviewed low-VRAM/no-preview launch partially
-loaded the diffusion model, offloaded 918.00 MB, and completed without OOM,
-node error, retry, or model fallback.
-
-The exact external evidence file is:
-
-```text
-C:\Users\jensb\AppData\Local\Comfy-Desktop\ComfyUI-Shared\output\WormsPortFlux2KleinText_00001_.png
-1024x1024, 423534 bytes
-CFCDDB3E74B1B3B2E1082571BA54F0F37F603E563902B6DDB8397DEA7C1516F4
-```
-
-Do not rerun `-Action Smoke -Profile flux2-klein` merely to re-enter this
-state; that action submits a new image. Re-enter read-only with:
-
-```powershell
-Set-Location "C:\Users\jensb\Desktop\Projects\Worms_Port"
-.\scripts\comfy-asset-pipeline.ps1 -Action Status -Profile flux2-klein -VerifyHashes -Json
-python .\scripts\comfy-mcp-smoke.py --profile flux2-klein --probe
-```
-
-The bridge can return an interim `running` result after its own 30-second
-history window even though Comfy is healthy. `comfy-mcp-smoke.py` now retains
-the same prompt ID, polls Comfy history until terminal success/error/timeout,
-and collects system telemetry for the complete wait. It reports `pass` only
-after terminal success. A timeout does not retry or cancel the prompt; inspect
-the queue and history before considering any subsequent request.
-
-Gate 4 is hardware admission only. Gate 5 must proceed sequentially: document
-one short FLUX-specific Wizard structure prompt/seed, submit one text output,
-and review it before documenting or submitting the Threadball structure pass.
-Only after both primary reviews may a single controlled reference edit be
-considered, and only when a failed primary gives a specific testable correction.
-Do not queue Loomkeeper, Patch, animation, roster, or promotion work.
-
-### WP-015B2A Gate 5/6 Visual Decision Re-entry
-
-Gate 5 completed on 2026-08-03 with the exact sequential maximum: one Wizard
-text primary, one Threadball text primary after Wizard review, and one
-controlled Wizard edit after both primary reviews. The queue returned to zero
-running and zero pending after each request. No retry, alternate seed, prompt
-rewrite, second edit, or batch ran.
-
-| Purpose | Seed | External output | SHA-256 | Decision |
-| --- | ---: | --- | --- | --- |
-| Wizard text primary | `15025001` | `WormsPortFlux2KleinText_00002_.png` | `D097705B08A4895ACCCA9D91B34B64039CACE893857E0BF688D54CA326481962` | reject |
-| Threadball text primary | `15025002` | `WormsPortFlux2KleinText_00003_.png` | `2BAE664F7E5A862BCB53B55A68071580485CE040A89650C68EC6FA398F4089EB` | pass for bounded structure only |
-| Wizard controlled edit | `15025003` | `WormsPortFlux2KleinReferenceEdit_00001_.png` | `9ACE9858AA1D81C5381548DF7473857C13EE83E4B90D9D8D6B5E8638B0B5A1CD` | reject |
-
-The text Wizard followed isolation, side bias, two eyes, hood identity, and
-separated feet, but added a mouth and produced rounded doll anatomy without a
-usable forward hand. `StageInput` exact-copied those rejected bytes as
-`wormsport/wizard-gate5-primary.png`. The one native FLUX reference edit removed
-the mouth but retained the rounded anatomy and unusable hand. Threadball alone
-passed its round blue/gold yarn-object structure at 28 pixels.
-
-Gate 6 therefore marks the `flux2-klein` profile
-`technical_only_visual_rejected`: it remains executable only so exact technical
-evidence can be inspected, but it is not an adopted B2 candidate route. Do not
-run `Smoke`, either FLUX MCP generation tool, or a generic workflow during
-ordinary re-entry. Use read-only status and the B2 review record:
-
-```powershell
-Set-Location "C:\Users\jensb\Desktop\Projects\Worms_Port"
-.\scripts\comfy-asset-pipeline.ps1 -Action Status -Profile flux2-klein -VerifyHashes -Json
-python .\scripts\comfy-mcp-smoke.py --profile flux2-klein --probe
-```
-
-All full-size outputs remain under the external Comfy output root. Exact 48px
-Wizard and 28px Threadball review derivatives remain under
-`E:\ComFy\TasirWimp\component-evidence\wp-015b2a\gate5`. None is a product
-asset. Re-entry returns to planning a character-master route that can enforce
-the anatomy and socket contract. A possible Relic-only FLUX route requires its
-own later scope decision; Threadball's pass does not authorize more generation.
-
-### WP-015B2B Structure-Reference Wizard Recovery
-
-The B2A Wizard edit used the already-rounded rejected Wizard as its only
-reference. That test was useful evidence but could not establish whether the
-native FLUX edit model can follow a clean anatomy guide. BFL's official FLUX.2
-guidance recommends clean pose, edge, or layout references for structural
-control, explicit reference roles, positive descriptions, and a prompt that is
-not overloaded with simultaneous structural constraints. The pinned ComfyUI
-`ReferenceLatent` node already provides this single-reference mechanism; no
-ControlNet, custom node, ComfyUI update, larger model, or new workflow is
-required for the first recovery diagnostic.
-
-The exact project-owned input is:
-
-```text
-docs/images/art-direction/knotkin-wizard-structure-guide.png
-1024x1024 opaque PNG, 15044 bytes
-SHA-256 5A8F1C1D0942755F113327467462D47812A22A64BAF3DF2C5CD2E0F491FA9AA1
-generator scripts/generate-wizard-structure-guide.js
-generator SHA-256 695B499E67794692BFEB248C22CA24C24C2D0091107B4EAAE247D29830FCAF63
-```
-
-The generator uses project-authored geometry only. It scales the B1 baseline
-and held-Relic socket by exactly two to `y=902` and `(682,586)`, draws one
-angular body with separate feet, two eye locations, and a protruding forward
-mitten, and reads no image input. The guide is documentation conditioning, not
-finished art or a product asset.
-
-Rebuild, verify, and stage it without inference:
-
-```powershell
-Set-Location "C:\Users\jensb\Desktop\Projects\Worms_Port"
-node .\scripts\generate-wizard-structure-guide.js
-Get-FileHash .\docs\images\art-direction\knotkin-wizard-structure-guide.png -Algorithm SHA256
-.\scripts\comfy-asset-pipeline.ps1 -Action Prepare -Profile flux2-klein -Json
-.\scripts\comfy-asset-pipeline.ps1 -Action Status -Profile flux2-klein -VerifyHashes -Json
-.\scripts\comfy-asset-pipeline.ps1 -Action StageInput -Profile flux2-klein -InputImage .\docs\images\art-direction\knotkin-wizard-structure-guide.png -StagedName wizard-structure-guide-v1.png -Json
-python .\scripts\comfy-mcp-smoke.py --profile flux2-klein --probe
-```
-
-Only after the manifest, guide hash, model/workflow hashes, low-VRAM launch,
-both MCP tools, staged hash, empty Comfy queue, and latest-output baseline are
-recorded may one request run through `generate_flux2_klein_reference_edit`.
-Its exact seed is `15026001`. Its exact prompt is:
-
-```text
-Image 1 defines the exact silhouette and pose. Preserve its flat-crowned angular head-and-torso, chamfered shoulders, narrow lower bridge, two separate rectangular feet, and forward arm ending in a simple mitten. Render that shape as a blue crochet Wizard with a dark-blue felt hood and restrained gold stitching. The face consists solely of two glossy black bead eyes. One complete right-facing character centered on an unbroken white field.
-```
-
-The prompt deliberately does not name unwanted face parts, props, scenery, or
-other negative concepts. The unchanged graph bounds the reference to one
-megapixel and uses batch one, four FLUX.2 scheduler steps, CFG 1, Euler, and no
-inline preview. The candidate command is:
-
-```powershell
-python .\scripts\comfy-mcp-smoke.py --profile flux2-klein --reference-image wormsport/wizard-structure-guide-v1.png --seed 15026001 --timeout 600 --prompt 'Image 1 defines the exact silhouette and pose. Preserve its flat-crowned angular head-and-torso, chamfered shoulders, narrow lower bridge, two separate rectangular feet, and forward arm ending in a simple mitten. Render that shape as a blue crochet Wizard with a dark-blue felt hood and restrained gold stitching. The face consists solely of two glossy black bead eyes. One complete right-facing character centered on an unbroken white field.'
-```
-
-Review the full output and an exact 48-pixel-tall derivative before any next
-decision. The diagnostic passes structure only when it retains one broad
-continuous angular head-and-torso with a flat crown and chamfered sides, a
-narrow lower bridge, two separate block-like feet, two bead eyes with an
-otherwise unmarked face, right-facing side bias, and a visibly protruding
-forward hand that can normalize to the B1 socket without covering an eye. A
-removable background shadow or opaque white field does not by itself fail this
-structure experiment, but neither is accepted product alpha.
-
-One terminal result closes the authorization. Do not change the seed or prompt,
-submit a second attempt, reuse either rejected Wizard, condition on the
-canonical lineup, add multi-reference nodes, queue Loomkeeper/Patch/animation,
-or promote output. A pass permits a separately documented route-adoption and
-exact-output review decision. A failure returns to planning; the next possible
-experiment is a separately reviewed two-reference structure/style graph, not
-an automatic retry.
-
-The one authorized request completed on 2026-08-03 as prompt
-`6fede7ab-3de4-4d67-9a24-d3de5ea3ca1f` in 298.33 seconds. Its untouched external
-output is `WormsPortFlux2KleinReferenceEdit_00002_.png`, 1024x1024 opaque PNG,
-1,163,317 bytes, SHA-256
-`FD24C8CD494FD9631BE2BC589067BE8477C67026DC24ED9BA9A9A3A07920570B`.
-The exact 48x48 HighQualityBicubic review derivative remains external at
-`E:\ComFy\TasirWimp\component-evidence\wp-015b2b\gate1\wizard-structure-15026001-48px.png`,
-3,467 bytes, SHA-256
-`192209CC0D7121AEDF0CC25CCDD0C807E314A6C0E65E459A83192B7A33D3E925`.
-Comfy reported 2,808.00 MB of the diffusion model loaded, 1,074.02 MB offloaded,
-a 324.00 MB buffer, and terminal success without a queued duplicate.
-
-The result passes isolation, side bias, two-eye face, separate feet, forward
-mitten, Wizard material identity, and 48px readability. It fails the controlling
-anatomy requirement: FLUX replaced the flat-crowned angular guide with a pointed
-hat, round head, and oval torso. Therefore the structure-reference route is
-rejected and its output remains external quarantine. Do not rerun it. Re-entry
-is a planning decision between a separately reviewed two-reference
-structure/style experiment and a deterministic character-master construction
-route; neither is authorized by WP-015B2B.
-
-### WP-015B2C Robot-Scaffold Knit Conversion
-
-B2C tests whether the repeated rounded result comes from FLUX's learned
-crochet/Wizard doll prior rather than the deterministic guide. It is a two-gate
-experiment, not a two-image batch. Gate 1 alone is initially executable. Gate 2
-is conditional and requires a recorded Gate 1 pass plus a second manifest state
-transition.
-
-The exact guide, model chain, single-reference workflow, dimensions, batch,
-steps, CFG, sampler, low-VRAM mode, and no-preview mode remain unchanged. Gate 1
-uses seed `15026002` and the exact prompt:
-
-```text
-Image 1 defines the exact silhouette and pose. Render its flat-crowned continuous angular head-and-torso, chamfered shoulders, narrow lower bridge, two separate rectangular feet, and forward articulated hand as a compact blue mechanical automaton. Use planar painted-metal panels, crisp beveled edges, two glossy black circular eyes, and one small neutral mouth slot. One complete right-facing character centered on an unbroken white field.
-```
-
-Before inference, rebuild and hash the guide, run `Prepare`, run
-`Status -VerifyHashes`, start the closed profile, exact-stage the guide, probe
-both required MCP tools, and record an empty queue plus latest-output baseline.
-Then run exactly:
-
-```powershell
-python .\scripts\comfy-mcp-smoke.py --profile flux2-klein --reference-image wormsport/wizard-structure-guide-v1.png --seed 15026002 --timeout 600 --prompt 'Image 1 defines the exact silhouette and pose. Render its flat-crowned continuous angular head-and-torso, chamfered shoulders, narrow lower bridge, two separate rectangular feet, and forward articulated hand as a compact blue mechanical automaton. Use planar painted-metal panels, crisp beveled edges, two glossy black circular eyes, and one small neutral mouth slot. One complete right-facing character centered on an unbroken white field.'
-```
-
-Review the full output and exact 48x48 derivative against the Gate 1 decision
-rule in `docs/asset-briefs/wp-015b2-generation-review.md`. Stop on failure. A
-pass permits documentation and manifest changes only; it does not itself permit
-the knit request.
-
-Gate 1 passed on 2026-08-03 as prompt
-`2dfc929f-3370-41e9-a568-4f1a86689c36`. The 1024x1024 opaque RGB output
-`WormsPortFlux2KleinReferenceEdit_00003_.png` is 644,831 bytes, SHA-256
-`BC6B21B74C5016504A733D5D1EC306FE7F46A8CC5E526E0FFF28EB9EABC25D38`.
-Its exact 48x48 derivative is 2,799 bytes, SHA-256
-`3D82FC1A55BC94AFABF1258C6E129F2421390C0FC6FEEECAB244917820A4C2BD`,
-under `E:\ComFy\TasirWimp\component-evidence\wp-015b2c\gate1`. The result
-retains the flat crown, chamfered chassis, narrow lower body, rectangular feet,
-articulated hand, two eyes, and one mouth at both sizes. This permits the second
-manifest transition; the robot remains external disposable evidence.
-
-After those changes and a second successful preflight, Gate 2 may exact-stage
-the accepted robot bytes and run seed `15026003` with this frozen prompt:
-
-```text
-Image 1 is the exact mechanical scaffold. Preserve its complete silhouette, scale, pose, planar proportions, flat crown, chamfered sides, narrow lower bridge, rectangular feet, articulated forward hand, two eyes, and small neutral mouth. Change only its materials: every visible surface becomes a closely fitted padded blue crochet shell stretched over the rigid faceted frame, with restrained dark-blue felt and gold stitching. Centered unchanged on the white field.
-```
-
-After Gate 2 completes, record the exact full-output and 48px hashes, then run
-the deterministic shape comparison with the exact output paths:
-
-```powershell
-node .\scripts\compare-character-silhouettes.js --reference <robot-output.png> --candidate <knit-output.png> --threshold 32 --normalized-size 256 --minimum-iou 0.90 --maximum-baseline-drift 16
-```
-
-This reports raw-canvas IoU, foreground-bounds-normalized IoU, both bounds, and
-baseline drift. `numeric_gate_pass` does not override a missing hand, rounded
-crown, extra face feature, or any other visual failure.
-
-The robot is an external disposable scaffold and remains blocked as product art.
-The knit result also remains quarantined. B2C adds one small neutral mouth to the
-future character contract so later expression frames can replace it; it adds no
-nose, eyebrows, or other face feature. Historical mouthless prompts remain
-unaltered evidence. The later B2D owner review supersedes only the eyebrow
-restriction for future work: one intentional stitched eyebrow above each eye is
-allowed when it supports the expression.
-
-Gate 2 passed on 2026-08-03 as prompt
-`936917b2-f182-4cfa-8960-5fccda8cbe0c`. Exact staged/source robot SHA-256 was
-`BC6B21B74C5016504A733D5D1EC306FE7F46A8CC5E526E0FFF28EB9EABC25D38`.
-The 1024x1024 opaque RGB knit output
-`WormsPortFlux2KleinReferenceEdit_00004_.png` is 1,130,420 bytes, SHA-256
-`5FF0A63DAC03E13B2A3390AD77E6929A9822412E1A1E0415E7A38125D703B246`.
-Its exact 48x48 derivative is 3,394 bytes, SHA-256
-`9308495013B25771F6B015AC7FD4EE3FC3B76DE4360AAF2A218ED4009D3A7B18`.
-The comparator recorded raw IoU `0.951554`, normalized IoU `0.956188`, and
-baseline drift `12`, passing the `0.90` / `16` numeric gate. Visual review also
-passed every structural, material, face, hand, foot, and phone-scale criterion.
-
-B2C is therefore complete. Stop the local services and return to planning. The
-knit output proves the route but remains external and unapproved; do not add
-Calling details, generate another character, normalize it, or promote it until
-a separate route-adoption and Wizard-master contract is reviewed.
-
-### WP-015B2D Wizard Cuteness And Calling Styling
-
-B2D adopts only the exact B2C knit silhouette and authorizes one styling edit.
-It targets the specific loss of cuteness without asking FLUX to solve alpha,
-animation, socket geometry, and character-family production in the same prompt.
-The normative gate and exact prompt are in
-`docs/asset-briefs/wp-015b2-generation-review.md`.
-
-Re-entry sequence:
-
-```powershell
-git status --short --branch
-npm run check:compliance
-npm run test:tooling
-npm run build
-npm audit
-.\scripts\comfy-asset-pipeline.ps1 -Action Prepare -Profile flux2-klein -Json
-.\scripts\comfy-asset-pipeline.ps1 -Action Status -Profile flux2-klein -VerifyHashes -Json
-.\scripts\comfy-asset-pipeline.ps1 -Action Start -Profile flux2-klein -Json
-.\scripts\comfy-asset-pipeline.ps1 -Action StageInput -Profile flux2-klein -InputImage "$env:LOCALAPPDATA\Comfy-Desktop\ComfyUI-Shared\output\WormsPortFlux2KleinReferenceEdit_00004_.png" -StagedName wizard-knit-proof-15026003.png -Json
-python .\scripts\comfy-mcp-smoke.py --profile flux2-klein --probe
-```
-
-Before inference, verify the staged/source SHA-256 is exactly
-`5FF0A63DAC03E13B2A3390AD77E6929A9822412E1A1E0415E7A38125D703B246`,
-the queue is empty, and `_00004_` is still the latest FLUX reference-edit
-output. Then run exactly one request with seed `15026004` and the frozen prompt:
-
-```text
-Image 1 is the exact fitted-knit structure. Preserve its angular silhouette, scale, right-facing pose, flat crown, chamfered body, narrow lower bridge, rectangular feet, and forward hand. Change only styling and expression: soft pale-blue chenille, a close-fitting deep-navy folded felt cowl inside the outline, exactly two slightly larger close-set glossy bead eyes, one tiny curved stitched smile, restrained gold stitching, a woven belt, and one wooden button. Replace rigid panel seams and the rear block with continuous crochet and a clean back. Center unchanged on white.
-```
-
-Do not retry. Create an exact 48px derivative externally, compare the untouched
-output to `_00004_` with `scripts/compare-character-silhouettes.js`, perform the
-full-size and phone-scale gate, record the result, close the manifest state,
-and stop both services. No output enters `assets/` in B2D.
-
-B2D completed once as prompt `c82a19fa-6be7-4a30-b193-b9c708638302`.
-External output `WormsPortFlux2KleinReferenceEdit_00005_.png` is a 887,003-byte
-1024x1024 opaque RGB PNG, SHA-256
-`DEF9265DAA4C6F2799D16870205E2015291E3E4AAE0F61802349C9FD8D56AD00`.
-Its 2,897-byte exact 48px derivative is SHA-256
-`AB172F6B365B64093F5E2BE03F4AE2D24623F73E18A881033172ED0DA5A6E8E1`.
-The request completed without sampling error or retry; the queue returned to
-zero. Normalized silhouette IoU was `0.880098` against the `0.90` floor and
-baseline drift was `0` pixels.
-
-The initial narrow gate flagged the paired eyebrows, neck-wrap cowl, and body
-narrowing. The later project-owner review accepts the eyebrows and width as
-useful creative variation and accepts B2D's cuteness direction. Treat
-`0.880098` as drift telemetry that may inform later width/scale compensation,
-not as an automatic art rejection. The remaining protected Calling issue is a
-Wizard cowl/hat that visibly rests on the head. B2D remains external and
-unpromoted because normalization, alpha, socket, animation, and exact-file
-product review are incomplete.
-
-### WP-015B2E Protected-Property Masked-Edit Investigation
-
-B2E completed its source/tooling investigation without inference, and the
-project owner then approved the exact workflow and mask for one frozen request.
-It selected a core-node masked latent edit and rejected the following
-alternatives:
-
-- `InpaintModelConditioning` adds model-specific concat conditioning and its
-  pinned node schema warns that the noise-mask option may improve results or
-  completely break them depending on the model. The installed FLUX.2 Klein edit
-  model has not established that contract.
-- `VAEEncodeForInpaint` intentionally replaces masked source pixels before VAE
-  encoding. B2E instead needs B2D to remain the semantic reference and base
-  latent while the mask only gates denoising.
-- `DifferentialDiffusion` is marked experimental in the pinned ComfyUI source.
-- custom inpaint/crop, segmentation, ControlNet, and IP-Adapter nodes would add
-  an unreviewed component and are not needed for this bounded hypothesis.
-
-The selected source graph is
-`scripts/comfy-workflows/generate_flux2_klein_protected_edit.json`, a 23-node
-project-owned derivative of the official pinned FLUX.2 Klein 4B distilled edit
-template. Its SHA-256 is
-`AD4D4F96AD7D7C024A1A903A440DD4FE6D9E31353ACB7E436BF7DFC787321DAA`.
-It uses only pinned ComfyUI 0.27.1 core nodes:
-
-1. load and bound the exact B2D image to one megapixel;
-2. encode B2D once and use that latent as both the sole `ReferenceLatent` and
-   the sampler's starting image;
-3. load the exact project-owned mask, match it to the bounded base, and read its
-   red channel as the edit mask;
-4. attach that mask with `SetLatentNoiseMask`, then retain the existing four
-   FLUX.2 steps, CFG `1`, Euler sampler, one-image batch, and low-VRAM/no-preview
-   profile settings; and
-5. decode, then use `ImageCompositeMasked` with B2D as destination and the same
-   mask so pixels outside the reviewed region are restored before saving.
-
-B2C remains geometry evidence, not a second model input. This avoids the extra
-reference tokens and semantic competition of multi-reference conditioning on
-the 8 GB GPU while still making the B2C broad angular family the human review
-standard. B2D is the edit target, base latent, and only style/reference image.
-
-The deterministic mask lives at
-`docs/images/art-direction/knotkin-wizard-cowl-edit-mask.png`, is 1024x1024,
-11,323 bytes, and has SHA-256
-`2B6C5F51A6EA411BB8B9C40AF861A339622316CB1D9710719F7F0CDEC327425B`.
-`scripts/generate-wizard-cowl-edit-mask.js`, SHA-256
-`8DFD6623479D61603C046550F9184F13ADAE0C4FA3E40E9C49F2017E6F8634A1`,
-regenerates it byte-for-byte. White permits edits around the crown, head
-perimeter, and navy neck wrap, including enough white-background halo for the
-cowl to grow above the existing silhouette. The central face island and all
-pixels below the cowl boundary are black, protecting the accepted eyes,
-eyebrows, mouth, body, feet, baseline, and forward Relic hand. A four-times
-render and box downsample provide a narrow soft boundary without another node.
-
-Pinned `object_info` validation passed all 23 node classes, required inputs, and
-connected edge types. This proves graph compatibility, not FLUX.2 masked-edit
-quality. After the project-owner approval, the graph is `runtime_enabled: true`
-inside the closed `flux2-klein` profile and may be installed only as
-`generate_flux2_klein_protected_edit`. The source-validation session itself
-ended with zero running / zero pending, B2D remained the newest output, and
-both local services were stopped; no image or mask was staged and no prompt ran
-during that gate. Current
-official ComfyUI background references are the
-[inpainting guide](https://docs.comfy.org/tutorials/basic/inpaint) and
-[FLUX.2 Klein guide](https://docs.comfy.org/tutorials/flux/flux-2-klein);
-the exact implementation authority remains the locally pinned ComfyUI revision
-recorded in the generation manifest.
-
-Protect only:
-
-- the recognisable broad angular Knotkin family, narrow lower bridge, and
-  separate feet, with moderate proportion variation allowed,
-- a Wizard cowl/hat visibly resting on the head,
-- a complete forward hand able to normalize to the separate-Relic socket,
-- exactly two eyes and one mouth, with optional intentional paired eyebrows,
-  and
-- friendly/cute readability at full size and 48px.
-
-Leave cowl point, folds, trim, stitch pattern, and local crown/neck shape to
-FLUX. Eye spacing, eyebrows, mouth, body, hand, and feet happen to receive
-stronger-than-semantic protection in this pass because they lie outside the
-mask. Silhouette IoU, baseline, canvas position, and bounds remain diagnostic
-measurements; small later normalization remains allowed.
-
-The project-owner decision activates exactly these reviewed bytes for seed
-`15026005` and this prompt:
-
-> Change only the navy knitted neck wrap into a cute Wizard cowl that visibly
-> rests on and frames the head, with a soft pointed crown and short neck drape.
-> Preserve the pale chenille angular Knotkin body, full pose, complete forward
-> hand, belt, button, separate feet, exactly two eyes, paired eyebrows, one
-> curved mouth, white background, centered full-body framing, and friendly
-> handcrafted appeal. No weapon, staff, extra limb, extra face, floating hat,
-> text, logo, or rear shell.
-
-Before that one request, activation must exact-install and register the
-workflow, stage exact B2D bytes and the exact tracked mask under two safe names,
-verify model/workflow/input hashes, confirm low-VRAM/no-preview launch mode, and
-record an empty queue plus B2D as latest-output baseline. Human review controls
-the result: the cowl must visibly rest on the head; the character must retain
-exactly two eyes, optional paired eyebrows, one mouth, the complete forward
-hand, separate feet, broad angular family, and cute 48px read. Pixel equality
-outside every nonzero mask pixel is mandatory; variation inside the mask is
-creative rather than a reason to reject. A failed result authorizes no retry,
-seed shopping, mask widening, or full-canvas fallback. Alpha, animation, socket
-normalization, another Calling, and product promotion remain later work.
-
-The one activated request completed as Comfy prompt
-`d023da3f-77cf-4f05-ae7b-62ce66f1f176` in `308.956` seconds. Its external
-1024x1024 output is
-`WormsPortFlux2KleinProtectedEdit_00001_.png`, 906000 bytes, SHA-256
-`1275B2BD8021EAA5C51AA0606A6CC20BA21B15ED6CEBC4A7C1FC76308BA9D2E0`.
-All `907427` zero-mask pixels equal B2D exactly, with maximum channel difference
-zero. Baseline drift is zero; normalized silhouette IoU `0.840783` remains
-telemetry. Preliminary full-size and 48px review passed the mechanical
-protected-property purpose, but subsequent project-owner review rejected the
-compact crown as no longer clearly Wizard-like and the horizontal neck wrap as
-thief-like. The queue returned to zero running / zero pending and both services
-were stopped. The request allowance is consumed, so B2E re-entry must not run
-another prompt.
-
-### WP-015B2F Wizard-Hood Source Review
-
-Project-owner review rejects B2E as the next Wizard master: its compact crown
-loses the Wizard calling and its horizontal neck wrap reads thief-like. B2F is
-therefore a deterministic source-review gate. It must not stage an input, start
-Comfy/MCP, or run inference.
-
-Regenerate the tracked controls byte-for-byte from project-owned geometry:
-
-```powershell
-node scripts/generate-wizard-hood-structure-controls.js
-```
-
-When the exact external B2D evidence file is present, create the untracked
-source-review scaffold with explicit paths:
-
-```powershell
-$base = "$env:LOCALAPPDATA\Comfy-Desktop\ComfyUI-Shared\output\WormsPortFlux2KleinReferenceEdit_00005_.png"
-$scaffold = "$env:LOCALAPPDATA\Comfy-Desktop\ComfyUI-Shared\output\WormsPortWizardHoodScaffold_v1.png"
-node scripts/generate-wizard-hood-structure-controls.js --base $base --scaffold-out $scaffold
-```
-
-The generator refuses any base whose SHA-256 is not
-`DEF9265DAA4C6F2799D16870205E2015291E3E4AAE0F61802349C9FD8D56AD00`
-and verifies that every zero-mask pixel remains exact B2D. Expected source
-evidence:
-
-- guide `08CB26CE3FAC6605859F9C9B51331351F28F40A005F6A101B2E575D8A56C6AB8`;
-- mask `AC9F8F101094C5C15361FD24827C4F24B7C52ACBC652000748B209CB5483F56B`;
-- generator `3B009E6F4A5908D4BAFA63426E7538F9B59DD2A4A286246FFC2604DCD7D0FB69`;
-  and
-- external scaffold `A048CA16B249298BBECFAD2F57552B04958E26F766D01F6577D1C6A011A0231C`.
-
-Review the full-size guide, mask, scaffold, and the exact 48px scaffold
-derivative. The garment must read as a tall asymmetric pointed Wizard hood with
-an open center neck and two short separated mantle flaps, not a horizontal
-scarf. The mask is intentionally generous so FLUX can form folds and remove the
-old wrap; separate black islands protect the accepted upper face and mouth.
-The body, forward Relic hand, feet, and baseline remain protected.
-
-The frozen activation prompt and approval checklist live in
-`docs/asset-briefs/wp-015b2-generation-review.md`. A full robe/tunic is outside
-this pass. The project owner approved all four source controls. The fail-closed
-activation binds seed `15026006`, base
-`wormsport/wizard-hood-scaffold-v1.png`, mask
-`wormsport/wizard-hood-edit-mask-v1.png`, and exactly the frozen prompt. Run at
-most one request after source-side checks, full component/workflow hash
-verification, low-VRAM/no-preview startup, three-tool MCP probe, staged-byte
-equality, an empty queue, and newest-output baseline capture all pass. Any
-mismatch closes the gate; no retry or parameter change is authorized.
-
-The one request completed as prompt
-`1f5fc569-5250-4799-a236-0bb22ba629c8` in `355.120` seconds. External output
-`WormsPortFlux2KleinProtectedEdit_00002_.png` is 920934 bytes, SHA-256
-`BE162B61FF38BE0EE2EA58716BDBAF5D2B38F0D8E6608953D2ECA41EFE7AD608`.
-All `844934` zero-mask pixels equal the scaffold exactly, baseline drift is
-zero, and the exact 48px derivative is SHA-256
-`70FC1611E1F84081699B9A805E0C6A7A795B5B89CA7ABA783FC84E4AE1968B90`.
-The tall knitted hood passes Wizard identity and 48px readability, but hard
-polygonal face and rectangular mouth restoration boundaries are visibly
-seamed at full size. The result therefore fails as a master.
-
-The failure demonstrates that the denoise permission mask and final exact-
-composite mask have different transition requirements. Do not rerun this graph
-with a wider or changed mask. Future planning may investigate separate masks or
-semantic regeneration of the complete face/hood region, but must create a new
-source gate and request allowance. The queue ended 0/0, both services were
-stopped, and re-entry is review/planning only.
-
-### WP-015B2G Rounded-Doll Reset Re-entry
-
-WP-015B2G supersedes the hexagonal production-anatomy requirement after the
-project owner reviewed the complete B2A-B2F evidence. Do not resume the robot,
-structure-guide, cowl-mask, or hood-mask routes. They remain historical controls
-that demonstrate why the requirement changed.
-
-The reset returned to the exact core-only `generate_flux2_klein_text` workflow.
-Seed `15027001` tested an abstract `C-shaped grip`; output
-`WormsPortFlux2KleinText_00004_.png`, SHA-256
-`F5A58D589BD0624BA502D8277BF94FC7A4BD43B09BD05FF98CB184FEF6A3BE1C`,
-retained a closed thumbs-up mitten and was not selected. Seed `15027002`
-replaced it with an upward-facing shallow-bowl palm and produced the selected
-external direction candidate:
-
-```text
-C:\Users\jensb\AppData\Local\Comfy-Desktop\ComfyUI-Shared\output\WormsPortFlux2KleinText_00005_.png
-40F9E81254A0792B967889808BD8BD8DE33DBDE5EAB7C4CBB1B336DD02BC54A5
-1024x1024, 788520 bytes
-```
-
-Exact selected prompt:
-
-```text
-One isolated full-body game character centered on a pure white background with generous space around the entire silhouette. A cute blue crochet Wizard doll with a compact rounded body, short limbs, and two separate stubby feet aligned on one baseline. The character faces toward the right edge in a three-quarter view. Exactly two large glossy black bead eyes and one small curved stitched smile are visible. The arm on the image-right side reaches horizontally away from the torso. It ends in a proportionate crochet mitten hand turned upward like a small shallow bowl: the palm faces upward and remains fully visible, while the thumb and rounded mitten fingers curl upward around its edges without touching. The empty palm forms a clear unobstructed cradle. The other arm hangs naturally at the character's side. A tall pointed dark-blue felt Wizard hat with a softly folded tip and small gold stitched stars rests on the head without covering the face. Clean, readable mobile-game character with even lighting. The raised palm is empty. No text, logo, scenery, floor plane, or second character.
-```
-
-Re-entry is read-only unless a later work package explicitly authorizes product
-normalization or another generation request. Confirm the external file and hash,
-then start from deterministic alpha/background extraction, crop, baseline,
-pivot, held-Relic socket, and phone-size review. The selected file is still
-quarantine evidence; do not copy it into `assets/`, animate it, or integrate it
-before exact-output IP and product-manifest approval. LoRA remains a separately
-scoped fallback for a future character-consistency need, not the active Wizard
-route.
-
-### WP-015B2H Wizard Production-Normalization Re-entry
-
-WP-015B2H completed on 2026-08-04. This re-entry contract reproduces the
-deterministic normalization of exactly one source and authorizes no inference:
-
-```text
-C:\Users\jensb\AppData\Local\Comfy-Desktop\ComfyUI-Shared\output\WormsPortFlux2KleinText_00005_.png
-40F9E81254A0792B967889808BD8BD8DE33DBDE5EAB7C4CBB1B336DD02BC54A5
-1024x1024, 788520 bytes
-```
-
-Required order:
-
-1. Check Git status and confirm the external file exists with the exact size and
-   SHA-256 above. A mismatch stops the slice; do not reconstruct the source from
-   screenshots or another generated output.
-2. Extend the existing `docs/evidence/wp-015b.json` record with the B2H starting
-   commit, clean/dirty state, lock hash, scope, non-goals, and planned checks,
-   then freeze a versioned normalization configuration before writing the
-   normalizer. The configuration records the
-   source hash, background/matte rule, edge-color decontamination rule, connected
-   subject selection, crop/padding, resampling filter, target dimensions,
-   baseline, pivot, palm/socket point, and output naming.
-3. Review the exact output and its complete FLUX component chain for commercial
-   use, redistribution, modification, attribution, official-brand implications,
-   and recognizable third-party similarity. A model/component admission is not
-   an output-IP approval. Record the human review separately from automated
-   pixel checks.
-4. Preserve the untouched opaque 1024x1024 source externally. Use the versioned
-   script to remove only the plain background and faint contact shadow,
-   decontaminate the deterministic edge matte, select the single connected
-   character, and derive a 512x512 RGBA master. Do not manually paint, clone,
-   reconstruct, generatively fill, reshape, or non-uniformly warp any body,
-   costume, face, or hand pixels.
-5. Use uniform scale and translation to target the retained B1 512x512 ground
-   pivot `(256,451)`, held-Relic socket `(341,293)`, motion-safe bounds, and the
-   visible center of the upward-facing palm cradle. Derive the 192x192 review
-   candidate at pivot `(96,169)` and socket `(128,110)`, plus an exact 48px-tall
-   phone-readability derivative. If one uniform transform cannot satisfy the
-   baseline and visible socket without clipping or implausible metadata, stop
-   and propose a reviewed coordinate amendment; never distort the character to
-   make old coordinates pass.
-6. Prove deterministic byte reproduction, valid real alpha, no opaque or
-   disconnected background fragments, no bright/dark fringe at representative
-   backgrounds, stable feet/baseline, motion-safe padding, readable eyes/mouth/
-   hat/palm at 48px, and full-size preservation of the selected direction.
-7. If and only if the exact-output, visual, alpha, geometry, provenance, and
-   phone-size reviews pass, add the exact normalized master and complete parent/
-   postprocess evidence to `legal/asset-manifest.json` and copy the reviewed
-   bytes into their approved source location under `assets/`. Do not assign a
-   runtime atlas path merely to close B2H; animation derivatives receive their
-   own later entries and runtime paths.
-
-B2H completion runs the normalizer determinism tests, JSON/evidence checks,
-`npm run check:compliance`, `npm run build`, `npm run smoke`, and
-`git diff --check`. The browser matrix is not required unless B2H changes a
-browser-facing asset path or runtime code. Real-device testing is not run in
-B2H because no player-visible asset is integrated. Report both omissions.
-
-Completion record:
-
-- frozen config
-  `scripts/asset-normalization/wp-015b2h-wizard-v1.json`, SHA-256
-  `2AAEF899BD9FDBE202D5D9A293F1DC971ED62AAC32ED95095AF662FE6567D644`;
-- deterministic normalizer `scripts/normalize-character-master.js`, SHA-256
-  `B4AEF73CC30133F622C131A8E8D0322DECF953F933FEFC4EE83940FB328CDD82`;
-- first review candidate rejected before promotion because unrestricted enclosed-
-  region filling retained the floor shadow as an opaque white oval;
-- corrected matte freezes source-y-900 shadow-zone chroma controls, retains
-  internal highlights only above that zone, and removes post-resample ringing
-  islands without altering source anatomy;
-- approved 195820-byte 512x512 RGBA master
-  `assets/masters/characters/knotkin/wizard/knotkin-wizard-source-master-v1.png`,
-  SHA-256
-  `7AF4864E00C7206A05684312916092C6881127F921FA7CEA01524899093318A9`;
-- exact 192px and 48px review hashes `5E5A2C9D...BC632` and
-  `726550CE...9B6B3`; navy/warm-light edge sheet `D4545EEB...105D`;
-- retained pivot `(256,451)` and reviewed rounded-body palm socket `(407,228)`.
-  The old `(341,293)` socket is explicitly superseded for this source because
-  satisfying it at the same baseline would shrink the 898-pixel shadow-free
-  subject to about 297 pixels tall; no distortion was used; and
-- the exact master passed product manifest review with no `runtime_path`.
-  Animation, another Calling, another prompt, and gameplay integration remain
-  blocked for B2H.
-
-Reproduce external review outputs with `npm run asset:normalize:wizard`. The
-command fails closed unless the exact external parent size, hash, dimensions,
-and channel count still match the frozen config.
-
-### WP-015B3 Vertical-Slice Production Re-entry
-
-WP-015B3 begins only after B2H approves the normalized Wizard master. It closes
-the asset-production prerequisites that WP-015C is not allowed to invent while
-integrating.
-
-1. **B3A shared companion masters:** keep existing external Threadball candidate
-   `2BAE664F7E5A862BCB53B55A68071580485CE040A89650C68EC6FA398F4089EB`
-   paused as historical structure evidence. It reads as ordinary yarn rather
-   than the compressed Worldweave spell now required by the product story, so do
-   not normalize, promote, delete, or use it as conditioning. Before inference,
-   the B1 brief now freezes exact text-only seed `15035001`, its 77-word prompt,
-   pinned 1024x1024/batch-one/four-step/CFG-1/Euler workflow, no reference input,
-   one-request limit, output-baseline evidence, protected properties, rejection
-   rules, and stop conditions. User-supplied Gemini concept
-   `BD87405A...DA6699` remains external comparison evidence; do not copy, stage,
-   or condition on it. Reverify components/workflows, low-VRAM/no-preview launch,
-   tool registration, empty queue, and newest output before running exactly that
-   request. The request completed successfully as prompt
-   `af2f84ad-deca-4a6d-bd83-b0b88e87c696` in 272.426 seconds, producing exact
-   external output `1F41AF26...F56EC`; services were stopped and the request
-   allowance is consumed. The project owner accepted its direction and
-   deterministic config `CF8C6301...635B` produced approved source master
-   `608F490C...D9B6F`, centered at projectile origin `(128,128)`, with genuine
-   strand gaps kept transparent. No retry, regeneration, animation, or runtime
-   integration is authorized. The equivalent Patch-layer contract is now frozen:
-   Cloud seed `15035002`, Terrain Top `15035003`, and Terrain Interior
-   `15035004` use the same pinned text-only workflow/settings and no reference
-   input. Cloud completed as external output `EA972B0B...FFE7`, passed
-   project-owner review, and has deterministic source master `7F327B51...4B23C`
-   with no runtime path. Owner-approved Terrain Top `BE5EB2E7...2B22` has
-   deterministic 256x64 source master `41511E63...7897` through frozen crop,
-   uniform scale, and horizontal repeat proof, with no runtime path. Terrain
-   Interior candidate `98091C73...50F9` remains rejected for its directional
-   quilt seam pattern. The owner separately repaired that material in four-layer
-   GIMP XCF `2E94BBE4...CDBC7B`; its exact flattened export
-   `6419C1E8...CF8095` deterministically produces opaque 256x256 master
-   `D50C2C60...2E40E9` with zero difference at both axes of a 3x3 repeat proof.
-   The original candidate remains rejected, and the recovery admits neither
-   post-export painting, runtime path, terrain authority, nor retry. Those
-   requests are strictly sequential, and each output must be reviewed before the
-   next gate. Treat FLUX output as
-   textile source imagery only; a later frozen deterministic normalizer must
-   prove Cloud alpha handling and terrain repeatability. Failure pauses the
-   family; it does not authorize seed shopping or a batch. Do not generate a
-   distinct Loomkeeper in B3A.
-2. **B3B deterministic Loomseed-presentation admission:** the approved
-   empty-handed Wizard source master may not be uploaded or regenerated again.
-   The two completed AutoSprite pilots are rejected external evidence: the first
-   remade/lowered the raised palm and the second substituted a basket/cup-like
-   object. Retain them only for traceability; do not use their pixels, poses, or
-   prompts as a parent, conditioning input, normalizer target, or product asset.
-   Freeze a deterministic composition contract instead: the approved Threadball
-   source master is the only possible parent for a calm permanent Loomseed at
-   the reviewed palm anchor, and a smaller temporary cast Threadball forms at or
-   just beyond that anchor before launch. The raw empty-handed source may never
-   be uploaded again. The later WP-015C exception permits exactly one
-   free-tier AutoSprite idle pilot from the approved combined
-   Wizard-with-Loomseed presentation, kept only in external quarantine; it does
-   not permit paid pose control, animation-service substitution, a raw-source
-   re-upload, source repair, a retry, a normalizer, a runtime path, or promotion.
-   AutoSprite's current public terms/privacy review on 2026-08-04/05 permits only
-   quarantined pilots: output rights and no-training are stated, but retention is
-   not fixed, non-infringement is disclaimed, and exact inference-model/vendor
-   identity is not fully published. The first preset-Idle pilot fails because it
-   lowers/remakes the raised cupped palm, so its exported sheet
-   `6EA23DEE...4C718` remains external rejected evidence. Its sole documented
-   free-tier Custom successor `Palm-preservation idle` also fails its first
-   editable frame by replacing the empty palm with a large blue woven
-   basket/cup-like object. Both pilots are retained temporarily in the account at
-   the owner's direction, but neither is an input or product candidate. The
-   former closed route is superseded only by the distinct WP-015C combined-
-   Loomseed idle pilot defined below; neither rejected output, its prompt, nor
-   its pose may inform that pilot. No pilot can promote a runtime asset without
-   later exact-file, IP, normalization, and manifest review.
-3. **B3C playable derivatives:** after the deterministic B3B contract is
-   frozen, compose and review one Wizard root presentation for reuse by both the
-   player and AI Loomkeeper. The permanent Loomseed and three static temporary
-   Threadball formation-start/formation-ready/projectile derivatives are now
-   exact approved source material. They are uniformly resampled only from the
-   approved Threadball master and map every local visual origin to `(32,32)`;
-   the Wizard root-space emission offset is `[151,-223]`. No new glow, loose
-   fibers, tail, impact, animation, runtime path, or authority has been
-   created. Config `wp-015b3c-threadball-effects-v1` now separately admits the
-   bounded later procedural halo/gather/tail/impact route, but it remains
-   unintegrated until C. Patch
-   background/cloud/repeatable terrain materials, and minimum shared
-   damage/result effects. The spell family shows loose fibers gathering at or
-   beyond the Loomseed, a smaller temporary compressed knot, compact flight, and
-   rapid non-graphic unspooling against Stitching; it must not imply fire, a
-   larger damage radius, or another unimplemented effect. The intact source
-   master may receive only deterministic root transforms; no generated character
-   frame or hand modification is part of this route. Record pivots, Loomseed
-   anchor, aim-direction emission rule, Fire phases, parent/output hashes,
-   exact-file approvals, phone-size review, and media budget. Distinct
-   Loomkeeper production remains deferred to WP-015D.
-4. **B3C.1 deterministic runtime-copy admission — completed 2026-08-05:** assign a
-   `runtime_path` only to the existing Wizard-with-Loomseed master, three cast
-   stages, Cloud, Terrain Top, and repaired Terrain Interior. The build copier
-   must make exactly seven byte-identical files below `assets/product/`, totaling
-   607,427 source bytes. Do not create a duplicate asset file, modify a source
-   master, promote the empty-handed Wizard/raw Threadball/rejected Terrain
-   Interior, generate an atlas, or add scene code. Prove the exact path
-   allowlist, source/copy hashes, approved-assets inventory, media budget,
-   manifest/compliance, build, and audit before C starts. The exact
-   `check:b3c-runtime-inventory` gate, its focused tests, tooling suite,
-   compliance, production build, audit, and diff check have passed.
-
-WP-015C began from B3C.1's seven manifest-approved runtime copies. On
-2026-08-08, a separate owner-authorized exact-file admission added four
-transparent AutoSprite Wizard sheets (idle, walk, Loomseed spell, and
-non-graphic Unraveling), bringing the current fixed inventory to eleven sources
-and 1,402,579 bytes below the 1.5 MB ceiling. The original B3C.1 seven-file
-record remains historical fact; the current `check:b3c-runtime-inventory` gate
-validates the eleven-file WP-015C inventory. No source generation, manual source
-repair, or unapproved path is implied. B3 changes no gameplay rules and
-integrates no product media into the combat scene.
-
-### WP-015C First Playable Visual-Slice Re-entry
-
-WP-015C is integration-only except for its historical quarantined service pilots
-and the separately owner-supplied, exact-file AutoSprite sheet admission.
-Its runtime inputs are the runtime-copy-approved B3 Wizard
-presentation, Threadball derivatives, Patch layers, shared minimum effects, and
-their manifest metadata. It instantiates the same Wizard presentation for the player and AI
-Loomkeeper. The authoritative Loomkeeper actor, rules, labels, and team/position
-cues remain distinct even though the temporary character art is shared. C may
-add client asset loading, atlas/state mapping, socket attachment, decorative
-composition, failure fallback, and presentation-event binding. Threadball
-gathering/levitation binds only to the existing aim/fire preparation, release to
-the authoritative release frame, and unspooling to the authoritative impact.
-These visuals do not change physics, damage, collision, or replay truth. C may
-not generate/refine product art, repair source pixels, approve licenses, change
-simulation/collision authority, or introduce the v3 Relic ruleset.
-
-#### WP-015C one-pilot Loomseed idle-animation exception (2026-08-06)
-
-The project owner reopened the animation question because the former failure
-condition has changed: the Wizard now permanently holds its Loomseed, rather
-than needing an empty hand as a separate Relic socket. This authorizes exactly
-one **free-tier Custom** AutoSprite idle request, using only
-`assets/masters/characters/knotkin/wizard/knotkin-wizard-loomseed-presentation-master-v1.png`
-(`1CC252B45C93D2553AC733DAA6AA49D05D6351DCC85E61EA559ECED458C9419C`) as
-the upload. Do not upload the raw empty-handed master, the runtime copy, either
-rejected pilot, or any third-party image. The service output is external
-quarantine evidence, never a product asset, even if it visually passes.
-
-Use sidescroller/right-facing, Turbo/Budget, 25 frames at 256px, default
-background removal, compression, and no sound. Do not choose Advanced Mode,
-paid pose/first-frame control, a paid plan, an API route, another character, or
-another source image. If the free UI cannot expose those settings, stop rather
-than substituting. Name the request `Loomseed-preservation idle` and use this
-exact prompt:
-
-```text
-Right-facing three-quarter blue crochet Wizard holds a gentle seamless idle on one ground baseline. Preserve the exact raised forward arm, upward-facing cupped mitten palm, and the small calm blue-and-gold Loomseed already resting in that palm. The Loomseed stays fully visible, attached to the palm, and stable in every frame; do not remove, replace, enlarge, detach, or turn it into a cup, basket, weapon, spell, or another object. Only quiet breathing, a tiny body bob, soft yarn-fiber stir, and slight pointed-hat-tip sway. Keep the full Wizard, two glossy black bead eyes, small stitched mouth, costume, feet, and plain/transparent background. No casting, projectile, walking, camera motion, text, scenery, extra limb, second character, or new object.
-```
-
-Record the account-visible character/request name, visible tier, all visible
-settings, prompt, source hash, any visible IDs, untouched export path/hash, and
-reviewer. Reject the entire output on any frame that removes, detaches, obscures,
-or substitutes the Loomseed; remakes the raised palm/arm; alters identity,
-baseline, or full-body framing; introduces an object, cast, background, or
-extra anatomy; or cannot be durably exported and hashed. One rejection ends this
-exception: no retry, prompt variation, normalizer, staging, runtime path, or
-asset-manifest entry follows without a new owner decision. A visual pass only
-creates review evidence; later independent license/privacy/output-rights,
-frame/pivot/baseline, exact-file, manifest, phone, and test-only staging gates
-remain required before any production use.
-
-The one pilot completed and consumed five free credits on 2026-08-06. Its
-account-visible character is `Knotkin Wizard — WP-015C Loomseed pilot`
-(`cmshun4s600brck4n4ex51xyz`); the free UI showed Humanoid, Auto Padding 75,
-sidescroller/right-facing, automatic first/last frames, Turbo/Budget 2 seconds,
-25 frames at 256px, default background removal/compression, and no sound. The
-untouched external 1280x1280 sheet is
-`C:\Users\jensb\Downloads\Knotkin Wizard — WP-015C Loomseed pilot-idle.png`
-(230,227 bytes, SHA-256
-`74405D51591BE482152A9AC2B4F9609E92651FCF200FFEBB31987EC8DD0DB9EB`). Its
-corners have alpha zero and its raised hand visibly retains a small blue/gold
-focus in every frame. The full 25-frame review nevertheless rejects it: every
-frame rewrites the source's two black bead eyes and small stitched mouth as one
-oversized white/black cartoon eye, with some blink frames and no mouth. Identity
-failure rejects the entire sheet, regardless of Loomseed retention. This closes
-the exception; retain the source and result only as external evidence. Do not
-retry, edit the prompt, repair, normalize, stage, manifest, or integrate it.
-
-#### WP-015C_Animation FLUX.2 one-key-pose gate (revised 2026-08-06)
-
-This is a separate, external-quarantine research lane, not a retry, repair, or
-replacement of AutoSprite. It supersedes the proposed FLUX 3 video lane: video
-may later provide motion-reference material, but it is not a sprite-production
-route. The first target is one still **idle** key pose which can be reviewed as
-a normal raster candidate before any later normalization decision.
-The existing deterministic root-transform/Threadball presentation remains the
-fallback route. The separately admitted exact AutoSprite sheets are now the
-approved first-slice client animation route; they do not alter source masters or
-authoritative state.
-
-The official global `FLUX` MCP connector remains registered at
-`https://mcp.bfl.ai` and separately authenticated with BFL OAuth. It exposes
-FLUX.2 image tools only and must not receive an API key. Codex Desktop runtime
-`0.147.0-alpha.1.2` omits its remote tools from desktop-thread registries after
-full restarts/new chats; treat that as the current Codex Desktop exposure defect,
-not a failed BFL login. Retain the connector for CLI use or a later desktop fix;
-this gate uses the direct BFL API instead.
-
-Direct BFL API calls use `Flux_GameAssets_API_Key`, which the owner placed at
-Windows **User** scope. Read it only into the invoking process at request time;
-never print it, rename/copy it to `BFL_API_KEY`, place it in a repository file,
-Codex config, shell history, request evidence, or prompt. A no-charge
-`GET https://api.bfl.ai/v1/credits` preflight on 2026-08-06 passed and returned
-1,000 credits. A newly started Codex process may not inherit a User-scoped
-variable automatically, so a helper must explicitly retrieve that scope or the
-owner must restart Codex; no secret workaround is permitted.
-
-No BFL media request is authorized merely by the connector or key preflight.
-BFL's API Service Terms (reviewed 2026-08-06) grant it broad rights to use
-inputs and outputs, including training/improving its products. Its published
-privacy-page training opt-out must not be assumed to amend those API terms.
-On 2026-08-06, the project owner affirmatively accepted that treatment for this
-one direct FLUX.2 `max` key-pose pilot. On 2026-08-07, the owner selected the
-final single-request scope: a natural idle pose, using the recorded combined
-Wizard input alone and no pose guide. It does not authorize a second request or
-relax any review, provenance, or product-admission rule. Do
-not upload the raw empty-handed Wizard, a runtime copy, a rejected AutoSprite
-sheet, or any third-party image.
-
-After that decision, freeze a single direct `POST /v1/flux-2-max` edit contract:
-
-1. **Identity reference:** exact combined Wizard-with-Loomseed master
-   `1CC252B45C93D2553AC733DAA6AA49D05D6351DCC85E61EA559ECED458C9419C`.
-2. **No structure reference:** the project-owned cast-preparation pose guide is
-   retained as documentation-only history and is explicitly not submitted. The
-   owner selected a natural relaxed idle stance from the identity reference alone.
-3. **Request:** exactly one `flux-2-max` image-edit output at 1024x1024 on a
-   white/plain background, full body visible on one ground baseline. The exact
-   prompt and every submit-able setting are frozen in the tracked request file
-   `docs/asset-briefs/wp-015c-animation-flux2-max-idle-request-v1.json`; no hidden
-   prompt/default is permitted. It fixes `disable_pup: true`, seed `15039001`,
-   safety tolerance `2`, and PNG output. Do not create a sprite sheet, animation,
-   video, alpha treatment, projectile, new object, or extra character.
-   Its exact pre-submit SHA-256 is
-   `AC1D79F6D1840CEF2ACAB4B90F08F22EF48EF3802841159C9876A7E1E61D97D8`.
-   Only `scripts/run-wp-015c-flux2-max-idle-pilot.js`
-   (`2222E4F7FD1CFFA184BC947BF5B7627454798060D3F1DDACBF3FCF2D42C348DA`)
-   may make that one request; its dry run re-verifies both exact source and
-   contract without accessing the key or uploading media.
-4. **Budget and preservation:** record the current quoted estimate (from $0.07),
-   endpoint/model, source hash/no-guide declaration, prompt/request body excluding the key,
-   result/task identifiers, settings, timestamps, cost, raw output hash, and
-   content credentials. Download the untouched image externally before any URL
-   expiry.
-5. **Review:** reject the complete pilot on any change to the two glossy black
-   bead eyes, small stitched mouth, permanent Loomseed, relaxed open hand, body
-   identity, full-body crop, baseline, or plain background. A visual pass is
-   evidence only.
-
-There is no automatic retry, generated sheet, video, alpha removal, normalizer,
-atlas, test staging, runtime path, product build, or phone-baseline update
-without a new work-package decision.
-
-The sole approved submission was made on 2026-08-07 with request contract
-`AC1D79F6...97D8` and BFL task id `9d825b3d-4533-4535-9bf4-07686ccd2f9e`.
-BFL accepted the request and initially quoted 10 credits for its 0.25 MP input /
-1 MP output, then settled it as `Request Moderated` with no image and no settled
-cost returned. The ignored quarantine contains sanitized submission metadata but
-no output media. The one-submission cap is consumed: do not retry, reword,
-switch model, or submit the pose guide. A fresh owner decision and work-package
-contract would be required to investigate a later candidate route.
-
-On 2026-08-07, the owner supplied that fresh, narrow decision: one text-only
-diagnostic using no source image or pose guide. The exact non-branded original
-description, seed `15039002`, endpoint, output settings, and one-call cap are
-frozen in `docs/asset-briefs/wp-015c-animation-flux2-max-text-idle-request-v1.json`.
-The text-only request is an isolation test only; it cannot claim to reproduce a
-protected work/style or create a product path.
-Its pre-submit SHA-256 is
-`D15E7C475FAEAD2CFA3699CA090D8E5E3A0D64B5EA40EAC22AE9FA948E8852ED`.
-Only `scripts/run-wp-015c-flux2-max-text-idle-pilot.js`
-(`B04B0344B7176EEB7D90DB464D6C45050AACB82ECFF49FF4D678D5337ABB2BBE`)
-may make that one source-free request; its dry run validates the exact prompt,
-parameters, no-reference declaration, output boundary, and one-call cap without
-reading the key or uploading media.
-
-That text-only request completed on 2026-08-07 as BFL task
-`3c486d7b-95f1-480c-9b33-27556b3f2742`. The initial quote was 7 credits for a
-1 MP output (no input image); final task cost was not returned. The untouched
-external-quarantine PNG is 898,494 bytes, SHA-256
-`4D34F37EA85CF987E1CE330AFC2136086E82F784274C9E545923F8DB6DEC0F96`.
-Its PNG `caBX` chunk contains C2PA/JUMBF provenance metadata. It is an
-unapproved external candidate only: the text-only output is visibly a different,
-front-facing character with exposed pale hands, eyelash-like eyes, a pink mouth,
-a large ball, and a drawn ground line. Do not normalize, edit, stage, integrate,
-or use it to condition another generation. The diagnostic establishes only that
-BFL accepted this changed text-only request; because the original request also
-used different wording, it does not prove which prior input field caused the
-`Protected Content` finding.
-
-Acceptance requires one deterministic player-and-Loomkeeper exchange through
-move, aim, fire, projectile flight, impact, Stitching damage, and result at every
-maintained phone viewport and under reduced motion. Decorative Patch pixels never
-define collision. V1/v2 replay truth and authoritative event timing stay intact.
-Run compliance, build, the full zero-retry browser matrix, and bundle/media
-budget for runtime changes. The owner accepted the V3 real-phone hitbox
-re-check and waived a replacement Ubuntu candidate for that focused correction;
-retain the prior Ubuntu artifact as technical evidence and never approve a
-baseline from Windows. The external animation pilot does not change runtime and
-therefore does not trigger those product checks; it has its own evidence review
-above. A separate real-phone acceptance remains required before any later
-animated production asset can be admitted.
-
-### WP-015B0 Approval And Canonical Baseline
-
-WP-015B0 is the no-product-output pre-production gate. A bounded technical
-smoke may write an untouched file to external quarantine to prove the reviewed
-workflow; it must not create or promote a product asset. B0 records:
-
-- the canonical baseline at
-  `docs/images/art-direction/knotkin-class-lineup-concept.png`, SHA-256
-  `B4B9B1E676E7DD5CD13F7ABB2B63048884D209295379FCC10347348F80D5FD46`;
-  its location under `docs/images/` is deliberate because it is a generation
-  and review reference, not a runtime asset,
-- the project owner's report that the Nimiq team/foundation encourages the
-  inspired body geometry for the Mini App competition and brand connection,
-  plus the owner's historical approval to explore that direction. WP-015B2G
-  later supersedes the anatomy requirement after production evidence while
-  retaining the palette/textile brand connection, without authorizing official
-  Nimiq brand files or an official-product claim,
-- project-owner approval of the exact archived checkpoint, exact pinned
-  text-to-image workflow, and project-owned image-conditioned workflow recorded
-  in `legal/generation-component-manifest.json`, and
-- the continuing exact-output gate: an approved model and workflow produce
-  quarantined candidates, never automatically approved product assets.
-
-The B0 technical smoke used seed `15015000`, four steps, CFG `6`, Euler/normal,
-and denoise `0.35`. It produced a valid 256x256 PNG only in external quarantine
-(SHA-256
-`72CAC609419A83B8501B001D2E011C3D213373AC9D62B05C0C9022D4762F468D`).
-This proves image-plus-text execution, not art acceptance, product approval, or
-runtime integration.
-
-The earlier `cotton-clash-battle-study.png` remains useful for material and
-battlefield mood, and `knotkin-calling-lineup-study.png` remains useful for the
-Calling vocabulary. Both are superseded for anatomy.
-
-### WP-015B1 Frozen Vertical-Slice Contract
-
-The normative Wizard, Loomkeeper, Threadball, and first-Patch briefs are in
-`docs/asset-briefs/wp-015b1-vertical-slice.md`. They preserve historical
-prompts, primary seeds, workflow settings, character pivot, baseline, and
-projectile metadata, while the B3B Loomseed amendment supersedes the
-empty-palm/held-Relic presentation rule with a palm anchor and aim-direction
-emission rule. B1 generates and promotes no media.
-
-The complete multi-character lineup is a visual and review reference, not the
-ordinary VAE starting image. B2 begins with one isolated text-to-image candidate
-for each registered purpose. The image-conditioned workflow may refine only an
-isolated, reviewed quarantined master staged through `StageInput`. A rejected
-candidate does not authorize seed shopping, prompt drift, or generic MCP
-publication.
-
-### WP-015 Basic Assembly Scope
-
-WP-015 is an integration-first asset pass. Its purpose is to make one complete
-artillery exchange readable on a phone—move, aim, fire, projectile flight,
-impact, Stitching loss, result—not to finish every animation, environment
-layer, effect variant, or balance dimension before anything is assembled.
-
-The required basic inventory is:
-
-- four character masters with common anatomy, baseline, scale, handedness,
-  source focus-anchor, and projectile-origin contracts,
-- only the animation states currently triggered by the playable loop,
-- one icon, held sprite, projectile, simple trail, and simple impact for each
-  of Threadball, Needlepoint, and Spoolburst,
-- shared basic Stitching-damage, Unraveling, victory, and reward effects,
-- one Patch with a scalable fill, one cotton-cloud or distant layer, and
-  repeatable terrain top and interior materials,
-- Calling portraits and Relic icons while touch controls and essential status
-  text remain accessible HTML/CSS, and
-- a small combat/result audio set after the visual loop works end to end.
-
-Production starts with one Wizard presentation reused for both combatants,
-Threadball, and one Patch as a single vertical slice. It must pass in-engine
-phone review before the distinct Loomkeeper, remaining Callings, and remaining
-Relics are produced through the proven pipeline. Additional Patches, foreground
-dressing, high-detail VFX, full animation coverage, Calling-specific effects,
-precision and radius differentiation, and final weapon tuning are explicitly
-deferred.
+visual reference. The image remains documentation-only: it cannot be cropped,
+traced, or shipped directly. It may be supplied to an approved production tool
+as the user-selected creative conditioning reference only when the tracked path
+and SHA-256 are recorded in the generation evidence. This does not resolve
+Nimiq brand or geometry rights. A brief must record all other inputs and
+explicitly block Sorcerers, Worms/Team17, realistic firearms, unlicensed logos,
+and recognizable third-party characters.
+
+Built-in image generation is used for rights-safe concept masters, ComfyUI for
+reproducible controlled refinement after every model component passes license
+review, and AutoSprite for animation/export from an approved master. Record
+prompts, negative constraints, workflow JSON and hash, seeds, model and custom
+node versions and licenses, service/job IDs, parent/output hashes, postprocess
+configuration, and reviewer identity.
 
 ### Production Decomposition
 
@@ -2234,37 +884,26 @@ assets rather than cropped into the game.
 
 Character production starts with four isolated 512x512 RGBA masters: Wizard,
 Thief, Warrior, and a Loomkeeper opponent variant. Each master shows one full
-Knotkin facing right in an orthographic-like three-quarter side view on
-transparency so both bead eyes remain visible. The feet share a stable baseline,
-the entire silhouette remains inside motion-safe padding, and there is no
-scenery, text, framing, or second character. Exactly two bead eyes, one small
-expression-ready mouth, Calling costume topology, body proportions, palette,
-lighting direction, and handedness must remain stable. One intentional stitched
-eyebrow above each eye is optional when it improves friendly expression. No
-nose, extra eye, duplicated mouth, or unrelated facial feature is introduced.
-Every pose also obeys a common focus-anchor and projectile-origin contract so
-separate visual effects can attach consistently without becoming collision
-authority. The current Wizard route is the specific exception to a generic
-interchangeable held-Relic model: it composes a permanent Loomseed at the
-anchor and launches a distinct temporary Threadball.
+Knotkin facing right in an orthographic-like side view on transparency. The
+feet share a stable baseline, the entire silhouette remains inside motion-safe
+padding, and there is no scenery, text, framing, or second character. Exactly
+two bead eyes, no mouth, Calling costume topology, body proportions, palette,
+lighting direction, and handedness must remain stable.
 
-Relics and effects are separate transparent asset families. Each of the three
-starting Relics receives a phone-readable icon, held sprite, projectile,
-simple trail, and simple impact. Stitching damage, Unraveling, victory, and
-Prize Loom reward effects may use shared basic families. A Relic should remain
-separate from the character atlas when practical. If a pose must bake in a
-Relic, that atlas is a separately named derivative with its own parent hashes
-and manifest entry.
+Relics and effects are separate transparent asset families. At minimum this
+includes Threadball, the two additional gameplay-approved Relics, their
+phone-readable icons, projectiles, trails, impacts, Stitching damage,
+Unraveling, and Prize Loom reward effects. A Relic should remain separate from
+the character atlas when practical. If a pose must bake in a Relic, that atlas
+is a separately named derivative with its own parent hashes and manifest entry.
 
 The first Patch is not one flattened painting. Produce:
 
 - a scalable sky or fabric fill,
-- one separate cotton-cloud or distant-decoration layer,
-- repeatable terrain top and interior materials.
-
-Banners, loom structures, extra props, edge variants, and foreground dressing
-are later detail passes unless the basic phone composition cannot be read
-without them.
+- separate cotton-cloud and distant-decoration layers,
+- separate banners, loom structures, and decorative props,
+- repeatable terrain top, edge, and interior materials,
+- optional foreground dressing that never controls collision.
 
 The deterministic terrain silhouette and collision mask remain code-owned game
 data. Decorative background pixels cannot define authoritative terrain or be
@@ -2286,114 +925,84 @@ Use this exact handoff for each visual asset family:
 2. **Image generation:** create a new isolated master from the approved brief
    and canonical reference. Store the untouched result only in ignored
    quarantine and record the full prompt, output ID, date, and SHA-256.
-3. **Master review:** reject anatomy, eye count, mouth count/placement,
-   silhouette, costume, lighting, perspective, equipment, alpha, or third-party
-   similarity drift.
+3. **Master review:** reject anatomy, eye count, mouth, silhouette, costume,
+   lighting, perspective, equipment, alpha, or third-party similarity drift.
    Only a reviewed master proceeds.
 4. **ComfyUI refinement:** use only when every checkpoint, VAE, LoRA,
    ControlNet, embedding, upscaler, and custom node has approved commercial-use
    evidence. Record workflow JSON and hash, seed, sampler, scheduler, steps,
    CFG, dimensions, denoise, component names, versions, licenses, and hashes.
-   For image-plus-text refinement, use `StageInput` and the reviewed
-   `generate_image_conditioned` graph; record the staged source hash and safe
-   relative `reference_image` returned by the command.
    If the model inventory is not approved or the server is unavailable, skip
    refinement or stop; do not substitute an unrecorded local workflow.
-5. **Deterministic master normalization and approval:** preserve the untouched
-   generator output externally. Through a versioned script and configuration,
-   produce a real-alpha isolated master with reviewed crop, padding, baseline,
-   pivot, and source focus-anchor. Review exact-output IP/provenance, visual
-   identity, alpha edges, and phone readability. Only the exact normalized
-   master may receive source-asset manifest approval; do not assign a runtime
-   path until a runtime derivative is ready.
-6. **Presentation-route admission:** use the admitted deterministic root
-   presentation where it is sufficient. It may compose only approved derivative
-   parents at recorded anchors and may not alter source pixels. Any later
-   animation service must separately pass its license, privacy, output-rights,
-   identity-control, and durable-evidence review before uploading the approved
-   isolated character master. AutoSprite's two B3B raw-source pilots remain
-   closed and may not be retried. WP-015C's one combined-Loomseed pilot is a
-   separately documented external experiment, not an approved dependency. The
-   four owner-provided AutoSprite sheets admitted on 2026-08-08 are the sole
-   exception: they are exact-file manifest-bound runtime inputs, never a license
-   to retry, regenerate, or treat a different export as equivalent.
-7. **Deterministic runtime normalization:** normalize runtime frame size, pivot,
-   baseline, padding, alpha, naming, timing, and atlas metadata through a
-   versioned script and configuration hash. Preserve every untouched service
-   download externally and keep source-master and runtime-derivative lineage
-   explicit.
-8. **In-engine staging:** load quarantined candidates through a test-only path,
+5. **AutoSprite animation:** upload the approved isolated character master,
+   reuse one character ID for its Calling, request the normative animation
+   states, and record character, pose, job, video, and spritesheet IDs plus all
+   downloaded hashes. If AutoSprite is unavailable, stop animation production
+   rather than silently changing generators.
+6. **Deterministic normalization:** preserve the untouched master, normalize
+   runtime frame size, pivot, baseline, padding, alpha, naming, timing, and
+   atlas metadata through a versioned script and configuration hash.
+7. **In-engine staging:** load quarantined candidates through a test-only path,
    render deterministic gameplay states, and capture the automated phone
    viewports. Staging cannot place unapproved files in product `assets/`.
-9. **Review and refinement:** run art, animation, IP, provenance, canvas,
+8. **Review and refinement:** run art, animation, IP, provenance, canvas,
    visual-diff, and phone-readability checks. Permit at most three scoped
    retries for one failure signature; rejection does not relax the contract.
-10. **Promotion:** add exact final hashes and evidence to the manifest, update
+9. **Promotion:** add exact final hashes and evidence to the manifest, update
    attribution when required, copy only approved runtime files into `assets/`,
    then run compliance, build, browser smoke, and relevant visual tests.
 
-### Basic Animation Contract
+### Animation Contract
 
-The initial Wizard route uses four separately admitted transparent 5x5/256px
-AutoSprite sheets for the client-only idle, movement, spell, and Unraveling
-states. The intact approved source master remains the fallback, while the
-separately composed permanent Loomseed, emission origin, and all authoritative
-actor positions remain simulation-independent. A later raster-animation route
-requires its own exact-file admission gate. The initial state contract is:
+Every first-release character atlas uses the same state names and baseline:
 
 | State | Frames | Loop | Required behavior |
 | --- | ---: | --- | --- |
-| `idle` | 1 source + root loop | yes | Minimal breathing/thread motion; Loomseed stays at its anchor |
-| `move` | 1 source + root loop | yes | Presentation follows authoritative movement without position drift |
-| `aim_low` | 1 source | holdable | Low trajectory pose with stable Loomseed anchor |
-| `aim_mid` | 1 source | holdable | Mid trajectory pose with stable Loomseed anchor |
-| `aim_high` | 1 source | holdable | High trajectory pose with stable Loomseed anchor |
-| `fire` | 3 effect phases | no | Glow, temporary Threadball formation, and launch from the emission origin |
-| `hit` | 1 source + root pulse | no | Cotton compression without anatomy mutation |
-| `unravel` | deferred | no | Non-graphic defeat ending in thread and fluff |
-| `victory` | deferred | yes | Compact celebration that stays inside padding |
+| `idle` | 8-12 | yes | Minimal breathing/thread motion; no silhouette drift |
+| `move` | 8-12 | yes | Stable baseline and readable short stride |
+| `jump_start` | 3-5 | no | Leaves the ground from the idle pose |
+| `fall` | 2-4 | holdable | Stable airborne pose without scale drift |
+| `land` | 3-5 | no | Returns exactly to the idle baseline |
+| `aim_low` | 1-3 | holdable | Low trajectory pose |
+| `aim_mid` | 1-3 | holdable | Mid trajectory pose |
+| `aim_high` | 1-3 | holdable | High trajectory pose |
+| `fire` | 6-10 | no | Names the exact gameplay release frame |
+| `hit` | 4-6 | no | Cotton compression without anatomy mutation |
+| `unravel` | 8-12 | no | Non-graphic defeat ending in thread and fluff |
+| `victory` | 8-12 | yes | Compact celebration that stays inside padding |
 
-`jump_start` is deferred because the current command model has no jump action.
-Dedicated `fall` and `land` states remain reserved until the presentation layer
-has a visible deterministic settling trigger. A later animation expansion must
-update this contract before production and cannot be inferred from unused
-placeholder state names.
-
-The Fire sequence is `glow -> temporary formation -> launch`. Its temporary
-projectile starts from the root-transformed Loomseed emission origin and leaves
-the permanent held focus behind. Runtime mirroring is allowed only after a
-handedness and costume-asymmetry review. A later atlas must start from the
-512x512 master and receive its own normalized frame, pivot, baseline, and
-phone-readability review; it cannot be inferred from this procedural route.
+Generate right-facing source frames. Runtime mirroring is allowed only after a
+handedness and costume-asymmetry review. Otherwise produce and track a separate
+left-facing derivative. Start from 512x512 masters and normalize the first
+runtime candidate to 192x192 RGBA frames with a pivot at 50% horizontal and 88%
+vertical. Changing frame size, pivot, or baseline requires recorded in-engine
+phone-readability evidence and an update to the asset-family brief.
 
 ### Runtime Naming And Placement
 
 Use stable kebab-case asset-family IDs and group approved files by role:
 
 ```text
-assets/product/characters/knotkin/{wizard,thief,warrior,loomkeeper}/
-assets/product/relics/<relic-id>/
-assets/product/effects/<effect-id>/
-assets/product/environment/patch-01/{background,props,terrain}/
-assets/product/ui/{callings,relics,reward}/
-assets/product/audio/{combat,result,reward}/
+assets/characters/knotkin/{wizard,thief,warrior,loomkeeper}/
+assets/relics/<relic-id>/
+assets/effects/<effect-id>/
+assets/environment/patch-01/{background,props,terrain}/
+assets/ui/{callings,relics,reward}/
+assets/audio/{combat,result,reward}/
 ```
 
-If an atlas is later admitted, frame names follow
-`<calling>/<state>/<zero-padded-frame>`. The B3C presentation configuration
-instead records root-transform settings, the Loomseed anchor, the
-aim-direction emission rule, and the Fire phases. Source masters, service
-downloads, rejected outputs, videos, workflows, and intermediate frames remain
-in ignored quarantine rather than the runtime tree.
+Atlas frame names follow `<calling>/<state>/<zero-padded-frame>`. The atlas
+records frame rectangles, pivots, durations, loop hints, and the release frame
+for `fire`. Source masters, service downloads, rejected outputs, videos,
+workflows, and intermediate frames remain in ignored quarantine rather than the
+runtime tree.
 
 ### Asset Acceptance
 
 Before promotion, automated and reviewer evidence must establish:
 
-- exactly two eyes, one controlled mouth expression, optional intentional
-  paired stitched eyebrows, no nose/extra eye/duplicated mouth/unrelated face
-  mark, and stable anatomy, costume, palette, lighting, and equipment identity across
-  every character frame,
+- exactly two eyes, no mouth, stable anatomy, costume, palette, lighting, and
+  equipment identity across every character frame,
 - stable frame dimensions, ground baseline, pivot, alpha edges, visual scale,
   and no disconnected alpha fragments or halos,
 - valid loops and transitions with no eye duplication, hand/equipment swapping,
@@ -2784,5 +1393,5 @@ A slice is done when:
 - the import boundary still passes,
 - relevant manifests/docs are current,
 - planned checks have run,
-- the change-selected checks pass, with a current build for runtime/build changes,
+- selected checks pass, with a current build for runtime/build changes,
 - final reporting names remaining risks.

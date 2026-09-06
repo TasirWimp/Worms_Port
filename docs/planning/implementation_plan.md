@@ -7,6 +7,12 @@ Phaser/Socket.IO stack.
 
 ## Execution Pointer
 
+- Tooling: **WP-016 adaptive agent support** is merged on main. It provides reciprocal read-only support during implementation, task-relative model/effort selection, revisable boundaries, retained support evidence, one verification owner, and a fresh independent final reviewer. Follow the operational protocol in [development workflow](../process/development_workflow.md#adaptive-support-during-implementation-wp-016).
+
+- Verification infrastructure: the isolated change-selection/build-reuse port
+  from `da1e7a9` follows the owner-requested 21:00 Berlin daily/full cadence.
+  See [Verification Funnels](../process/development_workflow.md#verification-funnels).
+  This changes verification policy only and does not advance the product package.
 - Active target: mobile-first single-player Nimiq Pay competition release.
 - Active product package: **WP-015D3B V9 Resource and Utilities — V9A rules
   contract and V9B injected authoritative foundation complete and independently

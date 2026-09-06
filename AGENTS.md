@@ -112,6 +112,11 @@ cross-module slice. It stays read-only, but owns the final assessment of
 product continuity and evidence sufficiency. It must not approve merely
 because the changed paths match a contract or because the selector passes.
 
+An agent that helped form the solution through adaptive support is a contributor,
+even if it stayed read-only. Use a fresh identity for substantive final assessment;
+do not relabel that advisor as the independent reviewer. The final reviewer first
+reconstructs the claim, then reconciles the retained support/failure ledger.
+
 Before a final verdict, the reviewer must inspect the selector's dry-run as a
 starting inventory, the implementation diff, the accepted predecessor journey,
 the current execution pointer, and the existing relevant tests. It then chooses
@@ -256,10 +261,15 @@ Role-specific Codex agents live in `.codex/agents/`:
 - `worms_port_asset_curator` - Sorcerers quarantine review, asset manifests, and attribution.
 - `worms_port_compliance_keeper` - legal manifests, package/license gates, and MIT compatibility.
 - `worms_port_docs_keeper` - README, docs, AGENTS, planning, and role maintenance.
-- `worms_port_reviewer` - read-only review for boundary risk, bugs, and missing checks.
+- `worms_port_reviewer` - independent read-only review for boundary risk, bugs, and missing checks.
+- `worms_port_support_advisor` - read-only reciprocal support while implementation is forming;
+  model/effort selected for the current uncertainty, not pinned to a permanent expert tier.
 
-Subagents coordinate through docs, manifests, commits, and completion summaries,
-not private handoff.
+Subagents can exchange native messages directly while work is active. Persist
+consequential observations, boundary changes and support returns in the existing
+package evidence; transient messages alone are not a recoverable handoff. Use the
+[adaptive support protocol](docs/process/development_workflow.md#adaptive-support-during-implementation-wp-016)
+before declaring the implementation boundary settled.
 
 ## Task Model Routing
 
@@ -268,12 +278,17 @@ the model/effort and a short reason. This policy authorizes the explicit model
 overrides below when delegation is already required/useful under the workflow.
 It does not require an extra agent for every small edit.
 
-| Work | Model / effort |
+| Current situation | Initial model / effort and support arrangement |
 | --- | --- |
-| Bounded implementation from an approved contract, focused tests, ordinary planning, client/server integration | `gpt-5.6-terra` / `high` |
-| Documentation, inventory, link checks, routine verification and result summaries | `gpt-5.6-terra` / `medium` |
-| Ambiguous architecture or rules with coupled invariants; substantive independent replay, authoritative-state, security or cross-module review | `gpt-6-astra` / `high` |
+| Familiar implementation or focused tests with exercised dependencies | `gpt-5.6-terra` / `high` with an available support port; the work boundary remains revisable. |
+| Documentation, inventory and mechanical checks | `gpt-5.6-terra` / `medium`; request support when source meanings conflict. |
+| Several plausible interpretations or integration dependencies | A reciprocal support episode; `gpt-5.6-sol` / `medium` or `high` is a calibration candidate, not a required intermediate rung. |
+| Coupled temporal/authority/security or architectural ambiguity | `gpt-6-astra` / `high` support can open before a failed patch. Keep the implementer's local evidence in the exchange. |
+| Substantive independent final assessment | Fresh `gpt-6-astra` / `high` identity that did not contribute to the solution. |
 
+These are starting hypotheses, not intrinsic role identities or measured cost
+winners. Keep model/effort fixed when first evaluating a changed interaction;
+compare model or effort separately after the support mechanism is observable.
 Project and ordinary subagent defaults are Terra/high. The docs role pins
 Terra/medium; the dedicated read-only reviewer pins Astra/high. Reserve that
 reviewer for substantive work; use a fresh Terra docs/test worker for routine
@@ -290,10 +305,19 @@ Astra/high entry/final reviewer. Keep the existing clean-room separation.
   and the relevant role instructions; retain read-only review scope and never
   delegate reference-contaminated context to a runtime implementer.
 - Escalate a reproducible failure to Astra after two unsuccessful Terra
-  corrections, or earlier when new ambiguity affects replay/authority/security.
+  corrections if support has not already opened. The implementer, advisor,
+  affected peer or coordinator may open support earlier when a dependency,
+  contradictory observation or risky interface change appears. A worker need
+  not fully diagnose what it cannot yet see or wait for a review FAIL.
   Pass the minimal failing case and attempted fixes. Escalation does not reset
   the workflow's three-correction stop, relax tests or authorize a wider slice.
-  Return routine work to Terra once the issue is resolved.
+  Revise the work split when the dependency crosses it; preserve one writer per
+  shared file. Reduce support after retaining the recovered distinction,
+  evidence, continuing assumptions and reopening cue.
+- Any participant can correct another's hypothesis with evidence. Missing
+  observations call for a probe; reasoning difficulty may justify more effort
+  or a different model; host failures call for infrastructure diagnosis.
+  A stronger model's confidence is not a product or acceptance authority.
 - Record model, effort, role and selection/escalation reason in the existing
   slice evidence/review summary. Distinguish requested/configured settings from
   runtime-confirmed metadata. Never infer the served model from an agent's
