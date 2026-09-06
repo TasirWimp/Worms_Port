@@ -2,7 +2,8 @@ import assert from 'node:assert/strict';
 import test from 'node:test';
 import {
     V9_RULESET_ID, applySimulationBarrierV9, applySimulationIntentV9, advanceSimulationTicksV9,
-    createSimulationV9, hashSimulationStateV9
+    advanceSimulationTicksV9DetachedRollout, cloneSimulationV9, completeDetachedSimulationRolloutV9,
+    DetachedSimulationRolloutV9, createSimulationV9, hashSimulationStateV9
 } from '../../shared/simulation-v9';
 import { setTerrainSolid, type PlayerCalling } from '../../shared/simulation';
 import {
@@ -315,6 +316,93 @@ test('V9 rejects unaffordable, stale, duplicate and deadline Fire atomically', (
     const deadline = advanceSimulationTicksV9(createSimulationV9(1, 'wizard'), 450).state;
     assert.equal(applySimulationIntentV9(deadline, deadline.activeActor, { type: 'fire', aimId: 1 }, deadline.turn, deadline.phase, deadline.inputEpoch).accepted, false);
 });
+
+test('V9 detached rollout advance is a per-tick public-oracle differential across mechanics boundaries', () => {
+    const cases: Array<{ name: string; ticks: number; state: ReturnType<typeof createSimulationV9> }> = [];
+    for (const calling of CALLINGS) cases.push({ name: `calling/${calling}`, ticks: 451, state: createSimulationV9(17, calling) });
+
+    let walk = clearFloorState();
+    walk = applySimulationIntentV9(walk, 'player', { type: 'walk_start', direction: 1 }, 0, 'action', 0).state;
+    cases.push({ name: 'script/walk-and-lease', ticks: 24, state: walk });
+    cases.push({ name: 'reflection/terrain-and-support', ticks: 24, state: reflectedClearFloorState() });
+
+    let projectile = clearFloorState();
+    projectile = applySimulationIntentV9(projectile, 'player', { type: 'select_relic', relicId: 'threadball' }, 0, 'action', 0).state;
+    projectile = applySimulationIntentV9(projectile, 'player', { type: 'aim', angleMilliDegrees: 20_000, powerPermille: 700 }, 0, 'action', projectile.inputEpoch).state;
+    projectile = applySimulationIntentV9(projectile, 'player', { type: 'fire', aimId: projectile.aimId }, 0, 'action', projectile.inputEpoch).state;
+    cases.push({ name: 'relic/projectile-and-event-translation', ticks: 90, state: projectile });
+
+    let guard = clearFloorState();
+    guard = applySimulationIntentV9(guard, 'player', { type: 'threadguard' }, 0, 'action', 0).state;
+    guard = applySimulationIntentV9(guard, 'player', { type: 'aim', angleMilliDegrees: 90_000, powerPermille: 0 }, 0, 'action', guard.inputEpoch).state;
+    guard = applySimulationIntentV9(guard, 'player', { type: 'fire', aimId: guard.aimId }, 0, 'action', guard.inputEpoch).state;
+    cases.push({ name: 'relic/guard-damage-and-expiry', ticks: 901, state: guard });
+
+    for (const kind of ['wall', 'ceiling', 'actor', 'ledge'] as const) {
+        let leap = threadleapFixture(kind);
+        leap = applySimulationIntentV9(leap, 'player', { type: 'threadleap', direction: 1 }, 0, 'action', 0).state;
+        cases.push({ name: `threadleap/${kind}-collision`, ticks: 120, state: leap });
+    }
+
+    const revisionLimit = createSimulationV9(1, 'wizard');
+    revisionLimit.revision = 65_534;
+    cases.push({ name: 'revision-and-match-limit', ticks: 1, state: revisionLimit });
+    cases.push({ name: 'income-deadline-and-turn-handoff', ticks: 900, state: createSimulationV9(1, 'wizard') });
+
+    for (const { name, ticks, state } of cases) assertDetachedTicksMatchPublicOracle(name, state, ticks);
+});
+
+test('V9 detached rollout advance clones trusted input and preserves public boundary results', () => {
+    const source = createSimulationV9(42, 'wizard');
+    const sourceHash = hashSimulationStateV9(source);
+    const rollout = DetachedSimulationRolloutV9.fromTrustedSource(source);
+    const zero = advanceSimulationTicksV9DetachedRollout(rollout, 0);
+    assert.deepEqual(zero, advanceSimulationTicksV9(source, 0));
+    const detached = advanceSimulationTicksV9DetachedRollout(rollout, 1);
+    assert.equal(hashSimulationStateV9(source), sourceHash, 'trusted source remains immutable');
+    assert.notStrictEqual(detached.state, source, 'a positive detached rollout owns its clone');
+    assert.deepEqual(advanceSimulationTicksV9DetachedRollout(rollout, 16_801), advanceSimulationTicksV9(detached.state, 16_801));
+    assert.deepEqual(completeDetachedSimulationRolloutV9(rollout), detached.state);
+    const limited = createSimulationV9(1, 'wizard'); limited.revision = 65_534;
+    const finished = advanceSimulationTicksV9(limited, 1).state;
+    const finishedRollout = DetachedSimulationRolloutV9.fromTrustedSource(finished);
+    assert.deepEqual(advanceSimulationTicksV9DetachedRollout(finishedRollout, 1), advanceSimulationTicksV9(finished, 1));
+});
+
+function assertDetachedTicksMatchPublicOracle(name: string, initial: ReturnType<typeof createSimulationV9>, ticks: number): void {
+    let oracle = cloneSimulationV9(initial); const rollout = DetachedSimulationRolloutV9.fromTrustedSource(initial);
+    for (let tick = 0; tick < ticks; tick += 1) {
+        const expected = advanceSimulationTicksV9(oracle, 1);
+        const actual = advanceSimulationTicksV9DetachedRollout(rollout, 1);
+        assert.deepEqual(actual, expected, `${name}: transition ${tick}`);
+        assert.equal(hashSimulationStateV9(actual.state), hashSimulationStateV9(expected.state), `${name}: canonical hash ${tick}`);
+        oracle = expected.state;
+        if (oracle.phase === 'finished') break;
+    }
+    assert.deepEqual(completeDetachedSimulationRolloutV9(rollout), oracle, `${name}: completed detached result`);
+}
+
+function threadleapFixture(kind: 'wall' | 'ceiling' | 'actor' | 'ledge') {
+    const state = clearFloorState();
+    if (kind === 'wall') {
+        for (let cx = 104; cx <= 107; cx += 1) for (let cy = 34; cy <= 39; cy += 1) setTerrainSolid(state.terrain, cx, cy, true);
+        state.units[0].xFp = 820 * FP; state.units[0].support = 40 * FP + Math.floor((820 - 12) / 8);
+    }
+    if (kind === 'ceiling') for (let cx = 96; cx <= 111; cx += 1) for (let cy = 23; cy <= 25; cy += 1) setTerrainSolid(state.terrain, cx, cy, true);
+    if (kind === 'actor') { state.units[1].xFp = 840 * FP; state.units[1].support = 40 * FP + 103; }
+    if (kind === 'ledge') for (let cx = 104; cx <= 111; cx += 1) for (let cy = 37; cy <= 38; cy += 1) setTerrainSolid(state.terrain, cx, cy, true);
+    return state;
+}
+
+function reflectedClearFloorState() {
+    const state = clearFloorState();
+    for (const unit of state.units) {
+        unit.xFp = 2048 * FP - unit.xFp;
+        unit.facing = -unit.facing as -1 | 1;
+        unit.support = 40 * FP + Math.floor((unit.xFp / FP - 12) / 8);
+    }
+    return state;
+}
 
 function asV8(state: ReturnType<typeof createSimulationV9>): SimulationStateV8R1 {
     const { utilityUsed: _utilityUsed, units, ...common } = state;

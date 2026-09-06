@@ -183,6 +183,47 @@ export function advanceSimulationTicksV9(current: SimulationStateV9, count: numb
     return { accepted: true, mutated: state !== current, state, events };
 }
 
+/** Detached state is created only through the validated planner boundary below. */
+export class DetachedSimulationRolloutV9 {
+    private constructor(private current: SimulationStateV9) {}
+    public static fromTrustedSource(source: SimulationStateV9): DetachedSimulationRolloutV9 {
+        assertSimulationInvariantsV9(source);
+        return new DetachedSimulationRolloutV9(cloneSimulationV9(source));
+    }
+    public get state(): SimulationStateV9 { return this.current; }
+    /** Public V9 transitions already validate their result before this replacement. */
+    public replace(state: SimulationStateV9): void { this.current = state; }
+}
+
+/**
+ * Advances a validated, clone-owned detached rollout without re-running V9's
+ * Zod validation for each internal tick. V8 remains the mechanics kernel for
+ * every tick. Call completeDetachedSimulationRolloutV9 before ranking.
+ */
+export function advanceSimulationTicksV9DetachedRollout(rollout: DetachedSimulationRolloutV9, count: number): SimulationTransitionV9 {
+    const current = rollout.state;
+    if (!Number.isSafeInteger(count) || count < 0 || count > 16800)
+        return reject(current, 'COMMAND_REJECTED', 'Tick batch exceeds the V9 bound.');
+    if (current.phase === 'finished' || count === 0) return { accepted: true, mutated: false, state: current, events: [] };
+    let state = current;
+    const events: SimulationEventV9[] = [];
+    for (let index = 0; index < count && state.phase !== 'finished'; index += 1) {
+        const result = advanceSimulationTicksV8(toV8(state), 1);
+        if (!result.mutated) break;
+        const next = fromV8(result.state, state, result.events);
+        events.push(...translateEvents(result.events, state, next));
+        state = next;
+    }
+    rollout.replace(state);
+    return { accepted: true, mutated: true, state, events };
+}
+
+/** Completes the detached-only trust boundary before a candidate can be ranked. */
+export function completeDetachedSimulationRolloutV9(rollout: DetachedSimulationRolloutV9): SimulationStateV9 {
+    assertSimulationInvariantsV9(rollout.state);
+    return rollout.state;
+}
+
 export function applySimulationBarrierV9(current: SimulationStateV9, barrier: SimulationBarrierV9): SimulationTransitionV9 {
     assertSimulationInvariantsV9(current);
     if (!SimulationBarrierV9Schema.safeParse(barrier).success) return reject(current, 'COMMAND_REJECTED', 'Invalid barrier.');
