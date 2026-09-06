@@ -156,6 +156,47 @@ test('V9 serialized input rechecks transport ownership after catch-up yields', a
     } finally { registry.dispose(); }
 });
 
+test('V9 neutral cancel/release are owned opaque cursor fences and never consume input sequence', async () => {
+    const registry = new SessionRegistry({ simulationRulesetId: V9_RULESET_ID, simulationTickIntervalMs: false,
+        v9TestOnly: { nowUs: () => 0 } });
+    try {
+        registry.create('v9_neutral_owner_socket');
+        registry.create('v9_neutral_foreign_socket');
+        const owner = registry.getBound('v9_neutral_owner_socket')!;
+        const foreign = registry.getBound('v9_neutral_foreign_socket')!;
+        const created = registry.createChallengeAutomatedV9(owner, 'practice', 'wizard');
+        assert.equal('code' in created, false);
+        if ('code' in created) return;
+        const started = await registry.submitInputV9(owner, {
+            requestId: 'v9_neutral_walk_start_01', challengeId: created.challengeId,
+            rulesetId: V9_RULESET_ID, automationId: 'wp-015d3b-v9d-v1', inputSequence: 0,
+            expectedTurn: 0, expectedPhase: 'action', inputEpoch: 0, intent: { type: 'walk_start', direction: 1 }
+        });
+        assert.equal(started.ok, true);
+        const state = registry.activeSnapshotV9(owner)!.simulation;
+        const foreignResponse = await registry.cancelInputV9(foreign, {
+            requestId: 'v9_neutral_foreign_01', challengeId: created.challengeId,
+            rulesetId: V9_RULESET_ID, automationId: 'wp-015d3b-v9d-v1', expectedTurn: state.turn, inputEpoch: state.inputEpoch
+        });
+        assert.equal(foreignResponse.ok, false);
+        assert.equal(foreignResponse.nextInputSequence, 0);
+        const cancelled = await registry.cancelInputV9(owner, {
+            requestId: 'v9_neutral_cancel_01', challengeId: created.challengeId,
+            rulesetId: V9_RULESET_ID, automationId: 'wp-015d3b-v9d-v1', expectedTurn: state.turn, inputEpoch: state.inputEpoch
+        });
+        assert.equal(cancelled.ok, true);
+        assert.equal(cancelled.nextInputSequence, 1);
+        const replay = registry.replayForChallengeV9(owner, created.challengeId)!;
+        assert.equal(replay.records.some(record => record.operation.kind === 'barrier' && record.operation.barrier.reason === 'cancel'), true);
+        const staleRelease = await registry.releaseInputV9(owner, {
+            requestId: 'v9_neutral_release_01', challengeId: created.challengeId,
+            rulesetId: V9_RULESET_ID, automationId: 'wp-015d3b-v9d-v1', expectedTurn: state.turn, inputEpoch: state.inputEpoch
+        });
+        assert.equal(staleRelease.ok, true);
+        assert.equal(staleRelease.nextInputSequence, 1);
+    } finally { registry.dispose(); }
+});
+
 async function start(options: Parameters<typeof createRuntimeServer>[0] = {}) {
     const runtime = createRuntimeServer({ allowMissingOrigin: true, ...options });
     const port = await runtime.listen();

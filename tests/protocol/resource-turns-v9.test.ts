@@ -2,7 +2,7 @@ import assert from 'node:assert/strict';
 import test from 'node:test';
 
 import {
-    ChallengeCreateV9Schema, ChallengeLeaveV9Schema, ChallengePauseV9Schema, CoordinatorReplayV9Schema, InputRequestV9Schema, SimulationBarrierV9Schema, SimulationIntentV9Schema,
+    ChallengeCreateV9Schema, ChallengeLeaveV9Schema, ChallengePauseV9Schema, CoordinatorReplayV9Schema, InputCancelV9Schema, InputReleaseV9Schema, InputRequestV9Schema, SimulationBarrierV9Schema, SimulationIntentV9Schema,
     SimulationSnapshotV9Schema, V9_REPLAY_LIMITS
 } from '../../shared/protocol-v9';
 import { SimulationCoordinatorV9 } from '../../server/src/simulation/coordinator-v9';
@@ -46,6 +46,9 @@ test('V9D candidate lifecycle envelopes are strict, tagged, and separate from V7
         intent: { type: 'face', direction: 1 } }).success, true);
     assert.equal(InputRequestV9Schema.safeParse({ ...base, inputSequence: 0, expectedTurn: 0, expectedPhase: 'action', inputEpoch: 0,
         intent: { type: 'face', direction: 1 }, unknown: true }).success, false);
+    assert.equal(InputCancelV9Schema.safeParse({ ...base, expectedTurn: 0, inputEpoch: 0 }).success, true);
+    assert.equal(InputReleaseV9Schema.safeParse({ ...base, expectedTurn: 0, inputEpoch: 0 }).success, true);
+    assert.equal(InputCancelV9Schema.safeParse({ ...base, expectedTurn: 0, inputEpoch: 0, inputSequence: 0 }).success, false);
     assert.equal(ChallengePauseV9Schema.safeParse({ ...base, sequence: 0, paused: true }).success, true);
     assert.equal(ChallengeLeaveV9Schema.safeParse({ ...base, sequence: 0, automationId: 'stripped' }).success, false);
 });

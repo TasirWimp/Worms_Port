@@ -37,7 +37,7 @@ import { InputRequestV8RuntimeSchema as InputRequestV8Schema, InputCancelV8Runti
 import { VersionedSimulationCoordinator } from '../simulation/versioned-coordinator';
 import type { CoordinatorUpdateV8Family as CoordinatorUpdateV8, SimulationCoordinatorV8Options } from '../simulation/coordinator-v8';
 import { CandidateAckV9Schema, ChallengeResultV9Schema, ChallengeSnapshotV9Schema,
-    InputRequestV9Schema, V9_INPUT_BYTES, jsonBytesV9,
+    InputCancelV9Schema, InputRequestV9Schema, V9_INPUT_BYTES, jsonBytesV9,
     type CandidateAckV9, type ChallengeResultV9, type ChallengeSnapshotV9,
     type CoordinatorReplayV9, type CoordinatorReplayV9Automated } from '../../../shared/protocol-v9';
 import type { CoordinatorSnapshotV9, CoordinatorUpdateV9, SimulationCoordinatorV9Options } from '../simulation/coordinator-v9';
@@ -174,7 +174,8 @@ export class SessionRegistry {
         cache: Map<string, { hash: string; ack: InputAckV8 }>; cancels: Map<string,string>; releases: Map<string,string> }>();
     private readonly v8Locks = new Map<string, Promise<void>>();
     private readonly v8InInput = new Set<string>();
-    private readonly v9Inputs = new Map<string, { next: number; cache: Map<string, { hash: string; ack: CandidateAckV9 }> }>();
+    private readonly v9Inputs = new Map<string, { next: number; cache: Map<string, { hash: string; ack: CandidateAckV9 }>;
+        cancels: Map<string, string>; releases: Map<string, string> }>();
     private readonly v9Locks = new Map<string, Promise<void>>();
     private readonly v9InInput = new Set<string>();
 
@@ -564,17 +565,8 @@ export class SessionRegistry {
         calling: Challenge['calling'],
         reward?: { challengeId: string; seed: number }
     ): ChallengeSnapshotV9 | ProtocolError {
-        if (!this.v9Enabled || this.simulationRulesetId !== V9_RULESET_ID) {
-            return v8Error('FEATURE_UNAVAILABLE', 'The V9 candidate is unavailable.');
-        }
-        if (mode === 'reward' && !reward) {
-            return v8Error('FEATURE_UNAVAILABLE', 'A durable reward reservation is required.');
-        }
-        if (!this.boundSessionV9(session)) return v8Error('UNAUTHORIZED', 'The V9 session is not bound.');
-        this.sweep();
-        for (const current of session.challenges.values()) {
-            if (current.status === 'active') return v8Error('COMMAND_REJECTED', 'Finish or leave the current match first.');
-        }
+        const admission = this.admitChallengeAutomatedV9(session, mode, reward?.challengeId);
+        if (admission) return admission;
         const closed = [...session.challenges.keys()];
         while (closed.length > 1) {
             const id = closed.shift()!;
@@ -591,8 +583,27 @@ export class SessionRegistry {
             resultEmitted: false, settlementEmitted: false, playerCommandTurn: 0, playerCommandCount: 0
         };
         session.challenges.set(id, challenge);
-        this.v9Inputs.set(id, { next: 0, cache: new Map() });
+        this.v9Inputs.set(id, { next: 0, cache: new Map(), cancels: new Map(), releases: new Map() });
         return this.snapshotV9(session, challenge);
+    }
+
+    /**
+     * Checks every V9 creation condition before a reward reservation is moved
+     * in-progress.  It has no creation, cursor, or reward side effect.
+     */
+    public admitChallengeAutomatedV9(session: Session, mode: Challenge['mode'], rewardChallengeId?: string): ProtocolError | undefined {
+        this.sweep();
+        if (!this.v9Enabled || this.simulationRulesetId !== V9_RULESET_ID)
+            return v8Error('FEATURE_UNAVAILABLE', 'The V9 candidate is unavailable.');
+        if (mode === 'reward' && !rewardChallengeId)
+            return v8Error('FEATURE_UNAVAILABLE', 'A durable reward reservation is required.');
+        if (!this.boundSessionV9(session)) return v8Error('UNAUTHORIZED', 'The V9 session is not bound.');
+        for (const current of session.challenges.values()) {
+            if (current.status === 'active') return v8Error('COMMAND_REJECTED', 'Finish or leave the current match first.');
+        }
+        if (rewardChallengeId && session.challenges.has(rewardChallengeId))
+            return v8Error('COMMAND_REJECTED', 'The reward challenge identifier is no longer available.');
+        return undefined;
     }
 
     public hasChallengeV9(session: Session, id: string): boolean {
@@ -674,6 +685,16 @@ export class SessionRegistry {
         });
     }
 
+    /** Neutral V9 cancellation has its own lane and never consumes the input cursor. */
+    public async cancelInputV9(session: Session, payload: unknown): Promise<CandidateAckV9> {
+        return this.neutralInputV9(session, payload, 'cancel');
+    }
+
+    /** A V9 release stops ordinary held movement but preserves a committed leap. */
+    public async releaseInputV9(session: Session, payload: unknown): Promise<CandidateAckV9> {
+        return this.neutralInputV9(session, payload, 'walk_stop');
+    }
+
     public async setChallengePausedV9(session: Session, id: string, paused: boolean): Promise<ChallengeSnapshotV9 | ProtocolError> {
         if (!this.hasChallengeV9(session, id)) return v8Error('UNAUTHORIZED', 'V9 ownership required.');
         const socketId = session.socketId;
@@ -701,6 +722,55 @@ export class SessionRegistry {
         const result = this.resultV9(session, challenge, 'left');
         this.settleV9(session, challenge, result);
         return result;
+    }
+
+    private async neutralInputV9(
+        session: Session,
+        payload: unknown,
+        reason: 'cancel' | 'walk_stop'
+    ): Promise<CandidateAckV9> {
+        const raw = payload as Record<string, unknown> | undefined;
+        const requestId = safeRequestIdV8(raw?.requestId);
+        const id = typeof raw?.challengeId === 'string' ? raw.challengeId : '';
+        const fail = (code: ProtocolError['code'], message: string) =>
+            this.inputFailureV9(requestId, '', code, message);
+        if (jsonBytesV9(payload) > V9_INPUT_BYTES)
+            return fail('PAYLOAD_TOO_LARGE', 'V9 neutral input exceeds 1024 bytes.');
+        const parsed = InputCancelV9Schema.safeParse(payload);
+        if (!parsed.success) return fail('BAD_REQUEST', 'Invalid V9 neutral input envelope.');
+        if (!this.ownsChallengePacketV9(session, id, parsed.data))
+            return fail('UNAUTHORIZED', 'The exact V9 challenge is not owned by this session.');
+        const socketId = session.socketId;
+        return this.serialV9(id, async () => {
+            if (!this.boundSessionV9(session) || session.socketId !== socketId || !this.ownsChallengePacketV9(session, id, parsed.data))
+                return fail('UNAUTHORIZED', 'The V9 neutral input belongs to a disconnected transport.');
+            const challenge = this.activeChallenge(session, id);
+            if (isProtocolError(challenge)) return fail(challenge.code, challenge.message);
+            const cursor = this.v9Inputs.get(id)!;
+            const cache = reason === 'cancel' ? cursor.cancels : cursor.releases;
+            const digest = requestHash(parsed.data);
+            const cached = cache.get(requestId);
+            if (cached && cached !== digest)
+                return fail('REPLAY_CONFLICT', 'V9 neutral request ID has different content.');
+            if (!cached) {
+                try { await this.versions.v9.catchUp(id); }
+                catch { return fail('CHALLENGE_CLOSED', 'The V9 match is no longer available.'); }
+                if (!this.boundSessionV9(session) || session.socketId !== socketId || !this.ownsChallengePacketV9(session, id, parsed.data))
+                    return fail('UNAUTHORIZED', 'The V9 neutral input belongs to a disconnected transport.');
+                const state = this.versions.v9.get(id)?.state;
+                if (state && state.activeActor === 'player' && (state.phase === 'action' || state.phase === 'retreat') &&
+                    state.turn === parsed.data.expectedTurn && state.inputEpoch === parsed.data.inputEpoch) {
+                    this.v9InInput.add(id);
+                    try { this.versions.v9.barrier(id, { reason, actor: 'player', expectedTurn: state.turn, expectedEpoch: state.inputEpoch }); }
+                    finally { this.v9InInput.delete(id); }
+                }
+                cache.set(requestId, digest);
+                while (cache.size > 256) cache.delete(cache.keys().next().value!);
+            }
+            const response = this.v9Success(requestId, session, challenge);
+            this.publishV9(session, challenge);
+            return response;
+        });
     }
 
     public submitCommand(
@@ -1453,9 +1523,20 @@ export class SessionRegistry {
     }
     private settleV9(session: Session, challenge: Challenge, result: ChallengeResultV9): void {
         if (challenge.settlementEmitted) return;
+        const replay = this.replayForSettlementV9(session, challenge);
+        // Settlement owns the durable record and must run before close removes
+        // the coordinator.  Only mark the once flag once evidence is present.
+        if (!replay) return;
         challenge.settlementEmitted = true;
-        const replay = this.replayForChallengeV9(session, challenge.id);
         if (replay) this.onChallengeSettledV9?.(result, replay);
+    }
+
+    private replayForSettlementV9(session: Session, challenge: Challenge): CoordinatorReplayV9Automated | undefined {
+        if (this.sessions.get(session.id) !== session || challenge.rulesetId !== V9_RULESET_ID ||
+            challenge.automationId !== V9_AUTOMATION_ID || session.challenges.get(challenge.id) !== challenge)
+            return undefined;
+        const replay = this.versions.v9.replay(challenge.id);
+        return replay && 'automationId' in replay ? replay as CoordinatorReplayV9Automated : undefined;
     }
     private async serialV9<T>(id: string, operation: () => Promise<T>): Promise<T> {
         const previous = this.v9Locks.get(id) ?? Promise.resolve();

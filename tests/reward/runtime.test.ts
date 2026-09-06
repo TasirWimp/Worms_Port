@@ -105,6 +105,35 @@ test('V9 reward leave settles the durable record once even when socket delivery 
     } finally { socket.close(); await runtime.close(); }
 });
 
+test('V9 disconnected expiry settles from authority-owned replay before session close deletes it', async () => {
+    const store = new MemoryRewardStore();
+    const ids = ['v9_disconnect_challenge_01', 'v9_disconnect_entitlement_01'];
+    let now = Date.now(); let settled = 0;
+    const rewards = new RewardService(config(), store, { idSource: () => ids.shift()!, tokenSource: () => 't'.repeat(43), seedSource: () => 1 });
+    const runtime = createRuntimeServer({ allowMissingOrigin: true, rewards, sessionRegistry: {
+        now: () => now, challengeTtlMs: 1_000, reconnectGraceMs: 10_000, simulationRulesetId: V9_RULESET_ID,
+        simulationTickIntervalMs: false, v9TestOnly: { nowUs: () => 0 }, onChallengeSettledV9: () => { settled += 1; }
+    } });
+    const port = await runtime.listen(); const socket = io(`http://127.0.0.1:${port}`, { transports: ['websocket'] });
+    try {
+        await once(socket, 'connect'); await emitAck(socket, protocolEvents.sessionOpen, { requestId: 'v9_disconnect_session_open', action: 'create' });
+        const session = runtime.sessions.getBound(socket.id!)!;
+        const identity = { address: 'NQ46 KLJE 5TMF 4Y1A 1255 CJHJ YG1S H0NU T604', authorizedAt: new Date().toISOString() };
+        runtime.sessions.authorize(session, identity);
+        const reserve = await emitAck(socket, protocolEvents.rewardReserve, { requestId: 'v9_disconnect_reserve_01', sequence: 0, calling: 'wizard' });
+        const created = await emitAck(socket, protocolEventsV9.create, { requestId: 'v9_disconnect_create_01', sequence: 1,
+            mode: 'reward', calling: 'wizard', challengeId: reserve.data.challengeId, eligibilityToken: reserve.data.eligibilityToken,
+            rulesetId: V9_RULESET_ID, automationId: 'wp-015d3b-v9d-v1' });
+        assert.equal(created.ok, true);
+        socket.disconnect(); await new Promise(resolve => setTimeout(resolve, 10));
+        now += 1_001; runtime.sessions.sweep(); runtime.sessions.sweep();
+        assert.equal(settled, 1);
+        const retained = await store.status(reserve.data.reservationId, identity.address);
+        assert.equal(retained?.state, 'expired');
+        assert.equal(retained?.replay && 'automationId' in retained.replay && retained.replay.automationId, 'wp-015d3b-v9d-v1');
+    } finally { socket.close(); await runtime.close(); }
+});
+
 test('V9 runtime close settles an active reward before coordinator deletion', async () => {
     const store = new MemoryRewardStore();
     const ids = ['v9_close_challenge_01', 'v9_close_entitlement_01'];
@@ -127,6 +156,29 @@ test('V9 runtime close settles an active reward before coordinator deletion', as
         await runtime.close();
         assert.equal(settled, 1);
         assert.equal((await store.status(reserve.data.reservationId, identity.address))?.state, 'expired');
+    } finally { socket.close(); await runtime.close(); }
+});
+
+test('a valid V9 reward envelope is admitted before reservation start and leaves a V7 runtime reservation usable', async () => {
+    const store = new MemoryRewardStore();
+    const ids = ['v9_preflight_challenge_01', 'v9_preflight_entitlement_01'];
+    const rewards = new RewardService(config(), store, { idSource: () => ids.shift()!, tokenSource: () => 't'.repeat(43), seedSource: () => 1 });
+    const runtime = createRuntimeServer({ allowMissingOrigin: true, rewards, sessionRegistry: { simulationTickIntervalMs: false } });
+    const port = await runtime.listen(); const socket = io(`http://127.0.0.1:${port}`, { transports: ['websocket'] });
+    try {
+        await once(socket, 'connect'); await emitAck(socket, protocolEvents.sessionOpen, { requestId: 'v9_preflight_session_open', action: 'create' });
+        const session = runtime.sessions.getBound(socket.id!)!;
+        const identity = { address: 'NQ46 KLJE 5TMF 4Y1A 1255 CJHJ YG1S H0NU T604', authorizedAt: new Date().toISOString() };
+        runtime.sessions.authorize(session, identity);
+        const reserve = await emitAck(socket, protocolEvents.rewardReserve, { requestId: 'v9_preflight_reserve_01', sequence: 0, calling: 'wizard' });
+        const rejected = await emitAck(socket, protocolEventsV9.create, { requestId: 'v9_preflight_create_01', sequence: 1,
+            mode: 'reward', calling: 'wizard', challengeId: reserve.data.challengeId, eligibilityToken: reserve.data.eligibilityToken,
+            rulesetId: V9_RULESET_ID, automationId: 'wp-015d3b-v9d-v1' });
+        assert.equal(ChallengeCreateAckV9Schema.safeParse(rejected).success, true);
+        assert.equal(rejected.ok, false);
+        assert.equal((await store.status(reserve.data.reservationId, identity.address))?.state, 'reserved');
+        const started = await rewards.start(identity, reserve.data.challengeId, reserve.data.eligibilityToken);
+        assert.equal(started.state, 'in_progress');
     } finally { socket.close(); await runtime.close(); }
 });
 

@@ -35,7 +35,7 @@ import { protocolEventsV8, V8_AUTOMATION_ID, V8_INPUT_BYTES, jsonBytesV8,
     ChallengePauseV8RuntimeSchema as ChallengePauseV8Schema, ChallengeLeaveV8RuntimeSchema as ChallengeLeaveV8Schema,
     ChallengeCreateV8Schema, type ChallengeCreateAckV8, type InputAckV8Runtime as InputAckV8 } from '../../../shared/protocol-v8';
 import { CandidateAckV9Schema, ChallengeCreateAckV9Schema, ChallengeCreateV9Schema,
-    ChallengeLeaveV9Schema, ChallengePauseV9Schema, InputRequestV9Schema,
+    ChallengeLeaveV9Schema, ChallengePauseV9Schema, InputCancelV9Schema, InputReleaseV9Schema, InputRequestV9Schema,
     V9_INPUT_BYTES, jsonBytesV9, protocolEventsV9, type CandidateAckV9 } from '../../../shared/protocol-v9';
 
 type Ack = (response: ProtocolAck<unknown>) => void;
@@ -79,6 +79,8 @@ export function setupProtocol(
         const inputLimiterV8 = new TokenBucket(20, 20 / 1000);
         const cancelLimiterV8 = new TokenBucket(2, 4 / 1000);
         const releaseLimiterV8 = new TokenBucket(2, 4 / 1000);
+        const cancelLimiterV9 = new TokenBucket(2, 4 / 1000);
+        const releaseLimiterV9 = new TokenBucket(2, 4 / 1000);
         const invalidLimiter = new TokenBucket(5, 5 / 10_000);
         const rewardInfoLimiter = new TokenBucket(8, 8 / 60_000);
         const rewardReserveLimiter = new TokenBucket(3, 3 / 60_000);
@@ -119,7 +121,8 @@ export function setupProtocol(
             return session && typeof challengeId === 'string' ? registry.inputCursorV9(session, challengeId) : 0;
         };
         const candidateFailure = (payload: unknown, code: ProtocolError['code'], message: string): CandidateAckV9 =>
-            CandidateAckV9Schema.parse({ protocolVersion: 9, requestId: requestIdOf(payload),
+            CandidateAckV9Schema.parse({ protocolVersion: 9,
+                requestId: RequestIdSchema.safeParse(requestIdOf(payload)).success ? requestIdOf(payload) : 'invalid-request-0',
                 nextSequence: registry.getBound(socket.id)?.nextSequence ?? 0,
                 nextInputSequence: ownedV9InputCursor(payload), ok: false,
                 error: { code, message, retryable: code === 'RATE_LIMITED' } });
@@ -140,7 +143,8 @@ export function setupProtocol(
             }
             const v8 = event === protocolEventsV8.create || event === protocolEventsV8.input || event === protocolEventsV8.cancel || event === protocolEventsV8.release ||
                 event === protocolEventsV8.pause || event === protocolEventsV8.leave;
-            const v9 = event === protocolEventsV9.create || event === protocolEventsV9.input || event === protocolEventsV9.pause || event === protocolEventsV9.leave;
+            const v9 = event === protocolEventsV9.create || event === protocolEventsV9.input || event === protocolEventsV9.cancel || event === protocolEventsV9.release ||
+                event === protocolEventsV9.pause || event === protocolEventsV9.leave;
             if (v8 && jsonBytesV8(payload) > V8_INPUT_BYTES) {
                 ack?.(wireFailureV8(event,payload,'PAYLOAD_TOO_LARGE','V8 payload exceeds 1024 bytes.',registry.getBound(socket.id)?.nextSequence ?? 0,ownedInputCursor(payload)));
                 if (!invalidLimiter.take()) socket.disconnect(true);
@@ -152,11 +156,15 @@ export function setupProtocol(
                 next(new Error('V9 payload is too large.')); return;
             }
             // Neutral cancellation has its own small lane: normal flooding cannot spend its tokens.
-            if (event === protocolEventsV8.cancel || event === protocolEventsV8.release) {
-                const limiter = event === protocolEventsV8.cancel ? cancelLimiterV8 : releaseLimiterV8;
+            if (event === protocolEventsV8.cancel || event === protocolEventsV8.release || event === protocolEventsV9.cancel || event === protocolEventsV9.release) {
+                const limiter = event === protocolEventsV8.cancel ? cancelLimiterV8
+                    : event === protocolEventsV8.release ? releaseLimiterV8
+                        : event === protocolEventsV9.cancel ? cancelLimiterV9 : releaseLimiterV9;
                 if (!limiter.take()) {
-                    ack?.(inputFailure(payload,'RATE_LIMITED','V8 neutral lane is rate limited.'));
-                    next(new Error('V8 neutral rate limit exceeded.')); return;
+                    ack?.(event === protocolEventsV9.cancel || event === protocolEventsV9.release
+                        ? candidateFailure(payload, 'RATE_LIMITED', 'V9 neutral lane is rate limited.')
+                        : inputFailure(payload,'RATE_LIMITED','V8 neutral lane is rate limited.'));
+                    next(new Error('Neutral rate limit exceeded.')); return;
                 }
             } else if (!eventLimiter.take()) {
                 if (v8) {
@@ -264,6 +272,25 @@ export function setupProtocol(
                 ack(candidateFailure(payload, 'INTERNAL_ERROR', 'V9 input could not be completed.'));
             });
         });
+
+        for (const event of [protocolEventsV9.cancel, protocolEventsV9.release]) {
+            socket.on(event, (payload: unknown, ack?: (response: CandidateAckV9) => void) => {
+                if (typeof ack !== 'function') { guard(socket, payload, undefined, invalidLimiter); return; }
+                const session = registry.getBound(socket.id);
+                const schema = event === protocolEventsV9.cancel ? InputCancelV9Schema : InputReleaseV9Schema;
+                if (!session) { ack(candidateFailure(payload, 'UNAUTHORIZED', 'Open or resume a session first.')); return; }
+                if (!schema.safeParse(payload).success) {
+                    ack(candidateFailure(payload, 'BAD_REQUEST', 'Invalid V9 neutral input envelope.'));
+                    if (!invalidLimiter.take()) socket.disconnect(true);
+                    return;
+                }
+                void (event === protocolEventsV9.cancel
+                    ? registry.cancelInputV9(session, payload)
+                    : registry.releaseInputV9(session, payload)).then(ack).catch(() => {
+                    ack(candidateFailure(payload, 'INTERNAL_ERROR', 'V9 neutral input could not be completed.'));
+                });
+            });
+        }
 
         for (const event of [protocolEventsV9.pause, protocolEventsV9.leave]) {
             socket.on(event, (payload: unknown, ack?: (response: CandidateAckV9) => void) => {
@@ -706,6 +733,9 @@ export function setupProtocol(
             void registry.sequenceAsync(session, request.requestId, request.sequence, { event: protocolEventsV9.create, ...request }, async () => {
                 if (registry.getBound(socket.id) !== session)
                     return failure(request.requestId, 'UNAUTHORIZED', 'The creation transport is no longer bound.');
+                const admission = registry.admitChallengeAutomatedV9(session, request.mode,
+                    request.mode === 'reward' ? request.challengeId : undefined);
+                if (admission) return failure(request.requestId, admission.code, admission.message, admission.retryable);
                 let entitlement: Awaited<ReturnType<RewardService['start']>> | undefined;
                 try {
                     if (request.mode === 'reward') {
@@ -717,6 +747,13 @@ export function setupProtocol(
                                 challengeId: entitlement.challengeId, outcome: 'left', revision: 0, nextSequence: session.nextSequence,
                                 finalTick: null, finalStateHash: null }).catch(() => undefined);
                             return failure(request.requestId, 'UNAUTHORIZED', 'The creation transport disconnected.');
+                        }
+                        const rechecked = registry.admitChallengeAutomatedV9(session, request.mode, entitlement.challengeId);
+                        if (rechecked) {
+                            await options.rewards.completeMatch({ protocolVersion: 1, serverTimeMs: Date.now(), sessionId: session.id,
+                                challengeId: entitlement.challengeId, outcome: 'left', revision: 0, nextSequence: session.nextSequence,
+                                finalTick: null, finalStateHash: null }).catch(() => undefined);
+                            return failure(request.requestId, rechecked.code, rechecked.message, rechecked.retryable);
                         }
                     }
                     const created = registry.createChallengeAutomatedV9(session, request.mode, request.calling,
@@ -1205,6 +1242,8 @@ function authorizationIdOf(payload: unknown): string | undefined {
 const ALLOWED_CLIENT_EVENTS = new Set([
     protocolEventsV9.create,
     protocolEventsV9.input,
+    protocolEventsV9.cancel,
+    protocolEventsV9.release,
     protocolEventsV9.pause,
     protocolEventsV9.leave,
     protocolEventsV8.create,
