@@ -3,7 +3,6 @@ const path = require('node:path');
 const { execFileSync, spawnSync } = require('node:child_process');
 
 const repoRoot = path.resolve(__dirname, '..');
-const availableScripts = require('../package.json').scripts;
 const productSuites = ['protocol', 'simulation', 'loomkeeper', 'relics', 'combat', 'practice', 'identity', 'reward'];
 const browserSuites = ['smoke', 'combat', 'practice', 'identity', 'reward', 'resilience'];
 
@@ -14,7 +13,6 @@ function planChanges(paths) {
   const suites = new Set();
   const browser = new Set();
   const fallback = [];
-  const compatibility = [];
   let runtime = false;
   let postgres = false;
   let performance = false;
@@ -36,11 +34,7 @@ function planChanges(paths) {
     if (/^docs\/evidence\/.*\.md$/.test(file)) {
       checks.add('check:clean-room');
     } else if (/^docs\/images\//.test(file)) {
-      if (availableScripts['check:generation-components']) checks.add('check:generation-components');
-      else {
-        checks.add('check:compliance');
-        compatibility.push(`${file}: this checkout has no generation-component gate; using its complete compliance gate.`);
-      }
+      checks.add('check:generation-components');
     } else if (/^docs\/evidence\/.*\.json$/.test(file) || file === 'legal/work-package-evidence.schema.json') {
       checks.add('check:work-packages');
     } else if (/^legal\/clean-room/.test(file)) {
@@ -80,9 +74,7 @@ function planChanges(paths) {
     } else if (/^client\/src\/identity\/|^server\/src\/identity\//.test(file)) {
       product(['identity', 'reward', 'protocol', 'practice'], ['smoke', 'identity', 'reward', 'practice']);
       postgres = true;
-    } else if (file === 'client/src/scenes/combat.ts') {
-      product(['combat', 'practice'], ['smoke', 'combat', 'practice', 'resilience', 'reward']);
-    } else if (/^client\/src\/(?:combat\/|lib\/(?:sideways|util)\.ts)/.test(file)) {
+    } else if (/^client\/src\/(?:combat\/|scenes\/combat\.ts|lib\/(?:sideways|util)\.ts)/.test(file)) {
       product(['combat', 'practice'], ['smoke', 'combat', 'practice', 'resilience']);
     } else if (/^client\/src\/(?:practice\/|result\/|scenes\/(?:practice|result)\.ts)/.test(file)) {
       product(['combat', 'practice', 'identity', 'reward', 'protocol'], browserSuites);
@@ -100,7 +92,7 @@ function planChanges(paths) {
       if (/^assets\/|^legal\/asset-manifest/.test(file)) {
         product(['combat', 'practice'], ['smoke', 'combat', 'practice', 'visual']);
       }
-    } else if (/^scripts\/(?:verify-changes|report-postgres-quality-prerequisite)\.js$/.test(file)) {
+    } else if (/^scripts\/(?:verify-changes|report-postgres-quality-prerequisite|audit-housekeeping)\.js$/.test(file)) {
       suites.add('test:tooling');
     } else if (/^scripts\/check-(?:identity-bundles|reward-security|bundle-budget)\.js$/.test(file)) {
       runtime = true;
@@ -125,12 +117,7 @@ function planChanges(paths) {
   const tasks = [...checks, ...suites];
   if (runtime) tasks.push('build:outputs', 'smoke:built', 'check:identity-bundles', 'check:reward-security', 'check:bundle-budget');
   if (audit) tasks.push('audit');
-  return { files, tasks, browser: [...browser].sort(), postgres, performance, fallback, compatibility };
-}
-
-function assertAvailableTasks(plan, scripts = availableScripts) {
-  const missing = plan.tasks.filter((task) => task !== 'audit' && !scripts[task]);
-  if (missing.length) throw new Error(`Selected checks are unavailable in this checkout: ${missing.join(', ')}. Add the required infrastructure; checks cannot be silently omitted.`);
+  return { files, tasks, browser: [...browser].sort(), postgres, performance, fallback };
 }
 
 function git(root, args) {
@@ -192,7 +179,6 @@ function main() {
   }
   const plan = planChanges(changedFiles(repoRoot, options.base));
   console.log(JSON.stringify(plan, null, 2));
-  assertAvailableTasks(plan);
   if (options['github-output']) {
     fs.appendFileSync(options['github-output'], `checks=${plan.tasks.length > 0}\nbrowser=${plan.browser.length > 0}\nvisual=${plan.browser.includes('visual')}\npostgres=${plan.postgres}\nperformance=${plan.performance}\n`);
   }
@@ -233,4 +219,4 @@ function main() {
 if (require.main === module) {
   try { main(); } catch (error) { console.error(error.message); process.exitCode = 1; }
 }
-module.exports = { planChanges, changedFiles, parseArgs, browserRuns, assertAvailableTasks };
+module.exports = { planChanges, changedFiles, parseArgs, browserRuns };

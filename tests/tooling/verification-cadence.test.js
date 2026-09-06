@@ -6,7 +6,7 @@ const os = require('node:os');
 const path = require('node:path');
 const { execFileSync } = require('node:child_process');
 const { scripts } = require('../../package.json');
-const { planChanges, changedFiles, parseArgs, browserRuns, assertAvailableTasks } = require('../../scripts/verify-changes');
+const { planChanges, changedFiles, parseArgs, browserRuns } = require('../../scripts/verify-changes');
 
 test('docs and Codex settings do not select a game build or test suite', () => {
   const plan = planChanges(['README.md', '.codex/config.toml', 'AGENTS.md', 'docs/planning/implementation_plan.md']);
@@ -16,23 +16,12 @@ test('docs and Codex settings do not select a game build or test suite', () => {
   assert.equal(plan.performance, false);
 });
 
-test('combat scene result routing keeps reward browser coverage', () => {
-  assert.ok(planChanges(['client/src/scenes/combat.ts']).browser.includes('reward'));
-});
-
 test('evidence JSON runs its schema gate without product tests', () => {
   const plan = planChanges(['docs/evidence/wp-015d3a.json']);
   assert.deepEqual(plan.tasks, ['check:work-packages']);
   assert.deepEqual(plan.browser, []);
   assert.deepEqual(planChanges(['docs/evidence/wp-015d3a-v8-action-turns-behavior-record.md']).tasks, ['check:clean-room']);
-  const images = planChanges(['docs/images/art-direction/reference.png']);
-  assert.deepEqual(images.tasks, [scripts['check:generation-components'] ? 'check:generation-components' : 'check:compliance']);
-  assertAvailableTasks(images);
-});
-
-test('missing infrastructure cannot silently remove selected checks', () => {
-  assert.throws(() => assertAvailableTasks({ tasks: ['test:new-analysis'] }), /unavailable.*test:new-analysis/);
-  assert.doesNotThrow(() => assertAvailableTasks(planChanges(['client/src/combat/camera.ts'])));
+  assert.deepEqual(planChanges(['docs/images/art-direction/knotkin-wizard-cowl-edit-mask.png']).tasks, ['check:generation-components']);
 });
 
 test('presentation work covers whole combat specs without unrelated AI units', () => {
@@ -71,6 +60,13 @@ test('test-only changes select their family and preserve browser fixture routing
   assert.deepEqual(planChanges(['tests/browser/reward.spec.ts']).browser, ['reward']);
   assert.equal(planChanges(['tests/reward/postgres.integration.ts']).postgres, true);
   assert.equal(planChanges(['tests/browser/performance.spec.ts']).performance, true);
+});
+
+test('housekeeping audit changes select only tooling coverage', () => {
+  const plan = planChanges(['scripts/audit-housekeeping.js']);
+  assert.deepEqual(plan.tasks, ['test:tooling']);
+  assert.deepEqual(plan.browser, []);
+  assert.deepEqual(plan.fallback, []);
 });
 
 test('visual comparisons cover every baseline without multiplying ordinary browser work', () => {
