@@ -43,6 +43,39 @@ function pendingSupportEpisode(status = 'open') {
   };
 }
 
+function reducedSupportEpisode() {
+  const sourceS1 = { commit: 'abcdef0', paths: ['scripts/check-work-package-evidence.js'] };
+  const sourceS2 = { commit: 'abcdef1', paths: ['scripts/check-work-package-evidence.js'] };
+  return {
+    id: 'reduced-support',
+    status: 'reduced',
+    participants: [
+      { id: 'implementer', requested: { model: 'gpt-5.6-terra', effort: 'high' }, runtime: { status: 'unknown' } },
+      { id: 'advisor', requested: { model: 'gpt-6-astra', effort: 'high' }, runtime: { status: 'unknown' } }
+    ],
+    source_binding: { ...sourceS2, relationship: 'Tooling support is scoped to this repository source.' },
+    exchanges: [
+      {
+        id: 'request', from: 'implementer', to: 'advisor', source: sourceS1,
+        probe: 'Does this record align with the schema?', remaining_uncertainty: 'The correction is pending.',
+        consequential: true, recipient_disposition: { status: 'received', detail: 'Advisor returned a bounded correction.' }
+      },
+      {
+        id: 'reply', from: 'advisor', to: 'implementer', source: sourceS1,
+        probe: 'Keep source checks structural.', remaining_uncertainty: 'Manual currentness review remains required.',
+        consequential: false
+      }
+    ],
+    closure: {
+      source_currentness: { ...sourceS2, manual_candidate_review: 'The declared candidate was inspected.' },
+      distinction: 'Recorded binding consistency is not a runtime or semantic claim.',
+      evidence: ['tests/tooling/work-package-evidence.test.js'],
+      support_assumptions: ['The exchange record is accurate.'],
+      reopen_cue: 'Reopen when source or unresolved obligations change.'
+    }
+  };
+}
+
 test('work-package evidence enforces schema fields and clean-room linkage', () => {
   assert.deepEqual(validateEvidence([base], [], () => hash), []);
   assert.match(validateEvidence([{ ...base, unexpected: true }], [], () => hash).join('\n'), /unexpected field/);
@@ -112,6 +145,91 @@ test('support episodes retain an open request before reciprocal reduction', () =
     /requires at least one recorded exchange/
   );
 });
+
+for (const { name, episode, expected } of [
+  {
+    name: 'a numeric source-binding commit',
+    episode: () => ({ ...pendingSupportEpisode(), source_binding: { ...pendingSupportEpisode().source_binding, commit: 1234567 } }),
+    expected: /same-repository source binding/
+  },
+  {
+    name: 'a numeric exchange-source commit',
+    episode: () => {
+      const open = pendingSupportEpisode();
+      return { ...open, exchanges: [{ ...open.exchanges[0], source: { ...open.exchanges[0].source, commit: 1234567 } }] };
+    },
+    expected: /requires source, probe, and remaining uncertainty/
+  },
+  {
+    name: 'a numeric closure-currentness commit',
+    episode: () => {
+      const reduced = reducedSupportEpisode();
+      return { ...reduced, closure: { ...reduced.closure, source_currentness: { ...reduced.closure.source_currentness, commit: 1234567 } } };
+    },
+    expected: /closure requires bound source currentness/
+  },
+  ...['model', 'effort'].map((field) => ({
+    name: `a numeric optional runtime ${field} when runtime is unknown`,
+    episode: () => {
+      const open = pendingSupportEpisode();
+      return { ...open, participants: open.participants.map((participant, index) => index === 0
+        ? { ...participant, runtime: { ...participant.runtime, [field]: 1234567 } }
+        : participant) };
+    },
+    expected: new RegExp(`runtime ${field}.*non-empty string`)
+  })),
+  {
+    name: 'a nonconsequential disposition with invalid status',
+    episode: () => {
+      const open = pendingSupportEpisode();
+      return { ...open, exchanges: [{ ...open.exchanges[0], consequential: false, recipient_disposition: { status: 'invalid', detail: 'Recorded optional disposition.' } }] };
+    },
+    expected: /recipient disposition requires received or pending status and detail/
+  },
+  {
+    name: 'a consequential disposition with invalid status',
+    episode: () => {
+      const open = pendingSupportEpisode();
+      return { ...open, exchanges: [{ ...open.exchanges[0], recipient_disposition: { status: 'invalid', detail: 'Recorded consequential disposition.' } }] };
+    },
+    expected: /consequential exchange requires received or pending recipient disposition/
+  },
+  {
+    name: 'a nonconsequential disposition with numeric detail',
+    episode: () => {
+      const open = pendingSupportEpisode();
+      return { ...open, exchanges: [{ ...open.exchanges[0], consequential: false, recipient_disposition: { status: 'received', detail: 1234567 } }] };
+    },
+    expected: /recipient disposition requires received or pending status and detail/
+  },
+  {
+    name: 'a nonconsequential disposition with an unexpected field',
+    episode: () => {
+      const open = pendingSupportEpisode();
+      return { ...open, exchanges: [{ ...open.exchanges[0], consequential: false, recipient_disposition: { status: 'received', detail: 'Recorded optional disposition.', invented: true } }] };
+    },
+    expected: /recipient disposition: unexpected field invented/
+  },
+  {
+    name: 'a null nonconsequential disposition',
+    episode: () => {
+      const open = pendingSupportEpisode();
+      return { ...open, exchanges: [{ ...open.exchanges[0], consequential: false, recipient_disposition: null }] };
+    },
+    expected: /recipient disposition requires received or pending status and detail/
+  },
+  ...[
+    ['null', null], ['false', false], ['zero', 0], ['empty-string', ''], ['array', []]
+  ].map(([kind, closure]) => ({
+    name: `a ${kind} closure on open support`,
+    episode: () => ({ ...pendingSupportEpisode(), closure }),
+    expected: /closure must be an object when present/
+  }))
+]) {
+  test(`support episodes reject ${name}`, () => {
+    assert.match(validateEvidence([{ ...base, support_episodes: [episode()] }], [], () => hash).join('\n'), expected);
+  });
+}
 
 test('support episodes retain reciprocal source-bound support without substituting for final review', () => {
   const sourceS1 = { commit: 'abcdef0', paths: ['scripts/check-work-package-evidence.js'] };

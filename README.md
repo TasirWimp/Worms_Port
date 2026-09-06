@@ -1037,6 +1037,12 @@ GPT-6 Astra/high. [Task model routing](AGENTS.md#task-model-routing) selects by
 scope, requires a recorded reason and escalates difficult failures without
 weakening verification. V9B uses Terra implementers and an Astra reviewer.
 
+WP-016 adds [native reciprocal support](docs/process/development_workflow.md#adaptive-support-during-implementation-wp-016)
+during implementation. The unpinned read-only support advisor can use Terra,
+Sol or Astra at a task-relative effort. Participants exchange local evidence
+and revise boundaries before final review; the advisor cannot independently
+approve its own solution. Consequential returns stay in package evidence.
+
 Codex must trust the project to load local settings. Existing task selections,
 explicit invocation overrides and managed settings can supersede project
 defaults; changing this file does not switch a running task. Custom role model
@@ -1056,6 +1062,7 @@ Role-specific Codex agents live in `.codex/agents/`:
 - `worms_port_compliance_keeper`
 - `worms_port_docs_keeper`
 - `worms_port_reviewer`
+- `worms_port_support_advisor`
 
 See `AGENTS.md` and `docs/planning/implementation_plan.md` for role routing.
 
