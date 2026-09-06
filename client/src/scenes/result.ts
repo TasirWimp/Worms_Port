@@ -2,6 +2,7 @@ import Phaser from 'phaser';
 
 import type { ChallengeResult, RewardUpdateData } from '../../../shared/protocol';
 import type { ChallengeResultV8Automated } from '../../../shared/protocol-v8';
+import type { ChallengeResultV9 } from '../../../shared/protocol-v9';
 import type { PlayerCalling } from '../../../shared/simulation';
 import { canRequestFullscreen, toggleGameFullscreen } from '../combat/fullscreen';
 import { activeSidewaysMode } from '../lib/sideways';
@@ -11,7 +12,7 @@ import {
 } from '../practice/client';
 
 export type ResultSceneArgs = {
-    result?: ChallengeResult | ChallengeResultV8Automated;
+    result?: ChallengeResult | ChallengeResultV8Automated | ChallengeResultV9;
     calling: PlayerCalling;
     message?: string;
     rewarded?: boolean;
@@ -255,7 +256,7 @@ function formatNim(luna: string): string {
     return fraction ? `${whole}.${fraction}` : whole.toString();
 }
 
-function resultTitle(outcome: ChallengeResult['outcome'] | undefined): string {
+function resultTitle(outcome: ChallengeResult['outcome'] | ChallengeResultV9['outcome'] | undefined): string {
     if (outcome === 'player_win') return 'Grand Knot!';
     if (outcome === 'loomkeeper_win') return 'The Loomkeeper prevailed';
     if (outcome === 'draw') return 'Threads tied';
@@ -263,7 +264,7 @@ function resultTitle(outcome: ChallengeResult['outcome'] | undefined): string {
     return outcome ? 'Practice interrupted' : 'Reward status';
 }
 
-function resultCopy(outcome: ChallengeResult['outcome'] | undefined): string {
+function resultCopy(outcome: ChallengeResult['outcome'] | ChallengeResultV9['outcome'] | undefined): string {
     if (outcome === 'player_win') return 'Your skill unraveled the Loomkeeper.';
     if (outcome === 'loomkeeper_win') return 'Restitch and try a different line.';
     if (outcome === 'draw') return 'The turn limit closed this Clash evenly.';

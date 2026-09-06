@@ -3,6 +3,8 @@ import type { SimulationCommand } from '../../../shared/simulation';
 import type { ChallengeSnapshotV8Runtime as ChallengeSnapshotV8, ChallengeResultV8Runtime as ChallengeResultV8 } from '../../../shared/protocol-v8';
 import type { SimulationIntentV8Family as SimulationIntentV8 } from '../../../shared/simulation-v8';
 import type { SimulationEventV9, SimulationIntentV9, SimulationStateV9 } from '../../../shared/simulation-v9';
+import type { ChallengeResultV9 } from '../../../shared/protocol-v9';
+import type { PlayerCalling } from '../../../shared/simulation';
 
 export type CombatCommandSubmitter = (
     command: SimulationCommand,
@@ -42,19 +44,29 @@ export type CombatSceneArgsV8 = {
     previewLabel?: string;
 };
 
-export type CombatSceneArgs = LegacyCombatSceneArgs | CombatSceneArgsV8;
+export type CombatSceneArgs = LegacyCombatSceneArgs | CombatSceneArgsV8 | CombatSceneArgsV9;
 
 /** Local-only V9C engineering preview contract. It carries no session or transport facts. */
 export type CombatSceneArgsV9 = {
     kind: 'v9'; snapshot: SimulationStateV9; previewLabel: string;
+    rewarded?: boolean;
+    calling?: PlayerCalling;
     submit: (intent: SimulationIntentV9) => Promise<SimulationStateV9>;
     setPaused: (paused: boolean) => Promise<SimulationStateV9>;
     cancelInput: () => Promise<SimulationStateV9>;
+    releaseMovement?: () => Promise<SimulationStateV9>;
     /** Local presentation state only; V9 deliberately has no transport envelope. */
     paused: () => boolean;
+    inputReady?: () => boolean;
+    pauseAllowed?: () => boolean;
+    pauseReason?: () => string | undefined;
     /** Re-entry creates a fresh local authority fixture after the old one is torn down. */
     restart: () => Promise<CombatSceneArgsV9>;
     onSnapshot: (listener: (snapshot: SimulationStateV9, events: SimulationEventV9[]) => void) => () => void;
+    onResult?: (listener: (result: ChallengeResultV9) => void) => () => void;
+    onConnection?: (listener: (state: 'connected' | 'reconnecting') => void) => () => void;
+    onUnavailable?: (listener: (message: string) => void) => () => void;
+    onError?: (listener: (message: string) => void) => () => void;
     destroy: () => void;
 };
 
@@ -76,6 +88,7 @@ export class V9PreviewListenerCleanup {
     handler: (...args: any[]) => void): void {
         target.once(event, handler); this.removers.push(() => target.off(event, handler));
     }
+    public defer(remove: () => void): void { this.removers.push(remove); }
     public dispose(): void { for (const remove of this.removers.splice(0)) remove(); }
 }
 

@@ -7,8 +7,9 @@ import { computeActorStatusLayout, type CombatLayout } from './layout';
 type ActionChoice = 'threadball' | 'needlepoint' | 'spoolburst' | 'threadguard' | 'threadleap' | null;
 type ActionMenu = 'closed' | 'root' | 'attack' | 'defense';
 type Callbacks = {
-    submit: (intent: SimulationIntentV9) => Promise<boolean>; pause: (paused: boolean) => void; neutral: () => void;
+    submit: (intent: SimulationIntentV9) => Promise<boolean>; pause: (paused: boolean) => void; neutral: () => void; release?: () => void;
     preview?: (aim: AimIntent | null) => void; focus?: (actor: 'player' | 'loomkeeper') => void; restart?: () => void;
+    inputReady?: () => boolean; pauseAllowed?: () => boolean; pauseReason?: () => string | undefined; live?: boolean;
 };
 
 /** V9 gesture ownership is local, generation-guarded, and always yields to authority. */
@@ -59,7 +60,7 @@ export class ResourceTurnsV9Controls {
             inputEpoch: String(state.inputEpoch), selectedRelic: state.selectedRelic, terminal: String(this.terminal()) });
         this.element('.combat-turn').textContent = this.phaseCopy();
         this.element('.v9-thread').textContent = `Thread ${facts.player.thread}`;
-        this.element('.combat-timer').textContent = this.terminal() ? 'Preview ended' : `${Math.max(0, state.phaseDeadlineTick - state.tick)} ticks left`;
+        this.element('.combat-timer').textContent = this.terminal() ? (this.callbacks.live ? 'Clash ended' : 'Preview ended') : `${Math.max(0, state.phaseDeadlineTick - state.tick)} ticks left`;
         this.setCard('.player-status', 'You', 'You', player.stitching, player.thread, player.shield, player.shieldExpiresTurn);
         this.setCard('.loomkeeper-status', 'Loom', 'Loomkeeper', state.units[1].stitching, state.units[1].thread, state.units[1].shield, state.units[1].shieldExpiresTurn);
         this.receipts = appendV9DamageReceipts(this.receipts, events);
@@ -71,11 +72,11 @@ export class ResourceTurnsV9Controls {
         const movement = this.element('.movement-zone'), aim = this.element('.aim-zone');
         movement.toggleAttribute('data-disabled', !action); movement.setAttribute('aria-disabled', String(!action));
         aim.toggleAttribute('data-disabled', !offense); aim.setAttribute('aria-disabled', String(!offense));
-        this.button('.pause-button').disabled = !this.pauseAllowed() && !paused; this.button('.pause-button').textContent = paused ? 'Resume' : 'Pause';
+        this.button('.pause-button').disabled = !(this.callbacks.pauseAllowed?.() ?? this.pauseAllowed()) && !paused; this.button('.pause-button').textContent = paused ? 'Resume' : 'Pause';
         this.element('.v9-pause-sheet').hidden = !paused && !this.terminal();
         this.element('.v9-pause-sheet strong').textContent = this.terminal()
             ? this.terminalGuidance()
-            : 'Preview paused · the local tick clock is stopped.';
+            : this.callbacks.live ? 'Practice paused · the authoritative clock is stopped.' : 'Preview paused · the local tick clock is stopped.';
         this.refreshActions(); this.positionCards(); return changed;
     }
 
@@ -132,7 +133,7 @@ export class ResourceTurnsV9Controls {
         const movement = this.element('.movement-zone');
         this.listen(movement, 'pointerdown', event => { if (!this.canAct() || event.button > 0) return; const point = this.point(event); if (this.movement.beginMovement(event.pointerId, point, this.layout?.movementZone ?? movement.getBoundingClientRect())) this.capture(movement, event.pointerId); });
         this.listen(movement, 'pointermove', event => { if (this.movement.moveMovement(event.pointerId, this.point(event), this.movementFacts(), this.now())) this.pollMovement(); });
-        const end = (event: PointerEvent) => { const result = this.movement.finishMovement(event.pointerId); if (!result) return; if (result.face) this.request({ type: 'face', direction: result.face }); else if (result.release) this.request({ type: 'walk_stop' }); };
+        const end = (event: PointerEvent) => { const result = this.movement.finishMovement(event.pointerId); if (!result) return; if (result.face) this.request({ type: 'face', direction: result.face }); else if (result.release) this.callbacks.release ? this.callbacks.release() : this.request({ type: 'walk_stop' }); };
         this.listen(movement, 'pointerup', end); this.listen(movement, 'pointercancel', () => { this.movement.interrupt(); this.callbacks.neutral(); });
         const aim = this.element('.aim-zone');
         this.listen(aim, 'pointerdown', event => { if (!this.canOffend() || event.button > 0) return; this.capture(aim, event.pointerId); if (this.aim.begin('aim', event.pointerId, this.point(event), Math.min(aim.clientWidth, aim.clientHeight) / 2)) this.callbacks.preview?.(this.aim.aimIntent()); });
@@ -145,7 +146,7 @@ export class ResourceTurnsV9Controls {
     private retireOwnership(): void { this.generation++; this.aim.cancel(); this.aim.clearAim(); this.movement.interrupt(); this.choice = null; this.menu = 'closed'; this.refreshPending = false; this.callbacks.preview?.(null); }
     private boundaryFor(state: SimulationStateV9, paused: boolean): string { return [state.turn, state.activeActor, state.phase, state.inputEpoch, paused, this.terminal(state), state.castUsed, state.utilityUsed, state.selectedRelic].join(':'); }
     private terminal(state = this.state): boolean { return state.phase === 'finished' || state.winner !== null; }
-    private canAct(): boolean { return !this.destroyed && !this.paused && !this.terminal() && this.state.activeActor === 'player' && (this.state.phase === 'action' || this.state.phase === 'retreat'); }
+    private canAct(): boolean { return !this.destroyed && !this.paused && !this.terminal() && (this.callbacks.inputReady?.() ?? true) && this.state.activeActor === 'player' && (this.state.phase === 'action' || this.state.phase === 'retreat'); }
     private canOffend(): boolean { return v9OffenseAllowed(this.state, this.paused); }
     private choiceCost(choice: Exclude<ActionChoice, null>): number { return choice === 'spoolburst' ? 5 : choice === 'needlepoint' ? 3 : 2; }
     private choiceAffordable(choice = this.choice): boolean { return choice === null || this.state.units[0].thread >= this.choiceCost(choice); }
@@ -162,11 +163,11 @@ export class ResourceTurnsV9Controls {
     private offenseAllowed(state: SimulationStateV9): boolean { return v9OffenseAllowed(state, this.paused); }
     private pauseAllowed(): boolean { return this.state.activeActor === 'player' && this.state.phase === 'action' && !this.terminal(); }
     private movementFacts() { const player = this.state.units[0]; return { grounded: player.grounded, facing: player.facing, heldDirection: this.state.heldDirection, lane: this.canAct() ? (this.state.heldDirection ? 'locomotion' : 'ready') : 'blocked' } as const; }
-    private unavailableReason(offense: boolean, utility: boolean): string { if (this.terminal()) return this.terminalGuidance(); if (this.paused) return 'Preview paused. Resume before acting.'; if (this.state.activeActor === 'loomkeeper') return 'Loomkeeper behavior is deferred to V9D; this local preview does not simulate a response.'; if (this.state.phase === 'retreat') return 'Retreat phase: movement only until the authority deadline.'; if (this.armedUseReason()) return this.armedUseReason()!; if (this.choice && this.choiceLegal(this.choice)) return `${this.useLabel(this.choice)} is ready.`; if (!offense && this.state.heldDirection) return 'Release movement before aiming, selecting a Relic, or using a utility.'; if (!utility && (this.state.castUsed || this.state.utilityUsed)) return 'That turn has already used its Relic or utility.'; return 'Choose Actions for Attack or Defense. Costs are paid only after Use is accepted.'; }
+    private unavailableReason(offense: boolean, utility: boolean): string { if (this.terminal()) return this.terminalGuidance(); if (this.paused) return this.callbacks.live ? 'Practice paused. Resume after authoritative acceptance.' : 'Preview paused. Resume before acting.'; if (this.callbacks.pauseReason?.() && this.state.activeActor === 'player') return this.callbacks.pauseReason()!; if (this.state.activeActor === 'loomkeeper') return this.callbacks.live ? 'Loomkeeper is choosing the authoritative response.' : 'Loomkeeper behavior is deferred to V9D; this local preview does not simulate a response.'; if (this.state.phase === 'retreat') return 'Retreat phase: movement only until the authority deadline.'; if (this.armedUseReason()) return this.armedUseReason()!; if (this.choice && this.choiceLegal(this.choice)) return `${this.useLabel(this.choice)} is ready.`; if (!offense && this.state.heldDirection) return 'Release movement before aiming, selecting a Relic, or using a utility.'; if (!utility && (this.state.castUsed || this.state.utilityUsed)) return 'That turn has already used its Relic or utility.'; return 'Choose Actions for Attack or Defense. Costs are paid only after Use is accepted.'; }
     private useLabel(choice: Exclude<ActionChoice, null>): string { return choice === 'threadguard' ? 'Use Guard · 2 Thread' : choice === 'threadleap' ? 'Use Leap · 2 Thread' : `Use ${relicLabel(choice)}`; }
-    private lifecycleGuidance(): string | undefined { if (this.terminal()) return this.terminalGuidance(); if (this.state.activeActor === 'loomkeeper') return 'Loomkeeper behavior is deferred to V9D; this local preview does not simulate a response.'; return undefined; }
-    private terminalGuidance(): string { const outcome = this.state.winner === 'player' ? 'You won' : this.state.winner === 'loomkeeper' ? 'Loomkeeper won' : this.state.winner === 'draw' ? 'The clash ended in a draw' : 'The local preview ended'; return this.state.finishReason === 'simulation_limit' ? 'Lifecycle safety limit reached. Start a fresh local preview.' : `${outcome} by authoritative ${this.state.finishReason ?? 'terminal'} outcome. Start a fresh local preview.`; }
-    private phaseCopy(): string { if (this.terminal()) return this.terminalGuidance(); if (this.paused) return 'Preview paused'; return this.state.activeActor === 'player' ? `You · ${this.state.phase}` : `Loomkeeper · ${this.state.phase} · V9D deferred`; }
+    private lifecycleGuidance(): string | undefined { if (this.terminal()) return this.terminalGuidance(); if (this.state.activeActor === 'loomkeeper') return this.callbacks.live ? 'Loomkeeper is choosing the authoritative response.' : 'Loomkeeper behavior is deferred to V9D; this local preview does not simulate a response.'; return undefined; }
+    private terminalGuidance(): string { const outcome = this.state.winner === 'player' ? 'You won' : this.state.winner === 'loomkeeper' ? 'Loomkeeper won' : this.state.winner === 'draw' ? 'The clash ended in a draw' : this.callbacks.live ? 'The candidate Clash ended' : 'The local preview ended'; return this.state.finishReason === 'simulation_limit' ? `Lifecycle safety limit reached. ${this.callbacks.live ? 'Start a fresh Practice Clash.' : 'Start a fresh local preview.'}` : `${outcome} by authoritative ${this.state.finishReason ?? 'terminal'} outcome. ${this.callbacks.live ? 'Start a fresh Practice Clash.' : 'Start a fresh local preview.'}`; }
+    private phaseCopy(): string { if (this.terminal()) return this.terminalGuidance(); if (this.paused) return this.callbacks.live ? 'Practice paused' : 'Preview paused'; return this.state.activeActor === 'player' ? `You · ${this.state.phase}` : this.callbacks.live ? `Loomkeeper · ${this.state.phase}` : `Loomkeeper · ${this.state.phase} · V9D deferred`; }
     private positionCards(): void { if (!this.layout) return; const positions = computeActorStatusLayout(this.layout, projectCombatV9(this.state).units); for (const [selector, rect] of [['.player-status', positions.player], ['.loomkeeper-status', positions.loomkeeper]] as const) { const element = this.element(selector); element.hidden = !rect; if (rect) this.place(element, rect); } }
     private setCard(selector: string, displayName: string, accessibleName: string, stitching: number, thread: number, shield: number, shieldExpiresTurn: number | null): void {
         const shieldLabel = shield > 0 ? `Shield ${shield} · expires turn ${shieldExpiresTurn}` : 'Shield inactive';

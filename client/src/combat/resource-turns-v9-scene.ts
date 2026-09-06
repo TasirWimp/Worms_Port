@@ -27,11 +27,24 @@ export class ResourceTurnsV9Scene {
         this.state = structuredClone(args.snapshot); createApprovedWizardAnimations(scene); this.renderer = new CombatRenderer(scene);
         this.camera = cameraForActor(projectCombatV9(this.state), createCombatCamera(projectCombatV9(this.state)), 'player');
         this.controls = new ResourceTurnsV9Controls(document.getElementById('game')!, this.state, {
-            submit: intent => this.submit(intent), pause: paused => void this.pause(paused), neutral: () => void this.neutralize(),
-            preview: aim => this.previewAim(aim), focus: actor => this.focusActor(actor), restart: () => void this.restart()
+            submit: intent => this.submit(intent), pause: paused => void this.pause(paused), neutral: () => void this.neutralize(), release: () => void this.releaseMovement(),
+            preview: aim => this.previewAim(aim), focus: actor => this.focusActor(actor), restart: () => void this.restart(),
+            inputReady: args.inputReady, pauseAllowed: args.pauseAllowed, pauseReason: args.pauseReason,
+            live: args.previewLabel.includes('server-authoritative')
         }, () => performance.now(), args.paused());
         this.controls.root.dataset.preview = args.previewLabel;
         this.unsubscribe = args.onSnapshot((state, events) => this.accept(state, events));
+        if (args.onConnection) this.listeners.defer(args.onConnection(state => {
+            this.controls.interrupt();
+            this.controls.root.dataset.connection = state;
+            if (state === 'reconnecting') this.controls.root.querySelector<HTMLElement>('.combat-message')!.textContent =
+                'Reconnecting · controls wait for a fresh authoritative snapshot.';
+        }));
+        if (args.onError) this.listeners.defer(args.onError(message => {
+            this.controls.root.querySelector<HTMLElement>('.combat-message')!.textContent = message;
+        }));
+        if (args.onUnavailable) this.listeners.defer(args.onUnavailable(message => this.showUnavailable(message)));
+        if (args.onResult) this.listeners.defer(args.onResult(result => this.showResult(result)));
         const interrupt = () => { this.cancelCameraNavigation(); this.cancelPresentation(); this.controls.interrupt(); void this.neutralize(); };
         const resize = () => { interrupt(); this.render(false); };
         this.listeners.emitter(scene.scale, Phaser.Scale.Events.RESIZE, resize); this.listeners.dom(window, 'blur', interrupt); this.listeners.dom(document, 'visibilitychange', interrupt);
@@ -88,6 +101,21 @@ export class ResourceTurnsV9Scene {
         // V9 is a local adapter, not an outer CombatScene argument. Retire every
         // old listener, frame and fixture before mounting one replacement here.
         this.destroy(); new ResourceTurnsV9Scene(this.scene, next);
+    }
+    private async releaseMovement(): Promise<void> {
+        if (this.neutralPending || this.destroyed || !this.args.releaseMovement) return this.neutralize();
+        const generation = this.requestGeneration, neutralGeneration = ++this.neutralGeneration; this.neutralPending = true;
+        try { const next = await this.args.releaseMovement(); if (!this.destroyed && generation === this.requestGeneration) this.accept(next, []); }
+        finally { if (neutralGeneration === this.neutralGeneration) this.neutralPending = false; }
+    }
+    private showResult(result: import('../../../shared/protocol-v9').ChallengeResultV9): void {
+        if (this.destroyed) return;
+        this.scene.scene.start('result', { result, calling: this.args.calling ?? 'wizard',
+            rewarded: this.args.rewarded, previewLabel: this.args.previewLabel });
+    }
+    private showUnavailable(message: string): void {
+        if (this.destroyed) return;
+        this.scene.scene.start('result', { calling: this.args.calling ?? 'wizard', message, previewLabel: this.args.previewLabel });
     }
     private previewAim(aim: AimIntent | null): void {
         const generation = ++this.previewGeneration;

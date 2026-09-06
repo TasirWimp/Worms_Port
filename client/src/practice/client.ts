@@ -19,6 +19,7 @@ import {
 } from '../../../shared/protocol';
 import type { PlayerCalling, SimulationCommand } from '../../../shared/simulation';
 import type { ChallengeSnapshotV8Automated, ChallengeResultV8Automated } from '../../../shared/protocol-v8';
+import type { ChallengeSnapshotV9, ChallengeResultV9 } from '../../../shared/protocol-v9';
 import type { CombatSceneArgs } from '../combat/contracts';
 import { reconnectSession, takeActionTurnsV8SessionEvents, whenSessionReady } from '../lib/session';
 
@@ -28,8 +29,8 @@ export const PRACTICE_CLIENT_REGISTRY_KEY = 'practice-client';
 
 export type PracticeConnectionState = 'connected' | 'reconnecting';
 export type Unsubscribe = () => void;
-export type LiveCombatSnapshot = ChallengeSnapshot | ChallengeSnapshotV8Automated;
-export type LiveCombatResult = ChallengeResult | ChallengeResultV8Automated;
+export type LiveCombatSnapshot = ChallengeSnapshot | ChallengeSnapshotV8Automated | ChallengeSnapshotV9;
+export type LiveCombatResult = ChallengeResult | ChallengeResultV8Automated | ChallengeResultV9;
 
 export class PracticeProtocolError extends Error {
     public constructor(public readonly protocolError: ProtocolError) {
@@ -61,6 +62,8 @@ export class PracticeClient {
     private readonly errorListeners = new Set<(message: string) => void>();
     private readonly rewardListeners = new Set<(update: RewardUpdateData) => void>();
     private readonly rewardUpdates = new Map<string, RewardUpdateData>();
+    private v9?: import('./resource-turns-v9').ResourceTurnsV9Client;
+    private v9Ready?: Promise<import('./resource-turns-v9').ResourceTurnsV9Client>;
 
     public constructor(
         private readonly socket: Socket,
@@ -115,10 +118,11 @@ export class PracticeClient {
     }
 
     public currentCombatSnapshot(): LiveCombatSnapshot | undefined {
-        return this.lifecycle?.currentSnapshot() ?? this.currentSnapshot();
+        return this.v9?.currentSnapshot() ?? this.lifecycle?.currentSnapshot() ?? this.currentSnapshot();
     }
 
     public async startCombat(calling: PlayerCalling): Promise<LiveCombatSnapshot> {
+        if (v9CandidateRoute()) return (await this.getV9()).start('practice', calling);
         return (await this.getLifecycle()).start(calling);
     }
 
@@ -147,15 +151,27 @@ export class PracticeClient {
     }
 
     public async startRewardCombat(calling: PlayerCalling): Promise<LiveCombatSnapshot> {
+        if (v9CandidateRoute()) {
+            const reservation = await this.reserveReward(calling);
+            return (await this.getV9()).start('reward', calling, {
+                challengeId: reservation.challengeId, eligibilityToken: reservation.eligibilityToken
+            });
+        }
         return (await this.getLifecycle()).startReward(calling);
     }
 
     public async retryCombat(calling: PlayerCalling): Promise<LiveCombatSnapshot> {
+        if (this.v9?.currentSnapshot()) {
+            const current = this.v9.currentSnapshot()!;
+            if (current.status === 'active') await this.v9.leave();
+            return this.v9.start(current.mode, calling);
+        }
         return (await this.getLifecycle()).retry(calling);
     }
 
     public async combatArgs(snapshot: LiveCombatSnapshot): Promise<CombatSceneArgs> {
         if (snapshot.protocolVersion === 1) return liveCombatArgs(this, snapshot);
+        if (snapshot.protocolVersion === 9) return (await this.getV9()).combatArgs(snapshot);
         return (await this.getLifecycle()).combatArgs(snapshot);
     }
 
@@ -270,6 +286,7 @@ export class PracticeClient {
         this.errorListeners.clear();
         this.rewardListeners.clear();
         this.lifecycle?.dispose();
+        this.v9?.dispose();
         this.combatResultListeners.clear();
     }
 
@@ -333,6 +350,13 @@ export class PracticeClient {
             emit: (event, request) => this.emitWithRetry(event, request),
             error: error => new PracticeProtocolError(error)
         }));
+    }
+
+    private getV9(): Promise<import('./resource-turns-v9').ResourceTurnsV9Client> {
+        const owner = this;
+        return this.v9Ready ??= import('./resource-turns-v9').then(module => this.v9 = new module.ResourceTurnsV9Client(
+            this.socket, () => owner.session, owner.sessionCursor
+        ));
     }
 
     private emitOnce(event: string, request: unknown): Promise<unknown> {
@@ -439,6 +463,7 @@ export class PracticeClient {
         queueMicrotask(() => {
             void whenSessionReady(this.socket).then((session) => {
                 if (session.sessionId !== this.sessionId) {
+                    this.v9?.dispose(); this.v9 = undefined; this.v9Ready = undefined;
                     this.sessionId = session.sessionId;
                     this.sessionCursor = { sessionId: session.sessionId, nextSequence: 0 };
                     this.snapshot = undefined;
@@ -492,6 +517,11 @@ function writeActivePractice(sessionId: string, challengeId: string): void {
 
 function clearActivePractice(): void {
     if (typeof sessionStorage !== 'undefined') sessionStorage.removeItem(ACTIVE_PRACTICE_KEY);
+}
+
+/** An explicit engineering candidate route; ordinary Practice/reward stays V7. */
+function v9CandidateRoute(): boolean {
+    return typeof window !== 'undefined' && new URLSearchParams(window.location.search).get('combat-preview') === 'v9-live';
 }
 
 export function liveCombatArgs(

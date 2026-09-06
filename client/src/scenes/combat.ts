@@ -17,7 +17,7 @@ import {
     createApprovedWizardAnimations,
     preloadApprovedCombatAssets
 } from '../combat/approved-assets';
-import type { CombatSceneArgs, LegacyCombatSceneArgs, CombatSceneArgsV8, SafeAreaInsets } from '../combat/contracts';
+import type { CombatSceneArgs, LegacyCombatSceneArgs, CombatSceneArgsV8, CombatSceneArgsV9, SafeAreaInsets } from '../combat/contracts';
 import { createCombatFixture, createActionTurnsV8Fixture } from '../combat/fixture';
 import { canRequestFullscreen, toggleGameFullscreen } from '../combat/fullscreen';
 import { activeSidewaysMode, clientPointToGame } from '../lib/sideways';
@@ -57,6 +57,7 @@ type CameraTransition = Readonly<{
 export default class CombatScene extends Phaser.Scene {
     private args: LegacyCombatSceneArgs;
     private v8Args?: CombatSceneArgsV8;
+    private v9Args?: CombatSceneArgsV9;
     private v8Preview?: 'v8' | 'v8-r1';
     private v9Preview = false;
     private initializationGeneration = 0;
@@ -103,11 +104,12 @@ export default class CombatScene extends Phaser.Scene {
     public init(args?: CombatSceneArgs): void {
         this.initializationGeneration++;
         this.v8Args = args?.kind === 'v8' ? args : undefined;
+        this.v9Args = args?.kind === 'v9' ? args : undefined;
         const preview = new URLSearchParams(window.location.search).get('combat-preview');
         this.v8Preview = !args?.snapshot && (preview === 'v8' || preview === 'v8-r1') ? preview : undefined;
         this.v9Preview = !args?.snapshot && preview === 'v9';
-        if (this.v8Args || this.v8Preview || this.v9Preview) return;
-        this.args = args?.snapshot && args.kind !== 'v8' ? args : createCombatFixture();
+        if (this.v8Args || this.v9Args || this.v8Preview || this.v9Preview) return;
+        this.args = args?.snapshot && args.kind !== 'v8' && args.kind !== 'v9' ? args : createCombatFixture();
         this.snapshot = structuredClone(this.args.snapshot);
         this.authoritativeSnapshot = structuredClone(this.args.snapshot);
         this.renderState = cloneSimulation(this.snapshot.simulation as SimulationState);
@@ -130,7 +132,7 @@ export default class CombatScene extends Phaser.Scene {
             void this.createV8();
             return;
         }
-        if (this.v9Preview) { void this.createV9(); return; }
+        if (this.v9Args || this.v9Preview) { void this.createV9(); return; }
         const parent = document.getElementById('game');
         if (!parent) throw new Error('Combat scene requires the #game host.');
         createApprovedWizardAnimations(this);
@@ -246,7 +248,7 @@ export default class CombatScene extends Phaser.Scene {
         const generation = this.initializationGeneration; let mounted = true;
         this.events.once(Phaser.Scenes.Events.SHUTDOWN, () => { mounted = false; });
         const { createResourceTurnsV9Fixture } = await import('../combat/resource-turns-v9-fixture');
-        const args = await createResourceTurnsV9Fixture();
+        const args = this.v9Args ?? await createResourceTurnsV9Fixture();
         if (!mounted || generation !== this.initializationGeneration || !this.scene.isActive()) { args.destroy(); return; }
         const { ResourceTurnsV9Scene } = await import('../combat/resource-turns-v9-scene');
         if (!mounted || generation !== this.initializationGeneration || !this.scene.isActive()) { args.destroy(); return; }
