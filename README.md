@@ -46,6 +46,11 @@ are also recorded in the Execution Pointer of
   preserved in `LICENSE` and `legal/source-manifest.json`.
 - `lorgan3/sorcerers` is a quarantined reference/archive only. No Sorcerers
   code or bulk assets are imported into the product tree.
+- V10 terrain planning uses Sorcerers only through the registered
+  [frozen terrain-tactics behavior record](docs/evidence/wp-015d4a-v10-terrain-tactics-behavior-record.md).
+  Its battlefield variety is inspiration for product-authored terrain and
+  starting-position requirements; its code, maps, algorithms, constants and
+  assets remain excluded.
 - Assets from Sorcerers may move into `assets/` only after exact-file license
   evidence proves commercial use, redistribution, and modification are allowed.
 - Product assets must be traceable through `legal/asset-manifest.json`.

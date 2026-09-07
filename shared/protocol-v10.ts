@@ -1,0 +1,73 @@
+import { z } from 'zod';
+import {
+    SimulationBarrierV10Schema, SimulationIntentV10Schema, SimulationStateV10Schema,
+    V10_RULESET_ID, V10_TERRAIN_PROFILE_IDS
+} from './simulation-v10';
+
+/** V10B keeps V9's bounded storage budget while defining a distinct replay ABI. */
+export const V10_REPLAY_LIMITS = Object.freeze({
+    records: 32_768,
+    bytes: 16 * 1024 * 1024,
+    operationBytes: 512,
+    ticks: 16_800,
+    terminalBytes: 512
+});
+
+const integer = (minimum: number, maximum: number) => z.number().int().min(minimum).max(maximum);
+const id = z.string().min(16).max(64).regex(/^[A-Za-z0-9_-]+$/);
+const hash = z.string().regex(/^[a-f0-9]{64}$/);
+const actor = z.enum(['player', 'loomkeeper']);
+const calling = z.enum(['wizard', 'thief', 'warrior']);
+const phase = z.enum(['action', 'projectile', 'settling', 'retreat', 'finished']);
+
+export const ReplayOperationV10Schema = z.union([
+    z.object({
+        kind: z.literal('intent'), actor, intent: SimulationIntentV10Schema,
+        expectedTurn: integer(0, 16), expectedPhase: phase, expectedEpoch: integer(0, 65535)
+    }).strict(),
+    z.object({ kind: z.literal('barrier'), barrier: SimulationBarrierV10Schema }).strict(),
+    z.object({ kind: z.literal('ticks'), count: integer(1, V10_REPLAY_LIMITS.ticks) }).strict(),
+    z.discriminatedUnion('reason', [
+        z.object({
+            kind: z.literal('automatic'), reason: z.literal('lease_expired'),
+            tick: integer(0, V10_REPLAY_LIMITS.ticks), inputEpoch: integer(0, 65535)
+        }).strict(),
+        z.object({
+            kind: z.literal('automatic'), reason: z.literal('phase'),
+            tick: integer(0, V10_REPLAY_LIMITS.ticks), inputEpoch: integer(0, 65535), phase
+        }).strict()
+    ]),
+    z.object({
+        kind: z.literal('safety'),
+        reason: z.enum(['replay_limit', 'lifecycle_limit', 'sequence_limit', 'expiry', 'left'])
+    }).strict()
+]);
+export type ReplayOperationV10 = z.infer<typeof ReplayOperationV10Schema>;
+
+export const ReplayRecordV10Schema = z.object({
+    index: integer(0, V10_REPLAY_LIMITS.records - 1),
+    operation: ReplayOperationV10Schema,
+    stateHash: hash
+}).strict();
+export type ReplayRecordV10 = z.infer<typeof ReplayRecordV10Schema>;
+
+/** Internal candidate replay only. V10C owns any query-gated transport envelope. */
+export const CoordinatorReplayV10Schema = z.object({
+    formatVersion: z.literal(10),
+    challengeId: id,
+    sessionId: id,
+    seed: integer(1, 0xffffffff),
+    calling,
+    rulesetId: z.literal(V10_RULESET_ID),
+    terrainProfileId: z.enum(V10_TERRAIN_PROFILE_IDS),
+    initialStateHash: hash,
+    records: z.array(ReplayRecordV10Schema).max(V10_REPLAY_LIMITS.records)
+}).strict();
+export type CoordinatorReplayV10 = z.infer<typeof CoordinatorReplayV10Schema>;
+
+export const SimulationSnapshotV10Schema = SimulationStateV10Schema;
+export { SimulationStateV10Schema, SimulationIntentV10Schema, SimulationBarrierV10Schema };
+
+export function jsonBytesV10(value: unknown): number {
+    return new TextEncoder().encode(JSON.stringify(value)).byteLength;
+}

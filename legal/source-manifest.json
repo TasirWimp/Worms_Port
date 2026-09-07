@@ -42,7 +42,7 @@
         "bulk asset import",
         "asset import without exact-file license evidence"
       ],
-      "notes": "The repo and its credits are pointers for review only. No Sorcerers files are product assets."
+      "notes": "The repo and its credits are pointers for review only. No Sorcerers files are product assets. V10 terrain inspiration is limited to the registered frozen behavior record at docs/evidence/wp-015d4a-v10-terrain-tactics-behavior-record.md."
     },
     {
       "id": "nimirun-coderepo-subagent-pattern",

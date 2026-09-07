@@ -58,9 +58,22 @@ Phaser/Socket.IO stack.
   dependency audit, security, bundle and housekeeping checks. Full Ubuntu/daily,
   PostgreSQL and public shared-mode
   promotion remain later release gates. Next gameplay package: **V10 terrain
-  and starting positions**; V11 teams remains separate. No funded activation is
-  implied. Overall package evidence remains `in_progress` until the later
-  promotion/release gates are settled.
+  and starting positions**; V11 teams remains separate. V10A has re-entered the
+  pinned Sorcerers reference only as a clean-room observation and frozen the
+  resulting behavior-level terrain inspiration in the
+  [V10 terrain-tactics record](../evidence/wp-015d4a-v10-terrain-tactics-behavior-record.md).
+  The owner then explicitly directed this running primary task to continue from
+  the frozen record without reopening Sorcerers or quarantine. The
+  [V10 product contract](wp-015d4a-v10-terrain-starts-contract.md) freezes three
+  deterministic surface profiles, map-specific starts and the opening/reply
+  assessment. V10B now supplies the separate deterministic state, packed
+  terrain generator, start selection, strict replay schema and versioned
+  reconstruction while leaving the current V7 selector and all transport
+  routes unchanged. **Next V10 step: V10C playable candidate.** The bounded V9
+  Loomkeeper must be adapted without changing its search budget, then the
+  local `?combat-preview=v10` phone presentation can be added. No funded
+  activation or public promotion is implied yet. Overall package evidence
+  remains `in_progress` until the later promotion/release gates are settled.
 - Product predecessor: **WP-015D3A V8 Action-Turn Candidate — V8A finite
   rules/acceptance contract complete and independently reviewed; V8B authoritative
   foundation complete and independently reviewed; V8C touch presentation

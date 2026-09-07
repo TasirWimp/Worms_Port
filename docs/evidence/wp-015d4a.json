@@ -1,0 +1,72 @@
+{
+  "id": "WP-015D4A",
+  "status": "in_progress",
+  "execution_mode": "single_owner",
+  "starting_commit": "00ee140b7c7eeafb591e5decd3eca5bcbf2278dc",
+  "branch": "codex/wp-015d4a-v10-terrain-starts-v0",
+  "initial_worktree": "clean",
+  "starting_lock_sha256": "6B768A8FDE2695D02555CA17201FD7CE420F9AC075B91380474DD7A643042BC8",
+  "owning_roles": [
+    "Codex primary single owner"
+  ],
+  "scope": [
+    "On 2026-09-07 the owner explicitly directed the running primary task to continue into V10 instead of handing the frozen observation to a fresh task. The same primary now uses only the frozen behavior record and local Worms_Port sources; it does not reopen Sorcerers or quarantine and does not claim independent clean-room review.",
+    "Re-enter the pinned public lorgan3/sorcerers reference at commit 0f45c4920321c0a3a14de30fe5cf44131a38da89 as the single-owner reference observer and freeze only behavior-level terrain inspiration for V10.",
+    "Record how battlefield silhouettes, elevation, cover, traversal, destructibility, map suitability and spawn-site limitations should inform a later independently authored V10 terrain-and-starting-position contract.",
+    "Make the V10 reference relationship discoverable from the existing repository entry points while preserving Sorcerers as GPL-3.0 quarantine/reference only.",
+    "V10A freezes the finite product-owned terrain/start contract and implementation sequence without changing runtime behavior.",
+    "V10B implements the separate V10 deterministic terrain, start, state, protocol/replay and versioned coordinator authority while preserving V1-V9 behavior and every public selector."
+  ],
+  "non_goals": [
+    "No runtime, test, dependency, asset, map, collision, simulation, AI, reward or deployment change; no Sorcerers code, algorithms, constants, identifiers, map bytes, images, paint output or generation rules enter the product tree.",
+    "No V10 client scene, socket lifecycle, SessionRegistry admission, automated Loomkeeper, reward route or public selector is implemented; no caves, ladders, enclosed multi-floor maps, disconnected islands, lethal water, custom map builder, larger teams or random spawn policy are authorized.",
+    "No V9 Relic-selection correction, public V9 promotion, funded activation or V11 team work is included."
+  ],
+  "planned_checks": [
+    "Register the frozen behavior record and its exact SHA-256 in legal/clean-room-records.json, then run the clean-room and work-package evidence gates.",
+    "Freeze and inspect the V10A product contract, exact documentation paths and V10B entry boundary.",
+    "Inspect the change selector dry run and execute its selected documentation/evidence checks.",
+    "Run git diff --check and repository housekeeping; V10A itself requires no game build.",
+    "For V10B run types, focused V10 protocol/simulation/replay tests, the selector's complete runtime plan, current build outputs and built smoke."
+  ],
+  "deterministic_seeds": [
+    "0x00000001",
+    "0x00000002",
+    "0x00000003",
+    "0x13579BDF",
+    "0xC0FFEE11",
+    "0xDEADBEEF"
+  ],
+  "sorcerers_reference_used": true,
+  "clean_room_records": [
+    "wp-015d4a-v10-terrain-tactics"
+  ],
+  "check_results": [
+    {
+      "command": "npm run check:types; node --import tsx --test tests/protocol/terrain-starts-v10.test.ts; node --import tsx --test tests/simulation/terrain-starts-v10.test.ts tests/simulation/terrain-starts-v10-replay.test.ts",
+      "status": "pass",
+      "detail": "Both TypeScript projects pass. Two focused protocol tests and eleven focused simulation/replay tests pass. Coverage includes all six contracted assessment seeds, 48 consecutive property seeds, all Callings, three profile identities, reflection direction, surface-only connectivity, exact separation and height bands, margins, outward movement, route continuity, support, V9 transition reuse, destructive terrain mutation, canonical SHA-256, strict replay identity, automatic boundaries, tamper rejection, detached snapshots and versioned historical dispatch."
+    },
+    {
+      "command": "npm run verify:changes -- --dry-run; npm run verify:changes",
+      "status": "pass",
+      "detail": "The conservative runtime plan passed compliance, both type checks, 103 tooling tests, 123 protocol tests, 141 simulation tests, 34 Loomkeeper tests, 10 Relic tests, 73 combat tests, 42 Practice tests, 22 identity tests and 37 reward tests. Production server/client outputs, approved asset copy, built smoke across ordinary V7 plus deployed V8/V9 profiles, identity-bundle inspection, reward-security scan and bundle limits passed. The selected canonical 390x844 Chromium browser run passed 57 tests with three reviewed route skips. PostgreSQL was the only selected prerequisite unavailable locally."
+    },
+    {
+      "command": "changed-document relative link inspection; JSON parse; npm run audit:housekeeping; git diff --check",
+      "status": "pass",
+      "detail": "All relative links in the changed Markdown entry points resolve, the changed JSON files parse, and whitespace checks pass. Housekeeping identifies WP-015D4A on the correctly named local V10 branch with no upstream and no gone tracking branches. Its report-only manual-reconciliation flag comes from older in-progress records and historical V9 review entries; V10A/V10B introduce no new unresolved branch or review mismatch."
+    }
+  ],
+  "reviews": [],
+  "skipped_checks": [
+    "The selected PostgreSQL prerequisite did not run because WP014_TEST_DATABASE_URL is unavailable locally; CI remains responsible for that isolated gate.",
+    "The full daily/release matrix and performance gate were not run because this is an unpromoted V10B authority foundation and the existing 21:00 Europe/Berlin automation owns the daily suite.",
+    "V10 phone/browser acceptance and the opening/reply assessment remain V10C/V10D work because V10B intentionally exposes no client preview or automated Loomkeeper."
+  ],
+  "residual_risks": [
+    "Source and image inspection cannot establish fun, balance, phone usability or player comprehension.",
+    "The observed reference includes unsupported topology and a non-deterministic placement policy; V10B replaces those behaviors with a small deterministic surface-only family, while AI, presentation and opening/reply assessment evidence remain outstanding.",
+    "The owner-directed same-task continuation is not an independently separated clean-room implementation or review; the registered lifecycle remains observed and blocks a complete clean-room claim."
+  ]
+}

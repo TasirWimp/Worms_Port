@@ -4,25 +4,30 @@ import { SimulationCoordinatorV8, type CoordinatorReplayV8Runtime, type Coordina
     type CoordinatorSnapshotV8, type CoordinatorTerminalResultV8Family, type SimulationCoordinatorV8Options } from './coordinator-v8';
 import { SimulationCoordinatorV9, type CoordinatorReplayV9, type CoordinatorSnapshotV9,
     type CoordinatorTerminalResultV9, type SimulationCoordinatorV9Options } from './coordinator-v9';
+import { SimulationCoordinatorV10, type CoordinatorReplayV10, type CoordinatorSnapshotV10,
+    type CoordinatorTerminalResultV10, type SimulationCoordinatorV10Options } from './coordinator-v10';
 import { CURRENT_COMBAT_RULESET_ID, type CombatRulesetId } from '../../../shared/combat-version';
 import { V8_AUTOMATION_ID, V9_AUTOMATION_ID } from '../../../shared/combat-version';
 import { isV8RulesetId, V8_R1_RULESET_ID, type V8RulesetId } from '../../../shared/simulation-v8';
 import { V9_RULESET_ID } from '../../../shared/simulation-v9';
+import { V10_RULESET_ID } from '../../../shared/simulation-v10';
 import { LEGACY_RULESET_ID, type PlayerCalling, type SimulationRulesetId } from '../../../shared/simulation';
 
-export type VersionedCoordinatorSnapshot = CoordinatorSnapshot | CoordinatorSnapshotV8Family | CoordinatorSnapshotV9;
-export type VersionedCoordinatorReplay = CoordinatorReplay | CoordinatorReplayV8Runtime | CoordinatorReplayV9;
-export type VersionedCoordinatorResult = CoordinatorTerminalResult | CoordinatorTerminalResultV8Family | CoordinatorTerminalResultV9;
+export type VersionedCoordinatorSnapshot = CoordinatorSnapshot | CoordinatorSnapshotV8Family | CoordinatorSnapshotV9 | CoordinatorSnapshotV10;
+export type VersionedCoordinatorReplay = CoordinatorReplay | CoordinatorReplayV8Runtime | CoordinatorReplayV9 | CoordinatorReplayV10;
+export type VersionedCoordinatorResult = CoordinatorTerminalResult | CoordinatorTerminalResultV8Family | CoordinatorTerminalResultV9 | CoordinatorTerminalResultV10;
 
 /** Dispatch by recorded identity, never by the current selector when reading a historical replay. */
 export class VersionedSimulationCoordinator {
     public readonly legacy: SimulationCoordinator;
     public readonly v8: SimulationCoordinatorV8;
     public readonly v9: SimulationCoordinatorV9;
-    public constructor(options: { legacy?: SimulationCoordinatorOptions; v8?: SimulationCoordinatorV8Options; v9?: SimulationCoordinatorV9Options } = {}) {
+    public readonly v10: SimulationCoordinatorV10;
+    public constructor(options: { legacy?: SimulationCoordinatorOptions; v8?: SimulationCoordinatorV8Options; v9?: SimulationCoordinatorV9Options; v10?: SimulationCoordinatorV10Options } = {}) {
         this.legacy = new SimulationCoordinator(options.legacy);
         this.v8 = new SimulationCoordinatorV8(options.v8);
         this.v9 = new SimulationCoordinatorV9(options.v9);
+        this.v10 = new SimulationCoordinatorV10(options.v10);
     }
     public create(challengeId: string, sessionId: string, seed: number, calling: PlayerCalling,
         rulesetId?: SimulationRulesetId): CoordinatorSnapshot;
@@ -31,10 +36,13 @@ export class VersionedSimulationCoordinator {
     public create(challengeId: string, sessionId: string, seed: number, calling: PlayerCalling,
         rulesetId: typeof V9_RULESET_ID): CoordinatorSnapshotV9;
     public create(challengeId: string, sessionId: string, seed: number, calling: PlayerCalling,
-        rulesetId: CombatRulesetId = CURRENT_COMBAT_RULESET_ID): VersionedCoordinatorSnapshot {
+        rulesetId: typeof V10_RULESET_ID): CoordinatorSnapshotV10;
+    public create(challengeId: string, sessionId: string, seed: number, calling: PlayerCalling,
+        rulesetId: CombatRulesetId | typeof V10_RULESET_ID = CURRENT_COMBAT_RULESET_ID): VersionedCoordinatorSnapshot {
         if (this.get(challengeId)) throw new Error('Duplicate versioned challenge.');
         if (isV8RulesetId(rulesetId)) return this.v8.create(challengeId, sessionId, seed, calling, rulesetId);
         if (rulesetId === V9_RULESET_ID) return this.v9.create(challengeId, sessionId, seed, calling);
+        if (rulesetId === V10_RULESET_ID) return this.v10.create(challengeId, sessionId, seed, calling);
         return this.legacy.create(challengeId, sessionId, seed, calling, rulesetId);
     }
     public createAutomated(challengeId:string,sessionId:string,seed:number,calling:PlayerCalling):
@@ -48,15 +56,16 @@ export class VersionedSimulationCoordinator {
         return this.v9.createAutomated(challengeId, sessionId, seed, calling);
     }
     public get(challengeId: string): VersionedCoordinatorSnapshot | undefined {
-        return this.v9.get(challengeId) ?? this.v8.get(challengeId) ?? this.legacy.get(challengeId);
+        return this.v10.get(challengeId) ?? this.v9.get(challengeId) ?? this.v8.get(challengeId) ?? this.legacy.get(challengeId);
     }
     public replay(challengeId: string): VersionedCoordinatorReplay | undefined {
-        return this.v9.replay(challengeId) ?? this.v8.replay(challengeId) ?? this.legacy.replay(challengeId);
+        return this.v10.replay(challengeId) ?? this.v9.replay(challengeId) ?? this.v8.replay(challengeId) ?? this.legacy.replay(challengeId);
     }
     public reconstructAndVerify(replay: VersionedCoordinatorReplay,
         expected?: { challengeId: string; sessionId: string }): VersionedCoordinatorSnapshot {
         if (expected && (expected.challengeId !== replay.challengeId || expected.sessionId !== replay.sessionId))
             throw new Error('Replay identity mismatch.');
+        if (replay.rulesetId === V10_RULESET_ID) return this.v10.reconstructAndVerify(replay, expected);
         if (replay.rulesetId === V9_RULESET_ID) return this.v9.reconstructAndVerify(replay, expected);
         if (isV8RulesetId(replay.rulesetId))
             return this.v8.reconstructAndVerify(replay, expected);
@@ -67,7 +76,7 @@ export class VersionedSimulationCoordinator {
             throw new Error('Unknown combat ruleset.');
         return this.legacy.reconstructAndVerify({ ...replay, rulesetId: replay.rulesetId ?? LEGACY_RULESET_ID });
     }
-    public delete(challengeId: string): void { this.legacy.delete(challengeId); this.v8.delete(challengeId); this.v9.delete(challengeId); }
-    public deleteForSession(sessionId: string): void { this.legacy.deleteForSession(sessionId); this.v8.deleteForSession(sessionId); this.v9.deleteForSession(sessionId); }
-    public dispose(): void { this.legacy.dispose(); this.v8.dispose(); this.v9.dispose(); }
+    public delete(challengeId: string): void { this.legacy.delete(challengeId); this.v8.delete(challengeId); this.v9.delete(challengeId); this.v10.delete(challengeId); }
+    public deleteForSession(sessionId: string): void { this.legacy.deleteForSession(sessionId); this.v8.deleteForSession(sessionId); this.v9.deleteForSession(sessionId); this.v10.deleteForSession(sessionId); }
+    public dispose(): void { this.legacy.dispose(); this.v8.dispose(); this.v9.dispose(); this.v10.dispose(); }
 }

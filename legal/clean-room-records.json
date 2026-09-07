@@ -2,6 +2,20 @@
   "policy": "Sorcerers-informed work starts with an observed frozen behavior record and completes only after separated implementation/review roles, an implementation declaration, a passing similarity review, and behavioral-test evidence.",
   "records": [
     {
+      "id": "wp-015d4a-v10-terrain-tactics",
+      "work_package": "WP-015D4A",
+      "source_commit": "0f45c4920321c0a3a14de30fe5cf44131a38da89",
+      "observed_material": [
+        "pinned repository overview, map-selection guidance and browser-testing guidance",
+        "five bundled map previews and their embedded terrain and collision-mask views",
+        "pinned map loading, collision/destruction, spawn-site discovery, character placement and movement-route source areas inspected only to distill behavior"
+      ],
+      "behavior_record": "docs/evidence/wp-015d4a-v10-terrain-tactics-behavior-record.md",
+      "behavior_record_sha256": "7249E898E9BBC99B48708A81EBA51373B528FC68BDB5B2E2F23016F8B9405868",
+      "observer": "Codex primary single-owner reference observer 2026-09-07",
+      "status": "observed"
+    },
+    {
       "id": "wp-015d3a-v8-action-turns",
       "work_package": "WP-015D3A",
       "source_commit": "0f45c4920321c0a3a14de30fe5cf44131a38da89",
