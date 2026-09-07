@@ -93,7 +93,7 @@ window.onload = async () => {
         game.scene.start('result', preview.args);
         return;
     }
-    const combatPreview = query.has('combat-preview');
+    const combatPreview = query.has('combat-preview') && query.get('combat-preview') !== 'v9-live';
     if (combatPreview) {
         runningGame = new NimbleKnotsGame(true);
         syncVisualViewport();

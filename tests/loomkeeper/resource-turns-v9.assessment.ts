@@ -3,7 +3,7 @@ import { execFileSync } from 'node:child_process';
 import { mkdir, writeFile } from 'node:fs/promises';
 import test from 'node:test';
 
-import { candidateAt, LoomkeeperExecutionV9, LoomkeeperPlannerV9, type LoomkeeperSelectionV9 } from '../../shared/loomkeeper-v9';
+import { candidateAt, evaluateV9AssessmentCandidate, LoomkeeperExecutionV9, LoomkeeperPlannerV9, type LoomkeeperSelectionV9 } from '../../shared/loomkeeper-v9';
 import { setTerrainSolid, terrainSolid, type PlayerCalling, type SimulationActor } from '../../shared/simulation';
 import {
     advanceSimulationTicksV9, applySimulationBarrierV9, applySimulationIntentV9, assertSimulationInvariantsV9,
@@ -17,7 +17,7 @@ const PROFILES = [0, 1, 4] as const;
 const FP = 256;
 type Profile = (typeof PROFILES)[number];
 type Scenario = { seed: number; reflected: boolean; calling: PlayerCalling; opening: SimulationActor; profile: Profile };
-type Trace = { selection: LoomkeeperSelectionV9; hashes: string[]; operations: Array<{ tick: number; kind: string }>;
+type Trace = { selection: LoomkeeperSelectionV9; hashes: string[]; operations: Array<{ tick: number; operation: unknown }>;
     workload: { slots: number; planningTicks: number; rolloutTicks: number; maximumRolloutTicks: number } };
 
 test('V9D assessment: fixed 196 scenarios and 272 deterministic executions', async t => {
@@ -116,9 +116,17 @@ function correctness(initial: SimulationStateV9): Trace {
     assert.ok(planner.rolloutTicks <= 189_000);
     const selection = planner.selection;
     assert.notEqual(selection.status, 'work_failure');
+    const scheduled = new SimulationCoordinatorV9({ nowUs: () => 0 });
+    const scheduledId = 'v9_assessment_scheduled';
+    scheduled.createAutomated(scheduledId, 'v9_assessment_session', initial.seed, initial.units[0].calling);
+    const entry = (scheduled as any).matches.get(scheduledId);
+    entry.state = cloneSimulationV9(initial);
+    entry.stateHash = hashSimulationStateV9(initial);
+    entry.replay.initialStateHash = entry.stateHash;
+    scheduled.advance(scheduledId, 30);
     let state = advanceSimulationTicksV9(cloneSimulationV9(initial), 30).state;
     const controller = selection.status === 'selected' ? new LoomkeeperExecutionV9(planner.selectedCandidate()!, selection.prefix, state) : undefined;
-    const hashes: string[] = [hashSimulationStateV9(state)], operations: Array<{ tick: number; kind: string }> = [];
+    const hashes: string[] = [hashSimulationStateV9(state)], operations: Array<{ tick: number; operation: unknown }> = [];
     while (controller && state.phase !== 'finished' && state.turn === initial.turn && state.tick - initial.tick < 1_050) {
         let progressed = false;
         for (let slot = 0; slot < 8; slot += 1) {
@@ -127,15 +135,17 @@ function correctness(initial: SimulationStateV9): Trace {
                 ? applySimulationIntentV9(state, state.activeActor, op.intent, state.turn, state.phase, state.inputEpoch)
                 : applySimulationBarrierV9(state, op.barrier);
             assert.ok(next.accepted && next.mutated, 'detached execution emitted an illegal operation');
-            operations.push({ tick: state.tick, kind: op.kind === 'intent' ? op.intent.type : op.barrier.reason });
+            operations.push({ tick: state.tick, operation: structuredClone(op) });
             state = next.state; hashes.push(hashSimulationStateV9(state)); progressed = true;
         }
+        assert.equal(hashSimulationStateV9(state), scheduled.get(scheduledId)!.stateHash, 'detached and actual scheduled per-tick state');
         if (state.phase === 'finished' || state.turn !== initial.turn) break;
-        state = advanceSimulationTicksV9(state, 1).state; hashes.push(hashSimulationStateV9(state));
+        state = advanceSimulationTicksV9(state, 1).state; scheduled.advance(scheduledId, 1); hashes.push(hashSimulationStateV9(state));
         if (!progressed && state.tick - initial.tick >= 1_050) throw new Error('Detached V9 execution exceeded its turn cap.');
     }
+    scheduled.dispose();
     return { selection, hashes, operations, workload: { slots: planner.evaluatedCandidates, planningTicks: planner.planningTicks,
-        rolloutTicks: planner.rolloutTicks, maximumRolloutTicks: planner.rolloutTicks ? 1_050 : 0 } };
+        rolloutTicks: planner.rolloutTicks, maximumRolloutTicks: planner.maximumRolloutTicks } };
 }
 
 function fullMatch(scenario: Scenario) {
@@ -153,10 +163,12 @@ function fullMatch(scenario: Scenario) {
             if (actor === 'loomkeeper') {
                 const planner = new LoomkeeperPlannerV9(state);
                 for (let tick = 0; tick < 30; tick += 1) { const batchStart = performance.now(); planner.step(); const elapsed = performance.now() - batchStart; totalPlanningMs += elapsed; maxBatchMs = Math.max(maxBatchMs, elapsed); }
-                totalRolloutTicks += planner.rolloutTicks; maxRolloutTicks = Math.max(maxRolloutTicks, planner.rolloutTicks); slots += 180;
+                totalRolloutTicks += planner.rolloutTicks; maxRolloutTicks = Math.max(maxRolloutTicks, planner.maximumRolloutTicks); slots += planner.evaluatedCandidates; unaffordableCandidates += planner.unaffordableCandidates;
                 if (planner.selection.status === 'work_failure') workFailures += 1;
                 if (planner.selection.status === 'no_legal_plan') noLegalPlans += 1;
-                assert.equal(planner.selection.status, 'selected'); candidate = planner.selectedCandidate()!; prefix = planner.selection.prefix;
+                assert.notEqual(planner.selection.status, 'work_failure');
+                if (planner.selection.status === 'no_legal_plan') { state = advanceSimulationTicksV9(state, 30).state; continue; }
+                candidate = planner.selectedCandidate()!; prefix = planner.selection.prefix;
                 selections.push({ turn: state.turn, actor, prefix, ordinal: planner.selection.ordinal, status: planner.selection.status });
             } else {
                 // Assessment-only player policy: a fixed script-family row has
@@ -169,14 +181,26 @@ function fullMatch(scenario: Scenario) {
                 unaffordableCandidates += lattice.length - affordable.length;
                 if (!affordable.length) { noLegalPlans += 1; selections.push({ turn: state.turn, actor, prefix: 'none', ordinal: null, status: 'no_legal_plan' });
                     state = advanceSimulationTicksV9(state, 30).state; continue; }
-                candidate = affordable[0]; selections.push({ turn: state.turn, actor, prefix: 'none', ordinal: candidate.ordinal, status: 'selected' });
+                const evaluated = lattice.map(item => evaluateV9AssessmentCandidate(state, item.ordinal));
+                const ranked = evaluated.filter((item): item is NonNullable<typeof item> => !!item);
+                const compare = (a: readonly number[], b: readonly number[]) => {
+                    for (let i = 0; i < a.length; i++) if (a[i] !== b[i]) return b[i] - a[i];
+                    return 0;
+                };
+                ranked.sort((a, b) => compare(a.rank, b.rank));
+                const chargedWork = evaluated.reduce((sum, item) => sum + (item?.logicalTicks ?? 1050), 0);
+                assert.ok(chargedWork <= 31_500);
+                totalRolloutTicks += chargedWork; maxRolloutTicks = Math.max(maxRolloutTicks, ...evaluated.map(item => item?.logicalTicks ?? 1050));
+                if (!ranked.length) { noLegalPlans++; state = advanceSimulationTicksV9(state, 30).state; continue; }
+                candidate = ranked[0].candidate;
+                selections.push({ turn: state.turn, actor, prefix: 'none', ordinal: candidate.ordinal, status: 'selected' });
             }
             if (state.units[actor === 'player' ? 0 : 1].thread >= 4) utility.opportunities += 1;
             if (prefix !== 'none') utility.used += 1;
             state = advanceSimulationTicksV9(state, 30).state;
             assert.equal(state.tick, turnStart + 30, 'every assessment actor pays its charged planning window');
             const execution = new LoomkeeperExecutionV9(candidate, prefix, state);
-            while (state.phase === 'action' && state.activeActor === actor && state.tick - turnStart < 1_050) {
+            while (state.phase !== 'finished' && state.turn === plannedTurn && state.tick - turnStart < 1_050) {
                 for (let slot = 0; slot < 8; slot += 1) {
                     const op = execution.next(state); if (!op) break;
                     const transition = op.kind === 'intent'
@@ -187,7 +211,7 @@ function fullMatch(scenario: Scenario) {
                     if (op.kind === 'intent' && op.intent.type === 'fire') casts[candidate.relicId] = (casts[candidate.relicId] ?? 0) + 1;
                     state = transition.state;
                 }
-                if (state.phase === 'action' && state.activeActor === actor) state = advanceSimulationTicksV9(state, 1).state;
+                if (state.phase !== 'finished' && state.turn === plannedTurn) state = advanceSimulationTicksV9(state, 1).state;
             }
         } else state = advanceSimulationTicksV9(state, 1).state;
         if (state.tick > 16_800) throw new Error('V9 assessment match exceeded 16,800 ticks.');
@@ -198,7 +222,7 @@ function fullMatch(scenario: Scenario) {
         casts, utility, unaffordableCandidates, noLegalPlans, workFailures,
         ticks: state.tick, turns: state.turn, damage: { player: start[0] - state.units[0].stitching, loomkeeper: start[1] - state.units[1].stitching },
         winner: state.winner, reason: state.finishReason, planning: { slots, playerSlots, playerAffordableCandidates, totalPlanningMs: Number(totalPlanningMs.toFixed(3)),
-            totalRolloutTicks, maximumRolloutTicks: maxRolloutTicks ? 1_050 : 0, maxSixSlotBatchMs: Number(maxBatchMs.toFixed(3)) } };
+            totalRolloutTicks, maximumRolloutTicks: maxRolloutTicks, maxSixSlotBatchMs: Number(maxBatchMs.toFixed(3)) } };
 }
 
 function thresholdFixture(bank: number, stitching: number, distance: number): SimulationStateV9 {

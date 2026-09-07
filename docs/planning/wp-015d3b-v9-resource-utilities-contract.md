@@ -1128,3 +1128,9 @@ failed independent review. Runtime-served metadata is unavailable. Reopen
 support if the strict inert predicate, differential matrix, real-clock
 cadence, work accounting, or any proposed scope expansion is uncertain. N and
 G remain active owners; advisory support is not final review authority.
+
+### V9D direct closure amendment - 2026-09-07
+
+The owner requested closure without agents. The coordinator performs direct review, corrections and verification; this is not a fresh independent review. Existing admitted V9 client, planner and assessment carriers remain in scope. The closure additionally admits only the compatible transitive qs 6.15.3 to 6.16.0 lockfile repair for the inherited audit failure. Keep numeric authority versions, frozen work limits, the V7 default and candidate-only admission unchanged. The local branch is now `codex/wp-015d3b-v9d-resource-utilities`; the historical remote is unchanged. Retain historical failures and distinguish new actual live browser proof from legacy browser passes.
+
+The direct closure additionally admits the startup branch in `client/src/script.ts`: `v9-live` must bootstrap the real session rather than be captured by the generic local-preview branch. This was reproduced by the new live browser test. Existing query values retain their behavior.

@@ -7,6 +7,7 @@ import { SimulationCoordinatorV9 } from '../../server/src/simulation/coordinator
 import { createRuntimeServer } from '../../server/src/runtime';
 import { V9_AUTOMATION_ID } from '../../shared/combat-version';
 import { V9_RULESET_ID } from '../../shared/simulation-v9';
+import { protocolEventsV9 } from '../../shared/protocol-v9';
 
 function snapshot(mode: 'practice' | 'reward', sequence = 0) {
     const coordinator = new SimulationCoordinatorV9();
@@ -61,5 +62,13 @@ test('V9 candidate client uses tagged create/input/cancel/release/pause/leave ac
         assert.equal(paused.paused, true);
         const result = await client.leave();
         assert.equal(result.outcome, 'left');
+        const restarted = await client.start('practice', 'wizard');
+        assert.notEqual(restarted.challengeId, created.challengeId);
+        assert.equal(client.inputReady(), true, 'retry establishes fresh challenge ownership');
+        const serverSocket = [...runtime.io.sockets.sockets.values()][0];
+        serverSocket.emit(protocolEventsV9.result, result);
+        await new Promise(resolve => setTimeout(resolve, 30));
+        assert.equal(client.inputReady(), true, 'late result from old challenge cannot terminalize retry');
+        await client.submit({ type: 'face', direction: 1 });
     } finally { client?.dispose(); socket.close(); await runtime.close(); }
 });

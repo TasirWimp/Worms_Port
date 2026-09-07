@@ -61,7 +61,7 @@ export type V9CandidateReservation = { challengeId: string; eligibilityToken: st
  * envelopes and never falls through to the ordinary V7 Practice transport.
  */
 export class ResourceTurnsV9Client {
-    private readonly lifecycle = new ResourceTurnsV9Lifecycle();
+    private lifecycle = new ResourceTurnsV9Lifecycle();
     private snapshot?: CandidateSnapshotV9;
     private terminal?: ChallengeResultV9;
     private disposed = false;
@@ -125,6 +125,11 @@ export class ResourceTurnsV9Client {
                 eligibilityToken: reservation?.eligibilityToken, rulesetId: V9_RULESET_ID, automationId: V9_AUTOMATION_ID };
         const ack: any = await this.mutate<z.infer<typeof ChallengeCreateAckV9Schema>>(protocolEventsV9.create, request, ChallengeCreateAckV9Schema);
         if (!ack.data || !('simulation' in ack.data)) throw new Error('V9 creation did not return an authoritative snapshot.');
+        // Only a successful, matched creation acknowledgement may replace identity.
+        if (ack.data.sessionId !== this.session().sessionId) throw new Error('Foreign V9 creation acknowledgement.');
+        this.lifecycle = new ResourceTurnsV9Lifecycle();
+        this.snapshot = undefined;
+        this.terminal = undefined;
         return this.acceptAckSnapshot(ack.data, ack.nextSequence, ack.nextInputSequence, false);
     }
 
@@ -194,7 +199,8 @@ export class ResourceTurnsV9Client {
     };
     private readonly onResultEvent = (raw: unknown): void => {
         const parsed = ChallengeResultV9Schema.safeParse(raw);
-        if (!parsed.success || parsed.data.sessionId !== this.session().sessionId) return;
+        if (!parsed.success || parsed.data.sessionId !== this.session().sessionId ||
+            parsed.data.challengeId !== this.snapshot?.challengeId) return;
         this.acceptResult(parsed.data, parsed.data.nextSequence, parsed.data.nextInputSequence);
     };
     private readonly onDisconnect = (): void => {
@@ -242,6 +248,8 @@ export class ResourceTurnsV9Client {
         return structuredClone(accepted);
     }
     private acceptResult(value: ChallengeResultV9, sequence: number, inputSequence: number): ChallengeResultV9 {
+        if (value.sessionId !== this.session().sessionId || value.challengeId !== this.snapshot?.challengeId)
+            throw new Error('Foreign V9 result.');
         if (this.terminal) return structuredClone(this.terminal);
         this.cursor.nextSequence = Math.max(this.cursor.nextSequence, sequence);
         this.terminal = structuredClone(value);

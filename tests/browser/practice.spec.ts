@@ -4,6 +4,44 @@ import { skipExcludedProjectBeforeSetup } from './support/project-routing';
 import path from 'node:path';
 import { createRuntimeServer } from '../../server/src/runtime';
 import { V8_R1_RULESET_ID } from '../../shared/simulation-v8';
+import { V9_RULESET_ID } from '../../shared/simulation-v9';
+
+test('live V9 candidate preserves pause, AI response, terminal result and fresh retry', async ({ page }) => {
+  const errors: string[] = [];
+  page.on('pageerror', error => errors.push(error.message));
+  let now = Date.now();
+  const runtime = createRuntimeServer({ clientDir: path.resolve('client/build'), sessionRegistry: {
+    now: () => now, challengeTtlMs: 60_000, simulationRulesetId: V9_RULESET_ID,
+    seedSource: () => 1, simulationTickIntervalMs: false, v9TestOnly: { nowUs: () => 0 }
+  } });
+  const port = await runtime.listen();
+  try {
+    await page.goto(`http://127.0.0.1:${port}/?sideways=off&combat-preview=v9-live`);
+    await page.getByRole('button', { name: 'Start Practice' }).tap();
+    const ui = page.locator('.combat-v9');
+    await expect(ui).toBeVisible();
+    await expect(ui).toHaveAttribute('data-ruleset', V9_RULESET_ID);
+    await ui.locator('.pause-button').tap();
+    await expect(ui).toHaveAttribute('data-paused', 'true');
+    await ui.locator('.pause-button').tap();
+    await expect(ui).toHaveAttribute('data-paused', 'false');
+    const bound = () => runtime.sessions.getBound([...runtime.io.sockets.sockets.values()][0].id)!;
+    const first = runtime.sessions.activeSnapshotV9(bound())!.challengeId;
+    runtime.sessions.advanceV9Test(first, 450);
+    await expect(ui).toHaveAttribute('data-active-actor', 'loomkeeper');
+    runtime.sessions.advanceV9Test(first, 350);
+    const replay = runtime.sessions.replayForChallengeV9(bound(), first)!;
+    expect(JSON.stringify(replay)).toContain('fire');
+    now += 60_001;
+    runtime.sessions.sweep();
+    await expect(page.locator('.result-shell')).toHaveAttribute('data-outcome', 'expired');
+    await page.getByRole('button', { name: 'Play Again', exact: true }).tap();
+    await expect(ui).toBeVisible();
+    await expect.poll(() => runtime.sessions.activeSnapshotV9(bound())?.challengeId).not.toBe(first);
+    await expect(ui.locator('.pause-button')).toBeEnabled();
+    expect(errors).toEqual([]);
+  } finally { await page.goto('about:blank'); await runtime.close(); }
+});
 
 test('injected automated Practice reloads paused authority, retries, and shows the actual expired result', async ({ page }) => {
   const pageErrors: string[] = [];

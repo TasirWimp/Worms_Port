@@ -2,7 +2,7 @@
   "id": "WP-015D3B",
   "status": "in_progress",
   "starting_commit": "da1e7a9c1a1c19bcfa4385e3db28cb530f660ebb",
-  "branch": "codex/wp-015d3b-v9b-authoritative-foundation-v0",
+  "branch": "codex/wp-015d3b-v9d-resource-utilities",
   "initial_worktree": "clean",
   "starting_lock_sha256": "D4DAC6AE09A3D2F6C5A7EAA11520BAC43F1628320C5331575BCF1E1857073D73",
   "owning_roles": [
@@ -11,6 +11,7 @@
     "worms_port_reviewer"
   ],
   "scope": [
+    "2026-09-07 owner requested closure without agents. Coordinator directly reviews and corrects existing V9D sources/tests; no new subagents or independent-review claim. Scope additionally admits only the qs 6.15.3 to 6.16.0 compatible transitive lockfile security update. Direct review found retry/result ownership and assessment player-search/retreat gaps despite earlier reported verification. Existing assessment and browser success is retained as historical evidence, not closure proof. Local branch renamed to V9D; remote remains historical V9B until explicitly published.",
     "V9B authoritative-foundation entry opened 2026-09-05 from clean d41df456696326f737e526e59f43aeae865a5681 on codex/wp-015d3b-v9b-authoritative-foundation-v0. Fresh /root/v9b_entry_designer configured gpt-5.6-terra/high read only the V9 contract, operating documents and local MIT V8 product sources/tests, then proposed strict V9 state/protocol/replay order, closed path hashes and red-first fixtures. Independent /root/v9b_entry_reviewer configured gpt-6-astra/high approved the corrected entry before a fresh implementation worker edits source. Requested/configured model data is not runtime-served metadata. No external/reference/quarantine access or runtime edit occurred during entry design.",
     "Owner reported V8E phone acceptance and explicitly requested starting V9 on 2026-09-05. V9A is the first bounded slice: a finite independently authored resource-and-utility contract, before runtime implementation.",
     "Exact V9A scope: docs/evidence/wp-015d3b.json, docs/planning/wp-015d3b-v9-resource-utilities-contract.md, docs/planning/implementation_plan.md, docs/planning/wp-015d3a-v8-action-turns-contract.md, docs/evidence/wp-015d3a.json and README.md. The new contract and evidence have a distinct V9 lifecycle; existing V8 carriers retain predecessor acceptance.",

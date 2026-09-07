@@ -29,6 +29,12 @@ export type LoomkeeperCandidateV9 = { ordinal: number; scriptIndex: number; move
     direction: 'stay' | 'toward' | 'away'; relicId: RelicId; angleMilliDegrees: number; powerPermille: number };
 export type LoomkeeperOperationV9 = { kind: 'intent'; intent: SimulationIntentV9 } | { kind: 'barrier'; barrier: SimulationBarrierV9 };
 type Evaluation = { candidate: LoomkeeperCandidateV9; logicalTicks: number; rank: readonly number[] };
+/** Assessment-only evaluator; production selection always uses the fixed planner. */
+export function evaluateV9AssessmentCandidate(source: SimulationStateV9, ordinal: number): Evaluation | undefined {
+    const charged = DetachedSimulationRolloutV9.fromTrustedSource(source);
+    advanceSimulationTicksV9DetachedRollout(charged, V9_AI_PLANNING_TICKS);
+    return evaluateCandidate(source, completeDetachedSimulationRolloutV9(charged), candidateAt(ordinal), 'none');
+}
 type PreparedPrefix = { state: SimulationStateV9; logicalTicks: number };
 export type LoomkeeperPlannerOptionsV9 = {
     /**
@@ -41,6 +47,7 @@ export type LoomkeeperPlannerOptionsV9 = {
 /** Phaser-free bounded V9 planner. Prefix evaluation mutates clones only. */
 export class LoomkeeperPlannerV9 {
     public planningTicks = 0; public evaluatedCandidates = 0; public rolloutTicks = 0;
+    public maximumRolloutTicks = 0; public unaffordableCandidates = 0;
     private best?: Evaluation; private complete = false; private readonly prefix: V9Prefix;
     private readonly chargedSource: SimulationStateV9;
     private readonly preparedPrefixes = new Map<number, PreparedPrefix | undefined>();
@@ -59,7 +66,9 @@ export class LoomkeeperPlannerV9 {
         if (this.complete) throw new Error('The V9 planning pass is already complete.');
         const start = this.evaluatedCandidates;
         for (let ordinal = start; ordinal < start + V9_AI_PLANS_PER_TICK; ordinal += 1) {
+            if (!candidateAffordable(this.source, candidateAt(ordinal), this.prefix)) this.unaffordableCandidates++;
             const evaluation = this.evaluate(candidateAt(ordinal));
+            this.maximumRolloutTicks = Math.max(this.maximumRolloutTicks, evaluation?.logicalTicks ?? V9_AI_MAX_ROLLOUT_TICKS);
             this.evaluatedCandidates += 1; this.rolloutTicks += evaluation?.logicalTicks ?? V9_AI_MAX_ROLLOUT_TICKS;
             if (this.rolloutTicks > V9_AI_MAX_TOTAL_ROLLOUT_TICKS) throw new Error('V9 planning exceeded its frozen rollout budget.');
             if (evaluation && (!this.best || compareRank(evaluation.rank, this.best.rank) > 0)) this.best = evaluation;
