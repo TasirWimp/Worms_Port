@@ -162,7 +162,7 @@ test('V9D timer exceptions report a runtime error without leaking raw exception 
     } finally { coordinator.dispose(); }
 });
 
-test('V9D slow AI batches report clock debt, retain the cutoff and reconstruct the safety stop', async () => {
+test('V9D charges slow AI work once while external clock stalls retain the debt cutoff', async () => {
     let now = 0;
     const diagnostics: unknown[] = [];
     const coordinator = new SimulationCoordinatorV9({ nowUs: () => now, yieldBatch: async () => {},
@@ -175,14 +175,24 @@ test('V9D slow AI batches report clock debt, retain the cutoff and reconstruct t
     });
     try {
         const id = 'v9_slow_ai_challenge'; coordinator.createAutomated(id, 'v9_slow_ai_session', 1, 'wizard');
-        coordinator.advance(id, 450); now = 34_000;
-        await coordinator.catchUp(id);
-        await coordinator.catchUp(id);
+        coordinator.advance(id, 450);
+        for (let batch = 0; batch < 30; batch += 1) {
+            now += 34_000;
+            const planning = await coordinator.catchUp(id);
+            assert.equal(planning.unavailable, false, 'bounded planner CPU is not double-charged as clock debt');
+        }
+        const planned = coordinator.get(id)!;
+        assert.equal(planned.state.tick, 480);
+        assert.equal(planned.terminalResult, undefined);
+        assert.equal((coordinator.replay(id) as any).chosenPlans.length, 1);
+        assert.equal(diagnostics.length, 0);
+
+        now += 1_100_000;
         const stopped = await coordinator.catchUp(id);
         assert.equal(stopped.unavailable, true);
         assert.equal(stopped.terminalResult?.stopReason, 'clock_debt');
-        assert.deepEqual(diagnostics, [{ reason: 'clock_debt', tick: 457, turn: 1, phase: 'action',
-            actor: 'loomkeeper', dueTicks: 36, planningTicks: 7, maximumPlanningBatchUs: 200_000 }]);
+        assert.deepEqual(diagnostics, [{ reason: 'clock_debt', tick: 480, turn: 1, phase: 'action',
+            actor: 'loomkeeper', dueTicks: 33, planningTicks: 30, maximumPlanningBatchUs: 200_000 }]);
         const replay = coordinator.replay(id)!;
         assert.equal(coordinator.reconstructAndVerify(replay).stateHash, stopped.stateHash);
         coordinator.safety(id, 'expiry');
@@ -192,7 +202,7 @@ test('V9D slow AI batches report clock debt, retain the cutoff and reconstruct t
 
 test('V9D real-clock planning reaches all 30 charged batches, casts, hands off, and reconstructs without debt loss', async t => {
     let epoch: number | undefined;
-    const batches: number[] = []; let maximumDebt = 0;
+    const batches: number[] = []; let maximumDueTicks = 0;
     const coordinator = new SimulationCoordinatorV9({
         nowUs: () => epoch === undefined ? 0 : Math.floor((performance.now() - epoch) * 1_000),
         plannerFactory: state => {
@@ -206,9 +216,8 @@ test('V9D real-clock planning reaches all 30 charged batches, casts, hands off, 
         coordinator.advance(id, 450); epoch = performance.now();
         while (coordinator.get(id)!.state.tick < 480 && !coordinator.get(id)!.unavailable) {
             await new Promise(resolve => setTimeout(resolve, 10));
-            const elapsedTicks = Math.floor((performance.now() - epoch) * 30 / 1_000);
-            maximumDebt = Math.max(maximumDebt, elapsedTicks - (coordinator.get(id)!.state.tick - 450));
             await coordinator.catchUp(id);
+            maximumDueTicks = Math.max(maximumDueTicks, coordinator.dueTicks(id));
             assert.ok(performance.now() - epoch < 5_000, 'real-clock planning exceeded the bounded observation window');
         }
         const planned = coordinator.get(id)!;
@@ -223,7 +232,7 @@ test('V9D real-clock planning reaches all 30 charged batches, casts, hands off, 
         const verifier = new SimulationCoordinatorV9();
         assert.equal(verifier.reconstructAndVerify(replay, { challengeId: replay.challengeId, sessionId: replay.sessionId }).stateHash, handoff.stateHash);
         verifier.dispose();
-        t.diagnostic(`real-clock batches=30 maxDebt=${maximumDebt} maxBatchMs=${Math.max(...batches).toFixed(3)} debtAtSelection=${debtAtSelection}`);
+        t.diagnostic(`real-clock batches=30 maxDueTicks=${maximumDueTicks} maxBatchMs=${Math.max(...batches).toFixed(3)} debtAtSelection=${debtAtSelection}`);
     } finally { coordinator.dispose(); }
 });
 

@@ -503,8 +503,13 @@ lifecycle cleanup, so correlate an early expiry with shutdown/restart logs.
 The line includes tick, turn,
 phase, actor, outstanding ticks and AI batch timing, with no session tokens,
 wallet data or raw exception text. A `/favicon.ico` 404 is unrelated.
-The owner's first AI-turn failure at approximately 20 seconds / tick 381 is
-still open pending this deployment evidence; local success does not clear it.
+The owner's deployed diagnostic confirmed `clock_debt` at tick 311 after only
+12 of 30 AI planning batches; the slowest batch took 188646 microseconds. The
+coordinator now charges those bounded planner computations only through their
+existing 30 logical planning ticks instead of also treating their CPU duration
+as missed simulation time. A genuine external scheduling delay still reaches
+the unchanged 30-tick debt cutoff. Repeat phone acceptance after redeploying;
+it remains open until the complete live AI turn succeeds.
 
 For rollback, restore the previously used profile (for example
 `development-v8d-practice`) and redeploy. Removing the profile or setting

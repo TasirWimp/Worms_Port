@@ -12,6 +12,7 @@
     "worms_port_reviewer"
   ],
   "scope": [
+    "2026-09-07 deployed diagnostic confirms the phone failure cause: clock_debt at tick 311, turn 1, with 31 ticks due after 12/30 AI planning batches and maximumPlanningBatchUs 188646 on the owner's paid one-CPU Render service. The bounded single-owner correction shifts only the affected match's clock anchor by measured planner-step CPU, so the existing fixed 30 logical planning ticks charge the computation once. External scheduler delays, the 30-tick cutoff, 180-candidate lattice, ranking, selected plan, simulation state/hash, replay and V8 mechanics remain unchanged. Phone acceptance remains blocked pending redeployed live proof.",
     "2026-09-07 phone acceptance remains blocked: owner reports first AI handoff stopping after about 20 seconds at tick 381. Supplied favicon.ico 404 access logs are unrelated. Normal challenge TTL is 30 minutes. Single-owner investigation reproduces clock-debt termination with controlled 200ms AI batches, but this does not establish the actual Render cause. Diagnostic correction adds finite optional stopReason result metadata, distinguishes timer runtime exceptions from clock debt, and emits bounded token-free application logs in the deployed Practice profile. No simulation, planner lattice, deadlines, safety caps, replay encoding or settlement outcomes change. Root-cause repair awaits the deployed diagnostic.",
     "2026-09-07 owner Render report reopens deployable phone readiness: V9-live client was shipped, but ordinary server startup only admitted V7/V8. Single-owner correction introduces explicit development-v9d-practice with real clocks, no monetary services or test injection, using existing startup/config/registry/runtime, smoke/profile/browser and documentation carriers. Historical injected closure remains valid only for its tested scope; it did not prove this deployment path. Current local/upstream V9D branch names match.",
     "2026-09-07 V9D engineering closure is complete through 5a1bd032b6d1cd5838ac546d33e66613e8ed75e6 after direct coordinator correction/review at owner request, with no agents used in this closure. The complete corrected assessment passed 196 scenarios / 272 executions. This current result supersedes the engineering blockers in historical review 121954e and the first two-file correction restriction; all historical reviews/support exchanges remain retained. Overall WP-015D3B stays in_progress for live-candidate phone acceptance and separate public/release decisions. The direct contributor review is explicitly not a fresh independent Astra final review.",
@@ -43,6 +44,11 @@
   "sorcerers_reference_used": false,
   "clean_room_records": [],
   "check_results": [
+    {
+      "command": "node scripts/verify-changes.js (V9D confirmed clock-debt correction)",
+      "status": "pass_with_expected_skip",
+      "detail": "2026-09-07: all 469 change-selected unit tests passed (protocol 121, simulation 130, Loomkeeper 34, relics 10, combat 73, Practice 42, identity 22, reward 37). Work-package/import-boundary checks, types, fresh outputs, identity/reward security and bundle gates passed. All four built profiles passed; each automated profile produced a real-clock Loomkeeper cast, and deployed V9 retained zero dormant DB/RPC contacts. Local real-clock V9 completed 30 planning batches with maxDueTicks 0, maximum batch 51.151ms and an exactly reconstructed handoff. Controlled 200ms planner batches completed all 30 charged ticks without debt; a separate 1.1-second external stall still produced the unchanged clock_debt safety result and reconstructable replay. Phone browser matrix: 57 passed, 3 expected landscape-owned exclusions, zero retries, 7.8 minutes. The final seam also measures the one-time planner initializer; after that refinement, types, all 34 Loomkeeper tests (maxDueTicks 0, maximum batch 50.385ms), all 121 protocol tests, fresh outputs/four-profile built smoke, and focused Practice browser checks (9 passed, 1 expected skip) passed again. PostgreSQL skipped because WP014_TEST_DATABASE_URL is absent; full daily/Ubuntu/release and physical phone checks were not run. Log: .cache/v9d-clock-accounting-verification.log."
+    },
     {
       "command": "node scripts/run-playwright.js --reuse-build --project=chromium-390x844 --output=test-results/v9d-stop-browser [all six selected specs]",
       "status": "pass_with_expected_skip",
@@ -145,6 +151,12 @@
     }
   ],
   "reviews": [
+    {
+      "role": "coordinator",
+      "reviewer": "/root (single-owner direct review; no agents)",
+      "decision": "pass",
+      "detail": "PASS for the confirmed clock-debt correction, pending owner phone acceptance. The deployed evidence identifies double charging of bounded planner CPU: the fixed 30 logical planning ticks already represent the decision window, while synchronous initialization/batch duration also advanced the real-time debt clock. The correction shifts only the same match's anchor by the measured initializer or planner-step duration. It cannot forgive outside delay or other-match work, and it leaves the 30-tick cutoff, 180 candidates, ranking, selected plan, authoritative state/hash, replay and V8 mechanics unchanged. Controlled slow-work/external-stall tests, real-clock handoff/reconstruction, built V9 profile and selected browser/product/security regressions pass. Historical failed agent reviews remain retained and reconciled by the documented later closure/corrections; no new agent was used or independent-review claim made. The package remains in_progress until redeployed phone proof."
+    },
     {
       "role": "coordinator",
       "reviewer": "/root (single-owner direct review; no agents)",
@@ -499,7 +511,7 @@
     "Full daily/release verification remains scheduled for 21:00 Europe/Berlin and was not run for this feature slice. Real Android/iOS acceptance, deployment, funded activation, V9 AI/presentation/balance and public selection remain outside V9B."
   ],
   "residual_risks": [
-    "Owner phone runtime failure at approximately 20 seconds / tick 381 is unresolved. Diagnostic reproduction proves a plausible timing path only; Owner reports the paid compute tier with one CPU, one level above Starter; the matching application stop log is not yet available. Do not attribute the failure to Free-tier limits or recommend an upgrade from this evidence. Existing local real-clock and browser passes are not evidence that the phone failure is repaired.",
+    "The deployed log confirms clock debt during AI planning, but the accounting correction is not yet deployed or phone-accepted. A complete live opponent turn on the owner's paid one-CPU Render service remains the decisive witness; no hardware upgrade is justified by current evidence.",
     "V9D engineering closure is not public promotion or physical-device acceptance. Next is owner acceptance on the explicit development-v9d-practice profile, then a separately authorized shared Practice/reward release decision. Public selection remains V7.",
     "Corrected assessment records 29 player wins, 90 AI wins and 1 draw, with no Spoolburst selected despite 49 affordable opportunities. These observations warrant the later balance review; no approved V9 outcome threshold makes them correctness failures.",
     "Development now follows the owner's repository-wide no-subagents policy. Review and corrections are direct; no independent agent assurance is claimed.",

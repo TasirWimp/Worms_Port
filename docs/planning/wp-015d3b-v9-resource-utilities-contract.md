@@ -1230,3 +1230,22 @@ Controlled slow batches reproduce a timing stop, while ordinary local cadence
 passes. Neither proves the owner's Render cause. Retain the deployed
 `[v9-practice-stop]` diagnostic before choosing the underlying correction;
 do not mark phone acceptance or the runtime failure resolved from this patch.
+
+#### Confirmed clock-debt correction
+
+The deployed diagnostic returned `clock_debt` at tick 311, turn 1, after 12 of
+30 planning batches, with 31 ticks due and a maximum batch duration of 188646
+microseconds. This confirms that bounded planner CPU was being counted twice:
+once as the fixed 30 logical ticks through which the lattice is evaluated and
+again as missed real-time simulation while the synchronous batch ran.
+
+The correction may shift only that match's clock anchor by the measured planner
+step duration. It may not forgive time before or after the step, compensate
+other match work, increase the 30-tick debt limit, reduce the 180 candidates,
+change plan ranking, alter logical tick/deadline/replay accounting, or modify
+V8 mechanics. A controlled 200-millisecond-per-batch test must complete all 30
+planning ticks and retain the same selected/reconstructable policy evidence;
+a later 1.1-second external stall must still produce `clock_debt`. Real-clock,
+built-profile and phone-browser AI witnesses remain required. Phone acceptance
+stays open until the owner repeats the full first AI turn on the redeployed
+paid one-CPU Render service.

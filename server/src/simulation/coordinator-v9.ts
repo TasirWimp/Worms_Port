@@ -326,14 +326,24 @@ export class SimulationCoordinatorV9 {
         if (!entry.automated || entry.state.phase !== 'action' || entry.state.activeActor !== 'loomkeeper') return;
         if (entry.aiTurn !== entry.state.turn) {
             entry.aiTurn = entry.state.turn; entry.planningElapsed = 0; entry.planningFailed = false; entry.execution = undefined;
-            try { entry.planner = this.options.plannerFactory?.(structuredClone(entry.state)) ?? new LoomkeeperPlannerV9(entry.state); }
-            catch { entry.planningFailed = true; entry.planner = undefined; }
+            entry.planner = undefined;
         }
         if ((entry.planningElapsed ?? 0) >= 30) return;
         if (!entry.planningFailed) {
             const started = this.clock();
-            try { entry.planner!.step(); } catch { entry.planningFailed = true; }
-            finally { entry.maximumPlanningBatchUs = Math.max(entry.maximumPlanningBatchUs ?? 0, this.clock() - started); }
+            try {
+                entry.planner ??= this.options.plannerFactory?.(structuredClone(entry.state)) ?? new LoomkeeperPlannerV9(entry.state);
+                entry.planner.step();
+            } catch { entry.planningFailed = true; entry.planner = undefined; }
+            finally {
+                const planningWorkUs = Math.max(0, this.clock() - started);
+                entry.maximumPlanningBatchUs = Math.max(entry.maximumPlanningBatchUs ?? 0, planningWorkUs);
+                // The fixed 30 logical planning ticks already charge the AI's
+                // decision window. Exclude only measured, bounded planner CPU
+                // from the real-time debt anchor so that work is not charged a
+                // second time. External scheduler stalls still accrue normally.
+                entry.anchorUs += planningWorkUs;
+            }
         }
         entry.planningElapsed = (entry.planningElapsed ?? 0) + 1;
     }
