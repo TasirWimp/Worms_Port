@@ -7,7 +7,7 @@ Phaser/Socket.IO stack.
 
 ## Execution Pointer
 
-- Tooling: **WP-016 adaptive agent support** is merged on main. It provides reciprocal read-only support during implementation, task-relative model/effort selection, revisable boundaries, retained support evidence, one verification owner, and a fresh independent final reviewer. Follow the operational protocol in [development workflow](../process/development_workflow.md#adaptive-support-during-implementation-wp-016).
+- Development policy: **No subagents**, effective 2026-09-07. The primary task owns implementation, testing, direct review, corrections and housekeeping. This supersedes all older agent assignments in this plan/contracts. **WP-016 is retired from development and retained on main for CRPM research**; see the [retirement/recovery record](../process/development_workflow.md#harness-retirement-and-research-preservation). The selector and 21:00 Europe/Berlin daily suite remain unchanged.
 
 - Verification infrastructure: the isolated change-selection/build-reuse port
   from `da1e7a9` follows the owner-requested 21:00 Berlin daily/full cadence.

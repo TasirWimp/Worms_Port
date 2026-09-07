@@ -467,43 +467,23 @@ PvP matchmaking is a post-competition feature. See
 `docs/planning/implementation_plan.md` for the active execution pointer and
 work-package sequence.
 
-## Codex Subagents
+## Single-owner development
 
-The project and ordinary subagent defaults are GPT-5.6 Terra (`gpt-5.6-terra`)
-with `high` reasoning, configured in [`.codex/config.toml`](.codex/config.toml).
-The docs keeper pins Terra/medium; the dedicated substantive reviewer pins
-GPT-6 Astra/high. [Task model routing](AGENTS.md#task-model-routing) selects by
-scope, requires a recorded reason and escalates difficult failures without
-weakening verification. V9B uses Terra implementers and an Astra reviewer.
+Worms_Port no longer uses subagents for development, review, research, tests or
+documentation. The primary assistant owns each change and its corrections.
+[AGENTS.md](AGENTS.md#single-owner-development--effective-2026-09-07) supersedes
+older delegation instructions. Project configuration sets `[agents].enabled =
+false`, the documented [Codex disable setting](https://learn.chatgpt.com/docs/agent-configuration/subagents#global-settings).
+The primary task's existing Terra/high default is unchanged. Project settings
+require a trusted checkout and may be overridden by host settings; the repo's
+no-delegation instruction applies even if an existing session still exposes tools.
 
-WP-016 adds [native reciprocal support](docs/process/development_workflow.md#adaptive-support-during-implementation-wp-016)
-during implementation. The unpinned read-only support advisor can use Terra,
-Sol or Astra at a task-relative effort. Participants exchange local evidence
-and revise boundaries before final review; the advisor cannot independently
-approve its own solution. Consequential returns stay in package evidence.
-
-Codex must trust the project to load local settings. Existing task selections,
-explicit invocation overrides and managed settings can supersede project
-defaults; changing this file does not switch a running task. Custom role model
-pins take precedence over ordinary subagent spawn/default settings, so the
-routing policy explains how to handle deliberate exceptions. These are
-configured defaults, not proof of the model served on a particular turn. See
-the [official configuration guide](https://learn.chatgpt.com/docs/config-file/config-basic)
-and [subagent configuration](https://learn.chatgpt.com/docs/agent-configuration/subagents#custom-agents).
-
-Role-specific Codex agents live in `.codex/agents/`:
-
-- `worms_port_planner`
-- `worms_port_test_worker`
-- `worms_port_base_game_worker`
-- `worms_port_network_worker`
-- `worms_port_asset_curator`
-- `worms_port_compliance_keeper`
-- `worms_port_docs_keeper`
-- `worms_port_reviewer`
-- `worms_port_support_advisor`
-
-See `AGENTS.md` and `docs/planning/implementation_plan.md` for role routing.
+The retired WP-016 harness remains discoverable on main for CRPM research:
+[retirement record and pinned recovery links](docs/process/development_workflow.md#harness-retirement-and-research-preservation),
+[archived role definitions](.codex/retired-agents/), and
+[original support evidence](docs/evidence/wp-016.json). These are historical
+research inputs, not active instructions. Selected checks and the full daily
+suite at 21:00 Europe/Berlin remain required.
 
 ## Upstream Pins
 

@@ -12,6 +12,7 @@
     "independent final reviewer"
   ],
   "scope": [
+    "2026-09-07 retirement: owner prohibits all subagents for Worms_Port development, including probes and independent reviewers. One primary task owns implementation, integration, checks, review and corrections. WP-016 remains a completed historical implementation and active CRPM research input; this does not mark it operationally active. Main already contains the port through b8b498b. Original source b50d5915aa5f88dd496c6837d3727be0c418cc60, all historical episodes and verdicts remain recoverable. Role definitions move unchanged to .codex/retired-agents; project agents.enabled=false and current repo policy disable use. The supplied V9 fragmentation diagnosis motivates this owner decision but is not a controlled cost/quality result. Its suggested probe/reviewer topology is not adopted.",
     "Owner-authorized tooling/workflow slice: native reciprocal agent support during implementation; revisable task boundaries, task-relative model/effort, one writer per shared artifact, independent final assessment.",
     "Extend existing work-package evidence only as needed to retain actual support exchanges, source identity, unresolved obligations, support reduction and reopening conditions; executable validation and negative controls.",
     "Use this tooling implementation as the first live support episode; retain model provenance and limitations. Track exact commits and results in the existing CRPM pressure case on main.",
@@ -23,6 +24,7 @@
     "No retrospective C7 acceptance change, cost-saving claim, full automated resource-lock rollout or model-effort benchmark."
   ],
   "planned_checks": [
+    "2026-09-07 retirement: node scripts/verify-changes.js; direct configuration/archive checks; git diff --check; audit:housekeeping",
     "node --test tests/tooling/work-package-evidence.test.js",
     "node scripts/verify-changes.js --base 2d31aa0 --dry-run",
     "node scripts/verify-changes.js --base 2d31aa0",
@@ -34,6 +36,11 @@
   "sorcerers_reference_used": false,
   "clean_room_records": [],
   "check_results": [
+    {
+      "command": "2026-09-07 retirement: node scripts/verify-changes.js; direct configuration/archive checks; git diff --check; audit:housekeeping",
+      "status": "pass",
+      "detail": "Selected compliance and 103 tooling tests passed on the V9D worktree; single-owner closure was red before the validator amendment and now passes, while malformed history, failed current review and missing checks still fail. TOML parse confirms agents.enabled=false, active project roles are absent and all nine archived role files match their pre-retirement Git contents. Housekeeping reconciled in current execution pointer. No runtime/build/browser/daily check selected: only policy, configuration, archived roles and evidence tooling changed. Main receives only the retirement diff, preserving its prior game and dependency lock."
+    },
     {
       "command": "node --test tests/tooling/work-package-evidence.test.js",
       "status": "pass",
@@ -66,6 +73,12 @@
     }
   ],
   "reviews": [
+    {
+      "role": "primary",
+      "reviewer": "current primary task; no subagents",
+      "decision": "pass",
+      "detail": "Direct retirement review: current instructions consistently prohibit subagents; historical protocol/roles are explicitly research-only. The original WP-016 independent reviews below remain historical findings, not approval of this retirement. Single-owner evidence mode can retain old failed reviews and unreduced support honestly; latest direct verdict and all planned checks govern closure, and historical support structure remains validated. No independent review or measured efficiency improvement is claimed."
+    },
     {
       "role": "worms_port_reviewer",
       "reviewer": "/root/support_final_review",
@@ -122,6 +135,7 @@
     }
   ],
   "residual_risks": [
+    "Retired from Worms_Port development as of 2026-09-07. CRPM research remains active. Repo settings apply when loaded/trusted and can be overridden by host settings; AGENTS.md prohibits delegation even in older sessions that still expose agent tools. Old branches/research worktrees must adopt current policy before new development; their historical content remains preserved.",
     "One live tooling support episode establishes an operational path and recoverable record, not unseen gameplay discovery, comparative efficiency, optimal model routing or causal attribution.",
     "Root /root is a solution contributor: it supplied the missing-final-identity guard, found premature reciprocity at opening, requested a single same-repo source boundary and caught empty-array schema drift. Root, implementer and advisor are ineligible for independent approval. Pair records summarize actual direct Terra/Astra exchanges without inventing a symmetric third-participant transcript.",
     "Native send_message and followup_task worked on this host. Requested Terra/high and Astra/high settings are known; actual served-model telemetry is unavailable. Exchange IDs are sanitized record labels, not authenticated transport receipts.",
