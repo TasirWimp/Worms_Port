@@ -1097,11 +1097,12 @@ P1 findings are: V7 reward reservation is consumed before V9 admission;
 disconnected settlement can be lost; real-clock planner cadence fails; there
 is no live V9 candidate journey; the D3 assessment has semantic/evidence
 failure; and required proof carriers are absent. The review also found a P2
-foreign-cursor leak and retained the inherited housekeeping-audit advisory.
+foreign-cursor leak and retained the inherited npm-audit advisory.
 The browser result is separate evidence: actual browser execution was 54
 passed with 3 expected landscape skips, and the separate three-browser check
-was 3/3 passed. The assessment ran 196/272 and failed with `null`; that result
-is semantically inadequate, and its report was overwritten by Playwright. The
+was 3/3 passed. The assessment reported 196 scenarios / 272 executions and `failure: null`;
+review nevertheless found its semantics inadequate, and its report was
+overwritten by Playwright. Counts alone did not establish a pass. The
 entry PASS by `/root/v9d_final_entry_reviewer` at `1a9e08a` had been absent
 from package evidence and is now retained there. These facts do not make any
 unrun or failed proof pass.
@@ -1134,3 +1135,44 @@ G remain active owners; advisory support is not final review authority.
 The owner requested closure without agents. The coordinator performs direct review, corrections and verification; this is not a fresh independent review. Existing admitted V9 client, planner and assessment carriers remain in scope. The closure additionally admits only the compatible transitive qs 6.15.3 to 6.16.0 lockfile repair for the inherited audit failure. Keep numeric authority versions, frozen work limits, the V7 default and candidate-only admission unchanged. The local branch is now `codex/wp-015d3b-v9d-resource-utilities`; the historical remote is unchanged. Retain historical failures and distinguish new actual live browser proof from legacy browser passes.
 
 The direct closure additionally admits the startup branch in `client/src/script.ts`: `v9-live` must bootstrap the real session rather than be captured by the generic local-preview branch. This was reproduced by the new live browser test. Existing query values retain their behavior.
+
+Direct review reproduced and corrected four additional gaps: the generic preview
+startup swallowed `v9-live`; a retry reused the previous challenge lifecycle;
+late results could terminate a replacement challenge; and paused restart could
+mount the old leave result over the new scene. The existing live browser carrier
+now exercises real injected creation, pause/resume, transport reconnect, an AI
+cast, expiry, result retry and paused restart. The assessment now searches all
+30 restricted player candidates with one charged tick each, ranks genuine
+rollouts, completes retreat, records measured workload and compares detached
+execution against the real coordinator at every exercised tick. Synthetic
+openings remain isolated from production replay/reward proof.
+
+The earlier D5 two-file restriction describes the first performance correction.
+The owner's subsequent closure instruction also covers the already admitted V9
+lifecycle/reward/protocol fixes and the client/assessment corrections above;
+the only additional startup and dependency paths are explicitly listed in this
+amendment. The frozen AI lattice, work/clock caps and public V7 selector remain.
+
+#### Direct closure result
+
+V9D engineering closure passes at `5a1bd03`. The corrected report completed
+196 scenarios / 272 executions in 832.319 seconds with no failure; its source
+commit, SHA-256, measured workload and observations are retained in the existing
+[V9 evidence](../evidence/wp-015d3b.json). The 120 full matches produced 29 player
+wins, 90 Loomkeeper wins and one draw. No Spoolburst was selected across 49
+affordable opportunities; this remains a descriptive balance observation.
+
+The selected product/tooling/build/smoke/security checks passed, followed by
+final types and focused tests, a fresh build, 55 canonical phone-browser passes,
+all three separately owned landscape cases and the final live-V9 journey after
+the paused-restart correction. The existing ordinary Practice performance gate
+passed; npm audit reports zero vulnerabilities. Documentation closure selects
+only work-package checks. Historical failures are reconciled without removal.
+
+This owner-directed contributor review used no agents and supplies no fresh
+independent-review claim. Next is owner phone acceptance of the injected live
+candidate; PostgreSQL, Ubuntu visual/full release, balance acceptance and public
+shared Practice/reward promotion remain separate. The full daily gate stays at
+21:00 Europe/Berlin. Local V9D branch naming is corrected; the remote V9B branch
+and main are untouched. Overall package evidence remains `in_progress` for
+those acceptance/release decisions, not for an unfinished V9D implementation.

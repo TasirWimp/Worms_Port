@@ -11,6 +11,7 @@
     "worms_port_reviewer"
   ],
   "scope": [
+    "2026-09-07 V9D engineering closure is complete through 5a1bd032b6d1cd5838ac546d33e66613e8ed75e6 after direct coordinator correction/review at owner request, with no agents used in this closure. The complete corrected assessment passed 196 scenarios / 272 executions. This current result supersedes the engineering blockers in historical review 121954e and the first two-file correction restriction; all historical reviews/support exchanges remain retained. Overall WP-015D3B stays in_progress for live-candidate phone acceptance and separate public/release decisions. The direct contributor review is explicitly not a fresh independent Astra final review.",
     "2026-09-07 owner requested closure without agents. Coordinator directly reviews and corrects existing V9D sources/tests; no new subagents or independent-review claim. Scope additionally admits only the qs 6.15.3 to 6.16.0 compatible transitive lockfile security update. Direct review found retry/result ownership and assessment player-search/retreat gaps despite earlier reported verification. Existing assessment and browser success is retained as historical evidence, not closure proof. Local branch renamed to V9D; remote remains historical V9B until explicitly published.",
     "V9B authoritative-foundation entry opened 2026-09-05 from clean d41df456696326f737e526e59f43aeae865a5681 on codex/wp-015d3b-v9b-authoritative-foundation-v0. Fresh /root/v9b_entry_designer configured gpt-5.6-terra/high read only the V9 contract, operating documents and local MIT V8 product sources/tests, then proposed strict V9 state/protocol/replay order, closed path hashes and red-first fixtures. Independent /root/v9b_entry_reviewer configured gpt-6-astra/high approved the corrected entry before a fresh implementation worker edits source. Requested/configured model data is not runtime-served metadata. No external/reference/quarantine access or runtime edit occurred during entry design.",
     "Owner reported V8E phone acceptance and explicitly requested starting V9 on 2026-09-05. V9A is the first bounded slice: a finite independently authored resource-and-utility contract, before runtime implementation.",
@@ -20,11 +21,11 @@
     "V9C initial local query-gated resource/cost/utility preview is committed on the historical V9B foundation branch. The expanded independent Astra continuity review failed it on 2026-09-05 despite passing selected verification. The owner authorized C7 continuity correction preparation: fresh-input boundaries, compact contextual actions, phone layout, presentation/HUD/camera, and truthful lifecycle guidance need an independently reviewed exact correction entry. The branch remains the V9B foundation carrier and its name does not imply V9C closure.",
     "V9C C7.5 is complete as a local preview correction. V9D is the approved-next documentation-only entry candidate at 2230a021c82bb16c00e92a7d088383d0a85fbf65: deterministic V9 Loomkeeper, strict automation/replay provenance, complete candidate-only shared Practice/reward lifecycle and bounded assessment. Its first independent entry review failed before source authorization; the next amended review then found the published Socket.IO blob malformed. The corrected entry retains the narrow live-controls seam and finite assessment matrix, and now records the exact Socket.IO lock. A fresh noncontributing Astra/high reviewer must approve it before any source edit; V9 remains unimplemented and public selection remains V7.",
     "The V9D assessment is fixed at 196 scenarios and 272 executions: 120 repeated correctness executions, 120 full Wizard matches and 32 repeated threshold executions. It writes a partial or complete ignored report; changed rows, work caps, outcome thresholds or report/failure semantics require a reviewed amendment.",
-    "V9D is in progress and blocked by fresh final Astra/high review at HEAD 121954e. The correction scope admits only shared/simulation-v9.ts and tests/simulation/resource-turns-v9.test.ts, owned by gameplay correction; docs retains only the existing contract, evidence and execution-pointer carriers. It may add a trusted detached-rollout advance seam to remove repeated V9 Zod validation while retaining adapter mechanics for mechanics-bearing ticks, with an optional strictly predicated inert-tick path. advanceSimulationTicksV9 remains unchanged as the differential oracle. No V8/general-kernel/clock-debt threshold/planner-search-or-cap/public-selector/lifecycle/reward change is authorized. Candidate/logical work charges remain, invalid detached result is work_failure, and correction proof requires the full per-tick state/event/hash matrix plus real-clock 30-batch/cast/handoff/replay cadence at unchanged debt; otherwise return a measured profile before broader scope."
+    "Historical 2026-09-06 correction entry (superseded by the owner-directed 2026-09-07 closure): V9D was blocked by fresh final Astra/high review at HEAD 121954e. The correction scope admits only shared/simulation-v9.ts and tests/simulation/resource-turns-v9.test.ts, owned by gameplay correction; docs retains only the existing contract, evidence and execution-pointer carriers. It may add a trusted detached-rollout advance seam to remove repeated V9 Zod validation while retaining adapter mechanics for mechanics-bearing ticks, with an optional strictly predicated inert-tick path. advanceSimulationTicksV9 remains unchanged as the differential oracle. No V8/general-kernel/clock-debt threshold/planner-search-or-cap/public-selector/lifecycle/reward change is authorized. Candidate/logical work charges remain, invalid detached result is work_failure, and correction proof requires the full per-tick state/event/hash matrix plus real-clock 30-batch/cast/handoff/replay cadence at unchanged debt; otherwise return a measured profile before broader scope."
   ],
   "non_goals": [
     "V9A was contract-only. V9B authorizes only its separately bounded injected authoritative foundation; it excludes deployment, shared public selector promotion, funded activation, V9C/D lifecycle or UI, V10 terrain, V11 teams, new assets/dependencies, reference/quarantine access, analytical execution and formal player observation.",
-    "V9D excludes public V9 activation, normal-selector changes, assets, dependencies or lockfile changes, Sorcerers/reference access, V8/legacy simulation edits, reward amounts/eligibility/ledger/schema/migration/signer changes, deployment, funded payout, balance approval, human similarity approval and physical-device acceptance."
+    "V9D excludes public V9 activation, normal-selector changes, assets, dependencies or lockfile changes except the 2026-09-07 qs security repair, Sorcerers/reference access, V8/legacy simulation edits, reward amounts/eligibility/ledger/schema/migration/signer changes, deployment, funded payout, balance approval, human similarity approval and physical-device acceptance."
   ],
   "planned_checks": [
     "Astra independent V9B entry review of strict version/replay, authority ordering, closed paths and source boundary before runtime edits.",
@@ -39,6 +40,41 @@
   "sorcerers_reference_used": false,
   "clean_room_records": [],
   "check_results": [
+    {
+      "command": "node scripts/run-playwright.js --reuse-build --performance-gate --output=test-results/v9d-closure-performance",
+      "status": "pass",
+      "detail": "Final rebuilt-source ordinary Practice performance gate passed 1/1 (53.0 seconds). This existing gate checks pinned Chromium timing/lazy SDK budgets; V9 planner real-clock and measured assessment evidence are separate."
+    },
+    {
+      "command": "node scripts/verify-changes.js --dry-run; node scripts/verify-changes.js; npm.cmd run audit:housekeeping; git diff --check",
+      "status": "pass",
+      "detail": "Closing three-document change selects only check:work-packages, which passed all 52 records; whitespace checks pass. No further game rebuild is needed for this documentation-only closure. Housekeeping confirms local V9D branch with historical V9B upstream and no gone tracking branches. Its retained failed-review flags are reconciled by the direct closure review and execution pointer, not deleted. Merged old branches and historical support records are untouched; no remote operation performed."
+    },
+    {
+      "command": "node scripts/verify-changes.js --phase checks (after selector dry-run; output test-results/v9d-closure-checks.log)",
+      "status": "pass",
+      "detail": "2026-09-07 closure baseline passed compliance/evidence/types; combat 73, Practice 42, identity 22, reward 37, protocol 119, simulation 130, Loomkeeper 32, relics 10 and tooling 102 tests; current build outputs and built smoke; identity/reward security, bundle budgets and npm audit. Later assessment/scene corrections were verified by the final assessment, fresh build and focused/browser reruns below; this baseline is not represented as a second exact-final-source full run. The explicit assessment is not included by the ordinary *.test.ts Loomkeeper glob."
+    },
+    {
+      "command": "npm.cmd run check:types; node --import tsx --test tests/practice/resource-turns-v9-client.test.ts tests/combat/resource-turns-v9.test.ts; npm.cmd run build:outputs",
+      "status": "pass",
+      "detail": "Final focused types/client/combat regression tests passed 20/20 and fresh outputs built. New red/green retry regression rejected lifecycle reuse and late previous-challenge results. The live browser first failed because script.ts intercepted v9-live; the corrected startup reaches real session ownership."
+    },
+    {
+      "command": "node scripts/run-playwright.js --reuse-build --project=chromium-390x844 [smoke/combat/practice/identity/reward/resilience specs]; focused chromium-844x390 owning cases; final live V9 practice journey",
+      "status": "pass_with_expected_skip",
+      "detail": "Canonical matrix passed 55 with 3 expected landscape-only skips (8.2 minutes). All 3 owning-landscape cases passed separately (fullscreen entry/exit, V4 anchored actor cards, result fullscreen). After final paused-restart correction and rebuild, the actual injected V9 browser journey passed again (1/1, 12.6 seconds): creation, pause/resume, socket disconnect/reconnect, AI cast, authoritative expiry/result, fresh Play Again and paused re-entry with no old result overlay or page errors. Distinct nested output directories preserve assessment evidence."
+    },
+    {
+      "command": "node --import tsx --test tests/loomkeeper/resource-turns-v9.assessment.ts",
+      "status": "pass",
+      "detail": "Corrected assessment completed 196 scenarios / 272 executions (A 60/120, B 120/120, C 16/32), failure:null; all 3 TAP tests passed including synthetic-proof isolation and actual 30-slot player search. Source commit 5a1bd032b6d1cd5838ac546d33e66613e8ed75e6; generated 2026-09-07T13:02:09.813Z; elapsed 832318.824 ms. Retained ignored report test-results/wp-015d3b-v9-assessment.json SHA-256 08BB4FBC7736BC68FA0CA7D113AC4127CB12E2C6CF80BB5B21309FB898D81A71. Full-match outcomes: player 29, Loomkeeper 90, draw 1; first actor wins 88. Utility used 114 / 245 opportunities; Spoolburst selected/fired 0 / 49 affordable opportunities. No no-legal-plan or work failures; maximum match 2812 ticks, maximum rollout 1050; measured maximum six-slot batch 187.869 ms on this shared Windows host. These are descriptive results, not balance/deployment-latency approval."
+    },
+    {
+      "command": "npm.cmd run check:bundle-budget; npm audit",
+      "status": "pass",
+      "detail": "Final build: largest initial JavaScript chunk 1496676 / 1500000 bytes; initial JavaScript plus CSS gzip 415302 / 430000. qs 6.16.0 compatible transitive lockfile repair leaves zero audit vulnerabilities. Initial JavaScript headroom remains small."
+    },
     {
       "command": "npm.cmd run verify:changes -- --dry-run; npm.cmd run verify:changes",
       "status": "pass",
@@ -86,6 +122,18 @@
     }
   ],
   "reviews": [
+    {
+      "role": "coordinator",
+      "reviewer": "/root (direct contributor review; owner requested no agents)",
+      "decision": "pass",
+      "detail": "PASS for V9D engineering candidate only at 5a1bd03. No agents were spawned or consulted for this closure; runtime-served coordinator model metadata is unavailable. This is not the usual independent Astra final assessment. Historical 121954e findings are reconciled: admission-before-reservation and detached/expiry/shutdown settlement plus once-only genuine automated reward proof are covered by ab1519b and reward/runtime tests; foreign cursor privacy by protocol runtime tests; immutable prefix and trusted detached seam by 94a2d7f/50bcf76, per-tick simulation differential and real-clock 30-batch/cast/handoff/reconstruction tests; actual client entry/retry/reconnect by b917084/840ab8b/5a1bd03 and live browser proof; semantically complete D3 assessment by genuine restricted candidate search, retreat/handoff, measured workload and actual coordinator trace comparison in 840ab8b, with the retained complete report. Existing historical support episode SUP-V9D-02 is not fabricated as a completed reciprocal exchange: the owner superseded further agent support with this direct closure. No remaining identified engineering blocker; package acceptance/release gates remain separate."
+    },
+    {
+      "role": "coordinator",
+      "reviewer": "/root continuity ledger",
+      "decision": "pass",
+      "detail": "Preserved: V9C compact contextual actions, corner pause, movement/presentation feedback and anchored stats via existing combat/browser cases; V7 default and all existing Practice/identity/reward/resilience paths via selected regression families. Replaced: V9 live AI deferral by authoritative automated candidate, with real-clock and browser AI-action evidence. Preserved: ownership, pause/reconnect, result/retry, input fences and once-only settlement. Deferred: live-candidate Android/iOS acceptance and balance decision to the next owner V9D acceptance checkpoint; public shared Practice/reward promotion and daily/Ubuntu/PostgreSQL release proof to the explicit release boundary; wider roster and terrain remain their already named future waypoints. Missing classifications: none within this engineering candidate scope. Synthetic assessment does not supply reward proof, phone acceptance, balance approval or payout authority."
+    },
     {
       "role": "worms_port_planner",
       "reviewer": "/root/v9_contract_planner",
@@ -186,7 +234,7 @@
       "role": "worms_port_reviewer",
       "reviewer": "/root/v9d_final_reviewer",
       "decision": "fail",
-      "detail": "Fresh configured Astra/high final review at HEAD 121954e failed V9D. P1: V7 reward reservation consumed before V9 admission, disconnected settlement loss, real-clock planner failure, absent live V9 candidate journey, D3 semantic/evidence failure, and missing proof carriers. P2: foreign cursor leak. It retained the inherited housekeeping-audit advisory. Browser evidence was separately 54 passed plus 3 expected landscape skips, with a separate 3/3 passed browser check. assess:v9 executed 196/272 then failed with null; the result is semantically inadequate and its report was overwritten by Playwright. V9D remains blocked and unapproved."
+      "detail": "Fresh configured Astra/high final review at HEAD 121954e failed V9D. P1: V7 reward reservation consumed before V9 admission, disconnected settlement loss, real-clock planner failure, absent live V9 candidate journey, D3 semantic/evidence failure, and missing proof carriers. P2: foreign cursor leak. It retained the inherited npm-audit advisory. Browser evidence was separately 54 passed plus 3 expected landscape skips, with a separate 3/3 passed browser check. assess:v9 reported 196 scenarios / 272 executions with failure:null; review found that result semantically inadequate and its report was overwritten by Playwright. V9D remains blocked and unapproved."
     }
   ],
   "support_episodes": [
@@ -408,14 +456,18 @@
     }
   ],
   "skipped_checks": [
-    "Game build, unit/browser/full daily suite, dependency audit and PostgreSQL: documentation/evidence-only slice; existing daily full-suite schedule remains 21:00 Europe/Berlin.",
+    "Current V9D closure: full five-project daily/release suite and Ubuntu visual baselines were not run; the unchanged 21:00 Europe/Berlin automation remains the full daily gate. Canonical relevant browser suite, three owning landscape cases and final focused live journey ran separately. PostgreSQL gate skipped because WP014_TEST_DATABASE_URL is absent. No physical Android/iOS, deployment or funded payout test was performed.",
+    "Fresh independent agent review intentionally not run because the owner explicitly requested no agents; direct coordinator review is recorded without impersonating an independent reviewer.",
+    "Historical V9A only: game build, unit/browser/full daily suite, dependency audit and PostgreSQL skipped for the documentation/evidence-only slice; existing daily full-suite schedule remains 21:00 Europe/Berlin.",
     "New physical-device testing, deployment and human similarity: not part of V9A. V8E phone acceptance is owner-reported; no device/OS inventory was supplied.",
     "Full daily/release verification remains scheduled for 21:00 Europe/Berlin and was not run for this feature slice. Real Android/iOS acceptance, deployment, funded activation, V9 AI/presentation/balance and public selection remain outside V9B."
   ],
   "residual_risks": [
-    "V9 economy/utility values are design defaults until implemented and assessed; owner V8E acceptance is not V9 balance approval.",
-    "V8 public release gates remain separate: dependency audit, PostgreSQL, release/performance/deployment capacity and human similarity.",
-    "V9B is injected-only authority. V9C requires separately approved lifecycle/presentation scope and must not treat this foundation as public activation or balance approval.",
-    "V9C C7.5 is accepted only as a local preview correction. V9D must preserve it while independently proving AI, shared lifecycle, reward eligibility and assessment before any V9 activation, balance or real-device claim."
+    "V9D engineering closure is not public promotion or physical-device acceptance. Next is owner acceptance of the injected live candidate, then a separately authorized shared Practice/reward release decision. Public selection remains V7.",
+    "Corrected assessment records 29 player wins, 90 AI wins and 1 draw, with no Spoolburst selected despite 49 affordable opportunities. These observations warrant the later balance review; no approved V9 outcome threshold makes them correctness failures.",
+    "Direct contributor review replaced agent review only for this owner-directed closure. Fresh independent Astra assurance was not produced in this turn.",
+    "PostgreSQL and the full Ubuntu/daily release matrix remain outstanding release evidence. The local full-suite automation remains 21:00 Europe/Berlin.",
+    "Final initial JavaScript is 1496676 / 1500000 bytes; future client additions have only 3324 bytes of raw initial-chunk headroom.",
+    "Local branch is renamed to V9D but still tracks the historical V9B upstream. This closure is committed locally; publication/merge and remote branch housekeeping were not requested."
   ]
 }

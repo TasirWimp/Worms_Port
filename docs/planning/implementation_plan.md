@@ -14,40 +14,32 @@ Phaser/Socket.IO stack.
   See [Verification Funnels](../process/development_workflow.md#verification-funnels).
   This changes verification policy only and does not advance the product package.
 - Active target: mobile-first single-player Nimiq Pay competition release.
-- Active product package: **WP-015D3B V9 Resource and Utilities — V9A rules
-  contract and V9B injected authoritative foundation complete and independently
-  reviewed on 2026-09-05 after owner-reported V8E phone acceptance. V9C touch
-  presentation/engineering preview is committed on the historical V9B
-  foundation branch, but its independent continuity review failed; a bounded
-  V9C continuity correction is complete and independently reviewed at C7.5;
-  it remains a local `?combat-preview=v9` engineering preview. **V9D is
-  in progress and blocked by a fresh Astra/high final review at `121954e`.
-  The review found V7 reward reservation consumed before V9 admission,
-  disconnected-settlement loss, a real-clock planner failure, no live V9
-  candidate journey, semantically inadequate/overwritten D3 assessment
-  evidence, missing proof carriers, and a P2 foreign-cursor leak. A narrow
-  correction admits only `shared/simulation-v9.ts` and
-  `tests/simulation/resource-turns-v9.test.ts`; it must preserve the V7
-  selector, lifecycle scope and frozen planner/clock/work caps. No approval,
-  activation, release or payout claim follows.**
-  The owner explicitly requested starting V9. The first bounded slice is the
-  [V9 resource-and-utility contract](wp-015d3b-v9-resource-utilities-contract.md),
-  with [separate V9 evidence](../evidence/wp-015d3b.json), from clean
-  `da1e7a9c1a1c19bcfa4385e3db28cb530f660ebb` on
-  `codex/wp-015d3b-v9a-rules-contract-v0`. A freezes Thread income/carry-over,
-  cast costs, Threadguard, Threadleap, bounded deterministic AI and B's exact
-  path allowance. Selected evidence/diff checks and independent design review
-  pass; no runtime is implemented. The fresh Terra/high entry designer has
-  bound B's source hashes, strict state/protocol/replay layout and red-first
-  fixtures in the V9 contract; an independent Astra/high reviewer approved the
-  entry. V9B now provides only test-injected V9 state, protocol/replay and
-  coordinator authority; its selected verification and final Astra review pass.
-  V9C's local `?combat-preview=v9` touch surface is not accepted: continuity
-  review found stale gestures, overlapping controls, missing presentation/HUD,
-  and missing player guidance. Its correction is complete; V9D preserves that
-  local UI while replacing only the AI deferral through live candidate state.
-  The public selector remains V7. V8 public release gates remain independent;
-  no automatic deployment, funded activation, V10 or V11 is implied.
+- Active product package: **WP-015D3B V9 Resource and Utilities.** V9A rules,
+  V9B injected authority and the V9C continuity correction are complete;
+  the owner accepted the V9C phone preview and authorized V9D.
+  V9D's failed review at `121954e` is retained as historical evidence. Its
+  correction and **V9D engineering closure are complete at `5a1bd03`**,
+  directly reviewed and verified under the owner's **no agents** instruction.
+  This coordinator review is not a fresh independent Astra review.
+  The [V9 contract](wp-015d3b-v9-resource-utilities-contract.md) and
+  [V9 evidence](../evidence/wp-015d3b.json) retain the findings and correction
+  scope. The local branch is `codex/wp-015d3b-v9d-resource-utilities`;
+  its upstream still has the historical V9B name and has not been republished.
+  The original assessment's counts were insufficient proof: the corrected
+  assessment now evaluates all 30 player candidates, charges planning ticks,
+  completes retreat/handoff and compares detached traces with the coordinator.
+  The real `?combat-preview=v9-live` journey now reaches injected V9 sessions,
+  including pause, reconnect, AI action, terminal result and fresh retry.
+  Normal public creation remains V7; `?combat-preview=v9` remains the local
+  engineering preview. V9-live requires a runtime explicitly configured for
+  the injected candidate and is not public activation.
+  Corrected assessment: **196 scenarios / 272 executions passed**; canonical
+  browser suite: **55 passed**, with its three landscape-only cases passing
+  separately. Balance observations are descriptive, not acceptance thresholds.
+  Next: owner phone acceptance of the live V9D candidate. Public promotion/release requires its separate shared
+  Practice/reward decision, full release gate and PostgreSQL evidence.
+  No funded activation, deployment, V10 or V11 is implied. Overall package
+  evidence remains `in_progress` until those later acceptance gates are settled.
 - Product predecessor: **WP-015D3A V8 Action-Turn Candidate — V8A finite
   rules/acceptance contract complete and independently reviewed; V8B authoritative
   foundation complete and independently reviewed; V8C touch presentation
