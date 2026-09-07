@@ -6,6 +6,7 @@ import { activeSidewaysMode, clientPointToGame } from '../lib/sideways';
 import { computeActorStatusLayout, type CombatLayout } from './layout';
 
 type ActionChoice = 'threadball' | 'needlepoint' | 'spoolburst' | 'threadguard' | 'threadleap' | null;
+type RelicChoice = Exclude<ActionChoice, 'threadguard' | 'threadleap' | null>;
 type ActionMenu = 'closed' | 'root' | 'attack' | 'defense';
 type Callbacks = {
     submit: (intent: SimulationIntentV9) => Promise<boolean>; pause: (paused: boolean) => void; neutral: () => void; release?: () => void;
@@ -21,7 +22,7 @@ export class ResourceTurnsV9Controls {
     private readonly aim = new CombatInputController(); private readonly movement = new UnifiedMovementInputController();
     private receipts: string[] = []; private layout?: CombatLayout; private lastRefresh = 0; private refreshPending = false;
     private cleanup: (() => void)[] = []; private boundary?: string; private generation = 0; private menu: ActionMenu = 'closed';
-    private choice: ActionChoice = null; private destroyed = false; private actionSignature = '';
+    private choice: ActionChoice = null; private selectingRelic = false; private destroyed = false; private actionSignature = '';
 
     public constructor(parent: HTMLElement, initial: ResourceTurnsState, private readonly callbacks: Callbacks,
         private readonly now: () => number = () => performance.now(), paused = false) {
@@ -38,7 +39,7 @@ export class ResourceTurnsV9Controls {
 <section class="combat-pause-sheet v9-pause-sheet" aria-live="polite" hidden><strong></strong><button class="v9-reenter" type="button">Start fresh preview</button></section>
 <div class="combat-message" aria-live="polite"></div>`;
         parent.appendChild(this.root);
-        this.button('.v9-actions-button').onclick = () => { if (this.canAct()) { this.menu = this.menu === 'root' ? 'closed' : 'root'; this.refreshActions(); } };
+        this.button('.v9-actions-button').onclick = () => { if (this.canAct() && !this.selectingRelic) { this.menu = this.menu === 'root' ? 'closed' : 'root'; this.refreshActions(); } };
         this.button('.fire-button').onclick = () => this.useSelected();
         this.button('.pause-button').onclick = () => this.callbacks.pause(!this.paused);
         this.button('.v9-reenter').onclick = () => this.callbacks.restart?.();
@@ -104,7 +105,7 @@ export class ResourceTurnsV9Controls {
     public destroy(): void { if (this.destroyed) return; this.destroyed = true; this.retireOwnership(); for (const remove of this.cleanup.splice(0)) remove(); this.root.remove(); }
 
     private useSelected(): void {
-        if (!this.canAct()) return;
+        if (!this.canAct() || this.selectingRelic) return;
         if (this.choice === 'threadguard') { this.request({ type: 'threadguard' }); return; }
         if (this.choice === 'threadleap') { this.request({ type: 'threadleap', direction: this.state.units[0].facing }); return; }
         if (this.choice) { this.request({ type: 'select_relic', relicId: this.choice }); return; }
@@ -115,11 +116,13 @@ export class ResourceTurnsV9Controls {
     private refreshActions(): void {
         const menu = this.element('.v9-action-menu'); menu.hidden = this.menu === 'closed'; const use = this.button('.fire-button'), actions = this.button('.v9-actions-button');
         const offense = this.canOffend(), utility = this.utilityAllowed(), action = offense || utility, armedReason = this.armedUseReason();
-        actions.disabled = !action; use.disabled = this.choice ? !this.choiceLegal(this.choice) : (!offense || !this.state.aim);
+        actions.disabled = !action || this.selectingRelic; use.disabled = this.selectingRelic || (this.choice ? !this.choiceLegal(this.choice) : (!offense || !this.state.aim));
         if (!this.choice && armedReason) use.disabled = true;
-        const label = this.choice === 'threadguard' ? 'Use Guard · 2 Thread' : this.choice === 'threadleap' ? 'Use Leap · 2 Thread' : this.choice ? `Use ${relicLabel(this.choice)}` : this.state.aim ? `Use ${relicLabel(this.state.selectedRelic)}` : 'Use';
+        const pendingRelic = this.pendingRelic();
+        const label = pendingRelic ? `Selecting ${relicName(pendingRelic)}`
+            : this.choice === 'threadguard' ? 'Use Guard · 2 Thread' : this.choice === 'threadleap' ? 'Use Leap · 2 Thread' : this.choice ? `Use ${relicLabel(this.choice)}` : this.state.aim ? `Use ${relicLabel(this.state.selectedRelic)}` : 'Use';
         use.textContent = label; use.setAttribute('aria-label', label); use.title = armedReason ?? '';
-        const signature = [this.menu, action, offense, utility, this.choice, this.state.units[0].thread, this.state.aimId, Boolean(this.state.aim), use.disabled, use.title, this.state.phase, this.state.heldDirection, this.state.castUsed, this.state.utilityUsed].join(':');
+        const signature = [this.menu, action, offense, utility, this.choice, this.selectingRelic, this.state.units[0].thread, this.state.aimId, Boolean(this.state.aim), use.disabled, use.title, this.state.phase, this.state.heldDirection, this.state.castUsed, this.state.utilityUsed].join(':');
         if (signature === this.actionSignature) return;
         this.actionSignature = signature;
         const options: { label: string; className: string; choice?: ActionChoice; next?: ActionMenu }[] = this.menu === 'root' ? [{ label: 'Attack', className: 'v9-attack', next: 'attack' }, { label: 'Defense', className: 'v9-defense', next: 'defense' }]
@@ -129,7 +132,13 @@ export class ResourceTurnsV9Controls {
         for (const option of options) { const button = document.createElement('button'); button.type = 'button'; button.className = option.className; button.textContent = option.label;
             button.disabled = option.next ? !action : !this.choiceLegal(option.choice!);
             if (button.disabled) button.title = option.choice ? this.choiceReason(option.choice) : this.unavailableReason(offense, utility);
-            button.onclick = () => { if (button.disabled) return; if (option.next) this.menu = option.next; else { this.choice = option.choice ?? null; this.menu = 'closed'; } this.refreshActions(); }; menu.appendChild(button); }
+            button.onclick = () => {
+                if (button.disabled) return;
+                if (option.next) { this.menu = option.next; this.refreshActions(); return; }
+                this.menu = 'closed';
+                if (option.choice && isRelicChoice(option.choice)) { this.selectRelic(option.choice); return; }
+                this.choice = option.choice ?? null; this.refreshActions();
+            }; menu.appendChild(button); }
         for (const button of this.root.querySelectorAll<HTMLButtonElement>('button')) button.setAttribute('aria-disabled', String(button.disabled));
     }
     private bindTouch(): void {
@@ -144,9 +153,19 @@ export class ResourceTurnsV9Controls {
         this.listen(aim, 'pointerup', event => { const command = this.aim.end(event.pointerId, true); this.callbacks.preview?.(this.aim.lockedAim); if (command?.type === 'aim') this.request(command); });
         this.listen(aim, 'pointercancel', event => { this.aim.cancel(event.pointerId); this.callbacks.preview?.(null); this.callbacks.neutral(); });
     }
-    private request(intent: SimulationIntentV9): void { const generation = this.generation; void this.callbacks.submit(intent).then(accepted => { if (this.destroyed || generation !== this.generation) return; if (!accepted) { this.message = 'Authority rejected that action; use a fresh gesture.'; return; } if (intent.type === 'select_relic') { this.choice = null; this.refreshActions(); } }); }
+    private selectRelic(choice: RelicChoice): void {
+        this.choice = choice; this.selectingRelic = true; this.refreshActions();
+        this.request({ type: 'select_relic', relicId: choice });
+    }
+    private pendingRelic(): RelicChoice | null { return this.selectingRelic && this.choice && isRelicChoice(this.choice) ? this.choice : null; }
+    private request(intent: SimulationIntentV9): void { const generation = this.generation; void this.callbacks.submit(intent).then(accepted => {
+        if (this.destroyed || generation !== this.generation) return;
+        if (intent.type === 'select_relic') { this.selectingRelic = false; this.choice = null; }
+        if (!accepted) { this.message = 'Authority rejected that action; use a fresh gesture.'; this.element('.combat-message').textContent = this.message; this.refreshActions(); return; }
+        if (intent.type === 'select_relic') this.refreshActions();
+    }); }
     private submitMovement(intent: SimulationIntentV9, refresh: boolean): void { if (refresh) this.refreshPending = true; const generation = this.generation; void this.callbacks.submit(intent).then(accepted => { if (this.destroyed || generation !== this.generation || !accepted) return; if (intent.type === 'walk_start' || intent.type === 'walk_stop' || intent.type === 'walk_refresh' || intent.type === 'jump') this.movement.submittedMovementIntent(intent); if (refresh) this.lastRefresh = this.now(); }).finally(() => { if (!this.destroyed && generation === this.generation && refresh) this.refreshPending = false; }); }
-    private retireOwnership(): void { this.generation++; this.aim.cancel(); this.aim.clearAim(); this.movement.interrupt(); this.choice = null; this.menu = 'closed'; this.refreshPending = false; this.callbacks.preview?.(null); }
+    private retireOwnership(): void { this.generation++; this.aim.cancel(); this.aim.clearAim(); this.movement.interrupt(); this.choice = null; this.selectingRelic = false; this.menu = 'closed'; this.refreshPending = false; this.callbacks.preview?.(null); }
     private boundaryFor(state: ResourceTurnsState, paused: boolean): string { return [state.turn, state.activeActor, state.phase, state.inputEpoch, paused, this.terminal(state), state.castUsed, state.utilityUsed, state.selectedRelic].join(':'); }
     private terminal(state: ResourceTurnsState = this.state): boolean { return state.phase === 'finished' || state.winner !== null; }
     private canAct(): boolean { return !this.destroyed && !this.paused && !this.terminal() && (this.callbacks.inputReady?.() ?? true) && this.state.activeActor === 'player' && (this.state.phase === 'action' || this.state.phase === 'retreat'); }
@@ -166,7 +185,7 @@ export class ResourceTurnsV9Controls {
     private offenseAllowed(state: ResourceTurnsState): boolean { return v9OffenseAllowed(state, this.paused); }
     private pauseAllowed(): boolean { return this.state.activeActor === 'player' && this.state.phase === 'action' && !this.terminal(); }
     private movementFacts() { const player = this.state.units[0]; return { grounded: player.grounded, facing: player.facing, heldDirection: this.state.heldDirection, lane: this.canAct() ? (this.state.heldDirection ? 'locomotion' : 'ready') : 'blocked' } as const; }
-    private unavailableReason(offense: boolean, utility: boolean): string { if (this.terminal()) return this.terminalGuidance(); if (this.paused) return this.callbacks.live ? 'Practice paused. Resume after authoritative acceptance.' : 'Preview paused. Resume before acting.'; if (this.callbacks.pauseReason?.() && this.state.activeActor === 'player') return this.callbacks.pauseReason()!; if (this.state.activeActor === 'loomkeeper') return this.callbacks.live || this.callbacks.automated ? 'Loomkeeper is choosing the authoritative response.' : 'Loomkeeper behavior is deferred to V9D; this local preview does not simulate a response.'; if (this.state.phase === 'retreat') return 'Retreat phase: movement only until the authority deadline.'; if (this.armedUseReason()) return this.armedUseReason()!; if (this.choice && this.choiceLegal(this.choice)) return `${this.useLabel(this.choice)} is ready.`; if (!offense && this.state.heldDirection) return 'Release movement before aiming, selecting a Relic, or using a utility.'; if (!utility && (this.state.castUsed || this.state.utilityUsed)) return 'That turn has already used its Relic or utility.'; return 'Choose Actions for Attack or Defense. Costs are paid only after Use is accepted.'; }
+    private unavailableReason(offense: boolean, utility: boolean): string { if (this.terminal()) return this.terminalGuidance(); if (this.paused) return this.callbacks.live ? 'Practice paused. Resume after authoritative acceptance.' : 'Preview paused. Resume before acting.'; if (this.callbacks.pauseReason?.() && this.state.activeActor === 'player') return this.callbacks.pauseReason()!; if (this.state.activeActor === 'loomkeeper') return this.callbacks.live || this.callbacks.automated ? 'Loomkeeper is choosing the authoritative response.' : 'Loomkeeper behavior is deferred to V9D; this local preview does not simulate a response.'; if (this.state.phase === 'retreat') return 'Retreat phase: movement only until the authority deadline.'; const pendingRelic = this.pendingRelic(); if (pendingRelic) return `Selecting ${relicName(pendingRelic)}.`; if (this.armedUseReason()) return this.armedUseReason()!; if (this.choice && this.choiceLegal(this.choice)) return `${this.useLabel(this.choice)} is ready.`; if (!offense && this.state.heldDirection) return 'Release movement before aiming, selecting a Relic, or using a utility.'; if (offense && !this.state.aim) return `${relicName(this.state.selectedRelic)} selected. Lock aim, then Use.`; if (!utility && (this.state.castUsed || this.state.utilityUsed)) return 'That turn has already used its Relic or utility.'; return 'Choose Actions for Attack or Defense. Costs are paid only after Use is accepted.'; }
     private useLabel(choice: Exclude<ActionChoice, null>): string { return choice === 'threadguard' ? 'Use Guard · 2 Thread' : choice === 'threadleap' ? 'Use Leap · 2 Thread' : `Use ${relicLabel(choice)}`; }
     private lifecycleGuidance(): string | undefined { if (this.terminal()) return this.terminalGuidance(); if (this.state.activeActor === 'loomkeeper') return this.callbacks.live || this.callbacks.automated ? 'Loomkeeper is choosing the authoritative response.' : 'Loomkeeper behavior is deferred to V9D; this local preview does not simulate a response.'; return undefined; }
     private terminalGuidance(): string { const outcome = this.state.winner === 'player' ? 'You won' : this.state.winner === 'loomkeeper' ? 'Loomkeeper won' : this.state.winner === 'draw' ? 'The clash ended in a draw' : this.callbacks.live ? 'The candidate Clash ended' : 'The local preview ended'; return this.state.finishReason === 'simulation_limit' ? `Lifecycle safety limit reached. ${this.callbacks.live ? 'Start a fresh Practice Clash.' : 'Start a fresh local preview.'}` : `${outcome} by authoritative ${this.state.finishReason ?? 'terminal'} outcome. ${this.callbacks.live ? 'Start a fresh Practice Clash.' : 'Start a fresh local preview.'}`; }
@@ -186,6 +205,7 @@ export class ResourceTurnsV9Controls {
     private button(selector: string): HTMLButtonElement { return this.root.querySelector<HTMLButtonElement>(selector)!; }
 }
 
-function relicLabel(choice: Exclude<ActionChoice, 'threadguard' | 'threadleap' | null>): string { return choice === 'threadball' ? 'Threadball · 2' : choice === 'needlepoint' ? 'Needlepoint · 3' : 'Spoolburst · 5'; }
-function relicName(choice: Exclude<ActionChoice, 'threadguard' | 'threadleap' | null>): string { return choice === 'threadball' ? 'Threadball' : choice === 'needlepoint' ? 'Needlepoint' : 'Spoolburst'; }
+function isRelicChoice(choice: Exclude<ActionChoice, null>): choice is RelicChoice { return choice !== 'threadguard' && choice !== 'threadleap'; }
+function relicLabel(choice: RelicChoice): string { return choice === 'threadball' ? 'Threadball · 2' : choice === 'needlepoint' ? 'Needlepoint · 3' : 'Spoolburst · 5'; }
+function relicName(choice: RelicChoice): string { return choice === 'threadball' ? 'Threadball' : choice === 'needlepoint' ? 'Needlepoint' : 'Spoolburst'; }
 function relicOrUtilityLabel(choice: Exclude<ActionChoice, null>): string { return choice === 'threadguard' ? 'Guard' : choice === 'threadleap' ? 'Leap' : relicLabel(choice); }

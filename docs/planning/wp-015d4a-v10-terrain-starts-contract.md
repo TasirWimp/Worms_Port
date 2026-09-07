@@ -270,3 +270,20 @@ projectile response, detached trajectory preview, local-only routing, the
 opening survey, interruption recovery, compact controls, actor cards and the
 directional Loomkeeper cue. V10D remains responsible for the complete six-seed
 opening/reply matrix, selected product gate and physical-phone acceptance.
+
+## V10C inherited Relic-selection correction
+
+The owner initially passed the deployed V10 phone journey, then found the
+previously tracked V9 Relic-selection failure while explicitly changing the
+attack. The shared compact controls required Use once to acknowledge a locally
+held selection, silently cleared an existing aim, and required another aim and
+Use before casting. This made the red control appear unresponsive whenever the
+player changed away from the carried/default Relic.
+
+The owner-directed fast-follow changes only the shared V9/V10 control adapter
+and its tests. Attack drawer choices now submit the cost-free authoritative
+selection immediately; current selection and the next aim step are explicit;
+Use activates only the eventual cast. Guard and Leap still require Use. V10
+terrain, starts, planner budgets, simulation/protocol/replay identity, local-only
+routing and all public selectors remain unchanged. V10D phone acceptance stays
+open until this correction is redeployed and retested on the physical phone.

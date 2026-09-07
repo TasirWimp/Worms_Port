@@ -14,8 +14,9 @@ Phaser/Socket.IO stack.
   See [Verification Funnels](../process/development_workflow.md#verification-funnels).
   This changes verification policy only and does not advance the product package.
 - Active target: mobile-first single-player Nimiq Pay competition release.
-- Active product package: **WP-015D3B V9 Resource and Utilities.** V9A rules,
-  V9B injected authority and the V9C continuity correction are complete;
+- Active product package: **WP-015D4A V10 Terrain and Starting Positions.** Its
+  V9 Resource and Utilities predecessor has complete V9A rules, V9B injected
+  authority and V9C continuity correction;
   the owner accepted the V9C phone preview and authorized V9D.
   V9D's failed review at `121954e` is retained as historical evidence. Its
   correction and **V9D engineering closure are complete at `5a1bd03`**,
@@ -75,6 +76,12 @@ Phaser/Socket.IO stack.
   terrain authority. Local `?combat-preview=v10` now supplies the automated
   Loomkeeper, compact inherited phone controls, map-wide opening survey and
   off-screen actor cue without a session, reward or public selector path.
+  The owner's follow-up physical-phone test reproduced the tracked inherited
+  Relic-selection bug: Use first acknowledged a locally held selection and
+  cleared aim, so changing Relics appeared to disable Fire. The bounded
+  fast-follow now submits Attack selections immediately, explains the fresh aim
+  step and reserves Use for the cast; Guard and Leap still activate through Use.
+  Physical-phone acceptance must be repeated after redeployment.
   **Next V10 step: V10D assessment and acceptance.** Run the complete
   opening/reply matrix and selected product gate, then request physical-phone
   acceptance. No funded activation or public promotion is implied yet. Overall

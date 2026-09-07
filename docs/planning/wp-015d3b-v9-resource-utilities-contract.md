@@ -1271,3 +1271,29 @@ Ubuntu visual/full daily coverage, PostgreSQL reward evidence, public shared
 Practice/reward selection and funded activation remain open. With that boundary
 retained, the next gameplay planning target is V10 terrain and starting
 positions; V11 teams remains separate.
+
+### V9 Relic-selection fast-follow — 2026-09-07
+
+The owner's later physical-phone test of the inherited controls reproduced the
+deferred Relic-selection bug in the V10 preview. V9/V10 authority always carries
+a selected Relic, but the compact drawer held a newly chosen attack only in the
+client. The red Use button's first tap submitted that selection and cleared any
+acknowledged aim; it did not cast. Because the same button appeared to promise
+the chosen attack, the required second aim-and-Use cycle read as an unresponsive
+Fire control.
+
+The owner-reported phone failure supersedes C7's two-step attack-selection
+interaction. Choosing Threadball, Needlepoint or Spoolburst in the Attack drawer
+now submits the cost-free selection immediately and shows the acknowledged
+Relic with a direct instruction to lock aim. The red Use button remains the only
+cast/utility activation target: it enables after a fresh acknowledged aim for
+attacks, while Guard and Leap remain locally armed until Use. Selection pending
+state disables duplicate input and clears at authority boundaries. No
+simulation, Relic cost, AI, replay, protocol, reward or public-selector rule
+changes.
+
+The correction requires direct control tests plus phone-browser proof for the
+default Threadball, a non-default Needlepoint cast, affordable later-turn
+replacement after Guard, selection latency/rejection safety and unchanged V7
+launch. The V10 physical-phone acceptance remains open until the corrected
+branch is redeployed and the owner repeats selection, aim and Use.

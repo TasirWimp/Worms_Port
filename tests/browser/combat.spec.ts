@@ -294,9 +294,8 @@ test('V9 resource engineering preview is local-only and keeps V7 Practice unsele
   await expect(page.getByRole('button', { name: 'Threadball · 2' })).toBeVisible();
   await expect(page.getByRole('button', { name: 'Spoolburst · 5' })).toBeDisabled();
   await page.getByRole('button', { name: 'Threadball · 2' }).tap();
-  await expectV9ArmedActionAfterAuthorityTick(page, ui, 'Use Threadball · 2');
-  await page.getByRole('button', { name: 'Use Threadball · 2' }).tap();
   await expect(ui).toHaveAttribute('data-selected-relic', 'threadball');
+  await expect(page.locator('.combat-message')).toHaveText('Threadball selected. Lock aim, then Use.');
   await expect(ui).toHaveAttribute('data-offense-allowed', 'true');
   await dragPad(page, '.combat-v9 .aim-zone', 909, 0.35, -0.35);
   // The local fixture can be draining its bounded tick credit immediately after
@@ -341,7 +340,8 @@ test('V9 resource engineering preview is local-only and keeps V7 Practice unsele
   await page.getByRole('button', { name: 'Actions' }).tap();
   await page.getByRole('button', { name: 'Attack' }).tap();
   await page.getByRole('button', { name: 'Needlepoint · 3' }).tap();
-  await expectV9ArmedActionAfterAuthorityTick(page, page.locator('.combat-v9'), 'Use Needlepoint · 3');
+  await expect(page.locator('.combat-v9')).toHaveAttribute('data-selected-relic', 'needlepoint');
+  await expect(page.locator('.combat-message')).toHaveText('Needlepoint selected. Lock aim, then Use.');
 
   await page.goto('/?combat-preview=v9');
   await expect(page.locator('.combat-v9')).toBeVisible();
@@ -394,7 +394,7 @@ test('V9 resource engineering preview is local-only and keeps V7 Practice unsele
   await expect(page.locator('.movement-zone')).toHaveAttribute('aria-label', /8 of 8 steps remaining/);
 });
 
-test('V9 turn-two carried Spoolburst yields to legal pending Relic replacements', async ({ page }) => {
+test('V9 turn-two carried Spoolburst yields to immediately selected affordable Relics', async ({ page }) => {
   test.setTimeout(55_000);
   await page.goto('/?combat-preview=v9&sideways=off');
   const ui = page.locator('.combat-v9'); await expect(ui).toBeVisible();
@@ -405,7 +405,6 @@ test('V9 turn-two carried Spoolburst yields to legal pending Relic replacements'
   await page.getByRole('button', { name: 'Actions' }).tap();
   await page.getByRole('button', { name: 'Attack' }).tap();
   await page.getByRole('button', { name: 'Spoolburst · 5' }).tap();
-  await page.getByRole('button', { name: 'Use Spoolburst · 5' }).tap();
   await expect(ui).toHaveAttribute('data-selected-relic', 'spoolburst');
   await page.getByRole('button', { name: 'Actions' }).tap();
   await page.getByRole('button', { name: 'Defense' }).tap();
@@ -417,11 +416,12 @@ test('V9 turn-two carried Spoolburst yields to legal pending Relic replacements'
   await expect(use).toBeDisabled();
   await expect(use).toHaveAttribute('title', /Need 5 Thread for Spoolburst/);
 
-  for (const [relic, label] of [['Threadball', 'Use Threadball · 2'], ['Needlepoint', 'Use Needlepoint · 3']] as const) {
+  for (const [relic, id] of [['Threadball', 'threadball'], ['Needlepoint', 'needlepoint']] as const) {
     await page.getByRole('button', { name: 'Actions' }).tap();
     await page.getByRole('button', { name: 'Attack' }).tap();
     await page.getByRole('button', { name: `${relic} · ${relic === 'Threadball' ? 2 : 3}` }).tap();
-    await expectV9ArmedActionAfterAuthorityTick(page, ui, label);
+    await expect(ui).toHaveAttribute('data-selected-relic', id);
+    await expect(page.locator('.combat-message')).toHaveText(`${relic} selected. Lock aim, then Use.`);
   }
 });
 
@@ -529,10 +529,14 @@ test('V10 terrain preview keeps the inherited phone guidance local and surveys i
   await expect(page.getByRole('button', { name: 'Attack' })).toBeVisible();
   await expect(page.getByRole('button', { name: 'Defense' })).toBeVisible();
   await page.getByRole('button', { name: 'Attack' }).tap();
-  await page.getByRole('button', { name: 'Threadball · 2' }).tap();
-  await expectV9ArmedActionAfterAuthorityTick(page, ui, 'Use Threadball · 2');
-  await page.getByRole('button', { name: 'Use Threadball · 2' }).tap();
-  await expect(ui).toHaveAttribute('data-selected-relic', 'threadball');
+  await page.getByRole('button', { name: 'Needlepoint · 3' }).tap();
+  await expect(ui).toHaveAttribute('data-selected-relic', 'needlepoint');
+  await expect(page.locator('.combat-message')).toHaveText('Needlepoint selected. Lock aim, then Use.');
+  await dragPad(page, '.combat-v10 .aim-zone', 1510, 0.35, -0.35);
+  await expect(ui).toHaveAttribute('data-aim-locked', 'true');
+  await expect(page.getByRole('button', { name: 'Use Needlepoint · 3' })).toBeEnabled();
+  await page.getByRole('button', { name: 'Use Needlepoint · 3' }).tap();
+  await expect(ui).toHaveAttribute('data-combat-phase', 'projectile');
 });
 
 test('V8 hold survives snapshots, release stops, forward Jump and separate Fire reveal retreat', async ({ page }, testInfo) => {
