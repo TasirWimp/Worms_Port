@@ -6,7 +6,7 @@ import {
 import type { PlayerCalling, SimulationActor } from '../../../shared/simulation';
 import {
     CoordinatorReplayV9Schema, CoordinatorReplayV9AutomatedSchema, ReplayOperationV9Schema, V9_REPLAY_LIMITS, jsonBytesV9,
-    type CoordinatorReplayV9, type CoordinatorReplayV9Automated, type ReplayOperationV9
+    type CoordinatorReplayV9, type CoordinatorReplayV9Automated, type ReplayOperationV9, type V9StopReason
 } from '../../../shared/protocol-v9';
 import { V9_AUTOMATION_ID } from '../../../shared/combat-version';
 import { LoomkeeperExecutionV9, LoomkeeperPlannerV9, type LoomkeeperSelectionV9 } from '../../../shared/loomkeeper-v9';
@@ -18,6 +18,7 @@ export type CoordinatorTerminalResultV9 = {
     rulesetId: typeof V9_RULESET_ID; challengeId: string; sessionId: string;
     winner: SimulationStateV9['winner']; reason: string; tick: number; stateHash: string;
     automationId?: typeof V9_AUTOMATION_ID;
+    stopReason?: V9StopReason;
 };
 export type CoordinatorSnapshotV9 = {
     challengeId: string; sessionId: string; state: SimulationStateV9; stateHash: string;
@@ -32,12 +33,17 @@ export type SimulationCoordinatorV9Options = {
     plannerFactory?: (state: SimulationStateV9) => LoomkeeperPlannerV9;
     onTransition?: (update: CoordinatorUpdateV9) => void;
     onTerminal?: (result: CoordinatorTerminalResultV9) => void;
+    /** Bounded operational metadata; never includes session identifiers or raw exceptions. */
+    onSafetyStop?: (diagnostic: { reason: V9StopReason; tick: number; turn: number;
+        phase: SimulationStateV9['phase']; actor: SimulationActor; dueTicks: number;
+        planningTicks: number; maximumPlanningBatchUs: number }) => void;
 };
 type Entry = {
     replay: CoordinatorReplayV9 | CoordinatorReplayV9Automated; state: SimulationStateV9; stateHash: string; bytes: number;
     paused: boolean; unavailable: boolean; anchorUs: number; credit: bigint;
     automated: boolean; aiTurn?: number; planningElapsed?: number; planner?: LoomkeeperPlannerV9;
     planningFailed?: boolean; execution?: LoomkeeperExecutionV9;
+    runtimeFailed?: boolean; stopReason?: V9StopReason; maximumPlanningBatchUs?: number;
     terminalResult?: CoordinatorTerminalResultV9; pendingTerminal?: CoordinatorTerminalResultV9;
 };
 
@@ -179,6 +185,10 @@ export class SimulationCoordinatorV9 {
     }
     public safety(challengeId: string, reason: Extract<ReplayOperationV9, { kind: 'safety' }>['reason']): CoordinatorUpdateV9 {
         const entry = this.require(challengeId); if (entry.terminalResult) return this.noop(entry);
+        entry.stopReason = entry.runtimeFailed ? 'runtime_error' : reason;
+        this.options.onSafetyStop?.({ reason: entry.stopReason, tick: entry.state.tick, turn: entry.state.turn,
+            phase: entry.state.phase, actor: entry.state.activeActor, dueTicks: this.dueTicks(challengeId),
+            planningTicks: entry.planningElapsed ?? 0, maximumPlanningBatchUs: entry.maximumPlanningBatchUs ?? 0 });
         entry.unavailable = reason !== 'replay_limit' && reason !== 'left'; entry.paused = false; entry.credit = 0n;
         return this.accept(entry, forceSimulationLimitV9(entry.state), { kind: 'safety', reason }, true);
     }
@@ -289,6 +299,7 @@ export class SimulationCoordinatorV9 {
         if (entry.state.phase === 'finished' && !entry.terminalResult) {
             entry.terminalResult = { rulesetId: V9_RULESET_ID, challengeId: entry.replay.challengeId, sessionId: entry.replay.sessionId,
                 winner: entry.state.winner, reason: entry.state.finishReason!, tick: entry.state.tick, stateHash,
+                ...(entry.stopReason ? { stopReason: entry.stopReason } : {}),
                 ...(entry.automated ? { automationId: V9_AUTOMATION_ID } : {}) };
             entry.pendingTerminal = entry.terminalResult; this.options.onTerminal?.(structuredClone(entry.terminalResult));
         }
@@ -319,7 +330,11 @@ export class SimulationCoordinatorV9 {
             catch { entry.planningFailed = true; entry.planner = undefined; }
         }
         if ((entry.planningElapsed ?? 0) >= 30) return;
-        if (!entry.planningFailed) { try { entry.planner!.step(); } catch { entry.planningFailed = true; } }
+        if (!entry.planningFailed) {
+            const started = this.clock();
+            try { entry.planner!.step(); } catch { entry.planningFailed = true; }
+            finally { entry.maximumPlanningBatchUs = Math.max(entry.maximumPlanningBatchUs ?? 0, this.clock() - started); }
+        }
         entry.planningElapsed = (entry.planningElapsed ?? 0) + 1;
     }
     private drainAutomated(entry: Entry, initial: CoordinatorUpdateV9): CoordinatorUpdateV9 {
@@ -360,7 +375,21 @@ export class SimulationCoordinatorV9 {
     private require(id: string): Entry { const entry = this.matches.get(id); if (!entry) throw new Error('No V9 simulation for this challenge.'); return entry; }
     private clock(): number { return bounded(this.nowUs(), 0, Number.MAX_SAFE_INTEGER); }
     private accrue(entry: Entry): void { const now = this.clock(); if (now < entry.anchorUs) { this.safety(entry.replay.challengeId, 'clock_debt'); return; } if (!entry.paused && !entry.terminalResult) entry.credit += BigInt(now - entry.anchorUs) * 30n; entry.anchorUs = now; }
-    private async pumpAll(): Promise<void> { if (this.ticking) return; this.ticking = true; try { for (const id of this.matches.keys()) { if (!this.matches.has(id)) continue; try { await this.catchUp(id); } catch { if (this.matches.has(id)) this.safety(id, 'clock_debt'); } } } finally { this.ticking = false; } }
+    private async pumpAll(): Promise<void> {
+        if (this.ticking) return;
+        this.ticking = true;
+        try {
+            for (const id of this.matches.keys()) {
+                if (!this.matches.has(id)) continue;
+                try { await this.catchUp(id); }
+                catch {
+                    const entry = this.matches.get(id);
+                    if (entry) { entry.runtimeFailed = true; this.safety(id, 'clock_debt'); }
+                }
+            }
+        } finally { this.ticking = false; }
+    }
+
 }
 
 function createState(seed: number, calling: PlayerCalling): SimulationStateV9 { return createSimulationV9(seed, calling); }

@@ -98,10 +98,14 @@ export const ChallengeSnapshotV9Schema = z.object({ protocolVersion: z.literal(9
     mode: z.enum(['practice', 'reward']), calling, status: z.enum(['active', 'left', 'expired', 'completed']), paused: z.boolean(),
     nextSequence: wireSequence, nextInputSequence: wireSequence, expiresAt: z.string().datetime(), simulation: SimulationStateV9Schema, stateHash: hash }).strict();
 export type ChallengeSnapshotV9 = z.infer<typeof ChallengeSnapshotV9Schema>;
+// Diagnostic metadata only: simulation/replay identities and settlement outcomes stay unchanged.
+export const V9StopReasonSchema = z.enum(['replay_limit', 'clock_debt', 'lifecycle_limit', 'sequence_limit', 'expiry', 'left', 'runtime_error']);
+export type V9StopReason = z.infer<typeof V9StopReasonSchema>;
 export const ChallengeResultV9Schema = z.object({ protocolVersion: z.literal(9), serverTimeMs: integer(0, Number.MAX_SAFE_INTEGER),
     sessionId: id, challengeId: id, rulesetId: z.literal(V9_RULESET_ID), automationId: z.literal(V9_AUTOMATION_ID),
     loomkeeperPolicyId: z.literal(V9_LOOMKEEPER_POLICY_ID), loomkeeperProfileId: z.literal(V9_LOOMKEEPER_PROFILE_ID),
     nextSequence: wireSequence, nextInputSequence: wireSequence, outcome: z.enum(['player_win', 'loomkeeper_win', 'draw', 'left', 'expired']),
+    stopReason: V9StopReasonSchema.optional(),
     finalTick: integer(0, V9_REPLAY_LIMITS.ticks), finalStateHash: hash }).strict();
 export type ChallengeResultV9 = z.infer<typeof ChallengeResultV9Schema>;
 const ackSuccess = z.object({ protocolVersion: z.literal(9), requestId: wireOwnership.requestId, nextSequence: wireSequence,

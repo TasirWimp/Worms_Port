@@ -1208,3 +1208,25 @@ contacts with dormant DB/RPC endpoints; phone matrix 56 passed with three
 expected landscape-only exclusions. Direct review passes the code correction.
 Next: redeploy the corrected V9D branch with the documented environment values
 and repeat owner phone acceptance. Render settings were not changed remotely.
+
+### V9D early-stop diagnosis (2026-09-07)
+
+The owner now reaches Practice on Render but reports an early first-AI-turn
+stop after about 20 seconds at tick 381. This reopens phone readiness. Normal
+expiry is 30 minutes; supplied favicon access-log 404s do not diagnose the stop.
+
+The bounded diagnostic correction admits the V9 coordinator, result envelope,
+registry result/log bridge, existing result scene, AI/browser tests and these
+existing documentation carriers. Optional `stopReason` metadata distinguishes
+the existing safety reasons and `runtime_error`. Timer exceptions keep the
+historical fail-closed replay operation but carry `runtime_error` operational
+metadata; no replay reconstruction may treat that metadata as policy proof.
+Normal outcome/settlement semantics, state hashes, replay encoding, 30-tick
+debt limit and all AI work/selection rules remain unchanged. Practice deployment
+logs only finite reason/state counters and batch timing, never raw exceptions
+or ownership/credential values. The UI distinguishes interruption from expiry.
+
+Controlled slow batches reproduce a timing stop, while ordinary local cadence
+passes. Neither proves the owner's Render cause. Retain the deployed
+`[v9-practice-stop]` diagnostic before choosing the underlying correction;
+do not mark phone acceptance or the runtime failure resolved from this patch.

@@ -240,7 +240,9 @@ export class SessionRegistry {
             tickIntervalMs: this.stagingPracticeV8 ? 10
                 : options.v8TestOnly ? options.v8TestOnly.tickIntervalMs ?? 10 : undefined,
             onTransition: update => this.onSimulationTransitionV8(update) },
-        v9: { ...options.v9TestOnly, tickIntervalMs: this.practiceV9 ? 10 : options.v9TestOnly?.tickIntervalMs, onTransition: update => this.onSimulationTransitionV9(update) } });
+        v9: { ...options.v9TestOnly, tickIntervalMs: this.practiceV9 ? 10 : options.v9TestOnly?.tickIntervalMs,
+            onSafetyStop: this.practiceV9 ? diagnostic => console.warn('[v9-practice-stop]', JSON.stringify(diagnostic)) : undefined,
+            onTransition: update => this.onSimulationTransitionV9(update) } });
         this.coordinator = this.versions.legacy;
         this.sweepTimer = setInterval(
             () => this.sweep(),
@@ -1498,7 +1500,8 @@ export class SessionRegistry {
             rulesetId: V9_RULESET_ID, automationId: V9_AUTOMATION_ID,
             loomkeeperPolicyId: 'nimble-knots-loomkeeper-v4', loomkeeperProfileId: 'standard-v9-0',
             nextSequence: session.nextSequence, nextInputSequence: this.v9Inputs.get(challenge.id)?.next ?? 0,
-            outcome: settledOutcome, finalTick: current?.state.tick ?? 0, finalStateHash: current?.stateHash ?? challenge.simulationStateHash
+            outcome: settledOutcome, stopReason: current?.terminalResult?.stopReason,
+            finalTick: current?.state.tick ?? 0, finalStateHash: current?.stateHash ?? challenge.simulationStateHash
         });
     }
     private v9Success(requestId: string, session: Session, challenge: Challenge): CandidateAckV9 {

@@ -12,6 +12,7 @@
     "worms_port_reviewer"
   ],
   "scope": [
+    "2026-09-07 phone acceptance remains blocked: owner reports first AI handoff stopping after about 20 seconds at tick 381. Supplied favicon.ico 404 access logs are unrelated. Normal challenge TTL is 30 minutes. Single-owner investigation reproduces clock-debt termination with controlled 200ms AI batches, but this does not establish the actual Render cause. Diagnostic correction adds finite optional stopReason result metadata, distinguishes timer runtime exceptions from clock debt, and emits bounded token-free application logs in the deployed Practice profile. No simulation, planner lattice, deadlines, safety caps, replay encoding or settlement outcomes change. Root-cause repair awaits the deployed diagnostic.",
     "2026-09-07 owner Render report reopens deployable phone readiness: V9-live client was shipped, but ordinary server startup only admitted V7/V8. Single-owner correction introduces explicit development-v9d-practice with real clocks, no monetary services or test injection, using existing startup/config/registry/runtime, smoke/profile/browser and documentation carriers. Historical injected closure remains valid only for its tested scope; it did not prove this deployment path. Current local/upstream V9D branch names match.",
     "2026-09-07 V9D engineering closure is complete through 5a1bd032b6d1cd5838ac546d33e66613e8ed75e6 after direct coordinator correction/review at owner request, with no agents used in this closure. The complete corrected assessment passed 196 scenarios / 272 executions. This current result supersedes the engineering blockers in historical review 121954e and the first two-file correction restriction; all historical reviews/support exchanges remain retained. Overall WP-015D3B stays in_progress for live-candidate phone acceptance and separate public/release decisions. The direct contributor review is explicitly not a fresh independent Astra final review.",
     "2026-09-07 owner requested closure without agents. Coordinator directly reviews and corrects existing V9D sources/tests; no new subagents or independent-review claim. Scope additionally admits only the qs 6.15.3 to 6.16.0 compatible transitive lockfile security update. Direct review found retry/result ownership and assessment player-search/retreat gaps despite earlier reported verification. Existing assessment and browser success is retained as historical evidence, not closure proof. Local branch renamed to V9D; remote remains historical V9B until explicitly published.",
@@ -42,6 +43,16 @@
   "sorcerers_reference_used": false,
   "clean_room_records": [],
   "check_results": [
+    {
+      "command": "node scripts/run-playwright.js --reuse-build --project=chromium-390x844 --output=test-results/v9d-stop-browser [all six selected specs]",
+      "status": "pass_with_expected_skip",
+      "detail": "2026-09-07 diagnostic correction: 57 passed, 3 expected landscape-owned exclusions, 7.8 minutes, zero retries. New real-transport phone case triggers timing debt at the first AI handoff, receives Practice interrupted and the server timing message, then starts fresh authority via Play Again. Existing live V9 case still shows Practice expired for real TTL expiry; predecessor Practice/reward/control/reconnect cases pass. Logs retained in .cache/v9d-stop/browser.log. Physical phone/Render root-cause repair remains unverified."
+    },
+    {
+      "command": "V9D early-stop diagnosis: selector dry-run and selected unit/type/build/smoke/security checks; controlled slow-planner and timer-exception tests",
+      "status": "pass",
+      "detail": "2026-09-07: 572 selected unit/tooling tests passed (combat 73, Practice 42, identity 22, reward 37, protocol 121, simulation 130, Loomkeeper 34, relics 10, tooling 103). Types, fresh outputs, all four built-server profiles with actual AI casts, identity/reward security and bundle gates passed. Local V9 real-clock planning: 30 batches, maximum debt 4, maximum batch 51.718ms. Controlled 200ms batches stop at tick 457 with 36 due ticks after 7 planning batches; safety replay reconstructs exactly. Injected timer exception yields runtime_error metadata without raw error leakage. This proves diagnostics, not the reported Render cause. Selector browser launch was stopped before test execution because its default output cleanup contended with the open verification log on Windows; the same complete selected specs were resumed using a nested output directory and the existing validated build. Logs: .cache/v9d-stop/verification.log and browser.log. PostgreSQL was explicitly skipped because WP014_TEST_DATABASE_URL is unavailable. Full daily/Ubuntu/release and real-device gates were not run; no planner/simulation semantics changed, so the 196-scenario assessment was not repeated."
+    },
     {
       "command": "node scripts/run-playwright.js --reuse-build --project=chromium-390x844 --output=test-results/v9d-deployment-browser [all six selected specs]",
       "status": "pass_with_expected_skip",
@@ -134,6 +145,12 @@
     }
   ],
   "reviews": [
+    {
+      "role": "coordinator",
+      "reviewer": "/root (single-owner direct review; no agents)",
+      "decision": "pass",
+      "detail": "PASS only for the early-stop diagnostic correction on 6ad8c72 plus this diff. Result metadata is finite/optional and does not enter simulation hashes, replay encoding or settlement decisions. Unexpected timer exceptions remain fail-closed while reporting runtime_error operationally. Deployed Practice logs bounded counters/timing without ownership or raw exception data. Slow-batch and timer-exception tests, all selected unit/build/smoke/security checks and 57 browser cases pass. This is explicitly not a repair or acceptance of the owner-reported 20-second/tick-381 Render failure. Owner reports a paid one-CPU instance; retain the matching application stop log next. No hardware upgrade is justified by current evidence. PostgreSQL, daily/full release, Ubuntu visual and real-device acceptance remain unrun."
+    },
     {
       "role": "coordinator",
       "reviewer": "/root (direct contributor review; owner requested no agents)",
@@ -482,11 +499,12 @@
     "Full daily/release verification remains scheduled for 21:00 Europe/Berlin and was not run for this feature slice. Real Android/iOS acceptance, deployment, funded activation, V9 AI/presentation/balance and public selection remain outside V9B."
   ],
   "residual_risks": [
+    "Owner phone runtime failure at approximately 20 seconds / tick 381 is unresolved. Diagnostic reproduction proves a plausible timing path only; Owner reports the paid compute tier with one CPU, one level above Starter; the matching application stop log is not yet available. Do not attribute the failure to Free-tier limits or recommend an upgrade from this evidence. Existing local real-clock and browser passes are not evidence that the phone failure is repaired.",
     "V9D engineering closure is not public promotion or physical-device acceptance. Next is owner acceptance on the explicit development-v9d-practice profile, then a separately authorized shared Practice/reward release decision. Public selection remains V7.",
     "Corrected assessment records 29 player wins, 90 AI wins and 1 draw, with no Spoolburst selected despite 49 affordable opportunities. These observations warrant the later balance review; no approved V9 outcome threshold makes them correctness failures.",
     "Development now follows the owner's repository-wide no-subagents policy. Review and corrections are direct; no independent agent assurance is claimed.",
     "PostgreSQL and the full Ubuntu/daily release matrix remain outstanding release evidence. The local full-suite automation remains 21:00 Europe/Berlin.",
-    "Final initial JavaScript is 1496676 / 1500000 bytes; future client additions have only 3324 bytes of raw initial-chunk headroom.",
+    "After the early-stop diagnostic correction, initial JavaScript is 1496955 / 1500000 bytes, with 3045 bytes of raw initial-chunk headroom; initial JS plus CSS gzip is 415409 / 430000 bytes.",
     "Local and upstream branch names now both read codex/wp-015d3b-v9d-resource-utilities. Render needs the deployment-profile correction plus NODE_ENV=production, NIMBLE_RUNTIME_PROFILE=development-v9d-practice and REWARD_PAUSED=true; NIMBLE_DEPLOYMENT must be absent or production. Code publication does not change remote environment values."
   ]
 }

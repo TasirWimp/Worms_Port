@@ -147,6 +147,49 @@ test('V9D selection capacity failure terminalizes before a live prefix debit', (
     coordinator.dispose();
 });
 
+test('V9D timer exceptions report a runtime error without leaking raw exception data', async () => {
+    const diagnostics: unknown[] = [];
+    const coordinator = new SimulationCoordinatorV9({ nowUs: () => 0, onSafetyStop: value => diagnostics.push(value) });
+    try {
+        const id = 'v9_runtime_failure'; coordinator.createAutomated(id, 'v9_runtime_session', 1, 'wizard');
+        coordinator.catchUp = async () => { throw new Error('private-error-payload'); };
+        await (coordinator as any).pumpAll();
+        assert.equal(coordinator.get(id)!.terminalResult?.stopReason, 'runtime_error');
+        assert.deepEqual(diagnostics, [{ reason: 'runtime_error', tick: 0, turn: 0, phase: 'action',
+            actor: 'player', dueTicks: 0, planningTicks: 0, maximumPlanningBatchUs: 0 }]);
+        assert.equal(JSON.stringify(diagnostics).includes('private-error-payload'), false);
+        assert.equal(coordinator.replay(id)!.records.at(-1)!.operation.kind, 'safety');
+    } finally { coordinator.dispose(); }
+});
+
+test('V9D slow AI batches report clock debt, retain the cutoff and reconstruct the safety stop', async () => {
+    let now = 0;
+    const diagnostics: unknown[] = [];
+    const coordinator = new SimulationCoordinatorV9({ nowUs: () => now, yieldBatch: async () => {},
+        onSafetyStop: diagnostic => diagnostics.push(diagnostic),
+        plannerFactory: state => {
+            const planner = new LoomkeeperPlannerV9(state), step = planner.step.bind(planner);
+            planner.step = () => { step(); now += 200_000; };
+            return planner;
+        }
+    });
+    try {
+        const id = 'v9_slow_ai_challenge'; coordinator.createAutomated(id, 'v9_slow_ai_session', 1, 'wizard');
+        coordinator.advance(id, 450); now = 34_000;
+        await coordinator.catchUp(id);
+        await coordinator.catchUp(id);
+        const stopped = await coordinator.catchUp(id);
+        assert.equal(stopped.unavailable, true);
+        assert.equal(stopped.terminalResult?.stopReason, 'clock_debt');
+        assert.deepEqual(diagnostics, [{ reason: 'clock_debt', tick: 457, turn: 1, phase: 'action',
+            actor: 'loomkeeper', dueTicks: 36, planningTicks: 7, maximumPlanningBatchUs: 200_000 }]);
+        const replay = coordinator.replay(id)!;
+        assert.equal(coordinator.reconstructAndVerify(replay).stateHash, stopped.stateHash);
+        coordinator.safety(id, 'expiry');
+        assert.equal(diagnostics.length, 1, 'a terminal match logs once');
+    } finally { coordinator.dispose(); }
+});
+
 test('V9D real-clock planning reaches all 30 charged batches, casts, hands off, and reconstructs without debt loss', async t => {
     let epoch: number | undefined;
     const batches: number[] = []; let maximumDebt = 0;

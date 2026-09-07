@@ -494,6 +494,18 @@ Check compact action menus, movement/HUD feedback, Thread costs/carry-over,
 utilities, an actual AI turn, pause/resume, reconnect, results and fresh retries.
 Phone acceptance and balance remain owner checks.
 
+If a Clash stops within seconds, this is not the normal 30-minute expiry.
+V9 now shows **Practice interrupted** for timing or runtime safety stops. In Render's
+application logs, find the matching `[v9-practice-stop]` line: `clock_debt`
+means the server fell behind its fixed 30-tick timing limit; `runtime_error`
+means its timer caught an unexpected exception. `expiry` also covers forced
+lifecycle cleanup, so correlate an early expiry with shutdown/restart logs.
+The line includes tick, turn,
+phase, actor, outstanding ticks and AI batch timing, with no session tokens,
+wallet data or raw exception text. A `/favicon.ico` 404 is unrelated.
+The owner's first AI-turn failure at approximately 20 seconds / tick 381 is
+still open pending this deployment evidence; local success does not clear it.
+
 For rollback, restore the previously used profile (for example
 `development-v8d-practice`) and redeploy. Removing the profile or setting
 `production-v7` restores normal V7 startup and normal credential validation;

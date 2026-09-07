@@ -37,7 +37,13 @@ Phaser/Socket.IO stack.
   The bounded correction adds `development-v9d-practice`: real-clock,
   Practice-only startup with identity/reward services dormant. Its selected
   checks and built real-clock AI smoke pass; phone matrix is 56 passed with
-  three expected exclusions. Next apply the Render settings and redeploy. See
+  three expected exclusions. The owner can now start Practice, but reports an
+  early stop at the first AI turn (about 20 seconds, final tick 381). **Phone
+  acceptance is blocked by this unresolved runtime failure.** Favicon 404s do
+  not identify its cause. The next diagnostic correction distinguishes server
+  timing debt from timer exceptions and real expiry, preserving all timing and
+  replay limits. Reproduce on Render and retain its `[v9-practice-stop]` line
+  before choosing a CPU optimization or another runtime correction. See
   [Render settings](../../README.md#v9d-phone-acceptance-on-the-existing-render-service).
   Corrected assessment: **196 scenarios / 272 executions passed**; canonical
   browser suite: **55 passed**, with its three landscape-only cases passing

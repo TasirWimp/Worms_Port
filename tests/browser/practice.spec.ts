@@ -26,6 +26,33 @@ test('deployed V9 Practice opens from the phone URL with live authority and supp
   } finally { await page.goto('about:blank'); await runtime.close(); }
 });
 
+test('V9 server timing stop at AI handoff shows interruption and permits a fresh retry', async ({ page }) => {
+  let nowUs = 0;
+  const runtime = createRuntimeServer({ clientDir: path.resolve('client/build'), sessionRegistry: {
+    simulationRulesetId: V9_RULESET_ID, seedSource: () => 1, simulationTickIntervalMs: false,
+    v9TestOnly: { nowUs: () => nowUs, tickIntervalMs: 10 }
+  } });
+  const port = await runtime.listen();
+  try {
+    await page.goto(`http://127.0.0.1:${port}/?combat-preview=v9-live`);
+    await page.getByRole('button', { name: 'Start Practice' }).tap();
+    const ui = page.locator('.combat-v9');
+    await expect(ui).toBeVisible();
+    const bound = () => runtime.sessions.getBound([...runtime.io.sockets.sockets.values()][0].id)!;
+    const first = runtime.sessions.activeSnapshotV9(bound())!.challengeId;
+    runtime.sessions.advanceV9Test(first, 450);
+    await expect(ui).toHaveAttribute('data-active-actor', 'loomkeeper');
+    nowUs += 1_100_000;
+    await expect(page.getByRole('heading', { name: 'Practice interrupted', exact: true })).toBeVisible();
+    await expect(page.locator('.result-copy')).toContainText('server could not keep up');
+    await expect(page.locator('.result-copy')).not.toContainText('expiry');
+    await page.getByRole('button', { name: 'Play Again', exact: true }).tap();
+    await expect(ui).toBeVisible();
+    await expect.poll(() => runtime.sessions.activeSnapshotV9(bound())?.challengeId).not.toBe(first);
+    await expect(ui.locator('.pause-button')).toBeEnabled();
+  } finally { await page.goto('about:blank'); await runtime.close(); }
+});
+
 test('live V9 candidate preserves pause, AI response, terminal result and fresh retry', async ({ page }) => {
   const errors: string[] = [];
   page.on('pageerror', error => errors.push(error.message));
@@ -63,6 +90,7 @@ test('live V9 candidate preserves pause, AI response, terminal result and fresh 
     now += 60_001;
     runtime.sessions.sweep();
     await expect(page.locator('.result-shell')).toHaveAttribute('data-outcome', 'expired');
+    await expect(page.getByRole('heading', { name: 'Practice expired', exact: true })).toBeVisible();
     await page.getByRole('button', { name: 'Play Again', exact: true }).tap();
     await expect(ui).toBeVisible();
     await expect.poll(() => runtime.sessions.activeSnapshotV9(bound())?.challengeId).not.toBe(first);

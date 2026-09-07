@@ -45,6 +45,8 @@ export default class ResultScene extends Phaser.Scene {
         const host = document.getElementById('game');
         if (!host || !this.client) throw new Error('Result scene requires the live practice client.');
         const outcome = this.args.result?.outcome;
+        const stopReason = this.args.result?.protocolVersion === 9 ? this.args.result.stopReason : undefined;
+        const interrupted = stopReason && stopReason !== 'expiry' && stopReason !== 'left';
         this.add.rectangle(this.scale.width / 2, this.scale.height / 2,
             this.scale.width, this.scale.height, 0x1F2348);
         this.root = document.createElement('main');
@@ -60,8 +62,11 @@ export default class ResultScene extends Phaser.Scene {
                 <p class="practice-eyebrow">${
                     this.args.rewarded ? 'Daily Challenge complete' : 'Practice Clash complete'
                 }</p>
-                <h1 id="result-title">${resultTitle(outcome)}</h1>
-                <p class="result-copy">${this.args.message ?? resultCopy(outcome)}</p>
+                <h1 id="result-title">${interrupted ? 'Practice interrupted' : resultTitle(outcome)}</h1>
+                <p class="result-copy">${interrupted
+                    ? stopReason === 'clock_debt' ? 'The server could not keep up with this Clash. Please try again.'
+                        : 'The server stopped this Clash unexpectedly. Please try again.'
+                    : this.args.message ?? resultCopy(outcome)}</p>
                 ${this.args.result ? `
                     <dl class="result-facts">
                         <div><dt>Final tick</dt><dd>${this.args.result.finalTick ?? '—'}</dd></div>
