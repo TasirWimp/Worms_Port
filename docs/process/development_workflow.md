@@ -9,12 +9,12 @@ adding gameplay, assets, or tooling.
 Use these files to decide where a change belongs:
 
 - `README.md` for setup, build, and high-level repo status.
-- `AGENTS.md` for Codex operating rules and subagent roles.
+- `AGENTS.md` for Codex operating rules and single-owner policy.
 - `docs/art-direction.md` for product identity, world, character, visual, and
   concept-art boundaries.
 - `docs/import-boundary.md` for upstream source roles.
 - `docs/asset-review-workflow.md` for third-party asset review.
-- `docs/planning/implementation_plan.md` for current slices and role routing.
+- `docs/planning/implementation_plan.md` for current slices and acceptance gates.
 - `legal/source-manifest.json` for upstream source traceability.
 - `legal/asset-manifest.json` for approved product assets.
 - `legal/allowed-licenses.json` for asset license policy.
@@ -43,33 +43,25 @@ Every non-trivial change should follow this loop:
 
 ## Autonomous Slice Loop
 
-For WP-005 and later, the orchestrating agent applies the required loop without
-waiting for routine implementation decisions:
+The primary assistant performs the whole slice without subagents. The owner
+retired implementation delegation, probe agents, support agents, reviewer
+agents and docs/test agents on 2026-09-07. This overrides older package routing.
 
-1. Read the execution pointer in `docs/planning/implementation_plan.md` and
-   select only the named unblocked work package.
-   Apply [task model routing](../../AGENTS.md#task-model-routing): announce the
-   chosen model/effort and reason, inspect role pins, and preserve fresh
-   implementer/distinct reviewer separation. Record those settings in the
-   existing slice evidence or review summary; only claim runtime confirmation
-   when model metadata is available. Escalation retains the correction limit.
-2. Record the starting commit, worktree status, affected ownership boundaries,
-   dependency-lock hash when relevant, planned checks, and deterministic seeds.
-3. Establish a green baseline for the selected checks. A red baseline is
-   reported separately and is not attributed to the candidate patch.
-4. Implement one refinement in an isolated branch or worktree. Keep file
-   ownership explicit, but revise the behavioral boundary when new dependencies
-   appear. Open reciprocal support during implementation using the protocol below.
-5. Run a fail-fast funnel: compliance, types, focused tests, clean build, built
-   smoke, protocol/browser/visual/performance checks as applicable.
-6. Ask the implementing agent to review its own change, then request the
-   relevant test, compliance, asset, and read-only reviewer roles.
-7. On failure, reproduce the smallest case, classify it, make one correction,
-   rerun the failing check, then rerun the selected funnel.
-8. Stop after three corrections for the same failure signature and report the
-   blocker without weakening a threshold or guardrail.
-9. Persist sanitized evidence, update source-of-truth documents, commit the
-   bounded slice, and advance the execution pointer only after all gates pass.
+1. Read the execution pointer and inspect Git status; select the authorized slice.
+2. Record its source, intended behavior, affected paths and relevant checks in
+   the existing evidence carrier. Preserve source and clean-room boundaries.
+3. Inspect the selector dry run and establish the relevant baseline.
+4. Implement and integrate directly across the coupled paths. Keep corrections
+   with the same primary task; use executable regression evidence where needed.
+5. Run the selected checks and widen them when risk or a failure warrants it.
+6. Review product continuity directly, including the actual player journey and
+   authority/lifecycle boundaries. Do not label contributor review independent.
+7. On failure, reproduce the smallest case, correct it, then rerun the affected
+   checks. Stop after three corrections of the same signature and report the
+   unresolved cause without weakening thresholds.
+8. Update evidence and housekeeping, commit the bounded change, and advance the
+   pointer only after the applicable gates pass. Daily/release and real-device
+   gates remain separate; no agent approval is required.
 
 ### Work-Package Evidence
 
@@ -80,7 +72,11 @@ dependency-lock SHA-256, owning roles, scope, non-goals, planned checks,
 deterministic seeds or an empty list, and whether Sorcerers observation was
 used. `npm run check:work-packages` validates these records.
 
-Before marking a record complete, add every check result, independent review,
+New packages use `execution_mode: single_owner`. Existing packages may explicitly
+record that transition while preserving historical support/review records.
+Append the latest direct verdict after historical reviews; a failed latest verdict
+blocks closure. Support-record consistency remains checked; retirement does not invent exchanges
+or relabel direct review as independent. Before completion, record checks, direct review,
 skipped check, and residual risk. Generated traces, videos, reports,
 screenshots, caches, and raw logs stay in ignored `test-results/` or
 `playwright-report/`. Only compact sanitized facts belong in the tracked
@@ -91,7 +87,40 @@ Never auto-approve screenshot baselines, asset licenses, attribution omissions,
 brand permissions, payment exceptions, security exceptions, or real-fund
 activation.
 
+### Harness Retirement And Research Preservation
+
+On 2026-09-07 the owner retired the harness from Worms_Port development and
+prohibited all subagents, including read-only probes and final reviewers.
+One continuous primary task now owns implementation, integration, tests, review
+and corrections. The supplied external diagnosis identified fragmented context
+across coupled V9 transitions and repeated correction/handoff costs; that is an
+interpretation of the observed case, not a controlled performance experiment.
+Its suggested probe/reviewer agents are explicitly not adopted. No measured
+single-owner speed or quality improvement is claimed yet.
+
+Preserved research carriers (available on main):
+- [WP-016 implementation/evidence](../evidence/wp-016.json), unchanged historical
+  support exchanges and verdicts, and the historical protocol below.
+- [Retired role definitions](../../.codex/retired-agents/), moved without changing
+  their contents out of Codex's active `.codex/agents/` discovery directory.
+- [Original operational source at b50d591](https://github.com/TasirWimp/Worms_Port/tree/b50d5915aa5f88dd496c6837d3727be0c418cc60)
+  and [main's completed port at b8b498b](https://github.com/TasirWimp/Worms_Port/commit/b8b498b).
+  Git history preserves the former active config, AGENTS instructions and tests.
+- [CRPM pressure case](https://github.com/TasirWimp/CRPM/blob/main/docs/case_studies/Worms_Port_Agent_Coordination_And_Capability_Pressure_Case_v0.md).
+  CRPM's research lifecycle is not retired by this product workflow decision.
+
+Current enforcement: `.codex/config.toml` sets `[agents].enabled = false`;
+AGENTS.md prohibits delegation even when old sessions or host overrides expose
+agent tools. Archive text and historical package instructions cannot authorize
+reactivation. Old branches/worktrees must incorporate this policy before new
+work; do not change a research checkout's historical source just to hide it.
+The selector, compliance/clean-room safeguards and 21:00 Europe/Berlin daily
+suite continue. A direct-review pass remains distinct from release approval.
+
 ### Adaptive Support During Implementation (WP-016)
+
+> RETIRED RESEARCH RECORD — preserved verbatim below for CRPM. None of the
+> following delegation instructions apply to current Worms_Port development.
 
 Use the existing Codex agent runtime first. This protocol authorizes useful
 native peer exchanges and role-specific model/effort selection within the
@@ -1375,15 +1404,8 @@ If implementation shows that the plan is wrong or risky:
 
 ## Subagent Coordination
 
-Use `.codex/agents/` roles as scoped workers. They coordinate through repo
-artifacts:
-
-- planning docs define work slices,
-- manifests record source and license evidence,
-- commits preserve reviewed changes,
-- completion summaries name affected future roles.
-
-No role may override the Turtle/Sorcerers boundary.
+Retired. Use the single-owner loop above. Historical role/protocol references
+are research records and must not trigger agent work.
 
 ## Definition Of Done
 

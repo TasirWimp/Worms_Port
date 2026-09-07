@@ -1,5 +1,22 @@
 # Worms_Port Agent Instructions
 
+## Single-owner development — effective 2026-09-07
+
+Do not spawn, delegate to, resume, or request work from any subagent in this
+repository. This includes implementation, review, research, probes, tests and
+documentation. Do not use other tasks, CLI sessions or external agent services
+as a delegation workaround. The current primary assistant owns the entire
+change, integration, review, verification and corrections.
+
+This owner instruction supersedes all older agent-role, model-routing,
+reciprocal-support and independent-agent-review requirements in repository
+documents, historical contracts and archived roles. Do not reactivate the
+harness unless the owner explicitly changes this policy. Ordinary test runners
+and the existing 21:00 Europe/Berlin full-suite automation remain in use.
+
+WP-016 is retained for CRPM research, not for current development. See the
+[retirement and research record](docs/process/development_workflow.md#harness-retirement-and-research-preservation).
+
 ## Repository Context
 
 Worms_Port is an MIT-licensed Phaser project bootstrapped from the MIT
@@ -24,7 +41,7 @@ Before feature work, read the relevant docs in this order:
 3. `docs/import-boundary.md` - Turtle base and Sorcerers quarantine rules.
 4. `docs/asset-review-workflow.md` - per-asset review workflow.
 5. `docs/process/development_workflow.md` - required development loop.
-6. `docs/planning/implementation_plan.md` - current slices and subagent roles.
+6. `docs/planning/implementation_plan.md` - current slices and acceptance gates.
 7. `legal/source-manifest.json` - source roles and upstream pins.
 8. `legal/asset-manifest.json` - approved product assets.
 9. `legal/allowed-licenses.json` - allowed and blocked asset licenses.
@@ -46,7 +63,7 @@ records a verified Nimiq Pay full-screen replacement.
 For implementation work:
 
 1. Check `git status --short --branch`.
-2. Identify which source document and subagent role owns the change.
+2. Identify which source document and behavior owns the change.
 3. Keep changes scoped to the requested slice.
 4. Preserve the Turtle/Sorcerers import boundary.
 5. Run the planned verification.
@@ -73,8 +90,8 @@ If the user asks only for planning, review, or brainstorming, do not edit code.
 - Use `npm run verify:changes -- --dry-run` to inspect the selected checks,
   then `npm run verify:changes` for the current edit. For a whole committed
   slice, pass `-- --base <starting-commit>` to both commands. This selector is
-  the mandatory edit-loop baseline and CI plan, not an upper bound on an
-  independent Astra reviewer's test choice.
+  the mandatory edit-loop baseline and CI plan, not an upper bound on the
+  primary assistant's risk-based test choice.
 - Runtime/build changes require types, current build outputs and built smoke.
   Documentation, Codex settings and test/verification-tool-only changes do not
   require a game build. Unknown paths receive conservative product coverage.
@@ -104,62 +121,30 @@ If the user asks only for planning, review, or brainstorming, do not edit code.
   until a separate release-testing environment is provided.
 - Always report skipped checks and why.
 
-## Independent Astra Review
+## Direct Review And Verification
 
-The `worms_port_reviewer` is the independent GPT-6 Astra/high reviewer for a
-substantive gameplay, client, server, authority, security, asset, or
-cross-module slice. It stays read-only, but owns the final assessment of
-product continuity and evidence sufficiency. It must not approve merely
-because the changed paths match a contract or because the selector passes.
+The primary assistant reviews the complete changed behavior and runs the
+necessary checks directly. The selector is a mandatory starting baseline,
+not an upper limit. Inspect the diff, accepted predecessor journey, execution
+pointer and relevant tests; widen checks when the changed risk warrants it.
+Retain continuity for mobile layout/guidance, the playable loop, presentation,
+AI, accessibility, lifecycle/authority and inherited capabilities. Each relevant
+capability must be preserved, explicitly replaced, or deferred to an
+owner-approved waypoint. Missing behavior or evidence blocks acceptance.
 
-An agent that helped form the solution through adaptive support is a contributor,
-even if it stayed read-only. Use a fresh identity for substantive final assessment;
-do not relabel that advisor as the independent reviewer. The final reviewer first
-reconstructs the claim, then reconciles the retained support/failure ledger.
-
-Before a final verdict, the reviewer must inspect the selector's dry-run as a
-starting inventory, the implementation diff, the accepted predecessor journey,
-the current execution pointer, and the existing relevant tests. It then chooses
-and runs any focused, family, browser, build, security, or full-suite checks
-that the changed risk warrants. It may exceed the selector freely; it may run
-the full suite when the risk or a focused failure justifies diagnosis. The daily
-21:00 Europe/Berlin run remains the required scheduled release gate and is not
-silently replaced by an Astra review.
-
-The reviewer maintains a continuity ledger for relevant player-visible
-capabilities: `preserved`, `replaced`, `deferred` with a named waypoint, or
-`missing`. A missing classification is a blocking finding. This includes
-mobile layout and guidance, the complete playable loop, presentation feedback,
-opponent behavior, accessibility, lifecycle/authority feedback, and inherited
-features. A local preview cannot silently remove an accepted capability; it
-must preserve it, expose the limitation, or record an owner-approved future
-waypoint.
-
-When existing evidence is insufficient, Astra returns `FAIL — missing evidence`
-instead of accepting the slice. Its finding must name the suitable test carrier,
-setup, player journey or authority state, expected outcome, and regression the
-test must prevent. It must also give the Terra/high implementer an actionable,
-read-only correction brief: relevant source and test carriers with lines,
-existing components/functions/fixtures to reuse, the expected data/control
-flow, authority and source-boundary constraints, and acceptance checks. It must
-distinguish required behavior from optional implementation choices and never
-write the correction itself. A Terra/high implementer owns the resulting bounded
-test and product correction; Astra reviews the correction independently. The
-reviewer reports the continuity ledger, commands run and outcomes, intentionally
-unrun checks with reasons, required tests, correction briefs, residual risk, and
-a `PASS`, `FAIL`, or `BLOCKED` verdict. A PASS is not release, daily-suite, or
-real-device approval unless those are separately executed and recorded.
+Reproduce findings, implement corrections and add meaningful regression tests
+within the same continuous task. Report commands, outcomes, skipped checks and
+residual risk. Call this direct review; never claim independent agent review.
+Daily/release and physical-device acceptance remain separate gates. New package
+records use `execution_mode: single_owner`; historical support evidence remains
+research history, not an instruction to reopen agent collaboration.
 
 ## Repository Housekeeping
 
-The existing `worms_port_docs_keeper` owns repository housekeeping; do not add a
-separate standing agent for it. At every work-package transition, merge/release
-boundary, and before closing an in-progress package, run `npm run
-audit:housekeeping`. The report identifies current branch/tracking state,
-branches merged into `main`, gone upstreams, in-progress evidence, and failed
-reviews requiring planning reconciliation. The docs keeper compares it with the
-execution pointer and latest review, then updates existing documentation when
-drift is real. It never renames, deletes, merges, pushes, or archives a branch.
+The primary assistant runs `npm run audit:housekeeping` at package transitions,
+merge/release boundaries and before package closure. Reconcile branch/tracking,
+execution pointer, evidence and review state directly. Preserve history; do not
+rename, delete, merge or publish branches without user authorization.
 
 ## Active Product Constraints
 
@@ -252,85 +237,18 @@ drift is real. It never renames, deletes, merges, pushes, or archives a branch.
 
 ## Codex Subagent Roles
 
-Role-specific Codex agents live in `.codex/agents/`:
-
-- `worms_port_planner` - feature slicing, scope checks, and import-boundary planning.
-- `worms_port_test_worker` - test planning, type/build/audit checks, and smoke verification.
-- `worms_port_base_game_worker` - Turtle-derived Phaser/client gameplay and re-theme work.
-- `worms_port_network_worker` - Express, Socket.IO, server runtime, and multiplayer state.
-- `worms_port_asset_curator` - Sorcerers quarantine review, asset manifests, and attribution.
-- `worms_port_compliance_keeper` - legal manifests, package/license gates, and MIT compatibility.
-- `worms_port_docs_keeper` - README, docs, AGENTS, planning, and role maintenance.
-- `worms_port_reviewer` - independent read-only review for boundary risk, bugs, and missing checks.
-- `worms_port_support_advisor` - read-only reciprocal support while implementation is forming;
-  model/effort selected for the current uncertainty, not pinned to a permanent expert tier.
-
-Subagents can exchange native messages directly while work is active. Persist
-consequential observations, boundary changes and support returns in the existing
-package evidence; transient messages alone are not a recoverable handoff. Use the
-[adaptive support protocol](docs/process/development_workflow.md#adaptive-support-during-implementation-wp-016)
-before declaring the implementation boundary settled.
+Retired. The unchanged role definitions are preserved under
+[`.codex/retired-agents/`](.codex/retired-agents/) for CRPM research and must not
+be loaded or followed for Worms_Port development. `.codex/agents/` is no longer
+an active project role directory; `[agents].enabled = false` disables
+multi-agent tools in project configuration.
 
 ## Task Model Routing
 
-Choose the model before each substantial slice or independent subtask; announce
-the model/effort and a short reason. This policy authorizes the explicit model
-overrides below when delegation is already required/useful under the workflow.
-It does not require an extra agent for every small edit.
-
-| Current situation | Initial model / effort and support arrangement |
-| --- | --- |
-| Familiar implementation or focused tests with exercised dependencies | `gpt-5.6-terra` / `high` with an available support port; the work boundary remains revisable. |
-| Documentation, inventory and mechanical checks | `gpt-5.6-terra` / `medium`; request support when source meanings conflict. |
-| Several plausible interpretations or integration dependencies | A reciprocal support episode; `gpt-5.6-sol` / `medium` or `high` is a calibration candidate, not a required intermediate rung. |
-| Coupled temporal/authority/security or architectural ambiguity | `gpt-6-astra` / `high` support can open before a failed patch. Keep the implementer's local evidence in the exchange. |
-| Substantive independent final assessment | Fresh `gpt-6-astra` / `high` identity that did not contribute to the solution. |
-
-These are starting hypotheses, not intrinsic role identities or measured cost
-winners. Keep model/effort fixed when first evaluating a changed interaction;
-compare model or effort separately after the support mechanism is observable.
-Project and ordinary subagent defaults are Terra/high. The docs role pins
-Terra/medium; the dedicated read-only reviewer pins Astra/high. Reserve that
-reviewer for substantive work; use a fresh Terra docs/test worker for routine
-reviews. For V9B, use fresh Terra/high implementers and an independent
-Astra/high entry/final reviewer. Keep the existing clean-room separation.
-
-- Use `fork_turns="none"` and explicit model/effort for fresh delegated work
-  where supported. Supply only the permitted source contract and exact file
-  ownership; workers must preserve others' edits. Do not use inherited-history
-  forks to choose a different model or cross a clean-room boundary.
-- Read the selected custom role's model pins before spawning: current Codex
-  applies those pins after spawn/default selection. For a needed override that
-  conflicts with a pin, use an unpinned worker/explorer with explicit settings
-  and the relevant role instructions; retain read-only review scope and never
-  delegate reference-contaminated context to a runtime implementer.
-- Escalate a reproducible failure to Astra after two unsuccessful Terra
-  corrections if support has not already opened. The implementer, advisor,
-  affected peer or coordinator may open support earlier when a dependency,
-  contradictory observation or risky interface change appears. A worker need
-  not fully diagnose what it cannot yet see or wait for a review FAIL.
-  Pass the minimal failing case and attempted fixes. Escalation does not reset
-  the workflow's three-correction stop, relax tests or authorize a wider slice.
-  Revise the work split when the dependency crosses it; preserve one writer per
-  shared file. Reduce support after retaining the recovered distinction,
-  evidence, continuing assumptions and reopening cue.
-- Any participant can correct another's hypothesis with evidence. Missing
-  observations call for a probe; reasoning difficulty may justify more effort
-  or a different model; host failures call for infrastructure diagnosis.
-  A stronger model's confidence is not a product or acceptance authority.
-- Record model, effort, role and selection/escalation reason in the existing
-  slice evidence/review summary. Distinguish requested/configured settings from
-  runtime-confirmed metadata. Never infer the served model from an agent's
-  self-description; disclose when actual metadata is unavailable.
-- Explicit user choices take precedence. If a requested model is unavailable,
-  report that fact rather than silently substituting. Existing task selections,
-  CLI overrides and managed settings can supersede project defaults; editing
-  config does not switch a running task. Check the task's model picker before
-  its next turn when a different coordinator model is desired.
-- Keep the selector baseline and the 21:00 Europe/Berlin full-suite schedule
-  unchanged. Astra may independently widen test coverage beyond selection;
-  model routing is a cost/quality policy, not a substitute for independent
-  review and passing checks.
+Retired with the harness. The primary task uses its selected model and effort;
+project defaults remain Terra/high. Do not spawn a different model to work
+around uncertainty. Investigate and correct directly; report a concrete blocker
+when needed. Configuration changes do not prove which model served a turn.
 
 ## Git And Reporting
 

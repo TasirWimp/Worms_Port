@@ -382,3 +382,26 @@ test('support episodes retain reciprocal source-bound support without substituti
     support_episodes: [{ ...pendingReduced, status: 'reopened' }]
   }], [], () => hash), []);
 });
+
+
+test('single-owner closure retains historical support without requiring more agents', () => {
+  const historical = pendingSupportEpisode();
+  const record = {
+    ...base, status: 'complete', execution_mode: 'single_owner',
+    support_episodes: [historical],
+    check_results: [{ command: 'test command', status: 'pass' }],
+    reviews: [
+      { role: 'historical-reviewer', reviewer: 'old-reviewer', decision: 'fail' },
+      { role: 'primary', reviewer: 'primary-task', decision: 'pass' }
+    ],
+    skipped_checks: [], residual_risks: ['No independent review claimed.']
+  };
+  const before = JSON.stringify(historical);
+  assert.deepEqual(validateEvidence([record], [], () => hash), []);
+  assert.equal(JSON.stringify(historical), before);
+  assert.match(validateEvidence([{ ...record, execution_mode: undefined }], [], () => hash).join('\n'), /cannot retain open/);
+  assert.match(validateEvidence([{ ...record, execution_mode: 'typo' }], [], () => hash).join('\n'), /invalid execution mode/);
+  assert.match(validateEvidence([{ ...record, reviews: [...record.reviews, { role: 'primary', reviewer: 'primary-task', decision: 'fail' }] }], [], () => hash).join('\n'), /passing reviews/);
+  assert.match(validateEvidence([{ ...record, check_results: [] }], [], () => hash).join('\n'), /one passing result/);
+  assert.match(validateEvidence([{ ...record, support_episodes: [{ ...historical, exchanges: 'invalid' }] }], [], () => hash).join('\n'), /exchanges/);
+});

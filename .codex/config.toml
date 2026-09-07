@@ -1,9 +1,7 @@
-# Cost-aware default. Task routing and escalation are defined in AGENTS.md.
+# Single-owner Worms_Port development. See AGENTS.md.
 model = "gpt-5.6-terra"
 model_reasoning_effort = "high"
 
 [agents]
-# Initial execution setting; native reciprocal support can use another model.
-# AGENTS.md governs episode-specific capability/effort and review independence.
-default_subagent_model = "gpt-5.6-terra"
-default_subagent_reasoning_effort = "high"
+# Owner retired all subagent use on 2026-09-07.
+enabled = false

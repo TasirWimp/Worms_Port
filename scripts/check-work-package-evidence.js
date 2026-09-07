@@ -13,7 +13,7 @@ const allowedFields = new Set([
   'starting_lock_sha256', 'owning_roles', 'scope', 'non_goals',
   'planned_checks', 'deterministic_seeds', 'sorcerers_reference_used',
   'clean_room_records', 'check_results', 'reviews', 'skipped_checks',
-  'residual_risks', 'support_episodes'
+  'residual_risks', 'support_episodes', 'execution_mode'
 ]);
 
 function canonicalLockHash(commit, root = repoRoot) {
@@ -234,7 +234,9 @@ function validateSupportEpisodes(evidence, errors) {
     }
   }
 
-  if (evidence.status === 'complete') {
+  // Historical support stays structurally validated, but retired collaboration
+  // must not require new exchanges or agent approval for single-owner closure.
+  if (evidence.status === 'complete' && evidence.execution_mode !== 'single_owner') {
     if (evidence.support_episodes.some((episode) => episode?.status !== 'reduced')) {
       errors.push(`${label}: completed evidence cannot retain open, blocked, or reopened support.`);
     }
@@ -293,6 +295,9 @@ function validateEvidence(
     ids.add(evidence.id);
     if (!/^WP-\d{3}(?:[A-Z]|[A-Z]\d[A-Z])?$/.test(evidence.id || '')) errors.push(`${label}: invalid work-package id.`);
     if (!['in_progress', 'complete', 'blocked'].includes(evidence.status)) errors.push(`${label}: invalid status.`);
+    if (evidence.execution_mode !== undefined && evidence.execution_mode !== 'single_owner') {
+      errors.push(`${label}: invalid execution mode.`);
+    }
     if (!/^[0-9a-f]{7,40}$/.test(evidence.starting_commit || '')) errors.push(`${label}: invalid starting_commit.`);
     if (!['clean', 'dirty-preserved'].includes(evidence.initial_worktree)) errors.push(`${label}: invalid initial_worktree.`);
     if (!/^[0-9A-F]{64}$/.test(evidence.starting_lock_sha256 || '')) errors.push(`${label}: invalid lock hash.`);
@@ -339,8 +344,12 @@ function validateEvidence(
         errors.push(`${label}: completed evidence requires one passing result for every planned check.`);
       }
       const reviews = Array.isArray(evidence.reviews) ? evidence.reviews : [];
-      if (reviews.length === 0 || reviews.some((review) =>
-        typeof review.role !== 'string' || typeof review.reviewer !== 'string' || review.decision !== 'pass'
+      // Single-owner mode retains historical failed reviews; the latest direct
+      // verdict governs closure. Legacy research records keep their old rule.
+      const closureReviews = evidence.execution_mode === 'single_owner' ? reviews.slice(-1) : reviews;
+      if (closureReviews.length === 0 || closureReviews.some((review) =>
+        typeof review.role !== 'string' || !review.role ||
+        typeof review.reviewer !== 'string' || !review.reviewer || review.decision !== 'pass'
       )) {
         errors.push(`${label}: completed evidence requires identified passing reviews.`);
       }
