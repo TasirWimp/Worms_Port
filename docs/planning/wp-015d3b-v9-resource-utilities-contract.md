@@ -1249,3 +1249,25 @@ a later 1.1-second external stall must still produce `clock_debt`. Real-clock,
 built-profile and phone-browser AI witnesses remain required. Phone acceptance
 stays open until the owner repeats the full first AI turn on the redeployed
 paid one-CPU Render service.
+
+### V9D owner acceptance and bounded closure — 2026-09-07
+
+The owner reports that all redeployed phone checks now pass, including the
+complete first Loomkeeper response. This closes V9D implementation and phone
+acceptance at `73018e6`; it does not activate public V9, rewards or payout.
+
+The owner accepts the current player-heavy loss rate as expected for this
+checkpoint. A separately reported bug prevents player Relic selection. Its
+cause and correction are unassessed and explicitly deferred to the tracked V9
+Relic-selection fast-follow. Preserve that residue; this closure does not call
+the control complete or silently adjust balance, ruleset identity or AI policy.
+
+The owner-requested lightweight release checkpoint reused the just-completed
+change-selected 469-test, 57-pass phone-browser and fresh four-profile
+build/smoke evidence at `73018e6`. Fresh compliance, npm audit with zero
+vulnerabilities, identity/reward security, bundle and housekeeping checks pass.
+It is not the full release gate.
+Ubuntu visual/full daily coverage, PostgreSQL reward evidence, public shared
+Practice/reward selection and funded activation remain open. With that boundary
+retained, the next gameplay planning target is V10 terrain and starting
+positions; V11 teams remains separate.

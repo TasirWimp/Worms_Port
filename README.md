@@ -509,7 +509,10 @@ coordinator now charges those bounded planner computations only through their
 existing 30 logical planning ticks instead of also treating their CPU duration
 as missed simulation time. A genuine external scheduling delay still reaches
 the unchanged 30-tick debt cutoff. Repeat phone acceptance after redeploying;
-it remains open until the complete live AI turn succeeds.
+the owner confirmed on 2026-09-07 that the redeployed phone journey and AI turn
+pass. V9D phone acceptance is complete. The owner separately reports a bug that
+prevents player Relic selection and explicitly defers it to the tracked V9
+Relic-selection fast-follow; this acceptance does not claim that bug is fixed.
 
 For rollback, restore the previously used profile (for example
 `development-v8d-practice`) and redeploy. Removing the profile or setting

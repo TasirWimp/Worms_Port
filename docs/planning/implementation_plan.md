@@ -44,16 +44,23 @@ Phaser/Socket.IO stack.
   bounded correction prevents the fixed 30-tick planning window from also
   charging its measured planner CPU as missed simulation time. External stalls,
   the 30-tick cutoff, AI lattice, selected plan, replay and gameplay stay fixed.
-  **Phone acceptance remains blocked until redeployment proves a complete live
-  AI turn.** See
+  The owner reports the redeployed phone journey and AI turn passing on
+  2026-09-07. **V9D implementation and phone acceptance are complete at
+  `73018e6`.** The owner accepts the observed loss rate for now and explicitly
+  defers the player Relic-selection bug to the tracked V9 Relic-selection
+  fast-follow; no balance or bug-fix claim is inferred. See
   [Render settings](../../README.md#v9d-phone-acceptance-on-the-existing-render-service).
   Corrected assessment: **196 scenarios / 272 executions passed**; canonical
   browser suite: **55 passed**, with its three landscape-only cases passing
   separately. Balance observations are descriptive, not acceptance thresholds.
-  Next: owner phone acceptance of the live V9D candidate. Public promotion/release requires its separate shared
-  Practice/reward decision, full release gate and PostgreSQL evidence.
-  No funded activation, deployment, V10 or V11 is implied. Overall package
-  evidence remains `in_progress` until those later acceptance gates are settled.
+  The light release checkpoint passed by reusing the complete selected
+  verification at `73018e6` and running fresh compliance, zero-vulnerability
+  dependency audit, security, bundle and housekeeping checks. Full Ubuntu/daily,
+  PostgreSQL and public shared-mode
+  promotion remain later release gates. Next gameplay package: **V10 terrain
+  and starting positions**; V11 teams remains separate. No funded activation is
+  implied. Overall package evidence remains `in_progress` until the later
+  promotion/release gates are settled.
 - Product predecessor: **WP-015D3A V8 Action-Turn Candidate — V8A finite
   rules/acceptance contract complete and independently reviewed; V8B authoritative
   foundation complete and independently reviewed; V8C touch presentation
