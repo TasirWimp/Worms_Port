@@ -22,6 +22,7 @@ export class ResourceTurnsV9Scene {
     private presentation: { steps: V9PresentationStep[]; index: number; startedAt: number; generation: number } | undefined;
     private projectileCamera?: CombatCamera; private cameraTransition?: CameraTransition;
     private cameraPointer?: { id: number; x: number }; private readonly listeners = new V9PreviewListenerCleanup();
+    private restarting = false;
 
     public constructor(private readonly scene: Phaser.Scene, private readonly args: CombatSceneArgsV9) {
         this.state = structuredClone(args.snapshot); createApprovedWizardAnimations(scene); this.renderer = new CombatRenderer(scene);
@@ -95,12 +96,17 @@ export class ResourceTurnsV9Scene {
         finally { if (neutralGeneration === this.neutralGeneration) this.neutralPending = false; }
     }
     private async restart(): Promise<void> {
-        if (this.destroyed) return;
-        const next = await this.args.restart();
-        if (this.destroyed) { next.destroy(); return; }
-        // V9 is a local adapter, not an outer CombatScene argument. Retire every
-        // old listener, frame and fixture before mounting one replacement here.
-        this.destroy(); new ResourceTurnsV9Scene(this.scene, next);
+        if (this.destroyed || this.restarting) return;
+        this.restarting = true;
+        try {
+            const next = await this.args.restart();
+            if (this.destroyed) { next.destroy(); return; }
+            // Retire old listeners before mounting the acknowledged replacement.
+            this.destroy(); new ResourceTurnsV9Scene(this.scene, next);
+        } catch (error) {
+            if (!this.destroyed) this.controls.root.querySelector<HTMLElement>('.combat-message')!.textContent =
+                error instanceof Error ? error.message : 'Unable to restart the Clash.';
+        } finally { this.restarting = false; }
     }
     private async releaseMovement(): Promise<void> {
         if (this.neutralPending || this.destroyed || !this.args.releaseMovement) return this.neutralize();
@@ -109,7 +115,7 @@ export class ResourceTurnsV9Scene {
         finally { if (neutralGeneration === this.neutralGeneration) this.neutralPending = false; }
     }
     private showResult(result: import('../../../shared/protocol-v9').ChallengeResultV9): void {
-        if (this.destroyed) return;
+        if (this.destroyed || this.restarting) return;
         this.scene.scene.start('result', { result, calling: this.args.calling ?? 'wizard',
             rewarded: this.args.rewarded, previewLabel: this.args.previewLabel });
     }

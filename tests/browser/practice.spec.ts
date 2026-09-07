@@ -47,6 +47,13 @@ test('live V9 candidate preserves pause, AI response, terminal result and fresh 
     await expect(ui).toBeVisible();
     await expect.poll(() => runtime.sessions.activeSnapshotV9(bound())?.challengeId).not.toBe(first);
     await expect(ui.locator('.pause-button')).toBeEnabled();
+    const second = runtime.sessions.activeSnapshotV9(bound())!.challengeId;
+    await ui.locator('.pause-button').tap();
+    await expect(ui).toHaveAttribute('data-paused', 'true');
+    await ui.locator('.v9-reenter').tap();
+    await expect(ui).toHaveAttribute('data-paused', 'false');
+    await expect.poll(() => runtime.sessions.activeSnapshotV9(bound())?.challengeId).not.toBe(second);
+    await expect(page.locator('.result-shell')).toHaveCount(0);
     expect(errors).toEqual([]);
   } finally { await page.goto('about:blank'); await runtime.close(); }
 });
