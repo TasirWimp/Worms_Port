@@ -25,6 +25,14 @@ test('live V9 candidate preserves pause, AI response, terminal result and fresh 
     await expect(ui).toHaveAttribute('data-paused', 'true');
     await ui.locator('.pause-button').tap();
     await expect(ui).toHaveAttribute('data-paused', 'false');
+    // Interrupt the real transport, then prove an owned resync permits a new command.
+    [...runtime.io.sockets.sockets.values()][0].conn.close();
+    await expect(ui).toHaveAttribute('data-connection', 'reconnecting');
+    await expect(ui).toHaveAttribute('data-connection', 'connected', { timeout: 10_000 });
+    await ui.locator('.pause-button').tap();
+    await expect(ui).toHaveAttribute('data-paused', 'true');
+    await ui.locator('.pause-button').tap();
+    await expect(ui).toHaveAttribute('data-paused', 'false');
     const bound = () => runtime.sessions.getBound([...runtime.io.sockets.sockets.values()][0].id)!;
     const first = runtime.sessions.activeSnapshotV9(bound())!.challengeId;
     runtime.sessions.advanceV9Test(first, 450);

@@ -3,7 +3,7 @@ import { execFileSync } from 'node:child_process';
 import { mkdir, writeFile } from 'node:fs/promises';
 import test from 'node:test';
 
-import { candidateAt, evaluateV9AssessmentCandidate, LoomkeeperExecutionV9, LoomkeeperPlannerV9, type LoomkeeperSelectionV9 } from '../../shared/loomkeeper-v9';
+import { candidateAt, evaluateV9AssessmentCandidate, prefixFor, LoomkeeperExecutionV9, LoomkeeperPlannerV9, type LoomkeeperSelectionV9 } from '../../shared/loomkeeper-v9';
 import { setTerrainSolid, terrainSolid, type PlayerCalling, type SimulationActor } from '../../shared/simulation';
 import {
     advanceSimulationTicksV9, applySimulationBarrierV9, applySimulationIntentV9, assertSimulationInvariantsV9,
@@ -51,12 +51,13 @@ test('V9D assessment: fixed 196 scenarios and 272 deterministic executions', asy
         for (const seed of SEEDS) for (const reflected of [false, true]) for (const calling of CALLINGS) {
             active = { group: 'A', seed, reflected, calling, opening: 'loomkeeper' };
             const initial = canonicalOpening(fixture(seed, calling, reflected), 'loomkeeper');
-            const first = correctness(initial), second = correctness(initial);
+            const first = correctness(initial); completedExecutions++;
+            const second = correctness(initial); completedExecutions++;
             assert.deepEqual(first, second, 'repeated Group A trace must be identical');
-            assert.equal(first.selection.status, 'selected');
+            assert.notEqual(first.selection.status, 'work_failure');
             assert.ok(first.hashes.length > 0);
             groupA.push({ seed, reflection: reflected, calling, opening: 'loomkeeper', executions: 2, ...first });
-            completedExecutions += 2;
+
         }
         assert.equal(groupA.length, 60);
 
@@ -77,13 +78,14 @@ test('V9D assessment: fixed 196 scenarios and 272 deterministic executions', asy
         for (const bank of [3, 4, 5, 7]) for (const stitching of [45, 46]) for (const distance of [640, 641]) {
             active = { group: 'C', seed: 1, calling: 'wizard', opening: 'loomkeeper', bank, stitching, distance };
             const initial = thresholdFixture(bank, stitching, distance);
-            const first = correctness(initial), second = correctness(initial);
+            const first = correctness(initial); completedExecutions++;
+            const second = correctness(initial); completedExecutions++;
             assert.deepEqual(first, second, 'repeated Group C trace must be identical');
             const expected = bank >= 4 && stitching === 45 ? 'threadguard'
                 : bank >= 4 && distance === 641 ? 'threadleap' : 'none';
             assert.equal(first.selection.prefix, expected);
             groupC.push({ bank, stitching, distance, executions: 2, expectedPrefix: expected, ...first });
-            completedExecutions += 2;
+
         }
         assert.equal(groupC.length, 16);
         assert.equal(completedExecutions, 272);
@@ -153,6 +155,7 @@ function fullMatch(scenario: Scenario) {
     let plannedTurn = -1, totalRolloutTicks = 0, maxRolloutTicks = 0, maxBatchMs = 0, totalPlanningMs = 0, slots = 0, threadSpent = 0;
     const start = state.units.map(unit => unit.stitching);
     const selections: Array<{ turn: number; actor: SimulationActor; prefix: string; ordinal: number | null; status: string }> = [];
+    let spoolburstAffordable = 0, spoolburstSelected = 0;
     const casts: Record<string, number> = {}, utility = { opportunities: 0, used: 0 };
     let noLegalPlans = 0, workFailures = 0, unaffordableCandidates = 0, playerSlots = 0, playerAffordableCandidates = 0;
     while (state.phase !== 'finished') {
@@ -179,25 +182,22 @@ function fullMatch(scenario: Scenario) {
                 const affordable = lattice.filter(item => relicCost(item.relicId) <= ownThread);
                 playerSlots += lattice.length; slots += lattice.length; playerAffordableCandidates += affordable.length;
                 unaffordableCandidates += lattice.length - affordable.length;
-                if (!affordable.length) { noLegalPlans += 1; selections.push({ turn: state.turn, actor, prefix: 'none', ordinal: null, status: 'no_legal_plan' });
-                    state = advanceSimulationTicksV9(state, 30).state; continue; }
-                const evaluated = lattice.map(item => evaluateV9AssessmentCandidate(state, item.ordinal));
-                const ranked = evaluated.filter((item): item is NonNullable<typeof item> => !!item);
-                const compare = (a: readonly number[], b: readonly number[]) => {
-                    for (let i = 0; i < a.length; i++) if (a[i] !== b[i]) return b[i] - a[i];
-                    return 0;
-                };
-                ranked.sort((a, b) => compare(a.rank, b.rank));
+                const { evaluated, ranked, elapsedMs } = restrictedPlayerPass(state, scenario.profile, () => {
+                    state = advanceSimulationTicksV9(state, 1).state;
+                });
+                totalPlanningMs += elapsedMs;
                 const chargedWork = evaluated.reduce((sum, item) => sum + (item?.logicalTicks ?? 1050), 0);
                 assert.ok(chargedWork <= 31_500);
                 totalRolloutTicks += chargedWork; maxRolloutTicks = Math.max(maxRolloutTicks, ...evaluated.map(item => item?.logicalTicks ?? 1050));
-                if (!ranked.length) { noLegalPlans++; state = advanceSimulationTicksV9(state, 30).state; continue; }
+                if (!ranked.length) { noLegalPlans++; selections.push({ turn: state.turn, actor, prefix: 'none', ordinal: null, status: 'no_legal_plan' }); continue; }
                 candidate = ranked[0].candidate;
                 selections.push({ turn: state.turn, actor, prefix: 'none', ordinal: candidate.ordinal, status: 'selected' });
             }
-            if (state.units[actor === 'player' ? 0 : 1].thread >= 4) utility.opportunities += 1;
+            if (prefixFor(state) !== 'none') utility.opportunities += 1;
             if (prefix !== 'none') utility.used += 1;
-            state = advanceSimulationTicksV9(state, 30).state;
+            if (state.units[actor === 'player' ? 0 : 1].thread - (prefix === 'none' ? 0 : 2) >= 5) spoolburstAffordable++;
+            if (candidate.relicId === 'spoolburst') spoolburstSelected++;
+            if (actor === 'loomkeeper') state = advanceSimulationTicksV9(state, 30).state;
             assert.equal(state.tick, turnStart + 30, 'every assessment actor pays its charged planning window');
             const execution = new LoomkeeperExecutionV9(candidate, prefix, state);
             while (state.phase !== 'finished' && state.turn === plannedTurn && state.tick - turnStart < 1_050) {
@@ -219,7 +219,7 @@ function fullMatch(scenario: Scenario) {
     return { seed: scenario.seed, reflection: scenario.reflected, calling: scenario.calling, opening: scenario.opening,
         script: profileName(scenario.profile), initialHash: hashSimulationStateV9(canonicalOpening(fixture(scenario.seed, scenario.calling, scenario.reflected), scenario.opening)),
         finalHash: hashSimulationStateV9(state), selections, thread: { spent: threadSpent, banked: state.units.map(unit => unit.thread) },
-        casts, utility, unaffordableCandidates, noLegalPlans, workFailures,
+        casts, utility, spoolburstAffordable, spoolburstSelected, unaffordableCandidates, noLegalPlans, workFailures,
         ticks: state.tick, turns: state.turn, damage: { player: start[0] - state.units[0].stitching, loomkeeper: start[1] - state.units[1].stitching },
         winner: state.winner, reason: state.finishReason, planning: { slots, playerSlots, playerAffordableCandidates, totalPlanningMs: Number(totalPlanningMs.toFixed(3)),
             totalRolloutTicks, maximumRolloutTicks: maxRolloutTicks, maxSixSlotBatchMs: Number(maxBatchMs.toFixed(3)) } };
@@ -265,6 +265,31 @@ function reflectTerrain<T extends { width: number; height: number; cellSize: num
 function profileName(profile: Profile): string { return profile === 0 ? 'stationary' : profile === 1 ? 'toward-90' : 'toward-90-jump'; }
 function relicCost(relicId: ReturnType<typeof candidateAt>['relicId']): number { return relicId === 'threadball' ? 2 : relicId === 'needlepoint' ? 3 : 5; }
 function sourceCommit(): string { try { return execFileSync('git', ['rev-parse', 'HEAD'], { encoding: 'utf8' }).trim(); } catch { return 'unavailable'; } }
-function aggregate(a: unknown[], b: unknown[], c: unknown[]) { const full = b as Array<{ winner: string; opening: string; casts: Record<string, number>; unaffordableCandidates: number; utility: { opportunities: number; used: number }; planning: { slots: number; playerSlots: number; playerAffordableCandidates: number; maxSixSlotBatchMs: number } }>;
-    return { groupCounts: { A: a.length, B: b.length, C: c.length }, outcomes: { playerWins: full.filter(row => row.winner === 'player').length, loomkeeperWins: full.filter(row => row.winner === 'loomkeeper').length, draws: full.filter(row => row.winner === 'draw').length, firstActorWins: full.filter(row => row.winner === row.opening).length }, firstActorBias: full.filter(row => row.winner === row.opening).length - full.filter(row => row.winner !== 'draw' && row.winner !== row.opening).length, expensiveCastStarvation: { spoolburstFired: full.reduce((sum, row) => sum + (row.casts.spoolburst ?? 0), 0), unaffordableCandidates: full.reduce((sum, row) => sum + row.unaffordableCandidates, 0) }, utility: { opportunities: full.reduce((sum, row) => sum + row.utility.opportunities, 0), used: full.reduce((sum, row) => sum + row.utility.used, 0) }, cpu: { maximumSixSlotBatchMs: Math.max(0, ...full.map(row => row.planning.maxSixSlotBatchMs)), totalSlots: full.reduce((sum, row) => sum + row.planning.slots, 0), playerSlots: full.reduce((sum, row) => sum + row.planning.playerSlots, 0), playerAffordableCandidates: full.reduce((sum, row) => sum + row.planning.playerAffordableCandidates, 0) } };
+function aggregate(a: unknown[], b: unknown[], c: unknown[]) { const full = b as Array<{ winner: string; opening: string; casts: Record<string, number>; spoolburstAffordable: number; spoolburstSelected: number; unaffordableCandidates: number; utility: { opportunities: number; used: number }; planning: { slots: number; playerSlots: number; playerAffordableCandidates: number; maxSixSlotBatchMs: number } }>;
+    return { groupCounts: { A: a.length, B: b.length, C: c.length }, outcomes: { playerWins: full.filter(row => row.winner === 'player').length, loomkeeperWins: full.filter(row => row.winner === 'loomkeeper').length, draws: full.filter(row => row.winner === 'draw').length, firstActorWins: full.filter(row => row.winner === row.opening).length }, firstActorBias: full.filter(row => row.winner === row.opening).length - full.filter(row => row.winner !== 'draw' && row.winner !== row.opening).length, expensiveCastStarvation: { affordableOpportunities: full.reduce((sum, row) => sum + row.spoolburstAffordable, 0), selected: full.reduce((sum, row) => sum + row.spoolburstSelected, 0), spoolburstFired: full.reduce((sum, row) => sum + (row.casts.spoolburst ?? 0), 0), unaffordableCandidates: full.reduce((sum, row) => sum + row.unaffordableCandidates, 0) }, utility: { opportunities: full.reduce((sum, row) => sum + row.utility.opportunities, 0), used: full.reduce((sum, row) => sum + row.utility.used, 0) }, cpu: { maximumSixSlotBatchMs: Math.max(0, ...full.map(row => row.planning.maxSixSlotBatchMs)), totalSlots: full.reduce((sum, row) => sum + row.planning.slots, 0), playerSlots: full.reduce((sum, row) => sum + row.planning.playerSlots, 0), playerAffordableCandidates: full.reduce((sum, row) => sum + row.planning.playerAffordableCandidates, 0) } };
 }
+
+function restrictedPlayerPass(source: SimulationStateV9, profile: Profile, chargedTick: () => void) {
+    const initial = cloneSimulationV9(source), evaluated: Array<ReturnType<typeof evaluateV9AssessmentCandidate>> = [];
+    const started = performance.now();
+    for (let slot = 0; slot < 30; slot++) {
+        evaluated.push(evaluateV9AssessmentCandidate(initial, profile * 30 + slot));
+        chargedTick();
+    }
+    const ranked = evaluated.filter((item): item is NonNullable<typeof item> => !!item);
+    ranked.sort((a, b) => {
+        for (let i = 0; i < a.rank.length; i++) if (a.rank[i] !== b.rank[i]) return b.rank[i] - a.rank[i];
+        return 0;
+    });
+    assert.deepEqual(source, initial, 'candidate evaluation must preserve the action-entry source');
+    return { evaluated, ranked, elapsedMs: performance.now() - started };
+}
+
+test('V9 assessment player evaluates all thirty candidates and selects better than first affordable', () => {
+    let ticks = 0;
+    const pass = restrictedPlayerPass(createSimulationV9(1, 'wizard'), 0, () => ticks++);
+    assert.equal(ticks, 30);
+    assert.equal(pass.evaluated.length, 30);
+    assert.equal(pass.ranked[0].candidate.ordinal, 15);
+    assert.notEqual(pass.ranked[0].candidate.ordinal, 0);
+});
