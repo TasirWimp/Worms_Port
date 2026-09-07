@@ -208,6 +208,16 @@ export function cloneSimulationV10(state: SimulationStateV10): SimulationStateV1
     return fromV9(cloned, state.terrainProfileId);
 }
 
+/**
+ * Detached compatibility view for the frozen V9 planner. V10 authority keeps
+ * its own identity and terrain profile; the planner receives only a deep V9
+ * clone and therefore cannot mutate or relabel the live V10 state.
+ */
+export function simulationV9ViewOfV10(state: SimulationStateV10): SimulationStateV9 {
+    assertSimulationInvariantsV10(state);
+    return cloneSimulationV9(toV9(state));
+}
+
 export function assertSimulationInvariantsV10(state: SimulationStateV10): void {
     if (!SimulationStateV10Schema.safeParse(state).success) throw new Error('Invalid V10 state: schema.');
     if (state.terrainProfileId !== v10TerrainProfileForSeed(state.seed)) {

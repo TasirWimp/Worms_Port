@@ -3,6 +3,7 @@ import type { SimulationCommand } from '../../../shared/simulation';
 import type { ChallengeSnapshotV8Runtime as ChallengeSnapshotV8, ChallengeResultV8Runtime as ChallengeResultV8 } from '../../../shared/protocol-v8';
 import type { SimulationIntentV8Family as SimulationIntentV8 } from '../../../shared/simulation-v8';
 import type { SimulationEventV9, SimulationIntentV9, SimulationStateV9 } from '../../../shared/simulation-v9';
+import type { SimulationEventV10, SimulationIntentV10, SimulationStateV10 } from '../../../shared/simulation-v10';
 import type { ChallengeResultV9 } from '../../../shared/protocol-v9';
 import type { PlayerCalling } from '../../../shared/simulation';
 
@@ -44,7 +45,7 @@ export type CombatSceneArgsV8 = {
     previewLabel?: string;
 };
 
-export type CombatSceneArgs = LegacyCombatSceneArgs | CombatSceneArgsV8 | CombatSceneArgsV9;
+export type CombatSceneArgs = LegacyCombatSceneArgs | CombatSceneArgsV8 | CombatSceneArgsV9 | CombatSceneArgsV10;
 
 /** Local-only V9C engineering preview contract. It carries no session or transport facts. */
 export type CombatSceneArgsV9 = {
@@ -69,6 +70,28 @@ export type CombatSceneArgsV9 = {
     onError?: (listener: (message: string) => void) => () => void;
     destroy: () => void;
 };
+
+/** Local-only V10C candidate. It cannot carry session, reward, or transport authority. */
+export type CombatSceneArgsV10 = {
+    kind: 'v10'; snapshot: SimulationStateV10; previewLabel: string;
+    calling?: PlayerCalling;
+    submit: (intent: SimulationIntentV10) => Promise<SimulationStateV10>;
+    setPaused: (paused: boolean) => Promise<SimulationStateV10>;
+    cancelInput: () => Promise<SimulationStateV10>;
+    releaseMovement?: () => Promise<SimulationStateV10>;
+    paused: () => boolean;
+    inputReady?: () => boolean;
+    pauseAllowed?: () => boolean;
+    pauseReason?: () => string | undefined;
+    trajectoryPreview: (aim: { angleMilliDegrees: number; powerPermille: number }) => { x: number; y: number }[];
+    restart: () => Promise<CombatSceneArgsV10>;
+    onSnapshot: (listener: (snapshot: SimulationStateV10, events: SimulationEventV10[]) => void) => () => void;
+    destroy: () => void;
+};
+
+export type ResourceTurnsSceneArgs = CombatSceneArgsV9 | CombatSceneArgsV10;
+export type ResourceTurnsState = SimulationStateV9 | SimulationStateV10;
+export type ResourceTurnsEvent = SimulationEventV9 | SimulationEventV10;
 
 /** Shared by the V9 scene's DOM and Phaser registrations so direct teardown is complete. */
 export class V9PreviewListenerCleanup {

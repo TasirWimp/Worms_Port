@@ -485,6 +485,56 @@ test('V9 actor cards keep compact visible values and full labels through phone m
   await assertV9ActorCardsFit(page);
 });
 
+test('V10 terrain preview keeps the inherited phone guidance local and surveys its map-specific starts', async ({ page }) => {
+  test.setTimeout(60_000);
+  const requests: string[] = [];
+  page.on('request', request => requests.push(request.url()));
+  await page.setViewportSize({ width: 390, height: 844 });
+  await page.goto('/?combat-preview=v10&sideways=off');
+  await applySyntheticSafeArea(page, SYNTHETIC_SAFE_AREA);
+  const ui = page.locator('.combat-v10');
+  await expect(ui).toBeVisible();
+  await expect(ui).toHaveAttribute('data-preview', 'V10 terrain engineering preview · local-only');
+  await expect(ui).toHaveAttribute('data-ruleset', 'nimble-knots-artillery-v10');
+  await expect(ui).toHaveAttribute('data-terrain-profile', 'rising-braid');
+  await expect(page.locator('.practice-shell')).toHaveCount(0);
+  expect(requests.some(url => /socket\.io|\/(?:session|challenge|reward)(?:\/|$|\?)/.test(url))).toBe(false);
+
+  await expect(ui).toHaveAttribute('data-opening-survey', 'true');
+  expect(Number(await ui.getAttribute('data-camera-width'))).toBeGreaterThan(1024);
+  await assertV9ActorCardsFit(page);
+  await expect(page.locator('.v9-action-menu')).toBeHidden();
+  await expect(page.getByRole('button', { name: 'Actions' })).toBeVisible();
+  await expect(page.getByRole('button', { name: 'Use', exact: true })).toBeDisabled();
+
+  const pause = await page.locator('.pause-button').boundingBox();
+  expect(pause).not.toBeNull();
+  expect(pause!.x).toBeLessThan(390 / 2);
+  expect(pause!.y).toBeLessThan(844 / 2);
+
+  await expect(ui).toHaveAttribute('data-opening-survey', 'false', { timeout: 5_000 });
+  await expect(ui).toHaveAttribute('data-camera-width', '1024');
+  const direction = page.locator('.combat-v10 .camera-focus-loomkeeper');
+  await expect(direction).toBeVisible();
+  await expect(direction).toHaveAttribute('data-side', 'right');
+  await expect(direction).toHaveAttribute('aria-label', /Loomkeeper, 100 Stitching, off-screen right/);
+
+  await page.goto('/?combat-preview=v10&sideways=off');
+  await expect(ui).toHaveAttribute('data-opening-survey', 'true');
+  await page.evaluate(() => window.dispatchEvent(new Event('resize')));
+  await expect(ui).toHaveAttribute('data-opening-survey', 'false');
+  await expect(ui).toHaveAttribute('data-camera-width', '1024');
+
+  await page.getByRole('button', { name: 'Actions' }).tap();
+  await expect(page.getByRole('button', { name: 'Attack' })).toBeVisible();
+  await expect(page.getByRole('button', { name: 'Defense' })).toBeVisible();
+  await page.getByRole('button', { name: 'Attack' }).tap();
+  await page.getByRole('button', { name: 'Threadball · 2' }).tap();
+  await expectV9ArmedActionAfterAuthorityTick(page, ui, 'Use Threadball · 2');
+  await page.getByRole('button', { name: 'Use Threadball · 2' }).tap();
+  await expect(ui).toHaveAttribute('data-selected-relic', 'threadball');
+});
+
 test('V8 hold survives snapshots, release stops, forward Jump and separate Fire reveal retreat', async ({ page }, testInfo) => {
   await page.goto('/?combat-preview=v8&sideways=off');
   const ui = page.locator('.combat-v8');

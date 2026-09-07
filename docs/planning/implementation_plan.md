@@ -69,11 +69,17 @@ Phaser/Socket.IO stack.
   assessment. V10B now supplies the separate deterministic state, packed
   terrain generator, start selection, strict replay schema and versioned
   reconstruction while leaving the current V7 selector and all transport
-  routes unchanged. **Next V10 step: V10C playable candidate.** The bounded V9
-  Loomkeeper must be adapted without changing its search budget, then the
-  local `?combat-preview=v10` phone presentation can be added. No funded
-  activation or public promotion is implied yet. Overall package evidence
-  remains `in_progress` until the later promotion/release gates are settled.
+  routes unchanged. **V10C playable candidate is complete.** The identity-only
+  adapter retains V9's 180-plan lattice, six candidates per tick, 30 charged
+  planning ticks and rollout limits while V10 transitions retain current
+  terrain authority. Local `?combat-preview=v10` now supplies the automated
+  Loomkeeper, compact inherited phone controls, map-wide opening survey and
+  off-screen actor cue without a session, reward or public selector path.
+  **Next V10 step: V10D assessment and acceptance.** Run the complete
+  opening/reply matrix and selected product gate, then request physical-phone
+  acceptance. No funded activation or public promotion is implied yet. Overall
+  package evidence remains `in_progress` until the later promotion/release
+  gates are settled.
 - Product predecessor: **WP-015D3A V8 Action-Turn Candidate — V8A finite
   rules/acceptance contract complete and independently reviewed; V8B authoritative
   foundation complete and independently reviewed; V8C touch presentation

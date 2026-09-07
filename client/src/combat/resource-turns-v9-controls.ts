@@ -1,4 +1,5 @@
-import type { SimulationEventV9, SimulationIntentV9, SimulationStateV9 } from '../../../shared/simulation-v9';
+import type { SimulationIntentV9 } from '../../../shared/simulation-v9';
+import type { ResourceTurnsEvent, ResourceTurnsState } from './contracts';
 import { CombatInputController, UnifiedMovementInputController, type AimIntent } from './input';
 import { appendV9DamageReceipts, projectCombatV9, projectCombatV9Resources, v9OffenseAllowed } from './resource-turns-v9-fixture';
 import { activeSidewaysMode, clientPointToGame } from '../lib/sideways';
@@ -9,22 +10,23 @@ type ActionMenu = 'closed' | 'root' | 'attack' | 'defense';
 type Callbacks = {
     submit: (intent: SimulationIntentV9) => Promise<boolean>; pause: (paused: boolean) => void; neutral: () => void; release?: () => void;
     preview?: (aim: AimIntent | null) => void; focus?: (actor: 'player' | 'loomkeeper') => void; restart?: () => void;
-    inputReady?: () => boolean; pauseAllowed?: () => boolean; pauseReason?: () => string | undefined; live?: boolean;
+    inputReady?: () => boolean; pauseAllowed?: () => boolean; pauseReason?: () => string | undefined;
+    live?: boolean; automated?: boolean;
 };
 
 /** V9 gesture ownership is local, generation-guarded, and always yields to authority. */
 export class ResourceTurnsV9Controls {
     public readonly root: HTMLDivElement;
-    private state: SimulationStateV9; private message = ''; private paused = false;
+    private state: ResourceTurnsState; private message = ''; private paused = false;
     private readonly aim = new CombatInputController(); private readonly movement = new UnifiedMovementInputController();
     private receipts: string[] = []; private layout?: CombatLayout; private lastRefresh = 0; private refreshPending = false;
     private cleanup: (() => void)[] = []; private boundary?: string; private generation = 0; private menu: ActionMenu = 'closed';
     private choice: ActionChoice = null; private destroyed = false; private actionSignature = '';
 
-    public constructor(parent: HTMLElement, initial: SimulationStateV9, private readonly callbacks: Callbacks,
+    public constructor(parent: HTMLElement, initial: ResourceTurnsState, private readonly callbacks: Callbacks,
         private readonly now: () => number = () => performance.now(), paused = false) {
         this.state = structuredClone(initial); this.paused = paused; this.root = document.createElement('div');
-        this.root.className = 'combat-ui combat-v9';
+        this.root.className = initial.rulesetVersion === 10 ? 'combat-ui combat-v9 combat-v10' : 'combat-ui combat-v9';
         this.root.innerHTML = `<header class="combat-status"><strong class="combat-turn" aria-live="polite"></strong><span class="v9-thread"></span><span class="combat-timer"></span></header>
 <div class="combat-unit-status player-status" data-unit="player" role="group"><span class="unit-status-name">You</span><strong class="unit-status-value"></strong></div>
 <div class="combat-unit-status loomkeeper-status" data-unit="loomkeeper" role="group"><span class="unit-status-name">Loomkeeper</span><strong class="unit-status-value"></strong></div>
@@ -32,7 +34,7 @@ export class ResourceTurnsV9Controls {
 <button class="pause-button" type="button">Pause</button>
 <div class="combat-touch-zone movement-zone" aria-label="Movement pad. Tap a side to face. Drag sideways to walk. Push up to hop."><span class="pad-label">Drag to walk · ↑ hop</span><span class="pad-ring"></span><span class="pad-knob"></span></div>
 <div class="combat-touch-zone aim-zone" aria-label="Aim and power pad"><span class="pad-label">Aim · release locks</span><span class="pad-ring"></span><span class="pad-knob"></span></div>
-<nav class="combat-actions v9-actions" aria-label="V9 resource actions"><button class="v9-actions-button" type="button">Actions</button><button class="fire-button" type="button">Use</button><div class="v9-action-menu" hidden></div></nav>
+<nav class="combat-actions v9-actions" aria-label="${initial.rulesetVersion === 10 ? 'V10 terrain' : 'V9 resource'} actions"><button class="v9-actions-button" type="button">Actions</button><button class="fire-button" type="button">Use</button><div class="v9-action-menu" hidden></div></nav>
 <section class="combat-pause-sheet v9-pause-sheet" aria-live="polite" hidden><strong></strong><button class="v9-reenter" type="button">Start fresh preview</button></section>
 <div class="combat-message" aria-live="polite"></div>`;
         parent.appendChild(this.root);
@@ -46,7 +48,7 @@ export class ResourceTurnsV9Controls {
     }
 
     /** Returns true only for an ownership boundary, never for ordinary ticking. */
-    public update(state: SimulationStateV9, events: SimulationEventV9[] = [], paused = this.paused): boolean {
+    public update(state: ResourceTurnsState, events: ResourceTurnsEvent[] = [], paused = this.paused): boolean {
         const nextBoundary = this.boundaryFor(state, paused); const changed = this.boundary !== undefined && this.boundary !== nextBoundary;
         this.boundary = nextBoundary; this.paused = paused;
         if (changed) this.retireOwnership();
@@ -58,6 +60,7 @@ export class ResourceTurnsV9Controls {
             playerFacing: player.facing < 0 ? 'left' : 'right', playerAirborne: String(facts.player.airborne), offenseAllowed: String(offense),
             aimLocked: String(state.aim !== null), aimId: String(state.aimId), activeActor: state.activeActor, combatPhase: state.phase,
             inputEpoch: String(state.inputEpoch), selectedRelic: state.selectedRelic, terminal: String(this.terminal()) });
+        if ('terrainProfileId' in state) this.root.dataset.terrainProfile = state.terrainProfileId;
         this.element('.combat-turn').textContent = this.phaseCopy();
         this.element('.v9-thread').textContent = `Thread ${facts.player.thread}`;
         this.element('.combat-timer').textContent = this.terminal() ? (this.callbacks.live ? 'Clash ended' : 'Preview ended') : `${Math.max(0, state.phaseDeadlineTick - state.tick)} ticks left`;
@@ -144,8 +147,8 @@ export class ResourceTurnsV9Controls {
     private request(intent: SimulationIntentV9): void { const generation = this.generation; void this.callbacks.submit(intent).then(accepted => { if (this.destroyed || generation !== this.generation) return; if (!accepted) { this.message = 'Authority rejected that action; use a fresh gesture.'; return; } if (intent.type === 'select_relic') { this.choice = null; this.refreshActions(); } }); }
     private submitMovement(intent: SimulationIntentV9, refresh: boolean): void { if (refresh) this.refreshPending = true; const generation = this.generation; void this.callbacks.submit(intent).then(accepted => { if (this.destroyed || generation !== this.generation || !accepted) return; if (intent.type === 'walk_start' || intent.type === 'walk_stop' || intent.type === 'walk_refresh' || intent.type === 'jump') this.movement.submittedMovementIntent(intent); if (refresh) this.lastRefresh = this.now(); }).finally(() => { if (!this.destroyed && generation === this.generation && refresh) this.refreshPending = false; }); }
     private retireOwnership(): void { this.generation++; this.aim.cancel(); this.aim.clearAim(); this.movement.interrupt(); this.choice = null; this.menu = 'closed'; this.refreshPending = false; this.callbacks.preview?.(null); }
-    private boundaryFor(state: SimulationStateV9, paused: boolean): string { return [state.turn, state.activeActor, state.phase, state.inputEpoch, paused, this.terminal(state), state.castUsed, state.utilityUsed, state.selectedRelic].join(':'); }
-    private terminal(state = this.state): boolean { return state.phase === 'finished' || state.winner !== null; }
+    private boundaryFor(state: ResourceTurnsState, paused: boolean): string { return [state.turn, state.activeActor, state.phase, state.inputEpoch, paused, this.terminal(state), state.castUsed, state.utilityUsed, state.selectedRelic].join(':'); }
+    private terminal(state: ResourceTurnsState = this.state): boolean { return state.phase === 'finished' || state.winner !== null; }
     private canAct(): boolean { return !this.destroyed && !this.paused && !this.terminal() && (this.callbacks.inputReady?.() ?? true) && this.state.activeActor === 'player' && (this.state.phase === 'action' || this.state.phase === 'retreat'); }
     private canOffend(): boolean { return v9OffenseAllowed(this.state, this.paused); }
     private choiceCost(choice: Exclude<ActionChoice, null>): number { return choice === 'spoolburst' ? 5 : choice === 'needlepoint' ? 3 : 2; }
@@ -160,14 +163,14 @@ export class ResourceTurnsV9Controls {
         return this.state.aim && !this.choiceAffordable(this.state.selectedRelic)
             ? `Need ${this.choiceCost(this.state.selectedRelic)} Thread for ${relicName(this.state.selectedRelic)}.` : undefined;
     }
-    private offenseAllowed(state: SimulationStateV9): boolean { return v9OffenseAllowed(state, this.paused); }
+    private offenseAllowed(state: ResourceTurnsState): boolean { return v9OffenseAllowed(state, this.paused); }
     private pauseAllowed(): boolean { return this.state.activeActor === 'player' && this.state.phase === 'action' && !this.terminal(); }
     private movementFacts() { const player = this.state.units[0]; return { grounded: player.grounded, facing: player.facing, heldDirection: this.state.heldDirection, lane: this.canAct() ? (this.state.heldDirection ? 'locomotion' : 'ready') : 'blocked' } as const; }
-    private unavailableReason(offense: boolean, utility: boolean): string { if (this.terminal()) return this.terminalGuidance(); if (this.paused) return this.callbacks.live ? 'Practice paused. Resume after authoritative acceptance.' : 'Preview paused. Resume before acting.'; if (this.callbacks.pauseReason?.() && this.state.activeActor === 'player') return this.callbacks.pauseReason()!; if (this.state.activeActor === 'loomkeeper') return this.callbacks.live ? 'Loomkeeper is choosing the authoritative response.' : 'Loomkeeper behavior is deferred to V9D; this local preview does not simulate a response.'; if (this.state.phase === 'retreat') return 'Retreat phase: movement only until the authority deadline.'; if (this.armedUseReason()) return this.armedUseReason()!; if (this.choice && this.choiceLegal(this.choice)) return `${this.useLabel(this.choice)} is ready.`; if (!offense && this.state.heldDirection) return 'Release movement before aiming, selecting a Relic, or using a utility.'; if (!utility && (this.state.castUsed || this.state.utilityUsed)) return 'That turn has already used its Relic or utility.'; return 'Choose Actions for Attack or Defense. Costs are paid only after Use is accepted.'; }
+    private unavailableReason(offense: boolean, utility: boolean): string { if (this.terminal()) return this.terminalGuidance(); if (this.paused) return this.callbacks.live ? 'Practice paused. Resume after authoritative acceptance.' : 'Preview paused. Resume before acting.'; if (this.callbacks.pauseReason?.() && this.state.activeActor === 'player') return this.callbacks.pauseReason()!; if (this.state.activeActor === 'loomkeeper') return this.callbacks.live || this.callbacks.automated ? 'Loomkeeper is choosing the authoritative response.' : 'Loomkeeper behavior is deferred to V9D; this local preview does not simulate a response.'; if (this.state.phase === 'retreat') return 'Retreat phase: movement only until the authority deadline.'; if (this.armedUseReason()) return this.armedUseReason()!; if (this.choice && this.choiceLegal(this.choice)) return `${this.useLabel(this.choice)} is ready.`; if (!offense && this.state.heldDirection) return 'Release movement before aiming, selecting a Relic, or using a utility.'; if (!utility && (this.state.castUsed || this.state.utilityUsed)) return 'That turn has already used its Relic or utility.'; return 'Choose Actions for Attack or Defense. Costs are paid only after Use is accepted.'; }
     private useLabel(choice: Exclude<ActionChoice, null>): string { return choice === 'threadguard' ? 'Use Guard · 2 Thread' : choice === 'threadleap' ? 'Use Leap · 2 Thread' : `Use ${relicLabel(choice)}`; }
-    private lifecycleGuidance(): string | undefined { if (this.terminal()) return this.terminalGuidance(); if (this.state.activeActor === 'loomkeeper') return this.callbacks.live ? 'Loomkeeper is choosing the authoritative response.' : 'Loomkeeper behavior is deferred to V9D; this local preview does not simulate a response.'; return undefined; }
+    private lifecycleGuidance(): string | undefined { if (this.terminal()) return this.terminalGuidance(); if (this.state.activeActor === 'loomkeeper') return this.callbacks.live || this.callbacks.automated ? 'Loomkeeper is choosing the authoritative response.' : 'Loomkeeper behavior is deferred to V9D; this local preview does not simulate a response.'; return undefined; }
     private terminalGuidance(): string { const outcome = this.state.winner === 'player' ? 'You won' : this.state.winner === 'loomkeeper' ? 'Loomkeeper won' : this.state.winner === 'draw' ? 'The clash ended in a draw' : this.callbacks.live ? 'The candidate Clash ended' : 'The local preview ended'; return this.state.finishReason === 'simulation_limit' ? `Lifecycle safety limit reached. ${this.callbacks.live ? 'Start a fresh Practice Clash.' : 'Start a fresh local preview.'}` : `${outcome} by authoritative ${this.state.finishReason ?? 'terminal'} outcome. ${this.callbacks.live ? 'Start a fresh Practice Clash.' : 'Start a fresh local preview.'}`; }
-    private phaseCopy(): string { if (this.terminal()) return this.terminalGuidance(); if (this.paused) return this.callbacks.live ? 'Practice paused' : 'Preview paused'; return this.state.activeActor === 'player' ? `You · ${this.state.phase}` : this.callbacks.live ? `Loomkeeper · ${this.state.phase}` : `Loomkeeper · ${this.state.phase} · V9D deferred`; }
+    private phaseCopy(): string { if (this.terminal()) return this.terminalGuidance(); if (this.paused) return this.callbacks.live ? 'Practice paused' : 'Preview paused'; return this.state.activeActor === 'player' ? `You · ${this.state.phase}` : this.callbacks.live || this.callbacks.automated ? `Loomkeeper · ${this.state.phase}` : `Loomkeeper · ${this.state.phase} · V9D deferred`; }
     private positionCards(): void { if (!this.layout) return; const positions = computeActorStatusLayout(this.layout, projectCombatV9(this.state).units); for (const [selector, rect] of [['.player-status', positions.player], ['.loomkeeper-status', positions.loomkeeper]] as const) { const element = this.element(selector); element.hidden = !rect; if (rect) this.place(element, rect); } }
     private setCard(selector: string, displayName: string, accessibleName: string, stitching: number, thread: number, shield: number, shieldExpiresTurn: number | null): void {
         const shieldLabel = shield > 0 ? `Shield ${shield} · expires turn ${shieldExpiresTurn}` : 'Shield inactive';

@@ -15,11 +15,12 @@
     "Record how battlefield silhouettes, elevation, cover, traversal, destructibility, map suitability and spawn-site limitations should inform a later independently authored V10 terrain-and-starting-position contract.",
     "Make the V10 reference relationship discoverable from the existing repository entry points while preserving Sorcerers as GPL-3.0 quarantine/reference only.",
     "V10A freezes the finite product-owned terrain/start contract and implementation sequence without changing runtime behavior.",
-    "V10B implements the separate V10 deterministic terrain, start, state, protocol/replay and versioned coordinator authority while preserving V1-V9 behavior and every public selector."
+    "V10B implements the separate V10 deterministic terrain, start, state, protocol/replay and versioned coordinator authority while preserving V1-V9 behavior and every public selector.",
+    "V10C reuses the exact bounded V9 planner through an identity-only adapter, executes its operations through V10 transitions, and exposes a local-only ?combat-preview=v10 phone candidate with inherited compact controls, opening survey and off-screen guidance."
   ],
   "non_goals": [
     "No runtime, test, dependency, asset, map, collision, simulation, AI, reward or deployment change; no Sorcerers code, algorithms, constants, identifiers, map bytes, images, paint output or generation rules enter the product tree.",
-    "No V10 client scene, socket lifecycle, SessionRegistry admission, automated Loomkeeper, reward route or public selector is implemented; no caves, ladders, enclosed multi-floor maps, disconnected islands, lethal water, custom map builder, larger teams or random spawn policy are authorized.",
+    "No V10 socket lifecycle, SessionRegistry admission, replay transport, reward route, deployment profile or public selector is implemented; the V10C client is a local query-gated fixture only. No caves, ladders, enclosed multi-floor maps, disconnected islands, lethal water, custom map builder, larger teams or random spawn policy are authorized.",
     "No V9 Relic-selection correction, public V9 promotion, funded activation or V11 team work is included."
   ],
   "planned_checks": [
@@ -27,7 +28,8 @@
     "Freeze and inspect the V10A product contract, exact documentation paths and V10B entry boundary.",
     "Inspect the change selector dry run and execute its selected documentation/evidence checks.",
     "Run git diff --check and repository housekeeping; V10A itself requires no game build.",
-    "For V10B run types, focused V10 protocol/simulation/replay tests, the selector's complete runtime plan, current build outputs and built smoke."
+    "For V10B run types, focused V10 protocol/simulation/replay tests, the selector's complete runtime plan, current build outputs and built smoke.",
+    "For V10C prove exact V9 planner budget and selection parity, V10 transition-only execution, a completed local Loomkeeper response, clone-only presentation work, local-only query routing, opening survey/interruption recovery and inherited phone guidance before running the selected product gate."
   ],
   "deterministic_seeds": [
     "0x00000001",
@@ -56,17 +58,33 @@
       "command": "changed-document relative link inspection; JSON parse; npm run audit:housekeeping; git diff --check",
       "status": "pass",
       "detail": "All relative links in the changed Markdown entry points resolve, the changed JSON files parse, and whitespace checks pass. Housekeeping identifies WP-015D4A on the correctly named local V10 branch with no upstream and no gone tracking branches. Its report-only manual-reconciliation flag comes from older in-progress records and historical V9 review entries; V10A/V10B introduce no new unresolved branch or review mismatch."
+    },
+    {
+      "command": "npm run check:types; node --import tsx --test tests/combat/resource-turns-v9.test.ts tests/combat/terrain-starts-v10.test.ts; node --import tsx --test tests/loomkeeper/resource-turns-v9.test.ts tests/loomkeeper/terrain-starts-v10.test.ts; npm run build:outputs; focused chromium-390x844 V10 browser check",
+      "status": "pass",
+      "detail": "Both TypeScript projects pass. Twenty V9/V10 combat tests and fifteen V9/V10 Loomkeeper tests pass. The V10 adapter preserves all frozen V9 budgets, statistics and selection, leaves its source untouched, and completes a V10 projectile response through V10 transitions. The local fixture proves its 30-tick planning debit and no transport/reward envelope. Production outputs build, and the canonical phone-browser case proves local-only routing, terrain identity, full-map survey, active-camera return, interruption recovery, collapsed action guidance, upper-left Pause placement, actor cards, off-screen Loomkeeper cue and accepted V10 Relic selection."
+    },
+    {
+      "command": "npm run verify:changes -- --base cbb6961; npm run verify:changes -- --base cbb6961 --phase browser; npm run verify:changes -- --base cbb6961 --phase postgres",
+      "status": "pass",
+      "detail": "The selected non-browser gate passed 75 combat, 42 Practice, 123 protocol, 141 simulation, 36 Loomkeeper, 10 Relic, 22 identity, 37 reward and 103 tooling tests, plus types, import/work-package gates, production outputs, all built V7/V8/V9 smokes, identity isolation, reward security and bundle limits. Direct review found that the first consolidated scene entry skipped Phaser's required asynchronous activation yield for injected V9 arguments; the corrected current build passes the three affected V9 live cases and the V10 case together. The complete current canonical browser phase passes 58 tests with three reviewed route exclusions. PostgreSQL is selected but reports the expected local skip because no disposable WP014_TEST_DATABASE_URL is configured."
     }
   ],
-  "reviews": [],
+  "reviews": [
+    {
+      "role": "primary assistant",
+      "reviewer": "single-owner V10C direct review",
+      "decision": "pass"
+    }
+  ],
   "skipped_checks": [
     "The selected PostgreSQL prerequisite did not run because WP014_TEST_DATABASE_URL is unavailable locally; CI remains responsible for that isolated gate.",
     "The full daily/release matrix and performance gate were not run because this is an unpromoted V10B authority foundation and the existing 21:00 Europe/Berlin automation owns the daily suite.",
-    "V10 phone/browser acceptance and the opening/reply assessment remain V10C/V10D work because V10B intentionally exposes no client preview or automated Loomkeeper."
+    "Physical-device V10 phone acceptance and the complete opening/reply assessment remain V10D work. The V10C canonical Playwright phone check is automated browser evidence only."
   ],
   "residual_risks": [
     "Source and image inspection cannot establish fun, balance, phone usability or player comprehension.",
-    "The observed reference includes unsupported topology and a non-deterministic placement policy; V10B replaces those behaviors with a small deterministic surface-only family, while AI, presentation and opening/reply assessment evidence remain outstanding.",
+    "The observed reference includes unsupported topology and a non-deterministic placement policy; V10B/V10C replace those behaviors with a small deterministic surface-only family and bounded inherited AI, while the complete opening/reply matrix and physical-phone evidence remain outstanding.",
     "The owner-directed same-task continuation is not an independently separated clean-room implementation or review; the registered lifecycle remains observed and blocks a complete clean-room claim."
   ]
 }

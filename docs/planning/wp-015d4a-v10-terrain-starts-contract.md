@@ -1,8 +1,8 @@
 # WP-015D4A V10 Terrain And Starting Positions Contract
 
-Status: V10A finite product contract and V10B deterministic authority,
-2026-09-07. Client presentation and automated-opponent integration have not
-started.
+Status: V10A finite product contract, V10B deterministic authority and V10C
+local playable candidate complete, 2026-09-07. V10D assessment and physical
+phone acceptance remain open.
 
 ## Purpose
 
@@ -183,9 +183,9 @@ ownership, alter settlement, or accept terrain/start data from the client.
 2. **V10B — deterministic authority (complete):** add V10 terrain/profile
    generation, opening selection, state identity, strict protocol/replay
    dispatch and focused historical-preservation tests.
-3. **V10C — playable candidate:** adapt the unchanged bounded Loomkeeper,
-   render the V10 Patch in the existing phone scene, and expose only the local
-   query-gated preview.
+3. **V10C — playable candidate (complete):** adapt the unchanged bounded
+   Loomkeeper, render the V10 Patch in the existing phone scene, and expose
+   only the local query-gated preview.
 4. **V10D — assessment and acceptance:** run the opening/reply matrix, selected
    product checks and phone-browser journey; then separately request real-device
    acceptance and any public promotion.
@@ -244,5 +244,29 @@ tests/simulation/terrain-starts-v10-replay.test.ts
 
 V10B closes when types, protocol, simulation, replay reconstruction,
 historical dispatch, selected repository checks, build outputs and built smoke
-pass. The next step is V10C playable candidate: adapt the unchanged bounded V9
-Loomkeeper and add only the local `?combat-preview=v10` presentation.
+pass.
+
+## V10C implementation boundary
+
+V10C adds an identity-only adapter around the unchanged V9 planner. The adapter
+retains all 180 candidates, six candidates per tick, 30 charged planning ticks,
+the per-candidate and total rollout caps, affordability, rank and deterministic
+tie order. It gives the planner a detached V9-compatible clone, then applies
+the selected operation cursor only through V10 transitions so the terrain
+profile and current destructible terrain remain authoritative.
+
+The local `?combat-preview=v10` fixture owns the real-time tick loop and bounded
+Loomkeeper response. It is lazy-loaded, has no socket, SessionRegistry, replay,
+reward or deployment-selector path, and does not alter ordinary Practice. Its
+presentation reuses the compact V9 action drawer, explicit Use button,
+upper-left Pause control, actor Stitching cards, movement/projectile effects and
+off-screen actor controls. V10 begins with a three-second full-map survey and
+returns to the player camera; player input or a browser interruption completes
+that return immediately.
+
+Focused adapter, fixture and canonical phone-browser checks cover frozen V9
+selection parity, exact work caps, V10-only transition execution, completed AI
+projectile response, detached trajectory preview, local-only routing, the
+opening survey, interruption recovery, compact controls, actor cards and the
+directional Loomkeeper cue. V10D remains responsible for the complete six-seed
+opening/reply matrix, selected product gate and physical-phone acceptance.

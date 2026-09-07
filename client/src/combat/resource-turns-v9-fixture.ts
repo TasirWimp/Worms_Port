@@ -3,7 +3,7 @@ import {
     createSimulationV9, forceSimulationLimitV9, type SimulationEventV9, type SimulationIntentV9, type SimulationStateV9
 } from '../../../shared/simulation-v9';
 import type { PlayerCalling } from '../../../shared/simulation';
-import type { CombatSceneArgsV9 } from './contracts';
+import type { CombatSceneArgsV9, ResourceTurnsEvent, ResourceTurnsState } from './contracts';
 import type { CombatRenderState } from './presentation';
 import { WIZARD_CAST_DURATION_MS } from './approved-assets';
 import type { CombatVisualPhase } from './renderer';
@@ -14,8 +14,8 @@ const V9_COSTS = { threadball: 2, needlepoint: 3, spoolburst: 5 } as const;
 export type V9PresentationStep = { visual: CombatVisualPhase; durationMs: number };
 
 /** V9 view projection stays behind the local preview's lazy fixture seam. */
-export function projectCombatV9(state: SimulationStateV9): CombatRenderState {
-    const unit = (body: SimulationStateV9['units'][number]) => ({
+export function projectCombatV9(state: ResourceTurnsState): CombatRenderState {
+    const unit = (body: ResourceTurnsState['units'][number]) => ({
         id: body.id, calling: body.calling, x: body.xFp / 256, y: body.yFp / 256,
         facing: body.facing, stitching: body.stitching, alive: body.alive, grounded: body.grounded
     });
@@ -23,21 +23,21 @@ export function projectCombatV9(state: SimulationStateV9): CombatRenderState {
         units: [unit(state.units[0]), unit(state.units[1])] };
 }
 
-export function v9OffenseAllowed(state: SimulationStateV9, paused: boolean): boolean {
+export function v9OffenseAllowed(state: ResourceTurnsState, paused: boolean): boolean {
     return state.phase === 'action' && state.activeActor === 'player' && state.winner === null && !paused &&
         !state.castUsed && state.heldDirection === 0 &&
         state.units.every(unit => unit.alive && unit.grounded && unit.vxFp === 0 && unit.vyFp === 0);
 }
 
-export function appendV9DamageReceipts(receipts: readonly string[], events: readonly SimulationEventV9[]): string[] {
+export function appendV9DamageReceipts(receipts: readonly string[], events: readonly ResourceTurnsEvent[]): string[] {
     return [...receipts, ...events.filter(event => event.type === 'damage_resolved').map(event =>
         `${event.actor} · raw ${event.raw} · ${event.absorbed} shield absorbed · ${event.stitchingLost} Stitching lost`
     )].slice(-4);
 }
 
-export function projectCombatV9Resources(state: SimulationStateV9) {
+export function projectCombatV9Resources(state: ResourceTurnsState) {
     const player = state.units[0]; const loomkeeper = state.units[1];
-    const resource = (unit: SimulationStateV9['units'][number]) => ({ thread: `${unit.thread}/9`, shield: unit.shield > 0
+    const resource = (unit: ResourceTurnsState['units'][number]) => ({ thread: `${unit.thread}/9`, shield: unit.shield > 0
         ? `Shield ${unit.shield} · expires turn ${unit.shieldExpiresTurn}` : 'Shield inactive' });
     return { player: { ...resource(player), airborne: !player.grounded, facing: player.facing }, loomkeeper: resource(loomkeeper),
         relics: Object.fromEntries(Object.entries(V9_COSTS).map(([id, cost]) => [id, { cost, affordable: player.thread >= cost }])) as Record<keyof typeof V9_COSTS, { cost: number; affordable: boolean }> };
@@ -57,7 +57,7 @@ export function trajectoryPreviewV9(state: SimulationStateV9, aim: { angleMilliD
 }
 
 /** Preserve the authoritative sampled trace and append only a copied live endpoint. */
-export function liveProjectileTraceV9(projectile: NonNullable<SimulationStateV9['projectile']>): { x: number; y: number }[] {
+export function liveProjectileTraceV9(projectile: NonNullable<ResourceTurnsState['projectile']>): { x: number; y: number }[] {
     const trace = projectile.trace.map(point => ({ ...point }));
     const endpoint = { x: projectile.xFp / 256, y: projectile.yFp / 256 };
     const last = trace.at(-1);
@@ -65,7 +65,7 @@ export function liveProjectileTraceV9(projectile: NonNullable<SimulationStateV9[
     return trace;
 }
 
-export function planV9Presentation(previous: SimulationStateV9, next: SimulationStateV9, reducedMotion: boolean): V9PresentationStep[] {
+export function planV9Presentation(previous: ResourceTurnsState, next: ResourceTurnsState, reducedMotion: boolean): V9PresentationStep[] {
     if (next.revision <= previous.revision || next.turn < previous.turn) return [];
     const duration = reducedMotion ? { movement: 70, charge: 40, formation: 50, projectile: 150, impact: 90 }
         : { movement: 220, charge: WIZARD_CAST_DURATION_MS / 2, formation: WIZARD_CAST_DURATION_MS / 2, projectile: 640, impact: 280 };
@@ -87,7 +87,7 @@ export function planV9Presentation(previous: SimulationStateV9, next: Simulation
     return steps;
 }
 
-function v9ProjectileSignature(projectile: NonNullable<SimulationStateV9['lastProjectile']>): string {
+function v9ProjectileSignature(projectile: NonNullable<ResourceTurnsState['lastProjectile']>): string {
     return [projectile.relicId, projectile.startX, projectile.startY, projectile.endX, projectile.endY, projectile.flightTicks, projectile.impact, projectile.trace.length].join(':');
 }
 

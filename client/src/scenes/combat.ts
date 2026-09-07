@@ -17,7 +17,7 @@ import {
     createApprovedWizardAnimations,
     preloadApprovedCombatAssets
 } from '../combat/approved-assets';
-import type { CombatSceneArgs, LegacyCombatSceneArgs, CombatSceneArgsV8, CombatSceneArgsV9, SafeAreaInsets } from '../combat/contracts';
+import type { CombatSceneArgs, LegacyCombatSceneArgs, CombatSceneArgsV8, ResourceTurnsSceneArgs, SafeAreaInsets } from '../combat/contracts';
 import { createCombatFixture, createActionTurnsV8Fixture } from '../combat/fixture';
 import { canRequestFullscreen, toggleGameFullscreen } from '../combat/fullscreen';
 import { activeSidewaysMode, clientPointToGame } from '../lib/sideways';
@@ -57,9 +57,9 @@ type CameraTransition = Readonly<{
 export default class CombatScene extends Phaser.Scene {
     private args: LegacyCombatSceneArgs;
     private v8Args?: CombatSceneArgsV8;
-    private v9Args?: CombatSceneArgsV9;
+    private resourceArgs?: ResourceTurnsSceneArgs;
     private v8Preview?: 'v8' | 'v8-r1';
-    private v9Preview = false;
+    private resourcePreview?: 'v9' | 'v10';
     private initializationGeneration = 0;
     private snapshot: ChallengeSnapshot;
     private authoritativeSnapshot: ChallengeSnapshot;
@@ -104,12 +104,12 @@ export default class CombatScene extends Phaser.Scene {
     public init(args?: CombatSceneArgs): void {
         this.initializationGeneration++;
         this.v8Args = args?.kind === 'v8' ? args : undefined;
-        this.v9Args = args?.kind === 'v9' ? args : undefined;
+        this.resourceArgs = args?.kind === 'v9' || args?.kind === 'v10' ? args : undefined;
         const preview = new URLSearchParams(window.location.search).get('combat-preview');
         this.v8Preview = !args?.snapshot && (preview === 'v8' || preview === 'v8-r1') ? preview : undefined;
-        this.v9Preview = !args?.snapshot && preview === 'v9';
-        if (this.v8Args || this.v9Args || this.v8Preview || this.v9Preview) return;
-        this.args = args?.snapshot && args.kind !== 'v8' && args.kind !== 'v9' ? args : createCombatFixture();
+        this.resourcePreview = !args?.snapshot && (preview === 'v9' || preview === 'v10') ? preview : undefined;
+        if (this.v8Args || this.resourceArgs || this.v8Preview || this.resourcePreview) return;
+        this.args = args?.snapshot && args.kind !== 'v8' && args.kind !== 'v9' && args.kind !== 'v10' ? args : createCombatFixture();
         this.snapshot = structuredClone(this.args.snapshot);
         this.authoritativeSnapshot = structuredClone(this.args.snapshot);
         this.renderState = cloneSimulation(this.snapshot.simulation as SimulationState);
@@ -132,7 +132,7 @@ export default class CombatScene extends Phaser.Scene {
             void this.createV8();
             return;
         }
-        if (this.v9Args || this.v9Preview) { void this.createV9(); return; }
+        if (this.resourceArgs || this.resourcePreview) { void this.createResourceTurns(); return; }
         const parent = document.getElementById('game');
         if (!parent) throw new Error('Combat scene requires the #game host.');
         createApprovedWizardAnimations(this);
@@ -244,11 +244,14 @@ export default class CombatScene extends Phaser.Scene {
         }
     }
 
-    private async createV9(): Promise<void> {
+    private async createResourceTurns(): Promise<void> {
         const generation = this.initializationGeneration; let mounted = true;
         this.events.once(Phaser.Scenes.Events.SHUTDOWN, () => { mounted = false; });
-        const { createResourceTurnsV9Fixture } = await import('../combat/resource-turns-v9-fixture');
-        const args = this.v9Args ?? await createResourceTurnsV9Fixture();
+        // Live injected arguments must yield once so Phaser can finish marking
+        // the scene active before the stale-mount guard runs.
+        const args = await (this.resourceArgs ?? (this.resourcePreview === 'v10'
+            ? await import('../combat/terrain-starts-v10-fixture').then(module => module.createTerrainStartsV10Fixture())
+            : await import('../combat/resource-turns-v9-fixture').then(module => module.createResourceTurnsV9Fixture())));
         if (!mounted || generation !== this.initializationGeneration || !this.scene.isActive()) { args.destroy(); return; }
         const { ResourceTurnsV9Scene } = await import('../combat/resource-turns-v9-scene');
         if (!mounted || generation !== this.initializationGeneration || !this.scene.isActive()) { args.destroy(); return; }
