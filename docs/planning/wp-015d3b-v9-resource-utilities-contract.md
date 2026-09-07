@@ -1176,3 +1176,35 @@ shared Practice/reward promotion remain separate. The full daily gate stays at
 21:00 Europe/Berlin. Local V9D branch naming is corrected; the remote V9B branch
 and main are untouched. Overall package evidence remains `in_progress` for
 those acceptance/release decisions, not for an unfinished V9D implementation.
+
+### V9D deployed Practice admission correction — 2026-09-07
+
+Owner phone testing on Render reproduced `The V9 candidate is unavailable`:
+the client query selected live V9, but the built server entry point only exposed
+V7/V8 profiles. Prior injected-browser and engineering closure evidence did not
+establish deployable V9 phone readiness. This is a distinct deployment gap.
+
+The primary task owns this correction without agents. Admit only the existing
+server startup/profile parser, registry/runtime admission, built-smoke script,
+profile/browser tests and these existing docs/evidence carriers. Introduce
+`development-v9d-practice` under the existing production-runtime/paused-reward
+safeguards. Use a distinct registry admission, fixed real clocks and the current
+V9 automation; do not expose test-only clock/seed/advance seams. Reject reward
+matches, reservation metadata, mixed profiles, injected runtime services and
+test shortcuts. Preserve saved credentials without parsing or connecting them.
+The normal V7 selector and V8 profiles remain unchanged. No payout, balance,
+shared-mode promotion or physical-device acceptance is implied.
+
+Required witnesses: red/green admission and isolation tests; built production
+entry with actual V9 AI progression and DB/RPC contact tripwires; phone browser
+Start Practice and paused retry through real profile admission; selected
+regressions, fresh build/smoke and direct continuity review. Read the exact
+[Render setup](../../README.md#v9d-phone-acceptance-on-the-existing-render-service)
+before testing; publishing code alone does not change Render environment values.
+
+Correction verification passed: all selected types/compliance/unit/tooling,
+fresh build and four built profiles, including actual V9 AI cast and zero
+contacts with dormant DB/RPC endpoints; phone matrix 56 passed with three
+expected landscape-only exclusions. Direct review passes the code correction.
+Next: redeploy the corrected V9D branch with the documented environment values
+and repeat owner phone acceptance. Render settings were not changed remotely.

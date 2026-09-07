@@ -1,6 +1,7 @@
 {
   "id": "WP-015D3B",
   "status": "in_progress",
+  "execution_mode": "single_owner",
   "starting_commit": "da1e7a9c1a1c19bcfa4385e3db28cb530f660ebb",
   "branch": "codex/wp-015d3b-v9d-resource-utilities",
   "initial_worktree": "clean",
@@ -11,6 +12,7 @@
     "worms_port_reviewer"
   ],
   "scope": [
+    "2026-09-07 owner Render report reopens deployable phone readiness: V9-live client was shipped, but ordinary server startup only admitted V7/V8. Single-owner correction introduces explicit development-v9d-practice with real clocks, no monetary services or test injection, using existing startup/config/registry/runtime, smoke/profile/browser and documentation carriers. Historical injected closure remains valid only for its tested scope; it did not prove this deployment path. Current local/upstream V9D branch names match.",
     "2026-09-07 V9D engineering closure is complete through 5a1bd032b6d1cd5838ac546d33e66613e8ed75e6 after direct coordinator correction/review at owner request, with no agents used in this closure. The complete corrected assessment passed 196 scenarios / 272 executions. This current result supersedes the engineering blockers in historical review 121954e and the first two-file correction restriction; all historical reviews/support exchanges remain retained. Overall WP-015D3B stays in_progress for live-candidate phone acceptance and separate public/release decisions. The direct contributor review is explicitly not a fresh independent Astra final review.",
     "2026-09-07 owner requested closure without agents. Coordinator directly reviews and corrects existing V9D sources/tests; no new subagents or independent-review claim. Scope additionally admits only the qs 6.15.3 to 6.16.0 compatible transitive lockfile security update. Direct review found retry/result ownership and assessment player-search/retreat gaps despite earlier reported verification. Existing assessment and browser success is retained as historical evidence, not closure proof. Local branch renamed to V9D; remote remains historical V9B until explicitly published.",
     "V9B authoritative-foundation entry opened 2026-09-05 from clean d41df456696326f737e526e59f43aeae865a5681 on codex/wp-015d3b-v9b-authoritative-foundation-v0. Fresh /root/v9b_entry_designer configured gpt-5.6-terra/high read only the V9 contract, operating documents and local MIT V8 product sources/tests, then proposed strict V9 state/protocol/replay order, closed path hashes and red-first fixtures. Independent /root/v9b_entry_reviewer configured gpt-6-astra/high approved the corrected entry before a fresh implementation worker edits source. Requested/configured model data is not runtime-served metadata. No external/reference/quarantine access or runtime edit occurred during entry design.",
@@ -40,6 +42,16 @@
   "sorcerers_reference_used": false,
   "clean_room_records": [],
   "check_results": [
+    {
+      "command": "node scripts/run-playwright.js --reuse-build --project=chromium-390x844 --output=test-results/v9d-deployment-browser [all six selected specs]",
+      "status": "pass_with_expected_skip",
+      "detail": "2026-09-07 real-profile phone regression and complete selected combat/identity/Practice/resilience/reward/smoke specs: 56 passed, 3 expected landscape-owned skips, 7.6 minutes. New case uses practiceV9 admission without clock/seed injection, loads ?combat-preview=v9-live in default sideways phone composition, starts live authority, pauses and restarts without stale result overlay. Existing injected V9 AI/reconnect/result/retry and inherited V7/V8 journeys remain green."
+    },
+    {
+      "command": "V9D deployed Practice: selector dry-run; node scripts/verify-changes.js --phase checks",
+      "status": "pass",
+      "detail": "2026-09-07 correction on dcb1adf plus deployment-profile diff: types/compliance and selected families passed (protocol 121, simulation 130, Loomkeeper 32, relics 10, combat 73, Practice 42, identity 22, reward 37, tooling 103). Fresh outputs built. Built smoke passed normal V7, both V8 profiles and development-v9d-practice; each deployed profile observed real-clock AI progression, and the V9 run observed a cast. DB/RPC tripwires remained at zero contacts through shutdown despite saved malformed production settings. Identity/reward security and bundle budgets pass. Profile tests were red for the missing startup/admission before correction and now pass 9/9. Test-only V9 advance remains unavailable in deployed Practice."
+    },
     {
       "command": "node scripts/run-playwright.js --reuse-build --performance-gate --output=test-results/v9d-closure-performance",
       "status": "pass",
@@ -235,6 +247,12 @@
       "reviewer": "/root/v9d_final_reviewer",
       "decision": "fail",
       "detail": "Fresh configured Astra/high final review at HEAD 121954e failed V9D. P1: V7 reward reservation consumed before V9 admission, disconnected settlement loss, real-clock planner failure, absent live V9 candidate journey, D3 semantic/evidence failure, and missing proof carriers. P2: foreign cursor leak. It retained the inherited npm-audit advisory. Browser evidence was separately 54 passed plus 3 expected landscape skips, with a separate 3/3 passed browser check. assess:v9 reported 196 scenarios / 272 executions with failure:null; review found that result semantically inadequate and its report was overwritten by Playwright. V9D remains blocked and unapproved."
+    },
+    {
+      "role": "primary",
+      "reviewer": "current primary task; no subagents",
+      "decision": "pass",
+      "detail": "2026-09-07 PASS for deployable V9D Practice profile code after reproducing absent admission. Server.ts reaches the isolated profile before identity/reward parsing; registry distinguishes real deployed admission from v9TestOnly, pins real clocks and refuses reward metadata. Runtime rejects monetary services/transport shortcuts. Tests cover invalid settings, fixture/mixed-profile rejection, inaccessible test advance, real built-entry AI, zero dormant DB/RPC contacts through shutdown, and phone creation/paused restart. Continuity preserved: V7 default, both V8 profiles, V9 local preview, live pause/reconnect/results, compact sideways touch UI, resource/AI rules and historical replay behavior. New capability: explicit owner V9D Practice deployment. Missing within correction scope: none. Remote environment change and owner phone acceptance remain next; this is direct review, not independent agent or release approval."
     }
   ],
   "support_episodes": [
@@ -456,6 +474,7 @@
     }
   ],
   "skipped_checks": [
+    "2026-09-07 deployment correction: PostgreSQL is unavailable because WP014_TEST_DATABASE_URL is absent. Three portrait-project exclusions belong to landscape-only cases; no layout code changed. Full daily/Ubuntu release matrix, new physical-device acceptance and live Render environment modification were not performed. The deterministic 196/272 assessment was not repeated because simulation/planner rules did not change; selected planner/replay and real-clock tests plus actual built-profile AI smoke ran. Existing 21:00 Europe/Berlin full-suite schedule is unchanged.",
     "Current V9D closure: full five-project daily/release suite and Ubuntu visual baselines were not run; the unchanged 21:00 Europe/Berlin automation remains the full daily gate. Canonical relevant browser suite, three owning landscape cases and final focused live journey ran separately. PostgreSQL gate skipped because WP014_TEST_DATABASE_URL is absent. No physical Android/iOS, deployment or funded payout test was performed.",
     "Fresh independent agent review intentionally not run because the owner explicitly requested no agents; direct coordinator review is recorded without impersonating an independent reviewer.",
     "Historical V9A only: game build, unit/browser/full daily suite, dependency audit and PostgreSQL skipped for the documentation/evidence-only slice; existing daily full-suite schedule remains 21:00 Europe/Berlin.",
@@ -463,11 +482,11 @@
     "Full daily/release verification remains scheduled for 21:00 Europe/Berlin and was not run for this feature slice. Real Android/iOS acceptance, deployment, funded activation, V9 AI/presentation/balance and public selection remain outside V9B."
   ],
   "residual_risks": [
-    "V9D engineering closure is not public promotion or physical-device acceptance. Next is owner acceptance of the injected live candidate, then a separately authorized shared Practice/reward release decision. Public selection remains V7.",
+    "V9D engineering closure is not public promotion or physical-device acceptance. Next is owner acceptance on the explicit development-v9d-practice profile, then a separately authorized shared Practice/reward release decision. Public selection remains V7.",
     "Corrected assessment records 29 player wins, 90 AI wins and 1 draw, with no Spoolburst selected despite 49 affordable opportunities. These observations warrant the later balance review; no approved V9 outcome threshold makes them correctness failures.",
-    "Direct contributor review replaced agent review only for this owner-directed closure. Fresh independent Astra assurance was not produced in this turn.",
+    "Development now follows the owner's repository-wide no-subagents policy. Review and corrections are direct; no independent agent assurance is claimed.",
     "PostgreSQL and the full Ubuntu/daily release matrix remain outstanding release evidence. The local full-suite automation remains 21:00 Europe/Berlin.",
     "Final initial JavaScript is 1496676 / 1500000 bytes; future client additions have only 3324 bytes of raw initial-chunk headroom.",
-    "Local branch is renamed to V9D but still tracks the historical V9B upstream. This closure is committed locally; publication/merge and remote branch housekeeping were not requested."
+    "Local and upstream branch names now both read codex/wp-015d3b-v9d-resource-utilities. Render needs the deployment-profile correction plus NODE_ENV=production, NIMBLE_RUNTIME_PROFILE=development-v9d-practice and REWARD_PAUSED=true; NIMBLE_DEPLOYMENT must be absent or production. Code publication does not change remote environment values."
   ]
 }

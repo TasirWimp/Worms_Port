@@ -24,7 +24,7 @@ Phaser/Socket.IO stack.
   The [V9 contract](wp-015d3b-v9-resource-utilities-contract.md) and
   [V9 evidence](../evidence/wp-015d3b.json) retain the findings and correction
   scope. The local branch is `codex/wp-015d3b-v9d-resource-utilities`;
-  its upstream still has the historical V9B name and has not been republished.
+  its matching V9D upstream is published. The historical V9B branch is retained.
   The original assessment's counts were insufficient proof: the corrected
   assessment now evaluates all 30 player candidates, charges planning ticks,
   completes retreat/handoff and compares detached traces with the coordinator.
@@ -32,7 +32,13 @@ Phaser/Socket.IO stack.
   including pause, reconnect, AI action, terminal result and fresh retry.
   Normal public creation remains V7; `?combat-preview=v9` remains the local
   engineering preview. V9-live requires a runtime explicitly configured for
-  the injected candidate and is not public activation.
+  the candidate and is not joint public activation. The owner reported Render
+  rejecting V9 creation because the deployed entry point had no V9 profile.
+  The bounded correction adds `development-v9d-practice`: real-clock,
+  Practice-only startup with identity/reward services dormant. Its selected
+  checks and built real-clock AI smoke pass; phone matrix is 56 passed with
+  three expected exclusions. Next apply the Render settings and redeploy. See
+  [Render settings](../../README.md#v9d-phone-acceptance-on-the-existing-render-service).
   Corrected assessment: **196 scenarios / 272 executions passed**; canonical
   browser suite: **55 passed**, with its three landscape-only cases passing
   separately. Balance observations are descriptive, not acceptance thresholds.

@@ -121,6 +121,8 @@ export type SessionRegistryOptions = {
     simulationRulesetId?: CombatRulesetId | typeof V9_RULESET_ID;
     /** Isolated no-wallet staging admission, never a client or fixture selector. */
     stagingPracticeV8?: 'staging-v8d-practice';
+    /** Explicit deployed V9 Practice profile; real clocks, no reward/test authority. */
+    practiceV9?: 'v9d-practice';
     seedSource?: (sessionId: string, practiceIndex: number) => number;
     loomkeeperEnabled?: boolean;
     loomkeeperDifficulty?: LoomkeeperDifficulty;
@@ -164,6 +166,7 @@ export class SessionRegistry {
     private readonly v8Enabled: boolean;
     private readonly v9Enabled: boolean;
     private readonly stagingPracticeV8: boolean;
+    private readonly practiceV9: boolean;
     private readonly onChallengeSnapshotV8?: SessionRegistryOptions['onChallengeSnapshotV8'];
     private readonly onChallengeCompletedV8?: SessionRegistryOptions['onChallengeCompletedV8'];
     private readonly onChallengeSettledV8?: SessionRegistryOptions['onChallengeSettledV8'];
@@ -180,16 +183,18 @@ export class SessionRegistry {
     private readonly v9InInput = new Set<string>();
 
     public constructor(options: SessionRegistryOptions = {}) {
-        if (options.stagingPracticeV8 !== undefined) {
+        if (options.stagingPracticeV8 !== undefined || options.practiceV9 !== undefined) {
             const overrides: (keyof SessionRegistryOptions)[] = [
-                'simulationRulesetId', 'v8TestOnly', 'now', 'seedSource',
+                'simulationRulesetId', 'v8TestOnly', 'v9TestOnly', 'now', 'seedSource',
                 'simulationTickIntervalMs', 'simulationTicksPerInterval', 'simulationMaxReplayRecords',
                 'loomkeeperEnabled', 'loomkeeperDifficulty', 'sessionTtlMs', 'reconnectGraceMs',
                 'tokenRecoveryMs', 'challengeTtlMs', 'sweepIntervalMs'
             ];
-            if (options.stagingPracticeV8 !== 'staging-v8d-practice' ||
+            if ((options.stagingPracticeV8 !== undefined && options.stagingPracticeV8 !== 'staging-v8d-practice') ||
+                (options.practiceV9 !== undefined && options.practiceV9 !== 'v9d-practice') ||
+                (options.stagingPracticeV8 !== undefined && options.practiceV9 !== undefined) ||
                 overrides.some(name => options[name] !== undefined)) {
-                throw new Error('V8D Practice staging refuses conflicting simulation or fixture options.');
+                throw new Error('Deployed Practice refuses conflicting simulation or fixture options.');
             }
         }
         this.now = options.now || Date.now;
@@ -204,8 +209,9 @@ export class SessionRegistry {
         this.onChallengeCompleted = options.onChallengeCompleted;
         this.seedSource = options.seedSource || (() => randomBytes(4).readUInt32BE(0));
         this.stagingPracticeV8 = options.stagingPracticeV8 !== undefined;
+        this.practiceV9 = options.practiceV9 !== undefined;
         this.simulationRulesetId = this.stagingPracticeV8
-            ? V8_R1_RULESET_ID : options.simulationRulesetId ?? CURRENT_COMBAT_RULESET_ID;
+            ? V8_R1_RULESET_ID : this.practiceV9 ? V9_RULESET_ID : options.simulationRulesetId ?? CURRENT_COMBAT_RULESET_ID;
         this.v8Enabled = options.v8TestOnly !== undefined;
         this.v9Enabled = options.v9TestOnly !== undefined;
         this.onChallengeSnapshotV8 = options.onChallengeSnapshotV8;
@@ -234,7 +240,7 @@ export class SessionRegistry {
             tickIntervalMs: this.stagingPracticeV8 ? 10
                 : options.v8TestOnly ? options.v8TestOnly.tickIntervalMs ?? 10 : undefined,
             onTransition: update => this.onSimulationTransitionV8(update) },
-        v9: { ...options.v9TestOnly, onTransition: update => this.onSimulationTransitionV9(update) } });
+        v9: { ...options.v9TestOnly, tickIntervalMs: this.practiceV9 ? 10 : options.v9TestOnly?.tickIntervalMs, onTransition: update => this.onSimulationTransitionV9(update) } });
         this.coordinator = this.versions.legacy;
         this.sweepTimer = setInterval(
             () => this.sweep(),
@@ -593,8 +599,10 @@ export class SessionRegistry {
      */
     public admitChallengeAutomatedV9(session: Session, mode: Challenge['mode'], rewardChallengeId?: string): ProtocolError | undefined {
         this.sweep();
-        if (!this.v9Enabled || this.simulationRulesetId !== V9_RULESET_ID)
+        if ((!this.v9Enabled && !this.practiceV9) || this.simulationRulesetId !== V9_RULESET_ID)
             return v8Error('FEATURE_UNAVAILABLE', 'The V9 candidate is unavailable.');
+        if (this.practiceV9 && (mode !== 'practice' || rewardChallengeId !== undefined))
+            return v8Error('FEATURE_UNAVAILABLE', 'Deployed V9 Practice refuses reward creation and reservation metadata.');
         if (mode === 'reward' && !rewardChallengeId)
             return v8Error('FEATURE_UNAVAILABLE', 'A durable reward reservation is required.');
         if (!this.boundSessionV9(session)) return v8Error('UNAUTHORIZED', 'The V9 session is not bound.');

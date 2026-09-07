@@ -92,7 +92,8 @@ function emitAck(socket, event, payload) {
   });
 }
 
-async function checkCombat(baseUrl, staging) {
+async function checkCombat(baseUrl, staging, v9 = false) {
+  const wire = v9 ? 'v9' : 'v8';
   const socket = io(baseUrl, { transports: ['websocket'], reconnection: false,
     autoConnect: false, timeout: 2_000, extraHeaders: { Origin: baseUrl },
     // A query cannot activate or downgrade the server-selected ruleset.
@@ -105,7 +106,8 @@ async function checkCombat(baseUrl, staging) {
     });
     const opened = await emitAck(socket, 'v1:session.open', { requestId: 'smoke_session_01', action: 'create' });
     assert.equal(opened.ok, true);
-    const request = { requestId: 'smoke_creation_01', sequence: 0, mode: 'practice', calling: 'wizard' };
+    const request = { requestId: 'smoke_creation_01', sequence: 0, mode: 'practice', calling: 'wizard',
+      ...(v9 ? { rulesetId: 'nimble-knots-artillery-v9', automationId: 'wp-015d3b-v9d-v1' } : {}) };
     for (const selector of [{ rulesetId: 'nimble-knots-artillery-v8-r1' },
       { automationId: 'wp-015d3a-v8d-r1-v1' }]) {
       const rejected = await emitAck(socket, 'v8:challenge.create', { ...request, ...selector });
@@ -113,33 +115,35 @@ async function checkCombat(baseUrl, staging) {
       assert.equal(rejected.error.code, 'BAD_REQUEST');
     }
     if (staging) {
-      const legacy = await emitAck(socket, 'v1:challenge.create', request);
+      const legacy = await emitAck(socket, 'v1:challenge.create', {
+        requestId: request.requestId, sequence: request.sequence, mode: 'practice', calling: 'wizard' });
       assert.equal(legacy.ok, false);
       assert.equal(legacy.error.code, 'FEATURE_UNAVAILABLE');
       const identity = await emitAck(socket, 'v1:identity.begin', {
         requestId: 'smoke_identity_01', address: 'NQ00 0000 0000 0000 0000 0000 0000 0000 0000' });
       assert.equal(identity.ok, false);
       assert.equal(identity.error.code, 'FEATURE_UNAVAILABLE');
-      const reward = await emitAck(socket, 'v8:challenge.create', { ...request,
+      const reward = await emitAck(socket, `${wire}:challenge.create`, { ...request,
         requestId: 'smoke_reward_001', mode: 'reward',
-        eligibility: { challengeId: 'a'.repeat(32), token: 'a'.repeat(43) } });
+        ...(v9 ? { challengeId: 'a'.repeat(32), eligibilityToken: 'a'.repeat(43) }
+          : { eligibility: { challengeId: 'a'.repeat(32), token: 'a'.repeat(43) } }) });
       assert.equal(reward.ok, false);
-      assert.equal(reward.error.code, 'REWARD_UNAVAILABLE');
+      assert.equal(reward.error.code, v9 ? 'FEATURE_UNAVAILABLE' : 'REWARD_UNAVAILABLE');
       request.sequence = reward.nextSequence;
       const info = await emitAck(socket, 'v1:reward.info', { requestId: 'smoke_reward_info' });
       assert.equal(info.ok, false);
       assert.equal(info.error.code, 'REWARD_UNAVAILABLE');
     }
-    const created = await emitAck(socket, 'v8:challenge.create', request);
+    const created = await emitAck(socket, `${wire}:challenge.create`, request);
     assert.equal(created.ok, true);
-    assert.equal(created.data.kind, staging ? 'v8' : 'legacy');
-    const snapshot = created.data.snapshot;
+    if (!v9) assert.equal(created.data.kind, staging ? 'v8' : 'legacy');
+    const snapshot = v9 ? created.data : created.data.snapshot;
     assert.equal(staging ? snapshot.rulesetId : snapshot.simulation.rulesetId,
-      staging ? 'nimble-knots-artillery-v8-r1' : 'nimble-knots-artillery-v7');
+      staging ? (v9 ? 'nimble-knots-artillery-v9' : 'nimble-knots-artillery-v8-r1') : 'nimble-knots-artillery-v7');
     if (staging) {
-      assert.equal(snapshot.automationId, 'wp-015d3a-v8d-r1-v1');
-      assert.equal(snapshot.loomkeeperPolicyId, 'nimble-knots-loomkeeper-v3');
-      assert.equal(snapshot.loomkeeperProfileId, 'standard-v8-0');
+      assert.equal(snapshot.automationId, v9 ? 'wp-015d3b-v9d-v1' : 'wp-015d3a-v8d-r1-v1');
+      assert.equal(snapshot.loomkeeperPolicyId, v9 ? 'nimble-knots-loomkeeper-v4' : 'nimble-knots-loomkeeper-v3');
+      assert.equal(snapshot.loomkeeperProfileId, v9 ? 'standard-v9-0' : 'standard-v8-0');
       // No seeds, clock injection, artificial tick advance or player shortcuts:
       // allow the actual 15s player timeout and observe live AI progression.
       // A legal no-plan timeout is allowed by policy, not a flaky random-seed failure.
@@ -147,9 +151,9 @@ async function checkCombat(baseUrl, staging) {
         let aiObserved = false;
         const done = (error) => {
           clearTimeout(timer);
-          socket.off('v8:challenge.snapshot', onSnapshot);
+          socket.off(`${wire}:challenge.snapshot`, onSnapshot);
           socket.off('disconnect', onDisconnect);
-          socket.off('v8:challenge.result', onResult);
+          socket.off(`${wire}:challenge.result`, onResult);
           error ? reject(error) : resolve();
         };
         const onSnapshot = update => {
@@ -176,11 +180,11 @@ async function checkCombat(baseUrl, staging) {
         };
         const onDisconnect = () => done(new Error('Staging disconnected before live AI progression.'));
         const timer = setTimeout(() => done(new Error('Staging real-clock AI progression was not observed within 40s.')), 40_000);
-        socket.on('v8:challenge.snapshot', onSnapshot);
-        socket.on('v8:challenge.result', onResult);
+        socket.on(`${wire}:challenge.snapshot`, onSnapshot);
+        socket.on(`${wire}:challenge.result`, onResult);
         socket.once('disconnect', onDisconnect);
       });
-      console.log('Validated production-runtime staging Practice: automated r1, live timer/AI, no identity/rewards.');
+      console.log(`Validated deployed ${v9 ? 'V9D' : 'V8D'} Practice: live timer/AI, no identity/rewards.`);
     } else console.log('Validated ordinary production-runtime V7 creation; query cannot select V8.');
   } finally { socket.close(); }
 }
@@ -198,7 +202,8 @@ async function connectionTripwire() {
 
 async function smokeProfile(profile) {
   const practiceOnly = profile !== undefined;
-  const development = profile === 'development-v8d-practice';
+  const v9 = profile === 'development-v9d-practice';
+  const development = profile === 'development-v8d-practice' || v9;
   const port = await getFreePort();
   const baseUrl = `http://127.0.0.1:${port}`;
   const database = development ? await connectionTripwire() : undefined;
@@ -255,8 +260,8 @@ async function smokeProfile(profile) {
       );
     }
 
-    await checkCombat(baseUrl, practiceOnly);
-    if (practiceOnly) assert.ok(stdout.includes(`Runtime ${profile} / nimble-knots-artillery-v8-r1 / wp-015d3a-v8d-r1-v1 / rewards disabled`));
+    await checkCombat(baseUrl, practiceOnly, v9);
+    if (practiceOnly) assert.ok(stdout.includes(`Runtime ${profile} / ${v9 ? 'nimble-knots-artillery-v9 / wp-015d3b-v9d-v1' : 'nimble-knots-artillery-v8-r1 / wp-015d3a-v8d-r1-v1'} / rewards disabled`));
     console.log(`Built server ${profile ?? 'V7'} smoke test passed on port ${port}.`);
     console.log(`Validated /, built overlays, approved asset plumbing, and /.room.join_id (${roomId}).`);
   } finally {
@@ -304,6 +309,7 @@ async function main() {
   await smokeProfile();
   await smokeProfile('staging-v8d-practice');
   await smokeProfile('development-v8d-practice');
+  await smokeProfile('development-v9d-practice');
   for (const overrides of [
     { NIMBLE_RUNTIME_PROFILE: 'unknown' }, { NIMBLE_DEPLOYMENT: 'production' },
     { NODE_ENV: 'test', PRACTICE_TEST_SEEDS: '1' }, { REWARD_MODE: 'record-only' },

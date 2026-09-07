@@ -467,6 +467,39 @@ PvP matchmaking is a post-competition feature. See
 `docs/planning/implementation_plan.md` for the active execution pointer and
 work-package sequence.
 
+## V9D phone acceptance on the existing Render service
+
+Deploy `codex/wp-015d3b-v9d-resource-utilities` with the V9D Practice profile
+implementation. In Render's service environment, set:
+
+```text
+NODE_ENV=production
+NIMBLE_RUNTIME_PROFILE=development-v9d-practice
+REWARD_PAUSED=true
+```
+
+`NIMBLE_DEPLOYMENT` must be absent or `production` on the existing service.
+Save and redeploy; use the usual build command and `npm start`. A successful
+startup logs `Runtime development-v9d-practice / nimble-knots-artillery-v9 /
+wp-015d3b-v9d-v1 / rewards disabled`. This profile uses real clocks and random
+match seeds, creates no identity/reward/database/payout service, and leaves
+saved production credentials dormant. It refuses deterministic test overrides.
+It only admits Practice; reward creation and reservation metadata are rejected.
+
+Open `/?combat-preview=v9-live` and tap Start Practice. The URL selects the V9
+client, while the server profile admits its matches; the URL alone cannot enable
+V9. `/?combat-preview=v9` is the older local preview. Keep the default sideways
+phone layout, or use `&sideways=off` to check the normal portrait alternative.
+Check compact action menus, movement/HUD feedback, Thread costs/carry-over,
+utilities, an actual AI turn, pause/resume, reconnect, results and fresh retries.
+Phone acceptance and balance remain owner checks.
+
+For rollback, restore the previously used profile (for example
+`development-v8d-practice`) and redeploy. Removing the profile or setting
+`production-v7` restores normal V7 startup and normal credential validation;
+keep `REWARD_PAUSED=true`. This owner Practice deployment is not joint public
+Practice/reward promotion or funded activation.
+
 ## Single-owner development
 
 Worms_Port no longer uses subagents for development, review, research, tests or

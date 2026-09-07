@@ -155,3 +155,42 @@ test('staging pins full automated r1 with live clocks and refuses reward metadat
         assert.ok(current && current.simulation.tick > tick, 'Real monotonic scheduler must advance staging play.');
     } finally { await runtime.close(); }
 });
+
+
+test('V9D development profile admits explicit real-clock Practice with dormant reward settings', async () => {
+    const environment = { ...development, NIMBLE_RUNTIME_PROFILE: 'development-v9d-practice',
+        REWARD_MODE: 'mainnet', DATABASE_URL: 'dormant-invalid', IDENTITY_PUBLIC_ORIGIN: 'dormant-invalid' };
+    assert.equal(practiceOnlyProfileFromEnvironment(environment), 'development-v9d-practice');
+    for (const override of [{ NODE_ENV: 'test' }, { REWARD_PAUSED: undefined }, { REWARD_PAUSED: 'false' },
+        { NIMBLE_DEPLOYMENT: 'staging' }, { PRACTICE_TEST_SEEDS: '1' }])
+        assert.throws(() => practiceOnlyProfileFromEnvironment({ ...environment, ...override }));
+    const runtime = createRuntimeServer({ sessionRegistry: { practiceV9: 'v9d-practice' }, identity: false });
+    try {
+        assert.equal(runtime.rewards, undefined); assert.equal(runtime.identity, undefined);
+        runtime.sessions.create('phone-v9');
+        const session = runtime.sessions.getBound('phone-v9')!;
+        for (const [mode, reward] of [['reward', undefined], ['reward', { challengeId: 'reserved', seed: 1 }],
+            ['practice', { challengeId: 'reserved', seed: 1 }]] as const) {
+            const result = runtime.sessions.createChallengeAutomatedV9(session, mode, 'wizard', reward);
+            assert.ok('code' in result); assert.equal(result.code, 'FEATURE_UNAVAILABLE');
+        }
+        const created = runtime.sessions.createChallengeAutomatedV9(session, 'practice', 'wizard');
+        assert.ok(!('code' in created));
+        assert.equal(created.automationId, 'wp-015d3b-v9d-v1');
+        assert.throws(() => runtime.sessions.advanceV9Test(created.challengeId, 1));
+        await new Promise(resolve => setTimeout(resolve, 180));
+        assert.ok(runtime.sessions.activeSnapshotV9(session)!.simulation.tick > created.simulation.tick);
+    } finally { await runtime.close(); }
+});
+
+test('V9D deployed Practice rejects test seams, mixed profiles and monetary runtime services', () => {
+    const admission = { practiceV9: 'v9d-practice' as const };
+    for (const override of [{ practiceV9: 'unknown' }, { stagingPracticeV8: 'staging-v8d-practice' },
+        { simulationRulesetId: V8_R1_RULESET_ID }, { v9TestOnly: {} }, { v8TestOnly: {} },
+        { seedSource: () => 1 }, { now: Date.now }, { simulationTickIntervalMs: false },
+        { challengeTtlMs: 1 }, { loomkeeperEnabled: false }])
+        assert.throws(() => new SessionRegistry({ ...admission, ...override } as any));
+    for (const override of [{ rewards: {} }, { identity: {} }, { rewardWorker: {} },
+        { allowMissingOrigin: true }, { sessionOpenRateCapacity: 100 }])
+        assert.throws(() => createRuntimeServer({ sessionRegistry: admission, ...override } as any));
+});

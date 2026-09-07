@@ -6,6 +6,26 @@ import { createRuntimeServer } from '../../server/src/runtime';
 import { V8_R1_RULESET_ID } from '../../shared/simulation-v8';
 import { V9_RULESET_ID } from '../../shared/simulation-v9';
 
+test('deployed V9 Practice opens from the phone URL with live authority and supports paused restart', async ({ page }) => {
+  const runtime = createRuntimeServer({ clientDir: path.resolve('client/build'),
+    sessionRegistry: { practiceV9: 'v9d-practice' }, identity: false });
+  const port = await runtime.listen();
+  try {
+    await page.goto(`http://127.0.0.1:${port}/?combat-preview=v9-live`);
+    await page.getByRole('button', { name: 'Start Practice' }).tap();
+    const ui = page.locator('.combat-v9');
+    await expect(ui).toBeVisible();
+    await expect(ui).toHaveAttribute('data-ruleset', V9_RULESET_ID);
+    await expect(ui.locator('.pause-button')).toBeEnabled();
+    await ui.locator('.pause-button').tap();
+    await expect(ui).toHaveAttribute('data-paused', 'true');
+    await ui.locator('.v9-reenter').tap();
+    await expect(ui).toHaveAttribute('data-paused', 'false');
+    await expect(page.locator('.result-shell')).toHaveCount(0);
+    await expect(ui.locator('.pause-button')).toBeEnabled();
+  } finally { await page.goto('about:blank'); await runtime.close(); }
+});
+
 test('live V9 candidate preserves pause, AI response, terminal result and fresh retry', async ({ page }) => {
   const errors: string[] = [];
   page.on('pageerror', error => errors.push(error.message));

@@ -16,8 +16,9 @@ import { MemoryRewardStore } from './reward/memory-store';
 import { RewardService } from './reward/service';
 import type { RewardStore } from './reward/types';
 import { practiceOnlyProfileFromEnvironment } from './staging-config';
-import { V8_AUTOMATION_ID } from '../../shared/combat-version';
+import { V8_AUTOMATION_ID, V9_AUTOMATION_ID } from '../../shared/combat-version';
 import { V8_R1_RULESET_ID } from '../../shared/simulation-v8';
+import { V9_RULESET_ID } from '../../shared/simulation-v9';
 
 const port = Number(process.env.PORT) || 3000;
 const sessionOpenRateCapacity = Number(process.env.SESSION_OPEN_RATE_CAPACITY);
@@ -36,12 +37,14 @@ async function main(): Promise<void> {
     // This branch must precede all normal identity/reward parsing and construction.
     // Saved production credentials remain dormant; pausing a worker alone is not isolation.
     const activeRuntime = practiceProfile ? createRuntimeServer({
-        sessionRegistry: { stagingPracticeV8: 'staging-v8d-practice' }, identity: false
+        sessionRegistry: practiceProfile === 'development-v9d-practice'
+            ? { practiceV9: 'v9d-practice' } : { stagingPracticeV8: 'staging-v8d-practice' }, identity: false
     }) : await createNormalRuntime();
     runtime = activeRuntime;
     await activeRuntime.listen(port, '0.0.0.0');
     if (practiceProfile) {
-        console.log(`Runtime ${practiceProfile} / ${V8_R1_RULESET_ID} / ${V8_AUTOMATION_ID} / rewards disabled`);
+        const v9 = practiceProfile === 'development-v9d-practice';
+        console.log(`Runtime ${practiceProfile} / ${v9 ? V9_RULESET_ID : V8_R1_RULESET_ID} / ${v9 ? V9_AUTOMATION_ID : V8_AUTOMATION_ID} / rewards disabled`);
     }
     for (const ifaceinfo of Object.values(os.networkInterfaces())) {
         for (const iface of ifaceinfo || []) {
