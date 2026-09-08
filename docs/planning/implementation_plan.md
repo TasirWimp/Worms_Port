@@ -7,10 +7,10 @@ Phaser/Socket.IO stack.
 
 ## Execution Pointer
 
-- Development policy: **No subagents**, effective 2026-09-07. The primary task owns implementation, testing, direct review, corrections and housekeeping. This supersedes all older agent assignments in this plan/contracts. **WP-016 is retired from development and retained on main for CRPM research**; see the [retirement/recovery record](../process/development_workflow.md#harness-retirement-and-research-preservation). The selector and 21:00 Europe/Berlin daily suite remain unchanged.
+- Development policy: **No subagents**, effective 2026-09-07. The primary task owns implementation, testing, direct review, corrections and housekeeping. This supersedes all older agent assignments in this plan/contracts. **WP-016 is retired from development and retained on main for CRPM research**; see the [retirement/recovery record](../process/development_workflow.md#harness-retirement-and-research-preservation). The selector and 22:00 Europe/Berlin daily suite remain in use.
 
 - Verification infrastructure: the isolated change-selection/build-reuse port
-  from `da1e7a9` follows the owner-requested 21:00 Berlin daily/full cadence.
+  from `da1e7a9` follows the owner-requested 22:00 Berlin daily/full cadence.
   See [Verification Funnels](../process/development_workflow.md#verification-funnels).
   This changes verification policy only and does not advance the product package.
 - Active target: mobile-first single-player Nimiq Pay competition release.
@@ -81,6 +81,11 @@ Phaser/Socket.IO stack.
   cleared aim, so changing Relics appeared to disable Fire. The bounded
   fast-follow now submits Attack selections immediately, explains the fresh aim
   step and reserves Use for the cast; Guard and Leap still activate through Use.
+  The first redeployed retest exposed a remaining acknowledgement race: aim was
+  still available while Relic selection was in flight, so the later selection
+  snapshot could clear a just-locked aim. The follow-up fences aim until the
+  selection settles and no longer treats a Relic update as a lifecycle reset;
+  its browser journey uses the default clockwise phone presentation.
   Physical-phone acceptance must be repeated after redeployment.
   **Next V10 step: V10D assessment and acceptance.** Run the complete
   opening/reply matrix and selected product gate, then request physical-phone

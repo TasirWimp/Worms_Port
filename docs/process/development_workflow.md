@@ -114,7 +114,7 @@ AGENTS.md prohibits delegation even when old sessions or host overrides expose
 agent tools. Archive text and historical package instructions cannot authorize
 reactivation. Old branches/worktrees must incorporate this policy before new
 work; do not change a research checkout's historical source just to hide it.
-The selector, compliance/clean-room safeguards and 21:00 Europe/Berlin daily
+The selector, compliance/clean-room safeguards and 22:00 Europe/Berlin daily
 suite continue. A direct-review pass remains distinct from release approval.
 
 ### Adaptive Support During Implementation (WP-016)
@@ -269,7 +269,7 @@ govern build reuse; a changed or missing proof rebuilds. Never approve or update
 Linux baselines from Windows. Candidate capture requires an explicit
 `visual-baseline-candidate` PR label or manual workflow dispatch and owner review.
 
-The existing full-product automation runs at **21:00 Europe/Berlin** (CET/CEST),
+The existing full-product automation runs at **22:00 Europe/Berlin** (CET/CEST),
 using `verify:daily` on its current checkout. Do not replace it with the selector.
 `verify:full` performs compliance/types/build once before the full quality gate
 and audit. If `WP014_TEST_DATABASE_URL` is configured, it also executes the

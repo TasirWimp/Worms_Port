@@ -73,9 +73,8 @@ export class ResourceTurnsV9Controls {
         const guidance = this.unavailableReason(offense, utility);
         this.message = this.lifecycleGuidance() ?? this.receipts.at(-1) ?? guidance;
         this.element('.combat-message').textContent = this.message;
-        const movement = this.element('.movement-zone'), aim = this.element('.aim-zone');
+        const movement = this.element('.movement-zone');
         movement.toggleAttribute('data-disabled', !action); movement.setAttribute('aria-disabled', String(!action));
-        aim.toggleAttribute('data-disabled', !offense); aim.setAttribute('aria-disabled', String(!offense));
         this.button('.pause-button').disabled = !(this.callbacks.pauseAllowed?.() ?? this.pauseAllowed()) && !paused; this.button('.pause-button').textContent = paused ? 'Resume' : 'Pause';
         this.element('.v9-pause-sheet').hidden = !paused && !this.terminal();
         this.element('.v9-pause-sheet strong').textContent = this.terminal()
@@ -116,6 +115,8 @@ export class ResourceTurnsV9Controls {
     private refreshActions(): void {
         const menu = this.element('.v9-action-menu'); menu.hidden = this.menu === 'closed'; const use = this.button('.fire-button'), actions = this.button('.v9-actions-button');
         const offense = this.canOffend(), utility = this.utilityAllowed(), action = offense || utility, armedReason = this.armedUseReason();
+        const aim = this.element('.aim-zone'), aimAvailable = offense && !this.selectingRelic;
+        aim.toggleAttribute('data-disabled', !aimAvailable); aim.setAttribute('aria-disabled', String(!aimAvailable));
         actions.disabled = !action || this.selectingRelic; use.disabled = this.selectingRelic || (this.choice ? !this.choiceLegal(this.choice) : (!offense || !this.state.aim));
         if (!this.choice && armedReason) use.disabled = true;
         const pendingRelic = this.pendingRelic();
@@ -148,12 +149,13 @@ export class ResourceTurnsV9Controls {
         const end = (event: PointerEvent) => { const result = this.movement.finishMovement(event.pointerId); if (!result) return; if (result.face) this.request({ type: 'face', direction: result.face }); else if (result.release) this.callbacks.release ? this.callbacks.release() : this.request({ type: 'walk_stop' }); };
         this.listen(movement, 'pointerup', end); this.listen(movement, 'pointercancel', () => { this.movement.interrupt(); this.callbacks.neutral(); });
         const aim = this.element('.aim-zone');
-        this.listen(aim, 'pointerdown', event => { if (!this.canOffend() || event.button > 0) return; this.capture(aim, event.pointerId); if (this.aim.begin('aim', event.pointerId, this.point(event), Math.min(aim.clientWidth, aim.clientHeight) / 2)) this.callbacks.preview?.(this.aim.aimIntent()); });
+        this.listen(aim, 'pointerdown', event => { if (this.selectingRelic || !this.canOffend() || event.button > 0) return; this.capture(aim, event.pointerId); if (this.aim.begin('aim', event.pointerId, this.point(event), Math.min(aim.clientWidth, aim.clientHeight) / 2)) this.callbacks.preview?.(this.aim.aimIntent()); });
         this.listen(aim, 'pointermove', event => { if (this.aim.move(event.pointerId, this.point(event))) this.callbacks.preview?.(this.aim.aimIntent()); });
         this.listen(aim, 'pointerup', event => { const command = this.aim.end(event.pointerId, true); this.callbacks.preview?.(this.aim.lockedAim); if (command?.type === 'aim') this.request(command); });
         this.listen(aim, 'pointercancel', event => { this.aim.cancel(event.pointerId); this.callbacks.preview?.(null); this.callbacks.neutral(); });
     }
     private selectRelic(choice: RelicChoice): void {
+        this.aim.cancel(); this.aim.clearAim(); this.callbacks.preview?.(null);
         this.choice = choice; this.selectingRelic = true; this.refreshActions();
         this.request({ type: 'select_relic', relicId: choice });
     }
@@ -162,11 +164,11 @@ export class ResourceTurnsV9Controls {
         if (this.destroyed || generation !== this.generation) return;
         if (intent.type === 'select_relic') { this.selectingRelic = false; this.choice = null; }
         if (!accepted) { this.message = 'Authority rejected that action; use a fresh gesture.'; this.element('.combat-message').textContent = this.message; this.refreshActions(); return; }
-        if (intent.type === 'select_relic') this.refreshActions();
+        if (intent.type === 'select_relic') this.update(this.state);
     }); }
     private submitMovement(intent: SimulationIntentV9, refresh: boolean): void { if (refresh) this.refreshPending = true; const generation = this.generation; void this.callbacks.submit(intent).then(accepted => { if (this.destroyed || generation !== this.generation || !accepted) return; if (intent.type === 'walk_start' || intent.type === 'walk_stop' || intent.type === 'walk_refresh' || intent.type === 'jump') this.movement.submittedMovementIntent(intent); if (refresh) this.lastRefresh = this.now(); }).finally(() => { if (!this.destroyed && generation === this.generation && refresh) this.refreshPending = false; }); }
     private retireOwnership(): void { this.generation++; this.aim.cancel(); this.aim.clearAim(); this.movement.interrupt(); this.choice = null; this.selectingRelic = false; this.menu = 'closed'; this.refreshPending = false; this.callbacks.preview?.(null); }
-    private boundaryFor(state: ResourceTurnsState, paused: boolean): string { return [state.turn, state.activeActor, state.phase, state.inputEpoch, paused, this.terminal(state), state.castUsed, state.utilityUsed, state.selectedRelic].join(':'); }
+    private boundaryFor(state: ResourceTurnsState, paused: boolean): string { return [state.turn, state.activeActor, state.phase, state.inputEpoch, paused, this.terminal(state), state.castUsed, state.utilityUsed].join(':'); }
     private terminal(state: ResourceTurnsState = this.state): boolean { return state.phase === 'finished' || state.winner !== null; }
     private canAct(): boolean { return !this.destroyed && !this.paused && !this.terminal() && (this.callbacks.inputReady?.() ?? true) && this.state.activeActor === 'player' && (this.state.phase === 'action' || this.state.phase === 'retreat'); }
     private canOffend(): boolean { return v9OffenseAllowed(this.state, this.paused); }

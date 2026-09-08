@@ -519,7 +519,8 @@ test('V10 terrain preview keeps the inherited phone guidance local and surveys i
   await expect(direction).toHaveAttribute('data-side', 'right');
   await expect(direction).toHaveAttribute('aria-label', /Loomkeeper, 100 Stitching, off-screen right/);
 
-  await page.goto('/?combat-preview=v10&sideways=off');
+  await page.goto('/?combat-preview=v10');
+  await expect(page.locator('html')).toHaveAttribute('data-sideways', 'right');
   await expect(ui).toHaveAttribute('data-opening-survey', 'true');
   await page.evaluate(() => window.dispatchEvent(new Event('resize')));
   await expect(ui).toHaveAttribute('data-opening-survey', 'false');

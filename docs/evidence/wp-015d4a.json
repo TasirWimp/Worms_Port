@@ -17,7 +17,8 @@
     "V10A freezes the finite product-owned terrain/start contract and implementation sequence without changing runtime behavior.",
     "V10B implements the separate V10 deterministic terrain, start, state, protocol/replay and versioned coordinator authority while preserving V1-V9 behavior and every public selector.",
     "V10C reuses the exact bounded V9 planner through an identity-only adapter, executes its operations through V10 transitions, and exposes a local-only ?combat-preview=v10 phone candidate with inherited compact controls, opening survey and off-screen guidance.",
-    "The owner's follow-up physical-phone test reproduces the inherited tracked V9 Relic-selection bug in V10. The bounded fast-follow changes only the shared V9/V10 controls and browser proof: Attack choices submit their cost-free authority selection immediately, current selection and fresh-aim guidance stay visible, and the red Use button performs the cast. Defense utilities still require Use."
+    "The owner's follow-up physical-phone test reproduces the inherited tracked V9 Relic-selection bug in V10. The bounded fast-follow changes only the shared V9/V10 controls and browser proof: Attack choices submit their cost-free authority selection immediately, current selection and fresh-aim guidance stay visible, and the red Use button performs the cast. Defense utilities still require Use.",
+    "The first redeployed fast-follow still let aim begin while Relic selection awaited authority. A quick aim could therefore lock before the later selection snapshot correctly cleared it. The follow-up serializes that local interaction: aim stays unavailable until selection settles, a selected-Relic update is no longer classified as a lifecycle boundary, and the following acknowledged aim retains the chosen Relic."
   ],
   "non_goals": [
     "No runtime, test, dependency, asset, map, collision, simulation, AI, reward or deployment change; no Sorcerers code, algorithms, constants, identifiers, map bytes, images, paint output or generation rules enter the product tree.",
@@ -31,7 +32,7 @@
     "Run git diff --check and repository housekeeping; V10A itself requires no game build.",
     "For V10B run types, focused V10 protocol/simulation/replay tests, the selector's complete runtime plan, current build outputs and built smoke.",
     "For V10C prove exact V9 planner budget and selection parity, V10 transition-only execution, a completed local Loomkeeper response, clone-only presentation work, local-only query routing, opening survey/interruption recovery and inherited phone guidance before running the selected product gate.",
-    "For the inherited Relic-selection fast-follow, prove immediate authority selection for default and changed Relics, a non-default selection-to-aim-to-Use cast, later-turn affordable replacement after a utility, duplicate-input fencing, unchanged V7 launch and physical-phone retest after redeployment."
+    "For the inherited Relic-selection fast-follow, prove immediate authority selection for default and changed Relics, delayed-selection fencing before aim, a non-default selection-to-aim-to-Use cast in the default clockwise phone presentation, later-turn affordable replacement after a utility, duplicate-input fencing, unchanged V7 launch and physical-phone retest after redeployment."
   ],
   "deterministic_seeds": [
     "0x00000001",
@@ -75,6 +76,11 @@
       "command": "npm run check:types; focused V9/V10 combat tests; focused chromium-390x844 Relic journeys; npm run verify:changes -- --base cfdcade",
       "status": "pass",
       "detail": "The inherited Relic-selection correction passes both TypeScript projects, 20 focused V9/V10 combat tests and three targeted phone-browser journeys. Needlepoint is selected directly from the V10 Attack drawer, a fresh aim enables Use, and the authoritative cast enters projectile phase; default Threadball and later-turn Spoolburst/Guard/affordable replacement paths also pass. After adding the direct selection-latency/rejection regression, the final combat family passes 76 tests. The remaining complete selected gate passes 42 Practice and 103 tooling tests, import/work-package checks, production outputs, all built V7/V8/V9 smokes, identity isolation, reward security and bundle limits. Its selected phone-browser phase passes 53 cases with three reviewed route exclusions."
+    },
+    {
+      "command": "node scripts/verify-changes.js --base 2650857; focused V9/V10 controls; focused default-sideways V10 phone journey",
+      "status": "pass",
+      "detail": "The acknowledgement-race correction passes 21 focused V9/V10 combat checks and the rebuilt Chromium 390x844 V10 selection-to-aim-to-Use journey under the default clockwise phone presentation. The selected gate passes 76 combat, 42 Practice and 103 tooling tests; import boundary, work-package evidence, both TypeScript projects, production outputs, all four built runtime profiles, identity isolation, reward security and bundle limits also pass. The selected phone phase passes 53 cases with three reviewed route exclusions and zero retries. Aim is unavailable while Relic selection is pending, a quick aim cannot overtake it, and the acknowledged Needlepoint remains selected through the following aim and projectile launch."
     }
   ],
   "reviews": [
@@ -87,11 +93,16 @@
       "role": "primary assistant",
       "reviewer": "single-owner inherited Relic-selection fast-follow direct review",
       "decision": "pass"
+    },
+    {
+      "role": "primary assistant",
+      "reviewer": "single-owner pending-selection race correction direct review",
+      "decision": "pass"
     }
   ],
   "skipped_checks": [
     "The selected PostgreSQL prerequisite did not run because WP014_TEST_DATABASE_URL is unavailable locally; CI remains responsible for that isolated gate.",
-    "The full daily/release matrix and performance gate were not run because this is an unpromoted V10B authority foundation and the existing 21:00 Europe/Berlin automation owns the daily suite.",
+    "The full daily/release matrix and performance gate were not run because this is an unpromoted V10B authority foundation and the existing 22:00 Europe/Berlin automation owns the daily suite.",
     "The owner's first physical-device V10 pass was followed by a more specific inherited Relic-selection failure. Physical-phone acceptance remains open until the corrected branch is redeployed and the selection-to-cast journey passes; the complete opening/reply assessment remains V10D work."
   ],
   "residual_risks": [

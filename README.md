@@ -139,7 +139,7 @@ unit families, types, build/smoke/security and whole browser specs on Chromium
 [scripts/verify-changes.js](scripts/verify-changes.js) and the
 [development workflow](docs/process/development_workflow.md#verification-funnels).
 
-The existing daily automation runs the full product suite at **21:00
+The existing daily automation runs the full product suite at **22:00
 Europe/Berlin** through `npm run verify:daily`. It runs compliance/types/build
 once, then reuses verified outputs for the full browser/security/performance
 gate and audit. PostgreSQL runs when its isolated local prerequisite is present;
@@ -541,7 +541,7 @@ The retired WP-016 harness remains discoverable on main for CRPM research:
 [archived role definitions](.codex/retired-agents/), and
 [original support evidence](docs/evidence/wp-016.json). These are historical
 research inputs, not active instructions. Selected checks and the full daily
-suite at 21:00 Europe/Berlin remain required.
+suite at 22:00 Europe/Berlin remain required.
 
 ## Upstream Pins
 

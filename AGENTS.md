@@ -12,7 +12,7 @@ This owner instruction supersedes all older agent-role, model-routing,
 reciprocal-support and independent-agent-review requirements in repository
 documents, historical contracts and archived roles. Do not reactivate the
 harness unless the owner explicitly changes this policy. Ordinary test runners
-and the existing 21:00 Europe/Berlin full-suite automation remain in use.
+and the existing 22:00 Europe/Berlin full-suite automation remain in use.
 
 WP-016 is retained for CRPM research, not for current development. See the
 [retirement and research record](docs/process/development_workflow.md#harness-retirement-and-research-preservation).
@@ -108,7 +108,7 @@ If the user asks only for planning, review, or brainstorming, do not edit code.
   phone-browser matrix, performance, security, bundle, audit, and reviewed
   expected-skip policy. Do not rerun it after every feature unless a focused
   failure requires full-matrix diagnosis.
-- The existing local daily automation runs at **21:00 Europe/Berlin**, including
+- The existing local daily automation runs at **22:00 Europe/Berlin**, including
   daylight-saving changes. It runs the full product suite, not the selector.
   Use the Verify workflow's manual dispatch for the full Ubuntu release matrix
   and PostgreSQL gate. Normal PR/push CI uses change selection.

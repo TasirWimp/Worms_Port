@@ -287,3 +287,12 @@ Use activates only the eventual cast. Guard and Leap still require Use. V10
 terrain, starts, planner budgets, simulation/protocol/replay identity, local-only
 routing and all public selectors remain unchanged. V10D phone acceptance stays
 open until this correction is redeployed and retested on the physical phone.
+
+The first redeployed correction still allowed the player to begin aiming while
+the Relic request was pending. On a phone, that let selection authority arrive
+after the aim lock and clear it as required by the simulation. The follow-up
+holds aim unavailable until selection settles, keeps the selected Relic through
+the following aim acknowledgement, and removes Relic value changes from the
+client's lifecycle-boundary key. The default clockwise phone path now carries
+the selection-to-aim-to-Use browser proof. Physical-phone acceptance remains
+open until that exact order passes after redeployment.

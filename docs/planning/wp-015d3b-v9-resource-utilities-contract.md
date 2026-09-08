@@ -1297,3 +1297,13 @@ default Threadball, a non-default Needlepoint cast, affordable later-turn
 replacement after Guard, selection latency/rejection safety and unchanged V7
 launch. The V10 physical-phone acceptance remains open until the corrected
 branch is redeployed and the owner repeats selection, aim and Use.
+
+The first redeployed retest then exposed a narrower asynchronous ordering gap.
+The aim pad remained available while the immediate Relic selection was awaiting
+authority, allowing a quick aim to be accepted before the selection snapshot;
+that later snapshot correctly cleared aim and made Use appear disabled again.
+The follow-up disables aim for the complete selection request, lets the
+selection acknowledgement settle without misclassifying the Relic value as a
+lifecycle boundary, and then accepts a fresh aim. Focused controls must prove
+the delayed-acknowledgement order, and the browser journey must cover the
+default clockwise phone presentation before another physical-phone retest.

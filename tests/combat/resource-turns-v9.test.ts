@@ -340,12 +340,17 @@ test('V9 controls directly gate aim, synchronize pad aria state, and remove reta
 test('V9 Attack selection submits immediately and fences duplicate Use until authority acknowledgement', async () => {
     const dom = installControlDom(); const fixture = await createResourceTurnsV9Fixture(1, 'wizard', createClock());
     const attempts: string[] = []; let acknowledge: ((accepted: boolean) => void) | undefined; let controls: ResourceTurnsV9Controls;
+    let authority = structuredClone(fixture.snapshot);
     try {
         controls = new ResourceTurnsV9Controls(dom.parent, fixture.snapshot, {
             submit: intent => {
                 attempts.push(intent.type);
                 return new Promise(resolve => { acknowledge = accepted => {
-                    if (accepted && intent.type === 'select_relic') controls.update({ ...fixture.snapshot, selectedRelic: intent.relicId });
+                    if (accepted && intent.type === 'select_relic') authority = { ...authority, selectedRelic: intent.relicId, aim: null };
+                    if (accepted && intent.type === 'aim') authority = { ...authority, aim: {
+                        angleMilliDegrees: intent.angleMilliDegrees, powerPermille: intent.powerPermille
+                    }, aimId: authority.aimId + 1 };
+                    if (accepted) controls.update(authority);
                     resolve(accepted);
                 }; });
             }, pause: () => {}, neutral: () => {}
@@ -354,18 +359,31 @@ test('V9 Attack selection submits immediately and fences duplicate Use until aut
         const internal = controls as unknown as { selectRelic: (choice: 'threadball' | 'needlepoint') => void };
         const use = root.querySelector<HTMLButtonElement>('.fire-button')!;
         const actions = root.querySelector<HTMLButtonElement>('.v9-actions-button')!;
+        const aim = root.querySelector<HTMLElement>('.aim-zone') as unknown as FakeElement;
 
         internal.selectRelic('needlepoint');
         assert.deepEqual(attempts, ['select_relic'], 'choosing an Attack immediately submits its cost-free selection');
         assert.equal(use.disabled, true); assert.equal(actions.disabled, true);
+        assert.equal(aim.getAttribute('aria-disabled'), 'true', 'aim waits for the Relic authority acknowledgement');
         assert.equal(use.textContent, 'Selecting Needlepoint');
+        aim.dispatch('pointerdown', 81, 60, 60); aim.dispatch('pointermove', 81, 96, 24); aim.dispatch('pointerup', 81, 96, 24);
+        assert.deepEqual(attempts, ['select_relic'], 'a quick aim cannot race ahead of the pending Relic selection');
         use.onclick!();
         assert.deepEqual(attempts, ['select_relic'], 'Use cannot duplicate an in-flight selection');
 
         acknowledge!(true); await Promise.resolve(); await Promise.resolve();
         assert.equal(root.dataset.selectedRelic, 'needlepoint');
+        assert.equal(aim.getAttribute('aria-disabled'), 'false', 'aim becomes available after the selection settles');
         assert.equal(use.disabled, true, 'Use waits for a fresh acknowledged aim after selection');
         assert.equal(root.querySelector<HTMLElement>('.combat-message')!.textContent, 'Needlepoint selected. Lock aim, then Use.');
+
+        aim.dispatch('pointerdown', 82, 60, 60); aim.dispatch('pointermove', 82, 96, 24); aim.dispatch('pointerup', 82, 96, 24);
+        assert.deepEqual(attempts, ['select_relic', 'aim']);
+        acknowledge!(true); await Promise.resolve(); await Promise.resolve();
+        assert.equal(root.dataset.selectedRelic, 'needlepoint', 'aim acknowledgement retains the selected Relic');
+        assert.equal(root.dataset.aimLocked, 'true');
+        assert.equal(use.disabled, false, 'the selected Relic can fire after its fresh aim is acknowledged');
+        assert.equal(use.textContent, 'Use Needlepoint · 3');
 
         internal.selectRelic('threadball'); acknowledge!(false); await Promise.resolve(); await Promise.resolve();
         assert.equal(actions.disabled, false, 'a rejected selection returns control to a fresh gesture');
