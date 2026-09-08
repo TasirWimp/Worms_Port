@@ -1,6 +1,7 @@
 const fs = require('node:fs');
 const path = require('node:path');
 const { execFileSync, spawnSync } = require('node:child_process');
+const { acquireVerificationLease } = require('./verification-lease');
 
 const repoRoot = path.resolve(__dirname, '..');
 const productSuites = ['protocol', 'simulation', 'loomkeeper', 'relics', 'combat', 'practice', 'identity', 'reward'];
@@ -92,7 +93,7 @@ function planChanges(paths) {
       if (/^assets\/|^legal\/asset-manifest/.test(file)) {
         product(['combat', 'practice'], ['smoke', 'combat', 'practice', 'visual']);
       }
-    } else if (/^scripts\/(?:verify-changes|report-postgres-quality-prerequisite|audit-housekeeping)\.js$/.test(file)) {
+    } else if (/^scripts\/(?:verify-changes|verification-lease|run-full-verification|report-postgres-quality-prerequisite|audit-housekeeping)\.js$/.test(file)) {
       suites.add('test:tooling');
     } else if (/^scripts\/check-(?:identity-bundles|reward-security|bundle-budget)\.js$/.test(file)) {
       runtime = true;
@@ -183,37 +184,43 @@ function main() {
     fs.appendFileSync(options['github-output'], `checks=${plan.tasks.length > 0}\nbrowser=${plan.browser.length > 0}\nvisual=${plan.browser.includes('visual')}\npostgres=${plan.postgres}\nperformance=${plan.performance}\n`);
   }
   if (options.dryRun) return;
-  run('git', ['diff', '--check']);
-  run('git', ['diff', '--cached', '--check']);
-  if (options.base) {
-    const ancestor = git(repoRoot, ['merge-base', options.base, 'HEAD']).trim();
-    run('git', ['diff', '--check', ancestor, 'HEAD']);
-  }
-  const phase = (name) => options.phase === 'all' || options.phase === name;
-  if (phase('checks')) {
-    for (const task of plan.tasks) run('npm', task === 'audit' ? ['audit'] : ['run', task]);
-  }
-  if (phase('browser') && plan.browser.length) {
-    for (const selection of browserRuns(plan.browser)) {
-      const args = ['scripts/run-playwright.js', '--reuse-build', ...selection.projects, ...selection.specs.map((spec) => `tests/browser/${spec}.spec.ts`)];
-      if (selection.specs.includes('visual') && process.platform !== 'linux') {
-        console.log('SKIPPED: Linux visual comparisons require Ubuntu CI; visual logic still runs.');
-        args.push('--ignore-snapshots');
-      }
-      run(process.execPath, args);
+  const lease = acquireVerificationLease({ repoRoot, mode: `change-selected:${options.phase}` });
+  console.log(`[verification-lease] acquired by change-selected verification (PID ${process.pid})`);
+  try {
+    run('git', ['diff', '--check']);
+    run('git', ['diff', '--cached', '--check']);
+    if (options.base) {
+      const ancestor = git(repoRoot, ['merge-base', options.base, 'HEAD']).trim();
+      run('git', ['diff', '--check', ancestor, 'HEAD']);
     }
+    const phase = (name) => options.phase === 'all' || options.phase === name;
+    if (phase('checks')) {
+      for (const task of plan.tasks) run('npm', task === 'audit' ? ['audit'] : ['run', task]);
+    }
+    if (phase('browser') && plan.browser.length) {
+      for (const selection of browserRuns(plan.browser)) {
+        const args = ['scripts/run-playwright.js', '--reuse-build', ...selection.projects, ...selection.specs.map((spec) => `tests/browser/${spec}.spec.ts`)];
+        if (selection.specs.includes('visual') && process.platform !== 'linux') {
+          console.log('SKIPPED: Linux visual comparisons require Ubuntu CI; visual logic still runs.');
+          args.push('--ignore-snapshots');
+        }
+        run(process.execPath, args);
+      }
+    }
+    if (phase('performance') && plan.performance) {
+      run('npm', ['run', 'test:browser:performance']);
+      run('npm', ['run', 'check:bundle-budget']);
+    }
+    if (phase('postgres') && plan.postgres) {
+      if (process.env.WP014_TEST_DATABASE_URL?.trim()) run('npm', ['run', 'verify:postgres']);
+      else if (process.env.CI) throw new Error('Selected PostgreSQL gate requires WP014_TEST_DATABASE_URL in CI.');
+      else console.log('SKIPPED: PostgreSQL checks require WP014_TEST_DATABASE_URL; CI must run the database gate.');
+    }
+    if (!plan.files.length) console.log('No working-tree changes. Use --base <starting-commit> to include committed work.');
+    console.log('Change-selected verification passed. Daily/release full coverage remains npm run verify:daily.');
+  } finally {
+    if (lease.release()) console.log('[verification-lease] released');
   }
-  if (phase('performance') && plan.performance) {
-    run('npm', ['run', 'test:browser:performance']);
-    run('npm', ['run', 'check:bundle-budget']);
-  }
-  if (phase('postgres') && plan.postgres) {
-    if (process.env.WP014_TEST_DATABASE_URL?.trim()) run('npm', ['run', 'verify:postgres']);
-    else if (process.env.CI) throw new Error('Selected PostgreSQL gate requires WP014_TEST_DATABASE_URL in CI.');
-    else console.log('SKIPPED: PostgreSQL checks require WP014_TEST_DATABASE_URL; CI must run the database gate.');
-  }
-  if (!plan.files.length) console.log('No working-tree changes. Use --base <starting-commit> to include committed work.');
-  console.log('Change-selected verification passed. Daily/release full coverage remains npm run verify:daily.');
 }
 
 if (require.main === module) {

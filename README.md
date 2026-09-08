@@ -139,6 +139,11 @@ unit families, types, build/smoke/security and whole browser specs on Chromium
 [scripts/verify-changes.js](scripts/verify-changes.js) and the
 [development workflow](docs/process/development_workflow.md#verification-funnels).
 
+`verify:changes`, `verify:full`, and `verify:daily` share an atomic checkout
+lease. If one is active, another exits before running checks and identifies the
+active run. This prevents scheduled and foreground verification from sharing
+temporary files, build output, or browser processes.
+
 The existing daily automation runs the full product suite at **22:00
 Europe/Berlin** through `npm run verify:daily`. It runs compliance/types/build
 once, then reuses verified outputs for the full browser/security/performance

@@ -203,15 +203,16 @@ reusing one oracle do not add independent empirical evidence. Revise the
 relationship/transition matrix when implementation exposes a new distinction;
 the entry matrix is not a completeness claim.
 
-One named verification owner controls shared build/output/smoke/browser work.
-Before launching such work, peers request that slot and receive an explicit
-handoff or wait. Record run/source identity and completion or incomplete status;
-after interruption, establish owned-process cleanup before reusing outputs.
-This first native protocol is procedural, not an enforced cross-process lock.
-The daily job is not automatically connected to the peer protocol: inspect its
-run state before sharing outputs, or use isolated output directories/worktrees.
-Uncertain ownership blocks a shared-output run. Independent source reads and
-isolated tests may overlap. Do not change the daily schedule or skip its checks.
+One verification run controls shared build, output, smoke and browser work in a
+checkout. `verify:changes`, `verify:full` and `verify:daily` enforce this with an
+atomic lease under the ignored `.cache/` directory. A second run fails before
+executing checks and reports the active mode, PID and start time. An interrupted
+run's dead lease is recovered on the next attempt. Focused commands invoked
+outside these entry points remain the caller's responsibility and must not run
+against the same checkout while a leased verification is active. Record
+run/source identity and completion or incomplete status; after interruption,
+establish owned-process cleanup before reusing outputs. Do not change the daily
+schedule or skip its checks.
 
 The selector remains the required edit-loop baseline. Support probes can run
 focused checks during work; final verification uses the complete selected scope
@@ -271,6 +272,9 @@ Linux baselines from Windows. Candidate capture requires an explicit
 
 The existing full-product automation runs at **22:00 Europe/Berlin** (CET/CEST),
 using `verify:daily` on its current checkout. Do not replace it with the selector.
+`verify:daily`, `verify:full` and the selector share one checkout lease so a
+foreground verification cannot contend with the scheduled run. Tooling test
+files execute serially for deterministic temporary-file and child-process use.
 `verify:full` performs compliance/types/build once before the full quality gate
 and audit. If `WP014_TEST_DATABASE_URL` is configured, it also executes the
 isolated database gate; otherwise report the missing prerequisite. Main's
@@ -304,10 +308,10 @@ verify:quality
   fresh build -> bundle/identity/reward security -> full browser matrix -> performance
 
 verify:full
-  verify:fast -> build:outputs -> built smoke -> verify:quality:built -> PostgreSQL gate/status -> audit
+  acquire lease -> verify:fast -> build:outputs -> built smoke -> verify:quality:built -> PostgreSQL gate/status -> audit
 
 verify:daily
-  verify:full
+  acquire lease -> same full sequence
 ```
 
 Built smoke tests must rebuild or prove that output metadata matches the current

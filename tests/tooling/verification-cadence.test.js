@@ -7,6 +7,8 @@ const path = require('node:path');
 const { execFileSync } = require('node:child_process');
 const { scripts } = require('../../package.json');
 const { planChanges, changedFiles, parseArgs, browserRuns } = require('../../scripts/verify-changes');
+const { acquireVerificationLease } = require('../../scripts/verification-lease');
+const { runFullVerification } = require('../../scripts/run-full-verification');
 
 test('docs and Codex settings do not select a game build or test suite', () => {
   const plan = planChanges(['README.md', '.codex/config.toml', 'AGENTS.md', 'docs/planning/implementation_plan.md']);
@@ -67,6 +69,68 @@ test('housekeeping audit changes select only tooling coverage', () => {
   assert.deepEqual(plan.tasks, ['test:tooling']);
   assert.deepEqual(plan.browser, []);
   assert.deepEqual(plan.fallback, []);
+});
+
+test('verification tooling changes select only tooling coverage', () => {
+  for (const file of ['scripts/verify-changes.js', 'scripts/verification-lease.js', 'scripts/run-full-verification.js']) {
+    const plan = planChanges([file]);
+    assert.deepEqual(plan.tasks, ['test:tooling']);
+    assert.deepEqual(plan.browser, []);
+    assert.deepEqual(plan.fallback, []);
+  }
+});
+
+test('one checkout permits only one active verification lease', (t) => {
+  const root = fs.mkdtempSync(path.join(os.tmpdir(), 'worms-verification-lease-'));
+  t.after(() => fs.rmSync(root, { recursive: true, force: true }));
+  const first = acquireVerificationLease({ repoRoot: root, mode: 'daily' });
+  assert.throws(
+    () => acquireVerificationLease({ repoRoot: root, mode: 'change-selected' }),
+    new RegExp(`already running.*PID ${process.pid}`, 's')
+  );
+  assert.equal(first.release(), true);
+  const second = acquireVerificationLease({ repoRoot: root, mode: 'change-selected' });
+  assert.equal(second.release(), true);
+});
+
+test('a dead verification owner is recovered without releasing its successor', (t) => {
+  const root = fs.mkdtempSync(path.join(os.tmpdir(), 'worms-verification-stale-'));
+  t.after(() => fs.rmSync(root, { recursive: true, force: true }));
+  const stale = acquireVerificationLease({ repoRoot: root, mode: 'interrupted', pid: 2_147_483_647 });
+  const successor = acquireVerificationLease({ repoRoot: root, mode: 'daily', isProcessAlive: () => false });
+  assert.equal(stale.release(), false);
+  assert.equal(successor.release(), true);
+});
+
+test('the full runner holds and releases its lease around the internal gate', (t) => {
+  const root = fs.mkdtempSync(path.join(os.tmpdir(), 'worms-full-verification-'));
+  t.after(() => fs.rmSync(root, { recursive: true, force: true }));
+  let observedOwner;
+  runFullVerification({
+    mode: 'daily',
+    root,
+    spawn(command, args, options) {
+      observedOwner = JSON.parse(fs.readFileSync(path.join(root, '.cache', 'verification-run', 'owner.json'), 'utf8'));
+      assert.equal(command, 'npm');
+      assert.deepEqual(args, ['run', 'verify:full:unlocked']);
+      assert.equal(options.cwd, root);
+      return { status: 0 };
+    }
+  });
+  assert.equal(observedOwner.mode, 'daily');
+  const successor = acquireVerificationLease({ repoRoot: root, mode: 'change-selected' });
+  assert.equal(successor.release(), true);
+});
+
+test('the full runner releases its lease when the internal gate fails', (t) => {
+  const root = fs.mkdtempSync(path.join(os.tmpdir(), 'worms-failed-verification-'));
+  t.after(() => fs.rmSync(root, { recursive: true, force: true }));
+  assert.throws(
+    () => runFullVerification({ mode: 'full', root, spawn: () => ({ status: 7 }) }),
+    /Full verification failed \(7\)/
+  );
+  const successor = acquireVerificationLease({ repoRoot: root, mode: 'daily' });
+  assert.equal(successor.release(), true);
 });
 
 test('visual comparisons cover every baseline without multiplying ordinary browser work', () => {
@@ -137,8 +201,10 @@ function expand(name) {
 }
 
 test('daily coverage stays complete with a single compliance/types/build pass', () => {
-  assert.equal(scripts['verify:daily'], 'npm run verify:full');
-  const full = expand('verify:daily');
+  assert.equal(scripts['verify:daily'], 'node scripts/run-full-verification.js daily');
+  assert.equal(scripts['verify:full'], 'node scripts/run-full-verification.js full');
+  assert.equal(scripts['test:tooling'], 'node --test --test-concurrency=1 tests/tooling/*.test.js');
+  const full = expand('verify:full:unlocked');
   const count = (pattern) => full.filter((step) => pattern.test(step)).length;
   assert.equal(count(/node scripts\/check-asset-manifest.js/), 1);
   assert.equal(count(/^tsc -p server\/tsconfig/), 1);
