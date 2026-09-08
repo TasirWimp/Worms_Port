@@ -85,13 +85,19 @@ Phaser/Socket.IO stack.
   still available while Relic selection was in flight, so the later selection
   snapshot could clear a just-locked aim. The follow-up fences aim until the
   selection settles and no longer treats a Relic update as a lifecycle reset;
-  its browser journey uses the default clockwise phone presentation.
-  Physical-phone acceptance must be repeated after redeployment.
-  **Next V10 step: V10D assessment and acceptance.** Run the complete
-  opening/reply matrix and selected product gate, then request physical-phone
-  acceptance. No funded activation or public promotion is implied yet. Overall
-  package evidence remains `in_progress` until the later promotion/release
-  gates are settled.
+  its browser journey uses the default clockwise phone presentation. The owner
+  confirmed the corrected selection-to-aim-to-Use order on the pushed `941c851`
+  preview from the physical phone on 2026-09-08.
+  **V10D assessment and acceptance are complete.** The source-bound assessment
+  passes all 24 frozen openings, 48 selected turns and 24 blocked shallow-cover
+  probes with zero missing plans, work failures or reconstruction failures. All
+  generated/mirrored, first-actor, side and elevation partitions are present;
+  every reply uses the exact terrain left by the opening attack. The selected
+  product gate, fresh complete Chromium phone phase and performance gate pass.
+  Overall package evidence remains `in_progress` because ordinary Practice and
+  Daily Challenge still use the current public ruleset. The next decision is an
+  explicit V10 no-reward public promotion or progression to V11; neither is
+  implied by V10D acceptance.
 - Product predecessor: **WP-015D3A V8 Action-Turn Candidate — V8A finite
   rules/acceptance contract complete and independently reviewed; V8B authoritative
   foundation complete and independently reviewed; V8C touch presentation

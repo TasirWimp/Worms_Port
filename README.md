@@ -96,6 +96,7 @@ npm run test:browser:resilience
 npm run test:browser:visual
 npm run test:browser:performance
 npm run test:browser:matrix
+npm run assess:v10
 npm run check:bundle-budget
 npm run check:identity-bundles
 npm run check:reward-security
@@ -503,6 +504,15 @@ phone layout, or use `&sideways=off` to check the normal portrait alternative.
 Check compact action menus, movement/HUD feedback, Thread costs/carry-over,
 utilities, an actual AI turn, pause/resume, reconnect, results and fresh retries.
 Phone acceptance and balance remain owner checks.
+
+The V10 terrain-and-starting-position candidate remains local-only at
+`/?combat-preview=v10`; it does not select a server profile or promote ordinary
+Practice, Daily Challenge, or rewards. `npm run assess:v10` runs its frozen
+24-opening V10D matrix across six seeds, generated and mirrored carriers, and
+both opening actors. It verifies blocked-cover replacement, the first attack,
+the other actor's reply through the resulting terrain, and exact operation/event
+reconstruction. Its ignored source-bound report is retained at
+`.cache/assessments/wp-015d4a-v10-assessment.json`.
 
 If a Clash stops within seconds, this is not the normal 30-minute expiry.
 V9 now shows **Practice interrupted** for timing or runtime safety stops. In Render's

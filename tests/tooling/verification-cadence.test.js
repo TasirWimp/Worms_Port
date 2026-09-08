@@ -71,6 +71,12 @@ test('housekeeping audit changes select only tooling coverage', () => {
   assert.deepEqual(plan.fallback, []);
 });
 
+test('V10 assessment changes select the finite assessment instead of the ordinary Loomkeeper glob', () => {
+  const plan = planChanges(['tests/loomkeeper/terrain-starts-v10.assessment.ts']);
+  assert.deepEqual(plan.tasks, ['assess:v10']);
+  assert.deepEqual(plan.browser, []);
+});
+
 test('verification tooling changes select only tooling coverage', () => {
   for (const file of ['scripts/verify-changes.js', 'scripts/verification-lease.js', 'scripts/run-full-verification.js']) {
     const plan = planChanges([file]);

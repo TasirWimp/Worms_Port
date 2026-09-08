@@ -1,8 +1,8 @@
 # WP-015D4A V10 Terrain And Starting Positions Contract
 
-Status: V10A finite product contract, V10B deterministic authority and V10C
-local playable candidate complete, 2026-09-07. V10D assessment and physical
-phone acceptance remain open.
+Status: V10A finite product contract, V10B deterministic authority, V10C local
+playable candidate and V10D assessment/physical-phone acceptance complete,
+2026-09-08. Public promotion remains a separate owner decision.
 
 ## Purpose
 
@@ -186,9 +186,9 @@ ownership, alter settlement, or accept terrain/start data from the client.
 3. **V10C — playable candidate (complete):** adapt the unchanged bounded
    Loomkeeper, render the V10 Patch in the existing phone scene, and expose
    only the local query-gated preview.
-4. **V10D — assessment and acceptance:** run the opening/reply matrix, selected
-   product checks and phone-browser journey; then separately request real-device
-   acceptance and any public promotion.
+4. **V10D — assessment and acceptance (complete):** run the opening/reply
+   matrix, selected product checks and phone-browser journey; then separately
+   record real-device acceptance and request any public promotion.
 
 Each step must update the existing WP-015D4A evidence before the next begins.
 
@@ -268,8 +268,8 @@ Focused adapter, fixture and canonical phone-browser checks cover frozen V9
 selection parity, exact work caps, V10-only transition execution, completed AI
 projectile response, detached trajectory preview, local-only routing, the
 opening survey, interruption recovery, compact controls, actor cards and the
-directional Loomkeeper cue. V10D remains responsible for the complete six-seed
-opening/reply matrix, selected product gate and physical-phone acceptance.
+directional Loomkeeper cue. V10D completes the six-seed opening/reply matrix,
+selected product gate and physical-phone acceptance recorded below.
 
 ## V10C inherited Relic-selection correction
 
@@ -285,8 +285,8 @@ and its tests. Attack drawer choices now submit the cost-free authoritative
 selection immediately; current selection and the next aim step are explicit;
 Use activates only the eventual cast. Guard and Leap still require Use. V10
 terrain, starts, planner budgets, simulation/protocol/replay identity, local-only
-routing and all public selectors remain unchanged. V10D phone acceptance stays
-open until this correction is redeployed and retested on the physical phone.
+routing and all public selectors remain unchanged. The subsequent correction
+and accepted physical-phone retest are recorded below.
 
 The first redeployed correction still allowed the player to begin aiming while
 the Relic request was pending. On a phone, that let selection authority arrive
@@ -294,5 +294,31 @@ after the aim lock and clear it as required by the simulation. The follow-up
 holds aim unavailable until selection settles, keeps the selected Relic through
 the following aim acknowledgement, and removes Relic value changes from the
 client's lifecycle-boundary key. The default clockwise phone path now carries
-the selection-to-aim-to-Use browser proof. Physical-phone acceptance remains
-open until that exact order passes after redeployment.
+the selection-to-aim-to-Use browser proof. The owner confirmed that exact order
+on the redeployed physical phone on 2026-09-08.
+
+## V10D assessment and acceptance
+
+`npm run assess:v10` executes the frozen 24-opening matrix: six contract seeds,
+their generated and assessment-only mirrored carriers, and both opening actors.
+Every opening runs the unchanged 180-plan V9 lattice through V10 transitions,
+replaces a terrain-blocked shallow shot with a legal higher or repositioned
+attack, carries the resulting terrain into the other actor's selected reply,
+and reconstructs every recorded operation, event and state hash. The report is
+retained under ignored `.cache/assessments/` so browser cleanup cannot erase it.
+
+The accepted matrix has 48 selected turns and 24 cover probes, with zero
+`no_legal_plan`, work, invariant, rollout-cap or reconstruction failures. All
+three profiles contribute eight rows. Opening actors and physical opening sides
+split 12/12, while the rising-braid elevated side splits 4/4 under reflection.
+Seventeen selected first turns deform terrain; the other seven are direct hits
+whose unchanged terrain is also carried exactly into the reply. These are
+engineering acceptance facts, not a win-rate or balance promise.
+
+The selected product gate, canonical Chromium phone journey and performance
+gate pass. The owner reports the pushed `941c851` V10 preview and corrected
+Relic selection-to-aim-to-Use sequence working as expected on the physical
+phone. V10D changes only assessment, routing and records, so it does not
+invalidate that runtime acceptance. PostgreSQL and the full Ubuntu release
+matrix remain separate gates. Ordinary Practice and Daily Challenge still use
+their current public ruleset; promoting V10 requires a separate owner decision.

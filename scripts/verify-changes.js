@@ -46,6 +46,8 @@ function planChanges(paths) {
       add(suites, ['check:crpm-world-types', 'test:crpm-world', 'test:d2a-adapter']);
     } else if (/^analysis\/tactical_model\/|^tests\/tactical-model\//.test(file) || /^scripts\/(?:export-tactical|run-v5-balance)/.test(file)) {
       suites.add('test:tactical-model');
+    } else if (file === 'tests/loomkeeper/terrain-starts-v10.assessment.ts') {
+      suites.add('assess:v10');
     } else if (/^tests\/browser-postgres\//.test(file) || file === 'playwright.postgres.config.ts' || file === 'scripts/run-postgres-browser.js') {
       postgres = true;
       suites.add('test:tooling');
