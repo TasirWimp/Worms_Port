@@ -46,11 +46,13 @@ are also recorded in the Execution Pointer of
   preserved in `LICENSE` and `legal/source-manifest.json`.
 - `lorgan3/sorcerers` is a quarantined reference/archive only. No Sorcerers
   code or bulk assets are imported into the product tree.
-- V10 terrain planning uses Sorcerers only through the registered
+- V10A-E terrain planning uses Sorcerers only through the registered
   [frozen terrain-tactics behavior record](docs/evidence/wp-015d4a-v10-terrain-tactics-behavior-record.md).
-  Its battlefield variety is inspiration for product-authored terrain and
-  starting-position requirements; its code, maps, algorithms, constants and
-  assets remain excluded.
+  The owner-authorized V10F preparation has a separate
+  [pinned procedural-terrain reference pack](docs/evidence/wp-015d4c-v10f-procedural-terrain-reference-pack.md)
+  covering Sorcerers and the other evaluated engines. All external code, maps,
+  algorithms, constants, sample tiles and assets remain excluded from product
+  paths.
 - Assets from Sorcerers may move into `assets/` only after exact-file license
   evidence proves commercial use, redistribution, and modification are allowed.
 - Product assets must be traceable through `legal/asset-manifest.json`.
@@ -517,6 +519,18 @@ pockets and jump-only firing shelves while preserving a legal attack from
 cover. The original `/?combat-preview=v10` route remains unchanged. The ignored
 source-bound V10E report is retained at
 `.cache/assessments/wp-015d4b-v10e-assessment.json`.
+
+WP-015D4C/V10F now prepares a deterministic surface grammar behind the existing
+`PackedTerrain` authority. Its first stage preserves V10/V10E behavior, creates
+a fixed eight-candidate product-owned grammar prototype and documents every
+external reference and license boundary. It adds no new runtime ruleset or
+phone route yet; candidate gameplay admission, ranking and replay identity are
+the next bounded step. V10F level concepts use normalized ASCII diagrams backed
+by machine-readable recipes: Twin Crests, Asymmetric Rampart, Trench Needle and
+Stepping Mesa. The diagrams are generated review artifacts rather than replay
+input. Recipes use 32 authoring columns that compile deterministically to the
+existing 256 collision columns; the full format and operation ranges are in the
+[V10 terrain contract](docs/planning/wp-015d4a-v10-terrain-starts-contract.md#ascii-chart-and-recipe-authority).
 
 If a Clash stops within seconds, this is not the normal 30-minute expiry.
 V9 now shows **Practice interrupted** for timing or runtime safety stops. In Render's

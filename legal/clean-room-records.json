@@ -2,6 +2,21 @@
   "policy": "Sorcerers-informed work starts with an observed frozen behavior record and completes only after separated implementation/review roles, an implementation declaration, a passing similarity review, and behavioral-test evidence.",
   "records": [
     {
+      "id": "wp-015d4c-v10f-procedural-terrain",
+      "work_package": "WP-015D4C",
+      "source_commit": "0f45c4920321c0a3a14de30fe5cf44131a38da89",
+      "observed_material": [
+        "pinned Sorcerers WFC, gameplay-mask, post-processing, map, terrain-paint and public-map-preview paths",
+        "pinned OpenClonk map-algorithm and layer documentation plus representative implementation paths",
+        "pinned Hedgewars generator-boundary, template-transform and alternate land-generation paths",
+        "pinned WFC algorithm references plus PCG and Phaser documentation"
+      ],
+      "behavior_record": "docs/evidence/wp-015d4c-v10f-procedural-terrain-reference-pack.md",
+      "behavior_record_sha256": "69235BE73B271B50A1B4F270E63D822C68FEC2613AB9A4EE9CE29C4ACB743B07",
+      "observer": "Codex primary single-owner reference observer 2026-09-08",
+      "status": "observed"
+    },
+    {
       "id": "wp-015d4a-v10-terrain-tactics",
       "work_package": "WP-015D4A",
       "source_commit": "0f45c4920321c0a3a14de30fe5cf44131a38da89",

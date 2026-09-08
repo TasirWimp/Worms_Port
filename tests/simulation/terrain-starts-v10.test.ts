@@ -10,9 +10,14 @@ import {
     canonicalSimulationJsonV10, createSimulationV10, generateV10TacticalArena,
     hashSimulationStateV10, v10TerrainProfileForSeed
 } from '../../shared/simulation-v10';
+import {
+    V10_PROCEDURAL_CANDIDATE_COUNT, V10_PROCEDURAL_SURFACE_GENERATOR_ID,
+    generateV10ProceduralSurfaceCandidate
+} from '../../shared/terrain-generation-v10';
 
 const ASSESSMENT_SEEDS = [1, 2, 3, 0x13579BDF, 0xC0FFEE11, 0xDEADBEEF] as const;
 const PROPERTY_SEEDS = Array.from({ length: 48 }, (_, index) => index + 1);
+const GRAMMAR_SEEDS = [...PROPERTY_SEEDS, ...ASSESSMENT_SEEDS.filter(seed => !PROPERTY_SEEDS.includes(seed))];
 const ACCEPTED_V10_STATE_HASHES = new Map<number, string>([
     [1, '10087fd1ec76f2b6c4cf657d44ed7ba7d0723c7a210095c8ae74f7e8ae2264a6'],
     [2, '324386df8042dec9e17fb9e3edd774c1ea78f4c4dbd52e3d68cb59ee22453f1f'],
@@ -48,6 +53,25 @@ test('V10E preserves every accepted original V10 assessment-seed state hash', ()
     for (const [seed, expectedHash] of ACCEPTED_V10_STATE_HASHES) {
         assert.equal(hashSimulationStateV10(createSimulationV10(seed, 'wizard')), expectedHash, `${seed}: accepted V10 hash`);
     }
+});
+
+test('V10F preparation produces a fixed deterministic surface-grammar candidate set', () => {
+    const signatures = new Set<string>();
+    for (const seed of GRAMMAR_SEEDS) {
+        for (let candidateIndex = 0; candidateIndex < V10_PROCEDURAL_CANDIDATE_COUNT; candidateIndex += 1) {
+            const candidate = generateV10ProceduralSurfaceCandidate(seed, candidateIndex);
+            assert.deepEqual(generateV10ProceduralSurfaceCandidate(seed, candidateIndex), candidate, `${seed}/${candidateIndex}: repeat`);
+            assert.equal(candidate.generatorId, V10_PROCEDURAL_SURFACE_GENERATOR_ID);
+            assert.equal(candidate.rows.length, 256);
+            assert.deepEqual(
+                candidate.operations.map(operation => operation.kind),
+                ['plateau', 'ramp', 'hollow', 'hollow', 'jump-shelf', 'jump-shelf', 'notch']
+            );
+            assert.ok(candidate.rows.every(row => Number.isSafeInteger(row) && row >= 34 && row <= 54));
+            signatures.add(candidate.rows.join(','));
+        }
+    }
+    assert.ok(signatures.size >= GRAMMAR_SEEDS.length * 4, 'candidate grammar should retain broad seed/index variety');
 });
 
 test('V10E has a replay-distinct identity and deterministic tactical profile family', () => {

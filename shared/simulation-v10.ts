@@ -7,9 +7,10 @@ import {
     type SimulationStateV9, type SimulationTransitionV9, type SimulationUnitV9
 } from './simulation-v9';
 import {
-    SIM_RULES, setTerrainSolid, terrainSolid,
+    SIM_RULES, terrainSolid,
     type PackedTerrain, type PlayerCalling
 } from './simulation';
+import { generateLegacyV10Surface, packV10SurfaceRows } from './terrain-generation-v10';
 
 /** Product-owned V10 terrain/start authority. V9 mechanics remain immutable. */
 export const V10_RULESET_ID = 'nimble-knots-artillery-v10' as const;
@@ -139,19 +140,10 @@ export function generateV10TacticalArena(
 ): V10TacticalArena {
     const normalized = normalizeSeed(seed);
     const profileId = v10TerrainProfileForSeed(normalized, rulesetId);
-    let rngState = nextRandom(normalized);
-    const variation = Number(rngState % 3) - 1;
-    rngState = nextRandom(rngState);
-    const reflected = (rngState & 1) === 1;
-    rngState = nextRandom(rngState);
-    const phase = Number(rngState % 17) - 8;
-    const rows = Array.from({ length: 256 }, (_, column) => {
-        const authoredColumn = reflected ? 255 - column : column;
-        return surfaceRow(profileId, authoredColumn, variation, phase);
-    });
-    const terrain = terrainFromRows(rows);
+    const { rows, ...surface } = generateLegacyV10Surface(normalized, profileId);
+    const terrain = packV10SurfaceRows(rows);
     const selected = selectV10OpeningPair(terrain, normalized, profileId);
-    return { terrain, rngState, profileId, reflected, variation, phase, ...selected };
+    return { terrain, profileId, ...surface, ...selected };
 }
 
 export function selectV10OpeningPair(
@@ -310,62 +302,6 @@ function fromV9(
     terrainProfileId: V10TerrainProfileId
 ): SimulationStateV10 {
     return { ...state, formatVersion: 10, rulesetId, rulesetVersion: 10, terrainProfileId };
-}
-
-function surfaceRow(
-    profileId: V10TerrainProfileId,
-    column: number,
-    variation: number,
-    phase: number
-): number {
-    if (profileId === 'sheltered-folds') {
-        const centre = 128 + phase;
-        const distance = Math.abs(column - centre);
-        const fold = distance >= 36 ? 0 : Math.min(8, Math.trunc((36 - distance) / 4));
-        return clamp(47 + variation - fold, 34, 54);
-    }
-    if (profileId === 'rising-braid') {
-        const start = 84 + phase;
-        const rise = clamp(Math.trunc((column - start) / 12), 0, 6);
-        return clamp(48 + variation - rise, 34, 54);
-    }
-    if (profileId === 'open-terraces') {
-        const shifted = column - phase;
-        const offset = shifted < 56 ? 1
-            : shifted < 88 ? 0
-                : shifted < 120 ? -1
-                    : shifted < 152 ? 0
-                        : shifted < 184 ? 1
-                            : 0;
-        return clamp(46 + variation + offset, 34, 54);
-    }
-    const shifted = column - phase;
-    if (profileId === 'twin-hollows') {
-        return clamp(50 + variation - (shifted >= 100 && shifted < 156 ? 6 : 0), 34, 54);
-    }
-    if (profileId === 'broken-loom') {
-        const shelf = (shifted >= 96 && shifted < 124) || (shifted >= 132 && shifted < 160);
-        return clamp(50 + variation - (shelf ? 4 : 0), 34, 54);
-    }
-    // High Stitch is intentionally asymmetric; reflection alternates which
-    // opening owns the deeper shelter while both sides retain a jump lookout.
-    if (shifted >= 92 && shifted < 160) return clamp(46 + variation, 34, 54);
-    if (shifted >= 160 && shifted < 164) return clamp(42 + variation, 34, 54);
-    if (shifted >= 164) return clamp(46 + variation, 34, 54);
-    return clamp(50 + variation, 34, 54);
-}
-
-function terrainFromRows(rows: readonly number[]): PackedTerrain {
-    const terrain: PackedTerrain = {
-        width: 256,
-        height: 72,
-        cellSize: 8,
-        words: new Array(576).fill(0)
-    };
-    for (let x = 0; x < terrain.width; x += 1) {
-        for (let y = rows[x]; y < terrain.height; y += 1) setTerrainSolid(terrain, x, y, true);
-    }
-    return terrain;
 }
 
 function evaluateOpening(
@@ -555,14 +491,6 @@ function normalizeSeed(seed: number): number {
     if (!Number.isFinite(seed)) throw new Error('V10 seed must be finite.');
     const normalized = Math.trunc(seed) >>> 0;
     return normalized === 0 ? 0x6D2B79F5 : normalized;
-}
-
-function nextRandom(state: number): number {
-    let value = state >>> 0;
-    value ^= value << 13;
-    value ^= value >>> 17;
-    value ^= value << 5;
-    return value >>> 0;
 }
 
 function alignUp(value: number, step: number): number {

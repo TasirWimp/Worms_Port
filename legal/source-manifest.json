@@ -1,5 +1,5 @@
 {
-  "checked_date": "2026-08-11",
+  "checked_date": "2026-09-08",
   "sources": [
     {
       "id": "turtlepu-worms-ii",
@@ -35,14 +35,127 @@
       "allowed_uses": [
         "gameplay reference",
         "asset-origin discovery",
-        "local ignored quarantine review"
+        "local ignored quarantine review",
+        "bounded V10F procedural terrain architecture observation"
       ],
       "blocked_uses": [
         "code copy",
         "bulk asset import",
         "asset import without exact-file license evidence"
       ],
-      "notes": "The repo and its credits are pointers for review only. No Sorcerers files are product assets. V10 terrain inspiration is limited to the registered frozen behavior record at docs/evidence/wp-015d4a-v10-terrain-tactics-behavior-record.md."
+      "notes": "The repo and its credits are pointers for review only. No Sorcerers files are product assets. V10A-E terrain inspiration is limited to the registered frozen behavior record at docs/evidence/wp-015d4a-v10-terrain-tactics-behavior-record.md. The owner-authorized V10F re-entry is separately frozen with exact inspected paths and boundaries at docs/evidence/wp-015d4c-v10f-procedural-terrain-reference-pack.md."
+    },
+    {
+      "id": "openclonk-procedural-landscape-reference",
+      "role": "technical_design_reference_only",
+      "repository": "openclonk/openclonk",
+      "url": "https://github.com/openclonk/openclonk",
+      "commit": "36de799544af0459014ea088867fe263779a8bdd",
+      "license": "ISC",
+      "license_evidence": "https://github.com/openclonk/openclonk/blob/36de799544af0459014ea088867fe263779a8bdd/COPYING",
+      "decision": "approved_reference_no_import",
+      "copied_into": [],
+      "referenced_paths": [
+        "docs/sdk/script/MapScript.xml",
+        "docs/sdk/scenario/MapCreatorS2.xml",
+        "src/landscape/C4MapScriptAlgo.cpp",
+        "planet/System.ocg/Template.ocg/DefaultWorld.ocs/Map.c"
+      ],
+      "allowed_uses": [
+        "composable position-to-mask operation reference",
+        "seeded map-layer architecture reference",
+        "bounded V10F design terminology"
+      ],
+      "blocked_uses": [
+        "code copy or runtime dependency",
+        "game data graphics or map import",
+        "license inference from engine code to repository assets"
+      ],
+      "notes": "Reference observation only. V10F independently implements a smaller product-owned integer surface grammar against existing PackedTerrain."
+    },
+    {
+      "id": "hedgewars-land-generation-reference",
+      "role": "copyleft_technical_reference_only",
+      "repository": "hedgewars/hw",
+      "url": "https://github.com/hedgewars/hw",
+      "commit": "85685825d924cf08b2becfdac61bccbaf4dbd9dd",
+      "license": "GPL-2.0",
+      "license_evidence": "https://github.com/hedgewars/hw/blob/85685825d924cf08b2becfdac61bccbaf4dbd9dd/COPYING",
+      "decision": "not_imported",
+      "copied_into": [],
+      "referenced_paths": [
+        "rust/landgen/src/lib.rs",
+        "rust/landgen/src/maze.rs",
+        "rust/landgen/src/outline_template_based/template_based.rs",
+        "rust/landgen/src/wavefront_collapse/",
+        "share/hedgewars/Data/map_templates.yaml",
+        "hedgewars/uLandGenPerlin.pas"
+      ],
+      "allowed_uses": [
+        "seeded generator-boundary reference",
+        "bounded mirror and flip concept reference",
+        "interchangeable terrain-strategy design reference"
+      ],
+      "blocked_uses": [
+        "code algorithm template constant or identifier copy",
+        "asset map or data import",
+        "runtime dependency or GPL-derived product implementation"
+      ],
+      "notes": "GPL source was inspected only to understand broad architecture. No Hedgewars expression enters Worms_Port."
+    },
+    {
+      "id": "mxgmn-wave-function-collapse-reference",
+      "role": "technical_algorithm_reference_only",
+      "repository": "mxgmn/WaveFunctionCollapse",
+      "url": "https://github.com/mxgmn/WaveFunctionCollapse",
+      "commit": "de7d22e705e816b62b4d613199d0463820fcaef3",
+      "license": "MIT",
+      "license_evidence": "https://github.com/mxgmn/WaveFunctionCollapse/blob/de7d22e705e816b62b4d613199d0463820fcaef3/LICENSE",
+      "decision": "approved_reference_no_import",
+      "copied_into": [],
+      "referenced_paths": [
+        "README.md",
+        "Model.cs",
+        "SimpleTiledModel.cs"
+      ],
+      "allowed_uses": [
+        "adjacency-constraint and contradiction terminology",
+        "symmetry-reduction concept reference",
+        "later generator-strategy evaluation"
+      ],
+      "blocked_uses": [
+        "code copy or runtime dependency in V10F preparation",
+        "sample image tile or linked-work import",
+        "assumption that software licensing covers sample media"
+      ],
+      "notes": "WFC is deliberately deferred. The first V10F grammar uses fixed product-owned operations and gameplay admission rather than a constraint solver."
+    },
+    {
+      "id": "kchapelier-javascript-wfc-evaluation",
+      "role": "technical_dependency_candidate_reference",
+      "repository": "kchapelier/wavefunctioncollapse",
+      "url": "https://github.com/kchapelier/wavefunctioncollapse",
+      "commit": "f1374ee2c04d197afe6d01652f87663a68cbf6a5",
+      "license": "MIT",
+      "license_evidence": "https://github.com/kchapelier/wavefunctioncollapse/blob/f1374ee2c04d197afe6d01652f87663a68cbf6a5/LICENSE",
+      "decision": "evaluated_not_imported",
+      "copied_into": [],
+      "referenced_paths": [
+        "README.md",
+        "model.js",
+        "simple-tiled-model.js",
+        "random-indice.js"
+      ],
+      "allowed_uses": [
+        "injected deterministic RNG feasibility review",
+        "later dependency comparison"
+      ],
+      "blocked_uses": [
+        "runtime dependency without a new package and license review",
+        "code or sample import",
+        "use as the initial V10F generator"
+      ],
+      "notes": "Evaluated but not adopted. package.json and package-lock.json remain unchanged."
     },
     {
       "id": "nimirun-coderepo-subagent-pattern",

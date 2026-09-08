@@ -14,7 +14,8 @@ Phaser/Socket.IO stack.
   See [Verification Funnels](../process/development_workflow.md#verification-funnels).
   This changes verification policy only and does not advance the product package.
 - Active target: mobile-first single-player Nimiq Pay competition release.
-- Active product package: **WP-015D4B V10E Tactical Terrain Refinement.** It
+- Active product package: **WP-015D4C V10F Procedural Terrain.** Its preparation
+  follows WP-015D4B V10E Tactical Terrain Refinement. It
   follows WP-015D4A V10 Terrain and Starting Positions. The V9 Resource and
   Utilities predecessor has complete V9A rules, V9B injected
   authority and V9C continuity correction;
@@ -106,7 +107,22 @@ Phaser/Socket.IO stack.
   remains available. Implementation and automated acceptance are complete;
   physical-phone terrain feel remains open. Overall package evidence stays
   `in_progress`, and no public Practice, Daily Challenge, reward promotion or
-  V11 progression is implied.
+  V11 progression is implied. The owner chose to proceed with V10F and
+  authorized a bounded new research pass. The
+  [pinned V10F reference pack](../evidence/wp-015d4c-v10f-procedural-terrain-reference-pack.md)
+  records every used/evaluated source, revision, inspected path and license
+  boundary. Preparation extracts the accepted surface construction behind a
+  product-owned generator seam and creates a deterministic eight-candidate
+  integer grammar without adding a runtime ruleset or preview. Candidate
+  gameplay admission/ranking, replay identity and phone exposure are the next
+  bounded V10F step. The owner has now supplied four ASCII terrain concepts:
+  Twin Crests, Asymmetric Rampart, Trench Needle and Stepping Mesa. The living
+  V10 contract records them as machine-readable 32-column recipe families that
+  compile to the existing 256-column collision mask. Normalized ASCII is
+  generated from the recipe for review and cannot become runtime or replay
+  authority. The next implementation adds `ridge`, `asymmetric-elevation`,
+  recipe compilation and family-specific admission before exposing
+  `/?combat-preview=v10f`.
 - Product predecessor: **WP-015D3A V8 Action-Turn Candidate — V8A finite
   rules/acceptance contract complete and independently reviewed; V8B authoritative
   foundation complete and independently reviewed; V8C touch presentation

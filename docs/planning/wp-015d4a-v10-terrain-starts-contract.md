@@ -2,8 +2,10 @@
 
 Status: V10A finite product contract, V10B deterministic authority, V10C local
 playable candidate and V10D assessment/physical-phone acceptance complete,
-2026-09-08. Owner-authorized V10E tactical terrain refinement is in progress.
-Public promotion remains a separate owner decision.
+2026-09-08. V10E implementation and automated acceptance are complete with
+physical-phone terrain feel still open. Owner-authorized WP-015D4C/V10F
+procedural-terrain preparation is in progress. Public promotion remains a
+separate owner decision.
 
 ## Purpose
 
@@ -374,3 +376,179 @@ shallow-cover probes. A separate local route,
 `/?combat-preview=v10` keeps the accepted original. Neither route creates a
 session, reward, database or public selector path. Physical-phone terrain feel
 and readability remain a separate owner acceptance gate after deployment.
+
+## V10F deterministic surface-grammar preparation
+
+The owner authorized a bounded return to terrain-engine research after V10E.
+The exact sources, revisions, inspected paths, license boundaries and adopted
+design ideas are frozen in the
+[V10F procedural-terrain reference pack](../evidence/wp-015d4c-v10f-procedural-terrain-reference-pack.md).
+That record supersedes the earlier no-reopen instruction only for this
+observation. Sorcerers remains GPL quarantine/reference-only, and no external
+code, map, template, asset, constant or pixel enters product paths.
+
+V10F starts by extracting the accepted V10/V10E row construction behind a
+product-owned generator seam. The compatibility path keeps the same seed
+normalization, xorshift sequence, phase, variation, reflection, authored rows
+and packed-mask conversion. The six accepted assessment-seed V10 state hashes
+remain the exact compatibility gate; V10E is exercised by its existing
+determinism, traversal and assessment tests.
+
+The first unselected grammar prototype produces exactly eight candidates per
+normalized seed. Each candidate applies seven bounded integer operations in a
+fixed order: plateau, ramp, left and right hollows, left and right jump shelves,
+and a central notch. Every parameter comes from a named tagged sub-seed, so
+adding or removing an unrelated parameter cannot silently shift subsequent
+choices. The prototype produces one surface row per column in the existing
+34-to-54 row envelope. It uses no wall clock, unbounded retry, file input,
+network input, dependency or decorative pixel data.
+
+### ASCII chart and recipe authority
+
+V10F uses compact ASCII charts to communicate the intended silhouette and
+tactical purpose of an authored level family. A free-form Markdown chart is not
+runtime input: whitespace, escaping and line wrapping make it unsuitable for
+replay authority. Each chart must have one machine-readable product recipe,
+and the tooling must render a normalized ASCII preview from that recipe. The
+generated preview, recipe operation list and sampled height signature stay
+together so documentation drift is visible in review.
+
+The existing terrain contains 256 collision columns, each eight world units
+wide, across the 2048-unit arena. V10F introduces a separate 32-column authoring
+grid. One authoring column expands to eight collision columns, or 64 world
+units. Operation spans below use authoring columns; final collision and replay
+state still contain all 256 surface samples. Ramps and curved operations are
+rasterized over the expanded columns with fixed integer interpolation and
+rounding. Surface row numbers increase downward, so a negative delta raises
+terrain and a positive delta lowers it.
+
+A recipe contains:
+
+- a stable recipe/profile ID and revision;
+- an ordered list of typed operations in 32-column authoring coordinates;
+- parameter ranges owned by that recipe;
+- `mirror`, `seed-reflect` or `none` transformation policy;
+- named start pockets and required jump/cover landmarks; and
+- family-specific tactical assertions used by admission and assessment.
+
+The supported recipe operations are:
+
+| Operation | Integer surface effect | Authoring span | Admission note |
+| --- | --- | ---: | --- |
+| `plateau` | Hold the current row | 3-5 columns | Must retain actor-width support where used for a start or landing. |
+| `ramp` | Change the row by 1-3 over the complete span | 2-4 columns | Expansion must keep every adjacent collision step walkable unless the boundary is explicitly a jump landmark. |
+| `hollow` | Lower terrain by 2-5 rows using a bounded bowl | 3-6 columns | An actor-accessible hollow must have a supported normal exit and may not become a spawn trap. |
+| `ridge` | Raise terrain by 3-6 rows using a bounded crest | 3-5 columns | May block shallow fire but must leave an affordable legal attack path. |
+| `jump-shelf` | Hold a raised landing 3-6 rows above its takeoff | 2-3 columns | The 24-48 world-unit rise preserves the accepted V10E jump-only range; two rows would remain walkable and is therefore excluded. |
+| `notch` | Lower a narrow surface section by 3-5 rows | 1-2 columns | This remains a depressed surface, never an empty vertical gap. A literal one-cell collision notch is not treated as actor space. |
+| `asymmetric-elevation` | Apply a continuous 3-6-row side offset across the midline | up to 16 columns | Seed reflection must alternate the high side, and both reflected openings must pass the same legal-action gates. |
+
+### Initial authored recipe families
+
+The first V10F family is exactly four recipes. Names describe tactical intent;
+all geometry remains generated from bounded integer parameters.
+
+#### Twin Crests (`twin-crests`)
+
+Sequence: `plateau` -> edge `ridge` -> `hollow` -> `jump-shelf` ->
+`notch` -> center `ridge` -> `notch` -> `jump-shelf` -> `hollow` ->
+edge `ridge` -> `plateau`.
+
+The recipe is mirror-symmetrical. Both starts occupy protected pockets, the
+center crest blocks a shallow direct shot, and each side can jump forward to a
+supported exposed firing shelf. Admission requires a legal arcing attack from
+cover and a legal attack after reaching either shelf.
+
+#### Asymmetric Rampart (`asymmetric-rampart`)
+
+Sequence: high `plateau` -> `asymmetric-elevation` -> `ramp` ->
+`jump-shelf` -> `notch` -> `hollow` -> cover `ridge` -> low `plateau`.
+
+One opening receives immediate elevation and less shelter; the other receives
+a deeper protected pocket and an ascending route. `seed-reflect` alternates
+which physical side is high. Admission runs both reflections and both opening
+actors, requires a legal attack and escape route from the low pocket, and
+rejects a layout when the bounded opening assessment cannot find a legal first
+attack and reply for both the high and low openings.
+
+#### Trench Needle (`trench-needle`)
+
+Sequence: `plateau` -> `hollow` -> `ridge` -> `notch` -> `hollow` ->
+`jump-shelf` -> `hollow` -> `notch` -> `ridge` -> `hollow` ->
+`plateau`.
+
+Narrow ridges must block selected shallow trajectories while higher precision
+shots remain legal. The assessment must prove that crater mutation can open at
+least one previously blocked line without leaving either actor unsupported or
+inside terrain. Every notch used for movement must expand to actor-clear width;
+narrower notches are projectile geometry only.
+
+#### Stepping Mesa (`stepping-mesa`)
+
+Sequence: `plateau` -> `hollow` -> `jump-shelf` -> `notch` -> peak
+`ridge` -> `notch` -> `jump-shelf` -> `hollow` -> `plateau`.
+
+Forward shelves provide a sequence of offensive positions across multiple
+turns. Each contracted jump must be reachable through normal simulation and
+land with actor-width support. A missed or declined jump may lead into a
+supported hollow, but the hollow must retain a normal exit and a legal action;
+the recipe may restrict horizontal fire temporarily but may not soft-lock play.
+
+### Deterministic recipe compilation and selection
+
+For a normalized seed, V10F performs the following fixed work:
+
+1. choose a recipe family by stable seed mapping;
+2. derive each recipe parameter from its own recipe/revision/parameter tag;
+3. emit exactly eight candidate recipes at indices zero through seven;
+4. compile each 32-column recipe to exactly 256 bounded surface rows;
+5. pack those rows through the existing `PackedTerrain` mask writer;
+6. run the fixed structural and projectile-preflight admission gates and reject
+   failures;
+7. rank admitted candidates lexicographically by family landmark fit,
+   worst-side legal preflight options, worst-side local mobility, center bias,
+   a stable seed-derived tie break and finally candidate index; and
+8. use a fixed product-owned fallback recipe when none is admitted.
+
+Runtime generation may evaluate only bounded integer geometry, movement and
+direct projectile preflights. It must not execute the 180-plan Loomkeeper search
+for each of eight candidates or turn wall-clock performance into map authority.
+The complete planner response after representative first attacks belongs to
+the offline V10 assessment and the 22:00/release suite. Recipe parameter ranges,
+their boundaries and the fixed fallback remain the runtime safety envelope.
+
+The generated normalized ASCII preview is a review artifact from step four. It
+does not affect selection, collision, state hashes or replay reconstruction.
+The later replay-distinct ruleset must bind its ruleset ID, recipe/profile ID,
+recipe revision, selected candidate index and complete packed terrain state.
+The intended local route after admission is `/?combat-preview=v10f`; creating
+that route does not promote Practice, Daily Challenge or rewards.
+
+This preparation does not add a ruleset ID, replay schema, selector, browser
+route or public runtime behavior. The next implementation slice must implement
+candidate admission and ranking. Its combined runtime and assessment gates are:
+
+1. actor-width support and body-clear starts inside safe world margins;
+2. supported outward movement and an inward jump that lands through normal
+   simulation without allowing walking to substitute for that jump;
+3. meaningful shallow cover with an affordable legal high or repositioned
+   attack from both opening roles;
+4. offline proof of a bounded legal Loomkeeper response against the exact
+   terrain resulting from representative first attacks;
+5. exact reconstruction of selected candidate, opening, operations, events and
+   state hashes; and
+6. a deterministic ranking tuple, seed-derived final tie break and fixed
+   product-owned fallback when no candidate is admitted.
+
+Only after those gates pass may a replay-distinct V10 ruleset and local phone
+preview expose generated terrain. WFC remains a possible later generator behind
+the same seam. Caves, overhangs, floating terrain and a rendering rewrite remain
+deferred while movement and terrain-top presentation assume one solid surface
+per column.
+
+The recipe tests additionally render and snapshot each normalized ASCII chart,
+check all 32 authoring samples and 256 collision samples, cover every operation
+at its minimum and maximum span/delta, and exercise all four recipes under both
+physical sides and opening actors. Phone acceptance checks that crests, pockets,
+shelves and current action guidance remain readable without reducing the clear
+arena or touch-target sizes.
