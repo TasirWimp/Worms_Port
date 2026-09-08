@@ -1,6 +1,7 @@
 import {
     advanceSimulationTicksV10, applySimulationBarrierV10, applySimulationIntentV10,
     createSimulationV10, forceSimulationLimitV10, hashSimulationStateV10, V10_RULESET_ID,
+    type V10RulesetId,
     type SimulationBarrierV10, type SimulationIntentV10, type SimulationStateV10,
     type SimulationTransitionV10
 } from '../../../shared/simulation-v10';
@@ -14,7 +15,7 @@ export { V10_REPLAY_LIMITS } from '../../../shared/protocol-v10';
 export type { CoordinatorReplayV10 } from '../../../shared/protocol-v10';
 
 export type CoordinatorTerminalResultV10 = {
-    rulesetId: typeof V10_RULESET_ID;
+    rulesetId: V10RulesetId;
     challengeId: string;
     sessionId: string;
     winner: SimulationStateV10['winner'];
@@ -61,9 +62,15 @@ export class SimulationCoordinatorV10 {
         this.maxBytes = bounded(options.maxReplayBytes ?? V10_REPLAY_LIMITS.bytes, 1024, V10_REPLAY_LIMITS.bytes);
     }
 
-    public create(challengeId: string, sessionId: string, seed: number, calling: PlayerCalling): CoordinatorSnapshotV10 {
+    public create(
+        challengeId: string,
+        sessionId: string,
+        seed: number,
+        calling: PlayerCalling,
+        rulesetId: V10RulesetId = V10_RULESET_ID
+    ): CoordinatorSnapshotV10 {
         if (this.matches.has(challengeId)) throw new Error('Duplicate V10 challenge.');
-        const state = createSimulationV10(seed, calling);
+        const state = createSimulationV10(seed, calling, rulesetId);
         const stateHash = hashSimulationStateV10(state);
         const replay = CoordinatorReplayV10Schema.parse({
             formatVersion: 10,
@@ -71,7 +78,7 @@ export class SimulationCoordinatorV10 {
             sessionId,
             seed: state.seed,
             calling,
-            rulesetId: V10_RULESET_ID,
+            rulesetId: state.rulesetId,
             terrainProfileId: state.terrainProfileId,
             initialStateHash: stateHash,
             records: []
@@ -190,7 +197,9 @@ export class SimulationCoordinatorV10 {
             maxReplayBytes: this.maxBytes
         });
         try {
-            const initial = verifier.create(replay.challengeId, replay.sessionId, replay.seed, replay.calling);
+            const initial = verifier.create(
+                replay.challengeId, replay.sessionId, replay.seed, replay.calling, replay.rulesetId
+            );
             if (initial.state.terrainProfileId !== replay.terrainProfileId) {
                 throw new Error('V10 terrain profile mismatch.');
             }
@@ -317,7 +326,7 @@ export class SimulationCoordinatorV10 {
 
         if (entry.state.phase === 'finished' && !entry.terminalResult) {
             entry.terminalResult = {
-                rulesetId: V10_RULESET_ID,
+                rulesetId: entry.state.rulesetId,
                 challengeId: entry.replay.challengeId,
                 sessionId: entry.replay.sessionId,
                 winner: entry.state.winner,

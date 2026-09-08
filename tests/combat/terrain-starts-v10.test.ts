@@ -6,7 +6,9 @@ import {
     trajectoryPreviewV10,
     type V10FixtureClock
 } from '../../client/src/combat/terrain-starts-v10-fixture';
-import { canonicalSimulationJsonV10, V10_RULESET_ID } from '../../shared/simulation-v10';
+import {
+    canonicalSimulationJsonV10, V10_R1_RULESET_ID, V10_RULESET_ID
+} from '../../shared/simulation-v10';
 
 function createClock(): V10FixtureClock & { advanceThirtyTicks: () => void } {
     let now = 0;
@@ -45,6 +47,26 @@ test('V10C local fixture exposes a detached terrain preview without transport or
     }
 });
 
+test('V10E local fixture exposes the revised terrain identity and preserves restart', async () => {
+    const clock = createClock();
+    const fixture = await createTerrainStartsV10Fixture(1, 'wizard', clock, V10_R1_RULESET_ID);
+    try {
+        assert.equal(fixture.kind, 'v10');
+        assert.equal(fixture.previewLabel, 'V10E tactical terrain preview · local-only');
+        assert.equal(fixture.snapshot.rulesetId, V10_R1_RULESET_ID);
+        assert.equal(fixture.snapshot.terrainProfileId, 'broken-loom');
+        const restarted = await fixture.restart();
+        try {
+            assert.equal(restarted.snapshot.rulesetId, V10_R1_RULESET_ID);
+            assert.deepEqual(restarted.snapshot.terrain, fixture.snapshot.terrain);
+        } finally {
+            restarted.destroy();
+        }
+    } finally {
+        fixture.destroy();
+    }
+});
+
 test('V10C local fixture charges 30 live ticks, then executes a bounded Loomkeeper response', async () => {
     const clock = createClock();
     const fixture = await createTerrainStartsV10Fixture(1, 'wizard', clock);
@@ -72,6 +94,29 @@ test('V10C local fixture charges 30 live ticks, then executes a bounded Loomkeep
         assert.ok(fixture.snapshot.phase === 'finished' || fixture.snapshot.activeActor === 'player');
         assert.equal(fixture.snapshot.rulesetId, V10_RULESET_ID);
         assert.equal(fixture.snapshot.terrainProfileId, handoff.terrainProfileId);
+    } finally {
+        stop();
+        fixture.destroy();
+    }
+});
+
+test('V10E local fixture completes a bounded Loomkeeper response on tactical terrain', async () => {
+    const clock = createClock();
+    const fixture = await createTerrainStartsV10Fixture(1, 'wizard', clock, V10_R1_RULESET_ID);
+    const events: string[] = [];
+    const stop = fixture.onSnapshot((_state, next) => events.push(...next.map(event => event.type)));
+    try {
+        for (let window = 0; window < 20 && fixture.snapshot.activeActor !== 'loomkeeper'; window += 1) {
+            clock.advanceThirtyTicks();
+        }
+        assert.equal(fixture.snapshot.activeActor, 'loomkeeper');
+        for (let window = 0; window < 45 && fixture.snapshot.activeActor === 'loomkeeper' &&
+            fixture.snapshot.phase !== 'finished'; window += 1) clock.advanceThirtyTicks();
+        assert.ok(events.includes('impact'));
+        assert.ok(fixture.snapshot.lastProjectile);
+        assert.ok(fixture.snapshot.phase === 'finished' || fixture.snapshot.activeActor === 'player');
+        assert.equal(fixture.snapshot.rulesetId, V10_R1_RULESET_ID);
+        assert.equal(fixture.snapshot.terrainProfileId, 'broken-loom');
     } finally {
         stop();
         fixture.destroy();

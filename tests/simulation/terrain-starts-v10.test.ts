@@ -5,6 +5,7 @@ import test from 'node:test';
 import { terrainSolid } from '../../shared/simulation';
 import {
     V10_OPENING_RULES, V10_PROFILE_RULES, V10_RULESET_ID,
+    V10_R1_RULESET_ID, V10_R1_TERRAIN_PROFILE_IDS,
     SimulationStateV10Schema, advanceSimulationTicksV10, applySimulationIntentV10,
     canonicalSimulationJsonV10, createSimulationV10, generateV10TacticalArena,
     hashSimulationStateV10, v10TerrainProfileForSeed
@@ -12,6 +13,14 @@ import {
 
 const ASSESSMENT_SEEDS = [1, 2, 3, 0x13579BDF, 0xC0FFEE11, 0xDEADBEEF] as const;
 const PROPERTY_SEEDS = Array.from({ length: 48 }, (_, index) => index + 1);
+const ACCEPTED_V10_STATE_HASHES = new Map<number, string>([
+    [1, '10087fd1ec76f2b6c4cf657d44ed7ba7d0723c7a210095c8ae74f7e8ae2264a6'],
+    [2, '324386df8042dec9e17fb9e3edd774c1ea78f4c4dbd52e3d68cb59ee22453f1f'],
+    [3, 'b156ec9b6c55813e1a71153d15c75f49a81df33bacfa2b280799d848a25a7556'],
+    [0x13579BDF, '99fdd0e392c2987920a18cc10b924913b84e71cc517a861b1ce9f6b94a580dfb'],
+    [0xC0FFEE11, 'c04953b22eaba1460438c25bb3080d55cf9650a166c7b53becbd5511a6bb5d2d'],
+    [0xDEADBEEF, 'bc4234c5d68cb7a7cabb9deb61b8bc0859b5f968a0e6ce157f896b7370baa02e']
+]);
 
 test('V10 creates deterministic profile-bound state for every Calling', () => {
     for (const seed of ASSESSMENT_SEEDS) {
@@ -30,6 +39,78 @@ test('V10 creates deterministic profile-bound state for every Calling', () => {
             assert.deepEqual(
                 alternate.units.map(unit => [unit.xFp, unit.yFp, unit.support]),
                 first.units.map(unit => [unit.xFp, unit.yFp, unit.support])
+            );
+        }
+    }
+});
+
+test('V10E preserves every accepted original V10 assessment-seed state hash', () => {
+    for (const [seed, expectedHash] of ACCEPTED_V10_STATE_HASHES) {
+        assert.equal(hashSimulationStateV10(createSimulationV10(seed, 'wizard')), expectedHash, `${seed}: accepted V10 hash`);
+    }
+});
+
+test('V10E has a replay-distinct identity and deterministic tactical profile family', () => {
+    const seen = new Set<string>();
+    for (const seed of PROPERTY_SEEDS) {
+        const original = createSimulationV10(seed, 'wizard');
+        const first = createSimulationV10(seed, 'wizard', V10_R1_RULESET_ID);
+        const repeated = createSimulationV10(seed, 'wizard', V10_R1_RULESET_ID);
+        seen.add(first.terrainProfileId);
+        assert.deepEqual(repeated, first, `${seed}: repeat`);
+        assert.equal(original.rulesetId, V10_RULESET_ID);
+        assert.equal(first.rulesetId, V10_R1_RULESET_ID);
+        assert.notEqual(first.terrainProfileId, original.terrainProfileId);
+        assert.notEqual(hashSimulationStateV10(first), hashSimulationStateV10(original));
+        assert.equal(SimulationStateV10Schema.safeParse(first).success, true);
+    }
+    assert.deepEqual([...seen].sort(), [...V10_R1_TERRAIN_PROFILE_IDS].sort());
+});
+
+test('V10E openings retain retreat cover and require a real jump to reach each firing shelf', () => {
+    for (const seed of PROPERTY_SEEDS) {
+        const arena = generateV10TacticalArena(seed, V10_R1_RULESET_ID);
+        const jumpPositions = arena.opening.jumpPositions;
+        assert.ok(jumpPositions, `${seed}: tactical positions`);
+        assert.equal(routeLength(arena.terrain, arena.opening.leftX, -1), 64, `${seed}: left retreat`);
+        assert.equal(routeLength(arena.terrain, arena.opening.rightX, 1), 64, `${seed}: right retreat`);
+
+        for (const [index, actor] of ['player', 'loomkeeper'].entries()) {
+            const position = jumpPositions[index];
+            assert.ok(position.rise >= V10_OPENING_RULES.minimumJumpRise, `${seed}/${actor}: jump rise`);
+            assert.ok(position.rise <= V10_OPENING_RULES.maximumJumpRise, `${seed}/${actor}: bounded jump rise`);
+            assert.equal(
+                routeIsWalkable(arena.terrain, position.takeoffX, position.landingX),
+                false,
+                `${seed}/${actor}: shelf is not walkable`
+            );
+
+            let state = createSimulationV10(seed, 'wizard', V10_R1_RULESET_ID);
+            state.activeActor = actor as 'player' | 'loomkeeper';
+            const launched = applySimulationIntentV10(
+                state,
+                actor as 'player' | 'loomkeeper',
+                { type: 'jump', direction: position.direction },
+                state.turn,
+                state.phase,
+                state.inputEpoch
+            );
+            assert.equal(launched.accepted, true, `${seed}/${actor}: accepted jump`);
+            state = launched.state;
+            for (let tick = 0; tick < 120 && !state.units[index].grounded; tick += 1) {
+                state = advanceSimulationTicksV10(state, 1).state;
+            }
+            const unit = state.units[index];
+            assert.equal(unit.grounded, true, `${seed}/${actor}: landed`);
+            assert.ok(unit.support !== null, `${seed}/${actor}: supported landing`);
+            assert.equal(
+                surfaceWorldY(state.terrain, unit.xFp / 256),
+                position.landingSurfaceY,
+                `${seed}/${actor}: landed on tactical shelf`
+            );
+            assert.ok(
+                Math.abs(unit.xFp / 256 - position.takeoffX) >= 48,
+                `${seed}/${actor}: meaningful jump displacement`
             );
         }
     }
@@ -174,4 +255,27 @@ function routeIsContinuous(
         if (Math.abs(surfaces[x / 8] - surfaces[x / 8 - 1]) > 1) return false;
     }
     return true;
+}
+
+function routeIsWalkable(
+    terrain: ReturnType<typeof generateV10TacticalArena>['terrain'],
+    firstX: number,
+    secondX: number
+): boolean {
+    const surfaces = surfaceRows(terrain);
+    const leftX = Math.min(firstX, secondX);
+    const rightX = Math.max(firstX, secondX);
+    for (let x = leftX + 8; x <= rightX; x += 8) {
+        if (Math.abs(surfaces[x / 8] - surfaces[x / 8 - 1]) * 8 > V10_OPENING_RULES.maximumWalkStep) {
+            return false;
+        }
+    }
+    return true;
+}
+
+function surfaceWorldY(
+    terrain: ReturnType<typeof generateV10TacticalArena>['terrain'],
+    worldX: number
+): number {
+    return surfaceRows(terrain)[Math.floor(worldX / terrain.cellSize)] * terrain.cellSize;
 }

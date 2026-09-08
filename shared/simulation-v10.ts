@@ -13,18 +13,37 @@ import {
 
 /** Product-owned V10 terrain/start authority. V9 mechanics remain immutable. */
 export const V10_RULESET_ID = 'nimble-knots-artillery-v10' as const;
+export const V10_R1_RULESET_ID = 'nimble-knots-artillery-v10-r1' as const;
+export const V10_RULESET_IDS = Object.freeze([V10_RULESET_ID, V10_R1_RULESET_ID] as const);
+export type V10RulesetId = typeof V10_RULESET_IDS[number];
+export function isV10RulesetId(value: unknown): value is V10RulesetId {
+    return value === V10_RULESET_ID || value === V10_R1_RULESET_ID;
+}
 export const V10_RULESET_VERSION = 10 as const;
 export const V10_TERRAIN_PROFILE_IDS = Object.freeze([
     'sheltered-folds',
     'rising-braid',
     'open-terraces'
 ] as const);
-export type V10TerrainProfileId = typeof V10_TERRAIN_PROFILE_IDS[number];
+export const V10_R1_TERRAIN_PROFILE_IDS = Object.freeze([
+    'twin-hollows',
+    'broken-loom',
+    'high-stitch'
+] as const);
+export const V10_ALL_TERRAIN_PROFILE_IDS = Object.freeze([
+    ...V10_TERRAIN_PROFILE_IDS,
+    ...V10_R1_TERRAIN_PROFILE_IDS
+] as const);
+export type V10TerrainProfileId = typeof V10_ALL_TERRAIN_PROFILE_IDS[number];
+export type V10R1TerrainProfileId = typeof V10_R1_TERRAIN_PROFILE_IDS[number];
 
 export const V10_PROFILE_RULES = Object.freeze({
     'sheltered-folds': Object.freeze({ separation: 512, minimumHeightDifference: 0, maximumHeightDifference: 24 }),
     'rising-braid': Object.freeze({ separation: 576, minimumHeightDifference: 32, maximumHeightDifference: 64 }),
-    'open-terraces': Object.freeze({ separation: 640, minimumHeightDifference: 0, maximumHeightDifference: 24 })
+    'open-terraces': Object.freeze({ separation: 640, minimumHeightDifference: 0, maximumHeightDifference: 24 }),
+    'twin-hollows': Object.freeze({ separation: 512, minimumHeightDifference: 0, maximumHeightDifference: 16 }),
+    'broken-loom': Object.freeze({ separation: 576, minimumHeightDifference: 0, maximumHeightDifference: 16 }),
+    'high-stitch': Object.freeze({ separation: 640, minimumHeightDifference: 32, maximumHeightDifference: 48 })
 } satisfies Readonly<Record<V10TerrainProfileId, Readonly<{
     separation: number; minimumHeightDifference: number; maximumHeightDifference: number;
 }>>>);
@@ -33,8 +52,21 @@ export const V10_OPENING_RULES = Object.freeze({
     safeWorldMargin: SIM_RULES.actorRadius + SIM_RULES.movementPerTurn,
     outwardMovement: SIM_RULES.movementPerTurn,
     movementStep: SIM_RULES.movementStep,
-    maximumRouteStep: 8
+    maximumRouteStep: 8,
+    maximumWalkStep: 16,
+    jumpPositionDistance: 64,
+    minimumJumpRise: 24,
+    maximumJumpRise: 48
 });
+
+export type V10JumpPosition = Readonly<{
+    takeoffX: number;
+    landingX: number;
+    takeoffSurfaceY: number;
+    landingSurfaceY: number;
+    direction: -1 | 1;
+    rise: number;
+}>;
 
 export type V10OpeningPair = Readonly<{
     leftX: number;
@@ -47,6 +79,7 @@ export type V10OpeningPair = Readonly<{
         centerBias: number;
         tieBreak: number;
     }>;
+    jumpPositions: readonly [V10JumpPosition, V10JumpPosition] | null;
 }>;
 
 export type V10TacticalArena = Readonly<{
@@ -63,7 +96,7 @@ export type V10TacticalArena = Readonly<{
 
 export type SimulationStateV10 = Omit<SimulationStateV9, 'formatVersion' | 'rulesetId' | 'rulesetVersion'> & {
     formatVersion: 10;
-    rulesetId: typeof V10_RULESET_ID;
+    rulesetId: V10RulesetId;
     rulesetVersion: 10;
     terrainProfileId: V10TerrainProfileId;
 };
@@ -76,21 +109,36 @@ export const SimulationStateV10Schema = SimulationStateV9Schema.omit({
     formatVersion: true, rulesetId: true, rulesetVersion: true
 }).extend({
     formatVersion: z.literal(10),
-    rulesetId: z.literal(V10_RULESET_ID),
+    rulesetId: z.enum(V10_RULESET_IDS),
     rulesetVersion: z.literal(10),
-    terrainProfileId: z.enum(V10_TERRAIN_PROFILE_IDS)
-}).strict();
+    terrainProfileId: z.enum(V10_ALL_TERRAIN_PROFILE_IDS)
+}).strict().superRefine((state, context) => {
+    const expectedProfiles = state.rulesetId === V10_R1_RULESET_ID
+        ? V10_R1_TERRAIN_PROFILE_IDS
+        : V10_TERRAIN_PROFILE_IDS;
+    if (!(expectedProfiles as readonly string[]).includes(state.terrainProfileId)) {
+        context.addIssue({ code: z.ZodIssueCode.custom, path: ['terrainProfileId'],
+            message: 'Terrain profile does not belong to the recorded V10 ruleset.' });
+    }
+});
 export const SimulationIntentV10Schema = SimulationIntentV9Schema;
 export const SimulationBarrierV10Schema = SimulationBarrierV9Schema;
 
-export function v10TerrainProfileForSeed(seed: number): V10TerrainProfileId {
+export function v10TerrainProfileForSeed(
+    seed: number,
+    rulesetId: V10RulesetId = V10_RULESET_ID
+): V10TerrainProfileId {
     const normalized = normalizeSeed(seed);
-    return V10_TERRAIN_PROFILE_IDS[normalized % V10_TERRAIN_PROFILE_IDS.length];
+    const profiles = rulesetId === V10_R1_RULESET_ID ? V10_R1_TERRAIN_PROFILE_IDS : V10_TERRAIN_PROFILE_IDS;
+    return profiles[normalized % profiles.length];
 }
 
-export function generateV10TacticalArena(seed: number): V10TacticalArena {
+export function generateV10TacticalArena(
+    seed: number,
+    rulesetId: V10RulesetId = V10_RULESET_ID
+): V10TacticalArena {
     const normalized = normalizeSeed(seed);
-    const profileId = v10TerrainProfileForSeed(normalized);
+    const profileId = v10TerrainProfileForSeed(normalized, rulesetId);
     let rngState = nextRandom(normalized);
     const variation = Number(rngState % 3) - 1;
     rngState = nextRandom(rngState);
@@ -143,13 +191,18 @@ export function evaluateV10OpeningPair(
     return opening;
 }
 
-export function createSimulationV10(seed: number, calling: PlayerCalling): SimulationStateV10 {
+export function createSimulationV10(
+    seed: number,
+    calling: PlayerCalling,
+    rulesetId: V10RulesetId = V10_RULESET_ID
+): SimulationStateV10 {
     const base = createV9Base(seed, calling);
-    const arena = generateV10TacticalArena(base.seed);
+    if (!isV10RulesetId(rulesetId)) throw new Error('Unknown V10 ruleset.');
+    const arena = generateV10TacticalArena(base.seed, rulesetId);
     const state: SimulationStateV10 = {
         ...base,
         formatVersion: 10,
-        rulesetId: V10_RULESET_ID,
+        rulesetId,
         rulesetVersion: 10,
         rngState: arena.rngState,
         terrainProfileId: arena.profileId,
@@ -205,7 +258,7 @@ export function forceSimulationLimitV10(current: SimulationStateV10): Simulation
 
 export function cloneSimulationV10(state: SimulationStateV10): SimulationStateV10 {
     const cloned = cloneSimulationV9(toV9(state));
-    return fromV9(cloned, state.terrainProfileId);
+    return fromV9(cloned, state.rulesetId, state.terrainProfileId);
 }
 
 /**
@@ -220,7 +273,7 @@ export function simulationV9ViewOfV10(state: SimulationStateV10): SimulationStat
 
 export function assertSimulationInvariantsV10(state: SimulationStateV10): void {
     if (!SimulationStateV10Schema.safeParse(state).success) throw new Error('Invalid V10 state: schema.');
-    if (state.terrainProfileId !== v10TerrainProfileForSeed(state.seed)) {
+    if (state.terrainProfileId !== v10TerrainProfileForSeed(state.seed, state.rulesetId)) {
         throw new Error('Invalid V10 state: terrain profile does not match seed.');
     }
     assertSimulationInvariantsV9(toV9(state));
@@ -241,7 +294,7 @@ function createV9Base(seed: number, calling: PlayerCalling): SimulationStateV9 {
 
 function fromV9Transition(result: SimulationTransitionV9, current: SimulationStateV10): SimulationTransitionV10 {
     if (!result.mutated) return { ...result, state: current };
-    const state = fromV9(result.state, current.terrainProfileId);
+    const state = fromV9(result.state, current.rulesetId, current.terrainProfileId);
     assertSimulationInvariantsV10(state);
     return { ...result, state };
 }
@@ -251,8 +304,12 @@ function toV9(state: SimulationStateV10): SimulationStateV9 {
     return { ...common, formatVersion: 9, rulesetId: 'nimble-knots-artillery-v9', rulesetVersion: 9 };
 }
 
-function fromV9(state: SimulationStateV9, terrainProfileId: V10TerrainProfileId): SimulationStateV10 {
-    return { ...state, formatVersion: 10, rulesetId: V10_RULESET_ID, rulesetVersion: 10, terrainProfileId };
+function fromV9(
+    state: SimulationStateV9,
+    rulesetId: V10RulesetId,
+    terrainProfileId: V10TerrainProfileId
+): SimulationStateV10 {
+    return { ...state, formatVersion: 10, rulesetId, rulesetVersion: 10, terrainProfileId };
 }
 
 function surfaceRow(
@@ -272,14 +329,30 @@ function surfaceRow(
         const rise = clamp(Math.trunc((column - start) / 12), 0, 6);
         return clamp(48 + variation - rise, 34, 54);
     }
+    if (profileId === 'open-terraces') {
+        const shifted = column - phase;
+        const offset = shifted < 56 ? 1
+            : shifted < 88 ? 0
+                : shifted < 120 ? -1
+                    : shifted < 152 ? 0
+                        : shifted < 184 ? 1
+                            : 0;
+        return clamp(46 + variation + offset, 34, 54);
+    }
     const shifted = column - phase;
-    const offset = shifted < 56 ? 1
-        : shifted < 88 ? 0
-            : shifted < 120 ? -1
-                : shifted < 152 ? 0
-                    : shifted < 184 ? 1
-                        : 0;
-    return clamp(46 + variation + offset, 34, 54);
+    if (profileId === 'twin-hollows') {
+        return clamp(50 + variation - (shifted >= 100 && shifted < 156 ? 6 : 0), 34, 54);
+    }
+    if (profileId === 'broken-loom') {
+        const shelf = (shifted >= 96 && shifted < 124) || (shifted >= 132 && shifted < 160);
+        return clamp(50 + variation - (shelf ? 4 : 0), 34, 54);
+    }
+    // High Stitch is intentionally asymmetric; reflection alternates which
+    // opening owns the deeper shelter while both sides retain a jump lookout.
+    if (shifted >= 92 && shifted < 160) return clamp(46 + variation, 34, 54);
+    if (shifted >= 160 && shifted < 164) return clamp(42 + variation, 34, 54);
+    if (shifted >= 164) return clamp(46 + variation, 34, 54);
+    return clamp(50 + variation, 34, 54);
 }
 
 function terrainFromRows(rows: readonly number[]): PackedTerrain {
@@ -314,8 +387,11 @@ function evaluateOpening(
     const heightDifference = Math.abs(rightSurfaceY - leftSurfaceY);
     if (heightDifference < rules.minimumHeightDifference || heightDifference > rules.maximumHeightDifference) return null;
     const outwardSteps = V10_OPENING_RULES.outwardMovement / V10_OPENING_RULES.movementStep;
-    if (movementReach(terrain, leftX, -1) < outwardSteps || movementReach(terrain, rightX, 1) < outwardSteps ||
-        !hasContinuousRoute(terrain, leftX, rightX)) return null;
+    if (movementReach(terrain, leftX, -1) < outwardSteps || movementReach(terrain, rightX, 1) < outwardSteps) return null;
+    const jumpPositions = isV10R1Profile(profileId)
+        ? tacticalJumpPositions(terrain, leftX, rightX)
+        : null;
+    if (jumpPositions === undefined || (!isV10R1Profile(profileId) && !hasContinuousRoute(terrain, leftX, rightX))) return null;
     const combinedLocalMobility = ([-1, 1] as const).reduce((total, direction) =>
         total + movementReach(terrain, leftX, direction) + movementReach(terrain, rightX, direction), 0);
     return {
@@ -325,7 +401,8 @@ function evaluateOpening(
             combinedLocalMobility,
             centerBias: Math.abs(leftX + rightX - worldWidth),
             tieBreak: pairTieBreak(seed, leftX, rightX)
-        }
+        },
+        jumpPositions
     };
 }
 
@@ -337,7 +414,9 @@ function profileFit(
     leftSurfaceY: number,
     rightSurfaceY: number
 ): number {
-    if (profileId === 'rising-braid') return Math.abs(rightSurfaceY - leftSurfaceY);
+    if (profileId === 'rising-braid' || profileId === 'high-stitch') {
+        return Math.abs(rightSurfaceY - leftSurfaceY);
+    }
     let minimumSurface = Number.MAX_SAFE_INTEGER;
     let maximumSurface = 0;
     for (let x = leftX; x <= rightX; x += terrain.cellSize) {
@@ -345,10 +424,56 @@ function profileFit(
         minimumSurface = Math.min(minimumSurface, surface);
         maximumSurface = Math.max(maximumSurface, surface);
     }
-    if (profileId === 'sheltered-folds') {
+    if (profileId === 'sheltered-folds' || profileId === 'twin-hollows' || profileId === 'broken-loom') {
         return Math.min(leftSurfaceY, rightSurfaceY) - minimumSurface;
     }
     return 256 - (maximumSurface - minimumSurface);
+}
+
+function isV10R1Profile(profileId: V10TerrainProfileId): profileId is V10R1TerrainProfileId {
+    return (V10_R1_TERRAIN_PROFILE_IDS as readonly string[]).includes(profileId);
+}
+
+function tacticalJumpPositions(
+    terrain: PackedTerrain,
+    leftX: number,
+    rightX: number
+): readonly [V10JumpPosition, V10JumpPosition] | undefined {
+    const left = tacticalJumpPosition(terrain, leftX, 1);
+    const right = tacticalJumpPosition(terrain, rightX, -1);
+    if (!left || !right || hasWalkableRoute(terrain, left.takeoffX, left.landingX) ||
+        hasWalkableRoute(terrain, right.landingX, right.takeoffX)) return undefined;
+    return [left, right];
+}
+
+function tacticalJumpPosition(
+    terrain: PackedTerrain,
+    takeoffX: number,
+    direction: -1 | 1
+): V10JumpPosition | undefined {
+    const landingX = takeoffX + direction * V10_OPENING_RULES.jumpPositionDistance;
+    const takeoffSurfaceY = bodyClearSurfaceY(terrain, takeoffX);
+    const landingSurfaceY = bodyClearSurfaceY(terrain, landingX);
+    if (takeoffSurfaceY === null || landingSurfaceY === null) return undefined;
+    const rise = takeoffSurfaceY - landingSurfaceY;
+    if (rise < V10_OPENING_RULES.minimumJumpRise || rise > V10_OPENING_RULES.maximumJumpRise) return undefined;
+    // A full actor-width landing zone keeps the phone jump forgiving.
+    for (const offset of [-8, 0, 8]) {
+        const surface = bodyClearSurfaceY(terrain, landingX + offset);
+        if (surface === null || surface !== landingSurfaceY) return undefined;
+    }
+    return { takeoffX, landingX, takeoffSurfaceY, landingSurfaceY, direction, rise };
+}
+
+function hasWalkableRoute(terrain: PackedTerrain, leftX: number, rightX: number): boolean {
+    let previous = surfaceY(terrain, leftX);
+    for (let x = leftX + terrain.cellSize; x <= rightX; x += terrain.cellSize) {
+        const next = surfaceY(terrain, x);
+        if (next >= terrain.height * terrain.cellSize ||
+            Math.abs(next - previous) > V10_OPENING_RULES.maximumWalkStep) return false;
+        previous = next;
+    }
+    return true;
 }
 
 function bodyClearSurfaceY(terrain: PackedTerrain, x: number): number | null {

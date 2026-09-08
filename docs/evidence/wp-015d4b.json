@@ -1,0 +1,88 @@
+{
+  "id": "WP-015D4B",
+  "status": "in_progress",
+  "execution_mode": "single_owner",
+  "starting_commit": "b879b930b91da5c2054a54c5849df4985aebc0af",
+  "branch": "codex/wp-015d4b-v10e-tactical-terrain",
+  "initial_worktree": "clean",
+  "starting_lock_sha256": "6B768A8FDE2695D02555CA17201FD7CE420F9AC075B91380474DD7A643042BC8",
+  "owning_roles": [
+    "Codex primary single owner"
+  ],
+  "scope": [
+    "Add a replay-distinct V10 r1 terrain candidate while preserving the accepted original V10 generator, state hashes and replay reconstruction.",
+    "Author three deterministic surface-only tactical profiles with protected opening pockets, shallow-fire cover and one clearly reachable jump-only firing position per actor.",
+    "Keep a supported fallback attack from each opening so jumping creates advantage without becoming a soft-lock requirement.",
+    "Expose the refinement through a separate local-only V10E phone preview and retain the original V10 preview.",
+    "Prove deterministic starts, jump traversal, landing support, destructive terrain authority, bounded Loomkeeper operation and phone readability."
+  ],
+  "non_goals": [
+    "No Sorcerers or third-party code, maps, algorithms, constants, assets or generated pixels enter the product tree. This package did not reopen any reference or quarantine source; it builds on the accepted product V10 contract with independently authored geometry.",
+    "No caves, overhangs, ladders, floating islands, lethal gaps, obstacle entities, custom map editor, new assets or dependencies are added.",
+    "No public Practice, Daily Challenge, reward path or production ruleset selector is promoted, and V11 teams remain separate.",
+    "The inherited V9 planner lattice and movement physics are not expanded or retuned."
+  ],
+  "planned_checks": [
+    "Run the change selector dry run before implementation and again over the complete package.",
+    "Run focused V10 protocol, simulation, replay, Loomkeeper, combat-fixture and canonical phone-browser tests.",
+    "Prove the original V10 identity still generates and reconstructs its accepted terrain while V10 r1 has distinct replay-bound identity and profile IDs.",
+    "Exercise normal jump traversal in both directions for every V10 r1 assessment seed, require supported landing on the tactical shelf, and prove direct walking cannot reach that shelf.",
+    "Run the V10 opening/reply assessment against both the preserved and refined terrain families, then run selected repository verification, diff checks and housekeeping.",
+    "Record physical-phone terrain feel as a separate owner acceptance gate after deployment."
+  ],
+  "deterministic_seeds": [
+    "0x00000001",
+    "0x00000002",
+    "0x00000003",
+    "0x13579BDF",
+    "0xC0FFEE11",
+    "0xDEADBEEF"
+  ],
+  "sorcerers_reference_used": false,
+  "clean_room_records": [],
+  "check_results": [
+    {
+      "command": "npm run check:types; focused V10 protocol/simulation/replay/combat tests; focused V10E Loomkeeper tests",
+      "status": "pass",
+      "detail": "Both TypeScript projects pass. Focused authority checks pass the original and revised schemas, replay dispatch, profile generation, original-V10 preservation, 48-seed terrain properties, actual normal-jump landing from both openings, local fixture restart and complete V10E Loomkeeper response. Across the six assessment seeds and both opening actors, the unchanged 180-plan lattice finds a legal plan in all 12 openings and selects tactical jumping in at least half."
+    },
+    {
+      "command": "npm run assess:v10",
+      "status": "pass",
+      "detail": "The combined V10D/E assessment passes 48 openings, 96 selected turns and 48 blocked shallow-cover probes in 151.2 seconds. Each of the six original/refined profiles contributes eight rows; rulesets and physical opening sides split 24/24. Thirty-one first turns mutate terrain, every reply consumes that exact result, and there are zero no-legal-plan, work, invariant, rollout-cap or reconstruction failures. The ignored 131,846-byte report at .cache/assessments/wp-015d4b-v10e-assessment.json has SHA-256 A11B8DB51941D78D745AAEED5C42E91F1EE9C485C4CB41E57F427691D9A186E7 and source digest 9BB692D6E72A9AE438F04DD899FFC498CA2BA1DDA117F4E7CC020920D805ED49."
+    },
+    {
+      "command": "focused Chromium 390x844 V10E phone journey and rendered screenshot inspection",
+      "status": "pass",
+      "detail": "The local-only ?combat-preview=v10e route reports nimble-knots-artillery-v10-r1 and Broken Loom for seed one, preserves the opening survey and compact inherited controls, accepts an inward jump, becomes airborne and lands supported. Direct screenshot inspection shows the player on the raised firing shelf with the central notch and opposing shelf visible inside the phone arena."
+    },
+    {
+      "command": "npm run verify:changes",
+      "status": "pass",
+      "detail": "The selected gate passes import boundary, both TypeScript projects, work-package evidence, 78 combat, 42 Practice, 124 protocol, 144 simulation, 37 Loomkeeper, 10 Relic, 22 identity, 37 reward and 109 tooling tests. The combined assessment passes again. Production outputs, approved asset copying, all four built runtime-profile smokes, identity/reward security and bundle limits pass. The zero-retry canonical Chromium phone phase reports 59 passed and three reviewed route exclusions. PostgreSQL is selected but unavailable locally."
+    },
+    {
+      "command": "accepted V10 state-hash comparison at b879b93; git diff --check; npm run audit:housekeeping",
+      "status": "pass",
+      "detail": "All six original V10 assessment-seed state hashes match the accepted starting commit exactly and are now frozen in a regression test; the final focused nine-test simulation file and both TypeScript projects pass. Diff checks pass. Housekeeping identifies WP-015D4B on the correctly named local branch with no upstream or gone tracking branches. Its report-only reconciliation flag comes from preserved older in-progress packages and historical failed V9 agent reviews, not a V10E mismatch."
+    }
+  ],
+  "reviews": [
+    {
+      "role": "primary assistant",
+      "reviewer": "single-owner V10E direct review",
+      "decision": "pass"
+    }
+  ],
+  "skipped_checks": [
+    "The selected PostgreSQL prerequisite did not run because WP014_TEST_DATABASE_URL is unavailable locally; V10E creates no database or public authority path, and CI remains responsible for that isolated gate.",
+    "The full five-project Ubuntu daily/release matrix was not rerun. The existing 22:00 Europe/Berlin automation owns the daily suite, while this package passed the selected zero-retry canonical Chromium phase.",
+    "Physical-phone terrain feel was not run autonomously and remains the next owner acceptance gate after deployment.",
+    "Public Practice, Daily Challenge and reward promotion were not exercised because V10E is a local query-gated candidate."
+  ],
+  "residual_risks": [
+    "Automated checks prove reachable jump positions, cover, legal attacks and deterministic replies; they cannot establish whether the three profiles feel sufficiently varied or enjoyable on a physical phone.",
+    "The surface-only representation produces deliberate stepped shelves rather than caves, overhangs or alternate vertical routes. Further topology should follow phone acceptance rather than expanding collision scope now.",
+    "V10E remains a local preview. PostgreSQL, the full Ubuntu release matrix and any public shared-ruleset promotion remain separate gates."
+  ]
+}

@@ -1,7 +1,7 @@
 import { z } from 'zod';
 import {
     SimulationBarrierV10Schema, SimulationIntentV10Schema, SimulationStateV10Schema,
-    V10_RULESET_ID, V10_TERRAIN_PROFILE_IDS
+    V10_ALL_TERRAIN_PROFILE_IDS, V10_R1_RULESET_ID, V10_R1_TERRAIN_PROFILE_IDS, V10_RULESET_IDS
 } from './simulation-v10';
 
 /** V10B keeps V9's bounded storage budget while defining a distinct replay ABI. */
@@ -58,11 +58,18 @@ export const CoordinatorReplayV10Schema = z.object({
     sessionId: id,
     seed: integer(1, 0xffffffff),
     calling,
-    rulesetId: z.literal(V10_RULESET_ID),
-    terrainProfileId: z.enum(V10_TERRAIN_PROFILE_IDS),
+    rulesetId: z.enum(V10_RULESET_IDS),
+    terrainProfileId: z.enum(V10_ALL_TERRAIN_PROFILE_IDS),
     initialStateHash: hash,
     records: z.array(ReplayRecordV10Schema).max(V10_REPLAY_LIMITS.records)
-}).strict();
+}).strict().superRefine((replay, context) => {
+    const revised = replay.rulesetId === V10_R1_RULESET_ID;
+    const profileIsRevised = (V10_R1_TERRAIN_PROFILE_IDS as readonly string[]).includes(replay.terrainProfileId);
+    if (revised !== profileIsRevised) {
+        context.addIssue({ code: z.ZodIssueCode.custom, path: ['terrainProfileId'],
+            message: 'Terrain profile does not belong to the recorded V10 ruleset.' });
+    }
+});
 export type CoordinatorReplayV10 = z.infer<typeof CoordinatorReplayV10Schema>;
 
 export const SimulationSnapshotV10Schema = SimulationStateV10Schema;

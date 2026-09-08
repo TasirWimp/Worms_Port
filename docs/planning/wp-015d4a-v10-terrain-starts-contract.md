@@ -2,7 +2,8 @@
 
 Status: V10A finite product contract, V10B deterministic authority, V10C local
 playable candidate and V10D assessment/physical-phone acceptance complete,
-2026-09-08. Public promotion remains a separate owner decision.
+2026-09-08. Owner-authorized V10E tactical terrain refinement is in progress.
+Public promotion remains a separate owner decision.
 
 ## Purpose
 
@@ -322,3 +323,54 @@ phone. V10D changes only assessment, routing and records, so it does not
 invalidate that runtime acceptance. PostgreSQL and the full Ubuntu release
 matrix remain separate gates. Ordinary Practice and Daily Challenge still use
 their current public ruleset; promoting V10 requires a separate owner decision.
+
+## V10E tactical terrain refinement
+
+The owner found that the accepted V10 profiles provided cover and elevation but
+did not create a meaningful reason to use the inherited jump. The original
+contract required every adjacent rise on the opponent route to remain walkable;
+that requirement made traversal reliable by removing the tactical choice. V10E
+replaces that requirement only for its new profile family. The accepted V10
+generator and its replay reconstruction remain available unchanged.
+
+V10E uses ruleset ID `nimble-knots-artillery-v10-r1`, format/ruleset version
+`10`, and three new profile IDs. The distinct ruleset ID binds the new terrain
+to snapshots, hashes and replays without changing an existing V10 seed under
+the old identity.
+
+| Profile ID | Opening separation | Required tactical character |
+| --- | ---: | --- |
+| `twin-hollows` | 512 | Level protected openings face a broad central crest with paired 48-unit jump approaches. |
+| `broken-loom` | 576 | Level opening pockets face paired 32-unit firing shelves separated by a central low notch. |
+| `high-stitch` | 640 | Reflection alternates a 32-unit opening-height advantage while each side retains a separate 32-unit jump lookout. |
+
+The V10E opening selector admits a pair only when:
+
+1. both actors retain the existing 64-unit supported outward retreat;
+2. each actor has an inward tactical landing position 64 units from its start;
+3. that position is 24 to 48 units above the opening and has body-clear,
+   actor-width support;
+4. at least one rise on that inward segment exceeds the inherited 16-unit
+   automatic walking step, so walking cannot silently substitute for jumping;
+5. the existing normal jump reaches and lands on the position in simulation;
+6. shallow fire from the opening meets terrain while a legal higher or
+   repositioned attack remains available; and
+7. the complete first attack, resulting terrain and other actor's reply remain
+   deterministic and reconstruct exactly.
+
+The battlefield remains one surface with solid terrain below it. V10E adds no
+cave, overhang, floating island, lethal gap, obstacle entity or collision
+layer. Jumping offers a more exposed firing position; it is not mandatory for
+an opening attack, so a player who stays in cover can still act. Existing
+crater deformation can remove cover or shelf support and remains the sole
+terrain authority after a shot.
+
+The inherited V9 planner lattice, movement physics, resource rules and action
+timings remain unchanged. The combined `npm run assess:v10` gate now evaluates
+both V10 identities across the six frozen seeds, generated and mirrored
+carriers, and both opening actors: 48 openings, 96 selected turns and 48
+shallow-cover probes. A separate local route,
+`/?combat-preview=v10e`, exposes the refined candidate while
+`/?combat-preview=v10` keeps the accepted original. Neither route creates a
+session, reward, database or public selector path. Physical-phone terrain feel
+and readability remain a separate owner acceptance gate after deployment.

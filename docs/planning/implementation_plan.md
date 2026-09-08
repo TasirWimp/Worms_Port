@@ -14,8 +14,9 @@ Phaser/Socket.IO stack.
   See [Verification Funnels](../process/development_workflow.md#verification-funnels).
   This changes verification policy only and does not advance the product package.
 - Active target: mobile-first single-player Nimiq Pay competition release.
-- Active product package: **WP-015D4A V10 Terrain and Starting Positions.** Its
-  V9 Resource and Utilities predecessor has complete V9A rules, V9B injected
+- Active product package: **WP-015D4B V10E Tactical Terrain Refinement.** It
+  follows WP-015D4A V10 Terrain and Starting Positions. The V9 Resource and
+  Utilities predecessor has complete V9A rules, V9B injected
   authority and V9C continuity correction;
   the owner accepted the V9C phone preview and authorized V9D.
   V9D's failed review at `121954e` is retained as historical evidence. Its
@@ -94,10 +95,18 @@ Phaser/Socket.IO stack.
   generated/mirrored, first-actor, side and elevation partitions are present;
   every reply uses the exact terrain left by the opening attack. The selected
   product gate, fresh complete Chromium phone phase and performance gate pass.
-  Overall package evidence remains `in_progress` because ordinary Practice and
-  Daily Challenge still use the current public ruleset. The next decision is an
-  explicit V10 no-reward public promotion or progression to V11; neither is
-  implied by V10D acceptance.
+  The owner then requested **V10E tactical terrain refinement** after finding
+  that the walkable V10 relief did not create a meaningful reason to jump.
+  WP-015D4B preserves original V10 under its existing identity and adds
+  replay-distinct `nimble-knots-artillery-v10-r1`: Twin Hollows, Broken Loom
+  and High Stitch give both openings protected shallow-fire cover, an outward
+  retreat and a 24-to-48-unit jump-only firing position. The inherited bounded
+  planner and movement physics remain unchanged. Local
+  `?combat-preview=v10e` is the refined phone candidate; the original V10 route
+  remains available. Implementation and automated acceptance are complete;
+  physical-phone terrain feel remains open. Overall package evidence stays
+  `in_progress`, and no public Practice, Daily Challenge, reward promotion or
+  V11 progression is implied.
 - Product predecessor: **WP-015D3A V8 Action-Turn Candidate — V8A finite
   rules/acceptance contract complete and independently reviewed; V8B authoritative
   foundation complete and independently reviewed; V8C touch presentation

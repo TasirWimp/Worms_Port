@@ -4,7 +4,9 @@ import test from 'node:test';
 import { V7_RULESET_ID } from '../../shared/simulation';
 import { CoordinatorReplayV10Schema } from '../../shared/protocol-v10';
 import { V9_RULESET_ID } from '../../shared/simulation-v9';
-import { V10_RULESET_ID, hashSimulationStateV10 } from '../../shared/simulation-v10';
+import {
+    V10_R1_RULESET_ID, V10_RULESET_ID, hashSimulationStateV10
+} from '../../shared/simulation-v10';
 import { SimulationCoordinatorV10 } from '../../server/src/simulation/coordinator-v10';
 import { VersionedSimulationCoordinator } from '../../server/src/simulation/versioned-coordinator';
 
@@ -49,6 +51,28 @@ test('V10 replay records automatic phase boundaries and regenerates them', () =>
     }
 });
 
+test('V10E coordinator reconstructs revised terrain without changing original V10 replay dispatch', () => {
+    const coordinator = new SimulationCoordinatorV10();
+    try {
+        const original = coordinator.create('challenge_v10_original', 'session_v10_original', 1, 'wizard');
+        const revised = coordinator.create(
+            'challenge_v10e_replay', 'session_v10e_replay', 1, 'wizard', V10_R1_RULESET_ID
+        );
+        coordinator.apply('challenge_v10e_replay', 'player', { type: 'jump', direction: 1 }, 0, 'action', 0);
+        coordinator.advance('challenge_v10e_replay', 63);
+        const replay = coordinator.replay('challenge_v10e_replay')!;
+        const restored = coordinator.reconstructAndVerify(replay);
+        assert.equal(original.state.rulesetId, V10_RULESET_ID);
+        assert.equal(revised.state.rulesetId, V10_R1_RULESET_ID);
+        assert.equal(replay.rulesetId, V10_R1_RULESET_ID);
+        assert.equal(replay.terrainProfileId, 'broken-loom');
+        assert.equal(restored.stateHash, coordinator.get('challenge_v10e_replay')!.stateHash);
+        assert.deepEqual(restored.state, coordinator.get('challenge_v10e_replay')!.state);
+    } finally {
+        coordinator.dispose();
+    }
+});
+
 test('V10 replay schema and reconstruction reject mixed identity, terrain profile and ownership', () => {
     const coordinator = new SimulationCoordinatorV10();
     try {
@@ -81,11 +105,17 @@ test('versioned coordinator dispatches V10 while preserving historical selectors
     const versions = new VersionedSimulationCoordinator();
     try {
         const v10 = versions.create('challenge_versioned_10', 'session_versioned_10', 2, 'wizard', V10_RULESET_ID);
+        const v10e = versions.create('challenge_versioned_10e', 'session_versioned_10e', 2, 'wizard', V10_R1_RULESET_ID);
         const v9 = versions.create('challenge_versioned_09', 'session_versioned_09', 2, 'wizard', V9_RULESET_ID);
         const v7 = versions.create('challenge_versioned_07', 'session_versioned_07', 2, 'wizard', V7_RULESET_ID);
-        assert.deepEqual([v10.state.rulesetId, v9.state.rulesetId, v7.state.rulesetId], [V10_RULESET_ID, V9_RULESET_ID, V7_RULESET_ID]);
+        assert.deepEqual(
+            [v10.state.rulesetId, v10e.state.rulesetId, v9.state.rulesetId, v7.state.rulesetId],
+            [V10_RULESET_ID, V10_R1_RULESET_ID, V9_RULESET_ID, V7_RULESET_ID]
+        );
         const replay = versions.replay('challenge_versioned_10')!;
         assert.equal(versions.reconstructAndVerify(replay).state.rulesetId, V10_RULESET_ID);
+        const revisedReplay = versions.replay('challenge_versioned_10e')!;
+        assert.equal(versions.reconstructAndVerify(revisedReplay).state.rulesetId, V10_R1_RULESET_ID);
     } finally {
         versions.dispose();
     }

@@ -16,15 +16,17 @@ import {
     advanceSimulationTicksV10, applySimulationBarrierV10, applySimulationIntentV10,
     assertSimulationInvariantsV10, cloneSimulationV10, createSimulationV10,
     generateV10TacticalArena, hashSimulationStateV10,
-    type SimulationStateV10, type SimulationTransitionV10
+    V10_R1_RULESET_ID, V10_RULESET_ID,
+    type SimulationStateV10, type SimulationTransitionV10, type V10RulesetId
 } from '../../shared/simulation-v10';
 import { SIM_RULES, setTerrainSolid, terrainSolid, type SimulationActor } from '../../shared/simulation';
 
 const SEEDS = [1, 2, 3, 0x13579BDF, 0xC0FFEE11, 0xDEADBEEF] as const;
 const REFLECTIONS = ['generated', 'mirrored'] as const;
 const OPENING_ACTORS = ['player', 'loomkeeper'] as const;
+const RULESETS: readonly V10RulesetId[] = [V10_RULESET_ID, V10_R1_RULESET_ID];
 const FP = 256;
-const REPORT_PATH = '.cache/assessments/wp-015d4a-v10-assessment.json';
+const REPORT_PATH = '.cache/assessments/wp-015d4b-v10e-assessment.json';
 const SOURCE_PATHS = [
     'docs/planning/wp-015d4a-v10-terrain-starts-contract.md',
     'shared/loomkeeper-v9.ts',
@@ -42,16 +44,16 @@ type AssessmentOperation =
     | { kind: 'barrier'; barrier: Extract<LoomkeeperOperationV10, { kind: 'barrier' }>['barrier'] };
 type AssessmentRecord = { operation: AssessmentOperation; stateHash: string; events: SimulationTransitionV10['events'] };
 
-test('V10D assessment: all 24 openings retain cover, a first attack, a reply, and exact reconstruction', async t => {
+test('V10D/E assessment: all 48 original and tactical openings retain cover, attack, reply, and reconstruction', async t => {
     const started = performance.now();
     const rows: Array<Record<string, unknown>> = [];
     let active: Record<string, unknown> | null = null;
     let failure: string | null = null;
     try {
-        for (const seed of SEEDS) for (const reflection of REFLECTIONS) for (const openingActor of OPENING_ACTORS) {
-            active = { seed, reflection, openingActor };
-            const generatedArena = generateV10TacticalArena(seed);
-            const generated = createSimulationV10(seed, 'wizard');
+        for (const rulesetId of RULESETS) for (const seed of SEEDS) for (const reflection of REFLECTIONS) for (const openingActor of OPENING_ACTORS) {
+            active = { rulesetId, seed, reflection, openingActor };
+            const generatedArena = generateV10TacticalArena(seed, rulesetId);
+            const generated = createSimulationV10(seed, 'wizard', rulesetId);
             const carrier = reflection === 'generated' ? generated : reflectState(generated);
             const initial = assessmentOpening(carrier, openingActor);
             const target = otherActor(openingActor);
@@ -87,6 +89,7 @@ test('V10D assessment: all 24 openings retain cover, a first attack, a reply, an
             rows.push({
                 seed,
                 seedHex: hexSeed(seed),
+                rulesetId,
                 profile: initial.terrainProfileId,
                 generatedReflection: generatedArena.reflected,
                 reflection,
@@ -114,17 +117,24 @@ test('V10D assessment: all 24 openings retain cover, a first attack, a reply, an
             });
         }
 
-        assert.equal(rows.length, 24);
+        assert.equal(rows.length, 48);
         const aggregate = aggregateRows(rows);
-        assert.deepEqual(aggregate.profileRows, { 'open-terraces': 8, 'rising-braid': 8, 'sheltered-folds': 8 });
-        assert.deepEqual(aggregate.openingActors, { loomkeeper: 12, player: 12 });
-        assert.deepEqual(aggregate.openingSides, { left: 12, right: 12 });
+        assert.deepEqual(aggregate.profileRows, {
+            'broken-loom': 8, 'high-stitch': 8, 'open-terraces': 8,
+            'rising-braid': 8, 'sheltered-folds': 8, 'twin-hollows': 8
+        });
+        assert.deepEqual(aggregate.rulesetRows, {
+            'nimble-knots-artillery-v10': 24,
+            'nimble-knots-artillery-v10-r1': 24
+        });
+        assert.deepEqual(aggregate.openingActors, { loomkeeper: 24, player: 24 });
+        assert.deepEqual(aggregate.openingSides, { left: 24, right: 24 });
         assert.deepEqual(aggregate.risingBraidElevatedSides, { left: 4, right: 4 });
         assert.equal(aggregate.noLegalPlans, 0);
         assert.equal(aggregate.workFailures, 0);
         assert.ok(aggregate.firstTerrainMutations > 0, 'the matrix must exercise a selected first-turn terrain mutation');
         await saveReport(rows, null, null, started);
-        t.diagnostic(`assessment=${(performance.now() - started).toFixed(3)}ms openings=24 selectedTurns=48 coverProbes=24`);
+        t.diagnostic(`assessment=${(performance.now() - started).toFixed(3)}ms openings=48 selectedTurns=96 coverProbes=48`);
     } catch (error) {
         failure = error instanceof Error ? error.message : String(error);
         await saveReport(rows, failure, active, started);
@@ -357,6 +367,7 @@ function aggregateRows(rows: Array<Record<string, unknown>>) {
         coverProbes: rows.length,
         firstTerrainMutations: rows.filter(row => (row.first as { terrainChanged: boolean }).terrainChanged).length,
         profileRows: count(rows, 'profile'),
+        rulesetRows: count(rows, 'rulesetId'),
         openingActors: count(rows, 'openingActor'),
         openingSides: count(rows, 'openingSide'),
         risingBraidElevatedSides: Object.fromEntries(['left', 'right'].map(side => [side, elevated.filter(value => value === side).length])),
@@ -375,15 +386,15 @@ async function saveReport(
     started: number
 ): Promise<void> {
     const report = {
-        assessmentId: 'wp-015d4a-v10d-v1',
+        assessmentId: 'wp-015d4b-v10e-v1',
         sourceCommit: sourceCommit(),
         sourcePaths: SOURCE_PATHS,
         sourceDigest: sourceDigest(),
         generatedAt: new Date().toISOString(),
         runtime: { node: process.version, platform: process.platform, arch: process.arch },
         contract: {
-            seeds: SEEDS.map(hexSeed), reflections: REFLECTIONS, openingActors: OPENING_ACTORS,
-            plannedOpenings: 24, plannedSelectedTurns: 48, plannedCoverProbes: 24,
+            rulesets: RULESETS, seeds: SEEDS.map(hexSeed), reflections: REFLECTIONS, openingActors: OPENING_ACTORS,
+            plannedOpenings: 48, plannedSelectedTurns: 96, plannedCoverProbes: 48,
             planner: { plans: 180, plansPerTick: 6, planningTicks: 30, maximumRolloutTicks: 1_050, maximumTotalRolloutTicks: 189_000 }
         },
         completed: { openings: rows.length, selectedTurns: rows.length * 2, coverProbes: rows.length },

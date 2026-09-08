@@ -10,7 +10,7 @@ import { CURRENT_COMBAT_RULESET_ID, type CombatRulesetId } from '../../../shared
 import { V8_AUTOMATION_ID, V9_AUTOMATION_ID } from '../../../shared/combat-version';
 import { isV8RulesetId, V8_R1_RULESET_ID, type V8RulesetId } from '../../../shared/simulation-v8';
 import { V9_RULESET_ID } from '../../../shared/simulation-v9';
-import { V10_RULESET_ID } from '../../../shared/simulation-v10';
+import { isV10RulesetId, V10_RULESET_ID, type V10RulesetId } from '../../../shared/simulation-v10';
 import { LEGACY_RULESET_ID, type PlayerCalling, type SimulationRulesetId } from '../../../shared/simulation';
 
 export type VersionedCoordinatorSnapshot = CoordinatorSnapshot | CoordinatorSnapshotV8Family | CoordinatorSnapshotV9 | CoordinatorSnapshotV10;
@@ -36,13 +36,13 @@ export class VersionedSimulationCoordinator {
     public create(challengeId: string, sessionId: string, seed: number, calling: PlayerCalling,
         rulesetId: typeof V9_RULESET_ID): CoordinatorSnapshotV9;
     public create(challengeId: string, sessionId: string, seed: number, calling: PlayerCalling,
-        rulesetId: typeof V10_RULESET_ID): CoordinatorSnapshotV10;
+        rulesetId: V10RulesetId): CoordinatorSnapshotV10;
     public create(challengeId: string, sessionId: string, seed: number, calling: PlayerCalling,
-        rulesetId: CombatRulesetId | typeof V10_RULESET_ID = CURRENT_COMBAT_RULESET_ID): VersionedCoordinatorSnapshot {
+        rulesetId: CombatRulesetId | V10RulesetId = CURRENT_COMBAT_RULESET_ID): VersionedCoordinatorSnapshot {
         if (this.get(challengeId)) throw new Error('Duplicate versioned challenge.');
         if (isV8RulesetId(rulesetId)) return this.v8.create(challengeId, sessionId, seed, calling, rulesetId);
         if (rulesetId === V9_RULESET_ID) return this.v9.create(challengeId, sessionId, seed, calling);
-        if (rulesetId === V10_RULESET_ID) return this.v10.create(challengeId, sessionId, seed, calling);
+        if (isV10RulesetId(rulesetId)) return this.v10.create(challengeId, sessionId, seed, calling, rulesetId);
         return this.legacy.create(challengeId, sessionId, seed, calling, rulesetId);
     }
     public createAutomated(challengeId:string,sessionId:string,seed:number,calling:PlayerCalling):
@@ -65,7 +65,7 @@ export class VersionedSimulationCoordinator {
         expected?: { challengeId: string; sessionId: string }): VersionedCoordinatorSnapshot {
         if (expected && (expected.challengeId !== replay.challengeId || expected.sessionId !== replay.sessionId))
             throw new Error('Replay identity mismatch.');
-        if (replay.rulesetId === V10_RULESET_ID) return this.v10.reconstructAndVerify(replay, expected);
+        if (isV10RulesetId(replay.rulesetId)) return this.v10.reconstructAndVerify(replay as CoordinatorReplayV10, expected);
         if (replay.rulesetId === V9_RULESET_ID) return this.v9.reconstructAndVerify(replay, expected);
         if (isV8RulesetId(replay.rulesetId))
             return this.v8.reconstructAndVerify(replay, expected);

@@ -540,6 +540,23 @@ test('V10 terrain preview keeps the inherited phone guidance local and surveys i
   await expect(ui).toHaveAttribute('data-combat-phase', 'projectile');
 });
 
+test('V10E phone preview exposes tactical terrain and a working jump from cover', async ({ page }, testInfo) => {
+  await page.setViewportSize({ width: 390, height: 844 });
+  await page.goto('/?combat-preview=v10e&sideways=off');
+  await applySyntheticSafeArea(page, SYNTHETIC_SAFE_AREA);
+  const ui = page.locator('.combat-v10');
+  await expect(ui).toBeVisible();
+  await expect(ui).toHaveAttribute('data-preview', 'V10E tactical terrain preview · local-only');
+  await expect(ui).toHaveAttribute('data-ruleset', 'nimble-knots-artillery-v10-r1');
+  await expect(ui).toHaveAttribute('data-terrain-profile', 'broken-loom');
+  await expect(ui).toHaveAttribute('data-opening-survey', 'false', { timeout: 5_000 });
+  await dragPad(page, '.combat-v10 .movement-zone', 951, 0.35, -0.5);
+  await expect(ui).toHaveAttribute('data-player-airborne', 'true');
+  await expect(ui).toHaveAttribute('data-player-airborne', 'false', { timeout: 4_000 });
+  await expect(ui).toHaveAttribute('data-active-actor', 'player');
+  await page.screenshot({ path: testInfo.outputPath('v10e-tactical-terrain-phone.png') });
+});
+
 test('V8 hold survives snapshots, release stops, forward Jump and separate Fire reveal retreat', async ({ page }, testInfo) => {
   await page.goto('/?combat-preview=v8&sideways=off');
   const ui = page.locator('.combat-v8');

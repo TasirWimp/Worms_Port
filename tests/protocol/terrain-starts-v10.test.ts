@@ -5,7 +5,9 @@ import {
     CoordinatorReplayV10Schema, ReplayOperationV10Schema, SimulationSnapshotV10Schema
 } from '../../shared/protocol-v10';
 import { V9_RULESET_ID } from '../../shared/simulation-v9';
-import { V10_RULESET_ID, createSimulationV10, hashSimulationStateV10 } from '../../shared/simulation-v10';
+import {
+    V10_R1_RULESET_ID, V10_RULESET_ID, createSimulationV10, hashSimulationStateV10
+} from '../../shared/simulation-v10';
 
 test('V10 protocol accepts only the exact state and operation identities', () => {
     const state = createSimulationV10(2, 'wizard');
@@ -40,4 +42,23 @@ test('V10 replay binds seed, selected terrain profile and initial hash without a
     assert.equal(CoordinatorReplayV10Schema.safeParse({ ...replay, terrainProfileId: 'sheltered-folds' }).success, true);
     assert.equal(CoordinatorReplayV10Schema.safeParse({ ...replay, protocolVersion: 10 }).success, false);
     assert.equal(CoordinatorReplayV10Schema.safeParse({ ...replay, rulesetId: V9_RULESET_ID }).success, false);
+});
+
+test('V10E replay schema binds its revised ruleset and tactical profile', () => {
+    const state = createSimulationV10(1, 'wizard', V10_R1_RULESET_ID);
+    const replay = {
+        formatVersion: 10,
+        challengeId: 'challenge_protocol_v10e',
+        sessionId: 'session_protocol_v10e',
+        seed: state.seed,
+        calling: 'wizard',
+        rulesetId: state.rulesetId,
+        terrainProfileId: state.terrainProfileId,
+        initialStateHash: hashSimulationStateV10(state),
+        records: []
+    };
+    assert.equal(CoordinatorReplayV10Schema.safeParse(replay).success, true);
+    assert.equal(CoordinatorReplayV10Schema.safeParse({ ...replay, rulesetId: V10_RULESET_ID }).success, false);
+    assert.notEqual(state.rulesetId, V10_RULESET_ID);
+    assert.equal(state.terrainProfileId, 'broken-loom');
 });

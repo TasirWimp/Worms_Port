@@ -5,6 +5,9 @@ import {
     cloneSimulationV10,
     createSimulationV10,
     forceSimulationLimitV10,
+    V10_R1_RULESET_ID,
+    V10_RULESET_ID,
+    type V10RulesetId,
     type SimulationEventV10,
     type SimulationIntentV10,
     type SimulationStateV10
@@ -33,9 +36,10 @@ export async function createTerrainStartsV10Fixture(
             const timer = window.setInterval(callback, 16);
             return () => window.clearInterval(timer);
         }
-    }
+    },
+    rulesetId: V10RulesetId = V10_RULESET_ID
 ): Promise<CombatSceneArgsV10> {
-    let state = createSimulationV10(seed, calling);
+    let state = createSimulationV10(seed, calling, rulesetId);
     let paused = false;
     let destroyed = false;
     let publishing = false;
@@ -246,13 +250,15 @@ export async function createTerrainStartsV10Fixture(
     return {
         kind: 'v10',
         get snapshot() { return cloneSimulationV10(state); },
-        previewLabel: 'V10 terrain engineering preview · local-only',
+        previewLabel: rulesetId === V10_R1_RULESET_ID
+            ? 'V10E tactical terrain preview · local-only'
+            : 'V10 terrain engineering preview · local-only',
         submit,
         setPaused,
         cancelInput,
         paused: () => paused,
         trajectoryPreview: aim => trajectoryPreviewV10(state, aim),
-        restart: () => createTerrainStartsV10Fixture(seed, calling, clock),
+        restart: () => createTerrainStartsV10Fixture(seed, calling, clock, rulesetId),
         onSnapshot: listener => {
             if (destroyed) return () => {};
             listeners.add(listener);

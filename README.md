@@ -508,11 +508,15 @@ Phone acceptance and balance remain owner checks.
 The V10 terrain-and-starting-position candidate remains local-only at
 `/?combat-preview=v10`; it does not select a server profile or promote ordinary
 Practice, Daily Challenge, or rewards. `npm run assess:v10` runs its frozen
-24-opening V10D matrix across six seeds, generated and mirrored carriers, and
-both opening actors. It verifies blocked-cover replacement, the first attack,
-the other actor's reply through the resulting terrain, and exact operation/event
-reconstruction. Its ignored source-bound report is retained at
-`.cache/assessments/wp-015d4a-v10-assessment.json`.
+V10D matrix and the replay-distinct V10E tactical refinement across six seeds,
+generated and mirrored carriers, and both opening actors. It verifies 48
+openings, blocked-cover replacement, the first attack, the other actor's reply
+through the resulting terrain, and exact operation/event reconstruction. The
+V10E phone candidate is `/?combat-preview=v10e`; it adds protected opening
+pockets and jump-only firing shelves while preserving a legal attack from
+cover. The original `/?combat-preview=v10` route remains unchanged. The ignored
+source-bound V10E report is retained at
+`.cache/assessments/wp-015d4b-v10e-assessment.json`.
 
 If a Clash stops within seconds, this is not the normal 30-minute expiry.
 V9 now shows **Practice interrupted** for timing or runtime safety stops. In Render's

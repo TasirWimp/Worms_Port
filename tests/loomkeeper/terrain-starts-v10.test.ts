@@ -25,9 +25,12 @@ import {
     canonicalSimulationJsonV10,
     createSimulationV10,
     simulationV9ViewOfV10,
+    V10_R1_RULESET_ID,
     V10_RULESET_ID,
     type SimulationStateV10
 } from '../../shared/simulation-v10';
+
+const V10E_ASSESSMENT_SEEDS = [1, 2, 3, 0x13579BDF, 0xC0FFEE11, 0xDEADBEEF] as const;
 
 function loomkeeperAction(seed = 1): SimulationStateV10 {
     let state = createSimulationV10(seed, 'wizard');
@@ -107,4 +110,23 @@ test('V10C execution applies the inherited operation cursor only through V10 tra
     assert.ok(operations.includes('fire'));
     assert.notEqual(state.turn, source.turn);
     assert.equal(state.terrainProfileId, profile);
+});
+
+test('V10E tactical openings give both sides legal bounded plans and exercise jump routes', () => {
+    let jumpSelections = 0;
+    for (const seed of V10E_ASSESSMENT_SEEDS) for (const actor of ['player', 'loomkeeper'] as const) {
+        const state = createSimulationV10(seed, 'wizard', V10_R1_RULESET_ID);
+        state.activeActor = actor;
+        state.units.forEach(unit => { unit.thread = 0; unit.lastCreditedTurn = -1; });
+        const active = state.units[actor === 'player' ? 0 : 1];
+        active.thread = 3;
+        active.lastCreditedTurn = state.turn;
+        const planner = new LoomkeeperPlannerV10(state);
+        for (let tick = 0; tick < V10_AI_PLANNING_TICKS; tick += 1) planner.step();
+        assert.equal(planner.selection.status, 'selected', `${seed}/${actor}: legal plan`);
+        assert.equal(planner.evaluatedCandidates, V10_AI_PLANS);
+        assert.ok(planner.rolloutTicks <= V10_AI_MAX_TOTAL_ROLLOUT_TICKS);
+        if (planner.selectedCandidate()?.jump) jumpSelections += 1;
+    }
+    assert.ok(jumpSelections >= V10E_ASSESSMENT_SEEDS.length, 'the bounded policy uses tactical jumps across the matrix');
 });
