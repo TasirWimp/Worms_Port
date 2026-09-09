@@ -289,6 +289,25 @@
       "checked_date": "2026-08-05",
       "decision": "approved",
       "notes": "The original one-request 1024x1024 FLUX candidate 98091C738D0E226FCAFA60EFA00BB4F63A503723CC310726E7787FEC702250F9 remains rejected historical evidence because of its large diagonal/diamond quilt seams; its raw pixels are not a product asset. The project owner then manually repaired that work in the four-layer external editable XCF C:/Users/jensb/Downloads/terrain-interior-manual-repair-v1.xcf, exact 6,331,391-byte SHA-256 2E94BBE46A3E901BB8EB14B21F413E8ACCB850D3443FFD72308D63B09DCDBC7B. GIMP 3.2.4 non-interactively flattened that exact source to the reviewed 2,731,505-byte 1024x1024 RGBA PNG SHA-256 6419C1E81F13FF75650A13F1FE6654711A7334C9A24EC48F86C4356533CF8095. The approved master is produced only by exact flattened-export verification, exact opaque-RGBA source-alpha verification, uniform one-quarter Mitchell-Netravali resampling, and fixed reciprocal 32-pixel horizontal and vertical edge blends under config 73118EE47A92EEA00DD78D11508F4031EA532B8DB798030B56E48A19C951C71D and normalizer 0DBA3767ECDF3B92A1C26653F899950FD1E8998E035BE7FB22B3EFFA2D4ED0CA. Two independent normalizations reproduce this 151,898-byte 256x256 opaque RGBA source master byte-for-byte. Its 3x3 repeat proof has zero maximum edge difference horizontally and vertically. No new inference, candidate, reference input, paint after the bound export, runtime_path, terrain authority, atlas placement, animation, or gameplay integration is admitted. No Sorcerers material was used."
+    },
+    {
+      "id": "volcanic-ruin-volcanic-cone-flux2-owned-original-source-master-v1",
+      "file": "assets/masters/environment/backgrounds/volcanic-ruin/volcanic-cone-source-master-v1.png",
+      "sha256": "83E451892C13730D2EA1DE5794927EC9CD63110567F110DC485D5ED148D041AD",
+      "origin_repo": "local owner-authorized reference-conditioned ComfyUI generation with the pinned Black Forest Labs FLUX.2 Klein 4B component chain",
+      "original_source_url": "https://huggingface.co/black-forest-labs/FLUX.2-klein-4b-fp8/tree/5b4408e59397a4a37ccb46afe426d8ed86379441",
+      "author": "Jens Bernhardt with local FLUX.2 Klein generation and deterministic Worms_Port normalization",
+      "license": "Owned-Original",
+      "commercial_use_allowed": true,
+      "redistribution_allowed": true,
+      "modification_allowed": true,
+      "attribution_required": false,
+      "share_alike": false,
+      "no_technical_restrictions": false,
+      "evidence_url": "https://huggingface.co/black-forest-labs/FLUX.2-klein-4b-fp8/blob/5b4408e59397a4a37ccb46afe426d8ed86379441/LICENSE.md",
+      "checked_date": "2026-09-09",
+      "decision": "approved",
+      "notes": "WP-015D4E used the exact owner-authorized documentation-only scene reference SHA-256 9A3E5DEDDF02B0C03B2A8E46894ED61158DB39D8471BA99CD42B8618A1EB0D04 through the pinned single-reference FLUX.2 Klein workflow A2BF8CD3C015D36646E73F2FA87F22741E4410D27B26D562331057B49CFF6C8E. The one request used seed 15040001 and prompt ID f244bf54-332e-4987-8e31-543c421b5a78, producing the untouched external 1360x768 RGB24 candidate 4B34F5EEB08C831164BE403204723E73FB95B10E8C7AA8CD5013C4E5974E329C. Project-owner review approved one generic isolated textile volcanic cone and subdued smoke plume; no text, UI, character, terrain, tower, named place, official Nimiq art, recognizable third-party subject, or Sorcerers material is present. The reference itself remains documentation-only and is neither copied into this master nor admitted to runtime. The pinned component license is Apache-2.0; its terms leave input/output rights and lawful use with the user. Frozen config 3007C43026F92A1FB0A621C54DD79EB391CD88A57AE938C1F52001DDDCFEE854 and normalizer A0AE2B16733E0A1E0C3BEAF5B4F23B33A58B0496D9DF4560A9EBBD9E435CA106 perform only exact-source verification, white-matte extraction/decontamination, a strictly bounded contact-shadow removal, connected-subject selection, enclosed-hole fill, uniform three-quarter scaling, and translation. Two independent runs produced this 499,991-byte 1024x576 RGBA source master byte-for-byte with transparent borders, one visible component, and decorative baseline anchor (512,528). This source master intentionally has no runtime_path, atlas placement, terrain authority, animation, or gameplay integration."
     }
   ]
 }

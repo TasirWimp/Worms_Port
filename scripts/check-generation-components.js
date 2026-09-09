@@ -120,6 +120,17 @@ const reviewedConditioningInputContracts = new Map([
     fileSize: 12461,
     fileSha256: 'AC9F8F101094C5C15361FD24827C4F24B7C52ACBC652000748B209CB5483F56B',
     generatorSha256: '3B009E6F4A5908D4BAFA63426E7538F9B59DD2A4A286246FFC2604DCD7D0FB69'
+  }],
+  ['volcanic-ruin-scene-reference-v1', {
+    kind: 'owner_provided_visual_reference',
+    sourcePath: 'docs/images/art-direction/backgrounds/volcanic-ruin-scene-reference-v1.png',
+    width: 1672,
+    height: 941,
+    fileSize: 2323466,
+    fileSha256: '9A3E5DEDDF02B0C03B2A8E46894ED61158DB39D8471BA99CD42B8618A1EB0D04',
+    ownerAuthorizedOn: '2026-09-09',
+    sourceRights: 'owner_authorized_conditioning_only',
+    externalUploadScope: 'local_loopback_comfy_only'
   }]
 ]);
 const reviewedFluxWorkflowContracts = new Map([
@@ -294,6 +305,51 @@ const reviewedProfileContracts = new Map([
       paused_candidate_sha256: '2BAE664F7E5A862BCB53B55A68071580485CE040A89650C68EC6FA398F4089EB',
       concept_reference_sha256: 'BD87405A8E29E4FCEEC87F4E4BC22256CEF215F2789DFDB1DD4BDD6A31DA6699',
       concept_reference_role: 'external_comparison_only'
+    },
+    backgroundAuthorizedRequest: {
+      decision: 'one_reference_edit_request_approved',
+      work_package: 'WP-015D4E',
+      purpose: 'volcanic-ruin-isolated-volcanic-cone-source',
+      tool: 'generate_flux2_klein_reference_edit',
+      workflow_sha256: 'A2BF8CD3C015D36646E73F2FA87F22741E4410D27B26D562331057B49CFF6C8E',
+      seed: 15040001,
+      prompt: 'One original isolated decorative mobile-game background asset on a plain white background: a single broad tropical volcanic cone, centered with generous padding, made from rounded blue-green and muted charcoal crochet, felt, and woven textile forms. Add one small soft gray smoke plume from the summit. Read as a distant landmark, calm and low contrast, with no ground plane or horizon. No tower, church, ruin, tree, palm, bush, terrain, character, weapon, projectile, UI, text, number, logo, watermark, frame, map, photo replication, named place, branded game art, or full scene.',
+      width: 1024,
+      height: 1024,
+      batch_size: 1,
+      steps: 4,
+      cfg: 1,
+      sampler: 'euler',
+      reference_input: 'volcanic-ruin-scene-reference-v1',
+      reference_staged_name: 'volcanic-ruin-scene-reference-v1.png',
+      max_requests: 1,
+      status: 'consumed_owner_review_pending',
+      requests_consumed: 1,
+      prompt_id: 'f244bf54-332e-4987-8e31-543c421b5a78',
+      runtime_seconds: 466.937,
+      external_output_path: 'C:\\Users\\jensb\\AppData\\Local\\Comfy-Desktop\\ComfyUI-Shared\\output\\WormsPortFlux2KleinReferenceEdit_00006_.png',
+      external_output_sha256: '4B34F5EEB08C831164BE403204723E73FB95B10E8C7AA8CD5013C4E5974E329C',
+      external_output_bytes: 831327,
+      external_output_pixel_format: 'RGB24',
+      further_requests_authorized: false
+    },
+    backgroundSourceMasterReview: {
+      decision: 'source_master_approved',
+      generation_work_package: 'WP-015D4E',
+      normalization_work_package: 'WP-015D4E',
+      seed: 15040001,
+      conditioning_reference_sha256: '9A3E5DEDDF02B0C03B2A8E46894ED61158DB39D8471BA99CD42B8618A1EB0D04',
+      external_source_sha256: '4B34F5EEB08C831164BE403204723E73FB95B10E8C7AA8CD5013C4E5974E329C',
+      normalization_config_path: 'scripts/asset-normalization/wp-015d4e-volcanic-cone-v1.json',
+      normalization_config_sha256: '3007C43026F92A1FB0A621C54DD79EB391CD88A57AE938C1F52001DDDCFEE854',
+      normalizer_path: 'scripts/normalize-volcanic-cone-master.js',
+      normalizer_sha256: 'A0AE2B16733E0A1E0C3BEAF5B4F23B33A58B0496D9DF4560A9EBBD9E435CA106',
+      normalized_master_path: 'assets/masters/environment/backgrounds/volcanic-ruin/volcanic-cone-source-master-v1.png',
+      normalized_master_sha256: '83E451892C13730D2EA1DE5794927EC9CD63110567F110DC485D5ED148D041AD',
+      master_canvas: [1024, 576],
+      placement_anchor: [512, 528],
+      runtime_path_assigned: false,
+      further_generation_authorized: false
     },
     threadballReview: {
       decision: 'source_master_approved',
@@ -556,8 +612,9 @@ function validateGenerationComponents(manifest, root = repoRoot) {
   if (manifest?.policy?.profile_selection !== 'closed_manifest_profiles_only') {
     errors.push('generation profile selection must remain closed to manifest-defined profiles.');
   }
-  if (manifest?.policy?.conditioning_input_state !== 'project_owned_documentation_only_until_generated_output_review') {
-    errors.push('conditioning inputs must remain project-owned documentation references until output review.');
+  if (manifest?.policy?.conditioning_input_state !==
+      'closed_reviewed_documentation_or_owner_authorized_reference_until_generated_output_review') {
+    errors.push('conditioning inputs must remain project-owned documentation references or exact owner-authorized visual references until output review.');
   }
   if (manifest?.policy?.generated_output_state !== 'quarantined_candidate_until_exact_file_approval') {
     errors.push('generated output must remain quarantined until exact-file approval.');
@@ -630,9 +687,6 @@ function validateGenerationComponents(manifest, root = repoRoot) {
       if (!/^[a-z0-9][a-z0-9-]*$/.test(input?.id || '')) errors.push(`${label}: invalid conditioning input id.`);
       if (conditioningIds.has(input?.id)) errors.push(`${label}: duplicate conditioning input id.`);
       conditioningIds.add(input?.id);
-      if (input?.license !== 'MIT' || input?.distribution !== 'documentation_conditioning_only') {
-        errors.push(`${label}: project-owned conditioning inputs must remain MIT documentation-only material.`);
-      }
       for (const field of ['approved_uses', 'blocked_uses']) {
         if (!Array.isArray(input?.[field]) || input[field].length === 0 ||
             input[field].some((entry) => typeof entry !== 'string' || !entry)) {
@@ -647,19 +701,37 @@ function validateGenerationComponents(manifest, root = repoRoot) {
       }
       if (input.kind !== contract.kind) errors.push(`${label}: reviewed conditioning kind changed.`);
       if (input.source_path !== contract.sourcePath) errors.push(`${label}: reviewed conditioning source_path changed.`);
-      if (input.generator_path !== contract.generatorPath) errors.push(`${label}: reviewed conditioning generator_path changed.`);
       if (input.width !== contract.width || input.height !== contract.height) {
         errors.push(`${label}: reviewed conditioning dimensions changed.`);
       }
       if (input.file_size !== contract.fileSize || input.file_sha256 !== contract.fileSha256) {
         errors.push(`${label}: reviewed conditioning file size or hash changed.`);
       }
-      if (input.generator_sha256 !== contract.generatorSha256) {
-        errors.push(`${label}: reviewed conditioning generator hash changed.`);
+      if (contract.kind === 'owner_provided_visual_reference') {
+        if (input.license !== 'Owner-Authorized-Reference-Only' ||
+            input.distribution !== 'documentation_conditioning_only' ||
+            input.source_rights !== contract.sourceRights ||
+            input.external_upload_scope !== contract.externalUploadScope ||
+            input.runtime_path_assigned !== false) {
+          errors.push(`${label}: owner-provided visual references must remain owner-authorized, documentation-only, local-loopback-only, and never runtime media.`);
+        }
+        if (input.owner_authorized_on !== contract.ownerAuthorizedOn) {
+          errors.push(`${label}: owner authorization date changed.`);
+        }
+        if (input.generator_path !== undefined || input.generator_sha256 !== undefined) {
+          errors.push(`${label}: owner-provided visual reference must not claim a project generator.`);
+        }
+      } else {
+        if (input.license !== 'MIT' || input.distribution !== 'documentation_conditioning_only') {
+          errors.push(`${label}: project-owned conditioning inputs must remain MIT documentation-only material.`);
+        }
+        if (input.generator_path !== contract.generatorPath) errors.push(`${label}: reviewed conditioning generator_path changed.`);
+        if (input.generator_sha256 !== contract.generatorSha256) {
+          errors.push(`${label}: reviewed conditioning generator hash changed.`);
+        }
       }
 
       const sourcePath = path.resolve(root, input.source_path || '');
-      const generatorPath = path.resolve(root, input.generator_path || '');
       const rootPrefix = path.resolve(root) + path.sep;
       if (!sourcePath.startsWith(rootPrefix) || !fs.existsSync(sourcePath)) {
         errors.push(`${label}: conditioning source must resolve inside the repository.`);
@@ -675,12 +747,15 @@ function validateGenerationComponents(manifest, root = repoRoot) {
           errors.push(`${label}: conditioning source must be the reviewed PNG dimensions.`);
         }
       }
-      if (!generatorPath.startsWith(rootPrefix) || !fs.existsSync(generatorPath)) {
-        errors.push(`${label}: conditioning generator must resolve inside the repository.`);
-      } else {
-        const generatorHash = crypto.createHash('sha256').update(fs.readFileSync(generatorPath)).digest('hex').toUpperCase();
-        if (generatorHash !== input.generator_sha256) {
-          errors.push(`${label}: conditioning generator bytes do not match the manifest.`);
+      if (contract.kind !== 'owner_provided_visual_reference') {
+        const generatorPath = path.resolve(root, input.generator_path || '');
+        if (!generatorPath.startsWith(rootPrefix) || !fs.existsSync(generatorPath)) {
+          errors.push(`${label}: conditioning generator must resolve inside the repository.`);
+        } else {
+          const generatorHash = crypto.createHash('sha256').update(fs.readFileSync(generatorPath)).digest('hex').toUpperCase();
+          if (generatorHash !== input.generator_sha256) {
+            errors.push(`${label}: conditioning generator bytes do not match the manifest.`);
+          }
         }
       }
     }
@@ -996,6 +1071,14 @@ function validateGenerationComponents(manifest, root = repoRoot) {
           JSON.stringify(profile.authorized_request) !== JSON.stringify(contract.authorizedRequest)) {
         errors.push(`${label}: exact authorized generation request changed.`);
       }
+      if (contract.backgroundAuthorizedRequest &&
+          JSON.stringify(profile.background_authorized_request) !== JSON.stringify(contract.backgroundAuthorizedRequest)) {
+        errors.push(`${label}: exact background authorized generation request changed.`);
+      }
+      if (contract.backgroundSourceMasterReview &&
+          JSON.stringify(profile.background_source_master_review) !== JSON.stringify(contract.backgroundSourceMasterReview)) {
+        errors.push(`${label}: exact background source-master review changed.`);
+      }
       if (contract.threadballReview &&
           JSON.stringify(profile.threadball_source_master_review) !== JSON.stringify(contract.threadballReview)) {
         errors.push(`${label}: exact Threadball source-master review changed.`);
@@ -1054,6 +1137,36 @@ function validateGenerationComponents(manifest, root = repoRoot) {
         if (!approvedMaster || approvedMaster.sha256 !== profile.latest_review.normalized_master_sha256 ||
             approvedMaster.runtime_path !== undefined) {
           errors.push(`${label}: approved normalized master must remain manifest-bound without runtime_path.`);
+        }
+      }
+      if (contract.backgroundSourceMasterReview) {
+        for (const [pathField, hashField] of [
+          ['normalization_config_path', 'normalization_config_sha256'],
+          ['normalizer_path', 'normalizer_sha256'],
+          ['normalized_master_path', 'normalized_master_sha256']
+        ]) {
+          const relativePath = profile.background_source_master_review?.[pathField] || '';
+          const resolvedPath = path.resolve(root, relativePath);
+          if (!relativePath || !resolvedPath.startsWith(path.resolve(root) + path.sep) ||
+              !fs.existsSync(resolvedPath)) {
+            errors.push(`${label}: background ${pathField} must resolve inside the repository.`);
+            continue;
+          }
+          const actualHash = crypto.createHash('sha256').update(fs.readFileSync(resolvedPath))
+            .digest('hex').toUpperCase();
+          if (actualHash !== profile.background_source_master_review?.[hashField]) {
+            errors.push(`${label}: background ${pathField} does not match ${hashField}.`);
+          }
+        }
+        const assetManifestPath = path.resolve(root, 'legal', 'asset-manifest.json');
+        const assetManifest = fs.existsSync(assetManifestPath) ?
+          JSON.parse(fs.readFileSync(assetManifestPath, 'utf8')) : null;
+        const approvedMaster = assetManifest?.assets?.find(
+          (asset) => asset.file === profile.background_source_master_review.normalized_master_path
+        );
+        if (!approvedMaster || approvedMaster.sha256 !== profile.background_source_master_review.normalized_master_sha256 ||
+            approvedMaster.runtime_path !== undefined) {
+          errors.push(`${label}: approved background master must remain manifest-bound without runtime_path.`);
         }
       }
       if (contract.threadballReview) {

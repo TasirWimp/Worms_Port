@@ -1,8 +1,11 @@
 # Volcanic-Ruin Background Scene Preparation
 
-Status: preparation only, authorized by the owner on 2026-09-09. It is carried
-on `codex/wp-015d4d-v10g-terrain-weapon-tactics`, while remaining a portable
-background-art brief rather than part of the active V10G terrain/weapon gate.
+Status: the owner approved the first isolated volcanic-cone source master on
+2026-09-09. It has no runtime path. V10G closed with this portable brief
+committed; active preparation now continues as
+[`WP-015D4E`](../../planning/wp-015d4e-volcanic-ruin-background-contract.md)
+on `codex/volcanic-ruin-background-art`, not as part of the closed V10G
+terrain/weapon gate.
 
 ## Purpose And Boundary
 
@@ -12,8 +15,10 @@ The scene must remain independent of `PackedTerrain`, collision,
 destruction, spawn selection, projectile authority, AI, replay bytes, and
 public Practice/Daily selection.
 
-This preparation creates no generated candidate, source master, runtime path,
-asset-manifest entry, build copy, renderer code, or player-visible change.
+The first cone is now approved as a source master only at
+`assets/masters/environment/backgrounds/volcanic-ruin/volcanic-cone-source-master-v1.png`.
+It creates no runtime path, build copy, renderer code, or player-visible change.
+Tower, jungle, palm, and bush families remain preparation-only.
 
 ## Owner-Provided Visual Reference
 

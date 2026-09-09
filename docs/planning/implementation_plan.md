@@ -22,13 +22,18 @@ Phaser/Socket.IO stack.
   Expanded-family selected verification passed (67 canonical browser cases);
   the owner accepted the expanded maps on a physical phone at `8e40a82`
   and explicitly authorized closure. **V10G is complete.**
-  Next implementation slice: none started; choose a separately scoped package
-  or release/public-activation review before further implementation.
+  Active preparation slice: **WP-015D4E Volcanic-Ruin Background Art**. It
+  starts from this closed V10G commit on a separate branch and establishes the
+  owner-provided reference, FLUX authorization boundary, and runtime-budget
+  gate. Its first volcanic-cone source master is approved with no runtime path;
+  later families and renderer integration remain separate. See the
+  [background-art contract](wp-015d4e-volcanic-ruin-background-contract.md).
   `/?combat-preview=v10g` defaults to Twin Crests; append `&terrain-map=` with
   `trench-needle`, `stepping-mesa`, `rampart-high-left` or `rampart-high-right`.
   Old R3 seeds/replays retain the fixed Twin Crests recipe; R2 remains unchanged.
   Public Practice/Daily activation is a separate owner decision.
-  Current implementation branch: `codex/wp-015d4d-v10g-terrain-weapon-tactics`.
+  V10G closed on `codex/wp-015d4d-v10g-terrain-weapon-tactics`; current
+  background-art preparation branch: `codex/volcanic-ruin-background-art`.
   Family expansion began from a clean worktree at `c52fc28`; closure follows
   clean `d796232`. No agents are used. The 22:00 daily suite, Ubuntu release
   visual checks and PostgreSQL gate remain separate from this package closure.

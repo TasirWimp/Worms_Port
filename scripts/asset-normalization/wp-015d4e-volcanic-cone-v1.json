@@ -1,0 +1,108 @@
+{
+  "schema_version": 1,
+  "id": "wp-015d4e-volcanic-cone-v1",
+  "work_package": "WP-015D4E",
+  "frozen_at": "2026-09-09",
+  "purpose": "Deterministically extract the one owner-approved quarantined volcanic-cone candidate from its white matte, retain its one connected textile landmark and subdued smoke, and uniformly place it on a transparent scalable background canvas without painting, reconstruction, or inference.",
+  "source": {
+    "default_external_path": "C:/Users/jensb/AppData/Local/Comfy-Desktop/ComfyUI-Shared/output/WormsPortFlux2KleinReferenceEdit_00006_.png",
+    "filename": "WormsPortFlux2KleinReferenceEdit_00006_.png",
+    "sha256": "4B34F5EEB08C831164BE403204723E73FB95B10E8C7AA8CD5013C4E5974E329C",
+    "bytes": 831327,
+    "width": 1360,
+    "height": 768,
+    "channels": 3
+  },
+  "boundaries": {
+    "allowed": [
+      "exact-source verification",
+      "fixed white-matte extraction and edge-color decontamination",
+      "largest connected subject selection",
+      "deterministic filling of fully enclosed white-matte stitch pinholes",
+      "uniform scale",
+      "translation",
+      "deterministic RGBA resampling"
+    ],
+    "blocked": [
+      "inference",
+      "manual painting",
+      "cloning",
+      "generative fill",
+      "volcano reconstruction",
+      "non-uniform scale",
+      "warp",
+      "a second candidate or request",
+      "tower, vegetation, terrain, character, UI, or scene composition",
+      "runtime integration"
+    ]
+  },
+  "matte": {
+    "background_rgb": [255, 255, 255],
+    "distance_metric": "maximum absolute RGB channel distance",
+    "hard_foreground_threshold": 20,
+    "soft_edge_low_threshold": 3,
+    "soft_edge_high_threshold": 16,
+    "soft_edge_radius_pixels": 2,
+    "component_connectivity": 8,
+    "component_selection": "largest hard-foreground component",
+    "post_resample_component_selection": "retain the largest 8-connected nonzero-alpha component after every resize to suppress isolated white-matte ringing pixels",
+    "enclosed_holes": "fill_enclosed_white_matte_only",
+    "external_background": "discard, including disconnected and border-connected pixels",
+    "contact_shadow": "discard every partial white-matte pixel strictly below the selected hard-subject maximum y, then discard only neutral light-gray contact-shadow pixels in the reviewed bottom source band; no contact plane or ground pixels become part of the master",
+    "below_hard_subject_extent": "discard_partial_alpha_only",
+    "neutral_contact_shadow": {
+      "min_source_y": 685,
+      "min_rgb_channel": 170,
+      "max_rgb_channel_spread": 25,
+      "operation": "discard_alpha_only"
+    },
+    "edge_color": "uncomposite soft-edge RGB from the fixed white matte using the computed alpha; hard foreground retains exact source RGB",
+    "expected_hard_bounds": {
+      "min_x": 195,
+      "min_y": 90,
+      "max_x": 1135,
+      "max_y": 692
+    }
+  },
+  "geometry": {
+    "source_landmarks": {
+      "baseline_center": [665, 692],
+      "method": "reviewed midpoint of the threshold-20 cone base; it is a decorative presentation anchor, never terrain authority"
+    },
+    "master": {
+      "canvas": [1024, 576],
+      "uniform_scale_numerator": 3,
+      "uniform_scale_denominator": 4,
+      "translation": [13.25, 9],
+      "placement_anchor": [512, 528],
+      "motion_safe": {
+        "min_x": 120,
+        "max_x": 900,
+        "min_y": 40,
+        "max_y": 548
+      }
+    },
+    "review_sizes": [[384, 216], [128, 72]]
+  },
+  "resampling": {
+    "filter": "Mitchell-Netravali bicubic",
+    "b": 0.3333333333333333,
+    "c": 0.3333333333333333,
+    "sampling": "pixel-center inverse mapping",
+    "alpha": "premultiplied during filtering, straight RGBA in PNG",
+    "png": "8-bit non-interlaced RGBA, filter type 0, deterministic zlib level 9"
+  },
+  "review_backgrounds": {
+    "patch_sky": [217, 242, 243],
+    "dark_navy": [31, 35, 70],
+    "contact_sheet_order": ["patch_sky", "dark_navy"]
+  },
+  "outputs": {
+    "master": "volcanic-cone-source-master-v1.png",
+    "review_384": "volcanic-cone-source-master-v1-review-384.png",
+    "review_128": "volcanic-cone-source-master-v1-review-128.png",
+    "edge_review": "volcanic-cone-source-master-v1-edge-review.png",
+    "report": "volcanic-cone-source-master-v1.report.json",
+    "approved_master_path": "assets/masters/environment/backgrounds/volcanic-ruin/volcanic-cone-source-master-v1.png"
+  }
+}

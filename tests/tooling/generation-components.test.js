@@ -92,6 +92,67 @@ test('Wizard structure and edit-mask conditioning stay project-owned, exact, and
   assert.match(errors, /conditioning input count must remain closed/);
 });
 
+test('owner-provided volcanic-ruin reference is exact, local-only, never-runtime, and bound to one cone request', () => {
+  const reference = manifest.conditioning_inputs.find(
+    (input) => input.id === 'volcanic-ruin-scene-reference-v1'
+  );
+  const profile = manifest.profiles.find((candidate) => candidate.id === 'flux2-klein');
+
+  assert.deepEqual(reference, {
+    id: 'volcanic-ruin-scene-reference-v1',
+    kind: 'owner_provided_visual_reference',
+    source_path: 'docs/images/art-direction/backgrounds/volcanic-ruin-scene-reference-v1.png',
+    version: '1',
+    width: 1672,
+    height: 941,
+    file_size: 2323466,
+    file_sha256: '9A3E5DEDDF02B0C03B2A8E46894ED61158DB39D8471BA99CD42B8618A1EB0D04',
+    owner_authorized_on: '2026-09-09',
+    source_rights: 'owner_authorized_conditioning_only',
+    license: 'Owner-Authorized-Reference-Only',
+    distribution: 'documentation_conditioning_only',
+    external_upload_scope: 'local_loopback_comfy_only',
+    runtime_path_assigned: false,
+    approved_uses: [
+      'one exact-file, local-loopback FLUX reference-edit request for the WP-015D4E isolated volcanic-cone candidate only',
+      'documentation and visual review of generic textile material, depth, and landmark readability'
+    ],
+    blocked_uses: [
+      'product runtime use, distribution, cropping, source-master admission, or treatment as finished artwork',
+      'any external upload other than the exact staged local Comfy input for the reviewed request',
+      'a whole-scene generation, named-place replication, UI/character/terrain reuse, second request, batch, or unrecorded conditioning'
+    ],
+    notes: 'Exact owner-provided scene-reference bytes. The owner authorized FLUX conditioning on 2026-09-09 for isolated generic background assets, but does not transfer this reference into a product asset or source master. UI, text, characters, terrain, clouds, and all composited scene pixels remain excluded from the requested output.'
+  });
+  assert.equal(profile.background_authorized_request.tool, 'generate_flux2_klein_reference_edit');
+  assert.equal(profile.background_authorized_request.seed, 15040001);
+  assert.equal(profile.background_authorized_request.status, 'consumed_owner_review_pending');
+  assert.equal(profile.background_authorized_request.requests_consumed, 1);
+  assert.equal(profile.background_authorized_request.external_output_sha256,
+    '4B34F5EEB08C831164BE403204723E73FB95B10E8C7AA8CD5013C4E5974E329C');
+  assert.equal(profile.background_source_master_review.normalized_master_sha256,
+    '83E451892C13730D2EA1DE5794927EC9CD63110567F110DC485D5ED148D041AD');
+  assert.equal(profile.background_source_master_review.runtime_path_assigned, false);
+
+  const invalid = structuredClone(manifest);
+  const invalidReference = invalid.conditioning_inputs.find(
+    (input) => input.id === 'volcanic-ruin-scene-reference-v1'
+  );
+  invalidReference.external_upload_scope = 'any_external_service';
+  invalidReference.runtime_path_assigned = true;
+  invalidReference.file_sha256 = '0'.repeat(64);
+  invalid.profiles.find((candidate) => candidate.id === 'flux2-klein')
+    .background_authorized_request.seed = 15040002;
+  invalid.profiles.find((candidate) => candidate.id === 'flux2-klein')
+    .background_source_master_review.placement_anchor = [511, 528];
+
+  const errors = validateGenerationComponents(invalid).join('\n');
+  assert.match(errors, /owner-provided visual references must remain owner-authorized/);
+  assert.match(errors, /conditioning source bytes do not match the manifest/);
+  assert.match(errors, /exact background authorized generation request changed/);
+  assert.match(errors, /exact background source-master review changed/);
+});
+
 test('generation workflow requires an exact JSON hash and disclosed input mode', () => {
   const invalid = structuredClone(manifest);
   const workflow = invalid.components.find((component) => component.kind === 'generation_workflow');

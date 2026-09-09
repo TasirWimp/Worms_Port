@@ -1,0 +1,57 @@
+{
+  "id": "WP-015D4E",
+  "status": "in_progress",
+  "execution_mode": "single_owner",
+  "starting_commit": "1accbeb",
+  "branch": "codex/volcanic-ruin-background-art",
+  "initial_worktree": "clean",
+  "starting_lock_sha256": "6B768A8FDE2695D02555CA17201FD7CE420F9AC075B91380474DD7A643042BC8",
+  "owning_roles": [
+    "primary assistant"
+  ],
+  "scope": [
+    "Prepare a reference-conditioned FLUX authorization and validation boundary for isolated decorative volcanic-ruin background assets.",
+    "Preflight the pinned local Comfy profile without staging or generating media.",
+    "Retain the current initial-media ceiling and require a later loading/budget package before any runtime admission."
+  ],
+  "non_goals": [
+    "No Comfy request, candidate, source master, normalizer, product asset, runtime path, renderer integration, gameplay change, public activation, or V10G reopening.",
+    "No external code, third-party asset, Sorcerers material, named-landmark replication, dependency, package-lock, or asset-manifest import."
+  ],
+  "planned_checks": [
+    "npm run audit:housekeeping",
+    "npm run check:work-packages",
+    "npm run verify:changes -- --dry-run",
+    "npm run verify:changes",
+    "git diff --check"
+  ],
+  "deterministic_seeds": [
+    "Proposed first isolated volcanic-cone candidate seed 15040001; unassigned and unconsumed until a future manifest authorization passes."
+  ],
+  "sorcerers_reference_used": false,
+  "clean_room_records": [],
+  "check_results": [
+    {
+      "command": "powershell -NoProfile -ExecutionPolicy Bypass -File scripts/comfy-asset-pipeline.ps1 -Action Prepare -Profile flux2-klein -Json",
+      "status": "pass",
+      "detail": "Non-generative preflight passed. The three reviewed FLUX model hashes and the text, reference-edit, and protected-edit workflow hashes match the pinned profile. ComfyUI and the MCP bridge remain stopped; no reference was staged and no candidate was generated."
+    },
+    {
+      "command": "Stage exact reference, then run one local MCP reference-edit request through scripts/comfy-mcp-smoke.py",
+      "status": "pass",
+      "detail": "StageInput copied SHA-256 9A3E5DEDDF02B0C03B2A8E46894ED61158DB39D8471BA99CD42B8618A1EB0D04 byte-identically to wormsport/volcanic-ruin-scene-reference-v1.png. The first launcher attempt failed in local argument parsing before any bridge call, so it did not consume authorization. The corrected one-shot request used reference-edit workflow A2BF8CD3...F6C8E, seed 15040001, prompt ID f244bf54-332e-4987-8e31-543c421b5a78, and completed in 466.937 seconds. Its sole external RGB24 1360x768 candidate is WormsPortFlux2KleinReferenceEdit_00006_.png, 831327 bytes, SHA-256 4B34F5EEB08C831164BE403204723E73FB95B10E8C7AA8CD5013C4E5974E329C. ComfyUI and the bridge were stopped after completion."
+    },
+    {
+      "command": "node scripts/normalize-volcanic-cone-master.js twice; node --test tests/tooling/volcanic-cone-master-normalization.test.js; source-master visual alpha review",
+      "status": "pass",
+      "detail": "Owner approved the candidate. Frozen config 3007C43026F92A1FB0A621C54DD79EB391CD88A57AE938C1F52001DDDCFEE854 and normalizer A0AE2B16733E0A1E0C3BEAF5B4F23B33A58B0496D9DF4560A9EBBD9E435CA106 produced byte-identical 499991-byte 1024x576 RGBA master 83E451892C13730D2EA1DE5794927EC9CD63110567F110DC485D5ED148D041AD twice. Alpha proof: transparent borders, one visible component, no disconnected visible pixels, core bounds 159..866 by 75..526, and exact decorative baseline anchor (512,528). Reviewed on light sky and dark navy contact sheets; bounded contact-shadow cleanup removes the model's neutral light-gray ground residue without painting or inference."
+    }
+  ],
+  "skipped_checks": [
+    "Game build, browser, PostgreSQL, visual-baseline, Comfy start, staging, smoke generation, and asset review are not applicable to this documentation/preflight-only stage."
+  ],
+  "residual_risks": [
+    "The cone source master has no runtime path. The tower, jungle, palm, and bush families each require their own request authorization, candidate review, normalization, and source-master decision.",
+    "The exact eleven-file initial-media inventory permits no new runtime background asset until a future loading and budget package changes that contract deliberately."
+  ]
+}
