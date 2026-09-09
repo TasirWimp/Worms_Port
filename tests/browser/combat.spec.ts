@@ -557,15 +557,18 @@ test('V10E phone preview exposes tactical terrain and a working jump from cover'
   await page.screenshot({ path: testInfo.outputPath('v10e-tactical-terrain-phone.png') });
 });
 
-test('V10G phone preview keeps role guidance compact and selected precision survives aiming', async ({ page }, testInfo) => {
+for (const [map, seed] of Object.entries({ 'twin-crests': 4, 'trench-needle': 5, 'stepping-mesa': 6,
+  'rampart-high-left': 7, 'rampart-high-right': 8 })) test(`V10G phone ${map} preserves aiming and completes an AI response`, async ({ page }, testInfo) => {
   test.setTimeout(60_000);
   const requests: string[] = [];
   page.on('request', request => requests.push(request.url()));
-  await page.goto('/?combat-preview=v10g');
+  await page.goto(`/?combat-preview=v10g&terrain-map=${map}`);
   const ui = page.locator('.combat-v10');
-  await expect(ui).toHaveAttribute('data-ruleset', 'nimble-knots-artillery-v10-r3');
-  await expect(ui).toHaveAttribute('data-terrain-seed', '4');
-  await expect(ui).toHaveAttribute('data-terrain-recipe-revision', 'v10g-twin-crests-r1');
+  await expect(ui).toHaveAttribute('data-ruleset', 'nimble-knots-artillery-v10-r4');
+  await expect(ui).toHaveAttribute('data-terrain-seed', String(seed));
+  await expect(ui).toHaveAttribute('data-terrain-profile', map.startsWith('rampart-') ? 'asymmetric-rampart' : map);
+  await expect(ui).toHaveAttribute('data-terrain-reflected', String(seed === 8));
+  await expect(ui).toHaveAttribute('data-terrain-recipe-revision', 'v10g-families-r1');
   await expect(ui).toHaveAttribute('data-opening-survey', 'false', { timeout: 5_000 });
   await expect(page.locator('.v9-action-menu')).toBeHidden();
   await assertV9ActorCardsFit(page);

@@ -581,8 +581,9 @@ remain separate decisions.
 
 ## V10G terrain and weapon tactics preparation
 
-Status: WP-015D4D R3 Twin Crests implementation is in verification; first-map
-physical-phone acceptance remains pending. This section supersedes the earlier deferral only for the bounded
+Status: the owner accepted R3 Twin Crests on a physical phone at `c52fc28`
+on 2026-09-09 and authorized family expansion. Expanded R4 selected verification passed (67 canonical browser cases);
+physical-phone acceptance of the expanded maps remains pending. This section supersedes the earlier deferral only for the bounded
 V10G work below. V10F functional phone acceptance stands; tactical effectiveness
 is the problem this next slice must solve. Development remains single-owner.
 
@@ -733,15 +734,61 @@ Implemented witnesses in `tests/simulation/terrain-tactics-v10g.test.ts`:
   candidate choices; legacy V9 candidates stay unchanged. A breach and subsequent
   AI response reconstruct through the coordinator with exact final state/hash.
 
-The local route is **`/?combat-preview=v10g`**, fixed to seed 4 while this single
-layout is assessed. Existing `sideways=left`/`sideways=off` options remain.
+The first-map checkpoint used **`/?combat-preview=v10g`**, fixed to seed 4.
+The expanded route below now supersedes that query selection. Existing `sideways=left`/`sideways=off` options remain.
 Selection deliberately retires an old aim; fresh aim preserves the selected
 Relic and its preview uses actual R3 flight. Attack choices show Lob, Precision
-and Breach only for R3. Full role mechanics are isolated from public sessions,
+and Breach only for V10G R3/R4. Full role mechanics are isolated from public sessions,
 wallets, rewards and R2 preview routes. Phone review must check the covered
 silhouette, walking up to a wall then jumping onto it, lob versus precision,
 later-turn breaching, aiming/selection, pause/restart and the AI response.
-Other families stay deferred until the owner accepts this first map.
+The owner accepted this first map at `c52fc28`, clearing family expansion.
+
+### Expanded family catalogue (R4)
+
+`nimble-knots-artillery-v10-r4` binds `v10g-families-r1`, candidate index zero.
+It reuses R3 weapon rules unchanged. R3 reconstruction still generates the old
+Twin Crests map for every seed; R4 must never reinterpret an R3 recording.
+The finite catalogue has five entries, selected by `(normalizedSeed + 1) % 5`.
+There is no random retry or unvalidated fallback. Phone selection is deliberately
+restricted to these named review maps; missing/unknown names select Twin Crests.
+
+| `terrain-map` | Seed | Geometry and tactical purpose |
+| --- | --- | --- |
+| `twin-crests` (default) | 4 | Accepted 448-floor pockets, 336 shelves and 328 centre crest. |
+| `trench-needle` | 5 | Same protected pockets; 128-wide ridges at 336 surround a 128-wide central notch down to 448. Ridge fire clears the notch; dropping loses the lane and requires a tested ordinary jump out on either side. |
+| `stepping-mesa` | 6 | Same pockets and first shelves; central 128-wide mesa rises another 112 units to 224. Cross-shelf precision is blocked until the second climb and approach to the mesa edge enables downhill fire. |
+| `rampart-high-left` | 7 | Left starts exposed at 336, right sheltered at 448. The low side jumps to the 336 shelf to gain a direct lane; the high side has an optional rear 224 shelf. |
+| `rampart-high-right` | 8 | Exact surface-row reflection of seed 7, with starts and jump directions reflected. Damage rasterization need not be perfectly symmetric. |
+
+Append `&terrain-map=<name>` to `/?combat-preview=v10g`. Existing sideways
+options remain. Preview, live simulation, AI and replay all bind R4 explicitly;
+no public Practice, session, wallet or reward route is opened.
+
+All layouts retain 32 authoring columns expanded into 256 collision columns,
+with generated ASCII from the exact rows. Runtime admission checks the bounded
+surface, full-body opening clearance, actual contiguous pocket/shelf widths,
+112-unit cover margin, supported takeoff/landing and ordinary jump envelope.
+The finite authored catalogue is additionally admitted by offline authority
+witnesses; these runtime geometry prerequisites are not a universal tactical
+validator for arbitrary future recipes.
+
+Family witnesses include pocket head/centre/feet boundary shots from opposing
+pockets/shelves; ordinary walking versus every declared jump; affordable lob
+alternatives on both sides; low-pocket breach followed by supported movement;
+and complete AI response/reconstruction after mutation for all five seeds.
+Mesa also requires two actual consecutive climbs and a walk to its exposed edge
+before the downhill precision hit. Rampart high ground is intentionally not a
+protected pocket: low-side shelf fire and the reverse countershot each deal 60.
+The low-side opening lob reaches high ground only for 6/7 splash damage at the
+recorded 60-degree/full-power setting, versus 45 from high to low. These are
+tradeoffs, not a balance or equal-win-rate claim. Planner work remains bounded
+at 180 candidates/30 ticks; multi-jump optimization is not added.
+
+No new source inspection, code import or asset use is involved. The existing
+frozen reference pack and clean-room record remain the reference provenance.
+Expanded-family phone acceptance must precede closure or public promotion.
+
 
 | Relic | V10G role | Required tradeoff |
 | --- | --- | --- |

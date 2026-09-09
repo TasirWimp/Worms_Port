@@ -1,3 +1,4 @@
+import { v10gFamilyForSeed } from '../../../shared/terrain-generation-v10g';
 import {
     advanceSimulationTicksV10,
     applySimulationBarrierV10,
@@ -6,7 +7,7 @@ import {
     createSimulationV10,
     forceSimulationLimitV10,
     V10_R1_RULESET_ID,
-    V10_R2_RULESET_ID, V10_R3_RULESET_ID,
+    V10_R2_RULESET_ID, V10_R3_RULESET_ID, V10_R4_RULESET_ID,
     V10_RULESET_ID,
     type V10RulesetId,
     type SimulationEventV10,
@@ -27,6 +28,16 @@ import type { CombatSceneArgsV10 } from './contracts';
 import type { V9FixtureClock } from './resource-turns-v9-fixture';
 
 export type V10FixtureClock = V9FixtureClock;
+
+export const V10G_PREVIEW_MAPS = Object.freeze({
+    'twin-crests': 4, 'trench-needle': 5, 'stepping-mesa': 6,
+    'rampart-high-left': 7, 'rampart-high-right': 8
+});
+export function v10GPreviewSeed(search: string): number {
+    const map = new URLSearchParams(search).get('terrain-map');
+    return map && Object.hasOwn(V10G_PREVIEW_MAPS, map)
+        ? V10G_PREVIEW_MAPS[map as keyof typeof V10G_PREVIEW_MAPS] : 4;
+}
 
 export const V10F_PREVIEW_DEFAULT_SEED = 1;
 
@@ -270,7 +281,9 @@ export async function createTerrainStartsV10Fixture(
         });
         if (result.accepted && result.mutated) state = result.state;
     };
-    const previewLabel = rulesetId === V10_R3_RULESET_ID
+    const previewLabel = rulesetId === V10_R4_RULESET_ID
+        ? `V10G ${terrainProfileLabel(state.terrainProfileId)}${state.terrainProfileId === 'asymmetric-rampart' ? (v10gFamilyForSeed(seed).reflected ? ' · high right' : ' · high left') : ''} · cover, shelves and breaching · local-only`
+        : rulesetId === V10_R3_RULESET_ID
         ? 'V10G Twin Crests · cover, shelves and breaching · local-only'
         : rulesetId === V10_R2_RULESET_ID
         ? [
@@ -288,6 +301,7 @@ export async function createTerrainStartsV10Fixture(
         kind: 'v10',
         get snapshot() { return cloneSimulationV10(state); },
         previewLabel,
+        ...(rulesetId === V10_R4_RULESET_ID ? { previewTerrainReflected: v10gFamilyForSeed(seed).reflected } : {}),
         ...(proceduralSurface ? { previewTerrainReflected: proceduralSurface.reflected } : {}),
         submit,
         setPaused,

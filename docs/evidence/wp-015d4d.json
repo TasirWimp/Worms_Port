@@ -12,7 +12,8 @@
   "scope": [
     "V10G geometry-first Twin Crests and distinct weapon tactics under the existing contract.",
     "First implementation checkpoint: authoritative combat dimensions, geometry constraints and executable baseline witnesses; R3 integration follows.",
-    "Continue from committed geometry checkpoint 31efa43 on a clean V10G branch: geometry-derived Twin Crests, R3 projectile and blast rules, explicit preview and AI/replay parity."
+    "Continue from committed geometry checkpoint 31efa43 on a clean V10G branch: geometry-derived Twin Crests, R3 projectile and blast rules, explicit preview and AI/replay parity.",
+    "Family expansion starts clean at c52fc28 after owner phone acceptance: R4 finite catalogue, bounded geometry admission, named phone selection, per-family authority and replay witnesses."
   ],
   "non_goals": [
     "No agents, public activation, legacy ruleset changes or asset imports. Owner subsequently authorized committing and publishing the geometry checkpoint on the V10G branch."
@@ -23,7 +24,11 @@
     "Housekeeping and direct review; physical phone acceptance remains owner-run."
   ],
   "deterministic_seeds": [
-    "4"
+    "4",
+    "5",
+    "6",
+    "7",
+    "8"
   ],
   "sorcerers_reference_used": true,
   "clean_room_records": [
@@ -64,6 +69,26 @@
       "command": "npm run check:compliance; npm run audit:housekeeping (R3 integration)",
       "status": "pass",
       "detail": "Compliance passed with 56 packages and five frozen clean-room records. Housekeeping reports the correct same-name V10G tracking branch; historical open packages remain retained."
+    },
+    {
+      "command": "node --import tsx --test tests/simulation/terrain-tactics-v10g.test.ts tests/combat/terrain-starts-v10.test.ts (family development)",
+      "status": "fail",
+      "detail": "All 18 tactical tests passed. One fixture case for high-left Rampart checked impact after only 30 ticks; the unobstructed shot had not reached the world edge. Corrected the test to await projectile resolution within a bounded ten clock windows; no product timing or flight changes. The corrected case passes in the selected combat suite."
+    },
+    {
+      "command": "node --import tsx --test --test-name-pattern='V10G family catalogue|V10G runtime admission' tests/simulation/terrain-tactics-v10g.test.ts; focused V10G Mesa countershot; standalone strict tsc of tactical tests",
+      "status": "pass",
+      "detail": "Late direct-review additions pass: both exits from the Trench notch are declared and reached in real simulation; narrow/low/unsupported geometry fails admission; Mesa downhill attack has an upward 60-damage countershot. Standalone strict test typing passes. Final terrain source precedes both server and client build outputs."
+    },
+    {
+      "command": "npm run verify:changes -- --dry-run; npm run verify:changes (R4 family expansion)",
+      "status": "pass",
+      "detail": "Selected verification passed: combat 88, Practice 42, protocol 125, simulation 175 (including 18 V10G tactical cases), Loomkeeper 39, Relics 10, identity 22, reward 37, tooling 110. Types, current server/client builds, four built-server smokes, identity/reward security and bundle budgets passed. Canonical Chromium phone: 67 passed, three expected project exclusions. All five R4 maps completed aim/fire and AI handoff; portrait escape pause/default fire passed. PostgreSQL skipped for absent WP014_TEST_DATABASE_URL. Full daily/release coverage is separate."
+    },
+    {
+      "command": "npm run check:compliance; npm run audit:housekeeping; npm run check:work-packages; git diff --check (R4 family expansion)",
+      "status": "pass",
+      "detail": "Compliance, evidence and whitespace pass. Housekeeping confirms the same-name V10G tracking branch with no gone upstream; historical package/review findings remain preserved. No agents, new dependencies, assets or external source inspection. Inspected canonical Windows screenshots for Trench, Mesa and both Ramparts: terrain distinctions, actor cards, camera/off-screen guidance and collapsed controls are retained; inherited Use-label clipping remains deferred."
     }
   ],
   "reviews": [
@@ -78,19 +103,32 @@
       "reviewer": "single-owner R3 first-map direct review",
       "decision": "pass",
       "detail": "Bounded first-map implementation: geometry-derived cover and shelves, terrain-first muzzle/swept collision, pre-impact nine-point blast shielding, distinct Relic roles, real movement/breach witnesses, explicit R3 AI and replay parity. Legacy defaults retained. Corrected a browser test orientation assumption after reproducing the resulting self-hit. First-map physical acceptance and wider family admission remain open."
+    },
+    {
+      "role": "owner",
+      "reviewer": "physical-phone Twin Crests acceptance",
+      "decision": "pass",
+      "detail": "Owner reports committed, pushed and phone-tested c52fc28 working as expected; explicitly authorizes remaining family expansion. Does not imply expanded-map acceptance or public activation."
+    },
+    {
+      "role": "primary assistant",
+      "reviewer": "single-owner R4 family expansion direct review",
+      "decision": "pass",
+      "detail": "All five finite maps use the unchanged R3 weapon rules through explicit R4 simulation, preview, AI and replay identity. Actual tests prove protected hitbox boundaries, all declared ordinary jumps (including both Trench exits), two Mesa climbs and downhill/upward tradeoff, Rampart low-side shelf attack/counterattack, legal low-pocket breach follow-ups and exact reconstruction after AI responses. Wrong profile/recipe is rejected; old R3 terrain remains frozen for every tested seed. Runtime admission uses actual widths and support, not only advertised labels. Phone-browser and selected inherited checks passed. Expanded physical-phone acceptance remains open; no public promotion or balance claim."
     }
   ],
   "skipped_checks": [
     "Three canonical browser cases are intentionally routed to other projects by tests/browser/quality-policy.json.",
-    "PostgreSQL gate not run: test database URL is absent and the integration selector stopped at its browser failure. CI owns the database prerequisite.",
-    "Full daily/release suite, performance and audit were not repeated at this implementation checkpoint. The 22:00 Europe/Berlin automation remains unchanged.",
-    "Physical Android/iOS acceptance and Ubuntu visual baseline comparison/approval not run. Windows screenshots are inspection evidence only."
+    "PostgreSQL skipped by the selector because WP014_TEST_DATABASE_URL is absent; CI must run that database gate.",
+    "Full daily/release suite, performance and dependency audit are not repeated at this implementation checkpoint; no package changes. The 22:00 Europe/Berlin automation is unchanged.",
+    "Expanded-family physical Android/iOS acceptance and Ubuntu visual baseline comparison/approval are not run. Owner Twin Crests acceptance at c52fc28 is retained; Windows screenshots are inspection only."
   ],
   "residual_risks": [
-    "V10G remains in progress pending owner phone acceptance of the fixed Twin Crests map at /?combat-preview=v10g; other terrain families are deferred until that gate.",
-    "The fixed recipe is admitted by executable actual-authority witnesses. Future variable generation requires extending admission; the horizontal geometry scan alone does not prove arbitrary-angle protection.",
-    "Blast exposure uses the documented finite nine-point sampling policy, not continuous body integration. Existing three-tick shooter immunity remains; steep shots can subsequently hit the caster.",
-    "Raster impact faces produce 60 versus 53 units of extra walking progress after the mirrored breach witness; both exceed the required 48 units.",
-    "Screenshot inspection shows inherited long Relic names clipped in the narrow Use button and overlap of the expanded menu with the player. Selection is available in the menu and the menu collapses; phone usability remains an owner acceptance concern."
+    "R4 family expansion is implemented; expanded-map phone acceptance remains open. Public Practice/Daily/reward activation remains separate.",
+    "Finite recipes have actual-authority witnesses plus bounded runtime geometry admission. Future arbitrary or variable recipes need new tactical admission evidence, not just geometry checks.",
+    "R4 reuses the R3 finite nine-point pre-impact blast policy and three-tick shooter immunity. Steep projectiles can subsequently hit their caster.",
+    "Rampart opening lobs favor the high side: the recorded full-power 60-degree shot deals 45 high-to-low versus 6/7 splash low-to-high. No equal-win-rate/balance claim is made. Surface reflection is exact; signed impact rasterization need not be.",
+    "AI uses the existing bounded 180-candidate planner with one jump per candidate; it responds on all maps but does not optimize Mesa multi-jump routes.",
+    "Inherited narrow Use-button label clipping and expanded-menu overlap were present in the phone-accepted predecessor and remain deferred."
   ]
 }

@@ -253,8 +253,8 @@ export default class CombatScene extends Phaser.Scene {
         const preview = this.resourcePreview;
         const args = await (this.resourceArgs ?? (preview === 'v10' || preview === 'v10e' || preview === 'v10f' || preview === 'v10g'
             ? await import('../combat/terrain-starts-v10-fixture').then(module => {
-                const seed = preview === 'v10g' ? 4 : preview === 'v10f' ? module.v10FPreviewSeed(window.location.search) : 1;
-                const rulesetId = preview === 'v10g' ? 'nimble-knots-artillery-v10-r3' : preview === 'v10f'
+                const seed = preview === 'v10g' ? module.v10GPreviewSeed(window.location.search) : preview === 'v10f' ? module.v10FPreviewSeed(window.location.search) : 1;
+                const rulesetId = preview === 'v10g' ? 'nimble-knots-artillery-v10-r4' : preview === 'v10f'
                     ? 'nimble-knots-artillery-v10-r2'
                     : preview === 'v10e'
                         ? 'nimble-knots-artillery-v10-r1'

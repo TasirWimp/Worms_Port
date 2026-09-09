@@ -1,5 +1,5 @@
 import { V10G_PROJECTILE_RULES } from './projectile-rules-v10g';
-import { generateV10GTwinCrests, V10G_RECIPE_REVISION } from './terrain-generation-v10g';
+import { generateV10GTwinCrests, V10G_RECIPE_REVISION, generateV10GFamily, v10gFamilyForSeed, V10G_FAMILY_RECIPE_REVISION } from './terrain-generation-v10g';
 import { z } from 'zod';
 import {
     applySimulationBarrierV9, applySimulationIntentV9, advanceSimulationTicksV9,
@@ -25,10 +25,12 @@ export const V10_RULESET_ID = 'nimble-knots-artillery-v10' as const;
 export const V10_R1_RULESET_ID = 'nimble-knots-artillery-v10-r1' as const;
 export const V10_R2_RULESET_ID = 'nimble-knots-artillery-v10-r2' as const;
 export const V10_R3_RULESET_ID = 'nimble-knots-artillery-v10-r3' as const;
-export const V10_RULESET_IDS = Object.freeze([V10_RULESET_ID, V10_R1_RULESET_ID, V10_R2_RULESET_ID, V10_R3_RULESET_ID] as const);
+export const V10_R4_RULESET_ID = 'nimble-knots-artillery-v10-r4' as const;
+export const usesV10GTactics = (rulesetId: string): boolean => rulesetId === V10_R3_RULESET_ID || rulesetId === V10_R4_RULESET_ID;
+export const V10_RULESET_IDS = Object.freeze([V10_RULESET_ID, V10_R1_RULESET_ID, V10_R2_RULESET_ID, V10_R3_RULESET_ID, V10_R4_RULESET_ID] as const);
 export type V10RulesetId = typeof V10_RULESET_IDS[number];
 export function isV10RulesetId(value: unknown): value is V10RulesetId {
-    return value === V10_RULESET_ID || value === V10_R1_RULESET_ID || value === V10_R2_RULESET_ID || value === V10_R3_RULESET_ID;
+    return value === V10_RULESET_ID || value === V10_R1_RULESET_ID || value === V10_R2_RULESET_ID || value === V10_R3_RULESET_ID || value === V10_R4_RULESET_ID;
 }
 export const V10_RULESET_VERSION = 10 as const;
 export const V10_TERRAIN_PROFILE_IDS = Object.freeze([
@@ -105,7 +107,7 @@ export type V10TacticalArena = Readonly<{
     opening: V10OpeningPair;
     evaluatedPairs: number;
     eligiblePairs: number;
-    recipeRevision?: typeof V10_PROCEDURAL_RECIPE_REVISION | typeof V10G_RECIPE_REVISION;
+    recipeRevision?: typeof V10_PROCEDURAL_RECIPE_REVISION | typeof V10G_RECIPE_REVISION | typeof V10G_FAMILY_RECIPE_REVISION;
     candidateIndex?: number;
     fallbackUsed?: boolean;
 }>;
@@ -115,7 +117,7 @@ export type SimulationStateV10 = Omit<SimulationStateV9, 'formatVersion' | 'rule
     rulesetId: V10RulesetId;
     rulesetVersion: 10;
     terrainProfileId: V10TerrainProfileId;
-    terrainRecipeRevision?: typeof V10_PROCEDURAL_RECIPE_REVISION | typeof V10G_RECIPE_REVISION;
+    terrainRecipeRevision?: typeof V10_PROCEDURAL_RECIPE_REVISION | typeof V10G_RECIPE_REVISION | typeof V10G_FAMILY_RECIPE_REVISION;
     terrainCandidateIndex?: number;
 };
 export type SimulationIntentV10 = SimulationIntentV9;
@@ -130,30 +132,31 @@ export const SimulationStateV10Schema = SimulationStateV9Schema.omit({
     rulesetId: z.enum(V10_RULESET_IDS),
     rulesetVersion: z.literal(10),
     terrainProfileId: z.enum(V10_ALL_TERRAIN_PROFILE_IDS),
-    terrainRecipeRevision: z.enum([V10_PROCEDURAL_RECIPE_REVISION, V10G_RECIPE_REVISION]).optional(),
+    terrainRecipeRevision: z.enum([V10_PROCEDURAL_RECIPE_REVISION, V10G_RECIPE_REVISION, V10G_FAMILY_RECIPE_REVISION]).optional(),
     terrainCandidateIndex: z.number().int().min(0).max(V10_PROCEDURAL_CANDIDATE_COUNT - 1).optional()
 }).strict().superRefine((state, context) => {
     const r3 = state.rulesetId === V10_R3_RULESET_ID;
-    const procedural = state.rulesetId === V10_R2_RULESET_ID || r3;
+    const r4 = state.rulesetId === V10_R4_RULESET_ID;
+    const procedural = state.rulesetId === V10_R2_RULESET_ID || r3 || r4;
     const expectedProfiles = procedural
         ? V10_PROCEDURAL_TERRAIN_PROFILE_IDS
         : state.rulesetId === V10_R1_RULESET_ID ? V10_R1_TERRAIN_PROFILE_IDS : V10_TERRAIN_PROFILE_IDS;
-    if (!(expectedProfiles as readonly string[]).includes(state.terrainProfileId) || (r3 && state.terrainProfileId !== 'twin-crests')) {
+    if (!(expectedProfiles as readonly string[]).includes(state.terrainProfileId) || (r3 && state.terrainProfileId !== 'twin-crests') || (r4 && state.terrainProfileId !== v10gFamilyForSeed(state.seed).profileId)) {
         context.addIssue({ code: z.ZodIssueCode.custom, path: ['terrainProfileId'],
             message: 'Terrain profile does not belong to the recorded V10 ruleset.' });
     }
-    if (procedural && (state.terrainRecipeRevision !== (r3 ? V10G_RECIPE_REVISION : V10_PROCEDURAL_RECIPE_REVISION) || (r3 && state.terrainCandidateIndex !== 0))) {
+    if (procedural && (state.terrainRecipeRevision !== (r4 ? V10G_FAMILY_RECIPE_REVISION : r3 ? V10G_RECIPE_REVISION : V10_PROCEDURAL_RECIPE_REVISION) || ((r3 || r4) && state.terrainCandidateIndex !== 0))) {
         context.addIssue({ code: z.ZodIssueCode.custom, path: ['terrainRecipeRevision'], message: 'Recipe/candidate does not belong to ruleset.' });
     }
     const hasRecipeRevision = Object.prototype.hasOwnProperty.call(state, 'terrainRecipeRevision');
     const hasCandidateIndex = Object.prototype.hasOwnProperty.call(state, 'terrainCandidateIndex');
     if (procedural !== hasRecipeRevision || (hasRecipeRevision && state.terrainRecipeRevision === undefined)) {
         context.addIssue({ code: z.ZodIssueCode.custom, path: ['terrainRecipeRevision'],
-            message: 'Procedural recipe revision must match the R2/R3 ruleset.' });
+            message: 'Procedural recipe revision must match the R2/R3/R4 ruleset.' });
     }
     if (procedural !== hasCandidateIndex || (hasCandidateIndex && state.terrainCandidateIndex === undefined)) {
         context.addIssue({ code: z.ZodIssueCode.custom, path: ['terrainCandidateIndex'],
-            message: 'Procedural candidate index must match the R2/R3 ruleset.' });
+            message: 'Procedural candidate index must match the R2/R3/R4 ruleset.' });
     }
 });
 export const SimulationIntentV10Schema = SimulationIntentV9Schema;
@@ -164,6 +167,7 @@ export function v10TerrainProfileForSeed(
     rulesetId: V10RulesetId = V10_RULESET_ID
 ): V10TerrainProfileId {
     const normalized = normalizeSeed(seed);
+    if (rulesetId === V10_R4_RULESET_ID) return v10gFamilyForSeed(normalized).profileId;
     if (rulesetId === V10_R3_RULESET_ID) return 'twin-crests';
     if (rulesetId === V10_R2_RULESET_ID) return v10ProceduralTerrainProfileForSeed(normalized);
     const profiles = rulesetId === V10_R1_RULESET_ID ? V10_R1_TERRAIN_PROFILE_IDS : V10_TERRAIN_PROFILE_IDS;
@@ -176,11 +180,11 @@ export function generateV10TacticalArena(
 ): V10TacticalArena {
     const normalized = normalizeSeed(seed);
     const profileId = v10TerrainProfileForSeed(normalized, rulesetId);
-    if (rulesetId === V10_R3_RULESET_ID) {
-        const candidate = generateV10GTwinCrests();
-        return { terrain: candidate.terrain, rngState: normalized, profileId, reflected: false, variation: 0, phase: 0,
+    if (usesV10GTactics(rulesetId)) {
+        const candidate = rulesetId === V10_R4_RULESET_ID ? generateV10GFamily(normalized) : generateV10GTwinCrests();
+        return { terrain: candidate.terrain, rngState: normalized, profileId, reflected: rulesetId === V10_R4_RULESET_ID && v10gFamilyForSeed(normalized).reflected, variation: 0, phase: 0,
             opening: { ...candidate.opening, score: { profileFit: 0, combinedLocalMobility: 0, centerBias: 0, tieBreak: normalized }, jumpPositions: candidate.jumpPositions },
-            evaluatedPairs: 1, eligiblePairs: 1, recipeRevision: V10G_RECIPE_REVISION, candidateIndex: 0, fallbackUsed: false };
+            evaluatedPairs: 1, eligiblePairs: 1, recipeRevision: candidate.recipeRevision, candidateIndex: 0, fallbackUsed: false };
     }
     if (rulesetId === V10_R2_RULESET_ID) {
         const selection = selectV10ProceduralSurface(normalized);
@@ -274,7 +278,7 @@ export function createSimulationV10(
         rulesetVersion: 10,
         rngState: arena.rngState,
         terrainProfileId: arena.profileId,
-        ...((rulesetId === V10_R2_RULESET_ID || rulesetId === V10_R3_RULESET_ID) ? {
+        ...((rulesetId === V10_R2_RULESET_ID || usesV10GTactics(rulesetId)) ? {
             terrainRecipeRevision: arena.recipeRevision!,
             terrainCandidateIndex: arena.candidateIndex!
         } : {}),
@@ -305,14 +309,14 @@ export function applySimulationIntentV10(
 ): SimulationTransitionV10 {
     assertSimulationInvariantsV10(current);
     return fromV9Transition(
-        applySimulationIntentV9(toV9(current), actor, intent, expectedTurn, expectedPhase, expectedEpoch, current.rulesetId === V10_R3_RULESET_ID ? V10G_PROJECTILE_RULES : undefined),
+        applySimulationIntentV9(toV9(current), actor, intent, expectedTurn, expectedPhase, expectedEpoch, usesV10GTactics(current.rulesetId) ? V10G_PROJECTILE_RULES : undefined),
         current
     );
 }
 
 export function advanceSimulationTicksV10(current: SimulationStateV10, count: number): SimulationTransitionV10 {
     assertSimulationInvariantsV10(current);
-    return fromV9Transition(advanceSimulationTicksV9(toV9(current), count, current.rulesetId === V10_R3_RULESET_ID ? V10G_PROJECTILE_RULES : undefined), current);
+    return fromV9Transition(advanceSimulationTicksV9(toV9(current), count, usesV10GTactics(current.rulesetId) ? V10G_PROJECTILE_RULES : undefined), current);
 }
 
 export function applySimulationBarrierV10(
@@ -337,7 +341,7 @@ export function cloneSimulationV10(state: SimulationStateV10): SimulationStateV1
 /**
  * Detached compatibility view for the frozen V9 planner. V10 authority keeps
  * its own identity and terrain profile; the planner receives only a deep V9
- * clone and therefore cannot mutate or relabel the live V10 state. R3 callers
+ * clone and therefore cannot mutate or relabel the live V10 state. R3/R4 callers
  * must also bind R3 mechanics, as LoomkeeperPlannerV10 does; this view alone
  * does not carry the candidate's physics.
  */
@@ -389,7 +393,7 @@ function fromV9(
     state: SimulationStateV9,
     rulesetId: V10RulesetId,
     terrainProfileId: V10TerrainProfileId,
-    terrainRecipeRevision?: typeof V10_PROCEDURAL_RECIPE_REVISION | typeof V10G_RECIPE_REVISION,
+    terrainRecipeRevision?: typeof V10_PROCEDURAL_RECIPE_REVISION | typeof V10G_RECIPE_REVISION | typeof V10G_FAMILY_RECIPE_REVISION,
     terrainCandidateIndex?: number
 ): SimulationStateV10 {
     return {

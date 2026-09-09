@@ -14,7 +14,7 @@ import {
     type LoomkeeperSelectionV9,
     type V9Prefix
 } from './loomkeeper-v9';
-import { simulationV9ViewOfV10, V10_R3_RULESET_ID, type SimulationStateV10 } from './simulation-v10';
+import { simulationV9ViewOfV10, usesV10GTactics, type SimulationStateV10 } from './simulation-v10';
 
 /** V10 deliberately inherits the complete frozen V9 search budget. */
 export const V10_AI_PLANS = V9_AI_PLANS;
@@ -27,15 +27,15 @@ export type LoomkeeperSelectionV10 = LoomkeeperSelectionV9;
 export type LoomkeeperCandidateV10 = LoomkeeperCandidateV9;
 export type LoomkeeperOperationV10 = LoomkeeperOperationV9;
 
-/** Legacy identity adapter; R3 also binds explicit mechanics and candidate timing. */
+/** Legacy identity adapter; R3/R4 also bind explicit mechanics and candidate timing. */
 export class LoomkeeperPlannerV10 {
     private readonly planner: LoomkeeperPlannerV9;
 
     public constructor(source: SimulationStateV10, options: LoomkeeperPlannerOptionsV9 = {}) {
         this.planner = new LoomkeeperPlannerV9(simulationV9ViewOfV10(source), {
             ...options,
-            mechanics: source.rulesetId === V10_R3_RULESET_ID ? V10G_PROJECTILE_RULES : undefined,
-            candidateAt: source.rulesetId === V10_R3_RULESET_ID ? v10gCandidateAt : undefined
+            mechanics: usesV10GTactics(source.rulesetId) ? V10G_PROJECTILE_RULES : undefined,
+            candidateAt: usesV10GTactics(source.rulesetId) ? v10gCandidateAt : undefined
         });
     }
 
@@ -50,7 +50,7 @@ export class LoomkeeperPlannerV10 {
     public selectedCandidate(): LoomkeeperCandidateV10 | undefined { return this.planner.selectedCandidate(); }
 }
 
-/** Same 180-slot budget; precision angles and jump approach belong to R3 only. */
+/** Same 180-slot budget; precision angles and jump approach belong to R3/R4 only. */
 export function v10gCandidateAt(ordinal: number): LoomkeeperCandidateV10 {
     const candidate = candidateAt(ordinal);
     return { ...candidate,

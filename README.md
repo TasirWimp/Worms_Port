@@ -58,11 +58,14 @@ are also recorded in the Execution Pointer of
   [V10G contract](docs/planning/wp-015d4a-v10-terrain-starts-contract.md#v10g-terrain-and-weapon-tactics-preparation).
   Its first target is meaningful pocket, shelf and breach choices on Twin Crests;
   the geometry foundation and R3 weapon integration are implemented. The local
-  `/?combat-preview=v10g` route uses Twin Crests seed 4 for first-map review:
-  Threadball lobs, Needlepoint needs a clear lane, and Spoolburst breaches cover.
-  The existing sideways options apply. Public Practice/Daily remain unchanged.
-  Other terrain families await this first-map acceptance. The
-  [frozen weapon observations](docs/evidence/wp-015d4d-v10g-weapon-terrain-reference.md)
+  `/?combat-preview=v10g` route defaults to the phone-accepted Twin Crests.
+  The expanded R4 catalogue adds `&terrain-map=trench-needle`,
+  `&terrain-map=stepping-mesa`, `&terrain-map=rampart-high-left` and
+  `&terrain-map=rampart-high-right`. These maps await phone acceptance.
+  Threadball lobs, Needlepoint fires straight and Spoolburst breaches; cover
+  shields the hitbox and blocks blast influence. Existing R3 recordings and R2
+  previews retain their original behavior. Public Practice/Daily are unchanged.
+  The [frozen weapon observations](docs/evidence/wp-015d4d-v10g-weapon-terrain-reference.md)
   preserve the reference boundary separately from the evolving contract.
 - Assets from Sorcerers may move into `assets/` only after exact-file license
   evidence proves commercial use, redistribution, and modification are allowed.

@@ -26,13 +26,13 @@ import {
     createSimulationV10,
     simulationV9ViewOfV10,
     V10_R1_RULESET_ID,
-    V10_R3_RULESET_ID,
+    V10_R3_RULESET_ID, V10_R4_RULESET_ID,
     V10_RULESET_ID,
     type SimulationStateV10
 } from '../../shared/simulation-v10';
 
-test('V10G planner keeps R3 precision physics through cached and uncached V9 rollouts', () => {
-    const source = createSimulationV10(4, 'wizard', V10_R3_RULESET_ID);
+for (const ruleset of [V10_R3_RULESET_ID, V10_R4_RULESET_ID]) test(`V10G planner precision/cache parity: ${ruleset}`, () => {
+    const source = createSimulationV10(5, 'wizard', ruleset);
     source.activeActor = 'loomkeeper'; source.units[1].thread = 3;
     for (const [index, unit] of source.units.entries()) {
         const x = index === 0 ? 880 : 1168;

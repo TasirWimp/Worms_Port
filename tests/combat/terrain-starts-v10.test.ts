@@ -4,11 +4,11 @@ import test from 'node:test';
 import {
     createTerrainStartsV10Fixture,
     trajectoryPreviewV10,
-    v10FPreviewSeed,
+    v10FPreviewSeed, v10GPreviewSeed,
     type V10FixtureClock
 } from '../../client/src/combat/terrain-starts-v10-fixture';
 import {
-    canonicalSimulationJsonV10, V10_R1_RULESET_ID, V10_R2_RULESET_ID, V10_R3_RULESET_ID, V10_RULESET_ID
+    canonicalSimulationJsonV10, V10_R1_RULESET_ID, V10_R2_RULESET_ID, V10_R3_RULESET_ID, V10_R4_RULESET_ID, V10_RULESET_ID
 } from '../../shared/simulation-v10';
 
 function createClock(): V10FixtureClock & { advanceThirtyTicks: () => void } {
@@ -28,9 +28,9 @@ function createClock(): V10FixtureClock & { advanceThirtyTicks: () => void } {
     };
 }
 
-test('V10G fixture preview matches live precision, re-aims after selection and restarts exactly', async () => {
+for (const seed of [0, 4, 5, 6, 7, 8]) test(`V10G fixture preview, AI and restart parity: ${seed || 'R3'}`, async () => {
     const clock = createClock();
-    const fixture = await createTerrainStartsV10Fixture(4, 'wizard', clock, V10_R3_RULESET_ID);
+    const fixture = await createTerrainStartsV10Fixture(seed || 4, 'wizard', clock, seed ? V10_R4_RULESET_ID : V10_R3_RULESET_ID);
     const initial = canonicalSimulationJsonV10(fixture.snapshot);
     const stop = fixture.onSnapshot(() => {});
     try {
@@ -45,7 +45,7 @@ test('V10G fixture preview matches live precision, re-aims after selection and r
         assert.ok(preview.every(point => point.y === preview[0].y));
         const aimed = await fixture.submit({ type: 'aim', angleMilliDegrees: 0, powerPermille: 1000 });
         await fixture.submit({ type: 'fire', aimId: aimed.aimId });
-        clock.advanceThirtyTicks();
+        for (let window = 0; window < 10 && fixture.snapshot.phase === 'projectile'; window++) clock.advanceThirtyTicks();
         assert.deepEqual(fixture.snapshot.lastProjectile?.trace, preview);
         const restarted = await fixture.restart();
         try { assert.equal(canonicalSimulationJsonV10(restarted.snapshot), initial); }
@@ -57,7 +57,7 @@ test('V10G fixture preview matches live precision, re-aims after selection and r
 });
 
 test('V10 aiming excludes preview computation but retains pre-existing and subsequent clock debt', async () => {
-    for (const ruleset of [V10_RULESET_ID, V10_R1_RULESET_ID, V10_R2_RULESET_ID, V10_R3_RULESET_ID]) {
+    for (const ruleset of [V10_RULESET_ID, V10_R1_RULESET_ID, V10_R2_RULESET_ID, V10_R3_RULESET_ID, V10_R4_RULESET_ID]) {
         let now = 0;
         const fixture = await createTerrainStartsV10Fixture(1, 'wizard', {
             now: () => now, every: () => () => {}
@@ -252,4 +252,11 @@ test('V10F local fixture completes a bounded Loomkeeper response on procedural t
         stop();
         fixture.destroy();
     }
+});
+
+
+test('V10G phone map query selects only named reviewed recipes', () => {
+    for (const [name, seed] of Object.entries({ 'twin-crests': 4, 'trench-needle': 5, 'stepping-mesa': 6,
+        'rampart-high-left': 7, 'rampart-high-right': 8 })) assert.equal(v10GPreviewSeed(`?terrain-map=${name}`), seed);
+    for (const search of ['', '?terrain-map=unknown', '?terrain-map=__proto__', '?terrain-seed=6']) assert.equal(v10GPreviewSeed(search), 4);
 });
