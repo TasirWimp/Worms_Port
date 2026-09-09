@@ -557,6 +557,61 @@ test('V10E phone preview exposes tactical terrain and a working jump from cover'
   await page.screenshot({ path: testInfo.outputPath('v10e-tactical-terrain-phone.png') });
 });
 
+test('V10G phone preview keeps role guidance compact and selected precision survives aiming', async ({ page }, testInfo) => {
+  test.setTimeout(60_000);
+  const requests: string[] = [];
+  page.on('request', request => requests.push(request.url()));
+  await page.goto('/?combat-preview=v10g');
+  const ui = page.locator('.combat-v10');
+  await expect(ui).toHaveAttribute('data-ruleset', 'nimble-knots-artillery-v10-r3');
+  await expect(ui).toHaveAttribute('data-terrain-seed', '4');
+  await expect(ui).toHaveAttribute('data-terrain-recipe-revision', 'v10g-twin-crests-r1');
+  await expect(ui).toHaveAttribute('data-opening-survey', 'false', { timeout: 5_000 });
+  await expect(page.locator('.v9-action-menu')).toBeHidden();
+  await assertV9ActorCardsFit(page);
+  await page.getByRole('button', { name: 'Actions' }).tap();
+  await page.getByRole('button', { name: 'Attack' }).tap();
+  await expect(page.getByRole('button', { name: 'Threadball · 2 · Lob', exact: true })).toBeVisible();
+  await expect(page.getByRole('button', { name: 'Spoolburst · 5 · Breach', exact: true })).toBeDisabled();
+  await page.screenshot({ path: testInfo.outputPath('v10g-roles-phone.png') });
+  await page.getByRole('button', { name: 'Needlepoint · 3 · Precision', exact: true }).tap();
+  await expect(ui).toHaveAttribute('data-selected-relic', 'needlepoint');
+  const sideways = await page.evaluate(() => document.documentElement.dataset.sideways);
+  await dragPad(page, '.combat-v10 .aim-zone', 1152,
+    sideways ? 0 : 0.35, sideways === 'right' ? 0.35 : sideways === 'left' ? -0.35 : 0);
+  await expect(ui).toHaveAttribute('data-aim-locked', 'true');
+  await expect(ui).toHaveAttribute('data-selected-relic', 'needlepoint');
+  await expect(page.locator('.fire-button')).toBeEnabled();
+  await page.screenshot({ path: testInfo.outputPath('v10g-cover-phone.png') });
+  await page.locator('.fire-button').tap();
+  await expect(ui).toHaveAttribute('data-player-thread', '0');
+  await expect(ui).toHaveAttribute('data-combat-phase', 'retreat');
+  await expect(page.locator('.player-status')).toHaveAttribute('aria-label', /100 Stitching/);
+  await expect(ui).toHaveAttribute('data-terminal', 'false');
+  await expect(ui).toHaveAttribute('data-active-actor', 'loomkeeper', { timeout: 8_000 });
+  await expect(ui).toHaveAttribute('data-active-actor', 'player', { timeout: 35_000 });
+  await expect(ui).toHaveAttribute('data-player-thread', '3');
+  await expect(ui).toHaveAttribute('data-terminal', 'false');
+  await expect(page.locator('.practice-shell')).toHaveCount(0);
+  expect(requests.some(url => /socket\.io|\/(?:session|challenge|reward)(?:\/|$|\?)/.test(url))).toBe(false);
+});
+
+test('V10G phone portrait escape pauses, resumes and fires the default Relic after immediate aiming', async ({ page }, testInfo) => {
+  await page.goto('/?combat-preview=v10g&sideways=off');
+  const ui = page.locator('.combat-v10');
+  await expect(ui).toBeVisible();
+  await page.getByRole('button', { name: 'Pause', exact: true }).tap();
+  await page.getByRole('button', { name: 'Resume', exact: true }).tap();
+  await dragPad(page, '.combat-v10 .aim-zone', 1153, 0.35, -0.35);
+  await expect(ui).toHaveAttribute('data-selected-relic', 'threadball');
+  await expect(ui).toHaveAttribute('data-aim-locked', 'true');
+  await expect(page.locator('.fire-button')).toBeEnabled();
+  await page.screenshot({ path: testInfo.outputPath('v10g-portrait-escape.png') });
+  await page.locator('.fire-button').tap();
+  await expect(ui).toHaveAttribute('data-player-thread', '1');
+  await expect(ui).toHaveAttribute('data-terminal', 'false');
+});
+
 test('V10F phone preview keeps procedural terrain readable and supports a normal terrain jump', async ({ page }, testInfo) => {
   test.setTimeout(60_000);
   const requests: string[] = [];

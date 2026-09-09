@@ -16,16 +16,15 @@ Phaser/Socket.IO stack.
 - Active target: mobile-first single-player Nimiq Pay competition release.
 - Active implementation slice: **WP-015D4D V10G Terrain And Weapon Tactics**;
   see the [V10G preparation contract](wp-015d4a-v10-terrain-starts-contract.md#v10g-terrain-and-weapon-tactics-preparation).
-  Geometry implementation has started; see [evidence](../evidence/wp-015d4d.json).
-  The first checkpoint reproduces exposed V10F hitboxes and verifies a 112-unit
-  ledge with actual movement authority. No R3 game route exists yet. Continue with
-  launch/projectile/blast rules and derive
-  Twin Crests seed 4 pocket/ridge/shelf constraints before damage tuning.
-  Reject geometry that cannot provide its declared protection or advantage.
-  Verify pocket/lob, shelf/precision and deliberate
-  breach/follow-up. Proposed R3 separates the three Relic roles and must carry
-  those rules consistently through preview, AI and replay. Freeze numerical
-  parameters from concrete witnesses before expanding terrain families.
+  R3 Twin Crests and weapon integration are implemented; see
+  [evidence](../evidence/wp-015d4d.json). Verification and first-map phone
+  acceptance are the current gate. Local route `/?combat-preview=v10g` uses
+  seed 4 and `v10g-twin-crests-r1`: 112-unit pocket walls/shelves, a 120-unit
+  centre crest, straight terrain-blocked Needlepoint, gravity Threadball and
+  Spoolburst, and pre-impact terrain shielding for splash. AI and previews
+  receive the same explicit R3 mechanics; replay binds the new recipe/ruleset.
+  Do not expand families or activate public Practice/Daily before the first-map
+  phone review. Existing V10F seed routes retain R2 behavior.
   Current implementation branch: `codex/wp-015d4d-v10g-terrain-weapon-tactics`.
   The owner authorized committing and pushing the geometry checkpoint here;
   the predecessor V10F branch/evidence remain preserved.

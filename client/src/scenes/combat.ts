@@ -59,7 +59,7 @@ export default class CombatScene extends Phaser.Scene {
     private v8Args?: CombatSceneArgsV8;
     private resourceArgs?: ResourceTurnsSceneArgs;
     private v8Preview?: 'v8' | 'v8-r1';
-    private resourcePreview?: 'v9' | 'v10' | 'v10e' | 'v10f';
+    private resourcePreview?: 'v9' | 'v10' | 'v10e' | 'v10f' | 'v10g';
     private initializationGeneration = 0;
     private snapshot: ChallengeSnapshot;
     private authoritativeSnapshot: ChallengeSnapshot;
@@ -107,7 +107,7 @@ export default class CombatScene extends Phaser.Scene {
         this.resourceArgs = args?.kind === 'v9' || args?.kind === 'v10' ? args : undefined;
         const preview = new URLSearchParams(window.location.search).get('combat-preview');
         this.v8Preview = !args?.snapshot && (preview === 'v8' || preview === 'v8-r1') ? preview : undefined;
-        this.resourcePreview = !args?.snapshot && (preview === 'v9' || preview === 'v10' || preview === 'v10e' || preview === 'v10f')
+        this.resourcePreview = !args?.snapshot && (preview === 'v9' || preview === 'v10' || preview === 'v10e' || preview === 'v10f' || preview === 'v10g')
             ? preview : undefined;
         if (this.v8Args || this.resourceArgs || this.v8Preview || this.resourcePreview) return;
         this.args = args?.snapshot && args.kind !== 'v8' && args.kind !== 'v9' && args.kind !== 'v10' ? args : createCombatFixture();
@@ -251,10 +251,10 @@ export default class CombatScene extends Phaser.Scene {
         // Live injected arguments must yield once so Phaser can finish marking
         // the scene active before the stale-mount guard runs.
         const preview = this.resourcePreview;
-        const args = await (this.resourceArgs ?? (preview === 'v10' || preview === 'v10e' || preview === 'v10f'
+        const args = await (this.resourceArgs ?? (preview === 'v10' || preview === 'v10e' || preview === 'v10f' || preview === 'v10g'
             ? await import('../combat/terrain-starts-v10-fixture').then(module => {
-                const seed = preview === 'v10f' ? module.v10FPreviewSeed(window.location.search) : 1;
-                const rulesetId = preview === 'v10f'
+                const seed = preview === 'v10g' ? 4 : preview === 'v10f' ? module.v10FPreviewSeed(window.location.search) : 1;
+                const rulesetId = preview === 'v10g' ? 'nimble-knots-artillery-v10-r3' : preview === 'v10f'
                     ? 'nimble-knots-artillery-v10-r2'
                     : preview === 'v10e'
                         ? 'nimble-knots-artillery-v10-r1'

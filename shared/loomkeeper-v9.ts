@@ -1,3 +1,4 @@
+import type { ProjectileMechanics } from './simulation-v8';
 import {
     advanceSimulationTicksV9DetachedRollout, applySimulationBarrierV9, applySimulationIntentV9,
     completeDetachedSimulationRolloutV9, DetachedSimulationRolloutV9,
@@ -26,7 +27,7 @@ export type LoomkeeperSelectionV9 =
     | { prefix: V9Prefix; status: 'selected'; ordinal: number }
     | { prefix: 'none'; status: 'no_legal_plan' | 'work_failure'; ordinal: null };
 export type LoomkeeperCandidateV9 = { ordinal: number; scriptIndex: number; movementTicks: number; jump: boolean;
-    direction: 'stay' | 'toward' | 'away'; relicId: RelicId; angleMilliDegrees: number; powerPermille: number };
+    direction: 'stay' | 'toward' | 'away'; relicId: RelicId; angleMilliDegrees: number; powerPermille: number; jumpDelayTicks?: number };
 export type LoomkeeperOperationV9 = { kind: 'intent'; intent: SimulationIntentV9 } | { kind: 'barrier'; barrier: SimulationBarrierV9 };
 type Evaluation = { candidate: LoomkeeperCandidateV9; logicalTicks: number; rank: readonly number[] };
 /** Assessment-only evaluator; production selection always uses the fixed planner. */
@@ -42,6 +43,9 @@ export type LoomkeeperPlannerOptionsV9 = {
      * not alter the frozen lattice. Production always uses the default.
      */
     reuseIdenticalPrefixes?: boolean;
+    /** Internal later-version seams; absent for frozen V9 callers. */
+    mechanics?: ProjectileMechanics;
+    candidateAt?: (ordinal: number) => LoomkeeperCandidateV9;
 };
 
 /** Phaser-free bounded V9 planner. Prefix evaluation mutates clones only. */
@@ -52,13 +56,13 @@ export class LoomkeeperPlannerV9 {
     private readonly chargedSource: SimulationStateV9;
     private readonly preparedPrefixes = new Map<number, PreparedPrefix | undefined>();
     private readonly reuseIdenticalPrefixes: boolean;
-    public constructor(private readonly source: SimulationStateV9, options: LoomkeeperPlannerOptionsV9 = {}) {
+    public constructor(private readonly source: SimulationStateV9, private readonly options: LoomkeeperPlannerOptionsV9 = {}) {
         if (source.phase !== 'action') throw new Error('V9 automation requires an action state.');
         this.prefix = prefixFor(source);
         // The charged planning window is identical for every candidate. Keep
         // this immutable root and clone it for each candidate or shared prefix.
         const charged = DetachedSimulationRolloutV9.fromTrustedSource(source);
-        advanceSimulationTicksV9DetachedRollout(charged, V9_AI_PLANNING_TICKS);
+        advanceSimulationTicksV9DetachedRollout(charged, V9_AI_PLANNING_TICKS, options.mechanics);
         this.chargedSource = completeDetachedSimulationRolloutV9(charged);
         this.reuseIdenticalPrefixes = options.reuseIdenticalPrefixes !== false;
     }
@@ -66,8 +70,8 @@ export class LoomkeeperPlannerV9 {
         if (this.complete) throw new Error('The V9 planning pass is already complete.');
         const start = this.evaluatedCandidates;
         for (let ordinal = start; ordinal < start + V9_AI_PLANS_PER_TICK; ordinal += 1) {
-            if (!candidateAffordable(this.source, candidateAt(ordinal), this.prefix)) this.unaffordableCandidates++;
-            const evaluation = this.evaluate(candidateAt(ordinal));
+            if (!candidateAffordable(this.source, (this.options.candidateAt ?? candidateAt)(ordinal), this.prefix)) this.unaffordableCandidates++;
+            const evaluation = this.evaluate((this.options.candidateAt ?? candidateAt)(ordinal));
             this.maximumRolloutTicks = Math.max(this.maximumRolloutTicks, evaluation?.logicalTicks ?? V9_AI_MAX_ROLLOUT_TICKS);
             this.evaluatedCandidates += 1; this.rolloutTicks += evaluation?.logicalTicks ?? V9_AI_MAX_ROLLOUT_TICKS;
             if (this.rolloutTicks > V9_AI_MAX_TOTAL_ROLLOUT_TICKS) throw new Error('V9 planning exceeded its frozen rollout budget.');
@@ -84,24 +88,25 @@ export class LoomkeeperPlannerV9 {
         return this.best ? { prefix: this.prefix, status: 'selected', ordinal: this.best.candidate.ordinal }
             : { prefix: 'none', status: 'no_legal_plan', ordinal: null };
     }
-    public selectedCandidate(): LoomkeeperCandidateV9 | undefined { return this.selection.status === 'selected' ? candidateAt(this.selection.ordinal) : undefined; }
+    public selectedCandidate(): LoomkeeperCandidateV9 | undefined { return this.selection.status === 'selected' ? (this.options.candidateAt ?? candidateAt)(this.selection.ordinal) : undefined; }
     private evaluate(candidate: LoomkeeperCandidateV9): Evaluation | undefined {
         // Income cannot occur inside an action. A prefix can only spend two
         // Thread, so this candidate can be rejected before any identical
         // movement/physics work while still consuming its frozen lattice slot.
         if (!candidateAffordable(this.source, candidate, this.prefix)) return undefined;
-        if (!this.reuseIdenticalPrefixes) return evaluateCandidate(this.source, this.chargedSource, candidate, this.prefix);
+        if (!this.reuseIdenticalPrefixes) return evaluateCandidate(this.source, this.chargedSource, candidate, this.prefix, this.options.mechanics);
         if (!this.preparedPrefixes.has(candidate.scriptIndex))
-            this.preparedPrefixes.set(candidate.scriptIndex, preparePrefix(this.chargedSource, candidate, this.prefix));
+            this.preparedPrefixes.set(candidate.scriptIndex, preparePrefix(this.chargedSource, candidate, this.prefix, this.options.mechanics));
         const prepared = this.preparedPrefixes.get(candidate.scriptIndex);
-        return prepared ? evaluatePreparedCandidate(this.source, candidate, this.prefix, prepared)
-            : evaluateCandidate(this.source, this.chargedSource, candidate, this.prefix);
+        return prepared ? evaluatePreparedCandidate(this.source, candidate, this.prefix, prepared, this.options.mechanics)
+            : evaluateCandidate(this.source, this.chargedSource, candidate, this.prefix, this.options.mechanics);
     }
 }
 
 /** The same operation cursor serves clone rollouts and recorded authority execution. */
 export class LoomkeeperExecutionV9 {
     private readonly turn: number; private readonly actor: SimulationActor; private prefixPending = true;
+    private delayedJumpIssued = false;
     private stage: 'prefix' | 'start' | 'motion' | 'ground' | 'aim' | 'dwell' | 'resolution' = 'prefix';
     private queue: LoomkeeperOperationV9[] = []; private movementStart = 0; private movementEnd = 0;
     private aimedAt = -1; private lastRefresh = -1; private retreatStart = -1; private lastRetreatRefresh = -1;
@@ -130,9 +135,13 @@ export class LoomkeeperExecutionV9 {
             if (this.candidate.direction === 'stay') this.stage = 'ground';
             else { const direction = scriptDirection(state, this.candidate.direction);
                 this.queue.push(intent({ type: 'face', direction }), intent({ type: 'walk_start', direction }));
-                if (this.candidate.jump) this.queue.push(intent({ type: 'jump', direction })); this.stage = 'motion'; return this.queue.shift(); }
+                if (this.candidate.jump && !this.candidate.jumpDelayTicks) this.queue.push(intent({ type: 'jump', direction })); this.stage = 'motion'; return this.queue.shift(); }
         }
         if (this.stage === 'motion') {
+            if (this.candidate.jump && this.candidate.jumpDelayTicks && !this.delayedJumpIssued && state.tick - this.movementStart >= this.candidate.jumpDelayTicks) {
+                this.delayedJumpIssued = true;
+                if (this.candidate.direction !== 'stay' && state.units[state.activeActor === 'player' ? 0 : 1].grounded) return intent({ type: 'jump', direction: scriptDirection(state, this.candidate.direction) });
+            }
             if (state.tick >= this.movementEnd) { this.stage = 'ground'; return { kind: 'barrier', barrier: { reason: 'cancel', actor: this.actor, expectedTurn: state.turn, expectedEpoch: state.inputEpoch } }; }
             const elapsed = state.tick - this.movementStart;
             if (elapsed > 0 && elapsed % 3 === 0 && state.heldDirection !== 0 && this.lastRefresh !== state.tick) { this.lastRefresh = state.tick; return intent({ type: 'walk_refresh' }); }
@@ -174,12 +183,12 @@ export function prefixFor(state: SimulationStateV9): V9Prefix {
     if (own.thread < 4) return 'none'; if (own.stitching <= 45) return 'threadguard';
     return Math.abs(own.xFp - other.xFp) > 640 * 256 ? 'threadleap' : 'none';
 }
-function evaluateCandidate(source: SimulationStateV9, chargedSource: SimulationStateV9, candidate: LoomkeeperCandidateV9, prefix: V9Prefix): Evaluation | undefined {
+function evaluateCandidate(source: SimulationStateV9, chargedSource: SimulationStateV9, candidate: LoomkeeperCandidateV9, prefix: V9Prefix, mechanics?: ProjectileMechanics): Evaluation | undefined {
     if (!candidateAffordable(source, candidate, prefix)) return undefined;
     const rollout = DetachedSimulationRolloutV9.fromTrustedSource(chargedSource);
     const state = rollout.state; const ticks = V9_AI_PLANNING_TICKS;
     const execution = new LoomkeeperExecutionV9(candidate, prefix, state);
-    return finishEvaluation(source, candidate, rollout, ticks, execution);
+    return finishEvaluation(source, candidate, rollout, ticks, execution, mechanics);
 }
 /**
  * Prefixes depend only on the chosen movement script and public action-entry
@@ -187,7 +196,7 @@ function evaluateCandidate(source: SimulationStateV9, chargedSource: SimulationS
  * this exact state removes repeated deterministic work without changing a
  * candidate's logical tick accounting, selection order or physics.
  */
-function preparePrefix(chargedSource: SimulationStateV9, candidate: LoomkeeperCandidateV9, prefix: V9Prefix): PreparedPrefix | undefined {
+function preparePrefix(chargedSource: SimulationStateV9, candidate: LoomkeeperCandidateV9, prefix: V9Prefix, mechanics?: ProjectileMechanics): PreparedPrefix | undefined {
     // The stationary script enters aim in the same operation cursor call. It
     // has no complete relic-independent stopping state, so retain its full
     // candidate rollout rather than change that cursor timing.
@@ -200,7 +209,7 @@ function preparePrefix(chargedSource: SimulationStateV9, candidate: LoomkeeperCa
             if (execution.readyForAim()) return { state: completeDetachedSimulationRolloutV9(rollout), logicalTicks: ticks };
             const operation = execution.next(state); if (!operation) break;
             const transition = operation.kind === 'intent'
-                ? applySimulationIntentV9(state, actor, operation.intent, state.turn, state.phase, state.inputEpoch)
+                ? applySimulationIntentV9(state, actor, operation.intent, state.turn, state.phase, state.inputEpoch, mechanics)
                 : applySimulationBarrierV9(state, operation.barrier);
             if (!transition.accepted) {
                 if (operation.kind === 'intent' && ['select_relic', 'aim', 'fire'].includes(operation.intent.type)) return undefined;
@@ -210,25 +219,25 @@ function preparePrefix(chargedSource: SimulationStateV9, candidate: LoomkeeperCa
         }
             if (execution.readyForAim()) return { state: completeDetachedSimulationRolloutV9(rollout), logicalTicks: ticks };
         if (state.phase === 'finished' || state.turn !== chargedSource.turn) break;
-        advanceSimulationTicksV9DetachedRollout(rollout, 1); state = rollout.state; ticks += 1;
+        advanceSimulationTicksV9DetachedRollout(rollout, 1, mechanics); state = rollout.state; ticks += 1;
     }
     return undefined;
 }
-function evaluatePreparedCandidate(source: SimulationStateV9, candidate: LoomkeeperCandidateV9, prefix: V9Prefix, prepared: PreparedPrefix): Evaluation | undefined {
+function evaluatePreparedCandidate(source: SimulationStateV9, candidate: LoomkeeperCandidateV9, prefix: V9Prefix, prepared: PreparedPrefix, mechanics?: ProjectileMechanics): Evaluation | undefined {
     const rollout = DetachedSimulationRolloutV9.fromTrustedSource(prepared.state);
-    return finishEvaluation(source, candidate, rollout, prepared.logicalTicks, new LoomkeeperExecutionV9(candidate, prefix, rollout.state, true));
+    return finishEvaluation(source, candidate, rollout, prepared.logicalTicks, new LoomkeeperExecutionV9(candidate, prefix, rollout.state, true), mechanics);
 }
 function finishEvaluation(source: SimulationStateV9, candidate: LoomkeeperCandidateV9, rollout: DetachedSimulationRolloutV9, initialTicks: number,
-    execution: LoomkeeperExecutionV9): Evaluation | undefined {
+    execution: LoomkeeperExecutionV9, mechanics?: ProjectileMechanics): Evaluation | undefined {
     let state = rollout.state, ticks = initialTicks; const actor = source.activeActor;
     while (state.phase !== 'finished' && state.turn === source.turn && ticks < V9_AI_MAX_ROLLOUT_TICKS) {
         for (let count = 0; count < 8; count += 1) { const operation = execution.next(state); if (!operation) break;
-            const transition = operation.kind === 'intent' ? applySimulationIntentV9(state, actor, operation.intent, state.turn, state.phase, state.inputEpoch) : applySimulationBarrierV9(state, operation.barrier);
+            const transition = operation.kind === 'intent' ? applySimulationIntentV9(state, actor, operation.intent, state.turn, state.phase, state.inputEpoch, mechanics) : applySimulationBarrierV9(state, operation.barrier);
             if (!transition.accepted) { if (operation.kind === 'intent' && ['select_relic', 'aim', 'fire'].includes(operation.intent.type)) return undefined; throw new Error('Illegal V9 policy operation.'); }
             rollout.replace(transition.state); state = rollout.state;
         }
         if (state.phase === 'finished' || state.turn !== source.turn) break;
-        advanceSimulationTicksV9DetachedRollout(rollout, 1); state = rollout.state; ticks += 1;
+        advanceSimulationTicksV9DetachedRollout(rollout, 1, mechanics); state = rollout.state; ticks += 1;
     }
     if (ticks >= V9_AI_MAX_ROLLOUT_TICKS && state.phase !== 'finished' && state.turn === source.turn) throw new Error('V9 candidate exceeded its frozen work bound.');
     const completed = completeDetachedSimulationRolloutV9(rollout);

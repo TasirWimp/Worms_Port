@@ -1,3 +1,4 @@
+import type { ProjectileMechanics } from './simulation-v8';
 import { z } from 'zod';
 import {
     V8_R1_RULESET_ID, V8_SIM_RULES, applySimulationBarrierV8, applySimulationIntentV8,
@@ -120,11 +121,11 @@ export function createSimulationV9(seed: number, calling: PlayerCalling): Simula
 }
 
 export function applySimulationIntentV9(current: SimulationStateV9, actorId: SimulationActor, intent: SimulationIntentV9,
-    expectedTurn: number, expectedPhase = current.phase, expectedEpoch = current.inputEpoch): SimulationTransitionV9 {
+    expectedTurn: number, expectedPhase = current.phase, expectedEpoch = current.inputEpoch, mechanics?: ProjectileMechanics): SimulationTransitionV9 {
     assertSimulationInvariantsV9(current);
     if (!SimulationIntentV9Schema.safeParse(intent).success) return reject(current, 'COMMAND_REJECTED', 'Invalid V9 intent.');
     if (intent.type !== 'threadguard' && intent.type !== 'threadleap') {
-        const result = applySimulationIntentV8(toV8(current), actorId, intent, expectedTurn, expectedPhase, expectedEpoch);
+        const result = applySimulationIntentV8(toV8(current), actorId, intent, expectedTurn, expectedPhase, expectedEpoch, mechanics);
         if (!result.accepted) return { ...result, state: current, events: [] };
         const state = fromV8(result.state, current, result.events);
         if (intent.type === 'fire' && result.state.phase === 'projectile') {
@@ -163,7 +164,7 @@ export function applySimulationIntentV9(current: SimulationStateV9, actorId: Sim
     return { accepted: true, mutated: true, state, events: [] };
 }
 
-export function advanceSimulationTicksV9(current: SimulationStateV9, count: number): SimulationTransitionV9 {
+export function advanceSimulationTicksV9(current: SimulationStateV9, count: number, mechanics?: ProjectileMechanics): SimulationTransitionV9 {
     assertSimulationInvariantsV9(current);
     if (!Number.isSafeInteger(count) || count < 0 || count > 16800)
         return reject(current, 'COMMAND_REJECTED', 'Tick batch exceeds the V9 bound.');
@@ -173,7 +174,7 @@ export function advanceSimulationTicksV9(current: SimulationStateV9, count: numb
     let state = current;
     const events: SimulationEventV9[] = [];
     for (let index = 0; index < count && state.phase !== 'finished'; index += 1) {
-        const result = advanceSimulationTicksV8(toV8(state), 1);
+        const result = advanceSimulationTicksV8(toV8(state), 1, mechanics);
         if (!result.mutated) break;
         const next = fromV8(result.state, state, result.events);
         assertSimulationInvariantsV9(next);
@@ -200,7 +201,7 @@ export class DetachedSimulationRolloutV9 {
  * Zod validation for each internal tick. V8 remains the mechanics kernel for
  * every tick. Call completeDetachedSimulationRolloutV9 before ranking.
  */
-export function advanceSimulationTicksV9DetachedRollout(rollout: DetachedSimulationRolloutV9, count: number): SimulationTransitionV9 {
+export function advanceSimulationTicksV9DetachedRollout(rollout: DetachedSimulationRolloutV9, count: number, mechanics?: ProjectileMechanics): SimulationTransitionV9 {
     const current = rollout.state;
     if (!Number.isSafeInteger(count) || count < 0 || count > 16800)
         return reject(current, 'COMMAND_REJECTED', 'Tick batch exceeds the V9 bound.');
@@ -208,7 +209,7 @@ export function advanceSimulationTicksV9DetachedRollout(rollout: DetachedSimulat
     let state = current;
     const events: SimulationEventV9[] = [];
     for (let index = 0; index < count && state.phase !== 'finished'; index += 1) {
-        const result = advanceSimulationTicksV8(toV8(state), 1);
+        const result = advanceSimulationTicksV8(toV8(state), 1, mechanics);
         if (!result.mutated) break;
         const next = fromV8(result.state, state, result.events);
         events.push(...translateEvents(result.events, state, next));

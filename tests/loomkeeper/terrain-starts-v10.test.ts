@@ -26,9 +26,47 @@ import {
     createSimulationV10,
     simulationV9ViewOfV10,
     V10_R1_RULESET_ID,
+    V10_R3_RULESET_ID,
     V10_RULESET_ID,
     type SimulationStateV10
 } from '../../shared/simulation-v10';
+
+test('V10G planner keeps R3 precision physics through cached and uncached V9 rollouts', () => {
+    const source = createSimulationV10(4, 'wizard', V10_R3_RULESET_ID);
+    source.activeActor = 'loomkeeper'; source.units[1].thread = 3;
+    for (const [index, unit] of source.units.entries()) {
+        const x = index === 0 ? 880 : 1168;
+        unit.xFp = x * 256; unit.yFp = 324 * 256;
+        unit.support = 42 * 256 + Math.floor((x - 12) / 8);
+    }
+    const original = canonicalSimulationJsonV10(source);
+    const planner = new LoomkeeperPlannerV10(source);
+    const uncached = new LoomkeeperPlannerV10(source, { reuseIdenticalPrefixes: false });
+    for (let tick = 0; tick < 30; tick += 1) { planner.step(); uncached.step(); }
+    assert.equal(canonicalSimulationJsonV10(source), original);
+    assert.equal(planner.evaluatedCandidates, 180);
+    assert.deepEqual(planner.selection, uncached.selection);
+    assert.equal(planner.rolloutTicks, uncached.rolloutTicks);
+    assert.equal(planner.selectedCandidate()!.relicId, 'needlepoint', 'new 60-damage precision beats the lob');
+    let state = advanceSimulationTicksV10(source, 30).state;
+    const execution = new LoomkeeperExecutionV10(planner.selectedCandidate()!, planner.selection.prefix, state);
+    let fired = false;
+    for (let tick = 0; tick < 1050 && state.turn === source.turn && state.phase !== 'finished'; tick += 1) {
+        for (let slot = 0; slot < 8; slot += 1) {
+            const operation = execution.next(state); if (!operation) break;
+            const result: ReturnType<typeof applySimulationIntentV10> = operation.kind === 'intent'
+                ? applySimulationIntentV10(state, 'loomkeeper', operation.intent, state.turn, state.phase, state.inputEpoch)
+                : applySimulationBarrierV10(state, operation.barrier);
+            assert.equal(result.accepted, true);
+            fired ||= operation.kind === 'intent' && operation.intent.type === 'fire';
+            state = result.state;
+        }
+        if (state.turn === source.turn) state = advanceSimulationTicksV10(state, 1).state;
+    }
+    assert.equal(fired, true);
+    assert.equal(state.units[0].stitching, 40);
+    assert.notEqual(state.turn, source.turn);
+});
 
 const V10E_ASSESSMENT_SEEDS = [1, 2, 3, 0x13579BDF, 0xC0FFEE11, 0xDEADBEEF] as const;
 

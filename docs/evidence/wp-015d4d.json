@@ -11,7 +11,8 @@
   ],
   "scope": [
     "V10G geometry-first Twin Crests and distinct weapon tactics under the existing contract.",
-    "First implementation checkpoint: authoritative combat dimensions, geometry constraints and executable baseline witnesses; R3 integration follows."
+    "First implementation checkpoint: authoritative combat dimensions, geometry constraints and executable baseline witnesses; R3 integration follows.",
+    "Continue from committed geometry checkpoint 31efa43 on a clean V10G branch: geometry-derived Twin Crests, R3 projectile and blast rules, explicit preview and AI/replay parity."
   ],
   "non_goals": [
     "No agents, public activation, legacy ruleset changes or asset imports. Owner subsequently authorized committing and publishing the geometry checkpoint on the V10G branch."
@@ -48,6 +49,21 @@
       "command": "npm run verify:changes -- --dry-run; npm run verify:changes",
       "status": "pass",
       "detail": "Selected gate passed: protocol 125, simulation 156 (the latest fifth focused geometry witness also passed separately), Loomkeeper 37, Relics 10, combat 81, Practice 42, identity 22 and reward 37. Types, build outputs, four built-server smokes, security/bundle checks and 61 canonical phone-browser cases passed; three project exclusions. PostgreSQL requires the missing test database URL. No runtime integration or tactical acceptance is claimed."
+    },
+    {
+      "command": "npm run verify:changes -- --dry-run; npm run verify:changes (R3 integration)",
+      "status": "fail",
+      "detail": "All selected non-browser checks passed: combat 82, Practice 42, protocol 125, simulation 164, Loomkeeper 38, Relics 10, identity 22, reward 37, tooling 110, types, build outputs, four built-server smokes, security and bundle checks. Browser: 62 passed, three expected exclusions, one new V10G test failed because its physical horizontal gesture mapped to a vertical self-hit in sideways mode. Corrected the test gesture using the orientation mapping; product damage and lifecycle limits unchanged. Full selector command was not repeated; focused correction verification follows."
+    },
+    {
+      "command": "node scripts/run-playwright.js --reuse-build --grep 'V10G phone' tests/browser/combat.spec.ts",
+      "status": "pass",
+      "detail": "Both V10G cases passed in all five maintained browser projects: 10 passed. Checks selection then aiming, safe precision shot, AI turn and return to player, compact role guidance, pause/resume and portrait escape. Inspected Windows screenshots for small sideways viewport, landscape and WebKit portrait escape; these are not release baseline approvals."
+    },
+    {
+      "command": "npm run check:compliance; npm run audit:housekeeping (R3 integration)",
+      "status": "pass",
+      "detail": "Compliance passed with 56 packages and five frozen clean-room records. Housekeeping reports the correct same-name V10G tracking branch; historical open packages remain retained."
     }
   ],
   "reviews": [
@@ -56,18 +72,25 @@
       "reviewer": "single-owner geometry checkpoint direct review",
       "decision": "pass",
       "detail": "Bounded geometry prerequisite is explicitly not final tactical admission. Actual authority witnesses supplement the row scan. Legacy generator/physics, public paths and assets are unchanged; full R3 acceptance remains open."
+    },
+    {
+      "role": "primary assistant",
+      "reviewer": "single-owner R3 first-map direct review",
+      "decision": "pass",
+      "detail": "Bounded first-map implementation: geometry-derived cover and shelves, terrain-first muzzle/swept collision, pre-impact nine-point blast shielding, distinct Relic roles, real movement/breach witnesses, explicit R3 AI and replay parity. Legacy defaults retained. Corrected a browser test orientation assumption after reproducing the resulting self-hit. First-map physical acceptance and wider family admission remain open."
     }
   ],
   "skipped_checks": [
-    "Three browser cases are intentionally routed to other projects by tests/browser/quality-policy.json.",
-    "PostgreSQL gate skipped because WP014_TEST_DATABASE_URL is absent; CI owns the database prerequisite.",
-    "Full daily/release matrix, performance and audit were not repeated: this is a geometry implementation checkpoint, not a release boundary. The 22:00 Europe/Berlin automation remains unchanged.",
-    "Real Android/iOS and V10G feel acceptance not run; no V10G phone route exists yet."
+    "Three canonical browser cases are intentionally routed to other projects by tests/browser/quality-policy.json.",
+    "PostgreSQL gate not run: test database URL is absent and the integration selector stopped at its browser failure. CI owns the database prerequisite.",
+    "Full daily/release suite, performance and audit were not repeated at this implementation checkpoint. The 22:00 Europe/Berlin automation remains unchanged.",
+    "Physical Android/iOS acceptance and Ubuntu visual baseline comparison/approval not run. Windows screenshots are inspection evidence only."
   ],
   "residual_risks": [
-    "V10G is in progress. No new phone route or generated R3 layout is delivered by this geometry checkpoint.",
-    "R3 launch/blast policy, candidate construction and admission, distinct Relic mechanics, AI/preview/replay parity and complete tactical witnesses remain open.",
-    "The horizontal-cover helper proves only a necessary geometric condition, not protection against arbitrary angles or blast damage.",
-    "Physical phone and first-map feel acceptance have not run for V10G."
+    "V10G remains in progress pending owner phone acceptance of the fixed Twin Crests map at /?combat-preview=v10g; other terrain families are deferred until that gate.",
+    "The fixed recipe is admitted by executable actual-authority witnesses. Future variable generation requires extending admission; the horizontal geometry scan alone does not prove arbitrary-angle protection.",
+    "Blast exposure uses the documented finite nine-point sampling policy, not continuous body integration. Existing three-tick shooter immunity remains; steep shots can subsequently hit the caster.",
+    "Raster impact faces produce 60 versus 53 units of extra walking progress after the mirrored breach witness; both exceed the required 48 units.",
+    "Screenshot inspection shows inherited long Relic names clipped in the narrow Use button and overlap of the expanded menu with the player. Selection is available in the menu and the menu collapses; phone usability remains an owner acceptance concern."
   ]
 }

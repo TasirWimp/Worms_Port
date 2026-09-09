@@ -8,7 +8,7 @@ import {
     type V10FixtureClock
 } from '../../client/src/combat/terrain-starts-v10-fixture';
 import {
-    canonicalSimulationJsonV10, V10_R1_RULESET_ID, V10_R2_RULESET_ID, V10_RULESET_ID
+    canonicalSimulationJsonV10, V10_R1_RULESET_ID, V10_R2_RULESET_ID, V10_R3_RULESET_ID, V10_RULESET_ID
 } from '../../shared/simulation-v10';
 
 function createClock(): V10FixtureClock & { advanceThirtyTicks: () => void } {
@@ -28,8 +28,36 @@ function createClock(): V10FixtureClock & { advanceThirtyTicks: () => void } {
     };
 }
 
+test('V10G fixture preview matches live precision, re-aims after selection and restarts exactly', async () => {
+    const clock = createClock();
+    const fixture = await createTerrainStartsV10Fixture(4, 'wizard', clock, V10_R3_RULESET_ID);
+    const initial = canonicalSimulationJsonV10(fixture.snapshot);
+    const stop = fixture.onSnapshot(() => {});
+    try {
+        await fixture.submit({ type: 'aim', angleMilliDegrees: 0, powerPermille: 1000 });
+        await fixture.submit({ type: 'select_relic', relicId: 'needlepoint' });
+        assert.equal(fixture.snapshot.selectedRelic, 'needlepoint');
+        assert.equal(fixture.snapshot.aim, null, 'selection deliberately requires a fresh acknowledged aim');
+        const before = canonicalSimulationJsonV10(fixture.snapshot);
+        const preview = fixture.trajectoryPreview({ angleMilliDegrees: 0, powerPermille: 1000 });
+        assert.equal(canonicalSimulationJsonV10(fixture.snapshot), before);
+        assert.ok(preview.length > 1);
+        assert.ok(preview.every(point => point.y === preview[0].y));
+        const aimed = await fixture.submit({ type: 'aim', angleMilliDegrees: 0, powerPermille: 1000 });
+        await fixture.submit({ type: 'fire', aimId: aimed.aimId });
+        clock.advanceThirtyTicks();
+        assert.deepEqual(fixture.snapshot.lastProjectile?.trace, preview);
+        const restarted = await fixture.restart();
+        try { assert.equal(canonicalSimulationJsonV10(restarted.snapshot), initial); }
+        finally { restarted.destroy(); }
+        for (let window = 0; window < 35 && fixture.snapshot.turn < 2; window += 1) clock.advanceThirtyTicks();
+        assert.ok(fixture.snapshot.turn >= 2);
+        assert.notEqual(fixture.snapshot.finishReason, 'simulation_limit');
+    } finally { stop(); fixture.destroy(); }
+});
+
 test('V10 aiming excludes preview computation but retains pre-existing and subsequent clock debt', async () => {
-    for (const ruleset of [V10_RULESET_ID, V10_R1_RULESET_ID, V10_R2_RULESET_ID]) {
+    for (const ruleset of [V10_RULESET_ID, V10_R1_RULESET_ID, V10_R2_RULESET_ID, V10_R3_RULESET_ID]) {
         let now = 0;
         const fixture = await createTerrainStartsV10Fixture(1, 'wizard', {
             now: () => now, every: () => () => {}

@@ -581,8 +581,8 @@ remain separate decisions.
 
 ## V10G terrain and weapon tactics preparation
 
-Status: WP-015D4D implementation started; geometry foundation is implemented,
-R3 authority and playable integration remain pending. This section supersedes the earlier deferral only for the bounded
+Status: WP-015D4D R3 Twin Crests implementation is in verification; first-map
+physical-phone acceptance remains pending. This section supersedes the earlier deferral only for the bounded
 V10G work below. V10F functional phone acceptance stands; tactical effectiveness
 is the problem this next slice must solve. Development remains single-owner.
 
@@ -667,10 +667,81 @@ both firing directions pass. These are executable reproductions, not
 claims that a new map or all weapon interactions are accepted. The helper checks
 all above-ground target rows and requires blocking material outside the hitbox.
 It deliberately does not equate horizontal occlusion with tactical admission.
-Blast policy, angled attacks, candidate terrain generation and real damage
-witnesses remain the next work. Historical physics and generation are untouched.
+At that checkpoint, blast policy, angled attacks, candidate terrain generation
+and real damage witnesses remained the next work. R3 progress is recorded below;
+historical physics and generation remain untouched.
 
 #### Candidate weapon roles
+
+The following implementation table now binds the first R3 candidate. Changes
+to accepted replay semantics require a new ruleset/recipe revision, not edits
+to historical V5/V7/V8/V9/R2 tables.
+
+| R3 Relic | Min/max launch speed (fp/tick) | Gravity (fp/tick/tick) | Direct damage | Crater radius | Splash radius | Thread |
+| --- | --- | --- | --- | --- | --- | --- |
+| Threadball | 1459 / 4864 | 80 | 45 | 40 | 64 | 2 |
+| Needlepoint | 1536 / 5120 | 0 | 60 | 8 | 8 | 3 |
+| Spoolburst | 1459 / 4864 | 80 | 25 | 80 | 48 | 5 |
+
+R3 uses the inherited point projectile and launch origin. Its sweep includes
+the muzzle and checks terrain before overlapping damage hitboxes. Splash uses
+the **intact pre-impact mask**, before excavation, and starts at the last free
+sweep point (the impact point for actor contact). A muzzle inside solid terrain
+has no free origin and cannot leak splash through that material. A fixed nine
+samples cover the damage rectangle's corners, edge midpoints and centre. Solid
+cells block each sampled ray, including endpoints; radial falloff uses the
+nearest exposed sample within the Relic's splash radius. An actor's direct
+contact still receives its direct damage; Guard retains its inherited absorption.
+The target rectangle extends one unit into the physical support plane, so those
+buried bottom samples are shielded by the floor. No flood fill, post-crater
+shielding, knockback, guidance or bouncing is introduced.
+
+#### First playable candidate and evidence
+
+`shared/terrain-generation-v10g.ts` derives one deterministic Twin Crests recipe
+from combat clearance: pocket floor 448, shelf surface 336 (112 rise), centre
+crest 328 (120 rise), 256-unit pockets and 128-unit firing shelves. Openings are
+760 and 1288; approach to 800/1248 then normal jump reaches a shelf. The centre
+crest retains one cell of clearance below a level shelf muzzle. Thirty-two
+authoring rows expand to 256 mask columns and a generated 32-by-16 ASCII review.
+This R3 compiler does not apply V10F's old height clamp. It validates dimension
+and horizontal-occlusion prerequisites and fails unavailable if they fail; no
+unvalidated fallback or random search exists. With one fixed geometry, the
+actual-authority witnesses below are its offline admission gate. Broader runtime
+candidate selection must not precede their extension to every new candidate.
+
+Implemented witnesses in `tests/simulation/terrain-tactics-v10g.test.ts`:
+
+- Needlepoint from pockets is blocked; a 60-degree, full-power Threadball lob
+  deals 45 damage into cover, while the nearby 55-degree shot fails. Both sides
+  pass. Spoolburst on the successful lob deals only 25 damage.
+- Pocket boundary positions are tested with precision aimed at head, centre
+  and feet from the opposing pocket and shelf, in both directions. This declares
+  a precision-fire protection envelope, not invulnerability to lobs or all
+  future weapons.
+- A real normal jump enables a 60-damage shelf-to-shelf precision hit and exposes
+  the jumper to the corresponding counterattack. Walking alone cannot climb it.
+- After legally earning five Thread, a 45-degree Spoolburst opens a supported
+  route: the same 120-tick later walk progresses 60 extra units left-to-right
+  and 53 right-to-left. Both exceed the 48-unit witness requirement. Integer
+  impact sampling at opposite cell faces and crater rasterization account for
+  the sub-cell difference; exact mirrored destruction is not claimed.
+- Thin-wall and blocked-muzzle tests prevent direct/splash leakage even when
+  the same impact removes the shielding cells. Both directions pass.
+- R3 planner tests retain 180 slots/30 planning ticks and identical cached versus
+  uncached results. R3 precision angles and a 40-tick jump approach are explicit
+  candidate choices; legacy V9 candidates stay unchanged. A breach and subsequent
+  AI response reconstruct through the coordinator with exact final state/hash.
+
+The local route is **`/?combat-preview=v10g`**, fixed to seed 4 while this single
+layout is assessed. Existing `sideways=left`/`sideways=off` options remain.
+Selection deliberately retires an old aim; fresh aim preserves the selected
+Relic and its preview uses actual R3 flight. Attack choices show Lob, Precision
+and Breach only for R3. Full role mechanics are isolated from public sessions,
+wallets, rewards and R2 preview routes. Phone review must check the covered
+silhouette, walking up to a wall then jumping onto it, lob versus precision,
+later-turn breaching, aiming/selection, pause/restart and the AI response.
+Other families stay deferred until the owner accepts this first map.
 
 | Relic | V10G role | Required tradeoff |
 | --- | --- | --- |
@@ -680,10 +751,10 @@ witnesses remain the next work. Historical physics and generation are untouched.
 
 This deliberately replaces the inherited V5 damage ordering for the new
 candidate only. Keep the existing Thread economy/costs, turn phases, movement,
-Guard and Leap initially. Numerical speed, damage, radius and lifetime values
-are not frozen by this preparation. Choose one product-owned bounded parameter
-table against the Twin Crests witnesses, record the values and observed
-tradeoffs before expanding maps, and keep all historical tables unchanged.
+Guard and Leap initially. The implementation table above records the bounded
+candidate parameters selected against the Twin Crests witnesses. Preserve those
+versioned values and observed tradeoffs before expanding maps, and keep all
+historical tables unchanged.
 Measure crater radius separately from splash radius; a large excavation must
 not silently imply damage through the entire removed area.
 
@@ -717,9 +788,9 @@ splash and terrain effects separately and preserve all legacy blast behavior.
    Loomkeeper rollouts must use the same candidate rules and current terrain.
    In particular, the V10-to-V9 planner adapter must not erase R3 weapon physics.
    Preserve bounded planner work and measured local preview-computation timing.
-   Proposed local route `/?combat-preview=v10g&terrain-seed=4` must retain the
+   Local route `/?combat-preview=v10g` must retain the
    phone's Actions/Use flow, show concise role/cost guidance and never open a
-   session, wallet or reward path. The route does not exist yet.
+   session, wallet or reward path. It is implemented and currently fixed to seed 4.
 4. **Twin Crests acceptance.** Run the witnesses below plus phone-browser aim,
    fire, jump, pause/restart and full AI-response checks. Present this one map
    for physical-phone review before generalizing its tuning.
@@ -812,5 +883,5 @@ not a game build.
 
 No public Practice/Daily/reward promotion, database work, new asset generation,
 guided flight, bounce simulation, knockback, temporary walls, caves, overhangs,
-floating islands, engine reset or ASCII editor is included. Numerical tuning
-and candidate implementation are the next work, not delivered by this document.
+floating islands, engine reset or ASCII editor is included. First-map physical
+acceptance precedes any further family expansion or public promotion.

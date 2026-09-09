@@ -6,7 +6,7 @@ import {
     createSimulationV10,
     forceSimulationLimitV10,
     V10_R1_RULESET_ID,
-    V10_R2_RULESET_ID,
+    V10_R2_RULESET_ID, V10_R3_RULESET_ID,
     V10_RULESET_ID,
     type V10RulesetId,
     type SimulationEventV10,
@@ -270,7 +270,9 @@ export async function createTerrainStartsV10Fixture(
         });
         if (result.accepted && result.mutated) state = result.state;
     };
-    const previewLabel = rulesetId === V10_R2_RULESET_ID
+    const previewLabel = rulesetId === V10_R3_RULESET_ID
+        ? 'V10G Twin Crests · cover, shelves and breaching · local-only'
+        : rulesetId === V10_R2_RULESET_ID
         ? [
             'V10F procedural terrain preview',
             terrainProfileLabel(state.terrainProfileId),

@@ -13,6 +13,15 @@ export function isV8RulesetId(value: unknown): value is V8RulesetId {
     return value === V8_RULESET_ID || value === V8_R1_RULESET_ID;
 }
 export const V8_RULESET_VERSION = 8 as const;
+/** Explicit internal kernel seam. Public legacy callers always omit it. */
+export type ProjectileMechanics = Readonly<{
+    relics: Readonly<Record<RelicId, Readonly<{
+        minimumShotSpeed: number; maximumShotSpeed: number; gravityFp: number;
+        craterRadius: number; damageRadius: number; maximumDamage: number;
+    }>>>;
+    terrainFirst: boolean;
+    shieldBlast: boolean;
+}>;
 export const V8_SIM_RULES = Object.freeze({
     worldWidth: 2048, worldHeight: 576, terrainCellSize: 8,
     terrainWidth: 256, terrainHeight: 72, fixedPointScale: 256,
@@ -119,7 +128,7 @@ export function createSimulationV8<R extends V8RulesetId = typeof V8_RULESET_ID>
 }
 export function applySimulationIntentV8<R extends V8RulesetId>(current: SimulationStateV8<R>, actor: SimulationActor,
     intent: SimulationIntentV8Family, expectedTurn: number, expectedPhase = current.phase,
-    expectedEpoch = current.inputEpoch): SimulationTransitionV8<R> {
+    expectedEpoch = current.inputEpoch, mechanics?: ProjectileMechanics): SimulationTransitionV8<R> {
     if (current.phase === 'finished') return reject(current, 'COMMAND_REJECTED', 'The match is finished.');
     if (expectedTurn !== current.turn) return reject(current, 'LATE_TURN', 'Different turn.');
     if (actor !== current.activeActor) return reject(current, 'NOT_YOUR_TURN', 'Different active actor.');
@@ -191,7 +200,7 @@ export function applySimulationIntentV8<R extends V8RulesetId>(current: Simulati
         state.aim = { angleMilliDegrees: intent.angleMilliDegrees, powerPermille: intent.powerPermille };
         break;
     case 'fire':
-        state.projectile = launchProjectile(state);
+        state.projectile = launchProjectile(state, mechanics);
         state.castUsed = true;
         enterPhase(state, 'projectile', 300, null, events);
         break;
@@ -201,7 +210,7 @@ export function applySimulationIntentV8<R extends V8RulesetId>(current: Simulati
     assertSimulationInvariantsV8Family(state);
     return { accepted: true, mutated: true, state, events };
 }
-export function advanceSimulationTicksV8<R extends V8RulesetId>(current: SimulationStateV8<R>, count: number): SimulationTransitionV8<R> {
+export function advanceSimulationTicksV8<R extends V8RulesetId>(current: SimulationStateV8<R>, count: number, mechanics?: ProjectileMechanics): SimulationTransitionV8<R> {
     if (!integer(count, 0, 16800)) return reject(current, 'COMMAND_REJECTED', 'Tick batch exceeds the V8 bound.');
     if (current.phase === 'finished' || count === 0) return unchanged(current);
     const state = cloneSimulationV8(current);
@@ -214,7 +223,7 @@ export function advanceSimulationTicksV8<R extends V8RulesetId>(current: Simulat
         expireLease(state, events);
         if (state.phase !== 'projectile') integrateBodies(state);
         state.tick += 1;
-        if (state.phase === 'projectile') advanceProjectile(state, events);
+        if (state.phase === 'projectile') advanceProjectile(state, events, mechanics);
         else resolveBodyBoundaries(state, events);
         if (state.winner === null) resolvePhaseDeadline(state, events);
         if (state.winner === null && state.tick >= 16800) finish(state, 'draw', 'simulation_limit', events);
@@ -596,10 +605,11 @@ function finish(state: SimulationStateV8Family, winner: SimulationWinner,
 }
 
 // The following launch/sweep/radial expressions preserve the MIT product's V5/V7
-// math in shared/simulation.ts. Only flight scheduling and physical settling differ.
-function launchProjectile(state: SimulationStateV8Family): ProjectileV8 {
+// math in shared/simulation.ts by default. Later candidates pass explicit rules;
+// no candidate configuration is inferred from a temporarily adapted V8 state.
+function launchProjectile(state: SimulationStateV8Family, mechanics?: ProjectileMechanics): ProjectileV8 {
     const unit = activeUnit(state); const aim = state.aim!;
-    const band = V5_LAUNCH_SPEED_RULES[state.selectedRelic];
+    const band = mechanics?.relics[state.selectedRelic] ?? V5_LAUNCH_SPEED_RULES[state.selectedRelic];
     const speed = band.minimumShotSpeed + Math.trunc((band.maximumShotSpeed - band.minimumShotSpeed) * aim.powerPermille / 1000);
     const startX = Math.floor(unit.xFp / 256) + unit.facing * 16;
     const startY = Math.floor(unit.yFp / 256) - 4;
@@ -609,29 +619,35 @@ function launchProjectile(state: SimulationStateV8Family): ProjectileV8 {
         vyFp: -Math.trunc(speed * aim.angleMilliDegrees / 90000), flightTicks: 0,
         startX, startY, trace: [{ x: startX, y: startY }] };
 }
-function projectileCollision(state: SimulationStateV8Family, shot: ProjectileV8, oldX: number, oldY: number):
-    { x: number; y: number; target: ProjectileSummary['impact'] } | null {
+function projectileCollision(state: SimulationStateV8Family, shot: ProjectileV8, oldX: number, oldY: number, mechanics?: ProjectileMechanics):
+    { x: number; y: number; target: ProjectileSummary['impact']; freeX?: number; freeY?: number } | null {
     const hitbox = directProjectileHitboxFor(V7_RULESET_ID);
     const x0 = Math.trunc(oldX / 256); const y0 = Math.trunc(oldY / 256);
     const x1 = Math.trunc(shot.xFp / 256); const y1 = Math.trunc(shot.yFp / 256);
     const steps = Math.max(1, Math.abs(x1 - x0), Math.abs(y1 - y0));
-    for (let step = 1; step <= steps; step += 1) {
+    let freeX = x0; let freeY = y0;
+    for (let step = mechanics?.terrainFirst ? 0 : 1; step <= steps; step += 1) {
         const x = x0 + Math.trunc((x1 - x0) * step / steps);
         const y = y0 + Math.trunc((y1 - y0) * step / steps);
+        if (mechanics?.terrainFirst && terrainSolid(state.terrain, Math.floor(x / 8), Math.floor(y / 8))) {
+            return { x, y, target: 'terrain', freeX, freeY };
+        }
         for (const unit of state.units) {
             if (!unit.alive || (unit.id === shot.actor && shot.flightTicks <= 3)) continue;
             const rootX = Math.floor(unit.xFp / 256); const rootY = Math.floor(unit.yFp / 256);
             if (Math.abs(rootX - x) <= hitbox.halfWidth && y >= rootY - hitbox.top && y <= rootY + hitbox.bottom) return { x, y, target: unit.id };
         }
-        if (terrainSolid(state.terrain, Math.trunc(x / 8), Math.trunc(y / 8))) return { x, y, target: 'terrain' };
+        if (!mechanics?.terrainFirst && terrainSolid(state.terrain, Math.trunc(x / 8), Math.trunc(y / 8))) return { x, y, target: 'terrain' };
+        freeX = x; freeY = y;
     }
     return null;
 }
-function advanceProjectile(state: SimulationStateV8Family, events: SimulationEventV8[]): void {
+function advanceProjectile(state: SimulationStateV8Family, events: SimulationEventV8[], mechanics?: ProjectileMechanics): void {
     const shot = state.projectile!;
     const oldX = shot.xFp; const oldY = shot.yFp;
-    shot.vyFp += 80; shot.xFp += shot.vxFp; shot.yFp += shot.vyFp; shot.flightTicks += 1;
-    const collision = projectileCollision(state, shot, oldX, oldY);
+    shot.vyFp += mechanics?.relics[shot.relicId].gravityFp ?? 80;
+    shot.xFp += shot.vxFp; shot.yFp += shot.vyFp; shot.flightTicks += 1;
+    const collision = projectileCollision(state, shot, oldX, oldY, mechanics);
     const x = collision?.x ?? Math.trunc(shot.xFp / 256);
     const y = collision?.y ?? Math.trunc(shot.yFp / 256);
     if (shot.flightTicks % 8 === 0 && shot.trace.length < 40) shot.trace.push({ x, y });
@@ -643,12 +659,17 @@ function advanceProjectile(state: SimulationStateV8Family, events: SimulationEve
         endX: x, endY: y, flightTicks: shot.flightTicks, impact, trace: shot.trace.map(point => ({ ...point })) };
     events.push({ type: 'impact', x, y, target: impact });
     if (impact !== 'world_exit' && impact !== 'lifetime') {
-        const relic = V5_RELIC_RULES[shot.relicId];
-        deformTerrain(state.terrain, x, y, relic.craterRadius);
+        const relic = mechanics?.relics[shot.relicId] ?? V5_RELIC_RULES[shot.relicId];
+        // R3 shields against the intact pre-impact mask, from the last free
+        // sweep sample. A blocked muzzle has no free sample and cannot leak blast.
+        const blastTerrain = mechanics?.shieldBlast ? state.terrain : undefined;
+        if (!blastTerrain) deformTerrain(state.terrain, x, y, relic.craterRadius);
         for (const unit of state.units) {
             if (!unit.alive) continue;
             const dx = Math.floor(unit.xFp / 256) - x; const dy = Math.floor(unit.yFp / 256) - y;
-            const distanceSquared = dx * dx + dy * dy;
+            const distanceSquared = blastTerrain && impact !== unit.id
+                ? exposedBlastDistanceSquared(blastTerrain, collision?.freeX ?? x, collision?.freeY ?? y, unit, relic.damageRadius)
+                : dx * dx + dy * dy;
             const direct = impact === unit.id;
             if (!direct && distanceSquared > relic.damageRadius * relic.damageRadius) continue;
             const distance = integerSquareRoot(distanceSquared);
@@ -657,11 +678,34 @@ function advanceProjectile(state: SimulationStateV8Family, events: SimulationEve
             unit.stitching = Math.max(0, unit.stitching - amount); unit.alive = unit.stitching > 0;
             events.push({ type: 'damaged', actor: unit.id, amount, stitching: unit.stitching });
         }
+        if (blastTerrain) deformTerrain(state.terrain, x, y, relic.craterRadius);
     }
     state.projectile = null; removeBelowWorld(state);
     if (deathResult(state, events)) return;
     if (hasUnsupported(state)) enterPhase(state, 'settling', 120, 'post_shot', events);
     else enterPhase(state, 'retreat', 60, null, events);
+}
+function exposedBlastDistanceSquared(terrain: PackedTerrain, x: number, y: number, unit: SimulationUnitV8, radius: number): number {
+    const hitbox = directProjectileHitboxFor(V7_RULESET_ID);
+    const rootX = Math.floor(unit.xFp / 256); const rootY = Math.floor(unit.yFp / 256);
+    let nearest = Infinity;
+    // Fixed nine target samples: corners, edge midpoints and centre of the
+    // damage rectangle. Exposure is binary per sample; nearest exposed sample
+    // owns radial falloff. No per-pixel flood fill or post-crater leakage.
+    for (const tx of [rootX - hitbox.halfWidth, rootX, rootX + hitbox.halfWidth]) {
+        for (const ty of [rootY - hitbox.top, rootY + Math.trunc((hitbox.bottom - hitbox.top) / 2), rootY + hitbox.bottom]) {
+            const distance = (tx - x) ** 2 + (ty - y) ** 2;
+            if (distance > radius * radius || distance >= nearest) continue;
+            const steps = Math.max(1, Math.abs(tx - x), Math.abs(ty - y));
+            let clear = true;
+            for (let step = 0; step <= steps; step += 1) {
+                if (terrainSolid(terrain, Math.floor((x + Math.trunc((tx - x) * step / steps)) / 8),
+                    Math.floor((y + Math.trunc((ty - y) * step / steps)) / 8))) { clear = false; break; }
+            }
+            if (clear) nearest = distance;
+        }
+    }
+    return nearest;
 }
 function integerSquareRoot(value: number): number {
     let low = 1; let high = Math.min(value, 88); let result = 0;

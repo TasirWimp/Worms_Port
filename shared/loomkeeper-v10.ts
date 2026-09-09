@@ -1,4 +1,6 @@
+import { V10G_PROJECTILE_RULES } from './projectile-rules-v10g';
 import {
+    candidateAt,
     LoomkeeperExecutionV9,
     LoomkeeperPlannerV9,
     V9_AI_MAX_ROLLOUT_TICKS,
@@ -12,7 +14,7 @@ import {
     type LoomkeeperSelectionV9,
     type V9Prefix
 } from './loomkeeper-v9';
-import { simulationV9ViewOfV10, type SimulationStateV10 } from './simulation-v10';
+import { simulationV9ViewOfV10, V10_R3_RULESET_ID, type SimulationStateV10 } from './simulation-v10';
 
 /** V10 deliberately inherits the complete frozen V9 search budget. */
 export const V10_AI_PLANS = V9_AI_PLANS;
@@ -25,12 +27,16 @@ export type LoomkeeperSelectionV10 = LoomkeeperSelectionV9;
 export type LoomkeeperCandidateV10 = LoomkeeperCandidateV9;
 export type LoomkeeperOperationV10 = LoomkeeperOperationV9;
 
-/** Identity-only adapter around the unchanged V9 planner implementation. */
+/** Legacy identity adapter; R3 also binds explicit mechanics and candidate timing. */
 export class LoomkeeperPlannerV10 {
     private readonly planner: LoomkeeperPlannerV9;
 
     public constructor(source: SimulationStateV10, options: LoomkeeperPlannerOptionsV9 = {}) {
-        this.planner = new LoomkeeperPlannerV9(simulationV9ViewOfV10(source), options);
+        this.planner = new LoomkeeperPlannerV9(simulationV9ViewOfV10(source), {
+            ...options,
+            mechanics: source.rulesetId === V10_R3_RULESET_ID ? V10G_PROJECTILE_RULES : undefined,
+            candidateAt: source.rulesetId === V10_R3_RULESET_ID ? v10gCandidateAt : undefined
+        });
     }
 
     public get planningTicks(): number { return this.planner.planningTicks; }
@@ -42,6 +48,14 @@ export class LoomkeeperPlannerV10 {
     public step(): void { this.planner.step(); }
     public get selection(): LoomkeeperSelectionV10 { return this.planner.selection; }
     public selectedCandidate(): LoomkeeperCandidateV10 | undefined { return this.planner.selectedCandidate(); }
+}
+
+/** Same 180-slot budget; precision angles and jump approach belong to R3 only. */
+export function v10gCandidateAt(ordinal: number): LoomkeeperCandidateV10 {
+    const candidate = candidateAt(ordinal);
+    return { ...candidate,
+        ...(candidate.relicId === 'needlepoint' ? { angleMilliDegrees: (candidate.angleMilliDegrees / 15000 - 3) * 5000 } : {}),
+        ...(candidate.jump ? { jumpDelayTicks: 40 } : {}) };
 }
 
 /** V9's cursor chooses operations; V10 validates and applies them itself. */
