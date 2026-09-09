@@ -394,14 +394,13 @@ and packed-mask conversion. The six accepted assessment-seed V10 state hashes
 remain the exact compatibility gate; V10E is exercised by its existing
 determinism, traversal and assessment tests.
 
-The first unselected grammar prototype produces exactly eight candidates per
-normalized seed. Each candidate applies seven bounded integer operations in a
-fixed order: plateau, ramp, left and right hollows, left and right jump shelves,
-and a central notch. Every parameter comes from a named tagged sub-seed, so
-adding or removing an unrelated parameter cannot silently shift subsequent
-choices. The prototype produces one surface row per column in the existing
-34-to-54 row envelope. It uses no wall clock, unbounded retry, file input,
-network input, dependency or decorative pixel data.
+The initial unselected prototype established the fixed eight-candidate and
+tagged-parameter seam. The implemented compiler now applies each selected
+family's complete typed operation sequence. Adding or removing an unrelated
+parameter cannot silently shift subsequent choices. Every candidate produces
+one surface row per collision column in the existing 34-to-54 row envelope.
+It uses no wall clock, unbounded retry, file input, network input, dependency
+or decorative pixel data.
 
 ### ASCII chart and recipe authority
 
@@ -519,14 +518,17 @@ their boundaries and the fixed fallback remain the runtime safety envelope.
 
 The generated normalized ASCII preview is a review artifact from step four. It
 does not affect selection, collision, state hashes or replay reconstruction.
-The later replay-distinct ruleset must bind its ruleset ID, recipe/profile ID,
-recipe revision, selected candidate index and complete packed terrain state.
-The intended local route after admission is `/?combat-preview=v10f`; creating
-that route does not promote Practice, Daily Challenge or rewards.
+Replay-distinct `nimble-knots-artillery-v10-r2` binds its ruleset ID,
+recipe/profile ID, recipe revision, selected candidate index and complete
+packed terrain state. The intended later local route is
+`/?combat-preview=v10f`; creating that route will not promote Practice, Daily
+Challenge or rewards.
 
-This preparation does not add a ruleset ID, replay schema, selector, browser
-route or public runtime behavior. The next implementation slice must implement
-candidate admission and ranking. Its combined runtime and assessment gates are:
+The preparation commit did not add a ruleset ID, replay schema, selector,
+browser route or public runtime behavior. The following stages 1-4
+implementation adds internal candidate admission/ranking and replay-distinct
+R2 authority while still adding no browser route or public runtime behavior.
+Its combined runtime and assessment gates are:
 
 1. actor-width support and body-clear starts inside safe world margins;
 2. supported outward movement and an inward jump that lands through normal
@@ -540,11 +542,11 @@ candidate admission and ranking. Its combined runtime and assessment gates are:
 6. a deterministic ranking tuple, seed-derived final tie break and fixed
    product-owned fallback when no candidate is admitted.
 
-Only after those gates pass may a replay-distinct V10 ruleset and local phone
-preview expose generated terrain. WFC remains a possible later generator behind
-the same seam. Caves, overhangs, floating terrain and a rendering rewrite remain
-deferred while movement and terrain-top presentation assume one solid surface
-per column.
+Those gates now pass for the internal R2 authority. A local phone preview is a
+separate next step and remains unimplemented. WFC remains a possible later
+generator behind the same seam. Caves, overhangs, floating terrain and a
+rendering rewrite remain deferred while movement and terrain-top presentation
+assume one solid surface per column.
 
 The recipe tests additionally render and snapshot each normalized ASCII chart,
 check all 32 authoring samples and 256 collision samples, cover every operation

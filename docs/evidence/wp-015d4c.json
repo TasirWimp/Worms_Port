@@ -10,28 +10,31 @@
     "Codex primary single owner"
   ],
   "scope": [
-    "Freeze an exact V10F terrain-engine reference pack with source revisions, inspected paths, license boundaries, adopted concepts and rejected imports.",
-    "Extract accepted V10 and V10E surface construction behind a product-owned generator seam without changing their authoritative terrain or RNG output.",
-    "Implement an unselected deterministic prototype that emits exactly eight integer surface-grammar candidates per normalized seed using independently tagged parameters.",
-    "Define Twin Crests, Asymmetric Rampart, Trench Needle and Stepping Mesa as machine-readable 32-column recipe families with normalized generated ASCII previews.",
-    "Freeze the operation semantics, 32-to-256-column compilation, gameplay admission, deterministic ranking, fallback, replay and phone-preview boundaries before adding a runtime ruleset."
+    "Retain the exact V10F reference pack and its source, revision, license and clean-room boundaries.",
+    "Preserve accepted V10 and V10E generation and state hashes behind the legacy generator seam.",
+    "Define Twin Crests, Asymmetric Rampart, Trench Needle and Stepping Mesa as typed product-owned 32-column recipes.",
+    "Compile each recipe deterministically to 256 bounded surface rows, PackedTerrain and a generated normalized ASCII review artifact.",
+    "Emit exactly eight independently tagged candidates per normalized seed and apply fixed structural, movement and direct-projectile admission.",
+    "Rank admitted candidates by the frozen lexicographic tuple and retain candidate zero as the fixed no-admission fallback.",
+    "Add replay-distinct nimble-knots-artillery-v10-r2 authority binding profile, recipe revision, candidate index and packed terrain.",
+    "Extend the offline V10 assessment across every V10F family, generated and mirrored carriers, both opening actors, mutation, Loomkeeper response and exact reconstruction."
   ],
   "non_goals": [
     "No external code, algorithm implementation, map, template, constant, identifier, image, tile or asset is copied or imported.",
     "No WFC or property-testing dependency is added, and package.json and package-lock.json remain unchanged.",
-    "No new ruleset, replay schema, browser preview, server profile, database path, reward behavior or public selector is added in the preparation stage.",
-    "No free-form Markdown or ASCII parser becomes gameplay authority; normalized ASCII is generated from a typed product recipe for review.",
+    "No V10F browser preview, server deployment profile, database path, reward behavior, Practice selector or Daily Challenge selector is added in stages 1-4.",
+    "No free-form Markdown or ASCII parser becomes gameplay authority; normalized ASCII is generated from typed recipes for review.",
     "No cave, overhang, floating island, lethal gap, obstacle layer, movement rewrite or terrain-rendering rewrite is added."
   ],
   "planned_checks": [
-    "Run the change selector dry run and selected verification over the complete preparation slice.",
-    "Run TypeScript checks and focused V10 simulation tests, including the accepted canonical V10 state hashes and deterministic grammar corpus.",
+    "Run the change selector dry run and selected verification over the complete stages 1-4 diff.",
+    "Run both TypeScript projects and focused V10F compiler, admission, jump, protocol, replay and legacy-compatibility tests.",
+    "Run the complete V10/V10E/V10F offline assessment and retain its source-bound local reports.",
     "Run compliance, diff checks and housekeeping to validate reference records, source boundaries and package tracking.",
-    "Directly review the complete diff for legacy compatibility, bounded generation, documentation accuracy and absence of runtime activation.",
-    "For the next implementation stage, snapshot normalized ASCII and compiled heights for all four recipes and test every operation boundary, reflection, opening role and family-specific gameplay gate."
+    "Directly review the complete diff for bounded runtime work, exact replay authority, legacy compatibility and lack of public activation."
   ],
   "deterministic_seeds": [
-    "0x00000001 through 0x00000030 across candidate indices 0 through 7",
+    "0x00000001 through 0x00000040 across candidate indices 0 through 7",
     "0x13579BDF",
     "0xC0FFEE11",
     "0xDEADBEEF"
@@ -42,43 +45,47 @@
   ],
   "check_results": [
     {
-      "command": "npm run verify:changes -- --dry-run; npm run verify:changes",
+      "command": "npm run check:types; focused V10F simulation, protocol and replay tests",
       "status": "pass",
-      "detail": "The selector chose compliance, both TypeScript projects, tooling, protocol, simulation, Loomkeeper, Relic, combat, Practice, identity and reward tests, production outputs, four built-runtime smokes, bundle/security checks and the canonical Chromium phone phase. All selected checks passed: 109 tooling, 124 protocol, 146 simulation, 37 Loomkeeper, 10 Relic, 78 combat, 42 Practice, 22 identity and 37 reward tests; browser results were 59 passed and three reviewed route exclusions."
+      "detail": "Both TypeScript projects pass. Focused coverage verifies all four exact recipe sequences, normalized ASCII snapshots, operation minima/maxima, 32-to-256 compilation, fixed eight-candidate output, both asymmetric reflections, admission, ranking, fallback, normal simulated jump landings, strict R2 protocol fields and versioned replay reconstruction/tamper rejection."
     },
     {
-      "command": "npm run check:types; node --import tsx --test tests/simulation/terrain-starts-v10.test.ts",
+      "command": "node --import tsx --test --test-name-pattern=V10F tests/loomkeeper/terrain-starts-v10.assessment.ts",
       "status": "pass",
-      "detail": "Both TypeScript projects pass. The focused ten-test V10 file preserves all six accepted canonical V10 state hashes and verifies deterministic bounded grammar output across seeds 1 through 48 plus 0x13579BDF, 0xC0FFEE11 and 0xDEADBEEF at all eight candidate indices."
+      "detail": "All 16 V10F rows pass: four recipe families by generated/mirrored carrier and player/Loomkeeper opening actor. Every representative shot mutates a blocked surface, every response planner selects and fires on that exact resulting terrain, and combined operations, events and state hashes reconstruct exactly."
+    },
+    {
+      "command": "node scripts/verify-changes.js --dry-run --base 247e6ad; node scripts/verify-changes.js --base 247e6ad",
+      "status": "pass",
+      "detail": "The selector chose work-package/import checks, both TypeScript projects, all product suites, the complete V10 assessment, production outputs, four built-server smokes, identity/reward security, bundle budgets and the canonical phone browser phase. All selected checks passed: 125 protocol, 152 simulation, 37 Loomkeeper, 10 Relic, 78 combat, 42 Practice, 22 identity and 37 reward tests; both assessment rows passed; browser results were 59 passed with three reviewed exclusions."
     },
     {
       "command": "npm run check:compliance; git diff --check; npm run audit:housekeeping",
       "status": "pass",
-      "detail": "Asset, generation-component, import-boundary, package-license, work-package and frozen-reference checks pass, as does the diff check. Housekeeping identifies WP-015D4C on the correctly named new branch with no gone tracking branches; its manual-reconciliation flag comes from preserved older in-progress packages and historical V9 failed reviews."
+      "detail": "Asset, runtime-inventory, generation-component, import-boundary, package-license, work-package and frozen clean-room records pass, as does the diff check. Housekeeping confirms the correctly tracked V10F branch with no gone upstream branches; manual reconciliation remains limited to preserved historical in-progress packages and failed V9 reviews."
     },
     {
-      "command": "single-owner direct review of the complete WP-015D4C preparation diff",
+      "command": "single-owner direct review of the V10F stages 1-4 diff",
       "status": "pass",
-      "detail": "The review confirmed that accepted V10/V10E generation is only relocated behind the new seam, the prototype is unreachable from runtime selection, every random parameter has a stable tag, generation has fixed candidate and operation counts, source/license records match the pinned references, and no external expression, dependency, asset, ruleset, route or public behavior was introduced."
+      "detail": "The direct review confirmed that runtime candidate selection performs only fixed integer geometry, movement and ballistic probes; the 180-plan Loomkeeper search runs only in offline assessment; legacy constructors omit all R2 fields; recipe metadata is strict and replay-bound; and no route, public selector, database, dependency or external product input was introduced."
     }
   ],
   "reviews": [
     {
       "role": "primary assistant",
-      "reviewer": "single-owner V10F preparation direct review",
+      "reviewer": "single-owner V10F stages 1-4 direct review",
       "decision": "pass"
     }
   ],
   "skipped_checks": [
-    "The selected PostgreSQL prerequisite did not run because WP014_TEST_DATABASE_URL is unavailable locally. This preparation adds no database or runtime authority path; CI remains responsible for that isolated gate.",
-    "The full five-project Ubuntu daily/release suite was not rerun. The existing 22:00 Europe/Berlin automation owns that gate; the selected canonical Chromium phase passed.",
-    "npm run assess:v10 was not rerun because the new grammar is deliberately not selectable by the V10 coordinator or assessment yet. Existing V10/V10E tests and all accepted V10 hashes pass.",
-    "No V10F physical-phone check was run because this preparation adds no V10F preview or player-visible behavior."
+    "The selected PostgreSQL prerequisite did not run because WP014_TEST_DATABASE_URL is unavailable locally. Stages 1-4 add no database or reward path; CI remains responsible for that isolated gate.",
+    "The full five-project Ubuntu daily/release suite is owned by the existing 22:00 Europe/Berlin automation and is not rerun for each feature edit.",
+    "No V10F physical-phone check was run because stages 1-4 deliberately add no V10F browser route or player-visible selector."
   ],
   "residual_risks": [
-    "The prototype candidates are structurally bounded but are not yet admitted by movement, cover, attack/reply or replay gates and are not exposed to players.",
-    "The current prototype does not yet implement the four recipe families, `ridge`, `asymmetric-elevation`, the 32-column compiler or generated ASCII previews; those are the next V10F implementation stage.",
-    "The clean-room record remains observed under the historical schema; the single-owner policy permits direct implementation and review but this preparation does not claim historical separated-role closure.",
-    "V10E physical-phone terrain feel remains open while the owner has authorized proceeding with V10F preparation."
+    "V10F is internal R2 authority only. The local ?combat-preview=v10f route, phone readability/feel and any later product promotion remain separate work.",
+    "Runtime admission uses a bounded direct-projectile lattice; the larger 180-plan response proof remains offline and in the daily/release gate by design.",
+    "The clean-room record remains observed under the historical schema; the active single-owner policy permits direct implementation and review but does not rewrite historical separated-role evidence.",
+    "V10E physical-phone terrain feel remains open while the owner chose to proceed with V10F."
   ]
 }

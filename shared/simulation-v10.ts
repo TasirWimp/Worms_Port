@@ -10,15 +10,22 @@ import {
     SIM_RULES, terrainSolid,
     type PackedTerrain, type PlayerCalling
 } from './simulation';
-import { generateLegacyV10Surface, packV10SurfaceRows } from './terrain-generation-v10';
+import {
+    V10_PROCEDURAL_CANDIDATE_COUNT, V10_PROCEDURAL_RECIPE_REVISION,
+    V10_PROCEDURAL_TERRAIN_PROFILE_IDS, generateLegacyV10Surface,
+    packV10SurfaceRows, v10ProceduralTerrainProfileForSeed,
+    type V10ProceduralTerrainProfileId
+} from './terrain-generation-v10';
+import { selectV10ProceduralSurface } from './terrain-admission-v10f';
 
 /** Product-owned V10 terrain/start authority. V9 mechanics remain immutable. */
 export const V10_RULESET_ID = 'nimble-knots-artillery-v10' as const;
 export const V10_R1_RULESET_ID = 'nimble-knots-artillery-v10-r1' as const;
-export const V10_RULESET_IDS = Object.freeze([V10_RULESET_ID, V10_R1_RULESET_ID] as const);
+export const V10_R2_RULESET_ID = 'nimble-knots-artillery-v10-r2' as const;
+export const V10_RULESET_IDS = Object.freeze([V10_RULESET_ID, V10_R1_RULESET_ID, V10_R2_RULESET_ID] as const);
 export type V10RulesetId = typeof V10_RULESET_IDS[number];
 export function isV10RulesetId(value: unknown): value is V10RulesetId {
-    return value === V10_RULESET_ID || value === V10_R1_RULESET_ID;
+    return value === V10_RULESET_ID || value === V10_R1_RULESET_ID || value === V10_R2_RULESET_ID;
 }
 export const V10_RULESET_VERSION = 10 as const;
 export const V10_TERRAIN_PROFILE_IDS = Object.freeze([
@@ -33,10 +40,12 @@ export const V10_R1_TERRAIN_PROFILE_IDS = Object.freeze([
 ] as const);
 export const V10_ALL_TERRAIN_PROFILE_IDS = Object.freeze([
     ...V10_TERRAIN_PROFILE_IDS,
-    ...V10_R1_TERRAIN_PROFILE_IDS
+    ...V10_R1_TERRAIN_PROFILE_IDS,
+    ...V10_PROCEDURAL_TERRAIN_PROFILE_IDS
 ] as const);
 export type V10TerrainProfileId = typeof V10_ALL_TERRAIN_PROFILE_IDS[number];
 export type V10R1TerrainProfileId = typeof V10_R1_TERRAIN_PROFILE_IDS[number];
+export type V10LegacyTerrainProfileId = typeof V10_TERRAIN_PROFILE_IDS[number] | V10R1TerrainProfileId;
 
 export const V10_PROFILE_RULES = Object.freeze({
     'sheltered-folds': Object.freeze({ separation: 512, minimumHeightDifference: 0, maximumHeightDifference: 24 }),
@@ -45,7 +54,7 @@ export const V10_PROFILE_RULES = Object.freeze({
     'twin-hollows': Object.freeze({ separation: 512, minimumHeightDifference: 0, maximumHeightDifference: 16 }),
     'broken-loom': Object.freeze({ separation: 576, minimumHeightDifference: 0, maximumHeightDifference: 16 }),
     'high-stitch': Object.freeze({ separation: 640, minimumHeightDifference: 32, maximumHeightDifference: 48 })
-} satisfies Readonly<Record<V10TerrainProfileId, Readonly<{
+} satisfies Readonly<Record<V10LegacyTerrainProfileId, Readonly<{
     separation: number; minimumHeightDifference: number; maximumHeightDifference: number;
 }>>>);
 
@@ -80,7 +89,7 @@ export type V10OpeningPair = Readonly<{
         centerBias: number;
         tieBreak: number;
     }>;
-    jumpPositions: readonly [V10JumpPosition, V10JumpPosition] | null;
+    jumpPositions: readonly V10JumpPosition[] | null;
 }>;
 
 export type V10TacticalArena = Readonly<{
@@ -93,6 +102,9 @@ export type V10TacticalArena = Readonly<{
     opening: V10OpeningPair;
     evaluatedPairs: number;
     eligiblePairs: number;
+    recipeRevision?: typeof V10_PROCEDURAL_RECIPE_REVISION;
+    candidateIndex?: number;
+    fallbackUsed?: boolean;
 }>;
 
 export type SimulationStateV10 = Omit<SimulationStateV9, 'formatVersion' | 'rulesetId' | 'rulesetVersion'> & {
@@ -100,6 +112,8 @@ export type SimulationStateV10 = Omit<SimulationStateV9, 'formatVersion' | 'rule
     rulesetId: V10RulesetId;
     rulesetVersion: 10;
     terrainProfileId: V10TerrainProfileId;
+    terrainRecipeRevision?: typeof V10_PROCEDURAL_RECIPE_REVISION;
+    terrainCandidateIndex?: number;
 };
 export type SimulationIntentV10 = SimulationIntentV9;
 export type SimulationBarrierV10 = SimulationBarrierV9;
@@ -112,14 +126,27 @@ export const SimulationStateV10Schema = SimulationStateV9Schema.omit({
     formatVersion: z.literal(10),
     rulesetId: z.enum(V10_RULESET_IDS),
     rulesetVersion: z.literal(10),
-    terrainProfileId: z.enum(V10_ALL_TERRAIN_PROFILE_IDS)
+    terrainProfileId: z.enum(V10_ALL_TERRAIN_PROFILE_IDS),
+    terrainRecipeRevision: z.literal(V10_PROCEDURAL_RECIPE_REVISION).optional(),
+    terrainCandidateIndex: z.number().int().min(0).max(V10_PROCEDURAL_CANDIDATE_COUNT - 1).optional()
 }).strict().superRefine((state, context) => {
-    const expectedProfiles = state.rulesetId === V10_R1_RULESET_ID
-        ? V10_R1_TERRAIN_PROFILE_IDS
-        : V10_TERRAIN_PROFILE_IDS;
+    const procedural = state.rulesetId === V10_R2_RULESET_ID;
+    const expectedProfiles = procedural
+        ? V10_PROCEDURAL_TERRAIN_PROFILE_IDS
+        : state.rulesetId === V10_R1_RULESET_ID ? V10_R1_TERRAIN_PROFILE_IDS : V10_TERRAIN_PROFILE_IDS;
     if (!(expectedProfiles as readonly string[]).includes(state.terrainProfileId)) {
         context.addIssue({ code: z.ZodIssueCode.custom, path: ['terrainProfileId'],
             message: 'Terrain profile does not belong to the recorded V10 ruleset.' });
+    }
+    const hasRecipeRevision = Object.prototype.hasOwnProperty.call(state, 'terrainRecipeRevision');
+    const hasCandidateIndex = Object.prototype.hasOwnProperty.call(state, 'terrainCandidateIndex');
+    if (procedural !== hasRecipeRevision || (hasRecipeRevision && state.terrainRecipeRevision === undefined)) {
+        context.addIssue({ code: z.ZodIssueCode.custom, path: ['terrainRecipeRevision'],
+            message: 'V10F recipe revision must exist only on the R2 ruleset.' });
+    }
+    if (procedural !== hasCandidateIndex || (hasCandidateIndex && state.terrainCandidateIndex === undefined)) {
+        context.addIssue({ code: z.ZodIssueCode.custom, path: ['terrainCandidateIndex'],
+            message: 'V10F candidate index must exist only on the R2 ruleset.' });
     }
 });
 export const SimulationIntentV10Schema = SimulationIntentV9Schema;
@@ -130,6 +157,7 @@ export function v10TerrainProfileForSeed(
     rulesetId: V10RulesetId = V10_RULESET_ID
 ): V10TerrainProfileId {
     const normalized = normalizeSeed(seed);
+    if (rulesetId === V10_R2_RULESET_ID) return v10ProceduralTerrainProfileForSeed(normalized);
     const profiles = rulesetId === V10_R1_RULESET_ID ? V10_R1_TERRAIN_PROFILE_IDS : V10_TERRAIN_PROFILE_IDS;
     return profiles[normalized % profiles.length];
 }
@@ -140,6 +168,34 @@ export function generateV10TacticalArena(
 ): V10TacticalArena {
     const normalized = normalizeSeed(seed);
     const profileId = v10TerrainProfileForSeed(normalized, rulesetId);
+    if (rulesetId === V10_R2_RULESET_ID) {
+        const selection = selectV10ProceduralSurface(normalized);
+        const evaluated = selection.selected;
+        const candidate = evaluated.candidate;
+        return {
+            terrain: evaluated.terrain,
+            rngState: evaluated.score.tieBreak || normalized,
+            profileId,
+            reflected: candidate.reflected,
+            variation: candidate.candidateIndex,
+            phase: 0,
+            opening: {
+                ...evaluated.opening,
+                score: {
+                    profileFit: evaluated.score.familyLandmarkFit,
+                    combinedLocalMobility: evaluated.localMobility[0] + evaluated.localMobility[1],
+                    centerBias: evaluated.score.centerBias,
+                    tieBreak: evaluated.score.tieBreak
+                },
+                jumpPositions: evaluated.jumpPositions
+            },
+            evaluatedPairs: V10_PROCEDURAL_CANDIDATE_COUNT,
+            eligiblePairs: selection.admittedCandidates,
+            recipeRevision: candidate.recipeRevision,
+            candidateIndex: candidate.candidateIndex,
+            fallbackUsed: selection.fallbackUsed
+        };
+    }
     const { rows, ...surface } = generateLegacyV10Surface(normalized, profileId);
     const terrain = packV10SurfaceRows(rows);
     const selected = selectV10OpeningPair(terrain, normalized, profileId);
@@ -151,6 +207,9 @@ export function selectV10OpeningPair(
     seed: number,
     profileId: V10TerrainProfileId
 ): { opening: V10OpeningPair; evaluatedPairs: number; eligiblePairs: number } {
+    if (isV10ProceduralProfile(profileId)) {
+        throw new Error('V10F openings are selected with their procedural candidate.');
+    }
     const rules = V10_PROFILE_RULES[profileId];
     const firstX = alignUp(V10_OPENING_RULES.safeWorldMargin, terrain.cellSize);
     const lastX = terrain.width * terrain.cellSize - V10_OPENING_RULES.safeWorldMargin - rules.separation;
@@ -175,6 +234,9 @@ export function evaluateV10OpeningPair(
     firstX: number,
     secondX: number
 ): V10OpeningPair {
+    if (isV10ProceduralProfile(profileId)) {
+        throw new Error('V10F openings are selected with their procedural candidate.');
+    }
     const opening = evaluateOpening(
         terrain, normalizeSeed(seed), profileId,
         Math.min(firstX, secondX), Math.max(firstX, secondX)
@@ -198,6 +260,10 @@ export function createSimulationV10(
         rulesetVersion: 10,
         rngState: arena.rngState,
         terrainProfileId: arena.profileId,
+        ...(rulesetId === V10_R2_RULESET_ID ? {
+            terrainRecipeRevision: arena.recipeRevision!,
+            terrainCandidateIndex: arena.candidateIndex!
+        } : {}),
         terrain: arena.terrain,
         units: base.units.map((unit, index) => {
             const x = index === 0 ? arena.opening.leftX : arena.opening.rightX;
@@ -250,7 +316,8 @@ export function forceSimulationLimitV10(current: SimulationStateV10): Simulation
 
 export function cloneSimulationV10(state: SimulationStateV10): SimulationStateV10 {
     const cloned = cloneSimulationV9(toV9(state));
-    return fromV9(cloned, state.rulesetId, state.terrainProfileId);
+    return fromV9(cloned, state.rulesetId, state.terrainProfileId,
+        state.terrainRecipeRevision, state.terrainCandidateIndex);
 }
 
 /**
@@ -286,28 +353,44 @@ function createV9Base(seed: number, calling: PlayerCalling): SimulationStateV9 {
 
 function fromV9Transition(result: SimulationTransitionV9, current: SimulationStateV10): SimulationTransitionV10 {
     if (!result.mutated) return { ...result, state: current };
-    const state = fromV9(result.state, current.rulesetId, current.terrainProfileId);
+    const state = fromV9(result.state, current.rulesetId, current.terrainProfileId,
+        current.terrainRecipeRevision, current.terrainCandidateIndex);
     assertSimulationInvariantsV10(state);
     return { ...result, state };
 }
 
 function toV9(state: SimulationStateV10): SimulationStateV9 {
-    const { terrainProfileId: _profile, ...common } = state;
+    const {
+        terrainProfileId: _profile,
+        terrainRecipeRevision: _recipe,
+        terrainCandidateIndex: _candidate,
+        ...common
+    } = state;
     return { ...common, formatVersion: 9, rulesetId: 'nimble-knots-artillery-v9', rulesetVersion: 9 };
 }
 
 function fromV9(
     state: SimulationStateV9,
     rulesetId: V10RulesetId,
-    terrainProfileId: V10TerrainProfileId
+    terrainProfileId: V10TerrainProfileId,
+    terrainRecipeRevision?: typeof V10_PROCEDURAL_RECIPE_REVISION,
+    terrainCandidateIndex?: number
 ): SimulationStateV10 {
-    return { ...state, formatVersion: 10, rulesetId, rulesetVersion: 10, terrainProfileId };
+    return {
+        ...state,
+        formatVersion: 10,
+        rulesetId,
+        rulesetVersion: 10,
+        terrainProfileId,
+        ...(terrainRecipeRevision !== undefined ? { terrainRecipeRevision } : {}),
+        ...(terrainCandidateIndex !== undefined ? { terrainCandidateIndex } : {})
+    };
 }
 
 function evaluateOpening(
     terrain: PackedTerrain,
     seed: number,
-    profileId: V10TerrainProfileId,
+    profileId: V10LegacyTerrainProfileId,
     leftX: number,
     rightX: number
 ): V10OpeningPair | null {
@@ -344,7 +427,7 @@ function evaluateOpening(
 
 function profileFit(
     terrain: PackedTerrain,
-    profileId: V10TerrainProfileId,
+    profileId: V10LegacyTerrainProfileId,
     leftX: number,
     rightX: number,
     leftSurfaceY: number,
@@ -368,6 +451,10 @@ function profileFit(
 
 function isV10R1Profile(profileId: V10TerrainProfileId): profileId is V10R1TerrainProfileId {
     return (V10_R1_TERRAIN_PROFILE_IDS as readonly string[]).includes(profileId);
+}
+
+function isV10ProceduralProfile(profileId: V10TerrainProfileId): profileId is V10ProceduralTerrainProfileId {
+    return (V10_PROCEDURAL_TERRAIN_PROFILE_IDS as readonly string[]).includes(profileId);
 }
 
 function tacticalJumpPositions(

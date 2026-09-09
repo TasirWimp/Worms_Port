@@ -16,7 +16,7 @@ import {
     advanceSimulationTicksV10, applySimulationBarrierV10, applySimulationIntentV10,
     assertSimulationInvariantsV10, cloneSimulationV10, createSimulationV10,
     generateV10TacticalArena, hashSimulationStateV10,
-    V10_R1_RULESET_ID, V10_RULESET_ID,
+    V10_R1_RULESET_ID, V10_R2_RULESET_ID, V10_RULESET_ID,
     type SimulationStateV10, type SimulationTransitionV10, type V10RulesetId
 } from '../../shared/simulation-v10';
 import { SIM_RULES, setTerrainSolid, terrainSolid, type SimulationActor } from '../../shared/simulation';
@@ -27,12 +27,15 @@ const OPENING_ACTORS = ['player', 'loomkeeper'] as const;
 const RULESETS: readonly V10RulesetId[] = [V10_RULESET_ID, V10_R1_RULESET_ID];
 const FP = 256;
 const REPORT_PATH = '.cache/assessments/wp-015d4b-v10e-assessment.json';
+const V10F_REPORT_PATH = '.cache/assessments/wp-015d4c-v10f-assessment.json';
 const SOURCE_PATHS = [
     'docs/planning/wp-015d4a-v10-terrain-starts-contract.md',
     'shared/loomkeeper-v9.ts',
     'shared/loomkeeper-v10.ts',
     'shared/simulation-v9.ts',
     'shared/simulation-v10.ts',
+    'shared/terrain-generation-v10.ts',
+    'shared/terrain-admission-v10f.ts',
     'tests/loomkeeper/terrain-starts-v10.assessment.ts'
 ] as const;
 
@@ -138,6 +141,90 @@ test('V10D/E assessment: all 48 original and tactical openings retain cover, att
     } catch (error) {
         failure = error instanceof Error ? error.message : String(error);
         await saveReport(rows, failure, active, started);
+        throw error;
+    }
+});
+
+test('V10F assessment: all recipe families, physical sides, and opening actors retain mutation, response, and reconstruction', async t => {
+    const started = performance.now();
+    const recipeSeeds = [1, 2, 3, 4] as const;
+    const rows: Array<Record<string, unknown>> = [];
+    let active: Record<string, unknown> | null = null;
+    let failure: string | null = null;
+    try {
+        for (const seed of recipeSeeds) for (const reflection of REFLECTIONS) for (const openingActor of OPENING_ACTORS) {
+            active = { rulesetId: V10_R2_RULESET_ID, seed, reflection, openingActor };
+            const generatedArena = generateV10TacticalArena(seed, V10_R2_RULESET_ID);
+            const generated = createSimulationV10(seed, 'wizard', V10_R2_RULESET_ID);
+            const carrier = reflection === 'generated' ? generated : reflectState(generated);
+            const initial = assessmentOpening(carrier, openingActor);
+            const initialTerrainHash = terrainHash(initial);
+
+            const openingPlan = plan(initial);
+            assert.equal(openingPlan.selection.status, 'selected');
+
+            const representative = executeCandidate(initial, candidateAt(0), 'none');
+            assert.equal(representative.summary.impact, 'terrain',
+                'the fixed representative attack must meet authored cover');
+            assert.notEqual(representative.summary.terrainHash, initialTerrainHash,
+                'the representative attack must mutate the selected terrain');
+            assert.equal(representative.state.activeActor, otherActor(openingActor));
+            assert.equal(representative.state.phase, 'action');
+            assert.ok(mutationOpenedSurface(initial, representative.state),
+                'terrain mutation must open at least one previously solid surface column');
+            assert.ok(representative.state.units.filter(unit => unit.alive)
+                .every(unit => unit.grounded && unit.support !== null),
+            'living actors must settle on authoritative support');
+
+            const responsePlan = plan(representative.state);
+            const responseTerrainHash = terrainHash(representative.state);
+            const response = executeCandidate(
+                representative.state, responsePlan.candidate, responsePlan.selection.prefix
+            );
+            assert.equal(responseTerrainHash, representative.summary.terrainHash,
+                'the Loomkeeper response must begin on the exact mutated terrain');
+            assert.equal(response.summary.fired, true);
+            assert.notEqual(response.summary.finishReason, 'simulation_limit');
+
+            const combined = [...representative.records, ...response.records];
+            const reconstructed = reconstruct(initial, combined);
+            assert.equal(hashSimulationStateV10(reconstructed), hashSimulationStateV10(response.state));
+            assert.deepEqual(reconstructed, response.state);
+            rows.push({
+                seed,
+                seedHex: hexSeed(seed),
+                rulesetId: V10_R2_RULESET_ID,
+                profile: initial.terrainProfileId,
+                recipeRevision: initial.terrainRecipeRevision,
+                candidateIndex: initial.terrainCandidateIndex,
+                admittedCandidates: generatedArena.eligiblePairs,
+                generatedReflection: generatedArena.reflected,
+                reflection,
+                openingActor,
+                openingSide: sideOf(initial, openingActor),
+                openingSelection: openingPlan.selection,
+                representative: representative.summary,
+                response: { selection: responsePlan.selection, workload: responsePlan.workload, ...response.summary },
+                combinedRecords: combined.length,
+                combinedOperationDigest: digestJson(combined),
+                finalHash: hashSimulationStateV10(response.state)
+            });
+        }
+        assert.equal(rows.length, 16);
+        assert.deepEqual(count(rows, 'profile'), {
+            'asymmetric-rampart': 4,
+            'stepping-mesa': 4,
+            'trench-needle': 4,
+            'twin-crests': 4
+        });
+        assert.deepEqual(count(rows, 'openingActor'), { loomkeeper: 8, player: 8 });
+        assert.deepEqual(count(rows, 'openingSide'), { left: 8, right: 8 });
+        assert.ok(rows.every(row => Number(row.admittedCandidates) > 0));
+        await saveV10FReport(rows, null, null, started, recipeSeeds);
+        t.diagnostic(`assessment=${(performance.now() - started).toFixed(3)}ms openings=16 responses=16 mutations=16`);
+    } catch (error) {
+        failure = error instanceof Error ? error.message : String(error);
+        await saveV10FReport(rows, failure, active, started, recipeSeeds);
         throw error;
     }
 });
@@ -327,6 +414,18 @@ function sideOf(state: SimulationStateV10, actor: SimulationActor): 'left' | 'ri
     return own.xFp < other.xFp ? 'left' : 'right';
 }
 function terrainHash(state: SimulationStateV10): string { return digestJson(state.terrain.words); }
+function mutationOpenedSurface(before: SimulationStateV10, after: SimulationStateV10): boolean {
+    for (let x = 0; x < before.terrain.width; x += 1) {
+        let beforeSurface = before.terrain.height;
+        let afterSurface = after.terrain.height;
+        for (let y = 0; y < before.terrain.height; y += 1) {
+            if (beforeSurface === before.terrain.height && terrainSolid(before.terrain, x, y)) beforeSurface = y;
+            if (afterSurface === after.terrain.height && terrainSolid(after.terrain, x, y)) afterSurface = y;
+        }
+        if (afterSurface > beforeSurface) return true;
+    }
+    return false;
+}
 function digestJson(value: unknown): string { return createHash('sha256').update(JSON.stringify(value)).digest('hex'); }
 function hexSeed(seed: number): string { return `0x${(seed >>> 0).toString(16).toUpperCase().padStart(8, '0')}`; }
 function sourceCommit(): string {
@@ -405,4 +504,53 @@ async function saveReport(
     };
     await mkdir('.cache/assessments', { recursive: true });
     await writeFile(REPORT_PATH, `${JSON.stringify(report, null, 2)}\n`, 'utf8');
+}
+
+async function saveV10FReport(
+    rows: Array<Record<string, unknown>>,
+    failure: string | null,
+    active: Record<string, unknown> | null,
+    started: number,
+    recipeSeeds: readonly number[]
+): Promise<void> {
+    const selections = rows.flatMap(row => [
+        row.openingSelection as LoomkeeperSelectionV10,
+        (row.response as { selection: LoomkeeperSelectionV10 }).selection
+    ]);
+    const report = {
+        assessmentId: 'wp-015d4c-v10f-v1',
+        sourceCommit: sourceCommit(),
+        sourcePaths: SOURCE_PATHS,
+        sourceDigest: sourceDigest(),
+        generatedAt: new Date().toISOString(),
+        runtime: { node: process.version, platform: process.platform, arch: process.arch },
+        contract: {
+            ruleset: V10_R2_RULESET_ID,
+            seeds: recipeSeeds.map(hexSeed),
+            reflections: REFLECTIONS,
+            openingActors: OPENING_ACTORS,
+            plannedOpenings: 16,
+            plannedPlannerSelections: 32,
+            plannedMutations: 16,
+            planner: { plans: 180, plansPerTick: 6, planningTicks: 30,
+                maximumRolloutTicks: 1_050, maximumTotalRolloutTicks: 189_000 }
+        },
+        completed: {
+            openings: rows.length,
+            plannerSelections: selections.filter(selection => selection.status === 'selected').length,
+            mutations: rows.length
+        },
+        failure: failure ? { message: failure, row: active } : null,
+        rows,
+        aggregate: {
+            profiles: count(rows, 'profile'),
+            openingActors: count(rows, 'openingActor'),
+            openingSides: count(rows, 'openingSide'),
+            noLegalPlans: selections.filter(selection => selection.status === 'no_legal_plan').length,
+            workFailures: selections.filter(selection => selection.status === 'work_failure').length
+        },
+        elapsedMs: Number((performance.now() - started).toFixed(3))
+    };
+    await mkdir('.cache/assessments', { recursive: true });
+    await writeFile(V10F_REPORT_PATH, `${JSON.stringify(report, null, 2)}\n`, 'utf8');
 }

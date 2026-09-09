@@ -111,18 +111,23 @@ Phaser/Socket.IO stack.
   authorized a bounded new research pass. The
   [pinned V10F reference pack](../evidence/wp-015d4c-v10f-procedural-terrain-reference-pack.md)
   records every used/evaluated source, revision, inspected path and license
-  boundary. Preparation extracts the accepted surface construction behind a
-  product-owned generator seam and creates a deterministic eight-candidate
-  integer grammar without adding a runtime ruleset or preview. Candidate
-  gameplay admission/ranking, replay identity and phone exposure are the next
-  bounded V10F step. The owner has now supplied four ASCII terrain concepts:
-  Twin Crests, Asymmetric Rampart, Trench Needle and Stepping Mesa. The living
-  V10 contract records them as machine-readable 32-column recipe families that
-  compile to the existing 256-column collision mask. Normalized ASCII is
-  generated from the recipe for review and cannot become runtime or replay
-  authority. The next implementation adds `ridge`, `asymmetric-elevation`,
-  recipe compilation and family-specific admission before exposing
-  `/?combat-preview=v10f`.
+  boundary. **V10F implementation stages 1-4 are complete in the current
+  branch.** Twin Crests, Asymmetric Rampart, Trench Needle and Stepping Mesa
+  are machine-readable 32-column recipes that compile to the existing
+  256-column collision mask and generate normalized ASCII review artifacts.
+  Every seed emits exactly eight tagged candidates; fixed structural,
+  movement and direct-projectile gates admit them, and the contracted
+  lexicographic tuple selects one with candidate zero retained as the fixed
+  no-admission fallback. Replay-distinct
+  `nimble-knots-artillery-v10-r2` binds the recipe revision, profile, selected
+  candidate and complete packed terrain while preserving accepted V10/V10E
+  output. The offline assessment covers all four recipes, generated/mirrored
+  physical sides and both opening actors, including terrain mutation, a
+  bounded Loomkeeper response on the resulting terrain and exact operation,
+  event and state-hash reconstruction. The ruleset remains internal: the next
+  separate step is `/?combat-preview=v10f`, followed by physical-phone terrain
+  readability and feel. No Practice, Daily Challenge or reward selector has
+  changed.
 - Product predecessor: **WP-015D3A V8 Action-Turn Candidate — V8A finite
   rules/acceptance contract complete and independently reviewed; V8B authoritative
   foundation complete and independently reviewed; V8C touch presentation

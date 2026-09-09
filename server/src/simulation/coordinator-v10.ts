@@ -80,6 +80,10 @@ export class SimulationCoordinatorV10 {
             calling,
             rulesetId: state.rulesetId,
             terrainProfileId: state.terrainProfileId,
+            ...(state.terrainRecipeRevision !== undefined ? {
+                recipeRevision: state.terrainRecipeRevision,
+                candidateIndex: state.terrainCandidateIndex
+            } : {}),
             initialStateHash: stateHash,
             records: []
         });
@@ -202,6 +206,10 @@ export class SimulationCoordinatorV10 {
             );
             if (initial.state.terrainProfileId !== replay.terrainProfileId) {
                 throw new Error('V10 terrain profile mismatch.');
+            }
+            if (initial.state.terrainRecipeRevision !== replay.recipeRevision ||
+                initial.state.terrainCandidateIndex !== replay.candidateIndex) {
+                throw new Error('V10 procedural terrain authority mismatch.');
             }
             if (initial.stateHash !== replay.initialStateHash) throw new Error('V10 initial hash mismatch.');
             let cursor = 0;

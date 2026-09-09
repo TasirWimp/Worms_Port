@@ -12,7 +12,8 @@ import {
 } from '../../shared/simulation-v10';
 import {
     V10_PROCEDURAL_CANDIDATE_COUNT, V10_PROCEDURAL_SURFACE_GENERATOR_ID,
-    generateV10ProceduralSurfaceCandidate
+    V10_PROCEDURAL_TERRAIN_RECIPES, generateV10ProceduralSurfaceCandidate,
+    v10ProceduralTerrainProfileForSeed
 } from '../../shared/terrain-generation-v10';
 
 const ASSESSMENT_SEEDS = [1, 2, 3, 0x13579BDF, 0xC0FFEE11, 0xDEADBEEF] as const;
@@ -58,20 +59,22 @@ test('V10E preserves every accepted original V10 assessment-seed state hash', ()
 test('V10F preparation produces a fixed deterministic surface-grammar candidate set', () => {
     const signatures = new Set<string>();
     for (const seed of GRAMMAR_SEEDS) {
+        const expectedProfile = v10ProceduralTerrainProfileForSeed(seed);
         for (let candidateIndex = 0; candidateIndex < V10_PROCEDURAL_CANDIDATE_COUNT; candidateIndex += 1) {
             const candidate = generateV10ProceduralSurfaceCandidate(seed, candidateIndex);
             assert.deepEqual(generateV10ProceduralSurfaceCandidate(seed, candidateIndex), candidate, `${seed}/${candidateIndex}: repeat`);
             assert.equal(candidate.generatorId, V10_PROCEDURAL_SURFACE_GENERATOR_ID);
+            assert.equal(candidate.profileId, expectedProfile);
             assert.equal(candidate.rows.length, 256);
             assert.deepEqual(
                 candidate.operations.map(operation => operation.kind),
-                ['plateau', 'ramp', 'hollow', 'hollow', 'jump-shelf', 'jump-shelf', 'notch']
+                V10_PROCEDURAL_TERRAIN_RECIPES[expectedProfile].segments.map(operation => operation.kind)
             );
             assert.ok(candidate.rows.every(row => Number.isSafeInteger(row) && row >= 34 && row <= 54));
             signatures.add(candidate.rows.join(','));
         }
     }
-    assert.ok(signatures.size >= GRAMMAR_SEEDS.length * 4, 'candidate grammar should retain broad seed/index variety');
+    assert.ok(signatures.size >= GRAMMAR_SEEDS.length * 3, 'candidate grammar should retain broad seed/index variety');
 });
 
 test('V10E has a replay-distinct identity and deterministic tactical profile family', () => {

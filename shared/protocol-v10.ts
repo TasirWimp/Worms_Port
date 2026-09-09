@@ -1,8 +1,13 @@
 import { z } from 'zod';
 import {
     SimulationBarrierV10Schema, SimulationIntentV10Schema, SimulationStateV10Schema,
-    V10_ALL_TERRAIN_PROFILE_IDS, V10_R1_RULESET_ID, V10_R1_TERRAIN_PROFILE_IDS, V10_RULESET_IDS
+    V10_ALL_TERRAIN_PROFILE_IDS, V10_R1_RULESET_ID, V10_R1_TERRAIN_PROFILE_IDS,
+    V10_R2_RULESET_ID, V10_RULESET_IDS
 } from './simulation-v10';
+import {
+    V10_PROCEDURAL_CANDIDATE_COUNT, V10_PROCEDURAL_RECIPE_REVISION,
+    V10_PROCEDURAL_TERRAIN_PROFILE_IDS
+} from './terrain-generation-v10';
 
 /** V10B keeps V9's bounded storage budget while defining a distinct replay ABI. */
 export const V10_REPLAY_LIMITS = Object.freeze({
@@ -60,14 +65,28 @@ export const CoordinatorReplayV10Schema = z.object({
     calling,
     rulesetId: z.enum(V10_RULESET_IDS),
     terrainProfileId: z.enum(V10_ALL_TERRAIN_PROFILE_IDS),
+    recipeRevision: z.literal(V10_PROCEDURAL_RECIPE_REVISION).optional(),
+    candidateIndex: integer(0, V10_PROCEDURAL_CANDIDATE_COUNT - 1).optional(),
     initialStateHash: hash,
     records: z.array(ReplayRecordV10Schema).max(V10_REPLAY_LIMITS.records)
 }).strict().superRefine((replay, context) => {
     const revised = replay.rulesetId === V10_R1_RULESET_ID;
+    const procedural = replay.rulesetId === V10_R2_RULESET_ID;
     const profileIsRevised = (V10_R1_TERRAIN_PROFILE_IDS as readonly string[]).includes(replay.terrainProfileId);
-    if (revised !== profileIsRevised) {
+    const profileIsProcedural = (V10_PROCEDURAL_TERRAIN_PROFILE_IDS as readonly string[]).includes(replay.terrainProfileId);
+    if (revised !== profileIsRevised || procedural !== profileIsProcedural) {
         context.addIssue({ code: z.ZodIssueCode.custom, path: ['terrainProfileId'],
             message: 'Terrain profile does not belong to the recorded V10 ruleset.' });
+    }
+    const hasRecipeRevision = Object.prototype.hasOwnProperty.call(replay, 'recipeRevision');
+    const hasCandidateIndex = Object.prototype.hasOwnProperty.call(replay, 'candidateIndex');
+    if (procedural !== hasRecipeRevision || (hasRecipeRevision && replay.recipeRevision === undefined)) {
+        context.addIssue({ code: z.ZodIssueCode.custom, path: ['recipeRevision'],
+            message: 'V10F replay recipe revision must exist only on the R2 ruleset.' });
+    }
+    if (procedural !== hasCandidateIndex || (hasCandidateIndex && replay.candidateIndex === undefined)) {
+        context.addIssue({ code: z.ZodIssueCode.custom, path: ['candidateIndex'],
+            message: 'V10F replay candidate index must exist only on the R2 ruleset.' });
     }
 });
 export type CoordinatorReplayV10 = z.infer<typeof CoordinatorReplayV10Schema>;
