@@ -127,6 +127,22 @@ down after implementation.
 - Character silhouettes, eyes, held Relics, trajectory previews, hazards, and
   Stitching state must remain legible at the smallest supported phone viewport.
 
+## Volcanic-Ruin Background Direction (Prepared, Not Yet Produced)
+
+The owner-provided [volcanic-ruin scene reference](images/art-direction/backgrounds/volcanic-ruin-scene-reference-v1.png)
+is a documentation-only composition reference. It must not be cropped, shipped,
+or treated as an approved product asset. Its full provenance, hash, preparation
+boundary, and later generation requirements are in the
+[background-scene preparation brief](asset-briefs/backgrounds/volcanic-ruin-scene-preparation-v1.md).
+
+The intended presentation is a separate scene grammar: existing sky/clouds;
+a height-scaled volcanic landmark and distant jungle; a height-scaled stone
+tower ruin; and sparse seeded vegetation. These layers remain decorative and
+independent of the authoritative terrain mask, destruction, actors, and
+projectiles. No V10G background source master, runtime path, renderer, or
+product-visible change is approved by this direction alone. The brief is
+carried on the current V10G branch, but is not V10G tactical-package scope.
+
 ## Release Relic Roster
 
 The competition release has exactly three independently designed Relics. Their
