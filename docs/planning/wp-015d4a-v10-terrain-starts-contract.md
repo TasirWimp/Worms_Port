@@ -562,3 +562,224 @@ at its minimum and maximum span/delta, and exercise all four recipes under both
 physical sides and opening actors. Phone acceptance checks that crests, pockets,
 shelves and current action guidance remain readable without reducing the clear
 arena or touch-target sizes.
+
+### Owner phone review and deferred tactical effectiveness
+
+The owner confirms that the aiming correction works and the triggerable
+gameplay checks pass. The terrain does not yet deliver the expected tactical
+effect with the current gravity-curved projectile trajectories. The owner
+explicitly defers that problem to a future step. Retain the implemented
+generator and preview; this acceptance does not assert that cover, firing
+shelves or destruction already produce satisfying tactical choices.
+
+The future terrain/ballistics tuning step must assess actual weapon arcs,
+positions and impact outcomes together with terrain geometry. A blocked
+horizontal line alone is insufficient evidence of useful cover. Do not infer
+authorization to add straight-shot weapons or change gravity from this report.
+Physical-device approval of future tactical effectiveness and public promotion
+remain separate decisions.
+
+## V10G terrain and weapon tactics preparation
+
+Status: owner-authorized preparation for WP-015D4D; runtime implementation has
+not started. This section supersedes the earlier deferral only for the bounded
+V10G work below. V10F functional phone acceptance stands; tactical effectiveness
+is the problem this next slice must solve. Development remains single-owner.
+
+### Outcome and first playable scope
+
+Prove one complete loop on Twin Crests: a pocket protects against direct fire;
+a normal jump to a shelf unlocks a useful precision attack but exposes the
+attacker; a lob can reach over cover; a deliberate breach changes a subsequent
+attack or movement option. All claims must hold in actual simulation for both
+actors. A blocked test trajectory alone does not prove a tactical benefit.
+
+Use existing Twin Crests seed 4 as the initial reproducible case. Preserve its
+R2 version; if the geometry needs tuning, bind the new recipe revision to the
+new ruleset. Keep the 32-column recipe/256-column mask workflow and generated
+ASCII review diagrams. No ASCII parser or level editor is required.
+
+### Binding geometry-first implementation contract
+
+Owner requirement: terrain must be built from combat clearance requirements,
+not generated from illustrative heights and judged tactical afterward. Phone
+feedback reports obstacles too low and pockets too shallow; retain this as the
+baseline failure to reproduce, not a measured diagnosis until inspected.
+
+Before tuning weapon damage or generating the R3 layout, record a versioned
+combat-dimensions table from authoritative code: actor damage hitbox and support
+position, launch origin for each facing, projectile collision size, swept-contact
+rules, jump envelope and landing/body clearance, blast reach and shielding rules.
+Use world units and explicit conversions to recipe heights and collision cells;
+rendered sprite bounds must not substitute for the actual damage hitbox.
+
+Derive and record pocket depth/width, ridge height/thickness and shelf height,
+width and spacing from that table. Round conservatively to the mask grid and
+state clearance margins. The earlier illustrative grammar height ranges are
+not acceptance limits. Preserve Twin Crests' intent, not its existing dimensions.
+
+- A protective pocket must shelter the full damage hitbox against its declared
+  incoming weapon/position envelope, including edge contacts and splash. Ridge
+  height alone is insufficient: use actual muzzle positions and collision paths.
+- Protection is weapon-specific. Label which attacks cover stops and which can
+  reach it; do not claim universal safety. A legal Threadball lob may enter the
+  pocket, but unexplained damage through a ridge cannot count as protection.
+- Cover must permit a supported spawn, legal escape and the intended affordable
+  lob. Taller geometry must not trap an actor or exceed the available jump budget.
+- A shelf must support the full body and unlock an actual hit on the opponent's
+  hitbox from the real launch origin. Prove its exposure cost with a counterattack;
+  altitude or an unobstructed decorative sightline alone is not an advantage.
+
+Use these constraints in recipe construction and bounded terrain admission.
+Reject candidates that fail their declared protection, escape or advantage
+requirements; do not admit them on silhouette or one blocked ray alone. Bound
+generation attempts and use only a validated deterministic fallback, or report
+unavailability if none exists. Keep broader tactical comparisons offline.
+Changes to hitbox, projectile, blast or movement dimensions must invalidate or
+rerun the affected terrain witnesses; geometry and combat rules are one versioned
+compatibility contract.
+
+### Proposed Relic contract
+
+| Relic | V10G role | Required tradeoff |
+| --- | --- | --- |
+| Threadball | Retain the familiar gravity-driven lob and baseline impact behavior. | Can clear a crest with suitable aim/power; a ridge or pocket must still change which arcs succeed. |
+| Needlepoint | Straight, zero-gravity precision projectile with swept collision; stops on the first solid terrain or actor contact. Not hitscan and not terrain-piercing. | More effective direct-hit damage than Threadball, but a smaller crater and splash area; needs an exposed firing lane. |
+| Spoolburst | Gravity-driven terrain breacher; one impact, no bouncing in this slice. | Larger crater than Threadball, lower direct-hit damage than Threadball; a miss may still buy a useful breach. |
+
+This deliberately replaces the inherited V5 damage ordering for the new
+candidate only. Keep the existing Thread economy/costs, turn phases, movement,
+Guard and Leap initially. Numerical speed, damage, radius and lifetime values
+are not frozen by this preparation. Choose one product-owned bounded parameter
+table against the Twin Crests witnesses, record the values and observed
+tradeoffs before expanding maps, and keep all historical tables unchanged.
+Measure crater radius separately from splash radius; a large excavation must
+not silently imply damage through the entire removed area.
+
+Terrain must stop Needlepoint before a character concealed behind it. Preserve
+direct-hit/collision ordering deliberately, including near-surface overlaps.
+Before geometry calibration, explicitly choose and document the R3 blast model:
+radial distance only, terrain occlusion, or attenuation. This contract authorizes
+the bounded shielding change needed to satisfy the declared cover requirements;
+it does not prescribe an untested occlusion algorithm. Define target hitbox
+sampling, edge contacts and whether shielding uses the pre-impact or post-crater
+mask. Distance-only splash is acceptable only where dimensions actually keep the
+protected hitbox outside its influence. Do not move one test actor farther away
+to conceal failures elsewhere in the declared protected area. Report direct,
+splash and terrain effects separately and preserve all legacy blast behavior.
+
+### Implementation sequence and ownership
+
+1. **Combat dimensions, terrain constraints, then calibration.** Measure the
+   authoritative geometry and choose explicit candidate flight/blast rules.
+   Retain failing baseline examples of shallow pockets and low obstacles. Derive
+   and implement Twin Crests dimensions and admission from the binding contract
+   above before tuning damage. Establish pocket/shelf and intact/breached paired
+   witnesses at equal legal Thread/turn budgets. Record a finite parameter table
+   and the resulting geometry constraints; do not start a broad optimizer.
+2. **Versioned projectile authority.** Reserve proposed
+   `nimble-knots-artillery-v10-r3`. Carry per-Relic flight and impact rules through
+   simulation, protocol validation, coordinator, hashes and replay. Use a shared
+   internal parameter seam if needed, with legacy defaults and explicit version
+   ownership; never mutate V5/V7/V8/V9/V10-R2 constants globally.
+3. **Preview and AI parity.** Aim previews, live flight, terrain admission and
+   Loomkeeper rollouts must use the same candidate rules and current terrain.
+   In particular, the V10-to-V9 planner adapter must not erase R3 weapon physics.
+   Preserve bounded planner work and measured local preview-computation timing.
+   Proposed local route `/?combat-preview=v10g&terrain-seed=4` must retain the
+   phone's Actions/Use flow, show concise role/cost guidance and never open a
+   session, wallet or reward path. The route does not exist yet.
+4. **Twin Crests acceptance.** Run the witnesses below plus phone-browser aim,
+   fire, jump, pause/restart and full AI-response checks. Present this one map
+   for physical-phone review before generalizing its tuning.
+5. **Family expansion.** After the first-map feel is accepted, apply the same
+   evidence to Trench Needle, Stepping Mesa and both Asymmetric Rampart
+   orientations. Tune recipes when needed, update bounded runtime admission
+   and retain expensive multi-turn comparisons in offline assessment.
+
+Expected local owners are `shared/simulation-v8.ts` (inherited flight/impact),
+`shared/simulation-v10.ts`, `shared/protocol-v10.ts`,
+`server/src/simulation/coordinator-v10.ts`, `shared/loomkeeper-v10.ts`, the
+terrain generation/admission modules, and the V10 fixture/scene adapter. Inspect
+their callers before choosing the smallest change; this list is not a mandate
+to edit every file. At implementation entry create the WP-015D4D evidence
+record with the actual starting commit, branch, existing changes and
+`execution_mode: single_owner`. Preparation does not rename the current branch
+or close historical packages.
+
+### Required tactical witnesses
+
+- **Pocket protection:** a Needlepoint shot toward a concealed opponent hits
+  terrain and produces no direct or splash damage to that opponent; repeat
+  after the opponent occupies the exposed shelf to establish the contrast.
+- **Protection envelope:** test both actors/facings and representative boundary
+  positions throughout the declared pocket, including the closest allowed blast
+  impact, near-ridge hitbox contact and blocked muzzle cases. Hold weapon and aim
+  fixed in paired cases where legal; document any necessary action difference.
+  Include deliberately too-low ridges and too-shallow pockets that admission
+  must reject, and a blast-rule regression proving the chosen shielding policy.
+- **Useful jump:** walking cannot substitute for the contracted jump; landing
+  on the shelf creates a previously unavailable precision hit. Verify the
+  corresponding increase in exposure using the opponent's actual attacks.
+- **Lob alternative:** a legal affordable Threadball arc reaches an opponent
+  behind the crest while Needlepoint is blocked. A nearby angle/power miss must
+  have a physically explainable terrain impact or overshoot.
+- **Consequential breach:** Spoolburst changes the collision mask and opens a
+  previously blocked attack or a supported traversable route. Replay a concrete
+  subsequent action to prove the benefit; removed-cell count alone cannot pass.
+- **Real choice:** pocket/lob, shelf/precision and breach/follow-up each have a
+  documented benefit and cost. Include situations where each is useful; do not
+  demand that every action be optimal in every position or equate equal damage
+  with balance.
+- **Continuation:** both sides remain supported or settle legally after impact,
+  the AI selects and completes a response on the resulting terrain, and all
+  operations/events/final hashes reconstruct exactly. Preserve R2 golden cases.
+
+Report actor positions and hitbox bounds, launch origins, geometry dimensions
+and clearance margins, declared protection envelope, aim/power, Relic, costs,
+terrain revision, blast policy/mask revision, collision
+target, damage, and the follow-up action for every witness. Use the actual
+authoritative launch/collision rules instead of a separately approximated test
+trajectory. V10F admission already includes gravity; V10G must improve its
+tactical criteria rather than claim to add curved-flight checking for the
+first time. Keep runtime candidate selection fixed and bounded; assess broader
+position/weapon comparisons offline.
+
+### Reference observations and implementation boundary
+
+Owner-authorized source inspection used the existing ignored Sorcerers checkout
+at [`0f45c4920321c0a3a14de30fe5cf44131a38da89`](https://github.com/lorgan3/sorcerers/tree/0f45c4920321c0a3a14de30fe5cf44131a38da89).
+The source remains GPL-3.0 quarantine/reference only. These are code-observed
+behaviors, not evidence from playing or benchmarking Sorcerers:
+
+| Inspected path under `src/data/` | Observation | V10G disposition |
+| --- | --- | --- |
+| `spells/fireball.ts`, `collision/simpleBody.ts` | Gravity, terrain bounces and intermediate/final explosions. | Distinct terrain responses inform the design; bouncing is deferred. |
+| `spells/magicMissile.ts` | Steering changes direction and suppresses gravity while controlled; collision detonates. | Guided flight is deferred. |
+| `spells/zoltraak.ts` | Straight beam cuts terrain; shields can stop it. Ordinary terrain is not its simple blocking boundary. | Do not cite it as proof of terrain-blocked precision fire. Needlepoint's blocking rule is a Worms product decision. |
+| `damage/explosiveDamage.ts`, `map/terrain.ts` | Explosions remove collision material and apply radial damage/force; inspected target selection has no terrain-occlusion test. | Separate excavation and damage; choose Worms shielding from its cover requirements rather than inheriting this behavior. Knockback remains deferred. |
+| `spells/iceWall.ts`, `spells/windBlast.ts`, `spells/bomb.ts` | Temporary collision obstacles, directional pushes and physical proximity-triggered explosives provide additional positional interactions. | All deferred from the first V10G implementation. |
+| `damage/fallDamage.ts` (partial read); `spells/rock.ts`, `spells/pebble.ts`, `spells/hairpin.ts` (keyword inspection) | Ancillary observation only; no general falling-damage claim was established from the file name. | No adopted behavior. |
+
+No source code, algorithm implementation, constants, identifiers, artwork, map,
+or asset is admitted by this research. Runtime work must use this distilled
+contract and local Worms code. The new observation is documented here instead
+of changing the hash-bound V10F reference pack. Register this bounded reference
+with WP-015D4D at implementation entry; no independent clean-room review is
+claimed or required to reactivate retired agents.
+
+### Verification and exclusions
+
+Use selector dry-run/selected verification, then widen to focused projectile,
+terrain, replay and AI assessment cases for the new risks. Browser checks must
+include immediate default aim/fire and switching Relics before/after aiming.
+The full 22:00/release gate and physical-phone acceptance remain separate.
+Ubuntu alone owns release visual comparisons. Missing evidence blocks the
+specific claim; accepted functionality must not be relabeled as tactical
+success. Preparation itself requires documentation/source-manifest checks,
+not a game build.
+
+No public Practice/Daily/reward promotion, database work, new asset generation,
+guided flight, bounce simulation, knockback, temporary walls, caves, overhangs,
+floating islands, engine reset or ASCII editor is included. Numerical tuning
+and candidate implementation are the next work, not delivered by this document.

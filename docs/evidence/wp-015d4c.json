@@ -48,6 +48,11 @@
   ],
   "check_results": [
     {
+      "command": "Owner-reported deployed phone acceptance after aiming correction",
+      "status": "pass",
+      "detail": "Owner confirms aiming now works and triggerable gameplay checks pass. Owner reports that gravity-curved projectile trajectories prevent terrain from delivering the expected tactical features and explicitly defers that issue. This is bounded functional acceptance, not acceptance of terrain/action tactical effectiveness. Exact deployed commit and device details were not supplied for this report."
+    },
+    {
       "command": "2026-09-09 aim safety-stop reproduction; node --import tsx --test tests/combat/terrain-starts-v10.test.ts; node scripts/verify-changes.js",
       "status": "pass",
       "detail": "Reproduced first-aim failure before the fix by charging 1200ms inside the actual clone-only trajectory call. Local V10/V10E/V10F now subtract only measured preview computation from live clock debt. Regression verifies unchanged preview state, retained earlier elapsed time, default Threadball aim/fire, and safety stops for real debt before or after preview. Seven focused fixture tests pass. Selected verification passes 81 combat, 42 Practice and 110 tooling tests, types, build, four runtime smokes, security/bundle checks, and 56 canonical browser cases with three reviewed project exclusions. The V10F browser journey now opens fresh in default sideways mode and aims/fires without selecting an Action. Direct review confirms the correction is local timing only; physical-phone confirmation is pending."
@@ -104,10 +109,10 @@
     "PostgreSQL did not run because the V10F preview adds no database or reward path and the change selector did not request that isolated gate; CI remains responsible when database-owned paths change.",
     "The failed 2026-09-08 daily gate was not repeated wholesale after its six exact browser failures passed. The next 22:00 Europe/Berlin automation retains the complete zero-retry matrix, performance, npm audit and local prerequisite report.",
     "Windows executed all selected visual behavior with snapshots ignored; only pinned Ubuntu 24.04 CI may compare or update release visual baselines.",
-    "No V10F physical-phone check was run autonomously. The local-only route and deterministic review URLs are ready for the owner's deployed-device acceptance."
+    "Physical-phone checks were owner-run, not autonomous: aiming and triggerable gameplay passed; terrain/action tactical effectiveness was explicitly deferred."
   ],
   "residual_risks": [
-    "V10F remains a local R2 preview. Physical-phone readability/feel and any later product promotion remain separate owner decisions.",
+    "V10F remains a local R2 preview. Terrain/action tactical effectiveness is owner-deferred to a future terrain/ballistics tuning step; functional phone acceptance does not resolve it. Public promotion remains separate.",
     "Runtime admission uses a bounded direct-projectile lattice; the larger 180-plan response proof remains offline and in the daily/release gate by design.",
     "The clean-room record remains observed under the historical schema; the active single-owner policy permits direct implementation and review but does not rewrite historical separated-role evidence.",
     "V10E physical-phone terrain feel remains open while the owner chose to proceed with V10F."

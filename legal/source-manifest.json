@@ -36,7 +36,8 @@
         "gameplay reference",
         "asset-origin discovery",
         "local ignored quarantine review",
-        "bounded V10F procedural terrain architecture observation"
+        "bounded V10F procedural terrain architecture observation",
+        "owner-authorized V10G weapon and terrain behavior observation; see docs/planning/wp-015d4a-v10-terrain-starts-contract.md#reference-observations-and-implementation-boundary"
       ],
       "blocked_uses": [
         "code copy",

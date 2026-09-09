@@ -14,6 +14,17 @@ Phaser/Socket.IO stack.
   See [Verification Funnels](../process/development_workflow.md#verification-funnels).
   This changes verification policy only and does not advance the product package.
 - Active target: mobile-first single-player Nimiq Pay competition release.
+- Next prepared slice: **WP-015D4D V10G Terrain And Weapon Tactics**;
+  see the [V10G preparation contract](wp-015d4a-v10-terrain-starts-contract.md#v10g-terrain-and-weapon-tactics-preparation).
+  Preparation is complete; runtime implementation has not started. Begin with
+  authoritative hitbox, launch, projectile/blast and jump dimensions; derive
+  Twin Crests seed 4 pocket/ridge/shelf constraints before damage tuning.
+  Reject geometry that cannot provide its declared protection or advantage.
+  Verify pocket/lob, shelf/precision and deliberate
+  breach/follow-up. Proposed R3 separates the three Relic roles and must carry
+  those rules consistently through preview, AI and replay. Freeze numerical
+  parameters from concrete witnesses before expanding terrain families.
+  Current V10F branch/evidence remain intact pending package-transition work.
 - Active product package: **WP-015D4C V10F Procedural Terrain.** Its preparation
   follows WP-015D4B V10E Tactical Terrain Refinement. It
   follows WP-015D4A V10 Terrain and Starting Positions. The V9 Resource and
@@ -139,7 +150,15 @@ Phaser/Socket.IO stack.
   time while retaining earlier and subsequent scheduling debt. A regression
   reproduces slow preview work and verifies default Threadball aim/fire; the
   phone journey now also aims immediately without selecting an Action.
-  Redeployed physical-phone confirmation remains open.
+  The owner subsequently confirmed that aiming and the triggerable gameplay
+  checks pass on the phone. Terrain/action tactical feel is explicitly deferred:
+  gravity-curved shots do not make the current terrain provide the intended
+  cover and firing-position choices. This is not acceptance of tactical terrain
+  effectiveness. Track a future terrain/ballistics tuning step using actual
+  projectile arcs; no straight-shot weapon or physics change is authorized by
+  this deferral. V10F generator/preview implementation has no newly reported
+  functional blocker; release verification and formal package closure remain
+  separate from this bounded phone acceptance.
   The 2026-09-08 daily gate exposed two inherited browser regressions:
   the synthetic result fixture had drifted from the current retry contract,
   and the legacy V8 compact-landscape focus control overlapped its Face row.

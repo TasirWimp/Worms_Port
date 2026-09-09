@@ -53,6 +53,11 @@ are also recorded in the Execution Pointer of
   covering Sorcerers and the other evaluated engines. All external code, maps,
   algorithms, constants, sample tiles and assets remain excluded from product
   paths.
+- V10G preparation records the separately authorized Sorcerers weapon/terrain
+  observations and product-owned implementation plan in the
+  [V10G contract](docs/planning/wp-015d4a-v10-terrain-starts-contract.md#v10g-terrain-and-weapon-tactics-preparation).
+  Its first target is meaningful pocket, shelf and breach choices on Twin Crests;
+  the new ruleset and phone route are planned, not implemented.
 - Assets from Sorcerers may move into `assets/` only after exact-file license
   evidence proves commercial use, redistribution, and modification are allowed.
 - Product assets must be traceable through `legal/asset-manifest.json`.
