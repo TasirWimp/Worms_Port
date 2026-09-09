@@ -57,7 +57,10 @@ are also recorded in the Execution Pointer of
   observations and product-owned implementation plan in the
   [V10G contract](docs/planning/wp-015d4a-v10-terrain-starts-contract.md#v10g-terrain-and-weapon-tactics-preparation).
   Its first target is meaningful pocket, shelf and breach choices on Twin Crests;
-  the new ruleset and phone route are planned, not implemented.
+  the geometry foundation and low-cover regressions are implemented; the new
+  ruleset and phone route are planned, not implemented. The
+  [frozen weapon observations](docs/evidence/wp-015d4d-v10g-weapon-terrain-reference.md)
+  preserve the reference boundary separately from the evolving contract.
 - Assets from Sorcerers may move into `assets/` only after exact-file license
   evidence proves commercial use, redistribution, and modification are allowed.
 - Product assets must be traceable through `legal/asset-manifest.json`.

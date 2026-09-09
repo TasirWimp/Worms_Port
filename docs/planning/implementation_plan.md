@@ -14,18 +14,22 @@ Phaser/Socket.IO stack.
   See [Verification Funnels](../process/development_workflow.md#verification-funnels).
   This changes verification policy only and does not advance the product package.
 - Active target: mobile-first single-player Nimiq Pay competition release.
-- Next prepared slice: **WP-015D4D V10G Terrain And Weapon Tactics**;
+- Active implementation slice: **WP-015D4D V10G Terrain And Weapon Tactics**;
   see the [V10G preparation contract](wp-015d4a-v10-terrain-starts-contract.md#v10g-terrain-and-weapon-tactics-preparation).
-  Preparation is complete; runtime implementation has not started. Begin with
-  authoritative hitbox, launch, projectile/blast and jump dimensions; derive
+  Geometry implementation has started; see [evidence](../evidence/wp-015d4d.json).
+  The first checkpoint reproduces exposed V10F hitboxes and verifies a 112-unit
+  ledge with actual movement authority. No R3 game route exists yet. Continue with
+  launch/projectile/blast rules and derive
   Twin Crests seed 4 pocket/ridge/shelf constraints before damage tuning.
   Reject geometry that cannot provide its declared protection or advantage.
   Verify pocket/lob, shelf/precision and deliberate
   breach/follow-up. Proposed R3 separates the three Relic roles and must carry
   those rules consistently through preview, AI and replay. Freeze numerical
   parameters from concrete witnesses before expanding terrain families.
-  Current V10F branch/evidence remain intact pending package-transition work.
-- Active product package: **WP-015D4C V10F Procedural Terrain.** Its preparation
+  Current implementation branch: `codex/wp-015d4d-v10g-terrain-weapon-tactics`.
+  The owner authorized committing and pushing the geometry checkpoint here;
+  the predecessor V10F branch/evidence remain preserved.
+- Playable predecessor: **WP-015D4C V10F Procedural Terrain.** Its preparation
   follows WP-015D4B V10E Tactical Terrain Refinement. It
   follows WP-015D4A V10 Terrain and Starting Positions. The V9 Resource and
   Utilities predecessor has complete V9A rules, V9B injected

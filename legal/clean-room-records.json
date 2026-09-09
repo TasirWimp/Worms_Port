@@ -2,6 +2,18 @@
   "policy": "Sorcerers-informed work starts with an observed frozen behavior record and completes only after separated implementation/review roles, an implementation declaration, a passing similarity review, and behavioral-test evidence.",
   "records": [
     {
+      "id": "wp-015d4d-v10g-weapon-terrain",
+      "work_package": "WP-015D4D",
+      "source_commit": "0f45c4920321c0a3a14de30fe5cf44131a38da89",
+      "observed_material": [
+        "Previously authorized weapon flight, impact, radial damage and terrain observations recorded in the preparation contract; no new upstream inspection."
+      ],
+      "behavior_record": "docs/evidence/wp-015d4d-v10g-weapon-terrain-reference.md",
+      "behavior_record_sha256": "8161004A99D8919F477D8F90EA61930F3744587E8D5C9C511C59692805150E4F",
+      "observer": "Primary single-owner reference observer, preparation turn",
+      "status": "observed"
+    },
+    {
       "id": "wp-015d4c-v10f-procedural-terrain",
       "work_package": "WP-015D4C",
       "source_commit": "0f45c4920321c0a3a14de30fe5cf44131a38da89",

@@ -1,0 +1,73 @@
+{
+  "id": "WP-015D4D",
+  "status": "in_progress",
+  "execution_mode": "single_owner",
+  "starting_commit": "d11449d7696cd7e0403311b0a84a019842e04cc3",
+  "branch": "codex/wp-015d4d-v10g-terrain-weapon-tactics",
+  "initial_worktree": "clean",
+  "starting_lock_sha256": "6B768A8FDE2695D02555CA17201FD7CE420F9AC075B91380474DD7A643042BC8",
+  "owning_roles": [
+    "primary assistant"
+  ],
+  "scope": [
+    "V10G geometry-first Twin Crests and distinct weapon tactics under the existing contract.",
+    "First implementation checkpoint: authoritative combat dimensions, geometry constraints and executable baseline witnesses; R3 integration follows."
+  ],
+  "non_goals": [
+    "No agents, public activation, legacy ruleset changes or asset imports. Owner subsequently authorized committing and publishing the geometry checkpoint on the V10G branch."
+  ],
+  "planned_checks": [
+    "Change selector dry run and selected verification.",
+    "Focused actual-simulation movement and geometry regressions, legacy compatibility.",
+    "Housekeeping and direct review; physical phone acceptance remains owner-run."
+  ],
+  "deterministic_seeds": [
+    "4"
+  ],
+  "sorcerers_reference_used": true,
+  "clean_room_records": [
+    "wp-015d4d-v10g-weapon-terrain"
+  ],
+  "check_results": [
+    {
+      "command": "node --import tsx --test tests/simulation/terrain-geometry-v10g.test.ts",
+      "status": "pass",
+      "detail": "Five focused tests pass: legacy 24-unit physical body versus 64x98 damage target; conservative grid-derived 112-unit cover and 80-unit pocket/shelf dimensions; both R2 seed-4 openings expose the head; identical actual-authority Threadball attacks deal 45 damage behind 40-unit barriers versus zero behind 112-unit barriers in both directions; actual walking cannot climb and jumping lands on the 112-unit ledge from both sides."
+    },
+    {
+      "command": "npx tsc --noEmit --target ES2022 --module ESNext --moduleResolution Bundler --strict --skipLibCheck --esModuleInterop shared/terrain-geometry-v10g.ts tests/simulation/terrain-geometry-v10g.test.ts",
+      "status": "pass",
+      "detail": "Standalone strict check includes the new module and tests, which are not yet imported by product entry points. Corrected literal-type inference for the evolving jump velocity."
+    },
+    {
+      "command": "npm run check:compliance; npm run audit:housekeeping; git diff --check",
+      "status": "pass",
+      "detail": "Compliance and whitespace pass. Housekeeping is report-only: same-name tracking branch, no gone upstream; historical open packages/reviews remain preserved. Pointer names V10G as active implementation and V10F as playable predecessor. Branch is not renamed or published."
+    },
+    {
+      "command": "npm run verify:changes -- --dry-run; npm run verify:changes",
+      "status": "pass",
+      "detail": "Selected gate passed: protocol 125, simulation 156 (the latest fifth focused geometry witness also passed separately), Loomkeeper 37, Relics 10, combat 81, Practice 42, identity 22 and reward 37. Types, build outputs, four built-server smokes, security/bundle checks and 61 canonical phone-browser cases passed; three project exclusions. PostgreSQL requires the missing test database URL. No runtime integration or tactical acceptance is claimed."
+    }
+  ],
+  "reviews": [
+    {
+      "role": "primary assistant",
+      "reviewer": "single-owner geometry checkpoint direct review",
+      "decision": "pass",
+      "detail": "Bounded geometry prerequisite is explicitly not final tactical admission. Actual authority witnesses supplement the row scan. Legacy generator/physics, public paths and assets are unchanged; full R3 acceptance remains open."
+    }
+  ],
+  "skipped_checks": [
+    "Three browser cases are intentionally routed to other projects by tests/browser/quality-policy.json.",
+    "PostgreSQL gate skipped because WP014_TEST_DATABASE_URL is absent; CI owns the database prerequisite.",
+    "Full daily/release matrix, performance and audit were not repeated: this is a geometry implementation checkpoint, not a release boundary. The 22:00 Europe/Berlin automation remains unchanged.",
+    "Real Android/iOS and V10G feel acceptance not run; no V10G phone route exists yet."
+  ],
+  "residual_risks": [
+    "V10G is in progress. No new phone route or generated R3 layout is delivered by this geometry checkpoint.",
+    "R3 launch/blast policy, candidate construction and admission, distinct Relic mechanics, AI/preview/replay parity and complete tactical witnesses remain open.",
+    "The horizontal-cover helper proves only a necessary geometric condition, not protection against arbitrary angles or blast damage.",
+    "Physical phone and first-map feel acceptance have not run for V10G."
+  ]
+}

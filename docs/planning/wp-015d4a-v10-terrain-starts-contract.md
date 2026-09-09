@@ -581,8 +581,8 @@ remain separate decisions.
 
 ## V10G terrain and weapon tactics preparation
 
-Status: owner-authorized preparation for WP-015D4D; runtime implementation has
-not started. This section supersedes the earlier deferral only for the bounded
+Status: WP-015D4D implementation started; geometry foundation is implemented,
+R3 authority and playable integration remain pending. This section supersedes the earlier deferral only for the bounded
 V10G work below. V10F functional phone acceptance stands; tactical effectiveness
 is the problem this next slice must solve. Development remains single-owner.
 
@@ -640,6 +640,37 @@ rerun the affected terrain witnesses; geometry and combat rules are one versione
 compatibility contract.
 
 ### Proposed Relic contract
+
+#### First implementation checkpoint: measured geometry
+
+Implementation/evidence: [WP-015D4D](../evidence/wp-015d4d.json),
+`shared/terrain-geometry-v10g.ts` and
+`tests/simulation/terrain-geometry-v10g.test.ts`.
+
+| Authority quantity | Measured value / consequence |
+| --- | --- |
+| Physical movement body | Radius 12; 24 by 24 world units. |
+| Direct projectile target | Half-width 32, top 85 and bottom 13 relative to actor root; 64 by 98 extent. Root is 12 units above support, so the head is 97 units above ground. The inherited bottom extends one unit below support. |
+| Terrain resolution | 8 world units per mask cell; 64 per authoring column. |
+| Cover rise prerequisite | At least 112 units: 97-unit head clearance plus one 8-unit margin, rounded upward to the mask grid. Actual incoming attack envelopes may require more. |
+| Pocket/shelf width prerequisite | At least 80 units: 64-unit target width plus one cell margin on each side. This is not a guaranteed safe movement envelope. |
+| Normal free jump | Actual discrete authority reaches 124 units of rise and returns to starting height after 63 ticks/world units of forward drive. Obstacle landing still requires simulation. |
+| Single-jump rise with margin | 112 units; tests verify actual landings from both directions on a 112-unit ledge, while walking stops below it. |
+| Existing launch origin | Root plus facing times 16 horizontally, minus 4 vertically; inherited projectile is a swept point and gains 80 fixed-point vertical velocity per tick. Candidate launch/blast rules still need calibration and authority tests. |
+
+Seed 4's R2 Twin Crests fails the new full-height horizontal protection
+prerequisite from both sides. A 40-unit barrier also fails; a 112-unit barrier
+passes this geometric prerequisite. A separate actual-authority paired shot
+from elevated ground deals 45 damage behind the 40-unit barrier and zero behind
+the 112-unit barrier, with identical Threadball launch/aim and actor positions;
+both firing directions pass. These are executable reproductions, not
+claims that a new map or all weapon interactions are accepted. The helper checks
+all above-ground target rows and requires blocking material outside the hitbox.
+It deliberately does not equate horizontal occlusion with tactical admission.
+Blast policy, angled attacks, candidate terrain generation and real damage
+witnesses remain the next work. Historical physics and generation are untouched.
+
+#### Candidate weapon roles
 
 | Relic | V10G role | Required tradeoff |
 | --- | --- | --- |
