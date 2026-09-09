@@ -552,6 +552,12 @@ input {
     text-align: right;
 }
 
+/* Legacy V8 has a separate Jump/Face row above its pads. Keep off-screen
+   navigation above that row in compact landscape so both remain tappable. */
+.combat-v8:not(.combat-v8-r1)[data-orientation='landscape'] .camera-focus-button {
+    top: calc(max(8px, var(--safe-area-top)) + 78px);
+}
+
 .camera-focus-button[hidden],
 .combat-ui[data-suspended='true'] .camera-focus-button,
 .combat-v8[data-presentation='unravel'] .camera-focus-button {

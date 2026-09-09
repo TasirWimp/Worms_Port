@@ -4,10 +4,11 @@ import test from 'node:test';
 import {
     createTerrainStartsV10Fixture,
     trajectoryPreviewV10,
+    v10FPreviewSeed,
     type V10FixtureClock
 } from '../../client/src/combat/terrain-starts-v10-fixture';
 import {
-    canonicalSimulationJsonV10, V10_R1_RULESET_ID, V10_RULESET_ID
+    canonicalSimulationJsonV10, V10_R1_RULESET_ID, V10_R2_RULESET_ID, V10_RULESET_ID
 } from '../../shared/simulation-v10';
 
 function createClock(): V10FixtureClock & { advanceThirtyTicks: () => void } {
@@ -67,6 +68,44 @@ test('V10E local fixture exposes the revised terrain identity and preserves rest
     }
 });
 
+test('V10F review route seeds are strict, deterministic and preserve every procedural family', async () => {
+    assert.equal(v10FPreviewSeed('?terrain-seed=4'), 4);
+    for (const search of ['', '?terrain-seed=0', '?terrain-seed=-1', '?terrain-seed=1.5',
+        '?terrain-seed=4294967296', '?terrain-seed=not-a-seed']) {
+        assert.equal(v10FPreviewSeed(search), 1, search);
+    }
+
+    const cases = [
+        { seed: 1, profile: 'asymmetric-rampart', candidate: 4, reflected: false, label: 'Asymmetric Rampart' },
+        { seed: 5, profile: 'asymmetric-rampart', candidate: 0, reflected: true, label: 'Asymmetric Rampart' },
+        { seed: 2, profile: 'trench-needle', candidate: 7, reflected: false, label: 'Trench Needle' },
+        { seed: 3, profile: 'stepping-mesa', candidate: 4, reflected: false, label: 'Stepping Mesa' },
+        { seed: 4, profile: 'twin-crests', candidate: 2, reflected: false, label: 'Twin Crests' }
+    ] as const;
+    for (const expected of cases) {
+        const fixture = await createTerrainStartsV10Fixture(expected.seed, 'wizard', createClock(), V10_R2_RULESET_ID);
+        try {
+            assert.equal(fixture.snapshot.rulesetId, V10_R2_RULESET_ID);
+            assert.equal(fixture.snapshot.seed, expected.seed);
+            assert.equal(fixture.snapshot.terrainProfileId, expected.profile);
+            assert.equal(fixture.snapshot.terrainRecipeRevision, 'v10f-recipes-r1');
+            assert.equal(fixture.snapshot.terrainCandidateIndex, expected.candidate);
+            assert.equal(fixture.previewTerrainReflected, expected.reflected);
+            assert.equal(fixture.previewLabel,
+                `V10F procedural terrain preview · ${expected.label} · candidate ${expected.candidate} · ${expected.reflected ? 'reflected' : 'authored'} · local-only`);
+            const restarted = await fixture.restart();
+            try {
+                assert.equal(restarted.snapshot.seed, expected.seed);
+                assert.equal(canonicalSimulationJsonV10(restarted.snapshot), canonicalSimulationJsonV10(fixture.snapshot));
+            } finally {
+                restarted.destroy();
+            }
+        } finally {
+            fixture.destroy();
+        }
+    }
+});
+
 test('V10C local fixture charges 30 live ticks, then executes a bounded Loomkeeper response', async () => {
     const clock = createClock();
     const fixture = await createTerrainStartsV10Fixture(1, 'wizard', clock);
@@ -117,6 +156,29 @@ test('V10E local fixture completes a bounded Loomkeeper response on tactical ter
         assert.ok(fixture.snapshot.phase === 'finished' || fixture.snapshot.activeActor === 'player');
         assert.equal(fixture.snapshot.rulesetId, V10_R1_RULESET_ID);
         assert.equal(fixture.snapshot.terrainProfileId, 'broken-loom');
+    } finally {
+        stop();
+        fixture.destroy();
+    }
+});
+
+test('V10F local fixture completes a bounded Loomkeeper response on procedural terrain', async () => {
+    const clock = createClock();
+    const fixture = await createTerrainStartsV10Fixture(1, 'wizard', clock, V10_R2_RULESET_ID);
+    const events: string[] = [];
+    const stop = fixture.onSnapshot((_state, next) => events.push(...next.map(event => event.type)));
+    try {
+        for (let window = 0; window < 20 && fixture.snapshot.activeActor !== 'loomkeeper'; window += 1) {
+            clock.advanceThirtyTicks();
+        }
+        assert.equal(fixture.snapshot.activeActor, 'loomkeeper');
+        for (let window = 0; window < 45 && fixture.snapshot.activeActor === 'loomkeeper' &&
+            fixture.snapshot.phase !== 'finished'; window += 1) clock.advanceThirtyTicks();
+        assert.ok(events.includes('impact'));
+        assert.ok(fixture.snapshot.lastProjectile);
+        assert.ok(fixture.snapshot.phase === 'finished' || fixture.snapshot.activeActor === 'player');
+        assert.equal(fixture.snapshot.rulesetId, V10_R2_RULESET_ID);
+        assert.equal(fixture.snapshot.terrainProfileId, 'asymmetric-rampart');
     } finally {
         stop();
         fixture.destroy();

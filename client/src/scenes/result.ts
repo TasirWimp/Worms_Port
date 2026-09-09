@@ -11,6 +11,10 @@ import {
     type PracticeClient
 } from '../practice/client';
 
+export type ResultClient = Pick<PracticeClient,
+    'retryCombat' | 'combatArgs' | 'onRewardUpdate' | 'rewardForChallenge' |
+    'claimReward' | 'rewardStatus'>;
+
 export type ResultSceneArgs = {
     result?: ChallengeResult | ChallengeResultV8Automated | ChallengeResultV9;
     calling: PlayerCalling;
@@ -22,7 +26,7 @@ export type ResultSceneArgs = {
 
 export default class ResultScene extends Phaser.Scene {
     private args: ResultSceneArgs;
-    private client: PracticeClient;
+    private client: ResultClient;
     private root: HTMLElement;
     private fullscreenUnavailable = false;
     private rewardUpdate?: RewardUpdateData;
@@ -41,7 +45,7 @@ export default class ResultScene extends Phaser.Scene {
     }
 
     public create(): void {
-        this.client = this.registry.get(PRACTICE_CLIENT_REGISTRY_KEY) as PracticeClient;
+        this.client = this.registry.get(PRACTICE_CLIENT_REGISTRY_KEY) as ResultClient;
         const host = document.getElementById('game');
         if (!host || !this.client) throw new Error('Result scene requires the live practice client.');
         const outcome = this.args.result?.outcome;

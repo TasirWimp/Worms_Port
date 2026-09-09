@@ -59,7 +59,7 @@ export default class CombatScene extends Phaser.Scene {
     private v8Args?: CombatSceneArgsV8;
     private resourceArgs?: ResourceTurnsSceneArgs;
     private v8Preview?: 'v8' | 'v8-r1';
-    private resourcePreview?: 'v9' | 'v10' | 'v10e';
+    private resourcePreview?: 'v9' | 'v10' | 'v10e' | 'v10f';
     private initializationGeneration = 0;
     private snapshot: ChallengeSnapshot;
     private authoritativeSnapshot: ChallengeSnapshot;
@@ -107,7 +107,7 @@ export default class CombatScene extends Phaser.Scene {
         this.resourceArgs = args?.kind === 'v9' || args?.kind === 'v10' ? args : undefined;
         const preview = new URLSearchParams(window.location.search).get('combat-preview');
         this.v8Preview = !args?.snapshot && (preview === 'v8' || preview === 'v8-r1') ? preview : undefined;
-        this.resourcePreview = !args?.snapshot && (preview === 'v9' || preview === 'v10' || preview === 'v10e')
+        this.resourcePreview = !args?.snapshot && (preview === 'v9' || preview === 'v10' || preview === 'v10e' || preview === 'v10f')
             ? preview : undefined;
         if (this.v8Args || this.resourceArgs || this.v8Preview || this.resourcePreview) return;
         this.args = args?.snapshot && args.kind !== 'v8' && args.kind !== 'v9' && args.kind !== 'v10' ? args : createCombatFixture();
@@ -250,13 +250,17 @@ export default class CombatScene extends Phaser.Scene {
         this.events.once(Phaser.Scenes.Events.SHUTDOWN, () => { mounted = false; });
         // Live injected arguments must yield once so Phaser can finish marking
         // the scene active before the stale-mount guard runs.
-        const args = await (this.resourceArgs ?? (this.resourcePreview === 'v10' || this.resourcePreview === 'v10e'
-            ? await import('../combat/terrain-starts-v10-fixture').then(module => module.createTerrainStartsV10Fixture(
-                1, 'wizard', undefined,
-                this.resourcePreview === 'v10e'
-                    ? 'nimble-knots-artillery-v10-r1'
-                    : 'nimble-knots-artillery-v10'
-            ))
+        const preview = this.resourcePreview;
+        const args = await (this.resourceArgs ?? (preview === 'v10' || preview === 'v10e' || preview === 'v10f'
+            ? await import('../combat/terrain-starts-v10-fixture').then(module => {
+                const seed = preview === 'v10f' ? module.v10FPreviewSeed(window.location.search) : 1;
+                const rulesetId = preview === 'v10f'
+                    ? 'nimble-knots-artillery-v10-r2'
+                    : preview === 'v10e'
+                        ? 'nimble-knots-artillery-v10-r1'
+                        : 'nimble-knots-artillery-v10';
+                return module.createTerrainStartsV10Fixture(seed, 'wizard', undefined, rulesetId);
+            })
             : await import('../combat/resource-turns-v9-fixture').then(module => module.createResourceTurnsV9Fixture())));
         if (!mounted || generation !== this.initializationGeneration || !this.scene.isActive()) { args.destroy(); return; }
         const { ResourceTurnsV9Scene } = await import('../combat/resource-turns-v9-scene');

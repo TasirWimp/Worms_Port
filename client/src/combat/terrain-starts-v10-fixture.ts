@@ -6,12 +6,17 @@ import {
     createSimulationV10,
     forceSimulationLimitV10,
     V10_R1_RULESET_ID,
+    V10_R2_RULESET_ID,
     V10_RULESET_ID,
     type V10RulesetId,
     type SimulationEventV10,
     type SimulationIntentV10,
     type SimulationStateV10
 } from '../../../shared/simulation-v10';
+import {
+    generateV10ProceduralSurfaceCandidate,
+    type V10ProceduralTerrainProfileId
+} from '../../../shared/terrain-generation-v10';
 import {
     LoomkeeperExecutionV10,
     LoomkeeperPlannerV10,
@@ -22,6 +27,18 @@ import type { CombatSceneArgsV10 } from './contracts';
 import type { V9FixtureClock } from './resource-turns-v9-fixture';
 
 export type V10FixtureClock = V9FixtureClock;
+
+export const V10F_PREVIEW_DEFAULT_SEED = 1;
+
+/** Accept only canonical positive uint32 review seeds; malformed input stays on the documented default. */
+export function v10FPreviewSeed(search: string): number {
+    const value = new URLSearchParams(search).get('terrain-seed');
+    if (!value || !/^[1-9]\d*$/.test(value)) return V10F_PREVIEW_DEFAULT_SEED;
+    const seed = Number(value);
+    return Number.isSafeInteger(seed) && seed <= 0xFFFF_FFFF
+        ? seed
+        : V10F_PREVIEW_DEFAULT_SEED;
+}
 
 /**
  * Local V10C authority. It adds the frozen Loomkeeper policy to V10 terrain,
@@ -40,6 +57,13 @@ export async function createTerrainStartsV10Fixture(
     rulesetId: V10RulesetId = V10_RULESET_ID
 ): Promise<CombatSceneArgsV10> {
     let state = createSimulationV10(seed, calling, rulesetId);
+    const proceduralSurface = rulesetId === V10_R2_RULESET_ID
+        ? generateV10ProceduralSurfaceCandidate(
+            state.seed,
+            state.terrainCandidateIndex!,
+            state.terrainProfileId as V10ProceduralTerrainProfileId
+        )
+        : undefined;
     let paused = false;
     let destroyed = false;
     let publishing = false;
@@ -246,13 +270,23 @@ export async function createTerrainStartsV10Fixture(
         });
         if (result.accepted && result.mutated) state = result.state;
     };
+    const previewLabel = rulesetId === V10_R2_RULESET_ID
+        ? [
+            'V10F procedural terrain preview',
+            terrainProfileLabel(state.terrainProfileId),
+            `candidate ${state.terrainCandidateIndex}`,
+            proceduralSurface!.reflected ? 'reflected' : 'authored',
+            'local-only'
+        ].join(' · ')
+        : rulesetId === V10_R1_RULESET_ID
+            ? 'V10E tactical terrain preview · local-only'
+            : 'V10 terrain engineering preview · local-only';
 
     return {
         kind: 'v10',
         get snapshot() { return cloneSimulationV10(state); },
-        previewLabel: rulesetId === V10_R1_RULESET_ID
-            ? 'V10E tactical terrain preview · local-only'
-            : 'V10 terrain engineering preview · local-only',
+        previewLabel,
+        ...(proceduralSurface ? { previewTerrainReflected: proceduralSurface.reflected } : {}),
         submit,
         setPaused,
         cancelInput,
@@ -276,6 +310,10 @@ export async function createTerrainStartsV10Fixture(
         },
         destroy
     };
+}
+
+function terrainProfileLabel(profileId: string): string {
+    return profileId.split('-').map(word => `${word[0].toUpperCase()}${word.slice(1)}`).join(' ');
 }
 
 /** Clone-only trajectory preview; V10 authority and terrain remain untouched. */

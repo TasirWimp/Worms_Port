@@ -44,6 +44,13 @@ test('practice and identity retain reward dependencies and browser coverage', ()
   assert.equal(planChanges(['server/src/reward/postgres-store.ts']).postgres, true);
 });
 
+test('result and style changes retain the five-project visual journey', () => {
+  for (const file of ['client/src/result/fixture.ts', 'client/src/scenes/result.ts', 'client/src/style.css']) {
+    const plan = planChanges([file]);
+    assert.ok(plan.browser.includes('visual'), `${file}: visual`);
+  }
+});
+
 test('shared AI changes retain authoritative integration coverage', () => {
   const plan = planChanges(['shared/loomkeeper-v8.ts']);
   for (const task of ['test:loomkeeper', 'test:simulation', 'test:protocol', 'test:practice', 'test:reward']) assert.ok(plan.tasks.includes(task));

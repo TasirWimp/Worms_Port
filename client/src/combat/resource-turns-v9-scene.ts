@@ -40,6 +40,9 @@ export class ResourceTurnsV9Scene {
             live: args.kind === 'v9' && args.previewLabel.includes('server-authoritative'), automated: args.kind === 'v10'
         }, () => performance.now(), args.paused());
         this.controls.root.dataset.preview = args.previewLabel;
+        if (args.kind === 'v10' && args.previewTerrainReflected !== undefined) {
+            this.controls.root.dataset.terrainReflected = String(args.previewTerrainReflected);
+        }
         this.unsubscribe = args.kind === 'v10'
             ? args.onSnapshot((state, events) => this.accept(state, events))
             : args.onSnapshot((state, events) => this.accept(state, events));

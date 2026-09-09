@@ -17,12 +17,13 @@
     "Emit exactly eight independently tagged candidates per normalized seed and apply fixed structural, movement and direct-projectile admission.",
     "Rank admitted candidates by the frozen lexicographic tuple and retain candidate zero as the fixed no-admission fallback.",
     "Add replay-distinct nimble-knots-artillery-v10-r2 authority binding profile, recipe revision, candidate index and packed terrain.",
-    "Extend the offline V10 assessment across every V10F family, generated and mirrored carriers, both opening actors, mutation, Loomkeeper response and exact reconstruction."
+    "Extend the offline V10 assessment across every V10F family, generated and mirrored carriers, both opening actors, mutation, Loomkeeper response and exact reconstruction.",
+    "Expose R2 through a local-only V10F phone preview with strict deterministic review seeds, review metadata and inherited mobile controls."
   ],
   "non_goals": [
     "No external code, algorithm implementation, map, template, constant, identifier, image, tile or asset is copied or imported.",
     "No WFC or property-testing dependency is added, and package.json and package-lock.json remain unchanged.",
-    "No V10F browser preview, server deployment profile, database path, reward behavior, Practice selector or Daily Challenge selector is added in stages 1-4.",
+    "No V10F server deployment profile, database path, reward behavior, Practice selector or Daily Challenge selector is added.",
     "No free-form Markdown or ASCII parser becomes gameplay authority; normalized ASCII is generated from typed recipes for review.",
     "No cave, overhang, floating island, lethal gap, obstacle layer, movement rewrite or terrain-rendering rewrite is added."
   ],
@@ -31,13 +32,15 @@
     "Run both TypeScript projects and focused V10F compiler, admission, jump, protocol, replay and legacy-compatibility tests.",
     "Run the complete V10/V10E/V10F offline assessment and retain its source-bound local reports.",
     "Run compliance, diff checks and housekeeping to validate reference records, source boundaries and package tracking.",
+    "Run focused fixture and phone-browser acceptance for strict review seeds, all terrain families, both asymmetric orientations, local isolation, compact guidance and a normal jump.",
     "Directly review the complete diff for bounded runtime work, exact replay authority, legacy compatibility and lack of public activation."
   ],
   "deterministic_seeds": [
     "0x00000001 through 0x00000040 across candidate indices 0 through 7",
     "0x13579BDF",
     "0xC0FFEE11",
-    "0xDEADBEEF"
+    "0xDEADBEEF",
+    "Phone review routes: 1 authored Asymmetric Rampart, 5 reflected Asymmetric Rampart, 2 Trench Needle, 3 Stepping Mesa and 4 Twin Crests"
   ],
   "sorcerers_reference_used": true,
   "clean_room_records": [
@@ -65,6 +68,16 @@
       "detail": "Asset, runtime-inventory, generation-component, import-boundary, package-license, work-package and frozen clean-room records pass, as does the diff check. Housekeeping confirms the correctly tracked V10F branch with no gone upstream branches; manual reconciliation remains limited to preserved historical in-progress packages and failed V9 reviews."
     },
     {
+      "command": "2026-09-08 npm run verify:daily failure review; focused six-case reproduction; node scripts/verify-changes.js",
+      "status": "pass",
+      "detail": "The daily gate's six browser failures had two concrete causes: the synthetic result fixture still exposed retry while ResultScene required retryCombat plus combatArgs, and the legacy V8 compact-landscape Loomkeeper focus button overlapped Face left. The fixture now satisfies a checked narrow ResultClient contract, the focus control stays above the legacy extra-control row, and a browser assertion protects non-overlap. All five result-recovery projects and the Chromium 844x390 V8 case pass. The complete selected correction gate also passes 78 combat, 42 Practice, 22 identity, 37 reward, 125 protocol and 110 tooling tests; builds, four smokes, security and bundle checks; 59 canonical browser cases with three reviewed skips; and eight applicable visual-logic cases with twelve expected project skips. Result and global-style changes now select the five-project visual journey."
+    },
+    {
+      "command": "2026-09-09 focused V10F fixture/browser checks; node scripts/verify-changes.js",
+      "status": "pass",
+      "detail": "The local R2 preview accepts only positive canonical uint32 review seeds, falls back to seed 1, preserves exact restart state, exposes all four families and both Asymmetric Rampart orientations, and completes a bounded Loomkeeper response. Six focused V10 fixture tests and two focused built Chromium phone journeys pass. The complete change-selected gate passes 80 combat, 42 Practice, 22 identity, 37 reward, 125 protocol and 110 tooling tests; types, production outputs, four built-server smokes, identity/reward security and bundle budgets; 61 canonical browser cases with three reviewed project skips; and eight applicable visual-logic cases with twelve expected project skips. The route made no session, challenge or reward request."
+    },
+    {
       "command": "single-owner direct review of the V10F stages 1-4 diff",
       "status": "pass",
       "detail": "The direct review confirmed that runtime candidate selection performs only fixed integer geometry, movement and ballistic probes; the 180-plan Loomkeeper search runs only in offline assessment; legacy constructors omit all R2 fields; recipe metadata is strict and replay-bound; and no route, public selector, database, dependency or external product input was introduced."
@@ -75,15 +88,21 @@
       "role": "primary assistant",
       "reviewer": "single-owner V10F stages 1-4 direct review",
       "decision": "pass"
+    },
+    {
+      "role": "primary assistant",
+      "reviewer": "single-owner V10F local phone-preview direct review",
+      "decision": "pass"
     }
   ],
   "skipped_checks": [
-    "The selected PostgreSQL prerequisite did not run because WP014_TEST_DATABASE_URL is unavailable locally. Stages 1-4 add no database or reward path; CI remains responsible for that isolated gate.",
-    "The full five-project Ubuntu daily/release suite is owned by the existing 22:00 Europe/Berlin automation and is not rerun for each feature edit.",
-    "No V10F physical-phone check was run because stages 1-4 deliberately add no V10F browser route or player-visible selector."
+    "PostgreSQL did not run because the V10F preview adds no database or reward path and the change selector did not request that isolated gate; CI remains responsible when database-owned paths change.",
+    "The failed 2026-09-08 daily gate was not repeated wholesale after its six exact browser failures passed. The next 22:00 Europe/Berlin automation retains the complete zero-retry matrix, performance, npm audit and local prerequisite report.",
+    "Windows executed all selected visual behavior with snapshots ignored; only pinned Ubuntu 24.04 CI may compare or update release visual baselines.",
+    "No V10F physical-phone check was run autonomously. The local-only route and deterministic review URLs are ready for the owner's deployed-device acceptance."
   ],
   "residual_risks": [
-    "V10F is internal R2 authority only. The local ?combat-preview=v10f route, phone readability/feel and any later product promotion remain separate work.",
+    "V10F remains a local R2 preview. Physical-phone readability/feel and any later product promotion remain separate owner decisions.",
     "Runtime admission uses a bounded direct-projectile lattice; the larger 180-plan response proof remains offline and in the daily/release gate by design.",
     "The clean-room record remains observed under the historical schema; the active single-owner policy permits direct implementation and review but does not rewrite historical separated-role evidence.",
     "V10E physical-phone terrain feel remains open while the owner chose to proceed with V10F."

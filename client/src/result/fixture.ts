@@ -1,11 +1,11 @@
 import type {
     ChallengeResult,
+    ChallengeSnapshot,
     RewardUpdateData
 } from '../../../shared/protocol';
 
 import { createCombatFixture } from '../combat/fixture';
-import type { PracticeClient } from '../practice/client';
-import type { ResultSceneArgs } from '../scenes/result';
+import type { ResultClient, ResultSceneArgs } from '../scenes/result';
 
 const CHALLENGE_ID = 'visual_result_challenge_01';
 const ENTITLEMENT_ID = 'visual_reward_entitlement_01';
@@ -13,20 +13,18 @@ const RECIPIENT = 'NQ46 KLJE 5TMF 4Y1A 1255 CJHJ YG1S H0NU T604';
 
 export function createResultPreview(
     mode: 'practice' | 'reward'
-): { args: ResultSceneArgs; client: PracticeClient } {
+): { args: ResultSceneArgs; client: ResultClient } {
     const combat = createCombatFixture(1, 'wizard');
     let reward = claimableReward();
     const rewardListeners = new Set<(update: RewardUpdateData) => void>();
-    const noSubscription = () => () => undefined;
-    const client = {
-        retry: async () => structuredClone(combat.snapshot),
-        submitCommand: combat.submitCommand,
-        setPaused: combat.setPaused,
-        onSnapshot: noSubscription,
-        onResult: noSubscription,
-        onConnection: noSubscription,
-        onUnavailable: noSubscription,
-        onError: noSubscription,
+    const client: ResultClient = {
+        retryCombat: async () => structuredClone(combat.snapshot),
+        combatArgs: async (snapshot) => {
+            if (snapshot.protocolVersion !== 1) {
+                throw new Error('The result preview supports only the legacy combat fixture.');
+            }
+            return { ...combat, snapshot: structuredClone(snapshot as ChallengeSnapshot) };
+        },
         onRewardUpdate: (listener: (update: RewardUpdateData) => void) => {
             rewardListeners.add(listener);
             return () => rewardListeners.delete(listener);
@@ -56,7 +54,7 @@ export function createResultPreview(
             emitReward(rewardListeners, reward);
             return structuredClone(reward);
         }
-    } as unknown as PracticeClient;
+    };
     return {
         client,
         args: {

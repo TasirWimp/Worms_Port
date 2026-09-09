@@ -124,10 +124,20 @@ Phaser/Socket.IO stack.
   output. The offline assessment covers all four recipes, generated/mirrored
   physical sides and both opening actors, including terrain mutation, a
   bounded Loomkeeper response on the resulting terrain and exact operation,
-  event and state-hash reconstruction. The ruleset remains internal: the next
-  separate step is `/?combat-preview=v10f`, followed by physical-phone terrain
-  readability and feel. No Practice, Daily Challenge or reward selector has
-  changed.
+  event and state-hash reconstruction. The local-only
+  `/?combat-preview=v10f` route now exposes R2 through the inherited phone
+  controls and automated Loomkeeper. Positive 32-bit `terrain-seed` values give
+  repeatable access to all four families and both Asymmetric Rampart
+  orientations; malformed values fall back to seed 1. Automated phone-browser
+  acceptance covers local isolation, review metadata, compact guidance, actor
+  cards and a normal jump. Physical-phone terrain readability and feel are the
+  next acceptance step. No Practice, Daily Challenge or reward selector has
+  changed. The 2026-09-08 daily gate exposed two inherited browser regressions:
+  the synthetic result fixture had drifted from the current retry contract,
+  and the legacy V8 compact-landscape focus control overlapped its Face row.
+  Both are corrected, their exact six failed project cases pass, and result or
+  style changes now select the five-project visual journey during feature
+  verification.
 - Product predecessor: **WP-015D3A V8 Action-Turn Candidate — V8A finite
   rules/acceptance contract complete and independently reviewed; V8B authoritative
   foundation complete and independently reviewed; V8C touch presentation

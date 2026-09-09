@@ -557,6 +557,65 @@ test('V10E phone preview exposes tactical terrain and a working jump from cover'
   await page.screenshot({ path: testInfo.outputPath('v10e-tactical-terrain-phone.png') });
 });
 
+test('V10F phone preview keeps procedural terrain readable and supports a normal terrain jump', async ({ page }, testInfo) => {
+  test.setTimeout(60_000);
+  const requests: string[] = [];
+  page.on('request', request => requests.push(request.url()));
+  await page.setViewportSize({ width: 390, height: 844 });
+  await page.goto('/?combat-preview=v10f&terrain-seed=1&sideways=off');
+  await applySyntheticSafeArea(page, SYNTHETIC_SAFE_AREA);
+  const ui = page.locator('.combat-v10');
+  await expect(ui).toBeVisible();
+  await expect(ui).toHaveAttribute('data-preview', 'V10F procedural terrain preview · Asymmetric Rampart · candidate 4 · authored · local-only');
+  await expect(ui).toHaveAttribute('data-ruleset', 'nimble-knots-artillery-v10-r2');
+  await expect(ui).toHaveAttribute('data-terrain-profile', 'asymmetric-rampart');
+  await expect(ui).toHaveAttribute('data-terrain-seed', '1');
+  await expect(ui).toHaveAttribute('data-terrain-recipe-revision', 'v10f-recipes-r1');
+  await expect(ui).toHaveAttribute('data-terrain-candidate', '4');
+  await expect(ui).toHaveAttribute('data-terrain-reflected', 'false');
+  await expect(page.locator('.practice-shell')).toHaveCount(0);
+  expect(requests.some(url => /socket\.io|\/(?:session|challenge|reward)(?:\/|$|\?)/.test(url))).toBe(false);
+
+  await expect(ui).toHaveAttribute('data-opening-survey', 'false', { timeout: 5_000 });
+  await assertV9ActorCardsFit(page);
+  await expect(page.locator('.v9-action-menu')).toBeHidden();
+  await expect(page.getByRole('button', { name: 'Actions' })).toBeVisible();
+  await expect(page.getByRole('button', { name: 'Use', exact: true })).toBeDisabled();
+  const pause = await page.locator('.pause-button').boundingBox();
+  expect(pause).not.toBeNull();
+  expect(pause!.x).toBeLessThan(390 / 2);
+  expect(pause!.y).toBeLessThan(844 / 2);
+
+  await dragPad(page, '.combat-v10 .movement-zone', 1051, 0.35, -0.5);
+  await expect(ui).toHaveAttribute('data-player-airborne', 'true');
+  await expect(ui).toHaveAttribute('data-player-airborne', 'false', { timeout: 4_000 });
+  await expect(ui).toHaveAttribute('data-active-actor', 'player');
+  await page.screenshot({ path: testInfo.outputPath('v10f-procedural-terrain-phone.png') });
+});
+
+test('V10F review seeds expose every family and both rampart orientations', async ({ page }) => {
+  const cases = [
+    { seed: 1, profile: 'asymmetric-rampart', candidate: '4', reflected: 'false', label: 'Asymmetric Rampart', orientation: 'authored' },
+    { seed: 5, profile: 'asymmetric-rampart', candidate: '0', reflected: 'true', label: 'Asymmetric Rampart', orientation: 'reflected' },
+    { seed: 2, profile: 'trench-needle', candidate: '7', reflected: 'false', label: 'Trench Needle', orientation: 'authored' },
+    { seed: 3, profile: 'stepping-mesa', candidate: '4', reflected: 'false', label: 'Stepping Mesa', orientation: 'authored' },
+    { seed: 4, profile: 'twin-crests', candidate: '2', reflected: 'false', label: 'Twin Crests', orientation: 'authored' }
+  ] as const;
+  for (const expected of cases) {
+    await page.goto(`/?combat-preview=v10f&terrain-seed=${expected.seed}&sideways=off`);
+    const ui = page.locator('.combat-v10');
+    await expect(ui).toHaveAttribute('data-preview',
+      `V10F procedural terrain preview · ${expected.label} · candidate ${expected.candidate} · ${expected.orientation} · local-only`);
+    await expect(ui).toHaveAttribute('data-ruleset', 'nimble-knots-artillery-v10-r2');
+    await expect(ui).toHaveAttribute('data-terrain-profile', expected.profile);
+    await expect(ui).toHaveAttribute('data-terrain-seed', String(expected.seed));
+    await expect(ui).toHaveAttribute('data-terrain-candidate', expected.candidate);
+    await expect(ui).toHaveAttribute('data-terrain-reflected', expected.reflected);
+    await expect(ui).toHaveAttribute('data-opening-survey', 'false', { timeout: 5_000 });
+    await assertV9ActorCardsFit(page);
+  }
+});
+
 test('V8 hold survives snapshots, release stops, forward Jump and separate Fire reveal retreat', async ({ page }, testInfo) => {
   await page.goto('/?combat-preview=v8&sideways=off');
   const ui = page.locator('.combat-v8');
@@ -595,6 +654,10 @@ test('V8 hold survives snapshots, release stops, forward Jump and separate Fire 
   const releaseTick = Number(await ui.getAttribute('data-simulation-tick'));
   await expect.poll(async () => Number(await ui.getAttribute('data-simulation-tick'))).toBeGreaterThan(releaseTick + 6);
   expect(Number(await ui.getAttribute('data-player-x'))).toBe(released);
+  const focusBox = await page.locator('.camera-focus-loomkeeper').boundingBox();
+  const faceLeftBox = await page.getByRole('button', { name: 'Face left', exact: true }).boundingBox();
+  expect(focusBox).not.toBeNull(); expect(faceLeftBox).not.toBeNull();
+  expect(overlaps(focusBox!, faceLeftBox!)).toBe(false);
   await page.getByRole('button', { name: 'Face left', exact: true }).tap();
   await expect(ui).toHaveAttribute('data-player-facing', 'left');
   expect(Number(await ui.getAttribute('data-player-x'))).toBe(released);

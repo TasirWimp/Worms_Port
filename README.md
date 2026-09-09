@@ -520,17 +520,35 @@ cover. The original `/?combat-preview=v10` route remains unchanged. The ignored
 source-bound V10E report is retained at
 `.cache/assessments/wp-015d4b-v10e-assessment.json`.
 
-WP-015D4C/V10F now prepares a deterministic surface grammar behind the existing
-`PackedTerrain` authority. Its first stage preserves V10/V10E behavior, creates
-a fixed eight-candidate product-owned grammar prototype and documents every
-external reference and license boundary. It adds no new runtime ruleset or
-phone route yet; candidate gameplay admission, ranking and replay identity are
-the next bounded step. V10F level concepts use normalized ASCII diagrams backed
-by machine-readable recipes: Twin Crests, Asymmetric Rampart, Trench Needle and
-Stepping Mesa. The diagrams are generated review artifacts rather than replay
-input. Recipes use 32 authoring columns that compile deterministically to the
-existing 256 collision columns; the full format and operation ranges are in the
+WP-015D4C/V10F adds a deterministic surface grammar behind the existing
+`PackedTerrain` authority. It preserves V10/V10E behavior, emits a fixed set of
+eight product-owned candidates, admits and ranks them with bounded gameplay
+checks, and binds the selected recipe revision and candidate to replay-distinct
+`nimble-knots-artillery-v10-r2`. Its level concepts use normalized ASCII
+diagrams backed by machine-readable recipes: Twin Crests, Asymmetric Rampart,
+Trench Needle and Stepping Mesa. The diagrams are generated review artifacts
+rather than replay input. Recipes use 32 authoring columns that compile
+deterministically to the existing 256 collision columns; the full format and
+operation ranges are in the
 [V10 terrain contract](docs/planning/wp-015d4a-v10-terrain-starts-contract.md#ascii-chart-and-recipe-authority).
+
+The local-only phone route is `/?combat-preview=v10f`. An optional positive
+32-bit `terrain-seed` selects a repeatable review case; absent or malformed
+values use seed 1. These fixed URLs cover every family and both physical
+orientations of the asymmetric family:
+
+- `/?combat-preview=v10f&terrain-seed=1`: Asymmetric Rampart, authored orientation.
+- `/?combat-preview=v10f&terrain-seed=5`: Asymmetric Rampart, reflected orientation.
+- `/?combat-preview=v10f&terrain-seed=2`: Trench Needle.
+- `/?combat-preview=v10f&terrain-seed=3`: Stepping Mesa.
+- `/?combat-preview=v10f&terrain-seed=4`: Twin Crests.
+
+On a phone, confirm that crests, protected pockets, firing shelves and notches
+remain legible during the opening survey and normal player camera; actor cards,
+the top-left Pause button and the collapsed Actions/Use controls stay readable
+without covering the arena; a forward hop leaves and regains the ground; and a
+normal attack leads to a bounded Loomkeeper turn. The route creates no session,
+wallet, database, reward or public Practice/Daily selector.
 
 If a Clash stops within seconds, this is not the normal 30-minute expiry.
 V9 now shows **Practice interrupted** for timing or runtime safety stops. In Render's

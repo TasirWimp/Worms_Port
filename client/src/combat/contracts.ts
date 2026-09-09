@@ -74,6 +74,8 @@ export type CombatSceneArgsV9 = {
 /** Local-only V10C candidate. It cannot carry session, reward, or transport authority. */
 export type CombatSceneArgsV10 = {
     kind: 'v10'; snapshot: SimulationStateV10; previewLabel: string;
+    /** Local review metadata derived from the replay-bound recipe and seed. */
+    previewTerrainReflected?: boolean;
     calling?: PlayerCalling;
     submit: (intent: SimulationIntentV10) => Promise<SimulationStateV10>;
     setPaused: (paused: boolean) => Promise<SimulationStateV10>;

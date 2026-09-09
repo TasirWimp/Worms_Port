@@ -79,8 +79,12 @@ function planChanges(paths) {
       postgres = true;
     } else if (/^client\/src\/(?:combat\/|scenes\/combat\.ts|lib\/(?:sideways|util)\.ts)/.test(file)) {
       product(['combat', 'practice'], ['smoke', 'combat', 'practice', 'resilience']);
-    } else if (/^client\/src\/(?:practice\/|result\/|scenes\/(?:practice|result)\.ts)/.test(file)) {
+    } else if (/^client\/src\/(?:result\/|scenes\/result\.ts)/.test(file)) {
+      product(['combat', 'practice', 'identity', 'reward', 'protocol'], [...browserSuites, 'visual']);
+    } else if (/^client\/src\/practice\/|^client\/src\/scenes\/practice\.ts/.test(file)) {
       product(['combat', 'practice', 'identity', 'reward', 'protocol'], browserSuites);
+    } else if (file === 'client/src/style.css') {
+      product(['combat', 'practice', 'identity', 'reward', 'protocol'], [...browserSuites, 'visual']);
     } else if (/^client\//.test(file)) {
       product(['combat', 'practice', 'identity', 'reward', 'protocol']);
     } else if (/^server\/src\/reward\/|^server\/migrations\//.test(file)) {

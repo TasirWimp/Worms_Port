@@ -61,7 +61,12 @@ export class ResourceTurnsV9Controls {
             playerFacing: player.facing < 0 ? 'left' : 'right', playerAirborne: String(facts.player.airborne), offenseAllowed: String(offense),
             aimLocked: String(state.aim !== null), aimId: String(state.aimId), activeActor: state.activeActor, combatPhase: state.phase,
             inputEpoch: String(state.inputEpoch), selectedRelic: state.selectedRelic, terminal: String(this.terminal()) });
-        if ('terrainProfileId' in state) this.root.dataset.terrainProfile = state.terrainProfileId;
+        if ('terrainProfileId' in state) {
+            this.root.dataset.terrainProfile = state.terrainProfileId;
+            this.root.dataset.terrainSeed = String(state.seed);
+            if (state.terrainRecipeRevision) this.root.dataset.terrainRecipeRevision = state.terrainRecipeRevision;
+            if (state.terrainCandidateIndex !== undefined) this.root.dataset.terrainCandidate = String(state.terrainCandidateIndex);
+        }
         this.element('.combat-turn').textContent = this.phaseCopy();
         this.element('.v9-thread').textContent = `Thread ${facts.player.thread}`;
         this.element('.combat-timer').textContent = this.terminal() ? (this.callbacks.live ? 'Clash ended' : 'Preview ended') : `${Math.max(0, state.phaseDeadlineTick - state.tick)} ticks left`;

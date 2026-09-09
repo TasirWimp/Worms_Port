@@ -75,6 +75,12 @@
       "reason": "One canonical portrait phone covers ordinary and default-sideways overlong movement in both directions, the free exhausted-budget turn, and authoritative budget disclosure."
     },
     {
+      "file": "combat.spec.ts",
+      "title": "V10F review seeds expose every family and both rampart orientations",
+      "runsOn": ["chromium-390x844"],
+      "reason": "The canonical portrait project covers all five deterministic V10F review URLs; every maintained project separately exercises the default V10F phone journey."
+    },
+    {
       "file": "identity.spec.ts",
       "title": "signing rejection is cancelled and the same account can retry immediately",
       "runsOn": ["chromium-390x844"],

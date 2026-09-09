@@ -4,8 +4,9 @@ Status: V10A finite product contract, V10B deterministic authority, V10C local
 playable candidate and V10D assessment/physical-phone acceptance complete,
 2026-09-08. V10E implementation and automated acceptance are complete with
 physical-phone terrain feel still open. Owner-authorized WP-015D4C/V10F
-procedural-terrain preparation is in progress. Public promotion remains a
-separate owner decision.
+procedural terrain, replay authority and local phone-preview implementation are
+complete with physical-phone terrain feel still open. Public promotion remains
+a separate owner decision.
 
 ## Purpose
 
@@ -520,15 +521,19 @@ The generated normalized ASCII preview is a review artifact from step four. It
 does not affect selection, collision, state hashes or replay reconstruction.
 Replay-distinct `nimble-knots-artillery-v10-r2` binds its ruleset ID,
 recipe/profile ID, recipe revision, selected candidate index and complete
-packed terrain state. The intended later local route is
-`/?combat-preview=v10f`; creating that route will not promote Practice, Daily
-Challenge or rewards.
+packed terrain state. The implemented local route is
+`/?combat-preview=v10f`; it does not promote Practice, Daily Challenge or
+rewards. Its optional `terrain-seed` parameter accepts canonical positive
+32-bit decimal seeds and otherwise falls back to seed 1. The fixed review set
+is seed 1 for authored Asymmetric Rampart, seed 5 for its reflection, seed 2 for
+Trench Needle, seed 3 for Stepping Mesa and seed 4 for Twin Crests.
 
 The preparation commit did not add a ruleset ID, replay schema, selector,
-browser route or public runtime behavior. The following stages 1-4
-implementation adds internal candidate admission/ranking and replay-distinct
-R2 authority while still adding no browser route or public runtime behavior.
-Its combined runtime and assessment gates are:
+browser route or public runtime behavior. Stages 1-4 then added internal
+candidate admission/ranking and replay-distinct R2 authority without a browser
+route or public runtime behavior. The current preview stage adds only the
+query-gated local fixture, deterministic review metadata and phone-browser
+acceptance. The combined runtime and assessment gates are:
 
 1. actor-width support and body-clear starts inside safe world margins;
 2. supported outward movement and an inward jump that lands through normal
@@ -542,11 +547,14 @@ Its combined runtime and assessment gates are:
 6. a deterministic ranking tuple, seed-derived final tie break and fixed
    product-owned fallback when no candidate is admitted.
 
-Those gates now pass for the internal R2 authority. A local phone preview is a
-separate next step and remains unimplemented. WFC remains a possible later
-generator behind the same seam. Caves, overhangs, floating terrain and a
-rendering rewrite remain deferred while movement and terrain-top presentation
-assume one solid surface per column.
+Those gates now pass for R2 authority and the local phone preview. The preview
+retains the existing opening survey, compact action guidance, actor cards,
+camera cues, movement, attacks and automated Loomkeeper response. Automated
+acceptance verifies local isolation, all review seeds and a normal jump from
+the default case. Physical-phone terrain readability and feel remain an owner
+gate. WFC remains a possible later generator behind the same seam. Caves,
+overhangs, floating terrain and a rendering rewrite remain deferred while
+movement and terrain-top presentation assume one solid surface per column.
 
 The recipe tests additionally render and snapshot each normalized ASCII chart,
 check all 32 authoring samples and 256 collision samples, cover every operation
