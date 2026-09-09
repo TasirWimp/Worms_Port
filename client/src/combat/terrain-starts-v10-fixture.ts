@@ -291,7 +291,17 @@ export async function createTerrainStartsV10Fixture(
         setPaused,
         cancelInput,
         paused: () => paused,
-        trajectoryPreview: aim => trajectoryPreviewV10(state, aim),
+        trajectoryPreview: aim => {
+            if (destroyed || paused) return [];
+            const started = clock.now();
+            try { return trajectoryPreviewV10(state, aim); }
+            finally {
+                // This bounded, clone-only rollout blocks the local timer on
+                // phones. Charge neither its CPU time nor planner CPU as
+                // missed live ticks; preserve all debt outside this call.
+                lastNow += Math.max(0, clock.now() - started);
+            }
+        },
         restart: () => createTerrainStartsV10Fixture(seed, calling, clock, rulesetId),
         onSnapshot: listener => {
             if (destroyed) return () => {};

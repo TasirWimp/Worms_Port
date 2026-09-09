@@ -591,6 +591,14 @@ test('V10F phone preview keeps procedural terrain readable and supports a normal
   await expect(ui).toHaveAttribute('data-player-airborne', 'false', { timeout: 4_000 });
   await expect(ui).toHaveAttribute('data-active-actor', 'player');
   await page.screenshot({ path: testInfo.outputPath('v10f-procedural-terrain-phone.png') });
+  // Fresh entry, no Actions selection: the default Threadball must aim and fire.
+  await page.goto('/?combat-preview=v10f');
+  await dragPad(page, '.combat-v10 .aim-zone', 1052, 0.35, -0.35);
+  await expect(ui).toHaveAttribute('data-aim-locked', 'true');
+  await expect(ui).toHaveAttribute('data-terminal', 'false');
+  await expect(page.locator('.combat-v10 .fire-button')).toBeEnabled();
+  await page.locator('.combat-v10 .fire-button').tap();
+  await expect(ui).toHaveAttribute('data-combat-phase', 'projectile');
 });
 
 test('V10F review seeds expose every family and both rampart orientations', async ({ page }) => {

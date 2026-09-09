@@ -48,6 +48,11 @@
   ],
   "check_results": [
     {
+      "command": "2026-09-09 aim safety-stop reproduction; node --import tsx --test tests/combat/terrain-starts-v10.test.ts; node scripts/verify-changes.js",
+      "status": "pass",
+      "detail": "Reproduced first-aim failure before the fix by charging 1200ms inside the actual clone-only trajectory call. Local V10/V10E/V10F now subtract only measured preview computation from live clock debt. Regression verifies unchanged preview state, retained earlier elapsed time, default Threadball aim/fire, and safety stops for real debt before or after preview. Seven focused fixture tests pass. Selected verification passes 81 combat, 42 Practice and 110 tooling tests, types, build, four runtime smokes, security/bundle checks, and 56 canonical browser cases with three reviewed project exclusions. The V10F browser journey now opens fresh in default sideways mode and aims/fires without selecting an Action. Direct review confirms the correction is local timing only; physical-phone confirmation is pending."
+    },
+    {
       "command": "npm run check:types; focused V10F simulation, protocol and replay tests",
       "status": "pass",
       "detail": "Both TypeScript projects pass. Focused coverage verifies all four exact recipe sequences, normalized ASCII snapshots, operation minima/maxima, 32-to-256 compilation, fixed eight-candidate output, both asymmetric reflections, admission, ranking, fallback, normal simulated jump landings, strict R2 protocol fields and versioned replay reconstruction/tamper rejection."

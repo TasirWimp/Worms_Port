@@ -132,7 +132,15 @@ Phaser/Socket.IO stack.
   acceptance covers local isolation, review metadata, compact guidance, actor
   cards and a normal jump. Physical-phone terrain readability and feel are the
   next acceptance step. No Practice, Daily Challenge or reward selector has
-  changed. The 2026-09-08 daily gate exposed two inherited browser regressions:
+  changed. The owner's V10F phone review then found an immediate aim-to-shot
+  blocker: synchronous trajectory computation was counted as missed local
+  simulation time and could trigger the generic lifecycle safety stop. The
+  local V10/V10E/V10F fixture now excludes only measured trajectory-computation
+  time while retaining earlier and subsequent scheduling debt. A regression
+  reproduces slow preview work and verifies default Threadball aim/fire; the
+  phone journey now also aims immediately without selecting an Action.
+  Redeployed physical-phone confirmation remains open.
+  The 2026-09-08 daily gate exposed two inherited browser regressions:
   the synthetic result fixture had drifted from the current retry contract,
   and the legacy V8 compact-landscape focus control overlapped its Face row.
   Both are corrected, their exact six failed project cases pass, and result or

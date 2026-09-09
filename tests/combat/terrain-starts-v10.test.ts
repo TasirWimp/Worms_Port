@@ -28,6 +28,47 @@ function createClock(): V10FixtureClock & { advanceThirtyTicks: () => void } {
     };
 }
 
+test('V10 aiming excludes preview computation but retains pre-existing and subsequent clock debt', async () => {
+    for (const ruleset of [V10_RULESET_ID, V10_R1_RULESET_ID, V10_R2_RULESET_ID]) {
+        let now = 0;
+        const fixture = await createTerrainStartsV10Fixture(1, 'wizard', {
+            now: () => now, every: () => () => {}
+        }, ruleset);
+        try {
+            now += 100;
+            const before = canonicalSimulationJsonV10(fixture.snapshot);
+            const trace = fixture.trajectoryPreview({
+                // Model slow synchronous computation within the actual preview call.
+                get angleMilliDegrees() { now += 1_200; return 45_000; },
+                powerPermille: 800
+            });
+            assert.ok(trace.length > 1);
+            assert.equal(canonicalSimulationJsonV10(fixture.snapshot), before);
+            const aimed = await fixture.submit({ type: 'aim', angleMilliDegrees: 45_000, powerPermille: 800 });
+            assert.equal(aimed.tick, 3, 'time before preview still advances the live clock');
+            assert.equal(aimed.selectedRelic, 'threadball');
+            const fired = await fixture.submit({ type: 'fire', aimId: aimed.aimId });
+            assert.equal(fired.phase, 'projectile');
+            now += 1_100;
+            await assert.rejects(fixture.submit({ type: 'aim', angleMilliDegrees: 45_000, powerPermille: 800 }));
+            assert.equal(fixture.snapshot.finishReason, 'simulation_limit', 'real scheduling debt still stops play');
+        } finally { fixture.destroy(); }
+
+        now = 0;
+        const overdue = await createTerrainStartsV10Fixture(1, 'wizard', {
+            now: () => now, every: () => () => {}
+        }, ruleset);
+        try {
+            now += 1_100;
+            overdue.trajectoryPreview({
+                get angleMilliDegrees() { now += 1_200; return 45_000; }, powerPermille: 800
+            });
+            await assert.rejects(overdue.submit({ type: 'aim', angleMilliDegrees: 45_000, powerPermille: 800 }));
+            assert.equal(overdue.snapshot.finishReason, 'simulation_limit', 'preview cannot erase earlier debt');
+        } finally { overdue.destroy(); }
+    }
+});
+
 test('V10C local fixture exposes a detached terrain preview without transport or reward facts', async () => {
     const clock = createClock();
     const fixture = await createTerrainStartsV10Fixture(1, 'wizard', clock);
