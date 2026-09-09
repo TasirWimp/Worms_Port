@@ -323,7 +323,9 @@ function validateEvidence(
     for (const recordId of evidence.clean_room_records || []) {
       const cleanRecord = cleanRoomById.get(recordId);
       if (!cleanRecord) errors.push(`${label}: unknown clean-room record ${recordId}.`);
-      else if (cleanRecord.work_package !== evidence.id) {
+      else if (cleanRecord.execution_mode === 'single_owner' && evidence.execution_mode !== 'single_owner') {
+        errors.push(`${label}: single-owner clean-room record requires single_owner evidence.`);
+      } else if (cleanRecord.work_package !== evidence.id) {
         errors.push(`${label}: clean-room record ${recordId} belongs to ${cleanRecord.work_package}.`);
       } else if (evidence.status === 'complete' && cleanRecord.status !== 'complete') {
         errors.push(`${label}: clean-room record ${recordId} must be complete.`);

@@ -1,6 +1,6 @@
 {
   "id": "WP-015D4D",
-  "status": "in_progress",
+  "status": "complete",
   "execution_mode": "single_owner",
   "starting_commit": "d11449d7696cd7e0403311b0a84a019842e04cc3",
   "branch": "codex/wp-015d4d-v10g-terrain-weapon-tactics",
@@ -13,15 +13,25 @@
     "V10G geometry-first Twin Crests and distinct weapon tactics under the existing contract.",
     "First implementation checkpoint: authoritative combat dimensions, geometry constraints and executable baseline witnesses; R3 integration follows.",
     "Continue from committed geometry checkpoint 31efa43 on a clean V10G branch: geometry-derived Twin Crests, R3 projectile and blast rules, explicit preview and AI/replay parity.",
-    "Family expansion starts clean at c52fc28 after owner phone acceptance: R4 finite catalogue, bounded geometry admission, named phone selection, per-family authority and replay witnesses."
+    "Family expansion starts clean at c52fc28 after owner phone acceptance: R4 finite catalogue, bounded geometry admission, named phone selection, per-family authority and replay witnesses.",
+    "Closed on owner instruction after expanded-map phone acceptance of 8e40a82; closure starts from clean d796232. No next implementation package is started."
   ],
   "non_goals": [
     "No agents, public activation, legacy ruleset changes or asset imports. Owner subsequently authorized committing and publishing the geometry checkpoint on the V10G branch."
   ],
   "planned_checks": [
-    "Change selector dry run and selected verification.",
-    "Focused actual-simulation movement and geometry regressions, legacy compatibility.",
-    "Housekeeping and direct review; physical phone acceptance remains owner-run."
+    "node --import tsx --test tests/simulation/terrain-geometry-v10g.test.ts",
+    "npx tsc --noEmit --target ES2022 --module ESNext --moduleResolution Bundler --strict --skipLibCheck --esModuleInterop shared/terrain-geometry-v10g.ts tests/simulation/terrain-geometry-v10g.test.ts",
+    "npm run check:compliance; npm run audit:housekeeping; git diff --check",
+    "npm run verify:changes -- --dry-run; npm run verify:changes",
+    "node scripts/run-playwright.js --reuse-build --grep 'V10G phone' tests/browser/combat.spec.ts",
+    "npm run check:compliance; npm run audit:housekeeping (R3 integration)",
+    "node --import tsx --test --test-name-pattern='V10G family catalogue|V10G runtime admission' tests/simulation/terrain-tactics-v10g.test.ts; focused V10G Mesa countershot; standalone strict tsc of tactical tests",
+    "npm run verify:changes -- --dry-run; npm run verify:changes (R4 family expansion)",
+    "npm run check:compliance; npm run audit:housekeeping; npm run check:work-packages; git diff --check (R4 family expansion)",
+    "node --test tests/tooling/clean-room-records.test.js tests/tooling/clean-room-lifecycle.test.js tests/tooling/work-package-evidence.test.js",
+    "npm run verify:changes -- --dry-run; npm run verify:changes (V10G closure)",
+    "npm run audit:housekeeping; git diff --check (V10G closure)"
   ],
   "deterministic_seeds": [
     "4",
@@ -56,11 +66,6 @@
       "detail": "Selected gate passed: protocol 125, simulation 156 (the latest fifth focused geometry witness also passed separately), Loomkeeper 37, Relics 10, combat 81, Practice 42, identity 22 and reward 37. Types, build outputs, four built-server smokes, security/bundle checks and 61 canonical phone-browser cases passed; three project exclusions. PostgreSQL requires the missing test database URL. No runtime integration or tactical acceptance is claimed."
     },
     {
-      "command": "npm run verify:changes -- --dry-run; npm run verify:changes (R3 integration)",
-      "status": "fail",
-      "detail": "All selected non-browser checks passed: combat 82, Practice 42, protocol 125, simulation 164, Loomkeeper 38, Relics 10, identity 22, reward 37, tooling 110, types, build outputs, four built-server smokes, security and bundle checks. Browser: 62 passed, three expected exclusions, one new V10G test failed because its physical horizontal gesture mapped to a vertical self-hit in sideways mode. Corrected the test gesture using the orientation mapping; product damage and lifecycle limits unchanged. Full selector command was not repeated; focused correction verification follows."
-    },
-    {
       "command": "node scripts/run-playwright.js --reuse-build --grep 'V10G phone' tests/browser/combat.spec.ts",
       "status": "pass",
       "detail": "Both V10G cases passed in all five maintained browser projects: 10 passed. Checks selection then aiming, safe precision shot, AI turn and return to player, compact role guidance, pause/resume and portrait escape. Inspected Windows screenshots for small sideways viewport, landscape and WebKit portrait escape; these are not release baseline approvals."
@@ -69,11 +74,6 @@
       "command": "npm run check:compliance; npm run audit:housekeeping (R3 integration)",
       "status": "pass",
       "detail": "Compliance passed with 56 packages and five frozen clean-room records. Housekeeping reports the correct same-name V10G tracking branch; historical open packages remain retained."
-    },
-    {
-      "command": "node --import tsx --test tests/simulation/terrain-tactics-v10g.test.ts tests/combat/terrain-starts-v10.test.ts (family development)",
-      "status": "fail",
-      "detail": "All 18 tactical tests passed. One fixture case for high-left Rampart checked impact after only 30 ticks; the unobstructed shot had not reached the world edge. Corrected the test to await projectile resolution within a bounded ten clock windows; no product timing or flight changes. The corrected case passes in the selected combat suite."
     },
     {
       "command": "node --import tsx --test --test-name-pattern='V10G family catalogue|V10G runtime admission' tests/simulation/terrain-tactics-v10g.test.ts; focused V10G Mesa countershot; standalone strict tsc of tactical tests",
@@ -89,6 +89,21 @@
       "command": "npm run check:compliance; npm run audit:housekeeping; npm run check:work-packages; git diff --check (R4 family expansion)",
       "status": "pass",
       "detail": "Compliance, evidence and whitespace pass. Housekeeping confirms the same-name V10G tracking branch with no gone upstream; historical package/review findings remain preserved. No agents, new dependencies, assets or external source inspection. Inspected canonical Windows screenshots for Trench, Mesa and both Ramparts: terrain distinctions, actor cards, camera/off-screen guidance and collapsed controls are retained; inherited Use-label clipping remains deferred."
+    },
+    {
+      "command": "node --test tests/tooling/clean-room-records.test.js tests/tooling/clean-room-lifecycle.test.js tests/tooling/work-package-evidence.test.js",
+      "status": "pass",
+      "detail": "22 tests pass. Explicit single_owner source records permit the same implementer/direct reviewer; legacy role separation, source hashes, declarations, passing source-boundary verdicts and behavioral evidence remain enforced. Work-package mode must match a single-owner source record."
+    },
+    {
+      "command": "npm run verify:changes -- --dry-run; npm run verify:changes (V10G closure)",
+      "status": "pass",
+      "detail": "Closure selected compliance and tooling only: all compliance gates and 110 tooling tests pass. No game build, browser, PostgreSQL or performance tasks selected; gameplay evidence and owner acceptance are reused. Frozen reference hashes remain unchanged."
+    },
+    {
+      "command": "npm run audit:housekeeping; git diff --check (V10G closure)",
+      "status": "pass",
+      "detail": "Matching V10G upstream, no gone tracking branches and no in-progress package on the current branch after closure. Other historical in-progress packages and merged branches remain preserved. Worktree contains only uncommitted closure changes. Whitespace check passes; no merge, push, branch deletion or new implementation."
     }
   ],
   "reviews": [
@@ -115,16 +130,41 @@
       "reviewer": "single-owner R4 family expansion direct review",
       "decision": "pass",
       "detail": "All five finite maps use the unchanged R3 weapon rules through explicit R4 simulation, preview, AI and replay identity. Actual tests prove protected hitbox boundaries, all declared ordinary jumps (including both Trench exits), two Mesa climbs and downhill/upward tradeoff, Rampart low-side shelf attack/counterattack, legal low-pocket breach follow-ups and exact reconstruction after AI responses. Wrong profile/recipe is rejected; old R3 terrain remains frozen for every tested seed. Runtime admission uses actual widths and support, not only advertised labels. Phone-browser and selected inherited checks passed. Expanded physical-phone acceptance remains open; no public promotion or balance claim."
+    },
+    {
+      "role": "primary assistant",
+      "reviewer": "retained historical verification attempt 1",
+      "decision": "fail",
+      "detail": "Historical failed check, subsequently corrected and superseded by the passing selected verification. Original check result: {\"command\": \"npm run verify:changes -- --dry-run; npm run verify:changes (R3 integration)\", \"status\": \"fail\", \"detail\": \"All selected non-browser checks passed: combat 82, Practice 42, protocol 125, simulation 164, Loomkeeper 38, Relics 10, identity 22, reward 37, tooling 110, types, build outputs, four built-server smokes, security and bundle checks. Browser: 62 passed, three expected exclusions, one new V10G test failed because its physical horizontal gesture mapped to a vertical self-hit in sideways mode. Corrected the test gesture using the orientation mapping; product damage and lifecycle limits unchanged. Full selector command was not repeated; focused correction verification follows.\"}"
+    },
+    {
+      "role": "primary assistant",
+      "reviewer": "retained historical verification attempt 2",
+      "decision": "fail",
+      "detail": "Historical failed check, subsequently corrected and superseded by the passing selected verification. Original check result: {\"command\": \"node --import tsx --test tests/simulation/terrain-tactics-v10g.test.ts tests/combat/terrain-starts-v10.test.ts (family development)\", \"status\": \"fail\", \"detail\": \"All 18 tactical tests passed. One fixture case for high-left Rampart checked impact after only 30 ticks; the unobstructed shot had not reached the world edge. Corrected the test to await projectile resolution within a bounded ten clock windows; no product timing or flight changes. The corrected case passes in the selected combat suite.\"}"
+    },
+    {
+      "role": "owner",
+      "reviewer": "expanded-family physical-phone acceptance",
+      "decision": "pass",
+      "detail": "Owner reports the expanded V10G maps working as expected on the phone and explicitly requests closure. Accepted implementation is 8e40a82; current HEAD d796232 adds background-direction documentation only. No public promotion or full-release acceptance is inferred."
+    },
+    {
+      "role": "primary assistant",
+      "reviewer": "V10G package closure direct review",
+      "decision": "pass",
+      "detail": "V10G engineering and owner phone acceptance are complete: accepted Twin Crests plus Trench Needle, Stepping Mesa and both Rampart orientations, shared weapon/AI/preview/replay rules and recorded tactical witnesses. Preserved prior failed attempts in historical reviews so final planned_checks/check_results describe successful closure evidence without relabeling failures. Single-owner source-boundary record closes under the retirement policy without fabricated independent identities. Release gates and deferred follow-ups remain explicit; no runtime changes, merge, branch deletion or public activation are part of closure."
     }
   ],
   "skipped_checks": [
     "Three canonical browser cases are intentionally routed to other projects by tests/browser/quality-policy.json.",
     "PostgreSQL skipped by the selector because WP014_TEST_DATABASE_URL is absent; CI must run that database gate.",
     "Full daily/release suite, performance and dependency audit are not repeated at this implementation checkpoint; no package changes. The 22:00 Europe/Berlin automation is unchanged.",
-    "Expanded-family physical Android/iOS acceptance and Ubuntu visual baseline comparison/approval are not run. Owner Twin Crests acceptance at c52fc28 is retained; Windows screenshots are inspection only."
+    "Owner phone acceptance is recorded for Twin Crests and expanded families; no separate exhaustive Android/iOS device matrix is claimed. Ubuntu release visual comparison/approval remains a release gate.",
+    "Closure edits are documentation, source-boundary lifecycle metadata and verification tooling only. Game builds and gameplay suites are not repeated; passing implementation checks at 8e40a82 are reused."
   ],
   "residual_risks": [
-    "R4 family expansion is implemented; expanded-map phone acceptance remains open. Public Practice/Daily/reward activation remains separate.",
+    "V10G engineering and owner phone acceptance are complete. Public Practice/Daily/reward activation, merge and full release qualification are separate decisions.",
     "Finite recipes have actual-authority witnesses plus bounded runtime geometry admission. Future arbitrary or variable recipes need new tactical admission evidence, not just geometry checks.",
     "R4 reuses the R3 finite nine-point pre-impact blast policy and three-tick shooter immunity. Steep projectiles can subsequently hit their caster.",
     "Rampart opening lobs favor the high side: the recorded full-power 60-degree shot deals 45 high-to-low versus 6/7 splash low-to-high. No equal-win-rate/balance claim is made. Surface reflection is exact; signed impact rasterization need not be.",

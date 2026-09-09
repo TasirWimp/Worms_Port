@@ -1,5 +1,5 @@
 {
-  "policy": "Sorcerers-informed work starts with an observed frozen behavior record and completes only after separated implementation/review roles, an implementation declaration, a passing similarity review, and behavioral-test evidence.",
+  "policy": "Sorcerers-informed work preserves a hash-bound behavior record, implementation declaration, passing source-boundary review and behavioral-test evidence. Current single_owner records use the same primary implementer/direct reviewer and claim no independent review. Historical records without execution_mode retain separated identities.",
   "records": [
     {
       "id": "wp-015d4d-v10g-weapon-terrain",
@@ -11,7 +11,19 @@
       "behavior_record": "docs/evidence/wp-015d4d-v10g-weapon-terrain-reference.md",
       "behavior_record_sha256": "8161004A99D8919F477D8F90EA61930F3744587E8D5C9C511C59692805150E4F",
       "observer": "Primary single-owner reference observer, preparation turn",
-      "status": "observed"
+      "status": "complete",
+      "execution_mode": "single_owner",
+      "implementer": "Primary single-owner assistant",
+      "reviewer": "Primary single-owner assistant",
+      "implementation_declaration": "V10G was implemented from the frozen behavior record, owner-approved contract and local Worms code. No Sorcerers code, assets, constants or algorithms were imported. Source-boundary direct review distinguishes product-owned terrain-blocking Needlepoint and pre-impact blast shielding from the reference observations. This is single-owner review, not independent clean-room separation. Frozen observation file and hash are unchanged.",
+      "similarity_review": "pass",
+      "behavioral_tests": [
+        "tests/simulation/terrain-geometry-v10g.test.ts",
+        "tests/simulation/terrain-tactics-v10g.test.ts",
+        "tests/loomkeeper/terrain-starts-v10.test.ts",
+        "tests/combat/terrain-starts-v10.test.ts",
+        "tests/browser/combat.spec.ts"
+      ]
     },
     {
       "id": "wp-015d4c-v10f-procedural-terrain",

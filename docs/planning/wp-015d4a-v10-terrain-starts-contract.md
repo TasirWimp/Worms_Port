@@ -581,11 +581,14 @@ remain separate decisions.
 
 ## V10G terrain and weapon tactics preparation
 
-Status: the owner accepted R3 Twin Crests on a physical phone at `c52fc28`
-on 2026-09-09 and authorized family expansion. Expanded R4 selected verification passed (67 canonical browser cases);
-physical-phone acceptance of the expanded maps remains pending. This section supersedes the earlier deferral only for the bounded
-V10G work below. V10F functional phone acceptance stands; tactical effectiveness
-is the problem this next slice must solve. Development remains single-owner.
+Status: **WP-015D4D V10G complete.** The owner accepted Twin Crests at
+`c52fc28`, then the expanded family implementation at `8e40a82` on a physical
+phone and explicitly requested closure. Selected verification passed, including
+67 canonical phone-browser cases. Closure starts from `d796232`, whose extra
+background-direction documentation does not change this gameplay scope.
+Single-owner direct review and the source-boundary record are complete; no
+independent review is claimed. Full daily/Ubuntu/PostgreSQL release gates,
+merge and public activation remain separate. No next implementation is started.
 
 ### Outcome and first playable scope
 
@@ -787,7 +790,8 @@ at 180 candidates/30 ticks; multi-jump optimization is not added.
 
 No new source inspection, code import or asset use is involved. The existing
 frozen reference pack and clean-room record remain the reference provenance.
-Expanded-family phone acceptance must precede closure or public promotion.
+Expanded-family phone acceptance is recorded and V10G is closed. Public
+promotion still requires a separate decision and release qualification.
 
 
 | Relic | V10G role | Required tradeoff |
@@ -826,8 +830,8 @@ splash and terrain effects separately and preserve all legacy blast behavior.
    above before tuning damage. Establish pocket/shelf and intact/breached paired
    witnesses at equal legal Thread/turn budgets. Record a finite parameter table
    and the resulting geometry constraints; do not start a broad optimizer.
-2. **Versioned projectile authority.** Reserve proposed
-   `nimble-knots-artillery-v10-r3`. Carry per-Relic flight and impact rules through
+2. **Versioned projectile authority.** Implemented
+   `nimble-knots-artillery-v10-r3` and the expanded-map R4 identity. Carry per-Relic flight and impact rules through
    simulation, protocol validation, coordinator, hashes and replay. Use a shared
    internal parameter seam if needed, with legacy defaults and explicit version
    ownership; never mutate V5/V7/V8/V9/V10-R2 constants globally.
@@ -837,7 +841,8 @@ splash and terrain effects separately and preserve all legacy blast behavior.
    Preserve bounded planner work and measured local preview-computation timing.
    Local route `/?combat-preview=v10g` must retain the
    phone's Actions/Use flow, show concise role/cost guidance and never open a
-   session, wallet or reward path. It is implemented and currently fixed to seed 4.
+   session, wallet or reward path. The implemented R4 route defaults to seed 4
+   and accepts the documented named family selections.
 4. **Twin Crests acceptance.** Run the witnesses below plus phone-browser aim,
    fire, jump, pause/restart and full AI-response checks. Present this one map
    for physical-phone review before generalizing its tuning.

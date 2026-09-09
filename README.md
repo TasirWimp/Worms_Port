@@ -61,7 +61,7 @@ are also recorded in the Execution Pointer of
   `/?combat-preview=v10g` route defaults to the phone-accepted Twin Crests.
   The expanded R4 catalogue adds `&terrain-map=trench-needle`,
   `&terrain-map=stepping-mesa`, `&terrain-map=rampart-high-left` and
-  `&terrain-map=rampart-high-right`. These maps await phone acceptance.
+  `&terrain-map=rampart-high-right`. These maps are phone-accepted; V10G is complete.
   Threadball lobs, Needlepoint fires straight and Spoolburst breaches; cover
   shields the hitbox and blocks blast influence. Existing R3 recordings and R2
   previews retain their original behavior. Public Practice/Daily are unchanged.

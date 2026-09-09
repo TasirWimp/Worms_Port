@@ -11,7 +11,7 @@ function validateRecords(records, root = repoRoot) {
   const allowedFields = new Set([
     'id', 'work_package', 'source_commit', 'observed_material', 'behavior_record',
     'behavior_record_sha256', 'observer', 'status', 'implementer', 'reviewer',
-    'implementation_declaration', 'similarity_review', 'behavioral_tests'
+    'implementation_declaration', 'similarity_review', 'behavioral_tests', 'execution_mode'
   ]);
 
   for (const record of records || []) {
@@ -31,6 +31,7 @@ function validateRecords(records, root = repoRoot) {
     if (!/^WP-\d{3}(?:[A-Z]|[A-Z]\d[A-Z])?$/.test(record.work_package || '')) {
       errors.push(`${record.id}: invalid work_package.`);
     }
+    if (record.execution_mode !== undefined && record.execution_mode !== 'single_owner') errors.push(`${record.id}: invalid execution_mode.`);
     if (!['observed', 'complete'].includes(record.status)) errors.push(`${record.id}: invalid status.`);
     if (!/^[0-9A-F]{64}$/.test(record.behavior_record_sha256 || '')) {
       errors.push(`${record.id}: invalid behavior_record_sha256.`);
@@ -56,7 +57,10 @@ function validateRecords(records, root = repoRoot) {
           record.behavioral_tests.some((item) => typeof item !== 'string')) {
         errors.push(`${record.id}: behavioral_tests must be non-empty.`);
       }
-      if (new Set([record.observer, record.implementer, record.reviewer]).size !== 3) {
+      if (record.execution_mode === 'single_owner' && record.implementer !== record.reviewer) {
+        errors.push(`${record.id}: single_owner requires the same implementer and direct reviewer.`);
+      }
+      if (record.execution_mode !== 'single_owner' && new Set([record.observer, record.implementer, record.reviewer]).size !== 3) {
         errors.push(`${record.id}: observer, implementer, and reviewer must be separate identities.`);
       }
       if (record.similarity_review !== 'pass') {

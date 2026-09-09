@@ -14,19 +14,24 @@ Phaser/Socket.IO stack.
   See [Verification Funnels](../process/development_workflow.md#verification-funnels).
   This changes verification policy only and does not advance the product package.
 - Active target: mobile-first single-player Nimiq Pay competition release.
-- Active implementation slice: **WP-015D4D V10G Terrain And Weapon Tactics**;
+- Latest completed slice: **WP-015D4D V10G Terrain And Weapon Tactics**;
   see the [V10G preparation contract](wp-015d4a-v10-terrain-starts-contract.md#v10g-terrain-and-weapon-tactics-preparation).
   The owner accepted R3 Twin Crests on a physical phone at `c52fc28` and
   authorized family expansion. R4 `v10g-families-r1` now extends the unchanged
   weapon rules to Trench Needle, Stepping Mesa and both Rampart orientations.
   Expanded-family selected verification passed (67 canonical browser cases);
-  physical-phone acceptance of the new maps is the current gate.
+  the owner accepted the expanded maps on a physical phone at `8e40a82`
+  and explicitly authorized closure. **V10G is complete.**
+  Next implementation slice: none started; choose a separately scoped package
+  or release/public-activation review before further implementation.
   `/?combat-preview=v10g` defaults to Twin Crests; append `&terrain-map=` with
   `trench-needle`, `stepping-mesa`, `rampart-high-left` or `rampart-high-right`.
   Old R3 seeds/replays retain the fixed Twin Crests recipe; R2 remains unchanged.
   Public Practice/Daily activation is a separate owner decision.
   Current implementation branch: `codex/wp-015d4d-v10g-terrain-weapon-tactics`.
-  Family expansion began from a clean worktree at `c52fc28`; no agents are used.
+  Family expansion began from a clean worktree at `c52fc28`; closure follows
+  clean `d796232`. No agents are used. The 22:00 daily suite, Ubuntu release
+  visual checks and PostgreSQL gate remain separate from this package closure.
 - Playable predecessor: **WP-015D4C V10F Procedural Terrain.** Its preparation
   follows WP-015D4B V10E Tactical Terrain Refinement. It
   follows WP-015D4A V10 Terrain and Starting Positions. The V9 Resource and

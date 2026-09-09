@@ -31,6 +31,13 @@ test('clean-room records fail closed on hash and role-separation errors', () => 
 
   try {
     assert.deepEqual(validateRecords([valid], root), []);
+    const single = { ...valid, execution_mode: 'single_owner', implementer: valid.observer, reviewer: valid.observer };
+    assert.deepEqual(validateRecords([single], root), []);
+    assert.match(validateRecords([{ ...single, execution_mode: 'typo' }], root).join('\n'), /invalid execution_mode/);
+    assert.match(validateRecords([{ ...single, reviewer: 'another-reviewer' }], root).join('\n'), /same implementer/);
+    assert.match(validateRecords([{ ...single, behavior_record_sha256: '0'.repeat(64) }], root).join('\n'), /hash mismatch/);
+    assert.match(validateRecords([{ ...single, behavioral_tests: [] }], root).join('\n'), /must be non-empty/);
+    assert.match(validateRecords([{ ...single, similarity_review: 'fail' }], root).join('\n'), /must pass/);
     const observed = {
       id: valid.id,
       work_package: valid.work_package,

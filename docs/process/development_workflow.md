@@ -116,6 +116,14 @@ reactivation. Old branches/worktrees must incorporate this policy before new
 work; do not change a research checkout's historical source just to hide it.
 The selector, compliance/clean-room safeguards and 22:00 Europe/Berlin daily
 suite continue. A direct-review pass remains distinct from release approval.
+Source-boundary records explicitly marked `execution_mode: single_owner` use
+one primary implementer/direct reviewer; they retain the frozen observation hash,
+implementation declaration, source-boundary verdict and behavioral evidence.
+They do not claim independent clean-room separation. Historical records without
+that mode retain their separated-identity validation. Linked work-package evidence
+must also declare single_owner. At closure, preserve failed verification attempts
+as clearly identified historical review entries; final planned checks map to
+passing results without changing the original failed outcomes.
 
 ### Adaptive Support During Implementation (WP-016)
 
