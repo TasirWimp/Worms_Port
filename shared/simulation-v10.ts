@@ -1,3 +1,4 @@
+import { generateVolcanicRuinTerrain, VOLCANIC_RUIN_RECIPE_REVISION } from './terrain-volcanic-ruin';
 import { V10G_PROJECTILE_RULES } from './projectile-rules-v10g';
 import { generateV10GTwinCrests, V10G_RECIPE_REVISION, generateV10GFamily, v10gFamilyForSeed, V10G_FAMILY_RECIPE_REVISION } from './terrain-generation-v10g';
 import { z } from 'zod';
@@ -26,11 +27,12 @@ export const V10_R1_RULESET_ID = 'nimble-knots-artillery-v10-r1' as const;
 export const V10_R2_RULESET_ID = 'nimble-knots-artillery-v10-r2' as const;
 export const V10_R3_RULESET_ID = 'nimble-knots-artillery-v10-r3' as const;
 export const V10_R4_RULESET_ID = 'nimble-knots-artillery-v10-r4' as const;
-export const usesV10GTactics = (rulesetId: string): boolean => rulesetId === V10_R3_RULESET_ID || rulesetId === V10_R4_RULESET_ID;
-export const V10_RULESET_IDS = Object.freeze([V10_RULESET_ID, V10_R1_RULESET_ID, V10_R2_RULESET_ID, V10_R3_RULESET_ID, V10_R4_RULESET_ID] as const);
+export const V10_R5_RULESET_ID = 'nimble-knots-artillery-v10-r5' as const;
+export const usesV10GTactics = (rulesetId: string): boolean => rulesetId === V10_R3_RULESET_ID || rulesetId === V10_R4_RULESET_ID || rulesetId === V10_R5_RULESET_ID;
+export const V10_RULESET_IDS = Object.freeze([V10_RULESET_ID, V10_R1_RULESET_ID, V10_R2_RULESET_ID, V10_R3_RULESET_ID, V10_R4_RULESET_ID, V10_R5_RULESET_ID] as const);
 export type V10RulesetId = typeof V10_RULESET_IDS[number];
 export function isV10RulesetId(value: unknown): value is V10RulesetId {
-    return value === V10_RULESET_ID || value === V10_R1_RULESET_ID || value === V10_R2_RULESET_ID || value === V10_R3_RULESET_ID || value === V10_R4_RULESET_ID;
+    return value === V10_RULESET_ID || value === V10_R1_RULESET_ID || value === V10_R2_RULESET_ID || value === V10_R3_RULESET_ID || value === V10_R4_RULESET_ID || value === V10_R5_RULESET_ID;
 }
 export const V10_RULESET_VERSION = 10 as const;
 export const V10_TERRAIN_PROFILE_IDS = Object.freeze([
@@ -46,7 +48,8 @@ export const V10_R1_TERRAIN_PROFILE_IDS = Object.freeze([
 export const V10_ALL_TERRAIN_PROFILE_IDS = Object.freeze([
     ...V10_TERRAIN_PROFILE_IDS,
     ...V10_R1_TERRAIN_PROFILE_IDS,
-    ...V10_PROCEDURAL_TERRAIN_PROFILE_IDS
+    ...V10_PROCEDURAL_TERRAIN_PROFILE_IDS,
+    'volcanic-ruin'
 ] as const);
 export type V10TerrainProfileId = typeof V10_ALL_TERRAIN_PROFILE_IDS[number];
 export type V10R1TerrainProfileId = typeof V10_R1_TERRAIN_PROFILE_IDS[number];
@@ -107,7 +110,7 @@ export type V10TacticalArena = Readonly<{
     opening: V10OpeningPair;
     evaluatedPairs: number;
     eligiblePairs: number;
-    recipeRevision?: typeof V10_PROCEDURAL_RECIPE_REVISION | typeof V10G_RECIPE_REVISION | typeof V10G_FAMILY_RECIPE_REVISION;
+    recipeRevision?: typeof V10_PROCEDURAL_RECIPE_REVISION | typeof V10G_RECIPE_REVISION | typeof V10G_FAMILY_RECIPE_REVISION | typeof VOLCANIC_RUIN_RECIPE_REVISION;
     candidateIndex?: number;
     fallbackUsed?: boolean;
 }>;
@@ -117,7 +120,7 @@ export type SimulationStateV10 = Omit<SimulationStateV9, 'formatVersion' | 'rule
     rulesetId: V10RulesetId;
     rulesetVersion: 10;
     terrainProfileId: V10TerrainProfileId;
-    terrainRecipeRevision?: typeof V10_PROCEDURAL_RECIPE_REVISION | typeof V10G_RECIPE_REVISION | typeof V10G_FAMILY_RECIPE_REVISION;
+    terrainRecipeRevision?: typeof V10_PROCEDURAL_RECIPE_REVISION | typeof V10G_RECIPE_REVISION | typeof V10G_FAMILY_RECIPE_REVISION | typeof VOLCANIC_RUIN_RECIPE_REVISION;
     terrainCandidateIndex?: number;
 };
 export type SimulationIntentV10 = SimulationIntentV9;
@@ -132,20 +135,21 @@ export const SimulationStateV10Schema = SimulationStateV9Schema.omit({
     rulesetId: z.enum(V10_RULESET_IDS),
     rulesetVersion: z.literal(10),
     terrainProfileId: z.enum(V10_ALL_TERRAIN_PROFILE_IDS),
-    terrainRecipeRevision: z.enum([V10_PROCEDURAL_RECIPE_REVISION, V10G_RECIPE_REVISION, V10G_FAMILY_RECIPE_REVISION]).optional(),
+    terrainRecipeRevision: z.enum([V10_PROCEDURAL_RECIPE_REVISION, V10G_RECIPE_REVISION, V10G_FAMILY_RECIPE_REVISION, VOLCANIC_RUIN_RECIPE_REVISION]).optional(),
     terrainCandidateIndex: z.number().int().min(0).max(V10_PROCEDURAL_CANDIDATE_COUNT - 1).optional()
 }).strict().superRefine((state, context) => {
     const r3 = state.rulesetId === V10_R3_RULESET_ID;
     const r4 = state.rulesetId === V10_R4_RULESET_ID;
-    const procedural = state.rulesetId === V10_R2_RULESET_ID || r3 || r4;
-    const expectedProfiles = procedural
+    const r5 = state.rulesetId === V10_R5_RULESET_ID;
+    const procedural = state.rulesetId === V10_R2_RULESET_ID || r3 || r4 || r5;
+    const expectedProfiles = r5 ? ['volcanic-ruin'] : procedural
         ? V10_PROCEDURAL_TERRAIN_PROFILE_IDS
         : state.rulesetId === V10_R1_RULESET_ID ? V10_R1_TERRAIN_PROFILE_IDS : V10_TERRAIN_PROFILE_IDS;
     if (!(expectedProfiles as readonly string[]).includes(state.terrainProfileId) || (r3 && state.terrainProfileId !== 'twin-crests') || (r4 && state.terrainProfileId !== v10gFamilyForSeed(state.seed).profileId)) {
         context.addIssue({ code: z.ZodIssueCode.custom, path: ['terrainProfileId'],
             message: 'Terrain profile does not belong to the recorded V10 ruleset.' });
     }
-    if (procedural && (state.terrainRecipeRevision !== (r4 ? V10G_FAMILY_RECIPE_REVISION : r3 ? V10G_RECIPE_REVISION : V10_PROCEDURAL_RECIPE_REVISION) || ((r3 || r4) && state.terrainCandidateIndex !== 0))) {
+    if (procedural && (state.terrainRecipeRevision !== (r5 ? VOLCANIC_RUIN_RECIPE_REVISION : r4 ? V10G_FAMILY_RECIPE_REVISION : r3 ? V10G_RECIPE_REVISION : V10_PROCEDURAL_RECIPE_REVISION) || ((r3 || r4 || r5) && state.terrainCandidateIndex !== 0))) {
         context.addIssue({ code: z.ZodIssueCode.custom, path: ['terrainRecipeRevision'], message: 'Recipe/candidate does not belong to ruleset.' });
     }
     const hasRecipeRevision = Object.prototype.hasOwnProperty.call(state, 'terrainRecipeRevision');
@@ -167,6 +171,7 @@ export function v10TerrainProfileForSeed(
     rulesetId: V10RulesetId = V10_RULESET_ID
 ): V10TerrainProfileId {
     const normalized = normalizeSeed(seed);
+    if (rulesetId === V10_R5_RULESET_ID) return 'volcanic-ruin';
     if (rulesetId === V10_R4_RULESET_ID) return v10gFamilyForSeed(normalized).profileId;
     if (rulesetId === V10_R3_RULESET_ID) return 'twin-crests';
     if (rulesetId === V10_R2_RULESET_ID) return v10ProceduralTerrainProfileForSeed(normalized);
@@ -181,7 +186,7 @@ export function generateV10TacticalArena(
     const normalized = normalizeSeed(seed);
     const profileId = v10TerrainProfileForSeed(normalized, rulesetId);
     if (usesV10GTactics(rulesetId)) {
-        const candidate = rulesetId === V10_R4_RULESET_ID ? generateV10GFamily(normalized) : generateV10GTwinCrests();
+        const candidate = rulesetId === V10_R5_RULESET_ID ? generateVolcanicRuinTerrain() : rulesetId === V10_R4_RULESET_ID ? generateV10GFamily(normalized) : generateV10GTwinCrests();
         return { terrain: candidate.terrain, rngState: normalized, profileId, reflected: rulesetId === V10_R4_RULESET_ID && v10gFamilyForSeed(normalized).reflected, variation: 0, phase: 0,
             opening: { ...candidate.opening, score: { profileFit: 0, combinedLocalMobility: 0, centerBias: 0, tieBreak: normalized }, jumpPositions: candidate.jumpPositions },
             evaluatedPairs: 1, eligiblePairs: 1, recipeRevision: candidate.recipeRevision, candidateIndex: 0, fallbackUsed: false };
@@ -225,7 +230,7 @@ export function selectV10OpeningPair(
     seed: number,
     profileId: V10TerrainProfileId
 ): { opening: V10OpeningPair; evaluatedPairs: number; eligiblePairs: number } {
-    if (isV10ProceduralProfile(profileId)) {
+    if (isV10ProceduralProfile(profileId) || profileId === 'volcanic-ruin') {
         throw new Error('V10F openings are selected with their procedural candidate.');
     }
     const rules = V10_PROFILE_RULES[profileId];
@@ -252,7 +257,7 @@ export function evaluateV10OpeningPair(
     firstX: number,
     secondX: number
 ): V10OpeningPair {
-    if (isV10ProceduralProfile(profileId)) {
+    if (isV10ProceduralProfile(profileId) || profileId === 'volcanic-ruin') {
         throw new Error('V10F openings are selected with their procedural candidate.');
     }
     const opening = evaluateOpening(
@@ -393,7 +398,7 @@ function fromV9(
     state: SimulationStateV9,
     rulesetId: V10RulesetId,
     terrainProfileId: V10TerrainProfileId,
-    terrainRecipeRevision?: typeof V10_PROCEDURAL_RECIPE_REVISION | typeof V10G_RECIPE_REVISION | typeof V10G_FAMILY_RECIPE_REVISION,
+    terrainRecipeRevision?: typeof V10_PROCEDURAL_RECIPE_REVISION | typeof V10G_RECIPE_REVISION | typeof V10G_FAMILY_RECIPE_REVISION | typeof VOLCANIC_RUIN_RECIPE_REVISION,
     terrainCandidateIndex?: number
 ): SimulationStateV10 {
     return {

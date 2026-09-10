@@ -1,3 +1,4 @@
+import { generateVolcanicRuinTerrain, VOLCANIC_RUIN_SURFACE_ASCII } from '../../shared/terrain-volcanic-ruin';
 import assert from 'node:assert/strict';
 import test from 'node:test';
 import { terrainSolid, type RelicId } from '../../shared/simulation';
@@ -9,7 +10,7 @@ import { SimulationCoordinatorV10 } from '../../server/src/simulation/coordinato
 import { LoomkeeperPlannerV10, LoomkeeperExecutionV10 } from '../../shared/loomkeeper-v10';
 import { createSimulationV10, applySimulationIntentV10, advanceSimulationTicksV10,
     assertSimulationInvariantsV10, cloneSimulationV10, SimulationStateV10Schema,
-    V10_R3_RULESET_ID, V10_R4_RULESET_ID, type SimulationStateV10, type SimulationIntentV10 } from '../../shared/simulation-v10';
+    V10_R3_RULESET_ID, V10_R4_RULESET_ID, V10_R5_RULESET_ID, type SimulationStateV10, type SimulationIntentV10 } from '../../shared/simulation-v10';
 
 const fresh = () => createSimulationV10(4, 'wizard', V10_R3_RULESET_ID);
 function apply(state: SimulationStateV10, intent: SimulationIntentV10) {
@@ -154,11 +155,11 @@ test('V10G intact thin cover shields splash even when the impact removes it; blo
     assert.ok(V10G_PROJECTILE_RULES.relics.spoolburst.craterRadius > V10G_PROJECTILE_RULES.relics.threadball.craterRadius);
 });
 
-for (const reviewSeed of [0, 4, 5, 6, 7, 8]) test(`V10G coordinator breach and AI replay parity: ${reviewSeed || 'legacy R3'}`, () => {
+for (const reviewSeed of [0, 4, 5, 6, 7, 8, 9]) test(`V10G coordinator breach and AI replay parity: ${reviewSeed || 'legacy R3'}`, () => {
     const coordinator = new SimulationCoordinatorV10();
     try {
         const id = 'challenge_v10g_replay'; const sessionId = 'session_v10g_replay';
-        coordinator.create(id, sessionId, reviewSeed || 4, 'wizard', reviewSeed ? V10_R4_RULESET_ID : V10_R3_RULESET_ID);
+        coordinator.create(id, sessionId, reviewSeed || 4, 'wizard', reviewSeed === 9 ? V10_R5_RULESET_ID : reviewSeed ? V10_R4_RULESET_ID : V10_R3_RULESET_ID);
         const initialTerrain = coordinator.get(id)!.state.terrain.words;
         coordinator.advance(id, 900); // Earn the five-Thread breacher legally.
         for (const intent of [{ type: 'select_relic', relicId: 'spoolburst' },
@@ -325,4 +326,37 @@ test('V10G expanded protected pockets shield head, centre and feet at boundary p
             }
         }
     }
+});
+
+
+test('volcanic ASCII compiles to supported starts and useful ordinary jump steps', () => {
+    const map = generateVolcanicRuinTerrain();
+    assert.equal(VOLCANIC_RUIN_SURFACE_ASCII.split('\n').length, 11);
+    assert.deepEqual(map, generateVolcanicRuinTerrain());
+    for (const jump of map.jumpPositions) {
+        let state = createSimulationV10(4, 'wizard', V10_R5_RULESET_ID);
+        position(state, 0, jump.takeoffX, jump.takeoffSurfaceY);
+        assert.equal(walk(state, jump.direction, 100).units[0].yFp / 256 + 12, jump.takeoffSurfaceY);
+        state = apply(state, { type: 'jump', direction: jump.direction });
+        for (let tick = 0; tick < 100 && !state.units[0].grounded; tick++) state = advanceSimulationTicksV10(state, 1).state;
+        assert.equal(state.units[0].grounded, true);
+        assert.equal(state.units[0].yFp / 256 + 12, jump.landingSurfaceY);
+    }
+});
+
+
+test('volcanic central notch blocks a downhill shot and its jump opens a counterattack', () => {
+    let state = createSimulationV10(4, 'wizard', V10_R5_RULESET_ID);
+    position(state, 0, 992, 336); position(state, 1, 1088, 448);
+    const protectedShot = resolve(fire(state, 'needlepoint', -45000));
+    assert.equal(protectedShot.lastProjectile?.impact, 'terrain');
+    assert.equal(protectedShot.units[1].stitching, 100);
+    state.activeActor = 'loomkeeper'; state.units[1].thread = 3;
+    state = apply(state, { type: 'jump', direction: -1 });
+    for (let tick = 0; tick < 100 && !state.units[1].grounded; tick++) state = advanceSimulationTicksV10(state, 1).state;
+    assert.equal(state.units[1].grounded, true);
+    assert.equal(state.units[1].yFp / 256 + 12, 336);
+    assert.equal(resolve(fire(state, 'needlepoint', 0)).units[0].stitching, 40);
+    state.activeActor = 'player';
+    assert.equal(resolve(fire(state, 'needlepoint', 0)).units[1].stitching, 40);
 });

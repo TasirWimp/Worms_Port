@@ -28,6 +28,7 @@ export type BackgroundProjectionInput = Readonly<{
     fieldX: number;
     fieldY: number;
     fieldHeight: number;
+    fieldWidth: number;
     worldScaleX: number;
     worldScaleY: number;
 }>;
@@ -41,18 +42,19 @@ export const VOLCANIC_RUIN_PREVIEW_WORLD = Object.freeze({ width: 2048, height: 
 // areas. Decorative anchors must stay outside them; their pixels never affect
 // any of those systems.
 export const BACKGROUND_LEGIBILITY_LANES = Object.freeze([
-    { left: 0.14, right: 0.36, top: 0.42, bottom: 0.94 },
-    { left: 0.64, right: 0.86, top: 0.42, bottom: 0.94 },
-    { left: 0.32, right: 0.68, top: 0.58, bottom: 0.88 }
+    { left: 0, right: 0.18, top: 0.15, bottom: 0.60 },
+    { left: 0.87, right: 1, top: 0.15, bottom: 0.65 },
+    { left: 0.25, right: 0.68, top: 0.10, bottom: 0.48 }
 ]);
 
 export const VOLCANIC_RUIN_BACKGROUND = Object.freeze({
     id: 'volcanic-ruin',
     vegetationSeed: 0x015D4F,
     landmarkPlacements: Object.freeze([
-        { asset: 'volcano', layer: 'L1-distant', anchor: { x: 0.5, y: 0.42 }, scale: 0.74, alpha: 0.56, parallax: 0.08 },
-        { asset: 'jungle', layer: 'L1-distant', anchor: { x: 0.5, y: 0.55 }, scale: 0.98, alpha: 0.42, parallax: 0.1 },
-        { asset: 'tower', layer: 'L2-landmark', anchor: { x: 0.92, y: 0.68 }, scale: 0.53, alpha: 0.68, parallax: 0.18 }
+        { asset: 'volcano', layer: 'L1-distant', anchor: { x: 0.40, y: 0.87 }, scale: 0.82, alpha: 0.74, parallax: 0.08 },
+        ...[0.04, 0.27, 0.50, 0.73, 0.96].map(x => ({ asset: 'jungle', layer: 'L1-distant',
+            anchor: { x, y: 0.83 }, scale: 0.64, alpha: 0.88, parallax: 0.1 })),
+        { asset: 'tower', layer: 'L2-landmark', anchor: { x: 0.79, y: 0.81 }, scale: 0.74, alpha: 0.96, parallax: 0.18 }
     ])
 }) as BackgroundSceneDefinition;
 
@@ -70,26 +72,16 @@ export function pointIsInBackgroundLegibilityLane(anchor: Readonly<{ x: number; 
 }
 
 /** A fixed LCG keeps near foliage stable without borrowing any game state. */
-export function seededVegetationPlacements(seed: number, count = 6): readonly BackgroundPlacement[] {
+export function seededVegetationPlacements(seed: number, count = 24): readonly BackgroundPlacement[] {
     let state = seed >>> 0;
-    const next = () => {
-        state = (Math.imul(state, 1664525) + 1013904223) >>> 0;
-        return state / 0x1_0000_0000;
-    };
-    const placements: BackgroundPlacement[] = [];
-    for (let index = 0; placements.length < count && index < count * 16; index += 1) {
-        const anchor = { x: 0.025 + next() * 0.95, y: 0.73 + next() * 0.21 };
-        if (pointIsInBackgroundLegibilityLane(anchor)) continue;
-        placements.push({
-            asset: placements.length % 2 === 0 ? 'palm' : 'bush',
-            layer: 'L3-near',
-            anchor,
-            scale: 0.19 + next() * 0.1,
-            alpha: 0.58 + next() * 0.14,
-            parallax: 0.32
-        });
-    }
-    return placements;
+    const next = () => { state = (Math.imul(state, 1664525) + 1013904223) >>> 0; return state / 0x1_0000_0000; };
+    return Array.from({ length: count }, (_, index) => {
+        const palm = index % 3 === 0;
+        return { asset: palm ? 'palm' : 'bush', layer: 'L3-near',
+            anchor: { x: (index + 0.2 + next() * 0.6) / count, y: (palm ? 0.84 : 0.81) + next() * 0.02 },
+            scale: palm ? 0.26 + next() * 0.07 : 0.22 + next() * 0.09,
+            alpha: palm ? 0.86 : 0.94, parallax: 0.32 };
+    });
 }
 
 export function backgroundPlacements(definition: BackgroundSceneDefinition): readonly BackgroundPlacement[] {
@@ -106,7 +98,10 @@ export function projectBackgroundPlacement(
     input: BackgroundProjectionInput
 ): Readonly<{ x: number; y: number; scale: number; depth: number }> {
     return {
-        x: input.fieldX + (placement.anchor.x * input.worldWidth - input.cameraLeft * placement.parallax) * input.worldScaleX,
+        // Compose inside the visible arena, not across the hidden 2048-unit world.
+        // Modest bounded drift preserves the landmark even after deliberate panning.
+        x: input.fieldX + placement.anchor.x * input.fieldWidth - Math.max(-input.fieldWidth * 0.06,
+            Math.min(input.fieldWidth * 0.06, (input.cameraLeft - 512) * placement.parallax * input.worldScaleX)),
         y: input.fieldY + placement.anchor.y * input.worldHeight * input.worldScaleY,
         scale: input.fieldHeight / input.worldHeight * placement.scale,
         depth: backgroundLayerDepth(placement.layer)

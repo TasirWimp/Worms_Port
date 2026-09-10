@@ -23,9 +23,16 @@ Phaser/Socket.IO stack.
   the owner accepted the expanded maps on a physical phone at `8e40a82`
   and explicitly authorized closure. **V10G is complete.**
   WP-015D4E Volcanic-Ruin Background Art completed source-master admission.
-  Active successor: **WP-015D4F Volcanic-Ruin Preview Bundle**. It retains the
-  frozen WP-015C inventory, admits only a separately budgeted lazy preview
-  bundle, and keeps public activation separate. See the
+  WP-015D4F completed the lazy preview bundle. Active successor:
+  **WP-015D4G Volcanic-Ruin Composition And Terrain Alignment**, beginning at
+  `990d2b3`. The owner authorizes scene framing plus an ASCII-authored R5 valley
+  using the existing assets. Combined preview: `/?combat-preview=v10g&background-preview=volcanic-ruin`.
+  Implementation and direct review are ready for owner phone acceptance:
+  five-project scenic checks passed; selected runtime checks passed, with one
+  Chromium resource-load failure passing unchanged on isolated rerun. See
+  [D4G verification evidence](../evidence/wp-015d4g.json). Next: deploy and
+  inspect the composed scene on the owner's phone before closing D4G.
+  Old V10G maps, asset bytes/budgets and public activation remain unchanged. See the
   [preview-bundle contract](wp-015d4f-volcanic-ruin-preview-bundle-contract.md).
   `/?combat-preview=v10g` defaults to Twin Crests; append `&terrain-map=` with
   `trench-needle`, `stepping-mesa`, `rampart-high-left` or `rampart-high-right`.

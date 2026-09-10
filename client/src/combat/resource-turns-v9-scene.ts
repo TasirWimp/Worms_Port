@@ -1,3 +1,4 @@
+import { VOLCANIC_RUIN_ARENA_FRAME } from '../../../shared/terrain-volcanic-ruin';
 import Phaser from 'phaser';
 import { V9PreviewListenerCleanup, type ResourceTurnsEvent, type ResourceTurnsSceneArgs, type ResourceTurnsState, type SafeAreaInsets } from './contracts';
 import { createApprovedWizardAnimations } from './approved-assets';
@@ -27,6 +28,7 @@ export class ResourceTurnsV9Scene {
     private projectileCamera?: CombatCamera; private cameraTransition?: CameraTransition;
     private cameraPointer?: { id: number; x: number }; private readonly listeners = new V9PreviewListenerCleanup();
     private restarting = false;
+    private readonly scenicFrame: boolean;
 
     public constructor(
         private readonly scene: Phaser.Scene,
@@ -35,10 +37,11 @@ export class ResourceTurnsV9Scene {
     ) {
         this.state = structuredClone(args.snapshot); createApprovedWizardAnimations(scene); this.renderer = new CombatRenderer(scene);
         this.sceneBackground = new BackgroundRenderer(scene, backgroundScene, this.renderer.backgroundMask);
+        this.scenicFrame = this.state.rulesetId === 'nimble-knots-artillery-v10-r5';
         const projected = projectCombatV9(this.state);
         const playerCamera = cameraForActor(projected, createCombatCamera(projected), 'player');
-        this.camera = args.kind === 'v10' ? createCombatOverviewCamera(projected) : playerCamera;
-        if (args.kind === 'v10' && this.camera.width > playerCamera.width) {
+        this.camera = this.scenicFrame ? { ...VOLCANIC_RUIN_ARENA_FRAME } : args.kind === 'v10' ? createCombatOverviewCamera(projected) : playerCamera;
+        if (!this.scenicFrame && args.kind === 'v10' && this.camera.width > playerCamera.width) {
             this.cameraTransition = { kind: 'opening', actor: 'player', from: this.camera, to: playerCamera, startedAt: performance.now() };
         }
         this.controls = new ResourceTurnsV9Controls(document.getElementById('game')!, this.state, {
@@ -94,7 +97,7 @@ export class ResourceTurnsV9Scene {
         if (boundary) { this.requestGeneration++; this.cancelCameraNavigation(); this.previewGeneration++; this.preview = []; this.cancelPresentation(); }
         const steps = planV9Presentation(previous, this.state, reducedMotion());
         if (steps.length) this.presentation = { steps, index: 0, startedAt: performance.now(), generation: this.requestGeneration };
-        if (!previous.projectile && this.state.projectile) { this.projectileCamera ??= this.camera; this.camera = focusCombatCamera(projectCombatV9(this.state), this.camera, this.state.projectile.xFp / 256); }
+        if (!previous.projectile && this.state.projectile) { this.projectileCamera ??= this.camera; this.camera = this.scenicFrame ? revealCombatCameraPoint(projectCombatV9(this.state), this.camera, this.state.projectile.xFp / 256) : focusCombatCamera(projectCombatV9(this.state), this.camera, this.state.projectile.xFp / 256); }
         if (previous.projectile && !this.state.projectile && this.projectileCamera) { this.camera = this.projectileCamera; this.projectileCamera = undefined; }
         this.render(false);
     }
@@ -154,7 +157,7 @@ export class ResourceTurnsV9Scene {
             ? this.args.trajectoryPreview(aim)
             : trajectoryPreviewV9(this.state as SimulationStateV9, aim);
         if (this.destroyed || generation !== this.previewGeneration) return;
-        this.preview = points; const end = points.at(-1); if (end) this.camera = revealCombatCameraPoint(projectCombatV9(this.state), this.camera, end.x);
+        this.preview = points; const end = points.at(-1); if (end && !this.scenicFrame) this.camera = revealCombatCameraPoint(projectCombatV9(this.state), this.camera, end.x);
     }
     private focusActor(actor: CameraActor): void {
         if (this.destroyed || this.state.projectile || this.state.phase === 'finished') return;
@@ -189,7 +192,7 @@ export class ResourceTurnsV9Scene {
         // current authority position on every frame in full and reduced motion.
         if (this.state.projectile) {
             this.projectileCamera ??= this.camera;
-            this.camera = focusCombatCamera(projectCombatV9(this.state), this.camera, this.state.projectile.xFp / 256);
+            this.camera = this.scenicFrame ? revealCombatCameraPoint(projectCombatV9(this.state), this.camera, this.state.projectile.xFp / 256) : focusCombatCamera(projectCombatV9(this.state), this.camera, this.state.projectile.xFp / 256);
         } else this.advanceCamera(now);
         this.layout = computeCombatLayout(this.scene.scale.width, this.scene.scale.height, readSafeArea(), this.camera); this.controls.setLayout(this.layout); if (pollMovement) this.controls.pollMovement();
         const queuedVisual = this.visual(now); const visual: CombatVisualPhase | undefined = this.state.projectile ? {

@@ -1,0 +1,92 @@
+{
+  "id": "WP-015D4G",
+  "status": "in_progress",
+  "execution_mode": "single_owner",
+  "starting_commit": "990d2b3",
+  "branch": "codex/volcanic-ruin-background-art",
+  "initial_worktree": "clean",
+  "starting_lock_sha256": "6B768A8FDE2695D02555CA17201FD7CE420F9AC075B91380474DD7A643042BC8",
+  "owning_roles": [
+    "primary assistant"
+  ],
+  "scope": [
+    "Owner-requested alignment to the existing exact reference: visible tower, grounded volcano/tree line, denser foliage, fitted starting frame and executable ASCII valley under R5."
+  ],
+  "non_goals": [
+    "No assets transformed/generated/imported, no old V10G replay reinterpretation, no public activation, no agents."
+  ],
+  "planned_checks": [
+    "Change selector dry run and selected verification.",
+    "Focused geometry, projectile, AI/replay and five-project phone framing/turn checks.",
+    "Compliance and housekeeping."
+  ],
+  "deterministic_seeds": [
+    "4 (scenic terrain)",
+    "0x015D4F (decorative vegetation only)"
+  ],
+  "sorcerers_reference_used": false,
+  "clean_room_records": [],
+  "check_results": [
+    {
+      "command": "npm run verify:changes -- --dry-run",
+      "status": "pass"
+    },
+    {
+      "details": "All selected code, build, built smoke, bundle and security checks passed. Canonical browser run: 68 passed, 3 policy skips, 1 failure in unchanged V8 rotation case due to Chromium net::ERR_NO_BUFFER_SPACE. Retained in .cache/volcanic-alignment-verification.log; isolated rerun passed without changes.",
+      "status": "fail",
+      "command": "npm run verify:changes"
+    },
+    {
+      "details": "1 passed, unchanged case; .cache/volcanic-v8-rerun.log.",
+      "status": "pass",
+      "command": "node scripts/run-playwright.js --reuse-build --project=chromium-390x844 tests/browser/combat.spec.ts --grep \"V8 right left off and actual-landscape keep safe touch targets and rotation mapping\""
+    },
+    {
+      "details": "5/5 passed on final build: Chromium 360x640, 390x844, 412x915, 844x390 and WebKit 390x844. Actual aim/fire/AI handoff plus both cards and Pause separation; .cache/volcanic-phone-matrix.log.",
+      "status": "pass",
+      "command": "node scripts/run-playwright.js --reuse-build tests/browser/combat.spec.ts --grep \"volcanic-ruin composed arena\""
+    },
+    {
+      "command": "npm run check:compliance",
+      "status": "pass"
+    },
+    {
+      "details": "Report-only. Current branch/upstream match. Historical merged branches, old in-progress evidence and retired review references preserved; D4E source admission complete but its wider package record remains historical in-progress. D4G is current and awaits phone acceptance.",
+      "status": "pass",
+      "command": "npm run audit:housekeeping"
+    },
+    {
+      "details": "Database gate explicitly skipped locally: WP014_TEST_DATABASE_URL unavailable.",
+      "status": "pass",
+      "command": "node scripts/verify-changes.js --phase postgres"
+    },
+    {
+      "details": "Final 390 portrait-sideways, 360 portrait-sideways and 844 landscape captures inspected. Tower visible, volcano grounded behind valley/jungle, dense lower foliage, both actor cards visible and Pause separate.",
+      "status": "pass",
+      "command": "Direct screenshot inspection"
+    },
+    {
+      "command": "git diff --check",
+      "status": "pass"
+    }
+  ],
+  "reviews": [
+    {
+      "details": "Reviewed complete scene projection, master origin, bounded camera behavior, ASCII collision compilation, R5 metadata/replay dispatch and actual jump/cover/AI witnesses. Corrected small-phone Pause overlap by lowering left start to y304. No independent-agent review or device acceptance claimed.",
+      "reviewer": "Primary single-owner assistant",
+      "decision": "pass",
+      "role": "primary_direct_review"
+    }
+  ],
+  "skipped_checks": [
+    "Three canonical browser policy skips: landscape full-screen probe, V4 world-anchored actor cards, result-screen full-screen exit; existing compact-landscape routing unchanged.",
+    "PostgreSQL unavailable locally; separate CI database gate remains mandatory.",
+    "Physical Android/iOS acceptance pending owner deployment/review.",
+    "Ubuntu release visual baseline generation/comparison not run; Windows captures are inspection evidence only.",
+    "Daily full-suite/performance gate not rerun for this feature edit; existing 22:00 Europe/Berlin automation remains unchanged."
+  ],
+  "residual_risks": [
+    "Decorative tower and volcano are not collidable. Scenic physics are defined only by ASCII terrain, never image alpha.",
+    "The 2048-unit collision world remains; the composed opening frame spans its central 1024 units."
+  ]
+}

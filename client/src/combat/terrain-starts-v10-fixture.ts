@@ -7,7 +7,7 @@ import {
     createSimulationV10,
     forceSimulationLimitV10,
     V10_R1_RULESET_ID,
-    V10_R2_RULESET_ID, V10_R3_RULESET_ID, V10_R4_RULESET_ID,
+    V10_R2_RULESET_ID, V10_R3_RULESET_ID, V10_R4_RULESET_ID, V10_R5_RULESET_ID,
     V10_RULESET_ID,
     type V10RulesetId,
     type SimulationEventV10,
@@ -281,7 +281,7 @@ export async function createTerrainStartsV10Fixture(
         });
         if (result.accepted && result.mutated) state = result.state;
     };
-    const previewLabel = rulesetId === V10_R4_RULESET_ID
+    const previewLabel = rulesetId === V10_R5_RULESET_ID ? 'Volcanic Ruin · stepped valley · local-only' : rulesetId === V10_R4_RULESET_ID
         ? `V10G ${terrainProfileLabel(state.terrainProfileId)}${state.terrainProfileId === 'asymmetric-rampart' ? (v10gFamilyForSeed(seed).reflected ? ' · high right' : ' · high left') : ''} · cover, shelves and breaching · local-only`
         : rulesetId === V10_R3_RULESET_ID
         ? 'V10G Twin Crests · cover, shelves and breaching · local-only'

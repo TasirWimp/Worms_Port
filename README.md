@@ -65,6 +65,10 @@ are also recorded in the Execution Pointer of
   Threadball lobs, Needlepoint fires straight and Spoolburst breaches; cover
   shields the hitbox and blocks blast influence. Existing R3 recordings and R2
   previews retain their original behavior. Public Practice/Daily are unchanged.
+  The separate `/?combat-preview=v10g&background-preview=volcanic-ruin`
+  preview now composes the existing art with an ASCII-authored stepped valley
+  (R5); it keeps the tower visible and both starts in the initial frame.
+  See the [composition contract](docs/planning/wp-015d4f-volcanic-ruin-preview-bundle-contract.md#wp-015d4g-owner-requested-composition-and-terrain-alignment).
   The [frozen weapon observations](docs/evidence/wp-015d4d-v10g-weapon-terrain-reference.md)
   preserve the reference boundary separately from the evolving contract.
 - Assets from Sorcerers may move into `assets/` only after exact-file license

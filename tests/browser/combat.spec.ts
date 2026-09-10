@@ -2093,3 +2093,35 @@ async function installV8DefeatRecorder(page: Page, snapshot: ChallengeSnapshotV8
   }, { units: snapshot.simulation.units, names: actors, scale: WIZARD_ANIMATION_SCALE_IN_WORLD,
     origin: WIZARD_UNRAVEL_ROOT_ORIGIN_Y, radius: SIM_RULES.actorRadius });
 }
+
+
+test('volcanic-ruin composed arena keeps both starts framed and completes a turn', async ({ page }, testInfo) => {
+  test.setTimeout(60_000);
+  await page.goto('/?combat-preview=v10g&background-preview=volcanic-ruin');
+  const ui = page.locator('.combat-v10');
+  await expect(ui).toHaveAttribute('data-ruleset', 'nimble-knots-artillery-v10-r5');
+  await expect(ui).toHaveAttribute('data-camera-left', '512.00');
+  await expect(ui).toHaveAttribute('data-camera-width', '1024');
+  await expect(ui).toHaveAttribute('data-opening-survey', 'false');
+  await assertV9ActorCardsFit(page);
+  await expect(page.locator('.player-status')).toBeVisible();
+  await expect(page.locator('.loomkeeper-status')).toBeVisible();
+  const overlap = await ui.evaluate(root => {
+    const card = root.querySelector('.player-status')!.getBoundingClientRect();
+    const pause = root.querySelector('.pause-button')!.getBoundingClientRect();
+    return card.left < pause.right && card.right > pause.left && card.top < pause.bottom && card.bottom > pause.top;
+  });
+  expect(overlap).toBe(false);
+  await page.screenshot({ path: testInfo.outputPath('volcanic-ruin-composition.png') });
+  await page.getByRole('button', { name: 'Pause', exact: true }).tap();
+  await page.getByRole('button', { name: 'Resume', exact: true }).tap();
+  const sideways = await page.evaluate(() => document.documentElement.dataset.sideways);
+  await dragPad(page, '.combat-v10 .aim-zone', 1199, sideways ? 0 : 0.35,
+    sideways === 'right' ? 0.35 : sideways === 'left' ? -0.35 : 0);
+  await expect(ui).toHaveAttribute('data-aim-locked', 'true');
+  await page.locator('.fire-button').tap();
+  await expect(ui).toHaveAttribute('data-player-thread', '1');
+  await expect(ui).toHaveAttribute('data-active-actor', 'loomkeeper', { timeout: 12_000 });
+  await expect(ui).toHaveAttribute('data-active-actor', 'player', { timeout: 35_000 });
+  await expect(ui).toHaveAttribute('data-terminal', 'false');
+});

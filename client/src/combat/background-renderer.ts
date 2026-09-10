@@ -29,7 +29,7 @@ export class BackgroundRenderer {
         this.sprites = backgroundPlacements(definition).map((placement) => ({
             placement,
             image: scene.add.image(0, 0, textureKey(placement.asset))
-                .setOrigin(0.5, 1)
+                .setOrigin(512 / 1024, 528 / 576)
                 .setDepth(backgroundLayerDepth(placement.layer))
                 .setMask(mask)
         }));
@@ -43,7 +43,7 @@ export class BackgroundRenderer {
                 worldWidth: VOLCANIC_RUIN_PREVIEW_WORLD.width,
                 worldHeight: VOLCANIC_RUIN_PREVIEW_WORLD.height, cameraLeft: layout.camera.left,
                 fieldX: layout.battlefield.x, fieldY: layout.battlefield.y,
-                fieldHeight: layout.battlefield.height,
+                fieldHeight: layout.battlefield.height, fieldWidth: layout.battlefield.width,
                 worldScaleX: layout.worldScaleX, worldScaleY: layout.worldScaleY
             });
             image.setPosition(projection.x, projection.y).setScale(projection.scale)
