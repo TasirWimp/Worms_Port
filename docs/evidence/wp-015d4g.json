@@ -68,6 +68,16 @@
     {
       "command": "git diff --check",
       "status": "pass"
+    },
+    {
+      "details": "At 714c9b2, Start fresh preview replaced the controller without its BackgroundSceneDefinition: expected volcanic-ruin, received none. Captured in .cache/background-restart-red.log. Fix retains the definition as a constructor property and passes it into every replacement.",
+      "status": "fail",
+      "command": "Pre-fix volcanic restart browser regression"
+    },
+    {
+      "command": "Restart correction: npm run verify:changes -- --dry-run and npm run verify:changes",
+      "status": "pass",
+      "details": "After 714c9b2: selected types, combat/practice/tooling tests, build outputs, built smoke, security/bundle checks and 65 canonical browser cases passed; 3 existing compact-landscape policy skips. New regression passes paused restart and subsequent terminal restart with volcanic background retained and aiming usable. Screenshot after terminal restart inspected: volcano, tower and foliage present. Logs: .cache/background-restart-plan.log and .cache/background-restart-verify.log."
     }
   ],
   "reviews": [
@@ -76,6 +86,12 @@
       "reviewer": "Primary single-owner assistant",
       "decision": "pass",
       "role": "primary_direct_review"
+    },
+    {
+      "reviewer": "Primary single-owner assistant",
+      "role": "primary_direct_review",
+      "decision": "pass",
+      "details": "Restart correction preserves the originally selected optional background across controller replacement. No URL re-selection, extra asset loads, terrain/replay changes or agents. Physical phone re-test remains pending; browser terminal coverage uses the actual lifecycle-limit terminal to reach the shared restart path deterministically."
     }
   ],
   "skipped_checks": [

@@ -425,25 +425,29 @@ test('V9 turn-two carried Spoolburst yields to immediately selected affordable R
   }
 });
 
-test('V9 local re-entry retires paused and terminal adapters without a transport', async ({ page }) => {
+for (const preview of ['v9', 'v10g&background-preview=volcanic-ruin']) {
+test(`${preview} local re-entry retires paused and terminal adapters without a transport`, async ({ page }, testInfo) => {
   test.setTimeout(60_000);
   const errors: string[] = []; const requests: string[] = [];
   page.on('pageerror', error => errors.push(error.message));
   page.on('request', request => requests.push(request.url()));
-  await page.goto('/?combat-preview=v9&sideways=off');
-  const ui = page.locator('.combat-v9'); await expect(ui).toBeVisible();
+  await page.goto(`/?combat-preview=${preview}&sideways=off`);
+  const selector = preview === 'v9' ? '.combat-v9' : '.combat-v10';
+  const expectedBackground = preview === 'v9' ? 'none' : 'volcanic-ruin';
+  const ui = page.locator(selector); await expect(ui).toBeVisible();
   await page.locator('.pause-button').tap(); await expect(ui).toHaveAttribute('data-paused', 'true');
   const pausedAdapter = await ui.elementHandle();
   await page.getByRole('button', { name: 'Start fresh preview' }).tap();
   expect(await pausedAdapter!.evaluate(element => element.isConnected)).toBe(false);
+  await expect(ui).toHaveAttribute('data-background', expectedBackground);
   await expect(ui).toHaveAttribute('data-input-epoch', '0');
   await expect(ui).toHaveAttribute('data-player-thread', '3');
   expect(Number(await ui.getAttribute('data-simulation-tick'))).toBeLessThan(16);
 
   // Each paused/resumed local barrier is authoritative fixture work. The 65th
   // pause reaches its documented lifecycle terminal without adding a test seam.
-  await page.evaluate(async () => {
-    const root = document.querySelector<HTMLElement>('.combat-v9')!;
+  await page.evaluate(async (selector) => {
+    const root = document.querySelector<HTMLElement>(selector)!;
     const button = root.querySelector<HTMLButtonElement>('.pause-button')!;
     const waitFor = (attribute: string, value: string) => new Promise<void>(resolve => {
       if (root.dataset[attribute] === value) { resolve(); return; }
@@ -456,19 +460,22 @@ test('V9 local re-entry retires paused and terminal adapters without a transport
       button.click(); await waitFor('paused', 'true'); button.click(); await waitFor('paused', 'false');
     }
     button.click(); await waitFor('terminal', 'true');
-  });
+  }, selector);
   await expect(ui).toHaveAttribute('data-terminal', 'true');
   await expect(page.getByRole('button', { name: 'Start fresh preview' })).toBeVisible();
   await page.getByRole('button', { name: 'Start fresh preview' }).tap();
   await expect(ui).toHaveAttribute('data-terminal', 'false');
+  await expect(ui).toHaveAttribute('data-background', expectedBackground);
   await expect(ui).toHaveAttribute('data-input-epoch', '0');
   await expect(ui).toHaveAttribute('data-player-thread', '3');
   expect(Number(await ui.getAttribute('data-simulation-tick'))).toBeLessThan(16);
-  await dragPad(page, '.combat-v9 .aim-zone', 955, 0.35, -0.35);
+  await page.screenshot({ path: testInfo.outputPath('restart-background.png') });
+  await dragPad(page, `${selector} .aim-zone`, 955, 0.35, -0.35);
   await expect(ui).toHaveAttribute('data-aim-locked', 'true');
   expect(errors).toEqual([]);
   expect(requests.some(url => /socket\.io|\/(?:session|challenge|reward)(?:\/|$|\?)/.test(url))).toBe(false);
 });
+}
 
 test('V9 actor cards keep compact visible values and full labels through phone modes', async ({ page }) => {
   test.setTimeout(60_000);

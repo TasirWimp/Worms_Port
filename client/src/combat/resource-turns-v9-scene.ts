@@ -33,7 +33,7 @@ export class ResourceTurnsV9Scene {
     public constructor(
         private readonly scene: Phaser.Scene,
         private readonly args: ResourceTurnsSceneArgs,
-        backgroundScene?: BackgroundSceneDefinition
+        private readonly backgroundScene?: BackgroundSceneDefinition
     ) {
         this.state = structuredClone(args.snapshot); createApprovedWizardAnimations(scene); this.renderer = new CombatRenderer(scene);
         this.sceneBackground = new BackgroundRenderer(scene, backgroundScene, this.renderer.backgroundMask);
@@ -128,7 +128,7 @@ export class ResourceTurnsV9Scene {
             const next = await this.args.restart();
             if (this.destroyed) { next.destroy(); return; }
             // Retire old listeners before mounting the acknowledged replacement.
-            this.destroy(); new ResourceTurnsV9Scene(this.scene, next);
+            this.destroy(); new ResourceTurnsV9Scene(this.scene, next, this.backgroundScene);
         } catch (error) {
             if (!this.destroyed) this.controls.root.querySelector<HTMLElement>('.combat-message')!.textContent =
                 error instanceof Error ? error.message : 'Unable to restart the Clash.';

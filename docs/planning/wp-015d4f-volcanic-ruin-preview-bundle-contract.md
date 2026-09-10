@@ -143,3 +143,7 @@ Owner phone review after deployment:
 3. Move down a shelf, jump back toward a higher landing, aim and fire, then let
    Loomkeeper respond. Confirm the composed view returns after projectile
    tracking and no selection, aiming or turn controls are obstructed.
+4. After losing, start a fresh preview and confirm the volcano, tower and
+   vegetation remain visible. Paused and terminal restarts must carry the same
+   background definition into the replacement scene; the replay-bound terrain
+   and the presentation selection both survive repeated restarts.
