@@ -5,7 +5,7 @@ const os = require('node:os');
 const path = require('node:path');
 const test = require('node:test');
 
-const { sourceCommit, validateRecords } = require('../../scripts/check-clean-room-records');
+const { canonicalBehaviorRecordHash, sourceCommit, validateRecords } = require('../../scripts/check-clean-room-records');
 
 test('clean-room records fail closed on hash and role-separation errors', () => {
   const root = fs.mkdtempSync(path.join(os.tmpdir(), 'nimble-knots-clean-room-'));
@@ -31,6 +31,10 @@ test('clean-room records fail closed on hash and role-separation errors', () => 
 
   try {
     assert.deepEqual(validateRecords([valid], root), []);
+    fs.writeFileSync(behaviorPath, behavior.replace(/\n/g, '\r\n'));
+    assert.equal(canonicalBehaviorRecordHash(behaviorPath), valid.behavior_record_sha256);
+    assert.deepEqual(validateRecords([valid], root), []);
+    fs.writeFileSync(behaviorPath, behavior);
     const single = { ...valid, execution_mode: 'single_owner', implementer: valid.observer, reviewer: valid.observer };
     assert.deepEqual(validateRecords([single], root), []);
     assert.match(validateRecords([{ ...single, execution_mode: 'typo' }], root).join('\n'), /invalid execution_mode/);

@@ -7,7 +7,7 @@
   "initial_worktree": "clean",
   "starting_lock_sha256": "6B768A8FDE2695D02555CA17201FD7CE420F9AC075B91380474DD7A643042BC8",
   "owning_roles": ["primary assistant"],
-  "scope": ["Admit an opt-in lazy volcanic-ruin engineering-preview bundle with exact-copy and non-authority guards.", "Correct the three pre-existing clean-room registry digests to match their unchanged committed frozen behavior records so the required Render build can run."],
+  "scope": ["Admit an opt-in lazy volcanic-ruin engineering-preview bundle with exact-copy and non-authority guards.", "Correct cross-platform clean-room hash validation so the three pre-existing registry digests bind their unchanged frozen Git bytes on both Windows and Render."],
   "non_goals": ["No WP-015C budget change, public activation, source transformation, atlas, terrain authority, V10G recipe change, or external generation."],
   "planned_checks": ["npm run verify:changes -- --dry-run", "npm run verify:changes", "git diff --check"],
   "deterministic_seeds": ["Scene-owned vegetation seed 0x015D4F only; no simulation or replay seed."],

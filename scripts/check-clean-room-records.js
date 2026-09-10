@@ -5,6 +5,17 @@ const path = require('node:path');
 const repoRoot = path.resolve(__dirname, '..');
 const sourceCommit = '0f45c4920321c0a3a14de30fe5cf44131a38da89';
 
+function canonicalBehaviorRecordHash(filePath) {
+  // Git stores these text records with LF endings, while Windows worktrees may
+  // materialize them as CRLF. The hash binds the frozen document's Git-stable
+  // content, not the checkout-specific line-ending conversion.
+  const canonicalBytes = Buffer.from(
+    fs.readFileSync(filePath, 'utf8').replace(/\r\n/g, '\n'),
+    'utf8'
+  );
+  return crypto.createHash('sha256').update(canonicalBytes).digest('hex').toUpperCase();
+}
+
 function validateRecords(records, root = repoRoot) {
   const errors = [];
   const ids = new Set();
@@ -72,7 +83,7 @@ function validateRecords(records, root = repoRoot) {
     if (!behaviorPath.startsWith(path.resolve(root) + path.sep) || !fs.existsSync(behaviorPath)) {
       errors.push(`${record.id}: behavior_record must resolve to an existing repository file.`);
     } else {
-      const hash = crypto.createHash('sha256').update(fs.readFileSync(behaviorPath)).digest('hex').toUpperCase();
+      const hash = canonicalBehaviorRecordHash(behaviorPath);
       if (hash !== record.behavior_record_sha256) {
         errors.push(`${record.id}: frozen behavior record hash mismatch.`);
       }
@@ -98,4 +109,4 @@ function main() {
 
 if (require.main === module) main();
 
-module.exports = { sourceCommit, validateRecords };
+module.exports = { canonicalBehaviorRecordHash, sourceCommit, validateRecords };
