@@ -20,8 +20,11 @@ The first cone is approved as a source master only at
 The owner also approved the generic Cagsawa-inspired stone tower as a source
 master only at
 `assets/masters/environment/backgrounds/volcanic-ruin/stone-tower-source-master-v1.png`.
-Neither creates a runtime path, build copy, renderer code, or player-visible
-change. Jungle, palm, and bush families remain preparation-only.
+The owner also approved one isolated sparse palm cluster as a source master
+only at
+`assets/masters/environment/backgrounds/volcanic-ruin/palm-cluster-source-master-v1.png`.
+None creates a runtime path, build copy, renderer code, or player-visible
+change. Jungle and bush families remain preparation-only.
 
 ## Owner-Provided Visual Reference
 

@@ -92,7 +92,7 @@ test('Wizard structure and edit-mask conditioning stay project-owned, exact, and
   assert.match(errors, /conditioning input count must remain closed/);
 });
 
-test('owner-provided volcanic-ruin reference is exact, local-only, never-runtime, and bound only to the cone and tower requests', () => {
+test('owner-provided volcanic-ruin reference is exact, local-only, never-runtime, and bound only to recorded isolated requests', () => {
   const reference = manifest.conditioning_inputs.find(
     (input) => input.id === 'volcanic-ruin-scene-reference-v1'
   );
@@ -117,12 +117,13 @@ test('owner-provided volcanic-ruin reference is exact, local-only, never-runtime
       'one exact-file, local-loopback FLUX reference-edit request for the WP-015D4E isolated volcanic-cone candidate only',
       'one separately recorded exact-file, local-loopback FLUX reference-edit request for the WP-015D4E isolated generic stone-tower-ruin candidate only',
       'one separately recorded exact-file, local-loopback FLUX reference-edit request for the WP-015D4E isolated distant-jungle-canopy candidate only',
+      'one separately recorded exact-file, local-loopback FLUX reference-edit request for the WP-015D4E isolated sparse-palm-cluster candidate only',
       'documentation and visual review of generic textile material, depth, and landmark readability'
     ],
     blocked_uses: [
       'product runtime use, distribution, cropping, source-master admission, or treatment as finished artwork',
       'any external upload other than the exact staged local Comfy input for the reviewed request',
-      'a whole-scene generation, named-place replication, UI/character/terrain reuse, any fourth request, batch, or unrecorded conditioning'
+      'a whole-scene generation, named-place replication, UI/character/terrain reuse, any fifth request, batch, or unrecorded conditioning'
     ],
     notes: 'Exact owner-provided scene-reference bytes. The owner authorized FLUX conditioning on 2026-09-09 for isolated generic background assets, but does not transfer this reference into a product asset or source master. UI, text, characters, terrain, clouds, and all composited scene pixels remain excluded from the requested output.'
   });
@@ -187,6 +188,14 @@ test('owner-provided volcanic-ruin reference is exact, local-only, never-runtime
     'B3AC79151D180F4439E82BD8EB9113734601084CE2780A2C56B4AA62CC09EBA1');
   assert.equal(profile.distant_jungle_source_master_review.normalized_master_sha256,
     '5174F7E0108F3CA11157D5A436BC2438389AF2FA7205050E43D3E5F5E19A964A');
+  assert.equal(profile.palm_cluster_authorized_request.seed, 15040004);
+  assert.equal(profile.palm_cluster_authorized_request.status, 'consumed_source_master_approved');
+  assert.equal(profile.palm_cluster_authorized_request.requests_consumed, 1);
+  assert.equal(profile.palm_cluster_authorized_request.external_output_sha256,
+    '05A93D234E9BFFB5F93F8D80E7C87F7C65C55824A730AC2C4C815B3F8CB5F4ED');
+  assert.equal(profile.palm_cluster_source_master_review.normalized_master_sha256,
+    'A9D0C91D5CFD6647654A89A0F1B81110D7FC4C4B3A5ABE395C0FB5B2D8E4E380');
+  assert.equal(profile.palm_cluster_source_master_review.runtime_path_assigned, false);
 
   const invalid = structuredClone(manifest);
   const invalidReference = invalid.conditioning_inputs.find(
@@ -205,6 +214,10 @@ test('owner-provided volcanic-ruin reference is exact, local-only, never-runtime
     .tower_source_master_review.placement_anchor = [511, 528];
   invalid.profiles.find((candidate) => candidate.id === 'flux2-klein')
     .distant_jungle_authorized_request.seed = 15040004;
+  invalid.profiles.find((candidate) => candidate.id === 'flux2-klein')
+    .palm_cluster_authorized_request.seed = 15040005;
+  invalid.profiles.find((candidate) => candidate.id === 'flux2-klein')
+    .palm_cluster_source_master_review.placement_anchor = [511, 528];
 
   const errors = validateGenerationComponents(invalid).join('\n');
   assert.match(errors, /owner-provided visual references must remain owner-authorized/);
@@ -214,6 +227,8 @@ test('owner-provided volcanic-ruin reference is exact, local-only, never-runtime
   assert.match(errors, /exact tower authorized generation request changed/);
   assert.match(errors, /exact tower source-master review changed/);
   assert.match(errors, /exact distant-jungle authorized generation request changed/);
+  assert.match(errors, /exact palm-cluster authorized generation request changed/);
+  assert.match(errors, /exact palm-cluster source-master review changed/);
 });
 
 test('generation workflow requires an exact JSON hash and disclosed input mode', () => {
