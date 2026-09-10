@@ -15,10 +15,13 @@ The scene must remain independent of `PackedTerrain`, collision,
 destruction, spawn selection, projectile authority, AI, replay bytes, and
 public Practice/Daily selection.
 
-The first cone is now approved as a source master only at
+The first cone is approved as a source master only at
 `assets/masters/environment/backgrounds/volcanic-ruin/volcanic-cone-source-master-v1.png`.
-It creates no runtime path, build copy, renderer code, or player-visible change.
-Tower, jungle, palm, and bush families remain preparation-only.
+The owner also approved the generic Cagsawa-inspired stone tower as a source
+master only at
+`assets/masters/environment/backgrounds/volcanic-ruin/stone-tower-source-master-v1.png`.
+Neither creates a runtime path, build copy, renderer code, or player-visible
+change. Jungle, palm, and bush families remain preparation-only.
 
 ## Owner-Provided Visual Reference
 

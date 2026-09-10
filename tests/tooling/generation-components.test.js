@@ -92,7 +92,7 @@ test('Wizard structure and edit-mask conditioning stay project-owned, exact, and
   assert.match(errors, /conditioning input count must remain closed/);
 });
 
-test('owner-provided volcanic-ruin reference is exact, local-only, never-runtime, and bound to one cone request', () => {
+test('owner-provided volcanic-ruin reference is exact, local-only, never-runtime, and bound only to the cone and tower requests', () => {
   const reference = manifest.conditioning_inputs.find(
     (input) => input.id === 'volcanic-ruin-scene-reference-v1'
   );
@@ -115,12 +115,14 @@ test('owner-provided volcanic-ruin reference is exact, local-only, never-runtime
     runtime_path_assigned: false,
     approved_uses: [
       'one exact-file, local-loopback FLUX reference-edit request for the WP-015D4E isolated volcanic-cone candidate only',
+      'one separately recorded exact-file, local-loopback FLUX reference-edit request for the WP-015D4E isolated generic stone-tower-ruin candidate only',
+      'one separately recorded exact-file, local-loopback FLUX reference-edit request for the WP-015D4E isolated distant-jungle-canopy candidate only',
       'documentation and visual review of generic textile material, depth, and landmark readability'
     ],
     blocked_uses: [
       'product runtime use, distribution, cropping, source-master admission, or treatment as finished artwork',
       'any external upload other than the exact staged local Comfy input for the reviewed request',
-      'a whole-scene generation, named-place replication, UI/character/terrain reuse, second request, batch, or unrecorded conditioning'
+      'a whole-scene generation, named-place replication, UI/character/terrain reuse, any fourth request, batch, or unrecorded conditioning'
     ],
     notes: 'Exact owner-provided scene-reference bytes. The owner authorized FLUX conditioning on 2026-09-09 for isolated generic background assets, but does not transfer this reference into a product asset or source master. UI, text, characters, terrain, clouds, and all composited scene pixels remain excluded from the requested output.'
   });
@@ -133,6 +135,58 @@ test('owner-provided volcanic-ruin reference is exact, local-only, never-runtime
   assert.equal(profile.background_source_master_review.normalized_master_sha256,
     '83E451892C13730D2EA1DE5794927EC9CD63110567F110DC485D5ED148D041AD');
   assert.equal(profile.background_source_master_review.runtime_path_assigned, false);
+  assert.deepEqual(profile.tower_authorized_request, {
+    decision: 'one_reference_edit_request_approved',
+    work_package: 'WP-015D4E',
+    purpose: 'volcanic-ruin-isolated-generic-stone-tower-source',
+    tool: 'generate_flux2_klein_reference_edit',
+    workflow_sha256: 'A2BF8CD3C015D36646E73F2FA87F22741E4410D27B26D562331057B49CFF6C8E',
+    seed: 15040002,
+    prompt: 'One original isolated decorative mobile-game background asset on a plain white background: a single weathered tropical stone bell-tower ruin, upright and centered with generous padding, built from rounded warm-gray crochet-stone blocks with a few restrained green vine accents and two open dark arch windows. Calm low-contrast landmark, tactile handmade textile material, with no ground plane or horizon. No volcano, smoke, tree, palm, bush, terrain, character, weapon, projectile, UI, text, number, logo, watermark, frame, map, photo replication, named place, branded game art, church interior, or full scene.',
+    width: 1024,
+    height: 1024,
+    batch_size: 1,
+    steps: 4,
+    cfg: 1,
+    sampler: 'euler',
+    reference_input: 'volcanic-ruin-scene-reference-v1',
+    reference_staged_name: 'volcanic-ruin-scene-reference-v1.png',
+    max_requests: 1,
+    status: 'consumed_source_master_approved',
+    requests_consumed: 1,
+    prompt_id: 'dd98b736-8300-47b1-a3df-29c9f1012a23',
+    runtime_seconds: 317.963,
+    external_output_path: 'C:\\Users\\jensb\\AppData\\Local\\Comfy-Desktop\\ComfyUI-Shared\\output\\WormsPortFlux2KleinReferenceEdit_00007_.png',
+    external_output_sha256: '6DDE21C23C9CF96D445DA3119D6EB9D282BE619B6BB2E3597CB699576D58D264',
+    external_output_bytes: 634010,
+    external_output_pixel_format: 'RGB24',
+    further_requests_authorized: false
+  });
+  assert.deepEqual(profile.tower_source_master_review, {
+    decision: 'source_master_approved',
+    generation_work_package: 'WP-015D4E',
+    normalization_work_package: 'WP-015D4E',
+    seed: 15040002,
+    conditioning_reference_sha256: '9A3E5DEDDF02B0C03B2A8E46894ED61158DB39D8471BA99CD42B8618A1EB0D04',
+    external_source_sha256: '6DDE21C23C9CF96D445DA3119D6EB9D282BE619B6BB2E3597CB699576D58D264',
+    normalization_config_path: 'scripts/asset-normalization/wp-015d4e-stone-tower-v1.json',
+    normalization_config_sha256: '00BD489A6B613147827C8F08338B7B285ECDD31DBC0275F00D9D85158D465326',
+    normalizer_path: 'scripts/normalize-stone-tower-master.js',
+    normalizer_sha256: '51973D516D88ECB2DD176A8D122A0D2EA7468530381AABCCF507829B91CEFB43',
+    normalized_master_path: 'assets/masters/environment/backgrounds/volcanic-ruin/stone-tower-source-master-v1.png',
+    normalized_master_sha256: '0810A4F5D3A3CCB72352F01AF61899BFAD7F4FC6EF9306164078F8C92FECBFA0',
+    master_canvas: [1024, 576],
+    placement_anchor: [512, 528],
+    runtime_path_assigned: false,
+    further_generation_authorized: false
+  });
+  assert.equal(profile.distant_jungle_authorized_request.seed, 15040003);
+  assert.equal(profile.distant_jungle_authorized_request.status, 'consumed_source_master_approved');
+  assert.equal(profile.distant_jungle_authorized_request.requests_consumed, 1);
+  assert.equal(profile.distant_jungle_authorized_request.external_output_sha256,
+    'B3AC79151D180F4439E82BD8EB9113734601084CE2780A2C56B4AA62CC09EBA1');
+  assert.equal(profile.distant_jungle_source_master_review.normalized_master_sha256,
+    '5174F7E0108F3CA11157D5A436BC2438389AF2FA7205050E43D3E5F5E19A964A');
 
   const invalid = structuredClone(manifest);
   const invalidReference = invalid.conditioning_inputs.find(
@@ -145,12 +199,21 @@ test('owner-provided volcanic-ruin reference is exact, local-only, never-runtime
     .background_authorized_request.seed = 15040002;
   invalid.profiles.find((candidate) => candidate.id === 'flux2-klein')
     .background_source_master_review.placement_anchor = [511, 528];
+  invalid.profiles.find((candidate) => candidate.id === 'flux2-klein')
+    .tower_authorized_request.seed = 15040003;
+  invalid.profiles.find((candidate) => candidate.id === 'flux2-klein')
+    .tower_source_master_review.placement_anchor = [511, 528];
+  invalid.profiles.find((candidate) => candidate.id === 'flux2-klein')
+    .distant_jungle_authorized_request.seed = 15040004;
 
   const errors = validateGenerationComponents(invalid).join('\n');
   assert.match(errors, /owner-provided visual references must remain owner-authorized/);
   assert.match(errors, /conditioning source bytes do not match the manifest/);
   assert.match(errors, /exact background authorized generation request changed/);
   assert.match(errors, /exact background source-master review changed/);
+  assert.match(errors, /exact tower authorized generation request changed/);
+  assert.match(errors, /exact tower source-master review changed/);
+  assert.match(errors, /exact distant-jungle authorized generation request changed/);
 });
 
 test('generation workflow requires an exact JSON hash and disclosed input mode', () => {

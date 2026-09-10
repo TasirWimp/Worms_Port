@@ -35,7 +35,7 @@ The manifest amendment must also create one new request authorization. No
 historic consumed authorization, seed, candidate, source master, or runtime
 copy may be reused.
 
-## First Candidate Gate: Volcanic Cone Only
+## Candidate Gates: Volcanic Cone Then Generic Stone Tower
 
 After Stage A passes, submit at most one quarantined candidate under a reviewed
 request record. The proposed identifier is
@@ -69,6 +69,47 @@ translation. Two independent runs produced the same 1024x576 RGBA master
 decorative baseline anchor `(512,528)`. The master is approved in
 `legal/asset-manifest.json`, but has no runtime path.
 
+### Authorized Tower Candidate
+
+The owner authorized a second, distinct one-shot reference-edit request on
+2026-09-10: `volcanic-ruin-bg-generic-stone-tower-v1`, seed `15040002`.
+It may use the same exact owner-provided reference only to guide the handmade
+textile material and distant-landmark readability. Its prompt requests a
+generic weathered tropical stone bell-tower ruin with restrained vines and two
+open arch windows; it excludes the volcano, terrain, characters, UI, a church
+interior, full scene, named place, and photo replication. Although the game
+concept calls this the Cagsawa-inspired church ruin, neither the generation
+prompt nor the future asset may identify or reproduce the real landmark.
+
+The request completed as prompt `dd98b736-8300-47b1-a3df-29c9f1012a23` in
+317.963 seconds, yielding one untouched RGB24 1360x768 external candidate:
+`WormsPortFlux2KleinReferenceEdit_00007_.png`, 634,010 bytes, SHA-256
+`6DDE21C23C9CF96D445DA3119D6EB9D282BE619B6BB2E3597CB699576D58D264`.
+The owner approved the candidate for deterministic normalization. Frozen config
+`wp-015d4e-stone-tower-v1` verifies only those exact candidate bytes, extracts
+the white matte, fills enclosed stitch pinholes, removes only the reviewed
+floor-shadow tail at source rows `712+`, and applies uniform 70% scale with a
+fixed translation. Two independent runs produced the same 1024x576 RGBA master
+`0810A4F5D3A3CCB72352F01AF61899BFAD7F4FC6EF9306164078F8C92FECBFA0` at
+decorative baseline anchor `(512,528)`. It is approved in
+`legal/asset-manifest.json`, but has no runtime path.
+
+### Authorized Distant-Jungle Candidate
+
+The owner authorized a third distinct one-shot reference-edit request on
+2026-09-10: `volcanic-ruin-bg-distant-jungle-a-v1`, seed `15040003`. It may
+use the same exact owner-provided reference only for restrained textile material
+and low-contrast distant-foliage readability. The prompt requests one wide,
+low horizontal generic tropical canopy cluster and blocks ground, horizon,
+individual landmark trees, volcano, tower, palm, bush, terrain, characters,
+UI, named place, photo replication, and full-scene output. The request
+completed as prompt `76f6c459-be98-4a7d-ace6-70cb34d0c2a8` in 295.813 seconds,
+yielding one untouched RGB24 1360x768 external candidate:
+`WormsPortFlux2KleinReferenceEdit_00008_.png`, 841,296 bytes, SHA-256
+`B3AC79151D180F4439E82BD8EB9113734601084CE2780A2C56B4AA62CC09EBA1`.
+It remains external quarantine pending owner visual review, with no source
+master or runtime path.
+
 ## Media And Integration Gate
 
 The present initial-media inventory is frozen: eleven approved files total
@@ -87,9 +128,10 @@ the existing no-background fallback before any admission.
    branch without reopening V10G.
 2. The Comfy profile preflight outcome is recorded without generating media.
 3. The owner-provided-reference manifest extension has a strict, test-covered
-   validation boundary and binds the consumed one-shot cone request.
-4. The owner-approved cone is a deterministic source master only; no runtime
-   path, renderer behavior, or gameplay authority changes.
+   validation boundary and binds the consumed cone request plus the distinct
+   one-shot tower request.
+4. The owner-approved cone and tower are deterministic source masters only; no
+   runtime path, renderer behavior, or gameplay authority changes.
 
 ## Planned Verification
 
@@ -110,7 +152,7 @@ the documentation/preflight stage because no game-visible file changes.
   in Stage A.
 - No source-master promotion, image normalization, runtime build copy, atlas,
   asset-manifest entry, or `BackgroundScene` implementation.
-- No production identification of Mayon, Cagsawa, or any other named real-world
-  location; the intended visual read remains generic.
+- No production identification or literal reproduction of Mayon, Cagsawa, or
+  any other named real-world location; the intended visual read remains generic.
 - No change to the closed V10G package, its owner phone acceptance, or its
   branch history.

@@ -333,6 +333,52 @@ const reviewedProfileContracts = new Map([
       external_output_pixel_format: 'RGB24',
       further_requests_authorized: false
     },
+    towerSourceMasterReview: {
+      decision: 'source_master_approved',
+      generation_work_package: 'WP-015D4E',
+      normalization_work_package: 'WP-015D4E',
+      seed: 15040002,
+      conditioning_reference_sha256: '9A3E5DEDDF02B0C03B2A8E46894ED61158DB39D8471BA99CD42B8618A1EB0D04',
+      external_source_sha256: '6DDE21C23C9CF96D445DA3119D6EB9D282BE619B6BB2E3597CB699576D58D264',
+      normalization_config_path: 'scripts/asset-normalization/wp-015d4e-stone-tower-v1.json',
+      normalization_config_sha256: '00BD489A6B613147827C8F08338B7B285ECDD31DBC0275F00D9D85158D465326',
+      normalizer_path: 'scripts/normalize-stone-tower-master.js',
+      normalizer_sha256: '51973D516D88ECB2DD176A8D122A0D2EA7468530381AABCCF507829B91CEFB43',
+      normalized_master_path: 'assets/masters/environment/backgrounds/volcanic-ruin/stone-tower-source-master-v1.png',
+      normalized_master_sha256: '0810A4F5D3A3CCB72352F01AF61899BFAD7F4FC6EF9306164078F8C92FECBFA0',
+      master_canvas: [1024, 576],
+      placement_anchor: [512, 528],
+      runtime_path_assigned: false,
+      further_generation_authorized: false
+    },
+    distantJungleAuthorizedRequest: {
+      decision: 'one_reference_edit_request_approved',
+      work_package: 'WP-015D4E',
+      purpose: 'volcanic-ruin-isolated-distant-jungle-canopy-source',
+      tool: 'generate_flux2_klein_reference_edit',
+      workflow_sha256: 'A2BF8CD3C015D36646E73F2FA87F22741E4410D27B26D562331057B49CFF6C8E',
+      seed: 15040003,
+      prompt: 'One original isolated decorative mobile-game background asset on a plain white background: a single wide low horizontal cluster of distant tropical jungle canopy, centered with generous padding, made from subdued blue-green and moss-green rounded crochet, felt, and woven textile foliage forms. Calm low contrast, soft even light, no individual landmark tree, with no ground plane or horizon. No volcano, smoke, tower, ruin, church, palm, bush, terrain, character, weapon, projectile, UI, text, number, logo, watermark, frame, map, photo replication, named place, branded game art, or full scene.',
+      width: 1024,
+      height: 1024,
+      batch_size: 1,
+      steps: 4,
+      cfg: 1,
+      sampler: 'euler',
+      reference_input: 'volcanic-ruin-scene-reference-v1',
+      reference_staged_name: 'volcanic-ruin-scene-reference-v1.png',
+      max_requests: 1,
+      status: 'consumed_source_master_approved',
+      requests_consumed: 1,
+      prompt_id: '76f6c459-be98-4a7d-ace6-70cb34d0c2a8',
+      runtime_seconds: 295.813,
+      external_output_path: 'C:\\Users\\jensb\\AppData\\Local\\Comfy-Desktop\\ComfyUI-Shared\\output\\WormsPortFlux2KleinReferenceEdit_00008_.png',
+      external_output_sha256: 'B3AC79151D180F4439E82BD8EB9113734601084CE2780A2C56B4AA62CC09EBA1',
+      external_output_bytes: 841296,
+      external_output_pixel_format: 'RGB24',
+      further_requests_authorized: false
+    },
+    distantJungleSourceMasterReview: {decision:'source_master_approved',generation_work_package:'WP-015D4E',normalization_work_package:'WP-015D4E',seed:15040003,conditioning_reference_sha256:'9A3E5DEDDF02B0C03B2A8E46894ED61158DB39D8471BA99CD42B8618A1EB0D04',external_source_sha256:'B3AC79151D180F4439E82BD8EB9113734601084CE2780A2C56B4AA62CC09EBA1',normalization_config_path:'scripts/asset-normalization/wp-015d4e-distant-jungle-v1.json',normalization_config_sha256:'48FB6CFD7F7D72774CC8721F1A72476000AD8EB1693D352A5E122012300D8DE5',normalizer_path:'scripts/normalize-distant-jungle-master.js',normalizer_sha256:'803CA88528ED0FAE306B7151E241F62CB7F13160A1499A154033DCFB622E4F46',normalized_master_path:'assets/masters/environment/backgrounds/volcanic-ruin/distant-jungle-source-master-v1.png',normalized_master_sha256:'5174F7E0108F3CA11157D5A436BC2438389AF2FA7205050E43D3E5F5E19A964A',master_canvas:[1024,576],placement_anchor:[512,528],runtime_path_assigned:false,further_generation_authorized:false},
     backgroundSourceMasterReview: {
       decision: 'source_master_approved',
       generation_work_package: 'WP-015D4E',
@@ -350,6 +396,33 @@ const reviewedProfileContracts = new Map([
       placement_anchor: [512, 528],
       runtime_path_assigned: false,
       further_generation_authorized: false
+    },
+    towerAuthorizedRequest: {
+      decision: 'one_reference_edit_request_approved',
+      work_package: 'WP-015D4E',
+      purpose: 'volcanic-ruin-isolated-generic-stone-tower-source',
+      tool: 'generate_flux2_klein_reference_edit',
+      workflow_sha256: 'A2BF8CD3C015D36646E73F2FA87F22741E4410D27B26D562331057B49CFF6C8E',
+      seed: 15040002,
+      prompt: 'One original isolated decorative mobile-game background asset on a plain white background: a single weathered tropical stone bell-tower ruin, upright and centered with generous padding, built from rounded warm-gray crochet-stone blocks with a few restrained green vine accents and two open dark arch windows. Calm low-contrast landmark, tactile handmade textile material, with no ground plane or horizon. No volcano, smoke, tree, palm, bush, terrain, character, weapon, projectile, UI, text, number, logo, watermark, frame, map, photo replication, named place, branded game art, church interior, or full scene.',
+      width: 1024,
+      height: 1024,
+      batch_size: 1,
+      steps: 4,
+      cfg: 1,
+      sampler: 'euler',
+      reference_input: 'volcanic-ruin-scene-reference-v1',
+      reference_staged_name: 'volcanic-ruin-scene-reference-v1.png',
+      max_requests: 1,
+      status: 'consumed_source_master_approved',
+      requests_consumed: 1,
+      prompt_id: 'dd98b736-8300-47b1-a3df-29c9f1012a23',
+      runtime_seconds: 317.963,
+      external_output_path: 'C:\\Users\\jensb\\AppData\\Local\\Comfy-Desktop\\ComfyUI-Shared\\output\\WormsPortFlux2KleinReferenceEdit_00007_.png',
+      external_output_sha256: '6DDE21C23C9CF96D445DA3119D6EB9D282BE619B6BB2E3597CB699576D58D264',
+      external_output_bytes: 634010,
+      external_output_pixel_format: 'RGB24',
+      further_requests_authorized: false
     },
     threadballReview: {
       decision: 'source_master_approved',
@@ -1079,6 +1152,19 @@ function validateGenerationComponents(manifest, root = repoRoot) {
           JSON.stringify(profile.background_source_master_review) !== JSON.stringify(contract.backgroundSourceMasterReview)) {
         errors.push(`${label}: exact background source-master review changed.`);
       }
+      if (contract.towerAuthorizedRequest &&
+          JSON.stringify(profile.tower_authorized_request) !== JSON.stringify(contract.towerAuthorizedRequest)) {
+        errors.push(`${label}: exact tower authorized generation request changed.`);
+      }
+      if (contract.towerSourceMasterReview &&
+          JSON.stringify(profile.tower_source_master_review) !== JSON.stringify(contract.towerSourceMasterReview)) {
+        errors.push(`${label}: exact tower source-master review changed.`);
+      }
+      if (contract.distantJungleAuthorizedRequest &&
+          JSON.stringify(profile.distant_jungle_authorized_request) !== JSON.stringify(contract.distantJungleAuthorizedRequest)) {
+        errors.push(`${label}: exact distant-jungle authorized generation request changed.`);
+      }
+      if (contract.distantJungleSourceMasterReview && JSON.stringify(profile.distant_jungle_source_master_review) !== JSON.stringify(contract.distantJungleSourceMasterReview)) errors.push(`${label}: exact distant-jungle source-master review changed.`);
       if (contract.threadballReview &&
           JSON.stringify(profile.threadball_source_master_review) !== JSON.stringify(contract.threadballReview)) {
         errors.push(`${label}: exact Threadball source-master review changed.`);
@@ -1167,6 +1253,36 @@ function validateGenerationComponents(manifest, root = repoRoot) {
         if (!approvedMaster || approvedMaster.sha256 !== profile.background_source_master_review.normalized_master_sha256 ||
             approvedMaster.runtime_path !== undefined) {
           errors.push(`${label}: approved background master must remain manifest-bound without runtime_path.`);
+        }
+      }
+      if (contract.towerSourceMasterReview) {
+        for (const [pathField, hashField] of [
+          ['normalization_config_path', 'normalization_config_sha256'],
+          ['normalizer_path', 'normalizer_sha256'],
+          ['normalized_master_path', 'normalized_master_sha256']
+        ]) {
+          const relativePath = profile.tower_source_master_review?.[pathField] || '';
+          const resolvedPath = path.resolve(root, relativePath);
+          if (!relativePath || !resolvedPath.startsWith(path.resolve(root) + path.sep) ||
+              !fs.existsSync(resolvedPath)) {
+            errors.push(`${label}: Tower ${pathField} must resolve inside the repository.`);
+            continue;
+          }
+          const actualHash = crypto.createHash('sha256').update(fs.readFileSync(resolvedPath))
+            .digest('hex').toUpperCase();
+          if (actualHash !== profile.tower_source_master_review?.[hashField]) {
+            errors.push(`${label}: Tower ${pathField} does not match ${hashField}.`);
+          }
+        }
+        const assetManifestPath = path.resolve(root, 'legal', 'asset-manifest.json');
+        const assetManifest = fs.existsSync(assetManifestPath) ?
+          JSON.parse(fs.readFileSync(assetManifestPath, 'utf8')) : null;
+        const approvedMaster = assetManifest?.assets?.find(
+          (asset) => asset.file === profile.tower_source_master_review.normalized_master_path
+        );
+        if (!approvedMaster || approvedMaster.sha256 !== profile.tower_source_master_review.normalized_master_sha256 ||
+            approvedMaster.runtime_path !== undefined) {
+          errors.push(`${label}: approved Tower source master must remain manifest-bound without runtime_path.`);
         }
       }
       if (contract.threadballReview) {
