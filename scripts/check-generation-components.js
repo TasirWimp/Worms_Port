@@ -348,7 +348,10 @@ const reviewedProfileContracts = new Map([
       normalized_master_sha256: '0810A4F5D3A3CCB72352F01AF61899BFAD7F4FC6EF9306164078F8C92FECBFA0',
       master_canvas: [1024, 576],
       placement_anchor: [512, 528],
-      runtime_path_assigned: false,
+      runtime_path_assigned: true,
+      runtime_path: 'assets/product/environment/backgrounds/volcanic-ruin/stone-tower-v1.png',
+      runtime_copy_work_package: 'WP-015D4F',
+      runtime_copy_source_bytes: 290125,
       further_generation_authorized: false
     },
     distantJungleAuthorizedRequest: {
@@ -398,7 +401,10 @@ const reviewedProfileContracts = new Map([
       normalized_master_sha256: '83E451892C13730D2EA1DE5794927EC9CD63110567F110DC485D5ED148D041AD',
       master_canvas: [1024, 576],
       placement_anchor: [512, 528],
-      runtime_path_assigned: false,
+      runtime_path_assigned: true,
+      runtime_path: 'assets/product/environment/backgrounds/volcanic-ruin/volcanic-cone-v1.png',
+      runtime_copy_work_package: 'WP-015D4F',
+      runtime_copy_source_bytes: 499991,
       further_generation_authorized: false
     },
     towerAuthorizedRequest: {
@@ -1259,8 +1265,8 @@ function validateGenerationComponents(manifest, root = repoRoot) {
           (asset) => asset.file === profile.background_source_master_review.normalized_master_path
         );
         if (!approvedMaster || approvedMaster.sha256 !== profile.background_source_master_review.normalized_master_sha256 ||
-            approvedMaster.runtime_path !== undefined) {
-          errors.push(`${label}: approved background master must remain manifest-bound without runtime_path.`);
+            approvedMaster.runtime_path !== profile.background_source_master_review.runtime_path) {
+          errors.push(`${label}: approved background master must remain manifest-bound to its reviewed preview runtime_path.`);
         }
       }
       if (contract.towerSourceMasterReview) {
@@ -1289,8 +1295,8 @@ function validateGenerationComponents(manifest, root = repoRoot) {
           (asset) => asset.file === profile.tower_source_master_review.normalized_master_path
         );
         if (!approvedMaster || approvedMaster.sha256 !== profile.tower_source_master_review.normalized_master_sha256 ||
-            approvedMaster.runtime_path !== undefined) {
-          errors.push(`${label}: approved Tower source master must remain manifest-bound without runtime_path.`);
+            approvedMaster.runtime_path !== profile.tower_source_master_review.runtime_path) {
+          errors.push(`${label}: approved Tower source master must remain manifest-bound to its reviewed preview runtime_path.`);
         }
       }
       if (contract.threadballReview) {

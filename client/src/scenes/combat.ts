@@ -15,8 +15,10 @@ import type { AimIntent } from '../combat/input';
 import {
     WIZARD_UNRAVEL_DURATION_MS,
     createApprovedWizardAnimations,
-    preloadApprovedCombatAssets
+    preloadApprovedCombatAssets,
+    preloadVolcanicRuinBackgroundAssets
 } from '../combat/approved-assets';
+import type { BackgroundSceneDefinition } from '../combat/background-scene';
 import type { CombatSceneArgs, LegacyCombatSceneArgs, CombatSceneArgsV8, ResourceTurnsSceneArgs, SafeAreaInsets } from '../combat/contracts';
 import { createCombatFixture, createActionTurnsV8Fixture } from '../combat/fixture';
 import { canRequestFullscreen, toggleGameFullscreen } from '../combat/fullscreen';
@@ -60,6 +62,7 @@ export default class CombatScene extends Phaser.Scene {
     private resourceArgs?: ResourceTurnsSceneArgs;
     private v8Preview?: 'v8' | 'v8-r1';
     private resourcePreview?: 'v9' | 'v10' | 'v10e' | 'v10f' | 'v10g';
+    private backgroundPreviewRequested = false;
     private initializationGeneration = 0;
     private snapshot: ChallengeSnapshot;
     private authoritativeSnapshot: ChallengeSnapshot;
@@ -109,6 +112,8 @@ export default class CombatScene extends Phaser.Scene {
         this.v8Preview = !args?.snapshot && (preview === 'v8' || preview === 'v8-r1') ? preview : undefined;
         this.resourcePreview = !args?.snapshot && (preview === 'v9' || preview === 'v10' || preview === 'v10e' || preview === 'v10f' || preview === 'v10g')
             ? preview : undefined;
+        this.backgroundPreviewRequested = this.resourcePreview === 'v10g' &&
+            new URLSearchParams(window.location.search).get('background-preview') === 'volcanic-ruin';
         if (this.v8Args || this.resourceArgs || this.v8Preview || this.resourcePreview) return;
         this.args = args?.snapshot && args.kind !== 'v8' && args.kind !== 'v9' && args.kind !== 'v10' ? args : createCombatFixture();
         this.snapshot = structuredClone(this.args.snapshot);
@@ -220,6 +225,7 @@ export default class CombatScene extends Phaser.Scene {
 
     public preload(): void {
         preloadApprovedCombatAssets(this);
+        if (this.backgroundPreviewRequested) preloadVolcanicRuinBackgroundAssets(this);
     }
 
     private async createV8(): Promise<void> {
@@ -265,7 +271,11 @@ export default class CombatScene extends Phaser.Scene {
         if (!mounted || generation !== this.initializationGeneration || !this.scene.isActive()) { args.destroy(); return; }
         const { ResourceTurnsV9Scene } = await import('../combat/resource-turns-v9-scene');
         if (!mounted || generation !== this.initializationGeneration || !this.scene.isActive()) { args.destroy(); return; }
-        new ResourceTurnsV9Scene(this, args);
+        const backgroundScene: BackgroundSceneDefinition | undefined = this.backgroundPreviewRequested
+            ? (await import('../combat/background-scene')).VOLCANIC_RUIN_BACKGROUND
+            : undefined;
+        if (!mounted || generation !== this.initializationGeneration || !this.scene.isActive()) { args.destroy(); return; }
+        new ResourceTurnsV9Scene(this, args, backgroundScene);
     }
 
     private async submit(command: SimulationCommand): Promise<void> {

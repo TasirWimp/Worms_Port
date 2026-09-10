@@ -1,7 +1,7 @@
 # Volcanic-Ruin Background Scene Preparation
 
-Status: the owner approved the first isolated volcanic-cone source master on
-2026-09-09. It has no runtime path. V10G closed with this portable brief
+Status: WP-015D4E approved all five isolated source masters. WP-015D4F admits
+their exact copies only to a separate opt-in engineering preview bundle. V10G closed with this portable brief
 committed; active preparation now continues as
 [`WP-015D4E`](../../planning/wp-015d4e-volcanic-ruin-background-contract.md)
 on `codex/volcanic-ruin-background-art`, not as part of the closed V10G
@@ -26,8 +26,10 @@ only at
 The owner also approved one isolated low bush cluster as a source master only
 at
 `assets/masters/environment/backgrounds/volcanic-ruin/bush-cluster-source-master-v1.png`.
-None creates a runtime path, build copy, renderer code, or player-visible
-change. The jungle family remains preparation-only.
+Their runtime paths, exact-copy policy, preview budget, and fail-closed loader
+are defined only by the later
+[WP-015D4F contract](../../planning/wp-015d4f-volcanic-ruin-preview-bundle-contract.md).
+They do not activate public Practice/Daily.
 
 ## Owner-Provided Visual Reference
 

@@ -127,7 +127,7 @@ down after implementation.
 - Character silhouettes, eyes, held Relics, trajectory previews, hazards, and
   Stitching state must remain legible at the smallest supported phone viewport.
 
-## Volcanic-Ruin Background Direction (Prepared, Not Yet Produced)
+## Volcanic-Ruin Background Direction (Engineering Preview)
 
 The owner-provided [volcanic-ruin scene reference](images/art-direction/backgrounds/volcanic-ruin-scene-reference-v1.png)
 is a documentation-only composition reference. It must not be cropped, shipped,
@@ -139,9 +139,10 @@ The intended presentation is a separate scene grammar: existing sky/clouds;
 a height-scaled volcanic landmark and distant jungle; a height-scaled stone
 tower ruin; and sparse seeded vegetation. These layers remain decorative and
 independent of the authoritative terrain mask, destruction, actors, and
-projectiles. No V10G background source master, runtime path, renderer, or
-product-visible change is approved by this direction alone. The brief is
-carried on the current V10G branch, but is not V10G tactical-package scope.
+projectiles. WP-015D4F admits a separately budgeted, fail-closed engineering
+preview only; the exact loading, authority, and public-activation boundary is
+in the [preview-bundle contract](planning/wp-015d4f-volcanic-ruin-preview-bundle-contract.md).
+It is not V10G tactical-package scope or a Practice/Daily release decision.
 
 ## Release Relic Roster
 

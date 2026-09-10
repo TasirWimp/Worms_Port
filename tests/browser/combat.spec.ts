@@ -599,6 +599,21 @@ for (const [map, seed] of Object.entries({ 'twin-crests': 4, 'trench-needle': 5,
   expect(requests.some(url => /socket\.io|\/(?:session|challenge|reward)(?:\/|$|\?)/.test(url))).toBe(false);
 });
 
+test('volcanic-ruin art loads only for the explicit V10G engineering preview', async ({ page }) => {
+  const ordinaryRequests: string[] = [];
+  page.on('request', request => ordinaryRequests.push(request.url()));
+  await page.goto('/?combat-preview=v10g&sideways=off');
+  await expect(page.locator('.combat-v10')).toHaveAttribute('data-background', 'none');
+  expect(ordinaryRequests.some(url => url.includes('/assets/product/environment/backgrounds/volcanic-ruin/'))).toBe(false);
+
+  const previewRequests: string[] = [];
+  page.on('request', request => previewRequests.push(request.url()));
+  await page.goto('/?combat-preview=v10g&background-preview=volcanic-ruin&sideways=off');
+  await expect(page.locator('.combat-v10')).toHaveAttribute('data-background', 'volcanic-ruin');
+  await expect.poll(() => previewRequests.filter(url => url.includes('/assets/product/environment/backgrounds/volcanic-ruin/')).length)
+    .toBe(5);
+});
+
 test('V10G phone portrait escape pauses, resumes and fires the default Relic after immediate aiming', async ({ page }, testInfo) => {
   await page.goto('/?combat-preview=v10g&sideways=off');
   const ui = page.locator('.combat-v10');

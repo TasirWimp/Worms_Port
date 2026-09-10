@@ -84,8 +84,8 @@ export class CombatRenderer {
         this.background = scene.add.graphics().setDepth(0);
         this.worldClip = scene.make.graphics();
         this.worldMask = this.worldClip.createGeometryMask();
-        this.teamCues = scene.add.graphics().setDepth(4);
-        this.effects = scene.add.graphics().setDepth(6);
+        this.teamCues = scene.add.graphics().setDepth(1.2);
+        this.effects = scene.add.graphics().setDepth(1.3);
         this.teamCues.setMask(this.worldMask);
         this.effects.setMask(this.worldMask);
         this.usingApprovedAssets = approvedCombatAssetsLoaded(scene);
@@ -96,7 +96,7 @@ export class CombatRenderer {
         this.wizardSprites.loomkeeper = this.createWizardSprite();
         for (let index = 0; index < 3; index += 1) {
             this.cloudSprites.push(scene.add.image(0, 0, APPROVED_COMBAT_ASSETS.cloud.key)
-                .setDepth(1)
+                .setDepth(0.05)
                 .setAlpha(0.72)
                 .setMask(this.worldMask));
         }
@@ -125,7 +125,8 @@ export class CombatRenderer {
         layout: CombatLayout,
         preview: { x: number; y: number }[],
         projectileTrace: { x: number; y: number }[] = [],
-        visualPhase?: CombatVisualPhase
+        visualPhase?: CombatVisualPhase,
+        renderBackground?: (layout: CombatLayout) => void
     ): void {
         const g = this.background;
         const field = layout.battlefield;
@@ -137,6 +138,8 @@ export class CombatRenderer {
         this.worldClip.clear();
         this.worldClip.fillStyle(0xFFFFFF);
         this.worldClip.fillRect(field.x, field.y, field.width, field.height);
+
+        renderBackground?.(layout);
 
         if (this.usingApprovedAssets) {
             this.updateClouds(layout);
@@ -172,12 +175,16 @@ export class CombatRenderer {
         this.projectileSprite?.destroy();
     }
 
+    public get backgroundMask(): Phaser.Display.Masks.GeometryMask {
+        return this.worldMask;
+    }
+
     private createWizardSprite(): Phaser.GameObjects.Sprite {
         const texture = this.usingWizardAnimations
             ? APPROVED_COMBAT_ASSETS.wizardIdle.key
             : APPROVED_COMBAT_ASSETS.wizard.key;
         return this.scene.add.sprite(0, 0, texture)
-            .setDepth(3)
+            .setDepth(1.1)
             .setOrigin(0.5, this.usingWizardAnimations
                 ? WIZARD_ANIMATION_ROOT_ORIGIN_Y
                 : WIZARD_STATIC_ROOT_ORIGIN_Y);
@@ -268,7 +275,7 @@ export class CombatRenderer {
     ): Phaser.GameObjects.TileSprite {
         const tile = this.scene.add.tileSprite(0, 0, 1, 1, texture)
             .setOrigin(0, 0)
-            .setDepth(2)
+            .setDepth(1)
             .setMask(this.worldMask);
         collection.push(tile);
         return tile;

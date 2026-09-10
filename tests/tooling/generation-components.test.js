@@ -136,7 +136,9 @@ test('owner-provided volcanic-ruin reference is exact, local-only, never-runtime
     '4B34F5EEB08C831164BE403204723E73FB95B10E8C7AA8CD5013C4E5974E329C');
   assert.equal(profile.background_source_master_review.normalized_master_sha256,
     '83E451892C13730D2EA1DE5794927EC9CD63110567F110DC485D5ED148D041AD');
-  assert.equal(profile.background_source_master_review.runtime_path_assigned, false);
+  assert.equal(profile.background_source_master_review.runtime_path_assigned, true);
+  assert.equal(profile.background_source_master_review.runtime_path,
+    'assets/product/environment/backgrounds/volcanic-ruin/volcanic-cone-v1.png');
   assert.deepEqual(profile.tower_authorized_request, {
     decision: 'one_reference_edit_request_approved',
     work_package: 'WP-015D4E',
@@ -179,7 +181,10 @@ test('owner-provided volcanic-ruin reference is exact, local-only, never-runtime
     normalized_master_sha256: '0810A4F5D3A3CCB72352F01AF61899BFAD7F4FC6EF9306164078F8C92FECBFA0',
     master_canvas: [1024, 576],
     placement_anchor: [512, 528],
-    runtime_path_assigned: false,
+    runtime_path_assigned: true,
+    runtime_path: 'assets/product/environment/backgrounds/volcanic-ruin/stone-tower-v1.png',
+    runtime_copy_work_package: 'WP-015D4F',
+    runtime_copy_source_bytes: 290125,
     further_generation_authorized: false
   });
   assert.equal(profile.distant_jungle_authorized_request.seed, 15040003);

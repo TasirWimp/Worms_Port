@@ -86,6 +86,16 @@ const expectedRuntimeInventory = Object.freeze([
   }
 ]);
 
+// WP-015D4F is the only successor that may coexist with this frozen initial
+// inventory. Its own guard verifies paths, hashes, byte budget and admission.
+const registeredSuccessorRuntimeIds = new Set([
+  'volcanic-ruin-volcanic-cone-flux2-owned-original-source-master-v1',
+  'volcanic-ruin-stone-tower-flux2-owned-original-source-master-v1',
+  'volcanic-ruin-distant-jungle-flux2-owned-original-source-master-v1',
+  'volcanic-ruin-palm-cluster-flux2-owned-original-source-master-v1',
+  'volcanic-ruin-bush-cluster-flux2-owned-original-source-master-v1'
+]);
+
 function sha256(bytes) {
   return crypto.createHash('sha256').update(bytes).digest('hex').toUpperCase();
 }
@@ -98,13 +108,14 @@ function validateB3cRuntimeInventory(document, root = repoRoot) {
   const errors = [];
   const assets = Array.isArray(document?.assets) ? document.assets : [];
   const runtimeAssets = assets.filter((asset) => asset.runtime_path);
+  const b3cRuntimeAssets = runtimeAssets.filter((asset) => !registeredSuccessorRuntimeIds.has(asset.id));
   const expectedById = new Map(expectedRuntimeInventory.map((item) => [item.id, item]));
 
-  if (runtimeAssets.length !== expectedRuntimeInventory.length) {
-    errors.push(`expected exactly ${expectedRuntimeInventory.length} approved WP-015C runtime assets, found ${runtimeAssets.length}.`);
+  if (b3cRuntimeAssets.length !== expectedRuntimeInventory.length) {
+    errors.push(`expected exactly ${expectedRuntimeInventory.length} approved WP-015C runtime assets, found ${b3cRuntimeAssets.length}.`);
   }
 
-  for (const asset of runtimeAssets) {
+  for (const asset of b3cRuntimeAssets) {
     const expected = expectedById.get(asset.id);
     if (!expected) {
       errors.push(`${asset.id}: unexpected runtime asset is blocked.`);
@@ -133,7 +144,7 @@ function validateB3cRuntimeInventory(document, root = repoRoot) {
   }
 
   for (const expected of expectedRuntimeInventory) {
-    const asset = runtimeAssets.find((candidate) => candidate.id === expected.id);
+    const asset = b3cRuntimeAssets.find((candidate) => candidate.id === expected.id);
     if (!asset) errors.push(`${expected.id}: required approved WP-015C runtime asset is missing.`);
   }
 
@@ -166,5 +177,6 @@ module.exports = {
   expectedRuntimeInventory,
   initialMediaByteCeiling,
   inventoryTotalBytes,
-  validateB3cRuntimeInventory
+  validateB3cRuntimeInventory,
+  registeredSuccessorRuntimeIds
 };

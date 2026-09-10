@@ -5,6 +5,8 @@ import { cameraDirectionToWorldX, cameraForActor, createCombatCamera, createComb
 import { computeCombatLayout, type CombatLayout } from './layout';
 import { liveProjectileTraceV9, planV9Presentation, projectCombatV9, trajectoryPreviewV9, type V9PresentationStep } from './resource-turns-v9-fixture';
 import { CombatRenderer, type CombatVisualPhase } from './renderer';
+import type { BackgroundSceneDefinition } from './background-scene';
+import { BackgroundRenderer } from './background-renderer';
 import { ResourceTurnsV9Controls } from './resource-turns-v9-controls';
 import { cameraFocusProgress } from './controls';
 import { activeSidewaysMode, clientPointToGame } from '../lib/sideways';
@@ -18,6 +20,7 @@ const V10_OPENING_CAMERA_DURATION_MS = 3_000;
 /** Local V9/V10 adapter: authority advances independently; this class only projects it. */
 export class ResourceTurnsV9Scene {
     private state: ResourceTurnsState; private readonly renderer: CombatRenderer; private readonly controls: ResourceTurnsV9Controls;
+    private readonly sceneBackground: BackgroundRenderer;
     private camera: CombatCamera; private layout: CombatLayout; private frame?: number; private destroyed = false; private unsubscribe?: () => void;
     private neutralPending = false; private neutralGeneration = 0; private requestGeneration = 0; private previewGeneration = 0; private preview: { x: number; y: number }[] = [];
     private presentation: { steps: V9PresentationStep[]; index: number; startedAt: number; generation: number } | undefined;
@@ -25,8 +28,13 @@ export class ResourceTurnsV9Scene {
     private cameraPointer?: { id: number; x: number }; private readonly listeners = new V9PreviewListenerCleanup();
     private restarting = false;
 
-    public constructor(private readonly scene: Phaser.Scene, private readonly args: ResourceTurnsSceneArgs) {
+    public constructor(
+        private readonly scene: Phaser.Scene,
+        private readonly args: ResourceTurnsSceneArgs,
+        backgroundScene?: BackgroundSceneDefinition
+    ) {
         this.state = structuredClone(args.snapshot); createApprovedWizardAnimations(scene); this.renderer = new CombatRenderer(scene);
+        this.sceneBackground = new BackgroundRenderer(scene, backgroundScene, this.renderer.backgroundMask);
         const projected = projectCombatV9(this.state);
         const playerCamera = cameraForActor(projected, createCombatCamera(projected), 'player');
         this.camera = args.kind === 'v10' ? createCombatOverviewCamera(projected) : playerCamera;
@@ -40,6 +48,7 @@ export class ResourceTurnsV9Scene {
             live: args.kind === 'v9' && args.previewLabel.includes('server-authoritative'), automated: args.kind === 'v10'
         }, () => performance.now(), args.paused());
         this.controls.root.dataset.preview = args.previewLabel;
+        this.controls.root.dataset.background = backgroundScene?.id ?? 'none';
         if (args.kind === 'v10' && args.previewTerrainReflected !== undefined) {
             this.controls.root.dataset.terrainReflected = String(args.previewTerrainReflected);
         }
@@ -75,7 +84,7 @@ export class ResourceTurnsV9Scene {
 
     public destroy(): void {
         if (this.destroyed) return; this.destroyed = true; if (this.frame) cancelAnimationFrame(this.frame);
-        this.unsubscribe?.(); this.listeners.dispose(); this.cancelCameraNavigation(); this.cancelPresentation(); this.args.destroy(); this.controls.destroy(); this.renderer.destroy();
+        this.unsubscribe?.(); this.listeners.dispose(); this.cancelCameraNavigation(); this.cancelPresentation(); this.args.destroy(); this.controls.destroy(); this.sceneBackground.destroy(); this.renderer.destroy();
     }
 
     private accept(next: ResourceTurnsState, events: ResourceTurnsEvent[]): void {
@@ -190,7 +199,8 @@ export class ResourceTurnsV9Scene {
         this.controls.setCameraFocusControls({ enabled: !this.state.projectile && this.state.phase !== 'finished',
             player: { direction: cameraDirectionToWorldX(this.camera, this.state.units[0].xFp / 256), stitching: this.state.units[0].stitching },
             loomkeeper: { direction: cameraDirectionToWorldX(this.camera, this.state.units[1].xFp / 256), stitching: this.state.units[1].stitching } });
-        this.renderer.render(projectCombatV9(this.state), this.layout, this.preview, visual?.kind === 'projectile' ? visual.trace : [], visual);
+        this.renderer.render(projectCombatV9(this.state), this.layout, this.preview, visual?.kind === 'projectile' ? visual.trace : [], visual,
+            (layout) => this.sceneBackground.render(layout));
         Object.assign(this.controls.root.dataset, { simulationTick: String(this.state.tick), playerThread: String(this.state.units[0].thread), playerShield: String(this.state.units[0].shield),
             cameraLeft: this.camera.left.toFixed(2), cameraWidth: String(this.camera.width), presentation: visual?.kind ?? 'none', projectilePoints: String(visual?.kind === 'projectile' ? visual.trace.length : 0), projectileEndX: String(visual?.kind === 'projectile' ? visual.trace.at(-1)?.x ?? '' : ''), projectileEndY: String(visual?.kind === 'projectile' ? visual.trace.at(-1)?.y ?? '' : ''), cameraTransition: this.cameraTransition?.kind === 'opening' ? 'opening' : this.cameraTransition?.actor ?? 'none', openingSurvey: String(this.cameraTransition?.kind === 'opening') });
     }

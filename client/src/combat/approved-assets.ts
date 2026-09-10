@@ -52,6 +52,26 @@ export const APPROVED_COMBAT_ASSETS = {
     terrainInterior: {
         key: 'wp015c-patch-terrain-interior',
         path: '/assets/product/environment/patch-01/terrain/interior-v1.png'
+    },
+    volcano: {
+        key: 'wp015d4f-volcanic-ruin-volcano',
+        path: '/assets/product/environment/backgrounds/volcanic-ruin/volcanic-cone-v1.png'
+    },
+    jungle: {
+        key: 'wp015d4f-volcanic-ruin-jungle',
+        path: '/assets/product/environment/backgrounds/volcanic-ruin/distant-jungle-v1.png'
+    },
+    tower: {
+        key: 'wp015d4f-volcanic-ruin-tower',
+        path: '/assets/product/environment/backgrounds/volcanic-ruin/stone-tower-v1.png'
+    },
+    palm: {
+        key: 'wp015d4f-volcanic-ruin-palm',
+        path: '/assets/product/environment/backgrounds/volcanic-ruin/palm-cluster-v1.png'
+    },
+    bush: {
+        key: 'wp015d4f-volcanic-ruin-bush',
+        path: '/assets/product/environment/backgrounds/volcanic-ruin/bush-cluster-v1.png'
     }
 } as const;
 
@@ -93,8 +113,16 @@ const WIZARD_ANIMATION_ASSETS = [
     APPROVED_COMBAT_ASSETS.wizardUnravel
 ] as const;
 
+const VOLCANIC_RUIN_BACKGROUND_ASSETS = [
+    APPROVED_COMBAT_ASSETS.volcano,
+    APPROVED_COMBAT_ASSETS.jungle,
+    APPROVED_COMBAT_ASSETS.tower,
+    APPROVED_COMBAT_ASSETS.palm,
+    APPROVED_COMBAT_ASSETS.bush
+] as const;
+
 export function preloadApprovedCombatAssets(scene: Phaser.Scene): void {
-    for (const asset of Object.values(APPROVED_COMBAT_ASSETS)) {
+    for (const asset of [...STATIC_COMBAT_ASSETS, ...WIZARD_ANIMATION_ASSETS]) {
         if (scene.textures.exists(asset.key)) continue;
         if (isSpriteSheetAsset(asset)) {
             scene.load.spritesheet(asset.key, asset.path, {
@@ -104,6 +132,13 @@ export function preloadApprovedCombatAssets(scene: Phaser.Scene): void {
         } else {
             scene.load.image(asset.key, asset.path);
         }
+    }
+}
+
+/** The background bundle is never part of the ordinary combat preload. */
+export function preloadVolcanicRuinBackgroundAssets(scene: Phaser.Scene): void {
+    for (const asset of VOLCANIC_RUIN_BACKGROUND_ASSETS) {
+        if (!scene.textures.exists(asset.key)) scene.load.image(asset.key, asset.path);
     }
 }
 
@@ -140,6 +175,11 @@ export function createApprovedWizardAnimations(scene: Phaser.Scene): boolean {
 
 export function approvedWizardAnimationsLoaded(scene: Phaser.Scene): boolean {
     return WIZARD_ANIMATION_ASSETS.every((asset) => scene.textures.exists(asset.key));
+}
+
+/** All-or-nothing makes missing or failed preview art fall back to no background. */
+export function volcanicRuinBackgroundAssetsLoaded(scene: Phaser.Scene): boolean {
+    return VOLCANIC_RUIN_BACKGROUND_ASSETS.every((asset) => scene.textures.exists(asset.key));
 }
 
 function isSpriteSheetAsset(asset: ApprovedCombatAsset): asset is SpriteSheetCombatAsset {

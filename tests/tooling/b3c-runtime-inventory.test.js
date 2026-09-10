@@ -11,6 +11,7 @@ const {
   inventoryTotalBytes,
   validateB3cRuntimeInventory
 } = require('../../scripts/check-b3c-runtime-inventory');
+const { expectedBackgroundBundle } = require('../../scripts/check-wp015d4f-background-bundle');
 
 const repoRoot = path.resolve(__dirname, '..', '..');
 const manifestPath = path.join(repoRoot, 'legal', 'asset-manifest.json');
@@ -37,13 +38,21 @@ test('WP-015C closes the runtime inventory to eleven exact source masters below 
     validateB3cRuntimeInventory(invalid).join('\n'),
     /required approved WP-015C runtime asset is missing/
   );
+
+  const unregistered = structuredClone(manifest);
+  unregistered.assets[0].runtime_path = 'assets/product/unregistered-runtime.png';
+  assert.match(
+    validateB3cRuntimeInventory(unregistered).join('\n'),
+    /unexpected runtime asset is blocked/
+  );
 });
 
-test('WP-015C build copies exactly the closed runtime inventory', () => {
+test('WP-015C copies stay byte-identical when the separate preview bundle is present', () => {
   const buildRoot = fs.mkdtempSync(path.join(os.tmpdir(), 'nimble-knots-b3c-runtime-'));
   try {
     const copied = copyApprovedAssets({ manifest: manifestPath, assetRoot, buildRoot });
-    assert.deepEqual(copied.map((asset) => ({
+    const b3cCopies = copied.filter((asset) => expectedRuntimeInventory.some((expected) => expected.id === asset.id));
+    assert.deepEqual(b3cCopies.map((asset) => ({
       id: asset.id,
       source: asset.source,
       runtime_path: asset.runtime_path,
@@ -61,6 +70,11 @@ test('WP-015C build copies exactly the closed runtime inventory', () => {
     ));
     assert.deepEqual(approvedAssets.assets, copied);
     for (const asset of expectedRuntimeInventory) {
+      const source = path.join(assetRoot, asset.file.slice('assets/'.length));
+      const copiedPath = path.join(buildRoot, asset.runtime_path);
+      assert.deepEqual(fs.readFileSync(copiedPath), fs.readFileSync(source));
+    }
+    for (const asset of expectedBackgroundBundle) {
       const source = path.join(assetRoot, asset.file.slice('assets/'.length));
       const copiedPath = path.join(buildRoot, asset.runtime_path);
       assert.deepEqual(fs.readFileSync(copiedPath), fs.readFileSync(source));

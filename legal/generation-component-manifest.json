@@ -276,7 +276,10 @@
         "normalized_master_sha256": "83E451892C13730D2EA1DE5794927EC9CD63110567F110DC485D5ED148D041AD",
         "master_canvas": [1024, 576],
         "placement_anchor": [512, 528],
-        "runtime_path_assigned": false,
+        "runtime_path_assigned": true,
+        "runtime_path": "assets/product/environment/backgrounds/volcanic-ruin/volcanic-cone-v1.png",
+        "runtime_copy_work_package": "WP-015D4F",
+        "runtime_copy_source_bytes": 499991,
         "further_generation_authorized": false
       },
       "tower_authorized_request": {
@@ -321,7 +324,10 @@
         "normalized_master_sha256": "0810A4F5D3A3CCB72352F01AF61899BFAD7F4FC6EF9306164078F8C92FECBFA0",
         "master_canvas": [1024, 576],
         "placement_anchor": [512, 528],
-        "runtime_path_assigned": false,
+        "runtime_path_assigned": true,
+        "runtime_path": "assets/product/environment/backgrounds/volcanic-ruin/stone-tower-v1.png",
+        "runtime_copy_work_package": "WP-015D4F",
+        "runtime_copy_source_bytes": 290125,
         "further_generation_authorized": false
       },
       "distant_jungle_authorized_request": {
