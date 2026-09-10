@@ -110,6 +110,27 @@ yielding one untouched RGB24 1360x768 external candidate:
 It remains external quarantine pending owner visual review, with no source
 master or runtime path.
 
+### Authorized Low-Bush Candidate
+
+On 2026-09-10, the owner explicitly authorized one fifth and final distinct
+reference-edit request: `volcanic-ruin-bg-bush-cluster-a-v1`, seed `15040005`.
+It may use the exact owner-provided reference only for restrained textile
+material and low-contrast foliage readability. Its prompt requests one low,
+wide generic rounded tropical bush cluster, and explicitly blocks ground,
+horizon, landmark trees, volcano, tower, ruin, jungle mass, palms, terrain,
+characters, UI, named places, photo replication, and full scenes. It is a
+The request completed as prompt `bf80b44e-c0b1-4e04-b2f5-05f8d478a07b` in
+330.869 seconds, yielding one untouched RGB24 1360x768 external candidate:
+`WormsPortFlux2KleinReferenceEdit_00010_.png`, 676,136 bytes, SHA-256
+`049CA28B8B9F9F3A2F342624E2DAE5C7DA55D1E5F8DCB0DC270CA25E16755797`.
+The owner approved the candidate for deterministic normalization. Frozen config
+`wp-015d4e-bush-cluster-v1` performs only exact-source verification,
+white-matte extraction, uniform 70% scale, and translation. Two independent
+runs produced the same 1024x576 RGBA master
+`D5EEE8F1A0B7A9B758321F5B429B0D2B9EAC5F7726A2031195628F0103AB69E2` at
+decorative baseline anchor `(512,528)`. It is approved in
+`legal/asset-manifest.json`, but has no runtime path.
+
 ## Media And Integration Gate
 
 The present initial-media inventory is frozen: eleven approved files total

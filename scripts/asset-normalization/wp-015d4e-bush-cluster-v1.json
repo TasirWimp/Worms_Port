@@ -1,0 +1,39 @@
+{
+  "schema_version": 1,
+  "id": "wp-015d4e-bush-cluster-v1",
+  "source": {
+    "default_external_path": "C:/Users/jensb/AppData/Local/Comfy-Desktop/ComfyUI-Shared/output/WormsPortFlux2KleinReferenceEdit_00010_.png",
+    "sha256": "049CA28B8B9F9F3A2F342624E2DAE5C7DA55D1E5F8DCB0DC270CA25E16755797",
+    "bytes": 676136,
+    "width": 1360,
+    "height": 768,
+    "channels": 3
+  },
+  "matte": {
+    "background_rgb": [255, 255, 255],
+    "hard_foreground_threshold": 24,
+    "soft_edge_low_threshold": 3,
+    "soft_edge_high_threshold": 16,
+    "soft_edge_radius_pixels": 2,
+    "component_connectivity": 8,
+    "expected_hard_bounds": {"min_x": 304, "min_y": 207, "max_x": 1082, "max_y": 574}
+  },
+  "geometry": {
+    "source_landmarks": {"baseline_center": [680, 574]},
+    "master": {
+      "canvas": [1024, 576],
+      "uniform_scale_numerator": 7,
+      "uniform_scale_denominator": 10,
+      "translation": [36, 126.2],
+      "placement_anchor": [512, 528]
+    }
+  },
+  "resampling": {
+    "filter": "Mitchell-Netravali bicubic",
+    "b": 0.3333333333333333,
+    "c": 0.3333333333333333,
+    "sampling": "pixel-center inverse mapping",
+    "alpha": "premultiplied during filtering, straight RGBA in PNG",
+    "png": "8-bit non-interlaced RGBA, filter type 0, deterministic zlib level 9"
+  }
+}

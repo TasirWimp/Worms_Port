@@ -118,12 +118,13 @@ test('owner-provided volcanic-ruin reference is exact, local-only, never-runtime
       'one separately recorded exact-file, local-loopback FLUX reference-edit request for the WP-015D4E isolated generic stone-tower-ruin candidate only',
       'one separately recorded exact-file, local-loopback FLUX reference-edit request for the WP-015D4E isolated distant-jungle-canopy candidate only',
       'one separately recorded exact-file, local-loopback FLUX reference-edit request for the WP-015D4E isolated sparse-palm-cluster candidate only',
+      'one separately recorded exact-file, local-loopback FLUX reference-edit request for the WP-015D4E isolated low-bush-cluster candidate only',
       'documentation and visual review of generic textile material, depth, and landmark readability'
     ],
     blocked_uses: [
       'product runtime use, distribution, cropping, source-master admission, or treatment as finished artwork',
       'any external upload other than the exact staged local Comfy input for the reviewed request',
-      'a whole-scene generation, named-place replication, UI/character/terrain reuse, any fifth request, batch, or unrecorded conditioning'
+      'a whole-scene generation, named-place replication, UI/character/terrain reuse, any sixth request, batch, or unrecorded conditioning'
     ],
     notes: 'Exact owner-provided scene-reference bytes. The owner authorized FLUX conditioning on 2026-09-09 for isolated generic background assets, but does not transfer this reference into a product asset or source master. UI, text, characters, terrain, clouds, and all composited scene pixels remain excluded from the requested output.'
   });
@@ -196,6 +197,14 @@ test('owner-provided volcanic-ruin reference is exact, local-only, never-runtime
   assert.equal(profile.palm_cluster_source_master_review.normalized_master_sha256,
     'A9D0C91D5CFD6647654A89A0F1B81110D7FC4C4B3A5ABE395C0FB5B2D8E4E380');
   assert.equal(profile.palm_cluster_source_master_review.runtime_path_assigned, false);
+  assert.equal(profile.bush_cluster_authorized_request.seed, 15040005);
+  assert.equal(profile.bush_cluster_authorized_request.status, 'consumed_source_master_approved');
+  assert.equal(profile.bush_cluster_authorized_request.requests_consumed, 1);
+  assert.equal(profile.bush_cluster_authorized_request.external_output_sha256,
+    '049CA28B8B9F9F3A2F342624E2DAE5C7DA55D1E5F8DCB0DC270CA25E16755797');
+  assert.equal(profile.bush_cluster_source_master_review.normalized_master_sha256,
+    'D5EEE8F1A0B7A9B758321F5B429B0D2B9EAC5F7726A2031195628F0103AB69E2');
+  assert.equal(profile.bush_cluster_source_master_review.runtime_path_assigned, false);
 
   const invalid = structuredClone(manifest);
   const invalidReference = invalid.conditioning_inputs.find(
@@ -218,6 +227,10 @@ test('owner-provided volcanic-ruin reference is exact, local-only, never-runtime
     .palm_cluster_authorized_request.seed = 15040005;
   invalid.profiles.find((candidate) => candidate.id === 'flux2-klein')
     .palm_cluster_source_master_review.placement_anchor = [511, 528];
+  invalid.profiles.find((candidate) => candidate.id === 'flux2-klein')
+    .bush_cluster_authorized_request.seed = 15040006;
+  invalid.profiles.find((candidate) => candidate.id === 'flux2-klein')
+    .bush_cluster_source_master_review.placement_anchor = [511, 528];
 
   const errors = validateGenerationComponents(invalid).join('\n');
   assert.match(errors, /owner-provided visual references must remain owner-authorized/);
@@ -229,6 +242,8 @@ test('owner-provided volcanic-ruin reference is exact, local-only, never-runtime
   assert.match(errors, /exact distant-jungle authorized generation request changed/);
   assert.match(errors, /exact palm-cluster authorized generation request changed/);
   assert.match(errors, /exact palm-cluster source-master review changed/);
+  assert.match(errors, /exact bush-cluster authorized generation request changed/);
+  assert.match(errors, /exact bush-cluster source-master review changed/);
 });
 
 test('generation workflow requires an exact JSON hash and disclosed input mode', () => {

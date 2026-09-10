@@ -29,7 +29,8 @@
     "Consumed isolated volcanic-cone candidate seed 15040001; source-master approved without runtime path.",
     "Consumed isolated generic stone-tower-ruin candidate seed 15040002; source-master approved without runtime path.",
     "Consumed isolated distant-jungle-canopy candidate seed 15040003; source-master approved without runtime path.",
-    "Consumed isolated sparse-palm-cluster candidate seed 15040004; source-master approved without runtime path."
+    "Consumed isolated sparse-palm-cluster candidate seed 15040004; source-master approved without runtime path.",
+    "Consumed isolated low-bush-cluster candidate seed 15040005; source-master approved without runtime path."
   ],
   "sorcerers_reference_used": false,
   "clean_room_records": [],
@@ -68,13 +69,23 @@
       "command": "One local MCP reference-edit request through scripts/comfy-mcp-smoke.py; stop local ComfyUI; normalize twice; source-master visual alpha review",
       "status": "pass",
       "detail": "Exactly one seed-15040004 sparse-palm-cluster request ran as prompt 16dd9f4c-b26e-4519-afce-e684d812d279, producing untouched 728510-byte RGB24 1360x768 external output WormsPortFlux2KleinReferenceEdit_00009_.png, SHA-256 05A93D234E9BFFB5F93F8D80E7C87F7C65C55824A730AC2C4C815B3F8CB5F4ED. The local ComfyUI and bridge were stopped before history timing could be read; no runtime seconds are asserted. Owner approved the isolated three-palm candidate. Frozen config 4B42C04E494896467C13934F74257C058427B99F3DD30C87103276F1784E6341 and normalizer E091762AB02534E4DD80449E2A1CE2FE3C8A34596278C623F636E525C6B679B1 reproduced the 339339-byte 1024x576 RGBA source master A9D0C91D5CFD6647654A89A0F1B81110D7FC4C4B3A5ABE395C0FB5B2D8E4E380 twice. Alpha proof: transparent borders, one visible component, no disconnected visible pixels, and exact decorative baseline anchor (512,528). The master remains source-only with no runtime path, product copy, atlas, renderer, gameplay, or scene integration."
+    },
+    {
+      "command": "Prepare and StageInput, then one local MCP reference-edit request through scripts/comfy-mcp-smoke.py; stop local ComfyUI",
+      "status": "pass",
+      "detail": "Fresh preflight and exact-input staging passed for the pinned local FLUX reference-edit workflow. Exactly one seed-15040005 low-bush request ran as prompt bf80b44e-c0b1-4e04-b2f5-05f8d478a07b, completed in 330.869 seconds, and produced untouched 676136-byte RGB24 1360x768 external output WormsPortFlux2KleinReferenceEdit_00010_.png, SHA-256 049CA28B8B9F9F3A2F342624E2DAE5C7DA55D1E5F8DCB0DC270CA25E16755797. Queue audit found no second prompt pending or completed. The local ComfyUI and bridge were stopped. Candidate remains external quarantine pending owner visual review; no normalizer, asset manifest entry, product file, runtime path, or renderer change exists."
+    },
+    {
+      "command": "node scripts/normalize-bush-cluster-master.js twice; source-master visual alpha review",
+      "status": "pass",
+      "detail": "Owner approved the candidate. Frozen config D86CB05BFB4E68464038A0AA1FABD96752812800E87245060177E3AE86178F75 and normalizer 77155890B6CD91C57DE92D40C4B1580308437711448CB6F7195AA70DEFE2D3C0 produced byte-identical 343550-byte 1024x576 RGBA master D5EEE8F1A0B7A9B758321F5B429B0D2B9EAC5F7726A2031195628F0103AB69E2 twice. Alpha proof: transparent borders, one visible component, no disconnected visible pixels, core bounds 249..793 by 271..528, and exact decorative baseline anchor (512,528). This source master has no runtime path, product copy, atlas, renderer, gameplay, or scene integration."
     }
   ],
   "skipped_checks": [
     "Game build, browser, PostgreSQL, visual-baseline, and physical-device checks are not applicable: this source-only asset admission adds no runtime path or player-visible behavior."
   ],
   "residual_risks": [
-    "The cone, tower, jungle, and palm source masters have no runtime path. The bush family still requires its own request authorization, candidate review, normalization, and source-master decision.",
+    "The cone, tower, jungle, palm, and bush source masters have no runtime path. The exact eleven-file initial-media inventory remains closed to new runtime copies.",
     "The exact eleven-file initial-media inventory permits no new runtime background asset until a future loading and budget package changes that contract deliberately."
   ]
 }

@@ -23,8 +23,11 @@ master only at
 The owner also approved one isolated sparse palm cluster as a source master
 only at
 `assets/masters/environment/backgrounds/volcanic-ruin/palm-cluster-source-master-v1.png`.
+The owner also approved one isolated low bush cluster as a source master only
+at
+`assets/masters/environment/backgrounds/volcanic-ruin/bush-cluster-source-master-v1.png`.
 None creates a runtime path, build copy, renderer code, or player-visible
-change. Jungle and bush families remain preparation-only.
+change. The jungle family remains preparation-only.
 
 ## Owner-Provided Visual Reference
 
