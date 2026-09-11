@@ -1,21 +1,22 @@
 # Worms_Port Agent Instructions
 
-## Single-owner development — effective 2026-09-07
+## Primary ownership with testing delegation — effective 2026-09-10
 
-Do not spawn, delegate to, resume, or request work from any subagent in this
-repository. This includes implementation, review, research, probes, tests and
-documentation. Do not use other tasks, CLI sessions or external agent services
-as a delegation workaround. The current primary assistant owns the entire
-change, integration, review, verification and corrections.
+The primary assistant owns implementation, coverage selection, integration,
+product corrections and direct review. Delegate test execution and operational
+supervision to one `worms_port_test_runner` subagent on GPT-5.6 Terra/medium.
+This owner-authorized testing exception supersedes the 2026-09-07 blanket ban.
+No implementation, research, reviewer or further nested agents are authorized.
+Do not use separate tasks, CLI sessions or external agents as a workaround.
+If native subagent tools are unavailable, disclose that and test directly.
 
-This owner instruction supersedes all older agent-role, model-routing,
-reciprocal-support and independent-agent-review requirements in repository
-documents, historical contracts and archived roles. Do not reactivate the
-harness unless the owner explicitly changes this policy. Ordinary test runners
-and the existing 22:00 Europe/Berlin full-suite automation remain in use.
-
-WP-016 is retained for CRPM research, not for current development. See the
-[retirement and research record](docs/process/development_workflow.md#harness-retirement-and-research-preservation).
+The primary reads the change-selector dry run and sends an explicit risk-based
+check plan. The worker runs it, handles bounded infrastructure recovery and
+reports evidence; product defects return to the primary. Follow
+[Testing delegation](docs/process/development_workflow.md#testing-delegation).
+The 22:00 Europe/Berlin full suite remains unchanged. WP-016 and all former
+roles remain retired research history, not active instructions; see the
+[retirement record](docs/process/development_workflow.md#harness-retirement-and-research-preservation).
 
 ## Repository Context
 
@@ -124,7 +125,7 @@ If the user asks only for planning, review, or brainstorming, do not edit code.
 ## Direct Review And Verification
 
 The primary assistant reviews the complete changed behavior and runs the
-necessary checks directly. The selector is a mandatory starting baseline,
+necessary coverage selection, delegating execution to the testing worker. The selector is a mandatory starting baseline,
 not an upper limit. Inspect the diff, accepted predecessor journey, execution
 pointer and relevant tests; widen checks when the changed risk warrants it.
 Retain continuity for mobile layout/guidance, the playable loop, presentation,
@@ -137,7 +138,8 @@ within the same continuous task. Report commands, outcomes, skipped checks and
 residual risk. Call this direct review; never claim independent agent review.
 Daily/release and physical-device acceptance remain separate gates. New package
 records use `execution_mode: single_owner`; historical support evidence remains
-research history, not an instruction to reopen agent collaboration.
+research history. `single_owner` describes product authorship and direct review;
+record delegated test commands/results and worker identity explicitly in evidence.
 
 ## Repository Housekeeping
 
@@ -237,18 +239,18 @@ rename, delete, merge or publish branches without user authorization.
 
 ## Codex Subagent Roles
 
-Retired. The unchanged role definitions are preserved under
-[`.codex/retired-agents/`](.codex/retired-agents/) for CRPM research and must not
-be loaded or followed for Worms_Port development. `.codex/agents/` is no longer
-an active project role directory; `[agents].enabled = false` disables
-multi-agent tools in project configuration.
+Only [worms_port_test_runner](.codex/agents/worms_port_test_runner.toml) is active.
+The unchanged [retired roles](.codex/retired-agents/) remain for CRPM research;
+do not load them. The one-worker config limit is a concurrency cap, not a
+technical role allowlist; these instructions enforce the testing-only boundary.
 
 ## Task Model Routing
 
-Retired with the harness. The primary task uses its selected model and effort;
-project defaults remain Terra/high. Do not spawn a different model to work
-around uncertainty. Investigate and correct directly; report a concrete blocker
-when needed. Configuration changes do not prove which model served a turn.
+The primary uses the user's selected model/effort. Astra Light is the owner's
+preferred coordinator for this workflow, not a project-enforced default.
+`.codex/config.toml` must not pin top-level model or reasoning effort. The testing
+role alone pins `gpt-5.6-terra` / `medium`. Do not silently substitute models.
+Configuration intent is not proof of which model served a turn.
 
 ## Git And Reporting
 

@@ -43,9 +43,9 @@ Every non-trivial change should follow this loop:
 
 ## Autonomous Slice Loop
 
-The primary assistant performs the whole slice without subagents. The owner
-retired implementation delegation, probe agents, support agents, reviewer
-agents and docs/test agents on 2026-09-07. This overrides older package routing.
+The primary assistant owns the product slice. On 2026-09-10 the owner authorized
+one Terra/medium testing worker; the former implementation, probe, support,
+reviewer and documentation agents remain retired. See Testing delegation below. This overrides older package routing.
 
 1. Read the execution pointer and inspect Git status; select the authorized slice.
 2. Record its source, intended behavior, affected paths and relevant checks in
@@ -53,7 +53,8 @@ agents and docs/test agents on 2026-09-07. This overrides older package routing.
 3. Inspect the selector dry run and establish the relevant baseline.
 4. Implement and integrate directly across the coupled paths. Keep corrections
    with the same primary task; use executable regression evidence where needed.
-5. Run the selected checks and widen them when risk or a failure warrants it.
+5. Delegate the selected checks to the testing worker and widen the plan when
+   risk or a failure warrants it; use direct execution only if tools are unavailable.
 6. Review product continuity directly, including the actual player journey and
    authority/lifecycle boundaries. Do not label contributor review independent.
 7. On failure, reproduce the smallest case, correct it, then rerun the affected
@@ -62,6 +63,66 @@ agents and docs/test agents on 2026-09-07. This overrides older package routing.
 8. Update evidence and housekeeping, commit the bounded change, and advance the
    pointer only after the applicable gates pass. Daily/release and real-device
    gates remain separate; no agent approval is required.
+
+### Testing delegation
+
+Owner decision, 2026-09-10: separate test execution from product reasoning.
+The primary (owner preference: Astra Light, freely selectable) chooses coverage;
+[worms_port_test_runner](../../.codex/agents/worms_port_test_runner.toml)
+uses GPT-5.6 Terra with medium reasoning to operate it. This standalone role is
+new and narrow; the old test worker and WP-016 remain archived unchanged.
+
+1. Primary checks the diff, predecessor behavior and
+   `npm run verify:changes -- --dry-run` (use `npm.cmd` for reliable PowerShell
+   argument forwarding). The selector remains the mandatory baseline, not a
+   ceiling. Send the worker exact commands, reasons, cwd, starting HEAD,
+   uncommitted paths, build/reuse policy, expected skips, ignored output path
+   and permitted infrastructure files. No whole chat dump is needed.
+2. Spawn only this role using native subagent tools, once per verification run.
+   Keep at most one worker open; reuse it for related corrections. If this
+   session lacks those tools, disclose it and execute directly for this session;
+   reload/start a fresh task to pick up the config. Do not bootstrap a second
+   CLI agent or separate task. Config does not prove runtime model identity.
+3. Worker runs and supervises the plan, captures exit codes/logs, diagnoses
+   stalls and preserves first failures. It may repair reversible operational
+   problems in the assigned test infrastructure scope and rerun affected checks.
+   It must not change product code, assertions, skips, pass thresholds, visual
+   baselines or external services. Product bugs/missing tests return to primary.
+   Three attempts of the same signature are the stop-and-report limit.
+4. Use existing verification leases, build proofs and owned-process cleanup.
+   Primary freezes tested inputs while the worker runs; unrelated planning can
+   continue. If inputs change, label prior results stale and send a revised
+   plan. Never duplicate the worker's suite or bypass a live daily-suite lease.
+5. Worker returns compact command/results/counts, tested revision/dirty paths,
+   failures/retries, infrastructure edits, evidence paths and skipped/blocked
+   checks. Primary inspects these and any infrastructure diff, fixes product
+   issues, chooses reruns and owns the final direct-review/acceptance report.
+   This worker is not an independent reviewer. Avoid frequent unchanged polls
+   or relaying raw test output to the user.
+
+The daily 22:00 Europe/Berlin full suite and release/device gates remain unchanged.
+Do not rerun the full daily suite merely because a worker exists. Runtime changes
+still need the selected build/smoke checks; config/docs-only edits need no game
+build. Existing source-boundary single-owner declarations refer to primary
+implementation and review, not fictional independent test authorship.
+
+Configuration rationale: the repo previously pinned top-level
+`model = "gpt-5.6-terra"` and `model_reasoning_effort = "high"`; both were removed.
+Only the testing role and subagent defaults pin Terra/medium. User-level defaults
+and manually selected main models are not rewritten. For an old task that still
+shows stale settings, reload the project/start a fresh task and select the main
+model in the composer; do not claim this file edit switched a running model.
+
+Official references checked for this setup:
+[custom agents and role model/effort precedence](https://learn.chatgpt.com/docs/agent-configuration/subagents),
+[project config and agent keys](https://learn.chatgpt.com/docs/config-file/config-reference),
+[instruction discovery/reload](https://learn.chatgpt.com/docs/agent-configuration/agents-md).
+
+Setup verification: TOML parsing, required role fields, one-worker cap and absence
+of top-level model/effort pins passed. Change-selector dry run/verification and
+report-only housekeeping passed. No game build was required for these config/docs
+changes. Native subagent tools were absent in the configuring task, so a live
+Terra/medium spawn remains unverified until a fresh task loads this configuration.
 
 ### Work-Package Evidence
 
@@ -72,7 +133,9 @@ dependency-lock SHA-256, owning roles, scope, non-goals, planned checks,
 deterministic seeds or an empty list, and whether Sorcerers observation was
 used. `npm run check:work-packages` validates these records.
 
-New packages use `execution_mode: single_owner`. Existing packages may explicitly
+New packages use `execution_mode: single_owner` for product authorship and direct
+review; record testing delegation and worker results explicitly in check/review
+details rather than claiming all execution was direct. Existing packages may explicitly
 record that transition while preserving historical support/review records.
 Append the latest direct verdict after historical reviews; a failed latest verdict
 blocks closure. Support-record consistency remains checked; retirement does not invent exchanges
@@ -91,8 +154,9 @@ activation.
 
 On 2026-09-07 the owner retired the harness from Worms_Port development and
 prohibited all subagents, including read-only probes and final reviewers.
-One continuous primary task now owns implementation, integration, tests, review
-and corrections. The supplied external diagnosis identified fragmented context
+At retirement, one continuous primary task owned implementation, integration,
+tests, review and corrections. The 2026-09-10 testing-only exception below
+supersedes the blanket ban while preserving primary product ownership. The supplied external diagnosis identified fragmented context
 across coupled V9 transitions and repeated correction/handoff costs; that is an
 interpretation of the observed case, not a controlled performance experiment.
 Its suggested probe/reviewer agents are explicitly not adopted. No measured
@@ -109,10 +173,9 @@ Preserved research carriers (available on main):
 - [CRPM pressure case](https://github.com/TasirWimp/CRPM/blob/main/docs/case_studies/Worms_Port_Agent_Coordination_And_Capability_Pressure_Case_v0.md).
   CRPM's research lifecycle is not retired by this product workflow decision.
 
-Current enforcement: `.codex/config.toml` sets `[agents].enabled = false`;
-AGENTS.md prohibits delegation even when old sessions or host overrides expose
-agent tools. Archive text and historical package instructions cannot authorize
-reactivation. Old branches/worktrees must incorporate this policy before new
+Current enforcement: `.codex/config.toml` enables one concurrent testing worker;
+AGENTS.md permits only the testing role. This is not WP-016 reactivation.
+Archive text and historical package instructions cannot authorize other roles. Old branches/worktrees must incorporate this policy before new
 work; do not change a research checkout's historical source just to hide it.
 The selector, compliance/clean-room safeguards and 22:00 Europe/Berlin daily
 suite continue. A direct-review pass remains distinct from release approval.

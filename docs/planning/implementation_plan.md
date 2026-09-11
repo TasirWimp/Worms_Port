@@ -7,7 +7,7 @@ Phaser/Socket.IO stack.
 
 ## Execution Pointer
 
-- Development policy: **No subagents**, effective 2026-09-07. The primary task owns implementation, testing, direct review, corrections and housekeeping. This supersedes all older agent assignments in this plan/contracts. **WP-016 is retired from development and retained on main for CRPM research**; see the [retirement/recovery record](../process/development_workflow.md#harness-retirement-and-research-preservation). The selector and 22:00 Europe/Berlin daily suite remain in use.
+- Development policy: **Primary ownership with testing-only delegation**, effective 2026-09-10. The primary selects coverage and owns implementation/product corrections/direct review; one Terra/medium `worms_port_test_runner` executes and manages the tests. Other agents and WP-016 remain retired. See [Testing delegation](../process/development_workflow.md#testing-delegation). Main model/effort follow the user selection, with no repo pin. The selector and 22:00 Europe/Berlin daily suite remain in use.
 
 - Verification infrastructure: the isolated change-selection/build-reuse port
   from `da1e7a9` follows the owner-requested 22:00 Berlin daily/full cadence.
