@@ -2028,10 +2028,14 @@ async function presentationV8Fixture(page: Page, options: { authoritative?: bool
       runtime.io.emit(protocolEventsV8.snapshot, snapshot);
     } else update(value => {
       // This fixture drives presentation receipts without advancing combat
-      // authority. Keep its exact phase age stable while the synthetic clock
-      // emits snapshots, even when a slow runner spends longer on UI probes.
-      value.simulation.phaseStartedTick += 3;
-      value.simulation.phaseDeadlineTick += 3;
+      // authority. Let its visible timer count down normally, then begin a new
+      // synthetic phase window before a slow runner crosses the schema bound.
+      const simulation = value.simulation;
+      if (simulation.tick >= simulation.phaseDeadlineTick) {
+        const phaseDuration = simulation.phaseDeadlineTick - simulation.phaseStartedTick;
+        simulation.phaseStartedTick = simulation.tick;
+        simulation.phaseDeadlineTick = simulation.tick + phaseDuration;
+      }
     });
   }, 60);
   return {
