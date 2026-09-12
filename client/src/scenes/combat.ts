@@ -112,8 +112,8 @@ export default class CombatScene extends Phaser.Scene {
         this.v8Preview = !args?.snapshot && (preview === 'v8' || preview === 'v8-r1') ? preview : undefined;
         this.resourcePreview = !args?.snapshot && (preview === 'v9' || preview === 'v10' || preview === 'v10e' || preview === 'v10f' || preview === 'v10g')
             ? preview : undefined;
-        this.backgroundPreviewRequested = this.resourcePreview === 'v10g' &&
-            new URLSearchParams(window.location.search).get('background-preview') === 'volcanic-ruin';
+        this.backgroundPreviewRequested = (args?.kind === 'v10' && args.live === true) || (this.resourcePreview === 'v10g' &&
+            new URLSearchParams(window.location.search).get('background-preview') === 'volcanic-ruin');
         if (this.v8Args || this.resourceArgs || this.v8Preview || this.resourcePreview) return;
         this.args = args?.snapshot && args.kind !== 'v8' && args.kind !== 'v9' && args.kind !== 'v10' ? args : createCombatFixture();
         this.snapshot = structuredClone(this.args.snapshot);

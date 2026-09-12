@@ -1,7 +1,7 @@
 /** Server-only, fail-closed admission for wallet-free owner Practice testing. */
 export function practiceOnlyProfileFromEnvironment(
     environment: NodeJS.ProcessEnv = process.env
-): 'staging-v8d-practice' | 'development-v8d-practice' | 'development-v9d-practice' | undefined {
+): 'staging-v8d-practice' | 'development-v8d-practice' | 'development-v9d-practice' | 'development-v10-practice' | undefined {
     for (const name of Object.keys(environment)) {
         if (name.startsWith('NIMBLE_') &&
             name !== 'NIMBLE_RUNTIME_PROFILE' && name !== 'NIMBLE_DEPLOYMENT') {
@@ -16,7 +16,7 @@ export function practiceOnlyProfileFromEnvironment(
         }
         return undefined;
     }
-    if (profile === 'development-v8d-practice' || profile === 'development-v9d-practice') {
+    if (profile === 'development-v8d-practice' || profile === 'development-v9d-practice' || profile === 'development-v10-practice') {
         if (environment.NODE_ENV !== 'production' || environment.REWARD_PAUSED !== 'true' ||
             (deployment !== undefined && deployment !== 'production')) {
             throw new Error('Practice development requires NODE_ENV=production, REWARD_PAUSED=true and no staging deployment.');

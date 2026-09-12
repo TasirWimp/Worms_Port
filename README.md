@@ -7,6 +7,35 @@ opponent, with an optional fixed sponsor-funded NIM reward for eligible wins.
 The `Worms_Port` repository was bootstrapped from the MIT
 `TurtlePU/worms-ii` code base and retains that provenance.
 
+## Standard volcanic Practice
+
+The normal `/` entry now starts server-backed V10 R5 Practice in the approved
+Volcanic Ruin stepped valley, with the existing terrain weapons and Loomkeeper.
+The five background images load only when combat starts. Practice remains
+wallet-free; Daily Challenge retains V7 reward authority and existing controls.
+The explicit local preview URLs remain available for historical review.
+The [V8 preview controller](client/src/combat/action-turns-v8-fixture.ts) loads
+only when requested, keeping its local authority out of the initial bundle.
+
+For the existing owner Render service, replace the old V9 Practice profile with:
+
+```text
+NODE_ENV=production
+NIMBLE_RUNTIME_PROFILE=development-v10-practice
+REWARD_PAUSED=true
+```
+
+Redeploy and open `/` without preview query parameters. This profile constructs
+no identity, database or payout service, even when old credentials are saved.
+Ordinary startup without a development profile also selects volcanic Practice,
+alongside the separately configured existing Daily service. Old V8/V9 profiles
+retain their prior behavior for rollback. No reward activation is implied.
+
+The owner accepted the local scenic restart fix on 2026-09-11. New server-backed
+phone acceptance should cover Start Practice, aim/fire and AI reply, pause,
+reconnect/reload, and repeated retries with the background still present.
+See the [standard Practice contract](docs/planning/wp-015d4f-volcanic-ruin-preview-bundle-contract.md#wp-015d4h-standard-server-backed-volcanic-practice).
+
 ## Temporary Nimiq Pay Display Workaround
 
 **Current default:** a portrait browser viewport renders the complete game as

@@ -1,3 +1,5 @@
+import type { ChallengeSnapshotV10, ChallengeResultV10 } from '../../../shared/protocol-v10-live';
+import { takeTerrainV10SessionEvents } from '../lib/session';
 import type { Socket } from 'socket.io-client';
 
 import {
@@ -29,8 +31,8 @@ export const PRACTICE_CLIENT_REGISTRY_KEY = 'practice-client';
 
 export type PracticeConnectionState = 'connected' | 'reconnecting';
 export type Unsubscribe = () => void;
-export type LiveCombatSnapshot = ChallengeSnapshot | ChallengeSnapshotV8Automated | ChallengeSnapshotV9;
-export type LiveCombatResult = ChallengeResult | ChallengeResultV8Automated | ChallengeResultV9;
+export type LiveCombatSnapshot = ChallengeSnapshot | ChallengeSnapshotV8Automated | ChallengeSnapshotV9 | ChallengeSnapshotV10;
+export type LiveCombatResult = ChallengeResult | ChallengeResultV8Automated | ChallengeResultV9 | ChallengeResultV10;
 
 export class PracticeProtocolError extends Error {
     public constructor(public readonly protocolError: ProtocolError) {
@@ -62,6 +64,9 @@ export class PracticeClient {
     private readonly errorListeners = new Set<(message: string) => void>();
     private readonly rewardListeners = new Set<(update: RewardUpdateData) => void>();
     private readonly rewardUpdates = new Map<string, RewardUpdateData>();
+    private volcanicPractice = false;
+    private v10?: import('./terrain-turns-v10').ResourceTurnsV10Client;
+    private v10Ready?: Promise<import('./terrain-turns-v10').ResourceTurnsV10Client>;
     private v9?: import('./resource-turns-v9').ResourceTurnsV9Client;
     private v9Ready?: Promise<import('./resource-turns-v9').ResourceTurnsV9Client>;
 
@@ -102,6 +107,15 @@ export class PracticeClient {
         if (buffered.snapshots.length || buffered.results.length) {
             await (await client.getLifecycle()).attach(buffered.snapshots, buffered.results);
         }
+        if (typeof window !== 'undefined' && window.location?.origin && typeof fetch === 'function') {
+            const response = await fetch('/api/practice-profile');
+            if (!response.ok) throw new Error('Practice configuration is unavailable. Reload to retry.');
+            const profile = await response.json();
+            if (!profile || !['legacy', 'volcanic-v10'].includes(profile.ruleset)) throw new Error('Unknown Practice profile.');
+            client.volcanicPractice = profile.ruleset === 'volcanic-v10';
+        }
+        const volcanic = takeTerrainV10SessionEvents(socket);
+        if (volcanic.snapshots.length) (await client.getV10()).restore(volcanic.snapshots, volcanic.results);
         return client;
     }
 
@@ -118,11 +132,14 @@ export class PracticeClient {
     }
 
     public currentCombatSnapshot(): LiveCombatSnapshot | undefined {
-        return this.v9?.currentSnapshot() ?? this.lifecycle?.currentSnapshot() ?? this.currentSnapshot();
+        const snapshots = [this.v10?.currentSnapshot(), this.v9?.currentSnapshot(), this.lifecycle?.currentSnapshot(), this.currentSnapshot()];
+        return snapshots.find(value => value?.status === 'active') ?? snapshots.find(Boolean);
     }
 
     public async startCombat(calling: PlayerCalling): Promise<LiveCombatSnapshot> {
+        if (this.volcanicPractice && this.v10?.currentSnapshot()?.status === 'active') return this.v10.currentSnapshot()!;
         if (v9CandidateRoute()) return (await this.getV9()).start('practice', calling);
+        if (this.volcanicPractice && !new URLSearchParams(window.location.search).has('legacy-practice')) return (await this.getV10()).start('practice', calling);
         return (await this.getLifecycle()).start(calling);
     }
 
@@ -161,6 +178,11 @@ export class PracticeClient {
     }
 
     public async retryCombat(calling: PlayerCalling): Promise<LiveCombatSnapshot> {
+        if (this.volcanicPractice) {
+            await this.getV10();
+            if (this.v10.currentSnapshot()?.status === 'active') await this.v10.leave();
+            return this.v10.start('practice', calling);
+        }
         if (this.v9?.currentSnapshot()) {
             const current = this.v9.currentSnapshot()!;
             if (current.status === 'active') await this.v9.leave();
@@ -173,6 +195,7 @@ export class PracticeClient {
 
     public async combatArgs(snapshot: LiveCombatSnapshot): Promise<CombatSceneArgs> {
         if (snapshot.protocolVersion === 1) return liveCombatArgs(this, snapshot);
+        if (snapshot.protocolVersion === 10) return (await this.getV10()).combatArgs(snapshot);
         if (snapshot.protocolVersion === 9) return (await this.getV9()).combatArgs(snapshot);
         return (await this.getLifecycle()).combatArgs(snapshot);
     }
@@ -287,6 +310,7 @@ export class PracticeClient {
         this.unavailableListeners.clear();
         this.errorListeners.clear();
         this.rewardListeners.clear();
+        this.v10?.dispose();
         this.lifecycle?.dispose();
         this.v9?.dispose();
         this.combatResultListeners.clear();
@@ -352,6 +376,10 @@ export class PracticeClient {
             emit: (event, request) => this.emitWithRetry(event, request),
             error: error => new PracticeProtocolError(error)
         }));
+    }
+
+    private getV10(): Promise<import('./terrain-turns-v10').ResourceTurnsV10Client> {
+        return this.v10Ready ??= import('./terrain-turns-v10').then(module => this.v10 = new module.ResourceTurnsV10Client(this.socket, () => this.session, this.sessionCursor));
     }
 
     private getV9(): Promise<import('./resource-turns-v9').ResourceTurnsV9Client> {
@@ -465,6 +493,7 @@ export class PracticeClient {
         queueMicrotask(() => {
             void whenSessionReady(this.socket).then((session) => {
                 if (session.sessionId !== this.sessionId) {
+                    this.v10?.sessionExpired(); this.v10 = undefined; this.v10Ready = undefined;
                     this.v9?.dispose(); this.v9 = undefined; this.v9Ready = undefined;
                     this.sessionId = session.sessionId;
                     this.sessionCursor = { sessionId: session.sessionId, nextSequence: 0 };

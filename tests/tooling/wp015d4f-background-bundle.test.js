@@ -13,7 +13,7 @@ const { validateB3cRuntimeInventory } = require('../../scripts/check-b3c-runtime
 
 const manifest = JSON.parse(fs.readFileSync(path.resolve(__dirname, '..', '..', 'legal', 'asset-manifest.json'), 'utf8'));
 
-test('WP-015D4F admits five exact lazy-preview copies without reopening the WP-015C inventory', () => {
+test('WP-015D4F admits five exact lazy Practice/preview copies without reopening the WP-015C inventory', () => {
   assert.deepEqual(validateWp015d4fBackgroundBundle(manifest), []);
   assert.deepEqual(validateB3cRuntimeInventory(manifest), []);
   assert.equal(expectedBackgroundBundle.length, 5);
@@ -21,12 +21,12 @@ test('WP-015D4F admits five exact lazy-preview copies without reopening the WP-0
   assert.ok(backgroundBundleTotalBytes() <= previewBundleByteCeiling);
 });
 
-test('WP-015D4F rejects a transformed path or non-preview admission', () => {
+test('WP-015D4F rejects a transformed path or unapproved admission', () => {
   const invalid = structuredClone(manifest);
   const asset = invalid.assets.find((candidate) => candidate.id === expectedBackgroundBundle[0].id);
   asset.runtime_path = 'assets/product/environment/backgrounds/volcanic-ruin/atlas.png';
   asset.runtime_copy_admission = 'something else';
   const errors = validateWp015d4fBackgroundBundle(invalid).join('\n');
   assert.match(errors, /runtime_path must remain the approved WP-015D4F value/);
-  assert.match(errors, /preview-only exact-copy admission/);
+  assert.match(errors, /standard-Practice exact-copy admission/);
 });

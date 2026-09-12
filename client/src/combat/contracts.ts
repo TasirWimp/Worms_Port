@@ -71,9 +71,9 @@ export type CombatSceneArgsV9 = {
     destroy: () => void;
 };
 
-/** Local-only V10C candidate. It cannot carry session, reward, or transport authority. */
+/** V10 presentation receives either local preview or server-owned Practice callbacks. */
 export type CombatSceneArgsV10 = {
-    kind: 'v10'; snapshot: SimulationStateV10; previewLabel: string;
+    kind: 'v10'; live?: boolean; snapshot: SimulationStateV10; previewLabel: string;
     /** Local review metadata derived from the replay-bound recipe and seed. */
     previewTerrainReflected?: boolean;
     calling?: PlayerCalling;
@@ -88,6 +88,10 @@ export type CombatSceneArgsV10 = {
     trajectoryPreview: (aim: { angleMilliDegrees: number; powerPermille: number }) => { x: number; y: number }[];
     restart: () => Promise<CombatSceneArgsV10>;
     onSnapshot: (listener: (snapshot: SimulationStateV10, events: SimulationEventV10[]) => void) => () => void;
+    onResult?: (listener: (result: import('../../../shared/protocol-v10-live').ChallengeResultV10) => void) => () => void;
+    onConnection?: (listener: (state: 'connected' | 'reconnecting') => void) => () => void;
+    onUnavailable?: (listener: (message: string) => void) => () => void;
+    onError?: (listener: (message: string) => void) => () => void;
     destroy: () => void;
 };
 

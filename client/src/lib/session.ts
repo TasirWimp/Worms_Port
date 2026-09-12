@@ -20,6 +20,7 @@ const sessionReady = new WeakMap<Socket, Promise<SessionOpenData>>();
 const sessionOpening = new WeakMap<Socket, Promise<SessionOpenData>>();
 const sessionReconnectRegistered = new WeakSet<Socket>();
 type ActionTurnsV8Buffer = { snapshots: unknown[]; results: unknown[] };
+const terrainV10Buffers = new WeakMap<Socket, ActionTurnsV8Buffer>();
 const actionTurnsV8Buffers = new WeakMap<Socket, ActionTurnsV8Buffer>();
 
 class SessionAckTimeout extends Error {}
@@ -44,6 +45,14 @@ export async function bootstrapSession (socket: Socket): Promise<SessionOpenData
         };
         socket.on('v8:challenge.snapshot', value => append(buffer.snapshots, value));
         socket.on('v8:challenge.result', value => append(buffer.results, value));
+        socket.on('disconnect', () => { buffer.snapshots.length = 0; buffer.results.length = 0; });
+    }
+    if (!terrainV10Buffers.has(socket)) {
+        const buffer: ActionTurnsV8Buffer = { snapshots: [], results: [] };
+        terrainV10Buffers.set(socket, buffer);
+        const append = (values: unknown[], value: unknown) => { values.push(value); if (values.length > 8) values.shift(); };
+        socket.on('v10:challenge.snapshot', value => append(buffer.snapshots, value));
+        socket.on('v10:challenge.result', value => append(buffer.results, value));
         socket.on('disconnect', () => { buffer.snapshots.length = 0; buffer.results.length = 0; });
     }
     await waitForConnection(socket);
@@ -240,4 +249,8 @@ async function waitForConnection (socket: Socket)
 function requestId ()
 {
     return crypto.randomUUID().replaceAll('-', '');
+}
+
+export function takeTerrainV10SessionEvents(socket: Socket): ActionTurnsV8Buffer {
+ const b = terrainV10Buffers.get(socket); return b ? { snapshots: b.snapshots.splice(0), results: b.results.splice(0) } : { snapshots: [], results: [] };
 }

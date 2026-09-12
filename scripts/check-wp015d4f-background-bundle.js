@@ -32,8 +32,8 @@ function validateWp015d4fBackgroundBundle(document, root = repoRoot) {
     for (const field of ['file', 'sha256', 'runtime_path']) {
       if (asset[field] !== expected[field]) errors.push(`${expected.id}: ${field} must remain the approved WP-015D4F value.`);
     }
-    if (asset.runtime_copy_admission !== 'WP-015D4F: preview-only byte-identical build copy in the lazy volcanic-ruin bundle; no source transform, atlas, gameplay authority, or public activation.')
-      errors.push(`${expected.id}: must retain the preview-only exact-copy admission.`);
+    if (asset.runtime_copy_admission !== 'WP-015D4H: byte-identical lazy volcanic-ruin bundle for standard Practice and explicit preview; no source transform, atlas, or image-derived gameplay authority.')
+      errors.push(`${expected.id}: must retain the approved standard-Practice exact-copy admission.`);
     const source = path.resolve(root, asset.file || '');
     if (!source.startsWith(path.resolve(root, 'assets') + path.sep) || !fs.existsSync(source)) {
       errors.push(`${expected.id}: source must resolve inside assets/.`); continue;

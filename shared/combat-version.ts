@@ -12,3 +12,6 @@ export const V8_LOOMKEEPER_PROFILE_ID = 'standard-v8-0' as const;
 export const V8_AUTOMATION_ID = 'wp-015d3a-v8d-r1-v1' as const;
 /** Strict V9D provenance; the numeric V9 replay version remains unchanged. */
 export const V9_AUTOMATION_ID = 'wp-015d3b-v9d-v1' as const;
+
+/** Server-backed volcanic Practice; reward selection remains V7. */
+export const V10_AUTOMATION_ID = 'wp-015d4h-v10-live-v1' as const;

@@ -152,6 +152,14 @@ export function createRuntimeServer(options: RuntimeServerOptions = {}) {
             processRewardResult(result,replay);
             options.sessionRegistry?.onChallengeSettledV8?.(result,replay);
         },
+        onChallengeSnapshotV10: (snapshot, socketId) => {
+            if (socketId) io.sockets.sockets.get(socketId)?.emit('v10:challenge.snapshot', snapshot);
+            options.sessionRegistry?.onChallengeSnapshotV10?.(snapshot, socketId);
+        },
+        onChallengeCompletedV10: (result, socketId) => {
+            if (socketId) io.sockets.sockets.get(socketId)?.emit('v10:challenge.result', result);
+            options.sessionRegistry?.onChallengeCompletedV10?.(result, socketId);
+        },
         onChallengeSnapshotV9: (snapshot, socketId) => {
             if (socketId) io.sockets.sockets.get(socketId)?.emit('v9:challenge.snapshot', snapshot);
             options.sessionRegistry?.onChallengeSnapshotV9?.(snapshot, socketId);
@@ -203,6 +211,11 @@ export function createRuntimeServer(options: RuntimeServerOptions = {}) {
         next();
     });
     app.use('/', express.static(clientDir));
+    app.get('/api/practice-profile', (_, response) => {
+        response.setHeader('Cache-Control', 'no-store');
+        response.json({ ruleset: options.sessionRegistry?.practiceV10 ? 'volcanic-v10' : 'legacy' });
+    });
+
     app.get('/', (_, response) => {
         response.sendFile(path.join(clientDir, 'index.html'));
     });

@@ -2,6 +2,7 @@ import Phaser from 'phaser';
 
 import type { ChallengeResult, RewardUpdateData } from '../../../shared/protocol';
 import type { ChallengeResultV8Automated } from '../../../shared/protocol-v8';
+import type { ChallengeResultV10 } from '../../../shared/protocol-v10-live';
 import type { ChallengeResultV9 } from '../../../shared/protocol-v9';
 import type { PlayerCalling } from '../../../shared/simulation';
 import { canRequestFullscreen, toggleGameFullscreen } from '../combat/fullscreen';
@@ -16,7 +17,7 @@ export type ResultClient = Pick<PracticeClient,
     'claimReward' | 'rewardStatus'>;
 
 export type ResultSceneArgs = {
-    result?: ChallengeResult | ChallengeResultV8Automated | ChallengeResultV9;
+    result?: ChallengeResult | ChallengeResultV8Automated | ChallengeResultV9 | ChallengeResultV10;
     calling: PlayerCalling;
     message?: string;
     rewarded?: boolean;
@@ -49,7 +50,7 @@ export default class ResultScene extends Phaser.Scene {
         const host = document.getElementById('game');
         if (!host || !this.client) throw new Error('Result scene requires the live practice client.');
         const outcome = this.args.result?.outcome;
-        const stopReason = this.args.result?.protocolVersion === 9 ? this.args.result.stopReason : undefined;
+        const stopReason = (this.args.result?.protocolVersion === 9 || this.args.result?.protocolVersion === 10) ? this.args.result.stopReason : undefined;
         const interrupted = stopReason && stopReason !== 'expiry' && stopReason !== 'left';
         this.add.rectangle(this.scale.width / 2, this.scale.height / 2,
             this.scale.width, this.scale.height, 0x1F2348);

@@ -1,0 +1,88 @@
+{
+  "id": "WP-015D4H",
+  "status": "in_progress",
+  "execution_mode": "single_owner",
+  "starting_commit": "a961738",
+  "branch": "codex/volcanic-ruin-background-art",
+  "initial_worktree": "clean",
+  "starting_lock_sha256": "6B768A8FDE2695D02555CA17201FD7CE420F9AC075B91380474DD7A643042BC8",
+  "owning_roles": [
+    "primary assistant"
+  ],
+  "scope": [
+    "Normal server-backed V10 R5 volcanic Practice, lifecycle, AI, replay and exact existing background bundle."
+  ],
+  "non_goals": [
+    "No PEI, reward activation, asset generation, old replay reinterpretation or public branch merge."
+  ],
+  "planned_checks": [
+    "npm.cmd run verify:changes",
+    "All-project standard volcanic Practice browser journeys",
+    "Direct review, screenshot inspection and housekeeping"
+  ],
+  "deterministic_seeds": [
+    "4 (regression fixture); live server random positive uint32 seeds"
+  ],
+  "sorcerers_reference_used": false,
+  "clean_room_records": [],
+  "check_results": [
+    {
+      "command": "npm.cmd run verify:changes",
+      "status": "pass",
+      "details": "Primary selected coverage from dry run; /root/verification (worms_port_test_runner, requested gpt-5.6-terra/medium; runtime model identity unavailable) executed against HEAD a961738 and 31 stable dirty paths. Final log .cache/v10-live-selector-2.log. Types/compliance, combat 94, practice 42, identity 22, reward 37, protocol 130, tooling 121, simulation 178, Loomkeeper 39 and relics 10 passed. Build outputs, built smoke, identity bundle, reward security and bundle checks passed. Browser 72 passed/3 Ubuntu comparison skips; visual logic 8 passed/12 Windows snapshot skips. Build proof 5f0e27e80142/c615fd9c9a6f. Initial JS 1,498,363/1,500,000 bytes; initial JS+CSS gzip 415,488/430,000. No budget relaxation.",
+      "historical_attempts": [
+        {
+          "command": "Initial check:types attempts",
+          "status": "fail",
+          "details": "Server/client V10 union and stop-reason errors corrected by primary; final focused types passed. Logs .cache/v10-live-types-4.log and .cache/v10-live-types-5.log record passing corrections."
+        },
+        {
+          "command": "Initial build attempts",
+          "status": "fail",
+          "details": "Evidence closure validation caught missing D4G completion results, incorrect raw working-file lock hash and unsupported root verification_history field. Primary retained prior D4G outcomes under historical_attempts, restored git-blob lock identity and valid schema. Subsequent full builds passed."
+        },
+        {
+          "command": "Focused final build, protocol and canonical browser",
+          "status": "pass",
+          "details": "Before comment/whitespace and V9 lock cleanup: build passed, protocol/staging 14/14, canonical volcanic 2/2. Logs .cache/v10-live-final-build.log, .cache/v10-live-final-protocol.log, .cache/v10-live-final-browser.log."
+        },
+        {
+          "command": "npm.cmd run verify:changes (first full attempt)",
+          "status": "fail",
+          "details": "All preceding non-browser gates passed; initial JS 1,501,094 exceeded unchanged 1,500,000-byte ceiling by 1,094. Log .cache/v10-live-selector.log. Primary moved the unchanged historical V8 local fixture behind a dynamic import, preserving its existing export/tests. Fresh build and full selector then passed; preflight .cache/v10-live-bundle-fix.log."
+        }
+      ]
+    },
+    {
+      "command": "All-project standard volcanic Practice browser journeys",
+      "status": "pass",
+      "details": "Worker executed node scripts/run-playwright.js --reuse-build tests/browser/practice.spec.ts --grep \"standard volcanic Practice\": 10/10 passed in 2.0 minutes, zero retries. Chromium 360x640, 390x844, 412x915, 844x390 and WebKit 390x844 each passed root V10 R5 admission, real-clock player shot/AI reply, pause, cold reload, paused/terminal retry with background, missing-image fallback and expired-session replacement. Log .cache/v10-live-all-projects.log. No source or infrastructure edits during execution."
+    },
+    {
+      "command": "Direct review, screenshot inspection and housekeeping",
+      "status": "pass",
+      "details": "Primary direct review covered dedicated Practice-only wire admission, session/cursor ownership, real-clock AI/replay regeneration, default entry, cancellation/pause/resume/expiry/result/retry, existing reward separation and exact asset-copy limits. All five retry screenshots inspected in test-results/practice-standard-volcanic-90068-sume-and-restart-background-*/standard-volcanic-retry.png: volcano/tower/foliage retained, actors/cards visible, Pause separate; ordinary landscape is not double-rotated. git diff --check clean. npm.cmd run audit:housekeeping passed report-only: branch/upstream match, no gone tracking branches; historical in-progress packages/failed reviews and merged branches retained, D4H awaits deployed acceptance."
+    }
+  ],
+  "reviews": [
+    {
+      "reviewer": "Primary single-owner assistant",
+      "role": "primary_direct_review",
+      "decision": "pass",
+      "details": "Local implementation and selected verification ready for deployment and owner phone acceptance. Product implementation/direct review remained primary-owned; testing delegated only to /root/verification, not an independent review. No PEI, funded V10 reward path, new asset pixels, baseline approval, branch merge or deployment. D4H remains in_progress until new live acceptance; predecessor D4G phone acceptance retained separately."
+    }
+  ],
+  "skipped_checks": [
+    "Three Ubuntu-only visual comparisons and twelve snapshot comparisons skipped by existing Windows policy; visual logic passed. No baseline generated or approved on Windows.",
+    "PostgreSQL gate skipped because WP014_TEST_DATABASE_URL is absent; CI database gate remains required.",
+    "Daily/full performance release matrix not run for this edit (selector performance=false); existing 22:00 Europe/Berlin automation unchanged.",
+    "New server-backed physical Android/iOS acceptance not run; the owner accepted the predecessor local preview, not this live transport.",
+    "npm audit not separately run: no package or lockfile change."
+  ],
+  "residual_risks": [
+    "Deployment must select development-v10-practice for the existing Practice-only service, with NODE_ENV=production and REWARD_PAUSED=true; normal runtime also selects V10 Practice alongside separately configured V7 Daily.",
+    "Session authority remains in-memory: server/session loss deliberately leads to a fresh Practice match, not durable match recovery.",
+    "Initial JS headroom is 1,637 bytes; future startup additions must preserve the unchanged bundle gate.",
+    "Ubuntu visual comparison, database/release gates and the new physical-phone journey remain separate acceptance requirements."
+  ]
+}

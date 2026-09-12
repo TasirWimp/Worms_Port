@@ -572,3 +572,93 @@ async function readPresentationRecorder(page: Page): Promise<{
     }
   ).__practicePresentation);
 }
+
+
+test('standard volcanic Practice at root keeps authority, AI, cold resume and restart background', async ({ page }, testInfo) => {
+  test.setTimeout(90_000);
+  let now = Date.now();
+  const errors: string[] = [];
+  page.on('pageerror', error => errors.push(error.message));
+  const fetched: string[] = []; page.on('request', request => fetched.push(request.url()));
+  const runtime = createRuntimeServer({ clientDir: path.resolve('client/build'), identity: false,
+    sessionRegistry: { practiceV10: true, now: () => now, challengeTtlMs: 120_000, seedSource: () => 4 } });
+  const port = await runtime.listen();
+  const owned = () => runtime.sessions.getBound([...runtime.io.sockets.sockets.values()][0]?.id)!;
+  try {
+    await page.goto(`http://127.0.0.1:${port}/`);
+    await expect(page.getByRole('button', { name: 'Start Practice' })).toBeVisible();
+    expect(fetched.some(url => /mini-app-sdk|volcanic-cone-v1/.test(url))).toBe(false);
+    await page.getByRole('button', { name: 'Start Practice' }).tap();
+    const ui = page.locator('.combat-v10');
+    await expect(ui).toHaveAttribute('data-ruleset', 'nimble-knots-artillery-v10-r5');
+    await expect(ui).toHaveAttribute('data-background', 'volcanic-ruin');
+    await expect(ui).toHaveAttribute('data-background-ready', 'true');
+    await expect(ui).toHaveAttribute('data-camera-left', '512.00');
+    const first = runtime.sessions.activeSnapshotV10(owned())!.challengeId;
+    await ui.locator('.pause-button').tap();
+    await expect(ui).toHaveAttribute('data-paused', 'true');
+    await page.reload();
+    await page.getByRole('button', { name: 'Resume Paused Clash' }).tap();
+    await expect(ui).toHaveAttribute('data-background', 'volcanic-ruin');
+    await expect(ui).toHaveAttribute('data-background-ready', 'true');
+    expect(runtime.sessions.activeSnapshotV10(owned())!.challengeId).toBe(first);
+    // The entry resumes the paused match; pause it again before restarting.
+    if (await ui.getAttribute('data-paused') !== 'true') await ui.locator('.pause-button').tap();
+    await expect(ui).toHaveAttribute('data-paused', 'true');
+    await ui.locator('.v9-reenter').tap();
+    await expect(ui).toHaveAttribute('data-paused', 'false');
+    await expect.poll(() => runtime.sessions.activeSnapshotV10(owned())?.challengeId).not.toBe(first);
+    await expect(ui).toHaveAttribute('data-background', 'volcanic-ruin');
+    await expect(ui).toHaveAttribute('data-background-ready', 'true');
+    const sideways = await page.evaluate(() => document.documentElement.dataset.sideways);
+    await dragPad(page, '.combat-v10 .aim-zone', 1199, sideways ? 0 : 0.35,
+      sideways === 'right' ? 0.35 : sideways === 'left' ? -0.35 : 0);
+    await expect(ui).toHaveAttribute('data-aim-locked', 'true');
+    await ui.locator('.fire-button').tap();
+    await expect(ui).toHaveAttribute('data-player-thread', '1');
+    await expect(ui).toHaveAttribute('data-active-actor', 'loomkeeper', { timeout: 12_000 });
+    await expect(ui).toHaveAttribute('data-active-actor', 'player', { timeout: 35_000 });
+    const second = runtime.sessions.activeSnapshotV10(owned())!.challengeId;
+    now += 120001; runtime.sessions.sweep();
+    await expect(page.locator('.result-shell')).toBeVisible();
+    await page.getByRole('button', { name: 'Play Again', exact: true }).tap();
+    await expect(ui).toHaveAttribute('data-background', 'volcanic-ruin');
+    await expect(ui).toHaveAttribute('data-background-ready', 'true');
+    expect(runtime.sessions.activeSnapshotV10(owned())!.challengeId).not.toBe(second);
+    expect(fetched.some(url => /mini-app-sdk/.test(url))).toBe(false);
+    expect(errors).toEqual([]);
+    await page.screenshot({ path: testInfo.outputPath('standard-volcanic-retry.png') });
+  } finally { await page.goto('about:blank'); await runtime.close(); }
+});
+
+
+test('standard volcanic Practice survives missing art and expired-session reconnect', async ({ page, context }) => {
+  test.setTimeout(45_000);
+  const runtime = createRuntimeServer({ clientDir: path.resolve('client/build'), identity: false,
+    sessionRegistry: { practiceV10: true, seedSource: () => 4 } });
+  const port = await runtime.listen();
+  try {
+    await page.route('**/volcanic-cone-v1.png', route => route.abort());
+    await page.goto(`http://127.0.0.1:${port}/`);
+    await page.getByRole('button', { name: 'Start Practice' }).tap();
+    const ui = page.locator('.combat-v10');
+    await expect(ui).toHaveAttribute('data-background-ready', 'false');
+    await expect(ui).toHaveAttribute('data-ruleset', 'nimble-knots-artillery-v10-r5');
+    await expect(ui.locator('.pause-button')).toBeEnabled();
+    await ui.locator('.pause-button').tap();
+    await expect(ui).toHaveAttribute('data-paused', 'true');
+    const socket = [...runtime.io.sockets.sockets.values()][0];
+    const previousSession = runtime.sessions.getBound(socket.id)!.id;
+    await context.setOffline(true);
+    await expect(ui).toHaveAttribute('data-connection', 'reconnecting');
+    runtime.sessions.close(previousSession);
+    await context.setOffline(false);
+    await expect(page.locator('.result-shell')).toBeVisible({ timeout: 15000 });
+    await page.getByRole('button', { name: 'Play Again', exact: true }).tap();
+    await expect(ui).toHaveAttribute('data-ruleset', 'nimble-knots-artillery-v10-r5');
+    await expect(ui).toHaveAttribute('data-background-ready', 'false');
+    const next = runtime.sessions.getBound([...runtime.io.sockets.sockets.values()][0].id)!;
+    expect(next.id).not.toBe(previousSession);
+    await expect(ui.locator('.pause-button')).toBeEnabled();
+  } finally { await context.setOffline(false); await page.goto('about:blank'); await runtime.close(); }
+});

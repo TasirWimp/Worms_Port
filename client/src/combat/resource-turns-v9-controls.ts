@@ -37,7 +37,7 @@ export class ResourceTurnsV9Controls {
 <div class="combat-touch-zone movement-zone" aria-label="Movement pad. Tap a side to face. Drag sideways to walk. Push up to hop."><span class="pad-label">Drag to walk · ↑ hop</span><span class="pad-ring"></span><span class="pad-knob"></span></div>
 <div class="combat-touch-zone aim-zone" aria-label="Aim and power pad"><span class="pad-label">Aim · release locks</span><span class="pad-ring"></span><span class="pad-knob"></span></div>
 <nav class="combat-actions v9-actions" aria-label="${initial.rulesetVersion === 10 ? 'V10 terrain' : 'V9 resource'} actions"><button class="v9-actions-button" type="button">Actions</button><button class="fire-button" type="button">Use</button><div class="v9-action-menu" hidden></div></nav>
-<section class="combat-pause-sheet v9-pause-sheet" aria-live="polite" hidden><strong></strong><button class="v9-reenter" type="button">Start fresh preview</button></section>
+<section class="combat-pause-sheet v9-pause-sheet" aria-live="polite" hidden><strong></strong><button class="v9-reenter" type="button">${callbacks.live ? 'Start fresh Practice' : 'Start fresh preview'}</button></section>
 <div class="combat-message" aria-live="polite"></div>`;
         parent.appendChild(this.root);
         this.button('.v9-actions-button').onclick = () => { if (this.canAct() && !this.selectingRelic) { this.menu = this.menu === 'root' ? 'closed' : 'root'; this.refreshActions(); } };

@@ -13,6 +13,17 @@ Phaser/Socket.IO stack.
   from `da1e7a9` follows the owner-requested 22:00 Berlin daily/full cadence.
   See [Verification Funnels](../process/development_workflow.md#verification-funnels).
   This changes verification policy only and does not advance the product package.
+- Owner-approved successor **WP-015D4H Standard Volcanic Practice**, 2026-09-11:
+  promote the accepted R5 volcanic arena into normal server-backed Practice at
+  `/`, before PEI implementation. D4G's restart fix at `d2e426d` is verified on
+  the owner's phone. D4H owns the new live authority, lifecycle and default entry;
+  the prior preview acceptance is not acceptance of this new transport.
+  See [contract](wp-015d4f-volcanic-ruin-preview-bundle-contract.md#wp-015d4h-standard-server-backed-volcanic-practice)
+  and [evidence](../evidence/wp-015d4h.json). Local implementation and direct review
+  are ready: change-selected gates and all ten five-project live volcanic cases
+  passed. Next: deploy the V10 Practice profile and verify the new live journey
+  on the owner's phone; Ubuntu/database/release gates remain separate. D4H stays
+  in progress for that acceptance. PEI remains unimplemented.
 - Active target: mobile-first single-player Nimiq Pay competition release.
 - Latest completed slice: **WP-015D4D V10G Terrain And Weapon Tactics**;
   see the [V10G preparation contract](wp-015d4a-v10-terrain-starts-contract.md#v10g-terrain-and-weapon-tactics-preparation).
@@ -27,11 +38,10 @@ Phaser/Socket.IO stack.
   **WP-015D4G Volcanic-Ruin Composition And Terrain Alignment**, beginning at
   `990d2b3`. The owner authorizes scene framing plus an ASCII-authored R5 valley
   using the existing assets. Combined preview: `/?combat-preview=v10g&background-preview=volcanic-ruin`.
-  Implementation and direct review are ready for owner phone acceptance:
+  Historical D4G implementation and direct review evidence:
   five-project scenic checks passed; selected runtime checks passed, with one
   Chromium resource-load failure passing unchanged on isolated rerun. See
-  [D4G verification evidence](../evidence/wp-015d4g.json). Next: deploy and
-  inspect the composed scene on the owner's phone before closing D4G.
+  [D4G verification evidence](../evidence/wp-015d4g.json). Owner phone acceptance, including the restart fix, was confirmed on 2026-09-11; D4H is now the active successor.
   Old V10G maps, asset bytes/budgets and public activation remain unchanged. See the
   [preview-bundle contract](wp-015d4f-volcanic-ruin-preview-bundle-contract.md).
   `/?combat-preview=v10g` defaults to Twin Crests; append `&terrain-map=` with

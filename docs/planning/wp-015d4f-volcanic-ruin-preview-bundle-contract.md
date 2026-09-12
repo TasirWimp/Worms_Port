@@ -1,7 +1,7 @@
 # WP-015D4F Volcanic-Ruin Preview Bundle Contract
 
 Status: bundle admission complete at `45e3e3f`; composition successor WP-015D4G
-is implemented and awaiting owner phone acceptance below. This package follows the source-only WP-015D4E
+was phone-accepted by the owner on 2026-09-11, including the restart correction at `d2e426d`. This package follows the source-only WP-015D4E
 admission and does not revise or replace its evidence.
 
 ## Scope
@@ -147,3 +147,39 @@ Owner phone review after deployment:
    vegetation remain visible. Paused and terminal restarts must carry the same
    background definition into the replacement scene; the replay-bound terrain
    and the presentation selection both survive repeated restarts.
+
+## WP-015D4H: Standard server-backed volcanic Practice
+
+Owner request, 2026-09-11: make the accepted volcanic V10 gameplay the normal
+server-backed Practice entry at `/` before beginning the separate PEI experiment.
+The owner explicitly confirmed server authority, rather than a default local
+preview, and verified the vanished-background restart fix on a physical phone.
+D4G is accepted; this successor owns live integration and its new acceptance.
+
+Reuse the exact R5 stepped valley, V10 planner and five admitted background
+copies. Do not reinterpret old V10 or V7 replays. A separate version-10 live
+wire envelope and automation identifier bind authoritative input, real clocks,
+Loomkeeper selection, pause, disconnect/resume, expiry, results and fresh retry.
+Practice remains wallet-free. Daily rewards retain their existing V7 authority,
+reservation and payout controls. PEI is not implemented in this package.
+
+The five background files remain a lazy, exact-copy 1,835,347-byte bundle under
+its 1,900,000-byte ceiling, loaded at combat entry. The existing 11-file media
+inventory remains 1,402,579 bytes; total available media is 3,237,926 bytes.
+This explicitly promotes the background to standard Practice, without changing
+source bytes, generating assets or treating decorative pixels as collision.
+
+The separate live coordinator reuses the accepted V9 scheduling and ownership
+patterns with V10 transitions and planner. Historical foundation coordinators
+remain available. A live replay retains R5 recipe/candidate metadata plus the
+chosen AI plans and a new automation identity; verification reconstructs both.
+
+Required checks: selector baseline, authoritative V10 lifecycle/replay and
+cross-session rejection, default phone Practice with aim/fire/AI handoff,
+paused restart, cold reload and terminal retry, background fallback, historical
+Practice/reward regression, compliance, build/smoke and bundle/security. Run the
+new standard journey across maintained browser projects. Existing V7 browser
+fixtures remain explicit historical coverage. Ubuntu visual baseline approval,
+full daily/release gates and new physical-device live acceptance remain separate.
+
+Evidence: [WP-015D4H](../evidence/wp-015d4h.json).

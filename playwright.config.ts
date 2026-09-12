@@ -83,6 +83,7 @@ export default defineConfig({
       NODE_ENV: 'test',
       PORT: String(port),
       SESSION_OPEN_RATE_CAPACITY: '100',
+      PRACTICE_TEST_VERSION: 'legacy',
       PRACTICE_TEST_SEEDS: '1,3735928559',
       IDENTITY_PUBLIC_ORIGIN: baseURL,
       NIMIQ_NETWORK: 'main-albatross'

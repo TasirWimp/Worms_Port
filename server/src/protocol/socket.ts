@@ -1,3 +1,6 @@
+import { CandidateAckV10Schema, ChallengeCreateAckV10Schema, ChallengeCreateV10Schema,
+    ChallengeLeaveV10Schema, ChallengePauseV10Schema, InputCancelV10Schema, InputReleaseV10Schema, InputRequestV10Schema,
+    V10_INPUT_BYTES, jsonBytesV10, protocolEventsV10, type CandidateAckV10 } from '../../../shared/protocol-v10-live';
 import type { Server, Socket } from 'socket.io';
 
 import {
@@ -79,6 +82,10 @@ export function setupProtocol(
         const inputLimiterV8 = new TokenBucket(20, 20 / 1000);
         const cancelLimiterV8 = new TokenBucket(2, 4 / 1000);
         const releaseLimiterV8 = new TokenBucket(2, 4 / 1000);
+        const cancelLimiterV10 = new TokenBucket(2, 4 / 1000);
+        const releaseLimiterV10 = new TokenBucket(2, 4 / 1000);
+        const inputLimiterV10 = new TokenBucket(30, 30 / 1000);
+        const eventLimiterV10 = new TokenBucket(30, 30 / 1000);
         const cancelLimiterV9 = new TokenBucket(2, 4 / 1000);
         const releaseLimiterV9 = new TokenBucket(2, 4 / 1000);
         const invalidLimiter = new TokenBucket(5, 5 / 10_000);
@@ -127,6 +134,18 @@ export function setupProtocol(
                 nextInputSequence: ownedV9InputCursor(payload), ok: false,
                 error: { code, message, retryable: code === 'RATE_LIMITED' } });
 
+        const ownedV10InputCursor = (payload: unknown): number => {
+            const session = registry.getBound(socket.id);
+            const challengeId = (payload && typeof payload === 'object') ? (payload as { challengeId?: unknown }).challengeId : undefined;
+            return session && typeof challengeId === 'string' ? registry.inputCursorV10(session, challengeId) : 0;
+        };
+        const candidateFailureV10 = (payload: unknown, code: ProtocolError['code'], message: string): CandidateAckV10 =>
+            CandidateAckV10Schema.parse({ protocolVersion: 10,
+                requestId: RequestIdSchema.safeParse(requestIdOf(payload)).success ? requestIdOf(payload) : 'invalid-request-0',
+                nextSequence: registry.getBound(socket.id)?.nextSequence ?? 0,
+                nextInputSequence: ownedV10InputCursor(payload), ok: false,
+                error: { code, message, retryable: code === 'RATE_LIMITED' } });
+
         socket.use((packet, next) => {
             const event = packet[0];
             const payload = packet[1];
@@ -140,6 +159,20 @@ export function setupProtocol(
                 }
                 next(new Error('Unknown protocol event.'));
                 return;
+            }
+            if ((Object.values(protocolEventsV10) as string[]).includes(event)) {
+                const neutral = event === protocolEventsV10.cancel || event === protocolEventsV10.release;
+                const limiter = event === protocolEventsV10.cancel ? cancelLimiterV10 : event === protocolEventsV10.release ? releaseLimiterV10 : eventLimiterV10;
+                if (jsonBytesV10(payload) > V10_INPUT_BYTES) {
+                    ack?.(candidateFailureV10(payload, 'PAYLOAD_TOO_LARGE', 'V10 payload exceeds 1024 bytes.'));
+                    if (!invalidLimiter.take()) socket.disconnect(true);
+                    next(new Error('V10 payload is too large.')); return;
+                }
+                if (!limiter.take() || (!neutral && event === protocolEventsV10.input && !inputLimiterV10.take())) {
+                    ack?.(candidateFailureV10(payload, 'RATE_LIMITED', 'V10 request rate exceeded.'));
+                    next(new Error('V10 rate limit exceeded.')); return;
+                }
+                next(); return;
             }
             const v8 = event === protocolEventsV8.create || event === protocolEventsV8.input || event === protocolEventsV8.cancel || event === protocolEventsV8.release ||
                 event === protocolEventsV8.pause || event === protocolEventsV8.leave;
@@ -256,6 +289,74 @@ export function setupProtocol(
                     if (response.ok && event === protocolEventsV8.pause) socket.emit(protocolEventsV8.snapshot,response.data);
                 }).catch(() => ack({protocolVersion:8,requestId:packet.requestId,nextSequence:session.nextSequence,ok:false,
                     error:{code:'INTERNAL_ERROR',message:'V8 lifecycle operation failed.',retryable:false}}));
+            });
+        }
+
+        socket.on(protocolEventsV10.input, (payload: unknown, ack?: (response: CandidateAckV10) => void) => {
+            if (typeof ack !== 'function') { guard(socket, payload, undefined, invalidLimiter); return; }
+            const session = registry.getBound(socket.id);
+            if (!session) { ack(candidateFailureV10(payload, 'UNAUTHORIZED', 'Open or resume a session first.')); return; }
+            if (!InputRequestV10Schema.safeParse(payload).success) {
+                ack(candidateFailureV10(payload, 'BAD_REQUEST', 'Invalid V10 input envelope.'));
+                if (!invalidLimiter.take()) socket.disconnect(true);
+                return;
+            }
+            void registry.submitInputV10(session, payload).then(ack).catch(() => {
+                ack(candidateFailureV10(payload, 'INTERNAL_ERROR', 'V10 input could not be completed.'));
+            });
+        });
+
+        for (const event of [protocolEventsV10.cancel, protocolEventsV10.release]) {
+            socket.on(event, (payload: unknown, ack?: (response: CandidateAckV10) => void) => {
+                if (typeof ack !== 'function') { guard(socket, payload, undefined, invalidLimiter); return; }
+                const session = registry.getBound(socket.id);
+                const schema = event === protocolEventsV10.cancel ? InputCancelV10Schema : InputReleaseV10Schema;
+                if (!session) { ack(candidateFailureV10(payload, 'UNAUTHORIZED', 'Open or resume a session first.')); return; }
+                if (!schema.safeParse(payload).success) {
+                    ack(candidateFailureV10(payload, 'BAD_REQUEST', 'Invalid V10 neutral input envelope.'));
+                    if (!invalidLimiter.take()) socket.disconnect(true);
+                    return;
+                }
+                void (event === protocolEventsV10.cancel
+                    ? registry.cancelInputV10(session, payload)
+                    : registry.releaseInputV10(session, payload)).then(ack).catch(() => {
+                    ack(candidateFailureV10(payload, 'INTERNAL_ERROR', 'V10 neutral input could not be completed.'));
+                });
+            });
+        }
+
+        for (const event of [protocolEventsV10.pause, protocolEventsV10.leave]) {
+            socket.on(event, (payload: unknown, ack?: (response: CandidateAckV10) => void) => {
+                if (typeof ack !== 'function') { guard(socket, payload, undefined, invalidLimiter); return; }
+                const session = registry.getBound(socket.id);
+                const schema = event === protocolEventsV10.pause ? ChallengePauseV10Schema : ChallengeLeaveV10Schema;
+                const parsed = schema.safeParse(payload);
+                if (!parsed.success || !session) {
+                    ack(candidateFailureV10(payload, session ? 'BAD_REQUEST' : 'UNAUTHORIZED', 'A valid owned V10 lifecycle request is required.'));
+                    if (session && !invalidLimiter.take()) socket.disconnect(true);
+                    return;
+                }
+                const packet = parsed.data;
+                void registry.sequenceAsync(session, packet.requestId, packet.sequence, { event, ...packet }, async () => {
+                    if (registry.getBound(socket.id) !== session || !registry.ownsChallengePacketV10(session, packet.challengeId, packet))
+                        return failure(packet.requestId, 'UNAUTHORIZED', 'The exact lifecycle match/transport is not owned.');
+                    const value = event === protocolEventsV10.pause
+                        ? await registry.setChallengePausedV10(session, packet.challengeId, ChallengePauseV10Schema.parse(payload).paused)
+                        : registry.leaveChallengeV10(session, packet.challengeId);
+                    return ackFor(packet.requestId, value);
+                }).then(response => {
+                    const current = registry.activeSnapshotV10(session);
+                    const data = response.ok ? response.data as any : undefined;
+                    const wire = CandidateAckV10Schema.parse(response.ok && data
+                        ? { protocolVersion: 10, requestId: packet.requestId, nextSequence: session.nextSequence,
+                            nextInputSequence: data.nextInputSequence, ok: true,
+                            data: { ...data, nextSequence: session.nextSequence } }
+                        : { protocolVersion: 10, requestId: packet.requestId, nextSequence: session.nextSequence,
+                            nextInputSequence: current?.nextInputSequence ?? ownedV10InputCursor(packet), ok: false,
+                            error: response.ok === false ? response.error : { code: 'CHALLENGE_NOT_FOUND', message: 'V10 match closed.', retryable: false } });
+                    ack(wire);
+                    if (wire.ok) registry.deliverCurrentV10(session);
+                }).catch(() => ack(candidateFailureV10(payload, 'INTERNAL_ERROR', 'V10 lifecycle operation failed.')));
             });
         }
 
@@ -403,6 +504,7 @@ export function setupProtocol(
             if (reboundSession) {
                 registry.deliverCurrentV8(reboundSession);
                 registry.deliverCurrentV9(reboundSession);
+                registry.deliverCurrentV10(reboundSession);
                 const activeSnapshot = registry.activeSnapshot(reboundSession);
                 if (activeSnapshot) {
                     socket.emit(protocolEvents.snapshot, activeSnapshot);
@@ -718,6 +820,29 @@ export function setupProtocol(
                     ack(rewardFailure(parsed.data.requestId, error));
                 }
             });
+        });
+
+        socket.on(protocolEventsV10.create, (payload: unknown, ack?: (response: CandidateAckV10) => void) => {
+            if (typeof ack !== 'function') return;
+            const parsed = ChallengeCreateV10Schema.safeParse(payload);
+            const session = registry.getBound(socket.id);
+            if (!parsed.success || !session) {
+                ack(candidateFailureV10(payload, session ? 'BAD_REQUEST' : 'UNAUTHORIZED', 'Valid volcanic Practice request required.'));
+                if (!parsed.success && !invalidLimiter.take()) socket.disconnect(true);
+                return;
+            }
+            const request = parsed.data;
+            void registry.sequenceAsync(session, request.requestId, request.sequence, { event: protocolEventsV10.create, ...request }, async () => {
+                if (registry.getBound(socket.id) !== session) return failure(request.requestId, 'UNAUTHORIZED', 'Creation transport disconnected.');
+                return ackFor(request.requestId, registry.createChallengeAutomatedV10(session, 'practice', request.calling));
+            }).then(response => {
+                const data = response.ok ? response.data as any : undefined;
+                const wire = ChallengeCreateAckV10Schema.parse(response.ok && data
+                    ? { protocolVersion: 10, requestId: request.requestId, nextSequence: session.nextSequence, nextInputSequence: data.nextInputSequence, ok: true, data: { ...data, nextSequence: session.nextSequence } }
+                    : { protocolVersion: 10, requestId: request.requestId, nextSequence: session.nextSequence, nextInputSequence: 0, ok: false, error: response.ok === false ? response.error : { code: 'INTERNAL_ERROR', message: 'Creation failed.', retryable: false } });
+                ack(wire);
+                if (wire.ok) registry.deliverCurrentV10(session);
+            }).catch(() => ack(candidateFailureV10(payload, 'INTERNAL_ERROR', 'Volcanic Practice creation failed.')));
         });
 
         socket.on(protocolEventsV9.create, (payload: unknown, ack?: (response: CandidateAckV9) => void) => {
@@ -1240,6 +1365,12 @@ function authorizationIdOf(payload: unknown): string | undefined {
 }
 
 const ALLOWED_CLIENT_EVENTS = new Set([
+    protocolEventsV10.create,
+    protocolEventsV10.input,
+    protocolEventsV10.cancel,
+    protocolEventsV10.release,
+    protocolEventsV10.pause,
+    protocolEventsV10.leave,
     protocolEventsV9.create,
     protocolEventsV9.input,
     protocolEventsV9.cancel,

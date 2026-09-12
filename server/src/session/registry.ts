@@ -1,3 +1,7 @@
+import { V10_AUTOMATION_ID } from '../../../shared/combat-version';
+import { V10_R5_RULESET_ID, type SimulationIntentV10 } from '../../../shared/simulation-v10';
+import { CandidateAckV10Schema, ChallengeResultV10Schema, ChallengeSnapshotV10Schema, InputCancelV10Schema, InputRequestV10Schema, V10_INPUT_BYTES, jsonBytesV10, type CandidateAckV10, type ChallengeResultV10, type ChallengeSnapshotV10, type CoordinatorReplayV10Automated } from '../../../shared/protocol-v10-live';
+import type { CoordinatorUpdateV10, LiveSimulationCoordinatorV10Options } from '../simulation/coordinator-v10-live';
 import { createHash, randomBytes } from 'crypto';
 
 import type {
@@ -67,7 +71,7 @@ type CachedRequest = {
 export type Challenge = {
     id: string;
     /** Absent on historical in-memory entries; V8 never enters a legacy snapshot. */
-    rulesetId?: SimulationRulesetId | V8RulesetId | typeof V9_RULESET_ID;
+    rulesetId?: SimulationRulesetId | V8RulesetId | typeof V9_RULESET_ID | typeof V10_R5_RULESET_ID;
     mode: 'practice' | 'reward';
     calling: 'wizard' | 'thief' | 'warrior';
     loomkeeperDifficulty: LoomkeeperDifficulty;
@@ -79,7 +83,7 @@ export type Challenge = {
     expiresAt: number;
     resultEmitted: boolean;
     settlementEmitted?: boolean;
-    automationId?: typeof V8_AUTOMATION_ID | typeof V9_AUTOMATION_ID;
+    automationId?: typeof V8_AUTOMATION_ID | typeof V9_AUTOMATION_ID | typeof V10_AUTOMATION_ID;
     playerCommandTurn: number;
     playerCommandCount: number;
 };
@@ -100,6 +104,13 @@ export type Session = {
 };
 
 export type SessionRegistryOptions = {
+    /** Standard volcanic Practice, enabled by the deployed entry point. */
+    practiceV10?: boolean;
+    v10TestOnly?: Pick<LiveSimulationCoordinatorV10Options, 'nowUs' | 'yieldBatch' | 'tickIntervalMs' | 'maxReplayRecords' | 'maxReplayBytes'>;
+    onChallengeSnapshotV10?: (snapshot: ChallengeSnapshotV10, socketId?: string) => void;
+    onChallengeCompletedV10?: (result: ChallengeResultV10, socketId?: string) => void;
+    onChallengeSettledV10?: (result: ChallengeResultV10, replay: CoordinatorReplayV10Automated) => void;
+
     now?: () => number;
     sessionTtlMs?: number;
     reconnectGraceMs?: number;
@@ -182,7 +193,18 @@ export class SessionRegistry {
     private readonly v9Locks = new Map<string, Promise<void>>();
     private readonly v9InInput = new Set<string>();
 
+    private readonly v10Inputs = new Map<string, { next: number; cache: Map<string, { hash: string; ack: CandidateAckV10 }>;
+        cancels: Map<string, string>; releases: Map<string, string> }>();
+    private readonly v10Locks = new Map<string, Promise<void>>();
+    private readonly v10InInput = new Set<string>();
+
+    private readonly practiceV10: boolean;
+    private readonly onChallengeSnapshotV10?: SessionRegistryOptions['onChallengeSnapshotV10'];
+    private readonly onChallengeCompletedV10?: SessionRegistryOptions['onChallengeCompletedV10'];
+    private readonly onChallengeSettledV10?: SessionRegistryOptions['onChallengeSettledV10'];
+
     public constructor(options: SessionRegistryOptions = {}) {
+        if (options.practiceV10 && (options.stagingPracticeV8 || options.practiceV9)) throw new Error('Conflicting Practice profiles.');
         if (options.stagingPracticeV8 !== undefined || options.practiceV9 !== undefined) {
             const overrides: (keyof SessionRegistryOptions)[] = [
                 'simulationRulesetId', 'v8TestOnly', 'v9TestOnly', 'now', 'seedSource',
@@ -197,6 +219,10 @@ export class SessionRegistry {
                 throw new Error('Deployed Practice refuses conflicting simulation or fixture options.');
             }
         }
+        this.practiceV10 = options.practiceV10 ?? false;
+        this.onChallengeSnapshotV10 = options.onChallengeSnapshotV10;
+        this.onChallengeCompletedV10 = options.onChallengeCompletedV10;
+        this.onChallengeSettledV10 = options.onChallengeSettledV10;
         this.now = options.now || Date.now;
         this.sessionTtlMs = options.sessionTtlMs || DEFAULT_SESSION_TTL_MS;
         this.reconnectGraceMs = options.reconnectGraceMs || DEFAULT_RECONNECT_GRACE_MS;
@@ -242,7 +268,10 @@ export class SessionRegistry {
             onTransition: update => this.onSimulationTransitionV8(update) },
         v9: { ...options.v9TestOnly, tickIntervalMs: this.practiceV9 ? 10 : options.v9TestOnly?.tickIntervalMs,
             onSafetyStop: this.practiceV9 ? diagnostic => console.warn('[v9-practice-stop]', JSON.stringify(diagnostic)) : undefined,
-            onTransition: update => this.onSimulationTransitionV9(update) } });
+            onTransition: update => this.onSimulationTransitionV9(update) },
+        v10Live: { ...options.v10TestOnly, tickIntervalMs: options.v10TestOnly ? options.v10TestOnly.tickIntervalMs : this.practiceV10 ? 10 : undefined,
+            onTransition: update => this.onSimulationTransitionV10(update),
+            onSafetyStop: diagnostic => console.warn('[v10-practice-stop]', JSON.stringify(diagnostic)) } });
         this.coordinator = this.versions.legacy;
         this.sweepTimer = setInterval(
             () => this.sweep(),
@@ -325,6 +354,7 @@ export class SessionRegistry {
         this.sessionsBySocket.set(socketId, session.id);
         this.connectionBarrierV8(session, 'reconnect');
         this.connectionBarrierV9(session, 'reconnect');
+        this.connectionBarrierV10(session, 'reconnect');
         return {
             data: this.openData(session, replacement, true),
             previousSocketId: previousSocketId === socketId ? undefined : previousSocketId
@@ -379,6 +409,7 @@ export class SessionRegistry {
         }
         this.connectionBarrierV8(session, 'disconnect');
         this.connectionBarrierV9(session, 'disconnect');
+        this.connectionBarrierV10(session, 'disconnect');
         session.socketId = undefined;
         this.sessionsBySocket.delete(socketId);
         session.disconnectedDeadline = this.now() + this.reconnectGraceMs;
@@ -409,7 +440,7 @@ export class SessionRegistry {
                 this.expireChallenge(session, existing, session.nextSequence + 1);
             }
             if (existing.status === 'active' && existing.expiresAt > this.now()) {
-                if (isV8RulesetId(existing.rulesetId)) return v8Error('COMMAND_REJECTED', 'An internal V8 fixture is already active.');
+                if (isV8RulesetId(existing.rulesetId) || existing.rulesetId === V10_R5_RULESET_ID) return v8Error('COMMAND_REJECTED', 'An internal V8 fixture is already active.');
                 return this.snapshot(session, existing);
             }
         }
@@ -420,7 +451,7 @@ export class SessionRegistry {
             const removedId = closedIds.shift()!;
             session.challenges.delete(removedId);
             this.versions.delete(removedId);
-            this.v8Inputs.delete(removedId);
+            this.v8Inputs.delete(removedId); this.v9Inputs.delete(removedId); this.v9Locks.delete(removedId); this.v10Inputs.delete(removedId); this.v10Locks.delete(removedId);
         }
         const challengeId = reward?.challengeId ?? opaqueId();
         const seed = reward?.seed ?? this.seedSource(
@@ -783,6 +814,220 @@ export class SessionRegistry {
         });
     }
 
+    public createChallengeAutomatedV10(
+        session: Session,
+        mode: Challenge['mode'],
+        calling: Challenge['calling'],
+        reward?: { challengeId: string; seed: number }
+    ): ChallengeSnapshotV10 | ProtocolError {
+        const admission = this.admitChallengeAutomatedV10(session, mode, reward?.challengeId);
+        if (admission) return admission;
+        const closed = [...session.challenges.keys()];
+        while (closed.length > 1) {
+            const id = closed.shift()!;
+            session.challenges.delete(id); this.versions.delete(id); this.v10Inputs.delete(id); this.v10Locks.delete(id); this.v9Inputs.delete(id); this.v9Locks.delete(id); this.v8Inputs.delete(id); this.v8Locks.delete(id);
+        }
+        const id = reward?.challengeId ?? opaqueId();
+        const seed = reward?.seed ?? this.seedSource(session.id, session.practiceSeedIndex++) >>> 0;
+        const snapshot = this.versions.v10Live.createAutomated(id, session.id, seed || 1, calling);
+        const challenge: Challenge = {
+            id, rulesetId: V10_R5_RULESET_ID, automationId: V10_AUTOMATION_ID, mode, calling,
+            loomkeeperDifficulty: 'standard', status: 'active', paused: false, revision: 0,
+            simulationRevision: 0, simulationStateHash: snapshot.stateHash,
+            expiresAt: Math.min(this.now() + this.challengeTtlMs, session.expiresAt),
+            resultEmitted: false, settlementEmitted: false, playerCommandTurn: 0, playerCommandCount: 0
+        };
+        session.challenges.set(id, challenge);
+        this.v10Inputs.set(id, { next: 0, cache: new Map(), cancels: new Map(), releases: new Map() });
+        return this.snapshotV10(session, challenge);
+    }
+
+    /**
+     * Checks V10 Practice admission without creating a match or changing cursors.
+     * Reward modes and reservation metadata are refused.
+     */
+    public admitChallengeAutomatedV10(session: Session, mode: Challenge['mode'], rewardChallengeId?: string): ProtocolError | undefined {
+        this.sweep();
+        if (!this.practiceV10)
+            return v8Error('FEATURE_UNAVAILABLE', 'The V10 candidate is unavailable.');
+        if (mode !== 'practice' || rewardChallengeId !== undefined)
+            return v8Error('FEATURE_UNAVAILABLE', 'Deployed V10 Practice refuses reward creation and reservation metadata.');
+        if (!this.boundSessionV10(session)) return v8Error('UNAUTHORIZED', 'The V10 session is not bound.');
+        for (const current of session.challenges.values()) {
+            if (current.status === 'active') return v8Error('COMMAND_REJECTED', 'Finish or leave the current match first.');
+        }
+        if (rewardChallengeId && session.challenges.has(rewardChallengeId))
+            return v8Error('COMMAND_REJECTED', 'The reward challenge identifier is no longer available.');
+        return undefined;
+    }
+
+    public hasChallengeV10(session: Session, id: string): boolean {
+        const challenge = session.challenges.get(id);
+        return this.boundSessionV10(session) && challenge?.rulesetId === V10_R5_RULESET_ID &&
+            challenge.automationId === V10_AUTOMATION_ID;
+    }
+
+    public ownsChallengePacketV10(session: Session, id: string, packet: { rulesetId: typeof V10_R5_RULESET_ID; automationId: typeof V10_AUTOMATION_ID }): boolean {
+        return this.hasChallengeV10(session, id) && packet.rulesetId === V10_R5_RULESET_ID && packet.automationId === V10_AUTOMATION_ID;
+    }
+
+    public inputCursorV10(session: Session, id: string): number {
+        return this.hasChallengeV10(session, id) ? this.v10Inputs.get(id)?.next ?? 0 : 0;
+    }
+
+    public activeSnapshotV10(session: Session): ChallengeSnapshotV10 | undefined {
+        const candidates = [...session.challenges.values()].filter(challenge => challenge.rulesetId === V10_R5_RULESET_ID);
+        const challenge = candidates.find(candidate => candidate.status === 'active') ?? candidates.at(-1);
+        return challenge && this.versions.v10Live.get(challenge.id) ? this.snapshotV10(session, challenge) : undefined;
+    }
+
+    public deliverCurrentV10(session: Session): void {
+        if (!this.boundSessionV10(session)) return;
+        const current = this.activeSnapshotV10(session);
+        if (current) this.publishV10(session, session.challenges.get(current.challengeId)!);
+    }
+
+    public replayForChallengeV10(session: Session, id: string): CoordinatorReplayV10Automated | undefined {
+        const replay = this.hasChallengeV10(session, id) ? this.versions.v10Live.replay(id) : undefined;
+        return replay && 'automationId' in replay ? replay as CoordinatorReplayV10Automated : undefined;
+    }
+
+    public async submitInputV10(session: Session, payload: unknown): Promise<CandidateAckV10> {
+        const raw = payload as Record<string, unknown> | undefined;
+        const requestId = safeRequestIdV8(raw?.requestId);
+        const id = typeof raw?.challengeId === 'string' ? raw.challengeId : '';
+        const failure = (code: ProtocolError['code'], message: string): CandidateAckV10 =>
+            this.inputFailureV10(requestId, id, code, message);
+        if (jsonBytesV10(payload) > V10_INPUT_BYTES) return failure('PAYLOAD_TOO_LARGE', 'V10 input exceeds 1024 bytes.');
+        const parsed = InputRequestV10Schema.safeParse(payload);
+        if (!parsed.success) return failure('BAD_REQUEST', 'Invalid V10 intent envelope.');
+        if (!this.ownsChallengePacketV10(session, id, parsed.data)) return failure('UNAUTHORIZED', 'The exact V10 challenge is not owned by this session.');
+        const socketId = session.socketId;
+        return this.serialV10(id, async () => {
+            if (!this.boundSessionV10(session) || session.socketId !== socketId || !this.ownsChallengePacketV10(session, id, parsed.data))
+                return failure('UNAUTHORIZED', 'The V10 session is no longer bound.');
+            const cursor = this.v10Inputs.get(id)!;
+            const packet = parsed.data;
+            const hash = requestHash(packet);
+            const cached = cursor.cache.get(requestId);
+            if (cached) return cached.hash === hash ? structuredClone(cached.ack) : failure('REPLAY_CONFLICT', 'The request ID has different content.');
+            if (packet.inputSequence !== cursor.next) return failure(packet.inputSequence < cursor.next ? 'STALE_SEQUENCE' : 'SEQUENCE_GAP', 'V10 input sequence is not the next cursor.');
+            if (cursor.next === 0xFFFFFFFF) {
+                this.versions.v10Live.safety(id, 'sequence_limit');
+                return failure('CHALLENGE_CLOSED', 'The V10 input sequence is exhausted.');
+            }
+            try { await this.versions.v10Live.catchUp(id); }
+            catch { return failure('CHALLENGE_CLOSED', 'The V10 match is no longer available.'); }
+            // The post-await ownership check is the handoff fence: a stale socket
+            // cannot spend the input cursor after a reconnect or leave.
+            if (!this.boundSessionV10(session) || session.socketId !== socketId || !this.ownsChallengePacketV10(session, id, packet))
+                return failure('UNAUTHORIZED', 'The V10 input belongs to a disconnected transport.');
+            const challenge = this.activeChallenge(session, id);
+            if (isProtocolError(challenge)) return failure(challenge.code, challenge.message);
+            cursor.next += 1;
+            this.v10InInput.add(id);
+            let response: CandidateAckV10;
+            try {
+                const update = this.versions.v10Live.apply(id, 'player', packet.intent as SimulationIntentV10, packet.expectedTurn, packet.expectedPhase, packet.inputEpoch);
+                response = update.transition.accepted
+                    ? this.v10Success(requestId, session, challenge)
+                    : failure('COMMAND_REJECTED', update.transition.error?.message ?? 'V10 intent rejected.');
+            } finally { this.v10InInput.delete(id); }
+            cursor.cache.set(requestId, { hash, ack: structuredClone(response) });
+            while (cursor.cache.size > 256) cursor.cache.delete(cursor.cache.keys().next().value!);
+            if (session.challenges.has(id)) this.publishV10(session, session.challenges.get(id)!);
+            return response;
+        });
+    }
+
+    /** Neutral V10 cancellation has its own lane and never consumes the input cursor. */
+    public async cancelInputV10(session: Session, payload: unknown): Promise<CandidateAckV10> {
+        return this.neutralInputV10(session, payload, 'cancel');
+    }
+
+    /** A V10 release stops ordinary held movement but preserves a committed leap. */
+    public async releaseInputV10(session: Session, payload: unknown): Promise<CandidateAckV10> {
+        return this.neutralInputV10(session, payload, 'walk_stop');
+    }
+
+    public async setChallengePausedV10(session: Session, id: string, paused: boolean): Promise<ChallengeSnapshotV10 | ProtocolError> {
+        if (!this.hasChallengeV10(session, id)) return v8Error('UNAUTHORIZED', 'V10 ownership required.');
+        const socketId = session.socketId;
+        return this.serialV10(id, async () => {
+            const challenge = this.activeChallenge(session, id);
+            if (isProtocolError(challenge)) return challenge;
+            if (challenge.mode !== 'practice') return v8Error('COMMAND_REJECTED', 'Rewarded V10 matches cannot pause.');
+            try {
+                await this.versions.v10Live.catchUp(id);
+                if (!this.boundSessionV10(session) || session.socketId !== socketId || !this.hasChallengeV10(session, id))
+                    return v8Error('UNAUTHORIZED', 'The pause transport disconnected.');
+                await this.versions.v10Live.setPaused(id, paused);
+                return this.snapshotV10(session, challenge);
+            } catch { return v8Error('COMMAND_REJECTED', 'Pause needs a stable player action with no timer debt.'); }
+        });
+    }
+
+    public leaveChallengeV10(session: Session, id: string): ChallengeResultV10 | ProtocolError {
+        if (!this.hasChallengeV10(session, id)) return v8Error('UNAUTHORIZED', 'V10 ownership required.');
+        const challenge = this.activeChallenge(session, id);
+        if (isProtocolError(challenge)) return challenge;
+        this.v10InInput.add(id);
+        try { this.versions.v10Live.safety(id, 'left'); challenge.status = 'left'; }
+        finally { this.v10InInput.delete(id); }
+        const result = this.resultV10(session, challenge, 'left');
+        this.settleV10(session, challenge, result);
+        return result;
+    }
+
+    private async neutralInputV10(
+        session: Session,
+        payload: unknown,
+        reason: 'cancel' | 'walk_stop'
+    ): Promise<CandidateAckV10> {
+        const raw = payload as Record<string, unknown> | undefined;
+        const requestId = safeRequestIdV8(raw?.requestId);
+        const id = typeof raw?.challengeId === 'string' ? raw.challengeId : '';
+        const fail = (code: ProtocolError['code'], message: string) =>
+            this.inputFailureV10(requestId, '', code, message);
+        if (jsonBytesV10(payload) > V10_INPUT_BYTES)
+            return fail('PAYLOAD_TOO_LARGE', 'V10 neutral input exceeds 1024 bytes.');
+        const parsed = InputCancelV10Schema.safeParse(payload);
+        if (!parsed.success) return fail('BAD_REQUEST', 'Invalid V10 neutral input envelope.');
+        if (!this.ownsChallengePacketV10(session, id, parsed.data))
+            return fail('UNAUTHORIZED', 'The exact V10 challenge is not owned by this session.');
+        const socketId = session.socketId;
+        return this.serialV10(id, async () => {
+            if (!this.boundSessionV10(session) || session.socketId !== socketId || !this.ownsChallengePacketV10(session, id, parsed.data))
+                return fail('UNAUTHORIZED', 'The V10 neutral input belongs to a disconnected transport.');
+            const challenge = this.activeChallenge(session, id);
+            if (isProtocolError(challenge)) return fail(challenge.code, challenge.message);
+            const cursor = this.v10Inputs.get(id)!;
+            const cache = reason === 'cancel' ? cursor.cancels : cursor.releases;
+            const digest = requestHash(parsed.data);
+            const cached = cache.get(requestId);
+            if (cached && cached !== digest)
+                return fail('REPLAY_CONFLICT', 'V10 neutral request ID has different content.');
+            if (!cached) {
+                try { await this.versions.v10Live.catchUp(id); }
+                catch { return fail('CHALLENGE_CLOSED', 'The V10 match is no longer available.'); }
+                if (!this.boundSessionV10(session) || session.socketId !== socketId || !this.ownsChallengePacketV10(session, id, parsed.data))
+                    return fail('UNAUTHORIZED', 'The V10 neutral input belongs to a disconnected transport.');
+                const state = this.versions.v10Live.get(id)?.state;
+                if (state && state.activeActor === 'player' && (state.phase === 'action' || state.phase === 'retreat') &&
+                    state.turn === parsed.data.expectedTurn && state.inputEpoch === parsed.data.inputEpoch) {
+                    this.v10InInput.add(id);
+                    try { this.versions.v10Live.barrier(id, { reason, actor: 'player', expectedTurn: state.turn, expectedEpoch: state.inputEpoch }); }
+                    finally { this.v10InInput.delete(id); }
+                }
+                cache.set(requestId, digest);
+                while (cache.size > 256) cache.delete(cache.keys().next().value!);
+            }
+            const response = this.v10Success(requestId, session, challenge);
+            this.publishV10(session, challenge);
+            return response;
+        });
+    }
+
     public submitCommand(
         session: Session,
         challengeId: string,
@@ -793,7 +1038,7 @@ export class SessionRegistry {
         if (isProtocolError(challenge)) {
             return challenge;
         }
-        if (isV8RulesetId(challenge.rulesetId)) return v8Error('COMMAND_REJECTED', 'V8 requires its dedicated input protocol.');
+        if (isV8RulesetId(challenge.rulesetId) || challenge.rulesetId === V10_R5_RULESET_ID) return v8Error('COMMAND_REJECTED', 'V8 requires its dedicated input protocol.');
         if (challenge.paused) {
             return {
                 code: 'COMMAND_REJECTED',
@@ -904,7 +1149,7 @@ export class SessionRegistry {
     }
 
     public activeSnapshot(session: Session): ChallengeSnapshot | undefined {
-        const challenges = [...session.challenges.values()].filter(challenge => !isV8RulesetId(challenge.rulesetId));
+        const challenges = [...session.challenges.values()].filter(challenge => !isV8RulesetId(challenge.rulesetId) && challenge.rulesetId !== V9_RULESET_ID && challenge.rulesetId !== V10_R5_RULESET_ID);
         const challenge = challenges.find((candidate) => candidate.status === 'active') ||
             challenges.reverse().find((candidate) => candidate.status === 'completed');
         return challenge && this.coordinator.get(challenge.id)
@@ -972,7 +1217,7 @@ export class SessionRegistry {
     ): ChallengeSnapshot | ProtocolError {
         const challenge = this.activeChallenge(session, challengeId);
         if (isProtocolError(challenge)) return challenge;
-        if (isV8RulesetId(challenge.rulesetId)) return v8Error('COMMAND_REJECTED', 'V8 requires its dedicated authority.');
+        if (isV8RulesetId(challenge.rulesetId) || challenge.rulesetId === V10_R5_RULESET_ID) return v8Error('COMMAND_REJECTED', 'V8 requires its dedicated authority.');
         if (challenge.paused) {
             return {
                 code: 'COMMAND_REJECTED',
@@ -991,7 +1236,7 @@ export class SessionRegistry {
         if (isProtocolError(challenge)) {
             return challenge;
         }
-        if (isV8RulesetId(challenge.rulesetId)) return v8Error('COMMAND_REJECTED', 'V8 requires its dedicated lifecycle.');
+        if (isV8RulesetId(challenge.rulesetId) || challenge.rulesetId === V10_R5_RULESET_ID) return v8Error('COMMAND_REJECTED', 'V8 requires its dedicated lifecycle.');
         challenge.status = 'left';
         challenge.revision += 1;
         const result: ChallengeResult = {
@@ -1016,7 +1261,7 @@ export class SessionRegistry {
     ): ChallengeSnapshot | ProtocolError {
         const challenge = this.activeChallenge(session, challengeId);
         if (isProtocolError(challenge)) return challenge;
-        if (isV8RulesetId(challenge.rulesetId)) return v8Error('COMMAND_REJECTED', 'V8 requires its dedicated lifecycle.');
+        if (isV8RulesetId(challenge.rulesetId) || challenge.rulesetId === V10_R5_RULESET_ID) return v8Error('COMMAND_REJECTED', 'V8 requires its dedicated lifecycle.');
         if (challenge.mode !== 'practice') {
             return {
                 code: 'COMMAND_REJECTED',
@@ -1143,7 +1388,7 @@ export class SessionRegistry {
             return;
         }
         for (const challenge of session.challenges.values()) {
-            if ((challenge.automationId === V8_AUTOMATION_ID || challenge.automationId === V9_AUTOMATION_ID) && challenge.status === 'active')
+            if ((challenge.automationId === V8_AUTOMATION_ID || challenge.automationId === V9_AUTOMATION_ID || challenge.automationId === V10_AUTOMATION_ID) && challenge.status === 'active')
                 this.expireChallenge(session, challenge);
         }
         this.sessionsByDigest.delete(session.tokenDigest);
@@ -1156,7 +1401,7 @@ export class SessionRegistry {
         this.sessions.delete(sessionId);
         this.sequenceLocks.delete(sessionId);
         this.versions.deleteForSession(sessionId);
-        for (const id of session.challenges.keys()) { this.v8Inputs.delete(id); this.v8Locks.delete(id); this.v9Inputs.delete(id); this.v9Locks.delete(id); }
+        for (const id of session.challenges.keys()) { this.v8Inputs.delete(id); this.v8Locks.delete(id); this.v9Inputs.delete(id); this.v9Locks.delete(id); this.v10Inputs.delete(id); this.v10Locks.delete(id); }
         this.onSessionClosed?.(session.id, session.socketId);
     }
 
@@ -1184,14 +1429,14 @@ export class SessionRegistry {
     public dispose(): void {
         clearInterval(this.sweepTimer);
         for (const session of this.sessions.values()) for (const challenge of session.challenges.values()) {
-            if ((challenge.automationId === V8_AUTOMATION_ID || challenge.automationId === V9_AUTOMATION_ID) && challenge.status === 'active')
+            if ((challenge.automationId === V8_AUTOMATION_ID || challenge.automationId === V9_AUTOMATION_ID || challenge.automationId === V10_AUTOMATION_ID) && challenge.status === 'active')
                 this.expireChallenge(session, challenge);
         }
         this.sessions.clear();
         this.sessionsByDigest.clear();
         this.sessionsBySocket.clear();
         this.versions.dispose();
-        this.v8Inputs.clear(); this.v8Locks.clear(); this.v9Inputs.clear(); this.v9Locks.clear();
+        this.v8Inputs.clear(); this.v8Locks.clear(); this.v9Inputs.clear(); this.v9Locks.clear(); this.v10Inputs.clear(); this.v10Locks.clear();
     }
 
     public get size(): number {
@@ -1452,6 +1697,14 @@ export class SessionRegistry {
             this.versions.v9.barrier(challenge.id, { reason, actor: 'player', expectedTurn: current.state.turn, expectedEpoch: current.state.inputEpoch });
         }
     }
+    private connectionBarrierV10(session: Session, reason: 'disconnect' | 'reconnect'): void {
+        for (const challenge of session.challenges.values()) {
+            if (challenge.rulesetId !== V10_R5_RULESET_ID || challenge.status !== 'active') continue;
+            const current = this.versions.v10Live.get(challenge.id);
+            if (!current) continue;
+            this.versions.v10Live.barrier(challenge.id, { reason, actor: 'player', expectedTurn: current.state.turn, expectedEpoch: current.state.inputEpoch });
+        }
+    }
     private onSimulationTransitionV8(update: CoordinatorUpdateV8): void {
         const session = this.sessions.get(update.sessionId);
         const challenge = session?.challenges.get(update.challengeId);
@@ -1559,6 +1812,87 @@ export class SessionRegistry {
         try { return await operation(); }
         finally { release(); if (this.v9Locks.get(id) === queued) this.v9Locks.delete(id); }
     }
+    private snapshotV10(session: Session, challenge: Challenge): ChallengeSnapshotV10 {
+        const current = this.versions.v10Live.get(challenge.id);
+        if (!current || challenge.rulesetId !== V10_R5_RULESET_ID || challenge.automationId !== V10_AUTOMATION_ID)
+            throw new Error(`V10 challenge ${challenge.id} has no automated state.`);
+        return ChallengeSnapshotV10Schema.parse({
+            protocolVersion: 10, serverTimeMs: this.now(), sessionId: session.id, challengeId: challenge.id,
+            rulesetId: V10_R5_RULESET_ID, automationId: V10_AUTOMATION_ID,
+            loomkeeperPolicyId: 'nimble-knots-loomkeeper-v5', loomkeeperProfileId: 'standard-v10-0',
+            mode: challenge.mode, calling: challenge.calling, status: challenge.status, paused: current.paused,
+            nextSequence: session.nextSequence, nextInputSequence: this.v10Inputs.get(challenge.id)?.next ?? 0,
+            expiresAt: new Date(challenge.expiresAt).toISOString(), simulation: current.state, stateHash: current.stateHash
+        });
+    }
+    private resultV10(session: Session, challenge: Challenge, outcome?: ChallengeResultV10['outcome']): ChallengeResultV10 {
+        const current = this.versions.v10Live.get(challenge.id);
+        const settledOutcome = outcome ?? (challenge.status === 'expired' ? 'expired' : challenge.status === 'left' ? 'left'
+            : current?.state.winner === 'player' ? 'player_win' : current?.state.winner === 'loomkeeper' ? 'loomkeeper_win' : 'draw');
+        return ChallengeResultV10Schema.parse({
+            protocolVersion: 10, serverTimeMs: this.now(), sessionId: session.id, challengeId: challenge.id,
+            rulesetId: V10_R5_RULESET_ID, automationId: V10_AUTOMATION_ID,
+            loomkeeperPolicyId: 'nimble-knots-loomkeeper-v5', loomkeeperProfileId: 'standard-v10-0',
+            nextSequence: session.nextSequence, nextInputSequence: this.v10Inputs.get(challenge.id)?.next ?? 0,
+            outcome: settledOutcome, stopReason: current?.terminalResult?.stopReason,
+            finalTick: current?.state.tick ?? 0, finalStateHash: current?.stateHash ?? challenge.simulationStateHash
+        });
+    }
+    private v10Success(requestId: string, session: Session, challenge: Challenge): CandidateAckV10 {
+        return CandidateAckV10Schema.parse({ protocolVersion: 10, requestId, nextSequence: session.nextSequence,
+            nextInputSequence: this.v10Inputs.get(challenge.id)?.next ?? 0, ok: true, data: this.snapshotV10(session, challenge) });
+    }
+    private inputFailureV10(requestId: string, id: string, code: ProtocolError['code'], message: string): CandidateAckV10 {
+        return CandidateAckV10Schema.parse({ protocolVersion: 10, requestId, nextSequence: 0,
+            nextInputSequence: this.v10Inputs.get(id)?.next ?? 0, ok: false,
+            error: { code, message, retryable: code === 'RATE_LIMITED' } });
+    }
+    private onSimulationTransitionV10(update: CoordinatorUpdateV10): void {
+        const session = this.sessions.get(update.sessionId);
+        const challenge = session?.challenges.get(update.challengeId);
+        if (!session || !challenge || challenge.rulesetId !== V10_R5_RULESET_ID) return;
+        challenge.simulationStateHash = update.stateHash; challenge.simulationRevision = update.state.revision; challenge.paused = update.paused;
+        if (update.state.phase === 'finished') challenge.status = update.unavailable ? 'expired' : 'completed';
+        if (!this.v10InInput.has(challenge.id)) this.publishV10(session, challenge);
+    }
+    private publishV10(session: Session, challenge: Challenge): void {
+        if (this.v10InInput.has(challenge.id)) return;
+        const snapshot = this.snapshotV10(session, challenge);
+        this.onChallengeSnapshotV10?.(snapshot, session.socketId);
+        if (snapshot.simulation.phase !== 'finished' && challenge.status === 'active') return;
+        const result = this.resultV10(session, challenge);
+        this.settleV10(session, challenge, result);
+        if (challenge.resultEmitted || !this.boundSessionV10(session)) return;
+        challenge.resultEmitted = true;
+        this.onChallengeCompletedV10?.(result, session.socketId);
+    }
+    private settleV10(session: Session, challenge: Challenge, result: ChallengeResultV10): void {
+        if (challenge.settlementEmitted) return;
+        const replay = this.replayForSettlementV10(session, challenge);
+        // Settlement owns the durable record and must run before close removes
+        // the coordinator.  Only mark the once flag once evidence is present.
+        if (!replay) return;
+        challenge.settlementEmitted = true;
+        if (replay) this.onChallengeSettledV10?.(result, replay);
+    }
+
+    private replayForSettlementV10(session: Session, challenge: Challenge): CoordinatorReplayV10Automated | undefined {
+        if (this.sessions.get(session.id) !== session || challenge.rulesetId !== V10_R5_RULESET_ID ||
+            challenge.automationId !== V10_AUTOMATION_ID || session.challenges.get(challenge.id) !== challenge)
+            return undefined;
+        const replay = this.versions.v10Live.replay(challenge.id);
+        return replay && 'automationId' in replay ? replay as CoordinatorReplayV10Automated : undefined;
+    }
+    private async serialV10<T>(id: string, operation: () => Promise<T>): Promise<T> {
+        const previous = this.v10Locks.get(id) ?? Promise.resolve();
+        let release!: () => void;
+        const current = new Promise<void>(resolve => { release = resolve; });
+        const queued = previous.then(() => current);
+        this.v10Locks.set(id, queued);
+        await previous;
+        try { return await operation(); }
+        finally { release(); if (this.v10Locks.get(id) === queued) this.v10Locks.delete(id); }
+    }
     private async serialV8<T>(id: string,operation: () => Promise<T>): Promise<T> {
         const previous = this.v8Locks.get(id) ?? Promise.resolve();
         let release!: () => void;
@@ -1570,6 +1904,9 @@ export class SessionRegistry {
         finally { release(); if (this.v8Locks.get(id) === queued) this.v8Locks.delete(id); }
     }
 
+    private boundSessionV10(session: Session): boolean {
+        return Boolean(session.socketId && this.getBound(session.socketId) === session);
+    }
     private activeChallenge(session: Session, id: string): Challenge | ProtocolError {
         const challenge = session.challenges.get(id);
         if (!challenge) {
@@ -1610,6 +1947,12 @@ export class SessionRegistry {
             this.versions.v9.safety(challenge.id, 'expiry');
             challenge.status = 'expired';
             this.publishV9(session, challenge);
+            return;
+        }
+        if (challenge.rulesetId === V10_R5_RULESET_ID) {
+            this.versions.v10Live.safety(challenge.id, 'expiry');
+            challenge.status = 'expired';
+            this.publishV10(session, challenge);
             return;
         }
         challenge.status = 'expired';

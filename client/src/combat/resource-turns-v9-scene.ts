@@ -1,7 +1,7 @@
 import { VOLCANIC_RUIN_ARENA_FRAME } from '../../../shared/terrain-volcanic-ruin';
 import Phaser from 'phaser';
 import { V9PreviewListenerCleanup, type ResourceTurnsEvent, type ResourceTurnsSceneArgs, type ResourceTurnsState, type SafeAreaInsets } from './contracts';
-import { createApprovedWizardAnimations } from './approved-assets';
+import { createApprovedWizardAnimations, WIZARD_UNRAVEL_DURATION_MS } from './approved-assets';
 import { cameraDirectionToWorldX, cameraForActor, createCombatCamera, createCombatOverviewCamera, focusCombatCamera, interpolateCombatCamera, panCombatCamera, revealCombatCameraPoint, type CombatCamera } from './camera';
 import { computeCombatLayout, type CombatLayout } from './layout';
 import { liveProjectileTraceV9, planV9Presentation, projectCombatV9, trajectoryPreviewV9, type V9PresentationStep } from './resource-turns-v9-fixture';
@@ -28,6 +28,7 @@ export class ResourceTurnsV9Scene {
     private projectileCamera?: CombatCamera; private cameraTransition?: CameraTransition;
     private cameraPointer?: { id: number; x: number }; private readonly listeners = new V9PreviewListenerCleanup();
     private restarting = false;
+    private terminalPresentation?: { result: import('../../../shared/protocol-v10-live').ChallengeResultV10; until: number };
     private readonly scenicFrame: boolean;
 
     public constructor(
@@ -48,17 +49,18 @@ export class ResourceTurnsV9Scene {
             submit: intent => this.submit(intent), pause: paused => void this.pause(paused), neutral: () => void this.neutralize(), release: () => void this.releaseMovement(),
             preview: aim => this.previewAim(aim), focus: actor => this.focusActor(actor), restart: () => void this.restart(),
             inputReady: args.inputReady, pauseAllowed: args.pauseAllowed, pauseReason: args.pauseReason,
-            live: args.kind === 'v9' && args.previewLabel.includes('server-authoritative'), automated: args.kind === 'v10'
+            live: args.kind === 'v10' ? args.live === true : args.previewLabel.includes('server-authoritative'), automated: args.kind === 'v10'
         }, () => performance.now(), args.paused());
         this.controls.root.dataset.preview = args.previewLabel;
         this.controls.root.dataset.background = backgroundScene?.id ?? 'none';
+        this.controls.root.dataset.backgroundReady = String(this.sceneBackground.active);
         if (args.kind === 'v10' && args.previewTerrainReflected !== undefined) {
             this.controls.root.dataset.terrainReflected = String(args.previewTerrainReflected);
         }
         this.unsubscribe = args.kind === 'v10'
             ? args.onSnapshot((state, events) => this.accept(state, events))
             : args.onSnapshot((state, events) => this.accept(state, events));
-        if (args.kind === 'v9') {
+        {
             if (args.onConnection) this.listeners.defer(args.onConnection(state => {
                 this.controls.interrupt();
                 this.controls.root.dataset.connection = state;
@@ -140,14 +142,18 @@ export class ResourceTurnsV9Scene {
         try { const next = await this.args.releaseMovement(); if (!this.destroyed && generation === this.requestGeneration) this.accept(next, []); }
         finally { if (neutralGeneration === this.neutralGeneration) this.neutralPending = false; }
     }
-    private showResult(result: import('../../../shared/protocol-v9').ChallengeResultV9): void {
+    private showResult(result: import('../../../shared/protocol-v9').ChallengeResultV9 | import('../../../shared/protocol-v10-live').ChallengeResultV10): void {
         if (this.destroyed || this.restarting) return;
+        if (result.protocolVersion === 10 && this.state.units.some(unit => !unit.alive)) {
+            this.terminalPresentation ??= { result, until: performance.now() + WIZARD_UNRAVEL_DURATION_MS };
+            return;
+        }
         this.scene.scene.start('result', { result, calling: this.args.calling ?? 'wizard',
-            rewarded: this.args.kind === 'v9' && this.args.rewarded, previewLabel: this.args.previewLabel });
+            rewarded: this.args.kind === 'v9' && this.args.rewarded, previewLabel: this.args.kind === 'v10' && this.args.live ? undefined : this.args.previewLabel });
     }
     private showUnavailable(message: string): void {
         if (this.destroyed) return;
-        this.scene.scene.start('result', { calling: this.args.calling ?? 'wizard', message, previewLabel: this.args.previewLabel });
+        this.scene.scene.start('result', { calling: this.args.calling ?? 'wizard', message, previewLabel: this.args.kind === 'v10' && this.args.live ? undefined : this.args.previewLabel });
     }
     private previewAim(aim: AimIntent | null): void {
         const generation = ++this.previewGeneration;
@@ -188,6 +194,11 @@ export class ResourceTurnsV9Scene {
     }
     private render(pollMovement: boolean): void {
         if (this.destroyed) return; const now = performance.now();
+        if (this.terminalPresentation && now >= this.terminalPresentation.until) {
+            const result = this.terminalPresentation.result;
+            this.scene.scene.start('result', { result, calling: this.args.calling ?? 'wizard', rewarded: false });
+            return;
+        }
         // The live V9 projectile wins over the decorative cast queue. Track its
         // current authority position on every frame in full and reduced motion.
         if (this.state.projectile) {
@@ -195,7 +206,9 @@ export class ResourceTurnsV9Scene {
             this.camera = this.scenicFrame ? revealCombatCameraPoint(projectCombatV9(this.state), this.camera, this.state.projectile.xFp / 256) : focusCombatCamera(projectCombatV9(this.state), this.camera, this.state.projectile.xFp / 256);
         } else this.advanceCamera(now);
         this.layout = computeCombatLayout(this.scene.scale.width, this.scene.scale.height, readSafeArea(), this.camera); this.controls.setLayout(this.layout); if (pollMovement) this.controls.pollMovement();
-        const queuedVisual = this.visual(now); const visual: CombatVisualPhase | undefined = this.state.projectile ? {
+        const queuedVisual = this.terminalPresentation ? { kind: 'impact' as const, actor: this.state.activeActor,
+            relicId: this.state.lastProjectile?.relicId ?? 'threadball' as const, trace: [],
+            unraveling: this.state.units.filter(unit => !unit.alive).map(unit => unit.id) } : this.visual(now); const visual: CombatVisualPhase | undefined = this.state.projectile ? {
             kind: 'projectile', actor: this.state.projectile.actor, relicId: this.state.projectile.relicId,
             trace: liveProjectileTraceV9(this.state.projectile)
         } : queuedVisual;

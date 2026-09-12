@@ -37,14 +37,15 @@ async function main(): Promise<void> {
     // This branch must precede all normal identity/reward parsing and construction.
     // Saved production credentials remain dormant; pausing a worker alone is not isolation.
     const activeRuntime = practiceProfile ? createRuntimeServer({
-        sessionRegistry: practiceProfile === 'development-v9d-practice'
+        sessionRegistry: practiceProfile === 'development-v10-practice' ? { practiceV10: true } : practiceProfile === 'development-v9d-practice'
             ? { practiceV9: 'v9d-practice' } : { stagingPracticeV8: 'staging-v8d-practice' }, identity: false
     }) : await createNormalRuntime();
     runtime = activeRuntime;
     await activeRuntime.listen(port, '0.0.0.0');
     if (practiceProfile) {
         const v9 = practiceProfile === 'development-v9d-practice';
-        console.log(`Runtime ${practiceProfile} / ${v9 ? V9_RULESET_ID : V8_R1_RULESET_ID} / ${v9 ? V9_AUTOMATION_ID : V8_AUTOMATION_ID} / rewards disabled`);
+        const v10 = practiceProfile === 'development-v10-practice';
+        console.log(`Runtime ${practiceProfile} / ${v10 ? 'nimble-knots-artillery-v10-r5' : v9 ? V9_RULESET_ID : V8_R1_RULESET_ID} / ${v10 ? 'wp-015d4h-v10-live-v1' : v9 ? V9_AUTOMATION_ID : V8_AUTOMATION_ID} / rewards disabled`);
     }
     for (const ifaceinfo of Object.values(os.networkInterfaces())) {
         for (const iface of ifaceinfo || []) {
@@ -85,11 +86,11 @@ async function createNormalRuntime(): Promise<RuntimeServer> {
             sessionOpenRateCapacity > 0
             ? sessionOpenRateCapacity
             : undefined,
-        sessionRegistry: deterministicTestSeeds.length > 0 ? {
+        sessionRegistry: { practiceV10: !(process.env.NODE_ENV === 'test' && process.env.PRACTICE_TEST_VERSION === 'legacy'), ...(deterministicTestSeeds.length > 0 ? {
             seedSource: (_sessionId, practiceIndex) => deterministicTestSeeds[
                 practiceIndex % deterministicTestSeeds.length
             ]
-        } : undefined,
+        } : {} ) },
         identity,
         rewards,
         rewardWorker
