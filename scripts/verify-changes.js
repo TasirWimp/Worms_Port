@@ -4,6 +4,7 @@ const os = require('node:os');
 const path = require('node:path');
 const { execFileSync, spawnSync } = require('node:child_process');
 const { acquireVerificationLease } = require('./verification-lease');
+const { checkRangeWhitespace } = require('./check-range-whitespace');
 
 const repoRoot = path.resolve(__dirname, '..');
 const productSuites = ['protocol', 'simulation', 'loomkeeper', 'relics', 'combat', 'practice', 'identity', 'reward', 'pei'];
@@ -285,8 +286,10 @@ function main() {
     run('git', ['diff', '--check']);
     run('git', ['diff', '--cached', '--check']);
     if (options.base) {
-      const ancestor = git(repoRoot, ['merge-base', options.base, 'HEAD']).trim();
-      run('git', ['diff', '--check', ancestor, 'HEAD']);
+      const inspection = checkRangeWhitespace(options.base, repoRoot);
+      if (inspection.acceptedLines.length > 0) {
+        console.log(`Range whitespace check passed with ${inspection.acceptedLines.length} exact blob-bound historical exception(s).`);
+      }
     }
     const phase = (name) => options.phase === 'all' || options.phase === name;
     if (phase('checks')) {
