@@ -1,6 +1,6 @@
 import { Pool, type PoolClient, type QueryResultRow } from 'pg';
 
-import { readPeiOperationsMigration } from './store';
+import { initializePeiOperationsMigration } from './store';
 
 export type PeiProxyTransferStateV0 = 'signed' | 'broadcast_unknown';
 
@@ -155,7 +155,7 @@ export class PostgresPeiProxyTransferStoreV0 implements PeiProxyTransferStoreV0 
     }
 
     public async initialize(): Promise<void> {
-        await this.pool.query(await readPeiOperationsMigration());
+        await initializePeiOperationsMigration(this.pool);
     }
 
     public async withRequestLock<T>(

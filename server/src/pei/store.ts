@@ -92,7 +92,7 @@ export class PostgresPeiJourneyStoreV0 implements PeiJourneyStoreV0 {
     }
 
     public async initialize(): Promise<void> {
-        await this.pool.query(await readPeiOperationsMigration());
+        await initializePeiOperationsMigration(this.pool);
     }
 
     public async begin(state: PeiJourneyStateV0, now: Date): Promise<PeiJourneyStateV0> {
@@ -188,4 +188,25 @@ export async function readPeiOperationsMigration(): Promise<string> {
         }
     }
     throw new Error('PEI operations migration 004_pei_operations.sql could not be located.');
+}
+
+export async function initializePeiOperationsMigration(pool: Pool): Promise<void> {
+    const migration = await readPeiOperationsMigration();
+    const client = await pool.connect();
+    try {
+        await client.query('BEGIN');
+        try {
+            await client.query(
+                'SELECT pg_advisory_xact_lock(hashtextextended($1, 22021))',
+                ['pei-operations-migration-v0']
+            );
+            await client.query(migration);
+            await client.query('COMMIT');
+        } catch (error) {
+            await client.query('ROLLBACK').catch(() => undefined);
+            throw error;
+        }
+    } finally {
+        client.release();
+    }
 }

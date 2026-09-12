@@ -72,6 +72,11 @@
       "command": "Follow-up CI PostgreSQL selection",
       "status": "pass",
       "details": "A second direct-review check found that a PR follow-up commit could otherwise select only its newest workflow/tooling delta and omit the prior product commit's PostgreSQL gate. Verify-workflow changes now retain postgres=true without widening browser or performance checks. The selector regression passed in the 131-case tooling suite, and the exact outgoing dry run selected the PostgreSQL job with no fallback. Log .cache/wp022g-ci-followup-selector.log."
+    },
+    {
+      "command": "GitHub Actions Verify run 34722801019 PEI PostgreSQL gate",
+      "status": "fail_then_corrected",
+      "details": "The restart/persistence case passed, then the new two-instance case reproduced a PostgreSQL catalog race while both stores ran CREATE TABLE IF NOT EXISTS concurrently: pg_type_typname_nsp_index error 23505. This was an infrastructure defect in shared migration initialization, not an issuance-policy assertion. Both PEI stores now execute migration 004 under the same transaction-scoped advisory lock; check:types passed on the correction. The affected PostgreSQL CI gate remains pending. Log .cache/wp022g-migration-lock-types.log; failed CI run https://github.com/TasirWimp/Worms_Port/actions/runs/34722801019."
     }
   ],
   "reviews": [

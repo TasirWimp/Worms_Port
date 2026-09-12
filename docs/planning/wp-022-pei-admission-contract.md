@@ -278,7 +278,9 @@ uses `PEI_PROXY_DAILY_BUDGET_LUNA=100000` and
 The selected PostgreSQL CI job runs `test:pei:postgres` alongside the reward
 database gates. It proves migration from zero, restart persistence, same-wallet
 refusal and concurrent daily-budget serialization through two store instances
-before Render receives the package.
+before Render receives the package. Migration initialization itself uses a
+transaction-scoped advisory lock so two starting helper/game instances cannot
+race PostgreSQL catalog creation.
 
 Routine phone and release verification now starts the standard V10 R5 volcanic
 profile. Browser suites marked `@legacy` retain prior engineering evidence but
