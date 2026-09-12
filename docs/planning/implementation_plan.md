@@ -13,17 +13,18 @@ Phaser/Socket.IO stack.
   from `da1e7a9` follows the owner-requested 22:00 Berlin daily/full cadence.
   See [Verification Funnels](../process/development_workflow.md#verification-funnels).
   This changes verification policy only and does not advance the product package.
-- Owner-approved successor **WP-015D4H Standard Volcanic Practice**, 2026-09-11:
+- Completed successor **WP-015D4H Standard Volcanic Practice**, 2026-09-12:
   promote the accepted R5 volcanic arena into normal server-backed Practice at
   `/`, before PEI implementation. D4G's restart fix at `d2e426d` is verified on
   the owner's phone. D4H owns the new live authority, lifecycle and default entry;
   the prior preview acceptance is not acceptance of this new transport.
   See [contract](wp-015d4f-volcanic-ruin-preview-bundle-contract.md#wp-015d4h-standard-server-backed-volcanic-practice)
-  and [evidence](../evidence/wp-015d4h.json). Local implementation and direct review
-  are ready: change-selected gates and all ten five-project live volcanic cases
-  passed. Next: deploy the V10 Practice profile and verify the new live journey
-  on the owner's phone; Ubuntu/database/release gates remain separate. D4H stays
-  in progress for that acceptance. PEI remains unimplemented.
+  and [evidence](../evidence/wp-015d4h.json). Change-selected gates and all ten
+  five-project live volcanic cases passed. The owner committed, pushed and
+  accepted the server-backed journey on a physical phone at `9c137ef`; D4H is
+  complete. Next: migrate the existing one-attempt-per-wallet Daily Challenge
+  from V7 to this same V10 R5 volcanic authority before adding PEI as its
+  additional admission requirement. PEI remains unimplemented.
 - Active target: mobile-first single-player Nimiq Pay competition release.
 - Latest completed slice: **WP-015D4D V10G Terrain And Weapon Tactics**;
   see the [V10G preparation contract](wp-015d4a-v10-terrain-starts-contract.md#v10g-terrain-and-weapon-tactics-preparation).

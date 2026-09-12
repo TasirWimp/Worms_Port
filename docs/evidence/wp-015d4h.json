@@ -1,6 +1,6 @@
 {
   "id": "WP-015D4H",
-  "status": "in_progress",
+  "status": "complete",
   "execution_mode": "single_owner",
   "starting_commit": "a961738",
   "branch": "codex/volcanic-ruin-background-art",
@@ -70,19 +70,23 @@
       "role": "primary_direct_review",
       "decision": "pass",
       "details": "Local implementation and selected verification ready for deployment and owner phone acceptance. Product implementation/direct review remained primary-owned; testing delegated only to /root/verification, not an independent review. No PEI, funded V10 reward path, new asset pixels, baseline approval, branch merge or deployment. D4H remains in_progress until new live acceptance; predecessor D4G phone acceptance retained separately."
+    },
+    {
+      "reviewer": "Project owner",
+      "role": "physical_phone_acceptance",
+      "decision": "pass",
+      "details": "2026-09-12: owner reports the committed and pushed standard server-backed volcanic Practice works as expected on a physical phone and authorizes D4H closure plus the PEI successor."
     }
   ],
   "skipped_checks": [
     "Three Ubuntu-only visual comparisons and twelve snapshot comparisons skipped by existing Windows policy; visual logic passed. No baseline generated or approved on Windows.",
     "PostgreSQL gate skipped because WP014_TEST_DATABASE_URL is absent; CI database gate remains required.",
     "Daily/full performance release matrix not run for this edit (selector performance=false); existing 22:00 Europe/Berlin automation unchanged.",
-    "New server-backed physical Android/iOS acceptance not run; the owner accepted the predecessor local preview, not this live transport.",
     "npm audit not separately run: no package or lockfile change."
   ],
   "residual_risks": [
-    "Deployment must select development-v10-practice for the existing Practice-only service, with NODE_ENV=production and REWARD_PAUSED=true; normal runtime also selects V10 Practice alongside separately configured V7 Daily.",
     "Session authority remains in-memory: server/session loss deliberately leads to a fresh Practice match, not durable match recovery.",
     "Initial JS headroom is 1,637 bytes; future startup additions must preserve the unchanged bundle gate.",
-    "Ubuntu visual comparison, database/release gates and the new physical-phone journey remain separate acceptance requirements."
+    "Ubuntu visual comparison and database/release gates remain separate acceptance requirements."
   ]
 }
