@@ -423,6 +423,11 @@ Practice match, and checks the built static/runtime endpoints. Setting
 `npm run smoke:built -- --legacy` explicitly enables the retired V7/V8/V9
 profile diagnostics; feature, quality and release commands do not pass it.
 
+Changes to the Verify workflow always retain the disposable PostgreSQL job.
+This prevents a follow-up CI wiring commit from dropping a database gate that
+the preceding product commit selected; it does not widen browser or performance
+coverage.
+
 The existing full-product automation runs at **22:00 Europe/Berlin** (CET/CEST),
 using `verify:daily` on its current checkout. Do not replace it with the selector.
 `verify:daily`, `verify:full` and the selector share one checkout lease so a

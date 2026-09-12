@@ -109,7 +109,10 @@ function planChanges(paths) {
       }
     } else if (file === 'scripts/smoke-built-server.js') {
       add(suites, ['test:tooling', 'smoke:built']);
-    } else if (file === '.github/workflows/verify.yml' || /^scripts\/(?:verify-changes|verification-lease|run-full-verification|report-postgres-quality-prerequisite|audit-housekeeping|check-range-whitespace|check-crpm-world-types)\.js$/.test(file)) {
+    } else if (file === '.github/workflows/verify.yml') {
+      suites.add('test:tooling');
+      postgres = true;
+    } else if (/^scripts\/(?:verify-changes|verification-lease|run-full-verification|report-postgres-quality-prerequisite|audit-housekeeping|check-range-whitespace|check-crpm-world-types)\.js$/.test(file)) {
       suites.add('test:tooling');
     } else if (/^scripts\/check-(?:identity-bundles|reward-security|bundle-budget)\.js$/.test(file)) {
       runtime = true;

@@ -115,7 +115,6 @@ test('V10 assessment changes select the finite assessment instead of the ordinar
 
 test('verification tooling changes select only tooling coverage', () => {
   for (const file of [
-    '.github/workflows/verify.yml',
     'scripts/check-crpm-world-types.js',
     'scripts/check-range-whitespace.js',
     'scripts/verify-changes.js',
@@ -127,6 +126,14 @@ test('verification tooling changes select only tooling coverage', () => {
     assert.deepEqual(plan.browser, []);
     assert.deepEqual(plan.fallback, []);
   }
+});
+
+test('verification workflow changes retain the disposable PostgreSQL gate', () => {
+  const plan = planChanges(['.github/workflows/verify.yml']);
+  assert.deepEqual(plan.tasks, ['test:tooling']);
+  assert.equal(plan.postgres, true);
+  assert.deepEqual(plan.browser, []);
+  assert.deepEqual(plan.fallback, []);
 });
 
 test('range whitespace accepts only the exact blob-bound historical diagnostics', () => {

@@ -192,6 +192,7 @@ jobs:
       - run: npm ci
       - run: npx playwright install --with-deps chromium
       - run: npm run test:reward:postgres
+      # Durable helper issuance shares this disposable PostgreSQL gate.
       - run: npm run test:pei:postgres
       - run: npm run test:browser:reward:postgres
       - run: npm run check:identity-bundles

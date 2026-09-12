@@ -67,6 +67,11 @@
       "command": "npm.cmd run test:tooling (PostgreSQL CI wiring)",
       "status": "pass",
       "details": "Direct review found that the selected PostgreSQL job did not yet invoke the existing PEI database suite. The workflow now runs test:pei:postgres after test:reward:postgres, and its tooling regression passed all 130 cases with no retries or skips. Log .cache/wp022g-tooling-ci-postgres.log."
+    },
+    {
+      "command": "Follow-up CI PostgreSQL selection",
+      "status": "pass",
+      "details": "A second direct-review check found that a PR follow-up commit could otherwise select only its newest workflow/tooling delta and omit the prior product commit's PostgreSQL gate. Verify-workflow changes now retain postgres=true without widening browser or performance checks. The selector regression passed in the 131-case tooling suite, and the exact outgoing dry run selected the PostgreSQL job with no fallback. Log .cache/wp022g-ci-followup-selector.log."
     }
   ],
   "reviews": [
