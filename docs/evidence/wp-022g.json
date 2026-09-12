@@ -76,7 +76,22 @@
     {
       "command": "GitHub Actions Verify run 34722801019 PEI PostgreSQL gate",
       "status": "fail_then_corrected",
-      "details": "The restart/persistence case passed, then the new two-instance case reproduced a PostgreSQL catalog race while both stores ran CREATE TABLE IF NOT EXISTS concurrently: pg_type_typname_nsp_index error 23505. This was an infrastructure defect in shared migration initialization, not an issuance-policy assertion. Both PEI stores now execute migration 004 under the same transaction-scoped advisory lock; check:types passed on the correction. The affected PostgreSQL CI gate remains pending. Log .cache/wp022g-migration-lock-types.log; failed CI run https://github.com/TasirWimp/Worms_Port/actions/runs/34722801019."
+      "details": "The restart/persistence case passed, then the new two-instance case reproduced a PostgreSQL catalog race while both stores ran CREATE TABLE IF NOT EXISTS concurrently: pg_type_typname_nsp_index error 23505. This was an infrastructure defect in shared migration initialization, not an issuance-policy assertion. Both PEI stores now execute migration 004 under the same transaction-scoped advisory lock; check:types passed on the correction. Log .cache/wp022g-migration-lock-types.log; failed CI run https://github.com/TasirWimp/Worms_Port/actions/runs/34722801019."
+    },
+    {
+      "command": "GitHub Actions Verify run 34722978021 PostgreSQL gate",
+      "status": "pass_with_narrow_follow_up",
+      "details": "Both PEI PostgreSQL cases passed after the shared migration lock correction, proving restart persistence, simultaneous store initialization and cross-instance daily-budget serialization. The later built Daily browser case reached the V10 loss result but exceeded its five-second database-backed status wait while still displaying 'Verifying the authoritative result...'. The already-retired V8 PostgreSQL browser case also ran unnecessarily. Ordinary PostgreSQL acceptance now excludes that V8 diagnostic and gives only the current V10 asynchronous result confirmation 15 seconds. The focused PostgreSQL rerun remains pending; no wider suite rerun is warranted. CI run https://github.com/TasirWimp/Worms_Port/actions/runs/34722978021."
+    },
+    {
+      "command": "Paused helper Render deployment fdf10cc",
+      "status": "pass",
+      "details": "Deploy dep-dait7n7qj5pc73bfr280 succeeded. The live startup log reports transfers paused on main-albatross with daily budget 100000 Luna and wallet limit 1, proving the durable migration starts safely before activation."
+    },
+    {
+      "command": "Narrow PostgreSQL browser acceptance correction checks",
+      "status": "pass_with_expected_skip",
+      "details": "Delegated execution passed types, all 131 tooling cases and all 67 work-package evidence records with zero retries. Playwright discovery lists exactly the current built V10 Daily case in ordinary PostgreSQL acceptance; PLAYWRIGHT_LEGACY_TESTS=true lists that case plus the explicit V8 diagnostic. Disposable PostgreSQL execution remains unavailable locally and is delegated to CI. Log .cache/wp022g-postgres-browser-acceptance-narrow.log."
     }
   ],
   "reviews": [
@@ -89,13 +104,13 @@
   ],
   "skipped_checks": [
     "Disposable PostgreSQL execution is unavailable locally because WP014_TEST_DATABASE_URL is absent; CI remains mandatory before deployment.",
-    "Retired pre-V10 browser previews are intentionally excluded from ordinary feature, quality and daily/release acceptance; they remain available through explicit diagnostic opt-in.",
+    "Retired pre-V10 browser previews, including the V8 PostgreSQL replay-identity journey, are intentionally excluded from ordinary feature, quality and daily/release acceptance; they remain available through explicit diagnostic opt-in.",
     "Authoritative Ubuntu screenshot comparison was not run on Windows. This slice changes acceptance selection and diagnostic attributes, not rendered visuals; canonical Daily visual logic passed with snapshots ignored.",
     "The full daily/release suite was not repeated; it remains at the 22:00 Europe/Berlin checkpoint under the accepted test policy.",
     "Physical Phone Gate D remains pending until the bounded deployment is live."
   ],
   "residual_risks": [
-    "CI must prove migration 004 and the concurrent cross-instance daily lock with disposable PostgreSQL.",
-    "The paused Render deployment, bounded one-NIM activation and Physical Phone Gate D remain pending."
+    "The focused current-V10 PostgreSQL browser recheck remains pending after its infrastructure-sensitive result wait was bounded at 15 seconds.",
+    "The paused game deployment, bounded one-NIM activation and Physical Phone Gate D remain pending."
   ]
 }

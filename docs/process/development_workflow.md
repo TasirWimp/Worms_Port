@@ -409,13 +409,17 @@ Linux baselines from Windows. Candidate capture requires an explicit
 The supported browser gate now starts the standard V10 R5 volcanic server
 profile. Playwright excludes every suite marked `@legacy` by default, including
 the former V4/V6/V7/V8/V9 engineering previews, pre-V10 lifecycle journeys and
-their visual baselines.
+their visual baselines. The same boundary applies to the PostgreSQL browser
+gate: its V8 replay-identity journey is a legacy diagnostic, while the ordinary
+gate runs the built V10 Daily journey.
 Those tests remain source history and may run only through the explicit
-`--legacy` diagnostic switch; the selector, quality gate and daily/release gate
-never request that switch. Lower-version shared modules and unit coverage may
-remain where V10 still depends on them, but their standalone browser behavior
-is no longer a product acceptance condition. New browser coverage must enter
-through the standard V10 Practice, Daily or PEI journeys.
+`--legacy` diagnostic switch, including
+`npm run test:browser:reward:postgres -- --legacy` for the database-backed
+journey; the selector, quality gate and daily/release gate never request that
+switch. Lower-version shared modules and unit coverage may remain where V10
+still depends on them, but their standalone browser behavior is no longer a
+product acceptance condition. New browser coverage must enter through the
+standard V10 Practice, Daily or PEI journeys.
 
 Built-server smoke follows the same boundary. Its routine path starts the
 normal production server, creates and pauses one authoritative V10 R5 volcanic

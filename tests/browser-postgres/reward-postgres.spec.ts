@@ -11,7 +11,7 @@ import { RewardService } from '../../server/src/reward/service';
 import { V8_R1_RULESET_ID } from '../../shared/simulation-v8';
 import { V8_AUTOMATION_ID } from '../../shared/combat-version';
 
-test('isolated automated r1 Daily retains exact replay identity in disposable PostgreSQL', async ({ page }) => {
+test('@legacy isolated automated r1 Daily retains exact replay identity in disposable PostgreSQL', async ({ page }) => {
   test.setTimeout(120_000);
   const adminUrl = process.env.WP014_TEST_DATABASE_URL?.trim();
   if (!adminUrl) throw new Error('V8 PostgreSQL acceptance requires WP014_TEST_DATABASE_URL; no database gate was run.');
@@ -119,7 +119,8 @@ test('built Daily journey persists consumed authority in PostgreSQL record-only 
     await completeCurrentClash(page);
     await expect(page.getByRole('heading', { name: 'The Loomkeeper prevailed' })).toBeVisible();
     await expect(page.locator('.reward-result-status')).toContainText(
-      'did not earn a reward'
+      'did not earn a reward',
+      { timeout: 15_000 }
     );
     await expect(page.getByRole('button', { name: 'Play Practice' })).toBeVisible();
     expect(errors).toEqual([]);

@@ -7,6 +7,10 @@ const { Client } = require('pg');
 const root = path.resolve(__dirname, '..');
 
 async function main() {
+  const rawArgs = process.argv.slice(2);
+  const legacyBrowserTests = rawArgs.includes('--legacy');
+  const unknownOption = rawArgs.find((argument) => argument !== '--legacy');
+  if (unknownOption) throw new Error(`Unknown PostgreSQL browser option: ${unknownOption}`);
   assertSafeEnvironment(process.env);
   const adminUrl = process.env.WP014_TEST_DATABASE_URL.trim();
   const databaseName = `nimble_knots_wp014_browser_${crypto.randomBytes(4).toString('hex')}`;
@@ -31,6 +35,7 @@ async function main() {
           PLAYWRIGHT_REUSE_BUILD: 'true',
           WP014_QUALITY_TEST: 'true',
           WP014_POSTGRES_BROWSER: 'true',
+          ...(legacyBrowserTests ? { PLAYWRIGHT_LEGACY_TESTS: 'true' } : {}),
           DATABASE_URL: databaseUrl,
           REWARD_MODE: 'record-only',
           REWARD_PAUSED: 'false',
