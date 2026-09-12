@@ -22,10 +22,18 @@ async function main() {
   const qualityShard = rawArgs.includes('--quality-shard');
   const performanceGate = rawArgs.includes('--performance-gate');
   const reuseBuild = rawArgs.includes('--reuse-build');
+  const legacyBrowserTests = rawArgs.includes('--legacy') || rawArgs.some((argument) =>
+    argument.endsWith('tests/browser/combat.spec.ts')
+  );
   const args = rawArgs.filter((argument) =>
     argument !== '--quality-gate' && argument !== '--quality-shard' &&
-    argument !== '--performance-gate' && argument !== '--reuse-build'
+    argument !== '--performance-gate' && argument !== '--reuse-build' &&
+    argument !== '--legacy'
   );
+  if ((legacyBrowserTests || process.env.PLAYWRIGHT_LEGACY_TESTS === 'true') &&
+      (qualityGate || performanceGate)) {
+    throw new Error('Legacy browser diagnostics cannot run as a release or performance gate.');
+  }
   if (qualityShard && !qualityGate) {
     throw new Error('A quality shard requires --quality-gate.');
   }
@@ -61,6 +69,7 @@ async function main() {
         ...(qualityShard ? { PLAYWRIGHT_QUALITY_SHARD: 'true' } : {}),
         ...(qualityShard ? { PLAYWRIGHT_QUALITY_PROJECTS: qualityProjects.join(',') } : {}),
         ...(performanceGate ? { PLAYWRIGHT_PERFORMANCE_GATE: 'true' } : {}),
+        ...(legacyBrowserTests ? { PLAYWRIGHT_LEGACY_TESTS: 'true' } : {}),
         ...(rewardRun ? {
           WP014_QUALITY_TEST: 'true',
           REWARD_MODE: 'record-only',

@@ -8,8 +8,8 @@ const { checkRangeWhitespace } = require('./check-range-whitespace');
 
 const repoRoot = path.resolve(__dirname, '..');
 const productSuites = ['protocol', 'simulation', 'loomkeeper', 'relics', 'combat', 'practice', 'identity', 'reward', 'pei'];
-const browserSuites = ['smoke', 'combat', 'practice', 'identity', 'reward', 'pei', 'resilience'];
-const verificationEnvironmentPrefixes = ['NIMBLE_', 'PLAYWRIGHT_', 'PRACTICE_', 'REWARD_', 'WP014_'];
+const browserSuites = ['smoke', 'practice', 'identity', 'reward', 'pei', 'resilience'];
+const verificationEnvironmentPrefixes = ['NIMBLE_', 'PEI_', 'PLAYWRIGHT_', 'PRACTICE_', 'REWARD_', 'WP014_'];
 const verificationEnvironmentNames = new Set(['CI', 'DATABASE_URL', 'NODE_ENV', 'TZ']);
 
 // Keep cross-module dependencies conservative. Unclassified files never mean no tests.
@@ -83,7 +83,7 @@ function planChanges(paths) {
       product(['identity', 'reward', 'protocol', 'practice'], ['smoke', 'identity', 'reward', 'practice']);
       postgres = true;
     } else if (/^client\/src\/(?:combat\/|scenes\/combat\.ts|lib\/(?:sideways|util)\.ts)/.test(file)) {
-      product(['combat', 'practice'], ['smoke', 'combat', 'practice', 'resilience']);
+      product(['combat', 'practice'], ['smoke', 'practice', 'resilience']);
     } else if (/^client\/src\/(?:result\/|scenes\/result\.ts)/.test(file)) {
       product(['combat', 'practice', 'identity', 'reward', 'protocol'], [...browserSuites, 'visual']);
     } else if (/^client\/src\/practice\/|^client\/src\/scenes\/practice\.ts/.test(file)) {
@@ -92,6 +92,9 @@ function planChanges(paths) {
       product(['combat', 'practice', 'identity', 'reward', 'protocol'], [...browserSuites, 'visual']);
     } else if (/^client\//.test(file)) {
       product(['combat', 'practice', 'identity', 'reward', 'protocol']);
+    } else if (/^server\/src\/pei(?:\/|-)|^server\/migrations\/004_pei_operations\.sql$/.test(file)) {
+      product(['pei', 'reward', 'protocol'], ['smoke', 'practice', 'reward', 'pei']);
+      postgres = true;
     } else if (/^server\/src\/reward\/|^server\/migrations\//.test(file)) {
       product(['reward', 'identity', 'protocol', 'practice'], ['smoke', 'practice', 'identity', 'reward']);
       postgres = true;
@@ -102,8 +105,10 @@ function planChanges(paths) {
       checks.add('check:compliance');
       suites.add('test:tooling');
       if (/^assets\/|^legal\/asset-manifest/.test(file)) {
-        product(['combat', 'practice'], ['smoke', 'combat', 'practice', 'visual']);
+        product(['combat', 'practice'], ['smoke', 'practice', 'visual']);
       }
+    } else if (file === 'scripts/smoke-built-server.js') {
+      add(suites, ['test:tooling', 'smoke:built']);
     } else if (file === '.github/workflows/verify.yml' || /^scripts\/(?:verify-changes|verification-lease|run-full-verification|report-postgres-quality-prerequisite|audit-housekeeping|check-range-whitespace|check-crpm-world-types)\.js$/.test(file)) {
       suites.add('test:tooling');
     } else if (/^scripts\/check-(?:identity-bundles|reward-security|bundle-budget)\.js$/.test(file)) {
@@ -113,7 +118,7 @@ function planChanges(paths) {
     } else if (/^scripts\/(?:check-|normalize-|compose-|compare-|generate-|comfy-|asset-normalization\/)/.test(file)) {
       checks.add('check:compliance');
       suites.add('test:tooling');
-      if (/threadball-effects/.test(file)) product(['combat', 'practice'], ['smoke', 'combat', 'practice']);
+      if (/threadball-effects/.test(file)) product(['combat', 'practice'], ['smoke', 'practice']);
     } else if (/^scripts\/(?:run-playwright|playwright-quality-policy|playwright-quality-reporter)\.js$/.test(file) || file === 'playwright.config.ts') {
       suites.add('test:tooling');
       add(browser, [...browserSuites, 'visual']);
@@ -127,8 +132,17 @@ function planChanges(paths) {
     for (const check of [...checks]) if (check !== 'check:compliance' && check !== 'check:types') checks.delete(check);
   }
   const tasks = [...checks, ...suites];
-  if (runtime) tasks.push('build:outputs', 'smoke:built', 'check:identity-bundles', 'check:reward-security', 'check:bundle-budget');
-  if (audit) tasks.push('audit');
+  const appendTask = (task) => { if (!tasks.includes(task)) tasks.push(task); };
+  if (runtime) {
+    for (const task of ['build:outputs', 'smoke:built', 'check:identity-bundles', 'check:reward-security', 'check:bundle-budget']) appendTask(task);
+  }
+  if (audit) appendTask('audit');
+  const buildIndex = tasks.indexOf('build:outputs');
+  const smokeIndex = tasks.indexOf('smoke:built');
+  if (buildIndex >= 0 && smokeIndex >= 0 && smokeIndex < buildIndex) {
+    tasks.splice(smokeIndex, 1);
+    tasks.splice(tasks.indexOf('build:outputs') + 1, 0, 'smoke:built');
+  }
   return { files, tasks, browser: [...browser].sort(), postgres, performance, fallback };
 }
 

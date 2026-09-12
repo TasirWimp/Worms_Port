@@ -6,6 +6,7 @@ import { createRuntimeServer } from '../../server/src/runtime';
 import { V8_R1_RULESET_ID } from '../../shared/simulation-v8';
 import { V9_RULESET_ID } from '../../shared/simulation-v9';
 
+test.describe('@legacy retired V8/V9 authorities', () => {
 test('deployed V9 Practice opens from the phone URL with live authority and supports paused restart', async ({ page }) => {
   const runtime = createRuntimeServer({ clientDir: path.resolve('client/build'),
     sessionRegistry: { practiceV9: 'v9d-practice' }, identity: false });
@@ -149,6 +150,7 @@ test('injected automated Practice reloads paused authority, retries, and shows t
     await page.goto('about:blank'); await runtime.close();
   }
 });
+});
 
 test.beforeEach(async ({ page }, testInfo) => {
   skipExcludedProjectBeforeSetup('practice.spec.ts', testInfo);
@@ -165,6 +167,7 @@ test.beforeEach(async ({ page }, testInfo) => {
   await expect.poll(() => consoleErrors).toEqual([]);
 });
 
+test.describe('@legacy retired pre-V10 live Practice behavior', () => {
 test('live practice supports authoritative pause, full player turn, and fresh retry', async ({ page }, testInfo) => {
   test.setTimeout(90_000);
   await page.getByRole('button', { name: /Warrior/ }).tap();
@@ -259,6 +262,7 @@ test('live practice supports authoritative pause, full player turn, and fresh re
   }
   await page.screenshot({ path: testInfo.outputPath('wp-011-live-practice.png') });
 });
+});
 
 test('calling controls and live combat actions remain phone-safe', async ({ page }) => {
   for (const button of await page.locator('.calling-picker button').all()) {
@@ -281,6 +285,8 @@ test('calling controls and live combat actions remain phone-safe', async ({ page
     expect(box!.width).toBeGreaterThanOrEqual(48);
     expect(box!.height).toBeGreaterThanOrEqual(48);
   }
+  await page.locator('.pause-button').tap();
+  await expect(page.locator('.combat-ui')).toHaveAttribute('data-paused', 'true');
 });
 
 test('default sideways mode carries the live practice journey into virtual landscape', async ({ page }, testInfo) => {
@@ -301,8 +307,11 @@ test('default sideways mode carries the live practice journey into virtual lands
   const startX = Number(await ui.getAttribute('data-player-x'));
   await dragPad(page, '.movement-zone', 61, 0, 0.36);
   await expect.poll(async () => Number(await ui.getAttribute('data-player-x'))).toBeGreaterThan(startX);
+  await page.locator('.pause-button').tap();
+  await expect(ui).toHaveAttribute('data-paused', 'true');
 });
 
+test.describe('@legacy retired pre-V10 result and recovery behavior', () => {
 test('two consecutive completed Clashes each show a result and use fresh authority', async ({ page }) => {
   test.setTimeout(120_000);
   await page.getByRole('button', { name: 'Start Practice' }).tap();
@@ -366,6 +375,7 @@ test('lost in-memory authority offers a fresh Practice Clash', async ({ page }) 
   await expect(page.getByText(/previous in-memory Practice Clash cannot be resumed/i)).toBeVisible();
   await page.getByRole('button', { name: 'Start Fresh Practice' }).tap();
   await expect(page.locator('.combat-ui')).toBeVisible();
+});
 });
 
 async function dragPad(

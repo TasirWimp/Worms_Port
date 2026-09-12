@@ -105,6 +105,9 @@ If the user asks only for planning, review, or brainstorming, do not edit code.
   failed; diagnostics do not turn it green, and another full daily/release run
   occurs only at its normal cadence or an explicit release rerun.
 - Runtime/build changes require types, current build outputs and built smoke.
+  Routine built smoke starts only the standard V10 R5 volcanic server. Retired
+  V7/V8/V9 runtime profiles require an explicit diagnostic opt-in and are not
+  part of feature, quality or release acceptance.
   Documentation, Codex settings and test/verification-tool-only changes do not
   require a game build. Unknown paths receive conservative product coverage.
 - Compliance-sensitive changes should run `npm run check:compliance`.
@@ -112,8 +115,10 @@ If the user asks only for planning, review, or brainstorming, do not edit code.
 - Server/client runtime changes should include a smoke test when practical.
 - After WP-005, browser-facing changes should run the Playwright phone smoke.
 - `npm run verify:feature` is the same change-selected entry point. Browser-facing
-  changes run complete relevant specs on the canonical phone, including V8 and
-  identity/reward cases where relevant. Visual changes compare all maintained
+  changes run complete relevant supported V10 specs on the canonical phone,
+  including identity/reward cases where relevant. Suites marked `@legacy` are
+  historical diagnostics and are excluded from ordinary, quality and release
+  gates. Visual changes compare all maintained
   projects on Ubuntu. This does not substitute for the daily release gate.
 - Run `npm run verify:daily` once at the end-of-day checkpoint and at an explicit
   release boundary. It retains the full automated five-project, zero-retry

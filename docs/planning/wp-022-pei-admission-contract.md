@@ -228,8 +228,11 @@ completed the PEI journey and verified V10 R5 win, claimed the reward, and
 received 1 NIM. The final payout update contained the authoritative transaction
 hash, but the result scene rendered only its status message. The correction
 adds a full selectable payout-hash field as soon as a signed transaction exists
-and keeps it visible through inclusion and finality. Phone Gate C remains open
-only for that presentation check and post-canary restoration.
+and keeps it visible through inclusion and finality. The owner accepted the
+corrected hash presentation on the physical phone. The temporary repeat-attempt
+variables were removed, rewards were paused, and the helper's live startup log
+confirmed transfers paused on MainAlbatross. Phone Gate C and WP-022F are
+complete.
 
 The live ledger records two distinct finalized 1 NIM development entitlements
 for the same normalized configured test wallet. They finalized at
@@ -250,3 +253,43 @@ the finalized payout candidate has SHA-256
 The baseline commit must still pass ordinary Ubuntu comparison CI before deploy.
 
 Evidence: [WP-022F](../evidence/wp-022f.json).
+
+## WP-022G: Durable helper issuance policy
+
+WP-022G replaces the low-balance canary convention with a durable helper-side
+issuance decision. Before constructing a new earn transaction, the helper
+reserves its request commitment, normalized wallet, UTC issuance day, transfer
+amount and request expiry in PostgreSQL. A day-level advisory lock serializes
+different requests across helper instances. Committed transfers and unexpired
+reservations count toward the configured daily sponsor budget and per-wallet
+daily issuance limit. If either limit would be exceeded, the helper refuses the
+request before querying the RPC or signing.
+
+The exact-request recovery rule remains unchanged. A repeated commitment with
+an existing signed transaction bypasses new issuance and rebroadcasts only the
+stored bytes. A same-commitment reservation must retain identical wallet, day,
+amount and expiry. A signing or preparation failure rolls back the PostgreSQL
+transaction; an ambiguous broadcast retains the committed issuance and exact
+signed bytes. Paused startup permits a zero budget, while an enabled helper must
+configure enough budget for at least one earn transfer. The first activation
+uses `PEI_PROXY_DAILY_BUDGET_LUNA=100000` and
+`PEI_PROXY_DAILY_WALLET_LIMIT=1`.
+
+Routine phone and release verification now starts the standard V10 R5 volcanic
+profile. Browser suites marked `@legacy` retain prior engineering evidence but
+are filtered from the selector, five-project quality gate and daily/release
+gate. An explicit `--legacy` run is diagnostic only and cannot become a quality
+or performance gate. Routine built-server smoke likewise creates and pauses
+only V10 R5; its retired runtime profiles require a separate explicit
+diagnostic opt-in.
+
+Phone Gate D completes one fresh real helper earn and return with the first
+wallet issuance, then starts over and confirms that a distinct second earn for
+the same wallet and UTC day is refused cleanly before signing. Ordinary
+wallet-free volcanic Practice must still start. The game reward service is
+temporarily unpaused only because the current product exposes PEI from the Daily
+availability surface; the gate does not start another rewarded match or claim a
+payout. After the phone result, both helper transfers and rewards return to
+paused settings. Receipt-carrier ablation remains deferred.
+
+Evidence: [WP-022G](../evidence/wp-022g.json).

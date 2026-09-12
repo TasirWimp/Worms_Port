@@ -75,7 +75,7 @@ Phaser/Socket.IO stack.
   on the owner's physical phone at `82187cb`: both real transfers completed,
   PEI qualification succeeded, and the exact V10 R5 volcanic Daily match
   started. The helper was immediately redeployed with transfers paused.
-  **WP-022E is complete. WP-022F Supervised Mainnet Reward Canary is active.**
+  **WP-022E and WP-022F Supervised Mainnet Reward Canary are complete.**
   It connects this accepted admission to the existing WP-013 MainAlbatross
   payout machinery for one supervised 1 NIM winning canary. A temporary
   wallet-scoped limit of twelve numbered attempts leaves at least ten further
@@ -92,16 +92,19 @@ Phaser/Socket.IO stack.
   selected automated checks without failures or retries. Ubuntu artifact run
   `34710588366` passed on exact commit `3789221`; its payout card and accumulated
   accepted V10 presentation drift were explicitly reviewed and promoted as
-  candidate baselines. Gate C remains open for ordinary Ubuntu comparison CI,
-  deployment and the focused phone presentation check, after which the temporary override is
-  removed and both transfer paths are paused. Durable helper daily sponsor
-  budget and per-wallet issuance controls follow before any broader
-  availability. Carrier-content ablation stays deferred until the complete
-  operational reward path works. See the
+  candidate baselines. Ordinary Ubuntu comparison CI passed; the owner then
+  accepted the hash presentation on the physical phone. The temporary reward
+  override was removed and both the game reward path and helper transfers were
+  redeployed paused. **WP-022G Durable Helper Issuance Policy is active** from
+  clean `c9c8ce0`. It atomically records new helper exposure and enforces a
+  daily sponsor budget plus per-wallet UTC-day limit before signing. Routine
+  Playwright, quality and daily gates now start standard V10 R5 and filter the
+  retired lower-version browser previews. Local checks, deployment and Phone
+  Gate D remain pending. Carrier-content ablation stays deferred. See the
   [PEI admission contract](wp-022-pei-admission-contract.md),
   [WP-022B evidence](../evidence/wp-022b.json), [WP-022C evidence](../evidence/wp-022c.json),
   [WP-022D evidence](../evidence/wp-022d.json), [WP-022E evidence](../evidence/wp-022e.json),
-  [WP-022F evidence](../evidence/wp-022f.json), and the
+  [WP-022F evidence](../evidence/wp-022f.json), [WP-022G evidence](../evidence/wp-022g.json), and the
   [bounded contract](wp-015d4f-volcanic-ruin-preview-bundle-contract.md#wp-022a-daily-v10-migration)
   and [evidence](../evidence/wp-022a.json).
 - Active target: mobile-first single-player Nimiq Pay competition release.

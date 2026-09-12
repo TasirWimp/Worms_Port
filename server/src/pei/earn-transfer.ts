@@ -24,11 +24,17 @@ export interface PeiEarnTransferAdapterV0 {
     close?(): void;
 }
 
+export type PeiEarnIssuancePolicyV0 = {
+    paused: boolean;
+    dailyBudgetLuna: bigint;
+    dailyWalletLimit: number;
+};
+
 export class DurablePeiEarnTransferV0 implements PeiEarnTransferV0 {
     public constructor(
         private readonly store: PeiProxyTransferStoreV0,
         private readonly adapter: PeiEarnTransferAdapterV0,
-        private readonly paused: boolean,
+        private readonly policy: PeiEarnIssuancePolicyV0,
         private readonly now: () => Date = () => new Date()
     ) {}
 
@@ -37,13 +43,23 @@ export class DurablePeiEarnTransferV0 implements PeiEarnTransferV0 {
     }
 
     public async send(request: PeiRequestV0, commitment: string): Promise<string> {
-        if (this.paused) throw new Error('PEI helper transfers are paused.');
+        if (this.policy.paused) throw new Error('PEI helper transfers are paused.');
         if (request.action !== 'earn' || await peiRequestCommitmentV0(request) !== commitment) {
             throw new Error('PEI helper received an invalid earn transfer request.');
         }
-        return this.store.withRequestLock(commitment, async (locked) => {
+        const transfer = await this.store.withRequestLock(commitment, async (locked) => {
             let transfer = await locked.get(commitment);
             if (!transfer) {
+                const now = this.now();
+                await locked.reserveIssuance({
+                    requestCommitment: commitment,
+                    walletAddress: request.subject,
+                    issuanceDay: utcDay(now),
+                    amountLuna: BigInt(request.minAmountLuna),
+                    expiresAt: new Date(request.expiresAt * 1_000),
+                    dailyBudgetLuna: this.policy.dailyBudgetLuna,
+                    dailyWalletLimit: this.policy.dailyWalletLimit
+                }, now);
                 const prepared = await this.adapter.prepare(request, commitment);
                 transfer = await locked.saveSigned({
                     requestCommitment: commitment,
@@ -52,20 +68,28 @@ export class DurablePeiEarnTransferV0 implements PeiEarnTransferV0 {
                     validityStartHeight: prepared.validityStartHeight
                 }, this.now());
             }
-            try {
-                await this.adapter.broadcast(transfer.signedTransaction);
-            } catch {
-                // Submission can be ambiguous. The exact persisted bytes are reused on retry.
-            }
-            await locked.markBroadcastUnknown(commitment, this.now());
-            return transfer.transactionHash;
+            return transfer;
         });
+        try {
+            await this.adapter.broadcast(transfer.signedTransaction);
+        } catch {
+            // Submission can be ambiguous. The exact committed bytes are reused on retry.
+        }
+        await this.store.withRequestLock(commitment, (locked) =>
+            locked.markBroadcastUnknown(commitment, this.now())
+        );
+        return transfer.transactionHash;
     }
 
     public async close(): Promise<void> {
         this.adapter.close?.();
         await this.store.close();
     }
+}
+
+function utcDay(value: Date): string {
+    if (!Number.isFinite(value.getTime())) throw new Error('The PEI helper clock is invalid.');
+    return value.toISOString().slice(0, 10);
 }
 
 export class NimiqRpcPeiEarnTransferAdapterV0 implements PeiEarnTransferAdapterV0 {

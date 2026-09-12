@@ -5,7 +5,7 @@ import { Client } from 'pg';
 import { PostgresPeiJourneyStoreV0 } from '../../server/src/pei/store';
 import { PostgresPeiProxyTransferStoreV0 } from '../../server/src/pei/transfer-store';
 import { peiRequestCommitmentV0 } from '../../shared/pei-v0';
-import { PEI_NOW_SECONDS, PEI_WALLET, peiFixture } from './fixtures';
+import { PEI_NOW_SECONDS, PEI_OTHER_WALLET, PEI_WALLET, peiFixture } from './fixtures';
 
 const ADMIN_URL = requiredAdminUrl();
 
@@ -39,6 +39,15 @@ test('PostgreSQL preserves accepted journeys and exact signed proxy bytes across
         const transfers = new PostgresPeiProxyTransferStoreV0(databaseUrl);
         await transfers.initialize();
         await transfers.withRequestLock(commitment, async (locked) => {
+            await locked.reserveIssuance({
+                requestCommitment: commitment,
+                walletAddress: PEI_WALLET,
+                issuanceDay: now.toISOString().slice(0, 10),
+                amountLuna: 100_000n,
+                expiresAt: new Date(fixture.earnProof.request.expiresAt * 1_000),
+                dailyBudgetLuna: 200_000n,
+                dailyWalletLimit: 1
+            }, now);
             await locked.saveSigned({
                 requestCommitment: commitment,
                 signedTransaction: 'cafe',
@@ -58,7 +67,61 @@ test('PostgreSQL preserves accepted journeys and exact signed proxy bytes across
             validityStartHeight: 100,
             state: 'broadcast_unknown'
         });
+        const secondRequest = { ...fixture.earnProof.request, nonce: 'C'.repeat(43) };
+        const secondCommitment = await peiRequestCommitmentV0(secondRequest);
+        await assert.rejects(
+            restartedTransfers.withRequestLock(secondCommitment, (locked) =>
+                locked.reserveIssuance({
+                    requestCommitment: secondCommitment,
+                    walletAddress: PEI_WALLET,
+                    issuanceDay: now.toISOString().slice(0, 10),
+                    amountLuna: 100_000n,
+                    expiresAt: new Date(secondRequest.expiresAt * 1_000),
+                    dailyBudgetLuna: 200_000n,
+                    dailyWalletLimit: 1
+                }, now)
+            ),
+            /already received today/
+        );
         await restartedTransfers.close();
+    });
+});
+
+test('PostgreSQL serializes concurrent helper instances against one daily budget', async () => {
+    await withDatabase(async (databaseUrl) => {
+        const fixture = await peiFixture();
+        const now = new Date(PEI_NOW_SECONDS * 1_000);
+        const requests = [
+            fixture.earnProof.request,
+            { ...fixture.earnProof.request, subject: PEI_OTHER_WALLET, nonce: 'B'.repeat(43) }
+        ];
+        const stores = [
+            new PostgresPeiProxyTransferStoreV0(databaseUrl),
+            new PostgresPeiProxyTransferStoreV0(databaseUrl)
+        ];
+        await Promise.all(stores.map((store) => store.initialize()));
+        try {
+            const results = await Promise.allSettled(requests.map(async (request, index) => {
+                const commitment = await peiRequestCommitmentV0(request);
+                return stores[index].withRequestLock(commitment, (locked) =>
+                    locked.reserveIssuance({
+                        requestCommitment: commitment,
+                        walletAddress: request.subject,
+                        issuanceDay: now.toISOString().slice(0, 10),
+                        amountLuna: 100_000n,
+                        expiresAt: new Date(request.expiresAt * 1_000),
+                        dailyBudgetLuna: 100_000n,
+                        dailyWalletLimit: 1
+                    }, now)
+                );
+            }));
+            assert.equal(results.filter((result) => result.status === 'fulfilled').length, 1);
+            const rejected = results.find((result) => result.status === 'rejected');
+            assert.ok(rejected && rejected.status === 'rejected');
+            assert.match(String(rejected.reason), /daily sponsor budget is exhausted/);
+        } finally {
+            await Promise.all(stores.map((store) => store.close()));
+        }
     });
 });
 

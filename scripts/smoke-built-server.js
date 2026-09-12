@@ -79,7 +79,7 @@ async function stopServer(child) {
 function isolatedEnvironment(overrides = {}) {
   const environment = { ...process.env };
   for (const name of Object.keys(environment)) {
-    if (/^(NIMBLE_|REWARD_|IDENTITY_|NIMIQ_|PRACTICE_TEST_|WP014_)/.test(name) ||
+    if (/^(NIMBLE_|PEI_|REWARD_|IDENTITY_|NIMIQ_|PRACTICE_TEST_|WP014_)/.test(name) ||
         ['DATABASE_URL', 'RENDER_EXTERNAL_URL', 'ALLOWED_ORIGINS', 'ALLOW_MISSING_ORIGIN',
           'SESSION_OPEN_RATE_CAPACITY'].includes(name)) delete environment[name];
   }
@@ -92,7 +92,43 @@ function emitAck(socket, event, payload) {
   });
 }
 
-async function checkCombat(baseUrl, staging, v9 = false) {
+async function checkV10Combat(baseUrl) {
+  const rulesetId = 'nimble-knots-artillery-v10-r5';
+  const automationId = 'wp-015d4h-v10-live-v1';
+  const socket = io(baseUrl, { transports: ['websocket'], reconnection: false,
+    autoConnect: false, timeout: 2_000, extraHeaders: { Origin: baseUrl } });
+  try {
+    await new Promise((resolve, reject) => {
+      socket.once('connect', resolve);
+      socket.once('connect_error', reject);
+      socket.connect();
+    });
+    const opened = await emitAck(socket, 'v1:session.open', {
+      requestId: 'smoke_v10_session_01', action: 'create'
+    });
+    assert.equal(opened.ok, true);
+    const created = await emitAck(socket, 'v10:challenge.create', {
+      requestId: 'smoke_v10_creation_01', sequence: 0, mode: 'practice', calling: 'wizard',
+      rulesetId, automationId
+    });
+    assert.equal(created.ok, true);
+    assert.equal(created.data.mode, 'practice');
+    assert.equal(created.data.calling, 'wizard');
+    assert.equal(created.data.rulesetId, rulesetId);
+    assert.equal(created.data.automationId, automationId);
+    assert.equal(created.data.simulation.rulesetId, rulesetId);
+    assert.equal(created.data.simulation.terrainProfileId, 'volcanic-ruin');
+    const paused = await emitAck(socket, 'v10:challenge.pause', {
+      requestId: 'smoke_v10_pause_0001', sequence: created.nextSequence,
+      challengeId: created.data.challengeId, rulesetId, automationId, paused: true
+    });
+    assert.equal(paused.ok, true);
+    assert.equal(paused.data.paused, true);
+    console.log('Validated standard V10 R5 volcanic Practice creation and pause.');
+  } finally { socket.close(); }
+}
+
+async function checkLegacyCombat(baseUrl, staging, v9 = false) {
   const wire = v9 ? 'v9' : 'v8';
   const socket = io(baseUrl, { transports: ['websocket'], reconnection: false,
     autoConnect: false, timeout: 2_000, extraHeaders: { Origin: baseUrl },
@@ -260,9 +296,15 @@ async function smokeProfile(profile) {
       );
     }
 
-    await checkCombat(baseUrl, practiceOnly, v9);
+    const runtimeResponse = await fetch(`${baseUrl}/api/practice-profile`);
+    const runtimeMetadata = await runtimeResponse.json();
+    assert.equal(runtimeResponse.ok, true);
+    assert.equal(runtimeMetadata.ruleset, practiceOnly ? 'legacy' : 'volcanic-v10');
+
+    if (practiceOnly) await checkLegacyCombat(baseUrl, practiceOnly, v9);
+    else await checkV10Combat(baseUrl);
     if (practiceOnly) assert.ok(stdout.includes(`Runtime ${profile} / ${v9 ? 'nimble-knots-artillery-v9 / wp-015d3b-v9d-v1' : 'nimble-knots-artillery-v8-r1 / wp-015d3a-v8d-r1-v1'} / rewards disabled`));
-    console.log(`Built server ${profile ?? 'V7'} smoke test passed on port ${port}.`);
+    console.log(`Built server ${profile ?? 'standard V10 R5'} smoke test passed on port ${port}.`);
     console.log(`Validated /, built overlays, approved asset plumbing, and /.room.join_id (${roomId}).`);
   } finally {
     try {
@@ -306,7 +348,15 @@ async function rejectedStartup(overrides) {
 }
 
 async function main() {
+  const args = process.argv.slice(2);
+  if (args.some(argument => argument !== '--legacy')) {
+    throw new Error(`Unknown built smoke option: ${args.find(argument => argument !== '--legacy')}`);
+  }
   await smokeProfile();
+  if (!args.includes('--legacy')) {
+    console.log('Retired V7/V8/V9 profiles were excluded from routine built smoke.');
+    return;
+  }
   await smokeProfile('staging-v8d-practice');
   await smokeProfile('development-v8d-practice');
   await smokeProfile('development-v9d-practice');

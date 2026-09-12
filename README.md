@@ -420,6 +420,8 @@ hexadecimal content. Configure only the helper service with its own
 ```text
 PEI_PROXY_PRIVATE_KEY_FILE=/etc/secrets/pei-proxy-key
 PEI_PROXY_FEE_LUNA=0
+PEI_PROXY_DAILY_BUDGET_LUNA=100000
+PEI_PROXY_DAILY_WALLET_LIMIT=1
 PEI_PROXY_PAUSED=true
 PEI_MAINNET_ACKNOWLEDGEMENT=I_UNDERSTAND_MAINNET_PEI_TRANSFERS
 ```
@@ -439,13 +441,15 @@ the same journey during its validity window. The helper and game each verify
 chain data independently. After qualification, the game displays both complete
 transaction hashes for operational reconstruction.
 
-This is a one-participant, low-funded canary boundary. Wider public activation
-still needs a durable helper-side sponsor budget and per-wallet daily issuance
-policy; the current Socket.IO limiter and helper balance do not replace those
-controls. A returned transfer replenishes the helper balance, so low funding
-alone does not cap the number of fresh earn requests. Keep the helper paused
-outside the actively supervised canary and do not start multiple fresh journeys
-after a failed return.
+The helper records each new exposure in PostgreSQL before signing. Committed
+transfers and unexpired reservations count against `PEI_PROXY_DAILY_BUDGET_LUNA`
+for the UTC issuance day and against `PEI_PROXY_DAILY_WALLET_LIMIT` for the
+normalized wallet. Distinct helper instances serialize this decision with a
+day-level database lock. A retry of the same request rebroadcasts the exact
+stored transaction and consumes no additional allowance. Paused deployments
+may keep the budget at zero; startup refuses to enable transfers unless the
+budget can fund at least one configured earn amount. Keep the helper paused
+outside a reviewed activation window even when these durable limits are set.
 
 For a controlled repeat-attempt payout canary, an operator may temporarily set
 `REWARD_TEST_WALLET_ADDRESS` to one compact or spaced test-wallet address and

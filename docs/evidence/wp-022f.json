@@ -1,6 +1,6 @@
 {
   "id": "WP-022F",
-  "status": "in_progress",
+  "status": "complete",
   "execution_mode": "single_owner",
   "starting_commit": "44e523e",
   "branch": "codex/pei-daily-v10",
@@ -30,7 +30,7 @@
     "Ubuntu visual baseline candidate generation and explicit review (payout-hash correction)",
     "npm.cmd run verify:changes -- --base 3789221 --dry-run (reviewed baseline promotion)",
     "npm.cmd run verify:changes -- --base 3789221 (reviewed baseline promotion)",
-    "Physical Phone Gate C and post-canary restoration"
+    "Physical Phone Gate C presentation and post-canary restoration"
   ],
   "deterministic_seeds": [
     "Twelve sequential numbered loss outcomes for one fixed wallet and UTC challenge day"
@@ -92,6 +92,11 @@
       "command": "npm.cmd run verify:changes -- --base 3789221 (reviewed baseline promotion)",
       "status": "pass",
       "details": "The delegated selected run passed all 66 work-package records and eight visual logic cases with twelve expected Windows-policy Linux-comparison skips, no failures and no retries. All 38 tracked PNGs match their downloaded Ubuntu artifact candidates byte-for-byte with no missing files, and git diff --check passed. Log .cache/wp022f-baseline-promotion.log."
+    },
+    {
+      "command": "Physical Phone Gate C presentation and post-canary restoration",
+      "status": "pass",
+      "details": "The owner verified on the physical phone that the completed MainAlbatross flow renders the transaction hashes for both PEI transfer directions after the payout-hash correction. The temporary reward test wallet, repeat-attempt limit and mainnet repeat acknowledgement were removed; the game redeployed with REWARD_PAUSED=true. The helper was corrected to PEI_PROXY_PAUSED=true, redeployed at c9c8ce0 and its live startup log reported transfers paused on main-albatross."
     }
   ],
   "reviews": [
@@ -112,6 +117,12 @@
       "role": "primary_direct_review",
       "decision": "pass",
       "details": "Primary explicitly reviewed Ubuntu artifact run 34710588366 rather than generating or approving baselines on Windows. The finalized reward card keeps the full hash inside the 390x844 result card with readable wrapping and intact actions. The remaining drift is the branch's already accepted current V10 terrain and presentation state; reviewed portrait, virtual-landscape, actual-landscape, safe-area, cast and pause captures retain their required controls and content."
+    },
+    {
+      "reviewer": "Project owner",
+      "role": "physical_phone_acceptance",
+      "decision": "pass",
+      "details": "The owner accepted the corrected transaction-hash presentation on the physical phone after the successful PEI-qualified V10 win and 1 NIM payout."
     }
   ],
   "skipped_checks": [
@@ -119,8 +130,5 @@
     "Performance was not selected because the change does not affect gameplay timing or presentation.",
     "Daily/full release verification remains at the 22:00 Europe/Berlin or explicit release boundary."
   ],
-  "residual_risks": [
-    "The twelve-slot PostgreSQL migration must pass the disposable database gate in CI because WP014_TEST_DATABASE_URL may be unavailable locally.",
-    "The bounded payout-hash presentation correction, Ubuntu candidate review and local promotion selector pass. Ordinary Ubuntu baseline comparison CI, deployment, the focused physical-phone hash visibility check and post-canary restoration remain pending."
-  ]
+  "residual_risks": []
 }

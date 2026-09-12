@@ -102,6 +102,7 @@ export class ResourceTurnsV10Client {
         const mode = snapshot.mode;
         return {
             kind: 'v10', snapshot: snapshot.simulation as SimulationStateV10, previewLabel: 'Volcanic Ruin', live: true,
+            challengeId: snapshot.challengeId,
             rewarded: mode === 'reward', trajectoryPreview: aim => trajectoryPreviewV10(this.requireSnapshot().simulation as SimulationStateV10, aim), calling: snapshot.calling,
             submit: intent => this.submit(intent).then(value => value.simulation as SimulationStateV10),
             setPaused: paused => this.setPaused(paused).then(value => value.simulation as SimulationStateV10),

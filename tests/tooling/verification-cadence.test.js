@@ -42,10 +42,11 @@ test('evidence JSON runs its schema gate without product tests', () => {
   assert.deepEqual(planChanges(['docs/images/art-direction/knotkin-wizard-cowl-edit-mask.png']).tasks, ['check:generation-components']);
 });
 
-test('presentation work covers whole combat specs without unrelated AI units', () => {
+test('presentation work covers supported V10 browser journeys without retired previews', () => {
   const plan = planChanges(['client/src/combat/camera.ts']);
   for (const task of ['test:combat', 'test:practice', 'build:outputs']) assert.ok(plan.tasks.includes(task));
-  for (const spec of ['combat', 'resilience']) assert.ok(plan.browser.includes(spec));
+  for (const spec of ['smoke', 'practice', 'resilience']) assert.ok(plan.browser.includes(spec));
+  assert.ok(!plan.browser.includes('combat'));
   for (const task of ['test:simulation', 'test:loomkeeper', 'test:reward', 'test:tooling']) assert.ok(!plan.tasks.includes(task));
   assert.equal(plan.postgres, false);
   assert.equal(plan.performance, false);
@@ -58,6 +59,18 @@ test('practice and identity retain reward dependencies and browser coverage', ()
     for (const spec of ['identity', 'reward']) assert.ok(plan.browser.includes(spec), `${file}: ${spec}`);
   }
   assert.equal(planChanges(['server/src/reward/postgres-store.ts']).postgres, true);
+});
+
+test('PEI helper changes select its operational boundary without legacy game families', () => {
+  const plan = planChanges(['server/src/pei/transfer-store.ts']);
+  for (const task of ['test:pei', 'test:reward', 'test:protocol', 'build:outputs']) {
+    assert.ok(plan.tasks.includes(task), task);
+  }
+  for (const task of ['test:combat', 'test:simulation', 'test:loomkeeper']) {
+    assert.ok(!plan.tasks.includes(task), task);
+  }
+  assert.deepEqual(plan.browser, ['pei', 'practice', 'reward', 'smoke']);
+  assert.equal(plan.postgres, true);
 });
 
 test('result and style changes retain the five-project visual journey', () => {
@@ -238,6 +251,16 @@ test('unknown paths broaden coverage instead of silently skipping it', () => {
   assert.deepEqual(plan.fallback, ['new-runtime/entry.ts']);
   for (const task of ['test:simulation', 'test:tooling', 'smoke:built']) assert.ok(plan.tasks.includes(task));
   assert.ok(plan.browser.includes('reward'));
+});
+
+test('built smoke harness edits select only tooling and the supported runtime smoke', () => {
+  const plan = planChanges(['scripts/smoke-built-server.js']);
+  assert.deepEqual(plan.tasks, ['test:tooling', 'smoke:built']);
+  assert.deepEqual(plan.browser, []);
+  assert.deepEqual(plan.fallback, []);
+  const combined = planChanges(['scripts/smoke-built-server.js', 'server/src/pei/transfer-store.ts']);
+  assert.equal(combined.tasks.filter(task => task === 'smoke:built').length, 1);
+  assert.equal(combined.tasks.indexOf('smoke:built'), combined.tasks.indexOf('build:outputs') + 1);
 });
 
 test('dependency edits retain audit, PostgreSQL and performance checks', () => {

@@ -61,7 +61,8 @@ export class ResourceTurnsV9Controls {
         Object.assign(this.root.dataset, { paused: String(paused), thread: facts.player.thread, ruleset: state.rulesetId,
             playerFacing: player.facing < 0 ? 'left' : 'right', playerAirborne: String(facts.player.airborne), offenseAllowed: String(offense),
             aimLocked: String(state.aim !== null), aimId: String(state.aimId), activeActor: state.activeActor, combatPhase: state.phase,
-            inputEpoch: String(state.inputEpoch), selectedRelic: state.selectedRelic, terminal: String(this.terminal()) });
+            inputEpoch: String(state.inputEpoch), selectedRelic: state.selectedRelic, terminal: String(this.terminal()),
+            turn: String(state.turn), seed: String(state.seed), playerX: String(player.xFp / 256) });
         if ('terrainProfileId' in state) {
             this.root.dataset.terrainProfile = state.terrainProfileId;
             this.root.dataset.terrainSeed = String(state.seed);

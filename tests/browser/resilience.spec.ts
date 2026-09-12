@@ -10,6 +10,7 @@ import { createTestSigner } from '../support/nimiq-signer';
 
 const CANONICAL_PROJECTS = new Set(['chromium-390x844', 'webkit-390x844']);
 
+test.describe('@legacy retired V8 interruption previews', () => {
 test('V8 interruptions require fresh walking and Jump presses without pausing hidden combat', async ({ page }) => {
   const errors = captureErrors(page);
   await page.goto('/?combat-preview=v8&sideways=off');
@@ -104,6 +105,7 @@ test('V8 r1 interrupted movement cannot reuse old upward input or pause hidden c
   }
   expect(errors).toEqual([]);
 });
+});
 
 test('constrained Chromium loading reaches actionable wallet-free Practice', async ({ page, context }, testInfo) => {
   test.setTimeout(60_000);
@@ -142,12 +144,18 @@ test('constrained Chromium loading reaches actionable wallet-free Practice', asy
     }).catch(() => undefined);
     await cdp.detach().catch(() => undefined);
   }
+  await expect(page.locator('.pause-button')).toBeEnabled({ timeout: 15_000 });
+  await page.locator('.pause-button').tap();
+  await expect(page.locator('.combat-ui')).toHaveAttribute('data-paused', 'true', {
+    timeout: 15_000
+  });
   expect(await page.evaluate(() => (
     window as typeof window & { __walletCalls?: number }
   ).__walletCalls)).toBe(0);
   expect(errors).toEqual([]);
 });
 
+test.describe('@legacy retired pre-V10 offline controls', () => {
 test('Chromium and WebKit offline lifecycle resumes the same authority', async ({ page, context }, testInfo) => {
   test.setTimeout(90_000);
   test.skip(!CANONICAL_PROJECTS.has(testInfo.project.name), 'The canonical Chromium and WebKit projects own offline/resume coverage.');
@@ -191,6 +199,7 @@ test('Chromium and WebKit offline lifecycle resumes the same authority', async (
   await dragPad(page, '.movement-zone', 73, 0.36, 0);
   await expect.poll(async () => Number(await ui.getAttribute('data-player-x'))).not.toBe(startX);
   expect(errors).toEqual([]);
+});
 });
 
 test('delayed synthetic wallet settlement authorizes once and keeps Practice usable', async ({ page }, testInfo) => {
@@ -244,12 +253,15 @@ test('delayed synthetic wallet settlement authorizes once and keeps Practice usa
 
     await start.tap();
     await expect(page.locator('.combat-ui')).toBeVisible();
+    await page.locator('.pause-button').tap();
+    await expect(page.locator('.combat-ui')).toHaveAttribute('data-paused', 'true');
     expect(errors).toEqual([]);
   } finally {
     signer.dispose();
   }
 });
 
+test.describe('@legacy retired pre-V10 session resilience', () => {
 test('lost session authority offers one truthful fresh Practice path', async ({ page }, testInfo) => {
   test.setTimeout(60_000);
   test.skip(!CANONICAL_PROJECTS.has(testInfo.project.name), 'The canonical Chromium and WebKit projects cover session-loss recovery.');
@@ -367,6 +379,7 @@ test('two browser contexts isolate storage, identity, challenge events, controls
     await secondContext.close();
     signer.dispose();
   }
+});
 });
 
 async function openPractice(page: Page): Promise<void> {

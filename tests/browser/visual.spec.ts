@@ -6,6 +6,7 @@ import {
   SYNTHETIC_SAFE_AREA
 } from './support/safe-area';
 
+test.describe('@legacy retired pre-V10 visual previews', () => {
 test('visual geometry baselines cover start, combat, result, and recovery', async ({ page }) => {
   // Once a stale combat snapshot no longer stops the test, Ubuntu must still have
   // enough outer time to visit and capture every remaining geometry state.
@@ -130,6 +131,7 @@ test('canonical visual states cover combat presentation, controls, motion, and s
   })).toMatch(/^(ready|result)$/);
   expect(errors).toEqual([]);
 });
+});
 
 test('canonical Daily visuals cover availability, authorization, claim processing, and finality', async ({
   page
@@ -184,6 +186,7 @@ test('canonical Daily visuals cover availability, authorization, claim processin
   }
 });
 
+test.describe('@legacy retired pre-V10 visual previews', () => {
 test('compact landscape visuals cover Pause and full-screen fallback', async ({ page }, testInfo) => {
   test.skip(testInfo.project.name !== 'chromium-844x390', 'Compact-landscape visual coverage.');
   const errors = captureErrors(page);
@@ -219,6 +222,7 @@ test('compact landscape visuals cover Pause and full-screen fallback', async ({ 
   await expect(page.getByText('Full screen is not supported by this app host')).toBeVisible();
   await screenshot(page, 'landscape-fullscreen-fallback.png');
   expect(errors).toEqual([]);
+});
 });
 
 function captureErrors(page: Page): string[] {

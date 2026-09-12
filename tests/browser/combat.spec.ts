@@ -17,6 +17,7 @@ import {
 } from './support/safe-area';
 import { skipExcludedProjectBeforeSetup } from './support/project-routing';
 
+test.describe('@legacy retired combat previews', () => {
 test.beforeEach(async ({ page }, testInfo) => {
   skipExcludedProjectBeforeSetup('combat.spec.ts', testInfo);
   const pageErrors: string[] = [];
@@ -2194,4 +2195,5 @@ test('volcanic-ruin composed arena keeps both starts framed and completes a turn
   await expect(ui).toHaveAttribute('data-active-actor', 'loomkeeper', { timeout: 12_000 });
   await expect(ui).toHaveAttribute('data-active-actor', 'player', { timeout: 35_000 });
   await expect(ui).toHaveAttribute('data-terminal', 'false');
+});
 });

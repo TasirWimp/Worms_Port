@@ -29,7 +29,11 @@ async function main(): Promise<void> {
     const earnTransfer = new DurablePeiEarnTransferV0(
         new PostgresPeiProxyTransferStoreV0(connectionString),
         adapter,
-        transferConfig.paused
+        {
+            paused: transferConfig.paused,
+            dailyBudgetLuna: transferConfig.dailyBudgetLuna,
+            dailyWalletLimit: transferConfig.dailyWalletLimit
+        }
     );
     runtime = createPeiProxyRuntimeV0({
         clientDir: path.resolve('client/build'),
@@ -40,7 +44,9 @@ async function main(): Promise<void> {
     await runtime.listen(port, '0.0.0.0');
     console.log(`PEI proxy listening on port ${port}; transfers ${
         transferConfig.paused ? 'paused' : 'enabled'
-    }; network ${transferConfig.network}`);
+    }; network ${transferConfig.network}; daily budget ${
+        transferConfig.dailyBudgetLuna
+    } Luna; wallet limit ${transferConfig.dailyWalletLimit}`);
 }
 
 for (const signal of ['SIGINT', 'SIGTERM'] as const) {

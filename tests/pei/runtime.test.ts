@@ -67,6 +67,37 @@ test('mainnet helper authority is explicit, paused by default and excluded from 
     const config = peiProxyTransferConfigFromEnvironment(pei, authority);
     assert.equal(config.paused, true);
     assert.equal(config.feeLuna, 0n);
+    assert.equal(config.dailyBudgetLuna, 0n);
+    assert.equal(config.dailyWalletLimit, 1);
+    assert.throws(
+        () => peiProxyTransferConfigFromEnvironment(pei, {
+            ...authority,
+            PEI_PROXY_PAUSED: 'false'
+        }),
+        /must fund at least one PEI earn transfer/
+    );
+    assert.deepEqual(
+        peiProxyTransferConfigFromEnvironment(pei, {
+            ...authority,
+            PEI_PROXY_PAUSED: 'false',
+            PEI_PROXY_DAILY_BUDGET_LUNA: '100000',
+            PEI_PROXY_DAILY_WALLET_LIMIT: '3'
+        }),
+        { ...config, paused: false, dailyBudgetLuna: 100000n, dailyWalletLimit: 3 }
+    );
+    for (const [name, value, message] of [
+        ['PEI_PROXY_DAILY_BUDGET_LUNA', '-1', /nonnegative integer Luna/],
+        ['PEI_PROXY_DAILY_WALLET_LIMIT', '0', /positive integer/],
+        ['PEI_PROXY_DAILY_WALLET_LIMIT', '101', /at most 100/]
+    ] as const) {
+        assert.throws(
+            () => peiProxyTransferConfigFromEnvironment(pei, {
+                ...authority,
+                [name]: value
+            }),
+            message
+        );
+    }
     assert.throws(
         () => peiProxyTransferConfigFromEnvironment(pei, {
             ...authority,

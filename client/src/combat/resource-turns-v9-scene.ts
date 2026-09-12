@@ -53,6 +53,10 @@ export class ResourceTurnsV9Scene {
         }, () => performance.now(), args.paused());
         this.controls.root.dataset.preview = args.previewLabel;
         this.controls.root.dataset.mode = args.rewarded ? 'reward' : 'practice';
+        if (args.calling) this.controls.root.dataset.calling = args.calling;
+        if (args.kind === 'v10' && args.challengeId) {
+            this.controls.root.dataset.challengeId = args.challengeId;
+        }
         this.controls.root.dataset.background = backgroundScene?.id ?? 'none';
         this.controls.root.dataset.backgroundReady = String(this.sceneBackground.active);
         if (args.kind === 'v10' && args.previewTerrainReflected !== undefined) {

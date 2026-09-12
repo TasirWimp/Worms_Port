@@ -406,6 +406,23 @@ govern build reuse; a changed or missing proof rebuilds. Never approve or update
 Linux baselines from Windows. Candidate capture requires an explicit
 `visual-baseline-candidate` PR label or manual workflow dispatch and owner review.
 
+The supported browser gate now starts the standard V10 R5 volcanic server
+profile. Playwright excludes every suite marked `@legacy` by default, including
+the former V4/V6/V7/V8/V9 engineering previews, pre-V10 lifecycle journeys and
+their visual baselines.
+Those tests remain source history and may run only through the explicit
+`--legacy` diagnostic switch; the selector, quality gate and daily/release gate
+never request that switch. Lower-version shared modules and unit coverage may
+remain where V10 still depends on them, but their standalone browser behavior
+is no longer a product acceptance condition. New browser coverage must enter
+through the standard V10 Practice, Daily or PEI journeys.
+
+Built-server smoke follows the same boundary. Its routine path starts the
+normal production server, creates and pauses one authoritative V10 R5 volcanic
+Practice match, and checks the built static/runtime endpoints. Setting
+`npm run smoke:built -- --legacy` explicitly enables the retired V7/V8/V9
+profile diagnostics; feature, quality and release commands do not pass it.
+
 The existing full-product automation runs at **22:00 Europe/Berlin** (CET/CEST),
 using `verify:daily` on its current checkout. Do not replace it with the selector.
 `verify:daily`, `verify:full` and the selector share one checkout lease so a

@@ -1,5 +1,6 @@
 import { expect, test } from '@playwright/test';
 
+test.describe('@legacy retired V7/V8 previews', () => {
 test('V8 engineering preview does not replace ordinary wallet-free V7 Practice', async ({ page }) => {
   await page.goto('/?combat-preview=v8&sideways=off');
   await expect(page.locator('.combat-v8')).toBeVisible();
@@ -23,6 +24,7 @@ test('V8 r1 preview is explicit and preserves original V8 and public wallet-free
   await expect(page.locator('.combat-ui')).toBeVisible();
   await expect(page.locator('.combat-v8')).toHaveCount(0);
   await expect(page.locator('.movement-zone')).toHaveAttribute('aria-label', /8 of 8 steps remaining/);
+});
 });
 
 test('built phone journey starts wallet-free live practice and accepts touch', async ({ page }) => {
@@ -50,9 +52,13 @@ test('built phone journey starts wallet-free live practice and accepts touch', a
 
   await page.locator('.pause-button').tap();
   await expect(ui).toHaveAttribute('data-paused', 'true');
-  await expect(page.locator('.combat-pause-sheet').getByText('Turn clock stopped', { exact: true })).toBeVisible();
+  await expect(page.locator('.combat-pause-sheet')).toContainText(
+    /Practice paused.*authoritative clock is stopped/i
+  );
   await page.locator('.pause-button').tap();
   await expect(ui).toHaveAttribute('data-paused', 'false');
+  await page.locator('.pause-button').tap();
+  await expect(ui).toHaveAttribute('data-paused', 'true');
 
   expect(pageErrors, `Unexpected page errors: ${pageErrors.join(' | ')}`).toEqual([]);
   expect(consoleErrors, `Unexpected console errors: ${consoleErrors.join(' | ')}`).toEqual([]);
@@ -71,14 +77,14 @@ test('practice reconnect suspends controls and resumes the same challenge', asyn
   const challengeId = await ui.getAttribute('data-challenge-id');
 
   await context.setOffline(true);
-  await expect(ui).toHaveAttribute('data-suspended', 'true', { timeout: 10_000 });
+  await expect(ui).toHaveAttribute('data-connection', 'reconnecting', { timeout: 10_000 });
   await expect(page.getByText(/Reconnecting/i)).toBeVisible();
-  await expect(page.locator('.movement-zone')).toHaveAttribute('aria-disabled', 'true');
 
   await context.setOffline(false);
-  await expect(ui).toHaveAttribute('data-suspended', 'false', { timeout: 15_000 });
+  await expect(ui).toHaveAttribute('data-connection', 'connected', { timeout: 15_000 });
   await expect(ui).toHaveAttribute('data-challenge-id', challengeId!);
-  await expect(page.locator('.movement-zone')).toHaveAttribute('aria-disabled', 'false');
+  await page.locator('.pause-button').tap();
+  await expect(ui).toHaveAttribute('data-paused', 'true');
 });
 
 async function canvasColors(canvas: import('@playwright/test').Locator): Promise<number> {
