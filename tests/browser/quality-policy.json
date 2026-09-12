@@ -12,6 +12,7 @@
     "practice.spec.ts",
     "identity.spec.ts",
     "reward.spec.ts",
+    "pei.spec.ts",
     "resilience.spec.ts",
     "visual.spec.ts"
   ],
@@ -109,6 +110,12 @@
       "title": "Daily Challenge discloses, authorizes, plays, and reports a consumed loss",
       "runsOn": ["chromium-390x844", "webkit-390x844"],
       "reason": "The complete fake-wallet Daily journey runs once per maintained mobile engine."
+    },
+    {
+      "file": "pei.spec.ts",
+      "title": "PEI helper survives both crossings and admits the same volcanic Daily match",
+      "runsOn": ["chromium-390x844", "webkit-390x844"],
+      "reason": "The synthetic two-origin wallet journey runs once per maintained mobile engine; the other phone projects retain the ordinary Daily and Practice gates."
     },
     {
       "file": "resilience.spec.ts",

@@ -28,6 +28,47 @@ export type RewardConfig = {
     operatorAcknowledgement?: string;
     testWalletAddress?: string;
     testDailyAttemptLimit: number;
+    peiRequired?: boolean;
+};
+
+export type PeiQualificationGrant = {
+    id: string;
+    walletAddress: string;
+    challengeDay: string;
+    qualificationDigest: string;
+    tokenDigest: string;
+    issuedAt: Date;
+    expiresAt: Date;
+    consumedAt?: Date;
+    entitlementId?: string;
+};
+
+export type PeiQualificationInput = {
+    id: string;
+    walletAddress: string;
+    challengeDay: string;
+    qualificationDigest: string;
+    tokenDigest: string;
+    issuedAt: Date;
+    expiresAt: Date;
+};
+
+export type PeiAdmissionBinding = {
+    grantId: string;
+    tokenDigest: string;
+};
+
+export type VerifiedPeiQualification = {
+    walletAddress: string;
+    qualificationDigest: string;
+    expiresAt: Date;
+};
+
+export type IssuedPeiAdmission = {
+    grantId: string;
+    token: string;
+    challengeDay: string;
+    expiresAt: string;
 };
 
 export type RewardEntitlement = {
@@ -52,6 +93,7 @@ export type RewardEntitlement = {
     includedHeight?: number;
     finalizedAt?: Date;
     reasonCode?: string;
+    peiAdmissionGrantId?: string;
 };
 
 export type RewardReservationInput = {
@@ -66,6 +108,8 @@ export type RewardReservationInput = {
     dailyAttemptLimit: number;
     paused: boolean;
     eligibilityTokenDigest: string;
+    peiAdmissionRequired?: boolean;
+    peiAdmission?: PeiAdmissionBinding;
     reservationExpiresAt: Date;
     now: Date;
 };
@@ -104,6 +148,11 @@ export type RewardStore = {
     forfeitInProgressOnStartup(now: Date): Promise<number>;
     withPayoutLease<T>(operation: () => Promise<T>): Promise<T | undefined>;
     info(day: string, config: RewardConfig): Promise<RewardInfoData>;
+    issuePeiQualification(input: PeiQualificationInput): Promise<PeiQualificationGrant>;
+    peiQualificationStatus(
+        grantId: string,
+        walletAddress: string
+    ): Promise<PeiQualificationGrant | undefined>;
     reserve(input: RewardReservationInput): Promise<RewardEntitlement>;
     start(
         challengeId: string,

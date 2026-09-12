@@ -34,8 +34,12 @@ function scanRewardSecurity(projectRoot = root, options = {}) {
   }
 
   const clientBuild = path.join(projectRoot, 'client', 'build');
-  const serverBundle = path.join(projectRoot, 'server', 'build', 'server.js');
-  if (requireBuild && (!fs.existsSync(clientBuild) || !fs.existsSync(serverBundle))) {
+  const serverBundles = [
+    path.join(projectRoot, 'server', 'build', 'server.js'),
+    path.join(projectRoot, 'server', 'build', 'pei-proxy-server.js')
+  ];
+  if (requireBuild && (!fs.existsSync(clientBuild) ||
+      serverBundles.some((file) => !fs.existsSync(file)))) {
     errors.push('Reward security inspection requires a fresh complete build.');
   }
   const clientText = listTextFiles(clientBuild)
@@ -45,6 +49,7 @@ function scanRewardSecurity(projectRoot = root, options = {}) {
     '@nimiq/core',
     'PrivateKey.fromHex',
     'REWARD_PRIVATE_KEY_FILE',
+    'PEI_PROXY_PRIVATE_KEY_FILE',
     'NIMIQ_RECOVERY_WORDS',
     SYNTHETIC_TEST_PRIVATE_KEY
   ]) {
@@ -52,13 +57,14 @@ function scanRewardSecurity(projectRoot = root, options = {}) {
       errors.push(`client/build: forbidden payout or server-only marker ${marker}.`);
     }
   }
-  if (fs.existsSync(serverBundle)) {
+  for (const serverBundle of serverBundles) {
+    if (!fs.existsSync(serverBundle)) continue;
     const serverText = fs.readFileSync(serverBundle, 'utf8');
     if (serverText.includes(SYNTHETIC_TEST_PRIVATE_KEY)) {
-      errors.push('server/build/server.js: fixed test private key entered the server bundle.');
+      errors.push(`${relativePath(projectRoot, serverBundle)}: fixed test private key entered the server bundle.`);
     }
     if (/-----BEGIN (?:EC |RSA )?PRIVATE KEY-----/.test(serverText)) {
-      errors.push('server/build/server.js: PEM private key material entered the server bundle.');
+      errors.push(`${relativePath(projectRoot, serverBundle)}: PEM private key material entered the server bundle.`);
     }
   }
 

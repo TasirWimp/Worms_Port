@@ -39,10 +39,16 @@ export const RewardInfoRequestSchema = z.object({
     requestId: RequestIdSchema
 }).strict();
 
+export const PeiAdmissionCredentialSchema = z.object({
+    grantId: RewardRecordIdSchema,
+    token: RewardTokenSchema
+}).strict();
+
 export const RewardReserveRequestSchema = z.object({
     requestId: RequestIdSchema,
     sequence: SequenceSchema,
-    calling: z.enum(['wizard', 'thief', 'warrior'])
+    calling: z.enum(['wizard', 'thief', 'warrior']),
+    peiAdmission: PeiAdmissionCredentialSchema.optional()
 }).strict();
 
 export const RewardClaimRequestSchema = z.object({
@@ -143,6 +149,9 @@ export const ProtocolErrorSchema = z.object({
         'REWARD_INELIGIBLE',
         'REWARD_CONFLICT',
         'REWARD_PAUSED',
+        'PEI_UNAVAILABLE',
+        'PEI_INVALID',
+        'PEI_INCONCLUSIVE',
         'INTERNAL_ERROR'
     ]),
     message: z.string().min(1).max(160),
@@ -180,6 +189,7 @@ export const SessionOpenDataSchema = z.object({
     sessionId: z.string().min(16).max(64),
     token: z.string().regex(SESSION_TOKEN_PATTERN),
     resumed: z.boolean(),
+    nextSequence: SequenceSchema.optional(),
     expiresAt: z.string().datetime(),
     identity: WalletIdentitySchema.optional()
 }).strict();
@@ -225,6 +235,7 @@ export const RewardPayoutStateSchema = z.enum([
 
 export const RewardInfoDataSchema = z.object({
     status: RewardPublicStateSchema,
+    peiRequired: z.boolean(),
     challengeDay: z.string().date(),
     rewardLuna: LunaStringSchema,
     reservationSeconds: z.number().int().positive().max(3600),
@@ -500,6 +511,7 @@ export type IdentityCompleteData = z.infer<typeof IdentityCompleteDataSchema>;
 export type WalletIdentity = z.infer<typeof WalletIdentitySchema>;
 export type RewardInfoData = z.infer<typeof RewardInfoDataSchema>;
 export type RewardReservationData = z.infer<typeof RewardReservationDataSchema>;
+export type PeiAdmissionCredential = z.infer<typeof PeiAdmissionCredentialSchema>;
 export type RewardUpdateData = z.infer<typeof RewardUpdateDataSchema>;
 export type RewardPayoutState = z.infer<typeof RewardPayoutStateSchema>;
 export type ChallengeCreateRequest = z.infer<typeof ChallengeCreateRequestSchema>;

@@ -14,6 +14,16 @@ test('rewards default disabled without requiring payout secrets', () => {
     assert.equal(config.privateKeyFile, 'Z:\\definitely-missing\\reward-key');
     assert.equal(config.network, 'test-albatross');
     assert.equal(config.rewardLuna, 100_000n);
+    assert.equal(config.peiRequired, false);
+});
+
+test('PEI admission is explicit and defaults fail-open only for existing Daily behavior', () => {
+    assert.equal(rewardConfigFromEnvironment({ PEI_ENABLED: 'true' }).peiRequired, true);
+    assert.equal(rewardConfigFromEnvironment({ PEI_ENABLED: 'false' }).peiRequired, false);
+    assert.throws(
+        () => rewardConfigFromEnvironment({ PEI_ENABLED: 'yes' }),
+        /PEI_ENABLED must be true or false/
+    );
 });
 
 test('money values are integer Luna and the pinned ruleset fixes the turn limit', () => {

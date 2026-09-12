@@ -6,8 +6,8 @@ const { execFileSync, spawnSync } = require('node:child_process');
 const { acquireVerificationLease } = require('./verification-lease');
 
 const repoRoot = path.resolve(__dirname, '..');
-const productSuites = ['protocol', 'simulation', 'loomkeeper', 'relics', 'combat', 'practice', 'identity', 'reward'];
-const browserSuites = ['smoke', 'combat', 'practice', 'identity', 'reward', 'resilience'];
+const productSuites = ['protocol', 'simulation', 'loomkeeper', 'relics', 'combat', 'practice', 'identity', 'reward', 'pei'];
+const browserSuites = ['smoke', 'combat', 'practice', 'identity', 'reward', 'pei', 'resilience'];
 const verificationEnvironmentPrefixes = ['NIMBLE_', 'PLAYWRIGHT_', 'PRACTICE_', 'REWARD_', 'WP014_'];
 const verificationEnvironmentNames = new Set(['CI', 'DATABASE_URL', 'NODE_ENV', 'TZ']);
 

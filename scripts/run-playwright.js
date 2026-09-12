@@ -46,7 +46,7 @@ async function main() {
   }
   if (qualityGate || performanceGate) assertQualityGateEnvironment(process.env);
   const rewardRun = qualityGate || (!performanceGate && args.length === 0) || args.some((argument) =>
-    argument.includes('reward.spec') || argument.includes('visual.spec')
+    argument.includes('reward.spec') || argument.includes('pei.spec') || argument.includes('visual.spec')
   );
   const child = childProcess.spawn(
     process.execPath,

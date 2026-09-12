@@ -27,6 +27,12 @@ import type {
 import type { SimulationCommand } from '../../../shared/simulation';
 import type { IdentityAuthorizationRegistry } from '../identity/registry';
 import type { RewardService } from '../reward/service';
+import { PeiCoordinatorError, type PeiCoordinatorV0 } from '../pei/coordinator';
+import {
+    PeiBeginRequestSchema,
+    PeiReturnRequestSchema,
+    peiProtocolEventsV0
+} from '../../../shared/pei-wire-v0';
 import { RewardStoreError } from '../reward/types';
 import type { CoordinatorReplay } from '../simulation/coordinator';
 import { ackFor, SessionRegistry } from '../session/registry';
@@ -52,6 +58,7 @@ export function setupProtocol(
         sessionOpenRateCapacity?: number;
         identity?: IdentityAuthorizationRegistry;
         rewards?: RewardService;
+        pei?: PeiCoordinatorV0;
     } = {}
 ): void {
     const openLimiters = new Map<string, TokenBucket>();
@@ -93,6 +100,7 @@ export function setupProtocol(
         const rewardReserveLimiter = new TokenBucket(3, 3 / 60_000);
         const rewardClaimLimiter = new TokenBucket(5, 5 / 60_000);
         const rewardStatusLimiter = new TokenBucket(12, 12 / 60_000);
+        const peiLimiter = new TokenBucket(8, 8 / 60_000);
         const ip = socket.handshake.address || 'unknown';
         const openCapacity = options.sessionOpenRateCapacity ?? 30;
         const openLimiter = openLimiters.get(ip) || new TokenBucket(
@@ -731,7 +739,8 @@ export function setupProtocol(
                                 parsed.data.requestId,
                                 await options.rewards!.reserve(
                                     session.identity,
-                                    parsed.data.calling
+                                    parsed.data.calling,
+                                    parsed.data.peiAdmission
                                 )
                             );
                         } catch (error) {
@@ -879,6 +888,90 @@ export function setupProtocol(
                 ack(wire);
                 if (wire.ok) registry.deliverCurrentV10(session);
             }).catch(() => ack(candidateFailureV10(payload, 'INTERNAL_ERROR', 'Volcanic challenge creation failed.')));
+        });
+
+        socket.on(peiProtocolEventsV0.begin, (payload: unknown, ack?: Ack) => {
+            if (!guard(socket, payload, ack, invalidLimiter)) return;
+            const parsed = PeiBeginRequestSchema.safeParse(payload);
+            if (!parsed.success) {
+                invalid(socket, ack, requestIdOf(payload), invalidLimiter);
+                return;
+            }
+            if (!peiLimiter.take()) {
+                ack?.(failure(parsed.data.requestId, 'RATE_LIMITED', 'Wait before starting another PEI journey.', true));
+                return;
+            }
+            withSessionAsync(socket, registry, parsed.data.requestId, ack, async (session) => {
+                const response = await registry.sequenceAsync(
+                    session,
+                    parsed.data.requestId,
+                    parsed.data.sequence,
+                    parsed.data,
+                    async () => {
+                        if (!options.pei || !session.identity) {
+                            return failure(
+                                parsed.data.requestId,
+                                'PEI_UNAVAILABLE',
+                                session.identity
+                                    ? 'PEI is unavailable on this server.'
+                                    : 'Authorize the Daily Challenge wallet before starting PEI.'
+                            );
+                        }
+                        try {
+                            return ackFor(
+                                parsed.data.requestId,
+                                await options.pei.begin(session.id, session.identity.address)
+                            );
+                        } catch (error) {
+                            return peiFailure(parsed.data.requestId, error);
+                        }
+                    }
+                );
+                ack(response);
+            });
+        });
+
+        socket.on(peiProtocolEventsV0.returned, (payload: unknown, ack?: Ack) => {
+            if (!guard(socket, payload, ack, invalidLimiter)) return;
+            const parsed = PeiReturnRequestSchema.safeParse(payload);
+            if (!parsed.success) {
+                invalid(socket, ack, requestIdOf(payload), invalidLimiter);
+                return;
+            }
+            if (!peiLimiter.take()) {
+                ack?.(failure(parsed.data.requestId, 'RATE_LIMITED', 'Wait before verifying the PEI return.', true));
+                return;
+            }
+            withSessionAsync(socket, registry, parsed.data.requestId, ack, async (session) => {
+                const response = await registry.sequenceAsync(
+                    session,
+                    parsed.data.requestId,
+                    parsed.data.sequence,
+                    parsed.data,
+                    async () => {
+                        if (!options.pei || !session.identity) {
+                            return failure(parsed.data.requestId, 'PEI_UNAVAILABLE', 'PEI and an authorized wallet are required.');
+                        }
+                        try {
+                            const data = parsed.data.kind === 'earn'
+                                ? await options.pei.acceptEarn(
+                                    session.id,
+                                    session.identity.address,
+                                    parsed.data.carrier
+                                )
+                                : await options.pei.complete(
+                                    session.id,
+                                    session.identity.address,
+                                    parsed.data.carrier
+                                );
+                            return ackFor(parsed.data.requestId, data);
+                        } catch (error) {
+                            return peiFailure(parsed.data.requestId, error);
+                        }
+                    }
+                );
+                ack(response);
+            });
         });
 
         socket.on(protocolEventsV9.create, (payload: unknown, ack?: (response: CandidateAckV9) => void) => {
@@ -1427,6 +1520,8 @@ const ALLOWED_CLIENT_EVENTS = new Set([
     protocolEvents.rewardReserve,
     protocolEvents.rewardClaim,
     protocolEvents.rewardStatus,
+    peiProtocolEventsV0.begin,
+    peiProtocolEventsV0.returned,
     protocolEvents.challengeCreate,
     protocolEvents.commandSubmit,
     protocolEvents.challengePause,
@@ -1438,6 +1533,22 @@ const ALLOWED_CLIENT_EVENTS = new Set([
     'client:game#join',
     'client:game#ready'
 ]);
+
+function peiFailure(requestId: string, error: unknown): ProtocolAck<never> {
+    if (error instanceof PeiCoordinatorError) {
+        return failure(
+            requestId,
+            error.kind === 'invalid'
+                ? 'PEI_INVALID'
+                : error.kind === 'inconclusive'
+                    ? 'PEI_INCONCLUSIVE'
+                    : 'PEI_UNAVAILABLE',
+            error.message,
+            error.retryable
+        );
+    }
+    return failure(requestId, 'PEI_INVALID', 'The PEI return could not be processed.');
+}
 
 function failureV8(payload: unknown,code: ProtocolError['code'],message: string,nextInputSequence=0): InputAckV8 {
     return { protocolVersion:8,requestId:requestIdOf(payload),nextInputSequence,ok:false,

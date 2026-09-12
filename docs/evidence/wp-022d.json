@@ -1,0 +1,56 @@
+{
+  "id": "WP-022D",
+  "status": "complete",
+  "execution_mode": "single_owner",
+  "starting_commit": "13377fd",
+  "branch": "codex/pei-daily-v10",
+  "initial_worktree": "dirty-preserved",
+  "starting_lock_sha256": "6B768A8FDE2695D02555CA17201FD7CE420F9AC075B91380474DD7A643042BC8",
+  "owning_roles": [
+    "primary assistant"
+  ],
+  "scope": [
+    "Connect the authenticated PEI v0 journey across separate game and helper browser origins.",
+    "Disclose wallet, network, amount and direction before each edge; keep Practice available and wallet-free.",
+    "Require helper-side chain finality before returning either proof and admit the same V10 R5 volcanic Daily match."
+  ],
+  "non_goals": [
+    "No real Nimiq Pay provider, public RPC, mainnet transfer, payout activation, carrier ablation or new art."
+  ],
+  "planned_checks": [
+    "npm.cmd run check:types && npm.cmd run build:outputs && npm.cmd run test:browser:pei",
+    "Primary direct review"
+  ],
+  "deterministic_seeds": [
+    "Fixed fake provider account, transaction hashes, chain records and V10 test seed"
+  ],
+  "sorcerers_reference_used": false,
+  "clean_room_records": [],
+  "check_results": [
+    {
+      "command": "npm.cmd run check:types && npm.cmd run build:outputs && npm.cmd run test:browser:pei",
+      "status": "pass",
+      "details": "Types passed and the final selected build produced proof 97e1c039d129/f5e6c30f3138. The focused PEI browser journey first passed 2/2 on canonical 390x844 Chromium and WebKit with zero retries, then passed again as part of the current 73-pass canonical phone phase after restart/finality hardening. It covers two origins, earn, helper reload, spend, both returns, admission, reload before Daily start and V10 R5 volcanic play. Logs .cache/wp022d-browser-pei-2.log, .cache/wp022e-selector-checks-3.log and .cache/wp022e-selector-browser.log."
+    },
+    {
+      "command": "Primary direct review",
+      "status": "pass",
+      "details": "Primary reviewed strict URL carriers and request HMACs, same-wallet enforcement, explicit helper facts, provider error handling, server-side finality, sessionStorage transaction resume, return parsing, admission persistence and the unchanged Practice path."
+    }
+  ],
+  "reviews": [
+    {
+      "reviewer": "Primary single-owner assistant",
+      "role": "primary_direct_review",
+      "decision": "pass",
+      "details": "The synthetic two-origin browser journey is complete. Test execution was delegated only to /root/verification."
+    }
+  ],
+  "skipped_checks": [
+    "The three existing Ubuntu-only visual cases were skipped under Windows policy; no baseline was generated or approved.",
+    "Real Nimiq Pay cross-origin navigation and wallet transfer were deferred to Phone Gate B."
+  ],
+  "residual_risks": [
+    "Loopback browser coverage cannot establish that the real Nimiq Pay WebView preserves provider access across direct navigation between registered Mini App origins."
+  ]
+}

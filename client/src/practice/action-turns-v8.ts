@@ -1,5 +1,5 @@
 import type { Socket } from 'socket.io-client';
-import type { SessionOpenData, ChallengeSnapshot, ChallengeResult, RewardInfoData, RewardReservationData, RewardUpdateData, ProtocolError } from '../../../shared/protocol';
+import type { SessionOpenData, ChallengeSnapshot, ChallengeResult, RewardInfoData, RewardReservationData, RewardUpdateData, ProtocolError, PeiAdmissionCredential } from '../../../shared/protocol';
 import { protocolEvents, ChallengeLeaveAckSchema, RewardInfoAckSchema, RewardReserveAckSchema, RewardClaimAckSchema, RewardStatusAckSchema } from '../../../shared/protocol';
 import type { ChallengeSnapshotV8Runtime as ChallengeSnapshotV8, ChallengeResultV8Runtime as ChallengeResultV8 } from '../../../shared/protocol-v8';
 import type { ChallengeSnapshotV8Automated, ChallengeResultV8Automated } from '../../../shared/protocol-v8';
@@ -823,14 +823,22 @@ export class ActionTurnsLifecycle {
         return structuredClone(parsed.data.data);
     }
 
-    public async reserve(calling: PlayerCalling): Promise<RewardReservationData> {
+    public async reserve(
+        calling: PlayerCalling,
+        peiAdmission?: PeiAdmissionCredential
+    ): Promise<RewardReservationData> {
         if (this.host.busy) throw new Error('Another Clash action is still pending.');
         if (!this.host.socket.connected) throw new Error('Reconnecting to the Clash server.');
         this.host.busy = true;
         const requestId = createRequestId();
         const sequence = this.host.cursor.nextSequence;
         try {
-            const raw = await this.host.emit(protocolEvents.rewardReserve, { requestId, sequence, calling });
+            const raw = await this.host.emit(protocolEvents.rewardReserve, {
+                requestId,
+                sequence,
+                calling,
+                ...(peiAdmission ? { peiAdmission } : {})
+            });
             const parsed = RewardReserveAckSchema.safeParse(raw);
             if (!parsed.success || parsed.data.requestId !== requestId) {
                 throw new Error('Server returned an invalid reward reservation.');

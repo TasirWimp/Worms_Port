@@ -17,7 +17,9 @@ import { NimiqPayIdentityAdapter } from './identity/adapter';
 import { IdentityProtocolClient } from './identity/client';
 import { IDENTITY_SERVICES_REGISTRY_KEY } from './identity/view';
 import { createResultPreview } from './result/fixture';
+import { capturePeiReturnV0 } from './pei/return';
 
+capturePeiReturnV0();
 const requestedSideways = requestedSidewaysMode(window.location.search);
 let runningGame: Phaser.Game | undefined;
 

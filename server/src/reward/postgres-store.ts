@@ -5,6 +5,8 @@ import { Pool, type PoolClient, type QueryResultRow } from 'pg';
 import type { RewardInfoData, RewardPayoutState } from '../../../shared/protocol';
 import {
     RewardStoreError,
+    type PeiQualificationGrant,
+    type PeiQualificationInput,
     type RewardClaimInput,
     type RewardConfig,
     type RewardEntitlement,
@@ -40,6 +42,19 @@ type EntitlementRow = QueryResultRow & {
     included_height: string | null;
     finalized_at: Date | null;
     reason_code: string | null;
+    pei_admission_grant_id: string | null;
+};
+
+type PeiQualificationRow = QueryResultRow & {
+    id: string;
+    wallet_address: string;
+    challenge_day: string | Date;
+    qualification_digest: string;
+    token_digest: string;
+    issued_at: Date;
+    expires_at: Date;
+    consumed_at: Date | null;
+    entitlement_id: string | null;
 };
 
 export class PostgresRewardStore implements RewardStore {
@@ -143,11 +158,53 @@ export class PostgresRewardStore implements RewardStore {
                     : committed + config.rewardLuna > config.dailyBudgetLuna
                         ? 'exhausted'
                         : 'available',
+            peiRequired: config.peiRequired === true,
             challengeDay: day,
             rewardLuna: config.rewardLuna.toString(),
             reservationSeconds: Math.floor(config.reservationTtlMs / 1000),
             turnLimit: config.turnLimit
         };
+    }
+
+    public async issuePeiQualification(
+        input: PeiQualificationInput
+    ): Promise<PeiQualificationGrant> {
+        try {
+            const inserted = await this.pool.query<PeiQualificationRow>(
+                `INSERT INTO pei_admission_grants (
+                    id, wallet_address, challenge_day, qualification_digest,
+                    token_digest, issued_at, expires_at
+                 ) VALUES ($1,$2,$3,$4,$5,$6,$7)
+                 RETURNING *`,
+                [
+                    input.id,
+                    input.walletAddress,
+                    input.challengeDay,
+                    input.qualificationDigest,
+                    input.tokenDigest,
+                    input.issuedAt,
+                    input.expiresAt
+                ]
+            );
+            return peiQualificationFromRow(inserted.rows[0]);
+        } catch (error) {
+            if (databaseCode(error) === UNIQUE_VIOLATION) {
+                throw new RewardStoreError('conflict', 'PEI admission grant already exists.');
+            }
+            throw error;
+        }
+    }
+
+    public async peiQualificationStatus(
+        grantId: string,
+        walletAddress: string
+    ): Promise<PeiQualificationGrant | undefined> {
+        const selected = await this.pool.query<PeiQualificationRow>(
+            `SELECT * FROM pei_admission_grants
+              WHERE id = $1 AND wallet_address = $2`,
+            [grantId, walletAddress]
+        );
+        return selected.rows[0] ? peiQualificationFromRow(selected.rows[0]) : undefined;
     }
 
     public async reserve(input: RewardReservationInput): Promise<RewardEntitlement> {
@@ -181,6 +238,7 @@ export class PostgresRewardStore implements RewardStore {
             if (!budget || budget.paused || day.paused) {
                 throw new RewardStoreError('paused', 'Sponsor rewards are paused.');
             }
+            const peiGrant = await validPeiGrantForReservation(client, input);
             const consumed = await client.query<{ count: string }>(
                 `SELECT COUNT(*)::text AS count FROM reward_entitlements
                   WHERE challenge_day = $1 AND wallet_address = $2
@@ -230,8 +288,9 @@ export class PostgresRewardStore implements RewardStore {
                         id, challenge_id, challenge_day, wallet_address, calling,
                         seed, reward_luna, state, attempt_number,
                         daily_attempt_limit, eligibility_token_digest,
-                        reservation_expires_at, created_at, updated_at
-                    ) VALUES ($1,$2,$3,$4,$5,$6,$7,'reserved',$8,$9,$10,$11,$12,$12)
+                        pei_admission_grant_id, reservation_expires_at,
+                        created_at, updated_at
+                    ) VALUES ($1,$2,$3,$4,$5,$6,$7,'reserved',$8,$9,$10,$11,$12,$13,$13)
                     RETURNING *`,
                     [
                         input.id,
@@ -244,6 +303,7 @@ export class PostgresRewardStore implements RewardStore {
                         consumedAttempts + 1,
                         dailyAttemptLimit,
                         input.eligibilityTokenDigest,
+                        peiGrant?.id ?? null,
                         input.reservationExpiresAt,
                         input.now
                     ]
@@ -294,6 +354,22 @@ export class PostgresRewardStore implements RewardStore {
                 await this.releaseReservation(client, row, 'expired', now);
                 throw new RewardStoreError('expired', 'The reward reservation expired.');
             }
+            let peiGrant: PeiQualificationRow | undefined;
+            if (row.pei_admission_grant_id) {
+                const selectedGrant = await client.query<PeiQualificationRow>(
+                    'SELECT * FROM pei_admission_grants WHERE id = $1 FOR UPDATE',
+                    [row.pei_admission_grant_id]
+                );
+                peiGrant = selectedGrant.rows[0];
+                if (!peiGrant || peiGrant.wallet_address !== walletAddress ||
+                    dayString(peiGrant.challenge_day) !== dayString(row.challenge_day) ||
+                    peiGrant.consumed_at || peiGrant.expires_at.getTime() <= now.getTime()) {
+                    throw new RewardStoreError(
+                        'ineligible',
+                        'The PEI admission grant is invalid or already used.'
+                    );
+                }
+            }
             const consumed = await client.query<{ count: string }>(
                 `SELECT COUNT(*)::text AS count FROM reward_entitlements
                   WHERE challenge_day = $1 AND wallet_address = $2
@@ -317,6 +393,20 @@ export class PostgresRewardStore implements RewardStore {
                 );
                 if (!updated.rows[0]) {
                     throw new RewardStoreError('conflict', 'The reward reservation changed.');
+                }
+                if (peiGrant) {
+                    const consumed = await client.query(
+                        `UPDATE pei_admission_grants
+                            SET consumed_at = $2, entitlement_id = $3
+                          WHERE id = $1 AND consumed_at IS NULL`,
+                        [peiGrant.id, now, row.id]
+                    );
+                    if (!consumed.rowCount) {
+                        throw new RewardStoreError(
+                            'conflict',
+                            'The PEI admission grant changed concurrently.'
+                        );
+                    }
                 }
                 await appendEvent(client, row.id, 'reserved', 'in_progress', null, now);
                 return entitlementFromRow(updated.rows[0]);
@@ -871,15 +961,62 @@ function entitlementFromRow(row: EntitlementRow): RewardEntitlement {
             ? { includedHeight: Number(row.included_height) }
             : {}),
         ...(row.finalized_at ? { finalizedAt: new Date(row.finalized_at) } : {}),
-        ...(row.reason_code ? { reasonCode: row.reason_code } : {})
+        ...(row.reason_code ? { reasonCode: row.reason_code } : {}),
+        ...(row.pei_admission_grant_id
+            ? { peiAdmissionGrantId: row.pei_admission_grant_id }
+            : {})
     };
+}
+
+function peiQualificationFromRow(row: PeiQualificationRow): PeiQualificationGrant {
+    return {
+        id: row.id,
+        walletAddress: row.wallet_address,
+        challengeDay: dayString(row.challenge_day),
+        qualificationDigest: row.qualification_digest,
+        tokenDigest: row.token_digest,
+        issuedAt: new Date(row.issued_at),
+        expiresAt: new Date(row.expires_at),
+        ...(row.consumed_at ? { consumedAt: new Date(row.consumed_at) } : {}),
+        ...(row.entitlement_id ? { entitlementId: row.entitlement_id } : {})
+    };
+}
+
+async function validPeiGrantForReservation(
+    client: PoolClient,
+    input: RewardReservationInput
+): Promise<PeiQualificationRow | undefined> {
+    if (!input.peiAdmissionRequired && !input.peiAdmission) return undefined;
+    if (!input.peiAdmission) {
+        throw new RewardStoreError(
+            'ineligible',
+            'A PEI admission grant is required for this Daily Challenge.'
+        );
+    }
+    const selected = await client.query<PeiQualificationRow>(
+        'SELECT * FROM pei_admission_grants WHERE id = $1 FOR UPDATE',
+        [input.peiAdmission.grantId]
+    );
+    const grant = selected.rows[0];
+    if (!grant || grant.wallet_address !== input.walletAddress ||
+        dayString(grant.challenge_day) !== input.challengeDay ||
+        grant.token_digest !== input.peiAdmission.tokenDigest ||
+        grant.consumed_at ||
+        grant.expires_at.getTime() < input.reservationExpiresAt.getTime()) {
+        throw new RewardStoreError(
+            'ineligible',
+            'The PEI admission grant is invalid, expired, or already used.'
+        );
+    }
+    return grant;
 }
 
 async function readRewardMigrations(): Promise<string[]> {
     const migrations: string[] = [];
     for (const filename of [
         '001_reward_ledger.sql',
-        '002_reward_test_attempt_slots.sql'
+        '002_reward_test_attempt_slots.sql',
+        '003_pei_admission.sql'
     ]) {
         const candidates = [
             path.join(__dirname, '../migrations', filename),

@@ -23,6 +23,7 @@ import {
 import { setup_room_api } from './room/api';
 import type { RewardPayoutWorker } from './reward/payout';
 import type { RewardService } from './reward/service';
+import type { PeiCoordinatorV0 } from './pei/coordinator';
 import { Room } from './room/class';
 import { RoomWatcher } from './room/watcher';
 import { Game } from './game/class';
@@ -43,6 +44,7 @@ export type RuntimeServerOptions = {
     identity?: IdentityAuthorizationOptions | false;
     rewards?: RewardService;
     rewardWorker?: RewardPayoutWorker;
+    pei?: PeiCoordinatorV0;
 };
 
 let legacyRuntimeActive = false;
@@ -181,6 +183,7 @@ export function createRuntimeServer(options: RuntimeServerOptions = {}) {
         },
         onSessionClosed: (sessionId, socketId) => {
             identity?.cancelSession(sessionId);
+            options.pei?.closeSession(sessionId);
             RoomWatcher.instance.removePlayer(sessionId);
             GameWatcher.instance.hidePlayer(sessionId);
             callerClosedHandler?.(sessionId, socketId);
@@ -232,7 +235,8 @@ export function createRuntimeServer(options: RuntimeServerOptions = {}) {
         maxPendingConnections: options.maxPendingConnections,
         sessionOpenRateCapacity: options.sessionOpenRateCapacity,
         identity,
-        rewards: options.rewards
+        rewards: options.rewards,
+        pei: options.pei
     });
     setup_room_api(app, io, sessions);
     setup_game_api(app, io, sessions);
@@ -253,6 +257,7 @@ export function createRuntimeServer(options: RuntimeServerOptions = {}) {
         identity?.dispose();
         await options.rewardWorker?.close();
         await Promise.allSettled([...rewardSettlementTasks]);
+        await options.pei?.close();
         await options.rewards?.close();
         await new Promise<void>((resolve, reject) => {
             io.close(() => {
@@ -269,6 +274,7 @@ export function createRuntimeServer(options: RuntimeServerOptions = {}) {
     const listen = async (port = 0, host = '127.0.0.1'): Promise<number> => {
         if (!initialized) {
             await options.rewards?.initialize();
+            await options.pei?.initialize();
             options.rewardWorker?.start();
             initialized = true;
         }

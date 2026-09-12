@@ -30,7 +30,7 @@ Phaser/Socket.IO stack.
   complete. Next: migrate the existing one-attempt-per-wallet Daily Challenge
   from V7 to this same V10 R5 volcanic authority before adding PEI as its
   additional admission requirement. PEI remains unimplemented.
-- Active successor **WP-022A Daily V10 Migration**, beginning at clean
+- Completed successor **WP-022A Daily V10 Migration**, beginning at clean
   `3538d1d` on `codex/pei-daily-v10`: make the existing wallet-gated Daily
   Challenge use exactly the standard Practice V10 R5 volcanic match. Preserve
   one reward-eligible attempt per wallet per UTC day, verified-win settlement,
@@ -41,12 +41,30 @@ Phaser/Socket.IO stack.
   direct review and change-selected verification are complete: the clean
   selector passed 72 browser cases with three expected Ubuntu-only visual
   skips and no retries, alongside all selected unit, build, smoke, security and
-  bundle gates. The first deployed Phone Gate A attempt correctly exposed that
-  Render still selected the isolated `development-v10-practice` profile, which
-  intentionally has no wallet or reward service; Daily therefore reported
-  unavailable before authorization. **Phone Gate A remains pending** after the
-  documented switch to the normal runtime with record-only rewards unpaused.
-  No PEI work begins until the owner accepts this physical-phone journey. See the
+  bundle gates. The first deployed Phone Gate A attempt exposed that Render
+  still selected the isolated `development-v10-practice` profile. After the
+  owner switched to the normal runtime with record-only rewards unpaused, all
+  six phone steps passed at `13377fd`: wallet authorization, V10 R5 volcanic
+  Daily play, Loomkeeper response, reload/resume, result/Practice retry and
+  same-day attempt refusal. A separate standard Practice match also passed.
+  **WP-022A is complete.** The uncommitted continuation from clean `13377fd`
+  completes **WP-022B Durable Admission Foundation**, **WP-022C Deterministic
+  Baseline and Fresh Verifier**, and **WP-022D Two-Origin Helper Journey**.
+  The short-lived credential binds verified PEI to wallet, UTC day and Daily
+  reservation and is consumed atomically with the started attempt. The frozen
+  overcomplete v0 carrier and fresh chain verifier now drive a browser journey
+  across separate game/helper origins, ending in the same V10 R5 volcanic Daily
+  authority. **WP-022E Durable Mainnet Canary** is active: exact signed helper
+  bytes and game journey state survive restarts, both sides wait for chain
+  finality, mainnet authority is separately acknowledged and paused by default,
+  and the two final transaction hashes remain visible. Local implementation,
+  direct review and the change-selected checks/browser/performance phases are
+  complete; the disposable PostgreSQL gate remains CI-only because the local
+  prerequisite is absent. Phone Gate B remains. Carrier-content ablation stays deferred until this operational
+  journey passes on the owner's phone. See the
+  [PEI admission contract](wp-022-pei-admission-contract.md),
+  [WP-022B evidence](../evidence/wp-022b.json), [WP-022C evidence](../evidence/wp-022c.json),
+  [WP-022D evidence](../evidence/wp-022d.json), [WP-022E evidence](../evidence/wp-022e.json), and the
   [bounded contract](wp-015d4f-volcanic-ruin-preview-bundle-contract.md#wp-022a-daily-v10-migration)
   and [evidence](../evidence/wp-022a.json).
 - Active target: mobile-first single-player Nimiq Pay competition release.

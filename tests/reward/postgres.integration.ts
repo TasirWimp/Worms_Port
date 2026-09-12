@@ -42,6 +42,7 @@ test('concurrent initialization migrates a zero database exactly once', async ()
                       ORDER BY table_name`
                 );
                 assert.deepEqual(tables.rows.map((row) => row.table_name), [
+                    'pei_admission_grants',
                     'reward_claims',
                     'reward_days',
                     'reward_entitlements',
@@ -61,6 +62,71 @@ test('concurrent initialization migrates a zero database exactly once', async ()
             }
         } finally {
             await Promise.allSettled([first.close(), second.close()]);
+        }
+    });
+});
+
+test('PEI grant binding and started-attempt consumption share durable authority', async () => {
+    await withDatabase('pei_admission', async (databaseUrl) => {
+        const store = new PostgresRewardStore(databaseUrl, 3);
+        try {
+            await store.initialize();
+            const grant = await store.issuePeiQualification({
+                id: 'pei_admission_grant_01',
+                walletAddress: WALLET,
+                challengeDay: DAY,
+                qualificationDigest: digest('verified-pei-journey'),
+                tokenDigest: digest('pei-admission-token'),
+                issuedAt: NOW,
+                expiresAt: new Date(NOW.getTime() + 600_000)
+            });
+            const credential = {
+                grantId: grant.id,
+                tokenDigest: digest('pei-admission-token')
+            };
+            await assert.rejects(
+                store.reserve(reservation(
+                    'pei_wrong_wallet_entitlement',
+                    'pei_wrong_wallet_challenge',
+                    OTHER_WALLET,
+                    DAY,
+                    { peiAdmissionRequired: true, peiAdmission: credential }
+                )),
+                rewardError('ineligible')
+            );
+
+            const cancelled = reservation(
+                'pei_cancel_entitlement_01',
+                'pei_cancel_challenge_01',
+                WALLET,
+                DAY,
+                { peiAdmissionRequired: true, peiAdmission: credential }
+            );
+            await store.reserve(cancelled);
+            await store.cancelReserved(cancelled.challengeId, WALLET, NOW);
+            assert.equal((await store.peiQualificationStatus(grant.id, WALLET))?.consumedAt, undefined);
+
+            const startedInput = reservation(
+                'pei_start_entitlement_01',
+                'pei_start_challenge_01',
+                WALLET,
+                DAY,
+                { peiAdmissionRequired: true, peiAdmission: credential }
+            );
+            const reserved = await store.reserve(startedInput);
+            assert.equal(reserved.peiAdmissionGrantId, grant.id);
+            const started = await store.start(
+                startedInput.challengeId,
+                WALLET,
+                startedInput.eligibilityTokenDigest,
+                NOW
+            );
+            assert.equal(started.state, 'in_progress');
+            const consumed = await store.peiQualificationStatus(grant.id, WALLET);
+            assert.equal(consumed?.entitlementId, started.id);
+            assert.equal(consumed?.consumedAt?.toISOString(), NOW.toISOString());
+        } finally {
+            await store.close();
         }
     });
 });

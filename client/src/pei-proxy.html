@@ -1,0 +1,29 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+  <meta name="theme-color" content="#1f2348" />
+  <title>PEI Thread Crossing</title>
+  <link rel="stylesheet" href="/pei-proxy.css" />
+</head>
+<body>
+  <main class="pei-shell">
+    <section class="pei-card" aria-labelledby="pei-title">
+      <p class="pei-eyebrow">Proof of Ecosystem Interaction · v0</p>
+      <h1 id="pei-title">Thread Crossing</h1>
+      <p id="pei-intro">Checking the request from NIMble Knots…</p>
+      <dl id="pei-facts" hidden>
+        <div><dt>Step</dt><dd data-fact="step"></dd></div>
+        <div><dt>Amount</dt><dd data-fact="amount"></dd></div>
+        <div><dt>Wallet</dt><dd data-fact="wallet"></dd></div>
+        <div><dt>Network</dt><dd data-fact="network"></dd></div>
+      </dl>
+      <button id="pei-action" type="button" hidden disabled>Continue</button>
+      <button id="pei-cancel" type="button" hidden>Return without qualifying</button>
+      <p id="pei-status" role="status" aria-live="polite"></p>
+    </section>
+  </main>
+  <script type="module" src="/pei-proxy.ts"></script>
+</body>
+</html>

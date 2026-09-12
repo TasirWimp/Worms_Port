@@ -43,7 +43,8 @@ configuration; `NIMBLE_DEPLOYMENT` may be absent or exactly `production`. Save
 these settings together and redeploy. Unpausing while the development profile
 is still selected deliberately fails startup. Record-only mode exercises wallet
 authorization, durable eligibility, V10 replay settlement and claim state
-without creating a Nimiq transaction. Mainnet remains a later explicit gate.
+without creating a reward transaction. Reward-payout mainnet remains a later
+explicit gate; the separate 1 NIM PEI interaction has its own canary below.
 
 The owner accepted the local scenic restart fix on 2026-09-11. New server-backed
 phone acceptance should cover Start Practice, aim/fire and AI reply, pause,
@@ -346,6 +347,97 @@ Common settings are `REWARD_LUNA`, `REWARD_DAILY_BUDGET_LUNA`,
 the immediate kill switch `REWARD_PAUSED=true`. Monetary values are integer
 Luna (`100000 Luna = 1 NIM`). The pinned ruleset currently requires
 `REWARD_TURN_LIMIT=16`.
+
+### PEI helper and Daily admission
+
+`PEI_ENABLED` defaults to `false`. When enabled, the Daily Challenge requires a
+two-edge MainAlbatross interaction before reservation: the dedicated helper
+sends NIM to the authorized player wallet, then Nimiq Pay sends the same amount
+from that wallet back to the helper. Both transactions carry the commitment of
+their server-authenticated request and must reach macro-block finality. A fresh
+game-server verification issues a short-lived admission bound to the wallet and
+UTC challenge day. The admission is consumed atomically with the started Daily
+attempt. Practice never reads PEI state or initializes the wallet SDK.
+
+The game and helper are separate Render Web Services built from the same commit.
+Use the usual build command for both. The game starts with `npm start`; the
+helper starts with `npm run start:pei-proxy`. Give each service its own Render
+PostgreSQL database. This keeps the helper signer database separate from the
+reward ledger. Configure these identical values on both services, using exact
+HTTPS origins without a trailing slash:
+
+```text
+NODE_ENV=production
+PEI_ENABLED=true
+PEI_NETWORK=main-albatross
+PEI_RETURN_ORIGIN=https://<game-service-host>
+PEI_PROXY_ORIGIN=https://<helper-service-host>
+PEI_PROXY_ADDRESS=<dedicated-helper-address>
+PEI_REQUEST_TTL_SECONDS=900
+PEI_EARN_MIN_LUNA=100000
+PEI_SPEND_MIN_LUNA=100000
+PEI_REQUEST_AUTH_SECRET=<same-32-byte-Base64URL-secret>
+PEI_RPC_URL=https://<trusted-main-albatross-rpc>
+```
+
+Generate the shared request-authentication secret once and paste the same value
+into both services:
+
+```powershell
+$peiSecretBytes = [byte[]]::new(32)
+[Security.Cryptography.RandomNumberGenerator]::Fill($peiSecretBytes)
+[Convert]::ToBase64String($peiSecretBytes).TrimEnd('=').Replace('+','-').Replace('/','_')
+```
+
+The game service additionally keeps its existing `DATABASE_URL`, identity and
+origin settings and uses:
+
+```text
+NIMIQ_NETWORK=main-albatross
+IDENTITY_PUBLIC_ORIGIN=https://<game-service-host>
+REWARD_MODE=record-only
+REWARD_NETWORK=main-albatross
+REWARD_PAUSED=false
+```
+
+Create a dedicated helper key outside this repository. The command refuses an
+existing file and any path inside the repository and prints the derived public
+address without printing the private key:
+
+```powershell
+npm run pei:generate-proxy-key -- "C:\absolute\outside\repo\pei-proxy-key"
+```
+
+Create a Render secret file named `pei-proxy-key` from that file's exact
+hexadecimal content. Configure only the helper service with its own
+`DATABASE_URL` and:
+
+```text
+PEI_PROXY_PRIVATE_KEY_FILE=/etc/secrets/pei-proxy-key
+PEI_PROXY_FEE_LUNA=0
+PEI_PROXY_PAUSED=true
+PEI_MAINNET_ACKNOWLEDGEMENT=I_UNDERSTAND_MAINNET_PEI_TRANSFERS
+```
+
+Deploy the helper paused first. `GET /api/pei/config` must report the intended
+network, game origin, proxy address and both `100000` Luna amounts. Register the
+helper origin as the helper Mini App used by this canary. Fund the dedicated
+helper address with only 1 NIM, change `PEI_PROXY_PAUSED=false`, and redeploy for
+one owner-authorized canary. The game reward remains record-only; the two PEI
+edges are the only real transfers. After the canary, restore
+`PEI_PROXY_PAUSED=true` and redeploy before adding more funds.
+
+The helper stores exact signed earn bytes before broadcast and reuses those
+bytes after ambiguous RPC submission or restart. The game stores the accepted
+earn proof and exact spend request so a replacement game process can continue
+the same journey during its validity window. The helper and game each verify
+chain data independently. After qualification, the game displays both complete
+transaction hashes for operational reconstruction.
+
+This is a one-participant, low-funded canary boundary. Wider public activation
+still needs a durable helper-side sponsor budget and per-wallet daily issuance
+policy; the current Socket.IO limiter and helper balance do not replace those
+controls.
 
 For a controlled repeat-attempt payout canary, an operator may temporarily set
 `REWARD_TEST_WALLET_ADDRESS` to one compact or spaced test-wallet address and

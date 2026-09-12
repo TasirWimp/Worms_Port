@@ -8,11 +8,13 @@ import {
     ChallengeResultSchema,
     ChallengeSnapshotSchema,
     CommandSubmitAckSchema,
+    PeiAdmissionCredentialSchema,
     protocolEvents,
     RewardUpdateDataSchema,
     type ChallengeResult,
     type ChallengeSnapshot,
     type ProtocolError,
+    type PeiAdmissionCredential,
     type RewardInfoData,
     type RewardReservationData,
     type RewardUpdateData,
@@ -27,6 +29,7 @@ import { reconnectSession, takeActionTurnsV8SessionEvents, whenSessionReady } fr
 
 const ACK_TIMEOUT_MS = 5_000;
 const ACTIVE_PRACTICE_KEY = 'nimble-knots.active-practice';
+const PEI_ADMISSION_KEY = 'nimble-knots.pei-admission-v0';
 export const PRACTICE_CLIENT_REGISTRY_KEY = 'practice-client';
 
 export type PracticeConnectionState = 'connected' | 'reconnecting';
@@ -64,11 +67,14 @@ export class PracticeClient {
     private readonly errorListeners = new Set<(message: string) => void>();
     private readonly rewardListeners = new Set<(update: RewardUpdateData) => void>();
     private readonly rewardUpdates = new Map<string, RewardUpdateData>();
+    private peiAdmission?: PeiAdmissionCredential;
     private volcanicPractice = false;
     private v10?: import('./terrain-turns-v10').ResourceTurnsV10Client;
     private v10Ready?: Promise<import('./terrain-turns-v10').ResourceTurnsV10Client>;
     private v9?: import('./resource-turns-v9').ResourceTurnsV9Client;
     private v9Ready?: Promise<import('./resource-turns-v9').ResourceTurnsV9Client>;
+    private pei?: import('../pei/client').PeiProtocolClientV0;
+    private peiReady?: Promise<import('../pei/client').PeiProtocolClientV0>;
 
     public constructor(
         private readonly socket: Socket,
@@ -78,8 +84,12 @@ export class PracticeClient {
     ) {
         this.session = structuredClone(session);
         this.sessionId = session.sessionId;
-        this.sessionCursor = { sessionId: session.sessionId, nextSequence: 0 };
+        this.sessionCursor = {
+            sessionId: session.sessionId,
+            nextSequence: session.nextSequence ?? 0
+        };
         this.identity = session.identity ? structuredClone(session.identity) : undefined;
+        this.peiAdmission = readPeiAdmission();
         const stored = readActivePractice();
         if (stored && stored.sessionId !== session.sessionId) {
             this.pendingUnavailable =
@@ -148,7 +158,38 @@ export class PracticeClient {
     }
 
     public noteAuthorizedIdentity(identity: WalletIdentity): void {
+        if (this.identity?.address !== identity.address) this.setPeiAdmissionCredential(undefined);
         this.identity = structuredClone(identity);
+    }
+
+    public setPeiAdmissionCredential(credential: PeiAdmissionCredential | undefined): void {
+        this.peiAdmission = credential ? structuredClone(credential) : undefined;
+        if (typeof sessionStorage === 'undefined') return;
+        if (credential) sessionStorage.setItem(PEI_ADMISSION_KEY, JSON.stringify(credential));
+        else sessionStorage.removeItem(PEI_ADMISSION_KEY);
+    }
+
+    public hasPeiAdmissionCredential(): boolean {
+        return this.peiAdmission !== undefined;
+    }
+
+    public async beginPei(): Promise<import('../../../shared/pei-wire-v0').PeiLaunchData> {
+        return (await this.getPei()).begin();
+    }
+
+    public async returnPei(
+        kind: import('../../../shared/pei-wire-v0').PeiReturnKind,
+        carrier: string
+    ): Promise<
+        import('../../../shared/pei-wire-v0').PeiLaunchData |
+        import('../../../shared/pei-wire-v0').PeiQualifiedData
+    > {
+        const result = await (await this.getPei()).returned(kind, carrier);
+        if (result.step === 'qualified') this.setPeiAdmissionCredential({
+            grantId: result.admission.grantId,
+            token: result.admission.token
+        });
+        return result;
     }
 
     public async rewardInfo(): Promise<RewardInfoData> {
@@ -327,7 +368,9 @@ export class PracticeClient {
     }
 
     private async reserveReward(calling: PlayerCalling): Promise<RewardReservationData> {
-        return (await this.getLifecycle()).reserve(calling);
+        const reservation = await (await this.getLifecycle()).reserve(calling, this.peiAdmission);
+        this.setPeiAdmissionCredential(undefined);
+        return reservation;
     }
 
     private async sendSnapshotMutation(
@@ -393,6 +436,19 @@ export class PracticeClient {
         return this.v9Ready ??= import('./resource-turns-v9').then(module => this.v9 = new module.ResourceTurnsV9Client(
             this.socket, () => owner.session, owner.sessionCursor
         ));
+    }
+
+    private getPei(): Promise<import('../pei/client').PeiProtocolClientV0> {
+        const owner = this;
+        return this.peiReady ??= import('../pei/client').then(module =>
+            this.pei = new module.PeiProtocolClientV0({
+                socket: this.socket,
+                cursor: this.sessionCursor,
+                get busy() { return owner.mutationPending; },
+                set busy(value) { owner.mutationPending = value; },
+                rejectSequence: (sequence, error) => this.consumeRejectedSequence(sequence, error)
+            })
+        );
     }
 
     private emitOnce(event: string, request: unknown): Promise<unknown> {
@@ -501,8 +557,13 @@ export class PracticeClient {
                 if (session.sessionId !== this.sessionId) {
                     this.v10?.sessionExpired(); this.v10 = undefined; this.v10Ready = undefined;
                     this.v9?.dispose(); this.v9 = undefined; this.v9Ready = undefined;
+                    this.pei = undefined; this.peiReady = undefined;
+                    this.setPeiAdmissionCredential(undefined);
                     this.sessionId = session.sessionId;
-                    this.sessionCursor = { sessionId: session.sessionId, nextSequence: 0 };
+                    this.sessionCursor = {
+                        sessionId: session.sessionId,
+                        nextSequence: session.nextSequence ?? 0
+                    };
                     this.snapshot = undefined;
                     this.identity = session.identity
                         ? structuredClone(session.identity)
@@ -513,6 +574,7 @@ export class PracticeClient {
                     }
                 }
                 this.session = structuredClone(session);
+                this.nextSequence = Math.max(this.nextSequence, session.nextSequence ?? 0);
                 for (const listener of this.connectionListeners) listener('connected');
             }).catch(() => {
                 for (const listener of this.connectionListeners) listener('reconnecting');
@@ -554,6 +616,20 @@ function writeActivePractice(sessionId: string, challengeId: string): void {
 
 function clearActivePractice(): void {
     if (typeof sessionStorage !== 'undefined') sessionStorage.removeItem(ACTIVE_PRACTICE_KEY);
+}
+
+function readPeiAdmission(): PeiAdmissionCredential | undefined {
+    if (typeof sessionStorage === 'undefined') return undefined;
+    try {
+        const parsed = PeiAdmissionCredentialSchema.safeParse(JSON.parse(
+            sessionStorage.getItem(PEI_ADMISSION_KEY) || 'null'
+        ));
+        if (parsed.success) return parsed.data;
+    } catch {
+        // Invalid client storage is discarded below.
+    }
+    sessionStorage.removeItem(PEI_ADMISSION_KEY);
+    return undefined;
 }
 
 /** An explicit engineering candidate route; ordinary Practice/reward stays V7. */

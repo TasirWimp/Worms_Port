@@ -20,6 +20,7 @@ import {
     IdentityCancelRequestSchema,
     IdentityCompleteDataSchema,
     IdentityCompleteRequestSchema,
+    RewardReserveRequestSchema,
     ProtocolFailureAckSchema,
     ProtocolSuccessAckSchema,
     SESSION_TOKEN_PATTERN,
@@ -57,6 +58,27 @@ test('session request schema enforces strict ids, actions, and opaque tokens', (
     ]) {
         assert.equal(SessionOpenRequestSchema.safeParse(invalid).success, false);
     }
+});
+
+test('reward reservation accepts only a strict opaque PEI admission credential', () => {
+    const valid = {
+        requestId,
+        sequence: 0,
+        calling: 'wizard' as const,
+        peiAdmission: {
+            grantId: 'pei_admission_grant_01',
+            token
+        }
+    };
+    assert.equal(RewardReserveRequestSchema.safeParse(valid).success, true);
+    assert.equal(RewardReserveRequestSchema.safeParse({
+        requestId, sequence: 0, calling: 'wizard'
+    }).success, true);
+    for (const invalid of [
+        { ...valid, peiAdmission: { ...valid.peiAdmission, token: 'short' } },
+        { ...valid, peiAdmission: { ...valid.peiAdmission, grantId: 'short' } },
+        { ...valid, peiAdmission: { ...valid.peiAdmission, proof: {} } }
+    ]) assert.equal(RewardReserveRequestSchema.safeParse(invalid).success, false);
 });
 
 test('identity schemas require strict server challenge and exact Nimiq proof fields', () => {

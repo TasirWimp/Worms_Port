@@ -17,6 +17,7 @@ test('reward security scan permits one test helper and rejects source, bundle, a
     write(root, 'tests/support/nimiq-signer.ts', `export const TEST_PRIVATE_KEY='${TEST_KEY}';`);
     write(root, 'client/build/app.js', 'Nimiq provider was not injected');
     write(root, 'server/build/server.js', 'require("@nimiq/core")');
+    write(root, 'server/build/pei-proxy-server.js', 'require("@nimiq/core")');
     assert.deepEqual(scanRewardSecurity(root), []);
 
     write(root, 'client/src/leak.ts', `const privateKey='${TEST_KEY}';`);

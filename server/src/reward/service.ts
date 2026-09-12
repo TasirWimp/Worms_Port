@@ -5,8 +5,10 @@ import type {
     RewardInfoData,
     RewardReservationData,
     RewardUpdateData,
-    WalletIdentity
+    WalletIdentity,
+    PeiAdmissionCredential
 } from '../../../shared/protocol';
+import { NormalizedNimiqAddressSchema } from '../../../shared/protocol';
 import { ChallengeResultV8AutomatedSchema,
     type ChallengeResultV8Automated } from '../../../shared/protocol-v8';
 import { ChallengeResultV9Schema, type ChallengeResultV9,
@@ -24,7 +26,9 @@ import {
     type RewardConfig,
     type RewardEntitlement,
     type RewardCoordinatorReplay,
-    type RewardStore
+    type RewardStore,
+    type IssuedPeiAdmission,
+    type VerifiedPeiQualification
 } from './types';
 
 export type RewardServiceOptions = {
@@ -32,6 +36,8 @@ export type RewardServiceOptions = {
     seedSource?: () => number;
     idSource?: () => string;
     tokenSource?: () => string;
+    peiGrantIdSource?: () => string;
+    peiGrantTokenSource?: () => string;
     onQueued?: () => void;
 };
 
@@ -40,6 +46,8 @@ export class RewardService {
     private readonly seedSource: () => number;
     private readonly idSource: () => string;
     private readonly tokenSource: () => string;
+    private readonly peiGrantIdSource: () => string;
+    private readonly peiGrantTokenSource: () => string;
     private readonly onQueued?: () => void;
 
     public constructor(
@@ -51,6 +59,9 @@ export class RewardService {
         this.seedSource = options.seedSource ?? (() => randomBytes(4).readUInt32BE());
         this.idSource = options.idSource ?? opaqueId;
         this.tokenSource = options.tokenSource ?? (() => randomBytes(32).toString('base64url'));
+        this.peiGrantIdSource = options.peiGrantIdSource ?? opaqueId;
+        this.peiGrantTokenSource = options.peiGrantTokenSource ??
+            (() => randomBytes(32).toString('base64url'));
         this.onQueued = options.onQueued;
         if (config.mode !== 'disabled' && !store) {
             throw new Error('Enabled rewards require a durable reward store.');
@@ -75,6 +86,7 @@ export class RewardService {
         if (this.config.mode === 'disabled') {
             return {
                 status: 'disabled',
+                peiRequired: false,
                 challengeDay: day,
                 rewardLuna: this.config.rewardLuna.toString(),
                 reservationSeconds: Math.floor(this.config.reservationTtlMs / 1000),
@@ -86,7 +98,8 @@ export class RewardService {
 
     public async reserve(
         identity: WalletIdentity | undefined,
-        calling: PlayerCalling
+        calling: PlayerCalling,
+        peiAdmission?: PeiAdmissionCredential
     ): Promise<RewardReservationData> {
         this.ensureEnabled();
         if (!identity) {
@@ -98,6 +111,12 @@ export class RewardService {
         const now = this.now();
         const rawToken = this.tokenSource();
         const challengeId = this.idSource();
+        if (this.config.peiRequired && !peiAdmission) {
+            throw new RewardStoreError(
+                'ineligible',
+                'Complete the PEI interaction before reserving today’s rewarded match.'
+            );
+        }
         const entitlement = await this.requireStore().reserve({
             id: this.idSource(),
             challengeId,
@@ -112,6 +131,15 @@ export class RewardService {
                 : 1,
             paused: this.config.paused,
             eligibilityTokenDigest: tokenDigest(rawToken),
+            peiAdmissionRequired: this.config.peiRequired === true,
+            ...(this.config.peiRequired && peiAdmission
+                ? {
+                    peiAdmission: {
+                        grantId: peiAdmission.grantId,
+                        tokenDigest: tokenDigest(peiAdmission.token)
+                    }
+                }
+                : {}),
             reservationExpiresAt: new Date(now.getTime() + this.config.reservationTtlMs),
             now
         });
@@ -124,6 +152,45 @@ export class RewardService {
             recipient: entitlement.walletAddress,
             calling: entitlement.calling,
             expiresAt: entitlement.reservationExpiresAt.toISOString()
+        };
+    }
+
+    public async issuePeiQualification(
+        qualification: VerifiedPeiQualification
+    ): Promise<IssuedPeiAdmission> {
+        this.ensureEnabled();
+        if (!this.config.peiRequired) {
+            throw new RewardStoreError('disabled', 'PEI admission is not enabled.');
+        }
+        const wallet = NormalizedNimiqAddressSchema.safeParse(qualification.walletAddress);
+        if (!wallet.success || !/^[A-Za-z0-9_-]{43}$/.test(qualification.qualificationDigest)) {
+            throw new RewardStoreError('ineligible', 'Verified PEI qualification is malformed.');
+        }
+        const now = this.now();
+        if (!(qualification.expiresAt instanceof Date) ||
+            !Number.isFinite(qualification.expiresAt.getTime()) ||
+            qualification.expiresAt.getTime() < now.getTime() + this.config.reservationTtlMs) {
+            throw new RewardStoreError(
+                'expired',
+                'Verified PEI qualification must cover the reward reservation window.'
+            );
+        }
+        const token = this.peiGrantTokenSource();
+        const input = {
+            id: this.peiGrantIdSource(),
+            walletAddress: wallet.data,
+            challengeDay: challengeDay(now),
+            qualificationDigest: qualification.qualificationDigest,
+            tokenDigest: tokenDigest(token),
+            issuedAt: now,
+            expiresAt: new Date(qualification.expiresAt)
+        };
+        const grant = await this.requireStore().issuePeiQualification(input);
+        return {
+            grantId: grant.id,
+            token,
+            challengeDay: grant.challengeDay,
+            expiresAt: grant.expiresAt.toISOString()
         };
     }
 

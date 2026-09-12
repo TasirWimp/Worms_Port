@@ -2112,6 +2112,7 @@ export class SessionRegistry {
             sessionId: session.id,
             token,
             resumed,
+            nextSequence: session.nextSequence,
             expiresAt: new Date(session.expiresAt).toISOString(),
             ...(session.identity ? { identity: { ...session.identity } } : {})
         };

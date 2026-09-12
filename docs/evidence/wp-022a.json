@@ -1,6 +1,6 @@
 {
   "id": "WP-022A",
-  "status": "in_progress",
+  "status": "complete",
   "execution_mode": "single_owner",
   "starting_commit": "3538d1d",
   "branch": "codex/pei-daily-v10",
@@ -61,17 +61,22 @@
       "reviewer": "Primary single-owner assistant",
       "role": "primary_direct_review",
       "decision": "pass",
-      "details": "The local Daily V10 migration and selected verification are ready for deployment and Phone Gate A. Product implementation and direct review remained primary-owned; only test execution was delegated to /root/verification. PEI, helper-app work, mainnet execution and reward-economy changes remain outside this package. WP-022A stays in_progress until project-owner physical-phone acceptance."
+      "details": "The Daily V10 migration, selected verification and corrected normal-runtime deployment passed Phone Gate A. Product implementation and direct review remained primary-owned; only test execution was delegated to /root/verification. PEI, helper-app work, mainnet execution and reward-economy changes remain outside this package."
     },
     {
       "reviewer": "Project owner",
       "role": "physical_phone_acceptance",
       "decision": "fail",
       "details": "2026-09-12 first deployed Phone Gate A attempt: Check Daily Challenge reported rewards temporarily unavailable and exposed no wallet authorization control. The deployed Render service still had REWARD_PAUSED=true and, from the observed reward.info failure rather than a structured paused status, retained development-v10-practice. That profile intentionally constructs no identity or reward service. Retest requires one coordinated environment change: remove NIMBLE_RUNTIME_PROFILE, select REWARD_MODE=record-only, set REWARD_PAUSED=false, retain database/identity configuration, and redeploy. No product gameplay failure was reached."
+    },
+    {
+      "reviewer": "Project owner",
+      "role": "physical_phone_acceptance",
+      "decision": "pass",
+      "details": "2026-09-12 corrected normal-runtime record-only deployment: all six Phone Gate A steps passed. Wallet authorization and Daily availability worked; Daily opened the V10 R5 volcanic match; player and Loomkeeper turns completed; reload resumed the same non-pausable challenge; terminal result and Practice retry worked; and a second same-wallet UTC-day attempt was refused. A separate standard Practice match also worked as expected."
     }
   ],
   "skipped_checks": [
-    "Physical Phone Gate A pending after the failed Practice-only-profile attempt and corrected normal-runtime redeployment.",
     "Three Ubuntu-only visual comparisons skipped under the existing Windows policy; no baseline was generated or approved on Windows.",
     "PostgreSQL gate skipped because WP014_TEST_DATABASE_URL is absent; the CI database gate remains required.",
     "Daily/full performance release matrix was not selected for this edit; the existing 22:00 Europe/Berlin automation remains unchanged.",
@@ -79,7 +84,6 @@
     "Mainnet transaction and PEI checks are outside WP-022A."
   ],
   "residual_risks": [
-    "The package remains open until the owner accepts the actual Daily V10 journey on a physical phone after removing the Practice-only deployment profile and unpausing record-only rewards.",
     "V10 session authority remains in-memory: reload within a retained server session resumes the same match, while server/session loss cannot durably recover it.",
     "Initial JavaScript headroom is 1,422 bytes; later startup additions must preserve the unchanged bundle ceiling.",
     "Ubuntu visual comparison, PostgreSQL and full release gates remain separate acceptance requirements."

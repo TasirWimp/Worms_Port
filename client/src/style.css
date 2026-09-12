@@ -1257,6 +1257,7 @@ button:disabled {
 .calling-picker button,
 .practice-start,
 .daily-check,
+.pei-start,
 .daily-start,
 .result-card button {
     min-height: 52px;
@@ -1298,6 +1299,14 @@ button:disabled {
 .daily-check {
     width: 100%;
     margin-bottom: 0.55rem;
+}
+
+.pei-start {
+    width: 100%;
+    margin-bottom: 0.55rem;
+    color: #fff !important;
+    background: #5f4b8b !important;
+    border-color: #e9b213 !important;
 }
 
 .daily-message {

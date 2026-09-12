@@ -238,3 +238,8 @@ authority without a chain transaction; mainnet remains outside WP-022A.
 6. Confirm a second Daily attempt for the same wallet and UTC day is refused.
 
 Evidence: [WP-022A](../evidence/wp-022a.json).
+
+Phone Gate A was accepted by the project owner on 2026-09-12 at deployed commit
+`13377fd` after the normal runtime was restored with record-only rewards
+unpaused. All six steps passed, and a separate standard Practice match remained
+wallet-free and playable. WP-022A is complete.
