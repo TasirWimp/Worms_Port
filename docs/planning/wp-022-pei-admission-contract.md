@@ -189,3 +189,38 @@ before broader availability. Carrier-content ablation remains deferred until
 that complete reward path works.
 
 Evidence: [WP-022E](../evidence/wp-022e.json).
+
+## WP-022F: Supervised mainnet reward canary
+
+WP-022F connects the accepted PEI-qualified Daily journey to the existing
+WP-013 MainAlbatross payout state machine for one supervised 1 NIM winning
+canary. It preserves the exact V10 R5 volcanic match, server-authoritative
+replay verification, sponsor budget, durable entitlement and claim records,
+exact-byte transaction recovery, idempotent broadcast, and macro-block
+finality reconciliation.
+
+The normal product rule remains one started rewarded attempt per wallet and UTC
+day. During this canary only, the explicitly configured owner test wallet may
+receive up to twelve durable attempt slots. This leaves at least ten further
+starts after the two earlier same-day Phone Gate B/C preparation attempts. Each
+started loss or forfeit consumes its own numbered slot; cancelled reservations
+do not consume a slot and remain subject to the separate five-reservation churn
+limit. The exception does not change any other wallet, Daily budget, one-active
+match rule, PEI requirement, replay validation, claim authority, signer check,
+payout recovery, or finality rule.
+
+Phone Gate C completes one fresh two-transfer PEI journey, starts the admitted
+V10 R5 volcanic Daily match, wins it, claims the fixed reward, and observes the
+same entitlement reach a finalized 1 NIM MainAlbatross payout with a visible
+transaction hash. One such win is sufficient for Phone Gate C; the remaining
+numbered slots intentionally stay available for supervised development and can
+each produce their own verified payout. After development testing, remove the
+test-wallet override and repeat acknowledgement, restore the default
+one-attempt rule, and pause both reward issuance and helper transfers until the
+next bounded waypoint.
+
+Durable helper daily sponsor-budget and per-wallet issuance controls remain
+required before broader availability. Receipt-carrier ablation remains
+deferred until this operational reward path is complete.
+
+Evidence: [WP-022F](../evidence/wp-022f.json).

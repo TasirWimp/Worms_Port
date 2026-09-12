@@ -449,7 +449,7 @@ after a failed return.
 
 For a controlled repeat-attempt payout canary, an operator may temporarily set
 `REWARD_TEST_WALLET_ADDRESS` to one compact or spaced test-wallet address and
-`REWARD_TEST_DAILY_ATTEMPT_LIMIT` to an integer from `2` through `5`. Mainnet
+`REWARD_TEST_DAILY_ATTEMPT_LIMIT` to an integer from `2` through `12`. Mainnet
 also requires the separate exact acknowledgement
 `REWARD_TEST_REPEAT_ACKNOWLEDGEMENT=I_UNDERSTAND_REPEAT_MAINNET_REWARDS`.
 The override creates distinct durable attempt slots only for that address; it
@@ -457,7 +457,8 @@ does not bypass the daily Luna budget, one-active-match rule, replay-verified
 win, single-use claim, payout idempotency, signer checks, or finality. Remove
 all three test settings immediately after the canary to restore the default
 one-started-attempt rule. Never target an uninvolved production player or add a
-broad/global bypass.
+broad/global bypass. Each numbered slot can produce its own verified payout,
+so keep this development override low-funded and actively supervised.
 Here, the test wallet is the Nimiq Pay account that authorizes and receives the
 reward; it is not the sponsor signer's funded address.
 

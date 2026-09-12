@@ -73,14 +73,26 @@ Phaser/Socket.IO stack.
   on the owner's physical phone at `82187cb`: both real transfers completed,
   PEI qualification succeeded, and the exact V10 R5 volcanic Daily match
   started. The helper was immediately redeployed with transfers paused.
-  **WP-022E is complete.** Next: connect this accepted PEI admission to the
-  existing WP-013 MainAlbatross payout machinery for one supervised 1 NIM
-  winning canary, then add durable helper daily sponsor-budget and per-wallet
-  issuance controls before any broader availability. Carrier-content ablation
-  stays deferred until the complete operational reward path works. See the
+  **WP-022E is complete. WP-022F Supervised Mainnet Reward Canary is active.**
+  It connects this accepted admission to the existing WP-013 MainAlbatross
+  payout machinery for one supervised 1 NIM winning canary. A temporary
+  wallet-scoped limit of twelve numbered attempts leaves at least ten further
+  starts after the two already consumed same-day preparation attempts, while
+  every other wallet remains at one attempt and the five-cancellation churn
+  guard remains intact. Change-selected checks passed on the final product
+  fingerprint, including 45 reward cases, fresh build/smoke/security and 20
+  canonical browser cases with one expected skip and no retries. The local
+  PostgreSQL phase retained its expected missing-database skip and remains a CI
+  gate. Phone Gate C will verify the complete PEI, V10 R5 win,
+  claim and finalized payout journey, after which the temporary override is
+  removed and both transfer paths are paused. Durable helper daily sponsor
+  budget and per-wallet issuance controls follow before any broader
+  availability. Carrier-content ablation stays deferred until the complete
+  operational reward path works. See the
   [PEI admission contract](wp-022-pei-admission-contract.md),
   [WP-022B evidence](../evidence/wp-022b.json), [WP-022C evidence](../evidence/wp-022c.json),
-  [WP-022D evidence](../evidence/wp-022d.json), [WP-022E evidence](../evidence/wp-022e.json), and the
+  [WP-022D evidence](../evidence/wp-022d.json), [WP-022E evidence](../evidence/wp-022e.json),
+  [WP-022F evidence](../evidence/wp-022f.json), and the
   [bounded contract](wp-015d4f-volcanic-ruin-preview-bundle-contract.md#wp-022a-daily-v10-migration)
   and [evidence](../evidence/wp-022a.json).
 - Active target: mobile-first single-player Nimiq Pay competition release.
@@ -2781,7 +2793,7 @@ core dependency when constructing and expiring transactions.
   UTC challenge day. Unlimited Practice is the retry path after a loss,
   forfeit, or consumed rewarded attempt.
 - A controlled payout canary may temporarily raise that limit only for one
-  explicitly configured normalized test-wallet address, to at most five
+  explicitly configured normalized test-wallet address, to at most twelve
   sequential attempt slots. Mainnet requires an additional exact operator
   acknowledgement. The exception must not weaken daily budget, active-match,
   replay, claim, idempotency, signer, reconciliation, or finality controls and

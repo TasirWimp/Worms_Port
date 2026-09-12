@@ -130,14 +130,15 @@ export class MemoryRewardStore implements RewardStore {
             });
             if (day.paused) throw new RewardStoreError('paused', 'Sponsor rewards are paused.');
             const peiGrant = this.validPeiGrantForReservation(input);
-            let dailyReservations = 0;
+            let unconsumedReservations = 0;
             let consumedAttempts = 0;
             for (const existing of this.entitlements.values()) {
                 if (existing.challengeDay !== input.challengeDay ||
                     existing.walletAddress !== input.walletAddress) continue;
-                dailyReservations += 1;
                 if (existing.attemptConsumed) {
                     consumedAttempts += 1;
+                } else {
+                    unconsumedReservations += 1;
                 }
                 if (existing.state === 'reserved') {
                     throw new RewardStoreError(
@@ -158,7 +159,7 @@ export class MemoryRewardStore implements RewardStore {
                     'This wallet already used today’s rewarded attempt.'
                 );
             }
-            if (dailyReservations >= MAX_DAILY_RESERVATIONS_PER_WALLET) {
+            if (unconsumedReservations >= MAX_DAILY_RESERVATIONS_PER_WALLET) {
                 throw new RewardStoreError(
                     'ineligible',
                     'This wallet reached today\'s reservation-attempt limit.'

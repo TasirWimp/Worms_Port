@@ -131,6 +131,53 @@ test('PEI grant binding and started-attempt consumption share durable authority'
     });
 });
 
+test('the PostgreSQL canary wallet can consume all twelve attempt slots', async () => {
+    await withDatabase('twelve_attempt_slots', async (databaseUrl) => {
+        const store = new PostgresRewardStore(databaseUrl, 3);
+        try {
+            await store.initialize();
+            for (let index = 1; index <= 12; index += 1) {
+                const suffix = String(index).padStart(2, '0');
+                const input = reservation(
+                    `postgres_canary_entitlement_${suffix}`,
+                    `postgres_canary_challenge_${suffix}`,
+                    WALLET,
+                    DAY,
+                    { dailyAttemptLimit: 12 }
+                );
+                await store.reserve(input);
+                assert.equal((await store.start(
+                    input.challengeId,
+                    WALLET,
+                    input.eligibilityTokenDigest,
+                    NOW
+                )).attemptNumber, index);
+                await store.completeMatch({
+                    challengeId: input.challengeId,
+                    outcome: 'loomkeeper_win',
+                    finalTick: 20,
+                    finalStateHash: index.toString(16).padStart(64, '0'),
+                    now: NOW
+                });
+            }
+
+            await assert.rejects(
+                store.reserve(reservation(
+                    'postgres_canary_entitlement_13',
+                    'postgres_canary_challenge_13',
+                    WALLET,
+                    DAY,
+                    { dailyAttemptLimit: 12 }
+                )),
+                rewardError('ineligible')
+            );
+
+        } finally {
+            await store.close();
+        }
+    });
+});
+
 test('two connections allocate one final budget slot and one active wallet authority', async () => {
     await withDatabase('contention', async (databaseUrl) => {
         const first = new PostgresRewardStore(databaseUrl, 3);

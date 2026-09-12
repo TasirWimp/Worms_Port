@@ -268,7 +268,8 @@ export class PostgresRewardStore implements RewardStore {
             const reservationCount = await client.query<{ count: string }>(
                 `SELECT COUNT(*)::text AS count
                    FROM reward_entitlements
-                  WHERE challenge_day = $1 AND wallet_address = $2`,
+                  WHERE challenge_day = $1 AND wallet_address = $2
+                    AND NOT attempt_consumed`,
                 [input.challengeDay, input.walletAddress]
             );
             if (Number(reservationCount.rows[0]?.count ?? 0) >=
@@ -1016,7 +1017,8 @@ async function readRewardMigrations(): Promise<string[]> {
     for (const filename of [
         '001_reward_ledger.sql',
         '002_reward_test_attempt_slots.sql',
-        '003_pei_admission.sql'
+        '003_pei_admission.sql',
+        '005_reward_test_attempt_slots_12.sql'
     ]) {
         const candidates = [
             path.join(__dirname, '../migrations', filename),

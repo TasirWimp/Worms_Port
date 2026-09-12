@@ -120,7 +120,7 @@ export function rewardConfigFromEnvironment(
             rawTestDailyAttemptLimit,
             'REWARD_TEST_DAILY_ATTEMPT_LIMIT',
             2,
-            5
+            12
         )
         : 1;
     if ((testWalletAddress && !rawTestDailyAttemptLimit) ||

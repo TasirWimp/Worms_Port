@@ -166,6 +166,47 @@ test('a bounded test-wallet limit permits sequential attempt slots only', async 
     );
 });
 
+test('the canary wallet can consume all twelve attempt slots', async () => {
+    const store = new MemoryRewardStore();
+    for (let index = 1; index <= 12; index += 1) {
+        const suffix = String(index).padStart(2, '0');
+        const input = {
+            ...reservation(
+                `entitlement_canary_${suffix}`,
+                `reward_challenge_canary_${suffix}`,
+                WALLET
+            ),
+            dailyAttemptLimit: 12
+        };
+        await store.reserve(input);
+        assert.equal((await store.start(
+            input.challengeId,
+            WALLET,
+            input.eligibilityTokenDigest,
+            NOW
+        )).attemptNumber, index);
+        await store.completeMatch({
+            challengeId: input.challengeId,
+            outcome: 'loomkeeper_win',
+            finalTick: 20,
+            finalStateHash: index.toString(16).padStart(64, '0'),
+            now: NOW
+        });
+    }
+
+    await assert.rejects(
+        store.reserve({
+            ...reservation(
+                'entitlement_canary_13',
+                'reward_challenge_canary_13',
+                WALLET
+            ),
+            dailyAttemptLimit: 12
+        }),
+        (error: unknown) => error instanceof RewardStoreError && error.code === 'ineligible'
+    );
+});
+
 test('cancelled reservation churn is bounded per wallet and UTC day', async () => {
     const store = new MemoryRewardStore();
     for (let index = 0; index < 5; index += 1) {

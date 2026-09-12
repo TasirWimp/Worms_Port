@@ -1,0 +1,78 @@
+{
+  "id": "WP-022F",
+  "status": "in_progress",
+  "execution_mode": "single_owner",
+  "starting_commit": "44e523e",
+  "branch": "codex/pei-daily-v10",
+  "initial_worktree": "clean",
+  "starting_lock_sha256": "6B768A8FDE2695D02555CA17201FD7CE420F9AC075B91380474DD7A643042BC8",
+  "owning_roles": [
+    "primary assistant"
+  ],
+  "scope": [
+    "Connect the accepted PEI-qualified volcanic Daily journey to the existing WP-013 MainAlbatross payout machinery for one supervised 1 NIM winning canary.",
+    "Raise the temporary override for the explicitly configured owner test wallet to twelve durable started-attempt slots while every other wallet remains at one attempt per UTC day.",
+    "Preserve the five-unconsumed-reservation churn limit independently from consumed test-wallet attempt records and migrate existing PostgreSQL deployments safely.",
+    "Complete Phone Gate C through verified win, claim, transaction finality and post-canary restoration."
+  ],
+  "non_goals": [
+    "No global retry bypass, reward amount or budget change, public helper issuance, durable helper sponsor policy, carrier-content ablation, gameplay change, asset change, or dependency change."
+  ],
+  "planned_checks": [
+    "npm.cmd run verify:changes -- --base 44e523e --dry-run",
+    "npm.cmd run verify:changes -- --base 44e523e --phase checks",
+    "npm.cmd run verify:changes -- --base 44e523e --phase browser",
+    "npm.cmd run verify:changes -- --base 44e523e --phase postgres",
+    "npm.cmd run audit:housekeeping",
+    "Physical Phone Gate C and post-canary restoration"
+  ],
+  "deterministic_seeds": [
+    "Twelve sequential numbered loss outcomes for one fixed wallet and UTC challenge day"
+  ],
+  "sorcerers_reference_used": false,
+  "clean_room_records": [],
+  "check_results": [
+    {
+      "command": "npm.cmd run verify:changes -- --base 44e523e --dry-run",
+      "status": "pass",
+      "details": "The final dry run selected work-package/import/type checks, reward/identity/protocol/practice coverage, fresh build and smoke, identity/reward security, bundle limits, canonical identity/practice/reward/smoke browser coverage and PostgreSQL. Performance was not selected. Final product fingerprint 9173ba075aa721aa22e0f1e1a5f1195ca0dcf7764df8eacf70e74578946bd70b."
+    },
+    {
+      "command": "npm.cmd run verify:changes -- --base 44e523e --phase checks",
+      "status": "pass",
+      "details": "The delegated worms_port_test_runner passed 66 work-package records, the import boundary, 45 reward, 22 identity, 131 protocol and 42 Practice tests, types, fresh build/smoke, identity and reward security and bundle limits on the final fingerprint. Build proof 1c49a1bb05f4/1055819233d2; JavaScript 1,431,404/1,500,000 bytes and JavaScript plus CSS gzip 416,957/430,000 bytes. Log .cache/wp022f-selector-checks-definitive.log."
+    },
+    {
+      "command": "npm.cmd run verify:changes -- --base 44e523e --phase browser",
+      "status": "pass",
+      "details": "The delegated canonical Chromium identity, Practice, reward and smoke phase passed 20 cases with one reviewed expected skip, zero failures and zero retries. Log .cache/wp022f-selector-browser.log."
+    },
+    {
+      "command": "npm.cmd run verify:changes -- --base 44e523e --phase postgres",
+      "status": "pass",
+      "details": "The selector preserved the final fingerprint and reported the expected local policy skip because WP014_TEST_DATABASE_URL is absent. The new twelve-slot migration coverage remains required in disposable PostgreSQL CI. Log .cache/wp022f-selector-postgres.log."
+    },
+    {
+      "command": "npm.cmd run audit:housekeeping",
+      "status": "pass",
+      "details": "The delegated report-only audit completed without mutation, identified WP-022F as intentionally in progress and retained only historical reconciliation items. Log .cache/wp022f-housekeeping.log."
+    }
+  ],
+  "reviews": [
+    {
+      "reviewer": "Primary single-owner assistant",
+      "role": "primary_direct_review",
+      "decision": "pass",
+      "details": "Primary reviewed wallet-only configuration, existing-row migration behavior, numbered-attempt allocation, consumed versus cancelled reservation accounting, one-active authority, sponsor budget, PEI admission, replay, claim, signer, exact-byte payout recovery and finality boundaries. The owner explicitly accepted that all twelve development slots can independently reach a verified payout."
+    }
+  ],
+  "skipped_checks": [
+    "PostgreSQL integration is unavailable locally because WP014_TEST_DATABASE_URL is unset; CI must run the disposable database gate.",
+    "Performance was not selected because the change does not affect gameplay timing or presentation.",
+    "Daily/full release verification remains at the 22:00 Europe/Berlin or explicit release boundary."
+  ],
+  "residual_risks": [
+    "The twelve-slot PostgreSQL migration must pass the disposable database gate in CI because WP014_TEST_DATABASE_URL may be unavailable locally.",
+    "The combined physical-phone PEI, verified win, claim and finalized 1 NIM payout journey remains pending Phone Gate C."
+  ]
+}

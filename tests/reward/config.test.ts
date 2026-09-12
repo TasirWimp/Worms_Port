@@ -73,9 +73,9 @@ test('repeat-attempt testing is wallet-scoped, bounded, and separately acknowled
     assert.throws(
         () => rewardConfigFromEnvironment({
             REWARD_TEST_WALLET_ADDRESS: wallet,
-            REWARD_TEST_DAILY_ATTEMPT_LIMIT: '6'
+            REWARD_TEST_DAILY_ATTEMPT_LIMIT: '13'
         }),
-        /between 2 and 5/
+        /between 2 and 12/
     );
     const mainnet = {
         REWARD_MODE: 'mainnet',
@@ -85,7 +85,7 @@ test('repeat-attempt testing is wallet-scoped, bounded, and separately acknowled
         REWARD_RPC_URL: 'https://rpc.example.test',
         REWARD_MAINNET_ACKNOWLEDGEMENT: 'I_UNDERSTAND_MAINNET_PAYOUTS',
         REWARD_TEST_WALLET_ADDRESS: wallet,
-        REWARD_TEST_DAILY_ATTEMPT_LIMIT: '2'
+        REWARD_TEST_DAILY_ATTEMPT_LIMIT: '12'
     };
     assert.throws(
         () => rewardConfigFromEnvironment(mainnet),
@@ -96,7 +96,7 @@ test('repeat-attempt testing is wallet-scoped, bounded, and separately acknowled
         REWARD_TEST_REPEAT_ACKNOWLEDGEMENT: 'I_UNDERSTAND_REPEAT_MAINNET_REWARDS'
     });
     assert.equal(config.testWalletAddress, wallet);
-    assert.equal(config.testDailyAttemptLimit, 2);
+    assert.equal(config.testDailyAttemptLimit, 12);
 });
 
 test('reward wallet settings normalize compact addresses and identify invalid variables', () => {
