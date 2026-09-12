@@ -175,6 +175,17 @@ Phone Gate B is the first real Nimiq Pay, two-origin and MainAlbatross gate. It
 must confirm both disclosures and wallet approvals, automatic return after each
 finality wait, the two reported hashes, reload without a duplicate transfer,
 the admitted V10 R5 volcanic Daily match, and unchanged wallet-free Practice.
-Carrier-content ablation remains closed until this operational journey passes.
+The corrected journey passed on the owner's physical phone at `82187cb`: both
+real transfers completed, qualification succeeded and the V10 R5 volcanic
+Daily match started. The helper was then redeployed with
+`PEI_PROXY_PAUSED=true`, and WP-022E is complete.
+
+The next operational waypoint reuses the existing WP-013 reward ledger,
+mainnet signer boundary, exact-byte payout recovery and finality reconciliation
+for one supervised PEI-qualified 1 NIM winning canary. The helper remains
+paused except during that bounded journey. Durable helper-side daily sponsor
+budget and per-wallet issuance controls are the next required implementation
+before broader availability. Carrier-content ablation remains deferred until
+that complete reward path works.
 
 Evidence: [WP-022E](../evidence/wp-022e.json).

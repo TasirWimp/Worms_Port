@@ -69,9 +69,15 @@ Phaser/Socket.IO stack.
   direct sends remain supported and all other contract paths fail closed.
   Change-selected checks passed, including 23 PEI cases, fresh build/smoke and
   security, followed by 73 phone-browser passes with three expected skips
-  and no retries. Phone Gate B remains open for the corrected deployed retry.
-  Carrier-content ablation stays deferred until this operational journey passes
-  on the owner's phone. See the
+  and no retries. The corrected MainAlbatross journey then passed Phone Gate B
+  on the owner's physical phone at `82187cb`: both real transfers completed,
+  PEI qualification succeeded, and the exact V10 R5 volcanic Daily match
+  started. The helper was immediately redeployed with transfers paused.
+  **WP-022E is complete.** Next: connect this accepted PEI admission to the
+  existing WP-013 MainAlbatross payout machinery for one supervised 1 NIM
+  winning canary, then add durable helper daily sponsor-budget and per-wallet
+  issuance controls before any broader availability. Carrier-content ablation
+  stays deferred until the complete operational reward path works. See the
   [PEI admission contract](wp-022-pei-admission-contract.md),
   [WP-022B evidence](../evidence/wp-022b.json), [WP-022C evidence](../evidence/wp-022c.json),
   [WP-022D evidence](../evidence/wp-022d.json), [WP-022E evidence](../evidence/wp-022e.json), and the
