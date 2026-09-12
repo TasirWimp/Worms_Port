@@ -275,6 +275,11 @@ configure enough budget for at least one earn transfer. The first activation
 uses `PEI_PROXY_DAILY_BUDGET_LUNA=100000` and
 `PEI_PROXY_DAILY_WALLET_LIMIT=1`.
 
+The selected PostgreSQL CI job runs `test:pei:postgres` alongside the reward
+database gates. It proves migration from zero, restart persistence, same-wallet
+refusal and concurrent daily-budget serialization through two store instances
+before Render receives the package.
+
 Routine phone and release verification now starts the standard V10 R5 volcanic
 profile. Browser suites marked `@legacy` retain prior engineering evidence but
 are filtered from the selector, five-project quality gate and daily/release

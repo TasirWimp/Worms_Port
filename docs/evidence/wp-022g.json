@@ -62,6 +62,11 @@
       "command": "npm.cmd run audit:housekeeping",
       "status": "pass",
       "details": "The report-only audit completed. WP-022G correctly remains in progress; manualReconciliationRequired refers to preserved historical package/review records and did not authorize mutation. Log .cache/wp022g-housekeeping-final.log."
+    },
+    {
+      "command": "npm.cmd run test:tooling (PostgreSQL CI wiring)",
+      "status": "pass",
+      "details": "Direct review found that the selected PostgreSQL job did not yet invoke the existing PEI database suite. The workflow now runs test:pei:postgres after test:reward:postgres, and its tooling regression passed all 130 cases with no retries or skips. Log .cache/wp022g-tooling-ci-postgres.log."
     }
   ],
   "reviews": [
