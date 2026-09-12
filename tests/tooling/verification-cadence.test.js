@@ -21,6 +21,10 @@ const {
   acceptedHistoricalDiagnostics,
   inspectWhitespaceDiagnostics
 } = require('../../scripts/check-range-whitespace');
+const {
+  acceptedHistoricalDiagnostic: acceptedCrpmTypeDiagnostic,
+  inspectTypeDiagnostics
+} = require('../../scripts/check-crpm-world-types');
 
 test('docs and Codex settings do not select a game build or test suite', () => {
   const plan = planChanges(['README.md', '.codex/config.toml', 'AGENTS.md', 'docs/planning/implementation_plan.md']);
@@ -99,6 +103,7 @@ test('V10 assessment changes select the finite assessment instead of the ordinar
 test('verification tooling changes select only tooling coverage', () => {
   for (const file of [
     '.github/workflows/verify.yml',
+    'scripts/check-crpm-world-types.js',
     'scripts/check-range-whitespace.js',
     'scripts/verify-changes.js',
     'scripts/verification-lease.js',
@@ -129,6 +134,35 @@ test('range whitespace accepts only the exact blob-bound historical diagnostics'
   const otherWhitespace = inspectWhitespaceDiagnostics(`${file}:${rule.line}: trailing whitespace.\n+bad \n`, () => rule.blob);
   assert.deepEqual(otherWhitespace.acceptedLines, []);
   assert.deepEqual(otherWhitespace.rejectedLines, [`${file}:${rule.line}: trailing whitespace.`, '+bad ']);
+});
+
+test('CRPM type gate accepts only the exact blob-bound historical diagnostic', () => {
+  const resolveAcceptedBlob = (file) => acceptedCrpmTypeDiagnostic.blobs[file];
+  const accepted = inspectTypeDiagnostics(
+    `${acceptedCrpmTypeDiagnostic.diagnostic}\n`,
+    resolveAcceptedBlob
+  );
+  assert.deepEqual(accepted.acceptedLines, [acceptedCrpmTypeDiagnostic.diagnostic]);
+  assert.deepEqual(accepted.rejectedLines, []);
+
+  const wrongBlob = inspectTypeDiagnostics(
+    `${acceptedCrpmTypeDiagnostic.diagnostic}\n`,
+    () => '0'.repeat(40)
+  );
+  assert.deepEqual(wrongBlob.acceptedLines, []);
+  assert.match(wrongBlob.rejectedLines[0], /blob .* does not match/);
+
+  const changedDiagnostic = `${acceptedCrpmTypeDiagnostic.diagnostic.replace('TS2739', 'TS9999')}\n`;
+  const changed = inspectTypeDiagnostics(changedDiagnostic, resolveAcceptedBlob);
+  assert.deepEqual(changed.acceptedLines, []);
+  assert.deepEqual(changed.rejectedLines, [changedDiagnostic.trim()]);
+
+  const additional = inspectTypeDiagnostics(
+    `${acceptedCrpmTypeDiagnostic.diagnostic}\nunexpected.ts(1,1): error TS2322: incompatible\n`,
+    resolveAcceptedBlob
+  );
+  assert.deepEqual(additional.acceptedLines, [acceptedCrpmTypeDiagnostic.diagnostic]);
+  assert.deepEqual(additional.rejectedLines, ['unexpected.ts(1,1): error TS2322: incompatible']);
 });
 
 test('one checkout permits only one active verification lease', (t) => {

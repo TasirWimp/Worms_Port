@@ -36,7 +36,7 @@
     "assess:v9": "node --import tsx --test tests/loomkeeper/resource-turns-v9.assessment.ts",
     "assess:v10": "node --import tsx --test tests/loomkeeper/terrain-starts-v10.assessment.ts",
     "test:relics": "node --import tsx --test tests/relics/*.test.ts",
-    "check:crpm-world-types": "tsc -p analysis/crpm_world/tsconfig.json",
+    "check:crpm-world-types": "node scripts/check-crpm-world-types.js",
     "test:crpm-world": "node --import tsx --test tests/crpm-world/*.test.ts",
     "test:crpm-world-design": "node --import tsx --test tests/crpm-world/design-port.test.ts",
     "test:crpm-world-evaluation": "node --import tsx --test tests/crpm-world/evaluation.test.ts",

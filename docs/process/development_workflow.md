@@ -331,6 +331,13 @@ is bound to the exact Git blob in `scripts/check-range-whitespace.js`; any byte
 change, line change or different whitespace diagnostic fails the gate. This
 keeps the CRPM and clean-room hashes intact without suppressing new defects.
 
+CRPM type validation likewise preserves the implementation-locked V4 authority
+adapter instead of rewriting its recorded blob after product rulesets expanded.
+`scripts/check-crpm-world-types.js` accepts its one known TS2739 diagnostic only
+when both the adapter and `shared/simulation.ts` match their recorded Git blobs.
+Any additional diagnostic, changed compiler message, or changed source blob
+fails the gate; a clean compiler result passes without an exception.
+
 ### Failed-check reruns
 
 Required gates retain zero automatic retries. Preserve the original failure,

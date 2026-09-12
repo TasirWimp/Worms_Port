@@ -104,7 +104,7 @@ function planChanges(paths) {
       if (/^assets\/|^legal\/asset-manifest/.test(file)) {
         product(['combat', 'practice'], ['smoke', 'combat', 'practice', 'visual']);
       }
-    } else if (file === '.github/workflows/verify.yml' || /^scripts\/(?:verify-changes|verification-lease|run-full-verification|report-postgres-quality-prerequisite|audit-housekeeping|check-range-whitespace)\.js$/.test(file)) {
+    } else if (file === '.github/workflows/verify.yml' || /^scripts\/(?:verify-changes|verification-lease|run-full-verification|report-postgres-quality-prerequisite|audit-housekeeping|check-range-whitespace|check-crpm-world-types)\.js$/.test(file)) {
       suites.add('test:tooling');
     } else if (/^scripts\/check-(?:identity-bundles|reward-security|bundle-budget)\.js$/.test(file)) {
       runtime = true;
