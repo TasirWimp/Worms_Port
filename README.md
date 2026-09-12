@@ -353,11 +353,16 @@ Luna (`100000 Luna = 1 NIM`). The pinned ruleset currently requires
 `PEI_ENABLED` defaults to `false`. When enabled, the Daily Challenge requires a
 two-edge MainAlbatross interaction before reservation: the dedicated helper
 sends NIM to the authorized player wallet, then Nimiq Pay sends the same amount
-from that wallet back to the helper. Both transactions carry the commitment of
-their server-authenticated request and must reach macro-block finality. A fresh
-game-server verification issues a short-lived admission bound to the wallet and
-UTC challenge day. The admission is consumed atomically with the started Daily
-attempt. Practice never reads PEI state or initializes the wallet SDK.
+from that wallet back to the helper. Nimiq Pay can implement the return as an
+HTLC early resolution, so the visible chain sender can be the HTLC address. The
+verifier accepts that form only when the successful transaction's parsed HTLC
+proof identifies the authorized player wallet as its creator; other HTLC proof
+forms and creator mismatches fail closed. Both transactions carry the
+commitment of their server-authenticated request and must reach macro-block
+finality. A fresh game-server verification issues a short-lived admission bound
+to the wallet and UTC challenge day. The admission is consumed atomically with
+the started Daily attempt. Practice never reads PEI state or initializes the
+wallet SDK.
 
 The game and helper are separate Render Web Services built from the same commit.
 Use the usual build command for both. The game starts with `npm start`; the
@@ -437,7 +442,10 @@ transaction hashes for operational reconstruction.
 This is a one-participant, low-funded canary boundary. Wider public activation
 still needs a durable helper-side sponsor budget and per-wallet daily issuance
 policy; the current Socket.IO limiter and helper balance do not replace those
-controls.
+controls. A returned transfer replenishes the helper balance, so low funding
+alone does not cap the number of fresh earn requests. Keep the helper paused
+outside the actively supervised canary and do not start multiple fresh journeys
+after a failed return.
 
 For a controlled repeat-attempt payout canary, an operator may temporarily set
 `REWARD_TEST_WALLET_ADDRESS` to one compact or spaced test-wallet address and

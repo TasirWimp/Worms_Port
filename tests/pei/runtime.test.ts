@@ -1,6 +1,6 @@
 import assert from 'node:assert/strict';
 import test from 'node:test';
-import { Policy } from '@nimiq/core';
+import { KeyPair, Policy, PrivateKey } from '@nimiq/core';
 
 import { peiConfigFromEnvironment } from '../../server/src/pei/config';
 import { NimiqRpcPeiChainAdapterV0 } from '../../server/src/pei/nimiq-rpc-adapter';
@@ -8,7 +8,12 @@ import {
     assertPeiProxyQualityTestEnvironment,
     peiProxyTransferConfigFromEnvironment
 } from '../../server/src/pei/proxy-config';
-import { PEI_EARN_TX, PEI_PROXY_ADDRESS, PEI_WALLET } from './fixtures';
+import {
+    PEI_EARN_TX,
+    PEI_HTLC_ADDRESS,
+    PEI_PROXY_ADDRESS,
+    PEI_WALLET
+} from './fixtures';
 
 test('PEI runtime environment is complete, cross-origin, network-bound and disabled by default', () => {
     assert.equal(peiConfigFromEnvironment({}), undefined);
@@ -92,6 +97,7 @@ test('Nimiq RPC adapter reads wrapped transaction bytes and macro-block finality
                     hash: PEI_EARN_TX.toUpperCase(),
                     networkId: 24,
                     from: PEI_PROXY_ADDRESS,
+                    fromType: 0,
                     to: PEI_WALLET,
                     value: 1,
                     recipientData: [...new TextEncoder().encode(commitment)],
@@ -109,6 +115,7 @@ test('Nimiq RPC adapter reads wrapped transaction bytes and macro-block finality
             hash: PEI_EARN_TX,
             network: 'main-albatross',
             sender: PEI_PROXY_ADDRESS,
+            senderAccountType: 'basic',
             recipient: PEI_WALLET,
             valueLuna: '1',
             data: commitment,
@@ -116,6 +123,55 @@ test('Nimiq RPC adapter reads wrapped transaction bytes and macro-block finality
             finalized: true
         });
         assert.deepEqual(methods, ['getTransactionByHash', 'getBlockNumber']);
+    } finally {
+        globalThis.fetch = originalFetch;
+    }
+});
+
+test('Nimiq RPC adapter exposes an HTLC early-resolution creator', async () => {
+    const originalFetch = globalThis.fetch;
+    const signer = deterministicKeyPair(1);
+    const creator = deterministicKeyPair(33);
+    const proof = Buffer.concat([
+        Buffer.from([1, 0]),
+        Buffer.from(signer.publicKey.serialize()),
+        Buffer.from([0]),
+        Buffer.from(signer.sign(Uint8Array.of(1)).serialize()),
+        Buffer.from([0]),
+        Buffer.from(creator.publicKey.serialize()),
+        Buffer.from([0]),
+        Buffer.from(creator.sign(Uint8Array.of(2)).serialize())
+    ]).toString('hex');
+    globalThis.fetch = async (_input, init) => {
+        const body = JSON.parse(String(init?.body)) as { method: string };
+        const data = body.method === 'getBlockNumber'
+            ? Policy.macroBlockAfter(100)
+            : {
+                transaction: {
+                    hash: PEI_EARN_TX,
+                    networkId: 24,
+                    from: PEI_HTLC_ADDRESS,
+                    fromType: 2,
+                    to: PEI_PROXY_ADDRESS,
+                    value: 100000,
+                    recipientData: [],
+                    proof,
+                    blockNumber: 100
+                },
+                executionResult: true
+            };
+        return new Response(JSON.stringify({
+            jsonrpc: '2.0', id: 1, result: { data }
+        }), { status: 200, headers: { 'content-type': 'application/json' } });
+    };
+    try {
+        const adapter = new NimiqRpcPeiChainAdapterV0('https://rpc.example');
+        const transaction = await adapter.transaction(PEI_EARN_TX);
+        assert.equal(transaction?.senderAccountType, 'htlc');
+        assert.deepEqual(transaction?.senderAuthorization, {
+            type: 'htlc-early-resolve',
+            creator: creator.toAddress().toUserFriendlyAddress()
+        });
     } finally {
         globalThis.fetch = originalFetch;
     }
@@ -133,3 +189,10 @@ test('Nimiq RPC not-found errors remain an inconclusive absence', async () => {
         globalThis.fetch = originalFetch;
     }
 });
+
+function deterministicKeyPair(offset: number): KeyPair {
+    return KeyPair.derive(PrivateKey.deserialize(Uint8Array.from(
+        { length: 32 },
+        (_, index) => (index + offset) % 255 || 1
+    )));
+}

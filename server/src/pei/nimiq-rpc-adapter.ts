@@ -1,4 +1,4 @@
-import { Policy } from '@nimiq/core';
+import { HashedTimeLockedContract, Policy } from '@nimiq/core';
 
 import type { PeiChainAdapterV0, PeiChainTransactionV0 } from './verifier';
 
@@ -27,6 +27,13 @@ export class NimiqRpcPeiChainAdapterV0 implements PeiChainAdapterV0 {
             : transaction.executionResult;
         const hash = stringField(transaction, ['hash']).toLowerCase();
         const sender = stringField(transaction, ['from', 'sender']);
+        const senderAccountType = accountType(optionalIntegerField(
+            transaction,
+            ['fromType', 'senderType']
+        ));
+        const senderAuthorization = senderAccountType === 'htlc'
+            ? htlcSenderAuthorization(transaction.proof)
+            : undefined;
         const recipient = stringField(transaction, ['to', 'recipient']);
         const value = integerField(transaction, ['value']);
         const networkId = integerField(transaction, ['networkId']);
@@ -41,6 +48,8 @@ export class NimiqRpcPeiChainAdapterV0 implements PeiChainAdapterV0 {
             hash,
             network,
             sender,
+            ...(senderAccountType ? { senderAccountType } : {}),
+            ...(senderAuthorization ? { senderAuthorization } : {}),
             recipient,
             valueLuna: String(value),
             data: recipientData(transaction.recipientData),
@@ -92,6 +101,26 @@ export class NimiqRpcPeiChainAdapterV0 implements PeiChainAdapterV0 {
         if (!('data' in result)) throw new Error('Nimiq RPC response omitted result.data.');
         return result.data;
     }
+}
+
+function accountType(value: number | undefined): PeiChainTransactionV0['senderAccountType'] | undefined {
+    if (value === undefined) return undefined;
+    return ['basic', 'vesting', 'htlc', 'staking'][value] as
+        PeiChainTransactionV0['senderAccountType'] | undefined ?? 'unknown';
+}
+
+function htlcSenderAuthorization(
+    value: unknown
+): PeiChainTransactionV0['senderAuthorization'] | undefined {
+    if (typeof value !== 'string' || !/^(?:[a-fA-F0-9]{2}){1,2048}$/.test(value)) {
+        throw new Error('Nimiq RPC returned an invalid HTLC proof.');
+    }
+    const proof = HashedTimeLockedContract.proofToPlain(
+        Uint8Array.from(Buffer.from(value, 'hex'))
+    );
+    return proof.type === 'early-resolve'
+        ? { type: 'htlc-early-resolve', creator: proof.creator }
+        : undefined;
 }
 
 class PeiRpcError extends Error {

@@ -12,7 +12,8 @@
   "scope": [
     "Persist active game-side journeys and exact helper-signed earn bytes so the same PEI pair can resume after reload, ambiguous broadcast or process replacement.",
     "Add a separate helper server entry point, dedicated PostgreSQL store, mainnet acknowledgement, pause switch, signer/RPC health checks and external key generator.",
-    "Expose both accepted transaction hashes and document a one-participant 1 NIM MainAlbatross Phone Gate B."
+    "Expose both accepted transaction hashes and document a one-participant 1 NIM MainAlbatross Phone Gate B.",
+    "Correct the live Nimiq Pay HTLC early-resolution sender model without admitting other contract proof paths."
   ],
   "non_goals": [
     "No autonomous deployment, key creation, funding, real transaction, reward payout activation, carrier-content ablation, public helper budget or general-public issuance policy."
@@ -75,6 +76,16 @@
       "command": "npm.cmd run audit:housekeeping",
       "status": "pass",
       "details": "Report-only housekeeping completed with no gone tracking branches. It reports this intentionally dirty in-progress WP-022E package and retained historical reconciliation items without mutating files. Log .cache/wp022e-housekeeping.log."
+    },
+    {
+      "command": "npm.cmd run verify:changes -- --phase checks",
+      "status": "pass",
+      "details": "After the first real Phone Gate B return exposed the HTLC sender mismatch, the unchanged selector fingerprint 10c013e5037d658feeb50f5ac34b6b7ab1583c2b532d15a49cd4bd010d2e9cea passed import boundary, types, selected protocol/simulation/Loomkeeper/reward coverage, 23 PEI cases, fresh build, built smoke, identity/reward security and bundle gates. The PEI coverage constructs and parses an HTLC early-resolution proof, accepts its bound creator and rejects wrong, missing or non-HTLC authority. No retry occurred. Log .cache/wp022e-phonegateb-checks.log."
+    },
+    {
+      "command": "npm.cmd run verify:changes -- --phase browser",
+      "status": "pass",
+      "details": "The same correction fingerprint passed 73 canonical Chromium 390x844 cases with three expected policy skips, zero failures and no retries. The selected run covered the two-origin PEI journey, V10 Daily admission, standard volcanic Practice, identity, resilience, rewards and smoke. Log .cache/wp022e-phonegateb-browser.log."
     }
   ],
   "reviews": [
@@ -83,15 +94,21 @@
       "role": "primary_direct_review",
       "decision": "pass",
       "details": "Primary reviewed wallet/request/parent binding, independent fresh chain verification, finality, helper secret isolation and pause guards, exact-byte persistence/rebroadcast, process/session replacement, transaction-hash visibility, same-connection PostgreSQL locking, bounded request-window de-duplication and unchanged Practice/V10 Daily authority. Implementation is ready for the bounded deployed canary; physical acceptance remains open."
+    },
+    {
+      "reviewer": "Primary single-owner assistant",
+      "role": "primary_direct_review",
+      "decision": "pass",
+      "details": "Primary reconstructed the finalized failing spend from MainAlbatross, confirmed fromType 2 and a parsed early-resolve proof whose creator is the authorized subject, and reviewed the correction against the pinned Nimiq core parser. The verifier still binds recipient, value, commitment, network, successful execution and macro finality; only the early-resolve creator can replace literal subject-sender equality. Other HTLC proof paths remain rejected."
     }
   ],
   "skipped_checks": [
     "PostgreSQL integration is unavailable locally because WP014_TEST_DATABASE_URL is unset; CI must run the disposable database gate.",
-    "No real Nimiq transaction or phone journey has run; Phone Gate B remains pending.",
+    "The first real Nimiq Pay/MainAlbatross journey reached both transfers but stopped at final spend verification; the corrected deployed Phone Gate B retry remains pending.",
     "Daily/full release verification remains at the 22:00 Europe/Berlin or explicit release boundary."
   ],
   "residual_risks": [
-    "Nimiq Pay cross-origin navigation, real provider behavior, public RPC response compatibility and mainnet finality remain unverified until Phone Gate B.",
-    "The low-funded canary has no durable helper-side sponsor budget or one-issuance-per-wallet/day rule and must not be opened to general users."
+    "The corrected HTLC early-resolution path has automated coverage but still requires the deployed physical-phone retry through qualification and V10 Daily start.",
+    "The low-funded canary has no durable helper-side sponsor budget or one-issuance-per-wallet/day rule. A returned transfer replenishes its balance and can fund another fresh earn request, so the helper must remain paused outside one supervised canary and must not be opened to general users."
   ]
 }

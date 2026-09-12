@@ -60,8 +60,18 @@ Phaser/Socket.IO stack.
   and the two final transaction hashes remain visible. Local implementation,
   direct review and the change-selected checks/browser/performance phases are
   complete; the disposable PostgreSQL gate remains CI-only because the local
-  prerequisite is absent. Phone Gate B remains. Carrier-content ablation stays deferred until this operational
-  journey passes on the owner's phone. See the
+  prerequisite is absent. The first Phone Gate B attempt reached both real
+  mainnet transfers and exposed Nimiq Pay's HTLC early-resolution return: the
+  player wallet co-signed as creator while the raw chain sender was the HTLC,
+  which the direct-sender verifier rejected. The helper was paused with 1 NIM
+  remaining. The correction now parses the HTLC proof and accepts only a
+  successful `early-resolve` spend whose creator is the authorized PEI subject;
+  direct sends remain supported and all other contract paths fail closed.
+  Change-selected checks passed, including 23 PEI cases, fresh build/smoke and
+  security, followed by 73 phone-browser passes with three expected skips
+  and no retries. Phone Gate B remains open for the corrected deployed retry.
+  Carrier-content ablation stays deferred until this operational journey passes
+  on the owner's phone. See the
   [PEI admission contract](wp-022-pei-admission-contract.md),
   [WP-022B evidence](../evidence/wp-022b.json), [WP-022C evidence](../evidence/wp-022c.json),
   [WP-022D evidence](../evidence/wp-022d.json), [WP-022E evidence](../evidence/wp-022e.json), and the

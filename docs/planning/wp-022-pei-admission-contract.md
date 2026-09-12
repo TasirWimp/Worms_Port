@@ -151,13 +151,25 @@ chain independently and require macro-block finality. The game reports the two
 accepted transaction hashes after qualification so an operator can reconstruct
 the canary from chain truth.
 
+The first physical-phone attempt established that Nimiq Pay can submit the
+return as an HTLC early-resolution transaction. Its chain sender is the HTLC
+address even though the authorized player wallet co-signs as the HTLC creator.
+The RPC adapter therefore parses the consensus-validated HTLC proof and exposes
+only an `early-resolve` creator. The verifier accepts the contract sender only
+for a successful spend when that creator equals the PEI subject. Direct subject
+sends remain valid; regular transfers, timeout resolutions, malformed proofs,
+wrong creators and non-HTLC substitutions remain invalid.
+
 The deployment gate is deliberately bounded to one participant and one funded
-1 NIM earn while reward payout remains `record-only`. The helper hot wallet is
-the canary's spending limit: fund it with only the authorized canary amount and
-restore `PEI_PROXY_PAUSED=true` after the journey. A wider public activation
-requires a durable helper-side daily sponsor budget and per-wallet issuance
-policy; the current Socket.IO limiter and low balance are canary controls, not a
-public distribution policy.
+1 NIM earn while reward payout remains `record-only`. Fund the helper with only
+the authorized canary amount and restore `PEI_PROXY_PAUSED=true` after the
+journey. A completed or rejected return can replenish the helper and allow that
+same balance to fund another fresh request, as the first phone attempt also
+demonstrated. Low balance is therefore exposure reduction rather than an
+issuance limit. A wider public activation requires a durable helper-side daily
+sponsor budget and per-wallet issuance policy; the current Socket.IO limiter
+and supervised pause switch are canary controls, not a public distribution
+policy.
 
 Phone Gate B is the first real Nimiq Pay, two-origin and MainAlbatross gate. It
 must confirm both disclosures and wallet approvals, automatic return after each

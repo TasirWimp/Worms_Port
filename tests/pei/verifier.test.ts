@@ -6,11 +6,13 @@ import type { RewardConfig } from '../../server/src/reward/types';
 import { peiProofHashV0, peiRequestCommitmentV0 } from '../../shared/pei-v0';
 import {
     verifyPeiJourneyV0,
+    type PeiChainTransactionV0,
     type PeiVerificationV0
 } from '../../server/src/pei/verifier';
 import {
     PEI_CONFIG,
     PEI_EARN_TX,
+    PEI_HTLC_ADDRESS,
     PEI_NOW_SECONDS,
     PEI_OTHER_WALLET,
     PEI_PROXY_ADDRESS,
@@ -124,6 +126,48 @@ test('both earn and spend transactions are bound to direction, value, data and n
             adapter: fixture.chain, config: PEI_CONFIG, nowSeconds: PEI_NOW_SECONDS
         });
         assertInvalid(result, expected, edge);
+    }
+});
+
+test('Nimiq Pay HTLC early resolution binds the spend to its authorized creator', async () => {
+    const fixture = await peiFixture();
+    const spend = fixture.chain.transactions.get(PEI_SPEND_TX)!;
+    spend.sender = PEI_HTLC_ADDRESS;
+    spend.senderAccountType = 'htlc';
+    spend.senderAuthorization = {
+        type: 'htlc-early-resolve',
+        creator: PEI_WALLET
+    };
+    const result = await verifyPeiJourneyV0(fixture.journey, {
+        adapter: fixture.chain, config: PEI_CONFIG, nowSeconds: PEI_NOW_SECONDS
+    });
+    assert.equal(result.status, 'valid');
+});
+
+test('HTLC spend authorization rejects a wrong creator or non-HTLC sender type', async () => {
+    for (const mutate of [
+        (spend: PeiChainTransactionV0) => {
+            spend.senderAuthorization = {
+                type: 'htlc-early-resolve',
+                creator: PEI_PROXY_ADDRESS
+            };
+        },
+        (spend: PeiChainTransactionV0) => { spend.senderAccountType = 'basic'; },
+        (spend: PeiChainTransactionV0) => { delete spend.senderAuthorization; }
+    ]) {
+        const fixture = await peiFixture();
+        const spend = fixture.chain.transactions.get(PEI_SPEND_TX)!;
+        spend.sender = PEI_HTLC_ADDRESS;
+        spend.senderAccountType = 'htlc';
+        spend.senderAuthorization = {
+            type: 'htlc-early-resolve',
+            creator: PEI_WALLET
+        };
+        mutate(spend);
+        const result = await verifyPeiJourneyV0(fixture.journey, {
+            adapter: fixture.chain, config: PEI_CONFIG, nowSeconds: PEI_NOW_SECONDS
+        });
+        assertInvalid(result, 'transaction_sender_mismatch', 'spend');
     }
 });
 

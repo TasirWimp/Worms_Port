@@ -16,6 +16,11 @@ export type PeiChainTransactionV0 = {
     hash: string;
     network: string;
     sender: string;
+    senderAccountType?: 'basic' | 'vesting' | 'htlc' | 'staking' | 'unknown';
+    senderAuthorization?: {
+        type: 'htlc-early-resolve';
+        creator: string;
+    };
     recipient: string;
     valueLuna: string;
     data: string;
@@ -215,9 +220,23 @@ async function verifyEdge(
     } catch {
         return invalid('transaction_address_invalid', action);
     }
-    const expectedSender = action === 'earn' ? proxy : proof.request.subject;
+    const expectedSender = action === 'earn'
+        ? proxy
+        : normalizeNimiqAddress(proof.request.subject);
     const expectedRecipient = action === 'earn' ? proof.request.subject : proxy;
-    if (sender !== expectedSender) return invalid('transaction_sender_mismatch', action);
+    if (sender !== expectedSender) {
+        if (action !== 'spend' || transaction.senderAccountType !== 'htlc' ||
+            transaction.senderAuthorization?.type !== 'htlc-early-resolve') {
+            return invalid('transaction_sender_mismatch', action);
+        }
+        let creator: string;
+        try {
+            creator = normalizeNimiqAddress(transaction.senderAuthorization.creator);
+        } catch {
+            return invalid('transaction_address_invalid', action);
+        }
+        if (creator !== expectedSender) return invalid('transaction_sender_mismatch', action);
+    }
     if (recipient !== expectedRecipient) return invalid('transaction_recipient_mismatch', action);
     if (!/^[1-9][0-9]{0,19}$/.test(transaction.valueLuna) ||
         BigInt(transaction.valueLuna) < BigInt(proof.request.minAmountLuna)) {
