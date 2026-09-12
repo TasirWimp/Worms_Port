@@ -94,6 +94,7 @@ test('built Daily journey persists consumed authority in PostgreSQL record-only 
     if (message.type() === 'error') errors.push(message.text());
   });
   try {
+    await page.emulateMedia({ reducedMotion: 'reduce' });
     await page.exposeFunction('testNimiqSign', (message: string) => signer.sign(message));
     await page.addInitScript(({ wallet }) => {
       const runtime = window as typeof window & {

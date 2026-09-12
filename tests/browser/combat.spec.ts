@@ -31,6 +31,50 @@ test.beforeEach(async ({ page }, testInfo) => {
   await expect.poll(() => consoleErrors).toEqual([]);
 });
 
+async function restartLocalPreviewPaused(page: Page, selector: string) {
+  return page.evaluate(async (rootSelector) => {
+    const previous = document.querySelector<HTMLElement>(rootSelector)!;
+    const current = await new Promise<HTMLElement>((resolve, reject) => {
+      const game = document.getElementById('game')!;
+      const timeout = window.setTimeout(() => {
+        observer.disconnect();
+        reject(new Error(`Replacement ${rootSelector} did not mount.`));
+      }, 5_000);
+      const observer = new MutationObserver(() => {
+        const replacement = document.querySelector<HTMLElement>(rootSelector);
+        if (!replacement || replacement === previous) return;
+        window.clearTimeout(timeout);
+        observer.disconnect();
+        resolve(replacement);
+      });
+      observer.observe(game, { childList: true, subtree: true });
+      previous.querySelector<HTMLButtonElement>('.v9-reenter')!.click();
+    });
+
+    const initialInputEpoch = current.dataset.inputEpoch;
+    const paused = new Promise<void>((resolve, reject) => {
+      const timeout = window.setTimeout(() => {
+        observer.disconnect();
+        reject(new Error(`Replacement ${rootSelector} did not pause.`));
+      }, 5_000);
+      const observer = new MutationObserver(() => {
+        if (current.dataset.paused !== 'true') return;
+        window.clearTimeout(timeout);
+        observer.disconnect();
+        resolve();
+      });
+      observer.observe(current, { attributes: true, attributeFilter: ['data-paused'] });
+    });
+    current.querySelector<HTMLButtonElement>('.pause-button')!.click();
+    await paused;
+    return {
+      previousConnected: previous.isConnected,
+      initialInputEpoch,
+      simulationTick: Number(current.dataset.simulationTick)
+    };
+  }, selector);
+}
+
 test('portrait/landscape layout is touch-safe and renders deterministic combat', async ({ page }, testInfo) => {
   const ui = page.locator('.combat-ui');
   const viewport = page.viewportSize()!;
@@ -436,13 +480,14 @@ test(`${preview} local re-entry retires paused and terminal adapters without a t
   const expectedBackground = preview === 'v9' ? 'none' : 'volcanic-ruin';
   const ui = page.locator(selector); await expect(ui).toBeVisible();
   await page.locator('.pause-button').tap(); await expect(ui).toHaveAttribute('data-paused', 'true');
-  const pausedAdapter = await ui.elementHandle();
-  await page.getByRole('button', { name: 'Start fresh preview' }).tap();
-  expect(await pausedAdapter!.evaluate(element => element.isConnected)).toBe(false);
+  const pausedRestart = await restartLocalPreviewPaused(page, selector);
+  expect(pausedRestart.previousConnected).toBe(false);
   await expect(ui).toHaveAttribute('data-background', expectedBackground);
-  await expect(ui).toHaveAttribute('data-input-epoch', '0');
+  expect(pausedRestart.initialInputEpoch).toBe('0');
   await expect(ui).toHaveAttribute('data-player-thread', '3');
-  expect(Number(await ui.getAttribute('data-simulation-tick'))).toBeLessThan(16);
+  expect(pausedRestart.simulationTick).toBeLessThan(16);
+  await page.getByRole('button', { name: 'Resume', exact: true }).tap();
+  await expect(ui).toHaveAttribute('data-paused', 'false');
 
   // Each paused/resumed local barrier is authoritative fixture work. The 65th
   // pause reaches its documented lifecycle terminal without adding a test seam.
@@ -456,19 +501,22 @@ test(`${preview} local re-entry retires paused and terminal adapters without a t
       });
       observer.observe(root, { attributes: true, attributeFilter: [`data-${attribute.replace(/[A-Z]/g, letter => `-${letter.toLowerCase()}`)}`] });
     });
-    for (let cycle = 0; cycle < 64; cycle += 1) {
+    for (let cycle = 0; cycle < 63; cycle += 1) {
       button.click(); await waitFor('paused', 'true'); button.click(); await waitFor('paused', 'false');
     }
     button.click(); await waitFor('terminal', 'true');
   }, selector);
   await expect(ui).toHaveAttribute('data-terminal', 'true');
   await expect(page.getByRole('button', { name: 'Start fresh preview' })).toBeVisible();
-  await page.getByRole('button', { name: 'Start fresh preview' }).tap();
+  const terminalRestart = await restartLocalPreviewPaused(page, selector);
+  expect(terminalRestart.previousConnected).toBe(false);
   await expect(ui).toHaveAttribute('data-terminal', 'false');
   await expect(ui).toHaveAttribute('data-background', expectedBackground);
-  await expect(ui).toHaveAttribute('data-input-epoch', '0');
+  expect(terminalRestart.initialInputEpoch).toBe('0');
   await expect(ui).toHaveAttribute('data-player-thread', '3');
-  expect(Number(await ui.getAttribute('data-simulation-tick'))).toBeLessThan(16);
+  expect(terminalRestart.simulationTick).toBeLessThan(16);
+  await page.getByRole('button', { name: 'Resume', exact: true }).tap();
+  await expect(ui).toHaveAttribute('data-paused', 'false');
   await page.screenshot({ path: testInfo.outputPath('restart-background.png') });
   await dragPad(page, `${selector} .aim-zone`, 955, 0.35, -0.35);
   await expect(ui).toHaveAttribute('data-aim-locked', 'true');
@@ -2107,6 +2155,9 @@ test('volcanic-ruin composed arena keeps both starts framed and completes a turn
   await page.goto('/?combat-preview=v10g&background-preview=volcanic-ruin');
   const ui = page.locator('.combat-v10');
   await expect(ui).toHaveAttribute('data-ruleset', 'nimble-knots-artillery-v10-r5');
+  await page.getByRole('button', { name: 'Pause', exact: true }).tap();
+  await expect(ui).toHaveAttribute('data-paused', 'true');
+  await expect(page.getByRole('button', { name: 'Resume', exact: true })).toBeEnabled();
   await expect(ui).toHaveAttribute('data-camera-left', '512.00');
   await expect(ui).toHaveAttribute('data-camera-width', '1024');
   await expect(ui).toHaveAttribute('data-opening-survey', 'false');
@@ -2120,7 +2171,6 @@ test('volcanic-ruin composed arena keeps both starts framed and completes a turn
   });
   expect(overlap).toBe(false);
   await page.screenshot({ path: testInfo.outputPath('volcanic-ruin-composition.png') });
-  await page.getByRole('button', { name: 'Pause', exact: true }).tap();
   await page.getByRole('button', { name: 'Resume', exact: true }).tap();
   const sideways = await page.evaluate(() => document.documentElement.dataset.sideways);
   await dragPad(page, '.combat-v10 .aim-zone', 1199, sideways ? 0 : 0.35,
