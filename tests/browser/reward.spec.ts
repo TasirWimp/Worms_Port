@@ -25,7 +25,7 @@ test('a finalized reward keeps its full payout transaction hash visible', async 
 });
 
 test('standard Daily uses volcanic V10, resumes, settles verified loss, and retries to the same Practice', async ({ page }) => {
-  test.setTimeout(90_000);
+  test.setTimeout(120_000);
   const pageErrors: string[] = [];
   page.on('pageerror', error => pageErrors.push(error.stack ?? error.message));
   const signer = createTestSigner();
@@ -37,7 +37,7 @@ test('standard Daily uses volcanic V10, resumes, settles verified loss, and retr
   { idSource: () => ids.shift()!, seedSource: () => 1 });
   const runtime = createRuntimeServer({ clientDir: path.resolve('client/build'), rewards,
     identity: { publicOrigin: 'http://127.0.0.1', network: 'test-albatross' },
-    sessionRegistry: { practiceV10: true, seedSource: () => 4, v10TestOnly: { nowUs: () => 0 } } });
+    sessionRegistry: { practiceV10: true, seedSource: () => 4, challengeTtlMs: 120_000 } });
   const port = await runtime.listen();
   try {
     await page.exposeFunction('testAutomatedSign', (message: string) => signer.sign(message));
@@ -58,15 +58,13 @@ test('standard Daily uses volcanic V10, resumes, settles verified loss, and retr
     await expect(ui).toHaveAttribute('data-background', 'volcanic-ruin');
     await expect(page.locator('.pause-button')).toBeDisabled();
     let socketId = [...runtime.io.sockets.sockets.keys()][0];
-    const session = runtime.sessions.getBound(socketId)!;
-    const challenge = runtime.sessions.activeSnapshotV10(session)!.challengeId;
+    const challenge = runtime.sessions.activeSnapshotV10(runtime.sessions.getBound(socketId)!)!.challengeId;
     await page.reload();
     await page.getByRole('button', { name: 'Resume Daily Challenge' }).tap();
     await expect(ui).toBeVisible();
     socketId = [...runtime.io.sockets.sockets.keys()][0];
     expect(runtime.sessions.activeSnapshotV10(runtime.sessions.getBound(socketId)!)!.challengeId).toBe(challenge);
-    for (let turn = 0; turn < 20 && runtime.sessions.activeSnapshotV10(session)!.status === 'active'; turn++)
-      runtime.sessions.advanceChallengeTicksV10ForTest(session, challenge, 900);
+    await completeCurrentClash(page);
     await expect(page.locator('.result-shell')).toHaveAttribute('data-outcome', 'loomkeeper_win');
     await expect(page.locator('.reward-result-status')).toContainText('did not earn a reward');
     await expect(page.locator('.reward-claim')).toBeHidden();
