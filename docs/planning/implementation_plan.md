@@ -87,9 +87,11 @@ Phaser/Socket.IO stack.
   V10 R5 win and a finalized 1 NIM payout, but exposed that the result scene did
   not render the transaction hash already present in the server update. The
   bounded correction adds a full selectable payout-hash field and passes its
-  selected automated checks without failures or retries. Gate C remains open
-  for Ubuntu visual review, deployment and the focused phone presentation check,
-  after which the temporary override is
+  selected automated checks without failures or retries. Ubuntu artifact run
+  `34710588366` passed on exact commit `3789221`; its payout card and accumulated
+  accepted V10 presentation drift were explicitly reviewed and promoted as
+  candidate baselines. Gate C remains open for ordinary Ubuntu comparison CI,
+  deployment and the focused phone presentation check, after which the temporary override is
   removed and both transfer paths are paused. Durable helper daily sponsor
   budget and per-wallet issuance controls follow before any broader
   availability. Carrier-content ablation stays deferred until the complete

@@ -240,4 +240,13 @@ for the same normalized configured test wallet. They finalized at
 These are separate challenge entitlements under the owner-approved development
 retry policy, rather than a duplicate claim for one entitlement.
 
+The hash presentation and accumulated accepted V10 presentation state were
+captured by Ubuntu 24.04 Visual baseline candidates run `34710588366` at exact
+commit `3789221`. All capture steps passed with eight visual cases and twelve
+expected project skips. Primary explicitly reviewed the payout card and current
+combat/sideways/landscape states before promoting the 23 changed artifact files;
+the finalized payout candidate has SHA-256
+`53119EC0A7BF740016D7FF98671F9EC7D8586799AD76F7D93D5937526A20F5E0`.
+The baseline commit must still pass ordinary Ubuntu comparison CI before deploy.
+
 Evidence: [WP-022F](../evidence/wp-022f.json).

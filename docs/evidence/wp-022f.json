@@ -28,6 +28,8 @@
     "npm.cmd run verify:changes -- --base 5c0ddb2 --phase browser (payout-hash correction)",
     "npm.cmd run check:work-packages (payout-hash evidence)",
     "Ubuntu visual baseline candidate generation and explicit review (payout-hash correction)",
+    "npm.cmd run verify:changes -- --base 3789221 --dry-run (reviewed baseline promotion)",
+    "npm.cmd run verify:changes -- --base 3789221 (reviewed baseline promotion)",
     "Physical Phone Gate C and post-canary restoration"
   ],
   "deterministic_seeds": [
@@ -75,6 +77,21 @@
       "command": "npm.cmd run check:work-packages (payout-hash evidence)",
       "status": "pass",
       "details": "The delegated evidence-only validation passed all 66 work-package records, git diff --check and JSON parsing with no failures or retries after the product results were recorded. Log .cache/wp022f-payout-hash-evidence.log."
+    },
+    {
+      "command": "Ubuntu visual baseline candidate generation and explicit review (payout-hash correction)",
+      "status": "pass",
+      "details": "GitHub Actions Visual baseline candidates run 34710588366 completed successfully on Ubuntu 24.04 at exact source commit 378922134b92f6ec928b1fff15bd3a914ca7c3fb. The delegated runner reported eight passing visual cases and twelve reviewed expected project skips with no failed or retried steps. Primary explicitly inspected the full 390x844 finalized payout card, current portrait/sideways/landscape combat states, safe-area controls, cast stages and pause overlays, then promoted the 23 byte-different files directly from the downloaded artifact. Fifteen other candidates remained byte-identical and all 38 expected files were present. The finalized candidate SHA-256 is 53119EC0A7BF740016D7FF98671F9EC7D8586799AD76F7D93D5937526A20F5E0. Ordinary Ubuntu comparison CI remains required after the baseline commit."
+    },
+    {
+      "command": "npm.cmd run verify:changes -- --base 3789221 --dry-run (reviewed baseline promotion)",
+      "status": "pass",
+      "details": "The mandatory dry run selected only the work-package check and visual browser spec for the three documentation files and 23 reviewed Linux baselines. PostgreSQL, performance and fallback coverage were false. Fingerprint 7445531fb315f01a74f6b973f663c1bc94309a063e9314b0da6cded71ad83c5d."
+    },
+    {
+      "command": "npm.cmd run verify:changes -- --base 3789221 (reviewed baseline promotion)",
+      "status": "pass",
+      "details": "The delegated selected run passed all 66 work-package records and eight visual logic cases with twelve expected Windows-policy Linux-comparison skips, no failures and no retries. All 38 tracked PNGs match their downloaded Ubuntu artifact candidates byte-for-byte with no missing files, and git diff --check passed. Log .cache/wp022f-baseline-promotion.log."
     }
   ],
   "reviews": [
@@ -89,6 +106,12 @@
       "role": "primary_direct_review",
       "decision": "pass",
       "details": "Primary reproduced the missing hash presentation, traced the authoritative transactionHash through the server update, and reviewed the correction for signed, included and finalized states, full 64-character selectable rendering, narrow responsive styling and regression coverage. The live ledger records two distinct finalized 1 NIM entitlements for the same normalized configured test wallet at 2026-09-12T17:43:59.787Z and 2026-09-12T17:50:59.805Z; the owner independently reported receiving 1 NIM."
+    },
+    {
+      "reviewer": "Primary single-owner assistant",
+      "role": "primary_direct_review",
+      "decision": "pass",
+      "details": "Primary explicitly reviewed Ubuntu artifact run 34710588366 rather than generating or approving baselines on Windows. The finalized reward card keeps the full hash inside the 390x844 result card with readable wrapping and intact actions. The remaining drift is the branch's already accepted current V10 terrain and presentation state; reviewed portrait, virtual-landscape, actual-landscape, safe-area, cast and pause captures retain their required controls and content."
     }
   ],
   "skipped_checks": [
@@ -98,6 +121,6 @@
   ],
   "residual_risks": [
     "The twelve-slot PostgreSQL migration must pass the disposable database gate in CI because WP014_TEST_DATABASE_URL may be unavailable locally.",
-    "The bounded payout-hash presentation correction passes selected automated coverage. Ubuntu baseline-candidate review, deployment, the focused physical-phone hash visibility check and post-canary restoration remain pending."
+    "The bounded payout-hash presentation correction, Ubuntu candidate review and local promotion selector pass. Ordinary Ubuntu baseline comparison CI, deployment, the focused physical-phone hash visibility check and post-canary restoration remain pending."
   ]
 }
