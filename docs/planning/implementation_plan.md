@@ -83,8 +83,13 @@ Phaser/Socket.IO stack.
   fingerprint, including 45 reward cases, fresh build/smoke/security and 20
   canonical browser cases with one expected skip and no retries. The local
   PostgreSQL phase retained its expected missing-database skip and remains a CI
-  gate. Phone Gate C will verify the complete PEI, V10 R5 win,
-  claim and finalized payout journey, after which the temporary override is
+  gate. The owner's first Phone Gate C journey at `5c0ddb2` completed PEI, the
+  V10 R5 win and a finalized 1 NIM payout, but exposed that the result scene did
+  not render the transaction hash already present in the server update. The
+  bounded correction adds a full selectable payout-hash field and passes its
+  selected automated checks without failures or retries. Gate C remains open
+  for Ubuntu visual review, deployment and the focused phone presentation check,
+  after which the temporary override is
   removed and both transfer paths are paused. Durable helper daily sponsor
   budget and per-wallet issuance controls follow before any broader
   availability. Carrier-content ablation stays deferred until the complete

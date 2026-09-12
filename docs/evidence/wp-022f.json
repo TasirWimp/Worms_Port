@@ -13,7 +13,7 @@
     "Connect the accepted PEI-qualified volcanic Daily journey to the existing WP-013 MainAlbatross payout machinery for one supervised 1 NIM winning canary.",
     "Raise the temporary override for the explicitly configured owner test wallet to twelve durable started-attempt slots while every other wallet remains at one attempt per UTC day.",
     "Preserve the five-unconsumed-reservation churn limit independently from consumed test-wallet attempt records and migrate existing PostgreSQL deployments safely.",
-    "Complete Phone Gate C through verified win, claim, transaction finality and post-canary restoration."
+    "Complete Phone Gate C through verified win, claim, transaction finality, persistent transaction-hash presentation and post-canary restoration."
   ],
   "non_goals": [
     "No global retry bypass, reward amount or budget change, public helper issuance, durable helper sponsor policy, carrier-content ablation, gameplay change, asset change, or dependency change."
@@ -24,6 +24,10 @@
     "npm.cmd run verify:changes -- --base 44e523e --phase browser",
     "npm.cmd run verify:changes -- --base 44e523e --phase postgres",
     "npm.cmd run audit:housekeeping",
+    "npm.cmd run verify:changes -- --base 5c0ddb2 --phase checks (payout-hash correction)",
+    "npm.cmd run verify:changes -- --base 5c0ddb2 --phase browser (payout-hash correction)",
+    "npm.cmd run check:work-packages (payout-hash evidence)",
+    "Ubuntu visual baseline candidate generation and explicit review (payout-hash correction)",
     "Physical Phone Gate C and post-canary restoration"
   ],
   "deterministic_seeds": [
@@ -56,6 +60,21 @@
       "command": "npm.cmd run audit:housekeeping",
       "status": "pass",
       "details": "The delegated report-only audit completed without mutation, identified WP-022F as intentionally in progress and retained only historical reconciliation items. Log .cache/wp022f-housekeeping.log."
+    },
+    {
+      "command": "npm.cmd run verify:changes -- --base 5c0ddb2 --phase checks (payout-hash correction)",
+      "status": "pass",
+      "details": "The delegated worms_port_test_runner preserved selector fingerprint a3b188f0a27e0f379e634ff1644aee549b1ac2bcc97723d367743f2b988d8a60 and passed import/work-package/type checks; 94 combat, 42 Practice, 22 identity, 45 reward, 131 protocol and 125 tooling tests; fresh build/smoke/security; and bundle limits. Build proof ac935e7d8253/248a162c0db1; JavaScript 1,431,813/1,500,000 bytes and JavaScript plus CSS gzip 417,099/430,000 bytes. No failures or retries. Log .cache/wp022f-payout-hash-checks.log."
+    },
+    {
+      "command": "npm.cmd run verify:changes -- --base 5c0ddb2 --phase browser (payout-hash correction)",
+      "status": "pass",
+      "details": "The delegated canonical phone suite passed 74 cases with three reviewed expected skips, including the new finalized full-hash regression, with no failures or retries. Visual logic passed eight cases with twelve expected Windows-policy snapshot skips, no failures and no retries. Log .cache/wp022f-payout-hash-browser.log."
+    },
+    {
+      "command": "npm.cmd run check:work-packages (payout-hash evidence)",
+      "status": "pass",
+      "details": "The delegated evidence-only validation passed all 66 work-package records, git diff --check and JSON parsing with no failures or retries after the product results were recorded. Log .cache/wp022f-payout-hash-evidence.log."
     }
   ],
   "reviews": [
@@ -64,6 +83,12 @@
       "role": "primary_direct_review",
       "decision": "pass",
       "details": "Primary reviewed wallet-only configuration, existing-row migration behavior, numbered-attempt allocation, consumed versus cancelled reservation accounting, one-active authority, sponsor budget, PEI admission, replay, claim, signer, exact-byte payout recovery and finality boundaries. The owner explicitly accepted that all twelve development slots can independently reach a verified payout."
+    },
+    {
+      "reviewer": "Primary single-owner assistant",
+      "role": "primary_direct_review",
+      "decision": "pass",
+      "details": "Primary reproduced the missing hash presentation, traced the authoritative transactionHash through the server update, and reviewed the correction for signed, included and finalized states, full 64-character selectable rendering, narrow responsive styling and regression coverage. The live ledger records two distinct finalized 1 NIM entitlements for the same normalized configured test wallet at 2026-09-12T17:43:59.787Z and 2026-09-12T17:50:59.805Z; the owner independently reported receiving 1 NIM."
     }
   ],
   "skipped_checks": [
@@ -73,6 +98,6 @@
   ],
   "residual_risks": [
     "The twelve-slot PostgreSQL migration must pass the disposable database gate in CI because WP014_TEST_DATABASE_URL may be unavailable locally.",
-    "The combined physical-phone PEI, verified win, claim and finalized 1 NIM payout journey remains pending Phone Gate C."
+    "The bounded payout-hash presentation correction passes selected automated coverage. Ubuntu baseline-candidate review, deployment, the focused physical-phone hash visibility check and post-canary restoration remain pending."
   ]
 }

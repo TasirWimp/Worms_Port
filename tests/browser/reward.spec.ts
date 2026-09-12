@@ -10,6 +10,20 @@ import { V8_R1_RULESET_ID } from '../../shared/simulation-v8';
 import { V10_AUTOMATION_ID } from '../../shared/combat-version';
 import { V10_R5_RULESET_ID } from '../../shared/simulation-v10';
 
+test('a finalized reward keeps its full payout transaction hash visible', async ({ page }) => {
+  const hash = 'a'.repeat(64);
+  await page.goto('/?result-preview=reward&sideways=off');
+  const transaction = page.locator('.reward-transaction');
+  await expect(transaction).toBeHidden();
+
+  await page.getByRole('button', { name: 'Claim fixed reward' }).tap();
+  await page.getByRole('button', { name: 'Refresh payout status' }).tap();
+
+  await expect(page.locator('.reward-result-status')).toContainText('finalized');
+  await expect(transaction).toBeVisible();
+  await expect(page.locator('.reward-transaction-hash')).toHaveText(hash);
+});
+
 test('standard Daily uses volcanic V10, resumes, settles verified loss, and retries to the same Practice', async ({ page }) => {
   test.setTimeout(90_000);
   const pageErrors: string[] = [];

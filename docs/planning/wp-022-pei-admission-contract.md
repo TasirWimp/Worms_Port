@@ -223,4 +223,21 @@ Durable helper daily sponsor-budget and per-wallet issuance controls remain
 required before broader availability. Receipt-carrier ablation remains
 deferred until this operational reward path is complete.
 
+The first Phone Gate C payout completed at deployed commit `5c0ddb2`: the owner
+completed the PEI journey and verified V10 R5 win, claimed the reward, and
+received 1 NIM. The final payout update contained the authoritative transaction
+hash, but the result scene rendered only its status message. The correction
+adds a full selectable payout-hash field as soon as a signed transaction exists
+and keeps it visible through inclusion and finality. Phone Gate C remains open
+only for that presentation check and post-canary restoration.
+
+The live ledger records two distinct finalized 1 NIM development entitlements
+for the same normalized configured test wallet. They finalized at
+`2026-09-12T17:43:59.787Z` with transaction hash
+`d8eb722e52846266a3844d36f07a65a5c323a4fab95293175063335b786ddb3d` and at
+`2026-09-12T17:50:59.805Z` with transaction hash
+`7d68a4f0f034f1e51f192f86d94af7f42af386482fa0df024168e3cd00c584ef`.
+These are separate challenge entitlements under the owner-approved development
+retry policy, rather than a duplicate claim for one entitlement.
+
 Evidence: [WP-022F](../evidence/wp-022f.json).

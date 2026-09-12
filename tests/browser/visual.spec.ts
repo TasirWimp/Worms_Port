@@ -176,6 +176,7 @@ test('canonical Daily visuals cover availability, authorization, claim processin
 
     await page.getByRole('button', { name: 'Refresh payout status' }).tap();
     await expect(page.locator('.reward-result-status')).toContainText('finalized');
+    await expect(page.locator('.reward-transaction-hash')).toHaveText('a'.repeat(64));
     await screenshot(page, 'canonical-daily-finalized.png');
     expect(errors).toEqual([]);
   } finally {

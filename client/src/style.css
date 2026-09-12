@@ -1432,6 +1432,25 @@ button:disabled {
     margin: 0 0 0.55rem;
 }
 
+.reward-transaction {
+    padding: 0.55rem;
+    background: #ffffff;
+    border-radius: 8px;
+}
+
+.reward-transaction strong,
+.reward-transaction code {
+    display: block;
+}
+
+.reward-transaction code {
+    margin-top: 0.3rem;
+    overflow-wrap: anywhere;
+    font-size: 0.72rem;
+    line-height: 1.35;
+    user-select: text;
+}
+
 .reward-claim,
 .reward-refresh {
     width: 100%;

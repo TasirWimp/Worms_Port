@@ -81,6 +81,10 @@ export default class ResultScene extends Phaser.Scene {
                     <section class="reward-result" aria-live="polite">
                         <h2>Fixed sponsor reward</h2>
                         <p class="reward-result-status">Verifying the authoritative result...</p>
+                        <p class="reward-transaction" hidden>
+                            <strong>Payout transaction hash</strong>
+                            <code class="reward-transaction-hash"></code>
+                        </p>
                         <button type="button" class="reward-claim" hidden>Claim fixed reward</button>
                         <button type="button" class="reward-refresh" hidden>Refresh payout status</button>
                     </section>
@@ -166,6 +170,14 @@ export default class ResultScene extends Phaser.Scene {
         );
         const claim = this.root.querySelector<HTMLButtonElement>('.reward-claim');
         const refresh = this.root.querySelector<HTMLButtonElement>('.reward-refresh');
+        const transaction = this.root.querySelector<HTMLElement>('.reward-transaction');
+        const transactionHash = this.root.querySelector<HTMLElement>(
+            '.reward-transaction-hash'
+        );
+        if (transaction && transactionHash) {
+            transaction.hidden = !update.transactionHash;
+            transactionHash.textContent = update.transactionHash ?? '';
+        }
         if (claim) claim.hidden = update.state !== 'claimable' || !update.claimNonce;
         if (refresh) {
             refresh.hidden = ![
