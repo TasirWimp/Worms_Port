@@ -50,12 +50,13 @@ export class ResourceTurnsV10Lifecycle {
     public pauseUnavailableReason(): string | undefined {
         if (!this.connected) return 'Reconnect and wait for a fresh authoritative snapshot.';
         if (!this.snapshot) return 'Waiting for a fresh authoritative snapshot.';
-        return undefined;
+        return this.snapshot.mode === 'reward' ? 'Rewarded Daily matches cannot pause.' : undefined;
     }
 }
 
 export type V10CandidateConnection = 'connected' | 'reconnecting';
 export type V10CandidateCursor = { sessionId: string; nextSequence: number };
+export type V10CandidateReservation = { challengeId: string; eligibilityToken: string };
 
 /**
  * The V10 route is deliberately injected by the caller.  It owns only V10
@@ -100,7 +101,8 @@ export class ResourceTurnsV10Client {
         if (snapshot.challengeId !== this.snapshot?.challengeId) throw new Error('V10 candidate ownership changed.');
         const mode = snapshot.mode;
         return {
-            kind: 'v10', snapshot: snapshot.simulation as SimulationStateV10, previewLabel: 'Volcanic Ruin', live: true, trajectoryPreview: aim => trajectoryPreviewV10(this.requireSnapshot().simulation as SimulationStateV10, aim), calling: snapshot.calling,
+            kind: 'v10', snapshot: snapshot.simulation as SimulationStateV10, previewLabel: 'Volcanic Ruin', live: true,
+            rewarded: mode === 'reward', trajectoryPreview: aim => trajectoryPreviewV10(this.requireSnapshot().simulation as SimulationStateV10, aim), calling: snapshot.calling,
             submit: intent => this.submit(intent).then(value => value.simulation as SimulationStateV10),
             setPaused: paused => this.setPaused(paused).then(value => value.simulation as SimulationStateV10),
             cancelInput: () => this.cancelInput().then(value => value.simulation as SimulationStateV10),
@@ -121,10 +123,14 @@ export class ResourceTurnsV10Client {
         };
     }
 
-    public async start(mode: 'practice', calling: PlayerCalling): Promise<CandidateSnapshotV10> {
+    public async start(mode: 'practice' | 'reward', calling: PlayerCalling,
+        reservation?: V10CandidateReservation): Promise<CandidateSnapshotV10> {
         await whenSessionReady(this.socket);
-        const request = { requestId: requestId(), sequence: this.cursor.nextSequence, mode, calling,
-            rulesetId: V10_R5_RULESET_ID, automationId: V10_AUTOMATION_ID };
+        const sequence = this.cursor.nextSequence;
+        const request = mode === 'practice'
+            ? { requestId: requestId(), sequence, mode, calling, rulesetId: V10_R5_RULESET_ID, automationId: V10_AUTOMATION_ID }
+            : { requestId: requestId(), sequence, mode, calling, challengeId: reservation?.challengeId,
+                eligibilityToken: reservation?.eligibilityToken, rulesetId: V10_R5_RULESET_ID, automationId: V10_AUTOMATION_ID };
         const ack: any = await this.mutate<z.infer<typeof ChallengeCreateAckV10Schema>>(protocolEventsV10.create, request, ChallengeCreateAckV10Schema);
         if (!ack.data || !('simulation' in ack.data)) throw new Error('V10 creation did not return an authoritative snapshot.');
         // Only a successful, matched creation acknowledgement may replace identity.
@@ -186,7 +192,7 @@ export class ResourceTurnsV10Client {
     public onUnavailable(listener: (value: string) => void): () => void { this.unavailable.add(listener); return () => this.unavailable.delete(listener); }
     public sessionExpired(): void {
         this.lifecycle.disconnect();
-        for (const listener of this.unavailable) listener('The previous Practice Clash cannot be resumed. Start a fresh Clash.');
+        for (const listener of this.unavailable) listener('The previous volcanic Clash cannot be resumed. Start a fresh Clash.');
         this.dispose();
     }
     public dispose(): void {

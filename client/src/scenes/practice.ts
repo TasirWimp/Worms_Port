@@ -81,7 +81,9 @@ export default class PracticeScene extends Phaser.Scene {
         const current = this.client.currentCombatSnapshot();
         if (current) this.calling = current.calling;
         if (current?.status === 'active') {
-            this.startButton().textContent = current.paused ? 'Resume Paused Clash' : 'Resume Practice';
+            this.startButton().textContent = current.mode === 'reward'
+                ? 'Resume Daily Challenge'
+                : current.paused ? 'Resume Paused Clash' : 'Resume Practice';
         }
         this.refreshCalling();
         for (const button of this.root.querySelectorAll<HTMLButtonElement>('[data-calling]')) {

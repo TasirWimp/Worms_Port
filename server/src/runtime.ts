@@ -7,6 +7,7 @@ import { protocolEvents } from '../../shared/protocol';
 import { protocolEventsV8 } from '../../shared/protocol-v8';
 import type { ChallengeResultV8Runtime, CoordinatorReplayV8Automated, CoordinatorReplayV8Runtime } from '../../shared/protocol-v8';
 import type { ChallengeResultV9, CoordinatorReplayV9Automated } from '../../shared/protocol-v9';
+import type { ChallengeResultV10, CoordinatorReplayV10Automated } from '../../shared/protocol-v10-live';
 
 import { setup_game_api } from './game/api';
 import {
@@ -47,7 +48,8 @@ export type RuntimeServerOptions = {
 let legacyRuntimeActive = false;
 
 export function createRuntimeServer(options: RuntimeServerOptions = {}) {
-    if ((options.sessionRegistry?.stagingPracticeV8 !== undefined || options.sessionRegistry?.practiceV9 !== undefined) &&
+    if ((options.sessionRegistry?.stagingPracticeV8 !== undefined || options.sessionRegistry?.practiceV9 !== undefined ||
+        options.sessionRegistry?.v10PracticeOnly === true) &&
         (options.identity || options.rewards !== undefined || options.rewardWorker !== undefined ||
             options.allowMissingOrigin === true || process.env.ALLOW_MISSING_ORIGIN === 'true' ||
             options.sessionOpenRateCapacity !== undefined)) {
@@ -120,12 +122,13 @@ export function createRuntimeServer(options: RuntimeServerOptions = {}) {
     };
     const processRewardResult = (result: Parameters<NonNullable<
         SessionRegistryOptions['onChallengeCompleted']
-    >>[0] | ChallengeResultV8Runtime | ChallengeResultV9, replayOverride?: CoordinatorReplayV8Runtime | CoordinatorReplayV9Automated) => {
+    >>[0] | ChallengeResultV8Runtime | ChallengeResultV9 | ChallengeResultV10,
+    replayOverride?: CoordinatorReplayV8Runtime | CoordinatorReplayV9Automated | CoordinatorReplayV10Automated) => {
         if (result.protocolVersion === 8 && !('automationId' in result)) return;
         if (!options.rewards ||
             sessions.challengeMode(result.sessionId, result.challengeId) !== 'reward') return;
         const replay = replayOverride
-            ? ('automationId' in replayOverride ? replayOverride as CoordinatorReplayV8Automated | CoordinatorReplayV9Automated : undefined)
+            ? ('automationId' in replayOverride ? replayOverride as CoordinatorReplayV8Automated | CoordinatorReplayV9Automated | CoordinatorReplayV10Automated : undefined)
             : sessions.replayForSessionChallenge(
             result.sessionId,
             result.challengeId
@@ -159,6 +162,10 @@ export function createRuntimeServer(options: RuntimeServerOptions = {}) {
         onChallengeCompletedV10: (result, socketId) => {
             if (socketId) io.sockets.sockets.get(socketId)?.emit('v10:challenge.result', result);
             options.sessionRegistry?.onChallengeCompletedV10?.(result, socketId);
+        },
+        onChallengeSettledV10: (result, replay) => {
+            processRewardResult(result, replay);
+            options.sessionRegistry?.onChallengeSettledV10?.(result, replay);
         },
         onChallengeSnapshotV9: (snapshot, socketId) => {
             if (socketId) io.sockets.sockets.get(socketId)?.emit('v9:challenge.snapshot', snapshot);

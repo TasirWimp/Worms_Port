@@ -37,7 +37,7 @@ async function main(): Promise<void> {
     // This branch must precede all normal identity/reward parsing and construction.
     // Saved production credentials remain dormant; pausing a worker alone is not isolation.
     const activeRuntime = practiceProfile ? createRuntimeServer({
-        sessionRegistry: practiceProfile === 'development-v10-practice' ? { practiceV10: true } : practiceProfile === 'development-v9d-practice'
+        sessionRegistry: practiceProfile === 'development-v10-practice' ? { practiceV10: true, v10PracticeOnly: true } : practiceProfile === 'development-v9d-practice'
             ? { practiceV9: 'v9d-practice' } : { stagingPracticeV8: 'staging-v8d-practice' }, identity: false
     }) : await createNormalRuntime();
     runtime = activeRuntime;

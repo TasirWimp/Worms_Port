@@ -204,4 +204,6 @@ test('volcanic no-wallet deployment requires production and paused rewards, pres
     assert.throws(() => practiceOnlyProfileFromEnvironment({ NODE_ENV: 'production', NIMBLE_RUNTIME_PROFILE: 'development-v10-practice', REWARD_PAUSED: 'false' }));
     assert.throws(() => practiceOnlyProfileFromEnvironment({ NODE_ENV: 'test', NIMBLE_RUNTIME_PROFILE: 'development-v10-practice', REWARD_PAUSED: 'true' }));
     assert.throws(() => new SessionRegistry({ practiceV10: true, practiceV9: 'v9d-practice' }));
+    assert.throws(() => new SessionRegistry({ v10PracticeOnly: true }));
+    assert.throws(() => createRuntimeServer({ sessionRegistry: { practiceV10: true, v10PracticeOnly: true }, rewards: {} as any }));
 });

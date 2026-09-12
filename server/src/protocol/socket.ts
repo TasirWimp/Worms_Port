@@ -827,14 +827,50 @@ export function setupProtocol(
             const parsed = ChallengeCreateV10Schema.safeParse(payload);
             const session = registry.getBound(socket.id);
             if (!parsed.success || !session) {
-                ack(candidateFailureV10(payload, session ? 'BAD_REQUEST' : 'UNAUTHORIZED', 'Valid volcanic Practice request required.'));
+                ack(candidateFailureV10(payload, session ? 'BAD_REQUEST' : 'UNAUTHORIZED', 'Valid volcanic challenge request required.'));
                 if (!parsed.success && !invalidLimiter.take()) socket.disconnect(true);
                 return;
             }
             const request = parsed.data;
             void registry.sequenceAsync(session, request.requestId, request.sequence, { event: protocolEventsV10.create, ...request }, async () => {
                 if (registry.getBound(socket.id) !== session) return failure(request.requestId, 'UNAUTHORIZED', 'Creation transport disconnected.');
-                return ackFor(request.requestId, registry.createChallengeAutomatedV10(session, 'practice', request.calling));
+                const admission = registry.admitChallengeAutomatedV10(session, request.mode,
+                    request.mode === 'reward' ? request.challengeId : undefined);
+                if (admission) return failure(request.requestId, admission.code, admission.message, admission.retryable);
+                let entitlement: Awaited<ReturnType<RewardService['start']>> | undefined;
+                try {
+                    if (request.mode === 'reward') {
+                        if (registry.hasActiveCombat(session)) return failure(request.requestId, 'BAD_REQUEST', 'Finish or leave the active Clash before starting a reward match.');
+                        if (!options.rewards) return failure(request.requestId, 'REWARD_UNAVAILABLE', 'Sponsor rewards are unavailable.');
+                        entitlement = await options.rewards.start(session.identity, request.challengeId, request.eligibilityToken);
+                        if (registry.getBound(socket.id) !== session) {
+                            await options.rewards.completeMatch({ protocolVersion: 1, serverTimeMs: Date.now(), sessionId: session.id,
+                                challengeId: entitlement.challengeId, outcome: 'left', revision: 0, nextSequence: session.nextSequence,
+                                finalTick: null, finalStateHash: null }).catch(() => undefined);
+                            return failure(request.requestId, 'UNAUTHORIZED', 'The creation transport disconnected.');
+                        }
+                        const rechecked = registry.admitChallengeAutomatedV10(session, request.mode, entitlement.challengeId);
+                        if (rechecked) {
+                            await options.rewards.completeMatch({ protocolVersion: 1, serverTimeMs: Date.now(), sessionId: session.id,
+                                challengeId: entitlement.challengeId, outcome: 'left', revision: 0, nextSequence: session.nextSequence,
+                                finalTick: null, finalStateHash: null }).catch(() => undefined);
+                            return failure(request.requestId, rechecked.code, rechecked.message, rechecked.retryable);
+                        }
+                    }
+                    const created = registry.createChallengeAutomatedV10(session, request.mode, request.calling,
+                        entitlement ? { challengeId: entitlement.challengeId, seed: entitlement.seed } : undefined);
+                    if ('code' in created && entitlement) {
+                        await options.rewards!.completeMatch({ protocolVersion: 1, serverTimeMs: Date.now(), sessionId: session.id,
+                            challengeId: entitlement.challengeId, outcome: 'left', revision: 0, nextSequence: session.nextSequence,
+                            finalTick: null, finalStateHash: null });
+                    }
+                    return ackFor(request.requestId, created);
+                } catch (error) {
+                    if (entitlement) await options.rewards!.completeMatch({ protocolVersion: 1, serverTimeMs: Date.now(), sessionId: session.id,
+                        challengeId: entitlement.challengeId, outcome: 'left', revision: 0, nextSequence: session.nextSequence,
+                        finalTick: null, finalStateHash: null }).catch(() => undefined);
+                    return rewardFailure(request.requestId, error);
+                }
             }).then(response => {
                 const data = response.ok ? response.data as any : undefined;
                 const wire = ChallengeCreateAckV10Schema.parse(response.ok && data
@@ -842,7 +878,7 @@ export function setupProtocol(
                     : { protocolVersion: 10, requestId: request.requestId, nextSequence: session.nextSequence, nextInputSequence: 0, ok: false, error: response.ok === false ? response.error : { code: 'INTERNAL_ERROR', message: 'Creation failed.', retryable: false } });
                 ack(wire);
                 if (wire.ok) registry.deliverCurrentV10(session);
-            }).catch(() => ack(candidateFailureV10(payload, 'INTERNAL_ERROR', 'Volcanic Practice creation failed.')));
+            }).catch(() => ack(candidateFailureV10(payload, 'INTERNAL_ERROR', 'Volcanic challenge creation failed.')));
         });
 
         socket.on(protocolEventsV9.create, (payload: unknown, ack?: (response: CandidateAckV9) => void) => {

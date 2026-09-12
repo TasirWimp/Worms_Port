@@ -25,6 +25,21 @@ Phaser/Socket.IO stack.
   complete. Next: migrate the existing one-attempt-per-wallet Daily Challenge
   from V7 to this same V10 R5 volcanic authority before adding PEI as its
   additional admission requirement. PEI remains unimplemented.
+- Active successor **WP-022A Daily V10 Migration**, beginning at clean
+  `3538d1d` on `codex/pei-daily-v10`: make the existing wallet-gated Daily
+  Challenge use exactly the standard Practice V10 R5 volcanic match. Preserve
+  one reward-eligible attempt per wallet per UTC day, verified-win settlement,
+  fixed sponsor funding, claims, budgets and payout controls. Rewarded matches
+  remain non-pausable; reconnect resumes the same authoritative challenge.
+  PEI receipt design and admission, helper-app work, mainnet execution and any
+  economy change remain outside this slice. Local implementation, primary
+  direct review and change-selected verification are complete: the clean
+  selector passed 72 browser cases with three expected Ubuntu-only visual
+  skips and no retries, alongside all selected unit, build, smoke, security and
+  bundle gates. **Phone Gate A is now pending** after owner deployment; no PEI
+  work begins until the owner accepts this physical-phone journey. See the
+  [bounded contract](wp-015d4f-volcanic-ruin-preview-bundle-contract.md#wp-022a-daily-v10-migration)
+  and [evidence](../evidence/wp-022a.json).
 - Active target: mobile-first single-player Nimiq Pay competition release.
 - Latest completed slice: **WP-015D4D V10G Terrain And Weapon Tactics**;
   see the [V10G preparation contract](wp-015d4a-v10-terrain-starts-contract.md#v10g-terrain-and-weapon-tactics-preparation).

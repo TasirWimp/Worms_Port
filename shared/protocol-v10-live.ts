@@ -12,7 +12,7 @@ const V10_LOOMKEEPER_PROFILE_ID = 'standard-v10-0';
 /** V10 reuses the frozen bounded replay storage budget without sharing a wire ABI. */
 
 export const V10_INPUT_BYTES = 1024;
-/** Dedicated live Practice transport names; V7 Daily retains its protocol. */
+/** Dedicated live V10 transport names shared by Practice and Daily. */
 export const protocolEventsV10 = Object.freeze({
     create: 'v10:challenge.create', input: 'v10:input.submit', cancel: 'v10:input.cancel', release: 'v10:input.release',
     pause: 'v10:challenge.pause', leave: 'v10:challenge.leave', snapshot: 'v10:challenge.snapshot', result: 'v10:challenge.result'
@@ -56,7 +56,14 @@ const wireOwnership = { requestId: z.string().min(16).max(64).regex(/^[A-Za-z0-9
     rulesetId: z.literal(V10_R5_RULESET_ID), automationId: z.literal(V10_AUTOMATION_ID) };
 const wireSequence = integer(0, 0xffffffff);
 
-export const ChallengeCreateV10Schema = z.object({ requestId: wireOwnership.requestId, sequence: wireSequence, mode: z.literal('practice'), calling, rulesetId: z.literal(V10_R5_RULESET_ID), automationId: z.literal(V10_AUTOMATION_ID) }).strict();
+const rewardEligibilityToken = z.string().length(43).regex(/^[A-Za-z0-9_-]+$/);
+export const ChallengeCreateV10Schema = z.discriminatedUnion('mode', [
+    z.object({ requestId: wireOwnership.requestId, sequence: wireSequence, mode: z.literal('practice'), calling,
+        rulesetId: z.literal(V10_R5_RULESET_ID), automationId: z.literal(V10_AUTOMATION_ID) }).strict(),
+    z.object({ requestId: wireOwnership.requestId, sequence: wireSequence, mode: z.literal('reward'), calling,
+        challengeId: wireOwnership.challengeId, rulesetId: z.literal(V10_R5_RULESET_ID),
+        automationId: z.literal(V10_AUTOMATION_ID), eligibilityToken: rewardEligibilityToken }).strict()
+]);
 export const InputRequestV10Schema = z.object({ ...wireOwnership, inputSequence: wireSequence, expectedTurn: integer(0, 16),
     expectedPhase: phase, inputEpoch: integer(0, 65535), intent: SimulationIntentV10Schema }).strict();
 export const InputCancelV10Schema = z.object({ ...wireOwnership, expectedTurn: integer(0, 16), inputEpoch: integer(0, 65535) }).strict();
@@ -66,7 +73,7 @@ export const ChallengeLeaveV10Schema = z.object({ ...wireOwnership, sequence: wi
 export const ChallengeSnapshotV10Schema = z.object({ protocolVersion: z.literal(10), serverTimeMs: integer(0, Number.MAX_SAFE_INTEGER),
     sessionId: id, challengeId: id, rulesetId: z.literal(V10_R5_RULESET_ID), automationId: z.literal(V10_AUTOMATION_ID),
     loomkeeperPolicyId: z.literal(V10_LOOMKEEPER_POLICY_ID), loomkeeperProfileId: z.literal(V10_LOOMKEEPER_PROFILE_ID),
-    mode: z.literal('practice'), calling, status: z.enum(['active', 'left', 'expired', 'completed']), paused: z.boolean(),
+    mode: z.enum(['practice', 'reward']), calling, status: z.enum(['active', 'left', 'expired', 'completed']), paused: z.boolean(),
     nextSequence: wireSequence, nextInputSequence: wireSequence, expiresAt: z.string().datetime(), simulation: SimulationStateV10Schema.refine(state => state.rulesetId === V10_R5_RULESET_ID), stateHash: hash }).strict();
 export type ChallengeSnapshotV10 = z.infer<typeof ChallengeSnapshotV10Schema>;
 // Diagnostic metadata only: simulation/replay identities and settlement outcomes stay unchanged.

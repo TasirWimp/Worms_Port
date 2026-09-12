@@ -12,7 +12,8 @@ The `Worms_Port` repository was bootstrapped from the MIT
 The normal `/` entry now starts server-backed V10 R5 Practice in the approved
 Volcanic Ruin stepped valley, with the existing terrain weapons and Loomkeeper.
 The five background images load only when combat starts. Practice remains
-wallet-free; Daily Challenge retains V7 reward authority and existing controls.
+wallet-free. Daily Challenge uses the same V10 R5 volcanic authority after its
+existing wallet and reward reservation checks.
 The explicit local preview URLs remain available for historical review.
 The [V8 preview controller](client/src/combat/action-turns-v8-fixture.ts) loads
 only when requested, keeping its local authority out of the initial bundle.
@@ -27,9 +28,11 @@ REWARD_PAUSED=true
 
 Redeploy and open `/` without preview query parameters. This profile constructs
 no identity, database or payout service, even when old credentials are saved.
-Ordinary startup without a development profile also selects volcanic Practice,
-alongside the separately configured existing Daily service. Old V8/V9 profiles
-retain their prior behavior for rollback. No reward activation is implied.
+Ordinary startup without a development profile selects volcanic V10 R5 for both
+Practice and the separately configured Daily service. The development profile
+remains Practice-only and constructs no reward service. Old V8/V9 protocols and
+replays retain their historical behavior. Runtime selection does not activate
+or fund rewards by itself.
 
 The owner accepted the local scenic restart fix on 2026-09-11. New server-backed
 phone acceptance should cover Start Practice, aim/fire and AI reply, pause,
@@ -279,8 +282,10 @@ starting Practice does not load or initialize the Mini App SDK and never
 prompts for a wallet. The Daily entry first discloses public availability,
 fixed Luna/NIM amount, one-started-attempt-per-wallet-and-UTC-day eligibility,
 sixteen-turn limit, and reservation window. It requests an account only after
-the player chooses that path. `/?identity-preview=1` remains the isolated
-identity diagnostics surface.
+the player chooses that path. The admitted match is the same server-authoritative
+V10 R5 Volcanic Ruin challenge used by Practice, with reward mode preventing
+pause and with settlement bound to its verified automated replay.
+`/?identity-preview=1` remains the isolated identity diagnostics surface.
 
 The authorization asks Nimiq Pay to sign a readable, short-lived server
 challenge and rotates the anonymous session token only after the server

@@ -168,6 +168,12 @@ export class PracticeClient {
     }
 
     public async startRewardCombat(calling: PlayerCalling): Promise<LiveCombatSnapshot> {
+        if (this.volcanicPractice) {
+            const reservation = await this.reserveReward(calling);
+            return (await this.getV10()).start('reward', calling, {
+                challengeId: reservation.challengeId, eligibilityToken: reservation.eligibilityToken
+            });
+        }
         if (v9CandidateRoute()) {
             const reservation = await this.reserveReward(calling);
             return (await this.getV9()).start('reward', calling, {

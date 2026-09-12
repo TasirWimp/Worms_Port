@@ -10,16 +10,32 @@ import { V10_R5_RULESET_ID } from '../../shared/simulation-v10';
 
 const request = { requestId: 'volcanic_request_001', sequence: 0, mode: 'practice', calling: 'wizard', rulesetId: V10_R5_RULESET_ID, automationId: V10_AUTOMATION_ID };
 
-test('volcanic live admission rejects rewards, old versions and forged extras', () => {
+test('volcanic live admission strictly separates standard Daily from the wallet-free Practice profile', async () => {
     assert.equal(ChallengeCreateV10Schema.safeParse(request).success, true);
-    for (const change of [{ mode: 'reward' }, { rulesetId: 'nimble-knots-artillery-v10-r4' }, { eligibilityToken: 'a'.repeat(43) }, { automationId: undefined }])
+    const rewardRequest = { ...request, mode: 'reward', challengeId: 'daily_reward_challenge_01', eligibilityToken: 'a'.repeat(43) };
+    assert.equal(ChallengeCreateV10Schema.safeParse(rewardRequest).success, true);
+    for (const change of [{ rulesetId: 'nimble-knots-artillery-v10-r4' }, { eligibilityToken: 'short' }, { automationId: undefined }])
+        assert.equal(ChallengeCreateV10Schema.safeParse({ ...rewardRequest, ...change }).success, false);
+    for (const change of [{ challengeId: 'daily_reward_challenge_01' }, { eligibilityToken: 'a'.repeat(43) }])
         assert.equal(ChallengeCreateV10Schema.safeParse({ ...request, ...change }).success, false);
     const registry = new SessionRegistry({ practiceV10: true, v10TestOnly: { nowUs: () => 0 } });
     try {
         registry.create('socket-one'); const session = registry.getBound('socket-one')!;
-        assert.equal(registry.admitChallengeAutomatedV10(session, 'reward')?.code, 'FEATURE_UNAVAILABLE');
-        assert.equal(registry.admitChallengeAutomatedV10(session, 'practice', 'forged-reservation')?.code, 'FEATURE_UNAVAILABLE');
+        assert.equal(registry.admitChallengeAutomatedV10(session, 'reward')?.code, 'BAD_REQUEST');
+        assert.equal(registry.admitChallengeAutomatedV10(session, 'practice', 'forged-reservation')?.code, 'BAD_REQUEST');
+        assert.equal(registry.admitChallengeAutomatedV10(session, 'reward', 'daily_reward_challenge_01'), undefined);
+        const created = registry.createChallengeAutomatedV10(session, 'reward', 'wizard', {
+            challengeId: 'daily_reward_challenge_01', seed: 4
+        });
+        assert.ok(!('code' in created));
+        assert.equal(created.mode, 'reward');
+        assert.equal((await registry.setChallengePausedV10(session, created.challengeId, true) as any).code, 'COMMAND_REJECTED');
     } finally { registry.dispose(); }
+    const practiceOnly = new SessionRegistry({ practiceV10: true, v10PracticeOnly: true, v10TestOnly: { nowUs: () => 0 } });
+    try {
+        practiceOnly.create('socket-two'); const session = practiceOnly.getBound('socket-two')!;
+        assert.equal(practiceOnly.admitChallengeAutomatedV10(session, 'reward', 'daily_reward_challenge_02')?.code, 'FEATURE_UNAVAILABLE');
+    } finally { practiceOnly.dispose(); }
 });
 
 test('volcanic live ownership, duplicate input, pause, cold resume and fresh match remain fenced', async () => {

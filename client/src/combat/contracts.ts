@@ -74,6 +74,7 @@ export type CombatSceneArgsV9 = {
 /** V10 presentation receives either local preview or server-owned Practice callbacks. */
 export type CombatSceneArgsV10 = {
     kind: 'v10'; live?: boolean; snapshot: SimulationStateV10; previewLabel: string;
+    rewarded?: boolean;
     /** Local review metadata derived from the replay-bound recipe and seed. */
     previewTerrainReflected?: boolean;
     calling?: PlayerCalling;

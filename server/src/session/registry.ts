@@ -106,6 +106,8 @@ export type Session = {
 export type SessionRegistryOptions = {
     /** Standard volcanic Practice, enabled by the deployed entry point. */
     practiceV10?: boolean;
+    /** Wallet-free deployment profile. Normal V10 runtimes leave this false. */
+    v10PracticeOnly?: boolean;
     v10TestOnly?: Pick<LiveSimulationCoordinatorV10Options, 'nowUs' | 'yieldBatch' | 'tickIntervalMs' | 'maxReplayRecords' | 'maxReplayBytes'>;
     onChallengeSnapshotV10?: (snapshot: ChallengeSnapshotV10, socketId?: string) => void;
     onChallengeCompletedV10?: (result: ChallengeResultV10, socketId?: string) => void;
@@ -199,12 +201,15 @@ export class SessionRegistry {
     private readonly v10InInput = new Set<string>();
 
     private readonly practiceV10: boolean;
+    private readonly v10PracticeOnly: boolean;
+    private readonly v10TestEnabled: boolean;
     private readonly onChallengeSnapshotV10?: SessionRegistryOptions['onChallengeSnapshotV10'];
     private readonly onChallengeCompletedV10?: SessionRegistryOptions['onChallengeCompletedV10'];
     private readonly onChallengeSettledV10?: SessionRegistryOptions['onChallengeSettledV10'];
 
     public constructor(options: SessionRegistryOptions = {}) {
         if (options.practiceV10 && (options.stagingPracticeV8 || options.practiceV9)) throw new Error('Conflicting Practice profiles.');
+        if (options.v10PracticeOnly && !options.practiceV10) throw new Error('V10 Practice-only admission requires V10 authority.');
         if (options.stagingPracticeV8 !== undefined || options.practiceV9 !== undefined) {
             const overrides: (keyof SessionRegistryOptions)[] = [
                 'simulationRulesetId', 'v8TestOnly', 'v9TestOnly', 'now', 'seedSource',
@@ -220,6 +225,8 @@ export class SessionRegistry {
             }
         }
         this.practiceV10 = options.practiceV10 ?? false;
+        this.v10PracticeOnly = options.v10PracticeOnly ?? false;
+        this.v10TestEnabled = options.v10TestOnly !== undefined;
         this.onChallengeSnapshotV10 = options.onChallengeSnapshotV10;
         this.onChallengeCompletedV10 = options.onChallengeCompletedV10;
         this.onChallengeSettledV10 = options.onChallengeSettledV10;
@@ -842,16 +849,17 @@ export class SessionRegistry {
         return this.snapshotV10(session, challenge);
     }
 
-    /**
-     * Checks V10 Practice admission without creating a match or changing cursors.
-     * Reward modes and reservation metadata are refused.
-     */
+    /** Checks V10 admission without creating a match or changing cursors. */
     public admitChallengeAutomatedV10(session: Session, mode: Challenge['mode'], rewardChallengeId?: string): ProtocolError | undefined {
         this.sweep();
         if (!this.practiceV10)
             return v8Error('FEATURE_UNAVAILABLE', 'The V10 candidate is unavailable.');
-        if (mode !== 'practice' || rewardChallengeId !== undefined)
+        if (this.v10PracticeOnly && (mode !== 'practice' || rewardChallengeId !== undefined))
             return v8Error('FEATURE_UNAVAILABLE', 'Deployed V10 Practice refuses reward creation and reservation metadata.');
+        if (mode === 'reward' && rewardChallengeId === undefined)
+            return v8Error('BAD_REQUEST', 'V10 Daily requires a reserved reward challenge identifier.');
+        if (mode === 'practice' && rewardChallengeId !== undefined)
+            return v8Error('BAD_REQUEST', 'V10 Practice cannot carry reward reservation metadata.');
         if (!this.boundSessionV10(session)) return v8Error('UNAUTHORIZED', 'The V10 session is not bound.');
         for (const current of session.challenges.values()) {
             if (current.status === 'active') return v8Error('COMMAND_REJECTED', 'Finish or leave the current match first.');
@@ -1645,6 +1653,11 @@ export class SessionRegistry {
         if (!this.v8Enabled || !this.hasChallengeV8(session,id)) throw new Error('V8 test fixture required.');
         this.versions.v8.advance(id,count);
         return this.snapshotV8(session,session.challenges.get(id)!);
+    }
+    public advanceChallengeTicksV10ForTest(session: Session, id: string, count: number): ChallengeSnapshotV10 {
+        if (!this.v10TestEnabled || !this.hasChallengeV10(session, id)) throw new Error('V10 test fixture required.');
+        this.versions.v10Live.advance(id, count);
+        return this.snapshotV10(session, session.challenges.get(id)!);
     }
     public applyIntentV8ForTest(session: Session,id: string,intent: SimulationIntentV8): ChallengeSnapshotV8 {
         if (!this.v8Enabled || !this.hasChallengeV8(session,id)) throw new Error('V8 test fixture required.');

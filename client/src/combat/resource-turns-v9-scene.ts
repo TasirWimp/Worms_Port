@@ -52,6 +52,7 @@ export class ResourceTurnsV9Scene {
             live: args.kind === 'v10' ? args.live === true : args.previewLabel.includes('server-authoritative'), automated: args.kind === 'v10'
         }, () => performance.now(), args.paused());
         this.controls.root.dataset.preview = args.previewLabel;
+        this.controls.root.dataset.mode = args.rewarded ? 'reward' : 'practice';
         this.controls.root.dataset.background = backgroundScene?.id ?? 'none';
         this.controls.root.dataset.backgroundReady = String(this.sceneBackground.active);
         if (args.kind === 'v10' && args.previewTerrainReflected !== undefined) {
@@ -149,7 +150,7 @@ export class ResourceTurnsV9Scene {
             return;
         }
         this.scene.scene.start('result', { result, calling: this.args.calling ?? 'wizard',
-            rewarded: this.args.kind === 'v9' && this.args.rewarded, previewLabel: this.args.kind === 'v10' && this.args.live ? undefined : this.args.previewLabel });
+            rewarded: this.args.rewarded === true, previewLabel: this.args.kind === 'v10' && this.args.live ? undefined : this.args.previewLabel });
     }
     private showUnavailable(message: string): void {
         if (this.destroyed) return;
@@ -196,7 +197,7 @@ export class ResourceTurnsV9Scene {
         if (this.destroyed) return; const now = performance.now();
         if (this.terminalPresentation && now >= this.terminalPresentation.until) {
             const result = this.terminalPresentation.result;
-            this.scene.scene.start('result', { result, calling: this.args.calling ?? 'wizard', rewarded: false });
+            this.scene.scene.start('result', { result, calling: this.args.calling ?? 'wizard', rewarded: this.args.rewarded === true });
             return;
         }
         // The live V9 projectile wins over the decorative cast queue. Track its

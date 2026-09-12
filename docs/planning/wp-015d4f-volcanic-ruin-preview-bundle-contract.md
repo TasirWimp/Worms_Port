@@ -183,3 +183,51 @@ fixtures remain explicit historical coverage. Ubuntu visual baseline approval,
 full daily/release gates and new physical-device live acceptance remain separate.
 
 Evidence: [WP-015D4H](../evidence/wp-015d4h.json).
+
+## WP-022A: Daily V10 Migration
+
+Owner request, 2026-09-12: the Daily Challenge must be exactly the mode later
+granted through PEI. Before PEI admission is introduced, migrate Daily from V7
+to the already accepted standard V10 R5 volcanic authority. This waypoint is
+about operational gameplay and reward infrastructure; it does not experiment
+with receipt contents.
+
+The existing Daily product contract remains authoritative: one reward-eligible
+attempt per wallet per UTC day, a fixed sponsor-funded reward only for a
+server-verified player win, durable reservation before combat, idempotent claim
+and payout processing, and no player stake. A rewarded V10 challenge uses the
+same R5 simulation, Loomkeeper policy, volcanic presentation and live lifecycle
+as Practice. Its reward mode prevents pause, binds the reservation challenge ID
+and eligibility token at creation, and carries the V10 automated replay into
+the existing reward verifier. Reload or reconnect resumes that same server
+challenge; terminal retry returns to standard V10 Practice.
+
+Historical V7, V8 and V9 protocols and replays retain their identities. The
+dedicated `development-v10-practice` profile stays wallet-free and rejects
+reward admission; the ordinary configured runtime admits V10 Daily only after
+the existing reward service reserves it. No PEI schema, helper mini app,
+cross-app handoff, mainnet transaction, payout activation, reward amount change,
+asset work or historical replay reinterpretation is authorized here.
+
+Required checks: strict V10 practice/reward wire admission, reservation and
+post-await ownership checks, reward-mode pause rejection, disconnect/resume,
+verified V10 win/loss replay settlement and idempotency, standard Practice
+regression, build/smoke/security/bundle selection, and the canonical phone
+browser Daily journey. PostgreSQL and full release coverage follow the existing
+selector and release policy.
+
+Phone Gate A after deployment:
+
+1. Authorize the wallet and confirm Daily still presents the existing fixed
+   reward and availability state.
+2. Start Daily and confirm it opens the same volcanic V10 R5 match as Practice.
+3. Aim and fire, then confirm the Loomkeeper completes its response.
+4. Reload during the active rewarded match, choose Resume Daily Challenge, and
+   confirm the same Daily challenge resumes. Rewarded Daily has no pause control
+   by policy.
+5. Complete or leave the match and confirm the result/claim state matches the
+   outcome. Choose Practice from the result and confirm a fresh volcanic V10 R5
+   match starts with its background intact.
+6. Confirm a second Daily attempt for the same wallet and UTC day is refused.
+
+Evidence: [WP-022A](../evidence/wp-022a.json).
