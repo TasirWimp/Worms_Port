@@ -11,6 +11,11 @@ Phaser/Socket.IO stack.
 
 - Verification infrastructure: the isolated change-selection/build-reuse port
   from `da1e7a9` follows the owner-requested 22:00 Berlin daily/full cadence.
+  Failed feature checks now preserve unchanged-input passes using the selector's
+  content fingerprint and escalate from exact-case diagnosis to the affected
+  `--phase`; full-selector repetition is reserved for changed inputs/plans or
+  cross-phase contamination. Daily/release attempts remain zero-retry and a
+  failed attempt stays failed.
   See [Verification Funnels](../process/development_workflow.md#verification-funnels).
   This changes verification policy only and does not advance the product package.
 - Completed successor **WP-015D4H Standard Volcanic Practice**, 2026-09-12:

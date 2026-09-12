@@ -93,6 +93,17 @@ If the user asks only for planning, review, or brainstorming, do not edit code.
   slice, pass `-- --base <starting-commit>` to both commands. This selector is
   the mandatory edit-loop baseline and CI plan, not an upper bound on the
   primary assistant's risk-based test choice.
+- Required gates use zero automatic retries. After a failure, preserve the
+  first failure and all passing results. If the selector's emitted input
+  fingerprint and build proof remain unchanged, reproduce the smallest failing
+  case and rerun only the affected phase with `--phase`; do not repeat the full
+  selector unless inputs or its plan changed, or evidence points to
+  cross-phase contamination. An isolated pass is diagnostic evidence, not
+  proof by itself of an infrastructure failure.
+- A feature gate may combine passing commands from unchanged-input runs when a
+  failure is classified and recorded. A failed daily/release run remains
+  failed; diagnostics do not turn it green, and another full daily/release run
+  occurs only at its normal cadence or an explicit release rerun.
 - Runtime/build changes require types, current build outputs and built smoke.
   Documentation, Codex settings and test/verification-tool-only changes do not
   require a game build. Unknown paths receive conservative product coverage.

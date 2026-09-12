@@ -1,4 +1,6 @@
 const fs = require('node:fs');
+const crypto = require('node:crypto');
+const os = require('node:os');
 const path = require('node:path');
 const { execFileSync, spawnSync } = require('node:child_process');
 const { acquireVerificationLease } = require('./verification-lease');
@@ -6,6 +8,8 @@ const { acquireVerificationLease } = require('./verification-lease');
 const repoRoot = path.resolve(__dirname, '..');
 const productSuites = ['protocol', 'simulation', 'loomkeeper', 'relics', 'combat', 'practice', 'identity', 'reward'];
 const browserSuites = ['smoke', 'combat', 'practice', 'identity', 'reward', 'resilience'];
+const verificationEnvironmentPrefixes = ['NIMBLE_', 'PLAYWRIGHT_', 'PRACTICE_', 'REWARD_', 'WP014_'];
+const verificationEnvironmentNames = new Set(['CI', 'DATABASE_URL', 'NODE_ENV', 'TZ']);
 
 // Keep cross-module dependencies conservative. Unclassified files never mean no tests.
 function planChanges(paths) {
@@ -131,6 +135,10 @@ function git(root, args) {
   return execFileSync('git', args, { cwd: root, encoding: 'utf8', maxBuffer: 16 * 1024 * 1024 });
 }
 
+function gitBuffer(root, args) {
+  return execFileSync('git', args, { cwd: root, encoding: 'buffer', maxBuffer: 16 * 1024 * 1024 });
+}
+
 function changedFiles(root = repoRoot, base) {
   const paths = [];
   const append = (output) => paths.push(...output.split('\0').filter(Boolean));
@@ -159,6 +167,86 @@ function parseArgs(args) {
   return options;
 }
 
+function verificationIdentity(root = repoRoot, { base, plan, env = process.env } = {}) {
+  const selectedPlan = plan || planChanges(changedFiles(root, base));
+  const head = git(root, ['rev-parse', 'HEAD']).trim();
+  const baseAncestor = base ? git(root, ['merge-base', base, 'HEAD']).trim() : null;
+  const packageLockPath = path.join(root, 'package-lock.json');
+  const packageLockSha256 = fs.existsSync(packageLockPath)
+    ? crypto.createHash('sha256').update(fs.readFileSync(packageLockPath)).digest('hex')
+    : null;
+  const hash = crypto.createHash('sha256');
+  const add = (label, value) => {
+    const bytes = Buffer.isBuffer(value) ? value : Buffer.from(String(value));
+    hash.update(`${label}\0${bytes.length}\0`);
+    hash.update(bytes);
+    hash.update('\0');
+  };
+
+  add('head', head);
+  add('base', base || '');
+  add('base-ancestor', baseAncestor || '');
+  add('node', process.version);
+  add('platform', `${process.platform}-${process.arch}-${os.release()}`);
+  add('package-lock', packageLockSha256 || 'missing');
+  add('plan', JSON.stringify(selectedPlan));
+  add('status', gitBuffer(root, ['status', '--porcelain=v2', '-z', '--untracked-files=all']));
+
+  const environment = Object.keys(env)
+    .filter((name) => verificationEnvironmentNames.has(name) || verificationEnvironmentPrefixes.some((prefix) => name.startsWith(prefix)))
+    .sort()
+    .map((name) => [name, String(env[name])]);
+  add('environment', JSON.stringify(environment));
+
+  for (const file of selectedPlan.files) {
+    const absolute = path.resolve(root, file);
+    const relative = path.relative(root, absolute);
+    if (relative === '..' || relative.startsWith(`..${path.sep}`) || path.isAbsolute(relative)) {
+      throw new Error(`Changed path escapes repository: ${file}`);
+    }
+    add('path', file);
+    add('index', gitBuffer(root, ['ls-files', '--stage', '-z', '--', file]));
+    if (!fs.existsSync(absolute)) {
+      add('working-tree', 'missing');
+      continue;
+    }
+    const stat = fs.lstatSync(absolute);
+    if (stat.isSymbolicLink()) add('working-tree-symlink', fs.readlinkSync(absolute));
+    else if (stat.isFile()) add('working-tree-file', fs.readFileSync(absolute));
+    else add('working-tree-other', `${stat.mode}:${stat.size}`);
+  }
+
+  return {
+    sha256: hash.digest('hex'),
+    head,
+    base: base || null,
+    baseAncestor,
+    node: process.version,
+    platform: `${process.platform}-${process.arch}-${os.release()}`,
+    packageLockSha256
+  };
+}
+
+function recoveryGuidance(phase, options, identity) {
+  const base = options.base ? ` --base '${String(options.base).replaceAll("'", "''")}'` : '';
+  return [
+    `Verification input fingerprint: ${identity.sha256}`,
+    'Preserve the first failure and every passing command while this fingerprint and the build proof remain unchanged.',
+    'Reproduce the smallest failing case with zero automatic retries. A passing isolated case is diagnostic evidence, not proof by itself of an infrastructure failure.',
+    `If the cause remains uncertain, rerun only the affected phase: npm.cmd run verify:changes -- --phase ${phase}${base}`,
+    'Rerun the complete selector only after tested inputs or the plan change, or when evidence points to contamination across phases.'
+  ].join('\n');
+}
+
+function runPhase(phase, options, identity, action) {
+  try {
+    action();
+  } catch (error) {
+    const message = error instanceof Error ? error.message : String(error);
+    throw new Error(`${message}\n${recoveryGuidance(phase, options, identity)}`);
+  }
+}
+
 function run(command, args) {
   console.log(`\n> ${command} ${args.join(' ')}`);
   // Only fixed, repository-owned npm task names use the Windows command shim.
@@ -185,7 +273,8 @@ function main() {
     if (process.env[`npm_config_${flag}`]) throw new Error(`npm consumed --${flag}; use npm.cmd or invoke this Node script directly.`);
   }
   const plan = planChanges(changedFiles(repoRoot, options.base));
-  console.log(JSON.stringify(plan, null, 2));
+  const identity = verificationIdentity(repoRoot, { base: options.base, plan });
+  console.log(JSON.stringify({ ...plan, verification: identity }, null, 2));
   if (options['github-output']) {
     fs.appendFileSync(options['github-output'], `checks=${plan.tasks.length > 0}\nbrowser=${plan.browser.length > 0}\nvisual=${plan.browser.includes('visual')}\npostgres=${plan.postgres}\nperformance=${plan.performance}\n`);
   }
@@ -201,26 +290,41 @@ function main() {
     }
     const phase = (name) => options.phase === 'all' || options.phase === name;
     if (phase('checks')) {
-      for (const task of plan.tasks) run('npm', task === 'audit' ? ['audit'] : ['run', task]);
+      runPhase('checks', options, identity, () => {
+        for (const task of plan.tasks) run('npm', task === 'audit' ? ['audit'] : ['run', task]);
+      });
     }
     if (phase('browser') && plan.browser.length) {
-      for (const selection of browserRuns(plan.browser)) {
-        const args = ['scripts/run-playwright.js', '--reuse-build', ...selection.projects, ...selection.specs.map((spec) => `tests/browser/${spec}.spec.ts`)];
-        if (selection.specs.includes('visual') && process.platform !== 'linux') {
-          console.log('SKIPPED: Linux visual comparisons require Ubuntu CI; visual logic still runs.');
-          args.push('--ignore-snapshots');
+      runPhase('browser', options, identity, () => {
+        for (const selection of browserRuns(plan.browser)) {
+          const args = ['scripts/run-playwright.js', '--reuse-build', ...selection.projects, ...selection.specs.map((spec) => `tests/browser/${spec}.spec.ts`)];
+          if (selection.specs.includes('visual') && process.platform !== 'linux') {
+            console.log('SKIPPED: Linux visual comparisons require Ubuntu CI; visual logic still runs.');
+            args.push('--ignore-snapshots');
+          }
+          run(process.execPath, args);
         }
-        run(process.execPath, args);
-      }
+      });
     }
     if (phase('performance') && plan.performance) {
-      run('npm', ['run', 'test:browser:performance']);
-      run('npm', ['run', 'check:bundle-budget']);
+      runPhase('performance', options, identity, () => {
+        run('npm', ['run', 'test:browser:performance']);
+        run('npm', ['run', 'check:bundle-budget']);
+      });
     }
     if (phase('postgres') && plan.postgres) {
-      if (process.env.WP014_TEST_DATABASE_URL?.trim()) run('npm', ['run', 'verify:postgres']);
-      else if (process.env.CI) throw new Error('Selected PostgreSQL gate requires WP014_TEST_DATABASE_URL in CI.');
-      else console.log('SKIPPED: PostgreSQL checks require WP014_TEST_DATABASE_URL; CI must run the database gate.');
+      runPhase('postgres', options, identity, () => {
+        if (process.env.WP014_TEST_DATABASE_URL?.trim()) run('npm', ['run', 'verify:postgres']);
+        else if (process.env.CI) throw new Error('Selected PostgreSQL gate requires WP014_TEST_DATABASE_URL in CI.');
+        else console.log('SKIPPED: PostgreSQL checks require WP014_TEST_DATABASE_URL; CI must run the database gate.');
+      });
+    }
+    const completedIdentity = verificationIdentity(repoRoot, { base: options.base, plan });
+    if (completedIdentity.sha256 !== identity.sha256) {
+      throw new Error(
+        `Verification inputs changed during the run; passing results are stale.\n` +
+        `Initial fingerprint: ${identity.sha256}\nCurrent fingerprint: ${completedIdentity.sha256}`
+      );
     }
     if (!plan.files.length) console.log('No working-tree changes. Use --base <starting-commit> to include committed work.');
     console.log('Change-selected verification passed. Daily/release full coverage remains npm run verify:daily.');
@@ -232,4 +336,12 @@ function main() {
 if (require.main === module) {
   try { main(); } catch (error) { console.error(error.message); process.exitCode = 1; }
 }
-module.exports = { planChanges, changedFiles, parseArgs, browserRuns };
+module.exports = {
+  planChanges,
+  changedFiles,
+  parseArgs,
+  browserRuns,
+  verificationIdentity,
+  recoveryGuidance,
+  runPhase
+};

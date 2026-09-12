@@ -6,7 +6,15 @@ const os = require('node:os');
 const path = require('node:path');
 const { execFileSync } = require('node:child_process');
 const { scripts } = require('../../package.json');
-const { planChanges, changedFiles, parseArgs, browserRuns } = require('../../scripts/verify-changes');
+const {
+  planChanges,
+  changedFiles,
+  parseArgs,
+  browserRuns,
+  verificationIdentity,
+  recoveryGuidance,
+  runPhase
+} = require('../../scripts/verify-changes');
 const { acquireVerificationLease } = require('../../scripts/verification-lease');
 const { runFullVerification } = require('../../scripts/run-full-verification');
 
@@ -178,6 +186,54 @@ test('dependency edits retain audit, PostgreSQL and performance checks', () => {
 test('invalid selector arguments cannot quietly become an empty selection', () => {
   for (const args of [['--base'], ['--phase', 'typo'], ['--unknown'], ['--base', '--dry-run']]) assert.throws(() => parseArgs(args));
   assert.equal(parseArgs(['--base', 'HEAD~1', '--dry-run']).base, 'HEAD~1');
+});
+
+test('verification identity binds HEAD, index, working tree, untracked files and relevant environment', (t) => {
+  const root = fs.mkdtempSync(path.join(os.tmpdir(), 'worms-verification-identity-'));
+  t.after(() => fs.rmSync(root, { recursive: true, force: true }));
+  const git = (...args) => execFileSync('git', args, { cwd: root, encoding: 'utf8', stdio: ['ignore', 'pipe', 'pipe'] }).trim();
+  git('init');
+  git('config', 'user.email', 'verification@example.invalid');
+  git('config', 'user.name', 'Verification Test');
+  fs.writeFileSync(path.join(root, 'package-lock.json'), '{"lockfileVersion":3}\n');
+  fs.writeFileSync(path.join(root, 'tracked.ts'), 'original\n');
+  git('add', '.');
+  git('-c', 'core.hooksPath=/dev/null', 'commit', '-m', 'fixture');
+
+  const identify = (env = { NODE_ENV: 'test' }) => verificationIdentity(root, {
+    plan: planChanges(changedFiles(root)),
+    env
+  }).sha256;
+  const clean = identify();
+  assert.equal(clean, identify());
+
+  fs.writeFileSync(path.join(root, 'tracked.ts'), 'working tree\n');
+  const workingTree = identify();
+  assert.notEqual(workingTree, clean);
+  git('add', 'tracked.ts');
+  const staged = identify();
+  assert.notEqual(staged, workingTree);
+  fs.writeFileSync(path.join(root, 'tracked.ts'), 'original\n');
+  const stagedWithReversal = identify();
+  assert.notEqual(stagedWithReversal, staged);
+
+  fs.writeFileSync(path.join(root, 'untracked.ts'), 'one\n');
+  const untrackedOne = identify();
+  fs.writeFileSync(path.join(root, 'untracked.ts'), 'two\n');
+  assert.notEqual(identify(), untrackedOne);
+  assert.notEqual(identify({ NODE_ENV: 'test', PLAYWRIGHT_BROWSERS_PATH: 'alternate' }), identify());
+});
+
+test('phase failure guidance preserves passing evidence and names the narrow rerun', () => {
+  const identity = { sha256: 'abc123' };
+  const guidance = recoveryGuidance('browser', { base: 'HEAD~1' }, identity);
+  assert.match(guidance, /fingerprint: abc123/);
+  assert.match(guidance, /--phase browser --base 'HEAD~1'/);
+  assert.match(guidance, /passing command/);
+  assert.throws(
+    () => runPhase('browser', {}, identity, () => { throw new Error('browser failed'); }),
+    /browser failed[\s\S]*--phase browser/
+  );
 });
 
 test('Git selection includes staged, unstaged, untracked, renamed, deleted and committed paths', (t) => {

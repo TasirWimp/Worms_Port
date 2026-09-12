@@ -57,9 +57,11 @@ reviewer and documentation agents remain retired. See Testing delegation below. 
    risk or a failure warrants it; use direct execution only if tools are unavailable.
 6. Review product continuity directly, including the actual player journey and
    authority/lifecycle boundaries. Do not label contributor review independent.
-7. On failure, reproduce the smallest case, correct it, then rerun the affected
-   checks. Stop after three corrections of the same signature and report the
-   unresolved cause without weakening thresholds.
+7. On failure, preserve the first failure and passing results, reproduce the
+   smallest case, correct it when necessary, then rerun only the affected
+   checks under the failed-check policy below. Stop after three corrections of
+   the same signature and report the unresolved cause without weakening
+   thresholds.
 8. Update evidence and housekeeping, commit the bounded change, and advance the
    pointer only after the applicable gates pass. Daily/release and real-device
    gates remain separate; no agent approval is required.
@@ -315,6 +317,46 @@ Selection includes staged, unstaged and untracked files, both sides of renames
 and deleted paths. For committed work pass `-- --base <starting-commit>`; record
 that base with the results. Invalid or unavailable bases fail, while a clean
 tree explicitly selects nothing. CI uses the PR merge base or previous push SHA.
+The dry run and live selector emit a SHA-256 verification-input fingerprint
+bound to HEAD, the merge-base selection, selector plan, index state, staged,
+unstaged and untracked file bytes, package lock, Node/platform identity and
+test-relevant environment values. Values are incorporated into the digest and
+are not printed. This fingerprint identifies reusable results; it does not
+replace the build proof required by runtime and browser checks.
+
+### Failed-check reruns
+
+Required gates retain zero automatic retries. Preserve the original failure,
+artifacts and every passing command before running a diagnostic. Apply this
+order:
+
+1. Reproduce the smallest failing test or command against the same input
+   fingerprint and build proof. A passing isolated case changes the diagnosis;
+   it does not prove an infrastructure cause by itself.
+2. When the signature identifies an operating-system, browser-launch, port,
+   process or other external-resource failure, bounded cleanup followed by one
+   zero-retry isolated pass may close an ordinary feature gate as combined
+   evidence. Record the first failure, cleanup, diagnostic command and
+   classification. Repetition of the same signature twice within one work
+   package or seven days opens a tooling defect instead of another recovered
+   pass.
+3. When the cause remains uncertain after an isolated pass, rerun the smallest
+   enclosing phase under the unchanged fingerprint. Use
+   `npm.cmd run verify:changes -- --phase checks`, `browser`, `postgres` or
+   `performance` as applicable. A state-leak or order-sensitive suspicion
+   requires the complete affected phase in its original order.
+4. When product code, tests, configuration, dependencies, selected paths or the
+   selector plan change, compute a fresh dry run and invalidate every dependent
+   result. Rerun the complete selector only when this invalidation reaches all
+   phases or when evidence points to contamination across phase boundaries.
+
+An ordinary feature result may combine passing commands from multiple runs only
+when their fingerprint, relevant build proof and environment match. Its evidence
+must say `recovered infrastructure failure` rather than `clean run`. The initial
+daily/release result is stricter: any required-check failure leaves that run
+failed. Focused diagnostics may determine the cause but cannot convert it to a
+pass; the next full daily/release attempt runs only at the normal cadence or an
+explicit release rerun after correction.
 
 | Changes | Required edit-loop coverage |
 | --- | --- |
