@@ -34,6 +34,17 @@ remains Practice-only and constructs no reward service. Old V8/V9 protocols and
 replays retain their historical behavior. Runtime selection does not activate
 or fund rewards by itself.
 
+The `development-v10-practice` block is only for isolated Practice acceptance.
+It cannot serve Daily Challenge. Before Daily Phone Gate A, change the existing
+Render service in one operation: delete `NIMBLE_RUNTIME_PROFILE`, set
+`REWARD_MODE=record-only`, and set `REWARD_PAUSED=false`. Keep
+`NODE_ENV=production`, the existing `DATABASE_URL`, and the existing identity
+configuration; `NIMBLE_DEPLOYMENT` may be absent or exactly `production`. Save
+these settings together and redeploy. Unpausing while the development profile
+is still selected deliberately fails startup. Record-only mode exercises wallet
+authorization, durable eligibility, V10 replay settlement and claim state
+without creating a Nimiq transaction. Mainnet remains a later explicit gate.
+
 The owner accepted the local scenic restart fix on 2026-09-11. New server-backed
 phone acceptance should cover Start Practice, aim/fire and AI reply, pause,
 reconnect/reload, and repeated retries with the background still present.

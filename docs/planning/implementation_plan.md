@@ -41,8 +41,12 @@ Phaser/Socket.IO stack.
   direct review and change-selected verification are complete: the clean
   selector passed 72 browser cases with three expected Ubuntu-only visual
   skips and no retries, alongside all selected unit, build, smoke, security and
-  bundle gates. **Phone Gate A is now pending** after owner deployment; no PEI
-  work begins until the owner accepts this physical-phone journey. See the
+  bundle gates. The first deployed Phone Gate A attempt correctly exposed that
+  Render still selected the isolated `development-v10-practice` profile, which
+  intentionally has no wallet or reward service; Daily therefore reported
+  unavailable before authorization. **Phone Gate A remains pending** after the
+  documented switch to the normal runtime with record-only rewards unpaused.
+  No PEI work begins until the owner accepts this physical-phone journey. See the
   [bounded contract](wp-015d4f-volcanic-ruin-preview-bundle-contract.md#wp-022a-daily-v10-migration)
   and [evidence](../evidence/wp-022a.json).
 - Active target: mobile-first single-player Nimiq Pay competition release.

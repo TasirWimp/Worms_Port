@@ -218,6 +218,13 @@ selector and release policy.
 
 Phone Gate A after deployment:
 
+Deployment precondition: the Practice-only acceptance profile must be removed.
+On the existing Render service, delete `NIMBLE_RUNTIME_PROFILE`, use
+`REWARD_MODE=record-only`, set `REWARD_PAUSED=false`, retain the existing
+database and identity configuration, and redeploy. `NIMBLE_DEPLOYMENT` may be
+absent or exactly `production`. These settings exercise the complete Daily
+authority without a chain transaction; mainnet remains outside WP-022A.
+
 1. Authorize the wallet and confirm Daily still presents the existing fixed
    reward and availability state.
 2. Start Daily and confirm it opens the same volcanic V10 R5 match as Practice.
