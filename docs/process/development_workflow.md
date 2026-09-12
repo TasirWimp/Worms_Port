@@ -372,6 +372,15 @@ failed. Focused diagnostics may determine the cause but cannot convert it to a
 pass; the next full daily/release attempt runs only at the normal cadence or an
 explicit release rerun after correction.
 
+CI time limits must cover the longest legitimate serial zero-retry selection so
+the platform does not manufacture a redundant rerun. The selected fast job has
+a 60-minute ceiling and the canonical phone-browser job has 45 minutes; focused
+diagnostics remain smaller and the daily matrix keeps its own shard boundaries.
+On a synchronized pull request, change selection starts at the preceding PR head;
+the initial PR event still starts at the base branch. Passing results from the
+preceding head remain evidence, while the new run covers only files invalidated
+by the correction. A manual release dispatch continues to run the full matrix.
+
 | Changes | Required edit-loop coverage |
 | --- | --- |
 | Ordinary docs and Codex settings | Diff checks; no game build |

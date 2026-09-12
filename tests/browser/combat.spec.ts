@@ -398,10 +398,13 @@ test('V9 resource engineering preview is local-only and keeps V7 Practice unsele
   await page.locator('.pause-button').tap();
   await expect(page.locator('.combat-v9')).toHaveAttribute('data-paused', 'true');
   await expect(page.getByRole('button', { name: 'Resume' })).toBeEnabled();
-  await page.getByRole('button', { name: 'Start fresh preview' }).tap();
+  const restarted = await restartLocalPreviewPaused(page, '.combat-v9');
+  expect(restarted.previousConnected).toBe(false);
+  expect(restarted.initialInputEpoch).toBe('0');
+  expect(restarted.simulationTick).toBeLessThan(16);
+  await expect(page.locator('.combat-v9')).toHaveAttribute('data-paused', 'true');
+  await page.getByRole('button', { name: 'Resume', exact: true }).tap();
   await expect(page.locator('.combat-v9')).toHaveAttribute('data-paused', 'false');
-  await expect(page.locator('.combat-v9')).toHaveAttribute('data-input-epoch', '0');
-  expect(Number(await page.locator('.combat-v9').getAttribute('data-simulation-tick'))).toBeLessThan(16);
   await expect(page.locator('.v9-thread')).toHaveText('Thread 3/9');
   await dragPad(page, '.combat-v9 .aim-zone', 934, 0.35, -0.35);
   await expect(page.locator('.combat-v9')).toHaveAttribute('data-aim-locked', 'true');
@@ -2023,7 +2026,13 @@ async function presentationV8Fixture(page: Page, options: { authoritative?: bool
       snapshot = ChallengeSnapshotV8RuntimeSchema.parse(
         runtime.sessions.advanceChallengeTicksV8ForTest(session, snapshot.challengeId, 3));
       runtime.io.emit(protocolEventsV8.snapshot, snapshot);
-    } else update(() => {});
+    } else update(value => {
+      // This fixture drives presentation receipts without advancing combat
+      // authority. Keep its exact phase age stable while the synthetic clock
+      // emits snapshots, even when a slow runner spends longer on UI probes.
+      value.simulation.phaseStartedTick += 3;
+      value.simulation.phaseDeadlineTick += 3;
+    });
   }, 60);
   return {
     current: () => structuredClone(snapshot), update, stop: () => clearInterval(timer),
