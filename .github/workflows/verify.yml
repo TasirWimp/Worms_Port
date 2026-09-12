@@ -40,7 +40,7 @@ jobs:
           else
             echo 'full=false' >> "$GITHUB_OUTPUT"
             node scripts/verify-changes.js --base "$CHANGE_BASE" --dry-run --github-output "$GITHUB_OUTPUT"
-            git diff --check "${CHANGE_BASE}...HEAD"
+            node scripts/check-range-whitespace.js "$CHANGE_BASE"
           fi
       - id: matrix
         env:

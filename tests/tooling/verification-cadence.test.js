@@ -17,6 +17,10 @@ const {
 } = require('../../scripts/verify-changes');
 const { acquireVerificationLease } = require('../../scripts/verification-lease');
 const { runFullVerification } = require('../../scripts/run-full-verification');
+const {
+  acceptedHistoricalDiagnostics,
+  inspectWhitespaceDiagnostics
+} = require('../../scripts/check-range-whitespace');
 
 test('docs and Codex settings do not select a game build or test suite', () => {
   const plan = planChanges(['README.md', '.codex/config.toml', 'AGENTS.md', 'docs/planning/implementation_plan.md']);
@@ -93,12 +97,38 @@ test('V10 assessment changes select the finite assessment instead of the ordinar
 });
 
 test('verification tooling changes select only tooling coverage', () => {
-  for (const file of ['scripts/verify-changes.js', 'scripts/verification-lease.js', 'scripts/run-full-verification.js']) {
+  for (const file of [
+    '.github/workflows/verify.yml',
+    'scripts/check-range-whitespace.js',
+    'scripts/verify-changes.js',
+    'scripts/verification-lease.js',
+    'scripts/run-full-verification.js'
+  ]) {
     const plan = planChanges([file]);
     assert.deepEqual(plan.tasks, ['test:tooling']);
     assert.deepEqual(plan.browser, []);
     assert.deepEqual(plan.fallback, []);
   }
+});
+
+test('range whitespace accepts only the exact blob-bound historical diagnostics', () => {
+  const [file, rule] = Object.entries(acceptedHistoricalDiagnostics)[0];
+  const diagnostic = `${file}:${rule.line}: new blank line at EOF.`;
+  const accepted = inspectWhitespaceDiagnostics(`${diagnostic}\n`, () => rule.blob);
+  assert.deepEqual(accepted.acceptedLines, [diagnostic]);
+  assert.deepEqual(accepted.rejectedLines, []);
+
+  const wrongBlob = inspectWhitespaceDiagnostics(`${diagnostic}\n`, () => '0'.repeat(40));
+  assert.deepEqual(wrongBlob.acceptedLines, []);
+  assert.match(wrongBlob.rejectedLines[0], /does not match/);
+
+  const unknown = inspectWhitespaceDiagnostics('unknown.txt:1: new blank line at EOF.\n', () => rule.blob);
+  assert.deepEqual(unknown.acceptedLines, []);
+  assert.deepEqual(unknown.rejectedLines, ['unknown.txt:1: new blank line at EOF.']);
+
+  const otherWhitespace = inspectWhitespaceDiagnostics(`${file}:${rule.line}: trailing whitespace.\n+bad \n`, () => rule.blob);
+  assert.deepEqual(otherWhitespace.acceptedLines, []);
+  assert.deepEqual(otherWhitespace.rejectedLines, [`${file}:${rule.line}: trailing whitespace.`, '+bad ']);
 });
 
 test('one checkout permits only one active verification lease', (t) => {

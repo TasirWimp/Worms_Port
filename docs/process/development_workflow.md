@@ -324,6 +324,13 @@ test-relevant environment values. Values are incorporated into the digest and
 are not printed. This fingerprint identifies reusable results; it does not
 replace the build proof required by runtime and browser checks.
 
+PR range whitespace validation retains strict `git diff --check` behavior. Its
+only exceptions are six named historical sealed files whose sole accepted
+diagnostic is a terminal blank line at EOF at the recorded line. Each exception
+is bound to the exact Git blob in `scripts/check-range-whitespace.js`; any byte
+change, line change or different whitespace diagnostic fails the gate. This
+keeps the CRPM and clean-room hashes intact without suppressing new defects.
+
 ### Failed-check reruns
 
 Required gates retain zero automatic retries. Preserve the original failure,

@@ -17,6 +17,8 @@ Phaser/Socket.IO stack.
   cross-phase contamination. Daily/release attempts remain zero-retry and a
   failed attempt stays failed.
   See [Verification Funnels](../process/development_workflow.md#verification-funnels).
+  PR range whitespace validation preserves six exact blob-bound sealed-file
+  exceptions while rejecting all new or changed whitespace defects.
   This changes verification policy only and does not advance the product package.
 - Completed successor **WP-015D4H Standard Volcanic Practice**, 2026-09-12:
   promote the accepted R5 volcanic arena into normal server-backed Practice at
