@@ -11,7 +11,7 @@
   ],
   "scope": [
     "Waypoint 1: promote a V10 R6 current runtime with the unchanged R5 volcanic terrain and weapon-terrain behavior, a smaller coherent Wizard presentation and direct-hit envelope, compact on-screen and off-screen gradient health bars, a 60-second continuous action, compact translucent left/right/up movement buttons with neutral direct jump, directional slide-to-jump, bounded aftertouch, a short ordinary arc and pre-landing buffer, a five-Thread player opening that exposes every release Relic, one offensive shot, the existing retreat and peer-safe V10 authority timing under concurrent Loomkeeper planning.",
-    "Waypoint 2 after physical-phone acceptance: add deterministic explosion knockback and authoritative impact settling without changing terrain carving or damage.",
+    "Waypoint 2 after accepted Phone Gate A: add a separate R6-only, non-steerable blast-motion state for every exposed living actor, including the shooter, with deterministic impulse falloff, active and non-active terrain collision, bounded settling and movement-input retirement/restoration without changing exposure, terrain carving or damage.",
     "Waypoint 3 after physical-phone acceptance: integrate the accepted R6 behavior through standard Practice and PEI-gated Daily lifecycle and reward paths."
   ],
   "non_goals": [
@@ -77,6 +77,11 @@
       "command": "Fifth Phone Gate A control-visual and neutral-jump refinement from committed base 5c24667",
       "status": "pass",
       "details": "The selector dry run recorded fingerprint 41163a027da865e84dd8e531880e2d06b7aad5397a12e9065dc346e0d3f00e78. The worms_port_test_runner used zero automatic retries. The first type phase retained a real adapter-narrowing failure; the primary corrected that boundary, then types passed before the remaining plan ran. Combat passed 45/45, simulation 54/54, protocol 17/17, Practice 1/1, Loomkeeper 39/39 and reward 28/28. These checks prove that a direct R6 Jump tap records direction zero and preserves x/facing, direction-to-Jump sliding retains takeoff momentum and aftertouch, neutral input replays deterministically, and pre-R6 identities reject it. Fresh build proof 8b0d2275a4c4 / dcc3e9f102d4 passed the standard R6 built smoke, identity-bundle and reward-security checks. Bundle limits passed at 1426261/1500000 raw JavaScript bytes and 416403/430000 initial JavaScript-plus-CSS gzip bytes. The exact live control journey passed at 360x640 and 844x390. The first five-layout visual run passed landscape and exposed a test-only horizontal-axis assumption for the sideways portrait policy; after making the seam assertion rotation-independent, only that visual case reran and passed 5/5 maintained projects in 22.5 seconds. Windows snapshot comparison was ignored by policy and produced no candidates. Logs .cache/wp023-r6-refinement-{types,combat,simulation,protocol,practice,loomkeeper,reward,build,browser-practice-controls,visual,visual-recovery}.log."
+    },
+    {
+      "command": "WP-023 Phone Gate A acceptance and Waypoint 2 planning-record check",
+      "status": "pass",
+      "details": "The change-selector dry run recorded fingerprint cd6324bd9a298aafb4f9cc5c9b630aea4505e47a2b0c91a59c0752f34fb97593 and selected only check:work-packages for the three documentation/evidence files. The worms_port_test_runner ran that exact zero-retry check; all 70 work-package records passed in 6.9 seconds. No product, build, browser, legacy or daily/release phase ran. Log .cache/wp023-docs-only-work-packages.log."
     }
   ],
   "reviews": [
@@ -91,6 +96,12 @@
       "reviewer": "primary assistant",
       "decision": "pass_waypoint_1_movement_buttons",
       "details": "Direct review confirms that current R6 alone replaces the dynamic thumbstick with compact translucent left, right and up/jump targets separated by three-pixel seams. A single captured pointer can slide through the cluster while preserving the last direction across each seam; direction changes remain bounded by the existing R6 authority and a fresh jump entry retains the 250ms landing buffer. A direct Jump entry now records neutral direction and launches with zero horizontal velocity without changing facing, while direction-to-Jump sliding records the last direction for takeoff. The V10 wire and replay contract accepts neutral jump only for current R6 authority; pre-R6 simulation and replay identities reject it. Pointer release, cancellation, lost capture and lifecycle boundaries retire local ownership. Threadleap, terrain, weapons, Practice/Daily identity, PEI and reward paths are unchanged. Physical Phone Gate A remains the acceptance boundary before Waypoint 2."
+    },
+    {
+      "role": "owner",
+      "reviewer": "WP-023 Phone Gate A physical-phone acceptance",
+      "decision": "pass",
+      "details": "At committed and pushed 73e9aba, the owner reported that all five final physical-phone checks worked as expected: the translucent compact buttons and narrow spacing, neutral direct jump, directional slide-to-jump, repeated input, aftertouch and release behavior. Together with the previously accepted R6 presentation, pace, action clock and complete Practice turn journey, this closes Phone Gate A and authorizes Waypoint 2. It does not accept explosion impulse, Phone Gate B, complete Daily integration or package closure."
     }
   ],
   "skipped_checks": [
@@ -98,9 +109,9 @@
     "Local PostgreSQL execution was skipped because WP014_TEST_DATABASE_URL is absent. WP-023 Waypoint 1 changes no database schema, receipt inventory or reward settlement behavior; disposable PostgreSQL remains a CI gate.",
     "Authoritative Ubuntu screenshot comparison and baseline approval were not run on Windows. Logic ran across all five maintained phone layouts; a Linux candidate belongs on the implementation PR after physical acceptance.",
     "The full daily/release and performance suites were not run because this is a feature waypoint rather than the 22:00 checkpoint or a release boundary.",
-    "Physical Phone Gate A is pending, so explosion impulse, complete Daily integration acceptance and Phone Gates B/C have not started."
+    "Physical Phone Gate A passed at 73e9aba. Explosion impulse has not been implemented, so Phone Gate B, complete Daily integration acceptance and Phone Gate C have not started."
   ],
   "residual_risks": [
-    "Phone Gate A accepted volcanic presentation, smaller actors, the 60-second clock, uninterrupted long-held movement, compact on-screen and off-screen health bars, the 5 percent speed refinement, first-turn Spoolburst, existing crater/retreat behavior, normal Loomkeeper/restart behavior and the shorter ordinary jump arc. The refined compact translucent left/right/up cluster, narrow seams, direct vertical jump, one-thumb directional slide-to-jump and aftertouch require owner phone acceptance before the package advances."
+    "Phone Gate A accepted Waypoint 1 at 73e9aba. The separate R6 blast-motion state, impulse calibration for all Relics, non-active actor collision, bounded settling and control retirement/restoration remain unimplemented and therefore uncalibrated on a physical phone; Phone Gate B is the next acceptance boundary."
   ]
 }

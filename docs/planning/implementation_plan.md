@@ -137,14 +137,18 @@ Phaser/Socket.IO stack.
   versioned session registry is a separate maintenance slice because V10 still
   intentionally inherits proven simulation and presentation mechanics.
 - Active successor: **WP-023 V10 R6 Action And Impact Dynamics**, beginning at
-  clean `c0f63ec` on `codex/v10-r6-action-impact-dynamics`. Waypoint 1 keeps
-  the exact R5 volcanic arena and weapon-terrain behavior while adding a
-  compact coherent actor presentation/target and a 60-second continuous-action
-  clock under the new current R6 identity. Waypoint 2 adds deterministic
-  explosion impulse only after physical-phone acceptance; Waypoint 3 completes
-  the accepted Practice and PEI-gated Daily journey. The package advances only
-  at the three owner phone gates. R5 remains an explicit diagnostic and is not
-  part of ordinary acceptance. See the [WP-023 contract](wp-023-v10-r6-action-impact-dynamics.md)
+  clean `c0f63ec` on `codex/v10-r6-action-impact-dynamics`. Waypoint 1 was
+  accepted on the owner's physical phone at committed and pushed `73e9aba`.
+  It keeps the exact R5 volcanic arena and weapon-terrain behavior while adding
+  the compact actor presentation/target, 60-second action clock, health bars
+  and compact translucent left/right/up controls with neutral direct jump,
+  directional slide-to-jump and bounded aftertouch. **Waypoint 2 is active:**
+  add a separate R6-only, non-steerable blast-motion state for either actor,
+  with deterministic terrain collision, settling and input retirement, while
+  preserving accepted movement, damage and crater behavior. Phone Gate B is
+  the next owner boundary. Waypoint 3 then completes the accepted Practice and
+  PEI-gated Daily journey. R5 remains an explicit diagnostic and is not part
+  of ordinary acceptance. See the [WP-023 contract](wp-023-v10-r6-action-impact-dynamics.md)
   and [evidence](../evidence/wp-023.json).
 - Active target: mobile-first single-player Nimiq Pay competition release.
 - Latest completed slice: **WP-015D4D V10G Terrain And Weapon Tactics**;

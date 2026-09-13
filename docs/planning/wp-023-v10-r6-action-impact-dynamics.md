@@ -1,6 +1,6 @@
 # WP-023 V10 R6 Action And Impact Dynamics
 
-Status: **Waypoint 1 movement-button refinement ready for Phone Gate A**
+Status: **Waypoint 1 accepted at Phone Gate A; Waypoint 2 ready for implementation**
 Branch: `codex/v10-r6-action-impact-dynamics`  
 Starting commit: `c0f63ec`
 
@@ -140,18 +140,67 @@ protocol ownership, build/smoke and the supported phone browser journey.
 6. Confirm the Loomkeeper responds normally, then reload/resume and start a
    fresh Practice match.
 
-Do not advance until the owner accepts Phone Gate A.
+Phone Gate A passed on the owner's physical phone at committed and pushed
+`73e9aba`. The final five checks accepted the translucent compact cluster,
+narrow seams, neutral direct jump, directional slide-to-jump, repeated jumps,
+aftertouch and release behavior together with the previously accepted R6
+presentation, pace, action clock and complete Practice turn journey. This
+accepts Waypoint 1 and authorizes Waypoint 2; it does not accept the later
+impulse or complete-product gates.
 
 ### Waypoint 2 — explosion impulse
 
-Add the bounded R6-only authoritative impulse, grounded launch, air movement,
-terrain collision and deterministic settling. Preserve the accepted Waypoint
-1 scale, timing and weapon/terrain behavior.
+Add a bounded R6-only blast-motion state to the authoritative simulation. It
+must be distinct from player walking, ordinary jumping and `walk_fall`, because
+an impact can launch either or both actors during settling and blast flight
+must not accept player aftertouch. Derive each integer impulse from the
+authoritative impact and the existing intact-terrain exposure/distance result
+used for damage. Per-Relic force bounds and radial falloff must be explicit and
+frozen in deterministic tests. A coincident direct hit uses projectile travel
+direction as its horizontal tie-break; actor facing and held input must never
+affect the result.
 
-**Phone Gate B** repeats the Practice journey and checks direct, edge and
-terrain-adjacent explosions from both sides. Actors must move in the expected
-direction, settle reliably and never tunnel, hover, jitter or leave controls
-owned after impact. Do not advance until the owner accepts Phone Gate B.
+Apply the impulse to every living exposed actor, including the shooter, and
+allow a grounded actor to launch. Integrate active and non-active blast motion
+through the existing terrain collision model until every launched actor is
+grounded or otherwise reaches a deterministic terminal result. Retain the
+existing settling bound and define a fail-closed outcome for any unresolved
+body at that boundary. Do not add bounce or fall damage, and do not change
+exposure, damage, crater geometry, projectile flight or turn economics.
+
+The transition into projectile flight must retire the authoritative movement
+lease and the client's captured pointer and button state. Left, right and Jump
+remain neutral and unavailable throughout projectile flight and settling;
+they become available in the existing retreat phase only after blast motion
+has settled. The accepted direct vertical jump, directional slide-to-jump and
+ordinary jump aftertouch remain separate input behavior and receive focused
+regression coverage.
+
+Automated review must cover direct and splash impacts from both sides, the
+zero-distance tie-break, open and terrain-adjacent hits, self-impulse and two-
+actor impulse, radial force ordering, active and non-active collision,
+settling/time-bound behavior, input retirement/restoration, deterministic
+replay/hash equivalence and unchanged R5 behavior, damage and crater output.
+Only current R6 runtime and browser paths are part of ordinary acceptance.
+
+**Phone Gate B** repeats ordinary wallet-free Practice at `/`:
+
+1. Confirm direct Jump still rises vertically and direction-to-Jump sliding
+   still supplies the accepted takeoff direction and aftertouch.
+2. Create open-space direct and splash impacts from the left and right. Each
+   exposed actor must move away from the blast, with a closer hit producing a
+   visibly stronger response than an edge hit.
+3. Create terrain-adjacent and near-shooter impacts. The target and shooter may
+   both move when exposed, must collide with the volcanic terrain and must keep
+   the familiar damage and crater behavior.
+4. Hold or touch a movement button around firing. The cluster must become
+   neutral during projectile flight and settling, must not steer an actor in
+   blast flight, and must respond normally when the retreat phase starts.
+5. Confirm actors settle without tunnelling, hovering or jitter, then complete
+   the Loomkeeper response and reload/resume once to check the same result and
+   restored controls.
+
+Do not advance until the owner accepts Phone Gate B.
 
 ### Waypoint 3 — complete product journey
 
