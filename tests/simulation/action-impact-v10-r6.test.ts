@@ -81,6 +81,30 @@ test('R6 sustains long touch movement with six-tick refreshes and still permits 
     assert.equal(second.error?.code, 'COMMAND_REJECTED');
 });
 
+test('R6 moves 25 percent faster and applies bounded directional aftertouch to a normal hop', () => {
+    const r5Initial = createSimulationV10(4, 'wizard', V10_R5_RULESET_ID);
+    const r6Initial = createSimulationV10(4, 'wizard', V10_R6_RULESET_ID);
+    const r5Walking = advanceSimulationTicksV10(accepted(r5Initial, { type: 'walk_start', direction: -1 }), 1).state;
+    const r6Walking = advanceSimulationTicksV10(accepted(r6Initial, { type: 'walk_start', direction: -1 }), 1).state;
+    assert.equal(r5Initial.units[0].xFp - r5Walking.units[0].xFp, 256);
+    assert.equal(r6Initial.units[0].xFp - r6Walking.units[0].xFp, V10_R6_DYNAMICS.walkSpeedFp);
+    assert.equal(V10_R6_DYNAMICS.walkSpeedFp, 320);
+
+    let jump = accepted(createSimulationV10(4, 'wizard', V10_R6_RULESET_ID), { type: 'jump', direction: 1 });
+    assert.equal(jump.units[0].vxFp, 320);
+    const steered = applySimulationIntentV10(jump, 'player', { type: 'walk_start', direction: -1 }, jump.turn);
+    assert.equal(steered.accepted, true, JSON.stringify(steered.error));
+    jump = advanceSimulationTicksV10(steered.state, 10).state;
+    assert.equal(jump.units[0].grounded, false);
+    assert.equal(jump.units[0].vxFp, 160);
+    assert.equal(jump.units[0].vyFp, -1_408);
+
+    const legacyJump = accepted(createSimulationV10(4, 'wizard', V10_R5_RULESET_ID), { type: 'jump', direction: 1 });
+    const legacySteer = applySimulationIntentV10(legacyJump, 'player', { type: 'walk_start', direction: -1 }, legacyJump.turn);
+    assert.equal(legacySteer.accepted, false);
+    assert.equal(legacyJump.units[0].vxFp, 256);
+});
+
 test('R6 projectile collision uses the compact character envelope', () => {
     const r5 = directEnvelopeProbe(V10_R5_RULESET_ID);
     const r6 = directEnvelopeProbe(V10_R6_RULESET_ID);

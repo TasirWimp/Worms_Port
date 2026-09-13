@@ -10,7 +10,7 @@ import {
     panCombatCamera,
     revealCombatCameraPoint
 } from '../../client/src/combat/camera';
-import { CombatInputController } from '../../client/src/combat/input';
+import { CombatInputController, UnifiedMovementInputController } from '../../client/src/combat/input';
 import {
     WIZARD_ANIMATION_SCALE_IN_WORLD,
     WIZARD_R6_ANIMATION_SCALE_IN_WORLD,
@@ -19,7 +19,7 @@ import {
     wizardPresentationTopInWorld
 } from '../../client/src/combat/loomseed-origin';
 import { trajectoryPreview } from '../../client/src/combat/preview';
-import { movementRefreshIntervalMs } from '../../client/src/combat/resource-turns-v9-controls';
+import { movementRefreshIntervalMs, stitchingHealthColor } from '../../client/src/combat/resource-turns-v9-controls';
 import {
     applySimulationCommand,
     canonicalSimulationJson,
@@ -220,6 +220,48 @@ test('R6 uses the compact coherent Wizard geometry without changing older presen
     assert.ok(wizardPresentationTopInWorld('nimble-knots-artillery-v10-r6') < wizardPresentationTopInWorld());
     assert.equal(movementRefreshIntervalMs('nimble-knots-artillery-v10-r6'), 200);
     assert.equal(movementRefreshIntervalMs('nimble-knots-artillery-v10-r5'), 100);
+});
+
+test('R6 health bars stay compact, sit four pixels above the Wizard and progress green through yellow to red', () => {
+    const state = createLatestSimulation(0xC0FFEE11, 'wizard');
+    const layout = computeCombatLayout(844, 390);
+    const status = computeActorStatusLayout(layout, state.units, 'nimble-knots-artillery-v10-r6').player!;
+    const wizardTop = layout.battlefield.y +
+        (state.units[0].y + SIM_RULES.actorRadius - wizardPresentationTopInWorld('nimble-knots-artillery-v10-r6')) * layout.worldScaleY;
+
+    assert.equal(status.height, 18);
+    assert.ok(status.width >= 56 && status.width <= 72);
+    assert.ok(Math.abs(status.y + status.height - (wizardTop - 4)) < 1e-9);
+    assert.equal(stitchingHealthColor(100), 'hsl(120 72% 44%)');
+    assert.equal(stitchingHealthColor(50), 'hsl(60 72% 44%)');
+    assert.equal(stitchingHealthColor(0), 'hsl(0 72% 44%)');
+});
+
+test('R6 air control reverses a held movement pointer while the frozen input remains inert in flight', () => {
+    const pad = { x: 100, y: 200, width: 112, height: 112 };
+    const origin = { x: 156, y: 256 };
+    const ready = { grounded: true, facing: 1 as const, heldDirection: 0 as const, lane: 'ready' as const };
+    const beginRight = (input: UnifiedMovementInputController) => {
+        assert.equal(input.beginMovement(1, origin, pad), true);
+        input.moveMovement(1, { x: origin.x + 30, y: origin.y }, ready, 0);
+        const intent = input.movementIntent(ready, 0);
+        assert.deepEqual(intent, { type: 'walk_start', direction: 1 });
+        input.submittedMovementIntent(intent!);
+    };
+
+    const current = new UnifiedMovementInputController();
+    beginRight(current);
+    current.observeGrounded(false, true);
+    const airborne = { ...ready, grounded: false, heldDirection: 1 as const, airControl: true };
+    current.moveMovement(1, { x: origin.x - 30, y: origin.y }, airborne, 1);
+    assert.deepEqual(current.movementIntent(airborne, 1), { type: 'walk_start', direction: -1 });
+
+    const frozen = new UnifiedMovementInputController();
+    beginRight(frozen);
+    frozen.observeGrounded(false);
+    const frozenAirborne = { ...ready, grounded: false, heldDirection: 1 as const };
+    frozen.moveMovement(1, { x: origin.x - 30, y: origin.y }, frozenAirborne, 1);
+    assert.equal(frozen.movementIntent(frozenAirborne, 1), null);
 });
 
 function overlaps(a: { x: number; y: number; width: number; height: number }, b: typeof a): boolean {

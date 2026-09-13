@@ -1,6 +1,6 @@
 # WP-023 V10 R6 Action And Impact Dynamics
 
-Status: **Waypoint 1 automated acceptance passed; Phone Gate A pending**  
+Status: **Waypoint 1 refinements ready for the Phone Gate A correction pass**
 Branch: `codex/v10-r6-action-impact-dynamics`  
 Starting commit: `c0f63ec`
 
@@ -33,6 +33,32 @@ normal phone round trip while keeping a full 60-second hold below the existing
 512-intent turn budget. The inherited Loomkeeper may continue refreshing at
 its proven three-tick cadence and should act promptly rather than wait out the
 larger action clock.
+
+The first physical Phone Gate A accepted sustained movement and the 200 ms
+refresh behavior, then requested three corrections. R6 therefore uses compact
+actor-attached health bars whose remaining fill changes continuously from
+green through yellow to red, raises ordinary walking from 256 to 320
+fixed-point units per tick, and adds a dedicated 48 px **Hop** action. A held
+left movement pointer stays owned while Hop is tapped and supplies bounded
+horizontal aftertouch during the committed jump. Vertical impulse, gravity,
+terrain collision and the reinforced Threadleap remain unchanged.
+The R6 action strip keeps Actions, Hop and Use in one centered row in both the
+default sideways phone composition and the supported portrait opt-out.
+
+This control choice follows the current mobile reference rather than adding a
+third simultaneous gesture. Team17's Worms W.M.D Mobilize uses an explicit
+forward-jump control and lets held left/right input influence jump direction
+and distance through aftertouch. Apple's game-control guidance places movement
+on the left, keeps frequent virtual controls at least 44 by 44 points, and
+recommends reducing awkward simultaneous button sequences. Pointer ownership
+continues to use independent Pointer Events IDs and per-control pointer capture
+as defined by the web standard.
+
+References:
+
+- https://www.team17.com/news/worms-w-md-mobilize-out-now-on-apple-android
+- https://developer.apple.com/design/human-interface-guidelines/game-controls
+- https://www.w3.org/TR/pointerevents/#pointer-capture
 
 R5 remains available only for explicit simulation and local-preview diagnosis.
 It is excluded from ordinary feature, quality and release acceptance along

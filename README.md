@@ -15,7 +15,9 @@ The five background images load only when combat starts. Practice remains
 wallet-free. Daily Challenge uses the same V10 R6 volcanic authority after its
 existing wallet, PEI receipt and reward reservation checks.
 R6 keeps the exact R5 terrain and weapon balance, presents smaller actors with
-a matching direct-hit envelope, and gives each actor a 60-second action phase
+compact color-changing health bars and a matching direct-hit envelope, and
+gives each actor a 60-second action phase with slightly faster walking, a
+dedicated Hop action and bounded horizontal jump aftertouch
 for continuous movement and jumping before its single offensive shot. R5 is an
 explicit diagnostic profile and is excluded from routine acceptance.
 The explicit local preview URLs remain available for historical review.

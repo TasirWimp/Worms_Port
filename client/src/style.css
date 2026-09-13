@@ -839,6 +839,18 @@ input {
     border: 2px solid #fff;
 }
 
+.combat-v10[data-ruleset='nimble-knots-artillery-v10-r6'] .combat-actions,
+.combat-v10[data-ruleset='nimble-knots-artillery-v10-r6'][data-orientation='landscape'] .combat-actions {
+    grid-template-columns: repeat(3, minmax(48px, 1fr)) !important;
+}
+
+.combat-v10[data-ruleset='nimble-knots-artillery-v10-r6'] .jump-button {
+    color: #fff;
+    font-weight: 900;
+    background: #0582ca;
+    border: 2px solid #fff;
+}
+
 .combat-v9 .v9-action-menu {
     position: absolute;
     z-index: 20;
@@ -888,6 +900,28 @@ input {
 .combat-v9 .loomkeeper-status { border-color: #fa7268; }
 .combat-v9 .unit-status-name { max-width: 2.3rem; font-size: 0.52rem; }
 .combat-v9 .unit-status-value { min-width: 0; overflow: hidden; color: #fff; font-size: clamp(0.38rem, 1vw, 0.5rem); letter-spacing: -0.04em; text-overflow: ellipsis; white-space: nowrap; }
+.combat-v10[data-ruleset='nimble-knots-artillery-v10-r6'] .combat-unit-status {
+    grid-template-columns: auto minmax(32px, 1fr);
+    grid-template-rows: 1fr;
+    gap: 3px;
+    min-height: 0;
+    padding: 2px 3px;
+    border-radius: 5px;
+}
+.combat-v10[data-ruleset='nimble-knots-artillery-v10-r6'] .unit-status-name {
+    max-width: 1.8rem;
+    font-size: 0.44rem;
+}
+.combat-v10[data-ruleset='nimble-knots-artillery-v10-r6'] .unit-status-value { display: none; }
+.combat-v10[data-ruleset='nimble-knots-artillery-v10-r6'] .unit-status-track {
+    grid-column: auto;
+    height: 7px;
+    background: rgb(255 255 255 / 32%);
+    border: 1px solid rgb(255 255 255 / 48%);
+}
+.combat-v10[data-ruleset='nimble-knots-artillery-v10-r6'] .unit-status-track span {
+    transition: width 160ms ease-out, background-color 160ms ease-out;
+}
 .combat-v9 .combat-message { top: calc(max(8px, var(--safe-area-top)) + 52px); bottom: auto; }
 .combat-v9 .v9-pause-sheet { z-index: 13; }
 .combat-v9 .v9-reenter { min-width: 48px; min-height: 48px; margin-top: 0.4rem; }

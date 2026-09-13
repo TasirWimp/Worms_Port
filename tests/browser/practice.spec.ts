@@ -643,6 +643,58 @@ test('standard volcanic Practice at root keeps authority, AI, cold resume and re
   } finally { await page.goto('about:blank'); await runtime.close(); }
 });
 
+test('current R6 phone controls combine held movement, Hop and bounded jump aftertouch', async ({ page }) => {
+  test.setTimeout(45_000);
+  const runtime = createRuntimeServer({ clientDir: path.resolve('client/build'), identity: false,
+    sessionRegistry: { practiceV10: true, seedSource: () => 4 } });
+  const port = await runtime.listen();
+  const owned = () => runtime.sessions.getBound([...runtime.io.sockets.sockets.values()][0]?.id)!;
+  try {
+    await page.goto(`http://127.0.0.1:${port}/?sideways=off`);
+    await page.getByRole('button', { name: 'Start Practice' }).tap();
+    const ui = page.locator('.combat-v10');
+    await expect(ui).toHaveAttribute('data-ruleset', CURRENT_V10_RULESET_ID);
+    const hop = ui.locator('.jump-button');
+    await expect(hop).toBeVisible();
+    const hopBox = await hop.boundingBox();
+    expect(hopBox?.width).toBeGreaterThanOrEqual(48);
+    expect(hopBox?.height).toBeGreaterThanOrEqual(48);
+    const actionBox = await ui.locator('.combat-actions').boundingBox();
+    const actionButtons = await Promise.all([
+      ui.locator('.v9-actions-button').boundingBox(),
+      hop.boundingBox(),
+      ui.locator('.fire-button').boundingBox()
+    ]);
+    expect(actionBox).not.toBeNull();
+    expect(actionButtons.every(box => box && Math.abs(box.y - actionButtons[0]!.y) < 1)).toBe(true);
+    expect(actionButtons.every(box => box && box.x >= actionBox!.x && box.x + box.width <= actionBox!.x + actionBox!.width + 1)).toBe(true);
+
+    const playerCard = ui.locator('.player-status');
+    await expect(playerCard.locator('.unit-status-value')).toBeHidden();
+    await expect(playerCard.locator('.unit-status-track')).toBeVisible();
+    expect((await playerCard.boundingBox())?.height).toBeLessThanOrEqual(19);
+    await expect(playerCard.locator('.unit-status-track span')).toHaveCSS('width', /[3-9][0-9]px/);
+    await expect(playerCard.locator('.unit-status-track span')).toHaveCSS('background-color', 'rgb(31, 193, 31)');
+
+    const startX = runtime.sessions.activeSnapshotV10(owned())!.simulation.units[0].xFp;
+    await pointer(page, '.combat-v10 .movement-zone', 'pointerdown', 1301, 0.5, 0.55);
+    await pointer(page, '.combat-v10 .movement-zone', 'pointermove', 1301, 0.82, 0.55);
+    await expect.poll(() => runtime.sessions.activeSnapshotV10(owned())!.simulation.units[0].xFp).toBeGreaterThan(startX);
+
+    await hop.tap();
+    await expect.poll(() => runtime.sessions.activeSnapshotV10(owned())!.simulation.units[0].grounded).toBe(false);
+    await pointer(page, '.combat-v10 .movement-zone', 'pointermove', 1301, 0.18, 0.55);
+    await expect.poll(() => {
+      const unit = runtime.sessions.activeSnapshotV10(owned())!.simulation.units[0];
+      return !unit.grounded && unit.vxFp < 320;
+    }).toBe(true);
+    await expect.poll(() => runtime.sessions.activeSnapshotV10(owned())!.simulation.units[0].grounded,
+      { timeout: 5_000 }).toBe(true);
+    await pointer(page, '.combat-v10 .movement-zone', 'pointerup', 1301, 0.18, 0.55);
+    await expect.poll(() => runtime.sessions.activeSnapshotV10(owned())!.simulation.heldDirection).toBe(0);
+  } finally { await page.goto('about:blank'); await runtime.close(); }
+});
+
 
 test('standard volcanic Practice survives missing art and expired-session reconnect', async ({ page, context }) => {
   test.setTimeout(45_000);

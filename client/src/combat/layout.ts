@@ -103,12 +103,16 @@ export function computeActorStatusLayout(
     units: readonly [SimulationUnit, SimulationUnit] | readonly SimulationUnit[],
     rulesetId?: string
 ): { player?: Rect; loomkeeper?: Rect } {
-    const width = Math.min(108, Math.max(78, layout.battlefield.width * 0.16));
-    const height = 32;
-    const actorOffset = Math.max(
-        36,
-        (SIM_RULES.actorRadius + wizardPresentationTopInWorld(rulesetId)) * layout.worldScale + 12
-    );
+    // Keep the eager layout module independent of the full simulation-v10
+    // authority graph. The scene that owns R6 already validates this identity.
+    const compact = rulesetId === 'nimble-knots-artillery-v10-r6';
+    const width = compact
+        ? Math.min(72, Math.max(56, layout.battlefield.width * 0.1))
+        : Math.min(108, Math.max(78, layout.battlefield.width * 0.16));
+    const height = compact ? 18 : 32;
+    const actorOffset = compact
+        ? Math.max(4, (wizardPresentationTopInWorld(rulesetId) - SIM_RULES.actorRadius) * layout.worldScale + 4)
+        : Math.max(36, (SIM_RULES.actorRadius + wizardPresentationTopInWorld(rulesetId)) * layout.worldScale + 12);
     const field = layout.battlefield;
     const rectFor = (unit: SimulationUnit): Rect | undefined => {
         const worldX = unit.x - layout.camera.left;

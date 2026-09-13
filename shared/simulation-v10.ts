@@ -45,7 +45,9 @@ export const V10_R6_DYNAMICS: SimulationDynamics = Object.freeze({
     actionTicks: 1_800,
     leaseTicks: 18,
     maximumTurnTicks: 2_400,
-    maximumCombatTicks: 38_400
+    maximumCombatTicks: 38_400,
+    walkSpeedFp: 320,
+    airControlAccelerationFp: 16
 });
 export const V10_TERRAIN_PROFILE_IDS = Object.freeze([
     'sheltered-folds',

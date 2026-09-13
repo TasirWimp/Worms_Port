@@ -10,7 +10,7 @@
     "primary assistant"
   ],
   "scope": [
-    "Waypoint 1: promote a V10 R6 current runtime with the unchanged R5 volcanic terrain and weapon-terrain behavior, a smaller coherent Wizard presentation and direct-hit envelope, and a 60-second continuous movement action followed by one offensive shot and the existing retreat.",
+    "Waypoint 1: promote a V10 R6 current runtime with the unchanged R5 volcanic terrain and weapon-terrain behavior, a smaller coherent Wizard presentation and direct-hit envelope, compact gradient health bars, a 60-second continuous movement action, slightly faster walking, a dedicated Hop with bounded aftertouch, one offensive shot and the existing retreat.",
     "Waypoint 2 after physical-phone acceptance: add deterministic explosion knockback and authoritative impact settling without changing terrain carving or damage.",
     "Waypoint 3 after physical-phone acceptance: integrate the accepted R6 behavior through standard Practice and PEI-gated Daily lifecycle and reward paths."
   ],
@@ -52,6 +52,11 @@
       "command": "npm run audit:housekeeping at the package transition",
       "status": "pass",
       "details": "The exact work-package checker passed all 70 records and the report-only housekeeping audit exited successfully with zero retries. WP-023 correctly remains in progress on a dirty feature branch without an upstream while Phone Gate A is pending. No gone tracking branches exist. The manual-reconciliation flag refers to preserved historical review records and other in-progress packages; no mutation was performed. Logs .cache/wp023-work-packages-waypoint1.log and .cache/wp023-housekeeping-waypoint1.log."
+    },
+    {
+      "command": "Focused Phone Gate A correction checks from committed base 820dba5",
+      "status": "pass",
+      "details": "The dry run recorded fingerprint f2fd6b51c11055d774e6bdd3129737b2374e59ed48c7587105342f7b4b0ff9fc. Zero-retry focused checks passed import, types, work-package records 70/70, current combat 45/45, simulation 53/53, protocol 16/16, Practice 1/1 and Loomkeeper 39/39. The initial fresh build, smoke, identity and reward-security checks passed, while bundle budget retained a real first failure at 436334/430000 gzip because an eager layout import pulled the full V10 simulation graph into the entry chunk. Removing that dependency and changing no budget produced final build proof 443c92239a09 / 2b0bad37895e, current R6 smoke, 1424998/1500000 raw JavaScript and 415715/430000 gzip. The supported canonical Practice spec passed 5/5. A first direct Windows visual invocation retained five missing-baseline failures; its generated candidates were removed, two actual captures were inspected directly, and the policy-corrected --ignore-snapshots invocation passed visual logic 5/5 in 17.9 seconds with no snapshot files. Previously green phases were not repeated. Logs .cache/wp023-gatea-refinement-dry-run.log, .cache/wp023-gatea-focused-units.log, .cache/wp023-gatea-build.log, .cache/wp023-gatea-combat-final.log, .cache/wp023-gatea-final-units.log, .cache/wp023-gatea-final-build.log, .cache/wp023-gatea-browser.log, .cache/wp023-gatea-visual.log and .cache/wp023-gatea-visual-final.log."
     }
   ],
   "reviews": [
@@ -59,7 +64,7 @@
       "role": "primary",
       "reviewer": "primary assistant",
       "decision": "pass_waypoint_1",
-      "details": "Direct review traced the current ruleset identity from server creation through the live wire contract, client startup, presentation, replay validation and independently derived Loomkeeper plan. R6 shares the exact R5 volcanic terrain, opening positions and weapon table; only its named dynamics and compact target/presentation are selected. V8/V9 transition callers omit the new dynamics parameter and therefore retain their historical constants. Practice and Daily both bind to current R6, while PEI receipt and reward policy are unchanged. Waypoint 2 remains blocked on the owner's physical Phone Gate A acceptance."
+      "details": "Direct review traced the current ruleset identity from server creation through the live wire contract, client startup, presentation, replay validation and independently derived Loomkeeper plan. R6 shares the exact R5 volcanic terrain, opening positions and weapon table; only its named dynamics and compact target/presentation are selected. V8/V9 transition callers omit the new dynamics parameter and therefore retain their historical constants. Practice and Daily both bind to current R6, while PEI receipt and reward policy are unchanged. Waypoint 2 remains blocked on the owner's physical Phone Gate A correction acceptance."
     }
   ],
   "skipped_checks": [
@@ -70,6 +75,6 @@
     "Physical Phone Gate A is pending, so explosion impulse, complete Daily integration acceptance and Phone Gates B/C have not started."
   ],
   "residual_risks": [
-    "Phone presentation, long-held touch movement and action pacing require the owner's physical-phone acceptance at each waypoint before the package advances."
+    "Phone Gate A accepted volcanic presentation, smaller actors, the 60-second clock, uninterrupted long-held movement, existing crater/retreat behavior and normal Loomkeeper response. Compact health-bar placement, the 25 percent speed increase and Hop aftertouch require the owner's correction pass before the package advances."
   ]
 }

@@ -34,7 +34,7 @@ export const V8_SIM_RULES = Object.freeze({
     maximumIntentsPerTurn: 512, maximumLifecycleBarriers: 128,
     maximumCounter: 65535
 });
-/** Explicit timing/budget seam for later current rulesets. Omission preserves V8/V9. */
+/** Explicit dynamics seam for later current rulesets. Omission preserves V8/V9. */
 export type SimulationDynamics = Readonly<{
     actionTicks: number;
     retreatTicks: number;
@@ -47,6 +47,9 @@ export type SimulationDynamics = Readonly<{
     leaseTicks: number;
     leaseRefreshTicks: number;
     maximumIntentsPerTurn: number;
+    walkSpeedFp: number;
+    jumpSpeedFp: number;
+    airControlAccelerationFp: number;
 }>;
 export const V8_DEFAULT_DYNAMICS: SimulationDynamics = Object.freeze({
     actionTicks: V8_SIM_RULES.actionTicks,
@@ -59,7 +62,10 @@ export const V8_DEFAULT_DYNAMICS: SimulationDynamics = Object.freeze({
     maximumCombatTicks: V8_SIM_RULES.maximumCombatTicks,
     leaseTicks: V8_SIM_RULES.leaseTicks,
     leaseRefreshTicks: V8_SIM_RULES.leaseRefreshTicks,
-    maximumIntentsPerTurn: V8_SIM_RULES.maximumIntentsPerTurn
+    maximumIntentsPerTurn: V8_SIM_RULES.maximumIntentsPerTurn,
+    walkSpeedFp: V8_SIM_RULES.walkSpeedFp,
+    jumpSpeedFp: V8_SIM_RULES.jumpSpeedFp,
+    airControlAccelerationFp: 0
 });
 export type SimulationPhaseV8 = 'action' | 'projectile' | 'settling' | 'retreat' | 'finished';
 export type SettleReasonV8 = 'post_shot' | 'action_timeout' | 'retreat_timeout' | 'death';
@@ -170,7 +176,8 @@ export function applySimulationIntentV8<R extends V8RulesetId>(current: Simulati
     }
     if (current.acceptedIntentCount >= dynamics.maximumIntentsPerTurn) return reject(current, 'INTENT_LIMIT', 'Turn intent budget exhausted.');
     const unit = activeUnit(current);
-    if (intent.type === 'walk_start' && current.rulesetId === V8_R1_RULESET_ID && !unit.grounded)
+    if (intent.type === 'walk_start' && current.rulesetId === V8_R1_RULESET_ID && !unit.grounded &&
+        dynamics.airControlAccelerationFp === 0)
         return reject(current, 'COMMAND_REJECTED', 'Walking cannot be buffered in air.');
     if (intent.type === 'walk_start' && current.heldDirection !== 0 &&
         (current.rulesetId !== V8_R1_RULESET_ID || intent.direction === current.heldDirection ||
@@ -220,7 +227,7 @@ export function applySimulationIntentV8<R extends V8RulesetId>(current: Simulati
             if (state.heldDirection !== 0) state.heldDirection = intent.direction;
         }
         body.grounded = false; body.support = null;
-        body.vxFp = body.facing * 256; body.vyFp = -2048;
+        body.vxFp = body.facing * dynamics.walkSpeedFp; body.vyFp = dynamics.jumpSpeedFp;
         body.airTicks = 0; body.airDrive = 'jump'; state.aim = null;
         break;
     case 'select_relic': state.selectedRelic = intent.relicId; state.aim = null; break;
@@ -251,7 +258,7 @@ export function advanceSimulationTicksV8<R extends V8RulesetId>(current: Simulat
             break;
         }
         expireLease(state, events);
-        if (state.phase !== 'projectile') integrateBodies(state);
+        if (state.phase !== 'projectile') integrateBodies(state, dynamics);
         state.tick += 1;
         if (state.phase === 'projectile') advanceProjectile(state, events, mechanics, dynamics);
         else resolveBodyBoundaries(state, events, dynamics);
@@ -540,12 +547,19 @@ function reevaluateSupports(state: SimulationStateV8Family): void {
         }
     }
 }
-function integrateBodies(state: SimulationStateV8Family): void {
+function integrateBodies(state: SimulationStateV8Family, dynamics: SimulationDynamics): void {
     reevaluateSupports(state);
     for (const unit of orderedBodies(state)) {
         if (!unit.alive) continue;
         if (!movingPhase(state) || unit.id !== state.activeActor) unit.vxFp = 0;
-        else if (unit.grounded) unit.vxFp = state.heldDirection * 256;
+        else if (unit.grounded) unit.vxFp = state.heldDirection * dynamics.walkSpeedFp;
+        else if (unit.airDrive === 'jump' && state.heldDirection !== 0 && dynamics.airControlAccelerationFp > 0) {
+            // R6 aftertouch changes a committed jump gradually. It cannot create
+            // vertical lift or exceed the speed already carried by a reinforced leap.
+            const target = state.heldDirection * Math.max(Math.abs(unit.vxFp), dynamics.walkSpeedFp);
+            unit.vxFp += Math.max(-dynamics.airControlAccelerationFp,
+                Math.min(dynamics.airControlAccelerationFp, target - unit.vxFp));
+        }
         const grounded = unit.grounded;
         const wanted = unit.vxFp;
         let dx = sweep(state, unit, 'x', wanted);
