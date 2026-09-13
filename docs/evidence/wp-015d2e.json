@@ -1,0 +1,163 @@
+{
+  "id": "WP-015D2E",
+  "status": "complete",
+  "starting_commit": "9da87c9aeec8d9d34cfbb2ff053f69e4cf035d40",
+  "branch": "codex/wp-015d2e-i2-world-design-port",
+  "initial_worktree": "clean",
+  "starting_lock_sha256": "D4DAC6AE09A3D2F6C5A7EAA11520BAC43F1628320C5331575BCF1E1857073D73",
+  "owning_roles": [
+    "worms_port_planner",
+    "worms_port_test_worker",
+    "worms_port_docs_keeper"
+  ],
+  "scope": [
+    "Admit the unchanged WP-015D2D I2 analytical candidate through a parallel versioned CRPM-world profile without editing the sealed WP-015D2B implementation or evidence lock.",
+    "Keep production spawn authority at distance 640 and register only starts 511/512/513, 575/576/577, 639/640/641, and 703/704/705 across both first actors, both mirrors, all 25 ordered base-policy pairs, seed 3237998097, and the existing 16-turn horizon.",
+    "Reproduce the exact C4, F4, H2, I1, and I2 boundary-report digests and emit compact source-bound entry, opponent-response, already-in-band control, residual, obligation, diagnostic, and scalar-probe evidence.",
+    "Retain full-resource start 769 as an excluded initial carrier and blocking horizon witness: F4 has four turn limits, I2 has eight, and four additional I2 retreat-kite paths suppress entry Seam Pin at turn 10.",
+    "Fail closed on unknown fields, domain/config/cut/probe/port drift, arbitrary execution, live activation, output-path escape, source drift, or a missing committed implementation receipt.",
+    "End at most at M2 local use, analytical disposition structural reference, and ProductAuthority none.",
+    "Freeze the implementation at commit 74e1b724478d576ae2c3b6bdd181c6e2ab20efe8, tree 45af9f7c6aa8e9515c8b466db378e4e30b0081a5, and canonical 16-file bundle digest 2cae366f4842538db78c5a388bf5e210731e4e4e240c06911a6380e30bed1b69, authenticated by direct-child lock commit 8be185fb7eb2fb58cdc35959ac7ce60975f7e75e.",
+    "Bind the sealed request digest 10a09ea047e1e00b2526618314d16cc97713f098ea41c767c6f84bf83547565f, analytical export digest 9648b3aa42f4892334c7c2ee6e73afc55c317e8d47148020e6fea8a871ff2dca, and result digest 6cebc0559466a72e969a2d2e151ad04691b9e03a352764bb3bf15bf1d1779789."
+  ],
+  "non_goals": [
+    "Change I2 mechanics, the tactical model, any comparator result, shared simulation, protocol, replay, client, server, Loomkeeper, rewards, wallet, assets, V1 through V4 behavior, or production spawn behavior.",
+    "Rotate, rewrite, or extend the sealed WP-015D2B registry, schemas, adapter chain, package scripts, implementation lock, or historical evidence.",
+    "Admit start 769, every possible starting distance, a new seed/policy/action/horizon, dynamic module/operator execution, or caller-authored acceptance metadata.",
+    "Claim gameplay quality, initiative fairness, player fun, global completeness, V5 approval, production activation, or graph-safe CRPM doctrine.",
+    "Vendor, import, depend on, or edit CRPM or Sorcerers."
+  ],
+  "planned_checks": [
+    "python -m unittest analysis.crpm_world.adapters.tests.test_d2e_i2_export -v",
+    "node --import tsx --test tests/crpm-world/d2e-i2-admission.test.ts",
+    "node --import tsx --test tests/crpm-world/evaluation.test.ts",
+    "npx tsc -p analysis/crpm_world/tsconfig.json",
+    "npm run test:crpm-world",
+    "npm run test:tactical-model",
+    "npm run test:simulation",
+    "npm run check:types",
+    "npm run check:work-packages",
+    "npm run check:compliance",
+    "npm run build",
+    "git diff --check",
+    "implementation commit followed by direct-child D2E lock/evidence seal",
+    "two identical sealed CLI executions and deterministic result digest comparison",
+    "CRPM source-lock inspection",
+    "final production/import/generated-output boundary inspection"
+  ],
+  "deterministic_seeds": [
+    "3237998097"
+  ],
+  "sorcerers_reference_used": false,
+  "clean_room_records": [],
+  "check_results": [
+    {
+      "command": "npx tsc -p analysis/crpm_world/tsconfig.json",
+      "status": "pass",
+      "detail": "The new profile-v3 registry, strict request/export/result schemas, cut, source-lock code, executor, CLI, and focused tests type-check without changing the sealed D2B TypeScript surface."
+    },
+    {
+      "command": "node --import tsx --test tests/crpm-world/d2e-i2-admission.test.ts",
+      "status": "pass",
+      "detail": "Six sealed tests passed with one inverse pre-seal test intentionally skipped: canonical exact request, cross-language export validation, four composed voyages with seven transition witnesses and one obligation, fail-closed request handling, output confinement, and the Git-authenticated deterministic result. Pre-seal blocking was separately exercised before the direct-child lock existed."
+    },
+    {
+      "command": "python -m unittest analysis.crpm_world.adapters.tests.test_d2e_i2_export -v",
+      "status": "pass",
+      "detail": "All five tests passed in 83.5 seconds, including two complete independent exports. C4/F4/H2/I1/I2 report bindings, entry/response/control witnesses, and the excluded start-769 warning reproduced exactly; the current analytical export digest is 9648b3aa42f4892334c7c2ee6e73afc55c317e8d47148020e6fea8a871ff2dca."
+    },
+    {
+      "command": "node --import tsx --test tests/crpm-world/evaluation.test.ts",
+      "status": "pass",
+      "detail": "All 11 evaluation tests passed after stale post-D2B expectations were corrected: current D2C/D2D tactical-source drift deliberately downgrades sealed historical D2A artifacts to M1 while every F2/F3/F4/H2/H3 false-closure finding and ProductAuthority none remain unchanged."
+    },
+    {
+      "command": "npm run test:crpm-world",
+      "status": "pass",
+      "detail": "All 82 applicable contract, canonicalization, cut/projection, authority, D2A, D2E, offline-port, evaluation, voyage, return, obligation, and boundary tests passed. The inverse unsealed-D2E test was the sole expected skip after sealing; the authenticated D2E execution test passed against the committed lock."
+    },
+    {
+      "command": "npm run test:tactical-model",
+      "status": "pass",
+      "detail": "The TypeScript authority fixture and all 41 Python tactical tests passed; C4/F4/H2/I1/I2 reports and I2 edge/horizon semantics remain locked."
+    },
+    {
+      "command": "npm run test:simulation",
+      "status": "pass",
+      "detail": "All 31 production simulation tests passed; no shared simulation or replay behavior changed."
+    },
+    {
+      "command": "npm run check:types",
+      "status": "pass",
+      "detail": "Server and client TypeScript checks passed. The D2E analysis type check and the standalone D2E CLI type check also passed."
+    },
+    {
+      "command": "npm run check:work-packages",
+      "status": "pass",
+      "detail": "The repository evidence checker accepted all work-package records, including completed WP-015D2E and the separately excluded machine implementation lock."
+    },
+    {
+      "command": "npm run check:compliance",
+      "status": "pass",
+      "detail": "Asset, runtime inventory, generation, import-boundary, package-license, 27-record work-package evidence, and clean-room checks passed."
+    },
+    {
+      "command": "npm run build",
+      "status": "pass",
+      "detail": "The full production compliance/type/server/client build and approved asset copy passed; only the existing Vite chunk-size warning remains."
+    },
+    {
+      "command": "implementation commit followed by direct-child D2E lock/evidence seal",
+      "status": "pass",
+      "detail": "Implementation commit 74e1b724478d576ae2c3b6bdd181c6e2ab20efe8 and tree 45af9f7c6aa8e9515c8b466db378e4e30b0081a5 are authenticated by sole-parent lock commit 8be185fb7eb2fb58cdc35959ac7ce60975f7e75e. All 16 registered blobs reproduce bundle digest 2cae366f4842538db78c5a388bf5e210731e4e4e240c06911a6380e30bed1b69."
+    },
+    {
+      "command": "two identical sealed CLI executions and deterministic result digest comparison",
+      "status": "pass",
+      "detail": "Two independent executions produced byte-identical 366,673-byte JSON files with file SHA-256 f4812e9c39bc3d16d5546629770443c1bc1468650afd23958ac449a0a91a2870. Both bind request 10a09ea047e1e00b2526618314d16cc97713f098ea41c767c6f84bf83547565f, analytical export 9648b3aa42f4892334c7c2ee6e73afc55c317e8d47148020e6fea8a871ff2dca, and result 6cebc0559466a72e969a2d2e151ad04691b9e03a352764bb3bf15bf1d1779789."
+    },
+    {
+      "command": "CRPM source-lock inspection",
+      "status": "pass",
+      "detail": "The sibling CRPM checkout is clean on main at 053c6fc; the exact methodological commit 995236df60924f790506cf5badec3c102abf3fd1 and both registered source blobs remain available. D2E has no CRPM runtime dependency."
+    },
+    {
+      "command": "git diff --check",
+      "status": "pass",
+      "detail": "The final bounded documentation/evidence diff has no whitespace errors; line-ending conversion notices are Git configuration warnings rather than diff failures."
+    },
+    {
+      "command": "final production/import/generated-output boundary inspection",
+      "status": "pass",
+      "detail": "Searches found no shared/client/server import of analysis/crpm_world or analysis/tactical_model, no shared/protocol, production ruleset, reward, wallet, package, asset, or runtime change, no tracked test-results, no arbitrary caller-controlled executable path, and no vendored CRPM source. The fixed Python and Git subprocesses remain registry-owned."
+    }
+  ],
+  "reviews": [
+    {
+      "role": "worms_port_planner",
+      "reviewer": "Codex",
+      "decision": "pass",
+      "detail": "Confirmed D2E admits only the unchanged I2 candidate and exact twelve-start pressure domain through a parallel profile-v3 chain, keeps production spawn authority at 640, retains start 769 as blocking residue, and leaves the Execution Pointer on WP-015D2A."
+    },
+    {
+      "role": "worms_port_test_worker",
+      "reviewer": "Codex",
+      "decision": "pass",
+      "detail": "Confirmed the implementation lock, source/report/config/request/result/witness digests, two byte-identical executions, exact comparator bindings, six sealed admission tests, 82-test CRPM-world suite, tactical and simulation regressions, and fail-closed request/path boundaries."
+    },
+    {
+      "role": "worms_port_docs_keeper",
+      "reviewer": "Codex",
+      "decision": "pass",
+      "detail": "Confirmed the README, admission contract, implementation plan, and evidence agree on M2 local use, structural-reference disposition, ProductAuthority none, the 769 horizon warning, and every non-promotion boundary."
+    }
+  ],
+  "skipped_checks": [
+    "Browser matrix and physical Android/iOS testing are not planned because D2E is analysis-only and has no runtime-facing or player-visible path."
+  ],
+  "residual_risks": [
+    "The ideal-direct-hit model excludes terrain, aim, trajectory, splash, player skill, live Loomkeeper behavior, UI, replay, networking, rewards, assets, and production state.",
+    "I2 remains a structural reference rather than design landfall. Its registered 57-percent aggregate is distance/policy conditioned, and start 769 exposes additional horizon residue outside the admitted initial-carrier domain.",
+    "The static adapter registry and implementation lock make re-entry explicit but do not prove the tactical cut is globally complete, independently empirical, fun, fair, or suitable for live V5 promotion. Any new domain, adapter, candidate, rule, or authority decision requires another bounded package."
+  ]
+}

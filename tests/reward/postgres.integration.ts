@@ -42,6 +42,7 @@ test('concurrent initialization migrates a zero database exactly once', async ()
                       ORDER BY table_name`
                 );
                 assert.deepEqual(tables.rows.map((row) => row.table_name), [
+                    'pei_admission_grants',
                     'reward_claims',
                     'reward_days',
                     'reward_entitlements',
@@ -61,6 +62,170 @@ test('concurrent initialization migrates a zero database exactly once', async ()
             }
         } finally {
             await Promise.allSettled([first.close(), second.close()]);
+        }
+    });
+});
+
+test('durable PEI receipts are wallet-bound, reusable after cancellation, and consumed at start', async () => {
+    await withDatabase('pei_admission', async (databaseUrl) => {
+        const store = new PostgresRewardStore(databaseUrl, 3);
+        try {
+            await store.initialize();
+            const receipt = await store.issuePeiReceipt({
+                id: 'pei_receipt_record_01',
+                walletAddress: WALLET,
+                qualificationDigest: digest('verified-pei-journey'),
+                issuedAt: NOW
+            });
+            const retried = await store.issuePeiReceipt({
+                id: 'pei_receipt_record_retry_01',
+                walletAddress: WALLET,
+                qualificationDigest: digest('verified-pei-journey'),
+                issuedAt: new Date(NOW.getTime() + 1_000)
+            });
+            assert.equal(retried.id, receipt.id);
+            await store.issuePeiReceipt({
+                id: 'pei_receipt_record_02',
+                walletAddress: WALLET,
+                qualificationDigest: digest('second-verified-pei-journey'),
+                issuedAt: new Date(NOW.getTime() + 2_000)
+            });
+            assert.equal((await store.info(DAY, {
+                ...config(), peiRequired: true
+            }, WALLET)).availablePeiReceipts, 2);
+            await assert.rejects(
+                store.reserve(reservation(
+                    'pei_wrong_wallet_entitlement',
+                    'pei_wrong_wallet_challenge',
+                    OTHER_WALLET,
+                    DAY,
+                    { peiReceiptRequired: true }
+                )),
+                rewardError('ineligible')
+            );
+
+            const cancelled = reservation(
+                'pei_cancel_entitlement_01',
+                'pei_cancel_challenge_01',
+                WALLET,
+                DAY,
+                { peiReceiptRequired: true }
+            );
+            await store.reserve(cancelled);
+            await store.cancelReserved(cancelled.challengeId, WALLET, NOW);
+            assert.equal((await store.peiReceiptStatus(receipt.id, WALLET))?.consumedAt, undefined);
+
+            const startedInput = reservation(
+                'pei_start_entitlement_01',
+                'pei_start_challenge_01',
+                WALLET,
+                DAY,
+                { peiReceiptRequired: true }
+            );
+            const reserved = await store.reserve(startedInput);
+            assert.equal(reserved.peiReceiptId, receipt.id);
+            const started = await store.start(
+                startedInput.challengeId,
+                WALLET,
+                startedInput.eligibilityTokenDigest,
+                NOW
+            );
+            assert.equal(started.state, 'in_progress');
+            const consumed = await store.peiReceiptStatus(receipt.id, WALLET);
+            assert.equal(consumed?.entitlementId, started.id);
+            assert.equal(consumed?.consumedAt?.toISOString(), NOW.toISOString());
+            assert.equal((await store.info(DAY, {
+                ...config(), peiRequired: true
+            }, WALLET)).availablePeiReceipts, 1);
+        } finally {
+            await store.close();
+        }
+    });
+});
+
+test('an expired historical-shaped grant remains usable as a non-expiring receipt', async () => {
+    await withDatabase('pei_legacy_receipt', async (databaseUrl) => {
+        const store = new PostgresRewardStore(databaseUrl, 2);
+        try {
+            await store.initialize();
+            const client = await connectedClient(databaseUrl);
+            try {
+                await client.query(
+                    `INSERT INTO pei_admission_grants (
+                        id, wallet_address, challenge_day, qualification_digest,
+                        token_digest, issued_at, expires_at
+                     ) VALUES ($1,$2,$3,$4,$5,$6,$7)`,
+                    [
+                        'pei_legacy_grant_01', WALLET, '2026-07-01',
+                        digest('legacy-verified-journey'), digest('legacy-browser-token'),
+                        new Date('2026-07-01T10:00:00.000Z'),
+                        new Date('2026-07-01T10:10:00.000Z')
+                    ]
+                );
+            } finally {
+                await client.end();
+            }
+            const input = reservation(
+                'pei_migrated_entitlement_01',
+                'pei_migrated_challenge_01',
+                WALLET,
+                DAY,
+                { peiReceiptRequired: true }
+            );
+            const reserved = await store.reserve(input);
+            assert.equal(reserved.peiReceiptId, 'pei_legacy_grant_01');
+            assert.equal((await store.start(
+                input.challengeId, WALLET, input.eligibilityTokenDigest, NOW
+            )).state, 'in_progress');
+        } finally {
+            await store.close();
+        }
+    });
+});
+
+test('the PostgreSQL canary wallet can consume all twelve attempt slots', async () => {
+    await withDatabase('twelve_attempt_slots', async (databaseUrl) => {
+        const store = new PostgresRewardStore(databaseUrl, 3);
+        try {
+            await store.initialize();
+            for (let index = 1; index <= 12; index += 1) {
+                const suffix = String(index).padStart(2, '0');
+                const input = reservation(
+                    `postgres_canary_entitlement_${suffix}`,
+                    `postgres_canary_challenge_${suffix}`,
+                    WALLET,
+                    DAY,
+                    { dailyAttemptLimit: 12 }
+                );
+                await store.reserve(input);
+                assert.equal((await store.start(
+                    input.challengeId,
+                    WALLET,
+                    input.eligibilityTokenDigest,
+                    NOW
+                )).attemptNumber, index);
+                await store.completeMatch({
+                    challengeId: input.challengeId,
+                    outcome: 'loomkeeper_win',
+                    finalTick: 20,
+                    finalStateHash: index.toString(16).padStart(64, '0'),
+                    now: NOW
+                });
+            }
+
+            await assert.rejects(
+                store.reserve(reservation(
+                    'postgres_canary_entitlement_13',
+                    'postgres_canary_challenge_13',
+                    WALLET,
+                    DAY,
+                    { dailyAttemptLimit: 12 }
+                )),
+                rewardError('ineligible')
+            );
+
+        } finally {
+            await store.close();
         }
     });
 });

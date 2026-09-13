@@ -1,6 +1,8 @@
 import type { RewardInfoData, RewardPayoutState } from '../../../shared/protocol';
 import {
     RewardStoreError,
+    type PeiReceipt,
+    type PeiReceiptInput,
     type RewardClaimInput,
     type RewardConfig,
     type RewardEntitlement,
@@ -31,6 +33,7 @@ export class MemoryRewardStore implements RewardStore {
     private readonly entitlements = new Map<string, StoredEntitlement>();
     private readonly challengeIndex = new Map<string, string>();
     private readonly claims = new Map<string, { entitlementId: string; requestDigest: string }>();
+    private readonly peiReceipts = new Map<string, PeiReceipt>();
     private mutex = Promise.resolve();
     private payoutLease = false;
 
@@ -61,7 +64,11 @@ export class MemoryRewardStore implements RewardStore {
         }
     }
 
-    public async info(day: string, config: RewardConfig): Promise<RewardInfoData> {
+    public async info(
+        day: string,
+        config: RewardConfig,
+        walletAddress?: string
+    ): Promise<RewardInfoData> {
         return this.lock(async () => {
             const rewardDay = this.day(day, config);
             return {
@@ -73,11 +80,44 @@ export class MemoryRewardStore implements RewardStore {
                             rewardDay.dailyBudgetLuna
                             ? 'exhausted'
                             : 'available',
+                peiRequired: config.peiRequired === true,
+                availablePeiReceipts: walletAddress
+                    ? this.availablePeiReceipts(walletAddress).length
+                    : 0,
                 challengeDay: day,
                 rewardLuna: config.rewardLuna.toString(),
                 reservationSeconds: Math.floor(config.reservationTtlMs / 1000),
                 turnLimit: config.turnLimit
             };
+        });
+    }
+
+    public async issuePeiReceipt(input: PeiReceiptInput): Promise<PeiReceipt> {
+        return this.lock(async () => {
+            const existing = [...this.peiReceipts.values()].find((receipt) =>
+                receipt.walletAddress === input.walletAddress &&
+                receipt.qualificationDigest === input.qualificationDigest
+            );
+            if (existing) return cloneReceipt(existing);
+            if (this.peiReceipts.has(input.id)) {
+                throw new RewardStoreError('conflict', 'PEI receipt already exists.');
+            }
+            const receipt: PeiReceipt = {
+                ...input,
+                issuedAt: new Date(input.issuedAt)
+            };
+            this.peiReceipts.set(receipt.id, receipt);
+            return cloneReceipt(receipt);
+        });
+    }
+
+    public async peiReceiptStatus(
+        receiptId: string,
+        walletAddress: string
+    ): Promise<PeiReceipt | undefined> {
+        return this.lock(async () => {
+            const receipt = this.peiReceipts.get(receiptId);
+            return receipt?.walletAddress === walletAddress ? cloneReceipt(receipt) : undefined;
         });
     }
 
@@ -98,14 +138,16 @@ export class MemoryRewardStore implements RewardStore {
                 testDailyAttemptLimit: 1
             });
             if (day.paused) throw new RewardStoreError('paused', 'Sponsor rewards are paused.');
-            let dailyReservations = 0;
+            const peiReceipt = this.selectPeiReceiptForReservation(input);
+            let unconsumedReservations = 0;
             let consumedAttempts = 0;
             for (const existing of this.entitlements.values()) {
                 if (existing.challengeDay !== input.challengeDay ||
                     existing.walletAddress !== input.walletAddress) continue;
-                dailyReservations += 1;
                 if (existing.attemptConsumed) {
                     consumedAttempts += 1;
+                } else {
+                    unconsumedReservations += 1;
                 }
                 if (existing.state === 'reserved') {
                     throw new RewardStoreError(
@@ -126,7 +168,7 @@ export class MemoryRewardStore implements RewardStore {
                     'This wallet already used today’s rewarded attempt.'
                 );
             }
-            if (dailyReservations >= MAX_DAILY_RESERVATIONS_PER_WALLET) {
+            if (unconsumedReservations >= MAX_DAILY_RESERVATIONS_PER_WALLET) {
                 throw new RewardStoreError(
                     'ineligible',
                     'This wallet reached today\'s reservation-attempt limit.'
@@ -148,7 +190,8 @@ export class MemoryRewardStore implements RewardStore {
                 attemptNumber: consumedAttempts + 1,
                 dailyAttemptLimit,
                 reservationExpiresAt: new Date(input.reservationExpiresAt),
-                eligibilityTokenDigest: input.eligibilityTokenDigest
+                eligibilityTokenDigest: input.eligibilityTokenDigest,
+                ...(peiReceipt ? { peiReceiptId: peiReceipt.id } : {})
             };
             this.entitlements.set(entitlement.id, entitlement);
             this.challengeIndex.set(entitlement.challengeId, entitlement.id);
@@ -177,6 +220,16 @@ export class MemoryRewardStore implements RewardStore {
                 this.release(entitlement, 'expired');
                 throw new RewardStoreError('expired', 'The reward reservation expired.');
             }
+            const peiReceipt = entitlement.peiReceiptId
+                ? this.peiReceipts.get(entitlement.peiReceiptId)
+                : undefined;
+            if (entitlement.peiReceiptId && (!peiReceipt || peiReceipt.consumedAt ||
+                peiReceipt.walletAddress !== walletAddress)) {
+                throw new RewardStoreError(
+                    'ineligible',
+                    'The PEI receipt is invalid or already used.'
+                );
+            }
             let consumedAttempts = 0;
             for (const existing of this.entitlements.values()) {
                 if (existing.id !== entitlement.id &&
@@ -195,6 +248,10 @@ export class MemoryRewardStore implements RewardStore {
             entitlement.state = 'in_progress';
             entitlement.attemptConsumed = true;
             delete entitlement.eligibilityTokenDigest;
+            if (peiReceipt) {
+                peiReceipt.consumedAt = new Date(now);
+                peiReceipt.entitlementId = entitlement.id;
+            }
             return clone(entitlement);
         });
     }
@@ -461,6 +518,31 @@ export class MemoryRewardStore implements RewardStore {
         return created;
     }
 
+    private selectPeiReceiptForReservation(
+        input: RewardReservationInput
+    ): PeiReceipt | undefined {
+        if (!input.peiReceiptRequired) return undefined;
+        const receipt = this.availablePeiReceipts(input.walletAddress)[0];
+        if (!receipt) {
+            throw new RewardStoreError(
+                'ineligible',
+                'Complete a PEI interaction before reserving today’s rewarded match.'
+            );
+        }
+        return receipt;
+    }
+
+    private availablePeiReceipts(walletAddress: string): PeiReceipt[] {
+        const reservedIds = new Set([...this.entitlements.values()]
+            .filter((entitlement) => entitlement.state === 'reserved' && entitlement.peiReceiptId)
+            .map((entitlement) => entitlement.peiReceiptId!));
+        return [...this.peiReceipts.values()]
+            .filter((receipt) => receipt.walletAddress === walletAddress &&
+                !receipt.consumedAt && !reservedIds.has(receipt.id))
+            .sort((left, right) => left.issuedAt.getTime() - right.issuedAt.getTime() ||
+                left.id.localeCompare(right.id));
+    }
+
     private release(
         entitlement: StoredEntitlement,
         next: 'expired' | 'cancelled'
@@ -516,4 +598,12 @@ function clone(entitlement: StoredEntitlement): RewardEntitlement {
     delete copy.claimNonceDigest;
     delete copy.claimNonceExpiresAt;
     return copy;
+}
+
+function cloneReceipt(receipt: PeiReceipt): PeiReceipt {
+    return {
+        ...receipt,
+        issuedAt: new Date(receipt.issuedAt),
+        ...(receipt.consumedAt ? { consumedAt: new Date(receipt.consumedAt) } : {})
+    };
 }

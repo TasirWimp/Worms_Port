@@ -1,0 +1,45 @@
+{
+  "id": "wp-015c-animation-flux2-max-idle-v1",
+  "status": "owner_authorized_pending_submission",
+  "owner_authorization": {
+    "date": "2026-08-07",
+    "scope": "exactly one direct FLUX.2 max idle-pose edit using only the approved combined Wizard-with-Loomseed master and this exact request contract"
+  },
+  "endpoint": "https://api.bfl.ai/v1/flux-2-max",
+  "model": "FLUX.2 [max]",
+  "input_image": {
+    "path": "assets/masters/characters/knotkin/wizard/knotkin-wizard-loomseed-presentation-master-v1.png",
+    "sha256": "1CC252B45C93D2553AC733DAA6AA49D05D6351DCC85E61EA559ECED458C9419C",
+    "role": "sole identity and visual reference; encode in memory at request time only"
+  },
+  "pose_guide": {
+    "submitted": false,
+    "reason": "owner selected a natural idle-pose evaluation without a structure reference"
+  },
+  "prompt": "Create one isolated, full-body idle game-character key pose on a plain white background.\n\nPreserve the exact identity of the Wizard-with-Loomseed reference: cute blue crochet body, dark navy pointed Wizard hat with small gold stitched stars, two glossy black bead eyes, a small stitched mouth, and the same small blue-and-gold yarn ball in its hand.\n\nExpress a calm, relaxed, softly alert character who is waiting between actions. The pose should feel natural and comfortably balanced, with the yarn ball resting passively as part of the character. Keep the full body visible, with both feet on one shared ground baseline.\n\nCreate one still idle pose.",
+  "parameters": {
+    "disable_pup": true,
+    "seed": 15039001,
+    "width": 1024,
+    "height": 1024,
+    "safety_tolerance": 2,
+    "output_format": "png"
+  },
+  "request_body_record": {
+    "prompt": "the exact top-level prompt field in this file",
+    "disable_pup": true,
+    "input_image": "base64 encoding of the exact approved source is constructed in memory at submission time and never persisted",
+    "seed": 15039001,
+    "width": 1024,
+    "height": 1024,
+    "safety_tolerance": 2,
+    "output_format": "png"
+  },
+  "max_submissions": 1,
+  "output_directory": ".quarantine/wp-015c-animation/flux2-max-idle-v1",
+  "blocked": [
+    "a second submission, retry, model substitution, prompt variation, or additional reference",
+    "submission of the raw empty-handed Wizard, runtime copy, pose guide, rejected AutoSprite output, or third-party input",
+    "video, sprite sheet, alpha treatment, normalizer, staging, runtime path, asset promotion, or product change"
+  ]
+}

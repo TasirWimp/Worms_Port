@@ -110,6 +110,7 @@ test('work-package evidence enforces schema fields and clean-room linkage', () =
 
 test('work-package evidence accepts a single uppercase stabilization suffix', () => {
   assert.deepEqual(validateEvidence([{ ...base, id: 'WP-011A' }], [], () => hash), []);
+  assert.deepEqual(validateEvidence([{ ...base, id: 'WP-015D2A' }], [], () => hash), []);
   assert.match(
     validateEvidence([{ ...base, id: 'WP-011AA' }], [], () => hash).join('\n'),
     /invalid work-package id/

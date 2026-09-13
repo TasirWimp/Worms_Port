@@ -7,6 +7,50 @@ opponent, with an optional fixed sponsor-funded NIM reward for eligible wins.
 The `Worms_Port` repository was bootstrapped from the MIT
 `TurtlePU/worms-ii` code base and retains that provenance.
 
+## Standard volcanic Practice
+
+The normal `/` entry now starts server-backed V10 R5 Practice in the approved
+Volcanic Ruin stepped valley, with the existing terrain weapons and Loomkeeper.
+The five background images load only when combat starts. Practice remains
+wallet-free. Daily Challenge uses the same V10 R5 volcanic authority after its
+existing wallet and reward reservation checks.
+The explicit local preview URLs remain available for historical review.
+The [V8 preview controller](client/src/combat/action-turns-v8-fixture.ts) loads
+only when requested, keeping its local authority out of the initial bundle.
+
+For the existing owner Render service, replace the old V9 Practice profile with:
+
+```text
+NODE_ENV=production
+NIMBLE_RUNTIME_PROFILE=development-v10-practice
+REWARD_PAUSED=true
+```
+
+Redeploy and open `/` without preview query parameters. This profile constructs
+no identity, database or payout service, even when old credentials are saved.
+Ordinary startup without a development profile selects volcanic V10 R5 for both
+Practice and the separately configured Daily service. The development profile
+remains Practice-only and constructs no reward service. Old V8/V9 protocols and
+replays retain their historical behavior. Runtime selection does not activate
+or fund rewards by itself.
+
+The `development-v10-practice` block is only for isolated Practice acceptance.
+It cannot serve Daily Challenge. Before Daily Phone Gate A, change the existing
+Render service in one operation: delete `NIMBLE_RUNTIME_PROFILE`, set
+`REWARD_MODE=record-only`, and set `REWARD_PAUSED=false`. Keep
+`NODE_ENV=production`, the existing `DATABASE_URL`, and the existing identity
+configuration; `NIMBLE_DEPLOYMENT` may be absent or exactly `production`. Save
+these settings together and redeploy. Unpausing while the development profile
+is still selected deliberately fails startup. Record-only mode exercises wallet
+authorization, durable eligibility, V10 replay settlement and claim state
+without creating a reward transaction. Reward-payout mainnet remains a later
+explicit gate; the separate 1 NIM PEI interaction has its own canary below.
+
+The owner accepted the local scenic restart fix on 2026-09-11. New server-backed
+phone acceptance should cover Start Practice, aim/fire and AI reply, pause,
+reconnect/reload, and repeated retries with the background still present.
+See the [standard Practice contract](docs/planning/wp-015d4f-volcanic-ruin-preview-bundle-contract.md#wp-015d4h-standard-server-backed-volcanic-practice).
+
 ## Temporary Nimiq Pay Display Workaround
 
 **Current default:** a portrait browser viewport renders the complete game as
@@ -46,6 +90,31 @@ are also recorded in the Execution Pointer of
   preserved in `LICENSE` and `legal/source-manifest.json`.
 - `lorgan3/sorcerers` is a quarantined reference/archive only. No Sorcerers
   code or bulk assets are imported into the product tree.
+- V10A-E terrain planning uses Sorcerers only through the registered
+  [frozen terrain-tactics behavior record](docs/evidence/wp-015d4a-v10-terrain-tactics-behavior-record.md).
+  The owner-authorized V10F preparation has a separate
+  [pinned procedural-terrain reference pack](docs/evidence/wp-015d4c-v10f-procedural-terrain-reference-pack.md)
+  covering Sorcerers and the other evaluated engines. All external code, maps,
+  algorithms, constants, sample tiles and assets remain excluded from product
+  paths.
+- V10G preparation records the separately authorized Sorcerers weapon/terrain
+  observations and product-owned implementation plan in the
+  [V10G contract](docs/planning/wp-015d4a-v10-terrain-starts-contract.md#v10g-terrain-and-weapon-tactics-preparation).
+  Its first target is meaningful pocket, shelf and breach choices on Twin Crests;
+  the geometry foundation and R3 weapon integration are implemented. The local
+  `/?combat-preview=v10g` route defaults to the phone-accepted Twin Crests.
+  The expanded R4 catalogue adds `&terrain-map=trench-needle`,
+  `&terrain-map=stepping-mesa`, `&terrain-map=rampart-high-left` and
+  `&terrain-map=rampart-high-right`. These maps are phone-accepted; V10G is complete.
+  Threadball lobs, Needlepoint fires straight and Spoolburst breaches; cover
+  shields the hitbox and blocks blast influence. Existing R3 recordings and R2
+  previews retain their original behavior. Public Practice/Daily are unchanged.
+  The separate `/?combat-preview=v10g&background-preview=volcanic-ruin`
+  preview now composes the existing art with an ASCII-authored stepped valley
+  (R5); it keeps the tower visible and both starts in the initial frame.
+  See the [composition contract](docs/planning/wp-015d4f-volcanic-ruin-preview-bundle-contract.md#wp-015d4g-owner-requested-composition-and-terrain-alignment).
+  The [frozen weapon observations](docs/evidence/wp-015d4d-v10g-weapon-terrain-reference.md)
+  preserve the reference boundary separately from the evolving contract.
 - Assets from Sorcerers may move into `assets/` only after exact-file license
   evidence proves commercial use, redistribution, and modification are allowed.
 - Product assets must be traceable through `legal/asset-manifest.json`.
@@ -91,6 +160,7 @@ npm run test:browser:resilience
 npm run test:browser:visual
 npm run test:browser:performance
 npm run test:browser:matrix
+npm run assess:v10
 npm run check:bundle-budget
 npm run check:identity-bundles
 npm run check:reward-security
@@ -134,7 +204,12 @@ unit families, types, build/smoke/security and whole browser specs on Chromium
 [scripts/verify-changes.js](scripts/verify-changes.js) and the
 [development workflow](docs/process/development_workflow.md#verification-funnels).
 
-The existing daily automation runs the full product suite at **21:00
+`verify:changes`, `verify:full`, and `verify:daily` share an atomic checkout
+lease. If one is active, another exits before running checks and identifies the
+active run. This prevents scheduled and foreground verification from sharing
+temporary files, build output, or browser processes.
+
+The existing daily automation runs the full product suite at **22:00
 Europe/Berlin** through `npm run verify:daily`. It runs compliance/types/build
 once, then reuses verified outputs for the full browser/security/performance
 gate and audit. PostgreSQL runs when its isolated local prerequisite is present;
@@ -219,8 +294,10 @@ starting Practice does not load or initialize the Mini App SDK and never
 prompts for a wallet. The Daily entry first discloses public availability,
 fixed Luna/NIM amount, one-started-attempt-per-wallet-and-UTC-day eligibility,
 sixteen-turn limit, and reservation window. It requests an account only after
-the player chooses that path. `/?identity-preview=1` remains the isolated
-identity diagnostics surface.
+the player chooses that path. The admitted match is the same server-authoritative
+V10 R5 Volcanic Ruin challenge used by Practice, with reward mode preventing
+pause and with settlement bound to its verified automated replay.
+`/?identity-preview=1` remains the isolated identity diagnostics surface.
 
 The authorization asks Nimiq Pay to sign a readable, short-lived server
 challenge and rotates the anonymous session token only after the server
@@ -271,9 +348,122 @@ the immediate kill switch `REWARD_PAUSED=true`. Monetary values are integer
 Luna (`100000 Luna = 1 NIM`). The pinned ruleset currently requires
 `REWARD_TURN_LIMIT=16`.
 
+### PEI helper and Daily admission
+
+`PEI_ENABLED` defaults to `false`. When enabled, the Daily Challenge requires a
+two-edge MainAlbatross interaction before reservation: the dedicated helper
+sends NIM to the authorized player wallet, then Nimiq Pay sends the same amount
+from that wallet back to the helper. Nimiq Pay can implement the return as an
+HTLC early resolution, so the visible chain sender can be the HTLC address. The
+verifier accepts that form only when the successful transaction's parsed HTLC
+proof identifies the authorized player wallet as its creator; other HTLC proof
+forms and creator mismatches fail closed. Both transactions carry the
+commitment of their server-authenticated request and must reach macro-block
+finality. A fresh game-server verification issues a durable receipt bound to
+the wallet. Several unused receipts may accumulate without expiry, and the
+oldest one is consumed atomically with a started Daily attempt. The independent
+one-started-attempt-per-wallet and UTC-day rule remains in the reward ledger.
+Practice never reads PEI state or initializes the wallet SDK.
+
+The game and helper are separate Render Web Services built from the same commit.
+Use the usual build command for both. The game starts with `npm start`; the
+helper starts with `npm run start:pei-proxy`. Give each service its own Render
+PostgreSQL database. This keeps the helper signer database separate from the
+reward ledger. Configure these identical values on both services, using exact
+HTTPS origins without a trailing slash:
+
+```text
+NODE_ENV=production
+PEI_ENABLED=true
+PEI_NETWORK=main-albatross
+PEI_RETURN_ORIGIN=https://<game-service-host>
+PEI_PROXY_ORIGIN=https://<helper-service-host>
+PEI_PROXY_ADDRESS=<dedicated-helper-address>
+PEI_REQUEST_TTL_SECONDS=900
+PEI_EARN_MIN_LUNA=100000
+PEI_SPEND_MIN_LUNA=100000
+PEI_REQUEST_AUTH_SECRET=<same-32-byte-Base64URL-secret>
+PEI_RPC_URL=https://<trusted-main-albatross-rpc>
+```
+
+Generate the shared request-authentication secret once and paste the same value
+into both services:
+
+```powershell
+$peiSecretBytes = [byte[]]::new(32)
+[Security.Cryptography.RandomNumberGenerator]::Fill($peiSecretBytes)
+[Convert]::ToBase64String($peiSecretBytes).TrimEnd('=').Replace('+','-').Replace('/','_')
+```
+
+The game service additionally keeps its existing `DATABASE_URL`, identity and
+origin settings and uses:
+
+```text
+NIMIQ_NETWORK=main-albatross
+IDENTITY_PUBLIC_ORIGIN=https://<game-service-host>
+REWARD_MODE=record-only
+REWARD_NETWORK=main-albatross
+REWARD_PAUSED=false
+```
+
+Create a dedicated helper key outside this repository. The command refuses an
+existing file and any path inside the repository and prints the derived public
+address without printing the private key:
+
+```powershell
+npm run pei:generate-proxy-key -- "C:\absolute\outside\repo\pei-proxy-key"
+```
+
+Create a Render secret file named `pei-proxy-key` from that file's exact
+hexadecimal content. Configure only the helper service with its own
+`DATABASE_URL` and:
+
+```text
+PEI_PROXY_PRIVATE_KEY_FILE=/etc/secrets/pei-proxy-key
+PEI_PROXY_FEE_LUNA=0
+PEI_PROXY_DAILY_BUDGET_LUNA=1000000
+PEI_PROXY_PAUSED=true
+PEI_MAINNET_ACKNOWLEDGEMENT=I_UNDERSTAND_MAINNET_PEI_TRANSFERS
+```
+
+Deploy the helper paused first. `GET /api/pei/config` must report the intended
+network, game origin, proxy address and both `100000` Luna amounts. Register the
+helper origin as the helper Mini App used by this canary. Fund the dedicated
+helper address with only 1 NIM, change `PEI_PROXY_PAUSED=false`, and redeploy for
+one owner-authorized canary. The game reward remains record-only; the two PEI
+edges are the only real transfers. After the canary, restore
+`PEI_PROXY_PAUSED=true` and redeploy before adding more funds.
+
+The helper stores exact signed earn bytes before broadcast and reuses those
+bytes after ambiguous RPC submission or restart. The game stores the accepted
+earn proof and exact spend request so a replacement game process can continue
+the same journey during its validity window. The helper and game each verify
+chain data independently. After qualification, the game displays both complete
+transaction hashes for operational reconstruction.
+
+The helper records each new exposure in PostgreSQL before signing. Committed
+transfers and unexpired reservations count against `PEI_PROXY_DAILY_BUDGET_LUNA`
+for the UTC issuance day. The example ceiling permits ten 1 NIM earn transfers.
+There is no per-wallet helper limit: the same wallet
+may complete several distinct ecosystem interactions while the operational
+exposure ceiling has capacity. Distinct helper instances serialize the budget
+decision with a day-level database lock. A retry of the same request rebroadcasts
+the exact stored transaction and consumes no additional allowance. Paused
+deployments may keep the budget at zero; startup refuses to enable transfers
+unless the budget can fund at least one configured earn amount.
+
+Every completed two-transfer journey creates a durable server-side receipt for
+the authorized wallet. Receipts do not expire and several unused receipts may
+accumulate. Reauthorizing the wallet after closing or reopening the app restores
+the server-reported count; no browser credential is involved. Starting a Daily
+Challenge automatically consumes the wallet's oldest unused receipt. Merely
+reserving and then cancelling or timing out returns that receipt to the available
+inventory. Daily itself remains limited to one started match per wallet and UTC
+day outside the documented wallet-scoped development override.
+
 For a controlled repeat-attempt payout canary, an operator may temporarily set
 `REWARD_TEST_WALLET_ADDRESS` to one compact or spaced test-wallet address and
-`REWARD_TEST_DAILY_ATTEMPT_LIMIT` to an integer from `2` through `5`. Mainnet
+`REWARD_TEST_DAILY_ATTEMPT_LIMIT` to an integer from `2` through `12`. Mainnet
 also requires the separate exact acknowledgement
 `REWARD_TEST_REPEAT_ACKNOWLEDGEMENT=I_UNDERSTAND_REPEAT_MAINNET_REWARDS`.
 The override creates distinct durable attempt slots only for that address; it
@@ -281,7 +471,8 @@ does not bypass the daily Luna budget, one-active-match rule, replay-verified
 win, single-use claim, payout idempotency, signer checks, or finality. Remove
 all three test settings immediately after the canary to restore the default
 one-started-attempt rule. Never target an uninvolved production player or add a
-broad/global bypass.
+broad/global bypass. Each numbered slot can produce its own verified payout,
+so keep this development override low-funded and actively supervised.
 Here, the test wallet is the Nimiq Pay account that authorizes and receives the
 reward; it is not the sponsor signer's funded address.
 
@@ -467,23 +658,117 @@ PvP matchmaking is a post-competition feature. See
 `docs/planning/implementation_plan.md` for the active execution pointer and
 work-package sequence.
 
-## Single-owner development
+## V9D phone acceptance on the existing Render service
 
-Worms_Port no longer uses subagents for development, review, research, tests or
-documentation. The primary assistant owns each change and its corrections.
-[AGENTS.md](AGENTS.md#single-owner-development--effective-2026-09-07) supersedes
-older delegation instructions. Project configuration sets `[agents].enabled =
-false`, the documented [Codex disable setting](https://learn.chatgpt.com/docs/agent-configuration/subagents#global-settings).
-The primary task's existing Terra/high default is unchanged. Project settings
-require a trusted checkout and may be overridden by host settings; the repo's
-no-delegation instruction applies even if an existing session still exposes tools.
+Deploy `codex/wp-015d3b-v9d-resource-utilities` with the V9D Practice profile
+implementation. In Render's service environment, set:
+
+```text
+NODE_ENV=production
+NIMBLE_RUNTIME_PROFILE=development-v9d-practice
+REWARD_PAUSED=true
+```
+
+`NIMBLE_DEPLOYMENT` must be absent or `production` on the existing service.
+Save and redeploy; use the usual build command and `npm start`. A successful
+startup logs `Runtime development-v9d-practice / nimble-knots-artillery-v9 /
+wp-015d3b-v9d-v1 / rewards disabled`. This profile uses real clocks and random
+match seeds, creates no identity/reward/database/payout service, and leaves
+saved production credentials dormant. It refuses deterministic test overrides.
+It only admits Practice; reward creation and reservation metadata are rejected.
+
+Open `/?combat-preview=v9-live` and tap Start Practice. The URL selects the V9
+client, while the server profile admits its matches; the URL alone cannot enable
+V9. `/?combat-preview=v9` is the older local preview. Keep the default sideways
+phone layout, or use `&sideways=off` to check the normal portrait alternative.
+Check compact action menus, movement/HUD feedback, Thread costs/carry-over,
+utilities, an actual AI turn, pause/resume, reconnect, results and fresh retries.
+Phone acceptance and balance remain owner checks.
+
+The V10 terrain-and-starting-position candidate remains local-only at
+`/?combat-preview=v10`; it does not select a server profile or promote ordinary
+Practice, Daily Challenge, or rewards. `npm run assess:v10` runs its frozen
+V10D matrix and the replay-distinct V10E tactical refinement across six seeds,
+generated and mirrored carriers, and both opening actors. It verifies 48
+openings, blocked-cover replacement, the first attack, the other actor's reply
+through the resulting terrain, and exact operation/event reconstruction. The
+V10E phone candidate is `/?combat-preview=v10e`; it adds protected opening
+pockets and jump-only firing shelves while preserving a legal attack from
+cover. The original `/?combat-preview=v10` route remains unchanged. The ignored
+source-bound V10E report is retained at
+`.cache/assessments/wp-015d4b-v10e-assessment.json`.
+
+WP-015D4C/V10F adds a deterministic surface grammar behind the existing
+`PackedTerrain` authority. It preserves V10/V10E behavior, emits a fixed set of
+eight product-owned candidates, admits and ranks them with bounded gameplay
+checks, and binds the selected recipe revision and candidate to replay-distinct
+`nimble-knots-artillery-v10-r2`. Its level concepts use normalized ASCII
+diagrams backed by machine-readable recipes: Twin Crests, Asymmetric Rampart,
+Trench Needle and Stepping Mesa. The diagrams are generated review artifacts
+rather than replay input. Recipes use 32 authoring columns that compile
+deterministically to the existing 256 collision columns; the full format and
+operation ranges are in the
+[V10 terrain contract](docs/planning/wp-015d4a-v10-terrain-starts-contract.md#ascii-chart-and-recipe-authority).
+
+The local-only phone route is `/?combat-preview=v10f`. An optional positive
+32-bit `terrain-seed` selects a repeatable review case; absent or malformed
+values use seed 1. These fixed URLs cover every family and both physical
+orientations of the asymmetric family:
+
+- `/?combat-preview=v10f&terrain-seed=1`: Asymmetric Rampart, authored orientation.
+- `/?combat-preview=v10f&terrain-seed=5`: Asymmetric Rampart, reflected orientation.
+- `/?combat-preview=v10f&terrain-seed=2`: Trench Needle.
+- `/?combat-preview=v10f&terrain-seed=3`: Stepping Mesa.
+- `/?combat-preview=v10f&terrain-seed=4`: Twin Crests.
+
+On a phone, confirm that crests, protected pockets, firing shelves and notches
+remain legible during the opening survey and normal player camera; actor cards,
+the top-left Pause button and the collapsed Actions/Use controls stay readable
+without covering the arena; a forward hop leaves and regains the ground; and a
+normal attack leads to a bounded Loomkeeper turn. The route creates no session,
+wallet, database, reward or public Practice/Daily selector.
+
+If a Clash stops within seconds, this is not the normal 30-minute expiry.
+V9 now shows **Practice interrupted** for timing or runtime safety stops. In Render's
+application logs, find the matching `[v9-practice-stop]` line: `clock_debt`
+means the server fell behind its fixed 30-tick timing limit; `runtime_error`
+means its timer caught an unexpected exception. `expiry` also covers forced
+lifecycle cleanup, so correlate an early expiry with shutdown/restart logs.
+The line includes tick, turn,
+phase, actor, outstanding ticks and AI batch timing, with no session tokens,
+wallet data or raw exception text. A `/favicon.ico` 404 is unrelated.
+The owner's deployed diagnostic confirmed `clock_debt` at tick 311 after only
+12 of 30 AI planning batches; the slowest batch took 188646 microseconds. The
+coordinator now charges those bounded planner computations only through their
+existing 30 logical planning ticks instead of also treating their CPU duration
+as missed simulation time. A genuine external scheduling delay still reaches
+the unchanged 30-tick debt cutoff. Repeat phone acceptance after redeploying;
+the owner confirmed on 2026-09-07 that the redeployed phone journey and AI turn
+pass. V9D phone acceptance is complete. The owner separately reports a bug that
+prevents player Relic selection and explicitly defers it to the tracked V9
+Relic-selection fast-follow; this acceptance does not claim that bug is fixed.
+
+For rollback, restore the previously used profile (for example
+`development-v8d-practice`) and redeploy. Removing the profile or setting
+`production-v7` restores normal V7 startup and normal credential validation;
+keep `REWARD_PAUSED=true`. This owner Practice deployment is not joint public
+Practice/reward promotion or funded activation.
+
+## Primary ownership and test execution
+
+The primary assistant owns implementation, coverage selection, direct review,
+integration, and product corrections. One `worms_port_test_runner` may execute
+the primary's selected checks and handle bounded test-infrastructure recovery;
+it does not implement or independently review product changes. [AGENTS.md](AGENTS.md#primary-ownership-with-testing-delegation--effective-2026-09-10)
+contains the active rule. Implementation, research, reviewer, and documentation
+subagents remain disabled.
 
 The retired WP-016 harness remains discoverable on main for CRPM research:
 [retirement record and pinned recovery links](docs/process/development_workflow.md#harness-retirement-and-research-preservation),
 [archived role definitions](.codex/retired-agents/), and
 [original support evidence](docs/evidence/wp-016.json). These are historical
 research inputs, not active instructions. Selected checks and the full daily
-suite at 21:00 Europe/Berlin remain required.
+suite at 22:00 Europe/Berlin remain required.
 
 ## Upstream Pins
 

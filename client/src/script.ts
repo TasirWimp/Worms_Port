@@ -17,7 +17,9 @@ import { NimiqPayIdentityAdapter } from './identity/adapter';
 import { IdentityProtocolClient } from './identity/client';
 import { IDENTITY_SERVICES_REGISTRY_KEY } from './identity/view';
 import { createResultPreview } from './result/fixture';
+import { capturePeiReturnV0 } from './pei/return';
 
+capturePeiReturnV0();
 const requestedSideways = requestedSidewaysMode(window.location.search);
 let runningGame: Phaser.Game | undefined;
 
@@ -93,7 +95,7 @@ window.onload = async () => {
         game.scene.start('result', preview.args);
         return;
     }
-    const combatPreview = query.has('combat-preview');
+    const combatPreview = query.has('combat-preview') && query.get('combat-preview') !== 'v9-live';
     if (combatPreview) {
         runningGame = new NimbleKnotsGame(true);
         syncVisualViewport();
@@ -107,7 +109,7 @@ window.onload = async () => {
     socket.on(protocolEvents.snapshot, bufferSnapshot);
     socket.on(protocolEvents.result, bufferResult);
     const session = await bootstrapSession(socket);
-    const client = new PracticeClient(socket, session, initialSnapshots, initialResults);
+    const client = await PracticeClient.connect(socket, session, initialSnapshots, initialResults);
     socket.off(protocolEvents.snapshot, bufferSnapshot);
     socket.off(protocolEvents.result, bufferResult);
     const game = new NimbleKnotsGame();

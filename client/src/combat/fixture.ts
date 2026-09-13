@@ -6,12 +6,19 @@ import {
     type SimulationCommand,
     type SimulationState
 } from '../../../shared/simulation';
-import type { CombatSceneArgs } from './contracts';
+import type { LegacyCombatSceneArgs, CombatSceneArgsV8 } from './contracts';
+
+/** Load historical V8 preview authority only when that preview is requested. */
+export async function createActionTurnsV8Fixture(
+    ...args: Parameters<typeof import('./action-turns-v8-fixture').createActionTurnsV8Fixture>
+): Promise<CombatSceneArgsV8> {
+    return (await import('./action-turns-v8-fixture')).createActionTurnsV8Fixture(...args);
+}
 
 export function createCombatFixture(
     seed = 0x00000001,
     calling: PlayerCalling = 'wizard'
-): CombatSceneArgs {
+): LegacyCombatSceneArgs {
     let snapshot = fixtureSnapshot(createLatestSimulation(seed, calling), calling);
     return {
         snapshot,

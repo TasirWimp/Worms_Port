@@ -15,7 +15,7 @@ test('clean-room observation and work-package completion advance together', () =
 
   const observed = {
     id: 'lifecycle-observation',
-    work_package: 'WP-999',
+    work_package: 'WP-999D2Z',
     source_commit: sourceCommit,
     observed_material: ['visible behavior'],
     behavior_record: 'behavior.md',
@@ -24,7 +24,7 @@ test('clean-room observation and work-package completion advance together', () =
     status: 'observed'
   };
   const inProgress = {
-    id: 'WP-999',
+    id: 'WP-999D2Z',
     status: 'in_progress',
     starting_commit: 'abcdef0',
     branch: 'codex/test',
@@ -57,6 +57,11 @@ test('clean-room observation and work-package completion advance together', () =
   };
 
   try {
+    const singleRecord = { ...completeRecord, execution_mode: 'single_owner', implementer: 'primary', reviewer: 'primary' };
+    const singleEvidence = { ...completeEvidence, execution_mode: 'single_owner', reviews: [{ role: 'primary', reviewer: 'primary', decision: 'pass' }] };
+    assert.deepEqual(validateRecords([singleRecord], root), []);
+    assert.deepEqual(validateEvidence([singleEvidence], [singleRecord], () => 'A'.repeat(64)), []);
+    assert.match(validateEvidence([completeEvidence], [singleRecord], () => 'A'.repeat(64)).join('\n'), /requires single_owner evidence/);
     assert.deepEqual(validateRecords([observed], root), []);
     assert.deepEqual(validateEvidence([inProgress], [observed], () => 'A'.repeat(64)), []);
     assert.match(validateEvidence([completeEvidence], [observed], () => 'A'.repeat(64)).join('\n'), /must be complete/);

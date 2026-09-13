@@ -120,7 +120,7 @@ export function rewardConfigFromEnvironment(
             rawTestDailyAttemptLimit,
             'REWARD_TEST_DAILY_ATTEMPT_LIMIT',
             2,
-            5
+            12
         )
         : 1;
     if ((testWalletAddress && !rawTestDailyAttemptLimit) ||
@@ -129,6 +129,7 @@ export function rewardConfigFromEnvironment(
             'REWARD_TEST_WALLET_ADDRESS and REWARD_TEST_DAILY_ATTEMPT_LIMIT must be set together.'
         );
     }
+    const peiRequired = strictBoolean(environment.PEI_ENABLED, 'PEI_ENABLED');
 
     if (mode === 'testnet' || mode === 'mainnet') {
         if (!expectedSignerAddress || !privateKeyFile || !rpcUrl) {
@@ -171,12 +172,20 @@ export function rewardConfigFromEnvironment(
         paused: environment.REWARD_PAUSED === 'true',
         network,
         testDailyAttemptLimit,
+        peiRequired,
         ...(expectedSignerAddress ? { expectedSignerAddress } : {}),
         ...(privateKeyFile ? { privateKeyFile } : {}),
         ...(rpcUrl ? { rpcUrl } : {}),
         ...(operatorAcknowledgement ? { operatorAcknowledgement } : {}),
         ...(testWalletAddress ? { testWalletAddress } : {})
     };
+}
+
+function strictBoolean(value: string | undefined, name: string): boolean {
+    const normalized = (value ?? 'false').trim();
+    if (normalized === 'true') return true;
+    if (normalized === 'false') return false;
+    throw new Error(`${name} must be true or false.`);
 }
 
 function rewardMode(value: string | undefined): RewardMode {

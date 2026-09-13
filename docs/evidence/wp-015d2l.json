@@ -1,0 +1,138 @@
+{
+  "id": "WP-015D2L",
+  "status": "complete",
+  "starting_commit": "3812456bc8de5859588818276e4c1fff930f678c",
+  "branch": "codex/wp-015d2l-actor-relative-policy-probe",
+  "initial_worktree": "clean",
+  "starting_lock_sha256": "D4DAC6AE09A3D2F6C5A7EAA11520BAC43F1628320C5331575BCF1E1857073D73",
+  "owning_roles": [
+    "worms_port_planner",
+    "worms_port_test_worker",
+    "worms_port_docs_keeper"
+  ],
+  "scope": [
+    "Contract the owner-approved D2K policy wake as a Lane 1 comparative falsifier before implementation, with unchanged F4 as its gameplay home carrier and ProductAuthority none.",
+    "Compare exact baseline selection with terminal-residue tie cleanup, a preparation-response-only lethal guard, and a global lethal guard without editing model.py, F4, or any existing policy.",
+    "Execute the historical F4 starts 448/512/576/640/704 across the two report orientations and all 25 policy pairs, plus starts 639/640/641 across all four independent actor/mirror orientations and all policy pairs: 2200 matches total.",
+    "Bind Worms_Port base 3812456bc8de5859588818276e4c1fff930f678c, clean read-only CRPM commit 053c6fc0a90ed48d8667016b18a1d10106a7a2bc, D2K raw/result digests, unchanged model/config hashes, F4 schema 11, seed 3237998097, and 16-turn horizon.",
+    "Emit strict deterministic carrier, selection-edge, immediate-win, residue, path, recurrence, terminal, orientation, phase-transport, and diagnostic records in raw digest 49a7effcf241fa3b7db519cb498ed54e83705030c365dc4986eeceaa1e018eac and result digest 24b24c7595a1902b2a38070fc97cbf4e0ff4a41e381ca5338b70c51f85eff8bd.",
+    "Reproduce baseline 158/250 and vector 30/28/30/30/40; show tie-only 158/250, preparation response 166/250 with 34/32/34/30/36, and global guard 184/250 with 38/36/38/40/32.",
+    "Reject lethal-first policy transport after 24 response-guard outcome witnesses follow responder phase: first-actor gains at 448/512/576, equal opposing gains at 640, and second-actor gains at 704.",
+    "Return the response-phase negative/boundary landmark to D2G while preserving the first-cycle Cocoon branch, the exact local second-cycle repair, two retained normalized path mismatches, and all excluded authority ports."
+  ],
+  "non_goals": [
+    "Change F4, model.py, a config, public policy selector, legal action, transition/expiry order, recurrence key, search, report, seed, horizon, or historical candidate result.",
+    "Treat an immediate terminal action, terminal residue cleanup, local policy coherence, the unchanged 640 aggregate, or the improved 704 band as gameplay landfall.",
+    "Add or alter live Loomkeeper behavior, a gameplay mechanic, V5 rule, protocol/replay field, client/server path, reward/wallet behavior, UI, asset, package dependency, or production authority.",
+    "Import, vendor, edit, or depend on CRPM or Sorcerers; promote bounded Worms_Port transport evidence into universal doctrine, graph safety, or independent empirical support."
+  ],
+  "planned_checks": [
+    "node --import tsx --test tests/crpm-world/policy-transport-falsifier.test.ts",
+    "npx tsx scripts/run-policy-transport-falsifier.ts --output test-results/crpm-world/d2l-policy-transport/policy-transport-result.json",
+    "npm run test:crpm-world",
+    "npm run test:tactical-model",
+    "npm run test:simulation",
+    "npm run check:crpm-world-types",
+    "npm run check:types",
+    "npm run check:compliance",
+    "npm run build",
+    "git diff --check",
+    "final model/config, sealed-surface, production-import, arbitrary-execution, CRPM-vendoring, and generated-output boundary inspection"
+  ],
+  "deterministic_seeds": [
+    "3237998097"
+  ],
+  "sorcerers_reference_used": false,
+  "clean_room_records": [],
+  "check_results": [
+    {
+      "command": "node --import tsx --test tests/crpm-world/policy-transport-falsifier.test.ts",
+      "status": "pass",
+      "detail": "All seven focused tests passed in 49.5 seconds. They prove the 2200-match topology, exact primary vectors, first-cycle preservation, second-cycle repair, responder-phase outcome transport, retained orientation mismatch witnesses, deterministic non-mutation and digests, strict source binding, fixed execution, and link-aware output confinement."
+    },
+    {
+      "command": "npx tsx scripts/run-policy-transport-falsifier.ts --output test-results/crpm-world/d2l-policy-transport/policy-transport-result.json",
+      "status": "pass",
+      "detail": "The fixed runner reproduced raw digest 49a7effcf241fa3b7db519cb498ed54e83705030c365dc4986eeceaa1e018eac and emitted ignored result digest 24b24c7595a1902b2a38070fc97cbf4e0ff4a41e381ca5338b70c51f85eff8bd with analytical disposition rejected and ProductAuthority none."
+    },
+    {
+      "command": "npm run test:crpm-world",
+      "status": "pass",
+      "detail": "The complete CRPM-world suite passed 111 tests with one reviewed existing unsealed-D2E skip and zero failures in 491.1 seconds, including every sealed historical contract, adapter, voyage, evaluation, D2H/D2I/D2K navigation audit, and the new D2L falsifier."
+    },
+    {
+      "command": "npm run test:tactical-model",
+      "status": "pass",
+      "detail": "The authoritative TypeScript fixture and all 41 Python tactical tests passed before implementation and again afterward. model.py, F4, policy selection, historical reports, and candidate results remain unchanged."
+    },
+    {
+      "command": "npm run test:simulation",
+      "status": "pass",
+      "detail": "All 31 production simulation tests passed; V1 through V4 state, terrain, replay, projectile, timing, and rejection behavior remain unchanged."
+    },
+    {
+      "command": "npm run check:crpm-world-types",
+      "status": "pass",
+      "detail": "The complete strict analysis/crpm_world TypeScript project, including D2L schemas, assessment, runner import, and focused tests, passed type checking."
+    },
+    {
+      "command": "npm run check:types",
+      "status": "pass",
+      "detail": "Server and client TypeScript checks passed with no production dependency on the analysis-only D2L path."
+    },
+    {
+      "command": "npm run check:compliance",
+      "status": "pass",
+      "detail": "Asset, runtime inventory, generation-component, import-boundary, package-license, work-package-evidence, and clean-room compliance passed with the completed D2L evidence record."
+    },
+    {
+      "command": "npm run build",
+      "status": "pass",
+      "detail": "The complete compliance/type/server/client build and approved-asset copy passed; D2L has no production import or runtime path."
+    },
+    {
+      "command": "git diff --check",
+      "status": "pass",
+      "detail": "The final analysis, test, documentation, and evidence diff has no whitespace errors; Git line-ending messages are configuration notices."
+    },
+    {
+      "command": "final model/config, sealed-surface, production-import, arbitrary-execution, CRPM-vendoring, and generated-output boundary inspection",
+      "status": "pass",
+      "detail": "No model/config, D2B/D2E sealed implementation, package metadata, shared/client/server/protocol/replay/reward/wallet/asset, CRPM, or Sorcerers source changed. Production code does not import D2L; the runner invokes one fixed Python module, accepts no executable operator, and rejects lexical and symbolic-link/junction output escape; generated test-results remain ignored and untracked."
+    }
+  ],
+  "reviews": [
+    {
+      "role": "worms_port_planner",
+      "reviewer": "Codex",
+      "decision": "pass",
+      "detail": "Confirmed the three fixed shadow variants make residue cleanup, bounded response improvement, and broad opportunism predict different voyages without changing mechanics, then return the failed policy direction to the navigation chart."
+    },
+    {
+      "role": "worms_port_test_worker",
+      "reviewer": "Codex",
+      "decision": "pass",
+      "detail": "Confirmed exact 1000/1200 frame topology, baseline parity, legal immediate targets, 24 phase witnesses, 214/52/236 primary substitution counts, first-cycle preservation, second-cycle repair, zero recurrence/turn-limit drift, stable digests, and fail-closed execution."
+    },
+    {
+      "role": "worms_port_docs_keeper",
+      "reviewer": "Codex",
+      "decision": "pass",
+      "detail": "Confirmed D2A, D2G, D2K, D2L, governance, implementation plan, both analysis READMEs, and evidence agree on the rejected result, false-closure warnings, ProductAuthority none, and chart-return boundary."
+    }
+  ],
+  "skipped_checks": [
+    "npm audit was not rerun because package.json and package-lock.json remain Git-identical to the starting commit and dependency changes were out of scope.",
+    "Browser matrix and physical Android/iOS testing were not run because D2L is offline analysis tooling with no runtime-facing or player-visible path."
+  ],
+  "residual_risks": [
+    "The five policies and three shadow transforms are correlated deterministic heuristics rather than optimal strategies, live Loomkeeper evidence, human behavior, or a strategy-complete game ocean.",
+    "The primary and boundary frames overlap; their 2200 matches, orientation replicas, substitutions, and outcome witnesses do not multiply independent empirical weight.",
+    "Tie-only cleanup changes 214 primary terminal actions but no outcome, duration, or recursive carrier. Its improved symmetry is terminal presentation residue, not evidence of gameplay quality.",
+    "The response guard repairs every declared later short/short omission and preserves the first Cocoon cycle, but its 24 changed outcomes follow responder phase and increase first-actor wins overall.",
+    "The response guard retains two normalized retreat-kite/best-response path mismatches at 639 and 640. They are inherited baseline residue that the narrow trigger does not touch, not a reason to widen the rejected policy.",
+    "The unchanged 640 aggregate hides four first-actor and four second-actor gains on different routes; the 704 improvement coexists with regressions at 448/512/576.",
+    "Rejecting lethal-first policy transport does not identify a replacement policy, gameplay mechanic, or sole cause of initiative. The next direction requires a revised D2G chart review.",
+    "Terrain, aim, trajectory, splash, hidden information, player execution, UI, replay, networking, rewards, assets, and production state remain outside D2A."
+  ]
+}

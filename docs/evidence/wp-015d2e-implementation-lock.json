@@ -1,0 +1,105 @@
+{
+  "schemaVersion": 1,
+  "repositoryId": "worms-port",
+  "implementationCommit": "74e1b724478d576ae2c3b6bdd181c6e2ab20efe8",
+  "implementationTree": "45af9f7c6aa8e9515c8b466db378e4e30b0081a5",
+  "implementationPaths": [
+    "analysis/crpm_world/adapters/d2a_export.py",
+    "analysis/crpm_world/adapters/d2e_i2_export.py",
+    "analysis/crpm_world/admissions/i2/cut.ts",
+    "analysis/crpm_world/admissions/i2/execute-request.ts",
+    "analysis/crpm_world/admissions/i2/implementation-lock.ts",
+    "analysis/crpm_world/admissions/i2/registry.ts",
+    "analysis/crpm_world/admissions/i2/schemas.ts",
+    "analysis/crpm_world/canonical.ts",
+    "analysis/crpm_world/kernel/compose-edges.ts",
+    "analysis/crpm_world/kernel/derive-voyage-evidence.ts",
+    "analysis/crpm_world/kernel/residual-ledger.ts",
+    "analysis/crpm_world/kernel/trace-voyage.ts",
+    "analysis/crpm_world/schemas.ts",
+    "analysis/crpm_world/types.ts",
+    "package-lock.json",
+    "scripts/run-crpm-world-design-i2.ts"
+  ],
+  "implementationFileBlobs": [
+    {
+      "path": "analysis/crpm_world/adapters/d2a_export.py",
+      "blobOid": "2bf80afacc0004fdc6f6be14ac230d9b0f380852"
+    },
+    {
+      "path": "analysis/crpm_world/adapters/d2e_i2_export.py",
+      "blobOid": "0663b9e00f03107db4b87328ce9a2b5c29d490b4"
+    },
+    {
+      "path": "analysis/crpm_world/admissions/i2/cut.ts",
+      "blobOid": "072f26ce6023cd70597f4f9333b3c9e426071cef"
+    },
+    {
+      "path": "analysis/crpm_world/admissions/i2/execute-request.ts",
+      "blobOid": "f0575ea392765beee46974bc4f470b92ce94f614"
+    },
+    {
+      "path": "analysis/crpm_world/admissions/i2/implementation-lock.ts",
+      "blobOid": "3e3923e23359ab351f3201585e779975bc57ae33"
+    },
+    {
+      "path": "analysis/crpm_world/admissions/i2/registry.ts",
+      "blobOid": "3798c679b433eedcc3472f25c767f46410a66017"
+    },
+    {
+      "path": "analysis/crpm_world/admissions/i2/schemas.ts",
+      "blobOid": "4ddd2d59b60d829135ae5e2328c3e2e21f6990bd"
+    },
+    {
+      "path": "analysis/crpm_world/canonical.ts",
+      "blobOid": "f52effc9560d9cc2fb2227080208f4e99a58ca52"
+    },
+    {
+      "path": "analysis/crpm_world/kernel/compose-edges.ts",
+      "blobOid": "582900318e774f0707879434593fc623d6aa4de9"
+    },
+    {
+      "path": "analysis/crpm_world/kernel/derive-voyage-evidence.ts",
+      "blobOid": "ea9ce423081b37339a9efb4147dfadaab32da0c0"
+    },
+    {
+      "path": "analysis/crpm_world/kernel/residual-ledger.ts",
+      "blobOid": "15eaadad5a657b86359f1e3926fe1fde18daf81c"
+    },
+    {
+      "path": "analysis/crpm_world/kernel/trace-voyage.ts",
+      "blobOid": "e29e1f4accd170e84d5fb55120137df9640ad7fd"
+    },
+    {
+      "path": "analysis/crpm_world/schemas.ts",
+      "blobOid": "2c385a784d775bbb4e9bb50d0aeaf47e6bbab086"
+    },
+    {
+      "path": "analysis/crpm_world/types.ts",
+      "blobOid": "dc9c39607b972eebba4bf6df27d823809f8d5dcb"
+    },
+    {
+      "path": "package-lock.json",
+      "blobOid": "ff3987b1224d4160a0b25fffe7952cce3364b880"
+    },
+    {
+      "path": "scripts/run-crpm-world-design-i2.ts",
+      "blobOid": "1d258247168815e66f7b55c1cee704dcd946079e"
+    }
+  ],
+  "implementationBundleDigest": "2cae366f4842538db78c5a388bf5e210731e4e4e240c06911a6380e30bed1b69",
+  "registeredAdapterChain": [
+    {
+      "id": "d2e_i2_world_design",
+      "version": 1
+    },
+    {
+      "id": "d2e_i2_analytical_export",
+      "version": 1
+    }
+  ],
+  "profileVersion": 3,
+  "requestSchemaVersion": 1,
+  "resultSchemaVersion": 1,
+  "sourceCommit": "9da87c9aeec8d9d34cfbb2ff053f69e4cf035d40"
+}

@@ -5,7 +5,7 @@ const os = require('node:os');
 const path = require('node:path');
 const test = require('node:test');
 
-const { sourceCommit, validateRecords } = require('../../scripts/check-clean-room-records');
+const { canonicalBehaviorRecordHash, sourceCommit, validateRecords } = require('../../scripts/check-clean-room-records');
 
 test('clean-room records fail closed on hash and role-separation errors', () => {
   const root = fs.mkdtempSync(path.join(os.tmpdir(), 'nimble-knots-clean-room-'));
@@ -15,7 +15,7 @@ test('clean-room records fail closed on hash and role-separation errors', () => 
 
   const valid = {
     id: 'bounded-observation',
-    work_package: 'WP-999',
+    work_package: 'WP-999D2Z',
     source_commit: sourceCommit,
     observed_material: ['visible running behavior'],
     behavior_record: 'behavior.md',
@@ -31,6 +31,17 @@ test('clean-room records fail closed on hash and role-separation errors', () => 
 
   try {
     assert.deepEqual(validateRecords([valid], root), []);
+    fs.writeFileSync(behaviorPath, behavior.replace(/\n/g, '\r\n'));
+    assert.equal(canonicalBehaviorRecordHash(behaviorPath), valid.behavior_record_sha256);
+    assert.deepEqual(validateRecords([valid], root), []);
+    fs.writeFileSync(behaviorPath, behavior);
+    const single = { ...valid, execution_mode: 'single_owner', implementer: valid.observer, reviewer: valid.observer };
+    assert.deepEqual(validateRecords([single], root), []);
+    assert.match(validateRecords([{ ...single, execution_mode: 'typo' }], root).join('\n'), /invalid execution_mode/);
+    assert.match(validateRecords([{ ...single, reviewer: 'another-reviewer' }], root).join('\n'), /same implementer/);
+    assert.match(validateRecords([{ ...single, behavior_record_sha256: '0'.repeat(64) }], root).join('\n'), /hash mismatch/);
+    assert.match(validateRecords([{ ...single, behavioral_tests: [] }], root).join('\n'), /must be non-empty/);
+    assert.match(validateRecords([{ ...single, similarity_review: 'fail' }], root).join('\n'), /must pass/);
     const observed = {
       id: valid.id,
       work_package: valid.work_package,
@@ -49,6 +60,7 @@ test('clean-room records fail closed on hash and role-separation errors', () => 
     assert.match(validateRecords([{ ...valid, behavior_record_sha256: '0'.repeat(64) }], root).join('\n'), /hash mismatch/);
     assert.match(validateRecords([{ ...valid, reviewer: valid.implementer }], root).join('\n'), /separate identities/);
     assert.match(validateRecords([{ ...valid, id: 'Invalid_ID' }], root).join('\n'), /invalid id/);
+    assert.match(validateRecords([{ ...valid, work_package: 'WP-999-D2Z' }], root).join('\n'), /invalid work_package/);
     assert.match(validateRecords([{ ...valid, unexpected: true }], root).join('\n'), /unexpected field/);
     assert.match(validateRecords([{ ...valid, behavioral_tests: [] }], root).join('\n'), /must be non-empty/);
   } finally {

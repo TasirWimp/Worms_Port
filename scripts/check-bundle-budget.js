@@ -13,9 +13,10 @@ const BUDGETS = Object.freeze({
 
 function collectInitialAssetNames(manifest) {
   const entries = Object.entries(manifest).filter(([, chunk]) => chunk.isEntry === true);
-  if (entries.length !== 1) {
-    throw new Error(`Expected exactly one Vite client entry, found ${entries.length}.`);
-  }
+  const primary = entries.length === 1
+    ? entries[0]
+    : entries.find(([key]) => key === 'index.html');
+  if (!primary) throw new Error('The Vite manifest has no unambiguous index.html game entry.');
 
   const assets = new Set();
   const visited = new Set();
@@ -28,7 +29,7 @@ function collectInitialAssetNames(manifest) {
     for (const css of chunk.css || []) assets.add(css);
     for (const imported of chunk.imports || []) visit(imported);
   };
-  visit(entries[0][0]);
+  visit(primary[0]);
   return [...assets].sort();
 }
 

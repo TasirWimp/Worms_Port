@@ -1,0 +1,124 @@
+{
+  "id": "WP-015D2C",
+  "status": "complete",
+  "starting_commit": "f5463d8185231ea8be3ce48949a458cf96ca716c",
+  "branch": "codex/wp-015d2c-range-entry-commitment",
+  "initial_worktree": "clean",
+  "starting_lock_sha256": "D4DAC6AE09A3D2F6C5A7EAA11520BAC43F1628320C5331575BCF1E1857073D73",
+  "owning_roles": [
+    "worms_port_planner",
+    "worms_port_test_worker",
+    "worms_port_docs_keeper"
+  ],
+  "scope": [
+    "Implement the owner-accepted Phase A I1 range-entry commitment candidate only in the existing Python D2A tactical model, leaving shared/simulation.ts as the sole production gameplay authority.",
+    "Add schema-versioned candidate config schema 15 as an exact F4 descendant whose only rule change removes an ordinary combined cast when that cast is illegal before movement and legal only after its own movement; relocation remains legal, ends the turn, and gives the opponent an ordinary turn before any later independently legal cast.",
+    "Keep Spoolburst preparation and stationary release, Unweave, Threadback, Cocoon, Seam Pin, Escape Slack, values, movement, action policies, and opening-search behavior unchanged.",
+    "Expose deterministic before/after direct-cast legality, range-entry relocation, ordinary response, and later-route evidence without adding persistent candidate state, resources, statuses, reactions, guaranteed casts, or production authority.",
+    "Run the mandatory 511/512/513, 575/576/577, 639/640/641, and 703/704/705 boundary frame over both first actors, both mirrors, and all 25 ordered base-policy pairs, for 100 matches per distance and 1,200 matches per config.",
+    "Bind the I1 canonical report digest 1dbefbedf8aa55e68002b91b6ed6c743085f5edbe5655a97f146d8161b053fa4 and the same-frame comparator digests C4 65a7e4f9300f9bcc51715a670760d0e74d5a25f09c1b70e5ff061b118d0e7dac, F4 8e0605617d63b25474da6df059455d0c365b93f657bf0260295788a854cd17dd, and H2 e99091ad9a75104c16136d55d73d95dc92dcca1d266369455efeb73c9316f2fe.",
+    "Reject I1 at the Phase A hard gate: it produces 1,196 Unravel results and four turn limits, no forced-opening scenario and no recurrence witness, but its 54.3 percent aggregate masks 68 percent, 32 percent, and 64 percent distance bands; the F4 80 percent first-actor rate at 704 flips to 32 percent instead of becoming a stable repair.",
+    "Record 1,188 range-entry relocations, 508 later matching direct casts, 468 later alternative actions while the entered Relic remained legal, 212 later unavailable casts, and no missing ordinary response or terminal-before-return path.",
+    "Stop before Phase B: do not register I1 with the sealed World Design Port, rotate WP-015D2B implementation/source locks, or claim candidate maturity, V5 approval, or product authority."
+  ],
+  "non_goals": [
+    "Change shared, client, server, protocol, replay, Loomkeeper, reward, wallet, asset, or V1 through V4 runtime behavior.",
+    "Add live defense, reaction timing, a new player status, a reserved or guaranteed future cast, a special opponent response, or a new resource.",
+    "Modify the sealed analysis/crpm_world implementation, its registered adapter/config/cut catalog, its authenticated implementation lock, or its historical D2A source lock.",
+    "Promote I1, add a production V5 ruleset, infer global balance or fun, or treat aggregate parity as design landfall.",
+    "Vendor, import, depend on, or edit CRPM or Sorcerers."
+  ],
+  "planned_checks": [
+    "npm run test:tactical-model",
+    "python -m analysis.tactical_model.run --config <I1-config> --starting-distances 511 512 513 575 576 577 639 640 641 703 704 705 --range-entry-boundary-sweep --output test-results/tactical-model/i1-range-entry-boundary-sweep-report.json",
+    "npm run test:simulation",
+    "npm run check:types",
+    "npm run check:work-packages",
+    "npm run check:compliance",
+    "npm run build",
+    "git diff --check",
+    "final production/import/generated-output boundary inspection"
+  ],
+  "deterministic_seeds": [
+    "3237998097"
+  ],
+  "sorcerers_reference_used": false,
+  "clean_room_records": [],
+  "check_results": [
+    {
+      "command": "npm run test:tactical-model",
+      "status": "pass",
+      "detail": "The authoritative TypeScript V4 fixture parity test and all 37 Python tactical-model tests passed. The suite locks unchanged historical behavior, the exact I1 split, prepared Spoolburst and F4-parent regressions, the complete 12-distance I1 report, and same-frame C4/F4/H2 comparator digests."
+    },
+    {
+      "command": "python -m analysis.tactical_model.run --config <I1-config> --starting-distances 511 512 513 575 576 577 639 640 641 703 704 705 --range-entry-boundary-sweep --output test-results/tactical-model/i1-range-entry-boundary-sweep-report.json",
+      "status": "pass",
+      "detail": "The analysis CLI wrote the ignored deterministic 1,200-match report. Canonical re-read reproduced digest 1dbefbedf8aa55e68002b91b6ed6c743085f5edbe5655a97f146d8161b053fa4."
+    },
+    {
+      "command": "npm run test:simulation",
+      "status": "pass",
+      "detail": "All 31 production simulation tests passed; shared/simulation.ts and shared/protocol.ts remain unchanged."
+    },
+    {
+      "command": "npm run check:types",
+      "status": "pass",
+      "detail": "Server and client TypeScript checks passed with no production-side CRPM-world or tactical-model dependency."
+    },
+    {
+      "command": "npm run check:work-packages",
+      "status": "pass",
+      "detail": "The repository evidence checker accepted 25 work-package records, including this completed Phase A/rejected-candidate record."
+    },
+    {
+      "command": "npm run check:compliance",
+      "status": "pass",
+      "detail": "Asset manifests, runtime inventory, generation components, import boundaries, package licenses, work-package evidence, and clean-room checks passed."
+    },
+    {
+      "command": "npm run build",
+      "status": "pass",
+      "detail": "The full production compliance, type, server bundle, client bundle, and approved eleven-asset copy completed successfully; I1 has no production import path."
+    },
+    {
+      "command": "git diff --check",
+      "status": "pass",
+      "detail": "The final working-tree diff has no whitespace errors; line-ending conversion notices are existing Git configuration warnings, not diff errors."
+    },
+    {
+      "command": "final production/import/generated-output boundary inspection",
+      "status": "pass",
+      "detail": "Searches found no shared/client/server import of analysis/crpm_world, no shared/protocol.ts or other production-source diff, no package or asset change, and no tracked test-results. The generated I1 report remains ignored. Changed source is confined to analysis/tactical_model, its new schema-15 config and tests, plus bounded planning/governance/evidence documentation."
+    }
+  ],
+  "reviews": [
+    {
+      "role": "worms_port_planner",
+      "reviewer": "Codex",
+      "decision": "pass",
+      "detail": "Confirmed Phase A implements exactly the accepted relocation commitment, preserves ordinary opponent response and later legality, and stops before the failed candidate could enter the World Design Port or production authority."
+    },
+    {
+      "role": "worms_port_test_worker",
+      "reviewer": "Codex",
+      "decision": "pass",
+      "detail": "Confirmed the 12-distance frame crosses both first actors, both mirrors, and every ordered base-policy pair; exact report and comparator digests, F4-parent behavior, Spoolburst separation, timeout failure, and distance-conditioned false closure are executable regressions."
+    },
+    {
+      "role": "worms_port_docs_keeper",
+      "reviewer": "Codex",
+      "decision": "pass",
+      "detail": "Confirmed the tactical README, D2A contract, D2C contract, implementation plan, governance note, and evidence agree that I1 is implemented analytically, evaluated, rejected, and not promoted."
+    }
+  ],
+  "skipped_checks": [
+    "The sealed WP-015D2B CRPM-world execution suite is not a Phase A acceptance gate: it intentionally authenticates the pre-I1 tactical-model Git blob and must fail closed while model.py differs. Its lock and registry remain unchanged because the candidate failed before Phase B.",
+    "Browser matrix and physical Android/iOS testing are not run because this package changes only the offline Python analytical model, tests, and documentation; it has no runtime-facing or player-visible import path."
+  ],
+  "residual_risks": [
+    "The ideal-direct-hit tactical model excludes terrain, aim, trajectory, splash, player skill, live Loomkeeper behavior, UI, replay, reward, and production behavior; its deterministic policy matrix is bounded evidence rather than optimal-play or player-fun proof.",
+    "I1 is rejected, not promoted: four distance-705 turn limits violate the terminal hard gate, and attractive aggregate parity masks material distance-conditioned overcorrection.",
+    "The path evidence classifies the ordinary response and next returning action, but adds no persistent obligation or reserved cast; any revised rule needs a new child work package and fresh semantics.",
+    "WP-015D2B remains sealed to its historical source and ProductAuthority none. Re-entry through the World Design Port would require a separately authorized Phase B with new source locks, config/cut registration, and adapter/evaluation review."
+  ]
+}

@@ -1,0 +1,77 @@
+{
+  "schema_version": 1,
+  "id": "wp-015b3a-patch-terrain-top-v1",
+  "work_package": "WP-015B3A",
+  "frozen_at": "2026-08-04",
+  "purpose": "Deterministically crop and uniformly downsample the exact owner-approved Patch 01 Terrain Top candidate into one horizontally repeatable textile material, with a narrow reciprocal edge blend that makes the source-derived repeat seam continuous without painting, reconstruction, or inference.",
+  "source": {
+    "default_external_path": "C:/Users/jensb/AppData/Local/Comfy-Desktop/ComfyUI-Shared/output/WormsPortFlux2KleinText_00008_.png",
+    "filename": "WormsPortFlux2KleinText_00008_.png",
+    "sha256": "BE5EB2E77062C9A86327ECC1EB7704C33F8511291709AE18A52D1AF51BE42B22",
+    "bytes": 774627,
+    "width": 1024,
+    "height": 1024,
+    "channels": 3
+  },
+  "boundaries": {
+    "allowed": [
+      "exact source verification",
+      "fixed rectangular crop",
+      "opaque RGB-to-RGBA conversion",
+      "uniform scale",
+      "deterministic RGBA resampling",
+      "fixed reciprocal horizontal edge blend",
+      "deterministic horizontal repeat proof"
+    ],
+    "blocked": [
+      "inference",
+      "manual painting",
+      "cloning",
+      "generative fill",
+      "content-aware repair",
+      "adaptive seam selection",
+      "non-uniform scale",
+      "warp",
+      "Terrain Interior generation",
+      "runtime integration"
+    ]
+  },
+  "geometry": {
+    "source_crop": {
+      "x": 0,
+      "y": 392,
+      "width": 1024,
+      "height": 256,
+      "method": "fixed full-width crop inside the reviewed uninterrupted material band; it removes only the white matte and partial transition rows above and below the 1024x281 visible source band"
+    },
+    "master": {
+      "canvas": [256, 64],
+      "uniform_scale_numerator": 1,
+      "uniform_scale_denominator": 4,
+      "horizontal_edge_blend": {
+        "mode": "reciprocal_linear_pair_blend",
+        "width_pixels": 16,
+        "method": "for pairs (x, width-1-x) inside the fixed edge band, linearly mix the two source-derived target pixels with reciprocal weights; the outer pair is exactly equal so horizontal repetition has no pixel discontinuity"
+      }
+    },
+    "review": {
+      "repeat_columns": 3,
+      "phone_preview_canvas": [192, 48]
+    }
+  },
+  "resampling": {
+    "filter": "Mitchell-Netravali bicubic",
+    "b": 0.3333333333333333,
+    "c": 0.3333333333333333,
+    "sampling": "pixel-center inverse mapping",
+    "alpha": "opaque source and opaque master",
+    "png": "8-bit non-interlaced RGBA, filter type 0, deterministic zlib level 9"
+  },
+  "outputs": {
+    "master": "patch-01-terrain-top-source-master-v1.png",
+    "repeat_3x": "patch-01-terrain-top-source-master-v1-repeat-3x.png",
+    "review_48": "patch-01-terrain-top-source-master-v1-review-48.png",
+    "report": "patch-01-terrain-top-source-master-v1.report.json",
+    "approved_master_path": "assets/masters/environment/patch-01/terrain/patch-01-terrain-top-source-master-v1.png"
+  }
+}

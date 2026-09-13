@@ -149,19 +149,19 @@ test('terminal results are emitted and consumed exactly once', () => {
     }
 });
 
-test('serialized authoritative coordinator snapshots remain below the 8 KiB event cap', () => {
+test('serialized authoritative coordinator snapshots remain below the V4 12 KiB event cap', () => {
     const coordinator = new SimulationCoordinator();
     try {
         const initial = coordinator.create('challenge_payload', 'session_payload', 0xFFFFFFFF, 'warrior');
-        assert.equal(Buffer.byteLength(JSON.stringify(initial), 'utf8') <= 8 * 1024, true);
-        assert.equal(Buffer.byteLength(canonicalSimulationJson(initial.state), 'utf8') <= 8 * 1024, true);
+        assert.equal(Buffer.byteLength(JSON.stringify(initial), 'utf8') <= 12 * 1024, true);
+        assert.equal(Buffer.byteLength(canonicalSimulationJson(initial.state), 'utf8') <= 12 * 1024, true);
 
         const aim = coordinator.apply('challenge_payload', 'player', {
             type: 'aim', angleMilliDegrees: 75_000, powerPermille: 1_000
         }, 0);
         const fired = coordinator.apply('challenge_payload', 'player', { type: 'fire' }, 0);
-        assert.equal(Buffer.byteLength(JSON.stringify(aim), 'utf8') <= 8 * 1024, true);
-        assert.equal(Buffer.byteLength(JSON.stringify(fired), 'utf8') <= 8 * 1024, true);
+        assert.equal(Buffer.byteLength(JSON.stringify(aim), 'utf8') <= 12 * 1024, true);
+        assert.equal(Buffer.byteLength(JSON.stringify(fired), 'utf8') <= 12 * 1024, true);
         assert.equal(fired.stateHash, hashSimulationState(fired.state));
         const liveTraceX = fired.state.lastProjectile!.trace[0].x;
         fired.state.lastProjectile!.trace[0].x += 1;

@@ -5,6 +5,8 @@ import { Pool, type PoolClient, type QueryResultRow } from 'pg';
 import type { RewardInfoData, RewardPayoutState } from '../../../shared/protocol';
 import {
     RewardStoreError,
+    type PeiReceipt,
+    type PeiReceiptInput,
     type RewardClaimInput,
     type RewardConfig,
     type RewardEntitlement,
@@ -40,6 +42,19 @@ type EntitlementRow = QueryResultRow & {
     included_height: string | null;
     finalized_at: Date | null;
     reason_code: string | null;
+    pei_admission_grant_id: string | null;
+};
+
+type PeiReceiptRow = QueryResultRow & {
+    id: string;
+    wallet_address: string;
+    challenge_day: string | Date | null;
+    qualification_digest: string;
+    token_digest: string | null;
+    issued_at: Date;
+    expires_at: Date | null;
+    consumed_at: Date | null;
+    entitlement_id: string | null;
 };
 
 export class PostgresRewardStore implements RewardStore {
@@ -132,9 +147,27 @@ export class PostgresRewardStore implements RewardStore {
         }
     }
 
-    public async info(day: string, config: RewardConfig): Promise<RewardInfoData> {
+    public async info(
+        day: string,
+        config: RewardConfig,
+        walletAddress?: string
+    ): Promise<RewardInfoData> {
         const row = await this.ensureDay(this.pool, day, config);
         const committed = BigInt(row.committed_luna);
+        const receiptCount = walletAddress
+            ? await this.pool.query<{ count: string }>(
+                `SELECT COUNT(*)::text AS count
+                   FROM pei_admission_grants receipt
+                  WHERE receipt.wallet_address = $1
+                    AND receipt.consumed_at IS NULL
+                    AND NOT EXISTS (
+                        SELECT 1 FROM reward_entitlements entitlement
+                         WHERE entitlement.pei_admission_grant_id = receipt.id
+                           AND entitlement.state = 'reserved'
+                    )`,
+                [walletAddress]
+            )
+            : undefined;
         return {
             status: config.mode === 'disabled'
                 ? 'disabled'
@@ -143,11 +176,55 @@ export class PostgresRewardStore implements RewardStore {
                     : committed + config.rewardLuna > config.dailyBudgetLuna
                         ? 'exhausted'
                         : 'available',
+            peiRequired: config.peiRequired === true,
+            availablePeiReceipts: Number(receiptCount?.rows[0]?.count ?? 0),
             challengeDay: day,
             rewardLuna: config.rewardLuna.toString(),
             reservationSeconds: Math.floor(config.reservationTtlMs / 1000),
             turnLimit: config.turnLimit
         };
+    }
+
+    public async issuePeiReceipt(input: PeiReceiptInput): Promise<PeiReceipt> {
+        return this.serializable(async (client) => {
+            await client.query(
+                'SELECT pg_advisory_xact_lock(hashtextextended($1, 22022))',
+                [`pei-receipt:${input.walletAddress}:${input.qualificationDigest}`]
+            );
+            const existing = await client.query<PeiReceiptRow>(
+                `SELECT * FROM pei_admission_grants
+                  WHERE wallet_address = $1 AND qualification_digest = $2
+                  ORDER BY issued_at, id
+                  LIMIT 1`,
+                [input.walletAddress, input.qualificationDigest]
+            );
+            if (existing.rows[0]) return peiReceiptFromRow(existing.rows[0]);
+            const inserted = await client.query<PeiReceiptRow>(
+                `INSERT INTO pei_admission_grants (
+                    id, wallet_address, qualification_digest, issued_at
+                 ) VALUES ($1,$2,$3,$4)
+                 RETURNING *`,
+                [
+                    input.id,
+                    input.walletAddress,
+                    input.qualificationDigest,
+                    input.issuedAt
+                ]
+            );
+            return peiReceiptFromRow(inserted.rows[0]);
+        });
+    }
+
+    public async peiReceiptStatus(
+        receiptId: string,
+        walletAddress: string
+    ): Promise<PeiReceipt | undefined> {
+        const selected = await this.pool.query<PeiReceiptRow>(
+            `SELECT * FROM pei_admission_grants
+              WHERE id = $1 AND wallet_address = $2`,
+            [receiptId, walletAddress]
+        );
+        return selected.rows[0] ? peiReceiptFromRow(selected.rows[0]) : undefined;
     }
 
     public async reserve(input: RewardReservationInput): Promise<RewardEntitlement> {
@@ -181,6 +258,7 @@ export class PostgresRewardStore implements RewardStore {
             if (!budget || budget.paused || day.paused) {
                 throw new RewardStoreError('paused', 'Sponsor rewards are paused.');
             }
+            const peiReceipt = await selectPeiReceiptForReservation(client, input);
             const consumed = await client.query<{ count: string }>(
                 `SELECT COUNT(*)::text AS count FROM reward_entitlements
                   WHERE challenge_day = $1 AND wallet_address = $2
@@ -210,7 +288,8 @@ export class PostgresRewardStore implements RewardStore {
             const reservationCount = await client.query<{ count: string }>(
                 `SELECT COUNT(*)::text AS count
                    FROM reward_entitlements
-                  WHERE challenge_day = $1 AND wallet_address = $2`,
+                  WHERE challenge_day = $1 AND wallet_address = $2
+                    AND NOT attempt_consumed`,
                 [input.challengeDay, input.walletAddress]
             );
             if (Number(reservationCount.rows[0]?.count ?? 0) >=
@@ -230,8 +309,9 @@ export class PostgresRewardStore implements RewardStore {
                         id, challenge_id, challenge_day, wallet_address, calling,
                         seed, reward_luna, state, attempt_number,
                         daily_attempt_limit, eligibility_token_digest,
-                        reservation_expires_at, created_at, updated_at
-                    ) VALUES ($1,$2,$3,$4,$5,$6,$7,'reserved',$8,$9,$10,$11,$12,$12)
+                        pei_admission_grant_id, reservation_expires_at,
+                        created_at, updated_at
+                    ) VALUES ($1,$2,$3,$4,$5,$6,$7,'reserved',$8,$9,$10,$11,$12,$13,$13)
                     RETURNING *`,
                     [
                         input.id,
@@ -244,6 +324,7 @@ export class PostgresRewardStore implements RewardStore {
                         consumedAttempts + 1,
                         dailyAttemptLimit,
                         input.eligibilityTokenDigest,
+                        peiReceipt?.id ?? null,
                         input.reservationExpiresAt,
                         input.now
                     ]
@@ -294,6 +375,21 @@ export class PostgresRewardStore implements RewardStore {
                 await this.releaseReservation(client, row, 'expired', now);
                 throw new RewardStoreError('expired', 'The reward reservation expired.');
             }
+            let peiReceipt: PeiReceiptRow | undefined;
+            if (row.pei_admission_grant_id) {
+                const selectedReceipt = await client.query<PeiReceiptRow>(
+                    'SELECT * FROM pei_admission_grants WHERE id = $1 FOR UPDATE',
+                    [row.pei_admission_grant_id]
+                );
+                peiReceipt = selectedReceipt.rows[0];
+                if (!peiReceipt || peiReceipt.wallet_address !== walletAddress ||
+                    peiReceipt.consumed_at) {
+                    throw new RewardStoreError(
+                        'ineligible',
+                        'The PEI receipt is invalid or already used.'
+                    );
+                }
+            }
             const consumed = await client.query<{ count: string }>(
                 `SELECT COUNT(*)::text AS count FROM reward_entitlements
                   WHERE challenge_day = $1 AND wallet_address = $2
@@ -317,6 +413,20 @@ export class PostgresRewardStore implements RewardStore {
                 );
                 if (!updated.rows[0]) {
                     throw new RewardStoreError('conflict', 'The reward reservation changed.');
+                }
+                if (peiReceipt) {
+                    const consumed = await client.query(
+                        `UPDATE pei_admission_grants
+                            SET consumed_at = $2, entitlement_id = $3
+                          WHERE id = $1 AND consumed_at IS NULL`,
+                        [peiReceipt.id, now, row.id]
+                    );
+                    if (!consumed.rowCount) {
+                        throw new RewardStoreError(
+                            'conflict',
+                            'The PEI receipt changed concurrently.'
+                        );
+                    }
                 }
                 await appendEvent(client, row.id, 'reserved', 'in_progress', null, now);
                 return entitlementFromRow(updated.rows[0]);
@@ -871,15 +981,62 @@ function entitlementFromRow(row: EntitlementRow): RewardEntitlement {
             ? { includedHeight: Number(row.included_height) }
             : {}),
         ...(row.finalized_at ? { finalizedAt: new Date(row.finalized_at) } : {}),
-        ...(row.reason_code ? { reasonCode: row.reason_code } : {})
+        ...(row.reason_code ? { reasonCode: row.reason_code } : {}),
+        ...(row.pei_admission_grant_id
+            ? { peiReceiptId: row.pei_admission_grant_id }
+            : {})
     };
+}
+
+function peiReceiptFromRow(row: PeiReceiptRow): PeiReceipt {
+    return {
+        id: row.id,
+        walletAddress: row.wallet_address,
+        qualificationDigest: row.qualification_digest,
+        issuedAt: new Date(row.issued_at),
+        ...(row.consumed_at ? { consumedAt: new Date(row.consumed_at) } : {}),
+        ...(row.entitlement_id ? { entitlementId: row.entitlement_id } : {})
+    };
+}
+
+async function selectPeiReceiptForReservation(
+    client: PoolClient,
+    input: RewardReservationInput
+): Promise<PeiReceiptRow | undefined> {
+    if (!input.peiReceiptRequired) return undefined;
+    const selected = await client.query<PeiReceiptRow>(
+        `SELECT receipt.*
+           FROM pei_admission_grants receipt
+          WHERE receipt.wallet_address = $1
+            AND receipt.consumed_at IS NULL
+            AND NOT EXISTS (
+                SELECT 1 FROM reward_entitlements entitlement
+                 WHERE entitlement.pei_admission_grant_id = receipt.id
+                   AND entitlement.state = 'reserved'
+            )
+          ORDER BY receipt.issued_at, receipt.id
+          LIMIT 1
+          FOR UPDATE OF receipt`,
+        [input.walletAddress]
+    );
+    const receipt = selected.rows[0];
+    if (!receipt) {
+        throw new RewardStoreError(
+            'ineligible',
+            'Complete a PEI interaction before reserving today’s rewarded match.'
+        );
+    }
+    return receipt;
 }
 
 async function readRewardMigrations(): Promise<string[]> {
     const migrations: string[] = [];
     for (const filename of [
         '001_reward_ledger.sql',
-        '002_reward_test_attempt_slots.sql'
+        '002_reward_test_attempt_slots.sql',
+        '003_pei_admission.sql',
+        '005_reward_test_attempt_slots_12.sql',
+        '006_durable_pei_receipts.sql'
     ]) {
         const candidates = [
             path.join(__dirname, '../migrations', filename),

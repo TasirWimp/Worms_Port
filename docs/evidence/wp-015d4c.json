@@ -1,0 +1,120 @@
+{
+  "id": "WP-015D4C",
+  "status": "in_progress",
+  "execution_mode": "single_owner",
+  "starting_commit": "2875e065f43fb2ee96510cb08ba0c4caafe0f34f",
+  "branch": "codex/wp-015d4c-v10f-procedural-terrain",
+  "initial_worktree": "clean",
+  "starting_lock_sha256": "6B768A8FDE2695D02555CA17201FD7CE420F9AC075B91380474DD7A643042BC8",
+  "owning_roles": [
+    "Codex primary single owner"
+  ],
+  "scope": [
+    "Retain the exact V10F reference pack and its source, revision, license and clean-room boundaries.",
+    "Preserve accepted V10 and V10E generation and state hashes behind the legacy generator seam.",
+    "Define Twin Crests, Asymmetric Rampart, Trench Needle and Stepping Mesa as typed product-owned 32-column recipes.",
+    "Compile each recipe deterministically to 256 bounded surface rows, PackedTerrain and a generated normalized ASCII review artifact.",
+    "Emit exactly eight independently tagged candidates per normalized seed and apply fixed structural, movement and direct-projectile admission.",
+    "Rank admitted candidates by the frozen lexicographic tuple and retain candidate zero as the fixed no-admission fallback.",
+    "Add replay-distinct nimble-knots-artillery-v10-r2 authority binding profile, recipe revision, candidate index and packed terrain.",
+    "Extend the offline V10 assessment across every V10F family, generated and mirrored carriers, both opening actors, mutation, Loomkeeper response and exact reconstruction.",
+    "Expose R2 through a local-only V10F phone preview with strict deterministic review seeds, review metadata and inherited mobile controls."
+  ],
+  "non_goals": [
+    "No external code, algorithm implementation, map, template, constant, identifier, image, tile or asset is copied or imported.",
+    "No WFC or property-testing dependency is added, and package.json and package-lock.json remain unchanged.",
+    "No V10F server deployment profile, database path, reward behavior, Practice selector or Daily Challenge selector is added.",
+    "No free-form Markdown or ASCII parser becomes gameplay authority; normalized ASCII is generated from typed recipes for review.",
+    "No cave, overhang, floating island, lethal gap, obstacle layer, movement rewrite or terrain-rendering rewrite is added."
+  ],
+  "planned_checks": [
+    "Run the change selector dry run and selected verification over the complete stages 1-4 diff.",
+    "Run both TypeScript projects and focused V10F compiler, admission, jump, protocol, replay and legacy-compatibility tests.",
+    "Run the complete V10/V10E/V10F offline assessment and retain its source-bound local reports.",
+    "Run compliance, diff checks and housekeeping to validate reference records, source boundaries and package tracking.",
+    "Run focused fixture and phone-browser acceptance for strict review seeds, all terrain families, both asymmetric orientations, local isolation, compact guidance and a normal jump.",
+    "Directly review the complete diff for bounded runtime work, exact replay authority, legacy compatibility and lack of public activation."
+  ],
+  "deterministic_seeds": [
+    "0x00000001 through 0x00000040 across candidate indices 0 through 7",
+    "0x13579BDF",
+    "0xC0FFEE11",
+    "0xDEADBEEF",
+    "Phone review routes: 1 authored Asymmetric Rampart, 5 reflected Asymmetric Rampart, 2 Trench Needle, 3 Stepping Mesa and 4 Twin Crests"
+  ],
+  "sorcerers_reference_used": true,
+  "clean_room_records": [
+    "wp-015d4c-v10f-procedural-terrain"
+  ],
+  "check_results": [
+    {
+      "command": "Owner-reported deployed phone acceptance after aiming correction",
+      "status": "pass",
+      "detail": "Owner confirms aiming now works and triggerable gameplay checks pass. Owner reports that gravity-curved projectile trajectories prevent terrain from delivering the expected tactical features and explicitly defers that issue. This is bounded functional acceptance, not acceptance of terrain/action tactical effectiveness. Exact deployed commit and device details were not supplied for this report."
+    },
+    {
+      "command": "2026-09-09 aim safety-stop reproduction; node --import tsx --test tests/combat/terrain-starts-v10.test.ts; node scripts/verify-changes.js",
+      "status": "pass",
+      "detail": "Reproduced first-aim failure before the fix by charging 1200ms inside the actual clone-only trajectory call. Local V10/V10E/V10F now subtract only measured preview computation from live clock debt. Regression verifies unchanged preview state, retained earlier elapsed time, default Threadball aim/fire, and safety stops for real debt before or after preview. Seven focused fixture tests pass. Selected verification passes 81 combat, 42 Practice and 110 tooling tests, types, build, four runtime smokes, security/bundle checks, and 56 canonical browser cases with three reviewed project exclusions. The V10F browser journey now opens fresh in default sideways mode and aims/fires without selecting an Action. Direct review confirms the correction is local timing only; physical-phone confirmation is pending."
+    },
+    {
+      "command": "npm run check:types; focused V10F simulation, protocol and replay tests",
+      "status": "pass",
+      "detail": "Both TypeScript projects pass. Focused coverage verifies all four exact recipe sequences, normalized ASCII snapshots, operation minima/maxima, 32-to-256 compilation, fixed eight-candidate output, both asymmetric reflections, admission, ranking, fallback, normal simulated jump landings, strict R2 protocol fields and versioned replay reconstruction/tamper rejection."
+    },
+    {
+      "command": "node --import tsx --test --test-name-pattern=V10F tests/loomkeeper/terrain-starts-v10.assessment.ts",
+      "status": "pass",
+      "detail": "All 16 V10F rows pass: four recipe families by generated/mirrored carrier and player/Loomkeeper opening actor. Every representative shot mutates a blocked surface, every response planner selects and fires on that exact resulting terrain, and combined operations, events and state hashes reconstruct exactly."
+    },
+    {
+      "command": "node scripts/verify-changes.js --dry-run --base 247e6ad; node scripts/verify-changes.js --base 247e6ad",
+      "status": "pass",
+      "detail": "The selector chose work-package/import checks, both TypeScript projects, all product suites, the complete V10 assessment, production outputs, four built-server smokes, identity/reward security, bundle budgets and the canonical phone browser phase. All selected checks passed: 125 protocol, 152 simulation, 37 Loomkeeper, 10 Relic, 78 combat, 42 Practice, 22 identity and 37 reward tests; both assessment rows passed; browser results were 59 passed with three reviewed exclusions."
+    },
+    {
+      "command": "npm run check:compliance; git diff --check; npm run audit:housekeeping",
+      "status": "pass",
+      "detail": "Asset, runtime-inventory, generation-component, import-boundary, package-license, work-package and frozen clean-room records pass, as does the diff check. Housekeeping confirms the correctly tracked V10F branch with no gone upstream branches; manual reconciliation remains limited to preserved historical in-progress packages and failed V9 reviews."
+    },
+    {
+      "command": "2026-09-08 npm run verify:daily failure review; focused six-case reproduction; node scripts/verify-changes.js",
+      "status": "pass",
+      "detail": "The daily gate's six browser failures had two concrete causes: the synthetic result fixture still exposed retry while ResultScene required retryCombat plus combatArgs, and the legacy V8 compact-landscape Loomkeeper focus button overlapped Face left. The fixture now satisfies a checked narrow ResultClient contract, the focus control stays above the legacy extra-control row, and a browser assertion protects non-overlap. All five result-recovery projects and the Chromium 844x390 V8 case pass. The complete selected correction gate also passes 78 combat, 42 Practice, 22 identity, 37 reward, 125 protocol and 110 tooling tests; builds, four smokes, security and bundle checks; 59 canonical browser cases with three reviewed skips; and eight applicable visual-logic cases with twelve expected project skips. Result and global-style changes now select the five-project visual journey."
+    },
+    {
+      "command": "2026-09-09 focused V10F fixture/browser checks; node scripts/verify-changes.js",
+      "status": "pass",
+      "detail": "The local R2 preview accepts only positive canonical uint32 review seeds, falls back to seed 1, preserves exact restart state, exposes all four families and both Asymmetric Rampart orientations, and completes a bounded Loomkeeper response. Six focused V10 fixture tests and two focused built Chromium phone journeys pass. The complete change-selected gate passes 80 combat, 42 Practice, 22 identity, 37 reward, 125 protocol and 110 tooling tests; types, production outputs, four built-server smokes, identity/reward security and bundle budgets; 61 canonical browser cases with three reviewed project skips; and eight applicable visual-logic cases with twelve expected project skips. The route made no session, challenge or reward request."
+    },
+    {
+      "command": "single-owner direct review of the V10F stages 1-4 diff",
+      "status": "pass",
+      "detail": "The direct review confirmed that runtime candidate selection performs only fixed integer geometry, movement and ballistic probes; the 180-plan Loomkeeper search runs only in offline assessment; legacy constructors omit all R2 fields; recipe metadata is strict and replay-bound; and no route, public selector, database, dependency or external product input was introduced."
+    }
+  ],
+  "reviews": [
+    {
+      "role": "primary assistant",
+      "reviewer": "single-owner V10F stages 1-4 direct review",
+      "decision": "pass"
+    },
+    {
+      "role": "primary assistant",
+      "reviewer": "single-owner V10F local phone-preview direct review",
+      "decision": "pass"
+    }
+  ],
+  "skipped_checks": [
+    "PostgreSQL did not run because the V10F preview adds no database or reward path and the change selector did not request that isolated gate; CI remains responsible when database-owned paths change.",
+    "The failed 2026-09-08 daily gate was not repeated wholesale after its six exact browser failures passed. The next 22:00 Europe/Berlin automation retains the complete zero-retry matrix, performance, npm audit and local prerequisite report.",
+    "Windows executed all selected visual behavior with snapshots ignored; only pinned Ubuntu 24.04 CI may compare or update release visual baselines.",
+    "Physical-phone checks were owner-run, not autonomous: aiming and triggerable gameplay passed; terrain/action tactical effectiveness was explicitly deferred."
+  ],
+  "residual_risks": [
+    "V10F remains a local R2 preview. Terrain/action tactical effectiveness is owner-deferred to a future terrain/ballistics tuning step; functional phone acceptance does not resolve it. Public promotion remains separate.",
+    "Runtime admission uses a bounded direct-projectile lattice; the larger 180-plan response proof remains offline and in the daily/release gate by design.",
+    "The clean-room record remains observed under the historical schema; the active single-owner policy permits direct implementation and review but does not rewrite historical separated-role evidence.",
+    "V10E physical-phone terrain feel remains open while the owner chose to proceed with V10F."
+  ]
+}

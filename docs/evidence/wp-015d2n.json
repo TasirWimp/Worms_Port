@@ -1,0 +1,147 @@
+{
+  "id": "WP-015D2N",
+  "status": "complete",
+  "starting_commit": "99818455eb24f5d46eb965dcc3e0b07125c424e2",
+  "branch": "codex/wp-015d2n-f4-bridge-calibration",
+  "initial_worktree": "clean",
+  "starting_lock_sha256": "D4DAC6AE09A3D2F6C5A7EAA11520BAC43F1628320C5331575BCF1E1857073D73",
+  "owning_roles": [
+    "worms_port_planner",
+    "worms_port_test_worker",
+    "worms_port_docs_keeper"
+  ],
+  "scope": [
+    "Contract and execute a Lane 2 mechanics-fixed bridge calibration over the exact D2M atlas and D2K raw carrier/voyage evidence.",
+    "Compare twelve declared refinements of the two aliased immediate-response source classes without searching for one scalar, cause, preferred carrier, or gameplay rule.",
+    "Compute label-independent carrier partitions, quotient-transport eligibility, explicit alias witnesses, equal-target over-refinement witnesses, public-formation/support obligations, and target-relative relevance.",
+    "Locate the earliest path-kind divergence across all eight matched 640/641 carrier pairs and preserve its co-formed route, turn, phase, separation, formation, resource, policy, orientation, and continuation residue.",
+    "Keep continuation transport, ordered-composition re-entry, actor-role transport, formation-support sufficiency, and expanded-chart admission as separate judgments.",
+    "Bind Worms_Port base 99818455eb24f5d46eb965dcc3e0b07125c424e2, clean read-only CRPM commit 053c6fc0a90ed48d8667016b18a1d10106a7a2bc, exact D2M/D2K digests, unchanged model/config hashes, seed 3237998097, and 16-turn horizon.",
+    "Return either a bounded single bridge, a covariant family requiring decorrelation, an underdeclared cut, or no relevant refinement with ProductAuthority none."
+  ],
+  "non_goals": [
+    "Change F4, model.py, a config, legal action, policy selector, transition/expiry order, recurrence key, seed, horizon, or any historical D2I/D2K/D2L/D2M result.",
+    "Add a Python probe, synthetic tactical state, wider-domain simulation, matched-twin intervention, gameplay candidate, preferred axis, or causal claim.",
+    "Treat finite partition congruence, exact separation, current phase, route history, or policy selection as sufficient gameplay design evidence.",
+    "Add or alter live Loomkeeper behavior, V5, protocol/replay, client/server, rewards/wallets, UI, assets, package metadata, or production authority.",
+    "Import, vendor, edit, or depend on CRPM or Sorcerers; promote the bounded atlas into universal doctrine, geometry, graph-safe schema, or empirical game evidence."
+  ],
+  "planned_checks": [
+    "node --import tsx --test tests/crpm-world/f4-bridge-calibration.test.ts",
+    "npx tsx scripts/run-f4-bridge-calibration.ts --output test-results/crpm-world/d2n-f4-bridge-calibration/f4-bridge-calibration-result.json",
+    "npm run test:crpm-world",
+    "npm run test:tactical-model",
+    "npm run test:simulation",
+    "npm run check:crpm-world-types",
+    "npm run check:types",
+    "npm run check:compliance",
+    "npm run build",
+    "npm audit",
+    "git diff --check",
+    "final mechanics, sealed-surface, production-import, arbitrary-execution, CRPM-vendoring, source-binding, generated-output, and bridge-overclaim inspection"
+  ],
+  "deterministic_seeds": [
+    "3237998097"
+  ],
+  "sorcerers_reference_used": false,
+  "clean_room_records": [],
+  "check_results": [
+    {
+      "command": "node --import tsx --test tests/crpm-world/f4-bridge-calibration.test.ts",
+      "status": "pass",
+      "detail": "All seven focused tests passed in 96.2 seconds. They prove exact D2M/D2K, F4, and CRPM bindings; all twelve refinement wakes; six label-independent partition families; 21 alias, 16 over-refinement, and eight predecessor-divergence witnesses; target-indexed readiness; deterministic non-mutation and digests; strict schemas; fixed probes; arbitrary-operator rejection; and link-aware output confinement."
+    },
+    {
+      "command": "npx tsx scripts/run-f4-bridge-calibration.ts --output test-results/crpm-world/d2n-f4-bridge-calibration/f4-bridge-calibration-result.json",
+      "status": "pass",
+      "detail": "The fixed runner regenerated D2I, D2K, D2L, and D2M before emitting ignored D2N result digest 5c554344271e2543cc6811fa579b28d85054da19b067acb8d12e7c60bed03dc8 with disposition covariant_bridge_family_requires_decorrelation and ProductAuthority none."
+    },
+    {
+      "command": "npm run test:crpm-world",
+      "status": "pass",
+      "detail": "The complete suite passed 126 of 127 tests with zero failures and the one reviewed existing unsealed-D2E expected skip in 227.1 seconds. It includes every sealed contract, adapter, cut, voyage, evaluation pressure case, prior navigation audit, and the new D2N calibration."
+    },
+    {
+      "command": "npm run test:tactical-model",
+      "status": "pass",
+      "detail": "The authoritative TypeScript fixture test and all 41 Python tactical-model tests passed. model.py, F4, config schema 11, actions, policies, recurrence, opening search, seed, and horizon remain unchanged."
+    },
+    {
+      "command": "npm run test:simulation",
+      "status": "pass",
+      "detail": "All 31 production simulation tests passed; V1 through V4 command, replay, terrain, projectile, timing, rejection, and terminal behavior remain unchanged."
+    },
+    {
+      "command": "npm run check:crpm-world-types",
+      "status": "pass",
+      "detail": "The strict analysis/crpm_world TypeScript project passed with the D2N schemas, assessment, runner import, and focused tests."
+    },
+    {
+      "command": "npm run check:types",
+      "status": "pass",
+      "detail": "Server and client TypeScript checks passed with no production dependency on analysis/crpm_world."
+    },
+    {
+      "command": "npm run check:compliance",
+      "status": "pass",
+      "detail": "Asset, runtime inventory, generation-component, import-boundary, package-license, work-package-evidence, and clean-room compliance passed with 34 evidence records."
+    },
+    {
+      "command": "npm run build",
+      "status": "pass",
+      "detail": "The full compliance/type/server/client build and approved-asset copy passed. The existing Vite large-chunk warning remains informational; D2N has no production import or build output."
+    },
+    {
+      "command": "npm audit",
+      "status": "pass",
+      "detail": "npm reported zero vulnerabilities. package.json and package-lock.json have the same Git blobs as the starting commit."
+    },
+    {
+      "command": "git diff --check",
+      "status": "pass",
+      "detail": "The analysis, test, documentation, manifest, and evidence diff has no whitespace errors; Git line-ending messages are configuration notices."
+    },
+    {
+      "command": "final mechanics, sealed-surface, production-import, arbitrary-execution, CRPM-vendoring, source-binding, generated-output, and bridge-overclaim inspection",
+      "status": "pass",
+      "detail": "No model/config, D2B/D2E sealed implementation, package metadata, shared/client/server/protocol/replay/reward/wallet/asset, CRPM, or Sorcerers source changed. Production code has no analysis/crpm_world import. The runner invokes only three literal fixed Python modules, accepts no executable operator, and rejects lexical and symbolic-link/junction output escape. Parent/model/config/CRPM bindings reproduce, package blobs match the base, the CRPM checkout is clean on its pinned main commit, and generated test-results remain ignored and untracked."
+    }
+  ],
+  "reviews": [
+    {
+      "role": "worms_port_planner",
+      "reviewer": "Codex",
+      "decision": "pass",
+      "detail": "Confirmed D2N is a Lane 2 mechanics-fixed bridge calibration returned through D2G, preserves partition-equivalent refinements as covariance, keeps five readiness targets separate, and licenses only a later natural matched-twin search rather than a representative bridge axis or candidate mechanic."
+    },
+    {
+      "role": "worms_port_test_worker",
+      "reviewer": "Codex",
+      "decision": "pass",
+      "detail": "Confirmed the exact twelve-refinement wake, six partition families, 21 aliases, 16 over-refinement controls, eight 640/641 seams, stable result digest, fixed execution, source drift failures, and complete regression coverage."
+    },
+    {
+      "role": "worms_port_docs_keeper",
+      "reviewer": "Codex",
+      "decision": "pass",
+      "detail": "Confirmed the D2N contract, D2G chart, operational governance, implementation plan, analysis README, CRPM source manifest, and evidence agree on the bounded covariance result, matched-twin stop gate, ProductAuthority none, and re-entry route."
+    }
+  ],
+  "skipped_checks": [
+    "The browser matrix was not run because D2N changes only offline analysis, tests, planning/evidence, and a source-manifest method reference; it has no browser-facing or player-visible path.",
+    "Physical Android and iOS testing was not run because D2N has no runtime-facing behavior and no separate device-testing environment was required."
+  ],
+  "residual_risks": [
+    "D2N reuses the exact D2K/D2M F4 lineage. Its refinements are correlated analysis of one deterministic carrier family, not independent empirical weight or player evidence.",
+    "Finite partition congruence does not identify a cause, minimal state variable, globally sufficient carrier, or gameplay mechanic. Equal partitions preserve operational covariance only.",
+    "Responder phase, completed turns, path history, and route plus formation are perfectly correlated on the declared domain. No representative may be selected until a later natural matched-twin search decorrelates them.",
+    "Exact separation removes the declared alias only by over-refining all eight known-equal 639/640 controls. It is not preferred merely because it is more detailed.",
+    "Current formation and resources do not distinguish this split, but that negative result does not make them irrelevant to other tactical targets or domains.",
+    "Policy selection and orientation remain aliased; their insufficiency does not prove that policy or scenario orientation cannot matter outside these 24 carriers.",
+    "The extra 641 relocation is a co-formation landmark rather than a sole cause or candidate rule. D2N executes no intervention and supplies no counterfactual evidence.",
+    "The five fixed policies, 16-turn horizon, and 639/640/641 starts are bounded analytical support, not strategy-complete or live Loomkeeper evidence.",
+    "Terrain, aim, trajectory, splash, hidden information, human execution/adaptation, UI, replay, networking, rewards, assets, and production state remain outside D2A.",
+    "D2N has no paired closed route and decoder. It does not establish holonomy, global geometry, global order, source-history recovery, game balance, V5 approval, or product landfall.",
+    "The next mechanics-fixed reachability package may fail to find the required natural twins. In that case the correct return is review of a V4/playtest-backed cut, not synthetic tactical states."
+  ]
+}

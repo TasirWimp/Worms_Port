@@ -1,0 +1,45 @@
+{
+  "schema_version": 8,
+  "id": "v5-range-damage-forward-seam-pin-escape-slack-spun-cocoon-threadball-unweave-candidate-f2",
+  "label": "Exploratory V5 C4 with decisive prepared Spoolburst, Spun Cocoon, and Threadball Unweave candidate F2",
+  "analysis_status": "exploratory",
+  "source_ruleset_id": "nimble-knots-artillery-v4",
+  "authority_fixture": "analysis/tactical_model/fixtures/v4-authoritative-baseline-v1.json",
+  "assumptions": [
+    "This is not nimble-knots-artillery-v5 and has no runtime, replay, protocol, or reward authority.",
+    "It keeps Candidate C4's forward-Stitch and equal 128-unit Escape Slack rules, but changes only the exploratory Spoolburst direct damage from 80 to a decisive prepared 100.",
+    "Spoolburst cannot be cast immediately. Its caster spends one full in-range turn preparing it; the charge survives exactly the opponent's next action and is available only as a stationary cast on the caster's immediately following turn if the target remains in range.",
+    "Preparation creates a Spun Cocoon that absorbs exactly one incoming Needlepoint or Spoolburst direct hit while leaving the charge intact. Threadball is not absorbed: its normal Strike deals 45 damage and leaves the charge intact, while a zero-damage Threadball Unweave cancels both the Cocoon and the charge.",
+    "Fire still ends the caster's turn. Terrain, aim, splash, animation, UI, and production counter-effects remain excluded."
+  ],
+  "world": { "width": 2048, "actor_margin": 12 },
+  "initial": { "seed": 3237998097, "player_x": 512, "loomkeeper_x": 1152, "first_actor": "player" },
+  "turn": { "maximum_turns": 16, "movement_per_turn": 64, "action_economy": "move_and_cast" },
+  "stitching": { "maximum": 100 },
+  "relics": {
+    "threadball": { "minimum_range": 0, "maximum_range": 576, "direct_damage": 45 },
+    "needlepoint": { "minimum_range": 0, "maximum_range": 640, "direct_damage": 30 },
+    "spoolburst": { "minimum_range": 0, "maximum_range": 512, "direct_damage": 100 }
+  },
+  "opening_search_depth": 3,
+  "tactical_core": {
+    "seam_pin": {
+      "relic_id": "needlepoint",
+      "maximum_separation_increase": 32,
+      "target_turns": 1,
+      "cooldown_actor_turns": 1,
+      "activation": "advance_only",
+      "retreat_cast_rule": "forbidden"
+    },
+    "escape_slack": { "per_actor": 128 },
+    "spoolburst_preparation": {
+      "relic_id": "spoolburst",
+      "preparation_turns": 1,
+      "disruption_relic_id": "threadball"
+    },
+    "spoolburst_cocoon": {
+      "absorbed_relic_ids": ["needlepoint", "spoolburst"],
+      "unweave_relic_id": "threadball"
+    }
+  }
+}

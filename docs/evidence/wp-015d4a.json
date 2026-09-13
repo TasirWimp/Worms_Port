@@ -1,0 +1,138 @@
+{
+  "id": "WP-015D4A",
+  "status": "in_progress",
+  "execution_mode": "single_owner",
+  "starting_commit": "00ee140b7c7eeafb591e5decd3eca5bcbf2278dc",
+  "branch": "codex/wp-015d4a-v10-terrain-starts-v0",
+  "initial_worktree": "clean",
+  "starting_lock_sha256": "6B768A8FDE2695D02555CA17201FD7CE420F9AC075B91380474DD7A643042BC8",
+  "owning_roles": [
+    "Codex primary single owner"
+  ],
+  "scope": [
+    "On 2026-09-07 the owner explicitly directed the running primary task to continue into V10 instead of handing the frozen observation to a fresh task. The same primary now uses only the frozen behavior record and local Worms_Port sources; it does not reopen Sorcerers or quarantine and does not claim independent clean-room review.",
+    "Re-enter the pinned public lorgan3/sorcerers reference at commit 0f45c4920321c0a3a14de30fe5cf44131a38da89 as the single-owner reference observer and freeze only behavior-level terrain inspiration for V10.",
+    "Record how battlefield silhouettes, elevation, cover, traversal, destructibility, map suitability and spawn-site limitations should inform a later independently authored V10 terrain-and-starting-position contract.",
+    "Make the V10 reference relationship discoverable from the existing repository entry points while preserving Sorcerers as GPL-3.0 quarantine/reference only.",
+    "V10A freezes the finite product-owned terrain/start contract and implementation sequence without changing runtime behavior.",
+    "V10B implements the separate V10 deterministic terrain, start, state, protocol/replay and versioned coordinator authority while preserving V1-V9 behavior and every public selector.",
+    "V10C reuses the exact bounded V9 planner through an identity-only adapter, executes its operations through V10 transitions, and exposes a local-only ?combat-preview=v10 phone candidate with inherited compact controls, opening survey and off-screen guidance.",
+    "The owner's follow-up physical-phone test reproduces the inherited tracked V9 Relic-selection bug in V10. The bounded fast-follow changes only the shared V9/V10 controls and browser proof: Attack choices submit their cost-free authority selection immediately, current selection and fresh-aim guidance stay visible, and the red Use button performs the cast. Defense utilities still require Use.",
+    "The first redeployed fast-follow still let aim begin while Relic selection awaited authority. A quick aim could therefore lock before the later selection snapshot correctly cleared it. The follow-up serializes that local interaction: aim stays unavailable until selection settles, a selected-Relic update is no longer classified as a lifecycle boundary, and the following acknowledged aim retains the chosen Relic.",
+    "V10D adds a source-bound finite assessment over the frozen 24-opening matrix: six contract seeds, generated and assessment-only mirrored carriers, and both opening actors. It runs 48 selected turns plus 24 blocked shallow-cover probes, carries the exact first-turn terrain into each reply, and reconstructs every operation, authoritative event and state hash.",
+    "The owner confirmed the pushed 941c851 V10 preview and corrected Relic selection-to-aim-to-Use sequence on the redeployed physical phone on 2026-09-08. V10D itself changes assessment, verification routing and records only."
+  ],
+  "non_goals": [
+    "No Sorcerers code, algorithms, constants, identifiers, map bytes, images, paint output or generation rules enter the product tree. The V10D assessment uses only the frozen behavior record and independently authored Worms_Port sources.",
+    "No V10 socket lifecycle, SessionRegistry admission, replay transport, reward route, deployment profile or public selector is implemented; the V10C client is a local query-gated fixture only. No caves, ladders, enclosed multi-floor maps, disconnected islands, lethal water, custom map builder, larger teams or random spawn policy are authorized.",
+    "The owner-directed inherited Relic-selection fast-follow changes no simulation, cost, AI, terrain, start, protocol, replay, reward or selector rule. V10D changes no product runtime. No public V9/V10 promotion, funded activation or V11 team work is included."
+  ],
+  "planned_checks": [
+    "Register the frozen behavior record and its exact SHA-256 in legal/clean-room-records.json, then run the clean-room and work-package evidence gates.",
+    "Freeze and inspect the V10A product contract, exact documentation paths and V10B entry boundary.",
+    "Inspect the change selector dry run and execute its selected documentation/evidence checks.",
+    "Run git diff --check and repository housekeeping; V10A itself requires no game build.",
+    "For V10B run types, focused V10 protocol/simulation/replay tests, the selector's complete runtime plan, current build outputs and built smoke.",
+    "For V10C prove exact V9 planner budget and selection parity, V10 transition-only execution, a completed local Loomkeeper response, clone-only presentation work, local-only query routing, opening survey/interruption recovery and inherited phone guidance before running the selected product gate.",
+    "For the inherited Relic-selection fast-follow, prove immediate authority selection for default and changed Relics, delayed-selection fencing before aim, a non-default selection-to-aim-to-Use cast in the default clockwise phone presentation, later-turn affordable replacement after a utility, duplicate-input fencing, unchanged V7 launch and physical-phone retest after redeployment.",
+    "For V10D run the complete six-seed, generated/mirrored and both-opening-actor matrix through the unchanged bounded V9 planner and V10 transitions; require a blocked shallow-cover probe, legal first attack, exact-terrain reply and exact reconstruction in every row.",
+    "Run the complete selected product baseline plus a fresh canonical Chromium phone phase and performance gate, then record the owner's physical-phone acceptance without treating V10D as public promotion."
+  ],
+  "deterministic_seeds": [
+    "0x00000001",
+    "0x00000002",
+    "0x00000003",
+    "0x13579BDF",
+    "0xC0FFEE11",
+    "0xDEADBEEF"
+  ],
+  "sorcerers_reference_used": true,
+  "clean_room_records": [
+    "wp-015d4a-v10-terrain-tactics"
+  ],
+  "check_results": [
+    {
+      "command": "npm run check:types; node --import tsx --test tests/protocol/terrain-starts-v10.test.ts; node --import tsx --test tests/simulation/terrain-starts-v10.test.ts tests/simulation/terrain-starts-v10-replay.test.ts",
+      "status": "pass",
+      "detail": "Both TypeScript projects pass. Two focused protocol tests and eleven focused simulation/replay tests pass. Coverage includes all six contracted assessment seeds, 48 consecutive property seeds, all Callings, three profile identities, reflection direction, surface-only connectivity, exact separation and height bands, margins, outward movement, route continuity, support, V9 transition reuse, destructive terrain mutation, canonical SHA-256, strict replay identity, automatic boundaries, tamper rejection, detached snapshots and versioned historical dispatch."
+    },
+    {
+      "command": "npm run verify:changes -- --dry-run; npm run verify:changes",
+      "status": "pass",
+      "detail": "The conservative runtime plan passed compliance, both type checks, 103 tooling tests, 123 protocol tests, 141 simulation tests, 34 Loomkeeper tests, 10 Relic tests, 73 combat tests, 42 Practice tests, 22 identity tests and 37 reward tests. Production server/client outputs, approved asset copy, built smoke across ordinary V7 plus deployed V8/V9 profiles, identity-bundle inspection, reward-security scan and bundle limits passed. The selected canonical 390x844 Chromium browser run passed 57 tests with three reviewed route skips. PostgreSQL was the only selected prerequisite unavailable locally."
+    },
+    {
+      "command": "changed-document relative link inspection; JSON parse; npm run audit:housekeeping; git diff --check",
+      "status": "pass",
+      "detail": "All relative links in the changed Markdown entry points resolve, the changed JSON files parse, and whitespace checks pass. Housekeeping identifies WP-015D4A on the correctly named local V10 branch with no upstream and no gone tracking branches. Its report-only manual-reconciliation flag comes from older in-progress records and historical V9 review entries; V10A/V10B introduce no new unresolved branch or review mismatch."
+    },
+    {
+      "command": "npm run check:types; node --import tsx --test tests/combat/resource-turns-v9.test.ts tests/combat/terrain-starts-v10.test.ts; node --import tsx --test tests/loomkeeper/resource-turns-v9.test.ts tests/loomkeeper/terrain-starts-v10.test.ts; npm run build:outputs; focused chromium-390x844 V10 browser check",
+      "status": "pass",
+      "detail": "Both TypeScript projects pass. Twenty V9/V10 combat tests and fifteen V9/V10 Loomkeeper tests pass. The V10 adapter preserves all frozen V9 budgets, statistics and selection, leaves its source untouched, and completes a V10 projectile response through V10 transitions. The local fixture proves its 30-tick planning debit and no transport/reward envelope. Production outputs build, and the canonical phone-browser case proves local-only routing, terrain identity, full-map survey, active-camera return, interruption recovery, collapsed action guidance, upper-left Pause placement, actor cards, off-screen Loomkeeper cue and accepted V10 Relic selection."
+    },
+    {
+      "command": "npm run verify:changes -- --base cbb6961; npm run verify:changes -- --base cbb6961 --phase browser; npm run verify:changes -- --base cbb6961 --phase postgres",
+      "status": "pass",
+      "detail": "The selected non-browser gate passed 75 combat, 42 Practice, 123 protocol, 141 simulation, 36 Loomkeeper, 10 Relic, 22 identity, 37 reward and 103 tooling tests, plus types, import/work-package gates, production outputs, all built V7/V8/V9 smokes, identity isolation, reward security and bundle limits. Direct review found that the first consolidated scene entry skipped Phaser's required asynchronous activation yield for injected V9 arguments; the corrected current build passes the three affected V9 live cases and the V10 case together. The complete current canonical browser phase passes 58 tests with three reviewed route exclusions. PostgreSQL is selected but reports the expected local skip because no disposable WP014_TEST_DATABASE_URL is configured."
+    },
+    {
+      "command": "npm run check:types; focused V9/V10 combat tests; focused chromium-390x844 Relic journeys; npm run verify:changes -- --base cfdcade",
+      "status": "pass",
+      "detail": "The inherited Relic-selection correction passes both TypeScript projects, 20 focused V9/V10 combat tests and three targeted phone-browser journeys. Needlepoint is selected directly from the V10 Attack drawer, a fresh aim enables Use, and the authoritative cast enters projectile phase; default Threadball and later-turn Spoolburst/Guard/affordable replacement paths also pass. After adding the direct selection-latency/rejection regression, the final combat family passes 76 tests. The remaining complete selected gate passes 42 Practice and 103 tooling tests, import/work-package checks, production outputs, all built V7/V8/V9 smokes, identity isolation, reward security and bundle limits. Its selected phone-browser phase passes 53 cases with three reviewed route exclusions."
+    },
+    {
+      "command": "node scripts/verify-changes.js --base 2650857; focused V9/V10 controls; focused default-sideways V10 phone journey",
+      "status": "pass",
+      "detail": "The acknowledgement-race correction passes 21 focused V9/V10 combat checks and the rebuilt Chromium 390x844 V10 selection-to-aim-to-Use journey under the default clockwise phone presentation. The selected gate passes 76 combat, 42 Practice and 103 tooling tests; import boundary, work-package evidence, both TypeScript projects, production outputs, all four built runtime profiles, identity isolation, reward security and bundle limits also pass. The selected phone phase passes 53 cases with three reviewed route exclusions and zero retries. Aim is unavailable while Relic selection is pending, a quick aim cannot overtake it, and the acknowledged Needlepoint remains selected through the following aim and projectile launch."
+    },
+    {
+      "command": "npm run assess:v10",
+      "status": "pass",
+      "detail": "The source-bound V10D assessment passes all 24 openings, 48 selected turns and 24 terrain-blocked shallow-cover probes in 71.1 seconds. All three terrain profiles contribute eight rows; opening actors and physical opening sides split 12/12, and rising-braid elevated sides split 4/4. Seventeen first turns mutate terrain and seven direct hits leave it unchanged; every reply consumes the exact resulting terrain. There are zero no-legal-plan, work, invariant, rollout-cap or reconstruction failures. The ignored 65,841-byte report at .cache/assessments/wp-015d4a-v10-assessment.json has SHA-256 E58978F9131C4F0D0E0C36C1A213CA5AAB21E51B496280CBA5CEA56EA2AE9180, source digest 00572330ba9db11c6107d673e4aafbafce3f84e88c9704eaf96967602b469b20 and source commit 941c851e012f0ec888389d75e020ad89a4bcbeb0."
+    },
+    {
+      "command": "npm run verify:changes; node scripts/verify-changes.js --phase browser; node scripts/verify-changes.js --phase performance",
+      "status": "pass",
+      "detail": "The selected gate passes types, compliance, 123 protocol, 141 simulation, 36 ordinary Loomkeeper, 10 Relic, 76 combat, 42 Practice, 22 identity, 37 reward and 109 tooling tests; the V10D assessment also passes inside the selected run. Production outputs, all four built server profiles and smokes, identity/reward security, the 1,497,230-byte raw and 415,492-byte gzip bundle limits, and a zero-vulnerability npm audit pass. The aggregate run's first browser navigation encountered Windows ERR_NO_BUFFER_SPACE before the page loaded; the exact case then passed alone, no project server/browser process or TCP exhaustion remained, and a fresh complete zero-retry browser phase passed 58 cases with three reviewed route exclusions. The fresh performance gate passed. PostgreSQL remains unavailable locally."
+    },
+    {
+      "command": "owner physical-phone acceptance on pushed 941c851 V10 preview",
+      "status": "pass",
+      "detail": "The owner reports that the previously corrected Relic selection-to-aim-to-Use journey now works as expected on the redeployed phone. Because V10D adds only assessment, routing and documentation, it does not invalidate that accepted runtime build."
+    }
+  ],
+  "reviews": [
+    {
+      "role": "primary assistant",
+      "reviewer": "single-owner V10C direct review",
+      "decision": "pass"
+    },
+    {
+      "role": "primary assistant",
+      "reviewer": "single-owner inherited Relic-selection fast-follow direct review",
+      "decision": "pass"
+    },
+    {
+      "role": "primary assistant",
+      "reviewer": "single-owner pending-selection race correction direct review",
+      "decision": "pass"
+    },
+    {
+      "role": "primary assistant",
+      "reviewer": "single-owner V10D assessment and acceptance direct review",
+      "decision": "pass"
+    }
+  ],
+  "skipped_checks": [
+    "The selected PostgreSQL prerequisite did not run because WP014_TEST_DATABASE_URL is unavailable locally; CI remains responsible for that isolated gate.",
+    "The full five-project Ubuntu daily/release matrix was not rerun for V10D. The existing 22:00 Europe/Berlin automation owns the daily suite, and release-boundary Ubuntu comparison remains separate from the local selected gate.",
+    "V10 public Practice, Daily Challenge and reward-path promotion were not exercised because the owner has not authorized that release decision; the accepted V10 candidate remains local-query-only."
+  ],
+  "residual_risks": [
+    "The finite source-bound matrix proves deterministic tactical reachability and replay reconstruction, but it cannot establish fun, balance or long-run win rates.",
+    "The observed reference includes unsupported topology and a non-deterministic placement policy; V10 replaces those behaviors with a small deterministic surface-only family and bounded inherited AI.",
+    "The owner-directed same-task continuation is not an independently separated clean-room implementation or review; the registered lifecycle remains observed and blocks a complete clean-room claim.",
+    "V10 remains a local preview. PostgreSQL authority, the full Ubuntu release matrix and any public Practice, Daily Challenge or reward promotion remain separate gates."
+  ]
+}

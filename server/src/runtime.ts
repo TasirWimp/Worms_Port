@@ -4,6 +4,10 @@ import path from 'path';
 import { Server as SocketIOServer } from 'socket.io';
 
 import { protocolEvents } from '../../shared/protocol';
+import { protocolEventsV8 } from '../../shared/protocol-v8';
+import type { ChallengeResultV8Runtime, CoordinatorReplayV8Automated, CoordinatorReplayV8Runtime } from '../../shared/protocol-v8';
+import type { ChallengeResultV9, CoordinatorReplayV9Automated } from '../../shared/protocol-v9';
+import type { ChallengeResultV10, CoordinatorReplayV10Automated } from '../../shared/protocol-v10-live';
 
 import { setup_game_api } from './game/api';
 import {
@@ -19,6 +23,7 @@ import {
 import { setup_room_api } from './room/api';
 import type { RewardPayoutWorker } from './reward/payout';
 import type { RewardService } from './reward/service';
+import type { PeiCoordinatorV0 } from './pei/coordinator';
 import { Room } from './room/class';
 import { RoomWatcher } from './room/watcher';
 import { Game } from './game/class';
@@ -39,11 +44,19 @@ export type RuntimeServerOptions = {
     identity?: IdentityAuthorizationOptions | false;
     rewards?: RewardService;
     rewardWorker?: RewardPayoutWorker;
+    pei?: PeiCoordinatorV0;
 };
 
 let legacyRuntimeActive = false;
 
 export function createRuntimeServer(options: RuntimeServerOptions = {}) {
+    if ((options.sessionRegistry?.stagingPracticeV8 !== undefined || options.sessionRegistry?.practiceV9 !== undefined ||
+        options.sessionRegistry?.v10PracticeOnly === true) &&
+        (options.identity || options.rewards !== undefined || options.rewardWorker !== undefined ||
+            options.allowMissingOrigin === true || process.env.ALLOW_MISSING_ORIGIN === 'true' ||
+            options.sessionOpenRateCapacity !== undefined)) {
+        throw new Error('Deployed Practice refuses identity, reward services and transport shortcuts.');
+    }
     if (legacyRuntimeActive) {
         throw new Error('Only one legacy lobby runtime may exist in a process.');
     }
@@ -69,7 +82,7 @@ export function createRuntimeServer(options: RuntimeServerOptions = {}) {
                 "form-action 'self'",
                 "script-src 'self'",
                 "style-src 'self' 'unsafe-inline'",
-                "img-src 'self' data:",
+                "img-src 'self' data: blob:",
                 "font-src 'self'",
                 "connect-src 'self' ws: wss:"
             ].join('; ')
@@ -103,6 +116,7 @@ export function createRuntimeServer(options: RuntimeServerOptions = {}) {
         ? new IdentityAuthorizationRegistry(options.identity)
         : undefined;
     let sessions!: SessionRegistry;
+    const rewardSettlementTasks = new Set<Promise<void>>();
     const emitRewardUpdate = (update: Awaited<ReturnType<RewardService['status']>>) => {
         for (const socketId of sessions.socketIdsForWallet(update.recipient)) {
             io.sockets.sockets.get(socketId)?.emit(protocolEvents.rewardUpdate, update);
@@ -110,23 +124,66 @@ export function createRuntimeServer(options: RuntimeServerOptions = {}) {
     };
     const processRewardResult = (result: Parameters<NonNullable<
         SessionRegistryOptions['onChallengeCompleted']
-    >>[0]) => {
+    >>[0] | ChallengeResultV8Runtime | ChallengeResultV9 | ChallengeResultV10,
+    replayOverride?: CoordinatorReplayV8Runtime | CoordinatorReplayV9Automated | CoordinatorReplayV10Automated) => {
+        if (result.protocolVersion === 8 && !('automationId' in result)) return;
         if (!options.rewards ||
             sessions.challengeMode(result.sessionId, result.challengeId) !== 'reward') return;
-        const replay = sessions.replayForSessionChallenge(
+        const replay = replayOverride
+            ? ('automationId' in replayOverride ? replayOverride as CoordinatorReplayV8Automated | CoordinatorReplayV9Automated | CoordinatorReplayV10Automated : undefined)
+            : sessions.replayForSessionChallenge(
             result.sessionId,
             result.challengeId
         );
-        void options.rewards.completeMatch(result, replay).then((update) => {
+        const task = options.rewards.completeMatch(result, replay).then((update) => {
             if (update) emitRewardUpdate(update);
         }).catch(() => {
             // The durable in-progress entitlement remains recoverable for operator review.
-        });
+        }).finally(() => rewardSettlementTasks.delete(task));
+        rewardSettlementTasks.add(task);
     };
     sessions = new SessionRegistry({
         ...options.sessionRegistry,
+        // Internal V8 fixtures never enter the legacy reward completion/verifier route.
+        onChallengeSnapshotV8: (snapshot,socketId) => {
+            if (socketId) io.sockets.sockets.get(socketId)?.emit(protocolEventsV8.snapshot,snapshot);
+            options.sessionRegistry?.onChallengeSnapshotV8?.(snapshot,socketId);
+        },
+        onChallengeCompletedV8: (result,socketId) => {
+            if (socketId) io.sockets.sockets.get(socketId)?.emit(protocolEventsV8.result,result);
+            options.sessionRegistry?.onChallengeCompletedV8?.(result,socketId);
+        },
+        onChallengeSettledV8: (result,replay) => {
+            processRewardResult(result,replay);
+            options.sessionRegistry?.onChallengeSettledV8?.(result,replay);
+        },
+        onChallengeSnapshotV10: (snapshot, socketId) => {
+            if (socketId) io.sockets.sockets.get(socketId)?.emit('v10:challenge.snapshot', snapshot);
+            options.sessionRegistry?.onChallengeSnapshotV10?.(snapshot, socketId);
+        },
+        onChallengeCompletedV10: (result, socketId) => {
+            if (socketId) io.sockets.sockets.get(socketId)?.emit('v10:challenge.result', result);
+            options.sessionRegistry?.onChallengeCompletedV10?.(result, socketId);
+        },
+        onChallengeSettledV10: (result, replay) => {
+            processRewardResult(result, replay);
+            options.sessionRegistry?.onChallengeSettledV10?.(result, replay);
+        },
+        onChallengeSnapshotV9: (snapshot, socketId) => {
+            if (socketId) io.sockets.sockets.get(socketId)?.emit('v9:challenge.snapshot', snapshot);
+            options.sessionRegistry?.onChallengeSnapshotV9?.(snapshot, socketId);
+        },
+        onChallengeCompletedV9: (result, socketId) => {
+            if (socketId) io.sockets.sockets.get(socketId)?.emit('v9:challenge.result', result);
+            options.sessionRegistry?.onChallengeCompletedV9?.(result, socketId);
+        },
+        onChallengeSettledV9: (result, replay) => {
+            processRewardResult(result, replay);
+            options.sessionRegistry?.onChallengeSettledV9?.(result, replay);
+        },
         onSessionClosed: (sessionId, socketId) => {
             identity?.cancelSession(sessionId);
+            options.pei?.closeSession(sessionId);
             RoomWatcher.instance.removePlayer(sessionId);
             GameWatcher.instance.hidePlayer(sessionId);
             callerClosedHandler?.(sessionId, socketId);
@@ -164,6 +221,11 @@ export function createRuntimeServer(options: RuntimeServerOptions = {}) {
         next();
     });
     app.use('/', express.static(clientDir));
+    app.get('/api/practice-profile', (_, response) => {
+        response.setHeader('Cache-Control', 'no-store');
+        response.json({ ruleset: options.sessionRegistry?.practiceV10 ? 'volcanic-v10' : 'legacy' });
+    });
+
     app.get('/', (_, response) => {
         response.sendFile(path.join(clientDir, 'index.html'));
     });
@@ -173,7 +235,8 @@ export function createRuntimeServer(options: RuntimeServerOptions = {}) {
         maxPendingConnections: options.maxPendingConnections,
         sessionOpenRateCapacity: options.sessionOpenRateCapacity,
         identity,
-        rewards: options.rewards
+        rewards: options.rewards,
+        pei: options.pei
     });
     setup_room_api(app, io, sessions);
     setup_game_api(app, io, sessions);
@@ -193,6 +256,8 @@ export function createRuntimeServer(options: RuntimeServerOptions = {}) {
         sessions.dispose();
         identity?.dispose();
         await options.rewardWorker?.close();
+        await Promise.allSettled([...rewardSettlementTasks]);
+        await options.pei?.close();
         await options.rewards?.close();
         await new Promise<void>((resolve, reject) => {
             io.close(() => {
@@ -209,6 +274,7 @@ export function createRuntimeServer(options: RuntimeServerOptions = {}) {
     const listen = async (port = 0, host = '127.0.0.1'): Promise<number> => {
         if (!initialized) {
             await options.rewards?.initialize();
+            await options.pei?.initialize();
             options.rewardWorker?.start();
             initialized = true;
         }

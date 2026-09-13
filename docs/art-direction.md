@@ -43,6 +43,42 @@ Combat is dramatic but not graphic. Impacts create cotton bursts, thread
 spirals, embroidered marks, and comic reactions. A defeated Knotkin unravels
 into fluff and thread and can later be restitched.
 
+## The Celestial Mill And Elemental Weave
+
+Above the Patchwork Realms turns the **Celestial Spinning Mill**. It draws in
+unformed cosmic fleece and spins it into NIM Thread. Where that Thread gathers
+and knots, it becomes the Worldweave: the common substance from which floating
+Patches, Knotkin bodies, Relics, clouds, and everyday materials are made. NIM
+Thread is therefore not merely decorative gold yarn. It is matter, life force,
+and magical potential in one continuous system.
+
+The world's elemental vocabulary is textile rather than geological:
+
+- **Worldweave / Thread** is substance and structure. Tightly knotted Thread
+  becomes bodies, tools, and land rather than conventional soil or stone.
+- **Air / Draft** is loose motion through the weave. It carries cotton clouds,
+  lifts fibers, and gives a spell reach and precision.
+- **Fire / Loomspark** is energy released through tension and friction. It reads
+  as warm gold, coral, and ember-like thread light rather than realistic burning
+  or graphic injury.
+- **Water / Cloudwater** is flow and transformation condensed from the cotton
+  clouds. It can wet, weight, dye, soften, or felt fibers, but no such gameplay
+  effect is committed for the competition release.
+
+Knotkin are living knots in this weave. **Stitching** describes how firmly a
+Knotkin remains held together; **Unraveling** returns loosened fibers to the
+Worldweave; **Restitching** forms them again. This connects setting, health,
+combat, defeat, and recovery through one material story.
+
+Relics focus this elemental Thread so any Calling can use the same public combat
+rules. Wizards make the underlying magic most visible: a Wizard's permanently
+held **Loomseed** anchors the Calling to the Worldweave, draws loose strands
+into a temporary cast knot, and remains with the Wizard when that smaller spell
+is released. A hit disrupts the opponent's Stitching rather than inflicting
+realistic ballistic, burning, or drowning injury. Later Callings may handle the
+same Relics differently in animation, but receive no hidden mechanical
+advantage.
+
 ## Competition Release Mode
 
 The first release is an immediately playable single-player artillery challenge
@@ -91,53 +127,136 @@ down after implementation.
 - Character silhouettes, eyes, held Relics, trajectory previews, hazards, and
   Stitching state must remain legible at the smallest supported phone viewport.
 
+## Volcanic-Ruin Background Direction (Engineering Preview)
+
+The owner-provided [volcanic-ruin scene reference](images/art-direction/backgrounds/volcanic-ruin-scene-reference-v1.png)
+is a documentation-only composition reference. It must not be cropped, shipped,
+or treated as an approved product asset. Its full provenance, hash, preparation
+boundary, and later generation requirements are in the
+[background-scene preparation brief](asset-briefs/backgrounds/volcanic-ruin-scene-preparation-v1.md).
+
+The intended presentation is a separate scene grammar: existing sky/clouds;
+a height-scaled volcanic landmark and distant jungle; a height-scaled stone
+tower ruin; and sparse seeded vegetation. These layers remain decorative and
+independent of the authoritative terrain mask, destruction, actors, and
+projectiles. WP-015D4F admits a separately budgeted, fail-closed engineering
+preview only; the exact loading, authority, and public-activation boundary is
+in the [preview-bundle contract](planning/wp-015d4f-volcanic-ruin-preview-bundle-contract.md).
+It is not V10G tactical-package scope or a Practice/Daily release decision.
+
 ## Release Relic Roster
 
 The competition release has exactly three independently designed Relics. Their
 mechanics are product-authored and do not derive from Sorcerers names,
 constants, algorithms, code, or assets.
 
-- **Threadball** (`threadball`) is the balanced baseline: a wound ball of NIM
-  Thread with medium Stitching damage and a medium circular terrain tear.
-- **Needlepoint** (`needlepoint`) is the precision choice: a toy-like polished
-  needle trailing luminous thread, with a small terrain puncture and a narrow,
-  high-damage impact area.
-- **Spoolburst** (`spoolburst`) is the control choice: an oversized wooden spool
-  releasing a broad cotton-and-thread burst, with lower peak damage but the
-  widest terrain opening and damage reach.
+- **Threadball** (`threadball`) is the balanced Worldweave spell: loose blue
+  world-thread is compressed into a hovering, magically tensioned knot with
+  luminous gold NIM Thread visible between its layers. It has medium range and
+  medium Stitching damage. It must not read as an ordinary household yarn ball,
+  earth clod, bomb, fuse, or generic fireball.
+- **Needlepoint** (`needlepoint`) is the long-range Air/Draft expression: a
+  toy-like polished needle draws a narrow line of luminous thread through the
+  air, giving the highest range and lowest Stitching damage.
+- **Spoolburst** (`spoolburst`) is the heavy Fire/Loomspark expression: an
+  over-tensioned wooden spool releases warm ember-like thread energy and rapid
+  unspooling force, giving the highest Stitching damage at the lowest range.
+
+For the Wizard's first presentation only, the Threadball family has two visual
+roles with one gameplay identity: the permanent calm Loomseed at the raised
+palm, and the smaller temporary cast Threadball that forms and launches from
+it. The Loomseed is not consumed, detached, or a second selectable Relic.
+
+Cloudwater establishes water in the setting but is not a fourth release Relic.
+A later water-focused Relic may explore flowing, weighting, dyeing, or felting
+imagery only after the basic assembled game is tested and its mechanics receive
+a separate deterministic, disclosed design gate.
+
+External Threadball candidate `2BAE664F...F4089EB` is paused as historical
+structure evidence because it reads as an ordinary yarn ball rather than the
+compressed spell described above. It is neither rejected nor approved: do not
+normalize, promote, delete, or use it as a conditioning input. WP-015B3A must
+freeze and review a new exact FLUX request contract before one replacement can
+run. That replacement completed as external output `1F41AF26...F56EC`. With the
+owner's approval, deterministic white-matte extraction and uniform centering
+produced source master
+`assets/masters/relics/threadball/relic-threadball-source-master-v1.png`
+(`608F490C...D9B6F`). The master preserves transparent gaps between tensioned
+blue strands so the gold core reads as internal Worldweave rather than a flat
+printed symbol. It is source-only and has no runtime path, animation, or
+integration authority.
+
+Patch 01's quiet off-white crochet Cloud has likewise completed owner-approved
+deterministic source-master normalization as
+`assets/masters/environment/patch-01/clouds/patch-01-cloud-source-master-v1.png`
+(`7F327B51...4B23C`). It is presentation-only source material with no runtime
+path; terrain solidity, crater shape, and collision remain code-owned.
+
+WP-015 differentiates only these two dimensions: range and maximum direct
+Stitching damage. Damage radius, terrain radius, precision, falloff, ammo,
+cooldowns, secondary effects, and Calling modifiers remain on a shared basic
+baseline or are deferred until the assembled game has been evaluated on real
+phones. Any future precision mechanic must be deterministic and disclosed; it
+must not introduce hidden or ambient random misses.
+
+The existing `nimble-knots-artillery-v2` constants remain immutable replay
+history. `nimble-knots-artillery-v3` retains them and adds only the fixed
+shared-Wizard direct-hit profile required by real-device acceptance; it maps
+the visible body without runtime image analysis and does not change terrain,
+movement, splash, or Relic values. `nimble-knots-artillery-v4` retains those
+values and profile while versioning the wider arena/camera contract. The
+range/damage identities above are planned for v5 rather than changing
+historical v2/v3/v4 results.
 
 All three use the same movement budget, angle and power inputs, projectile
 flight, collision authority, one-shot turn completion, and Stitching scale for
 player and Loomkeeper. Selection has no ammo, cooldown, hidden modifier, or
 Calling restriction and remains active until another Relic is selected.
 
-Code-drawn placeholders must remain distinct without color alone: Threadball
-uses a round wound silhouette, Needlepoint a narrow diagonal needle-and-thread
-silhouette, and Spoolburst a squat spool with an outward burst ring. Production
-art remains a later exact-file asset task.
+Code-drawn placeholders and production assets must remain distinct without
+color alone: Threadball reads as a compressed round knot of stored Worldweave
+tension, Needlepoint as fast and long-reaching Draft, and Spoolburst as heavy
+short-reaching Loomspark. Elemental presentation is visual and narrative in the
+basic release; WP-015 visuals must not imply unimplemented radius, precision,
+status, terrain, or secondary-effect differences.
 
 ## Knotkin Anatomy
 
 All Knotkin share one readable species silhouette:
 
-- a broad angular hexagonal head-and-torso with a flat crown,
-- chamfered cheeks and sloped shoulders,
-- short angular arms,
-- a narrow lower bridge,
-- two separate stubby rectangular feet,
+- a compact rounded crochet-doll head and softly oval body,
+- short soft limbs whose silhouettes remain separate from the torso,
+- two separate stubby feet resting on one readable baseline,
+- a simple crochet mitten hand with a readable upward-facing cupped palm; a
+  Wizard may permanently cradle its Calling focus there,
 - exactly two oversized glossy black bead eyes,
-- no mouth, nose, eyebrows, or other facial marks.
+- one small readable mouth suitable for expression variants, and
+- optional minimal stitched eyebrows when they strengthen a friendly
+  expression, and no nose, extra eye, duplicated mouth, or unrelated facial
+  marks.
 
-The shape is inspired by the user-supplied Nimiq emoticon reference. It must be
-expressed as soft three-dimensional anatomy, not printed as a Nimiq logo.
-Emotion comes from eye angle, body tilt, pose, costume, and animation.
+The earlier broad hexagonal anatomy was inspired by the user-supplied Nimiq
+emoticon reference. WP-015B2A through B2F showed that FLUX consistently couples
+`cute crochet character` with rounded doll anatomy, while attempts to force the
+hexagonal form accumulated mechanical residue, lost cuteness, incorrect
+headwear, or visible composite seams. On 2026-08-03 the project owner therefore
+superseded the hexagonal production requirement instead of continuing to fight
+the admitted model. Nimiq connection now comes through the approved palette,
+gold stitching, textile world, and competition context rather than a literal or
+implied logo-shaped body.
 
-Costumes may exaggerate a Calling but must not hide the shared body silhouette.
-The design must remain readable at mobile-game scale.
+Emotion comes from eye angle, the small mouth, body tilt, pose, costume, and
+animation. The neutral master keeps one simple mouth that later expression
+variants may replace without changing the eyes or the selected rounded-doll
+family.
+
+Costumes may exaggerate a Calling but must not hide the face, separate feet, or
+Relic-presenting hand. The design must remain readable at mobile-game scale.
 
 ## Callings
 
-- **Wizard:** folded hood, spool staff, pom-pom spells, tangled lightning.
+- **Wizard:** tall pointed felt hat with gold stitched stars, spool staff,
+  pom-pom spells, tangled lightning.
 - **Thief:** low hood, long scarf, needle grappling tool, button smoke bombs.
 - **Warrior:** felt armor, thimble helmet, button shield, spool hammer.
 - **Ranger:** stitched hat, twig-and-thread bow, yarn quiver.
@@ -228,33 +347,273 @@ shapes are superseded and are not canonical Knotkin anatomy.
 ![Early Knotkin fantasy Calling lineup](images/art-direction/knotkin-calling-lineup-study.png)
 
 This exploration established the Wizard, Thief, Warrior, Ranger, Alchemist,
-and Cleric lineup. Its rounded doll anatomy predates the Nimiq-inspired body
-shape and is superseded.
+and Cleric lineup. Its exact anatomy remains historical rather than a production
+master, but its friendly rounded-doll premise became directionally relevant
+again after the WP-015B2G requirement reset.
 
-### Current Knotkin Direction
+### Calling And Material Reference
 
 ![Knotkin fantasy Calling lineup](images/art-direction/knotkin-class-lineup-concept.png)
 
-This image is the canonical artwork reference for future Knotkin and Calling
-production. New character briefs, pose masters, sprites, portraits, promotional
-art, and in-game Calling depictions must begin from its visual system:
+This image remains the canonical Calling, palette, material, and world-language
+reference. Its angular anatomy is superseded by WP-015B2G. New character
+briefs, pose masters, sprites, portraits, promotional art, and in-game Calling
+depictions use the following retained parts of its visual system:
 
-- the same shared angular crochet body family,
-- exactly two oversized glossy bead eyes and no mouth,
+- exactly two oversized glossy bead eyes and one small expressive mouth,
 - the pictured Calling color identities and material vocabulary,
 - chunky yarn bodies, felt garments, visible stitches, wooden buttons, spools,
   polished thimbles, and toy-like fantasy equipment,
 - compact silhouettes that remain readable on a phone,
 - a warm handcrafted stage with cotton clouds and stitched Patchwork terrain.
 
+The project owner's 2026-08-03 mouth amendment adds one small neutral mouth so
+animation can provide expression variants. The later WP-015B2G amendment is a
+second explicit deviation: production anatomy follows the rounded crochet-doll
+family demonstrated by FLUX rather than the pictured hexagonal body. The lineup
+remains canonical for eyes, palette, material, costume vocabulary, and world
+language, not anatomy.
+
 The image is a design reference, not a sprite sheet or runtime source. The user
-has approved it as the canonical creative and generation reference, so approved
-production tools may receive the tracked file as conditioning input when its
-path and SHA-256 are recorded. Do not crop, trace, or ship its pixels directly.
-This approval does not resolve Nimiq brand or geometry rights. Generated
-derivatives remain in quarantine until their prompts, workflows, model
-licenses, source hashes, output hashes, review, and manifest entries are
-complete.
+has approved it as the canonical Calling, material, and world-language
+reference, so approved production tools may receive the tracked file as
+conditioning input when its path and SHA-256 are recorded. It is no longer the
+anatomy reference. Do not crop, trace, or ship its pixels directly.
+
+The current rounded Wizard direction is the external, quarantined B2G output:
+
+`C:\Users\jensb\AppData\Local\Comfy-Desktop\ComfyUI-Shared\output\WormsPortFlux2KleinText_00005_.png`
+
+Its SHA-256 is
+`40F9E81254A0792B967889808BD8BD8DE33DBDE5EAB7C4CBB1B336DD02BC54A5`.
+It is selected visual-direction evidence, not an approved product asset. Its
+exact prompt, seed, workflow, decision path, and outstanding normalization
+gates are recorded in
+`docs/asset-briefs/wp-015b2-generation-review.md`.
+
+### Deterministic Wizard Structure Guide
+
+![Project-owned Wizard structure guide](images/art-direction/knotkin-wizard-structure-guide.png)
+
+`docs/images/art-direction/knotkin-wizard-structure-guide.png` is a
+documentation-only control image for the bounded WP-015B2B Wizard recovery. It
+is not concept art, generated output, or a runtime sprite. The project-owned
+script `scripts/generate-wizard-structure-guide.js` draws it from the written
+Knotkin anatomy and frozen 512x512 geometry contract without reading, cropping,
+tracing, or copying any concept pixels.
+
+- PNG SHA-256:
+  `5A8F1C1D0942755F113327467462D47812A22A64BAF3DF2C5CD2E0F491FA9AA1`
+- Generator SHA-256:
+  `695B499E67794692BFEB248C22CA24C24C2D0091107B4EAAE247D29830FCAF63`
+- Canvas: opaque 1024x1024 PNG on white.
+- Frozen guide geometry: ground baseline `y=902`; held-Relic socket center
+  `(682,586)`, exactly twice the B1 512x512 coordinates.
+
+Its approved generation uses are the completed fixed-seed FLUX.2 Klein
+single-reference diagnostic and the completed WP-015B2C Gate 1 robot-scaffold
+test.
+The first use defined structure and pose while the prompt defined crochet
+material and Wizard Calling identity, but FLUX returned to rounded doll anatomy
+and failed. B2C therefore removes crochet/Calling semantics for one mechanical
+control. Gate 1 passed, and Gate 2 must reference only those exact robot bytes,
+not the guide. The guide remains documentation evidence; it may not enter
+`assets/`, substitute for exact-output review, authorize a rerun/other
+character/batch, or be described as finished product artwork.
+
+WP-015B2C proved the temporary mechanical-scaffold route without changing the
+world boundary. Gate 1's external robot is SHA-256
+`BC6B21B74C5016504A733D5D1EC306FE7F46A8CC5E526E0FFF28EB9EABC25D38`.
+Gate 2's external fitted-knit conversion is SHA-256
+`5FF0A63DAC03E13B2A3390AD77E6929A9822412E1A1E0415E7A38125D703B246`;
+it preserves `0.956188` normalized silhouette IoU and a 12-pixel baseline drift.
+This is route evidence only. The knit output retains construction seams and a
+rear scaffold volume and lacks final Calling design, alpha, socket
+normalization, animation, and exact-output product approval.
+
+WP-015B2D adopts that exact knit output only as the structural edit target for
+one Wizard cuteness and Calling-styling pass. The angular body remains fixed.
+Friendly appeal comes from slightly larger close-set bead eyes, one tiny curved
+stitched smile, softer continuous chenille, and warm textile details rather
+than a rounded or puffy body. A close-fitting folded cowl must stay inside the
+existing flat-crowned outline. This is a candidate-generation contract, not an
+amendment that permits generic doll anatomy or promotes the B2C/B2D pixels.
+
+The single B2D result confirms that these local cues restore friendly appeal.
+The project owner accepts its paired stitched eyebrows and moderate body-width
+variation as useful FLUX creativity. Its measured normalized silhouette IoU
+`0.880098` is retained as drift telemetry, not an automatic art rejection.
+B2C remains the strongest geometry reference and B2D the preferred cuteness and
+surface-treatment reference; neither image is yet normalized or approved as a
+runtime product asset.
+
+These B2B-B2F controls are now historical evidence for why the project stopped
+forcing the hexagonal body. They remain useful demonstrations of structural
+conditioning and mask limitations, but they no longer define future Knotkin
+anatomy or authorize another controlled repair.
+
+### Deterministic Wizard Cowl Edit Mask
+
+![Project-owned Wizard cowl edit mask](images/art-direction/knotkin-wizard-cowl-edit-mask.png)
+
+WP-015B2E records a second documentation-only control image at
+`docs/images/art-direction/knotkin-wizard-cowl-edit-mask.png`. White marks the
+only editable region around B2D's crown, head perimeter, and navy neck wrap;
+the central face island, body, feet, baseline, and forward Relic hand remain
+black. Its halo permits a head-worn cowl to extend above the current crown
+without opening the entire character silhouette to regeneration.
+
+- PNG SHA-256:
+  `2B6C5F51A6EA411BB8B9C40AF861A339622316CB1D9710719F7F0CDEC327425B`
+- Generator SHA-256:
+  `8DFD6623479D61603C046550F9184F13ADAE0C4FA3E40E9C49F2017E6F8634A1`
+- Canvas: opaque 1024x1024 grayscale PNG; white editable, black protected.
+- Intended base: external B2D evidence
+  `DEF9265DAA4C6F2799D16870205E2015291E3E4AAE0F61802349C9FD8D56AD00`.
+- Geometry review evidence: external B2C output
+  `5FF0A63DAC03E13B2A3390AD77E6929A9822412E1A1E0415E7A38125D703B246`;
+  it is not a second model input.
+
+The mask is source/review tooling, not artwork. It may not enter `assets/`, be
+repainted ad hoc, or be reused for another Calling. Its one B2E request has
+already been consumed; runtime availability of the exact protected-edit graph
+does not authorize a retry. Its workflow and activation history live in
+`asset-briefs/wp-015b2-generation-review.md`.
+
+### Wizard Hood Structure Controls
+
+![Project-owned Wizard hood structure guide](images/art-direction/knotkin-wizard-hood-structure-guide.png)
+
+![Project-owned Wizard hood edit mask](images/art-direction/knotkin-wizard-hood-edit-mask.png)
+
+Project-owner review rejects the B2E output as the next Wizard master despite
+its exact protected-pixel pass. Its compact head covering loses the Wizard
+calling, while the broad horizontal neck wrap reads more like a thief scarf.
+WP-015B2F responds with deterministic source controls before another model
+request: a tall asymmetrical pointed hood, open face and center neck, and two
+short separated mantle flaps. It intentionally does not define a full robe.
+
+- Structure guide SHA-256:
+  `08CB26CE3FAC6605859F9C9B51331351F28F40A005F6A101B2E575D8A56C6AB8`.
+- Generous mask SHA-256:
+  `AC9F8F101094C5C15361FD24827C4F24B7C52ACBC652000748B209CB5483F56B`.
+- Shared deterministic generator SHA-256:
+  `3B009E6F4A5908D4BAFA63426E7538F9B59DD2A4A286246FFC2604DCD7D0FB69`.
+- Intended exact base: external B2D evidence
+  `DEF9265DAA4C6F2799D16870205E2015291E3E4AAE0F61802349C9FD8D56AD00`.
+
+The mask is deliberately wider than the garment silhouette. It gives FLUX
+room to form textile folds and fully remove the rejected scarf while separate
+black islands preserve the accepted upper face and mouth. The body, forward
+Relic hand, feet, and baseline remain protected. The guide, mask, and external
+scaffold are review controls only, not runtime artwork. Project-owner approval
+permitted their exact staged derivatives for one seed `15026006` protected
+edit only. That allowance is now consumed. The hood reads clearly as a Wizard,
+but the output is rejected because exact face/mouth restoration creates visible
+hard seams; it does not permit a retry, changed control, or product promotion.
+
+Future generated art is not expected to be deterministic to the last detail.
+Protect the recognisable rounded crochet-doll family, a Calling-defining hat or
+costume that does not hide the face, an upward-facing cupped hand capable of
+presenting a separate Relic, exactly two eyes, one mouth, and friendly/cute
+phone-scale readability. Let FLUX vary eyebrow use, eye spacing, stitch pattern,
+textile folds, local proportions, and other non-protected detail. Measurements
+should reveal crop, baseline, and socket drift for later deterministic
+normalization; they no longer compare candidates to the superseded hexagonal
+silhouette.
+
+### Approved Wizard Source Master
+
+![Approved rounded crochet Wizard source master](../assets/masters/characters/knotkin/wizard/knotkin-wizard-source-master-v1.png)
+
+WP-015B2H approves this exact 512x512 RGBA file as the Wizard source master:
+
+- asset SHA-256:
+  `7AF4864E00C7206A05684312916092C6881127F921FA7CEA01524899093318A9`,
+- exact opaque B2G parent SHA-256:
+  `40F9E81254A0792B967889808BD8BD8DE33DBDE5EAB7C4CBB1B336DD02BC54A5`,
+- ground pivot `(256,451)`, visible cupped-palm Loomseed anchor/emission origin
+  `(407,228)`,
+- 192px review pivot/anchor `(96,169)` / `(153,85)`, and
+- no runtime path, animation admission, atlas placement, or collision authority.
+
+The source's rounded body and long raised arm cannot meet the superseded B1
+socket `(341,293)` at the retained baseline without shrinking the character to
+about 297 pixels tall. B2H therefore preserves the selected anatomy with one
+uniform full-height transform and records the actual palm coordinate. The
+source master intentionally remains empty-handed: a later deterministic
+presentation derivative may compose the approved Threadball source as the
+permanent Loomseed at that anchor, while a separate temporary Threadball spell
+is emitted beyond it. The normalizer removes the white background and faint
+floor shadow without repaint, fill, reconstruction, or warp. Exact-output
+review passed the two-eye/one-mouth Wizard identity, empty upward palm,
+phone-size read, dark/light alpha edge, and third-party-similarity boundary.
+This source master is the visual and geometry reference for the first
+presentation route and for later rounded-family character work; later
+derivatives still require independent manifest entries and runtime paths.
+
+### Approved Wizard Loomseed Presentation Master
+
+![Approved Wizard holding the Loomseed](../assets/masters/characters/knotkin/wizard/knotkin-wizard-loomseed-presentation-master-v1.png)
+
+WP-015B3C deterministically composes the approved Threadball source as the
+permanent Wizard Loomseed. Exact config
+`scripts/asset-normalization/wp-015b3c-wizard-loomseed-v1.json`
+(`B42E2360...C718E`) verifies both parents, maps the Threadball visual center to
+the palm anchor `(407,228)`, uniformly scales it to 64x64, and places it above
+the palm so its blue strands and gold core remain readable. Normalizer
+`scripts/compose-wizard-loomseed-presentation.js` (`58B81919...8847`) produced
+the exact 512x512 RGBA master
+`1CC252B45C93D2553AC733DAA6AA49D05D6351DCC85E61EA559ECED458C9419C`
+byte-for-byte twice. It is approved source presentation material only: no
+runtime path, animation, projectile, collision, or gameplay authority exists.
+
+The same B3C record also approves three static, source-only temporary cast
+stages from the exact Threadball parent. Frozen config
+`scripts/asset-normalization/wp-015b3c-threadball-cast-v1.json`
+(`5F4DAE04...AB19`) and composer
+`scripts/compose-threadball-cast-derivatives.js` (`6030B9A6...E9B5`) map the
+source visual center to local `(32,32)` in every 64x64 transparent canvas. The
+small formation-start is `C189A206...FDD0`, the larger formation-ready is
+`94F0DEDC...CCA9`, and the compact flight-stage projectile is
+`8ECA37C6...23E9`. A later root transform maps their local origin to the same
+Wizard emission offset `[151,-223]` from pivot `(256,451)`; it does not change
+authoritative shot origin or physics. These derivative bytes contain no new
+glow, gathering fibers, tail, impact, animation, runtime path, or gameplay
+authority. The visible strand-gathering and non-graphic Unraveling effects are
+separately admitted in source-free config
+`scripts/asset-normalization/wp-015b3c-threadball-effects-v1.json`
+(`2C9A827F...D34A`). It permits only later deterministic code-drawn halo,
+inward thread strokes, a three-segment taut tail, and at most four small
+Unraveling loops. It explicitly forbids fire/explosion imagery, damage-radius
+coupling, collision, replay, and source-master modification. These effects
+remain unintegrated until WP-015C.
+
+The first production interpretation is frozen in
+`asset-briefs/wp-015b1-vertical-slice.md`. That contract translates the lineup
+into isolated Wizard and Loomkeeper masters, a separate Threadball family, and
+decomposed Patch 01 materials without copying the lineup's composite pixels.
+The 2026-08-04 B3 simplification amendment preserves the Loomkeeper brief as
+future roster guidance but removes its distinct master from the first playable
+slice. WP-015B3/C reuse the same approved Wizard presentation for the player and
+AI opponent; WP-015D produces the distinct Loomkeeper with Thief and Warrior.
+The B3A Patch amendment separately freezes quiet Cloud, terrain-top, and
+terrain-interior source contracts. FLUX may provide textile source imagery, but
+only deterministic post-processing may establish transparent cloud edges or
+repeatable terrain joins; decorative Patches never own collision or destruction.
+
+For WP-015B0 the project owner records that the Nimiq team/foundation
+encouraged the Nimiq-inspired body geometry for the Mini App competition: its
+purpose is to bring the brand to a wider audience and build a recognizable
+connection with Nimiq. That owner-supplied record closes the project's internal
+competition-scope permission question, but does not require retaining geometry
+that proved unsuitable for the production model. WP-015B2G keeps the intended
+brand connection through Nimiq colors, gold-thread details, naming, and world
+language. It does not import or authorize an official Nimiq logo, icon, font,
+or other brand file, and the game must not claim to be an official Nimiq
+product. Generated derivatives remain in quarantine until their prompts,
+workflows, model licenses, source hashes, output hashes, review, and manifest
+entries are complete.
 
 ### Concept Provenance
 
@@ -282,9 +641,13 @@ complete.
 
 All three were generated on 2026-07-10 with OpenAI built-in image generation
 under TasirWimp's authoring direction. OpenAI output terms do not by themselves
-grant rights to third-party brands represented in input references. Nimiq
-brand-use rights and exact final-asset provenance must be confirmed before
-product approval. No Sorcerers material was used.
+grant rights to third-party brands represented in input references. The
+project-owner record above documents the Nimiq team/foundation encouragement
+and the project's historical approval to explore inspired geometry. WP-015B2G
+later supersedes that anatomy requirement on production evidence while retaining
+the intended brand connection through palette and textile language. Any official
+Nimiq brand file still needs separate exact permission and provenance.
+No Sorcerers material was used.
 
 The earlier Pocket Robot asset is a superseded import-workflow trial and is not
 part of the NIMble Knots art direction. WP-003 removed it from runtime. The
@@ -295,8 +658,8 @@ separate archive or removal policy is adopted.
 
 Required:
 
-- cute cotton Knotkin with the shared angular anatomy,
-- big eyes and no mouth,
+- cute cotton Knotkin with the shared rounded crochet-doll anatomy,
+- big eyes and one small expression-ready mouth,
 - readable fantasy Callings,
 - playful artillery confrontation,
 - tactile crochet, felt, cotton, and stitched terrain,
@@ -311,17 +674,29 @@ Blocked:
 - Worms or Team17 character silhouettes, names, UI, or branded visual motifs,
 - Sorcerers code, artwork, costumes, audio, or copied character designs,
 - realistic violence, gore, firearms, or grim military presentation,
-- robots as the canonical player characters,
+- robots as the canonical player characters; a quarantined mechanical scaffold
+  may be used only as a temporary generation-control input when its exact
+  contract and output are recorded,
 - unlicensed Nimiq brand assets or an implication that the game is an official
   Nimiq product,
 - concept art entering runtime without an approved asset-manifest entry.
 
 ## Open Decisions
 
-- Confirm written permission or an applicable license for Nimiq-inspired body
-  geometry and any official brand elements used in the final product.
-- Define the first production-ready Wizard, Thief, and Warrior animation set.
-- Define the first Patch and its destructible-material behavior.
+- If an official Nimiq logo, icon, font, or other brand file is proposed later,
+  archive its separate written permission and exact-file provenance before use.
+- The first external AutoSprite combined-Loomseed idle pilot preserved the focus
+  but failed Wizard face identity and remains rejected. On 2026-08-08 the owner
+  separately supplied and approved four transparent 5x5 Wizard sheets for the
+  first playable slice: idle, walk, Loomseed spell, and non-graphic Unraveling.
+  They share a generic crochet-Wizard presentation for both actors, are exact-file
+  manifest-bound, and fall back to the static Loomseed Wizard if they cannot load.
+  Produce and validate the distinct Loomkeeper later in WP-015D with Thief and
+  Warrior.
+- Validate Patch 01 tiling, phone composition, and code-owned circular
+  destruction before producing additional Patches or decorative layers.
+- Keep Cloudwater non-mechanical through WP-015; a playable water Relic or
+  elemental interaction requires a later disclosed rules and presentation gate.
 - Set the fixed reward, daily Prize Loom budget, eligibility window, and
   reservation timeout before enabling real payouts.
 - Provide an Android/iOS release-testing environment when physical-device

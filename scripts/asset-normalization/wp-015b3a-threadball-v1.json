@@ -1,0 +1,103 @@
+{
+  "schema_version": 1,
+  "id": "wp-015b3a-threadball-v1",
+  "work_package": "WP-015B3A",
+  "frozen_at": "2026-08-04",
+  "purpose": "Deterministically extract the exact owner-approved Worldweave Threadball candidate from its white matte, preserve the genuine open gaps between tensioned strands, and center it without repainting, reconstruction, or distortion.",
+  "source": {
+    "default_external_path": "C:/Users/jensb/AppData/Local/Comfy-Desktop/ComfyUI-Shared/output/WormsPortFlux2KleinText_00006_.png",
+    "filename": "WormsPortFlux2KleinText_00006_.png",
+    "sha256": "1F41AF26B9F15419BFB5A59E2485B70EC706AB505672EC57AC8C9295B43F56EC",
+    "bytes": 787706,
+    "width": 1024,
+    "height": 1024,
+    "channels": 3
+  },
+  "boundaries": {
+    "allowed": [
+      "background matte extraction",
+      "white-matte edge-color decontamination",
+      "largest connected subject selection",
+      "preservation of genuine open strand gaps",
+      "uniform scale",
+      "translation",
+      "deterministic RGBA resampling"
+    ],
+    "blocked": [
+      "inference",
+      "manual painting",
+      "cloning",
+      "generative fill",
+      "strand or core reconstruction",
+      "enclosed-hole filling",
+      "non-uniform scale",
+      "warp",
+      "animation",
+      "runtime integration"
+    ]
+  },
+  "matte": {
+    "background_rgb": [255, 255, 255],
+    "distance_metric": "maximum absolute RGB channel distance",
+    "hard_foreground_threshold": 8,
+    "soft_edge_low_threshold": 3,
+    "soft_edge_high_threshold": 16,
+    "soft_edge_radius_pixels": 2,
+    "component_connectivity": 8,
+    "component_selection": "largest hard-foreground component",
+    "post_resample_component_selection": "retain the largest 8-connected nonzero-alpha component after each resize to suppress isolated bicubic ringing pixels",
+    "enclosed_holes": "preserve_background",
+    "external_background": "discard, including disconnected and border-connected pixels",
+    "contact_shadow": "discard; the approved source has no contact shadow and genuine gaps between strands remain transparent",
+    "edge_color": "uncomposite soft-edge RGB from the fixed white matte using the computed alpha; hard foreground retains exact source RGB",
+    "expected_hard_bounds": {
+      "min_x": 291,
+      "min_y": 269,
+      "max_x": 740,
+      "max_y": 729
+    }
+  },
+  "geometry": {
+    "source_landmarks": {
+      "visible_center": [515.5, 499],
+      "method": "reviewed midpoint of the 8-threshold connected Worldweave knot bounds; the projectile origin is its visual center, not a character socket"
+    },
+    "master": {
+      "canvas": [256, 256],
+      "uniform_scale_numerator": 190,
+      "uniform_scale_denominator": 461,
+      "translation": [-84.46203904555315, -77.66160520607374],
+      "projectile_origin": [128, 128],
+      "motion_safe": {
+        "min_x": 24,
+        "max_x": 232,
+        "min_y": 24,
+        "max_y": 232
+      },
+      "expected_subject_bounds_unrounded": [35.48156182212582, 33, 220.93058568329718, 223]
+    },
+    "review_sizes": [48, 36, 28]
+  },
+  "resampling": {
+    "filter": "Mitchell-Netravali bicubic",
+    "b": 0.3333333333333333,
+    "c": 0.3333333333333333,
+    "sampling": "pixel-center inverse mapping",
+    "alpha": "premultiplied during filtering, straight RGBA in PNG",
+    "png": "8-bit non-interlaced RGBA, filter type 0, deterministic zlib level 9"
+  },
+  "review_backgrounds": {
+    "dark_navy": [31, 35, 70],
+    "warm_light": [247, 242, 231],
+    "contact_sheet_order": ["dark_navy", "warm_light"]
+  },
+  "outputs": {
+    "master": "relic-threadball-source-master-v1.png",
+    "review_48": "relic-threadball-source-master-v1-review-48.png",
+    "review_36": "relic-threadball-source-master-v1-review-36.png",
+    "review_28": "relic-threadball-source-master-v1-review-28.png",
+    "edge_review": "relic-threadball-source-master-v1-edge-review.png",
+    "report": "relic-threadball-source-master-v1.report.json",
+    "approved_master_path": "assets/masters/relics/threadball/relic-threadball-source-master-v1.png"
+  }
+}

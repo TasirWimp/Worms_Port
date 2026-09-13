@@ -15,6 +15,14 @@ import { PostgresRewardStore } from './reward/postgres-store';
 import { MemoryRewardStore } from './reward/memory-store';
 import { RewardService } from './reward/service';
 import type { RewardStore } from './reward/types';
+import { practiceOnlyProfileFromEnvironment } from './staging-config';
+import { V8_AUTOMATION_ID, V9_AUTOMATION_ID } from '../../shared/combat-version';
+import { V8_R1_RULESET_ID } from '../../shared/simulation-v8';
+import { V9_RULESET_ID } from '../../shared/simulation-v9';
+import { peiConfigFromEnvironment } from './pei/config';
+import { PeiCoordinatorV0 } from './pei/coordinator';
+import { NimiqRpcPeiChainAdapterV0 } from './pei/nimiq-rpc-adapter';
+import { MemoryPeiJourneyStoreV0, PostgresPeiJourneyStoreV0 } from './pei/store';
 
 const port = Number(process.env.PORT) || 3000;
 const sessionOpenRateCapacity = Number(process.env.SESSION_OPEN_RATE_CAPACITY);
@@ -29,6 +37,30 @@ void main().catch((error) => {
 });
 
 async function main(): Promise<void> {
+    const practiceProfile = practiceOnlyProfileFromEnvironment();
+    // This branch must precede all normal identity/reward parsing and construction.
+    // Saved production credentials remain dormant; pausing a worker alone is not isolation.
+    const activeRuntime = practiceProfile ? createRuntimeServer({
+        sessionRegistry: practiceProfile === 'development-v10-practice' ? { practiceV10: true, v10PracticeOnly: true } : practiceProfile === 'development-v9d-practice'
+            ? { practiceV9: 'v9d-practice' } : { stagingPracticeV8: 'staging-v8d-practice' }, identity: false
+    }) : await createNormalRuntime();
+    runtime = activeRuntime;
+    await activeRuntime.listen(port, '0.0.0.0');
+    if (practiceProfile) {
+        const v9 = practiceProfile === 'development-v9d-practice';
+        const v10 = practiceProfile === 'development-v10-practice';
+        console.log(`Runtime ${practiceProfile} / ${v10 ? 'nimble-knots-artillery-v10-r5' : v9 ? V9_RULESET_ID : V8_R1_RULESET_ID} / ${v10 ? 'wp-015d4h-v10-live-v1' : v9 ? V9_AUTOMATION_ID : V8_AUTOMATION_ID} / rewards disabled`);
+    }
+    for (const ifaceinfo of Object.values(os.networkInterfaces())) {
+        for (const iface of ifaceinfo || []) {
+            if (!iface.internal && iface.family === 'IPv4') {
+                console.log(`Listening on http://${iface.address}:${port}`);
+            }
+        }
+    }
+}
+
+async function createNormalRuntime(): Promise<RuntimeServer> {
     assertRewardQualityTestEnvironment();
     const rewardConfig = rewardConfigFromEnvironment();
     const identity = identityOptionsFromEnvironment(rewardConfig.mode !== 'disabled');
@@ -44,6 +76,31 @@ async function main(): Promise<void> {
             ? { seedSource: () => rewardTestSeed }
             : {})
     });
+    const peiConfig = peiConfigFromEnvironment(process.env, rewardConfig.network);
+    let pei: PeiCoordinatorV0 | undefined;
+    if (peiConfig) {
+        if (rewardConfig.mode === 'disabled') {
+            throw new Error('PEI requires an enabled Daily reward ledger.');
+        }
+        if (identity === false || identity.publicOrigin !== peiConfig.requesterOrigin) {
+            throw new Error('PEI_RETURN_ORIGIN must match the configured identity public origin.');
+        }
+        const rpcUrl = process.env.PEI_RPC_URL?.trim();
+        if (!rpcUrl) throw new Error('PEI_RPC_URL is required when PEI is enabled.');
+        const connectionString = process.env.DATABASE_URL?.trim();
+        if (!connectionString && !(process.env.NODE_ENV === 'test' &&
+            process.env.REWARD_TEST_MEMORY_STORE === 'true')) {
+            throw new Error('PEI requires DATABASE_URL for restart-safe journey state.');
+        }
+        pei = new PeiCoordinatorV0({
+            config: peiConfig,
+            adapter: new NimiqRpcPeiChainAdapterV0(rpcUrl),
+            rewards,
+            journeyStore: connectionString
+                ? new PostgresPeiJourneyStoreV0(connectionString)
+                : new MemoryPeiJourneyStoreV0()
+        });
+    }
     let activeRuntime: RuntimeServer | undefined;
     if (store) {
         const adapter = rewardConfig.mode === 'record-only'
@@ -58,24 +115,21 @@ async function main(): Promise<void> {
             sessionOpenRateCapacity > 0
             ? sessionOpenRateCapacity
             : undefined,
-        sessionRegistry: deterministicTestSeeds.length > 0 ? {
+        sessionRegistry: {
+            practiceV10: !(process.env.NODE_ENV === 'test' && process.env.PRACTICE_TEST_VERSION === 'legacy'),
+            ...(peiConfig ? { reconnectGraceMs: (peiConfig.requestTtlSeconds + 30) * 1_000 } : {}),
+            ...(deterministicTestSeeds.length > 0 ? {
             seedSource: (_sessionId, practiceIndex) => deterministicTestSeeds[
                 practiceIndex % deterministicTestSeeds.length
             ]
-        } : undefined,
+            } : {})
+        },
         identity,
         rewards,
-        rewardWorker
+        rewardWorker,
+        pei
     });
-    runtime = activeRuntime;
-    await activeRuntime.listen(port, '0.0.0.0');
-    for (const ifaceinfo of Object.values(os.networkInterfaces())) {
-        for (const iface of ifaceinfo || []) {
-            if (!iface.internal && iface.family === 'IPv4') {
-                console.log(`Listening on http://${iface.address}:${port}`);
-            }
-        }
-    }
+    return activeRuntime;
 }
 
 for (const signal of ['SIGINT', 'SIGTERM'] as const) {

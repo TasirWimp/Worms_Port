@@ -1,0 +1,171 @@
+{
+  "id": "WP-015C",
+  "status": "complete",
+  "starting_commit": "84f93d8c800dd39f7cc1399fd23d618635ba7c26",
+  "branch": "codex/wp-015-production-assets",
+  "initial_worktree": "clean",
+  "starting_lock_sha256": "E3E461C3D97BEA4EAA18C87ABA4C83FB8B5286EC10A4235BE789679EFC8F0412",
+  "owning_roles": [
+    "worms_port_base_game_worker",
+    "worms_port_asset_curator",
+    "worms_port_test_worker",
+    "worms_port_reviewer"
+  ],
+  "scope": [
+    "Load the eleven exact manifest-approved runtime copies, retaining the static Loomseed Wizard and procedural fallback when a runtime image or animation sheet cannot load.",
+    "Present the same approved Wizard-with-Loomseed for the player and Loomkeeper while retaining code-owned actor labels, team cues, positions, rules, and authority.",
+    "Tile the approved Cloud, Terrain Top, and Terrain Interior only as decorative layers over code-owned terrain geometry, and bind the approved Threadball presentation stages to existing authoritative events.",
+    "Admit the four owner-supplied exact AutoSprite Wizard sheets as immutable sources and byte-identical runtime copies, sliced at runtime without an atlas or pixel alteration.",
+    "Use only nimble-knots-artillery-v3 for the bounded shared-Wizard direct-hit profile while preserving V1/V2 behavior byte-for-byte.",
+    "Close the bounded AutoSprite and FLUX.2 research evidence routes without adding any generated research output to the product.",
+    "Apply the owner-approved uniform 30 percent shared-Wizard presentation scale and readable decorative Patch-material mapping without changing runtime asset bytes, terrain authority, collision, replay, rewards, or simulation."
+  ],
+  "non_goals": [
+    "Generate, alter, approve, or promote another source raster, atlas, animation, or runtime asset beyond the exact four owner-supplied AutoSprite sheets.",
+    "Change V1/V2 simulation, collision, damage, projectile paths, replay, turn timing, AI policy, rewards, or their rulesets.",
+    "Change V3 Relic constants, terrain footprint, movement, projectile launch, gravity, splash damage, Loomkeeper policy, or reward eligibility.",
+    "Derive hitboxes dynamically from image pixels, use Patch pixels as collision truth, or remove the procedural fallback.",
+    "Approve or update a visual baseline from Windows or treat browser automation as a substitute for real-device acceptance.",
+    "Upload the raw empty-handed Wizard, runtime copies, or any rejected generated output to AutoSprite or FLUX.2; use a paid control, retry, prompt variation, normalizer, staging, or product path for those closed research gates."
+  ],
+  "planned_checks": [
+    "npm run check:compliance",
+    "npm run check:types",
+    "npm run test:combat",
+    "npm run test:simulation",
+    "npm run test:relics",
+    "npm run test:protocol",
+    "npm run test:tooling",
+    "node --import tsx --test tests/reward/runtime.test.ts",
+    "npm run build",
+    "npm run check:bundle-budget",
+    "npm run test:browser:matrix",
+    "WP-015C AutoSprite and FLUX.2 evidence review",
+    "GitHub Actions Visual baseline candidates run 31264979770 (Ubuntu 24.04) and explicit artifact inspection",
+    "Samsung phone acceptance",
+    "implementation scope and import-boundary review"
+  ],
+  "deterministic_seeds": [
+    "1",
+    "3735928559"
+  ],
+  "sorcerers_reference_used": false,
+  "clean_room_records": [],
+  "check_results": [
+    {
+      "command": "npm run check:compliance",
+      "status": "pass",
+      "detail": "Final documentation-only closure run passed asset manifest, 11-file runtime inventory, generation-component, import-boundary, package-license, work-package, and clean-room checks."
+    },
+    {
+      "command": "npm run check:types",
+      "status": "pass",
+      "detail": "Both TypeScript projects passed after the final presentation-scale refinement."
+    },
+    {
+      "command": "npm run test:combat",
+      "status": "pass",
+      "detail": "All 20 combat tests passed, including all-Relic completed-cast ordering and continuous Loomseed-origin presentation geometry."
+    },
+    {
+      "command": "npm run test:simulation",
+      "status": "pass",
+      "detail": "All 30 deterministic terrain, command, trace, damage, timeout, replay, and bounded-workload tests passed during the slice."
+    },
+    {
+      "command": "npm run test:relics",
+      "status": "pass",
+      "detail": "All 9 Relic tests passed, including V3 direct-hit behavior and V1/V2 replay preservation."
+    },
+    {
+      "command": "npm run test:protocol",
+      "status": "pass",
+      "detail": "All 38 strict transport, Practice, replay, and snapshot-schema tests passed for V3."
+    },
+    {
+      "command": "npm run test:tooling",
+      "status": "pass",
+      "detail": "All 61 tooling tests passed; they prove the 11 exact approved source masters total 1,402,579 bytes and every build copy is byte-identical."
+    },
+    {
+      "command": "node --import tsx --test tests/reward/runtime.test.ts",
+      "status": "pass",
+      "detail": "Both runtime transport and security-header tests passed; the C slice did not change reward authority."
+    },
+    {
+      "command": "npm run build",
+      "status": "pass",
+      "detail": "Compliance, types, server/client production builds, and exact copying of all 11 approved runtime assets passed."
+    },
+    {
+      "command": "npm run check:bundle-budget",
+      "status": "pass",
+      "detail": "Final measured bundle sizes were 1,450,829 / 1,500,000 bytes for the largest initial JavaScript chunk and 402,367 / 430,000 bytes for initial JavaScript plus CSS gzip."
+    },
+    {
+      "command": "npm run test:browser:matrix",
+      "status": "pass",
+      "detail": "The full zero-retry mobile matrix passed 95 applicable Chromium/WebKit results in 7.1 minutes with 60 reviewed policy skips."
+    },
+    {
+      "command": "WP-015C AutoSprite and FLUX.2 evidence review",
+      "status": "pass",
+      "detail": "The four exact owner-supplied transparent 5x5/256px AutoSprite sheets passed admission and source/runtime byte checks. Earlier AutoSprite pilots remain rejected external evidence; the one FLUX.2 image request was moderated without output and the separate text-only diagnostic remains rejected for product admission. Neither research route adds a product asset, retry, or runtime path."
+    },
+    {
+      "command": "GitHub Actions Visual baseline candidates run 31264979770 (Ubuntu 24.04) and explicit artifact inspection",
+      "status": "pass",
+      "detail": "The exact branch ref 5484e4801df6672441ada6347b4e366363e7b56b completed the pinned artifact-only workflow in 4m24s. Explicit technical inspection of canonical full-motion, player-projectile, Loomkeeper-aim, and wide-start candidates confirmed the enlarged shared Wizards, readable Patch material, unchanged Cloud, Loomseed-origin presentation, and continuous player/Loomkeeper ballistic read. No Windows image or committed visual baseline was created or updated."
+    },
+    {
+      "command": "Samsung phone acceptance",
+      "status": "pass",
+      "detail": "After deployment to Render, the project owner tested the final presentation-scale refinement on a Samsung phone and reported that it worked as expected."
+    },
+    {
+      "command": "implementation scope and import-boundary review",
+      "status": "pass",
+      "detail": "Reviewed the final route: no Sorcerers code or assets, no source-pixel alteration, no baseline update, no new dependency, and no change to simulation, reward, or server authority beyond the already-versioned V3 direct-hit profile."
+    }
+  ],
+  "reviews": [
+    {
+      "role": "project owner",
+      "reviewer": "Jens Bernhardt",
+      "decision": "pass",
+      "detail": "Authorized the four exact AutoSprite sheet admissions, accepted the delayed cast and visual-origin repairs, accepted the V3 shared-Wizard hitbox, and accepted the final Samsung-phone presentation-scale result."
+    },
+    {
+      "role": "worms_port_asset_curator",
+      "reviewer": "Codex",
+      "decision": "pass",
+      "detail": "Confirmed exact-file-only asset admission, byte-identical runtime copies, external quarantine for rejected research candidates, and no Sorcerers product input."
+    },
+    {
+      "role": "worms_port_test_worker",
+      "reviewer": "Codex",
+      "decision": "pass",
+      "detail": "Confirmed the full automated mobile matrix, performance and bundle measurements, final compliance run, and the pinned Ubuntu candidate workflow result."
+    },
+    {
+      "role": "worms_port_reviewer",
+      "reviewer": "Codex",
+      "decision": "pass",
+      "detail": "Confirmed the C changes remain presentation-scoped except for the explicitly versioned V3 body profile, while V1/V2 behavior remains preserved."
+    }
+  ],
+  "skipped_checks": [
+    "Physical iOS testing and Nimiq Pay WebView testing were not run in an autonomous environment; the owner supplied the required Samsung phone acceptance.",
+    "No Windows visual comparison was run or retained. Linux candidate run 31264979770 is the pinned visual workflow evidence, and it intentionally did not update a committed baseline.",
+    "The moderated FLUX.2 image request produced no media. The separate text-only diagnostic is retained as rejected external evidence only and is not a runtime input."
+  ],
+  "residual_risks": [
+    "The approved Wizard presentation is intentionally shared by player and Loomkeeper until the post-release WP-017A character roster produces a distinct Loomkeeper; labels and team rings remain the distinction.",
+    "The deterministic Loomkeeper can select Needlepoint or Spoolburst, which intentionally retain bounded procedural placeholder presentation until their approved asset/UI families are created in WP-015D3.",
+    "No committed visual baseline changed in WP-015C. Any future baseline change must be generated and inspected through the pinned Ubuntu candidate workflow before its baseline commit.",
+    "The V3 direct-hit profile is valid only for the shared Wizard presentation. WP-017A must version a new profile for any distinct Calling or Loomkeeper visual.",
+    "V3 retains V2's historical 120 maximum Needlepoint damage, so a correct direct Needlepoint contact can resolve a full 100-Stitching target in one action. WP-015D2 must separately version the planned low-damage Needlepoint tier.",
+    "AutoSprite does not publish an exact inference model/version and the four admitted PNG exports carry no prompt, job ID, or model/version metadata. A future regeneration is not equivalent without new asset review.",
+    "The owner accepted BFL service/training use only for the two closed FLUX.2 pilots. Any further input, model, request, or output requires a new decision."
+  ]
+}

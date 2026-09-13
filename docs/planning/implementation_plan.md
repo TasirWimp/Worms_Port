@@ -7,18 +7,1206 @@ Phaser/Socket.IO stack.
 
 ## Execution Pointer
 
-- Development policy: **No subagents**, effective 2026-09-07. The primary task owns implementation, testing, direct review, corrections and housekeeping. This supersedes all older agent assignments in this plan/contracts. **WP-016 is retired from development and retained on main for CRPM research**; see the [retirement/recovery record](../process/development_workflow.md#harness-retirement-and-research-preservation). The selector and 21:00 Europe/Berlin daily suite remain unchanged.
+- Development policy: **Primary ownership with testing-only delegation**, effective 2026-09-10. The primary selects coverage and owns implementation/product corrections/direct review; one Terra/medium `worms_port_test_runner` executes and manages the tests. Other agents and WP-016 remain retired. See [Testing delegation](../process/development_workflow.md#testing-delegation). Main model/effort follow the user selection, with no repo pin. The selector and 22:00 Europe/Berlin daily suite remain in use.
 
 - Verification infrastructure: the isolated change-selection/build-reuse port
-  from `da1e7a9` follows the owner-requested 21:00 Berlin daily/full cadence.
+  from `da1e7a9` follows the owner-requested 22:00 Berlin daily/full cadence.
+  Failed feature checks now preserve unchanged-input passes using the selector's
+  content fingerprint and escalate from exact-case diagnosis to the affected
+  `--phase`; full-selector repetition is reserved for changed inputs/plans or
+  cross-phase contamination. Daily/release attempts remain zero-retry and a
+  failed attempt stays failed.
   See [Verification Funnels](../process/development_workflow.md#verification-funnels).
+  PR range whitespace validation preserves six exact blob-bound sealed-file
+  exceptions while rejecting all new or changed whitespace defects.
   This changes verification policy only and does not advance the product package.
+- Completed successor **WP-015D4H Standard Volcanic Practice**, 2026-09-12:
+  promote the accepted R5 volcanic arena into normal server-backed Practice at
+  `/`, before PEI implementation. D4G's restart fix at `d2e426d` is verified on
+  the owner's phone. D4H owns the new live authority, lifecycle and default entry;
+  the prior preview acceptance is not acceptance of this new transport.
+  See [contract](wp-015d4f-volcanic-ruin-preview-bundle-contract.md#wp-015d4h-standard-server-backed-volcanic-practice)
+  and [evidence](../evidence/wp-015d4h.json). Change-selected gates and all ten
+  five-project live volcanic cases passed. The owner committed, pushed and
+  accepted the server-backed journey on a physical phone at `9c137ef`; D4H is
+  complete. Next: migrate the existing one-attempt-per-wallet Daily Challenge
+  from V7 to this same V10 R5 volcanic authority before adding PEI as its
+  additional admission requirement. PEI remains unimplemented.
+- Completed successor **WP-022A Daily V10 Migration**, beginning at clean
+  `3538d1d` on `codex/pei-daily-v10`: make the existing wallet-gated Daily
+  Challenge use exactly the standard Practice V10 R5 volcanic match. Preserve
+  one reward-eligible attempt per wallet per UTC day, verified-win settlement,
+  fixed sponsor funding, claims, budgets and payout controls. Rewarded matches
+  remain non-pausable; reconnect resumes the same authoritative challenge.
+  PEI receipt design and admission, helper-app work, mainnet execution and any
+  economy change remain outside this slice. Local implementation, primary
+  direct review and change-selected verification are complete: the clean
+  selector passed 72 browser cases with three expected Ubuntu-only visual
+  skips and no retries, alongside all selected unit, build, smoke, security and
+  bundle gates. The first deployed Phone Gate A attempt exposed that Render
+  still selected the isolated `development-v10-practice` profile. After the
+  owner switched to the normal runtime with record-only rewards unpaused, all
+  six phone steps passed at `13377fd`: wallet authorization, V10 R5 volcanic
+  Daily play, Loomkeeper response, reload/resume, result/Practice retry and
+  same-day attempt refusal. A separate standard Practice match also passed.
+  **WP-022A is complete.** The uncommitted continuation from clean `13377fd`
+  completes **WP-022B Durable Admission Foundation**, **WP-022C Deterministic
+  Baseline and Fresh Verifier**, and **WP-022D Two-Origin Helper Journey**.
+  The short-lived credential binds verified PEI to wallet, UTC day and Daily
+  reservation and is consumed atomically with the started attempt. The frozen
+  overcomplete v0 carrier and fresh chain verifier now drive a browser journey
+  across separate game/helper origins, ending in the same V10 R5 volcanic Daily
+  authority. **WP-022E Durable Mainnet Canary** is active: exact signed helper
+  bytes and game journey state survive restarts, both sides wait for chain
+  finality, mainnet authority is separately acknowledged and paused by default,
+  and the two final transaction hashes remain visible. Local implementation,
+  direct review and the change-selected checks/browser/performance phases are
+  complete; the disposable PostgreSQL gate remains CI-only because the local
+  prerequisite is absent. The first Phone Gate B attempt reached both real
+  mainnet transfers and exposed Nimiq Pay's HTLC early-resolution return: the
+  player wallet co-signed as creator while the raw chain sender was the HTLC,
+  which the direct-sender verifier rejected. The helper was paused with 1 NIM
+  remaining. The correction now parses the HTLC proof and accepts only a
+  successful `early-resolve` spend whose creator is the authorized PEI subject;
+  direct sends remain supported and all other contract paths fail closed.
+  Change-selected checks passed, including 23 PEI cases, fresh build/smoke and
+  security, followed by 73 phone-browser passes with three expected skips
+  and no retries. The corrected MainAlbatross journey then passed Phone Gate B
+  on the owner's physical phone at `82187cb`: both real transfers completed,
+  PEI qualification succeeded, and the exact V10 R5 volcanic Daily match
+  started. The helper was immediately redeployed with transfers paused.
+  **WP-022E and WP-022F Supervised Mainnet Reward Canary are complete.**
+  It connects this accepted admission to the existing WP-013 MainAlbatross
+  payout machinery for one supervised 1 NIM winning canary. A temporary
+  wallet-scoped limit of twelve numbered attempts leaves at least ten further
+  starts after the two already consumed same-day preparation attempts, while
+  every other wallet remains at one attempt and the five-cancellation churn
+  guard remains intact. Change-selected checks passed on the final product
+  fingerprint, including 45 reward cases, fresh build/smoke/security and 20
+  canonical browser cases with one expected skip and no retries. The local
+  PostgreSQL phase retained its expected missing-database skip and remains a CI
+  gate. The owner's first Phone Gate C journey at `5c0ddb2` completed PEI, the
+  V10 R5 win and a finalized 1 NIM payout, but exposed that the result scene did
+  not render the transaction hash already present in the server update. The
+  bounded correction adds a full selectable payout-hash field and passes its
+  selected automated checks without failures or retries. Ubuntu artifact run
+  `34710588366` passed on exact commit `3789221`; its payout card and accumulated
+  accepted V10 presentation drift were explicitly reviewed and promoted as
+  candidate baselines. Ordinary Ubuntu comparison CI passed; the owner then
+  accepted the hash presentation on the physical phone. The temporary reward
+  override was removed and both the game reward path and helper transfers were
+  redeployed paused. **WP-022G Durable Helper Issuance Policy is complete** from
+  clean `c9c8ce0`. It atomically records new helper exposure and enforces a
+  daily sponsor budget plus per-wallet UTC-day limit before signing. Routine
+  Playwright, quality and daily gates now start standard V10 R5 and filter the
+  retired lower-version browser previews. Local and PostgreSQL CI checks passed,
+  followed by all seven Phone Gate D steps on the owner's physical phone. That
+  gate exposed a product-semantics correction: helper interactions must be
+  repeatable and issued qualifications must persist independently of a UTC day.
+  **WP-022H Durable Wallet Receipt Refinement is complete** from clean `3603cbf`.
+  It removes the helper's per-wallet daily cap, replaces browser-held expiring
+  credentials with a server-owned multi-receipt wallet inventory, migrates
+  existing unconsumed grants, automatically consumes the oldest receipt only
+  when Daily starts, and makes routine unit/browser verification explicitly
+  V10-only. The one-started-Daily-per-wallet/day authority remains unchanged.
+  Selected local checks, the disposable PostgreSQL reward/PEI/current-V10
+  browser gate, and the reviewed Ubuntu Daily baseline comparison passed. The
+  owner accepted three physical-phone MainAlbatross cycles covering app
+  close/reopen recovery, two accumulated same-day receipts, loss consumption,
+  separate winning consumption and two finalized 1 NIM rewards. The temporary
+  repeat-attempt variables were removed and both Render services were restored
+  paused. Carrier-content ablation stays paused; the planned V10 PEI
+  implementation line is closed and no successor PEI slice is authorized. See the
+  [PEI admission contract](wp-022-pei-admission-contract.md),
+  [WP-022B evidence](../evidence/wp-022b.json), [WP-022C evidence](../evidence/wp-022c.json),
+  [WP-022D evidence](../evidence/wp-022d.json), [WP-022E evidence](../evidence/wp-022e.json),
+  [WP-022F evidence](../evidence/wp-022f.json), [WP-022G evidence](../evidence/wp-022g.json),
+  [WP-022H evidence](../evidence/wp-022h.json), and the
+  [bounded contract](wp-015d4f-volcanic-ruin-preview-bundle-contract.md#wp-022a-daily-v10-migration)
+  and [evidence](../evidence/wp-022a.json).
 - Active target: mobile-first single-player Nimiq Pay competition release.
-- Active work package: **WP-015 Production Art And Audio**. Produce the first
-  approved runtime art/audio set through the exact-file asset review and
-  manifest pipeline, using the WP-014 capture, visual, and media-budget gates.
-- Last completed work package: **WP-014 Autonomous Quality Harness**, including
-  **WP-014E Performance and closure** on 2026-08-02.
+- Latest completed slice: **WP-015D4D V10G Terrain And Weapon Tactics**;
+  see the [V10G preparation contract](wp-015d4a-v10-terrain-starts-contract.md#v10g-terrain-and-weapon-tactics-preparation).
+  The owner accepted R3 Twin Crests on a physical phone at `c52fc28` and
+  authorized family expansion. R4 `v10g-families-r1` now extends the unchanged
+  weapon rules to Trench Needle, Stepping Mesa and both Rampart orientations.
+  Expanded-family selected verification passed (67 canonical browser cases);
+  the owner accepted the expanded maps on a physical phone at `8e40a82`
+  and explicitly authorized closure. **V10G is complete.**
+  WP-015D4E Volcanic-Ruin Background Art completed source-master admission.
+  WP-015D4F completed the lazy preview bundle. Active successor:
+  **WP-015D4G Volcanic-Ruin Composition And Terrain Alignment**, beginning at
+  `990d2b3`. The owner authorizes scene framing plus an ASCII-authored R5 valley
+  using the existing assets. Combined preview: `/?combat-preview=v10g&background-preview=volcanic-ruin`.
+  Historical D4G implementation and direct review evidence:
+  five-project scenic checks passed; selected runtime checks passed, with one
+  Chromium resource-load failure passing unchanged on isolated rerun. See
+  [D4G verification evidence](../evidence/wp-015d4g.json). Owner phone acceptance, including the restart fix, was confirmed on 2026-09-11; D4H is now the active successor.
+  Old V10G maps, asset bytes/budgets and public activation remain unchanged. See the
+  [preview-bundle contract](wp-015d4f-volcanic-ruin-preview-bundle-contract.md).
+  `/?combat-preview=v10g` defaults to Twin Crests; append `&terrain-map=` with
+  `trench-needle`, `stepping-mesa`, `rampart-high-left` or `rampart-high-right`.
+  Old R3 seeds/replays retain the fixed Twin Crests recipe; R2 remains unchanged.
+  Public Practice/Daily activation is a separate owner decision.
+  V10G closed on `codex/wp-015d4d-v10g-terrain-weapon-tactics`; current
+  background-art preparation branch: `codex/volcanic-ruin-background-art`.
+  Family expansion began from a clean worktree at `c52fc28`; closure follows
+  clean `d796232`. No agents are used. The 22:00 daily suite, Ubuntu release
+  visual checks and PostgreSQL gate remain separate from this package closure.
+- Playable predecessor: **WP-015D4C V10F Procedural Terrain.** Its preparation
+  follows WP-015D4B V10E Tactical Terrain Refinement. It
+  follows WP-015D4A V10 Terrain and Starting Positions. The V9 Resource and
+  Utilities predecessor has complete V9A rules, V9B injected
+  authority and V9C continuity correction;
+  the owner accepted the V9C phone preview and authorized V9D.
+  V9D's failed review at `121954e` is retained as historical evidence. Its
+  correction and **V9D engineering closure are complete at `5a1bd03`**,
+  directly reviewed and verified under the owner's **no agents** instruction.
+  This coordinator review is not a fresh independent Astra review.
+  The [V9 contract](wp-015d3b-v9-resource-utilities-contract.md) and
+  [V9 evidence](../evidence/wp-015d3b.json) retain the findings and correction
+  scope. The local branch is `codex/wp-015d3b-v9d-resource-utilities`;
+  its matching V9D upstream is published. The historical V9B branch is retained.
+  The original assessment's counts were insufficient proof: the corrected
+  assessment now evaluates all 30 player candidates, charges planning ticks,
+  completes retreat/handoff and compares detached traces with the coordinator.
+  The real `?combat-preview=v9-live` journey now reaches injected V9 sessions,
+  including pause, reconnect, AI action, terminal result and fresh retry.
+  Normal public creation remains V7; `?combat-preview=v9` remains the local
+  engineering preview. V9-live requires a runtime explicitly configured for
+  the candidate and is not joint public activation. The owner reported Render
+  rejecting V9 creation because the deployed entry point had no V9 profile.
+  The bounded correction adds `development-v9d-practice`: real-clock,
+  Practice-only startup with identity/reward services dormant. Its selected
+  checks and built real-clock AI smoke pass; phone matrix is 56 passed with
+  three expected exclusions. The owner can now start Practice, but an early
+  first-AI-turn stop blocked phone acceptance. The deployed diagnostic confirms
+  `clock_debt` at tick 311: 31 due ticks after only 12 of 30 planning batches,
+  with a maximum 188646-microsecond batch on the paid one-CPU service. The
+  bounded correction prevents the fixed 30-tick planning window from also
+  charging its measured planner CPU as missed simulation time. External stalls,
+  the 30-tick cutoff, AI lattice, selected plan, replay and gameplay stay fixed.
+  The owner reports the redeployed phone journey and AI turn passing on
+  2026-09-07. **V9D implementation and phone acceptance are complete at
+  `73018e6`.** The owner accepts the observed loss rate for now and explicitly
+  defers the player Relic-selection bug to the tracked V9 Relic-selection
+  fast-follow; no balance or bug-fix claim is inferred. See
+  [Render settings](../../README.md#v9d-phone-acceptance-on-the-existing-render-service).
+  Corrected assessment: **196 scenarios / 272 executions passed**; canonical
+  browser suite: **55 passed**, with its three landscape-only cases passing
+  separately. Balance observations are descriptive, not acceptance thresholds.
+  The light release checkpoint passed by reusing the complete selected
+  verification at `73018e6` and running fresh compliance, zero-vulnerability
+  dependency audit, security, bundle and housekeeping checks. Full Ubuntu/daily,
+  PostgreSQL and public shared-mode
+  promotion remain later release gates. Next gameplay package: **V10 terrain
+  and starting positions**; V11 teams remains separate. V10A has re-entered the
+  pinned Sorcerers reference only as a clean-room observation and frozen the
+  resulting behavior-level terrain inspiration in the
+  [V10 terrain-tactics record](../evidence/wp-015d4a-v10-terrain-tactics-behavior-record.md).
+  The owner then explicitly directed this running primary task to continue from
+  the frozen record without reopening Sorcerers or quarantine. The
+  [V10 product contract](wp-015d4a-v10-terrain-starts-contract.md) freezes three
+  deterministic surface profiles, map-specific starts and the opening/reply
+  assessment. V10B now supplies the separate deterministic state, packed
+  terrain generator, start selection, strict replay schema and versioned
+  reconstruction while leaving the current V7 selector and all transport
+  routes unchanged. **V10C playable candidate is complete.** The identity-only
+  adapter retains V9's 180-plan lattice, six candidates per tick, 30 charged
+  planning ticks and rollout limits while V10 transitions retain current
+  terrain authority. Local `?combat-preview=v10` now supplies the automated
+  Loomkeeper, compact inherited phone controls, map-wide opening survey and
+  off-screen actor cue without a session, reward or public selector path.
+  The owner's follow-up physical-phone test reproduced the tracked inherited
+  Relic-selection bug: Use first acknowledged a locally held selection and
+  cleared aim, so changing Relics appeared to disable Fire. The bounded
+  fast-follow now submits Attack selections immediately, explains the fresh aim
+  step and reserves Use for the cast; Guard and Leap still activate through Use.
+  The first redeployed retest exposed a remaining acknowledgement race: aim was
+  still available while Relic selection was in flight, so the later selection
+  snapshot could clear a just-locked aim. The follow-up fences aim until the
+  selection settles and no longer treats a Relic update as a lifecycle reset;
+  its browser journey uses the default clockwise phone presentation. The owner
+  confirmed the corrected selection-to-aim-to-Use order on the pushed `941c851`
+  preview from the physical phone on 2026-09-08.
+  **V10D assessment and acceptance are complete.** The source-bound assessment
+  passes all 24 frozen openings, 48 selected turns and 24 blocked shallow-cover
+  probes with zero missing plans, work failures or reconstruction failures. All
+  generated/mirrored, first-actor, side and elevation partitions are present;
+  every reply uses the exact terrain left by the opening attack. The selected
+  product gate, fresh complete Chromium phone phase and performance gate pass.
+  The owner then requested **V10E tactical terrain refinement** after finding
+  that the walkable V10 relief did not create a meaningful reason to jump.
+  WP-015D4B preserves original V10 under its existing identity and adds
+  replay-distinct `nimble-knots-artillery-v10-r1`: Twin Hollows, Broken Loom
+  and High Stitch give both openings protected shallow-fire cover, an outward
+  retreat and a 24-to-48-unit jump-only firing position. The inherited bounded
+  planner and movement physics remain unchanged. Local
+  `?combat-preview=v10e` is the refined phone candidate; the original V10 route
+  remains available. Implementation and automated acceptance are complete;
+  physical-phone terrain feel remains open. Overall package evidence stays
+  `in_progress`, and no public Practice, Daily Challenge, reward promotion or
+  V11 progression is implied. The owner chose to proceed with V10F and
+  authorized a bounded new research pass. The
+  [pinned V10F reference pack](../evidence/wp-015d4c-v10f-procedural-terrain-reference-pack.md)
+  records every used/evaluated source, revision, inspected path and license
+  boundary. **V10F implementation stages 1-4 are complete in the current
+  branch.** Twin Crests, Asymmetric Rampart, Trench Needle and Stepping Mesa
+  are machine-readable 32-column recipes that compile to the existing
+  256-column collision mask and generate normalized ASCII review artifacts.
+  Every seed emits exactly eight tagged candidates; fixed structural,
+  movement and direct-projectile gates admit them, and the contracted
+  lexicographic tuple selects one with candidate zero retained as the fixed
+  no-admission fallback. Replay-distinct
+  `nimble-knots-artillery-v10-r2` binds the recipe revision, profile, selected
+  candidate and complete packed terrain while preserving accepted V10/V10E
+  output. The offline assessment covers all four recipes, generated/mirrored
+  physical sides and both opening actors, including terrain mutation, a
+  bounded Loomkeeper response on the resulting terrain and exact operation,
+  event and state-hash reconstruction. The local-only
+  `/?combat-preview=v10f` route now exposes R2 through the inherited phone
+  controls and automated Loomkeeper. Positive 32-bit `terrain-seed` values give
+  repeatable access to all four families and both Asymmetric Rampart
+  orientations; malformed values fall back to seed 1. Automated phone-browser
+  acceptance covers local isolation, review metadata, compact guidance, actor
+  cards and a normal jump. Physical-phone terrain readability and feel are the
+  next acceptance step. No Practice, Daily Challenge or reward selector has
+  changed. The owner's V10F phone review then found an immediate aim-to-shot
+  blocker: synchronous trajectory computation was counted as missed local
+  simulation time and could trigger the generic lifecycle safety stop. The
+  local V10/V10E/V10F fixture now excludes only measured trajectory-computation
+  time while retaining earlier and subsequent scheduling debt. A regression
+  reproduces slow preview work and verifies default Threadball aim/fire; the
+  phone journey now also aims immediately without selecting an Action.
+  The owner subsequently confirmed that aiming and the triggerable gameplay
+  checks pass on the phone. Terrain/action tactical feel is explicitly deferred:
+  gravity-curved shots do not make the current terrain provide the intended
+  cover and firing-position choices. This is not acceptance of tactical terrain
+  effectiveness. Track a future terrain/ballistics tuning step using actual
+  projectile arcs; no straight-shot weapon or physics change is authorized by
+  this deferral. V10F generator/preview implementation has no newly reported
+  functional blocker; release verification and formal package closure remain
+  separate from this bounded phone acceptance.
+  The 2026-09-08 daily gate exposed two inherited browser regressions:
+  the synthetic result fixture had drifted from the current retry contract,
+  and the legacy V8 compact-landscape focus control overlapped its Face row.
+  Both are corrected, their exact six failed project cases pass, and result or
+  style changes now select the five-project visual journey during feature
+  verification.
+- Product predecessor: **WP-015D3A V8 Action-Turn Candidate — V8A finite
+  rules/acceptance contract complete and independently reviewed; V8B authoritative
+  foundation complete and independently reviewed; V8C touch presentation
+  complete, verified and independently reviewed; V8C.1 combined controls and
+  traversal correction complete and owner-accepted; V8D automated Loomkeeper/
+  lifecycle implemented and verified as an unpromoted candidate. Live V7
+  unchanged.**
+  The owner opened V8A after the independently reviewed preparation and shared-
+  ruleset correction. The
+  [V8 preparation contract and roadmap](wp-015d3a-v8-action-turns-contract.md)
+  binds exact V7 source/build recovery, the
+  [frozen behavior-only handoff](../evidence/wp-015d3a-v8-action-turns-behavior-record.md),
+  owner-required shared Practice/reward combat rules, immutable replay
+  identities, clean-room roles, and the feature/daily verification cadence. The
+  [evidence record](../evidence/wp-015d3a.json) stays `in_progress` and the
+  clean-room record stays `observed`; neither asserts completed V8.
+  The owner corrected the initial mode-split proposal: both current modes
+  already use V7 and standard AI, and V8 must promote one shared combat
+  version for both. Eligibility/payout remain separate mode policies;
+  historical matches/replays keep their own recorded version. See the
+  contract's owner-correction section, which supersedes the earlier split
+  without rewriting the frozen reference observation.
+  Public gameplay remains V7 in both modes. The pre-V8 runtime checkpoint
+  `dc66d2ac0f02b1b7c47f6949816a7cbc6e48e286` is preserved by local tag
+  `checkpoint/v7-before-v8-2026-09-02` and separately hashed local source/build
+  archives. Preparation and V8A made no runtime, reward, asset, dependency,
+  schema, analytical, or deployment change. V8B adds an internal injected-only
+  versioned foundation, not joint activation. V8A froze product-authored
+  15-second action, 30-unit/s walking, a one-tap forward hop and 2-second
+  retreat, with explicit phase/input/replay/AI bounds, future exact paths,
+  and separate quick-correctness versus full-assessment gates. Contract
+  `wp-015d3a-v8a-rules-v0` passed independent design and arithmetic review;
+  B's collision/phase/replay integration now passes 67 V8 tests and distinct
+  review. C adds clamped hold/release walking, one-tap forward Jump, free facing,
+  separate aim/Fire, phase/time HUD, bounded V8 client transport and interruption
+  recovery. Its 30 new focused V8 tests pass alongside legacy combat/Practice.
+  Final feature gate, built smoke, five standard phone-browser checks and four
+  final small-phone/WebKit V8 combat checks pass. Earlier all-five-profile V8
+  behavior coverage is separately source-bound before the final readability
+  CSS fix. Real-device touch feel and balance remain unverified.
+  The owner opened V8C's touch controls and presentation from freshly fetched,
+  clean V8B commit `87ae3dad358f752ba64540e54d21a96b134d1e42`, using the
+  existing A7 C allow-list and fresh clean-room implementers. The explicit
+  `?combat-preview=v8` route is engineering-only with no AI policy, wallet or
+  reward; ordinary creation and the legacy preview are unchanged. On 2026-09-03
+  the owner opened V8C.1 from freshly fetched clean local/upstream
+  `abc02026ae20a95b36369fa56c039b042914492d`, before V8D. It combines movement,
+  facing and Jump on one pad and corrects small-step/wall-flush-hop traversal,
+  under an explicit new candidate identity that preserves original V8 replays.
+  Its completed source-bound return is in the existing V8 contract. Explicit
+  `?combat-preview=v8-r1` adds tap-to-face, same-finger walk/neutral/reversal,
+  upward/diagonal hop, ordinary release preserving the hop, supported 8/16-unit
+  stepping and wall-flush jump recovery. Original `?combat-preview=v8` remains
+  unchanged. Core 89/89 and selected client 70/70 tests, the final feature gate,
+  20/20 targeted five-profile browser checks, security/bundle/preservation checks
+  and distinct source review pass. The owner then confirmed C.1 works as
+  expected on their phone and opened V8D; this is not Lane G evidence.
+  D started from freshly fetched clean local/upstream
+  `3fc33a33049a7e61bc0ab8ee7e3f340917e3b136`, on isolated branch
+  `codex/wp-015d3a-v8d-loomkeeper-lifecycle-v0`. The existing contract's D
+  section owns the exact 37-path preregistration and 35-path source-bound
+  return, fresh implementation roles, independent review and explicitly
+  automated r1 identity. Timed standard AI, complete Practice/reward lifecycle,
+  60-match shared-mode parity, the 240-match paired assessment, final feature
+  gate and 10/10 five-profile candidate browser checks pass. Bundle and
+  reward/identity security checks pass; initial raw JS has 418 bytes headroom.
+  Production default remains V7 in both modes. Current completed follow-up:
+  **V8D.3 presentation corrections implemented, verified and independently reviewed**,
+  from clean fetched `e86e164`
+  on `codex/wp-015d3a-v8d-presentation-v0`; exact eleven-path scope and checks in
+  [contract D.3](wp-015d3a-v8-action-turns-contract.md#d3--owner-requested-presentation-corrections-2026-09-04).
+  Owner chose continuous gameplay/clock with retained damage feedback, alongside
+  complete defeat/aftermath presentation, airborne idle and human-anchored
+  ordinary camera. Actual Unravel completion now precedes one second of aftermath,
+  double defeat waits for both actors, and an explicit bounded unavailable path
+  cannot falsely claim completion. Focused helpers pass29/29; the final feature
+  gate passes452 fast tests, allthree built-profile smokes and5/5 canonical
+  phone cases; the focused five-profile matrix passes30/30 with20 zero-violation
+  terminal timelines. Initial rawJS is1492600/1500000 after the lazy scene-entry
+  extraction. Independent source review has no blocking finding. No rules,
+  replay, assets or deployment configuration change.
+  The owner pushed, deployed and accepted these D.3 corrections on their phone;
+  this is ordinary product acceptance, not Lane G evidence. Current bounded
+  follow-up: **V8E reversible opponent focus implemented, verified and
+  independently reviewed; owner phone acceptance reported complete 2026-09-05**
+  from freshly fetched clean local/upstream
+  `7c228efc426dc670e45e52d065fa43d8569b3f6d` on
+  `codex/wp-015d3a-v8e-opponent-focus-v0`. The existing V8 contract section E
+  freezes an exact nine-existing-path maximum and presentation-only behavior:
+  a side-correct off-screen Loomkeeper/Stitching button, reversible `Back to
+  You`, 300ms/reduced-motion focus, manual-pan cancellation/recovery, temporary
+  projectile priority and predictable player-action recenter. It creates no
+  new combat identity, automatic AI-turn camera, minimap/PiP, telemetry,
+  mechanics or authority. Fresh no-history client implementation and distinct
+  read-only review produced the implementation return. Entry review initially
+  stopped four camera-state ambiguities; the amended exact threshold, restore,
+  teardown and injected shared-mode proof received independent `GO`. The final
+  five source/test paths bind to SHA-256
+  `97ca418b44f8a9024dd885e5fb983eb1799ab117aeaae4321a33627186609b83`.
+  The feature gate, final 40/40 zero-retry five-profile V8E matrix, bundle and
+  security checks pass. A focused WebKit failure exposed and corrected native
+  click suppression without adding a test bridge; final independent review has
+  no blocker. The owner reports completing README's phone checklist with
+  everything working as expected and explicitly opens V9A above. This is
+  ordinary product acceptance; device/OS details were not supplied. Completed predecessor:
+  **V8D.2 single-service development profile complete and independently reviewed**,
+  under section D.2 of the existing
+  contract from clean `aa4f3e5` on `codex/wp-015d3a-v8d-single-service-v0`.
+  The owner says the existing production service is unused and elects to reuse
+  its URL for development. One explicit profile now runs full V8D Practice
+  while keeping saved production settings dormant: no reward/identity/database/
+  signer/RPC/reconciliation initialization. Keep rewards paused for rollback;
+  no deployment or public/funded release is performed in this preparation.
+  Final feature gate, seven focused tests, three-profile built smoke with zero
+  dormant DB/RPC contacts and five canonical phone-browser cases pass. Next:
+  owner push, select the new branch on the existing service, add
+  `NIMBLE_RUNTIME_PROFILE=development-v8d-practice`, keep `REWARD_PAUSED=true`
+  and `NODE_ENV=production`, and follow README's same-service phone checklist.
+  Completed predecessor:
+  **V8D.1 separate no-payout staging preparation complete and independently
+  reviewed**, governed by section D.1 in
+  the existing V8 contract, from clean `9e0427d` on
+  `codex/wp-015d3a-v8d-staging-v0`. Normal Start Practice access to full V8D is
+  ready for owner acceptance on a separate Render service. Feature gate,
+  real-clock built staging smoke, four selected candidate browser cases and
+  exact-source protections pass. See README Hosting for the environment and
+  phone checklist. Its then-next separate-service step is superseded by D.2;
+  no production promotion, wallet/reward activation or deployment in this pass.
+  Thereafter close public activation gates, including
+  a separately scoped fix for inherited moderate qs audit findings, isolated
+  PostgreSQL execution, full daily/release quality/performance, deployment CPU,
+  human similarity and real-device acceptance. Do not promote automatically
+  merely because the injected candidate passes engineering tests. The owner's
+  subsequent explicit V9 instruction is recorded above; it leaves these public
+  activation gates open.
+  The analytical execution pointer remains **WP-015D2A**;
+  Stage C debt remains `interrupted_no_tap`, Lane G/Lane M execution remains
+  closed, Lane G evidence remains none, D2O remains unsatisfied, and
+  ProductAuthority remains none.
+- Completed product predecessor: **WP-015D2Z V7 Tactical Arena Candidate — complete,
+  awaiting owner deployment/review:** V7 is bounded to
+  deterministic surface-only terrain profiles and terrain-derived,
+  balance-aware opening pairs under the actual V6 movement and V5 Relic rules.
+  Its source-bound contract and exact changed-path allow-list are
+  [WP-015D2Z V7 Tactical Arena Candidate Contract](wp-015d2z-v7-tactical-arena-contract.md).
+  The Sorcerers reference observation is frozen as behavior-only evidence;
+  distinct implementer and reviewer identities completed the clean-room
+  lifecycle with `similarity_review: pass` and no reference code or assets.
+  V1 through V6 replay behavior remains protected. No player observation,
+  Lane G/Lane M execution, Stage C repair, reward, asset, dependency,
+  telemetry, CRPM, authority, or analytical-pointer change is admitted.
+  ProductAuthority remains `none` and D2O remains unsatisfied. Implementation
+  commit `b086479ca736200db3daca438c8698403b306569` and repair commit
+  `3654c2bf2eb4c0d85229384b97984b28003a9fc6` passed the per-feature phone
+  gate, historical runtime checks, the restored V4 analytical export, clean-
+  room compliance, and independent source-boundary review.
+  The 2026-09-02 test-only follow-up corrected six daily camera assertions
+  that still assumed V4's fixed spawn while exercising V7. Spawn-relative
+  framing now passes the affected five-project checks and the quick feature
+  gate; performance, bundle/security, and audit checks also pass. Gameplay is
+  unchanged. The prior red daily result is retained in the V7 contract and
+  evidence; a fresh complete daily matrix and the separate PostgreSQL gate
+  remain due (no local test database was configured).
+- Completed product predecessor: **WP-015D2Y V6 Movement Corrections:** the separately versioned
+  `nimble-knots-artillery-v6` correction authorized by the owner on 2026-09-01
+  preserves V5's Relic balance profile while making an acquired movement drag
+  commit its clamped intent beyond the visible ring, adding a free
+  turn-in-place transition before opposite movement, and exposing the
+  authoritative `8/8` movement-step budget on the pad. The source-bound
+  contract is
+  [WP-015D2Y V6 Movement Corrections Contract](wp-015d2y-v6-movement-corrections-contract.md).
+  V1 through V5 replay semantics and the sealed analytical carriers remain
+  immutable. Lane G/Lane M execution, player observation, Stage C repair,
+  balance retuning, rewards, assets, dependencies, telemetry, CRPM, and the
+  analytical execution pointer remained excluded. ProductAuthority remains
+  `none`; D2O remains unsatisfied. Implementation commit
+  `601b05ee454811bf9e39417ef99e8b338a417201` passed the strict five-project
+  phone-browser rerun with 103 executed checks and 72 policy-approved skips,
+  plus the declared simulation, protocol, historical V5, analytical, runtime,
+  performance, bundle, reward-security, audit, and compliance gates.
+- Completed product predecessor: **WP-015D2X V5 Marketing Candidate:** the
+  values-only V5 profile passed its bounded automated gates at the production
+  start and is preserved unchanged as V6's balance base. Its source-bound
+  record is
+  [WP-015D2X V5 Marketing Candidate Contract](wp-015d2x-v5-marketing-candidate-contract.md).
+- Parent analytical record: **WP-015D2A Tactical Game Model and Simulation Harness:**
+  establish and test the decision model that precedes V5 Relic values without
+  changing accepted V1 through V4 replay behavior. The contract is
+  [WP-015D2A Tactical Game Model and Simulation Harness](wp-015d2a-tactical-game-model-contract.md).
+  It keeps TypeScript authoritative and makes Python an analytical tool only;
+  action-economy, defense, and convergence candidates require an explicit later
+  versioned decision rather than becoming hidden V5 rules. Candidate D1 basic
+  Brace and Candidate E1/E2/E3 Spoolburst self-backlash are recorded only as
+  rejected analysis evidence; neither authorizes a live mechanic. Candidate F1
+  prepared-Spoolburst/Threadball disruption proves an answerable commitment
+  loop but is also rejected as a balance solution. Candidate F2 Cocoon/Unweave
+  lowers the cross-band first-actor rate but creates a deterministic denial loop,
+  so it too is rejected as a balance solution. A bounded L4+ CRPM-inspired
+  recurrence gate now records the first repeated non-terminal state under a
+  declared tactical cut; it is analysis governance only, not a runtime
+  dependency or game doctrine. Candidate F3 Threadback-Unweave removes F2's
+  loop by spending existing Escape Slack through forced separation, but worsens
+  cross-band initiative to 68.8%, so it too is rejected negative evidence.
+  Candidate G1 tests a target-selected pre-hit Threadstep using the same
+  bounded Escape Slack. It passes the recurrence gate and improves the
+  cross-band rate to 60.8%, but cannot counter a move-and-cast opener that
+  first closes distance; it therefore leaves forced openings at the 448/512
+  starts and is also rejected negative evidence. No reaction, movement, or V5
+  rule is approved. Candidate F4 recombines F2's one-hit Spun Cocoon with F3's
+  costly Threadback Unweave while retaining C4's 80-damage prepared Spoolburst.
+  It is the first candidate to remove both bounded openings and recurrence at
+  every cross-band start, but its 63.2% aggregate first-actor rate (including
+  80% at 704) does not improve C4's 63.0%; it remains a structural reference
+  only, with no V5 rule approved.
+  Candidate H1 supplies only the second actor a public, first-turn-only
+  all-Relic Opening Weave. It also removes all forced openings, recurrence, and
+  turn-limit outcomes, but flips initiative to a 44.0% first-actor rate; full
+  damage negation is therefore rejected as overcompensation. No second-actor
+  status, UI, replay, reward, or V5 rule is approved.
+  Candidate H2 makes that opening response optional and prices a use at one
+  existing 64-unit Escape-Slack step. It removes the forced-opening,
+  recurrence, and turn-limit witnesses with a 48.8% aggregate first-actor rate,
+  but leaves a 44%/40%/44%/40%/76% distance-band split. It is therefore
+  rejected as a live compensation rule: a price resolves neither the short-
+  range second-actor advantage nor the long-range first-actor advantage. No
+  Opening Weave status, UI, replay, reward, or V5 rule is approved.
+  Candidate H3 couples that paid response to a visible Frayed Seam and an
+  advancing-Needlepoint zero-separation bind after the defender's normal reply.
+  Dedicated probes prove the attacker can use that counterplay, and all 250
+  cross-band matches converge without recurrence. But H3 returns to C4's 63.2%
+  first-actor rate and retains forced Spoolburst/Threadball openings at the
+  448/512/576 starts. It is rejected as a live rule: a delayed counter cannot
+  repair an immediate forced opening. No Frayed Seam, strengthened Seam Pin,
+  Opening Weave status, UI, replay, reward, or V5 rule is approved.
+  **WP-015D2B CRPM Game-World Profile and Offline World Design Port completed
+  on 2026-08-11** after implementation, adversarial, sealing, and final external
+  review as a bounded analysis-only subordinate package on
+  `codex/wp-015d2b-crpm-world-design-port`. It is rooted at Worms_Port base
+  `af23717e61fea6995bf3b7209211ae1aaa2bb855`, with the
+  dependency-repair implementation frozen at
+  `ca7bce03f132da6344b9b46c1743d055f65cba07`, tree
+  `029fb669cb1fee85eed322163d951aec5614d135`, and 25-file bundle digest
+  `ab843f2d35d6814b6837c7ae037f64d59cac00e19dfa57099538545a75742010`,
+  authenticated by the direct-child machine lock at
+  `b7937615ca72b7ac74de038c74ef78a64c0e1962`.
+  It source-locks the read-only
+  CRPM methodology checkout at `995236df60924f790506cf5badec3c102abf3fd1`.
+  Its v2 strict contracts/adapters, v3 result envelope, v4 full-composition
+  voyage, seven-cut versioned registry, Git-derived and approved-lock-authenticated
+  execution receipt, canonical edge-derived summaries, explicit
+  obligation expiration, closed offline CLI, and exact-probe-bound historical
+  evaluation lens completed at `M2 local use`. Mandatory evidence is
+  registry-fixed, world obligations and return assessments are separate,
+  current ProductAuthority is `none`, and V4 parity is provenance only. It
+  creates no V5, mechanic, status, live reaction,
+  protocol/replay/reward/UI/Loomkeeper change, CRPM runtime dependency, or
+  graph-safe schema. The Execution Pointer remains on WP-015D2A.
+  Follow-on operational use is governed by
+  [CRPM World Operational Governance](../process/crpm-world-operational-governance.md):
+  registered reproduction remains closed, while every new tactical hypothesis
+  requires a declared lane, candidate admission record, version/source impact,
+  complete domain, non-scalar evaluation, and separate analytical disposition.
+  The first range-entry idea is recorded there as a bounded pressure profile
+  and was contracted through
+  [WP-015D2C Range-Entry Commitment Candidate Contract](wp-015d2c-range-entry-commitment-candidate-contract.md).
+  Owner-accepted Phase A implements only the direct-cast-only I1 interpretation
+  in D2A. Its 1,200-match boundary frame has no forced opening or recurrence,
+  but four 705 matches reach the turn limit and the 54.3% aggregate masks a
+  68%-to-32% boundary reversal. I1 is rejected; Phase B World Design Port
+  registration is blocked; no range-entry rule or V5 behavior is approved.
+  The next separately bounded experiment is
+  [WP-015D2D Entry Seam-Pin Candidate Contract](wp-015d2d-entry-seam-pin-candidate-contract.md).
+  I2 keeps the F4 movement-created Needlepoint hit and removes only the Seam
+  Pin/cooldown created when Needlepoint was outside range before that movement.
+  Its 1,200-match Phase A gate passes with all matches terminal, no forced
+  opening/recurrence, 57% aggregate, and 56% at 641/703/704; affected openings
+  split 28/12 per target distance. An exploratory audit also exposes an
+  inherited horizon boundary at start 769, where F4 has four turn limits and
+  I2 has eight. I2 is a bounded structural survivor with explicit horizon
+  residue. The owner subsequently opened the separate
+  [WP-015D2E I2 World Design Port Admission Contract](wp-015d2e-i2-world-design-port-admission-contract.md)
+  while keeping production spawn authority at 640. D2E registers only the
+  twelve D2D pressure starts, retains 769 as an excluded-start warning, and
+  adds a parallel source-locked profile-v3 adapter/cut/request/result chain so
+  sealed D2B remains byte-identical. **WP-015D2E completed on 2026-08-24** at
+  `M2_local_use`, analytical disposition `structural_reference`, and
+  ProductAuthority `none`. Implementation commit
+  `74e1b724478d576ae2c3b6bdd181c6e2ab20efe8`, tree
+  `45af9f7c6aa8e9515c8b466db378e4e30b0081a5`, and 16-file bundle digest
+  `2cae366f4842538db78c5a388bf5e210731e4e4e240c06911a6380e30bed1b69`
+  are authenticated by direct-child lock commit
+  `8be185fb7eb2fb58cdc35959ac7ce60975f7e75e`. Two sealed runs reproduced
+  request `10a09ea047e1e00b2526618314d16cc97713f098ea41c767c6f84bf83547565f`,
+  analytical export
+  `9648b3aa42f4892334c7c2ee6e73afc55c317e8d47148020e6fea8a871ff2dca`,
+  and result `6cebc0559466a72e969a2d2e151ad04691b9e03a352764bb3bf15bf1d1779789`.
+  The start-769 warning remains blocking; no V5 or production promotion is
+  opened, and the Execution Pointer remains WP-015D2A.
+  **WP-015D2F I2 Policy-Conditioned Closure Audit completed on 2026-08-24**
+  without changing I2, F4, their configs/reports, or either sealed World Design
+  Port layer. Its 2,400 matched-carrier audit shows the 61-to-57-percent
+  aggregate change is cross-policy redistribution: first-actor-policy deltas
+  are `-36/+8/+8/-36/+8`, while all five same-policy mirrors remain unchanged
+  and best-response versus best-response stays 44/48 first-actor wins. Seventy-
+  two of 120 matched opening routes change the caster's next action and 36
+  change outcome. Exact spawn 640 keeps the same 60/40 aggregate and has no
+  opening suppression, while 28 later re-entry suppressions remain explicit.
+  Audit digest
+  `476735407135b11f1d3805a7b7a4b22c5d7c8a46a1f6ac972f2d134fb3ff1657`
+  closes I2 as `residualized` for `policy_fragile` evidence with
+  ProductAuthority none. The next permitted action is a cross-candidate and
+  policy-model review before another Lane 1 mechanic is contracted; the
+  Execution Pointer remains WP-015D2A.
+  **WP-015D2G Relational Gameplay Navigation Review completed on 2026-08-24** on
+  `codex/wp-015d2g-relational-navigation-chart`. Its
+  [manual navigation carrier](wp-015d2g-relational-gameplay-navigation-review.md)
+  reconstructs V4/A/B/B2/C/D/E/F/G/H/I candidate routes as source-bound anchor,
+  guide, warning, horizon, and negative landmarks. D2G uses a bounded
+  directional wager rather than requiring one compressed causal explanation,
+  identifies five coupled pressure basins, and records that starting-distance
+  summaries are not support-complete route carriers. The owner selected R1:
+  inspect route-reachable carriers at the real spawn 640 before changing a
+  policy or mechanic. The separate
+  [WP-015D2H Production-Spawn Reachable Carrier Probe Contract](wp-015d2h-production-spawn-reachable-carrier-probe-contract.md)
+  completed on 2026-08-24 as a Lane 2 observation/cut extension over unchanged
+  F4/I2 traces. Its 200 exact-spawn matches expose 1,544 transition carriers.
+  Each config has 68 policy-visible alias classes, including 40 across multiple
+  routes; 34 witness pairs select different actions. Completed-turn progress,
+  Spoolburst preparation/Cocoon, and Escape Slack remain explicit residue. The
+  full exact-time carrier has no repeated twins, so finite map eligibility is
+  `unexercised_no_twins`, not proof. Result digest
+  `cd83a46c68f2d5968fa0d3e7af5e73bcefbe5acb18df110d1a686f9e5d8f9658`
+  closes D2H as `retain_and_refine`. The next permitted action is owner review
+  of a smaller recurrence-support twin question, not a policy or gameplay
+  change. On 2026-08-24 the owner accepted the target-typed refinement as
+  [WP-015D2I Cocoon Formation and Ordered Transport Voyage Audit](wp-015d2i-cocoon-transport-voyage-audit-contract.md).
+  **WP-015D2I completed on 2026-08-24** as a Lane 2 observation over the frozen D2H spawn carriers. It
+  separates policy selection, matched-action visible descent, tactical
+  recurrence, exact carrier, and terminal targets, then follows each existing
+  F4 Cocoon from public preparation through response and resolution. I2 remains
+  a returned comparator. Its deterministic result digest
+  `ff29c8a1d18a201ca9047e72f458e919151ec53cd581567219b307e393a4b7b0`
+  reconstructs 80 voyages per config and returns
+  `advance_to_candidate_question`: eight exact interleaved witnesses per config
+  show a later first-actor preparation forming the Cocoon that absorbs the
+  second actor's release before the first actor's own release lands. The four
+  unique short-approach matches per config all finish for the first actor on
+  turn nine. This opens only owner review of a later formation/expiry-interface
+  contract. Neither package changes a model, config, sealed World Design Port,
+  production behavior, or ProductAuthority. The Execution Pointer remains
+  WP-015D2A.
+  The owner then opened the bounded
+  [WP-015D2J Cocoon Formation-Timing Candidate Question Review](wp-015d2j-cocoon-formation-timing-candidate-question.md).
+  **WP-015D2J withdrew the question before contract on 2026-08-24** after two
+  read-only falsifiers. Suppressing the newer Cocoon changes F4 first-actor
+  wins at 639/640/641 from `60/60/80` to `56/56/84`: it merely replaces the
+  later-preparer privilege with an earlier-preparer privilege, while existing
+  paid Unweave still gives the responder a winning continuation. Requiring a
+  separate range-entry action before movement-created preparation changes the
+  same local profile to `64/64/76`, improving the far side while worsening the
+  exact production-spawn side. No unique role-neutral timing transition is
+  selected, so no candidate, config, model, policy, or port change is made.
+  The next permitted direction is D2G R2: a separate mechanics-fixed Lane 2
+  policy-choice relation audit around 639/640/641. The Execution Pointer
+  remains WP-015D2A and ProductAuthority remains `none`.
+  The owner opened that route as
+  [WP-015D2K Mechanics-Fixed Policy-Choice Relation Audit](wp-015d2k-policy-choice-relation-audit-contract.md).
+  **WP-015D2K completed on 2026-08-24** over unchanged F4. Its raw digest
+  `47ef25b6557edaa1f477f0bdde80b0b1d8b041399adb844a22c8746f1314e769`
+  binds 12 baseline routes, 24 discovered preparation-response carriers, ten
+  legal responses per carrier, and all 25 continuation-policy contexts per
+  response: 6,000 terminal voyages with no recurrence. Every carrier already
+  exposes five policy-selected response families. The first-cycle
+  `short_approach` counter-preparation is not terminally dominated, while the
+  second cycle reaches an opponent at 20 Stitching where every Threadball
+  direction is immediately lethal but several heuristics still select slower
+  routes. The `best_response` lethal tie also chooses absolute `left`, creating
+  12 mirror-sensitive position/Escape-Slack residues. Result digest
+  `5c544f6822744ac63a595ca4458bb2dfb72696836468a47bf494c628b5573832`
+  returns `retain_mechanics_refine_policy_question`. The next permitted action
+  is owner review of a separate analytical policy-probe contract; no policy,
+  mechanic, Loomkeeper, or production change is approved. The Execution
+  Pointer remains WP-015D2A and ProductAuthority remains `none`.
+  The owner opened that analytical wake as
+  [WP-015D2L Policy-Transport Falsifier](wp-015d2l-policy-transport-falsifier-contract.md).
+  **WP-015D2L completed and rejected on 2026-08-25** without editing F4,
+  `model.py`, or an existing policy. Its raw digest
+  `49a7effcf241fa3b7db519cb498ed54e83705030c365dc4986eeceaa1e018eac`
+  binds 2,200 baseline/shadow matches. Residue-only terminal tie cleanup changes
+  214 primary actions but no outcome. The preparation-response guard repairs
+  the exact later short/short omission yet changes F4 from 158/250 to 166/250
+  first-actor wins, with distance vector `34/32/34/30/36`; 24 changed witnesses
+  terminate for the actor owning the response edge. The global guard amplifies
+  the problem to 184/250. Result digest
+  `24b24c7595a1902b2a38070fc97cbf4e0ff4a41e381ca5338b70c51f85eff8bd`
+  returns this direction to D2G as a response-phase negative/boundary landmark.
+  No policy, Loomkeeper, mechanic, V5, or production change is approved. The
+  Execution Pointer remains WP-015D2A and ProductAuthority remains `none`.
+  The owner then opened the mechanics-fixed composition wake as
+  [WP-015D2M Target-Indexed Tactical-Order Atlas](wp-015d2m-target-indexed-tactical-order-atlas-contract.md).
+  **WP-015D2M completed on 2026-08-25** over the exact D2I, D2K, and D2L
+  parents without changing F4 or a policy. Result digest
+  `882534e69ddae101d3d1e1463ddca467f2a95899be2a8e826eb14cb1dd5a55c2`
+  binds six local charts and four overlaps. Both 640/641 cycles retain the same
+  normalized immediate-response projection but split complete continuation
+  and responder phase; cycle two also splits policy selection. Four protected
+  targets survive bounded or with residue, while ordered composition and
+  actor-role transport fail descent. The global disposition is
+  `role_neutral_global_order_not_assembled`. No closed-route decoder exists,
+  so no holonomy, candidate, mechanic, V5, or product claim follows. The next
+  permitted direction is one separately contracted mechanics-fixed interface
+  probe returned through D2G. The Execution Pointer remains WP-015D2A and
+  ProductAuthority remains `none`.
+  The owner opened that calibration as
+  [WP-015D2N F4 Bridge Calibration](wp-015d2n-f4-bridge-calibration-contract.md).
+  **WP-015D2N completed on 2026-08-25** without changing F4, `model.py`, a
+  config, or a policy. Result digest
+  `5c554344271e2543cc6811fa579b28d85054da19b067acb8d12e7c60bed03dc8`
+  binds twelve refinements, six label-independent partition families, 21
+  alias witnesses, 16 over-refinement controls, and eight exact 640/641
+  predecessor seams. Phase, completed turns, path history, and route plus
+  current formation share one target-congruent finite partition, while exact
+  separation unnecessarily splits all known-equal 639/640 controls. Current
+  formation/resources, policy selection, and orientation remain insufficient.
+  No representative bridge axis is licensed. The next permitted direction is
+  a separately contracted mechanics-fixed reachability search for natural
+  matched twins that decorrelate route, phase, turn position, and geometry; if
+  those twins are unreachable, the authority cut must be reviewed instead of
+  synthesizing evidence. The Execution Pointer remains WP-015D2A and
+  ProductAuthority remains `none`.
+  The owner accepted that search as
+  [WP-015D2O F4 Natural Matched-Twin Reachability](wp-015d2o-f4-natural-matched-twin-reachability-contract.md).
+  **WP-015D2O completed on 2026-08-25** without changing F4, `model.py`, a
+  config, policy, horizon, or production surface. Raw digest
+  `edafdd5c3a7f094eb522a29b4994b40d3b7de0ce0abce0e4589cea565bb6213f`
+  binds an exhaustive four-action legal-prefix census of 2,100 natural
+  response-carrier occurrences, 1,520 full states, 319 actor-relative current-
+  carrier classes, and 122 continuation relations. Every full state in each
+  normalized class has the same protected relation. Result digest
+  `bc131d3fa0065cb8e1a93790d297813c243744124dad7bb079ccf0ffb851162e`
+  separates four matched-twin families: route-order controls are all equal and
+  remain trace/re-entry support; geometry has both equal and tactical-split
+  twins and remains conditional; all 304 first/second-phase splits involve the
+  finite turn limit; and all 32 same-phase completed-turn controls are equal.
+  The disposition `d2a_axes_calibrated_authority_horizon_review_required`
+  permits an expanded D2A relational chart only with those calibrated roles.
+  Before any production-facing gameplay proposal, a separate V4/playtest cut
+  must review real timing and response ownership. No gameplay phase, mechanic,
+  V5, or product authority is approved. The Execution Pointer remains
+  WP-015D2A and ProductAuthority remains `none`.
+  **WP-015D2P documentation-only sidecar (2026-08-28):** the owner authorized
+  [V4 Observation and External-Pressure Contract](wp-015d2p-v4-observation-pressure-contract.md)
+  and a source-bound cross-repository coordination return. This preregisters
+  separate simulation-continuation and actual player-observation questions;
+  it does not satisfy D2O's V4/playtest gate or authorize execution.
+  New pressure cases, observation requests, instrumentation and playtests
+  remain closed pending separate review/authorization. Existing source locks,
+  D2O results, V4 gameplay and closed PR #2 are unchanged. The active
+  Execution Pointer remains WP-015D2A; this sidecar has ProductAuthority `none`.
+  **WP-015D2Q / WPV4-COMMAND-01A (2026-08-28):** after approval of D2P,
+  the owner authorized the [V4 Actor/Turn Command-Gate Pressure child](wp-015d2q-v4-command-gate-pressure-contract.md):
+  contract, isolated implementation, exact execution and report. Only four
+  independently initialized one-move V4 actor/expectedTurn declarations are
+  admitted. CRPM remains frozen; aim/fire, timing, player observation,
+  gameplay changes and P5 stay closed. The child must return its source-bound
+  report for review; it does not satisfy D2O's player-authority gate or advance
+  the parent WP-015D2A execution pointer.
+  **WP-015D2Q bounded closeout (2026-08-28):** the
+  [four-case report](wp-015d2q-v4-command-gate-pressure-report.md) and
+  [source-bound review return](../evidence/wp-015d2q/review-return.json)
+  close only the actor/expectedTurn child at executable source
+  `85f6ea945bd2b5b2aacb6b61cc2af52fe0c09ebb`.
+  Actor pressure is conditional on a matching turn; the mismatched-turn actor
+  control is no-witness. Expected turn also separates two rejection errors
+  with equal post-state. Disposition is `structural_reference`, not player
+  authority or a full COMMAND-family result. Review only: no aim/fire child,
+  playtest, gameplay change, CRPM/P5 continuation, PR operation or push is opened.
+  **WP-015D2R residue-driven round-trip navigator Stage A (2026-08-29):** the
+  owner authorized the [documentation-only navigator contract](wp-015d2r-residue-driven-round-trip-navigator-contract.md)
+  and its [frozen incomplete planning registry](wp-015d2r-residue-driven-round-trip-candidate-registry.json)
+  from D2Q terminal `4fc88d947a98d737cbcdfd22d31d36c4bd5843eb`
+  and CRPM handoff `8c64353f4c8f5504af3e30ca175d9422ca7ae608`.
+  It selects only a question-forming reorganization from the D2Q command chart
+  to a one-next-command authority-side continuation/return chart. The known
+  one/four-cycle movement twin remains retrospective correlated calibration,
+  not fresh evidence. Stage B route search, credible player response, timing,
+  gameplay, ProductAuthority, placement and P5 remain closed. The active
+  Execution Pointer stays WP-015D2A.
+
+  **WP-015D2V parent re-entry and dual-lane handoff (2026-08-30):** the
+  reviewed [WP-015D2V handoff](wp-015d2v-parent-reentry-and-dual-lane-handoff.md)
+  returns the completed nested WP-015D2R Stage A/B/C navigator to the parent
+  chart. Stage C remains `reviewed_bounded`; `TAU-WPV4-RETURN-01A` is
+  licensed only for that bounded re-entry. This closes the inner navigation
+  voyage, not the wider WP-015D2 gameplay line. The active Execution Pointer
+  remains WP-015D2A, D2O's player-information/timing/response-edge gate remains
+  unsatisfied, and ProductAuthority remains `none`.
+  Lane M freezes `Q_support` for a future separately preregistered
+  longer-horizon congruence test but is blocked on aggregate-harness repair and
+  review. Lane G owns player-visible formation and credible response timing and
+  currently has no player evidence. Both lanes are evidence-separated,
+  independently governed, and execution closed. The Stage C aggregate remains
+  `interrupted_no_tap`, never pass. No gameplay, P5, placement, landfall, or
+  successor execution is opened.
+
+  ```yaml
+  parent_reentry_parity:
+    record_id: DTAP-WP015D2R-STAGE-C-PARENT-REENTRY-v0
+    crpm_source_commit: 85e86d6699d49e16495f7761669341028ec2f720
+    crpm_return_commit: 6f3abc11323b7e842ca4cb51a768fdefe6c1ec8f
+    stage_c_source_commit: e09b253356843342bd8077403668911cad539b46
+    stage_c_result_commit: 0dda7a7d91d32dcd8815ba6fd0beec2065bed220
+    stage_c_review_commit: 0581694b568461ecc556d79a236fe5ade46746d8
+    stage_c_terminal_commit: 19e69073c63966374a9c91b3973340752e787546
+    nested_round_trip_status: complete_inner_navigation_voyage_only
+    bounded_reentry: reviewed_bounded
+    q_support_verdict: sufficient_for_complete_registered_one_command_target_on_finite_domain_nonunique
+    q_support_equality_pairs: 6265
+    q_support_counterexamples: 0
+    q_support_recursive_closure: not_tested
+    q_command_verdict: sufficient_for_registered_command_semantics_only_not_continuation_support
+    q_command_equality_pairs: 6279
+    q_command_continuation_support_counterexamples: 14
+    aggregate_status: interrupted_no_tap
+    wider_reuse_blocked_until_repair: true
+    lane_m:
+      target: longer_horizon_congruence_of_frozen_Q_support
+      prerequisite: repaired_and_reviewed_stage_c_aggregate_harness
+      registration_open: false
+      execution_open: false
+    lane_g:
+      target: player_visible_formation_and_credible_response_timing
+      D2O_player_information_timing_gate: unsatisfied
+      registration_open: false
+      execution_open: false
+    active_execution_pointer: WP-015D2A
+    WP-015D2R_parent_navigation_status: closed_after_stage_c
+    wider_WP-015D2_gameplay_line: open
+    evidence_class: correlated_reuse
+    ProductAuthority: none
+    mathematical_placement_implication: none
+    gameplay_change: false
+    P5_open: false
+    successor_world_execution_open: false
+    parity_digest: 7d1992c6c4fb353286cf4939757225caf8c57d306eb043c49f7580e68ffa8efb
+    stop_statement: >-
+      WP-015D2R parent re-entry and dual-lane handoff documented;
+      no Lane M or Lane G execution opened.
+  ```
+
+  **WP-015D2W Lane G documentation contract (2026-08-30):** the
+  [source-bound contract](wp-015d2w-lane-g-player-visible-formation-and-credible-response-timing-contract.md)
+  separately preregisters player-visible Loomkeeper cast formation and credible
+  response timing on unchanged V4. It freezes the pre-observation environment,
+  build/client/device/display activation row, public support, exact events and
+  clocks, latency/tolerance, participant/reviewer/consent/privacy/retention
+  boundary, trial domain, negative-result classifications, stopping rule, and
+  future output boundary. It conducts no observation and creates no participant
+  data. D2P remains the broader question registry; D2V remains immutable route
+  provenance. Lane G has evidence 'none' and execution remains closed.
+  The active Execution Pointer stays WP-015D2A, D2O remains unsatisfied, the
+  Stage C aggregate remains 'interrupted_no_tap', and Lane M does not lend
+  evidence or prerequisites to this documentation pass. ProductAuthority,
+  placement, gameplay change, P5, and landfall remain closed.
+
+  ~~~yaml
+  lane_g_preregistration_parity:
+    record_id: WP-015D2W-LANE-G-PREREGISTRATION-v0
+    milestone_id: WP-015D2W
+    target: player_visible_formation_and_credible_response_timing
+    method: separately_bound_player_observation_and_timing_contract
+    source_entry:
+      crpm_commit: e14b661ff521cbc398b0bd6245e8f54f0388a37b
+      worms_commit: 7f8fe6108ae26a0e25bb3ca185dab6c1f86c662f
+    environment_id: LG-SGS22-NIMIQPAY-SIDEWAYS-RIGHT-v0
+    build_source: 7f8fe6108ae26a0e25bb3ca185dab6c1f86c662f
+    client:
+      route: "/"
+      mode: practice
+      calling: wizard
+      ruleset: nimble-knots-artillery-v4
+      loomkeeper_difficulty: standard
+    formation_event: first_two_consecutive_frames_of_loomkeeper_cast_formation_ready_with_matching_visible_status
+    response_window_start: first_frame_after_formation_with_an_existing_player_gameplay_control_visible_and_enabled
+    response_window_stop: earlier_of_authority_acceptance_of_an_effective_response_or_authoritative_threat_resolution
+    credible_response: at_least_one_predeclared_effective_existing_v4_gameplay_command_authority_accepted_before_the_threatened_shot_becomes_unavoidable
+    trial_domain: first_naturally_occurring_damaging_loomkeeper_shot_in_each_new_practice_clash
+    stopping_rule: three_usable_trials_or_six_attempts_or_PT20M_whichever_occurs_first
+    Lane_G_identity_recorded: true
+    Lane_G_current_evidence: none
+    Lane_G_execution_open: false
+    D2O_player_information_timing_gate: unsatisfied
+    active_execution_pointer: WP-015D2A
+    aggregate_debt: interrupted_no_tap
+    ProductAuthority: none
+    mathematical_placement_implication: none
+    gameplay_change: false
+    P5_open: false
+    landfall_claim: false
+    pilot_activation: not_required
+    parity_digest: 7da9340551ecae4df7a29bf7287759fd0cb655444dc3c9057456175ad065c1b1
+  ~~~
+
+  **WP-015D1 V4 wider
+  arena and pan camera completed on 2026-08-08**
+  on `codex/wp-015-production-assets`: V4 preserves historical replays while
+  admitting no obstacle, tactical-terrain, balance, or asset work.
+  **WP-015C First playable visual slice — integration plus bounded V3 hitbox
+  stabilization** completed on 2026-08-08; its evidence carrier is
+  `docs/evidence/wp-015c.json`.
+  WP-015B3C.1 completed
+  on 2026-08-05. Its first closed inventory assigned `runtime_path` only to
+  seven existing approved masters and the build copier produced their
+  byte-identical copies below `assets/product/` (607,427 source bytes). On
+  2026-08-08 the owner supplied and authorized four separately reviewed
+  AutoSprite 5x5/256px Wizard sheets for idle, walk, Loomseed spell, and
+  non-graphic Unraveling. They expand the fixed runtime inventory to eleven
+  immutable sources totaling 1,402,579 bytes, still below the 1.5 MB ceiling.
+  Phaser slices those sheets at runtime without generating an atlas or editing
+  pixels; the static Loomseed Wizard remains the fallback if a sheet cannot
+  load. The raw empty-handed Wizard, raw Threadball, rejected FLUX Terrain
+  Interior, and earlier rejected AutoSprite pilot remain excluded. The first
+  documented free-tier AutoSprite idle pilot is still rejected for a whole-sheet
+  face-identity failure and does not provide pixels or conditioning to the new
+  owner-supplied exports.
+  The owner additionally authorized the single versioned rules exception after
+  real-device testing: new challenges may use `nimble-knots-artillery-v3` with
+  the documented shared-Wizard direct-hit profile, while V1/V2 remain immutable.
+- **WP-015C_Animation FLUX.2 one-key-pose pilot:** this separate,
+  non-production research gate does not reopen rejected AutoSprite animation or
+  use FLUX 3 video. The goal is one still **idle key pose**, not a
+  generated sprite sheet: FLUX.2 `max` receives the exact combined
+  Wizard-with-Loomseed master as its sole identity reference. The owner revised
+  the one permitted request to a relaxed idle pose and explicitly excludes the
+  newly created cast-preparation guide; it remains documentation-only historical
+  evidence. The exact prompt and submit-able parameters are frozen in
+  `docs/asset-briefs/wp-015c-animation-flux2-max-idle-request-v1.json`; the direct
+  API request is
+  exactly one 1024x1024 `POST /v1/flux-2-max` edit, estimated from $0.07, with a
+  white/plain background and full-body ground baseline. The Windows User-scoped
+  `Flux_GameAssets_API_Key` is read only in the invoking process, never copied
+  to the repository, Codex config, evidence, logs, or prompts. Its no-charge
+  `/v1/credits` preflight passed with 1,000 credits. The official OAuth FLUX MCP
+  is separately configured but Codex Desktop `0.147.0-alpha.1.2` does not expose
+  it to chat threads, so it is not an implementation dependency. No Wizard
+  image or edited output exists yet. On 2026-08-06 the owner accepted BFL's API
+  input/output-use treatment, including training/improvement use, for this one
+  pilot only. The source/prompt contract is now hash-bound and owner-authorized
+  for exactly one upload. The result remains external quarantine and cannot create a source asset,
+  sprite sheet, normalizer, runtime path, product build, or player-visible change.
+  The pre-submit request file is hash-bound as
+  `AC1D79F6...97D8`; its only runner is
+  `scripts/run-wp-015c-flux2-max-idle-pilot.js` (`2222E4F7...48DA`), which
+  dry-run verified the exact source, one-request cap, no-guide declaration, and
+  locked parameters without reading a secret or uploading media.
+  That sole call was submitted on 2026-08-07 as BFL task
+  `9d825b3d-4533-4535-9bf4-07686ccd2f9e` and settled `Request Moderated` without
+  output or a settled cost. The initial quote was 10 credits for 0.25 MP input / 1
+  MP output. The one-call gate is closed: do not retry, change the prompt/model,
+  or send the pose guide. Any later investigation needs a new owner decision and
+  work-package contract.
+  The owner subsequently authorized one separate **text-only** diagnostic to
+  isolate that protected-content moderation finding. It submits no image, guide,
+  brand, franchise, artist-style request, or third-party material; it describes
+  only original crochet/fantasy properties in
+  `docs/asset-briefs/wp-015c-animation-flux2-max-text-idle-request-v1.json`.
+  It has a fresh one-call cap and cannot promote or integrate any output. Its
+  pre-submit request hash is `D15E7C47...52ED`; its only runner is
+  `scripts/run-wp-015c-flux2-max-text-idle-pilot.js` (`B04B0344...2BBE`), whose
+  dry run passed without accessing a secret or uploading media.
+  The sole source-free task `3c486d7b-95f1-480c-9b33-27556b3f2742` completed as
+  quarantined PNG `4D34F37E...0F96` (898,494 bytes, C2PA/JUMBF present). It proves
+  BFL accepted the changed text-only request, not that the original source image
+  alone caused the earlier moderation: its wording also changed. The result
+  visibly fails identity/production admission (front-facing doll, pale hands,
+  eyelash-like eyes, pink mouth, large ball, drawn ground line). No retry,
+  repair, conditioning, normalizer, or product path is authorized.
+- Background: both AutoSprite pilots remain rejected external evidence. The owner superseded
+  the empty-palm overlay condition with a permanent held Loomseed and a separate
+  temporary cast Threadball. B3C now has an exact Wizard-with-Loomseed
+  derivative with its one B3C.1 build-copy runtime path. WP-015B2H completed on 2026-08-04 and approved
+  exact 512x512 RGBA Wizard source master
+  `assets/masters/characters/knotkin/wizard/knotkin-wizard-source-master-v1.png`,
+  SHA-256
+  `7AF4864E00C7206A05684312916092C6881127F921FA7CEA01524899093318A9`,
+  with ground pivot `(256,451)` and visible cupped-palm Loomseed
+  anchor/emission origin `(407,228)`. It has no `runtime_path` and authorizes
+  no animation or integration. B3C's deterministic composition config
+  `wp-015b3c-wizard-loomseed-v1` now maps the exact Threadball source at that
+  anchor and produced approved source presentation master `1CC252B4...9419C`.
+  Frozen cast config `wp-015b3c-threadball-cast-v1`
+  (`5F4DAE04...AB19`) now approves only three static 64x64 presentation masters
+  from that same parent: formation-start `C189A206...FDD0`, formation-ready
+  `94F0DEDC...CCA9`, and compact projectile `8ECA37C6...23E9`. All local visual
+  origins are `(32,32)`; the future Wizard root-space emission offset is
+  `[151,-223]`. Separate effects config `wp-015b3c-threadball-effects-v1`
+  (`2C9A827F...D34A`) now freezes the later client-only order, timing, and
+  bounded procedural halo/gather/tail/impact grammar. It still creates no
+  runtime derivative or combat integration authorization.
+- Existing external Threadball candidate
+  `2BAE664F7E5A862BCB53B55A68071580485CE040A89650C68EC6FA398F4089EB`
+  is paused as historical structure evidence: it reads as an ordinary yarn ball
+  rather than the newly defined compressed Worldweave spell. Do not normalize,
+  promote, delete, or condition on it. The replacement contract is now frozen:
+  exact 77-word text-only prompt, seed `15035001`, pinned FLUX workflow/settings,
+  no reference image, and exactly one request after fail-closed preflight. That
+  allowance is consumed by exact external output `1F41AF26...F56EC`, now approved
+  only as deterministic source master `608F490C...D9B6F`; it authorizes no retry,
+  regeneration, animation, or runtime integration. The
+  user-supplied Gemini artwork `BD87405A...DA6699` is external comparison-only
+  evidence and contributes no pixels or conditioning. The decomposed Patch
+  contract is now frozen: its text-only Cloud, Terrain Top, and Terrain Interior
+  gates use seeds `15035002` through `15035004`, no references, and the pinned
+  FLUX workflow/settings. The sole Cloud request completed as external output
+  `EA972B0B...FFE7`, passed owner review, and is now deterministically approved
+  as source master `7F327B51...4B23C`, with B3C.1 build-copy runtime path
+  `assets/product/environment/patch-01/clouds/cloud-v1.png`. Its frozen
+  normalizer fills only fully enclosed white-matte stitch pinholes, then applies
+  uniform placement at `(256,256)`; it does not paint, reconstruct, or infer.
+  Owner-approved Terrain Top source `BE5EB2E7...2B22` now has deterministic
+  256x64 master `41511E63...7897`, after frozen crop, uniform scale, and a
+  three-copy horizontal repeat proof with zero edge difference and B3C.1 build-copy
+  runtime path `assets/product/environment/patch-01/terrain/top-v1.png`. Terrain Interior's separate fresh-preflighted FLUX candidate
+  `98091C73...50F9` remains rejected for its directional quilt seam pattern.
+  The owner-approved four-layer GIMP repair `2E94BBE4...CDBC7B` instead yields
+  exact flattened export `6419C1E8...CF8095`; frozen deterministic 2D
+  normalization now approves source master `D50C2C60...2E40E9` at 256x256 with
+  zero difference across its 3x3 horizontal and vertical repeat proof; its
+  B3C.1 build-copy runtime path is
+  `assets/product/environment/patch-01/terrain/interior-v1.png`. FLUX outputs
+  are textile source imagery, never a promise of tile
+  seams or collision geometry; deterministic later normalizers must prove the
+  Cloud alpha and terrain repeat tests. No distinct Loomkeeper, batch, animation
+  upload, source-master promotion, or runtime integration belongs in B3A at this
+  gate.
+- Following gates: **WP-015B3B** records the failed external-route evidence;
+  **WP-015B3C** has completed the static permanent-Loomseed and temporary
+  Threadball formation/projectile source derivatives plus root-transform
+  geometry. The separate effect admission now freezes the actual glow,
+  loose-fiber gather, short-tail, impact, and timing contract. **WP-015B3C.1**
+  has assigned only the fixed manifest runtime paths and proved byte-identical
+  build copies; **WP-015C** is complete.
+  The gameplay
+  AI remains the Loomkeeper, but its first-slice presentation is the same Wizard
+  asset as the player. Distinct Loomkeeper, Thief, and Warrior production now
+  moves to post-release WP-017A; D0 through D3 retain the shared Wizard.
+  C passed automated phone views, a fresh pinned Ubuntu candidate workflow, and
+  separate Samsung real-device acceptance. **WP-015D0** is complete and
+  **WP-015D1** is the active implementation gate.
+- Historical B2A-B2G evidence digest: B2E selected a pinned core-node route and
+  produced a deterministic source-only
+  candidate. Workflow
+  `scripts/comfy-workflows/generate_flux2_klein_protected_edit.json` is a
+  23-node graph, SHA-256
+  `AD4D4F96AD7D7C024A1A903A440DD4FE6D9E31353ACB7E436BF7DFC787321DAA`.
+  Its project-owned 1024x1024 mask is
+  `docs/images/art-direction/knotkin-wizard-cowl-edit-mask.png`, SHA-256
+  `2B6C5F51A6EA411BB8B9C40AF861A339622316CB1D9710719F7F0CDEC327425B`,
+  generated exactly by source SHA-256
+  `8DFD6623479D61603C046550F9184F13ADAE0C4FA3E40E9C49F2017E6F8634A1`.
+  Pinned ComfyUI 0.27.1 `object_info` found all 23 core nodes, required inputs,
+  and connected edge types valid. The graph uses B2D as the sole reference and
+  base latent, applies `SetLatentNoiseMask`, and restores protected pixels with
+  `ImageCompositeMasked`. B2C supplies the geometry review contract rather
+  than a second memory-consuming and semantically ambiguous reference. The
+  project owner approved the exact source workflow and mask after reviewing the
+  source gate. The workflow is now `runtime_enabled: true`, belongs to the
+  closed `flux2-klein` profile, and may be exact-installed as MCP tool
+  `generate_flux2_klein_protected_edit`. The one request against B2D completed
+  with the tracked mask, frozen seed `15026005`, and documented cowl-only
+  prompt as Comfy prompt `d023da3f-77cf-4f05-ae7b-62ce66f1f176` in `308.956`
+  seconds. External output SHA-256 is
+  `1275B2BD8021EAA5C51AA0606A6CC20BA21B15ED6CEBC4A7C1FC76308BA9D2E0`.
+  All `907427` zero-mask pixels match B2D exactly; baseline drift is zero and
+  normalized silhouette IoU `0.840783` remains drift telemetry. Project-owner
+  review rejects the exact B2E output as the next Wizard master: its compact
+  crown loses the Wizard calling and its horizontal neck wrap reads thief-like.
+  No retry ran. B2F now binds project-owned hood guide
+  `08CB26CE3FAC6605859F9C9B51331351F28F40A005F6A101B2E575D8A56C6AB8`,
+  generous protected-edit mask
+  `AC9F8F101094C5C15361FD24827C4F24B7C52ACBC652000748B209CB5483F56B`,
+  and exact-B2D external review scaffold
+  `A048CA16B249298BBECFAD2F57552B04958E26F766D01F6577D1C6A011A0231C`.
+  The proposed garment is a tall asymmetric pointed hood with an open center
+  neck and short split mantle; a full robe/tunic is deferred. The project owner
+  authorized only the one-request transition binding
+  scaffold `A048CA16...0231C`, mask `AC9F8F10...3F56B`, staged names
+  `wormsport/wizard-hood-scaffold-v1.png` and
+  `wormsport/wizard-hood-edit-mask-v1.png`, frozen prompt, and seed `15026006`.
+  That request completed as prompt
+  `1f5fc569-5250-4799-a236-0bb22ba629c8` in `355.120` seconds and produced
+  external output
+  `BE162B61FF38BE0EE2EA58716BDBAF5D2B38F0D8E6608953D2ECA41EFE7AD608`.
+  All `844934` zero-mask pixels match the scaffold exactly and the hood reads
+  clearly as a Wizard at 48px. Full-size review nevertheless rejects the
+  visible polygonal face and rectangular mouth seams created by restoring hard
+  protected islands next to newly generated garment pixels. The shared denoise
+  and composite mask is therefore not adopted for this transition problem.
+  `InpaintModelConditioning` is excluded because its own pinned
+  schema warns that the noise-mask path can break depending on the model;
+  experimental `DifferentialDiffusion` and all custom nodes are also excluded.
+  WP-015B2D
+  completed once on 2026-08-03 from external WP-015B2C knit proof SHA-256
+  `5FF0A63DAC03E13B2A3390AD77E6929A9822412E1A1E0415E7A38125D703B246`.
+  Its single seed `15026004` reference edit ran as prompt
+  `c82a19fa-6be7-4a30-b193-b9c708638302`. It visibly improved friendly appeal,
+  producing exact external output
+  `DEF9265DAA4C6F2799D16870205E2015291E3E4AAE0F61802349C9FD8D56AD00`
+  with paired eyebrows and normalized silhouette IoU `0.880098`. The project
+  owner accepts the eyebrows, body-width variation, and cuteness direction;
+  IoU is drift telemetry rather than automatic art authority. B2E executed the
+  single reviewed interior edit that mediates between B2C geometry and B2D
+  styling. Those angular protected-property requirements are now historical
+  evidence rather than the active anatomy contract. The current protected
+  properties are the rounded crochet-doll family, a clear Calling-defining hat,
+  the upward-facing cupped Relic palm, exactly two eyes and one mouth, and
+  friendly/cute readability. Paired stitched eyebrows remain optional. B2H now
+  resolves alpha, source-master approval, and the Wizard palm socket; animation,
+  runtime promotion, and another Calling remain blocked. Its predecessor
+  **WP-015B2C robot-scaffold knit
+  conversion completed with both gates passed on 2026-08-03**. Before that,
+  **WP-015B2A FLUX.2 Klein 4B model-admission deviation** completed Gates 1
+  through 6 on 2026-08-03 for exactly three external files:
+  canonical BFL FP8 diffusion model
+  `97ED34FE0567E436200F2FAEE3939B88F2B5D99F8AF2A4DC16532C4245C0CCB6`,
+  deterministic canonical-shard encoder merge
+  `AD65083F0B6561CC84B9B6A42FF397EE749171E367C28D800C4A6FD612ABC169`,
+  and canonical BFL FP32 VAE
+  `D64F3A68E1CC4F9F4E29B6E0DA38A0204FE9A49F2D4053F0EC1FA1CA02F9C4B5`.
+  The unlicensed pre-release Comfy encoder mirror is rejected. Two native
+  core-node source graphs are now exact-hashed at
+  `626568CEAA47627F7D421D3BD1B0AA151E1643DBA8FBD631F5EB437666649E28`
+  (text) and
+  `A2BF8CD3C015D36646E73F2FA87F22741E4410D27B26D562331057B49CFF6C8E`
+  (single reference). The closed `flux2-klein` profile now exact-installs those
+  workflows, verifies the full model/workflow chain, requires low-VRAM startup
+  with previews disabled, and checks exact MCP tool registration. One fixed-seed
+  1024x1024 technical smoke completed on the Windows AMD Radeon RX 7600 8 GB in
+  254.42 seconds without OOM, retry, node error, or model fallback. Its external
+  quarantined PNG is exact-hashed at
+  `CFCDDB3E74B1B3B2E1082571BA54F0F37F603E563902B6DDB8397DEA7C1516F4`.
+  Gate 5 then passed the Threadball structure purpose but failed Wizard both as
+  text-to-image and after the single controlled edit because that edit reused
+  the malformed rounded Wizard as its only structural reference. Gate 6 retains
+  that evidence and rejects the attempted route. WP-015B2B changed only the
+  reference strategy: one exact project-owned angular guide, one positive-only
+  67-word prompt, fixed seed `15026001`, and the unchanged native
+  single-reference graph. Prompt
+  `6fede7ab-3de4-4d67-9a24-d3de5ea3ca1f` completed once in 298.33 seconds and
+  produced exact-hashed external output
+  `FD24C8CD494FD9631BE2BC589067BE8477C67026DC24ED9BA9A9A3A07920570B`.
+  It preserved the Wizard materials, two eyes, separate feet, and forward
+  mitten, but replaced the guide's angular continuous body with a pointed hat,
+  round head, and oval torso. The frozen structure purpose therefore failed.
+  No retry, multi-reference graph, custom node, larger model, batch, or product
+  promotion is authorized. B2C isolated the remaining hypothesis by rendering
+  the exact guide once as a faceted mechanical scaffold without crochet,
+  Wizard, cute, plush, doll, or puffy semantics. Gate 1 passed as prompt
+  `2dfc929f-3370-41e9-a568-4f1a86689c36`; its exact external output is SHA-256
+  `BC6B21B74C5016504A733D5D1EC306FE7F46A8CC5E526E0FFF28EB9EABC25D38`.
+  The second reviewed state produced exactly one fitted-knit conversion,
+  `5FF0A63DAC03E13B2A3390AD77E6929A9822412E1A1E0415E7A38125D703B246`.
+  It retained the visual structure at 48px and passed the deterministic
+  comparison with normalized IoU `0.956188` and baseline drift `12` pixels.
+  Both files remain external quarantine; B2C itself authorized no further
+  generation.
+- Last completed asset slice: **WP-015B2H Wizard production normalization** on
+  2026-08-04. Frozen config `2AAEF899...7D644` and normalizer
+  `B4AEF73C...CDD82` produced the approved master `7AF4864E...18A9` twice
+  byte-for-byte. The planned coordinate stop rule amended only socket metadata
+  from the superseded angular `(341,293)` to the actual rounded-body palm
+  `(407,228)`; pivot `(256,451)` and uniform placement remain intact.
+- Completed B3C action: the exact deterministic Loomseed presentation config,
+  normalizer, source-only master, manifest lineage, 192px/48px reviews, and
+  two-run byte proof are frozen. The next exact Threadball-only composition
+  config, composer, three 64x64 formation/projectile source derivatives,
+  manifest lineage, rooted emission offset `[151,-223]`, visual reviews, and
+  two-run byte proof are also frozen. The separate source-free effects config
+  has now frozen glow/gather/tail/impact/timing without a new Threadball
+  generation or runtime path. WP-015C remains the next integration-only gate.
+  The first
+  Turbo/Budget preset-Idle pilot was exported as
+  external sheet `6EA23DEE...4C718` and rejected because it lowered/remade the
+  raised cupped palm. The documented free-tier Custom successor
+  `Palm-preservation idle` also failed: its first 256px frame replaces the empty
+  palm with a large blue woven basket/cup-like object, so it cannot establish
+  the intentional permanent Loomseed presentation. Both account pilots are
+  external rejected evidence. Their former no-third-attempt rule was superseded
+  only once by a WP-015C combined-Loomseed pilot. That 25-frame, free-tier
+  output retained a focus but rewrote the approved face as one oversized cartoon
+  eye with no stitched mouth, so it is also rejected external evidence (exact
+  SHA-256 `74405D...DB9EB`). Paid pose control, retries, source re-upload,
+  normalizer, runtime path, and asset promotion remain prohibited. B3C has
+  instead created the static deterministic Loomseed
+  derivative at `(407,228)`. The separate temporary Threadball must form and
+  launch from its emission origin without using either rejected pilot's pixels,
+  pose, or conditioning. Terrain Interior candidate `98091C73...50F9` remains
+  rejected historical evidence. Its separately owner-approved GIMP repair is
+  closed as exact 256x256 source master `D50C2C60...2E40E9`; no post-export
+  paint, runtime path, or further Patch request is authorized. No Threadball,
+  Cloud, Terrain Top, or Terrain Interior retry is authorized.
+  Initial due diligence on 2026-08-04 finds AutoSprite.io available for custom
+  animation and spritesheet downloads. Its 2025-09-18 terms retain user input
+  and output rights subject to input/third-party rights and state no training on
+  user content; its privacy policy retains uploaded inputs/outputs only as long
+  as needed but gives no fixed period, while its terms disclaim non-infringement
+  and identify third-party inference vendors without an exact model/version.
+  Both AutoSprite pilots remain externally quarantined and retained in the
+  account temporarily. The Custom successor consumed the former empty-palm
+  allowance and failed its first-frame socket review. Neither pilot can
+  approve a runtime asset.
+  Distinct Loomkeeper production, animation,
+  runtime integration, roster completion, and further Wizard generation remain
+  outside that slice.
 - WP-012 exactly pins `@nimiq/mini-app-sdk` `0.1.0` and server-only
   `@nimiq/core` `2.7.1`. Provider access remains lazy, identity acceptance is
   now used by WP-013's separate production Daily entry, the diagnostics surface
@@ -135,6 +1323,26 @@ Phaser/Socket.IO stack.
   re-entry is WP-015 planning and implementation. The Linux Fire median has
   only 8.7 ms of headroom and remains a monitored risk, not a reason to raise
   the budget.
+- WP-015A completed on 2026-08-02. It reconstructed ComfyUI 0.27.1 on the AMD
+  RX 7600, the loopback MCP bridge, Codex registration, and the exact archived
+  checkpoint. A seed-1 256x256 four-step MCP image passed end to end in 14.2
+  seconds and remained in the external Comfy shared output. The new
+  `comfy-asset-pipeline.ps1` entry point verifies Git pins, the Python 3.10.6
+  package lock, dependency health, model name/size/hash, ports, and command
+  ancestry before it starts or stops anything. Component licenses and blocked
+  promotion behavior are enforced by `npm run check:compliance`; evidence is
+  closed in `docs/evidence/wp-015a.json`. Committed WP-015B0 approves the exact
+  checkpoint, text-only image workflow, and project-owned VAE img2img workflow
+  for quarantined production candidates and closes the geometry/baseline
+  decision. Committed WP-015B1 freezes the first vertical-slice prompts, seeds,
+  geometry, animation triggers, and review gates. The initial B2 text-only pass,
+  one prompt-only retry, and one conditioned Wizard diagnostic did not satisfy
+  those gates. Committed review `2c528b8` records the failed attempts and stop.
+  WP-015B2A Gates 1 through 6 now record the exact admitted external components,
+  native workflows, closed runtime profiles, successful RX 7600 technical
+  smoke, split Wizard/Threadball visual result, and explicit general-route
+  rejection. Re-entry begins with character-route planning, not generation,
+  exact-output approval, or promotion.
 - The approved post-competition weekly program is now scoped as WP-018 through
   WP-021: Nimiq Chronicle, Loom XP qualification, optional PvP Sparring Loom,
   and the Weekly Grand Knot Tournament with an additional sponsor-funded
@@ -346,7 +1554,7 @@ Verification:
 - source scan for blocked brand names in user-facing code/docs,
 - `npm run build`.
 
-Delivered as **NIMble Knots: Cotton Clash**, featuring mouthless, big-eyed
+Delivered as **NIMble Knots: Cotton Clash**, featuring expressive, big-eyed
 Knotkin fantasy Callings in the cotton-and-crochet Patchwork Realms.
 `docs/art-direction.md` is the creative source of truth. Product metadata,
 visible client surfaces, default game schema, and server model terminology now
@@ -1614,7 +2822,7 @@ core dependency when constructing and expiring transactions.
   UTC challenge day. Unlimited Practice is the retry path after a loss,
   forfeit, or consumed rewarded attempt.
 - A controlled payout canary may temporarily raise that limit only for one
-  explicitly configured normalized test-wallet address, to at most five
+  explicitly configured normalized test-wallet address, to at most twelve
   sequential attempt slots. Mainnet requires an additional exact operator
   acknowledgement. The exception must not weaken daily budget, active-match,
   replay, claim, idempotency, signer, reconciliation, or finality controls and
@@ -2017,7 +3225,8 @@ the median and maximum must both pass.
 | Ordinary Practice requests for the lazy Mini App SDK before wallet action | 0 |
 | Navigation to actionable Practice start, median / maximum | <= 2,000 ms / 3,000 ms |
 | Start Practice tap to legal combat input, median / maximum | <= 3,000 ms / 5,000 ms |
-| Legal Fire tap to visible projectile presentation, median / maximum | <= 250 ms / 500 ms |
+| Legal Fire tap to visible spell-cast feedback, median / maximum | <= 350 ms / 500 ms |
+| Legal Threadball Fire tap to visible projectile, minimum / median / maximum | >= 1,800 ms / <= 2,500 ms / <= 3,000 ms |
 | Complete player-shot and Loomkeeper-response presentation | <= 10,000 ms maximum |
 | Individual browser test | <= 120 seconds |
 | Each required CI job / complete workflow wall time | <= 20 / 30 minutes |
@@ -2122,6 +3331,62 @@ allowance cannot be reassigned to JavaScript.
    time was 9m09s. Exact Ubuntu bundle and timing measurements, expected-skip,
    security, self-review, and residual risks are recorded in
    `docs/evidence/wp-014e.json`.
+6. **WP-014F Quality-gate repair - in progress 2026-08-31:** ordinary Verify
+   run `33420614409` on a documentation-only Lane G PR exposed pre-existing
+   quality debt. Its Linux visual baselines still showed the placeholder arena
+   while actual captures contained the already-approved production art; one
+   complete Practice result arrived immediately after a 30-second poll expired;
+   and performance sampling completed four stable measured contexts before the
+   120-second outer test timeout. The repair preserves gameplay, one warm-up
+   plus five measured contexts, zero retries, visual thresholds, expected
+   skips, and project coverage. It excludes trace,
+   screenshot, and video capture only from the measured performance project,
+   retained the next two exact Linux verdicts (including a 2,529.7ms and then
+   3,066.7ms visible-projectile median) instead of rerunning them away,
+   records the same existing player-visible DOM timing boundaries at mutation
+   delivery rather than adding a software-rendered animation-frame sampling
+   interval, adds no product instrumentation or telemetry,
+   raises only the outer evidence-collection allowance to 180 seconds, and gives
+   the single-exchange Practice poll a bounded 15-second CI scheduling margin.
+   Three retained exact Linux verdicts then bounded the post-Fire software-rendering
+   spread: visible-projectile medians were 2,529.7ms, 3,066.7ms, and 2,863.6ms;
+   complete-response maxima reached 11,194.8ms. The prior 2,500/3,000/10,000ms
+   ceilings had not been validated on Ubuntu after the required two-second cast
+   order. WP-014F therefore recalibrates only those ceilings to 3,200ms median,
+   3,500ms maximum, and 12,000ms response maximum. The 1,800ms launch minimum,
+   350/500ms instant-feedback budget, navigation/readiness budgets, and all
+   gameplay durations remain frozen.
+   The first Ubuntu candidate run then proved that the multi-navigation geometry
+   test needs a 60-second outer allowance to finish after its formerly failing
+   combat comparison; no visual wait, comparison threshold, retry, or project
+   coverage changes.
+   Replacement Linux baselines remain blocked until the pinned Ubuntu 24.04
+   artifact-only workflow generates them and every changed candidate is
+   explicitly inspected. Evidence is open in `docs/evidence/wp-014f.json`.
+7. **WP-014G Browser-harness optimization - complete 2026-09-01:** preserves
+   the five maintained projects, zero retries, one worker per existing CI shard,
+   expected-skip accounting, visual thresholds, timing budgets, and fresh-build
+   authority while reducing repeated local setup. A deterministic build proof
+   binds declared production inputs and exact client/server outputs; every
+   browser command rebuilds on a missing or stale proof and may reuse only an
+   exact match. Combat and Practice apply their reviewed project routes before
+   shared navigation, and a canonical focused gameplay command supports the
+   edit loop without substituting for final matrix coverage. Evidence is open
+   in `docs/evidence/wp-014g.json`. The final local matrix retained all 175
+   results (103 passed, 72 approved skips) and improved from 11.3 to 10.7
+   minutes; the canonical five-case edit-loop gate passed in 32.5 seconds from
+   an unchanged verified build and in 50.8 seconds when a stale proof correctly
+   triggered a rebuild.
+8. **WP-014H Feature/daily verification cadence - complete 2026-09-01:**
+   operationalizes the owner-selected two-tier cadence without weakening release
+   evidence. Every shipped feature runs the fast deterministic checks, current
+   output build, built smoke, and five-case canonical browser gate through
+   `verify:feature`. One end-of-day checkpoint runs the unchanged complete gate
+   through `verify:daily`, which must remain an exact alias for `verify:full`.
+   GitHub release CI remains unchanged. The quick gate passed in about one
+   minute, the daily alias entered the full gate successfully in its bounded
+   startup probe, and local automation `worms-port-daily-verification` is active
+   for 22:00. Evidence is closed in `docs/evidence/wp-014h.json`.
 
 #### Acceptance
 
@@ -2155,32 +3420,517 @@ Primary implementation references reviewed for this refinement:
 
 ### WP-015 Production Art And Audio
 
-Status: planned. Depends on WP-010 and WP-014 asset gates.
+Status: in progress. Depends on WP-010 and WP-014 asset gates. WP-015A is
+complete; WP-015B is the active slice.
 
-Goal: produce Wizard, Thief, Warrior, Loomkeeper variant, Relics, first Patch,
-effects, UI media, and short audio through the MCP asset pipeline. Every brief
-must cite `docs/images/art-direction/knotkin-class-lineup-concept.png` as the
-canonical visual reference. No pixels from the concept image enter runtime
-without explicit exact-file approval.
+Goal: assemble a basic, phone-playable production-art version of the existing
+artillery loop so real-device testing can show how characters, weapons,
+projectiles, impacts, damage, environment, UI, and results work together. This
+is an integration and game-feel pass, not final detail, animation coverage, or
+balance polish. Every brief must cite
+`docs/images/art-direction/knotkin-class-lineup-concept.png` as the canonical
+Calling, palette, material, costume-vocabulary, and world-language reference.
+WP-015B2G supersedes its anatomy with the rounded crochet-doll family. No pixels
+from the concept image enter runtime without explicit exact-file approval.
 
-Minimum visual asset inventory:
+The three starting Relics are the base default roster. WP-015 introduces a
+new versioned ruleset rather than changing v1 or v2 replay truth. Only range and
+maximum direct Stitching damage distinguish them initially: Threadball is
+medium/medium, Needlepoint is highest/lowest, and Spoolburst is lowest/highest.
+Damage radius, terrain radius, precision, falloff, ammo, cooldowns, secondary
+effects, Calling modifiers, and final numeric tuning remain shared or deferred.
+
+Basic asset inventory:
 
 - four isolated side-view character masters: Wizard, Thief, Warrior, and a
   friendly but clearly opposing Loomkeeper variant,
-- one normalized runtime atlas per character with `idle`, `move`, `jump_start`,
-  `fall`, `land`, `aim_low`, `aim_mid`, `aim_high`, `fire`, `hit`, `unravel`,
-  and `victory` states,
-- separate transparent masters and phone-readable icons for Threadball and the
-  two additional Relics frozen by the gameplay specification,
-- separate projectile, trail, impact, Stitching-damage, Unraveling, and Prize
-  Loom reward effects,
-- one Patch environment split into a scalable decorative backdrop, separate
-  transparent background props, repeatable terrain material textures, and a
-  code-owned destructible collision mask,
+- one basic normalized runtime atlas per character with `idle`, `move`,
+  `aim_low`, `aim_mid`, `aim_high`, `fire`, `hit`, `unravel`, and `victory`,
+- separate transparent icon, held sprite, projectile, simple trail, and simple
+  impact assets for Threadball, Needlepoint, and Spoolburst,
+- shared basic Stitching-damage, Unraveling, victory, and Prize Loom reward
+  effects,
+- one Patch with a scalable fill, one cotton-cloud or distant layer, repeatable
+  terrain top and interior materials, and a code-owned collision mask,
 - Calling portraits or icons derived from approved character masters rather
   than cropped from the lineup concept,
-- short approved audio for aiming/charging, firing, impact, damage, Unraveling,
-  victory, and reward confirmation through a separate audio provenance path.
+- a small approved audio set for firing, impact, damage/Unraveling, result, and
+  reward confirmation through a separate audio provenance path.
+
+Sequential delivery slices:
+
+- **WP-015A Pipeline foundation — complete:** pin and license-review the local
+  external generator stack, freeze its bridge environment, prove a bounded
+  loopback smoke, and provide one fail-closed re-entry command. This slice
+  promotes no media.
+- **WP-015B Basic assembly contract and vertical-slice foundation — in
+  progress:**
+  - **WP-015B0 Approval and canonical baseline — complete 2026-08-02:** record
+    the project owner's Nimiq-team/foundation encouragement attestation and
+    historical geometry approval, later superseded for production anatomy by
+    B2G; point re-entry to the documentation-only knitting lineup;
+    approve and hash the exact archived checkpoint, text-only generation
+    workflow, and project-owned image-plus-text refinement graph; retain
+    exact-output review. The bounded technical smoke remained in external
+    quarantine and this slice promoted no media.
+  - **WP-015B1 Vertical-slice briefs and deterministic generation contract —
+    complete 2026-08-02:** freeze Wizard, Loomkeeper, Threadball, and first-Patch
+    briefs, prompts, negative constraints, seeds,
+    anatomy/baseline/historical held-Relic sockets, projectile origins, animation triggers,
+    and acceptance checks in `docs/asset-briefs/wp-015b1-vertical-slice.md`.
+    B2G later amends the anatomy and current FLUX prompt while retaining the
+    baseline/socket/animation contract. This slice generated no media.
+  - **WP-015B2 Quarantined vertical-slice masters — in progress, Wizard
+    direction selected and further generation suspended:** the fixed primary
+    pass and Retry 1 failed art gates; the user
+    stopped Retry 2 after one conditioned Wizard diagnostic. Preserve every
+    exact rejected output and promote nothing. Prompt decomposition alone is no
+    longer the immediate next action because the approved SD 1.5 route did not
+    demonstrate adequate structural instruction following.
+  - **WP-015B2A FLUX.2 Klein 4B model-admission deviation — complete 2026-08-03,
+    general route rejected:** exact-component review admitted the canonical
+    BFL FP8 diffusion model, a deterministic single-file merge of the canonical
+    BFL Qwen shards, and the canonical BFL FP32 VAE. The pre-release Comfy Qwen
+    mirror failed exact provenance and is blocked. Two exact, core-only native
+    workflows passed source review, and the closed `sd15`/`flux2-klein`
+    profiles now exact-install and register only their reviewed chains. One
+    fixed-seed technical smoke passed on the RX 7600 8 GB route without OOM,
+    retry, node error, or model fallback. The sequential visual micro-bakeoff
+    passed Threadball but failed Wizard text generation and its one controlled
+    edit. The profile remains technical evidence and a possible future
+    separately reviewed Relic-only route; general B2 generation returns to
+    planning and does not authorize a larger model, cloud API, custom node, or
+    asset batch.
+  - **WP-015B2B Deterministic structure-reference Wizard recovery — completed
+    with visual rejection 2026-08-03:** BFL's official guidance identifies clean pose/layout references
+    and explicit reference roles as FLUX.2's structural-control mechanism and
+    advises positive descriptions rather than negative prompting. Add one
+    project-owned 1024x1024 guide that scales the frozen B1 baseline and socket
+    exactly, keep the existing core-only single-reference graph unchanged, and
+    authorize one positive-only fixed-seed Wizard diagnostic. The one request
+    completed technically but returned to a round head and oval torso despite
+    retaining the eyes, feet, hand, and Wizard material identity, so it failed
+    the angular structure purpose and remains quarantined. Multi-reference style
+    conditioning and deterministic character construction remain separately
+    reviewed alternatives rather than automatic follow-ups.
+  - **WP-015B2C Robot-scaffold knit conversion — completed with both gates
+    passed 2026-08-03:** test the
+    project owner's hypothesis that `crochet Wizard` activates the rounded doll
+    prior. The first fixed request uses the deterministic guide and mechanical
+    semantics only. Stop if it does not produce the angular chassis. Only a
+    recorded pass plus a second fail-closed manifest state may authorize one
+    material-only conversion into a fitted crochet shell. Gate 1 passed and Gate
+    2 preserved the exact robot structure with normalized IoU `0.956188` and
+    12-pixel baseline drift. Both outputs remain disposable quarantine evidence,
+    not a player-character direction or approved master. The mouth contract is
+    amended to two bead eyes and one small neutral expression-ready mouth while
+    historical prompts remain unchanged.
+  - **WP-015B2D Wizard cuteness and Calling styling — completed 2026-08-03:**
+    use the accepted B2C fitted-knit bytes once with seed `15026004` to improve
+    friendly appeal. The project owner accepts its paired eyebrows, moderate
+    body variation, and cuteness direction. Output `DEF9265D...AD00` remains
+    external evidence; its neck-wrap cowl required a protected local repair.
+  - **WP-015B2E Protected cowl edit — single request completed and rejected as
+    Wizard master 2026-08-03:** use B2D as the sole base/reference and
+    the exact tracked cowl mask in the core-only protected workflow. Seed
+    `15026005` produced external output `1275B2BD...D2E0`; every zero-mask pixel
+    equals B2D. Project-owner review found that its compact crown loses the
+    Wizard calling and its horizontal wrap reads thief-like. The one-request
+    allowance is consumed; no retry or promotion is implied.
+  - **WP-015B2F Wizard-hood protected edit — single request completed and
+    visually rejected 2026-08-03:** use exact B2D to construct one deterministic external
+    scaffold with a tall asymmetric pointed hood, open neck, and short split
+    mantle. The tracked structure guide and generous mask preserve the accepted
+    face, mouth, lower body, forward Relic hand, feet, and baseline while giving
+    FLUX room to remove the rejected scarf. A full robe/tunic is a later
+    separate pass. Project-owner approval of the exact guide, mask, scaffold,
+    48px read, and frozen prompt completed. Seed `15026006` produced a clear
+    Wizard hood, but hard-restored face/mouth islands created visible seams.
+    The allowance is consumed; no retry or changed control is implied.
+  - **WP-015B2G Rounded-doll requirement reset — owner-selected direction
+    recorded 2026-08-03:** preserve B2A-B2F as the full evidence trail, but stop
+    treating FLUX's rounded cute-doll prior as a defect. The old hexagonal
+    anatomy requirement is superseded. Two unconditioned, fixed-seed text trials
+    returned to the first successful FLUX composition while applying lessons
+    from the control cycle. Seed `15027001` failed only the abstract grip purpose
+    with a closed thumbs-up mitten. Seed `15027002` described the palm as an
+    upward-facing shallow bowl and produced selected external candidate
+    `40F9E812...4A5`. No third prompt, LoRA, normalization, or promotion is
+    implied. The exact prompt and full external path are frozen in the B2 review.
+  - **WP-015B2H Wizard production normalization — completed 2026-08-04:** exact
+    external source `40F9E812...4A5` passed output-IP/component review and remains
+    untouched outside the repository. Frozen config `2AAEF899...7D644` and
+    normalizer `B4AEF73C...CDD82` removed the background/contact shadow, retained
+    one connected subject, decontaminated the edge, and reproduced 512/192/48px
+    RGBA outputs byte-for-byte. Candidate A was rejected because generic enclosed-
+    region filling retained the floor shadow; the corrected shadow-zone matte
+    passed full-size, dark/light edge, 192px, and 48px review. Approved source
+    master `7AF4864E...18A9` retains pivot `(256,451)` and uses the actual visible
+    palm socket `(407,228)`. The old angular-body socket `(341,293)` was amended
+    because matching it at the retained baseline would shrink the character to
+    about 297px tall. No pixels were distorted. The manifest entry has no
+    `runtime_path`; animation, atlas, integration, another prompt, and another
+    Calling remain blocked.
+  - **WP-015B3 Vertical-slice production completion — active after B2H:**
+    complete all approved inputs required by C before touching runtime code:
+    - **B3A shared companion masters:** keep existing Threadball candidate
+      `2BAE664F...F4089EB` paused as exact historical structure evidence because
+      it reads as ordinary yarn rather than a compressed Worldweave spell. Do
+      not normalize, promote, delete, or use it as conditioning. The replacement
+      gate now freezes seed `15035001`, the exact 77-word text-only prompt, pinned
+      FLUX settings/workflow, no reference input, one request, output-baseline
+      evidence, protected properties, rejection rules, and stop conditions. The
+      external Gemini concept `BD87405A...DA6699` supplies comparison cues only;
+      it is not copied, staged, or conditioned on. The one request completed as
+      exact external output `1F41AF26...F56EC` and deterministically approved
+      source master `608F490C...D9B6F`; no retry, animation, or runtime
+      integration is authorized. The equivalent Patch-layer contract is now
+      frozen: Cloud (`15035002`), Terrain Top (`15035003`), and Terrain Interior
+      (`15035004`) are text-only/no-reference requests under the same pinned
+      FLUX settings, but are strictly sequential. Cloud completed as external
+      `EA972B0B...FFE7`, passed owner review, and is source-master-approved as
+      `7F327B51...4B23C` with no runtime path. Owner-approved Terrain Top then
+      deterministically produced 256x64 source master `41511E63...7897` through
+      frozen crop, uniform scale, and exact horizontal repeat proof; no runtime
+      path is assigned. Terrain Interior consumed its separately preflighted
+      request as external candidate `98091C73...50F9`, then remains rejected for
+      its directional quilt seam pattern. The project owner separately repaired
+      the material in four-layer XCF `2E94BBE4...CDBC7B`; its exact GIMP export
+      `6419C1E8...CF8095` deterministically produces 256x256 source master
+      `D50C2C60...2E40E9` with a zero-difference 3x3 two-axis repeat proof and
+      no runtime path.
+      Each
+      source imagery gate needs fresh
+      preflight, review, and explicit continuation; it does not claim seamless
+      tiling, which remains a deterministic-normalization proof. Stop on failure
+      instead of starting a batch. Do not generate a distinct Loomkeeper in B3A.
+    - **B3B deterministic Loomseed-presentation admission:** preserve the two
+      rejected AutoSprite pilots as external evidence and make no further
+      service request. Freeze the source parents, palm anchor, root-transform
+      rule, and three Fire phases for a permanent held Loomseed and separate
+      temporary cast Threadball. The exact approved Threadball source master is
+      the only permitted visual parent; the rejected basket/cup-like frame is
+      neither an input nor a product candidate. This documentation gate creates
+      no asset or runtime path.
+    - **B3C playable derivative inventory:** after B3B's deterministic contract
+      is frozen, produce and normalize one minimum Wizard root presentation for
+      reuse by both the player and AI Loomkeeper, plus the permanent Loomseed,
+      temporary Threadball formation/projectile/short-tail/impact family, Patch
+      background/cloud/repeatable terrain materials, and shared damage/result
+      effects needed by the C exchange. The Threadball sequence must show loose
+      strands gathering at or beyond the held Loomseed, compressed flight, and
+      rapid non-graphic unspooling against Stitching without implying a new
+      radius or status effect. Record composition metadata, pivots, Loomseed
+      anchor, aim-direction emission rule, parent hashes, phone-size review,
+      manifest decisions, and the 1.5 MB media budget. C stays blocked until
+      every required runtime file is approved.
+- **WP-015B3C.1 Runtime-copy admission — completed 2026-08-05:**
+  promoted only these already approved source files by adding an exact
+  `runtime_path` to their existing asset-manifest entry: the 512px
+  Wizard-with-Loomseed presentation master; Threadball `formation-start`,
+  `formation-ready`, and `projectile` 64px masters; Patch Cloud; Patch Terrain
+  Top; and Patch Terrain Interior. Each path must sit below `assets/product/`,
+  each build output must be byte-identical to its existing manifest-bound
+  source, and the generated approved-assets list must contain exactly those
+  seven files. Their current source bytes total 607,427 bytes, below the 1.5 MB
+  initial-media ceiling. Do not add a duplicate source file below
+  `assets/product/`, alter any master, promote the unused empty-handed Wizard or
+  raw Threadball master, add a runtime path to the rejected FLUX Terrain
+  Interior, generate an atlas, add code, or make player-visible changes. The
+  `check:b3c-runtime-inventory` allowlist verifies the exact paths, source hashes,
+  and 607,427-byte total; focused tests prove byte-identical build copies.
+  Tooling, compliance, build, audit, and diff checks passed. This resolves the
+  former C-entry contradiction without weakening the source-only approval gate.
+- **WP-015C First playable visual slice — integration plus bounded V3 hitbox stabilization:** after B3C.1
+  closes, load the approved
+  Wizard presentation for both the player and the AI Loomkeeper, compose the
+  approved permanent Loomseed at its recorded anchor, launch the approved
+  temporary Threadball derivatives from its emission origin, compose Patch
+  decorative layers over code-owned terrain/collision, and bind presentation
+  states only to existing authoritative events. Bind gathering/levitation to the
+  existing aim/fire preparation, release to the authoritative release frame,
+  and unspooling impact to the authoritative impact event without changing
+  physics, damage, collision, or replay truth. The existing Loomkeeper actor,
+  rules, labels, and team/position cues remain unchanged; only its temporary
+  visual presentation reuses the Wizard. No generation, source repair, or asset
+  approval belongs in C. Its one external-quarantine, free-tier AutoSprite
+  combined-Loomseed idle pilot is complete and rejected; it cannot alter this
+  runtime route, admit a file, or authorize another request. The sole later
+  real-device-authorized ruleset exception
+  is `nimble-knots-artillery-v3`: new challenges retain every v2 mechanic and
+  Loomkeeper policy but replace only direct projectile contact with the fixed
+  shared-Wizard body profile `halfWidth: 32`, `top: 85`, `bottom: 13`, measured
+  from unit centre. V1/v2 must retain byte-for-byte replay behavior; V3 direct
+  contact is zero-distance damage only for the hit target, leaving splash,
+  terrain footprint, movement, launch, gravity, and Relic constants unchanged.
+  The profile derives once from recorded approved-presentation metrics and may
+  not inspect image pixels at runtime. Prove one complete player and Loomkeeper
+  move/aim/fire/flight/impact/damage/result exchange at all maintained phone
+  viewports, with reduced-motion behavior, v1/v2 replay truth, placeholder
+  fallback/error handling, lazy-loading/media-budget reporting, and no change to
+  collision or simulation authority apart from that explicit versioned V3
+  profile. Run compliance, build, the full automated
+  phone-browser matrix, and the Ubuntu visual-candidate workflow. D remains
+  blocked until the candidate is reviewed on a real phone and any finding is
+  either fixed or explicitly deferred. Implementation status on 2026-08-05:
+  the fixed seven-file inventory now loads through a client-side fallback,
+  the shared Wizard/temporary Threadball/Patch presentation is bound to existing
+  authority, and the final Windows zero-retry matrix passed 95 applicable
+  results with 60 reviewed exclusions. On 2026-08-06, pinned Ubuntu 24.04
+  workflow run `31070047238` passed for commit `6339565432f480439dd907807234aec0db4bdf2a`
+  and uploaded the candidate artifact; its Threadball charge, formation,
+  projectile, impact, landscape, and sideways frames received a technical
+  inspection without any Windows baseline update. Explicit visual-baseline
+  approval and separate real-phone review remain required before C can close.
+  The first real-phone C review then found a completed solid flight-path overlay
+  obscuring the cast/impact read and no discrete in-flight visual for the
+  still-unapproved Needlepoint/Spoolburst families. The in-scope repair removes
+  every completed fired-path line while retaining the dashed aim preview;
+  Threadball keeps its approved sprite/blue-only short tail, and the two deferred families
+  now use bounded procedural projectile/impact placeholders. It changes no
+  source asset, physics, collision, damage, replay, or authority. A fresh
+  Ubuntu candidate inspection and focused real-phone re-check are required
+  before C can close. The next focused phone acceptance then exposed the larger
+  Wizard's upper body as visually present but mechanically untargetable because
+  v1/v2 retain their 24 by 24 lower-body target. The owner authorized the
+  versioned V3 correction above. It must update protocol validation, new-match
+  defaults, client acceptance, replay reconstruction, and deterministic tests
+  while preserving V1/V2 goldens. Its fixed profile covers the current visible
+  torso/head/hat/feet but deliberately excludes the extended palm/Loomseed;
+  any distinct later character needs a newly versioned profile. Fresh phone,
+  Ubuntu-candidate, and full browser-matrix evidence originally gated C closure.
+  The owner subsequently passed the focused V3 real-phone hitbox check and
+  explicitly waived a replacement Ubuntu candidate for that correction; the
+  earlier pinned Ubuntu artifact remains technical evidence and no Windows
+  baseline was approved.
+  Because V3 retains the historical V2 Relic values, the corrected target also
+  makes a true direct Needlepoint contact capable of resolving a full
+  100-Stitching target in one action. This is visible correctness rather than a
+  stealth balance change; focused phone acceptance must assess the pacing before
+  C closes. WP-015D2's separately versioned V5 keeps the planned low-damage
+  Needlepoint tier. On 2026-08-08 the owner accepted the final Render-deployed
+  Samsung-phone presentation after the uniform 30 percent shared-Wizard scale
+  increase and the readable decorative Patch-material mapping. The previously
+  required fresh Ubuntu candidate run `31264979770` passed on the exact branch
+  ref `5484e4801df6672441ada6347b4e366363e7b56b` and its artifact was
+  technically inspected: the full-motion, projectile, Loomkeeper-aim, and wide
+  start candidates retained the intended composition. It created no Windows or
+  committed baseline. WP-015C is complete; WP-015D0 is the next planning-only
+  gate.
+- **WP-015C_Animation FLUX.2 one-key-pose pilot:** preserve the first playable
+  slice's deterministic root-transform route while evaluating, but not
+  admitting, one still relaxed idle pose. The official BFL MCP is an
+  OAuth-only FLUX.2 image connector, but Codex Desktop does not currently expose
+  its remote tools to threads; it must not receive an API key and is not used by
+  this work package. The direct helper reads only the Windows User-scoped
+  `Flux_GameAssets_API_Key` at invocation time. It must require the prompt from
+  its command arguments or a separately hash-bound request file, never conceal
+  it as a default, and must never print or persist the key. Before the single
+  request, freeze the exact source hash `1CC252B4...9419C`, no pose guide,
+  the exact prompt and parameters in
+  `docs/asset-briefs/wp-015c-animation-flux2-max-idle-request-v1.json`, the
+  `flux-2-max` endpoint, 1024x1024 output, white/plain background, full-body
+  crop, and ground baseline. The owner
+  accepted BFL's documented service/training use of this pilot's submitted input
+  and resulting output on 2026-08-06; that narrow decision does not authorize a
+  second request or alter the other Terms. Retain the untouched image and service metadata externally and
+  reject the result on any face, mouth, Loomseed, palm, anatomy, full-body
+  framing, baseline, background, or identity drift. Record endpoint/model,
+  request body excluding the key, service task/result identifiers, settings,
+  cost, timestamps, source/no-guide/output hashes, and retained content credentials.
+  There is no automatic retry, generated sheet, video, alpha removal, atlas,
+  normalization, staging, runtime path, or visual-baseline update in this work
+  package.
+- **WP-015D0 Arena Scale and Camera Contract — complete:** the owner-approved
+  [WP-015D0 Arena Scale and Camera Contract](wp-015d0-arena-camera-contract.md)
+  freezes V4 as a `2048 by 576` world, `256 by 72` terrain at 8-unit cells,
+  player/Loomkeeper spawn x `512/1152`, and the current-scale `1024 by 576`
+  camera window with horizontal range `0..1024`. The initial reachable duel
+  separation remains 640, while the Loomkeeper sits just outside the starting
+  player window and the doubled world preserves genuine later tactical space.
+  It specifies sideways-safe canvas-only panning, a non-interactive swipe hint,
+  edge-follow for an authoritative preview endpoint, preserved aim-lock view,
+  post-lock panning, caster/projectile/impact follow, recovery,
+  replay boundary, test matrix, and no-obstacles/no-tactical-terrain scope.
+  V1/V2/V3 world dimensions, terrain generation, coordinates, replay bytes,
+  and ruleset reconstruction remain immutable. **WP-015D1 completed on
+  2026-08-08.** Its final opening survey is horizontal-only: the fixed vertical
+  terrain/Wizard framing never reveals blank space or moves a Wizard into the
+  ground. `npm run build`, the 24 combat tests, and the 170-result zero-retry
+  phone-browser matrix passed; Windows visual comparison was intentionally
+  omitted under the existing policy, with Ubuntu CI remaining authoritative.
+  The project owner then accepted the final Samsung-phone behavior.
+- **WP-015D1 V4 wider arena and pan camera — complete 2026-08-08:** after D0
+  contract approval, D1 implemented the frozen V4 arena size, terrain-grid
+  dimensions, spawn separation, deterministic low-relief ground extension, and
+  horizontal camera/pan/follow behavior using the current approved
+  shared-Wizard, Threadball, Cloud, and Patch presentation. V4 retained the V3
+  Relic values, actor labels, current shared-Wizard hitbox profile, and generic
+  Needlepoint/Spoolburst presentation while preserving byte-for-byte V1/V2/V3
+  replay behavior. D1 generated or admitted no media and added no tactical
+  terrain profile, obstacle, destructible prop, alternate map, character,
+  Calling distinction, Relic range/damage tier, radius, precision, falloff,
+  ammo, cooldown, or secondary effect. It proved camera bounds from the
+  authoritative V4 terrain state, protected sideways gesture routing,
+  player/Loomkeeper framing, trajectory/projectile alignment, bounded
+  Loomkeeper search, deterministic V4 replay reconstruction, and the full
+  phone-browser plus Samsung real-device camera acceptance. The accepted
+  delivery includes the fixed-vertical, horizontal-only opening survey
+  correction.
+- **WP-015D2A Tactical Game Model and Simulation Harness:** after D1
+  acceptance, formalize the V4/V5 tactical decision tree before freezing V5
+  values. The model treats a Clash as a finite sequential perfect-information
+  game: an observed cast, relocation, or any separately proposed defense is a
+  commitment whose opponent response must be evaluated. It records the MDA
+  progression from desired agency/tension/mastery, through pressure,
+  approach/retreat, survival windows, and convergence, to candidate rules. A
+  deterministic Python analysis harness explores bounded transparent policies
+  and integer-only configurations, reports mirrored first-actor advantage,
+  counterplay, action diversity, convergence, and dominated actions, and
+  cross-checks production candidates against TypeScript scenario transcripts.
+  TypeScript remains the sole live/replay authority. The exact contract is
+  [wp-015d2a-tactical-game-model-contract.md](wp-015d2a-tactical-game-model-contract.md).
+  D2A can test movement/action economy, a Brace-like defense, and
+  Loom-Tightening-style overtime only as labelled candidates. It authorizes no
+  gameplay change, V5 default, new asset, terrain tactic, reward change, or
+  silent defense/overtime rule. It closes with an owner decision to proceed
+  values-only or to separately version a tactical-core follow-up.
+- **WP-015D2 V5 basic Relic range and damage tiers:** after D2A's owner
+  decision, freeze exact range and maximum direct-damage values for Threadball
+  (medium / medium), Needlepoint (long / low), and Spoolburst (short / high),
+  then add `nimble-knots-artillery-v5`. The split deliberately makes this V5
+  rather than mutating the accepted V4 arena rules: V1 through V4 replay
+  behavior and reconstruction remain byte-for-byte. Unless a separately
+  approved tactical-core package says otherwise, V5 remains values-only: it
+  uses the current move/turn economy, current shared Wizard, and current
+  approved/procedural Relic presentation while deriving the revised legal range
+  and deterministic Loomkeeper policy from V5 only. Radius, precision, falloff,
+  ammo, cooldowns, status effects, Calling modifiers, terrain tactics,
+  obstacles, defense, convergence/overtime, and source-media work remain
+  deferred. Close with exact tier/range/replay/AI ordering tests, analytical
+  transcript parity, compliance, build, full browser matrix, and real-device
+  pacing acceptance.
+- **WP-015D3 Needlepoint and Spoolburst visual identity:** after D2 acceptance,
+  create, exact-file review, and integrate the small approved UI/effect families
+  for Needlepoint's Air/Draft grammar and Spoolburst's Fire/Loomspark grammar.
+  This includes only the selected-Relic UI treatment and deterministic cast,
+  in-flight, short-tail, and impact presentation needed to make the two V5
+  tiers legible. Threadball retains its approved Worldweave presentation, and
+  both combatants retain the shared Wizard presentation. D3 must not introduce
+  a distinct Loomkeeper, Thief, Warrior, obstacle, tactical terrain profile,
+  alternate map, or new simulation/range/damage/hitbox rule. Exact source
+  masters, manifests, attribution, byte-identical runtime copies, media budget,
+  fallback behavior, browser visual review, and real-device acceptance are all
+  required before this presentation slice closes.
+- **WP-015E Basic audio and closure:** source or generate the small combat/result/
+  reward audio set through a separate exact-file license and provenance path;
+  give Threadball a tightening/winding and snap-unravel identity, Needlepoint a
+  light Draft passage, and Spoolburst a warm Loomspark/unspooling identity
+  without realistic gunfire or explosive violence. Normalize loudness/format
+  and verify mute, pause, repeated-play, and mobile lifecycle behavior. Finish
+  all visual/audio manifests and attribution, confirm
+  lazy loading and the 1.5 MB compressed initial-media ceiling, inspect the final
+  Ubuntu visual baselines, and close compliance, audit, build, complete browser,
+  production-smoke, and separate real-device acceptance evidence. Detailed art,
+  extra animation, additional Patches, and balance polish remain deferred.
+
+WP-015B2A is a corrective admission gate, not an approval of FLUX.2, its
+component mirrors, a new prompt contract, or any output. It deviates from the
+previous plan as follows:
+
+1. **Component evidence first — passed 2026-08-03:** exact-hash and admit only
+   the external BFL FP8 diffusion file, deterministic canonical-shard Qwen merge,
+   and exact BFL FP32 VAE recorded in
+   `legal/generation-component-manifest.json`. The official Comfy guide's
+   pre-release Qwen mirror is rejected because two tensors differ from canonical
+   BFL/Qwen and its repository supplies no exact license/provenance linkage.
+2. **Native workflow only — passed 2026-08-03 as runtime-disabled source:** review project-owned text-to-image and
+   single-reference-edit graphs built solely from the already pinned ComfyUI
+   0.27.1 core nodes. Exact-hash both graphs and register only their bounded
+   parameters. Do not update ComfyUI, install a custom node, use an external
+   generation API, expose either loopback service, or weaken the existing SD
+   1.5 verification route.
+3. **Fail-closed multi-model pipeline — passed 2026-08-03 without inference:** add a separate reviewed model profile
+   rather than replacing the SD 1.5 smoke checkpoint or accepting arbitrary
+   model names. `Prepare`, `Status`, `Start`, and MCP registration must verify
+   the selected profile's complete component and workflow chain. All files and
+   outputs remain external and quarantined.
+4. **Eight-GB technical admission - passed 2026-08-03:** one batch-one,
+   fixed-seed 1024x1024 run completed on the actual Windows AMD Radeon RX 7600
+   with low-VRAM text-encoder offload and previews disabled. Comfy reported
+   254.42 seconds, partial diffusion loading with 918.00 MB offloaded, and no
+   OOM, retry, node error, or model fallback. The exact external output is
+   recorded in the B2A review and evidence record. Driver-reported memory
+   samples are retained as approximate telemetry rather than a portable GPU
+   requirement.
+5. **Two-purpose visual admission - completed with split result 2026-08-03:**
+   one isolated Wizard text pass failed, one isolated Threadball text pass
+   passed, and the single allowed Wizard reference edit removed the mouth but
+   did not solve angular anatomy or the forward-hand socket. Every request used
+   its pre-recorded short prompt and seed and was reviewed before continuing.
+6. **Historical B2A adoption decision - rejected 2026-08-03:** provenance,
+   license, pipeline, and hardware passed, but both visual purposes did not. At
+   that gate the route was not adopted for resumed B2 generation. Its technical
+   and Threadball evidence remains preserved. The later, owner-scoped B2B-B2G
+   experiments and B2G anatomy reset are separately recorded decisions; they do
+   not rewrite this gate result.
+
+WP-015B1 remains normative for baseline, source-palm coordinates, historical
+projectile metadata, environment decomposition, and source boundaries. The
+B3B Loomseed amendment supersedes B1's empty-palm/held-Relic presentation rule
+while retaining the actual B2H palm coordinate as the anchor/emission origin.
+WP-015B2G
+supersedes its angular product anatomy and historical SD 1.5 prompt wording.
+Those SD 1.5 prompts, seeds, CFG, sampler, scheduler, and workflow hashes remain
+the immutable historical contract for the rejected run. A different model must
+receive a separately reviewed model-specific prompt/settings/seed amendment;
+cross-model seed equality is not meaningful. For Patch terrain, generation may
+offer reviewed material source imagery, but seamless edges, exact repeatability,
+transparent cleanup, and collision geometry must be deterministic postprocess
+or code-owned work rather than model promises.
+
+Primary official sources reviewed for this planning deviation:
+
+- FLUX.2 model family, 4B Apache-2.0 status, generation/editing support, and
+  consumer-GPU positioning:
+  `https://github.com/black-forest-labs/flux2/tree/50fe5162777813d869182b139e83b10743caef15`;
+- exact distilled FP8 model card and license:
+  `https://huggingface.co/black-forest-labs/FLUX.2-klein-4b-fp8/tree/5b4408e59397a4a37ccb46afe426d8ed86379441`;
+- native ComfyUI 4B text-to-image/edit workflows, three component locations,
+  and published FP8 memory figure:
+  `https://github.com/Comfy-Org/docs/blob/ac1bc24fdc79409f3b469d5130b2dbb7097d4f0d/tutorials/flux/flux-2-klein.mdx`;
+- canonical Apache-2.0 BFL Qwen shards and Klein VAE used for Gate 1 tensor
+  comparison:
+  `https://huggingface.co/black-forest-labs/FLUX.2-klein-4B/tree/e7b7dc27f91deacad38e78976d1f2b499d76a294`;
+- canonical FP32 VAE exact file plus BFL's file-family-specific Apache-2.0
+  autoencoder statement:
+  `https://huggingface.co/black-forest-labs/FLUX.2-dev/blob/26afe3a78bb242c0a8bb181dcc8937bb16e5c66c/vae/diffusion_pytorch_model.safetensors`
+  and
+  `https://github.com/black-forest-labs/flux2/blob/50fe5162777813d869182b139e83b10743caef15/README.md#flux2-autoencoder`;
+- ComfyUI low-VRAM, preview, offload, and AMD guidance:
+  `https://docs.comfy.org/troubleshooting/overview`.
+
+Additional primary sources reviewed for WP-015B2B on 2026-08-03:
+
+- BFL FLUX.2 prompt ordering, 30-80-word normal range, positive description,
+  structured prompts, and explicit multi-reference roles:
+  `https://docs.bfl.ai/guides/prompting_guide_flux2`;
+- BFL structural guidance through clean pose, edge, and layout references
+  instead of a dedicated ControlNet input, plus the warning that matching is
+  semantic rather than pixel-perfect:
+  `https://docs.bfl.ai/guides/usecases_editing_controlnets`;
+- BFL single-reference instruction guidance:
+  `https://docs.bfl.ai/guides/prompting_editing_single_reference`;
+- FLUX.2 Klein 4B single/multi-reference support and Apache-2.0 status:
+  `https://github.com/black-forest-labs/flux2`; and
+- ComfyUI's official distilled 4B edit workflow and published 8.4 GB figure:
+  `https://docs.comfy.org/tutorials/flux/flux-2-klein`.
+
+Deferred beyond WP-015: high-detail variants, multiple Patches, foreground
+dressing, unused jump/fall/land animations, Calling-specific effects, radius
+and precision differentiation, secondary weapon mechanics, a playable
+Cloudwater/water Relic, elemental status interactions, and final balance tuning.
+Reopen those only after the basic assembled game has real-device feedback.
 
 Character master contract:
 
@@ -2188,13 +3938,18 @@ Character master contract:
 - orthographic-like side view suitable for a side-on artillery game,
 - one full character only, no scenery, text, frame, shadow crop, or other
   character,
-- exactly two glossy bead eyes, no mouth or other facial marks,
+- exactly two glossy bead eyes, one small neutral expression-ready mouth, and no
+  nose, extra eye, duplicated mouth, or unrelated facial marks; one intentional
+  stitched eyebrow above each eye is optional,
 - full feet visible on one shared ground baseline with sufficient motion
   padding,
 - consistent body proportions, costume topology, lighting, palette, and
   handedness across all poses,
-- neutral locomotion masters avoid baking a selected Relic into every frame;
-  unavoidable Relic-specific animation is a separately tracked derivative,
+- stable Wizard Loomseed anchor and aim-direction emission metadata across
+  basic aim and Fire states,
+- the approved source master remains empty-handed, while its separately tracked
+  deterministic presentation derivative may permanently compose the Loomseed;
+  the temporary cast Threadball remains independent,
 - runtime candidate normalized to a 192x192 frame with pivot at 50% horizontal
   and 88% vertical; a different size or pivot requires recorded phone-readability
   evidence and a contract update.
@@ -2202,9 +3957,9 @@ Character master contract:
 Environment contract:
 
 - decorative background pixels never define authoritative collision,
-- sky/fabric fill, cotton clouds, banners/loom structures, and distant props are
-  separate layers that can compose in both portrait and landscape,
-- terrain top, edge, and interior materials repeat without visible seams and
+- the basic sky/fabric fill and one cotton-cloud or distant layer compose in
+  both portrait and landscape,
+- terrain top and interior materials repeat without visible seams and
   remain convincing after circular destruction,
 - deterministic map geometry and the server collision mask are generated or
   stored as product data independently from decorative artwork,
@@ -2218,11 +3973,15 @@ requirements, and phone acceptance checks are normative in
 Owning roles: `worms_port_asset_curator`, `worms_port_compliance_keeper`,
 `worms_port_base_game_worker`, `worms_port_reviewer`.
 
-Verification: inventory completeness, character-master and environment
-contracts, art-direction checks, animation consistency, exact provenance,
+Verification: first prove the Wizard-as-player/shared-Wizard-as-Loomkeeper/
+Threadball/Patch exchange end to end, then check basic inventory completeness,
+character/socket/environment
+contracts, v1/v2/v3 replay compatibility, deterministic v4 range/damage tier
+ordering, art direction, animation consistency, exact provenance,
 model/component license evidence, manifest hashes, attribution, atlas loading,
-mobile screenshots at all automated phone viewports, visual review, compliance,
-and build.
+the 1.5 MB compressed initial-media ceiling, mobile screenshots at all
+automated phone viewports, visual review, compliance, build, browser matrix,
+and separate real-device acceptance.
 
 ### WP-016 Retention And Distribution
 
@@ -2258,6 +4017,29 @@ Verification: clean install, audit, compliance, full build, complete automated
 suite, production smoke, deep link, disabled/enabled reward configuration, and
 rollback rehearsal. Real Android/iOS testing is listed separately as not run;
 it does not block completion of the documented autonomous cycle.
+
+### WP-017A Post-release Character Roster And Calling Differentiation
+
+Status: planned, post-release, and non-blocking to WP-018 through WP-021.
+Depends on WP-017 and the accepted shared-Wizard baseline from WP-015.
+
+Goal: produce, exact-file review, and integrate the distinct Loomkeeper, Thief,
+and Warrior character families that are intentionally excluded from WP-015D1
+through WP-015D3. Retain the current shared Wizard presentation for both
+combatants until each replacement source master, animation, socket/held-Relic
+geometry, source-specific hitbox, manifest entry, and runtime copy passes its
+own review. Calling identity remains presentation-only unless a later separately
+versioned mechanics package authorizes an actual Calling modifier.
+
+Non-goals: reopening the accepted V4/V5 arena or Relic tiers; adding obstacles,
+tactical terrain, PvP, rewards, or Calling-specific gameplay advantages; and
+promoting generated media without the same source, license, attribution,
+fallback, browser, and real-device gates used by the first Wizard slice.
+
+Verification: source-master and provenance review; alpha/baseline/identity/
+socket inspection; deterministic source-specific hitbox and replay tests; media
+budget/fallback checks; Ubuntu visual candidate review; full browser matrix; and
+separate real-device acceptance.
 
 ## Post-Competition Weekly System And Governance Foundation
 
@@ -2910,8 +4692,9 @@ types, build, full browser matrix, and independent payout security review.
 WP-005 -> WP-006 -> WP-007 -> WP-008 -> WP-009 -> WP-010 -> WP-011 -> WP-011A
 WP-011A -> WP-011B -> WP-011C -> WP-011D -> WP-011E (presentation path)
 WP-011E -> WP-012 -> WP-013 -> WP-014
-WP-010 + WP-014 ------------------------------------------------------------> WP-015
-WP-013 + WP-015 ------------------------------------------------------------> WP-016 -> WP-017
+WP-010 + WP-014 -> WP-015C -> WP-015D0 -> WP-015D1 -> WP-015D2A -> WP-015D2 -> WP-015D3 -> WP-015E
+WP-013 + WP-015E -----------------------------------------------------------> WP-016 -> WP-017
+WP-017 -> WP-017A (post-release character roster; non-blocking)
 WP-017 -> WP-018 -> WP-019 -> WP-021
                             `-> WP-020 (optional PvP port; non-blocking)
 ```

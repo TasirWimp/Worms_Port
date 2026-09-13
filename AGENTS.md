@@ -1,21 +1,22 @@
 # Worms_Port Agent Instructions
 
-## Single-owner development — effective 2026-09-07
+## Primary ownership with testing delegation — effective 2026-09-10
 
-Do not spawn, delegate to, resume, or request work from any subagent in this
-repository. This includes implementation, review, research, probes, tests and
-documentation. Do not use other tasks, CLI sessions or external agent services
-as a delegation workaround. The current primary assistant owns the entire
-change, integration, review, verification and corrections.
+The primary assistant owns implementation, coverage selection, integration,
+product corrections and direct review. Delegate test execution and operational
+supervision to one `worms_port_test_runner` subagent on GPT-5.6 Terra/medium.
+This owner-authorized testing exception supersedes the 2026-09-07 blanket ban.
+No implementation, research, reviewer or further nested agents are authorized.
+Do not use separate tasks, CLI sessions or external agents as a workaround.
+If native subagent tools are unavailable, disclose that and test directly.
 
-This owner instruction supersedes all older agent-role, model-routing,
-reciprocal-support and independent-agent-review requirements in repository
-documents, historical contracts and archived roles. Do not reactivate the
-harness unless the owner explicitly changes this policy. Ordinary test runners
-and the existing 21:00 Europe/Berlin full-suite automation remain in use.
-
-WP-016 is retained for CRPM research, not for current development. See the
-[retirement and research record](docs/process/development_workflow.md#harness-retirement-and-research-preservation).
+The primary reads the change-selector dry run and sends an explicit risk-based
+check plan. The worker runs it, handles bounded infrastructure recovery and
+reports evidence; product defects return to the primary. Follow
+[Testing delegation](docs/process/development_workflow.md#testing-delegation).
+The 22:00 Europe/Berlin full suite remains unchanged. WP-016 and all former
+roles remain retired research history, not active instructions; see the
+[retirement record](docs/process/development_workflow.md#harness-retirement-and-research-preservation).
 
 ## Repository Context
 
@@ -92,7 +93,21 @@ If the user asks only for planning, review, or brainstorming, do not edit code.
   slice, pass `-- --base <starting-commit>` to both commands. This selector is
   the mandatory edit-loop baseline and CI plan, not an upper bound on the
   primary assistant's risk-based test choice.
+- Required gates use zero automatic retries. After a failure, preserve the
+  first failure and all passing results. If the selector's emitted input
+  fingerprint and build proof remain unchanged, reproduce the smallest failing
+  case and rerun only the affected phase with `--phase`; do not repeat the full
+  selector unless inputs or its plan changed, or evidence points to
+  cross-phase contamination. An isolated pass is diagnostic evidence, not
+  proof by itself of an infrastructure failure.
+- A feature gate may combine passing commands from unchanged-input runs when a
+  failure is classified and recorded. A failed daily/release run remains
+  failed; diagnostics do not turn it green, and another full daily/release run
+  occurs only at its normal cadence or an explicit release rerun.
 - Runtime/build changes require types, current build outputs and built smoke.
+  Routine built smoke starts only the standard V10 R5 volcanic server. Retired
+  V7/V8/V9 runtime profiles require an explicit diagnostic opt-in and are not
+  part of feature, quality or release acceptance.
   Documentation, Codex settings and test/verification-tool-only changes do not
   require a game build. Unknown paths receive conservative product coverage.
 - Compliance-sensitive changes should run `npm run check:compliance`.
@@ -100,15 +115,17 @@ If the user asks only for planning, review, or brainstorming, do not edit code.
 - Server/client runtime changes should include a smoke test when practical.
 - After WP-005, browser-facing changes should run the Playwright phone smoke.
 - `npm run verify:feature` is the same change-selected entry point. Browser-facing
-  changes run complete relevant specs on the canonical phone, including V8 and
-  identity/reward cases where relevant. Visual changes compare all maintained
+  changes run complete relevant supported V10 specs on the canonical phone,
+  including identity/reward cases where relevant. Suites marked `@legacy` are
+  historical diagnostics and are excluded from ordinary, quality and release
+  gates. Visual changes compare all maintained
   projects on Ubuntu. This does not substitute for the daily release gate.
 - Run `npm run verify:daily` once at the end-of-day checkpoint and at an explicit
   release boundary. It retains the full automated five-project, zero-retry
   phone-browser matrix, performance, security, bundle, audit, and reviewed
   expected-skip policy. Do not rerun it after every feature unless a focused
   failure requires full-matrix diagnosis.
-- The existing local daily automation runs at **21:00 Europe/Berlin**, including
+- The existing local daily automation runs at **22:00 Europe/Berlin**, including
   daylight-saving changes. It runs the full product suite, not the selector.
   Use the Verify workflow's manual dispatch for the full Ubuntu release matrix
   and PostgreSQL gate. Normal PR/push CI uses change selection.
@@ -124,7 +141,7 @@ If the user asks only for planning, review, or brainstorming, do not edit code.
 ## Direct Review And Verification
 
 The primary assistant reviews the complete changed behavior and runs the
-necessary checks directly. The selector is a mandatory starting baseline,
+necessary coverage selection, delegating execution to the testing worker. The selector is a mandatory starting baseline,
 not an upper limit. Inspect the diff, accepted predecessor journey, execution
 pointer and relevant tests; widen checks when the changed risk warrants it.
 Retain continuity for mobile layout/guidance, the playable loop, presentation,
@@ -137,7 +154,8 @@ within the same continuous task. Report commands, outcomes, skipped checks and
 residual risk. Call this direct review; never claim independent agent review.
 Daily/release and physical-device acceptance remain separate gates. New package
 records use `execution_mode: single_owner`; historical support evidence remains
-research history, not an instruction to reopen agent collaboration.
+research history. `single_owner` describes product authorship and direct review;
+record delegated test commands/results and worker identity explicitly in evidence.
 
 ## Repository Housekeeping
 
@@ -237,18 +255,18 @@ rename, delete, merge or publish branches without user authorization.
 
 ## Codex Subagent Roles
 
-Retired. The unchanged role definitions are preserved under
-[`.codex/retired-agents/`](.codex/retired-agents/) for CRPM research and must not
-be loaded or followed for Worms_Port development. `.codex/agents/` is no longer
-an active project role directory; `[agents].enabled = false` disables
-multi-agent tools in project configuration.
+Only [worms_port_test_runner](.codex/agents/worms_port_test_runner.toml) is active.
+The unchanged [retired roles](.codex/retired-agents/) remain for CRPM research;
+do not load them. The one-worker config limit is a concurrency cap, not a
+technical role allowlist; these instructions enforce the testing-only boundary.
 
 ## Task Model Routing
 
-Retired with the harness. The primary task uses its selected model and effort;
-project defaults remain Terra/high. Do not spawn a different model to work
-around uncertainty. Investigate and correct directly; report a concrete blocker
-when needed. Configuration changes do not prove which model served a turn.
+The primary uses the user's selected model/effort. Astra Light is the owner's
+preferred coordinator for this workflow, not a project-enforced default.
+`.codex/config.toml` must not pin top-level model or reasoning effort. The testing
+role alone pins `gpt-5.6-terra` / `medium`. Do not silently substitute models.
+Configuration intent is not proof of which model served a turn.
 
 ## Git And Reporting
 

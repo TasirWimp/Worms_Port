@@ -1,0 +1,126 @@
+{
+  "id": "WP-015D2F",
+  "status": "complete",
+  "starting_commit": "9865d265526ed87ea96ea4810d1272080ba1c5f1",
+  "branch": "codex/wp-015d2f-i2-policy-closure-audit",
+  "initial_worktree": "clean",
+  "starting_lock_sha256": "D4DAC6AE09A3D2F6C5A7EAA11520BAC43F1628320C5331575BCF1E1857073D73",
+  "owning_roles": [
+    "worms_port_planner",
+    "worms_port_test_worker",
+    "worms_port_docs_keeper"
+  ],
+  "scope": [
+    "Audit unchanged F4 and I2 over the existing twelve-distance, both-first-actor, both-mirror, 25-policy-pair frame without changing either mechanic or historical report.",
+    "Expose aggregate contributions by first-actor policy, ordered policy pair, same-policy mirror, affected entry route, and matched post-entry action choice.",
+    "Verify exact production spawn 640 separately from the 641/703/704 range-entry seams and retain the excluded-world boundaries.",
+    "Classify I2 as residualized for policy fragility if its aggregate improvement does not survive best-response and policy-conditioned cuts.",
+    "Preserve WP-015D2B/WP-015D2E seals, ProductAuthority none, and every production/import boundary.",
+    "Bind unchanged F4/I2 report digests and deterministic audit digest 476735407135b11f1d3805a7b7a4b22c5d7c8a46a1f6ac972f2d134fb3ff1657.",
+    "Record the final residualized policy_fragile disposition and stop before another candidate or policy change."
+  ],
+  "non_goals": [
+    "Change model.py, a tactical config, policy semantics, damage, range, movement, state, action legality, cooldown, status, response, seed, search, horizon, or historical digest.",
+    "Add or activate V5, a new gameplay mechanic, production AI behavior, protocol, replay, client, server, reward, wallet, asset, or runtime path.",
+    "Treat a deterministic policy matrix as player-skill evidence, optimal play, fun, balance proof, or product authority.",
+    "Vendor, import, depend on, or edit CRPM or Sorcerers."
+  ],
+  "planned_checks": [
+    "python -m unittest analysis.tactical_model.tests.test_policy_closure_audit -v",
+    "python -m analysis.tactical_model.policy_closure_audit --output test-results/tactical-model/i2-policy-closure-audit.json",
+    "npm run test:tactical-model",
+    "npm run test:simulation",
+    "npm run check:types",
+    "npm run check:work-packages",
+    "npm run check:compliance",
+    "npm run build",
+    "git diff --check",
+    "final sealed-source, production-import, and generated-output boundary inspection"
+  ],
+  "deterministic_seeds": [
+    "3237998097"
+  ],
+  "sorcerers_reference_used": false,
+  "clean_room_records": [],
+  "check_results": [
+    {
+      "command": "python -m unittest analysis.tactical_model.tests.test_policy_closure_audit -v",
+      "status": "pass",
+      "detail": "All six focused tests passed in 31.5 seconds. They build the full audit twice, bind exact F4/I2 reports and domain, reconcile the -48 aggregate through -36/+8/+8/-36/+8 policy contributions, retain all same-policy mirrors, verify exact-spawn residue and 120 matched entry routes, confine output, and reproduce audit digest 476735407135b11f1d3805a7b7a4b22c5d7c8a46a1f6ac972f2d134fb3ff1657."
+    },
+    {
+      "command": "python -m analysis.tactical_model.policy_closure_audit --output test-results/tactical-model/i2-policy-closure-audit.json",
+      "status": "pass",
+      "detail": "The deterministic CLI wrote a 56,572-byte ignored JSON artifact with file SHA-256 0FD760DAEC3078626C9A00B78E41FB3579542D76FD1EDE058284B6F4A3BDA5E0 and canonical audit digest 476735407135b11f1d3805a7b7a4b22c5d7c8a46a1f6ac972f2d134fb3ff1657. The disposition is residualized with reason policy_fragile and ProductAuthority none."
+    },
+    {
+      "command": "npm run test:tactical-model",
+      "status": "pass",
+      "detail": "The TypeScript V4 authority fixture and all 41 historical Python tactical tests passed. No config, model transition, policy, report, or historical digest changed."
+    },
+    {
+      "command": "npm run test:simulation",
+      "status": "pass",
+      "detail": "All 31 production simulation tests passed; shared simulation and replay behavior remain unchanged."
+    },
+    {
+      "command": "npm run check:types",
+      "status": "pass",
+      "detail": "Server and client TypeScript checks passed with no production-side analysis dependency."
+    },
+    {
+      "command": "npm run check:work-packages",
+      "status": "pass",
+      "detail": "The work-package evidence checker accepted completed WP-015D2F and all existing evidence records."
+    },
+    {
+      "command": "npm run check:compliance",
+      "status": "pass",
+      "detail": "Asset, inventory, generation, import-boundary, license, work-package, and clean-room compliance passed."
+    },
+    {
+      "command": "npm run build",
+      "status": "pass",
+      "detail": "The production compliance/type/server/client build and approved asset copy passed; only the existing Vite chunk-size warning remains."
+    },
+    {
+      "command": "git diff --check",
+      "status": "pass",
+      "detail": "The final bounded audit/documentation diff has no whitespace errors; Git line-ending notices are configuration warnings."
+    },
+    {
+      "command": "final sealed-source, production-import, and generated-output boundary inspection",
+      "status": "pass",
+      "detail": "No model/config, D2B/D2E implementation/lock, shared/client/server/protocol/replay/reward/wallet/asset/package, or CRPM source changed. No production module imports analysis and the generated audit remains ignored and untracked."
+    }
+  ],
+  "reviews": [
+    {
+      "role": "worms_port_planner",
+      "reviewer": "Codex",
+      "decision": "pass",
+      "detail": "Confirmed the audit answers the policy-conditioning question without selecting another mechanic, preserves historical dispositions, and stops at a cross-candidate review handoff."
+    },
+    {
+      "role": "worms_port_test_worker",
+      "reviewer": "Codex",
+      "decision": "pass",
+      "detail": "Confirmed all 2,400 carriers reconcile across aggregate, distance, first-actor policy, ordered pair, same-policy, opening-entry, action-shift, and exact-spawn surfaces with deterministic digests."
+    },
+    {
+      "role": "worms_port_docs_keeper",
+      "reviewer": "Codex",
+      "decision": "pass",
+      "detail": "Confirmed the tactical README, D2A contract, governance note, implementation plan, D2F contract, and evidence agree on residualized policy fragility, ProductAuthority none, and the next review-only action."
+    }
+  ],
+  "skipped_checks": [
+    "Browser matrix and physical Android/iOS testing were not run because D2F adds only an offline Python audit, tests, and documentation with no runtime-facing or player-visible path."
+  ],
+  "residual_risks": [
+    "The five deterministic policies are correlated model probes, not optimal play, live Loomkeeper evidence, human skill data, or independent empirical samples.",
+    "The audit demonstrates policy fragility but does not by itself identify which new action economy, response window, value family, or policy model would produce useful gameplay.",
+    "The ideal-direct abstraction still excludes terrain, aim, trajectory, splash, hidden information, player execution, UI, replay, networking, rewards, assets, and production state.",
+    "The exploratory cooldown-retention counterfactual remains hypothesis-forming only; it was not implemented, source-bound, or used as accepted evidence."
+  ]
+}

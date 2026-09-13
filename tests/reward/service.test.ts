@@ -2,11 +2,14 @@ import assert from 'node:assert/strict';
 import test from 'node:test';
 
 import type { ChallengeResult } from '../../shared/protocol';
-import { decideLoomkeeperTurn } from '../../shared/loomkeeper';
+import { SIM_RULES } from '../../shared/simulation';
 import { MemoryRewardStore } from '../../server/src/reward/memory-store';
 import { RewardService } from '../../server/src/reward/service';
 import { RewardStoreError, type RewardConfig } from '../../server/src/reward/types';
 import { SimulationCoordinator } from '../../server/src/simulation/coordinator';
+import { SimulationCoordinatorV9 } from '../../server/src/simulation/coordinator-v9';
+import { LiveSimulationCoordinatorV10 } from '../../server/src/simulation/coordinator-v10-live';
+import { candidateAt, LoomkeeperExecutionV9, type LoomkeeperSelectionV9 } from '../../shared/loomkeeper-v9';
 
 test('a client-reported win without a reconstructable server replay creates no claim', async () => {
     const store = new MemoryRewardStore();
@@ -63,37 +66,29 @@ test('a reconstructed authoritative win becomes one wallet-bound queued claim', 
         1,
         'wizard'
     );
-    while (coordinator.get(reservation.challengeId)!.state.phase === 'awaiting_command') {
-        let state = coordinator.get(reservation.challengeId)!.state;
-        if (state.activeActor === 'player') {
-            coordinator.apply(
-                reservation.challengeId,
-                'player',
-                { type: 'aim', angleMilliDegrees: 40_000, powerPermille: 1_000 },
-                state.turn
-            );
-            state = coordinator.get(reservation.challengeId)!.state;
-            coordinator.apply(
-                reservation.challengeId,
-                'player',
-                { type: 'fire' },
-                state.turn
-            );
-        } else {
-            const decision = decideLoomkeeperTurn(state, 'standard')!;
-            for (const command of decision.commands) {
-                const live = coordinator.get(reservation.challengeId)!.state;
-                if (live.phase === 'finished') break;
-                coordinator.apply(
-                    reservation.challengeId,
-                    'loomkeeper',
-                    command,
-                    live.turn
-                );
-            }
+    for (let shot = 1; shot <= 5; shot += 1) {
+        const playerTurn = coordinator.get(reservation.challengeId)!.state;
+        assert.equal(playerTurn.activeActor, 'player');
+        assert.equal(playerTurn.turn, (shot - 1) * 2);
+        coordinator.apply(
+            reservation.challengeId,
+            'player',
+            { type: 'aim', angleMilliDegrees: 35_000, powerPermille: 1_000 },
+            playerTurn.turn
+        );
+        coordinator.apply(
+            reservation.challengeId,
+            'player',
+            { type: 'fire' },
+            playerTurn.turn
+        );
+        if (shot < 5) {
+            coordinator.advance(reservation.challengeId, SIM_RULES.turnTicks);
         }
     }
     const terminal = coordinator.get(reservation.challengeId)!;
+    assert.equal(terminal.state.phase, 'finished');
+    assert.equal(terminal.state.winner, 'player');
     const update = await service.completeMatch({
         protocolVersion: 1,
         serverTimeMs: Date.now(),
@@ -120,6 +115,144 @@ test('a reconstructed authoritative win becomes one wallet-bound queued claim', 
         'idempotency_key_01'
     )).state, 'queued');
     assert.equal((await service.status(identity)).state, 'queued');
+});
+
+test('forged V9 automation evidence never changes an in-progress entitlement', async () => {
+    const store = new MemoryRewardStore();
+    const service = new RewardService(config(), store, {
+        now: () => new Date('2026-07-29T12:00:00.000Z'),
+        idSource: (() => { const ids = ['v9_forged_challenge_01', 'v9_forged_entitlement_01']; return () => ids.shift()!; })(),
+        tokenSource: () => 't'.repeat(43), seedSource: () => 1
+    });
+    const identity = { address: 'NQ46 KLJE 5TMF 4Y1A 1255 CJHJ YG1S H0NU T604', authorizedAt: '2026-07-29T12:00:00.000Z' };
+    const reservation = await service.reserve(identity, 'wizard');
+    await service.start(identity, reservation.challengeId, reservation.eligibilityToken);
+    const coordinator = new SimulationCoordinatorV9({ nowUs: () => 0 });
+    try {
+        coordinator.createAutomated(reservation.challengeId, 'v9_forged_session_01', 1, 'wizard');
+        coordinator.advance(reservation.challengeId, 1);
+        const replay = coordinator.replay(reservation.challengeId)!;
+        const result = {
+            protocolVersion: 9 as const, serverTimeMs: Date.now(), sessionId: 'v9_forged_session_01', challengeId: reservation.challengeId,
+            rulesetId: replay.rulesetId, automationId: 'wp-015d3b-v9d-v1' as const,
+            loomkeeperPolicyId: replay.loomkeeperPolicyId, loomkeeperProfileId: replay.loomkeeperProfileId,
+            nextSequence: 1, nextInputSequence: 0, outcome: 'player_win' as const, finalTick: 0, finalStateHash: replay.initialStateHash
+        };
+        const forgeries: unknown[] = [
+            { result: { ...result, automationId: 'stripped' }, replay },
+            { result, replay: { ...replay, initialStateHash: 'f'.repeat(64) } },
+            { result, replay: { ...replay, chosenPlans: [{ turn: 0, prefix: 'none', status: 'selected', ordinal: 0 }] } },
+            { result, replay: { ...replay, records: replay.records.map((record, index) => index === 0
+                ? { ...record, operation: { kind: 'ticks' as const, count: 2 } } : record) } },
+            { result, replay: { ...replay, sessionId: 'v9_foreign_session_01' } },
+            { result, replay: { ...replay, records: Array(32_769).fill(replay.records[0] ?? { index: 0, operation: { kind: 'ticks', count: 1 }, stateHash: replay.initialStateHash }) } },
+            { result, replay: { ...replay, chosenPlans: [{ turn: 0, prefix: 'none', status: 'work_failure', ordinal: null }] } }
+        ];
+        for (const forged of forgeries) {
+            const candidate = forged as { result: any; replay: any };
+            await assert.rejects(service.completeMatch(candidate.result, candidate.replay),
+                (error: unknown) => error instanceof RewardStoreError && error.code === 'unavailable');
+            assert.equal((await store.status(reservation.reservationId, identity.address))?.state, 'in_progress');
+        }
+    } finally { coordinator.dispose(); }
+});
+
+test('a genuine automated V9 player win produces one recoverable record-only claim', async () => {
+    const store = new MemoryRewardStore();
+    const service = serviceFor(store);
+    const identity = {
+        address: 'NQ46 KLJE 5TMF 4Y1A 1255 CJHJ YG1S H0NU T604',
+        authorizedAt: '2026-07-29T12:00:00.000Z'
+    };
+    const reservation = await service.reserve(identity, 'wizard');
+    await service.start(identity, reservation.challengeId, reservation.eligibilityToken);
+    const coordinator = new SimulationCoordinatorV9({ nowUs: () => 0 });
+    try {
+        coordinator.createAutomated(reservation.challengeId, 'reward_v9_session_001', 1, 'wizard');
+        const selections: readonly LoomkeeperSelectionV9[] = [
+            { prefix: 'none', status: 'selected', ordinal: 15 },
+            { prefix: 'none', status: 'selected', ordinal: 135 },
+            { prefix: 'none', status: 'selected', ordinal: 125 }
+        ];
+        let plannedTurn = -1;
+        let execution: LoomkeeperExecutionV9 | undefined;
+        while (coordinator.get(reservation.challengeId)!.state.phase !== 'finished') {
+            let current = coordinator.get(reservation.challengeId)!;
+            if (current.state.activeActor === 'player' && current.state.phase === 'action' && current.state.turn !== plannedTurn) {
+                plannedTurn = current.state.turn;
+                const selection = selections[plannedTurn / 2];
+                assert.ok(selection?.status === 'selected' && selection.ordinal !== null);
+                coordinator.advance(reservation.challengeId, 30);
+                execution = new LoomkeeperExecutionV9(candidateAt(selection.ordinal), selection.prefix,
+                    coordinator.get(reservation.challengeId)!.state);
+            }
+            if (coordinator.get(reservation.challengeId)!.state.activeActor === 'player' && execution) {
+                for (let slot = 0; slot < 8; slot += 1) {
+                    current = coordinator.get(reservation.challengeId)!;
+                    const operation = execution.next(current.state);
+                    if (!operation) break;
+                    const update = operation.kind === 'intent'
+                        ? coordinator.apply(reservation.challengeId, 'player', operation.intent,
+                            current.state.turn, current.state.phase, current.state.inputEpoch)
+                        : coordinator.barrier(reservation.challengeId, operation.barrier);
+                    assert.equal(update.transition.accepted, true);
+                }
+            }
+            coordinator.advance(reservation.challengeId, 1);
+            assert.ok(coordinator.get(reservation.challengeId)!.state.tick <= 16_800);
+        }
+        const terminal = coordinator.get(reservation.challengeId)!;
+        assert.equal(terminal.state.phase, 'finished');
+        assert.equal(terminal.state.winner, 'player');
+        const result = {
+            protocolVersion: 9 as const, serverTimeMs: Date.now(), sessionId: 'reward_v9_session_001',
+            challengeId: reservation.challengeId, rulesetId: terminal.state.rulesetId,
+            automationId: 'wp-015d3b-v9d-v1' as const, loomkeeperPolicyId: 'nimble-knots-loomkeeper-v4' as const,
+            loomkeeperProfileId: 'standard-v9-0' as const, nextSequence: 1, nextInputSequence: 0,
+            outcome: 'player_win' as const, finalTick: terminal.state.tick, finalStateHash: terminal.stateHash
+        };
+        const update = await service.completeMatch(result, coordinator.replay(reservation.challengeId));
+        assert.equal(update?.state, 'claimable');
+        assert.ok(update?.claimNonce);
+        const repeated = await service.completeMatch(result, coordinator.replay(reservation.challengeId));
+        assert.equal(repeated?.state, 'claimable');
+    } finally { coordinator.dispose(); }
+});
+
+test('genuine V10 Daily evidence settles once while forged volcanic replay evidence is refused', async () => {
+    const store = new MemoryRewardStore();
+    const service = serviceFor(store);
+    const identity = {
+        address: 'NQ46 KLJE 5TMF 4Y1A 1255 CJHJ YG1S H0NU T604',
+        authorizedAt: '2026-07-29T12:00:00.000Z'
+    };
+    const reservation = await service.reserve(identity, 'wizard');
+    await service.start(identity, reservation.challengeId, reservation.eligibilityToken);
+    const coordinator = new LiveSimulationCoordinatorV10({ nowUs: () => 0 });
+    try {
+        coordinator.createAutomated(reservation.challengeId, 'reward_v10_session_001', 1, 'wizard');
+        for (let turn = 0; turn < 20 && coordinator.get(reservation.challengeId)!.state.phase !== 'finished'; turn += 1)
+            coordinator.advance(reservation.challengeId, 900);
+        const terminal = coordinator.get(reservation.challengeId)!;
+        assert.equal(terminal.state.phase, 'finished');
+        assert.notEqual(terminal.state.winner, 'player');
+        const result = {
+            protocolVersion: 10 as const, serverTimeMs: Date.now(), sessionId: 'reward_v10_session_001',
+            challengeId: reservation.challengeId, rulesetId: terminal.state.rulesetId,
+            automationId: 'wp-015d4h-v10-live-v1' as const,
+            loomkeeperPolicyId: 'nimble-knots-loomkeeper-v5' as const,
+            loomkeeperProfileId: 'standard-v10-0' as const, nextSequence: 1, nextInputSequence: 0,
+            outcome: terminal.state.winner === 'loomkeeper' ? 'loomkeeper_win' as const : 'draw' as const,
+            finalTick: terminal.state.tick, finalStateHash: terminal.stateHash
+        };
+        const replay = coordinator.replay(reservation.challengeId)!;
+        await assert.rejects(service.completeMatch(result, { ...replay, initialStateHash: 'f'.repeat(64) }),
+            (error: unknown) => error instanceof RewardStoreError && error.code === 'unavailable');
+        assert.equal((await store.status(reservation.reservationId, identity.address))?.state, 'in_progress');
+        const update = await service.completeMatch(result, replay);
+        assert.equal(update?.state, terminal.state.winner === 'loomkeeper' ? 'lost' : 'draw');
+        assert.equal((await service.completeMatch(result, replay))?.state, update?.state);
+    } finally { coordinator.dispose(); }
 });
 
 test('the configured test wallet can use its bounded second attempt without masking liabilities', async () => {

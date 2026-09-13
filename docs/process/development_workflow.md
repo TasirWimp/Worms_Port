@@ -43,9 +43,9 @@ Every non-trivial change should follow this loop:
 
 ## Autonomous Slice Loop
 
-The primary assistant performs the whole slice without subagents. The owner
-retired implementation delegation, probe agents, support agents, reviewer
-agents and docs/test agents on 2026-09-07. This overrides older package routing.
+The primary assistant owns the product slice. On 2026-09-10 the owner authorized
+one Terra/medium testing worker; the former implementation, probe, support,
+reviewer and documentation agents remain retired. See Testing delegation below. This overrides older package routing.
 
 1. Read the execution pointer and inspect Git status; select the authorized slice.
 2. Record its source, intended behavior, affected paths and relevant checks in
@@ -53,15 +53,78 @@ agents and docs/test agents on 2026-09-07. This overrides older package routing.
 3. Inspect the selector dry run and establish the relevant baseline.
 4. Implement and integrate directly across the coupled paths. Keep corrections
    with the same primary task; use executable regression evidence where needed.
-5. Run the selected checks and widen them when risk or a failure warrants it.
+5. Delegate the selected checks to the testing worker and widen the plan when
+   risk or a failure warrants it; use direct execution only if tools are unavailable.
 6. Review product continuity directly, including the actual player journey and
    authority/lifecycle boundaries. Do not label contributor review independent.
-7. On failure, reproduce the smallest case, correct it, then rerun the affected
-   checks. Stop after three corrections of the same signature and report the
-   unresolved cause without weakening thresholds.
+7. On failure, preserve the first failure and passing results, reproduce the
+   smallest case, correct it when necessary, then rerun only the affected
+   checks under the failed-check policy below. Stop after three corrections of
+   the same signature and report the unresolved cause without weakening
+   thresholds.
 8. Update evidence and housekeeping, commit the bounded change, and advance the
    pointer only after the applicable gates pass. Daily/release and real-device
    gates remain separate; no agent approval is required.
+
+### Testing delegation
+
+Owner decision, 2026-09-10: separate test execution from product reasoning.
+The primary (owner preference: Astra Light, freely selectable) chooses coverage;
+[worms_port_test_runner](../../.codex/agents/worms_port_test_runner.toml)
+uses GPT-5.6 Terra with medium reasoning to operate it. This standalone role is
+new and narrow; the old test worker and WP-016 remain archived unchanged.
+
+1. Primary checks the diff, predecessor behavior and
+   `npm run verify:changes -- --dry-run` (use `npm.cmd` for reliable PowerShell
+   argument forwarding). The selector remains the mandatory baseline, not a
+   ceiling. Send the worker exact commands, reasons, cwd, starting HEAD,
+   uncommitted paths, build/reuse policy, expected skips, ignored output path
+   and permitted infrastructure files. No whole chat dump is needed.
+2. Spawn only this role using native subagent tools, once per verification run.
+   Keep at most one worker open; reuse it for related corrections. If this
+   session lacks those tools, disclose it and execute directly for this session;
+   reload/start a fresh task to pick up the config. Do not bootstrap a second
+   CLI agent or separate task. Config does not prove runtime model identity.
+3. Worker runs and supervises the plan, captures exit codes/logs, diagnoses
+   stalls and preserves first failures. It may repair reversible operational
+   problems in the assigned test infrastructure scope and rerun affected checks.
+   It must not change product code, assertions, skips, pass thresholds, visual
+   baselines or external services. Product bugs/missing tests return to primary.
+   Three attempts of the same signature are the stop-and-report limit.
+4. Use existing verification leases, build proofs and owned-process cleanup.
+   Primary freezes tested inputs while the worker runs; unrelated planning can
+   continue. If inputs change, label prior results stale and send a revised
+   plan. Never duplicate the worker's suite or bypass a live daily-suite lease.
+5. Worker returns compact command/results/counts, tested revision/dirty paths,
+   failures/retries, infrastructure edits, evidence paths and skipped/blocked
+   checks. Primary inspects these and any infrastructure diff, fixes product
+   issues, chooses reruns and owns the final direct-review/acceptance report.
+   This worker is not an independent reviewer. Avoid frequent unchanged polls
+   or relaying raw test output to the user.
+
+The daily 22:00 Europe/Berlin full suite and release/device gates remain unchanged.
+Do not rerun the full daily suite merely because a worker exists. Runtime changes
+still need the selected build/smoke checks; config/docs-only edits need no game
+build. Existing source-boundary single-owner declarations refer to primary
+implementation and review, not fictional independent test authorship.
+
+Configuration rationale: the repo previously pinned top-level
+`model = "gpt-5.6-terra"` and `model_reasoning_effort = "high"`; both were removed.
+Only the testing role and subagent defaults pin Terra/medium. User-level defaults
+and manually selected main models are not rewritten. For an old task that still
+shows stale settings, reload the project/start a fresh task and select the main
+model in the composer; do not claim this file edit switched a running model.
+
+Official references checked for this setup:
+[custom agents and role model/effort precedence](https://learn.chatgpt.com/docs/agent-configuration/subagents),
+[project config and agent keys](https://learn.chatgpt.com/docs/config-file/config-reference),
+[instruction discovery/reload](https://learn.chatgpt.com/docs/agent-configuration/agents-md).
+
+Setup verification: TOML parsing, required role fields, one-worker cap and absence
+of top-level model/effort pins passed. Change-selector dry run/verification and
+report-only housekeeping passed. No game build was required for these config/docs
+changes. Native subagent tools were absent in the configuring task, so a live
+Terra/medium spawn remains unverified until a fresh task loads this configuration.
 
 ### Work-Package Evidence
 
@@ -72,7 +135,9 @@ dependency-lock SHA-256, owning roles, scope, non-goals, planned checks,
 deterministic seeds or an empty list, and whether Sorcerers observation was
 used. `npm run check:work-packages` validates these records.
 
-New packages use `execution_mode: single_owner`. Existing packages may explicitly
+New packages use `execution_mode: single_owner` for product authorship and direct
+review; record testing delegation and worker results explicitly in check/review
+details rather than claiming all execution was direct. Existing packages may explicitly
 record that transition while preserving historical support/review records.
 Append the latest direct verdict after historical reviews; a failed latest verdict
 blocks closure. Support-record consistency remains checked; retirement does not invent exchanges
@@ -91,8 +156,9 @@ activation.
 
 On 2026-09-07 the owner retired the harness from Worms_Port development and
 prohibited all subagents, including read-only probes and final reviewers.
-One continuous primary task now owns implementation, integration, tests, review
-and corrections. The supplied external diagnosis identified fragmented context
+At retirement, one continuous primary task owned implementation, integration,
+tests, review and corrections. The 2026-09-10 testing-only exception below
+supersedes the blanket ban while preserving primary product ownership. The supplied external diagnosis identified fragmented context
 across coupled V9 transitions and repeated correction/handoff costs; that is an
 interpretation of the observed case, not a controlled performance experiment.
 Its suggested probe/reviewer agents are explicitly not adopted. No measured
@@ -109,13 +175,20 @@ Preserved research carriers (available on main):
 - [CRPM pressure case](https://github.com/TasirWimp/CRPM/blob/main/docs/case_studies/Worms_Port_Agent_Coordination_And_Capability_Pressure_Case_v0.md).
   CRPM's research lifecycle is not retired by this product workflow decision.
 
-Current enforcement: `.codex/config.toml` sets `[agents].enabled = false`;
-AGENTS.md prohibits delegation even when old sessions or host overrides expose
-agent tools. Archive text and historical package instructions cannot authorize
-reactivation. Old branches/worktrees must incorporate this policy before new
+Current enforcement: `.codex/config.toml` enables one concurrent testing worker;
+AGENTS.md permits only the testing role. This is not WP-016 reactivation.
+Archive text and historical package instructions cannot authorize other roles. Old branches/worktrees must incorporate this policy before new
 work; do not change a research checkout's historical source just to hide it.
-The selector, compliance/clean-room safeguards and 21:00 Europe/Berlin daily
+The selector, compliance/clean-room safeguards and 22:00 Europe/Berlin daily
 suite continue. A direct-review pass remains distinct from release approval.
+Source-boundary records explicitly marked `execution_mode: single_owner` use
+one primary implementer/direct reviewer; they retain the frozen observation hash,
+implementation declaration, source-boundary verdict and behavioral evidence.
+They do not claim independent clean-room separation. Historical records without
+that mode retain their separated-identity validation. Linked work-package evidence
+must also declare single_owner. At closure, preserve failed verification attempts
+as clearly identified historical review entries; final planned checks map to
+passing results without changing the original failed outcomes.
 
 ### Adaptive Support During Implementation (WP-016)
 
@@ -203,15 +276,16 @@ reusing one oracle do not add independent empirical evidence. Revise the
 relationship/transition matrix when implementation exposes a new distinction;
 the entry matrix is not a completeness claim.
 
-One named verification owner controls shared build/output/smoke/browser work.
-Before launching such work, peers request that slot and receive an explicit
-handoff or wait. Record run/source identity and completion or incomplete status;
-after interruption, establish owned-process cleanup before reusing outputs.
-This first native protocol is procedural, not an enforced cross-process lock.
-The daily job is not automatically connected to the peer protocol: inspect its
-run state before sharing outputs, or use isolated output directories/worktrees.
-Uncertain ownership blocks a shared-output run. Independent source reads and
-isolated tests may overlap. Do not change the daily schedule or skip its checks.
+One verification run controls shared build, output, smoke and browser work in a
+checkout. `verify:changes`, `verify:full` and `verify:daily` enforce this with an
+atomic lease under the ignored `.cache/` directory. A second run fails before
+executing checks and reports the active mode, PID and start time. An interrupted
+run's dead lease is recovered on the next attempt. Focused commands invoked
+outside these entry points remain the caller's responsibility and must not run
+against the same checkout while a leased verification is active. Record
+run/source identity and completion or incomplete status; after interruption,
+establish owned-process cleanup before reusing outputs. Do not change the daily
+schedule or skip its checks.
 
 The selector remains the required edit-loop baseline. Support probes can run
 focused checks during work; final verification uses the complete selected scope
@@ -243,6 +317,69 @@ Selection includes staged, unstaged and untracked files, both sides of renames
 and deleted paths. For committed work pass `-- --base <starting-commit>`; record
 that base with the results. Invalid or unavailable bases fail, while a clean
 tree explicitly selects nothing. CI uses the PR merge base or previous push SHA.
+The dry run and live selector emit a SHA-256 verification-input fingerprint
+bound to HEAD, the merge-base selection, selector plan, index state, staged,
+unstaged and untracked file bytes, package lock, Node/platform identity and
+test-relevant environment values. Values are incorporated into the digest and
+are not printed. This fingerprint identifies reusable results; it does not
+replace the build proof required by runtime and browser checks.
+
+PR range whitespace validation retains strict `git diff --check` behavior. Its
+only exceptions are six named historical sealed files whose sole accepted
+diagnostic is a terminal blank line at EOF at the recorded line. Each exception
+is bound to the exact Git blob in `scripts/check-range-whitespace.js`; any byte
+change, line change or different whitespace diagnostic fails the gate. This
+keeps the CRPM and clean-room hashes intact without suppressing new defects.
+
+CRPM type validation likewise preserves the implementation-locked V4 authority
+adapter instead of rewriting its recorded blob after product rulesets expanded.
+`scripts/check-crpm-world-types.js` accepts its one known TS2739 diagnostic only
+when both the adapter and `shared/simulation.ts` match their recorded Git blobs.
+Any additional diagnostic, changed compiler message, or changed source blob
+fails the gate; a clean compiler result passes without an exception.
+
+### Failed-check reruns
+
+Required gates retain zero automatic retries. Preserve the original failure,
+artifacts and every passing command before running a diagnostic. Apply this
+order:
+
+1. Reproduce the smallest failing test or command against the same input
+   fingerprint and build proof. A passing isolated case changes the diagnosis;
+   it does not prove an infrastructure cause by itself.
+2. When the signature identifies an operating-system, browser-launch, port,
+   process or other external-resource failure, bounded cleanup followed by one
+   zero-retry isolated pass may close an ordinary feature gate as combined
+   evidence. Record the first failure, cleanup, diagnostic command and
+   classification. Repetition of the same signature twice within one work
+   package or seven days opens a tooling defect instead of another recovered
+   pass.
+3. When the cause remains uncertain after an isolated pass, rerun the smallest
+   enclosing phase under the unchanged fingerprint. Use
+   `npm.cmd run verify:changes -- --phase checks`, `browser`, `postgres` or
+   `performance` as applicable. A state-leak or order-sensitive suspicion
+   requires the complete affected phase in its original order.
+4. When product code, tests, configuration, dependencies, selected paths or the
+   selector plan change, compute a fresh dry run and invalidate every dependent
+   result. Rerun the complete selector only when this invalidation reaches all
+   phases or when evidence points to contamination across phase boundaries.
+
+An ordinary feature result may combine passing commands from multiple runs only
+when their fingerprint, relevant build proof and environment match. Its evidence
+must say `recovered infrastructure failure` rather than `clean run`. The initial
+daily/release result is stricter: any required-check failure leaves that run
+failed. Focused diagnostics may determine the cause but cannot convert it to a
+pass; the next full daily/release attempt runs only at the normal cadence or an
+explicit release rerun after correction.
+
+CI time limits must cover the longest legitimate serial zero-retry selection so
+the platform does not manufacture a redundant rerun. The selected fast job has
+a 60-minute ceiling and the canonical phone-browser job has 45 minutes; focused
+diagnostics remain smaller and the daily matrix keeps its own shard boundaries.
+On a synchronized pull request, change selection starts at the preceding PR head;
+the initial PR event still starts at the base branch. Passing results from the
+preceding head remain evidence, while the new run covers only files invalidated
+by the correction. A manual release dispatch continues to run the full matrix.
 
 | Changes | Required edit-loop coverage |
 | --- | --- |
@@ -269,8 +406,41 @@ govern build reuse; a changed or missing proof rebuilds. Never approve or update
 Linux baselines from Windows. Candidate capture requires an explicit
 `visual-baseline-candidate` PR label or manual workflow dispatch and owner review.
 
-The existing full-product automation runs at **21:00 Europe/Berlin** (CET/CEST),
+The supported browser gate now starts the standard V10 R5 volcanic server
+profile. Playwright excludes every suite marked `@legacy` by default, including
+the former V4/V6/V7/V8/V9 engineering previews, pre-V10 lifecycle journeys and
+their visual baselines. The same boundary applies to the PostgreSQL browser
+gate: its V8 replay-identity journey is a legacy diagnostic, while the ordinary
+gate runs the built V10 Daily journey.
+Those tests remain source history and may run only through the explicit
+`--legacy` diagnostic switch, including
+`npm run test:browser:reward:postgres -- --legacy` for the database-backed
+journey; the selector, quality gate and daily/release gate never request that
+switch. Routine protocol, simulation, combat, Practice and reward unit commands
+likewise exclude version-only V7/V8/V9 files and legacy-bearing mixed files
+through `scripts/run-supported-unit-tests.js`; current V10 cases are extracted
+where a mixed file would otherwise hide them. `npm run test:legacy` is the
+single explicit diagnostic entry point for retired unit and browser coverage.
+Lower-version shared modules may remain while V10 still imports them, but their
+standalone behavior is no longer a product acceptance condition. New coverage
+must enter through the standard V10 Practice, Daily or PEI journeys.
+
+Built-server smoke follows the same boundary. Its routine path starts the
+normal production server, creates and pauses one authoritative V10 R5 volcanic
+Practice match, and checks the built static/runtime endpoints. Setting
+`npm run smoke:built -- --legacy` explicitly enables the retired V7/V8/V9
+profile diagnostics; feature, quality and release commands do not pass it.
+
+Changes to the Verify workflow always retain the disposable PostgreSQL job.
+This prevents a follow-up CI wiring commit from dropping a database gate that
+the preceding product commit selected; it does not widen browser or performance
+coverage.
+
+The existing full-product automation runs at **22:00 Europe/Berlin** (CET/CEST),
 using `verify:daily` on its current checkout. Do not replace it with the selector.
+`verify:daily`, `verify:full` and the selector share one checkout lease so a
+foreground verification cannot contend with the scheduled run. Tooling test
+files execute serially for deterministic temporary-file and child-process use.
 `verify:full` performs compliance/types/build once before the full quality gate
 and audit. If `WP014_TEST_DATABASE_URL` is configured, it also executes the
 isolated database gate; otherwise report the missing prerequisite. Main's
@@ -304,10 +474,10 @@ verify:quality
   fresh build -> bundle/identity/reward security -> full browser matrix -> performance
 
 verify:full
-  verify:fast -> build:outputs -> built smoke -> verify:quality:built -> PostgreSQL gate/status -> audit
+  acquire lease -> verify:fast -> build:outputs -> built smoke -> verify:quality:built -> PostgreSQL gate/status -> audit
 
 verify:daily
-  verify:full
+  acquire lease -> same full sequence
 ```
 
 Built smoke tests must rebuild or prove that output metadata matches the current
@@ -635,13 +805,14 @@ activation is not part of autonomous WP-013 acceptance.
 If a user-approved payout canary needs more than one same-day run, scope the
 temporary exception to the dedicated test wallet with
 `REWARD_TEST_WALLET_ADDRESS` and `REWARD_TEST_DAILY_ATTEMPT_LIMIT` (maximum
-five). This is the authorized player/recipient wallet, not the payout signer.
+twelve). This is the authorized player/recipient wallet, not the payout signer.
 Mainnet additionally requires
 `REWARD_TEST_REPEAT_ACKNOWLEDGEMENT=I_UNDERSTAND_REPEAT_MAINNET_REWARDS`.
 Attempt slots remain separate immutable ledger records and all budget, replay,
 claim, signing, reconciliation, and finality controls still apply. Remove the
 override settings after the canary; do not reset or delete existing
-entitlements to regain eligibility.
+entitlements to regain eligibility. Each numbered slot can produce its own
+verified payout, so the development override remains low-funded and supervised.
 
 WP-013's bounded operational acceptance completed on 2026-08-01. The
 user-operated MainAlbatross canary produced exactly one 1 NIM transaction,
@@ -1402,10 +1573,12 @@ If implementation shows that the plan is wrong or risky:
 5. Ask the user before continuing if the change would import new GPL/unclear
    material, change the project license, or materially expand scope.
 
-## Subagent Coordination
+## Implementation and review delegation
 
-Retired. Use the single-owner loop above. Historical role/protocol references
-are research records and must not trigger agent work.
+Implementation, research, and independent-review subagents are retired. The
+only active delegated role is the testing worker described in
+[Testing delegation](#testing-delegation); historical role/protocol references
+are research records and must not trigger other agent work.
 
 ## Definition Of Done
 

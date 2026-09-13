@@ -1,0 +1,88 @@
+{
+  "id": "WP-014H",
+  "status": "complete",
+  "starting_commit": "5333a90276d71d9343f167a66f91df6c52cba792",
+  "branch": "codex/wp-014h-feature-daily-verification-v0",
+  "initial_worktree": "clean",
+  "starting_lock_sha256": "D4DAC6AE09A3D2F6C5A7EAA11520BAC43F1628320C5331575BCF1E1857073D73",
+  "owning_roles": [
+    "worms_port_test_worker",
+    "worms_port_docs_keeper",
+    "worms_port_reviewer"
+  ],
+  "scope": [
+    "Add one operational verify:feature command that runs the fast deterministic suites, produces current build outputs without repeating those checks, smokes the built server, and runs the five-case canonical browser gate.",
+    "Add one verify:daily alias for the unchanged complete verify:full gate and establish one end-of-day execution cadence.",
+    "Update repository and agent instructions so normal feature delivery runs verify:feature while the full matrix, performance, security, audit, and release checks run at the daily checkpoint or an explicit release boundary.",
+    "Add executable tooling assertions that prevent the quick gate from silently becoming the full gate or the daily alias from drifting away from verify:full.",
+    "Limit tracked outputs to AGENTS.md, README.md, docs/evidence/wp-014h.json, docs/planning/implementation_plan.md, docs/process/development_workflow.md, package.json, and tests/tooling/verification-cadence.test.js."
+  ],
+  "non_goals": [
+    "No reduction in full-suite projects, expected-skip accounting, retries, worker limits, visual thresholds, timing budgets, security checks, audit coverage, or release evidence.",
+    "No gameplay, simulation, client, server, protocol, reward, authority, asset, dependency, package-lock, executor, or GitHub release-CI behavior change.",
+    "No player observation, physical-device session, Lane G/Lane M execution, Stage C work, ProductAuthority, P5, placement, or landfall claim."
+  ],
+  "planned_checks": [
+    "npm run test:tooling",
+    "npm run verify:feature",
+    "npm run check:compliance",
+    "npm audit",
+    "verify:daily wiring and scheduled-automation review",
+    "git diff --check and scoped self-review"
+  ],
+  "deterministic_seeds": [
+    "1",
+    "3735928559"
+  ],
+  "sorcerers_reference_used": false,
+  "clean_room_records": [],
+  "check_results": [
+    {
+      "command": "npm run test:tooling",
+      "status": "pass",
+      "detail": "All 70 tooling tests passed in 1.43 seconds, including the new feature-gate composition and exact daily-alias assertions."
+    },
+    {
+      "command": "npm run verify:feature",
+      "status": "pass",
+      "detail": "The complete per-feature gate passed in about one minute: compliance, types, 70 tooling, 38 protocol, 32 simulation, 11 Loomkeeper, 9 Relic, 24 combat, 5 Practice, 22 identity, and 24 reward tests; current server/client outputs and deterministic build proof; built smoke; and five canonical Chromium browser checks, whose browser phase completed in 35.3 seconds."
+    },
+    {
+      "command": "npm run check:compliance",
+      "status": "pass",
+      "detail": "All asset, runtime-inventory, generation-component, import-boundary, package-license, work-package, and clean-room gates passed with 48 work-package records."
+    },
+    {
+      "command": "npm audit",
+      "status": "pass",
+      "detail": "0 vulnerabilities; package-lock.json and dependency identities remain unchanged."
+    },
+    {
+      "command": "verify:daily wiring and scheduled-automation review",
+      "status": "pass",
+      "detail": "Tooling proves verify:daily is exactly npm run verify:full. A bounded startup probe entered verify:full and its verify:fast stage successfully, then was intentionally interrupted before the full suite as directed by the owner. Active local automation worms-port-daily-verification is scheduled daily at 22:00 and reports without modifying or fixing the repository."
+    },
+    {
+      "command": "git diff --check and scoped self-review",
+      "status": "pass",
+      "detail": "The final tracked path set matches the seven-path allowlist. Review confirmed the quick command retains deterministic, build, smoke, and browser evidence; the daily alias retains the complete gate; GitHub release CI, gameplay, dependencies, assets, policies, thresholds, and manifests are unchanged; whitespace validation passed."
+    }
+  ],
+  "reviews": [
+    {
+      "role": "worms_port_reviewer",
+      "reviewer": "Codex primary-agent cadence and scope review",
+      "decision": "pass",
+      "detail": "Reviewed script composition, duplicate-check avoidance, daily alias integrity, scheduling prompt boundaries, agent instructions, exact output scope, and unchanged full-suite authority."
+    }
+  ],
+  "skipped_checks": [
+    "The complete verify:daily suite was not rerun during implementation at the owner's direction. Its startup and exact alias were proven; WP-014G's immediately preceding full matrix and performance evidence remain the current full-run baseline until the scheduled end-of-day checkpoint.",
+    "Real Android/iOS and Nimiq Pay WebView testing was not run because this package changes verification cadence and repository tooling only."
+  ],
+  "residual_risks": [
+    "The end-of-day automation requires the configured local host to be available; the manual npm run verify:daily command remains the fallback.",
+    "A red quick gate still blocks feature delivery, while a red daily gate remains actionable debt and must not be normalized as an expected failure.",
+    "Physical Android/iOS and Nimiq Pay WebView behavior remain separate user-operated acceptance."
+  ]
+}

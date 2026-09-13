@@ -1,0 +1,36 @@
+{
+  "id": "wp-015c-animation-flux2-max-text-idle-v1",
+  "status": "owner_authorized_pending_submission",
+  "owner_authorization": {
+    "date": "2026-08-07",
+    "scope": "exactly one direct text-only FLUX.2 max diagnostic idle-pose request; it submits no input image, pose guide, or third-party reference"
+  },
+  "endpoint": "https://api.bfl.ai/v1/flux-2-max",
+  "model": "FLUX.2 [max]",
+  "reference_images_submitted": false,
+  "prompt": "Create one original, isolated, full-body idle game-character key pose on a plain white background.\n\nA cute blue crocheted fantasy wizard with a rounded yarn-doll body, short legs and feet on one shared ground baseline, and a dark navy pointed wizard hat with small gold stitched stars. It has two glossy black bead eyes, a small stitched mouth, and one small blue-and-gold yarn ball resting naturally in an open hand.\n\nExpress a calm, relaxed, softly alert character who is waiting between actions. The pose should feel natural and comfortably balanced, with the yarn ball resting passively as part of the character. Keep the full body visible.\n\nCreate one still idle pose.",
+  "parameters": {
+    "disable_pup": true,
+    "seed": 15039002,
+    "width": 1024,
+    "height": 1024,
+    "safety_tolerance": 2,
+    "output_format": "png"
+  },
+  "request_body_record": {
+    "prompt": "the exact top-level prompt field in this file",
+    "disable_pup": true,
+    "seed": 15039002,
+    "width": 1024,
+    "height": 1024,
+    "safety_tolerance": 2,
+    "output_format": "png"
+  },
+  "max_submissions": 1,
+  "output_directory": ".quarantine/wp-015c-animation/flux2-max-text-idle-v1",
+  "blocked": [
+    "an input image, pose guide, third-party reference, second submission, retry, model substitution, or prompt variation",
+    "a claim that the output reproduces an existing protected work, brand, franchise, or artist style",
+    "video, sprite sheet, alpha treatment, normalizer, staging, runtime path, asset promotion, or product change"
+  ]
+}

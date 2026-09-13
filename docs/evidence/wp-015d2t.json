@@ -1,0 +1,134 @@
+{
+  "id": "WP-015D2T",
+  "status": "complete",
+  "starting_commit": "6e88418a6a90281976dd5f6dcf2e6db55d9e4009",
+  "branch": "codex/wp-015d2r-stage-b-execution-v1",
+  "initial_worktree": "clean",
+  "starting_lock_sha256": "D4DAC6AE09A3D2F6C5A7EAA11520BAC43F1628320C5331575BCF1E1857073D73",
+  "owning_roles": [
+    "worms_port_executor",
+    "worms_port_reviewer",
+    "cross_repository_coordinator"
+  ],
+  "scope": [
+    "pilot_activation: not_required. This pass executes one bounded Worms-owned L4+ pressure question and accepts no cross-world return, witness promotion, placement, ProductAuthority or P5 claim.",
+    "Execute only parent WP-015D2R child WPV4-NAVIGATOR-01B Stage B from immutable preregistration source 65b2153714f237964354da3791fe4af4694a0594 and terminal 6e88418a6a90281976dd5f6dcf2e6db55d9e4009.",
+    "Implement exactly six new regular tracked outputs: this WP-015D2T evidence; the registered executor; runner; focused/destructive test; human report; and machine result.",
+    "Execute the complete registered 276-word domain in exact shortlex order, exclude both calibration words before any authority call, retain every exclusion, rejection, pruned word, eligible endpoint, alias pair, equality, typed split and frame failure, and never stop at a positive.",
+    "Write raw execution records only to the five registered ignored JSONL paths under test-results/crpm-world/wp-015d2r-stage-b-v1/.",
+    "Report the preregistered primary outcomes without modification and add only the non-authoritative descriptive cross-tab by endpoint-depth pair, same/cross depth, pre-budget pair, post-budget pair and primary outcome.",
+    "Call movementRemaining inequality a continuation-support-coordinate split only; preserve TAU-WPV4-RETURN-01A as candidate_unlicensed and stop before Stage C."
+  ],
+  "non_goals": [
+    "Do not modify either Stage B preregistration source file or any D2P, D2Q, Stage A, cut, schema, authority, adapter, sealed executor, gameplay, CRPM, dependency, asset, lock, product or historical evidence file.",
+    "Do not alter the primary outcome enum, adaptively widen the seed/domain/depth/decoder, inject state, replay either exact calibration occurrence, suppress negatives or stop at the first positive.",
+    "Do not call a movementRemaining split recursive continuation closure, license Tau, select a next carrier transformation, revise the chart, claim landfall, perform the Stage C return, issue ProductAuthority or placement, open P5, create a PR or push."
+  ],
+  "planned_checks": [
+    "npm run check:compliance (baseline, source and final)",
+    "focused Stage B contract and destructive-control tests",
+    "affected bounded CRPM-world validation lineage",
+    "strict executor/result/report/evidence parity and duplicate rejection",
+    "exact source binding plus preregistration/predecessor preservation audit",
+    "exact execution result-range changed-path/status/mode/blob audit",
+    "git diff --check",
+    "identified read-only execution, governance and boundary review"
+  ],
+  "deterministic_seeds": [
+    "3237998097 (0xC0FFEE11), exactly the sole preregistered cut-domain seed"
+  ],
+  "sorcerers_reference_used": false,
+  "clean_room_records": [],
+  "check_results": [
+    {
+      "command": "npm run check:compliance (baseline, source and final)",
+      "status": "pass",
+      "detail": "All seven compliance components passed at the clean preregistration terminal, on the stabilized execution source, after the durable result, and on the closeout draft. The work-package checker recognizes 40 records. No compliance script, schema, dependency or lock file changed."
+    },
+    {
+      "command": "focused Stage B contract and destructive-control tests",
+      "status": "pass",
+      "detail": "The final synthetic-only Stage B suite reported 22 tests: 21 pass, 0 fail and 1 Windows EPERM symlink-creation skip in 129.17 seconds. It covered the exact 276/274 domain, pre-authority holdouts, call conservation, pruning and no-early-stop behavior, outcome precedence, cross-tab endpoint association, failure-evidence provenance, duplicate/coherent-rehash attacks, source authentication, path confinement, hard links, all-target reservation cleanup and byte verification. npm run check:crpm-world-types passed. Tests did not invoke the registered search or calibration sentinel."
+    },
+    {
+      "command": "affected bounded CRPM-world validation lineage",
+      "status": "pass",
+      "detail": "The bounded canonical plus V4 authority-adapter lineage passed 17/17 tests; simulation passed 31/31; production and analysis TypeScript checks passed; and the server/client build completed. The client build emitted only the repository's existing large-chunk advisory. The intentionally broader CRPM-world/calibration lane remained closed."
+    },
+    {
+      "command": "strict executor/result/report/evidence parity and duplicate rejection",
+      "status": "pass",
+      "detail": "The no-authority verifier authenticated source commit 439bba3d92a4b4ab3216ad3fa987e90b983dd2c0 and result commit d340a2286598a1fd399dfa23ba55426185f0e96d, reproduced source digest e50059a6af824ad06c17af213ca32fb21f18dd9868bbc03646b7e39e41af95dc and result digest db073dfe67e0687253fe284832b45fad051b463edfd2e8ac9d3fb862b86c3a11, and matched every embedded/raw/report row. Named suite/source-range/domain/records/outcomes/cross-tab/parity digests are 2eaaf9cbb8f4a64aceac1e7213c692971704839abda53673b429526661a962c5, fcf2337841f4e8be53d78a0a11cb6c5f4d38f6323864ade4cdba68c2192c6e6c, 6c28603a45024c31b47fa24a82a71dfc30e9e28ed960b406597a7847e948eaba, 7369d08707a1529064691ce58c40c50ca7f782292080a50ee0ed70f574051c9c, d245c1368950e4972077557ae5280623415b52cf011ee4576b5580b80d8ac14e, 5247cba5743f97aa05a4e60b4bfed3426d5de2446b1bcdb903e3a518fd64e293 and 765df299868250feb1d3eb0b21cb38a0ddd209bd9005569a203706b7b17fb724. Strict duplicate-key, duplicate-row, duplicate-ID and coherent-rehash controls passed."
+    },
+    {
+      "command": "exact source binding plus preregistration/predecessor preservation audit",
+      "status": "pass",
+      "detail": "Execution source commit 439bba3d92a4b4ab3216ad3fa987e90b983dd2c0, tree aab7b66ea4646c557b31542347ae1f693463d8ae, contains exactly four additive regular files and has source digest e50059a6af824ad06c17af213ca32fb21f18dd9868bbc03646b7e39e41af95dc. The contract and registration preserve blobs 6140b390d8e073378e57c90c2d2cd8c2dac20f79 and d8d6b5a6c52fb421fb77ab4cb32a2d1f48ed03aa. Review reproduced 84 mode/blob/Git-byte checks across 21 frozen Stage A, D2P/D2Q, cut, schema, canonical, authority and calibration rows. No prohibited owner or CRPM byte changed."
+    },
+    {
+      "command": "exact execution result-range changed-path/status/mode/blob audit",
+      "status": "pass",
+      "detail": "Preregistration terminal 6e88418a6a90281976dd5f6dcf2e6db55d9e4009 through result d340a2286598a1fd399dfa23ba55426185f0e96d has exactly six endpoint A/100644 paths across two linear commits and range digest d175e68c1843cba022ed21cc4c700b7c1bc513981849797af4201ce51857a11e. Result blob/SHA-256 is 2452a19b700fd6c6965fdb20a27824cf386070c9 / 947e951f1f155931d066322df8e7b1748c282b812dca8355bf31d08be23f19ff; report is 10a753c0c7d1f7d271f2b6f8fd47daa8fc898b46 / 2b540c70635d325d5423073da49d7d3582e1c52dbb9e300f02848bbee63b6962. Every intermediate rejects undeclared paths, deletes, renames and nonregular modes. This evidence closeout modifies only its already allowed path; the containing terminal identity is verified externally after commit to avoid circular self-identity."
+    },
+    {
+      "command": "git diff --check",
+      "status": "pass",
+      "detail": "Working, staged, source, result and closeout-range whitespace checks passed. Checkout line-ending notices are configuration-only; all durable identities bind committed Git bytes."
+    },
+    {
+      "command": "identified read-only execution, governance and boundary review",
+      "status": "pass",
+      "detail": "Three identified read-only reviews passed the committed source and result: execution integrity, semantic/governance, and exact range/boundary preservation. They reproduced 276 attempts, 2 zero-call holdouts, 274 endpoints, 9 source classes, 7 alias classes and 7,378 nC2 pairs; all five outcome counts and 1,113 candidate rows; five raw ledgers; every durable digest; and all closed Tau, witness, ProductAuthority, placement, landfall, chart, successor, Stage C and P5 gates."
+    }
+  ],
+  "reviews": [
+    {
+      "role": "worms_port_committed_source_reviewer",
+      "reviewer": "Codex /root/stage_b_execution_audit — committed-source execution authorization review",
+      "decision": "pass",
+      "detail": "Bound source commit 439bba3d92a4b4ab3216ad3fa987e90b983dd2c0 and tree aab7b66ea4646c557b31542347ae1f693463d8ae. Reproduced the exact four-path source range, immutable preregistration identities, output absence, exhaustive generator/holdout controls and validation evidence; licensed exactly one Stage B execution and no Stage C or promotion."
+    },
+    {
+      "role": "worms_port_execution_integrity_reviewer",
+      "reviewer": "Codex /root/stage_b_executor — durable result/raw integrity review",
+      "decision": "pass",
+      "detail": "Bound result d340a2286598a1fd399dfa23ba55426185f0e96d and source 439bba3d92a4b4ab3216ad3fa987e90b983dd2c0. Independently reproduced all source/result/named/raw digests, 274/2110/274 initialization-prefix-next call totals, exact two zero-call exclusions, source and alias classes, nC2 pair identities, classifications, duplicate rejection and executable/result/report/raw parity without authority use."
+    },
+    {
+      "role": "worms_port_semantic_and_governance_reviewer",
+      "reviewer": "Codex /root/stage_b_execution_audit — durable semantic/governance review",
+      "decision": "pass",
+      "detail": "Confirmed the five primary outcome counts sum to 7,378, all 1,113 target-relevant rows recur inside the registered inverse depth/pre-budget pattern, and the cross-tab remains descriptive and non-causal. Preserved correlated_reuse, W absent, Omega/P/N not_evaluated, J not_applicable, Tau candidate_unlicensed, no recursive-closure claim and every closed product/placement/Stage C/P5 gate."
+    },
+    {
+      "role": "worms_port_result_range_and_boundary_reviewer",
+      "reviewer": "Codex /root/stage_b_tests — durable range/boundary review",
+      "decision": "pass",
+      "detail": "Reproduced both linear commit deltas, six allowed endpoint paths, 84 frozen predecessor checks, exact raw confinement to five ignored regular singly linked files, no prohibited-owner drift and no-authority result/compliance/diff verification."
+    },
+    {
+      "role": "cross_repository_coordinator",
+      "reviewer": "Codex main writer — governing closeout review",
+      "decision": "pass",
+      "detail": "Confirmed this is a Worms-owned L4+ bounded execution, not a CRPM return or placement operation. The known route-length/movement-budget recurrence is retained as descriptive pressure only; no carrier selection, public-formation inference, gameplay change, playtest, Tau license, chart revision, ProductAuthority, landfall, Stage C or P5 operation occurred."
+    }
+  ],
+  "skipped_checks": [
+    "The full npm run test:crpm-world suite and historical cuts-and-transport calibration sentinel were not run. The focused Stage B suite plus canonical/adapter lineage covered the affected surface without replaying either exact calibration occurrence as fresh evidence.",
+    "One Windows-only symlink-creation destructive branch was skipped after EPERM. Hard-link, traversal, reserved-name, identity, all-target reservation and exact-path controls still ran; the platform skip remains explicit residue.",
+    "Browser, UI, player-observation, timing, physical-device and playtest lanes were not run because their information, consent, public-formation, timing and product boundaries remain closed.",
+    "npm audit was not run because package.json and package-lock.json are unchanged and dependency work is outside the allowed output set.",
+    "No second registered execution, D2Q replay, gameplay or sealed-executor change, CRPM edit/return, Tau license, carrier selection, chart revision, ProductAuthority, placement, landfall, Stage C, P5, PR operation or push was performed."
+  ],
+  "residual_risks": [
+    "The run uses the cut's sole admitted seed, immutable authority/cut bytes and historical calibration lineage. Its implementation path is deterministic and reviewable, but its mathematical facts remain correlated_reuse rather than empirically independent evidence.",
+    "All 1,113 target-relevant pairs recur inside the registered inverse route-depth/pre-command-budget pattern; zero target-relevant pairs were observed outside it. This descriptive result does not establish causation, global carrier necessity, minimality or placement.",
+    "The 14 post-command movementRemaining inequalities are continuation-support-coordinate splits only. A one-command horizon does not establish recursive continuation closure or decodability across a later move.",
+    "Candidate results are present but W remains absent; Omega_W, observed P_W and observed N_W remain not_evaluated; J_W remains not_applicable. TAU-WPV4-RETURN-01A is candidate_unlicensed and requires a separate Stage C review before any return or carrier decision.",
+    "Authority-readable projection does not establish actual player visibility or public formation. Credible response, timing, UI/player observation and playtest evidence remain untested and closed.",
+    "No registered word was rejected and no extension was pruned in this finite domain. That observed local reachability does not imply all-seed, wider-route or gameplay completeness.",
+    "The five raw JSONL ledgers are intentionally ignored and retained only at their exact local paths; their complete rows are mirrored in the committed result and bound by row and file digests. A checkout without the ignored files can verify the durable result/report but cannot recover the separate raw files except from the execution workspace.",
+    "Publisher tests retain a Windows symlink EPERM as platform residue. A filesystem failure during publication would be a failed runner-level retention event; result-last ordering, retained partial files and mandatory verifier checks prevent an incomplete package from silently becoming valid. No such failure occurred in this run.",
+    "This tracked evidence preserves the execution-source and result commits but cannot self-hash its own containing closeout commit. Re-entry must retain the externally verified terminal commit, evidence blob and exact base-to-terminal range digest."
+  ]
+}

@@ -42,6 +42,22 @@ test('bundle measurement follows only the initial static Vite graph', () => {
   }
 });
 
+test('bundle measurement selects the game entry from a multi-page build', () => {
+  const build = fs.mkdtempSync(path.join(os.tmpdir(), 'nimble-knots-bundle-'));
+  try {
+    write(build, '.vite/manifest.json', JSON.stringify({
+      'index.html': { file: 'assets/game.js', isEntry: true },
+      'pei-proxy.html': { file: 'assets/helper.js', isEntry: true }
+    }));
+    write(build, 'assets/game.js', 'game');
+    write(build, 'assets/helper.js', 'helper-only');
+    const report = measureBundle(build);
+    assert.deepEqual(report.initialAssets.map((asset) => asset.path), ['assets/game.js']);
+  } finally {
+    fs.rmSync(build, { recursive: true, force: true });
+  }
+});
+
 test('bundle evaluation fails each exact byte ceiling independently', () => {
   assert.deepEqual(evaluateBundleMeasurements({
     largestInitialJavascriptRawBytes: BUDGETS.largestInitialJavascriptRawBytes,

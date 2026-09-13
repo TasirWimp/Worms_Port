@@ -1,0 +1,903 @@
+{
+  "schemaVersion": 1,
+  "registrationId": "WP-015D2R:stage-c-independent-reconstruction-and-chart-revision:v1",
+  "packageId": "WP-015D2R",
+  "supportWorkPackageId": "WP-015D2U",
+  "stage": "stage_c",
+  "title": "WP-015D2R Stage C independent reconstruction, witness re-entry, and chart revision",
+  "sourceBoundary": {
+    "sourceHead": {
+      "commit": "6e47d42b691effe5d34c5c050302def40ae40181",
+      "tree": "098d17d9d2598406a0c1a9222c07bd94f5c29aab",
+      "role": "stage_c_entry_and_stage_b_terminal_evidence"
+    },
+    "requiredCommits": {
+      "stageBPreregistrationSource": "65b2153714f237964354da3791fe4af4694a0594",
+      "stageBPreregistrationSourceTree": "4f0cc39665cd903c279fa5e9f415120edba53a97",
+      "stageBPreregistrationTerminal": "6e88418a6a90281976dd5f6dcf2e6db55d9e4009",
+      "stageBPreregistrationTerminalTree": "70a8c35a2fe102837577883c6dcc0581dce9e2b9",
+      "stageBExecutionSource": "439bba3d92a4b4ab3216ad3fa987e90b983dd2c0",
+      "stageBExecutionSourceTree": "aab7b66ea4646c557b31542347ae1f693463d8ae",
+      "stageBResult": "d340a2286598a1fd399dfa23ba55426185f0e96d",
+      "stageBResultTree": "8362b60ca2d33225dc9c7254ca70ec5bb73b1b65",
+      "stageBTerminalEvidence": "6e47d42b691effe5d34c5c050302def40ae40181",
+      "stageBTerminalEvidenceTree": "098d17d9d2598406a0c1a9222c07bd94f5c29aab"
+    },
+    "stageBResultDigest": "db073dfe67e0687253fe284832b45fad051b463edfd2e8ac9d3fb862b86c3a11",
+    "sourceBindings": [
+      {
+        "id": "STAGE_B_PREREGISTRATION_CONTRACT",
+        "commit": "65b2153714f237964354da3791fe4af4694a0594",
+        "path": "docs/planning/wp-015d2r-stage-b-one-next-command-search-contract-v1.md",
+        "mode": "100644",
+        "blob": "6140b390d8e073378e57c90c2d2cd8c2dac20f79",
+        "sha256": "37d9fa6d566ead810b83c19fc29f72363beb6c6fc734e74e04e1b408eb024dd5",
+        "role": "immutable_human_stage_b_preregistration"
+      },
+      {
+        "id": "STAGE_B_PREREGISTRATION_MACHINE",
+        "commit": "65b2153714f237964354da3791fe4af4694a0594",
+        "path": "analysis/crpm_world/navigation/wp-015d2r-stage-b-one-next-command-search-registration-v1.json",
+        "mode": "100644",
+        "blob": "d8d6b5a6c52fb421fb77ab4cb32a2d1f48ed03aa",
+        "sha256": "b02ee74661e7c9a6b48c3f9917ea12d6889840800a3e0036518de3a933961087",
+        "role": "immutable_machine_stage_b_preregistration"
+      },
+      {
+        "id": "STAGE_B_PREREGISTRATION_EVIDENCE",
+        "commit": "6e88418a6a90281976dd5f6dcf2e6db55d9e4009",
+        "path": "docs/evidence/wp-015d2s.json",
+        "mode": "100644",
+        "blob": "416c137f9360967badedb100fa9d3851749763af",
+        "sha256": "f27c7de5045257f794814f42698541ef357a856ec53bc196096971fb61474738",
+        "role": "immutable_preregistration_terminal_evidence"
+      },
+      {
+        "id": "STAGE_B_PRIMARY_BUILDER_PROHIBITED_INPUT",
+        "commit": "439bba3d92a4b4ab3216ad3fa987e90b983dd2c0",
+        "path": "analysis/crpm_world/navigation/assess-wp-015d2r-stage-b-one-next-command-search-v1.ts",
+        "mode": "100644",
+        "blob": "1fea48debecd32c23f2fdd0f51355aeb169f7834",
+        "sha256": "759bf2b459a500ccb14f5a9ba6e26bcd64e64a1f31d2ba63cb760b707575366c",
+        "role": "preserved_predecessor_identity_never_reconstruction_answer"
+      },
+      {
+        "id": "STAGE_B_RUNNER_PROHIBITED_EXECUTION",
+        "commit": "439bba3d92a4b4ab3216ad3fa987e90b983dd2c0",
+        "path": "scripts/run-wp-015d2r-stage-b-one-next-command-search-v1.ts",
+        "mode": "100644",
+        "blob": "042b1ce1a49d24763e93b8521f1112b826f4aa1b",
+        "sha256": "ddca5c4864ac883c894b82115d0a473bd94bf6649d254d4b0b1e920c014e9f6d",
+        "role": "preserved_predecessor_identity_never_executed"
+      },
+      {
+        "id": "STAGE_B_FOCUSED_TESTS_PRESERVED",
+        "commit": "439bba3d92a4b4ab3216ad3fa987e90b983dd2c0",
+        "path": "tests/crpm-world/wp-015d2r-stage-b-one-next-command-search-v1.test.ts",
+        "mode": "100644",
+        "blob": "01a081de0420909b2ca8846884f407f635657551",
+        "sha256": "0487dfbabff4d1761b4bfaa09ca359f71a10f9293c775cbd5b6993eb73c73f66",
+        "role": "preserved_predecessor_validation_not_stage_c_reconstruction"
+      },
+      {
+        "id": "STAGE_B_DURABLE_RESULT",
+        "commit": "d340a2286598a1fd399dfa23ba55426185f0e96d",
+        "path": "docs/evidence/wp-015d2r-stage-b-v1/result.json",
+        "mode": "100644",
+        "blob": "2452a19b700fd6c6965fdb20a27824cf386070c9",
+        "sha256": "947e951f1f155931d066322df8e7b1748c282b812dca8355bf31d08be23f19ff",
+        "semanticDigest": "db073dfe67e0687253fe284832b45fad051b463edfd2e8ac9d3fb862b86c3a11",
+        "role": "sole_stage_c_reconstruction_data_input"
+      },
+      {
+        "id": "STAGE_B_HUMAN_REPORT",
+        "commit": "d340a2286598a1fd399dfa23ba55426185f0e96d",
+        "path": "docs/planning/wp-015d2r-stage-b-one-next-command-search-report-v1.md",
+        "mode": "100644",
+        "blob": "10a753c0c7d1f7d271f2b6f8fd47daa8fc898b46",
+        "sha256": "2b540c70635d325d5423073da49d7d3582e1c52dbb9e300f02848bbee63b6962",
+        "role": "human_predecessor_report_for_parity_only"
+      },
+      {
+        "id": "STAGE_B_TERMINAL_WORK_EVIDENCE",
+        "commit": "6e47d42b691effe5d34c5c050302def40ae40181",
+        "path": "docs/evidence/wp-015d2t.json",
+        "mode": "100644",
+        "blob": "74a08801666a214cfdf53bbc2d7b98aee43b7343",
+        "sha256": "59a5de10635aeeebbef9ac55aca18e1f906676075f8db0e015bad607ee3801fb",
+        "role": "immutable_stage_b_terminal_evidence"
+      },
+      {
+        "id": "STAGE_A_NAVIGATOR_CONTRACT",
+        "commit": "4bcb213c9a1a2619d8699f3fed275e6afa71f03e",
+        "path": "docs/planning/wp-015d2r-residue-driven-round-trip-navigator-contract.md",
+        "mode": "100644",
+        "blob": "38f27751d97c6087bb1e314c6ecc31611435a974",
+        "sha256": "956ab24cdf152d7db3185784b5d012c407ab5f4b23cee7366077df9a3703874b",
+        "role": "immutable_stage_a_witness_and_return_contract"
+      },
+      {
+        "id": "STAGE_A_CANDIDATE_REGISTRY",
+        "commit": "4bcb213c9a1a2619d8699f3fed275e6afa71f03e",
+        "path": "docs/planning/wp-015d2r-residue-driven-round-trip-candidate-registry.json",
+        "mode": "100644",
+        "blob": "d3002ef29f748964a4bfcdce4199d8075a6f57ce",
+        "sha256": "e88b4f76404cca15dadad14a5b24ae5509ff8ea715449533e897aa3d22cc5106",
+        "role": "immutable_stage_a_chart_and_source_bindings"
+      },
+      {
+        "id": "STAGE_A_REVIEW_RETURN",
+        "commit": "4bcb213c9a1a2619d8699f3fed275e6afa71f03e",
+        "path": "docs/evidence/wp-015d2r/review-return.json",
+        "mode": "100644",
+        "blob": "1a55777608da47b20b4bb06128edaa7e9ed90e1a",
+        "sha256": "5989e11341ca41bdc2387a3830a67d9cfc2a7f3677a5860c7fb1e8915c2add6d",
+        "role": "immutable_stage_a_durable_return"
+      },
+      {
+        "id": "D2Q_COMMAND_GATE_RETURN",
+        "commit": "4fc88d947a98d737cbcdfd22d31d36c4bd5843eb",
+        "path": "docs/evidence/wp-015d2q/review-return.json",
+        "mode": "100644",
+        "blob": "f992202b2be4d8e47e293a81325537ee28474f47",
+        "sha256": "e951bbdf74bfceb781f20794ebde5786e848b5992c8de2aeab8486dde447e308",
+        "semanticDigest": "b538f5b6da82dc3b6655a9c0d89404e3b20592191886a9bb4280d6fe481d1615",
+        "role": "immutable_command_gate_anchor_recovered_without_replay"
+      },
+      {
+        "id": "THIN_V4_CUT_SOURCE",
+        "commit": "3a3cca8c720f89251cad56029b9f7b1c69d87146",
+        "path": "analysis/crpm_world/cuts/v4-cuts.ts",
+        "mode": "100644",
+        "blob": "769d6fc2ca689eeedfe9bba680b9d24aa37fc67e",
+        "sha256": "0e404a6316630ee12203889bf9c2ea97357865a12832a1252f5b1c2274f2a3f2",
+        "role": "exact_alias_producing_cut_source_bytes"
+      },
+      {
+        "id": "CANONICAL_JSON_UTILITY",
+        "commit": "3a3cca8c720f89251cad56029b9f7b1c69d87146",
+        "path": "analysis/crpm_world/canonical.ts",
+        "mode": "100644",
+        "blob": "f52effc9560d9cc2fb2227080208f4e99a58ca52",
+        "sha256": "df093ac1934f4ed88ba02986399b09276c2a696e55c8f415a3bd6018767d5e67",
+        "role": "generic_canonicalization_utility_only"
+      }
+    ]
+  },
+  "independentReconstructionBoundary": {
+    "input": "Read and authenticate only the Git-object bytes of STAGE_B_DURABLE_RESULT at d340a2286598a1fd399dfa23ba55426185f0e96d for reconstructed endpoint, class, pair, cross-tab, witness, carrier and chart facts. Other bindings are immutable provenance and parity inputs.",
+    "implementationClass": "reconstruction_independent",
+    "evidenceClass": "correlated_reuse",
+    "covarianceRule": "The Stage C implementation path must be independent of the Stage B builder, but every mathematical fact is reconstructed from the same Stage B observations and remains correlated_reuse, never empirically independent.",
+    "allowedSemanticDependency": "analysis/crpm_world/canonical.ts may supply generic canonical JSON only; Node standard-library hashing, Git object reads, strict JSON parsing and ordinary collection operations are allowed.",
+    "forbiddenImports": [
+      "analysis/crpm_world/navigation/assess-wp-015d2r-stage-b-one-next-command-search-v1.ts",
+      "scripts/run-wp-015d2r-stage-b-one-next-command-search-v1.ts",
+      "analysis/crpm_world/adapters/v4-authority-adapter.ts",
+      "shared/simulation.ts"
+    ],
+    "forbiddenActions": [
+      "rerun Stage B or its verifier as the reconstruction answer",
+      "enumerate or regenerate route words",
+      "call createSimulation, applySimulationCommand, tickSimulation or any authority adapter",
+      "import, invoke, spawn, copy or transliterate the primary Stage B semantic builder",
+      "read ignored Stage B raw JSONL as a substitute for the committed durable result",
+      "replay the calibration sentinel or D2Q cases",
+      "mutate any predecessor, cut, schema, authority, adapter, sealed executor, gameplay, dependency, CRPM or product file"
+    ]
+  },
+  "fixedFrame": {
+    "level": "L4+",
+    "world": "Worms_Port V4 bounded analytical world at the bound predecessor bytes",
+    "cutStance": "source equivalence under thin_visible_duel_v0@2; D2Q authority_v4@2 remains a distinct immutable command-gate anchor",
+    "protectedFamily": [
+      "D2Q command-gate actor/expectedTurn and accepted/mutated/error/event distinctions recoverable from immutable provenance",
+      "the complete registered Stage B one-next-command target over all 274 eligible endpoint occurrences",
+      "route and exact-state provenance sufficient for audit re-entry without promotion to live recursive state",
+      "explicit residue, reopening conditions and successor stop"
+    ],
+    "d2qProtectedReadout": {
+      "sourceResultDigest": "b538f5b6da82dc3b6655a9c0d89404e3b20592191886a9bb4280d6fe481d1615",
+      "caseRowsCanonicalDigest": "2202151c88d85e922b303bebd61d43c52279d571f1fe2087260ec27c31a9129d",
+      "ablationRowsCanonicalDigest": "675b829933fc5e20ed893eacdfb718a928ba5397d438be3181922b1fa1b53a7c",
+      "caseCount": 4,
+      "requiredCaseFields": [
+        "caseId",
+        "edgeDigest",
+        "evidenceClass",
+        "inputUnchanged",
+        "mathematicalPlacementImplication",
+        "observedClass",
+        "readout",
+        "reopeningCondition",
+        "requestDigest",
+        "sourceReadoutMatches",
+        "targetDigest",
+        "unchangedRejection",
+        "verdict",
+        "witnessDigest"
+      ],
+      "requiredDecodedReadoutFields": [
+        "accepted",
+        "authoritativeEvents",
+        "error",
+        "eventsDigest",
+        "movementRemaining",
+        "mutated",
+        "playerX",
+        "postStateDigest",
+        "preStateDigest",
+        "revision"
+      ],
+      "requiredFieldAblationControls": [
+        "fieldId and exact omittedFieldIds",
+        "full, ablated and restored class identities",
+        "primary, equality and error-only controls where registered",
+        "all seven derived frame checks",
+        "sourceFactsPass, actuallyOmitted and restorationRecovers",
+        "verdict, evidenceClass, mathematicalPlacementImplication and reopeningCondition"
+      ],
+      "caseVerdicts": {
+        "CMD-VALID-01": "accepted_true_mutated_true_error_null_moved_event",
+        "CMD-TURN-01": "accepted_false_mutated_false_LATE_TURN",
+        "CMD-ACTOR-01": "accepted_false_mutated_false_NOT_YOUR_TURN",
+        "CMD-PRECEDENCE-01": "accepted_false_mutated_false_LATE_TURN"
+      },
+      "fieldVerdicts": {
+        "actor": "target_relevant_on_declared_V4_command_gate",
+        "expectedTurn": "target_relevant_on_declared_V4_command_gate"
+      },
+      "recoveryRule": "Strictly parse the authenticated D2Q return bytes, independently derive a normalized four-case table containing every required case control and every decoded readout field, derive the complete actor/expectedTurn ablation controls and verdict table, and compare each value with the immutable registered row digests and source rows without importing or executing D2Q. Artifact presence, blob equality, row-digest equality or result-digest equality alone is insufficient without the value-by-value normalized rows. The derived rows remain the command-gate anchor, not Stage B source-equivalence classes."
+    },
+    "K_target": {
+      "id": "K_WPV4_ONE_COMMAND_COMPLETE_V1",
+      "domain": "Every one of the 274 committed eligible endpoint occurrences and every unordered pair within an equal thin_visible_duel_v0@2 source class.",
+      "readout": [
+        "accepted",
+        "mutated",
+        "error normalized as null or exact code/message",
+        "ordered exact authoritativeEvents",
+        "post-command movementRemaining"
+      ],
+      "equality": "Exact decoded equality with numeric tolerance 0. Digests identify retained bytes but never replace decoded comparison.",
+      "excludes": [
+        "route history",
+        "pre-command revision",
+        "post-command revision",
+        "pre-command exact state digest",
+        "post-command exact state digest"
+      ]
+    },
+    "routes": "Only route records already retained inside the committed Stage B result; no route generation or replay.",
+    "horizon": "Exactly the already-observed single next MOVE +1 readout; no further authority call.",
+    "support": "Authenticated Stage B result bytes, exact Stage A/D2Q provenance bindings, independent reconstruction code and destructive validation.",
+    "tolerance": 0,
+    "oracleInputBoundary": "No authority, gameplay, hidden executor, Stage B semantic helper, player observation, timing, external oracle or uncommitted raw file may contribute an answer."
+  },
+  "reconstructionObligations": {
+    "eligibleEndpointCount": 274,
+    "sourceClassCount": 9,
+    "sourceClassSizesSorted": [
+      1,
+      1,
+      8,
+      8,
+      29,
+      29,
+      61,
+      61,
+      76
+    ],
+    "aliasedSourceClassCount": 7,
+    "pairCount": 7378,
+    "primaryOutcomeCounts": {
+      "frame_support_failure": 0,
+      "command_semantic_split": 1099,
+      "continuation_support_split": 14,
+      "provenance_exact_state_only_split": 2983,
+      "no_target_relevant_split": 3282
+    },
+    "targetRelevantPairCount": 1113,
+    "pairIdentityRule": "Independently regroup endpoints by exact sourceProjection projected value, preserve the canonical route-ID left/right order stored by the source, derive pair-${sha256(canonicalJson({classKey,leftEndpointId,rightEndpointId}))}, reject duplicates, and match all 7,378 committed pair identities one-for-one.",
+    "outcomeRule": "Independently compare decoded endpoint records in precedence order: frame/support failure; command-semantic inequality; post-command movementRemaining inequality; pre/post revision or state-digest inequality; otherwise no target-relevant split. Route-history inequality alone is provenance only.",
+    "crossTab": {
+      "dimensions": [
+        "endpoint-depth pair",
+        "same_depth or cross_depth",
+        "pre-command movementRemaining pair",
+        "post-command movementRemaining pair",
+        "primary outcome"
+      ],
+      "expectedRowCount": 10,
+      "stageBReferenceDigest": "5247cba5743f97aa05a4e60b4bfed3426d5de2446b1bcdb903e3a518fd64e293",
+      "rule": "Reconstruct from endpoints joined to independently rebuilt pair identities; do not copy descriptiveCrossTab rows or use them as the answer. Match the authenticated Stage B rows only after derivation."
+    },
+    "targetRelevantConstraints": {
+      "everyTargetRelevantPairHasUnequalPreCommandMovementRemaining": true,
+      "sameDepthTargetRelevantPairCount": 0,
+      "equalPreCommandMovementRemainingTargetRelevantPairCount": 0
+    },
+    "coFormation": {
+      "requiredMappings": [
+        {
+          "endpointDepth": 2,
+          "preCommandMovementRemaining": 48,
+          "postCommandMovementRemaining": 40,
+          "nextMoveAdmissible": true
+        },
+        {
+          "endpointDepth": 4,
+          "preCommandMovementRemaining": 32,
+          "postCommandMovementRemaining": 24,
+          "nextMoveAdmissible": true
+        },
+        {
+          "endpointDepth": 8,
+          "preCommandMovementRemaining": 0,
+          "postCommandMovementRemaining": 0,
+          "nextMoveAdmissible": false
+        }
+      ],
+      "interpretation": "route_depth_and_movement_budget_co_formed_in_this_finite_result",
+      "nonClaims": [
+        "causation",
+        "unique or global minimality",
+        "all-seed closure",
+        "recursive continuation closure"
+      ]
+    }
+  },
+  "witnessReturnContract": {
+    "separateDimensions": {
+      "executionWitness": "present when the exact Stage B result identity, semantic digest and registered finite evidence authenticate; later reconstruction failure blocks admission but does not erase the historical execution witness",
+      "evidenceClass": "correlated_reuse",
+      "semanticReconstructionReadiness": "derived in the result as ready_for_committed_review only when all semantic reconstruction, negative-retention, witness and chart controls pass; otherwise not_ready",
+      "navigatorAdmission": "the result must retain pending; only the separate post-result review return may emit reviewed_bounded after committed-result, range, parity and three-role synthesis checks pass",
+      "candidateCarrierSufficiency": "derived in the result separately by the Q_support and Q_command implication tests",
+      "tauLicense": "the result must retain candidate_unlicensed; only the separate post-result review return may license bounded Stage C re-entry"
+    },
+    "W": {
+      "definition": "The authenticated complete Stage B execution artifact for the registered finite domain. The Stage C reconstruction certificate is a separate navigator-admission control, not part of execution-witness existence.",
+      "statusOnAuthenticatedStageBResult": "present",
+      "sourceFailureStatus": "invalid_source",
+      "stageCReconstructionFailureEffect": "W_remains_present_but_navigator_admission_and_J_W_fail"
+    },
+    "Omega_W": {
+      "definition": "The exact fixedFrame object: world, thin source cut, K_target, finite 274-endpoint domain, retained routes, one-command horizon, committed support, tolerance 0 and closed oracle/input boundary.",
+      "statusOnAllFrameChecksPass": "evaluated_exact",
+      "failureStatus": "frame_support_failure"
+    },
+    "P_W": {
+      "definition": "Observed positive reconstruction facts only: exact counts and identities, exact outcome/cross-tab reproduction, the target-relevant constraints, non-vacuous Q_support finite implication and narrower Q_command command-semantic implication.",
+      "requiredFactsOnPass": [
+        "all 15 predecessor source bindings authenticate",
+        "274 endpoints, 9 source classes, 7 aliased classes and 7,378 pair identities independently match",
+        "all five primary outcome counts and the ten-row cross-tab independently match",
+        "all 1,113 target-relevant pairs have unequal pre-command movementRemaining",
+        "zero same-depth and zero equal-pre-budget target-relevant pairs exist",
+        "Q_support has 6,265 equal-candidate pairs and zero K_target counterexamples",
+        "Q_command has 6,279 equal-candidate pairs and zero command-semantic counterexamples",
+        "the four-case D2Q protected core and actor/expectedTurn field verdicts are recoverable without replay"
+      ],
+      "statusOnAllReconstructionChecksPass": "observed",
+      "failureStatus": "failed_reconstruction"
+    },
+    "N_W": {
+      "definition": "Observed negative and limiting facts: thin-only K_target counterexamples, Q_command continuation-support counterexamples, no same-depth/equal-pre-budget target-relevant observations, covariance, non-uniqueness and every untested wider/public/recursive claim.",
+      "requiredFactsOnPass": [
+        "thin-only has 1,113 K_target counterexamples",
+        "Q_command retains 14 continuation-support counterexamples",
+        "no same-depth or equal-pre-budget target-relevant positive was observed",
+        "the evidence is correlated_reuse and does not identify causation",
+        "Q_support finite sufficiency is nonunique",
+        "public formation, other seeds/routes/actions, longer horizons, recursive closure, player response/timing, ProductAuthority and placement remain untested or closed"
+      ],
+      "statusOnAllNegativeRetentionChecksPass": "observed",
+      "failureStatus": "incomplete_negative_retention"
+    },
+    "J_W": {
+      "boundedAuditTarget": "complete_for_bounded_registered_one_command_audit",
+      "thinCutCompleteness": "intentionally_incomplete",
+      "rule": "J_W may be complete only for exhaustive authenticated evidence and independent reconstruction of the registered finite audit target. It never asserts completeness of thin_visible_duel_v0@2, public formation, all seeds, longer horizons or gameplay."
+    }
+  },
+  "carrierCandidates": {
+    "thinOnlyBaseline": {
+      "definition": "thin_visible_duel_v0@2 projection",
+      "equalCandidatePairCount": 7378,
+      "KTargetCounterexampleCount": 1113,
+      "verdictOnExactMatch": "insufficient_for_complete_registered_one_command_target"
+    },
+    "Q_support": {
+      "definition": "(thin_visible_duel_v0@2 projection, pre-command movementRemaining)",
+      "groupCount": 17,
+      "equalCandidatePairCount": 6265,
+      "KTargetCounterexampleCount": 0,
+      "implication": "For every unordered pair in the 274-endpoint finite domain, equality under Q_support implies equality of K_WPV4_ONE_COMMAND_COMPLETE_V1.",
+      "nonVacuityRule": "At least one equal-Q_support pair must exist; the exact expected count is 6,265.",
+      "verdictOnExactMatch": "sufficient_for_complete_registered_one_command_target_on_finite_domain_nonunique"
+    },
+    "Q_command": {
+      "definition": "(thin_visible_duel_v0@2 projection, next-move accepted Boolean)",
+      "addedCoordinate": "next-move admissibility only; movementRemaining is not folded into this candidate",
+      "groupCount": 14,
+      "equalCandidatePairCount": 6279,
+      "commandSemanticCounterexampleCount": 0,
+      "continuationSupportCounterexampleCount": 14,
+      "verdictOnExactMatch": "sufficient_for_registered_command_semantics_only_not_continuation_support"
+    },
+    "formation": "No public-input plus declared-support formation witness is introduced. Authority-readable or retrospectively constructed candidates are not player-public carriers."
+  },
+  "carrierRoleContract": {
+    "enum": [
+      "live_carrier",
+      "target_relative_support",
+      "provenance",
+      "re_entry_support",
+      "unresolved"
+    ],
+    "requiredFields": [
+      "movementRemaining",
+      "move admissibility",
+      "route history",
+      "revision",
+      "exact state digest"
+    ],
+    "expectedOnExactDerivation": {
+      "movementRemaining": "live_carrier",
+      "move admissibility": "target_relative_support",
+      "route history": "provenance",
+      "revision": "provenance",
+      "exact state digest": "re_entry_support"
+    },
+    "guards": [
+      "A live_carrier label is target- and frame-relative and requires a non-vacuous finite implication test; it does not imply public formation, recursive state, unique minimality or gameplay exposure.",
+      "Move admissibility may support only the registered command-semantic distinction; exact movementRemaining remains the separate continuation-support target.",
+      "Route history must remain provenance even though exact history can make equivalence classes singleton.",
+      "Revision is a co-formed exact-state proxy and cannot become a live carrier solely because it separates the finite target-relevant pairs.",
+      "Exact state digest supports audit re-entry and provenance, not a preferred live carrier.",
+      "Any field whose derivation does not satisfy its rule is unresolved rather than promoted by expectation."
+    ]
+  },
+  "stateMaterialSeparationContract": {
+    "auditPredecessorProvenance": {
+      "statusOnExactDerivation": "authenticated",
+      "otherwise": "unresolved",
+      "basis": "All fifteen exact predecessor bindings, including immutable Stage A and D2Q material, authenticate and their ordered identity digest matches; never live recursive state."
+    },
+    "domainTransitionProvenance": {
+      "statusOnExactDerivation": "route_history_and_revision_only",
+      "otherwise": "unresolved",
+      "basis": "Route history and revision both derive the provenance role and remain transition provenance, not target carrier coordinates."
+    },
+    "reEntryMaterial": {
+      "statusOnExactDerivation": "exact_state_digest_only",
+      "otherwise": "unresolved",
+      "basis": "Exact state digest derives re_entry_support and is retained for exact audit recovery only."
+    },
+    "liveRecursiveState": {
+      "status": "absent_not_established",
+      "recursiveContinuationClosure": false
+    },
+    "preCommandBudget": {
+      "statusOnExactDerivation": "bounded_one_command_live_carrier",
+      "otherwise": "unresolved",
+      "recursiveState": false
+    },
+    "derivationRule": "Derive all categories from authenticated source identities, recovered D2Q/Stage A structure, carrier-role evidence and candidate partitions. Bind the ledger into W/Omega/P/N/J, Tau, chart and parity; a category mutation must withdraw readiness rather than be absorbed by a generic provenance label."
+  },
+  "tauReturnContract": {
+    "transitionId": "TAU-WPV4-RETURN-01A",
+    "initialStatus": "candidate_unlicensed",
+    "from": "C_D2Q_COMMAND_GATE",
+    "to": "C_ONE_NEXT_COMMAND_CONTINUATION",
+    "semanticObligations": [
+      "Authenticate every exact Stage A, Stage B, D2Q, cut and canonical source binding and the Stage B semantic result digest.",
+      "Demonstrate the independent implementation boundary and retain correlated_reuse as the mathematical evidence class.",
+      "Independently reconstruct all 274 endpoints, 9 source classes, 7 aliased classes, 7,378 pair identities, five outcome counts and the exact cross-tab.",
+      "Derive both target-relevant constraints: unequal pre-command movementRemaining for every target-relevant pair and zero same-depth or equal-pre-budget target-relevant pairs.",
+      "Strictly parse and independently derive the four immutable D2Q case readouts and actor/expectedTurn verdict rows, compare every decoded value with the registered expectation, and do not treat artifact presence or digest equality alone as recovery.",
+      "Preserve the Stage B command and continuation result while separating command, continuation, provenance, re-entry and unresolved carrier roles.",
+      "Derive and preserve the state-material separation among audit predecessor provenance, domain-transition provenance, re-entry material, absent live recursive state and bounded nonrecursive pre-command budget.",
+      "Derive W, Omega_W, observed P_W, observed N_W and J_W with bounded-audit completeness kept distinct from thin-cut completeness.",
+      "Pass the non-vacuous Q_support and Q_command implication controls and retain every counterexample/negative.",
+      "Derive a candidate chart revision with residue and reopening conditions, selecting either one recommendation-only next transition or an explicit stop while successor execution remains closed."
+    ],
+    "reviewObligations": [
+      "Bind a separately committed result and report whose semanticReconstructionReadiness is ready_for_committed_review while navigatorAdmission is pending and Tau is candidate_unlicensed.",
+      "Recompute executable/result/report parity, strict duplicate controls and the exact entry-to-result changed-path/status/mode/blob range over committed bytes.",
+      "Record the actual three-role pilot returns and governing synthesis with evidence overlap, disagreements, false-promotion checks, HT10/HT11 status and explicit non-claims.",
+      "Review the candidate chart, carrier roles, residue and conditional successor recommendation without opening a successor world.",
+      "Publish a distinct committed review return and keep ProductAuthority none, mathematical placement none, player observation/timing closed, gameplay false and P5 closed."
+    ],
+    "statusRule": {
+      "resultArtifact": "candidate_unlicensed",
+      "reviewReturnWhenAllSemanticAndReviewObligationsPass": "licensed_for_bounded_stage_c_reentry_only",
+      "otherwise": "candidate_unlicensed",
+      "automaticLicenseFromStageBPositive": false,
+      "landfall": false
+    }
+  },
+  "chartRevisionContract": {
+    "requiredSections": [
+      "strengthened routes",
+      "demoted routes",
+      "split carrier roles",
+      "shoals and dead ends",
+      "residue carried forward",
+      "one recommended next transition or explicit stop"
+    ],
+    "strengtheningGuard": "The result may derive only a candidate strengthened route when semanticReconstructionReadiness is ready_for_committed_review. The post-result review return alone may accept bounded strengthening after all review obligations pass. No agreement count, digest inequality or proxy alone strengthens a route.",
+    "requiredDemotions": [
+      "thin-only for the complete one-command target",
+      "thin-plus-admissibility for continuation support",
+      "route history as a vacuous singleton live carrier",
+      "revision as a co-formed live-carrier proxy",
+      "exact state digest as an over-thick live carrier"
+    ],
+    "successorRule": "The result must choose conditionally: recommend a separately preregistered longer-horizon closure test of the returned thin-plus-pre-command-movementRemaining carrier only if the reconstructed residue and semantic controls select it; otherwise record an explicit stop. The review return may accept only that recommendation or stop. Stage C must not author the successor contract, open it or execute it.",
+    "forbiddenClaims": [
+      "causation",
+      "global or unique minimality",
+      "all-seed closure",
+      "recursive continuation closure",
+      "public or player formation",
+      "ProductAuthority",
+      "mathematical placement",
+      "landfall"
+    ]
+  },
+  "pilotSynthesis": {
+    "pilotActivation": "required",
+    "reason": "Stage C can accept a material cross-world return/re-entry and revise a carrier chart, so all three read-only CRPM pilot roles are mandatory before governing synthesis.",
+    "level": "L4+",
+    "fixedFrame": "The exact source-bound finite one-command audit under thin_visible_duel_v0@2, with D2Q as immutable command-gate provenance and no world, product or placement promotion.",
+    "requiredRoles": [
+      "crpm_route_tracer",
+      "crpm_covariance_auditor",
+      "crpm_reentry_reviewer"
+    ],
+    "requiredPerRoleReturnFields": [
+      "bound current HEAD and exact source paths plus a per-role boundIdentities object containing source commit/tree/source digest; result commit/tree; result/report modes, blobs and Git-byte SHA-256; result semantic/parity digests; source-to-result and entry-to-result range digests; and immutable Stage B result commit/digest",
+      "claim status and strongest licensed claim",
+      "support overlap and evidence-independence class",
+      "preserved, forgotten, newly visible and residual fields",
+      "disagreements, false-promotion findings and reopening conditions",
+      "HT10 and HT11 obligation status"
+    ],
+    "requiredGoverningSynthesisFields": [
+      "current HEAD and source basis",
+      "pilot activation decision and reason",
+      "level, cut/stance, protected family and fixed frame",
+      "per-agent findings and evidence overlap",
+      "historical-status drift",
+      "evidence-independence class for every combined support path",
+      "committed exact-composition status",
+      "preserved, forgotten, newly visible and residual fields",
+      "disagreements and false-promotion findings",
+      "HT10-HT11 transfer-back status by obligation",
+      "stop/reopen decision for projected readout, P3, HT8, learned support formation and successor world",
+      "strongest licensed claim and explicit non-claims"
+    ],
+    "evidenceOverlap": "correlated_reuse",
+    "agreementRule": "Independent reviewer routes improve falsification and recoverability but reuse the same committed facts; agreement is not empirical independence or a vote.",
+    "exactStageCArtifactAtSourceHead": "absent",
+    "committedSealedCompositionAtSourceHead": "absent",
+    "strongestPreimplementationClaim": "support_qualified",
+    "historicalStatusDrift": "Stage B correctly stopped with W absent and Tau candidate_unlicensed. Stage C may revise those prospective fields only through this exact source-bound reconstruction; historical Stage B bytes remain unchanged.",
+    "HT10": "Independent reconstruction is opened only for this bounded audit; no result is accepted before exact match, negative retention and destructive controls pass.",
+    "HT11": "Transfer-back/re-entry remains stopped until every Tau obligation passes; even a pass licenses only bounded Stage C re-entry and no successor world execution.",
+    "stopDecisions": {
+      "projectedReadout": "thin-only completeness claim stopped",
+      "P3": "not opened or changed",
+      "HT8": "no positive history-recovery claim beyond immutable provenance",
+      "learnedSupportFormation": "not opened",
+      "successorWorld": "closed"
+    },
+    "nonClaims": [
+      "empirical independence",
+      "global carrier choice",
+      "recursive closure",
+      "product authority",
+      "mathematical placement",
+      "P5"
+    ],
+    "actualEntryReturns": {
+      "completedBeforeSourceEdits": true,
+      "commonSourceBasis": {
+        "wormsHead": "6e47d42b691effe5d34c5c050302def40ae40181",
+        "wormsTree": "098d17d9d2598406a0c1a9222c07bd94f5c29aab",
+        "crpmMethodHead": "8c64353f4c8f5504af3e30ca175d9422ca7ae608",
+        "crpmMethodTree": "2f12aa11b796231a33540ca02b6081035b6e1751",
+        "stageBResultCommit": "d340a2286598a1fd399dfa23ba55426185f0e96d",
+        "stageBResultDigest": "db073dfe67e0687253fe284832b45fad051b463edfd2e8ac9d3fb862b86c3a11"
+      },
+      "returns": [
+        {
+          "taskId": "/root/stage_c_route_trace",
+          "role": "crpm_route_tracer",
+          "claimStatus": "support_qualified",
+          "implementationPath": "reconstruction_independent",
+          "evidenceClass": "correlated_reuse",
+          "findings": [
+            "Independently parsed committed result bytes without the Stage B builder or authority and matched 274 endpoints, 9 source classes, 7 aliased classes, all 7,378 pair identities and outcome counts 0/1,099/14/2,983/3,282.",
+            "Matched the exact depth/pre-budget/post-budget cross-tab, all 1,113 target-relevant pairs as unequal pre-budget, and zero same-depth or equal-pre-budget target-relevant pairs.",
+            "Q_support retained 6,265 equal-candidate pairs with zero K_target failures; thin-plus-admissibility retained 6,279 equal-candidate pairs with zero command failures and 14 continuation failures.",
+            "The authenticated execution W can be present, J_W can be complete only for K_target, and Tau remains candidate_unlicensed at source HEAD."
+          ],
+          "scopeWarning": "thin_visible_duel_v0@2 remains incomplete; no recursive, all-seed, wider-domain or global carrier claim is licensed.",
+          "HT10": "opened_for_bounded_reconstruction_only",
+          "HT11": "stopped_pending_durable_result_and_review"
+        },
+        {
+          "taskId": "/root/stage_c_covariance",
+          "role": "crpm_covariance_auditor",
+          "claimStatus": "support_qualified",
+          "implementationPath": "reconstruction_independent",
+          "evidenceClass": "correlated_reuse",
+          "findings": [
+            "Reproduced the same exact reconstruction facts and source/result digests through an independent implementation route.",
+            "Every atomic mathematical fact and every pilot agreement is correlated_reuse; no empirically_independent evidence pair exists.",
+            "Depth 2 -> pre 48 -> post 40 -> accepted, depth 4 -> pre 32 -> post 24 -> accepted, and depth 8 -> pre 0 -> post 0 -> rejected are perfectly co-formed in this finite source.",
+            "Q_support is bounded and nonunique, carrier/provenance/re-entry roles must remain split, no exact Stage C artifact exists at source HEAD, and the strongest entry claim is support_qualified."
+          ],
+          "scopeWarning": "Perfect co-formation and reviewer agreement do not license causation, minimality, empirical-weight or placement promotion.",
+          "HT10": "opened_for_bounded_reconstruction_only",
+          "HT11": "stopped_pending_durable_result_and_review"
+        },
+        {
+          "taskId": "/root/stage_c_reentry",
+          "role": "crpm_reentry_reviewer",
+          "claimStatus": "support_qualified",
+          "implementationPath": "reconstruction_independent",
+          "evidenceClass": "correlated_reuse",
+          "findings": [
+            "Independently matched the exact Stage B result and identified that K_target excludes exact state and route history while 2,983 Q_support-equal pairs retain provenance differences.",
+            "Thin-plus-depth induces the same finite partition as thin-plus-budget and therefore witnesses nonuniqueness rather than a privileged carrier.",
+            "Observed 15 exact-digest convergences, 2,968 persistent exact-digest differences and 3,282 negative history-recovery controls inside the relevant exact-state/history audit.",
+            "Tau and landfall cannot pass without a committed return; one command is not an induced recursive update; reviewer agreement adds no empirical weight.",
+            "Recommended only a separately preregistered longer-horizon successor-congruence test, with no execution."
+          ],
+          "scopeWarning": "Exact provenance recovery and finite target sufficiency do not themselves establish re-entry admission, recursive closure, global carrier status or landfall.",
+          "HT10": "opened_for_bounded_reconstruction_only",
+          "HT11": "stopped_pending_durable_result_and_review"
+        }
+      ],
+      "evidenceOverlap": {
+        "atomicFacts": "correlated_reuse",
+        "reviewerAgreement": "correlated_reuse",
+        "implementationPaths": "reconstruction_independent",
+        "empiricallyIndependentPairs": 0,
+        "rule": "Independent reconstruction paths improve falsifiability and recoverability only; they do not increase empirical weight."
+      },
+      "disagreement": {
+        "substantive": "none",
+        "preservedScopeWarning": "The route return used bounded live carrier while the covariance/re-entry returns preferred candidate live coordinate.",
+        "resolution": "Classify pre-command movementRemaining as a target-relative, nonunique live_carrier only inside the exact finite K_target frame; do not promote it to a public, global, unique-minimal or recursive carrier."
+      },
+      "historicalStatusDrift": "Stage A/B closed, W-absent, not-evaluated witness-interface and Tau-candidate-unlicensed fields remain valid historical stops. The existing Stage B execution now permits Stage C to derive a present execution W, but no historical artifact is rewritten and admission remains pending until a fresh committed review return.",
+      "fieldLedger": {
+        "preserved": [
+          "D2Q four-case command-gate readouts and actor/expectedTurn verdict provenance",
+          "thin-cut active actor, unit positions and visible Stitching projection",
+          "all committed Stage B endpoint, pair, outcome, cross-tab and route-provenance records",
+          "correlated_reuse evidence classification and closed governance gates"
+        ],
+        "forgottenByThinCut": [
+          "pre/post movementRemaining",
+          "revision",
+          "route history",
+          "exact pre/post state digest"
+        ],
+        "newlyVisibleAtEntry": [
+          "nine thin source classes and seven aliased classes",
+          "1,113 target-relevant alias splits all aligned with unequal pre-command budget",
+          "bounded nonunique Q_support and command-only thin-plus-admissibility candidates",
+          "route-depth and movement-budget co-formation"
+        ],
+        "residual": [
+          "longer-horizon successor congruence",
+          "wider routes, actions, seeds and worlds",
+          "public/player formation and timing",
+          "causation, global or unique minimality",
+          "recursive continuation closure"
+        ]
+      },
+      "falsePromotionFindings": [
+        "Revision, route-history or exact-state-digest inequality alone cannot certify a continuation-bearing live carrier.",
+        "Thin-plus-depth matching the finite Q_support partition defeats any unique-minimality inference.",
+        "Complete evidence for K_target is not completeness of the thin cut.",
+        "One-command implication is not induced recursive-update closure.",
+        "Reviewer agreement is not empirically independent evidence.",
+        "Authority-readable or reconstructible support is not player-public formation.",
+        "No Tau license or landfall exists without a committed reviewed return."
+      ],
+      "transferBackStatus": {
+        "HT10": "opened_only_for_the_exact_bounded_independent_reconstruction",
+        "HT11": "stopped_pending_durable_result_fresh_three_role_review_and_review_return",
+        "P3": "closed",
+        "HT8": "closed_except_recoverable_provenance",
+        "learnedSupportFormation": "closed"
+      },
+      "stopReopenDecisions": {
+        "thinProjectedReadoutAsCompleteCarrier": "stopped",
+        "stageCReconstruction": "opened_at_exact_entry_boundary",
+        "navigatorAdmission": "pending",
+        "successorRecommendation": "may_be_derived_only_from_result_residue",
+        "successorWorldExecution": "closed",
+        "reopeningCondition": "a new preregistration or an explicit source, cut, frame, target, domain or horizon change followed by fresh review"
+      },
+      "strongestLicensedClaim": "support_qualified: the exact committed Stage B result supports a bounded independent Stage C reconstruction and candidate target-relative thin-plus-pre-budget sufficiency test; it does not yet admit navigator re-entry or license Tau.",
+      "explicitNonClaims": [
+        "empirical independence",
+        "causation",
+        "global or unique minimality",
+        "all-seed or wider-domain closure",
+        "recursive continuation closure",
+        "public or player formation",
+        "landfall",
+        "ProductAuthority",
+        "mathematical placement",
+        "P5 or successor execution"
+      ]
+    }
+  },
+  "reviewReturnContract": {
+    "path": "docs/evidence/wp-015d2r-stage-c-v1/review-return.json",
+    "creationGate": "Create only after the result and report are committed and their exact commit, blobs, semantic digest, parity and entry-to-result range have been independently audited. Do not create the review return in the source or result commit.",
+    "preReviewResultState": {
+      "semanticReconstructionReadiness": "ready_for_committed_review; source/authentication/semantic hard-gate failure stops before result/report reservation and is retained in WP-015D2U instead of publishing a not_ready result",
+      "navigatorAdmission": "pending",
+      "tauStatus": "candidate_unlicensed",
+      "chartStatus": "candidate_revision_pending_review"
+    },
+    "requiredDecisionInputs": [
+      "committed source/result/report identities and exact Git bytes",
+      "semantic reconstruction and destructive-control verdicts",
+      "staged executable/result/report parity",
+      "entry-to-result exact changed-path/status/mode/blob audit",
+      "three actual read-only pilot returns and governing synthesis",
+      "candidate chart, carrier roles, residue and reopening conditions",
+      "all closed product, placement, player, gameplay, P5 and successor gates"
+    ],
+    "freshPostResultPilotAudit": {
+      "required": true,
+      "binding": "The audit must bind the actual committed Stage C source, result and report commits, trees, blobs, semantic/parity/range digests and the unchanged predecessor boundary.",
+      "roles": [
+        "crpm_route_tracer",
+        "crpm_covariance_auditor",
+        "crpm_reentry_reviewer"
+      ],
+      "recordingRule": "Embed the actual reviewer-authored structured returns or their exact digest-bound substance inside review-return.json before any admission decision. Role names, templates, expected findings, this entry audit, or machine-derived defaults cannot substitute for fresh reviewer input.",
+      "agreementRule": "Preserve disagreements and scope warnings; do not use majority vote or agreement to increase empirical weight.",
+      "absenceEffect": "navigatorAdmission remains pending or not_admitted and Tau remains candidate_unlicensed"
+    },
+    "passState": {
+      "semanticReconstructionReadiness": "ready_for_committed_review",
+      "navigatorAdmission": "reviewed_bounded",
+      "tauStatus": "licensed_for_bounded_stage_c_reentry_only",
+      "chartStatus": "reviewed_bounded",
+      "successor": "recommendation_only_or_explicit_stop",
+      "successorWorldExecution": "closed"
+    },
+    "failureState": {
+      "navigatorAdmission": "not_admitted",
+      "tauStatus": "candidate_unlicensed",
+      "chartStatus": "not_accepted",
+      "successorWorldExecution": "closed"
+    }
+  },
+  "outputContract": {
+    "allowedOutputs": [
+      "docs/evidence/wp-015d2u.json",
+      "docs/planning/wp-015d2r-stage-c-independent-reconstruction-and-chart-revision-contract-v1.md",
+      "analysis/crpm_world/navigation/wp-015d2r-stage-c-reconstruction-registration-v1.json",
+      "analysis/crpm_world/navigation/reconstruct-wp-015d2r-stage-c-return-v1.ts",
+      "scripts/run-wp-015d2r-stage-c-return-v1.ts",
+      "tests/crpm-world/wp-015d2r-stage-c-return-v1.test.ts",
+      "docs/evidence/wp-015d2r-stage-c-v1/result.json",
+      "docs/planning/wp-015d2r-stage-c-independent-reconstruction-and-chart-revision-report-v1.md",
+      "docs/evidence/wp-015d2r-stage-c-v1/review-return.json"
+    ],
+    "sourceOutputs": [
+      "docs/evidence/wp-015d2u.json",
+      "docs/planning/wp-015d2r-stage-c-independent-reconstruction-and-chart-revision-contract-v1.md",
+      "analysis/crpm_world/navigation/wp-015d2r-stage-c-reconstruction-registration-v1.json",
+      "analysis/crpm_world/navigation/reconstruct-wp-015d2r-stage-c-return-v1.ts",
+      "scripts/run-wp-015d2r-stage-c-return-v1.ts",
+      "tests/crpm-world/wp-015d2r-stage-c-return-v1.test.ts"
+    ],
+    "resultOutputs": [
+      "docs/evidence/wp-015d2r-stage-c-v1/result.json",
+      "docs/planning/wp-015d2r-stage-c-independent-reconstruction-and-chart-revision-report-v1.md"
+    ],
+    "reviewReturnOutputs": [
+      "docs/evidence/wp-015d2r-stage-c-v1/review-return.json"
+    ],
+    "requiredStatus": "A",
+    "requiredMode": "100644",
+    "existingPathChangesAllowed": false,
+    "lifecycle": {
+      "sourceStage": "From entry commit to source commit, add exactly all six sourceOutputs as A/100644; resultOutputs and reviewReturnOutputs remain absent.",
+      "resultStage": "From source commit to result commit, add exactly both resultOutputs as A/100644; all sourceOutputs remain byte-identical and the review return remains absent.",
+      "reviewReturnStage": "From result commit to review-return commit, add exactly the one reviewReturnOutputs path as A/100644 after committed-result/range/parity/three-role review; all earlier outputs remain byte-identical.",
+      "terminalCloseoutStage": "From review-return commit to terminal commit, modify only docs/evidence/wp-015d2u.json as M/100644 to record the committed review return and completed checks; every other allowed output remains byte-identical.",
+      "failureBeforeResultReservation": "Any source authentication, frame, reconstruction, negative-retention, witness or candidate-chart hard-gate failure stops before creating either result output. Retain the failure in command/test evidence and docs/evidence/wp-015d2u.json; do not publish a not_ready result/report pair.",
+      "entryToTerminalEndpoint": "Relative to 6e47d42b691effe5d34c5c050302def40ae40181, exactly all nine allowedOutputs must be A/100644. No other endpoint path may change.",
+      "intermediateStatusRule": "docs/evidence/wp-015d2u.json is A in the source commit and M only in the terminal closeout; source contract, registration, reconstructor, runner and test are A only at source; result and report are A only at result; review return is A only after result review. Renames, deletes, copies with rename status, type changes, nonregular modes and any undeclared path are forbidden."
+    },
+    "ignoredOrRawOutputsAllowed": [],
+    "baseCommit": "6e47d42b691effe5d34c5c050302def40ae40181"
+  },
+  "validationContract": {
+    "strictJson": "Reject duplicate JSON keys, endpoint IDs, class identities, pair IDs, cross-tab rows, source bindings, output paths, chart rows and carrier-field rows.",
+    "sourceAuthentication": "Read every bound file from its exact Git object, check commit/tree/path/mode/blob/Git-byte SHA-256, and reject mutable working-tree substitution.",
+    "exactReconstruction": "Derive and compare endpoint/class/pair/outcome/cross-tab/constraint/candidate/witness/chart facts without the forbidden Stage B helper or authority.",
+    "destructiveControls": [
+      "mutate one endpoint identity or count",
+      "mutate one source-class membership",
+      "mutate one pair identity or outcome",
+      "mutate one cross-tab count",
+      "mutate one pre-command movementRemaining relation",
+      "introduce a same-depth or equal-pre-budget target-relevant row",
+      "introduce a Q_support K_target counterexample",
+      "erase a Q_command continuation-support counterexample",
+      "mutate one provenance binding",
+      "mutate one witness-state dimension",
+      "fail one Tau obligation",
+      "mutate one chart role or output path"
+    ],
+    "parity": "Apply staged parity: source contract/registration/in-progress evidence and output lifecycle; executable/result/report semantic reconstruction with readiness derived but admission pending and Tau unlicensed; committed result/report/review-return governance decision with actual pilot synthesis; then review-return/final-evidence closeout. Never let an earlier stage self-attest a later-stage decision.",
+    "stagedParity": {
+      "source": "Contract, registration, in-progress evidence, reconstructor, runner and test agree on source identities, fixed frame, forbidden boundary, formulas, output lifecycle and closed gates.",
+      "result": "Executable, committed machine result and compact report agree on reconstructed counts/digests, W/Omega/P/N/J, candidates, roles, candidate chart, residue, conditional recommendation/stop and semanticReconstructionReadiness; navigatorAdmission remains pending and Tau candidate_unlicensed.",
+      "reviewReturn": "Committed result/report and review return agree on exact identities/range/parity, actual three-role synthesis, every semantic/review obligation, reviewed_bounded admission or failure, Tau license or nonlicense, reviewed chart and successor stop.",
+      "terminalEvidence": "The review return and completed WP-015D2U evidence agree on source/result/review identities, checks, decisions, residue and closed gates; the terminal commit identity is verified externally rather than self-attested."
+    },
+    "rangeAudit": "From 6e47d42b691effe5d34c5c050302def40ae40181 through source, result, review-return and terminal commits, bind every changed path/status/mode/blob at endpoints and every intermediate commit. Entry-to-terminal endpoint rows are exactly nine A/100644 paths. Intermediate evidence is A then terminal M; source files are source-stage A only; result/report are result-stage A only; review return is review-stage A only. Reject undeclared paths, deletes, renames, copies with rename status, type changes, nonregular modes and prohibited-owner changes.",
+    "governedChecks": [
+      "focused Stage C contract and destructive tests",
+      "npm run check:crpm-world-types",
+      "affected bounded canonical validation lineage without Stage B or calibration replay",
+      "npm run check:compliance",
+      "npm run build",
+      "git diff --check",
+      "three-role read-only CRPM pilot and identified committed source/result/boundary reviews"
+    ],
+    "acceptedValidationGap": {
+      "date": "2026-08-30",
+      "aggregateInvocation": "node --import tsx --test tests/crpm-world/wp-015d2r-stage-c-return-v1.test.ts",
+      "topLevelTestCount": 32,
+      "nestedDestructiveScenarioLowerBound": 500,
+      "elapsedBeforeTermination": "PT2H35M53S",
+      "observedState": "responsive_continuously_cpu_bound_stable_memory_no_tap_emitted",
+      "disposition": "interrupted_no_tap_user_accepted_incomplete_aggregate_coverage",
+      "notAClaim": "The aggregate suite did not pass and must not be reported as passed.",
+      "retainedEvidence": [
+        "npm run check:crpm-world-types passed",
+        "npm run check:work-packages passed",
+        "independent static/source re-review passed",
+        "registration boundary targeted controls passed 2/2",
+        "D2Q, Omega, result and review destructive targeted controls passed 6/6",
+        "admitted and blocked review targeted paths passed 2/2",
+        "earlier targeted reconstruction, lifecycle, range, parity, witness, carrier, Tau and chart controls passed"
+      ],
+      "evidenceClass": "correlated_reuse_with_explicit_coordinator_waiver",
+      "reopeningConditions": [
+        "repair the aggregate-suite runtime and rerun all 32 top-level tests",
+        "any Stage C source byte changes after the source commit",
+        "reuse outside the exact bounded Stage C re-entry decision"
+      ]
+    }
+  },
+  "governedStop": {
+    "condition": "The source-bound Stage C implementation is committed; the no-authority reconstruction has produced a separately committed result and compact report with semantic readiness derived, admission pending and Tau unlicensed; a distinct committed review return then records exact range/parity and actual three-role synthesis and alone may admit bounded re-entry/license Tau; final evidence closeout modifies only WP-015D2U; and no successor execution has opened.",
+    "stopStatement": "WP-015D2R Stage C stopped; no successor world execution opened.",
+    "productAuthority": "none",
+    "mathematicalPlacementImplication": "none",
+    "playerObservationTiming": "closed",
+    "gameplayChange": false,
+    "p5": "closed",
+    "successorWorldExecution": "closed"
+  }
+}

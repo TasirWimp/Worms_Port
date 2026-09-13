@@ -1,0 +1,449 @@
+{
+  "schemaVersion": 1,
+  "packageId": "WP-015D2Q",
+  "childId": "WPV4-COMMAND-01A",
+  "parentFamilyId": "WPV4-COMMAND-01",
+  "ownerRepository": "Worms_Port",
+  "operationalLane": 2,
+  "productAuthority": "none",
+  "mathematicalPlacementImplication": "none",
+  "sourceBasis": {
+    "wormsBaseCommit": "3a3cca8c720f89251cad56029b9f7b1c69d87146",
+    "wormsBaseTree": "6faac9c6ac1a045280aa263de1d086527b8fd958",
+    "crpmFrozenCommit": "c9bf511f67ffbe518cd9f9603916bb26e1527736",
+    "crpmContract": {
+      "commit": "b66036e9184612ee7b70d2412e0620ba16665093",
+      "path": "docs/architecture/definition_target_admission/CRPM_Definition_Target_Placement_Unit_Contract_v0.md",
+      "blob": "7b672e603d86e9d85bf7b95dcc80dcdb9b6ffbae",
+      "sha256": "c38a3b9908e427e68d499be1e8b2d8661b8c45585c7aa45c594e3e2d68821508"
+    },
+    "coordinationReturn": {
+      "commit": "c9bf511f67ffbe518cd9f9603916bb26e1527736",
+      "path": "docs/architecture/definition_target_admission/returns/DTAP-WP_Documentation_Coordination_Return_2026-08-28_v0.yaml",
+      "blob": "b1ea9bcb321a0062ceedf3c8ce6189f64e7406f4"
+    },
+    "reviewAttachmentSha256": "fef9cf091eb853a8c3c012a7cc353c8a20ff1a0750cb587ac2c692e60c808501"
+  },
+  "remotePublicationStatus": {
+    "CRPMDocumentationBranch": "pushed",
+    "WormsDocumentationBranch": "pushed",
+    "semanticEffect": "none",
+    "evidenceEffect": "none"
+  },
+  "fixedContext": {
+    "world": {
+      "repository": "Worms_Port",
+      "ruleset": "nimble-knots-artillery-v4",
+      "seed": 3237998097,
+      "calling": "wizard"
+    },
+    "cut": {
+      "authority": {
+        "id": "authority_v4",
+        "version": 2
+      },
+      "childObservation": "d2q-command-declaration@1"
+    },
+    "target": {
+      "id": "T_COMMAND",
+      "readoutFields": [
+        "accepted",
+        "mutated",
+        "error",
+        "preStateDigest",
+        "postStateDigest",
+        "eventsDigest",
+        "authoritativeEvents",
+        "revision",
+        "playerX",
+        "movementRemaining"
+      ]
+    },
+    "domain": {
+      "caseIds": [
+        "CMD-VALID-01",
+        "CMD-TURN-01",
+        "CMD-ACTOR-01",
+        "CMD-PRECEDENCE-01"
+      ],
+      "caseSetDeclaredComplete": false,
+      "completeOnlyWithin": "The four registered declarations; not all commands or states."
+    },
+    "routes": {
+      "formation": "createSimulation(seed, calling, V4_RULESET_ID)",
+      "perCase": [
+        "fresh initialization",
+        "one adapter-mediated move direction 1"
+      ]
+    },
+    "horizon": {
+      "authorityCallsPerCase": 1,
+      "tickAdvances": 0,
+      "networkScheduling": "excluded",
+      "playerObservation": "excluded"
+    },
+    "support": {
+      "initialTurn": 0,
+      "initialActiveActor": "player",
+      "initialPhase": "awaiting_command",
+      "initialRevision": 0,
+      "authoritySource": "shared/simulation.ts",
+      "actualCommandInputs": [
+        "actor",
+        "expectedTurn",
+        "command"
+      ],
+      "formationWitness": "public deterministic initialization; no hand-edited state"
+    },
+    "tolerance": {
+      "comparison": "exact canonical JSON and SHA-256; no numeric tolerance"
+    },
+    "oracleInputBoundary": {
+      "decoderInputs": [
+        "world",
+        "initialStateDigest",
+        "command",
+        "retained actor/expectedTurn coordinates"
+      ],
+      "excludedDecoderInputs": [
+        "caseId",
+        "requestId",
+        "requestDigest",
+        "edgeId",
+        "witnessId",
+        "deduplicationIdentity",
+        "omitted-coordinate provenance",
+        "hidden executor state"
+      ],
+      "observationRule": "Case IDs identify evidence rows outside the projection; class keys use only the projected value."
+    }
+  },
+  "requestTemplate": {
+    "schemaVersion": 2,
+    "requestVersion": 2,
+    "profileVersion": 2,
+    "adapter": {
+      "id": "v4_authority",
+      "version": 2
+    },
+    "baseline": {
+      "kind": "ruleset",
+      "id": "nimble-knots-artillery-v4",
+      "version": 4,
+      "calling": "wizard"
+    },
+    "scenarioDomain": {
+      "schemaVersion": 1,
+      "scenarioIds": [
+        "v4-authority-c0ffee11"
+      ],
+      "actionFamilies": [
+        "move"
+      ],
+      "policyFamilies": [
+        "declared-command-sequence"
+      ],
+      "seeds": [
+        3237998097
+      ],
+      "constraints": [
+        "Each D2Q request starts independently from the same public V4 initialization.",
+        "Exactly one move direction 1; no tick advancement, network scheduling, UI or player observation."
+      ]
+    },
+    "cut": {
+      "id": "authority_v4",
+      "version": 2
+    },
+    "protectedFamily": [
+      "The canonical V4 authority state remains recoverable by its source reference and digest.",
+      "Command acceptance, mutation, state, events, and error remain owned by shared/simulation.ts."
+    ],
+    "seeds": [
+      3237998097
+    ],
+    "outputDetailLevel": "witnesses",
+    "mandatoryEvidenceProbes": [
+      "v4.accepted_commands",
+      "v4.rejected_commands",
+      "v4.mutated_commands",
+      "v4.event_count"
+    ],
+    "optionalDisplayedScalarProbes": [],
+    "requestedPorts": [
+      "analysis-result",
+      "authority-transition",
+      "transition-witness",
+      "projection-evidence",
+      "replay-evidence",
+      "diagnostic-profile",
+      "scalar-probes",
+      "residual-ledger"
+    ],
+    "activation": "offline_only",
+    "explicitExclusions": [
+      "No gameplay, protocol, replay ABI, client, server, reward, asset or dependency change.",
+      "No aim/fire, ticks, wall-clock timing, network scheduling, player observation or playtest.",
+      "No empirical independence, global carrier minimality, CRPM placement, P5 or D2O authority-gate completion."
+    ]
+  },
+  "cases": [
+    {
+      "caseId": "CMD-VALID-01",
+      "requestId": "d2q-cmd-valid-01",
+      "step": {
+        "sequence": 0,
+        "kind": "command",
+        "actor": "player",
+        "expectedTurn": 0,
+        "command": {
+          "type": "move",
+          "direction": 1
+        }
+      },
+      "sourcePrediction": "accepted_move"
+    },
+    {
+      "caseId": "CMD-TURN-01",
+      "requestId": "d2q-cmd-turn-01",
+      "step": {
+        "sequence": 0,
+        "kind": "command",
+        "actor": "player",
+        "expectedTurn": 1,
+        "command": {
+          "type": "move",
+          "direction": 1
+        }
+      },
+      "sourcePrediction": "LATE_TURN"
+    },
+    {
+      "caseId": "CMD-ACTOR-01",
+      "requestId": "d2q-cmd-actor-01",
+      "step": {
+        "sequence": 0,
+        "kind": "command",
+        "actor": "loomkeeper",
+        "expectedTurn": 0,
+        "command": {
+          "type": "move",
+          "direction": 1
+        }
+      },
+      "sourcePrediction": "NOT_YOUR_TURN"
+    },
+    {
+      "caseId": "CMD-PRECEDENCE-01",
+      "requestId": "d2q-cmd-precedence-01",
+      "step": {
+        "sequence": 0,
+        "kind": "command",
+        "actor": "loomkeeper",
+        "expectedTurn": 1,
+        "command": {
+          "type": "move",
+          "direction": 1
+        }
+      },
+      "sourcePrediction": "LATE_TURN"
+    }
+  ],
+  "ablations": [
+    {
+      "ablationId": "ABL-ACTOR",
+      "omittedFieldIds": [
+        "actor"
+      ],
+      "rentScope": "declared_target",
+      "primaryPair": [
+        "CMD-VALID-01",
+        "CMD-ACTOR-01"
+      ],
+      "equalityControl": [
+        "CMD-TURN-01",
+        "CMD-PRECEDENCE-01"
+      ]
+    },
+    {
+      "ablationId": "ABL-EXPECTED-TURN",
+      "omittedFieldIds": [
+        "expectedTurn"
+      ],
+      "rentScope": "declared_target",
+      "primaryPair": [
+        "CMD-VALID-01",
+        "CMD-TURN-01"
+      ],
+      "errorOnlyControl": [
+        "CMD-ACTOR-01",
+        "CMD-PRECEDENCE-01"
+      ]
+    }
+  ],
+  "expectedPrecedencePair": [
+    "CMD-ACTOR-01",
+    "CMD-PRECEDENCE-01"
+  ],
+  "sourceBindings": [
+    {
+      "path": "shared/simulation.ts",
+      "commit": "3a3cca8c720f89251cad56029b9f7b1c69d87146",
+      "blob": "c9279c6f3b5d708ad0e54d32d2dca6d97234b4c0",
+      "mode": "100644",
+      "sha256": "4f559090e41ef0428e9a6e5795f5ad666dbb780981283ebdc34dd7b93e392fb2"
+    },
+    {
+      "path": "analysis/crpm_world/adapters/v4-authority-adapter.ts",
+      "commit": "3a3cca8c720f89251cad56029b9f7b1c69d87146",
+      "blob": "c7a7179ed49ab7c81ebb8da6ee7004ae7c15eee0",
+      "mode": "100644",
+      "sha256": "ebc2b7019e5005973102bf99b841efe841a7899c2eac4e02ee47f892ee52a782"
+    },
+    {
+      "path": "analysis/crpm_world/design-port/validate-request.ts",
+      "commit": "3a3cca8c720f89251cad56029b9f7b1c69d87146",
+      "blob": "3cd3fc73299b1b057b86dff28cb777ce369845c2",
+      "mode": "100644",
+      "sha256": "31c2a2b6afefd4a0191de7d6961a4711ae786c68cad88884de7b0db4f7873971"
+    },
+    {
+      "path": "analysis/crpm_world/design-port/execute-request.ts",
+      "commit": "3a3cca8c720f89251cad56029b9f7b1c69d87146",
+      "blob": "e9a45b50b48772de967dfbcc53f98393adf88dc7",
+      "mode": "100644",
+      "sha256": "b1fd0d60039347578bc787038121f6bcb0d3ea1c8643cc9bf3da1593ce8ec499"
+    },
+    {
+      "path": "analysis/crpm_world/canonical.ts",
+      "commit": "3a3cca8c720f89251cad56029b9f7b1c69d87146",
+      "blob": "f52effc9560d9cc2fb2227080208f4e99a58ca52",
+      "mode": "100644",
+      "sha256": "df093ac1934f4ed88ba02986399b09276c2a696e55c8f415a3bd6018767d5e67"
+    },
+    {
+      "path": "analysis/crpm_world/implementation-lock.ts",
+      "commit": "3a3cca8c720f89251cad56029b9f7b1c69d87146",
+      "blob": "a6ab137033ab9f371d6e47cb3cf2ffbdd232df45",
+      "mode": "100644",
+      "sha256": "03b4a0315001b4bb97cb3627461c83f5db3b265310fe045d9b9a7d7bc42ad8bb"
+    },
+    {
+      "path": "analysis/crpm_world/cuts/v4-cuts.ts",
+      "commit": "3a3cca8c720f89251cad56029b9f7b1c69d87146",
+      "blob": "769d6fc2ca689eeedfe9bba680b9d24aa37fc67e",
+      "mode": "100644",
+      "sha256": "0e404a6316630ee12203889bf9c2ea97357865a12832a1252f5b1c2274f2a3f2"
+    },
+    {
+      "path": "docs/evidence/wp-015d2b-implementation-lock.json",
+      "commit": "3a3cca8c720f89251cad56029b9f7b1c69d87146",
+      "blob": "d80cf2f792088bc78eeaa947564e4cc967bec61c",
+      "mode": "100644",
+      "sha256": "a716fd453e5e670e9055e52227d62c5059ebd8d2e6c9c8d57c288ffde706f9cc"
+    },
+    {
+      "path": "docs/evidence/wp-015d2e-implementation-lock.json",
+      "commit": "3a3cca8c720f89251cad56029b9f7b1c69d87146",
+      "blob": "d0668988d445f1bc7c31b9277fb07e19b919c60c",
+      "mode": "100644",
+      "sha256": "8a3fe9a2bca9348f3635721001c92fafcd154d9a878cc030f3c20ba69a26bbd3"
+    },
+    {
+      "path": "docs/planning/wp-015d2p-v4-observation-pressure-contract.md",
+      "commit": "3a3cca8c720f89251cad56029b9f7b1c69d87146",
+      "blob": "c7b5d1adf6759f8f1ca0a26ccce49009ba03fa19",
+      "mode": "100644",
+      "sha256": "d060aa18c0ee575ec87ed53c1e90f83feed1517eca7068a054aae24afea325f5"
+    },
+    {
+      "path": "docs/evidence/wp-015d2p.json",
+      "commit": "3a3cca8c720f89251cad56029b9f7b1c69d87146",
+      "blob": "e64ba67656733b6f64536883a95312f14f1328a7",
+      "mode": "100644",
+      "sha256": "54e9b95e9c8629010b476e027e9bd36b664a0a9a8c6605ba146feb96c47611fd"
+    },
+    {
+      "path": "docs/evidence/wp-015d2o.json",
+      "commit": "3a3cca8c720f89251cad56029b9f7b1c69d87146",
+      "blob": "d2b121e9045f46b58423c5c7c222630518749f4b",
+      "mode": "100644",
+      "sha256": "17956c46cef5d57ef697989466bc8eaa64f72d96fb38567803348365b0ee42d8"
+    },
+    {
+      "path": "docs/process/crpm-world-operational-governance.md",
+      "commit": "3a3cca8c720f89251cad56029b9f7b1c69d87146",
+      "blob": "7e95b14b8d07e608d83c7716026c61330370ebc6",
+      "mode": "100644",
+      "sha256": "146c28c871a990aa4b88b30fa653591f18ed81dcc28f66a3b9cd0bc8d42e1152"
+    },
+    {
+      "path": "legal/source-manifest.json",
+      "commit": "3a3cca8c720f89251cad56029b9f7b1c69d87146",
+      "blob": "fcec6f7591942b8e49aebab73f1cb9e41e303c1e",
+      "mode": "100644",
+      "sha256": "1ea52484c34dcbe47b63429fe35fee16b077acc0d066bff60ea30331af30c64d"
+    },
+    {
+      "path": "package-lock.json",
+      "commit": "3a3cca8c720f89251cad56029b9f7b1c69d87146",
+      "blob": "ff3987b1224d4160a0b25fffe7952cce3364b880",
+      "mode": "100644",
+      "sha256": "d4dac6ae09a3d2f6c5a7eaa11520bac43f1628320c5331575bcf1e1857073d73"
+    },
+    {
+      "path": "package.json",
+      "commit": "3a3cca8c720f89251cad56029b9f7b1c69d87146",
+      "blob": "1bdf5c92f51b0b74a938028b8509f4c09137a442",
+      "mode": "100644",
+      "sha256": "024574d4ba804386894d1b742d3cdec83ce0ad48a96e0f605c259fdba4d3bf1c"
+    }
+  ],
+  "allowedOutputs": [
+    "docs/evidence/wp-015d2q.json",
+    "docs/planning/wp-015d2q-v4-command-gate-pressure-contract.md",
+    "analysis/crpm_world/navigation/v4-command-gate-registration.json",
+    "analysis/crpm_world/navigation/assess-v4-command-gates.ts",
+    "scripts/run-v4-command-gate-pressure.ts",
+    "tests/crpm-world/v4-command-gate-pressure.test.ts",
+    "docs/planning/wp-015d2q-v4-command-gate-pressure-report.md",
+    "docs/evidence/wp-015d2q/review-return.json",
+    "docs/planning/implementation_plan.md",
+    "docs/planning/wp-015d2g-relational-gameplay-navigation-review.md",
+    "analysis/crpm_world/README.md"
+  ],
+  "implementationPaths": [
+    "analysis/crpm_world/navigation/v4-command-gate-registration.json",
+    "analysis/crpm_world/navigation/assess-v4-command-gates.ts",
+    "scripts/run-v4-command-gate-pressure.ts",
+    "tests/crpm-world/v4-command-gate-pressure.test.ts"
+  ],
+  "outputRoot": "test-results/crpm-world/d2q-v4-command-gates",
+  "reportPath": "docs/planning/wp-015d2q-v4-command-gate-pressure-report.md",
+  "returnPath": "docs/evidence/wp-015d2q/review-return.json",
+  "negativeControls": [
+    "duplicate_json_key",
+    "duplicate_case",
+    "missing_case",
+    "extra_case",
+    "changed_case_identity",
+    "changed_seed",
+    "changed_actor_or_expected_turn",
+    "sequential_prestate",
+    "changed_context",
+    "hidden_decoder_input",
+    "missing_restoration",
+    "changed_response",
+    "changed_event_order_or_digest",
+    "changed_source_blob",
+    "undeclared_path",
+    "wrong_mode",
+    "intermediate_forbidden_path",
+    "report_return_parity_drift",
+    "printed_digest_drift",
+    "output_escape",
+    "output_symlink"
+  ],
+  "reopeningCondition": "A changed source, case, target, cut, support, command, horizon, owner boundary or missing recoverable artifact requires a newly authorized child; this registration never widens silently.",
+  "stopCondition": "Stop for review after the bounded report, or immediately on source drift, undeclared changes, unavailable witnesses or a needed sealed/production/CRPM edit."
+}

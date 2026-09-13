@@ -1,0 +1,1577 @@
+import { z } from 'zod';
+
+import { canonicalJson, compareCanonicalText, sha256Digest, type JsonValue } from './canonical';
+import { deriveVoyageEvidence, deriveWorldDesignResidual } from './kernel/derive-voyage-evidence';
+
+export const CRPM_WORLD_SCHEMA_VERSION = 1 as const;
+export const WORLD_DESIGN_REQUEST_SCHEMA_VERSION = 2 as const;
+export const WORLD_DESIGN_RESULT_SCHEMA_VERSION = 3 as const;
+
+const SchemaVersionSchema = z.literal(CRPM_WORLD_SCHEMA_VERSION);
+const IsoWallClockValuePattern = /\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}(?:\.\d+)?(?:Z|[+-]\d{2}:\d{2})/;
+const TrimmedStringSchema = z.string().min(1).max(4_096).refine(
+    (value) => value.trim() === value,
+    'String values must not contain leading or trailing whitespace.'
+).refine(
+    (value) => !IsoWallClockValuePattern.test(value),
+    'Wall-clock timestamp values are not allowed in deterministic artifacts.'
+);
+const IdentifierSchema = z.string()
+    .min(1)
+    .max(160)
+    .regex(/^[A-Za-z0-9][A-Za-z0-9._:/-]*$/);
+const SourcePathSchema = z.string()
+    .min(1)
+    .max(512)
+    .refine((value) => value.trim() === value && !value.includes('\\') &&
+        !value.startsWith('/') && !value.split('/').includes('..'),
+        'Source paths must be trimmed repository-relative POSIX paths.');
+const DigestSchema = z.string().regex(/^[0-9a-f]{64}$/);
+const CommitShaSchema = z.string().regex(/^[0-9a-f]{40}$/);
+const GitObjectIdSchema = z.string().regex(/^[0-9a-f]{40}$/);
+const VersionSchema = z.number().int().min(1).max(Number.MAX_SAFE_INTEGER)
+    .refine((value) => !Object.is(value, -0));
+const NonNegativeSafeIntegerSchema = z.number().int().min(0).max(Number.MAX_SAFE_INTEGER)
+    .refine((value) => !Object.is(value, -0));
+const DeterministicNumberSchema = z.number().superRefine((value, context) => {
+    if (!Number.isFinite(value)) {
+        context.addIssue({ code: 'custom', message: 'Numbers must be finite.' });
+    } else if (Object.is(value, -0)) {
+        context.addIssue({ code: 'custom', message: 'Negative zero is not deterministic JSON.' });
+    } else if (Number.isInteger(value) && !Number.isSafeInteger(value)) {
+        context.addIssue({ code: 'custom', message: 'Integer values must be safe integers.' });
+    }
+});
+
+function uniqueStringArray(item: z.ZodString, minimum = 0, maximum = 256) {
+    return z.array(item).min(minimum).max(maximum).superRefine((values, context) => {
+        const seen = new Set<string>();
+        for (let index = 0; index < values.length; index += 1) {
+            if (seen.has(values[index])) {
+                context.addIssue({
+                    code: 'custom',
+                    path: [index],
+                    message: `Duplicate value ${JSON.stringify(values[index])}.`
+                });
+            }
+            seen.add(values[index]);
+        }
+    });
+}
+
+const IdentifierListSchema = uniqueStringArray(IdentifierSchema, 0);
+const NonEmptyIdentifierListSchema = uniqueStringArray(IdentifierSchema, 1);
+const DescriptionListSchema = uniqueStringArray(TrimmedStringSchema, 0);
+const NonEmptyDescriptionListSchema = uniqueStringArray(TrimmedStringSchema, 1);
+
+export const DeterministicJsonValueSchema = z.custom<JsonValue>((value) => {
+    try {
+        canonicalJson(value);
+        return true;
+    } catch {
+        return false;
+    }
+}, 'Value must be deterministic JSON without unstable timestamp fields.');
+
+export const ProductAuthoritySchema = z.enum([
+    'none',
+    'authority-adapter-parity',
+    'owner-reviewed',
+    'versioned-ruleset-approved',
+    'production-active'
+]);
+
+export const CarrierMaturitySchema = z.enum([
+    'M0_appearance',
+    'M1_declaration',
+    'M2_local_use',
+    'M3_bounded_design_landfall'
+]);
+
+export const SupportStatusSchema = z.enum([
+    'unsupported',
+    'declared',
+    'witnessed',
+    'verified',
+    'blocked'
+]);
+
+export const EvidenceOriginSchema = z.enum([
+    'authority-derived',
+    'analysis-derived',
+    'methodological',
+    'synthetic-contract-test'
+]);
+
+export const AdapterReferenceSchema = z.strictObject({
+    id: IdentifierSchema,
+    version: VersionSchema
+});
+
+export const CutReferenceSchema = z.strictObject({
+    id: IdentifierSchema,
+    version: VersionSchema
+});
+
+export const SourceLockSchema = z.strictObject({
+    repositoryId: IdentifierSchema,
+    commit: CommitShaSchema,
+    paths: uniqueStringArray(SourcePathSchema, 1, 128)
+});
+
+export const ImplementationFileBlobSchema = z.strictObject({
+    path: SourcePathSchema,
+    blobOid: GitObjectIdSchema
+});
+
+const RegisteredExecutionReceiptBaseShape = {
+    schemaVersion: z.literal(1),
+    repositoryId: z.literal('worms-port'),
+    implementationCommit: CommitShaSchema,
+    implementationTree: GitObjectIdSchema,
+    implementationPaths: uniqueStringArray(SourcePathSchema, 1, 128),
+    implementationFileBlobs: z.array(ImplementationFileBlobSchema).min(1).max(128),
+    implementationBundleDigest: DigestSchema,
+    adapterVersions: z.array(AdapterReferenceSchema).min(1).max(16),
+    profileVersion: VersionSchema,
+    requestSchemaVersion: z.literal(WORLD_DESIGN_REQUEST_SCHEMA_VERSION),
+    resultSchemaVersion: z.literal(WORLD_DESIGN_RESULT_SCHEMA_VERSION),
+    sourceLocks: z.array(SourceLockSchema).min(1).max(16),
+    requestDigest: DigestSchema
+};
+
+function validateExecutionReceipt(
+    receipt: z.infer<z.ZodObject<typeof RegisteredExecutionReceiptBaseShape>>,
+    context: z.RefinementCtx
+) {
+    const paths = [...receipt.implementationPaths].sort(compareCanonicalText);
+    const blobs = [...receipt.implementationFileBlobs]
+        .sort((left, right) => compareCanonicalText(left.path, right.path));
+    if (canonicalJson(paths) !== canonicalJson(blobs.map((blob) => blob.path))) {
+        context.addIssue({ code: 'custom', path: ['implementationFileBlobs'], message: 'Implementation paths and per-file blobs must match exactly.' });
+    }
+    const expected = sha256Digest({
+        repositoryId: receipt.repositoryId,
+        implementationCommit: receipt.implementationCommit,
+        implementationTree: receipt.implementationTree,
+        implementationFileBlobs: blobs
+    });
+    if (expected !== receipt.implementationBundleDigest) {
+        context.addIssue({ code: 'custom', path: ['implementationBundleDigest'], message: 'Implementation bundle digest does not match the registered Git objects.' });
+    }
+}
+
+export const RegisteredExecutionReceiptBaseSchema = z.strictObject(RegisteredExecutionReceiptBaseShape)
+    .superRefine(validateExecutionReceipt);
+
+export const RegisteredExecutionReceiptSchema = z.strictObject({
+    ...RegisteredExecutionReceiptBaseShape,
+    resultDigest: DigestSchema
+}).superRefine(validateExecutionReceipt);
+
+export const ScenarioDomainSchema = z.strictObject({
+    schemaVersion: SchemaVersionSchema,
+    scenarioIds: NonEmptyIdentifierListSchema,
+    actionFamilies: NonEmptyIdentifierListSchema,
+    policyFamilies: IdentifierListSchema,
+    seeds: z.array(NonNegativeSafeIntegerSchema).min(1).max(1_024).superRefine((values, context) => {
+        const seen = new Set<number>();
+        for (let index = 0; index < values.length; index += 1) {
+            if (seen.has(values[index])) {
+                context.addIssue({ code: 'custom', path: [index], message: 'Seed values must be unique.' });
+            }
+            seen.add(values[index]);
+        }
+    }),
+    constraints: DescriptionListSchema
+});
+
+export const WorldCarrierReferenceSchema = z.strictObject({
+    schemaVersion: SchemaVersionSchema,
+    profileVersion: VersionSchema,
+    carrierKind: z.enum([
+        'authority',
+        'replay',
+        'player-public',
+        'presentation',
+        'tactical-analysis',
+        'world-design'
+    ]),
+    adapter: AdapterReferenceSchema,
+    rulesetOrConfigId: IdentifierSchema,
+    baselineDigest: DigestSchema,
+    stateDigest: DigestSchema,
+    revisionOrStep: NonNegativeSafeIntegerSchema,
+    sourceReference: TrimmedStringSchema.optional()
+});
+
+export const WorldCutDefinitionSchema = z.strictObject({
+    schemaVersion: SchemaVersionSchema,
+    cutId: IdentifierSchema,
+    cutVersion: VersionSchema,
+    sourceCarrierKind: WorldCarrierReferenceSchema.shape.carrierKind,
+    projectionDescription: TrimmedStringSchema,
+    admissibleDomain: ScenarioDomainSchema,
+    protectedFamily: NonEmptyDescriptionListSchema,
+    includedSupport: NonEmptyIdentifierListSchema,
+    intentionallyForgottenDistinctions: DescriptionListSchema,
+    excludedClaims: NonEmptyDescriptionListSchema,
+    deterministicContinuationClaim: z.enum(['complete', 'bounded', 'relational', 'none'])
+});
+
+export const PortDefinitionSchema = z.strictObject({
+    id: IdentifierSchema,
+    description: TrimmedStringSchema,
+    required: z.boolean()
+});
+
+const PortListSchema = z.array(PortDefinitionSchema).min(1).max(128).superRefine((ports, context) => {
+    const ids = new Set<string>();
+    for (let index = 0; index < ports.length; index += 1) {
+        if (ids.has(ports[index].id)) {
+            context.addIssue({ code: 'custom', path: [index, 'id'], message: 'Port ids must be unique.' });
+        }
+        ids.add(ports[index].id);
+    }
+});
+
+export const ContractCatalogsSchema = z.strictObject({
+    adapters: z.array(AdapterReferenceSchema).max(128).superRefine((adapters, context) => {
+        const ids = new Set<string>();
+        for (let index = 0; index < adapters.length; index += 1) {
+            const key = `${adapters[index].id}@${adapters[index].version}`;
+            if (ids.has(key)) {
+                context.addIssue({ code: 'custom', path: [index], message: 'Adapter registrations must be unique.' });
+            }
+            ids.add(key);
+        }
+    }),
+    rulesetsOrConfigs: IdentifierListSchema,
+    cuts: z.array(CutReferenceSchema).max(128).superRefine((cuts, context) => {
+        const ids = new Set<string>();
+        for (let index = 0; index < cuts.length; index += 1) {
+            const key = `${cuts[index].id}@${cuts[index].version}`;
+            if (ids.has(key)) {
+                context.addIssue({ code: 'custom', path: [index], message: 'Cut registrations must be unique.' });
+            }
+            ids.add(key);
+        }
+    }),
+    edgeKinds: IdentifierListSchema,
+    domainMotifs: IdentifierListSchema
+});
+
+export const PortContractSchema = z.strictObject({
+    schemaVersion: SchemaVersionSchema,
+    profileVersion: VersionSchema,
+    portContractId: IdentifierSchema,
+    portContractVersion: VersionSchema,
+    catalogs: ContractCatalogsSchema,
+    contextPorts: PortListSchema,
+    inputPorts: PortListSchema,
+    outputPorts: PortListSchema,
+    observedPorts: PortListSchema,
+    actuatedPorts: PortListSchema,
+    evidencePorts: PortListSchema,
+    supportPorts: PortListSchema,
+    returnPorts: PortListSchema,
+    forbiddenPorts: PortListSchema,
+    escalationTriggers: NonEmptyDescriptionListSchema
+});
+
+export const DeltaSchema = z.strictObject({
+    subject: IdentifierSchema,
+    before: DeterministicJsonValueSchema,
+    after: DeterministicJsonValueSchema,
+    description: TrimmedStringSchema
+});
+
+export const AuthorityDeltaSchema = z.strictObject({
+    subject: IdentifierSchema,
+    before: z.literal('none'),
+    after: z.literal('none'),
+    rationale: TrimmedStringSchema
+});
+
+export const ResidualLedgerSchema = z.strictObject({
+    schemaVersion: z.literal(2),
+    positionDeltas: z.array(DeltaSchema).max(256),
+    resourceDeltas: z.array(DeltaSchema).max(256),
+    healthDeltas: z.array(DeltaSchema).max(256),
+    statusDeltas: z.array(DeltaSchema).max(256),
+    terrainDeltas: z.array(DeltaSchema).max(256),
+    authorityDeltas: z.array(AuthorityDeltaSchema).max(64),
+    expiredRights: IdentifierListSchema,
+    openedObligations: IdentifierListSchema,
+    carriedObligations: IdentifierListSchema,
+    dischargedObligations: IdentifierListSchema,
+    unresolvedObligations: IdentifierListSchema,
+    excludedUnmodelledResidue: DescriptionListSchema
+});
+
+export const WitnessReferenceSchema = z.strictObject({
+    witnessId: IdentifierSchema,
+    digest: DigestSchema
+});
+
+export const AuthorityProvenanceSchema = z.discriminatedUnion('relationship', [
+    z.strictObject({
+        relationship: z.literal('none')
+    }),
+    z.strictObject({
+        relationship: z.literal('authority_adapter_parity'),
+        authoritySource: SourceLockSchema,
+        witnessReferences: z.array(WitnessReferenceSchema).min(1).max(4_096),
+        scope: TrimmedStringSchema,
+        excludedClaims: NonEmptyDescriptionListSchema
+    })
+]);
+
+export const FixedFrameSchema = z.strictObject({
+    schemaVersion: SchemaVersionSchema,
+    sourceLocks: z.array(SourceLockSchema).min(1).max(16),
+    baselineOrConfigId: IdentifierSchema,
+    adapter: AdapterReferenceSchema,
+    scenarioDomain: ScenarioDomainSchema,
+    sourceCut: CutReferenceSchema,
+    targetCut: CutReferenceSchema,
+    actorOrPolicy: IdentifierSchema,
+    expectedRevisionOrStep: NonNegativeSafeIntegerSchema
+});
+
+export const EdgePortBindingsSchema = z.strictObject({
+    contextPorts: NonEmptyIdentifierListSchema,
+    actionPorts: NonEmptyIdentifierListSchema,
+    responsePorts: NonEmptyIdentifierListSchema,
+    evidencePorts: NonEmptyIdentifierListSchema,
+    supportPorts: NonEmptyIdentifierListSchema,
+    returnPorts: NonEmptyIdentifierListSchema
+});
+
+const WorldTransitionEdgeBaseShape = {
+    edgeId: IdentifierSchema,
+    edgeVersion: VersionSchema,
+    edgeKind: IdentifierSchema,
+    domainMotif: IdentifierSchema,
+    crpmTransitionInterpretation: z.enum([
+        'refine',
+        'compress',
+        'decompress',
+        'reorganize',
+        'overlap-move'
+    ]).optional(),
+    crpmInterpretationJustification: TrimmedStringSchema.optional(),
+    sourceCarrier: WorldCarrierReferenceSchema,
+    targetCarrier: WorldCarrierReferenceSchema,
+    sourceCut: CutReferenceSchema,
+    targetCut: CutReferenceSchema,
+    fixedFrame: FixedFrameSchema,
+    commandOrDeclaration: DeterministicJsonValueSchema,
+    response: DeterministicJsonValueSchema.optional(),
+    protectedFamily: NonEmptyDescriptionListSchema,
+    sourceRefs: NonEmptyDescriptionListSchema,
+    witnessReferences: z.array(WitnessReferenceSchema).min(1).max(256),
+    decoderRefs: NonEmptyIdentifierListSchema,
+    carrierRefs: z.array(DigestSchema).min(2).max(256),
+    pathPosition: NonNegativeSafeIntegerSchema,
+    preserved: NonEmptyDescriptionListSchema,
+    forgotten: DescriptionListSchema,
+    newlyVisible: DescriptionListSchema,
+    residual: ResidualLedgerSchema,
+    reversibility: z.enum(['exact', 'protected_equivalent', 'repair_dependent', 'one_way']),
+    returnCondition: TrimmedStringSchema,
+    reopeningCondition: TrimmedStringSchema,
+    supportStatus: SupportStatusSchema,
+    productAuthority: z.literal('none'),
+    authorityDefinitionMutationObserved: z.literal(false)
+};
+
+export const WorldTransitionEdgeV1Schema = z.strictObject({
+    schemaVersion: SchemaVersionSchema,
+    ...WorldTransitionEdgeBaseShape
+});
+
+export const WorldTransitionEdgeV2Schema = z.strictObject({
+    schemaVersion: z.literal(2),
+    ...WorldTransitionEdgeBaseShape,
+    portBindings: EdgePortBindingsSchema
+});
+
+export const WorldTransitionEdgeSchema = z.discriminatedUnion('schemaVersion', [
+    WorldTransitionEdgeV1Schema,
+    WorldTransitionEdgeV2Schema
+]).superRefine((edge, context) => {
+    if (edge.crpmTransitionInterpretation && !edge.crpmInterpretationJustification) {
+        context.addIssue({ code: 'custom', path: ['crpmInterpretationJustification'], message: 'A CRPM transition interpretation requires an explicit bounded justification.' });
+    }
+    if (!edge.crpmTransitionInterpretation && edge.crpmInterpretationJustification) {
+        context.addIssue({ code: 'custom', path: ['crpmInterpretationJustification'], message: 'CRPM interpretation justification is not allowed without an interpretation.' });
+    }
+    if (canonicalJson(edge.sourceCut) !== canonicalJson(edge.fixedFrame.sourceCut)) {
+        context.addIssue({ code: 'custom', path: ['fixedFrame', 'sourceCut'], message: 'Fixed frame source cut must match the edge.' });
+    }
+    if (canonicalJson(edge.targetCut) !== canonicalJson(edge.fixedFrame.targetCut)) {
+        context.addIssue({ code: 'custom', path: ['fixedFrame', 'targetCut'], message: 'Fixed frame target cut must match the edge.' });
+    }
+    if (edge.sourceCarrier.adapter.id !== edge.fixedFrame.adapter.id ||
+        edge.sourceCarrier.adapter.version !== edge.fixedFrame.adapter.version) {
+        context.addIssue({ code: 'custom', path: ['fixedFrame', 'adapter'], message: 'Fixed frame adapter must match the source carrier.' });
+    }
+    if (edge.sourceCarrier.rulesetOrConfigId !== edge.fixedFrame.baselineOrConfigId) {
+        context.addIssue({ code: 'custom', path: ['fixedFrame', 'baselineOrConfigId'], message: 'Fixed frame baseline/config must match the source carrier.' });
+    }
+    const carrierVersionChanges = edge.sourceCarrier.schemaVersion !== edge.targetCarrier.schemaVersion ||
+        edge.sourceCarrier.profileVersion !== edge.targetCarrier.profileVersion;
+    if (carrierVersionChanges && edge.edgeKind !== 'carrier-profile-migration') {
+        context.addIssue({
+            code: 'custom',
+            path: ['edgeKind'],
+            message: 'A schema/profile carrier change requires an explicit carrier-profile-migration edge.'
+        });
+    }
+    const requiredCarrierDigests = [sha256Digest(edge.sourceCarrier), sha256Digest(edge.targetCarrier)];
+    for (const digest of requiredCarrierDigests) {
+        if (!edge.carrierRefs.includes(digest)) {
+            context.addIssue({ code: 'custom', path: ['carrierRefs'], message: 'Carrier refs must include source and target carrier digests.' });
+        }
+    }
+});
+
+export const CompositionIssueCodeSchema = z.enum([
+    'carrier-state-mismatch',
+    'carrier-reference-mismatch',
+    'revision-order-mismatch',
+    'turn-order-mismatch',
+    'ruleset-mismatch',
+    'adapter-mismatch',
+    'cut-mismatch',
+    'missing-input-port',
+    'forbidden-port-crossing',
+    'obligation-not-propagated'
+]);
+
+export const CompositionIssueSchema = z.strictObject({
+    code: CompositionIssueCodeSchema,
+    message: TrimmedStringSchema,
+    details: DeterministicJsonValueSchema
+});
+
+export const CompositionContractSchema = z.strictObject({
+    schemaVersion: z.literal(1),
+    contractId: z.literal('crpm-world-edge-composition'),
+    contractVersion: z.literal(1),
+    externallySuppliedInputPorts: IdentifierListSchema,
+    forbiddenPortIds: IdentifierListSchema,
+    cutBridgePolicy: z.literal('explicit_bridge_edge_only')
+});
+
+const CompositionWitnessBaseShape = {
+    witnessId: IdentifierSchema,
+    witnessVersion: VersionSchema,
+    firstEdgeId: IdentifierSchema,
+    secondEdgeId: IdentifierSchema,
+    compatible: z.boolean(),
+    checkedConditions: NonEmptyIdentifierListSchema,
+    requiredInputPorts: IdentifierListSchema,
+    availableInputPorts: IdentifierListSchema,
+    forbiddenPortsCrossed: IdentifierListSchema,
+    issues: z.array(CompositionIssueSchema).max(64)
+};
+
+export const CompositionWitnessV1Schema = z.strictObject({
+    schemaVersion: SchemaVersionSchema,
+    ...CompositionWitnessBaseShape
+});
+
+export const CompositionWitnessV2Schema = z.strictObject({
+    schemaVersion: z.literal(2),
+    ...CompositionWitnessBaseShape,
+    firstEdgeDigest: DigestSchema,
+    secondEdgeDigest: DigestSchema,
+    compositionContract: CompositionContractSchema
+});
+
+export const CompositionWitnessSchema = z.discriminatedUnion('schemaVersion', [
+    CompositionWitnessV1Schema,
+    CompositionWitnessV2Schema
+]).superRefine((witness, context) => {
+    if (witness.compatible && witness.issues.length > 0) {
+        context.addIssue({ code: 'custom', path: ['issues'], message: 'Compatible composition witnesses cannot contain issues.' });
+    }
+    if (!witness.compatible && witness.issues.length === 0) {
+        context.addIssue({ code: 'custom', path: ['issues'], message: 'Incompatible composition witnesses require at least one issue.' });
+    }
+});
+
+export const EdgeCompositionResultSchema = z.strictObject({
+    schemaVersion: SchemaVersionSchema,
+    compatible: z.boolean(),
+    partialValidEdges: z.array(WorldTransitionEdgeSchema).min(1).max(2),
+    attemptedEdge: WorldTransitionEdgeSchema,
+    accumulatedResidual: ResidualLedgerSchema,
+    carriedObligations: IdentifierListSchema,
+    unresolvedObligations: IdentifierListSchema,
+    witness: CompositionWitnessSchema
+}).superRefine((result, context) => {
+    if (result.compatible !== result.witness.compatible) {
+        context.addIssue({ code: 'custom', path: ['witness', 'compatible'], message: 'Composition result and witness compatibility must agree.' });
+    }
+    if (result.compatible && result.partialValidEdges.length !== 2) {
+        context.addIssue({ code: 'custom', path: ['partialValidEdges'], message: 'Compatible composition must retain both edges.' });
+    }
+    if (!result.compatible && result.partialValidEdges.length !== 1) {
+        context.addIssue({ code: 'custom', path: ['partialValidEdges'], message: 'Incompatible composition must retain the valid prefix and separate attempted edge.' });
+    }
+});
+
+export const TransitionWitnessSchema = z.strictObject({
+    schemaVersion: SchemaVersionSchema,
+    witnessId: IdentifierSchema,
+    witnessVersion: VersionSchema,
+    edgeId: IdentifierSchema,
+    evidenceOrigin: EvidenceOriginSchema,
+    covarianceGroup: IdentifierSchema,
+    deduplicationIdentity: DigestSchema,
+    sourceRefs: NonEmptyDescriptionListSchema,
+    decoderRefs: NonEmptyIdentifierListSchema,
+    inputDigest: DigestSchema,
+    outputDigest: DigestSchema,
+    orderedEventsDigest: DigestSchema.optional(),
+    status: z.enum(['exact', 'mismatch', 'not_tested']),
+    mismatchResidual: ResidualLedgerSchema.optional(),
+    excludedClaims: DescriptionListSchema
+}).superRefine((witness, context) => {
+    if (witness.status === 'mismatch' && witness.mismatchResidual === undefined) {
+        context.addIssue({ code: 'custom', path: ['mismatchResidual'], message: 'Mismatch witnesses require explicit residual.' });
+    }
+    if (witness.status !== 'mismatch' && witness.mismatchResidual !== undefined) {
+        context.addIssue({ code: 'custom', path: ['mismatchResidual'], message: 'Only mismatch witnesses may carry mismatch residual.' });
+    }
+});
+
+export const WorldObligationOriginSchema = z.discriminatedUnion('kind', [
+    z.strictObject({
+        kind: z.literal('edge'),
+        edgeId: IdentifierSchema
+    }),
+    z.strictObject({
+        kind: z.literal('initial_carrier'),
+        carrier: WorldCarrierReferenceSchema
+    })
+]);
+
+export const WorldObligationRoleSchema = z.strictObject({
+    owner: IdentifierSchema,
+    bearer: IdentifierSchema,
+    beneficiary: IdentifierSchema,
+    originator: IdentifierSchema.nullable(),
+    eligibleResponders: NonEmptyIdentifierListSchema
+});
+
+export const WorldObligationSchema = z.strictObject({
+    schemaVersion: z.literal(2),
+    obligationId: IdentifierSchema,
+    obligationVersion: VersionSchema,
+    obligationType: z.enum([
+        'spoolburst_preparation',
+        'spun_cocoon',
+        'opening_weave',
+        'frayed_seam',
+        'seam_pin',
+        'brace'
+    ]),
+    origin: WorldObligationOriginSchema,
+    roles: WorldObligationRoleSchema,
+    supportCarrier: WorldCarrierReferenceSchema,
+    legalResponses: NonEmptyDescriptionListSchema,
+    expiryCondition: TrimmedStringSchema,
+    dischargeCondition: TrimmedStringSchema,
+    lifecycleStatus: z.enum(['open', 'carried', 'discharged', 'expired'])
+});
+
+export const CompatibilityResultSchema = z.strictObject({
+    compatible: z.boolean(),
+    checkedEdgeIds: IdentifierListSchema,
+    issues: DescriptionListSchema
+}).superRefine((result, context) => {
+    if (result.compatible && result.issues.length > 0) {
+        context.addIssue({ code: 'custom', path: ['issues'], message: 'Compatible voyages cannot carry compatibility issues.' });
+    }
+    if (!result.compatible && result.issues.length === 0) {
+        context.addIssue({ code: 'custom', path: ['issues'], message: 'Incompatible voyages require an explicit issue.' });
+    }
+});
+
+export const TerminalResultSchema = z.strictObject({
+    status: z.enum(['completed', 'blocked', 'nonterminal', 'failed']),
+    summary: TrimmedStringSchema,
+    excludedClaims: DescriptionListSchema
+});
+
+export const ReplaySupportSchema = z.strictObject({
+    supported: z.boolean(),
+    replayRecordRefs: IdentifierListSchema,
+    stateHashRefs: z.array(DigestSchema).max(256),
+    limitations: DescriptionListSchema
+});
+
+const VoyageTraceBaseShape = {
+    voyageId: IdentifierSchema,
+    voyageVersion: VersionSchema,
+    initialCarrier: WorldCarrierReferenceSchema,
+    transitionEdges: z.array(WorldTransitionEdgeSchema).max(1_024),
+    finalCarrier: WorldCarrierReferenceSchema,
+    compatibilityResult: CompatibilityResultSchema,
+    accumulatedResidual: ResidualLedgerSchema,
+    terminalResult: TerminalResultSchema,
+    recurrenceWitnesses: z.array(WitnessReferenceSchema).max(256),
+    returnWitnesses: z.array(WitnessReferenceSchema).max(256),
+    replaySupport: ReplaySupportSchema
+};
+
+export const VoyageTraceV1Schema = z.strictObject({
+    schemaVersion: SchemaVersionSchema,
+    ...VoyageTraceBaseShape
+});
+
+export const VoyageEdgeAttemptSchema = z.strictObject({
+    sequence: NonNegativeSafeIntegerSchema,
+    outcome: z.enum(['accepted', 'rejected', 'incompatible']),
+    edge: WorldTransitionEdgeSchema,
+    compositionWitness: CompositionWitnessSchema.nullable()
+});
+
+export const VoyageCommandPathEntrySchema = z.strictObject({
+    sequence: NonNegativeSafeIntegerSchema,
+    edgeId: IdentifierSchema,
+    outcome: VoyageEdgeAttemptSchema.shape.outcome,
+    commandOrDeclaration: DeterministicJsonValueSchema
+});
+
+export const VoyageCutChangeSchema = z.strictObject({
+    sequence: NonNegativeSafeIntegerSchema,
+    sourceCut: CutReferenceSchema,
+    targetCut: CutReferenceSchema,
+    bridgeEdgeId: IdentifierSchema
+}).refine((change) => canonicalJson(change.sourceCut) !== canonicalJson(change.targetCut), {
+    message: 'Cut-change entries require distinct source and target cuts.'
+});
+
+export const VoyageObligationHistorySchema = z.strictObject({
+    opened: IdentifierListSchema,
+    carried: IdentifierListSchema,
+    discharged: IdentifierListSchema,
+    expired: IdentifierListSchema,
+    unresolved: IdentifierListSchema
+});
+
+export const VoyageTraceV2Schema = z.strictObject({
+    schemaVersion: z.literal(2),
+    ...VoyageTraceBaseShape,
+    edgeAttempts: z.array(VoyageEdgeAttemptSchema).max(1_024),
+    commandPath: z.array(VoyageCommandPathEntrySchema).max(1_024),
+    cutChanges: z.array(VoyageCutChangeSchema).max(1_024),
+    witnessReferences: z.array(WitnessReferenceSchema).max(4_096),
+    obligationHistory: VoyageObligationHistorySchema,
+    reentryInstructions: NonEmptyDescriptionListSchema,
+    excludedClaims: NonEmptyDescriptionListSchema
+});
+
+export const VoyageTraceV3Schema = z.strictObject({
+    schemaVersion: z.literal(3),
+    ...VoyageTraceBaseShape,
+    edgeAttempts: z.array(VoyageEdgeAttemptSchema).max(1_024),
+    commandPath: z.array(VoyageCommandPathEntrySchema).max(1_024),
+    cutChanges: z.array(VoyageCutChangeSchema).max(1_024),
+    witnessReferences: z.array(WitnessReferenceSchema).max(4_096),
+    initialObligationIds: IdentifierListSchema,
+    obligationHistory: VoyageObligationHistorySchema,
+    reentryInstructions: NonEmptyDescriptionListSchema,
+    excludedClaims: NonEmptyDescriptionListSchema
+});
+
+export const VoyageEdgeAttemptV4Schema = z.strictObject({
+    sequence: NonNegativeSafeIntegerSchema,
+    outcome: z.enum(['accepted', 'rejected', 'incompatible']),
+    edge: WorldTransitionEdgeV2Schema,
+    compositionWitness: CompositionWitnessV2Schema
+});
+
+export const VoyageTraceV4Schema = z.strictObject({
+    schemaVersion: z.literal(4),
+    ...VoyageTraceBaseShape,
+    transitionEdges: z.array(WorldTransitionEdgeV2Schema).max(1_024),
+    edgeAttempts: z.array(VoyageEdgeAttemptV4Schema).max(1_024),
+    commandPath: z.array(VoyageCommandPathEntrySchema).max(1_024),
+    cutChanges: z.array(VoyageCutChangeSchema).max(1_024),
+    witnessReferences: z.array(WitnessReferenceSchema).max(4_096),
+    compositionContract: CompositionContractSchema,
+    initialObligationIds: IdentifierListSchema,
+    obligationHistory: VoyageObligationHistorySchema,
+    reentryInstructions: NonEmptyDescriptionListSchema,
+    excludedClaims: NonEmptyDescriptionListSchema
+}).superRefine((voyage, context) => {
+    const derived = deriveVoyageEvidence(
+        voyage.edgeAttempts,
+        voyage.initialCarrier,
+        voyage.initialObligationIds,
+        voyage.compositionContract
+    );
+    for (let index = 0; index < derived.attemptValidations.length; index += 1) {
+        const validation = derived.attemptValidations[index];
+        if (!validation.valid) {
+            context.addIssue({
+                code: 'custom',
+                path: ['edgeAttempts', index],
+                message: validation.issues.join(' ')
+            });
+        }
+    }
+    for (const [field, declared, expected] of [
+        ['transitionEdges', voyage.transitionEdges, derived.transitionEdges],
+        ['accumulatedResidual', voyage.accumulatedResidual, derived.accumulatedResidual],
+        ['obligationHistory', voyage.obligationHistory, derived.obligationHistory],
+        ['finalCarrier', voyage.finalCarrier, derived.finalCarrier],
+        ['compatibilityResult', voyage.compatibilityResult, derived.compatibility]
+    ] as const) {
+        if (canonicalJson(declared) !== canonicalJson(expected)) {
+            context.addIssue({ code: 'custom', path: [field], message: `${field} must equal the canonical full-composition voyage derivation.` });
+        }
+    }
+});
+
+export const VoyageTraceSchema = z.discriminatedUnion('schemaVersion', [
+    VoyageTraceV1Schema,
+    VoyageTraceV2Schema,
+    VoyageTraceV3Schema,
+    VoyageTraceV4Schema
+]).superRefine((voyage, context) => {
+    const mismatches: string[] = [];
+    const carrierMatches = (
+        left: z.infer<typeof WorldCarrierReferenceSchema>,
+        right: z.infer<typeof WorldCarrierReferenceSchema>
+    ) => left.stateDigest === right.stateDigest &&
+        left.baselineDigest === right.baselineDigest &&
+        left.schemaVersion === right.schemaVersion &&
+        left.profileVersion === right.profileVersion &&
+        left.revisionOrStep === right.revisionOrStep &&
+        left.carrierKind === right.carrierKind &&
+        left.rulesetOrConfigId === right.rulesetOrConfigId &&
+        left.adapter.id === right.adapter.id &&
+        left.adapter.version === right.adapter.version &&
+        left.sourceReference
+            ?.replace(/#(?:pre|post)$/, '')
+            .replace(/:(?:pre|post):[0-9a-f]{64}$/, '') ===
+        right.sourceReference
+            ?.replace(/#(?:pre|post)$/, '')
+            .replace(/:(?:pre|post):[0-9a-f]{64}$/, '');
+    if (voyage.transitionEdges.length === 0) {
+        if (!carrierMatches(voyage.initialCarrier, voyage.finalCarrier)) {
+            mismatches.push('An empty voyage must retain the initial carrier.');
+        }
+    } else {
+        if (!carrierMatches(voyage.transitionEdges[0].sourceCarrier, voyage.initialCarrier)) {
+            mismatches.push('The first edge source does not match the initial carrier.');
+        }
+        for (let index = 1; index < voyage.transitionEdges.length; index += 1) {
+            const previous = voyage.transitionEdges[index - 1];
+            const current = voyage.transitionEdges[index];
+            if (!carrierMatches(previous.targetCarrier, current.sourceCarrier)) {
+                mismatches.push(`Carrier mismatch before edge ${current.edgeId}.`);
+            }
+            const composedAttempts = voyage.schemaVersion !== 1
+                ? voyage.edgeAttempts.filter((attempt) => attempt.outcome !== 'incompatible')
+                : [];
+            const currentAttemptSequence = voyage.schemaVersion !== 1
+                ? composedAttempts[index]?.sequence
+                : index;
+            const declaredCutChange = voyage.schemaVersion !== 1 && voyage.cutChanges.some((change) =>
+                change.sequence === currentAttemptSequence &&
+                change.bridgeEdgeId === current.edgeId &&
+                canonicalJson(change.sourceCut) === canonicalJson(previous.targetCut) &&
+                canonicalJson(change.targetCut) === canonicalJson(current.sourceCut)
+            );
+            if (canonicalJson(previous.targetCut) !== canonicalJson(current.sourceCut) && !declaredCutChange) {
+                mismatches.push(`Cut mismatch before edge ${current.edgeId}.`);
+            }
+        }
+        const lastEdge = voyage.transitionEdges[voyage.transitionEdges.length - 1];
+        if (!carrierMatches(lastEdge.targetCarrier, voyage.finalCarrier)) {
+            mismatches.push('The last edge target does not match the final carrier.');
+        }
+    }
+    if (voyage.compatibilityResult.compatible && mismatches.length > 0) {
+        for (const message of mismatches) {
+            context.addIssue({ code: 'custom', path: ['compatibilityResult'], message });
+        }
+    }
+    if (voyage.schemaVersion === 1) return;
+
+    for (let index = 0; index < voyage.edgeAttempts.length; index += 1) {
+        const attempt = voyage.edgeAttempts[index];
+        if (attempt.sequence !== index) {
+            context.addIssue({ code: 'custom', path: ['edgeAttempts', index, 'sequence'], message: 'Voyage attempt sequence must be contiguous.' });
+        }
+        const command = voyage.commandPath[index];
+        if (!command || command.sequence !== index || command.edgeId !== attempt.edge.edgeId ||
+            command.outcome !== attempt.outcome ||
+            canonicalJson(command.commandOrDeclaration) !== canonicalJson(attempt.edge.commandOrDeclaration)) {
+            context.addIssue({ code: 'custom', path: ['commandPath', index], message: 'Command path must exactly preserve every edge attempt.' });
+        }
+        if (attempt.outcome === 'incompatible' && !attempt.compositionWitness) {
+            context.addIssue({ code: 'custom', path: ['edgeAttempts', index, 'compositionWitness'], message: 'Incompatible attempts require a structured composition witness.' });
+        }
+    }
+    if (voyage.commandPath.length !== voyage.edgeAttempts.length) {
+        context.addIssue({ code: 'custom', path: ['commandPath'], message: 'Command path length must match edge attempts.' });
+    }
+    const composedIds = voyage.edgeAttempts
+        .filter((attempt) => attempt.outcome !== 'incompatible')
+        .map((attempt) => attempt.edge.edgeId);
+    if (canonicalJson(composedIds) !== canonicalJson(voyage.transitionEdges.map((edge) => edge.edgeId))) {
+        context.addIssue({ code: 'custom', path: ['transitionEdges'], message: 'Transition edges must retain every compatible accepted or rejected attempt in order.' });
+    }
+    if (voyage.schemaVersion === 4) {
+        const derived = deriveVoyageEvidence(
+            voyage.edgeAttempts,
+            voyage.initialCarrier,
+            voyage.initialObligationIds,
+            voyage.compositionContract
+        );
+        for (let index = 0; index < derived.attemptValidations.length; index += 1) {
+            const validation = derived.attemptValidations[index];
+            if (!validation.valid) {
+                context.addIssue({
+                    code: 'custom',
+                    path: ['edgeAttempts', index],
+                    message: validation.issues.join(' ')
+                });
+            }
+        }
+        for (const [field, declared, expected] of [
+            ['accumulatedResidual', voyage.accumulatedResidual, derived.accumulatedResidual],
+            ['obligationHistory', voyage.obligationHistory, derived.obligationHistory],
+            ['finalCarrier', voyage.finalCarrier, derived.finalCarrier],
+            ['compatibilityResult', voyage.compatibilityResult, derived.compatibility]
+        ] as const) {
+            if (canonicalJson(declared) !== canonicalJson(expected)) {
+                context.addIssue({ code: 'custom', path: [field], message: `${field} must equal the canonical edge-derived voyage summary.` });
+            }
+        }
+    }
+});
+
+export const ReturnClassificationSchema = z.enum([
+    'visible_equal',
+    'protected_equivalent',
+    'recursive_carrier_return',
+    'invariant_region_return',
+    'finite_exact_return',
+    'route_mismatch'
+]);
+
+export const ReturnClassAssessmentSchema = z.strictObject({
+    classification: ReturnClassificationSchema,
+    status: z.enum(['satisfied', 'not_satisfied', 'not_assessed']),
+    declaredCut: CutReferenceSchema.nullable(),
+    declaredRegionId: IdentifierSchema.nullable(),
+    witnessRefs: DescriptionListSchema,
+    declaredExclusions: DescriptionListSchema,
+    rationale: TrimmedStringSchema
+});
+
+export const ReturnAssessmentSchema = z.strictObject({
+    schemaVersion: SchemaVersionSchema,
+    assessmentId: IdentifierSchema,
+    assessmentVersion: VersionSchema,
+    sourceCarrier: WorldCarrierReferenceSchema,
+    targetCarrier: WorldCarrierReferenceSchema,
+    declaredDomain: ScenarioDomainSchema,
+    classifications: z.array(ReturnClassAssessmentSchema).length(6),
+    satisfiedClassifications: z.array(ReturnClassificationSchema).max(6),
+    blockedClaims: NonEmptyDescriptionListSchema
+}).superRefine((assessment, context) => {
+    const expected = ReturnClassificationSchema.options;
+    const actual = assessment.classifications.map((item) => item.classification);
+    if (canonicalJson(actual) !== canonicalJson(expected)) {
+        context.addIssue({ code: 'custom', path: ['classifications'], message: 'Return assessments must retain all six classifications in canonical order.' });
+    }
+    const satisfied = assessment.classifications
+        .filter((item) => item.status === 'satisfied')
+        .map((item) => item.classification);
+    if (canonicalJson(satisfied) !== canonicalJson(assessment.satisfiedClassifications)) {
+        context.addIssue({ code: 'custom', path: ['satisfiedClassifications'], message: 'Satisfied return classifications must match their assessment rows.' });
+    }
+});
+
+export const ProjectionClassSchema = z.strictObject({
+    classKey: IdentifierSchema,
+    memberRefs: NonEmptyDescriptionListSchema
+});
+
+export const AliasingWitnessSchema = z.strictObject({
+    witnessRef: WitnessReferenceSchema,
+    sourceClassKey: IdentifierSchema,
+    targetClassKey: IdentifierSchema,
+    sourceItemRef: TrimmedStringSchema,
+    targetItemRef: TrimmedStringSchema
+});
+
+export const AliasingWitnessPairSchema = z.strictObject({
+    left: AliasingWitnessSchema,
+    right: AliasingWitnessSchema
+});
+
+export const ObservedProjectionTransitionSchema = z.strictObject({
+    sourceClassKey: IdentifierSchema,
+    targetClassKeys: NonEmptyIdentifierListSchema
+});
+
+const ProjectionTransportAssessmentBaseShape = {
+    assessmentId: IdentifierSchema,
+    assessmentVersion: VersionSchema,
+    sourceClasses: z.array(ProjectionClassSchema).min(1).max(1_024),
+    targetClasses: z.array(ProjectionClassSchema).min(1).max(1_024),
+    deterministicMapEligibility: z.boolean(),
+    aliasingKeys: IdentifierListSchema,
+    recommendedShape: z.enum(['map', 'relation_or_kernel']),
+    sampledDomain: ScenarioDomainSchema,
+    blockedClaims: NonEmptyDescriptionListSchema
+};
+
+export const ProjectionTransportAssessmentV1Schema = z.strictObject({
+    schemaVersion: SchemaVersionSchema,
+    ...ProjectionTransportAssessmentBaseShape,
+    leftAliasingWitness: AliasingWitnessSchema.nullable(),
+    rightAliasingWitness: AliasingWitnessSchema.nullable()
+});
+
+export const ProjectionTransportAssessmentV2Schema = z.strictObject({
+    schemaVersion: z.literal(2),
+    ...ProjectionTransportAssessmentBaseShape,
+    observedTransitions: z.array(ObservedProjectionTransitionSchema).min(1).max(1_024),
+    aliasingWitnessPairs: z.array(AliasingWitnessPairSchema).max(1_024)
+});
+
+export const ProjectionTransportAssessmentSchema = z.discriminatedUnion('schemaVersion', [
+    ProjectionTransportAssessmentV1Schema,
+    ProjectionTransportAssessmentV2Schema
+]).superRefine((assessment, context) => {
+    for (const [field, classes] of [
+        ['sourceClasses', assessment.sourceClasses],
+        ['targetClasses', assessment.targetClasses]
+    ] as const) {
+        const keys = new Set<string>();
+        for (let index = 0; index < classes.length; index += 1) {
+            if (keys.has(classes[index].classKey)) {
+                context.addIssue({ code: 'custom', path: [field, index, 'classKey'], message: 'Projection class keys must be unique.' });
+            }
+            keys.add(classes[index].classKey);
+        }
+    }
+
+    const pairs = assessment.schemaVersion === 1
+        ? assessment.leftAliasingWitness && assessment.rightAliasingWitness
+            ? [{ left: assessment.leftAliasingWitness, right: assessment.rightAliasingWitness }]
+            : []
+        : assessment.aliasingWitnessPairs;
+
+    if (assessment.deterministicMapEligibility) {
+        if (assessment.recommendedShape !== 'map' || assessment.aliasingKeys.length > 0 || pairs.length > 0) {
+            context.addIssue({ code: 'custom', message: 'Map-eligible assessments cannot contain alias witnesses.' });
+        }
+    } else if (assessment.recommendedShape !== 'relation_or_kernel' ||
+        assessment.aliasingKeys.length === 0 || pairs.length === 0) {
+        context.addIssue({ code: 'custom', message: 'Ineligible assessments require explicit left/right aliases and relation_or_kernel.' });
+        return;
+    }
+
+    const sourceKeys = new Set(assessment.sourceClasses.map((item) => item.classKey));
+    const targetKeys = new Set(assessment.targetClasses.map((item) => item.classKey));
+    const pairedSourceKeys = new Set<string>();
+    for (let index = 0; index < pairs.length; index += 1) {
+        const { left, right } = pairs[index];
+        if (left.sourceClassKey !== right.sourceClassKey || left.targetClassKey === right.targetClassKey) {
+            context.addIssue({
+                code: 'custom',
+                path: [assessment.schemaVersion === 1 ? 'leftAliasingWitness' : 'aliasingWitnessPairs', index],
+                message: 'Aliasing witnesses must share one source class and split into different target classes.'
+            });
+        }
+        if (!assessment.aliasingKeys.includes(left.sourceClassKey)) {
+            context.addIssue({ code: 'custom', path: ['aliasingKeys'], message: 'Aliasing keys must include every witnessed source class.' });
+        }
+        if (!sourceKeys.has(left.sourceClassKey) || !sourceKeys.has(right.sourceClassKey) ||
+            !targetKeys.has(left.targetClassKey) || !targetKeys.has(right.targetClassKey)) {
+            context.addIssue({ code: 'custom', message: 'Aliasing witnesses must reference declared source and target classes.' });
+        }
+        if (pairedSourceKeys.has(left.sourceClassKey)) {
+            context.addIssue({ code: 'custom', message: 'Each aliased source class may have only one explicit witness pair.' });
+        }
+        pairedSourceKeys.add(left.sourceClassKey);
+    }
+
+    if (assessment.schemaVersion === 1) {
+        if ((assessment.leftAliasingWitness === null) !== (assessment.rightAliasingWitness === null)) {
+            context.addIssue({ code: 'custom', message: 'V1 alias witnesses must be both present or both null.' });
+        }
+        return;
+    }
+
+    const transitionSources = new Set<string>();
+    for (let index = 0; index < assessment.observedTransitions.length; index += 1) {
+        const transition = assessment.observedTransitions[index];
+        if (!sourceKeys.has(transition.sourceClassKey) ||
+            transition.targetClassKeys.some((key) => !targetKeys.has(key))) {
+            context.addIssue({
+                code: 'custom',
+                path: ['observedTransitions', index],
+                message: 'Observed transitions must reference declared source and target classes.'
+            });
+        }
+        if (transitionSources.has(transition.sourceClassKey)) {
+            context.addIssue({
+                code: 'custom',
+                path: ['observedTransitions', index, 'sourceClassKey'],
+                message: 'Observed transitions must contain one row per source class.'
+            });
+        }
+        transitionSources.add(transition.sourceClassKey);
+        const isAliased = transition.targetClassKeys.length > 1;
+        if (isAliased !== assessment.aliasingKeys.includes(transition.sourceClassKey)) {
+            context.addIssue({
+                code: 'custom',
+                path: ['observedTransitions', index, 'targetClassKeys'],
+                message: 'Aliasing keys must exactly identify source classes with multiple observed target classes.'
+            });
+        }
+    }
+    if (transitionSources.size !== sourceKeys.size ||
+        [...sourceKeys].some((key) => !transitionSources.has(key))) {
+        context.addIssue({ code: 'custom', path: ['observedTransitions'], message: 'Every source class requires an observed transition row.' });
+    }
+    if (pairedSourceKeys.size !== assessment.aliasingKeys.length ||
+        assessment.aliasingKeys.some((key) => !pairedSourceKeys.has(key))) {
+        context.addIssue({ code: 'custom', path: ['aliasingWitnessPairs'], message: 'Every aliased source class requires one explicit witness pair.' });
+    }
+});
+
+export const DiagnosticAxisSchema = z.strictObject({
+    assessment: TrimmedStringSchema,
+    evidenceRefs: IdentifierListSchema,
+    visibleResidue: DescriptionListSchema,
+    blockedClaims: DescriptionListSchema
+});
+
+export const ScalarProbeSchema = z.strictObject({
+    probeId: IdentifierSchema,
+    value: DeterministicNumberSchema,
+    unit: IdentifierSchema,
+    scope: TrimmedStringSchema
+});
+
+export const DiagnosticProfileV1Schema = z.strictObject({
+    schemaVersion: SchemaVersionSchema,
+    diagnosticId: IdentifierSchema,
+    diagnosticVersion: VersionSchema,
+    evaluationObjectRef: IdentifierSchema,
+    cut: CutReferenceSchema,
+    protectedFamily: NonEmptyDescriptionListSchema,
+    scope: TrimmedStringSchema,
+    pathPressure: DiagnosticAxisSchema,
+    residueVisibility: DiagnosticAxisSchema,
+    localReorganization: DiagnosticAxisSchema,
+    cutFidelity: DiagnosticAxisSchema,
+    returnStrength: DiagnosticAxisSchema,
+    closureRisk: DiagnosticAxisSchema,
+    scalarProbes: z.array(ScalarProbeSchema).max(256),
+    blockedClaims: NonEmptyDescriptionListSchema,
+    excludedClaims: DescriptionListSchema
+});
+
+export const EvaluationObjectKindSchema = z.enum([
+    'transition',
+    'voyage',
+    'candidate_design_result'
+]);
+
+export const DiagnosticWitnessReferenceSchema = z.strictObject({
+    witnessId: IdentifierSchema,
+    digest: DigestSchema
+});
+
+export const WitnessLinkedBlockedClaimSchema = z.strictObject({
+    claimId: IdentifierSchema,
+    reason: TrimmedStringSchema,
+    witnessReferences: z.array(DiagnosticWitnessReferenceSchema).min(1).max(256)
+});
+
+function qualitativeAxis<T extends [string, ...string[]]>(values: T) {
+    return z.strictObject({
+        value: z.enum(values),
+        reason: TrimmedStringSchema,
+        witnessReferences: z.array(DiagnosticWitnessReferenceSchema).min(1).max(256),
+        visibleResidue: DescriptionListSchema,
+        blockedClaimIds: IdentifierListSchema
+    });
+}
+
+export const PathPressureAxisSchema = qualitativeAxis([
+    'viable_routes',
+    'mixed_routes',
+    'forced_route_pressure',
+    'blocked_continuation',
+    'not_assessed'
+]);
+
+export const ResidueVisibilityAxisSchema = qualitativeAxis([
+    'explicit',
+    'partial',
+    'hidden',
+    'not_assessed'
+]);
+
+export const LocalReorganizationAxisSchema = qualitativeAxis([
+    'material_reorganization',
+    'partial_reorganization',
+    'delay_only',
+    'same_line',
+    'not_assessed'
+]);
+
+export const CutFidelityAxisSchema = qualitativeAxis([
+    'within_cut',
+    'boundary_residue',
+    'cut_violation',
+    'not_assessed'
+]);
+
+export const ReturnStrengthAxisSchema = qualitativeAxis([
+    'reenterable',
+    'partially_reenterable',
+    'not_reenterable',
+    'not_assessed'
+]);
+
+export const ClosureRiskAxisSchema = qualitativeAxis([
+    'low',
+    'present',
+    'high',
+    'blocked_landfall'
+]);
+
+export const DiagnosticProfileV2Schema = z.strictObject({
+    schemaVersion: z.literal(2),
+    diagnosticId: IdentifierSchema,
+    diagnosticVersion: VersionSchema,
+    evaluationObject: z.strictObject({
+        kind: EvaluationObjectKindSchema,
+        objectRef: IdentifierSchema
+    }),
+    activeFrame: z.strictObject({
+        frameRef: IdentifierSchema,
+        cut: CutReferenceSchema,
+        admissibleScope: ScenarioDomainSchema
+    }),
+    protectedFamily: NonEmptyDescriptionListSchema,
+    excludedClaims: NonEmptyDescriptionListSchema,
+    pathPressure: PathPressureAxisSchema,
+    residueVisibility: ResidueVisibilityAxisSchema,
+    localReorganization: LocalReorganizationAxisSchema,
+    cutFidelity: CutFidelityAxisSchema,
+    returnStrength: ReturnStrengthAxisSchema,
+    closureRisk: ClosureRiskAxisSchema,
+    blockedClaims: z.array(WitnessLinkedBlockedClaimSchema).min(1).max(256)
+}).superRefine((profile, context) => {
+    const claimIds = new Set(profile.blockedClaims.map((claim) => claim.claimId));
+    const axes = [
+        profile.pathPressure,
+        profile.residueVisibility,
+        profile.localReorganization,
+        profile.cutFidelity,
+        profile.returnStrength,
+        profile.closureRisk
+    ];
+    for (let axisIndex = 0; axisIndex < axes.length; axisIndex += 1) {
+        for (const claimId of axes[axisIndex].blockedClaimIds) {
+            if (!claimIds.has(claimId)) {
+                context.addIssue({
+                    code: 'custom',
+                    path: [['pathPressure', 'residueVisibility', 'localReorganization', 'cutFidelity', 'returnStrength', 'closureRisk'][axisIndex], 'blockedClaimIds'],
+                    message: `Axis references undeclared blocked claim ${claimId}.`
+                });
+            }
+        }
+    }
+});
+
+export const DiagnosticProfileSchema = z.discriminatedUnion('schemaVersion', [
+    DiagnosticProfileV1Schema,
+    DiagnosticProfileV2Schema
+]);
+
+export const DesignStepSchema = z.strictObject({
+    sequence: NonNegativeSafeIntegerSchema,
+    kind: z.enum(['policy', 'command', 'declaration']),
+    catalogId: IdentifierSchema,
+    payload: DeterministicJsonValueSchema
+});
+
+export const WorldDesignRequestPayloadSchema = z.strictObject({
+    schemaVersion: z.literal(WORLD_DESIGN_REQUEST_SCHEMA_VERSION),
+    requestId: IdentifierSchema,
+    requestVersion: VersionSchema,
+    profileVersion: VersionSchema,
+    registeredAdapter: AdapterReferenceSchema,
+    baselineOrConfigReference: WorldCarrierReferenceSchema,
+    scenarioDomain: ScenarioDomainSchema,
+    cut: WorldCutDefinitionSchema,
+    protectedFamily: NonEmptyDescriptionListSchema,
+    policyOrCommandSequence: z.array(DesignStepSchema).min(1).max(4_096).superRefine((steps, context) => {
+        for (let index = 0; index < steps.length; index += 1) {
+            if (steps[index].sequence !== index) {
+                context.addIssue({ code: 'custom', path: [index, 'sequence'], message: 'Design step sequence must be contiguous from zero.' });
+            }
+        }
+    }),
+    seeds: z.array(NonNegativeSafeIntegerSchema).min(1).max(1_024),
+    outputDetailLevel: z.enum(['summary', 'witnesses', 'full']),
+    excludedClaims: NonEmptyDescriptionListSchema
+}).superRefine((request, context) => {
+    if (request.registeredAdapter.id !== request.baselineOrConfigReference.adapter.id ||
+        request.registeredAdapter.version !== request.baselineOrConfigReference.adapter.version) {
+        context.addIssue({ code: 'custom', path: ['registeredAdapter'], message: 'Registered adapter must match the baseline/config carrier.' });
+    }
+    if (request.cut.sourceCarrierKind !== request.baselineOrConfigReference.carrierKind) {
+        context.addIssue({ code: 'custom', path: ['cut', 'sourceCarrierKind'], message: 'Cut source carrier kind must match the baseline/config carrier.' });
+    }
+    const requestProtected = [...request.protectedFamily].sort(compareCanonicalText);
+    const cutProtected = [...request.cut.protectedFamily].sort(compareCanonicalText);
+    if (canonicalJson(requestProtected) !== canonicalJson(cutProtected)) {
+        context.addIssue({ code: 'custom', path: ['protectedFamily'], message: 'Request protected family must exactly match the declared cut protected family.' });
+    }
+    const requestSeeds = [...request.seeds].sort((left, right) => left - right);
+    const domainSeeds = [...request.scenarioDomain.seeds].sort((left, right) => left - right);
+    if (canonicalJson(requestSeeds) !== canonicalJson(domainSeeds)) {
+        context.addIssue({ code: 'custom', path: ['seeds'], message: 'Request seeds must exactly match the scenario-domain seed set.' });
+    }
+    const cutDomain = request.cut.admissibleDomain;
+    for (const [field, values, allowed] of [
+        ['scenarioIds', request.scenarioDomain.scenarioIds, cutDomain.scenarioIds],
+        ['actionFamilies', request.scenarioDomain.actionFamilies, cutDomain.actionFamilies],
+        ['policyFamilies', request.scenarioDomain.policyFamilies, cutDomain.policyFamilies]
+    ] as const) {
+        if (values.some((value) => !allowed.includes(value))) {
+            context.addIssue({ code: 'custom', path: ['scenarioDomain', field], message: `Request ${field} must remain inside the cut domain.` });
+        }
+    }
+    if (request.seeds.some((seed) => !cutDomain.seeds.includes(seed))) {
+        context.addIssue({ code: 'custom', path: ['seeds'], message: 'Request seeds must remain inside the cut domain.' });
+    }
+});
+
+export const WorldDesignRequestSchema = z.strictObject({
+    ...WorldDesignRequestPayloadSchema.shape,
+    requestDigest: DigestSchema
+}).superRefine((request, context) => {
+    const { requestDigest, ...payload } = request;
+    const payloadResult = WorldDesignRequestPayloadSchema.safeParse(payload);
+    if (!payloadResult.success) {
+        for (const issue of payloadResult.error.issues) {
+            context.addIssue({
+                code: 'custom',
+                path: issue.path,
+                message: issue.message
+            });
+        }
+        return;
+    }
+    if (sha256Digest(payload) !== requestDigest) {
+        context.addIssue({ code: 'custom', path: ['requestDigest'], message: 'Request digest does not match canonical request content.' });
+    }
+});
+
+export const WorldDesignResultPayloadSchema = z.strictObject({
+    schemaVersion: z.literal(WORLD_DESIGN_RESULT_SCHEMA_VERSION),
+    resultId: IdentifierSchema,
+    resultVersion: VersionSchema,
+    requestDigest: DigestSchema,
+    sourceLocks: z.array(SourceLockSchema).min(1).max(16),
+    traces: z.array(VoyageTraceSchema).max(1_024),
+    transitionWitnesses: z.array(TransitionWitnessSchema).max(4_096),
+    projectionAssessments: z.array(ProjectionTransportAssessmentSchema).max(1_024),
+    worldObligations: z.array(WorldObligationSchema).max(1_024),
+    returnAssessments: z.array(ReturnAssessmentSchema).max(1_024),
+    diagnostics: z.array(DiagnosticProfileSchema).max(1_024),
+    residualLedger: ResidualLedgerSchema,
+    blockedClaims: NonEmptyDescriptionListSchema,
+    maturity: z.enum(['M0_appearance', 'M1_declaration', 'M2_local_use']),
+    productAuthority: z.literal('none'),
+    authorityProvenance: AuthorityProvenanceSchema,
+    evidenceOrigin: EvidenceOriginSchema,
+    covarianceGroup: IdentifierSchema,
+    deduplicationIdentity: DigestSchema,
+    executionReceipt: RegisteredExecutionReceiptBaseSchema
+});
+
+export const WorldDesignResultSchema = z.strictObject({
+    schemaVersion: z.literal(WORLD_DESIGN_RESULT_SCHEMA_VERSION),
+    resultId: IdentifierSchema,
+    resultVersion: VersionSchema,
+    requestDigest: DigestSchema,
+    sourceLocks: z.array(SourceLockSchema).min(1).max(16),
+    traces: z.array(VoyageTraceSchema).max(1_024),
+    transitionWitnesses: z.array(TransitionWitnessSchema).max(4_096),
+    projectionAssessments: z.array(ProjectionTransportAssessmentSchema).max(1_024),
+    worldObligations: z.array(WorldObligationSchema).max(1_024),
+    returnAssessments: z.array(ReturnAssessmentSchema).max(1_024),
+    diagnostics: z.array(DiagnosticProfileSchema).max(1_024),
+    residualLedger: ResidualLedgerSchema,
+    blockedClaims: NonEmptyDescriptionListSchema,
+    maturity: z.enum(['M0_appearance', 'M1_declaration', 'M2_local_use']),
+    productAuthority: z.literal('none'),
+    authorityProvenance: AuthorityProvenanceSchema,
+    evidenceOrigin: EvidenceOriginSchema,
+    covarianceGroup: IdentifierSchema,
+    deduplicationIdentity: DigestSchema,
+    executionReceipt: RegisteredExecutionReceiptSchema,
+    resultDigest: DigestSchema
+}).superRefine((result, context) => {
+    const { resultDigest, executionReceipt, ...rest } = result;
+    const { resultDigest: receiptResultDigest, ...receiptBase } = executionReceipt;
+    const payload = { ...rest, executionReceipt: receiptBase };
+    if (sha256Digest(payload) !== resultDigest) {
+        context.addIssue({ code: 'custom', path: ['resultDigest'], message: 'Result digest does not match canonical result content.' });
+    }
+    if (receiptResultDigest !== resultDigest) {
+        context.addIssue({ code: 'custom', path: ['executionReceipt', 'resultDigest'], message: 'Execution receipt must bind the exact result digest.' });
+    }
+    if (executionReceipt.requestDigest !== result.requestDigest) {
+        context.addIssue({ code: 'custom', path: ['executionReceipt', 'requestDigest'], message: 'Execution receipt must bind the exact request digest.' });
+    }
+    if (canonicalJson(executionReceipt.sourceLocks) !== canonicalJson(result.sourceLocks)) {
+        context.addIssue({ code: 'custom', path: ['executionReceipt', 'sourceLocks'], message: 'Execution receipt source locks must match the result source locks.' });
+    }
+    if (executionReceipt.profileVersion !== 2 || executionReceipt.requestSchemaVersion !== 2 || executionReceipt.resultSchemaVersion !== 3) {
+        context.addIssue({ code: 'custom', path: ['executionReceipt'], message: 'Only the authenticated profile-v2/request-v2/result-v3 execution receipt is supported.' });
+    }
+    const expectedAdapterChain = result.evidenceOrigin === 'authority-derived'
+        ? [
+            { id: 'v4_authority', version: 2 },
+            { id: 'nimble-knots-simulation-authority-adapter', version: 2 }
+        ]
+        : result.evidenceOrigin === 'analysis-derived'
+            ? [
+                { id: 'd2a_tactical', version: 2 },
+                { id: 'd2a_analytical_export', version: 2 }
+            ]
+            : null;
+    if (expectedAdapterChain && canonicalJson(executionReceipt.adapterVersions) !== canonicalJson(expectedAdapterChain)) {
+        context.addIssue({ code: 'custom', path: ['executionReceipt', 'adapterVersions'], message: 'Execution receipt must contain the exact registered adapter chain in execution order.' });
+    }
+    const receiptAdapters = new Set(executionReceipt.adapterVersions.map((adapter) => canonicalJson(adapter)));
+    const referencedAdapters = result.traces.flatMap((trace) => trace.transitionEdges.flatMap((edge) => [
+        edge.sourceCarrier.adapter,
+        edge.targetCarrier.adapter,
+        edge.fixedFrame.adapter
+    ]));
+    for (const adapter of referencedAdapters) {
+        if (!receiptAdapters.has(canonicalJson(adapter))) {
+            context.addIssue({ code: 'custom', path: ['executionReceipt', 'adapterVersions'], message: `Receipt omits adapter ${adapter.id}@${adapter.version} referenced by an edge carrier or fixed frame.` });
+        }
+    }
+    for (let index = 0; index < result.traces.length; index += 1) {
+        if (result.traces[index].schemaVersion !== 4) {
+            context.addIssue({ code: 'custom', path: ['traces', index, 'schemaVersion'], message: 'Pre-authentication voyage records are unsupported; results require VoyageTrace v4.' });
+        }
+    }
+    const derivedResidual = deriveWorldDesignResidual(result.traces);
+    if (canonicalJson(result.residualLedger) !== canonicalJson(derivedResidual)) {
+        context.addIssue({ code: 'custom', path: ['residualLedger'], message: 'Result residual ledger must equal the canonical aggregation of all contained traces.' });
+    }
+    if (result.authorityProvenance.relationship === 'authority_adapter_parity') {
+        const provenance = result.authorityProvenance;
+        if (result.evidenceOrigin !== 'authority-derived') {
+            context.addIssue({ code: 'custom', path: ['authorityProvenance'], message: 'Authority-adapter parity provenance requires authority-derived evidence.' });
+        }
+        if (!result.sourceLocks.some((lock) => canonicalJson(lock) === canonicalJson(provenance.authoritySource))) {
+            context.addIssue({ code: 'custom', path: ['authorityProvenance', 'authoritySource'], message: 'Authority provenance source lock must be present in the result source locks.' });
+        }
+        const actualWitnesses = new Set(result.transitionWitnesses.map((witness) =>
+            canonicalJson({ witnessId: witness.witnessId, digest: sha256Digest(witness) })
+        ));
+        for (let index = 0; index < provenance.witnessReferences.length; index += 1) {
+            if (!actualWitnesses.has(canonicalJson(provenance.witnessReferences[index]))) {
+                context.addIssue({ code: 'custom', path: ['authorityProvenance', 'witnessReferences', index], message: 'Authority provenance must reference an exact transition witness in this result.' });
+            }
+        }
+    }
+
+    const obligations = new Map(result.worldObligations.map((obligation) => [obligation.obligationId, obligation]));
+    if (obligations.size !== result.worldObligations.length) {
+        context.addIssue({ code: 'custom', path: ['worldObligations'], message: 'World-obligation ids must be unique.' });
+    }
+    const edges = result.traces.flatMap((trace) => trace.transitionEdges);
+    const edgesById = new Map(edges.map((edge) => [edge.edgeId, edge]));
+    for (let index = 0; index < result.worldObligations.length; index += 1) {
+        const obligation = result.worldObligations[index];
+        if (obligation.origin.kind === 'edge') {
+            const origin = edgesById.get(obligation.origin.edgeId);
+            if (!origin) {
+                context.addIssue({ code: 'custom', path: ['worldObligations', index, 'origin', 'edgeId'], message: 'World-obligation origin edge must exist in the result.' });
+            } else if (canonicalJson(obligation.supportCarrier) !== canonicalJson(origin.targetCarrier)) {
+                context.addIssue({ code: 'custom', path: ['worldObligations', index, 'supportCarrier'], message: 'Edge-origin obligation support carrier must be the origin edge target carrier.' });
+            }
+        } else {
+            const initialCarrier = obligation.origin.carrier;
+            const initialExists = result.traces.some((trace) => canonicalJson(trace.initialCarrier) === canonicalJson(initialCarrier));
+            if (!initialExists || canonicalJson(obligation.supportCarrier) !== canonicalJson(initialCarrier)) {
+                context.addIssue({ code: 'custom', path: ['worldObligations', index, 'origin', 'carrier'], message: 'Initial-carrier obligation must reference an exact trace initial carrier and matching support carrier.' });
+            }
+        }
+    }
+
+    const referencedIds = new Set<string>();
+    const visitLedger = (ledger: z.infer<typeof ResidualLedgerSchema>, path: (string | number)[]) => {
+        for (const field of [
+            'openedObligations',
+            'carriedObligations',
+            'dischargedObligations',
+            'unresolvedObligations',
+            'expiredRights'
+        ] as const) {
+            for (let index = 0; index < ledger[field].length; index += 1) {
+                const obligationId = ledger[field][index];
+                referencedIds.add(obligationId);
+                if (!obligations.has(obligationId)) {
+                    context.addIssue({
+                        code: 'custom',
+                        path: [...path, field, index],
+                        message: `Residual obligation ${obligationId} has no typed world-obligation record.`
+                    });
+                }
+            }
+        }
+    };
+    visitLedger(result.residualLedger, ['residualLedger']);
+    const observedLifecycle = new Map<string, 'open' | 'carried' | 'discharged' | 'expired'>();
+    for (let traceIndex = 0; traceIndex < result.traces.length; traceIndex += 1) {
+        const trace = result.traces[traceIndex];
+        const initialObligations = result.worldObligations.filter((obligation) => {
+            const origin = obligation.origin;
+            return origin.kind === 'initial_carrier' &&
+                canonicalJson(origin.carrier) === canonicalJson(trace.initialCarrier);
+        });
+        const live = new Set(initialObligations.map((obligation) => obligation.obligationId));
+        for (const obligation of initialObligations) observedLifecycle.set(obligation.obligationId, 'open');
+        if (trace.schemaVersion === 3) {
+            const expectedInitial = [...live].sort(compareCanonicalText);
+            const declaredInitial = [...trace.initialObligationIds].sort(compareCanonicalText);
+            if (canonicalJson(expectedInitial) !== canonicalJson(declaredInitial)) {
+                context.addIssue({ code: 'custom', path: ['traces', traceIndex, 'initialObligationIds'], message: 'Trace initial obligations must match typed initial-carrier obligation records.' });
+            }
+        }
+        for (let edgeIndex = 0; edgeIndex < trace.transitionEdges.length; edgeIndex += 1) {
+            const edge = trace.transitionEdges[edgeIndex];
+            const ledger = edge.residual;
+            visitLedger(ledger, ['traces', traceIndex, 'transitionEdges', edgeIndex, 'residual']);
+            const simultaneousClosure = ledger.dischargedObligations.filter((id) => ledger.expiredRights.includes(id));
+            if (simultaneousClosure.length > 0) {
+                context.addIssue({ code: 'custom', path: ['traces', traceIndex, 'transitionEdges', edgeIndex, 'residual'], message: 'An obligation cannot discharge and expire on the same edge.' });
+            }
+            const closing = new Set([...ledger.dischargedObligations, ...ledger.expiredRights]);
+            const expectedCarried = [...live].filter((obligationId) => !closing.has(obligationId)).sort(compareCanonicalText);
+            const declaredCarried = [...ledger.carriedObligations].sort(compareCanonicalText);
+            if (canonicalJson(expectedCarried) !== canonicalJson(declaredCarried)) {
+                context.addIssue({
+                    code: 'custom',
+                    path: ['traces', traceIndex, 'transitionEdges', edgeIndex, 'residual', 'carriedObligations'],
+                    message: 'Every previously open obligation must be explicitly carried or closed on the next edge.'
+                });
+            }
+            for (const obligationId of ledger.openedObligations) {
+                const obligation = obligations.get(obligationId);
+                if (live.has(obligationId) || obligation?.origin.kind !== 'edge' || obligation.origin.edgeId !== edge.edgeId) {
+                    context.addIssue({ code: 'custom', path: ['traces', traceIndex, 'transitionEdges', edgeIndex, 'residual', 'openedObligations'], message: `Obligation ${obligationId} must open exactly once on its declared origin edge.` });
+                }
+                live.add(obligationId);
+                observedLifecycle.set(obligationId, 'open');
+            }
+            for (const obligationId of ledger.carriedObligations) {
+                if (!live.has(obligationId)) {
+                    context.addIssue({ code: 'custom', path: ['traces', traceIndex, 'transitionEdges', edgeIndex, 'residual', 'carriedObligations'], message: `Obligation ${obligationId} cannot be carried before it opens.` });
+                } else {
+                    observedLifecycle.set(obligationId, 'carried');
+                }
+            }
+            for (const obligationId of ledger.dischargedObligations) {
+                if (!live.has(obligationId)) {
+                    context.addIssue({ code: 'custom', path: ['traces', traceIndex, 'transitionEdges', edgeIndex, 'residual'], message: `Obligation ${obligationId} cannot discharge before it opens.` });
+                }
+                live.delete(obligationId);
+                observedLifecycle.set(obligationId, 'discharged');
+            }
+            for (const obligationId of ledger.expiredRights) {
+                if (!live.has(obligationId)) {
+                    context.addIssue({ code: 'custom', path: ['traces', traceIndex, 'transitionEdges', edgeIndex, 'residual'], message: `Obligation ${obligationId} cannot expire before it opens.` });
+                }
+                live.delete(obligationId);
+                observedLifecycle.set(obligationId, 'expired');
+            }
+            const unresolved = [...ledger.unresolvedObligations].sort(compareCanonicalText);
+            const expected = [...live].sort(compareCanonicalText);
+            if (canonicalJson(unresolved) !== canonicalJson(expected)) {
+                context.addIssue({ code: 'custom', path: ['traces', traceIndex, 'transitionEdges', edgeIndex, 'residual', 'unresolvedObligations'], message: 'Every open obligation must be carried forward or explicitly discharged/expired on the next edge.' });
+            }
+        }
+    }
+    for (let index = 0; index < result.worldObligations.length; index += 1) {
+        const obligation = result.worldObligations[index];
+        if (!referencedIds.has(obligation.obligationId)) {
+            context.addIssue({ code: 'custom', path: ['worldObligations', index], message: 'Typed world-obligation records must be referenced by result residue.' });
+        }
+        const observed = observedLifecycle.get(obligation.obligationId);
+        if (observed !== obligation.lifecycleStatus) {
+            context.addIssue({
+                code: 'custom',
+                path: ['worldObligations', index, 'lifecycleStatus'],
+                message: `World-obligation lifecycle status must match its witnessed edge history (${observed ?? 'unobserved'}).`
+            });
+        }
+    }
+});
+
+export function buildWorldDesignRequest(input: unknown) {
+    const payload = WorldDesignRequestPayloadSchema.parse(input);
+    return WorldDesignRequestSchema.parse({ ...payload, requestDigest: sha256Digest(payload) });
+}
+
+export function buildWorldDesignResult(input: unknown) {
+    const payload = WorldDesignResultPayloadSchema.parse(input);
+    const resultDigest = sha256Digest(payload);
+    return WorldDesignResultSchema.parse({
+        ...payload,
+        executionReceipt: { ...payload.executionReceipt, resultDigest },
+        resultDigest
+    });
+}
+
+export function parseRegisteredWorldDesignRequest(input: unknown, portContractInput: unknown) {
+    const request = WorldDesignRequestSchema.parse(input);
+    const portContract = PortContractSchema.parse(portContractInput);
+    const adapterRegistered = portContract.catalogs.adapters.some((adapter) =>
+        adapter.id === request.registeredAdapter.id && adapter.version === request.registeredAdapter.version
+    );
+    if (!adapterRegistered) {
+        throw new Error(`Adapter ${request.registeredAdapter.id}@${request.registeredAdapter.version} is not registered.`);
+    }
+    if (!portContract.catalogs.rulesetsOrConfigs.includes(request.baselineOrConfigReference.rulesetOrConfigId)) {
+        throw new Error(`Ruleset/config ${request.baselineOrConfigReference.rulesetOrConfigId} is not registered.`);
+    }
+    if (!portContract.catalogs.cuts.some((cut) =>
+        cut.id === request.cut.cutId && cut.version === request.cut.cutVersion
+    )) {
+        throw new Error(`Cut ${request.cut.cutId}@${request.cut.cutVersion} is not registered.`);
+    }
+    return request;
+}

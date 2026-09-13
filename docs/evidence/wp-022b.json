@@ -1,0 +1,73 @@
+{
+  "id": "WP-022B",
+  "status": "complete",
+  "execution_mode": "single_owner",
+  "starting_commit": "13377fd",
+  "branch": "codex/pei-daily-v10",
+  "initial_worktree": "clean",
+  "starting_lock_sha256": "6B768A8FDE2695D02555CA17201FD7CE420F9AC075B91380474DD7A643042BC8",
+  "owning_roles": [
+    "primary assistant"
+  ],
+  "scope": [
+    "Add a durable server-side PEI admission credential bound to normalized wallet, UTC challenge day, verification digest and expiry.",
+    "Require and bind the credential during Daily reservation only when PEI_ENABLED=true, then consume it atomically with the existing started-attempt transition.",
+    "Preserve the accepted V10 R5 Daily and wallet-free Practice behavior while PEI remains disabled by default."
+  ],
+  "non_goals": [
+    "No helper Mini App, PEI request/proof/carrier schema, chain lookup, receipt ablation, public PEI journey, mainnet transaction or payout-mode change."
+  ],
+  "planned_checks": [
+    "npm.cmd run verify:changes",
+    "Focused PEI admission, reward and protocol checks",
+    "Primary direct review"
+  ],
+  "deterministic_seeds": [
+    "Fixed admission IDs, credential tokens, verification digests, UTC instants and V10 reward seeds in focused tests"
+  ],
+  "sorcerers_reference_used": false,
+  "clean_room_records": [],
+  "check_results": [
+    {
+      "command": "npm.cmd run verify:changes",
+      "status": "pass",
+      "details": "Primary selected coverage from dry run; /root/verification (worms_port_test_runner, requested gpt-5.6-terra/medium; runtime model identity unavailable) executed against HEAD 13377fd and 20 stable dirty/untracked inputs. Fingerprint d953a7705d85b4ecf26608662b1e6f88abb9b7ab05831d7c08ffa092b213872c remained unchanged. Import boundary, types, 62 work-package records, combat 94, practice 42, identity 22, reward 44, protocol 131, simulation 178, Loomkeeper 39 and relics 10 passed. Build, built smoke, identity/reward security and bundle checks passed. Chromium 390x844 completed 72 passes and 3 expected skips with zero failures or retries. Build proof e3aee2436082/83e27b872e40. Initial JS 1,498,847/1,500,000 bytes; initial JS+CSS gzip 415,596/430,000. Log .cache/wp022b-selector.log.",
+      "historical_attempts": [
+        {
+          "command": "Focused PEI admission tests before final selector",
+          "status": "fail",
+          "details": "The first focused run exhausted a finite deterministic ID fixture while exercising deliberate rejection paths. Primary replaced it with an unbounded deterministic sequence; the current-code focused rerun passed 18/18 in .cache/wp022b-focused-rerun.log. This changed the verification input before the final selector and no results from the stale fingerprint were reused."
+        }
+      ]
+    },
+    {
+      "command": "Focused PEI admission, reward and protocol checks",
+      "status": "pass",
+      "details": "Current-code focused PEI admission coverage passed 18/18; the complete reward family passed 44/44 and protocol family passed 131/131. Logs .cache/wp022b-focused-rerun.log, .cache/wp022b-reward.log and .cache/wp022b-protocol.log."
+    },
+    {
+      "command": "Primary direct review",
+      "status": "pass",
+      "details": "Primary reviewed strict environment parsing, disabled-mode compatibility, raw-token non-persistence, wallet/day/token/expiry binding, serializable reservation, atomic start/credential consumption, cancellation reuse, replay refusal, socket schema, V10 Daily creation and Practice isolation. git diff --check reported no whitespace errors before evidence closure."
+    }
+  ],
+  "reviews": [
+    {
+      "reviewer": "Primary single-owner assistant",
+      "role": "primary_direct_review",
+      "decision": "pass",
+      "details": "The durable admission seam is complete and stays inactive unless PEI_ENABLED=true. Product implementation and direct review remained primary-owned; only test execution was delegated to /root/verification. The helper, receipt protocol, chain lookup and public PEI journey remain successor work."
+    }
+  ],
+  "skipped_checks": [
+    "PostgreSQL integration skipped because WP014_TEST_DATABASE_URL is absent; the CI database gate remains required.",
+    "Three Ubuntu-only visual comparisons skipped under the existing Windows policy; no baseline was generated or approved on Windows.",
+    "Daily/full release and performance matrix was not selected; the 22:00 Europe/Berlin automation remains unchanged.",
+    "npm audit was not separately run because no dependency or lockfile changed.",
+    "No physical-phone gate applies because PEI_ENABLED remains false and WP-022B exposes no user journey."
+  ],
+  "residual_risks": [
+    "No trusted chain verifier or client return path can issue a production qualification yet; PEI_ENABLED must remain false outside controlled tests.",
+    "PostgreSQL behavior still requires the existing disposable database or CI integration gate."
+  ]
+}

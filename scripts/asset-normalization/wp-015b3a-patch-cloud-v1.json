@@ -1,0 +1,100 @@
+{
+  "schema_version": 1,
+  "id": "wp-015b3a-patch-cloud-v1",
+  "work_package": "WP-015B3A",
+  "frozen_at": "2026-08-04",
+  "purpose": "Deterministically extract the exact owner-approved Patch 01 Cloud candidate from its white matte, preserve its connected crochet silhouette and interior stitch reading without transparent pinholes, and uniformly center it without painting, reconstruction, or distortion.",
+  "source": {
+    "default_external_path": "C:/Users/jensb/AppData/Local/Comfy-Desktop/ComfyUI-Shared/output/WormsPortFlux2KleinText_00007_.png",
+    "filename": "WormsPortFlux2KleinText_00007_.png",
+    "sha256": "EA972B0B884AE5D144C74AE01E490E9C8961A42619172060C11F53925D48FFE7",
+    "bytes": 688501,
+    "width": 1024,
+    "height": 1024,
+    "channels": 3
+  },
+  "boundaries": {
+    "allowed": [
+      "background matte extraction",
+      "white-matte edge-color decontamination",
+      "largest connected subject selection",
+      "deterministic filling of fully enclosed white-matte regions to avoid transparent stitch pinholes",
+      "uniform scale",
+      "translation",
+      "deterministic RGBA resampling"
+    ],
+    "blocked": [
+      "inference",
+      "manual painting",
+      "cloning",
+      "generative fill",
+      "cloud reconstruction",
+      "non-uniform scale",
+      "warp",
+      "Terrain Top generation",
+      "runtime integration"
+    ]
+  },
+  "matte": {
+    "background_rgb": [255, 255, 255],
+    "distance_metric": "maximum absolute RGB channel distance",
+    "hard_foreground_threshold": 20,
+    "soft_edge_low_threshold": 3,
+    "soft_edge_high_threshold": 16,
+    "soft_edge_radius_pixels": 2,
+    "component_connectivity": 8,
+    "component_selection": "largest hard-foreground component",
+    "post_resample_component_selection": "retain the largest 8-connected nonzero-alpha component after each resize to suppress isolated bicubic ringing pixels",
+    "enclosed_holes": "fill_enclosed_white_matte_only",
+    "external_background": "discard, including disconnected and border-connected pixels",
+    "contact_shadow": "discard; the approved source has no contact plane and only fully enclosed white-matte regions are filled to prevent background-color pinholes",
+    "edge_color": "uncomposite soft-edge RGB from the fixed white matte using the computed alpha; hard foreground retains exact source RGB",
+    "expected_hard_bounds": {
+      "min_x": 96,
+      "min_y": 215,
+      "max_x": 937,
+      "max_y": 774
+    }
+  },
+  "geometry": {
+    "source_landmarks": {
+      "visible_center": [516.5, 494.5],
+      "method": "reviewed midpoint of the threshold-20 connected Cloud bounds; it is a presentation-placement anchor, not terrain authority"
+    },
+    "master": {
+      "canvas": [512, 512],
+      "uniform_scale_numerator": 12,
+      "uniform_scale_denominator": 25,
+      "translation": [8.079999999999984, 18.639999999999986],
+      "placement_anchor": [256, 256],
+      "motion_safe": {
+        "min_x": 36,
+        "max_x": 476,
+        "min_y": 96,
+        "max_y": 416
+      }
+    },
+    "review_sizes": [192, 48]
+  },
+  "resampling": {
+    "filter": "Mitchell-Netravali bicubic",
+    "b": 0.3333333333333333,
+    "c": 0.3333333333333333,
+    "sampling": "pixel-center inverse mapping",
+    "alpha": "premultiplied during filtering, straight RGBA in PNG",
+    "png": "8-bit non-interlaced RGBA, filter type 0, deterministic zlib level 9"
+  },
+  "review_backgrounds": {
+    "patch_sky": [217, 242, 243],
+    "dark_navy": [31, 35, 70],
+    "contact_sheet_order": ["patch_sky", "dark_navy"]
+  },
+  "outputs": {
+    "master": "patch-01-cloud-source-master-v1.png",
+    "review_192": "patch-01-cloud-source-master-v1-review-192.png",
+    "review_48": "patch-01-cloud-source-master-v1-review-48.png",
+    "edge_review": "patch-01-cloud-source-master-v1-edge-review.png",
+    "report": "patch-01-cloud-source-master-v1.report.json",
+    "approved_master_path": "assets/masters/environment/patch-01/clouds/patch-01-cloud-source-master-v1.png"
+  }
+}

@@ -1,17 +1,14 @@
+import type { ChallengeSnapshotV10, ChallengeResultV10 } from '../../../shared/protocol-v10-live';
+import { takeTerrainV10SessionEvents } from '../lib/session';
 import type { Socket } from 'socket.io-client';
 
 import {
     ChallengeCreateAckSchema,
-    ChallengeLeaveAckSchema,
     ChallengePauseAckSchema,
     ChallengeResultSchema,
     ChallengeSnapshotSchema,
     CommandSubmitAckSchema,
     protocolEvents,
-    RewardClaimAckSchema,
-    RewardInfoAckSchema,
-    RewardReserveAckSchema,
-    RewardStatusAckSchema,
     RewardUpdateDataSchema,
     type ChallengeResult,
     type ChallengeSnapshot,
@@ -23,8 +20,10 @@ import {
     type WalletIdentity
 } from '../../../shared/protocol';
 import type { PlayerCalling, SimulationCommand } from '../../../shared/simulation';
+import type { ChallengeSnapshotV8Automated, ChallengeResultV8Automated } from '../../../shared/protocol-v8';
+import type { ChallengeSnapshotV9, ChallengeResultV9 } from '../../../shared/protocol-v9';
 import type { CombatSceneArgs } from '../combat/contracts';
-import { whenSessionReady } from '../lib/session';
+import { reconnectSession, takeActionTurnsV8SessionEvents, whenSessionReady } from '../lib/session';
 
 const ACK_TIMEOUT_MS = 5_000;
 const ACTIVE_PRACTICE_KEY = 'nimble-knots.active-practice';
@@ -32,6 +31,8 @@ export const PRACTICE_CLIENT_REGISTRY_KEY = 'practice-client';
 
 export type PracticeConnectionState = 'connected' | 'reconnecting';
 export type Unsubscribe = () => void;
+export type LiveCombatSnapshot = ChallengeSnapshot | ChallengeSnapshotV8Automated | ChallengeSnapshotV9 | ChallengeSnapshotV10;
+export type LiveCombatResult = ChallengeResult | ChallengeResultV8Automated | ChallengeResultV9 | ChallengeResultV10;
 
 export class PracticeProtocolError extends Error {
     public constructor(public readonly protocolError: ProtocolError) {
@@ -44,7 +45,13 @@ export class PracticeClient {
     private snapshot?: ChallengeSnapshot;
     private sessionId: string;
     private identity?: WalletIdentity;
-    private nextSequence = 0;
+    private sessionCursor: import('./action-turns-v8').ActionTurnsSessionCursor;
+    private get nextSequence(): number { return this.sessionCursor.nextSequence; }
+    private set nextSequence(value: number) { this.sessionCursor.nextSequence = value; }
+    private session: SessionOpenData;
+    private lifecycle?: import('./action-turns-v8').ActionTurnsLifecycle;
+    private lifecycleReady?: Promise<import('./action-turns-v8').ActionTurnsLifecycle>;
+    private readonly combatResultListeners = new Set<(result: LiveCombatResult) => void>();
     private mutationPending = false;
     private readonly suppressedLeaveChallenges = new Set<string>();
     private pendingUnavailable?: string;
@@ -57,6 +64,13 @@ export class PracticeClient {
     private readonly errorListeners = new Set<(message: string) => void>();
     private readonly rewardListeners = new Set<(update: RewardUpdateData) => void>();
     private readonly rewardUpdates = new Map<string, RewardUpdateData>();
+    private volcanicPractice = false;
+    private v10?: import('./terrain-turns-v10').ResourceTurnsV10Client;
+    private v10Ready?: Promise<import('./terrain-turns-v10').ResourceTurnsV10Client>;
+    private v9?: import('./resource-turns-v9').ResourceTurnsV9Client;
+    private v9Ready?: Promise<import('./resource-turns-v9').ResourceTurnsV9Client>;
+    private pei?: import('../pei/client').PeiProtocolClientV0;
+    private peiReady?: Promise<import('../pei/client').PeiProtocolClientV0>;
 
     public constructor(
         private readonly socket: Socket,
@@ -64,7 +78,12 @@ export class PracticeClient {
         initialSnapshots: readonly unknown[] = [],
         initialResults: readonly unknown[] = []
     ) {
+        this.session = structuredClone(session);
         this.sessionId = session.sessionId;
+        this.sessionCursor = {
+            sessionId: session.sessionId,
+            nextSequence: session.nextSequence ?? 0
+        };
         this.identity = session.identity ? structuredClone(session.identity) : undefined;
         const stored = readActivePractice();
         if (stored && stored.sessionId !== session.sessionId) {
@@ -86,6 +105,25 @@ export class PracticeClient {
         for (const raw of initialResults) this.onResultEvent(raw);
     }
 
+    public static async connect(socket: Socket, session: SessionOpenData,
+        initialSnapshots: readonly unknown[] = [], initialResults: readonly unknown[] = []): Promise<PracticeClient> {
+        const client = new PracticeClient(socket, session, initialSnapshots, initialResults);
+        const buffered = takeActionTurnsV8SessionEvents(socket);
+        if (buffered.snapshots.length || buffered.results.length) {
+            await (await client.getLifecycle()).attach(buffered.snapshots, buffered.results);
+        }
+        if (typeof window !== 'undefined' && window.location?.origin && typeof fetch === 'function') {
+            const response = await fetch('/api/practice-profile');
+            if (!response.ok) throw new Error('Practice configuration is unavailable. Reload to retry.');
+            const profile = await response.json();
+            if (!profile || !['legacy', 'volcanic-v10'].includes(profile.ruleset)) throw new Error('Unknown Practice profile.');
+            client.volcanicPractice = profile.ruleset === 'volcanic-v10';
+        }
+        const volcanic = takeTerrainV10SessionEvents(socket);
+        if (volcanic.snapshots.length) (await client.getV10()).restore(volcanic.snapshots, volcanic.results);
+        return client;
+    }
+
     public currentSnapshot(): ChallengeSnapshot | undefined {
         return this.snapshot ? structuredClone(this.snapshot) : undefined;
     }
@@ -98,6 +136,18 @@ export class PracticeClient {
         }, ChallengeCreateAckSchema);
     }
 
+    public currentCombatSnapshot(): LiveCombatSnapshot | undefined {
+        const snapshots = [this.v10?.currentSnapshot(), this.v9?.currentSnapshot(), this.lifecycle?.currentSnapshot(), this.currentSnapshot()];
+        return snapshots.find(value => value?.status === 'active') ?? snapshots.find(Boolean);
+    }
+
+    public async startCombat(calling: PlayerCalling): Promise<LiveCombatSnapshot> {
+        if (this.volcanicPractice && this.v10?.currentSnapshot()?.status === 'active') return this.v10.currentSnapshot()!;
+        if (v9CandidateRoute()) return (await this.getV9()).start('practice', calling);
+        if (this.volcanicPractice && !new URLSearchParams(window.location.search).has('legacy-practice')) return (await this.getV10()).start('practice', calling);
+        return (await this.getLifecycle()).start(calling);
+    }
+
     public currentIdentity(): WalletIdentity | undefined {
         return this.identity ? structuredClone(this.identity) : undefined;
     }
@@ -106,16 +156,22 @@ export class PracticeClient {
         this.identity = structuredClone(identity);
     }
 
+    public async beginPei(): Promise<import('../../../shared/pei-wire-v0').PeiLaunchData> {
+        return (await this.getPei()).begin();
+    }
+
+    public async returnPei(
+        kind: import('../../../shared/pei-wire-v0').PeiReturnKind,
+        carrier: string
+    ): Promise<
+        import('../../../shared/pei-wire-v0').PeiLaunchData |
+        import('../../../shared/pei-wire-v0').PeiQualifiedData
+    > {
+        return (await this.getPei()).returned(kind, carrier);
+    }
+
     public async rewardInfo(): Promise<RewardInfoData> {
-        await whenSessionReady(this.socket);
-        const requestId = createRequestId();
-        const raw = await this.emitWithRetry(protocolEvents.rewardInfo, { requestId });
-        const parsed = RewardInfoAckSchema.safeParse(raw);
-        if (!parsed.success || parsed.data.requestId !== requestId) {
-            throw new Error('Server returned invalid Daily Challenge availability.');
-        }
-        if (parsed.data.ok === false) throw new PracticeProtocolError(parsed.data.error);
-        return structuredClone(parsed.data.data);
+        return (await this.getLifecycle()).rewardInfo();
     }
 
     public async startReward(calling: PlayerCalling): Promise<ChallengeSnapshot> {
@@ -130,6 +186,52 @@ export class PracticeClient {
         }, ChallengeCreateAckSchema);
     }
 
+    public async startRewardCombat(calling: PlayerCalling): Promise<LiveCombatSnapshot> {
+        if (this.volcanicPractice) {
+            const reservation = await this.reserveReward(calling);
+            return (await this.getV10()).start('reward', calling, {
+                challengeId: reservation.challengeId, eligibilityToken: reservation.eligibilityToken
+            });
+        }
+        if (v9CandidateRoute()) {
+            const reservation = await this.reserveReward(calling);
+            return (await this.getV9()).start('reward', calling, {
+                challengeId: reservation.challengeId, eligibilityToken: reservation.eligibilityToken
+            });
+        }
+        return (await this.getLifecycle()).startReward(calling);
+    }
+
+    public async retryCombat(calling: PlayerCalling): Promise<LiveCombatSnapshot> {
+        if (this.volcanicPractice) {
+            await this.getV10();
+            if (this.v10.currentSnapshot()?.status === 'active') await this.v10.leave();
+            return this.v10.start('practice', calling);
+        }
+        if (this.v9?.currentSnapshot()) {
+            const current = this.v9.currentSnapshot()!;
+            if (current.status === 'active') await this.v9.leave();
+            // A reward entitlement is single-use. Result retry follows the
+            // existing Daily Challenge affordance back to wallet-free Practice.
+            return this.v9.start(current.mode === 'reward' ? 'practice' : current.mode, calling);
+        }
+        return (await this.getLifecycle()).retry(calling);
+    }
+
+    public async combatArgs(snapshot: LiveCombatSnapshot): Promise<CombatSceneArgs> {
+        if (snapshot.protocolVersion === 1) return liveCombatArgs(this, snapshot);
+        if (snapshot.protocolVersion === 10) return (await this.getV10()).combatArgs(snapshot);
+        if (snapshot.protocolVersion === 9) return (await this.getV9()).combatArgs(snapshot);
+        return (await this.getLifecycle()).combatArgs(snapshot);
+    }
+
+    public onCombatResult(listener: (result: LiveCombatResult) => void): Unsubscribe {
+        this.combatResultListeners.add(listener);
+        this.lifecycle?.flushResult(listener);
+        const legacy = this.onResult(listener);
+        return () => { legacy(); this.combatResultListeners.delete(listener); };
+    }
+
     public rewardForChallenge(challengeId: string): RewardUpdateData | undefined {
         const update = this.rewardUpdates.get(challengeId);
         return update ? structuredClone(update) : undefined;
@@ -141,40 +243,11 @@ export class PracticeClient {
     }
 
     public async claimReward(update: RewardUpdateData): Promise<RewardUpdateData> {
-        if (!update.claimNonce) {
-            throw new Error('Refresh reward status before claiming.');
-        }
-        await whenSessionReady(this.socket);
-        const requestId = createRequestId();
-        const raw = await this.emitWithRetry(protocolEvents.rewardClaim, {
-            requestId,
-            entitlementId: update.entitlementId,
-            claimNonce: update.claimNonce,
-            idempotencyKey: createRequestId()
-        });
-        const parsed = RewardClaimAckSchema.safeParse(raw);
-        if (!parsed.success || parsed.data.requestId !== requestId) {
-            throw new Error('Server returned an invalid reward claim.');
-        }
-        if (parsed.data.ok === false) throw new PracticeProtocolError(parsed.data.error);
-        this.acceptRewardUpdate(parsed.data.data);
-        return structuredClone(parsed.data.data);
+        return (await this.getLifecycle()).claimReward(update);
     }
 
     public async rewardStatus(entitlementId?: string): Promise<RewardUpdateData> {
-        await whenSessionReady(this.socket);
-        const requestId = createRequestId();
-        const raw = await this.emitWithRetry(protocolEvents.rewardStatus, {
-            requestId,
-            ...(entitlementId ? { entitlementId } : {})
-        });
-        const parsed = RewardStatusAckSchema.safeParse(raw);
-        if (!parsed.success || parsed.data.requestId !== requestId) {
-            throw new Error('Server returned an invalid reward status.');
-        }
-        if (parsed.data.ok === false) throw new PracticeProtocolError(parsed.data.error);
-        this.acceptRewardUpdate(parsed.data.data);
-        return structuredClone(parsed.data.data);
+        return (await this.getLifecycle()).rewardStatus(entitlementId);
     }
 
     public async submitCommand(
@@ -262,58 +335,18 @@ export class PracticeClient {
         this.unavailableListeners.clear();
         this.errorListeners.clear();
         this.rewardListeners.clear();
+        this.v10?.dispose();
+        this.lifecycle?.dispose();
+        this.v9?.dispose();
+        this.combatResultListeners.clear();
     }
 
     private async leave(challengeId: string): Promise<ChallengeResult> {
-        if (this.mutationPending) throw new Error('Another practice action is still pending.');
-        this.mutationPending = true;
-        const requestId = createRequestId();
-        const sequence = this.nextSequence;
-        const request = { requestId, sequence, challengeId };
-        try {
-            const raw = await this.emitWithRetry(protocolEvents.challengeLeave, request);
-            const parsed = ChallengeLeaveAckSchema.safeParse(raw);
-            if (!parsed.success || parsed.data.requestId !== requestId) {
-                throw new Error('Server returned an invalid leave acknowledgement.');
-            }
-            if (parsed.data.ok === false) {
-                this.consumeRejectedSequence(sequence, parsed.data.error);
-                throw new PracticeProtocolError(parsed.data.error);
-            }
-            this.nextSequence = Math.max(this.nextSequence, parsed.data.data.nextSequence);
-            this.acceptResult(parsed.data.data);
-            if (this.snapshot?.challengeId === challengeId) this.snapshot = undefined;
-            return structuredClone(parsed.data.data);
-        } finally {
-            this.mutationPending = false;
-        }
+        return (await this.getLifecycle()).leaveLegacy(challengeId);
     }
 
     private async reserveReward(calling: PlayerCalling): Promise<RewardReservationData> {
-        if (this.mutationPending) throw new Error('Another Clash action is still pending.');
-        if (!this.socket.connected) throw new Error('Reconnecting to the Clash server.');
-        this.mutationPending = true;
-        const requestId = createRequestId();
-        const sequence = this.nextSequence;
-        try {
-            const raw = await this.emitWithRetry(protocolEvents.rewardReserve, {
-                requestId,
-                sequence,
-                calling
-            });
-            const parsed = RewardReserveAckSchema.safeParse(raw);
-            if (!parsed.success || parsed.data.requestId !== requestId) {
-                throw new Error('Server returned an invalid reward reservation.');
-            }
-            if (parsed.data.ok === false) {
-                this.consumeRejectedSequence(sequence, parsed.data.error);
-                throw new PracticeProtocolError(parsed.data.error);
-            }
-            this.nextSequence = Math.max(this.nextSequence, sequence + 1);
-            return structuredClone(parsed.data.data);
-        } finally {
-            this.mutationPending = false;
-        }
+        return (await this.getLifecycle()).reserve(calling);
     }
 
     private async sendSnapshotMutation(
@@ -350,6 +383,48 @@ export class PracticeClient {
             if (!this.socket.connected) throw firstError;
             return this.emitOnce(event, request);
         });
+    }
+
+    private getLifecycle(): Promise<import('./action-turns-v8').ActionTurnsLifecycle> {
+        const owner = this;
+        return this.lifecycleReady ??= import('./action-turns-v8').then(module => this.lifecycle = new module.ActionTurnsLifecycle({
+            socket: this.socket, listeners: this.combatResultListeners,
+            get session() { return owner.session; }, get cursor() { return owner.sessionCursor; },
+            get busy() { return owner.mutationPending; }, set busy(value) { owner.mutationPending = value; },
+            get legacySnapshot() { return owner.currentSnapshot(); },
+            acceptLegacy: snapshot => this.acceptSnapshot(snapshot),
+            acceptLegacyResult: result => this.acceptResult(result),
+            clearLegacy: id => { if (this.snapshot?.challengeId === id) this.snapshot = undefined; },
+            suppressLegacy: id => this.suppressedLeaveChallenges.add(id),
+            acceptReward: update => this.acceptRewardUpdate(update),
+            rejectSequence: (sequence, error) => this.consumeRejectedSequence(sequence, error),
+            emit: (event, request) => this.emitWithRetry(event, request),
+            error: error => new PracticeProtocolError(error)
+        }));
+    }
+
+    private getV10(): Promise<import('./terrain-turns-v10').ResourceTurnsV10Client> {
+        return this.v10Ready ??= import('./terrain-turns-v10').then(module => this.v10 = new module.ResourceTurnsV10Client(this.socket, () => this.session, this.sessionCursor));
+    }
+
+    private getV9(): Promise<import('./resource-turns-v9').ResourceTurnsV9Client> {
+        const owner = this;
+        return this.v9Ready ??= import('./resource-turns-v9').then(module => this.v9 = new module.ResourceTurnsV9Client(
+            this.socket, () => owner.session, owner.sessionCursor
+        ));
+    }
+
+    private getPei(): Promise<import('../pei/client').PeiProtocolClientV0> {
+        const owner = this;
+        return this.peiReady ??= import('../pei/client').then(module =>
+            this.pei = new module.PeiProtocolClientV0({
+                socket: this.socket,
+                cursor: this.sessionCursor,
+                get busy() { return owner.mutationPending; },
+                set busy(value) { owner.mutationPending = value; },
+                rejectSequence: (sequence, error) => this.consumeRejectedSequence(sequence, error)
+            })
+        );
     }
 
     private emitOnce(event: string, request: unknown): Promise<unknown> {
@@ -456,8 +531,14 @@ export class PracticeClient {
         queueMicrotask(() => {
             void whenSessionReady(this.socket).then((session) => {
                 if (session.sessionId !== this.sessionId) {
+                    this.v10?.sessionExpired(); this.v10 = undefined; this.v10Ready = undefined;
+                    this.v9?.dispose(); this.v9 = undefined; this.v9Ready = undefined;
+                    this.pei = undefined; this.peiReady = undefined;
                     this.sessionId = session.sessionId;
-                    this.nextSequence = 0;
+                    this.sessionCursor = {
+                        sessionId: session.sessionId,
+                        nextSequence: session.nextSequence ?? 0
+                    };
                     this.snapshot = undefined;
                     this.identity = session.identity
                         ? structuredClone(session.identity)
@@ -467,6 +548,8 @@ export class PracticeClient {
                         listener('The previous in-memory Practice Clash cannot be resumed. Start a fresh Clash.');
                     }
                 }
+                this.session = structuredClone(session);
+                this.nextSequence = Math.max(this.nextSequence, session.nextSequence ?? 0);
                 for (const listener of this.connectionListeners) listener('connected');
             }).catch(() => {
                 for (const listener of this.connectionListeners) listener('reconnecting');
@@ -508,6 +591,12 @@ function writeActivePractice(sessionId: string, challengeId: string): void {
 
 function clearActivePractice(): void {
     if (typeof sessionStorage !== 'undefined') sessionStorage.removeItem(ACTIVE_PRACTICE_KEY);
+}
+
+/** Explicit retired diagnostic route; standard Practice and Daily use V10. */
+function v9CandidateRoute(): boolean {
+    const search = globalThis.window?.location?.search;
+    return typeof search === 'string' && new URLSearchParams(search).get('combat-preview') === 'v9-live';
 }
 
 export function liveCombatArgs(

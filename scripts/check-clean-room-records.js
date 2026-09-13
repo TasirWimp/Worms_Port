@@ -5,13 +5,24 @@ const path = require('node:path');
 const repoRoot = path.resolve(__dirname, '..');
 const sourceCommit = '0f45c4920321c0a3a14de30fe5cf44131a38da89';
 
+function canonicalBehaviorRecordHash(filePath) {
+  // Git stores these text records with LF endings, while Windows worktrees may
+  // materialize them as CRLF. The hash binds the frozen document's Git-stable
+  // content, not the checkout-specific line-ending conversion.
+  const canonicalBytes = Buffer.from(
+    fs.readFileSync(filePath, 'utf8').replace(/\r\n/g, '\n'),
+    'utf8'
+  );
+  return crypto.createHash('sha256').update(canonicalBytes).digest('hex').toUpperCase();
+}
+
 function validateRecords(records, root = repoRoot) {
   const errors = [];
   const ids = new Set();
   const allowedFields = new Set([
     'id', 'work_package', 'source_commit', 'observed_material', 'behavior_record',
     'behavior_record_sha256', 'observer', 'status', 'implementer', 'reviewer',
-    'implementation_declaration', 'similarity_review', 'behavioral_tests'
+    'implementation_declaration', 'similarity_review', 'behavioral_tests', 'execution_mode'
   ]);
 
   for (const record of records || []) {
@@ -28,7 +39,10 @@ function validateRecords(records, root = repoRoot) {
       if (!allowedFields.has(field)) errors.push(`${record.id || '<missing id>'}: unexpected field ${field}.`);
     }
     if (!/^[a-z0-9-]+$/.test(record.id || '')) errors.push(`${record.id || '<missing id>'}: invalid id.`);
-    if (!/^WP-\d{3}$/.test(record.work_package || '')) errors.push(`${record.id}: invalid work_package.`);
+    if (!/^WP-\d{3}(?:[A-Z]|[A-Z]\d[A-Z])?$/.test(record.work_package || '')) {
+      errors.push(`${record.id}: invalid work_package.`);
+    }
+    if (record.execution_mode !== undefined && record.execution_mode !== 'single_owner') errors.push(`${record.id}: invalid execution_mode.`);
     if (!['observed', 'complete'].includes(record.status)) errors.push(`${record.id}: invalid status.`);
     if (!/^[0-9A-F]{64}$/.test(record.behavior_record_sha256 || '')) {
       errors.push(`${record.id}: invalid behavior_record_sha256.`);
@@ -54,7 +68,10 @@ function validateRecords(records, root = repoRoot) {
           record.behavioral_tests.some((item) => typeof item !== 'string')) {
         errors.push(`${record.id}: behavioral_tests must be non-empty.`);
       }
-      if (new Set([record.observer, record.implementer, record.reviewer]).size !== 3) {
+      if (record.execution_mode === 'single_owner' && record.implementer !== record.reviewer) {
+        errors.push(`${record.id}: single_owner requires the same implementer and direct reviewer.`);
+      }
+      if (record.execution_mode !== 'single_owner' && new Set([record.observer, record.implementer, record.reviewer]).size !== 3) {
         errors.push(`${record.id}: observer, implementer, and reviewer must be separate identities.`);
       }
       if (record.similarity_review !== 'pass') {
@@ -66,7 +83,7 @@ function validateRecords(records, root = repoRoot) {
     if (!behaviorPath.startsWith(path.resolve(root) + path.sep) || !fs.existsSync(behaviorPath)) {
       errors.push(`${record.id}: behavior_record must resolve to an existing repository file.`);
     } else {
-      const hash = crypto.createHash('sha256').update(fs.readFileSync(behaviorPath)).digest('hex').toUpperCase();
+      const hash = canonicalBehaviorRecordHash(behaviorPath);
       if (hash !== record.behavior_record_sha256) {
         errors.push(`${record.id}: frozen behavior record hash mismatch.`);
       }
@@ -92,4 +109,4 @@ function main() {
 
 if (require.main === module) main();
 
-module.exports = { sourceCommit, validateRecords };
+module.exports = { canonicalBehaviorRecordHash, sourceCommit, validateRecords };

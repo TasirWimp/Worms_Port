@@ -1,0 +1,116 @@
+{
+  "id": "WP-015D2X",
+  "status": "complete",
+  "starting_commit": "14cf9d490d7cf7b23e22918f608a694bb3028005",
+  "branch": "codex/wp-015d2-v5-marketing-candidate-v0",
+  "initial_worktree": "clean",
+  "starting_lock_sha256": "D4DAC6AE09A3D2F6C5A7EAA11520BAC43F1628320C5331575BCF1E1857073D73",
+  "owning_roles": [
+    "worms_port_planner",
+    "worms_port_base_game_worker",
+    "worms_port_network_worker",
+    "worms_port_test_worker",
+    "worms_port_compliance_keeper",
+    "worms_port_docs_keeper",
+    "worms_port_reviewer"
+  ],
+  "scope": [
+    "Implement a separately versioned values-only nimble-knots-artillery-v5 candidate from the D2A 640/576/512 ideal-range and 30/45/80 maximum-direct-damage starting hypothesis.",
+    "Calibrate exact per-Relic integer launch-speed bands against the authoritative TypeScript simulation with at most three declared profiles and activate V5 only if the production-start plausibility gates pass.",
+    "Preserve V1 through V4 replay behavior, extend strict snapshot/protocol/reconstruction support for V5, retain equal player/Loomkeeper rules, and disclose the compact Relic roles without adding media."
+  ],
+  "non_goals": [
+    "Claim global or human balance, fun, D2O satisfaction, ProductAuthority, placement, P5, landfall, or release readiness.",
+    "Add Seam Pin, Escape Slack, Brace, preparation, Cocoon, Unweave, Threadback, Opening Weave, Threadstep, reactions, overtime, ammo, cooldown, precision, status, Calling differences, obstacles, tactical terrain, telemetry, or a new Loomkeeper policy.",
+    "Execute Lane G or Lane M, repair the Stage C aggregate harness, conduct player observation or device sessions, activate rewards, change dependencies or assets, import Sorcerers material, or modify historical source-bound carriers."
+  ],
+  "planned_checks": [
+    "npm run verify:fast",
+    "npm run test:v5-balance",
+    "npm run test:tactical-model",
+    "npm run test:simulation && npm run test:relics && npm run test:loomkeeper && npm run test:protocol",
+    "npm run build && npm run verify:runtime",
+    "npm run test:combat && npm run test:practice",
+    "npm run test:reward && npm run check:reward-security",
+    "npm run test:browser:matrix",
+    "npm run test:browser:performance && npm run check:bundle-budget && npm audit",
+    "WP-015D2X source identity and changed-path review"
+  ],
+  "deterministic_seeds": [
+    "3237998097",
+    "0xC0FFEE11 + i*0x9E3779B9 mod 2^32 for i=0..24"
+  ],
+  "sorcerers_reference_used": false,
+  "clean_room_records": [],
+  "check_results": [
+    {
+      "command": "npm run verify:fast",
+      "status": "pass",
+      "detail": "The pre-edit baseline and final completed tree both passed compliance, types, tooling, protocol, simulation, Loomkeeper, Relic, combat, Practice, identity, and reward suites. The baseline was exact starting commit 14cf9d490d7cf7b23e22918f608a694bb3028005."
+    },
+    {
+      "command": "npm run test:v5-balance",
+      "status": "pass",
+      "detail": "Profile zero passed before activation without opening profiles one or two. All measured gameplay results remained identical after activation: 50/50 Unraveling terminals, 0 draws, 31/50 first-actor wins (62%), 0 declared recurrence witnesses, Relic selections Threadball 118 / Needlepoint 95 / Spoolburst 58, maximum 128 evaluated candidates, 805 simulated transitions and 11 commands. Flat 45-degree full-power ground distances were 584/646/518 for Threadball/Needlepoint/Spoolburst; each directly hit its declared 576/640/512 target and did not directly hit the next 64-unit band. Direct damage was exactly 45/30/80. Config SHA-256 2828254E2D84762B88D37D32997E7FB535B7BE905F3A753D47A15A1E37F6A66B; preregistration report SHA-256 F8653CA6EC92E2BE827B412A1CD29346C3C48BB79AFAF8B4553849A6972FF1FF; activated report SHA-256 77A7025722A26BB5230A83587E242F85A31A1A555C5C79E92036C9D0750F937C."
+    },
+    {
+      "command": "npm run test:simulation && npm run test:relics && npm run test:loomkeeper && npm run test:protocol",
+      "status": "pass",
+      "detail": "After activation, 31 simulation, 9 Relic, 11 Loomkeeper and 38 strict protocol tests passed. New challenges use V5, explicit V4 reconstruction remains exact, and deterministic V5 terminal fixtures no longer inherit historical V4 damage assumptions."
+    },
+    {
+      "command": "npm run test:tactical-model",
+      "status": "pass",
+      "detail": "The V4 authority fixture, activated V5 strict types/profile/replay gates, and all 41 historical Python tactical-model tests passed."
+    },
+    {
+      "command": "npm run build && npm run verify:runtime",
+      "status": "pass",
+      "detail": "Compliance, server/client types, server bundle, Vite client build, exact approved-asset copying, and the built-server route/overlay/asset smoke passed. No dependency, package-lock, asset, manifest, or server configuration changed."
+    },
+    {
+      "command": "npm run test:combat && npm run test:practice",
+      "status": "pass",
+      "detail": "All 24 combat unit tests and 5 Practice lifecycle tests passed. The chooser exposes compact Medium 45 / Long 30 / Short 80 guidance while retaining minimum 48px targets and the existing authoritative preview/input boundary."
+    },
+    {
+      "command": "npm run test:reward && npm run check:reward-security",
+      "status": "pass",
+      "detail": "All 24 reward tests and the reward security scan passed after the synthetic reconstructed-win fixture was advanced through four deterministic V5 Threadball turns. Reward configuration, signer behavior, budgets, secrets, network settings and paused/disabled defaults are unchanged."
+    },
+    {
+      "command": "npm run test:browser:matrix",
+      "status": "pass",
+      "detail": "The five-project Windows phone-browser quality gate passed all 170 project results: 102 executed and 68 policy-approved skips across Chromium 360x640, 390x844, 412x915, 844x390 and WebKit 390x844. Non-Linux visual comparison was omitted by policy."
+    },
+    {
+      "command": "npm run test:browser:performance && npm run check:bundle-budget && npm audit",
+      "status": "pass",
+      "detail": "The pinned Chromium Practice performance gate passed. Largest initial JavaScript was 1,462,618/1,500,000 bytes and initial JavaScript plus CSS gzip was 405,007/430,000 bytes. npm audit reported 0 vulnerabilities."
+    },
+    {
+      "command": "WP-015D2X source identity and changed-path review",
+      "status": "pass",
+      "detail": "The implementation is commit 893a3f5ff3bbf09b0f5b528b52ca8f88d8faa286; separate activation is eadbf47d568581d54d847c941ee1bf07b1360226/tree 5a65219e9fa014dcc9f5fbb2b5ae08bd072ba5b8; the V5-aware reward proof fixture is 2f95ee27dea412eb8b7d34681d0e222af1313b31. Every changed path is inside the contract allow-list. Package-lock Git bytes remain SHA-256 D4DAC6AE09A3D2F6C5A7EAA11520BAC43F1628320C5331575BCF1E1857073D73 and the historical V4 start hash remains f319a603ccc9f1cce95a4affb0ab54219bf8963c620e88fc3a07de52cf496f4d."
+    }
+  ],
+  "reviews": [
+    {
+      "role": "bounded_implementation_and_source_reviewer",
+      "reviewer": "Codex primary-agent exact-diff review",
+      "decision": "pass",
+      "evidence_class": "deterministic_automated_engineering_evidence",
+      "detail": "Reviewed the contract-to-diff mapping, non-default implementation/activation separation, V1-V4 identity preservation, V5 role/config parity, client disclosure, reward non-activation, changed-path boundary and all declared stop conditions. No rejected D2A mechanic, Lane G/Lane M execution, observation, asset, dependency, telemetry, reward activation or ProductAuthority claim entered the change."
+    }
+  ],
+  "skipped_checks": [
+    "Real Android/iOS testing and formal player observation are outside this autonomous package and remain not run.",
+    "Linux visual baseline comparison was not run on Windows. The pinned Ubuntu 24.04 artifact workflow remains the only admissible source for reviewed baseline candidates."
+  ],
+  "residual_risks": [
+    "V5 passed a bounded deterministic policy matrix, not player observation. Human fun, learnability, accessibility, perceived fairness and real-device pacing remain unknown.",
+    "The declared activation domain is the real 640-unit production start. Adjacent-distance checks remain safety residue and cannot establish global balance.",
+    "ProductAuthority remains none, D2O remains unsatisfied, Lane G has no V5 evidence and execution remains closed, and rewards remain paused/disabled.",
+    "The compact Relic text changes rendered pixels; authoritative Linux visual comparison still needs its normal CI review before release baseline approval."
+  ]
+}

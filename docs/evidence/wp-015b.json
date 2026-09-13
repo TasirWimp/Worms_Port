@@ -1,0 +1,621 @@
+{
+  "id": "WP-015B",
+  "status": "in_progress",
+  "starting_commit": "bfb1677f4a1cb460cf9b5125c7aa14336cf6dbc6",
+  "branch": "codex/wp-015-production-assets",
+  "initial_worktree": "clean",
+  "starting_lock_sha256": "8A13522641DC030E38258E08B843B1E902B018E324D3AEECA3CD577F0EF10704",
+  "owning_roles": [
+    "worms_port_asset_curator",
+    "worms_port_compliance_keeper",
+    "worms_port_base_game_worker",
+    "worms_port_reviewer"
+  ],
+  "scope": [
+    "Record the project owner's attestation of Nimiq team/foundation encouragement, historical approval to explore inspired geometry, the later rounded-doll anatomy reset, and the canonical documentation-only Calling/material baseline",
+    "Approve and exact-hash the production checkpoint, text-to-image workflow, and project-owned image-conditioned refinement workflow while preserving external quarantine",
+    "Freeze the Wizard, Loomkeeper, Threadball, and first-Patch briefs, prompts, negative constraints, sockets, triggers, and acceptance checks",
+    "After the rejected SD 1.5 attempts, insert a bounded FLUX.2 Klein 4B model-admission deviation without approving a model or resuming generation",
+    "After the failed FLUX Wizard edit, test one deterministic project-owned structure reference with one positive-only fixed-seed diagnostic",
+    "After three rounded Wizard failures, test one mechanical scaffold and conditionally one fitted-knit conversion while amending the future face contract to retain a small expressive mouth",
+    "Adopt the accepted fitted-knit structure for exactly one fixed-seed Wizard cuteness and Calling-styling edit without combining alpha, animation, or exact socket normalization",
+    "Record the project-owner acceptance of B2D eyebrows, moderate body variation, and cuteness direction; construct and review a protected B2E route; then execute exactly one approved frozen request without retry",
+    "Record the project-owner rejection of B2E's Wizard identity and thief-like neck wrap, then construct deterministic B2F hood structure controls and stop before staging or inference for exact source review",
+    "Record the project-owner decision to supersede the hexagonal anatomy after the full B2A-B2F control cycle, return to FLUX's rounded crochet-doll prior, compare one abstract-grip trial with one visible shallow-bowl palm trial, and freeze the selected external Wizard direction without product promotion",
+    "Refine the post-B2G handoff into a deterministic Wizard normalization/approval gate, a separately gated vertical-slice production and animation-admission package, and an integration-only first playable visual slice",
+    "Normalize only exact B2G Wizard source 40F9E812...4A5 through a frozen deterministic configuration into reviewed 512x512 RGBA, 192x192, and 48px derivatives; stop rather than repaint, generate, non-uniformly warp, animate, or integrate",
+    "Record the project-owner B3 simplification that reuses one approved Wizard presentation for the player and AI Loomkeeper, removes distinct Loomkeeper production from B3/C, and moves it to the WP-015D character roster",
+    "Pause the ordinary-yarn Threadball candidate, connect Wizard spell presentation to the Celestial Spinning Mill and elemental Worldweave story, and propagate the revised spell-state contract through B3A, B3B, B3C, C, D, and E",
+    "Record the exact external Gemini concept as comparison-only evidence, freeze one text-only Worldweave Threadball request at seed 15035001 with no reference input, and stop after its exact output for review",
+    "Approve only the exact B3A Threadball through frozen deterministic white-matte extraction, gap preservation, uniform centering, alpha/phone-size review, exact-file manifest lineage, and no-runtime-path enforcement",
+    "Freeze one separate text-only/no-reference B3A Patch source contract for Cloud, Terrain Top, and Terrain Interior, sequentially reviewable at seeds 15035002 through 15035004, while reserving alpha/repeatability for later deterministic-normalization gates",
+    "Generate deterministic quarantined vertical-slice candidates and complete pre-promotion art, IP, provenance, and phone-readability review",
+    "Record the rejected first AutoSprite Wizard Idle pilot and authorize one free-tier Custom palm-preservation pilot with a frozen prompt, settings, evidence requirements, and no-third-attempt stop rule",
+    "Supersede the empty-palm overlay rule after both AutoSprite pilots fail: retain them as rejected external evidence, freeze a permanent Wizard Loomseed at the approved palm anchor, and emit a separate temporary Threadball without changing gameplay authority",
+    "Compose one exact source-only Wizard-with-Loomseed presentation master from the approved Wizard and Threadball source masters, with fixed uniform scale, palm anchor, layer order, manifest lineage, and no projectile, animation, or runtime path",
+    "Derive and exact-approve only three static temporary Threadball cast stages from the approved Threadball source, with fixed uniform scales, centered local origins, root-space emission metadata, manifest lineage, and no fabricated glow/fibers/tail/impact, animation, or runtime path",
+    "Freeze one source-free Threadball effect/timing contract that binds only later client presentation to the approved Loomseed/cast stages and existing authoritative events, with bounded procedural halo/gather/tail/Unraveling grammar and explicit no-runtime/no-authority boundary",
+    "Recover only the project-owner-repaired Terrain Interior through an exact GIMP flattened-export record, fixed deterministic two-axis repeat normalization, manifest lineage, and no-new-inference/no-runtime boundary while retaining the original FLUX candidate as rejected history",
+    "Resolve the B3C source-only versus C runtime-file prerequisite by planning one exact seven-file byte-identical runtime-copy admission subgate before integration"
+  ],
+  "non_goals": [
+    "Promoting or integrating any runtime image, atlas, effect, environment, UI, or audio asset before WP-015C",
+    "Treating model, workflow, project-owner, or candidate-generation approval as exact-output product approval",
+    "Shipping, cropping, tracing, or moving the canonical documentation concept into assets",
+    "Using official Nimiq logo, icon, font, or brand files without separate exact permission and provenance",
+    "Using Sorcerers or Worms/Team17 code, prompts, screenshots, concepts, or assets"
+  ],
+  "planned_checks": [
+    "npm run check:compliance",
+    "npm run test:tooling",
+    "npm run build",
+    "npm audit",
+    "ComfyUI production preflight with exact checkpoint and workflow hashes",
+    "FLUX.2 Klein three-component provenance, commercial-use license, and exact-hash admission",
+    "FLUX.2 native core-node text-to-image and reference-edit workflow hash review",
+    "RX 7600 8 GB low-VRAM technical smoke",
+    "Wizard and Threadball staged visual admission",
+    "WP-015B2B deterministic structure-guide integrity and one fixed-seed Wizard diagnostic",
+    "WP-015B2C Gate 1 robot-scaffold diagnostic and conditional Gate 2 fitted-knit silhouette preservation",
+    "WP-015B2D exact-input cuteness and Wizard-styling edit with full-size, 48px, and deterministic silhouette review",
+    "WP-015B2E protected-property mask integrity, pinned core-node workflow schema, exact preflight, one frozen request, protected-pixel equality, drift telemetry, and full-size/48px review",
+    "WP-015B2F deterministic hood guide and generous mask integrity, exact-B2D scaffold protection, frozen prompt review, full-size/48px review, and no-inference boundary",
+    "WP-015B2G exact rounded-doll prompt, fixed seeds, external output paths and hashes, cupped-palm visual decision, fail-closed shutdown, and no-product-promotion boundary",
+    "WP-015B2H source identity, exact-output rights/IP review, frozen normalization configuration, deterministic byte reproduction, alpha/background and edge quality, baseline/pivot/socket geometry, 48px and maintained-phone visual review, manifest lineage, and no-runtime-path boundary",
+    "WP-015B3A exact Gemini comparison record, frozen text-only request contract, fail-closed component/workflow/service/queue/output preflight, one-request limit, and exact-output visual review",
+    "WP-015B3A Threadball source identity, frozen gap-preserving normalization, deterministic byte reproduction, alpha/background and 48px/36px/28px review, projectile-origin geometry, manifest lineage, and no-runtime-path boundary",
+    "WP-015B3A Patch source-contract completeness, model-versus-deterministic-tiling boundary, serial one-request sequencing, and no-inference/no-runtime-path enforcement",
+    "WP-015B3A Cloud source identity, frozen white-matte normalization, deterministic byte reproduction, alpha/background and 192px/48px review, placement geometry, manifest lineage, and no-runtime-path boundary",
+    "WP-015B3A Terrain Top exact request, owner review, frozen crop/repeat normalizer, byte reproduction, source-master/manifest lineage, and no-runtime-path boundary",
+    "WP-015B1 brief-contract completeness and source-boundary review",
+    "fixed-seed quarantined vertical-slice master review",
+    "self-review"
+  ],
+  "deterministic_seeds": [
+    "15015000",
+    "15015001",
+    "15015002",
+    "15015003",
+    "15015004",
+    "15015005",
+    "15015006",
+    "15025000",
+    "15025001",
+    "15025002",
+    "15025003",
+    "15026001",
+    "15026002",
+    "15026003",
+    "15026004",
+    "15026005",
+    "15026006",
+    "15027001",
+    "15027002",
+    "15035001",
+    "15035002",
+    "15035003",
+    "15035004"
+  ],
+  "sorcerers_reference_used": false,
+  "clean_room_records": [],
+  "check_results": [
+    {
+      "command": "WP-015B2H starting-state checkpoint",
+      "status": "pass",
+      "detail": "WP-015B2H starts from clean synchronized branch codex/wp-015-production-assets at commit 0d2cca606a6318185633e696872a47ebbecce0bc with package-lock SHA-256 044353A8A419C6B942D5D74C4941A5EF1DB7C22574DF676CBFE87D0C51144BB3. The sole external input exists at the frozen Comfy output path as a 788,520-byte 1024x1024 PNG with SHA-256 40F9E81254A0792B967889808BD8BD8DE33DBDE5EAB7C4CBB1B336DD02BC54A5. Scope is deterministic master normalization and exact-file review only. No inference, repainting, non-uniform warp, animation, another Calling, runtime path, or integration is authorized. Sorcerers was not inspected or used."
+    },
+    {
+      "command": "npm run check:compliance",
+      "status": "pass",
+      "detail": "Passed for the WP-015B0 implementation later committed at 95957e3 with five reviewed generation components, 21 work-package evidence records, zero clean-room records, and no product-media promotion."
+    },
+    {
+      "command": "npm run test:tooling",
+      "status": "pass",
+      "detail": "All 24 tooling tests passed, including exact-hash and input-mode validation for the project-owned image-conditioned workflow."
+    },
+    {
+      "command": "npm run build",
+      "status": "pass",
+      "detail": "The complete server and client build passed for the WP-015B0 implementation later committed at 95957e3. Zero approved runtime assets were copied; the existing client chunk-size warning remains unchanged."
+    },
+    {
+      "command": "ComfyUI production preflight with exact checkpoint and workflow hashes",
+      "status": "pass",
+      "detail": "Verified ComfyUI 0.27.1 and the pinned MCP bridge on the RX 7600, the exact 2.13 GB checkpoint, the pinned text-to-image graph, and project-owned image-conditioned graph C21BD9224D08E1708073C3C11BFF749E4B901F5BE20EFE32245DAE6B489D3060. StageInput copied prior external smoke bytes 43F813104432B1C44E7083A88589F51B8719E695F2AC27AD35212004EAF6C8FF under the constrained input namespace. Seed 15015000, four steps, CFG 6, Euler/normal, and denoise 0.35 produced a valid 256x256 quarantined PNG (109690 bytes, SHA-256 72CAC609419A83B8501B001D2E011C3D213373AC9D62B05C0C9022D4762F468D). No product asset or manifest entry was created."
+    },
+    {
+      "command": "WP-015B1 brief-contract completeness and source-boundary review",
+      "status": "pass",
+      "detail": "Reviewed docs/asset-briefs/wp-015b1-vertical-slice.md at SHA-256 5A323A12BF3C3238179C624D3B87DEA9F0AA3D80B7FD974B51A30CC174B9862E. The contract freezes six exact positive prompts, three shared/family negative prompts, seeds 15015001 through 15015006, reviewed model/workflow hashes and settings, Wizard/Loomkeeper normalization and animation triggers, Threadball derivatives, Patch decomposition, B2 handoff, and explicit no-generation/no-promotion/Sorcerers and official-brand boundaries."
+    },
+    {
+      "command": "fixed-seed quarantined vertical-slice master review",
+      "status": "fail",
+      "detail": "The six exact primary outputs and six same-seed prompt-only Retry 1 outputs failed the frozen art gates. The user stopped conditioned Retry 2 after its first Wizard output also failed; the ComfyUI queue then reported zero running and zero pending jobs. All output paths, hashes, asset/prompt IDs, settings, and rejection reasons are recorded in docs/asset-briefs/wp-015b2-generation-review.md. No file was promoted or copied into assets/."
+    },
+    {
+      "command": "FLUX.2 Klein three-component provenance, commercial-use license, and exact-hash admission",
+      "status": "pass",
+      "detail": "Gate 1 admitted only external file hashes 97ED34FE0567E436200F2FAEE3939B88F2B5D99F8AF2A4DC16532C4245C0CCB6 (canonical BFL distilled FP8 diffusion), AD65083F0B6561CC84B9B6A42FF397EE749171E367C28D800C4A6FD612ABC169 (deterministic single-file merge of two exact BFL Apache-2.0 Qwen shards), and D64F3A68E1CC4F9F4E29B6E0DA38A0204FE9A49F2D4053F0EC1FA1CA02F9C4B5 (canonical BFL FP32 VAE covered by BFL's explicit Apache-2.0 autoencoder statement). All six downloaded source/comparison files matched pinned LFS size and SHA-256 metadata. The encoder merge passed 398/398 raw tensor comparisons; the VAE matched its canonical FP32 LFS object and projected exactly across all 251 tensors to the Apache Klein BF16 VAE. The pre-release Comfy encoder mirror was rejected after two final-layer tensors differed from canonical BFL/Qwen and no exact mirror license/provenance linkage was present. Files remain external; no workflow, generation route, output, or product asset was approved."
+    },
+    {
+      "command": "npm run test:tooling (WP-015B2A Gate 1)",
+      "status": "pass",
+      "detail": "All 25 tooling tests passed, including the new exact FLUX split-component contracts and fail-closed deterministic-repackage provenance checks."
+    },
+    {
+      "command": "npm run check:compliance (WP-015B2A Gate 1)",
+      "status": "pass",
+      "detail": "Asset, generation-component, import-boundary, package-license, work-package, and clean-room checks passed with eight reviewed generation components, 21 evidence records, and zero clean-room records."
+    },
+    {
+      "command": "npm run build (WP-015B2A Gate 1)",
+      "status": "pass",
+      "detail": "The complete compliance, TypeScript, server, and client build passed. Zero runtime assets were copied; the existing Vite chunk-size warning remains unchanged."
+    },
+    {
+      "command": "Comfy FLUX component relocation and loader discovery",
+      "status": "pass",
+      "detail": "Stopped ComfyUI and the MCP bridge through the reviewed pipeline, moved the three exact component files from the C: shared model directories to E:/ComFy/TasirWimp/Worms_Port-models, and reverified their SHA-256 values after the move. Pinned local extra_model_paths.yaml at D03C5A366C7291F161B30DDB6CF5002800B67380E6D32D7DCC410AEFD1B4A00D, restarted both loopback services, and confirmed through ComfyUI object_info that UNETLoader, CLIPLoader, and VAELoader discover the exact reviewed filenames. No workflow or generation ran."
+    },
+    {
+      "command": "FLUX.2 native core-node text-to-image and reference-edit workflow hash review",
+      "status": "pass",
+      "detail": "Gate 2 translated the official Comfy workflow templates pinned at cebdebc9fc2febcb97a5db0dd291f59f5300b176 into a 13-node text graph 626568CEAA47627F7D421D3BD1B0AA151E1643DBA8FBD631F5EB437666649E28 and a 19-node single-reference graph A2BF8CD3C015D36646E73F2FA87F22741E4410D27B26D562331057B49CFF6C8E. Both exact-bind the three Gate 1 filenames, four steps, CFG 1, Euler, and batch one; the text graph is fixed at 1024x1024 and the edit graph bounds one staged reference to one megapixel. Every node, required input, and connected edge type passed the pinned local ComfyUI 0.27.1 object_info schema. The manifest keeps both runtime-disabled and neither was copied to the external MCP workflows directory. No prompt or generation ran."
+    },
+    {
+      "command": "npm run test:tooling (WP-015B2A Gate 2)",
+      "status": "pass",
+      "detail": "All 26 tooling tests passed, including exact FLUX workflow hash, official-template revision, model-chain, core-node, fixed-settings, placeholder-set, and runtime-disabled contracts."
+    },
+    {
+      "command": "npm run check:compliance (WP-015B2A Gate 2)",
+      "status": "pass",
+      "detail": "Asset, generation-component, import-boundary, package-license, work-package, and clean-room checks passed with ten reviewed generation components, 21 evidence records, and zero clean-room records."
+    },
+    {
+      "command": "npm run build (WP-015B2A Gate 2)",
+      "status": "pass",
+      "detail": "The complete compliance, TypeScript, server, and client build passed. The two FLUX graphs remained source-only, zero runtime assets were copied, and the existing Vite chunk-size warning remained unchanged."
+    },
+    {
+      "command": "Closed-profile Prepare/Start/Status integration (WP-015B2A Gate 3)",
+      "status": "pass",
+      "detail": "The default sd15 profile exact-verified its archived checkpoint and two workflow hashes. The flux2-klein profile exact-verified 12,451,819,924 model bytes across the three Gate 1 hashes, exact-installed both Gate 2 workflow copies, safely restarted only reviewed loopback services, and reported ComfyUI 0.27.1 on the native AMD Radeon RX 7600 with LOW_VRAM launch readiness and previews disabled. The reviewed Stop/Start lifecycle also passed from a fully stopped state. A subsequent exact sd15 status pass proved the original route and MCP default checkpoint remained intact."
+    },
+    {
+      "command": "MCP profile registration and no-inference review (WP-015B2A Gate 3)",
+      "status": "pass",
+      "detail": "The restarted pinned bridge exposed generate_flux2_klein_text and generate_flux2_klein_reference_edit while retaining generate_image and generate_image_conditioned. The profile probe returned ready with 20 total MCP tools. No tools/call request was made: ComfyUI reported zero running and zero pending prompts, and the newest external output remained the rejected WormsPortConditioned_00002_.png from 2026-08-02T19:31:17.8169394Z."
+    },
+    {
+      "command": "Arbitrary generation-profile rejection (WP-015B2A Gate 3)",
+      "status": "pass",
+      "detail": "PowerShell parameter validation rejected profile name arbitrary before script work. Manifest compliance separately fixes the profile count at two and rejects model-chain, workflow-chain, MCP-tool, launch-mode, and low-VRAM/no-preview argument drift before runtime workflow copying."
+    },
+    {
+      "command": "npm run test:tooling (WP-015B2A Gate 3)",
+      "status": "pass",
+      "detail": "All 27 tooling tests passed, including exact closed-profile contracts and rejection coverage for arbitrary model, workflow, MCP tool, launch argument, and third-profile selection."
+    },
+    {
+      "command": "npm run check:compliance (WP-015B2A Gate 3)",
+      "status": "pass",
+      "detail": "Asset, generation-component, import-boundary, package-license, work-package, and clean-room checks passed with ten reviewed generation components, two closed profiles, 21 evidence records, and zero clean-room records."
+    },
+    {
+      "command": "npm run build (WP-015B2A Gate 3)",
+      "status": "pass",
+      "detail": "The complete compliance, TypeScript, server, and client build passed. Zero runtime product assets were copied, and the existing Vite chunk-size warning remained unchanged."
+    },
+    {
+      "command": "Closed-profile preflight and queue/output baseline (WP-015B2A Gate 4)",
+      "status": "pass",
+      "detail": "The flux2-klein probe found both required FLUX tools among 20 registered MCP tools. ComfyUI reported the native AMD Radeon RX 7600, LOW_VRAM plus previews disabled, zero running and zero pending prompts, 20,469,755,904 bytes free host RAM, and 8,422,293,504 bytes free VRAM before inference. The newest prior output remained WormsPortConditioned_00002_.png from 2026-08-02T19:31:17.8169394Z. Tooling and compliance checks passed before the single authorized request."
+    },
+    {
+      "command": "RX 7600 8 GB low-VRAM technical smoke (WP-015B2A Gate 4)",
+      "status": "pass",
+      "detail": "Exactly one generate_flux2_klein_text request used prompt 'WP-015B2A Gate 4 technical smoke: one flat cyan circle centered on a plain white background', seed 15025000, 1024x1024, batch one, four FLUX.2 scheduler steps, CFG 1, Euler, and no inline preview. Prompt 54eb2c85-54dc-44a9-a036-07f4fa2f8bd0 reached terminal Comfy success in 254.42 seconds. The diffusion model loaded partially with 2,964.02 MB resident, 918.00 MB offloaded, and a 243.00 MB reserved buffer; the CPU text encoder and 160.31 MB VAE loaded successfully. No OOM, node error, cached-node reuse, cancellation, retry, alternate model, or workflow fallback occurred."
+    },
+    {
+      "command": "Gate 4 output, telemetry, and terminal-state integrity review",
+      "status": "pass",
+      "detail": "The one external output WormsPortFlux2KleinText_00001_.png is a valid 1024x1024 PNG, 423,534 bytes, SHA-256 CFCDDB3E74B1B3B2E1082571BA54F0F37F603E563902B6DDB8397DEA7C1516F4. Host free RAM reached a sampled minimum of 4,422,750,208 bytes; extended driver-reported free VRAM reached 4,820,218,368 bytes but is treated as approximate because a later sample exceeded nominal total. Final queue state was zero running and zero pending. The output remains external quarantine and was not copied into assets or the product manifest. The helper now follows an interim MCP running response to terminal Comfy history and never reports pass, retries, or cancels on an unresolved prompt."
+    },
+    {
+      "command": "comfy-mcp-smoke terminal-state helper validation (WP-015B2A Gate 4)",
+      "status": "pass",
+      "detail": "Python syntax compilation passed without writing bytecode, live flux2-klein and sd15 probes each returned ready with both profile-required tools, and a read-only parser check recovered terminal success plus the exact output reference from the completed Gate 4 prompt history. The original SD 1.5 default health-smoke prompt remains profile-specific. No new generation was submitted."
+    },
+    {
+      "command": "npm run test:tooling (WP-015B2A Gate 4)",
+      "status": "pass",
+      "detail": "All 27 tooling tests passed after the Gate 4 profile-state transition, including fail-closed rejection of state rollback, arbitrary profiles, component drift, workflow drift, MCP tool drift, and launch-argument drift."
+    },
+    {
+      "command": "npm run check:compliance (WP-015B2A Gate 4)",
+      "status": "pass",
+      "detail": "Asset, generation-component, import-boundary, package-license, work-package, and clean-room checks passed with ten reviewed generation components, two closed profiles, 21 evidence records, and zero clean-room records."
+    },
+    {
+      "command": "npm run build (WP-015B2A Gate 4)",
+      "status": "pass",
+      "detail": "The complete compliance, TypeScript, server, and client build passed. Zero runtime product assets were copied; the existing Vite chunk-size warning remained unchanged."
+    },
+    {
+      "command": "Exact closed-profile preflight (WP-015B2A Gate 5)",
+      "status": "pass",
+      "detail": "A clean worktree at committed Gate 4 e56799f was confirmed. Status -VerifyHashes reverified all 12,451,819,924 external model bytes and both exact workflow copies, LOW_VRAM/no-preview launch readiness, native AMD Radeon RX 7600, and both required MCP tools. The Comfy queue was empty and WormsPortFlux2KleinText_00001_.png was the latest output before Gate 5."
+    },
+    {
+      "command": "Gate 5 Wizard text primary",
+      "status": "fail",
+      "detail": "One pre-recorded short prompt with seed 15025001 reached terminal success as prompt 34c39230-baf7-4a48-9a11-fe0fd8c1a63f in 253.52 seconds. Output WormsPortFlux2KleinText_00002_.png is a 759,137-byte 1024x1024 opaque PNG, SHA-256 D097705B08A4895ACCCA9D91B34B64039CACE893857E0BF688D54CA326481962. Isolation, right-facing pose, two eyes, hood identity, complete feet, and 48px readability passed, but a mouth, rounded doll anatomy, and no clear empty forward hand failed the bounded Wizard structure gate."
+    },
+    {
+      "command": "Gate 5 Threadball text primary",
+      "status": "pass",
+      "detail": "After Wizard review, one pre-recorded short prompt with seed 15025002 reached terminal success as prompt 9c00e7df-6055-42fa-b635-04754bfce2ae in 256.92 seconds. Output WormsPortFlux2KleinText_00003_.png is a 956,917-byte 1024x1024 opaque PNG, SHA-256 2BAE664F7E5A862BCB53B55A68071580485CE040A89650C68EC6FA398F4089EB. One centered round blue chenille ball, restrained gold thread wraps, clean isolation, no baked effect or extra object, medium-weight identity, and 28px readability passed the bounded structure purpose. Exact output/product approval remains pending and no promotion occurred."
+    },
+    {
+      "command": "Gate 5 single controlled Wizard reference edit",
+      "status": "fail",
+      "detail": "StageInput exact-copied rejected Wizard bytes D097705B08A4895ACCCA9D91B34B64039CACE893857E0BF688D54CA326481962 as wormsport/wizard-gate5-primary.png. The one allowed native reference edit used its pre-recorded prompt and seed 15025003, reaching terminal success as prompt 5f649423-e441-40eb-a871-384aaccf2677 in 297.30 seconds. Output WormsPortFlux2KleinReferenceEdit_00001_.png is a 1,129,517-byte 1024x1024 opaque PNG, SHA-256 9ACE9858AA1D81C5381548DF7473857C13EE83E4B90D9D8D6B5E8638B0B5A1CD. It removed the mouth and preserved the intended invariants but retained rounded anatomy and no usable forward hand, so the edit failed. No second edit or generation ran."
+    },
+    {
+      "command": "WP-015B2A Gate 6 explicit adoption decision",
+      "status": "pass",
+      "detail": "The reviewed decision rule required both Wizard and Threadball purposes to pass. Threadball passed but Wizard failed both primary and controlled edit, so the flux2-klein profile moved to technical_only_visual_rejected. Technical and Relic-purpose evidence is retained externally, all candidate outputs remain quarantined, and further generation is blocked pending a new reviewed character-master plan."
+    },
+    {
+      "command": "comfy-mcp-smoke bounded Gate 5 runner validation",
+      "status": "pass",
+      "detail": "The helper preserved profile-specific smoke defaults while accepting explicit reviewed seeds and, only for flux2-klein, one safe wormsport/ reference filename returned by StageInput. All three Gate 5 calls reported pass only after terminal Comfy success and captured full-wait telemetry. Syntax and both profile probes passed; SD 1.5 reference mode and a path outside the staged namespace were rejected before MCP access. No arbitrary component, model, or workflow selector was introduced."
+    },
+    {
+      "command": "npm run test:tooling (WP-015B2A Gates 5/6)",
+      "status": "pass",
+      "detail": "All 27 tooling tests passed, including the technical_only_visual_rejected profile-state contract and fail-closed model, workflow, MCP tool, launch argument, and profile-count checks."
+    },
+    {
+      "command": "npm run check:compliance (WP-015B2A Gates 5/6)",
+      "status": "pass",
+      "detail": "Asset, generation-component, import-boundary, package-license, work-package, and clean-room checks passed with ten reviewed generation components, two closed profiles, 21 evidence records, and zero clean-room records."
+    },
+    {
+      "command": "npm run build (WP-015B2A Gates 5/6)",
+      "status": "pass",
+      "detail": "The complete compliance, TypeScript, server, and client build passed. Zero runtime product assets were copied; the existing Vite chunk-size warning remained unchanged."
+    },
+    {
+      "command": "WP-015B2B deterministic structure-guide construction and integrity preflight",
+      "status": "pass",
+      "detail": "The project-owned Node generator reproducibly wrote docs/images/art-direction/knotkin-wizard-structure-guide.png as a 15,044-byte 1024x1024 opaque PNG with SHA-256 5A8F1C1D0942755F113327467462D47812A22A64BAF3DF2C5CD2E0F491FA9AA1. Its exact-hashed source reads no images and encodes the doubled B1 baseline y=902 and held-Relic socket center (682,586). The manifest checker rejected conditioning-policy, license, distribution, dimension, hash, path, arbitrary-input, and input-count drift."
+    },
+    {
+      "command": "WP-015B2B exact closed-profile and no-generation preflight",
+      "status": "pass",
+      "detail": "Prepare and Status -VerifyHashes reverified all three external FLUX model components and both exact native workflows. Start confirmed ComfyUI 0.27.1 on native AMD Radeon RX 7600 in LOW_VRAM/no-preview mode and both exact MCP tools. StageInput exact-copied the guide to wormsport/wizard-structure-guide-v1.png with the reviewed hash. The MCP probe reported ready; the queue was 0 running / 0 pending and WormsPortFlux2KleinReferenceEdit_00001_.png remained the latest output before the request, proving no preflight generation."
+    },
+    {
+      "command": "WP-015B2B single structure-reference Wizard diagnostic",
+      "status": "fail",
+      "detail": "The one authorized positive-only prompt and seed 15026001 were submitted once as prompt 6fede7ab-3de4-4d67-9a24-d3de5ea3ca1f. Although the calling shell observer timed out after submission, no retry was made; Comfy history and server logs recorded terminal success in 298.33 seconds and a clean 0/0 queue. Output WormsPortFlux2KleinReferenceEdit_00002_.png is a 1,163,317-byte 1024x1024 opaque PNG, SHA-256 FD24C8CD494FD9631BE2BC589067BE8477C67026DC24ED9BA9A9A3A07920570B. Comfy loaded 2,808.00 MB of diffusion weights, offloaded 1,074.02 MB, reserved a 324.00 MB buffer, and completed four Euler steps without node error. The 3,467-byte 48x48 HighQualityBicubic derivative has SHA-256 192209CC0D7121AEDF0CC25CCDD0C807E314A6C0E65E459A83192B7A33D3E925. Isolation, two eyes, feet, forward mitten, Wizard material, and small-scale readability passed, but the required flat-crowned angular continuous body failed because FLUX returned a pointed hat, round head, and oval torso. The output remains external quarantine and the one-request authorization is exhausted."
+    },
+    {
+      "command": "npm run check:compliance (WP-015B2B closure)",
+      "status": "pass",
+      "detail": "Asset, generation-component, import-boundary, package-license, work-package, and clean-room checks passed with ten reviewed generation components, two closed profiles, 21 evidence records, and zero clean-room records. The profile state is fail-closed as structure_recovery_visual_rejected."
+    },
+    {
+      "command": "npm run test:tooling (WP-015B2B closure)",
+      "status": "pass",
+      "detail": "All 28 tooling tests passed, including exact project-owned structure-guide path, dimensions, bytes, hashes, generator hash, licensing, documentation-only distribution, arbitrary-input rejection, and closed profile-state enforcement."
+    },
+    {
+      "command": "npm run build (WP-015B2B closure)",
+      "status": "pass",
+      "detail": "The complete compliance, TypeScript, server, and client build passed. Zero runtime product assets were copied; the existing Vite chunk-size warning remained unchanged."
+    },
+    {
+      "command": "npm audit (WP-015B2B closure)",
+      "status": "pass",
+      "detail": "npm reported zero vulnerabilities. No package or lockfile change was introduced by WP-015B2B."
+    },
+    {
+      "command": "WP-015B2C contract, mouth amendment, and Gate 1 preflight",
+      "status": "pass",
+      "detail": "The future character contract now keeps exactly two bead eyes and one small neutral expression-ready mouth while historical mouthless prompts remain unchanged evidence. The closed profile authorized Gate 1 only. Compliance, all 28 tooling tests, the full build, npm audit, exact guide regeneration, all three model hashes, both workflow hashes, LOW_VRAM/no-preview startup, staged guide hash, both MCP tools, an empty queue, and the prior B2B latest-output baseline passed before inference."
+    },
+    {
+      "command": "WP-015B2C Gate 1 mechanical-scaffold diagnostic",
+      "status": "pass",
+      "detail": "The one authorized seed 15026002 request completed as prompt 2dfc929f-3370-41e9-a568-4f1a86689c36 with helper elapsed time 298.57 seconds and no sampling error. Output WormsPortFlux2KleinReferenceEdit_00003_.png is a 644,831-byte 1024x1024 opaque RGB PNG, SHA-256 BC6B21B74C5016504A733D5D1EC306FE7F46A8CC5E526E0FFF28EB9EABC25D38. Its 2,799-byte 48x48 HighQualityBicubic derivative has SHA-256 3D82FC1A55BC94AFABF1258C6E129F2421390C0FC6FEEECAB244917820A4C2BD. The result passed the flat crown, chamfered planar chassis, continuous angular outer silhouette, narrowed lower body, rectangular feet, articulated forward hand, exactly two eyes, one mouth, isolation, and 48px readability purpose. It remains an external disposable robot scaffold. The queue returned to 0/0; no retry or Gate 2 request occurred before the second manifest transition."
+    },
+    {
+      "command": "WP-015B2C Gate 2 fitted-knit conversion",
+      "status": "pass",
+      "detail": "After Gate 1 documentation, the manifest transitioned separately and all compliance, 30 tooling tests, build, audit, exact model/workflow hashes, MCP tools, staged source hash, empty queue, and latest-output baseline passed. StageInput exact-copied robot bytes BC6B21B74C5016504A733D5D1EC306FE7F46A8CC5E526E0FFF28EB9EABC25D38 as wormsport/wizard-robot-scaffold-15026002.png. The single seed 15026003 conversion completed as prompt 936917b2-f182-4cfa-8960-5fccda8cbe0c in 295.019 seconds with no sampling error. Output WormsPortFlux2KleinReferenceEdit_00004_.png is a 1,130,420-byte 1024x1024 opaque RGB PNG, SHA-256 5FF0A63DAC03E13B2A3390AD77E6929A9822412E1A1E0415E7A38125D703B246. Its 3,394-byte 48x48 derivative has SHA-256 9308495013B25771F6B015AC7FD4EE3FC3B76DE4360AAF2A218ED4009D3A7B18. Visual review passed the angular knit shell, hand, feet, two eyes, one mouth, isolation, and 48px criteria. The deterministic comparison passed with canvas IoU 0.951554, normalized IoU 0.956188, and 12-pixel baseline drift. Both outputs remain external quarantine; no third request ran."
+    },
+    {
+      "command": "WP-015B2C deterministic silhouette tooling",
+      "status": "pass",
+      "detail": "The dependency-free 8-bit RGB/RGBA PNG comparator reports raw and foreground-bounds-normalized IoU plus baseline drift using a frozen 32-level maximum channel distance from white and 256x256 normalization. Its self-comparison and placement-normalization tests passed, and the exact Gate 2 comparison reproduced normalized IoU 0.956188 with 12-pixel baseline drift."
+    },
+    {
+      "command": "WP-015B2C closure verification",
+      "status": "pass",
+      "detail": "JSON parsing, npm run check:compliance, all 30 tooling tests, the complete compliance/TypeScript/server/client build, npm audit with zero vulnerabilities, and git diff --check passed after the final profile state transitioned to robot_scaffold_knit_route_passed. Zero runtime assets were copied; the existing Vite chunk-size warning remained unchanged."
+    },
+    {
+      "command": "WP-015B2D single Wizard cuteness and Calling-styling edit",
+      "status": "pass",
+      "detail": "The authorization bound exact B2C knit input 5FF0A63DAC03E13B2A3390AD77E6929A9822412E1A1E0415E7A38125D703B246, seed 15026004, one 84-word prompt, and one terminal request. Compliance, 31 tooling tests, the complete build, npm audit, exact model/workflow hashes, LOW_VRAM/no-preview startup, both MCP tools, staged-source equality, empty queue, and _00004_ latest-output baseline passed before inference. Prompt c82a19fa-6be7-4a30-b193-b9c708638302 completed successfully in 312.618 seconds without sampling error or retry. External output WormsPortFlux2KleinReferenceEdit_00005_.png is an 887,003-byte 1024x1024 opaque RGB PNG, SHA-256 DEF9265DAA4C6F2799D16870205E2015291E3E4AAE0F61802349C9FD8D56AD00. Its 2,897-byte exact 48px derivative is SHA-256 AB172F6B365B64093F5E2BE03F4AE2D24623F73E18A881033172ED0DA5A6E8E1. The initial narrow gate flagged two added eyebrows, a neck-wrap cowl interpretation, and normalized silhouette IoU 0.880098 below its 0.90 floor. Baseline drift was 0 pixels. The queue returned to 0/0 and no retry ran."
+    },
+    {
+      "command": "WP-015B2D closure verification",
+      "status": "pass",
+      "detail": "The initial automated closure recorded the narrow gate result and both local services stopped. JSON parsing, npm run check:compliance, all 31 tooling tests, the full compliance/TypeScript/server/client build, npm audit with zero vulnerabilities, exact silhouette reproduction, git diff --check, and the assets-tree status check passed. Zero runtime assets were copied; the existing Vite chunk-size warning remained unchanged."
+    },
+    {
+      "command": "WP-015B2D project-owner creative review and WP-015B2E planning boundary",
+      "status": "pass",
+      "detail": "The project owner accepted the paired eyebrows, moderate body-width variation, and overall cuteness direction. Normalized silhouette IoU 0.880098 is now drift telemetry that may guide later compensation rather than automatic rejection. Protected properties are the recognisable angular Knotkin family, a Wizard cowl or hat resting on the head, a usable forward Relic hand, exactly two eyes and one mouth with optional paired eyebrows, and friendly phone-scale appeal. WP-015B2E may investigate a pinned core-node mask or region-controlled route but authorizes no workflow change, staged input, prompt, seed, inference, normalization, or promotion. JSON parsing, compliance, all 31 tooling tests, the full build, npm audit with zero vulnerabilities, git diff --check, and the zero-runtime-asset check passed after the policy transition."
+    },
+    {
+      "command": "WP-015B2E protected-edit source and no-inference validation",
+      "status": "pass",
+      "detail": "Selected a core-only B2D-base route after excluding model-dependent InpaintModelConditioning, destructive masked-pixel VAEEncodeForInpaint behavior, experimental DifferentialDiffusion, and custom nodes. Project source workflow scripts/comfy-workflows/generate_flux2_klein_protected_edit.json contains 23 nodes and exact hash AD4D4F96AD7D7C024A1A903A440DD4FE6D9E31353ACB7E436BF7DFC787321DAA. It uses B2D as sole ReferenceLatent and base latent, gates sampling with SetLatentNoiseMask, and restores protected pixels through ImageCompositeMasked. Deterministic 1024x1024 cowl mask 2B6C5F51A6EA411BB8B9C40AF861A339622316CB1D9710719F7F0CDEC327425B regenerates byte-for-byte from generator 8DFD6623479D61603C046550F9184F13ADAE0C4FA3E40E9C49F2017E6F8634A1 and protects the face, body, feet, baseline, and Relic hand while opening the crown/neck-wrap region. Pinned ComfyUI 0.27.1 object_info validation passed all classes, required inputs, and connected edge types. The candidate remains runtime-disabled, outside the profile and MCP runtime directory. The validation session ended with a 0/0 queue, B2D still latest, and both services stopped; no input staging or inference occurred. Seed 15026005 and the exact cowl-only prompt are reserved but not authorized."
+    },
+    {
+      "command": "WP-015B2E source-gate closure verification",
+      "status": "pass",
+      "detail": "JSON parsing, npm run check:compliance, all 33 tooling tests, the complete compliance/TypeScript/server/client build, npm audit with zero vulnerabilities, git diff --check, deterministic mask regeneration, and the zero-runtime-asset build check passed. Generation-component compliance now covers 11 exact components and two closed profiles while keeping the protected-edit candidate runtime-disabled. The existing Vite chunk-size warning remains unchanged."
+    },
+    {
+      "command": "WP-015B2E single protected Wizard cowl edit",
+      "status": "pass",
+      "detail": "After project-owner approval, source-side compliance, 34 tooling tests, full build, npm audit, runner rejection checks, exact model/workflow hashes, low-VRAM/no-preview startup, three-tool MCP registration, staged B2D and mask equality, an empty queue, and B2D newest-output baseline passed. Exactly one request ran with seed 15026005 and the frozen cowl-only prompt. Comfy prompt d023da3f-77cf-4f05-ae7b-62ce66f1f176 completed successfully in 308.956 seconds without retry or telemetry sampling errors. External output WormsPortFlux2KleinProtectedEdit_00001_.png is a 906,000-byte 1024x1024 PNG, SHA-256 1275B2BD8021EAA5C51AA0606A6CC20BA21B15ED6CEBC4A7C1FC76308BA9D2E0. Host free RAM minimum was 5,386,878,976 bytes and driver-reported free VRAM minimum was 3,232,272,896 bytes."
+    },
+    {
+      "command": "WP-015B2E protected-pixel, silhouette, and preliminary visual review",
+      "status": "pass",
+      "detail": "All 907,427 zero-mask pixels equal B2D exactly with zero mismatches and maximum RGB-channel difference zero. Baseline drift is 0, canvas IoU 0.897468, and normalized silhouette IoU 0.840783; the IoU values remain drift telemetry. The exact 48px HighQualityBicubic derivative is 2,986 bytes, SHA-256 92524044C2B65179302D47EFF8092C97534E342C1DEA31F49023EC3C6F5C8964. Preliminary review passed the mechanical protected-property purpose, but subsequent project-owner review rejected it as the next Wizard master because the compact crown loses the Wizard calling and the horizontal neck wrap reads thief-like. The queue ended 0/0, both services were stopped, no file entered assets, and the request allowance is consumed."
+    },
+    {
+      "command": "WP-015B2F deterministic Wizard-hood source-review gate",
+      "status": "pass",
+      "detail": "Project-owned generator 3B009E6F4A5908D4BAFA63426E7538F9B59DD2A4A286246FFC2604DCD7D0FB69 reproduced the 25,382-byte hood guide 08CB26CE3FAC6605859F9C9B51331351F28F40A005F6A101B2E575D8A56C6AB8 and 12,461-byte generous mask AC9F8F101094C5C15361FD24827C4F24B7C52ACBC652000748B209CB5483F56B byte-for-byte. It accepted only exact B2D bytes and created external scaffold A048CA16B249298BBECFAD2F57552B04958E26F766D01F6577D1C6A011A0231C plus 48px derivative DFACDC05E4D2A1E858C4565D678E3731099451973EA7F7EBC650D9C1DF486331. All 844,934 zero-mask pixels match B2D exactly; baseline drift is zero. Canvas IoU 0.859408 and normalized IoU 0.813729 are expected drift telemetry because the control deliberately adds the missing tall crown. Full-size and 48px source review passes the intended pointed-hood readability. The frozen hood-only prompt, no-robe boundary, and owner-approval gate are documented. JSON parsing, all 38 tooling tests, compliance, full build, npm audit with zero vulnerabilities, git diff check, and zero-runtime-asset check passed. No Comfy service was started, no input was staged, and no inference ran."
+    },
+    {
+      "command": "WP-015B2F project-owner source approval and one-request activation",
+      "status": "pass",
+      "detail": "The project owner approved the exact tall pointed-hood guide, generous mask with separate face/mouth protection, exact-B2D external scaffold, 48px read, and frozen hood-only prompt. The fail-closed profile now authorizes exactly one protected edit with seed 15026006, staged base wormsport/wizard-hood-scaffold-v1.png, and staged mask wormsport/wizard-hood-edit-mask-v1.png. A full robe/tunic, retry, prompt/seed/input change, another Calling, normalization, animation, and product promotion remain blocked."
+    },
+    {
+      "command": "WP-015B2F single protected Wizard-hood edit and visual closure",
+      "status": "fail",
+      "detail": "Source-side JSON parsing, all 38 tooling tests, complete compliance/type/server/client build, npm audit with zero vulnerabilities, and git diff check passed. Exact preflight verified three model hashes, three workflow hashes, native RX 7600 low-VRAM/no-preview startup, all three MCP tools, staged scaffold A048CA16B249298BBECFAD2F57552B04958E26F766D01F6577D1C6A011A0231C, staged mask AC9F8F101094C5C15361FD24827C4F24B7C52ACBC652000748B209CB5483F56B, a 0/0 queue, and B2E _00001_ as newest generated-output baseline. The sole seed 15026006 request completed as prompt 1f5fc569-5250-4799-a236-0bb22ba629c8 in 355.120 seconds. External output WormsPortFlux2KleinProtectedEdit_00002_.png is a 920,934-byte 1024x1024 PNG, SHA-256 BE162B61FF38BE0EE2EA58716BDBAF5D2B38F0D8E6608953D2ECA41EFE7AD608. Host free RAM minimum was 3,925,364,736 bytes and driver-reported free VRAM minimum was 2,376,634,880 bytes. All 844,934 zero-mask pixels equal the scaffold exactly; baseline drift is zero, canvas IoU 0.835513, and normalized IoU 0.796676. Its 3,103-byte 48px derivative is SHA-256 70FC1611E1F84081699B9A805E0C6A7A795B5B89CA7ABA783FC84E4AE1968B90. The hood passes Wizard identity and 48px readability, but visible polygonal face and rectangular mouth seams fail full-size integration. The queue ended 0/0, both services stopped, no retry ran, and no file entered assets."
+    },
+    {
+      "command": "WP-015B2G rounded-doll reset and abstract-grip trial",
+      "status": "fail",
+      "detail": "After exact model/workflow hash verification, native RX 7600 low-VRAM/no-preview startup, three-tool MCP registration, an empty queue, and WormsPortFlux2KleinText_00003_.png baseline capture, one unconditioned text request ran with seed 15027001. Prompt e3ac9210-551f-4c92-b6bb-e8b9da1f6cce completed in 257.38 seconds. External 1024x1024 output C:\\Users\\jensb\\AppData\\Local\\Comfy-Desktop\\ComfyUI-Shared\\output\\WormsPortFlux2KleinText_00004_.png is 1,077,223 bytes, SHA-256 F5A58D589BD0624BA502D8277BF94FC7A4BD43B09BD05FF98CB184FEF6A3BE1C. Rounded doll anatomy, two eyes, mouth, star hat, isolation, and separated forward arm passed the reset direction, but abstract C-shaped-grip wording produced a closed thumbs-up mitten without an open Relic cradle. No automatic retry ran."
+    },
+    {
+      "command": "WP-015B2G upward-facing cupped-palm candidate and owner decision",
+      "status": "pass",
+      "detail": "After a fresh exact-hash, low-VRAM, three-tool, empty-queue preflight with _00004_ as the newest baseline, one owner-authorized revised text request ran with seed 15027002. Prompt ba48322c-5236-4876-a09f-42c20712919d completed in 258.082 seconds. External 1024x1024 output C:\\Users\\jensb\\AppData\\Local\\Comfy-Desktop\\ComfyUI-Shared\\output\\WormsPortFlux2KleinText_00005_.png is 788,520 bytes, SHA-256 40F9E81254A0792B967889808BD8BD8DE33DBDE5EAB7C4CBB1B336DD02BC54A5. Visible shallow-bowl wording produced a clear upward-facing empty cupped palm while preserving the selected cute rounded doll, two eyes, curved mouth, pointed gold-star Wizard hat, separate feet, isolation, and readable silhouette. The owner selected this exact file as the Wizard master direction. Slight front bias and faint contact shadow remain normalization/review concerns. The queue ended cleanly, both services stopped, no third request ran, and nothing entered assets."
+    },
+    {
+      "command": "WP-015B2G decision-path documentation closure",
+      "status": "pass",
+      "detail": "The art direction, vertical-slice brief, generation review, development re-entry note, implementation pointer, repository instructions, README, and this evidence record now consistently preserve the full SD 1.5 through B2F failure path and the owner-directed B2G reset: FLUX naturally maps cute toward rounded doll anatomy, so the project stops fighting that prior and retains Nimiq connection through palette, textile material, Calling costume, eyes, and world language instead of mandatory hexagonal anatomy. The exact selected external path, SHA-256, prompt, seed 15027002, prompt ID, runtime, known residue, quarantine state, and next normalization gates are recorded. JSON parsing, npm run check:compliance, and git diff --check passed; build, browser matrix, and real-device checks were not required for documentation-only changes."
+    },
+    {
+      "command": "WP-015 post-B2G planning refinement",
+      "status": "pass",
+      "detail": "The Execution Pointer now advances only to WP-015B2H deterministic Wizard normalization of exact source 40F9E812...4A5. B2H freezes source verification, exact-output rights/IP review, versioned alpha/background and edge normalization, uniform-only placement, retained baseline/pivot/socket targets with a stop-and-amend rule, 512/192/48px review derivatives, source-master approval, and explicit no-generation/no-animation/no-integration boundaries. WP-015B3 now owns serial companion-master completion, Threadball reuse review, animation-route admission through a Wizard-only pilot, and all manifest-approved playable derivatives. WP-015C is integration-only and must pass automated phone/Ubuntu visual evidence plus separate real-device acceptance before D. D freezes replay-compatible v3 range/damage values and completes the roster; E adds separately reviewed audio and closes release evidence. The master workflow now normalizes and approves a source master before any animation upload, resolving the prior ordering contradiction. Evidence JSON parsing, npm run check:compliance, and git diff --check passed; build, browser, and real-device checks were not run because this refinement changes documentation only."
+    },
+    {
+      "command": "WP-015B2H frozen source, configuration, and exact-output rights/IP review",
+      "status": "pass",
+      "detail": "The sole 788,520-byte 1024x1024 RGB parent reverified as SHA-256 40F9E81254A0792B967889808BD8BD8DE33DBDE5EAB7C4CBB1B336DD02BC54A5 and remains untouched externally. Frozen config scripts/asset-normalization/wp-015b2h-wizard-v1.json is SHA-256 2AAEF899BD9FDBE202D5D9A293F1DC971ED62AAC32ED95095AF662FE6567D644; normalizer scripts/normalize-character-master.js is SHA-256 B4AEF73CC30133F622C131A8E8D0322DECF953F933FEFC4EE83940FB328CDD82. The exact text-only workflow is 626568CEAA47627F7D421D3BD1B0AA151E1643DBA8FBD631F5EB437666649E28. Pinned diffusion, BFL encoder, and VAE evidence remains Apache-2.0 and external/unbundled. BFL claims no output ownership while requiring lawful, non-infringing use. Human visual/IP review found one generic isolated crochet Wizard, two bead eyes, one mouth, an empty upward palm, no text, logo, official Nimiq art, recognizable third-party character, reference-image input, or Sorcerers material."
+    },
+    {
+      "command": "WP-015B2H candidate A alpha-edge visual review",
+      "status": "fail",
+      "detail": "The first deterministic candidate correctly extracted the character but the unrestricted enclosed-region rule filled a low-contrast floor-shadow cavity below the image-left foot, creating an opaque white oval on transparency and the dark review background. No file was copied into assets and no manifest entry was added. The failure amended only the frozen matte: source y>=900 now requires reviewed blue-excess thresholds, enclosed highlights are retained only above that shadow zone, and post-resample ringing islands are discarded. No character pixel was painted, regenerated, reconstructed, or warped."
+    },
+    {
+      "command": "WP-015B2H candidate B alpha, geometry, and phone-size visual review",
+      "status": "pass",
+      "detail": "The corrected candidate produces one connected subject with zero visible canvas-border pixels, zero disconnected pixels, 57,026 opaque pixels, 1,640 partial-alpha pixels, core bounds x=135..440 and y=32..452, and clean edges on navy and warm-light backgrounds. Hat, two eyes, mouth, separate feet, and empty cupped palm remain readable at 512, 192, and 48 pixels. The 195,820-byte master is 7AF4864E00C7206A05684312916092C6881127F921FA7CEA01524899093318A9; 192px review is 5E5A2C9D923D361B91CA750FE858689A7111D993A15C670A75E3D931459BC632; 48px review is 726550CECE3F0AA866EA9A6CF4E80FFACDA19BCF8F77C40DCCF8E7AEC7E9B6B3; dark/light sheet is D4545EEBC98035677C57896BDB7351E3C8E64E6AC710799A22881908AD60105D. Pivot remains (256,451). The stop-and-amend rule moves only socket metadata from superseded angular-body (341,293) to the visible rounded-body palm (407,228); forcing the old vertical displacement would make the shadow-free subject only about 297px tall."
+    },
+    {
+      "command": "WP-015B2H deterministic reproduction and normalizer tooling",
+      "status": "pass",
+      "detail": "A second independent candidate directory reproduced the master, 192px, 48px, and edge-review SHA-256 values byte-for-byte. Four new focused tests cover connected blue-subject selection with neutral-shadow rejection, enclosed-highlight preservation, partial edge alpha, exact source hash failure, deterministic RGBA PNG bytes, non-uniform-transform rejection, ringing-island cleanup, and the frozen source/pivot/socket/no-runtime boundary. The full npm run test:tooling suite passed 42/42 after the generation-profile regression test was advanced from the historical B2F state to the exact B2H source-master review."
+    },
+    {
+      "command": "WP-015B2H exact source-master manifest approval",
+      "status": "pass",
+      "detail": "Approved exact master bytes were copied to assets/masters/characters/knotkin/wizard/knotkin-wizard-source-master-v1.png and entered in legal/asset-manifest.json as Owned-Original with complete parent, workflow, external component, config, normalizer, and review lineage. The FLUX profile binds source 40F9E812...4A5 to normalized master 7AF4864E...18A9 and blocks further generation. Both asset and generation-component compliance pass. The asset deliberately has no runtime_path, so copy-approved-assets cannot ship it and B2H authorizes no atlas, animation, gameplay integration, another Calling, or further Wizard prompt."
+    },
+    {
+      "command": "WP-015B2H closure verification and current transitive security refresh",
+      "status": "pass",
+      "detail": "npm run verify:fast passed compliance, TypeScript, and all 198 tooling/protocol/simulation/Loomkeeper/Relic/combat/Practice/identity/reward tests. npm run smoke rebuilt server/client, copied zero runtime assets as required, and passed the built server/overlay/asset-plumbing/room smoke. The first final npm audit discovered newly published high-severity GHSA-2m8v-j782-fhvr in transitive socket.io-parser 4.2.6; the upstream advisory says 4.2.7 is the patched 4.x version and has no workaround. A compatible npm update changed only that transitive lock entry to 4.2.7, resulting package-lock SHA-256 18036C2C8F8AA35E2E5FEE03A0B421BA25561C00C609FD3C88BFC51BDEA56FAE, then verify:fast, full build/smoke, package-license compliance, and npm audit with zero vulnerabilities all passed. git diff --check passed. The existing Vite large-chunk warning remains unchanged. Browser matrix and real-device checks were intentionally skipped because the approved source master has no runtime_path and no player-visible behavior changed."
+    },
+    {
+      "command": "WP-015B3 shared-Wizard opponent planning amendment",
+      "status": "pass",
+      "detail": "The project owner simplified the first playable visual slice: B3A now reviews Threadball and produces Patch sources only; B3B admits one Wizard animation route; B3C produces one Wizard inventory reused by the player and AI Loomkeeper; and C integrates that one presentation for both actors without changing authoritative Loomkeeper behavior, labels, or team/position cues. The historical Loomkeeper brief, seeds, rejected outputs, and geometry remain traceability evidence but authorize no B3 generation. Distinct Loomkeeper source, animation, approval, and integration move to WP-015D with Thief, Warrior, and the wider character roster. Documentation-only verification parsed this JSON, passed compliance, and passed git diff --check; build, browser matrix, and real-device checks were not run because no source, runtime path, manifest asset, or player-visible behavior changed."
+    },
+    {
+      "command": "WP-015B3 Threadball spell and world-story planning amendment",
+      "status": "pass",
+      "detail": "The owner paused exact external Threadball candidate 2BAE664F...F4089EB without rejecting or deleting its historical structure evidence because it reads as ordinary yarn rather than Wizard magic. Art direction now connects the Celestial Spinning Mill, NIM Thread, Worldweave, Knotkin Stitching/Unraveling/Restitching, and the textile elemental vocabulary: Worldweave/Thread as substance, Air/Draft as motion, Fire/Loomspark as energy, and Water/Cloudwater as flow and transformation. B3A must freeze one new exact Worldweave Threadball request contract before inference and resolve it before Patch; B3B preserves an empty stable Wizard palm; B3C creates separate formation/held/projectile/short-tail/impact spell assets; C binds them to existing authoritative events without gameplay changes; D applies Draft to Needlepoint and Loomspark to Spoolburst without adding mechanics; E carries those identities into audio. Cloudwater gameplay remains deferred. Documentation-only verification parsed this JSON, passed compliance, and passed git diff --check; build, browser matrix, and real-device checks were not run because no code, asset, manifest, runtime path, or player-visible behavior changed."
+    },
+    {
+      "command": "WP-015B3A Gemini comparison and exact-request gate",
+      "status": "pass",
+      "detail": "Recorded user-supplied 2,082,789-byte 1408x768 RGBA Gemini concept BD87405A8E29E4FCEEC87F4E4BC22256CEF215F2789DFDB1DD4BDD6A31DA6699 as external comparison-only evidence. Only compressed blue strands, a visible warm-gold core, levitation, and inward tension inform the separately authored prompt; the source remains outside the repository and is not copied, staged, traced, cropped, trained on, conditioned on, shipped, or added to the product asset manifest. The frozen request uses generate_flux2_klein_text, exact workflow 626568CE...9E28, seed 15035001, 1024x1024, batch one, four steps, CFG 1, Euler, no reference input, and the exact 77-word B1 prompt. It authorizes one request after fail-closed preflight and no retry, repair, reference edit, Patch request, normalization, promotion, or runtime integration."
+    },
+    {
+      "command": "WP-015B3A exact Threadball request and initial visual triage",
+      "status": "pass",
+      "detail": "Exact-hash preparation and verification passed for FLUX model 97ED34FE...CCB6, text encoder AD65083F...C169, VAE D64F3A68...C4B5, and text workflow 626568CE...9E28. Comfy launched with the reviewed low-VRAM/no-preview mode; generate_flux2_klein_text was registered, the queue was empty, and output baseline WormsPortFlux2KleinText_00005_.png was 40F9E812...4A5. Exactly one seed-15035001 request ran with no reference input or retry. Prompt af2f84ad-deca-4a6d-bd83-b0b88e87c696 completed successfully in 272.426 seconds as 787,706-byte 1024x1024 RGB24 external output WormsPortFlux2KleinText_00006_.png, SHA-256 1F41AF26B9F15419BFB5A59E2485B70EC706AB505672EC57AC8C9295B43F56EC. Queue returned empty and services stopped. Initial full-size and non-promotional 48px triage passes isolation, clean spherical silhouette, tactile blue strands, visible gold core, and forbidden-content checks; semantic reading as compressed magic rather than household yarn remains owner-decision pending. No normalization, exact-output approval, asset-manifest promotion, Patch request, or runtime integration occurred."
+    },
+    {
+      "command": "WP-015B3A pending-decision verification",
+      "status": "pass",
+      "detail": "Parsed both JSON evidence files, npm run check:compliance passed all asset, generation-component, import-boundary, package-license, work-package, and clean-room gates, npm run test:tooling passed all 42 tests, npm run build passed compliance, TypeScript, server, and client production builds, and git diff --check passed. The existing Vite large-chunk warning remains unchanged. npm audit was not rerun because no dependency or lockfile changed. Browser matrix and real-device tests were not run because the candidate remains external quarantine media with no runtime path or player-visible behavior."
+    },
+    {
+      "command": "WP-015B3A deterministic Threadball source-master approval",
+      "status": "pass",
+      "detail": "The project owner accepted the exact seed-15035001 Worldweave Threadball direction. The sole 787,706-byte 1024x1024 RGB parent reverified as SHA-256 1F41AF26B9F15419BFB5A59E2485B70EC706AB505672EC57AC8C9295B43F56EC and remains untouched externally. Frozen config scripts/asset-normalization/wp-015b3a-threadball-v1.json is SHA-256 CF8C6301E9A41DBAB2A16B127F4DF553F719474644761EBE865EDF3A0452635B; normalizer scripts/normalize-relic-master.js is SHA-256 F44A5B86B146EC678E3C594E9C9FD78CADD592F8AF5069BE8A9E4A7944D65B8B. The normalizer removes only the fixed white matte, preserves genuine open gaps between the connected blue strands, decontaminates soft white edges, retains one component, and applies only uniform scale and translation. Two independent directories reproduced the 90,764-byte 256x256 RGBA master SHA-256 608F490CEE2A7FA79F0EA47BF7B15A8E49685B7B1E65E5AE38E15A34B4CD9B6F; 48px 94606A5B...0407B, 36px 4DC19B71...D085, 28px E2B0ABA1...35E0, and navy/warm-light edge review A2EBE175...97CD also matched byte-for-byte. Alpha review reports zero border pixels, one connected subject, 27,300 opaque and 523 partial-alpha pixels, core bounds x=35..220/y=33..222, and visual-center projectile origin (128,128). Review passed the isolated blue/gold knot, transparent strand gaps, no text/logo/character/weapon/third-party artifact, and 28px core read. The approved source master is manifest-bound without runtime_path; no retry, further generation, Patch request, animation, atlas, or gameplay integration occurred."
+    },
+    {
+      "command": "WP-015B3A Threadball source-master closure verification",
+      "status": "pass",
+      "detail": "npm run asset:normalize:threadball and a second independent normalization both produced master 608F490C...D9B6F. The focused normalizer and generation-component tests passed, npm run test:tooling passed all 44 tests, npm run build passed compliance, TypeScript, server, and client builds, npm audit found zero vulnerabilities, and git diff --check passed. The existing Vite large-chunk warning remains unchanged. Browser matrix and real-device testing remain out of scope because the approved Threadball is source-only with no runtime_path and no player-visible behavior changed."
+    },
+    {
+      "command": "WP-015B3A Patch source-contract gate",
+      "status": "pass",
+      "detail": "The B1 brief now freezes three separate no-reference FLUX text source purposes under exact workflow 626568CE...9E28 and fixed 1024x1024/batch-one/four-step/CFG-1/Euler settings: Cloud seed 15035002, Terrain Top seed 15035003, and Terrain Interior seed 15035004. The Cloud, then Terrain Top, then Terrain Interior order is strict; each requires fresh component/workflow/service/empty-queue preflight, output review, and explicit continuation. The contract records protected properties and rejection examples, forbids historical outputs, Wizard, Threadball, Gemini, or any external artwork as references, and forbids batch/retry/repair. It treats FLUX output as textile source imagery only: later frozen deterministic normalizers must prove Cloud alpha extraction and terrain repeatability while code retains collision and destruction authority. No inference, output, normalization configuration, source-master approval, asset-manifest entry, atlas, runtime path, or gameplay integration occurred."
+    },
+    {
+      "command": "WP-015B3A Cloud exact request and visual triage",
+      "status": "pass",
+      "detail": "Fresh Status -VerifyHashes passed all three FLUX component hashes (97ED34FE...CCB6, AD65083F...C169, D64F3A68...C4B5), exact text workflow 626568CE...9E28, ComfyUI 0.27.1 revision c2638ce6c00e3426c48d56a775bc46e9a8464094, low-VRAM/no-preview launch, native AMD RX 7600, bridge revision e0101b2312f30501664dabe4a74c1283c4268eb8, and registered generate_flux2_klein_text. The queue was empty and the output baseline was Threadball 1F41AF26...F56EC. Exactly one no-reference seed-15035002 request used the frozen Cloud prompt. Prompt 0936905b-fb40-47e9-a621-8106e4382a93 reached terminal Comfy success in 255.665 seconds with no retry, producing untouched external 688,501-byte 1024x1024 RGB24 WormsPortFlux2KleinText_00007_.png, SHA-256 EA972B0B884AE5D144C74AE01E490E9C8961A42619172060C11F53925D48FFE7; the queue returned empty. The candidate is one connected off-white crochet three-pom-pom cluster on white with no text, logo, character, scenery, contact plane, or third-party artifact. Its full-size reading is more compact/pom-pom-like than a clearly low cloud. A non-promotional whole-canvas 48px external review copy, rendered with Windows System.Drawing high-quality bicubic interpolation without changing the source, is 2,972 bytes, SHA-256 E16B9D8D65ABD7F2EB51FFBF59B0DAD8B1370B70F5F19AC3DB8016921107CCEF; it remains quiet. Project-owner visual decision is pending. No alpha extraction, crop, normalizer, source master, asset manifest entry, Terrain Top request, atlas, runtime path, or integration occurred."
+    },
+    {
+      "command": "WP-015B3A deterministic Cloud source-master approval",
+      "status": "pass",
+      "detail": "The project owner accepted the exact seed-15035002 Cloud direction. The sole 688,501-byte 1024x1024 RGB parent reverified as SHA-256 EA972B0B884AE5D144C74AE01E490E9C8961A42619172060C11F53925D48FFE7 and remains untouched externally. Frozen config scripts/asset-normalization/wp-015b3a-patch-cloud-v1.json is SHA-256 A13DB44E682870B262C6D2660790A63A5876F3131504DCA4F7E57C09309FAE78; normalizer scripts/normalize-cloud-master.js is SHA-256 185E37D22822FEEB6FBA8049D77E18163758EFEF37CBDE28E13D82F9912B0492. The normalizer removes only the fixed white matte, decontaminates soft edges, retains the largest connected cloud, fills only fully enclosed white-matte regions to prevent transparent stitch pinholes, and applies only uniform scale and translation. Two independent directories reproduced the 211,751-byte 512x512 RGBA master SHA-256 7F327B515FBF89F7DD275C4385FA194AE3F95E677C60BE10126CA68D9024B23C; 192px 122E186246D9B82EDCFF7358BE6A355248906187978273116E9D3AC5E36AD32A, 48px B5C484E0671566FCA63DFFE0E664AFA59F93B04F14CB53809E4E30DAA5C09FA3, and Patch-sky/dark-navy edge review D929A00C5C6D9B6CDA84327E8D19DF66A4DC40886A5AD3EBC3C53F095E0DBC44 also matched byte-for-byte. Alpha review reports zero border pixels, one connected subject, 76,357 opaque and 1,673 partial-alpha pixels, visible bounds x=53..459/y=121..390, and placement anchor (256,256). The approved source master is manifest-bound without runtime_path; no retry, Terrain Top request, animation, atlas, or gameplay integration occurred."
+    },
+    {
+      "command": "WP-015B3A Terrain Top exact request and visual triage",
+      "status": "pass",
+      "detail": "Fresh Prepare, Status -VerifyHashes, and Start passed for exact FLUX model hashes 97ED34FE...CCB6, AD65083F...C169, and D64F3A68...C4B5; exact text workflow 626568CE...9E28; ComfyUI 0.27.1 revision c2638ce6c00e3426c48d56a775bc46e9a8464094; native AMD RX 7600 low-VRAM/no-preview launch; loopback bridge revision e0101b2312f30501664dabe4a74c1283c4268eb8; and registered generate_flux2_klein_text. The queue was empty with Cloud EA972B0B...FFE7 as the prior output. Exactly one no-reference seed-15035003 request used the frozen Terrain Top prompt. Prompt d2ca47de-5cfb-4830-bb2e-243edad798eb reached terminal Comfy success in 260.706 seconds, producing untouched external 774,627-byte 1024x1024 RGB24 WormsPortFlux2KleinText_00008_.png, SHA-256 BE5EB2E77062C9A86327ECC1EB7704C33F8511291709AE18A52D1AF51BE42B22; the queue returned empty and reviewed local services stopped. Initial full-size and non-promotional 48px external review copy (1,859 bytes, SHA-256 8758AFE08A12D94733FE6289558F3FA3BA8470DFDF1234F9AEC8A963085B0D7A) pass the straight full-width light-olive grass, warm-brown felt, restrained stitch-join, calm material scale, and forbidden-content checks. The project owner accepted the candidate."
+    },
+    {
+      "command": "WP-015B3A deterministic Terrain Top source-master approval",
+      "status": "pass",
+      "detail": "The owner-approved exact 774,627-byte 1024x1024 RGB parent reverified as BE5EB2E77062C9A86327ECC1EB7704C33F8511291709AE18A52D1AF51BE42B22 and remains untouched externally. Frozen config scripts/asset-normalization/wp-015b3a-patch-terrain-top-v1.json is SHA-256 4BA76F6477FF10F332B632C832EE314AB73FF624E9DBE3F05AE9B4673BF3FFC8; normalizer scripts/normalize-terrain-top-master.js is SHA-256 F5668C102F21E2098BA7246866A2BE1FB59CCA91988BDCF2BCEA5CF65AA4FC6F. It applies only fixed crop (0,392,1024,256), opaque RGBA conversion, uniform one-quarter scaling, deterministic Mitchell-Netravali resampling, and a reciprocal 16-pixel horizontal edge blend; it performs no inference, painting, cloning, fill, adaptive seam selection, or warp. Two independent output directories produced the same 41,834-byte 256x64 opaque RGBA master SHA-256 41511E63D0DBF602FCA854EB983DB9B754631587F6E5234CBB9DAF9113E77897. The 768x64 three-copy repeat proof is SHA-256 718BD1A0E49DCE815971B01C3E0625B0761CAB19C6BC79AE23952F049BB21B3D and its edge mean/max differences are both zero; the 192x48 review is SHA-256 F08A2FD49A3AB1F784C5C0E4ACFA7A54FEEE398326467DF63A65B8D6188A37A6. Full-size, repeat, and phone-scale visual review pass the grass/felt/stitch reading and no forbidden content. The master is manifest-bound without runtime_path; no Terrain Interior request, atlas, animation, terrain authority, or integration occurred."
+    },
+    {
+      "command": "WP-015B3A Terrain Interior exact request and visual triage",
+      "status": "fail",
+      "detail": "Fresh Prepare, Status -VerifyHashes, and Start passed for exact FLUX model hashes 97ED34FE...CCB6, AD65083F...C169, and D64F3A68...C4B5; exact text workflow 626568CE...9E28; ComfyUI 0.27.1 revision c2638ce6c00e3426c48d56a775bc46e9a8464094; native AMD RX 7600 low-VRAM/no-preview launch; loopback bridge revision e0101b2312f30501664dabe4a74c1283c4268eb8; and registered generate_flux2_klein_text. The queue was empty with Terrain Top BE5EB2E7...2B22 as the prior output. Exactly one no-reference seed-15035004 request used the frozen Terrain Interior prompt. Prompt db813267-25e6-4bef-ba14-ea8b41d491c6 reached terminal Comfy success in 255.203 seconds with no retry, producing untouched external 2,440,150-byte 1024x1024 RGB24 WormsPortFlux2KleinText_00009_.png, SHA-256 98091C738D0E226FCAFA60EFA00BB4F63A503723CC310726E7787FEC702250F9; the queue returned empty and reviewed local services stopped. The external non-promotional 48px whole-canvas review copy, rendered with Windows System.Drawing high-quality bicubic interpolation without changing the source, is 5,304 bytes, SHA-256 2CB5BEF4B1F0F28403565384FD74929E191D0BB57F4957D3637DC1A3E3DE1D3E. Full-size review finds visible large diagonal/diamond quilt seams, which conflict with the frozen no-seam/no-direction acceptance check. The project owner rejected the candidate; the Patch family is paused. No crop, repeat proof, normalizer, source-master promotion, asset-manifest entry, runtime path, atlas, animation, integration, or further request occurred."
+    },
+    {
+      "command": "WP-015B3B AutoSprite first-pilot failure and free-tier palm-preservation amendment",
+      "status": "pass",
+      "detail": "The sole initially authorized AutoSprite Wizard pilot reused only approved source master 7AF4864E...18A9, under account-visible character 'Knotkin Wizard — WP-015B3B pilot', sidescroller/right-facing preset Idle, Turbo/Budget, 25 frames at 256px, default background removal, compression, and no sound. Its untouched external export C:\\Users\\jensb\\Downloads\\Knotkin Wizard — WP-015B3B pilot-idle-trimmed.png is 1280x1280, 546,923 bytes, SHA-256 6EA23DEE5CC42FFA94591B080086018AAEFD2521891E2B192D9DC8447864C718. Full frame review fails because the generated idle lowers/remakes the raised forward arm and upward-facing cupped palm, leaving no stable separate-Relic socket. It remains external quarantine; no asset, atlas, normalizer, or runtime path was created. The owner directs that this account pilot remain temporarily, but its rejected sheet cannot be input, pose, or conditioning material. Official AutoSprite material rechecked on 2026-08-05 confirms free-tier custom prompts but reserves first-frame/pose control for paid Advanced Mode. One, and only one, free-tier Custom successor is authorized against the existing account character with the frozen palm-preservation prompt and settings in wp-015b1-vertical-slice.md. If the free UI does not expose the exact route/settings, or if any output frame fails identity, baseline, raised-arm, or open-cupped-palm/socket review, stop AutoSprite Wizard animation work. No paid mode, re-upload, prompt variant, normalizer, runtime promotion, or third attempt is authorized. JSON parsing, compliance, and diff checks passed; build, browser matrix, and real-device tests remain skipped because this is documentation and external-quarantine evidence only."
+    },
+    {
+      "command": "WP-015B3B free-tier Custom pilot result",
+      "status": "fail",
+      "detail": "The one authorized successor ran in AutoSprite against the existing account character only: Custom name 'Palm-preservation idle', exact frozen 527-character prompt, automatic first/last-frame route, sidescroller/right-facing, Turbo/Budget 2 seconds, 25 frames at 256px, default background removal, compression, and no sound. It completed successfully in the service and reduced the visible free-credit balance from 13 to 8. The sheet editor's first displayed frame fails the accepted Relic contract: the service substitutes a large blue woven basket/cup-like object for the raised Wizard's empty upward-facing cupped mitten palm. This removes the required separate overlay socket, so one-frame failure rejects the entire 25-frame sheet without frame edits, normalizer, atlas, asset-manifest entry, runtime path, or integration. The generated sheet remains visible in the account temporarily and was left untouched. The service's download confirmation was completed, but no durable local output file/hash could be recovered by this session; visible-page asset bundling also failed to fetch the service's signed asset. The absence of an exact export hash prevents promotion and does not authorize another download or generation. Both AutoSprite pilots are rejected external evidence; the documented no-third-attempt stop rule now closes AutoSprite Wizard animation work."
+    },
+    {
+      "command": "WP-015B3B Loomseed presentation-contract amendment",
+      "status": "pass",
+      "detail": "The project owner superseded the failed empty-palm overlay requirement without promoting either AutoSprite pilot. The approved empty-handed Wizard source master remains unchanged and source-only. B3C must compose a calm permanent Loomseed only from approved Threadball source-master lineage at palm anchor (407,228), with the 192px review anchor (153,85), then form and launch a separate smaller temporary Threadball at or just beyond that root-transformed emission origin. The former rightward Relic-local offset remains simulation metadata only and does not define the new visual launch rule. Rejected AutoSprite pixels, prompts, poses, and the accidental basket/cup object are excluded from product lineage and conditioning. The amendment makes no runtime asset, code, physics, replay, reward, range, damage, cooldown, or ammo change. JSON parsing, git diff --check, and npm run check:compliance passed; build, browser-matrix, and real-device checks are not applicable to this documentation-only amendment."
+    },
+    {
+      "command": "WP-015B3C deterministic Wizard Loomseed composition",
+      "status": "pass",
+      "detail": "Frozen config scripts/asset-normalization/wp-015b3c-wizard-loomseed-v1.json (B42E2360CE1CE4A745645F1AF18E61C0856D2A0B1E33DEC8C89FB0C30A7C718E) and project-owned normalizer scripts/compose-wizard-loomseed-presentation.js (58B81919F2FCAAB842A5ACA6EA864B7A58C6882B6FD59620F731263445978847) verify the exact Wizard parent 7AF4864E00C7206A05684312916092C6881127F921FA7CEA01524899093318A9 and Threadball parent 608F490CEE2A7FA79F0EA47BF7B15A8E49685B7B1E65E5AE38E15A34B4CD9B6F. It uniformly scales Threadball by 1/4, maps its center exactly to Wizard palm/emission anchor (407,228), and alpha-composes the Loomseed above the palm. Two independent runs reproduced 196,974-byte 512x512 RGBA master 1CC252B45C93D2553AC733DAA6AA49D05D6351DCC85E61EA559ECED458C9419C, 192px review 278F68C821191F4C5FF4ED87959A86BAE64FA81B6FBB5C9F387D1CC839EAAA35, 48px review 45CF9C9D9D8C17B33E59E2A379E37732F2D737F442A558621E1D9F8DD32C10AB, and navy/warm-light review BEE57171B2DF2D5FD9B3729C05D0D35528521B3B3A2A1D62C4F38E11D710D2F8. Exact parents remain unchanged. The combined master is manifest-bound without runtime_path; no generated character frame, projectile, animation, collision, gameplay integration, or rejected AutoSprite input was used. Focused composition tests, all 52 tooling tests, compliance, TypeScript/server/client build, npm audit with zero vulnerabilities, JSON parsing, and git diff --check passed. The existing Vite large-chunk warning is unchanged."
+    },
+    {
+      "command": "WP-015B3C deterministic Threadball cast-stage composition",
+      "status": "pass",
+      "detail": "Frozen config scripts/asset-normalization/wp-015b3c-threadball-cast-v1.json (5F4DAE04C3E3701705FDB6BF7AB940CFEC0F3203B4C2F241AA8C1D555005AB19) and project-owned composer scripts/compose-threadball-cast-derivatives.js (6030B9A6A962E0BADF943AC70FC570952A5459EC5ACCAFD96BFB49743887E9B5) verify the only visual parent, Threadball source master 608F490CEE2A7FA79F0EA47BF7B15A8E49685B7B1E65E5AE38E15A34B4CD9B6F. Uniform 3/32, 5/32, and 7/64 resampling created three 64x64 RGBA presentation masters with their source center at local (32,32): 1,074-byte formation-start C189A2060BE92DFAE75B8FDDB2F6038DBB209808B764197C9F93473A8908FDD0, 2,546-byte formation-ready 94F0DEDC5ABCA6FF8E65B3F0CFA5EDC48ED869D382CD322CF90BAA492A3BCCA9, and 1,350-byte compact projectile 8ECA37C67C06B2A0C6D8E866FE2FE3E18E40E9F22E557CDEBF8F5470E95123E9. The frozen Wizard presentation metadata records emission offset [151,-223] from root pivot (256,451), separate from physics authority. Two independent outputs matched byte-for-byte; visual review of the 288x192 navy/warm-light contact sheet passed one-component, padding, and gold-core readability checks. No inference, painting, reconstruction, new glow, loose fibers, tail, impact, animation, runtime_path, collision, or gameplay integration occurred. npm run asset:compose:threadball-cast, focused tests, all 54 tooling tests, compliance, TypeScript/server/client build, npm audit with zero vulnerabilities, JSON parsing, and git diff --check passed. The existing Vite large-chunk warning is unchanged."
+    },
+    {
+      "command": "WP-015B3C source-free Threadball effect and timing admission",
+      "status": "pass",
+      "detail": "Frozen config scripts/asset-normalization/wp-015b3c-threadball-effects-v1.json (2C9A827F674B60D5899F698C840D0493F4AB7D8134C0CDC3B60A5D526BD6D34A) binds the approved combined Wizard Loomseed master 1CC252B45C93D2553AC733DAA6AA49D05D6351DCC85E61EA559ECED458C9419C and the exact three static Threadball stages C189A2060BE92DFAE75B8FDDB2F6038DBB209808B764197C9F93473A8908FDD0, 94F0DEDC5ABCA6FF8E65B3F0CFA5EDC48ED869D382CD322CF90BAA492A3BCCA9, and 8ECA37C67C06B2A0C6D8E866FE2FE3E18E40E9F22E557CDEBF8F5470E95123E9. It records root-space emission offset [151,-223], normal/reduced causal ordering, 80/120ms and 30/40ms pre-flight phase budgets, and bounded later client-only procedural effects: one gold halo, at most three inward strokes, a three-segment tail, and at most four small Unraveling loops. The contract explicitly excludes raster creation, source changes, implicit randomness, damage-radius coupling, new gameplay effects/mechanics, collision/terrain authority, simulation/replay/turn/reward mutation, and B3C runtime integration. Focused contract tests, all tooling tests, compliance, TypeScript/server/client build, npm audit, JSON parsing, and git diff --check passed. The existing Vite large-chunk warning is unchanged."
+    },
+    {
+      "command": "WP-015B3C owner-manual Terrain Interior recovery",
+      "status": "pass",
+      "detail": "The rejected FLUX external candidate 98091C738D0E226FCAFA60EFA00BB4F63A503723CC310726E7787FEC702250F9 remains rejected historical evidence for large diagonal/diamond quilt seams. The project owner separately repaired the material in external four-layer XCF C:/Users/jensb/Downloads/terrain-interior-manual-repair-v1.xcf, 6,331,391 bytes, SHA-256 2E94BBE46A3E901BB8EB14B21F413E8ACCB850D3443FFD72308D63B09DCDBC7B. GIMP 3.2.4 non-interactively loaded it without modification and flattened exactly one 1024x1024 RGBA PNG export, 2,731,505 bytes, SHA-256 6419C1E81F13FF75650A13F1FE6654711A7334C9A24EC48F86C4356533CF8095; full-size visual review passed the irregular warm-brown textile and sparse non-directional gold-stitch reading. Frozen config scripts/asset-normalization/wp-015b3c-patch-terrain-interior-manual-v1.json (73118EE47A92EEA00DD78D11508F4031EA532B8DB798030B56E48A19C951C71D) and project-owned normalizer scripts/normalize-terrain-interior-master.js (0DBA3767ECDF3B92A1C26653F899950FD1E8998E035BE7FB22B3EFFA2D4ED0CA) verify that exact flattened source alpha is fully opaque, retain the whole canvas, uniformly downsample by one quarter, and apply only fixed reciprocal 32px horizontal then vertical edge blends. Two independent output directories reproduced the same 151,898-byte 256x256 RGBA source master D50C2C60A9941DEF0CD9E1C3C98A205A329CCFEC8766F3B1B70456728E2E40E9. The 768x768 3x3 repeat proof is SHA-256 1008EEF3DAE0B5689F994CC572E64F5B5EBDA4C8E6AC94135BD93551CC2E2A66 with zero mean and maximum edge difference on both axes; its 96px review is SHA-256 027B1E07714E65325C4D07F00B424064C40D2D046D196992F4BFA47C268130F7. Full-size and repeat visual review pass without visible directional quilt seams. The exact master is manifest-bound without runtime_path. Focused normalizer tests, all tooling tests, compliance, TypeScript/server/client build, npm audit with zero vulnerabilities, JSON parsing, and git diff --check passed. No new inference, input reference, post-export painting, runtime integration, terrain authority, collision, atlas, animation, or player-visible behavior occurred; the existing Vite large-chunk warning is unchanged."
+    },
+    {
+      "command": "WP-015B3C.1 runtime-copy admission refinement",
+      "status": "pass",
+      "detail": "The plan had a real entry contradiction: all B3C masters were deliberately manifest-approved without runtime_path, while C required every runtime file to be approved before integration and prohibited itself from asset approval. The project owner approved a narrow bridge that preserves those boundaries. B3C.1 may add runtime_path only to the seven existing manifest-bound files: Wizard-with-Loomseed 1CC252B45C93D2553AC733DAA6AA49D05D6351DCC85E61EA559ECED458C9419C; cast formation-start C189A2060BE92DFAE75B8FDDB2F6038DBB209808B764197C9F93473A8908FDD0, formation-ready 94F0DEDC5ABCA6FF8E65B3F0CFA5EDC48ED869D382CD322CF90BAA492A3BCCA9, and projectile 8ECA37C67C06B2A0C6D8E866FE2FE3E18E40E9F22E557CDEBF8F5470E95123E9; Cloud 7F327B515FBF89F7DD275C4385FA194AE3F95E677C60BE10126CA68D9024B23C; Terrain Top 41511E63D0DBF602FCA854EB983DB9B754631587F6E5234CBB9DAF9113E77897; and Terrain Interior D50C2C60A9941DEF0CD9E1C3C98A205A329CCFEC8766F3B1B70456728E2E40E9. Existing copy-approved-assets behavior must reproduce the same source bytes only below assets/product/, with an exact seven-path allowlist and a 607,427-byte source total below the 1.5 MB ceiling. No duplicate source, master change, rejected candidate promotion, raw/empty-handed master runtime path, atlas, scene code, player-visible behavior, inference, or integration is allowed. C starts only after B3C.1 path/hash/budget, manifest/compliance, build-copy, and audit proof closes. This documentation refinement changed no runtime asset or code."
+    },
+    {
+      "command": "WP-015B3C.1 deterministic runtime-copy admission implementation",
+      "status": "pass",
+      "detail": "B3C.1 assigned runtime_path only to the seven frozen approved masters: Loomseed Wizard 1CC252B45C93D2553AC733DAA6AA49D05D6351DCC85E61EA559ECED458C9419C; Threadball formation-start C189A2060BE92DFAE75B8FDDB2F6038DBB209808B764197C9F93473A8908FDD0, formation-ready 94F0DEDC5ABCA6FF8E65B3F0CFA5EDC48ED869D382CD322CF90BAA492A3BCCA9, and projectile 8ECA37C67C06B2A0C6D8E866FE2FE3E18E40E9F22E557CDEBF8F5470E95123E9; Cloud 7F327B515FBF89F7DD275C4385FA194AE3F95E677C60BE10126CA68D9024B23C; Terrain Top 41511E63D0DBF602FCA854EB983DB9B754631587F6E5234CBB9DAF9113E77897; and owner-repaired Terrain Interior D50C2C60A9941DEF0CD9E1C3C98A205A329CCFEC8766F3B1B70456728E2E40E9. scripts/check-b3c-runtime-inventory.js closes the exact seven-path allowlist, source hashes, byte sizes, and 607,427-byte total below the 1.5 MB budget; focused tests prove copy-approved-assets produces only byte-identical build copies. Generation-component contracts bind the three Patch runtime paths to their reviewed masters. npm run test:tooling passed 61 tests, npm run check:compliance passed, npm run build copied 7 runtime assets, npm audit reported zero vulnerabilities, and git diff --check passed. No source pixel, rejected candidate, raw empty-handed Wizard, raw Threadball, atlas, scene code, or player-visible behaviour changed."
+    }
+  ],
+  "reviews": [
+    {
+      "role": "worms_port_asset_curator",
+      "reviewer": "primary-agent-exact-output-visual-ip-and-alpha-review",
+      "decision": "pass"
+    },
+    {
+      "role": "worms_port_compliance_keeper",
+      "reviewer": "primary-agent-flux-component-and-source-master-manifest-review",
+      "decision": "pass"
+    },
+    {
+      "role": "worms_port_test_worker",
+      "reviewer": "primary-agent-normalizer-determinism-and-geometry-review",
+      "decision": "pass"
+    },
+    {
+      "role": "worms_port_reviewer",
+      "reviewer": "primary-agent-no-inference-no-runtime-scope-review",
+      "decision": "pass"
+    }
+  ],
+  "skipped_checks": [
+    "The phone-browser matrix was not run for WP-015B0, WP-015B1, WP-015B2A Gates 1-6, WP-015B2B, WP-015B2C, WP-015B2D, WP-015B2E, WP-015B2F, or WP-015B2G because these slices change only the offline generation pipeline, documentation, compliance metadata, and external quarantined component state; they change no browser-facing code or runtime asset.",
+    "Real-device testing was not run because WP-015B0, WP-015B1, WP-015B2A Gates 1-6, WP-015B2B, WP-015B2C, WP-015B2D, WP-015B2E, WP-015B2F, and WP-015B2G create no player-visible behavior or product media.",
+    "FLUX inference was not run in Gate 3 because the separate Gate 4 technical smoke had to record runtime, memory behavior, and exact output evidence as its own bounded review.",
+    "Wizard, Threadball, and reference-edit visual admission was not run in Gate 4 because technical hardware admission and visual-purpose admission are separate gates.",
+    "The phone-browser matrix was not run for WP-015B2H because the approved Wizard is a source master without runtime_path and no browser-facing code or runtime asset path changed.",
+    "Real-device testing was not run for WP-015B2H because no player-visible media was integrated; the maintained 192px and exact 48px derivatives were reviewed locally instead.",
+    "Build, browser-matrix, and real-device checks were not run for the WP-015B3 shared-Wizard opponent amendment because it changes planning and re-entry documentation only.",
+    "Build, browser-matrix, and real-device checks were not run for the WP-015B3 Threadball spell/world-story amendment because it changes planning and re-entry documentation only.",
+    "The phone-browser matrix and real-device checks were not run for the WP-015B3A Threadball source master because it has no runtime_path and no browser-facing code or player-visible behavior changed.",
+    "Build, browser-matrix, and real-device checks were not run for the WP-015B3A Patch source-contract gate because it changes planning, provenance, and no-inference boundaries only; no code, model component, runtime asset, or player-visible behaviour changed.",
+    "The phone-browser matrix and real-device checks were not run for the WP-015B3A Cloud candidate because it remains external quarantine media with no runtime path or player-visible behavior. Full-size and a non-promotional 48px whole-canvas review were inspected locally; no asset was promoted.",
+    "The phone-browser matrix and real-device checks were not run for the WP-015B3A Cloud source master because it has no runtime_path and no browser-facing code or player-visible behavior changed; 192px/48px and Patch-sky/dark-navy reviews were inspected locally instead.",
+    "The phone-browser matrix and real-device checks were not run for the WP-015B3A Terrain Top source master because it has no runtime_path and no browser-facing code or player-visible behavior changed; full-size, 3x horizontal repeat, and 192x48 reviews were inspected locally instead.",
+    "The phone-browser matrix and real-device checks were not run for the WP-015B3A Terrain Interior candidate because it remains external quarantine media with no runtime path or player-visible behavior. Full-size and a non-promotional 48px whole-canvas review were inspected locally; no asset was promoted.",
+    "Build, browser-matrix, and real-device checks were not run for the WP-015B3B free-tier palm-preservation amendment because it changes only route documentation and external-quarantine evidence; it creates no runtime asset, source change, or player-visible behaviour. JSON parsing, compliance, and diff checks are required.",
+    "Build, browser-matrix, and real-device checks were not run for the failed WP-015B3B Custom pilot because it remains an external service result with no runtime asset, source, or player-visible product change. The AutoSprite live sheet editor was visually inspected; its first frame alone failed the empty-palm socket gate.",
+    "Build, browser-matrix, and real-device checks were not run for the WP-015B3B Loomseed presentation-contract amendment because it changes documentation and future derivative boundaries only. No source image, runtime path, code, or player-visible presentation changed.",
+    "The phone-browser matrix and real-device checks were not run for the WP-015B3C Wizard Loomseed composition because the approved combined master has no runtime_path and no browser-facing code or player-visible product presentation changed. The 512px master, 192px/48px reviews, and navy/warm-light edge review were inspected locally instead.",
+    "The phone-browser matrix and real-device checks were not run for the WP-015B3C Threadball cast-stage masters because all three have no runtime_path and no browser-facing code or player-visible product presentation changed. Their navy/warm-light contact sheet and individual transparent padding were inspected locally instead.",
+    "The browser matrix and real-device checks were not run for the WP-015B3C source-free Threadball effect admission because it freezes future presentation boundaries only. It creates no raster asset, runtime path, scene integration, or player-visible behaviour; focused configuration tests, JSON parsing, compliance, diff checks, and the required source/tooling build were run.",
+    "The phone-browser matrix and real-device checks were not run for the WP-015B3C owner-manual Terrain Interior source master because it has no runtime_path, atlas, collision, or browser-facing integration. Full-size, 3x3 repeat, and 96px local reviews were inspected instead; focused tooling/configuration tests, compliance, build, JSON parsing, diff checks, and npm audit were run.",
+    "Build, browser-matrix, and real-device checks were not run for the WP-015B3C.1 runtime-copy admission refinement because it updates only planning, re-entry, and evidence documentation. B3C.1 implementation—not this refinement—must run path/hash/budget, manifest/compliance, build-copy, and audit checks before C integration.",
+    "The phone-browser matrix and real-device checks were not run for WP-015B3C.1 implementation because it adds manifest-approved build-copy paths only and no scene/browser code or player-visible behavior. The required path/hash/budget, focused copy, tooling, compliance, build, audit, and diff checks passed; the full matrix and real-device review begin with WP-015C integration."
+  ],
+  "residual_risks": [
+    "The reviewed image-conditioned graph uses native FLUX ReferenceLatent semantic conditioning, not a hard edge, pose, mask, or ControlNet constraint. B2C demonstrates one successful semantic-scaffold workaround but does not establish pixel-exact geometry control for arbitrary characters.",
+    "The current SD 1.5 checkpoint did not reliably follow the dense B1 character, Relic, and environment prompts. Its rejected prompts, seeds, settings, and outputs remain historical evidence; they are not silently reused for another model architecture.",
+    "WP-015B2A retains exactly three external FLUX.2 component files, two native workflows, and one closed executable profile as technical evidence. The completed WP-015B2B diagnostic changed only the structural input and prompt strategy and failed its Wizard anatomy purpose; its result does not authorize a second attempt, multi-reference graph, or batch.",
+    "The Windows AMD RX 7600 8 GB completed the technical smoke, all three Gate 5 requests, B2B, both B2C gates, B2D, B2E, B2F, and both B2G text trials without runtime failure, but offloaded generation took 253-355 seconds. Driver portability remains unproven and its approximate VRAM samples must not be generalized into a hardware requirement.",
+    "Threadball candidate 2BAE664F...F4089EB passed only the historical bounded round-object structure review. It is now explicitly paused because it reads as ordinary yarn rather than the required compressed Worldweave spell; it has no exact-output IP/product approval, alpha normalization, derivative cleanup, manifest entry, or authority as a conditioning input.",
+    "B2C proves that a mechanical semantic scaffold can establish angular geometry and survive one fitted-knit conversion, but the opaque knit output retains panel seams and a rear scaffold volume. B2D proves that larger close-set eyes, a curved smile, optional paired eyebrows, pale chenille, a belt/button, and warmer details improve appeal. B2E preserves every zero-mask pixel but is rejected as the next Wizard master because its compact crown loses the Wizard calling and its horizontal neck wrap reads thief-like. B2F proves the new scaffold can drive a clear tall Wizard hood, but exact restoration of hard face and mouth islands creates unacceptable visible seams. B2H resolves normalization, alpha, and the source-master socket for the B2G direction; animation and companion-asset consistency remain unresolved.",
+    "The mouth amendment improves expression capacity but requires a later neutral-mouth topology and bounded expression-frame contract so mouth placement does not flicker or multiply across animation.",
+    "B2E proves the core latent-mask route can preserve all zero-mask decoded pixels exactly and produce a coherent head-worn covering, but it does not establish that future masks, characters, or prompts will behave similarly. The one-request allowance is consumed and no retry is authorized.",
+    "The B2G cupped-palm Wizard has passed B2H exact-output product/IP, deterministic alpha, geometry, phone-size, and source-master manifest review as exact normalized bytes 7AF4864E...18A9. It remains intentionally non-runtime and unanimated. Its first AutoSprite preset-Idle pilot lowers/remakes the raised palm. The one free-tier Custom successor uses the exact palm-preservation prompt yet replaces the empty palm with a large blue woven basket/cup-like object in its first displayed frame. Both violate the stable separate-Relic socket contract. AutoSprite has no approved remaining route: no iterative prompt shopping, paid first-frame/pose control, or third attempt is authorized. B3C now provides a static permanent Loomseed, three static Threadball cast stages, a source-free effect/timing contract, and an owner-manual Terrain Interior source master, but integration plus player-visible phone and real-device validation remain WP-015C work. Threadball, the B2C knit conversion, B2D creative-direction result, B2E rejected cowl candidate, B2F deterministic scaffold, B2F rejected seamed output, B2G closed-mitten trial, and untouched B2G opaque parent remain external evidence. B3A's one seed-15035001 Worldweave Threadball request has now produced approved source master 608F490C...D9B6F through gap-preserving deterministic normalization; its Gemini comparison supplied no pixels or conditioning, and no retry is authorized. The separate Patch contract freezes Cloud, Terrain Top, and Terrain Interior sources at seeds 15035002 through 15035004. Cloud has now passed owner-approved deterministic normalization as source master 7F327B51...4B23C with no runtime path; no Cloud retry is authorized. Owner-approved Terrain Top BE5EB2E7...2B22 now has deterministic 256x64 source master 41511E63...7897 through fixed crop, uniform scale, and a zero-difference three-copy horizontal repeat proof; it has no runtime path. Terrain Interior's original FLUX candidate 98091C73...50F9 remains rejected for visible diagonal/diamond quilt seams. The owner-repaired XCF then admits only exact flattened export 6419C1E8...CF8095 and deterministic 256x256 master D50C2C60...2E40E9 with a zero-difference 3x3 two-axis repeat proof. This does not authorize a retry, post-export painting, new inference, or runtime integration. FLUX cannot establish exact tile seams or collision geometry; deterministic post-processing and code remain required. B3/C intentionally reuse one Wizard presentation for both combatants, which reduces immediate opponent visual distinction; existing labels and team/position cues remain required until WP-015D produces the distinct Loomkeeper with the wider roster. The old mask-topology repair and LoRA remain deferred alternatives, not authorization."
+  ]
+}

@@ -6,7 +6,11 @@ import {
   SYNTHETIC_SAFE_AREA
 } from './support/safe-area';
 
+test.describe('@legacy retired pre-V10 visual previews', () => {
 test('visual geometry baselines cover start, combat, result, and recovery', async ({ page }) => {
+  // Once a stale combat snapshot no longer stops the test, Ubuntu must still have
+  // enough outer time to visit and capture every remaining geometry state.
+  test.setTimeout(60_000);
   const errors = captureErrors(page);
 
   await page.goto('/');
@@ -97,10 +101,19 @@ test('canonical visual states cover combat presentation, controls, motion, and s
   const liveUi = page.locator('.combat-ui');
   await expect(liveUi).toBeVisible();
   await expect(liveUi).toHaveAttribute('data-seed', '1');
+  await expect(liveUi).toHaveAttribute('data-visual-assets', 'approved-runtime-copies');
   await aimAt(page, 40, 302);
   await expect(page.locator('.fire-button')).toBeEnabled();
-  await armPresentationGate(page, 'player-projectile');
+  await armPresentationGate(page, 'player-cast-charge');
   await page.locator('.fire-button').tap();
+  await capturePresentation(page, 'player-cast-charge', 'canonical-player-cast-charge.png');
+  await releasePresentationGate(page, 'player-cast-formation');
+  await expect(liveUi).toHaveAttribute('data-visual-stage', 'formation-start');
+  await capturePresentation(page, 'player-cast-formation', 'canonical-player-cast-formation.png');
+  await releasePresentationGate(page, 'player-cast-formation');
+  await expect(liveUi).toHaveAttribute('data-visual-stage', 'formation-ready');
+  await capturePresentation(page, 'player-cast-formation', 'canonical-player-cast-formation-ready.png');
+  await releasePresentationGate(page, 'player-projectile');
   await capturePresentation(page, 'player-projectile', 'canonical-player-projectile.png');
   await releasePresentationGate(page, 'player-impact');
   await capturePresentation(page, 'player-impact', 'canonical-player-impact.png');
@@ -111,8 +124,13 @@ test('canonical visual states cover combat presentation, controls, motion, and s
   await releasePresentationGate(page, 'loomkeeper-impact');
   await capturePresentation(page, 'loomkeeper-impact', 'canonical-loomkeeper-impact.png');
   await releasePresentationGate(page, null);
-  await expect(page.locator('.combat-ui')).toHaveAttribute('data-presenting', 'false');
+  await expect.poll(() => page.evaluate(() => {
+    if (document.querySelector('.result-shell')) return 'result';
+    const combat = document.querySelector<HTMLElement>('.combat-ui');
+    return combat?.dataset.presenting === 'false' ? 'ready' : 'waiting';
+  })).toMatch(/^(ready|result)$/);
   expect(errors).toEqual([]);
+});
 });
 
 test('canonical Daily visuals cover availability, authorization, claim processing, and finality', async ({
@@ -160,6 +178,7 @@ test('canonical Daily visuals cover availability, authorization, claim processin
 
     await page.getByRole('button', { name: 'Refresh payout status' }).tap();
     await expect(page.locator('.reward-result-status')).toContainText('finalized');
+    await expect(page.locator('.reward-transaction-hash')).toHaveText('a'.repeat(64));
     await screenshot(page, 'canonical-daily-finalized.png');
     expect(errors).toEqual([]);
   } finally {
@@ -167,6 +186,7 @@ test('canonical Daily visuals cover availability, authorization, claim processin
   }
 });
 
+test.describe('@legacy retired pre-V10 visual previews', () => {
 test('compact landscape visuals cover Pause and full-screen fallback', async ({ page }, testInfo) => {
   test.skip(testInfo.project.name !== 'chromium-844x390', 'Compact-landscape visual coverage.');
   const errors = captureErrors(page);
@@ -202,6 +222,7 @@ test('compact landscape visuals cover Pause and full-screen fallback', async ({ 
   await expect(page.getByText('Full screen is not supported by this app host')).toBeVisible();
   await screenshot(page, 'landscape-fullscreen-fallback.png');
   expect(errors).toEqual([]);
+});
 });
 
 function captureErrors(page: Page): string[] {
@@ -397,7 +418,9 @@ async function installPresentationGate(page: Page): Promise<void> {
     } = { target: null };
     window.setTimeout = ((handler: TimerHandler, timeout = 0, ...args: unknown[]) => {
       const phase = document.querySelector<HTMLElement>('.combat-ui')?.dataset.presentation;
-      if (phase && phase === state.target && timeout <= 1_000 && !state.blocked) {
+      // Standard-motion casting and Unraveling can intentionally hold a
+      // presentation phase for up to two seconds.
+      if (phase && phase === state.target && timeout <= 2_500 && !state.blocked) {
         document.documentElement.dataset.visualCheckpoint = phase;
         state.blocked = () => nativeSetTimeout(handler, 0, ...args);
         return 0;

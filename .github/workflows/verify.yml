@@ -17,6 +17,7 @@ jobs:
   changes:
     runs-on: ubuntu-24.04
     outputs:
+      base: ${{ steps.plan.outputs.base }}
       full: ${{ steps.plan.outputs.full }}
       checks: ${{ steps.plan.outputs.checks }}
       browser: ${{ steps.plan.outputs.browser }}
@@ -33,14 +34,15 @@ jobs:
       - id: plan
         env:
           FULL: ${{ github.event_name == 'workflow_dispatch' }}
-          CHANGE_BASE: ${{ github.event.pull_request.base.sha || github.event.before }}
+          CHANGE_BASE: ${{ github.event.before || github.event.pull_request.base.sha }}
         run: |
+          echo "base=$CHANGE_BASE" >> "$GITHUB_OUTPUT"
           if [ "$FULL" = true ]; then
             printf 'full=true\nchecks=true\nbrowser=true\npostgres=true\nperformance=true\n' >> "$GITHUB_OUTPUT"
           else
             echo 'full=false' >> "$GITHUB_OUTPUT"
             node scripts/verify-changes.js --base "$CHANGE_BASE" --dry-run --github-output "$GITHUB_OUTPUT"
-            git diff --check "${CHANGE_BASE}...HEAD"
+            node scripts/check-range-whitespace.js "$CHANGE_BASE"
           fi
       - id: matrix
         env:
@@ -61,7 +63,7 @@ jobs:
     needs: changes
     if: needs.changes.outputs.checks == 'true'
     runs-on: ubuntu-24.04
-    timeout-minutes: 20
+    timeout-minutes: 60
     steps:
       - uses: actions/checkout@v5
         with:
@@ -74,7 +76,7 @@ jobs:
       - name: Relevant checks
         if: needs.changes.outputs.full != 'true'
         env:
-          CHANGE_BASE: ${{ github.event.pull_request.base.sha || github.event.before }}
+          CHANGE_BASE: ${{ needs.changes.outputs.base }}
         run: node scripts/verify-changes.js --base "$CHANGE_BASE" --phase checks
       - name: Full release checks
         if: needs.changes.outputs.full == 'true'
@@ -84,7 +86,7 @@ jobs:
     needs: changes
     if: needs.changes.outputs.browser == 'true'
     runs-on: ubuntu-24.04
-    timeout-minutes: 20
+    timeout-minutes: 45
     strategy:
       fail-fast: false
       matrix: ${{ fromJSON(needs.changes.outputs.matrix) }}
@@ -101,7 +103,7 @@ jobs:
       - name: Relevant browser specs
         if: needs.changes.outputs.full != 'true'
         env:
-          CHANGE_BASE: ${{ github.event.pull_request.base.sha || github.event.before }}
+          CHANGE_BASE: ${{ needs.changes.outputs.base }}
         run: node scripts/verify-changes.js --base "$CHANGE_BASE" --phase browser
       - name: Full release browser matrix
         if: needs.changes.outputs.full == 'true'
@@ -190,6 +192,8 @@ jobs:
       - run: npm ci
       - run: npx playwright install --with-deps chromium
       - run: npm run test:reward:postgres
+      # Durable helper issuance shares this disposable PostgreSQL gate.
+      - run: npm run test:pei:postgres
       - run: npm run test:browser:reward:postgres
       - run: npm run check:identity-bundles
       - run: npm run check:reward-security

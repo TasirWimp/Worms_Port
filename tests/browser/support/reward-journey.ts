@@ -1,35 +1,71 @@
-import { expect, type Page } from '@playwright/test';
+import { expect, type Locator, type Page } from '@playwright/test';
+
+type JourneyBoundary = { kind: 'input-epoch' | 'turn'; value: number };
 
 export async function completeCurrentClash(page: Page): Promise<void> {
   const ui = page.locator('.combat-ui');
   for (let shot = 0; shot < 10; shot += 1) {
-    await expect.poll(() => page.evaluate(() => {
-      if (document.querySelector('.result-shell')) return 'result';
-      const combat = document.querySelector<HTMLElement>('.combat-ui');
-      return combat?.dataset.presenting === 'false' &&
-        combat.dataset.activeActor === 'player' ? 'ready' : 'waiting';
-    }), { timeout: 30_000 }).toMatch(/^(ready|result)$/);
+    await expect.poll(() => currentJourneyState(page), { timeout: 45_000 })
+      .toMatch(/^(ready|result)$/);
     if (await page.locator('.result-shell').count()) return;
     if (await ui.getAttribute('data-selected-relic') !== 'threadball') {
-      await page.locator('.relic-trigger').tap();
-      await expect(page.locator('.relic-chooser')).toBeVisible();
-      await page.getByRole('button', { name: 'Select Threadball' }).tap();
+      await selectThreadball(page, ui);
       await expect(ui).toHaveAttribute('data-selected-relic', 'threadball');
     }
     await aimAt(page, 40, shot + 200);
     await expect(page.locator('.fire-button')).toBeEnabled();
-    const turn = Number(await ui.getAttribute('data-turn'));
+    const boundary = await ui.evaluate((combat) => {
+      const resourceTurns = combat.classList.contains('combat-v9');
+      return {
+        kind: resourceTurns ? 'input-epoch' as const : 'turn' as const,
+        value: Number(resourceTurns
+          ? (combat as HTMLElement).dataset.inputEpoch
+          : (combat as HTMLElement).dataset.turn)
+      };
+    });
     await page.locator('.fire-button').tap();
-    await expect.poll(() => page.evaluate((minimumTurn) => {
-      if (document.querySelector('.result-shell')) return 'result';
-      const combat = document.querySelector<HTMLElement>('.combat-ui');
-      return Number(combat?.dataset.turn) > minimumTurn &&
-        combat?.dataset.presenting === 'false' &&
-        combat.dataset.activeActor === 'player' ? 'ready' : 'waiting';
-    }, turn), { timeout: 30_000 }).toMatch(/^(ready|result)$/);
+    await expect.poll(() => currentJourneyState(page, boundary), { timeout: 45_000 })
+      .toMatch(/^(ready|result)$/);
     if (await page.locator('.result-shell').count()) return;
   }
   throw new Error('Reward Clash did not reach a terminal result within ten player shots.');
+}
+
+async function currentJourneyState(
+  page: Page,
+  minimum: JourneyBoundary | null = null
+): Promise<'ready' | 'result' | 'waiting'> {
+  return page.evaluate((boundary) => {
+    if (document.querySelector('.result-shell')) return 'result';
+    const root = document.querySelector<HTMLElement>('.combat-ui');
+    if (!root) return 'waiting';
+    const resourceTurns = root.classList.contains('combat-v9');
+    const currentBoundary = Number(resourceTurns
+      ? root.dataset.inputEpoch
+      : root.dataset.turn);
+    const boundaryAdvanced = !boundary ||
+      (boundary.kind === (resourceTurns ? 'input-epoch' : 'turn') &&
+        currentBoundary > boundary.value);
+    const presentationComplete = resourceTurns
+      ? root.dataset.presentation === 'none'
+      : root.dataset.presenting === 'false';
+    const actionPhase = !resourceTurns || root.dataset.combatPhase === 'action';
+    return boundaryAdvanced && presentationComplete && actionPhase && root.dataset.activeActor === 'player'
+      ? 'ready'
+      : 'waiting';
+  }, minimum);
+}
+
+async function selectThreadball(page: Page, ui: Locator): Promise<void> {
+  if (await ui.evaluate((combat) => combat.classList.contains('combat-v9'))) {
+    await page.getByRole('button', { name: 'Actions', exact: true }).tap();
+    await page.getByRole('button', { name: 'Attack', exact: true }).tap();
+    await page.getByRole('button', { name: /^Threadball · 2(?: · Lob)?$/ }).tap();
+    return;
+  }
+  await page.locator('.relic-trigger').tap();
+  await expect(page.locator('.relic-chooser')).toBeVisible();
+  await page.getByRole('button', { name: 'Select Threadball' }).tap();
 }
 
 async function aimAt(page: Page, angleDegrees: number, pointerId: number): Promise<void> {

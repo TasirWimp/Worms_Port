@@ -18,6 +18,10 @@ const ACTIVE_GAME_KEY = 'nimble-knots.active-game';
 const ACK_TIMEOUT_MS = 5000;
 const sessionReady = new WeakMap<Socket, Promise<SessionOpenData>>();
 const sessionOpening = new WeakMap<Socket, Promise<SessionOpenData>>();
+const sessionReconnectRegistered = new WeakSet<Socket>();
+type ActionTurnsV8Buffer = { snapshots: unknown[]; results: unknown[] };
+const terrainV10Buffers = new WeakMap<Socket, ActionTurnsV8Buffer>();
+const actionTurnsV8Buffers = new WeakMap<Socket, ActionTurnsV8Buffer>();
 
 class SessionAckTimeout extends Error {}
 
@@ -28,14 +32,47 @@ const sessionAckSchema = z.union([
 
 export async function bootstrapSession (socket: Socket): Promise<SessionOpenData>
 {
+    // Capture the dedicated resume events before the V1 session acknowledgement.
+    // These two wire names are intentionally literal: bootstrap must not import
+    // the lazy V8 validator/engine into ordinary V7 startup. The adapter validates
+    // every buffered value; this bounded buffer confers no combat authority.
+    if (!actionTurnsV8Buffers.has(socket)) {
+        const buffer: ActionTurnsV8Buffer = { snapshots: [], results: [] };
+        actionTurnsV8Buffers.set(socket, buffer);
+        const append = (values: unknown[], value: unknown) => {
+            values.push(value);
+            if (values.length > 8) values.shift();
+        };
+        socket.on('v8:challenge.snapshot', value => append(buffer.snapshots, value));
+        socket.on('v8:challenge.result', value => append(buffer.results, value));
+        socket.on('disconnect', () => { buffer.snapshots.length = 0; buffer.results.length = 0; });
+    }
+    if (!terrainV10Buffers.has(socket)) {
+        const buffer: ActionTurnsV8Buffer = { snapshots: [], results: [] };
+        terrainV10Buffers.set(socket, buffer);
+        const append = (values: unknown[], value: unknown) => { values.push(value); if (values.length > 8) values.shift(); };
+        socket.on('v10:challenge.snapshot', value => append(buffer.snapshots, value));
+        socket.on('v10:challenge.result', value => append(buffer.results, value));
+        socket.on('disconnect', () => { buffer.snapshots.length = 0; buffer.results.length = 0; });
+    }
     await waitForConnection(socket);
-    socket.on('connect', () => {
-        const resumed = ensureSession(socket);
-        void resumed.catch((error) => {
-            console.error('Failed to resume the server session after reconnect.', error);
+    if (!sessionReconnectRegistered.has(socket)) {
+        sessionReconnectRegistered.add(socket);
+        socket.on('connect', () => {
+            const resumed = ensureSession(socket);
+            void resumed.catch((error) => {
+                console.error('Failed to resume the server session after reconnect.', error);
+            });
         });
-    });
+    }
     return ensureSession(socket);
+}
+
+/** Drained only by the injected V8 adapter; legacy session schemas stay exact. */
+export function takeActionTurnsV8SessionEvents(socket: Socket): ActionTurnsV8Buffer {
+    const buffer = actionTurnsV8Buffers.get(socket);
+    return buffer ? { snapshots: buffer.snapshots.splice(0), results: buffer.results.splice(0) }
+        : { snapshots: [], results: [] };
 }
 
 export function whenSessionReady (socket: Socket): Promise<SessionOpenData>
@@ -58,9 +95,15 @@ export function adoptSession(socket: Socket, session: SessionOpenData): SessionO
 export async function reconnectSession(socket: Socket): Promise<SessionOpenData>
 {
     socket.disconnect();
+    // Publish the pending readiness before connect listeners run. They must not
+    // observe the previous connection's already-resolved session promise.
+    const reconnecting = (async () => {
+        await waitForConnection(socket);
+        return ensureSession(socket);
+    })();
+    sessionReady.set(socket, reconnecting);
     socket.connect();
-    await waitForConnection(socket);
-    return ensureSession(socket);
+    return reconnecting;
 }
 
 export function getActiveGameId ()
@@ -206,4 +249,8 @@ async function waitForConnection (socket: Socket)
 function requestId ()
 {
     return crypto.randomUUID().replaceAll('-', '');
+}
+
+export function takeTerrainV10SessionEvents(socket: Socket): ActionTurnsV8Buffer {
+ const b = terrainV10Buffers.get(socket); return b ? { snapshots: b.snapshots.splice(0), results: b.results.splice(0) } : { snapshots: [], results: [] };
 }

@@ -4,6 +4,10 @@ const port = Number(process.env.PLAYWRIGHT_PORT || 4173);
 const baseURL = `http://127.0.0.1:${port}`;
 const qualityGate = process.env.PLAYWRIGHT_QUALITY_GATE === 'true';
 const performanceGate = process.env.PLAYWRIGHT_PERFORMANCE_GATE === 'true';
+const legacyBrowserTests = process.env.PLAYWRIGHT_LEGACY_TESTS === 'true';
+if (legacyBrowserTests && (qualityGate || performanceGate)) {
+  throw new Error('Legacy browser diagnostics cannot run as a release or performance gate.');
+}
 
 const phoneUse = (width: number, height: number) => ({
   viewport: { width, height },
@@ -21,6 +25,7 @@ export default defineConfig({
   testDir: './tests/browser',
   testMatch: performanceGate ? 'performance.spec.ts' : undefined,
   testIgnore: performanceGate ? undefined : 'performance.spec.ts',
+  grepInvert: legacyBrowserTests ? undefined : /@legacy/,
   outputDir: './test-results',
   fullyParallel: false,
   forbidOnly: Boolean(process.env.CI) || qualityGate,
@@ -42,9 +47,12 @@ export default defineConfig({
   },
   use: {
     baseURL,
-    trace: 'retain-on-failure',
-    screenshot: 'only-on-failure',
-    video: 'retain-on-failure'
+    // The performance project measures full-motion wall-clock behavior. Do not
+    // charge Ubuntu software rendering for trace, screenshot, or video capture;
+    // its sanitized timing JSON remains the authoritative failure artifact.
+    trace: performanceGate ? 'off' : 'retain-on-failure',
+    screenshot: performanceGate ? 'off' : 'only-on-failure',
+    video: performanceGate ? 'off' : 'retain-on-failure'
   },
   projects: (performanceGate ? [
     {
@@ -80,6 +88,7 @@ export default defineConfig({
       NODE_ENV: 'test',
       PORT: String(port),
       SESSION_OPEN_RATE_CAPACITY: '100',
+      PRACTICE_TEST_VERSION: 'v10',
       PRACTICE_TEST_SEEDS: '1,3735928559',
       IDENTITY_PUBLIC_ORIGIN: baseURL,
       NIMIQ_NETWORK: 'main-albatross'

@@ -1,0 +1,89 @@
+{
+  "schema_version": 1,
+  "id": "wp-015b3c-patch-terrain-interior-manual-v1",
+  "work_package": "WP-015B3C",
+  "frozen_at": "2026-08-05",
+  "purpose": "Promote one owner-repaired Patch 01 Terrain Interior from its exact GIMP 3.2.4 flattened export into an opaque 256x256 repeatable textile source master. The rejected FLUX candidate remains rejected historical evidence; this is a separately reviewed manual-repair recovery with no new inference request.",
+  "source": {
+    "default_external_path": "test-results/wp-015b3c-terrain-interior-manual-export-v1.png",
+    "filename": "wp-015b3c-terrain-interior-manual-export-v1.png",
+    "sha256": "6419C1E81F13FF75650A13F1FE6654711A7334C9A24EC48F86C4356533CF8095",
+    "bytes": 2731505,
+    "width": 1024,
+    "height": 1024,
+    "channels": 4,
+    "editable_source": {
+      "external_path": "C:/Users/jensb/Downloads/terrain-interior-manual-repair-v1.xcf",
+      "sha256": "2E94BBE46A3E901BB8EB14B21F413E8ACCB850D3443FFD72308D63B09DCDBC7B",
+      "bytes": 6331391,
+      "layers": 4,
+      "export_tool": "GIMP 3.2.4 non-interactive flattened PNG export"
+    }
+  },
+  "boundaries": {
+    "allowed": [
+      "owner-approved manual repair embodied only in the exact external XCF/flattened PNG source",
+      "exact flattened-export verification",
+      "exact opaque-RGBA source-alpha verification",
+      "uniform scale",
+      "deterministic RGBA resampling",
+      "fixed reciprocal horizontal and vertical edge blends",
+      "deterministic two-dimensional repeat proof"
+    ],
+    "blocked": [
+      "new FLUX or other generative request",
+      "use of any other candidate or reference image",
+      "manual painting after the exact flattened export",
+      "cloning",
+      "generative fill",
+      "content-aware repair",
+      "adaptive seam selection",
+      "non-uniform scale",
+      "warp",
+      "runtime integration",
+      "terrain authority or collision integration"
+    ]
+  },
+  "geometry": {
+    "source_crop": {
+      "x": 0,
+      "y": 0,
+      "width": 1024,
+      "height": 1024,
+      "method": "fixed complete flattened owner-repaired canvas"
+    },
+    "master": {
+      "canvas": [256, 256],
+      "uniform_scale_numerator": 1,
+      "uniform_scale_denominator": 4,
+      "horizontal_edge_blend": {
+        "mode": "reciprocal_linear_pair_blend",
+        "width_pixels": 32
+      },
+      "vertical_edge_blend": {
+        "mode": "reciprocal_linear_pair_blend",
+        "width_pixels": 32
+      }
+    },
+    "review": {
+      "repeat_columns": 3,
+      "repeat_rows": 3,
+      "phone_preview_canvas": [96, 96]
+    }
+  },
+  "resampling": {
+    "filter": "Mitchell-Netravali bicubic",
+    "b": 0.3333333333333333,
+    "c": 0.3333333333333333,
+    "sampling": "pixel-center inverse mapping",
+    "alpha": "the exact flattened RGBA source and derived master must both be fully opaque",
+    "png": "8-bit non-interlaced RGBA, filter type 0, deterministic zlib level 9"
+  },
+  "outputs": {
+    "master": "patch-01-terrain-interior-source-master-v1.png",
+    "repeat_3x3": "patch-01-terrain-interior-source-master-v1-repeat-3x3.png",
+    "review_96": "patch-01-terrain-interior-source-master-v1-review-96.png",
+    "report": "patch-01-terrain-interior-source-master-v1.report.json",
+    "approved_master_path": "assets/masters/environment/patch-01/terrain/patch-01-terrain-interior-source-master-v1.png"
+  }
+}

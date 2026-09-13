@@ -18,8 +18,184 @@ import { GameWatcher } from '../../server/src/game/watcher';
 import { SessionRegistry } from '../../server/src/session/registry';
 import { SimulationCoordinator } from '../../server/src/simulation/coordinator';
 import { SIM_RULES } from '../../shared/simulation';
+import { V8_R1_RULESET_ID } from '../../shared/simulation-v8';
+import { ChallengeCreateAckV8Schema, protocolEventsV8 } from '../../shared/protocol-v8';
+import { CandidateAckV9Schema, ChallengeCreateAckV9Schema, protocolEventsV9 } from '../../shared/protocol-v9';
+import { V9_RULESET_ID } from '../../shared/simulation-v9';
 
 type Ack = Record<string, any>;
+
+test('versioned creation shares selection and keeps cross-endpoint caches separate', async () => {
+    for (const candidate of [false, true]) {
+        const { runtime, url } = await start(candidate ? { sessionRegistry: {
+            simulationRulesetId: V8_R1_RULESET_ID, simulationTickIntervalMs: false,
+            v8TestOnly: { nowUs: () => 0 } } } : {});
+        const socket = await connect(url);
+        try {
+            await openSession(socket);
+            const request = { requestId: 'shared_creation_01', sequence: 0, mode: 'practice', calling: 'wizard' };
+            const created = await emitAck(socket, protocolEventsV8.create, request);
+            assert.equal(ChallengeCreateAckV8Schema.safeParse(created).success, true);
+            assert.equal(created.ok, true);
+            assert.equal(created.data.kind, candidate ? 'v8' : 'legacy');
+            assert.deepEqual(await emitAck(socket, protocolEventsV8.create, request), created);
+            const legacy = await emitAck(socket, protocolEvents.challengeCreate, request);
+            assert.equal(legacy.protocolVersion, 1);
+            assert.equal(legacy.ok, false);
+            assert.equal(legacy.error.code, candidate ? 'FEATURE_UNAVAILABLE' : 'REPLAY_CONFLICT');
+            assert.equal(runtime.sessions.getBound(socket.id!)!.challenges.size, 1);
+            assert.equal(runtime.sessions.getBound(socket.id!)!.nextSequence, 1);
+        } finally { await closeAll(runtime, [socket]); }
+    }
+});
+
+test('versioned creation refusals retain strict V8 acknowledgements and consume no authority', async () => {
+    const { runtime, url } = await start({ sessionRegistry: { simulationRulesetId: V8_R1_RULESET_ID,
+        simulationTickIntervalMs: false, v8TestOnly: { nowUs: () => 0 } } });
+    const socket = await connect(url);
+    try {
+        const request = { requestId: 'guard_creation_01', sequence: 0, mode: 'practice', calling: 'wizard' };
+        const unauthorized = await emitAck(socket, protocolEventsV8.create, request);
+        assert.equal(ChallengeCreateAckV8Schema.safeParse(unauthorized).success, true);
+        assert.equal(unauthorized.error.code, 'UNAUTHORIZED');
+        await openSession(socket);
+        for (const [payload, code] of [[{ ...request, rulesetId: V8_R1_RULESET_ID }, 'BAD_REQUEST'],
+            [{ ...request, padding: 'x'.repeat(1024) }, 'PAYLOAD_TOO_LARGE']] as const) {
+            const ack = await emitAck(socket, protocolEventsV8.create, payload);
+            assert.equal(ChallengeCreateAckV8Schema.safeParse(ack).success, true);
+            assert.equal(ack.error.code, code);
+        }
+        let limited = false;
+        for (let index = 0; index < 90; index++) {
+            const ack = await emitAck(socket, protocolEventsV8.create,
+                { ...request, requestId: `guard_rate_${index}`, sequence: 1 });
+            assert.equal(ChallengeCreateAckV8Schema.safeParse(ack).success, true);
+            limited ||= ack.error.code === 'RATE_LIMITED';
+        }
+        assert.equal(limited, true);
+        assert.equal(runtime.sessions.getBound(socket.id!)!.nextSequence, 0);
+        assert.equal(runtime.sessions.getBound(socket.id!)!.challenges.size, 0);
+    } finally { await closeAll(runtime, [socket]); }
+});
+
+test('V9 candidate keeps strict ownership, sequence/cursor, pause and reconnect resync separate from V7', async () => {
+    const { runtime, url } = await start({ sessionRegistry: { simulationRulesetId: V9_RULESET_ID,
+        simulationTickIntervalMs: false, v9TestOnly: { nowUs: () => 0 } } });
+    const sockets: Socket[] = [];
+    try {
+        const original = await connect(url); sockets.push(original);
+        const opened = await openSession(original, 'v9_candidate_open_01');
+        const malformed = await emitAck(original, protocolEventsV9.create, {
+            requestId: 'v9_candidate_bad_01', sequence: 0, mode: 'practice', calling: 'wizard'
+        });
+        assert.equal(CandidateAckV9Schema.safeParse(malformed).success, true);
+        assert.equal(malformed.ok, false);
+        const created = await emitAck(original, protocolEventsV9.create, {
+            requestId: 'v9_candidate_create_01', sequence: 0, mode: 'practice', calling: 'wizard',
+            rulesetId: V9_RULESET_ID, automationId: 'wp-015d3b-v9d-v1'
+        });
+        assert.equal(ChallengeCreateAckV9Schema.safeParse(created).success, true);
+        assert.equal(created.ok, true);
+        assert.equal(created.data.nextSequence, 1);
+        const paused = await emitAck(original, protocolEventsV9.pause, {
+            requestId: 'v9_candidate_pause_01', sequence: 1, challengeId: created.data.challengeId,
+            rulesetId: V9_RULESET_ID, automationId: 'wp-015d3b-v9d-v1', paused: true
+        });
+        assert.equal(CandidateAckV9Schema.safeParse(paused).success, true);
+        assert.equal(paused.ok, true);
+        assert.equal(paused.data.paused, true);
+        const wrongCursor = await emitAck(original, protocolEventsV9.input, {
+            requestId: 'v9_candidate_input_01', challengeId: created.data.challengeId,
+            rulesetId: V9_RULESET_ID, automationId: 'wp-015d3b-v9d-v1', inputSequence: 1,
+            expectedTurn: 0, expectedPhase: 'action', inputEpoch: 0, intent: { type: 'face', direction: 1 }
+        });
+        assert.equal(CandidateAckV9Schema.safeParse(wrongCursor).success, true);
+        assert.equal(wrongCursor.ok, false);
+        assert.equal(wrongCursor.error.code, 'SEQUENCE_GAP');
+        original.close();
+        await new Promise(resolve => setTimeout(resolve, 10));
+        const resumed = await connect(url); sockets.push(resumed);
+        const resync = new Promise<any>(resolve => resumed.once(protocolEventsV9.snapshot, resolve));
+        const reopened = await emitAck(resumed, protocolEvents.sessionOpen, {
+            requestId: 'v9_candidate_resume_01', action: 'resume', token: opened.token
+        });
+        assert.equal(reopened.ok, true);
+        const fresh = await resync;
+        assert.equal(fresh.challengeId, created.data.challengeId);
+        assert.equal(fresh.paused, true);
+        assert.equal(fresh.nextSequence, 2);
+    } finally { await closeAll(runtime, sockets); }
+});
+
+test('V9 serialized input rechecks transport ownership after catch-up yields', async () => {
+    let nowUs = 0;
+    let release!: () => void;
+    let yielded!: () => void;
+    const yieldStarted = new Promise<void>(resolve => { yielded = resolve; });
+    const registry = new SessionRegistry({ simulationRulesetId: V9_RULESET_ID, simulationTickIntervalMs: false,
+        v9TestOnly: { nowUs: () => nowUs, yieldBatch: () => { yielded(); return new Promise<void>(resolve => { release = resolve; }); } } });
+    try {
+        registry.create('v9_owned_socket_01');
+        const session = registry.getBound('v9_owned_socket_01')!;
+        const created = registry.createChallengeAutomatedV9(session, 'practice', 'wizard');
+        assert.equal('code' in created, false);
+        if ('code' in created) return;
+        nowUs = 250_000;
+        const pending = registry.submitInputV9(session, {
+            requestId: 'v9_post_await_input_01', challengeId: created.challengeId,
+            rulesetId: V9_RULESET_ID, automationId: 'wp-015d3b-v9d-v1', inputSequence: 0,
+            expectedTurn: 0, expectedPhase: 'action', inputEpoch: 0, intent: { type: 'face', direction: 1 }
+        });
+        await yieldStarted;
+        registry.disconnect('v9_owned_socket_01');
+        release();
+        const response = await pending;
+        assert.equal(response.ok, false);
+        if (!response.ok) assert.equal(response.error.code, 'UNAUTHORIZED');
+        assert.equal(registry.inputCursorV9(session, created.challengeId), 0);
+    } finally { registry.dispose(); }
+});
+
+test('V9 neutral cancel/release are owned opaque cursor fences and never consume input sequence', async () => {
+    const registry = new SessionRegistry({ simulationRulesetId: V9_RULESET_ID, simulationTickIntervalMs: false,
+        v9TestOnly: { nowUs: () => 0 } });
+    try {
+        registry.create('v9_neutral_owner_socket');
+        registry.create('v9_neutral_foreign_socket');
+        const owner = registry.getBound('v9_neutral_owner_socket')!;
+        const foreign = registry.getBound('v9_neutral_foreign_socket')!;
+        const created = registry.createChallengeAutomatedV9(owner, 'practice', 'wizard');
+        assert.equal('code' in created, false);
+        if ('code' in created) return;
+        const started = await registry.submitInputV9(owner, {
+            requestId: 'v9_neutral_walk_start_01', challengeId: created.challengeId,
+            rulesetId: V9_RULESET_ID, automationId: 'wp-015d3b-v9d-v1', inputSequence: 0,
+            expectedTurn: 0, expectedPhase: 'action', inputEpoch: 0, intent: { type: 'walk_start', direction: 1 }
+        });
+        assert.equal(started.ok, true);
+        const state = registry.activeSnapshotV9(owner)!.simulation;
+        const foreignResponse = await registry.cancelInputV9(foreign, {
+            requestId: 'v9_neutral_foreign_01', challengeId: created.challengeId,
+            rulesetId: V9_RULESET_ID, automationId: 'wp-015d3b-v9d-v1', expectedTurn: state.turn, inputEpoch: state.inputEpoch
+        });
+        assert.equal(foreignResponse.ok, false);
+        assert.equal(foreignResponse.nextInputSequence, 0);
+        const cancelled = await registry.cancelInputV9(owner, {
+            requestId: 'v9_neutral_cancel_01', challengeId: created.challengeId,
+            rulesetId: V9_RULESET_ID, automationId: 'wp-015d3b-v9d-v1', expectedTurn: state.turn, inputEpoch: state.inputEpoch
+        });
+        assert.equal(cancelled.ok, true);
+        assert.equal(cancelled.nextInputSequence, 1);
+        const replay = registry.replayForChallengeV9(owner, created.challengeId)!;
+        assert.equal(replay.records.some(record => record.operation.kind === 'barrier' && record.operation.barrier.reason === 'cancel'), true);
+        const staleRelease = await registry.releaseInputV9(owner, {
+            requestId: 'v9_neutral_release_01', challengeId: created.challengeId,
+            rulesetId: V9_RULESET_ID, automationId: 'wp-015d3b-v9d-v1', expectedTurn: state.turn, inputEpoch: state.inputEpoch
+        });
+        assert.equal(staleRelease.ok, true);
+        assert.equal(staleRelease.nextInputSequence, 1);
+    } finally { registry.dispose(); }
+});
 
 async function start(options: Parameters<typeof createRuntimeServer>[0] = {}) {
     const runtime = createRuntimeServer({ allowMissingOrigin: true, ...options });
@@ -408,7 +584,7 @@ test('malformed, extra, and oversized events fail closed without echoing secrets
             sequence: 0,
             mode: 'practice',
             calling: 'wizard',
-            padding: 'x'.repeat(9 * 1024)
+            padding: 'x'.repeat(13 * 1024)
         });
         assert.equal(oversized.error.code, 'PAYLOAD_TOO_LARGE');
         assert.doesNotMatch(JSON.stringify(oversized), /x{64}/);
@@ -448,7 +624,7 @@ test('pending connection and oversized-invalid budgets fail closed', async () =>
                 sequence: 0,
                 mode: 'practice',
                 calling: 'wizard',
-                padding: 'x'.repeat(9 * 1024)
+                padding: 'x'.repeat(13 * 1024)
             });
             assert.equal(response.error.code, 'PAYLOAD_TOO_LARGE');
         }
@@ -457,7 +633,7 @@ test('pending connection and oversized-invalid budgets fail closed', async () =>
             sequence: 0,
             mode: 'practice',
             calling: 'wizard',
-            padding: 'x'.repeat(9 * 1024)
+            padding: 'x'.repeat(13 * 1024)
         });
         await disconnected;
         assert.equal(first.connected, false);
@@ -904,7 +1080,8 @@ test('protocol commands mutate authoritative simulation once and reconstruct fro
             calling: 'wizard'
         });
         assert.equal(ChallengeSnapshotSchema.safeParse(created.data).success, true);
-        assert.equal(created.data.simulation.rulesetId, 'nimble-knots-artillery-v2');
+        assert.equal(created.data.simulation.rulesetId, 'nimble-knots-artillery-v7');
+        assert.equal(created.data.simulation.rulesetVersion, 7);
         assert.equal(created.data.loomkeeperPolicyId, 'nimble-knots-loomkeeper-v2');
         assert.ok(Buffer.byteLength(JSON.stringify(created.data), 'utf8') <= 8 * 1024);
         const initialHash = created.data.stateHash;
@@ -1006,7 +1183,7 @@ test('deterministic Practice seed cycling is isolated per session', () => {
     }
 });
 
-test('player fire produces one automated Loomkeeper turn and records only its chosen plan', async () => {
+test('player fire produces one automated Loomkeeper resolution and records only its chosen plan', async () => {
     const { runtime, url } = await start({
         sessionRegistry: { seedSource: () => 1, simulationTickIntervalMs: false }
     });
@@ -1027,7 +1204,7 @@ test('player fire produces one automated Loomkeeper turn and records only its ch
             const timer = setTimeout(() => reject(new Error('Loomkeeper snapshot timed out.')), 1_000);
             socket.on(protocolEvents.snapshot, (snapshot) => {
                 if (snapshot.challengeId === created.data.challengeId &&
-                    snapshot.simulation.turn === 2) {
+                    (snapshot.simulation.turn === 2 || snapshot.simulation.phase === 'finished')) {
                     automatedSnapshots.push(snapshot);
                     clearTimeout(timer);
                     resolve(snapshot);
@@ -1041,13 +1218,19 @@ test('player fire produces one automated Loomkeeper turn and records only its ch
         };
         const fired = await emitAck(socket, protocolEvents.commandSubmit, firePayload);
         assert.equal(fired.ok, true);
-        assert.equal(fired.data.simulation.rulesetId, 'nimble-knots-artillery-v2');
-        assert.equal(fired.data.simulation.rulesetVersion, 2);
+        assert.equal(fired.data.simulation.rulesetId, 'nimble-knots-artillery-v7');
+        assert.equal(fired.data.simulation.rulesetVersion, 7);
         assert.equal(fired.data.simulation.activeActor, 'loomkeeper');
         assert.equal(fired.data.simulation.turn, 1);
         const reply = await automated;
-        assert.equal(reply.simulation.activeActor, 'player');
         assert.equal(reply.loomkeeperPolicyId, 'nimble-knots-loomkeeper-v2');
+        if (reply.simulation.phase === 'finished') {
+            assert.equal(reply.simulation.activeActor, 'loomkeeper');
+            assert.equal(reply.simulation.turn, 1);
+        } else {
+            assert.equal(reply.simulation.activeActor, 'player');
+            assert.equal(reply.simulation.turn, 2);
+        }
 
         const session = runtime.sessions.getBound(socket.id!);
         assert.ok(session);
@@ -1066,7 +1249,8 @@ test('player fire produces one automated Loomkeeper turn and records only its ch
         await new Promise((resolve) => setTimeout(resolve, 20));
         assert.equal(automatedSnapshots.length, 2);
         assert.equal(automatedSnapshots.at(-1).stateHash, reply.stateHash);
-        assert.equal(automatedSnapshots.at(-1).simulation.turn, 2);
+        assert.equal(automatedSnapshots.at(-1).simulation.phase, reply.simulation.phase);
+        assert.equal(automatedSnapshots.at(-1).simulation.turn, reply.simulation.turn);
         assert.equal(
             runtime.sessions.replayForChallenge(session, created.data.challengeId)!.records.length,
             replayLength
@@ -1204,34 +1388,39 @@ test('authoritative victory emits one final result and duplicate fire is inert',
             mode: 'practice',
             calling: 'warrior'
         });
-        await emitAck(socket, protocolEvents.commandSubmit, {
-            requestId: 'victory_aim_01', sequence: 1,
-            challengeId: created.data.challengeId, expectedTurn: 0,
-            command: { type: 'aim', angleMilliDegrees: 35_000, powerPermille: 1_000 }
-        });
-        await emitAck(socket, protocolEvents.commandSubmit, {
-            requestId: 'victory_fire_01', sequence: 2,
-            challengeId: created.data.challengeId, expectedTurn: 0,
-            command: { type: 'fire' }
-        });
         const session = runtime.sessions.getBound(socket.id!);
         assert.ok(session);
-        const afterTimeout = runtime.sessions.advanceChallengeTicks(
-            session,
-            created.data.challengeId,
-            SIM_RULES.turnTicks
-        );
-        assert.equal('code' in afterTimeout, false);
+        let sequence = 1;
+        for (let shot = 1; shot <= 4; shot += 1) {
+            const expectedTurn = (shot - 1) * 2;
+            await emitAck(socket, protocolEvents.commandSubmit, {
+                requestId: `victory_aim_0${shot}`, sequence: sequence++,
+                challengeId: created.data.challengeId, expectedTurn,
+                command: { type: 'aim', angleMilliDegrees: 35_000, powerPermille: 1_000 }
+            });
+            const fired = await emitAck(socket, protocolEvents.commandSubmit, {
+                requestId: `victory_fire_0${shot}`, sequence: sequence++,
+                challengeId: created.data.challengeId, expectedTurn,
+                command: { type: 'fire' }
+            });
+            assert.equal(fired.data.status, 'active');
+            const afterTimeout = runtime.sessions.advanceChallengeTicks(
+                session,
+                created.data.challengeId,
+                SIM_RULES.turnTicks
+            );
+            assert.equal('code' in afterTimeout, false);
+        }
         await emitAck(socket, protocolEvents.commandSubmit, {
-            requestId: 'victory_aim_02', sequence: 3,
-            challengeId: created.data.challengeId, expectedTurn: 2,
+            requestId: 'victory_aim_05', sequence: sequence++,
+            challengeId: created.data.challengeId, expectedTurn: 8,
             command: { type: 'aim', angleMilliDegrees: 35_000, powerPermille: 1_000 }
         });
         const results: any[] = [];
         socket.on(protocolEvents.result, (result) => results.push(result));
         const finalPayload = {
-            requestId: 'victory_fire_02', sequence: 4,
-            challengeId: created.data.challengeId, expectedTurn: 2,
+            requestId: 'victory_fire_05', sequence,
+            challengeId: created.data.challengeId, expectedTurn: 8,
             command: { type: 'fire' }
         };
         const final = await emitAck(socket, protocolEvents.commandSubmit, finalPayload);

@@ -1,0 +1,106 @@
+{
+  "schema_version": 1,
+  "id": "wp-015d4e-stone-tower-v1",
+  "work_package": "WP-015D4E",
+  "frozen_at": "2026-09-10",
+  "purpose": "Deterministically extract the one owner-approved quarantined generic stone-tower candidate from its white matte, remove only its model-made floor-shadow rows, retain one connected textile landmark, and uniformly place it on a transparent scalable background canvas without painting, reconstruction, or inference.",
+  "source": {
+    "default_external_path": "C:/Users/jensb/AppData/Local/Comfy-Desktop/ComfyUI-Shared/output/WormsPortFlux2KleinReferenceEdit_00007_.png",
+    "filename": "WormsPortFlux2KleinReferenceEdit_00007_.png",
+    "sha256": "6DDE21C23C9CF96D445DA3119D6EB9D282BE619B6BB2E3597CB699576D58D264",
+    "bytes": 634010,
+    "width": 1360,
+    "height": 768,
+    "channels": 3
+  },
+  "boundaries": {
+    "allowed": [
+      "exact-source verification",
+      "fixed white-matte extraction and edge-color decontamination",
+      "largest connected subject selection",
+      "deterministic filling of fully enclosed white-matte stitch pinholes",
+      "fixed removal of all alpha in source rows 712 and below, which contain only the reviewed model-made contact-shadow tail",
+      "uniform scale",
+      "translation",
+      "deterministic RGBA resampling"
+    ],
+    "blocked": [
+      "inference",
+      "manual painting",
+      "cloning",
+      "generative fill",
+      "tower reconstruction",
+      "non-uniform scale",
+      "warp",
+      "a second candidate or request",
+      "volcano, vegetation, terrain, character, UI, or scene composition",
+      "runtime integration"
+    ]
+  },
+  "matte": {
+    "background_rgb": [255, 255, 255],
+    "distance_metric": "maximum absolute RGB channel distance",
+    "hard_foreground_threshold": 32,
+    "soft_edge_low_threshold": 3,
+    "soft_edge_high_threshold": 16,
+    "soft_edge_radius_pixels": 2,
+    "component_connectivity": 8,
+    "component_selection": "largest hard-foreground component",
+    "post_resample_component_selection": "retain the largest 8-connected nonzero-alpha component after every resize to suppress isolated white-matte ringing pixels",
+    "enclosed_holes": "fill_enclosed_white_matte_only",
+    "external_background": "discard, including disconnected and border-connected pixels",
+    "contact_shadow": {
+      "first_discarded_source_y": 712,
+      "operation": "discard_all_alpha_in_and_below_fixed_source_row",
+      "rationale": "The threshold-32 selected component remains tower-wide through row 711; rows 712 through 721 taper only as the reviewed neutral floor-shadow tail."
+    },
+    "edge_color": "uncomposite soft-edge RGB from the fixed white matte using the computed alpha; hard foreground retains exact source RGB",
+    "expected_hard_bounds": {
+      "min_x": 472,
+      "min_y": 28,
+      "max_x": 859,
+      "max_y": 721
+    }
+  },
+  "geometry": {
+    "source_landmarks": {
+      "baseline_center": [668, 711],
+      "method": "reviewed center of the retained tower base immediately above the discarded shadow tail; decorative presentation anchor only, never terrain authority"
+    },
+    "master": {
+      "canvas": [1024, 576],
+      "uniform_scale_numerator": 7,
+      "uniform_scale_denominator": 10,
+      "translation": [44.400000000000006, 30.3],
+      "placement_anchor": [512, 528],
+      "motion_safe": {
+        "min_x": 360,
+        "max_x": 670,
+        "min_y": 40,
+        "max_y": 540
+      }
+    },
+    "review_sizes": [[384, 216], [128, 72]]
+  },
+  "resampling": {
+    "filter": "Mitchell-Netravali bicubic",
+    "b": 0.3333333333333333,
+    "c": 0.3333333333333333,
+    "sampling": "pixel-center inverse mapping",
+    "alpha": "premultiplied during filtering, straight RGBA in PNG",
+    "png": "8-bit non-interlaced RGBA, filter type 0, deterministic zlib level 9"
+  },
+  "review_backgrounds": {
+    "patch_sky": [217, 242, 243],
+    "dark_navy": [31, 35, 70],
+    "contact_sheet_order": ["patch_sky", "dark_navy"]
+  },
+  "outputs": {
+    "master": "stone-tower-source-master-v1.png",
+    "review_384": "stone-tower-source-master-v1-review-384.png",
+    "review_128": "stone-tower-source-master-v1-review-128.png",
+    "edge_review": "stone-tower-source-master-v1-edge-review.png",
+    "report": "stone-tower-source-master-v1.report.json",
+    "approved_master_path": "assets/masters/environment/backgrounds/volcanic-ruin/stone-tower-source-master-v1.png"
+  }
+}

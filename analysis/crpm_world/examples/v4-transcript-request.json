@@ -1,0 +1,119 @@
+{
+  "schemaVersion": 2,
+  "requestId": "v4-authority-transcript-example",
+  "requestVersion": 2,
+  "profileVersion": 2,
+  "adapter": {
+    "id": "v4_authority",
+    "version": 2
+  },
+  "baseline": {
+    "kind": "ruleset",
+    "id": "nimble-knots-artillery-v4",
+    "version": 4,
+    "calling": "wizard"
+  },
+  "scenarioDomain": {
+    "schemaVersion": 1,
+    "scenarioIds": [
+      "v4-authority-c0ffee11"
+    ],
+    "actionFamilies": [
+      "move",
+      "select_relic",
+      "aim",
+      "fire"
+    ],
+    "policyFamilies": [
+      "declared-command-sequence"
+    ],
+    "seeds": [
+      3237998097
+    ],
+    "constraints": [
+      "One reviewed four-command V4 authority transcript.",
+      "No tick advancement, network input, or runtime activation is requested."
+    ]
+  },
+  "cut": {
+    "id": "authority_v4",
+    "version": 2
+  },
+  "protectedFamily": [
+    "The canonical V4 authority state remains recoverable by its source reference and digest.",
+    "Command acceptance, mutation, state, events, and error remain owned by shared/simulation.ts."
+  ],
+  "sequence": [
+    {
+      "sequence": 0,
+      "kind": "command",
+      "actor": "player",
+      "expectedTurn": 0,
+      "command": {
+        "type": "move",
+        "direction": 1
+      }
+    },
+    {
+      "sequence": 1,
+      "kind": "command",
+      "actor": "player",
+      "expectedTurn": 0,
+      "command": {
+        "type": "select_relic",
+        "relicId": "threadball"
+      }
+    },
+    {
+      "sequence": 2,
+      "kind": "command",
+      "actor": "player",
+      "expectedTurn": 0,
+      "command": {
+        "type": "aim",
+        "angleMilliDegrees": 45000,
+        "powerPermille": 700
+      }
+    },
+    {
+      "sequence": 3,
+      "kind": "command",
+      "actor": "player",
+      "expectedTurn": 0,
+      "command": {
+        "type": "fire"
+      }
+    }
+  ],
+  "seeds": [
+    3237998097
+  ],
+  "outputDetailLevel": "witnesses",
+  "mandatoryEvidenceProbes": [
+    "v4.accepted_commands",
+    "v4.rejected_commands",
+    "v4.mutated_commands",
+    "v4.event_count"
+  ],
+  "optionalDisplayedScalarProbes": [
+    "v4.accepted_commands",
+    "v4.rejected_commands",
+    "v4.mutated_commands",
+    "v4.event_count"
+  ],
+  "requestedPorts": [
+    "analysis-result",
+    "authority-transition",
+    "transition-witness",
+    "projection-evidence",
+    "replay-evidence",
+    "diagnostic-profile",
+    "scalar-probes",
+    "residual-ledger"
+  ],
+  "activation": "offline_only",
+  "explicitExclusions": [
+    "No live gameplay, protocol, replay ABI, client, server, reward, or asset mutation is requested.",
+    "The finite transcript does not establish balance or all-state simulation equivalence."
+  ]
+}

@@ -1,0 +1,107 @@
+{
+  "id": "WP-015D2A",
+  "status": "in_progress",
+  "starting_commit": "99cb25b9c1233f771fc65263b7f131c41be8aee2",
+  "branch": "codex/wp-015-production-assets",
+  "initial_worktree": "clean",
+  "starting_lock_sha256": "E3E461C3D97BEA4EAA18C87ABA4C83FB8B5286EC10A4235BE789679EFC8F0412",
+  "owning_roles": [
+    "worms_port_planner",
+    "worms_port_base_game_worker",
+    "worms_port_test_worker",
+    "worms_port_docs_keeper"
+  ],
+  "scope": [
+    "Create an isolated deterministic Python tactical-analysis model with versioned integer-only configurations, transparent policies, compact match traces, and aggregate strategy metrics.",
+    "Export and verify a V4 structural authority fixture from the TypeScript simulation without changing V1 through V4 gameplay, replay, protocol, or Loomkeeper behavior.",
+    "Record the V4 ideal-direct-hit baseline, one explicitly non-production V5 range/damage candidate, separately schema-versioned Needlepoint Seam Pin / forward-Stitch / Escape Slack tactical-core hypotheses, C4's centered cross-band starting-distance sweep, the bounded L4+ CRPM-inspired tactical-voyage recurrence gate, and the rejected D1 one-use Brace / E1-E3 Spoolburst self-backlash / F1 prepared-Spoolburst-Threadball-disruption / F2 Spun-Cocoon-Threadball-Unweave / F3 Threadback-Unweave / F4 Cocoon-Threadback recombination / G1 Cast-Threadstep-reaction / H1 automatic, H2 paid, and H3 counterable second-actor Opening-Weave probes so design can inspect dominance, initiative, counterplay, convergence, and non-terminal recurrence hypotheses.",
+    "Provide reproducible Python and TypeScript tests plus a local report command; generated reports remain ignored outside the product runtime."
+  ],
+  "non_goals": [
+    "Create, activate, or change nimble-knots-artillery-v5 or any V1 through V4 rule, replay, protocol, client, server, reward, asset, or Loomkeeper behavior.",
+    "Treat the analytical model as a second game authority, a full ballistic/terrain reimplementation, proof of player behavior, or a source of live command validation.",
+    "Add a live defense/status action, action-economy change, Loom Tightening, tie-break, obstacle, destructible terrain, Calling modifier, source media, dependency, or Sorcerers material. Candidates B/B2/C/D1/E/F1/F2/F3/F4/G1/H1/H2/H3 and the recurrence gate model configuration-bound analytical Needlepoint, convergence, rejected basic-defense/self-backlash, prepared-Spoolburst/Threadball, Cocoon/Threadback, pre-hit reaction, and second-actor opening-compensation mechanics only."
+  ],
+  "planned_checks": [
+    "npm run test:tactical-model",
+    "npm run check:types",
+    "npm run check:compliance",
+    "npm run build",
+    "npm audit",
+    "D2A analytical-model and authority-boundary review"
+  ],
+  "deterministic_seeds": [
+    "3237998097"
+  ],
+  "sorcerers_reference_used": false,
+  "clean_room_records": [],
+  "check_results": [
+    {
+      "command": "npm run test:tactical-model",
+      "status": "pass",
+      "detail": "Strict TypeScript checking for the fixture exporter/test, one TypeScript fixture-parity test, and thirty-one standard-library Python model tests passed, including Candidate B tether/cooldown, Candidate B2 forward-only/retreat-cast, Candidate C exact Escape Slack accounting/configuration, the no-false-retreat policy regression, a repeatable centered cross-band C4 scenario sweep, D1 Brace hit/expiry/policy coverage, E1/E2/E3 Spoolburst self-cost legality/terminal-cost coverage, F1 preparation/disruption/expiry coverage, F2 Cocoon/Strike/Unweave/repeated-state coverage, F3 Threadback/full-Escape-Slack/non-recurrence coverage, F4 Cocoon plus costly Threadback/non-recurrence coverage, G1 pre-hit Threadstep residue plus reaction-aware opening-search coverage, H1 second-actor Opening Weave assignment/expiry/state-cut/non-recurrence coverage, H2 optional priced use/low-damage policy distinction/reaction-aware cross-band coverage, and H3 partial paid Weave / Frayed-Seam / advancing-Needlepoint binding / forced-opening coverage."
+    },
+    {
+      "command": "npm run check:types",
+      "status": "pass",
+      "detail": "Both production TypeScript projects passed; D2A adds no production import path."
+    },
+    {
+      "command": "npm run check:compliance",
+      "status": "pass",
+      "detail": "Asset, runtime inventory, generation, import-boundary, package-license, work-package evidence, and clean-room gates passed with the D2A record."
+    },
+    {
+      "command": "npm run build",
+      "status": "pass",
+      "detail": "The production server/client build passed and copied only the existing eleven approved runtime assets."
+    },
+    {
+      "command": "npm audit",
+      "status": "reported",
+      "detail": "Reported one high-severity advisory for transitive development dependency nanoid@3.3.16 via vite -> postcss. D2A changed no dependency or lockfile; remediation needs a separately scoped dependency update."
+    },
+    {
+      "command": "D2A analytical-model and authority-boundary review",
+      "status": "pass",
+      "detail": "The Python package is isolated below analysis/, reports its ideal-direct-hit limitations, has no client/server/shared runtime import, and checks structural V4 facts through a TypeScript-generated fixture."
+    }
+  ],
+  "reviews": [
+    {
+      "role": "worms_port_planner",
+      "reviewer": "Codex",
+      "decision": "pass",
+      "detail": "Confirmed D2A remains an analytical predecessor: no V5 activation, action-economy, defense, overtime, terrain tactic, or reward change was introduced."
+    },
+    {
+      "role": "worms_port_test_worker",
+      "reviewer": "Codex",
+      "decision": "pass",
+      "detail": "Confirmed deterministic config validation, TypeScript fixture parity, Python repeatability, and ignored report generation; the full browser matrix is not applicable because no player-visible behavior changed."
+    }
+  ],
+  "skipped_checks": [
+    "The full phone-browser matrix and real-device acceptance were not run because D2A adds no client, server, shared-gameplay, protocol, asset, or visible behavior. They remain required for a later playable V5 or tactical-core ruleset.",
+    "No full ballistic, terrain, or replay-equivalence claim is made for the Python model. The checked V4 authority link is structural only; production candidates require TypeScript scenario transcript parity before activation."
+  ],
+  "residual_risks": [
+    "The analysis assumes ideal direct hits on a level-ground range projection. It cannot predict real mobile aim, terrain collision, splash, or actual Loomkeeper play.",
+    "Candidate A is useful negative evidence, not an approved V5 values table. Its 576/640 pursuit-retreat oscillation led to separately versioned Candidate B analysis, not a V5 rule.",
+    "Candidate B demonstrates a direct-hit Needlepoint counter to the specific equal-retreat trace, but its comparable primary matrix has 10 turn-limit draws out of 50 matches and a 56% first-actor rate. It is not approved for production or sufficient evidence of global convergence.",
+    "Candidate B2 preserves the direct counter trace and returns its comparable first-actor rate to 48%, but still records 10 turn-limit draws out of 50 and an average 7.12 turns. It is not approved for production or sufficient evidence of global convergence.",
+    "The initial C4/C1 mutual-retreat timeouts were superseded after trace review found a retreat-kite policy bug: it chose an approach whenever the opponent could damage it, even though its own cast was legal. With a real-retreat-only policy, C4 and C1 each finish all 50 primary-matrix matches by Unraveling; C4 retains a 52% first-actor rate and 6.12 average turns, while C2/C3 retain 4 draw outcomes. The ideal-hit/heuristic limits and unresolved live counterplay mean no Escape Slack value is approved for production.",
+    "C4's centered 448/512/576/640/704 starting-distance sweep finishes all 250 ideal-hit policy matches, but records first-actor rates of 64%/60%/64%/52%/76%, respectively. The 448/512/576 scenarios also have bounded forced direct-cast openings. These counterfactual analytical scenarios are not V4 replay parity, but they block a values-only V5 decision until an initiative-counterplay candidate is assessed.",
+    "Candidate D1's one-use public Brace spends a full turn, halves only the next incoming direct hit, and expires after the opposing turn. It retains C4's canonical and cross-band first-actor rates, does not prevent the remaining forced Spoolburst openings, and its own survival policy rarely has a rational use. It is rejected analysis-only evidence; no percentage tuning, UI, replay, or live defensive action is approved. A reaction/turn-order defense would be a materially different separately authorized candidate.",
+    "Candidate E1/E2/E3 make a legal Spoolburst pay 10/20/30 caster Stitching while always leaving its caster alive. They remove the bounded direct Spoolburst forced openings, but E1 produces 10 cross-band turn limits and E2/E3 worsen the cross-band first-actor rate to 70.4%/67.2% (C4: 63.0%). They are rejected analysis-only evidence; no self-damage, Threadball follow-on effect, UI, replay, or live rule is approved.",
+    "Candidate F1 makes Spoolburst a one-turn in-range preparation with stationary release that a direct Threadball hit can disrupt. Its primary traces prove 36 preparations, 12 disruptions, and 14 completed Spoolburst casts at the canonical start; all 250 cross-band matches resolve and bounded direct openings disappear. But its 68.8% cross-band first-actor rate and 6.784-turn mean are worse than C4's 63.0% and 5.336. It is rejected analysis-only evidence; no charge/disruption/status/UI/replay/live rule is approved.",
+    "Candidate F2 adds a decisive prepared Spoolburst, one-hit Cocoon against Needlepoint/Spoolburst, and a zero-damage Threadball Unweave in place of automatic disruption. It lowers the cross-band first-actor rate to 58.4%, but produces 20 mirrored medium-hold/short-approach prepare-Unweave loops at the turn limit. The L4+ CRPM-inspired recurrence gate makes this visible as a repeated non-terminal tactical state under a declared cut; it is not a runtime dependency, game doctrine, or player-model claim. F2 is rejected analysis-only evidence; no Cocoon, Unweave, 100-damage Spoolburst, status/UI/replay/live rule is approved.",
+    "Candidate F3 removes F2's Cocoon to isolate a Threadback Unweave: cancellation requires a full forced 64-unit retreat using the existing 128-unit Escape Slack reserve. It eliminates all repeated-state witnesses and all 250 cross-band matches Unravel, but increases first-actor wins to 68.8% and a 7.072-turn mean. It is rejected analysis-only evidence: recurrence-free convergence alone does not establish initiative fairness. No Threadback, forced movement, charge state, status/UI/replay/live rule is approved.",
+    "Candidate F4 recombines F2's one-hit Cocoon with F3's full-Escape-Slack Threadback, while retaining C4's 80-damage prepared Spoolburst. It is the first candidate with no bounded direct openings, recurrence witnesses, or turn limits across the 250-match cross-band sweep, but has a 63.2% first-actor rate versus C4's 63.0% and rises to 80% at distance 704. It is retained only as structural evidence; no Cocoon, preparation, Unweave, Threadback, status/UI/replay/live rule is approved.",
+    "Candidate H1 gives only the second actor a public one-hit Opening Weave that absorbs any direct first-turn cast, then expires after that actor's first normal action if unused. It removes all forced openings, recurrence witnesses, and turn limits across 250 cross-band matches, but reverses initiative to 44.0% first-actor wins (36% at 512/640). H1 is rejected as overcompensation; no second-actor status/UI/replay/reward/live rule is approved.",
+    "Candidate H2 makes the second actor's Opening Weave optional and charges one existing 64-unit Escape-Slack step only when it absorbs the opening hit. It removes all forced openings, recurrence witnesses, and turn limits across the 250-match sweep, and its 48.8% aggregate first-actor rate is near parity. The 44%/40%/44%/40%/76% distance-band split remains material, however: the paid response favors the second actor through 640 and does not address the 704 first-actor advantage. H2 is rejected as a live balance candidate; no second-actor status/UI/replay/reward/live rule is approved.",
+    "Candidate H3 halves a paid opening hit and leaves a Frayed Seam that an advancing Needlepoint can convert into a one-turn zero-separation bind after the defender's normal reply. Dedicated probes prove this full attacker/defender/counter sequence is reachable, and all 250 cross-band matches Unravel without recurrence. However, its 63.2% first-actor rate and 64%/60%/64%/52%/76% distance family return to C4, with forced Spoolburst/Threadball openings at 448/512/576. H3 is rejected as a live balance candidate: a delayed counterplay aperture cannot repair an immediate forced opening. No Frayed Seam, strengthened Seam Pin, status/UI/replay/reward/live rule is approved.",
+    "Candidate G1 grants a target-selected pre-hit Threadstep only when one full existing 64-unit Escape-Slack move makes a declared cast miss. All 250 cross-band matches Unravel and the recurrence gate has no witness; the first-actor rate falls to 60.8%. But move-and-cast compression survives: six forced casts remain at the 448 start and three advancing forced casts remain at 512. G1 is rejected analysis-only evidence; no reaction window, forced movement, UI, replay, status, or V5 rule is approved.",
+    "npm audit reports the existing high-severity nanoid advisory through vite -> postcss; D2A did not alter the dependency graph or lockfile."
+  ]
+}

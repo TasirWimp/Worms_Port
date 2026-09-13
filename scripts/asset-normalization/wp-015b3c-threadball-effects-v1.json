@@ -1,0 +1,146 @@
+{
+  "schema_version": 1,
+  "id": "wp-015b3c-threadball-effects-v1",
+  "work_package": "WP-015B3C",
+  "frozen_at": "2026-08-05",
+  "purpose": "Admit a source-free visual recipe for the temporary Threadball cast sequence. WP-015C may later bind this recipe to existing authoritative presentation events; this configuration itself creates no runtime path or product media.",
+  "inputs": {
+    "wizard_loomseed_presentation": {
+      "path": "assets/masters/characters/knotkin/wizard/knotkin-wizard-loomseed-presentation-master-v1.png",
+      "sha256": "1CC252B45C93D2553AC733DAA6AA49D05D6351DCC85E61EA559ECED458C9419C",
+      "palm_anchor_and_emission_origin": [407, 228],
+      "root_pivot": [256, 451],
+      "root_space_emission_offset": [151, -223]
+    },
+    "threadball_stages": {
+      "formation_start": {
+        "path": "assets/masters/relics/threadball/relic-threadball-cast-formation-start-presentation-master-v1.png",
+        "sha256": "C189A2060BE92DFAE75B8FDDB2F6038DBB209808B764197C9F93473A8908FDD0",
+        "local_visual_origin": [32, 32]
+      },
+      "formation_ready": {
+        "path": "assets/masters/relics/threadball/relic-threadball-cast-formation-ready-presentation-master-v1.png",
+        "sha256": "94F0DEDC5ABCA6FF8E65B3F0CFA5EDC48ED869D382CD322CF90BAA492A3BCCA9",
+        "local_visual_origin": [32, 32]
+      },
+      "projectile": {
+        "path": "assets/masters/relics/threadball/relic-threadball-cast-projectile-presentation-master-v1.png",
+        "sha256": "8ECA37C67C06B2A0C6D8E866FE2FE3E18E40E9F22E557CDEBF8F5470E95123E9",
+        "local_visual_origin": [32, 32]
+      }
+    }
+  },
+  "event_binding": {
+    "scope": "later WP-015C client presentation only",
+    "relic_id": "threadball",
+    "normal_order": [
+      "existing_loomkeeper_aim_when_applicable",
+      "threadball-cast-charge",
+      "threadball-cast-formation",
+      "existing-authoritative-projectile",
+      "existing-authoritative-impact"
+    ],
+    "reduced_motion_order": [
+      "existing_loomkeeper_aim_when_applicable",
+      "threadball-cast-charge",
+      "threadball-cast-formation",
+      "existing-authoritative-projectile",
+      "existing-authoritative-impact"
+    ],
+    "authority_rule": "The event plan may consume only the already-authoritative actor, Relic id, aim/trace, projectile start/end, and impact point. It must not alter launch origin, collision, damage, crater radius, turn deadline, replay, reward, or server state."
+  },
+  "timing_ms": {
+    "normal": {
+      "cast_charge": 80,
+      "cast_formation": 120,
+      "existing_projectile": 640,
+      "existing_impact": 280
+    },
+    "reduced_motion": {
+      "cast_charge": 30,
+      "cast_formation": 40,
+      "existing_projectile": 120,
+      "existing_impact": 80
+    }
+  },
+  "procedural_effects": {
+    "rendering_rule": "These are transient code-drawn graphics admitted for later WP-015C only. They are not raster assets, do not change any approved source file, and must be deterministic from phase progress and authoritative presentation input.",
+    "palette": {
+      "worldweave_blue": "#0582CA",
+      "nim_thread_gold": "#E9B213",
+      "warm_light": "#F7F2E7"
+    },
+    "cast_charge": {
+      "source": "permanent Loomseed anchor",
+      "graphic": "one restrained gold halo behind the held Loomseed plus at most three short blue thread strokes directed inward",
+      "limits": {
+        "halo_radius_actor_radius_multiplier": 0.55,
+        "halo_max_alpha": 0.35,
+        "thread_stroke_count_max": 3,
+        "thread_length_actor_radius_multiplier": 0.7
+      }
+    },
+    "cast_formation": {
+      "source": "formation_start then formation_ready masters",
+      "graphic": "center the two approved temporary-knot stages at the transformed emission origin; the permanent Loomseed remains visible and stationary",
+      "limits": {
+        "formation_start_progress_end": 0.45,
+        "formation_ready_progress_start": 0.55,
+        "extra_halo_max_alpha": 0.25
+      }
+    },
+    "flight_tail": {
+      "source": "existing authoritative projectile trace",
+      "graphic": "the compact projectile master at the current trace endpoint with a short taut blue tail sampled only from preceding trace segments",
+      "limits": {
+        "trace_segments_max": 3,
+        "stroke_width_actor_radius_multiplier": 0.09,
+        "head_to_tail_alpha": [0.72, 0.08],
+        "no_motion_blur": true
+      }
+    },
+    "impact_unravel": {
+      "source": "existing authoritative impact point",
+      "graphic": "at most four short blue/gold thread loops that open outward and fade; no explosion, shockwave, fire, or crater outline",
+      "limits": {
+        "loop_count_max": 4,
+        "loop_radius_actor_radius_multiplier": 0.75,
+        "max_alpha": 0.6,
+        "damage_radius_coupling": "forbidden"
+      }
+    }
+  },
+  "boundaries": {
+    "allowed": [
+      "use the three approved static Threadball stages and permanent Loomseed as later client-only presentation inputs",
+      "deterministic code-drawn halo, thread strokes, tail, and unravel loops within the listed limits",
+      "root-transform the Wizard, Loomseed anchor, emission origin, and temporary cast stages together",
+      "add a later client presentation phase before the already-authoritative projectile phase"
+    ],
+    "blocked": [
+      "new raster asset generation",
+      "inference",
+      "manual painting",
+      "source-master modification",
+      "randomness not derived from explicit presentation inputs",
+      "damage-radius visual scaling",
+      "new status effect",
+      "fire or explosion imagery",
+      "collision or terrain authority",
+      "simulation or replay mutation",
+      "turn-timing or reward mutation",
+      "WP-015C runtime integration in this B3C contract"
+    ]
+  },
+  "acceptance": {
+    "phone_read": "The permanent Loomseed remains visibly held while a smaller temporary knot forms and launches; the projectile has no baked or long trail; impact reads as material Unraveling rather than a blast.",
+    "causal_read": "For both player and Loomkeeper, cast charge and formation occur before the existing authoritative projectile trace, and the impact effect occurs only at the existing authoritative impact point.",
+    "reduced_motion": "The same causal phase order remains, with the frozen shortened durations and no continuous decorative loop.",
+    "later_verification": [
+      "unit-test normal and reduced-motion phase order and duration bounds",
+      "full phone-browser matrix and canonical visual review after WP-015C integration",
+      "real-device review after a runtime path exists",
+      "verify no visual parameter reads crater radius, damage, collision, reward, or replay state"
+    ]
+  }
+}

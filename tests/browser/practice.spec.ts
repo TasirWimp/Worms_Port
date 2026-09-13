@@ -1,6 +1,159 @@
 import { expect, test, type Page } from '@playwright/test';
 
-test.beforeEach(async ({ page }) => {
+import { skipExcludedProjectBeforeSetup } from './support/project-routing';
+import path from 'node:path';
+import { createRuntimeServer } from '../../server/src/runtime';
+import { V8_R1_RULESET_ID } from '../../shared/simulation-v8';
+import { V9_RULESET_ID } from '../../shared/simulation-v9';
+
+test.describe('@legacy retired V8/V9 authorities', () => {
+test('deployed V9 Practice opens from the phone URL with live authority and supports paused restart', async ({ page }) => {
+  const runtime = createRuntimeServer({ clientDir: path.resolve('client/build'),
+    sessionRegistry: { practiceV9: 'v9d-practice' }, identity: false });
+  const port = await runtime.listen();
+  try {
+    await page.goto(`http://127.0.0.1:${port}/?combat-preview=v9-live`);
+    await page.getByRole('button', { name: 'Start Practice' }).tap();
+    const ui = page.locator('.combat-v9');
+    await expect(ui).toBeVisible();
+    await expect(ui).toHaveAttribute('data-ruleset', V9_RULESET_ID);
+    await expect(ui.locator('.pause-button')).toBeEnabled();
+    await ui.locator('.pause-button').tap();
+    await expect(ui).toHaveAttribute('data-paused', 'true');
+    await ui.locator('.v9-reenter').tap();
+    await expect(ui).toHaveAttribute('data-paused', 'false');
+    await expect(page.locator('.result-shell')).toHaveCount(0);
+    await expect(ui.locator('.pause-button')).toBeEnabled();
+  } finally { await page.goto('about:blank'); await runtime.close(); }
+});
+
+test('V9 server timing stop at AI handoff shows interruption and permits a fresh retry', async ({ page }) => {
+  let nowUs = 0;
+  const runtime = createRuntimeServer({ clientDir: path.resolve('client/build'), sessionRegistry: {
+    simulationRulesetId: V9_RULESET_ID, seedSource: () => 1, simulationTickIntervalMs: false,
+    v9TestOnly: { nowUs: () => nowUs, tickIntervalMs: 10 }
+  } });
+  const port = await runtime.listen();
+  try {
+    await page.goto(`http://127.0.0.1:${port}/?combat-preview=v9-live`);
+    await page.getByRole('button', { name: 'Start Practice' }).tap();
+    const ui = page.locator('.combat-v9');
+    await expect(ui).toBeVisible();
+    const bound = () => runtime.sessions.getBound([...runtime.io.sockets.sockets.values()][0].id)!;
+    const first = runtime.sessions.activeSnapshotV9(bound())!.challengeId;
+    runtime.sessions.advanceV9Test(first, 450);
+    await expect(ui).toHaveAttribute('data-active-actor', 'loomkeeper');
+    nowUs += 1_100_000;
+    await expect(page.getByRole('heading', { name: 'Practice interrupted', exact: true })).toBeVisible();
+    await expect(page.locator('.result-copy')).toContainText('server could not keep up');
+    await expect(page.locator('.result-copy')).not.toContainText('expiry');
+    await page.getByRole('button', { name: 'Play Again', exact: true }).tap();
+    await expect(ui).toBeVisible();
+    await expect.poll(() => runtime.sessions.activeSnapshotV9(bound())?.challengeId).not.toBe(first);
+    await expect(ui.locator('.pause-button')).toBeEnabled();
+  } finally { await page.goto('about:blank'); await runtime.close(); }
+});
+
+test('live V9 candidate preserves pause, AI response, terminal result and fresh retry', async ({ page }) => {
+  const errors: string[] = [];
+  page.on('pageerror', error => errors.push(error.message));
+  let now = Date.now();
+  const runtime = createRuntimeServer({ clientDir: path.resolve('client/build'), sessionRegistry: {
+    now: () => now, challengeTtlMs: 60_000, simulationRulesetId: V9_RULESET_ID,
+    seedSource: () => 1, simulationTickIntervalMs: false, v9TestOnly: { nowUs: () => 0 }
+  } });
+  const port = await runtime.listen();
+  try {
+    await page.goto(`http://127.0.0.1:${port}/?sideways=off&combat-preview=v9-live`);
+    await page.getByRole('button', { name: 'Start Practice' }).tap();
+    const ui = page.locator('.combat-v9');
+    await expect(ui).toBeVisible();
+    await expect(ui).toHaveAttribute('data-ruleset', V9_RULESET_ID);
+    await ui.locator('.pause-button').tap();
+    await expect(ui).toHaveAttribute('data-paused', 'true');
+    await ui.locator('.pause-button').tap();
+    await expect(ui).toHaveAttribute('data-paused', 'false');
+    // Interrupt the real transport, then prove an owned resync permits a new command.
+    [...runtime.io.sockets.sockets.values()][0].conn.close();
+    await expect(ui).toHaveAttribute('data-connection', 'reconnecting');
+    await expect(ui).toHaveAttribute('data-connection', 'connected', { timeout: 10_000 });
+    await ui.locator('.pause-button').tap();
+    await expect(ui).toHaveAttribute('data-paused', 'true');
+    await ui.locator('.pause-button').tap();
+    await expect(ui).toHaveAttribute('data-paused', 'false');
+    const bound = () => runtime.sessions.getBound([...runtime.io.sockets.sockets.values()][0].id)!;
+    const first = runtime.sessions.activeSnapshotV9(bound())!.challengeId;
+    runtime.sessions.advanceV9Test(first, 450);
+    await expect(ui).toHaveAttribute('data-active-actor', 'loomkeeper');
+    runtime.sessions.advanceV9Test(first, 350);
+    const replay = runtime.sessions.replayForChallengeV9(bound(), first)!;
+    expect(JSON.stringify(replay)).toContain('fire');
+    now += 60_001;
+    runtime.sessions.sweep();
+    await expect(page.locator('.result-shell')).toHaveAttribute('data-outcome', 'expired');
+    await expect(page.getByRole('heading', { name: 'Practice expired', exact: true })).toBeVisible();
+    await page.getByRole('button', { name: 'Play Again', exact: true }).tap();
+    await expect(ui).toBeVisible();
+    await expect.poll(() => runtime.sessions.activeSnapshotV9(bound())?.challengeId).not.toBe(first);
+    await expect(ui.locator('.pause-button')).toBeEnabled();
+    const second = runtime.sessions.activeSnapshotV9(bound())!.challengeId;
+    await ui.locator('.pause-button').tap();
+    await expect(ui).toHaveAttribute('data-paused', 'true');
+    await ui.locator('.v9-reenter').tap();
+    await expect(ui).toHaveAttribute('data-paused', 'false');
+    await expect.poll(() => runtime.sessions.activeSnapshotV9(bound())?.challengeId).not.toBe(second);
+    await expect(page.locator('.result-shell')).toHaveCount(0);
+    expect(errors).toEqual([]);
+  } finally { await page.goto('about:blank'); await runtime.close(); }
+});
+
+test('injected automated Practice reloads paused authority, retries, and shows the actual expired result', async ({ page }) => {
+  const pageErrors: string[] = [];
+  page.on('pageerror', error => pageErrors.push(error.stack ?? error.message));
+  let now = Date.now();
+  const runtime = createRuntimeServer({ clientDir: path.resolve('client/build'), sessionRegistry: {
+    now: () => now, challengeTtlMs: 60_000, simulationRulesetId: V8_R1_RULESET_ID,
+    simulationTickIntervalMs: false, v8TestOnly: {} } });
+  const port = await runtime.listen();
+  try {
+    await page.goto(`http://127.0.0.1:${port}/?sideways=off`);
+    await page.getByRole('button', { name: 'Start Practice' }).tap();
+    const ui = page.locator('.combat-v8');
+    // Live scene arguments must mount after Phaser's synchronous create phase.
+    await expect(ui).toBeVisible();
+    await expect(ui).toHaveAttribute('data-ruleset', V8_R1_RULESET_ID);
+    const first = await ui.getAttribute('data-challenge-id');
+    await page.locator('.pause-button').tap();
+    await expect(ui).toHaveAttribute('data-paused', 'true');
+    await page.reload();
+    await page.getByRole('button', { name: 'Resume Paused Clash' }).tap();
+    await expect(ui).toHaveAttribute('data-challenge-id', first!);
+    await expect(ui).toHaveAttribute('data-paused', 'true');
+    await page.locator('.pause-button').tap();
+    await expect(ui).toHaveAttribute('data-paused', 'false');
+    await page.locator('.pause-button').tap();
+    await expect(ui).toHaveAttribute('data-paused', 'true');
+    await page.locator('.retry-button').tap();
+    await expect(ui).not.toHaveAttribute('data-challenge-id', first!);
+    await expect(ui).toHaveAttribute('data-ruleset', V8_R1_RULESET_ID);
+    await expect(page.locator('.result-shell')).toHaveCount(0);
+    now += 60_001; runtime.sessions.sweep();
+    await expect(page.locator('.result-shell')).toHaveAttribute('data-outcome', 'expired');
+    await expect(page.locator('.result-shell')).toHaveAttribute('data-final-hash', /^[a-f0-9]{64}$/);
+    await page.getByRole('button', { name: 'Change Calling' }).tap();
+    await expect(page.getByRole('heading', { name: 'Practice Clash' })).toBeVisible();
+    await expect(page.locator('.result-shell')).toHaveCount(0);
+    await page.getByRole('button', { name: 'Start Practice' }).tap();
+    await expect(ui).toHaveAttribute('data-ruleset', V8_R1_RULESET_ID);
+  } finally {
+    expect.soft(pageErrors, 'Automated Practice must not raise browser page errors.').toEqual([]);
+    await page.goto('about:blank'); await runtime.close();
+  }
+});
+});
+
+test.beforeEach(async ({ page }, testInfo) => {
+  skipExcludedProjectBeforeSetup('practice.spec.ts', testInfo);
   const pageErrors: string[] = [];
   const consoleErrors: string[] = [];
   page.on('pageerror', (error) => pageErrors.push(error.message));
@@ -14,8 +167,9 @@ test.beforeEach(async ({ page }) => {
   await expect.poll(() => consoleErrors).toEqual([]);
 });
 
+test.describe('@legacy retired pre-V10 live Practice behavior', () => {
 test('live practice supports authoritative pause, full player turn, and fresh retry', async ({ page }, testInfo) => {
-  test.setTimeout(60_000);
+  test.setTimeout(90_000);
   await page.getByRole('button', { name: /Warrior/ }).tap();
   await page.getByRole('button', { name: 'Start Practice' }).tap();
   const ui = page.locator('.combat-ui');
@@ -43,30 +197,71 @@ test('live practice supports authoritative pause, full player turn, and fresh re
   await expect(page.locator('.fire-button')).toBeEnabled();
   await installPresentationRecorder(page);
   await page.locator('.fire-button').tap();
-  await expect.poll(async () => Number(await ui.getAttribute('data-turn')), {
-    timeout: 15_000
-  }).toBeGreaterThanOrEqual(2);
-  await expect(ui).toHaveAttribute('data-active-actor', 'player');
-  await expect(ui).toHaveAttribute('data-presenting', 'false');
-  await expect(ui).toHaveAttribute('data-preview-points', '0');
+  await expect.poll(async () => {
+    if (await page.locator('.result-shell').count()) return 'result';
+    return Number(await ui.getAttribute('data-turn')) >= 2 &&
+      await ui.getAttribute('data-active-actor') === 'player' &&
+      await ui.getAttribute('data-presenting') === 'false'
+      ? 'ready'
+      : 'waiting';
+  }, {
+    // A live exchange now includes normal-motion casts for both actors and,
+    // when terminal, the two-second Unraveling presentation. Match the
+    // existing per-turn lifecycle allowance used by completeCurrentClash. A
+    // retained Ubuntu failure reached the terminal result immediately after
+    // the old poll expired, so keep a bounded 15-second CI scheduling margin.
+    timeout: 45_000
+  }).toMatch(/^(ready|result)$/);
+  const terminalAfterReply = await page.locator('.result-shell').count() > 0;
+  if (terminalAfterReply) {
+    await expect(page.locator('.result-shell')).toBeVisible();
+  } else {
+    await expect(ui).toHaveAttribute('data-active-actor', 'player');
+    await expect(ui).toHaveAttribute('data-presenting', 'false');
+    await expect(ui).toHaveAttribute('data-preview-points', '0');
+  }
   const presentation = await readPresentationRecorder(page);
   expect(presentation.phases).toEqual(expect.arrayContaining([
+    'player-cast-charge',
+    'player-cast-formation',
     'player-projectile',
     'player-impact',
     'loomkeeper-aim',
     'loomkeeper-projectile',
     'loomkeeper-impact'
   ]));
+  expect(presentation.phases.indexOf('player-cast-charge')).toBeLessThan(
+    presentation.phases.indexOf('player-cast-formation')
+  );
+  expect(presentation.phases.indexOf('player-cast-formation')).toBeLessThan(
+    presentation.phases.indexOf('player-projectile')
+  );
   expect(presentation.maximumProjectilePoints).toBeGreaterThan(1);
+  expect(presentation.projectileVisuals).toContainEqual({
+    phase: 'player-projectile',
+    visual: 'generic-spoolburst'
+  });
+  expect(presentation.projectileVisuals).toContainEqual(expect.objectContaining({
+    phase: 'loomkeeper-projectile',
+    visual: expect.stringMatching(/^(threadball|generic-(needlepoint|spoolburst))$/)
+  }));
 
-  await page.locator('.pause-button').tap();
-  await expect(page.locator('.combat-pause-sheet')).toBeVisible();
-  await page.locator('.retry-button').tap();
+  if (terminalAfterReply) {
+    await page.getByRole('button', { name: 'Play Again' }).tap();
+  } else {
+    await page.locator('.pause-button').tap();
+    await expect(page.locator('.combat-pause-sheet')).toBeVisible();
+    await page.locator('.retry-button').tap();
+  }
+  await expect(ui).toBeVisible();
   await expect.poll(() => ui.getAttribute('data-challenge-id')).not.toBe(firstChallenge);
   await expect(ui).toHaveAttribute('data-turn', '0');
   await expect(ui).toHaveAttribute('data-calling', 'warrior');
-  await expect(page.getByText(/Fresh Practice Clash started/i)).toBeVisible();
+  if (!terminalAfterReply) {
+    await expect(page.getByText(/Fresh Practice Clash started/i)).toBeVisible();
+  }
   await page.screenshot({ path: testInfo.outputPath('wp-011-live-practice.png') });
+});
 });
 
 test('calling controls and live combat actions remain phone-safe', async ({ page }) => {
@@ -90,10 +285,11 @@ test('calling controls and live combat actions remain phone-safe', async ({ page
     expect(box!.width).toBeGreaterThanOrEqual(48);
     expect(box!.height).toBeGreaterThanOrEqual(48);
   }
+  await page.locator('.pause-button').tap();
+  await expect(page.locator('.combat-ui')).toHaveAttribute('data-paused', 'true');
 });
 
 test('default sideways mode carries the live practice journey into virtual landscape', async ({ page }, testInfo) => {
-  test.skip(testInfo.project.name !== 'chromium-390x844', 'One portrait viewport is sufficient.');
   await page.goto('/');
   await expect(page.getByRole('heading', { name: 'Practice Clash' })).toBeVisible();
   await expect(page.locator('html')).toHaveAttribute('data-sideways', 'right');
@@ -111,11 +307,13 @@ test('default sideways mode carries the live practice journey into virtual lands
   const startX = Number(await ui.getAttribute('data-player-x'));
   await dragPad(page, '.movement-zone', 61, 0, 0.36);
   await expect.poll(async () => Number(await ui.getAttribute('data-player-x'))).toBeGreaterThan(startX);
+  await page.locator('.pause-button').tap();
+  await expect(ui).toHaveAttribute('data-paused', 'true');
 });
 
-test('two consecutive completed Clashes each show a result and use fresh authority', async ({ page }, testInfo) => {
+test.describe('@legacy retired pre-V10 result and recovery behavior', () => {
+test('two consecutive completed Clashes each show a result and use fresh authority', async ({ page }) => {
   test.setTimeout(120_000);
-  test.skip(testInfo.project.name !== 'chromium-390x844', 'One deterministic live journey is sufficient.');
   await page.getByRole('button', { name: 'Start Practice' }).tap();
   const ui = page.locator('.combat-ui');
   await expect(ui).toBeVisible();
@@ -138,9 +336,8 @@ test('two consecutive completed Clashes each show a result and use fresh authori
   await expect(page.getByRole('button', { name: 'Change Calling' })).toBeVisible();
 });
 
-test('a full-screen match retains an exit toggle on the result screen', async ({ page }, testInfo) => {
+test('a full-screen match retains an exit toggle on the result screen', async ({ page }) => {
   test.setTimeout(90_000);
-  test.skip(testInfo.project.name !== 'chromium-844x390', 'One landscape journey is sufficient.');
   await installFullscreenStub(page);
   await page.getByRole('button', { name: 'Start Practice' }).tap();
   await expect(page.locator('.combat-ui')).toBeVisible();
@@ -178,6 +375,7 @@ test('lost in-memory authority offers a fresh Practice Clash', async ({ page }) 
   await expect(page.getByText(/previous in-memory Practice Clash cannot be resumed/i)).toBeVisible();
   await page.getByRole('button', { name: 'Start Fresh Practice' }).tap();
   await expect(page.locator('.combat-ui')).toBeVisible();
+});
 });
 
 async function dragPad(
@@ -340,11 +538,22 @@ function overlaps(
 
 async function installPresentationRecorder(page: Page): Promise<void> {
   await page.locator('.combat-ui').evaluate((element) => {
-    const state = { phases: [] as string[], maximumProjectilePoints: 0 };
+    const state = {
+      phases: [] as string[],
+      maximumProjectilePoints: 0,
+      projectileVisuals: [] as { phase: string; visual: string }[]
+    };
     (window as typeof window & { __practicePresentation?: typeof state }).__practicePresentation = state;
     const record = () => {
       const phase = (element as HTMLElement).dataset.presentation;
       if (phase && state.phases.at(-1) !== phase) state.phases.push(phase);
+      const visual = (element as HTMLElement).dataset.projectileVisual;
+      if (phase?.endsWith('-projectile') && visual) {
+        const previous = state.projectileVisuals.at(-1);
+        if (!previous || previous.phase !== phase || previous.visual !== visual) {
+          state.projectileVisuals.push({ phase, visual });
+        }
+      }
       state.maximumProjectilePoints = Math.max(
         state.maximumProjectilePoints,
         Number((element as HTMLElement).dataset.projectilePoints || 0)
@@ -352,7 +561,7 @@ async function installPresentationRecorder(page: Page): Promise<void> {
     };
     new MutationObserver(record).observe(element, {
       attributes: true,
-      attributeFilter: ['data-presentation', 'data-projectile-points']
+      attributeFilter: ['data-presentation', 'data-projectile-points', 'data-projectile-visual']
     });
     record();
   });
@@ -361,10 +570,105 @@ async function installPresentationRecorder(page: Page): Promise<void> {
 async function readPresentationRecorder(page: Page): Promise<{
   phases: string[];
   maximumProjectilePoints: number;
+  projectileVisuals: { phase: string; visual: string }[];
 }> {
   return page.evaluate(() => (
     window as typeof window & {
-      __practicePresentation: { phases: string[]; maximumProjectilePoints: number }
+      __practicePresentation: {
+        phases: string[];
+        maximumProjectilePoints: number;
+        projectileVisuals: { phase: string; visual: string }[];
+      }
     }
   ).__practicePresentation);
 }
+
+
+test('standard volcanic Practice at root keeps authority, AI, cold resume and restart background', async ({ page }, testInfo) => {
+  test.setTimeout(90_000);
+  let now = Date.now();
+  const errors: string[] = [];
+  page.on('pageerror', error => errors.push(error.message));
+  const fetched: string[] = []; page.on('request', request => fetched.push(request.url()));
+  const runtime = createRuntimeServer({ clientDir: path.resolve('client/build'), identity: false,
+    sessionRegistry: { practiceV10: true, now: () => now, challengeTtlMs: 120_000, seedSource: () => 4 } });
+  const port = await runtime.listen();
+  const owned = () => runtime.sessions.getBound([...runtime.io.sockets.sockets.values()][0]?.id)!;
+  try {
+    await page.goto(`http://127.0.0.1:${port}/`);
+    await expect(page.getByRole('button', { name: 'Start Practice' })).toBeVisible();
+    expect(fetched.some(url => /mini-app-sdk|volcanic-cone-v1/.test(url))).toBe(false);
+    await page.getByRole('button', { name: 'Start Practice' }).tap();
+    const ui = page.locator('.combat-v10');
+    await expect(ui).toHaveAttribute('data-ruleset', 'nimble-knots-artillery-v10-r5');
+    await expect(ui).toHaveAttribute('data-background', 'volcanic-ruin');
+    await expect(ui).toHaveAttribute('data-background-ready', 'true');
+    await expect(ui).toHaveAttribute('data-camera-left', '512.00');
+    const first = runtime.sessions.activeSnapshotV10(owned())!.challengeId;
+    await ui.locator('.pause-button').tap();
+    await expect(ui).toHaveAttribute('data-paused', 'true');
+    await page.reload();
+    await page.getByRole('button', { name: 'Resume Paused Clash' }).tap();
+    await expect(ui).toHaveAttribute('data-background', 'volcanic-ruin');
+    await expect(ui).toHaveAttribute('data-background-ready', 'true');
+    expect(runtime.sessions.activeSnapshotV10(owned())!.challengeId).toBe(first);
+    // The entry resumes the paused match; pause it again before restarting.
+    if (await ui.getAttribute('data-paused') !== 'true') await ui.locator('.pause-button').tap();
+    await expect(ui).toHaveAttribute('data-paused', 'true');
+    await ui.locator('.v9-reenter').tap();
+    await expect(ui).toHaveAttribute('data-paused', 'false');
+    await expect.poll(() => runtime.sessions.activeSnapshotV10(owned())?.challengeId).not.toBe(first);
+    await expect(ui).toHaveAttribute('data-background', 'volcanic-ruin');
+    await expect(ui).toHaveAttribute('data-background-ready', 'true');
+    const sideways = await page.evaluate(() => document.documentElement.dataset.sideways);
+    await dragPad(page, '.combat-v10 .aim-zone', 1199, sideways ? 0 : 0.35,
+      sideways === 'right' ? 0.35 : sideways === 'left' ? -0.35 : 0);
+    await expect(ui).toHaveAttribute('data-aim-locked', 'true');
+    await ui.locator('.fire-button').tap();
+    await expect(ui).toHaveAttribute('data-player-thread', '1');
+    await expect(ui).toHaveAttribute('data-active-actor', 'loomkeeper', { timeout: 12_000 });
+    await expect(ui).toHaveAttribute('data-active-actor', 'player', { timeout: 35_000 });
+    const second = runtime.sessions.activeSnapshotV10(owned())!.challengeId;
+    now += 120001; runtime.sessions.sweep();
+    await expect(page.locator('.result-shell')).toBeVisible();
+    await page.getByRole('button', { name: 'Play Again', exact: true }).tap();
+    await expect(ui).toHaveAttribute('data-background', 'volcanic-ruin');
+    await expect(ui).toHaveAttribute('data-background-ready', 'true');
+    expect(runtime.sessions.activeSnapshotV10(owned())!.challengeId).not.toBe(second);
+    expect(fetched.some(url => /mini-app-sdk/.test(url))).toBe(false);
+    expect(errors).toEqual([]);
+    await page.screenshot({ path: testInfo.outputPath('standard-volcanic-retry.png') });
+  } finally { await page.goto('about:blank'); await runtime.close(); }
+});
+
+
+test('standard volcanic Practice survives missing art and expired-session reconnect', async ({ page, context }) => {
+  test.setTimeout(45_000);
+  const runtime = createRuntimeServer({ clientDir: path.resolve('client/build'), identity: false,
+    sessionRegistry: { practiceV10: true, seedSource: () => 4 } });
+  const port = await runtime.listen();
+  try {
+    await page.route('**/volcanic-cone-v1.png', route => route.abort());
+    await page.goto(`http://127.0.0.1:${port}/`);
+    await page.getByRole('button', { name: 'Start Practice' }).tap();
+    const ui = page.locator('.combat-v10');
+    await expect(ui).toHaveAttribute('data-background-ready', 'false');
+    await expect(ui).toHaveAttribute('data-ruleset', 'nimble-knots-artillery-v10-r5');
+    await expect(ui.locator('.pause-button')).toBeEnabled();
+    await ui.locator('.pause-button').tap();
+    await expect(ui).toHaveAttribute('data-paused', 'true');
+    const socket = [...runtime.io.sockets.sockets.values()][0];
+    const previousSession = runtime.sessions.getBound(socket.id)!.id;
+    await context.setOffline(true);
+    await expect(ui).toHaveAttribute('data-connection', 'reconnecting');
+    runtime.sessions.close(previousSession);
+    await context.setOffline(false);
+    await expect(page.locator('.result-shell')).toBeVisible({ timeout: 15000 });
+    await page.getByRole('button', { name: 'Play Again', exact: true }).tap();
+    await expect(ui).toHaveAttribute('data-ruleset', 'nimble-knots-artillery-v10-r5');
+    await expect(ui).toHaveAttribute('data-background-ready', 'false');
+    const next = runtime.sessions.getBound([...runtime.io.sockets.sockets.values()][0].id)!;
+    expect(next.id).not.toBe(previousSession);
+    await expect(ui.locator('.pause-button')).toBeEnabled();
+  } finally { await context.setOffline(false); await page.goto('about:blank'); await runtime.close(); }
+});

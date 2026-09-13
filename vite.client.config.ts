@@ -8,6 +8,12 @@ export default defineConfig({
     outDir: path.resolve(__dirname, 'client/build'),
     emptyOutDir: true,
     manifest: true,
-    sourcemap: false
+    sourcemap: false,
+    rollupOptions: {
+      input: {
+        game: path.resolve(__dirname, 'client/src/index.html'),
+        peiProxy: path.resolve(__dirname, 'client/src/pei-proxy.html')
+      }
+    }
   }
 });

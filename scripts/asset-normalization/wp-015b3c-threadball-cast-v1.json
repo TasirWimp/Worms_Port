@@ -1,0 +1,106 @@
+{
+  "schema_version": 1,
+  "id": "wp-015b3c-threadball-cast-v1",
+  "work_package": "WP-015B3C",
+  "frozen_at": "2026-08-05",
+  "purpose": "Derive three source-only, static Threadball cast stages from the one approved Threadball source master. They make the temporary knot's bounded formation-to-flight read possible without inventing new strands, glow, tail, impact, or animation pixels.",
+  "input": {
+    "path": "assets/masters/relics/threadball/relic-threadball-source-master-v1.png",
+    "sha256": "608F490CEE2A7FA79F0EA47BF7B15A8E49685B7B1E65E5AE38E15A34B4CD9B6F",
+    "bytes": 90764,
+    "width": 256,
+    "height": 256,
+    "channels": 4,
+    "visual_center": [128, 128]
+  },
+  "boundaries": {
+    "allowed": [
+      "exact source verification",
+      "uniform source resampling",
+      "fixed centering on transparent canvases",
+      "deterministic source-derived review compositing"
+    ],
+    "blocked": [
+      "inference",
+      "manual painting",
+      "cloning",
+      "generative fill",
+      "strand reconstruction",
+      "gold-core reconstruction",
+      "new glow pixels",
+      "new loose-fiber pixels",
+      "tail generation",
+      "impact generation",
+      "non-uniform scale",
+      "warp",
+      "animation",
+      "runtime integration"
+    ]
+  },
+  "wizard_presentation_geometry": {
+    "source_pivot": [256, 451],
+    "palm_anchor_and_emission_origin": [407, 228],
+    "emission_offset_from_root_pivot": [151, -223],
+    "rule": "A later runtime route transforms this offset with the intact Wizard root. Each temporary cast stage centers its local visual origin on the transformed emission origin before launch along the authoritative aim direction. These static source derivatives do not define simulation physics, collision, timing, or replay truth."
+  },
+  "stages": {
+    "formation_start": {
+      "canvas": [64, 64],
+      "uniform_scale_numerator": 3,
+      "uniform_scale_denominator": 32,
+      "translation": [20, 20],
+      "visual_origin": [32, 32],
+      "rendered_nominal_size": [24, 24],
+      "role": "brief initial temporary cast knot at the emission origin; the permanent Loomseed remains held"
+    },
+    "formation_ready": {
+      "canvas": [64, 64],
+      "uniform_scale_numerator": 5,
+      "uniform_scale_denominator": 32,
+      "translation": [12, 12],
+      "visual_origin": [32, 32],
+      "rendered_nominal_size": [40, 40],
+      "role": "larger fully formed temporary cast knot immediately before launch; this is not a damage-radius indicator"
+    },
+    "projectile": {
+      "canvas": [64, 64],
+      "uniform_scale_numerator": 7,
+      "uniform_scale_denominator": 64,
+      "translation": [18, 18],
+      "visual_origin": [32, 32],
+      "rendered_nominal_size": [28, 28],
+      "role": "compact temporary Threadball in flight; no trail or impact is baked into this file"
+    }
+  },
+  "resampling": {
+    "filter": "Mitchell-Netravali bicubic",
+    "b": 0.3333333333333333,
+    "c": 0.3333333333333333,
+    "sampling": "pixel-center inverse mapping",
+    "alpha": "premultiplied during filtering, straight RGBA in PNG",
+    "png": "8-bit non-interlaced RGBA, filter type 0, deterministic zlib level 9"
+  },
+  "review_backgrounds": {
+    "dark_navy": [31, 35, 70],
+    "warm_light": [247, 242, 231],
+    "contact_sheet_order": ["dark_navy", "warm_light"]
+  },
+  "outputs": {
+    "formation_start": "relic-threadball-cast-formation-start-presentation-master-v1.png",
+    "formation_ready": "relic-threadball-cast-formation-ready-presentation-master-v1.png",
+    "projectile": "relic-threadball-cast-projectile-presentation-master-v1.png",
+    "review_sheet": "relic-threadball-cast-presentation-master-v1-review.png",
+    "report": "relic-threadball-cast-presentation-master-v1.report.json",
+    "approved_master_paths": {
+      "formation_start": "assets/masters/relics/threadball/relic-threadball-cast-formation-start-presentation-master-v1.png",
+      "formation_ready": "assets/masters/relics/threadball/relic-threadball-cast-formation-ready-presentation-master-v1.png",
+      "projectile": "assets/masters/relics/threadball/relic-threadball-cast-projectile-presentation-master-v1.png"
+    },
+    "expected_sha256": {
+      "formation_start": "C189A2060BE92DFAE75B8FDDB2F6038DBB209808B764197C9F93473A8908FDD0",
+      "formation_ready": "94F0DEDC5ABCA6FF8E65B3F0CFA5EDC48ED869D382CD322CF90BAA492A3BCCA9",
+      "projectile": "8ECA37C67C06B2A0C6D8E866FE2FE3E18E40E9F22E557CDEBF8F5470E95123E9",
+      "review_sheet": "9B74A0369FC04983DFA45AB86D204C3E7CD437932C9EB546868B3C919BE39534"
+    }
+  }
+}

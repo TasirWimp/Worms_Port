@@ -1,0 +1,54 @@
+{
+  "schema_version": 16,
+  "id": "v5-range-damage-forward-seam-pin-escape-slack-spoolburst-preparation-spun-cocoon-threadback-unweave-entry-seam-pin-candidate-i2",
+  "label": "Exploratory V5 F4 with entry Seam-Pin exclusion candidate I2",
+  "analysis_status": "exploratory",
+  "source_ruleset_id": "nimble-knots-artillery-v4",
+  "authority_fixture": "analysis/tactical_model/fixtures/v4-authoritative-baseline-v1.json",
+  "assumptions": [
+    "This is not nimble-knots-artillery-v5 and has no runtime, replay, protocol, reward, UI, asset, or product authority.",
+    "It keeps Candidate F4's complete ideal-direct-hit values and tactical core: 30/45/80 damage, 640/576/512 ranges, forward Seam Pin, equal 128 Escape Slack, prepared Spoolburst, Spun Cocoon, and compulsory 64-unit Threadback Unweave.",
+    "A Needlepoint cast that is outside maximum range before its own movement and inside range after that movement remains a legal combined move-and-cast for 30 damage, but it applies no Seam Pin and starts no Seam-Pin cooldown.",
+    "The suppression is an edge-scoped cast interpretation, not a status, resource, special response, reaction action, delayed cast, or persistent tactical-state field.",
+    "Stationary and already-in-band Needlepoint behavior, Threadball, Spoolburst preparation and stationary release, Unweave, Threadback, Escape Slack, movement, values, policies, and search depth are unchanged.",
+    "Terrain, aim, trajectory, splash, player skill, live Loomkeeper behavior, animation, UI, replay, reward, and production counter-effects remain excluded."
+  ],
+  "world": { "width": 2048, "actor_margin": 12 },
+  "initial": { "seed": 3237998097, "player_x": 512, "loomkeeper_x": 1152, "first_actor": "player" },
+  "turn": { "maximum_turns": 16, "movement_per_turn": 64, "action_economy": "move_and_cast" },
+  "stitching": { "maximum": 100 },
+  "relics": {
+    "threadball": { "minimum_range": 0, "maximum_range": 576, "direct_damage": 45 },
+    "needlepoint": { "minimum_range": 0, "maximum_range": 640, "direct_damage": 30 },
+    "spoolburst": { "minimum_range": 0, "maximum_range": 512, "direct_damage": 80 }
+  },
+  "opening_search_depth": 3,
+  "tactical_core": {
+    "seam_pin": {
+      "relic_id": "needlepoint",
+      "maximum_separation_increase": 32,
+      "target_turns": 1,
+      "cooldown_actor_turns": 1,
+      "activation": "advance_only",
+      "retreat_cast_rule": "forbidden"
+    },
+    "escape_slack": { "per_actor": 128 },
+    "spoolburst_preparation": {
+      "relic_id": "spoolburst",
+      "preparation_turns": 1,
+      "disruption_relic_id": "threadball"
+    },
+    "spoolburst_cocoon": {
+      "absorbed_relic_ids": ["needlepoint", "spoolburst"],
+      "unweave_relic_id": "threadball"
+    },
+    "spoolburst_threadback": {
+      "unweave_relic_id": "threadball",
+      "separation_increase": 64
+    },
+    "entry_seam_pin": {
+      "relic_id": "needlepoint",
+      "suppression": "pre_movement_out_of_range"
+    }
+  }
+}

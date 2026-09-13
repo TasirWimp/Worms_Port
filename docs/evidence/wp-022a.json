@@ -1,0 +1,91 @@
+{
+  "id": "WP-022A",
+  "status": "complete",
+  "execution_mode": "single_owner",
+  "starting_commit": "3538d1d",
+  "branch": "codex/pei-daily-v10",
+  "initial_worktree": "clean",
+  "starting_lock_sha256": "6B768A8FDE2695D02555CA17201FD7CE420F9AC075B91380474DD7A643042BC8",
+  "owning_roles": [
+    "primary assistant"
+  ],
+  "scope": [
+    "Migrate the existing one-attempt-per-wallet Daily Challenge from V7 to the same server-authoritative V10 R5 volcanic match used by standard Practice.",
+    "Preserve the existing reward reservation, eligibility, settlement, claim, budget and payout controls while adding verified V10 replay evidence.",
+    "Record the Phone Gate A deployment correction from the isolated Practice-only profile to the normal runtime with record-only rewards."
+  ],
+  "non_goals": [
+    "No PEI receipt, helper mini app, PEI admission rule, mainnet transaction execution, reward amount change, new asset or historical replay reinterpretation."
+  ],
+  "planned_checks": [
+    "npm.cmd run verify:changes",
+    "Focused V10 Daily authority, reward-verification and phone-browser journeys",
+    "Primary direct review, documentation reconciliation and housekeeping"
+  ],
+  "deterministic_seeds": [
+    "Server-assigned positive uint32 V10 R5 seeds; fixed regression seeds recorded by focused tests"
+  ],
+  "sorcerers_reference_used": false,
+  "clean_room_records": [],
+  "check_results": [
+    {
+      "command": "npm.cmd run verify:changes",
+      "status": "pass",
+      "details": "Primary selected coverage from the dry run; /root/verification (worms_port_test_runner, requested gpt-5.6-terra/medium; runtime model identity unavailable) executed the clean rerun against HEAD 3538d1d and 21 stable dirty paths. Log .cache/wp022a-selector-rerun.log. Import boundary, types, work packages 61, combat 94, practice 42, identity 22, reward 38, protocol 130, simulation 178, Loomkeeper 39, relics 10 and tooling 121 passed. Build outputs, built smoke, identity bundles, reward security and bundle checks passed. Browser 72 passed/3 expected Ubuntu-only visual skips with zero failures or retries. Build proof c718cdc8e557/6f5b7b6dd6fd. Initial JS 1,498,578/1,500,000 bytes; initial JS+CSS gzip 415,505/430,000. No budget relaxation.",
+      "historical_attempts": [
+        {
+          "command": "Initial type check",
+          "status": "fail",
+          "details": "V10 reward replay code initially referenced V9-only policy/profile fields. Primary corrected the verifier to use the fields present in the V10 replay while preserving session, automation, challenge, ruleset and deterministic terminal binding; corrected types passed."
+        },
+        {
+          "command": "npm.cmd run verify:changes (first full attempt)",
+          "status": "fail",
+          "details": "All relevant checks after the browser infrastructure failure passed; Chromium reported net::ERR_NO_BUFFER_SPACE in the unchanged V10G Twin Crests case. The exact isolated case then passed unchanged 1/1 with no console errors in .cache/wp022a-twin-crests-diagnose-2.log. The subsequent clean full selector passed without retries."
+        }
+      ]
+    },
+    {
+      "command": "Focused V10 Daily authority, reward-verification and phone-browser journeys",
+      "status": "pass",
+      "details": "Focused Node coverage passed 20/20 for strict V10 admission, Practice/reward separation, dedicated Practice-only refusal, genuine deterministic reward settlement, forgery refusal and idempotency; log .cache/wp022a-focused-node-2.log. A fresh npm.cmd run build:outputs passed with proof c718cdc8e557/6f5b7b6dd6fd; log .cache/wp022a-build-outputs-2.log. The canonical Chromium Daily journey passed 1/1 in 22.4 seconds with zero retries: wallet authorization, V10 R5 volcanic reward start, non-pausable match, explicit reload resume of the same challenge, verified terminal loss, and fresh standard volcanic Practice retry; log .cache/wp022a-browser-daily-2.log."
+    },
+    {
+      "command": "Primary direct review, documentation reconciliation and housekeeping",
+      "status": "pass",
+      "details": "Primary direct review covered reservation-before-admission, pre/post-await ownership checks, disconnect/create-failure forfeiture, one-attempt UTC-day semantics, V10 deterministic replay verification, result idempotency, rewarded non-pause behavior, reload resume, terminal presentation and Practice retry. npm.cmd run audit:housekeeping passed report-only in 1.15 seconds; log .cache/wp022a-housekeeping-rerun.log. It reports the expected dirty WP-022A worktree and retained historical reconciliation items without mutating files. Final bounded documentation validation passed: git diff --check reported no whitespace errors and npm.cmd run check:work-packages validated all 61 records; logs .cache/wp022a-final-diff-check.log and .cache/wp022a-final-work-packages.log."
+    }
+  ],
+  "reviews": [
+    {
+      "reviewer": "Primary single-owner assistant",
+      "role": "primary_direct_review",
+      "decision": "pass",
+      "details": "The Daily V10 migration, selected verification and corrected normal-runtime deployment passed Phone Gate A. Product implementation and direct review remained primary-owned; only test execution was delegated to /root/verification. PEI, helper-app work, mainnet execution and reward-economy changes remain outside this package."
+    },
+    {
+      "reviewer": "Project owner",
+      "role": "physical_phone_acceptance",
+      "decision": "fail",
+      "details": "2026-09-12 first deployed Phone Gate A attempt: Check Daily Challenge reported rewards temporarily unavailable and exposed no wallet authorization control. The deployed Render service still had REWARD_PAUSED=true and, from the observed reward.info failure rather than a structured paused status, retained development-v10-practice. That profile intentionally constructs no identity or reward service. Retest requires one coordinated environment change: remove NIMBLE_RUNTIME_PROFILE, select REWARD_MODE=record-only, set REWARD_PAUSED=false, retain database/identity configuration, and redeploy. No product gameplay failure was reached."
+    },
+    {
+      "reviewer": "Project owner",
+      "role": "physical_phone_acceptance",
+      "decision": "pass",
+      "details": "2026-09-12 corrected normal-runtime record-only deployment: all six Phone Gate A steps passed. Wallet authorization and Daily availability worked; Daily opened the V10 R5 volcanic match; player and Loomkeeper turns completed; reload resumed the same non-pausable challenge; terminal result and Practice retry worked; and a second same-wallet UTC-day attempt was refused. A separate standard Practice match also worked as expected."
+    }
+  ],
+  "skipped_checks": [
+    "Three Ubuntu-only visual comparisons skipped under the existing Windows policy; no baseline was generated or approved on Windows.",
+    "PostgreSQL gate skipped because WP014_TEST_DATABASE_URL is absent; the CI database gate remains required.",
+    "Daily/full performance release matrix was not selected for this edit; the existing 22:00 Europe/Berlin automation remains unchanged.",
+    "npm audit not separately run because no package or lockfile changed.",
+    "Mainnet transaction and PEI checks are outside WP-022A."
+  ],
+  "residual_risks": [
+    "V10 session authority remains in-memory: reload within a retained server session resumes the same match, while server/session loss cannot durably recover it.",
+    "Initial JavaScript headroom is 1,422 bytes; later startup additions must preserve the unchanged bundle ceiling.",
+    "Ubuntu visual comparison, PostgreSQL and full release gates remain separate acceptance requirements."
+  ]
+}

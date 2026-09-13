@@ -2,12 +2,14 @@ import { defineConfig } from '@playwright/test';
 
 const port = Number(process.env.PLAYWRIGHT_PORT || 4174);
 const baseURL = `http://127.0.0.1:${port}`;
+const includeLegacy = process.env.PLAYWRIGHT_LEGACY_TESTS === 'true';
 
 export default defineConfig({
   testDir: './tests/browser-postgres',
   outputDir: './test-results',
   fullyParallel: false,
   forbidOnly: true,
+  grepInvert: includeLegacy ? undefined : /@legacy/,
   retries: 0,
   workers: 1,
   timeout: 120_000,

@@ -4,6 +4,11 @@ import type {
     RewardUpdateData
 } from '../../../shared/protocol';
 import type { CoordinatorReplay } from '../simulation/coordinator';
+import type { CoordinatorReplayV8Automated } from '../../../shared/protocol-v8';
+import type { CoordinatorReplayV9Automated } from '../../../shared/protocol-v9';
+import type { CoordinatorReplayV10Automated } from '../../../shared/protocol-v10-live';
+
+export type RewardCoordinatorReplay = CoordinatorReplay | CoordinatorReplayV8Automated | CoordinatorReplayV9Automated | CoordinatorReplayV10Automated;
 
 export type RewardMode = 'disabled' | 'record-only' | 'testnet' | 'mainnet';
 
@@ -23,6 +28,34 @@ export type RewardConfig = {
     operatorAcknowledgement?: string;
     testWalletAddress?: string;
     testDailyAttemptLimit: number;
+    peiRequired?: boolean;
+};
+
+export type PeiReceipt = {
+    id: string;
+    walletAddress: string;
+    qualificationDigest: string;
+    issuedAt: Date;
+    consumedAt?: Date;
+    entitlementId?: string;
+};
+
+export type PeiReceiptInput = {
+    id: string;
+    walletAddress: string;
+    qualificationDigest: string;
+    issuedAt: Date;
+};
+
+export type VerifiedPeiQualification = {
+    walletAddress: string;
+    qualificationDigest: string;
+    expiresAt: Date;
+};
+
+export type IssuedPeiReceipt = {
+    id: string;
+    issuedAt: string;
 };
 
 export type RewardEntitlement = {
@@ -40,13 +73,14 @@ export type RewardEntitlement = {
     reservationExpiresAt: Date;
     finalTick?: number;
     finalStateHash?: string;
-    replay?: CoordinatorReplay;
+    replay?: RewardCoordinatorReplay;
     signedTransaction?: string;
     transactionHash?: string;
     validityStartHeight?: number;
     includedHeight?: number;
     finalizedAt?: Date;
     reasonCode?: string;
+    peiReceiptId?: string;
 };
 
 export type RewardReservationInput = {
@@ -61,6 +95,7 @@ export type RewardReservationInput = {
     dailyAttemptLimit: number;
     paused: boolean;
     eligibilityTokenDigest: string;
+    peiReceiptRequired?: boolean;
     reservationExpiresAt: Date;
     now: Date;
 };
@@ -70,7 +105,7 @@ export type RewardMatchEvidence = {
     outcome: 'left' | 'expired' | 'player_win' | 'loomkeeper_win' | 'draw';
     finalTick: number | null;
     finalStateHash: string | null;
-    replay?: CoordinatorReplay;
+    replay?: RewardCoordinatorReplay;
     claimNonceDigest?: string;
     claimNonceExpiresAt?: Date;
     now: Date;
@@ -98,7 +133,12 @@ export type RewardStore = {
     close(): Promise<void>;
     forfeitInProgressOnStartup(now: Date): Promise<number>;
     withPayoutLease<T>(operation: () => Promise<T>): Promise<T | undefined>;
-    info(day: string, config: RewardConfig): Promise<RewardInfoData>;
+    info(day: string, config: RewardConfig, walletAddress?: string): Promise<RewardInfoData>;
+    issuePeiReceipt(input: PeiReceiptInput): Promise<PeiReceipt>;
+    peiReceiptStatus(
+        receiptId: string,
+        walletAddress: string
+    ): Promise<PeiReceipt | undefined>;
     reserve(input: RewardReservationInput): Promise<RewardEntitlement>;
     start(
         challengeId: string,

@@ -1,0 +1,125 @@
+{
+  "id": "WP-015D2D",
+  "status": "complete",
+  "starting_commit": "565545b1dc7803ed48150e7ddafd844212c9fbe0",
+  "branch": "codex/wp-015d2d-entry-seam-pin",
+  "initial_worktree": "clean",
+  "starting_lock_sha256": "D4DAC6AE09A3D2F6C5A7EAA11520BAC43F1628320C5331575BCF1E1857073D73",
+  "owning_roles": [
+    "worms_port_planner",
+    "worms_port_test_worker",
+    "worms_port_docs_keeper"
+  ],
+  "scope": [
+    "Implement the owner-accepted analysis-only I2 entry Seam-Pin exclusion as a separate schema-version 16 F4 child, leaving shared/simulation.ts as the sole production gameplay authority.",
+    "Preserve movement-created Needlepoint action legality, position, normal 30 damage, turn transfer, and every F4 support member except the target Seam Pin and caster cooldown created when Needlepoint was beyond maximum range before that cast's own movement.",
+    "Add no persistent state, resource, reaction, delayed cast, special response, guaranteed right, policy, value change, runtime path, or ProductAuthority.",
+    "Bind explicit entrySeamPinSuppression trace witnesses and route summaries that keep first-actor, second-actor, and turn-limit outcomes separate.",
+    "Run the exact D2C twelve-distance frame over both first actors, both mirrors, and all 25 ordered base-policy pairs, for 100 matches per distance and 1,200 matches total.",
+    "Bind canonical I2 report digest 31e341944d0490d531e989463804f8402c32c191e7dd1d4fe205081ef0ce099d while preserving the exact C4, F4, H2, and I1 comparator digests.",
+    "Record the declared result: 1,200 Unraveling results, no forced opening or non-terminal recurrence, 684 first-actor wins, 416 Needlepoint-only suppressions, and 84/36 first-/second-actor outcomes across 120 affected opening routes.",
+    "Record rates 56/56/60/60/60/60/60/60/56/56/56/44 percent at 511/512/513/575/576/577/639/640/641/703/704/705 without converting the 57 percent aggregate into a scalar landfall claim.",
+    "Preserve the extended horizon witness outside the declared gate: at start 769 F4 has four turn limits and I2 has eight; four additional I2 retreat-kite mirrors suppress their entry pin at turn 10 and cannot finish within the inherited 16-turn horizon.",
+    "Classify I2 as a bounded Phase A structural survivor with explicit horizon residue and stop before any WP-015D2B source-lock rotation, World Design Port admission, V5 proposal, or production implementation."
+  ],
+  "non_goals": [
+    "Change shared, client, server, protocol, replay, Loomkeeper, reward, wallet, asset, package, or V1 through V4 runtime behavior.",
+    "Implement I1 again, remove the complete entry cast, modify Needlepoint damage, weaken all Seam Pins, or change Spoolburst, Threadball, Escape Slack, movement, policy, recurrence, or turn-horizon values.",
+    "Register I2 in analysis/crpm_world, alter its authenticated implementation/source locks, or treat sealed D2B execution as a Phase A dependency.",
+    "Claim global starting-distance coverage, optimal balance, empirical player fun, V5 approval, or product authority from the bounded policy matrix.",
+    "Vendor, import, depend on, or edit CRPM or Sorcerers."
+  ],
+  "planned_checks": [
+    "npm run test:tactical-model",
+    "python -m analysis.tactical_model.run --config <I2-config> --starting-distances 511 512 513 575 576 577 639 640 641 703 704 705 --range-entry-boundary-sweep --output test-results/tactical-model/i2-entry-seam-pin-boundary-sweep-report.json",
+    "npm run test:simulation",
+    "npm run check:types",
+    "npm run check:work-packages",
+    "npm run check:compliance",
+    "npm run build",
+    "git diff --check",
+    "final production/import/generated-output boundary inspection"
+  ],
+  "deterministic_seeds": [
+    "3237998097"
+  ],
+  "sorcerers_reference_used": false,
+  "clean_room_records": [],
+  "check_results": [
+    {
+      "command": "npm run test:tactical-model",
+      "status": "pass",
+      "detail": "The authoritative TypeScript V4 fixture parity test and all 41 Python tactical-model tests passed. Existing C4/F2/F3/F4/H2/H3/I1 behavior and digests remain locked; I2 tests cover exact affected/unaffected edges, trace residue, the 1,200-match gate, and the separate 768/769 horizon witness."
+    },
+    {
+      "command": "python -m analysis.tactical_model.run --config <I2-config> --starting-distances 511 512 513 575 576 577 639 640 641 703 704 705 --range-entry-boundary-sweep --output test-results/tactical-model/i2-entry-seam-pin-boundary-sweep-report.json",
+      "status": "pass",
+      "detail": "The analysis CLI wrote the ignored deterministic I2 report; canonical re-read reproduced digest 31e341944d0490d531e989463804f8402c32c191e7dd1d4fe205081ef0ce099d."
+    },
+    {
+      "command": "npm run test:simulation",
+      "status": "pass",
+      "detail": "All 31 production simulation tests passed; shared/simulation.ts and shared/protocol.ts remain unchanged."
+    },
+    {
+      "command": "npm run check:types",
+      "status": "pass",
+      "detail": "Server and client TypeScript checks passed with no production-side analysis dependency."
+    },
+    {
+      "command": "npm run check:work-packages",
+      "status": "pass",
+      "detail": "The repository evidence checker accepted 26 completed work-package records, including the bounded I2 structural-survivor disposition and horizon residue."
+    },
+    {
+      "command": "npm run check:compliance",
+      "status": "pass",
+      "detail": "Asset manifests, runtime inventory, generation components, import boundaries, package licenses, work-package evidence, and clean-room checks passed."
+    },
+    {
+      "command": "npm run build",
+      "status": "pass",
+      "detail": "The full production compliance, type, server bundle, client bundle, and approved eleven-asset copy completed successfully; I2 has no production import path."
+    },
+    {
+      "command": "git diff --check",
+      "status": "pass",
+      "detail": "The final working-tree diff has no whitespace errors; line-ending conversion notices are Git configuration warnings rather than diff failures."
+    },
+    {
+      "command": "final production/import/generated-output boundary inspection",
+      "status": "pass",
+      "detail": "Searches found no shared/client/server import of analysis/crpm_world or analysis/tactical_model, no production/protocol/package/asset/CRPM-world diff, and no tracked test-results. The reproducible 881 MB exploratory class report was removed after witness extraction; the mandatory report remains ignored."
+    }
+  ],
+  "reviews": [
+    {
+      "role": "worms_port_planner",
+      "reviewer": "Codex",
+      "decision": "pass",
+      "detail": "Confirmed I2 is a separate one-rule F4 child, the accepted edge semantics were frozen before implementation, the declared gate and exploratory breadth evidence remain distinct, and no World Design Port or production phase opened automatically."
+    },
+    {
+      "role": "worms_port_test_worker",
+      "reviewer": "Codex",
+      "decision": "pass",
+      "detail": "Confirmed exact action/damage preservation, Needlepoint-only suppression, unchanged already-in-band Seam Pin, explicit cooldown/pin/route witnesses, separate draw accounting, same-frame comparator locks, and executable F4-versus-I2 769 horizon evidence."
+    },
+    {
+      "role": "worms_port_docs_keeper",
+      "reviewer": "Codex",
+      "decision": "pass",
+      "detail": "Confirmed the tactical README, D2A contract, D2D contract, implementation plan, governance note, and evidence agree that I2 survives only the bounded Phase A gate, retains ProductAuthority none, and carries the extended horizon warning without false closure."
+    }
+  ],
+  "skipped_checks": [
+    "The sealed WP-015D2B CRPM-world suite is not a Phase A acceptance gate because it intentionally authenticates the pre-I1/pre-I2 tactical-model Git blob. No World Design Port migration or lock rotation is authorized in this package.",
+    "Browser matrix and physical Android/iOS testing are not run because I2 changes only the offline Python analytical model, tests, and documentation; it has no runtime-facing or player-visible path."
+  ],
+  "residual_risks": [
+    "The ideal-direct-hit model excludes terrain, aim, trajectory, splash, player skill, live Loomkeeper behavior, UI, replay, reward, and production behavior; deterministic policy results are bounded analytical evidence only.",
+    "I2 passes the declared 511-through-705 gate but has explicit horizon residue at the exploratory start 769. That full-resource starting carrier is outside the contracted frame, yet its four additional timeouts prevent automatic profile or product promotion.",
+    "A post-hoc 96-class slice from starts 24 through 768 reports terminal outcomes and 44-to-60-percent rates, but it was selected after the horizon boundary was observed and cannot upgrade maturity or prove every integer start/carrier.",
+    "WP-015D2B remains sealed to historical tactical sources and ProductAuthority none. Any Phase B admission requires a separate owner decision about starting-carrier scope, versioned config/cut/domain changes, new source locks, and full adapter/evaluation review."
+  ]
+}

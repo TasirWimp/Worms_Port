@@ -1,0 +1,118 @@
+{
+  "schemaVersion": 1,
+  "requestId": "wp-015d2e-i2-spawn-pressure",
+  "profileVersion": 3,
+  "adapter": {
+    "id": "d2e_i2_world_design",
+    "version": 1
+  },
+  "baseline": {
+    "kind": "d2a_config",
+    "id": "v5-range-damage-forward-seam-pin-escape-slack-spoolburst-preparation-spun-cocoon-threadback-unweave-entry-seam-pin-candidate-i2",
+    "version": 16
+  },
+  "scenarioDomain": {
+    "schemaVersion": 1,
+    "scenarioIds": [
+      "d2e-i2-start-511",
+      "d2e-i2-start-512",
+      "d2e-i2-start-513",
+      "d2e-i2-start-575",
+      "d2e-i2-start-576",
+      "d2e-i2-start-577",
+      "d2e-i2-start-639",
+      "d2e-i2-start-640",
+      "d2e-i2-start-641",
+      "d2e-i2-start-703",
+      "d2e-i2-start-704",
+      "d2e-i2-start-705"
+    ],
+    "actionFamilies": [
+      "d2e-i2-pressure-export"
+    ],
+    "policyFamilies": [
+      "base-policy-pair-matrix-v1"
+    ],
+    "seeds": [
+      3237998097
+    ],
+    "constraints": [
+      "Production spawn authority remains distance 640; all other starts are analytical pressure carriers.",
+      "Both first actors, both mirrors, all 25 ordered base-policy pairs, and the existing 16-turn horizon are mandatory.",
+      "A full-resource start at distance 769 is excluded and retained as a blocking horizon warning."
+    ]
+  },
+  "cut": {
+    "id": "d2e_i2_spawn_pressure_v1",
+    "version": 1
+  },
+  "protectedFamily": [
+    "I2 remains the exact WP-015D2D rule: movement-created Needlepoint retains movement, legality, and 30 damage while suppressing only its target Seam Pin and caster cooldown.",
+    "C4, F4, H2, and I1 report identities and historical analytical dispositions remain recoverable and unchanged.",
+    "The excluded full-resource start-769 horizon warning remains explicit and blocks broader starting-carrier or design-landfall claims.",
+    "D2E remains analysis-only, leaves shared/simulation.ts authoritative, and cannot activate V5 or acquire product authority."
+  ],
+  "sequence": [
+    {
+      "sequence": 0,
+      "kind": "policy",
+      "configId": "v5-range-damage-forward-seam-pin-escape-slack-spoolburst-preparation-spun-cocoon-threadback-unweave-entry-seam-pin-candidate-i2",
+      "policyFamily": "base-policy-pair-matrix-v1"
+    }
+  ],
+  "seeds": [
+    3237998097
+  ],
+  "outputDetailLevel": "witnesses",
+  "mandatoryEvidenceProbes": [
+    "f4.excluded_start_769_turn_limits",
+    "i2.affected_opening_route_first_actor_wins",
+    "i2.affected_opening_route_second_actor_wins",
+    "i2.affected_opening_route_turn_limits",
+    "i2.caster_seam_pin_cooldown",
+    "i2.distance_511_first_actor_win_rate",
+    "i2.distance_512_first_actor_win_rate",
+    "i2.distance_513_first_actor_win_rate",
+    "i2.distance_575_first_actor_win_rate",
+    "i2.distance_576_first_actor_win_rate",
+    "i2.distance_577_first_actor_win_rate",
+    "i2.distance_639_first_actor_win_rate",
+    "i2.distance_640_first_actor_win_rate",
+    "i2.distance_641_first_actor_win_rate",
+    "i2.distance_703_first_actor_win_rate",
+    "i2.distance_704_first_actor_win_rate",
+    "i2.distance_705_first_actor_win_rate",
+    "i2.entry_seam_pin_suppressions",
+    "i2.escape_slack_spent",
+    "i2.excluded_start_769_turn_limits",
+    "i2.first_actor_win_rate",
+    "i2.forced_opening_scenarios",
+    "i2.match_count",
+    "i2.movement_created_needlepoint_damage",
+    "i2.needlepoint_uses",
+    "i2.nonterminal_recurrence_matches",
+    "i2.spoolburst_uses",
+    "i2.target_seam_pin_turns",
+    "i2.terminal_turn_limit",
+    "i2.terminal_unravelled",
+    "i2.threadball_uses"
+  ],
+  "requestedPorts": [
+    "analysis-result",
+    "transition-witness",
+    "tactical-voyage",
+    "residual-ledger",
+    "diagnostic-profile",
+    "scalar-probes",
+    "horizon-warning",
+    "comparator-evidence"
+  ],
+  "activation": "offline_only",
+  "explicitExclusions": [
+    "Terrain geometry and collision are unmodelled.",
+    "Aim, trajectory, splash, and projectile physics are unmodelled.",
+    "Player skill and live Loomkeeper behavior are unmodelled.",
+    "UI, replay, reward, protocol, networking, assets, and runtime mutation are unmodelled and forbidden."
+  ]
+}
+

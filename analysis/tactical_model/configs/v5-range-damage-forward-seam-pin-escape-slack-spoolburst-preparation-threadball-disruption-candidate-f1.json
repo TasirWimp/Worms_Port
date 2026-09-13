@@ -1,0 +1,40 @@
+{
+  "schema_version": 7,
+  "id": "v5-range-damage-forward-seam-pin-escape-slack-spoolburst-preparation-threadball-disruption-candidate-f1",
+  "label": "Exploratory V5 C4 with prepared Spoolburst and Threadball disruption candidate F1",
+  "analysis_status": "exploratory",
+  "source_ruleset_id": "nimble-knots-artillery-v4",
+  "authority_fixture": "analysis/tactical_model/fixtures/v4-authoritative-baseline-v1.json",
+  "assumptions": [
+    "This is not nimble-knots-artillery-v5 and has no runtime, replay, protocol, or reward authority.",
+    "It keeps Candidate C4's ideal-direct-hit range, damage, forward-Stitch, and equal 128-unit Escape Slack rules.",
+    "Spoolburst cannot be cast immediately. From its normal launch band, its caster spends one full turn preparing it; the charge survives exactly the opponent's next action and is available only as a stationary cast on the caster's immediately following turn if the target remains in range.",
+    "A direct Threadball hit on a prepared Spoolburst caster clears that charge while dealing its normal 45 ideal direct damage. Fire still ends the caster's turn; terrain, aim, splash, animation, UI, and production counter-effects remain excluded."
+  ],
+  "world": { "width": 2048, "actor_margin": 12 },
+  "initial": { "seed": 3237998097, "player_x": 512, "loomkeeper_x": 1152, "first_actor": "player" },
+  "turn": { "maximum_turns": 16, "movement_per_turn": 64, "action_economy": "move_and_cast" },
+  "stitching": { "maximum": 100 },
+  "relics": {
+    "threadball": { "minimum_range": 0, "maximum_range": 576, "direct_damage": 45 },
+    "needlepoint": { "minimum_range": 0, "maximum_range": 640, "direct_damage": 30 },
+    "spoolburst": { "minimum_range": 0, "maximum_range": 512, "direct_damage": 80 }
+  },
+  "opening_search_depth": 3,
+  "tactical_core": {
+    "seam_pin": {
+      "relic_id": "needlepoint",
+      "maximum_separation_increase": 32,
+      "target_turns": 1,
+      "cooldown_actor_turns": 1,
+      "activation": "advance_only",
+      "retreat_cast_rule": "forbidden"
+    },
+    "escape_slack": { "per_actor": 128 },
+    "spoolburst_preparation": {
+      "relic_id": "spoolburst",
+      "preparation_turns": 1,
+      "disruption_relic_id": "threadball"
+    }
+  }
+}

@@ -1,0 +1,137 @@
+{
+  "id": "WP-015D2K",
+  "status": "complete",
+  "starting_commit": "5b6233a202f3a2fa8c06515d2c8f794736c77b02",
+  "branch": "codex/wp-015d2k-policy-choice-relation-audit",
+  "initial_worktree": "clean",
+  "starting_lock_sha256": "D4DAC6AE09A3D2F6C5A7EAA11520BAC43F1628320C5331575BCF1E1857073D73",
+  "owning_roles": [
+    "worms_port_planner",
+    "worms_port_test_worker",
+    "worms_port_docs_keeper"
+  ],
+  "scope": [
+    "Record the owner-approved D2K mechanics-fixed policy-choice relation audit as a re-enterable Lane 2 contract over unchanged F4 and the completed D2I Cocoon voyage result.",
+    "Enumerate all interleaved preparation response carriers on short_approach routes at starts 639, 640, and 641 across both first actors and both independent mirror values, every legal response, all five existing policy selections, and all 25 existing continuation-policy pairs.",
+    "Emit strict deterministic Python and TypeScript records that bind tactical-model SHA-256 af0b0ec8d9893e992bdc95123a915e24a2305ee2b9fff32bce95d27cdb4c8c08, F4 config SHA-256 5e519b09ea5e5684185bcd527600705825ba75df8f01e310adb027d09d4f54e0, D2I result digest ff29c8a1d18a201ca9047e72f458e919151ec53cd581567219b307e393a4b7b0, seed 3237998097, and read-only CRPM method commit 053c6fc0a90ed48d8667016b18a1d10106a7a2bc.",
+    "Keep legal support, policy selection, immediate residue, forced continuation, terminal-only dominance, policy regret, boundary transport, and actor/mirror equivariance as separate relations rather than reducing them to one balance metric.",
+    "Record 12 routes, 24 response carriers, 240 legal response instances, 120 policy selections, and 6000 deterministic terminal voyages in raw digest 47ef25b6557edaa1f477f0bdde80b0b1d8b041399adb844a22c8746f1314e769 and assessed result digest 5c544f6822744ac63a595ca4458bb2dfb72696836468a47bf494c628b5573832.",
+    "Return retain_mechanics_refine_policy_question after finding rich existing legal support, a non-dominated first-cycle Cocoon branch, second-cycle immediate lethal response support missed by several heuristics, and actor-absolute best_response tie behavior with mirror-sensitive Escape-Slack residue.",
+    "Update the D2G navigation chart, D2J disposition, operational governance, implementation plan, both analysis READMEs, contract, tests, and evidence without moving the WP-015D2A Execution Pointer."
+  ],
+  "non_goals": [
+    "Change model.py, any tactical config, legal action, policy selector, transition or expiry order, recurrence key, opening search, aggregate result, seed, horizon, or historical candidate disposition.",
+    "Claim that terminal-only dominance is gameplay dominance, that the five policies are optimal or player models, that one response is globally best, or that the game is balanced, fun, solved, or ready for production.",
+    "Add a candidate mechanic, policy change, V5 rule, live Loomkeeper behavior, protocol or replay field, client or server path, reward or wallet behavior, UI, asset, package dependency, or ProductAuthority.",
+    "Edit, import, vendor, or depend on CRPM or Sorcerers; promote the bounded relation grammar into universal doctrine, a graph-safe schema, or independent empirical evidence."
+  ],
+  "planned_checks": [
+    "node --import tsx --test tests/crpm-world/policy-choice-relation-audit.test.ts",
+    "npx tsx scripts/run-policy-choice-relation-audit.ts --output test-results/crpm-world/d2k-policy-choice/policy-choice-relation-result.json",
+    "npm run test:crpm-world",
+    "npm run test:tactical-model",
+    "npm run test:simulation",
+    "npm run check:crpm-world-types",
+    "npm run check:types",
+    "npm run check:compliance",
+    "npm run build",
+    "git diff --check",
+    "final model/config, sealed-surface, production-import, arbitrary-execution, CRPM-vendoring, and generated-output boundary inspection"
+  ],
+  "deterministic_seeds": [
+    "3237998097"
+  ],
+  "sorcerers_reference_used": false,
+  "clean_room_records": [],
+  "check_results": [
+    {
+      "command": "node --import tsx --test tests/crpm-world/policy-choice-relation-audit.test.ts",
+      "status": "pass",
+      "detail": "All nine focused tests passed. They prove exact route/carrier/action/selection/voyage topology, deterministic digests and non-mutation, cycle-specific Cocoon and lethal-response findings, normalized orientation and boundary relations, strict source/schema rejection, and lexical plus link-aware output confinement."
+    },
+    {
+      "command": "npx tsx scripts/run-policy-choice-relation-audit.ts --output test-results/crpm-world/d2k-policy-choice/policy-choice-relation-result.json",
+      "status": "pass",
+      "detail": "The fixed runner reproduced raw digest 47ef25b6557edaa1f477f0bdde80b0b1d8b041399adb844a22c8746f1314e769 and emitted ignored result digest 5c544f6822744ac63a595ca4458bb2dfb72696836468a47bf494c628b5573832 with navigation return retain_mechanics_refine_policy_question and ProductAuthority none."
+    },
+    {
+      "command": "npm run test:crpm-world",
+      "status": "pass",
+      "detail": "The complete CRPM-world suite passed 104 tests with one reviewed existing unsealed-D2E skip and zero failures in 434.9 seconds, including every sealed historical contract, adapter, voyage, evaluation, D2H/D2I audit, and the new D2K relation audit."
+    },
+    {
+      "command": "npm run test:tactical-model",
+      "status": "pass",
+      "detail": "The authoritative TypeScript fixture and all 41 Python tactical tests passed before implementation and again afterward; the post-implementation Python run completed in 64.4 seconds with no model, config, policy, result, or report change."
+    },
+    {
+      "command": "npm run test:simulation",
+      "status": "pass",
+      "detail": "All 31 production simulation tests passed; V1 through V4 state, terrain, replay, projectile, timing, and rejection behavior remain unchanged."
+    },
+    {
+      "command": "npm run check:crpm-world-types",
+      "status": "pass",
+      "detail": "The complete strict analysis/crpm_world TypeScript project, including the D2K raw/result schemas, assessment, runner import, and tests, passed type checking."
+    },
+    {
+      "command": "npm run check:types",
+      "status": "pass",
+      "detail": "Server and client TypeScript checks passed with no production dependency on the analysis-only D2K path."
+    },
+    {
+      "command": "npm run check:compliance",
+      "status": "pass",
+      "detail": "Asset, runtime inventory, generation-component, import-boundary, package-license, work-package-evidence, and clean-room compliance passed with the completed D2K evidence record."
+    },
+    {
+      "command": "npm run build",
+      "status": "pass",
+      "detail": "The complete compliance/type/server/client build and approved-asset copy passed; D2K has no production import or runtime path."
+    },
+    {
+      "command": "git diff --check",
+      "status": "pass",
+      "detail": "The final analysis, test, documentation, and evidence diff has no whitespace errors; Git line-ending messages are configuration notices."
+    },
+    {
+      "command": "final model/config, sealed-surface, production-import, arbitrary-execution, CRPM-vendoring, and generated-output boundary inspection",
+      "status": "pass",
+      "detail": "No model/config, D2B/D2E sealed implementation, package metadata, shared/client/server/protocol/replay/reward/wallet/asset, CRPM, or Sorcerers source changed. Production code does not import D2K; the runner invokes one fixed Python module, accepts no executable operator, and rejects lexical and symbolic-link/junction output escape; generated test-results remain ignored and untracked."
+    }
+  ],
+  "reviews": [
+    {
+      "role": "worms_port_planner",
+      "reviewer": "Codex",
+      "decision": "pass",
+      "detail": "Confirmed D2K holds mechanics and policies fixed while reconstructing the complete declared response relation, keeps terminal outcomes separate from residue and excluded ports, and opens only an owner-reviewed analytical policy question."
+    },
+    {
+      "role": "worms_port_test_worker",
+      "reviewer": "Codex",
+      "decision": "pass",
+      "detail": "Confirmed exact 12/24/240/120/6000 topology, stable raw/result digests, all-context terminal vector comparisons, non-mutation, strict source locks, actor-relative normalization, mirror-sensitive selection witnesses, and lexical plus link-aware fail-closed output boundaries."
+    },
+    {
+      "role": "worms_port_docs_keeper",
+      "reviewer": "Codex",
+      "decision": "pass",
+      "detail": "Confirmed D2A, D2G, D2I, D2J, D2K, operational governance, both analysis READMEs, implementation plan, and evidence agree on the result, limitations, ProductAuthority none, and next owner-review gate."
+    }
+  ],
+  "skipped_checks": [
+    "npm audit was not rerun because package.json and package-lock.json remain Git-identical to the starting commit and dependency changes were out of scope.",
+    "Browser matrix and physical Android/iOS testing were not run because D2K is offline analysis tooling with no runtime-facing or player-visible path."
+  ],
+  "residual_risks": [
+    "The five fixed policies are correlated analytical heuristics rather than optimal strategies, live Loomkeeper evidence, human behavior, or a strategy-complete game ocean.",
+    "The 6000 voyages are exhaustive only over the declared continuation-policy cross product. Their 4292 responder wins, 1696 preparer wins, 12 turn-limit draws, 752 raw dominance witnesses, and 84 policy regret witnesses include shared carriers, fourfold actor/mirror covariance, and action-direction variants rather than independent evidentiary weight.",
+    "Terminal-only dominance deliberately omits path, turn count, position, Escape Slack, status, hidden information, and player valuation; it cannot select a gameplay response or production policy by itself.",
+    "The first-cycle short_approach counter-preparation remains non-dominated over the declared contexts, so a blanket removal or suppression would erase supported Cocoon choice rather than follow from D2K evidence.",
+    "The second-cycle immediate Threadball and eventual Unweave results expose a bounded policy/pacing question, not a generally optimal action or proof that selection alone causes the global first-actor profile.",
+    "The absolute-left best_response tie changes approach/retreat and 64 Escape-Slack residue under mirror while retaining its immediate terminal win; actor-relative tie handling remains untested and unauthorized.",
+    "The normalized legal relation survives 639/640/641, but complete continuations change at 641 with responder phase and completed-turn horizon; no global distance invariance is claimed.",
+    "Terrain, aim, trajectory, splash, hidden information, player execution, UI, replay, networking, rewards, assets, and production state remain outside D2A."
+  ]
+}

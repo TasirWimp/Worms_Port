@@ -1,0 +1,91 @@
+{
+  "id": "WP-015D4E",
+  "status": "in_progress",
+  "execution_mode": "single_owner",
+  "starting_commit": "1accbeb",
+  "branch": "codex/volcanic-ruin-background-art",
+  "initial_worktree": "clean",
+  "starting_lock_sha256": "6B768A8FDE2695D02555CA17201FD7CE420F9AC075B91380474DD7A643042BC8",
+  "owning_roles": [
+    "primary assistant"
+  ],
+  "scope": [
+    "Prepare a reference-conditioned FLUX authorization and validation boundary for isolated decorative volcanic-ruin background assets.",
+    "Preflight the pinned local Comfy profile without staging or generating media.",
+    "Retain the current initial-media ceiling and require a later loading/budget package before any runtime admission."
+  ],
+  "non_goals": [
+    "No product asset, runtime path, renderer integration, gameplay change, public activation, or V10G reopening.",
+    "No external code, third-party asset, Sorcerers material, named-landmark replication, dependency, package-lock, runtime inventory import, or renderer integration."
+  ],
+  "planned_checks": [
+    "npm run audit:housekeeping",
+    "npm run check:work-packages",
+    "npm run verify:changes -- --dry-run",
+    "npm run verify:changes",
+    "git diff --check"
+  ],
+  "deterministic_seeds": [
+    "Consumed isolated volcanic-cone candidate seed 15040001; source-master approved without runtime path.",
+    "Consumed isolated generic stone-tower-ruin candidate seed 15040002; source-master approved without runtime path.",
+    "Consumed isolated distant-jungle-canopy candidate seed 15040003; source-master approved without runtime path.",
+    "Consumed isolated sparse-palm-cluster candidate seed 15040004; source-master approved without runtime path.",
+    "Consumed isolated low-bush-cluster candidate seed 15040005; source-master approved without runtime path."
+  ],
+  "sorcerers_reference_used": false,
+  "clean_room_records": [],
+  "check_results": [
+    {
+      "command": "powershell -NoProfile -ExecutionPolicy Bypass -File scripts/comfy-asset-pipeline.ps1 -Action Prepare -Profile flux2-klein -Json",
+      "status": "pass",
+      "detail": "Non-generative preflight passed. The three reviewed FLUX model hashes and the text, reference-edit, and protected-edit workflow hashes match the pinned profile. ComfyUI and the MCP bridge remain stopped; no reference was staged and no candidate was generated."
+    },
+    {
+      "command": "Stage exact reference, then run one local MCP reference-edit request through scripts/comfy-mcp-smoke.py",
+      "status": "pass",
+      "detail": "StageInput copied SHA-256 9A3E5DEDDF02B0C03B2A8E46894ED61158DB39D8471BA99CD42B8618A1EB0D04 byte-identically to wormsport/volcanic-ruin-scene-reference-v1.png. The first launcher attempt failed in local argument parsing before any bridge call, so it did not consume authorization. The corrected one-shot request used reference-edit workflow A2BF8CD3...F6C8E, seed 15040001, prompt ID f244bf54-332e-4987-8e31-543c421b5a78, and completed in 466.937 seconds. Its sole external RGB24 1360x768 candidate is WormsPortFlux2KleinReferenceEdit_00006_.png, 831327 bytes, SHA-256 4B34F5EEB08C831164BE403204723E73FB95B10E8C7AA8CD5013C4E5974E329C. ComfyUI and the bridge were stopped after completion."
+    },
+    {
+      "command": "node scripts/normalize-volcanic-cone-master.js twice; node --test tests/tooling/volcanic-cone-master-normalization.test.js; source-master visual alpha review",
+      "status": "pass",
+      "detail": "Owner approved the candidate. Frozen config 3007C43026F92A1FB0A621C54DD79EB391CD88A57AE938C1F52001DDDCFEE854 and normalizer A0AE2B16733E0A1E0C3BEAF5B4F23B33A58B0496D9DF4560A9EBBD9E435CA106 produced byte-identical 499991-byte 1024x576 RGBA master 83E451892C13730D2EA1DE5794927EC9CD63110567F110DC485D5ED148D041AD twice. Alpha proof: transparent borders, one visible component, no disconnected visible pixels, core bounds 159..866 by 75..526, and exact decorative baseline anchor (512,528). Reviewed on light sky and dark navy contact sheets; bounded contact-shadow cleanup removes the model's neutral light-gray ground residue without painting or inference."
+    },
+    {
+      "command": "Prepare and StageInput, then one local MCP reference-edit request through scripts/comfy-mcp-smoke.py",
+      "status": "pass",
+      "detail": "Fresh preflight verified the three exact FLUX component hashes and the pinned reference-edit workflow. StageInput copied the exact reference SHA-256 9A3E5DEDDF02B0C03B2A8E46894ED61158DB39D8471BA99CD42B8618A1EB0D04 byte-identically to wormsport/volcanic-ruin-scene-reference-v1.png. Exactly one seed-15040002 generic stone-tower request ran as prompt dd98b736-8300-47b1-a3df-29c9f1012a23, completed in 317.963 seconds, and produced untouched 634010-byte RGB24 1360x768 external output WormsPortFlux2KleinReferenceEdit_00007_.png, SHA-256 6DDE21C23C9CF96D445DA3119D6EB9D282BE619B6BB2E3597CB699576D58D264. The queue returned empty and local ComfyUI plus the MCP bridge were stopped. Candidate remains external quarantine pending owner visual review; no normalizer, asset manifest entry, product file, runtime path, or renderer change exists."
+    },
+    {
+      "command": "node scripts/normalize-stone-tower-master.js twice; node --test tests/tooling/stone-tower-master-normalization.test.js; source-master alpha and edge review",
+      "status": "pass",
+      "detail": "Owner approved the candidate. Frozen config 00BD489A6B613147827C8F08338B7B285ECDD31DBC0275F00D9D85158D465326 and normalizer 51973D516D88ECB2DD176A8D122A0D2EA7468530381AABCCF507829B91CEFB43 produced byte-identical 290125-byte 1024x576 RGBA master 0810A4F5D3A3CCB72352F01AF61899BFAD7F4FC6EF9306164078F8C92FECBFA0 twice. Alpha proof: transparent borders, one visible component, no disconnected visible pixels, core bounds 373..645 by 49..528, and exact decorative baseline anchor (512,528). The frozen contact-shadow rule removes only all alpha from source rows 712 and below; no paint, reconstruction, or inference ran. Reviewed on light sky and dark navy contact sheets; source master has no runtime path."
+    },
+    {
+      "command": "Prepare and StageInput, then one local MCP reference-edit request through scripts/comfy-mcp-smoke.py",
+      "status": "pass",
+      "detail": "Fresh preflight verified the three exact FLUX component hashes and the pinned reference-edit workflow. StageInput copied the exact reference SHA-256 9A3E5DEDDF02B0C03B2A8E46894ED61158DB39D8471BA99CD42B8618A1EB0D04 byte-identically to wormsport/volcanic-ruin-scene-reference-v1.png. Exactly one seed-15040003 distant-jungle request ran as prompt 76f6c459-be98-4a7d-ace6-70cb34d0c2a8, completed in 295.813 seconds, and produced untouched 841296-byte RGB24 1360x768 external output WormsPortFlux2KleinReferenceEdit_00008_.png, SHA-256 B3AC79151D180F4439E82BD8EB9113734601084CE2780A2C56B4AA62CC09EBA1. The queue returned empty and local ComfyUI plus the MCP bridge were stopped. Candidate remains external quarantine pending owner visual review; no normalizer, asset manifest entry, product file, runtime path, or renderer change exists."
+    },
+    {
+      "command": "One local MCP reference-edit request through scripts/comfy-mcp-smoke.py; stop local ComfyUI; normalize twice; source-master visual alpha review",
+      "status": "pass",
+      "detail": "Exactly one seed-15040004 sparse-palm-cluster request ran as prompt 16dd9f4c-b26e-4519-afce-e684d812d279, producing untouched 728510-byte RGB24 1360x768 external output WormsPortFlux2KleinReferenceEdit_00009_.png, SHA-256 05A93D234E9BFFB5F93F8D80E7C87F7C65C55824A730AC2C4C815B3F8CB5F4ED. The local ComfyUI and bridge were stopped before history timing could be read; no runtime seconds are asserted. Owner approved the isolated three-palm candidate. Frozen config 4B42C04E494896467C13934F74257C058427B99F3DD30C87103276F1784E6341 and normalizer E091762AB02534E4DD80449E2A1CE2FE3C8A34596278C623F636E525C6B679B1 reproduced the 339339-byte 1024x576 RGBA source master A9D0C91D5CFD6647654A89A0F1B81110D7FC4C4B3A5ABE395C0FB5B2D8E4E380 twice. Alpha proof: transparent borders, one visible component, no disconnected visible pixels, and exact decorative baseline anchor (512,528). The master remains source-only with no runtime path, product copy, atlas, renderer, gameplay, or scene integration."
+    },
+    {
+      "command": "Prepare and StageInput, then one local MCP reference-edit request through scripts/comfy-mcp-smoke.py; stop local ComfyUI",
+      "status": "pass",
+      "detail": "Fresh preflight and exact-input staging passed for the pinned local FLUX reference-edit workflow. Exactly one seed-15040005 low-bush request ran as prompt bf80b44e-c0b1-4e04-b2f5-05f8d478a07b, completed in 330.869 seconds, and produced untouched 676136-byte RGB24 1360x768 external output WormsPortFlux2KleinReferenceEdit_00010_.png, SHA-256 049CA28B8B9F9F3A2F342624E2DAE5C7DA55D1E5F8DCB0DC270CA25E16755797. Queue audit found no second prompt pending or completed. The local ComfyUI and bridge were stopped. Candidate remains external quarantine pending owner visual review; no normalizer, asset manifest entry, product file, runtime path, or renderer change exists."
+    },
+    {
+      "command": "node scripts/normalize-bush-cluster-master.js twice; source-master visual alpha review",
+      "status": "pass",
+      "detail": "Owner approved the candidate. Frozen config D86CB05BFB4E68464038A0AA1FABD96752812800E87245060177E3AE86178F75 and normalizer 77155890B6CD91C57DE92D40C4B1580308437711448CB6F7195AA70DEFE2D3C0 produced byte-identical 343550-byte 1024x576 RGBA master D5EEE8F1A0B7A9B758321F5B429B0D2B9EAC5F7726A2031195628F0103AB69E2 twice. Alpha proof: transparent borders, one visible component, no disconnected visible pixels, core bounds 249..793 by 271..528, and exact decorative baseline anchor (512,528). This source master has no runtime path, product copy, atlas, renderer, gameplay, or scene integration."
+    }
+  ],
+  "skipped_checks": [
+    "Game build, browser, PostgreSQL, visual-baseline, and physical-device checks are not applicable: this source-only asset admission adds no runtime path or player-visible behavior."
+  ],
+  "residual_risks": [
+    "The cone, tower, jungle, palm, and bush source masters have no runtime path. The exact eleven-file initial-media inventory remains closed to new runtime copies.",
+    "The exact eleven-file initial-media inventory permits no new runtime background asset until a future loading and budget package changes that contract deliberately."
+  ]
+}

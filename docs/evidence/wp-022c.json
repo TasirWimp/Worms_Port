@@ -1,0 +1,56 @@
+{
+  "id": "WP-022C",
+  "status": "complete",
+  "execution_mode": "single_owner",
+  "starting_commit": "13377fd",
+  "branch": "codex/pei-daily-v10",
+  "initial_worktree": "dirty-preserved",
+  "starting_lock_sha256": "6B768A8FDE2695D02555CA17201FD7CE420F9AC075B91380474DD7A643042BC8",
+  "owning_roles": [
+    "primary assistant"
+  ],
+  "scope": [
+    "Freeze canonical PEI v0 request, proof and overcomplete two-edge journey codecs with SHA-256 and Base64URL golden vectors.",
+    "Implement a fresh verifier against a narrow chain-adapter contract with valid, invalid and inconclusive outcomes.",
+    "Feed a valid verifier result into the durable WP-022B admission issuer without a public browser or live-chain route."
+  ],
+  "non_goals": [
+    "No helper Mini App, browser/deep-link journey, public verifier endpoint, live RPC, real NIM transaction, carrier ablation, payout activation or new art."
+  ],
+  "planned_checks": [
+    "npm.cmd run test:pei",
+    "Primary direct review"
+  ],
+  "deterministic_seeds": [
+    "Fixed 32-byte nonces, UTC seconds, transaction hashes, chain records and canonical golden-vector bytes"
+  ],
+  "sorcerers_reference_used": false,
+  "clean_room_records": [],
+  "check_results": [
+    {
+      "command": "npm.cmd run test:pei",
+      "status": "pass",
+      "details": "The complete PEI family passed 20/20 in the final selected checks phase. It retains canonical golden vectors, request/proof/journey decoding limits, request commitments, parent binding, valid/invalid/inconclusive verifier outcomes, pending/finality behavior, replay refusal, stateless chain reconstruction and admission issuance. Log .cache/wp022e-selector-checks-3.log."
+    },
+    {
+      "command": "Primary direct review",
+      "status": "pass",
+      "details": "Primary reviewed canonical key order and Base64URL bounds, 43-byte SHA-256 request commitments, complete proof reconstruction from fresh chain observations, exact addresses/network/value/data/execution/finality checks, ordered parent binding and the separation between historical proof and short-lived Daily admission."
+    }
+  ],
+  "reviews": [
+    {
+      "reviewer": "Primary single-owner assistant",
+      "role": "primary_direct_review",
+      "decision": "pass",
+      "details": "The overcomplete v0 baseline and verifier are complete. Product work and direct review remained primary-owned; test execution was delegated only to /root/verification."
+    }
+  ],
+  "skipped_checks": [
+    "No physical-phone gate applies to the codec and verifier-only boundary; the real journey belongs to Phone Gate B.",
+    "No carrier-content ablation was run because the operational end-to-end journey has priority."
+  ],
+  "residual_risks": [
+    "Synthetic verifier coverage does not establish the public RPC or real Nimiq Pay journey; those are bounded by WP-022E and Phone Gate B."
+  ]
+}

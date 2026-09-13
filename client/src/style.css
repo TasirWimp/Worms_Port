@@ -427,6 +427,143 @@ input {
     pointer-events: none;
 }
 
+.combat-v8 .v8-extra {
+    position: absolute;
+    pointer-events: auto;
+    min-width: 48px;
+    min-height: 48px;
+    padding: 4px;
+    color: #1f2348;
+    background: rgb(255 255 255 / 92%);
+    border: 2px solid #5f4b8b;
+    border-radius: 14px;
+    font-weight: 800;
+    touch-action: none;
+}
+
+.combat-v8 .v8-extra:disabled { opacity: 0.45; }
+
+.combat-v9 .v9-resource-readout {
+    position: absolute;
+    z-index: 6;
+    top: calc(max(8px, var(--safe-area-top)) + 34px);
+    left: 50%;
+    display: flex;
+    gap: 0.5rem;
+    transform: translateX(-50%);
+    color: #1f2348;
+    font-size: 0.68rem;
+    font-weight: 800;
+    pointer-events: none;
+}
+.combat-v9 .v9-actions { display: grid; grid-template-columns: repeat(3, minmax(48px, 1fr)); gap: 0.3rem; }
+.combat-v9 .v9-actions button { min-width: 48px; min-height: 48px; padding: 0.2rem; font-size: 0.66rem; touch-action: manipulation; }
+.combat-v9 .v9-guard, .combat-v9 .v9-leap { background: #e9b213; color: #1f2348; font-weight: 800; }
+.combat-v9 .combat-status { pointer-events: none; }
+.combat-v9 .combat-actions,
+.combat-v9[data-orientation='landscape'] .combat-actions { grid-template-columns: repeat(3, minmax(48px, 1fr)); grid-template-rows: repeat(3, 48px); pointer-events: auto; }
+.combat-v9 .combat-actions > button { min-width: 48px; min-height: 48px; pointer-events: auto; }
+
+/* Must follow the generic late two-column action override: V9 has nine core controls. */
+.combat-v9 .combat-actions,
+.combat-v9[data-orientation='landscape'] .combat-actions { grid-template-columns: repeat(3, minmax(48px, 1fr)) !important; grid-template-rows: repeat(3, 48px) !important; }
+
+.combat-v8-r1 .pad-side {
+    position: absolute;
+    top: 18%;
+    width: calc(50% - 8px);
+    text-align: center;
+    color: #1f2348;
+    font-weight: 800;
+    pointer-events: none;
+}
+.combat-v8-r1 .pad-side-left { left: 0; }
+.combat-v8-r1 .pad-side-right { right: 0; }
+.combat-v8-r1 .pad-side small { display: block; font-size: 0.58rem; }
+.combat-v8-r1 .movement-zone.is-active .pad-side { visibility: hidden; }
+.combat-v8-r1 .movement-zone .pad-label { white-space: normal; text-align: center; }
+
+/* V8 uses a plain label, not the legacy icon/text/caret grid. */
+.combat-v8 .combat-actions .relic-trigger {
+    display: block;
+    padding: 0.2rem 0.1rem;
+    white-space: normal;
+    overflow-wrap: anywhere;
+    line-height: 1.15;
+}
+
+.combat-v8[data-orientation='portrait'] .combat-message {
+    top: calc(max(8px, var(--safe-area-top)) + 52px);
+    bottom: auto;
+}
+
+.combat-unit-status[hidden] {
+    display: none;
+}
+
+.combat-camera-hint {
+    position: absolute;
+    z-index: 4;
+    top: 21%;
+    left: 50%;
+    max-width: min(64vw, 280px);
+    padding: 0.35rem 0.6rem;
+    color: #1f2348;
+    font-size: clamp(0.58rem, 1.8vw, 0.75rem);
+    font-weight: 800;
+    line-height: 1.15;
+    text-align: center;
+    background: rgb(238 247 247 / 90%);
+    border: 1px solid rgb(31 35 72 / 48%);
+    border-radius: 999px;
+    box-shadow: 0 2px 8px rgb(31 35 72 / 18%);
+    transform: translateX(-50%);
+    pointer-events: none;
+}
+
+.camera-focus-button {
+    position: absolute;
+    z-index: 10;
+    top: 45%;
+    min-width: 48px;
+    min-height: 48px;
+    max-width: min(38%, 152px);
+    padding: 0.35rem 0.5rem;
+    color: #fff;
+    font-size: clamp(0.58rem, 1.8vw, 0.72rem);
+    font-weight: 900;
+    line-height: 1.15;
+    background: rgb(31 35 72 / 94%);
+    border: 2px solid #e9b213;
+    border-radius: 12px;
+    box-shadow: 0 4px 12px rgb(31 35 72 / 34%);
+    transform: translateY(-50%);
+    pointer-events: auto;
+    touch-action: manipulation;
+}
+
+.camera-focus-button[data-side='left'] {
+    left: max(8px, var(--safe-area-left));
+    text-align: left;
+}
+
+.camera-focus-button[data-side='right'] {
+    right: max(8px, var(--safe-area-right));
+    text-align: right;
+}
+
+/* Legacy V8 has a separate Jump/Face row above its pads. Keep off-screen
+   navigation above that row in compact landscape so both remain tappable. */
+.combat-v8:not(.combat-v8-r1)[data-orientation='landscape'] .camera-focus-button {
+    top: calc(max(8px, var(--safe-area-top)) + 78px);
+}
+
+.camera-focus-button[hidden],
+.combat-ui[data-suspended='true'] .camera-focus-button,
+.combat-v8[data-presentation='unravel'] .camera-focus-button {
+    display: none;
+}
+
 .unit-status-name {
     overflow: hidden;
     font-weight: 800;
@@ -635,6 +772,16 @@ input {
     text-overflow: ellipsis;
 }
 
+.relic-chooser .relic-role {
+    display: block;
+    margin-top: 1px;
+    color: #fff7ce;
+    font-size: 0.4rem;
+    font-weight: 800;
+    line-height: 1;
+    white-space: nowrap;
+}
+
 .combat-actions .fire-button:disabled {
     opacity: 0.42;
 }
@@ -664,6 +811,94 @@ input {
     padding: 0.8rem 1rem;
     border: 2px solid #e9b213;
     transform: translate(-50%, -50%);
+}
+
+/* V9C keeps its compact hierarchy on a phone: Actions expands context; Use is
+ * the only committing red target. Pause is separately placed from pauseZone. */
+.combat-v9 .combat-actions,
+.combat-v9[data-orientation='landscape'] .combat-actions {
+    display: grid !important;
+    grid-template-columns: minmax(56px, 1fr) 56px !important;
+    grid-template-rows: 56px !important;
+    gap: 4px;
+    overflow: visible;
+    z-index: 14;
+}
+
+.combat-v9 .v9-actions-button {
+    color: #1f2348;
+    font-weight: 900;
+    background: #e9b213;
+    border: 2px solid #fff;
+}
+
+.combat-v9 .fire-button {
+    color: #fff;
+    font-weight: 900;
+    background: #d94432;
+    border: 2px solid #fff;
+}
+
+.combat-v9 .v9-action-menu {
+    position: absolute;
+    z-index: 20;
+    right: 0;
+    bottom: calc(100% + 4px);
+    display: grid;
+    grid-template-columns: repeat(2, minmax(72px, 1fr));
+    gap: 4px;
+    width: min(260px, 100%);
+    padding: 4px;
+    background: rgb(31 35 72 / 94%);
+    border: 2px solid #e9b213;
+    border-radius: 12px;
+    box-shadow: 0 4px 12px rgb(31 35 72 / 35%);
+}
+
+.combat-v9 .v9-action-menu[hidden] { display: none; }
+.combat-v9 .v9-action-menu button { min-width: 48px; min-height: 48px; padding: 0.2rem; font-size: 0.62rem; font-weight: 800; pointer-events: auto; }
+.combat-v9 .v9-attack { background: #e9b213; color: #1f2348; }
+.combat-v9 .v9-defense, .combat-v9 .v9-choice { background: #0582ca; color: #fff; }
+.combat-v9 .v9-guard, .combat-v9 .v9-leap { background: #5f4b8b; }
+
+.combat-v9 .pause-button { z-index: 12; }
+.combat-v9 .combat-unit-status {
+    position: absolute;
+    z-index: 7;
+    display: grid;
+    grid-template-columns: auto minmax(0, 1fr);
+    align-items: center;
+    min-height: 32px;
+    padding: 0.24rem 0.35rem;
+    color: #fff;
+    font-size: clamp(0.5rem, 1.7vw, 0.66rem);
+    line-height: 1;
+    text-align: center;
+    background: rgb(31 35 72 / 91%);
+    border: 1px solid rgb(255 255 255 / 72%);
+    border-radius: 8px;
+    pointer-events: none;
+}
+
+/* This selector follows the V9 placement rule above, so it must retain the
+ * native hidden contract instead of leaving an off-screen hit rectangle. */
+.combat-v9 .combat-unit-status[hidden] { display: none; }
+
+.combat-v9 .player-status { border-color: #e9b213; }
+.combat-v9 .loomkeeper-status { border-color: #fa7268; }
+.combat-v9 .unit-status-name { max-width: 2.3rem; font-size: 0.52rem; }
+.combat-v9 .unit-status-value { min-width: 0; overflow: hidden; color: #fff; font-size: clamp(0.38rem, 1vw, 0.5rem); letter-spacing: -0.04em; text-overflow: ellipsis; white-space: nowrap; }
+.combat-v9 .combat-message { top: calc(max(8px, var(--safe-area-top)) + 52px); bottom: auto; }
+.combat-v9 .v9-pause-sheet { z-index: 13; }
+.combat-v9 .v9-reenter { min-width: 48px; min-height: 48px; margin-top: 0.4rem; }
+
+/* Terminal suspension must not cover the approved defeat animation. */
+.combat-v8[data-presentation='unravel'] .combat-message {
+    top: calc(max(8px, var(--safe-area-top)) + 52px);
+    bottom: auto;
+    padding: 0.45rem 0.7rem;
+    border: 0;
+    transform: translateX(-50%);
 }
 
 .combat-pause-sheet {
@@ -726,7 +961,8 @@ input {
 @media (prefers-reduced-motion: reduce) {
     .combat-touch-zone,
     .combat-actions,
-    .unit-status-track span {
+    .unit-status-track span,
+    .camera-focus-button {
         transition: none;
     }
 }
@@ -1021,6 +1257,7 @@ button:disabled {
 .calling-picker button,
 .practice-start,
 .daily-check,
+.pei-start,
 .daily-start,
 .result-card button {
     min-height: 52px;
@@ -1062,6 +1299,14 @@ button:disabled {
 .daily-check {
     width: 100%;
     margin-bottom: 0.55rem;
+}
+
+.pei-start {
+    width: 100%;
+    margin-bottom: 0.55rem;
+    color: #fff !important;
+    background: #5f4b8b !important;
+    border-color: #e9b213 !important;
 }
 
 .daily-message {
@@ -1185,6 +1430,25 @@ button:disabled {
 .reward-result h2,
 .reward-result p {
     margin: 0 0 0.55rem;
+}
+
+.reward-transaction {
+    padding: 0.55rem;
+    background: #ffffff;
+    border-radius: 8px;
+}
+
+.reward-transaction strong,
+.reward-transaction code {
+    display: block;
+}
+
+.reward-transaction code {
+    margin-top: 0.3rem;
+    overflow-wrap: anywhere;
+    font-size: 0.72rem;
+    line-height: 1.35;
+    user-select: text;
 }
 
 .reward-claim,

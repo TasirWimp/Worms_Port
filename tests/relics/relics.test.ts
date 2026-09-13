@@ -7,12 +7,23 @@ import {
     canonicalSimulationJson,
     createLatestSimulation,
     createSimulation,
+    DIRECT_PROJECTILE_HITBOXES,
     deformTerrain,
     LEGACY_RULESET_ID,
     LATEST_RULESET_ID,
+    launchSpeedRulesFor,
     RELIC_IDS,
     RELIC_RULES,
+    relicRulesFor,
     SIM_RULES,
+    V2_RULESET_ID,
+    V3_RULESET_ID,
+    V4_RULESET_ID,
+    V5_LAUNCH_SPEED_RULES,
+    V5_RELIC_RULES,
+    V5_RULESET_ID,
+    V6_RULESET_ID,
+    V7_RULESET_ID,
     type RelicId,
     type SimulationActor,
     type SimulationState
@@ -60,7 +71,7 @@ function populationCount(input: number): number {
     return (((value + (value >>> 4)) & 0x0F0F0F0F) * 0x01010101) >>> 24;
 }
 
-test('v2 freezes three distinct Relic constants and strict snapshot identity', () => {
+test('V7 defaults new challenges while preserving V5 balance and strict snapshot identity', () => {
     assert.deepEqual(RELIC_IDS, ['threadball', 'needlepoint', 'spoolburst']);
     assert.deepEqual(RELIC_RULES, {
         threadball: { craterRadius: 40, damageRadius: 64, maximumDamage: 70 },
@@ -68,13 +79,46 @@ test('v2 freezes three distinct Relic constants and strict snapshot identity', (
         spoolburst: { craterRadius: 64, damageRadius: 88, maximumDamage: 45 }
     });
     const state = createLatestSimulation(1, 'wizard');
-    assert.equal(state.formatVersion, 2);
+    assert.deepEqual(V5_RELIC_RULES, {
+        threadball: { craterRadius: 40, damageRadius: 64, maximumDamage: 45 },
+        needlepoint: { craterRadius: 40, damageRadius: 64, maximumDamage: 30 },
+        spoolburst: { craterRadius: 40, damageRadius: 64, maximumDamage: 80 }
+    });
+    assert.equal(LATEST_RULESET_ID, V7_RULESET_ID);
+    assert.equal(state.formatVersion, 7);
     assert.equal(state.rulesetId, LATEST_RULESET_ID);
-    assert.equal(state.rulesetVersion, 2);
+    assert.equal(state.rulesetVersion, 7);
+    for (const relicId of RELIC_IDS) {
+        assert.deepEqual(relicRulesFor(V7_RULESET_ID, relicId), V5_RELIC_RULES[relicId]);
+        assert.deepEqual(relicRulesFor(V6_RULESET_ID, relicId), V5_RELIC_RULES[relicId]);
+        assert.deepEqual(launchSpeedRulesFor(V7_RULESET_ID, relicId), V5_LAUNCH_SPEED_RULES[relicId]);
+        assert.deepEqual(launchSpeedRulesFor(V6_RULESET_ID, relicId), V5_LAUNCH_SPEED_RULES[relicId]);
+    }
+    assert.deepEqual(DIRECT_PROJECTILE_HITBOXES[LATEST_RULESET_ID], {
+        halfWidth: 32,
+        top: 85,
+        bottom: 13
+    });
     assert.equal(SimulationSnapshotSchema.safeParse(state).success, true);
     assert.equal(SimulationSnapshotSchema.safeParse({
         ...state, rulesetId: LEGACY_RULESET_ID
     }).success, false);
+});
+
+test('V3 registers a visible upper-body direct hit without changing the v2 result', () => {
+    const fireAtVisibleUpperBody = (rulesetId: typeof V2_RULESET_ID | typeof V3_RULESET_ID) => {
+        const state = createSimulation(0xC0FFEE11, 'wizard', rulesetId);
+        state.units[1].x = 528;
+        state.units[1].y = 257;
+        return fire(state, 'player', 'threadball');
+    };
+
+    const v2 = fireAtVisibleUpperBody(V2_RULESET_ID);
+    const v3 = fireAtVisibleUpperBody(V3_RULESET_ID);
+    assert.notEqual(v2.state.lastProjectile?.impact, 'loomkeeper');
+    assert.equal(v2.state.units[1].stitching, 100);
+    assert.equal(v3.state.lastProjectile?.impact, 'loomkeeper');
+    assert.equal(v3.state.units[1].stitching, 30);
 });
 
 test('v1 hashes and Threadball behavior remain compatible and reject v2 Relics', () => {
@@ -100,7 +144,7 @@ test('v1 hashes and Threadball behavior remain compatible and reject v2 Relics',
 test('Needlepoint rewards direct precision while Spoolburst removes the most terrain', () => {
     const directDamage = new Map<RelicId, number>();
     for (const relicId of RELIC_IDS) {
-        const state = createLatestSimulation(0xC0FFEE11, 'wizard');
+        const state = createSimulation(0xC0FFEE11, 'wizard', V2_RULESET_ID);
         state.units[1].x = 814;
         state.units[1].y = 304;
         const result = fire(state, 'player', relicId);
@@ -113,11 +157,29 @@ test('Needlepoint rewards direct precision while Spoolburst removes the most ter
 
     const remainingTerrain = new Map<RelicId, number>();
     for (const relicId of RELIC_IDS) {
-        const result = fire(createLatestSimulation(0xC0FFEE11, 'wizard'), 'player', relicId);
+        const result = fire(
+            createSimulation(0xC0FFEE11, 'wizard', V2_RULESET_ID),
+            'player',
+            relicId
+        );
         remainingTerrain.set(relicId, solidCells(result.state));
     }
     assert.equal(remainingTerrain.get('spoolburst')! < remainingTerrain.get('threadball')!, true);
     assert.equal(remainingTerrain.get('threadball')! < remainingTerrain.get('needlepoint')!, true);
+});
+
+test('V7 Needlepoint direct hits use the inherited V5 maximum damage', () => {
+    const source = createSimulation(1, 'wizard', V7_RULESET_ID);
+    const initialStitching = source.units[1].stitching;
+    const result = fire(source, 'player', 'needlepoint', 33_000, 1_000);
+
+    assert.equal(result.accepted, true);
+    assert.equal(result.state.lastProjectile?.impact, 'loomkeeper');
+    assert.equal(
+        initialStitching - result.state.units[1].stitching,
+        V5_RELIC_RULES.needlepoint.maximumDamage
+    );
+    assert.equal(result.state.units[1].stitching, 70);
 });
 
 test('player and Loomkeeper have identical legal selection and effect rules', () => {
@@ -164,13 +226,17 @@ test('all Relics are deterministic and bounded over the evidence seed corpus', (
 
 test('every Relic crater radius clips safely and remains idempotent at world edges', () => {
     for (const relicId of RELIC_IDS) {
-        for (const [x, y] of [[0, 0], [1023, 0], [0, 575], [1023, 575]] as const) {
+        const state = createLatestSimulation(1, 'wizard');
+        const worldWidth = state.terrain.width * state.terrain.cellSize;
+        const worldHeight = state.terrain.height * state.terrain.cellSize;
+        for (const [x, y] of [[0, 0], [worldWidth - 1, 0], [0, worldHeight - 1], [worldWidth - 1, worldHeight - 1]] as const) {
             const state = createLatestSimulation(1, 'wizard');
-            deformTerrain(state.terrain, x, y, RELIC_RULES[relicId].craterRadius);
+            const craterRadius = relicRulesFor(state.rulesetId, relicId).craterRadius;
+            deformTerrain(state.terrain, x, y, craterRadius);
             const once = [...state.terrain.words];
-            deformTerrain(state.terrain, x, y, RELIC_RULES[relicId].craterRadius);
+            deformTerrain(state.terrain, x, y, craterRadius);
             assert.deepEqual(state.terrain.words, once, `${relicId}/${x},${y}`);
-            assert.equal(state.terrain.words.length, 288);
+            assert.equal(state.terrain.words.length, 576);
             assert.equal(state.terrain.words.every(
                 (word) => Number.isSafeInteger(word) && word >= 0 && word <= 0xFFFFFFFF
             ), true);
@@ -178,17 +244,42 @@ test('every Relic crater radius clips safely and remains idempotent at world edg
     }
 });
 
-test('replays carry v2 explicitly and legacy records without ruleset metadata reconstruct as v1', () => {
+test('replays carry V7 by default and preserve explicit V6 through V1 reconstruction', () => {
     const current = new SimulationCoordinator();
     try {
-        const created = current.create('v2-challenge', 'v2-session', 1, 'wizard');
-        current.apply('v2-challenge', 'player', {
+        const created = current.create('v7-challenge', 'v7-session', 1, 'wizard');
+        current.apply('v7-challenge', 'player', {
             type: 'select_relic', relicId: 'spoolburst'
         }, 0);
-        const replay = current.replay('v2-challenge')!;
+        const replay = current.replay('v7-challenge')!;
         assert.equal(replay.rulesetId, LATEST_RULESET_ID);
-        assert.equal(current.reconstructAndVerify(replay).stateHash, current.get('v2-challenge')!.stateHash);
+        assert.equal(current.reconstructAndVerify(replay).stateHash, current.get('v7-challenge')!.stateHash);
         assert.equal(created.state.rulesetId, LATEST_RULESET_ID);
+
+        const v6 = current.create('v6-challenge', 'v6-session', 6, 'wizard', V6_RULESET_ID);
+        const v6Replay = current.replay('v6-challenge')!;
+        assert.equal(v6Replay.rulesetId, V6_RULESET_ID);
+        assert.equal(current.reconstructAndVerify(v6Replay).stateHash, v6.stateHash);
+
+        const v5 = current.create('v5-challenge', 'v5-session', 5, 'wizard', V5_RULESET_ID);
+        const v5Replay = current.replay('v5-challenge')!;
+        assert.equal(v5Replay.rulesetId, V5_RULESET_ID);
+        assert.equal(current.reconstructAndVerify(v5Replay).stateHash, v5.stateHash);
+
+        const v4 = current.create('v4-challenge', 'v4-session', 4, 'wizard', V4_RULESET_ID);
+        const v4Replay = current.replay('v4-challenge')!;
+        assert.equal(v4Replay.rulesetId, V4_RULESET_ID);
+        assert.equal(current.reconstructAndVerify(v4Replay).stateHash, v4.stateHash);
+
+        const v3 = current.create('v3-challenge', 'v3-session', 3, 'wizard', V3_RULESET_ID);
+        const v3Replay = current.replay('v3-challenge')!;
+        assert.equal(v3Replay.rulesetId, V3_RULESET_ID);
+        assert.equal(current.reconstructAndVerify(v3Replay).stateHash, v3.stateHash);
+
+        const v2 = current.create('v2-challenge', 'v2-session', 2, 'wizard', V2_RULESET_ID);
+        const v2Replay = current.replay('v2-challenge')!;
+        assert.equal(v2Replay.rulesetId, V2_RULESET_ID);
+        assert.equal(current.reconstructAndVerify(v2Replay).stateHash, v2.stateHash);
     } finally {
         current.dispose();
     }
@@ -213,7 +304,7 @@ test('replays carry v2 explicitly and legacy records without ruleset metadata re
 test('v2 turn-limit draw golden reconstructs exactly', () => {
     const coordinator = new SimulationCoordinator();
     try {
-        coordinator.create('draw-v2', 'draw-session', 0xC0FFEE11, 'wizard');
+        coordinator.create('draw-v2', 'draw-session', 0xC0FFEE11, 'wizard', V2_RULESET_ID);
         const terminal = coordinator.advance(
             'draw-v2',
             SIM_RULES.turnTicks * SIM_RULES.maximumTurns

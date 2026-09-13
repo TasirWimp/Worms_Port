@@ -1,0 +1,10 @@
+{
+  "schema_version": 1,
+  "id": "wp-015d4e-distant-jungle-v1",
+  "work_package": "WP-015D4E",
+  "source": {"default_external_path":"C:/Users/jensb/AppData/Local/Comfy-Desktop/ComfyUI-Shared/output/WormsPortFlux2KleinReferenceEdit_00008_.png","sha256":"B3AC79151D180F4439E82BD8EB9113734601084CE2780A2C56B4AA62CC09EBA1","bytes":841296,"width":1360,"height":768,"channels":3},
+  "matte": {"background_rgb":[255,255,255],"hard_foreground_threshold":24,"soft_edge_low_threshold":3,"soft_edge_high_threshold":16,"soft_edge_radius_pixels":2,"component_connectivity":8,"enclosed_holes":"fill_enclosed_white_matte_only","expected_hard_bounds":{"min_x":64,"min_y":239,"max_x":1318,"max_y":571},"contact_shadow":{"first_discarded_source_y":564,"operation":"discard_all_alpha_in_and_below_fixed_source_row"}},
+  "geometry": {"source_landmarks":{"baseline_center":[691,563]},"master":{"canvas":[1024,576],"uniform_scale_numerator":3,"uniform_scale_denominator":5,"translation":[97.4,190.2],"placement_anchor":[512,528],"motion_safe":{"min_x":120,"max_x":910,"min_y":300,"max_y":540}}},
+  "resampling": {"filter":"Mitchell-Netravali bicubic","b":0.3333333333333333,"c":0.3333333333333333,"sampling":"pixel-center inverse mapping","alpha":"premultiplied during filtering, straight RGBA in PNG","png":"8-bit non-interlaced RGBA, filter type 0, deterministic zlib level 9"},
+  "outputs": {"master":"distant-jungle-source-master-v1.png","approved_master_path":"assets/masters/environment/backgrounds/volcanic-ruin/distant-jungle-source-master-v1.png"}
+}

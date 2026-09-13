@@ -2,6 +2,10 @@
 node_modules/
 npm-debug.log*
 
+# Python analytical-tool caches
+__pycache__/
+*.py[cod]
+
 # parcel
 .cache/
 client/dist/
@@ -14,6 +18,9 @@ test-results/
 playwright-report/
 blob-report/
 .playwright-cache/
+
+# local rollback archives; never use the disposable browser-test output home
+.local-artifacts/rollback/
 
 # local-only upstream review material
 .quarantine/

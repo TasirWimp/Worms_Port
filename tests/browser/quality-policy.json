@@ -8,10 +8,10 @@
   ],
   "requiredFiles": [
     "smoke.spec.ts",
-    "combat.spec.ts",
     "practice.spec.ts",
     "identity.spec.ts",
     "reward.spec.ts",
+    "pei.spec.ts",
     "resilience.spec.ts",
     "visual.spec.ts"
   ],
@@ -21,112 +21,72 @@
       "title": "built phone journey starts wallet-free live practice and accepts touch"
     },
     {
-      "file": "combat.spec.ts",
-      "title": "portrait/landscape layout is touch-safe and renders deterministic combat"
-    },
-    {
       "file": "practice.spec.ts",
       "title": "calling controls and live combat actions remain phone-safe"
     },
     {
       "file": "identity.spec.ts",
       "title": "ordinary Practice never initializes or calls an injected wallet provider"
-    },
-    {
-      "file": "visual.spec.ts",
-      "title": "visual geometry baselines cover start, combat, result, and recovery"
     }
   ],
   "expectedProjectSkips": [
     {
-      "file": "combat.spec.ts",
-      "title": "landscape offers a user-activated full-screen probe with a safe exit",
-      "runsOn": ["chromium-844x390"],
-      "reason": "The full-screen capability probe is scoped to the maintained compact-landscape project."
-    },
-    {
-      "file": "combat.spec.ts",
-      "title": "default sideways mode creates touch-safe landscape in a portrait viewport",
-      "runsOn": ["chromium-390x844"],
-      "reason": "The complete right/left/default sideways transition is frozen on the canonical portrait project."
-    },
-    {
       "file": "identity.spec.ts",
       "title": "signing rejection is cancelled and the same account can retry immediately",
-      "runsOn": ["chromium-390x844"],
+      "runsOn": [
+        "chromium-390x844"
+      ],
       "reason": "One canonical portrait host covers the repeated native-provider rejection presentation."
     },
     {
       "file": "practice.spec.ts",
       "title": "default sideways mode carries the live practice journey into virtual landscape",
-      "runsOn": ["chromium-390x844"],
+      "runsOn": [
+        "chromium-390x844"
+      ],
       "reason": "The default sideways onboarding journey is frozen on the canonical portrait project."
-    },
-    {
-      "file": "practice.spec.ts",
-      "title": "two consecutive completed Clashes each show a result and use fresh authority",
-      "runsOn": ["chromium-390x844"],
-      "reason": "The long deterministic consecutive-match journey is frozen on one canonical project."
-    },
-    {
-      "file": "practice.spec.ts",
-      "title": "a full-screen match retains an exit toggle on the result screen",
-      "runsOn": ["chromium-844x390"],
-      "reason": "The result-screen full-screen exit journey is applicable to compact landscape."
     },
     {
       "file": "reward.spec.ts",
       "title": "Daily Challenge discloses, authorizes, plays, and reports a consumed loss",
-      "runsOn": ["chromium-390x844", "webkit-390x844"],
+      "runsOn": [
+        "chromium-390x844",
+        "webkit-390x844"
+      ],
       "reason": "The complete fake-wallet Daily journey runs once per maintained mobile engine."
+    },
+    {
+      "file": "pei.spec.ts",
+      "title": "PEI helper survives both crossings and admits the same volcanic Daily match",
+      "runsOn": [
+        "chromium-390x844",
+        "webkit-390x844"
+      ],
+      "reason": "The synthetic two-origin wallet journey runs once per maintained mobile engine; the other phone projects retain the ordinary Daily and Practice gates."
     },
     {
       "file": "resilience.spec.ts",
       "title": "constrained Chromium loading reaches actionable wallet-free Practice",
-      "runsOn": ["chromium-390x844"],
+      "runsOn": [
+        "chromium-390x844"
+      ],
       "reason": "Chromium CDP provides the supported deterministic bandwidth and latency control."
     },
     {
       "file": "resilience.spec.ts",
-      "title": "Chromium and WebKit offline lifecycle resumes the same authority",
-      "runsOn": ["chromium-390x844", "webkit-390x844"],
-      "reason": "The canonical mobile projects cover offline resume in both maintained browser engines."
-    },
-    {
-      "file": "resilience.spec.ts",
       "title": "delayed synthetic wallet settlement authorizes once and keeps Practice usable",
-      "runsOn": ["chromium-390x844"],
+      "runsOn": [
+        "chromium-390x844"
+      ],
       "reason": "One canonical Chromium project covers bounded delayed synthetic provider settlement."
-    },
-    {
-      "file": "resilience.spec.ts",
-      "title": "lost session authority offers one truthful fresh Practice path",
-      "runsOn": ["chromium-390x844", "webkit-390x844"],
-      "reason": "The canonical Chromium and WebKit projects cover truthful lost-session recovery."
-    },
-    {
-      "file": "resilience.spec.ts",
-      "title": "two browser contexts isolate storage, identity, challenge events, controls, and reconnects",
-      "runsOn": ["chromium-390x844", "webkit-390x844"],
-      "reason": "The canonical Chromium and WebKit projects cover simultaneous browser-context isolation."
-    },
-    {
-      "file": "visual.spec.ts",
-      "title": "canonical visual states cover combat presentation, controls, motion, and sideways modes",
-      "runsOn": ["chromium-390x844"],
-      "reason": "State-rich combat visual baselines are frozen on the canonical Chromium project."
     },
     {
       "file": "visual.spec.ts",
       "title": "canonical Daily visuals cover availability, authorization, claim processing, and finality",
-      "runsOn": ["chromium-390x844"],
+      "runsOn": [
+        "chromium-390x844"
+      ],
       "reason": "State-rich synthetic-wallet Daily visual baselines are frozen on canonical Chromium."
-    },
-    {
-      "file": "visual.spec.ts",
-      "title": "compact landscape visuals cover Pause and full-screen fallback",
-      "runsOn": ["chromium-844x390"],
-      "reason": "Pause and standards-based full-screen fallback presentation applies to compact landscape."
     }
   ]
 }

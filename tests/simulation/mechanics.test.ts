@@ -7,8 +7,276 @@ import {
     assertSimulationInvariants,
     canonicalSimulationJson,
     createSimulation,
-    SIM_RULES
+    createLatestSimulation,
+    evaluateV7OpeningPair,
+    generateV7TacticalArena,
+    selectV7OpeningPair,
+    SIM_RULES,
+    terrainSolid,
+    V7_OPENING_RULES,
+    V7_RULESET_ID,
+    V7_TERRAIN_PROFILE_IDS,
+    V5_RULESET_ID,
+    V6_RULESET_ID
 } from '../../shared/simulation';
+
+const V7_EVIDENCE_SEEDS = [
+    1,
+    0xC0FFEE11,
+    0xDEADBEEF,
+    3,
+    2
+] as const;
+
+test('V7 is deterministic, separately versioned, and terrain-derived', () => {
+    const first = createLatestSimulation(0xC0FFEE11, 'wizard');
+    const second = createLatestSimulation(0xC0FFEE11, 'wizard');
+    assert.equal(first.rulesetId, V7_RULESET_ID);
+    assert.equal(first.formatVersion, 7);
+    assert.deepEqual(
+        { width: first.terrain.width, height: first.terrain.height, cellSize: first.terrain.cellSize, words: first.terrain.words.length },
+        { width: 256, height: 72, cellSize: 8, words: 576 }
+    );
+    assert.equal(first.units[1].x - first.units[0].x, V7_OPENING_RULES.separation);
+    assert.equal(canonicalSimulationJson(first), canonicalSimulationJson(second));
+
+    const aimed = applySimulationCommand(first, 'player', {
+        type: 'aim', angleMilliDegrees: 45_000, powerPermille: 700
+    }, first.turn);
+    const turned = applySimulationCommand(
+        aimed.state,
+        'player',
+        { type: 'move', direction: 0 },
+        aimed.state.turn
+    );
+    assert.equal(turned.accepted, true);
+    assert.equal(turned.state.units[0].facing, -1);
+    assert.equal(turned.state.units[0].x, first.units[0].x);
+    assert.equal(turned.state.movementRemaining, first.movementRemaining);
+    assert.equal(turned.state.aim, null);
+
+    const openingPairs = new Set(V7_EVIDENCE_SEEDS.map((seed) =>
+        createSimulation(seed, 'wizard', V7_RULESET_ID).units.map((unit) => unit.x).join(':')
+    ));
+    assert.equal(openingPairs.size > 1, true, 'seed-derived openings must not collapse to one fixed pair');
+
+    const historical = createSimulation(0xC0FFEE11, 'wizard', 'nimble-knots-artillery-v3');
+    assert.deepEqual(
+        { width: historical.terrain.width, height: historical.terrain.height, cellSize: historical.terrain.cellSize, words: historical.terrain.words.length },
+        { width: 128, height: 72, cellSize: 8, words: 288 }
+    );
+    assert.deepEqual(historical.units.map((unit) => unit.x), [192, 832]);
+});
+
+test('V7 surface profiles are varied, surface-only, solid-below, and bounded', () => {
+    const profiles = new Set<string>();
+    const terrains = new Set<string>();
+    for (const seed of V7_EVIDENCE_SEEDS) {
+        const first = generateV7TacticalArena(seed);
+        const second = generateV7TacticalArena(seed);
+        assert.deepEqual(second, first, `seed=0x${seed.toString(16)}`);
+        profiles.add(first.profileId);
+        terrains.add(first.terrain.words.join(','));
+        assert.equal(first.evaluatedPairs <= first.terrain.width, true);
+        assert.equal(first.eligiblePairs > 0, true);
+
+        const surfaceRows = new Set<number>();
+        for (let x = 0; x < first.terrain.width; x += 1) {
+            let foundSurface = false;
+            for (let y = 0; y < first.terrain.height; y += 1) {
+                const solid = terrainSolid(first.terrain, x, y);
+                if (solid && !foundSurface) surfaceRows.add(y);
+                if (solid) foundSurface = true;
+                if (foundSurface) assert.equal(solid, true, `seed=${seed} column=${x} row=${y}`);
+            }
+            assert.equal(foundSurface, true, `seed=${seed} column=${x}`);
+        }
+        assert.equal(surfaceRows.size >= 4, true, `seed=${seed} visible relief`);
+    }
+    assert.deepEqual([...profiles].sort(), [...V7_TERRAIN_PROFILE_IDS].sort());
+    assert.equal(terrains.size >= V7_TERRAIN_PROFILE_IDS.length, true);
+});
+
+test('V7 opening pairs satisfy support, margins, local movement, route, height, and score parity', () => {
+    for (const seed of V7_EVIDENCE_SEEDS) {
+        const arena = generateV7TacticalArena(seed);
+        const pair = arena.opening;
+        const reversed = evaluateV7OpeningPair(
+            arena.terrain,
+            seed,
+            pair.rightX,
+            pair.leftX
+        );
+        assert.deepEqual(reversed, pair, `role-swap score seed=0x${seed.toString(16)}`);
+        assert.equal(pair.rightX - pair.leftX, V7_OPENING_RULES.separation);
+        assert.equal(Math.abs(pair.rightSurfaceY - pair.leftSurfaceY) <= V7_OPENING_RULES.maximumHeightDifference, true);
+        assert.equal(pair.leftX >= V7_OPENING_RULES.safeWorldMargin, true);
+        assert.equal(pair.rightX <= 2048 - V7_OPENING_RULES.safeWorldMargin, true);
+
+        const state = createSimulation(seed, 'wizard', V7_RULESET_ID);
+        for (const [index, actor] of ['player', 'loomkeeper'].entries()) {
+            assertBodyClearSupport(state, index);
+            const source = structuredClone(state);
+            source.activeActor = actor as 'player' | 'loomkeeper';
+            for (const direction of [-1, 1] as const) {
+                const moved = applySimulationCommand(
+                    source,
+                    actor as 'player' | 'loomkeeper',
+                    { type: 'move', direction },
+                    source.turn
+                );
+                assert.equal(moved.accepted, true, `seed=${seed} actor=${actor} direction=${direction}`);
+                assert.equal(
+                    moved.state.units[index].x,
+                    source.units[index].x + direction * SIM_RULES.movementStep
+                );
+            }
+        }
+
+        let previousY = surfaceAt(arena.terrain, pair.leftX);
+        for (let x = pair.leftX + SIM_RULES.movementStep; x <= pair.rightX; x += SIM_RULES.movementStep) {
+            const nextY = surfaceAt(arena.terrain, x);
+            assert.equal(Math.abs(nextY - previousY) <= SIM_RULES.maximumClimb, true,
+                `seed=${seed} route x=${x}`);
+            previousY = nextY;
+        }
+
+        const ranked = [];
+        const firstX = Math.ceil(V7_OPENING_RULES.safeWorldMargin / arena.terrain.cellSize) *
+            arena.terrain.cellSize;
+        const lastX = 2048 - V7_OPENING_RULES.safeWorldMargin - V7_OPENING_RULES.separation;
+        for (let leftX = firstX; leftX <= lastX; leftX += arena.terrain.cellSize) {
+            try {
+                ranked.push(evaluateV7OpeningPair(
+                    arena.terrain,
+                    seed,
+                    leftX,
+                    leftX + V7_OPENING_RULES.separation
+                ));
+            } catch {
+                // Invalid geometry is deliberately excluded before scoring.
+            }
+        }
+        ranked.sort(compareOpeningRank);
+        assert.deepEqual(ranked[0], pair, `score priority seed=0x${seed.toString(16)}`);
+    }
+});
+
+test('V7 opening selection fails closed when no supported pair exists', () => {
+    const arena = generateV7TacticalArena(1);
+    const empty = { ...arena.terrain, words: arena.terrain.words.map(() => 0) };
+    assert.throws(
+        () => selectV7OpeningPair(empty, 1),
+        /no valid opening pair/i
+    );
+});
+
+function assertBodyClearSupport(
+    state: ReturnType<typeof createSimulation>,
+    unitIndex: number
+): void {
+    const unit = state.units[unitIndex];
+    const terrain = state.terrain;
+    const supportY = unit.y + SIM_RULES.actorRadius;
+    assert.equal(
+        terrainSolid(
+            terrain,
+            Math.trunc(unit.x / terrain.cellSize),
+            Math.trunc(supportY / terrain.cellSize)
+        ),
+        true
+    );
+    const leftColumn = Math.trunc((unit.x - SIM_RULES.actorRadius) / terrain.cellSize);
+    const rightColumn = Math.trunc((unit.x + SIM_RULES.actorRadius - 1) / terrain.cellSize);
+    const topRow = Math.trunc((unit.y - SIM_RULES.actorRadius) / terrain.cellSize);
+    const bottomRow = Math.trunc((supportY - 1) / terrain.cellSize);
+    for (let x = leftColumn; x <= rightColumn; x += 1) {
+        for (let y = topRow; y <= bottomRow; y += 1) {
+            assert.equal(terrainSolid(terrain, x, y), false, `body cell ${x},${y}`);
+        }
+    }
+}
+
+function compareOpeningRank(
+    first: ReturnType<typeof evaluateV7OpeningPair>,
+    second: ReturnType<typeof evaluateV7OpeningPair>
+): number {
+    return first.score.heightBias - second.score.heightBias ||
+        second.score.combinedLocalMobility - first.score.combinedLocalMobility ||
+        first.score.centerBias - second.score.centerBias ||
+        first.score.tieBreak - second.score.tieBreak ||
+        first.leftX - second.leftX;
+}
+
+function surfaceAt(terrain: ReturnType<typeof generateV7TacticalArena>['terrain'], worldX: number): number {
+    const column = Math.trunc(worldX / terrain.cellSize);
+    for (let y = 0; y < terrain.height; y += 1) {
+        if (terrainSolid(terrain, column, y)) return y * terrain.cellSize;
+    }
+    throw new Error(`No surface at ${worldX}.`);
+}
+
+test('V6 turns in place for free before opposite movement and clears locked aim', () => {
+    let state = createSimulation(0xC0FFEE11, 'wizard', V6_RULESET_ID);
+    state = applySimulationCommand(state, 'player', {
+        type: 'aim', angleMilliDegrees: 45_000, powerPermille: 700
+    }, 0).state;
+    const beforeX = state.units[0].x;
+    const beforeY = state.units[0].y;
+    const beforeBudget = state.movementRemaining;
+
+    const turned = applySimulationCommand(state, 'player', { type: 'move', direction: 0 }, 0);
+    assert.equal(turned.accepted, true);
+    assert.equal(turned.state.units[0].facing, -1);
+    assert.equal(turned.state.units[0].x, beforeX);
+    assert.equal(turned.state.units[0].y, beforeY);
+    assert.equal(turned.state.movementRemaining, beforeBudget);
+    assert.equal(turned.state.aim, null);
+    assert.deepEqual(turned.events, [{ type: 'turned', actor: 'player', facing: -1 }]);
+
+    const reaimed = applySimulationCommand(turned.state, 'player', {
+        type: 'aim', angleMilliDegrees: 30_000, powerPermille: 500
+    }, 0);
+    const moved = applySimulationCommand(
+        reaimed.state,
+        'player',
+        { type: 'move', direction: -1 },
+        0
+    );
+    assert.equal(moved.accepted, true);
+    assert.equal(moved.state.units[0].x, beforeX - SIM_RULES.movementStep);
+    assert.equal(moved.state.movementRemaining, beforeBudget - SIM_RULES.movementStep);
+    assert.equal(moved.state.units[0].facing, -1);
+    assert.equal(moved.state.aim, null);
+
+    const exhausted = createSimulation(1, 'wizard', V6_RULESET_ID);
+    exhausted.movementRemaining = 0;
+    const exhaustedTurn = applySimulationCommand(
+        exhausted,
+        'player',
+        { type: 'move', direction: 0 },
+        0
+    );
+    assert.equal(exhaustedTurn.accepted, true);
+    assert.equal(exhaustedTurn.state.units[0].facing, -1);
+    assert.equal(exhaustedTurn.state.movementRemaining, 0);
+
+    const historicalV5 = createSimulation(0xC0FFEE11, 'wizard', V5_RULESET_ID);
+    const historicalNeutral = applySimulationCommand(
+        historicalV5,
+        'player',
+        { type: 'move', direction: 0 },
+        0
+    );
+    assert.equal(historicalNeutral.state.units[0].facing, 1);
+    assert.equal(historicalNeutral.state.units[0].x, historicalV5.units[0].x);
+    assert.deepEqual(historicalNeutral.events, [{
+        type: 'moved',
+        actor: 'player',
+        x: historicalV5.units[0].x,
+        y: historicalNeutral.state.units[0].y
+    }]);
+});
 
 test('move, aim, and fire form an authoritative fixed-turn transition', () => {
     const initial = createSimulation(0xC0FFEE11, 'wizard');

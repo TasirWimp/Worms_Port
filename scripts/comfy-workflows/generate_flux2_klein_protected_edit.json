@@ -1,0 +1,337 @@
+{
+  "1": {
+    "inputs": {
+      "unet_name": "flux-2-klein-4b-fp8.safetensors",
+      "weight_dtype": "default"
+    },
+    "class_type": "UNETLoader",
+    "_meta": {
+      "title": "Reviewed FLUX.2 Klein 4B FP8 model"
+    }
+  },
+  "2": {
+    "inputs": {
+      "clip_name": "qwen_3_4b_bfl_apache.safetensors",
+      "type": "flux2",
+      "device": "default"
+    },
+    "class_type": "CLIPLoader",
+    "_meta": {
+      "title": "Reviewed BFL Qwen3 text encoder"
+    }
+  },
+  "3": {
+    "inputs": {
+      "vae_name": "flux2-vae.safetensors"
+    },
+    "class_type": "VAELoader",
+    "_meta": {
+      "title": "Reviewed FLUX.2 VAE"
+    }
+  },
+  "4": {
+    "inputs": {
+      "image": "PARAM_STR_REFERENCE_IMAGE"
+    },
+    "class_type": "LoadImage",
+    "_meta": {
+      "title": "Staged B2D base and style reference"
+    }
+  },
+  "5": {
+    "inputs": {
+      "image": [
+        "4",
+        0
+      ],
+      "upscale_method": "nearest-exact",
+      "megapixels": 1,
+      "resolution_steps": 1
+    },
+    "class_type": "ImageScaleToTotalPixels",
+    "_meta": {
+      "title": "Bound B2D base to one megapixel"
+    }
+  },
+  "6": {
+    "inputs": {
+      "image": [
+        "5",
+        0
+      ]
+    },
+    "class_type": "GetImageSize",
+    "_meta": {
+      "title": "Use bounded base dimensions"
+    }
+  },
+  "7": {
+    "inputs": {
+      "image": "PARAM_STR_MASK_IMAGE"
+    },
+    "class_type": "LoadImage",
+    "_meta": {
+      "title": "Staged project-owned protected-property mask"
+    }
+  },
+  "8": {
+    "inputs": {
+      "image": [
+        "7",
+        0
+      ],
+      "upscale_method": "nearest-exact",
+      "width": [
+        "6",
+        0
+      ],
+      "height": [
+        "6",
+        1
+      ],
+      "crop": "disabled"
+    },
+    "class_type": "ImageScale",
+    "_meta": {
+      "title": "Match mask to bounded base"
+    }
+  },
+  "9": {
+    "inputs": {
+      "image": [
+        "8",
+        0
+      ],
+      "channel": "red"
+    },
+    "class_type": "ImageToMask",
+    "_meta": {
+      "title": "White editable cowl region"
+    }
+  },
+  "10": {
+    "inputs": {
+      "text": "PARAM_PROMPT",
+      "clip": [
+        "2",
+        0
+      ]
+    },
+    "class_type": "CLIPTextEncode",
+    "_meta": {
+      "title": "Protected-property edit instruction"
+    }
+  },
+  "11": {
+    "inputs": {
+      "conditioning": [
+        "10",
+        0
+      ]
+    },
+    "class_type": "ConditioningZeroOut",
+    "_meta": {
+      "title": "Distilled negative conditioning"
+    }
+  },
+  "12": {
+    "inputs": {
+      "pixels": [
+        "5",
+        0
+      ],
+      "vae": [
+        "3",
+        0
+      ]
+    },
+    "class_type": "VAEEncode",
+    "_meta": {
+      "title": "Encode B2D base latent"
+    }
+  },
+  "13": {
+    "inputs": {
+      "conditioning": [
+        "10",
+        0
+      ],
+      "latent": [
+        "12",
+        0
+      ]
+    },
+    "class_type": "ReferenceLatent",
+    "_meta": {
+      "title": "Positive B2D reference conditioning"
+    }
+  },
+  "14": {
+    "inputs": {
+      "conditioning": [
+        "11",
+        0
+      ],
+      "latent": [
+        "12",
+        0
+      ]
+    },
+    "class_type": "ReferenceLatent",
+    "_meta": {
+      "title": "Negative B2D reference conditioning"
+    }
+  },
+  "15": {
+    "inputs": {
+      "samples": [
+        "12",
+        0
+      ],
+      "mask": [
+        "9",
+        0
+      ]
+    },
+    "class_type": "SetLatentNoiseMask",
+    "_meta": {
+      "title": "Limit sampling to the cowl region"
+    }
+  },
+  "16": {
+    "inputs": {
+      "steps": 4,
+      "width": [
+        "6",
+        0
+      ],
+      "height": [
+        "6",
+        1
+      ]
+    },
+    "class_type": "Flux2Scheduler",
+    "_meta": {
+      "title": "Pinned distilled FLUX.2 schedule"
+    }
+  },
+  "17": {
+    "inputs": {
+      "model": [
+        "1",
+        0
+      ],
+      "positive": [
+        "13",
+        0
+      ],
+      "negative": [
+        "14",
+        0
+      ],
+      "cfg": 1
+    },
+    "class_type": "CFGGuider",
+    "_meta": {
+      "title": "Pinned distilled guidance"
+    }
+  },
+  "18": {
+    "inputs": {
+      "noise_seed": "PARAM_INT_SEED"
+    },
+    "class_type": "RandomNoise",
+    "_meta": {
+      "title": "Recorded seed"
+    }
+  },
+  "19": {
+    "inputs": {
+      "sampler_name": "euler"
+    },
+    "class_type": "KSamplerSelect",
+    "_meta": {
+      "title": "Pinned distilled sampler"
+    }
+  },
+  "20": {
+    "inputs": {
+      "noise": [
+        "18",
+        0
+      ],
+      "guider": [
+        "17",
+        0
+      ],
+      "sampler": [
+        "19",
+        0
+      ],
+      "sigmas": [
+        "16",
+        0
+      ],
+      "latent_image": [
+        "15",
+        0
+      ]
+    },
+    "class_type": "SamplerCustomAdvanced",
+    "_meta": {
+      "title": "Masked FLUX.2 Klein edit sampler"
+    }
+  },
+  "21": {
+    "inputs": {
+      "samples": [
+        "20",
+        0
+      ],
+      "vae": [
+        "3",
+        0
+      ]
+    },
+    "class_type": "VAEDecode",
+    "_meta": {
+      "title": "Decode masked edit"
+    }
+  },
+  "22": {
+    "inputs": {
+      "destination": [
+        "5",
+        0
+      ],
+      "source": [
+        "21",
+        0
+      ],
+      "x": 0,
+      "y": 0,
+      "resize_source": false,
+      "mask": [
+        "9",
+        0
+      ]
+    },
+    "class_type": "ImageCompositeMasked",
+    "_meta": {
+      "title": "Restore all pixels outside the reviewed mask"
+    }
+  },
+  "23": {
+    "inputs": {
+      "images": [
+        "22",
+        0
+      ],
+      "filename_prefix": "WormsPortFlux2KleinProtectedEdit"
+    },
+    "class_type": "SaveImage",
+    "_meta": {
+      "title": "Save quarantined protected-property edit"
+    }
+  }
+}

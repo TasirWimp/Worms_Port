@@ -1,5 +1,5 @@
 {
-  "checked_date": "2026-07-31",
+  "checked_date": "2026-09-08",
   "sources": [
     {
       "id": "turtlepu-worms-ii",
@@ -35,14 +35,128 @@
       "allowed_uses": [
         "gameplay reference",
         "asset-origin discovery",
-        "local ignored quarantine review"
+        "local ignored quarantine review",
+        "bounded V10F procedural terrain architecture observation",
+        "owner-authorized V10G weapon and terrain behavior observation; see docs/planning/wp-015d4a-v10-terrain-starts-contract.md#reference-observations-and-implementation-boundary"
       ],
       "blocked_uses": [
         "code copy",
         "bulk asset import",
         "asset import without exact-file license evidence"
       ],
-      "notes": "The repo and its credits are pointers for review only. No Sorcerers files are product assets."
+      "notes": "The repo and its credits are pointers for review only. No Sorcerers files are product assets. V10A-E terrain inspiration is limited to the registered frozen behavior record at docs/evidence/wp-015d4a-v10-terrain-tactics-behavior-record.md. The owner-authorized V10F re-entry is separately frozen with exact inspected paths and boundaries at docs/evidence/wp-015d4c-v10f-procedural-terrain-reference-pack.md."
+    },
+    {
+      "id": "openclonk-procedural-landscape-reference",
+      "role": "technical_design_reference_only",
+      "repository": "openclonk/openclonk",
+      "url": "https://github.com/openclonk/openclonk",
+      "commit": "36de799544af0459014ea088867fe263779a8bdd",
+      "license": "ISC",
+      "license_evidence": "https://github.com/openclonk/openclonk/blob/36de799544af0459014ea088867fe263779a8bdd/COPYING",
+      "decision": "approved_reference_no_import",
+      "copied_into": [],
+      "referenced_paths": [
+        "docs/sdk/script/MapScript.xml",
+        "docs/sdk/scenario/MapCreatorS2.xml",
+        "src/landscape/C4MapScriptAlgo.cpp",
+        "planet/System.ocg/Template.ocg/DefaultWorld.ocs/Map.c"
+      ],
+      "allowed_uses": [
+        "composable position-to-mask operation reference",
+        "seeded map-layer architecture reference",
+        "bounded V10F design terminology"
+      ],
+      "blocked_uses": [
+        "code copy or runtime dependency",
+        "game data graphics or map import",
+        "license inference from engine code to repository assets"
+      ],
+      "notes": "Reference observation only. V10F independently implements a smaller product-owned integer surface grammar against existing PackedTerrain."
+    },
+    {
+      "id": "hedgewars-land-generation-reference",
+      "role": "copyleft_technical_reference_only",
+      "repository": "hedgewars/hw",
+      "url": "https://github.com/hedgewars/hw",
+      "commit": "85685825d924cf08b2becfdac61bccbaf4dbd9dd",
+      "license": "GPL-2.0",
+      "license_evidence": "https://github.com/hedgewars/hw/blob/85685825d924cf08b2becfdac61bccbaf4dbd9dd/COPYING",
+      "decision": "not_imported",
+      "copied_into": [],
+      "referenced_paths": [
+        "rust/landgen/src/lib.rs",
+        "rust/landgen/src/maze.rs",
+        "rust/landgen/src/outline_template_based/template_based.rs",
+        "rust/landgen/src/wavefront_collapse/",
+        "share/hedgewars/Data/map_templates.yaml",
+        "hedgewars/uLandGenPerlin.pas"
+      ],
+      "allowed_uses": [
+        "seeded generator-boundary reference",
+        "bounded mirror and flip concept reference",
+        "interchangeable terrain-strategy design reference"
+      ],
+      "blocked_uses": [
+        "code algorithm template constant or identifier copy",
+        "asset map or data import",
+        "runtime dependency or GPL-derived product implementation"
+      ],
+      "notes": "GPL source was inspected only to understand broad architecture. No Hedgewars expression enters Worms_Port."
+    },
+    {
+      "id": "mxgmn-wave-function-collapse-reference",
+      "role": "technical_algorithm_reference_only",
+      "repository": "mxgmn/WaveFunctionCollapse",
+      "url": "https://github.com/mxgmn/WaveFunctionCollapse",
+      "commit": "de7d22e705e816b62b4d613199d0463820fcaef3",
+      "license": "MIT",
+      "license_evidence": "https://github.com/mxgmn/WaveFunctionCollapse/blob/de7d22e705e816b62b4d613199d0463820fcaef3/LICENSE",
+      "decision": "approved_reference_no_import",
+      "copied_into": [],
+      "referenced_paths": [
+        "README.md",
+        "Model.cs",
+        "SimpleTiledModel.cs"
+      ],
+      "allowed_uses": [
+        "adjacency-constraint and contradiction terminology",
+        "symmetry-reduction concept reference",
+        "later generator-strategy evaluation"
+      ],
+      "blocked_uses": [
+        "code copy or runtime dependency in V10F preparation",
+        "sample image tile or linked-work import",
+        "assumption that software licensing covers sample media"
+      ],
+      "notes": "WFC is deliberately deferred. The first V10F grammar uses fixed product-owned operations and gameplay admission rather than a constraint solver."
+    },
+    {
+      "id": "kchapelier-javascript-wfc-evaluation",
+      "role": "technical_dependency_candidate_reference",
+      "repository": "kchapelier/wavefunctioncollapse",
+      "url": "https://github.com/kchapelier/wavefunctioncollapse",
+      "commit": "f1374ee2c04d197afe6d01652f87663a68cbf6a5",
+      "license": "MIT",
+      "license_evidence": "https://github.com/kchapelier/wavefunctioncollapse/blob/f1374ee2c04d197afe6d01652f87663a68cbf6a5/LICENSE",
+      "decision": "evaluated_not_imported",
+      "copied_into": [],
+      "referenced_paths": [
+        "README.md",
+        "model.js",
+        "simple-tiled-model.js",
+        "random-indice.js"
+      ],
+      "allowed_uses": [
+        "injected deterministic RNG feasibility review",
+        "later dependency comparison"
+      ],
+      "blocked_uses": [
+        "runtime dependency without a new package and license review",
+        "code or sample import",
+        "use as the initial V10F generator"
+      ],
+      "notes": "Evaluated but not adopted. package.json and package-lock.json remain unchanged."
     },
     {
       "id": "nimirun-coderepo-subagent-pattern",
@@ -97,6 +211,149 @@
         "claim that CRPM empirically validates the game design"
       ],
       "notes": "The implementation plan adapts a bounded L4+ governance method only. CRPM remains an external design reference and is not a runtime dependency, player model, optimization theorem, or source of empirical player evidence."
+    },
+    {
+      "id": "tasirwimp-crpm-game-world-profile-method",
+      "role": "design_governance_method_reference",
+      "repository": "TasirWimp/CRPM",
+      "url": "https://github.com/TasirWimp/CRPM",
+      "commit": "995236df60924f790506cf5badec3c102abf3fd1",
+      "license": "MIT",
+      "license_evidence": "https://github.com/TasirWimp/CRPM/blob/995236df60924f790506cf5badec3c102abf3fd1/LICENSE",
+      "decision": "method_adapted_no_code_import",
+      "copied_into": [],
+      "referenced_paths": [
+        "docs/architecture/Start_Here_Canonical.md",
+        "docs/architecture/CRPM_Port_Flow_Mapping_Note_v0.md",
+        "docs/architecture/CRPM_Port_Flow_Boundary_Interface_Run_v0.md",
+        "docs/architecture/CRPM_Cut_Transition_Translation_Note_v0.md",
+        "docs/architecture/CRPM_Edge_Scoped_Cut_Roles_Reentry_Protection_v0.md",
+        "docs/architecture/CRPM_Edge_Anatomy_Reentry_Graph_Relation_v0.md",
+        "docs/architecture/CRPM_Typed_Reentry_Edge_Tooling_Playbook_v0.md",
+        "docs/architecture/voyage_graphs/research_notes/CRPM_Voyage_Edge_Graph_Recursive_Cut_Transition_Dynamics_Design_Note_v0.md",
+        "docs/architecture/CRPM_Evaluation_Language_Operational_Note_v0.md",
+        "docs/case_studies/Ported_Local_Subsystem_Case_Template.md",
+        "emergence_lab_crpm/observer.py",
+        "tests/automation/test_observer.py",
+        "emergence_lab_crpm/dynamic_return_obligation_crosswalk_source.py"
+      ],
+      "allowed_uses": [
+        "bounded Worms_Port L4+ game-world port, cut, edge, voyage, re-entry, and evaluation method adaptation",
+        "independent TypeScript reimplementation of the generic finite quotient-transport checker purpose",
+        "source-attributed contract, test, evidence, and transfer-back discipline"
+      ],
+      "blocked_uses": [
+        "CRPM code copy, vendoring, runtime import, or package dependency",
+        "promotion into a universal schema, graph-safe format, ontology, doctrine, or source-history recovery claim",
+        "claim that CRPM supplies empirical game evidence or production gameplay authority",
+        "multiplication of evidentiary weight from correlated documents, rows, adapters, reruns, or reviewer agreement"
+      ],
+      "notes": "WP-015D2B independently implements a bounded Worms_Port application profile from the exact referenced CRPM commit. CRPM remains read-only methodological source material; copied_into is empty, the generated canonical start-here is navigation only, and no CRPM code or dependency enters production or analysis runtime paths."
+    },
+    {
+      "id": "tasirwimp-crpm-unknown-source-navigation-method",
+      "role": "design_governance_method_reference",
+      "repository": "TasirWimp/CRPM",
+      "url": "https://github.com/TasirWimp/CRPM",
+      "commit": "053c6fc0a90ed48d8667016b18a1d10106a7a2bc",
+      "license": "MIT",
+      "license_evidence": "https://github.com/TasirWimp/CRPM/blob/053c6fc0a90ed48d8667016b18a1d10106a7a2bc/LICENSE",
+      "decision": "method_adapted_no_code_import",
+      "copied_into": [],
+      "referenced_paths": [
+        "docs/architecture/spectral_theory_of_residue/Unknown_Source_Ocean_Navigation/README.md",
+        "docs/architecture/spectral_theory_of_residue/Unknown_Source_Ocean_Navigation/Unknown_Source_Ocean_Exploration_Protocol_v0.md",
+        "docs/architecture/spectral_theory_of_residue/Unknown_Source_Ocean_Navigation/Grouped_Cut_Transition_Navigation_v0.md",
+        "docs/architecture/spectral_theory_of_residue/Unknown_Source_Ocean_Navigation/Null_Space_Guided_Cut_Transition_Search_Protocol_v0.md",
+        "docs/architecture/spectral_theory_of_residue/Unknown_Source_Ocean_Navigation/Witness_Probe_Carrier_Generalization_v0.md",
+        "docs/architecture/spectral_theory_of_residue/Unknown_Source_Ocean_Navigation/Landfall_Reentry_Diagnostic_Profile_v0.md",
+        "docs/architecture/voyage_graphs/research_notes/CRPM_Voyage_Source_Ocean_Preobject_Field_Model_v0.md",
+        "docs/case_studies/Historical_Physics_Residue_Route_Selection_Pressure_Case_v0.md",
+        "docs/architecture/CRPM_Candidate_Mathematical_Spine_Implementation_Goal_v0.md",
+        "docs/architecture/CRPM_Candidate_Mathematical_Spine_Calibration_Report_v0.md",
+        "docs/architecture/voyage_graphs/research_notes/CRPM_Voyage_Edge_Graph_Recursive_Cut_Transition_Dynamics_Design_Note_v0.md",
+        "emergence_lab_crpm/operational_memory_compatibility_fibre.py",
+        "emergence_lab_crpm/observer.py",
+        "emergence_lab_crpm/operational_memory_m9_formation_calibration.py",
+        "logs/CRPM-Insight-Log.md"
+      ],
+      "allowed_uses": [
+        "bounded Worms_Port L4+ pre-candidate navigation review",
+        "manual source-bound landmark, probe-wake, lookback, chart-revision, return, and reopening discipline",
+        "directional gameplay probing without sole-cause or scalar-optimization claims",
+        "source-attributed planning and re-entry documentation",
+        "bounded target-indexed local-to-global assembly, quotient-transport, route-action, and formation calibration",
+        "bounded carrier-partition calibration with alias, over-refinement, covariance, and matched-twin controls",
+        "mechanics-fixed natural matched-twin reachability and target-relative carrier-axis calibration"
+      ],
+      "blocked_uses": [
+        "CRPM code or prose copy, vendoring, runtime import, or package dependency",
+        "promotion into a universal search algorithm, game ontology, graph-safe schema, or automatic design authority",
+        "claim that CRPM supplies empirical gameplay evidence, causal proof, balance proof, or player-behavior evidence",
+        "treating a generated route set, landmark, local improvement, or lower pressure as landfall"
+      ],
+      "notes": "WP-015D2G uses the exploratory L4+ navigation bundle to govern a manual cross-candidate Worms_Port chart. WP-015D2M independently implements a bounded target-indexed atlas over existing Worms_Port evidence, using the later mathematical-spine, voyage, formation-calibration, and insight carriers only as L4+ review grammar. WP-015D2N calibrates that F4 bridge with read-only compatibility-fibre and quotient-observer method references, preserving equal finite partitions as covariance rather than selecting a representative. WP-015D2O independently executes a mechanics-fixed natural matched-twin reachability search and uses null-space/witness-probe and compatibility-fibre methods only to calibrate bounded target-relative carrier roles. These packages preserve prior CRPM locks, copy and import no CRPM code, and grant no gameplay or product authority."
+    },
+    {
+      "id": "tasirwimp-crpm-placement-unit-documentation-method",
+      "role": "design_governance_method_reference",
+      "repository": "TasirWimp/CRPM",
+      "url": "https://github.com/TasirWimp/CRPM",
+      "commit": "b66036e9184612ee7b70d2412e0620ba16665093",
+      "license": "MIT",
+      "license_evidence": "https://github.com/TasirWimp/CRPM/blob/2493029cd7518b80b1678f6aff7d0c59ad0e2148/LICENSE",
+      "decision": "method_adapted_no_code_import",
+      "copied_into": [],
+      "referenced_paths": [
+        "docs/architecture/definition_target_admission/CRPM_Definition_Target_Placement_Unit_Contract_v0.md",
+        "docs/architecture/CRPM_Definition_Target_Admission_P4_Pilot_Placement_Review_v0.md",
+        "docs/architecture/definition_target_admission/returns/DTAP-P4_Pilot_Evidence_2026-08-28_v0.yaml",
+        "docs/architecture/definition_target_admission/returns/DTAP-P4_Review_Return_2026-08-28_v0.yaml"
+      ],
+      "allowed_uses": [
+        "WP-015D2P documentation-only preregistration of Worms-owned V4 observation questions",
+        "separation of field identifiers, source-bound placement units and external-pressure questions",
+        "source-attributed context, covariance, negative-outcome and review-stop discipline"
+      ],
+      "blocked_uses": [
+        "code or prose copy, vendoring, runtime import or package dependency",
+        "new pressure execution, gameplay change, playtest or product authority without separate authorization",
+        "transferring CRPM worlds, fibres, holonomy, admission or placement verdicts into Worms",
+        "empirical-independence claims from shared sources, adapters, reviewers or the coordinator",
+        "rewriting historical CRPM method pins or D2B/D2E implementation locks"
+      ],
+      "notes": "Added 2026-08-28 for WP-015D2P only. The exact contract commit is local and deliberately unpushed; resolve it in the CRPM checkout. Its P4 sources are recommendation-only L4+ records. This additional pin does not replace the D2B, D2E or D2G-D2O method locks. No CRPM code/prose is copied into Worms and no executable or product authority is granted."
+    },
+    {
+      "id": "tasirwimp-crpm-residue-driven-round-trip-navigator-handoff",
+      "role": "design_governance_method_reference",
+      "repository": "TasirWimp/CRPM",
+      "url": "https://github.com/TasirWimp/CRPM",
+      "commit": "8c64353f4c8f5504af3e30ca175d9422ca7ae608",
+      "license": "MIT",
+      "license_evidence": "https://github.com/TasirWimp/CRPM/blob/8c64353f4c8f5504af3e30ca175d9422ca7ae608/LICENSE",
+      "decision": "method_adapted_no_code_import",
+      "copied_into": [],
+      "referenced_paths": [
+        "docs/architecture/definition_target_admission/DTAP_Worms_Port_Residue_Driven_Round_Trip_Navigator_Handoff_v0.md",
+        "docs/architecture/definition_target_admission/CRPM_Definition_Target_Admission_P2_Thick_Carrier_And_Lifecycle_Goal_v0.md",
+        "docs/architecture/definition_target_admission/returns/DTAP-P2_Review_Return_2026-08-27_v0.yaml",
+        "docs/architecture/definition_target_admission/CRPM_Definition_Target_Admission_P3_Independent_Reconstruction_And_Successor_Horizon_Goal_v0.md",
+        "docs/architecture/definition_target_admission/returns/DTAP-P3_Review_Return_2026-08-28_v0.yaml"
+      ],
+      "allowed_uses": [
+        "WP-015D2R documentation-only Worms question formation",
+        "bounded L4+ transition, witness, carrier, residue, lifecycle, re-entry, and successor-horizon vocabulary",
+        "explicitly incomplete candidate chart and one-next-command continuation/return Stage A seed",
+        "source-attributed planning, negative-witness, support-ledger, and review-stop discipline"
+      ],
+      "blocked_uses": [
+        "CRPM code or prose copy, vendoring, runtime import, or package dependency",
+        "pressure execution, route search, gameplay change, player observation, or timing measurement without separate authorization",
+        "widening immutable D2Q or replacing historical D2P, D2B, D2E, or D2G-D2O source locks and results",
+        "claim that CRPM supplies Worms world evidence, ProductAuthority, placement, P5, a universal navigator, or empirical independence"
+      ],
+      "notes": "Added 2026-08-29 for WP-015D2R Stage A only. Commit 8c64353 contains the new L4+ handoff and is distinct from historical method parent/coordination commit c9bf511. Durable P2/P3 returns are predecessor facts; their goal packets are lineage. CRPM supplies no Worms world-evidence or product authority. No CRPM code/prose is copied, and Stage B remains closed."
     },
     {
       "id": "phaserjs-examples-mobile-input",
@@ -212,6 +469,79 @@
         "code copy without exact-path traceability and MIT notice"
       ],
       "notes": "Focused integration reference only. Use it to understand the minimum Phaser scene and Rex joystick wiring. NIMble Knots must emit typed touch intent instead of mutating keyboard cursor state and must use reviewed Phaser 3.90-compatible APIs."
+    },
+    {
+      "id": "tasirwimp-crpm-post-stage-c-parent-reentry-method",
+      "role": "design_governance_method_reference",
+      "repository": "TasirWimp/CRPM",
+      "url": "https://github.com/TasirWimp/CRPM",
+      "commit": "6f3abc11323b7e842ca4cb51a768fdefe6c1ec8f",
+      "license": "MIT",
+      "license_evidence": "https://github.com/TasirWimp/CRPM/blob/6f3abc11323b7e842ca4cb51a768fdefe6c1ec8f/LICENSE",
+      "decision": "method_adapted_no_code_import",
+      "copied_into": [],
+      "referenced_paths": [
+        "docs/architecture/definition_target_admission/DTAP_Worms_Port_Post_Stage_C_Parent_Reentry_And_Dual_Lane_Handoff_v0.md",
+        "docs/architecture/definition_target_admission/returns/DTAP-WP015D2R_Stage_C_Parent_Reentry_Return_2026-08-30_v0.yaml",
+        "docs/architecture/definition_target_admission/CRPM_Worms_Port_Post_Stage_C_Parent_Reentry_And_Dual_Lane_Handoff_Goal_v0.md",
+        "docs/architecture/definition_target_admission/DTAP_Worms_Port_Residue_Driven_Round_Trip_Navigator_Handoff_v0.md"
+      ],
+      "allowed_uses": [
+        "WP-015D2V documentation-only closure of the nested WP-015D2R Stage A/B/C navigation voyage",
+        "bounded reviewed Stage C return to the parent WP-015D2 chart",
+        "registration of evidence-separated execution-closed Lane M and Lane G routes",
+        "source-attributed carrier-role, validation-debt, covariance, re-entry, and reopening discipline"
+      ],
+      "blocked_uses": [
+        "CRPM code or prose copy, vendoring, runtime import, package dependency, world ontology, or empirical validation",
+        "aggregate-harness repair, longer-horizon execution, player observation, timing measurement, gameplay change, or playtest without separate authorization",
+        "evidence inheritance or empirical-independence claims across Lane M and Lane G",
+        "changing WP-015D2A, satisfying D2O, or granting gameplay authority, ProductAuthority, placement, P5, landfall, or successor execution"
+      ],
+      "notes": "Added 2026-08-30 for WP-015D2V only. CRPM successor source 85e86d6699d49e16495f7761669341028ec2f720 and return 6f3abc11323b7e842ca4cb51a768fdefe6c1ec8f route the already reviewed-bounded Stage C result; they add no Worms world evidence. The historical Stage-A-only CRPM row remains unchanged. No CRPM code or prose is copied, and both successor lanes remain closed.",
+      "parent_reentry": {
+        "record_id": "DTAP-WP015D2R-STAGE-C-PARENT-REENTRY-v0",
+        "crpm_source_commit": "85e86d6699d49e16495f7761669341028ec2f720",
+        "crpm_return_commit": "6f3abc11323b7e842ca4cb51a768fdefe6c1ec8f",
+        "stage_c_source_commit": "e09b253356843342bd8077403668911cad539b46",
+        "stage_c_result_commit": "0dda7a7d91d32dcd8815ba6fd0beec2065bed220",
+        "stage_c_review_commit": "0581694b568461ecc556d79a236fe5ade46746d8",
+        "stage_c_terminal_commit": "19e69073c63966374a9c91b3973340752e787546",
+        "nested_round_trip_status": "complete_inner_navigation_voyage_only",
+        "bounded_reentry": "reviewed_bounded",
+        "q_support_verdict": "sufficient_for_complete_registered_one_command_target_on_finite_domain_nonunique",
+        "q_support_equality_pairs": 6265,
+        "q_support_counterexamples": 0,
+        "q_support_recursive_closure": "not_tested",
+        "q_command_verdict": "sufficient_for_registered_command_semantics_only_not_continuation_support",
+        "q_command_equality_pairs": 6279,
+        "q_command_continuation_support_counterexamples": 14,
+        "aggregate_status": "interrupted_no_tap",
+        "wider_reuse_blocked_until_repair": true,
+        "lane_m": {
+          "target": "longer_horizon_congruence_of_frozen_Q_support",
+          "prerequisite": "repaired_and_reviewed_stage_c_aggregate_harness",
+          "registration_open": false,
+          "execution_open": false
+        },
+        "lane_g": {
+          "target": "player_visible_formation_and_credible_response_timing",
+          "D2O_player_information_timing_gate": "unsatisfied",
+          "registration_open": false,
+          "execution_open": false
+        },
+        "active_execution_pointer": "WP-015D2A",
+        "WP-015D2R_parent_navigation_status": "closed_after_stage_c",
+        "wider_WP-015D2_gameplay_line": "open",
+        "evidence_class": "correlated_reuse",
+        "ProductAuthority": "none",
+        "mathematical_placement_implication": "none",
+        "gameplay_change": false,
+        "P5_open": false,
+        "successor_world_execution_open": false,
+        "parity_digest": "7d1992c6c4fb353286cf4939757225caf8c57d306eb043c49f7580e68ffa8efb",
+        "stop_statement": "WP-015D2R parent re-entry and dual-lane handoff documented; no Lane M or Lane G execution opened."
+      }
     }
   ]
 }

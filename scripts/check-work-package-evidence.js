@@ -4,6 +4,10 @@ const fs = require('node:fs');
 const path = require('node:path');
 
 const repoRoot = path.resolve(__dirname, '..');
+const nonWorkPackageEvidenceFiles = new Set([
+  'wp-015d2b-implementation-lock.json',
+  'wp-015d2e-implementation-lock.json'
+]);
 const allowedFields = new Set([
   'id', 'status', 'starting_commit', 'branch', 'initial_worktree',
   'starting_lock_sha256', 'owning_roles', 'scope', 'non_goals',
@@ -289,7 +293,7 @@ function validateEvidence(
 
     if (ids.has(evidence.id)) errors.push(`${label}: duplicate work-package id.`);
     ids.add(evidence.id);
-    if (!/^WP-\d{3}[A-Z]?$/.test(evidence.id || '')) errors.push(`${label}: invalid work-package id.`);
+    if (!/^WP-\d{3}(?:[A-Z]|[A-Z]\d[A-Z])?$/.test(evidence.id || '')) errors.push(`${label}: invalid work-package id.`);
     if (!['in_progress', 'complete', 'blocked'].includes(evidence.status)) errors.push(`${label}: invalid status.`);
     if (evidence.execution_mode !== undefined && evidence.execution_mode !== 'single_owner') {
       errors.push(`${label}: invalid execution mode.`);
@@ -319,7 +323,9 @@ function validateEvidence(
     for (const recordId of evidence.clean_room_records || []) {
       const cleanRecord = cleanRoomById.get(recordId);
       if (!cleanRecord) errors.push(`${label}: unknown clean-room record ${recordId}.`);
-      else if (cleanRecord.work_package !== evidence.id) {
+      else if (cleanRecord.execution_mode === 'single_owner' && evidence.execution_mode !== 'single_owner') {
+        errors.push(`${label}: single-owner clean-room record requires single_owner evidence.`);
+      } else if (cleanRecord.work_package !== evidence.id) {
         errors.push(`${label}: clean-room record ${recordId} belongs to ${cleanRecord.work_package}.`);
       } else if (evidence.status === 'complete' && cleanRecord.status !== 'complete') {
         errors.push(`${label}: clean-room record ${recordId} must be complete.`);
@@ -364,7 +370,9 @@ function validateEvidence(
 
 function main() {
   const evidenceRoot = path.join(repoRoot, 'docs', 'evidence');
-  const files = fs.readdirSync(evidenceRoot).filter((file) => file.endsWith('.json'));
+  const files = fs.readdirSync(evidenceRoot).filter((file) =>
+    file.endsWith('.json') && !nonWorkPackageEvidenceFiles.has(file)
+  );
   const records = files.map((file) => JSON.parse(fs.readFileSync(path.join(evidenceRoot, file), 'utf8')));
   const cleanRoom = JSON.parse(fs.readFileSync(path.join(repoRoot, 'legal', 'clean-room-records.json'), 'utf8'));
   const allowUnresolvedHistory =

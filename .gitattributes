@@ -1,0 +1,10 @@
+/scripts/comfy-mcp-requirements.lock text eol=lf
+/scripts/comfy-workflows/*.json text eol=lf
+/scripts/generate-wizard-structure-guide.js text eol=lf
+/scripts/generate-wizard-cowl-edit-mask.js text eol=lf
+/scripts/generate-wizard-hood-structure-controls.js text eol=lf
+/scripts/generate-wizard-cast-preparation-pose-guide.js text eol=lf
+/scripts/normalize-*-master.js text eol=lf
+/scripts/asset-normalization/*.json text eol=lf
+/docs/evidence/wp-015d2z-v7-terrain-and-placement-behavior-record.md text eol=lf
+/docs/evidence/wp-015d3a-v8-action-turns-behavior-record.md text eol=lf
