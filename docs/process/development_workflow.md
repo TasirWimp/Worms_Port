@@ -406,7 +406,7 @@ govern build reuse; a changed or missing proof rebuilds. Never approve or update
 Linux baselines from Windows. Candidate capture requires an explicit
 `visual-baseline-candidate` PR label or manual workflow dispatch and owner review.
 
-The supported browser gate now starts the standard V10 R5 volcanic server
+The supported browser gate now starts the standard current V10 R6 volcanic server
 profile. Playwright excludes every suite marked `@legacy` by default, including
 the former V4/V6/V7/V8/V9 engineering previews, pre-V10 lifecycle journeys and
 their visual baselines. The same boundary applies to the PostgreSQL browser
@@ -426,7 +426,7 @@ standalone behavior is no longer a product acceptance condition. New coverage
 must enter through the standard V10 Practice, Daily or PEI journeys.
 
 Built-server smoke follows the same boundary. Its routine path starts the
-normal production server, creates and pauses one authoritative V10 R5 volcanic
+normal production server, creates and pauses one authoritative current V10 R6 volcanic
 Practice match, and checks the built static/runtime endpoints. Setting
 `npm run smoke:built -- --legacy` explicitly enables the retired V7/V8/V9
 profile diagnostics; feature, quality and release commands do not pass it.

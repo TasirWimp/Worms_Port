@@ -93,8 +93,8 @@ function emitAck(socket, event, payload) {
 }
 
 async function checkV10Combat(baseUrl) {
-  const rulesetId = 'nimble-knots-artillery-v10-r5';
-  const automationId = 'wp-015d4h-v10-live-v1';
+  const rulesetId = 'nimble-knots-artillery-v10-r6';
+  const automationId = 'wp-023-v10-r6-live-v1';
   const socket = io(baseUrl, { transports: ['websocket'], reconnection: false,
     autoConnect: false, timeout: 2_000, extraHeaders: { Origin: baseUrl } });
   try {
@@ -124,7 +124,7 @@ async function checkV10Combat(baseUrl) {
     });
     assert.equal(paused.ok, true);
     assert.equal(paused.data.paused, true);
-    console.log('Validated standard V10 R5 volcanic Practice creation and pause.');
+    console.log('Validated standard V10 R6 volcanic Practice creation and pause.');
   } finally { socket.close(); }
 }
 
@@ -304,7 +304,7 @@ async function smokeProfile(profile) {
     if (practiceOnly) await checkLegacyCombat(baseUrl, practiceOnly, v9);
     else await checkV10Combat(baseUrl);
     if (practiceOnly) assert.ok(stdout.includes(`Runtime ${profile} / ${v9 ? 'nimble-knots-artillery-v9 / wp-015d3b-v9d-v1' : 'nimble-knots-artillery-v8-r1 / wp-015d3a-v8d-r1-v1'} / rewards disabled`));
-    console.log(`Built server ${profile ?? 'standard V10 R5'} smoke test passed on port ${port}.`);
+    console.log(`Built server ${profile ?? 'standard V10 R6'} smoke test passed on port ${port}.`);
     console.log(`Validated /, built overlays, approved asset plumbing, and /.room.join_id (${roomId}).`);
   } finally {
     try {

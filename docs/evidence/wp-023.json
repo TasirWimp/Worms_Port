@@ -1,0 +1,75 @@
+{
+  "id": "WP-023",
+  "status": "in_progress",
+  "execution_mode": "single_owner",
+  "starting_commit": "c0f63ec",
+  "branch": "codex/v10-r6-action-impact-dynamics",
+  "initial_worktree": "clean",
+  "starting_lock_sha256": "6B768A8FDE2695D02555CA17201FD7CE420F9AC075B91380474DD7A643042BC8",
+  "owning_roles": [
+    "primary assistant"
+  ],
+  "scope": [
+    "Waypoint 1: promote a V10 R6 current runtime with the unchanged R5 volcanic terrain and weapon-terrain behavior, a smaller coherent Wizard presentation and direct-hit envelope, and a 60-second continuous movement action followed by one offensive shot and the existing retreat.",
+    "Waypoint 2 after physical-phone acceptance: add deterministic explosion knockback and authoritative impact settling without changing terrain carving or damage.",
+    "Waypoint 3 after physical-phone acceptance: integrate the accepted R6 behavior through standard Practice and PEI-gated Daily lifecycle and reward paths."
+  ],
+  "non_goals": [
+    "No terrain generation, terrain resolution, crater, weapon damage, projectile, thread-cost, shield, cover, reward, PEI receipt, asset-byte or dependency changes.",
+    "No collision or fall damage, bounce physics, multiple offensive shots, old V7/V8/V9 behavior changes, or ordinary R5 compatibility matrix."
+  ],
+  "planned_checks": [
+    "npm run verify:changes -- --dry-run",
+    "Focused current V10 R6 simulation, presentation, protocol, Practice and browser combat checks selected by direct review",
+    "npm run verify:changes",
+    "npm run audit:housekeeping at the package transition"
+  ],
+  "deterministic_seeds": [
+    "Current volcanic Practice seed 4",
+    "Current volcanic Daily authority seeds supplied by the existing reservation path"
+  ],
+  "sorcerers_reference_used": true,
+  "clean_room_records": [
+    "wp-023-sorcerers-action-impact"
+  ],
+  "check_results": [
+    {
+      "command": "npm run verify:changes -- --dry-run --base c0f63ec",
+      "status": "pass",
+      "details": "The final selector dry run reported fingerprint 5e51a456ba3f22fb1d99ec7517249de78dead610831c5154be5b1869308080ac. Direct review retained all current V10 gameplay, protocol, Practice, PEI/reward, build, smoke, security, bundle, browser, visual-logic and PostgreSQL phases while excluding retired runtime profiles."
+    },
+    {
+      "command": "Focused current V10 R6 simulation, presentation, protocol, Practice and browser combat checks selected by direct review",
+      "status": "pass",
+      "details": "Delegated zero-retry checks passed import and type boundaries, clean-room records 6/6, work-package records 70/70, combat 43/43, current Practice 1/1, identity 22/22, reward 28/28, protocol 16/16, tooling 133/133, simulation 52/52, Loomkeeper 39/39, relics 10/10 and PEI 25/25. The R6 simulation cases prove exact R5/R6 arena and weapon equality, the 1,799/1,800-tick action boundary, a long six-tick-refresh movement hold, the one-shot limit and the compact direct-hit envelope. The first protocol phase preserved 15 passes while one 510-tick fixture no longer crossed the intentional 1,800-tick R6 action phase; correcting it to the named R6 boundary produced 16/16 without repeating unrelated checks. Logs .cache/wp023-selector-checks.log, .cache/wp023-protocol-recovery.log and .cache/wp023-checks-remainder.log."
+    },
+    {
+      "command": "npm run verify:changes -- --base c0f63ec",
+      "status": "pass",
+      "details": "The selected gate was composed from preserved unchanged-input passes and exact affected-phase recovery. Fresh build proof 33508fec46ec / 61580ee59774 passed the standard V10 R6 volcanic built smoke, identity-bundle and reward-security checks. Bundle limits passed at 1,424,768/1,500,000 JavaScript bytes and 415,488/430,000 initial JavaScript-plus-CSS gzip bytes. Canonical Chromium passed 15/15 supported current identity, PEI, Practice, resilience, reward and smoke cases in 2.9 minutes. Supported R6 visual logic passed on all five maintained phone layouts: 6 applicable cases passed and four Windows screenshot comparisons skipped by policy. The PostgreSQL phase recorded its expected local prerequisite omission. Logs .cache/wp023-selector-browser.log, .cache/wp023-visual-logic.log, .cache/wp023-smoke-wording.log and .cache/wp023-selector-postgres.log."
+    },
+    {
+      "command": "npm run audit:housekeeping at the package transition",
+      "status": "pass",
+      "details": "The exact work-package checker passed all 70 records and the report-only housekeeping audit exited successfully with zero retries. WP-023 correctly remains in progress on a dirty feature branch without an upstream while Phone Gate A is pending. No gone tracking branches exist. The manual-reconciliation flag refers to preserved historical review records and other in-progress packages; no mutation was performed. Logs .cache/wp023-work-packages-waypoint1.log and .cache/wp023-housekeeping-waypoint1.log."
+    }
+  ],
+  "reviews": [
+    {
+      "role": "primary",
+      "reviewer": "primary assistant",
+      "decision": "pass_waypoint_1",
+      "details": "Direct review traced the current ruleset identity from server creation through the live wire contract, client startup, presentation, replay validation and independently derived Loomkeeper plan. R6 shares the exact R5 volcanic terrain, opening positions and weapon table; only its named dynamics and compact target/presentation are selected. V8/V9 transition callers omit the new dynamics parameter and therefore retain their historical constants. Practice and Daily both bind to current R6, while PEI receipt and reward policy are unchanged. Waypoint 2 remains blocked on the owner's physical Phone Gate A acceptance."
+    }
+  ],
+  "skipped_checks": [
+    "Retired R5 compatibility and V7/V8/V9 runtime/browser suites were intentionally excluded from ordinary acceptance; they remain explicit diagnostics only.",
+    "Local PostgreSQL execution was skipped because WP014_TEST_DATABASE_URL is absent. WP-023 Waypoint 1 changes no database schema, receipt inventory or reward settlement behavior; disposable PostgreSQL remains a CI gate.",
+    "Authoritative Ubuntu screenshot comparison and baseline approval were not run on Windows. Logic ran across all five maintained phone layouts; a Linux candidate belongs on the implementation PR after physical acceptance.",
+    "The full daily/release and performance suites were not run because this is a feature waypoint rather than the 22:00 checkpoint or a release boundary.",
+    "Physical Phone Gate A is pending, so explosion impulse, complete Daily integration acceptance and Phone Gates B/C have not started."
+  ],
+  "residual_risks": [
+    "Phone presentation, long-held touch movement and action pacing require the owner's physical-phone acceptance at each waypoint before the package advances."
+  ]
+}

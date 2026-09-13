@@ -1,5 +1,6 @@
 import { expect, test, type Page } from '@playwright/test';
 
+import { CURRENT_V10_RULESET_ID } from '../../shared/simulation-v10';
 import { createTestSigner } from '../support/nimiq-signer';
 import {
   applySyntheticSafeArea,
@@ -131,6 +132,27 @@ test('canonical visual states cover combat presentation, controls, motion, and s
   })).toMatch(/^(ready|result)$/);
   expect(errors).toEqual([]);
 });
+});
+
+test('current R6 volcanic Practice start stays coherent across maintained phone layouts', async ({
+  page
+}) => {
+  test.setTimeout(60_000);
+  const errors = captureErrors(page);
+
+  await page.goto('/');
+  await page.getByRole('button', { name: 'Start Practice' }).tap();
+  const ui = page.locator('.combat-v10');
+  await expect(ui).toBeVisible();
+  await expect(ui).toHaveAttribute('data-ruleset', CURRENT_V10_RULESET_ID);
+  await expect(ui).toHaveAttribute('data-background', 'volcanic-ruin');
+  await expect(ui).toHaveAttribute('data-background-ready', 'true');
+  await expect(ui.locator('.combat-timer')).toHaveText(/^(59|60)s$/);
+  await expect(ui.locator('.player-status')).toBeVisible();
+  await expect(ui.locator('.loomkeeper-status')).toBeVisible();
+  await assertDocumentLocked(page);
+  await screenshot(page, 'current-r6-volcanic-practice-start.png');
+  expect(errors).toEqual([]);
 });
 
 test('canonical Daily visuals cover availability, authorization, claim processing, and finality', async ({

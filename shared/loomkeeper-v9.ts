@@ -1,4 +1,4 @@
-import type { ProjectileMechanics } from './simulation-v8';
+import type { ProjectileMechanics, SimulationDynamics } from './simulation-v8';
 import {
     advanceSimulationTicksV9DetachedRollout, applySimulationBarrierV9, applySimulationIntentV9,
     completeDetachedSimulationRolloutV9, DetachedSimulationRolloutV9,
@@ -45,6 +45,7 @@ export type LoomkeeperPlannerOptionsV9 = {
     reuseIdenticalPrefixes?: boolean;
     /** Internal later-version seams; absent for frozen V9 callers. */
     mechanics?: ProjectileMechanics;
+    dynamics?: SimulationDynamics;
     candidateAt?: (ordinal: number) => LoomkeeperCandidateV9;
 };
 
@@ -61,7 +62,7 @@ export class LoomkeeperPlannerV9 {
         this.prefix = prefixFor(source);
         // The charged planning window is identical for every candidate. Keep
         // this immutable root and clone it for each candidate or shared prefix.
-        const charged = DetachedSimulationRolloutV9.fromTrustedSource(source);
+        const charged = DetachedSimulationRolloutV9.fromTrustedSource(source, options.dynamics);
         advanceSimulationTicksV9DetachedRollout(charged, V9_AI_PLANNING_TICKS, options.mechanics);
         this.chargedSource = completeDetachedSimulationRolloutV9(charged);
         this.reuseIdenticalPrefixes = options.reuseIdenticalPrefixes !== false;
@@ -94,12 +95,12 @@ export class LoomkeeperPlannerV9 {
         // Thread, so this candidate can be rejected before any identical
         // movement/physics work while still consuming its frozen lattice slot.
         if (!candidateAffordable(this.source, candidate, this.prefix)) return undefined;
-        if (!this.reuseIdenticalPrefixes) return evaluateCandidate(this.source, this.chargedSource, candidate, this.prefix, this.options.mechanics);
+        if (!this.reuseIdenticalPrefixes) return evaluateCandidate(this.source, this.chargedSource, candidate, this.prefix, this.options.mechanics, this.options.dynamics);
         if (!this.preparedPrefixes.has(candidate.scriptIndex))
-            this.preparedPrefixes.set(candidate.scriptIndex, preparePrefix(this.chargedSource, candidate, this.prefix, this.options.mechanics));
+            this.preparedPrefixes.set(candidate.scriptIndex, preparePrefix(this.chargedSource, candidate, this.prefix, this.options.mechanics, this.options.dynamics));
         const prepared = this.preparedPrefixes.get(candidate.scriptIndex);
-        return prepared ? evaluatePreparedCandidate(this.source, candidate, this.prefix, prepared, this.options.mechanics)
-            : evaluateCandidate(this.source, this.chargedSource, candidate, this.prefix, this.options.mechanics);
+        return prepared ? evaluatePreparedCandidate(this.source, candidate, this.prefix, prepared, this.options.mechanics, this.options.dynamics)
+            : evaluateCandidate(this.source, this.chargedSource, candidate, this.prefix, this.options.mechanics, this.options.dynamics);
     }
 }
 
@@ -183,12 +184,13 @@ export function prefixFor(state: SimulationStateV9): V9Prefix {
     if (own.thread < 4) return 'none'; if (own.stitching <= 45) return 'threadguard';
     return Math.abs(own.xFp - other.xFp) > 640 * 256 ? 'threadleap' : 'none';
 }
-function evaluateCandidate(source: SimulationStateV9, chargedSource: SimulationStateV9, candidate: LoomkeeperCandidateV9, prefix: V9Prefix, mechanics?: ProjectileMechanics): Evaluation | undefined {
+function evaluateCandidate(source: SimulationStateV9, chargedSource: SimulationStateV9, candidate: LoomkeeperCandidateV9,
+    prefix: V9Prefix, mechanics?: ProjectileMechanics, dynamics?: SimulationDynamics): Evaluation | undefined {
     if (!candidateAffordable(source, candidate, prefix)) return undefined;
-    const rollout = DetachedSimulationRolloutV9.fromTrustedSource(chargedSource);
+    const rollout = DetachedSimulationRolloutV9.fromTrustedSource(chargedSource, dynamics);
     const state = rollout.state; const ticks = V9_AI_PLANNING_TICKS;
     const execution = new LoomkeeperExecutionV9(candidate, prefix, state);
-    return finishEvaluation(source, candidate, rollout, ticks, execution, mechanics);
+    return finishEvaluation(source, candidate, rollout, ticks, execution, mechanics, dynamics);
 }
 /**
  * Prefixes depend only on the chosen movement script and public action-entry
@@ -196,12 +198,13 @@ function evaluateCandidate(source: SimulationStateV9, chargedSource: SimulationS
  * this exact state removes repeated deterministic work without changing a
  * candidate's logical tick accounting, selection order or physics.
  */
-function preparePrefix(chargedSource: SimulationStateV9, candidate: LoomkeeperCandidateV9, prefix: V9Prefix, mechanics?: ProjectileMechanics): PreparedPrefix | undefined {
+function preparePrefix(chargedSource: SimulationStateV9, candidate: LoomkeeperCandidateV9, prefix: V9Prefix,
+    mechanics?: ProjectileMechanics, dynamics?: SimulationDynamics): PreparedPrefix | undefined {
     // The stationary script enters aim in the same operation cursor call. It
     // has no complete relic-independent stopping state, so retain its full
     // candidate rollout rather than change that cursor timing.
     if (candidate.direction === 'stay') return undefined;
-    const rollout = DetachedSimulationRolloutV9.fromTrustedSource(chargedSource);
+    const rollout = DetachedSimulationRolloutV9.fromTrustedSource(chargedSource, dynamics);
     let state = rollout.state; let ticks = V9_AI_PLANNING_TICKS; const actor = state.activeActor;
     const execution = new LoomkeeperExecutionV9(candidate, prefix, state);
     while (state.phase !== 'finished' && state.turn === chargedSource.turn && ticks < V9_AI_MAX_ROLLOUT_TICKS) {
@@ -209,8 +212,8 @@ function preparePrefix(chargedSource: SimulationStateV9, candidate: LoomkeeperCa
             if (execution.readyForAim()) return { state: completeDetachedSimulationRolloutV9(rollout), logicalTicks: ticks };
             const operation = execution.next(state); if (!operation) break;
             const transition = operation.kind === 'intent'
-                ? applySimulationIntentV9(state, actor, operation.intent, state.turn, state.phase, state.inputEpoch, mechanics)
-                : applySimulationBarrierV9(state, operation.barrier);
+                ? applySimulationIntentV9(state, actor, operation.intent, state.turn, state.phase, state.inputEpoch, mechanics, dynamics)
+                : applySimulationBarrierV9(state, operation.barrier, dynamics);
             if (!transition.accepted) {
                 if (operation.kind === 'intent' && ['select_relic', 'aim', 'fire'].includes(operation.intent.type)) return undefined;
                 throw new Error('Illegal V9 policy operation.');
@@ -223,16 +226,17 @@ function preparePrefix(chargedSource: SimulationStateV9, candidate: LoomkeeperCa
     }
     return undefined;
 }
-function evaluatePreparedCandidate(source: SimulationStateV9, candidate: LoomkeeperCandidateV9, prefix: V9Prefix, prepared: PreparedPrefix, mechanics?: ProjectileMechanics): Evaluation | undefined {
-    const rollout = DetachedSimulationRolloutV9.fromTrustedSource(prepared.state);
-    return finishEvaluation(source, candidate, rollout, prepared.logicalTicks, new LoomkeeperExecutionV9(candidate, prefix, rollout.state, true), mechanics);
+function evaluatePreparedCandidate(source: SimulationStateV9, candidate: LoomkeeperCandidateV9, prefix: V9Prefix,
+    prepared: PreparedPrefix, mechanics?: ProjectileMechanics, dynamics?: SimulationDynamics): Evaluation | undefined {
+    const rollout = DetachedSimulationRolloutV9.fromTrustedSource(prepared.state, dynamics);
+    return finishEvaluation(source, candidate, rollout, prepared.logicalTicks, new LoomkeeperExecutionV9(candidate, prefix, rollout.state, true), mechanics, dynamics);
 }
 function finishEvaluation(source: SimulationStateV9, candidate: LoomkeeperCandidateV9, rollout: DetachedSimulationRolloutV9, initialTicks: number,
-    execution: LoomkeeperExecutionV9, mechanics?: ProjectileMechanics): Evaluation | undefined {
+    execution: LoomkeeperExecutionV9, mechanics?: ProjectileMechanics, dynamics?: SimulationDynamics): Evaluation | undefined {
     let state = rollout.state, ticks = initialTicks; const actor = source.activeActor;
     while (state.phase !== 'finished' && state.turn === source.turn && ticks < V9_AI_MAX_ROLLOUT_TICKS) {
         for (let count = 0; count < 8; count += 1) { const operation = execution.next(state); if (!operation) break;
-            const transition = operation.kind === 'intent' ? applySimulationIntentV9(state, actor, operation.intent, state.turn, state.phase, state.inputEpoch, mechanics) : applySimulationBarrierV9(state, operation.barrier);
+            const transition = operation.kind === 'intent' ? applySimulationIntentV9(state, actor, operation.intent, state.turn, state.phase, state.inputEpoch, mechanics, dynamics) : applySimulationBarrierV9(state, operation.barrier, dynamics);
             if (!transition.accepted) { if (operation.kind === 'intent' && ['select_relic', 'aim', 'fire'].includes(operation.intent.type)) return undefined; throw new Error('Illegal V9 policy operation.'); }
             rollout.replace(transition.state); state = rollout.state;
         }

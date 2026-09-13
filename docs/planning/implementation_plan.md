@@ -136,6 +136,16 @@ Phaser/Socket.IO stack.
   carrier experiment remains paused. Later server-side decomposition of the
   versioned session registry is a separate maintenance slice because V10 still
   intentionally inherits proven simulation and presentation mechanics.
+- Active successor: **WP-023 V10 R6 Action And Impact Dynamics**, beginning at
+  clean `c0f63ec` on `codex/v10-r6-action-impact-dynamics`. Waypoint 1 keeps
+  the exact R5 volcanic arena and weapon-terrain behavior while adding a
+  compact coherent actor presentation/target and a 60-second continuous-action
+  clock under the new current R6 identity. Waypoint 2 adds deterministic
+  explosion impulse only after physical-phone acceptance; Waypoint 3 completes
+  the accepted Practice and PEI-gated Daily journey. The package advances only
+  at the three owner phone gates. R5 remains an explicit diagnostic and is not
+  part of ordinary acceptance. See the [WP-023 contract](wp-023-v10-r6-action-impact-dynamics.md)
+  and [evidence](../evidence/wp-023.json).
 - Active target: mobile-first single-player Nimiq Pay competition release.
 - Latest completed slice: **WP-015D4D V10G Terrain And Weapon Tactics**;
   see the [V10G preparation contract](wp-015d4a-v10-terrain-starts-contract.md#v10g-terrain-and-weapon-tactics-preparation).

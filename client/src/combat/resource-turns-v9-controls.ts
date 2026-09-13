@@ -1,4 +1,4 @@
-import { usesV10GTactics } from '../../../shared/simulation-v10';
+import { usesV10GTactics, usesV10R6ActionDynamics } from '../../../shared/simulation-v10';
 import type { SimulationIntentV9 } from '../../../shared/simulation-v9';
 import type { ResourceTurnsEvent, ResourceTurnsState } from './contracts';
 import { CombatInputController, UnifiedMovementInputController, type AimIntent } from './input';
@@ -15,6 +15,10 @@ type Callbacks = {
     inputReady?: () => boolean; pauseAllowed?: () => boolean; pauseReason?: () => string | undefined;
     live?: boolean; automated?: boolean;
 };
+
+export function movementRefreshIntervalMs(rulesetId: string): number {
+    return usesV10R6ActionDynamics(rulesetId) ? 200 : 100;
+}
 
 /** V9 gesture ownership is local, generation-guarded, and always yields to authority. */
 export class ResourceTurnsV9Controls {
@@ -71,7 +75,9 @@ export class ResourceTurnsV9Controls {
         }
         this.element('.combat-turn').textContent = this.phaseCopy();
         this.element('.v9-thread').textContent = `Thread ${facts.player.thread}`;
-        this.element('.combat-timer').textContent = this.terminal() ? (this.callbacks.live ? 'Clash ended' : 'Preview ended') : `${Math.max(0, state.phaseDeadlineTick - state.tick)} ticks left`;
+        const remaining = Math.max(0, state.phaseDeadlineTick - state.tick);
+        this.element('.combat-timer').textContent = this.terminal() ? (this.callbacks.live ? 'Clash ended' : 'Preview ended')
+            : usesV10R6ActionDynamics(state.rulesetId) ? `${Math.ceil(remaining / 30)}s` : `${remaining} ticks left`;
         this.setCard('.player-status', 'You', 'You', player.stitching, player.thread, player.shield, player.shieldExpiresTurn);
         this.setCard('.loomkeeper-status', 'Loom', 'Loomkeeper', state.units[1].stitching, state.units[1].thread, state.units[1].shield, state.units[1].shieldExpiresTurn);
         this.receipts = appendV9DamageReceipts(this.receipts, events);
@@ -105,7 +111,8 @@ export class ResourceTurnsV9Controls {
         if (this.destroyed) return; const now = this.now(), facts = this.movementFacts();
         const intent = this.movement.movementIntent({ ...facts, lane: facts.lane === 'locomotion' ? 'ready' : facts.lane }, now);
         if (intent) { this.submitMovement(intent, false); return; }
-        if (facts.lane === 'locomotion' && this.movement.ownedPointer() && !this.refreshPending && now - this.lastRefresh >= 100) this.submitMovement({ type: 'walk_refresh' }, true);
+        const refreshIntervalMs = movementRefreshIntervalMs(this.state.rulesetId);
+        if (facts.lane === 'locomotion' && this.movement.ownedPointer() && !this.refreshPending && now - this.lastRefresh >= refreshIntervalMs) this.submitMovement({ type: 'walk_refresh' }, true);
     }
     public interrupt(): void { this.retireOwnership(); }
     public destroy(): void { if (this.destroyed) return; this.destroyed = true; this.retireOwnership(); for (const remove of this.cleanup.splice(0)) remove(); this.root.remove(); }
@@ -203,7 +210,7 @@ export class ResourceTurnsV9Controls {
     private lifecycleGuidance(): string | undefined { if (this.terminal()) return this.terminalGuidance(); if (this.state.activeActor === 'loomkeeper') return this.callbacks.live || this.callbacks.automated ? 'Loomkeeper is choosing the authoritative response.' : 'Loomkeeper behavior is deferred to V9D; this local preview does not simulate a response.'; return undefined; }
     private terminalGuidance(): string { const outcome = this.state.winner === 'player' ? 'You won' : this.state.winner === 'loomkeeper' ? 'Loomkeeper won' : this.state.winner === 'draw' ? 'The clash ended in a draw' : this.callbacks.live ? 'The candidate Clash ended' : 'The local preview ended'; return this.state.finishReason === 'simulation_limit' ? `Lifecycle safety limit reached. ${this.callbacks.live ? 'Start a fresh Practice Clash.' : 'Start a fresh local preview.'}` : `${outcome} by authoritative ${this.state.finishReason ?? 'terminal'} outcome. ${this.callbacks.live ? 'Start a fresh Practice Clash.' : 'Start a fresh local preview.'}`; }
     private phaseCopy(): string { if (this.terminal()) return this.terminalGuidance(); if (this.paused) return this.callbacks.live ? 'Practice paused' : 'Preview paused'; return this.state.activeActor === 'player' ? `You · ${this.state.phase}` : this.callbacks.live || this.callbacks.automated ? `Loomkeeper · ${this.state.phase}` : `Loomkeeper · ${this.state.phase} · V9D deferred`; }
-    private positionCards(): void { if (!this.layout) return; const positions = computeActorStatusLayout(this.layout, projectCombatV9(this.state).units); for (const [selector, rect] of [['.player-status', positions.player], ['.loomkeeper-status', positions.loomkeeper]] as const) { const element = this.element(selector); element.hidden = !rect; if (rect) this.place(element, rect); } }
+    private positionCards(): void { if (!this.layout) return; const positions = computeActorStatusLayout(this.layout, projectCombatV9(this.state).units, this.state.rulesetId); for (const [selector, rect] of [['.player-status', positions.player], ['.loomkeeper-status', positions.loomkeeper]] as const) { const element = this.element(selector); element.hidden = !rect; if (rect) this.place(element, rect); } }
     private setCard(selector: string, displayName: string, accessibleName: string, stitching: number, thread: number, shield: number, shieldExpiresTurn: number | null): void {
         const shieldLabel = shield > 0 ? `Shield ${shield} · expires turn ${shieldExpiresTurn}` : 'Shield inactive';
         const element = this.element(selector); element.setAttribute('aria-label', `${accessibleName} · ${stitching} Stitching · Thread ${thread} of 9 · ${shieldLabel}`);

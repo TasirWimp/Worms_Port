@@ -2,7 +2,7 @@ import { z } from 'zod';
 import { ProtocolErrorSchema } from './protocol';
 import {
     SimulationBarrierV10Schema, SimulationIntentV10Schema, SimulationStateV10Schema,
-    V10_R5_RULESET_ID
+    CURRENT_V10_RULESET_ID
 } from './simulation-v10';
 import { V10_AUTOMATION_ID } from './combat-version';
 
@@ -53,15 +53,15 @@ export const CoordinatorReplayV10AutomatedSchema = CoordinatorReplayV10Schema.sa
 export type CoordinatorReplayV10Automated = z.infer<typeof CoordinatorReplayV10AutomatedSchema>;
 
 const wireOwnership = { requestId: z.string().min(16).max(64).regex(/^[A-Za-z0-9_-]+$/), challengeId: id,
-    rulesetId: z.literal(V10_R5_RULESET_ID), automationId: z.literal(V10_AUTOMATION_ID) };
+    rulesetId: z.literal(CURRENT_V10_RULESET_ID), automationId: z.literal(V10_AUTOMATION_ID) };
 const wireSequence = integer(0, 0xffffffff);
 
 const rewardEligibilityToken = z.string().length(43).regex(/^[A-Za-z0-9_-]+$/);
 export const ChallengeCreateV10Schema = z.discriminatedUnion('mode', [
     z.object({ requestId: wireOwnership.requestId, sequence: wireSequence, mode: z.literal('practice'), calling,
-        rulesetId: z.literal(V10_R5_RULESET_ID), automationId: z.literal(V10_AUTOMATION_ID) }).strict(),
+        rulesetId: z.literal(CURRENT_V10_RULESET_ID), automationId: z.literal(V10_AUTOMATION_ID) }).strict(),
     z.object({ requestId: wireOwnership.requestId, sequence: wireSequence, mode: z.literal('reward'), calling,
-        challengeId: wireOwnership.challengeId, rulesetId: z.literal(V10_R5_RULESET_ID),
+        challengeId: wireOwnership.challengeId, rulesetId: z.literal(CURRENT_V10_RULESET_ID),
         automationId: z.literal(V10_AUTOMATION_ID), eligibilityToken: rewardEligibilityToken }).strict()
 ]);
 export const InputRequestV10Schema = z.object({ ...wireOwnership, inputSequence: wireSequence, expectedTurn: integer(0, 16),
@@ -71,16 +71,16 @@ export const InputReleaseV10Schema = InputCancelV10Schema;
 export const ChallengePauseV10Schema = z.object({ ...wireOwnership, sequence: wireSequence, paused: z.boolean() }).strict();
 export const ChallengeLeaveV10Schema = z.object({ ...wireOwnership, sequence: wireSequence }).strict();
 export const ChallengeSnapshotV10Schema = z.object({ protocolVersion: z.literal(10), serverTimeMs: integer(0, Number.MAX_SAFE_INTEGER),
-    sessionId: id, challengeId: id, rulesetId: z.literal(V10_R5_RULESET_ID), automationId: z.literal(V10_AUTOMATION_ID),
+    sessionId: id, challengeId: id, rulesetId: z.literal(CURRENT_V10_RULESET_ID), automationId: z.literal(V10_AUTOMATION_ID),
     loomkeeperPolicyId: z.literal(V10_LOOMKEEPER_POLICY_ID), loomkeeperProfileId: z.literal(V10_LOOMKEEPER_PROFILE_ID),
     mode: z.enum(['practice', 'reward']), calling, status: z.enum(['active', 'left', 'expired', 'completed']), paused: z.boolean(),
-    nextSequence: wireSequence, nextInputSequence: wireSequence, expiresAt: z.string().datetime(), simulation: SimulationStateV10Schema.refine(state => state.rulesetId === V10_R5_RULESET_ID), stateHash: hash }).strict();
+    nextSequence: wireSequence, nextInputSequence: wireSequence, expiresAt: z.string().datetime(), simulation: SimulationStateV10Schema.refine(state => state.rulesetId === CURRENT_V10_RULESET_ID), stateHash: hash }).strict();
 export type ChallengeSnapshotV10 = z.infer<typeof ChallengeSnapshotV10Schema>;
 // Diagnostic metadata only: simulation/replay identities and settlement outcomes stay unchanged.
 export const V10StopReasonSchema = z.enum(['replay_limit', 'clock_debt', 'lifecycle_limit', 'sequence_limit', 'expiry', 'left', 'runtime_error']);
 export type V10StopReason = z.infer<typeof V10StopReasonSchema>;
 export const ChallengeResultV10Schema = z.object({ protocolVersion: z.literal(10), serverTimeMs: integer(0, Number.MAX_SAFE_INTEGER),
-    sessionId: id, challengeId: id, rulesetId: z.literal(V10_R5_RULESET_ID), automationId: z.literal(V10_AUTOMATION_ID),
+    sessionId: id, challengeId: id, rulesetId: z.literal(CURRENT_V10_RULESET_ID), automationId: z.literal(V10_AUTOMATION_ID),
     loomkeeperPolicyId: z.literal(V10_LOOMKEEPER_POLICY_ID), loomkeeperProfileId: z.literal(V10_LOOMKEEPER_PROFILE_ID),
     nextSequence: wireSequence, nextInputSequence: wireSequence, outcome: z.enum(['player_win', 'loomkeeper_win', 'draw', 'left', 'expired']),
     stopReason: V10StopReasonSchema.optional(),

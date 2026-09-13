@@ -1,4 +1,4 @@
-import type { ProjectileMechanics } from './simulation-v8';
+import type { ProjectileMechanics, SimulationDynamics } from './simulation-v8';
 import { z } from 'zod';
 import {
     V8_R1_RULESET_ID, V8_SIM_RULES, applySimulationBarrierV8, applySimulationIntentV8,
@@ -98,6 +98,14 @@ export const SimulationStateV9Schema = z.object({
         words: z.array(integer(0, 0xffffffff)).length(576) }).strict(),
     projectile: projectile.nullable(), lastProjectile: projectileSummary.nullable()
 }).strict();
+/** Internal later-version validator; exact timing remains in the kernel invariant. */
+export const SimulationStateV9KernelSchema = SimulationStateV9Schema.extend({
+    tick: integer(0, 38_400),
+    phaseStartedTick: integer(0, 38_400),
+    phaseDeadlineTick: integer(0, 40_800),
+    leaseExpiresTick: integer(0, 38_418).nullable(),
+    lastLeaseRefreshTick: integer(0, 38_400).nullable()
+}).strict();
 export const SimulationIntentV9Schema = z.discriminatedUnion('type', [
     z.object({ type: z.literal('walk_start'), direction }).strict(),
     z.object({ type: z.literal('walk_refresh') }).strict(),
@@ -121,11 +129,12 @@ export function createSimulationV9(seed: number, calling: PlayerCalling): Simula
 }
 
 export function applySimulationIntentV9(current: SimulationStateV9, actorId: SimulationActor, intent: SimulationIntentV9,
-    expectedTurn: number, expectedPhase = current.phase, expectedEpoch = current.inputEpoch, mechanics?: ProjectileMechanics): SimulationTransitionV9 {
-    assertSimulationInvariantsV9(current);
+    expectedTurn: number, expectedPhase = current.phase, expectedEpoch = current.inputEpoch, mechanics?: ProjectileMechanics,
+    dynamics?: SimulationDynamics): SimulationTransitionV9 {
+    assertSimulationInvariantsV9(current, dynamics);
     if (!SimulationIntentV9Schema.safeParse(intent).success) return reject(current, 'COMMAND_REJECTED', 'Invalid V9 intent.');
     if (intent.type !== 'threadguard' && intent.type !== 'threadleap') {
-        const result = applySimulationIntentV8(toV8(current), actorId, intent, expectedTurn, expectedPhase, expectedEpoch, mechanics);
+        const result = applySimulationIntentV8(toV8(current), actorId, intent, expectedTurn, expectedPhase, expectedEpoch, mechanics, dynamics);
         if (!result.accepted) return { ...result, state: current, events: [] };
         const state = fromV8(result.state, current, result.events);
         if (intent.type === 'fire' && result.state.phase === 'projectile') {
@@ -134,21 +143,21 @@ export function applySimulationIntentV9(current: SimulationStateV9, actorId: Sim
             if (unit.thread < price) return reject(current, 'COMMAND_REJECTED', 'Insufficient Thread.');
             activeUnit(state).thread -= price;
         }
-        assertSimulationInvariantsV9(state);
+        assertSimulationInvariantsV9(state, dynamics);
         return { accepted: result.accepted, mutated: result.mutated, state, events: translateEvents(result.events, current, state) };
     }
     if (current.phase === 'finished') return reject(current, 'COMMAND_REJECTED', 'The match is finished.');
     if (expectedTurn !== current.turn) return reject(current, 'LATE_TURN', 'Different turn.');
     if (actorId !== current.activeActor) return reject(current, 'NOT_YOUR_TURN', 'Different active actor.');
     if (expectedPhase !== current.phase || expectedEpoch !== current.inputEpoch) return reject(current, 'STALE_INPUT', 'Different phase or input epoch.');
-    if (current.acceptedIntentCount >= 512) return reject(current, 'INTENT_LIMIT', 'Turn intent budget exhausted.');
+    if (current.acceptedIntentCount >= (dynamics?.maximumIntentsPerTurn ?? V8_SIM_RULES.maximumIntentsPerTurn)) return reject(current, 'INTENT_LIMIT', 'Turn intent budget exhausted.');
     const active = activeUnit(current);
     if (current.phase !== 'action' || current.tick >= current.phaseDeadlineTick || current.castUsed || current.utilityUsed ||
         current.heldDirection !== 0 || !active.alive ||
         !current.units.every(body => body.alive && body.grounded && body.vxFp === 0 && body.vyFp === 0))
         return reject(current, 'COMMAND_REJECTED', 'Utility is not legal in this state.');
     // Mirror V8's fail-closed counter terminal before a utility can mutate or debit.
-    if (current.revision >= 65534 || current.inputEpoch >= 65534) return forceSimulationLimitV9(current);
+    if (current.revision >= 65534 || current.inputEpoch >= 65534) return forceSimulationLimitV9(current, dynamics);
     if (active.thread < 2) return reject(current, 'COMMAND_REJECTED', 'Insufficient Thread.');
     const state = cloneSimulationV9(current); const body = activeUnit(state);
     body.thread -= 2; state.utilityUsed = true; clearInput(state, false);
@@ -160,24 +169,26 @@ export function applySimulationIntentV9(current: SimulationStateV9, actorId: Sim
         body.airDrive = 'jump'; body.reinforcedLeap = true;
     }
     state.acceptedIntentCount += 1; state.revision += 1;
-    assertSimulationInvariantsV9(state);
+    assertSimulationInvariantsV9(state, dynamics);
     return { accepted: true, mutated: true, state, events: [] };
 }
 
-export function advanceSimulationTicksV9(current: SimulationStateV9, count: number, mechanics?: ProjectileMechanics): SimulationTransitionV9 {
-    assertSimulationInvariantsV9(current);
-    if (!Number.isSafeInteger(count) || count < 0 || count > 16800)
-        return reject(current, 'COMMAND_REJECTED', 'Tick batch exceeds the V9 bound.');
+export function advanceSimulationTicksV9(current: SimulationStateV9, count: number, mechanics?: ProjectileMechanics,
+    dynamics?: SimulationDynamics): SimulationTransitionV9 {
+    assertSimulationInvariantsV9(current, dynamics);
+    const maximumCombatTicks = dynamics?.maximumCombatTicks ?? V8_SIM_RULES.maximumCombatTicks;
+    if (!Number.isSafeInteger(count) || count < 0 || count > maximumCombatTicks)
+        return reject(current, 'COMMAND_REJECTED', 'Tick batch exceeds the simulation bound.');
     if (current.phase === 'finished' || count === 0) return { accepted: true, mutated: false, state: current, events: [] };
     // Reapply the immutable V8-r1 tick one at a time so resource effects occur at
     // each real boundary, making a batch exactly equivalent to repeated ticks.
     let state = current;
     const events: SimulationEventV9[] = [];
     for (let index = 0; index < count && state.phase !== 'finished'; index += 1) {
-        const result = advanceSimulationTicksV8(toV8(state), 1, mechanics);
+        const result = advanceSimulationTicksV8(toV8(state), 1, mechanics, dynamics);
         if (!result.mutated) break;
         const next = fromV8(result.state, state, result.events);
-        assertSimulationInvariantsV9(next);
+        assertSimulationInvariantsV9(next, dynamics);
         events.push(...translateEvents(result.events, state, next));
         state = next;
     }
@@ -186,10 +197,10 @@ export function advanceSimulationTicksV9(current: SimulationStateV9, count: numb
 
 /** Detached state is created only through the validated planner boundary below. */
 export class DetachedSimulationRolloutV9 {
-    private constructor(private current: SimulationStateV9) {}
-    public static fromTrustedSource(source: SimulationStateV9): DetachedSimulationRolloutV9 {
-        assertSimulationInvariantsV9(source);
-        return new DetachedSimulationRolloutV9(cloneSimulationV9(source));
+    private constructor(private current: SimulationStateV9, public readonly dynamics?: SimulationDynamics) {}
+    public static fromTrustedSource(source: SimulationStateV9, dynamics?: SimulationDynamics): DetachedSimulationRolloutV9 {
+        assertSimulationInvariantsV9(source, dynamics);
+        return new DetachedSimulationRolloutV9(cloneSimulationV9(source), dynamics);
     }
     public get state(): SimulationStateV9 { return this.current; }
     /** Public V9 transitions already validate their result before this replacement. */
@@ -203,13 +214,14 @@ export class DetachedSimulationRolloutV9 {
  */
 export function advanceSimulationTicksV9DetachedRollout(rollout: DetachedSimulationRolloutV9, count: number, mechanics?: ProjectileMechanics): SimulationTransitionV9 {
     const current = rollout.state;
-    if (!Number.isSafeInteger(count) || count < 0 || count > 16800)
-        return reject(current, 'COMMAND_REJECTED', 'Tick batch exceeds the V9 bound.');
+    const maximumCombatTicks = rollout.dynamics?.maximumCombatTicks ?? V8_SIM_RULES.maximumCombatTicks;
+    if (!Number.isSafeInteger(count) || count < 0 || count > maximumCombatTicks)
+        return reject(current, 'COMMAND_REJECTED', 'Tick batch exceeds the simulation bound.');
     if (current.phase === 'finished' || count === 0) return { accepted: true, mutated: false, state: current, events: [] };
     let state = current;
     const events: SimulationEventV9[] = [];
     for (let index = 0; index < count && state.phase !== 'finished'; index += 1) {
-        const result = advanceSimulationTicksV8(toV8(state), 1, mechanics);
+        const result = advanceSimulationTicksV8(toV8(state), 1, mechanics, rollout.dynamics);
         if (!result.mutated) break;
         const next = fromV8(result.state, state, result.events);
         events.push(...translateEvents(result.events, state, next));
@@ -221,12 +233,13 @@ export function advanceSimulationTicksV9DetachedRollout(rollout: DetachedSimulat
 
 /** Completes the detached-only trust boundary before a candidate can be ranked. */
 export function completeDetachedSimulationRolloutV9(rollout: DetachedSimulationRolloutV9): SimulationStateV9 {
-    assertSimulationInvariantsV9(rollout.state);
+    assertSimulationInvariantsV9(rollout.state, rollout.dynamics);
     return rollout.state;
 }
 
-export function applySimulationBarrierV9(current: SimulationStateV9, barrier: SimulationBarrierV9): SimulationTransitionV9 {
-    assertSimulationInvariantsV9(current);
+export function applySimulationBarrierV9(current: SimulationStateV9, barrier: SimulationBarrierV9,
+    dynamics?: SimulationDynamics): SimulationTransitionV9 {
+    assertSimulationInvariantsV9(current, dynamics);
     if (!SimulationBarrierV9Schema.safeParse(barrier).success) return reject(current, 'COMMAND_REJECTED', 'Invalid barrier.');
     // V8 restricts pause to grounded player action. A V9 committed Threadleap is
     // interruptible: it loses horizontal drive while its inherited gravity arc
@@ -234,23 +247,23 @@ export function applySimulationBarrierV9(current: SimulationStateV9, barrier: Si
     if (barrier.reason === 'pause' && activeUnit(current).reinforcedLeap && current.phase === 'action' &&
         barrier.actor === current.activeActor && barrier.expectedTurn === current.turn && barrier.expectedEpoch === current.inputEpoch) {
         if (current.lifecycleBarrierCount >= 128) return reject(current, 'LIFECYCLE_LIMIT', 'Lifecycle budget exhausted.');
-        if (current.revision >= 65534 || current.inputEpoch >= 65534) return forceSimulationLimitV9(current);
+        if (current.revision >= 65534 || current.inputEpoch >= 65534) return forceSimulationLimitV9(current, dynamics);
         const state = cloneSimulationV9(current); clearInput(state, false); state.lifecycleBarrierCount += 1; state.revision += 1;
-        assertSimulationInvariantsV9(state);
+        assertSimulationInvariantsV9(state, dynamics);
         return { accepted: true, mutated: true, state, events: [] };
     }
-    const result = applySimulationBarrierV8(toV8(current), barrier);
+    const result = applySimulationBarrierV8(toV8(current), barrier, dynamics);
     if (!result.mutated) return { ...result, state: current, events: [] };
     const state = fromV8(result.state, current, result.events);
-    assertSimulationInvariantsV9(state);
+    assertSimulationInvariantsV9(state, dynamics);
     return { accepted: result.accepted, mutated: result.mutated, state, events: translateEvents(result.events, current, state) };
 }
 
-export function forceSimulationLimitV9(current: SimulationStateV9): SimulationTransitionV9 {
-    const result = forceSimulationLimitV8(toV8(current));
+export function forceSimulationLimitV9(current: SimulationStateV9, dynamics?: SimulationDynamics): SimulationTransitionV9 {
+    const result = forceSimulationLimitV8(toV8(current), dynamics);
     if (!result.mutated) return { ...result, state: current, events: [] };
     const state = fromV8(result.state, current, result.events);
-    assertSimulationInvariantsV9(state);
+    assertSimulationInvariantsV9(state, dynamics);
     return { accepted: result.accepted, mutated: result.mutated, state, events: translateEvents(result.events, current, state) };
 }
 
@@ -260,8 +273,8 @@ export function cloneSimulationV9(state: SimulationStateV9): SimulationStateV9 {
         lastProjectile: state.lastProjectile ? { ...state.lastProjectile, trace: state.lastProjectile.trace.map(point => ({ ...point })) } : null };
 }
 
-export function assertSimulationInvariantsV9(state: SimulationStateV9): void {
-    if (!SimulationStateV9Schema.safeParse(state).success) throw new Error('Invalid V9 state: schema.');
+export function assertSimulationInvariantsV9(state: SimulationStateV9, dynamics?: SimulationDynamics): void {
+    if (!(dynamics ? SimulationStateV9KernelSchema : SimulationStateV9Schema).safeParse(state).success) throw new Error('Invalid V9 state: schema.');
     const fail = (condition: boolean, message: string) => { if (!condition) throw new Error(`Invalid V9 state: ${message}`); };
     for (const body of state.units) {
         // Validate V9's actual health before creating the temporary V8
@@ -272,7 +285,7 @@ export function assertSimulationInvariantsV9(state: SimulationStateV9): void {
         if (!body.alive) fail(body.shield === 0 && body.shieldExpiresTurn === null && !body.reinforcedLeap, 'dead resource');
         if (body.reinforcedLeap) fail(!body.grounded && body.airDrive === 'jump', 'reinforced leap');
     }
-    assertSimulationInvariantsV8Family(toV8(state));
+    assertSimulationInvariantsV8Family(toV8(state), dynamics);
 }
 
 /** Validates before serializing and recursively sorts all object keys. */

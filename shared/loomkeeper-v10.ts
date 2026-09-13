@@ -1,4 +1,3 @@
-import { V10G_PROJECTILE_RULES } from './projectile-rules-v10g';
 import {
     candidateAt,
     LoomkeeperExecutionV9,
@@ -14,7 +13,7 @@ import {
     type LoomkeeperSelectionV9,
     type V9Prefix
 } from './loomkeeper-v9';
-import { simulationV9ViewOfV10, usesV10GTactics, type SimulationStateV10 } from './simulation-v10';
+import { dynamicsForV10, mechanicsForV10, simulationV9ViewOfV10, usesV10GTactics, type SimulationStateV10 } from './simulation-v10';
 
 /** V10 deliberately inherits the complete frozen V9 search budget. */
 export const V10_AI_PLANS = V9_AI_PLANS;
@@ -34,7 +33,8 @@ export class LoomkeeperPlannerV10 {
     public constructor(source: SimulationStateV10, options: LoomkeeperPlannerOptionsV9 = {}) {
         this.planner = new LoomkeeperPlannerV9(simulationV9ViewOfV10(source), {
             ...options,
-            mechanics: usesV10GTactics(source.rulesetId) ? V10G_PROJECTILE_RULES : undefined,
+            mechanics: mechanicsForV10(source.rulesetId),
+            dynamics: dynamicsForV10(source.rulesetId),
             candidateAt: usesV10GTactics(source.rulesetId) ? v10gCandidateAt : undefined
         });
     }

@@ -13,6 +13,7 @@ import { cameraFocusProgress } from './controls';
 import { activeSidewaysMode, clientPointToGame } from '../lib/sideways';
 import type { AimIntent } from './input';
 import type { SimulationIntentV9, SimulationStateV9 } from '../../../shared/simulation-v9';
+import { usesVolcanicRuin } from '../../../shared/simulation-v10';
 
 type CameraActor = 'player' | 'loomkeeper';
 type CameraTransition = { kind: 'focus' | 'opening'; actor: CameraActor; from: CombatCamera; to: CombatCamera; startedAt: number };
@@ -38,7 +39,7 @@ export class ResourceTurnsV9Scene {
     ) {
         this.state = structuredClone(args.snapshot); createApprovedWizardAnimations(scene); this.renderer = new CombatRenderer(scene);
         this.sceneBackground = new BackgroundRenderer(scene, backgroundScene, this.renderer.backgroundMask);
-        this.scenicFrame = this.state.rulesetId === 'nimble-knots-artillery-v10-r5';
+        this.scenicFrame = usesVolcanicRuin(this.state.rulesetId);
         const projected = projectCombatV9(this.state);
         const playerCamera = cameraForActor(projected, createCombatCamera(projected), 'player');
         this.camera = this.scenicFrame ? { ...VOLCANIC_RUIN_ARENA_FRAME } : args.kind === 'v10' ? createCombatOverviewCamera(projected) : playerCamera;

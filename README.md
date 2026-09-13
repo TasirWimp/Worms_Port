@@ -9,11 +9,15 @@ The `Worms_Port` repository was bootstrapped from the MIT
 
 ## Standard volcanic Practice
 
-The normal `/` entry now starts server-backed V10 R5 Practice in the approved
+The normal `/` entry now starts server-backed V10 R6 Practice in the approved
 Volcanic Ruin stepped valley, with the existing terrain weapons and Loomkeeper.
 The five background images load only when combat starts. Practice remains
-wallet-free. Daily Challenge uses the same V10 R5 volcanic authority after its
-existing wallet and reward reservation checks.
+wallet-free. Daily Challenge uses the same V10 R6 volcanic authority after its
+existing wallet, PEI receipt and reward reservation checks.
+R6 keeps the exact R5 terrain and weapon balance, presents smaller actors with
+a matching direct-hit envelope, and gives each actor a 60-second action phase
+for continuous movement and jumping before its single offensive shot. R5 is an
+explicit diagnostic profile and is excluded from routine acceptance.
 The explicit local preview URLs remain available for historical review.
 The [V8 preview controller](client/src/combat/action-turns-v8-fixture.ts) loads
 only when requested, keeping its local authority out of the initial bundle.
@@ -28,7 +32,7 @@ REWARD_PAUSED=true
 
 Redeploy and open `/` without preview query parameters. This profile constructs
 no identity, database or payout service, even when old credentials are saved.
-Ordinary startup without a development profile selects volcanic V10 R5 for both
+Ordinary startup without a development profile selects volcanic V10 R6 for both
 Practice and the separately configured Daily service. The development profile
 remains Practice-only and constructs no reward service. Old V8/V9 protocols and
 replays retain their historical behavior. Runtime selection does not activate
@@ -271,7 +275,7 @@ fails.
 The active Socket.IO transport uses strict request/acknowledgement schemas
 and server-issued 256-bit opaque session tokens. Socket.IO IDs are transport
 details and are never accepted from callers as player identity. Practice
-sessions work without a wallet. The default client creates live V10 R5 Practice
+sessions work without a wallet. The default client creates live V10 R6 Practice
 Clashes, submits ordered commands, consumes authoritative snapshots and
 results, and reconnects with the rotated session token. WP-012 adds an optional
 verified Nimiq wallet identity to that existing session. WP-013 uses that
@@ -295,7 +299,7 @@ prompts for a wallet. The Daily entry first discloses public availability,
 fixed Luna/NIM amount, one-started-attempt-per-wallet-and-UTC-day eligibility,
 sixteen-turn limit, and reservation window. It requests an account only after
 the player chooses that path. The admitted match is the same server-authoritative
-V10 R5 Volcanic Ruin challenge used by Practice, with reward mode preventing
+V10 R6 Volcanic Ruin challenge used by Practice, with reward mode preventing
 pause and with settlement bound to its verified automated replay.
 `/?identity-preview=1` remains the isolated identity diagnostics surface.
 
@@ -662,7 +666,7 @@ work-package sequence.
 
 This section preserves the retired V9D deployment record for diagnosis on its
 archived branch. It is not a current deployment procedure. The standard client
-uses only V10 R5 for server-backed Practice and Daily; preview query values are
+uses only V10 R6 for server-backed Practice and Daily; preview query values are
 local visual diagnostics and cannot select a V9 server route.
 
 Deploy `codex/wp-015d3b-v9d-resource-utilities` with the V9D Practice profile

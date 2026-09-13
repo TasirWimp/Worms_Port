@@ -6,9 +6,9 @@ import { VersionedSimulationCoordinator } from '../../server/src/simulation/vers
 import { ChallengeCreateV10Schema } from '../../shared/protocol-v10-live';
 import { CoordinatorReplayV10Schema } from '../../shared/protocol-v10';
 import { V10_AUTOMATION_ID } from '../../shared/combat-version';
-import { V10_R5_RULESET_ID } from '../../shared/simulation-v10';
+import { CURRENT_V10_RULESET_ID, V10_R6_DYNAMICS } from '../../shared/simulation-v10';
 
-const request = { requestId: 'volcanic_request_001', sequence: 0, mode: 'practice', calling: 'wizard', rulesetId: V10_R5_RULESET_ID, automationId: V10_AUTOMATION_ID };
+const request = { requestId: 'volcanic_request_001', sequence: 0, mode: 'practice', calling: 'wizard', rulesetId: CURRENT_V10_RULESET_ID, automationId: V10_AUTOMATION_ID };
 
 test('volcanic live admission strictly separates standard Daily from the wallet-free Practice profile', async () => {
     assert.equal(ChallengeCreateV10Schema.safeParse(request).success, true);
@@ -50,7 +50,7 @@ test('volcanic live ownership, duplicate input, pause, cold resume and fresh mat
         assert.equal((registry.createChallenge(session, 'practice', 'wizard') as any).code, 'COMMAND_REJECTED');
         assert.equal((registry.submitCommand(session, created.challengeId, { type: 'fire' }, 0) as any).code, 'COMMAND_REJECTED');
         assert.equal(registry.admitChallengeAutomatedV10(session, 'practice')?.code, 'COMMAND_REJECTED');
-        const packet = { requestId: 'volcanic_input_001', challengeId: created.challengeId, rulesetId: V10_R5_RULESET_ID, automationId: V10_AUTOMATION_ID,
+        const packet = { requestId: 'volcanic_input_001', challengeId: created.challengeId, rulesetId: CURRENT_V10_RULESET_ID, automationId: V10_AUTOMATION_ID,
             inputSequence: 0, expectedTurn: created.simulation.turn, expectedPhase: created.simulation.phase, inputEpoch: created.simulation.inputEpoch,
             intent: { type: 'aim', angleMilliDegrees: 30000, powerPermille: 500 } };
         assert.equal((await registry.submitInputV10(foreign, packet)).ok, false);
@@ -66,7 +66,7 @@ test('volcanic live ownership, duplicate input, pause, cold resume and fresh mat
         const unpaused = await registry.setChallengePausedV10(session, created.challengeId, false); assert.ok(!('code' in unpaused));
         assert.equal(registry.leaveChallengeV10(session, created.challengeId).outcome, 'left');
         const next = registry.createChallengeAutomatedV10(session, 'practice', 'thief'); assert.ok(!('code' in next));
-        assert.notEqual(next.challengeId, created.challengeId); assert.equal(next.simulation.rulesetId, V10_R5_RULESET_ID);
+        assert.notEqual(next.challengeId, created.challengeId); assert.equal(next.simulation.rulesetId, CURRENT_V10_RULESET_ID);
         assert.equal(next.calling, 'thief');
     } finally { registry.dispose(); }
 });
@@ -76,7 +76,9 @@ test('volcanic live replay regenerates AI, binds terrain, and refuses foundation
     const dispatcher = new VersionedSimulationCoordinator();
     try {
         const created = live.createAutomated('volcanic_replay_match', 'volcanic_replay_owner', 4, 'wizard');
-        live.advance(created.challengeId, 510);
+        // Cross the longer R6 player action and allow the fixed 30-tick AI
+        // planning charge plus execution to enter the retained replay.
+        live.advance(created.challengeId, V10_R6_DYNAMICS.actionTicks + 60);
         const replay = live.replay(created.challengeId)!;
         assert.ok('chosenPlans' in replay); assert.ok(replay.chosenPlans.length > 0);
         assert.ok(replay.chosenPlans.every(plan => plan.status !== 'work_failure'));

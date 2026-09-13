@@ -13,5 +13,5 @@ export const V8_AUTOMATION_ID = 'wp-015d3a-v8d-r1-v1' as const;
 /** Strict V9D provenance; the numeric V9 replay version remains unchanged. */
 export const V9_AUTOMATION_ID = 'wp-015d3b-v9d-v1' as const;
 
-/** Server-backed volcanic authority shared by standard Practice and Daily. */
-export const V10_AUTOMATION_ID = 'wp-015d4h-v10-live-v1' as const;
+/** Current R6 volcanic authority shared by standard Practice and Daily. */
+export const V10_AUTOMATION_ID = 'wp-023-v10-r6-live-v1' as const;

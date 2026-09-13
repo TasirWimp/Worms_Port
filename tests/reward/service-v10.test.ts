@@ -5,6 +5,7 @@ import { LiveSimulationCoordinatorV10 } from '../../server/src/simulation/coordi
 import { MemoryRewardStore } from '../../server/src/reward/memory-store';
 import { RewardService } from '../../server/src/reward/service';
 import { RewardStoreError, type RewardConfig } from '../../server/src/reward/types';
+import { V10_AUTOMATION_ID } from '../../shared/combat-version';
 
 const WALLET = 'NQ46 KLJE 5TMF 4Y1A 1255 CJHJ YG1S H0NU T604';
 
@@ -34,7 +35,7 @@ test('genuine V10 Daily evidence settles once while forged volcanic replay evide
             sessionId: 'reward_v10_session_001',
             challengeId: reservation.challengeId,
             rulesetId: terminal.state.rulesetId,
-            automationId: 'wp-015d4h-v10-live-v1' as const,
+            automationId: V10_AUTOMATION_ID,
             loomkeeperPolicyId: 'nimble-knots-loomkeeper-v5' as const,
             loomkeeperProfileId: 'standard-v10-0' as const,
             nextSequence: 1,

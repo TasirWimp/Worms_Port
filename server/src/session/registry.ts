@@ -1,5 +1,5 @@
 import { V10_AUTOMATION_ID } from '../../../shared/combat-version';
-import { V10_R5_RULESET_ID, type SimulationIntentV10 } from '../../../shared/simulation-v10';
+import { CURRENT_V10_RULESET_ID, type SimulationIntentV10 } from '../../../shared/simulation-v10';
 import { CandidateAckV10Schema, ChallengeResultV10Schema, ChallengeSnapshotV10Schema, InputCancelV10Schema, InputRequestV10Schema, V10_INPUT_BYTES, jsonBytesV10, type CandidateAckV10, type ChallengeResultV10, type ChallengeSnapshotV10, type CoordinatorReplayV10Automated } from '../../../shared/protocol-v10-live';
 import type { CoordinatorUpdateV10, LiveSimulationCoordinatorV10Options } from '../simulation/coordinator-v10-live';
 import { createHash, randomBytes } from 'crypto';
@@ -71,7 +71,7 @@ type CachedRequest = {
 export type Challenge = {
     id: string;
     /** Absent on historical in-memory entries; V8 never enters a legacy snapshot. */
-    rulesetId?: SimulationRulesetId | V8RulesetId | typeof V9_RULESET_ID | typeof V10_R5_RULESET_ID;
+    rulesetId?: SimulationRulesetId | V8RulesetId | typeof V9_RULESET_ID | typeof CURRENT_V10_RULESET_ID;
     mode: 'practice' | 'reward';
     calling: 'wizard' | 'thief' | 'warrior';
     loomkeeperDifficulty: LoomkeeperDifficulty;
@@ -447,7 +447,7 @@ export class SessionRegistry {
                 this.expireChallenge(session, existing, session.nextSequence + 1);
             }
             if (existing.status === 'active' && existing.expiresAt > this.now()) {
-                if (isV8RulesetId(existing.rulesetId) || existing.rulesetId === V10_R5_RULESET_ID) return v8Error('COMMAND_REJECTED', 'An internal V8 fixture is already active.');
+                if (isV8RulesetId(existing.rulesetId) || existing.rulesetId === CURRENT_V10_RULESET_ID) return v8Error('COMMAND_REJECTED', 'An internal V8 fixture is already active.');
                 return this.snapshot(session, existing);
             }
         }
@@ -838,7 +838,7 @@ export class SessionRegistry {
         const seed = reward?.seed ?? this.seedSource(session.id, session.practiceSeedIndex++) >>> 0;
         const snapshot = this.versions.v10Live.createAutomated(id, session.id, seed || 1, calling);
         const challenge: Challenge = {
-            id, rulesetId: V10_R5_RULESET_ID, automationId: V10_AUTOMATION_ID, mode, calling,
+            id, rulesetId: CURRENT_V10_RULESET_ID, automationId: V10_AUTOMATION_ID, mode, calling,
             loomkeeperDifficulty: 'standard', status: 'active', paused: false, revision: 0,
             simulationRevision: 0, simulationStateHash: snapshot.stateHash,
             expiresAt: Math.min(this.now() + this.challengeTtlMs, session.expiresAt),
@@ -871,12 +871,12 @@ export class SessionRegistry {
 
     public hasChallengeV10(session: Session, id: string): boolean {
         const challenge = session.challenges.get(id);
-        return this.boundSessionV10(session) && challenge?.rulesetId === V10_R5_RULESET_ID &&
+        return this.boundSessionV10(session) && challenge?.rulesetId === CURRENT_V10_RULESET_ID &&
             challenge.automationId === V10_AUTOMATION_ID;
     }
 
-    public ownsChallengePacketV10(session: Session, id: string, packet: { rulesetId: typeof V10_R5_RULESET_ID; automationId: typeof V10_AUTOMATION_ID }): boolean {
-        return this.hasChallengeV10(session, id) && packet.rulesetId === V10_R5_RULESET_ID && packet.automationId === V10_AUTOMATION_ID;
+    public ownsChallengePacketV10(session: Session, id: string, packet: { rulesetId: typeof CURRENT_V10_RULESET_ID; automationId: typeof V10_AUTOMATION_ID }): boolean {
+        return this.hasChallengeV10(session, id) && packet.rulesetId === CURRENT_V10_RULESET_ID && packet.automationId === V10_AUTOMATION_ID;
     }
 
     public inputCursorV10(session: Session, id: string): number {
@@ -884,7 +884,7 @@ export class SessionRegistry {
     }
 
     public activeSnapshotV10(session: Session): ChallengeSnapshotV10 | undefined {
-        const candidates = [...session.challenges.values()].filter(challenge => challenge.rulesetId === V10_R5_RULESET_ID);
+        const candidates = [...session.challenges.values()].filter(challenge => challenge.rulesetId === CURRENT_V10_RULESET_ID);
         const challenge = candidates.find(candidate => candidate.status === 'active') ?? candidates.at(-1);
         return challenge && this.versions.v10Live.get(challenge.id) ? this.snapshotV10(session, challenge) : undefined;
     }
@@ -1046,7 +1046,7 @@ export class SessionRegistry {
         if (isProtocolError(challenge)) {
             return challenge;
         }
-        if (isV8RulesetId(challenge.rulesetId) || challenge.rulesetId === V10_R5_RULESET_ID) return v8Error('COMMAND_REJECTED', 'V8 requires its dedicated input protocol.');
+        if (isV8RulesetId(challenge.rulesetId) || challenge.rulesetId === CURRENT_V10_RULESET_ID) return v8Error('COMMAND_REJECTED', 'V8 requires its dedicated input protocol.');
         if (challenge.paused) {
             return {
                 code: 'COMMAND_REJECTED',
@@ -1157,7 +1157,7 @@ export class SessionRegistry {
     }
 
     public activeSnapshot(session: Session): ChallengeSnapshot | undefined {
-        const challenges = [...session.challenges.values()].filter(challenge => !isV8RulesetId(challenge.rulesetId) && challenge.rulesetId !== V9_RULESET_ID && challenge.rulesetId !== V10_R5_RULESET_ID);
+        const challenges = [...session.challenges.values()].filter(challenge => !isV8RulesetId(challenge.rulesetId) && challenge.rulesetId !== V9_RULESET_ID && challenge.rulesetId !== CURRENT_V10_RULESET_ID);
         const challenge = challenges.find((candidate) => candidate.status === 'active') ||
             challenges.reverse().find((candidate) => candidate.status === 'completed');
         return challenge && this.coordinator.get(challenge.id)
@@ -1225,7 +1225,7 @@ export class SessionRegistry {
     ): ChallengeSnapshot | ProtocolError {
         const challenge = this.activeChallenge(session, challengeId);
         if (isProtocolError(challenge)) return challenge;
-        if (isV8RulesetId(challenge.rulesetId) || challenge.rulesetId === V10_R5_RULESET_ID) return v8Error('COMMAND_REJECTED', 'V8 requires its dedicated authority.');
+        if (isV8RulesetId(challenge.rulesetId) || challenge.rulesetId === CURRENT_V10_RULESET_ID) return v8Error('COMMAND_REJECTED', 'V8 requires its dedicated authority.');
         if (challenge.paused) {
             return {
                 code: 'COMMAND_REJECTED',
@@ -1244,7 +1244,7 @@ export class SessionRegistry {
         if (isProtocolError(challenge)) {
             return challenge;
         }
-        if (isV8RulesetId(challenge.rulesetId) || challenge.rulesetId === V10_R5_RULESET_ID) return v8Error('COMMAND_REJECTED', 'V8 requires its dedicated lifecycle.');
+        if (isV8RulesetId(challenge.rulesetId) || challenge.rulesetId === CURRENT_V10_RULESET_ID) return v8Error('COMMAND_REJECTED', 'V8 requires its dedicated lifecycle.');
         challenge.status = 'left';
         challenge.revision += 1;
         const result: ChallengeResult = {
@@ -1269,7 +1269,7 @@ export class SessionRegistry {
     ): ChallengeSnapshot | ProtocolError {
         const challenge = this.activeChallenge(session, challengeId);
         if (isProtocolError(challenge)) return challenge;
-        if (isV8RulesetId(challenge.rulesetId) || challenge.rulesetId === V10_R5_RULESET_ID) return v8Error('COMMAND_REJECTED', 'V8 requires its dedicated lifecycle.');
+        if (isV8RulesetId(challenge.rulesetId) || challenge.rulesetId === CURRENT_V10_RULESET_ID) return v8Error('COMMAND_REJECTED', 'V8 requires its dedicated lifecycle.');
         if (challenge.mode !== 'practice') {
             return {
                 code: 'COMMAND_REJECTED',
@@ -1712,7 +1712,7 @@ export class SessionRegistry {
     }
     private connectionBarrierV10(session: Session, reason: 'disconnect' | 'reconnect'): void {
         for (const challenge of session.challenges.values()) {
-            if (challenge.rulesetId !== V10_R5_RULESET_ID || challenge.status !== 'active') continue;
+            if (challenge.rulesetId !== CURRENT_V10_RULESET_ID || challenge.status !== 'active') continue;
             const current = this.versions.v10Live.get(challenge.id);
             if (!current) continue;
             this.versions.v10Live.barrier(challenge.id, { reason, actor: 'player', expectedTurn: current.state.turn, expectedEpoch: current.state.inputEpoch });
@@ -1827,11 +1827,11 @@ export class SessionRegistry {
     }
     private snapshotV10(session: Session, challenge: Challenge): ChallengeSnapshotV10 {
         const current = this.versions.v10Live.get(challenge.id);
-        if (!current || challenge.rulesetId !== V10_R5_RULESET_ID || challenge.automationId !== V10_AUTOMATION_ID)
+        if (!current || challenge.rulesetId !== CURRENT_V10_RULESET_ID || challenge.automationId !== V10_AUTOMATION_ID)
             throw new Error(`V10 challenge ${challenge.id} has no automated state.`);
         return ChallengeSnapshotV10Schema.parse({
             protocolVersion: 10, serverTimeMs: this.now(), sessionId: session.id, challengeId: challenge.id,
-            rulesetId: V10_R5_RULESET_ID, automationId: V10_AUTOMATION_ID,
+            rulesetId: CURRENT_V10_RULESET_ID, automationId: V10_AUTOMATION_ID,
             loomkeeperPolicyId: 'nimble-knots-loomkeeper-v5', loomkeeperProfileId: 'standard-v10-0',
             mode: challenge.mode, calling: challenge.calling, status: challenge.status, paused: current.paused,
             nextSequence: session.nextSequence, nextInputSequence: this.v10Inputs.get(challenge.id)?.next ?? 0,
@@ -1844,7 +1844,7 @@ export class SessionRegistry {
             : current?.state.winner === 'player' ? 'player_win' : current?.state.winner === 'loomkeeper' ? 'loomkeeper_win' : 'draw');
         return ChallengeResultV10Schema.parse({
             protocolVersion: 10, serverTimeMs: this.now(), sessionId: session.id, challengeId: challenge.id,
-            rulesetId: V10_R5_RULESET_ID, automationId: V10_AUTOMATION_ID,
+            rulesetId: CURRENT_V10_RULESET_ID, automationId: V10_AUTOMATION_ID,
             loomkeeperPolicyId: 'nimble-knots-loomkeeper-v5', loomkeeperProfileId: 'standard-v10-0',
             nextSequence: session.nextSequence, nextInputSequence: this.v10Inputs.get(challenge.id)?.next ?? 0,
             outcome: settledOutcome, stopReason: current?.terminalResult?.stopReason,
@@ -1863,7 +1863,7 @@ export class SessionRegistry {
     private onSimulationTransitionV10(update: CoordinatorUpdateV10): void {
         const session = this.sessions.get(update.sessionId);
         const challenge = session?.challenges.get(update.challengeId);
-        if (!session || !challenge || challenge.rulesetId !== V10_R5_RULESET_ID) return;
+        if (!session || !challenge || challenge.rulesetId !== CURRENT_V10_RULESET_ID) return;
         challenge.simulationStateHash = update.stateHash; challenge.simulationRevision = update.state.revision; challenge.paused = update.paused;
         if (update.state.phase === 'finished') challenge.status = update.unavailable ? 'expired' : 'completed';
         if (!this.v10InInput.has(challenge.id)) this.publishV10(session, challenge);
@@ -1890,7 +1890,7 @@ export class SessionRegistry {
     }
 
     private replayForSettlementV10(session: Session, challenge: Challenge): CoordinatorReplayV10Automated | undefined {
-        if (this.sessions.get(session.id) !== session || challenge.rulesetId !== V10_R5_RULESET_ID ||
+        if (this.sessions.get(session.id) !== session || challenge.rulesetId !== CURRENT_V10_RULESET_ID ||
             challenge.automationId !== V10_AUTOMATION_ID || session.challenges.get(challenge.id) !== challenge)
             return undefined;
         const replay = this.versions.v10Live.replay(challenge.id);
@@ -1962,7 +1962,7 @@ export class SessionRegistry {
             this.publishV9(session, challenge);
             return;
         }
-        if (challenge.rulesetId === V10_R5_RULESET_ID) {
+        if (challenge.rulesetId === CURRENT_V10_RULESET_ID) {
             this.versions.v10Live.safety(challenge.id, 'expiry');
             challenge.status = 'expired';
             this.publishV10(session, challenge);

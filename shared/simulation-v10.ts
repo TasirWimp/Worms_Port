@@ -1,14 +1,15 @@
 import { generateVolcanicRuinTerrain, VOLCANIC_RUIN_RECIPE_REVISION } from './terrain-volcanic-ruin';
-import { V10G_PROJECTILE_RULES } from './projectile-rules-v10g';
+import { V10G_PROJECTILE_RULES, V10_R6_PROJECTILE_RULES } from './projectile-rules-v10g';
 import { generateV10GTwinCrests, V10G_RECIPE_REVISION, generateV10GFamily, v10gFamilyForSeed, V10G_FAMILY_RECIPE_REVISION } from './terrain-generation-v10g';
 import { z } from 'zod';
 import {
     applySimulationBarrierV9, applySimulationIntentV9, advanceSimulationTicksV9,
     assertSimulationInvariantsV9, cloneSimulationV9, createSimulationV9, forceSimulationLimitV9,
-    SimulationBarrierV9Schema, SimulationIntentV9Schema, SimulationStateV9Schema,
+    SimulationBarrierV9Schema, SimulationIntentV9Schema, SimulationStateV9KernelSchema,
     type SimulationBarrierV9, type SimulationEventV9, type SimulationIntentV9,
     type SimulationStateV9, type SimulationTransitionV9, type SimulationUnitV9
 } from './simulation-v9';
+import { V8_DEFAULT_DYNAMICS, type ProjectileMechanics, type SimulationDynamics } from './simulation-v8';
 import {
     SIM_RULES, terrainSolid,
     type PackedTerrain, type PlayerCalling
@@ -28,13 +29,24 @@ export const V10_R2_RULESET_ID = 'nimble-knots-artillery-v10-r2' as const;
 export const V10_R3_RULESET_ID = 'nimble-knots-artillery-v10-r3' as const;
 export const V10_R4_RULESET_ID = 'nimble-knots-artillery-v10-r4' as const;
 export const V10_R5_RULESET_ID = 'nimble-knots-artillery-v10-r5' as const;
-export const usesV10GTactics = (rulesetId: string): boolean => rulesetId === V10_R3_RULESET_ID || rulesetId === V10_R4_RULESET_ID || rulesetId === V10_R5_RULESET_ID;
-export const V10_RULESET_IDS = Object.freeze([V10_RULESET_ID, V10_R1_RULESET_ID, V10_R2_RULESET_ID, V10_R3_RULESET_ID, V10_R4_RULESET_ID, V10_R5_RULESET_ID] as const);
+export const V10_R6_RULESET_ID = 'nimble-knots-artillery-v10-r6' as const;
+export const CURRENT_V10_RULESET_ID = V10_R6_RULESET_ID;
+export const usesV10GTactics = (rulesetId: string): boolean => rulesetId === V10_R3_RULESET_ID || rulesetId === V10_R4_RULESET_ID || rulesetId === V10_R5_RULESET_ID || rulesetId === V10_R6_RULESET_ID;
+export const usesVolcanicRuin = (rulesetId: string): boolean => rulesetId === V10_R5_RULESET_ID || rulesetId === V10_R6_RULESET_ID;
+export const usesV10R6ActionDynamics = (rulesetId: string): boolean => rulesetId === V10_R6_RULESET_ID;
+export const V10_RULESET_IDS = Object.freeze([V10_RULESET_ID, V10_R1_RULESET_ID, V10_R2_RULESET_ID, V10_R3_RULESET_ID, V10_R4_RULESET_ID, V10_R5_RULESET_ID, V10_R6_RULESET_ID] as const);
 export type V10RulesetId = typeof V10_RULESET_IDS[number];
 export function isV10RulesetId(value: unknown): value is V10RulesetId {
-    return value === V10_RULESET_ID || value === V10_R1_RULESET_ID || value === V10_R2_RULESET_ID || value === V10_R3_RULESET_ID || value === V10_R4_RULESET_ID || value === V10_R5_RULESET_ID;
+    return value === V10_RULESET_ID || value === V10_R1_RULESET_ID || value === V10_R2_RULESET_ID || value === V10_R3_RULESET_ID || value === V10_R4_RULESET_ID || value === V10_R5_RULESET_ID || value === V10_R6_RULESET_ID;
 }
 export const V10_RULESET_VERSION = 10 as const;
+export const V10_R6_DYNAMICS: SimulationDynamics = Object.freeze({
+    ...V8_DEFAULT_DYNAMICS,
+    actionTicks: 1_800,
+    leaseTicks: 18,
+    maximumTurnTicks: 2_400,
+    maximumCombatTicks: 38_400
+});
 export const V10_TERRAIN_PROFILE_IDS = Object.freeze([
     'sheltered-folds',
     'rising-braid',
@@ -128,7 +140,7 @@ export type SimulationBarrierV10 = SimulationBarrierV9;
 export type SimulationEventV10 = SimulationEventV9;
 export type SimulationTransitionV10 = Omit<SimulationTransitionV9, 'state'> & { state: SimulationStateV10 };
 
-export const SimulationStateV10Schema = SimulationStateV9Schema.omit({
+export const SimulationStateV10Schema = SimulationStateV9KernelSchema.omit({
     formatVersion: true, rulesetId: true, rulesetVersion: true
 }).extend({
     formatVersion: z.literal(10),
@@ -141,26 +153,36 @@ export const SimulationStateV10Schema = SimulationStateV9Schema.omit({
     const r3 = state.rulesetId === V10_R3_RULESET_ID;
     const r4 = state.rulesetId === V10_R4_RULESET_ID;
     const r5 = state.rulesetId === V10_R5_RULESET_ID;
-    const procedural = state.rulesetId === V10_R2_RULESET_ID || r3 || r4 || r5;
-    const expectedProfiles = r5 ? ['volcanic-ruin'] : procedural
+    const r6 = state.rulesetId === V10_R6_RULESET_ID;
+    const volcanic = r5 || r6;
+    const procedural = state.rulesetId === V10_R2_RULESET_ID || r3 || r4 || volcanic;
+    const expectedProfiles = volcanic ? ['volcanic-ruin'] : procedural
         ? V10_PROCEDURAL_TERRAIN_PROFILE_IDS
         : state.rulesetId === V10_R1_RULESET_ID ? V10_R1_TERRAIN_PROFILE_IDS : V10_TERRAIN_PROFILE_IDS;
     if (!(expectedProfiles as readonly string[]).includes(state.terrainProfileId) || (r3 && state.terrainProfileId !== 'twin-crests') || (r4 && state.terrainProfileId !== v10gFamilyForSeed(state.seed).profileId)) {
         context.addIssue({ code: z.ZodIssueCode.custom, path: ['terrainProfileId'],
             message: 'Terrain profile does not belong to the recorded V10 ruleset.' });
     }
-    if (procedural && (state.terrainRecipeRevision !== (r5 ? VOLCANIC_RUIN_RECIPE_REVISION : r4 ? V10G_FAMILY_RECIPE_REVISION : r3 ? V10G_RECIPE_REVISION : V10_PROCEDURAL_RECIPE_REVISION) || ((r3 || r4 || r5) && state.terrainCandidateIndex !== 0))) {
+    if (procedural && (state.terrainRecipeRevision !== (volcanic ? VOLCANIC_RUIN_RECIPE_REVISION : r4 ? V10G_FAMILY_RECIPE_REVISION : r3 ? V10G_RECIPE_REVISION : V10_PROCEDURAL_RECIPE_REVISION) || ((r3 || r4 || volcanic) && state.terrainCandidateIndex !== 0))) {
         context.addIssue({ code: z.ZodIssueCode.custom, path: ['terrainRecipeRevision'], message: 'Recipe/candidate does not belong to ruleset.' });
     }
     const hasRecipeRevision = Object.prototype.hasOwnProperty.call(state, 'terrainRecipeRevision');
     const hasCandidateIndex = Object.prototype.hasOwnProperty.call(state, 'terrainCandidateIndex');
     if (procedural !== hasRecipeRevision || (hasRecipeRevision && state.terrainRecipeRevision === undefined)) {
         context.addIssue({ code: z.ZodIssueCode.custom, path: ['terrainRecipeRevision'],
-            message: 'Procedural recipe revision must match the R2/R3/R4 ruleset.' });
+            message: 'Procedural recipe revision must match the recorded V10 ruleset.' });
     }
     if (procedural !== hasCandidateIndex || (hasCandidateIndex && state.terrainCandidateIndex === undefined)) {
         context.addIssue({ code: z.ZodIssueCode.custom, path: ['terrainCandidateIndex'],
-            message: 'Procedural candidate index must match the R2/R3/R4 ruleset.' });
+            message: 'Procedural candidate index must match the recorded V10 ruleset.' });
+    }
+    if (!r6 && (state.tick > V8_DEFAULT_DYNAMICS.maximumCombatTicks ||
+        state.phaseStartedTick > V8_DEFAULT_DYNAMICS.maximumCombatTicks ||
+        state.phaseDeadlineTick > V8_DEFAULT_DYNAMICS.maximumCombatTicks + V8_DEFAULT_DYNAMICS.maximumTurnTicks ||
+        (state.lastLeaseRefreshTick !== null && state.lastLeaseRefreshTick > V8_DEFAULT_DYNAMICS.maximumCombatTicks) ||
+        (state.leaseExpiresTick !== null && state.leaseExpiresTick > V8_DEFAULT_DYNAMICS.maximumCombatTicks + V8_DEFAULT_DYNAMICS.leaseTicks))) {
+        context.addIssue({ code: z.ZodIssueCode.custom, path: ['tick'],
+            message: 'Pre-R6 state exceeds its frozen clock bounds.' });
     }
 });
 export const SimulationIntentV10Schema = SimulationIntentV9Schema;
@@ -171,7 +193,7 @@ export function v10TerrainProfileForSeed(
     rulesetId: V10RulesetId = V10_RULESET_ID
 ): V10TerrainProfileId {
     const normalized = normalizeSeed(seed);
-    if (rulesetId === V10_R5_RULESET_ID) return 'volcanic-ruin';
+    if (usesVolcanicRuin(rulesetId)) return 'volcanic-ruin';
     if (rulesetId === V10_R4_RULESET_ID) return v10gFamilyForSeed(normalized).profileId;
     if (rulesetId === V10_R3_RULESET_ID) return 'twin-crests';
     if (rulesetId === V10_R2_RULESET_ID) return v10ProceduralTerrainProfileForSeed(normalized);
@@ -186,7 +208,7 @@ export function generateV10TacticalArena(
     const normalized = normalizeSeed(seed);
     const profileId = v10TerrainProfileForSeed(normalized, rulesetId);
     if (usesV10GTactics(rulesetId)) {
-        const candidate = rulesetId === V10_R5_RULESET_ID ? generateVolcanicRuinTerrain() : rulesetId === V10_R4_RULESET_ID ? generateV10GFamily(normalized) : generateV10GTwinCrests();
+        const candidate = usesVolcanicRuin(rulesetId) ? generateVolcanicRuinTerrain() : rulesetId === V10_R4_RULESET_ID ? generateV10GFamily(normalized) : generateV10GTwinCrests();
         return { terrain: candidate.terrain, rngState: normalized, profileId, reflected: rulesetId === V10_R4_RULESET_ID && v10gFamilyForSeed(normalized).reflected, variation: 0, phase: 0,
             opening: { ...candidate.opening, score: { profileFit: 0, combinedLocalMobility: 0, centerBias: 0, tieBreak: normalized }, jumpPositions: candidate.jumpPositions },
             evaluatedPairs: 1, eligiblePairs: 1, recipeRevision: candidate.recipeRevision, candidateIndex: 0, fallbackUsed: false };
@@ -275,6 +297,7 @@ export function createSimulationV10(
 ): SimulationStateV10 {
     const base = createV9Base(seed, calling);
     if (!isV10RulesetId(rulesetId)) throw new Error('Unknown V10 ruleset.');
+    if (usesV10R6ActionDynamics(rulesetId)) base.phaseDeadlineTick = V10_R6_DYNAMICS.actionTicks;
     const arena = generateV10TacticalArena(base.seed, rulesetId);
     const state: SimulationStateV10 = {
         ...base,
@@ -313,15 +336,18 @@ export function applySimulationIntentV10(
     expectedEpoch = current.inputEpoch
 ): SimulationTransitionV10 {
     assertSimulationInvariantsV10(current);
+    const mechanics = mechanicsForV10(current.rulesetId);
+    const dynamics = dynamicsForV10(current.rulesetId);
     return fromV9Transition(
-        applySimulationIntentV9(toV9(current), actor, intent, expectedTurn, expectedPhase, expectedEpoch, usesV10GTactics(current.rulesetId) ? V10G_PROJECTILE_RULES : undefined),
+        applySimulationIntentV9(toV9(current), actor, intent, expectedTurn, expectedPhase, expectedEpoch, mechanics, dynamics),
         current
     );
 }
 
 export function advanceSimulationTicksV10(current: SimulationStateV10, count: number): SimulationTransitionV10 {
     assertSimulationInvariantsV10(current);
-    return fromV9Transition(advanceSimulationTicksV9(toV9(current), count, usesV10GTactics(current.rulesetId) ? V10G_PROJECTILE_RULES : undefined), current);
+    return fromV9Transition(advanceSimulationTicksV9(toV9(current), count,
+        mechanicsForV10(current.rulesetId), dynamicsForV10(current.rulesetId)), current);
 }
 
 export function applySimulationBarrierV10(
@@ -329,12 +355,12 @@ export function applySimulationBarrierV10(
     barrier: SimulationBarrierV10
 ): SimulationTransitionV10 {
     assertSimulationInvariantsV10(current);
-    return fromV9Transition(applySimulationBarrierV9(toV9(current), barrier), current);
+    return fromV9Transition(applySimulationBarrierV9(toV9(current), barrier, dynamicsForV10(current.rulesetId)), current);
 }
 
 export function forceSimulationLimitV10(current: SimulationStateV10): SimulationTransitionV10 {
     assertSimulationInvariantsV10(current);
-    return fromV9Transition(forceSimulationLimitV9(toV9(current)), current);
+    return fromV9Transition(forceSimulationLimitV9(toV9(current), dynamicsForV10(current.rulesetId)), current);
 }
 
 export function cloneSimulationV10(state: SimulationStateV10): SimulationStateV10 {
@@ -360,7 +386,7 @@ export function assertSimulationInvariantsV10(state: SimulationStateV10): void {
     if (state.terrainProfileId !== v10TerrainProfileForSeed(state.seed, state.rulesetId)) {
         throw new Error('Invalid V10 state: terrain profile does not match seed.');
     }
-    assertSimulationInvariantsV9(toV9(state));
+    assertSimulationInvariantsV9(toV9(state), dynamicsForV10(state.rulesetId));
 }
 
 export function canonicalSimulationJsonV10(state: SimulationStateV10): string {
@@ -374,6 +400,15 @@ export function hashSimulationStateV10(state: SimulationStateV10): string {
 
 function createV9Base(seed: number, calling: PlayerCalling): SimulationStateV9 {
     return createSimulationV9(normalizeSeed(seed), calling);
+}
+
+export function dynamicsForV10(rulesetId: V10RulesetId): SimulationDynamics | undefined {
+    return usesV10R6ActionDynamics(rulesetId) ? V10_R6_DYNAMICS : undefined;
+}
+
+export function mechanicsForV10(rulesetId: V10RulesetId): ProjectileMechanics | undefined {
+    return rulesetId === V10_R6_RULESET_ID ? V10_R6_PROJECTILE_RULES
+        : usesV10GTactics(rulesetId) ? V10G_PROJECTILE_RULES : undefined;
 }
 
 function fromV9Transition(result: SimulationTransitionV9, current: SimulationStateV10): SimulationTransitionV10 {

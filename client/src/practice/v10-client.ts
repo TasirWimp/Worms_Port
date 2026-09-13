@@ -12,7 +12,7 @@ import {
     type ChallengeResultV10
 } from '../../../shared/protocol-v10-live';
 import { V10_AUTOMATION_ID } from '../../../shared/combat-version';
-import { V10_R5_RULESET_ID, type SimulationIntentV10, type SimulationStateV10 } from '../../../shared/simulation-v10';
+import { CURRENT_V10_RULESET_ID, type SimulationIntentV10, type SimulationStateV10 } from '../../../shared/simulation-v10';
 import type { CombatSceneArgsV10 } from '../combat/contracts';
 
 export type V10PracticeSnapshot = z.infer<typeof ChallengeSnapshotV10Schema>;
@@ -131,9 +131,9 @@ export class V10PracticeClient {
         await whenSessionReady(this.socket);
         const sequence = this.cursor.nextSequence;
         const request = mode === 'practice'
-            ? { requestId: requestId(), sequence, mode, calling, rulesetId: V10_R5_RULESET_ID, automationId: V10_AUTOMATION_ID }
+            ? { requestId: requestId(), sequence, mode, calling, rulesetId: CURRENT_V10_RULESET_ID, automationId: V10_AUTOMATION_ID }
             : { requestId: requestId(), sequence, mode, calling, challengeId: reservation?.challengeId,
-                eligibilityToken: reservation?.eligibilityToken, rulesetId: V10_R5_RULESET_ID, automationId: V10_AUTOMATION_ID };
+                eligibilityToken: reservation?.eligibilityToken, rulesetId: CURRENT_V10_RULESET_ID, automationId: V10_AUTOMATION_ID };
         const ack: any = await this.mutate<z.infer<typeof ChallengeCreateAckV10Schema>>(protocolEventsV10.create, request, ChallengeCreateAckV10Schema);
         if (!ack.data || !('simulation' in ack.data)) throw new Error('V10 creation did not return an authoritative snapshot.');
         // Only a successful, matched creation acknowledgement may replace identity.
@@ -146,7 +146,7 @@ export class V10PracticeClient {
 
     public async submit(intent: SimulationIntentV10): Promise<V10PracticeSnapshot> {
         const value = this.requireInput();
-        const request = { requestId: requestId(), challengeId: value.challengeId, rulesetId: V10_R5_RULESET_ID,
+        const request = { requestId: requestId(), challengeId: value.challengeId, rulesetId: CURRENT_V10_RULESET_ID,
             automationId: V10_AUTOMATION_ID, inputSequence: value.nextInputSequence,
             expectedTurn: value.simulation.turn, expectedPhase: value.simulation.phase,
             inputEpoch: value.simulation.inputEpoch, intent };
@@ -159,7 +159,7 @@ export class V10PracticeClient {
     public releaseMovement(): Promise<V10PracticeSnapshot> { return this.neutral(protocolEventsV10.release); }
     private async neutral(event: string): Promise<V10PracticeSnapshot> {
         const value = this.requireSnapshot();
-        const request = { requestId: requestId(), challengeId: value.challengeId, rulesetId: V10_R5_RULESET_ID,
+        const request = { requestId: requestId(), challengeId: value.challengeId, rulesetId: CURRENT_V10_RULESET_ID,
             automationId: V10_AUTOMATION_ID, expectedTurn: value.simulation.turn, inputEpoch: value.simulation.inputEpoch };
         const ack: any = await this.mutate<z.infer<typeof CandidateAckV10Schema>>(event, request, CandidateAckV10Schema);
         if (!ack.data || !('simulation' in ack.data)) throw new Error('V10 neutral fence did not return an authoritative snapshot.');
@@ -169,7 +169,7 @@ export class V10PracticeClient {
     public async setPaused(paused: boolean): Promise<V10PracticeSnapshot> {
         if (paused && !this.pauseAllowed()) throw new Error(this.pauseReason() ?? 'Pause is unavailable in this authority state.');
         const value = this.requireSnapshot();
-        const request = { requestId: requestId(), challengeId: value.challengeId, rulesetId: V10_R5_RULESET_ID,
+        const request = { requestId: requestId(), challengeId: value.challengeId, rulesetId: CURRENT_V10_RULESET_ID,
             automationId: V10_AUTOMATION_ID, sequence: this.cursor.nextSequence, paused };
         const ack: any = await this.mutate<z.infer<typeof CandidateAckV10Schema>>(protocolEventsV10.pause, request, CandidateAckV10Schema);
         if (!ack.data || !('simulation' in ack.data)) throw new Error('V10 pause did not return an authoritative snapshot.');
@@ -178,7 +178,7 @@ export class V10PracticeClient {
 
     public async leave(): Promise<ChallengeResultV10> {
         const value = this.requireSnapshot();
-        const request = { requestId: requestId(), challengeId: value.challengeId, rulesetId: V10_R5_RULESET_ID,
+        const request = { requestId: requestId(), challengeId: value.challengeId, rulesetId: CURRENT_V10_RULESET_ID,
             automationId: V10_AUTOMATION_ID, sequence: this.cursor.nextSequence };
         const ack: any = await this.mutate<z.infer<typeof CandidateAckV10Schema>>(protocolEventsV10.leave, request, CandidateAckV10Schema);
         if (!ack.data || !('outcome' in ack.data)) throw new Error('V10 leave did not return an authoritative result.');

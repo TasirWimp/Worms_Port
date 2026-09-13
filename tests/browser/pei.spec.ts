@@ -9,7 +9,7 @@ import { createRuntimeServer } from '../../server/src/runtime';
 import { MemoryRewardStore } from '../../server/src/reward/memory-store';
 import { RewardService } from '../../server/src/reward/service';
 import type { RewardConfig } from '../../server/src/reward/types';
-import { V10_R5_RULESET_ID } from '../../shared/simulation-v10';
+import { CURRENT_V10_RULESET_ID } from '../../shared/simulation-v10';
 import { createTestSigner, privateKeyForProject } from '../support/nimiq-signer';
 
 const PROXY_ADDRESS = 'NQ34 61R8 YJUA KLDJ 4VVL E22V T7KE ATA3 A1HY';
@@ -168,7 +168,7 @@ test('PEI helper survives both crossings and admits the same volcanic Daily matc
     await expect(page.getByRole('button', { name: 'Start Daily Challenge' })).toBeEnabled();
     await page.getByRole('button', { name: 'Start Daily Challenge' }).tap();
     await expect(page.locator('.combat-v10')).toHaveAttribute('data-mode', 'reward');
-    await expect(page.locator('.combat-v10')).toHaveAttribute('data-ruleset', V10_R5_RULESET_ID);
+    await expect(page.locator('.combat-v10')).toHaveAttribute('data-ruleset', CURRENT_V10_RULESET_ID);
     await expect(page.locator('.combat-v10')).toHaveAttribute('data-background', 'volcanic-ruin');
   } finally {
     expect.soft(pageErrors, 'PEI browser crossings must not raise page errors.').toEqual([]);

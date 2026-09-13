@@ -2,6 +2,18 @@
   "policy": "Sorcerers-informed work preserves a hash-bound behavior record, implementation declaration, passing source-boundary review and behavioral-test evidence. Current single_owner records use the same primary implementer/direct reviewer and claim no independent review. Historical records without execution_mode retain separated identities.",
   "records": [
     {
+      "id": "wp-023-sorcerers-action-impact",
+      "work_package": "WP-023",
+      "source_commit": "0f45c4920321c0a3a14de30fe5cf44131a38da89",
+      "observed_material": [
+        "Previously completed read-only source investigation of relative actor/world scale, timed movement and jumping, attack transition and explosion displacement; no new upstream inspection during implementation."
+      ],
+      "behavior_record": "docs/evidence/wp-023-sorcerers-action-impact-reference.md",
+      "behavior_record_sha256": "7397586E1F174504E3D9209548D9250E9CB40F43C4D355B68C8D0694C238F1BD",
+      "observer": "Codex primary single-owner reference observer 2026-09-13",
+      "status": "observed"
+    },
+    {
       "id": "wp-015d4d-v10g-weapon-terrain",
       "work_package": "WP-015D4D",
       "source_commit": "0f45c4920321c0a3a14de30fe5cf44131a38da89",

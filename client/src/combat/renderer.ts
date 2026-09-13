@@ -17,12 +17,11 @@ import {
 import type { CombatLayout } from './layout';
 import {
     WIZARD_ANIMATION_ROOT_ORIGIN_Y,
-    WIZARD_ANIMATION_SCALE_IN_WORLD,
     WIZARD_STATIC_ROOT_ORIGIN_Y,
-    WIZARD_STATIC_SCALE_IN_WORLD,
     WIZARD_UNRAVEL_ROOT_ORIGIN_Y,
     loomseedScreenPoint,
-    traceFromLoomseedOrigin
+    traceFromLoomseedOrigin,
+    wizardPresentationScaleInWorld
 } from './loomseed-origin';
 
 export type CombatVisualPhase =
@@ -78,6 +77,7 @@ export class CombatRenderer {
     private readonly projectileSprite?: Phaser.GameObjects.Image;
     private readonly usingApprovedAssets: boolean;
     private readonly usingWizardAnimations: boolean;
+    private presentationRulesetId?: string;
 
     public constructor(scene: Phaser.Scene) {
         this.scene = scene;
@@ -128,6 +128,7 @@ export class CombatRenderer {
         visualPhase?: CombatVisualPhase,
         renderBackground?: (layout: CombatLayout) => void
     ): void {
+        this.presentationRulesetId = state.rulesetId;
         const g = this.background;
         const field = layout.battlefield;
         g.clear();
@@ -290,9 +291,10 @@ export class CombatRenderer {
         layout: CombatLayout,
         visualPhase?: CombatVisualPhase
     ): void {
-        const scale = Math.max(0.1, layout.worldScale * (this.usingWizardAnimations
-            ? WIZARD_ANIMATION_SCALE_IN_WORLD
-            : WIZARD_STATIC_SCALE_IN_WORLD));
+        const scale = Math.max(0.1, layout.worldScale * wizardPresentationScaleInWorld(
+            this.usingWizardAnimations ? 'animation-sheet' : 'static-master',
+            this.presentationRulesetId
+        ));
         for (const unit of units) {
             const sprite = this.wizardSprites[unit.id];
             if (!sprite) continue;
@@ -522,7 +524,8 @@ export class CombatRenderer {
         return loomseedScreenPoint(
             root,
             layout,
-            this.usingWizardAnimations ? 'animation-sheet' : 'static-master'
+            this.usingWizardAnimations ? 'animation-sheet' : 'static-master',
+            this.presentationRulesetId
         );
     }
 
@@ -537,7 +540,8 @@ export class CombatRenderer {
             trace,
             root,
             layout,
-            this.usingWizardAnimations ? 'animation-sheet' : 'static-master'
+            this.usingWizardAnimations ? 'animation-sheet' : 'static-master',
+            this.presentationRulesetId
         );
     }
 
@@ -590,7 +594,9 @@ export class CombatRenderer {
     private drawFallbackKnotkin(unit: SimulationUnit, layout: CombatLayout, relicId: RelicId): void {
         const g = this.background;
         const point = this.worldPoint(unit.x, unit.y, layout);
-        const radius = Math.max(10, SIM_RULES.actorRadius * layout.worldScale * 1.8);
+        const radiusInWorld = this.presentationRulesetId === 'nimble-knots-artillery-v10-r6'
+            ? 34 : SIM_RULES.actorRadius * 1.8;
+        const radius = Math.max(10, radiusInWorld * layout.worldScale);
         const body = unit.id === 'player' ? 0x0582CA : 0x5F4B8B;
         const accent = unit.id === 'player' ? 0xE9B213 : 0xFA7268;
         const alpha = unit.alive ? 1 : 0.35;

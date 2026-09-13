@@ -16,7 +16,8 @@ import { MemoryRewardStore } from './reward/memory-store';
 import { RewardService } from './reward/service';
 import type { RewardStore } from './reward/types';
 import { practiceOnlyProfileFromEnvironment } from './staging-config';
-import { V8_AUTOMATION_ID, V9_AUTOMATION_ID } from '../../shared/combat-version';
+import { V10_AUTOMATION_ID, V8_AUTOMATION_ID, V9_AUTOMATION_ID } from '../../shared/combat-version';
+import { CURRENT_V10_RULESET_ID } from '../../shared/simulation-v10';
 import { V8_R1_RULESET_ID } from '../../shared/simulation-v8';
 import { V9_RULESET_ID } from '../../shared/simulation-v9';
 import { peiConfigFromEnvironment } from './pei/config';
@@ -49,7 +50,7 @@ async function main(): Promise<void> {
     if (practiceProfile) {
         const v9 = practiceProfile === 'development-v9d-practice';
         const v10 = practiceProfile === 'development-v10-practice';
-        console.log(`Runtime ${practiceProfile} / ${v10 ? 'nimble-knots-artillery-v10-r5' : v9 ? V9_RULESET_ID : V8_R1_RULESET_ID} / ${v10 ? 'wp-015d4h-v10-live-v1' : v9 ? V9_AUTOMATION_ID : V8_AUTOMATION_ID} / rewards disabled`);
+        console.log(`Runtime ${practiceProfile} / ${v10 ? CURRENT_V10_RULESET_ID : v9 ? V9_RULESET_ID : V8_R1_RULESET_ID} / ${v10 ? V10_AUTOMATION_ID : v9 ? V9_AUTOMATION_ID : V8_AUTOMATION_ID} / rewards disabled`);
     }
     for (const ifaceinfo of Object.values(os.networkInterfaces())) {
         for (const iface of ifaceinfo || []) {

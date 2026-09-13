@@ -1,6 +1,6 @@
 import {
     advanceSimulationTicksV10, applySimulationBarrierV10, applySimulationIntentV10,
-    assertSimulationInvariantsV10, createSimulationV10, forceSimulationLimitV10, hashSimulationStateV10, V10_R5_RULESET_ID,
+    assertSimulationInvariantsV10, createSimulationV10, forceSimulationLimitV10, hashSimulationStateV10, CURRENT_V10_RULESET_ID,
     type SimulationBarrierV10, type SimulationIntentV10, type SimulationStateV10, type SimulationTransitionV10
 } from '../../../shared/simulation-v10';
 import type { PlayerCalling, SimulationActor } from '../../../shared/simulation';
@@ -15,7 +15,7 @@ export { V10_REPLAY_LIMITS } from '../../../shared/protocol-v10-live';
 export type { CoordinatorReplayV10 } from '../../../shared/protocol-v10-live';
 
 export type CoordinatorTerminalResultV10 = {
-    rulesetId: typeof V10_R5_RULESET_ID; challengeId: string; sessionId: string;
+    rulesetId: typeof CURRENT_V10_RULESET_ID; challengeId: string; sessionId: string;
     winner: SimulationStateV10['winner']; reason: string; tick: number; stateHash: string;
     automationId?: typeof V10_AUTOMATION_ID;
     stopReason?: V10StopReason;
@@ -74,7 +74,7 @@ export class LiveSimulationCoordinatorV10 {
         const state = createState(seed, calling);
         const stateHash = hashSimulationStateV10(state);
         const replay = CoordinatorReplayV10Schema.parse({ formatVersion: 10, challengeId, sessionId, seed, calling,
-            rulesetId: V10_R5_RULESET_ID, terrainProfileId: state.terrainProfileId, recipeRevision: state.terrainRecipeRevision, candidateIndex: state.terrainCandidateIndex, initialStateHash: stateHash, records: [] });
+            rulesetId: CURRENT_V10_RULESET_ID, terrainProfileId: state.terrainProfileId, recipeRevision: state.terrainRecipeRevision, candidateIndex: state.terrainCandidateIndex, initialStateHash: stateHash, records: [] });
         const entry: Entry = { replay, state, stateHash, bytes: jsonBytesV10(replay), paused: false,
             unavailable: false, anchorUs: this.clock(), credit: 0n, automated: false };
         if (entry.bytes + V10_REPLAY_LIMITS.terminalBytes > this.maxBytes) throw new Error('No terminal replay reserve.');
@@ -86,7 +86,7 @@ export class LiveSimulationCoordinatorV10 {
         if (this.matches.has(challengeId)) throw new Error('Duplicate V10 challenge.');
         const state = createState(seed, calling), stateHash = hashSimulationStateV10(state);
         const replay = CoordinatorReplayV10AutomatedSchema.parse({ formatVersion: 10, challengeId, sessionId, seed, calling,
-            rulesetId: V10_R5_RULESET_ID, terrainProfileId: state.terrainProfileId, recipeRevision: state.terrainRecipeRevision, candidateIndex: state.terrainCandidateIndex,
+            rulesetId: CURRENT_V10_RULESET_ID, terrainProfileId: state.terrainProfileId, recipeRevision: state.terrainRecipeRevision, candidateIndex: state.terrainCandidateIndex,
             automationId: V10_AUTOMATION_ID, initialStateHash: stateHash, records: [], chosenPlans: [] });
         const entry: Entry = { replay, state, stateHash, bytes: jsonBytesV10(replay), paused: false, unavailable: false,
             anchorUs: this.clock(), credit: 0n, automated: true };
@@ -296,7 +296,7 @@ export class LiveSimulationCoordinatorV10 {
         if (coalesce) entry.replay.records[entry.replay.records.length - 1] = record; else entry.replay.records.push(record);
         entry.replay.records.push(...annotations);
         if (entry.state.phase === 'finished' && !entry.terminalResult) {
-            entry.terminalResult = { rulesetId: V10_R5_RULESET_ID, challengeId: entry.replay.challengeId, sessionId: entry.replay.sessionId,
+            entry.terminalResult = { rulesetId: CURRENT_V10_RULESET_ID, challengeId: entry.replay.challengeId, sessionId: entry.replay.sessionId,
                 winner: entry.state.winner, reason: entry.state.finishReason!, tick: entry.state.tick, stateHash,
                 ...(entry.stopReason ? { stopReason: entry.stopReason } : {}),
                 ...(entry.automated ? { automationId: V10_AUTOMATION_ID } : {}) };
@@ -401,7 +401,7 @@ export class LiveSimulationCoordinatorV10 {
 
 }
 
-function createState(seed: number, calling: PlayerCalling): SimulationStateV10 { return createSimulationV10(seed, calling, V10_R5_RULESET_ID); }
+function createState(seed: number, calling: PlayerCalling): SimulationStateV10 { return createSimulationV10(seed, calling, CURRENT_V10_RULESET_ID); }
 function bounded(value: number, minimum: number, maximum: number): number {
     if (!Number.isSafeInteger(value) || value < minimum || value > maximum) throw new RangeError('V10 integer bound exceeded.');
     return value;

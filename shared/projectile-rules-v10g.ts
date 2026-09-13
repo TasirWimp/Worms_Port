@@ -13,3 +13,9 @@ export const V10G_PROJECTILE_RULES: ProjectileMechanics = Object.freeze({
             gravityFp: 80, craterRadius: 80, damageRadius: 48, maximumDamage: 25 })
     })
 });
+
+/** R6 changes only the coherent visual/direct-target envelope in Waypoint 1. */
+export const V10_R6_PROJECTILE_RULES: ProjectileMechanics = Object.freeze({
+    ...V10G_PROJECTILE_RULES,
+    directHitbox: Object.freeze({ halfWidth: 22, top: 56, bottom: 12 })
+});

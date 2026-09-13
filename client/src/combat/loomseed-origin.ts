@@ -15,6 +15,25 @@ export const WIZARD_ANIMATION_SCALE_IN_WORLD = 0.56 * WIZARD_PRESENTATION_SCALE_
 // The idle/cast sheet's hat begins near y=40. This keeps unit status cards
 // visibly above the enlarged shared Wizard while preserving its ground root.
 export const WIZARD_PRESENTATION_TOP_IN_WORLD = (212 - 40) * WIZARD_ANIMATION_SCALE_IN_WORLD;
+export const WIZARD_R6_ANIMATION_SCALE_IN_WORLD = 0.4;
+export const WIZARD_R6_STATIC_SCALE_IN_WORLD = 0.23 * WIZARD_R6_ANIMATION_SCALE_IN_WORLD / 0.56;
+export const WIZARD_R6_PRESENTATION_TOP_IN_WORLD = (212 - 40) * WIZARD_R6_ANIMATION_SCALE_IN_WORLD;
+
+export function wizardPresentationScaleInWorld(
+    geometry: WizardPresentationGeometry,
+    rulesetId?: string
+): number {
+    const compact = rulesetId === 'nimble-knots-artillery-v10-r6';
+    return geometry === 'animation-sheet'
+        ? compact ? WIZARD_R6_ANIMATION_SCALE_IN_WORLD : WIZARD_ANIMATION_SCALE_IN_WORLD
+        : compact ? WIZARD_R6_STATIC_SCALE_IN_WORLD : WIZARD_STATIC_SCALE_IN_WORLD;
+}
+
+export function wizardPresentationTopInWorld(rulesetId?: string): number {
+    return rulesetId === 'nimble-knots-artillery-v10-r6'
+        ? WIZARD_R6_PRESENTATION_TOP_IN_WORLD
+        : WIZARD_PRESENTATION_TOP_IN_WORLD;
+}
 
 const STATIC_LOOMSEED_OFFSET = { x: 151, y: -223 };
 // The final retained spell frame puts the Loomseed centre at (158, 106)
@@ -24,12 +43,11 @@ const ANIMATION_LOOMSEED_OFFSET = { x: 30, y: -106 };
 export function loomseedScreenPoint(
     root: WizardRoot,
     layout: CombatLayout,
-    geometry: WizardPresentationGeometry
+    geometry: WizardPresentationGeometry,
+    rulesetId?: string
 ): CombatWorldPoint {
     const animationSheet = geometry === 'animation-sheet';
-    const scale = Math.max(0.1, layout.worldScale * (animationSheet
-        ? WIZARD_ANIMATION_SCALE_IN_WORLD
-        : WIZARD_STATIC_SCALE_IN_WORLD));
+    const scale = Math.max(0.1, layout.worldScale * wizardPresentationScaleInWorld(geometry, rulesetId));
     const offset = animationSheet ? ANIMATION_LOOMSEED_OFFSET : STATIC_LOOMSEED_OFFSET;
     return {
         x: root.x + root.facing * offset.x * scale,
@@ -45,12 +63,13 @@ export function traceFromLoomseedOrigin(
     trace: readonly CombatWorldPoint[],
     root: WizardRoot,
     layout: CombatLayout,
-    geometry: WizardPresentationGeometry
+    geometry: WizardPresentationGeometry,
+    rulesetId?: string
 ): CombatWorldPoint[] {
     if (trace.length === 0 || layout.worldScaleX <= 0 || layout.worldScaleY <= 0) {
         return trace.map((point) => ({ ...point }));
     }
-    const anchor = loomseedScreenPoint(root, layout, geometry);
+    const anchor = loomseedScreenPoint(root, layout, geometry, rulesetId);
     const origin = {
         // `anchor` is in screen space. Restore the camera origin before
         // comparing it with authoritative world-space trace samples; omitting

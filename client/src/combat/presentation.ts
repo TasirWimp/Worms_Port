@@ -10,6 +10,7 @@ import { inputBoundaryV8 } from './input';
 /** A deliberately non-authoritative, version-independent rendering surface. */
 export type CombatRenderUnit = SimulationUnit & { grounded?: boolean };
 export type CombatRenderState = Pick<SimulationState, 'terrain' | 'activeActor' | 'selectedRelic'> & {
+    rulesetId?: string;
     units: [CombatRenderUnit, CombatRenderUnit];
 };
 
@@ -18,7 +19,7 @@ export function projectCombatV8(state: SimulationStateV8 | ChallengeSnapshotV8['
         id: body.id, calling: body.calling, x: body.xFp / 256, y: body.yFp / 256,
         facing: body.facing, stitching: body.stitching, alive: body.alive, grounded: body.grounded
     });
-    return { terrain: state.terrain, activeActor: state.activeActor, selectedRelic: state.selectedRelic,
+    return { rulesetId: state.rulesetId, terrain: state.terrain, activeActor: state.activeActor, selectedRelic: state.selectedRelic,
         units: [unit(state.units[0]), unit(state.units[1])] };
 }
 

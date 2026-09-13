@@ -7,7 +7,7 @@ import { io, type Socket } from 'socket.io-client';
 import { protocolEvents } from '../../shared/protocol';
 import { ChallengeCreateAckV10Schema, protocolEventsV10 } from '../../shared/protocol-v10-live';
 import { V10_AUTOMATION_ID } from '../../shared/combat-version';
-import { V10_R5_RULESET_ID } from '../../shared/simulation-v10';
+import { CURRENT_V10_RULESET_ID } from '../../shared/simulation-v10';
 import { createRuntimeServer } from '../../server/src/runtime';
 import { MemoryRewardStore } from '../../server/src/reward/memory-store';
 import { RewardService } from '../../server/src/reward/service';
@@ -146,7 +146,7 @@ test('server-owned receipt reaches the authoritative V10 volcanic Daily match', 
             calling: 'wizard',
             challengeId: reserve.data.challengeId,
             eligibilityToken: reserve.data.eligibilityToken,
-            rulesetId: V10_R5_RULESET_ID,
+            rulesetId: CURRENT_V10_RULESET_ID,
             automationId: V10_AUTOMATION_ID
         });
         assert.equal(ChallengeCreateAckV10Schema.safeParse(created).success, true);

@@ -5,6 +5,7 @@ import path from 'node:path';
 import { createRuntimeServer } from '../../server/src/runtime';
 import { V8_R1_RULESET_ID } from '../../shared/simulation-v8';
 import { V9_RULESET_ID } from '../../shared/simulation-v9';
+import { CURRENT_V10_RULESET_ID } from '../../shared/simulation-v10';
 
 test.describe('@legacy retired V8/V9 authorities', () => {
 test('deployed V9 Practice opens from the phone URL with live authority and supports paused restart', async ({ page }) => {
@@ -600,7 +601,8 @@ test('standard volcanic Practice at root keeps authority, AI, cold resume and re
     expect(fetched.some(url => /mini-app-sdk|volcanic-cone-v1/.test(url))).toBe(false);
     await page.getByRole('button', { name: 'Start Practice' }).tap();
     const ui = page.locator('.combat-v10');
-    await expect(ui).toHaveAttribute('data-ruleset', 'nimble-knots-artillery-v10-r5');
+    await expect(ui).toHaveAttribute('data-ruleset', CURRENT_V10_RULESET_ID);
+    await expect(ui.locator('.combat-timer')).toHaveText(/^(59|60)s$/);
     await expect(ui).toHaveAttribute('data-background', 'volcanic-ruin');
     await expect(ui).toHaveAttribute('data-background-ready', 'true');
     await expect(ui).toHaveAttribute('data-camera-left', '512.00');
@@ -653,7 +655,7 @@ test('standard volcanic Practice survives missing art and expired-session reconn
     await page.getByRole('button', { name: 'Start Practice' }).tap();
     const ui = page.locator('.combat-v10');
     await expect(ui).toHaveAttribute('data-background-ready', 'false');
-    await expect(ui).toHaveAttribute('data-ruleset', 'nimble-knots-artillery-v10-r5');
+    await expect(ui).toHaveAttribute('data-ruleset', CURRENT_V10_RULESET_ID);
     await expect(ui.locator('.pause-button')).toBeEnabled();
     await ui.locator('.pause-button').tap();
     await expect(ui).toHaveAttribute('data-paused', 'true');
@@ -665,7 +667,7 @@ test('standard volcanic Practice survives missing art and expired-session reconn
     await context.setOffline(false);
     await expect(page.locator('.result-shell')).toBeVisible({ timeout: 15000 });
     await page.getByRole('button', { name: 'Play Again', exact: true }).tap();
-    await expect(ui).toHaveAttribute('data-ruleset', 'nimble-knots-artillery-v10-r5');
+    await expect(ui).toHaveAttribute('data-ruleset', CURRENT_V10_RULESET_ID);
     await expect(ui).toHaveAttribute('data-background-ready', 'false');
     const next = runtime.sessions.getBound([...runtime.io.sockets.sockets.values()][0].id)!;
     expect(next.id).not.toBe(previousSession);

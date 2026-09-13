@@ -2,7 +2,7 @@ import { SIM_RULES } from '../../../shared/simulation';
 import type { SimulationUnit } from '../../../shared/simulation';
 import { COMBAT_CAMERA_WINDOW, type CombatCamera } from './camera';
 import type { Rect, SafeAreaInsets } from './contracts';
-import { WIZARD_PRESENTATION_TOP_IN_WORLD } from './loomseed-origin';
+import { wizardPresentationTopInWorld } from './loomseed-origin';
 
 export type CombatLayout = {
     orientation: 'portrait' | 'landscape';
@@ -100,13 +100,14 @@ export function computeCombatLayout(
 
 export function computeActorStatusLayout(
     layout: CombatLayout,
-    units: readonly [SimulationUnit, SimulationUnit] | readonly SimulationUnit[]
+    units: readonly [SimulationUnit, SimulationUnit] | readonly SimulationUnit[],
+    rulesetId?: string
 ): { player?: Rect; loomkeeper?: Rect } {
     const width = Math.min(108, Math.max(78, layout.battlefield.width * 0.16));
     const height = 32;
     const actorOffset = Math.max(
         36,
-        (SIM_RULES.actorRadius + WIZARD_PRESENTATION_TOP_IN_WORLD) * layout.worldScale + 12
+        (SIM_RULES.actorRadius + wizardPresentationTopInWorld(rulesetId)) * layout.worldScale + 12
     );
     const field = layout.battlefield;
     const rectFor = (unit: SimulationUnit): Rect | undefined => {

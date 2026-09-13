@@ -5,7 +5,7 @@ import { io } from 'socket.io-client';
 import { bootstrapSession } from '../../client/src/lib/session';
 import { PracticeClient } from '../../client/src/practice/client';
 import { createRuntimeServer } from '../../server/src/runtime';
-import { V10_R5_RULESET_ID } from '../../shared/simulation-v10';
+import { CURRENT_V10_RULESET_ID } from '../../shared/simulation-v10';
 
 test('current Practice client owns only the volcanic V10 lifecycle', async () => {
     installSessionStorage();
@@ -24,7 +24,7 @@ test('current Practice client owns only the volcanic V10 lifecycle', async () =>
         client = await PracticeClient.connect(socket, await bootstrapSession(socket));
         const first = await client.startCombat('wizard');
         assert.equal(first.protocolVersion, 10);
-        assert.equal(first.rulesetId, V10_R5_RULESET_ID);
+        assert.equal(first.rulesetId, CURRENT_V10_RULESET_ID);
         assert.equal(first.mode, 'practice');
 
         const args = await client.combatArgs(first);
@@ -38,7 +38,7 @@ test('current Practice client owns only the volcanic V10 lifecycle', async () =>
         const next = await client.retryCombat('thief');
         assert.notEqual(next.challengeId, first.challengeId);
         assert.equal(next.protocolVersion, 10);
-        assert.equal(next.rulesetId, V10_R5_RULESET_ID);
+        assert.equal(next.rulesetId, CURRENT_V10_RULESET_ID);
         assert.equal(next.calling, 'thief');
     } finally {
         client?.dispose();

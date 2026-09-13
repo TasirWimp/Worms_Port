@@ -4,19 +4,19 @@ import { z } from 'zod';
 import {
     SimulationBarrierV10Schema, SimulationIntentV10Schema, SimulationStateV10Schema,
     V10_ALL_TERRAIN_PROFILE_IDS, V10_R1_RULESET_ID, V10_R1_TERRAIN_PROFILE_IDS,
-    V10_R2_RULESET_ID, V10_R3_RULESET_ID, V10_R4_RULESET_ID, V10_R5_RULESET_ID, V10_RULESET_IDS
+    V10_R2_RULESET_ID, V10_R3_RULESET_ID, V10_R4_RULESET_ID, V10_R5_RULESET_ID, V10_R6_RULESET_ID, V10_RULESET_IDS
 } from './simulation-v10';
 import {
     V10_PROCEDURAL_CANDIDATE_COUNT, V10_PROCEDURAL_RECIPE_REVISION,
     V10_PROCEDURAL_TERRAIN_PROFILE_IDS
 } from './terrain-generation-v10';
 
-/** V10B keeps V9's bounded storage budget while defining a distinct replay ABI. */
+/** V10 keeps V9's byte/record budget while R6 widens the bounded tick ceiling. */
 export const V10_REPLAY_LIMITS = Object.freeze({
     records: 32_768,
     bytes: 16 * 1024 * 1024,
     operationBytes: 512,
-    ticks: 16_800,
+    ticks: 38_400,
     terminalBytes: 512
 });
 
@@ -76,14 +76,16 @@ export const CoordinatorReplayV10Schema = z.object({
     const r3 = replay.rulesetId === V10_R3_RULESET_ID;
     const r4 = replay.rulesetId === V10_R4_RULESET_ID;
     const r5 = replay.rulesetId === V10_R5_RULESET_ID;
-    const procedural = replay.rulesetId === V10_R2_RULESET_ID || r3 || r4 || r5;
+    const r6 = replay.rulesetId === V10_R6_RULESET_ID;
+    const volcanic = r5 || r6;
+    const procedural = replay.rulesetId === V10_R2_RULESET_ID || r3 || r4 || volcanic;
     const profileIsRevised = (V10_R1_TERRAIN_PROFILE_IDS as readonly string[]).includes(replay.terrainProfileId);
-    const profileIsProcedural = (r5 && replay.terrainProfileId === 'volcanic-ruin') || (V10_PROCEDURAL_TERRAIN_PROFILE_IDS as readonly string[]).includes(replay.terrainProfileId);
-    if ((r5 && replay.terrainProfileId !== 'volcanic-ruin') || (!r5 && replay.terrainProfileId === 'volcanic-ruin') || revised !== profileIsRevised || procedural !== profileIsProcedural || (r4 && replay.terrainProfileId !== v10gFamilyForSeed(replay.seed).profileId)) {
+    const profileIsProcedural = (volcanic && replay.terrainProfileId === 'volcanic-ruin') || (V10_PROCEDURAL_TERRAIN_PROFILE_IDS as readonly string[]).includes(replay.terrainProfileId);
+    if ((volcanic && replay.terrainProfileId !== 'volcanic-ruin') || (!volcanic && replay.terrainProfileId === 'volcanic-ruin') || revised !== profileIsRevised || procedural !== profileIsProcedural || (r4 && replay.terrainProfileId !== v10gFamilyForSeed(replay.seed).profileId)) {
         context.addIssue({ code: z.ZodIssueCode.custom, path: ['terrainProfileId'],
             message: 'Terrain profile does not belong to the recorded V10 ruleset.' });
     }
-    if (procedural && (replay.recipeRevision !== (r5 ? VOLCANIC_RUIN_RECIPE_REVISION : r4 ? V10G_FAMILY_RECIPE_REVISION : r3 ? V10G_RECIPE_REVISION : V10_PROCEDURAL_RECIPE_REVISION) || ((r4 || r5) && replay.candidateIndex !== 0) || (r3 && (replay.candidateIndex !== 0 || replay.terrainProfileId !== 'twin-crests')))) {
+    if (procedural && (replay.recipeRevision !== (volcanic ? VOLCANIC_RUIN_RECIPE_REVISION : r4 ? V10G_FAMILY_RECIPE_REVISION : r3 ? V10G_RECIPE_REVISION : V10_PROCEDURAL_RECIPE_REVISION) || ((r4 || volcanic) && replay.candidateIndex !== 0) || (r3 && (replay.candidateIndex !== 0 || replay.terrainProfileId !== 'twin-crests')))) {
         context.addIssue({ code: z.ZodIssueCode.custom, path: ['recipeRevision'], message: 'Recipe/candidate does not belong to ruleset.' });
     }
     const hasRecipeRevision = Object.prototype.hasOwnProperty.call(replay, 'recipeRevision');
@@ -95,6 +97,11 @@ export const CoordinatorReplayV10Schema = z.object({
     if (procedural !== hasCandidateIndex || (hasCandidateIndex && replay.candidateIndex === undefined)) {
         context.addIssue({ code: z.ZodIssueCode.custom, path: ['candidateIndex'],
             message: 'Procedural replay candidate index must match the R2/R3/R4 ruleset.' });
+    }
+    if (!r6 && replay.records.reduce((ticks, record) => ticks +
+        (record.operation.kind === 'ticks' ? record.operation.count : 0), 0) > 16_800) {
+        context.addIssue({ code: z.ZodIssueCode.custom, path: ['records'],
+            message: 'Pre-R6 replay exceeds its frozen tick bound.' });
     }
 });
 export type CoordinatorReplayV10 = z.infer<typeof CoordinatorReplayV10Schema>;
