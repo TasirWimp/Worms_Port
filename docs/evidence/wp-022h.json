@@ -1,6 +1,6 @@
 {
   "id": "WP-022H",
-  "status": "in_progress",
+  "status": "complete",
   "execution_mode": "single_owner",
   "starting_commit": "3603cbf",
   "branch": "codex/pei-daily-v10",
@@ -24,8 +24,10 @@
     "Fresh build outputs and standard V10 built smoke",
     "Focused PEI and reward phone-browser checks",
     "Disposable PostgreSQL reward and PEI migration checks when available",
+    "Ubuntu visual candidate 34753595816 and ordinary comparison 34753818526",
     "npm run audit:housekeeping",
-    "Physical Phone Gate E"
+    "Physical Phone Gate E",
+    "Restore both Render services to paused safe state"
   ],
   "deterministic_seeds": [
     "Fixed receipt IDs, proof digests, wallet addresses, UTC instants and V10 reward seeds in focused tests"
@@ -56,12 +58,27 @@
     {
       "command": "Disposable PostgreSQL reward and PEI migration checks when available",
       "status": "pass",
-      "details": "The delegated PostgreSQL selector phase passed under fingerprint 9894a4d26688255c745d3b17dbe73bcd06d719141c7971926b3fc391b82b821f. WP014_TEST_DATABASE_URL was absent, so it explicitly skipped database unit/browser execution without creating or repairing infrastructure; CI must execute the selected disposable PostgreSQL gate after push. Log .cache/wp022h-postgres-phase.log."
+      "details": "The delegated local PostgreSQL selector phase passed under fingerprint 9894a4d26688255c745d3b17dbe73bcd06d719141c7971926b3fc391b82b821f. WP014_TEST_DATABASE_URL was absent, so it explicitly skipped local database execution without creating or repairing infrastructure. GitHub Actions manual Verify run 34753183008 then passed the disposable PostgreSQL reward suite, PEI migration/inventory suite, current V10 database-backed reward browser journey, identity-bundle check and reward-security check at exact commit 1132264. Log .cache/wp022h-postgres-phase.log; CI run https://github.com/TasirWimp/Worms_Port/actions/runs/34753183008."
+    },
+    {
+      "command": "Ubuntu visual candidate 34753595816 and ordinary comparison 34753818526",
+      "status": "pass",
+      "details": "The artifact-only Ubuntu 24.04 capture at 1132264 regenerated exactly one baseline: canonical-daily-authorized-chromium-390x844-linux.png, SHA-256 237EF4C3A571DA0E0713828615CF7A52938159B24E47FB2944482CDE0436BFB6. Primary reviewed the intended authorized-wallet Daily status with unchanged reward facts and controls. The candidate matched the failed release run's actual screenshot byte-for-byte. After promotion, ordinary change-selected Ubuntu comparison run 34753818526 passed at ec252c2: one canonical project passed and four policy exclusions were expected. No retry was used. Candidate https://github.com/TasirWimp/Worms_Port/actions/runs/34753595816; comparison https://github.com/TasirWimp/Worms_Port/actions/runs/34753818526."
+    },
+    {
+      "command": "Physical Phone Gate E",
+      "status": "pass",
+      "details": "The owner completed three real MainAlbatross journeys on a physical phone. A direct earn/return cycle survived closing the game and a lost Daily as specified. A second sequence closed the game after both helper transfers, completed another distinct crossing so the wallet held two receipts, then consumed one receipt in a winning V10 R5 volcanic Daily and received 1 NIM. A third Daily consumed the remaining receipt, won and received its separate 1 NIM reward. This proves close/reopen recovery, same-day multi-receipt accumulation, one-receipt-per-start consumption, loss consumption and winning settlement. The owner-approved development repeat-attempt override allowed the latter two same-day starts; the unchanged default one-start-per-wallet/day rule retains its prior Phone Gate A acceptance and automated coverage."
+    },
+    {
+      "command": "Restore both Render services to paused safe state",
+      "status": "pass",
+      "details": "After Phone Gate E, the owner confirmed both Render services were redeployed in their safe state: game rewards paused, the wallet-scoped repeat-attempt variables removed, and helper transfers paused. The helper's 1,000,000 Luna global budget may remain configured while paused."
     },
     {
       "command": "npm run audit:housekeeping",
       "status": "pass",
-      "details": "Delegated zero-retry validation passed all 68 work-package evidence records and the report-only housekeeping audit. It found no gone tracking branches, kept WP-022H in progress, and retained the pre-existing historical reconciliation flag. Log .cache/wp022h-evidence-housekeeping.log."
+      "details": "The first selected closure run correctly failed because the newly recorded Ubuntu visual result was missing from planned_checks. Primary repaired that evidence parity without changing product or acceptance claims. The exact affected checker then passed all 68 work-package records, and the report-only housekeeping audit found no package-closure blocker while retaining the pre-existing historical reconciliation flag. No failed command was retried unchanged. Logs .cache/wp022h-final-closure.log, .cache/wp022h-final-closure-recovery.log and .cache/wp022h-housekeeping-closure.log."
     }
   ],
   "reviews": [
@@ -74,12 +91,9 @@
   ],
   "skipped_checks": [
     "Retired V7/V8/V9 tests were intentionally not run; npm run test:legacy remains an explicit diagnostic outside acceptance.",
-    "The full daily/release matrix remains scheduled for 22:00 Europe/Berlin and was not duplicated for this feature gate.",
-    "Visual baselines and performance were not run because this changes receipt state and entry copy rather than combat rendering or mechanics; the canonical-phone journey and bundle budget cover the affected runtime surface.",
-    "Local PostgreSQL tests were skipped because WP014_TEST_DATABASE_URL is absent; the selected CI database gate remains required after push.",
-    "Physical Phone Gate E remains pending after deployment."
+    "Local PostgreSQL execution was skipped because WP014_TEST_DATABASE_URL is absent; exact-commit disposable PostgreSQL CI passed all reward, PEI and current V10 browser database gates.",
+    "Manual release run 34753183008 remains failed. Its performance warmup never reached Practice legal input within the observation timeout, while the two Chromium Practice layout cases ended with server clock_debt at ticks 183 and 191. These retained Practice-only failures occurred outside the PEI path; the same run passed fast release checks, WebKit, bundle budget and every PostgreSQL PEI/reward gate. They were not retried or used as green release evidence.",
+    "Receipt-carrier ablation remains paused by owner direction and is outside WP-022H."
   ],
-  "residual_risks": [
-    "CI PostgreSQL execution, deployment and Physical Phone Gate E remain pending."
-  ]
+  "residual_risks": []
 }

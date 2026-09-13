@@ -103,13 +103,20 @@ Phaser/Socket.IO stack.
   followed by all seven Phone Gate D steps on the owner's physical phone. That
   gate exposed a product-semantics correction: helper interactions must be
   repeatable and issued qualifications must persist independently of a UTC day.
-  **WP-022H Durable Wallet Receipt Refinement is active** from clean `3603cbf`.
+  **WP-022H Durable Wallet Receipt Refinement is complete** from clean `3603cbf`.
   It removes the helper's per-wallet daily cap, replaces browser-held expiring
   credentials with a server-owned multi-receipt wallet inventory, migrates
   existing unconsumed grants, automatically consumes the oldest receipt only
   when Daily starts, and makes routine unit/browser verification explicitly
   V10-only. The one-started-Daily-per-wallet/day authority remains unchanged.
-  Carrier-content ablation stays deferred. See the
+  Selected local checks, the disposable PostgreSQL reward/PEI/current-V10
+  browser gate, and the reviewed Ubuntu Daily baseline comparison passed. The
+  owner accepted three physical-phone MainAlbatross cycles covering app
+  close/reopen recovery, two accumulated same-day receipts, loss consumption,
+  separate winning consumption and two finalized 1 NIM rewards. The temporary
+  repeat-attempt variables were removed and both Render services were restored
+  paused. Carrier-content ablation stays paused; the planned V10 PEI
+  implementation line is closed and no successor PEI slice is authorized. See the
   [PEI admission contract](wp-022-pei-admission-contract.md),
   [WP-022B evidence](../evidence/wp-022b.json), [WP-022C evidence](../evidence/wp-022c.json),
   [WP-022D evidence](../evidence/wp-022d.json), [WP-022E evidence](../evidence/wp-022e.json),

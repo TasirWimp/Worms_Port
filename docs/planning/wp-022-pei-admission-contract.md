@@ -347,4 +347,22 @@ V10 R5 volcanic Practice must still start. Carrier-content ablation stays
 paused. The supervised helper deployment uses a 1,000,000 Luna global daily
 ceiling for up to ten gross 1 NIM earn transfers during this gate.
 
+Phone Gate E passed on the owner's physical phone at `ec9adf7` plus the
+whitespace-only `1132264` follow-up. Three real MainAlbatross cycles proved
+receipt persistence across closing and reopening, two distinct same-day
+receipts held by one wallet, one receipt consumed for a loss, and the two
+remaining receipts consumed separately by winning V10 R5 volcanic Daily
+matches whose 1 NIM rewards arrived. The owner-approved repeat-attempt override
+made the same-day consumption checks possible; the default one-started-Daily
+rule remains covered by Phone Gate A and unchanged automated authority tests.
+Afterward the owner removed the repeat-attempt variables and redeployed both
+game rewards and helper transfers paused. Disposable PostgreSQL reward, PEI and
+current V10 browser gates passed in CI. The one intended authorized-Daily visual
+change was captured and reviewed from Ubuntu artifact run `34753595816`, then
+passed ordinary comparison in run `34753818526` at `ec252c2`.
+
+**WP-022H and the planned V10 PEI implementation line are complete.** The
+receipt-carrier experiment remains paused and no successor PEI slice is
+authorized.
+
 Evidence: [WP-022H](../evidence/wp-022h.json).
