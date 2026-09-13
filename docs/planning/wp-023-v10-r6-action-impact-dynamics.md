@@ -1,6 +1,6 @@
 # WP-023 V10 R6 Action And Impact Dynamics
 
-Status: **Waypoint 1 refinements ready for the Phone Gate A correction pass**
+Status: **Waypoint 1 second refinements ready for Phone Gate A**
 Branch: `codex/v10-r6-action-impact-dynamics`  
 Starting commit: `c0f63ec`
 
@@ -11,6 +11,14 @@ without changing its terrain or weapon balance. The current server-backed
 Practice and PEI-gated Daily paths use a new `nimble-knots-artillery-v10-r6`
 identity. R6 keeps the exact R5 arena, openings, terrain mask, crater radii,
 damage, projectile rules, Thread costs, shields, turn count and reward rules.
+Its player opening inventory is 5 Thread so every release Relic is available
+on the first turn; R5 keeps its frozen 3-Thread opening.
+
+The current V10 coordinator also excludes each measured Loomkeeper planning
+batch from the real-time debt anchors of all active matches. Logical planning
+ticks already charge that work to the acting match; charging the same internal
+server work as scheduler delay to peer matches could stop a valid Clash under
+concurrent load. Unmeasured event-loop stalls continue to accrue normally.
 
 The package changes three coupled parts:
 
@@ -35,29 +43,38 @@ its proven three-tick cadence and should act promptly rather than wait out the
 larger action clock.
 
 The first physical Phone Gate A accepted sustained movement and the 200 ms
-refresh behavior, then requested three corrections. R6 therefore uses compact
-actor-attached health bars whose remaining fill changes continuously from
-green through yellow to red, raises ordinary walking from 256 to 320
-fixed-point units per tick, and adds a dedicated 48 px **Hop** action. A held
-left movement pointer stays owned while Hop is tapped and supplies bounded
-horizontal aftertouch during the committed jump. Vertical impulse, gravity,
-terrain collision and the reinforced Threadleap remain unchanged.
-The R6 action strip keeps Actions, Hop and Use in one centered row in both the
-default sideways phone composition and the supported portrait opt-out.
+refresh behavior, then requested compact actor-attached health bars, faster
+walking and jump aftertouch. The second pass accepted those health bars while
+actors are visible, requested the same compact display on off-screen focus
+controls, another 5 percent walking increase and one movement control instead
+of a separate Hop button. It also confirmed that Spoolburst was still
+unavailable to the player at the opening 3-Thread inventory.
 
-This control choice follows the current mobile reference rather than adding a
-third simultaneous gesture. Team17's Worms W.M.D Mobilize uses an explicit
-forward-jump control and lets held left/right input influence jump direction
-and distance through aftertouch. Apple's game-control guidance places movement
-on the left, keeps frequent virtual controls at least 44 by 44 points, and
-recommends reducing awkward simultaneous button sequences. Pointer ownership
-continues to use independent Pointer Events IDs and per-control pointer capture
-as defined by the web standard.
+R6 now uses the same small green-through-yellow-to-red bar for actor-attached
+and off-screen status. The off-screen card remains inside a 76 by 48 px touch
+target. Walking rises from 320 to 336 fixed-point units per tick. The full
+left movement region behaves as a dynamic thumbstick: contact establishes its
+visual origin, a sideways drag walks, and a 16 px upward commitment jumps
+without releasing. Once committed, horizontal steering is measured from the
+jump position with a 6 px threshold and 24 fixed-point acceleration. This
+allows quick landing corrections while retaining bounded authority physics.
+Vertical impulse, gravity, terrain collision and reinforced Threadleap stay
+unchanged. The action strip returns to Actions and Use.
+
+Apple's current guidance places movement on the left, gives touch movement a
+large input region and recommends combining related functionality in one
+control. Its touch-game session demonstrates embedding another action in a
+thumbstick through the gesture magnitude. Team17's Worms W.M.D Mobilize also
+allows held left/right input to influence jump direction and distance through
+aftertouch. The R6 control applies those patterns to the existing deterministic
+Worms-style authority. Pointer ownership continues to use independent Pointer
+Events IDs and per-control pointer capture as defined by the web standard.
 
 References:
 
 - https://www.team17.com/news/worms-w-md-mobilize-out-now-on-apple-android
 - https://developer.apple.com/design/human-interface-guidelines/game-controls
+- https://developer.apple.com/videos/play/wwdc2026/358/
 - https://www.w3.org/TR/pointerevents/#pointer-capture
 
 R5 remains available only for explicit simulation and local-preview diagnosis.
@@ -79,14 +96,20 @@ protocol ownership, build/smoke and the supported phone browser journey.
 
 1. Confirm the volcanic arena and background still load with the familiar
    starting positions.
-2. Confirm both actors are visibly smaller, remain grounded and have status
-   cards attached to the correct actor.
+2. Confirm both actors are visibly smaller, remain grounded and have compact
+   color health bars attached to the correct actor. Pan until an actor is off
+   screen and confirm its edge control also uses the small bar without a large
+   number while remaining easy to tap.
 3. Confirm the action clock begins at about 60 seconds.
-4. Hold movement for at least 15 seconds, release, jump and move again; movement
-   must stay continuous and responsive without lease stutter.
-5. Fire one relic, confirm the familiar crater/damage behavior, then use the
-   existing two-second retreat window. A second offensive shot in the same
-   turn must remain unavailable.
+4. Confirm there is no Hop button. Touch anywhere comfortable in the left blue
+   movement region, drag sideways to walk, then push upward without lifting to
+   jump. Make small left/right changes around that launch position in flight;
+   landing corrections must react promptly without lease stutter. Confirm the
+   walking pace feels about 5 percent faster than the preceding phone build.
+5. Open Actions > Attack and confirm Spoolburst can be selected on the first
+   turn with the displayed 5 Thread. Fire one relic, confirm the familiar
+   crater/damage behavior, then use the existing two-second retreat window. A
+   second offensive shot in the same turn must remain unavailable.
 6. Confirm the Loomkeeper responds normally, then reload/resume and start a
    fresh Practice match.
 

@@ -46,8 +46,8 @@ export const V10_R6_DYNAMICS: SimulationDynamics = Object.freeze({
     leaseTicks: 18,
     maximumTurnTicks: 2_400,
     maximumCombatTicks: 38_400,
-    walkSpeedFp: 320,
-    airControlAccelerationFp: 16
+    walkSpeedFp: 336,
+    airControlAccelerationFp: 24
 });
 export const V10_TERRAIN_PROFILE_IDS = Object.freeze([
     'sheltered-folds',
@@ -299,7 +299,10 @@ export function createSimulationV10(
 ): SimulationStateV10 {
     const base = createV9Base(seed, calling);
     if (!isV10RulesetId(rulesetId)) throw new Error('Unknown V10 ruleset.');
-    if (usesV10R6ActionDynamics(rulesetId)) base.phaseDeadlineTick = V10_R6_DYNAMICS.actionTicks;
+    if (usesV10R6ActionDynamics(rulesetId)) {
+        base.phaseDeadlineTick = V10_R6_DYNAMICS.actionTicks;
+        base.units[0].thread = 5;
+    }
     const arena = generateV10TacticalArena(base.seed, rulesetId);
     const state: SimulationStateV10 = {
         ...base,

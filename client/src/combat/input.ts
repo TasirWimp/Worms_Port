@@ -209,12 +209,15 @@ export type MovementFactsR1 = {
     lane: 'ready' | 'locomotion' | 'blocked';
     /** Current R6 only: the held movement pointer may steer a committed jump. */
     airControl?: boolean;
+    /** Current R6 only: one low-drag thumbstick owns walk, jump and air steering. */
+    platformerStick?: boolean;
 };
 
 /** Current pointer geometry only. No command queue, simulation or movement timer. */
 export class UnifiedMovementInputController extends ActionTurnsInputController {
     private gesture?: { side: -1 | 0 | 1; maximumDistance: number; locomotion: boolean;
-        hop: 'unseen' | 'eligible' | 'discarded' | 'submitted'; deadline: number; motionEligible: boolean };
+        hop: 'unseen' | 'eligible' | 'discarded' | 'submitted'; deadline: number; motionEligible: boolean;
+        airOriginX?: number };
 
     public beginMovement(id: number, point: Point, pad: Rect): boolean {
         if (!this.begin('movement', id, point, 48)) return false;
@@ -230,11 +233,12 @@ export class UnifiedMovementInputController extends ActionTurnsInputController {
         const dx = point.x - owner.origin.x; const dy = point.y - owner.origin.y;
         gesture.maximumDistance = Math.max(gesture.maximumDistance, Math.hypot(dx, dy));
         gesture.motionEligible = facts.grounded || facts.airControl === true;
-        if (dy <= -24 && gesture.hop === 'unseen') {
+        const jumping = this.jumpGesture(dx, dy, facts);
+        if (jumping && gesture.hop === 'unseen') {
             gesture.hop = facts.grounded && facts.lane !== 'blocked' ? 'eligible' : 'discarded';
             gesture.deadline = now + 250;
         }
-        if (dy > -24 && gesture.hop === 'eligible') gesture.hop = 'discarded';
+        if (!jumping && gesture.hop === 'eligible') gesture.hop = 'discarded';
         this.observeGrounded(facts.grounded, facts.airControl === true);
         this.expire(now);
         return true;
@@ -247,12 +251,18 @@ export class UnifiedMovementInputController extends ActionTurnsInputController {
         if (facts.lane === 'blocked' && gesture.hop === 'eligible') gesture.hop = 'discarded';
         if (facts.lane !== 'ready') return null;
         const dx = owner.current.x - owner.origin.x; const dy = owner.current.y - owner.origin.y;
-        const direction = Math.abs(dx) >= 10 ? (dx < 0 ? -1 : 1) : 0;
-        if (dy <= -24) {
+        const steeringDx = facts.platformerStick && !facts.grounded && gesture.airOriginX !== undefined
+            ? owner.current.x - gesture.airOriginX
+            : dx;
+        const directionThreshold = facts.platformerStick ? 6 : 10;
+        const direction = Math.abs(steeringDx) >= directionThreshold ? (steeringDx < 0 ? -1 : 1) : 0;
+        if (facts.grounded && this.jumpGesture(dx, dy, facts)) {
             return gesture.hop === 'eligible' && facts.grounded
                 ? { type: 'jump', direction: direction || facts.facing } : null;
         }
-        if (!direction) return facts.heldDirection ? { type: 'walk_stop' } : null;
+        if (!direction) return facts.platformerStick && !facts.grounded
+            ? null
+            : facts.heldDirection ? { type: 'walk_stop' } : null;
         return (facts.grounded || facts.airControl === true) && gesture.motionEligible && direction !== facts.heldDirection
             ? { type: 'walk_start', direction } : null;
     }
@@ -260,7 +270,10 @@ export class UnifiedMovementInputController extends ActionTurnsInputController {
     public submittedMovementIntent(intent: SimulationIntentV8R1): void {
         if (!this.gesture) return;
         this.gesture.locomotion = true;
-        if (intent.type === 'jump') { this.gesture.hop = 'submitted'; this.gesture.motionEligible = false; }
+        if (intent.type === 'jump') {
+            this.gesture.hop = 'submitted'; this.gesture.motionEligible = false;
+            this.gesture.airOriginX ??= this.ownedPointer()?.current.x;
+        }
     }
 
     public observeGrounded(grounded: boolean, airControl = false): void {
@@ -279,6 +292,11 @@ export class UnifiedMovementInputController extends ActionTurnsInputController {
     }
 
     public override interrupt(): void { this.gesture = undefined; super.interrupt(); }
+    private jumpGesture(dx: number, dy: number, facts: MovementFactsR1): boolean {
+        return facts.platformerStick
+            ? dy <= -16 && -dy >= Math.abs(dx) * 0.45
+            : dy <= -24;
+    }
     private expire(now: number): void {
         if (this.gesture?.hop === 'eligible' && now >= this.gesture.deadline) this.gesture.hop = 'discarded';
     }

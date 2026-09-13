@@ -839,18 +839,6 @@ input {
     border: 2px solid #fff;
 }
 
-.combat-v10[data-ruleset='nimble-knots-artillery-v10-r6'] .combat-actions,
-.combat-v10[data-ruleset='nimble-knots-artillery-v10-r6'][data-orientation='landscape'] .combat-actions {
-    grid-template-columns: repeat(3, minmax(48px, 1fr)) !important;
-}
-
-.combat-v10[data-ruleset='nimble-knots-artillery-v10-r6'] .jump-button {
-    color: #fff;
-    font-weight: 900;
-    background: #0582ca;
-    border: 2px solid #fff;
-}
-
 .combat-v9 .v9-action-menu {
     position: absolute;
     z-index: 20;
@@ -922,6 +910,47 @@ input {
 .combat-v10[data-ruleset='nimble-knots-artillery-v10-r6'] .unit-status-track span {
     transition: width 160ms ease-out, background-color 160ms ease-out;
 }
+.combat-v10[data-ruleset='nimble-knots-artillery-v10-r6'] .camera-focus-button {
+    width: 76px;
+    min-width: 76px;
+    max-width: 76px;
+    padding: 0;
+    background: transparent;
+    border: 0;
+    box-shadow: none;
+}
+.combat-v10[data-ruleset='nimble-knots-artillery-v10-r6'] .camera-focus-card {
+    position: absolute;
+    top: 50%;
+    left: 0;
+    display: flex;
+    align-items: center;
+    width: 76px;
+    height: 18px;
+    gap: 3px;
+    padding: 2px 3px;
+    color: #fff;
+    font-size: 0.44rem;
+    line-height: 1;
+    background: rgb(31 35 72 / 91%);
+    border: 1px solid #e9b213;
+    border-radius: 5px;
+    transform: translateY(-50%);
+    pointer-events: none;
+}
+.combat-v10[data-ruleset='nimble-knots-artillery-v10-r6'] .camera-focus-loomkeeper .camera-focus-card { border-color: #fa7268; }
+.combat-v10[data-ruleset='nimble-knots-artillery-v10-r6'] .camera-focus-button[data-side='left'] .camera-focus-arrow { order: -1; }
+.combat-v10[data-ruleset='nimble-knots-artillery-v10-r6'] .camera-focus-name { font-weight: 800; }
+.combat-v10[data-ruleset='nimble-knots-artillery-v10-r6'] .camera-focus-track {
+    flex: 1;
+    overflow: hidden;
+    height: 7px;
+    background: rgb(255 255 255 / 32%);
+    border: 1px solid rgb(255 255 255 / 48%);
+    border-radius: 999px;
+}
+.combat-v10[data-ruleset='nimble-knots-artillery-v10-r6'] .camera-focus-fill { display: block; height: 100%; border-radius: inherit; }
+.combat-v10[data-ruleset='nimble-knots-artillery-v10-r6'] .camera-focus-arrow { font-size: 0.7rem; }
 .combat-v9 .combat-message { top: calc(max(8px, var(--safe-area-top)) + 52px); bottom: auto; }
 .combat-v9 .v9-pause-sheet { z-index: 13; }
 .combat-v9 .v9-reenter { min-width: 48px; min-height: 48px; margin-top: 0.4rem; }

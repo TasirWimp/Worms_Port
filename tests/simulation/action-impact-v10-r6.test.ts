@@ -22,7 +22,11 @@ test('current V10 R6 keeps the exact R5 volcanic arena and frozen weapon-terrain
     assert.equal(r6.terrainRecipeRevision, r5.terrainRecipeRevision);
     assert.equal(r6.terrainCandidateIndex, r5.terrainCandidateIndex);
     assert.deepEqual(r6.terrain, r5.terrain);
-    assert.deepEqual(r6.units, r5.units);
+    const normalizedUnits = structuredClone(r6.units);
+    normalizedUnits[0].thread = r5.units[0].thread;
+    assert.deepEqual(normalizedUnits, r5.units);
+    assert.equal(r5.units[0].thread, 3);
+    assert.equal(r6.units[0].thread, 5);
 
     const r5Mechanics = mechanicsForV10(V10_R5_RULESET_ID)!;
     const r6Mechanics = mechanicsForV10(V10_R6_RULESET_ID)!;
@@ -81,28 +85,41 @@ test('R6 sustains long touch movement with six-tick refreshes and still permits 
     assert.equal(second.error?.code, 'COMMAND_REJECTED');
 });
 
-test('R6 moves 25 percent faster and applies bounded directional aftertouch to a normal hop', () => {
+test('R6 walks at the refined speed and applies more responsive bounded aftertouch to a normal jump', () => {
     const r5Initial = createSimulationV10(4, 'wizard', V10_R5_RULESET_ID);
     const r6Initial = createSimulationV10(4, 'wizard', V10_R6_RULESET_ID);
     const r5Walking = advanceSimulationTicksV10(accepted(r5Initial, { type: 'walk_start', direction: -1 }), 1).state;
     const r6Walking = advanceSimulationTicksV10(accepted(r6Initial, { type: 'walk_start', direction: -1 }), 1).state;
     assert.equal(r5Initial.units[0].xFp - r5Walking.units[0].xFp, 256);
     assert.equal(r6Initial.units[0].xFp - r6Walking.units[0].xFp, V10_R6_DYNAMICS.walkSpeedFp);
-    assert.equal(V10_R6_DYNAMICS.walkSpeedFp, 320);
+    assert.equal(V10_R6_DYNAMICS.walkSpeedFp, 336);
 
     let jump = accepted(createSimulationV10(4, 'wizard', V10_R6_RULESET_ID), { type: 'jump', direction: 1 });
-    assert.equal(jump.units[0].vxFp, 320);
+    assert.equal(jump.units[0].vxFp, 336);
     const steered = applySimulationIntentV10(jump, 'player', { type: 'walk_start', direction: -1 }, jump.turn);
     assert.equal(steered.accepted, true, JSON.stringify(steered.error));
     jump = advanceSimulationTicksV10(steered.state, 10).state;
     assert.equal(jump.units[0].grounded, false);
-    assert.equal(jump.units[0].vxFp, 160);
+    assert.equal(jump.units[0].vxFp, 96);
     assert.equal(jump.units[0].vyFp, -1_408);
 
     const legacyJump = accepted(createSimulationV10(4, 'wizard', V10_R5_RULESET_ID), { type: 'jump', direction: 1 });
     const legacySteer = applySimulationIntentV10(legacyJump, 'player', { type: 'walk_start', direction: -1 }, legacyJump.turn);
     assert.equal(legacySteer.accepted, false);
     assert.equal(legacyJump.units[0].vxFp, 256);
+});
+
+test('R6 opens with enough Thread to select and fire Spoolburst while frozen R5 retains three', () => {
+    const r5 = createSimulationV10(4, 'wizard', V10_R5_RULESET_ID);
+    let r6 = createSimulationV10(4, 'wizard', V10_R6_RULESET_ID);
+    assert.equal(r5.units[0].thread, 3);
+    assert.equal(r6.units[0].thread, 5);
+
+    r6 = accepted(r6, { type: 'select_relic', relicId: 'spoolburst' });
+    r6 = accepted(r6, { type: 'aim', angleMilliDegrees: 45_000, powerPermille: 800 });
+    r6 = accepted(r6, { type: 'fire', aimId: r6.aimId });
+    assert.equal(r6.selectedRelic, 'spoolburst');
+    assert.equal(r6.units[0].thread, 0);
 });
 
 test('R6 projectile collision uses the compact character envelope', () => {

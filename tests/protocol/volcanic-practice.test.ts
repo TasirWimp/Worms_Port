@@ -7,6 +7,7 @@ import { ChallengeCreateV10Schema } from '../../shared/protocol-v10-live';
 import { CoordinatorReplayV10Schema } from '../../shared/protocol-v10';
 import { V10_AUTOMATION_ID } from '../../shared/combat-version';
 import { CURRENT_V10_RULESET_ID, V10_R6_DYNAMICS } from '../../shared/simulation-v10';
+import { LoomkeeperPlannerV10 } from '../../shared/loomkeeper-v10';
 
 const request = { requestId: 'volcanic_request_001', sequence: 0, mode: 'practice', calling: 'wizard', rulesetId: CURRENT_V10_RULESET_ID, automationId: V10_AUTOMATION_ID };
 
@@ -88,6 +89,29 @@ test('volcanic live replay regenerates AI, binds terrain, and refuses foundation
         assert.throws(() => dispatcher.reconstructAndVerify({ ...replay, chosenPlans: [] } as any));
         assert.throws(() => dispatcher.reconstructAndVerify(replay, { challengeId: created.challengeId, sessionId: 'different_owner_001' }));
     } finally { live.dispose(); dispatcher.dispose(); }
+});
+
+test('measured V10 Loomkeeper work cannot become clock debt for another live match', () => {
+    let nowUs = 0;
+    class MeasuredPlanner extends LoomkeeperPlannerV10 {
+        public override step(): void { nowUs += 200_000; super.step(); }
+    }
+    const live = new LiveSimulationCoordinatorV10({
+        nowUs: () => nowUs,
+        plannerFactory: state => new MeasuredPlanner(state)
+    });
+    try {
+        const busy = live.createAutomated('volcanic_busy_match', 'volcanic_busy_owner', 4, 'wizard');
+        const peer = live.createAutomated('volcanic_peer_match', 'volcanic_peer_owner', 4, 'wizard');
+        live.advance(busy.challengeId, V10_R6_DYNAMICS.actionTicks + 30);
+
+        assert.equal(nowUs, 6_000_000);
+        assert.equal(live.dueTicks(peer.challengeId), 0);
+        const peerAfterWork = live.pump(peer.challengeId);
+        assert.equal(peerAfterWork.unavailable, false);
+        assert.equal(peerAfterWork.terminalResult, undefined);
+        assert.equal(peerAfterWork.state.tick, 0);
+    } finally { live.dispose(); }
 });
 
 test('volcanic expiry closes authority and preserves its final replay for settlement', () => {

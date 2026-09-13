@@ -627,7 +627,7 @@ test('standard volcanic Practice at root keeps authority, AI, cold resume and re
       sideways === 'right' ? 0.35 : sideways === 'left' ? -0.35 : 0);
     await expect(ui).toHaveAttribute('data-aim-locked', 'true');
     await ui.locator('.fire-button').tap();
-    await expect(ui).toHaveAttribute('data-player-thread', '1');
+    await expect(ui).toHaveAttribute('data-player-thread', '3');
     await expect(ui).toHaveAttribute('data-active-actor', 'loomkeeper', { timeout: 12_000 });
     await expect(ui).toHaveAttribute('data-active-actor', 'player', { timeout: 35_000 });
     const second = runtime.sessions.activeSnapshotV10(owned())!.challengeId;
@@ -643,7 +643,7 @@ test('standard volcanic Practice at root keeps authority, AI, cold resume and re
   } finally { await page.goto('about:blank'); await runtime.close(); }
 });
 
-test('current R6 phone controls combine held movement, Hop and bounded jump aftertouch', async ({ page }) => {
+test('current R6 phone controls combine walk, jump and low-drag air steering in one thumbstick', async ({ page }) => {
   test.setTimeout(45_000);
   const runtime = createRuntimeServer({ clientDir: path.resolve('client/build'), identity: false,
     sessionRegistry: { practiceV10: true, seedSource: () => 4 } });
@@ -654,15 +654,12 @@ test('current R6 phone controls combine held movement, Hop and bounded jump afte
     await page.getByRole('button', { name: 'Start Practice' }).tap();
     const ui = page.locator('.combat-v10');
     await expect(ui).toHaveAttribute('data-ruleset', CURRENT_V10_RULESET_ID);
-    const hop = ui.locator('.jump-button');
-    await expect(hop).toBeVisible();
-    const hopBox = await hop.boundingBox();
-    expect(hopBox?.width).toBeGreaterThanOrEqual(48);
-    expect(hopBox?.height).toBeGreaterThanOrEqual(48);
+    await expect(ui.locator('.jump-button')).toHaveCount(0);
+    await expect(ui.locator('.movement-zone')).toHaveAttribute('aria-label',
+      'Movement thumbstick. Drag sideways to walk, push up to jump, and steer in the air.');
     const actionBox = await ui.locator('.combat-actions').boundingBox();
     const actionButtons = await Promise.all([
       ui.locator('.v9-actions-button').boundingBox(),
-      hop.boundingBox(),
       ui.locator('.fire-button').boundingBox()
     ]);
     expect(actionBox).not.toBeNull();
@@ -676,22 +673,47 @@ test('current R6 phone controls combine held movement, Hop and bounded jump afte
     await expect(playerCard.locator('.unit-status-track span')).toHaveCSS('width', /[3-9][0-9]px/);
     await expect(playerCard.locator('.unit-status-track span')).toHaveCSS('background-color', 'rgb(31, 193, 31)');
 
+    await pointer(page, '#game canvas', 'pointerdown', 1300, 0.5, 0.25);
+    await pointer(page, '#game canvas', 'pointermove', 1300, 0.95, 0.25);
+    await pointer(page, '#game canvas', 'pointerup', 1300, 0.95, 0.25);
+    await expect.poll(async () => Number(await ui.getAttribute('data-camera-left'))).toBeLessThan(100);
+    const focus = ui.locator('.camera-focus-button:visible').first();
+    await expect(focus).toBeVisible();
+    await expect(focus).toHaveAttribute('data-compact', 'true');
+    await expect(focus.locator('.camera-focus-card')).toBeVisible();
+    await expect(focus.locator('.camera-focus-track')).toBeVisible();
+    expect((await focus.locator('.camera-focus-card').boundingBox())?.height).toBeLessThanOrEqual(18);
+    expect((await focus.boundingBox())?.height).toBeGreaterThanOrEqual(48);
+    expect(await focus.textContent()).not.toMatch(/\d/);
+    await expect(ui).toHaveAttribute('data-player-thread', '5');
+
     const startX = runtime.sessions.activeSnapshotV10(owned())!.simulation.units[0].xFp;
     await pointer(page, '.combat-v10 .movement-zone', 'pointerdown', 1301, 0.5, 0.55);
+    await expect.poll(() => ui.locator('.movement-zone').evaluate(element =>
+      (element as HTMLElement).style.getPropertyValue('--pad-x'))).toMatch(/px$/);
     await pointer(page, '.combat-v10 .movement-zone', 'pointermove', 1301, 0.82, 0.55);
     await expect.poll(() => runtime.sessions.activeSnapshotV10(owned())!.simulation.units[0].xFp).toBeGreaterThan(startX);
 
-    await hop.tap();
+    await pointer(page, '.combat-v10 .movement-zone', 'pointermove', 1301, 0.82, 0.35);
     await expect.poll(() => runtime.sessions.activeSnapshotV10(owned())!.simulation.units[0].grounded).toBe(false);
-    await pointer(page, '.combat-v10 .movement-zone', 'pointermove', 1301, 0.18, 0.55);
+    await pointer(page, '.combat-v10 .movement-zone', 'pointermove', 1301, 0.75, 0.35);
+    await expect.poll(() => runtime.sessions.activeSnapshotV10(owned())!.simulation.heldDirection).toBe(-1);
     await expect.poll(() => {
       const unit = runtime.sessions.activeSnapshotV10(owned())!.simulation.units[0];
-      return !unit.grounded && unit.vxFp < 320;
+      return !unit.grounded && unit.vxFp < 336;
     }).toBe(true);
     await expect.poll(() => runtime.sessions.activeSnapshotV10(owned())!.simulation.units[0].grounded,
       { timeout: 5_000 }).toBe(true);
-    await pointer(page, '.combat-v10 .movement-zone', 'pointerup', 1301, 0.18, 0.55);
+    await pointer(page, '.combat-v10 .movement-zone', 'pointerup', 1301, 0.75, 0.35);
     await expect.poll(() => runtime.sessions.activeSnapshotV10(owned())!.simulation.heldDirection).toBe(0);
+    await expect(ui.locator('.movement-zone')).not.toHaveClass(/is-active/);
+
+    await ui.locator('.v9-actions-button').tap();
+    await ui.locator('.v9-attack').tap();
+    const spoolburst = ui.locator('.relic-spoolburst');
+    await expect(spoolburst).toBeEnabled();
+    await spoolburst.tap();
+    await expect(ui).toHaveAttribute('data-selected-relic', 'spoolburst');
   } finally { await page.goto('about:blank'); await runtime.close(); }
 });
 

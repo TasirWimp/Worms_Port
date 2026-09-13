@@ -10,7 +10,7 @@
     "primary assistant"
   ],
   "scope": [
-    "Waypoint 1: promote a V10 R6 current runtime with the unchanged R5 volcanic terrain and weapon-terrain behavior, a smaller coherent Wizard presentation and direct-hit envelope, compact gradient health bars, a 60-second continuous movement action, slightly faster walking, a dedicated Hop with bounded aftertouch, one offensive shot and the existing retreat.",
+    "Waypoint 1: promote a V10 R6 current runtime with the unchanged R5 volcanic terrain and weapon-terrain behavior, a smaller coherent Wizard presentation and direct-hit envelope, compact on-screen and off-screen gradient health bars, a 60-second continuous action, a combined walk/jump/air-steer thumbstick, a five-Thread player opening that exposes every release Relic, one offensive shot, the existing retreat and peer-safe V10 authority timing under concurrent Loomkeeper planning.",
     "Waypoint 2 after physical-phone acceptance: add deterministic explosion knockback and authoritative impact settling without changing terrain carving or damage.",
     "Waypoint 3 after physical-phone acceptance: integrate the accepted R6 behavior through standard Practice and PEI-gated Daily lifecycle and reward paths."
   ],
@@ -57,6 +57,11 @@
       "command": "Focused Phone Gate A correction checks from committed base 820dba5",
       "status": "pass",
       "details": "The dry run recorded fingerprint f2fd6b51c11055d774e6bdd3129737b2374e59ed48c7587105342f7b4b0ff9fc. Zero-retry focused checks passed import, types, work-package records 70/70, current combat 45/45, simulation 53/53, protocol 16/16, Practice 1/1 and Loomkeeper 39/39. The initial fresh build, smoke, identity and reward-security checks passed, while bundle budget retained a real first failure at 436334/430000 gzip because an eager layout import pulled the full V10 simulation graph into the entry chunk. Removing that dependency and changing no budget produced final build proof 443c92239a09 / 2b0bad37895e, current R6 smoke, 1424998/1500000 raw JavaScript and 415715/430000 gzip. The supported canonical Practice spec passed 5/5. A first direct Windows visual invocation retained five missing-baseline failures; its generated candidates were removed, two actual captures were inspected directly, and the policy-corrected --ignore-snapshots invocation passed visual logic 5/5 in 17.9 seconds with no snapshot files. Previously green phases were not repeated. Logs .cache/wp023-gatea-refinement-dry-run.log, .cache/wp023-gatea-focused-units.log, .cache/wp023-gatea-build.log, .cache/wp023-gatea-combat-final.log, .cache/wp023-gatea-final-units.log, .cache/wp023-gatea-final-build.log, .cache/wp023-gatea-browser.log, .cache/wp023-gatea-visual.log and .cache/wp023-gatea-visual-final.log."
+    },
+    {
+      "command": "Second Phone Gate A correction and focused recovery from committed base 04e249a",
+      "status": "pass",
+      "details": "The first zero-retry selector retained every passing unit, build, smoke, security and budget result, then failed only the 16-case shared-server canonical browser phase: one Daily consumed-loss journey stopped at tick 407 with clock_debt after concurrent Loomkeeper planning batches. Direct review classified a V10 coordinator defect rather than rerunning the suite: measured internal planning time for one match was being counted as external scheduler delay for peer matches. The coordinator now excludes each measured authority-work interval from every active match debt anchor, and a deterministic two-match regression proves that 6,000,000 microseconds of peer planner work produces zero due ticks and no peer clock debt. The refreshed dry run recorded fingerprint 503b800d6d6cdf2908339954ce2adc0d361617cebbe63788a9c37251d409bec1. Zero-retry focused recovery passed types, protocol 17/17, fresh R6 build/smoke, identity, reward security and bundle limits with proof c6f53dfa1b52 / f981caf98e93, 1425330/1500000 raw JavaScript bytes and 415948/430000 gzip bytes. The exact shared-server canonical browser phase passed 16/16 in 2.7 minutes, and R6 visual logic passed 5/5 maintained phone projects in 18.1 seconds with Windows snapshot comparison ignored and no generated candidates. Previously passing unchanged phases were not repeated. Logs .cache/wp023-gatea2-selector-final.log and .cache/wp023-gatea2-recovery-{dry-run,types,protocol,build,browser,visual}.log."
     }
   ],
   "reviews": [
@@ -75,6 +80,6 @@
     "Physical Phone Gate A is pending, so explosion impulse, complete Daily integration acceptance and Phone Gates B/C have not started."
   ],
   "residual_risks": [
-    "Phone Gate A accepted volcanic presentation, smaller actors, the 60-second clock, uninterrupted long-held movement, existing crater/retreat behavior and normal Loomkeeper response. Compact health-bar placement, the 25 percent speed increase and Hop aftertouch require the owner's correction pass before the package advances."
+    "Phone Gate A accepted volcanic presentation, smaller actors, the 60-second clock, uninterrupted long-held movement, actor-attached health bars, existing crater/retreat behavior and normal Loomkeeper response. The compact off-screen status, 5 percent speed refinement, combined thumbstick jump/air steering and first-turn Spoolburst availability require the owner's second correction pass before the package advances."
   ]
 }

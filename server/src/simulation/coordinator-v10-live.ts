@@ -338,10 +338,11 @@ export class LiveSimulationCoordinatorV10 {
                 const planningWorkUs = Math.max(0, this.clock() - started);
                 entry.maximumPlanningBatchUs = Math.max(entry.maximumPlanningBatchUs ?? 0, planningWorkUs);
                 // The fixed 30 logical planning ticks already charge the AI's
-                // decision window. Exclude only measured, bounded planner CPU
-                // from the real-time debt anchor so that work is not charged a
-                // second time. External scheduler stalls still accrue normally.
-                entry.anchorUs += planningWorkUs;
+                // decision window. Exclude measured planner CPU from every live
+                // match so one match cannot charge its internal authority work
+                // as scheduler debt to peers. External scheduler stalls still
+                // accrue normally because they are not inside this measurement.
+                this.excludeMeasuredAuthorityWork(planningWorkUs);
             }
         }
         entry.planningElapsed = (entry.planningElapsed ?? 0) + 1;
@@ -373,6 +374,10 @@ export class LiveSimulationCoordinatorV10 {
         return update;
     }
     private hasSelection(entry: Entry, turn: number): boolean { return 'chosenPlans' in entry.replay && entry.replay.chosenPlans.some(plan => plan.turn === turn); }
+    private excludeMeasuredAuthorityWork(elapsedUs: number): void {
+        if (elapsedUs <= 0) return;
+        for (const match of this.matches.values()) match.anchorUs += elapsedUs;
+    }
     private recordSelection(entry: Entry, turn: number, selection: LoomkeeperSelectionV10): boolean {
         if (!('chosenPlans' in entry.replay)) throw new Error('Foundation replay cannot record automated selection.');
         const previous = entry.replay.chosenPlans;

@@ -237,10 +237,11 @@ test('R6 health bars stay compact, sit four pixels above the Wizard and progress
     assert.equal(stitchingHealthColor(0), 'hsl(0 72% 44%)');
 });
 
-test('R6 air control reverses a held movement pointer while the frozen input remains inert in flight', () => {
+test('R6 platformer stick jumps from walking and reverses air steering with a small launch-relative drag', () => {
     const pad = { x: 100, y: 200, width: 112, height: 112 };
     const origin = { x: 156, y: 256 };
-    const ready = { grounded: true, facing: 1 as const, heldDirection: 0 as const, lane: 'ready' as const };
+    const ready = { grounded: true, facing: 1 as const, heldDirection: 0 as const, lane: 'ready' as const,
+        platformerStick: true };
     const beginRight = (input: UnifiedMovementInputController) => {
         assert.equal(input.beginMovement(1, origin, pad), true);
         input.moveMovement(1, { x: origin.x + 30, y: origin.y }, ready, 0);
@@ -251,15 +252,23 @@ test('R6 air control reverses a held movement pointer while the frozen input rem
 
     const current = new UnifiedMovementInputController();
     beginRight(current);
+    const walking = { ...ready, heldDirection: 1 as const };
+    current.moveMovement(1, { x: origin.x + 30, y: origin.y - 16 }, walking, 1);
+    const jump = current.movementIntent(walking, 1);
+    assert.deepEqual(jump, { type: 'jump', direction: 1 });
+    current.submittedMovementIntent(jump!);
     current.observeGrounded(false, true);
-    const airborne = { ...ready, grounded: false, heldDirection: 1 as const, airControl: true };
-    current.moveMovement(1, { x: origin.x - 30, y: origin.y }, airborne, 1);
-    assert.deepEqual(current.movementIntent(airborne, 1), { type: 'walk_start', direction: -1 });
+    const airborne = { ...walking, grounded: false, airControl: true };
+    current.moveMovement(1, { x: origin.x + 23, y: origin.y - 16 }, airborne, 2);
+    assert.deepEqual(current.movementIntent(airborne, 2), { type: 'walk_start', direction: -1 });
 
     const frozen = new UnifiedMovementInputController();
-    beginRight(frozen);
+    const frozenReady = { grounded: true, facing: 1 as const, heldDirection: 0 as const, lane: 'ready' as const };
+    assert.equal(frozen.beginMovement(1, origin, pad), true);
+    frozen.moveMovement(1, { x: origin.x + 30, y: origin.y }, frozenReady, 0);
+    frozen.submittedMovementIntent(frozen.movementIntent(frozenReady, 0)!);
     frozen.observeGrounded(false);
-    const frozenAirborne = { ...ready, grounded: false, heldDirection: 1 as const };
+    const frozenAirborne = { ...frozenReady, grounded: false, heldDirection: 1 as const };
     frozen.moveMovement(1, { x: origin.x - 30, y: origin.y }, frozenAirborne, 1);
     assert.equal(frozen.movementIntent(frozenAirborne, 1), null);
 });
