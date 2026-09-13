@@ -166,6 +166,13 @@ test('current R6 volcanic Practice start stays coherent across maintained phone 
   expect(overlaps(movementButtons[0]!, movementButtons[1]!)).toBe(false);
   expect(overlaps(movementButtons[0]!, movementButtons[2]!)).toBe(false);
   expect(overlaps(movementButtons[1]!, movementButtons[2]!)).toBe(false);
+  for (const [first, second] of [[movementButtons[0]!, movementButtons[1]!],
+    [movementButtons[0]!, movementButtons[2]!], [movementButtons[1]!, movementButtons[2]!]]) {
+    const gap = rectangularGap(first, second);
+    expect(gap).toBeGreaterThanOrEqual(2);
+    expect(gap).toBeLessThanOrEqual(4);
+  }
+  await expect(ui.locator('.movement-left')).toHaveCSS('background-color', 'rgba(5, 130, 202, 0.3)');
   await assertDocumentLocked(page);
   await screenshot(page, 'current-r6-volcanic-practice-start.png');
   expect(errors).toEqual([]);
@@ -390,6 +397,15 @@ function overlaps(
 ): boolean {
   return a.x < b.x + b.width && a.x + a.width > b.x &&
     a.y < b.y + b.height && a.y + a.height > b.y;
+}
+
+function rectangularGap(
+  a: { x: number; y: number; width: number; height: number },
+  b: { x: number; y: number; width: number; height: number }
+): number {
+  const horizontal = Math.max(b.x - (a.x + a.width), a.x - (b.x + b.width), 0);
+  const vertical = Math.max(b.y - (a.y + a.height), a.y - (b.y + b.height), 0);
+  return Math.max(horizontal, vertical);
 }
 
 async function dragPad(

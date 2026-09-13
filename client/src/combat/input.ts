@@ -2,6 +2,7 @@ import type { SimulationCommand } from '../../../shared/simulation';
 import type { Point, Rect } from './contracts';
 import type { ChallengeSnapshotV8Family as ChallengeSnapshotV8 } from '../../../shared/protocol-v8';
 import type { SimulationIntentV8R1 } from '../../../shared/simulation-v8';
+import type { SimulationIntentV10 } from '../../../shared/simulation-v10';
 
 export type CombatInputPhase =
     | 'idle'
@@ -222,6 +223,7 @@ export type R6MovementButton = 'left' | 'right' | 'jump';
 export class R6MovementButtonController {
     private pointer?: { id: number; button: R6MovementButton | null; direction: -1 | 0 | 1 };
     private jumpDeadline?: number;
+    private jumpDirection?: -1 | 0 | 1;
 
     public begin(id: number, button: R6MovementButton, now: number): boolean {
         if (this.pointer) return false;
@@ -238,13 +240,16 @@ export class R6MovementButtonController {
         return true;
     }
 
-    public movementIntent(facts: MovementFactsR1, now: number): SimulationIntentV8R1 | null {
-        if (this.jumpDeadline !== undefined && now > this.jumpDeadline) this.jumpDeadline = undefined;
+    public movementIntent(facts: MovementFactsR1, now: number): SimulationIntentV10 | null {
+        if (this.jumpDeadline !== undefined && now > this.jumpDeadline) {
+            this.jumpDeadline = undefined; this.jumpDirection = undefined;
+        }
         if (facts.lane !== 'ready') return null;
         const direction = this.pointer?.direction ?? 0;
         if (facts.grounded && this.jumpDeadline !== undefined) {
-            this.jumpDeadline = undefined;
-            return { type: 'jump', direction: direction || facts.heldDirection || facts.facing };
+            const jumpDirection = this.jumpDirection ?? 0;
+            this.jumpDeadline = undefined; this.jumpDirection = undefined;
+            return { type: 'jump', direction: jumpDirection };
         }
         if (!facts.grounded && facts.airControl !== true) return null;
         if (direction === facts.heldDirection) return null;
@@ -259,14 +264,16 @@ export class R6MovementButtonController {
         return { release };
     }
 
-    public interrupt(): void { this.pointer = undefined; this.jumpDeadline = undefined; }
+    public interrupt(): void { this.pointer = undefined; this.jumpDeadline = undefined; this.jumpDirection = undefined; }
     public hasDirectionHold(): boolean { return Boolean(this.pointer?.direction); }
-    public activeButton(): R6MovementButton | null { return this.pointer?.button ?? null; }
 
     private apply(button: R6MovementButton, now: number): void {
         if (!this.pointer) return;
         this.pointer.button = button;
-        if (button === 'jump') this.jumpDeadline = now + 250;
+        if (button === 'jump') {
+            this.jumpDeadline = now + 250;
+            this.jumpDirection = this.pointer.direction;
+        }
         else this.pointer.direction = button === 'left' ? -1 : 1;
     }
 }

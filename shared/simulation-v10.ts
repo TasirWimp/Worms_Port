@@ -138,7 +138,7 @@ export type SimulationStateV10 = Omit<SimulationStateV9, 'formatVersion' | 'rule
     terrainRecipeRevision?: typeof V10_PROCEDURAL_RECIPE_REVISION | typeof V10G_RECIPE_REVISION | typeof V10G_FAMILY_RECIPE_REVISION | typeof VOLCANIC_RUIN_RECIPE_REVISION;
     terrainCandidateIndex?: number;
 };
-export type SimulationIntentV10 = SimulationIntentV9;
+export type SimulationIntentV10 = SimulationIntentV9 | { type: 'jump'; direction: 0 };
 export type SimulationBarrierV10 = SimulationBarrierV9;
 export type SimulationEventV10 = SimulationEventV9;
 export type SimulationTransitionV10 = Omit<SimulationTransitionV9, 'state'> & { state: SimulationStateV10 };
@@ -188,7 +188,10 @@ export const SimulationStateV10Schema = SimulationStateV9KernelSchema.omit({
             message: 'Pre-R6 state exceeds its frozen clock bounds.' });
     }
 });
-export const SimulationIntentV10Schema = SimulationIntentV9Schema;
+export const SimulationIntentV10Schema = z.union([
+    SimulationIntentV9Schema,
+    z.object({ type: z.literal('jump'), direction: z.literal(0) }).strict()
+]);
 export const SimulationBarrierV10Schema = SimulationBarrierV9Schema;
 
 export function v10TerrainProfileForSeed(
@@ -344,8 +347,22 @@ export function applySimulationIntentV10(
     assertSimulationInvariantsV10(current);
     const mechanics = mechanicsForV10(current.rulesetId);
     const dynamics = dynamicsForV10(current.rulesetId);
+    const neutralJump = intent.type === 'jump' && intent.direction === 0;
+    if (neutralJump && (current.rulesetId !== V10_R6_RULESET_ID || current.heldDirection !== 0)) {
+        return { accepted: false, mutated: false, state: current, events: [],
+            error: { code: 'COMMAND_REJECTED', message: 'Neutral jump requires an idle R6 actor.' } };
+    }
+    const delegatedIntent: SimulationIntentV9 = neutralJump
+        ? { type: 'jump', direction: current.units[actor === 'player' ? 0 : 1].facing }
+        : intent as SimulationIntentV9;
+    const transition = applySimulationIntentV9(
+        toV9(current), actor, delegatedIntent, expectedTurn, expectedPhase, expectedEpoch, mechanics, dynamics
+    );
+    if (neutralJump && transition.accepted && transition.mutated) {
+        transition.state.units[actor === 'player' ? 0 : 1].vxFp = 0;
+    }
     return fromV9Transition(
-        applySimulationIntentV9(toV9(current), actor, intent, expectedTurn, expectedPhase, expectedEpoch, mechanics, dynamics),
+        transition,
         current
     );
 }

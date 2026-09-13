@@ -237,10 +237,14 @@ test('R6 health bars stay compact, sit four pixels above the Wizard and progress
     assert.equal(stitchingHealthColor(0), 'hsl(0 72% 44%)');
 });
 
-test('R6 movement buttons support held walking, slide-to-jump and directional aftertouch without origin drift', () => {
+test('R6 movement buttons distinguish a neutral tap from slide-to-jump and retain directional aftertouch', () => {
     const input = new R6MovementButtonController();
     const ready = { grounded: true, facing: 1 as const, heldDirection: 0 as const, lane: 'ready' as const,
         airControl: true };
+
+    assert.equal(input.begin(7, 'jump', 0), true);
+    assert.deepEqual(input.movementIntent(ready, 0), { type: 'jump', direction: 0 });
+    assert.deepEqual(input.finish(7), { release: false });
 
     assert.equal(input.begin(1, 'right', 0), true);
     assert.deepEqual(input.movementIntent(ready, 0), { type: 'walk_start', direction: 1 });

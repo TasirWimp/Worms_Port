@@ -94,6 +94,14 @@ test('R6 walks at the refined speed and uses a shorter normal jump with bounded 
     assert.equal(r6Initial.units[0].xFp - r6Walking.units[0].xFp, V10_R6_DYNAMICS.walkSpeedFp);
     assert.equal(V10_R6_DYNAMICS.walkSpeedFp, 336);
 
+    const neutralStartX = r6Initial.units[0].xFp;
+    let neutralJump = accepted(r6Initial, { type: 'jump', direction: 0 });
+    assert.equal(neutralJump.units[0].vxFp, 0);
+    assert.equal(neutralJump.units[0].vyFp, -1_728);
+    neutralJump = advanceSimulationTicksV10(neutralJump, 10).state;
+    assert.equal(neutralJump.units[0].xFp, neutralStartX);
+    assert.equal(neutralJump.units[0].facing, r6Initial.units[0].facing);
+
     let jump = accepted(createSimulationV10(4, 'wizard', V10_R6_RULESET_ID), { type: 'jump', direction: 1 });
     assert.equal(jump.units[0].vxFp, 336);
     assert.equal(jump.units[0].vyFp, -1_728);
@@ -108,6 +116,10 @@ test('R6 walks at the refined speed and uses a shorter normal jump with bounded 
     const legacySteer = applySimulationIntentV10(legacyJump, 'player', { type: 'walk_start', direction: -1 }, legacyJump.turn);
     assert.equal(legacySteer.accepted, false);
     assert.equal(legacyJump.units[0].vxFp, 256);
+    const legacyNeutral = applySimulationIntentV10(
+        createSimulationV10(4, 'wizard', V10_R5_RULESET_ID), 'player', { type: 'jump', direction: 0 }, 0
+    );
+    assert.equal(legacyNeutral.accepted, false);
 
     let reinforced = accepted(createSimulationV10(4, 'wizard', V10_R6_RULESET_ID),
         { type: 'threadleap', direction: 1 });

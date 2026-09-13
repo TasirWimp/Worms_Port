@@ -67,11 +67,15 @@ R6 now uses the same small green-through-yellow-to-red bar for actor-attached
 and off-screen status. The off-screen card remains inside a 76 by 48 px touch
 target. Walking rises from 320 to 336 fixed-point units per tick. The left
 movement region now contains three fixed, non-overlapping targets of at least
-48 by 48 px: jump above, with left and right below. Holding either direction
-walks and supplies the same bounded airborne acceleration. The thumb may slide
-from a direction through jump and into either direction for aftertouch; gaps do
-not discard the last held direction, while lifting or an interrupted capture
-releases it. Each fresh entry into jump can buffer for 250 ms before landing.
+48 by 48 px: jump above, with left and right below. Their translucent surfaces
+preserve the arena view, and the three-pixel seams keep the cluster compact
+while retaining distinct targets. Holding either direction walks and supplies
+the same bounded airborne acceleration. A direct jump entry records a neutral
+takeoff and rises vertically without changing facing. Sliding from a direction
+into jump records that direction for the takeoff; the thumb can then continue
+into either direction for aftertouch. Gaps do not discard the last held
+direction, while lifting or an interrupted capture releases it. Each fresh
+entry into jump can buffer for 250 ms before landing.
 The fixed controls remove origin lookup, re-centering and cumulative drift.
 The ordinary R6 jump impulse changes from
 `-2048` to `-1728` fixed-point units. With the inherited 64-unit gravity, its
@@ -119,14 +123,16 @@ protocol ownership, build/smoke and the supported phone browser journey.
    screen and confirm its edge control also uses the small bar without a large
    number while remaining easy to tap.
 3. Confirm the action clock begins at about 60 seconds.
-4. Confirm the left movement cluster has separate blue left, right and up/jump
-   buttons with comfortable gaps and no Hop action in the centre strip. Hold a
-   direction to walk, slide the same thumb to jump, then slide into either
-   direction in flight for an accurate landing. Repeat several walk/jump cycles
-   without searching for a neutral origin and also try direct taps on all three
-   targets. Confirm each target is easy to distinguish, landing corrections
-   react promptly, a near-landing jump remains buffered, and releasing the
-   cluster stops movement. The accepted walking pace and shorter arc remain.
+4. Confirm the left movement cluster has separate translucent left, right and
+   up/jump buttons with only a narrow seam between them and no Hop action in the
+   centre strip. Directly tap Jump while standing and confirm the actor rises
+   vertically without horizontal drift. Hold a direction to walk, slide the
+   same thumb to Jump and confirm that direction carries into takeoff, then
+   slide into either direction in flight for an accurate landing. Repeat
+   several walk/jump cycles without searching for a neutral origin. Confirm
+   each target remains easy to distinguish, landing corrections react promptly,
+   a near-landing jump remains buffered, and releasing the cluster stops
+   movement. The accepted walking pace and shorter arc remain.
 5. Open Actions > Attack and confirm Spoolburst can be selected on the first
    turn with the displayed 5 Thread. Fire one relic, confirm the familiar
    crater/damage behavior, then use the existing two-second retreat window. A

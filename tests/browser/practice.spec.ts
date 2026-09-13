@@ -645,7 +645,7 @@ test('standard volcanic Practice at root keeps authority, AI, cold resume and re
   } finally { await page.goto('about:blank'); await runtime.close(); }
 });
 
-test('current R6 phone controls use spaced left, right and jump buttons with slide aftertouch', async ({ page }) => {
+test('current R6 phone controls use a compact translucent cluster with neutral tap-jump and slide aftertouch', async ({ page }) => {
   test.setTimeout(45_000);
   const runtime = createRuntimeServer({ clientDir: path.resolve('client/build'), identity: false,
     sessionRegistry: { practiceV10: true, seedSource: () => 4 } });
@@ -665,6 +665,13 @@ test('current R6 phone controls use spaced left, right and jump buttons with sli
     expect(overlaps(movementButtons[0]!, movementButtons[1]!)).toBe(false);
     expect(overlaps(movementButtons[0]!, movementButtons[2]!)).toBe(false);
     expect(overlaps(movementButtons[1]!, movementButtons[2]!)).toBe(false);
+    const horizontalGap = movementButtons[1]!.x - (movementButtons[0]!.x + movementButtons[0]!.width);
+    const verticalGap = movementButtons[0]!.y - (movementButtons[2]!.y + movementButtons[2]!.height);
+    expect(horizontalGap).toBeGreaterThanOrEqual(2);
+    expect(horizontalGap).toBeLessThanOrEqual(4);
+    expect(verticalGap).toBeGreaterThanOrEqual(2);
+    expect(verticalGap).toBeLessThanOrEqual(4);
+    await expect(ui.locator('.movement-left')).toHaveCSS('background-color', 'rgba(5, 130, 202, 0.3)');
     const actionBox = await ui.locator('.combat-actions').boundingBox();
     const actionButtons = await Promise.all([
       ui.locator('.v9-actions-button').boundingBox(),
@@ -695,6 +702,15 @@ test('current R6 phone controls use spaced left, right and jump buttons with sli
     expect((await focus.boundingBox())?.height).toBeGreaterThanOrEqual(48);
     expect(await focus.textContent()).not.toMatch(/\d/);
     await expect(ui).toHaveAttribute('data-player-thread', '5');
+
+    const neutralStartX = runtime.sessions.activeSnapshotV10(owned())!.simulation.units[0].xFp;
+    await pointer(page, '.combat-v10 .movement-jump', 'pointerdown', 1301, 0.5, 0.5);
+    await expect.poll(() => runtime.sessions.activeSnapshotV10(owned())!.simulation.units[0].grounded).toBe(false);
+    await expect.poll(() => runtime.sessions.activeSnapshotV10(owned())!.simulation.units[0].vxFp).toBe(0);
+    expect(runtime.sessions.activeSnapshotV10(owned())!.simulation.units[0].xFp).toBe(neutralStartX);
+    await pointer(page, '.combat-v10 .movement-jump', 'pointerup', 1301, 0.5, 0.5);
+    await expect.poll(() => runtime.sessions.activeSnapshotV10(owned())!.simulation.units[0].grounded,
+      { timeout: 5_000 }).toBe(true);
 
     const startX = runtime.sessions.activeSnapshotV10(owned())!.simulation.units[0].xFp;
     await pointer(page, '.combat-v10 .movement-right', 'pointerdown', 1301, 0.5, 0.5);

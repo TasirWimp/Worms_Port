@@ -103,6 +103,11 @@ export const CoordinatorReplayV10Schema = z.object({
         context.addIssue({ code: z.ZodIssueCode.custom, path: ['records'],
             message: 'Pre-R6 replay exceeds its frozen tick bound.' });
     }
+    if (!r6 && replay.records.some(record => record.operation.kind === 'intent' &&
+        record.operation.intent.type === 'jump' && record.operation.intent.direction === 0)) {
+        context.addIssue({ code: z.ZodIssueCode.custom, path: ['records'],
+            message: 'Neutral jump belongs only to the R6 replay contract.' });
+    }
 });
 export type CoordinatorReplayV10 = z.infer<typeof CoordinatorReplayV10Schema>;
 

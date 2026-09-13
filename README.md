@@ -16,11 +16,12 @@ wallet-free. Daily Challenge uses the same V10 R6 volcanic authority after its
 existing wallet, PEI receipt and reward reservation checks.
 R6 keeps the exact R5 terrain and weapon balance, presents smaller actors with
 compact color-changing health bars and a matching direct-hit envelope, and
-gives each actor a 60-second action phase with slightly faster walking, a
-spaced left-thumb cluster for holding left or right and tapping or sliding up
-to jump. Sliding between the three fixed buttons preserves responsive bounded
-air steering without a drifting touch origin, and jump keeps its short
-pre-landing buffer.
+gives each actor a 60-second action phase with slightly faster walking and a
+compact translucent left-thumb cluster for holding left or right and tapping
+or sliding up to jump. A direct Jump tap rises vertically; sliding from a
+direction into Jump carries that direction into the takeoff. Sliding between
+the three fixed buttons preserves responsive bounded air steering without a
+drifting touch origin, and jump keeps its short pre-landing buffer.
 Its ordinary jump is lower and shorter while Threadleap retains its reinforced
 arc. The player opens with 5 Thread,
 so Spoolburst is available on the first turn. R5 is an

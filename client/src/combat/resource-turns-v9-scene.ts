@@ -13,7 +13,7 @@ import { cameraFocusProgress } from './controls';
 import { activeSidewaysMode, clientPointToGame } from '../lib/sideways';
 import type { AimIntent } from './input';
 import type { SimulationIntentV9, SimulationStateV9 } from '../../../shared/simulation-v9';
-import { usesVolcanicRuin } from '../../../shared/simulation-v10';
+import { usesVolcanicRuin, type SimulationIntentV10 } from '../../../shared/simulation-v10';
 
 type CameraActor = 'player' | 'loomkeeper';
 type CameraTransition = { kind: 'focus' | 'opening'; actor: CameraActor; from: CombatCamera; to: CombatCamera; startedAt: number };
@@ -109,10 +109,11 @@ export class ResourceTurnsV9Scene {
         if (previous.projectile && !this.state.projectile && this.projectileCamera) { this.camera = this.projectileCamera; this.projectileCamera = undefined; }
         this.render(false);
     }
-    private async submit(intent: SimulationIntentV9): Promise<boolean> {
+    private async submit(intent: SimulationIntentV10): Promise<boolean> {
         this.completeOpeningSurvey();
         const generation = this.requestGeneration;
-        try { const next = await this.args.submit(intent); if (!this.destroyed && generation === this.requestGeneration) this.accept(next, []); return !this.destroyed && generation === this.requestGeneration; }
+        if (this.args.kind === 'v9' && intent.type === 'jump' && intent.direction === 0) return false;
+        try { const next = this.args.kind === 'v10' ? await this.args.submit(intent) : await this.args.submit(intent as SimulationIntentV9); if (!this.destroyed && generation === this.requestGeneration) this.accept(next, []); return !this.destroyed && generation === this.requestGeneration; }
         catch (error) { if (!this.destroyed && generation === this.requestGeneration) this.controls.update(this.state, [], this.args.paused()); return false; }
     }
     private async pause(paused: boolean): Promise<void> {

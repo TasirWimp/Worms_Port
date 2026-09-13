@@ -1,5 +1,5 @@
-import { usesV10GTactics, usesV10R6ActionDynamics } from '../../../shared/simulation-v10';
-import type { SimulationIntentV9 } from '../../../shared/simulation-v9';
+import { usesV10GTactics, usesV10R6ActionDynamics, type SimulationIntentV10 } from '../../../shared/simulation-v10';
+import type { SimulationIntentV8R1 } from '../../../shared/simulation-v8';
 import type { ResourceTurnsEvent, ResourceTurnsState } from './contracts';
 import { CombatInputController, R6MovementButtonController, UnifiedMovementInputController,
     type AimIntent, type R6MovementButton } from './input';
@@ -11,7 +11,7 @@ type ActionChoice = 'threadball' | 'needlepoint' | 'spoolburst' | 'threadguard' 
 type RelicChoice = Exclude<ActionChoice, 'threadguard' | 'threadleap' | null>;
 type ActionMenu = 'closed' | 'root' | 'attack' | 'defense';
 type Callbacks = {
-    submit: (intent: SimulationIntentV9) => Promise<boolean>; pause: (paused: boolean) => void; neutral: () => void; release?: () => void;
+    submit: (intent: SimulationIntentV10) => Promise<boolean>; pause: (paused: boolean) => void; neutral: () => void; release?: () => void;
     preview?: (aim: AimIntent | null) => void; focus?: (actor: 'player' | 'loomkeeper') => void; restart?: () => void;
     inputReady?: () => boolean; pauseAllowed?: () => boolean; pauseReason?: () => string | undefined;
     live?: boolean; automated?: boolean;
@@ -224,13 +224,13 @@ ${movementControl}
         this.request({ type: 'select_relic', relicId: choice });
     }
     private pendingRelic(): RelicChoice | null { return this.selectingRelic && this.choice && isRelicChoice(this.choice) ? this.choice : null; }
-    private request(intent: SimulationIntentV9): void { const generation = this.generation; void this.callbacks.submit(intent).then(accepted => {
+    private request(intent: SimulationIntentV10): void { const generation = this.generation; void this.callbacks.submit(intent).then(accepted => {
         if (this.destroyed || generation !== this.generation) return;
         if (intent.type === 'select_relic') { this.selectingRelic = false; this.choice = null; }
         if (!accepted) { this.message = 'Authority rejected that action; use a fresh gesture.'; this.element('.combat-message').textContent = this.message; this.refreshActions(); return; }
         if (intent.type === 'select_relic') this.update(this.state);
     }); }
-    private submitMovement(intent: SimulationIntentV9, refresh: boolean): void { if (refresh) this.refreshPending = true; this.movementPending += 1; const generation = this.generation; const r6 = usesV10R6ActionDynamics(this.state.rulesetId); void this.callbacks.submit(intent).then(accepted => { if (this.destroyed || generation !== this.generation || !accepted) return; if (!r6 && (intent.type === 'walk_start' || intent.type === 'walk_stop' || intent.type === 'walk_refresh' || intent.type === 'jump')) this.movement.submittedMovementIntent(intent); if (refresh) this.lastRefresh = this.now(); }).finally(() => { this.movementPending = Math.max(0, this.movementPending - 1); if (!this.destroyed && generation === this.generation && refresh) this.refreshPending = false; }); }
+    private submitMovement(intent: SimulationIntentV10, refresh: boolean): void { if (refresh) this.refreshPending = true; this.movementPending += 1; const generation = this.generation; const r6 = usesV10R6ActionDynamics(this.state.rulesetId); void this.callbacks.submit(intent).then(accepted => { if (this.destroyed || generation !== this.generation || !accepted) return; if (!r6 && (intent.type === 'walk_start' || intent.type === 'walk_stop' || intent.type === 'walk_refresh' || intent.type === 'jump')) this.movement.submittedMovementIntent(intent as SimulationIntentV8R1); if (refresh) this.lastRefresh = this.now(); }).finally(() => { this.movementPending = Math.max(0, this.movementPending - 1); if (!this.destroyed && generation === this.generation && refresh) this.refreshPending = false; }); }
     private retireOwnership(): void { this.generation++; this.aim.cancel(); this.aim.clearAim(); this.movement.interrupt(); this.movementButtons.interrupt(); this.showMovementButton(null); this.choice = null; this.selectingRelic = false; this.menu = 'closed'; this.refreshPending = false; this.callbacks.preview?.(null); }
     private boundaryFor(state: ResourceTurnsState, paused: boolean): string { return [state.turn, state.activeActor, state.phase, state.inputEpoch, paused, this.terminal(state), state.castUsed, state.utilityUsed].join(':'); }
     private terminal(state: ResourceTurnsState = this.state): boolean { return state.phase === 'finished' || state.winner !== null; }
@@ -290,7 +290,7 @@ ${movementControl}
         card.querySelector<HTMLElement>('.camera-focus-arrow')!.textContent = direction === 'left' ? '‹' : '›';
     }
     private movementButtonTarget(event: PointerEvent): R6MovementButton | null { const target = event.target instanceof Element ? event.target.closest<HTMLElement>('[data-movement-button]') : null; const value = target?.dataset.movementButton; return value === 'left' || value === 'right' || value === 'jump' ? value : null; }
-    private movementButtonAt(point: { x: number; y: number }): R6MovementButton | null { const rect = this.layout?.movementZone; if (!rect) return null; const size = Math.min(56, Math.max(48, rect.width * 0.34)); const x = point.x - rect.x, y = point.y - rect.y; const inside = (left: number, top: number) => x >= left && x <= left + size && y >= top && y <= top + size; if (inside((rect.width - size) / 2, 0)) return 'jump'; if (inside(0, rect.height - size)) return 'left'; if (inside(rect.width - size, rect.height - size)) return 'right'; return null; }
+    private movementButtonAt(point: { x: number; y: number }): R6MovementButton | null { const rect = this.layout?.movementZone; if (!rect) return null; const gap = 3; const size = Math.min(56, (rect.width - gap) / 2); const groupSize = size * 2 + gap; const left = (rect.width - groupSize) / 2; const top = (rect.height - groupSize) / 2; const x = point.x - rect.x, y = point.y - rect.y; const inside = (buttonLeft: number, buttonTop: number) => x >= buttonLeft && x <= buttonLeft + size && y >= buttonTop && y <= buttonTop + size; if (inside((rect.width - size) / 2, top)) return 'jump'; if (inside(left, top + size + gap)) return 'left'; if (inside(left + size + gap, top + size + gap)) return 'right'; return null; }
     private showMovementButton(active: R6MovementButton | null): void { for (const button of this.root.querySelectorAll<HTMLElement>('[data-movement-button]')) { const selected = button.dataset.movementButton === active; button.classList.toggle('is-active', selected); button.setAttribute('aria-pressed', String(selected)); } }
     private point(event: PointerEvent) { const bounds = this.root.parentElement!.getBoundingClientRect(); return clientPointToGame({ x: event.clientX, y: event.clientY }, bounds, activeSidewaysMode()); }
     private capture(element: HTMLElement, pointerId: number): void { try { element.setPointerCapture(pointerId); } catch {} }

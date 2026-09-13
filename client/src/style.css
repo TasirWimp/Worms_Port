@@ -952,32 +952,31 @@ input {
 .combat-v10[data-ruleset='nimble-knots-artillery-v10-r6'] .camera-focus-fill { display: block; height: 100%; border-radius: inherit; }
 .combat-v10[data-ruleset='nimble-knots-artillery-v10-r6'] .camera-focus-arrow { font-size: 0.7rem; }
 .combat-v10[data-ruleset='nimble-knots-artillery-v10-r6'] .movement-buttons {
+    --movement-button-gap: 3px;
+    --movement-button-size: min(56px, calc((100% - var(--movement-button-gap)) / 2));
     overflow: visible;
     background: transparent;
     border: 0;
 }
 .combat-v10[data-ruleset='nimble-knots-artillery-v10-r6'] .movement-buttons .pad-label {
-    top: 50%;
-    color: rgb(31 35 72 / 72%);
-    font-size: 0.48rem;
-    line-height: 1;
-    transform: translateY(-50%);
+    display: none;
 }
 .combat-v10[data-ruleset='nimble-knots-artillery-v10-r6'] .movement-button {
     position: absolute;
     display: grid;
     place-content: center;
-    width: clamp(48px, 34%, 56px);
-    height: clamp(48px, 34%, 56px);
+    width: var(--movement-button-size);
+    height: var(--movement-button-size);
     padding: 0;
     color: #fff;
     font-size: 1.55rem;
     font-weight: 900;
     line-height: 0.8;
-    background: rgb(5 130 202 / 92%);
-    border: 3px solid rgb(255 255 255 / 92%);
+    background: rgb(5 130 202 / 30%);
+    border: 2px solid rgb(255 255 255 / 62%);
     border-radius: 16px;
-    box-shadow: 0 4px 10px rgb(31 35 72 / 34%);
+    box-shadow: 0 2px 7px rgb(31 35 72 / 22%);
+    backdrop-filter: blur(1px);
     touch-action: none;
     user-select: none;
     -webkit-user-select: none;
@@ -990,11 +989,21 @@ input {
     line-height: 1;
     text-transform: uppercase;
 }
-.combat-v10[data-ruleset='nimble-knots-artillery-v10-r6'] .movement-jump { top: 0; left: 50%; transform: translateX(-50%); }
-.combat-v10[data-ruleset='nimble-knots-artillery-v10-r6'] .movement-left { bottom: 0; left: 0; }
-.combat-v10[data-ruleset='nimble-knots-artillery-v10-r6'] .movement-right { right: 0; bottom: 0; }
+.combat-v10[data-ruleset='nimble-knots-artillery-v10-r6'] .movement-jump {
+    top: calc(50% - var(--movement-button-gap) / 2 - var(--movement-button-size));
+    left: 50%;
+    transform: translateX(-50%);
+}
+.combat-v10[data-ruleset='nimble-knots-artillery-v10-r6'] .movement-left {
+    top: calc(50% + var(--movement-button-gap) / 2);
+    left: calc(50% - var(--movement-button-gap) / 2 - var(--movement-button-size));
+}
+.combat-v10[data-ruleset='nimble-knots-artillery-v10-r6'] .movement-right {
+    top: calc(50% + var(--movement-button-gap) / 2);
+    left: calc(50% + var(--movement-button-gap) / 2);
+}
 .combat-v10[data-ruleset='nimble-knots-artillery-v10-r6'] .movement-button.is-active {
-    background: #075d96;
+    background: rgb(7 93 150 / 68%);
     box-shadow: inset 0 0 0 2px rgb(255 255 255 / 38%), 0 2px 6px rgb(31 35 72 / 34%);
 }
 .combat-v10[data-ruleset='nimble-knots-artillery-v10-r6'] .movement-left.is-active,
