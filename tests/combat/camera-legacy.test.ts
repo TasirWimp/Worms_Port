@@ -79,4 +79,3 @@ test('historical arenas remain a full-width zero-range camera', () => {
     assert.deepEqual(panCombatCamera(historical, camera, 100), camera);
     assert.deepEqual(createCombatOverviewCamera(historical), camera);
 });
-
