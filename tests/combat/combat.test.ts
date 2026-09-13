@@ -10,7 +10,7 @@ import {
     panCombatCamera,
     revealCombatCameraPoint
 } from '../../client/src/combat/camera';
-import { CombatInputController, UnifiedMovementInputController } from '../../client/src/combat/input';
+import { CombatInputController, R6MovementButtonController } from '../../client/src/combat/input';
 import {
     WIZARD_ANIMATION_SCALE_IN_WORLD,
     WIZARD_R6_ANIMATION_SCALE_IN_WORLD,
@@ -237,53 +237,35 @@ test('R6 health bars stay compact, sit four pixels above the Wizard and progress
     assert.equal(stitchingHealthColor(0), 'hsl(0 72% 44%)');
 });
 
-test('R6 platformer stick jumps, steers and buffers another jump without releasing the pointer', () => {
-    const pad = { x: 100, y: 200, width: 112, height: 112 };
-    const origin = { x: 156, y: 256 };
+test('R6 movement buttons support held walking, slide-to-jump and directional aftertouch without origin drift', () => {
+    const input = new R6MovementButtonController();
     const ready = { grounded: true, facing: 1 as const, heldDirection: 0 as const, lane: 'ready' as const,
-        platformerStick: true };
-    const beginRight = (input: UnifiedMovementInputController) => {
-        assert.equal(input.beginMovement(1, origin, pad), true);
-        input.moveMovement(1, { x: origin.x + 30, y: origin.y }, ready, 0);
-        const intent = input.movementIntent(ready, 0);
-        assert.deepEqual(intent, { type: 'walk_start', direction: 1 });
-        input.submittedMovementIntent(intent!);
-    };
+        airControl: true };
 
-    const current = new UnifiedMovementInputController();
-    beginRight(current);
+    assert.equal(input.begin(1, 'right', 0), true);
+    assert.deepEqual(input.movementIntent(ready, 0), { type: 'walk_start', direction: 1 });
     const walking = { ...ready, heldDirection: 1 as const };
-    current.moveMovement(1, { x: origin.x + 30, y: origin.y - 16 }, walking, 1);
-    const jump = current.movementIntent(walking, 1);
-    assert.deepEqual(jump, { type: 'jump', direction: 1 });
-    current.submittedMovementIntent(jump!);
-    current.observeGrounded(false, true);
-    const airborne = { ...walking, grounded: false, airControl: true };
-    current.moveMovement(1, { x: origin.x + 23, y: origin.y - 16 }, airborne, 2);
-    assert.deepEqual(current.movementIntent(airborne, 2), { type: 'walk_start', direction: -1 });
+    assert.equal(input.movementIntent(walking, 1), null);
 
-    const steeringLeft = { ...airborne, heldDirection: -1 as const };
-    current.moveMovement(1, { x: origin.x + 23, y: origin.y }, steeringLeft, 100);
-    assert.equal(current.movementIntent(steeringLeft, 100), null);
-    current.moveMovement(1, { x: origin.x + 23, y: origin.y - 16 }, steeringLeft, 200);
-    assert.equal(current.movementIntent(steeringLeft, 200), null);
-    const landed = { ...steeringLeft, grounded: true };
-    const bufferedJump = current.movementIntent(landed, 300);
-    assert.deepEqual(bufferedJump, { type: 'jump', direction: 1 });
-    current.submittedMovementIntent(bufferedJump!);
-    current.moveMovement(1, { x: origin.x + 23, y: origin.y }, steeringLeft, 301);
-    current.moveMovement(1, { x: origin.x + 16, y: origin.y - 16 }, landed, 302);
-    assert.deepEqual(current.movementIntent(landed, 302), { type: 'jump', direction: 1 });
+    input.move(1, 'jump', 2);
+    assert.deepEqual(input.movementIntent(walking, 2), { type: 'jump', direction: 1 });
+    const airborne = { ...walking, grounded: false };
+    input.move(1, null, 3);
+    input.move(1, 'left', 4);
+    assert.deepEqual(input.movementIntent(airborne, 4), { type: 'walk_start', direction: -1 });
+    assert.equal(input.hasDirectionHold(), true);
 
-    const frozen = new UnifiedMovementInputController();
-    const frozenReady = { grounded: true, facing: 1 as const, heldDirection: 0 as const, lane: 'ready' as const };
-    assert.equal(frozen.beginMovement(1, origin, pad), true);
-    frozen.moveMovement(1, { x: origin.x + 30, y: origin.y }, frozenReady, 0);
-    frozen.submittedMovementIntent(frozen.movementIntent(frozenReady, 0)!);
-    frozen.observeGrounded(false);
-    const frozenAirborne = { ...frozenReady, grounded: false, heldDirection: 1 as const };
-    frozen.moveMovement(1, { x: origin.x - 30, y: origin.y }, frozenAirborne, 1);
-    assert.equal(frozen.movementIntent(frozenAirborne, 1), null);
+    input.move(1, null, 100);
+    input.move(1, 'jump', 101);
+    assert.equal(input.movementIntent({ ...airborne, heldDirection: -1 }, 200), null,
+        'an airborne press waits for the existing landing buffer');
+    assert.deepEqual(input.movementIntent({ ...walking, heldDirection: -1 }, 300),
+        { type: 'jump', direction: -1 });
+    assert.deepEqual(input.finish(1), { release: true });
+
+    const expired = new R6MovementButtonController();
+    assert.equal(expired.begin(2, 'jump', 0), true);
+    assert.equal(expired.movementIntent(ready, 251), null, 'the existing 250 ms jump buffer stays bounded');
 });
 
 function overlaps(a: { x: number; y: number; width: number; height: number }, b: typeof a): boolean {

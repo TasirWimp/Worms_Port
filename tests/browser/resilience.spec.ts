@@ -355,8 +355,10 @@ test('two browser contexts isolate storage, identity, challenge events, controls
 
     const firstStartX = Number(await firstUi.getAttribute('data-player-x'));
     const secondStartX = Number(await secondUi.getAttribute('data-player-x'));
-    await dragPad(page, '.movement-zone', 81, 0.36, 0);
+    await pointer(page, '.movement-right', 'pointerdown', 81, 0.5, 0.5);
     await expect.poll(async () => Number(await firstUi.getAttribute('data-player-x'))).not.toBe(firstStartX);
+    await pointer(page, '.movement-right', 'pointerup', 81, 0.5, 0.5);
+    await expect(firstUi).toHaveAttribute('data-held-direction', '0');
     await expect(secondUi).toHaveAttribute('data-player-x', String(secondStartX));
     await expect(secondUi).toHaveAttribute('data-challenge-id', secondChallenge!);
 
@@ -369,8 +371,10 @@ test('two browser contexts isolate storage, identity, challenge events, controls
     await expect(firstUi).toHaveAttribute('data-challenge-id', firstChallenge!);
 
     await page.close();
-    await dragPad(secondPage, '.movement-zone', 82, 0.36, 0);
+    await pointer(secondPage, '.movement-right', 'pointerdown', 82, 0.5, 0.5);
     await expect.poll(async () => Number(await secondUi.getAttribute('data-player-x'))).not.toBe(secondStartX);
+    await pointer(secondPage, '.movement-right', 'pointerup', 82, 0.5, 0.5);
+    await expect(secondUi).toHaveAttribute('data-held-direction', '0');
     await expect(secondUi).toHaveAttribute('data-challenge-id', secondChallenge!);
     expect(unexpectedOfflineLifecycleErrors(firstErrors)).toEqual([]);
     expect(secondErrors).toEqual([]);

@@ -207,17 +207,75 @@ export function inputBoundaryV8(snapshot: ChallengeSnapshotV8): string {
 export type MovementFactsR1 = {
     grounded: boolean; facing: -1 | 1; heldDirection: -1 | 0 | 1;
     lane: 'ready' | 'locomotion' | 'blocked';
-    /** Current R6 only: the held movement pointer may steer a committed jump. */
+    /** Current R6 button input may change direction during a committed jump. */
     airControl?: boolean;
-    /** Current R6 only: one low-drag thumbstick owns walk, jump and air steering. */
-    platformerStick?: boolean;
 };
+
+export type R6MovementButton = 'left' | 'right' | 'jump';
+
+/**
+ * Current R6 movement maps one captured thumb to three fixed buttons. Sliding
+ * between them retains the last horizontal direction, so the thumb can roll
+ * through Jump and then choose either aftertouch direction without an origin
+ * that drifts across the screen.
+ */
+export class R6MovementButtonController {
+    private pointer?: { id: number; button: R6MovementButton | null; direction: -1 | 0 | 1 };
+    private jumpDeadline?: number;
+
+    public begin(id: number, button: R6MovementButton, now: number): boolean {
+        if (this.pointer) return false;
+        this.pointer = { id, button: null, direction: 0 };
+        this.apply(button, now);
+        return true;
+    }
+
+    public move(id: number, button: R6MovementButton | null, now: number): boolean {
+        if (this.pointer?.id !== id) return false;
+        if (button === this.pointer.button) return true;
+        this.pointer.button = null;
+        if (button) this.apply(button, now);
+        return true;
+    }
+
+    public movementIntent(facts: MovementFactsR1, now: number): SimulationIntentV8R1 | null {
+        if (this.jumpDeadline !== undefined && now > this.jumpDeadline) this.jumpDeadline = undefined;
+        if (facts.lane !== 'ready') return null;
+        const direction = this.pointer?.direction ?? 0;
+        if (facts.grounded && this.jumpDeadline !== undefined) {
+            this.jumpDeadline = undefined;
+            return { type: 'jump', direction: direction || facts.heldDirection || facts.facing };
+        }
+        if (!facts.grounded && facts.airControl !== true) return null;
+        if (direction === facts.heldDirection) return null;
+        return direction ? { type: 'walk_start', direction }
+            : facts.heldDirection ? { type: 'walk_stop' } : null;
+    }
+
+    public finish(id: number): { release: boolean } | null {
+        if (this.pointer?.id !== id) return null;
+        const release = this.pointer.direction !== 0;
+        this.pointer = undefined;
+        return { release };
+    }
+
+    public interrupt(): void { this.pointer = undefined; this.jumpDeadline = undefined; }
+    public hasDirectionHold(): boolean { return Boolean(this.pointer?.direction); }
+    public activeButton(): R6MovementButton | null { return this.pointer?.button ?? null; }
+
+    private apply(button: R6MovementButton, now: number): void {
+        if (!this.pointer) return;
+        this.pointer.button = button;
+        if (button === 'jump') this.jumpDeadline = now + 250;
+        else this.pointer.direction = button === 'left' ? -1 : 1;
+    }
+}
 
 /** Current pointer geometry only. No command queue, simulation or movement timer. */
 export class UnifiedMovementInputController extends ActionTurnsInputController {
     private gesture?: { side: -1 | 0 | 1; maximumDistance: number; locomotion: boolean;
         hop: 'unseen' | 'eligible' | 'discarded' | 'submitted'; deadline: number; motionEligible: boolean;
-        airOriginX?: number };
+    };
 
     public beginMovement(id: number, point: Point, pad: Rect): boolean {
         if (!this.begin('movement', id, point, 48)) return false;
@@ -234,16 +292,11 @@ export class UnifiedMovementInputController extends ActionTurnsInputController {
         gesture.maximumDistance = Math.max(gesture.maximumDistance, Math.hypot(dx, dy));
         gesture.motionEligible = facts.grounded || facts.airControl === true;
         const jumping = this.jumpGesture(dx, dy, facts);
-        if (facts.platformerStick && this.jumpRearmGesture(dy) &&
-            (gesture.hop === 'submitted' || gesture.hop === 'discarded')) {
-            gesture.hop = 'unseen'; gesture.deadline = 0;
-        }
         if (jumping && gesture.hop === 'unseen') {
-            gesture.hop = facts.lane !== 'blocked' && (facts.grounded || facts.platformerStick)
-                ? 'eligible' : 'discarded';
+            gesture.hop = facts.grounded && facts.lane !== 'blocked' ? 'eligible' : 'discarded';
             gesture.deadline = now + 250;
         }
-        if (!facts.platformerStick && !jumping && gesture.hop === 'eligible') gesture.hop = 'discarded';
+        if (!jumping && gesture.hop === 'eligible') gesture.hop = 'discarded';
         this.observeGrounded(facts.grounded, facts.airControl === true);
         this.expire(now);
         return true;
@@ -256,18 +309,12 @@ export class UnifiedMovementInputController extends ActionTurnsInputController {
         if (facts.lane === 'blocked' && gesture.hop === 'eligible') gesture.hop = 'discarded';
         if (facts.lane !== 'ready') return null;
         const dx = owner.current.x - owner.origin.x; const dy = owner.current.y - owner.origin.y;
-        const steeringDx = facts.platformerStick && !facts.grounded && gesture.airOriginX !== undefined
-            ? owner.current.x - gesture.airOriginX
-            : dx;
-        const directionThreshold = facts.platformerStick ? 6 : 10;
-        const direction = Math.abs(steeringDx) >= directionThreshold ? (steeringDx < 0 ? -1 : 1) : 0;
+        const direction = Math.abs(dx) >= 10 ? (dx < 0 ? -1 : 1) : 0;
         if (facts.grounded && this.jumpGesture(dx, dy, facts)) {
             return gesture.hop === 'eligible' && facts.grounded
                 ? { type: 'jump', direction: direction || facts.facing } : null;
         }
-        if (!direction) return facts.platformerStick && !facts.grounded
-            ? null
-            : facts.heldDirection ? { type: 'walk_stop' } : null;
+        if (!direction) return facts.heldDirection ? { type: 'walk_stop' } : null;
         return (facts.grounded || facts.airControl === true) && gesture.motionEligible && direction !== facts.heldDirection
             ? { type: 'walk_start', direction } : null;
     }
@@ -277,7 +324,6 @@ export class UnifiedMovementInputController extends ActionTurnsInputController {
         this.gesture.locomotion = true;
         if (intent.type === 'jump') {
             this.gesture.hop = 'submitted'; this.gesture.motionEligible = false;
-            this.gesture.airOriginX = this.ownedPointer()?.current.x;
         }
     }
 
@@ -297,12 +343,7 @@ export class UnifiedMovementInputController extends ActionTurnsInputController {
     }
 
     public override interrupt(): void { this.gesture = undefined; super.interrupt(); }
-    private jumpGesture(dx: number, dy: number, facts: MovementFactsR1): boolean {
-        return facts.platformerStick
-            ? dy <= -16 && -dy >= Math.abs(dx) * 0.45
-            : dy <= -24;
-    }
-    private jumpRearmGesture(dy: number): boolean { return dy >= -6; }
+    private jumpGesture(_dx: number, dy: number, _facts: MovementFactsR1): boolean { return dy <= -24; }
     private expire(now: number): void {
         if (this.gesture?.hop === 'eligible' && now >= this.gesture.deadline) this.gesture.hop = 'discarded';
     }

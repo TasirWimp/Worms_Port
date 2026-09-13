@@ -150,6 +150,22 @@ test('current R6 volcanic Practice start stays coherent across maintained phone 
   await expect(ui.locator('.combat-timer')).toHaveText(/^(59|60)s$/);
   await expect(ui.locator('.player-status')).toBeVisible();
   await expect(ui.locator('.loomkeeper-status')).toBeVisible();
+  const movementZone = await ui.locator('.movement-zone').boundingBox();
+  const movementButtons = await Promise.all(['left', 'right', 'jump'].map(name =>
+    ui.locator(`[data-movement-button="${name}"]`).boundingBox()));
+  expect(movementZone).not.toBeNull();
+  for (const button of movementButtons) {
+    expect(button).not.toBeNull();
+    expect(button!.width).toBeGreaterThanOrEqual(48);
+    expect(button!.height).toBeGreaterThanOrEqual(48);
+    expect(button!.x).toBeGreaterThanOrEqual(movementZone!.x - 1);
+    expect(button!.y).toBeGreaterThanOrEqual(movementZone!.y - 1);
+    expect(button!.x + button!.width).toBeLessThanOrEqual(movementZone!.x + movementZone!.width + 1);
+    expect(button!.y + button!.height).toBeLessThanOrEqual(movementZone!.y + movementZone!.height + 1);
+  }
+  expect(overlaps(movementButtons[0]!, movementButtons[1]!)).toBe(false);
+  expect(overlaps(movementButtons[0]!, movementButtons[2]!)).toBe(false);
+  expect(overlaps(movementButtons[1]!, movementButtons[2]!)).toBe(false);
   await assertDocumentLocked(page);
   await screenshot(page, 'current-r6-volcanic-practice-start.png');
   expect(errors).toEqual([]);

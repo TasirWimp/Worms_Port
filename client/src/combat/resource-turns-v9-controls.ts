@@ -1,7 +1,8 @@
 import { usesV10GTactics, usesV10R6ActionDynamics } from '../../../shared/simulation-v10';
 import type { SimulationIntentV9 } from '../../../shared/simulation-v9';
 import type { ResourceTurnsEvent, ResourceTurnsState } from './contracts';
-import { CombatInputController, UnifiedMovementInputController, type AimIntent } from './input';
+import { CombatInputController, R6MovementButtonController, UnifiedMovementInputController,
+    type AimIntent, type R6MovementButton } from './input';
 import { appendV9DamageReceipts, projectCombatV9, projectCombatV9Resources, v9OffenseAllowed } from './resource-turns-v9-fixture';
 import { activeSidewaysMode, clientPointToGame } from '../lib/sideways';
 import { computeActorStatusLayout, type CombatLayout } from './layout';
@@ -25,21 +26,26 @@ export class ResourceTurnsV9Controls {
     public readonly root: HTMLDivElement;
     private state: ResourceTurnsState; private message = ''; private paused = false;
     private readonly aim = new CombatInputController(); private readonly movement = new UnifiedMovementInputController();
+    private readonly movementButtons = new R6MovementButtonController();
     private receipts: string[] = []; private layout?: CombatLayout; private lastRefresh = 0; private refreshPending = false;
     private cleanup: (() => void)[] = []; private boundary?: string; private generation = 0; private menu: ActionMenu = 'closed';
     private choice: ActionChoice = null; private selectingRelic = false; private destroyed = false; private actionSignature = '';
-    private movementPending = 0; private jumpQueued: Extract<SimulationIntentV9, { type: 'jump' }> | null = null;
+    private movementPending = 0;
 
     public constructor(parent: HTMLElement, initial: ResourceTurnsState, private readonly callbacks: Callbacks,
         private readonly now: () => number = () => performance.now(), paused = false) {
         this.state = structuredClone(initial); this.paused = paused; this.root = document.createElement('div');
+        const r6Movement = usesV10R6ActionDynamics(initial.rulesetId);
+        const movementControl = r6Movement
+            ? `<div class="combat-touch-zone movement-zone movement-buttons" role="group" aria-label="Movement buttons. Hold left or right to walk and steer in the air. Slide or tap up to jump."><span class="pad-label">Move</span><button type="button" class="movement-button movement-jump" data-movement-button="jump" aria-label="Jump"><span aria-hidden="true">↑</span><small>Jump</small></button><button type="button" class="movement-button movement-left" data-movement-button="left" aria-label="Move left"><span aria-hidden="true">←</span></button><button type="button" class="movement-button movement-right" data-movement-button="right" aria-label="Move right"><span aria-hidden="true">→</span></button></div>`
+            : `<div class="combat-touch-zone movement-zone" aria-label="Movement pad. Tap a side to face. Drag sideways to walk. Push up to hop."><span class="pad-label">Drag to walk · ↑ hop</span><span class="pad-ring"></span><span class="pad-knob"></span></div>`;
         this.root.className = initial.rulesetVersion === 10 ? 'combat-ui combat-v9 combat-v10' : 'combat-ui combat-v9';
         this.root.innerHTML = `<header class="combat-status"><strong class="combat-turn" aria-live="polite"></strong><span class="v9-thread"></span><span class="combat-timer"></span></header>
 <div class="combat-unit-status player-status" data-unit="player" role="group"><span class="unit-status-name">You</span><strong class="unit-status-value"></strong><span class="unit-status-track" aria-hidden="true" hidden><span></span></span></div>
 <div class="combat-unit-status loomkeeper-status" data-unit="loomkeeper" role="group"><span class="unit-status-name">Loomkeeper</span><strong class="unit-status-value"></strong><span class="unit-status-track" aria-hidden="true" hidden><span></span></span></div>
 <button type="button" class="camera-focus-button camera-focus-player" hidden></button><button type="button" class="camera-focus-button camera-focus-loomkeeper" hidden></button>
 <button class="pause-button" type="button">Pause</button>
-<div class="combat-touch-zone movement-zone" aria-label="${usesV10R6ActionDynamics(initial.rulesetId) ? 'Movement thumbstick. Drag sideways to walk, push up to jump, and steer in the air.' : 'Movement pad. Tap a side to face. Drag sideways to walk. Push up to hop.'}"><span class="pad-label">${usesV10R6ActionDynamics(initial.rulesetId) ? 'Walk · ↑ jump · air steer' : 'Drag to walk · ↑ hop'}</span><span class="pad-ring"></span><span class="pad-knob"></span></div>
+${movementControl}
 <div class="combat-touch-zone aim-zone" aria-label="Aim and power pad"><span class="pad-label">Aim · release locks</span><span class="pad-ring"></span><span class="pad-knob"></span></div>
 <nav class="combat-actions v9-actions" aria-label="${initial.rulesetVersion === 10 ? 'V10 terrain' : 'V9 resource'} actions"><button class="v9-actions-button" type="button">Actions</button><button class="fire-button" type="button">Use</button><div class="v9-action-menu" hidden></div></nav>
 <section class="combat-pause-sheet v9-pause-sheet" aria-live="polite" hidden><strong></strong><button class="v9-reenter" type="button">${callbacks.live ? 'Start fresh Practice' : 'Start fresh preview'}</button></section>
@@ -60,7 +66,7 @@ export class ResourceTurnsV9Controls {
         this.boundary = nextBoundary; this.paused = paused;
         if (changed) this.retireOwnership();
         this.state = structuredClone(state); this.aim.syncAuthoritativeAim(state.aim);
-        this.movement.observeGrounded(state.units[0].grounded, usesV10R6ActionDynamics(state.rulesetId));
+        if (!usesV10R6ActionDynamics(state.rulesetId)) this.movement.observeGrounded(state.units[0].grounded);
         const facts = projectCombatV9Resources(state), player = state.units[0], action = this.canAct();
         const offense = this.offenseAllowed(state); const utility = action && !state.castUsed && !state.utilityUsed && state.heldDirection === 0 &&
             player.thread >= 2 && state.units.every(unit => unit.alive && unit.grounded && unit.vxFp === 0 && unit.vyFp === 0);
@@ -68,7 +74,7 @@ export class ResourceTurnsV9Controls {
             playerFacing: player.facing < 0 ? 'left' : 'right', playerAirborne: String(facts.player.airborne), offenseAllowed: String(offense),
             aimLocked: String(state.aim !== null), aimId: String(state.aimId), activeActor: state.activeActor, combatPhase: state.phase,
             inputEpoch: String(state.inputEpoch), selectedRelic: state.selectedRelic, terminal: String(this.terminal()),
-            turn: String(state.turn), seed: String(state.seed), playerX: String(player.xFp / 256) });
+            turn: String(state.turn), seed: String(state.seed), playerX: String(player.xFp / 256), heldDirection: String(state.heldDirection) });
         if ('terrainProfileId' in state) {
             this.root.dataset.terrainProfile = state.terrainProfileId;
             this.root.dataset.terrainSeed = String(state.seed);
@@ -91,10 +97,13 @@ export class ResourceTurnsV9Controls {
         const movement = this.element('.movement-zone');
         const r6Movement = usesV10R6ActionDynamics(state.rulesetId);
         movement.setAttribute('aria-label', r6Movement
-            ? 'Movement thumbstick. Drag sideways to walk, push up to jump, and steer in the air.'
+            ? 'Movement buttons. Hold left or right to walk and steer in the air. Slide or tap up to jump.'
             : 'Movement pad. Tap a side to face. Drag sideways to walk. Push up to hop.');
-        this.element('.movement-zone .pad-label').textContent = r6Movement ? 'Walk · ↑ jump · air steer' : 'Drag to walk · ↑ hop';
+        this.element('.movement-zone .pad-label').textContent = r6Movement ? 'Move' : 'Drag to walk · ↑ hop';
         movement.toggleAttribute('data-disabled', !action); movement.setAttribute('aria-disabled', String(!action));
+        for (const button of this.root.querySelectorAll<HTMLButtonElement>('.movement-button')) {
+            button.disabled = !action; button.setAttribute('aria-disabled', String(!action));
+        }
         this.button('.pause-button').disabled = !(this.callbacks.pauseAllowed?.() ?? this.pauseAllowed()) && !paused; this.button('.pause-button').textContent = paused ? 'Resume' : 'Pause';
         this.element('.v9-pause-sheet').hidden = !paused && !this.terminal();
         this.element('.v9-pause-sheet strong').textContent = this.terminal()
@@ -121,10 +130,13 @@ export class ResourceTurnsV9Controls {
     }
     public pollMovement(): void {
         if (this.destroyed) return; const now = this.now(), facts = this.movementFacts();
-        const intent = this.movement.movementIntent({ ...facts, lane: facts.lane === 'locomotion' ? 'ready' : facts.lane }, now);
+        const r6 = usesV10R6ActionDynamics(this.state.rulesetId);
+        const input = r6 ? this.movementButtons : this.movement;
+        const intent = input.movementIntent({ ...facts, lane: facts.lane === 'locomotion' ? 'ready' : facts.lane }, now);
         if (intent) { this.submitMovement(intent, false); return; }
         const refreshIntervalMs = movementRefreshIntervalMs(this.state.rulesetId);
-        if (facts.lane === 'locomotion' && this.movement.ownedPointer() && !this.refreshPending && now - this.lastRefresh >= refreshIntervalMs) this.submitMovement({ type: 'walk_refresh' }, true);
+        const held = r6 ? this.movementButtons.hasDirectionHold() : Boolean(this.movement.ownedPointer());
+        if (facts.lane === 'locomotion' && held && !this.refreshPending && now - this.lastRefresh >= refreshIntervalMs) this.submitMovement({ type: 'walk_refresh' }, true);
     }
     public interrupt(): void { this.retireOwnership(); }
     public destroy(): void { if (this.destroyed) return; this.destroyed = true; this.retireOwnership(); for (const remove of this.cleanup.splice(0)) remove(); this.root.remove(); }
@@ -170,15 +182,41 @@ export class ResourceTurnsV9Controls {
     }
     private bindTouch(): void {
         const movement = this.element('.movement-zone');
-        this.listen(movement, 'pointerdown', event => { if (!this.canAct() || event.button > 0) return; const point = this.point(event); if (this.movement.beginMovement(event.pointerId, point, this.layout?.movementZone ?? movement.getBoundingClientRect())) { this.capture(movement, event.pointerId); if (usesV10R6ActionDynamics(this.state.rulesetId)) this.beginMovementStick(movement, point); } });
-        this.listen(movement, 'pointermove', event => { const point = this.point(event); if (this.movement.moveMovement(event.pointerId, point, this.movementFacts(), this.now())) { if (usesV10R6ActionDynamics(this.state.rulesetId)) this.moveMovementStick(movement); this.pollMovement(); } });
-        const end = (event: PointerEvent) => { const result = this.movement.finishMovement(event.pointerId); if (!result) return; this.resetMovementStick(); if (result.face) this.request({ type: 'face', direction: result.face }); else if (result.release) this.callbacks.release ? this.callbacks.release() : this.request({ type: 'walk_stop' }); };
-        this.listen(movement, 'pointerup', end); this.listen(movement, 'pointercancel', () => { this.movement.interrupt(); this.resetMovementStick(); this.callbacks.neutral(); });
+        if (usesV10R6ActionDynamics(this.state.rulesetId)) this.bindMovementButtons(movement);
+        else {
+            this.listen(movement, 'pointerdown', event => { if (!this.canAct() || event.button > 0) return; const point = this.point(event); if (this.movement.beginMovement(event.pointerId, point, this.layout?.movementZone ?? movement.getBoundingClientRect())) this.capture(movement, event.pointerId); });
+            this.listen(movement, 'pointermove', event => { if (this.movement.moveMovement(event.pointerId, this.point(event), this.movementFacts(), this.now())) this.pollMovement(); });
+            const end = (event: PointerEvent) => { const result = this.movement.finishMovement(event.pointerId); if (!result) return; if (result.face) this.request({ type: 'face', direction: result.face }); else if (result.release) this.callbacks.release ? this.callbacks.release() : this.request({ type: 'walk_stop' }); };
+            this.listen(movement, 'pointerup', end); this.listen(movement, 'pointercancel', () => { this.movement.interrupt(); this.callbacks.neutral(); });
+        }
         const aim = this.element('.aim-zone');
         this.listen(aim, 'pointerdown', event => { if (this.selectingRelic || !this.canOffend() || event.button > 0) return; this.capture(aim, event.pointerId); if (this.aim.begin('aim', event.pointerId, this.point(event), Math.min(aim.clientWidth, aim.clientHeight) / 2)) this.callbacks.preview?.(this.aim.aimIntent()); });
         this.listen(aim, 'pointermove', event => { if (this.aim.move(event.pointerId, this.point(event))) this.callbacks.preview?.(this.aim.aimIntent()); });
         this.listen(aim, 'pointerup', event => { const command = this.aim.end(event.pointerId, true); this.callbacks.preview?.(this.aim.lockedAim); if (command?.type === 'aim') this.request(command); });
         this.listen(aim, 'pointercancel', event => { this.aim.cancel(event.pointerId); this.callbacks.preview?.(null); this.callbacks.neutral(); });
+    }
+    private bindMovementButtons(zone: HTMLElement): void {
+        this.listen(zone, 'pointerdown', event => {
+            if (!this.canAct() || event.button > 0) return;
+            const button = this.movementButtonTarget(event) ?? this.movementButtonAt(this.point(event));
+            if (!button || !this.movementButtons.begin(event.pointerId, button, this.now())) return;
+            event.preventDefault(); this.capture(zone, event.pointerId); this.showMovementButton(button); this.pollMovement();
+        });
+        this.listen(zone, 'pointermove', event => {
+            const button = this.movementButtonAt(this.point(event));
+            if (!this.movementButtons.move(event.pointerId, button, this.now())) return;
+            event.preventDefault(); this.showMovementButton(button); this.pollMovement();
+        });
+        const end = (event: PointerEvent) => {
+            const result = this.movementButtons.finish(event.pointerId); if (!result) return;
+            this.showMovementButton(null);
+            if (result.release) this.callbacks.release ? this.callbacks.release() : this.request({ type: 'walk_stop' });
+        };
+        const cancel = (event: PointerEvent) => {
+            const result = this.movementButtons.finish(event.pointerId); if (!result) return;
+            this.movementButtons.interrupt(); this.showMovementButton(null); this.callbacks.neutral();
+        };
+        this.listen(zone, 'pointerup', end); this.listen(zone, 'pointercancel', cancel); this.listen(zone, 'lostpointercapture', cancel);
     }
     private selectRelic(choice: RelicChoice): void {
         this.aim.cancel(); this.aim.clearAim(); this.callbacks.preview?.(null);
@@ -192,9 +230,8 @@ export class ResourceTurnsV9Controls {
         if (!accepted) { this.message = 'Authority rejected that action; use a fresh gesture.'; this.element('.combat-message').textContent = this.message; this.refreshActions(); return; }
         if (intent.type === 'select_relic') this.update(this.state);
     }); }
-    private submitMovement(intent: SimulationIntentV9, refresh: boolean): void { if (intent.type === 'jump' && this.movementPending > 0 && usesV10R6ActionDynamics(this.state.rulesetId)) { this.jumpQueued = intent; this.movement.submittedMovementIntent(intent); return; } if (refresh) this.refreshPending = true; this.movementPending += 1; const generation = this.generation; void this.callbacks.submit(intent).then(accepted => { if (this.destroyed || generation !== this.generation || !accepted) return; if (intent.type === 'walk_start' || intent.type === 'walk_stop' || intent.type === 'walk_refresh' || intent.type === 'jump') this.movement.submittedMovementIntent(intent); if (refresh) this.lastRefresh = this.now(); }).finally(() => { this.movementPending = Math.max(0, this.movementPending - 1); if (!this.destroyed && generation === this.generation) { if (refresh) this.refreshPending = false; this.flushQueuedJump(); } }); }
-    private flushQueuedJump(): void { if (!this.jumpQueued || this.movementPending > 0) return; const jump = this.jumpQueued; this.jumpQueued = null; this.submitMovement(jump, false); }
-    private retireOwnership(): void { this.generation++; this.aim.cancel(); this.aim.clearAim(); this.movement.interrupt(); this.resetMovementStick(); this.choice = null; this.selectingRelic = false; this.menu = 'closed'; this.refreshPending = false; this.jumpQueued = null; this.callbacks.preview?.(null); }
+    private submitMovement(intent: SimulationIntentV9, refresh: boolean): void { if (refresh) this.refreshPending = true; this.movementPending += 1; const generation = this.generation; const r6 = usesV10R6ActionDynamics(this.state.rulesetId); void this.callbacks.submit(intent).then(accepted => { if (this.destroyed || generation !== this.generation || !accepted) return; if (!r6 && (intent.type === 'walk_start' || intent.type === 'walk_stop' || intent.type === 'walk_refresh' || intent.type === 'jump')) this.movement.submittedMovementIntent(intent); if (refresh) this.lastRefresh = this.now(); }).finally(() => { this.movementPending = Math.max(0, this.movementPending - 1); if (!this.destroyed && generation === this.generation && refresh) this.refreshPending = false; }); }
+    private retireOwnership(): void { this.generation++; this.aim.cancel(); this.aim.clearAim(); this.movement.interrupt(); this.movementButtons.interrupt(); this.showMovementButton(null); this.choice = null; this.selectingRelic = false; this.menu = 'closed'; this.refreshPending = false; this.callbacks.preview?.(null); }
     private boundaryFor(state: ResourceTurnsState, paused: boolean): string { return [state.turn, state.activeActor, state.phase, state.inputEpoch, paused, this.terminal(state), state.castUsed, state.utilityUsed].join(':'); }
     private terminal(state: ResourceTurnsState = this.state): boolean { return state.phase === 'finished' || state.winner !== null; }
     private canAct(): boolean { return !this.destroyed && !this.paused && !this.terminal() && (this.callbacks.inputReady?.() ?? true) && this.state.activeActor === 'player' && (this.state.phase === 'action' || this.state.phase === 'retreat'); }
@@ -213,7 +250,7 @@ export class ResourceTurnsV9Controls {
     }
     private offenseAllowed(state: ResourceTurnsState): boolean { return v9OffenseAllowed(state, this.paused); }
     private pauseAllowed(): boolean { return this.state.activeActor === 'player' && this.state.phase === 'action' && !this.terminal(); }
-    private movementFacts() { const player = this.state.units[0]; const r6 = usesV10R6ActionDynamics(this.state.rulesetId); const phaseReady = !this.destroyed && !this.paused && !this.terminal() && this.state.activeActor === 'player' && (this.state.phase === 'action' || this.state.phase === 'retreat'); const ready = phaseReady && ((this.callbacks.inputReady?.() ?? true) || (r6 && this.movementPending > 0)); return { grounded: player.grounded, facing: player.facing, heldDirection: this.state.heldDirection, airControl: r6, platformerStick: r6, lane: ready ? (this.state.heldDirection ? 'locomotion' : 'ready') : 'blocked' } as const; }
+    private movementFacts() { const player = this.state.units[0]; const r6 = usesV10R6ActionDynamics(this.state.rulesetId); const phaseReady = !this.destroyed && !this.paused && !this.terminal() && this.state.activeActor === 'player' && (this.state.phase === 'action' || this.state.phase === 'retreat'); const inputReady = this.callbacks.inputReady?.() ?? true; const ready = phaseReady && inputReady && (!r6 || this.movementPending === 0); return { grounded: player.grounded, facing: player.facing, heldDirection: this.state.heldDirection, airControl: r6, lane: ready ? (this.state.heldDirection ? 'locomotion' : 'ready') : 'blocked' } as const; }
     private unavailableReason(offense: boolean, utility: boolean): string { if (this.terminal()) return this.terminalGuidance(); if (this.paused) return this.callbacks.live ? 'Practice paused. Resume after authoritative acceptance.' : 'Preview paused. Resume before acting.'; if (this.callbacks.pauseReason?.() && this.state.activeActor === 'player') return this.callbacks.pauseReason()!; if (this.state.activeActor === 'loomkeeper') return this.callbacks.live || this.callbacks.automated ? 'Loomkeeper is choosing the authoritative response.' : 'Loomkeeper behavior is deferred to V9D; this local preview does not simulate a response.'; if (this.state.phase === 'retreat') return 'Retreat phase: movement only until the authority deadline.'; const pendingRelic = this.pendingRelic(); if (pendingRelic) return `Selecting ${relicName(pendingRelic)}.`; if (this.armedUseReason()) return this.armedUseReason()!; if (this.choice && this.choiceLegal(this.choice)) return `${this.useLabel(this.choice)} is ready.`; if (!offense && this.state.heldDirection) return 'Release movement before aiming, selecting a Relic, or using a utility.'; if (offense && !this.state.aim) return `${usesV10GTactics(this.state.rulesetId) ? this.relicDescription(this.state.selectedRelic) : relicName(this.state.selectedRelic)} selected. Lock aim, then Use.`; if (!utility && (this.state.castUsed || this.state.utilityUsed)) return 'That turn has already used its Relic or utility.'; return 'Choose Actions for Attack or Defense. Costs are paid only after Use is accepted.'; }
     private relicDescription(choice: RelicChoice): string {
         if (!usesV10GTactics(this.state.rulesetId)) return relicLabel(choice);
@@ -252,9 +289,9 @@ export class ResourceTurnsV9Controls {
         fill.style.backgroundColor = stitchingHealthColor(stitching);
         card.querySelector<HTMLElement>('.camera-focus-arrow')!.textContent = direction === 'left' ? '‹' : '›';
     }
-    private beginMovementStick(zone: HTMLElement, point: { x: number; y: number }): void { const rect = this.layout?.movementZone; if (!rect) return; zone.style.setProperty('--pad-x', `${point.x - rect.x}px`); zone.style.setProperty('--pad-y', `${point.y - rect.y}px`); zone.classList.add('is-active'); this.moveMovementStick(zone); }
-    private moveMovementStick(zone: HTMLElement): void { const owner = this.movement.ownedPointer(); const knob = zone.querySelector<HTMLElement>('.pad-knob'); if (!owner || !knob) return; const dx = owner.current.x - owner.origin.x, dy = owner.current.y - owner.origin.y, distance = Math.hypot(dx, dy), scale = distance > 34 ? 34 / distance : 1; knob.style.transform = `translate(calc(-50% + ${dx * scale}px), calc(-50% + ${dy * scale}px))`; }
-    private resetMovementStick(): void { const zone = this.root.querySelector<HTMLElement>('.movement-zone'); if (!zone) return; zone.classList.remove('is-active'); zone.style.removeProperty('--pad-x'); zone.style.removeProperty('--pad-y'); const knob = zone.querySelector<HTMLElement>('.pad-knob'); if (knob) knob.style.removeProperty('transform'); }
+    private movementButtonTarget(event: PointerEvent): R6MovementButton | null { const target = event.target instanceof Element ? event.target.closest<HTMLElement>('[data-movement-button]') : null; const value = target?.dataset.movementButton; return value === 'left' || value === 'right' || value === 'jump' ? value : null; }
+    private movementButtonAt(point: { x: number; y: number }): R6MovementButton | null { const rect = this.layout?.movementZone; if (!rect) return null; const size = Math.min(56, Math.max(48, rect.width * 0.34)); const x = point.x - rect.x, y = point.y - rect.y; const inside = (left: number, top: number) => x >= left && x <= left + size && y >= top && y <= top + size; if (inside((rect.width - size) / 2, 0)) return 'jump'; if (inside(0, rect.height - size)) return 'left'; if (inside(rect.width - size, rect.height - size)) return 'right'; return null; }
+    private showMovementButton(active: R6MovementButton | null): void { for (const button of this.root.querySelectorAll<HTMLElement>('[data-movement-button]')) { const selected = button.dataset.movementButton === active; button.classList.toggle('is-active', selected); button.setAttribute('aria-pressed', String(selected)); } }
     private point(event: PointerEvent) { const bounds = this.root.parentElement!.getBoundingClientRect(); return clientPointToGame({ x: event.clientX, y: event.clientY }, bounds, activeSidewaysMode()); }
     private capture(element: HTMLElement, pointerId: number): void { try { element.setPointerCapture(pointerId); } catch {} }
     private listen(element: HTMLElement, type: string, handler: (event: PointerEvent) => void): void { element.addEventListener(type, handler); this.cleanup.push(() => element.removeEventListener(type, handler)); }

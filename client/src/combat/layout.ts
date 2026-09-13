@@ -67,7 +67,7 @@ export function computeCombatLayout(
         Math.max(MINIMUM_PAD_SIZE, Math.min(usableWidth * 0.28, usableHeight * 0.46))
     );
     const padY = top + usableHeight - padSize;
-    const actionWidth = Math.min(ACTION_WIDTH, Math.max(112, usableWidth - padSize * 2 - 16));
+    const actionWidth = Math.min(ACTION_WIDTH, Math.max(116, usableWidth - padSize * 2 - 16));
     const actionY = orientation === 'portrait'
         ? Math.max(top + STATUS_HEIGHT + 8, padY - ACTION_HEIGHT - 8)
         : top + usableHeight - ACTION_HEIGHT;

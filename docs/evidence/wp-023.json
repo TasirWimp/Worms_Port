@@ -10,7 +10,7 @@
     "primary assistant"
   ],
   "scope": [
-    "Waypoint 1: promote a V10 R6 current runtime with the unchanged R5 volcanic terrain and weapon-terrain behavior, a smaller coherent Wizard presentation and direct-hit envelope, compact on-screen and off-screen gradient health bars, a 60-second continuous action, a combined walk/repeat-jump/air-steer thumbstick with a short ordinary arc and pre-landing buffer, a five-Thread player opening that exposes every release Relic, one offensive shot, the existing retreat and peer-safe V10 authority timing under concurrent Loomkeeper planning.",
+    "Waypoint 1: promote a V10 R6 current runtime with the unchanged R5 volcanic terrain and weapon-terrain behavior, a smaller coherent Wizard presentation and direct-hit envelope, compact on-screen and off-screen gradient health bars, a 60-second continuous action, fixed left/right/up movement buttons with slide-to-jump, directional aftertouch, a short ordinary arc and pre-landing buffer, a five-Thread player opening that exposes every release Relic, one offensive shot, the existing retreat and peer-safe V10 authority timing under concurrent Loomkeeper planning.",
     "Waypoint 2 after physical-phone acceptance: add deterministic explosion knockback and authoritative impact settling without changing terrain carving or damage.",
     "Waypoint 3 after physical-phone acceptance: integrate the accepted R6 behavior through standard Practice and PEI-gated Daily lifecycle and reward paths."
   ],
@@ -67,6 +67,11 @@
       "command": "Third Phone Gate A refinement checks from committed base 6723d4a",
       "status": "pass",
       "details": "The selector dry run recorded fingerprint 9a1bedb0e6400aa55decc0a96d68625706e39d2ac493536764470e1dee4abe9f. Direct review selected only the current behavior affected by held-pointer rearming, pre-landing buffering and the shorter ordinary R6 jump. Delegated zero-retry checks passed types, work-package records 70/70, combat 45/45, simulation 54/54, protocol 17/17, Practice 1/1 and reward 28/28. The tests prove consecutive jumps under one pointer ownership, a 250 ms buffered jump after returning through the reset band, a -1728 ordinary impulse, bounded aftertouch and the unchanged -2048 reinforced Threadleap. Fresh build proof ddb882a45a16 / b5dedfd1f944 passed standard R6 smoke and bundle limits at 1425521/1500000 raw JavaScript bytes and 415988/430000 gzip bytes. All five supported current V10 Practice cases passed on canonical Chromium in 44.2 seconds, including two walk/jump cycles without pointerup. No full selector, retired runtime suite or unrelated browser family was repeated. Logs .cache/wp023-gatea3-{types,work-packages,combat,simulation,protocol,practice,reward,build,browser-practice}.log."
+    },
+    {
+      "command": "Fourth Phone Gate A movement-button refinement from committed base 4bf222a",
+      "status": "pass",
+      "details": "The final selector dry run recorded fingerprint 9218e77c35c2a0585aa6a93110dc43abc1fc547f050da08e9b8889773adecdd0. The worms_port_test_runner executed the primary's zero-retry risk plan. Types, combat 45/45, fresh build proof 2ce7a192782d / 08992716f8d2, standard R6 built smoke and bundle limits at 1426163/1500000 raw JavaScript bytes and 416330/430000 gzip bytes passed. The first current Practice phase retained 18 passes, 4 expected skips and three failures: the 360px action strip was four pixels too narrow, one current sideways case still drove the removed pad, and an integer-only status-width regex rejected a valid fractional value. The product layout expanded its minimum action width from 112 to 116px; current tests now drive the fixed buttons and preserve the original 30px health-track minimum numerically. Without repeating preserved passes, the affected 844x390 and 360x640 R6 control cases and 390x844 sideways case passed. Current resilience passed 2 cases with 8 project-policy skips. Five-layout Windows visual logic passed 6 cases with 4 expected screenshot skips and no generated candidates. The button case proves three non-overlapping 48px targets, held walking, one-thumb slide-to-jump, opposite-direction aftertouch, repeated jump entry and release. No unrelated identity, reward, PEI, protocol, PostgreSQL, performance, daily/release or legacy suite was rerun. Logs .cache/wp023-gatea4-browser-practice.log, .cache/wp023-gatea4-recovery-practice-controls.log and .cache/wp023-gatea4-final-{practice-controls,practice-sideways,resilience,visual}.log."
     }
   ],
   "reviews": [
@@ -75,6 +80,12 @@
       "reviewer": "primary assistant",
       "decision": "pass_waypoint_1",
       "details": "Direct review traced the current ruleset identity from server creation through the live wire contract, client startup, presentation, replay validation and independently derived Loomkeeper plan. R6 shares the exact R5 volcanic terrain, opening positions and weapon table; only its named dynamics and compact target/presentation are selected. V8/V9 transition callers omit the new dynamics parameter and therefore retain their historical constants. Practice and Daily both bind to current R6, while PEI receipt and reward policy are unchanged. Waypoint 2 remains blocked on the owner's physical Phone Gate A correction acceptance."
+    },
+    {
+      "role": "primary",
+      "reviewer": "primary assistant",
+      "decision": "pass_waypoint_1_movement_buttons",
+      "details": "Direct review confirms that current R6 alone replaces the dynamic thumbstick with fixed left, right and up/jump targets. A single captured pointer can slide through the cluster while preserving the last direction across intentional gaps; direction changes remain bounded by the existing R6 authority and a fresh jump entry retains the 250ms landing buffer. Pointer release, cancellation, lost capture and lifecycle boundaries retire local ownership. The authoritative speed, jump impulse, Threadleap, terrain, weapons, Practice/Daily identity, PEI and reward paths are unchanged. Physical Phone Gate A remains the acceptance boundary before Waypoint 2."
     }
   ],
   "skipped_checks": [
@@ -85,6 +96,6 @@
     "Physical Phone Gate A is pending, so explosion impulse, complete Daily integration acceptance and Phone Gates B/C have not started."
   ],
   "residual_risks": [
-    "Phone Gate A accepted volcanic presentation, smaller actors, the 60-second clock, uninterrupted long-held movement, compact on-screen and off-screen health bars, the 5 percent speed refinement, first-turn Spoolburst, existing crater/retreat behavior and normal Loomkeeper/restart behavior. Repeat jumps from one held thumb and the shorter ordinary jump arc require the owner's third correction pass before the package advances."
+    "Phone Gate A accepted volcanic presentation, smaller actors, the 60-second clock, uninterrupted long-held movement, compact on-screen and off-screen health bars, the 5 percent speed refinement, first-turn Spoolburst, existing crater/retreat behavior, normal Loomkeeper/restart behavior and the shorter ordinary jump arc. The replacement fixed left/right/up movement cluster, one-thumb slide-to-jump and directional aftertouch require owner phone acceptance before the package advances."
   ]
 }

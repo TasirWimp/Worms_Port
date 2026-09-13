@@ -306,8 +306,10 @@ test('default sideways mode carries the live practice journey into virtual lands
   await assertControlsFit(page);
 
   const startX = Number(await ui.getAttribute('data-player-x'));
-  await dragPad(page, '.movement-zone', 61, 0, 0.36);
+  await pointer(page, '.movement-right', 'pointerdown', 61, 0.5, 0.5);
   await expect.poll(async () => Number(await ui.getAttribute('data-player-x'))).toBeGreaterThan(startX);
+  await pointer(page, '.movement-right', 'pointerup', 61, 0.5, 0.5);
+  await expect(ui).toHaveAttribute('data-held-direction', '0');
   await page.locator('.pause-button').tap();
   await expect(ui).toHaveAttribute('data-paused', 'true');
 });
@@ -643,7 +645,7 @@ test('standard volcanic Practice at root keeps authority, AI, cold resume and re
   } finally { await page.goto('about:blank'); await runtime.close(); }
 });
 
-test('current R6 phone controls combine walk, jump and low-drag air steering in one thumbstick', async ({ page }) => {
+test('current R6 phone controls use spaced left, right and jump buttons with slide aftertouch', async ({ page }) => {
   test.setTimeout(45_000);
   const runtime = createRuntimeServer({ clientDir: path.resolve('client/build'), identity: false,
     sessionRegistry: { practiceV10: true, seedSource: () => 4 } });
@@ -656,7 +658,13 @@ test('current R6 phone controls combine walk, jump and low-drag air steering in 
     await expect(ui).toHaveAttribute('data-ruleset', CURRENT_V10_RULESET_ID);
     await expect(ui.locator('.jump-button')).toHaveCount(0);
     await expect(ui.locator('.movement-zone')).toHaveAttribute('aria-label',
-      'Movement thumbstick. Drag sideways to walk, push up to jump, and steer in the air.');
+      'Movement buttons. Hold left or right to walk and steer in the air. Slide or tap up to jump.');
+    const movementButtons = await Promise.all(['left', 'right', 'jump'].map(name =>
+      ui.locator(`[data-movement-button="${name}"]`).boundingBox()));
+    expect(movementButtons.every(box => box && box.width >= 48 && box.height >= 48)).toBe(true);
+    expect(overlaps(movementButtons[0]!, movementButtons[1]!)).toBe(false);
+    expect(overlaps(movementButtons[0]!, movementButtons[2]!)).toBe(false);
+    expect(overlaps(movementButtons[1]!, movementButtons[2]!)).toBe(false);
     const actionBox = await ui.locator('.combat-actions').boundingBox();
     const actionButtons = await Promise.all([
       ui.locator('.v9-actions-button').boundingBox(),
@@ -670,7 +678,8 @@ test('current R6 phone controls combine walk, jump and low-drag air steering in 
     await expect(playerCard.locator('.unit-status-value')).toBeHidden();
     await expect(playerCard.locator('.unit-status-track')).toBeVisible();
     expect((await playerCard.boundingBox())?.height).toBeLessThanOrEqual(19);
-    await expect(playerCard.locator('.unit-status-track span')).toHaveCSS('width', /[3-9][0-9]px/);
+    expect(await playerCard.locator('.unit-status-track span').evaluate(element =>
+      Number.parseFloat(getComputedStyle(element).width))).toBeGreaterThanOrEqual(30);
     await expect(playerCard.locator('.unit-status-track span')).toHaveCSS('background-color', 'rgb(31, 193, 31)');
 
     await pointer(page, '#game canvas', 'pointerdown', 1300, 0.5, 0.25);
@@ -688,30 +697,29 @@ test('current R6 phone controls combine walk, jump and low-drag air steering in 
     await expect(ui).toHaveAttribute('data-player-thread', '5');
 
     const startX = runtime.sessions.activeSnapshotV10(owned())!.simulation.units[0].xFp;
-    await pointer(page, '.combat-v10 .movement-zone', 'pointerdown', 1301, 0.5, 0.55);
-    await expect.poll(() => ui.locator('.movement-zone').evaluate(element =>
-      (element as HTMLElement).style.getPropertyValue('--pad-x'))).toMatch(/px$/);
-    await pointer(page, '.combat-v10 .movement-zone', 'pointermove', 1301, 0.82, 0.55);
+    await pointer(page, '.combat-v10 .movement-right', 'pointerdown', 1301, 0.5, 0.5);
+    await expect(ui.locator('.movement-right')).toHaveAttribute('aria-pressed', 'true');
     await expect.poll(() => runtime.sessions.activeSnapshotV10(owned())!.simulation.units[0].xFp).toBeGreaterThan(startX);
 
-    await pointer(page, '.combat-v10 .movement-zone', 'pointermove', 1301, 0.82, 0.35);
+    await pointer(page, '.combat-v10 .movement-zone', 'pointermove', 1301, 0.5, 0.2);
     await expect.poll(() => runtime.sessions.activeSnapshotV10(owned())!.simulation.units[0].grounded).toBe(false);
-    await pointer(page, '.combat-v10 .movement-zone', 'pointermove', 1301, 0.75, 0.35);
+    await expect(ui.locator('.movement-jump')).toHaveAttribute('aria-pressed', 'true');
+    await pointer(page, '.combat-v10 .movement-zone', 'pointermove', 1301, 0.2, 0.8);
     await expect.poll(() => runtime.sessions.activeSnapshotV10(owned())!.simulation.heldDirection).toBe(-1);
+    await expect(ui.locator('.movement-left')).toHaveAttribute('aria-pressed', 'true');
     await expect.poll(() => {
       const unit = runtime.sessions.activeSnapshotV10(owned())!.simulation.units[0];
       return !unit.grounded && unit.vxFp < 336;
     }).toBe(true);
     await expect.poll(() => runtime.sessions.activeSnapshotV10(owned())!.simulation.units[0].grounded,
       { timeout: 5_000 }).toBe(true);
-    await pointer(page, '.combat-v10 .movement-zone', 'pointermove', 1301, 0.75, 0.55);
-    await pointer(page, '.combat-v10 .movement-zone', 'pointermove', 1301, 0.75, 0.35);
+    await pointer(page, '.combat-v10 .movement-zone', 'pointermove', 1301, 0.5, 0.2);
     await expect.poll(() => runtime.sessions.activeSnapshotV10(owned())!.simulation.units[0].grounded).toBe(false);
     await expect.poll(() => runtime.sessions.activeSnapshotV10(owned())!.simulation.units[0].grounded,
       { timeout: 5_000 }).toBe(true);
-    await pointer(page, '.combat-v10 .movement-zone', 'pointerup', 1301, 0.75, 0.35);
+    await pointer(page, '.combat-v10 .movement-zone', 'pointerup', 1301, 0.5, 0.2);
     await expect.poll(() => runtime.sessions.activeSnapshotV10(owned())!.simulation.heldDirection).toBe(0);
-    await expect(ui.locator('.movement-zone')).not.toHaveClass(/is-active/);
+    await expect(ui.locator('.movement-button[aria-pressed="true"]')).toHaveCount(0);
 
     await ui.locator('.v9-actions-button').tap();
     await ui.locator('.v9-attack').tap();

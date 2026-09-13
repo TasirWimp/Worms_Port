@@ -1,6 +1,6 @@
 # WP-023 V10 R6 Action And Impact Dynamics
 
-Status: **Waypoint 1 third refinements ready for Phone Gate A**
+Status: **Waypoint 1 movement-button refinement ready for Phone Gate A**
 Branch: `codex/v10-r6-action-impact-dynamics`  
 Starting commit: `c0f63ec`
 
@@ -56,39 +56,42 @@ walk-and-jump worked, but the next jump incorrectly required releasing and
 retouching the movement region. The ordinary jump also interrupted play too
 long and rose slightly too high.
 
+The shorter arc passed the next phone review, but repeated jumps exposed an
+inherent limit in the dynamic thumbstick: the user had to find its original
+neutral point before another upward displacement could be recognized. Rebasing
+that origin after every jump would instead make the control walk upward through
+its finite screen region. The owner selected the mobile Worms arrangement of
+fixed left, right and up/jump buttons.
+
 R6 now uses the same small green-through-yellow-to-red bar for actor-attached
 and off-screen status. The off-screen card remains inside a 76 by 48 px touch
-target. Walking rises from 320 to 336 fixed-point units per tick. The full
-left movement region behaves as a dynamic thumbstick: contact establishes its
-visual origin, a sideways drag walks, and a 16 px upward commitment jumps
-without releasing. Once committed, horizontal steering is measured from the
-jump position with a 6 px threshold and 24 fixed-point acceleration. This
-allows quick landing corrections while retaining bounded authority physics.
-Returning the held thumb to a 6 px vertical reset band rearms the next jump;
-another upward commitment can buffer for 250 ms before landing and fires as
-soon as authoritative ground contact arrives. Each accepted jump rebases air
-steering at its own launch position. The ordinary R6 jump impulse changes from
+target. Walking rises from 320 to 336 fixed-point units per tick. The left
+movement region now contains three fixed, non-overlapping targets of at least
+48 by 48 px: jump above, with left and right below. Holding either direction
+walks and supplies the same bounded airborne acceleration. The thumb may slide
+from a direction through jump and into either direction for aftertouch; gaps do
+not discard the last held direction, while lifting or an interrupted capture
+releases it. Each fresh entry into jump can buffer for 250 ms before landing.
+The fixed controls remove origin lookup, re-centering and cumulative drift.
+The ordinary R6 jump impulse changes from
 `-2048` to `-1728` fixed-point units. With the inherited 64-unit gravity, its
 unobstructed arc falls from about 2.10 to 1.77 seconds and from about 124 to 88
 world units at the apex. Terrain collision and reinforced Threadleap stay
 unchanged. The action strip remains Actions and Use.
 
-Apple's current guidance places movement on the left, gives touch movement a
-large input region and recommends combining related functionality in one
-control. Its touch-game session demonstrates embedding another action in a
-thumbstick through the gesture magnitude. Team17's Worms W.M.D Mobilize also
-allows held left/right input to influence jump direction and distance through
+Apple's controller guidance separates continuous directional movement from a
+discrete jump action. Team17's Worms W.M.D Mobilize applies that arrangement on
+touch with left/right movement, a separate jump control and directional
 aftertouch. Celeste's creator identifies a short pre-landing jump buffer as one
 of its moment-to-moment forgiveness techniques. The R6 control applies those
-patterns to the existing deterministic Worms-style authority. Pointer ownership
-continues to use independent Pointer Events IDs and per-control pointer capture
-as defined by the web standard.
+patterns to the existing deterministic Worms-style authority while allowing a
+single thumb to slide across the cluster. Pointer ownership continues to use
+Pointer Events capture as defined by the web standard.
 
 References:
 
 - https://www.team17.com/news/worms-w-md-mobilize-out-now-on-apple-android
-- https://developer.apple.com/design/human-interface-guidelines/game-controls
-- https://developer.apple.com/videos/play/wwdc2026/358/
+- https://developer.apple.com/library/archive/documentation/ServicesDiscovery/Conceptual/GameControllerPG/IncorporatingControllersintoYourDesign/IncorporatingControllersintoYourDesign.html
 - https://www.maddymakesgames.com/articles/celeste_and_forgiveness/index.html
 - https://www.w3.org/TR/pointerevents/#pointer-capture
 
@@ -116,14 +119,14 @@ protocol ownership, build/smoke and the supported phone browser journey.
    screen and confirm its edge control also uses the small bar without a large
    number while remaining easy to tap.
 3. Confirm the action clock begins at about 60 seconds.
-4. Confirm there is no Hop button. Touch anywhere comfortable in the left blue
-   movement region, drag sideways to walk, then push upward without lifting to
-   jump. Make small left/right changes around that launch position in flight.
-   Return toward the horizontal walk band and push upward again before or after
-   landing; repeat several walk/jump cycles without lifting the thumb. Confirm
-   landing corrections react promptly, the next jump is buffered near landing,
-   and the lower, shorter ordinary arc restores the playing rhythm without lease
-   stutter. The walking pace remains the accepted 5 percent refinement.
+4. Confirm the left movement cluster has separate blue left, right and up/jump
+   buttons with comfortable gaps and no Hop action in the centre strip. Hold a
+   direction to walk, slide the same thumb to jump, then slide into either
+   direction in flight for an accurate landing. Repeat several walk/jump cycles
+   without searching for a neutral origin and also try direct taps on all three
+   targets. Confirm each target is easy to distinguish, landing corrections
+   react promptly, a near-landing jump remains buffered, and releasing the
+   cluster stops movement. The accepted walking pace and shorter arc remain.
 5. Open Actions > Attack and confirm Spoolburst can be selected on the first
    turn with the displayed 5 Thread. Fire one relic, confirm the familiar
    crater/damage behavior, then use the existing two-second retreat window. A
