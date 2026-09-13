@@ -1,12 +1,12 @@
 import assert from 'node:assert/strict';
 import test from 'node:test';
 
+import { PeiCoordinatorV0 } from '../../server/src/pei/coordinator';
 import {
     authenticateRequest,
-    PeiCoordinatorV0,
     requestAuthenticationMatches,
     type PeiRuntimeConfigV0
-} from '../../server/src/pei/coordinator';
+} from '../../server/src/pei/runtime-contract';
 import { createPeiProxyRuntimeV0 } from '../../server/src/pei/proxy-runtime';
 import { MemoryPeiJourneyStoreV0 } from '../../server/src/pei/store';
 import { MemoryRewardStore } from '../../server/src/reward/memory-store';

@@ -1,0 +1,72 @@
+{
+  "id": "WP-022I",
+  "status": "complete",
+  "execution_mode": "single_owner",
+  "starting_commit": "8508a63",
+  "branch": "codex/v10-current-path-refinement",
+  "initial_worktree": "clean",
+  "starting_lock_sha256": "6B768A8FDE2695D02555CA17201FD7CE420F9AC075B91380474DD7A643042BC8",
+  "owning_roles": [
+    "primary assistant"
+  ],
+  "scope": [
+    "Make the standard client facade V10 R5-only and remove retired V7/V8/V9 startup selection from the current product path.",
+    "Extract neutral session storage, reward protocol and local result-preview contracts from the retired V8 lifecycle.",
+    "Separate the shared PEI runtime contract from the game coordinator and enforce the standalone helper bundle boundary from its actual esbuild dependency graph.",
+    "Add a fast server-backed V10 Practice lifecycle test for ordinary edit-loop coverage."
+  ],
+  "non_goals": [
+    "No gameplay, PEI receipt semantics, reward economics, assets, dependencies, deployment configuration or server session-registry decomposition.",
+    "No deletion or rewrite of retired V7/V8/V9 sources that remain useful as explicit diagnostics or are inherited by V10 mechanics and presentation."
+  ],
+  "planned_checks": [
+    "npm run verify:changes -- --dry-run",
+    "Focused type, current V10 Practice, PEI and helper-boundary checks",
+    "npm run verify:changes",
+    "npm run audit:housekeeping"
+  ],
+  "deterministic_seeds": [
+    "V10 Practice seed 4 with a fixed zero microsecond test clock"
+  ],
+  "sorcerers_reference_used": false,
+  "clean_room_records": [],
+  "check_results": [
+    {
+      "command": "npm run verify:changes -- --dry-run",
+      "status": "pass",
+      "details": "The final dry run reported fingerprint b61d7bb757ae52aa3188d96ba38d17e1c34b1dd9b76f58690bb5e28e3b878306 at HEAD 8508a63. It selected import, types, work-package, current combat/Practice/identity/reward/protocol/tooling/PEI, fresh build, V10 smoke, identity/reward security, bundle budget, supported browser/visual logic and PostgreSQL; performance was not selected and fallback was empty. Log .cache/wp022i-selector-tooling-dry-run.log."
+    },
+    {
+      "command": "Focused type, current V10 Practice, PEI and helper-boundary checks",
+      "status": "pass",
+      "details": "Delegated zero-retry checks passed current V10 Practice 1/1, PEI 25/25 and the helper-boundary unit 1/1, followed after final naming by types and Practice again. Fixture-only failures were preserved: types first exposed that the legacy result preview needed its own contract; Practice first lacked the browser timer shim and then twice asserted lifecycle pause state on the returned SimulationState. Each input was corrected before one exact rerun. The helper unit likewise exposed two output-key fixture mistakes before passing against the actual esbuild output shape. Logs .cache/wp022h-v10-refinement-focused.log, .cache/wp022h-v10-refinement-types-recovery.log, .cache/wp022h-v10-refinement-practice*.log, .cache/wp022h-v10-refinement-pei.log, .cache/wp022h-v10-refinement-identity-bundles*.log and .cache/wp022h-v10-refinement-postrename-*.log."
+    },
+    {
+      "command": "npm run verify:changes",
+      "status": "pass",
+      "details": "The selected gate was completed from preserved unchanged-input passes and focused recovery, without repeating the full selector. Its first 14-second attempt stopped after import/types because WP-022I used the working-tree lock hash instead of the canonical starting-commit bytes; the corrected evidence passed. The checks phase then passed combat 42/42, Practice 1/1, identity 22/22, reward 28/28 and protocol 16/16 before tooling correctly found that its expected Practice membership still said empty. The exact current tooling file passed 31/31 after naming the new V10 test; the prior 132 tooling passes and PEI 25/25 were preserved. Fresh build proof 4538727fe65e/c3934d0cf433 passed V10 smoke, identity-bundle, reward-security and budgets at 1,424,291/1,500,000 JavaScript bytes and 415,401/430,000 gzip JavaScript-plus-CSS bytes. Canonical Chromium passed 15/15 supported V10 identity/PEI/Practice/resilience/reward/smoke cases in 2.6 minutes. Visual logic passed 1 with four expected platform skips in 6.3 seconds. PostgreSQL recorded the expected missing local prerequisite skip. Logs .cache/wp022i-selector*.log, .cache/wp022i-tooling-membership-recovery.log and .cache/wp022i-*.log."
+    },
+    {
+      "command": "npm run audit:housekeeping",
+      "status": "pass",
+      "details": "The report-only audit passed before closure. It found the expected dirty untracked current branch without an upstream and WP-022I still in progress at audit time. No gone tracking branches exist. The existing manual-reconciliation flag remains for historical failed-review and in-progress package records; no mutation was performed. Log .cache/wp022i-housekeeping.log."
+    }
+  ],
+  "reviews": [
+    {
+      "role": "primary",
+      "reviewer": "primary assistant",
+      "decision": "pass",
+      "details": "Direct review traced startup, V10 create/pause/retry/result storage, Daily reservation and reward updates, PEI return handling, local result previews and both server bundles. The standard facade and startup route have no V7/V8/V9 selection or imports. V10 remains the only server-backed Practice/Daily client, while retired sources stay isolated for explicit diagnostics. The helper graph contains no game, protocol, reward, room, session or simulation authority. No gameplay, receipt, reward or deployment semantics changed."
+    }
+  ],
+  "skipped_checks": [
+    "Retired V7/V8/V9 unit and browser diagnostics were intentionally excluded from acceptance; npm run test:legacy remains available only for explicit diagnosis.",
+    "Local PostgreSQL execution was skipped because WP014_TEST_DATABASE_URL is absent. This refinement changes no database schema or durable store behavior; disposable PostgreSQL remains a CI gate.",
+    "Linux snapshot comparison was skipped on Windows by policy. All maintained visual-project logic ran, with one applicable pass and four expected skips; the result fixture change is type-only and creates no visual delta.",
+    "The full daily/release suite was not run because this is not the 22:00 checkpoint or a release boundary. Performance was not selected. Physical-phone testing was not repeated for this behavior-preserving internal refinement."
+  ],
+  "residual_risks": [
+    "The server SessionRegistry and runtime still multiplex retired authorities. Splitting current V10 server authority from those adapters remains a separate maintenance slice because it has a larger protocol and settlement risk surface."
+  ]
+}

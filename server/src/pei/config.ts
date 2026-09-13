@@ -1,5 +1,5 @@
 import { normalizeNimiqAddress } from '../identity/crypto';
-import type { PeiRuntimeConfigV0 } from './coordinator';
+import type { PeiRuntimeConfigV0 } from './runtime-contract';
 
 export function peiConfigFromEnvironment(
     environment: NodeJS.ProcessEnv = process.env,

@@ -124,6 +124,18 @@ Phaser/Socket.IO stack.
   [WP-022H evidence](../evidence/wp-022h.json), and the
   [bounded contract](wp-015d4f-volcanic-ruin-preview-bundle-contract.md#wp-022a-daily-v10-migration)
   and [evidence](../evidence/wp-022a.json).
+- Completed maintenance successor: **WP-022I V10 Current Path Refinement**, beginning at
+  clean `8508a63` on `codex/v10-current-path-refinement`. This is a
+  behavior-preserving simplification after PEI closure. The public client facade
+  now owns only V10 R5 Practice/Daily and delegates its small reward protocol;
+  local result previews use their own fixture contract. Retired V7/V8/V9 client
+  adapters remain available only to explicit historical diagnostics and cannot
+  be selected by the standard startup route. A separate PEI runtime contract
+  prevents the helper bundle from importing game, session, simulation, room,
+  protocol or reward authority, with its esbuild graph checked directly. The
+  carrier experiment remains paused. Later server-side decomposition of the
+  versioned session registry is a separate maintenance slice because V10 still
+  intentionally inherits proven simulation and presentation mechanics.
 - Active target: mobile-first single-player Nimiq Pay competition release.
 - Latest completed slice: **WP-015D4D V10G Terrain And Weapon Tactics**;
   see the [V10G preparation contract](wp-015d4a-v10-terrain-starts-contract.md#v10g-terrain-and-weapon-tactics-preparation).

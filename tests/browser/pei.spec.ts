@@ -1,7 +1,8 @@
 import { expect, test } from '@playwright/test';
 import path from 'node:path';
 
-import { PeiCoordinatorV0, type PeiRuntimeConfigV0 } from '../../server/src/pei/coordinator';
+import { PeiCoordinatorV0 } from '../../server/src/pei/coordinator';
+import type { PeiRuntimeConfigV0 } from '../../server/src/pei/runtime-contract';
 import { createPeiProxyRuntimeV0 } from '../../server/src/pei/proxy-runtime';
 import type { PeiChainTransactionV0 } from '../../server/src/pei/verifier';
 import { createRuntimeServer } from '../../server/src/runtime';

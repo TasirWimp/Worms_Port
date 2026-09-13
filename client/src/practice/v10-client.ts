@@ -1,5 +1,7 @@
 import { trajectoryPreviewV10 } from '../combat/terrain-starts-v10-fixture';
 import { whenSessionReady } from '../lib/session';
+import type { PracticeSessionCursor } from './contracts';
+import { clearActivePractice, writeActivePractice } from './storage';
 import type { Socket } from 'socket.io-client';
 import type { z } from 'zod';
 import type { PlayerCalling } from '../../../shared/simulation';
@@ -13,23 +15,23 @@ import { V10_AUTOMATION_ID } from '../../../shared/combat-version';
 import { V10_R5_RULESET_ID, type SimulationIntentV10, type SimulationStateV10 } from '../../../shared/simulation-v10';
 import type { CombatSceneArgsV10 } from '../combat/contracts';
 
-export type CandidateSnapshotV10 = z.infer<typeof ChallengeSnapshotV10Schema>;
+export type V10PracticeSnapshot = z.infer<typeof ChallengeSnapshotV10Schema>;
 
 /**
- * Client-side ownership projection for the candidate transport. It deliberately
+ * Client-side ownership projection for the current V10 transport. It deliberately
  * projects only acknowledged authority facts: scenes retire their old control
  * generation whenever connection or challenge ownership changes.
  */
-export class ResourceTurnsV10Lifecycle {
-    private snapshot?: CandidateSnapshotV10;
+export class V10PracticeLifecycle {
+    private snapshot?: V10PracticeSnapshot;
     private connected = true;
     private resyncRequired = false;
     private currentGeneration = 0;
     public get generation(): number { return this.currentGeneration; }
-    public get current(): CandidateSnapshotV10 | undefined { return this.snapshot && structuredClone(this.snapshot); }
+    public get current(): V10PracticeSnapshot | undefined { return this.snapshot && structuredClone(this.snapshot); }
     public get ready(): boolean { return this.connected && !this.resyncRequired && !!this.snapshot; }
     public disconnect(): void { if (this.connected) { this.connected = false; this.resyncRequired = true; this.currentGeneration += 1; } }
-    public acceptSnapshot(value: unknown, ownedSessionId: string, resync = false): CandidateSnapshotV10 | undefined {
+    public acceptSnapshot(value: unknown, ownedSessionId: string, resync = false): V10PracticeSnapshot | undefined {
         const parsed = ChallengeSnapshotV10Schema.safeParse(value);
         if (!parsed.success || parsed.data.sessionId !== ownedSessionId) return undefined;
         const next = parsed.data;
@@ -54,29 +56,29 @@ export class ResourceTurnsV10Lifecycle {
     }
 }
 
-export type V10CandidateConnection = 'connected' | 'reconnecting';
-export type V10CandidateCursor = { sessionId: string; nextSequence: number };
-export type V10CandidateReservation = { challengeId: string; eligibilityToken: string };
+export type V10PracticeConnection = 'connected' | 'reconnecting';
+export type V10PracticeCursor = PracticeSessionCursor;
+export type V10PracticeReservation = { challengeId: string; eligibilityToken: string };
 
 /**
- * The V10 route is deliberately injected by the caller.  It owns only V10
- * envelopes and never falls through to the ordinary V7 Practice transport.
+ * The current Practice route owns only V10 envelopes and cannot fall through
+ * to a retired Practice transport.
  */
-export class ResourceTurnsV10Client {
-    private lifecycle = new ResourceTurnsV10Lifecycle();
-    private snapshot?: CandidateSnapshotV10;
+export class V10PracticeClient {
+    private lifecycle = new V10PracticeLifecycle();
+    private snapshot?: V10PracticeSnapshot;
     private terminal?: ChallengeResultV10;
     private disposed = false;
     private mutation?: Promise<unknown>;
-    private readonly snapshots = new Set<(value: CandidateSnapshotV10) => void>();
+    private readonly snapshots = new Set<(value: V10PracticeSnapshot) => void>();
     private readonly results = new Set<(value: ChallengeResultV10) => void>();
-    private readonly connections = new Set<(value: V10CandidateConnection) => void>();
+    private readonly connections = new Set<(value: V10PracticeConnection) => void>();
     private readonly errors = new Set<(value: string) => void>();
     private readonly unavailable = new Set<(value: string) => void>();
 
     private readonly initialSessionId: string;
     public constructor(private readonly socket: Socket, private readonly session: () => SessionOpenData,
-        private readonly cursor: V10CandidateCursor) {
+        private readonly cursor: V10PracticeCursor) {
         this.initialSessionId = session().sessionId;
         socket.on(protocolEventsV10.snapshot, this.onSnapshotEvent);
         socket.on(protocolEventsV10.result, this.onResultEvent);
@@ -88,7 +90,7 @@ export class ResourceTurnsV10Client {
         for (const value of snapshots) this.onSnapshotEvent(value);
         for (const value of results) this.onResultEvent(value);
     }
-    public currentSnapshot(): CandidateSnapshotV10 | undefined { return this.snapshot && structuredClone(this.snapshot); }
+    public currentSnapshot(): V10PracticeSnapshot | undefined { return this.snapshot && structuredClone(this.snapshot); }
     public inputReady(): boolean {
         const value = this.snapshot;
         return Boolean(value && this.lifecycle.ready && this.socket.connected && !this.mutation && value.status === 'active' && !value.paused &&
@@ -97,8 +99,8 @@ export class ResourceTurnsV10Client {
     }
     public pauseAllowed(): boolean { return this.lifecycle.canPause() && !this.mutation; }
     public pauseReason(): string | undefined { return this.lifecycle.pauseUnavailableReason(); }
-    public combatArgs(snapshot: CandidateSnapshotV10): CombatSceneArgsV10 {
-        if (snapshot.challengeId !== this.snapshot?.challengeId) throw new Error('V10 candidate ownership changed.');
+    public combatArgs(snapshot: V10PracticeSnapshot): CombatSceneArgsV10 {
+        if (snapshot.challengeId !== this.snapshot?.challengeId) throw new Error('V10 Practice ownership changed.');
         const mode = snapshot.mode;
         return {
             kind: 'v10', snapshot: snapshot.simulation as SimulationStateV10, previewLabel: 'Volcanic Ruin', live: true,
@@ -125,7 +127,7 @@ export class ResourceTurnsV10Client {
     }
 
     public async start(mode: 'practice' | 'reward', calling: PlayerCalling,
-        reservation?: V10CandidateReservation): Promise<CandidateSnapshotV10> {
+        reservation?: V10PracticeReservation): Promise<V10PracticeSnapshot> {
         await whenSessionReady(this.socket);
         const sequence = this.cursor.nextSequence;
         const request = mode === 'practice'
@@ -136,13 +138,13 @@ export class ResourceTurnsV10Client {
         if (!ack.data || !('simulation' in ack.data)) throw new Error('V10 creation did not return an authoritative snapshot.');
         // Only a successful, matched creation acknowledgement may replace identity.
         if (ack.data.sessionId !== this.session().sessionId) throw new Error('Foreign V10 creation acknowledgement.');
-        this.lifecycle = new ResourceTurnsV10Lifecycle();
+        this.lifecycle = new V10PracticeLifecycle();
         this.snapshot = undefined;
         this.terminal = undefined;
         return this.acceptAckSnapshot(ack.data, ack.nextSequence, ack.nextInputSequence, false);
     }
 
-    public async submit(intent: SimulationIntentV10): Promise<CandidateSnapshotV10> {
+    public async submit(intent: SimulationIntentV10): Promise<V10PracticeSnapshot> {
         const value = this.requireInput();
         const request = { requestId: requestId(), challengeId: value.challengeId, rulesetId: V10_R5_RULESET_ID,
             automationId: V10_AUTOMATION_ID, inputSequence: value.nextInputSequence,
@@ -153,9 +155,9 @@ export class ResourceTurnsV10Client {
         return this.acceptAckSnapshot(ack.data, ack.nextSequence, ack.nextInputSequence, false);
     }
 
-    public cancelInput(): Promise<CandidateSnapshotV10> { return this.neutral(protocolEventsV10.cancel); }
-    public releaseMovement(): Promise<CandidateSnapshotV10> { return this.neutral(protocolEventsV10.release); }
-    private async neutral(event: string): Promise<CandidateSnapshotV10> {
+    public cancelInput(): Promise<V10PracticeSnapshot> { return this.neutral(protocolEventsV10.cancel); }
+    public releaseMovement(): Promise<V10PracticeSnapshot> { return this.neutral(protocolEventsV10.release); }
+    private async neutral(event: string): Promise<V10PracticeSnapshot> {
         const value = this.requireSnapshot();
         const request = { requestId: requestId(), challengeId: value.challengeId, rulesetId: V10_R5_RULESET_ID,
             automationId: V10_AUTOMATION_ID, expectedTurn: value.simulation.turn, inputEpoch: value.simulation.inputEpoch };
@@ -164,7 +166,7 @@ export class ResourceTurnsV10Client {
         return this.acceptAckSnapshot(ack.data, ack.nextSequence, ack.nextInputSequence, false);
     }
 
-    public async setPaused(paused: boolean): Promise<CandidateSnapshotV10> {
+    public async setPaused(paused: boolean): Promise<V10PracticeSnapshot> {
         if (paused && !this.pauseAllowed()) throw new Error(this.pauseReason() ?? 'Pause is unavailable in this authority state.');
         const value = this.requireSnapshot();
         const request = { requestId: requestId(), challengeId: value.challengeId, rulesetId: V10_R5_RULESET_ID,
@@ -183,16 +185,17 @@ export class ResourceTurnsV10Client {
         return this.acceptResult(ack.data, ack.nextSequence, ack.nextInputSequence);
     }
 
-    public onSnapshot(listener: (value: CandidateSnapshotV10) => void): () => void { this.snapshots.add(listener); return () => this.snapshots.delete(listener); }
+    public onSnapshot(listener: (value: V10PracticeSnapshot) => void): () => void { this.snapshots.add(listener); return () => this.snapshots.delete(listener); }
     public onResult(listener: (value: ChallengeResultV10) => void): () => void {
         this.results.add(listener); if (this.terminal) queueMicrotask(() => listener(structuredClone(this.terminal!)));
         return () => this.results.delete(listener);
     }
-    public onConnection(listener: (value: V10CandidateConnection) => void): () => void { this.connections.add(listener); return () => this.connections.delete(listener); }
+    public onConnection(listener: (value: V10PracticeConnection) => void): () => void { this.connections.add(listener); return () => this.connections.delete(listener); }
     public onError(listener: (value: string) => void): () => void { this.errors.add(listener); return () => this.errors.delete(listener); }
     public onUnavailable(listener: (value: string) => void): () => void { this.unavailable.add(listener); return () => this.unavailable.delete(listener); }
     public sessionExpired(): void {
         this.lifecycle.disconnect();
+        clearActivePractice();
         for (const listener of this.unavailable) listener('The previous volcanic Clash cannot be resumed. Start a fresh Clash.');
         this.dispose();
     }
@@ -205,7 +208,7 @@ export class ResourceTurnsV10Client {
 
     private readonly onSnapshotEvent = (raw: unknown): void => {
         const parsed = ChallengeSnapshotV10Schema.safeParse(raw);
-        if (!parsed.success) return this.report('The server sent an invalid V10 candidate snapshot.');
+        if (!parsed.success) return this.report('The server sent an invalid V10 Practice snapshot.');
         const accepted = this.lifecycle.acceptSnapshot(parsed.data, this.session().sessionId, true);
         if (!accepted) return;
         this.snapshot = accepted; writeActivePractice(accepted.sessionId, accepted.challengeId); this.cursor.nextSequence = Math.max(this.cursor.nextSequence, accepted.nextSequence);
@@ -227,26 +230,26 @@ export class ResourceTurnsV10Client {
         queueMicrotask(() => {
             if (this.disposed) return;
             if (this.session().sessionId !== this.initialSessionId) {
-                for (const listener of this.unavailable) listener('The previous in-memory V10 candidate Clash cannot be resumed. Start a fresh Clash.');
+                for (const listener of this.unavailable) listener('The previous in-memory V10 Practice Clash cannot be resumed. Start a fresh Clash.');
                 return;
             }
             for (const listener of this.connections) listener('connected');
         });
     };
     private async mutate<T>(event: string, request: { requestId: string }, schema: { safeParse: (value: unknown) => any }): Promise<T> {
-        if (this.disposed || !this.socket.connected) throw new Error('V10 candidate transport is reconnecting.');
-        if (this.mutation) throw new Error('A V10 candidate acknowledgement is still pending.');
+        if (this.disposed || !this.socket.connected) throw new Error('V10 Practice transport is reconnecting.');
+        if (this.mutation) throw new Error('A V10 Practice acknowledgement is still pending.');
         const operation = new Promise<T>((resolve, reject) => this.socket.timeout(5_000).emit(event, request,
             (error: Error | null, raw: unknown) => {
                 const parsed = schema.safeParse(raw);
-                if (error || !parsed.success || parsed.data.requestId !== request.requestId) return reject(error ?? new Error('Invalid V10 candidate acknowledgement.'));
+                if (error || !parsed.success || parsed.data.requestId !== request.requestId) return reject(error ?? new Error('Invalid V10 Practice acknowledgement.'));
                 if (parsed.data.ok === false) { this.cursor.nextSequence = Math.max(this.cursor.nextSequence, parsed.data.nextSequence); return reject(new Error(parsed.data.error.message)); }
                 resolve(parsed.data);
             }));
         this.mutation = operation;
         try { return await operation; } finally { if (this.mutation === operation) this.mutation = undefined; }
     }
-    private acceptAckSnapshot(value: CandidateSnapshotV10, sequence: number, inputSequence: number, resync: boolean): CandidateSnapshotV10 {
+    private acceptAckSnapshot(value: V10PracticeSnapshot, sequence: number, inputSequence: number, resync: boolean): V10PracticeSnapshot {
         const accepted = this.lifecycle.acceptSnapshot(value, this.session().sessionId, resync) ?? (() => {
             const current = this.lifecycle.current;
             return current && current.sessionId === value.sessionId && current.challengeId === value.challengeId &&
@@ -256,7 +259,7 @@ export class ResourceTurnsV10Client {
         // cursor ownership belongs to the snapshot and is the fence for live
         // controls; a tagged snapshot event can legitimately arrive before its
         // lifecycle acknowledgement carries the advanced outer sequence.
-        if (!accepted || inputSequence !== accepted.nextInputSequence) throw new Error('Stale V10 candidate acknowledgement.');
+        if (!accepted || inputSequence !== accepted.nextInputSequence) throw new Error('Stale V10 Practice acknowledgement.');
         this.snapshot = accepted; writeActivePractice(accepted.sessionId, accepted.challengeId); this.cursor.nextSequence = Math.max(this.cursor.nextSequence, sequence);
         for (const listener of this.snapshots) listener(structuredClone(accepted));
         return structuredClone(accepted);
@@ -267,17 +270,13 @@ export class ResourceTurnsV10Client {
         if (this.terminal) return structuredClone(this.terminal);
         this.cursor.nextSequence = Math.max(this.cursor.nextSequence, sequence);
         this.terminal = structuredClone(value);
+        clearActivePractice();
         for (const listener of this.results) listener(structuredClone(value));
         return structuredClone(value);
     }
-    private requireSnapshot(): CandidateSnapshotV10 { if (!this.snapshot || this.terminal) throw new Error('No active V10 candidate Clash is available.'); return this.snapshot; }
-    private requireInput(): CandidateSnapshotV10 { const value = this.requireSnapshot(); if (!this.inputReady()) throw new Error('Wait for a fresh authoritative V10 snapshot.'); return value; }
+    private requireSnapshot(): V10PracticeSnapshot { if (!this.snapshot || this.terminal) throw new Error('No active V10 Practice Clash is available.'); return this.snapshot; }
+    private requireInput(): V10PracticeSnapshot { const value = this.requireSnapshot(); if (!this.inputReady()) throw new Error('Wait for a fresh authoritative V10 snapshot.'); return value; }
     private report(message: string): void { for (const listener of this.errors) listener(message); }
 }
 
 function requestId(): string { return crypto.randomUUID().replaceAll('-', ''); }
-
-function writeActivePractice(sessionId: string, challengeId: string): void {
-    if (typeof sessionStorage === 'undefined') return;
-    sessionStorage.setItem('nimble-knots.active-practice', JSON.stringify({ sessionId, challengeId }));
-}

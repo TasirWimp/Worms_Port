@@ -4,15 +4,17 @@ import { protocolEvents, ChallengeLeaveAckSchema, RewardInfoAckSchema, RewardRes
 import type { ChallengeSnapshotV8Runtime as ChallengeSnapshotV8, ChallengeResultV8Runtime as ChallengeResultV8 } from '../../../shared/protocol-v8';
 import type { ChallengeSnapshotV8Automated, ChallengeResultV8Automated } from '../../../shared/protocol-v8';
 import type { PlayerCalling } from '../../../shared/simulation';
-import type { LiveCombatSnapshot, LiveCombatResult } from './client';
 import type { SimulationIntentV8Family as SimulationIntentV8, V8RulesetId } from '../../../shared/simulation-v8';
 import type { CombatSceneArgsV8 } from '../combat/contracts';
 import { reconnectSession, takeActionTurnsV8SessionEvents, whenSessionReady } from '../lib/session';
+import type { PracticeSessionCursor } from './contracts';
 
 const ACK_TIMEOUT_MS = 5_000;
 export type PracticeConnectionState = 'connected' | 'reconnecting';
 export type Unsubscribe = () => void;
-export type ActionTurnsSessionCursor = { sessionId: string; nextSequence: number };
+export type ActionTurnsSessionCursor = PracticeSessionCursor;
+type LegacyCombatSnapshot = ChallengeSnapshot | ChallengeSnapshotV8Automated;
+type LegacyCombatResult = ChallengeResult | ChallengeResultV8Automated;
 class PracticeProtocolError extends Error {
     public constructor(public readonly protocolError: { code: string; message: string; retryable: boolean }) { super(protocolError.message); }
 }
@@ -35,8 +37,8 @@ type PendingV8 = { valid: boolean; timer?: unknown; reject: (error: Error) => vo
     inputSequence?: number; intentType?: SimulationIntentV8['type']; turn?: number; epoch?: number; committedFire?: boolean };
 
 /** Internal, explicitly attached V8 transport. It has no create/reward/retry path.
- * Load validators only when this candidate adapter is requested; public V7
- * PracticeClient and its 5-second idempotent mutation path remain unchanged.
+ * Load validators only when an explicit retired-version diagnostic requests
+ * this adapter; the current Practice facade never imports it.
  */
 export class ActionTurnsV8Client<R extends V8RulesetId = 'nimble-knots-artillery-v8'> {
     private snapshot?: ChallengeSnapshotV8;
@@ -705,7 +707,7 @@ type PracticeLifecycleHost = {
     readonly session: SessionOpenData;
     readonly cursor: ActionTurnsSessionCursor;
     readonly legacySnapshot: ChallengeSnapshot | undefined;
-    readonly listeners: Set<(result: LiveCombatResult) => void>;
+    readonly listeners: Set<(result: LegacyCombatResult) => void>;
     busy: boolean;
     acceptLegacy(snapshot: ChallengeSnapshot): void;
     acceptLegacyResult(result: ChallengeResult): void;
@@ -730,17 +732,17 @@ export class ActionTurnsLifecycle {
             snapshots, results, undefined, this.host.cursor));
     }
 
-    public currentSnapshot(): LiveCombatSnapshot | undefined {
+    public currentSnapshot(): LegacyCombatSnapshot | undefined {
         return (this.client?.currentSnapshot() as ChallengeSnapshotV8Automated | undefined) ?? this.host.legacySnapshot;
     }
 
-    public async start(calling: PlayerCalling): Promise<LiveCombatSnapshot> {
+    public async start(calling: PlayerCalling): Promise<LegacyCombatSnapshot> {
         const current = this.currentSnapshot();
         if (current?.sessionId === this.host.session.sessionId && current.status === 'active') return current;
         return this.create({ mode: 'practice', calling });
     }
 
-    public async startReward(calling: PlayerCalling): Promise<LiveCombatSnapshot> {
+    public async startReward(calling: PlayerCalling): Promise<LegacyCombatSnapshot> {
         if (this.currentSnapshot()?.status === 'active')
             throw new Error('Finish or leave the active Clash before starting a reward match.');
         const reservation = await this.reserve(calling);
@@ -749,7 +751,7 @@ export class ActionTurnsLifecycle {
         } });
     }
 
-    public async retry(calling: PlayerCalling): Promise<LiveCombatSnapshot> {
+    public async retry(calling: PlayerCalling): Promise<LegacyCombatSnapshot> {
         if (this.client) {
             this.client.suppressResult();
             const current = this.client.currentSnapshot();
@@ -772,13 +774,13 @@ export class ActionTurnsLifecycle {
             return this.combatArgs(next);
         });
         return { ...args, onResult: listener => {
-            const receive = (result: LiveCombatResult) => { if (result.protocolVersion === 8) listener(result); };
+            const receive = (result: LegacyCombatResult) => { if (result.protocolVersion === 8) listener(result); };
             this.host.listeners.add(receive); this.flushResult(receive);
             return () => this.host.listeners.delete(receive);
         } };
     }
 
-    public flushResult(listener: (result: LiveCombatResult) => void): void {
+    public flushResult(listener: (result: LegacyCombatResult) => void): void {
         if (!this.pendingResult) return;
         const result = this.pendingResult; this.pendingResult = undefined;
         queueMicrotask(() => { if (this.host.listeners.has(listener)) listener(structuredClone(result)); });
@@ -880,7 +882,7 @@ export class ActionTurnsLifecycle {
         return structuredClone(parsed.data.data);
     }
 
-    private async create(body: Record<string, unknown>): Promise<LiveCombatSnapshot> {
+    private async create(body: Record<string, unknown>): Promise<LegacyCombatSnapshot> {
         if (this.host.busy) throw new Error('Another Clash action is still pending.');
         await whenSessionReady(this.host.socket);
         if (this.host.busy) throw new Error('Another Clash action is still pending.');

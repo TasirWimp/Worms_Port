@@ -2,7 +2,6 @@ import Phaser from 'phaser';
 import './style.css';
 
 import { io } from 'socket.io-client';
-import { protocolEvents } from '../../shared/protocol';
 
 import JoinScene from './scenes/join';
 import RoomScene from './scenes/room';
@@ -95,23 +94,15 @@ window.onload = async () => {
         game.scene.start('result', preview.args);
         return;
     }
-    const combatPreview = query.has('combat-preview') && query.get('combat-preview') !== 'v9-live';
+    const combatPreview = query.has('combat-preview');
     if (combatPreview) {
         runningGame = new NimbleKnotsGame(true);
         syncVisualViewport();
         return;
     }
     const socket = io({ transports: ['websocket'] });
-    const initialSnapshots: unknown[] = [];
-    const initialResults: unknown[] = [];
-    const bufferSnapshot = (snapshot: unknown) => initialSnapshots.push(snapshot);
-    const bufferResult = (result: unknown) => initialResults.push(result);
-    socket.on(protocolEvents.snapshot, bufferSnapshot);
-    socket.on(protocolEvents.result, bufferResult);
     const session = await bootstrapSession(socket);
-    const client = await PracticeClient.connect(socket, session, initialSnapshots, initialResults);
-    socket.off(protocolEvents.snapshot, bufferSnapshot);
-    socket.off(protocolEvents.result, bufferResult);
+    const client = await PracticeClient.connect(socket, session);
     const game = new NimbleKnotsGame();
     runningGame = game;
     syncVisualViewport();

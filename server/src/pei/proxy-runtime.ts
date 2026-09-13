@@ -11,7 +11,7 @@ import {
     type PeiRequestV0
 } from '../../../shared/pei-v0';
 import { normalizeNimiqAddress } from '../identity/crypto';
-import { requestAuthenticationMatches, type PeiRuntimeConfigV0 } from './coordinator';
+import { requestAuthenticationMatches, type PeiRuntimeConfigV0 } from './runtime-contract';
 import { verifyPeiProofV0, type PeiChainAdapterV0 } from './verifier';
 
 export interface PeiEarnTransferV0 {

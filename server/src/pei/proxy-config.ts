@@ -1,5 +1,5 @@
 import { normalizeNimiqAddress } from '../identity/crypto';
-import type { PeiRuntimeConfigV0 } from './coordinator';
+import type { PeiRuntimeConfigV0 } from './runtime-contract';
 
 const MAINNET_ACKNOWLEDGEMENT = 'I_UNDERSTAND_MAINNET_PEI_TRANSFERS';
 

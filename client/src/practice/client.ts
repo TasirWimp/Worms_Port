@@ -1,39 +1,25 @@
-import type { ChallengeSnapshotV10, ChallengeResultV10 } from '../../../shared/protocol-v10-live';
-import { takeTerrainV10SessionEvents } from '../lib/session';
 import type { Socket } from 'socket.io-client';
 
+import type { ChallengeResultV10, ChallengeSnapshotV10 } from '../../../shared/protocol-v10-live';
 import {
-    ChallengeCreateAckSchema,
-    ChallengePauseAckSchema,
-    ChallengeResultSchema,
-    ChallengeSnapshotSchema,
-    CommandSubmitAckSchema,
-    protocolEvents,
     RewardUpdateDataSchema,
-    type ChallengeResult,
-    type ChallengeSnapshot,
+    protocolEvents,
     type ProtocolError,
     type RewardInfoData,
-    type RewardReservationData,
     type RewardUpdateData,
     type SessionOpenData,
     type WalletIdentity
 } from '../../../shared/protocol';
-import type { PlayerCalling, SimulationCommand } from '../../../shared/simulation';
-import type { ChallengeSnapshotV8Automated, ChallengeResultV8Automated } from '../../../shared/protocol-v8';
-import type { ChallengeSnapshotV9, ChallengeResultV9 } from '../../../shared/protocol-v9';
-import type { CombatSceneArgs } from '../combat/contracts';
-import { reconnectSession, takeActionTurnsV8SessionEvents, whenSessionReady } from '../lib/session';
+import type { PlayerCalling } from '../../../shared/simulation';
+import type { CombatSceneArgsV10 } from '../combat/contracts';
+import { takeTerrainV10SessionEvents, whenSessionReady } from '../lib/session';
+import type { PracticeConnectionState, PracticeSessionCursor, Unsubscribe } from './contracts';
+import { clearActivePractice, readActivePractice } from './storage';
 
 const ACK_TIMEOUT_MS = 5_000;
-const ACTIVE_PRACTICE_KEY = 'nimble-knots.active-practice';
 export const PRACTICE_CLIENT_REGISTRY_KEY = 'practice-client';
 
-export type PracticeConnectionState = 'connected' | 'reconnecting';
-export type Unsubscribe = () => void;
-export type LiveCombatSnapshot = ChallengeSnapshot | ChallengeSnapshotV8Automated | ChallengeSnapshotV9 | ChallengeSnapshotV10;
-export type LiveCombatResult = ChallengeResult | ChallengeResultV8Automated | ChallengeResultV9 | ChallengeResultV10;
-
+export type { PracticeConnectionState, Unsubscribe } from './contracts';
 export class PracticeProtocolError extends Error {
     public constructor(public readonly protocolError: ProtocolError) {
         super(protocolError.message);
@@ -41,43 +27,30 @@ export class PracticeProtocolError extends Error {
     }
 }
 
+/**
+ * Current product facade. Practice and Daily always enter the V10 volcanic
+ * authority; identity, rewards and PEI retain their independent protocols.
+ */
 export class PracticeClient {
-    private snapshot?: ChallengeSnapshot;
     private sessionId: string;
     private identity?: WalletIdentity;
-    private sessionCursor: import('./action-turns-v8').ActionTurnsSessionCursor;
-    private get nextSequence(): number { return this.sessionCursor.nextSequence; }
-    private set nextSequence(value: number) { this.sessionCursor.nextSequence = value; }
+    private sessionCursor: PracticeSessionCursor;
     private session: SessionOpenData;
-    private lifecycle?: import('./action-turns-v8').ActionTurnsLifecycle;
-    private lifecycleReady?: Promise<import('./action-turns-v8').ActionTurnsLifecycle>;
-    private readonly combatResultListeners = new Set<(result: LiveCombatResult) => void>();
     private mutationPending = false;
-    private readonly suppressedLeaveChallenges = new Set<string>();
     private pendingUnavailable?: string;
-    private pendingResult?: ChallengeResult;
-    private readonly deliveredResults = new Set<string>();
-    private readonly snapshotListeners = new Set<(snapshot: ChallengeSnapshot) => void>();
-    private readonly resultListeners = new Set<(result: ChallengeResult) => void>();
     private readonly connectionListeners = new Set<(state: PracticeConnectionState) => void>();
     private readonly unavailableListeners = new Set<(message: string) => void>();
     private readonly errorListeners = new Set<(message: string) => void>();
     private readonly rewardListeners = new Set<(update: RewardUpdateData) => void>();
     private readonly rewardUpdates = new Map<string, RewardUpdateData>();
-    private volcanicPractice = false;
-    private v10?: import('./terrain-turns-v10').ResourceTurnsV10Client;
-    private v10Ready?: Promise<import('./terrain-turns-v10').ResourceTurnsV10Client>;
-    private v9?: import('./resource-turns-v9').ResourceTurnsV9Client;
-    private v9Ready?: Promise<import('./resource-turns-v9').ResourceTurnsV9Client>;
+    private v10?: import('./v10-client').V10PracticeClient;
+    private v10Ready?: Promise<import('./v10-client').V10PracticeClient>;
+    private rewards?: import('./rewards').RewardProtocolClient;
+    private rewardsReady?: Promise<import('./rewards').RewardProtocolClient>;
     private pei?: import('../pei/client').PeiProtocolClientV0;
     private peiReady?: Promise<import('../pei/client').PeiProtocolClientV0>;
 
-    public constructor(
-        private readonly socket: Socket,
-        session: SessionOpenData,
-        initialSnapshots: readonly unknown[] = [],
-        initialResults: readonly unknown[] = []
-    ) {
+    public constructor(private readonly socket: Socket, session: SessionOpenData) {
         this.session = structuredClone(session);
         this.sessionId = session.sessionId;
         this.sessionCursor = {
@@ -91,61 +64,39 @@ export class PracticeClient {
                 'The previous in-memory Practice Clash cannot be resumed. Start a fresh Clash.';
             clearActivePractice();
         }
-        this.onSnapshotEvent = this.onSnapshotEvent.bind(this);
-        this.onResultEvent = this.onResultEvent.bind(this);
         this.onDisconnect = this.onDisconnect.bind(this);
         this.onConnect = this.onConnect.bind(this);
         this.onRewardUpdateEvent = this.onRewardUpdateEvent.bind(this);
-        socket.on(protocolEvents.snapshot, this.onSnapshotEvent);
-        socket.on(protocolEvents.result, this.onResultEvent);
         socket.on(protocolEvents.rewardUpdate, this.onRewardUpdateEvent);
         socket.on('disconnect', this.onDisconnect);
         socket.on('connect', this.onConnect);
-        for (const raw of initialSnapshots) this.onSnapshotEvent(raw);
-        for (const raw of initialResults) this.onResultEvent(raw);
     }
 
-    public static async connect(socket: Socket, session: SessionOpenData,
-        initialSnapshots: readonly unknown[] = [], initialResults: readonly unknown[] = []): Promise<PracticeClient> {
-        const client = new PracticeClient(socket, session, initialSnapshots, initialResults);
-        const buffered = takeActionTurnsV8SessionEvents(socket);
-        if (buffered.snapshots.length || buffered.results.length) {
-            await (await client.getLifecycle()).attach(buffered.snapshots, buffered.results);
-        }
+    public static async connect(socket: Socket, session: SessionOpenData): Promise<PracticeClient> {
+        const client = new PracticeClient(socket, session);
         if (typeof window !== 'undefined' && window.location?.origin && typeof fetch === 'function') {
             const response = await fetch('/api/practice-profile');
             if (!response.ok) throw new Error('Practice configuration is unavailable. Reload to retry.');
             const profile = await response.json();
-            if (!profile || !['legacy', 'volcanic-v10'].includes(profile.ruleset)) throw new Error('Unknown Practice profile.');
-            client.volcanicPractice = profile.ruleset === 'volcanic-v10';
+            if (!profile || profile.ruleset !== 'volcanic-v10') {
+                throw new Error('This client requires the current volcanic V10 Practice profile.');
+            }
         }
-        const volcanic = takeTerrainV10SessionEvents(socket);
-        if (volcanic.snapshots.length) (await client.getV10()).restore(volcanic.snapshots, volcanic.results);
+        const v10 = await client.getV10();
+        const buffered = takeTerrainV10SessionEvents(socket);
+        v10.restore(buffered.snapshots, buffered.results);
         return client;
     }
 
-    public currentSnapshot(): ChallengeSnapshot | undefined {
-        return this.snapshot ? structuredClone(this.snapshot) : undefined;
+    public currentCombatSnapshot(): ChallengeSnapshotV10 | undefined {
+        return this.v10?.currentSnapshot();
     }
 
-    public async start(calling: PlayerCalling): Promise<ChallengeSnapshot> {
-        await whenSessionReady(this.socket);
-        return this.sendSnapshotMutation(protocolEvents.challengeCreate, {
-            mode: 'practice',
-            calling
-        }, ChallengeCreateAckSchema);
-    }
-
-    public currentCombatSnapshot(): LiveCombatSnapshot | undefined {
-        const snapshots = [this.v10?.currentSnapshot(), this.v9?.currentSnapshot(), this.lifecycle?.currentSnapshot(), this.currentSnapshot()];
-        return snapshots.find(value => value?.status === 'active') ?? snapshots.find(Boolean);
-    }
-
-    public async startCombat(calling: PlayerCalling): Promise<LiveCombatSnapshot> {
-        if (this.volcanicPractice && this.v10?.currentSnapshot()?.status === 'active') return this.v10.currentSnapshot()!;
-        if (v9CandidateRoute()) return (await this.getV9()).start('practice', calling);
-        if (this.volcanicPractice && !new URLSearchParams(window.location.search).has('legacy-practice')) return (await this.getV10()).start('practice', calling);
-        return (await this.getLifecycle()).start(calling);
+    public async startCombat(calling: PlayerCalling): Promise<ChallengeSnapshotV10> {
+        const v10 = await this.getV10();
+        const current = v10.currentSnapshot();
+        if (current?.status === 'active') return current;
+        return v10.start('practice', calling);
     }
 
     public currentIdentity(): WalletIdentity | undefined {
@@ -171,65 +122,31 @@ export class PracticeClient {
     }
 
     public async rewardInfo(): Promise<RewardInfoData> {
-        return (await this.getLifecycle()).rewardInfo();
+        return (await this.getRewards()).info();
     }
 
-    public async startReward(calling: PlayerCalling): Promise<ChallengeSnapshot> {
-        const reservation = await this.reserveReward(calling);
-        return this.sendSnapshotMutation(protocolEvents.challengeCreate, {
-            mode: 'reward',
-            calling,
-            eligibility: {
-                challengeId: reservation.challengeId,
-                token: reservation.eligibilityToken
-            }
-        }, ChallengeCreateAckSchema);
+    public async startRewardCombat(calling: PlayerCalling): Promise<ChallengeSnapshotV10> {
+        const reservation = await (await this.getRewards()).reserve(calling);
+        return (await this.getV10()).start('reward', calling, {
+            challengeId: reservation.challengeId,
+            eligibilityToken: reservation.eligibilityToken
+        });
     }
 
-    public async startRewardCombat(calling: PlayerCalling): Promise<LiveCombatSnapshot> {
-        if (this.volcanicPractice) {
-            const reservation = await this.reserveReward(calling);
-            return (await this.getV10()).start('reward', calling, {
-                challengeId: reservation.challengeId, eligibilityToken: reservation.eligibilityToken
-            });
-        }
-        if (v9CandidateRoute()) {
-            const reservation = await this.reserveReward(calling);
-            return (await this.getV9()).start('reward', calling, {
-                challengeId: reservation.challengeId, eligibilityToken: reservation.eligibilityToken
-            });
-        }
-        return (await this.getLifecycle()).startReward(calling);
+    public async retryCombat(calling: PlayerCalling): Promise<ChallengeSnapshotV10> {
+        const v10 = await this.getV10();
+        if (v10.currentSnapshot()?.status === 'active') await v10.leave();
+        return v10.start('practice', calling);
     }
 
-    public async retryCombat(calling: PlayerCalling): Promise<LiveCombatSnapshot> {
-        if (this.volcanicPractice) {
-            await this.getV10();
-            if (this.v10.currentSnapshot()?.status === 'active') await this.v10.leave();
-            return this.v10.start('practice', calling);
-        }
-        if (this.v9?.currentSnapshot()) {
-            const current = this.v9.currentSnapshot()!;
-            if (current.status === 'active') await this.v9.leave();
-            // A reward entitlement is single-use. Result retry follows the
-            // existing Daily Challenge affordance back to wallet-free Practice.
-            return this.v9.start(current.mode === 'reward' ? 'practice' : current.mode, calling);
-        }
-        return (await this.getLifecycle()).retry(calling);
+    public async combatArgs(snapshot: ChallengeSnapshotV10): Promise<CombatSceneArgsV10> {
+        if (snapshot.protocolVersion !== 10) throw new Error('Current combat requires V10 authority.');
+        return (await this.getV10()).combatArgs(snapshot);
     }
 
-    public async combatArgs(snapshot: LiveCombatSnapshot): Promise<CombatSceneArgs> {
-        if (snapshot.protocolVersion === 1) return liveCombatArgs(this, snapshot);
-        if (snapshot.protocolVersion === 10) return (await this.getV10()).combatArgs(snapshot);
-        if (snapshot.protocolVersion === 9) return (await this.getV9()).combatArgs(snapshot);
-        return (await this.getLifecycle()).combatArgs(snapshot);
-    }
-
-    public onCombatResult(listener: (result: LiveCombatResult) => void): Unsubscribe {
-        this.combatResultListeners.add(listener);
-        this.lifecycle?.flushResult(listener);
-        const legacy = this.onResult(listener);
-        return () => { legacy(); this.combatResultListeners.delete(listener); };
+    public onCombatResult(listener: (result: ChallengeResultV10) => void): Unsubscribe {
+        if (!this.v10) throw new Error('Current V10 combat is not initialized.');
+        return this.v10.onResult(listener);
     }
 
     public rewardForChallenge(challengeId: string): RewardUpdateData | undefined {
@@ -243,62 +160,11 @@ export class PracticeClient {
     }
 
     public async claimReward(update: RewardUpdateData): Promise<RewardUpdateData> {
-        return (await this.getLifecycle()).claimReward(update);
+        return (await this.getRewards()).claim(update);
     }
 
     public async rewardStatus(entitlementId?: string): Promise<RewardUpdateData> {
-        return (await this.getLifecycle()).rewardStatus(entitlementId);
-    }
-
-    public async submitCommand(
-        command: SimulationCommand,
-        expectedTurn: number
-    ): Promise<ChallengeSnapshot> {
-        const challenge = this.requireSnapshot();
-        return this.sendSnapshotMutation(protocolEvents.commandSubmit, {
-            challengeId: challenge.challengeId,
-            expectedTurn,
-            command
-        }, CommandSubmitAckSchema);
-    }
-
-    public async setPaused(paused: boolean): Promise<ChallengeSnapshot> {
-        const challenge = this.requireSnapshot();
-        return this.sendSnapshotMutation(protocolEvents.challengePause, {
-            challengeId: challenge.challengeId,
-            paused
-        }, ChallengePauseAckSchema);
-    }
-
-    public async retry(calling = this.snapshot?.calling ?? 'wizard'): Promise<ChallengeSnapshot> {
-        const current = this.snapshot;
-        if (current?.status === 'active') {
-            this.suppressedLeaveChallenges.add(current.challengeId);
-            while (this.suppressedLeaveChallenges.size > 16) {
-                const oldest = this.suppressedLeaveChallenges.values().next().value;
-                if (!oldest) break;
-                this.suppressedLeaveChallenges.delete(oldest);
-            }
-            await this.leave(current.challengeId);
-        }
-        return this.start(calling);
-    }
-
-    public onSnapshot(listener: (snapshot: ChallengeSnapshot) => void): Unsubscribe {
-        this.snapshotListeners.add(listener);
-        return () => this.snapshotListeners.delete(listener);
-    }
-
-    public onResult(listener: (result: ChallengeResult) => void): Unsubscribe {
-        this.resultListeners.add(listener);
-        if (this.pendingResult) {
-            const result = structuredClone(this.pendingResult);
-            this.pendingResult = undefined;
-            queueMicrotask(() => {
-                if (this.resultListeners.has(listener)) listener(result);
-            });
-        }
-        return () => this.resultListeners.delete(listener);
+        return (await this.getRewards()).status(entitlementId);
     }
 
     public onConnection(listener: (state: PracticeConnectionState) => void): Unsubscribe {
@@ -324,99 +190,45 @@ export class PracticeClient {
     }
 
     public dispose(): void {
-        this.socket.off(protocolEvents.snapshot, this.onSnapshotEvent);
-        this.socket.off(protocolEvents.result, this.onResultEvent);
         this.socket.off(protocolEvents.rewardUpdate, this.onRewardUpdateEvent);
         this.socket.off('disconnect', this.onDisconnect);
         this.socket.off('connect', this.onConnect);
-        this.snapshotListeners.clear();
-        this.resultListeners.clear();
         this.connectionListeners.clear();
         this.unavailableListeners.clear();
         this.errorListeners.clear();
         this.rewardListeners.clear();
         this.v10?.dispose();
-        this.lifecycle?.dispose();
-        this.v9?.dispose();
-        this.combatResultListeners.clear();
     }
 
-    private async leave(challengeId: string): Promise<ChallengeResult> {
-        return (await this.getLifecycle()).leaveLegacy(challengeId);
+    private getV10(): Promise<import('./v10-client').V10PracticeClient> {
+        return this.v10Ready ??= import('./v10-client').then((module) =>
+            this.v10 = new module.V10PracticeClient(
+                this.socket,
+                () => this.session,
+                this.sessionCursor
+            )
+        );
     }
 
-    private async reserveReward(calling: PlayerCalling): Promise<RewardReservationData> {
-        return (await this.getLifecycle()).reserve(calling);
-    }
-
-    private async sendSnapshotMutation(
-        event: string,
-        body: Record<string, unknown>,
-        schema: typeof ChallengeCreateAckSchema
-    ): Promise<ChallengeSnapshot> {
-        if (this.mutationPending) throw new Error('Another practice action is still pending.');
-        if (!this.socket.connected) throw new Error('Reconnecting to the Practice Clash server.');
-        this.mutationPending = true;
-        const requestId = createRequestId();
-        const sequence = this.nextSequence;
-        const request = { requestId, sequence, ...body };
-        try {
-            const raw = await this.emitWithRetry(event, request);
-            const parsed = schema.safeParse(raw);
-            if (!parsed.success || parsed.data.requestId !== requestId) {
-                throw new Error('Server returned an invalid practice acknowledgement.');
-            }
-            if (parsed.data.ok === false) {
-                this.consumeRejectedSequence(sequence, parsed.data.error);
-                throw new PracticeProtocolError(parsed.data.error);
-            }
-            this.nextSequence = Math.max(this.nextSequence, parsed.data.data.nextSequence);
-            this.acceptSnapshot(parsed.data.data);
-            return structuredClone(parsed.data.data);
-        } finally {
-            this.mutationPending = false;
-        }
-    }
-
-    private emitWithRetry(event: string, request: unknown): Promise<unknown> {
-        return this.emitOnce(event, request).catch((firstError) => {
-            if (!this.socket.connected) throw firstError;
-            return this.emitOnce(event, request);
-        });
-    }
-
-    private getLifecycle(): Promise<import('./action-turns-v8').ActionTurnsLifecycle> {
+    private getRewards(): Promise<import('./rewards').RewardProtocolClient> {
         const owner = this;
-        return this.lifecycleReady ??= import('./action-turns-v8').then(module => this.lifecycle = new module.ActionTurnsLifecycle({
-            socket: this.socket, listeners: this.combatResultListeners,
-            get session() { return owner.session; }, get cursor() { return owner.sessionCursor; },
-            get busy() { return owner.mutationPending; }, set busy(value) { owner.mutationPending = value; },
-            get legacySnapshot() { return owner.currentSnapshot(); },
-            acceptLegacy: snapshot => this.acceptSnapshot(snapshot),
-            acceptLegacyResult: result => this.acceptResult(result),
-            clearLegacy: id => { if (this.snapshot?.challengeId === id) this.snapshot = undefined; },
-            suppressLegacy: id => this.suppressedLeaveChallenges.add(id),
-            acceptReward: update => this.acceptRewardUpdate(update),
-            rejectSequence: (sequence, error) => this.consumeRejectedSequence(sequence, error),
-            emit: (event, request) => this.emitWithRetry(event, request),
-            error: error => new PracticeProtocolError(error)
-        }));
-    }
-
-    private getV10(): Promise<import('./terrain-turns-v10').ResourceTurnsV10Client> {
-        return this.v10Ready ??= import('./terrain-turns-v10').then(module => this.v10 = new module.ResourceTurnsV10Client(this.socket, () => this.session, this.sessionCursor));
-    }
-
-    private getV9(): Promise<import('./resource-turns-v9').ResourceTurnsV9Client> {
-        const owner = this;
-        return this.v9Ready ??= import('./resource-turns-v9').then(module => this.v9 = new module.ResourceTurnsV9Client(
-            this.socket, () => owner.session, owner.sessionCursor
-        ));
+        return this.rewardsReady ??= import('./rewards').then((module) =>
+            this.rewards = new module.RewardProtocolClient({
+                socket: owner.socket,
+                get cursor() { return owner.sessionCursor; },
+                get busy() { return owner.mutationPending; },
+                set busy(value) { owner.mutationPending = value; },
+                emit: (event, request) => owner.emitWithRetry(event, request),
+                rejectSequence: (sequence, error) => owner.consumeRejectedSequence(sequence, error),
+                error: (error) => new PracticeProtocolError(error),
+                accept: (update) => owner.acceptRewardUpdate(update)
+            })
+        );
     }
 
     private getPei(): Promise<import('../pei/client').PeiProtocolClientV0> {
         const owner = this;
-        return this.peiReady ??= import('../pei/client').then(module =>
+        return this.peiReady ??= import('../pei/client').then((module) =>
             this.pei = new module.PeiProtocolClientV0({
                 socket: this.socket,
                 cursor: this.sessionCursor,
@@ -427,14 +239,21 @@ export class PracticeClient {
         );
     }
 
+    private emitWithRetry(event: string, request: unknown): Promise<unknown> {
+        return this.emitOnce(event, request).catch((firstError) => {
+            if (!this.socket.connected) throw firstError;
+            return this.emitOnce(event, request);
+        });
+    }
+
     private emitOnce(event: string, request: unknown): Promise<unknown> {
         return new Promise((resolve, reject) => {
             this.socket.timeout(ACK_TIMEOUT_MS).emit(
                 event,
                 request,
-                (timeoutError: Error | null, ack: unknown) => {
+                (timeoutError: Error | null, acknowledgement: unknown) => {
                     if (timeoutError) reject(new Error(`${event} acknowledgement timed out.`));
-                    else resolve(ack);
+                    else resolve(acknowledgement);
                 }
             );
         });
@@ -442,69 +261,8 @@ export class PracticeClient {
 
     private consumeRejectedSequence(sequence: number, error: ProtocolError): void {
         if (!['STALE_SEQUENCE', 'SEQUENCE_GAP', 'UNAUTHORIZED', 'SESSION_EXPIRED'].includes(error.code)) {
-            this.nextSequence = Math.max(this.nextSequence, sequence + 1);
+            this.sessionCursor.nextSequence = Math.max(this.sessionCursor.nextSequence, sequence + 1);
         }
-    }
-
-    private acceptSnapshot(candidate: ChallengeSnapshot): void {
-        if (candidate.sessionId !== this.sessionId) return;
-        this.nextSequence = Math.max(this.nextSequence, candidate.nextSequence);
-        const current = this.snapshot;
-        if (current?.challengeId === candidate.challengeId) {
-            if (candidate.revision < current.revision) return;
-            if (candidate.revision === current.revision) {
-                const agrees = candidate.stateHash === current.stateHash &&
-                    candidate.paused === current.paused &&
-                    candidate.status === current.status;
-                if (!agrees) {
-                    this.notifyError('Conflicting authoritative snapshots were rejected.');
-                    return;
-                }
-                return;
-            }
-        }
-        this.snapshot = structuredClone(candidate);
-        if (candidate.status === 'active') {
-            writeActivePractice(candidate.sessionId, candidate.challengeId);
-        } else {
-            clearActivePractice();
-        }
-        for (const listener of this.snapshotListeners) listener(structuredClone(candidate));
-    }
-
-    private acceptResult(candidate: ChallengeResult): void {
-        if (candidate.sessionId !== this.sessionId) return;
-        this.nextSequence = Math.max(this.nextSequence, candidate.nextSequence);
-        clearActivePractice();
-        if (candidate.outcome === 'left' && this.suppressedLeaveChallenges.has(candidate.challengeId)) {
-            return;
-        }
-        const key = `${candidate.challengeId}:${candidate.revision}:${candidate.outcome}`;
-        if (this.deliveredResults.has(key)) return;
-        this.deliveredResults.add(key);
-        if (this.resultListeners.size === 0) {
-            this.pendingResult = structuredClone(candidate);
-            return;
-        }
-        for (const listener of this.resultListeners) listener(structuredClone(candidate));
-    }
-
-    private onSnapshotEvent(raw: unknown): void {
-        const parsed = ChallengeSnapshotSchema.safeParse(raw);
-        if (!parsed.success) {
-            this.notifyError('The server sent an invalid practice snapshot.');
-            return;
-        }
-        this.acceptSnapshot(parsed.data);
-    }
-
-    private onResultEvent(raw: unknown): void {
-        const parsed = ChallengeResultSchema.safeParse(raw);
-        if (!parsed.success) {
-            this.notifyError('The server sent an invalid practice result.');
-            return;
-        }
-        this.acceptResult(parsed.data);
     }
 
     private onRewardUpdateEvent(raw: unknown): void {
@@ -518,9 +276,7 @@ export class PracticeClient {
 
     private acceptRewardUpdate(update: RewardUpdateData): void {
         this.rewardUpdates.set(update.challengeId, structuredClone(update));
-        for (const listener of this.rewardListeners) {
-            listener(structuredClone(update));
-        }
+        for (const listener of this.rewardListeners) listener(structuredClone(update));
     }
 
     private onDisconnect(): void {
@@ -531,25 +287,29 @@ export class PracticeClient {
         queueMicrotask(() => {
             void whenSessionReady(this.socket).then((session) => {
                 if (session.sessionId !== this.sessionId) {
-                    this.v10?.sessionExpired(); this.v10 = undefined; this.v10Ready = undefined;
-                    this.v9?.dispose(); this.v9 = undefined; this.v9Ready = undefined;
-                    this.pei = undefined; this.peiReady = undefined;
+                    this.v10?.sessionExpired();
+                    this.v10 = undefined;
+                    this.v10Ready = undefined;
+                    this.rewards = undefined;
+                    this.rewardsReady = undefined;
+                    this.pei = undefined;
+                    this.peiReady = undefined;
                     this.sessionId = session.sessionId;
                     this.sessionCursor = {
                         sessionId: session.sessionId,
                         nextSequence: session.nextSequence ?? 0
                     };
-                    this.snapshot = undefined;
-                    this.identity = session.identity
-                        ? structuredClone(session.identity)
-                        : undefined;
+                    this.identity = session.identity ? structuredClone(session.identity) : undefined;
                     clearActivePractice();
                     for (const listener of this.unavailableListeners) {
                         listener('The previous in-memory Practice Clash cannot be resumed. Start a fresh Clash.');
                     }
                 }
                 this.session = structuredClone(session);
-                this.nextSequence = Math.max(this.nextSequence, session.nextSequence ?? 0);
+                this.sessionCursor.nextSequence = Math.max(
+                    this.sessionCursor.nextSequence,
+                    session.nextSequence ?? 0
+                );
                 for (const listener of this.connectionListeners) listener('connected');
             }).catch(() => {
                 for (const listener of this.connectionListeners) listener('reconnecting');
@@ -557,61 +317,7 @@ export class PracticeClient {
         });
     }
 
-    private requireSnapshot(): ChallengeSnapshot {
-        if (!this.snapshot) throw new Error('No active Practice Clash is available.');
-        return this.snapshot;
-    }
-
     private notifyError(message: string): void {
         for (const listener of this.errorListeners) listener(message);
     }
-}
-
-function createRequestId(): string {
-    return crypto.randomUUID().replaceAll('-', '');
-}
-
-function readActivePractice(): { sessionId: string; challengeId: string } | undefined {
-    if (typeof sessionStorage === 'undefined') return undefined;
-    try {
-        const value = JSON.parse(sessionStorage.getItem(ACTIVE_PRACTICE_KEY) || 'null');
-        return value && typeof value.sessionId === 'string' && typeof value.challengeId === 'string'
-            ? value
-            : undefined;
-    } catch {
-        sessionStorage.removeItem(ACTIVE_PRACTICE_KEY);
-        return undefined;
-    }
-}
-
-function writeActivePractice(sessionId: string, challengeId: string): void {
-    if (typeof sessionStorage === 'undefined') return;
-    sessionStorage.setItem(ACTIVE_PRACTICE_KEY, JSON.stringify({ sessionId, challengeId }));
-}
-
-function clearActivePractice(): void {
-    if (typeof sessionStorage !== 'undefined') sessionStorage.removeItem(ACTIVE_PRACTICE_KEY);
-}
-
-/** Explicit retired diagnostic route; standard Practice and Daily use V10. */
-function v9CandidateRoute(): boolean {
-    const search = globalThis.window?.location?.search;
-    return typeof search === 'string' && new URLSearchParams(search).get('combat-preview') === 'v9-live';
-}
-
-export function liveCombatArgs(
-    client: PracticeClient,
-    snapshot: ChallengeSnapshot
-): CombatSceneArgs {
-    return {
-        snapshot,
-        submitCommand: (command, expectedTurn) => client.submitCommand(command, expectedTurn),
-        setPaused: (paused) => client.setPaused(paused),
-        retry: () => client.retry(),
-        onSnapshot: (listener) => client.onSnapshot(listener),
-        onResult: (listener) => client.onResult(listener),
-        onConnection: (listener) => client.onConnection(listener),
-        onUnavailable: (listener) => client.onUnavailable(listener),
-        onError: (listener) => client.onError(listener)
-    };
 }

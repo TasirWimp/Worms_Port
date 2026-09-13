@@ -5,7 +5,8 @@ import type {
 } from '../../../shared/protocol';
 
 import { createCombatFixture } from '../combat/fixture';
-import type { ResultClient, ResultSceneArgs } from '../scenes/result';
+import type { CombatSceneArgs } from '../combat/contracts';
+import type { ResultSceneArgs } from '../scenes/result';
 
 const CHALLENGE_ID = 'visual_result_challenge_01';
 const ENTITLEMENT_ID = 'visual_reward_entitlement_01';
@@ -13,18 +14,13 @@ const RECIPIENT = 'NQ46 KLJE 5TMF 4Y1A 1255 CJHJ YG1S H0NU T604';
 
 export function createResultPreview(
     mode: 'practice' | 'reward'
-): { args: ResultSceneArgs; client: ResultClient } {
+): { args: ResultSceneArgs; client: ResultPreviewClient } {
     const combat = createCombatFixture(1, 'wizard');
     let reward = claimableReward();
     const rewardListeners = new Set<(update: RewardUpdateData) => void>();
-    const client: ResultClient = {
+    const client: ResultPreviewClient = {
         retryCombat: async () => structuredClone(combat.snapshot),
-        combatArgs: async (snapshot) => {
-            if (snapshot.protocolVersion !== 1) {
-                throw new Error('The result preview supports only the legacy combat fixture.');
-            }
-            return { ...combat, snapshot: structuredClone(snapshot as ChallengeSnapshot) };
-        },
+        combatArgs: async (snapshot) => ({ ...combat, snapshot: structuredClone(snapshot) }),
         onRewardUpdate: (listener: (update: RewardUpdateData) => void) => {
             rewardListeners.add(listener);
             return () => rewardListeners.delete(listener);
@@ -66,6 +62,16 @@ export function createResultPreview(
         }
     };
 }
+
+/** Local visual fixture adapter; it never enters the server-backed V10 client. */
+type ResultPreviewClient = {
+    retryCombat(calling: import('../../../shared/simulation').PlayerCalling): Promise<ChallengeSnapshot>;
+    combatArgs(snapshot: ChallengeSnapshot): Promise<CombatSceneArgs>;
+    onRewardUpdate(listener: (update: RewardUpdateData) => void): () => void;
+    rewardForChallenge(challengeId: string): RewardUpdateData | undefined;
+    claimReward(update: RewardUpdateData): Promise<RewardUpdateData>;
+    rewardStatus(entitlementId?: string): Promise<RewardUpdateData>;
+};
 
 function fixedResult(): ChallengeResult {
     return {

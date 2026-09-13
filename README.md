@@ -268,10 +268,10 @@ fails.
 
 ## Session And Protocol Foundation
 
-The active Socket.IO transport uses strict v1 request/acknowledgement schemas
+The active Socket.IO transport uses strict request/acknowledgement schemas
 and server-issued 256-bit opaque session tokens. Socket.IO IDs are transport
 details and are never accepted from callers as player identity. Practice
-sessions work without a wallet. The default client creates live v2 Practice
+sessions work without a wallet. The default client creates live V10 R5 Practice
 Clashes, submits ordered commands, consumes authoritative snapshots and
 results, and reconnects with the rotated session token. WP-012 adds an optional
 verified Nimiq wallet identity to that existing session. WP-013 uses that
@@ -658,7 +658,12 @@ PvP matchmaking is a post-competition feature. See
 `docs/planning/implementation_plan.md` for the active execution pointer and
 work-package sequence.
 
-## V9D phone acceptance on the existing Render service
+## Historical V9D phone acceptance record
+
+This section preserves the retired V9D deployment record for diagnosis on its
+archived branch. It is not a current deployment procedure. The standard client
+uses only V10 R5 for server-backed Practice and Daily; preview query values are
+local visual diagnostics and cannot select a V9 server route.
 
 Deploy `codex/wp-015d3b-v9d-resource-utilities` with the V9D Practice profile
 implementation. In Render's service environment, set:

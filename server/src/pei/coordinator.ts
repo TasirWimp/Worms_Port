@@ -1,5 +1,3 @@
-import { createHmac, timingSafeEqual } from 'crypto';
-
 import {
     PEI_PROTOCOL,
     PEI_PROXY,
@@ -24,15 +22,11 @@ import {
     type PeiJourneyStateV0,
     type PeiJourneyStoreV0
 } from './store';
-import type { PeiChainAdapterV0, PeiVerifierConfigV0 } from './verifier';
+import { authenticateRequest, type PeiRuntimeConfigV0 } from './runtime-contract';
+import type { PeiChainAdapterV0 } from './verifier';
 import { verifyPeiJourneyV0, verifyPeiProofV0 } from './verifier';
 
-export type PeiRuntimeConfigV0 = PeiVerifierConfigV0 & {
-    proxyOrigin: string;
-    returnUri: string;
-    requestAuthSecret: string;
-    requestTtlSeconds: number;
-};
+export type { PeiRuntimeConfigV0 } from './runtime-contract';
 
 export type PeiCoordinatorOptionsV0 = {
     config: PeiRuntimeConfigV0;
@@ -276,21 +270,4 @@ export class PeiCoordinatorError extends Error {
             true
         );
     }
-}
-
-export function authenticateRequest(requestCarrier: string, secret: string): string {
-    return createHmac('sha256', Buffer.from(secret, 'base64url'))
-        .update(requestCarrier, 'utf8')
-        .digest('base64url');
-}
-
-export function requestAuthenticationMatches(
-    requestCarrier: string,
-    presented: string,
-    secret: string
-): boolean {
-    if (!/^[A-Za-z0-9_-]{43}$/.test(presented)) return false;
-    const expected = Buffer.from(authenticateRequest(requestCarrier, secret), 'base64url');
-    const actual = Buffer.from(presented, 'base64url');
-    return actual.length === expected.length && timingSafeEqual(actual, expected);
 }

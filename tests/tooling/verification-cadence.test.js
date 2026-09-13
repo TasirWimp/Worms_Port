@@ -388,7 +388,9 @@ test('routine unit selectors exclude every explicit legacy diagnostic', () => {
     if (suite !== 'practice') assert.ok(selected.length > 0, suite);
     assert.equal(selected.some((file) => legacyFiles.has(file)), false, suite);
   }
-  assert.deepEqual(suiteFiles('practice'), []);
+  assert.deepEqual(suiteFiles('practice'), [
+    'tests/practice/current-v10-client.test.ts'
+  ]);
   for (const file of legacyFiles) {
     assert.equal(fs.existsSync(path.resolve(__dirname, '../..', file)), true, file);
   }
