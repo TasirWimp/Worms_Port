@@ -85,7 +85,7 @@ test('R6 sustains long touch movement with six-tick refreshes and still permits 
     assert.equal(second.error?.code, 'COMMAND_REJECTED');
 });
 
-test('R6 walks at the refined speed and applies more responsive bounded aftertouch to a normal jump', () => {
+test('R6 walks at the refined speed and uses a shorter normal jump with bounded aftertouch', () => {
     const r5Initial = createSimulationV10(4, 'wizard', V10_R5_RULESET_ID);
     const r6Initial = createSimulationV10(4, 'wizard', V10_R6_RULESET_ID);
     const r5Walking = advanceSimulationTicksV10(accepted(r5Initial, { type: 'walk_start', direction: -1 }), 1).state;
@@ -96,17 +96,24 @@ test('R6 walks at the refined speed and applies more responsive bounded aftertou
 
     let jump = accepted(createSimulationV10(4, 'wizard', V10_R6_RULESET_ID), { type: 'jump', direction: 1 });
     assert.equal(jump.units[0].vxFp, 336);
+    assert.equal(jump.units[0].vyFp, -1_728);
     const steered = applySimulationIntentV10(jump, 'player', { type: 'walk_start', direction: -1 }, jump.turn);
     assert.equal(steered.accepted, true, JSON.stringify(steered.error));
     jump = advanceSimulationTicksV10(steered.state, 10).state;
     assert.equal(jump.units[0].grounded, false);
     assert.equal(jump.units[0].vxFp, 96);
-    assert.equal(jump.units[0].vyFp, -1_408);
+    assert.equal(jump.units[0].vyFp, -1_088);
 
     const legacyJump = accepted(createSimulationV10(4, 'wizard', V10_R5_RULESET_ID), { type: 'jump', direction: 1 });
     const legacySteer = applySimulationIntentV10(legacyJump, 'player', { type: 'walk_start', direction: -1 }, legacyJump.turn);
     assert.equal(legacySteer.accepted, false);
     assert.equal(legacyJump.units[0].vxFp, 256);
+
+    let reinforced = accepted(createSimulationV10(4, 'wizard', V10_R6_RULESET_ID),
+        { type: 'threadleap', direction: 1 });
+    assert.equal(reinforced.units[0].vyFp, -2_048);
+    reinforced = advanceSimulationTicksV10(reinforced, 10).state;
+    assert.equal(reinforced.units[0].vyFp, -1_408);
 });
 
 test('R6 opens with enough Thread to select and fire Spoolburst while frozen R5 retains three', () => {

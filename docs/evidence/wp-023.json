@@ -10,7 +10,7 @@
     "primary assistant"
   ],
   "scope": [
-    "Waypoint 1: promote a V10 R6 current runtime with the unchanged R5 volcanic terrain and weapon-terrain behavior, a smaller coherent Wizard presentation and direct-hit envelope, compact on-screen and off-screen gradient health bars, a 60-second continuous action, a combined walk/jump/air-steer thumbstick, a five-Thread player opening that exposes every release Relic, one offensive shot, the existing retreat and peer-safe V10 authority timing under concurrent Loomkeeper planning.",
+    "Waypoint 1: promote a V10 R6 current runtime with the unchanged R5 volcanic terrain and weapon-terrain behavior, a smaller coherent Wizard presentation and direct-hit envelope, compact on-screen and off-screen gradient health bars, a 60-second continuous action, a combined walk/repeat-jump/air-steer thumbstick with a short ordinary arc and pre-landing buffer, a five-Thread player opening that exposes every release Relic, one offensive shot, the existing retreat and peer-safe V10 authority timing under concurrent Loomkeeper planning.",
     "Waypoint 2 after physical-phone acceptance: add deterministic explosion knockback and authoritative impact settling without changing terrain carving or damage.",
     "Waypoint 3 after physical-phone acceptance: integrate the accepted R6 behavior through standard Practice and PEI-gated Daily lifecycle and reward paths."
   ],
@@ -62,6 +62,11 @@
       "command": "Second Phone Gate A correction and focused recovery from committed base 04e249a",
       "status": "pass",
       "details": "The first zero-retry selector retained every passing unit, build, smoke, security and budget result, then failed only the 16-case shared-server canonical browser phase: one Daily consumed-loss journey stopped at tick 407 with clock_debt after concurrent Loomkeeper planning batches. Direct review classified a V10 coordinator defect rather than rerunning the suite: measured internal planning time for one match was being counted as external scheduler delay for peer matches. The coordinator now excludes each measured authority-work interval from every active match debt anchor, and a deterministic two-match regression proves that 6,000,000 microseconds of peer planner work produces zero due ticks and no peer clock debt. The refreshed dry run recorded fingerprint 503b800d6d6cdf2908339954ce2adc0d361617cebbe63788a9c37251d409bec1. Zero-retry focused recovery passed types, protocol 17/17, fresh R6 build/smoke, identity, reward security and bundle limits with proof c6f53dfa1b52 / f981caf98e93, 1425330/1500000 raw JavaScript bytes and 415948/430000 gzip bytes. The exact shared-server canonical browser phase passed 16/16 in 2.7 minutes, and R6 visual logic passed 5/5 maintained phone projects in 18.1 seconds with Windows snapshot comparison ignored and no generated candidates. Previously passing unchanged phases were not repeated. Logs .cache/wp023-gatea2-selector-final.log and .cache/wp023-gatea2-recovery-{dry-run,types,protocol,build,browser,visual}.log."
+    },
+    {
+      "command": "Third Phone Gate A refinement checks from committed base 6723d4a",
+      "status": "pass",
+      "details": "The selector dry run recorded fingerprint 9a1bedb0e6400aa55decc0a96d68625706e39d2ac493536764470e1dee4abe9f. Direct review selected only the current behavior affected by held-pointer rearming, pre-landing buffering and the shorter ordinary R6 jump. Delegated zero-retry checks passed types, work-package records 70/70, combat 45/45, simulation 54/54, protocol 17/17, Practice 1/1 and reward 28/28. The tests prove consecutive jumps under one pointer ownership, a 250 ms buffered jump after returning through the reset band, a -1728 ordinary impulse, bounded aftertouch and the unchanged -2048 reinforced Threadleap. Fresh build proof ddb882a45a16 / b5dedfd1f944 passed standard R6 smoke and bundle limits at 1425521/1500000 raw JavaScript bytes and 415988/430000 gzip bytes. All five supported current V10 Practice cases passed on canonical Chromium in 44.2 seconds, including two walk/jump cycles without pointerup. No full selector, retired runtime suite or unrelated browser family was repeated. Logs .cache/wp023-gatea3-{types,work-packages,combat,simulation,protocol,practice,reward,build,browser-practice}.log."
     }
   ],
   "reviews": [
@@ -80,6 +85,6 @@
     "Physical Phone Gate A is pending, so explosion impulse, complete Daily integration acceptance and Phone Gates B/C have not started."
   ],
   "residual_risks": [
-    "Phone Gate A accepted volcanic presentation, smaller actors, the 60-second clock, uninterrupted long-held movement, actor-attached health bars, existing crater/retreat behavior and normal Loomkeeper response. The compact off-screen status, 5 percent speed refinement, combined thumbstick jump/air steering and first-turn Spoolburst availability require the owner's second correction pass before the package advances."
+    "Phone Gate A accepted volcanic presentation, smaller actors, the 60-second clock, uninterrupted long-held movement, compact on-screen and off-screen health bars, the 5 percent speed refinement, first-turn Spoolburst, existing crater/retreat behavior and normal Loomkeeper/restart behavior. Repeat jumps from one held thumb and the shorter ordinary jump arc require the owner's third correction pass before the package advances."
   ]
 }

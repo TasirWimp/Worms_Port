@@ -237,7 +237,7 @@ test('R6 health bars stay compact, sit four pixels above the Wizard and progress
     assert.equal(stitchingHealthColor(0), 'hsl(0 72% 44%)');
 });
 
-test('R6 platformer stick jumps from walking and reverses air steering with a small launch-relative drag', () => {
+test('R6 platformer stick jumps, steers and buffers another jump without releasing the pointer', () => {
     const pad = { x: 100, y: 200, width: 112, height: 112 };
     const origin = { x: 156, y: 256 };
     const ready = { grounded: true, facing: 1 as const, heldDirection: 0 as const, lane: 'ready' as const,
@@ -261,6 +261,19 @@ test('R6 platformer stick jumps from walking and reverses air steering with a sm
     const airborne = { ...walking, grounded: false, airControl: true };
     current.moveMovement(1, { x: origin.x + 23, y: origin.y - 16 }, airborne, 2);
     assert.deepEqual(current.movementIntent(airborne, 2), { type: 'walk_start', direction: -1 });
+
+    const steeringLeft = { ...airborne, heldDirection: -1 as const };
+    current.moveMovement(1, { x: origin.x + 23, y: origin.y }, steeringLeft, 100);
+    assert.equal(current.movementIntent(steeringLeft, 100), null);
+    current.moveMovement(1, { x: origin.x + 23, y: origin.y - 16 }, steeringLeft, 200);
+    assert.equal(current.movementIntent(steeringLeft, 200), null);
+    const landed = { ...steeringLeft, grounded: true };
+    const bufferedJump = current.movementIntent(landed, 300);
+    assert.deepEqual(bufferedJump, { type: 'jump', direction: 1 });
+    current.submittedMovementIntent(bufferedJump!);
+    current.moveMovement(1, { x: origin.x + 23, y: origin.y }, steeringLeft, 301);
+    current.moveMovement(1, { x: origin.x + 16, y: origin.y - 16 }, landed, 302);
+    assert.deepEqual(current.movementIntent(landed, 302), { type: 'jump', direction: 1 });
 
     const frozen = new UnifiedMovementInputController();
     const frozenReady = { grounded: true, facing: 1 as const, heldDirection: 0 as const, lane: 'ready' as const };

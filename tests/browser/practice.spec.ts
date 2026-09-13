@@ -704,6 +704,11 @@ test('current R6 phone controls combine walk, jump and low-drag air steering in 
     }).toBe(true);
     await expect.poll(() => runtime.sessions.activeSnapshotV10(owned())!.simulation.units[0].grounded,
       { timeout: 5_000 }).toBe(true);
+    await pointer(page, '.combat-v10 .movement-zone', 'pointermove', 1301, 0.75, 0.55);
+    await pointer(page, '.combat-v10 .movement-zone', 'pointermove', 1301, 0.75, 0.35);
+    await expect.poll(() => runtime.sessions.activeSnapshotV10(owned())!.simulation.units[0].grounded).toBe(false);
+    await expect.poll(() => runtime.sessions.activeSnapshotV10(owned())!.simulation.units[0].grounded,
+      { timeout: 5_000 }).toBe(true);
     await pointer(page, '.combat-v10 .movement-zone', 'pointerup', 1301, 0.75, 0.35);
     await expect.poll(() => runtime.sessions.activeSnapshotV10(owned())!.simulation.heldDirection).toBe(0);
     await expect(ui.locator('.movement-zone')).not.toHaveClass(/is-active/);

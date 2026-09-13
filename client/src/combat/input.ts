@@ -234,11 +234,16 @@ export class UnifiedMovementInputController extends ActionTurnsInputController {
         gesture.maximumDistance = Math.max(gesture.maximumDistance, Math.hypot(dx, dy));
         gesture.motionEligible = facts.grounded || facts.airControl === true;
         const jumping = this.jumpGesture(dx, dy, facts);
+        if (facts.platformerStick && this.jumpRearmGesture(dy) &&
+            (gesture.hop === 'submitted' || gesture.hop === 'discarded')) {
+            gesture.hop = 'unseen'; gesture.deadline = 0;
+        }
         if (jumping && gesture.hop === 'unseen') {
-            gesture.hop = facts.grounded && facts.lane !== 'blocked' ? 'eligible' : 'discarded';
+            gesture.hop = facts.lane !== 'blocked' && (facts.grounded || facts.platformerStick)
+                ? 'eligible' : 'discarded';
             gesture.deadline = now + 250;
         }
-        if (!jumping && gesture.hop === 'eligible') gesture.hop = 'discarded';
+        if (!facts.platformerStick && !jumping && gesture.hop === 'eligible') gesture.hop = 'discarded';
         this.observeGrounded(facts.grounded, facts.airControl === true);
         this.expire(now);
         return true;
@@ -272,7 +277,7 @@ export class UnifiedMovementInputController extends ActionTurnsInputController {
         this.gesture.locomotion = true;
         if (intent.type === 'jump') {
             this.gesture.hop = 'submitted'; this.gesture.motionEligible = false;
-            this.gesture.airOriginX ??= this.ownedPointer()?.current.x;
+            this.gesture.airOriginX = this.ownedPointer()?.current.x;
         }
     }
 
@@ -297,6 +302,7 @@ export class UnifiedMovementInputController extends ActionTurnsInputController {
             ? dy <= -16 && -dy >= Math.abs(dx) * 0.45
             : dy <= -24;
     }
+    private jumpRearmGesture(dy: number): boolean { return dy >= -6; }
     private expire(now: number): void {
         if (this.gesture?.hop === 'eligible' && now >= this.gesture.deadline) this.gesture.hop = 'discarded';
     }

@@ -47,6 +47,7 @@ export const V10_R6_DYNAMICS: SimulationDynamics = Object.freeze({
     maximumTurnTicks: 2_400,
     maximumCombatTicks: 38_400,
     walkSpeedFp: 336,
+    jumpSpeedFp: -1_728,
     airControlAccelerationFp: 24
 });
 export const V10_TERRAIN_PROFILE_IDS = Object.freeze([

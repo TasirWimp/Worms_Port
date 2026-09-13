@@ -17,8 +17,10 @@ existing wallet, PEI receipt and reward reservation checks.
 R6 keeps the exact R5 terrain and weapon balance, presents smaller actors with
 compact color-changing health bars and a matching direct-hit envelope, and
 gives each actor a 60-second action phase with slightly faster walking, a
-single left thumbstick for walking, upward-drag jumping and responsive bounded
-air steering before its single offensive shot. The player opens with 5 Thread,
+single left thumbstick for walking, repeatable upward-drag jumps without lifting
+the thumb, short pre-landing jump buffering and responsive bounded air steering.
+Its ordinary jump is lower and shorter while Threadleap retains its reinforced
+arc. The player opens with 5 Thread,
 so Spoolburst is available on the first turn. R5 is an
 explicit diagnostic profile and is excluded from routine acceptance.
 The explicit local preview URLs remain available for historical review.
