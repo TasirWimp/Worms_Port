@@ -47,12 +47,11 @@ test('a fresh verifier reconstructs the complete journey and feeds durable admis
     };
     const rewards = new RewardService(rewardConfig, new MemoryRewardStore(), {
         now: () => new Date(PEI_NOW_SECONDS * 1_000),
-        peiGrantIdSource: () => 'pei_admission_grant_fresh_01',
-        peiGrantTokenSource: () => 'T'.repeat(43)
+        peiReceiptIdSource: () => 'pei_receipt_fresh_01'
     });
-    const admission = await rewards.issuePeiQualification(result.qualification);
-    assert.equal(admission.grantId, 'pei_admission_grant_fresh_01');
-    assert.equal(admission.challengeDay, new Date(PEI_NOW_SECONDS * 1_000).toISOString().slice(0, 10));
+    const receipt = await rewards.issuePeiReceipt(result.qualification);
+    assert.equal(receipt.id, 'pei_receipt_fresh_01');
+    assert.equal(receipt.issuedAt, new Date(PEI_NOW_SECONDS * 1_000).toISOString());
 });
 
 test('request policy mismatches and replay against a fresh expected request are invalid', async () => {

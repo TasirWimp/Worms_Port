@@ -1,8 +1,8 @@
 import type { RewardInfoData, RewardPayoutState } from '../../../shared/protocol';
 import {
     RewardStoreError,
-    type PeiQualificationGrant,
-    type PeiQualificationInput,
+    type PeiReceipt,
+    type PeiReceiptInput,
     type RewardClaimInput,
     type RewardConfig,
     type RewardEntitlement,
@@ -33,7 +33,7 @@ export class MemoryRewardStore implements RewardStore {
     private readonly entitlements = new Map<string, StoredEntitlement>();
     private readonly challengeIndex = new Map<string, string>();
     private readonly claims = new Map<string, { entitlementId: string; requestDigest: string }>();
-    private readonly peiQualifications = new Map<string, PeiQualificationGrant>();
+    private readonly peiReceipts = new Map<string, PeiReceipt>();
     private mutex = Promise.resolve();
     private payoutLease = false;
 
@@ -64,7 +64,11 @@ export class MemoryRewardStore implements RewardStore {
         }
     }
 
-    public async info(day: string, config: RewardConfig): Promise<RewardInfoData> {
+    public async info(
+        day: string,
+        config: RewardConfig,
+        walletAddress?: string
+    ): Promise<RewardInfoData> {
         return this.lock(async () => {
             const rewardDay = this.day(day, config);
             return {
@@ -77,6 +81,9 @@ export class MemoryRewardStore implements RewardStore {
                             ? 'exhausted'
                             : 'available',
                 peiRequired: config.peiRequired === true,
+                availablePeiReceipts: walletAddress
+                    ? this.availablePeiReceipts(walletAddress).length
+                    : 0,
                 challengeDay: day,
                 rewardLuna: config.rewardLuna.toString(),
                 reservationSeconds: Math.floor(config.reservationTtlMs / 1000),
@@ -85,30 +92,32 @@ export class MemoryRewardStore implements RewardStore {
         });
     }
 
-    public async issuePeiQualification(
-        input: PeiQualificationInput
-    ): Promise<PeiQualificationGrant> {
+    public async issuePeiReceipt(input: PeiReceiptInput): Promise<PeiReceipt> {
         return this.lock(async () => {
-            if (this.peiQualifications.has(input.id)) {
-                throw new RewardStoreError('conflict', 'PEI admission grant already exists.');
+            const existing = [...this.peiReceipts.values()].find((receipt) =>
+                receipt.walletAddress === input.walletAddress &&
+                receipt.qualificationDigest === input.qualificationDigest
+            );
+            if (existing) return cloneReceipt(existing);
+            if (this.peiReceipts.has(input.id)) {
+                throw new RewardStoreError('conflict', 'PEI receipt already exists.');
             }
-            const grant: PeiQualificationGrant = {
+            const receipt: PeiReceipt = {
                 ...input,
-                issuedAt: new Date(input.issuedAt),
-                expiresAt: new Date(input.expiresAt)
+                issuedAt: new Date(input.issuedAt)
             };
-            this.peiQualifications.set(grant.id, grant);
-            return cloneGrant(grant);
+            this.peiReceipts.set(receipt.id, receipt);
+            return cloneReceipt(receipt);
         });
     }
 
-    public async peiQualificationStatus(
-        grantId: string,
+    public async peiReceiptStatus(
+        receiptId: string,
         walletAddress: string
-    ): Promise<PeiQualificationGrant | undefined> {
+    ): Promise<PeiReceipt | undefined> {
         return this.lock(async () => {
-            const grant = this.peiQualifications.get(grantId);
-            return grant?.walletAddress === walletAddress ? cloneGrant(grant) : undefined;
+            const receipt = this.peiReceipts.get(receiptId);
+            return receipt?.walletAddress === walletAddress ? cloneReceipt(receipt) : undefined;
         });
     }
 
@@ -129,7 +138,7 @@ export class MemoryRewardStore implements RewardStore {
                 testDailyAttemptLimit: 1
             });
             if (day.paused) throw new RewardStoreError('paused', 'Sponsor rewards are paused.');
-            const peiGrant = this.validPeiGrantForReservation(input);
+            const peiReceipt = this.selectPeiReceiptForReservation(input);
             let unconsumedReservations = 0;
             let consumedAttempts = 0;
             for (const existing of this.entitlements.values()) {
@@ -182,7 +191,7 @@ export class MemoryRewardStore implements RewardStore {
                 dailyAttemptLimit,
                 reservationExpiresAt: new Date(input.reservationExpiresAt),
                 eligibilityTokenDigest: input.eligibilityTokenDigest,
-                ...(peiGrant ? { peiAdmissionGrantId: peiGrant.id } : {})
+                ...(peiReceipt ? { peiReceiptId: peiReceipt.id } : {})
             };
             this.entitlements.set(entitlement.id, entitlement);
             this.challengeIndex.set(entitlement.challengeId, entitlement.id);
@@ -211,16 +220,14 @@ export class MemoryRewardStore implements RewardStore {
                 this.release(entitlement, 'expired');
                 throw new RewardStoreError('expired', 'The reward reservation expired.');
             }
-            const peiGrant = entitlement.peiAdmissionGrantId
-                ? this.peiQualifications.get(entitlement.peiAdmissionGrantId)
+            const peiReceipt = entitlement.peiReceiptId
+                ? this.peiReceipts.get(entitlement.peiReceiptId)
                 : undefined;
-            if (entitlement.peiAdmissionGrantId && (!peiGrant || peiGrant.consumedAt ||
-                peiGrant.walletAddress !== walletAddress ||
-                peiGrant.challengeDay !== entitlement.challengeDay ||
-                peiGrant.expiresAt.getTime() <= now.getTime())) {
+            if (entitlement.peiReceiptId && (!peiReceipt || peiReceipt.consumedAt ||
+                peiReceipt.walletAddress !== walletAddress)) {
                 throw new RewardStoreError(
                     'ineligible',
-                    'The PEI admission grant is invalid or already used.'
+                    'The PEI receipt is invalid or already used.'
                 );
             }
             let consumedAttempts = 0;
@@ -241,9 +248,9 @@ export class MemoryRewardStore implements RewardStore {
             entitlement.state = 'in_progress';
             entitlement.attemptConsumed = true;
             delete entitlement.eligibilityTokenDigest;
-            if (peiGrant) {
-                peiGrant.consumedAt = new Date(now);
-                peiGrant.entitlementId = entitlement.id;
+            if (peiReceipt) {
+                peiReceipt.consumedAt = new Date(now);
+                peiReceipt.entitlementId = entitlement.id;
             }
             return clone(entitlement);
         });
@@ -511,28 +518,29 @@ export class MemoryRewardStore implements RewardStore {
         return created;
     }
 
-    private validPeiGrantForReservation(
+    private selectPeiReceiptForReservation(
         input: RewardReservationInput
-    ): PeiQualificationGrant | undefined {
-        if (!input.peiAdmissionRequired && !input.peiAdmission) return undefined;
-        if (!input.peiAdmission) {
+    ): PeiReceipt | undefined {
+        if (!input.peiReceiptRequired) return undefined;
+        const receipt = this.availablePeiReceipts(input.walletAddress)[0];
+        if (!receipt) {
             throw new RewardStoreError(
                 'ineligible',
-                'A PEI admission grant is required for this Daily Challenge.'
+                'Complete a PEI interaction before reserving today’s rewarded match.'
             );
         }
-        const grant = this.peiQualifications.get(input.peiAdmission.grantId);
-        if (!grant || grant.walletAddress !== input.walletAddress ||
-            grant.challengeDay !== input.challengeDay ||
-            grant.tokenDigest !== input.peiAdmission.tokenDigest ||
-            grant.consumedAt ||
-            grant.expiresAt.getTime() < input.reservationExpiresAt.getTime()) {
-            throw new RewardStoreError(
-                'ineligible',
-                'The PEI admission grant is invalid, expired, or already used.'
-            );
-        }
-        return grant;
+        return receipt;
+    }
+
+    private availablePeiReceipts(walletAddress: string): PeiReceipt[] {
+        const reservedIds = new Set([...this.entitlements.values()]
+            .filter((entitlement) => entitlement.state === 'reserved' && entitlement.peiReceiptId)
+            .map((entitlement) => entitlement.peiReceiptId!));
+        return [...this.peiReceipts.values()]
+            .filter((receipt) => receipt.walletAddress === walletAddress &&
+                !receipt.consumedAt && !reservedIds.has(receipt.id))
+            .sort((left, right) => left.issuedAt.getTime() - right.issuedAt.getTime() ||
+                left.id.localeCompare(right.id));
     }
 
     private release(
@@ -592,11 +600,10 @@ function clone(entitlement: StoredEntitlement): RewardEntitlement {
     return copy;
 }
 
-function cloneGrant(grant: PeiQualificationGrant): PeiQualificationGrant {
+function cloneReceipt(receipt: PeiReceipt): PeiReceipt {
     return {
-        ...grant,
-        issuedAt: new Date(grant.issuedAt),
-        expiresAt: new Date(grant.expiresAt),
-        ...(grant.consumedAt ? { consumedAt: new Date(grant.consumedAt) } : {})
+        ...receipt,
+        issuedAt: new Date(receipt.issuedAt),
+        ...(receipt.consumedAt ? { consumedAt: new Date(receipt.consumedAt) } : {})
     };
 }

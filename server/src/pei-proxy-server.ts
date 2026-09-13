@@ -31,8 +31,7 @@ async function main(): Promise<void> {
         adapter,
         {
             paused: transferConfig.paused,
-            dailyBudgetLuna: transferConfig.dailyBudgetLuna,
-            dailyWalletLimit: transferConfig.dailyWalletLimit
+            dailyBudgetLuna: transferConfig.dailyBudgetLuna
         }
     );
     runtime = createPeiProxyRuntimeV0({
@@ -46,7 +45,7 @@ async function main(): Promise<void> {
         transferConfig.paused ? 'paused' : 'enabled'
     }; network ${transferConfig.network}; daily budget ${
         transferConfig.dailyBudgetLuna
-    } Luna; wallet limit ${transferConfig.dailyWalletLimit}`);
+    } Luna`);
 }
 
 for (const signal of ['SIGINT', 'SIGTERM'] as const) {

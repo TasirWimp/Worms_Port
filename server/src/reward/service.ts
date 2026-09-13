@@ -5,8 +5,7 @@ import type {
     RewardInfoData,
     RewardReservationData,
     RewardUpdateData,
-    WalletIdentity,
-    PeiAdmissionCredential
+    WalletIdentity
 } from '../../../shared/protocol';
 import { NormalizedNimiqAddressSchema } from '../../../shared/protocol';
 import { ChallengeResultV8AutomatedSchema,
@@ -27,7 +26,7 @@ import {
     type RewardEntitlement,
     type RewardCoordinatorReplay,
     type RewardStore,
-    type IssuedPeiAdmission,
+    type IssuedPeiReceipt,
     type VerifiedPeiQualification
 } from './types';
 
@@ -36,8 +35,7 @@ export type RewardServiceOptions = {
     seedSource?: () => number;
     idSource?: () => string;
     tokenSource?: () => string;
-    peiGrantIdSource?: () => string;
-    peiGrantTokenSource?: () => string;
+    peiReceiptIdSource?: () => string;
     onQueued?: () => void;
 };
 
@@ -46,8 +44,7 @@ export class RewardService {
     private readonly seedSource: () => number;
     private readonly idSource: () => string;
     private readonly tokenSource: () => string;
-    private readonly peiGrantIdSource: () => string;
-    private readonly peiGrantTokenSource: () => string;
+    private readonly peiReceiptIdSource: () => string;
     private readonly onQueued?: () => void;
 
     public constructor(
@@ -59,9 +56,7 @@ export class RewardService {
         this.seedSource = options.seedSource ?? (() => randomBytes(4).readUInt32BE());
         this.idSource = options.idSource ?? opaqueId;
         this.tokenSource = options.tokenSource ?? (() => randomBytes(32).toString('base64url'));
-        this.peiGrantIdSource = options.peiGrantIdSource ?? opaqueId;
-        this.peiGrantTokenSource = options.peiGrantTokenSource ??
-            (() => randomBytes(32).toString('base64url'));
+        this.peiReceiptIdSource = options.peiReceiptIdSource ?? opaqueId;
         this.onQueued = options.onQueued;
         if (config.mode !== 'disabled' && !store) {
             throw new Error('Enabled rewards require a durable reward store.');
@@ -81,25 +76,28 @@ export class RewardService {
         await this.store?.close();
     }
 
-    public async info(): Promise<RewardInfoData> {
-        const day = challengeDay(this.now());
+    public async info(identity?: WalletIdentity): Promise<RewardInfoData> {
+        const now = this.now();
+        const day = challengeDay(now);
         if (this.config.mode === 'disabled') {
             return {
                 status: 'disabled',
                 peiRequired: false,
+                availablePeiReceipts: 0,
                 challengeDay: day,
                 rewardLuna: this.config.rewardLuna.toString(),
                 reservationSeconds: Math.floor(this.config.reservationTtlMs / 1000),
                 turnLimit: this.config.turnLimit
             };
         }
-        return this.requireStore().info(day, this.config);
+        const store = this.requireStore();
+        await store.expireReservations(now);
+        return store.info(day, this.config, identity?.address);
     }
 
     public async reserve(
         identity: WalletIdentity | undefined,
-        calling: PlayerCalling,
-        peiAdmission?: PeiAdmissionCredential
+        calling: PlayerCalling
     ): Promise<RewardReservationData> {
         this.ensureEnabled();
         if (!identity) {
@@ -111,12 +109,6 @@ export class RewardService {
         const now = this.now();
         const rawToken = this.tokenSource();
         const challengeId = this.idSource();
-        if (this.config.peiRequired && !peiAdmission) {
-            throw new RewardStoreError(
-                'ineligible',
-                'Complete the PEI interaction before reserving today’s rewarded match.'
-            );
-        }
         const entitlement = await this.requireStore().reserve({
             id: this.idSource(),
             challengeId,
@@ -131,15 +123,7 @@ export class RewardService {
                 : 1,
             paused: this.config.paused,
             eligibilityTokenDigest: tokenDigest(rawToken),
-            peiAdmissionRequired: this.config.peiRequired === true,
-            ...(this.config.peiRequired && peiAdmission
-                ? {
-                    peiAdmission: {
-                        grantId: peiAdmission.grantId,
-                        tokenDigest: tokenDigest(peiAdmission.token)
-                    }
-                }
-                : {}),
+            peiReceiptRequired: this.config.peiRequired === true,
             reservationExpiresAt: new Date(now.getTime() + this.config.reservationTtlMs),
             now
         });
@@ -155,12 +139,14 @@ export class RewardService {
         };
     }
 
-    public async issuePeiQualification(
+    public async issuePeiReceipt(
         qualification: VerifiedPeiQualification
-    ): Promise<IssuedPeiAdmission> {
-        this.ensureEnabled();
+    ): Promise<IssuedPeiReceipt> {
+        if (this.config.mode === 'disabled') {
+            throw new RewardStoreError('disabled', 'Sponsor rewards are disabled.');
+        }
         if (!this.config.peiRequired) {
-            throw new RewardStoreError('disabled', 'PEI admission is not enabled.');
+            throw new RewardStoreError('disabled', 'PEI receipts are not enabled.');
         }
         const wallet = NormalizedNimiqAddressSchema.safeParse(qualification.walletAddress);
         if (!wallet.success || !/^[A-Za-z0-9_-]{43}$/.test(qualification.qualificationDigest)) {
@@ -169,28 +155,22 @@ export class RewardService {
         const now = this.now();
         if (!(qualification.expiresAt instanceof Date) ||
             !Number.isFinite(qualification.expiresAt.getTime()) ||
-            qualification.expiresAt.getTime() < now.getTime() + this.config.reservationTtlMs) {
+            qualification.expiresAt.getTime() <= now.getTime()) {
             throw new RewardStoreError(
                 'expired',
-                'Verified PEI qualification must cover the reward reservation window.'
+                'Verified PEI qualification has expired.'
             );
         }
-        const token = this.peiGrantTokenSource();
         const input = {
-            id: this.peiGrantIdSource(),
+            id: this.peiReceiptIdSource(),
             walletAddress: wallet.data,
-            challengeDay: challengeDay(now),
             qualificationDigest: qualification.qualificationDigest,
-            tokenDigest: tokenDigest(token),
-            issuedAt: now,
-            expiresAt: new Date(qualification.expiresAt)
+            issuedAt: now
         };
-        const grant = await this.requireStore().issuePeiQualification(input);
+        const receipt = await this.requireStore().issuePeiReceipt(input);
         return {
-            grantId: grant.id,
-            token,
-            challengeDay: grant.challengeDay,
-            expiresAt: grant.expiresAt.toISOString()
+            id: receipt.id,
+            issuedAt: receipt.issuedAt.toISOString()
         };
     }
 

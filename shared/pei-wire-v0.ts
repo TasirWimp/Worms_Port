@@ -38,11 +38,9 @@ export const PeiLaunchDataSchema = z.object({
 
 export const PeiQualifiedDataSchema = z.object({
     step: z.literal('qualified'),
-    admission: z.object({
-        grantId: z.string().min(16).max(64).regex(/^[A-Za-z0-9_-]+$/),
-        token: z.string().length(43).regex(/^[A-Za-z0-9_-]+$/),
-        challengeDay: z.string().date(),
-        expiresAt: z.string().datetime()
+    receipt: z.object({
+        id: z.string().min(16).max(64).regex(/^[A-Za-z0-9_-]+$/),
+        issuedAt: z.string().datetime()
     }).strict(),
     edges: z.tuple([z.literal('earned'), z.literal('spent')]),
     transactionHashes: z.tuple([

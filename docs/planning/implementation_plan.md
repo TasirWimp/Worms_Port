@@ -95,16 +95,26 @@ Phaser/Socket.IO stack.
   candidate baselines. Ordinary Ubuntu comparison CI passed; the owner then
   accepted the hash presentation on the physical phone. The temporary reward
   override was removed and both the game reward path and helper transfers were
-  redeployed paused. **WP-022G Durable Helper Issuance Policy is active** from
+  redeployed paused. **WP-022G Durable Helper Issuance Policy is complete** from
   clean `c9c8ce0`. It atomically records new helper exposure and enforces a
   daily sponsor budget plus per-wallet UTC-day limit before signing. Routine
   Playwright, quality and daily gates now start standard V10 R5 and filter the
-  retired lower-version browser previews. Local checks, deployment and Phone
-  Gate D remain pending. Carrier-content ablation stays deferred. See the
+  retired lower-version browser previews. Local and PostgreSQL CI checks passed,
+  followed by all seven Phone Gate D steps on the owner's physical phone. That
+  gate exposed a product-semantics correction: helper interactions must be
+  repeatable and issued qualifications must persist independently of a UTC day.
+  **WP-022H Durable Wallet Receipt Refinement is active** from clean `3603cbf`.
+  It removes the helper's per-wallet daily cap, replaces browser-held expiring
+  credentials with a server-owned multi-receipt wallet inventory, migrates
+  existing unconsumed grants, automatically consumes the oldest receipt only
+  when Daily starts, and makes routine unit/browser verification explicitly
+  V10-only. The one-started-Daily-per-wallet/day authority remains unchanged.
+  Carrier-content ablation stays deferred. See the
   [PEI admission contract](wp-022-pei-admission-contract.md),
   [WP-022B evidence](../evidence/wp-022b.json), [WP-022C evidence](../evidence/wp-022c.json),
   [WP-022D evidence](../evidence/wp-022d.json), [WP-022E evidence](../evidence/wp-022e.json),
-  [WP-022F evidence](../evidence/wp-022f.json), [WP-022G evidence](../evidence/wp-022g.json), and the
+  [WP-022F evidence](../evidence/wp-022f.json), [WP-022G evidence](../evidence/wp-022g.json),
+  [WP-022H evidence](../evidence/wp-022h.json), and the
   [bounded contract](wp-015d4f-volcanic-ruin-preview-bundle-contract.md#wp-022a-daily-v10-migration)
   and [evidence](../evidence/wp-022a.json).
 - Active target: mobile-first single-player Nimiq Pay competition release.

@@ -45,8 +45,7 @@ test('PostgreSQL preserves accepted journeys and exact signed proxy bytes across
                 issuanceDay: now.toISOString().slice(0, 10),
                 amountLuna: 100_000n,
                 expiresAt: new Date(fixture.earnProof.request.expiresAt * 1_000),
-                dailyBudgetLuna: 200_000n,
-                dailyWalletLimit: 1
+                dailyBudgetLuna: 200_000n
             }, now);
             await locked.saveSigned({
                 requestCommitment: commitment,
@@ -69,19 +68,15 @@ test('PostgreSQL preserves accepted journeys and exact signed proxy bytes across
         });
         const secondRequest = { ...fixture.earnProof.request, nonce: 'C'.repeat(43) };
         const secondCommitment = await peiRequestCommitmentV0(secondRequest);
-        await assert.rejects(
-            restartedTransfers.withRequestLock(secondCommitment, (locked) =>
-                locked.reserveIssuance({
-                    requestCommitment: secondCommitment,
-                    walletAddress: PEI_WALLET,
-                    issuanceDay: now.toISOString().slice(0, 10),
-                    amountLuna: 100_000n,
-                    expiresAt: new Date(secondRequest.expiresAt * 1_000),
-                    dailyBudgetLuna: 200_000n,
-                    dailyWalletLimit: 1
-                }, now)
-            ),
-            /already received today/
+        await restartedTransfers.withRequestLock(secondCommitment, (locked) =>
+            locked.reserveIssuance({
+                requestCommitment: secondCommitment,
+                walletAddress: PEI_WALLET,
+                issuanceDay: now.toISOString().slice(0, 10),
+                amountLuna: 100_000n,
+                expiresAt: new Date(secondRequest.expiresAt * 1_000),
+                dailyBudgetLuna: 200_000n
+            }, now)
         );
         await restartedTransfers.close();
     });
@@ -110,8 +105,7 @@ test('PostgreSQL serializes concurrent helper instances against one daily budget
                         issuanceDay: now.toISOString().slice(0, 10),
                         amountLuna: 100_000n,
                         expiresAt: new Date(request.expiresAt * 1_000),
-                        dailyBudgetLuna: 100_000n,
-                        dailyWalletLimit: 1
+                        dailyBudgetLuna: 100_000n
                     }, now)
                 );
             }));

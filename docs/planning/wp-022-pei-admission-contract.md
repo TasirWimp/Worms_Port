@@ -9,6 +9,10 @@ slice.
 
 ## WP-022B: Durable admission foundation
 
+This was the first admission implementation. WP-022H supersedes its
+wallet/day-bound browser credential with the durable receipt inventory defined
+below; the section remains as implementation history.
+
 WP-022B adds the internal seam between a future successful PEI verification and
 the existing Daily Challenge. It does not define a PEI request, proof, receipt,
 URL carrier, helper UI or blockchain adapter.
@@ -87,7 +91,7 @@ The chain interface is production-neutral. WP-022C tests it with an independent
 deterministic synthetic adapter and golden vectors, including malformed
 carriers, request policy, transaction binding, parent mutation, wallet swaps,
 pending/failure classification and replay against a new expected request. A
-valid verifier result is passed directly to `RewardService.issuePeiQualification`
+valid verifier result is passed directly to `RewardService.issuePeiReceipt`
 to prove the admission seam, while no public endpoint, helper UI, live RPC,
 wallet transaction, payout or initial client bundle is added.
 
@@ -300,3 +304,47 @@ payout. After the phone result, both helper transfers and rewards return to
 paused settings. Receipt-carrier ablation remains deferred.
 
 Evidence: [WP-022G](../evidence/wp-022g.json).
+
+## WP-022H: Durable wallet receipt refinement
+
+WP-022H corrects the product lifetime boundary exposed by Phone Gate D. The
+helper models an ecosystem interaction that may happen repeatedly; it therefore
+has no per-wallet or per-day qualification rule. Its pause switch, exact-byte
+idempotency, balance check and global UTC-day exposure ceiling remain
+operational controls on the helper wallet rather than properties of a player's
+receipt. Pausing Daily rewards prevents a Daily reservation but does not prevent
+an otherwise enabled helper journey from issuing a receipt.
+
+A valid completed earn-and-return journey issues one durable receipt to the
+normalized wallet. The reward server stores the receipt ID, wallet,
+qualification digest and issuance time. It stores no browser bearer token,
+challenge day or receipt expiry. Repeating delivery of the same verified
+journey is idempotent and returns the existing receipt; a distinct journey adds
+another receipt. Existing verified, unconsumed admission grants remain usable
+after the migration even when their former day or expiry has passed.
+
+An authorized wallet may accumulate several unused receipts. `reward.info`
+returns only that authorized wallet's available count, including after app or
+session replacement. The client never persists PEI authority. The Daily
+reservation selects and holds the oldest available receipt on the server.
+Starting the V10 R5 volcanic Daily consumes it atomically with the existing
+started-attempt transition. Cancellation or reservation expiry releases the
+hold without consuming the receipt. The independent one-started-Daily-per-wallet
+and UTC-day rule remains unchanged.
+
+Routine verification supports V10 only. Directly named legacy browser files no
+longer opt themselves into `@legacy` tests, and routine unit-family commands
+exclude version-only and legacy-bearing files while retaining extracted V10
+and shared current coverage. `npm run test:legacy` is an explicit diagnostic
+command and is outside feature, quality and release acceptance.
+
+Phone Gate E verifies the corrected lifetime: authorize one wallet; confirm its
+unused receipt count survives a close/reopen; complete a second helper journey
+on the same UTC day and see the count increase; start Daily and see exactly one
+receipt consumed; then confirm a second Daily start is still refused for that
+day while another helper interaction remains possible. Standard wallet-free
+V10 R5 volcanic Practice must still start. Carrier-content ablation stays
+paused. The supervised helper deployment uses a 1,000,000 Luna global daily
+ceiling for up to ten gross 1 NIM earn transfers during this gate.
+
+Evidence: [WP-022H](../evidence/wp-022h.json).

@@ -31,31 +31,20 @@ export type RewardConfig = {
     peiRequired?: boolean;
 };
 
-export type PeiQualificationGrant = {
+export type PeiReceipt = {
     id: string;
     walletAddress: string;
-    challengeDay: string;
     qualificationDigest: string;
-    tokenDigest: string;
     issuedAt: Date;
-    expiresAt: Date;
     consumedAt?: Date;
     entitlementId?: string;
 };
 
-export type PeiQualificationInput = {
+export type PeiReceiptInput = {
     id: string;
     walletAddress: string;
-    challengeDay: string;
     qualificationDigest: string;
-    tokenDigest: string;
     issuedAt: Date;
-    expiresAt: Date;
-};
-
-export type PeiAdmissionBinding = {
-    grantId: string;
-    tokenDigest: string;
 };
 
 export type VerifiedPeiQualification = {
@@ -64,11 +53,9 @@ export type VerifiedPeiQualification = {
     expiresAt: Date;
 };
 
-export type IssuedPeiAdmission = {
-    grantId: string;
-    token: string;
-    challengeDay: string;
-    expiresAt: string;
+export type IssuedPeiReceipt = {
+    id: string;
+    issuedAt: string;
 };
 
 export type RewardEntitlement = {
@@ -93,7 +80,7 @@ export type RewardEntitlement = {
     includedHeight?: number;
     finalizedAt?: Date;
     reasonCode?: string;
-    peiAdmissionGrantId?: string;
+    peiReceiptId?: string;
 };
 
 export type RewardReservationInput = {
@@ -108,8 +95,7 @@ export type RewardReservationInput = {
     dailyAttemptLimit: number;
     paused: boolean;
     eligibilityTokenDigest: string;
-    peiAdmissionRequired?: boolean;
-    peiAdmission?: PeiAdmissionBinding;
+    peiReceiptRequired?: boolean;
     reservationExpiresAt: Date;
     now: Date;
 };
@@ -147,12 +133,12 @@ export type RewardStore = {
     close(): Promise<void>;
     forfeitInProgressOnStartup(now: Date): Promise<number>;
     withPayoutLease<T>(operation: () => Promise<T>): Promise<T | undefined>;
-    info(day: string, config: RewardConfig): Promise<RewardInfoData>;
-    issuePeiQualification(input: PeiQualificationInput): Promise<PeiQualificationGrant>;
-    peiQualificationStatus(
-        grantId: string,
+    info(day: string, config: RewardConfig, walletAddress?: string): Promise<RewardInfoData>;
+    issuePeiReceipt(input: PeiReceiptInput): Promise<PeiReceipt>;
+    peiReceiptStatus(
+        receiptId: string,
         walletAddress: string
-    ): Promise<PeiQualificationGrant | undefined>;
+    ): Promise<PeiReceipt | undefined>;
     reserve(input: RewardReservationInput): Promise<RewardEntitlement>;
     start(
         challengeId: string,

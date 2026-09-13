@@ -22,9 +22,7 @@ async function main() {
   const qualityShard = rawArgs.includes('--quality-shard');
   const performanceGate = rawArgs.includes('--performance-gate');
   const reuseBuild = rawArgs.includes('--reuse-build');
-  const legacyBrowserTests = rawArgs.includes('--legacy') || rawArgs.some((argument) =>
-    argument.endsWith('tests/browser/combat.spec.ts')
-  );
+  const legacyBrowserTests = rawArgs.includes('--legacy');
   const args = rawArgs.filter((argument) =>
     argument !== '--quality-gate' && argument !== '--quality-shard' &&
     argument !== '--performance-gate' && argument !== '--reuse-build' &&

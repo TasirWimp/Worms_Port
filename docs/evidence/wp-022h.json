@@ -1,0 +1,85 @@
+{
+  "id": "WP-022H",
+  "status": "in_progress",
+  "execution_mode": "single_owner",
+  "starting_commit": "3603cbf",
+  "branch": "codex/pei-daily-v10",
+  "initial_worktree": "clean",
+  "starting_lock_sha256": "6B768A8FDE2695D02555CA17201FD7CE420F9AC075B91380474DD7A643042BC8",
+  "owning_roles": [
+    "primary assistant"
+  ],
+  "scope": [
+    "Replace browser-held expiring PEI admission credentials with a durable server-owned receipt inventory keyed to the authorized wallet.",
+    "Allow several unused non-expiring receipts, issue distinct interactions idempotently, migrate existing unconsumed grants, and consume the oldest receipt only when Daily starts.",
+    "Remove the helper per-wallet daily limit while retaining pause, exact-byte retry, balance and global exposure controls.",
+    "Make routine unit and browser verification explicitly V10-only, with retired coverage behind npm run test:legacy."
+  ],
+  "non_goals": [
+    "No receipt-carrier ablation, gameplay mechanics change, reward amount change, public launch, asset change, dependency change or wholesale deletion of lower-version modules still imported by V10."
+  ],
+  "planned_checks": [
+    "npm run verify:changes -- --dry-run",
+    "Focused types, tooling, protocol, reward and PEI unit checks",
+    "Fresh build outputs and standard V10 built smoke",
+    "Focused PEI and reward phone-browser checks",
+    "Disposable PostgreSQL reward and PEI migration checks when available",
+    "npm run audit:housekeeping",
+    "Physical Phone Gate E"
+  ],
+  "deterministic_seeds": [
+    "Fixed receipt IDs, proof digests, wallet addresses, UTC instants and V10 reward seeds in focused tests"
+  ],
+  "sorcerers_reference_used": false,
+  "clean_room_records": [],
+  "check_results": [
+    {
+      "command": "npm run verify:changes -- --dry-run",
+      "status": "pass",
+      "details": "The testing worker reported selector fingerprint 5fd80e60566f61a7d8bae5f6d8ccecba327b459a969ed4bdb965f059bd859365 at HEAD 3603cbf. Package and selector changes conservatively selected all runtime families, fresh build, V10 smoke, browser, PostgreSQL and performance. Primary narrowed execution by product risk: receipt/reward/PEI/protocol/tooling, fresh runtime outputs, V10 smoke and the current PEI/reward browser journey; unrelated combat mechanics, simulation, visual comparison and performance remain outside this behavior-only refinement. Existing build proof was invalid because declared inputs changed. Log .cache/wp022g-current-selector-dry-run.log."
+    },
+    {
+      "command": "Focused types, tooling, protocol, reward and PEI unit checks",
+      "status": "pass",
+      "details": "Delegated zero-retry execution passed server/client types, 132 tooling-policy cases, the extracted current V10 reward settlement case, and 45 focused protocol/reward/PEI cases. The receipt cases cover wallet isolation, multi-receipt accumulation across UTC days, oldest-first selection, consume-on-start, cancellation reuse, proof idempotency, paused-reward issuance, the independent Daily limit and the V10 socket path. After direct review separated three historical camera cases into the explicit legacy file, tooling again passed 132/132 and the retained shared current combat coverage passed 10/10 without running the legacy cases. Logs .cache/wp022h-focused-prebuild.log, .cache/wp022h-prebuild-v10-extraction.log and .cache/wp022h-unit-split-validation.log."
+    },
+    {
+      "command": "Fresh build outputs and standard V10 built smoke",
+      "status": "pass",
+      "details": "Fresh build proof 3dc7bf2f9e38 / f47f7cd4fd6a passed. Built smoke created and paused the standard V10 R5 volcanic Practice match and verified overlays, approved assets and the room adapter; retired V7/V8/V9 profiles were excluded. Reward-security scanning found no leak, and bundle budgets passed at 1,431,516/1,500,000 initial JavaScript bytes and 417,072/430,000 initial JavaScript-plus-CSS gzip bytes. Log .cache/wp022h-build-security.log."
+    },
+    {
+      "command": "Focused PEI and reward phone-browser checks",
+      "status": "pass",
+      "details": "One combined canonical chromium-390x844 run passed 6/6 supported cases in 1.4 minutes with zero retries or skips. It covered both PEI crossings, server receipt recovery after reload, V10 R5 volcanic Daily, payout hash, Daily loss and consumption policy, wallet-free Practice touch controls and reconnect to the same challenge. After direct review strengthened the lifetime proof, the PEI case alone passed 1/1 in 5.8 seconds after clearing browser session storage, opening a fresh server session, explicitly reauthorizing the wallet and recovering its receipt count. No @legacy case ran. Logs .cache/wp022h-browser-pei-reward-smoke.log and .cache/wp022h-browser-pei-session-recovery.log."
+    },
+    {
+      "command": "Disposable PostgreSQL reward and PEI migration checks when available",
+      "status": "pass",
+      "details": "The delegated PostgreSQL selector phase passed under fingerprint 9894a4d26688255c745d3b17dbe73bcd06d719141c7971926b3fc391b82b821f. WP014_TEST_DATABASE_URL was absent, so it explicitly skipped database unit/browser execution without creating or repairing infrastructure; CI must execute the selected disposable PostgreSQL gate after push. Log .cache/wp022h-postgres-phase.log."
+    },
+    {
+      "command": "npm run audit:housekeeping",
+      "status": "pass",
+      "details": "Delegated zero-retry validation passed all 68 work-package evidence records and the report-only housekeeping audit. It found no gone tracking branches, kept WP-022H in progress, and retained the pre-existing historical reconciliation flag. Log .cache/wp022h-evidence-housekeeping.log."
+    }
+  ],
+  "reviews": [
+    {
+      "role": "primary",
+      "reviewer": "primary assistant",
+      "decision": "pass",
+      "details": "Direct review traced the complete wallet-authorized info, helper return, receipt issue, Daily reserve/start and cancellation/expiry paths in memory and PostgreSQL. The browser supplies no receipt ID or bearer authority; only the server counts and selects wallet receipts. Distinct verified journeys accumulate, exact proof replay is idempotent, old unconsumed rows remain usable despite their historical day/expiry fields, and one receipt is consumed only with the existing atomic started-attempt transition. Helper per-wallet/day policy and ordinary legacy acceptance tests are removed while global exposure, pause, exact-byte retries, balance checks and V10 behavior remain."
+    }
+  ],
+  "skipped_checks": [
+    "Retired V7/V8/V9 tests were intentionally not run; npm run test:legacy remains an explicit diagnostic outside acceptance.",
+    "The full daily/release matrix remains scheduled for 22:00 Europe/Berlin and was not duplicated for this feature gate.",
+    "Visual baselines and performance were not run because this changes receipt state and entry copy rather than combat rendering or mechanics; the canonical-phone journey and bundle budget cover the affected runtime surface.",
+    "Local PostgreSQL tests were skipped because WP014_TEST_DATABASE_URL is absent; the selected CI database gate remains required after push.",
+    "Physical Phone Gate E remains pending after deployment."
+  ],
+  "residual_risks": [
+    "CI PostgreSQL execution, deployment and Physical Phone Gate E remain pending."
+  ]
+}

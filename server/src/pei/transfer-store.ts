@@ -19,12 +19,11 @@ export type PeiProxyIssuanceReservationV0 = {
     amountLuna: bigint;
     expiresAt: Date;
     dailyBudgetLuna: bigint;
-    dailyWalletLimit: number;
 };
 
 type PeiProxyIssuanceV0 = Omit<
     PeiProxyIssuanceReservationV0,
-    'dailyBudgetLuna' | 'dailyWalletLimit'
+    'dailyBudgetLuna'
 > & { state: 'reserved' | 'committed' };
 
 export interface PeiProxyTransferOperationsV0 {
@@ -88,11 +87,6 @@ export class MemoryPeiProxyTransferStoreV0 implements PeiProxyTransferStoreV0 {
             (issuance.state === 'committed' || issuance.expiresAt > now)
         );
         const spent = active.reduce((total, issuance) => total + issuance.amountLuna, 0n);
-        if (active.filter((issuance) =>
-            issuance.walletAddress === reservation.walletAddress
-        ).length >= reservation.dailyWalletLimit) {
-            throw new Error('This wallet has already received today\'s PEI helper transfer.');
-        }
         if (spent + reservation.amountLuna > reservation.dailyBudgetLuna) {
             throw new Error('The PEI helper daily sponsor budget is exhausted.');
         }
@@ -221,18 +215,13 @@ export class PostgresPeiProxyTransferStoreV0 implements PeiProxyTransferStoreV0 
             return;
         }
         const usage = await database.query<IssuanceUsageRow>(
-            `SELECT COALESCE(SUM(amount_luna), 0)::text AS amount_luna,
-                    COUNT(*) FILTER (WHERE wallet_address = $2)::text AS wallet_count
+            `SELECT COALESCE(SUM(amount_luna), 0)::text AS amount_luna
                FROM pei_proxy_issuances_v0
               WHERE issuance_day = $1::date
-                AND (state = 'committed' OR expires_at > $3)`,
-            [reservation.issuanceDay, reservation.walletAddress, now]
+                AND (state = 'committed' OR expires_at > $2)`,
+            [reservation.issuanceDay, now]
         );
         const spent = BigInt(usage.rows[0]?.amount_luna ?? '0');
-        const walletCount = Number(usage.rows[0]?.wallet_count ?? '0');
-        if (walletCount >= reservation.dailyWalletLimit) {
-            throw new Error('This wallet has already received today\'s PEI helper transfer.');
-        }
         if (spent + reservation.amountLuna > reservation.dailyBudgetLuna) {
             throw new Error('The PEI helper daily sponsor budget is exhausted.');
         }
@@ -342,7 +331,6 @@ type IssuanceRow = QueryResultRow & {
 
 type IssuanceUsageRow = QueryResultRow & {
     amount_luna: string;
-    wallet_count: string;
 };
 
 function issuanceFromRow(row: IssuanceRow): PeiProxyIssuanceV0 {
@@ -374,8 +362,7 @@ function assertReservation(reservation: PeiProxyIssuanceReservationV0, now: Date
         !/^\d{4}-\d{2}-\d{2}$/.test(reservation.issuanceDay) ||
         reservation.issuanceDay !== now.toISOString().slice(0, 10) ||
         reservation.amountLuna <= 0n || reservation.dailyBudgetLuna < 0n ||
-        !Number.isSafeInteger(reservation.dailyWalletLimit) || reservation.dailyWalletLimit < 1 ||
-        reservation.dailyWalletLimit > 100 || !Number.isFinite(reservation.expiresAt.getTime()) ||
+        !Number.isFinite(reservation.expiresAt.getTime()) ||
         reservation.expiresAt <= now) {
         throw new Error('The PEI helper issuance reservation is invalid.');
     }

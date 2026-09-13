@@ -152,14 +152,14 @@ export class PeiCoordinatorV0 {
             expectedEarnCommitment: state.earnRequestCommitment
         });
         if (verification.status !== 'valid') throw PeiCoordinatorError.fromVerification(verification);
-        let admission: Awaited<ReturnType<RewardService['issuePeiQualification']>>;
+        let receipt: Awaited<ReturnType<RewardService['issuePeiReceipt']>>;
         try {
-            admission = await this.options.rewards.issuePeiQualification(verification.qualification);
+            receipt = await this.options.rewards.issuePeiReceipt(verification.qualification);
         } catch (error) {
             if (error instanceof RewardStoreError && error.code === 'expired') {
                 throw new PeiCoordinatorError(
                     'invalid',
-                    'The PEI proof expires too soon to reserve a Daily match. Start again.',
+                    'The PEI proof expired before it could be recorded. Start again.',
                     false
                 );
             }
@@ -167,7 +167,7 @@ export class PeiCoordinatorV0 {
         }
         return {
             step: 'qualified',
-            admission,
+            receipt,
             edges: ['earned', 'spent'],
             transactionHashes: [
                 verification.transactionHashes[0],

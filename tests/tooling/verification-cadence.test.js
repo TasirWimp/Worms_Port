@@ -17,6 +17,7 @@ const {
 } = require('../../scripts/verify-changes');
 const { acquireVerificationLease } = require('../../scripts/verification-lease');
 const { runFullVerification } = require('../../scripts/run-full-verification');
+const { legacyFiles, suiteFiles } = require('../../scripts/run-supported-unit-tests');
 const {
   acceptedHistoricalDiagnostics,
   inspectWhitespaceDiagnostics
@@ -374,8 +375,25 @@ test('daily coverage stays complete with a single compliance/types/build pass', 
   assert.equal(count(/^vite build/), 1);
   assert.equal(count(/^esbuild /), 1);
   for (const pattern of [/quality-gate/, /performance-gate/, /check-bundle-budget/, /smoke-built-server/, /report-postgres-quality-prerequisite/, /^npm audit$/]) assert.equal(count(pattern), 1, `${pattern}`);
-  for (const suite of ['tooling', 'protocol', 'simulation', 'loomkeeper', 'relics', 'combat', 'practice', 'identity', 'reward']) assert.ok(full.some((step) => step.includes(`tests/${suite}/`)), suite);
+  for (const suite of ['tooling', 'protocol', 'simulation', 'loomkeeper', 'relics', 'combat', 'practice', 'identity', 'reward']) {
+    assert.ok(full.some((step) => step.includes(`tests/${suite}/`) ||
+      step === `node scripts/run-supported-unit-tests.js ${suite}`), suite);
+  }
   assert.equal(scripts['verify:feature'], scripts['verify:changes']);
+});
+
+test('routine unit selectors exclude every explicit legacy diagnostic', () => {
+  for (const suite of ['protocol', 'simulation', 'combat', 'practice', 'reward']) {
+    const selected = suiteFiles(suite);
+    if (suite !== 'practice') assert.ok(selected.length > 0, suite);
+    assert.equal(selected.some((file) => legacyFiles.has(file)), false, suite);
+  }
+  assert.deepEqual(suiteFiles('practice'), []);
+  for (const file of legacyFiles) {
+    assert.equal(fs.existsSync(path.resolve(__dirname, '../..', file)), true, file);
+  }
+  assert.equal(scripts['test:legacy'],
+    'npm run test:legacy:unit && npm run test:browser:legacy');
 });
 
 test('selected CI jobs retain enough time for the serial zero-retry gates', () => {

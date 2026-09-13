@@ -8,7 +8,6 @@ export type PeiProxyTransferConfigV0 = {
     proxyAddress: string;
     feeLuna: bigint;
     dailyBudgetLuna: bigint;
-    dailyWalletLimit: number;
     privateKeyFile: string;
     rpcUrl: string;
     paused: boolean;
@@ -31,11 +30,6 @@ export function peiProxyTransferConfigFromEnvironment(
         environment.PEI_PROXY_DAILY_BUDGET_LUNA ?? '0',
         'PEI_PROXY_DAILY_BUDGET_LUNA'
     );
-    const dailyWalletLimit = positiveInteger(
-        environment.PEI_PROXY_DAILY_WALLET_LIMIT ?? '1',
-        'PEI_PROXY_DAILY_WALLET_LIMIT',
-        100
-    );
     if (!paused && dailyBudgetLuna < BigInt(pei.earnAmountLuna)) {
         throw new Error('PEI_PROXY_DAILY_BUDGET_LUNA must fund at least one PEI earn transfer.');
     }
@@ -50,7 +44,6 @@ export function peiProxyTransferConfigFromEnvironment(
         proxyAddress: normalizeNimiqAddress(pei.proxyAddress),
         feeLuna,
         dailyBudgetLuna,
-        dailyWalletLimit,
         privateKeyFile,
         rpcUrl,
         paused
@@ -100,13 +93,4 @@ function boolean(value: string, name: string): boolean {
     if (value === 'true') return true;
     if (value === 'false') return false;
     throw new Error(`${name} must be true or false.`);
-}
-
-function positiveInteger(value: string, name: string, maximum: number): number {
-    if (!/^[1-9][0-9]*$/.test(value)) throw new Error(`${name} must be a positive integer.`);
-    const parsed = Number(value);
-    if (!Number.isSafeInteger(parsed) || parsed > maximum) {
-        throw new Error(`${name} must be at most ${maximum}.`);
-    }
-    return parsed;
 }

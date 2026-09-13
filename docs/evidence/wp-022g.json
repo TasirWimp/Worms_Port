@@ -1,6 +1,6 @@
 {
   "id": "WP-022G",
-  "status": "in_progress",
+  "status": "complete",
   "execution_mode": "single_owner",
   "starting_commit": "c9c8ce0",
   "branch": "codex/pei-daily-v10",
@@ -19,12 +19,10 @@
     "No receipt-carrier ablation, gameplay rule change, reward amount change, public launch, helper funding, asset change, dependency change or removal of lower-version modules still used internally by V10."
   ],
   "planned_checks": [
-    "npm.cmd run verify:changes -- --base c9c8ce0 --dry-run",
-    "npm.cmd run verify:changes -- --base c9c8ce0 --phase checks",
-    "npm.cmd run verify:changes -- --base c9c8ce0 --phase browser",
-    "npm.cmd run verify:changes -- --base c9c8ce0 --phase postgres",
+    "WP-022G selected local checks and current V10 build",
+    "WP-022G PostgreSQL and current V10 browser CI gates",
+    "WP-022G Render paused deployment and bounded activation",
     "npm.cmd run audit:housekeeping",
-    "Render paused-state verification, bounded activation and startup-log inspection",
     "Physical Phone Gate D"
   ],
   "deterministic_seeds": [
@@ -34,64 +32,96 @@
   "clean_room_records": [],
   "check_results": [
     {
-      "command": "Pre-package Render safe-state restoration",
+      "command": "WP-022G selected local checks and current V10 build",
       "status": "pass",
-      "details": "The game service redeployed commit c9c8ce0 with REWARD_PAUSED=true and all three temporary repeat-attempt variables removed. The helper form initially still held PEI_PROXY_PAUSED=false despite the prior save attempt; primary corrected it to true, redeployed c9c8ce0 and verified the live startup log reported transfers paused on main-albatross."
+      "details": "Types, tooling, selected protocol/reward/PEI coverage, fresh build, standard V10 R5 smoke, security, bundle and focused supported-V10 browser checks passed with zero automatic retries. The full chronological command record is retained below.",
+      "historical_attempts": [
+        {
+          "command": "Pre-package Render safe-state restoration",
+          "status": "pass",
+          "details": "The game service redeployed commit c9c8ce0 with REWARD_PAUSED=true and all three temporary repeat-attempt variables removed. The helper form initially still held PEI_PROXY_PAUSED=false despite the prior save attempt; primary corrected it to true, redeployed c9c8ce0 and verified the live startup log reported transfers paused on main-albatross."
+        },
+        {
+          "command": "Focused selected checks and current build output",
+          "status": "pass",
+          "details": "Delegated execution passed types, 94 combat cases, 42 Practice cases, 130 tooling cases, the selected protocol/reward/PEI checks, a fresh server/client build, standard V10 R5 built smoke, identity bundle inspection, reward security inspection, the 1,500,000-byte JavaScript and 430,000-byte initial-gzip budgets, 67 evidence records and both whitespace checks. No product source changed after this build. Logs .cache/wp022g-v10-practice-focused-checks.log, .cache/wp022g-checks-definitive.log and .cache/wp022g-smoke-v10-recovery2.log."
+        },
+        {
+          "command": "npm.cmd run test:pei (final helper policy edit)",
+          "status": "pass",
+          "details": "All 25 PEI tests passed with no retries or skips, including exact-byte recovery, commit-before-broadcast ordering, same-wallet refusal, sponsor-budget refusal and enabled-startup budget validation. Types also passed on this final helper-policy edit. Logs .cache/wp022g-pei-final.log and .cache/wp022g-types-final.log."
+        },
+        {
+          "command": "Focused supported-V10 browser checks",
+          "status": "pass",
+          "details": "The current browser boundary passed three identity cases, the two-origin PEI journey, four standard V10 Practice cases, three reward cases, the two built phone smoke cases, delayed-wallet resilience, constrained-network Practice and canonical Daily visual logic. The visual command scheduled five maintained projects: canonical Chromium passed and four policy skips were expected. No retries were used. Logs .cache/wp022g-browser-final.log, .cache/wp022g-browser-practice-recovery.log, .cache/wp022g-browser-resilience-smoke-recovery.log, .cache/wp022g-browser-constrained-recovery.log, .cache/wp022g-browser-reward.log and .cache/wp022g-browser-visual-logic.log."
+        },
+        {
+          "command": "npm.cmd run verify:changes -- --base c9c8ce0 --phase postgres",
+          "status": "pass_with_expected_skip",
+          "details": "The selector acquired and released its lease and explicitly deferred the PostgreSQL unit/browser gate because WP014_TEST_DATABASE_URL is unavailable locally. CI must execute the migration, restart, same-wallet persistence and concurrent two-instance daily-lock cases. Log .cache/wp022g-postgres-final.log."
+        },
+        {
+          "command": "npm.cmd run audit:housekeeping",
+          "status": "pass",
+          "details": "The report-only audit completed. WP-022G correctly remains in progress; manualReconciliationRequired refers to preserved historical package/review records and did not authorize mutation. Log .cache/wp022g-housekeeping-final.log."
+        },
+        {
+          "command": "npm.cmd run test:tooling (PostgreSQL CI wiring)",
+          "status": "pass",
+          "details": "Direct review found that the selected PostgreSQL job did not yet invoke the existing PEI database suite. The workflow now runs test:pei:postgres after test:reward:postgres, and its tooling regression passed all 130 cases with no retries or skips. Log .cache/wp022g-tooling-ci-postgres.log."
+        },
+        {
+          "command": "Follow-up CI PostgreSQL selection",
+          "status": "pass",
+          "details": "A second direct-review check found that a PR follow-up commit could otherwise select only its newest workflow/tooling delta and omit the prior product commit's PostgreSQL gate. Verify-workflow changes now retain postgres=true without widening browser or performance checks. The selector regression passed in the 131-case tooling suite, and the exact outgoing dry run selected the PostgreSQL job with no fallback. Log .cache/wp022g-ci-followup-selector.log."
+        },
+        {
+          "command": "GitHub Actions Verify run 34722801019 PEI PostgreSQL gate",
+          "status": "fail_then_corrected",
+          "details": "The restart/persistence case passed, then the new two-instance case reproduced a PostgreSQL catalog race while both stores ran CREATE TABLE IF NOT EXISTS concurrently: pg_type_typname_nsp_index error 23505. This was an infrastructure defect in shared migration initialization, not an issuance-policy assertion. Both PEI stores now execute migration 004 under the same transaction-scoped advisory lock; check:types passed on the correction. Log .cache/wp022g-migration-lock-types.log; failed CI run https://github.com/TasirWimp/Worms_Port/actions/runs/34722801019."
+        },
+        {
+          "command": "GitHub Actions Verify run 34722978021 PostgreSQL gate",
+          "status": "pass_with_narrow_follow_up",
+          "details": "Both PEI PostgreSQL cases passed after the shared migration lock correction, proving restart persistence, simultaneous store initialization and cross-instance daily-budget serialization. The later built Daily browser case reached the V10 loss result but exceeded its five-second database-backed status wait while still displaying 'Verifying the authoritative result...'. The already-retired V8 PostgreSQL browser case also ran unnecessarily. Ordinary PostgreSQL acceptance now excludes that V8 diagnostic and gives only the current V10 asynchronous result confirmation 15 seconds. The focused PostgreSQL rerun remains pending; no wider suite rerun is warranted. CI run https://github.com/TasirWimp/Worms_Port/actions/runs/34722978021."
+        },
+        {
+          "command": "Paused helper Render deployment fdf10cc",
+          "status": "pass",
+          "details": "Deploy dep-dait7n7qj5pc73bfr280 succeeded. The live startup log reports transfers paused on main-albatross with daily budget 100000 Luna and wallet limit 1, proving the durable migration starts safely before activation."
+        },
+        {
+          "command": "Narrow PostgreSQL browser acceptance correction checks",
+          "status": "pass_with_expected_skip",
+          "details": "Delegated execution passed types, all 131 tooling cases and all 67 work-package evidence records with zero retries. Playwright discovery lists exactly the current built V10 Daily case in ordinary PostgreSQL acceptance; PLAYWRIGHT_LEGACY_TESTS=true lists that case plus the explicit V8 diagnostic. Disposable PostgreSQL execution remains unavailable locally and is delegated to CI. Log .cache/wp022g-postgres-browser-acceptance-narrow.log."
+        },
+        {
+          "command": "Physical Phone Gate D",
+          "status": "pass",
+          "details": "The owner confirmed all seven specified steps on a physical phone. The durable helper transfer path, return, current V10 Daily surface and wallet-free Practice worked. The observed second-interaction refusal was implemented as specified by WP-022G, then explicitly superseded as a product requirement by WP-022H durable multi-receipt semantics."
+        }
+      ]
     },
     {
-      "command": "Focused selected checks and current build output",
+      "command": "WP-022G PostgreSQL and current V10 browser CI gates",
       "status": "pass",
-      "details": "Delegated execution passed types, 94 combat cases, 42 Practice cases, 130 tooling cases, the selected protocol/reward/PEI checks, a fresh server/client build, standard V10 R5 built smoke, identity bundle inspection, reward security inspection, the 1,500,000-byte JavaScript and 430,000-byte initial-gzip budgets, 67 evidence records and both whitespace checks. No product source changed after this build. Logs .cache/wp022g-v10-practice-focused-checks.log, .cache/wp022g-checks-definitive.log and .cache/wp022g-smoke-v10-recovery2.log."
+      "details": "CI exposed and then verified corrections for concurrent migration initialization and the bounded V10 database-backed result wait. PEI PostgreSQL restart and cross-instance budget cases passed; retired V8 PostgreSQL browser behavior was removed from ordinary acceptance."
     },
     {
-      "command": "npm.cmd run test:pei (final helper policy edit)",
+      "command": "WP-022G Render paused deployment and bounded activation",
       "status": "pass",
-      "details": "All 25 PEI tests passed with no retries or skips, including exact-byte recovery, commit-before-broadcast ordering, same-wallet refusal, sponsor-budget refusal and enabled-startup budget validation. Types also passed on this final helper-policy edit. Logs .cache/wp022g-pei-final.log and .cache/wp022g-types-final.log."
-    },
-    {
-      "command": "Focused supported-V10 browser checks",
-      "status": "pass",
-      "details": "The current browser boundary passed three identity cases, the two-origin PEI journey, four standard V10 Practice cases, three reward cases, the two built phone smoke cases, delayed-wallet resilience, constrained-network Practice and canonical Daily visual logic. The visual command scheduled five maintained projects: canonical Chromium passed and four policy skips were expected. No retries were used. Logs .cache/wp022g-browser-final.log, .cache/wp022g-browser-practice-recovery.log, .cache/wp022g-browser-resilience-smoke-recovery.log, .cache/wp022g-browser-constrained-recovery.log, .cache/wp022g-browser-reward.log and .cache/wp022g-browser-visual-logic.log."
-    },
-    {
-      "command": "npm.cmd run verify:changes -- --base c9c8ce0 --phase postgres",
-      "status": "pass_with_expected_skip",
-      "details": "The selector acquired and released its lease and explicitly deferred the PostgreSQL unit/browser gate because WP014_TEST_DATABASE_URL is unavailable locally. CI must execute the migration, restart, same-wallet persistence and concurrent two-instance daily-lock cases. Log .cache/wp022g-postgres-final.log."
+      "details": "The helper deployed paused on MainAlbatross before its owner-authorized bounded activation. The game and helper were returned to paused safe state after the canary work."
     },
     {
       "command": "npm.cmd run audit:housekeeping",
       "status": "pass",
-      "details": "The report-only audit completed. WP-022G correctly remains in progress; manualReconciliationRequired refers to preserved historical package/review records and did not authorize mutation. Log .cache/wp022g-housekeeping-final.log."
+      "details": "The report-only package audit passed during the WP-022G transition; preserved historical reconciliation records required no mutation."
     },
     {
-      "command": "npm.cmd run test:tooling (PostgreSQL CI wiring)",
+      "command": "Physical Phone Gate D",
       "status": "pass",
-      "details": "Direct review found that the selected PostgreSQL job did not yet invoke the existing PEI database suite. The workflow now runs test:pei:postgres after test:reward:postgres, and its tooling regression passed all 130 cases with no retries or skips. Log .cache/wp022g-tooling-ci-postgres.log."
-    },
-    {
-      "command": "Follow-up CI PostgreSQL selection",
-      "status": "pass",
-      "details": "A second direct-review check found that a PR follow-up commit could otherwise select only its newest workflow/tooling delta and omit the prior product commit's PostgreSQL gate. Verify-workflow changes now retain postgres=true without widening browser or performance checks. The selector regression passed in the 131-case tooling suite, and the exact outgoing dry run selected the PostgreSQL job with no fallback. Log .cache/wp022g-ci-followup-selector.log."
-    },
-    {
-      "command": "GitHub Actions Verify run 34722801019 PEI PostgreSQL gate",
-      "status": "fail_then_corrected",
-      "details": "The restart/persistence case passed, then the new two-instance case reproduced a PostgreSQL catalog race while both stores ran CREATE TABLE IF NOT EXISTS concurrently: pg_type_typname_nsp_index error 23505. This was an infrastructure defect in shared migration initialization, not an issuance-policy assertion. Both PEI stores now execute migration 004 under the same transaction-scoped advisory lock; check:types passed on the correction. Log .cache/wp022g-migration-lock-types.log; failed CI run https://github.com/TasirWimp/Worms_Port/actions/runs/34722801019."
-    },
-    {
-      "command": "GitHub Actions Verify run 34722978021 PostgreSQL gate",
-      "status": "pass_with_narrow_follow_up",
-      "details": "Both PEI PostgreSQL cases passed after the shared migration lock correction, proving restart persistence, simultaneous store initialization and cross-instance daily-budget serialization. The later built Daily browser case reached the V10 loss result but exceeded its five-second database-backed status wait while still displaying 'Verifying the authoritative result...'. The already-retired V8 PostgreSQL browser case also ran unnecessarily. Ordinary PostgreSQL acceptance now excludes that V8 diagnostic and gives only the current V10 asynchronous result confirmation 15 seconds. The focused PostgreSQL rerun remains pending; no wider suite rerun is warranted. CI run https://github.com/TasirWimp/Worms_Port/actions/runs/34722978021."
-    },
-    {
-      "command": "Paused helper Render deployment fdf10cc",
-      "status": "pass",
-      "details": "Deploy dep-dait7n7qj5pc73bfr280 succeeded. The live startup log reports transfers paused on main-albatross with daily budget 100000 Luna and wallet limit 1, proving the durable migration starts safely before activation."
-    },
-    {
-      "command": "Narrow PostgreSQL browser acceptance correction checks",
-      "status": "pass_with_expected_skip",
-      "details": "Delegated execution passed types, all 131 tooling cases and all 67 work-package evidence records with zero retries. Playwright discovery lists exactly the current built V10 Daily case in ordinary PostgreSQL acceptance; PLAYWRIGHT_LEGACY_TESTS=true lists that case plus the explicit V8 diagnostic. Disposable PostgreSQL execution remains unavailable locally and is delegated to CI. Log .cache/wp022g-postgres-browser-acceptance-narrow.log."
+      "details": "The owner confirmed all seven specified steps on a physical phone. Durable helper transfer, return, current V10 Daily surface and wallet-free Practice worked. The specified second-interaction refusal was then superseded by the WP-022H durable multi-receipt requirement."
     }
   ],
   "reviews": [
@@ -107,10 +137,7 @@
     "Retired pre-V10 browser previews, including the V8 PostgreSQL replay-identity journey, are intentionally excluded from ordinary feature, quality and daily/release acceptance; they remain available through explicit diagnostic opt-in.",
     "Authoritative Ubuntu screenshot comparison was not run on Windows. This slice changes acceptance selection and diagnostic attributes, not rendered visuals; canonical Daily visual logic passed with snapshots ignored.",
     "The full daily/release suite was not repeated; it remains at the 22:00 Europe/Berlin checkpoint under the accepted test policy.",
-    "Physical Phone Gate D remains pending until the bounded deployment is live."
+    "Receipt-carrier ablation remains deferred by owner direction."
   ],
-  "residual_risks": [
-    "The focused current-V10 PostgreSQL browser recheck remains pending after its infrastructure-sensitive result wait was bounded at 15 seconds.",
-    "The paused game deployment, bounded one-NIM activation and Physical Phone Gate D remain pending."
-  ]
+  "residual_risks": []
 }

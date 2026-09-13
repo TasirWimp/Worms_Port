@@ -27,7 +27,6 @@ export interface PeiEarnTransferAdapterV0 {
 export type PeiEarnIssuancePolicyV0 = {
     paused: boolean;
     dailyBudgetLuna: bigint;
-    dailyWalletLimit: number;
 };
 
 export class DurablePeiEarnTransferV0 implements PeiEarnTransferV0 {
@@ -57,8 +56,7 @@ export class DurablePeiEarnTransferV0 implements PeiEarnTransferV0 {
                     issuanceDay: utcDay(now),
                     amountLuna: BigInt(request.minAmountLuna),
                     expiresAt: new Date(request.expiresAt * 1_000),
-                    dailyBudgetLuna: this.policy.dailyBudgetLuna,
-                    dailyWalletLimit: this.policy.dailyWalletLimit
+                    dailyBudgetLuna: this.policy.dailyBudgetLuna
                 }, now);
                 const prepared = await this.adapter.prepare(request, commitment);
                 transfer = await locked.saveSigned({

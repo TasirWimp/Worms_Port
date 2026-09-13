@@ -416,10 +416,14 @@ Those tests remain source history and may run only through the explicit
 `--legacy` diagnostic switch, including
 `npm run test:browser:reward:postgres -- --legacy` for the database-backed
 journey; the selector, quality gate and daily/release gate never request that
-switch. Lower-version shared modules and unit coverage may remain where V10
-still depends on them, but their standalone browser behavior is no longer a
-product acceptance condition. New browser coverage must enter through the
-standard V10 Practice, Daily or PEI journeys.
+switch. Routine protocol, simulation, combat, Practice and reward unit commands
+likewise exclude version-only V7/V8/V9 files and legacy-bearing mixed files
+through `scripts/run-supported-unit-tests.js`; current V10 cases are extracted
+where a mixed file would otherwise hide them. `npm run test:legacy` is the
+single explicit diagnostic entry point for retired unit and browser coverage.
+Lower-version shared modules may remain while V10 still imports them, but their
+standalone behavior is no longer a product acceptance condition. New coverage
+must enter through the standard V10 Practice, Daily or PEI journeys.
 
 Built-server smoke follows the same boundary. Its routine path starts the
 normal production server, creates and pauses one authoritative V10 R5 volcanic
@@ -1569,10 +1573,12 @@ If implementation shows that the plan is wrong or risky:
 5. Ask the user before continuing if the change would import new GPL/unclear
    material, change the project license, or materially expand scope.
 
-## Subagent Coordination
+## Implementation and review delegation
 
-Retired. Use the single-owner loop above. Historical role/protocol references
-are research records and must not trigger agent work.
+Implementation, research, and independent-review subagents are retired. The
+only active delegated role is the testing worker described in
+[Testing delegation](#testing-delegation); historical role/protocol references
+are research records and must not trigger other agent work.
 
 ## Definition Of Done
 

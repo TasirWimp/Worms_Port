@@ -42,8 +42,7 @@ test('PEI helper survives both crossings and admits the same volcanic Daily matc
   const rewards = new RewardService(rewardConfig, new MemoryRewardStore(), {
     idSource: () => `pei_browser_reward_${String(++id).padStart(3, '0')}`,
     seedSource: () => 4,
-    peiGrantIdSource: () => 'pei_browser_admission_001',
-    peiGrantTokenSource: () => 'T'.repeat(43)
+    peiReceiptIdSource: () => 'pei_browser_receipt_001'
   });
   expect((await rewards.info()).status).toBe('available');
   const config: PeiRuntimeConfigV0 = {
@@ -125,13 +124,13 @@ test('PEI helper survives both crossings and admits the same volcanic Daily matc
 
     await page.goto(`${config.requesterOrigin}/?sideways=off`);
     await page.getByRole('button', { name: 'Check Daily Challenge' }).tap();
-    await expect(page.locator('.daily-summary')).toContainText('complete PEI');
+    await expect(page.locator('.daily-summary')).toContainText('Authorize');
     await page.getByRole('button', { name: 'Choose Nimiq account' }).tap();
     await page.getByRole('button', { name: signer.address }).tap();
-    await expect(page.getByRole('button', { name: 'Complete PEI qualification' })).toBeEnabled();
+    await expect(page.getByRole('button', { name: 'Complete PEI interaction' })).toBeEnabled();
     await expect(page.getByRole('button', { name: 'Start Daily Challenge' })).toBeDisabled();
 
-    await page.getByRole('button', { name: 'Complete PEI qualification' }).tap();
+    await page.getByRole('button', { name: 'Complete PEI interaction' }).tap();
     await expect(page).toHaveURL(new RegExp(`^http://127\\.0\\.0\\.1:${helperPort}/#\\/pei/`));
     await expect(page.locator('html')).toHaveAttribute('data-step', 'earn');
     await expect(page.locator('#pei-facts')).toContainText('0.00001 NIM');
@@ -154,10 +153,17 @@ test('PEI helper survives both crossings and admits the same volcanic Daily matc
     await page.getByRole('button', { name: 'Return 0.00001 NIM' }).tap();
 
     await expect(page).toHaveURL(`${config.requesterOrigin}/`);
-    await expect(page.locator('.daily-message')).toContainText('PEI complete');
+    await expect(page.locator('.daily-message')).toContainText('PEI receipt saved');
+    await expect(page.locator('.daily-facts')).toContainText('Unused PEI receipts1');
+    await expect(page.getByRole('button', { name: 'Complete another PEI interaction' })).toBeEnabled();
     await expect(page.getByRole('button', { name: 'Start Daily Challenge' })).toBeEnabled();
+    await page.evaluate(() => sessionStorage.clear());
     await page.reload();
     await page.getByRole('button', { name: 'Check Daily Challenge' }).tap();
+    await expect(page.locator('.daily-summary')).toContainText('Authorize');
+    await page.getByRole('button', { name: 'Choose Nimiq account' }).tap();
+    await page.getByRole('button', { name: signer.address }).tap();
+    await expect(page.locator('.daily-facts')).toContainText('Unused PEI receipts1');
     await expect(page.getByRole('button', { name: 'Start Daily Challenge' })).toBeEnabled();
     await page.getByRole('button', { name: 'Start Daily Challenge' }).tap();
     await expect(page.locator('.combat-v10')).toHaveAttribute('data-mode', 'reward');

@@ -60,24 +60,12 @@ test('session request schema enforces strict ids, actions, and opaque tokens', (
     }
 });
 
-test('reward reservation accepts only a strict opaque PEI admission credential', () => {
-    const valid = {
-        requestId,
-        sequence: 0,
-        calling: 'wizard' as const,
-        peiAdmission: {
-            grantId: 'pei_admission_grant_01',
-            token
-        }
-    };
+test('reward reservation accepts no client-supplied PEI authority', () => {
+    const valid = { requestId, sequence: 0, calling: 'wizard' as const };
     assert.equal(RewardReserveRequestSchema.safeParse(valid).success, true);
-    assert.equal(RewardReserveRequestSchema.safeParse({
-        requestId, sequence: 0, calling: 'wizard'
-    }).success, true);
     for (const invalid of [
-        { ...valid, peiAdmission: { ...valid.peiAdmission, token: 'short' } },
-        { ...valid, peiAdmission: { ...valid.peiAdmission, grantId: 'short' } },
-        { ...valid, peiAdmission: { ...valid.peiAdmission, proof: {} } }
+        { ...valid, peiAdmission: { grantId: 'pei_admission_grant_01', token } },
+        { ...valid, receiptId: 'pei_receipt_record_01' }
     ]) assert.equal(RewardReserveRequestSchema.safeParse(invalid).success, false);
 });
 

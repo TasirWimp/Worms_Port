@@ -66,31 +66,40 @@ test('concurrent initialization migrates a zero database exactly once', async ()
     });
 });
 
-test('PEI grant binding and started-attempt consumption share durable authority', async () => {
+test('durable PEI receipts are wallet-bound, reusable after cancellation, and consumed at start', async () => {
     await withDatabase('pei_admission', async (databaseUrl) => {
         const store = new PostgresRewardStore(databaseUrl, 3);
         try {
             await store.initialize();
-            const grant = await store.issuePeiQualification({
-                id: 'pei_admission_grant_01',
+            const receipt = await store.issuePeiReceipt({
+                id: 'pei_receipt_record_01',
                 walletAddress: WALLET,
-                challengeDay: DAY,
                 qualificationDigest: digest('verified-pei-journey'),
-                tokenDigest: digest('pei-admission-token'),
-                issuedAt: NOW,
-                expiresAt: new Date(NOW.getTime() + 600_000)
+                issuedAt: NOW
             });
-            const credential = {
-                grantId: grant.id,
-                tokenDigest: digest('pei-admission-token')
-            };
+            const retried = await store.issuePeiReceipt({
+                id: 'pei_receipt_record_retry_01',
+                walletAddress: WALLET,
+                qualificationDigest: digest('verified-pei-journey'),
+                issuedAt: new Date(NOW.getTime() + 1_000)
+            });
+            assert.equal(retried.id, receipt.id);
+            await store.issuePeiReceipt({
+                id: 'pei_receipt_record_02',
+                walletAddress: WALLET,
+                qualificationDigest: digest('second-verified-pei-journey'),
+                issuedAt: new Date(NOW.getTime() + 2_000)
+            });
+            assert.equal((await store.info(DAY, {
+                ...config(), peiRequired: true
+            }, WALLET)).availablePeiReceipts, 2);
             await assert.rejects(
                 store.reserve(reservation(
                     'pei_wrong_wallet_entitlement',
                     'pei_wrong_wallet_challenge',
                     OTHER_WALLET,
                     DAY,
-                    { peiAdmissionRequired: true, peiAdmission: credential }
+                    { peiReceiptRequired: true }
                 )),
                 rewardError('ineligible')
             );
@@ -100,21 +109,21 @@ test('PEI grant binding and started-attempt consumption share durable authority'
                 'pei_cancel_challenge_01',
                 WALLET,
                 DAY,
-                { peiAdmissionRequired: true, peiAdmission: credential }
+                { peiReceiptRequired: true }
             );
             await store.reserve(cancelled);
             await store.cancelReserved(cancelled.challengeId, WALLET, NOW);
-            assert.equal((await store.peiQualificationStatus(grant.id, WALLET))?.consumedAt, undefined);
+            assert.equal((await store.peiReceiptStatus(receipt.id, WALLET))?.consumedAt, undefined);
 
             const startedInput = reservation(
                 'pei_start_entitlement_01',
                 'pei_start_challenge_01',
                 WALLET,
                 DAY,
-                { peiAdmissionRequired: true, peiAdmission: credential }
+                { peiReceiptRequired: true }
             );
             const reserved = await store.reserve(startedInput);
-            assert.equal(reserved.peiAdmissionGrantId, grant.id);
+            assert.equal(reserved.peiReceiptId, receipt.id);
             const started = await store.start(
                 startedInput.challengeId,
                 WALLET,
@@ -122,9 +131,52 @@ test('PEI grant binding and started-attempt consumption share durable authority'
                 NOW
             );
             assert.equal(started.state, 'in_progress');
-            const consumed = await store.peiQualificationStatus(grant.id, WALLET);
+            const consumed = await store.peiReceiptStatus(receipt.id, WALLET);
             assert.equal(consumed?.entitlementId, started.id);
             assert.equal(consumed?.consumedAt?.toISOString(), NOW.toISOString());
+            assert.equal((await store.info(DAY, {
+                ...config(), peiRequired: true
+            }, WALLET)).availablePeiReceipts, 1);
+        } finally {
+            await store.close();
+        }
+    });
+});
+
+test('an expired historical-shaped grant remains usable as a non-expiring receipt', async () => {
+    await withDatabase('pei_legacy_receipt', async (databaseUrl) => {
+        const store = new PostgresRewardStore(databaseUrl, 2);
+        try {
+            await store.initialize();
+            const client = await connectedClient(databaseUrl);
+            try {
+                await client.query(
+                    `INSERT INTO pei_admission_grants (
+                        id, wallet_address, challenge_day, qualification_digest,
+                        token_digest, issued_at, expires_at
+                     ) VALUES ($1,$2,$3,$4,$5,$6,$7)`,
+                    [
+                        'pei_legacy_grant_01', WALLET, '2026-07-01',
+                        digest('legacy-verified-journey'), digest('legacy-browser-token'),
+                        new Date('2026-07-01T10:00:00.000Z'),
+                        new Date('2026-07-01T10:10:00.000Z')
+                    ]
+                );
+            } finally {
+                await client.end();
+            }
+            const input = reservation(
+                'pei_migrated_entitlement_01',
+                'pei_migrated_challenge_01',
+                WALLET,
+                DAY,
+                { peiReceiptRequired: true }
+            );
+            const reserved = await store.reserve(input);
+            assert.equal(reserved.peiReceiptId, 'pei_legacy_grant_01');
+            assert.equal((await store.start(
+                input.challengeId, WALLET, input.eligibilityTokenDigest, NOW
+            )).state, 'in_progress');
         } finally {
             await store.close();
         }

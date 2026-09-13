@@ -359,10 +359,11 @@ verifier accepts that form only when the successful transaction's parsed HTLC
 proof identifies the authorized player wallet as its creator; other HTLC proof
 forms and creator mismatches fail closed. Both transactions carry the
 commitment of their server-authenticated request and must reach macro-block
-finality. A fresh game-server verification issues a short-lived admission bound
-to the wallet and UTC challenge day. The admission is consumed atomically with
-the started Daily attempt. Practice never reads PEI state or initializes the
-wallet SDK.
+finality. A fresh game-server verification issues a durable receipt bound to
+the wallet. Several unused receipts may accumulate without expiry, and the
+oldest one is consumed atomically with a started Daily attempt. The independent
+one-started-attempt-per-wallet and UTC-day rule remains in the reward ledger.
+Practice never reads PEI state or initializes the wallet SDK.
 
 The game and helper are separate Render Web Services built from the same commit.
 Use the usual build command for both. The game starts with `npm start`; the
@@ -420,8 +421,7 @@ hexadecimal content. Configure only the helper service with its own
 ```text
 PEI_PROXY_PRIVATE_KEY_FILE=/etc/secrets/pei-proxy-key
 PEI_PROXY_FEE_LUNA=0
-PEI_PROXY_DAILY_BUDGET_LUNA=100000
-PEI_PROXY_DAILY_WALLET_LIMIT=1
+PEI_PROXY_DAILY_BUDGET_LUNA=1000000
 PEI_PROXY_PAUSED=true
 PEI_MAINNET_ACKNOWLEDGEMENT=I_UNDERSTAND_MAINNET_PEI_TRANSFERS
 ```
@@ -443,13 +443,23 @@ transaction hashes for operational reconstruction.
 
 The helper records each new exposure in PostgreSQL before signing. Committed
 transfers and unexpired reservations count against `PEI_PROXY_DAILY_BUDGET_LUNA`
-for the UTC issuance day and against `PEI_PROXY_DAILY_WALLET_LIMIT` for the
-normalized wallet. Distinct helper instances serialize this decision with a
-day-level database lock. A retry of the same request rebroadcasts the exact
-stored transaction and consumes no additional allowance. Paused deployments
-may keep the budget at zero; startup refuses to enable transfers unless the
-budget can fund at least one configured earn amount. Keep the helper paused
-outside a reviewed activation window even when these durable limits are set.
+for the UTC issuance day. The example ceiling permits ten 1 NIM earn transfers.
+There is no per-wallet helper limit: the same wallet
+may complete several distinct ecosystem interactions while the operational
+exposure ceiling has capacity. Distinct helper instances serialize the budget
+decision with a day-level database lock. A retry of the same request rebroadcasts
+the exact stored transaction and consumes no additional allowance. Paused
+deployments may keep the budget at zero; startup refuses to enable transfers
+unless the budget can fund at least one configured earn amount.
+
+Every completed two-transfer journey creates a durable server-side receipt for
+the authorized wallet. Receipts do not expire and several unused receipts may
+accumulate. Reauthorizing the wallet after closing or reopening the app restores
+the server-reported count; no browser credential is involved. Starting a Daily
+Challenge automatically consumes the wallet's oldest unused receipt. Merely
+reserving and then cancelling or timing out returns that receipt to the available
+inventory. Daily itself remains limited to one started match per wallet and UTC
+day outside the documented wallet-scoped development override.
 
 For a controlled repeat-attempt payout canary, an operator may temporarily set
 `REWARD_TEST_WALLET_ADDRESS` to one compact or spaced test-wallet address and
@@ -744,16 +754,14 @@ For rollback, restore the previously used profile (for example
 keep `REWARD_PAUSED=true`. This owner Practice deployment is not joint public
 Practice/reward promotion or funded activation.
 
-## Single-owner development
+## Primary ownership and test execution
 
-Worms_Port no longer uses subagents for development, review, research, tests or
-documentation. The primary assistant owns each change and its corrections.
-[AGENTS.md](AGENTS.md#single-owner-development--effective-2026-09-07) supersedes
-older delegation instructions. Project configuration sets `[agents].enabled =
-false`, the documented [Codex disable setting](https://learn.chatgpt.com/docs/agent-configuration/subagents#global-settings).
-The primary task's existing Terra/high default is unchanged. Project settings
-require a trusted checkout and may be overridden by host settings; the repo's
-no-delegation instruction applies even if an existing session still exposes tools.
+The primary assistant owns implementation, coverage selection, direct review,
+integration, and product corrections. One `worms_port_test_runner` may execute
+the primary's selected checks and handle bounded test-infrastructure recovery;
+it does not implement or independently review product changes. [AGENTS.md](AGENTS.md#primary-ownership-with-testing-delegation--effective-2026-09-10)
+contains the active rule. Implementation, research, reviewer, and documentation
+subagents remain disabled.
 
 The retired WP-016 harness remains discoverable on main for CRPM research:
 [retirement record and pinned recovery links](docs/process/development_workflow.md#harness-retirement-and-research-preservation),

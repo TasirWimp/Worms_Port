@@ -678,7 +678,7 @@ export function setupProtocol(
                 ));
                 return;
             }
-            withSessionAsync(socket, registry, parsed.data.requestId, ack, async () => {
+            withSessionAsync(socket, registry, parsed.data.requestId, ack, async (session) => {
                 if (!options.rewards) {
                     ack(failure(
                         parsed.data.requestId,
@@ -688,7 +688,7 @@ export function setupProtocol(
                     return;
                 }
                 try {
-                    ack(ackFor(parsed.data.requestId, await options.rewards.info()));
+                    ack(ackFor(parsed.data.requestId, await options.rewards.info(session.identity)));
                 } catch (error) {
                     ack(rewardFailure(parsed.data.requestId, error));
                 }
@@ -739,8 +739,7 @@ export function setupProtocol(
                                 parsed.data.requestId,
                                 await options.rewards!.reserve(
                                     session.identity,
-                                    parsed.data.calling,
-                                    parsed.data.peiAdmission
+                                    parsed.data.calling
                                 )
                             );
                         } catch (error) {

@@ -45,7 +45,7 @@ const runtimeConfig = (): PeiRuntimeConfigV0 => ({
     requireFinality: true
 });
 
-test('coordinator binds both browser crossings and issues one Daily admission', async () => {
+test('coordinator binds both browser crossings and issues one durable receipt', async () => {
     const chain = new SyntheticPeiChain();
     const store = new MemoryRewardStore();
     const rewards = rewardService(store);
@@ -97,8 +97,8 @@ test('coordinator binds both browser crossings and issues one Daily admission', 
     assert.equal(qualified.step, 'qualified');
     assert.deepEqual(qualified.edges, ['earned', 'spent']);
     assert.deepEqual(qualified.transactionHashes, [PEI_EARN_TX, PEI_SPEND_TX]);
-    assert.equal((await store.peiQualificationStatus(
-        qualified.admission.grantId, PEI_WALLET
+    assert.equal((await store.peiReceiptStatus(
+        qualified.receipt.id, PEI_WALLET
     ))?.qualificationDigest.length, 43);
     await assert.rejects(
         coordinator.complete('pei_coordinator_session_01', PEI_WALLET, 'broken')
@@ -233,7 +233,7 @@ test('request HMAC rejects malformed presentations without throwing', () => {
 });
 
 function rewardService(store: MemoryRewardStore): RewardService {
-    let grant = 0;
+    let receipt = 0;
     const config: RewardConfig = {
         mode: 'record-only', paused: false,
         network: 'main-albatross', rewardLuna: 100_000n, feeLuna: 0n,
@@ -243,7 +243,6 @@ function rewardService(store: MemoryRewardStore): RewardService {
     };
     return new RewardService(config, store, {
         now: () => new Date(PEI_NOW_SECONDS * 1_000),
-        peiGrantIdSource: () => `pei_coordinator_admission_${++grant}`,
-        peiGrantTokenSource: () => 'T'.repeat(43)
+        peiReceiptIdSource: () => `pei_coordinator_receipt_${++receipt}`
     });
 }

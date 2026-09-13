@@ -57,21 +57,20 @@ test('paused earn helper refuses signing and first broadcast', async () => {
     assert.deepEqual(adapter.broadcasts, []);
 });
 
-test('daily issuance policy refuses a second transfer to the same wallet', async () => {
+test('helper permits repeated interactions from the same wallet within its exposure ceiling', async () => {
     const fixture = await peiFixture();
     const firstRequest = fixture.earnProof.request;
     const secondRequest = { ...firstRequest, nonce: 'C'.repeat(43) };
     const store = new MemoryPeiProxyTransferStoreV0();
     const adapter = new FakeEarnAdapter(false);
-    const transfer = new DurablePeiEarnTransferV0(store, adapter, activePolicy(), () =>
+    const transfer = new DurablePeiEarnTransferV0(store, adapter, {
+        ...activePolicy(), dailyBudgetLuna: 200_000n
+    }, () =>
         new Date(PEI_NOW_SECONDS * 1_000)
     );
     await transfer.send(firstRequest, await peiRequestCommitmentV0(firstRequest));
-    await assert.rejects(
-        transfer.send(secondRequest, await peiRequestCommitmentV0(secondRequest)),
-        /already received today/
-    );
-    assert.equal(adapter.preparations, 1);
+    await transfer.send(secondRequest, await peiRequestCommitmentV0(secondRequest));
+    assert.equal(adapter.preparations, 2);
 });
 
 test('daily sponsor budget refuses new wallet exposure after its cap', async () => {
@@ -123,7 +122,6 @@ test('server-only Nimiq signer commits the exact request into a valid transactio
             proxyAddress: signer.address,
             feeLuna: 0n,
             dailyBudgetLuna: 100_000n,
-            dailyWalletLimit: 1,
             privateKeyFile: keyFile,
             rpcUrl: 'https://rpc.example',
             paused: false
@@ -200,5 +198,5 @@ class CommitTrackingStore extends MemoryPeiProxyTransferStoreV0 {
 }
 
 function activePolicy() {
-    return { paused: false, dailyBudgetLuna: 100_000n, dailyWalletLimit: 1 } as const;
+    return { paused: false, dailyBudgetLuna: 100_000n } as const;
 }

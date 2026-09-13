@@ -67,7 +67,7 @@ export default class PracticeScene extends Phaser.Scene {
                 <dl class="daily-facts" hidden></dl>
                 <div class="daily-identity"></div>
                 <button type="button" class="daily-check">Check Daily Challenge</button>
-                <button type="button" class="pei-start" hidden disabled>Complete PEI qualification</button>
+                <button type="button" class="pei-start" hidden disabled>Complete PEI interaction</button>
                 <button type="button" class="daily-start" hidden disabled>Start Daily Challenge</button>
                 <p class="daily-message" aria-live="polite"></p>
             </section>
@@ -138,24 +138,11 @@ export default class PracticeScene extends Phaser.Scene {
         summary.textContent = "Checking today's availability...";
         try {
             const info = await this.client.rewardInfo();
-            this.rewardInfo = info;
-            summary.textContent = rewardAvailability(info);
-            const facts = this.root.querySelector<HTMLElement>('.daily-facts')!;
-            facts.hidden = false;
-            facts.innerHTML = `
-                <div><dt>Fixed reward</dt><dd>${formatNim(info.rewardLuna)} NIM</dd></div>
-                <div><dt>Eligibility</dt><dd>${info.peiRequired
-                    ? 'PEI plus one started attempt per wallet and UTC day'
-                    : 'One started attempt per wallet and UTC day'}</dd></div>
-                <div><dt>Turn limit</dt><dd>${info.turnLimit}</dd></div>
-                <div><dt>Reservation</dt><dd>${info.reservationSeconds} seconds</dd></div>
-            `;
-            if (info.status === 'available' && identityServices && !identityPreview) {
+            this.applyRewardInfo(info);
+            if ((info.status === 'available' || info.peiRequired) &&
+                identityServices && !identityPreview) {
                 this.mountIdentity(identityServices, true);
             }
-            this.dailyButton().hidden = info.status !== 'available';
-            this.peiButton().hidden = info.status !== 'available' || !info.peiRequired ||
-                this.client.hasPeiAdmissionCredential();
             if (this.client.currentIdentity()) {
                 await this.recoverReward();
                 if (this.scene.isActive()) await this.processPeiReturn();
@@ -195,8 +182,7 @@ export default class PracticeScene extends Phaser.Scene {
                 onAuthorized: (identity) => {
                     this.client.noteAuthorizedIdentity(identity);
                     this.refreshStartAvailability();
-                    void this.recoverReward();
-                    if (readPeiReturnV0()) void this.processPeiReturn();
+                    void this.loadRewardInfo(services, !production);
                 }
             }
         );
@@ -263,8 +249,8 @@ export default class PracticeScene extends Phaser.Scene {
         if (!returned || this.peiBusy) return;
         if (returned.kind === 'cancel') {
             clearPeiReturnV0();
-            this.setDailyMessage('PEI qualification was cancelled. Practice remains available.');
-            this.peiButton().textContent = 'Complete PEI qualification';
+            this.setDailyMessage('PEI interaction was cancelled. Practice remains available.');
+            this.peiButton().textContent = 'Complete PEI interaction';
             return;
         }
         if (!this.client.currentIdentity()) {
@@ -281,11 +267,12 @@ export default class PracticeScene extends Phaser.Scene {
             const result = await this.client.returnPei(returned.kind, returned.carrier);
             clearPeiReturnV0();
             if (result.step === 'qualified') {
-                this.peiButton().hidden = true;
+                this.applyRewardInfo(await this.client.rewardInfo());
                 this.setDailyMessage(
-                    'PEI complete: the wallet received and returned NIM. ' +
+                    'PEI receipt saved to this wallet: it does not expire and will be consumed ' +
+                    'when a Daily Challenge starts. ' +
                     `Earn tx ${result.transactionHashes[0]}; spend tx ${result.transactionHashes[1]}. ` +
-                    'Daily play is ready.'
+                    `${this.rewardInfo?.availablePeiReceipts ?? 0} unused receipt(s) available.`
                 );
             } else {
                 this.setDailyMessage('First transfer verified. Opening the return step…');
@@ -297,7 +284,7 @@ export default class PracticeScene extends Phaser.Scene {
             if (!retryable) clearPeiReturnV0();
             this.peiButton().textContent = retryable
                 ? 'Retry PEI verification'
-                : 'Restart PEI qualification';
+                : 'Restart PEI interaction';
             this.setDailyMessage(messageForPeiError(error));
         } finally {
             this.peiBusy = false;
@@ -350,14 +337,39 @@ export default class PracticeScene extends Phaser.Scene {
         field.hidden = !message;
     }
 
+    private applyRewardInfo(info: RewardInfoData): void {
+        this.rewardInfo = info;
+        this.root.querySelector<HTMLElement>('.daily-summary')!.textContent =
+            rewardAvailability(info, !!this.client.currentIdentity());
+        const facts = this.root.querySelector<HTMLElement>('.daily-facts')!;
+        facts.hidden = false;
+        facts.innerHTML = `
+            <div><dt>Fixed reward</dt><dd>${formatNim(info.rewardLuna)} NIM</dd></div>
+            <div><dt>Eligibility</dt><dd>${info.peiRequired
+                ? 'One PEI receipt plus one started attempt per wallet and UTC day'
+                : 'One started attempt per wallet and UTC day'}</dd></div>
+            ${info.peiRequired
+                ? `<div><dt>Unused PEI receipts</dt><dd>${info.availablePeiReceipts}</dd></div>`
+                : ''}
+            <div><dt>Turn limit</dt><dd>${info.turnLimit}</dd></div>
+            <div><dt>Reservation</dt><dd>${info.reservationSeconds} seconds</dd></div>
+        `;
+        this.dailyButton().hidden = info.status !== 'available';
+        this.peiButton().hidden = !info.peiRequired;
+        this.peiButton().textContent = info.availablePeiReceipts > 0
+            ? 'Complete another PEI interaction'
+            : 'Complete PEI interaction';
+        this.refreshStartAvailability();
+    }
+
     private refreshStartAvailability(): void {
         this.startButton().disabled = this.reconnecting || this.identityBusy;
         this.dailyButton().disabled = this.reconnecting || this.identityBusy ||
             this.rewardBusy || this.rewardInfo?.status !== 'available' ||
             !this.client.currentIdentity() ||
-            (this.rewardInfo?.peiRequired === true && !this.client.hasPeiAdmissionCredential());
+            (this.rewardInfo?.peiRequired === true && this.rewardInfo.availablePeiReceipts < 1);
         this.peiButton().disabled = this.reconnecting || this.identityBusy || this.rewardBusy ||
-            this.peiBusy || this.rewardInfo?.status !== 'available' ||
+            this.peiBusy || this.rewardInfo?.peiRequired !== true ||
             !this.client.currentIdentity();
     }
 
@@ -369,11 +381,13 @@ export default class PracticeScene extends Phaser.Scene {
     }
 }
 
-function rewardAvailability(info: RewardInfoData): string {
+function rewardAvailability(info: RewardInfoData, walletAuthorized: boolean): string {
     if (info.status === 'available') {
-        return info.peiRequired
-            ? 'Available today. Authorize the receiving wallet, then complete PEI.'
-            : 'Available today. Authorize the receiving wallet before play.';
+        if (!walletAuthorized) return 'Available today. Authorize the receiving wallet before play.';
+        if (!info.peiRequired) return 'Available today for this wallet.';
+        return info.availablePeiReceipts > 0
+            ? `${info.availablePeiReceipts} unused PEI receipt(s) available for this wallet.`
+            : 'Complete a PEI interaction to receive a durable Daily receipt.';
     }
     if (info.status === 'paused') return 'Sponsor rewards are paused. Unlimited Practice is ready.';
     if (info.status === 'exhausted') return "Today's reward pool is exhausted. Unlimited Practice is ready.";
@@ -384,7 +398,7 @@ function rewardAvailability(info: RewardInfoData): string {
 function messageForPeiError(error: unknown): string {
     return error instanceof Error
         ? `${error.message} Practice remains available.`
-        : 'PEI qualification could not continue. Practice remains available.';
+        : 'PEI interaction could not continue. Practice remains available.';
 }
 
 function formatNim(luna: string): string {
