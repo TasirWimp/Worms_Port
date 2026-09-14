@@ -145,15 +145,20 @@ Phaser/Socket.IO stack.
   directional slide-to-jump and bounded aftertouch. Waypoint 2's separate
   non-steerable `blast` state, explicit per-Relic radial impulse bounds,
   existing swept collision and fail-closed settling passed Phone Gate B at
-  committed and pushed `6c7fc32`. The first Phone Gate C run accepted the
-  journey through active Daily play, then found that destroying the mini-app
-  WebView after both actors fired lost the session-only bearer: the entitlement
-  remained in progress but no Resume action was available. **A focused restart
-  correction is ready for phone retest:** only an active rewarded match retains
-  its rotating, server-bounded bearer across WebView destruction; terminal,
-  left, expired and rejected-session paths remove it, while Practice remains
-  session-only. The maintained PEI journey now proves same-challenge and
-  same-turn recovery after a full player/Loomkeeper round plus terminal cleanup.
+  committed and pushed `6c7fc32`. The first Phone Gate C run found that a
+  destroyed mini-app WebView lost the session-only bearer. The correction at
+  committed and pushed `b9f1987` retains the rotating, server-bounded bearer
+  only while a rewarded match is active and clears it on every terminal or
+  rejected-session path; Practice remains session-only. The phone confirmed
+  that resume reopens the same Daily and that an eligible win still pays 1 NIM.
+  A subsequent destroyed-WebView resume found bumpy, lagging walking and jumping
+  while fresh Daily and Practice remained smooth. The focused reproduction
+  identified a thumb-release race with an in-flight movement acknowledgement;
+  release and lifecycle-neutral fences now serialize behind that acknowledgement
+  and use the newly accepted state. **The correction is ready for a focused
+  Phone Gate C retest** of sustained walking, directional/repeated jumping,
+  aftertouch and release after resume. Accepted admission, same-match and payout
+  evidence does not need to be repeated.
   No server authority or economy code changed. R5 remains an explicit diagnostic
   and is not part of ordinary acceptance. See the [WP-023 contract](wp-023-v10-r6-action-impact-dynamics.md)
   and [evidence](../evidence/wp-023.json).

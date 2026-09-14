@@ -18,7 +18,8 @@ const EARN_HASH = '7'.repeat(64);
 const SPEND_HASH = '8'.repeat(64);
 
 test('PEI helper receipt survives return and completes the same volcanic Daily and Practice journey', async ({
-  page
+  page: initialPage,
+  context
 }, testInfo) => {
   test.setTimeout(240_000);
   test.skip(
@@ -98,7 +99,9 @@ test('PEI helper receipt survives return and completes the same volcanic Daily a
   const helperPort = await helper.listen();
   config.proxyOrigin = `http://127.0.0.1:${helperPort}`;
   const pageErrors: string[] = [];
-  page.on('pageerror', error => pageErrors.push(error.stack ?? error.message));
+  let page = initialPage;
+  const capturePageErrors = () => page.on('pageerror', error => pageErrors.push(error.stack ?? error.message));
+  capturePageErrors();
   try {
     await page.exposeFunction('testPeiSign', (message: string) => signer.sign(message));
     await page.exposeFunction('testPeiSpend', (transaction: {
@@ -168,7 +171,7 @@ test('PEI helper receipt survives return and completes the same volcanic Daily a
     await expect(page.locator('.daily-facts')).toContainText('Unused PEI receipts1');
     await expect(page.getByRole('button', { name: 'Start Daily Challenge' })).toBeEnabled();
     await page.getByRole('button', { name: 'Start Daily Challenge' }).tap();
-    const combat = page.locator('.combat-v10');
+    let combat = page.locator('.combat-v10');
     await expect(combat).toHaveAttribute('data-mode', 'reward');
     await expect(combat).toHaveAttribute('data-ruleset', CURRENT_V10_RULESET_ID);
     await expect(combat).toHaveAttribute('data-background', 'volcanic-ruin');
@@ -192,14 +195,43 @@ test('PEI helper receipt survives return and completes the same volcanic Daily a
     await expect.poll(() => page.evaluate(() =>
       localStorage.getItem('nimble-knots.active-reward-session-token')))
       .toMatch(/^[A-Za-z0-9_-]{43}$/);
-    await page.evaluate(() => sessionStorage.clear());
-    await page.reload();
+    await page.close();
+    page = await context.newPage();
+    capturePageErrors();
+    await page.goto(`${config.requesterOrigin}/?sideways=off`);
     await expect(page.getByRole('button', { name: 'Resume Daily Challenge' })).toBeVisible();
     await page.getByRole('button', { name: 'Resume Daily Challenge' }).tap();
+    combat = page.locator('.combat-v10');
     await expect(combat).toHaveAttribute('data-mode', 'reward');
     socketId = [...game.io.sockets.sockets.keys()][0];
     expect(game.sessions.activeSnapshotV10(game.sessions.getBound(socketId)!)!.challengeId).toBe(dailyChallenge);
     await expect(combat).toHaveAttribute('data-turn', String(closedState.turn));
+
+    const resumed = () => game.sessions.activeSnapshotV10(game.sessions.getBound(
+      [...game.io.sockets.sockets.keys()][0]
+    )!)!.simulation;
+    const startX = resumed().units[0].xFp;
+    await pointer(page, '.combat-v10 .movement-right', 'pointerdown', 1701, 0.5, 0.5);
+    await expect.poll(() => resumed().heldDirection).toBe(1);
+    await expect.poll(() => resumed().units[0].xFp).toBeGreaterThan(startX);
+    const progress: number[] = [];
+    for (let sample = 0; sample < 10; sample += 1) {
+      await page.waitForTimeout(100);
+      const state = resumed();
+      progress.push(state.units[0].xFp);
+      expect(state.heldDirection, 'a resumed held walk must not lose its movement lease').toBe(1);
+    }
+    expect(progress.at(-1)!).toBeGreaterThan(progress[0]!);
+
+    await pointer(page, '.combat-v10 .movement-zone', 'pointermove', 1701, 0.5, 0.2);
+    await expect.poll(() => resumed().units[0].grounded).toBe(false);
+    await pointer(page, '.combat-v10 .movement-zone', 'pointermove', 1701, 0.2, 0.8);
+    await expect.poll(() => resumed().heldDirection).toBe(-1);
+    await expect.poll(() => resumed().units[0].grounded, { timeout: 5_000 }).toBe(true);
+    await pointer(page, '.combat-v10 .movement-zone', 'pointermove', 1701, 0.5, 0.2);
+    await expect.poll(() => resumed().units[0].grounded).toBe(false);
+    await pointer(page, '.combat-v10 .movement-zone', 'pointerup', 1701, 0.5, 0.2);
+    await expect.poll(() => resumed().heldDirection).toBe(0);
 
     await completeCurrentClash(page);
     await expect.poll(() => page.evaluate(() =>
@@ -227,3 +259,27 @@ test('PEI helper receipt survives return and completes the same volcanic Daily a
     signer.dispose();
   }
 });
+
+async function pointer(
+  page: import('@playwright/test').Page,
+  selector: string,
+  type: 'pointerdown' | 'pointermove' | 'pointerup',
+  pointerId: number,
+  xRatio: number,
+  yRatio: number
+): Promise<void> {
+  await page.locator(selector).evaluate((element, args) => {
+    const rect = element.getBoundingClientRect();
+    element.dispatchEvent(new PointerEvent(args.type, {
+      bubbles: true,
+      cancelable: true,
+      pointerId: args.pointerId,
+      pointerType: 'touch',
+      isPrimary: true,
+      button: 0,
+      buttons: args.type === 'pointerup' ? 0 : 1,
+      clientX: rect.left + rect.width * args.xRatio,
+      clientY: rect.top + rect.height * args.yRatio
+    }));
+  }, { type, pointerId, xRatio, yRatio });
+}

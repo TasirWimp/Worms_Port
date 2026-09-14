@@ -158,6 +158,14 @@ export class V10PracticeClient {
     public cancelInput(): Promise<V10PracticeSnapshot> { return this.neutral(protocolEventsV10.cancel); }
     public releaseMovement(): Promise<V10PracticeSnapshot> { return this.neutral(protocolEventsV10.release); }
     private async neutral(event: string): Promise<V10PracticeSnapshot> {
+        // Pointer release and lifecycle cancellation must close the movement
+        // lease even when a preceding walk/jump acknowledgement is still in
+        // flight. Queue the neutral fence behind that one mutation instead of
+        // racing it into mutate() and leaving held movement active.
+        const pending = this.mutation;
+        if (pending) {
+            try { await pending; } catch { /* fence the latest accepted snapshot below */ }
+        }
         const value = this.requireSnapshot();
         const request = { requestId: requestId(), challengeId: value.challengeId, rulesetId: CURRENT_V10_RULESET_ID,
             automationId: V10_AUTOMATION_ID, expectedTurn: value.simulation.turn, inputEpoch: value.simulation.inputEpoch };

@@ -117,6 +117,11 @@
       "command": "WP-023 Phone Gate C WebView-restart correction from committed base ff910e1",
       "status": "pass",
       "details": "The initial selector dry run recorded fingerprint 76fb46e1c27e00001d42fa718a54edc5aee3c54cdd96fca7e095ef3a005b6464 and a conservative shared-session plan. Direct review then selected the current behavior at risk and the worms_port_test_runner executed every phase with zero retries. Types, the retained-token rotation regression 2/2, current V10 client 1/1, tooling 133/133 and import boundary passed. Fresh build proof eaaa0e4288c2 / 51a9eed4166d passed standard V10 R6 volcanic smoke, identity bundles, reward security and bundle limits at 1,426,745/1,500,000 raw JavaScript bytes and 416,544/430,000 initial JavaScript-plus-CSS gzip bytes. The exact PEI journey passed on Chromium 390x844 and WebKit 390x844 with three expected project skips; it destroys session storage after a complete player/Loomkeeper round, resumes the same Daily challenge and turn, completes the terminal journey and proves persistent-token cleanup. Current Practice, identity, reward, resilience and smoke then passed 56 cases with 19 expected project skips across all maintained profiles in one unchanged-build run. Two WebKit clock-debt cleanup records did not affect their passing reward assertions. No phase was repeated. Logs .cache/wp023-gatec-stage1-*.log, .cache/wp023-gatec-stage2-*.log and .cache/wp023-gatec-stage3-browser-shared.log."
+    },
+    {
+      "command": "WP-023 post-resume control-continuity correction from committed base b9f1987",
+      "status": "pass",
+      "details": "The final selector dry run recorded fingerprint 0e7ff66d2c823a77bf846797e7422be777b24016fc2c0527d19ebd0a94207586. The initial exact destroyed-page PEI diagnostic reused valid build proof eaaa0e4288c2 / 51a9eed4166d and retained one Chromium failure while WebKit passed: lifting the thumb during an in-flight jump acknowledgement raced releaseMovement into the occupied mutation lane and raised `A V10 Practice acknowledgement is still pending.` The client now queues release and lifecycle-neutral fences behind that one acknowledgement and constructs the fence from the newly accepted state. The worms_port_test_runner then passed types, the deterministic delayed-ack current V10 client regression 2/2, fresh build proof b18fd24541b4 / 9ed17431ccea, standard V10 R6 volcanic smoke, and the exact destroyed-page PEI journey 2/2 on Chromium and WebKit with no page errors. That journey verifies a sustained lease, directional slide-to-jump, aftertouch, a second held-thumb jump and release after resume before completing the unchanged terminal/Practice path. Fresh current R6 controls also passed 2/2 on both engines; work-package records 70/70, tooling 133/133 and bundle limits at 1,426,745/1,500,000 raw JavaScript bytes and 416,542/430,000 gzip bytes passed. Two command-interface preflight failures were preserved: plain npm dropped the dry-run options on Windows, and build-proof.js has no --check CLI; the Windows-safe command and exported verifier replaced only those failed invocations. No product phase was retried. Logs .cache/wp023-current-*.log and .cache/wp023-lifecycle-fix-*.log."
     }
   ],
   "reviews": [
@@ -167,6 +172,18 @@
       "reviewer": "primary assistant",
       "decision": "pass_restart_correction_for_focused_phone_retest",
       "details": "Direct review identified the destroyed WebView's sessionStorage boundary: wallet reauthorization could find the entitlement, but only the lost server-session bearer could reclaim its in-memory match. The client now retains that rotating bearer in persistent Web storage only while a rewarded match is active. Successful session rotation updates both copies; terminal, completed, left, expired and rejected-session paths clear the retained copy. Practice remains session-only. The bearer keeps the existing server expiry and two-minute reconnect grace and grants no new match, wallet, receipt or payout authority. Automated restart and surrounding current-path evidence pass; physical close/reopen and terminal claim remain the final acceptance boundary."
+    },
+    {
+      "role": "owner",
+      "reviewer": "WP-023 Phone Gate C physical-phone retest",
+      "decision": "fail_post_resume_control_continuity",
+      "details": "At committed and pushed b9f1987, the owner confirmed that reopening the Nimiq Pay mini app exposed the resume path, the interrupted rewarded Daily resumed successfully, and the completed eligible win paid 1 NIM. A subsequent destroyed-WebView resume exposed a second lifecycle defect: walking and jumping in the resumed rewarded match were bumpy and lagged, while fresh rewarded Daily and Practice matches remained smooth. Resume availability, same-match recovery and payout evidence are retained, but Phone Gate C remains open until focused post-resume control continuity passes."
+    },
+    {
+      "role": "primary",
+      "reviewer": "primary assistant",
+      "decision": "pass_post_resume_control_correction_for_focused_phone_retest",
+      "details": "Direct review and a destroyed-page Chromium reproduction identified a timing race between the last walk/jump acknowledgement and the thumb-release neutral fence. The current V10 client now serializes that fence immediately after the in-flight mutation and uses its newly accepted snapshot, preserving strict server sequence, epoch and movement-lease authority. It does not predict motion, extend the movement lease, change jump or walk dynamics, alter the three-button controller, or touch PEI/reward authority. The exact PEI restart path and fresh Practice control path pass on both maintained mobile engines. Physical-phone comparison with the already accepted fresh-match feel remains the final Gate C boundary."
     }
   ],
   "skipped_checks": [
@@ -174,10 +191,11 @@
     "Local PostgreSQL execution was not repeated because the restart correction changes no schema, receipt inventory, reward settlement or database path; the existing CI gate remains authoritative.",
     "Authoritative Ubuntu screenshot comparison and baseline approval were not run because the restart correction changes no pixels or layout.",
     "The full daily/release and performance suites were not run because this is a feature waypoint rather than the 22:00 checkpoint or a release boundary.",
-    "Physical Phone Gates A and B passed at 73e9aba and 6c7fc32 respectively. The first Phone Gate C run accepted the journey through active Daily play and failed only destroyed-WebView resume; that focused physical retest remains open."
+    "The selector's broader identity, reward, protocol, resilience and smoke-browser families were not repeated because the change only serializes the current V10 neutral fence; the exact PEI restart journey covers reward identity and terminal continuity, the delayed-ack unit freezes the mutation ordering, fresh built smoke covers the deployed runtime, and the unchanged fresh R6 browser control journey covers the comparison path.",
+    "Physical Phone Gates A and B passed at 73e9aba and 6c7fc32. Phone Gate C confirms resume availability and payout at b9f1987 but remains open on post-resume movement and jump smoothness."
   ],
   "residual_risks": [
-    "Automated Chromium and WebKit coverage proves the same Daily challenge and turn resume after sessionStorage destruction, but the deployed Nimiq Pay WebView must still prove that its persistent Web storage survives a real close/reopen within the existing two-minute server reconnect grace.",
-    "After resume, the owner must finish that Daily and confirm the existing eligible-win claim and transaction-hash path before WP-023 can close."
+    "A focused correction and physical-phone retest must establish that walking, neutral/directional jumping, repeated held-thumb jumps and aftertouch remain as responsive after destroyed-WebView Daily resume as in a fresh Daily or Practice match.",
+    "After Phone Gate C passes, remove REWARD_TEST_WALLET_ADDRESS, REWARD_TEST_DAILY_ATTEMPT_LIMIT and REWARD_TEST_REPEAT_ACKNOWLEDGEMENT from the Render game service, then redeploy to restore the one-started-Daily-per-wallet rule before WP-023 closes."
   ]
 }

@@ -47,6 +47,46 @@ test('current Practice client owns only the volcanic V10 lifecycle', async () =>
     }
 });
 
+test('current V10 movement release waits for an in-flight movement acknowledgement', async () => {
+    installSessionStorage();
+    let nowUs = 0;
+    let releaseCatchUp!: () => void;
+    const catchUpGate = new Promise<void>(resolve => { releaseCatchUp = resolve; });
+    const runtime = createRuntimeServer({
+        allowMissingOrigin: true,
+        sessionRegistry: {
+            practiceV10: true,
+            seedSource: () => 4,
+            v10TestOnly: { nowUs: () => nowUs, yieldBatch: () => catchUpGate }
+        }
+    });
+    const port = await runtime.listen();
+    const socket = io(`http://127.0.0.1:${port}`, { transports: ['websocket'] });
+    let client: PracticeClient | undefined;
+    try {
+        client = await PracticeClient.connect(socket, await bootstrapSession(socket));
+        const created = await client.startCombat('wizard');
+        const args = await client.combatArgs(created);
+        if (args.kind !== 'v10' || !args.releaseMovement) throw new Error('Expected current V10 movement controls.');
+
+        nowUs = 250_000;
+        const walking = args.submit({ type: 'walk_start', direction: 1 });
+        await new Promise(resolve => setImmediate(resolve));
+        const released = args.releaseMovement();
+        releaseCatchUp();
+
+        const moving = await walking;
+        assert.equal(moving.heldDirection, 1);
+        const stopped = await released;
+        assert.equal(stopped.heldDirection, 0,
+            'pointer release serializes behind the pending walk instead of losing the neutral fence');
+    } finally {
+        client?.dispose();
+        socket.close();
+        await runtime.close();
+    }
+});
+
 function installSessionStorage(): void {
     const values = new Map<string, string>();
     Object.assign(globalThis, {

@@ -1,6 +1,6 @@
 # WP-023 V10 R6 Action And Impact Dynamics
 
-Status: **Phone Gate C restart correction ready for focused phone retest**
+Status: **Post-resume control correction ready for focused Phone Gate C retest**
 Branch: `codex/v10-r6-action-impact-dynamics`  
 Starting commit: `c0f63ec`
 
@@ -281,6 +281,27 @@ tap **Resume Daily Challenge**, confirm the same match state, then finish the
 Daily and check the existing eligible-win claim/hash path. The already accepted
 Practice, PEI issuance, consumption and R6 gameplay checks do not need to be
 repeated.
+
+At committed and pushed `b9f1987`, the physical phone confirmed that reopening
+exposes Resume Daily Challenge, restores the interrupted match, and preserves
+the eligible-win path through a 1 NIM payment. A subsequent destroyed-WebView
+resume exposed bumpy, lagging walking and jumping that does not occur in a
+fresh Daily or Practice match. Gate C is therefore reopened only for
+post-resume control continuity. The accepted resume, same-match, receipt and
+payout observations remain valid and do not need to be repeated.
+
+The focused Chromium reproduction destroyed the first page, resumed the same
+Daily, and exercised sustained walking plus two held-thumb jumps. It exposed a
+timing race when pointer release reached the V10 client while the preceding
+jump acknowledgement still occupied its single mutation lane. The client now
+waits for that acknowledgement, then sends the release or lifecycle-neutral
+fence using the newly accepted authority snapshot. It does not change movement
+leases, walk speed, jump dynamics, button behavior, PEI or reward policy. The
+exact restart journey and the fresh Practice control comparison pass on both
+maintained mobile engines. The focused phone retest now checks sustained walk,
+directional slide-to-jump, aftertouch, a second held-thumb jump and clean
+release after resume; the accepted receipt, same-match and payout paths need
+not be repeated.
 
 ## Verification policy
 
