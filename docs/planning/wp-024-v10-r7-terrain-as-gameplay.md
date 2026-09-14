@@ -1,6 +1,6 @@
 # WP-024 V10 R7 Terrain As Gameplay
 
-Status: **Waypoint 1 second crater refinement; awaiting Phone Gate A**
+Status: **Waypoint 1 crater scale accepted; awaiting Needlepoint recoil phone gate**
 Planning base: `842da39`  
 Implementation base: `4f7c878`
 Implementation branch: `codex/v10-r6-action-impact-dynamics`
@@ -109,8 +109,13 @@ authorization to tune other weapon axes at the same time. At a cell-centred
 impact, the packed-mask surface spans are 16 cells for Threadball, 2 for
 Needlepoint and 28 for Spoolburst.
 
-Damage radius, maximum damage, launch bands, gravity, Thread cost, shield
-interaction and R6 blast impulse remain unchanged for the first crater gate.
+Damage radius, maximum damage, launch bands, gravity, Thread cost and shield
+interaction remain unchanged. After the crater scale and fall exit passed phone
+review, Gate A found the inherited Needlepoint recoil visually absent at the
+compact phone scale. R7 therefore raises only its Needlepoint impulse from the
+R6 `256 / 768 / 512` table to `384 / 1024 / 768` fixed-point units per tick.
+The direct horizontal launch is 4 world units per tick with a 3-unit upward
+bias, remaining below Threadball and Spoolburst force. R6 stays frozen.
 This deliberately makes Threadball and especially Spoolburst stronger terrain
 tools without silently increasing their health damage. A later adjustment must
 be justified by observed gameplay and contracted separately within R7.
@@ -129,8 +134,10 @@ Use the wallet-free private R7 preview at `/?combat-preview=v10r7`:
 2. Compare both crater roles and confirm Threadball reads as about one-third of
    Spoolburst by area.
 3. Confirm Needlepoint remains a small precision cut.
-4. Confirm damage, health bars, recoil, self-blast, firing, retreat, controls and
-   the 60-second action flow still feel like accepted R6.
+4. Hit a surviving actor directly with Needlepoint from either side and confirm
+   it visibly launches away from the impact. Confirm damage, health bars,
+   self-blast, firing, retreat, controls and the 60-second action flow remain
+   accepted.
 5. Walk and jump through the new crater edges and confirm collision, camera and
    rendering remain smooth on the phone.
 6. Open a crater through the world bottom, let either Nimble fall through it and

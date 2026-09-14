@@ -37,7 +37,7 @@ test('R7 Waypoint 1 keeps live V10 on R6 and inherits the accepted volcanic acti
     assert.equal(neutralJump.state.units[0].vxFp, 0);
 });
 
-test('R7 changes only Threadball and Spoolburst crater scale from R6', () => {
+test('R7 scopes its changes to crater scale and phone-legible Needlepoint recoil', () => {
     const r6 = mechanicsForV10(V10_R6_RULESET_ID)!;
     const r7 = mechanicsForV10(V10_R7_RULESET_ID)!;
 
@@ -49,7 +49,10 @@ test('R7 changes only Threadball and Spoolburst crater scale from R6', () => {
         r7.relics.threadball.craterRadius ** 2 / r7.relics.spoolburst.craterRadius ** 2 - 1 / 3
     ) < 0.01);
     assert.deepEqual(r7.directHitbox, r6.directHitbox);
-    assert.deepEqual(r7.blastImpulse, r6.blastImpulse);
+    assert.deepEqual(r7.blastImpulse, {
+        ...r6.blastImpulse,
+        needlepoint: { minimumSpeedFp: 384, maximumSpeedFp: 1_024, upwardBiasFp: 768 }
+    });
     assert.equal(r7.terrainFirst, r6.terrainFirst);
     assert.equal(r7.shieldBlast, r6.shieldBlast);
 
@@ -63,6 +66,38 @@ test('R7 changes only Threadball and Spoolburst crater scale from R6', () => {
         [40, 8, 80],
         'the live R6 table remains unchanged'
     );
+});
+
+test('R7 Needlepoint direct hits visibly launch a surviving actor while R6 stays frozen', () => {
+    let state = createSimulationV10(4, 'wizard', V10_R7_RULESET_ID);
+    const target = state.units[1];
+    const targetX = Math.floor(target.xFp / 256);
+    const targetY = Math.floor(target.yFp / 256);
+    const launchedFromX = target.xFp;
+    state.selectedRelic = 'needlepoint';
+    state.castUsed = true;
+    state.phase = 'projectile';
+    state.phaseStartedTick = state.tick;
+    state.phaseDeadlineTick = state.tick + V10_R6_DYNAMICS.projectileTicks;
+    state.projectile = {
+        actor: 'player', relicId: 'needlepoint', xFp: targetX * 256, yFp: targetY * 256,
+        vxFp: 256, vyFp: -80, flightTicks: 0, startX: targetX - 1, startY: targetY,
+        trace: [{ x: targetX - 1, y: targetY }]
+    };
+
+    state = advanceSimulationTicksV10(state, 1).state;
+    assert.equal(state.lastProjectile?.impact, 'loomkeeper');
+    assert.equal(state.units[1].stitching, 40);
+    assert.deepEqual(
+        [state.units[1].vxFp, state.units[1].vyFp, state.units[1].airDrive],
+        [1_024, -768, 'blast']
+    );
+
+    state = advanceSimulationTicksV10(state, 4).state;
+    assert.ok(state.units[1].xFp > launchedFromX);
+    assert.equal(state.units[1].airDrive, 'blast');
+    assert.deepEqual(mechanicsForV10(V10_R6_RULESET_ID)!.blastImpulse?.needlepoint,
+        { minimumSpeedFp: 256, maximumSpeedFp: 768, upwardBiasFp: 512 });
 });
 
 test('R7 crater radii clear deterministic circular spans in the packed terrain mask', () => {

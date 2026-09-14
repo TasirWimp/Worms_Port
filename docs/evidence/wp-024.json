@@ -13,6 +13,7 @@
     "Waypoint 1: add a non-current V10 R7 identity that preserves the complete accepted R6 volcanic state, action dynamics, presentation, controls, projectile behavior, damage, blast impulse, Thread economy and Loomkeeper. After two phone reads, Threadball terrain radius is refined to 64 world units and Spoolburst to 112. Threadball is about one-third of Spoolburst by area, and the thinnest volcanic shelf needs two Spoolburst hits to open its floor.",
     "Expose the R7 candidate through a local-only wallet-free volcanic phone preview for physical crater-scale and movement review while standard Practice and PEI-gated Daily remain on current R6.",
     "Hide an R7 actor presentation after its authoritative collision body has fallen entirely below the open world bottom, while preserving the existing fall loss and ordinary damage-unravel presentation.",
+    "After the crater scale and floor exit pass on phone, make the previously accepted Needlepoint recoil legible in R7 by raising only its bounded impulse to 384/1024/768 while R6, damage, carving and the other Relic impulses remain frozen.",
     "Waypoint 2 after Phone Gate A: replace the surface-only volcanic recipe with the contracted fully destructible ASCII battlefield and open-bottom fall behavior.",
     "Waypoint 3 after terrain acceptance: add the bounded server-only Gemini Loomkeeper selector, fresh live ASCII state and deterministic fallback/replay boundary before final Practice and Daily promotion."
   ],
@@ -29,7 +30,8 @@
     "npm.cmd run audit:housekeeping at the Waypoint 1 phone boundary",
     "Phone Gate A on the physical phone",
     "Phone Gate A crater-scale and floor-exit refinement from committed base 8ba164a",
-    "Second Phone Gate A crater parameter refinement from committed base 18a1292"
+    "Second Phone Gate A crater parameter refinement from committed base 18a1292",
+    "Phone Gate A Needlepoint recoil refinement from committed base dbcec6a"
   ],
   "deterministic_seeds": [
     "R7 local volcanic preview seed 4"
@@ -66,6 +68,11 @@
       "command": "Second Phone Gate A crater parameter refinement from committed base 18a1292",
       "status": "pass",
       "details": "The primary inspected the current volcanic ASCII and measured its deepest surface at world Y 448, leaving a 128-unit shelf above the open bottom. R7 radii changed only from 128/8/164 to 64/8/112. The focused zero-retry plan passed types, all 5 R7 terrain-gameplay cases, fresh build proof b2dba1e6c5ee / da16c34049a1 and the supported Chromium 390x844 R7 preview at 1/1. Regression coverage proves the 16/2/28-cell crater spans, Threadball's 32.7-percent area ratio, one worst-position Spoolburst preserving the thinnest shelf floor, a second impact opening it, and the accepted fall loss. The broad dry-run fingerprint b25f722f2c2d788ac377916f50b97698746ca4f8b257bd780432c8cc27e3d0f5 was inspected but not executed: current R6 authority, protocols, rewards, PEI, routes, rendering, dependencies and other browser journeys did not change, so their passing 18a1292 evidence was reused. Logs .cache/wp024-crater-refinement-types.log, .cache/wp024-crater-refinement-simulation.log, .cache/wp024-crater-refinement-build.log and .cache/wp024-crater-refinement-browser-r7-preview.log."
+    },
+    {
+      "command": "Phone Gate A Needlepoint recoil refinement from committed base dbcec6a",
+      "status": "pass",
+      "details": "The focused zero-retry plan passed types, all 6 R7 terrain-gameplay cases, fresh build proof fe635ec82cea / f42840d01887 and the supported Chromium 390x844 R7 preview at 1/1. The new direct-impact regression proves that a surviving target receives the R7 Needlepoint 1024/-768 blast launch, enters blast motion and changes world position over subsequent ticks; it also freezes R6 at 256/768/512 and retains the accepted crater, two-hit shelf and fall-loss cases. The broad dry-run fingerprint 8fb829ae3ebb159a4e368949e5f16acbed019a9be1c66c2ba52c30270d6f69ba was inspected but not executed because this changed only one non-current R7 parameter table plus its focused test and documentation. Broader unit/browser, PostgreSQL, performance, security, bundle, legacy and daily/release checks reused the passing committed dbcec6a boundary. Logs .cache/wp024-r7-recoil-types.log, .cache/wp024-r7-recoil-simulation.log, .cache/wp024-r7-recoil-build.log and .cache/wp024-r7-recoil-browser-r7-preview.log."
     }
   ],
   "reviews": [
@@ -83,10 +90,20 @@
       "reviewer": "primary assistant",
       "status": "pass",
       "details": "Second crater refinement review confirms that only the two non-current R7 radius constants, their focused regression expectations and current planning text changed. The 112-unit Spoolburst radius is smaller than the thinnest 128-unit volcanic shelf even for a collision at the bottom of its first solid cell, while a subsequent impact reaches the exposed floor. The 64-unit Threadball radius gives 32.7 percent of Spoolburst's continuous circular area. Needlepoint, R6 Practice/Daily, damage, impulse, movement, fall authority, presentation, reward and PEI behavior remain unchanged."
+    },
+    {
+      "reviewer": "WP-024 Phone Gate A partial physical-phone acceptance",
+      "status": "pass",
+      "details": "At committed and pushed dbcec6a, the owner accepted Gate A points 1 through 3: one Spoolburst preserves the thinnest floor before a second breach, Threadball reads at about one-third of its area, and Needlepoint retains its precision crater. The owner also confirmed the previously corrected open-bottom fall presentation now vanishes as expected. Gate A remains open because the inherited Needlepoint actor recoil was visually absent."
+    },
+    {
+      "reviewer": "primary assistant",
+      "status": "pass",
+      "details": "Needlepoint recoil review traced the R7 mechanics object through the authoritative V10 tick and local preview. The existing branch was present but its 768/-512 direct launch was too subtle at the compact phone scale. R7 now overrides only Needlepoint impulse with bounded 384/1024/768 values; executable coverage proves launch and displacement. Threadball and Spoolburst force, all crater values, damage, exposure, R6 Practice/Daily, rewards and PEI remain unchanged. Physical feel remains at the open Gate A checkpoint."
     }
   ],
   "skipped_checks": [
-    "The second crater scale awaits owner Phone Gate A after commit, push and client deployment; floor-exit presentation already passed on the physical phone.",
+    "The accepted crater scale and floor-exit presentation are frozen; the R7 Needlepoint recoil refinement awaits owner Phone Gate A after commit, push and client deployment.",
     "Retired R5-and-older runtime profiles and the @legacy browser suite were excluded from ordinary acceptance.",
     "The daily/release suite was not run because this is a feature waypoint rather than the daily or release boundary.",
     "Performance was not selected for the bounded crater-rule and local-preview change.",
@@ -95,7 +112,7 @@
     "Authoritative Ubuntu visual baseline comparison remains CI-only; Windows ran supported visual logic with screenshot comparison skipped by policy."
   ],
   "residual_risks": [
-    "The refined 128-unit Threadball and 224-unit Spoolburst crater diameters require physical-phone acceptance before terrain design begins.",
+    "The 128-unit Threadball and 224-unit Spoolburst crater diameters passed physical-phone acceptance; the bounded R7 Needlepoint recoil candidate still requires phone acceptance before terrain design begins.",
     "The unchanged R6 surface-only battlefield may limit how fully the first phone gate demonstrates the larger crater roles; the new tactical map belongs to Waypoint 2.",
     "Physical Android/iOS and Nimiq Pay WebView behavior remain outside automated browser evidence."
   ]

@@ -130,7 +130,8 @@ are also recorded in the Execution Pointer of
 - WP-024 Waypoint 1 is available only through the wallet-free local
   `/?combat-preview=v10r7` route. It keeps the accepted R6 Volcanic Ruin match,
   controls, timing, damage and impact motion while previewing a 128-unit
-  Threadball crater and a 224-unit Spoolburst crater. Standard Practice and the
+  Threadball crater, a 224-unit Spoolburst crater and phone-legible Needlepoint
+  recoil. Standard Practice and the
   PEI-gated Daily Challenge remain on R6 until the R7 phone gates are accepted.
 - Assets from Sorcerers may move into `assets/` only after exact-file license
   evidence proves commercial use, redistribution, and modification are allowed.

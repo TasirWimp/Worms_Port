@@ -26,11 +26,16 @@ export const V10_R6_PROJECTILE_RULES: ProjectileMechanics = Object.freeze({
 });
 
 /**
- * R7 Waypoint 1 keeps every accepted R6 combat value and changes only the
- * terrain cleared by Threadball and Spoolburst.
+ * R7 Waypoint 1 keeps the accepted R6 package, changes the terrain cleared by
+ * Threadball and Spoolburst, and makes Needlepoint recoil legible at the
+ * compact phone presentation scale.
  */
 export const V10_R7_PROJECTILE_RULES: ProjectileMechanics = Object.freeze({
     ...V10_R6_PROJECTILE_RULES,
+    blastImpulse: Object.freeze({
+        ...V10_R6_PROJECTILE_RULES.blastImpulse,
+        needlepoint: Object.freeze({ minimumSpeedFp: 384, maximumSpeedFp: 1_024, upwardBiasFp: 768 })
+    }),
     relics: Object.freeze({
         threadball: Object.freeze({
             ...V10_R6_PROJECTILE_RULES.relics.threadball,
