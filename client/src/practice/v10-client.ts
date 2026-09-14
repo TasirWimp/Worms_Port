@@ -1,5 +1,5 @@
 import { trajectoryPreviewV10 } from '../combat/terrain-starts-v10-fixture';
-import { whenSessionReady } from '../lib/session';
+import { clearRetainedRewardSession, retainRewardSession, whenSessionReady } from '../lib/session';
 import type { PracticeSessionCursor } from './contracts';
 import { clearActivePractice, writeActivePractice } from './storage';
 import type { Socket } from 'socket.io-client';
@@ -196,6 +196,7 @@ export class V10PracticeClient {
     public sessionExpired(): void {
         this.lifecycle.disconnect();
         clearActivePractice();
+        clearRetainedRewardSession();
         for (const listener of this.unavailable) listener('The previous volcanic Clash cannot be resumed. Start a fresh Clash.');
         this.dispose();
     }
@@ -211,7 +212,12 @@ export class V10PracticeClient {
         if (!parsed.success) return this.report('The server sent an invalid V10 Practice snapshot.');
         const accepted = this.lifecycle.acceptSnapshot(parsed.data, this.session().sessionId, true);
         if (!accepted) return;
-        this.snapshot = accepted; writeActivePractice(accepted.sessionId, accepted.challengeId); this.cursor.nextSequence = Math.max(this.cursor.nextSequence, accepted.nextSequence);
+        this.snapshot = accepted; writeActivePractice(accepted.sessionId, accepted.challengeId);
+        if (accepted.mode === 'reward') {
+            if (accepted.status === 'active') retainRewardSession(this.session());
+            else clearRetainedRewardSession();
+        }
+        this.cursor.nextSequence = Math.max(this.cursor.nextSequence, accepted.nextSequence);
         for (const listener of this.snapshots) listener(structuredClone(accepted));
     };
     private readonly onResultEvent = (raw: unknown): void => {
@@ -260,7 +266,12 @@ export class V10PracticeClient {
         // controls; a tagged snapshot event can legitimately arrive before its
         // lifecycle acknowledgement carries the advanced outer sequence.
         if (!accepted || inputSequence !== accepted.nextInputSequence) throw new Error('Stale V10 Practice acknowledgement.');
-        this.snapshot = accepted; writeActivePractice(accepted.sessionId, accepted.challengeId); this.cursor.nextSequence = Math.max(this.cursor.nextSequence, sequence);
+        this.snapshot = accepted; writeActivePractice(accepted.sessionId, accepted.challengeId);
+        if (accepted.mode === 'reward') {
+            if (accepted.status === 'active') retainRewardSession(this.session());
+            else clearRetainedRewardSession();
+        }
+        this.cursor.nextSequence = Math.max(this.cursor.nextSequence, sequence);
         for (const listener of this.snapshots) listener(structuredClone(accepted));
         return structuredClone(accepted);
     }
@@ -271,6 +282,7 @@ export class V10PracticeClient {
         this.cursor.nextSequence = Math.max(this.cursor.nextSequence, sequence);
         this.terminal = structuredClone(value);
         clearActivePractice();
+        clearRetainedRewardSession();
         for (const listener of this.results) listener(structuredClone(value));
         return structuredClone(value);
     }

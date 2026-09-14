@@ -14,6 +14,7 @@ import {
 } from '../../../shared/protocol';
 
 const SESSION_TOKEN_KEY = 'nimble-knots.session-token';
+const ACTIVE_REWARD_SESSION_TOKEN_KEY = 'nimble-knots.active-reward-session-token';
 const ACTIVE_GAME_KEY = 'nimble-knots.active-game';
 const ACK_TIMEOUT_MS = 5000;
 const sessionReady = new WeakMap<Socket, Promise<SessionOpenData>>();
@@ -86,10 +87,32 @@ export function whenSessionReady (socket: Socket): Promise<SessionOpenData>
 
 export function adoptSession(socket: Socket, session: SessionOpenData): SessionOpenData
 {
+    const retainedReward = readRetainedRewardSessionToken();
     sessionStorage.setItem(SESSION_TOKEN_KEY, session.token);
+    if (retainedReward) writeRetainedRewardSessionToken(session.token);
     const ready = Promise.resolve(structuredClone(session));
     sessionReady.set(socket, ready);
     return structuredClone(session);
+}
+
+/**
+ * Rewarded matches cannot pause, so a bounded server session is the only way
+ * to resume one after a mini-app WebView is destroyed. Practice remains
+ * session-only; this persistent token exists only from rewarded start until a
+ * terminal result or rejected/expired server session clears it.
+ */
+export function retainRewardSession(session: SessionOpenData): void {
+    writeRetainedRewardSessionToken(session.token);
+}
+
+export function clearRetainedRewardSession(): void {
+    try {
+        if (typeof localStorage !== 'undefined') {
+            localStorage.removeItem(ACTIVE_REWARD_SESSION_TOKEN_KEY);
+        }
+    } catch {
+        // Storage denial keeps the existing session-only behavior.
+    }
 }
 
 export async function reconnectSession(socket: Socket): Promise<SessionOpenData>
@@ -151,12 +174,13 @@ async function openSession (
 ): Promise<SessionOpenData>
 {
     const storedToken = sessionStorage.getItem(SESSION_TOKEN_KEY);
-    const token = storedToken && SESSION_TOKEN_PATTERN.test(storedToken)
+    const transientToken = storedToken && SESSION_TOKEN_PATTERN.test(storedToken)
         ? storedToken
         : null;
-    if (storedToken && !token) {
+    if (storedToken && !transientToken) {
         sessionStorage.removeItem(SESSION_TOKEN_KEY);
     }
+    const token = transientToken ?? readRetainedRewardSessionToken();
     const request = token
         ? { requestId: requestId(), action: 'resume' as const, token }
         : { requestId: requestId(), action: 'create' as const };
@@ -178,6 +202,7 @@ async function openSession (
             && (response.error.code === 'UNAUTHORIZED'
                 || response.error.code === 'SESSION_EXPIRED')) {
             sessionStorage.removeItem(SESSION_TOKEN_KEY);
+            clearRetainedRewardSession();
             clearActiveGameId();
             return openSession(socket, allowAckRecovery);
         }
@@ -185,6 +210,30 @@ async function openSession (
     }
 
     return adoptSession(socket, response.data);
+}
+
+function readRetainedRewardSessionToken(): string | null {
+    try {
+        if (typeof localStorage === 'undefined') return null;
+        const token = localStorage.getItem(ACTIVE_REWARD_SESSION_TOKEN_KEY);
+        if (!token) return null;
+        if (SESSION_TOKEN_PATTERN.test(token)) return token;
+        localStorage.removeItem(ACTIVE_REWARD_SESSION_TOKEN_KEY);
+    } catch {
+        // Storage denial keeps the existing session-only behavior.
+    }
+    return null;
+}
+
+function writeRetainedRewardSessionToken(token: string): void {
+    if (!SESSION_TOKEN_PATTERN.test(token)) return;
+    try {
+        if (typeof localStorage !== 'undefined') {
+            localStorage.setItem(ACTIVE_REWARD_SESSION_TOKEN_KEY, token);
+        }
+    } catch {
+        // Storage denial keeps the existing session-only behavior.
+    }
 }
 
 async function emitSessionOpen (

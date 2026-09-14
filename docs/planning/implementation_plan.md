@@ -145,12 +145,17 @@ Phaser/Socket.IO stack.
   directional slide-to-jump and bounded aftertouch. Waypoint 2's separate
   non-steerable `blast` state, explicit per-Relic radial impulse bounds,
   existing swept collision and fail-closed settling passed Phone Gate B at
-  committed and pushed `6c7fc32`. **Waypoint 3 integration is ready for Phone
-  Gate C:** the maintained helper journey proves receipt persistence and
-  start-only consumption, same-challenge Daily reconnect, terminal R6 replay
-  settlement and return to the same volcanic R6 Practice. No product authority
-  or economy code changed. R5 remains an explicit diagnostic and is not part
-  of ordinary acceptance. See the [WP-023 contract](wp-023-v10-r6-action-impact-dynamics.md)
+  committed and pushed `6c7fc32`. The first Phone Gate C run accepted the
+  journey through active Daily play, then found that destroying the mini-app
+  WebView after both actors fired lost the session-only bearer: the entitlement
+  remained in progress but no Resume action was available. **A focused restart
+  correction is ready for phone retest:** only an active rewarded match retains
+  its rotating, server-bounded bearer across WebView destruction; terminal,
+  left, expired and rejected-session paths remove it, while Practice remains
+  session-only. The maintained PEI journey now proves same-challenge and
+  same-turn recovery after a full player/Loomkeeper round plus terminal cleanup.
+  No server authority or economy code changed. R5 remains an explicit diagnostic
+  and is not part of ordinary acceptance. See the [WP-023 contract](wp-023-v10-r6-action-impact-dynamics.md)
   and [evidence](../evidence/wp-023.json).
 - Active target: mobile-first single-player Nimiq Pay competition release.
 - Latest completed slice: **WP-015D4D V10G Terrain And Weapon Tactics**;

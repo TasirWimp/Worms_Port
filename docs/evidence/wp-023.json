@@ -112,6 +112,11 @@
       "command": "WP-023 Gate B acceptance and Waypoint 3 implementation-record check",
       "status": "pass",
       "details": "The exact zero-retry work-package checker passed all records after the owner Gate B acceptance, contract, execution pointer and Waypoint 3 evidence were updated. No product, build, browser, legacy or daily/release phase was repeated for the documentation-only change. Log .cache/wp023-waypoint3-work-packages.log."
+    },
+    {
+      "command": "WP-023 Phone Gate C WebView-restart correction from committed base ff910e1",
+      "status": "pass",
+      "details": "The initial selector dry run recorded fingerprint 76fb46e1c27e00001d42fa718a54edc5aee3c54cdd96fca7e095ef3a005b6464 and a conservative shared-session plan. Direct review then selected the current behavior at risk and the worms_port_test_runner executed every phase with zero retries. Types, the retained-token rotation regression 2/2, current V10 client 1/1, tooling 133/133 and import boundary passed. Fresh build proof eaaa0e4288c2 / 51a9eed4166d passed standard V10 R6 volcanic smoke, identity bundles, reward security and bundle limits at 1,426,745/1,500,000 raw JavaScript bytes and 416,544/430,000 initial JavaScript-plus-CSS gzip bytes. The exact PEI journey passed on Chromium 390x844 and WebKit 390x844 with three expected project skips; it destroys session storage after a complete player/Loomkeeper round, resumes the same Daily challenge and turn, completes the terminal journey and proves persistent-token cleanup. Current Practice, identity, reward, resilience and smoke then passed 56 cases with 19 expected project skips across all maintained profiles in one unchanged-build run. Two WebKit clock-debt cleanup records did not affect their passing reward assertions. No phase was repeated. Logs .cache/wp023-gatec-stage1-*.log, .cache/wp023-gatec-stage2-*.log and .cache/wp023-gatec-stage3-browser-shared.log."
     }
   ],
   "reviews": [
@@ -150,16 +155,29 @@
       "reviewer": "primary assistant",
       "decision": "pass_waypoint_3_integration",
       "details": "Direct review traces standard Practice and PEI-gated Daily into the same CURRENT_V10_RULESET_ID coordinator and live replay contract. Reward admission reserves the wallet's oldest unused receipt and atomically consumes it only when the match starts; reconnect retains the same R6 challenge. Terminal settlement passes the authoritative R6 replay to RewardService verification before changing entitlement state. The extended maintained browser journey proves receipt persistence across reload, start-only consumption, reconnect continuity, terminal replay storage and return to R6 Practice. Existing reward tests continue to cover eligible-win claim authorization, fixed sponsor-funded queuing and payout-state reconciliation. No helper issuance, Daily limit, reward value, wallet policy or payout authority changed. Phone Gate C remains required before WP-023 closure."
+    },
+    {
+      "role": "owner",
+      "reviewer": "WP-023 first Phone Gate C physical-phone run",
+      "decision": "fail_restart_resume",
+      "details": "The owner accepted all checks preceding the lifecycle restart. After the player and Loomkeeper had both fired, closing and reopening the app showed that the rewarded Daily Challenge and its bound wallet were still in progress, but exposed no Resume Daily Challenge action. This blocks Phone Gate C completion while preserving the already accepted Practice, PEI issuance/consumption and R6 gameplay observations."
+    },
+    {
+      "role": "primary",
+      "reviewer": "primary assistant",
+      "decision": "pass_restart_correction_for_focused_phone_retest",
+      "details": "Direct review identified the destroyed WebView's sessionStorage boundary: wallet reauthorization could find the entitlement, but only the lost server-session bearer could reclaim its in-memory match. The client now retains that rotating bearer in persistent Web storage only while a rewarded match is active. Successful session rotation updates both copies; terminal, completed, left, expired and rejected-session paths clear the retained copy. Practice remains session-only. The bearer keeps the existing server expiry and two-minute reconnect grace and grants no new match, wallet, receipt or payout authority. Automated restart and surrounding current-path evidence pass; physical close/reopen and terminal claim remain the final acceptance boundary."
     }
   ],
   "skipped_checks": [
     "Retired R5 compatibility and V7/V8/V9 runtime/browser suites were intentionally excluded from ordinary acceptance; they remain explicit diagnostics only.",
-    "Local PostgreSQL execution was skipped because WP014_TEST_DATABASE_URL is absent. WP-023 Waypoint 1 changes no database schema, receipt inventory or reward settlement behavior; disposable PostgreSQL remains a CI gate.",
-    "Authoritative Ubuntu screenshot comparison and baseline approval were not run on Windows. Logic ran across all five maintained phone layouts; a Linux candidate belongs on the implementation PR after physical acceptance.",
+    "Local PostgreSQL execution was not repeated because the restart correction changes no schema, receipt inventory, reward settlement or database path; the existing CI gate remains authoritative.",
+    "Authoritative Ubuntu screenshot comparison and baseline approval were not run because the restart correction changes no pixels or layout.",
     "The full daily/release and performance suites were not run because this is a feature waypoint rather than the 22:00 checkpoint or a release boundary.",
-    "Physical Phone Gates A and B passed at 73e9aba and 6c7fc32 respectively. Waypoint 3 automated integration is complete, but Phone Gate C has not started."
+    "Physical Phone Gates A and B passed at 73e9aba and 6c7fc32 respectively. The first Phone Gate C run accepted the journey through active Daily play and failed only destroyed-WebView resume; that focused physical retest remains open."
   ],
   "residual_risks": [
-    "The owner accepted R6 gameplay at Phone Gate B, and automated integration covers the complete PEI-gated terminal path. One deployed physical-phone Practice plus Daily journey must still confirm receipt consumption, same-match reconnect and the existing eligible-win payout before WP-023 can close."
+    "Automated Chromium and WebKit coverage proves the same Daily challenge and turn resume after sessionStorage destruction, but the deployed Nimiq Pay WebView must still prove that its persistent Web storage survives a real close/reopen within the existing two-minute server reconnect grace.",
+    "After resume, the owner must finish that Daily and confirm the existing eligible-win claim and transaction-hash path before WP-023 can close."
   ]
 }

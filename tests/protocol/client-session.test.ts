@@ -18,6 +18,7 @@ class FakeSocket extends EventEmitter {
     public disconnects = 0;
     public connects = 0;
     public attempts = 0;
+    public actions: string[] = [];
 
     timeout() { return this; }
 
@@ -28,6 +29,7 @@ class FakeSocket extends EventEmitter {
         const request = args[0];
         const callback = args[1];
         this.attempts += 1;
+        this.actions.push(request.action);
         if (this.attempts === 1) {
             queueMicrotask(() => callback(new Error('simulated lost acknowledgement')));
         } else {
@@ -90,4 +92,23 @@ test('browser session bootstrap reconnects once and retries a lost resume acknow
     assert.equal(socket.disconnects, 1);
     assert.equal(socket.connects, 1);
     assert.equal(socket.attempts, 2);
+});
+
+test('browser session bootstrap rotates a retained active-reward token after WebView restart', async () => {
+    const sessionStorage = new MemoryStorage();
+    const localStorage = new MemoryStorage();
+    localStorage.setItem('nimble-knots.active-reward-session-token', 'a'.repeat(43));
+    Object.assign(globalThis, {
+        sessionStorage,
+        localStorage,
+        window: { setTimeout, clearTimeout }
+    });
+    const socket = new FakeSocket();
+
+    const session = await bootstrapSession(socket as any);
+
+    assert.equal(session.sessionId, 'session_identifier_01');
+    assert.deepEqual(socket.actions, ['resume', 'resume']);
+    assert.equal(sessionStorage.getItem('nimble-knots.session-token'), 'b'.repeat(43));
+    assert.equal(localStorage.getItem('nimble-knots.active-reward-session-token'), 'b'.repeat(43));
 });

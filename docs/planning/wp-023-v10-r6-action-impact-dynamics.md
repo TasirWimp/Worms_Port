@@ -1,6 +1,6 @@
 # WP-023 V10 R6 Action And Impact Dynamics
 
-Status: **Waypoint 3 integration ready for Phone Gate C**
+Status: **Phone Gate C restart correction ready for focused phone retest**
 Branch: `codex/v10-r6-action-impact-dynamics`  
 Starting commit: `c0f63ec`
 
@@ -246,16 +246,41 @@ stores a verified R6 replay, and the result returns to the same volcanic R6
 Practice. The first extended run exposed a frozen test-only authority clock
 that was appropriate only while the case ended immediately after admission;
 removing that fixture freeze let the standard timer complete the journey on
-both maintained mobile engines. No product authority or economy code changed.
+both maintained mobile engines. No server authority or economy code changed.
 Existing focused reward checks continue to own claim authorization, fixed
 reward queuing and payout settlement. Phone Gate C remains the final product
 acceptance boundary.
+
+The owner's first Phone Gate C run accepted the journey through active Daily
+play, then exposed a real mini-app lifecycle boundary: after both actors had
+fired, destroying and reopening the WebView displayed the server's in-progress
+entitlement but offered no way to resume it. The session bearer had existed
+only in `sessionStorage`, so the reopened client could authorize the wallet but
+could not reclaim the in-memory match even while it remained inside reconnect
+grace.
+
+The correction retains the rotating server-session bearer in persistent Web
+storage only while a rewarded match is active. Practice remains session-only.
+Every successful resume rotates both copies; a terminal result, completed/left
+snapshot, explicit session expiry or rejected bearer removes the retained
+copy. The bearer retains the server's existing expiry and reconnect bounds and
+does not grant new match, wallet, receipt or payout authority. The maintained
+PEI journey now destroys session storage after a complete player/Loomkeeper
+round, requires the Resume Daily Challenge action, verifies the same challenge
+and turn, completes the match, and proves the retained bearer is removed.
 
 **Phone Gate C** runs one wallet-free Practice and one available PEI-gated
 Daily. It confirms receipt consumption only when Daily starts, the same R6
 match behavior in both modes, reconnect continuity, a terminal result and the
 existing payout behavior for an eligible win. The helper may remain paused
 until the Daily receipt is actually needed.
+
+The focused retest resumes at the failed lifecycle check: close the mini app
+after both actors have fired, reopen it within the existing reconnect grace,
+tap **Resume Daily Challenge**, confirm the same match state, then finish the
+Daily and check the existing eligible-win claim/hash path. The already accepted
+Practice, PEI issuance, consumption and R6 gameplay checks do not need to be
+repeated.
 
 ## Verification policy
 

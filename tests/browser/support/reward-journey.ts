@@ -3,32 +3,37 @@ import { expect, type Locator, type Page } from '@playwright/test';
 type JourneyBoundary = { kind: 'input-epoch' | 'turn'; value: number };
 
 export async function completeCurrentClash(page: Page): Promise<void> {
-  const ui = page.locator('.combat-ui');
   for (let shot = 0; shot < 10; shot += 1) {
-    await expect.poll(() => currentJourneyState(page), { timeout: 45_000 })
-      .toMatch(/^(ready|result)$/);
-    if (await page.locator('.result-shell').count()) return;
-    if (await ui.getAttribute('data-selected-relic') !== 'threadball') {
-      await selectThreadball(page, ui);
-      await expect(ui).toHaveAttribute('data-selected-relic', 'threadball');
-    }
-    await aimAt(page, 40, shot + 200);
-    await expect(page.locator('.fire-button')).toBeEnabled();
-    const boundary = await ui.evaluate((combat) => {
-      const resourceTurns = combat.classList.contains('combat-v9');
-      return {
-        kind: resourceTurns ? 'input-epoch' as const : 'turn' as const,
-        value: Number(resourceTurns
-          ? (combat as HTMLElement).dataset.inputEpoch
-          : (combat as HTMLElement).dataset.turn)
-      };
-    });
-    await page.locator('.fire-button').tap();
-    await expect.poll(() => currentJourneyState(page, boundary), { timeout: 45_000 })
-      .toMatch(/^(ready|result)$/);
-    if (await page.locator('.result-shell').count()) return;
+    if (await playCurrentRound(page, shot + 200)) return;
   }
   throw new Error('Reward Clash did not reach a terminal result within ten player shots.');
+}
+
+/** Fires once and waits until the Loomkeeper has answered or the match ends. */
+export async function playCurrentRound(page: Page, pointerId = 200): Promise<boolean> {
+  const ui = page.locator('.combat-ui');
+  await expect.poll(() => currentJourneyState(page), { timeout: 45_000 })
+    .toMatch(/^(ready|result)$/);
+  if (await page.locator('.result-shell').count()) return true;
+  if (await ui.getAttribute('data-selected-relic') !== 'threadball') {
+    await selectThreadball(page, ui);
+    await expect(ui).toHaveAttribute('data-selected-relic', 'threadball');
+  }
+  await aimAt(page, 40, pointerId);
+  await expect(page.locator('.fire-button')).toBeEnabled();
+  const boundary = await ui.evaluate((combat) => {
+    const resourceTurns = combat.classList.contains('combat-v9');
+    return {
+      kind: resourceTurns ? 'input-epoch' as const : 'turn' as const,
+      value: Number(resourceTurns
+        ? (combat as HTMLElement).dataset.inputEpoch
+        : (combat as HTMLElement).dataset.turn)
+    };
+  });
+  await page.locator('.fire-button').tap();
+  await expect.poll(() => currentJourneyState(page, boundary), { timeout: 45_000 })
+    .toMatch(/^(ready|result)$/);
+  return Boolean(await page.locator('.result-shell').count());
 }
 
 async function currentJourneyState(

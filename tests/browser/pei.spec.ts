@@ -11,7 +11,7 @@ import { RewardService } from '../../server/src/reward/service';
 import type { RewardConfig } from '../../server/src/reward/types';
 import { CURRENT_V10_RULESET_ID } from '../../shared/simulation-v10';
 import { createTestSigner, privateKeyForProject } from '../support/nimiq-signer';
-import { completeCurrentClash } from './support/reward-journey';
+import { completeCurrentClash, playCurrentRound } from './support/reward-journey';
 
 const PROXY_ADDRESS = 'NQ34 61R8 YJUA KLDJ 4VVL E22V T7KE ATA3 A1HY';
 const EARN_HASH = '7'.repeat(64);
@@ -182,13 +182,29 @@ test('PEI helper receipt survives return and completes the same volcanic Daily a
 
     let socketId = [...game.io.sockets.sockets.keys()][0];
     const dailyChallenge = game.sessions.activeSnapshotV10(game.sessions.getBound(socketId)!)!.challengeId;
+    expect(await playCurrentRound(page, 190)).toBe(false);
+    const closedState = await combat.evaluate((element) => ({
+      turn: Number((element as HTMLElement).dataset.turn),
+      activeActor: (element as HTMLElement).dataset.activeActor
+    }));
+    expect(closedState.turn).toBeGreaterThanOrEqual(2);
+    expect(closedState.activeActor).toBe('player');
+    await expect.poll(() => page.evaluate(() =>
+      localStorage.getItem('nimble-knots.active-reward-session-token')))
+      .toMatch(/^[A-Za-z0-9_-]{43}$/);
+    await page.evaluate(() => sessionStorage.clear());
     await page.reload();
+    await expect(page.getByRole('button', { name: 'Resume Daily Challenge' })).toBeVisible();
     await page.getByRole('button', { name: 'Resume Daily Challenge' }).tap();
     await expect(combat).toHaveAttribute('data-mode', 'reward');
     socketId = [...game.io.sockets.sockets.keys()][0];
     expect(game.sessions.activeSnapshotV10(game.sessions.getBound(socketId)!)!.challengeId).toBe(dailyChallenge);
+    await expect(combat).toHaveAttribute('data-turn', String(closedState.turn));
 
     await completeCurrentClash(page);
+    await expect.poll(() => page.evaluate(() =>
+      localStorage.getItem('nimble-knots.active-reward-session-token')))
+      .toBeNull();
     const result = page.locator('.result-shell');
     await expect(result).toBeVisible();
     const outcome = await result.getAttribute('data-outcome');
