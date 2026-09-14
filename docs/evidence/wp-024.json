@@ -124,10 +124,15 @@
       "reviewer": "primary assistant",
       "status": "pass",
       "details": "Waypoint 2 direct review confirms that R7 alone selects volcanic-ruin-battlefield-r1; current R6 retains its prior recipe, central camera frame and server-backed Practice/Daily identity. The strict 64 by 36 compiler expands every source cell to an explicit 256 by 72 bit mask, validates the closed legend and both opening envelopes, and synthesizes no edge or bottom terrain. The fixed chart includes both world edges, a full-width destructible foundation, high/lower routes, cover, cavities and labelled plugs. Packed terrain remains authority; the live ASCII, revision, terrain hash and full state hash are derived from it. Local R7 restore validates the full strict state and hash, while explicit restart cannot be overwritten by the retiring fixture. The approved and fallback renderers expose every upward terrain surface. No Gemini, dependency, server, reward, PEI, database, asset or current-path behavior changed."
+    },
+    {
+      "reviewer": "WP-024 Phone Gate B physical-phone acceptance",
+      "status": "pass",
+      "details": "At committed and pushed 9e17773, the owner accepted all seven phone checks. The opening survey and authored battlefield use the full arena; upper, central and lower routes are readable and playable; multiple Relics can remove obstructions and open routes; a breached foundation produces a clear open-bottom fall loss; isolated terrain remains stable and destructible; controls, camera and crater presentation remain smooth; closing and reopening restores the exact changed battlefield; and explicit restart creates a fresh battlefield. This completes Waypoint 2 and authorizes Waypoint 3. Gemini and standard Practice/Daily promotion remain inactive."
     }
   ],
   "skipped_checks": [
-    "Phone Gate A passed on the physical phone at committed and pushed 4933cb2; Waypoint 2 is implemented and Phone Gate B awaits owner testing after commit, push and deployment.",
+    "Phone Gates A and B passed on the physical phone at committed and pushed 4933cb2 and 9e17773 respectively; Waypoint 3 has not started.",
     "Retired R5-and-older runtime profiles and the @legacy browser suite were excluded from ordinary acceptance.",
     "The daily/release suite was not run because this is a feature waypoint rather than the daily or release boundary.",
     "Performance was not selected for this private non-current R7 waypoint; five-project visual logic and the physical Phone Gate B own smooth full-map rendering acceptance.",
@@ -136,7 +141,6 @@
     "Authoritative Ubuntu visual baseline comparison remains CI-only; Windows ran supported visual logic with screenshot comparison skipped by policy."
   ],
   "residual_risks": [
-    "Waypoint 2's automated evidence is local; the fixed battlefield, route readability, breach roles, isolated-terrain behavior and exact changed-map reopen still require Phone Gate B.",
     "The private R7 preview uses browser persistence for the Phone Gate B reopen check; later Practice/Daily promotion must use the existing server-backed reconnect and replay authority instead.",
     "Physical Android/iOS and Nimiq Pay WebView behavior remain outside automated browser evidence."
   ]

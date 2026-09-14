@@ -1,6 +1,6 @@
 # WP-024 V10 R7 Terrain As Gameplay
 
-Status: **Waypoint 1 and Phone Gate A accepted; Waypoint 2 implemented, awaiting Phone Gate B**
+Status: **Waypoints 1-2 and Phone Gates A-B accepted; Waypoint 3 is next**
 Planning base: `842da39`  
 Implementation base: `4f7c878`
 Implementation branch: `codex/v10-r6-action-impact-dynamics`
@@ -302,6 +302,13 @@ Use the same private R7 Practice preview after Gate A:
 
 Gate B accepts the authored battlefield and fall rule. It does not activate
 Gemini or the rewarded Daily path.
+
+At committed and pushed `9e17773`, the owner accepted all seven physical-phone
+checks. The full arena, tactical routes, destructible foundation, open-bottom
+fall loss, exact changed-map reopen and deliberate fresh restart behaved as
+specified. **Phone Gate B is complete.** This authorizes Waypoint 3's bounded
+server-side Loomkeeper selector; it does not activate Gemini or promote R7 to
+standard Practice or Daily.
 
 ## Waypoint 3 - Gemini-backed Loomkeeper selection
 

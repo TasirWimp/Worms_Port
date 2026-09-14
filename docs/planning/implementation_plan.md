@@ -176,8 +176,8 @@ Phaser/Socket.IO stack.
   inherited Needlepoint recoil too subtle at the compact phone scale, so R7
   now gives it a bounded 384/1024/768 impulse. Points 4 and 5 then passed,
   completing Gate A and authorizing Waypoint 2's fixed fully destructible ASCII
-  battlefield. Waypoint 2 is now implemented behind the same private route and
-  awaits Phone Gate B. Its exact 64 by 36 chart uses all 2048 world units with
+  battlefield. Waypoint 2 is implemented behind the same private route. Its
+  exact 64 by 36 chart uses all 2048 world units with
   destructible edge structures, a full-width 144-unit foundation, opening
   shelves, high and lower routes, blockers, cavities and a central breach plug.
   The R7 opening survey shows the whole arena before player focus; current R6
@@ -193,8 +193,13 @@ Phaser/Socket.IO stack.
   never calls Gemini. Waypoint 1 owns only the R7 identity, crater radii and a
   local volcanic phone preview. Change-selected current-path verification and
   the supported canonical R7 browser case pass. Standard Practice and Daily
-  remain R6 until the later promotion gate. **The next acceptance target is
-  WP-024 Phone Gate B; Gemini remains deferred to Waypoint 3.** See the
+  remain R6 until the later promotion gate. At committed and pushed `9e17773`,
+  all seven Phone Gate B checks passed on the owner's physical phone: the full
+  battlefield, route destruction, open-bottom fall loss, changed-map reopen and
+  fresh restart behaved as specified. **Waypoint 2 and Phone Gate B are
+  accepted. The next implementation target is Waypoint 3's bounded server-side
+  Gemini Loomkeeper selector, beginning with deterministic candidate generation,
+  strict adapter/fallback boundaries and shadow mode.** See the
   [WP-024 contract](wp-024-v10-r7-terrain-as-gameplay.md).
 - Active target: mobile-first single-player Nimiq Pay competition release.
 - Latest completed slice: **WP-015D4D V10G Terrain And Weapon Tactics**;
