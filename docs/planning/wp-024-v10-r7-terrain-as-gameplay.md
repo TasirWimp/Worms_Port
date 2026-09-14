@@ -1,8 +1,9 @@
 # WP-024 V10 R7 Terrain As Gameplay
 
-Status: **Proposed; planning only, implementation not started**  
+Status: **Waypoint 1 implemented; awaiting Phone Gate A**
 Planning base: `842da39`  
-Implementation branch: **not created**
+Implementation base: `4f7c878`
+Implementation branch: `codex/v10-r6-action-impact-dynamics`
 
 ## Product outcome
 
@@ -114,7 +115,7 @@ cells. Direct actor impacts continue to carve at the resolved impact point.
 
 ### Phone Gate A - scale and feel
 
-Use wallet-free Practice on a private R7 preview:
+Use the wallet-free private R7 preview at `/?combat-preview=v10r7`:
 
 1. Compare both actors with a Threadball crater and confirm the opening reads as
    roughly four actor heights across.

@@ -1,0 +1,78 @@
+{
+  "id": "WP-024",
+  "status": "in_progress",
+  "execution_mode": "single_owner",
+  "starting_commit": "4f7c878",
+  "branch": "codex/v10-r6-action-impact-dynamics",
+  "initial_worktree": "clean",
+  "starting_lock_sha256": "6B768A8FDE2695D02555CA17201FD7CE420F9AC075B91380474DD7A643042BC8",
+  "owning_roles": [
+    "primary assistant"
+  ],
+  "scope": [
+    "Waypoint 1: add a non-current V10 R7 identity that preserves the complete accepted R6 volcanic state, action dynamics, presentation, controls, projectile behavior, damage, blast impulse, Thread economy and Loomkeeper while changing only Threadball terrain radius to 136 world units and Spoolburst terrain radius to 240 world units.",
+    "Expose the R7 candidate through a local-only wallet-free volcanic phone preview for physical crater-scale and movement review while standard Practice and PEI-gated Daily remain on current R6.",
+    "Waypoint 2 after Phone Gate A: replace the surface-only volcanic recipe with the contracted fully destructible ASCII battlefield and open-bottom fall behavior.",
+    "Waypoint 3 after terrain acceptance: add the bounded server-only Gemini Loomkeeper selector, fresh live ASCII state and deterministic fallback/replay boundary before final Practice and Daily promotion."
+  ],
+  "non_goals": [
+    "No Waypoint 2 ASCII compiler, map geometry, fall presentation, terrain revision or terrain hash implementation in Waypoint 1.",
+    "No Gemini dependency, API call, environment variable, prompt, external plan, reward verifier change or Waypoint 3 implementation in Waypoint 1.",
+    "No current Practice, Daily, PEI, reward, helper, server-profile, database, asset, damage, impulse, Thread-cost, movement, jump, camera or control behavior change before Phone Gate A.",
+    "No retired R5 or older runtime acceptance matrix and no Sorcerers inspection, code, assets or conditioning."
+  ],
+  "planned_checks": [
+    "npm.cmd run verify:changes -- --dry-run --base 4f7c878",
+    "Focused current R7 simulation, protocol, local fixture, presentation and browser preview checks selected by direct review",
+    "npm.cmd run verify:changes -- --base 4f7c878",
+    "npm.cmd run audit:housekeeping at the Waypoint 1 phone boundary",
+    "Phone Gate A on the physical phone"
+  ],
+  "deterministic_seeds": [
+    "R7 local volcanic preview seed 4"
+  ],
+  "sorcerers_reference_used": false,
+  "clean_room_records": [],
+  "check_results": [
+    {
+      "command": "npm.cmd run verify:changes -- --dry-run --base 4f7c878",
+      "status": "pass",
+      "details": "The final dry run recorded fingerprint e85f0addace07f3bf6f5a1d83088314820267a63bec144b3a2c91161180f4989. It selected current V10 unit, build, smoke, security, budget, supported browser and local PostgreSQL prerequisite coverage while performance and retired legacy profiles remained excluded."
+    },
+    {
+      "command": "Focused current R7 simulation, protocol, local fixture, presentation and browser preview checks selected by direct review",
+      "status": "pass",
+      "details": "The worms_port_test_runner passed types and 35/35 focused simulation, protocol, fixture and presentation cases, then produced fresh build proof 015e098b3db7 / bb589d626831. The new cases prove that current Practice/Daily stay R6, R7 reuses the exact volcanic terrain, 60-second dynamics, compact controls and presentation, and changes only the 136/8/240 terrain radii. Packed-mask checks prove exact symmetric 34/2/60-cell surface spans. The first two browser starts were blocked before Playwright by an incorrect worktree-byte lock hash in the new evidence record; the committed-blob hash corrected that metadata without repeating passed phases. A third command correctly found no supported case because combat.spec.ts is legacy-filtered. Moving the case into the supported visual suite produced 1/1 on Chromium 390x844 in 7.1 seconds with no retry of a browser assertion. Logs .cache/wp024-waypoint1-browser-r7-preview.log, .cache/wp024-waypoint1-browser-r7-preview-recovery.log, .cache/wp024-waypoint1-browser-r7-preview-final.log and .cache/wp024-waypoint1-browser-r7-preview-supported.log."
+    },
+    {
+      "command": "npm.cmd run verify:changes -- --base 4f7c878",
+      "status": "pass",
+      "details": "The zero-retry final selector passed import, types, 71 work-package records, combat 46/46, Practice 2/2, identity 22/22, reward 28/28, protocol 18/18, simulation 63/63, Loomkeeper 39/39, relics 10/10 and PEI 25/25. Fresh build proof 23bf113aebad / b5de9a03f2bb passed the standard R6 built smoke, identity/reward security and bundle limits at 1426836/1500000 raw JavaScript bytes and 416591/430000 gzip bytes. Supported canonical browser families passed 16/16; visual logic passed 11/11 with four expected Windows screenshot skips. The local PostgreSQL prerequisite remained absent as expected. Log .cache/wp024-final-selector.log."
+    },
+    {
+      "command": "npm.cmd run audit:housekeeping at the Waypoint 1 phone boundary",
+      "status": "pass",
+      "details": "The final documentation boundary passed 71/71 work-package records and the report-only housekeeping audit. The current branch and upstream match, WP-024 remains correctly in progress pending Phone Gate A, and no gone tracking branch exists. The manual-reconciliation flag refers only to preserved historical package/review records. Logs .cache/wp024-final-work-packages.log and .cache/wp024-final-housekeeping.log."
+    }
+  ],
+  "reviews": [
+    {
+      "reviewer": "primary assistant",
+      "status": "pass",
+      "details": "Direct review traced the ruleset selector, projectile mechanics, state/replay schema, local fixture, volcanic composition, compact R6 presentation and current server authority. R7 is query-gated and local-only; CURRENT_V10_RULESET_ID and server-backed Practice/Daily remain R6. No Sorcerers material, asset bytes, dependency, reward, PEI or server-profile behavior changed."
+    }
+  ],
+  "skipped_checks": [
+    "Physical phone behavior awaits owner Phone Gate A after commit, push and client deployment.",
+    "Retired R5-and-older runtime profiles and the @legacy browser suite were excluded from ordinary acceptance.",
+    "The daily/release suite was not run because this is a feature waypoint rather than the daily or release boundary.",
+    "Performance was not selected for the bounded crater-rule and local-preview change.",
+    "PostgreSQL integration was selected but skipped locally because WP014_TEST_DATABASE_URL is unavailable; CI retains that gate.",
+    "Authoritative Ubuntu visual baseline comparison remains CI-only; Windows ran supported visual logic with screenshot comparison skipped by policy."
+  ],
+  "residual_risks": [
+    "The 272-unit Threadball and 480-unit Spoolburst crater diameters require physical-phone feel acceptance before terrain design begins.",
+    "The unchanged R6 surface-only battlefield may limit how fully the first phone gate demonstrates the larger crater roles; the new tactical map belongs to Waypoint 2.",
+    "Physical Android/iOS and Nimiq Pay WebView behavior remain outside automated browser evidence."
+  ]
+}

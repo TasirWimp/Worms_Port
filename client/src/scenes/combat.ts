@@ -61,7 +61,7 @@ export default class CombatScene extends Phaser.Scene {
     private v8Args?: CombatSceneArgsV8;
     private resourceArgs?: ResourceTurnsSceneArgs;
     private v8Preview?: 'v8' | 'v8-r1';
-    private resourcePreview?: 'v9' | 'v10' | 'v10e' | 'v10f' | 'v10g';
+    private resourcePreview?: 'v9' | 'v10' | 'v10e' | 'v10f' | 'v10g' | 'v10r7';
     private backgroundPreviewRequested = false;
     private initializationGeneration = 0;
     private snapshot: ChallengeSnapshot;
@@ -110,9 +110,9 @@ export default class CombatScene extends Phaser.Scene {
         this.resourceArgs = args?.kind === 'v9' || args?.kind === 'v10' ? args : undefined;
         const preview = new URLSearchParams(window.location.search).get('combat-preview');
         this.v8Preview = !args?.snapshot && (preview === 'v8' || preview === 'v8-r1') ? preview : undefined;
-        this.resourcePreview = !args?.snapshot && (preview === 'v9' || preview === 'v10' || preview === 'v10e' || preview === 'v10f' || preview === 'v10g')
+        this.resourcePreview = !args?.snapshot && (preview === 'v9' || preview === 'v10' || preview === 'v10e' || preview === 'v10f' || preview === 'v10g' || preview === 'v10r7')
             ? preview : undefined;
-        this.backgroundPreviewRequested = (args?.kind === 'v10' && args.live === true) || (this.resourcePreview === 'v10g' &&
+        this.backgroundPreviewRequested = (args?.kind === 'v10' && args.live === true) || this.resourcePreview === 'v10r7' || (this.resourcePreview === 'v10g' &&
             new URLSearchParams(window.location.search).get('background-preview') === 'volcanic-ruin');
         if (this.v8Args || this.resourceArgs || this.v8Preview || this.resourcePreview) return;
         this.args = args?.snapshot && args.kind !== 'v8' && args.kind !== 'v9' && args.kind !== 'v10' ? args : createCombatFixture();
@@ -257,10 +257,10 @@ export default class CombatScene extends Phaser.Scene {
         // Live injected arguments must yield once so Phaser can finish marking
         // the scene active before the stale-mount guard runs.
         const preview = this.resourcePreview;
-        const args = await (this.resourceArgs ?? (preview === 'v10' || preview === 'v10e' || preview === 'v10f' || preview === 'v10g'
+        const args = await (this.resourceArgs ?? (preview === 'v10' || preview === 'v10e' || preview === 'v10f' || preview === 'v10g' || preview === 'v10r7'
             ? await import('../combat/terrain-starts-v10-fixture').then(module => {
-                const seed = preview === 'v10g' ? module.v10GPreviewSeed(window.location.search) : preview === 'v10f' ? module.v10FPreviewSeed(window.location.search) : 1;
-                const rulesetId = preview === 'v10g' ? (this.backgroundPreviewRequested ? 'nimble-knots-artillery-v10-r5' : 'nimble-knots-artillery-v10-r4') : preview === 'v10f'
+                const seed = preview === 'v10r7' ? 4 : preview === 'v10g' ? module.v10GPreviewSeed(window.location.search) : preview === 'v10f' ? module.v10FPreviewSeed(window.location.search) : 1;
+                const rulesetId = preview === 'v10r7' ? 'nimble-knots-artillery-v10-r7' : preview === 'v10g' ? (this.backgroundPreviewRequested ? 'nimble-knots-artillery-v10-r5' : 'nimble-knots-artillery-v10-r4') : preview === 'v10f'
                     ? 'nimble-knots-artillery-v10-r2'
                     : preview === 'v10e'
                         ? 'nimble-knots-artillery-v10-r1'

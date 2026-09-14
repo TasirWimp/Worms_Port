@@ -8,7 +8,7 @@ import {
     type V10FixtureClock
 } from '../../client/src/combat/terrain-starts-v10-fixture';
 import {
-    canonicalSimulationJsonV10, V10_R1_RULESET_ID, V10_R2_RULESET_ID, V10_R3_RULESET_ID, V10_R4_RULESET_ID, V10_RULESET_ID
+    canonicalSimulationJsonV10, V10_R1_RULESET_ID, V10_R2_RULESET_ID, V10_R3_RULESET_ID, V10_R4_RULESET_ID, V10_R7_RULESET_ID, V10_RULESET_ID
 } from '../../shared/simulation-v10';
 
 function createClock(): V10FixtureClock & { advanceThirtyTicks: () => void } {
@@ -112,6 +112,27 @@ test('V10C local fixture exposes a detached terrain preview without transport or
         });
         assert.ok(trace.length > 1);
         assert.equal(canonicalSimulationJsonV10(fixture.snapshot), before);
+    } finally {
+        fixture.destroy();
+    }
+});
+
+test('V10 R7 local fixture exposes the volcanic crater-scale identity and preserves it on restart', async () => {
+    const fixture = await createTerrainStartsV10Fixture(4, 'wizard', createClock(), V10_R7_RULESET_ID);
+    try {
+        assert.equal(fixture.kind, 'v10');
+        assert.equal(fixture.previewLabel, 'V10 R7 crater-scale preview · Volcanic Ruin · local-only');
+        assert.equal(fixture.snapshot.rulesetId, V10_R7_RULESET_ID);
+        assert.equal(fixture.snapshot.terrainProfileId, 'volcanic-ruin');
+        assert.equal(fixture.snapshot.units[0].thread, 5);
+        const restarted = await fixture.restart();
+        try {
+            assert.equal(restarted.snapshot.rulesetId, V10_R7_RULESET_ID);
+            assert.equal(restarted.snapshot.terrainProfileId, 'volcanic-ruin');
+            assert.deepEqual(restarted.snapshot.terrain, fixture.snapshot.terrain);
+        } finally {
+            restarted.destroy();
+        }
     } finally {
         fixture.destroy();
     }

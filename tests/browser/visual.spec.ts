@@ -178,6 +178,42 @@ test('current R6 volcanic Practice start stays coherent across maintained phone 
   expect(errors).toEqual([]);
 });
 
+test('V10 R7 crater-scale preview keeps the accepted R6 mobile shell on the volcanic arena', async ({ page }) => {
+  const errors = captureErrors(page);
+  await page.goto('/?combat-preview=v10r7&sideways=off');
+  const ui = page.locator('.combat-v10');
+  await expect(ui).toHaveAttribute('data-ruleset', 'nimble-knots-artillery-v10-r7');
+  await expect(ui).toHaveAttribute('data-preview', 'V10 R7 crater-scale preview · Volcanic Ruin · local-only');
+  await expect(ui).toHaveAttribute('data-terrain-profile', 'volcanic-ruin');
+  await expect(ui).toHaveAttribute('data-background', 'volcanic-ruin');
+  await expect(ui).toHaveAttribute('data-background-ready', 'true');
+  await expect(ui.locator('.combat-timer')).toHaveText(/^(59|60)s$/);
+  await expect(ui.locator('.v9-thread')).toHaveText('Thread 5/9');
+  await expect(ui.locator('.movement-zone')).toHaveAttribute('aria-label',
+    'Movement buttons. Hold left or right to walk and steer in the air. Slide or tap up to jump.');
+  for (const control of ['.movement-left', '.movement-jump', '.movement-right']) {
+    const box = await ui.locator(control).boundingBox();
+    expect(box).not.toBeNull();
+    expect(box!.width).toBeGreaterThanOrEqual(48);
+    expect(box!.height).toBeGreaterThanOrEqual(48);
+  }
+  await expect(ui.locator('.player-status .unit-status-value')).toBeHidden();
+  await expect(ui.locator('.player-status .unit-status-track')).toBeVisible();
+  await ui.locator('.v9-actions-button').tap();
+  await ui.locator('.v9-attack').tap();
+  await ui.locator('.relic-spoolburst').tap();
+  await expect(ui).toHaveAttribute('data-selected-relic', 'spoolburst');
+  await ui.locator('.v9-actions-button').tap();
+  await ui.locator('.v9-attack').tap();
+  await ui.locator('.relic-threadball').tap();
+  await dragPad(page, '.combat-v10 .aim-zone', 1207, 0.35, 0);
+  await expect(ui).toHaveAttribute('data-aim-locked', 'true');
+  await expect(ui.locator('.fire-button')).toBeEnabled();
+  await ui.locator('.fire-button').tap();
+  await expect(ui).toHaveAttribute('data-combat-phase', /projectile|settling|retreat/);
+  expect(errors).toEqual([]);
+});
+
 test('canonical Daily visuals cover availability, authorization, claim processing, and finality', async ({
   page
 }, testInfo) => {

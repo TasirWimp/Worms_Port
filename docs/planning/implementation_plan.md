@@ -165,8 +165,10 @@ Phaser/Socket.IO stack.
   No server authority or economy code changed. R5 remains an explicit diagnostic
   and is not part of ordinary acceptance. See the [WP-023 contract](wp-023-v10-r6-action-impact-dynamics.md)
   and [evidence](../evidence/wp-023.json).
-- Proposed successor: **WP-024 V10 R7 Terrain As Gameplay**, planned from clean
-  `842da39`. R7 starts Threadball at a 272-unit crater diameter and Spoolburst
+- Active successor: **WP-024 V10 R7 Terrain As Gameplay**. Waypoint 1 is
+  implemented from clean `4f7c878` and awaits Phone Gate A on
+  `/?combat-preview=v10r7`. R7 starts Threadball at a 272-unit crater
+  diameter and Spoolburst
   at 480, measured against the accepted 68-unit actor presentation. It extends
   the existing ASCII terrain compiler from a surface profile to a complete,
   entirely destructible 64 by 36 battlefield with exact 256 by 72 live-state
@@ -174,8 +176,10 @@ Phaser/Socket.IO stack.
   lets a server-only Gemini adapter select from a deterministic shortlist of
   legal Loomkeeper plans using a fresh ASCII snapshot after every terrain
   change; the local planner remains the bounded fallback and replay settlement
-  never calls Gemini. The package contract and phone gates are documented, but
-  implementation has not started and R6 remains standard. See the
+  never calls Gemini. Waypoint 1 owns only the R7 identity, crater radii and a
+  local volcanic phone preview. Change-selected current-path verification and
+  the supported canonical R7 browser case pass. Standard Practice and Daily
+  remain R6 until the later promotion gate. See the
   [WP-024 contract](wp-024-v10-r7-terrain-as-gameplay.md).
 - Active target: mobile-first single-player Nimiq Pay competition release.
 - Latest completed slice: **WP-015D4D V10G Terrain And Weapon Tactics**;

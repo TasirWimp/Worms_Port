@@ -21,6 +21,7 @@ import {
     WIZARD_UNRAVEL_ROOT_ORIGIN_Y,
     loomseedScreenPoint,
     traceFromLoomseedOrigin,
+    usesCompactWizardPresentation,
     wizardPresentationScaleInWorld
 } from './loomseed-origin';
 
@@ -594,7 +595,7 @@ export class CombatRenderer {
     private drawFallbackKnotkin(unit: SimulationUnit, layout: CombatLayout, relicId: RelicId): void {
         const g = this.background;
         const point = this.worldPoint(unit.x, unit.y, layout);
-        const radiusInWorld = this.presentationRulesetId === 'nimble-knots-artillery-v10-r6'
+        const radiusInWorld = usesCompactWizardPresentation(this.presentationRulesetId)
             ? 34 : SIM_RULES.actorRadius * 1.8;
         const radius = Math.max(10, radiusInWorld * layout.worldScale);
         const body = unit.id === 'player' ? 0x0582CA : 0x5F4B8B;

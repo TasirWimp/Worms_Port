@@ -204,32 +204,37 @@ test('Loomseed presentation anchor smoothly offsets a trace while preserving its
     assert.deepEqual(trace, [{ x: 324, y: 42 }, { x: 355, y: 30 }, { x: 388, y: 48 }]);
 });
 
-test('R6 uses the compact coherent Wizard geometry without changing older presentation geometry', () => {
+test('R6-family rulesets use the compact coherent Wizard geometry without changing older presentation geometry', () => {
     const layout = computeCombatLayout(844, 390, { top: 0, right: 0, bottom: 0, left: 0 }, {
         left: 300, top: 0, width: 1024, height: 576
     });
     const root = { x: 220, y: 310, facing: 1 as const };
     const legacy = loomseedScreenPoint(root, layout, 'animation-sheet');
     const compact = loomseedScreenPoint(root, layout, 'animation-sheet', 'nimble-knots-artillery-v10-r6');
+    const r7 = loomseedScreenPoint(root, layout, 'animation-sheet', 'nimble-knots-artillery-v10-r7');
     const compactScale = Math.max(0.1, layout.worldScale * WIZARD_R6_ANIMATION_SCALE_IN_WORLD);
 
     assert.equal(WIZARD_R6_ANIMATION_SCALE_IN_WORLD, 0.4);
     assert.equal(compact.x, root.x + 30 * compactScale);
     assert.equal(compact.y, root.y - 106 * compactScale);
+    assert.deepEqual(r7, compact);
     assert.ok(compact.y > legacy.y);
     assert.ok(wizardPresentationTopInWorld('nimble-knots-artillery-v10-r6') < wizardPresentationTopInWorld());
     assert.equal(movementRefreshIntervalMs('nimble-knots-artillery-v10-r6'), 200);
+    assert.equal(movementRefreshIntervalMs('nimble-knots-artillery-v10-r7'), 200);
     assert.equal(movementRefreshIntervalMs('nimble-knots-artillery-v10-r5'), 100);
 });
 
-test('R6 health bars stay compact, sit four pixels above the Wizard and progress green through yellow to red', () => {
+test('R6-family health bars stay compact, sit four pixels above the Wizard and progress green through yellow to red', () => {
     const state = createLatestSimulation(0xC0FFEE11, 'wizard');
     const layout = computeCombatLayout(844, 390);
     const status = computeActorStatusLayout(layout, state.units, 'nimble-knots-artillery-v10-r6').player!;
+    const r7Status = computeActorStatusLayout(layout, state.units, 'nimble-knots-artillery-v10-r7').player!;
     const wizardTop = layout.battlefield.y +
         (state.units[0].y + SIM_RULES.actorRadius - wizardPresentationTopInWorld('nimble-knots-artillery-v10-r6')) * layout.worldScaleY;
 
     assert.equal(status.height, 18);
+    assert.deepEqual(r7Status, status);
     assert.ok(status.width >= 56 && status.width <= 72);
     assert.ok(Math.abs(status.y + status.height - (wizardTop - 4)) < 1e-9);
     assert.equal(stitchingHealthColor(100), 'hsl(120 72% 44%)');

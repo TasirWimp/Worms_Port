@@ -4,14 +4,14 @@ import { z } from 'zod';
 import {
     SimulationBarrierV10Schema, SimulationIntentV10Schema, SimulationStateV10Schema,
     V10_ALL_TERRAIN_PROFILE_IDS, V10_R1_RULESET_ID, V10_R1_TERRAIN_PROFILE_IDS,
-    V10_R2_RULESET_ID, V10_R3_RULESET_ID, V10_R4_RULESET_ID, V10_R5_RULESET_ID, V10_R6_RULESET_ID, V10_RULESET_IDS
+    V10_R2_RULESET_ID, V10_R3_RULESET_ID, V10_R4_RULESET_ID, V10_R5_RULESET_ID, V10_R6_RULESET_ID, V10_R7_RULESET_ID, V10_RULESET_IDS
 } from './simulation-v10';
 import {
     V10_PROCEDURAL_CANDIDATE_COUNT, V10_PROCEDURAL_RECIPE_REVISION,
     V10_PROCEDURAL_TERRAIN_PROFILE_IDS
 } from './terrain-generation-v10';
 
-/** V10 keeps V9's byte/record budget while R6 widens the bounded tick ceiling. */
+/** V10 keeps V9's byte/record budget while the R6 family widens the bounded tick ceiling. */
 export const V10_REPLAY_LIMITS = Object.freeze({
     records: 32_768,
     bytes: 16 * 1024 * 1024,
@@ -77,7 +77,9 @@ export const CoordinatorReplayV10Schema = z.object({
     const r4 = replay.rulesetId === V10_R4_RULESET_ID;
     const r5 = replay.rulesetId === V10_R5_RULESET_ID;
     const r6 = replay.rulesetId === V10_R6_RULESET_ID;
-    const volcanic = r5 || r6;
+    const r7 = replay.rulesetId === V10_R7_RULESET_ID;
+    const volcanic = r5 || r6 || r7;
+    const actionDynamics = r6 || r7;
     const procedural = replay.rulesetId === V10_R2_RULESET_ID || r3 || r4 || volcanic;
     const profileIsRevised = (V10_R1_TERRAIN_PROFILE_IDS as readonly string[]).includes(replay.terrainProfileId);
     const profileIsProcedural = (volcanic && replay.terrainProfileId === 'volcanic-ruin') || (V10_PROCEDURAL_TERRAIN_PROFILE_IDS as readonly string[]).includes(replay.terrainProfileId);
@@ -92,21 +94,21 @@ export const CoordinatorReplayV10Schema = z.object({
     const hasCandidateIndex = Object.prototype.hasOwnProperty.call(replay, 'candidateIndex');
     if (procedural !== hasRecipeRevision || (hasRecipeRevision && replay.recipeRevision === undefined)) {
         context.addIssue({ code: z.ZodIssueCode.custom, path: ['recipeRevision'],
-            message: 'Procedural replay recipe revision must match the R2/R3/R4 ruleset.' });
+            message: 'Procedural replay recipe revision must match the recorded ruleset.' });
     }
     if (procedural !== hasCandidateIndex || (hasCandidateIndex && replay.candidateIndex === undefined)) {
         context.addIssue({ code: z.ZodIssueCode.custom, path: ['candidateIndex'],
-            message: 'Procedural replay candidate index must match the R2/R3/R4 ruleset.' });
+            message: 'Procedural replay candidate index must match the recorded ruleset.' });
     }
-    if (!r6 && replay.records.reduce((ticks, record) => ticks +
+    if (!actionDynamics && replay.records.reduce((ticks, record) => ticks +
         (record.operation.kind === 'ticks' ? record.operation.count : 0), 0) > 16_800) {
         context.addIssue({ code: z.ZodIssueCode.custom, path: ['records'],
-            message: 'Pre-R6 replay exceeds its frozen tick bound.' });
+            message: 'Pre-action-dynamics replay exceeds its frozen tick bound.' });
     }
-    if (!r6 && replay.records.some(record => record.operation.kind === 'intent' &&
+    if (!actionDynamics && replay.records.some(record => record.operation.kind === 'intent' &&
         record.operation.intent.type === 'jump' && record.operation.intent.direction === 0)) {
         context.addIssue({ code: z.ZodIssueCode.custom, path: ['records'],
-            message: 'Neutral jump belongs only to the R6 replay contract.' });
+            message: 'Neutral jump belongs only to the R6-family replay contract.' });
     }
 });
 export type CoordinatorReplayV10 = z.infer<typeof CoordinatorReplayV10Schema>;

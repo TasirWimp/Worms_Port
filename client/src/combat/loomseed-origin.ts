@@ -19,18 +19,24 @@ export const WIZARD_R6_ANIMATION_SCALE_IN_WORLD = 0.4;
 export const WIZARD_R6_STATIC_SCALE_IN_WORLD = 0.23 * WIZARD_R6_ANIMATION_SCALE_IN_WORLD / 0.56;
 export const WIZARD_R6_PRESENTATION_TOP_IN_WORLD = (212 - 40) * WIZARD_R6_ANIMATION_SCALE_IN_WORLD;
 
+/** R7 retains the accepted compact R6 actor presentation. */
+export function usesCompactWizardPresentation(rulesetId?: string): boolean {
+    return rulesetId === 'nimble-knots-artillery-v10-r6' ||
+        rulesetId === 'nimble-knots-artillery-v10-r7';
+}
+
 export function wizardPresentationScaleInWorld(
     geometry: WizardPresentationGeometry,
     rulesetId?: string
 ): number {
-    const compact = rulesetId === 'nimble-knots-artillery-v10-r6';
+    const compact = usesCompactWizardPresentation(rulesetId);
     return geometry === 'animation-sheet'
         ? compact ? WIZARD_R6_ANIMATION_SCALE_IN_WORLD : WIZARD_ANIMATION_SCALE_IN_WORLD
         : compact ? WIZARD_R6_STATIC_SCALE_IN_WORLD : WIZARD_STATIC_SCALE_IN_WORLD;
 }
 
 export function wizardPresentationTopInWorld(rulesetId?: string): number {
-    return rulesetId === 'nimble-knots-artillery-v10-r6'
+    return usesCompactWizardPresentation(rulesetId)
         ? WIZARD_R6_PRESENTATION_TOP_IN_WORLD
         : WIZARD_PRESENTATION_TOP_IN_WORLD;
 }

@@ -6,7 +6,7 @@ import {
 } from '../../shared/protocol-v10';
 import { V9_RULESET_ID } from '../../shared/simulation-v9';
 import {
-    V10_R1_RULESET_ID, V10_R2_RULESET_ID, V10_R6_RULESET_ID, V10_RULESET_ID,
+    V10_R1_RULESET_ID, V10_R2_RULESET_ID, V10_R6_RULESET_ID, V10_R7_RULESET_ID, V10_RULESET_ID,
     createSimulationV10, hashSimulationStateV10
 } from '../../shared/simulation-v10';
 import { V10_PROCEDURAL_RECIPE_REVISION } from '../../shared/terrain-generation-v10';
@@ -61,6 +61,13 @@ test('V10 replay binds seed, selected terrain profile and initial hash without a
         initialStateHash: hashSimulationStateV10(r6),
         records: [{ ...neutralRecord, stateHash: hashSimulationStateV10(r6) }]
     }).success, true);
+    const r7 = createSimulationV10(2, 'wizard', V10_R7_RULESET_ID);
+    assert.equal(CoordinatorReplayV10Schema.safeParse({
+        ...replay, rulesetId: V10_R7_RULESET_ID, terrainProfileId: r7.terrainProfileId,
+        recipeRevision: r7.terrainRecipeRevision, candidateIndex: r7.terrainCandidateIndex,
+        initialStateHash: hashSimulationStateV10(r7),
+        records: [{ ...neutralRecord, stateHash: hashSimulationStateV10(r7) }]
+    }).success, true, 'R7 replay inherits the bounded R6-family neutral jump contract');
 });
 
 test('V10E replay schema binds its revised ruleset and tactical profile', () => {

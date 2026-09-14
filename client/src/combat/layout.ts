@@ -2,7 +2,7 @@ import { SIM_RULES } from '../../../shared/simulation';
 import type { SimulationUnit } from '../../../shared/simulation';
 import { COMBAT_CAMERA_WINDOW, type CombatCamera } from './camera';
 import type { Rect, SafeAreaInsets } from './contracts';
-import { wizardPresentationTopInWorld } from './loomseed-origin';
+import { usesCompactWizardPresentation, wizardPresentationTopInWorld } from './loomseed-origin';
 
 export type CombatLayout = {
     orientation: 'portrait' | 'landscape';
@@ -104,8 +104,8 @@ export function computeActorStatusLayout(
     rulesetId?: string
 ): { player?: Rect; loomkeeper?: Rect } {
     // Keep the eager layout module independent of the full simulation-v10
-    // authority graph. The scene that owns R6 already validates this identity.
-    const compact = rulesetId === 'nimble-knots-artillery-v10-r6';
+    // authority graph. The scene validates the R6-family identity.
+    const compact = usesCompactWizardPresentation(rulesetId);
     const width = compact
         ? Math.min(72, Math.max(56, layout.battlefield.width * 0.1))
         : Math.min(108, Math.max(78, layout.battlefield.width * 0.16));

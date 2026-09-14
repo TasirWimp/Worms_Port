@@ -1,5 +1,5 @@
 import { generateVolcanicRuinTerrain, VOLCANIC_RUIN_RECIPE_REVISION } from './terrain-volcanic-ruin';
-import { V10G_PROJECTILE_RULES, V10_R6_PROJECTILE_RULES } from './projectile-rules-v10g';
+import { V10G_PROJECTILE_RULES, V10_R6_PROJECTILE_RULES, V10_R7_PROJECTILE_RULES } from './projectile-rules-v10g';
 import { generateV10GTwinCrests, V10G_RECIPE_REVISION, generateV10GFamily, v10gFamilyForSeed, V10G_FAMILY_RECIPE_REVISION } from './terrain-generation-v10g';
 import { z } from 'zod';
 import {
@@ -30,14 +30,16 @@ export const V10_R3_RULESET_ID = 'nimble-knots-artillery-v10-r3' as const;
 export const V10_R4_RULESET_ID = 'nimble-knots-artillery-v10-r4' as const;
 export const V10_R5_RULESET_ID = 'nimble-knots-artillery-v10-r5' as const;
 export const V10_R6_RULESET_ID = 'nimble-knots-artillery-v10-r6' as const;
+export const V10_R7_RULESET_ID = 'nimble-knots-artillery-v10-r7' as const;
 export const CURRENT_V10_RULESET_ID = V10_R6_RULESET_ID;
-export const usesV10GTactics = (rulesetId: string): boolean => rulesetId === V10_R3_RULESET_ID || rulesetId === V10_R4_RULESET_ID || rulesetId === V10_R5_RULESET_ID || rulesetId === V10_R6_RULESET_ID;
-export const usesVolcanicRuin = (rulesetId: string): boolean => rulesetId === V10_R5_RULESET_ID || rulesetId === V10_R6_RULESET_ID;
-export const usesV10R6ActionDynamics = (rulesetId: string): boolean => rulesetId === V10_R6_RULESET_ID;
-export const V10_RULESET_IDS = Object.freeze([V10_RULESET_ID, V10_R1_RULESET_ID, V10_R2_RULESET_ID, V10_R3_RULESET_ID, V10_R4_RULESET_ID, V10_R5_RULESET_ID, V10_R6_RULESET_ID] as const);
+export const usesV10GTactics = (rulesetId: string): boolean => rulesetId === V10_R3_RULESET_ID || rulesetId === V10_R4_RULESET_ID || rulesetId === V10_R5_RULESET_ID || rulesetId === V10_R6_RULESET_ID || rulesetId === V10_R7_RULESET_ID;
+export const usesVolcanicRuin = (rulesetId: string): boolean => rulesetId === V10_R5_RULESET_ID || rulesetId === V10_R6_RULESET_ID || rulesetId === V10_R7_RULESET_ID;
+/** R7 inherits the accepted R6 timing, control, and impact-motion package. */
+export const usesV10R6ActionDynamics = (rulesetId: string): boolean => rulesetId === V10_R6_RULESET_ID || rulesetId === V10_R7_RULESET_ID;
+export const V10_RULESET_IDS = Object.freeze([V10_RULESET_ID, V10_R1_RULESET_ID, V10_R2_RULESET_ID, V10_R3_RULESET_ID, V10_R4_RULESET_ID, V10_R5_RULESET_ID, V10_R6_RULESET_ID, V10_R7_RULESET_ID] as const);
 export type V10RulesetId = typeof V10_RULESET_IDS[number];
 export function isV10RulesetId(value: unknown): value is V10RulesetId {
-    return value === V10_RULESET_ID || value === V10_R1_RULESET_ID || value === V10_R2_RULESET_ID || value === V10_R3_RULESET_ID || value === V10_R4_RULESET_ID || value === V10_R5_RULESET_ID || value === V10_R6_RULESET_ID;
+    return value === V10_RULESET_ID || value === V10_R1_RULESET_ID || value === V10_R2_RULESET_ID || value === V10_R3_RULESET_ID || value === V10_R4_RULESET_ID || value === V10_R5_RULESET_ID || value === V10_R6_RULESET_ID || value === V10_R7_RULESET_ID;
 }
 export const V10_RULESET_VERSION = 10 as const;
 export const V10_R6_DYNAMICS: SimulationDynamics = Object.freeze({
@@ -158,7 +160,9 @@ export const SimulationStateV10Schema = SimulationStateV9KernelSchema.omit({
     const r4 = state.rulesetId === V10_R4_RULESET_ID;
     const r5 = state.rulesetId === V10_R5_RULESET_ID;
     const r6 = state.rulesetId === V10_R6_RULESET_ID;
-    const volcanic = r5 || r6;
+    const r7 = state.rulesetId === V10_R7_RULESET_ID;
+    const volcanic = r5 || r6 || r7;
+    const actionDynamics = r6 || r7;
     const procedural = state.rulesetId === V10_R2_RULESET_ID || r3 || r4 || volcanic;
     const expectedProfiles = volcanic ? ['volcanic-ruin'] : procedural
         ? V10_PROCEDURAL_TERRAIN_PROFILE_IDS
@@ -180,18 +184,18 @@ export const SimulationStateV10Schema = SimulationStateV9KernelSchema.omit({
         context.addIssue({ code: z.ZodIssueCode.custom, path: ['terrainCandidateIndex'],
             message: 'Procedural candidate index must match the recorded V10 ruleset.' });
     }
-    if (!r6 && (state.tick > V8_DEFAULT_DYNAMICS.maximumCombatTicks ||
+    if (!actionDynamics && (state.tick > V8_DEFAULT_DYNAMICS.maximumCombatTicks ||
         state.phaseStartedTick > V8_DEFAULT_DYNAMICS.maximumCombatTicks ||
         state.phaseDeadlineTick > V8_DEFAULT_DYNAMICS.maximumCombatTicks + V8_DEFAULT_DYNAMICS.maximumTurnTicks ||
         (state.lastLeaseRefreshTick !== null && state.lastLeaseRefreshTick > V8_DEFAULT_DYNAMICS.maximumCombatTicks) ||
         (state.leaseExpiresTick !== null && state.leaseExpiresTick > V8_DEFAULT_DYNAMICS.maximumCombatTicks + V8_DEFAULT_DYNAMICS.leaseTicks))) {
         context.addIssue({ code: z.ZodIssueCode.custom, path: ['tick'],
-            message: 'Pre-R6 state exceeds its frozen clock bounds.' });
+            message: 'Pre-action-dynamics state exceeds its frozen clock bounds.' });
     }
     const units = state.units as unknown as readonly { airDrive: string | null }[];
-    if (!r6 && units.some(unit => unit.airDrive === 'blast')) {
+    if (!actionDynamics && units.some(unit => unit.airDrive === 'blast')) {
         context.addIssue({ code: z.ZodIssueCode.custom, path: ['units'],
-            message: 'Blast motion belongs only to the R6 state contract.' });
+            message: 'Blast motion belongs only to the R6-family state contract.' });
     }
 });
 export const SimulationIntentV10Schema = z.union([
@@ -354,9 +358,9 @@ export function applySimulationIntentV10(
     const mechanics = mechanicsForV10(current.rulesetId);
     const dynamics = dynamicsForV10(current.rulesetId);
     const neutralJump = intent.type === 'jump' && intent.direction === 0;
-    if (neutralJump && (current.rulesetId !== V10_R6_RULESET_ID || current.heldDirection !== 0)) {
+    if (neutralJump && (!usesV10R6ActionDynamics(current.rulesetId) || current.heldDirection !== 0)) {
         return { accepted: false, mutated: false, state: current, events: [],
-            error: { code: 'COMMAND_REJECTED', message: 'Neutral jump requires an idle R6 actor.' } };
+            error: { code: 'COMMAND_REJECTED', message: 'Neutral jump requires an idle R6-family actor.' } };
     }
     const delegatedIntent: SimulationIntentV9 = neutralJump
         ? { type: 'jump', direction: current.units[actor === 'player' ? 0 : 1].facing }
@@ -436,7 +440,8 @@ export function dynamicsForV10(rulesetId: V10RulesetId): SimulationDynamics | un
 }
 
 export function mechanicsForV10(rulesetId: V10RulesetId): ProjectileMechanics | undefined {
-    return rulesetId === V10_R6_RULESET_ID ? V10_R6_PROJECTILE_RULES
+    return rulesetId === V10_R7_RULESET_ID ? V10_R7_PROJECTILE_RULES
+        : rulesetId === V10_R6_RULESET_ID ? V10_R6_PROJECTILE_RULES
         : usesV10GTactics(rulesetId) ? V10G_PROJECTILE_RULES : undefined;
 }
 

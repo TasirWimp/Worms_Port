@@ -24,3 +24,22 @@ export const V10_R6_PROJECTILE_RULES: ProjectileMechanics = Object.freeze({
         spoolburst: Object.freeze({ minimumSpeedFp: 320, maximumSpeedFp: 1_280, upwardBiasFp: 960 })
     })
 });
+
+/**
+ * R7 Waypoint 1 keeps every accepted R6 combat value and changes only the
+ * terrain cleared by Threadball and Spoolburst.
+ */
+export const V10_R7_PROJECTILE_RULES: ProjectileMechanics = Object.freeze({
+    ...V10_R6_PROJECTILE_RULES,
+    relics: Object.freeze({
+        threadball: Object.freeze({
+            ...V10_R6_PROJECTILE_RULES.relics.threadball,
+            craterRadius: 136
+        }),
+        needlepoint: V10_R6_PROJECTILE_RULES.relics.needlepoint,
+        spoolburst: Object.freeze({
+            ...V10_R6_PROJECTILE_RULES.relics.spoolburst,
+            craterRadius: 240
+        })
+    })
+});
