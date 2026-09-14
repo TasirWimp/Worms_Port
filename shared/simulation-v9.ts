@@ -2,7 +2,7 @@ import type { ProjectileMechanics, SimulationDynamics } from './simulation-v8';
 import { z } from 'zod';
 import {
     V8_R1_RULESET_ID, V8_SIM_RULES, applySimulationBarrierV8, applySimulationIntentV8,
-    advanceSimulationTicksV8, assertSimulationInvariantsV8Family,
+    advanceOwnedSimulationTicksV8, advanceSimulationTicksV8, assertSimulationInvariantsV8Family,
     createSimulationV8, forceSimulationLimitV8, type ProjectileV8, type SettleReasonV8,
     type SimulationBarrierV8Family, type SimulationEventV8, type SimulationIntentV8R1,
     type SimulationPhaseV8, type SimulationStateV8R1, type SimulationTransitionV8,
@@ -217,21 +217,31 @@ export class DetachedSimulationRolloutV9 {
  * every tick. Call completeDetachedSimulationRolloutV9 before ranking.
  */
 export function advanceSimulationTicksV9DetachedRollout(rollout: DetachedSimulationRolloutV9, count: number, mechanics?: ProjectileMechanics): SimulationTransitionV9 {
-    const current = rollout.state;
-    const maximumCombatTicks = rollout.dynamics?.maximumCombatTicks ?? V8_SIM_RULES.maximumCombatTicks;
+    const result = advanceOwnedSimulationTicksV9(rollout.state, count, mechanics, rollout.dynamics);
+    rollout.replace(result.state);
+    return result;
+}
+
+/**
+ * Internal clone-owned tick kernel shared by deterministic planner and replay
+ * work. The caller establishes the V9 invariant before entry and validates the
+ * completed state before it crosses a trust boundary.
+ */
+export function advanceOwnedSimulationTicksV9(current: SimulationStateV9, count: number, mechanics?: ProjectileMechanics,
+    dynamics?: SimulationDynamics): SimulationTransitionV9 {
+    const maximumCombatTicks = dynamics?.maximumCombatTicks ?? V8_SIM_RULES.maximumCombatTicks;
     if (!Number.isSafeInteger(count) || count < 0 || count > maximumCombatTicks)
         return reject(current, 'COMMAND_REJECTED', 'Tick batch exceeds the simulation bound.');
     if (current.phase === 'finished' || count === 0) return { accepted: true, mutated: false, state: current, events: [] };
     let state = current;
     const events: SimulationEventV9[] = [];
     for (let index = 0; index < count && state.phase !== 'finished'; index += 1) {
-        const result = advanceSimulationTicksV8(toV8(state), 1, mechanics, rollout.dynamics);
+        const result = advanceOwnedSimulationTicksV8(toV8(state), 1, mechanics, dynamics);
         if (!result.mutated) break;
         const next = fromV8(result.state, state, result.events);
         events.push(...translateEvents(result.events, state, next));
         state = next;
     }
-    rollout.replace(state);
     return { accepted: true, mutated: true, state, events };
 }
 

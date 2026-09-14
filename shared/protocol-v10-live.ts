@@ -2,9 +2,11 @@ import { z } from 'zod';
 import { ProtocolErrorSchema } from './protocol';
 import {
     SimulationBarrierV10Schema, SimulationIntentV10Schema, SimulationStateV10Schema,
-    CURRENT_V10_RULESET_ID
+    CURRENT_V10_RULESET_ID, V10_R6_RULESET_ID, V10_R7_RULESET_ID
 } from './simulation-v10';
-import { V10_AUTOMATION_ID } from './combat-version';
+import {
+    V10_AUTOMATION_ID, V10_AUTOMATION_IDS, V10_R6_AUTOMATION_ID, V10_R7_AUTOMATION_ID
+} from './combat-version';
 
 const V10_LOOMKEEPER_POLICY_ID = 'nimble-knots-loomkeeper-v5';
 const V10_LOOMKEEPER_PROFILE_ID = 'standard-v10-0';
@@ -47,9 +49,18 @@ export const LoomkeeperSelectionV10Schema = z.object({
 });
 export type LoomkeeperSelectionV10Record = z.infer<typeof LoomkeeperSelectionV10Schema>;
 export const CoordinatorReplayV10AutomatedSchema = CoordinatorReplayV10Schema.safeExtend({
-    automationId: z.literal(V10_AUTOMATION_ID),
+    automationId: z.enum(V10_AUTOMATION_IDS),
     chosenPlans: z.array(LoomkeeperSelectionV10Schema).max(16)
-}).strict();
+}).strict().superRefine((replay, context) => {
+    const identityMatches = replay.rulesetId === V10_R6_RULESET_ID
+        ? replay.automationId === V10_R6_AUTOMATION_ID
+        : replay.rulesetId === V10_R7_RULESET_ID && replay.automationId === V10_R7_AUTOMATION_ID;
+    if (!identityMatches) context.addIssue({
+        code: z.ZodIssueCode.custom,
+        path: ['automationId'],
+        message: 'Automation provenance does not belong to the recorded live V10 ruleset.'
+    });
+});
 export type CoordinatorReplayV10Automated = z.infer<typeof CoordinatorReplayV10AutomatedSchema>;
 
 const wireOwnership = { requestId: z.string().min(16).max(64).regex(/^[A-Za-z0-9_-]+$/), challengeId: id,

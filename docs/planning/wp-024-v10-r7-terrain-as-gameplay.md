@@ -1,6 +1,6 @@
 # WP-024 V10 R7 Terrain As Gameplay
 
-Status: **Waypoints 1-2 and Phone Gates A-B accepted; Waypoint 3 is next**
+Status: **Waypoint 3 implementation complete; Phone Gate C is next**
 Planning base: `842da39`  
 Implementation base: `4f7c878`
 Implementation branch: `codex/v10-r6-action-impact-dynamics`
@@ -292,9 +292,11 @@ server-backed Practice or rewarded Daily path.
 At committed and pushed `9e17773`, the owner accepted all seven physical-phone
 checks. The full arena, tactical routes, destructible foundation, open-bottom
 fall loss, exact changed-map reopen and deliberate fresh restart behaved as
-specified. **Phone Gate B is complete.** This authorizes Waypoint 3's bounded
-server-authority and deterministic replay integration; it does not yet promote
-R7 to standard Practice or Daily.
+specified. **Phone Gate B is complete.** The current implementation candidate
+now carries the accepted R7 state through live server creation, transport,
+replay reconstruction, deterministic Loomkeeper selection and reward
+verification. The practice-only deployment profile is the Phone Gate C canary;
+the deployed Daily service stays on R6 until that gate passes.
 
 ## Waypoint 3 - server-authoritative R7 and deterministic Loomkeeper
 
@@ -327,15 +329,27 @@ The fresh verifier reconstructs those facts locally and never performs a
 network call. A replay with a changed ruleset, automation identity, recipe,
 terrain transition, selection or result must fail closed.
 
+Reward settlement replays the exact deterministic proof cooperatively in
+six-tick batches. Its verifier owns a validated private state, uses the same
+V8/V9 mechanics kernel, regenerates the Loomkeeper plan and compares every
+canonical record and state hash before the durable reward update. Yielding
+between batches keeps terminal result delivery and unrelated matches
+responsive; it does not skip a replay operation or weaken the final invariant.
+The result screen may therefore appear briefly while the entitlement remains
+`in_progress`, and the existing reward update completes that transition.
+
 Closing and reopening the mini app during either actor's turn must recover the
 same challenge, terrain, turn, phase, actor positions, input cursors and already
 selected deterministic plan. A deliberate in-game leave or restart follows the
 existing authoritative lifecycle and cannot resurrect the local preview state.
 
-Practice admission comes first. Rewarded Daily remains on R6 until the R7
-Practice canary and replay verifier pass. Final promotion then binds the exact
-same R7 ruleset and automation identity to both paths; the reward service still
-pays only a verified authoritative player win.
+Practice admission comes first. The branch's current wire identity is R7 so the
+practice-only profile can exercise the real server and client path without
+constructing identity, PEI or reward services. Rewarded Daily remains on its
+deployed R6 build until the R7 Practice canary and replay verifier pass. Final
+activation deploys the exact same R7 ruleset and automation identity through
+the ordinary profile; the reward service still pays only a verified
+authoritative player win.
 
 ### Phone Gate C - server-backed R7 Practice
 

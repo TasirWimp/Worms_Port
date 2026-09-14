@@ -1,6 +1,8 @@
 import {
-    advanceSimulationTicksV10, applySimulationBarrierV10, applySimulationIntentV10,
-    assertSimulationInvariantsV10, createSimulationV10, forceSimulationLimitV10, hashSimulationStateV10, CURRENT_V10_RULESET_ID,
+    advanceOwnedSimulationTickV10, advanceSimulationTicksV10, applySimulationBarrierV10, applySimulationIntentV10,
+    assertSimulationInvariantsV10, createSimulationV10, forceSimulationLimitV10, hashSimulationStateV10,
+    hashValidatedSimulationStateV10, CURRENT_V10_RULESET_ID,
+    V10_R6_RULESET_ID, V10_R7_RULESET_ID,
     type SimulationBarrierV10, type SimulationIntentV10, type SimulationStateV10, type SimulationTransitionV10
 } from '../../../shared/simulation-v10';
 import type { PlayerCalling, SimulationActor } from '../../../shared/simulation';
@@ -8,28 +10,37 @@ import {
     CoordinatorReplayV10Schema, CoordinatorReplayV10AutomatedSchema, ReplayOperationV10Schema, V10_REPLAY_LIMITS, jsonBytesV10,
     type CoordinatorReplayV10, type CoordinatorReplayV10Automated, type ReplayOperationV10, type V10StopReason
 } from '../../../shared/protocol-v10-live';
-import { V10_AUTOMATION_ID } from '../../../shared/combat-version';
+import {
+    isV10AutomationId, V10_AUTOMATION_ID, V10_R6_AUTOMATION_ID, V10_R7_AUTOMATION_ID,
+    type V10AutomationId
+} from '../../../shared/combat-version';
 import { LoomkeeperExecutionV10, LoomkeeperPlannerV10, type LoomkeeperSelectionV10 } from '../../../shared/loomkeeper-v10';
 
 export { V10_REPLAY_LIMITS } from '../../../shared/protocol-v10-live';
 export type { CoordinatorReplayV10 } from '../../../shared/protocol-v10-live';
 
+const REPLAY_VERIFICATION_TICK_BATCH = 6;
+
+type LiveV10RulesetId = typeof V10_R6_RULESET_ID | typeof V10_R7_RULESET_ID;
+type LiveV10Identity = Readonly<{ rulesetId: LiveV10RulesetId; automationId: V10AutomationId }>;
 export type CoordinatorTerminalResultV10 = {
-    rulesetId: typeof CURRENT_V10_RULESET_ID; challengeId: string; sessionId: string;
+    rulesetId: LiveV10RulesetId; challengeId: string; sessionId: string;
     winner: SimulationStateV10['winner']; reason: string; tick: number; stateHash: string;
-    automationId?: typeof V10_AUTOMATION_ID;
+    automationId?: V10AutomationId;
     stopReason?: V10StopReason;
 };
 export type CoordinatorSnapshotV10 = {
     challengeId: string; sessionId: string; state: SimulationStateV10; stateHash: string;
     replayLength: number; paused: boolean; unavailable: boolean; terminalResult?: CoordinatorTerminalResultV10;
-    automationId?: typeof V10_AUTOMATION_ID;
+    automationId?: V10AutomationId;
 };
 export type CoordinatorUpdateV10 = CoordinatorSnapshotV10 & { transition: SimulationTransitionV10 };
 export type LiveSimulationCoordinatorV10Options = {
     nowUs?: () => number; yieldBatch?: () => Promise<void>; tickIntervalMs?: number;
     /** Test seams may only lower frozen replay caps. */
     maxReplayRecords?: number; maxReplayBytes?: number;
+    /** Historical replay verification seam; live runtime omits it and uses the current identity. */
+    replayIdentity?: LiveV10Identity;
     plannerFactory?: (state: SimulationStateV10) => LoomkeeperPlannerV10;
     onTransition?: (update: CoordinatorUpdateV10) => void;
     onTerminal?: (result: CoordinatorTerminalResultV10) => void;
@@ -54,14 +65,20 @@ export class LiveSimulationCoordinatorV10 {
     private readonly yieldBatch: () => Promise<void>;
     private readonly maxRecords: number;
     private readonly maxBytes: number;
+    private readonly identity: LiveV10Identity;
     private readonly timer?: NodeJS.Timeout;
     private ticking = false;
+    private replayVerificationKernel = false;
 
     public constructor(private readonly options: LiveSimulationCoordinatorV10Options = {}) {
         this.nowUs = options.nowUs ?? (() => Number(process.hrtime.bigint() / 1000n));
         this.yieldBatch = options.yieldBatch ?? (() => new Promise(resolve => setImmediate(resolve)));
         this.maxRecords = bounded(options.maxReplayRecords ?? V10_REPLAY_LIMITS.records, 2, V10_REPLAY_LIMITS.records);
         this.maxBytes = bounded(options.maxReplayBytes ?? V10_REPLAY_LIMITS.bytes, 1024, V10_REPLAY_LIMITS.bytes);
+        this.identity = validateLiveIdentity(options.replayIdentity ?? {
+            rulesetId: CURRENT_V10_RULESET_ID,
+            automationId: V10_AUTOMATION_ID
+        });
         if (options.tickIntervalMs !== undefined) {
             bounded(options.tickIntervalMs, 1, 1000);
             this.timer = setInterval(() => { void this.pumpAll(); }, options.tickIntervalMs);
@@ -71,10 +88,10 @@ export class LiveSimulationCoordinatorV10 {
 
     public create(challengeId: string, sessionId: string, seed: number, calling: PlayerCalling): CoordinatorSnapshotV10 {
         if (this.matches.has(challengeId)) throw new Error('Duplicate V10 challenge.');
-        const state = createState(seed, calling);
+        const state = createState(seed, calling, this.identity.rulesetId);
         const stateHash = hashSimulationStateV10(state);
         const replay = CoordinatorReplayV10Schema.parse({ formatVersion: 10, challengeId, sessionId, seed, calling,
-            rulesetId: CURRENT_V10_RULESET_ID, terrainProfileId: state.terrainProfileId, recipeRevision: state.terrainRecipeRevision, candidateIndex: state.terrainCandidateIndex, initialStateHash: stateHash, records: [] });
+            rulesetId: this.identity.rulesetId, terrainProfileId: state.terrainProfileId, recipeRevision: state.terrainRecipeRevision, candidateIndex: state.terrainCandidateIndex, initialStateHash: stateHash, records: [] });
         const entry: Entry = { replay, state, stateHash, bytes: jsonBytesV10(replay), paused: false,
             unavailable: false, anchorUs: this.clock(), credit: 0n, automated: false };
         if (entry.bytes + V10_REPLAY_LIMITS.terminalBytes > this.maxBytes) throw new Error('No terminal replay reserve.');
@@ -82,16 +99,16 @@ export class LiveSimulationCoordinatorV10 {
         return this.snapshot(entry);
     }
 
-    public createAutomated(challengeId: string, sessionId: string, seed: number, calling: PlayerCalling): CoordinatorSnapshotV10 & { automationId: typeof V10_AUTOMATION_ID } {
+    public createAutomated(challengeId: string, sessionId: string, seed: number, calling: PlayerCalling): CoordinatorSnapshotV10 & { automationId: V10AutomationId } {
         if (this.matches.has(challengeId)) throw new Error('Duplicate V10 challenge.');
-        const state = createState(seed, calling), stateHash = hashSimulationStateV10(state);
+        const state = createState(seed, calling, this.identity.rulesetId), stateHash = hashSimulationStateV10(state);
         const replay = CoordinatorReplayV10AutomatedSchema.parse({ formatVersion: 10, challengeId, sessionId, seed, calling,
-            rulesetId: CURRENT_V10_RULESET_ID, terrainProfileId: state.terrainProfileId, recipeRevision: state.terrainRecipeRevision, candidateIndex: state.terrainCandidateIndex,
-            automationId: V10_AUTOMATION_ID, initialStateHash: stateHash, records: [], chosenPlans: [] });
+            rulesetId: this.identity.rulesetId, terrainProfileId: state.terrainProfileId, recipeRevision: state.terrainRecipeRevision, candidateIndex: state.terrainCandidateIndex,
+            automationId: this.identity.automationId, initialStateHash: stateHash, records: [], chosenPlans: [] });
         const entry: Entry = { replay, state, stateHash, bytes: jsonBytesV10(replay), paused: false, unavailable: false,
             anchorUs: this.clock(), credit: 0n, automated: true };
         if (entry.bytes + V10_REPLAY_LIMITS.terminalBytes > this.maxBytes) throw new Error('No terminal replay reserve.');
-        this.matches.set(challengeId, entry); return this.snapshot(entry) as CoordinatorSnapshotV10 & { automationId: typeof V10_AUTOMATION_ID };
+        this.matches.set(challengeId, entry); return this.snapshot(entry) as CoordinatorSnapshotV10 & { automationId: V10AutomationId };
     }
 
     public get(challengeId: string): CoordinatorSnapshotV10 | undefined {
@@ -152,18 +169,30 @@ export class LiveSimulationCoordinatorV10 {
     public advance(challengeId: string, count: number): CoordinatorUpdateV10 {
         bounded(count, 0, V10_REPLAY_LIMITS.ticks); const entry = this.require(challengeId);
         if (entry.paused) return this.rejected(entry, 'The match is paused.');
-        let update = this.noop(entry);
-        for (let index = 0; index < count && !entry.terminalResult; index++) {
-            if (entry.automated) this.prepareAutomatedTick(entry);
-            const oldPhase = entry.state.phase, oldTick = entry.state.tick;
-            update = this.accept(entry, advanceSimulationTicksV10(entry.state, 1), { kind: 'ticks', count: 1 }, false, !entry.automated);
-            if (entry.automated) {
-                update = this.drainAutomated(entry, update);
-                if (entry.state.tick % 3 === 0 || oldPhase !== entry.state.phase || oldTick === entry.state.tick)
-                    this.options.onTransition?.(structuredClone(update));
+        const started = this.clock();
+        try {
+            let update = this.noop(entry);
+            for (let index = 0; index < count && !entry.terminalResult; index++) {
+                if (entry.automated) this.prepareAutomatedTick(entry);
+                const oldPhase = entry.state.phase, oldTick = entry.state.tick;
+                const transition = this.replayVerificationKernel
+                    ? advanceOwnedSimulationTickV10(entry.state)
+                    : advanceSimulationTicksV10(entry.state, 1);
+                update = this.accept(entry, transition, { kind: 'ticks', count: 1 }, false, !entry.automated);
+                if (entry.automated) {
+                    update = this.drainAutomated(entry, update);
+                    if (entry.state.tick % 3 === 0 || oldPhase !== entry.state.phase || oldTick === entry.state.tick)
+                        this.options.onTransition?.(structuredClone(update));
+                }
             }
+            if (this.replayVerificationKernel) assertSimulationInvariantsV10(entry.state);
+            return update;
+        } finally {
+            // Logical ticks already charge planning and simulation time. Exclude
+            // all synchronous authority work, including state publication, so
+            // larger R7 terrain cannot be counted again as scheduler debt.
+            this.excludeMeasuredAuthorityWork(Math.max(0, this.clock() - started));
         }
-        return update;
     }
 
     public pump(challengeId: string): CoordinatorSnapshotV10 {
@@ -196,21 +225,15 @@ export class LiveSimulationCoordinatorV10 {
     }
 
     public reconstructAndVerify(input: unknown, expected?: { challengeId: string; sessionId: string }): CoordinatorSnapshotV10 {
-        if (jsonBytesV10(input) > this.maxBytes) throw new Error('V10 replay byte limit exceeded.');
-        const raw = input as { records?: unknown[] };
-        if (!raw || !Array.isArray(raw.records) || raw.records.length > this.maxRecords) throw new Error('V10 replay record limit exceeded.');
-        for (const record of raw.records) if (jsonBytesV10(record) > V10_REPLAY_LIMITS.operationBytes) throw new Error('V10 operation record byte limit exceeded.');
-        let totalTicks = 0;
-        for (const record of raw.records) if ((record as { operation?: { kind?: string; count?: unknown } }).operation?.kind === 'ticks')
-            totalTicks += (record as { operation: { count: number } }).operation.count;
-        if (totalTicks > V10_REPLAY_LIMITS.ticks) throw new Error('V10 replay tick limit exceeded.');
-        if ((input as { automationId?: unknown })?.automationId === V10_AUTOMATION_ID) return this.reconstructAutomated(input, expected);
+        this.assertReplayBounds(input);
+        if (isV10AutomationId((input as { automationId?: unknown })?.automationId)) return this.reconstructAutomated(input, expected);
         const replay = CoordinatorReplayV10Schema.parse(input);
         if (expected && (expected.challengeId !== replay.challengeId || expected.sessionId !== replay.sessionId)) throw new Error('V10 replay ownership mismatch.');
-        totalTicks = 0;
+        let totalTicks = 0;
         for (const record of replay.records) if (record.operation.kind === 'ticks') totalTicks += record.operation.count;
         if (totalTicks > V10_REPLAY_LIMITS.ticks) throw new Error('V10 replay tick limit exceeded.');
-        const verifier = new LiveSimulationCoordinatorV10({ nowUs: () => 0, maxReplayRecords: this.maxRecords, maxReplayBytes: this.maxBytes });
+        const verifier = new LiveSimulationCoordinatorV10({ nowUs: () => 0, maxReplayRecords: this.maxRecords,
+            maxReplayBytes: this.maxBytes, replayIdentity: liveIdentityForRuleset(replay.rulesetId) });
         try {
             const initial = verifier.create(replay.challengeId, replay.sessionId, replay.seed, replay.calling);
             if (initial.stateHash !== replay.initialStateHash) throw new Error('V10 initial hash mismatch.');
@@ -236,11 +259,25 @@ export class LiveSimulationCoordinatorV10 {
             return { ...result, replayLength: replay.records.length };
         } finally { verifier.dispose(); }
     }
+    /** Current reward settlement yields between bounded replay batches. */
+    public async reconstructAndVerifyAsync(input: unknown,
+        expected?: { challengeId: string; sessionId: string }): Promise<CoordinatorSnapshotV10> {
+        this.assertReplayBounds(input);
+        if (isV10AutomationId((input as { automationId?: unknown })?.automationId)) {
+            return this.reconstructAutomatedAsync(input, expected);
+        }
+        return this.reconstructAndVerify(input, expected);
+    }
     private reconstructAutomated(input: unknown, expected?: { challengeId: string; sessionId: string }): CoordinatorSnapshotV10 {
         const replay = CoordinatorReplayV10AutomatedSchema.parse(input);
         if (expected && (expected.challengeId !== replay.challengeId || expected.sessionId !== replay.sessionId)) throw new Error('V10 replay ownership mismatch.');
         if (replay.chosenPlans.some(plan => plan.status === 'work_failure')) throw new Error('A V10 work failure is not automated-policy proof.');
-        const verifier = new LiveSimulationCoordinatorV10({ nowUs: () => 0, maxReplayRecords: this.maxRecords, maxReplayBytes: this.maxBytes });
+        const verifier = new LiveSimulationCoordinatorV10({ nowUs: () => 0, maxReplayRecords: this.maxRecords,
+            maxReplayBytes: this.maxBytes, replayIdentity: validateLiveIdentity({
+                rulesetId: replay.rulesetId as LiveV10RulesetId,
+                automationId: replay.automationId
+            }) });
+        verifier.replayVerificationKernel = true;
         try {
             const initial = verifier.createAutomated(replay.challengeId, replay.sessionId, replay.seed, replay.calling);
             if (initial.stateHash !== replay.initialStateHash) throw new Error('V10 initial hash mismatch.');
@@ -264,6 +301,46 @@ export class LiveSimulationCoordinatorV10 {
             return verifier.get(replay.challengeId)!;
         } finally { verifier.dispose(); }
     }
+    private async reconstructAutomatedAsync(input: unknown,
+        expected?: { challengeId: string; sessionId: string }): Promise<CoordinatorSnapshotV10> {
+        const replay = CoordinatorReplayV10AutomatedSchema.parse(input);
+        if (expected && (expected.challengeId !== replay.challengeId || expected.sessionId !== replay.sessionId)) throw new Error('V10 replay ownership mismatch.');
+        if (replay.chosenPlans.some(plan => plan.status === 'work_failure')) throw new Error('A V10 work failure is not automated-policy proof.');
+        const verifier = new LiveSimulationCoordinatorV10({ nowUs: () => 0, maxReplayRecords: this.maxRecords,
+            maxReplayBytes: this.maxBytes, replayIdentity: validateLiveIdentity({
+                rulesetId: replay.rulesetId as LiveV10RulesetId,
+                automationId: replay.automationId
+            }) });
+        verifier.replayVerificationKernel = true;
+        try {
+            const initial = verifier.createAutomated(replay.challengeId, replay.sessionId, replay.seed, replay.calling);
+            if (initial.stateHash !== replay.initialStateHash) throw new Error('V10 initial hash mismatch.');
+            let cursor = 0;
+            while (cursor < replay.records.length) {
+                const generated = verifier.require(replay.challengeId).replay.records[cursor];
+                if (generated) { if (JSON.stringify(generated) !== JSON.stringify(replay.records[cursor])) throw new Error(`V10 automated replay divergence at ${cursor}.`); cursor += 1; continue; }
+                const operation = replay.records[cursor].operation;
+                if (operation.kind === 'automatic' || (operation.kind === 'intent' && operation.actor === 'loomkeeper') ||
+                    (operation.kind === 'barrier' && operation.barrier.actor === 'loomkeeper')) throw new Error(`Missing generated V10 policy operation at ${cursor}.`);
+                if (verifier.get(replay.challengeId)!.state.phase === 'finished') throw new Error('V10 replay extends beyond terminal state.');
+                if (operation.kind === 'intent') verifier.apply(replay.challengeId, operation.actor, operation.intent as SimulationIntentV10, operation.expectedTurn, operation.expectedPhase, operation.expectedEpoch);
+                else if (operation.kind === 'barrier') verifier.barrier(replay.challengeId, operation.barrier);
+                else if (operation.kind === 'ticks') {
+                    let remaining = operation.count;
+                    while (remaining > 0) {
+                        const count = Math.min(REPLAY_VERIFICATION_TICK_BATCH, remaining);
+                        verifier.advance(replay.challengeId, count); remaining -= count;
+                        await this.yieldBatch();
+                    }
+                } else verifier.safety(replay.challengeId, operation.reason);
+                if (!verifier.require(replay.challengeId).replay.records[cursor]) throw new Error(`V10 replay operation did not mutate at ${cursor}.`);
+            }
+            const regenerated = verifier.require(replay.challengeId).replay;
+            if (JSON.stringify(regenerated.records) !== JSON.stringify(replay.records) || !('chosenPlans' in regenerated) ||
+                JSON.stringify(regenerated.chosenPlans) !== JSON.stringify(replay.chosenPlans)) throw new Error('V10 automated policy proof is incomplete or changed.');
+            return verifier.get(replay.challengeId)!;
+        } finally { verifier.dispose(); }
+    }
     public takePendingTerminalResult(challengeId: string): CoordinatorTerminalResultV10 | undefined {
         const entry = this.matches.get(challengeId); const result = entry?.pendingTerminal; if (entry) entry.pendingTerminal = undefined;
         return result && structuredClone(result);
@@ -273,8 +350,12 @@ export class LiveSimulationCoordinatorV10 {
     public dispose(): void { if (this.timer) clearInterval(this.timer); this.matches.clear(); }
 
     private accept(entry: Entry, transition: SimulationTransitionV10, operation: ReplayOperationV10, reserve = false, notify = true): CoordinatorUpdateV10 {
-        if (!transition.accepted || !transition.mutated) return { ...this.snapshot(entry), transition: structuredClone(transition) };
-        const stateHash = hashSimulationStateV10(transition.state);
+        if (!transition.accepted || !transition.mutated) return this.replayVerificationKernel
+            ? this.verificationUpdate(entry, transition)
+            : { ...this.snapshot(entry), transition: structuredClone(transition) };
+        const stateHash = this.replayVerificationKernel
+            ? hashValidatedSimulationStateV10(transition.state)
+            : hashSimulationStateV10(transition.state);
         const automatic: ReplayOperationV10[] = reserve ? [] : transition.events.filter(event => event.type === 'input_barrier').map(event =>
             event.reason === 'phase' ? { kind: 'automatic', reason: 'phase', tick: transition.state.tick, inputEpoch: transition.state.inputEpoch, phase: transition.state.phase }
                 : { kind: 'automatic', reason: 'lease_expired', tick: transition.state.tick, inputEpoch: transition.state.inputEpoch });
@@ -296,18 +377,33 @@ export class LiveSimulationCoordinatorV10 {
         if (coalesce) entry.replay.records[entry.replay.records.length - 1] = record; else entry.replay.records.push(record);
         entry.replay.records.push(...annotations);
         if (entry.state.phase === 'finished' && !entry.terminalResult) {
-            entry.terminalResult = { rulesetId: CURRENT_V10_RULESET_ID, challengeId: entry.replay.challengeId, sessionId: entry.replay.sessionId,
+            entry.terminalResult = { rulesetId: liveRulesetId(entry.replay.rulesetId), challengeId: entry.replay.challengeId, sessionId: entry.replay.sessionId,
                 winner: entry.state.winner, reason: entry.state.finishReason!, tick: entry.state.tick, stateHash,
                 ...(entry.stopReason ? { stopReason: entry.stopReason } : {}),
-                ...(entry.automated ? { automationId: V10_AUTOMATION_ID } : {}) };
+                ...(entry.automated && 'automationId' in entry.replay ? { automationId: entry.replay.automationId } : {}) };
             entry.pendingTerminal = entry.terminalResult; this.options.onTerminal?.(structuredClone(entry.terminalResult));
         }
-        const update = { ...this.snapshot(entry), transition: structuredClone(transition) };
+        const update = this.replayVerificationKernel
+            ? this.verificationUpdate(entry, transition)
+            : { ...this.snapshot(entry), transition: structuredClone(transition) };
         if (notify && (operation.kind !== 'ticks' || entry.state.tick % 3 === 0 || oldPhase !== entry.state.phase || transition.events.some(event => event.type === 'phase_changed'))) this.options.onTransition?.(update);
         return update;
     }
-    private snapshot(entry: Entry): CoordinatorSnapshotV10 { return { challengeId: entry.replay.challengeId, sessionId: entry.replay.sessionId, state: structuredClone(entry.state), stateHash: entry.stateHash, replayLength: entry.replay.records.length, paused: entry.paused, unavailable: entry.unavailable, ...(entry.automated ? { automationId: V10_AUTOMATION_ID } : {}), ...(entry.terminalResult ? { terminalResult: structuredClone(entry.terminalResult) } : {}) }; }
-    private noop(entry: Entry): CoordinatorUpdateV10 { return { ...this.snapshot(entry), transition: { accepted: true, mutated: false, state: structuredClone(entry.state), events: [] } }; }
+    /** Internal verifier view. Nothing returned here crosses the replay trust boundary. */
+    private verificationUpdate(entry: Entry, transition: SimulationTransitionV10): CoordinatorUpdateV10 {
+        return { challengeId: entry.replay.challengeId, sessionId: entry.replay.sessionId, state: entry.state,
+            stateHash: entry.stateHash, replayLength: entry.replay.records.length, paused: entry.paused,
+            unavailable: entry.unavailable, transition,
+            ...(entry.automated && 'automationId' in entry.replay ? { automationId: entry.replay.automationId } : {}),
+            ...(entry.terminalResult ? { terminalResult: entry.terminalResult } : {}) };
+    }
+    private snapshot(entry: Entry): CoordinatorSnapshotV10 { return { challengeId: entry.replay.challengeId, sessionId: entry.replay.sessionId, state: structuredClone(entry.state), stateHash: entry.stateHash, replayLength: entry.replay.records.length, paused: entry.paused, unavailable: entry.unavailable, ...(entry.automated && 'automationId' in entry.replay ? { automationId: entry.replay.automationId } : {}), ...(entry.terminalResult ? { terminalResult: structuredClone(entry.terminalResult) } : {}) }; }
+    private noop(entry: Entry): CoordinatorUpdateV10 {
+        const transition = { accepted: true, mutated: false, state: entry.state, events: [] } satisfies SimulationTransitionV10;
+        return this.replayVerificationKernel
+            ? this.verificationUpdate(entry, transition)
+            : { ...this.snapshot(entry), transition: structuredClone(transition) };
+    }
     private rejected(entry: Entry, message: string): CoordinatorUpdateV10 { return { ...this.snapshot(entry), transition: { accepted: false, mutated: false, state: structuredClone(entry.state), events: [], error: { code: 'COMMAND_REJECTED', message } } }; }
     private resumeInterruptedThreadleap(entry: Entry): SimulationTransitionV10 {
         if (entry.state.lifecycleBarrierCount >= 128) {
@@ -337,12 +433,6 @@ export class LiveSimulationCoordinatorV10 {
             finally {
                 const planningWorkUs = Math.max(0, this.clock() - started);
                 entry.maximumPlanningBatchUs = Math.max(entry.maximumPlanningBatchUs ?? 0, planningWorkUs);
-                // The fixed 30 logical planning ticks already charge the AI's
-                // decision window. Exclude measured planner CPU from every live
-                // match so one match cannot charge its internal authority work
-                // as scheduler debt to peers. External scheduler stalls still
-                // accrue normally because they are not inside this measurement.
-                this.excludeMeasuredAuthorityWork(planningWorkUs);
             }
         }
         entry.planningElapsed = (entry.planningElapsed ?? 0) + 1;
@@ -359,7 +449,10 @@ export class LiveSimulationCoordinatorV10 {
         if (!entry.execution) return initial;
         let update = initial;
         for (let count = 0; count < 8; count += 1) {
-            const operation = entry.execution.next(entry.state); if (!operation) break;
+            const operation = this.replayVerificationKernel
+                ? entry.execution.nextValidated(entry.state)
+                : entry.execution.next(entry.state);
+            if (!operation) break;
             const before = entry.state;
             const transition = operation.kind === 'intent'
                 ? applySimulationIntentV10(before, 'loomkeeper', operation.intent, before.turn, before.phase, before.inputEpoch)
@@ -386,6 +479,16 @@ export class LiveSimulationCoordinatorV10 {
         if (bytes > this.maxBytes - V10_REPLAY_LIMITS.terminalBytes) { entry.replay.chosenPlans = previous; return false; }
         entry.bytes = bytes; return true;
     }
+    private assertReplayBounds(input: unknown): void {
+        if (jsonBytesV10(input) > this.maxBytes) throw new Error('V10 replay byte limit exceeded.');
+        const raw = input as { records?: unknown[] };
+        if (!raw || !Array.isArray(raw.records) || raw.records.length > this.maxRecords) throw new Error('V10 replay record limit exceeded.');
+        for (const record of raw.records) if (jsonBytesV10(record) > V10_REPLAY_LIMITS.operationBytes) throw new Error('V10 operation record byte limit exceeded.');
+        let totalTicks = 0;
+        for (const record of raw.records) if ((record as { operation?: { kind?: string; count?: unknown } }).operation?.kind === 'ticks')
+            totalTicks += (record as { operation: { count: number } }).operation.count;
+        if (totalTicks > V10_REPLAY_LIMITS.ticks) throw new Error('V10 replay tick limit exceeded.');
+    }
     private require(id: string): Entry { const entry = this.matches.get(id); if (!entry) throw new Error('No V10 simulation for this challenge.'); return entry; }
     private clock(): number { return bounded(this.nowUs(), 0, Number.MAX_SAFE_INTEGER); }
     private accrue(entry: Entry): void { const now = this.clock(); if (now < entry.anchorUs) { this.safety(entry.replay.challengeId, 'clock_debt'); return; } if (!entry.paused && !entry.terminalResult) entry.credit += BigInt(now - entry.anchorUs) * 30n; entry.anchorUs = now; }
@@ -406,7 +509,22 @@ export class LiveSimulationCoordinatorV10 {
 
 }
 
-function createState(seed: number, calling: PlayerCalling): SimulationStateV10 { return createSimulationV10(seed, calling, CURRENT_V10_RULESET_ID); }
+function createState(seed: number, calling: PlayerCalling, rulesetId: LiveV10RulesetId): SimulationStateV10 {
+    return createSimulationV10(seed, calling, rulesetId);
+}
+function liveRulesetId(value: unknown): LiveV10RulesetId {
+    if (value !== V10_R6_RULESET_ID && value !== V10_R7_RULESET_ID) throw new Error('Unsupported live V10 replay ruleset.');
+    return value;
+}
+function liveIdentityForRuleset(value: unknown): LiveV10Identity {
+    const rulesetId = liveRulesetId(value);
+    return { rulesetId, automationId: rulesetId === V10_R6_RULESET_ID ? V10_R6_AUTOMATION_ID : V10_R7_AUTOMATION_ID };
+}
+function validateLiveIdentity(identity: LiveV10Identity): LiveV10Identity {
+    const expected = liveIdentityForRuleset(identity.rulesetId);
+    if (identity.automationId !== expected.automationId) throw new Error('Mismatched live V10 replay identity.');
+    return identity;
+}
 function bounded(value: number, minimum: number, maximum: number): number {
     if (!Number.isSafeInteger(value) || value < minimum || value > maximum) throw new RangeError('V10 integer bound exceeded.');
     return value;

@@ -13,7 +13,10 @@ import {
     type LoomkeeperSelectionV9,
     type V9Prefix
 } from './loomkeeper-v9';
-import { dynamicsForV10, mechanicsForV10, simulationV9ViewOfV10, usesV10GTactics, type SimulationStateV10 } from './simulation-v10';
+import {
+    dynamicsForV10, mechanicsForV10, simulationV9ViewOfV10, simulationV9ViewOfValidatedV10,
+    usesV10GTactics, type SimulationStateV10
+} from './simulation-v10';
 
 /** V10 deliberately inherits the complete frozen V9 search budget. */
 export const V10_AI_PLANS = V9_AI_PLANS;
@@ -79,5 +82,9 @@ export class LoomkeeperExecutionV10 {
     public readyForAim(): boolean { return this.execution.readyForAim(); }
     public next(state: SimulationStateV10): LoomkeeperOperationV10 | undefined {
         return this.execution.next(simulationV9ViewOfV10(state));
+    }
+    /** Internal replay verifier seam; the cursor reads but never mutates this view. */
+    public nextValidated(state: SimulationStateV10): LoomkeeperOperationV10 | undefined {
+        return this.execution.next(simulationV9ViewOfValidatedV10(state));
     }
 }

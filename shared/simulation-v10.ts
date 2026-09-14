@@ -7,7 +7,7 @@ import { V10G_PROJECTILE_RULES, V10_R6_PROJECTILE_RULES, V10_R7_PROJECTILE_RULES
 import { generateV10GTwinCrests, V10G_RECIPE_REVISION, generateV10GFamily, v10gFamilyForSeed, V10G_FAMILY_RECIPE_REVISION } from './terrain-generation-v10g';
 import { z } from 'zod';
 import {
-    applySimulationBarrierV9, applySimulationIntentV9, advanceSimulationTicksV9,
+    applySimulationBarrierV9, applySimulationIntentV9, advanceOwnedSimulationTicksV9, advanceSimulationTicksV9,
     assertSimulationInvariantsV9, cloneSimulationV9, createSimulationV9, forceSimulationLimitV9,
     SimulationBarrierV9Schema, SimulationIntentV9Schema, SimulationStateV9KernelSchema,
     type SimulationBarrierV9, type SimulationEventV9, type SimulationIntentV9,
@@ -35,7 +35,7 @@ export const V10_R4_RULESET_ID = 'nimble-knots-artillery-v10-r4' as const;
 export const V10_R5_RULESET_ID = 'nimble-knots-artillery-v10-r5' as const;
 export const V10_R6_RULESET_ID = 'nimble-knots-artillery-v10-r6' as const;
 export const V10_R7_RULESET_ID = 'nimble-knots-artillery-v10-r7' as const;
-export const CURRENT_V10_RULESET_ID = V10_R6_RULESET_ID;
+export const CURRENT_V10_RULESET_ID = V10_R7_RULESET_ID;
 export const usesV10GTactics = (rulesetId: string): boolean => rulesetId === V10_R3_RULESET_ID || rulesetId === V10_R4_RULESET_ID || rulesetId === V10_R5_RULESET_ID || rulesetId === V10_R6_RULESET_ID || rulesetId === V10_R7_RULESET_ID;
 export const usesVolcanicRuin = (rulesetId: string): boolean => rulesetId === V10_R5_RULESET_ID || rulesetId === V10_R6_RULESET_ID || rulesetId === V10_R7_RULESET_ID;
 /** R5/R6 retain the accepted fixed volcanic composition; R7 surveys the complete 2048-unit battlefield. */
@@ -414,6 +414,29 @@ export function advanceSimulationTicksV10(current: SimulationStateV10, count: nu
         mechanicsForV10(current.rulesetId), dynamicsForV10(current.rulesetId)), current);
 }
 
+/**
+ * Internal one-tick kernel for a fresh replay verifier. The verifier exclusively
+ * owns `current`, validates the completed batch and compares its canonical hash
+ * with recorded authority before the state can cross a trust boundary.
+ */
+export function advanceOwnedSimulationTickV10(current: SimulationStateV10): SimulationTransitionV10 {
+    const terrainWordsBefore = current.rulesetId === V10_R7_RULESET_ID && current.projectile
+        ? [...current.terrain.words]
+        : undefined;
+    const result = advanceOwnedSimulationTicksV9(toV9(current), 1,
+        mechanicsForV10(current.rulesetId), dynamicsForV10(current.rulesetId));
+    if (!result.mutated) return { ...result, state: current };
+    let terrainRevision = current.terrainRevision;
+    let terrainHash = current.terrainHash;
+    if (current.rulesetId === V10_R7_RULESET_ID) {
+        const terrainChanged = terrainWordsBefore?.some((word, index) => word !== result.state.terrain.words[index]) ?? false;
+        terrainRevision = current.terrainRevision! + (terrainChanged ? 1 : 0);
+        terrainHash = terrainChanged ? hashTerrainV10R7(result.state.terrain) : current.terrainHash;
+    }
+    return { ...result, state: fromV9(result.state, current.rulesetId, current.terrainProfileId,
+        current.terrainRecipeRevision, current.terrainCandidateIndex, terrainRevision, terrainHash) };
+}
+
 export function applySimulationBarrierV10(
     current: SimulationStateV10,
     barrier: SimulationBarrierV10
@@ -446,6 +469,11 @@ export function simulationV9ViewOfV10(state: SimulationStateV10): SimulationStat
     return cloneSimulationV9(toV9(state));
 }
 
+/** Read-only adapter for an internal verifier-owned state already inside its validated batch. */
+export function simulationV9ViewOfValidatedV10(state: SimulationStateV10): SimulationStateV9 {
+    return toV9(state);
+}
+
 export function assertSimulationInvariantsV10(state: SimulationStateV10): void {
     if (!SimulationStateV10Schema.safeParse(state).success) throw new Error('Invalid V10 state: schema.');
     if (state.terrainProfileId !== v10TerrainProfileForSeed(state.seed, state.rulesetId)) {
@@ -463,7 +491,13 @@ export function canonicalSimulationJsonV10(state: SimulationStateV10): string {
 }
 
 export function hashSimulationStateV10(state: SimulationStateV10): string {
-    return sha256(new TextEncoder().encode(canonicalSimulationJsonV10(state)));
+    assertSimulationInvariantsV10(state);
+    return hashValidatedSimulationStateV10(state);
+}
+
+/** Internal canonical hash seam; callers must establish the V10 invariant. */
+export function hashValidatedSimulationStateV10(state: SimulationStateV10): string {
+    return sha256(new TextEncoder().encode(canonicalJson(state)));
 }
 
 export function hashTerrainV10R7(terrain: PackedTerrain): string {

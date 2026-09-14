@@ -7,14 +7,18 @@ opponent, with an optional fixed sponsor-funded NIM reward for eligible wins.
 The `Worms_Port` repository was bootstrapped from the MIT
 `TurtlePU/worms-ii` code base and retains that provenance.
 
-## Standard volcanic Practice
+## Current volcanic Practice
 
-The normal `/` entry now starts server-backed V10 R6 Practice in the approved
-Volcanic Ruin stepped valley, with the existing terrain weapons and Loomkeeper.
+The normal `/` entry in the WP-024 branch starts server-backed V10 R7 Practice
+on the accepted full-width, fully destructible Volcanic Ruin battlefield, with
+the existing terrain weapons and deterministic Loomkeeper.
 The five background images load only when combat starts. Practice remains
-wallet-free. Daily Challenge uses the same V10 R6 volcanic authority after its
-existing wallet, PEI receipt and reward reservation checks.
-R6 keeps the exact R5 terrain and weapon balance, presents smaller actors with
+wallet-free. The production deployment remains on V10 R6 until the R7
+Practice canary passes Phone Gate C. The branch's ordinary production profile
+already binds Daily to the same exact R7 identity after its existing wallet,
+PEI receipt and reward reservation checks, so keep that profile undeployed
+until Gate C passes.
+R7 keeps the accepted R6 timing and action balance, presents smaller actors with
 compact color-changing health bars and a matching direct-hit envelope, and
 gives each actor a 60-second action phase with slightly faster walking and a
 compact translucent left-thumb cluster for holding left or right and tapping
@@ -40,11 +44,13 @@ REWARD_PAUSED=true
 
 Redeploy and open `/` without preview query parameters. This profile constructs
 no identity, database or payout service, even when old credentials are saved.
-Ordinary startup without a development profile selects volcanic V10 R6 for both
+Ordinary startup without a development profile selects volcanic V10 R7 for both
 Practice and the separately configured Daily service. The development profile
-remains Practice-only and constructs no reward service. Old V8/V9 protocols and
-replays retain their historical behavior. Runtime selection does not activate
-or fund rewards by itself.
+remains Practice-only and constructs no reward service, making it the required
+Phone Gate C canary profile. Old V8/V9 protocols and replays retain their
+historical behavior, and frozen R6 live evidence remains verifiable without an
+R6 runtime profile. Runtime selection does not activate or fund rewards by
+itself.
 
 The `development-v10-practice` block is only for isolated Practice acceptance.
 It cannot serve Daily Challenge. Before Daily Phone Gate A, change the existing
@@ -127,18 +133,19 @@ are also recorded in the Execution Pointer of
   See the [composition contract](docs/planning/wp-015d4f-volcanic-ruin-preview-bundle-contract.md#wp-015d4g-owner-requested-composition-and-terrain-alignment).
   The [frozen weapon observations](docs/evidence/wp-015d4d-v10g-weapon-terrain-reference.md)
   preserve the reference boundary separately from the evolving contract.
-- [WP-024 R7](docs/planning/wp-024-v10-r7-terrain-as-gameplay.md) is available only through the wallet-free local
-  `/?combat-preview=v10r7` route. It keeps the accepted R6 Volcanic Ruin match,
-  controls, timing, damage and impact motion while previewing a 128-unit
-  Threadball crater, a 224-unit Spoolburst crater and phone-legible Needlepoint
+- [WP-024 R7](docs/planning/wp-024-v10-r7-terrain-as-gameplay.md) keeps the
+  accepted R6 controls, timing, damage and impact motion while using a 64-unit
+  Threadball crater, a 112-unit Spoolburst crater and phone-legible Needlepoint
   recoil on the accepted full-width, fully destructible ASCII battlefield.
-  Waypoints 1-2 and Phone Gates A-B are accepted. Waypoint 3 now owns only the
-  deterministic server/replay integration and final R7 Practice/Daily promotion;
+  The local `/?combat-preview=v10r7` route remains available for diagnostics;
+  the root path now supplies the server-backed R7 Practice canary. Waypoints
+  1-2 and Phone Gates A-B are accepted. Waypoint 3 owns the current
+  deterministic server/replay integration and final R7 Practice/Daily activation;
   objective modes and Gemini are separately planned in
   [WP-026](docs/planning/wp-026-v10-r8-objective-modes.md) and
   [WP-027](docs/planning/wp-027-gemini-objective-loomkeeper.md).
-  Standard Practice and the PEI-gated Daily Challenge remain on R6 until the
-  remaining R7 gates are accepted.
+  The deployed PEI-gated Daily Challenge remains on R6 until Phone Gate C
+  accepts the practice-only R7 deployment.
 - Assets from Sorcerers may move into `assets/` only after exact-file license
   evidence proves commercial use, redistribution, and modification are allowed.
 - Product assets must be traceable through `legal/asset-manifest.json`.
@@ -295,7 +302,7 @@ fails.
 The active Socket.IO transport uses strict request/acknowledgement schemas
 and server-issued 256-bit opaque session tokens. Socket.IO IDs are transport
 details and are never accepted from callers as player identity. Practice
-sessions work without a wallet. The default client creates live V10 R6 Practice
+sessions work without a wallet. The default client creates live V10 R7 Practice
 Clashes, submits ordered commands, consumes authoritative snapshots and
 results, and reconnects with the rotated session token. WP-012 adds an optional
 verified Nimiq wallet identity to that existing session. WP-013 uses that
@@ -686,7 +693,7 @@ work-package sequence.
 
 This section preserves the retired V9D deployment record for diagnosis on its
 archived branch. It is not a current deployment procedure. The standard client
-uses only V10 R6 for server-backed Practice and Daily; preview query values are
+uses only V10 R7 for server-backed Practice and Daily; preview query values are
 local visual diagnostics and cannot select a V9 server route.
 
 Deploy `codex/wp-015d3b-v9d-resource-utilities` with the V9D Practice profile

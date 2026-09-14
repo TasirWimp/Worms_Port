@@ -607,7 +607,10 @@ test('standard volcanic Practice at root keeps authority, AI, cold resume and re
     await expect(ui.locator('.combat-timer')).toHaveText(/^(59|60)s$/);
     await expect(ui).toHaveAttribute('data-background', 'volcanic-ruin');
     await expect(ui).toHaveAttribute('data-background-ready', 'true');
-    await expect(ui).toHaveAttribute('data-camera-left', '512.00');
+    await expect(ui).toHaveAttribute('data-opening-survey', 'true');
+    await expect(ui).toHaveAttribute('data-opening-survey-width', '2048');
+    await expect(ui).toHaveAttribute('data-opening-survey', 'false', { timeout: 5_000 });
+    await expect(ui).toHaveAttribute('data-camera-left', '112.00');
     const first = runtime.sessions.activeSnapshotV10(owned())!.challengeId;
     await ui.locator('.pause-button').tap();
     await expect(ui).toHaveAttribute('data-paused', 'true');
@@ -645,7 +648,7 @@ test('standard volcanic Practice at root keeps authority, AI, cold resume and re
   } finally { await page.goto('about:blank'); await runtime.close(); }
 });
 
-test('current R6 phone controls use a compact translucent cluster with neutral tap-jump and slide aftertouch', async ({ page }) => {
+test('current R7 phone controls use a compact translucent cluster with neutral tap-jump and slide aftertouch', async ({ page }) => {
   test.setTimeout(60_000);
   const runtime = createRuntimeServer({ clientDir: path.resolve('client/build'), identity: false,
     sessionRegistry: { practiceV10: true, seedSource: () => 4 } });

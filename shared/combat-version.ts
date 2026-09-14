@@ -13,5 +13,16 @@ export const V8_AUTOMATION_ID = 'wp-015d3a-v8d-r1-v1' as const;
 /** Strict V9D provenance; the numeric V9 replay version remains unchanged. */
 export const V9_AUTOMATION_ID = 'wp-015d3b-v9d-v1' as const;
 
-/** Current R6 volcanic authority shared by standard Practice and Daily. */
-export const V10_AUTOMATION_ID = 'wp-023-v10-r6-live-v1' as const;
+/** Frozen R6 replay provenance retained only for historical verification. */
+export const V10_R6_AUTOMATION_ID = 'wp-023-v10-r6-live-v1' as const;
+/** Current R7 terrain-as-gameplay authority. */
+export const V10_R7_AUTOMATION_ID = 'wp-024-v10-r7-live-v1' as const;
+export const V10_AUTOMATION_ID = V10_R7_AUTOMATION_ID;
+export const V10_AUTOMATION_IDS = Object.freeze([
+    V10_R6_AUTOMATION_ID,
+    V10_R7_AUTOMATION_ID
+] as const);
+export type V10AutomationId = typeof V10_AUTOMATION_IDS[number];
+export function isV10AutomationId(value: unknown): value is V10AutomationId {
+    return value === V10_R6_AUTOMATION_ID || value === V10_R7_AUTOMATION_ID;
+}

@@ -134,7 +134,7 @@ test('canonical visual states cover combat presentation, controls, motion, and s
 });
 });
 
-test('current R6 volcanic Practice start stays coherent across maintained phone layouts', async ({
+test('current R7 volcanic Practice start stays coherent across maintained phone layouts', async ({
   page
 }) => {
   test.setTimeout(60_000);
@@ -174,7 +174,7 @@ test('current R6 volcanic Practice start stays coherent across maintained phone 
   }
   await expect(ui.locator('.movement-left')).toHaveCSS('background-color', 'rgba(5, 130, 202, 0.3)');
   await assertDocumentLocked(page);
-  await screenshot(page, 'current-r6-volcanic-practice-start.png');
+  await screenshot(page, 'current-r7-volcanic-practice-start.png');
   expect(errors).toEqual([]);
 });
 

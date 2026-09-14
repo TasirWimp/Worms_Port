@@ -259,6 +259,19 @@ export function advanceSimulationTicksV8<R extends V8RulesetId>(current: Simulat
     if (!integer(count, 0, dynamics.maximumCombatTicks)) return reject(current, 'COMMAND_REJECTED', 'Tick batch exceeds the simulation bound.');
     if (current.phase === 'finished' || count === 0) return unchanged(current);
     const state = cloneSimulationV8(current);
+    const result = advanceOwnedSimulationTicksV8(state, count, mechanics, dynamics);
+    assertSimulationInvariantsV8Family(result.state, dynamics);
+    return result;
+}
+
+/**
+ * Internal detached-rollout kernel. The caller must own and have already
+ * validated `state`; this mutates that state so a bounded planner rollout does
+ * not copy and rescan the complete terrain mask on every simulated tick.
+ * Public authority continues through `advanceSimulationTicksV8` above.
+ */
+export function advanceOwnedSimulationTicksV8<R extends V8RulesetId>(state: SimulationStateV8<R>, count: number,
+    mechanics?: ProjectileMechanics, dynamics: SimulationDynamics = V8_DEFAULT_DYNAMICS): SimulationTransitionV8<R> {
     const events: SimulationEventV8[] = [];
     for (let step = 0; step < count && state.phase !== 'finished'; step += 1) {
         if (state.tick >= dynamics.maximumCombatTicks || countersExhausted(state)) {
@@ -274,7 +287,6 @@ export function advanceSimulationTicksV8<R extends V8RulesetId>(current: Simulat
         if (state.winner === null && state.tick >= dynamics.maximumCombatTicks) finish(state, 'draw', 'simulation_limit', events);
         state.revision += 1;
     }
-    assertSimulationInvariantsV8Family(state, dynamics);
     return { accepted: true, mutated: true, state, events };
 }
 export function applySimulationBarrierV8<R extends V8RulesetId>(current: SimulationStateV8<R>, barrier: SimulationBarrierV8Family,

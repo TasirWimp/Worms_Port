@@ -55,7 +55,8 @@ async function currentJourneyState(
       ? root.dataset.presentation === 'none'
       : root.dataset.presenting === 'false';
     const actionPhase = !resourceTurns || root.dataset.combatPhase === 'action';
-    return boundaryAdvanced && presentationComplete && actionPhase && root.dataset.activeActor === 'player'
+    const offenseReady = !resourceTurns || root.dataset.offenseAllowed === 'true';
+    return boundaryAdvanced && presentationComplete && actionPhase && offenseReady && root.dataset.activeActor === 'player'
       ? 'ready'
       : 'waiting';
   }, minimum);

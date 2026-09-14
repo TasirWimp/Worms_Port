@@ -3,7 +3,6 @@ import test from 'node:test';
 
 import { setTerrainSolid, type RelicId } from '../../shared/simulation';
 import {
-    CURRENT_V10_RULESET_ID,
     V10_R5_RULESET_ID,
     V10_R6_DYNAMICS,
     V10_R6_RULESET_ID,
@@ -18,8 +17,7 @@ import {
 
 const FP = 256;
 
-test('current V10 R6 keeps the exact R5 volcanic arena and frozen weapon-terrain table', () => {
-    assert.equal(CURRENT_V10_RULESET_ID, V10_R6_RULESET_ID);
+test('frozen V10 R6 keeps the exact R5 volcanic arena and weapon-terrain table', () => {
     const r5 = createSimulationV10(4, 'wizard', V10_R5_RULESET_ID);
     const r6 = createSimulationV10(4, 'wizard', V10_R6_RULESET_ID);
 

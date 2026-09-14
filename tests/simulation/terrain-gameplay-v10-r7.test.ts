@@ -25,8 +25,8 @@ import {
 
 const R6_ACTOR_HEIGHT = 68;
 
-test('R7 Waypoint 2 keeps live V10 on R6 while selecting its full explicit battlefield', () => {
-    assert.equal(CURRENT_V10_RULESET_ID, V10_R6_RULESET_ID);
+test('R7 Waypoint 3 promotes the full explicit battlefield to the live V10 identity', () => {
+    assert.equal(CURRENT_V10_RULESET_ID, V10_R7_RULESET_ID);
     const r6 = createSimulationV10(4, 'wizard', V10_R6_RULESET_ID);
     const r7 = createSimulationV10(4, 'wizard', V10_R7_RULESET_ID);
 

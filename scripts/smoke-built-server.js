@@ -93,8 +93,8 @@ function emitAck(socket, event, payload) {
 }
 
 async function checkV10Combat(baseUrl) {
-  const rulesetId = 'nimble-knots-artillery-v10-r6';
-  const automationId = 'wp-023-v10-r6-live-v1';
+  const rulesetId = 'nimble-knots-artillery-v10-r7';
+  const automationId = 'wp-024-v10-r7-live-v1';
   const socket = io(baseUrl, { transports: ['websocket'], reconnection: false,
     autoConnect: false, timeout: 2_000, extraHeaders: { Origin: baseUrl } });
   try {
@@ -118,13 +118,15 @@ async function checkV10Combat(baseUrl) {
     assert.equal(created.data.automationId, automationId);
     assert.equal(created.data.simulation.rulesetId, rulesetId);
     assert.equal(created.data.simulation.terrainProfileId, 'volcanic-ruin');
+    assert.equal(created.data.simulation.terrainRevision, 0);
+    assert.match(created.data.simulation.terrainHash, /^[a-f0-9]{64}$/);
     const paused = await emitAck(socket, 'v10:challenge.pause', {
       requestId: 'smoke_v10_pause_0001', sequence: created.nextSequence,
       challengeId: created.data.challengeId, rulesetId, automationId, paused: true
     });
     assert.equal(paused.ok, true);
     assert.equal(paused.data.paused, true);
-    console.log('Validated standard V10 R6 volcanic Practice creation and pause.');
+    console.log('Validated standard V10 R7 volcanic Practice creation and pause.');
   } finally { socket.close(); }
 }
 
@@ -304,7 +306,7 @@ async function smokeProfile(profile) {
     if (practiceOnly) await checkLegacyCombat(baseUrl, practiceOnly, v9);
     else await checkV10Combat(baseUrl);
     if (practiceOnly) assert.ok(stdout.includes(`Runtime ${profile} / ${v9 ? 'nimble-knots-artillery-v9 / wp-015d3b-v9d-v1' : 'nimble-knots-artillery-v8-r1 / wp-015d3a-v8d-r1-v1'} / rewards disabled`));
-    console.log(`Built server ${profile ?? 'standard V10 R6'} smoke test passed on port ${port}.`);
+    console.log(`Built server ${profile ?? 'standard V10 R7'} smoke test passed on port ${port}.`);
     console.log(`Validated /, built overlays, approved asset plumbing, and /.room.join_id (${roomId}).`);
   } finally {
     try {

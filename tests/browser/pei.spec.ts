@@ -241,8 +241,9 @@ test('PEI helper receipt survives return and completes the same volcanic Daily a
     await expect(result).toBeVisible();
     const outcome = await result.getAttribute('data-outcome');
     expect(['player_win', 'loomkeeper_win', 'draw']).toContain(outcome);
+    await expect.poll(async () => (await store.status(consumed!.entitlementId!, signer.address))?.state,
+      { timeout: 45_000 }).toBe(outcome === 'player_win' ? 'claimable' : 'lost');
     const entitlement = await store.status(consumed!.entitlementId!, signer.address);
-    expect(entitlement?.state).toBe(outcome === 'player_win' ? 'claimable' : 'lost');
     expect(entitlement?.replay && 'rulesetId' in entitlement.replay
       ? entitlement.replay.rulesetId
       : undefined).toBe(CURRENT_V10_RULESET_ID);

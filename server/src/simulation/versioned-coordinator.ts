@@ -1,6 +1,6 @@
 import { LiveSimulationCoordinatorV10, type LiveSimulationCoordinatorV10Options } from './coordinator-v10-live';
 import type { CoordinatorReplayV10Automated } from '../../../shared/protocol-v10-live';
-import { V10_AUTOMATION_ID } from '../../../shared/combat-version';
+import { isV10AutomationId } from '../../../shared/combat-version';
 import { SimulationCoordinator, type CoordinatorReplay, type CoordinatorSnapshot,
     type CoordinatorTerminalResult, type SimulationCoordinatorOptions } from './coordinator';
 import { SimulationCoordinatorV8, type CoordinatorReplayV8Runtime, type CoordinatorSnapshotV8Family,
@@ -70,7 +70,7 @@ export class VersionedSimulationCoordinator {
         expected?: { challengeId: string; sessionId: string }): VersionedCoordinatorSnapshot {
         if (expected && (expected.challengeId !== replay.challengeId || expected.sessionId !== replay.sessionId))
             throw new Error('Replay identity mismatch.');
-        if ('automationId' in replay && replay.automationId === V10_AUTOMATION_ID) return this.v10Live.reconstructAndVerify(replay, expected);
+        if ('automationId' in replay && isV10AutomationId(replay.automationId)) return this.v10Live.reconstructAndVerify(replay, expected);
         if (isV10RulesetId(replay.rulesetId)) return this.v10.reconstructAndVerify(replay as CoordinatorReplayV10, expected);
         if (replay.rulesetId === V9_RULESET_ID) return this.v9.reconstructAndVerify(replay, expected);
         if (isV8RulesetId(replay.rulesetId))
@@ -81,6 +81,15 @@ export class VersionedSimulationCoordinator {
         if (replay.rulesetId !== undefined && !/^nimble-knots-artillery-v[1-7]$/.test(replay.rulesetId))
             throw new Error('Unknown combat ruleset.');
         return this.legacy.reconstructAndVerify({ ...replay, rulesetId: replay.rulesetId ?? LEGACY_RULESET_ID });
+    }
+    public async reconstructAndVerifyAsync(replay: VersionedCoordinatorReplay,
+        expected?: { challengeId: string; sessionId: string }): Promise<VersionedCoordinatorSnapshot> {
+        if (expected && (expected.challengeId !== replay.challengeId || expected.sessionId !== replay.sessionId))
+            throw new Error('Replay identity mismatch.');
+        if ('automationId' in replay && isV10AutomationId(replay.automationId)) {
+            return this.v10Live.reconstructAndVerifyAsync(replay, expected);
+        }
+        return this.reconstructAndVerify(replay, expected);
     }
     public delete(challengeId: string): void { this.legacy.delete(challengeId); this.v8.delete(challengeId); this.v9.delete(challengeId); this.v10.delete(challengeId); this.v10Live.delete(challengeId); }
     public deleteForSession(sessionId: string): void { this.legacy.deleteForSession(sessionId); this.v8.deleteForSession(sessionId); this.v9.deleteForSession(sessionId); this.v10.deleteForSession(sessionId); this.v10Live.deleteForSession(sessionId); }

@@ -213,9 +213,10 @@ export class RewardService {
                 throw new RewardStoreError('unavailable', 'Authoritative V10 reward evidence is incomplete.');
             }
             try {
-                const verified = new VersionedSimulationCoordinator().reconstructAndVerify(
+                const coordinator = new VersionedSimulationCoordinator();
+                const verified = await coordinator.reconstructAndVerifyAsync(
                     v10Replay, { challengeId: result.challengeId, sessionId: result.sessionId }
-                );
+                ).finally(() => coordinator.dispose());
                 const expectedWinner = result.outcome === 'player_win' ? 'player'
                     : result.outcome === 'loomkeeper_win' ? 'loomkeeper'
                     : result.outcome === 'draw' ? 'draw' : null;

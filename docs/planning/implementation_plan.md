@@ -180,7 +180,7 @@ Phaser/Socket.IO stack.
   exact 64 by 36 chart uses all 2048 world units with
   destructible edge structures, a full-width 144-unit foundation, opening
   shelves, high and lower routes, blockers, cavities and a central breach plug.
-  The R7 opening survey shows the whole arena before player focus; current R6
+  The R7 opening survey shows the whole arena before player focus; frozen R6
   keeps its accepted central volcanic frame. R7 also removes a fallen Nimble from presentation once its collision
   body has cleared an open crater bottom. It extends
   the existing ASCII terrain compiler from a surface profile to a complete,
@@ -188,14 +188,22 @@ Phaser/Socket.IO stack.
   serialization, terrain revision/hash continuity, local changed-map recovery,
   open-bottom fall losses and no hidden floor. Waypoint 1 owns only the R7 identity, crater radii and a
   local volcanic phone preview. Change-selected current-path verification and
-  the supported canonical R7 browser case pass. Standard Practice and Daily
-  remain R6 until the later promotion gate. At committed and pushed `9e17773`,
+  the supported canonical R7 browser case pass. At committed and pushed `9e17773`,
   all seven Phone Gate B checks passed on the owner's physical phone: the full
   battlefield, route destruction, open-bottom fall loss, changed-map reopen and
   fresh restart behaved as specified. **Waypoint 2 and Phone Gate B are
-  accepted. The next implementation target is Waypoint 3's server-authoritative
-  R7 integration with the existing deterministic Loomkeeper, exact replay and
-  resume, followed by the Practice and Daily promotion gates. Gemini has moved
+  accepted. Waypoint 3 is now implemented as the branch's current R7 live
+  identity. The root client, server lifecycle, deterministic Loomkeeper,
+  replay/resume path, reward verifier and built smoke agree on that identity;
+  frozen R6 automated evidence remains reconstructable but is not an ordinary
+  runtime profile. Exact reward replay now yields between bounded tick batches
+  and uses a private validated-state kernel, so terminal delivery remains
+  responsive without relaxing operation, plan, terrain or state-hash proof.
+  The existing `development-v10-practice` deployment profile
+  exposes this exact path without identity, PEI or rewards for Phone Gate C.
+  The deployed standard Practice/Daily service remains on R6 until Gate C
+  passes; enabling the ordinary branch profile after acceptance activates the
+  same R7 identity for both paths before Phone Gate D. Gemini has moved
   out of WP-024 so no deathmatch-specific external selector is built before the
   objective rules exist.** See the
   [WP-024 contract](wp-024-v10-r7-terrain-as-gameplay.md).

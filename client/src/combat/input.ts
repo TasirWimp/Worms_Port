@@ -208,14 +208,14 @@ export function inputBoundaryV8(snapshot: ChallengeSnapshotV8): string {
 export type MovementFactsR1 = {
     grounded: boolean; facing: -1 | 1; heldDirection: -1 | 0 | 1;
     lane: 'ready' | 'locomotion' | 'blocked';
-    /** Current R6 button input may change direction during a committed jump. */
+    /** R6-family button input may change direction during a committed jump. */
     airControl?: boolean;
 };
 
 export type R6MovementButton = 'left' | 'right' | 'jump';
 
 /**
- * Current R6 movement maps one captured thumb to three fixed buttons. Sliding
+ * R6-family movement maps one captured thumb to three fixed buttons. Sliding
  * between them retains the last horizontal direction, so the thumb can roll
  * through Jump and then choose either aftertouch direction without an origin
  * that drifts across the screen.

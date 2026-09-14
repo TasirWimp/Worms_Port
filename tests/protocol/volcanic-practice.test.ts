@@ -3,10 +3,13 @@ import test from 'node:test';
 import { SessionRegistry } from '../../server/src/session/registry';
 import { LiveSimulationCoordinatorV10 } from '../../server/src/simulation/coordinator-v10-live';
 import { VersionedSimulationCoordinator } from '../../server/src/simulation/versioned-coordinator';
-import { ChallengeCreateV10Schema } from '../../shared/protocol-v10-live';
+import { ChallengeCreateV10Schema, CoordinatorReplayV10AutomatedSchema } from '../../shared/protocol-v10-live';
 import { CoordinatorReplayV10Schema } from '../../shared/protocol-v10';
-import { V10_AUTOMATION_ID } from '../../shared/combat-version';
-import { CURRENT_V10_RULESET_ID, V10_R6_DYNAMICS } from '../../shared/simulation-v10';
+import { V10_AUTOMATION_ID, V10_R6_AUTOMATION_ID } from '../../shared/combat-version';
+import {
+    CURRENT_V10_RULESET_ID, V10_R6_DYNAMICS, V10_R6_RULESET_ID, V10_R7_RULESET_ID,
+    hashTerrainV10R7
+} from '../../shared/simulation-v10';
 import { LoomkeeperPlannerV10 } from '../../shared/loomkeeper-v10';
 
 const request = { requestId: 'volcanic_request_001', sequence: 0, mode: 'practice', calling: 'wizard', rulesetId: CURRENT_V10_RULESET_ID, automationId: V10_AUTOMATION_ID };
@@ -46,7 +49,11 @@ test('volcanic live ownership, duplicate input, pause, cold resume and fresh mat
         registry.create('socket-two');
         const session = registry.getBound('socket-one')!, foreign = registry.getBound('socket-two')!;
         const created = registry.createChallengeAutomatedV10(session, 'practice', 'wizard'); assert.ok(!('code' in created));
+        assert.equal(created.rulesetId, V10_R7_RULESET_ID);
+        assert.equal(created.automationId, V10_AUTOMATION_ID);
         assert.equal(created.simulation.terrainProfileId, 'volcanic-ruin');
+        assert.equal(created.simulation.terrainRevision, 0);
+        assert.equal(created.simulation.terrainHash, hashTerrainV10R7(created.simulation.terrain));
         assert.equal(registry.hasActiveCombat(session), true);
         assert.equal((registry.createChallenge(session, 'practice', 'wizard') as any).code, 'COMMAND_REJECTED');
         assert.equal((registry.submitCommand(session, created.challengeId, { type: 'fire' }, 0) as any).code, 'COMMAND_REJECTED');
@@ -72,7 +79,7 @@ test('volcanic live ownership, duplicate input, pause, cold resume and fresh mat
     } finally { registry.dispose(); }
 });
 
-test('volcanic live replay regenerates AI, binds terrain, and refuses foundation relabelling', () => {
+test('volcanic live replay regenerates AI cooperatively, binds terrain, and refuses foundation relabelling', async () => {
     const live = new LiveSimulationCoordinatorV10({ nowUs: () => 0 });
     const dispatcher = new VersionedSimulationCoordinator();
     try {
@@ -81,17 +88,74 @@ test('volcanic live replay regenerates AI, binds terrain, and refuses foundation
         // planning charge plus execution to enter the retained replay.
         live.advance(created.challengeId, V10_R6_DYNAMICS.actionTicks + 60);
         const replay = live.replay(created.challengeId)!;
+        assert.equal(replay.rulesetId, V10_R7_RULESET_ID);
+        assert.equal('automationId' in replay && replay.automationId, V10_AUTOMATION_ID);
         assert.ok('chosenPlans' in replay); assert.ok(replay.chosenPlans.length > 0);
         assert.ok(replay.chosenPlans.every(plan => plan.status !== 'work_failure'));
         assert.equal(CoordinatorReplayV10Schema.safeParse(replay).success, false);
-        assert.equal(dispatcher.reconstructAndVerify(replay).stateHash, live.get(created.challengeId)!.stateHash);
+        let eventLoopProgressed = false;
+        setImmediate(() => { eventLoopProgressed = true; });
+        assert.equal((await dispatcher.reconstructAndVerifyAsync(replay)).stateHash, live.get(created.challengeId)!.stateHash);
+        assert.equal(eventLoopProgressed, true);
         assert.throws(() => dispatcher.reconstructAndVerify({ ...replay, recipeRevision: 'forged' } as any));
         assert.throws(() => dispatcher.reconstructAndVerify({ ...replay, chosenPlans: [] } as any));
         assert.throws(() => dispatcher.reconstructAndVerify(replay, { challengeId: created.challengeId, sessionId: 'different_owner_001' }));
     } finally { live.dispose(); dispatcher.dispose(); }
 });
 
-test('measured V10 Loomkeeper work cannot become clock debt for another live match', () => {
+test('R7 server replay preserves the exact destructible terrain revision and hash', () => {
+    const live = new LiveSimulationCoordinatorV10({ nowUs: () => 0 });
+    const dispatcher = new VersionedSimulationCoordinator();
+    try {
+        const created = live.createAutomated('r7_terrain_replay_match', 'r7_terrain_replay_owner', 4, 'wizard');
+        const initialTerrainHash = created.state.terrainHash;
+        let state = created.state;
+        live.apply(created.challengeId, 'player', { type: 'aim', angleMilliDegrees: 0, powerPermille: 500 },
+            state.turn, state.phase, state.inputEpoch);
+        state = live.get(created.challengeId)!.state;
+        live.apply(created.challengeId, 'player', { type: 'fire', aimId: state.aimId },
+            state.turn, state.phase, state.inputEpoch);
+        for (let tick = 0; tick < 300 && live.get(created.challengeId)!.state.terrainRevision === 0; tick += 1) {
+            live.advance(created.challengeId, 1);
+        }
+        const changed = live.get(created.challengeId)!;
+        assert.ok((changed.state.terrainRevision ?? 0) > 0);
+        assert.notEqual(changed.state.terrainHash, initialTerrainHash);
+        assert.equal(changed.state.terrainHash, hashTerrainV10R7(changed.state.terrain));
+
+        const restored = dispatcher.reconstructAndVerify(live.replay(created.challengeId)!);
+        assert.equal(restored.stateHash, changed.stateHash);
+        assert.equal(restored.state.terrainRevision, changed.state.terrainRevision);
+        assert.equal(restored.state.terrainHash, changed.state.terrainHash);
+        assert.deepEqual(restored.state.terrain, changed.state.terrain);
+    } finally { live.dispose(); dispatcher.dispose(); }
+});
+
+test('the current verifier reconstructs frozen R6 automated evidence without making R6 live again', () => {
+    const r6 = new LiveSimulationCoordinatorV10({ nowUs: () => 0, replayIdentity: {
+        rulesetId: V10_R6_RULESET_ID,
+        automationId: V10_R6_AUTOMATION_ID
+    } });
+    const dispatcher = new VersionedSimulationCoordinator();
+    try {
+        const created = r6.createAutomated('frozen_r6_replay_match', 'frozen_r6_replay_owner', 4, 'wizard');
+        const state = r6.get(created.challengeId)!.state;
+        r6.apply(created.challengeId, 'player', { type: 'aim', angleMilliDegrees: 30_000, powerPermille: 500 },
+            state.turn, state.phase, state.inputEpoch);
+        const replay = r6.replay(created.challengeId)!;
+        assert.equal(replay.rulesetId, V10_R6_RULESET_ID);
+        assert.equal('automationId' in replay && replay.automationId, V10_R6_AUTOMATION_ID);
+        assert.equal(CoordinatorReplayV10AutomatedSchema.safeParse(replay).success, true);
+        assert.equal(dispatcher.reconstructAndVerify(replay).stateHash, r6.get(created.challengeId)!.stateHash);
+        assert.equal(CoordinatorReplayV10AutomatedSchema.safeParse({
+            ...replay,
+            automationId: V10_AUTOMATION_ID
+        }).success, false);
+        assert.throws(() => dispatcher.reconstructAndVerify({ ...replay, automationId: V10_AUTOMATION_ID } as any));
+    } finally { r6.dispose(); dispatcher.dispose(); }
+});
+
+test('measured V10 authority work cannot become clock debt for live matches', () => {
     let nowUs = 0;
     class MeasuredPlanner extends LoomkeeperPlannerV10 {
         public override step(): void { nowUs += 200_000; super.step(); }
@@ -111,6 +175,27 @@ test('measured V10 Loomkeeper work cannot become clock debt for another live mat
         assert.equal(peerAfterWork.unavailable, false);
         assert.equal(peerAfterWork.terminalResult, undefined);
         assert.equal(peerAfterWork.state.tick, 0);
+    } finally { live.dispose(); }
+});
+
+test('R7 state publication is charged by logical ticks and external stalls still fail closed', () => {
+    let nowUs = 0;
+    const live = new LiveSimulationCoordinatorV10({
+        nowUs: () => nowUs,
+        onTransition: () => { nowUs += 100_000; }
+    });
+    try {
+        const busy = live.createAutomated('r7_publication_match', 'r7_publication_owner', 4, 'wizard');
+        const peer = live.createAutomated('r7_publication_peer', 'r7_publication_peer_owner', 4, 'wizard');
+        live.advance(busy.challengeId, 33);
+        assert.equal(live.dueTicks(busy.challengeId), 0);
+        assert.equal(live.dueTicks(peer.challengeId), 0);
+        assert.equal(live.pump(peer.challengeId).unavailable, false);
+
+        nowUs += 1_100_000;
+        const stopped = live.pump(peer.challengeId);
+        assert.equal(stopped.unavailable, true);
+        assert.equal(stopped.terminalResult?.stopReason, 'clock_debt');
     } finally { live.dispose(); }
 });
 
