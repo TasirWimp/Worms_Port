@@ -8,6 +8,7 @@ import {
     V10_R6_DYNAMICS,
     V10_R6_RULESET_ID,
     V10_R7_RULESET_ID,
+    advanceSimulationTicksV10,
     applySimulationIntentV10,
     createSimulationV10,
     mechanicsForV10
@@ -40,10 +41,16 @@ test('R7 changes only Threadball and Spoolburst crater scale from R6', () => {
     const r6 = mechanicsForV10(V10_R6_RULESET_ID)!;
     const r7 = mechanicsForV10(V10_R7_RULESET_ID)!;
 
-    assert.equal(r7.relics.threadball.craterRadius, R6_ACTOR_HEIGHT * 2);
+    assert.equal(r7.relics.threadball.craterRadius, 128);
     assert.equal(r7.relics.needlepoint.craterRadius, 8);
-    assert.equal(r7.relics.spoolburst.craterRadius, 240);
-    assert.equal(r7.relics.spoolburst.craterRadius * 2 / R6_ACTOR_HEIGHT, 120 / 17);
+    assert.equal(r7.relics.spoolburst.craterRadius, 164);
+    assert.ok(Math.abs(r7.relics.threadball.craterRadius * 2 / R6_ACTOR_HEIGHT - 3.76) < 0.01);
+    assert.ok(Math.abs(
+        r7.relics.threadball.craterRadius ** 2 / r7.relics.spoolburst.craterRadius ** 2 - 0.6
+    ) < 0.01);
+    assert.ok(Math.abs(
+        r7.relics.threadball.craterRadius ** 2 / 136 ** 2 - 0.9
+    ) < 0.02);
     assert.deepEqual(r7.directHitbox, r6.directHitbox);
     assert.deepEqual(r7.blastImpulse, r6.blastImpulse);
     assert.equal(r7.terrainFirst, r6.terrainFirst);
@@ -67,9 +74,9 @@ test('R7 crater radii clear deterministic circular spans in the packed terrain m
     const centerY = 320;
 
     for (const [relic, expectedSurfaceCells] of [
-        ['threadball', 34],
+        ['threadball', 32],
         ['needlepoint', 2],
-        ['spoolburst', 60]
+        ['spoolburst', 40]
     ] as const) {
         const terrain = structuredClone(createSimulationV10(4, 'wizard', V10_R7_RULESET_ID).terrain);
         for (let y = 0; y < terrain.height; y += 1) {
@@ -84,4 +91,30 @@ test('R7 crater radii clear deterministic circular spans in the packed terrain m
         assert.equal(terrainSolid(terrain, cleared[0] - 1, row), true);
         assert.equal(terrainSolid(terrain, cleared.at(-1)! + 1, row), true);
     }
+});
+
+test('an R7 unit falling through a floorless crater exits below the world and loses', () => {
+    let state = createSimulationV10(4, 'wizard', V10_R7_RULESET_ID);
+    const playerX = Math.floor(state.units[0].xFp / 256);
+    const firstCell = Math.floor((playerX - 12) / state.terrain.cellSize);
+    const lastCell = Math.ceil((playerX + 12) / state.terrain.cellSize) - 1;
+    for (let y = 0; y < state.terrain.height; y += 1) {
+        for (let x = firstCell; x <= lastCell; x += 1) setTerrainSolid(state.terrain, x, y, false);
+    }
+    state.units[0].grounded = false;
+    state.units[0].support = null;
+    state.units[0].vxFp = 0;
+    state.units[0].vyFp = 0;
+    state.units[0].airTicks = 0;
+    state.units[0].airDrive = 'walk_fall';
+
+    for (let tick = 0; tick < 120 && state.phase !== 'finished'; tick += 1) {
+        state = advanceSimulationTicksV10(state, 1).state;
+    }
+    assert.equal(state.phase, 'finished');
+    assert.equal(state.units[0].alive, false);
+    assert.equal(state.units[0].stitching, 0);
+    assert.ok(state.units[0].yFp / 256 - 12 >= 576);
+    assert.equal(state.winner, 'loomkeeper');
+    assert.equal(state.finishReason, 'unravelled');
 });

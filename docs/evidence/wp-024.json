@@ -10,13 +10,14 @@
     "primary assistant"
   ],
   "scope": [
-    "Waypoint 1: add a non-current V10 R7 identity that preserves the complete accepted R6 volcanic state, action dynamics, presentation, controls, projectile behavior, damage, blast impulse, Thread economy and Loomkeeper while changing only Threadball terrain radius to 136 world units and Spoolburst terrain radius to 240 world units.",
+    "Waypoint 1: add a non-current V10 R7 identity that preserves the complete accepted R6 volcanic state, action dynamics, presentation, controls, projectile behavior, damage, blast impulse, Thread economy and Loomkeeper. After the first phone read, Threadball terrain radius is refined to 128 world units and Spoolburst to 164, making Threadball about 60.9 percent of Spoolburst by area.",
     "Expose the R7 candidate through a local-only wallet-free volcanic phone preview for physical crater-scale and movement review while standard Practice and PEI-gated Daily remain on current R6.",
+    "Hide an R7 actor presentation after its authoritative collision body has fallen entirely below the open world bottom, while preserving the existing fall loss and ordinary damage-unravel presentation.",
     "Waypoint 2 after Phone Gate A: replace the surface-only volcanic recipe with the contracted fully destructible ASCII battlefield and open-bottom fall behavior.",
     "Waypoint 3 after terrain acceptance: add the bounded server-only Gemini Loomkeeper selector, fresh live ASCII state and deterministic fallback/replay boundary before final Practice and Daily promotion."
   ],
   "non_goals": [
-    "No Waypoint 2 ASCII compiler, map geometry, fall presentation, terrain revision or terrain hash implementation in Waypoint 1.",
+    "No Waypoint 2 ASCII compiler, map geometry, terrain revision or terrain hash implementation in Waypoint 1.",
     "No Gemini dependency, API call, environment variable, prompt, external plan, reward verifier change or Waypoint 3 implementation in Waypoint 1.",
     "No current Practice, Daily, PEI, reward, helper, server-profile, database, asset, damage, impulse, Thread-cost, movement, jump, camera or control behavior change before Phone Gate A.",
     "No retired R5 or older runtime acceptance matrix and no Sorcerers inspection, code, assets or conditioning."
@@ -26,7 +27,8 @@
     "Focused current R7 simulation, protocol, local fixture, presentation and browser preview checks selected by direct review",
     "npm.cmd run verify:changes -- --base 4f7c878",
     "npm.cmd run audit:housekeeping at the Waypoint 1 phone boundary",
-    "Phone Gate A on the physical phone"
+    "Phone Gate A on the physical phone",
+    "Phone Gate A crater-scale and floor-exit refinement from committed base 8ba164a"
   ],
   "deterministic_seeds": [
     "R7 local volcanic preview seed 4"
@@ -53,6 +55,11 @@
       "command": "npm.cmd run audit:housekeeping at the Waypoint 1 phone boundary",
       "status": "pass",
       "details": "The final documentation boundary passed 71/71 work-package records and the report-only housekeeping audit. The current branch and upstream match, WP-024 remains correctly in progress pending Phone Gate A, and no gone tracking branch exists. The manual-reconciliation flag refers only to preserved historical package/review records. Logs .cache/wp024-final-work-packages.log and .cache/wp024-final-housekeeping.log."
+    },
+    {
+      "command": "Phone Gate A crater-scale and floor-exit refinement from committed base 8ba164a",
+      "status": "pass",
+      "details": "The primary refined R7 radii to 128/8/164 and added fall-exit presentation coverage. The delegated zero-retry focused run first passed types but exposed two deterministic test-fixture errors: a 40-cell Spoolburst raster span was expected as 42, and a manually cleared support left the actor marked grounded. After the primary corrected only those fixtures, types and focused R7/combat units passed 18/18. A mistaken nonexistent build:current command exercised no product code; the corrected repository build:outputs command passed once with proof fb5a32179771 / b49ebb419ff1, followed by the supported Chromium 390x844 R7 preview at 1/1. The final selector ran once at fingerprint f830b815f8d30c4177a3cd68f166157c659a222a381c40d740aa8aa93c749fbd and passed import, types, 71 evidence records, all selected current unit suites, the standard R6 volcanic smoke, security, bundle limits and supported browser families 16/16. PostgreSQL had its explicit local prerequisite skip; performance, legacy and daily/release coverage were not selected. The refinement documentation boundary then passed 71 work-package records and the report-only housekeeping audit; its reconciliation flag refers to preserved historical records. Logs .cache/wp024-phone-gatea-focused-units.log, .cache/wp024-phone-gatea-recovery-focused-units.log, .cache/wp024-phone-gatea-recovery-build-outputs.log, .cache/wp024-phone-gatea-recovery-browser-r7-preview.log, .cache/wp024-phone-gatea-final-selector.log, .cache/wp024-phone-gatea-work-packages.log and .cache/wp024-phone-gatea-housekeeping.log."
     }
   ],
   "reviews": [
@@ -60,10 +67,15 @@
       "reviewer": "primary assistant",
       "status": "pass",
       "details": "Direct review traced the ruleset selector, projectile mechanics, state/replay schema, local fixture, volcanic composition, compact R6 presentation and current server authority. R7 is query-gated and local-only; CURRENT_V10_RULESET_ID and server-backed Practice/Daily remain R6. No Sorcerers material, asset bytes, dependency, reward, PEI or server-profile behavior changed."
+    },
+    {
+      "reviewer": "primary assistant",
+      "status": "pass",
+      "details": "Refinement review confirms the integer crater radii make Threadball 11.4 percent smaller than its first candidate by area and 60.9 percent of Spoolburst by area. The authoritative fall threshold remains unchanged; only an already-dead R7 actor whose collision body has cleared the 576-unit world bottom is hidden in the approved and fallback renderers, team cue and health layout. An ordinary in-world damage death remains visible for the existing unravel presentation, and R6 presentation and server-backed Practice/Daily remain unchanged."
     }
   ],
   "skipped_checks": [
-    "Physical phone behavior awaits owner Phone Gate A after commit, push and client deployment.",
+    "Refined crater scale and floor-exit presentation await owner Phone Gate A after commit, push and client deployment.",
     "Retired R5-and-older runtime profiles and the @legacy browser suite were excluded from ordinary acceptance.",
     "The daily/release suite was not run because this is a feature waypoint rather than the daily or release boundary.",
     "Performance was not selected for the bounded crater-rule and local-preview change.",
@@ -71,7 +83,7 @@
     "Authoritative Ubuntu visual baseline comparison remains CI-only; Windows ran supported visual logic with screenshot comparison skipped by policy."
   ],
   "residual_risks": [
-    "The 272-unit Threadball and 480-unit Spoolburst crater diameters require physical-phone feel acceptance before terrain design begins.",
+    "The refined 256-unit Threadball and 328-unit Spoolburst crater diameters require physical-phone acceptance before terrain design begins.",
     "The unchanged R6 surface-only battlefield may limit how fully the first phone gate demonstrates the larger crater roles; the new tactical map belongs to Waypoint 2.",
     "Physical Android/iOS and Nimiq Pay WebView behavior remain outside automated browser evidence."
   ]

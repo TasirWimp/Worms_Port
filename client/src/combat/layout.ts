@@ -2,7 +2,11 @@ import { SIM_RULES } from '../../../shared/simulation';
 import type { SimulationUnit } from '../../../shared/simulation';
 import { COMBAT_CAMERA_WINDOW, type CombatCamera } from './camera';
 import type { Rect, SafeAreaInsets } from './contracts';
-import { usesCompactWizardPresentation, wizardPresentationTopInWorld } from './loomseed-origin';
+import {
+    usesCompactWizardPresentation,
+    wizardPresentationTopInWorld,
+    wizardPresentationVisible
+} from './loomseed-origin';
 
 export type CombatLayout = {
     orientation: 'portrait' | 'landscape';
@@ -115,6 +119,9 @@ export function computeActorStatusLayout(
         : Math.max(36, (SIM_RULES.actorRadius + wizardPresentationTopInWorld(rulesetId)) * layout.worldScale + 12);
     const field = layout.battlefield;
     const rectFor = (unit: SimulationUnit): Rect | undefined => {
+        if (!wizardPresentationVisible(
+            unit, rulesetId, layout.camera.top + layout.camera.height, SIM_RULES.actorRadius
+        )) return undefined;
         const worldX = unit.x - layout.camera.left;
         const status = {
             x: field.x + worldX * layout.worldScaleX - width / 2,

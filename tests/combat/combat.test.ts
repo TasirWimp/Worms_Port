@@ -16,6 +16,7 @@ import {
     WIZARD_R6_ANIMATION_SCALE_IN_WORLD,
     loomseedScreenPoint,
     traceFromLoomseedOrigin,
+    wizardPresentationVisible,
     wizardPresentationTopInWorld
 } from '../../client/src/combat/loomseed-origin';
 import { trajectoryPreview } from '../../client/src/combat/preview';
@@ -240,6 +241,22 @@ test('R6-family health bars stay compact, sit four pixels above the Wizard and p
     assert.equal(stitchingHealthColor(100), 'hsl(120 72% 44%)');
     assert.equal(stitchingHealthColor(50), 'hsl(60 72% 44%)');
     assert.equal(stitchingHealthColor(0), 'hsl(0 72% 44%)');
+});
+
+test('R7 hides a fallen Wizard after its collision body clears the open bottom', () => {
+    const fallen = { alive: false, y: 588 };
+    assert.equal(wizardPresentationVisible(fallen, 'nimble-knots-artillery-v10-r7', 576, 12), false);
+    assert.equal(wizardPresentationVisible(fallen, 'nimble-knots-artillery-v10-r6', 576, 12), true);
+    assert.equal(wizardPresentationVisible({ alive: false, y: 300 }, 'nimble-knots-artillery-v10-r7', 576, 12), true);
+    assert.equal(wizardPresentationVisible({ alive: true, y: 588 }, 'nimble-knots-artillery-v10-r7', 576, 12), true);
+
+    const state = createLatestSimulation(0xC0FFEE11, 'wizard');
+    const units = structuredClone(state.units);
+    units[0].alive = false;
+    units[0].y = 588;
+    assert.equal(computeActorStatusLayout(
+        computeCombatLayout(844, 390), units, 'nimble-knots-artillery-v10-r7'
+    ).player, undefined);
 });
 
 test('R6 movement buttons distinguish a neutral tap from slide-to-jump and retain directional aftertouch', () => {

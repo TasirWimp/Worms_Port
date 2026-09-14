@@ -22,6 +22,7 @@ import {
     loomseedScreenPoint,
     traceFromLoomseedOrigin,
     usesCompactWizardPresentation,
+    wizardPresentationVisible,
     wizardPresentationScaleInWorld
 } from './loomseed-origin';
 
@@ -150,7 +151,11 @@ export class CombatRenderer {
         } else {
             this.drawFallbackClouds(layout);
             this.drawFallbackTerrain(state, layout);
-            for (const unit of state.units) this.drawFallbackKnotkin(unit, layout, state.selectedRelic);
+            for (const unit of state.units) {
+                if (this.unitPresentationVisible(unit, layout)) {
+                    this.drawFallbackKnotkin(unit, layout, state.selectedRelic);
+                }
+            }
         }
 
         this.teamCues.clear();
@@ -299,6 +304,10 @@ export class CombatRenderer {
         for (const unit of units) {
             const sprite = this.wizardSprites[unit.id];
             if (!sprite) continue;
+            if (!this.unitPresentationVisible(unit, layout)) {
+                sprite.setVisible(false);
+                continue;
+            }
             const root = this.actorRoot(unit, layout);
             sprite.setPosition(root.x, root.y)
                 .setScale(scale)
@@ -327,12 +336,22 @@ export class CombatRenderer {
         const g = this.teamCues;
         const radius = Math.max(10, SIM_RULES.actorRadius * layout.worldScale * 1.8);
         for (const unit of units) {
+            if (!this.unitPresentationVisible(unit, layout)) continue;
             const root = this.actorRoot(unit, layout);
             const color = unit.id === 'player' ? 0xE9B213 : 0xFA7268;
             const alpha = unit.alive ? 0.75 : 0.25;
             g.lineStyle(Math.max(2, radius * 0.12), color, alpha);
             g.strokeEllipse(root.x, root.y - radius * 0.08, radius * 1.5, radius * 0.44);
         }
+    }
+
+    private unitPresentationVisible(unit: SimulationUnit, layout: CombatLayout): boolean {
+        return wizardPresentationVisible(
+            unit,
+            this.presentationRulesetId,
+            layout.camera.top + layout.camera.height,
+            SIM_RULES.actorRadius
+        );
     }
 
     private drawVisualPhase(visualPhase: CombatVisualPhase | undefined, layout: CombatLayout): void {

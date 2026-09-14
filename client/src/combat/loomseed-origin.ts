@@ -25,6 +25,21 @@ export function usesCompactWizardPresentation(rulesetId?: string): boolean {
         rulesetId === 'nimble-knots-artillery-v10-r7';
 }
 
+/**
+ * A fallen R7 unit is already authoritatively dead once its collision body has
+ * cleared the open bottom. Do not hold its larger art sprite on the last row
+ * during the terminal presentation.
+ */
+export function wizardPresentationVisible(
+    unit: Readonly<{ alive: boolean; y: number }>,
+    rulesetId: string | undefined,
+    worldBottom: number,
+    collisionRadius: number
+): boolean {
+    return rulesetId !== 'nimble-knots-artillery-v10-r7' || unit.alive ||
+        unit.y - collisionRadius < worldBottom;
+}
+
 export function wizardPresentationScaleInWorld(
     geometry: WizardPresentationGeometry,
     rulesetId?: string
