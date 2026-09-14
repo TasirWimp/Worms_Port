@@ -41,16 +41,13 @@ test('R7 changes only Threadball and Spoolburst crater scale from R6', () => {
     const r6 = mechanicsForV10(V10_R6_RULESET_ID)!;
     const r7 = mechanicsForV10(V10_R7_RULESET_ID)!;
 
-    assert.equal(r7.relics.threadball.craterRadius, 128);
+    assert.equal(r7.relics.threadball.craterRadius, 64);
     assert.equal(r7.relics.needlepoint.craterRadius, 8);
-    assert.equal(r7.relics.spoolburst.craterRadius, 164);
-    assert.ok(Math.abs(r7.relics.threadball.craterRadius * 2 / R6_ACTOR_HEIGHT - 3.76) < 0.01);
+    assert.equal(r7.relics.spoolburst.craterRadius, 112);
+    assert.ok(Math.abs(r7.relics.threadball.craterRadius * 2 / R6_ACTOR_HEIGHT - 1.88) < 0.01);
     assert.ok(Math.abs(
-        r7.relics.threadball.craterRadius ** 2 / r7.relics.spoolburst.craterRadius ** 2 - 0.6
+        r7.relics.threadball.craterRadius ** 2 / r7.relics.spoolburst.craterRadius ** 2 - 1 / 3
     ) < 0.01);
-    assert.ok(Math.abs(
-        r7.relics.threadball.craterRadius ** 2 / 136 ** 2 - 0.9
-    ) < 0.02);
     assert.deepEqual(r7.directHitbox, r6.directHitbox);
     assert.deepEqual(r7.blastImpulse, r6.blastImpulse);
     assert.equal(r7.terrainFirst, r6.terrainFirst);
@@ -74,9 +71,9 @@ test('R7 crater radii clear deterministic circular spans in the packed terrain m
     const centerY = 320;
 
     for (const [relic, expectedSurfaceCells] of [
-        ['threadball', 32],
+        ['threadball', 16],
         ['needlepoint', 2],
-        ['spoolburst', 40]
+        ['spoolburst', 28]
     ] as const) {
         const terrain = structuredClone(createSimulationV10(4, 'wizard', V10_R7_RULESET_ID).terrain);
         for (let y = 0; y < terrain.height; y += 1) {
@@ -91,6 +88,34 @@ test('R7 crater radii clear deterministic circular spans in the packed terrain m
         assert.equal(terrainSolid(terrain, cleared[0] - 1, row), true);
         assert.equal(terrainSolid(terrain, cleared.at(-1)! + 1, row), true);
     }
+});
+
+test('the thinnest volcanic shelf needs two Spoolbursts to open the world bottom', () => {
+    const terrain = structuredClone(createSimulationV10(4, 'wizard', V10_R7_RULESET_ID).terrain);
+    const mechanics = mechanicsForV10(V10_R7_RULESET_ID)!;
+    const surfaceRow = (column: number): number => {
+        for (let row = 0; row < terrain.height; row += 1) {
+            if (terrainSolid(terrain, column, row)) return row;
+        }
+        return terrain.height;
+    };
+    const initialSurfaces = Array.from({ length: terrain.width }, (_, column) => surfaceRow(column));
+    const deepestSurface = Math.max(...initialSurfaces);
+    const column = initialSurfaces.indexOf(deepestSurface);
+    const bottomRow = terrain.height - 1;
+
+    assert.equal(deepestSurface, 56);
+    assert.equal((terrain.height - deepestSurface) * terrain.cellSize, 128);
+
+    const centerX = column * terrain.cellSize + terrain.cellSize / 2;
+    const deepestFirstImpactY = (deepestSurface + 1) * terrain.cellSize - 1;
+    deformTerrain(terrain, centerX, deepestFirstImpactY, mechanics.relics.spoolburst.craterRadius);
+    assert.equal(terrainSolid(terrain, column, bottomRow), true, 'one hit preserves the floor');
+
+    const secondSurface = surfaceRow(column);
+    assert.ok(secondSurface > deepestSurface && secondSurface < terrain.height);
+    deformTerrain(terrain, centerX, secondSurface * terrain.cellSize, mechanics.relics.spoolburst.craterRadius);
+    assert.equal(terrainSolid(terrain, column, bottomRow), false, 'the second hit opens the floor');
 });
 
 test('an R7 unit falling through a floorless crater exits below the world and loses', () => {

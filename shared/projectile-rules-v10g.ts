@@ -34,12 +34,12 @@ export const V10_R7_PROJECTILE_RULES: ProjectileMechanics = Object.freeze({
     relics: Object.freeze({
         threadball: Object.freeze({
             ...V10_R6_PROJECTILE_RULES.relics.threadball,
-            craterRadius: 128
+            craterRadius: 64
         }),
         needlepoint: V10_R6_PROJECTILE_RULES.relics.needlepoint,
         spoolburst: Object.freeze({
             ...V10_R6_PROJECTILE_RULES.relics.spoolburst,
-            craterRadius: 164
+            craterRadius: 112
         })
     })
 });

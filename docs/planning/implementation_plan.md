@@ -168,9 +168,10 @@ Phaser/Socket.IO stack.
 - Active successor: **WP-024 V10 R7 Terrain As Gameplay**. Waypoint 1 is
   implemented from clean `4f7c878` and awaits Phone Gate A on
   `/?combat-preview=v10r7`. The first phone read found both crater candidates
-  too large; the active refinement uses a 256-unit Threadball diameter and a
-  328-unit Spoolburst diameter, making Threadball about 60.9% of Spoolburst by
-  area. It also removes a fallen R7 Nimble from presentation once its collision
+  too large; the active refinement now uses a 128-unit Threadball diameter and
+  a 224-unit Spoolburst diameter. Threadball is about one-third of Spoolburst by
+  area, while one Spoolburst cannot break through the thinnest 128-unit shelf
+  and a second hit into the exposed crater floor can. It also removes a fallen R7 Nimble from presentation once its collision
   body has cleared an open crater bottom. It extends
   the existing ASCII terrain compiler from a surface profile to a complete,
   entirely destructible 64 by 36 battlefield with exact 256 by 72 live-state

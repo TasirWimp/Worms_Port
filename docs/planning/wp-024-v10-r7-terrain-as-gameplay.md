@@ -1,6 +1,6 @@
 # WP-024 V10 R7 Terrain As Gameplay
 
-Status: **Waypoint 1 refined; awaiting Phone Gate A**
+Status: **Waypoint 1 second crater refinement; awaiting Phone Gate A**
 Planning base: `842da39`  
 Implementation base: `4f7c878`
 Implementation branch: `codex/v10-r6-action-impact-dynamics`
@@ -17,8 +17,8 @@ them.
 
 The package has three coupled product changes:
 
-1. tune Threadball to a crater diameter of about 3.8 actor heights and keep its
-   area near 60% of the larger Spoolburst crater;
+1. tune Threadball to about one-third of Spoolburst's crater area and size
+   Spoolburst so the thinnest volcanic shelf needs at least two hits to open;
 2. replace the surface-only volcanic terrain with an entirely destructible
    tactical battlefield that can contain cavities, bridges, overhangs, thin
    supports and openings to the bottom of the world; and
@@ -94,17 +94,20 @@ The refined R7 terrain radii are:
 
 | Relic | Diameter | Radius | Actor-height ratio | Nominal 8-unit-cell diameter |
 | --- | ---: | ---: | ---: | ---: |
-| Threadball | 256 | 128 | about 3.76 | 32 cells |
+| Threadball | 128 | 64 | about 1.88 | 16 cells |
 | Needlepoint | 16 | 8 | unchanged precision cut | 2 cells |
-| Spoolburst | 328 | 164 | about 4.82 | 41 cells |
+| Spoolburst | 224 | 112 | about 3.29 | 28 cells |
 
-The first phone read found both initial crater sizes too large. The refined
-Threadball area is about 11.4% smaller than the initial 272-unit candidate, and
-its area is about 60.9% of the refined Spoolburst. The integer radii retain
-deterministic circular carving on the 8-unit collision grid. These remain phone
-review values, not an authorization to tune other weapon axes at the same time.
-At a cell-centred impact, the packed-mask surface spans are 32 cells for
-Threadball, 2 for Needlepoint and 40 for Spoolburst.
+Two phone reads found both earlier crater candidates too large. The current
+volcanic map's thinnest shelf starts at world Y 448 and leaves 128 units of
+terrain above the open world bottom. Spoolburst's 112-unit radius preserves a
+bottom collision row after a first hit even at the deepest point of that shelf;
+a second hit into the newly exposed crater floor can open it. Threadball's area
+is about 32.7% of Spoolburst's. The integer radii retain deterministic circular
+carving on the 8-unit collision grid. These remain phone-review values, not an
+authorization to tune other weapon axes at the same time. At a cell-centred
+impact, the packed-mask surface spans are 16 cells for Threadball, 2 for
+Needlepoint and 28 for Spoolburst.
 
 Damage radius, maximum damage, launch bands, gravity, Thread cost, shield
 interaction and R6 blast impulse remain unchanged for the first crater gate.
@@ -121,11 +124,10 @@ cells. Direct actor impacts continue to carve at the resolved impact point.
 
 Use the wallet-free private R7 preview at `/?combat-preview=v10r7`:
 
-1. Compare both actors with a Threadball crater and confirm the refined opening
-   reads as roughly 3.8 actor heights across.
-2. Fire Spoolburst into bulk terrain and confirm Threadball reads as about 60%
-   of its crater area while the two Relics still create materially different
-   routes.
+1. Fire one Spoolburst into the thinnest terrain and confirm it leaves a floor;
+   hit the exposed crater floor again and confirm the second hit opens it.
+2. Compare both crater roles and confirm Threadball reads as about one-third of
+   Spoolburst by area.
 3. Confirm Needlepoint remains a small precision cut.
 4. Confirm damage, health bars, recoil, self-blast, firing, retreat, controls and
    the 60-second action flow still feel like accepted R6.
