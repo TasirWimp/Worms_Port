@@ -11,15 +11,16 @@ import { RewardService } from '../../server/src/reward/service';
 import type { RewardConfig } from '../../server/src/reward/types';
 import { CURRENT_V10_RULESET_ID } from '../../shared/simulation-v10';
 import { createTestSigner, privateKeyForProject } from '../support/nimiq-signer';
+import { completeCurrentClash } from './support/reward-journey';
 
 const PROXY_ADDRESS = 'NQ34 61R8 YJUA KLDJ 4VVL E22V T7KE ATA3 A1HY';
 const EARN_HASH = '7'.repeat(64);
 const SPEND_HASH = '8'.repeat(64);
 
-test('PEI helper survives both crossings and admits the same volcanic Daily match', async ({
+test('PEI helper receipt survives return and completes the same volcanic Daily and Practice journey', async ({
   page
 }, testInfo) => {
-  test.setTimeout(120_000);
+  test.setTimeout(240_000);
   test.skip(
     !['chromium-390x844', 'webkit-390x844'].includes(testInfo.project.name),
     'One maintained project per mobile engine covers the two-origin PEI journey.'
@@ -40,7 +41,8 @@ test('PEI helper survives both crossings and admits the same volcanic Daily matc
     peiRequired: true
   };
   let id = 0;
-  const rewards = new RewardService(rewardConfig, new MemoryRewardStore(), {
+  const store = new MemoryRewardStore();
+  const rewards = new RewardService(rewardConfig, store, {
     idSource: () => `pei_browser_reward_${String(++id).padStart(3, '0')}`,
     seedSource: () => 4,
     peiReceiptIdSource: () => 'pei_browser_receipt_001'
@@ -71,8 +73,7 @@ test('PEI helper survives both crossings and admits the same volcanic Daily matc
     sessionRegistry: {
       practiceV10: true,
       seedSource: () => 4,
-      reconnectGraceMs: 660_000,
-      v10TestOnly: { nowUs: () => 0 }
+      reconnectGraceMs: 660_000
     }
   });
   const gamePort = await game.listen();
@@ -167,9 +168,41 @@ test('PEI helper survives both crossings and admits the same volcanic Daily matc
     await expect(page.locator('.daily-facts')).toContainText('Unused PEI receipts1');
     await expect(page.getByRole('button', { name: 'Start Daily Challenge' })).toBeEnabled();
     await page.getByRole('button', { name: 'Start Daily Challenge' }).tap();
-    await expect(page.locator('.combat-v10')).toHaveAttribute('data-mode', 'reward');
-    await expect(page.locator('.combat-v10')).toHaveAttribute('data-ruleset', CURRENT_V10_RULESET_ID);
-    await expect(page.locator('.combat-v10')).toHaveAttribute('data-background', 'volcanic-ruin');
+    const combat = page.locator('.combat-v10');
+    await expect(combat).toHaveAttribute('data-mode', 'reward');
+    await expect(combat).toHaveAttribute('data-ruleset', CURRENT_V10_RULESET_ID);
+    await expect(combat).toHaveAttribute('data-background', 'volcanic-ruin');
+    const consumed = await store.peiReceiptStatus('pei_browser_receipt_001', signer.address);
+    expect(consumed?.consumedAt).toBeInstanceOf(Date);
+    expect(consumed?.entitlementId).toBeTruthy();
+    expect((await rewards.info({
+      address: signer.address,
+      authorizedAt: new Date().toISOString()
+    })).availablePeiReceipts).toBe(0);
+
+    let socketId = [...game.io.sockets.sockets.keys()][0];
+    const dailyChallenge = game.sessions.activeSnapshotV10(game.sessions.getBound(socketId)!)!.challengeId;
+    await page.reload();
+    await page.getByRole('button', { name: 'Resume Daily Challenge' }).tap();
+    await expect(combat).toHaveAttribute('data-mode', 'reward');
+    socketId = [...game.io.sockets.sockets.keys()][0];
+    expect(game.sessions.activeSnapshotV10(game.sessions.getBound(socketId)!)!.challengeId).toBe(dailyChallenge);
+
+    await completeCurrentClash(page);
+    const result = page.locator('.result-shell');
+    await expect(result).toBeVisible();
+    const outcome = await result.getAttribute('data-outcome');
+    expect(['player_win', 'loomkeeper_win', 'draw']).toContain(outcome);
+    const entitlement = await store.status(consumed!.entitlementId!, signer.address);
+    expect(entitlement?.state).toBe(outcome === 'player_win' ? 'claimable' : 'lost');
+    expect(entitlement?.replay && 'rulesetId' in entitlement.replay
+      ? entitlement.replay.rulesetId
+      : undefined).toBe(CURRENT_V10_RULESET_ID);
+
+    await page.getByRole('button', { name: 'Play Practice' }).tap();
+    await expect(combat).toHaveAttribute('data-mode', 'practice');
+    await expect(combat).toHaveAttribute('data-ruleset', CURRENT_V10_RULESET_ID);
+    await expect(combat).toHaveAttribute('data-background', 'volcanic-ruin');
   } finally {
     expect.soft(pageErrors, 'PEI browser crossings must not raise page errors.').toEqual([]);
     await page.goto('about:blank');

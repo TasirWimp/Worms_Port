@@ -1,6 +1,6 @@
 # WP-023 V10 R6 Action And Impact Dynamics
 
-Status: **Waypoint 2 implemented; ready for Phone Gate B**
+Status: **Waypoint 3 integration ready for Phone Gate C**
 Branch: `codex/v10-r6-action-impact-dynamics`  
 Starting commit: `c0f63ec`
 
@@ -222,7 +222,14 @@ the remaining Waypoint 2 acceptance boundary.
    the Loomkeeper response and reload/resume once to check the same result and
    restored controls.
 
-Do not advance until the owner accepts Phone Gate B.
+Phone Gate B passed on the owner's physical phone at committed and pushed
+`6c7fc32`. The accepted checks cover the original neutral and directional jump
+controls, direct and splash motion, Needlepoint recoil, near-shooter and
+terrain-adjacent impacts, smooth settling, Loomkeeper response and reload. The
+owner also accepted the existing stationary-fire boundary: starting movement
+closes the aimed shot, returns the centre action to disabled Use and therefore
+prevents firing until the actor stops and aims again. No control change is
+required. This accepts Waypoint 2 and authorizes Waypoint 3.
 
 ### Waypoint 3 — complete product journey
 
@@ -230,6 +237,19 @@ Review the accepted R6 mechanics through standard Practice and the existing
 wallet/PEI receipt/Daily/reward lifecycle. Update current-path documentation,
 selected checks and release evidence. Do not broaden helper issuance, Daily
 eligibility or reward economics.
+
+The integration review traces both modes into the same current R6 coordinator
+and replay verifier. Its maintained two-origin browser journey now continues
+past helper return: the unused receipt survives game reload, is consumed only
+when Daily starts, reconnect resumes the same challenge, the terminal result
+stores a verified R6 replay, and the result returns to the same volcanic R6
+Practice. The first extended run exposed a frozen test-only authority clock
+that was appropriate only while the case ended immediately after admission;
+removing that fixture freeze let the standard timer complete the journey on
+both maintained mobile engines. No product authority or economy code changed.
+Existing focused reward checks continue to own claim authorization, fixed
+reward queuing and payout settlement. Phone Gate C remains the final product
+acceptance boundary.
 
 **Phone Gate C** runs one wallet-free Practice and one available PEI-gated
 Daily. It confirms receipt consumption only when Daily starts, the same R6

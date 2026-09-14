@@ -142,13 +142,14 @@ Phaser/Socket.IO stack.
   It keeps the exact R5 volcanic arena and weapon-terrain behavior while adding
   the compact actor presentation/target, 60-second action clock, health bars
   and compact translucent left/right/up controls with neutral direct jump,
-  directional slide-to-jump and bounded aftertouch. **Waypoint 2 is implemented
-  and ready for Phone Gate B:** R6 now has a separate non-steerable `blast`
-  state for either actor, explicit per-Relic radial impulse bounds, existing
-  swept terrain collision, fail-closed settling and fire-to-retreat input
-  retirement. R5, damage and crater behavior remain unchanged. Waypoint 3 stays
-  blocked until physical acceptance, then completes the accepted Practice and
-  PEI-gated Daily journey. R5 remains an explicit diagnostic and is not part
+  directional slide-to-jump and bounded aftertouch. Waypoint 2's separate
+  non-steerable `blast` state, explicit per-Relic radial impulse bounds,
+  existing swept collision and fail-closed settling passed Phone Gate B at
+  committed and pushed `6c7fc32`. **Waypoint 3 integration is ready for Phone
+  Gate C:** the maintained helper journey proves receipt persistence and
+  start-only consumption, same-challenge Daily reconnect, terminal R6 replay
+  settlement and return to the same volcanic R6 Practice. No product authority
+  or economy code changed. R5 remains an explicit diagnostic and is not part
   of ordinary acceptance. See the [WP-023 contract](wp-023-v10-r6-action-impact-dynamics.md)
   and [evidence](../evidence/wp-023.json).
 - Active target: mobile-first single-player Nimiq Pay competition release.

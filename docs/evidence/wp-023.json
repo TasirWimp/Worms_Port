@@ -102,6 +102,16 @@
       "command": "WP-023 Waypoint 2 implementation-record check",
       "status": "pass",
       "details": "The exact zero-retry work-package record check passed after the contract, execution pointer and evidence were advanced to the Phone Gate B boundary. No runtime, build, browser, legacy or daily/release check was repeated after the documentation-only update. Log .cache/wp023-waypoint2-work-packages.log."
+    },
+    {
+      "command": "WP-023 Waypoint 3 change selection and focused integration checks from committed base 6c7fc32",
+      "status": "pass",
+      "details": "The dry run recorded fingerprint 3f9dd5997f8df44a2bb7e557aef4d7fe46d2037623d4760885e8f7c33e5d7f87 and selected tooling plus the PEI browser family for the sole test edit. Direct review added types because the case now inspects typed reward state. Types and tooling 133/133 passed with zero retries. The first PEI browser run retained two cross-engine failures after firing: the extended case stayed at tick 0 because its former admission-only fixture froze the V10 clock with nowUs returning zero. This was a test-fixture boundary, supported by identical Chromium/WebKit traces and authoritative tick-0 projectile state. Removing only that freeze and rerunning the exact affected PEI phase passed the complete helper, receipt, Daily reconnect, terminal replay and Practice-return journey on Chromium 390x844 and WebKit 390x844, with three expected project skips and zero retries. The existing build was reused because product inputs were unchanged. Logs .cache/wp023-waypoint3-{dry-run,types,tooling,browser-pei,browser-pei-recovery}.log."
+    },
+    {
+      "command": "WP-023 Gate B acceptance and Waypoint 3 implementation-record check",
+      "status": "pass",
+      "details": "The exact zero-retry work-package checker passed all records after the owner Gate B acceptance, contract, execution pointer and Waypoint 3 evidence were updated. No product, build, browser, legacy or daily/release phase was repeated for the documentation-only change. Log .cache/wp023-waypoint3-work-packages.log."
     }
   ],
   "reviews": [
@@ -128,6 +138,18 @@
       "reviewer": "primary assistant",
       "decision": "pass_waypoint_2_implementation",
       "details": "Direct review confirms that only current R6 supplies an impulse table and admits the new blast motion state. Damage distance and terrain exposure are calculated against intact terrain before deformation, then each exposed surviving actor receives deterministic radial motion; a coincident direct hit uses projectile travel direction rather than facing or input. Active and non-active actors share the existing swept collision, gravity, landing and bounded simulation-limit paths. Entering projectile and settling phases retires the authority lease and client pointer state; blast motion cannot consume player aftertouch, and the existing retreat restores the accepted controls. R5 has neither an impulse table nor a valid blast wire state, while crater, damage, projectile flight, Thread costs and reward/PEI policy are unchanged. Automated implementation acceptance is complete; physical feel and collision acceptance remain at Phone Gate B."
+    },
+    {
+      "role": "owner",
+      "reviewer": "WP-023 Phone Gate B physical-phone acceptance",
+      "decision": "pass",
+      "details": "At committed and pushed 6c7fc32, the owner accepted the neutral and directional jump controls, direct and splash motion, Needlepoint recoil, near-shooter and terrain-adjacent impacts, smooth settling, Loomkeeper response and reload. Moving closes the aimed shot and changes Fire back to disabled Use; the owner explicitly accepted this existing stationary-fire boundary without changes. This closes Phone Gate B and authorizes Waypoint 3."
+    },
+    {
+      "role": "primary",
+      "reviewer": "primary assistant",
+      "decision": "pass_waypoint_3_integration",
+      "details": "Direct review traces standard Practice and PEI-gated Daily into the same CURRENT_V10_RULESET_ID coordinator and live replay contract. Reward admission reserves the wallet's oldest unused receipt and atomically consumes it only when the match starts; reconnect retains the same R6 challenge. Terminal settlement passes the authoritative R6 replay to RewardService verification before changing entitlement state. The extended maintained browser journey proves receipt persistence across reload, start-only consumption, reconnect continuity, terminal replay storage and return to R6 Practice. Existing reward tests continue to cover eligible-win claim authorization, fixed sponsor-funded queuing and payout-state reconciliation. No helper issuance, Daily limit, reward value, wallet policy or payout authority changed. Phone Gate C remains required before WP-023 closure."
     }
   ],
   "skipped_checks": [
@@ -135,9 +157,9 @@
     "Local PostgreSQL execution was skipped because WP014_TEST_DATABASE_URL is absent. WP-023 Waypoint 1 changes no database schema, receipt inventory or reward settlement behavior; disposable PostgreSQL remains a CI gate.",
     "Authoritative Ubuntu screenshot comparison and baseline approval were not run on Windows. Logic ran across all five maintained phone layouts; a Linux candidate belongs on the implementation PR after physical acceptance.",
     "The full daily/release and performance suites were not run because this is a feature waypoint rather than the 22:00 checkpoint or a release boundary.",
-    "Physical Phone Gate A passed at 73e9aba. Waypoint 2 is implemented, but physical Phone Gate B, complete Daily integration acceptance and Phone Gate C have not started."
+    "Physical Phone Gates A and B passed at 73e9aba and 6c7fc32 respectively. Waypoint 3 automated integration is complete, but Phone Gate C has not started."
   ],
   "residual_risks": [
-    "Automated checks freeze and verify the R6 blast-motion mechanics, but the three Relic force ranges, radial feel, near-shooter behavior, terrain collision and control handoff remain uncalibrated on a physical phone. Phone Gate B is the next acceptance boundary, and Waypoint 3 must not start before it passes."
+    "The owner accepted R6 gameplay at Phone Gate B, and automated integration covers the complete PEI-gated terminal path. One deployed physical-phone Practice plus Daily journey must still confirm receipt consumption, same-match reconnect and the existing eligible-win payout before WP-023 can close."
   ]
 }
