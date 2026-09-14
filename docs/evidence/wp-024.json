@@ -17,9 +17,11 @@
     "Waypoint 2 after Phone Gate A: replace R7's inherited surface-only recipe with a fixed fully destructible 64 by 36 ASCII battlefield spanning the complete 2048 by 576 world, while R6 stays unchanged.",
     "Compile every authoring cell explicitly into the 256 by 72 packed mask; use all world-width columns for edge structures, routes and a 144-unit full-width destructible foundation with deliberate breach zones and no hidden floor.",
     "Serialize exact live terrain and actor overlays, bind R7 terrain revision/hash metadata to authoritative transitions, render every exposed terrain surface, introduce the full-world camera survey and restore the exact changed local preview across app reopen while explicit restart starts fresh.",
-    "Waypoint 3 after terrain acceptance: add the bounded server-only Gemini Loomkeeper selector, fresh live ASCII state and deterministic fallback/replay boundary before final Practice and Daily promotion."
+    "Waypoint 3 after terrain acceptance: move the exact R7 state into the server-authoritative lifecycle with the existing deterministic Loomkeeper, exact replay/resume and Practice canary before final Practice and Daily promotion."
   ],
   "non_goals": [
+    "No Gemini dependency, API call, prompt, provider configuration or external selector anywhere in WP-024; objective-aware Gemini selection is owned by WP-027 after WP-026 defines R8 objective gameplay.",
+    "No coins, chests, objective state or Defend, Collect and Claim modes in R7; those gameplay changes are owned by WP-026 after WP-025 lifecycle hardening.",
     "No Gemini dependency, call, selector or external model behavior in Waypoint 2.",
     "No Gemini dependency, API call, environment variable, prompt, external plan, reward verifier change or Waypoint 3 implementation in Waypoint 1.",
     "No current R6 Practice, Daily, PEI, reward, helper, server-profile, database, asset, damage, Thread-cost, movement, jump, camera or control behavior change in Waypoint 1; only the explicitly phone-reviewed R7 Needlepoint impulse correction extends the original crater scope.",
@@ -35,7 +37,10 @@
     "Second Phone Gate A crater parameter refinement from committed base 18a1292",
     "Phone Gate A Needlepoint recoil refinement from committed base dbcec6a",
     "Waypoint 2 exact compiler, geometry, serializer, transition metadata, local recovery, rendering and full-arena browser checks from committed base 4933cb2",
-    "Phone Gate B on the physical phone"
+    "Phone Gate B on the physical phone",
+    "Waypoint 3 exact R7 server identity, deterministic Loomkeeper, replay/resume, Practice canary, reward verification and current browser checks",
+    "Phone Gate C on server-backed R7 Practice",
+    "Phone Gate D on the final standard R7 Practice and PEI-gated Daily paths"
   ],
   "deterministic_seeds": [
     "R7 local volcanic preview seed 4"
@@ -128,7 +133,7 @@
     {
       "reviewer": "WP-024 Phone Gate B physical-phone acceptance",
       "status": "pass",
-      "details": "At committed and pushed 9e17773, the owner accepted all seven phone checks. The opening survey and authored battlefield use the full arena; upper, central and lower routes are readable and playable; multiple Relics can remove obstructions and open routes; a breached foundation produces a clear open-bottom fall loss; isolated terrain remains stable and destructible; controls, camera and crater presentation remain smooth; closing and reopening restores the exact changed battlefield; and explicit restart creates a fresh battlefield. This completes Waypoint 2 and authorizes Waypoint 3. Gemini and standard Practice/Daily promotion remain inactive."
+      "details": "At committed and pushed 9e17773, the owner accepted all seven phone checks. The opening survey and authored battlefield use the full arena; upper, central and lower routes are readable and playable; multiple Relics can remove obstructions and open routes; a breached foundation produces a clear open-bottom fall loss; isolated terrain remains stable and destructible; controls, camera and crater presentation remain smooth; closing and reopening restores the exact changed battlefield; and explicit restart creates a fresh battlefield. This completes Waypoint 2 and authorizes Waypoint 3's deterministic server-authority and replay integration. Standard Practice/Daily promotion remains inactive; Gemini has moved to WP-027 after the WP-026 objective rules."
     }
   ],
   "skipped_checks": [

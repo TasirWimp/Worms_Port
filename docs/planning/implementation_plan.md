@@ -186,21 +186,46 @@ Phaser/Socket.IO stack.
   the existing ASCII terrain compiler from a surface profile to a complete,
   entirely destructible 64 by 36 battlefield with exact 256 by 72 live-state
   serialization, terrain revision/hash continuity, local changed-map recovery,
-  open-bottom fall losses and no hidden floor. A later waypoint
-  lets a server-only Gemini adapter select from a deterministic shortlist of
-  legal Loomkeeper plans using a fresh ASCII snapshot after every terrain
-  change; the local planner remains the bounded fallback and replay settlement
-  never calls Gemini. Waypoint 1 owns only the R7 identity, crater radii and a
+  open-bottom fall losses and no hidden floor. Waypoint 1 owns only the R7 identity, crater radii and a
   local volcanic phone preview. Change-selected current-path verification and
   the supported canonical R7 browser case pass. Standard Practice and Daily
   remain R6 until the later promotion gate. At committed and pushed `9e17773`,
   all seven Phone Gate B checks passed on the owner's physical phone: the full
   battlefield, route destruction, open-bottom fall loss, changed-map reopen and
   fresh restart behaved as specified. **Waypoint 2 and Phone Gate B are
-  accepted. The next implementation target is Waypoint 3's bounded server-side
-  Gemini Loomkeeper selector, beginning with deterministic candidate generation,
-  strict adapter/fallback boundaries and shadow mode.** See the
+  accepted. The next implementation target is Waypoint 3's server-authoritative
+  R7 integration with the existing deterministic Loomkeeper, exact replay and
+  resume, followed by the Practice and Daily promotion gates. Gemini has moved
+  out of WP-024 so no deathmatch-specific external selector is built before the
+  objective rules exist.** See the
   [WP-024 contract](wp-024-v10-r7-terrain-as-gameplay.md).
+- Queued mandatory successor after WP-024 closes: **WP-025 Mobile Lifecycle And
+  Power Hardening**. It does not interrupt the remaining WP-024 Waypoint 3,
+  Phone Gate C, promotion or Phone Gate D path. The package will suspend the
+  custom presentation loop and local preview clock while the mini app is hidden,
+  disconnect the live Socket.IO transport until foreground resume, reset timing
+  anchors without catch-up work, and move independent combat animation work under
+  Phaser's managed lifecycle where practical. Daily Challenge authority and exact
+  resume must remain server-owned. Automated coverage will require no hidden-state
+  simulation/render work or snapshot traffic; the physical-phone gate will compare
+  Nimiq Pay at its home screen, the static NIMble Knots lobby and an active match.
+  If meaningful background activity remains after the app-side fix, the residual
+  investigation will be reduced to the Nimiq Pay WebView host lifecycle, including
+  native pause, timer pause and destruction behavior. Current synthetic visibility
+  evidence proves that app-owned work continues while hidden; it does not by itself
+  attribute the phone's measured CPU time to one process or lifecycle layer.
+- Queued after WP-025: **WP-026 V10 R8 Objective Modes**. It introduces the
+  server-authoritative Defend, Collect and Claim modes, non-destructible physical
+  coins and chests, objective-specific results, a separate ASCII objective layer,
+  deterministic objective-aware Loomkeeper play, exact replay/resume and the
+  player mode-selection flow. R8 remains isolated from R7 replay truth. See the
+  [WP-026 contract](wp-026-v10-r8-objective-modes.md).
+- Queued after WP-026: **WP-027 Objective-Aware Gemini Loomkeeper**. Gemini may
+  select only a stable ID from server-generated, deterministically simulated
+  complete-turn candidates whose consequences include the active objective,
+  terrain topology and object state. The deterministic R8 policy remains the
+  permanent fallback and replay verification never calls Gemini. See the
+  [WP-027 contract](wp-027-gemini-objective-loomkeeper.md).
 - Active target: mobile-first single-player Nimiq Pay competition release.
 - Latest completed slice: **WP-015D4D V10G Terrain And Weapon Tactics**;
   see the [V10G preparation contract](wp-015d4a-v10-terrain-starts-contract.md#v10g-terrain-and-weapon-tactics-preparation).

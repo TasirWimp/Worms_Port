@@ -15,20 +15,18 @@ projectiles, damage, blast impulse, Thread economy, deterministic simulation,
 resume behavior and reward rules unless a waypoint below explicitly changes
 them.
 
-The package has three coupled product changes:
+The package has two coupled product changes:
 
 1. tune Threadball to about one-third of Spoolburst's crater area and size
    Spoolburst so the thinnest volcanic shelf needs at least two hits to open;
 2. replace the surface-only volcanic terrain with an entirely destructible
    tactical battlefield that can contain cavities, bridges, overhangs, thin
-   supports and openings to the bottom of the world; and
-3. give the Loomkeeper a Gemini-backed tactical selector that reasons over an
-   exact ASCII representation of the current battlefield without giving an
-   external model simulation authority.
+   supports and openings to the bottom of the world.
 
-The crater scale and battlefield come first. Gemini enters through the same
-ASCII state seam only after terrain round trips, destruction and reward replay
-are independently trustworthy.
+After both terrain waypoints pass phone review, Waypoint 3 moves the exact R7
+state into the existing server-authoritative Practice and Daily lifecycle with
+the deterministic Loomkeeper. Objective modes belong to WP-026 and the
+objective-aware Gemini selector belongs to WP-027; neither is part of R7.
 
 ## Current seams and required changes
 
@@ -62,13 +60,6 @@ The web review contributes behavior and layout principles only:
   using negative space and tall, thin structures to make constrained terrain
   feel larger. R7 applies those layout principles to the existing packed 2D
   mask.
-- Google's Gemini documentation supports schema-constrained JSON, but explicitly
-  requires applications to validate semantically incorrect output. It also
-  distinguishes stable model names from hot-swapped `latest` aliases and
-  requires production API keys to remain server-side. R7 therefore treats the
-  model response as untrusted plan selection, pins an exact stable model in a
-  policy identity and keeps the key out of the client.
-
 No external game code, map, texture or asset enters the product. Sorcerers
 remains quarantined and is not reopened for this package.
 
@@ -76,10 +67,6 @@ References:
 
 - https://www.team17.com/games/worms-w-m-d-mobilize
 - https://www.team17.com/news/team17s-100-games-part-eight-2002-2004-worms-3d-worms-blast-more
-- https://ai.google.dev/gemini-api/docs/structured-output
-- https://ai.google.dev/gemini-api/docs/models
-- https://ai.google.dev/gemini-api/docs/api-key
-- https://ai.google.dev/gemini-api/docs/rate-limits
 
 ## Waypoint 1 - crater scale
 
@@ -147,7 +134,7 @@ At committed and pushed `4933cb2`, the owner accepted points 4 and 5 after the
 bounded Needlepoint recoil correction. Together with the previously accepted
 crater roles, precision cut and open-bottom fall presentation, **Phone Gate A
 is complete** and authorizes Waypoint 2. It does not approve the new battlefield
-or Gemini behavior.
+or server promotion.
 
 ## Waypoint 2 - fully destructible ASCII battlefield
 
@@ -251,8 +238,7 @@ background remains collisionless and behind all terrain.
 
 The initial authoring chart is not mutated during play. `PackedTerrain.words`
 remains authoritative. After every impact, R7 derives the next ASCII state from
-the changed bits rather than editing text or asking Gemini to infer which cells
-were removed.
+the changed bits rather than editing text or inferring which cells were removed.
 
 The canonical live serializer emits exactly 72 lines of 256 characters, one
 character per 8 by 8 collision cell, with LF separators and no terminal newline:
@@ -300,156 +286,73 @@ Use the same private R7 Practice preview after Gate A:
    confirm the same terrain revision and destruction state resumes; use the
    in-game restart and confirm it deliberately starts a fresh battlefield.
 
-Gate B accepts the authored battlefield and fall rule. It does not activate
-Gemini or the rewarded Daily path.
+Gate B accepts the authored battlefield and fall rule. It does not activate the
+server-backed Practice or rewarded Daily path.
 
 At committed and pushed `9e17773`, the owner accepted all seven physical-phone
 checks. The full arena, tactical routes, destructible foundation, open-bottom
 fall loss, exact changed-map reopen and deliberate fresh restart behaved as
 specified. **Phone Gate B is complete.** This authorizes Waypoint 3's bounded
-server-side Loomkeeper selector; it does not activate Gemini or promote R7 to
-standard Practice or Daily.
+server-authority and deterministic replay integration; it does not yet promote
+R7 to standard Practice or Daily.
 
-## Waypoint 3 - Gemini-backed Loomkeeper selection
+## Waypoint 3 - server-authoritative R7 and deterministic Loomkeeper
 
-### Authority boundary
+### Version and authority
 
-Gemini is a bounded selector, not the game simulation, collision system, map
-store or command authority. At the start of each Loomkeeper turn, the server:
+Waypoint 3 promotes the already accepted R7 simulation into the existing live
+server lifecycle without adding another gameplay mechanic. It changes the
+current V10 ruleset and automation identity only after the server, replay,
+client and reward verifier all agree on the same exact R7 identity. R6 replay
+truth stays reconstructable and cannot be relabelled as R7 evidence.
 
-1. snapshots the exact authoritative R7 state;
-2. serializes the complete current battlefield ASCII, including all accumulated
-   destruction;
-3. deterministically enumerates and simulates legal Loomkeeper candidate plans;
-4. reduces them to a diverse shortlist of at most 24 candidates with stable IDs;
-5. sends the snapshot and candidate summaries to Gemini; and
-6. accepts only a returned ID that occurs in that exact shortlist before feeding
-   the candidate's already validated operations through the existing authority.
+The server creates R7 from the accepted fixed battlefield recipe, owns every
+input and tick, publishes the complete authoritative state, and applies the
+same crater, fall, action, Thread and result rules proven in the private
+preview. The browser stops owning local recovery once it enters server-backed
+Practice or Daily; reconnect requests the existing challenge and accepts only
+its server state and cursors.
 
-Candidate summaries include the proposed movement/jump, Relic, aim and power,
-predicted impact cell, health effects, fall/elimination result, final actor
-positions and terrain cells removed. The shortlist keeps legal diversity across
-Relics, movement and tactical result instead of sending 24 near-duplicate shots.
-Gemini never supplies coordinates, velocities, crater edits or arbitrary
-commands.
+R7 retains the deterministic Loomkeeper already inherited by the preview. Its
+planner and execution use the current changed terrain, and its selected ordinal
+and utility prefix remain replay evidence. WP-024 does not add an external
+provider, prompt, model choice, candidate shortlist or API dependency.
 
-Every request contains a fresh complete snapshot. R7 does not use Gemini chat
-history or `previous_interaction_id` as battlefield memory. This makes the
-updated ASCII map the model's current view while preventing accumulated model
-state from drifting away from authoritative destruction.
+### Replay, resume and reward verification
 
-### Structured response
+The live R7 replay binds the battlefield recipe revision, initial state hash,
+every accepted operation, every deterministic Loomkeeper selection, terrain
+revision and terrain hash progression, terminal result and final state hash.
+The fresh verifier reconstructs those facts locally and never performs a
+network call. A replay with a changed ruleset, automation identity, recipe,
+terrain transition, selection or result must fail closed.
 
-Use Gemini structured output with a small JSON Schema equivalent to:
+Closing and reopening the mini app during either actor's turn must recover the
+same challenge, terrain, turn, phase, actor positions, input cursors and already
+selected deterministic plan. A deliberate in-game leave or restart follows the
+existing authoritative lifecycle and cannot resurrect the local preview state.
 
-```json
-{
-  "candidateId": "r7-candidate-id",
-  "tactic": "damage|ring_out|open_route|deny_route|self_preserve"
-}
-```
+Practice admission comes first. Rewarded Daily remains on R6 until the R7
+Practice canary and replay verifier pass. Final promotion then binds the exact
+same R7 ruleset and automation identity to both paths; the reward service still
+pays only a verified authoritative player win.
 
-`candidateId` is an enum of the current shortlist IDs. Both fields are required,
-additional properties are rejected, output count is one and output tokens are
-kept small. `tactic` is audit metadata and never changes authority. The server
-still parses, size-bounds and semantically validates the response because schema
-conformance alone does not prove that a plan is current or legal.
+### Phone Gate C - server-backed R7 Practice
 
-The policy uses an exact stable model name. It must not use `latest`, preview or
-experimental aliases for rewarded matches. Temperature is set to zero to reduce
-variation, but no deterministic-output claim is made.
+Deploy the exact R7 identity to the server-backed Practice canary with the
+deterministic Loomkeeper:
 
-### Replay and reward verification
-
-Calling Gemini again during settlement would be nondeterministic and would make
-historical rewards depend on an external model version. R7 instead extends each
-automated selection record with:
-
-- turn and R7 policy ID;
-- provider: `gemini` or `deterministic-fallback`;
-- exact stable model ID and prompt-contract revision;
-- basis state hash, terrain revision and terrain hash;
-- candidate-set hash and selected candidate ID; and
-- canonical structured-response hash.
-
-The fresh verifier reconstructs the decision state, regenerates the candidate
-set locally, checks all hashes and confirms the recorded ID was legal, then
-replays that candidate's operations. It never contacts Gemini. This proves the
-simulation and chosen action exactly; it does not claim that a later Gemini call
-would choose the same action. Rewarded activation requires this distinction to
-be visible in direct review and accepted before the Daily gate.
-
-Reconnect and process restart retain the chosen plan record. A match captures
-its provider and policy revision at creation, so an environment or model change
-cannot switch an in-progress match halfway through.
-
-### Availability, latency and cost
-
-The deterministic R6/R7 planner remains a permanent fallback. Missing keys,
-timeouts, quota/rate limits, network failures, invalid JSON, unknown IDs, stale
-hashes and rejected responses select the deterministic plan at the same bounded
-decision point. Candidate-generation or simulation failures still fail closed;
-they are not converted into an external model success.
-
-Gemini first runs in shadow mode: the deterministic Loomkeeper acts while the
-server records Gemini latency, validity, candidate choice and estimated/token-
-count cost. Practice can then run a live canary. Daily activation follows only
-after the replay verifier, fallback and operational thresholds pass.
-
-The decision is released at one fixed logical boundary even if Gemini answers
-early. Shadow measurements select that boundary, initially targeting no more
-than 90 ticks (three seconds). A late response is ignored. There is one external
-request per Loomkeeper turn and no request retry inside the turn; the local
-fallback is cheaper and faster than extending gameplay around API backoff. With
-the existing 16-turn limit, a match can make at most eight Gemini calls.
-
-The server enforces one in-flight request per match, a global concurrency cap,
-an input-byte/token ceiling, a small output ceiling, a circuit breaker and a
-deployment spend budget. The full `256 x 72` ASCII terrain alone is 18,503 ASCII
-bytes, so shadow mode must measure actual tokens with the target model rather
-than infer billing from characters. API latency and internal selection work do
-not charge another match as scheduler debt.
-
-### Security and deployment configuration
-
-The Gemini adapter lives only in the server. Its request contains gameplay
-state and candidate data but no wallet address, PEI receipt, transaction hash,
-reward reservation, session bearer, IP address or device data. It accepts no
-player-authored prompt text. Logs retain model/policy IDs, hashes, latency,
-provider outcome, token counts and bounded error classes, without the API key or
-wallet identity.
-
-Safe deployment defaults are:
-
-```text
-LOOMKEEPER_PROVIDER=deterministic
-GEMINI_API_KEY=<server-side secret; absent while deterministic>
-GEMINI_MODEL=<exact stable model ID; required for shadow or live Gemini>
-```
-
-Allowed provider values are `deterministic`, `gemini-shadow` and `gemini`.
-Invalid or incomplete configuration fails startup for a requested Gemini mode;
-it does not silently expose a key to the browser. The first implementation
-should prefer the existing server runtime and a small transport adapter. Adding
-an SDK requires the ordinary package, license, audit and bundle review and is
-not assumed by this plan.
-
-### Phone Gate C - live Gemini Practice canary
-
-After shadow evidence passes, deploy `LOOMKEEPER_PROVIDER=gemini` only to the
-Practice canary:
-
-1. Play several turns after creating different holes, barriers and bottom
-   threats; confirm the Loomkeeper reacts to the current changed terrain rather
-   than the opening map.
-2. Confirm its movement and shot remain legal and the fixed thinking interval
-   does not stall controls or another match.
+1. Start Practice and confirm the accepted full R7 battlefield, crater roles,
+   controls, timing and opening survey appear without wallet or PEI.
+2. Create different holes, barriers and bottom threats across several turns and
+   confirm the Loomkeeper remains legal while using the current changed terrain.
 3. Close and reopen during both player and Loomkeeper turns and confirm the same
-   terrain and already selected plan resume.
-4. Exercise a controlled missing-key or disabled-provider deployment and confirm
-   deterministic fallback completes Practice without a broken match.
+   terrain, turn, positions and already selected plan resume smoothly.
+4. Complete one health win and one open-bottom fall result, then start a fresh
+   Practice match and confirm it receives a fresh battlefield state.
 
-Gate C accepts operational Practice behavior, not rewards.
+Gate C accepts the server lifecycle, deterministic replay and Practice behavior.
+It does not add objective modes, Gemini or a Daily reward change.
 
 ## Final promotion and Phone Gate D
 
@@ -486,13 +389,10 @@ The implementation must add meaningful current-R7 coverage for:
   open-bottom elimination for either actor plus the simultaneous draw;
 - exact live ASCII serialization after successive overlapping craters,
   `terrainRevision`, terrain hash and state hash continuity;
-- server-generated candidate diversity, shortlist bounds, structured-response
-  validation, stale/unknown selection rejection and deterministic fallback;
-- fixed decision timing, timeout/rate/quota/circuit behavior using local fakes,
-  with no live Gemini call in routine CI;
-- restart/reconnect replay reconstruction without any verifier network call;
-- client/server bundle separation so `GEMINI_API_KEY` and the provider adapter
-  cannot enter browser output;
+- exact R7 live protocol and automation identities, deterministic Loomkeeper
+  selection records and rejection of R6/R7 replay relabelling;
+- server-backed restart/reconnect reconstruction of changed terrain, actor state,
+  input cursors and the already selected deterministic plan;
 - current R7 Practice and Daily browser journeys, reward settlement, security,
   build and the standard volcanic server smoke; and
 - phone-layout and terrain visuals on all maintained projects, with any changed
@@ -500,22 +400,34 @@ The implementation must add meaningful current-R7 coverage for:
 
 R5/R6 and older runtime profiles remain explicit diagnostics. Ordinary feature,
 quality and release acceptance runs current R7 only. A documentation-only plan
-change needs no game build. Live Gemini, PostgreSQL, Ubuntu artifact and physical
-phone gates are reported separately and are run only when their waypoint makes
-them relevant.
+change needs no game build. PostgreSQL, Ubuntu artifact and physical phone gates
+are reported separately and are run only when their waypoint makes them relevant.
 
 ## Explicit deferrals
 
 R7 does not add terrain gravity, debris, fluids, material hit points, terrain
-repair, player-authored maps, procedural map generation, Gemini-authored maps,
-arbitrary Gemini commands, PvP, player stakes, variable rewards or PEI carrier
-experimentation. It does not change the approved art-source boundary.
+repair, player-authored maps, procedural map generation, objective objects or
+objective modes, Gemini selection, PvP, player stakes, variable rewards or PEI
+carrier experimentation. It does not change the approved art-source boundary.
+
+WP-026 owns the new Defend, Collect and Claim rules on a separately versioned R8
+state after lifecycle hardening. WP-027 owns the later objective-aware Gemini
+selector. Neither successor may rewrite R7 replay truth or be claimed as WP-024
+acceptance.
+
+Mobile lifecycle and power hardening is also outside WP-024 so it cannot disrupt
+the accepted terrain path or weaken Gates C-D. It is a mandatory successor queued
+immediately after WP-024 closes. That package will stop app-owned simulation,
+rendering and live snapshot traffic while hidden, preserve authoritative Daily
+Challenge resume, and finish with a physical-phone background-battery gate. The
+implementation plan records the bounded scope and the separate Nimiq Pay WebView
+host follow-up if app-side suspension does not remove the observed activity.
 
 ## Definition of done
 
 WP-024 closes only when the owner has accepted Gates A-D, the exact R7 Practice
 and Daily paths are deployed, replay verification proves every selected plan and
-terrain mutation without calling Gemini, safe environment settings are restored,
-change-selected checks pass, the work-package evidence is complete and
+terrain mutation through the deterministic policy, safe environment settings are
+restored, change-selected checks pass, the work-package evidence is complete and
 housekeeping agrees with the execution pointer. Until then, R6 remains the
 standard game.

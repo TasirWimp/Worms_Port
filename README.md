@@ -127,12 +127,18 @@ are also recorded in the Execution Pointer of
   See the [composition contract](docs/planning/wp-015d4f-volcanic-ruin-preview-bundle-contract.md#wp-015d4g-owner-requested-composition-and-terrain-alignment).
   The [frozen weapon observations](docs/evidence/wp-015d4d-v10g-weapon-terrain-reference.md)
   preserve the reference boundary separately from the evolving contract.
-- WP-024 Waypoint 1 is available only through the wallet-free local
+- [WP-024 R7](docs/planning/wp-024-v10-r7-terrain-as-gameplay.md) is available only through the wallet-free local
   `/?combat-preview=v10r7` route. It keeps the accepted R6 Volcanic Ruin match,
   controls, timing, damage and impact motion while previewing a 128-unit
   Threadball crater, a 224-unit Spoolburst crater and phone-legible Needlepoint
-  recoil. Standard Practice and the
-  PEI-gated Daily Challenge remain on R6 until the R7 phone gates are accepted.
+  recoil on the accepted full-width, fully destructible ASCII battlefield.
+  Waypoints 1-2 and Phone Gates A-B are accepted. Waypoint 3 now owns only the
+  deterministic server/replay integration and final R7 Practice/Daily promotion;
+  objective modes and Gemini are separately planned in
+  [WP-026](docs/planning/wp-026-v10-r8-objective-modes.md) and
+  [WP-027](docs/planning/wp-027-gemini-objective-loomkeeper.md).
+  Standard Practice and the PEI-gated Daily Challenge remain on R6 until the
+  remaining R7 gates are accepted.
 - Assets from Sorcerers may move into `assets/` only after exact-file license
   evidence proves commercial use, redistribution, and modification are allowed.
 - Product assets must be traceable through `legal/asset-manifest.json`.
