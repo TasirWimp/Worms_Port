@@ -11,7 +11,19 @@
       "behavior_record": "docs/evidence/wp-023-sorcerers-action-impact-reference.md",
       "behavior_record_sha256": "7397586E1F174504E3D9209548D9250E9CB40F43C4D355B68C8D0694C238F1BD",
       "observer": "Codex primary single-owner reference observer 2026-09-13",
-      "status": "observed"
+      "status": "complete",
+      "execution_mode": "single_owner",
+      "implementer": "Primary single-owner assistant",
+      "reviewer": "Primary single-owner assistant",
+      "implementation_declaration": "WP-023 was implemented from the frozen behavior record, the owner-approved local contract and existing Worms_Port code. No Sorcerers code, assets, constants, algorithms, identifiers, maps or file structure were imported. The 60-second action, compact actor target, mobile controls, movement lease, jump dynamics and per-Relic blast impulse are independently specified product decisions. Direct source-boundary review found no product dependency on the quarantined reference. This is single-owner review, not independent clean-room separation; the frozen observation file and hash are unchanged.",
+      "similarity_review": "pass",
+      "behavioral_tests": [
+        "tests/simulation/action-impact-v10-r6.test.ts",
+        "tests/combat/combat.test.ts",
+        "tests/practice/current-v10-client.test.ts",
+        "tests/browser/practice.spec.ts",
+        "tests/browser/pei.spec.ts"
+      ]
     },
     {
       "id": "wp-015d4d-v10g-weapon-terrain",

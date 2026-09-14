@@ -1,6 +1,6 @@
 # WP-023 V10 R6 Action And Impact Dynamics
 
-Status: **Post-resume control correction ready for focused Phone Gate C retest**
+Status: **Complete 2026-09-14**
 Branch: `codex/v10-r6-action-impact-dynamics`  
 Starting commit: `c0f63ec`
 
@@ -302,6 +302,16 @@ maintained mobile engines. The focused phone retest now checks sustained walk,
 directional slide-to-jump, aftertouch, a second held-thumb jump and clean
 release after resume; the accepted receipt, same-match and payout paths need
 not be repeated.
+
+At committed and pushed `5a214e6`, the owner accepted all four focused checks
+on the physical phone in a resumed rewarded match: sustained walking remained
+smooth, directional slide-to-jump and aftertouch were responsive, a second
+held-thumb jump worked, and release stopped movement cleanly. The owner also
+removed the temporary wallet-scoped repeat-attempt configuration, restored the
+helper and game environment to their safe state, and redeployed both Render
+services. Together with the previously accepted same-match resume, receipt
+consumption, terminal result and 1 NIM payout, Phone Gate C and WP-023 are
+complete.
 
 ## Verification policy
 

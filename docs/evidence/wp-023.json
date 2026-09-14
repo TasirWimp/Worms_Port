@@ -1,6 +1,6 @@
 {
   "id": "WP-023",
-  "status": "in_progress",
+  "status": "complete",
   "execution_mode": "single_owner",
   "starting_commit": "c0f63ec",
   "branch": "codex/v10-r6-action-impact-dynamics",
@@ -19,10 +19,24 @@
     "No collision or fall damage, bounce physics, multiple offensive shots, old V7/V8/V9 behavior changes, or ordinary R5 compatibility matrix."
   ],
   "planned_checks": [
-    "npm run verify:changes -- --dry-run",
+    "npm run verify:changes -- --dry-run --base c0f63ec",
     "Focused current V10 R6 simulation, presentation, protocol, Practice and browser combat checks selected by direct review",
-    "npm run verify:changes",
-    "npm run audit:housekeeping at the package transition"
+    "npm run verify:changes -- --base c0f63ec",
+    "npm run audit:housekeeping at the package transition",
+    "Focused Phone Gate A correction checks from committed base 820dba5",
+    "Second Phone Gate A correction and focused recovery from committed base 04e249a",
+    "Third Phone Gate A refinement checks from committed base 6723d4a",
+    "Fourth Phone Gate A movement-button refinement from committed base 4bf222a",
+    "Fifth Phone Gate A control-visual and neutral-jump refinement from committed base 5c24667",
+    "WP-023 Phone Gate A acceptance and Waypoint 2 planning-record check",
+    "npm run verify:changes -- --dry-run --base 52dee8a",
+    "Waypoint 2 focused deterministic and current-unit checks",
+    "Waypoint 2 current build, smoke, browser and local PostgreSQL prerequisite plan",
+    "WP-023 Waypoint 2 implementation-record check",
+    "WP-023 Waypoint 3 change selection and focused integration checks from committed base 6c7fc32",
+    "WP-023 Gate B acceptance and Waypoint 3 implementation-record check",
+    "WP-023 Phone Gate C WebView-restart correction from committed base ff910e1",
+    "WP-023 post-resume control-continuity correction from committed base b9f1987"
   ],
   "deterministic_seeds": [
     "Current volcanic Practice seed 4",
@@ -51,7 +65,7 @@
     {
       "command": "npm run audit:housekeeping at the package transition",
       "status": "pass",
-      "details": "The exact work-package checker passed all 70 records and the report-only housekeeping audit exited successfully with zero retries. WP-023 correctly remains in progress on a dirty feature branch without an upstream while Phone Gate A is pending. No gone tracking branches exist. The manual-reconciliation flag refers to preserved historical review records and other in-progress packages; no mutation was performed. Logs .cache/wp023-work-packages-waypoint1.log and .cache/wp023-housekeeping-waypoint1.log."
+      "details": "The initial Waypoint 1 work-package checker passed all 70 records and its report-only housekeeping audit exited successfully. At final closure, the first work-package check preserved two documentation failures: the Sorcerers behavior record was still observation-only and the completed package's staged check inventory did not match its retained results. The primary completed the single-owner clean-room declaration without changing the frozen observation file or hash and reconciled all 18 planned commands with their passing result records. The corrected closure then passed 70/70 work-package records, 6/6 clean-room records and report-only housekeeping with zero test retries. Branch and upstream match at 5a214e6 with only the closure records dirty; no gone tracking branch exists. The audit's manual-reconciliation flag refers only to preserved historical packages/reviews and caused no mutation. Logs .cache/wp023-work-packages-waypoint1.log, .cache/wp023-housekeeping-waypoint1.log and .cache/wp023-closure-*-corrected.log."
     },
     {
       "command": "Focused Phone Gate A correction checks from committed base 820dba5",
@@ -184,6 +198,12 @@
       "reviewer": "primary assistant",
       "decision": "pass_post_resume_control_correction_for_focused_phone_retest",
       "details": "Direct review and a destroyed-page Chromium reproduction identified a timing race between the last walk/jump acknowledgement and the thumb-release neutral fence. The current V10 client now serializes that fence immediately after the in-flight mutation and uses its newly accepted snapshot, preserving strict server sequence, epoch and movement-lease authority. It does not predict motion, extend the movement lease, change jump or walk dynamics, alter the three-button controller, or touch PEI/reward authority. The exact PEI restart path and fresh Practice control path pass on both maintained mobile engines. Physical-phone comparison with the already accepted fresh-match feel remains the final Gate C boundary."
+    },
+    {
+      "role": "owner",
+      "reviewer": "WP-023 final Phone Gate C physical-phone acceptance",
+      "decision": "pass",
+      "details": "At committed and pushed 5a214e6, the owner confirmed that all four focused checks pass in a resumed rewarded match: sustained walking is smooth, directional slide-to-jump and aftertouch remain responsive, repeated held-thumb jumping works, and thumb release stops cleanly. The owner also removed the temporary wallet-scoped repeat-attempt configuration, restored the helper and game environment to their safe state, and redeployed both Render services. Together with the retained same-match, receipt-consumption, terminal and 1 NIM payout evidence, this closes Phone Gate C and WP-023."
     }
   ],
   "skipped_checks": [
@@ -192,10 +212,7 @@
     "Authoritative Ubuntu screenshot comparison and baseline approval were not run because the restart correction changes no pixels or layout.",
     "The full daily/release and performance suites were not run because this is a feature waypoint rather than the 22:00 checkpoint or a release boundary.",
     "The selector's broader identity, reward, protocol, resilience and smoke-browser families were not repeated because the change only serializes the current V10 neutral fence; the exact PEI restart journey covers reward identity and terminal continuity, the delayed-ack unit freezes the mutation ordering, fresh built smoke covers the deployed runtime, and the unchanged fresh R6 browser control journey covers the comparison path.",
-    "Physical Phone Gates A and B passed at 73e9aba and 6c7fc32. Phone Gate C confirms resume availability and payout at b9f1987 but remains open on post-resume movement and jump smoothness."
+    "Physical Phone Gates A, B and C passed at 73e9aba, 6c7fc32 and 5a214e6. Android/iOS coverage beyond the owner's accepted physical-phone journey remains outside this package."
   ],
-  "residual_risks": [
-    "A focused correction and physical-phone retest must establish that walking, neutral/directional jumping, repeated held-thumb jumps and aftertouch remain as responsive after destroyed-WebView Daily resume as in a fresh Daily or Practice match.",
-    "After Phone Gate C passes, remove REWARD_TEST_WALLET_ADDRESS, REWARD_TEST_DAILY_ATTEMPT_LIMIT and REWARD_TEST_REPEAT_ACKNOWLEDGEMENT from the Render game service, then redeploy to restore the one-started-Daily-per-wallet rule before WP-023 closes."
-  ]
+  "residual_risks": []
 }

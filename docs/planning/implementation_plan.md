@@ -136,7 +136,7 @@ Phaser/Socket.IO stack.
   carrier experiment remains paused. Later server-side decomposition of the
   versioned session registry is a separate maintenance slice because V10 still
   intentionally inherits proven simulation and presentation mechanics.
-- Active successor: **WP-023 V10 R6 Action And Impact Dynamics**, beginning at
+- Completed successor: **WP-023 V10 R6 Action And Impact Dynamics**, beginning at
   clean `c0f63ec` on `codex/v10-r6-action-impact-dynamics`. Waypoint 1 was
   accepted on the owner's physical phone at committed and pushed `73e9aba`.
   It keeps the exact R5 volcanic arena and weapon-terrain behavior while adding
@@ -155,10 +155,13 @@ Phaser/Socket.IO stack.
   while fresh Daily and Practice remained smooth. The focused reproduction
   identified a thumb-release race with an in-flight movement acknowledgement;
   release and lifecycle-neutral fences now serialize behind that acknowledgement
-  and use the newly accepted state. **The correction is ready for a focused
-  Phone Gate C retest** of sustained walking, directional/repeated jumping,
-  aftertouch and release after resume. Accepted admission, same-match and payout
-  evidence does not need to be repeated.
+  and use the newly accepted state. At committed and pushed `5a214e6`, the owner
+  accepted sustained walking, directional/repeated jumping, aftertouch and clean
+  release in a resumed rewarded match. The temporary wallet-scoped repeat
+  variables were removed, the helper and game were restored to safe environment
+  settings, and both Render services were redeployed. **Phone Gate C and WP-023
+  are complete.** No successor package is authorized; the next execution target
+  waits for the owner's next topic.
   No server authority or economy code changed. R5 remains an explicit diagnostic
   and is not part of ordinary acceptance. See the [WP-023 contract](wp-023-v10-r6-action-impact-dynamics.md)
   and [evidence](../evidence/wp-023.json).
