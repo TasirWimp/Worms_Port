@@ -82,6 +82,26 @@
       "command": "WP-023 Phone Gate A acceptance and Waypoint 2 planning-record check",
       "status": "pass",
       "details": "The change-selector dry run recorded fingerprint cd6324bd9a298aafb4f9cc5c9b630aea4505e47a2b0c91a59c0752f34fb97593 and selected only check:work-packages for the three documentation/evidence files. The worms_port_test_runner ran that exact zero-retry check; all 70 work-package records passed in 6.9 seconds. No product, build, browser, legacy or daily/release phase ran. Log .cache/wp023-docs-only-work-packages.log."
+    },
+    {
+      "command": "npm run verify:changes -- --dry-run --base 52dee8a",
+      "status": "pass",
+      "details": "The Waypoint 2 selector dry run recorded fingerprint 765107eb46cdb8bf1e235b581401aa169034ef53f21331bc69d9e3e145ef7104. It selected current import, type, protocol, simulation, Loomkeeper, relic, combat, Practice, identity, reward, PEI, tooling, build/smoke/security/budget, six maintained browser families and PostgreSQL coverage. Retired V7/V8/V9 profiles, performance and the daily/release gate remained excluded by policy."
+    },
+    {
+      "command": "Waypoint 2 focused deterministic and current-unit checks",
+      "status": "pass",
+      "details": "The first type run retained one real SimulationStateV10 schema-narrowing failure; the primary corrected that boundary and the exact type recovery passed without repeating unrelated work. Zero-retry checks then passed the final R6 action-impact file 12/12, import boundary, protocol 17/17, remaining current V10 simulation 48/48, current terrain-start Loomkeeper 5/5, relics 10/10, combat 45/45, Practice 1/1, identity 22/22, reward 28/28, PEI 25/25 and tooling 133/133. The focused R6 cases freeze all three impulse tables and prove direct and mirrored splash force, closer-force ordering, self/two-actor launch, projectile-direction tie-break, swept wall collision from both sides, rejected settling input, R5 exclusion, batch/hash equivalence, landing into retreat and a fail-closed unresolved-settling draw. Logs .cache/wp023-waypoint2-types.log, .cache/wp023-waypoint2-types-recovery.log, .cache/wp023-waypoint2-r6-dynamics-final.log and .cache/wp023-waypoint2-*.log."
+    },
+    {
+      "command": "Waypoint 2 current build, smoke, browser and local PostgreSQL prerequisite plan",
+      "status": "pass",
+      "details": "Fresh build proof 6a37803fd00e / db562588d3a7 passed the standard V10 R6 volcanic smoke, identity bundles, reward security and bundle limits at 1,426,261/1,500,000 raw JavaScript bytes and 416,403/430,000 initial JavaScript-plus-CSS gzip bytes. The complete supported Practice phase passed 21 cases with four expected skips; the remaining identity, PEI, resilience, reward and smoke matrix passed 37 cases with 18 expected project-policy skips across the five maintained projects. Both browser commands used zero retries and retained unchanged runtime inputs. The dedicated PostgreSQL reporter exited successfully and recorded the expected local omission because WP014_TEST_DATABASE_URL is unavailable; CI remains responsible for the mandatory database gate. Logs .cache/wp023-waypoint2-build.log, .cache/wp023-waypoint2-browser-practice.log, .cache/wp023-waypoint2-browser-remaining.log and .cache/wp023-waypoint2-postgres-prerequisite.log."
+    },
+    {
+      "command": "WP-023 Waypoint 2 implementation-record check",
+      "status": "pass",
+      "details": "The exact zero-retry work-package record check passed after the contract, execution pointer and evidence were advanced to the Phone Gate B boundary. No runtime, build, browser, legacy or daily/release check was repeated after the documentation-only update. Log .cache/wp023-waypoint2-work-packages.log."
     }
   ],
   "reviews": [
@@ -102,6 +122,12 @@
       "reviewer": "WP-023 Phone Gate A physical-phone acceptance",
       "decision": "pass",
       "details": "At committed and pushed 73e9aba, the owner reported that all five final physical-phone checks worked as expected: the translucent compact buttons and narrow spacing, neutral direct jump, directional slide-to-jump, repeated input, aftertouch and release behavior. Together with the previously accepted R6 presentation, pace, action clock and complete Practice turn journey, this closes Phone Gate A and authorizes Waypoint 2. It does not accept explosion impulse, Phone Gate B, complete Daily integration or package closure."
+    },
+    {
+      "role": "primary",
+      "reviewer": "primary assistant",
+      "decision": "pass_waypoint_2_implementation",
+      "details": "Direct review confirms that only current R6 supplies an impulse table and admits the new blast motion state. Damage distance and terrain exposure are calculated against intact terrain before deformation, then each exposed surviving actor receives deterministic radial motion; a coincident direct hit uses projectile travel direction rather than facing or input. Active and non-active actors share the existing swept collision, gravity, landing and bounded simulation-limit paths. Entering projectile and settling phases retires the authority lease and client pointer state; blast motion cannot consume player aftertouch, and the existing retreat restores the accepted controls. R5 has neither an impulse table nor a valid blast wire state, while crater, damage, projectile flight, Thread costs and reward/PEI policy are unchanged. Automated implementation acceptance is complete; physical feel and collision acceptance remain at Phone Gate B."
     }
   ],
   "skipped_checks": [
@@ -109,9 +135,9 @@
     "Local PostgreSQL execution was skipped because WP014_TEST_DATABASE_URL is absent. WP-023 Waypoint 1 changes no database schema, receipt inventory or reward settlement behavior; disposable PostgreSQL remains a CI gate.",
     "Authoritative Ubuntu screenshot comparison and baseline approval were not run on Windows. Logic ran across all five maintained phone layouts; a Linux candidate belongs on the implementation PR after physical acceptance.",
     "The full daily/release and performance suites were not run because this is a feature waypoint rather than the 22:00 checkpoint or a release boundary.",
-    "Physical Phone Gate A passed at 73e9aba. Explosion impulse has not been implemented, so Phone Gate B, complete Daily integration acceptance and Phone Gate C have not started."
+    "Physical Phone Gate A passed at 73e9aba. Waypoint 2 is implemented, but physical Phone Gate B, complete Daily integration acceptance and Phone Gate C have not started."
   ],
   "residual_risks": [
-    "Phone Gate A accepted Waypoint 1 at 73e9aba. The separate R6 blast-motion state, impulse calibration for all Relics, non-active actor collision, bounded settling and control retirement/restoration remain unimplemented and therefore uncalibrated on a physical phone; Phone Gate B is the next acceptance boundary."
+    "Automated checks freeze and verify the R6 blast-motion mechanics, but the three Relic force ranges, radial feel, near-shooter behavior, terrain collision and control handoff remain uncalibrated on a physical phone. Phone Gate B is the next acceptance boundary, and Waypoint 3 must not start before it passes."
   ]
 }

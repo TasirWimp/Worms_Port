@@ -646,7 +646,7 @@ test('standard volcanic Practice at root keeps authority, AI, cold resume and re
 });
 
 test('current R6 phone controls use a compact translucent cluster with neutral tap-jump and slide aftertouch', async ({ page }) => {
-  test.setTimeout(45_000);
+  test.setTimeout(60_000);
   const runtime = createRuntimeServer({ clientDir: path.resolve('client/build'), identity: false,
     sessionRegistry: { practiceV10: true, seedSource: () => 4 } });
   const port = await runtime.listen();
@@ -743,6 +743,18 @@ test('current R6 phone controls use a compact translucent cluster with neutral t
     await expect(spoolburst).toBeEnabled();
     await spoolburst.tap();
     await expect(ui).toHaveAttribute('data-selected-relic', 'spoolburst');
+    await dragPad(page, '.aim-zone', 1302, 0.3, -0.34);
+    await expect(ui.locator('.fire-button')).toBeEnabled();
+    await ui.locator('.fire-button').tap();
+    await expect.poll(() => runtime.sessions.activeSnapshotV10(owned())!.simulation.phase).not.toBe('action');
+    await expect(ui.locator('.movement-button:disabled')).toHaveCount(3);
+    await expect(ui.locator('.movement-button[aria-pressed="true"]')).toHaveCount(0);
+    await pointer(page, '.combat-v10 .movement-right', 'pointerdown', 1303, 0.5, 0.5);
+    await expect.poll(() => runtime.sessions.activeSnapshotV10(owned())!.simulation.heldDirection).toBe(0);
+    await expect(ui.locator('.movement-button[aria-pressed="true"]')).toHaveCount(0);
+    await expect.poll(() => runtime.sessions.activeSnapshotV10(owned())!.simulation.phase,
+      { timeout: 15_000 }).toBe('retreat');
+    await expect(ui.locator('.movement-button:enabled')).toHaveCount(3);
   } finally { await page.goto('about:blank'); await runtime.close(); }
 });
 

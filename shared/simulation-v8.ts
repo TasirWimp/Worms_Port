@@ -13,6 +13,11 @@ export function isV8RulesetId(value: unknown): value is V8RulesetId {
     return value === V8_RULESET_ID || value === V8_R1_RULESET_ID;
 }
 export const V8_RULESET_VERSION = 8 as const;
+export type BlastImpulseRule = Readonly<{
+    minimumSpeedFp: number;
+    maximumSpeedFp: number;
+    upwardBiasFp: number;
+}>;
 /** Explicit internal kernel seam. Public legacy callers always omit it. */
 export type ProjectileMechanics = Readonly<{
     relics: Readonly<Record<RelicId, Readonly<{
@@ -22,6 +27,7 @@ export type ProjectileMechanics = Readonly<{
     terrainFirst: boolean;
     shieldBlast: boolean;
     directHitbox?: DirectProjectileHitbox;
+    blastImpulse?: Readonly<Record<RelicId, BlastImpulseRule>>;
 }>;
 export const V8_SIM_RULES = Object.freeze({
     worldWidth: 2048, worldHeight: 576, terrainCellSize: 8,
@@ -50,6 +56,7 @@ export type SimulationDynamics = Readonly<{
     walkSpeedFp: number;
     jumpSpeedFp: number;
     airControlAccelerationFp: number;
+    blastMotion: boolean;
 }>;
 export const V8_DEFAULT_DYNAMICS: SimulationDynamics = Object.freeze({
     actionTicks: V8_SIM_RULES.actionTicks,
@@ -65,7 +72,8 @@ export const V8_DEFAULT_DYNAMICS: SimulationDynamics = Object.freeze({
     maximumIntentsPerTurn: V8_SIM_RULES.maximumIntentsPerTurn,
     walkSpeedFp: V8_SIM_RULES.walkSpeedFp,
     jumpSpeedFp: V8_SIM_RULES.jumpSpeedFp,
-    airControlAccelerationFp: 0
+    airControlAccelerationFp: 0,
+    blastMotion: false
 });
 export type SimulationPhaseV8 = 'action' | 'projectile' | 'settling' | 'retreat' | 'finished';
 export type SettleReasonV8 = 'post_shot' | 'action_timeout' | 'retreat_timeout' | 'death';
@@ -78,7 +86,7 @@ export type SimulationUnitV8 = {
     /** Flat terrain cell index, supporting actor ID, or no support. */
     support: number | SimulationActor | null;
     airTicks: number;
-    airDrive: 'jump' | 'walk_fall' | null;
+    airDrive: 'jump' | 'walk_fall' | 'blast' | null;
 };
 export type ProjectileV8 = {
     actor: SimulationActor; relicId: RelicId;
@@ -370,7 +378,8 @@ export function assertSimulationInvariantsV8Family(state: SimulationStateV8Famil
         fail(integer(unit.vxFp, -2048, 2048) && integer(unit.vyFp, -2048, 2048), 'velocity');
         fail(integer(unit.stitching, 0, 100) && typeof unit.alive === 'boolean' && unit.alive === (unit.stitching > 0), 'Stitching');
         fail([-1, 1].includes(unit.facing) && typeof unit.grounded === 'boolean' && integer(unit.airTicks, 0, dynamics.maximumAirTicks), 'unit motion');
-        fail(unit.airDrive === null || unit.airDrive === 'jump' || unit.airDrive === 'walk_fall', 'air drive');
+        fail(unit.airDrive === null || unit.airDrive === 'jump' || unit.airDrive === 'walk_fall' ||
+            (dynamics.blastMotion && unit.airDrive === 'blast'), 'air drive');
         fail(unit.support === null || integer(unit.support, 0, 18431) || unit.support === 'player' || unit.support === 'loomkeeper', 'support');
         if (unit.alive) {
             fail(!terrainOverlaps(state, bodyRect(unit)), 'terrain penetration');
@@ -396,7 +405,8 @@ export function assertSimulationInvariantsV8Family(state: SimulationStateV8Famil
             [shot.startX, shot.startY, shot.endX, shot.endY].every(value => integer(value, -4096, 4096)) &&
             ['terrain', 'player', 'loomkeeper', 'world_exit', 'lifetime'].includes(shot.impact) && validTrace(shot.trace, 41), 'last projectile');
     }
-    if (!movingPhase(state)) fail(state.heldDirection === 0 && state.aim === null && state.units.every(unit => unit.vxFp === 0), 'hard boundary');
+    if (!movingPhase(state)) fail(state.heldDirection === 0 && state.aim === null && state.units.every(unit =>
+        unit.vxFp === 0 || (dynamics.blastMotion && state.phase === 'settling' && unit.airDrive === 'blast')), 'hard boundary');
     if (state.phase === 'finished') {
         if (state.finishReason === 'simulation_limit') fail(state.winner === 'draw', 'safety result');
         if (state.finishReason === 'turn_limit') fail(state.winner === 'draw' && state.turn === 16, 'turn result');
@@ -451,10 +461,10 @@ function stopWalking(state: SimulationStateV8Family): void {
     state.heldDirection = 0; state.leaseExpiresTick = null; state.lastLeaseRefreshTick = null; state.aim = null;
     if (activeUnit(state).airDrive !== 'jump') activeUnit(state).vxFp = 0;
 }
-function clearInput(state: SimulationStateV8Family, allBodies: boolean): void {
+function clearInput(state: SimulationStateV8Family, allBodies: boolean, preserveBlast = false): void {
     state.heldDirection = 0; state.leaseExpiresTick = null; state.lastLeaseRefreshTick = null;
     state.aim = null; state.inputEpoch = Math.min(65535, state.inputEpoch + 1);
-    if (allBodies) state.units.forEach(unit => { unit.vxFp = 0; });
+    if (allBodies) state.units.forEach(unit => { if (!preserveBlast || unit.airDrive !== 'blast') unit.vxFp = 0; });
     else activeUnit(state).vxFp = 0;
 }
 function expireLease(state: SimulationStateV8Family, events: SimulationEventV8[]): void {
@@ -551,7 +561,10 @@ function integrateBodies(state: SimulationStateV8Family, dynamics: SimulationDyn
     reevaluateSupports(state);
     for (const unit of orderedBodies(state)) {
         if (!unit.alive) continue;
-        if (!movingPhase(state) || unit.id !== state.activeActor) unit.vxFp = 0;
+        if (dynamics.blastMotion && unit.airDrive === 'blast') {
+            // Blast motion belongs to the authoritative impact, including for
+            // the non-active actor. Player movement input cannot steer it.
+        } else if (!movingPhase(state) || unit.id !== state.activeActor) unit.vxFp = 0;
         else if (unit.grounded) unit.vxFp = state.heldDirection * dynamics.walkSpeedFp;
         else if (unit.airDrive === 'jump' && state.heldDirection !== 0 && dynamics.airControlAccelerationFp > 0) {
             // R6 aftertouch changes a committed jump gradually. It cannot create
@@ -636,7 +649,7 @@ function resolvePhaseDeadline(state: SimulationStateV8Family, events: Simulation
 }
 function enterPhase(state: SimulationStateV8Family, phase: SimulationPhaseV8, ticks: number,
     reason: SettleReasonV8 | null, events: SimulationEventV8[]): void {
-    clearInput(state, true); state.phase = phase; state.phaseStartedTick = state.tick;
+    clearInput(state, true, phase === 'settling'); state.phase = phase; state.phaseStartedTick = state.tick;
     state.phaseDeadlineTick = state.tick + ticks; state.settleReason = reason;
     events.push({ type: 'input_barrier', reason: 'phase', tick: state.tick });
     events.push({ type: 'phase_changed', phase, tick: state.tick });
@@ -732,6 +745,8 @@ function advanceProjectile(state: SimulationStateV8Family, events: SimulationEve
                 Math.trunc((relic.damageRadius - distance) * relic.maximumDamage / relic.damageRadius));
             unit.stitching = Math.max(0, unit.stitching - amount); unit.alive = unit.stitching > 0;
             events.push({ type: 'damaged', actor: unit.id, amount, stitching: unit.stitching });
+            const impulse = mechanics?.blastImpulse?.[shot.relicId];
+            if (impulse && unit.alive) applyBlastImpulse(unit, shot, x, y, distance, relic.damageRadius, direct, impulse);
         }
         if (blastTerrain) deformTerrain(state.terrain, x, y, relic.craterRadius);
     }
@@ -764,12 +779,28 @@ function exposedBlastDistanceSquared(terrain: PackedTerrain, x: number, y: numbe
     return nearest;
 }
 function integerSquareRoot(value: number): number {
-    let low = 1; let high = Math.min(value, 88); let result = 0;
+    let low = 1; let high = Math.min(value, 4096); let result = 0;
     while (low <= high) {
         const middle = Math.trunc((low + high) / 2);
         if (middle * middle <= value) { result = middle; low = middle + 1; } else high = middle - 1;
     }
     return result;
+}
+function applyBlastImpulse(unit: SimulationUnitV8, shot: ProjectileV8, impactX: number, impactY: number,
+    distance: number, radius: number, direct: boolean, rule: BlastImpulseRule): void {
+    const falloffDistance = direct ? 0 : Math.min(radius, distance);
+    const speed = rule.minimumSpeedFp + Math.trunc(
+        (rule.maximumSpeedFp - rule.minimumSpeedFp) * (radius - falloffDistance) / radius
+    );
+    const dx = Math.floor(unit.xFp / 256) - impactX;
+    const dy = Math.floor(unit.yFp / 256) - impactY;
+    const travelDirection = Math.sign(shot.vxFp) as -1 | 0 | 1;
+    const horizontalBasis = dx === 0 ? travelDirection : dx;
+    const normalizer = Math.max(1, integerSquareRoot(dx * dx + dy * dy));
+    unit.grounded = false; unit.support = null;
+    unit.vxFp = Math.trunc(speed * horizontalBasis / normalizer);
+    unit.vyFp = Math.min(Math.trunc(speed * dy / normalizer), -Math.min(speed, rule.upwardBiasFp));
+    unit.airTicks = 0; unit.airDrive = 'blast';
 }
 function canonicalJson(value: unknown): string {
     if (Array.isArray(value)) return `[${value.map(canonicalJson).join(',')}]`;

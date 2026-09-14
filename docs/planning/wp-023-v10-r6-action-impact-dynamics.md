@@ -1,6 +1,6 @@
 # WP-023 V10 R6 Action And Impact Dynamics
 
-Status: **Waypoint 1 accepted at Phone Gate A; Waypoint 2 ready for implementation**
+Status: **Waypoint 2 implemented; ready for Phone Gate B**
 Branch: `codex/v10-r6-action-impact-dynamics`  
 Starting commit: `c0f63ec`
 
@@ -182,6 +182,28 @@ actor impulse, radial force ordering, active and non-active collision,
 settling/time-bound behavior, input retirement/restoration, deterministic
 replay/hash equivalence and unchanged R5 behavior, damage and crater output.
 Only current R6 runtime and browser paths are part of ordinary acceptance.
+
+The implemented R6 table freezes each Relic's minimum splash speed, maximum
+direct-hit speed and upward bias in fixed-point units per tick: Threadball
+`384 / 1536 / 1152`, Needlepoint `256 / 768 / 512`, and Spoolburst
+`320 / 1280 / 960`. Exposed splash motion falls linearly from the maximum to
+the explicit minimum at the damage radius. A direct hit receives maximum force;
+a coincident horizontal position uses projectile travel direction. The radial
+component points away from the intact-terrain exposure result, while the upward
+bias ensures that an exposed grounded actor can launch.
+
+Every exposed survivor enters the R6-only `blast` motion state. Both actors use
+the existing swept terrain collision and gravity during settling, regardless of
+whose turn it is, and blast motion ignores held input. The existing 120-tick
+settling and air bounds fail closed to a `simulation_limit` draw when a body
+cannot resolve. The phase input barrier retires the authority lease and client
+button ownership at fire; the fixed movement cluster remains neutral through
+projectile flight and settling and returns for retreat. R5 has no impulse table
+and continues to reject the `blast` state.
+
+Focused deterministic checks, the current build and volcanic smoke, and all
+selected maintained browser families pass with zero retries. Phone Gate B is
+the remaining Waypoint 2 acceptance boundary.
 
 **Phone Gate B** repeats ordinary wallet-free Practice at `/`:
 

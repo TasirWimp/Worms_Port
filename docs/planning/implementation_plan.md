@@ -142,11 +142,12 @@ Phaser/Socket.IO stack.
   It keeps the exact R5 volcanic arena and weapon-terrain behavior while adding
   the compact actor presentation/target, 60-second action clock, health bars
   and compact translucent left/right/up controls with neutral direct jump,
-  directional slide-to-jump and bounded aftertouch. **Waypoint 2 is active:**
-  add a separate R6-only, non-steerable blast-motion state for either actor,
-  with deterministic terrain collision, settling and input retirement, while
-  preserving accepted movement, damage and crater behavior. Phone Gate B is
-  the next owner boundary. Waypoint 3 then completes the accepted Practice and
+  directional slide-to-jump and bounded aftertouch. **Waypoint 2 is implemented
+  and ready for Phone Gate B:** R6 now has a separate non-steerable `blast`
+  state for either actor, explicit per-Relic radial impulse bounds, existing
+  swept terrain collision, fail-closed settling and fire-to-retreat input
+  retirement. R5, damage and crater behavior remain unchanged. Waypoint 3 stays
+  blocked until physical acceptance, then completes the accepted Practice and
   PEI-gated Daily journey. R5 remains an explicit diagnostic and is not part
   of ordinary acceptance. See the [WP-023 contract](wp-023-v10-r6-action-impact-dynamics.md)
   and [evidence](../evidence/wp-023.json).

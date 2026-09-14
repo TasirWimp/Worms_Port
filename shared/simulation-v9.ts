@@ -98,13 +98,17 @@ export const SimulationStateV9Schema = z.object({
         words: z.array(integer(0, 0xffffffff)).length(576) }).strict(),
     projectile: projectile.nullable(), lastProjectile: projectileSummary.nullable()
 }).strict();
+const kernelUnit = unit.extend({
+    airDrive: z.enum(['jump', 'walk_fall', 'blast']).nullable()
+}).strict();
 /** Internal later-version validator; exact timing remains in the kernel invariant. */
 export const SimulationStateV9KernelSchema = SimulationStateV9Schema.extend({
     tick: integer(0, 38_400),
     phaseStartedTick: integer(0, 38_400),
     phaseDeadlineTick: integer(0, 40_800),
     leaseExpiresTick: integer(0, 38_418).nullable(),
-    lastLeaseRefreshTick: integer(0, 38_400).nullable()
+    lastLeaseRefreshTick: integer(0, 38_400).nullable(),
+    units: z.tuple([kernelUnit, kernelUnit])
 }).strict();
 export const SimulationIntentV9Schema = z.discriminatedUnion('type', [
     z.object({ type: z.literal('walk_start'), direction }).strict(),

@@ -48,7 +48,8 @@ export const V10_R6_DYNAMICS: SimulationDynamics = Object.freeze({
     maximumCombatTicks: 38_400,
     walkSpeedFp: 336,
     jumpSpeedFp: -1_728,
-    airControlAccelerationFp: 24
+    airControlAccelerationFp: 24,
+    blastMotion: true
 });
 export const V10_TERRAIN_PROFILE_IDS = Object.freeze([
     'sheltered-folds',
@@ -186,6 +187,11 @@ export const SimulationStateV10Schema = SimulationStateV9KernelSchema.omit({
         (state.leaseExpiresTick !== null && state.leaseExpiresTick > V8_DEFAULT_DYNAMICS.maximumCombatTicks + V8_DEFAULT_DYNAMICS.leaseTicks))) {
         context.addIssue({ code: z.ZodIssueCode.custom, path: ['tick'],
             message: 'Pre-R6 state exceeds its frozen clock bounds.' });
+    }
+    const units = state.units as unknown as readonly { airDrive: string | null }[];
+    if (!r6 && units.some(unit => unit.airDrive === 'blast')) {
+        context.addIssue({ code: z.ZodIssueCode.custom, path: ['units'],
+            message: 'Blast motion belongs only to the R6 state contract.' });
     }
 });
 export const SimulationIntentV10Schema = z.union([
