@@ -1,6 +1,6 @@
 # WP-024 V10 R7 Terrain As Gameplay
 
-Status: **Waypoint 1 crater scale accepted; awaiting Needlepoint recoil phone gate**
+Status: **Waypoint 1 and Phone Gate A accepted; Waypoint 2 implemented, awaiting Phone Gate B**
 Planning base: `842da39`  
 Implementation base: `4f7c878`
 Implementation branch: `codex/v10-r6-action-impact-dynamics`
@@ -143,8 +143,11 @@ Use the wallet-free private R7 preview at `/?combat-preview=v10r7`:
 6. Open a crater through the world bottom, let either Nimble fall through it and
    confirm the actor leaves the screen before the loss result appears.
 
-Gate A may tune only Threadball and Spoolburst crater radii. It does not approve
-the new battlefield or Gemini behavior.
+At committed and pushed `4933cb2`, the owner accepted points 4 and 5 after the
+bounded Needlepoint recoil correction. Together with the previously accepted
+crater roles, precision cut and open-bottom fall presentation, **Phone Gate A
+is complete** and authorizes Waypoint 2. It does not approve the new battlefield
+or Gemini behavior.
 
 ## Waypoint 2 - fully destructible ASCII battlefield
 
@@ -209,6 +212,22 @@ until another crater removes it. This keeps terrain authority as one packed
 mask and avoids a second rigid-body/debris simulation while retaining the
 intended ability to remove the support beneath an actor.
 
+The implemented `volcanic-ruin-battlefield-r1` chart uses all 64 authoring
+columns. A nine-row, 144-world-unit destructible foundation spans the complete
+2048-unit width. Elevated outer ledges and bastions occupy both world edges;
+the opening shelves remain at world x 624 and 1424; and the high bridge,
+vertical blockers, central `+` breach plug, cavities and linked lower shelves
+use the space between them. Base-only approach zones at authoring columns 8-9
+and 54-55 visibly expose the lower route and the intended sustained-damage
+bottom breach without turning the outer arena into empty camera margin.
+
+The foundation depth preserves the accepted weapon roles: one Spoolburst at a
+fresh base-only zone leaves a floor and a second aligned hit can open the
+bottom; Threadball needs approximately three aligned foundation hits. The
+central labelled plug remains a useful one-Threadball route breach. The R7
+preview begins with the existing 2048-unit opening survey before focusing the
+player, while R5/R6 retain their accepted fixed volcanic frame.
+
 ### Open-bottom elimination
 
 Every solid bit is destructible. There is no hidden floor, bedrock row or
@@ -255,6 +274,14 @@ battlefield snapshot also carries the existing full state hash. Serializer
 caching may key only on terrain revision; actor overlays are rebuilt for every
 decision.
 
+Waypoint 2 implements the serializer directly from `PackedTerrain.words`, the
+transition reconciler, and strict restore validation. The private R7 preview
+persists bounded simulation snapshots in same-origin browser storage at state
+and terrain boundaries, so closing and reopening restores the exact changed
+mask. The explicit in-game restart starts a fresh R7 battlefield. This local
+review aid is not a substitute for the later server-backed reconnect/replay
+authority.
+
 ### Phone Gate B - terrain as gameplay
 
 Use the same private R7 Practice preview after Gate A:
@@ -269,8 +296,9 @@ Use the same private R7 Practice preview after Gate A:
    can still be removed by later hits.
 5. Confirm walking, jumping, aftertouch, aiming, blast movement, camera motion
    and large-crater rendering stay smooth.
-6. Close and reopen Practice during a changed battlefield and confirm the same
-   exact destruction state resumes.
+6. Close and reopen the private R7 preview during a changed battlefield and
+   confirm the same terrain revision and destruction state resumes; use the
+   in-game restart and confirm it deliberately starts a fresh battlefield.
 
 Gate B accepts the authored battlefield and fall rule. It does not activate
 Gemini or the rewarded Daily path.

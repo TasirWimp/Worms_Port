@@ -13,7 +13,7 @@ import { cameraFocusProgress } from './controls';
 import { activeSidewaysMode, clientPointToGame } from '../lib/sideways';
 import type { AimIntent } from './input';
 import type { SimulationIntentV9, SimulationStateV9 } from '../../../shared/simulation-v9';
-import { usesVolcanicRuin, type SimulationIntentV10 } from '../../../shared/simulation-v10';
+import { usesVolcanicRuinScenicFrame, type SimulationIntentV10 } from '../../../shared/simulation-v10';
 
 type CameraActor = 'player' | 'loomkeeper';
 type CameraTransition = { kind: 'focus' | 'opening'; actor: CameraActor; from: CombatCamera; to: CombatCamera; startedAt: number };
@@ -39,7 +39,7 @@ export class ResourceTurnsV9Scene {
     ) {
         this.state = structuredClone(args.snapshot); createApprovedWizardAnimations(scene); this.renderer = new CombatRenderer(scene);
         this.sceneBackground = new BackgroundRenderer(scene, backgroundScene, this.renderer.backgroundMask);
-        this.scenicFrame = usesVolcanicRuin(this.state.rulesetId);
+        this.scenicFrame = usesVolcanicRuinScenicFrame(this.state.rulesetId);
         const projected = projectCombatV9(this.state);
         const playerCamera = cameraForActor(projected, createCombatCamera(projected), 'player');
         this.camera = this.scenicFrame ? { ...VOLCANIC_RUIN_ARENA_FRAME } : args.kind === 'v10' ? createCombatOverviewCamera(projected) : playerCamera;
@@ -60,6 +60,9 @@ export class ResourceTurnsV9Scene {
         }
         this.controls.root.dataset.background = backgroundScene?.id ?? 'none';
         this.controls.root.dataset.backgroundReady = String(this.sceneBackground.active);
+        if (this.cameraTransition?.kind === 'opening') {
+            this.controls.root.dataset.openingSurveyWidth = String(this.camera.width);
+        }
         if (args.kind === 'v10' && args.previewTerrainReflected !== undefined) {
             this.controls.root.dataset.terrainReflected = String(args.previewTerrainReflected);
         }
@@ -226,6 +229,10 @@ export class ResourceTurnsV9Scene {
             (layout) => this.sceneBackground.render(layout));
         Object.assign(this.controls.root.dataset, { simulationTick: String(this.state.tick), playerThread: String(this.state.units[0].thread), playerShield: String(this.state.units[0].shield),
             cameraLeft: this.camera.left.toFixed(2), cameraWidth: String(this.camera.width), presentation: visual?.kind ?? 'none', projectilePoints: String(visual?.kind === 'projectile' ? visual.trace.length : 0), projectileEndX: String(visual?.kind === 'projectile' ? visual.trace.at(-1)?.x ?? '' : ''), projectileEndY: String(visual?.kind === 'projectile' ? visual.trace.at(-1)?.y ?? '' : ''), cameraTransition: this.cameraTransition?.kind === 'opening' ? 'opening' : this.cameraTransition?.actor ?? 'none', openingSurvey: String(this.cameraTransition?.kind === 'opening') });
+        if ('terrainRevision' in this.state && this.state.terrainRevision !== undefined) {
+            this.controls.root.dataset.terrainRevision = String(this.state.terrainRevision);
+            this.controls.root.dataset.terrainHash = this.state.terrainHash ?? '';
+        }
     }
     private cancelPresentation(): void { this.presentation = undefined; }
     private cancelCameraTransition(): void { this.cameraTransition = undefined; }

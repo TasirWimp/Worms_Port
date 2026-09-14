@@ -166,26 +166,35 @@ Phaser/Socket.IO stack.
   and is not part of ordinary acceptance. See the [WP-023 contract](wp-023-v10-r6-action-impact-dynamics.md)
   and [evidence](../evidence/wp-023.json).
 - Active successor: **WP-024 V10 R7 Terrain As Gameplay**. Waypoint 1 is
-  implemented from clean `4f7c878` and awaits Phone Gate A on
-  `/?combat-preview=v10r7`. The first phone read found both crater candidates
+  implemented from clean `4f7c878`; Phone Gate A passed at committed and pushed
+  `4933cb2` on `/?combat-preview=v10r7`. The first phone read found both crater candidates
   too large; the active refinement now uses a 128-unit Threadball diameter and
   a 224-unit Spoolburst diameter. Threadball is about one-third of Spoolburst by
   area, while one Spoolburst cannot break through the thinnest 128-unit shelf
   and a second hit into the exposed crater floor can. The crater scale and
   floor-exit presentation passed physical-phone review; Gate A then found the
   inherited Needlepoint recoil too subtle at the compact phone scale, so R7
-  now gives it a bounded 384/1024/768 impulse candidate. It also removes a fallen R7 Nimble from presentation once its collision
+  now gives it a bounded 384/1024/768 impulse. Points 4 and 5 then passed,
+  completing Gate A and authorizing Waypoint 2's fixed fully destructible ASCII
+  battlefield. Waypoint 2 is now implemented behind the same private route and
+  awaits Phone Gate B. Its exact 64 by 36 chart uses all 2048 world units with
+  destructible edge structures, a full-width 144-unit foundation, opening
+  shelves, high and lower routes, blockers, cavities and a central breach plug.
+  The R7 opening survey shows the whole arena before player focus; current R6
+  keeps its accepted central volcanic frame. R7 also removes a fallen Nimble from presentation once its collision
   body has cleared an open crater bottom. It extends
   the existing ASCII terrain compiler from a surface profile to a complete,
   entirely destructible 64 by 36 battlefield with exact 256 by 72 live-state
-  serialization, open-bottom fall losses and no hidden floor. A later waypoint
+  serialization, terrain revision/hash continuity, local changed-map recovery,
+  open-bottom fall losses and no hidden floor. A later waypoint
   lets a server-only Gemini adapter select from a deterministic shortlist of
   legal Loomkeeper plans using a fresh ASCII snapshot after every terrain
   change; the local planner remains the bounded fallback and replay settlement
   never calls Gemini. Waypoint 1 owns only the R7 identity, crater radii and a
   local volcanic phone preview. Change-selected current-path verification and
   the supported canonical R7 browser case pass. Standard Practice and Daily
-  remain R6 until the later promotion gate. See the
+  remain R6 until the later promotion gate. **The next acceptance target is
+  WP-024 Phone Gate B; Gemini remains deferred to Waypoint 3.** See the
   [WP-024 contract](wp-024-v10-r7-terrain-as-gameplay.md).
 - Active target: mobile-first single-player Nimiq Pay competition release.
 - Latest completed slice: **WP-015D4D V10G Terrain And Weapon Tactics**;

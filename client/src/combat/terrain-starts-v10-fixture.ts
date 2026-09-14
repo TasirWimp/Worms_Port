@@ -3,9 +3,11 @@ import {
     advanceSimulationTicksV10,
     applySimulationBarrierV10,
     applySimulationIntentV10,
+    assertSimulationInvariantsV10,
     cloneSimulationV10,
     createSimulationV10,
     forceSimulationLimitV10,
+    SimulationStateV10Schema,
     V10_R1_RULESET_ID,
     V10_R2_RULESET_ID, V10_R3_RULESET_ID, V10_R4_RULESET_ID, V10_R5_RULESET_ID,
     V10_R7_RULESET_ID,
@@ -29,6 +31,9 @@ import type { CombatSceneArgsV10 } from './contracts';
 import type { V9FixtureClock } from './resource-turns-v9-fixture';
 
 export type V10FixtureClock = V9FixtureClock;
+export type V10FixtureStorage = Pick<Storage, 'getItem' | 'setItem' | 'removeItem'>;
+
+const V10_R7_PREVIEW_STORAGE_PREFIX = 'nimble-knots:v10r7-preview-state';
 
 export const V10G_PREVIEW_MAPS = Object.freeze({
     'twin-crests': 4, 'trench-needle': 5, 'stepping-mesa': 6,
@@ -66,9 +71,16 @@ export async function createTerrainStartsV10Fixture(
             return () => window.clearInterval(timer);
         }
     },
-    rulesetId: V10RulesetId = V10_RULESET_ID
+    rulesetId: V10RulesetId = V10_RULESET_ID,
+    storage: V10FixtureStorage | undefined = browserStorage(),
+    fresh = false
 ): Promise<CombatSceneArgsV10> {
-    let state = createSimulationV10(seed, calling, rulesetId);
+    const initial = createSimulationV10(seed, calling, rulesetId);
+    const previewStorage = rulesetId === V10_R7_RULESET_ID ? storage : undefined;
+    const storageKey = `${V10_R7_PREVIEW_STORAGE_PREFIX}:${initial.seed}:${calling}`;
+    let state = !fresh && previewStorage
+        ? restoreR7PreviewState(previewStorage, storageKey, initial) ?? initial
+        : initial;
     const proceduralSurface = rulesetId === V10_R2_RULESET_ID
         ? generateV10ProceduralSurfaceCandidate(
             state.seed,
@@ -87,10 +99,28 @@ export async function createTerrainStartsV10Fixture(
     let planner: LoomkeeperPlannerV10 | undefined;
     let execution: LoomkeeperExecutionV10 | undefined;
     let planningFailed = false;
+    let retiringForRestart = false;
     const listeners = new Set<(state: SimulationStateV10, events: SimulationEventV10[]) => void>();
+    let persistedBoundary = '';
 
-    const publish = (events: SimulationEventV10[] = []) => {
+    const persist = (force = false) => {
+        if (!previewStorage || retiringForRestart) return;
+        const boundary = [state.terrainRevision, state.phase, state.turn, state.inputEpoch,
+            state.projectile === null, state.winner].join(':');
+        if (!force && boundary === persistedBoundary) return;
+        try {
+            previewStorage.setItem(storageKey, JSON.stringify(state));
+            persistedBoundary = boundary;
+        } catch {
+            // Local preview persistence is a review aid; storage denial must
+            // never turn it into simulation authority or stop gameplay.
+        }
+    };
+    persist(fresh || state === initial);
+
+    const publish = (events: SimulationEventV10[] = [], forcePersist = false) => {
         if (destroyed) return;
+        persist(forcePersist);
         publishing = true;
         try {
             for (const listener of listeners) listener(cloneSimulationV10(state), structuredClone(events));
@@ -103,7 +133,7 @@ export async function createTerrainStartsV10Fixture(
         state = result.state;
         paused = false;
         credit = 0;
-        publish(result.events);
+        publish(result.events, true);
     };
     const resetAutomation = () => {
         aiTurn = undefined;
@@ -215,7 +245,7 @@ export async function createTerrainStartsV10Fixture(
             }
             if (barrier.accepted && barrier.mutated) {
                 state = barrier.state;
-                publish(barrier.events);
+                publish(barrier.events, true);
             }
             throw new Error(result.error.message);
         }
@@ -224,7 +254,7 @@ export async function createTerrainStartsV10Fixture(
             throw new Error(result.error?.message ?? 'Intent rejected.');
         }
         state = result.state;
-        publish(result.events);
+        publish(result.events, true);
         return cloneSimulationV10(state);
     };
     const setPaused = async (value: boolean) => {
@@ -250,7 +280,7 @@ export async function createTerrainStartsV10Fixture(
         paused = value;
         credit = 0;
         lastNow = clock.now();
-        publish(result.events);
+        publish(result.events, true);
         return cloneSimulationV10(state);
     };
     const cancelInput = async () => {
@@ -265,7 +295,7 @@ export async function createTerrainStartsV10Fixture(
         }
         if (result.accepted && result.mutated) {
             state = result.state;
-            publish(result.events);
+            publish(result.events, true);
         }
         return cloneSimulationV10(state);
     };
@@ -281,8 +311,9 @@ export async function createTerrainStartsV10Fixture(
             expectedTurn: state.turn, expectedEpoch: state.inputEpoch
         });
         if (result.accepted && result.mutated) state = result.state;
+        if (!retiringForRestart) persist(true);
     };
-    const previewLabel = rulesetId === V10_R7_RULESET_ID ? 'V10 R7 crater-scale preview · Volcanic Ruin · local-only' : rulesetId === V10_R5_RULESET_ID ? 'Volcanic Ruin · stepped valley · local-only' : rulesetId === V10_R4_RULESET_ID
+    const previewLabel = rulesetId === V10_R7_RULESET_ID ? 'V10 R7 terrain-as-gameplay preview · full volcanic battlefield · local-only' : rulesetId === V10_R5_RULESET_ID ? 'Volcanic Ruin · stepped valley · local-only' : rulesetId === V10_R4_RULESET_ID
         ? `V10G ${terrainProfileLabel(state.terrainProfileId)}${state.terrainProfileId === 'asymmetric-rampart' ? (v10gFamilyForSeed(seed).reflected ? ' · high right' : ' · high left') : ''} · cover, shelves and breaching · local-only`
         : rulesetId === V10_R3_RULESET_ID
         ? 'V10G Twin Crests · cover, shelves and breaching · local-only'
@@ -319,7 +350,15 @@ export async function createTerrainStartsV10Fixture(
                 lastNow += Math.max(0, clock.now() - started);
             }
         },
-        restart: () => createTerrainStartsV10Fixture(seed, calling, clock, rulesetId),
+        restart: async () => {
+            retiringForRestart = true;
+            try {
+                return await createTerrainStartsV10Fixture(seed, calling, clock, rulesetId, previewStorage, true);
+            } catch (error) {
+                retiringForRestart = false;
+                throw error;
+            }
+        },
         onSnapshot: listener => {
             if (destroyed) return () => {};
             listeners.add(listener);
@@ -337,6 +376,39 @@ export async function createTerrainStartsV10Fixture(
         },
         destroy
     };
+}
+
+function browserStorage(): V10FixtureStorage | undefined {
+    if (typeof window === 'undefined') return undefined;
+    try { return window.localStorage; }
+    catch { return undefined; }
+}
+
+function restoreR7PreviewState(
+    storage: V10FixtureStorage,
+    key: string,
+    initial: SimulationStateV10
+): SimulationStateV10 | undefined {
+    try {
+        const source = storage.getItem(key);
+        if (!source) return undefined;
+        const parsed = SimulationStateV10Schema.safeParse(JSON.parse(source));
+        if (!parsed.success || parsed.data.rulesetId !== V10_R7_RULESET_ID ||
+            parsed.data.seed !== initial.seed || parsed.data.units[0].calling !== initial.units[0].calling ||
+            parsed.data.terrainRecipeRevision !== initial.terrainRecipeRevision) {
+            storage.removeItem(key);
+            return undefined;
+        }
+        // Zod has proved the strict runtime shape; its inferred extension type
+        // weakens inherited fields such as `aim`, so restore the domain type at
+        // this single validation boundary.
+        const restored = cloneSimulationV10(parsed.data as SimulationStateV10);
+        assertSimulationInvariantsV10(restored);
+        return restored;
+    } catch {
+        try { storage.removeItem(key); } catch {}
+        return undefined;
+    }
 }
 
 function terrainProfileLabel(profileId: string): string {

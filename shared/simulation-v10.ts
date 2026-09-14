@@ -1,4 +1,8 @@
 import { generateVolcanicRuinTerrain, VOLCANIC_RUIN_RECIPE_REVISION } from './terrain-volcanic-ruin';
+import {
+    compileV10R7Battlefield, overlayV10R7Actors, serializeV10R7Terrain,
+    V10_R7_BATTLEFIELD_RECIPE_REVISION
+} from './terrain-battlefield-v10-r7';
 import { V10G_PROJECTILE_RULES, V10_R6_PROJECTILE_RULES, V10_R7_PROJECTILE_RULES } from './projectile-rules-v10g';
 import { generateV10GTwinCrests, V10G_RECIPE_REVISION, generateV10GFamily, v10gFamilyForSeed, V10G_FAMILY_RECIPE_REVISION } from './terrain-generation-v10g';
 import { z } from 'zod';
@@ -34,6 +38,8 @@ export const V10_R7_RULESET_ID = 'nimble-knots-artillery-v10-r7' as const;
 export const CURRENT_V10_RULESET_ID = V10_R6_RULESET_ID;
 export const usesV10GTactics = (rulesetId: string): boolean => rulesetId === V10_R3_RULESET_ID || rulesetId === V10_R4_RULESET_ID || rulesetId === V10_R5_RULESET_ID || rulesetId === V10_R6_RULESET_ID || rulesetId === V10_R7_RULESET_ID;
 export const usesVolcanicRuin = (rulesetId: string): boolean => rulesetId === V10_R5_RULESET_ID || rulesetId === V10_R6_RULESET_ID || rulesetId === V10_R7_RULESET_ID;
+/** R5/R6 retain the accepted fixed volcanic composition; R7 surveys the complete 2048-unit battlefield. */
+export const usesVolcanicRuinScenicFrame = (rulesetId: string): boolean => rulesetId === V10_R5_RULESET_ID || rulesetId === V10_R6_RULESET_ID;
 /** R7 inherits the accepted R6 timing, control, and impact-motion package. */
 export const usesV10R6ActionDynamics = (rulesetId: string): boolean => rulesetId === V10_R6_RULESET_ID || rulesetId === V10_R7_RULESET_ID;
 export const V10_RULESET_IDS = Object.freeze([V10_RULESET_ID, V10_R1_RULESET_ID, V10_R2_RULESET_ID, V10_R3_RULESET_ID, V10_R4_RULESET_ID, V10_R5_RULESET_ID, V10_R6_RULESET_ID, V10_R7_RULESET_ID] as const);
@@ -128,18 +134,24 @@ export type V10TacticalArena = Readonly<{
     opening: V10OpeningPair;
     evaluatedPairs: number;
     eligiblePairs: number;
-    recipeRevision?: typeof V10_PROCEDURAL_RECIPE_REVISION | typeof V10G_RECIPE_REVISION | typeof V10G_FAMILY_RECIPE_REVISION | typeof VOLCANIC_RUIN_RECIPE_REVISION;
+    recipeRevision?: V10TerrainRecipeRevision;
     candidateIndex?: number;
     fallbackUsed?: boolean;
 }>;
+
+export type V10TerrainRecipeRevision = typeof V10_PROCEDURAL_RECIPE_REVISION |
+    typeof V10G_RECIPE_REVISION | typeof V10G_FAMILY_RECIPE_REVISION |
+    typeof VOLCANIC_RUIN_RECIPE_REVISION | typeof V10_R7_BATTLEFIELD_RECIPE_REVISION;
 
 export type SimulationStateV10 = Omit<SimulationStateV9, 'formatVersion' | 'rulesetId' | 'rulesetVersion'> & {
     formatVersion: 10;
     rulesetId: V10RulesetId;
     rulesetVersion: 10;
     terrainProfileId: V10TerrainProfileId;
-    terrainRecipeRevision?: typeof V10_PROCEDURAL_RECIPE_REVISION | typeof V10G_RECIPE_REVISION | typeof V10G_FAMILY_RECIPE_REVISION | typeof VOLCANIC_RUIN_RECIPE_REVISION;
+    terrainRecipeRevision?: V10TerrainRecipeRevision;
     terrainCandidateIndex?: number;
+    terrainRevision?: number;
+    terrainHash?: string;
 };
 export type SimulationIntentV10 = SimulationIntentV9 | { type: 'jump'; direction: 0 };
 export type SimulationBarrierV10 = SimulationBarrierV9;
@@ -153,8 +165,10 @@ export const SimulationStateV10Schema = SimulationStateV9KernelSchema.omit({
     rulesetId: z.enum(V10_RULESET_IDS),
     rulesetVersion: z.literal(10),
     terrainProfileId: z.enum(V10_ALL_TERRAIN_PROFILE_IDS),
-    terrainRecipeRevision: z.enum([V10_PROCEDURAL_RECIPE_REVISION, V10G_RECIPE_REVISION, V10G_FAMILY_RECIPE_REVISION, VOLCANIC_RUIN_RECIPE_REVISION]).optional(),
-    terrainCandidateIndex: z.number().int().min(0).max(V10_PROCEDURAL_CANDIDATE_COUNT - 1).optional()
+    terrainRecipeRevision: z.enum([V10_PROCEDURAL_RECIPE_REVISION, V10G_RECIPE_REVISION, V10G_FAMILY_RECIPE_REVISION, VOLCANIC_RUIN_RECIPE_REVISION, V10_R7_BATTLEFIELD_RECIPE_REVISION]).optional(),
+    terrainCandidateIndex: z.number().int().min(0).max(V10_PROCEDURAL_CANDIDATE_COUNT - 1).optional(),
+    terrainRevision: z.number().int().min(0).max(65_535).optional(),
+    terrainHash: z.string().regex(/^[a-f0-9]{64}$/).optional()
 }).strict().superRefine((state, context) => {
     const r3 = state.rulesetId === V10_R3_RULESET_ID;
     const r4 = state.rulesetId === V10_R4_RULESET_ID;
@@ -171,7 +185,8 @@ export const SimulationStateV10Schema = SimulationStateV9KernelSchema.omit({
         context.addIssue({ code: z.ZodIssueCode.custom, path: ['terrainProfileId'],
             message: 'Terrain profile does not belong to the recorded V10 ruleset.' });
     }
-    if (procedural && (state.terrainRecipeRevision !== (volcanic ? VOLCANIC_RUIN_RECIPE_REVISION : r4 ? V10G_FAMILY_RECIPE_REVISION : r3 ? V10G_RECIPE_REVISION : V10_PROCEDURAL_RECIPE_REVISION) || ((r3 || r4 || volcanic) && state.terrainCandidateIndex !== 0))) {
+    const expectedRecipe = r7 ? V10_R7_BATTLEFIELD_RECIPE_REVISION : volcanic ? VOLCANIC_RUIN_RECIPE_REVISION : r4 ? V10G_FAMILY_RECIPE_REVISION : r3 ? V10G_RECIPE_REVISION : V10_PROCEDURAL_RECIPE_REVISION;
+    if (procedural && (state.terrainRecipeRevision !== expectedRecipe || ((r3 || r4 || volcanic) && state.terrainCandidateIndex !== 0))) {
         context.addIssue({ code: z.ZodIssueCode.custom, path: ['terrainRecipeRevision'], message: 'Recipe/candidate does not belong to ruleset.' });
     }
     const hasRecipeRevision = Object.prototype.hasOwnProperty.call(state, 'terrainRecipeRevision');
@@ -183,6 +198,16 @@ export const SimulationStateV10Schema = SimulationStateV9KernelSchema.omit({
     if (procedural !== hasCandidateIndex || (hasCandidateIndex && state.terrainCandidateIndex === undefined)) {
         context.addIssue({ code: z.ZodIssueCode.custom, path: ['terrainCandidateIndex'],
             message: 'Procedural candidate index must match the recorded V10 ruleset.' });
+    }
+    const hasTerrainRevision = Object.prototype.hasOwnProperty.call(state, 'terrainRevision');
+    const hasTerrainHash = Object.prototype.hasOwnProperty.call(state, 'terrainHash');
+    if (r7 !== hasTerrainRevision || (hasTerrainRevision && state.terrainRevision === undefined)) {
+        context.addIssue({ code: z.ZodIssueCode.custom, path: ['terrainRevision'],
+            message: 'R7 terrain revision must match the recorded ruleset.' });
+    }
+    if (r7 !== hasTerrainHash || (hasTerrainHash && state.terrainHash === undefined)) {
+        context.addIssue({ code: z.ZodIssueCode.custom, path: ['terrainHash'],
+            message: 'R7 terrain hash must match the recorded ruleset.' });
     }
     if (!actionDynamics && (state.tick > V8_DEFAULT_DYNAMICS.maximumCombatTicks ||
         state.phaseStartedTick > V8_DEFAULT_DYNAMICS.maximumCombatTicks ||
@@ -224,7 +249,9 @@ export function generateV10TacticalArena(
     const normalized = normalizeSeed(seed);
     const profileId = v10TerrainProfileForSeed(normalized, rulesetId);
     if (usesV10GTactics(rulesetId)) {
-        const candidate = usesVolcanicRuin(rulesetId) ? generateVolcanicRuinTerrain() : rulesetId === V10_R4_RULESET_ID ? generateV10GFamily(normalized) : generateV10GTwinCrests();
+        const candidate = rulesetId === V10_R7_RULESET_ID ? compileV10R7Battlefield()
+            : usesVolcanicRuin(rulesetId) ? generateVolcanicRuinTerrain()
+            : rulesetId === V10_R4_RULESET_ID ? generateV10GFamily(normalized) : generateV10GTwinCrests();
         return { terrain: candidate.terrain, rngState: normalized, profileId, reflected: rulesetId === V10_R4_RULESET_ID && v10gFamilyForSeed(normalized).reflected, variation: 0, phase: 0,
             opening: { ...candidate.opening, score: { profileFit: 0, combinedLocalMobility: 0, centerBias: 0, tieBreak: normalized }, jumpPositions: candidate.jumpPositions },
             evaluatedPairs: 1, eligiblePairs: 1, recipeRevision: candidate.recipeRevision, candidateIndex: 0, fallbackUsed: false };
@@ -330,6 +357,10 @@ export function createSimulationV10(
             terrainCandidateIndex: arena.candidateIndex!
         } : {}),
         terrain: arena.terrain,
+        ...(rulesetId === V10_R7_RULESET_ID ? {
+            terrainRevision: 0,
+            terrainHash: hashTerrainV10R7(arena.terrain)
+        } : {}),
         units: base.units.map((unit, index) => {
             const x = index === 0 ? arena.opening.leftX : arena.opening.rightX;
             const surfaceY = index === 0 ? arena.opening.leftSurfaceY : arena.opening.rightSurfaceY;
@@ -399,7 +430,8 @@ export function forceSimulationLimitV10(current: SimulationStateV10): Simulation
 export function cloneSimulationV10(state: SimulationStateV10): SimulationStateV10 {
     const cloned = cloneSimulationV9(toV9(state));
     return fromV9(cloned, state.rulesetId, state.terrainProfileId,
-        state.terrainRecipeRevision, state.terrainCandidateIndex);
+        state.terrainRecipeRevision, state.terrainCandidateIndex,
+        state.terrainRevision, state.terrainHash);
 }
 
 /**
@@ -419,6 +451,9 @@ export function assertSimulationInvariantsV10(state: SimulationStateV10): void {
     if (state.terrainProfileId !== v10TerrainProfileForSeed(state.seed, state.rulesetId)) {
         throw new Error('Invalid V10 state: terrain profile does not match seed.');
     }
+    if (state.rulesetId === V10_R7_RULESET_ID && state.terrainHash !== hashTerrainV10R7(state.terrain)) {
+        throw new Error('Invalid V10 state: terrain hash does not match packed terrain.');
+    }
     assertSimulationInvariantsV9(toV9(state), dynamicsForV10(state.rulesetId));
 }
 
@@ -429,6 +464,67 @@ export function canonicalSimulationJsonV10(state: SimulationStateV10): string {
 
 export function hashSimulationStateV10(state: SimulationStateV10): string {
     return sha256(new TextEncoder().encode(canonicalSimulationJsonV10(state)));
+}
+
+export function hashTerrainV10R7(terrain: PackedTerrain): string {
+    return sha256(new TextEncoder().encode(serializeV10R7Terrain(terrain)));
+}
+
+export function reconcileTerrainMetadataV10(
+    current: SimulationStateV10,
+    nextTerrain: PackedTerrain
+): Readonly<{ terrainRevision?: number; terrainHash?: string }> {
+    if (current.rulesetId !== V10_R7_RULESET_ID) return {};
+    if (current.terrainRevision === undefined || current.terrainHash === undefined) {
+        throw new Error('R7 terrain metadata is missing.');
+    }
+    const terrainChanged = !terrainWordsEqual(current.terrain, nextTerrain);
+    return {
+        terrainRevision: current.terrainRevision + (terrainChanged ? 1 : 0),
+        terrainHash: terrainChanged ? hashTerrainV10R7(nextTerrain) : current.terrainHash
+    };
+}
+
+export type V10R7LiveBattlefieldState = Readonly<{
+    terrainAscii: string;
+    terrainRevision: number;
+    terrainHash: string;
+    stateHash: string;
+    units: readonly Readonly<{
+        id: 'player' | 'loomkeeper';
+        xFp: number;
+        yFp: number;
+        vxFp: number;
+        vyFp: number;
+        grounded: boolean;
+        stitching: number;
+        alive: boolean;
+    }>[];
+}>;
+
+/** Complete current R7 battlefield model; packed terrain remains the authority. */
+export function serializeV10R7BattlefieldState(state: SimulationStateV10): V10R7LiveBattlefieldState {
+    assertSimulationInvariantsV10(state);
+    if (state.rulesetId !== V10_R7_RULESET_ID || state.terrainRevision === undefined || !state.terrainHash) {
+        throw new Error('Live R7 battlefield serialization requires an R7 state.');
+    }
+    const units = state.units.map(unit => ({
+        id: unit.id,
+        xFp: unit.xFp,
+        yFp: unit.yFp,
+        vxFp: unit.vxFp,
+        vyFp: unit.vyFp,
+        grounded: unit.grounded,
+        stitching: unit.stitching,
+        alive: unit.alive
+    }));
+    return Object.freeze({
+        terrainAscii: overlayV10R7Actors(state.terrain, state.units),
+        terrainRevision: state.terrainRevision,
+        terrainHash: state.terrainHash,
+        stateHash: hashSimulationStateV10(state),
+        units: Object.freeze(units.map(unit => Object.freeze(unit)))
+    });
 }
 
 function createV9Base(seed: number, calling: PlayerCalling): SimulationStateV9 {
@@ -447,8 +543,10 @@ export function mechanicsForV10(rulesetId: V10RulesetId): ProjectileMechanics | 
 
 function fromV9Transition(result: SimulationTransitionV9, current: SimulationStateV10): SimulationTransitionV10 {
     if (!result.mutated) return { ...result, state: current };
+    const { terrainRevision, terrainHash } = reconcileTerrainMetadataV10(current, result.state.terrain);
     const state = fromV9(result.state, current.rulesetId, current.terrainProfileId,
-        current.terrainRecipeRevision, current.terrainCandidateIndex);
+        current.terrainRecipeRevision, current.terrainCandidateIndex,
+        terrainRevision, terrainHash);
     assertSimulationInvariantsV10(state);
     return { ...result, state };
 }
@@ -458,6 +556,8 @@ function toV9(state: SimulationStateV10): SimulationStateV9 {
         terrainProfileId: _profile,
         terrainRecipeRevision: _recipe,
         terrainCandidateIndex: _candidate,
+        terrainRevision: _terrainRevision,
+        terrainHash: _terrainHash,
         ...common
     } = state;
     return { ...common, formatVersion: 9, rulesetId: 'nimble-knots-artillery-v9', rulesetVersion: 9 };
@@ -467,8 +567,10 @@ function fromV9(
     state: SimulationStateV9,
     rulesetId: V10RulesetId,
     terrainProfileId: V10TerrainProfileId,
-    terrainRecipeRevision?: typeof V10_PROCEDURAL_RECIPE_REVISION | typeof V10G_RECIPE_REVISION | typeof V10G_FAMILY_RECIPE_REVISION | typeof VOLCANIC_RUIN_RECIPE_REVISION,
-    terrainCandidateIndex?: number
+    terrainRecipeRevision?: V10TerrainRecipeRevision,
+    terrainCandidateIndex?: number,
+    terrainRevision?: number,
+    terrainHash?: string
 ): SimulationStateV10 {
     return {
         ...state,
@@ -477,8 +579,15 @@ function fromV9(
         rulesetVersion: 10,
         terrainProfileId,
         ...(terrainRecipeRevision !== undefined ? { terrainRecipeRevision } : {}),
-        ...(terrainCandidateIndex !== undefined ? { terrainCandidateIndex } : {})
+        ...(terrainCandidateIndex !== undefined ? { terrainCandidateIndex } : {}),
+        ...(terrainRevision !== undefined ? { terrainRevision } : {}),
+        ...(terrainHash !== undefined ? { terrainHash } : {})
     };
+}
+
+function terrainWordsEqual(left: PackedTerrain, right: PackedTerrain): boolean {
+    return left.width === right.width && left.height === right.height && left.cellSize === right.cellSize &&
+        left.words.length === right.words.length && left.words.every((word, index) => word === right.words[index]);
 }
 
 function evaluateOpening(

@@ -8,8 +8,9 @@ import {
     type V10FixtureClock
 } from '../../client/src/combat/terrain-starts-v10-fixture';
 import {
-    canonicalSimulationJsonV10, V10_R1_RULESET_ID, V10_R2_RULESET_ID, V10_R3_RULESET_ID, V10_R4_RULESET_ID, V10_R7_RULESET_ID, V10_RULESET_ID
+    canonicalSimulationJsonV10, hashTerrainV10R7, V10_R1_RULESET_ID, V10_R2_RULESET_ID, V10_R3_RULESET_ID, V10_R4_RULESET_ID, V10_R7_RULESET_ID, V10_RULESET_ID
 } from '../../shared/simulation-v10';
+import { deformTerrain } from '../../shared/simulation';
 
 function createClock(): V10FixtureClock & { advanceThirtyTicks: () => void } {
     let now = 0;
@@ -117,11 +118,11 @@ test('V10C local fixture exposes a detached terrain preview without transport or
     }
 });
 
-test('V10 R7 local fixture exposes the volcanic crater-scale identity and preserves it on restart', async () => {
+test('V10 R7 local fixture exposes the full volcanic battlefield identity and preserves it on restart', async () => {
     const fixture = await createTerrainStartsV10Fixture(4, 'wizard', createClock(), V10_R7_RULESET_ID);
     try {
         assert.equal(fixture.kind, 'v10');
-        assert.equal(fixture.previewLabel, 'V10 R7 crater-scale preview · Volcanic Ruin · local-only');
+        assert.equal(fixture.previewLabel, 'V10 R7 terrain-as-gameplay preview · full volcanic battlefield · local-only');
         assert.equal(fixture.snapshot.rulesetId, V10_R7_RULESET_ID);
         assert.equal(fixture.snapshot.terrainProfileId, 'volcanic-ruin');
         assert.equal(fixture.snapshot.units[0].thread, 5);
@@ -136,6 +137,34 @@ test('V10 R7 local fixture exposes the volcanic crater-scale identity and preser
     } finally {
         fixture.destroy();
     }
+});
+
+test('V10 R7 local fixture restores exact changed terrain and explicit restart starts fresh', async () => {
+    const values = new Map<string, string>();
+    const storage = {
+        getItem: (key: string) => values.get(key) ?? null,
+        setItem: (key: string, value: string) => { values.set(key, value); },
+        removeItem: (key: string) => { values.delete(key); }
+    };
+    const first = await createTerrainStartsV10Fixture(4, 'wizard', createClock(), V10_R7_RULESET_ID, storage);
+    const key = [...values.keys()][0];
+    first.destroy();
+    const changed = structuredClone(first.snapshot);
+    deformTerrain(changed.terrain, 1_040, 360, 64);
+    changed.terrainRevision! += 1;
+    changed.terrainHash = hashTerrainV10R7(changed.terrain);
+    values.set(key, JSON.stringify(changed));
+
+    const resumed = await createTerrainStartsV10Fixture(4, 'wizard', createClock(), V10_R7_RULESET_ID, storage);
+    try {
+        assert.equal(resumed.snapshot.terrainRevision, 1);
+        assert.equal(canonicalSimulationJsonV10(resumed.snapshot), canonicalSimulationJsonV10(changed));
+        const restarted = await resumed.restart();
+        try {
+            assert.equal(restarted.snapshot.terrainRevision, 0);
+            assert.notEqual(restarted.snapshot.terrainHash, changed.terrainHash);
+        } finally { restarted.destroy(); }
+    } finally { resumed.destroy(); }
 });
 
 test('V10E local fixture exposes the revised terrain identity and preserves restart', async () => {

@@ -1,4 +1,5 @@
 import { VOLCANIC_RUIN_RECIPE_REVISION } from './terrain-volcanic-ruin';
+import { V10_R7_BATTLEFIELD_RECIPE_REVISION } from './terrain-battlefield-v10-r7';
 import { V10G_RECIPE_REVISION, V10G_FAMILY_RECIPE_REVISION, v10gFamilyForSeed } from './terrain-generation-v10g';
 import { z } from 'zod';
 import {
@@ -67,7 +68,7 @@ export const CoordinatorReplayV10Schema = z.object({
     calling,
     rulesetId: z.enum(V10_RULESET_IDS),
     terrainProfileId: z.enum(V10_ALL_TERRAIN_PROFILE_IDS),
-    recipeRevision: z.enum([V10_PROCEDURAL_RECIPE_REVISION, V10G_RECIPE_REVISION, V10G_FAMILY_RECIPE_REVISION, VOLCANIC_RUIN_RECIPE_REVISION]).optional(),
+    recipeRevision: z.enum([V10_PROCEDURAL_RECIPE_REVISION, V10G_RECIPE_REVISION, V10G_FAMILY_RECIPE_REVISION, VOLCANIC_RUIN_RECIPE_REVISION, V10_R7_BATTLEFIELD_RECIPE_REVISION]).optional(),
     candidateIndex: integer(0, V10_PROCEDURAL_CANDIDATE_COUNT - 1).optional(),
     initialStateHash: hash,
     records: z.array(ReplayRecordV10Schema).max(V10_REPLAY_LIMITS.records)
@@ -87,7 +88,8 @@ export const CoordinatorReplayV10Schema = z.object({
         context.addIssue({ code: z.ZodIssueCode.custom, path: ['terrainProfileId'],
             message: 'Terrain profile does not belong to the recorded V10 ruleset.' });
     }
-    if (procedural && (replay.recipeRevision !== (volcanic ? VOLCANIC_RUIN_RECIPE_REVISION : r4 ? V10G_FAMILY_RECIPE_REVISION : r3 ? V10G_RECIPE_REVISION : V10_PROCEDURAL_RECIPE_REVISION) || ((r4 || volcanic) && replay.candidateIndex !== 0) || (r3 && (replay.candidateIndex !== 0 || replay.terrainProfileId !== 'twin-crests')))) {
+    const expectedRecipe = r7 ? V10_R7_BATTLEFIELD_RECIPE_REVISION : volcanic ? VOLCANIC_RUIN_RECIPE_REVISION : r4 ? V10G_FAMILY_RECIPE_REVISION : r3 ? V10G_RECIPE_REVISION : V10_PROCEDURAL_RECIPE_REVISION;
+    if (procedural && (replay.recipeRevision !== expectedRecipe || ((r4 || volcanic) && replay.candidateIndex !== 0) || (r3 && (replay.candidateIndex !== 0 || replay.terrainProfileId !== 'twin-crests')))) {
         context.addIssue({ code: z.ZodIssueCode.custom, path: ['recipeRevision'], message: 'Recipe/candidate does not belong to ruleset.' });
     }
     const hasRecipeRevision = Object.prototype.hasOwnProperty.call(replay, 'recipeRevision');

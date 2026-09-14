@@ -178,15 +178,16 @@ test('current R6 volcanic Practice start stays coherent across maintained phone 
   expect(errors).toEqual([]);
 });
 
-test('V10 R7 crater-scale preview keeps the accepted R6 mobile shell on the volcanic arena', async ({ page }) => {
+test('V10 R7 terrain-as-gameplay preview keeps the accepted R6 mobile shell on the full volcanic arena', async ({ page }) => {
   const errors = captureErrors(page);
   await page.goto('/?combat-preview=v10r7&sideways=off');
   const ui = page.locator('.combat-v10');
   await expect(ui).toHaveAttribute('data-ruleset', 'nimble-knots-artillery-v10-r7');
-  await expect(ui).toHaveAttribute('data-preview', 'V10 R7 crater-scale preview · Volcanic Ruin · local-only');
+  await expect(ui).toHaveAttribute('data-preview', 'V10 R7 terrain-as-gameplay preview · full volcanic battlefield · local-only');
   await expect(ui).toHaveAttribute('data-terrain-profile', 'volcanic-ruin');
   await expect(ui).toHaveAttribute('data-background', 'volcanic-ruin');
   await expect(ui).toHaveAttribute('data-background-ready', 'true');
+  await expect(ui).toHaveAttribute('data-opening-survey-width', '2048');
   await expect(ui.locator('.combat-timer')).toHaveText(/^(59|60)s$/);
   await expect(ui.locator('.v9-thread')).toHaveText('Thread 5/9');
   await expect(ui.locator('.movement-zone')).toHaveAttribute('aria-label',
@@ -212,6 +213,34 @@ test('V10 R7 crater-scale preview keeps the accepted R6 mobile shell on the volc
   await ui.locator('.fire-button').tap();
   await expect(ui).toHaveAttribute('data-combat-phase', /projectile|settling|retreat/);
   expect(errors).toEqual([]);
+});
+
+test('V10 R7 full battlefield persists exact destruction across a local phone reload', async ({ page }, testInfo) => {
+  test.skip(testInfo.project.name !== 'chromium-390x844', 'Canonical phone persistence coverage.');
+  test.setTimeout(60_000);
+  await page.goto('/?combat-preview=v10r7&sideways=off');
+  let ui = page.locator('.combat-v10');
+  await expect(ui).toHaveAttribute('data-ruleset', 'nimble-knots-artillery-v10-r7');
+  await expect(ui).toHaveAttribute('data-terrain-revision', '0');
+  await expect(ui).toHaveAttribute('data-opening-survey-width', '2048');
+
+  await ui.locator('.v9-actions-button').tap();
+  await ui.locator('.v9-attack').tap();
+  await ui.locator('.relic-threadball').tap();
+  await dragPad(page, '.combat-v10 .aim-zone', 1207, 0.35, 0);
+  await expect(ui).toHaveAttribute('data-aim-locked', 'true');
+  await ui.locator('.fire-button').tap();
+  await expect.poll(async () => Number(await ui.getAttribute('data-terrain-revision')),
+    { timeout: 12_000 }).toBeGreaterThan(0);
+  const revision = await ui.getAttribute('data-terrain-revision');
+  const terrainHash = await ui.getAttribute('data-terrain-hash');
+  expect(terrainHash).toMatch(/^[a-f0-9]{64}$/);
+
+  await page.reload();
+  ui = page.locator('.combat-v10');
+  await expect(ui).toHaveAttribute('data-ruleset', 'nimble-knots-artillery-v10-r7');
+  await expect(ui).toHaveAttribute('data-terrain-revision', revision!);
+  await expect(ui).toHaveAttribute('data-terrain-hash', terrainHash!);
 });
 
 test('canonical Daily visuals cover availability, authorization, claim processing, and finality', async ({

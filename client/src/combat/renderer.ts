@@ -247,29 +247,33 @@ export class CombatRenderer {
             }
         }
 
-        for (let x = 0; x < state.terrain.width; x += 1) {
-            for (let y = 0; y < state.terrain.height; y += 1) {
-                if (!terrainSolid(state.terrain, x, y) || (y > 0 && terrainSolid(state.terrain, x, y - 1))) {
-                    continue;
-                }
+        // Render every upward-facing material run. The old surface profile had
+        // only one top per column; R7 can expose bridges, caves and crater
+        // floors at several heights in the same column.
+        for (let y = 0; y < state.terrain.height; y += 1) {
+            let runStart = -1;
+            for (let x = 0; x <= state.terrain.width; x += 1) {
+                const exposed = x < state.terrain.width && terrainSolid(state.terrain, x, y) &&
+                    (y === 0 || !terrainSolid(state.terrain, x, y - 1));
+                if (exposed && runStart < 0) runStart = x;
+                if (!exposed && runStart >= 0) {
                 const tile = this.terrainTopTiles[topIndex++] ?? this.createTerrainTile(
                     APPROVED_COMBAT_ASSETS.terrainTop.key,
                     this.terrainTopTiles
                     );
-                    tile.setPosition(field.x + (x * state.terrain.cellSize - layout.camera.left) * layout.worldScaleX, field.y + y * cellY)
+                    tile.setPosition(field.x + (runStart * state.terrain.cellSize - layout.camera.left) * layout.worldScaleX, field.y + y * cellY)
                         .setSize(
-                            cellX + 0.5,
+                            (x - runStart) * cellX + 0.5,
                             Math.max(
                                 2,
                                 layout.worldScaleY * TERRAIN_TOP_SOURCE_HEIGHT * TERRAIN_MATERIAL_SCALE_IN_WORLD
                             )
                         )
                         .setTileScale(materialScaleX, materialScaleY)
-                        // Each surface segment starts at the grass edge while
-                        // retaining a single horizontally aligned material run.
-                        .setTilePosition(x * cellX / materialScaleX, 0)
+                        .setTilePosition(runStart * cellX / materialScaleX, 0)
                         .setVisible(true);
-                break;
+                    runStart = -1;
+                }
             }
         }
         this.hideUnusedTiles(this.terrainInteriorTiles, interiorIndex);
@@ -605,7 +609,6 @@ export class CombatRenderer {
                     const px = field.x + (x * state.terrain.cellSize - layout.camera.left) * layout.worldScaleX;
                     const py = field.y + y * cellY;
                     g.lineBetween(px, py, px + cellX, py);
-                    break;
                 }
             }
         }
