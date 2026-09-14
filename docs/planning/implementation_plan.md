@@ -165,6 +165,18 @@ Phaser/Socket.IO stack.
   No server authority or economy code changed. R5 remains an explicit diagnostic
   and is not part of ordinary acceptance. See the [WP-023 contract](wp-023-v10-r6-action-impact-dynamics.md)
   and [evidence](../evidence/wp-023.json).
+- Proposed successor: **WP-024 V10 R7 Terrain As Gameplay**, planned from clean
+  `842da39`. R7 starts Threadball at a 272-unit crater diameter and Spoolburst
+  at 480, measured against the accepted 68-unit actor presentation. It extends
+  the existing ASCII terrain compiler from a surface profile to a complete,
+  entirely destructible 64 by 36 battlefield with exact 256 by 72 live-state
+  serialization, open-bottom fall losses and no hidden floor. A later waypoint
+  lets a server-only Gemini adapter select from a deterministic shortlist of
+  legal Loomkeeper plans using a fresh ASCII snapshot after every terrain
+  change; the local planner remains the bounded fallback and replay settlement
+  never calls Gemini. The package contract and phone gates are documented, but
+  implementation has not started and R6 remains standard. See the
+  [WP-024 contract](wp-024-v10-r7-terrain-as-gameplay.md).
 - Active target: mobile-first single-player Nimiq Pay competition release.
 - Latest completed slice: **WP-015D4D V10G Terrain And Weapon Tactics**;
   see the [V10G preparation contract](wp-015d4a-v10-terrain-starts-contract.md#v10g-terrain-and-weapon-tactics-preparation).
