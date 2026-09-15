@@ -1,6 +1,6 @@
 # WP-024 V10 R7 Terrain As Gameplay
 
-Status: **Phone Gate C accepted; final R7 promotion is next**
+Status: **Final R7 promotion verified; Phone Gate D is next**
 Planning base: `842da39`  
 Implementation base: `4f7c878`
 Implementation branch: `codex/v10-r6-action-impact-dynamics`
@@ -416,6 +416,21 @@ functional passes, this closes Phone Gate C and authorizes final R7 promotion.
 After Gates A-C and automated replay proof pass, promote one exact R7 identity
 to both standard Practice and the PEI-gated Daily Challenge. No separate Daily
 terrain, crater table or controls are permitted.
+
+The final promotion uses the already implemented current constants rather than
+adding another gameplay selector: an absent `NIMBLE_RUNTIME_PROFILE` is the
+only normal production route and resolves both modes to
+`nimble-knots-artillery-v10-r7` with automation
+`wp-024-v10-r7-live-v1`. The retired `production-v7` alias is rejected. Named
+development profiles remain isolated diagnostics and cannot serve Daily.
+Supported protocol and browser assertions bind the shared Daily-to-Practice and
+PEI-to-Daily-to-Practice journeys to the literal R7 identifiers so a future
+change to a generic `CURRENT` constant cannot conceal version drift.
+
+The final change-selected acceptance passed the exact production-profile and
+R7 protocol boundary, fresh build/smoke, identity bundle isolation, reward
+security and one canonical Chromium journey each for standard Daily-to-Practice
+and PEI-to-Daily-to-Practice. Phone Gate D is the remaining WP-024 gate.
 
 Phone Gate D checks one final end-to-end journey:
 

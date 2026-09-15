@@ -18,7 +18,8 @@
     "Compile every authoring cell explicitly into the 256 by 72 packed mask; use all world-width columns for edge structures, routes and a 144-unit full-width destructible foundation with deliberate breach zones and no hidden floor.",
     "Serialize exact live terrain and actor overlays, bind R7 terrain revision/hash metadata to authoritative transitions, render every exposed terrain surface, introduce the full-world camera survey and restore the exact changed local preview across app reopen while explicit restart starts fresh.",
     "Waypoint 3 after terrain acceptance: move the exact R7 state into the server-authoritative lifecycle with the existing deterministic Loomkeeper, exact replay/resume and Practice canary before final Practice and Daily promotion.",
-    "Correct the Phone Gate C foreground performance regression without changing gameplay: coalesce aim previews per display frame, batch detached projectile rollout validation, cache terrain topology by authoritative revision/hash, avoid unchanged layout writes and remove redundant validation inside coordinator-owned tick batches."
+    "Correct the Phone Gate C foreground performance regression without changing gameplay: coalesce aim previews per display frame, batch detached projectile rollout validation, cache terrain topology by authoritative revision/hash, avoid unchanged layout writes and remove redundant validation inside coordinator-owned tick batches.",
+    "After Phone Gate C, promote the already accepted current R7 identity to the one normal Practice and PEI-gated Daily runtime: require NIMBLE_RUNTIME_PROFILE to be absent, reject the retired production-v7 alias and bind supported cross-mode journeys to literal R7 identifiers."
   ],
   "non_goals": [
     "No Gemini dependency, API call, prompt, provider configuration or external selector anywhere in WP-024; objective-aware Gemini selection is owned by WP-027 after WP-026 defines R8 objective gameplay.",
@@ -129,6 +130,11 @@
       "command": "Phone Gate C final foreground-performance retest",
       "status": "pass",
       "details": "At committed and pushed cf11916, the owner confirmed on the physical phone that the corrected game works much better. Threadball and Spoolburst aiming, full-arena panning, sustained walking, repeated jumping and Pause response are accepted. Combined with the four earlier functional passes, this completes Phone Gate C and authorizes final R7 promotion to the shared standard Practice and PEI-gated Daily path."
+    },
+    {
+      "command": "WP-024 final R7 promotion risk-based verification from 39efb21",
+      "status": "pass",
+      "details": "The worms_port_test_runner verified the frozen ten-path promotion diff at selector fingerprint 1a48756f568cd5d072cc52e94a1f378399aaa88bb015e6daf401d267b2da7b6c with zero retries or infrastructure edits. Work-package evidence 71 records, import boundary, types, protocol 21/21, fresh build proof 3cfa8b0d30b0 / be719e7549f4, standard R7 built smoke, identity bundles and reward security passed. The exact canonical Chromium standard Daily-to-Practice journey passed 1/1 in 68.792 seconds and the PEI-to-Daily-to-Practice journey passed 1/1 in 77.756 seconds. Report-only housekeeping passed. Logs are under .cache/wp024-r7-final-promotion-*.log."
     }
   ],
   "reviews": [
@@ -196,19 +202,24 @@
       "reviewer": "WP-024 Phone Gate C final physical-phone acceptance",
       "status": "pass",
       "details": "The owner accepted the focused performance correction at committed and pushed cf11916. The prior functional passes and the final responsiveness retest together close Gate C; final R7 promotion and Phone Gate D remain open."
+    },
+    {
+      "reviewer": "primary assistant final R7 promotion direct review",
+      "status": "pass",
+      "details": "Direct review confirms the ordinary runtime already consumed the current R7 ruleset and automation identity for both Practice and reward admission. Promotion removes only the misleading production-v7 environment alias, making an absent NIMBLE_RUNTIME_PROFILE the sole normal production selection; named development profiles remain isolated and cannot serve Daily. Literal R7 assertions now cover standard Daily, PEI receipt consumption, durable replay/resume and the return to Practice. No gameplay, economy, receipt, payout, database, identity, dependency or asset behavior changed."
     }
   ],
   "skipped_checks": [
     "Phone Gates A, B and C passed on the physical phone at committed and pushed 4933cb2, 9e17773 and cf11916 respectively; Phone Gate D remains pending after final R7 promotion.",
     "Retired R5-and-older runtime profiles and the @legacy browser suite were excluded from ordinary acceptance.",
-    "The daily/release suite was not run because this is a feature waypoint rather than the daily or release boundary.",
+    "The daily/release suite was not run because this is the final feature waypoint before physical Phone Gate D rather than the daily or release boundary.",
     "The broad six-run performance gate is not repeated for this correction; focused current-R7 browser coverage measures coalesced touch dispatch and unchanged-terrain reuse, while physical-phone feel remains the acceptance authority.",
     "The second parameter-only refinement reused the passing cross-system evidence at committed 18a1292; broader current unit/browser families, PostgreSQL, security and bundle checks were not repeated because their inputs and authority boundaries did not change.",
-    "PostgreSQL integration was selected but skipped locally because WP014_TEST_DATABASE_URL is unavailable; CI retains that gate.",
+    "PostgreSQL integration was not repeated because the promotion changes no database, store, migration or concurrency behavior; its existing CI gate remains authoritative.",
     "Authoritative Ubuntu visual baseline comparison remains CI-only; Windows ran supported visual logic with screenshot comparison skipped by policy."
   ],
   "residual_risks": [
-    "The accepted R7 identity still has to be promoted to the ordinary shared Practice/Daily deployment and pass Phone Gate D before WP-024 closes.",
+    "The verified R7 identity still has to pass the supervised physical Phone Gate D on the ordinary shared Practice/Daily deployment before WP-024 closes.",
     "Physical Android/iOS and Nimiq Pay WebView behavior remain outside automated browser evidence."
   ]
 }

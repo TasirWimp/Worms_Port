@@ -214,9 +214,12 @@ Phaser/Socket.IO stack.
   and pushed `cf11916`, the owner accepted the focused phone performance retest:
   aiming, camera panning, walking, jumping and Pause response all feel much
   better. **Phone Gate C is complete. The next execution target is final R7
-  promotion.** The deployed standard Practice/Daily service remains on R6
-  until that promotion activates the same R7 identity for both paths before
-  Phone Gate D. Gemini has moved
+  promotion.** The promotion removes the retired `production-v7` alias: an
+  absent `NIMBLE_RUNTIME_PROFILE` is now the sole normal production route and
+  binds Practice and Daily to the literal R7 ruleset and automation identity.
+  Named development profiles remain isolated diagnostics. The exact protocol,
+  build/smoke, identity/reward guards and canonical standard Daily-to-Practice
+  and PEI-to-Daily-to-Practice journeys pass. **Phone Gate D is next.** Gemini has moved
   out of WP-024 so no deathmatch-specific external selector is built before the
   objective rules exist.** See the
   [WP-024 contract](wp-024-v10-r7-terrain-as-gameplay.md).

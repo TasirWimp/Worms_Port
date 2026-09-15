@@ -135,7 +135,7 @@ async function checkLegacyCombat(baseUrl, staging, v9 = false) {
   const socket = io(baseUrl, { transports: ['websocket'], reconnection: false,
     autoConnect: false, timeout: 2_000, extraHeaders: { Origin: baseUrl },
     // A query cannot activate or downgrade the server-selected ruleset.
-    query: { NIMBLE_RUNTIME_PROFILE: staging ? 'production-v7' : 'staging-v8d-practice' } });
+    query: { NIMBLE_RUNTIME_PROFILE: staging ? 'forged-production-profile' : 'staging-v8d-practice' } });
   try {
     await new Promise((resolve, reject) => {
       socket.once('connect', resolve);

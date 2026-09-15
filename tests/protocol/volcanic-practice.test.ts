@@ -5,7 +5,7 @@ import { LiveSimulationCoordinatorV10 } from '../../server/src/simulation/coordi
 import { VersionedSimulationCoordinator } from '../../server/src/simulation/versioned-coordinator';
 import { ChallengeCreateV10Schema, CoordinatorReplayV10AutomatedSchema } from '../../shared/protocol-v10-live';
 import { CoordinatorReplayV10Schema } from '../../shared/protocol-v10';
-import { V10_AUTOMATION_ID, V10_R6_AUTOMATION_ID } from '../../shared/combat-version';
+import { V10_AUTOMATION_ID, V10_R6_AUTOMATION_ID, V10_R7_AUTOMATION_ID } from '../../shared/combat-version';
 import {
     CURRENT_V10_RULESET_ID, V10_R6_DYNAMICS, V10_R6_RULESET_ID, V10_R7_RULESET_ID,
     hashTerrainV10R7
@@ -14,7 +14,9 @@ import { LoomkeeperPlannerV10 } from '../../shared/loomkeeper-v10';
 
 const request = { requestId: 'volcanic_request_001', sequence: 0, mode: 'practice', calling: 'wizard', rulesetId: CURRENT_V10_RULESET_ID, automationId: V10_AUTOMATION_ID };
 
-test('volcanic live admission strictly separates standard Daily from the wallet-free Practice profile', async () => {
+test('promoted R7 identity is exact and volcanic live admission separates standard Daily from the wallet-free Practice profile', async () => {
+    assert.equal(CURRENT_V10_RULESET_ID, V10_R7_RULESET_ID);
+    assert.equal(V10_AUTOMATION_ID, V10_R7_AUTOMATION_ID);
     assert.equal(ChallengeCreateV10Schema.safeParse(request).success, true);
     const rewardRequest = { ...request, mode: 'reward', challengeId: 'daily_reward_challenge_01', eligibilityToken: 'a'.repeat(43) };
     assert.equal(ChallengeCreateV10Schema.safeParse(rewardRequest).success, true);

@@ -13,11 +13,12 @@ The normal `/` entry in the WP-024 branch starts server-backed V10 R7 Practice
 on the accepted full-width, fully destructible Volcanic Ruin battlefield, with
 the existing terrain weapons and deterministic Loomkeeper.
 The five background images load only when combat starts. Practice remains
-wallet-free. The production deployment remains on V10 R6 until the R7
-Practice canary passes Phone Gate C. The branch's ordinary production profile
-already binds Daily to the same exact R7 identity after its existing wallet,
-PEI receipt and reward reservation checks, so keep that profile undeployed
-until Gate C passes.
+wallet-free. Phone Gate C accepted the server-backed R7 canary at `cf11916`.
+The branch's ordinary production runtime now promotes this same exact R7
+identity to Practice and, after its existing wallet, PEI receipt and reward
+reservation checks, Daily. Remove `NIMBLE_RUNTIME_PROFILE` to select this
+current production runtime; named development profiles remain isolated
+diagnostics and cannot serve Daily.
 R7 keeps the accepted R6 timing and action balance, presents smaller actors with
 compact color-changing health bars and a matching direct-hit envelope, and
 gives each actor a 60-second action phase with slightly faster walking and a
@@ -34,35 +35,36 @@ The explicit local preview URLs remain available for historical review.
 The [V8 preview controller](client/src/combat/action-turns-v8-fixture.ts) loads
 only when requested, keeping its local authority out of the initial bundle.
 
-For the existing owner Render service, replace the old V9 Practice profile with:
+For the existing owner Render service, deploy the promoted standard R7 runtime
+in its safe state with:
 
 ```text
 NODE_ENV=production
-NIMBLE_RUNTIME_PROFILE=development-v10-practice
+NIMBLE_RUNTIME_PROFILE=<delete this variable>
+NIMBLE_DEPLOYMENT=production (or leave absent)
 REWARD_PAUSED=true
 ```
 
-Redeploy and open `/` without preview query parameters. This profile constructs
-no identity, database or payout service, even when old credentials are saved.
-Ordinary startup without a development profile selects volcanic V10 R7 for both
-Practice and the separately configured Daily service. The development profile
-remains Practice-only and constructs no reward service, making it the required
-Phone Gate C canary profile. Old V8/V9 protocols and replays retain their
+Redeploy and open `/` without preview query parameters. Ordinary startup without
+a development profile selects volcanic V10 R7 for both Practice and the
+separately configured Daily service; the pause switch keeps rewards unavailable
+while Practice remains wallet-free. The `development-v10-practice` profile
+remains available as an isolated Practice diagnostic: it constructs no identity,
+database or payout service even when old credentials are saved, and cannot serve
+Daily. Old V8/V9 protocols and replays retain their
 historical behavior, and frozen R6 live evidence remains verifiable without an
 R6 runtime profile. Runtime selection does not activate or fund rewards by
 itself.
 
-The `development-v10-practice` block is only for isolated Practice acceptance.
-It cannot serve Daily Challenge. Before Daily Phone Gate A, change the existing
-Render service in one operation: delete `NIMBLE_RUNTIME_PROFILE`, set
-`REWARD_MODE=record-only`, and set `REWARD_PAUSED=false`. Keep
-`NODE_ENV=production`, the existing `DATABASE_URL`, and the existing identity
-configuration; `NIMBLE_DEPLOYMENT` may be absent or exactly `production`. Save
-these settings together and redeploy. Unpausing while the development profile
-is still selected deliberately fails startup. Record-only mode exercises wallet
-authorization, durable eligibility, V10 replay settlement and claim state
-without creating a reward transaction. Reward-payout mainnet remains a later
-explicit gate; the separate 1 NIM PEI interaction has its own canary below.
+For supervised Phone Gate D, keep `NIMBLE_RUNTIME_PROFILE` absent and retain the
+already configured mainnet identity, PEI, database, reward signer and RPC
+settings. Confirm that `REWARD_TEST_WALLET_ADDRESS`,
+`REWARD_TEST_DAILY_ATTEMPT_LIMIT` and
+`REWARD_TEST_REPEAT_ACKNOWLEDGEMENT` are absent. Set `REWARD_PAUSED=false` on
+the game and `PEI_PROXY_PAUSED=false` on the helper, then redeploy both. After
+the gate, restore both pause variables to `true` and redeploy. This bounded gate
+uses the already approved tiny mainnet transfers; it does not authorize leaving
+either service active afterward.
 
 The owner accepted the local scenic restart fix on 2026-09-11. New server-backed
 phone acceptance should cover Start Practice, aim/fire and AI reply, pause,
@@ -139,13 +141,13 @@ are also recorded in the Execution Pointer of
   recoil on the accepted full-width, fully destructible ASCII battlefield.
   The local `/?combat-preview=v10r7` route remains available for diagnostics;
   the root path now supplies the server-backed R7 Practice canary. Waypoints
-  1-2 and Phone Gates A-B are accepted. Waypoint 3 owns the current
-  deterministic server/replay integration and final R7 Practice/Daily activation;
+  1-3 and Phone Gates A-C are accepted. The final promotion activates this
+  deterministic server/replay identity for both Practice and Daily;
   objective modes and Gemini are separately planned in
   [WP-026](docs/planning/wp-026-v10-r8-objective-modes.md) and
   [WP-027](docs/planning/wp-027-gemini-objective-loomkeeper.md).
-  The deployed PEI-gated Daily Challenge remains on R6 until Phone Gate C
-  accepts the practice-only R7 deployment.
+  Named development profiles remain diagnostics and cannot activate the
+  PEI-gated Daily Challenge.
 - Assets from Sorcerers may move into `assets/` only after exact-file license
   evidence proves commercial use, redistribution, and modification are allowed.
 - Product assets must be traceable through `legal/asset-manifest.json`.
@@ -784,11 +786,11 @@ pass. V9D phone acceptance is complete. The owner separately reports a bug that
 prevents player Relic selection and explicitly defers it to the tracked V9
 Relic-selection fast-follow; this acceptance does not claim that bug is fixed.
 
-For rollback, restore the previously used profile (for example
-`development-v8d-practice`) and redeploy. Removing the profile or setting
-`production-v7` restores normal V7 startup and normal credential validation;
-keep `REWARD_PAUSED=true`. This owner Practice deployment is not joint public
-Practice/reward promotion or funded activation.
+For rollback to an isolated Practice surface, restore the previously used
+development profile and redeploy with `REWARD_PAUSED=true`. Removing
+`NIMBLE_RUNTIME_PROFILE` selects the normal current R7 runtime and validates its
+configured identity and reward services. Runtime selection alone does not
+activate or fund rewards.
 
 ## Primary ownership and test execution
 

@@ -9,7 +9,7 @@ import { createRuntimeServer } from '../../server/src/runtime';
 import { MemoryRewardStore } from '../../server/src/reward/memory-store';
 import { RewardService } from '../../server/src/reward/service';
 import type { RewardConfig } from '../../server/src/reward/types';
-import { CURRENT_V10_RULESET_ID } from '../../shared/simulation-v10';
+import { V10_R7_RULESET_ID } from '../../shared/simulation-v10';
 import { createTestSigner, privateKeyForProject } from '../support/nimiq-signer';
 import { completeCurrentClash, playCurrentRound } from './support/reward-journey';
 
@@ -173,7 +173,7 @@ test('PEI helper receipt survives return and completes the same volcanic Daily a
     await page.getByRole('button', { name: 'Start Daily Challenge' }).tap();
     let combat = page.locator('.combat-v10');
     await expect(combat).toHaveAttribute('data-mode', 'reward');
-    await expect(combat).toHaveAttribute('data-ruleset', CURRENT_V10_RULESET_ID);
+    await expect(combat).toHaveAttribute('data-ruleset', V10_R7_RULESET_ID);
     await expect(combat).toHaveAttribute('data-background', 'volcanic-ruin');
     const consumed = await store.peiReceiptStatus('pei_browser_receipt_001', signer.address);
     expect(consumed?.consumedAt).toBeInstanceOf(Date);
@@ -246,11 +246,11 @@ test('PEI helper receipt survives return and completes the same volcanic Daily a
     const entitlement = await store.status(consumed!.entitlementId!, signer.address);
     expect(entitlement?.replay && 'rulesetId' in entitlement.replay
       ? entitlement.replay.rulesetId
-      : undefined).toBe(CURRENT_V10_RULESET_ID);
+      : undefined).toBe(V10_R7_RULESET_ID);
 
     await page.getByRole('button', { name: 'Play Practice' }).tap();
     await expect(combat).toHaveAttribute('data-mode', 'practice');
-    await expect(combat).toHaveAttribute('data-ruleset', CURRENT_V10_RULESET_ID);
+    await expect(combat).toHaveAttribute('data-ruleset', V10_R7_RULESET_ID);
     await expect(combat).toHaveAttribute('data-background', 'volcanic-ruin');
   } finally {
     expect.soft(pageErrors, 'PEI browser crossings must not raise page errors.').toEqual([]);

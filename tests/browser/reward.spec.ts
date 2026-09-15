@@ -7,8 +7,8 @@ import { createRuntimeServer } from '../../server/src/runtime';
 import { MemoryRewardStore } from '../../server/src/reward/memory-store';
 import { RewardService } from '../../server/src/reward/service';
 import { V8_R1_RULESET_ID } from '../../shared/simulation-v8';
-import { V10_AUTOMATION_ID } from '../../shared/combat-version';
-import { CURRENT_V10_RULESET_ID } from '../../shared/simulation-v10';
+import { V10_R7_AUTOMATION_ID } from '../../shared/combat-version';
+import { V10_R7_RULESET_ID } from '../../shared/simulation-v10';
 
 test('a finalized reward keeps its full payout transaction hash visible', async ({ page }) => {
   const hash = 'a'.repeat(64);
@@ -54,7 +54,7 @@ test('standard Daily uses volcanic V10, resumes, settles verified loss, and retr
     const ui = page.locator('.combat-v10');
     await expect(ui).toBeVisible();
     await expect(ui).toHaveAttribute('data-mode', 'reward');
-    await expect(ui).toHaveAttribute('data-ruleset', CURRENT_V10_RULESET_ID);
+    await expect(ui).toHaveAttribute('data-ruleset', V10_R7_RULESET_ID);
     await expect(ui).toHaveAttribute('data-background', 'volcanic-ruin');
     await expect(page.locator('.pause-button')).toBeDisabled();
     let socketId = [...runtime.io.sockets.sockets.keys()][0];
@@ -70,10 +70,10 @@ test('standard Daily uses volcanic V10, resumes, settles verified loss, and retr
     await expect(page.locator('.reward-claim')).toBeHidden();
     const retained = await store.status('browser_automated_entitlement', signer.address);
     expect(retained?.state).toBe('lost');
-    expect(retained?.replay && 'automationId' in retained.replay && retained.replay.automationId).toBe(V10_AUTOMATION_ID);
+    expect(retained?.replay && 'automationId' in retained.replay && retained.replay.automationId).toBe(V10_R7_AUTOMATION_ID);
     await page.getByRole('button', { name: 'Play Practice' }).tap();
     await expect(ui).toHaveAttribute('data-mode', 'practice');
-    await expect(ui).toHaveAttribute('data-ruleset', CURRENT_V10_RULESET_ID);
+    await expect(ui).toHaveAttribute('data-ruleset', V10_R7_RULESET_ID);
     await expect(ui).toHaveAttribute('data-background', 'volcanic-ruin');
   } finally {
     expect.soft(pageErrors, 'Automated Daily must not raise browser page errors.').toEqual([]);

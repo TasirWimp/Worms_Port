@@ -10,9 +10,9 @@ export function practiceOnlyProfileFromEnvironment(
     }
     const profile = environment.NIMBLE_RUNTIME_PROFILE;
     const deployment = environment.NIMBLE_DEPLOYMENT;
-    if (profile === undefined || profile === 'production-v7') {
+    if (profile === undefined) {
         if (deployment !== undefined && deployment !== 'production') {
-            throw new Error('Normal V7 runtime requires an absent or production deployment setting.');
+            throw new Error('Normal current runtime requires an absent or production deployment setting.');
         }
         return undefined;
     }

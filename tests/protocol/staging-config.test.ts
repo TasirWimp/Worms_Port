@@ -35,7 +35,7 @@ test('single-service development leaves saved monetary and identity values dorma
     }
     // The selector alone does not validate, contact or rewrite saved production subsystems on rollback.
     assert.equal(stagingPracticeFromEnvironment({ ...environment, NIMBLE_RUNTIME_PROFILE: undefined }), false);
-    assert.equal(stagingPracticeFromEnvironment({ ...environment, NIMBLE_RUNTIME_PROFILE: 'production-v7' }), false);
+    assert.throws(() => stagingPracticeFromEnvironment({ ...environment, NIMBLE_RUNTIME_PROFILE: 'production-v7' }));
 });
 
 test('single-service development refuses missing pause, incompatible deployment and fixture overrides', () => {
@@ -65,10 +65,11 @@ test('single-service profile selection does not read dormant production values',
     assert.equal(practiceOnlyProfileFromEnvironment(environment), 'development-v8d-practice');
 });
 
-test('staging requires exact explicit production-runtime opt-in; ordinary startup stays V7', () => {
+test('staging requires exact explicit opt-in; ordinary startup selects the current runtime only when the profile is absent', () => {
     assert.equal(stagingPracticeFromEnvironment({}), false);
-    assert.equal(stagingPracticeFromEnvironment({ NODE_ENV: 'production',
-        NIMBLE_RUNTIME_PROFILE: 'production-v7', NIMBLE_DEPLOYMENT: 'production' }), false);
+    assert.equal(stagingPracticeFromEnvironment({ NODE_ENV: 'production', NIMBLE_DEPLOYMENT: 'production' }), false);
+    assert.throws(() => stagingPracticeFromEnvironment({ NODE_ENV: 'production',
+        NIMBLE_RUNTIME_PROFILE: 'production-v7', NIMBLE_DEPLOYMENT: 'production' }));
     assert.equal(stagingPracticeFromEnvironment(staging), true);
     assert.equal(practiceOnlyProfileFromEnvironment(staging), 'staging-v8d-practice');
     assert.equal(stagingPracticeFromEnvironment({ ...staging,
