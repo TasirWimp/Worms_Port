@@ -4,6 +4,7 @@
 /scripts/generate-wizard-cowl-edit-mask.js text eol=lf
 /scripts/generate-wizard-hood-structure-controls.js text eol=lf
 /scripts/generate-wizard-cast-preparation-pose-guide.js text eol=lf
+/scripts/generate-objective-coin-guide.js text eol=lf
 /scripts/normalize-*-master.js text eol=lf
 /scripts/asset-normalization/*.json text eol=lf
 /docs/evidence/wp-015d2z-v7-terrain-and-placement-behavior-record.md text eol=lf

@@ -407,7 +407,7 @@ export async function createTerrainStartsV10Fixture(
         if (result.accepted && result.mutated) state = result.state;
         if (!retiringForRestart) persist(true);
     };
-    const previewLabel = rulesetId === V10_R8_RULESET_ID ? `V10 R8 ${objectiveMode} object-physics preview · mode rules deferred · local-only` : rulesetId === V10_R7_RULESET_ID ? 'V10 R7 terrain-as-gameplay preview · full volcanic battlefield · local-only' : rulesetId === V10_R5_RULESET_ID ? 'Volcanic Ruin · stepped valley · local-only' : rulesetId === V10_R4_RULESET_ID
+    const previewLabel = rulesetId === V10_R8_RULESET_ID ? `V10 R8 ${objectiveMode} objective-mode canary · local-only` : rulesetId === V10_R7_RULESET_ID ? 'V10 R7 terrain-as-gameplay preview · full volcanic battlefield · local-only' : rulesetId === V10_R5_RULESET_ID ? 'Volcanic Ruin · stepped valley · local-only' : rulesetId === V10_R4_RULESET_ID
         ? `V10G ${terrainProfileLabel(state.terrainProfileId)}${state.terrainProfileId === 'asymmetric-rampart' ? (v10gFamilyForSeed(seed).reflected ? ' · high right' : ' · high left') : ''} · cover, shelves and breaching · local-only`
         : rulesetId === V10_R3_RULESET_ID
         ? 'V10G Twin Crests · cover, shelves and breaching · local-only'
@@ -427,6 +427,7 @@ export async function createTerrainStartsV10Fixture(
         kind: 'v10',
         get snapshot() { return cloneState(state); },
         previewLabel,
+        calling,
         ...(rulesetId === V10_R4_RULESET_ID ? { previewTerrainReflected: v10gFamilyForSeed(seed).reflected } : {}),
         ...(proceduralSurface ? { previewTerrainReflected: proceduralSurface.reflected } : {}),
         submit,

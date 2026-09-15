@@ -669,6 +669,22 @@ export class CombatRenderer {
         for (const object of state.objectives ?? []) {
             if (object.status !== 'active') continue;
             const point = this.worldPoint(object.xFp / 256, object.yFp / 256, layout);
+            const edgeMargin = 10;
+            const leftEdge = layout.battlefield.x + edgeMargin;
+            const rightEdge = layout.battlefield.x + layout.battlefield.width - edgeMargin;
+            if (point.x < leftEdge || point.x > rightEdge) {
+                const left = point.x < leftEdge;
+                const x = left ? leftEdge : rightEdge;
+                const y = Math.max(layout.battlefield.y + edgeMargin,
+                    Math.min(layout.battlefield.y + layout.battlefield.height - edgeMargin, point.y));
+                g.fillStyle(object.kind === 'coin' ? 0xE9B213 : 0x795548, 0.94);
+                if (left) g.fillTriangle(x - 7, y, x + 5, y - 7, x + 5, y + 7);
+                else g.fillTriangle(x + 7, y, x - 5, y - 7, x - 5, y + 7);
+                g.lineStyle(1.5, 0x1F2348, 0.92);
+                g.strokeTriangle(left ? x - 7 : x + 7, y, left ? x + 5 : x - 5, y - 7,
+                    left ? x + 5 : x - 5, y + 7);
+                continue;
+            }
             if (object.kind === 'coin') {
                 const sprite = this.objectiveCoinSprites[coinSpriteIndex++];
                 if (sprite) {

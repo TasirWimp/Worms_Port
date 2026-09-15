@@ -92,7 +92,7 @@ export default class ResultScene extends Phaser.Scene {
                 <button type="button" class="result-retry">${
                     this.args.rewarded ? 'Play Practice' : 'Play Again'
                 }</button>
-                <button type="button" class="result-change">Change Calling</button>
+                <button type="button" class="result-change">Back to Lobby</button>
                 <button type="button" class="result-fullscreen" hidden></button>
                 <p class="result-message" aria-live="polite"></p>
             </section>

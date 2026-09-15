@@ -270,8 +270,13 @@ Phaser/Socket.IO stack.
   semantic class across R6-R8; the owner accepted the correction in Defend and
   Collect. A separately approved generic amber textile hex coin replaces the
   round Collect placeholder without changing objective authority, and its final
-  physical-phone shape review passed. **Waypoint 2 is next:** add local contact,
-  scoring, terminal rules, HUD and mode selection for all three modes. The
+  physical-phone shape review passed. **Waypoint 2 implementation and automated
+  checks are complete; Phone Gate B is next.** The private local R8 canary now
+  has contact, scoring, terminal rules, HUD and mode selection for all three
+  modes. Wizard is the only visible player character: the normal R7
+  lobby removes the obsolete class choice while retaining the existing
+  `calling: "wizard"` protocol field, and the private R8 lobby reuses those three
+  buttons for Defend, Collect and Claim. The
   package introduces the server-authoritative Defend, Collect and Claim modes,
   non-destructible physical coins and chests, objective-specific results, a
   separate ASCII objective layer, deterministic objective-aware Loomkeeper play,

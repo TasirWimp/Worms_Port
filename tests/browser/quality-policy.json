@@ -22,7 +22,7 @@
     },
     {
       "file": "practice.spec.ts",
-      "title": "calling controls and live combat actions remain phone-safe"
+      "title": "fixed Wizard lobby and live combat actions remain phone-safe"
     },
     {
       "file": "identity.spec.ts",

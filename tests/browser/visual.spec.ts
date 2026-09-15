@@ -215,6 +215,29 @@ test('V10 R7 terrain-as-gameplay preview keeps the accepted R6 mobile shell on t
   expect(errors).toEqual([]);
 });
 
+test('V10 R8 private lobby reuses the three choices for objective modes with a fixed Wizard', async ({ page }) => {
+  await page.goto('/?combat-preview=v10r8');
+  const lobby = page.locator('.objective-mode-shell');
+  const modePicker = lobby.locator('.objective-mode-picker');
+  await expect(lobby).toHaveAttribute('data-selected-mode', 'collect');
+  await expect(modePicker.getByRole('button', { name: /Defend/ })).toBeVisible();
+  await expect(modePicker.getByRole('button', { name: /Collect/ })).toHaveAttribute('aria-pressed', 'true');
+  await expect(modePicker.getByRole('button', { name: /Claim/ })).toBeVisible();
+  for (const button of await modePicker.getByRole('button').all()) {
+    const box = await button.boundingBox();
+    expect(box).not.toBeNull();
+    expect(box!.width).toBeGreaterThanOrEqual(48);
+    expect(box!.height).toBeGreaterThanOrEqual(48);
+  }
+  await modePicker.getByRole('button', { name: /Defend/ }).tap();
+  await expect(lobby).toHaveAttribute('data-selected-mode', 'defend');
+  await lobby.getByRole('button', { name: 'Start Defend' }).tap();
+  const ui = page.locator('.combat-v10');
+  await expect(ui).toHaveAttribute('data-ruleset', 'nimble-knots-artillery-v10-r8');
+  await expect(ui).toHaveAttribute('data-objective-mode', 'defend');
+  await expect(ui).toHaveAttribute('data-calling', 'wizard');
+});
+
 test('V10 R8 private preview renders bounded coin and chest physics without changing the R7 shell', async ({ page }) => {
   test.setTimeout(45_000);
   const errors = captureErrors(page);
@@ -222,12 +245,15 @@ test('V10 R8 private preview renders bounded coin and chest physics without chan
   let ui = page.locator('.combat-v10');
   await expect(ui).toHaveAttribute('data-ruleset', 'nimble-knots-artillery-v10-r8');
   await expect(ui).toHaveAttribute('data-preview',
-    'V10 R8 collect object-physics preview · mode rules deferred · local-only');
+    'V10 R8 collect objective-mode canary · local-only');
   await expect(ui).toHaveAttribute('data-objective-mode', 'collect');
   await expect(ui).toHaveAttribute('data-objective-recipe', 'volcanic-ruin-objectives-r1');
   await expect(ui).toHaveAttribute('data-objective-presentation', 'approved-runtime-coin');
   await expect(ui).toHaveAttribute('data-objective-active', '7');
   await expect(ui).toHaveAttribute('data-objective-lost', '0');
+  await expect(ui).toHaveAttribute('data-objective-player-score', '0');
+  await expect(ui).toHaveAttribute('data-objective-offscreen', /^[0-7]$/);
+  await expect(ui.locator('.objective-status')).toHaveText('Collect · You 0 · Loom 0 · 7 left');
   await expect(ui).toHaveAttribute('data-objective-hash', /^[a-f0-9]{64}$/);
   await expect(ui).toHaveAttribute('data-objective-positions', /coin-1,active/);
   await expect(ui).toHaveAttribute('data-terrain-profile', 'volcanic-ruin');

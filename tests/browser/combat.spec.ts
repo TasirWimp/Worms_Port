@@ -1016,7 +1016,7 @@ test('V8D presentation retires interrupted aftermath without losing accepted res
     await expect(page.locator('.result-shell')).toHaveAttribute('data-final-hash', fixture.current().stateHash);
     fixture.stop();
     fixture.releaseServerMatch();
-    await page.getByRole('button', { name: 'Change Calling' }).tap();
+    await page.getByRole('button', { name: 'Back to Lobby' }).tap();
     await page.getByRole('button', { name: 'Start Practice' }).tap();
     await expect(ui).not.toHaveAttribute('data-challenge-id', fixture.current().challengeId);
     await expect(ui).toHaveAttribute('data-hit-feedback', 'none');

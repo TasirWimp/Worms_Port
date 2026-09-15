@@ -1,6 +1,6 @@
 # WP-026 V10 R8 Objective Modes
 
-Status: **active; Waypoint 1 and Phone Gate A complete; Waypoint 2 is next**
+Status: **active; Waypoint 1 and Phone Gate A complete; Waypoint 2 awaits Phone Gate B**
 
 Required predecessor: completed WP-024 R7 promotion and completed WP-025
 lifecycle and power hardening
@@ -189,9 +189,20 @@ WP-027.
 
 ## Client and camera contract
 
-The R8 canary adds three clear mode choices before challenge creation. Each uses
-one short goal description and shows which side owns the chest. Practice needs
-no wallet or PEI.
+Wizard is the only player character in the current product. The lobby therefore
+removes the obsolete Wizard, Thief and Warrior class choice. New R7 Practice and
+Daily challenges continue to send the existing `calling: "wizard"` field so this
+UI correction does not force a protocol, database or replay migration.
+
+The private R8 canary reuses that three-button lobby space for Defend, Collect
+and Claim before local challenge creation. Each button has one short goal
+description and identifies the chest owner where relevant. The selected button
+is exposed as `objectiveMode`, is immutable during the match and is restored by
+the review URL. `/?combat-preview=v10r8` opens this selector; the existing
+`objective-mode=defend|collect|claim` deep links continue to open the selected
+match directly. Restart starts the same mode fresh, while a completed match
+offers **Change Mode**. The normal result path uses **Back to Lobby** because
+there is no longer a Calling to change. Practice needs no wallet or PEI.
 
 The match HUD shows coin scores and remaining active coins for Collect, or chest
 owner/status and attacker/defender roles for Defend and Claim. Small noninteractive
@@ -279,11 +290,33 @@ complete.**
 ### Waypoint 2 - three deterministic modes
 
 Add exact mode layouts, contact, scoring and terminal rules plus the local HUD
-and mode selector.
+and mode selector. The private R8 lobby uses the former three Calling buttons
+for Defend, Collect and Claim and fixes the player Calling to Wizard internally.
+The ordinary R7 lobby removes the class selector but keeps new server-backed
+Practice and Daily challenges on exact R7 with `calling: "wizard"`. Waypoint 3,
+not this local slice, moves the R8 selector into server-backed Practice.
 
 Phone Gate B completes and restarts each mode, exercises chest capture and chest
 loss, collects and denies coins, checks a Collect draw, and judges whether direct
 elimination leaves meaningful objective play.
+
+Use `/?combat-preview=v10r8` for the physical review. Confirm that the lobby
+offers Defend, Collect and Claim with one fixed Wizard, then:
+
+1. start Collect, bank coins by contact and drop at least one unbanked coin out
+   of the open bottom; verify score, remaining-coin HUD and edge indicators;
+2. finish Collect once with equal scores to confirm the draw and exact result
+   wording;
+3. start Claim and touch the Loomkeeper chest to confirm attacker capture;
+4. start Defend, remove the support below the player chest and let it leave the
+   open bottom to confirm the Loomkeeper wins even when the player opened it;
+5. finish any mode by direct elimination and judge whether the objective still
+   changes useful play; and
+6. confirm **Restart Mode** starts the same clean layout while **Change Mode**
+   returns to the selector and can start another mode immediately.
+
+The ordinary `/` Practice and Daily paths must still show no class selector,
+start as the Wizard, and remain exact server-backed R7 during this gate.
 
 ### Waypoint 3 - server Practice and deterministic Loomkeeper
 

@@ -16,7 +16,6 @@ import { clearPeiReturnV0, readPeiReturnV0 } from '../pei/return';
 export default class PracticeScene extends Phaser.Scene {
     private client: PracticeClient;
     private root: HTMLElement;
-    private calling: PlayerCalling = 'wizard';
     private readonly unsubscribers: (() => void)[] = [];
     private identityView?: IdentityAcceptanceView;
     private identityBusy = false;
@@ -50,13 +49,7 @@ export default class PracticeScene extends Phaser.Scene {
                     <strong>Before playing:</strong> keep the phone upright, switch off Auto rotate,
                     then turn it so the phone's top points right.
                 </p>
-                <fieldset class="calling-picker">
-                    <legend>Choose your Calling</legend>
-                    <button type="button" data-calling="wizard">Wizard<small>Spoolcraft</small></button>
-                    <button type="button" data-calling="thief">Thief<small>Threadwork</small></button>
-                    <button type="button" data-calling="warrior">Warrior<small>Patchguard</small></button>
-                </fieldset>
-                <p class="calling-note">All Callings use the same practice rules and statistics.</p>
+                <p class="calling-note">Play as the Wizard Knotkin in the Volcanic Ruin.</p>
                 <button type="button" class="practice-start">Start Practice</button>
                 <p class="practice-message" aria-live="polite"></p>
             </section>
@@ -82,18 +75,10 @@ export default class PracticeScene extends Phaser.Scene {
             this.mountIdentity(identityServices, false);
         }
         const current = this.client.currentCombatSnapshot();
-        if (current) this.calling = current.calling;
         if (current?.status === 'active') {
             this.startButton().textContent = current.mode === 'reward'
                 ? 'Resume Daily Challenge'
                 : current.paused ? 'Resume Paused Clash' : 'Resume Practice';
-        }
-        this.refreshCalling();
-        for (const button of this.root.querySelectorAll<HTMLButtonElement>('[data-calling]')) {
-            button.addEventListener('click', () => {
-                this.calling = button.dataset.calling as PlayerCalling;
-                this.refreshCalling();
-            });
         }
         this.startButton().addEventListener('click', () => void this.startPractice());
         this.root.querySelector<HTMLButtonElement>('.daily-check')!.addEventListener(
@@ -117,7 +102,7 @@ export default class PracticeScene extends Phaser.Scene {
             const snapshot = this.client.currentCombatSnapshot();
             this.scene.start('result', {
                 result,
-                calling: this.calling,
+                calling: snapshot?.calling ?? CURRENT_PLAYER_CALLING,
                 rewarded: snapshot?.challengeId === result.challengeId &&
                     snapshot.mode === 'reward'
             });
@@ -195,7 +180,7 @@ export default class PracticeScene extends Phaser.Scene {
         try {
             const update = await this.client.rewardStatus();
             this.scene.start('result', {
-                calling: this.calling,
+                calling: CURRENT_PLAYER_CALLING,
                 rewarded: true,
                 rewardUpdate: update
             });
@@ -210,7 +195,7 @@ export default class PracticeScene extends Phaser.Scene {
         this.refreshStartAvailability();
         this.setDailyMessage("Reserving today's fixed sponsor reward...");
         try {
-            const snapshot = await this.client.startRewardCombat(this.calling);
+            const snapshot = await this.client.startRewardCombat(CURRENT_PLAYER_CALLING);
             this.scene.start('combat', await this.client.combatArgs(snapshot));
         } catch (error) {
             this.setDailyMessage(
@@ -297,19 +282,11 @@ export default class PracticeScene extends Phaser.Scene {
         button.disabled = true;
         this.setMessage('Weaving the Patch…');
         try {
-            const snapshot = await this.client.startCombat(this.calling);
+            const snapshot = await this.client.startCombat(CURRENT_PLAYER_CALLING);
             this.scene.start('combat', await this.client.combatArgs(snapshot));
         } catch (error) {
             this.refreshStartAvailability();
             this.setMessage(error instanceof Error ? error.message : 'Practice could not start.');
-        }
-    }
-
-    private refreshCalling(): void {
-        for (const button of this.root.querySelectorAll<HTMLButtonElement>('[data-calling]')) {
-            const selected = button.dataset.calling === this.calling;
-            button.classList.toggle('is-selected', selected);
-            button.setAttribute('aria-pressed', String(selected));
         }
     }
 
@@ -408,7 +385,7 @@ function formatNim(luna: string): string {
     return fraction ? `${whole}.${fraction}` : whole.toString();
 }
 
-function drawBackdrop(scene: Phaser.Scene): void {
+export function drawBackdrop(scene: Phaser.Scene): void {
     const { width, height } = scene.scale;
     const graphics = scene.add.graphics();
     graphics.fillStyle(0xD9F2F3).fillRect(0, 0, width, height);
@@ -418,3 +395,5 @@ function drawBackdrop(scene: Phaser.Scene): void {
     graphics.fillStyle(0x5F4B8B).fillCircle(width * 0.1, height, width * 0.42);
     graphics.fillStyle(0x88B04B).fillCircle(width * 0.72, height, width * 0.52);
 }
+
+const CURRENT_PLAYER_CALLING: PlayerCalling = 'wizard';

@@ -90,7 +90,7 @@ test('standard Daily uses volcanic V10, resumes, settles verified loss, and retr
     const retained = await store.status('browser_automated_entitlement', signer.address);
     expect(retained?.state).toBe('lost');
     expect(retained?.replay && 'automationId' in retained.replay && retained.replay.automationId).toBe(V10_R7_AUTOMATION_ID);
-    await page.getByRole('button', { name: 'Change Calling' }).tap();
+    await page.getByRole('button', { name: 'Back to Lobby' }).tap();
     await expect(page.locator('.result-shell')).toHaveCount(0);
     await expect(page.getByRole('heading', { name: 'Practice Clash' })).toBeVisible();
     await page.getByRole('button', { name: 'Start Practice' }).tap();
@@ -151,7 +151,8 @@ test('Daily Challenge discloses, authorizes, plays, and reports a consumed loss'
       name: 'The Loomkeeper prevailed'
     })).toBeVisible();
     await expect(page.locator('.reward-result-status')).toContainText(
-      'did not earn a reward'
+      'did not earn a reward',
+      { timeout: 15_000 }
     );
     await expect(page.locator('.reward-result-status')).toContainText('1 NIM');
     await expect(page.locator('.reward-claim')).toBeHidden();

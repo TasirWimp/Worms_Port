@@ -141,7 +141,7 @@ test('injected automated Practice reloads paused authority, retries, and shows t
     now += 60_001; runtime.sessions.sweep();
     await expect(page.locator('.result-shell')).toHaveAttribute('data-outcome', 'expired');
     await expect(page.locator('.result-shell')).toHaveAttribute('data-final-hash', /^[a-f0-9]{64}$/);
-    await page.getByRole('button', { name: 'Change Calling' }).tap();
+    await page.getByRole('button', { name: 'Back to Lobby' }).tap();
     await expect(page.getByRole('heading', { name: 'Practice Clash' })).toBeVisible();
     await expect(page.locator('.result-shell')).toHaveCount(0);
     await page.getByRole('button', { name: 'Start Practice' }).tap();
@@ -265,13 +265,9 @@ test('live practice supports authoritative pause, full player turn, and fresh re
 });
 });
 
-test('calling controls and live combat actions remain phone-safe', async ({ page }) => {
-  for (const button of await page.locator('.calling-picker button').all()) {
-    const box = await button.boundingBox();
-    expect(box).not.toBeNull();
-    expect(box!.width).toBeGreaterThanOrEqual(48);
-    expect(box!.height).toBeGreaterThanOrEqual(48);
-  }
+test('fixed Wizard lobby and live combat actions remain phone-safe', async ({ page }) => {
+  await expect(page.locator('.calling-picker')).toHaveCount(0);
+  await expect(page.getByText('Play as the Wizard Knotkin')).toBeVisible();
   await page.getByRole('button', { name: 'Start Practice' }).tap();
   await expect(page.locator('.combat-ui')).toBeVisible();
   const viewport = page.viewportSize()!;
@@ -336,7 +332,7 @@ test('two consecutive completed Clashes each show a result and use fresh authori
   await completeCurrentClash(page);
   await expect(page.locator('.result-shell')).toBeVisible();
   await expect(page.getByRole('button', { name: 'Play Again' })).toBeVisible();
-  await expect(page.getByRole('button', { name: 'Change Calling' })).toBeVisible();
+  await expect(page.getByRole('button', { name: 'Back to Lobby' })).toBeVisible();
 });
 
 test('a full-screen match retains an exit toggle on the result screen', async ({ page }) => {
@@ -638,14 +634,13 @@ test('standard volcanic Practice at root keeps authority, AI, cold resume and re
     const second = runtime.sessions.activeSnapshotV10(owned())!.challengeId;
     now += 120001; runtime.sessions.sweep();
     await expect(page.locator('.result-shell')).toBeVisible();
-    await page.getByRole('button', { name: 'Change Calling', exact: true }).tap();
+    await page.getByRole('button', { name: 'Back to Lobby', exact: true }).tap();
     await expect(page.locator('.result-shell')).toHaveCount(0);
     await expect(page.getByRole('heading', { name: 'Practice Clash' })).toBeVisible();
-    await page.getByRole('button', { name: /Thief/ }).tap();
     await page.getByRole('button', { name: 'Start Practice' }).tap();
     await expect(ui).toHaveAttribute('data-background', 'volcanic-ruin');
     await expect(ui).toHaveAttribute('data-background-ready', 'true');
-    await expect(ui).toHaveAttribute('data-calling', 'thief');
+    await expect(ui).toHaveAttribute('data-calling', 'wizard');
     expect(runtime.sessions.activeSnapshotV10(owned())!.challengeId).not.toBe(second);
     expect(fetched.some(url => /mini-app-sdk/.test(url))).toBe(false);
     expect(errors).toEqual([]);

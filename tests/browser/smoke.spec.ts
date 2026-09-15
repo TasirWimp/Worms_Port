@@ -38,13 +38,13 @@ test('built phone journey starts wallet-free live practice and accepts touch', a
   await page.goto('/');
   await expect(page.getByRole('heading', { name: 'Practice Clash' })).toBeVisible({ timeout: 10_000 });
   await expect(page.getByText(/No wallet, matchmaking, or reward pool/i)).toBeVisible();
-  await page.getByRole('button', { name: /Thief/ }).tap();
-  await expect(page.getByRole('button', { name: /Thief/ })).toHaveAttribute('aria-pressed', 'true');
+  await expect(page.locator('.calling-picker')).toHaveCount(0);
+  await expect(page.getByText('Play as the Wizard Knotkin')).toBeVisible();
   await page.getByRole('button', { name: 'Start Practice' }).tap();
 
   const ui = page.locator('.combat-ui');
   await expect(ui).toBeVisible();
-  await expect(ui).toHaveAttribute('data-calling', 'thief');
+  await expect(ui).toHaveAttribute('data-calling', 'wizard');
   await expect(ui).toHaveAttribute('data-challenge-id', /^[A-Za-z0-9_-]{16,64}$/);
   const canvas = page.locator('#game canvas');
   await expect(canvas).toBeVisible();

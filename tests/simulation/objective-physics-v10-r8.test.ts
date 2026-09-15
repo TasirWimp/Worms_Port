@@ -2,7 +2,7 @@ import assert from 'node:assert/strict';
 import test from 'node:test';
 
 import { parseV10R7Terrain } from '../../shared/terrain-battlefield-v10-r7';
-import { setTerrainSolid } from '../../shared/simulation';
+import { setTerrainSolid, terrainSolid } from '../../shared/simulation';
 import {
     advanceDetachedProjectileV10,
     applySimulationIntentV10,
@@ -22,6 +22,7 @@ import {
     simulationV10R7ViewOfR8,
     trajectoryPreviewV10R8,
     V10_R8_COLLECT_OBJECTIVES_ASCII,
+    V10_R8_CLAIM_OBJECTIVES_ASCII,
     V10_R8_DEFEND_OBJECTIVES_ASCII,
     V10_R8_OBJECTIVE_RECIPE_REVISION,
     V10_R8_RULESET_ID
@@ -178,10 +179,185 @@ test('live R8 serialization overlays actors and active objects beside exact terr
     assert.equal(live.terrainAscii.includes('C'), false);
 });
 
+test('R8 collects by living-body overlap and leaves an exact two-actor distance tie active', () => {
+    const initial = createSimulationV10R8(4, 'wizard', 'collect');
+    const objective = objectiveAtActor(initial, 'collect', 'player');
+    const collected = advanceSimulationTicksV10R8({ ...initial, objective }, 1).state;
+    assert.equal(collected.objective.scores.player, 1);
+    assert.equal(collected.objective.objects.filter(object => object.status === 'collected').length, 1);
+    assert.equal(collected.objective.objects.find(object => object.status === 'collected')?.resolvedBy, 'player');
+    assert.equal(collected.objective.result, null);
+
+    const tiedCoin = objective.objects.find(object => Math.abs(object.xFp - initial.units[0].xFp) <= 16 * 256)!;
+    const tiedYFp = tiedCoin.yFp + 4 * 256;
+    const playerX = tiedCoin.xFp - 24 * 256;
+    const loomkeeperX = tiedCoin.xFp + 24 * 256;
+    const playerSupport = actorSupportAt(initial.terrain, playerX, tiedYFp);
+    const loomkeeperSupport = actorSupportAt(initial.terrain, loomkeeperX, tiedYFp);
+    assert.notEqual(playerSupport, null);
+    assert.notEqual(loomkeeperSupport, null);
+    const tied = {
+        ...initial,
+        units: [{ ...initial.units[0], xFp: playerX, yFp: tiedYFp, support: playerSupport },
+            { ...initial.units[1], xFp: loomkeeperX, yFp: tiedYFp,
+                grounded: true, support: loomkeeperSupport }] as typeof initial.units,
+        objective
+    };
+    const unresolved = advanceSimulationTicksV10R8(tied, 1).state;
+    assert.equal(unresolved.objective.scores.player, 0);
+    assert.equal(unresolved.objective.scores.loomkeeper, 0);
+    assert.equal(unresolved.objective.objects.filter(object => object.status === 'active').length, 7);
+});
+
+test('R8 ends Collect as soon as a four-coin lead cannot be caught', () => {
+    let state = createSimulationV10R8(4, 'wizard', 'collect');
+    for (let count = 0; count < 4; count += 1) {
+        const loomkeeper = state.units[1];
+        const coin = state.objective.objects.filter(object => object.status === 'active')
+            .sort((left, right) => Math.abs(right.xFp - loomkeeper.xFp) - Math.abs(left.xFp - loomkeeper.xFp))[0];
+        const playerYFp = coin.yFp + 4 * 256;
+        const support = actorSupportAt(state.terrain, coin.xFp, playerYFp);
+        assert.notEqual(support, null);
+        state = advanceSimulationTicksV10R8({
+            ...state,
+            units: [{ ...state.units[0], xFp: coin.xFp, yFp: playerYFp,
+                vxFp: 0, vyFp: 0, grounded: true, support, airTicks: 0, airDrive: null },
+            state.units[1]] as typeof state.units
+        }, 1).state;
+    }
+    assert.equal(state.objective.scores.player, 4);
+    assert.equal(state.objective.objects.filter(object => object.status === 'active').length, 3);
+    assert.equal(state.winner, 'player');
+    assert.deepEqual(state.objective.result, { winner: 'player', reason: 'coin_lead' });
+});
+
+test('R8 chest contact awards only the attacker and records the exact result reason', () => {
+    const claim = createSimulationV10R8(4, 'wizard', 'claim');
+    const claimed = advanceSimulationTicksV10R8({
+        ...claim,
+        objective: objectiveAtActor(claim, 'claim', 'player')
+    }, 1).state;
+    assert.equal(claimed.winner, 'player');
+    assert.deepEqual(claimed.objective.result, { winner: 'player', reason: 'chest_captured' });
+    assert.equal(claimed.objective.objects[0].status, 'captured');
+    assert.equal(claimed.objective.objects[0].resolvedBy, 'player');
+    assertSimulationInvariantsV10R8(claimed);
+
+    const defend = createSimulationV10R8(4, 'wizard', 'defend');
+    const defended = advanceSimulationTicksV10R8({
+        ...defend,
+        objective: objectiveAtActor(defend, 'defend', 'loomkeeper')
+    }, 1).state;
+    assert.equal(defended.winner, 'loomkeeper');
+    assert.deepEqual(defended.objective.result, { winner: 'loomkeeper', reason: 'chest_captured' });
+    assertSimulationInvariantsV10R8(defended);
+});
+
+test('R8 chest loss and turn-limit outcomes follow the selected objective mode', () => {
+    const initial = createSimulationV10R8(4, 'wizard', 'defend');
+    const terrain = structuredClone(initial.terrain);
+    const chest = initial.objective.objects[0];
+    const leftColumn = Math.floor((chest.xFp / 256 - 28) / terrain.cellSize);
+    const rightColumn = Math.floor((chest.xFp / 256 + 28 - 1) / terrain.cellSize);
+    for (let row = 30; row < terrain.height; row += 1) {
+        for (let column = leftColumn; column <= rightColumn; column += 1) {
+            setTerrainSolid(terrain, column, row, false);
+        }
+    }
+    let objective = initial.objective;
+    while (objective.objects[0].status === 'active') {
+        objective = advanceObjectivePhysicsV10R8(objective, terrain);
+    }
+    const lost = advanceSimulationTicksV10R8({
+        ...initial,
+        terrain,
+        terrainRevision: 1,
+        terrainHash: hashTerrainV10R7(terrain),
+        objective
+    }, 1).state;
+    assert.equal(lost.winner, 'loomkeeper');
+    assert.deepEqual(lost.objective.result, { winner: 'loomkeeper', reason: 'chest_lost' });
+
+    const expected = { defend: 'player', collect: 'draw', claim: 'loomkeeper' } as const;
+    for (const mode of ['defend', 'collect', 'claim'] as const) {
+        const state = createSimulationV10R8(4, 'wizard', mode);
+        const result = advanceSimulationTicksV10R8({ ...state, turn: 15 }, 1_800).state;
+        assert.equal(result.winner, expected[mode]);
+        assert.deepEqual(result.objective.result, { winner: expected[mode], reason: 'turn_limit' });
+        assertSimulationInvariantsV10R8(result);
+    }
+});
+
+test('R8 resolves opposing chest-loss and elimination victories on one tick as a draw', () => {
+    const initial = createSimulationV10R8(4, 'wizard', 'defend');
+    const terrain = structuredClone(initial.terrain);
+    const chest = initial.objective.objects[0];
+    const leftColumn = Math.floor((chest.xFp / 256 - 28) / terrain.cellSize);
+    const rightColumn = Math.floor((chest.xFp / 256 + 28 - 1) / terrain.cellSize);
+    for (let row = 30; row < terrain.height; row += 1) {
+        for (let column = leftColumn; column <= rightColumn; column += 1) {
+            setTerrainSolid(terrain, column, row, false);
+        }
+    }
+    let objective = initial.objective;
+    while (objective.objects[0].status === 'active') {
+        objective = advanceObjectivePhysicsV10R8(objective, terrain);
+    }
+    const result = advanceSimulationTicksV10R8({
+        ...initial,
+        terrain,
+        terrainRevision: 1,
+        terrainHash: hashTerrainV10R7(terrain),
+        units: [initial.units[0], { ...initial.units[1], stitching: 0, alive: false,
+            vxFp: 0, vyFp: 0, grounded: false, support: null, airTicks: 0, airDrive: null }],
+        objective
+    }, 1).state;
+    assert.equal(result.winner, 'draw');
+    assert.deepEqual(result.objective.result, { winner: 'draw', reason: 'simultaneous' });
+    assertSimulationInvariantsV10R8(result);
+});
+
 function setLayerCell(source: string, row: number, column: number, glyph: string): string {
     const lines = source.split('\n');
     lines[row] = `${lines[row].slice(0, column)}${glyph}${lines[row].slice(column + 1)}`;
     return lines.join('\n');
+}
+
+function objectiveAtActor(
+    state: ReturnType<typeof createSimulationV10R8>,
+    mode: 'collect' | 'defend' | 'claim',
+    actor: 'player' | 'loomkeeper'
+) {
+    const unit = state.units[actor === 'player' ? 0 : 1];
+    assert.notEqual(unit.support, null);
+    const supportRow = Math.floor(unit.support! / state.terrain.width);
+    const row = Math.floor(supportRow / 2) - 1;
+    const column = Math.floor(unit.xFp / 256 / 32);
+    const glyph = mode === 'collect' ? 'o' : 'C';
+    const source = mode === 'collect' ? V10_R8_COLLECT_OBJECTIVES_ASCII
+        : mode === 'defend' ? V10_R8_DEFEND_OBJECTIVES_ASCII : V10_R8_CLAIM_OBJECTIVES_ASCII;
+    const lines = source.split('\n');
+    if (lines[row][column] !== glyph) {
+        const existingRow = lines.findIndex(line => line.includes(glyph));
+        const existingColumn = lines[existingRow].indexOf(glyph);
+        lines[existingRow] = `${lines[existingRow].slice(0, existingColumn)}.${lines[existingRow].slice(existingColumn + 1)}`;
+        lines[row] = `${lines[row].slice(0, column)}${glyph}${lines[row].slice(column + 1)}`;
+    }
+    return compileV10R8ObjectiveLayer(mode, state.terrain, lines.join('\n'));
+}
+
+function actorSupportAt(
+    terrain: ReturnType<typeof createSimulationV10R8>['terrain'],
+    xFp: number,
+    yFp: number
+): number | null {
+    const left = Math.floor((xFp / 256 - 12) / terrain.cellSize);
+    const right = Math.floor((xFp / 256 + 12 - 1) / terrain.cellSize);
+    const row = Math.floor((yFp / 256 + 12) / terrain.cellSize);
+    for (let column = Math.max(0, left); column <= Math.min(terrain.width - 1, right); column += 1) {
+        if (terrainSolid(terrain, column, row)) return row * terrain.width + column;
+    }
+    return null;
 }
 
 function trajectoryPreviewR7(

@@ -329,8 +329,6 @@ test('two browser contexts isolate storage, identity, challenge events, controls
     await expect(page.locator('.identity-acceptance')).toHaveAttribute('data-authorized', 'true');
     await expect(secondPage.locator('.identity-acceptance')).not.toHaveAttribute('data-authorized', 'true');
 
-    await page.getByRole('button', { name: /Thief/ }).tap();
-    await secondPage.getByRole('button', { name: /Warrior/ }).tap();
     await Promise.all([
       page.getByRole('button', { name: 'Start Practice' }).tap(),
       secondPage.getByRole('button', { name: 'Start Practice' }).tap()

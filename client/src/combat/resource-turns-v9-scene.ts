@@ -58,6 +58,7 @@ export class ResourceTurnsV9Scene {
         this.controls = new ResourceTurnsV9Controls(document.getElementById('game')!, this.state, {
             submit: intent => this.submit(intent), pause: paused => void this.pause(paused), neutral: () => void this.neutralize(), release: () => void this.releaseMovement(),
             preview: aim => this.previewAim(aim), focus: actor => this.focusActor(actor), restart: () => void this.restart(),
+            changeMode: 'objective' in this.state ? () => this.changeMode() : undefined,
             inputReady: args.inputReady, pauseAllowed: args.pauseAllowed, pauseReason: args.pauseReason,
             live: args.kind === 'v10' ? args.live === true : args.previewLabel.includes('server-authoritative'), automated: args.kind === 'v10'
         }, () => performance.now(), args.paused());
@@ -199,6 +200,15 @@ export class ResourceTurnsV9Scene {
                 error instanceof Error ? error.message : 'Unable to restart the Clash.';
         } finally { this.restarting = false; }
     }
+    private changeMode(): void {
+        if (this.destroyed || !('objective' in this.state)) return;
+        const selectedMode = this.state.objective.objectiveMode;
+        const url = new URL(window.location.href);
+        url.searchParams.delete('objective-mode');
+        window.history.replaceState(null, '', url);
+        this.destroy();
+        this.scene.scene.start('objective-mode', { selectedMode });
+    }
     private async releaseMovement(): Promise<void> {
         if (this.neutralPending || this.destroyed || !this.args.releaseMovement) return this.neutralize();
         const generation = this.requestGeneration, neutralGeneration = ++this.neutralGeneration; this.neutralPending = true;
@@ -300,6 +310,11 @@ export class ResourceTurnsV9Scene {
                 objectiveHash: this.state.objective.objectiveHash,
                 objectiveActive: String(this.state.objective.objects.filter(object => object.status === 'active').length),
                 objectiveLost: String(this.state.objective.objects.filter(object => object.status === 'lost').length),
+                objectivePlayerScore: String(this.state.objective.scores.player),
+                objectiveLoomkeeperScore: String(this.state.objective.scores.loomkeeper),
+                objectiveResult: this.state.objective.result?.reason ?? 'none',
+                objectiveOffscreen: String(this.state.objective.objects.filter(object => object.status === 'active' &&
+                    (object.xFp / 256 < this.camera.left || object.xFp / 256 > this.camera.left + this.camera.width)).length),
                 objectivePositions: this.state.objective.objects.map(object =>
                     `${object.id},${object.status},${object.xFp},${object.yFp},${object.grounded ? 1 : 0}`).join(';')
             } : {}) };

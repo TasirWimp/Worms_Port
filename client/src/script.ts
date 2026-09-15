@@ -9,6 +9,7 @@ import GameScene from './scenes/game';
 import CombatScene from './scenes/combat';
 import PracticeScene from './scenes/practice';
 import ResultScene from './scenes/result';
+import type ObjectiveModeScene from './scenes/objective-mode';
 import { bootstrapSession } from './lib/session';
 import { requestedSidewaysMode, resolveSidewaysMode } from './lib/sideways';
 import { PRACTICE_CLIENT_REGISTRY_KEY, PracticeClient } from './practice/client';
@@ -64,12 +65,15 @@ class NimbleKnotsGame extends Phaser.Game
     private lifecycleLoopReadyListener = false;
     private lifecycleLoopCallback?: Phaser.Types.Core.TimeStepCallback;
 
-    constructor (combatPreview = false)
+    constructor (combatPreview = false, objectiveModeScene?: typeof ObjectiveModeScene)
     {
         const viewport = window.visualViewport;
         const viewportWidth = Math.max(1, Math.floor(viewport?.width ?? window.innerWidth));
         const viewportHeight = Math.max(1, Math.floor(viewport?.height ?? window.innerHeight));
         const sideways = resolveSidewaysMode(requestedSideways, viewportWidth, viewportHeight);
+        const query = new URLSearchParams(window.location.search);
+        const objectiveLobby = combatPreview && query.get('combat-preview') === 'v10r8' &&
+            !query.has('objective-mode');
         super({
             title: 'NIMble Knots: Cotton Clash',
             backgroundColor: 0x1F2348,
@@ -83,7 +87,11 @@ class NimbleKnotsGame extends Phaser.Game
                 createContainer: true
             },
             scene: combatPreview
-                ? [ CombatScene, JoinScene, RoomScene, GameScene ]
+                ? objectiveLobby
+                    ? [ objectiveModeScene!, CombatScene, JoinScene, RoomScene, GameScene ]
+                    : objectiveModeScene
+                        ? [ CombatScene, objectiveModeScene, JoinScene, RoomScene, GameScene ]
+                        : [ CombatScene, JoinScene, RoomScene, GameScene ]
                 : [ BootScene, PracticeScene, CombatScene, ResultScene, JoinScene, RoomScene, GameScene ]
         });
     }
@@ -130,8 +138,11 @@ window.onload = async () => {
     }
     const combatPreview = query.has('combat-preview');
     if (combatPreview) {
+        const objectiveModeScene = query.get('combat-preview') === 'v10r8'
+            ? (await import('./scenes/objective-mode')).default
+            : undefined;
         applicationLifecycle = new ApplicationLifecycle({ onResume: syncVisualViewport });
-        const game = new NimbleKnotsGame(true);
+        const game = new NimbleKnotsGame(true, objectiveModeScene);
         runningGame = game;
         applicationLifecycle.attachGame(game);
         syncVisualViewport();

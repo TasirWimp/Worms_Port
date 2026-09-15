@@ -13,6 +13,7 @@ type ActionMenu = 'closed' | 'root' | 'attack' | 'defense';
 type Callbacks = {
     submit: (intent: SimulationIntentV10) => Promise<boolean>; pause: (paused: boolean) => void; neutral: () => void; release?: () => void;
     preview?: (aim: AimIntent | null) => void; focus?: (actor: 'player' | 'loomkeeper') => void; restart?: () => void;
+    changeMode?: () => void;
     inputReady?: () => boolean; pauseAllowed?: () => boolean; pauseReason?: () => string | undefined;
     live?: boolean; automated?: boolean;
 };
@@ -45,7 +46,7 @@ export class ResourceTurnsV9Controls {
         this.root.className = initial.rulesetVersion === 10
             ? `combat-ui combat-v9 combat-v10${r6Movement ? ' combat-action-dynamics' : ''}`
             : 'combat-ui combat-v9';
-        this.root.innerHTML = `<header class="combat-status"><strong class="combat-turn" aria-live="polite"></strong><span class="v9-thread"></span><span class="combat-timer"></span></header>
+        this.root.innerHTML = `<header class="combat-status"><strong class="combat-turn" aria-live="polite"></strong><span class="objective-status" hidden></span><span class="v9-thread"></span><span class="combat-timer"></span></header>
 <div class="combat-unit-status player-status" data-unit="player" role="group"><span class="unit-status-name">You</span><strong class="unit-status-value"></strong><span class="unit-status-track" aria-hidden="true" hidden><span></span></span></div>
 <div class="combat-unit-status loomkeeper-status" data-unit="loomkeeper" role="group"><span class="unit-status-name">Loomkeeper</span><strong class="unit-status-value"></strong><span class="unit-status-track" aria-hidden="true" hidden><span></span></span></div>
 <button type="button" class="camera-focus-button camera-focus-player" hidden></button><button type="button" class="camera-focus-button camera-focus-loomkeeper" hidden></button>
@@ -53,13 +54,14 @@ export class ResourceTurnsV9Controls {
 ${movementControl}
 <div class="combat-touch-zone aim-zone" aria-label="Aim and power pad"><span class="pad-label">Aim · release locks</span><span class="pad-ring"></span><span class="pad-knob"></span></div>
 <nav class="combat-actions v9-actions" aria-label="${initial.rulesetVersion === 10 ? 'V10 terrain' : 'V9 resource'} actions"><button class="v9-actions-button" type="button">Actions</button><button class="fire-button" type="button">Use</button><div class="v9-action-menu" hidden></div></nav>
-<section class="combat-pause-sheet v9-pause-sheet" aria-live="polite" hidden><strong></strong><button class="v9-reenter" type="button">${callbacks.live ? 'Start fresh Practice' : 'Start fresh preview'}</button></section>
+<section class="combat-pause-sheet v9-pause-sheet" aria-live="polite" hidden><strong></strong><button class="v9-reenter" type="button">${callbacks.changeMode ? 'Restart Mode' : callbacks.live ? 'Start fresh Practice' : 'Start fresh preview'}</button><button class="v9-change-mode" type="button" hidden>Change Mode</button></section>
 <div class="combat-message" aria-live="polite"></div>`;
         parent.appendChild(this.root);
         this.button('.v9-actions-button').onclick = () => { if (this.canAct() && !this.selectingRelic) { this.menu = this.menu === 'root' ? 'closed' : 'root'; this.refreshActions(); } };
         this.button('.fire-button').onclick = () => this.useSelected();
         this.button('.pause-button').onclick = () => this.callbacks.pause(!this.paused);
         this.button('.v9-reenter').onclick = () => this.callbacks.restart?.();
+        this.button('.v9-change-mode').onclick = () => this.callbacks.changeMode?.();
         for (const [selector, actor] of [['.camera-focus-player', 'player'], ['.camera-focus-loomkeeper', 'loomkeeper']] as const)
             this.button(selector).onclick = () => this.callbacks.focus?.(actor);
         this.bindTouch(); this.update(initial, [], paused);
@@ -88,6 +90,7 @@ ${movementControl}
         }
         this.element('.combat-turn').textContent = this.phaseCopy();
         this.element('.v9-thread').textContent = `Thread ${facts.player.thread}`;
+        this.refreshObjectiveStatus();
         const remaining = Math.max(0, state.phaseDeadlineTick - state.tick);
         this.element('.combat-timer').textContent = this.terminal() ? (this.callbacks.live ? 'Clash ended' : 'Preview ended')
             : usesV10R6ActionDynamics(state.rulesetId) ? `${Math.ceil(remaining / 30)}s` : `${remaining} ticks left`;
@@ -114,6 +117,7 @@ ${movementControl}
         this.element('.v9-pause-sheet strong').textContent = this.terminal()
             ? this.terminalGuidance()
             : this.callbacks.live ? 'Practice paused · the authoritative clock is stopped.' : 'Preview paused · the local tick clock is stopped.';
+        this.button('.v9-change-mode').hidden = !this.terminal() || !this.callbacks.changeMode;
         this.refreshActions(); this.positionCards(); return changed;
     }
 
@@ -279,7 +283,37 @@ ${movementControl}
     }
     private useLabel(choice: Exclude<ActionChoice, null>): string { return choice === 'threadguard' ? 'Use Guard · 2 Thread' : choice === 'threadleap' ? 'Use Leap · 2 Thread' : `Use ${relicLabel(choice)}`; }
     private lifecycleGuidance(): string | undefined { if (this.terminal()) return this.terminalGuidance(); if (this.state.activeActor === 'loomkeeper') return this.callbacks.live || this.callbacks.automated ? 'Loomkeeper is choosing the authoritative response.' : 'Loomkeeper behavior is deferred to V9D; this local preview does not simulate a response.'; return undefined; }
-    private terminalGuidance(): string { const outcome = this.state.winner === 'player' ? 'You won' : this.state.winner === 'loomkeeper' ? 'Loomkeeper won' : this.state.winner === 'draw' ? 'The clash ended in a draw' : this.callbacks.live ? 'The candidate Clash ended' : 'The local preview ended'; return this.state.finishReason === 'simulation_limit' ? `Lifecycle safety limit reached. ${this.callbacks.live ? 'Start a fresh Practice Clash.' : 'Start a fresh local preview.'}` : `${outcome} by authoritative ${this.state.finishReason ?? 'terminal'} outcome. ${this.callbacks.live ? 'Start a fresh Practice Clash.' : 'Start a fresh local preview.'}`; }
+    private terminalGuidance(): string {
+        const outcome = this.state.winner === 'player' ? 'You won' : this.state.winner === 'loomkeeper' ? 'Loomkeeper won'
+            : this.state.winner === 'draw' ? 'The clash ended in a draw'
+                : this.callbacks.live ? 'The candidate Clash ended' : 'The local preview ended';
+        if (!('objective' in this.state)) return this.state.finishReason === 'simulation_limit'
+            ? `Lifecycle safety limit reached. ${this.callbacks.live ? 'Start a fresh Practice Clash.' : 'Start a fresh local preview.'}`
+            : `${outcome} by authoritative ${this.state.finishReason ?? 'terminal'} outcome. ${this.callbacks.live ? 'Start a fresh Practice Clash.' : 'Start a fresh local preview.'}`;
+        const objectiveReason = this.state.objective.result?.reason;
+        const reason = objectiveReason ? ({ elimination: 'elimination', chest_captured: 'chest capture',
+            chest_lost: 'chest loss', coin_lead: 'an unbeatable coin lead', coins_resolved: 'the final coin score',
+            turn_limit: 'the turn-limit objective', simulation_limit: 'the lifecycle safety limit',
+            simultaneous: 'simultaneous opposing victories' } as const)[objectiveReason] : 'terminal';
+        return reason === 'the lifecycle safety limit' ? 'Lifecycle safety limit reached. Restart this mode.'
+            : `${outcome} by ${reason}. Restart this mode or change mode.`;
+    }
+    private refreshObjectiveStatus(): void {
+        const field = this.element('.objective-status');
+        if (!('objective' in this.state)) { field.hidden = true; return; }
+        const objective = this.state.objective;
+        field.hidden = false;
+        if (objective.objectiveMode === 'collect') {
+            const active = objective.objects.filter(object => object.status === 'active').length;
+            field.textContent = `Collect · You ${objective.scores.player} · Loom ${objective.scores.loomkeeper} · ${active} left`;
+        } else {
+            const chest = objective.objects[0];
+            const label = objective.objectiveMode === 'defend' ? 'Defend your chest' : 'Claim Loom chest';
+            const status = chest.status === 'active' ? chest.grounded ? 'safe' : 'falling' : chest.status;
+            field.textContent = `${label} · ${status}`;
+        }
+        field.setAttribute('aria-label', field.textContent);
+    }
     private phaseCopy(): string { if (this.terminal()) return this.terminalGuidance(); if (this.paused) return this.callbacks.live ? 'Practice paused' : 'Preview paused'; return this.state.activeActor === 'player' ? `You · ${this.state.phase}` : this.callbacks.live || this.callbacks.automated ? `Loomkeeper · ${this.state.phase}` : `Loomkeeper · ${this.state.phase} · V9D deferred`; }
     private positionCards(): void { if (!this.layout) return; const positions = computeActorStatusLayout(this.layout, projectCombatV9(this.state).units, this.state.rulesetId); for (const [selector, rect] of [['.player-status', positions.player], ['.loomkeeper-status', positions.loomkeeper]] as const) { const element = this.element(selector); element.hidden = !rect; if (rect) this.place(element, rect); } }
     private setCard(selector: string, displayName: string, accessibleName: string, stitching: number, thread: number, shield: number, shieldExpiresTurn: number | null): void {

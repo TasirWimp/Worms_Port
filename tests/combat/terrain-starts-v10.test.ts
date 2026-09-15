@@ -51,7 +51,7 @@ test('R8 local fixture keeps objective physics isolated and starts fresh in the 
         assert.equal(fixture.snapshot.rulesetId, V10_R8_RULESET_ID);
         assert.equal(fixture.snapshot.objective.objectiveMode, 'defend');
         assert.equal(fixture.snapshot.objective.recipeRevision, V10_R8_OBJECTIVE_RECIPE_REVISION);
-        assert.match(fixture.previewLabel, /V10 R8 defend object-physics preview/);
+        assert.match(fixture.previewLabel, /V10 R8 defend objective-mode canary/);
         const before = hashSimulationStateV10R8(fixture.snapshot);
         const trace = fixture.trajectoryPreview({ angleMilliDegrees: 45_000, powerPermille: 800 });
         assert.ok(trace.length > 1);
