@@ -75,6 +75,11 @@ export class ResourceTurnsV9Scene {
         if (args.kind === 'v10' && args.previewTerrainReflected !== undefined) {
             this.controls.root.dataset.terrainReflected = String(args.previewTerrainReflected);
         }
+        if ('objective' in this.state) {
+            this.controls.root.dataset.objectiveMode = this.state.objective.objectiveMode;
+            this.controls.root.dataset.objectiveRecipe = this.state.objective.recipeRevision;
+            this.controls.root.dataset.objectivePresentation = 'code-owned';
+        }
         this.unsubscribe = args.kind === 'v10'
             ? args.onSnapshot((state, events) => this.accept(state, events))
             : args.onSnapshot((state, events) => this.accept(state, events));
@@ -287,7 +292,15 @@ export class ResourceTurnsV9Scene {
             cameraLeft: this.camera.left.toFixed(2), cameraWidth: String(this.camera.width), presentation: visual?.kind ?? 'none', projectilePoints: String(visual?.kind === 'projectile' ? visual.trace.length : 0), projectileEndX: String(visual?.kind === 'projectile' ? visual.trace.at(-1)?.x ?? '' : ''), projectileEndY: String(visual?.kind === 'projectile' ? visual.trace.at(-1)?.y ?? '' : ''), cameraTransition: this.cameraTransition?.kind === 'opening' ? 'opening' : this.cameraTransition?.actor ?? 'none', openingSurvey: String(this.cameraTransition?.kind === 'opening'), previewComputations: String(this.previewComputationCount), terrainCompilations: String(this.renderer.terrainCompilationCount),
             ...('terrainRevision' in this.state && this.state.terrainRevision !== undefined
                 ? { terrainRevision: String(this.state.terrainRevision), terrainHash: this.state.terrainHash ?? '' }
-                : {}) };
+                : {}),
+            ...('objective' in this.state ? {
+                objectiveRevision: String(this.state.objective.objectiveRevision),
+                objectiveHash: this.state.objective.objectiveHash,
+                objectiveActive: String(this.state.objective.objects.filter(object => object.status === 'active').length),
+                objectiveLost: String(this.state.objective.objects.filter(object => object.status === 'lost').length),
+                objectivePositions: this.state.objective.objects.map(object =>
+                    `${object.id},${object.status},${object.xFp},${object.yFp},${object.grounded ? 1 : 0}`).join(';')
+            } : {}) };
         const datasetSignature = Object.values(dataset).join(':');
         if (datasetSignature !== this.renderDatasetSignature) {
             this.renderDatasetSignature = datasetSignature;

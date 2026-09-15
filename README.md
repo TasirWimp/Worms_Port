@@ -71,6 +71,27 @@ phone acceptance should cover Start Practice, aim/fire and AI reply, pause,
 reconnect/reload, and repeated retries with the background still present.
 See the [standard Practice contract](docs/planning/wp-015d4f-volcanic-ruin-preview-bundle-contract.md#wp-015d4h-standard-server-backed-volcanic-practice).
 
+### Private R8 objective-physics preview
+
+WP-026 Waypoint 1 is isolated behind wallet-free local preview routes. It does
+not change `/`, server Practice, Daily, PEI admission or rewards:
+
+```text
+/?combat-preview=v10r8&objective-mode=collect
+/?combat-preview=v10r8&objective-mode=defend
+/?combat-preview=v10r8&objective-mode=claim
+```
+
+The preview places seven coins for Collect or one chest for Defend and Claim on
+a separate ASCII layer aligned to the full R7 arena. Shots pass through the
+objects without damaging them. Destroying their terrain support makes them fall
+vertically, land on lower terrain or disappear after their whole body leaves the
+open bottom. Contact, score, result rules, objective HUD and objective-aware AI
+are intentionally absent until later WP-026 waypoints. The current code-owned
+coin and chest drawings exist for Phone Gate A scale and behavior review.
+Unknown `objective-mode` values select Collect. A reload restores the matching
+local preview; its Restart action creates the selected mode from a fresh layout.
+
 ## Temporary Nimiq Pay Display Workaround
 
 **Current default:** a portrait browser viewport renders the complete game as

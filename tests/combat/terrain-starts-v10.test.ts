@@ -4,13 +4,18 @@ import test from 'node:test';
 import {
     createTerrainStartsV10Fixture,
     trajectoryPreviewV10,
-    v10FPreviewSeed, v10GPreviewSeed,
+    v10FPreviewSeed, v10GPreviewSeed, v10R8PreviewMode,
     type V10FixtureClock
 } from '../../client/src/combat/terrain-starts-v10-fixture';
 import {
     canonicalSimulationJsonV10, hashTerrainV10R7, V10_R1_RULESET_ID, V10_R2_RULESET_ID, V10_R3_RULESET_ID, V10_R4_RULESET_ID, V10_R7_RULESET_ID, V10_RULESET_ID
 } from '../../shared/simulation-v10';
 import { deformTerrain } from '../../shared/simulation';
+import {
+    hashSimulationStateV10R8,
+    V10_R8_OBJECTIVE_RECIPE_REVISION,
+    V10_R8_RULESET_ID
+} from '../../shared/simulation-v10-r8';
 
 function createClock(): V10FixtureClock & { advanceThirtyTicks: () => void } {
     let now = 0;
@@ -28,6 +33,47 @@ function createClock(): V10FixtureClock & { advanceThirtyTicks: () => void } {
         }
     };
 }
+
+test('R8 preview mode selection is bounded and defaults to Collect', () => {
+    assert.equal(v10R8PreviewMode('?objective-mode=defend'), 'defend');
+    assert.equal(v10R8PreviewMode('?objective-mode=claim'), 'claim');
+    assert.equal(v10R8PreviewMode('?objective-mode=collect'), 'collect');
+    assert.equal(v10R8PreviewMode('?objective-mode=unknown'), 'collect');
+    assert.equal(v10R8PreviewMode(''), 'collect');
+});
+
+test('R8 local fixture keeps objective physics isolated and starts fresh in the same review mode', async () => {
+    const clock = createClock();
+    const fixture = await createTerrainStartsV10Fixture(
+        4, 'wizard', clock, V10_R8_RULESET_ID, undefined, false, 'defend'
+    );
+    try {
+        assert.equal(fixture.snapshot.rulesetId, V10_R8_RULESET_ID);
+        assert.equal(fixture.snapshot.objective.objectiveMode, 'defend');
+        assert.equal(fixture.snapshot.objective.recipeRevision, V10_R8_OBJECTIVE_RECIPE_REVISION);
+        assert.match(fixture.previewLabel, /V10 R8 defend object-physics preview/);
+        const before = hashSimulationStateV10R8(fixture.snapshot);
+        const trace = fixture.trajectoryPreview({ angleMilliDegrees: 45_000, powerPermille: 800 });
+        assert.ok(trace.length > 1);
+        assert.equal(hashSimulationStateV10R8(fixture.snapshot), before);
+        const stop = fixture.onSnapshot(() => {});
+        clock.advanceThirtyTicks();
+        stop();
+        assert.ok(fixture.snapshot.tick > 0);
+        assert.equal(fixture.snapshot.objective.objects[0].status, 'active');
+
+        const restarted = await fixture.restart();
+        try {
+            assert.equal(restarted.snapshot.objective.objectiveMode, 'defend');
+            assert.equal(restarted.snapshot.objective.objectiveRevision, 0);
+            assert.equal(restarted.snapshot.terrainRevision, 0);
+        } finally {
+            restarted.destroy();
+        }
+    } finally {
+        fixture.destroy();
+    }
+});
 
 test('current R7 local preview retires its scheduler while the app is suspended', async () => {
     let now = 0;

@@ -22,7 +22,8 @@ export const WIZARD_R6_PRESENTATION_TOP_IN_WORLD = (212 - 40) * WIZARD_R6_ANIMAT
 /** R7 retains the accepted compact R6 actor presentation. */
 export function usesCompactWizardPresentation(rulesetId?: string): boolean {
     return rulesetId === 'nimble-knots-artillery-v10-r6' ||
-        rulesetId === 'nimble-knots-artillery-v10-r7';
+        rulesetId === 'nimble-knots-artillery-v10-r7' ||
+        rulesetId === 'nimble-knots-artillery-v10-r8';
 }
 
 /**
@@ -36,7 +37,7 @@ export function wizardPresentationVisible(
     worldBottom: number,
     collisionRadius: number
 ): boolean {
-    return rulesetId !== 'nimble-knots-artillery-v10-r7' || unit.alive ||
+    return (rulesetId !== 'nimble-knots-artillery-v10-r7' && rulesetId !== 'nimble-knots-artillery-v10-r8') || unit.alive ||
         unit.y - collisionRadius < worldBottom;
 }
 

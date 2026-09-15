@@ -215,6 +215,45 @@ test('V10 R7 terrain-as-gameplay preview keeps the accepted R6 mobile shell on t
   expect(errors).toEqual([]);
 });
 
+test('V10 R8 private preview renders bounded coin and chest physics without changing the R7 shell', async ({ page }) => {
+  test.setTimeout(45_000);
+  const errors = captureErrors(page);
+  await page.goto('/?combat-preview=v10r8&objective-mode=collect&sideways=off');
+  let ui = page.locator('.combat-v10');
+  await expect(ui).toHaveAttribute('data-ruleset', 'nimble-knots-artillery-v10-r8');
+  await expect(ui).toHaveAttribute('data-preview',
+    'V10 R8 collect object-physics preview · mode rules deferred · local-only');
+  await expect(ui).toHaveAttribute('data-objective-mode', 'collect');
+  await expect(ui).toHaveAttribute('data-objective-recipe', 'volcanic-ruin-objectives-r1');
+  await expect(ui).toHaveAttribute('data-objective-presentation', 'code-owned');
+  await expect(ui).toHaveAttribute('data-objective-active', '7');
+  await expect(ui).toHaveAttribute('data-objective-lost', '0');
+  await expect(ui).toHaveAttribute('data-objective-hash', /^[a-f0-9]{64}$/);
+  await expect(ui).toHaveAttribute('data-objective-positions', /coin-1,active/);
+  await expect(ui).toHaveAttribute('data-terrain-profile', 'volcanic-ruin');
+  await expect(ui).toHaveAttribute('data-background', 'volcanic-ruin');
+  await expect(ui).toHaveAttribute('data-opening-survey-width', '2048');
+  await expect(ui.locator('.combat-timer')).toHaveText(/^\d{1,2}s$/);
+  await expect(ui.locator('.movement-button')).toHaveCount(3);
+
+  await ui.locator('.v9-actions-button').tap();
+  await ui.locator('.v9-attack').tap();
+  await ui.locator('.relic-needlepoint').tap();
+  await dragPad(page, '.combat-v10 .aim-zone', 2601, 0.35, 0);
+  await expect(ui).toHaveAttribute('data-aim-locked', 'true');
+  await ui.locator('.fire-button').tap();
+  await expect(ui).toHaveAttribute('data-combat-phase', /projectile|settling|retreat/);
+  await expect(ui).toHaveAttribute('data-objective-active', '7');
+
+  await page.goto('/?combat-preview=v10r8&objective-mode=defend&sideways=off');
+  ui = page.locator('.combat-v10');
+  await expect(ui).toHaveAttribute('data-ruleset', 'nimble-knots-artillery-v10-r8');
+  await expect(ui).toHaveAttribute('data-objective-mode', 'defend');
+  await expect(ui).toHaveAttribute('data-objective-active', '1');
+  await expect(ui).toHaveAttribute('data-objective-positions', /player-chest,active/);
+  expect(errors).toEqual([]);
+});
+
 test('V10 R7 full battlefield persists exact destruction across a local phone reload', async ({ page }, testInfo) => {
   test.skip(testInfo.project.name !== 'chromium-390x844', 'Canonical phone persistence coverage.');
   test.setTimeout(60_000);

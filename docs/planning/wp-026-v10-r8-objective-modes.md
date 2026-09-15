@@ -1,6 +1,6 @@
 # WP-026 V10 R8 Objective Modes
 
-Status: **next authorized successor; planning contract only; implementation not started**
+Status: **active; Waypoint 1 implemented locally; Phone Gate A pending**
 
 Required predecessor: completed WP-024 R7 promotion and completed WP-025
 lifecycle and power hardening
@@ -208,6 +208,29 @@ reward remains payable only for a verified authoritative player win.
 
 Implement the bounded objective state, compiler, live serialization, gravity,
 support, landing and open-bottom loss behind a wallet-free private R8 preview.
+
+The implementation begins at clean `c82e74d`. It keeps R8 out of the current
+ruleset registry and wraps an R7 simulation only inside the private
+`/?combat-preview=v10r8` fixture. Separate fixed `64 x 36` layers compile seven
+coins for Collect or one owned chest for Defend and Claim. Object position and
+vertical velocity use fixed-point state; support, landing and open-bottom loss
+advance after the inherited combat tick with their own revision and hash.
+Projectiles and actors remain transparent to these objects. The tactical
+serializer publishes an overlay plus exact structured object state without
+altering the terrain serialization or terrain hash. Coins and chests use a
+temporary code-owned drawing for this phone-size gate. Contact, score, terminal
+rules, HUD and server authority remain reserved for the later waypoints.
+
+Private review routes are:
+
+- `/?combat-preview=v10r8&objective-mode=collect`;
+- `/?combat-preview=v10r8&objective-mode=defend`; and
+- `/?combat-preview=v10r8&objective-mode=claim`.
+
+Missing or unknown objective modes fail to the bounded Collect review mode.
+Reload restores only the matching local seed, Calling, recipe and mode; Restart
+constructs the same mode from its fresh fixed layout. The root path and both
+server-backed Practice and Daily remain exact R7 throughout this waypoint.
 
 Phone Gate A confirms readable object scale; intact objects survive direct fire;
 removing support makes each kind fall and land; an open bottom removes it; and

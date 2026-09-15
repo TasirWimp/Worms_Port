@@ -21,6 +21,7 @@ export function projectCombatV9(state: ResourceTurnsState): CombatRenderState {
     });
     return { rulesetId: state.rulesetId, terrain: state.terrain, activeActor: state.activeActor, selectedRelic: state.selectedRelic,
         ...('terrainRevision' in state ? { terrainRevision: state.terrainRevision, terrainHash: state.terrainHash } : {}),
+        ...('objective' in state ? { objectives: state.objective.objects } : {}),
         units: [unit(state.units[0]), unit(state.units[1])] };
 }
 

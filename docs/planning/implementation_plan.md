@@ -252,8 +252,16 @@ Phaser/Socket.IO stack.
   consumption with Nimiq Pay and the game in the background. See the
   [WP-025 contract](wp-025-mobile-lifecycle-power-hardening.md) and
   [evidence](../evidence/wp-025.json).
-- Next authorized successor: **WP-026 V10 R8 Objective Modes**. Its implementation
-  has not started. It introduces the
+- Active successor: **WP-026 V10 R8 Objective Modes**, beginning at clean
+  `c82e74d`. Waypoint 1 is implemented locally behind the wallet-free
+  `/?combat-preview=v10r8&objective-mode=collect|defend|claim` routes and awaits
+  Phone Gate A. It adds separate fixed ASCII objective layers, bounded coin and
+  chest state, fixed-point fall/support/landing/open-bottom loss, independent
+  objective revision/hash and live tactical serialization. Objects use a
+  code-owned gate presentation and remain transparent to actors and projectiles.
+  Contact, scoring, terminal rules, HUD, server/replay authority and the
+  objective-aware Loomkeeper remain in Waypoints 2 and 3. Standard Practice and
+  PEI-gated Daily remain exact R7. The package introduces the
   server-authoritative Defend, Collect and Claim modes, non-destructible physical
   coins and chests, objective-specific results, a separate ASCII objective layer,
   deterministic objective-aware Loomkeeper play, exact replay/resume and the

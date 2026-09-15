@@ -71,6 +71,7 @@ export class CombatRenderer {
     private readonly background: Phaser.GameObjects.Graphics;
     private readonly worldClip: Phaser.GameObjects.Graphics;
     private readonly worldMask: Phaser.Display.Masks.GeometryMask;
+    private readonly objectiveObjects: Phaser.GameObjects.Graphics;
     private readonly teamCues: Phaser.GameObjects.Graphics;
     private readonly effects: Phaser.GameObjects.Graphics;
     private readonly wizardSprites: Partial<Record<SimulationActor, Phaser.GameObjects.Sprite>> = {};
@@ -96,8 +97,10 @@ export class CombatRenderer {
         this.background = scene.add.graphics().setDepth(0);
         this.worldClip = scene.make.graphics();
         this.worldMask = this.worldClip.createGeometryMask();
+        this.objectiveObjects = scene.add.graphics().setDepth(1.05);
         this.teamCues = scene.add.graphics().setDepth(1.2);
         this.effects = scene.add.graphics().setDepth(1.3);
+        this.objectiveObjects.setMask(this.worldMask);
         this.teamCues.setMask(this.worldMask);
         this.effects.setMask(this.worldMask);
         this.usingApprovedAssets = approvedCombatAssetsLoaded(scene);
@@ -170,6 +173,7 @@ export class CombatRenderer {
             }
         }
 
+        this.drawObjectiveObjects(state, layout);
         this.teamCues.clear();
         if (this.usingApprovedAssets) this.drawTeamCues(state.units, layout);
 
@@ -184,6 +188,7 @@ export class CombatRenderer {
     public destroy(): void {
         this.background.destroy();
         this.worldClip.destroy();
+        this.objectiveObjects.destroy();
         this.teamCues.destroy();
         this.effects.destroy();
         for (const sprite of Object.values(this.wizardSprites)) sprite?.destroy();
@@ -642,6 +647,41 @@ export class CombatRenderer {
         g.fillCircle(point.x - radius * 0.34, point.y - radius * 0.14, radius * 0.25);
         g.fillCircle(point.x + radius * 0.34, point.y - radius * 0.14, radius * 0.25);
         this.drawFallbackRelic(relicId, point.x, point.y, radius, unit.facing);
+    }
+
+    private drawObjectiveObjects(state: CombatRenderState, layout: CombatLayout): void {
+        const g = this.objectiveObjects;
+        g.clear();
+        for (const object of state.objectives ?? []) {
+            if (object.status !== 'active') continue;
+            const point = this.worldPoint(object.xFp / 256, object.yFp / 256, layout);
+            if (object.kind === 'coin') {
+                const radius = Math.max(6, 16 * layout.worldScale);
+                g.fillStyle(0xE9B213, 0.98);
+                g.fillCircle(point.x, point.y, radius);
+                g.lineStyle(Math.max(1.5, radius * 0.16), 0x1F2348, 0.9);
+                g.strokeCircle(point.x, point.y, radius);
+                g.lineStyle(Math.max(1, radius * 0.1), 0xFFF2A8, 0.95);
+                g.strokeCircle(point.x, point.y, radius * 0.56);
+                g.lineBetween(point.x, point.y - radius * 0.42, point.x, point.y + radius * 0.42);
+                continue;
+            }
+            const width = Math.max(18, 56 * layout.worldScaleX);
+            const height = Math.max(14, 40 * layout.worldScaleY);
+            const left = point.x - width / 2;
+            const top = point.y - height / 2;
+            const radius = Math.max(2, Math.min(width, height) * 0.16);
+            g.fillStyle(0x795548, 0.98);
+            g.fillRoundedRect(left, top, width, height, radius);
+            g.fillStyle(0xE9B213, 0.96);
+            g.fillRoundedRect(left, top, width, height * 0.36, radius);
+            g.lineStyle(Math.max(1.5, height * 0.1), 0x1F2348, 0.92);
+            g.strokeRoundedRect(left, top, width, height, radius);
+            g.lineBetween(left, top + height * 0.38, left + width, top + height * 0.38);
+            g.fillStyle(0xFFF2A8, 1);
+            g.fillRoundedRect(point.x - width * 0.08, point.y - height * 0.02,
+                width * 0.16, height * 0.27, radius * 0.5);
+        }
     }
 
     private drawFallbackRelic(relicId: RelicId, x: number, y: number, radius: number, facing: -1 | 1): void {

@@ -19,6 +19,21 @@ import {
     type SimulationStateV10
 } from '../../../shared/simulation-v10';
 import {
+    advanceSimulationTicksV10R8,
+    applySimulationBarrierV10R8,
+    applySimulationIntentV10R8,
+    assertSimulationInvariantsV10R8,
+    cloneSimulationV10R8,
+    createSimulationV10R8,
+    forceSimulationLimitV10R8,
+    objectiveModeV10R8,
+    simulationV10R7ViewOfValidatedR8,
+    trajectoryPreviewV10R8,
+    V10_R8_RULESET_ID,
+    type SimulationStateV10R8,
+    type V10R8ObjectiveMode
+} from '../../../shared/simulation-v10-r8';
+import {
     generateV10ProceduralSurfaceCandidate,
     type V10ProceduralTerrainProfileId
 } from '../../../shared/terrain-generation-v10';
@@ -28,13 +43,15 @@ import {
     V10_AI_PLANNING_TICKS
 } from '../../../shared/loomkeeper-v10';
 import type { PlayerCalling } from '../../../shared/simulation';
-import type { CombatSceneArgsV10 } from './contracts';
+import type { CombatSceneArgsV10, CombatSceneArgsV10R8, SimulationStateV10Family } from './contracts';
 import type { V9FixtureClock } from './resource-turns-v9-fixture';
 
 export type V10FixtureClock = V9FixtureClock;
 export type V10FixtureStorage = Pick<Storage, 'getItem' | 'setItem' | 'removeItem'>;
 
 const V10_R7_PREVIEW_STORAGE_PREFIX = 'nimble-knots:v10r7-preview-state';
+const V10_R8_PREVIEW_STORAGE_PREFIX = 'nimble-knots:v10r8-preview-state';
+type V10PreviewRulesetId = V10RulesetId | typeof V10_R8_RULESET_ID;
 
 export const V10G_PREVIEW_MAPS = Object.freeze({
     'twin-crests': 4, 'trench-needle': 5, 'stepping-mesa': 6,
@@ -62,6 +79,24 @@ export function v10FPreviewSeed(search: string): number {
  * Local V10C authority. It adds the frozen Loomkeeper policy to V10 terrain,
  * but owns no session, socket, replay, reward, or production selector.
  */
+export function createTerrainStartsV10Fixture(
+    seed: number,
+    calling: PlayerCalling,
+    clock: V10FixtureClock | undefined,
+    rulesetId: typeof V10_R8_RULESET_ID,
+    storage?: V10FixtureStorage,
+    fresh?: boolean,
+    objectiveMode?: V10R8ObjectiveMode
+): Promise<CombatSceneArgsV10R8>;
+export function createTerrainStartsV10Fixture(
+    seed?: number,
+    calling?: PlayerCalling,
+    clock?: V10FixtureClock,
+    rulesetId?: V10RulesetId,
+    storage?: V10FixtureStorage,
+    fresh?: boolean,
+    objectiveMode?: V10R8ObjectiveMode
+): Promise<CombatSceneArgsV10>;
 export async function createTerrainStartsV10Fixture(
     seed = 1,
     calling: PlayerCalling = 'wizard',
@@ -72,16 +107,51 @@ export async function createTerrainStartsV10Fixture(
             return () => window.clearInterval(timer);
         }
     },
-    rulesetId: V10RulesetId = V10_RULESET_ID,
+    rulesetId: V10PreviewRulesetId = V10_RULESET_ID,
     storage: V10FixtureStorage | undefined = browserStorage(),
-    fresh = false
-): Promise<CombatSceneArgsV10> {
-    const initial = createSimulationV10(seed, calling, rulesetId);
-    const previewStorage = rulesetId === V10_R7_RULESET_ID ? storage : undefined;
-    const storageKey = `${V10_R7_PREVIEW_STORAGE_PREFIX}:${initial.seed}:${calling}`;
+    fresh = false,
+    objectiveMode: V10R8ObjectiveMode = 'collect'
+): Promise<CombatSceneArgsV10 | CombatSceneArgsV10R8> {
+    const r8 = rulesetId === V10_R8_RULESET_ID;
+    const initial: SimulationStateV10Family = r8
+        ? createSimulationV10R8(seed, calling, objectiveMode)
+        : createSimulationV10(seed, calling, rulesetId);
+    const previewStorage = rulesetId === V10_R7_RULESET_ID || r8 ? storage : undefined;
+    const storagePrefix = r8 ? V10_R8_PREVIEW_STORAGE_PREFIX : V10_R7_PREVIEW_STORAGE_PREFIX;
+    const storageKey = `${storagePrefix}:${initial.seed}:${calling}${r8 ? `:${objectiveMode}` : ''}`;
     let state = !fresh && previewStorage
-        ? restoreR7PreviewState(previewStorage, storageKey, initial) ?? initial
+        ? r8
+            ? restoreR8PreviewState(previewStorage, storageKey, initial as SimulationStateV10R8) ?? initial
+            : restoreR7PreviewState(previewStorage, storageKey, initial as SimulationStateV10) ?? initial
         : initial;
+    const cloneState = (source: SimulationStateV10Family): SimulationStateV10Family =>
+        source.rulesetId === V10_R8_RULESET_ID ? cloneSimulationV10R8(source) : cloneSimulationV10(source);
+    const applyStateIntent = (
+        source: SimulationStateV10Family,
+        actor: 'player' | 'loomkeeper',
+        intent: SimulationIntentV10,
+        expectedTurn: number,
+        expectedPhase = source.phase,
+        expectedEpoch = source.inputEpoch
+    ) => source.rulesetId === V10_R8_RULESET_ID
+        ? applySimulationIntentV10R8(source, actor, intent, expectedTurn, expectedPhase, expectedEpoch)
+        : applySimulationIntentV10(source, actor, intent, expectedTurn, expectedPhase, expectedEpoch);
+    const applyStateBarrier = (
+        source: SimulationStateV10Family,
+        barrier: Parameters<typeof applySimulationBarrierV10>[1]
+    ) => source.rulesetId === V10_R8_RULESET_ID
+        ? applySimulationBarrierV10R8(source, barrier)
+        : applySimulationBarrierV10(source, barrier);
+    const advanceStateTicks = (source: SimulationStateV10Family, count: number) =>
+        source.rulesetId === V10_R8_RULESET_ID
+            ? advanceSimulationTicksV10R8(source, count)
+            : advanceSimulationTicksV10(source, count);
+    const forceStateLimit = (source: SimulationStateV10Family) =>
+        source.rulesetId === V10_R8_RULESET_ID
+            ? forceSimulationLimitV10R8(source)
+            : forceSimulationLimitV10(source);
+    const plannerView = (source: SimulationStateV10Family): SimulationStateV10 =>
+        source.rulesetId === V10_R8_RULESET_ID ? simulationV10R7ViewOfValidatedR8(source) : source;
     const proceduralSurface = rulesetId === V10_R2_RULESET_ID
         ? generateV10ProceduralSurfaceCandidate(
             state.seed,
@@ -102,12 +172,13 @@ export async function createTerrainStartsV10Fixture(
     let execution: LoomkeeperExecutionV10 | undefined;
     let planningFailed = false;
     let retiringForRestart = false;
-    const listeners = new Set<(state: SimulationStateV10, events: SimulationEventV10[]) => void>();
+    const listeners = new Set<(state: SimulationStateV10Family, events: SimulationEventV10[]) => void>();
     let persistedBoundary = '';
 
     const persist = (force = false) => {
         if (!previewStorage || retiringForRestart) return;
-        const boundary = [state.terrainRevision, state.phase, state.turn, state.inputEpoch,
+        const boundary = [state.terrainRevision, 'objective' in state ? state.objective.objectiveRevision : '',
+            state.phase, state.turn, state.inputEpoch,
             state.projectile === null, state.winner].join(':');
         if (!force && boundary === persistedBoundary) return;
         try {
@@ -125,13 +196,13 @@ export async function createTerrainStartsV10Fixture(
         persist(forcePersist);
         publishing = true;
         try {
-            for (const listener of listeners) listener(cloneSimulationV10(state), structuredClone(events));
+            for (const listener of listeners) listener(cloneState(state), structuredClone(events));
         } finally {
             publishing = false;
         }
     };
     const terminal = () => {
-        const result = forceSimulationLimitV10(state);
+        const result = forceStateLimit(state);
         state = result.state;
         paused = false;
         credit = 0;
@@ -154,7 +225,7 @@ export async function createTerrainStartsV10Fixture(
         if (!planningFailed) {
             const started = clock.now();
             try {
-                planner ??= new LoomkeeperPlannerV10(state);
+                planner ??= new LoomkeeperPlannerV10(plannerView(state));
                 planner.step();
             } catch {
                 planningFailed = true;
@@ -174,20 +245,20 @@ export async function createTerrainStartsV10Fixture(
             const selection = planner!.selection;
             if (selection.status === 'selected') {
                 execution = new LoomkeeperExecutionV10(
-                    planner!.selectedCandidate()!, selection.prefix, state
+                    planner!.selectedCandidate()!, selection.prefix, plannerView(state)
                 );
             }
         }
         if (!execution) return;
         for (let count = 0; count < 8; count += 1) {
-            const operation = execution.next(state);
+            const operation = execution.next(plannerView(state));
             if (!operation) break;
             const transition = operation.kind === 'intent'
-                ? applySimulationIntentV10(
+                ? applyStateIntent(
                     state, 'loomkeeper', operation.intent,
                     state.turn, state.phase, state.inputEpoch
                 )
-                : applySimulationBarrierV10(state, operation.barrier);
+                : applyStateBarrier(state, operation.barrier);
             if (!transition.accepted) {
                 terminal();
                 return;
@@ -214,7 +285,7 @@ export async function createTerrainStartsV10Fixture(
         while (credit >= 1000 && count < 6 && state.phase !== 'finished') {
             credit -= 1000;
             prepareAutomatedTick();
-            const result = advanceSimulationTicksV10(state, 1);
+            const result = advanceStateTicks(state, 1);
             state = result.state;
             events.push(...result.events);
             drainAutomation(events);
@@ -245,11 +316,11 @@ export async function createTerrainStartsV10Fixture(
             : 'Preview is catching up; use a fresh gesture.');
         if (paused) throw new Error('Preview is paused.');
         const before = state;
-        const result = applySimulationIntentV10(
+        const result = applyStateIntent(
             state, 'player', intent, state.turn, state.phase, state.inputEpoch
         );
         if (result.error?.code === 'INTENT_LIMIT') {
-            const barrier = applySimulationBarrierV10(state, {
+            const barrier = applyStateBarrier(state, {
                 reason: 'intent_limit', actor: 'player',
                 expectedTurn: state.turn, expectedEpoch: state.inputEpoch
             });
@@ -269,17 +340,17 @@ export async function createTerrainStartsV10Fixture(
         }
         state = result.state;
         publish(result.events, true);
-        return cloneSimulationV10(state);
+        return cloneState(state);
     };
     const setPaused = async (value: boolean) => {
         if (destroyed) throw new Error('Preview is closed.');
         if (publishing) throw new Error('Preview is catching up; use a fresh gesture.');
-        if (value === paused) return cloneSimulationV10(state);
+        if (value === paused) return cloneState(state);
         if (!due()) throw new Error('Preview is catching up; request pause again.');
         if (value && (state.activeActor !== 'player' || state.phase !== 'action')) {
             throw new Error('Pause requires your action phase.');
         }
-        const result = applySimulationBarrierV10(state, {
+        const result = applyStateBarrier(state, {
             reason: value ? 'pause' : 'resume', actor: 'player',
             expectedTurn: state.turn, expectedEpoch: state.inputEpoch
         });
@@ -297,7 +368,7 @@ export async function createTerrainStartsV10Fixture(
         publish(result.events, true);
         if (paused) stopClock();
         else startClock();
-        return cloneSimulationV10(state);
+        return cloneState(state);
     };
     const setLocalClockSuspended = (value: boolean) => {
         if (destroyed || value === clockSuspended) return;
@@ -308,20 +379,20 @@ export async function createTerrainStartsV10Fixture(
         else startClock();
     };
     const cancelInput = async () => {
-        if (destroyed || publishing) return cloneSimulationV10(state);
-        const result = applySimulationBarrierV10(state, {
+        if (destroyed || publishing) return cloneState(state);
+        const result = applyStateBarrier(state, {
             reason: 'cancel', actor: 'player',
             expectedTurn: state.turn, expectedEpoch: state.inputEpoch
         });
         if (result.error?.code === 'LIFECYCLE_LIMIT') {
             terminal();
-            return cloneSimulationV10(state);
+            return cloneState(state);
         }
         if (result.accepted && result.mutated) {
             state = result.state;
             publish(result.events, true);
         }
-        return cloneSimulationV10(state);
+        return cloneState(state);
     };
     const destroy = () => {
         if (destroyed) return;
@@ -329,14 +400,14 @@ export async function createTerrainStartsV10Fixture(
         stopClock();
         listeners.clear();
         resetAutomation();
-        const result = applySimulationBarrierV10(state, {
+        const result = applyStateBarrier(state, {
             reason: 'cancel', actor: 'player',
             expectedTurn: state.turn, expectedEpoch: state.inputEpoch
         });
         if (result.accepted && result.mutated) state = result.state;
         if (!retiringForRestart) persist(true);
     };
-    const previewLabel = rulesetId === V10_R7_RULESET_ID ? 'V10 R7 terrain-as-gameplay preview · full volcanic battlefield · local-only' : rulesetId === V10_R5_RULESET_ID ? 'Volcanic Ruin · stepped valley · local-only' : rulesetId === V10_R4_RULESET_ID
+    const previewLabel = rulesetId === V10_R8_RULESET_ID ? `V10 R8 ${objectiveMode} object-physics preview · mode rules deferred · local-only` : rulesetId === V10_R7_RULESET_ID ? 'V10 R7 terrain-as-gameplay preview · full volcanic battlefield · local-only' : rulesetId === V10_R5_RULESET_ID ? 'Volcanic Ruin · stepped valley · local-only' : rulesetId === V10_R4_RULESET_ID
         ? `V10G ${terrainProfileLabel(state.terrainProfileId)}${state.terrainProfileId === 'asymmetric-rampart' ? (v10gFamilyForSeed(seed).reflected ? ' · high right' : ' · high left') : ''} · cover, shelves and breaching · local-only`
         : rulesetId === V10_R3_RULESET_ID
         ? 'V10G Twin Crests · cover, shelves and breaching · local-only'
@@ -354,7 +425,7 @@ export async function createTerrainStartsV10Fixture(
 
     return {
         kind: 'v10',
-        get snapshot() { return cloneSimulationV10(state); },
+        get snapshot() { return cloneState(state); },
         previewLabel,
         ...(rulesetId === V10_R4_RULESET_ID ? { previewTerrainReflected: v10gFamilyForSeed(seed).reflected } : {}),
         ...(proceduralSurface ? { previewTerrainReflected: proceduralSurface.reflected } : {}),
@@ -366,7 +437,9 @@ export async function createTerrainStartsV10Fixture(
         trajectoryPreview: aim => {
             if (destroyed || paused) return [];
             const started = clock.now();
-            try { return trajectoryPreviewV10(state, aim); }
+            try { return state.rulesetId === V10_R8_RULESET_ID
+                ? trajectoryPreviewV10R8(state, aim)
+                : trajectoryPreviewV10(state, aim); }
             finally {
                 // This bounded, clone-only rollout blocks the local timer on
                 // phones. Charge neither its CPU time nor planner CPU as
@@ -377,7 +450,13 @@ export async function createTerrainStartsV10Fixture(
         restart: async () => {
             retiringForRestart = true;
             try {
-                return await createTerrainStartsV10Fixture(seed, calling, clock, rulesetId, previewStorage, true);
+                return rulesetId === V10_R8_RULESET_ID
+                    ? await createTerrainStartsV10Fixture(
+                        seed, calling, clock, V10_R8_RULESET_ID, previewStorage, true, objectiveMode
+                    )
+                    : await createTerrainStartsV10Fixture(
+                        seed, calling, clock, rulesetId, previewStorage, true, objectiveMode
+                    );
             } catch (error) {
                 retiringForRestart = false;
                 throw error;
@@ -393,7 +472,11 @@ export async function createTerrainStartsV10Fixture(
             };
         },
         destroy
-    };
+    } as CombatSceneArgsV10 | CombatSceneArgsV10R8;
+}
+
+export function v10R8PreviewMode(search: string): V10R8ObjectiveMode {
+    return objectiveModeV10R8(new URLSearchParams(search).get('objective-mode'));
 }
 
 function browserStorage(): V10FixtureStorage | undefined {
@@ -422,6 +505,31 @@ function restoreR7PreviewState(
         // this single validation boundary.
         const restored = cloneSimulationV10(parsed.data as SimulationStateV10);
         assertSimulationInvariantsV10(restored);
+        return restored;
+    } catch {
+        try { storage.removeItem(key); } catch {}
+        return undefined;
+    }
+}
+
+function restoreR8PreviewState(
+    storage: V10FixtureStorage,
+    key: string,
+    initial: SimulationStateV10R8
+): SimulationStateV10R8 | undefined {
+    try {
+        const source = storage.getItem(key);
+        if (!source) return undefined;
+        const restored = cloneSimulationV10R8(JSON.parse(source) as SimulationStateV10R8);
+        assertSimulationInvariantsV10R8(restored);
+        if (restored.seed !== initial.seed ||
+            restored.units[0].calling !== initial.units[0].calling ||
+            restored.terrainRecipeRevision !== initial.terrainRecipeRevision ||
+            restored.objective.objectiveMode !== initial.objective.objectiveMode ||
+            restored.objective.recipeRevision !== initial.objective.recipeRevision) {
+            storage.removeItem(key);
+            return undefined;
+        }
         return restored;
     } catch {
         try { storage.removeItem(key); } catch {}

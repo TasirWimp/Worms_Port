@@ -1,0 +1,82 @@
+{
+  "id": "WP-026",
+  "status": "in_progress",
+  "execution_mode": "single_owner",
+  "starting_commit": "c82e74d",
+  "branch": "codex/v10-r6-action-impact-dynamics",
+  "initial_worktree": "clean",
+  "starting_lock_sha256": "6B768A8FDE2695D02555CA17201FD7CE420F9AC075B91380474DD7A643042BC8",
+  "owning_roles": [
+    "primary assistant"
+  ],
+  "scope": [
+    "Waypoint 1: add an isolated nimble-knots-artillery-v10-r8 state that wraps the accepted R7 combat authority with bounded objective objects, revision and hash metadata while standard Practice and PEI-gated Daily remain R7.",
+    "Compile separate 64 by 36 ASCII objective layers aligned with the accepted R7 battlefield into stable coin and chest objects without changing a terrain bit or the R7 terrain hash.",
+    "Apply deterministic fixed-point vertical gravity, terrain support, landing and open-bottom loss to active objects after each R8 combat tick; projectiles, actors and blasts do not collide with or directly move or damage them.",
+    "Serialize the live tactical ASCII overlay and exact structured objective state beside unchanged terrain serialization.",
+    "Expose coin and chest physics through a wallet-free private v10r8 preview with code-owned placeholder presentation for physical Phone Gate A."
+  ],
+  "non_goals": [
+    "No collection, capture, scoring, objective terminal result, mode selector, objective HUD or objective-aware Loomkeeper behavior in Waypoint 1.",
+    "No server Practice, Daily, PEI, reward, helper, wallet, database, deployment profile, environment variable, replay or protocol activation in Waypoint 1.",
+    "No Gemini integration, external source, Sorcerers material, imported/generated asset, dependency or R7 behavior change."
+  ],
+  "planned_checks": [
+    "npm.cmd run verify:changes -- --dry-run --base c82e74d",
+    "Focused R8 objective compiler, physics, serialization, fixture, presentation and private browser preview checks selected by direct review",
+    "npm.cmd run verify:changes -- --base c82e74d",
+    "npm.cmd run audit:housekeeping before Phone Gate A",
+    "Phone Gate A on the physical phone"
+  ],
+  "deterministic_seeds": [
+    "R8 local volcanic objective preview seed 4",
+    "volcanic-ruin-objectives-r1 fixed collect, defend and claim ASCII layers"
+  ],
+  "sorcerers_reference_used": false,
+  "clean_room_records": [],
+  "check_results": [
+    {
+      "command": "npm.cmd run verify:changes -- --dry-run --base c82e74d",
+      "status": "pass",
+      "details": "The frozen pre-acceptance dry run selected 17 current import/type/work-package/unit/build/security/budget checks, the supported identity/PEI/Practice/resilience/reward/smoke/visual browser groups and PostgreSQL. Performance, fallback and retired runtime profiles were absent. Its product-input fingerprint was b31760304ba128c1a2bfef61d1a78fef7c032a437b55173aaf5a145b9a0c979e; later evidence and bounded recovery edits produced the phase fingerprints retained in their logs. Log .cache/wp026-w1-acceptance-dry-run.log."
+    },
+    {
+      "command": "Focused R8 objective compiler, physics, serialization and local fixture checks selected by direct review",
+      "status": "pass",
+      "details": "Delegated zero-retry recovery passed types, objective authority 6/6 and the complete terrain-starts fixture file 19/19. The first type pass exposed only integration field and overload mistakes. The first objective run preserved 5/6 passes and rejected an intentionally malformed coin at the world-envelope check before the test's expected support check; moving that test anchor to clear in-world air produced 6/6. Coverage proves fixed inventories, strict ASCII, fall/landing/open-bottom loss, revision/hash isolation, projectile transparency, input immutability, tactical serialization, bounded preview modes and fresh restart while retaining current R7 fixture cases. Logs .cache/wp026-w1-types.log, .cache/wp026-w1-types-recovery.log, .cache/wp026-w1-objective-physics.log, .cache/wp026-w1-objective-physics-recovery.log and .cache/wp026-w1-terrain-starts.log."
+    },
+    {
+      "command": "npm.cmd run verify:changes -- --base c82e74d, composed under the unchanged-input recovery policy",
+      "status": "pass",
+      "details": "The first selector preserved passing whitespace, import and type checks, then stopped on an evidence-only starting-lock mismatch. The exact c82e74d package-lock blob hash corrected that record and work packages passed 73/73. The still-unrun checks then passed combat 51/51, Practice 4/4, protocol 21/21, simulation 79/79, Loomkeeper 39/39, relics 10/10, identity 22/22, reward 28/28 and PEI 25/25, with standard R7 smoke, identity/reward security and bundle limits. After a shared live-entry regression produced 2/18 browser passes and sixteen identical missing-combat roots, direct trace review restored the deliberate Phaser activation microtask yield removed by the preview refactor. Types, fresh build proof bc9450514195 / 8b928cdf12db, R7 smoke and the exact first failed Identity-to-Practice journey then passed 1/1. The previously unrun visual matrix produced 16 passes, eight expected Windows screenshot skips and one landscape-only R8 timer assertion failure; R8 already passed four projects. Replacing that inherited-rule timing assertion with a running-countdown check passed the exact fifth R8 project 1/1. No complete selector, six-family browser command or passing visual project was repeated. Final bundle use was 1432507/1500000 raw initial JavaScript bytes and 418088/430000 gzip bytes. Logs are .cache/wp026-w1-acceptance-selector.log, .cache/wp026-w1-work-packages-recovery.log, .cache/wp026-w1-checks-*.log, .cache/wp026-w1-browser-phase.log, .cache/wp026-w1-browser-recovery-*.log, .cache/wp026-w1-browser-visual.log and .cache/wp026-w1-browser-visual-r8-recovery.log."
+    },
+    {
+      "command": "npm.cmd run verify:changes -- --phase postgres --base c82e74d",
+      "status": "pass",
+      "details": "The selected phase exited successfully with its explicit local prerequisite skip because WP014_TEST_DATABASE_URL is absent. PostgreSQL remains a CI gate. Final phase fingerprint 765af4cf5227f5b905649ba394d4474817cac76b7eb3b034fb62b0b373ad6c72. Log .cache/wp026-w1-postgres-phase.log."
+    },
+    {
+      "command": "npm.cmd run audit:housekeeping before Phone Gate A",
+      "status": "pass",
+      "details": "The report-only audit passed on the matching branch/upstream with WP-026 correctly in progress and the expected dirty implementation. Its manual-reconciliation flag refers to preserved historical in-progress packages and archived WP-015D3B failed-review records; no mutation was performed. Log .cache/wp026-w1-prephone-housekeeping.log."
+    }
+  ],
+  "reviews": [
+    {
+      "role": "primary",
+      "reviewer": "primary assistant",
+      "decision": "pass",
+      "details": "Direct review traced R8 construction, strict ASCII compilation, fixed-point object motion, terrain support, open-bottom loss, state/objective hashes, tactical serialization, local persistence/restart, rendering and startup selection. Public ticks clone before owned mutation and validate at the trust boundary. The current registry, live protocol, server coordinator, Practice/Daily selector and reward/PEI authority remain literal R7. R8 imports no external assets or quarantined reference material and adds no server, protocol, database, dependency or environment path. The temporary code-owned coin/chest presentation and foreground smoothness remain subject to Phone Gate A."
+    }
+  ],
+  "skipped_checks": [
+    "Retired R6-and-older runtime profiles and @legacy browser diagnostics were excluded from current acceptance.",
+    "Performance was not selected. The private R8 wrapper adds at most seven bounded vertical-only objects; Phone Gate A owns foreground camera, crater, control and object-motion smoothness.",
+    "The local PostgreSQL prerequisite is absent, so its selected phase recorded the repository's expected skip and remains required in CI.",
+    "The daily/release suite was not run because Waypoint 1 is a private feature gate rather than the 22:00 checkpoint or an explicit release boundary.",
+    "Physical Android and iOS checks have not run yet; Android Phone Gate A is the next acceptance step."
+  ],
+  "residual_risks": [
+    "Phone Gate A must decide whether the code-owned coin and chest scale is readable and whether object falling remains smooth during terrain destruction and full-arena camera movement."
+  ]
+}

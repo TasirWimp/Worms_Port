@@ -36,12 +36,12 @@ export const V10_R5_RULESET_ID = 'nimble-knots-artillery-v10-r5' as const;
 export const V10_R6_RULESET_ID = 'nimble-knots-artillery-v10-r6' as const;
 export const V10_R7_RULESET_ID = 'nimble-knots-artillery-v10-r7' as const;
 export const CURRENT_V10_RULESET_ID = V10_R7_RULESET_ID;
-export const usesV10GTactics = (rulesetId: string): boolean => rulesetId === V10_R3_RULESET_ID || rulesetId === V10_R4_RULESET_ID || rulesetId === V10_R5_RULESET_ID || rulesetId === V10_R6_RULESET_ID || rulesetId === V10_R7_RULESET_ID;
-export const usesVolcanicRuin = (rulesetId: string): boolean => rulesetId === V10_R5_RULESET_ID || rulesetId === V10_R6_RULESET_ID || rulesetId === V10_R7_RULESET_ID;
+export const usesV10GTactics = (rulesetId: string): boolean => rulesetId === V10_R3_RULESET_ID || rulesetId === V10_R4_RULESET_ID || rulesetId === V10_R5_RULESET_ID || rulesetId === V10_R6_RULESET_ID || rulesetId === V10_R7_RULESET_ID || rulesetId === 'nimble-knots-artillery-v10-r8';
+export const usesVolcanicRuin = (rulesetId: string): boolean => rulesetId === V10_R5_RULESET_ID || rulesetId === V10_R6_RULESET_ID || rulesetId === V10_R7_RULESET_ID || rulesetId === 'nimble-knots-artillery-v10-r8';
 /** R5/R6 retain the accepted fixed volcanic composition; R7 surveys the complete 2048-unit battlefield. */
 export const usesVolcanicRuinScenicFrame = (rulesetId: string): boolean => rulesetId === V10_R5_RULESET_ID || rulesetId === V10_R6_RULESET_ID;
 /** R7 inherits the accepted R6 timing, control, and impact-motion package. */
-export const usesV10R6ActionDynamics = (rulesetId: string): boolean => rulesetId === V10_R6_RULESET_ID || rulesetId === V10_R7_RULESET_ID;
+export const usesV10R6ActionDynamics = (rulesetId: string): boolean => rulesetId === V10_R6_RULESET_ID || rulesetId === V10_R7_RULESET_ID || rulesetId === 'nimble-knots-artillery-v10-r8';
 export const V10_RULESET_IDS = Object.freeze([V10_RULESET_ID, V10_R1_RULESET_ID, V10_R2_RULESET_ID, V10_R3_RULESET_ID, V10_R4_RULESET_ID, V10_R5_RULESET_ID, V10_R6_RULESET_ID, V10_R7_RULESET_ID] as const);
 export type V10RulesetId = typeof V10_RULESET_IDS[number];
 export function isV10RulesetId(value: unknown): value is V10RulesetId {
@@ -541,6 +541,11 @@ export function hashSimulationStateV10(state: SimulationStateV10): string {
 /** Internal canonical hash seam; callers must establish the V10 invariant. */
 export function hashValidatedSimulationStateV10(state: SimulationStateV10): string {
     return sha256(new TextEncoder().encode(canonicalJson(state)));
+}
+
+/** Shared deterministic hash seam for isolated later V10-family state layers. */
+export function hashCanonicalV10Value(value: unknown): string {
+    return sha256(new TextEncoder().encode(canonicalJson(value)));
 }
 
 export function hashTerrainV10R7(terrain: PackedTerrain): string {

@@ -5,6 +5,7 @@ import type { CombatVisualPhase } from './renderer';
 import type { ChallengeSnapshotV8Family as ChallengeSnapshotV8 } from '../../../shared/protocol-v8';
 import type { SimulationStateV8Family as SimulationStateV8 } from '../../../shared/simulation-v8';
 import type { SimulationState, SimulationUnit } from '../../../shared/simulation';
+import type { V10R8ObjectiveObject } from '../../../shared/simulation-v10-r8';
 import { inputBoundaryV8 } from './input';
 
 /** A deliberately non-authoritative, version-independent rendering surface. */
@@ -13,6 +14,7 @@ export type CombatRenderState = Pick<SimulationState, 'terrain' | 'activeActor' 
     rulesetId?: string;
     terrainRevision?: number;
     terrainHash?: string;
+    objectives?: readonly V10R8ObjectiveObject[];
     units: [CombatRenderUnit, CombatRenderUnit];
 };
 

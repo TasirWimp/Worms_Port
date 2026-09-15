@@ -4,6 +4,7 @@ import type { ChallengeSnapshotV8Runtime as ChallengeSnapshotV8, ChallengeResult
 import type { SimulationIntentV8Family as SimulationIntentV8 } from '../../../shared/simulation-v8';
 import type { SimulationEventV9, SimulationIntentV9, SimulationStateV9 } from '../../../shared/simulation-v9';
 import type { SimulationEventV10, SimulationIntentV10, SimulationStateV10 } from '../../../shared/simulation-v10';
+import type { SimulationStateV10R8 } from '../../../shared/simulation-v10-r8';
 import type { ChallengeResultV9 } from '../../../shared/protocol-v9';
 import type { PlayerCalling } from '../../../shared/simulation';
 
@@ -45,7 +46,8 @@ export type CombatSceneArgsV8 = {
     previewLabel?: string;
 };
 
-export type CombatSceneArgs = LegacyCombatSceneArgs | CombatSceneArgsV8 | CombatSceneArgsV9 | CombatSceneArgsV10;
+export type CombatSceneArgs = LegacyCombatSceneArgs | CombatSceneArgsV8 | CombatSceneArgsV9 |
+    CombatSceneArgsV10 | CombatSceneArgsV10R8;
 
 /** Local-only V9C engineering preview contract. It carries no session or transport facts. */
 export type CombatSceneArgsV9 = {
@@ -73,19 +75,19 @@ export type CombatSceneArgsV9 = {
     destroy: () => void;
 };
 
-/** V10 presentation receives either local preview or server-owned Practice callbacks. */
-export type CombatSceneArgsV10 = {
-    kind: 'v10'; live?: boolean; snapshot: SimulationStateV10; previewLabel: string;
+export type SimulationStateV10Family = SimulationStateV10 | SimulationStateV10R8;
+type CombatSceneArgsV10Base<State extends SimulationStateV10Family> = {
+    kind: 'v10'; live?: boolean; snapshot: State; previewLabel: string;
     /** Present only for live authority; exposed for lifecycle diagnostics. */
     challengeId?: string;
     rewarded?: boolean;
     /** Local review metadata derived from the replay-bound recipe and seed. */
     previewTerrainReflected?: boolean;
     calling?: PlayerCalling;
-    submit: (intent: SimulationIntentV10) => Promise<SimulationStateV10>;
-    setPaused: (paused: boolean) => Promise<SimulationStateV10>;
-    cancelInput: () => Promise<SimulationStateV10>;
-    releaseMovement?: () => Promise<SimulationStateV10>;
+    submit: (intent: SimulationIntentV10) => Promise<State>;
+    setPaused: (paused: boolean) => Promise<State>;
+    cancelInput: () => Promise<State>;
+    releaseMovement?: () => Promise<State>;
     paused: () => boolean;
     inputReady?: () => boolean;
     pauseAllowed?: () => boolean;
@@ -93,8 +95,8 @@ export type CombatSceneArgsV10 = {
     /** Local preview scheduler only; live match time remains server-owned. */
     setLocalClockSuspended?: (suspended: boolean) => void;
     trajectoryPreview: (aim: { angleMilliDegrees: number; powerPermille: number }) => { x: number; y: number }[];
-    restart: () => Promise<CombatSceneArgsV10>;
-    onSnapshot: (listener: (snapshot: SimulationStateV10, events: SimulationEventV10[]) => void) => () => void;
+    restart: () => Promise<CombatSceneArgsV10Base<State>>;
+    onSnapshot: (listener: (snapshot: State, events: SimulationEventV10[]) => void) => () => void;
     onResult?: (listener: (result: import('../../../shared/protocol-v10-live').ChallengeResultV10) => void) => () => void;
     onConnection?: (listener: (state: 'connected' | 'reconnecting') => void) => () => void;
     onUnavailable?: (listener: (message: string) => void) => () => void;
@@ -102,8 +104,13 @@ export type CombatSceneArgsV10 = {
     destroy: () => void;
 };
 
-export type ResourceTurnsSceneArgs = CombatSceneArgsV9 | CombatSceneArgsV10;
-export type ResourceTurnsState = SimulationStateV9 | SimulationStateV10;
+/** Current server-backed V10 presentation contract. */
+export type CombatSceneArgsV10 = CombatSceneArgsV10Base<SimulationStateV10>;
+/** Isolated local R8 preview contract; it cannot enter the current server path. */
+export type CombatSceneArgsV10R8 = CombatSceneArgsV10Base<SimulationStateV10R8>;
+
+export type ResourceTurnsSceneArgs = CombatSceneArgsV9 | CombatSceneArgsV10 | CombatSceneArgsV10R8;
+export type ResourceTurnsState = SimulationStateV9 | SimulationStateV10Family;
 export type ResourceTurnsEvent = SimulationEventV9 | SimulationEventV10;
 
 /** Shared by the V9 scene's DOM and Phaser registrations so direct teardown is complete. */
