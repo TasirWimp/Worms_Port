@@ -816,6 +816,83 @@ test('current R7 coalesces aim work and reuses unchanged terrain while authority
   } finally { await page.goto('about:blank'); await runtime.close(); }
 });
 
+test('current R7 stops hidden presentation and transport, then resumes the same authority', async ({ page }) => {
+  test.setTimeout(45_000);
+  let deliveredSnapshots = 0;
+  const runtime = createRuntimeServer({ clientDir: path.resolve('client/build'), identity: false,
+    sessionRegistry: {
+      practiceV10: true,
+      seedSource: () => 4,
+      onChallengeSnapshotV10: (_snapshot, socketId) => { if (socketId) deliveredSnapshots += 1; }
+    } });
+  const port = await runtime.listen();
+  try {
+    await page.addInitScript(() => {
+      const schedule = window.requestAnimationFrame.bind(window);
+      let callbacks = 0;
+      window.requestAnimationFrame = (callback: FrameRequestCallback) => schedule((time) => {
+        callbacks += 1;
+        callback(time);
+      });
+      (window as typeof window & { __frameCallbacks?: () => number }).__frameCallbacks = () => callbacks;
+    });
+    await page.goto(`http://127.0.0.1:${port}/?sideways=off`);
+    await expect(page.locator('html')).toHaveAttribute('data-app-lifecycle', 'active');
+    const firstSessionId = runtime.sessions.getBound([...runtime.io.sockets.sockets.values()][0].id)!.id;
+
+    await setDocumentHidden(page, true);
+    await expect(page.locator('html')).toHaveAttribute('data-app-lifecycle', 'suspended');
+    await expect.poll(() => runtime.io.sockets.sockets.size).toBe(0);
+    await page.waitForTimeout(100);
+    const hiddenLobbyFrames = await frameCallbackCount(page);
+    await page.waitForTimeout(250);
+    expect(await frameCallbackCount(page)).toBe(hiddenLobbyFrames);
+
+    await setDocumentHidden(page, false);
+    await expect(page.locator('html')).toHaveAttribute('data-app-lifecycle', 'active');
+    await expect.poll(() => runtime.io.sockets.sockets.size).toBe(1);
+    expect(runtime.sessions.getBound([...runtime.io.sockets.sockets.values()][0].id)!.id).toBe(firstSessionId);
+
+    await page.getByRole('button', { name: 'Start Practice' }).tap();
+    const ui = page.locator('.combat-v10');
+    await expect(ui).toHaveAttribute('data-ruleset', CURRENT_V10_RULESET_ID);
+    const activeSocket = [...runtime.io.sockets.sockets.values()][0];
+    const session = runtime.sessions.getBound(activeSocket.id)!;
+    const challengeId = runtime.sessions.activeSnapshotV10(session)!.challengeId;
+    await pointer(page, '.combat-v10 .movement-right', 'pointerdown', 1500, 0.5, 0.5);
+    await expect.poll(() => runtime.sessions.activeSnapshotV10(session)!.simulation.heldDirection).toBe(1);
+
+    await setDocumentHidden(page, true);
+    await expect(ui).toHaveAttribute('data-lifecycle', 'suspended');
+    await expect(ui).toHaveAttribute('data-connection', 'reconnecting');
+    await expect.poll(() => runtime.io.sockets.sockets.size).toBe(0);
+    await expect.poll(() => runtime.sessions.activeSnapshotV10(session)!.simulation.heldDirection).toBe(0);
+    await page.waitForTimeout(100);
+    const hiddenMatchFrames = await frameCallbackCount(page);
+    const hiddenDeliveries = deliveredSnapshots;
+    const hiddenTick = runtime.sessions.activeSnapshotV10(session)!.simulation.tick;
+    await page.waitForTimeout(250);
+    expect(await frameCallbackCount(page)).toBe(hiddenMatchFrames);
+    expect(deliveredSnapshots).toBe(hiddenDeliveries);
+    expect(runtime.sessions.activeSnapshotV10(session)!.simulation.tick).toBeGreaterThan(hiddenTick);
+
+    await setDocumentHidden(page, false);
+    await expect(page.locator('html')).toHaveAttribute('data-app-lifecycle', 'active');
+    await expect.poll(() => runtime.io.sockets.sockets.size).toBe(1);
+    await expect(ui).toHaveAttribute('data-lifecycle', 'active');
+    await expect(ui).toHaveAttribute('data-connection', 'connected');
+    await expect(ui).toHaveAttribute('data-presentation', 'none');
+    const resumed = runtime.sessions.getBound([...runtime.io.sockets.sockets.values()][0].id)!;
+    expect(resumed.id).toBe(firstSessionId);
+    expect(runtime.sessions.activeSnapshotV10(resumed)!.challengeId).toBe(challengeId);
+    const resumedX = runtime.sessions.activeSnapshotV10(resumed)!.simulation.units[0].xFp;
+    await pointer(page, '.combat-v10 .movement-right', 'pointerdown', 1501, 0.5, 0.5);
+    await expect.poll(() => runtime.sessions.activeSnapshotV10(resumed)!.simulation.units[0].xFp).toBeGreaterThan(resumedX);
+    await pointer(page, '.combat-v10 .movement-right', 'pointerup', 1501, 0.5, 0.5);
+    await expect.poll(() => runtime.sessions.activeSnapshotV10(resumed)!.simulation.heldDirection).toBe(0);
+  } finally { await setDocumentHidden(page, false); await page.goto('about:blank'); await runtime.close(); }
+});
+
 
 test('standard volcanic Practice survives missing art and expired-session reconnect', async ({ page, context }) => {
   test.setTimeout(45_000);
@@ -847,3 +924,17 @@ test('standard volcanic Practice survives missing art and expired-session reconn
     await expect(ui.locator('.pause-button')).toBeEnabled();
   } finally { await context.setOffline(false); await page.goto('about:blank'); await runtime.close(); }
 });
+
+async function setDocumentHidden(page: Page, hidden: boolean): Promise<void> {
+  await page.evaluate((next) => {
+    if (next) Object.defineProperty(document, 'hidden', { configurable: true, get: () => true });
+    else Reflect.deleteProperty(document, 'hidden');
+    document.dispatchEvent(new Event('visibilitychange'));
+  }, hidden);
+}
+
+async function frameCallbackCount(page: Page): Promise<number> {
+  return page.evaluate(() => (
+    window as typeof window & { __frameCallbacks?: () => number }
+  ).__frameCallbacks?.() ?? 0);
+}

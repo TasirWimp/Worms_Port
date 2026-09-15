@@ -61,6 +61,8 @@ export type CombatSceneArgsV9 = {
     inputReady?: () => boolean;
     pauseAllowed?: () => boolean;
     pauseReason?: () => string | undefined;
+    /** Local preview scheduler only; live match time remains server-owned. */
+    setLocalClockSuspended?: (suspended: boolean) => void;
     /** Re-entry creates a fresh local authority fixture after the old one is torn down. */
     restart: () => Promise<CombatSceneArgsV9>;
     onSnapshot: (listener: (snapshot: SimulationStateV9, events: SimulationEventV9[]) => void) => () => void;
@@ -88,6 +90,8 @@ export type CombatSceneArgsV10 = {
     inputReady?: () => boolean;
     pauseAllowed?: () => boolean;
     pauseReason?: () => string | undefined;
+    /** Local preview scheduler only; live match time remains server-owned. */
+    setLocalClockSuspended?: (suspended: boolean) => void;
     trajectoryPreview: (aim: { angleMilliDegrees: number; powerPermille: number }) => { x: number; y: number }[];
     restart: () => Promise<CombatSceneArgsV10>;
     onSnapshot: (listener: (snapshot: SimulationStateV10, events: SimulationEventV10[]) => void) => () => void;

@@ -58,7 +58,26 @@ test('standard Daily uses volcanic V10, resumes, settles verified loss, and retr
     await expect(ui).toHaveAttribute('data-background', 'volcanic-ruin');
     await expect(page.locator('.pause-button')).toBeDisabled();
     let socketId = [...runtime.io.sockets.sockets.keys()][0];
+    const sessionId = runtime.sessions.getBound(socketId)!.id;
     const challenge = runtime.sessions.activeSnapshotV10(runtime.sessions.getBound(socketId)!)!.challengeId;
+    await page.evaluate(() => {
+      Object.defineProperty(document, 'hidden', { configurable: true, get: () => true });
+      document.dispatchEvent(new Event('visibilitychange'));
+    });
+    await expect(page.locator('html')).toHaveAttribute('data-app-lifecycle', 'suspended');
+    await expect(ui).toHaveAttribute('data-lifecycle', 'suspended');
+    await expect.poll(() => runtime.io.sockets.sockets.size).toBe(0);
+    await page.evaluate(() => {
+      Reflect.deleteProperty(document, 'hidden');
+      document.dispatchEvent(new Event('visibilitychange'));
+    });
+    await expect(page.locator('html')).toHaveAttribute('data-app-lifecycle', 'active');
+    await expect.poll(() => runtime.io.sockets.sockets.size).toBe(1);
+    await expect(ui).toHaveAttribute('data-lifecycle', 'active');
+    await expect(ui).toHaveAttribute('data-connection', 'connected');
+    socketId = [...runtime.io.sockets.sockets.keys()][0];
+    expect(runtime.sessions.getBound(socketId)!.id).toBe(sessionId);
+    expect(runtime.sessions.activeSnapshotV10(runtime.sessions.getBound(socketId)!)!.challengeId).toBe(challenge);
     await page.reload();
     await page.getByRole('button', { name: 'Resume Daily Challenge' }).tap();
     await expect(ui).toBeVisible();

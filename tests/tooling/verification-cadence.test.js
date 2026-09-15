@@ -389,6 +389,7 @@ test('routine unit selectors exclude every explicit legacy diagnostic', () => {
     assert.equal(selected.some((file) => legacyFiles.has(file)), false, suite);
   }
   assert.deepEqual(suiteFiles('practice'), [
+    'tests/practice/application-lifecycle.test.ts',
     'tests/practice/current-v10-client.test.ts'
   ]);
   for (const file of legacyFiles) {

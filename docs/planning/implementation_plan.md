@@ -234,20 +234,22 @@ Phaser/Socket.IO stack.
   out of WP-024 so no deathmatch-specific external selector is built before the
   objective rules exist. See the
   [WP-024 contract](wp-024-v10-r7-terrain-as-gameplay.md).
-- Next authorized successor: **WP-025 Mobile Lifecycle And Power Hardening**.
-  Its contract and implementation have not started. The package will suspend the
-  custom presentation loop and local preview clock while the mini app is hidden,
-  disconnect the live Socket.IO transport until foreground resume, reset timing
-  anchors without catch-up work, and move independent combat animation work under
-  Phaser's managed lifecycle where practical. Daily Challenge authority and exact
-  resume must remain server-owned. Automated coverage will require no hidden-state
-  simulation/render work or snapshot traffic; the physical-phone gate will compare
-  Nimiq Pay at its home screen, the static NIMble Knots lobby and an active match.
-  If meaningful background activity remains after the app-side fix, the residual
-  investigation will be reduced to the Nimiq Pay WebView host lifecycle, including
-  native pause, timer pause and destruction behavior. Current synthetic visibility
-  evidence proves that app-owned work continues while hidden; it does not by itself
-  attribute the phone's measured CPU time to one process or lifecycle layer.
+- Active successor: **WP-025 Mobile Lifecycle And Power Hardening**, implemented
+  locally from clean `b6f7141`; automated verification is complete and Phone
+  Gate A is pending. One idempotent document/page lifecycle owner pauses Phaser and
+  disconnects Socket.IO while hidden. Current R7 presentation now uses Phaser's
+  managed Scene update instead of its own perpetual animation frame. Foreground
+  resume reconnects the bounded session, replaces hidden projection state from
+  a fresh owned snapshot and never replays elapsed client animation. Daily
+  Challenge authority and timing remain server-owned. Automated coverage
+  requires no hidden-state frame work or delivered snapshots; the physical gate
+  compares Nimiq Pay home, the static lobby and an active Practice. Meaningful
+  residue after those app-side checks is reduced to Nimiq Pay's native WebView
+  lifecycle. Current checks prove no hidden Phaser frame callbacks, no delivered
+  snapshots, released movement and exact Practice/Daily resume; the initial
+  browser proof exposed and the final correction removed Phaser's otherwise
+  still-scheduled paused frames. See the [WP-025 contract](wp-025-mobile-lifecycle-power-hardening.md)
+  and [evidence](../evidence/wp-025.json).
 - Queued after WP-025: **WP-026 V10 R8 Objective Modes**. It introduces the
   server-authoritative Defend, Collect and Claim modes, non-destructible physical
   coins and chests, objective-specific results, a separate ASCII objective layer,

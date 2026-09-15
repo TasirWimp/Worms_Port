@@ -17,12 +17,15 @@ import { IdentityProtocolClient } from './identity/client';
 import { IDENTITY_SERVICES_REGISTRY_KEY } from './identity/view';
 import { createResultPreview } from './result/fixture';
 import { capturePeiReturnV0 } from './pei/return';
+import { ApplicationLifecycle } from './lib/application-lifecycle';
 
 capturePeiReturnV0();
 const requestedSideways = requestedSidewaysMode(window.location.search);
 let runningGame: Phaser.Game | undefined;
+let applicationLifecycle: ApplicationLifecycle | undefined;
 
 function syncVisualViewport(): void {
+    if (document.hidden && runningGame) return;
     const viewport = window.visualViewport;
     const width = Math.max(1, Math.floor(viewport?.width ?? window.innerWidth));
     const height = Math.max(1, Math.floor(viewport?.height ?? window.innerHeight));
@@ -57,6 +60,10 @@ class BootScene extends Phaser.Scene {
 
 class NimbleKnotsGame extends Phaser.Game
 {
+    private lifecycleLoopStopped = false;
+    private lifecycleLoopReadyListener = false;
+    private lifecycleLoopCallback?: Phaser.Types.Core.TimeStepCallback;
+
     constructor (combatPreview = false)
     {
         const viewport = window.visualViewport;
@@ -80,6 +87,31 @@ class NimbleKnotsGame extends Phaser.Game
                 : [ BootScene, PracticeScene, CombatScene, ResultScene, JoinScene, RoomScene, GameScene ]
         });
     }
+
+    public stopLoop(): void {
+        this.lifecycleLoopStopped = true;
+        if (this.isRunning) {
+            this.lifecycleLoopCallback = this.loop.callback;
+            this.loop.stop();
+            return;
+        }
+        if (this.lifecycleLoopReadyListener) return;
+        this.lifecycleLoopReadyListener = true;
+        this.events.once(Phaser.Core.Events.READY, () => {
+            this.lifecycleLoopReadyListener = false;
+            queueMicrotask(() => {
+                if (this.lifecycleLoopStopped) this.stopLoop();
+            });
+        });
+    }
+
+    public startLoop(): void {
+        this.lifecycleLoopStopped = false;
+        if (!this.isRunning || this.loop.running) return;
+        const callback = this.lifecycleLoopCallback ?? this.loop.callback;
+        this.lifecycleLoopCallback = undefined;
+        this.loop.start(callback);
+    }
 }
 
 window.onload = async () => {
@@ -87,8 +119,10 @@ window.onload = async () => {
     const resultPreview = query.get('result-preview');
     if (resultPreview === 'practice' || resultPreview === 'reward') {
         const preview = createResultPreview(resultPreview);
+        applicationLifecycle = new ApplicationLifecycle({ onResume: syncVisualViewport });
         const game = new NimbleKnotsGame();
         runningGame = game;
+        applicationLifecycle.attachGame(game);
         syncVisualViewport();
         game.registry.set(PRACTICE_CLIENT_REGISTRY_KEY, preview.client);
         game.scene.start('result', preview.args);
@@ -96,15 +130,21 @@ window.onload = async () => {
     }
     const combatPreview = query.has('combat-preview');
     if (combatPreview) {
-        runningGame = new NimbleKnotsGame(true);
+        applicationLifecycle = new ApplicationLifecycle({ onResume: syncVisualViewport });
+        const game = new NimbleKnotsGame(true);
+        runningGame = game;
+        applicationLifecycle.attachGame(game);
         syncVisualViewport();
         return;
     }
     const socket = io({ transports: ['websocket'] });
     const session = await bootstrapSession(socket);
     const client = await PracticeClient.connect(socket, session);
+    applicationLifecycle = new ApplicationLifecycle({ onResume: syncVisualViewport });
+    applicationLifecycle.attachSocket(socket);
     const game = new NimbleKnotsGame();
     runningGame = game;
+    applicationLifecycle.attachGame(game);
     syncVisualViewport();
     game.registry.set(PRACTICE_CLIENT_REGISTRY_KEY, client);
     game.registry.set(IDENTITY_SERVICES_REGISTRY_KEY, {

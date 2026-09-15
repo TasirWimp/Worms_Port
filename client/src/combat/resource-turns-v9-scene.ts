@@ -11,6 +11,7 @@ import { BackgroundRenderer } from './background-renderer';
 import { ResourceTurnsV9Controls } from './resource-turns-v9-controls';
 import { cameraFocusProgress } from './controls';
 import { activeSidewaysMode, clientPointToGame } from '../lib/sideways';
+import { APP_RESUME_EVENT, APP_SUSPEND_EVENT } from '../lib/application-lifecycle';
 import type { AimIntent } from './input';
 import type { SimulationIntentV9, SimulationStateV9 } from '../../../shared/simulation-v9';
 import { usesVolcanicRuinScenicFrame, type SimulationIntentV10 } from '../../../shared/simulation-v10';
@@ -23,7 +24,7 @@ const V10_OPENING_CAMERA_DURATION_MS = 3_000;
 export class ResourceTurnsV9Scene {
     private state: ResourceTurnsState; private readonly renderer: CombatRenderer; private readonly controls: ResourceTurnsV9Controls;
     private readonly sceneBackground: BackgroundRenderer;
-    private camera: CombatCamera; private layout: CombatLayout; private frame?: number; private destroyed = false; private unsubscribe?: () => void;
+    private camera: CombatCamera; private layout: CombatLayout; private destroyed = false; private unsubscribe?: () => void;
     private neutralPending = false; private neutralGeneration = 0; private requestGeneration = 0; private previewGeneration = 0; private preview: { x: number; y: number }[] = [];
     private presentation: { steps: V9PresentationStep[]; index: number; startedAt: number; generation: number } | undefined;
     private projectileCamera?: CombatCamera; private cameraTransition?: CameraTransition;
@@ -36,6 +37,9 @@ export class ResourceTurnsV9Scene {
     private pendingPreview?: { aim: AimIntent; generation: number };
     private previewComputationCount = 0;
     private renderDatasetSignature = '';
+    private suspended = false;
+    private resyncSnapshotPending = false;
+    private skipTerminalPresentation = false;
 
     public constructor(
         private readonly scene: Phaser.Scene,
@@ -78,8 +82,13 @@ export class ResourceTurnsV9Scene {
             if (args.onConnection) this.listeners.defer(args.onConnection(state => {
                 this.controls.interrupt();
                 this.controls.root.dataset.connection = state;
-                if (state === 'reconnecting') this.controls.root.querySelector<HTMLElement>('.combat-message')!.textContent =
-                    'Reconnecting · controls wait for a fresh authoritative snapshot.';
+                if (state === 'reconnecting') {
+                    this.resyncSnapshotPending = true;
+                    this.cancelCameraNavigation();
+                    this.cancelPresentation();
+                    this.controls.root.querySelector<HTMLElement>('.combat-message')!.textContent =
+                        'Reconnecting · controls wait for a fresh authoritative snapshot.';
+                }
             }));
             if (args.onError) this.listeners.defer(args.onError(message => {
                 this.controls.root.querySelector<HTMLElement>('.combat-message')!.textContent = message;
@@ -87,9 +96,19 @@ export class ResourceTurnsV9Scene {
             if (args.onUnavailable) this.listeners.defer(args.onUnavailable(message => this.showUnavailable(message)));
             if (args.onResult) this.listeners.defer(args.onResult(result => this.showResult(result)));
         }
-        const interrupt = () => { this.completeOpeningSurvey(); this.cancelCameraNavigation(); this.cancelPresentation(); this.controls.interrupt(); void this.neutralize(); };
-        const resize = () => { this.safeArea = readSafeArea(); interrupt(); this.requestRender(); };
-        this.listeners.emitter(scene.scale, Phaser.Scale.Events.RESIZE, resize); this.listeners.dom(window, 'blur', interrupt); this.listeners.dom(document, 'visibilitychange', interrupt);
+        const interrupt = () => { this.completeOpeningSurvey(); this.cancelCameraNavigation(); this.cancelPresentation(); this.controls.interrupt(); void this.neutralize().catch(() => undefined); };
+        const resize = () => {
+            this.safeArea = readSafeArea();
+            if (!this.suspended) interrupt();
+            this.requestRender();
+        };
+        const visibility = () => document.hidden ? this.suspendProjection() : this.resumeProjection();
+        this.listeners.emitter(scene.scale, Phaser.Scale.Events.RESIZE, resize);
+        this.listeners.emitter(scene.events, Phaser.Scenes.Events.UPDATE, this.updateFrame);
+        this.listeners.dom(window, 'blur', interrupt);
+        this.listeners.dom(document, 'visibilitychange', visibility);
+        this.listeners.dom(window, APP_SUSPEND_EVENT, () => this.suspendProjection());
+        this.listeners.dom(window, APP_RESUME_EVENT, () => this.resumeProjection());
         const canvas = scene.game.canvas;
         const coordinate = (event: PointerEvent) => clientPointToGame({ x: event.clientX, y: event.clientY }, document.getElementById('game')!.getBoundingClientRect(), activeSidewaysMode()).x;
         const down = (event: PointerEvent) => { if (event.button === 0) { this.completeOpeningSurvey(); this.cancelCameraTransition(); this.cameraPointer = { id: event.pointerId, x: coordinate(event) }; try { canvas.setPointerCapture(event.pointerId); } catch {} } };
@@ -98,28 +117,40 @@ export class ResourceTurnsV9Scene {
         const cancel = () => { this.cancelCameraPointer(); interrupt(); };
         this.listeners.dom(canvas, 'pointerdown', down); this.listeners.dom(canvas, 'pointermove', move); this.listeners.dom(canvas, 'pointerup', end); this.listeners.dom(canvas, 'pointercancel', cancel);
         this.listeners.once(this.scene.events, Phaser.Scenes.Events.SHUTDOWN, () => this.destroy());
-        const loop = () => {
-            if (this.destroyed) return;
-            this.controls.pollMovement();
-            this.flushPreview();
-            if (this.renderRequested || this.cameraTransition || this.presentation || this.terminalPresentation) {
-                this.renderRequested = false;
-                this.render(false);
-            }
-            this.frame = requestAnimationFrame(loop);
-        };
-        loop();
+        if (document.hidden) this.suspendProjection();
+        else {
+            this.controls.root.dataset.lifecycle = 'active';
+            this.updateFrame();
+        }
     }
 
     public destroy(): void {
-        if (this.destroyed) return; this.destroyed = true; if (this.frame) cancelAnimationFrame(this.frame);
+        if (this.destroyed) return; this.destroyed = true;
         this.unsubscribe?.(); this.listeners.dispose(); this.cancelCameraNavigation(); this.cancelPresentation(); this.args.destroy(); this.controls.destroy(); this.sceneBackground.destroy(); this.renderer.destroy();
     }
 
     private accept(next: ResourceTurnsState, events: ResourceTurnsEvent[]): void {
         if (this.destroyed) return;
+        if (this.suspended) {
+            this.state = structuredClone(next);
+            this.resyncSnapshotPending = true;
+            return;
+        }
         const previous = this.state; this.state = structuredClone(next);
         const boundary = this.controls.update(this.state, events, this.args.paused());
+        if (this.resyncSnapshotPending) {
+            this.resyncSnapshotPending = false;
+            this.skipTerminalPresentation = this.state.phase === 'finished' || this.state.winner !== null;
+            this.requestGeneration++;
+            this.previewGeneration++;
+            this.pendingPreview = undefined;
+            this.preview = [];
+            this.projectileCamera = undefined;
+            this.cancelCameraNavigation();
+            this.cancelPresentation();
+            this.requestRender();
+            return;
+        }
         if (boundary) { this.requestGeneration++; this.cancelCameraNavigation(); this.previewGeneration++; this.pendingPreview = undefined; this.preview = []; this.cancelPresentation(); }
         const steps = planV9Presentation(previous, this.state, reducedMotion());
         if (steps.length) this.presentation = { steps, index: 0, startedAt: performance.now(), generation: this.requestGeneration };
@@ -169,7 +200,9 @@ export class ResourceTurnsV9Scene {
     }
     private showResult(result: import('../../../shared/protocol-v9').ChallengeResultV9 | import('../../../shared/protocol-v10-live').ChallengeResultV10): void {
         if (this.destroyed || this.restarting) return;
-        if (result.protocolVersion === 10 && this.state.units.some(unit => !unit.alive)) {
+        const skipPresentation = this.resyncSnapshotPending || this.skipTerminalPresentation;
+        this.skipTerminalPresentation = false;
+        if (!skipPresentation && result.protocolVersion === 10 && this.state.units.some(unit => !unit.alive)) {
             this.terminalPresentation ??= { result, until: performance.now() + WIZARD_UNRAVEL_DURATION_MS };
             return;
         }
@@ -225,8 +258,8 @@ export class ResourceTurnsV9Scene {
         const visual = current.steps[current.index].visual;
         return visual;
     }
-    private render(pollMovement: boolean): void {
-        if (this.destroyed) return; const now = performance.now();
+    private render(): void {
+        if (this.destroyed || this.suspended) return; const now = performance.now();
         if (this.terminalPresentation && now >= this.terminalPresentation.until) {
             const result = this.terminalPresentation.result;
             this.scene.scene.start('result', { result, calling: this.args.calling ?? 'wizard', rewarded: this.args.rewarded === true });
@@ -238,7 +271,7 @@ export class ResourceTurnsV9Scene {
             this.projectileCamera ??= this.camera;
             this.camera = this.scenicFrame ? revealCombatCameraPoint(projectCombatV9(this.state), this.camera, this.state.projectile.xFp / 256) : focusCombatCamera(projectCombatV9(this.state), this.camera, this.state.projectile.xFp / 256);
         } else this.advanceCamera(now);
-        this.layout = computeCombatLayout(this.scene.scale.width, this.scene.scale.height, this.safeArea, this.camera); this.controls.setLayout(this.layout); if (pollMovement) this.controls.pollMovement();
+        this.layout = computeCombatLayout(this.scene.scale.width, this.scene.scale.height, this.safeArea, this.camera); this.controls.setLayout(this.layout);
         const queuedVisual = this.terminalPresentation ? { kind: 'impact' as const, actor: this.state.activeActor,
             relicId: this.state.lastProjectile?.relicId ?? 'threadball' as const, trace: [],
             unraveling: this.state.units.filter(unit => !unit.alive).map(unit => unit.id) } : this.visual(now); const visual: CombatVisualPhase | undefined = this.state.projectile ? {
@@ -272,6 +305,43 @@ export class ResourceTurnsV9Scene {
     }
     private cancelCameraPointer(): void { const pointer = this.cameraPointer; if (!pointer) return; try { this.scene.game.canvas.releasePointerCapture(pointer.id); } catch {} this.cameraPointer = undefined; }
     private cancelCameraNavigation(): void { this.cancelCameraTransition(); this.cancelCameraPointer(); }
+
+    private readonly updateFrame = (): void => {
+        if (this.destroyed || this.suspended) return;
+        this.controls.pollMovement();
+        this.flushPreview();
+        if (this.renderRequested || this.cameraTransition || this.presentation || this.terminalPresentation) {
+            this.renderRequested = false;
+            this.render();
+        }
+    };
+
+    private suspendProjection(): void {
+        if (this.destroyed || this.suspended) return;
+        this.suspended = true;
+        this.resyncSnapshotPending = this.args.kind === 'v10' && this.args.live === true;
+        this.requestGeneration++;
+        this.previewGeneration++;
+        this.pendingPreview = undefined;
+        this.preview = [];
+        this.cancelCameraNavigation();
+        this.cancelPresentation();
+        this.controls.interrupt();
+        this.args.setLocalClockSuspended?.(true);
+        this.controls.root.dataset.lifecycle = 'suspended';
+        if (this.args.kind !== 'v10' || this.args.live !== true) {
+            void this.neutralize().catch(() => undefined);
+        }
+    }
+
+    private resumeProjection(): void {
+        if (this.destroyed || !this.suspended || document.hidden) return;
+        this.suspended = false;
+        this.args.setLocalClockSuspended?.(false);
+        this.controls.root.dataset.lifecycle = 'active';
+        if (this.terminalPresentation) this.terminalPresentation.until = performance.now();
+        this.requestRender();
+    }
 }
 
 function reducedMotion(): boolean { return window.matchMedia('(prefers-reduced-motion: reduce)').matches; }

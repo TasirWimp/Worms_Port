@@ -29,6 +29,43 @@ function createClock(): V10FixtureClock & { advanceThirtyTicks: () => void } {
     };
 }
 
+test('current R7 local preview retires its scheduler while the app is suspended', async () => {
+    let now = 0;
+    let callback: (() => void) | undefined;
+    let starts = 0;
+    let stops = 0;
+    const fixture = await createTerrainStartsV10Fixture(4, 'wizard', {
+        now: () => now,
+        every: next => {
+            starts += 1;
+            callback = next;
+            return () => {
+                stops += 1;
+                if (callback === next) callback = undefined;
+            };
+        }
+    }, V10_R7_RULESET_ID);
+    const unsubscribe = fixture.onSnapshot(() => {});
+    try {
+        assert.equal(starts, 1);
+        const tick = fixture.snapshot.tick;
+        fixture.setLocalClockSuspended?.(true);
+        assert.equal(stops, 1);
+        now += 20_000;
+        callback?.();
+        assert.equal(fixture.snapshot.tick, tick);
+        fixture.setLocalClockSuspended?.(false);
+        assert.equal(starts, 2);
+        now += 1_000;
+        callback?.();
+        assert.ok(fixture.snapshot.tick > tick);
+    } finally {
+        unsubscribe();
+        fixture.destroy();
+    }
+    assert.equal(stops, 2);
+});
+
 for (const seed of [0, 4, 5, 6, 7, 8]) test(`V10G fixture preview, AI and restart parity: ${seed || 'R3'}`, async () => {
     const clock = createClock();
     const fixture = await createTerrainStartsV10Fixture(seed || 4, 'wizard', clock, seed ? V10_R4_RULESET_ID : V10_R3_RULESET_ID);

@@ -1,0 +1,74 @@
+{
+  "id": "WP-025",
+  "status": "in_progress",
+  "execution_mode": "single_owner",
+  "starting_commit": "b6f7141",
+  "branch": "codex/v10-r6-action-impact-dynamics",
+  "initial_worktree": "clean",
+  "starting_lock_sha256": "6B768A8FDE2695D02555CA17201FD7CE420F9AC075B91380474DD7A643042BC8",
+  "owning_roles": [
+    "primary assistant"
+  ],
+  "scope": [
+    "Stop app-owned Phaser update/render work and the live Socket.IO transport while the mini app is hidden, using one idempotent visibility/page lifecycle owner.",
+    "Move the current R7 presentation heartbeat under Phaser Scene UPDATE, cancel transient projection work at suspension and replace it from a fresh owned snapshot without catch-up animation on foreground resume.",
+    "Preserve the server-owned Practice and PEI-gated Daily challenge, session, replay, result and reward lifecycle across a short background interval.",
+    "Measure the physical Android result against Nimiq Pay home, a hidden static lobby and a hidden active Practice before attributing any residue to the host WebView lifecycle."
+  ],
+  "non_goals": [
+    "No gameplay, ruleset, terrain, Loomkeeper, reward, PEI, helper, wallet, database, environment-variable, dependency, asset or deployment change.",
+    "No client-authoritative background pause, reconnect-grace extension, additional Daily attempt or retired-version lifecycle support."
+  ],
+  "planned_checks": [
+    "npm run verify:changes -- --dry-run --base b6f7141",
+    "Focused current lifecycle unit, Practice and Daily browser checks selected by direct review",
+    "npm run verify:changes -- --base b6f7141",
+    "npm run check:work-packages and npm run audit:housekeeping before Phone Gate A"
+  ],
+  "deterministic_seeds": [
+    "Current volcanic R7 Practice seed 4",
+    "Current Daily reservation seed 1 and R7 match seed 4"
+  ],
+  "sorcerers_reference_used": false,
+  "clean_room_records": [],
+  "check_results": [
+    {
+      "command": "npm run verify:changes -- --dry-run --base b6f7141",
+      "status": "pass",
+      "details": "The final selector dry run recorded fingerprint 084413b4ae21abb3179d94410d2223264c2206e7cafe15aa4d7b49238d578add. It selected current import, types, work-package, combat, Practice, identity, reward, protocol and tooling checks, fresh build, standard R7 smoke, identity/reward security, bundle budget and canonical current identity/PEI/Practice/resilience/reward/smoke browser journeys. Performance, PostgreSQL, visual, legacy and daily/release coverage were not selected."
+    },
+    {
+      "command": "Focused current lifecycle unit, Practice and Daily browser checks selected by direct review",
+      "status": "pass",
+      "details": "Delegated zero-retry current checks passed lifecycle/Practice 4/4 and combat 49/49. They prove idempotent suspend/resume, initially hidden attachment, local R7 preview scheduler cancellation and restart without wall-time debt, and unchanged current combat behavior. The first canonical browser phase retained 17 passes and one real lifecycle failure: Phaser pause suppressed updates but left request-animation-frame callbacks scheduled. After the product correction, the exact hidden lobby/Practice case passed 1/1 and the exact active Daily visibility/resume journey passed 1/1. Logs .cache/wp025-final-practice.log, .cache/wp025-final-combat.log, .cache/wp025-final-browser.log, .cache/wp025-lifecycle-practice-browser.log and .cache/wp025-lifecycle-reward-browser.log."
+    },
+    {
+      "command": "npm run verify:changes -- --base b6f7141",
+      "status": "pass",
+      "details": "The change-selected feature gate was composed under the repository recovery policy without rerunning unchanged passing phases. The first run passed import, types, work packages 72/72, combat 48/48, Practice 4/4, identity 22/22, reward 28/28 and protocol 21/21, then preserved a tooling inventory failure. Updating the expected current Practice inventory passed the exact tooling file 31/31. A first local scheduler correction preserved 40 combat passes and exposed nine deterministic catch-up failures; limiting scheduler shutdown to terminal state produced 49/49. The final lifecycle correction passed types, Practice 4/4, fresh build proof ba91ee3bcecd / 08847d87cc8f, standard R7 built smoke, identity-bundle and reward-security checks. Bundle limits passed at 1,431,053/1,500,000 JavaScript bytes and 417,552/430,000 initial JavaScript-plus-CSS gzip bytes. The original canonical browser run preserved 17/18 passes; only the affected Practice and Daily cases reran and passed. No full selector was repeated. Logs .cache/wp025-selector.log, .cache/wp025-recovery-tooling.log, .cache/wp025-recovery-combat.log, .cache/wp025-final-browser.log and .cache/wp025-lifecycle-*.log."
+    },
+    {
+      "command": "npm run check:work-packages and npm run audit:housekeeping before Phone Gate A",
+      "status": "pass",
+      "details": "The delegated pre-phone record check passed all 72 work-package records. The report-only housekeeping audit exited successfully with normal branch/upstream state, the expected dirty WP-025 implementation and WP-025 correctly in progress. Its manual-reconciliation flag refers to preserved historical failed reviews and other historical/in-progress records; no mutation was performed. Logs .cache/wp025-pre-phone-work-packages.log and .cache/wp025-pre-phone-housekeeping.log."
+    }
+  ],
+  "reviews": [
+    {
+      "role": "primary",
+      "reviewer": "primary assistant",
+      "decision": "pass",
+      "details": "Direct review traced normal startup, page visibility/pagehide/pageshow ordering, Phaser scheduling, current R7 local and server-backed presentation, Socket.IO manual reconnect, session bootstrap, V10 fresh-snapshot input fencing, disconnect movement release and Daily resume. Hidden state cancels transient projection, stops both Phaser and local preview schedulers and disconnects the socket. Resume resets timer anchors, reconnects the same bounded server authority and never enables input from stale projection. No gameplay, server timing, replay, Daily limit, PEI, reward, helper, database, asset, dependency or environment behavior changed. Physical Android power attribution remains Phone Gate A."
+    }
+  ],
+  "skipped_checks": [
+    "Retired R5-and-older runtime profiles and @legacy browser diagnostics were excluded from current acceptance.",
+    "Performance and visual phases were not selected: the change adds no pixels and the focused browser proof counts the exact hidden scheduler and snapshot work that caused the power risk. Foreground physical smoothness remains part of Phone Gate A.",
+    "PostgreSQL was not selected because lifecycle hardening changes no database, store, migration, settlement or concurrency boundary.",
+    "The daily/release suite was not run because this is a feature waypoint before physical Phone Gate A rather than the 22:00 checkpoint or an explicit release boundary.",
+    "Physical Android/iOS and Nimiq Pay battery acceptance has not run yet; Phone Gate A is the only remaining package gate."
+  ],
+  "residual_risks": [
+    "Android attributes both mini-app and native host work to Nimiq Pay, so the physical comparison can reduce remaining ownership to the host layer but cannot profile native internals from this repository."
+  ]
+}

@@ -90,6 +90,7 @@ export async function createTerrainStartsV10Fixture(
         )
         : undefined;
     let paused = false;
+    let clockSuspended = false;
     let destroyed = false;
     let publishing = false;
     let credit = 0;
@@ -201,7 +202,7 @@ export async function createTerrainStartsV10Fixture(
         const now = clock.now();
         const elapsed = Math.max(0, now - lastNow);
         lastNow = now;
-        if (paused) return true;
+        if (paused || clockSuspended) return true;
         if (state.phase === 'finished') return false;
         credit += elapsed * 30;
         if (Math.floor(credit / 1000) > 30) {
@@ -223,6 +224,18 @@ export async function createTerrainStartsV10Fixture(
         const caughtUp = credit < 1000;
         if (count) publish(events);
         return caughtUp;
+    };
+    const stopClock = () => {
+        stop?.();
+        stop = undefined;
+    };
+    const startClock = () => {
+        if (destroyed || paused || clockSuspended || stop || !listeners.size || state.phase === 'finished') return;
+        lastNow = clock.now();
+        stop = clock.every(() => {
+            due();
+            if (state.phase === 'finished') stopClock();
+        });
     };
     const submit = async (intent: SimulationIntentV10) => {
         if (destroyed) throw new Error('Preview is closed.');
@@ -282,7 +295,17 @@ export async function createTerrainStartsV10Fixture(
         credit = 0;
         lastNow = clock.now();
         publish(result.events, true);
+        if (paused) stopClock();
+        else startClock();
         return cloneSimulationV10(state);
+    };
+    const setLocalClockSuspended = (value: boolean) => {
+        if (destroyed || value === clockSuspended) return;
+        clockSuspended = value;
+        credit = 0;
+        lastNow = clock.now();
+        if (clockSuspended) stopClock();
+        else startClock();
     };
     const cancelInput = async () => {
         if (destroyed || publishing) return cloneSimulationV10(state);
@@ -303,8 +326,7 @@ export async function createTerrainStartsV10Fixture(
     const destroy = () => {
         if (destroyed) return;
         destroyed = true;
-        stop?.();
-        stop = undefined;
+        stopClock();
         listeners.clear();
         resetAutomation();
         const result = applySimulationBarrierV10(state, {
@@ -339,6 +361,7 @@ export async function createTerrainStartsV10Fixture(
         submit,
         setPaused,
         cancelInput,
+        setLocalClockSuspended,
         paused: () => paused,
         trajectoryPreview: aim => {
             if (destroyed || paused) return [];
@@ -363,16 +386,10 @@ export async function createTerrainStartsV10Fixture(
         onSnapshot: listener => {
             if (destroyed) return () => {};
             listeners.add(listener);
-            if (!stop) {
-                lastNow = clock.now();
-                stop = clock.every(() => { due(); });
-            }
+            startClock();
             return () => {
                 listeners.delete(listener);
-                if (!listeners.size) {
-                    stop?.();
-                    stop = undefined;
-                }
+                if (!listeners.size) stopClock();
             };
         },
         destroy

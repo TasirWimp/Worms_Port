@@ -148,6 +148,13 @@ are also recorded in the Execution Pointer of
   [WP-027](docs/planning/wp-027-gemini-objective-loomkeeper.md).
   Named development profiles remain diagnostics and cannot activate the
   PEI-gated Daily Challenge.
+- [WP-025](docs/planning/wp-025-mobile-lifecycle-power-hardening.md) pauses
+  Phaser and disconnects Socket.IO whenever the mini app is hidden. Returning
+  to the foreground reconnects the same bounded current-R7 session and waits
+  for a fresh authoritative snapshot; hidden time never becomes client-side
+  catch-up animation. Match time, Daily eligibility and rewards remain
+  server-owned. Physical Nimiq Pay battery and short-resume acceptance is
+  pending.
 - Assets from Sorcerers may move into `assets/` only after exact-file license
   evidence proves commercial use, redistribution, and modification are allowed.
 - Product assets must be traceable through `legal/asset-manifest.json`.
