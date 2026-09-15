@@ -1,6 +1,6 @@
 {
   "id": "WP-024",
-  "status": "in_progress",
+  "status": "complete",
   "execution_mode": "single_owner",
   "starting_commit": "4f7c878",
   "branch": "codex/v10-r6-action-impact-dynamics",
@@ -34,7 +34,7 @@
     "npm.cmd run verify:changes -- --dry-run --base 4f7c878",
     "Focused current R7 simulation, protocol, local fixture, presentation and browser preview checks selected by direct review",
     "npm.cmd run verify:changes -- --base 4f7c878",
-    "npm.cmd run audit:housekeeping at the Waypoint 1 phone boundary",
+    "npm.cmd run audit:housekeeping at package transitions and closure",
     "Phone Gate A on the physical phone",
     "Phone Gate A crater-scale and floor-exit refinement from committed base 8ba164a",
     "Second Phone Gate A crater parameter refinement from committed base 18a1292",
@@ -68,9 +68,14 @@
       "details": "The zero-retry final selector passed import, types, 71 work-package records, combat 46/46, Practice 2/2, identity 22/22, reward 28/28, protocol 18/18, simulation 63/63, Loomkeeper 39/39, relics 10/10 and PEI 25/25. Fresh build proof 23bf113aebad / b5de9a03f2bb passed the standard R6 built smoke, identity/reward security and bundle limits at 1426836/1500000 raw JavaScript bytes and 416591/430000 gzip bytes. Supported canonical browser families passed 16/16; visual logic passed 11/11 with four expected Windows screenshot skips. The local PostgreSQL prerequisite remained absent as expected. Log .cache/wp024-final-selector.log."
     },
     {
-      "command": "npm.cmd run audit:housekeeping at the Waypoint 1 phone boundary",
+      "command": "npm.cmd run audit:housekeeping at package transitions and closure",
       "status": "pass",
-      "details": "The final documentation boundary passed 71/71 work-package records and the report-only housekeeping audit. The current branch and upstream match, WP-024 remains correctly in progress pending Phone Gate A, and no gone tracking branch exists. The manual-reconciliation flag refers only to preserved historical package/review records. Logs .cache/wp024-final-work-packages.log and .cache/wp024-final-housekeeping.log."
+      "details": "Report-only housekeeping passed at the waypoint boundaries and again at closure on 2026-09-15. The closure audit confirmed the current branch tracks its matching upstream, WP-024 is no longer current in-progress, and the manual-reconciliation flag refers to preserved historical package/review records. Logs include .cache/wp024-final-housekeeping.log and .cache/wp024-closure-housekeeping.log."
+    },
+    {
+      "command": "Phone Gate A on the physical phone",
+      "status": "pass",
+      "details": "The owner accepted crater scale, the two-hit Spoolburst floor, the one-third-area Threadball crater, Needlepoint precision carving, open-bottom disappearance and smooth movement across crater edges. The first read retained points 1 through 3 and exposed only subtle Needlepoint actor recoil; after the bounded R7-only recoil correction, points 4 and 5 passed at committed and pushed 4933cb2, completing Gate A."
     },
     {
       "command": "Phone Gate A crater-scale and floor-exit refinement from committed base 8ba164a",
@@ -88,64 +93,29 @@
       "details": "The focused zero-retry plan passed types, all 6 R7 terrain-gameplay cases, fresh build proof fe635ec82cea / f42840d01887 and the supported Chromium 390x844 R7 preview at 1/1. The new direct-impact regression proves that a surviving target receives the R7 Needlepoint 1024/-768 blast launch, enters blast motion and changes world position over subsequent ticks; it also freezes R6 at 256/768/512 and retains the accepted crater, two-hit shelf and fall-loss cases. The broad dry-run fingerprint 8fb829ae3ebb159a4e368949e5f16acbed019a9be1c66c2ba52c30270d6f69ba was inspected but not executed because this changed only one non-current R7 parameter table plus its focused test and documentation. Broader unit/browser, PostgreSQL, performance, security, bundle, legacy and daily/release checks reused the passing committed dbcec6a boundary. Logs .cache/wp024-r7-recoil-types.log, .cache/wp024-r7-recoil-simulation.log, .cache/wp024-r7-recoil-build.log and .cache/wp024-r7-recoil-browser-r7-preview.log."
     },
     {
-      "command": "Waypoint 2 focused compiler, state, fixture, protocol and Loomkeeper checks",
+      "command": "Waypoint 2 exact compiler, geometry, serializer, transition metadata, local recovery, rendering and full-arena browser checks from committed base 4933cb2",
       "status": "pass",
-      "details": "The testing worker preserved each first failure while the primary corrected product/test boundaries. The first type pass exposed one Zod/domain restore cast; the first 35/37 unit run exposed an invalid handcrafted projectile fixture and showed that the initial chart covered every column with elevated material. The chart gained explicit base-only breach approaches at authoring columns 8-9 and 54-55. After three projectile-identity failures, policy stopped that fixture strategy; the primary removed it and tested the production terrain-metadata reconciler directly without weakening an invariant. The final affected checks passed types and R7 simulation 12/12, combining with unchanged passing fixture, protocol and Loomkeeper cases for 37/37 focused cases. Logs .cache/wp024-waypoint2-types.log, .cache/wp024-waypoint2-terrain-focused-recovery.log, .cache/wp024-waypoint2-terrain-focused-recovery2.log, .cache/wp024-waypoint2-r7-simulation-final.log, .cache/wp024-waypoint2-metadata-types.log and .cache/wp024-waypoint2-metadata-simulation.log."
+      "details": "The focused compiler/state work preserved each first failure while the primary corrected a restore cast, invalid handcrafted projectile fixture and missing base-only breach approaches. Final affected checks passed types and 37/37 focused compiler, fixture, protocol, simulation and Loomkeeper cases without weakening production invariants. The final selector at fingerprint fdfaa3151a937947c31c03e5d9481727e96341d924afe13fbddec562c07ccc87 passed all selected units, build proof ac1beac325f6 / f4d324f3f345, smoke, security, bundle and 16/16 supported current browser cases. One timing-sensitive camera assertion failed in the visual phase; the primary replaced it with the immutable opening-survey fact, then affected recovery passed types, fresh build proof d8437dd7b964 / b4b3e409f6c7, visual logic 5/5 and the canonical Threadball destruction/reload case 1/1. The full selector was not repeated. Logs are under .cache/wp024-waypoint2-*.log."
     },
     {
-      "command": "npm.cmd run verify:changes -- --base 4933cb2 plus affected visual recovery",
+      "command": "Phone Gate B on the physical phone",
       "status": "pass",
-      "details": "The one final selector used fingerprint fdfaa3151a937947c31c03e5d9481727e96341d924afe13fbddec562c07ccc87. Import, types, 71 evidence records, combat 48/48, Practice 2/2, protocol 18/18, simulation 72/72, Loomkeeper 39/39, relics 10/10, identity 22/22, reward 28/28, PEI 25/25 and tooling 133/133 passed. Build proof ac1beac325f6 / f4d324f3f345 passed standard R6 smoke, security and bundle limits; supported current browsers passed 16/16. The visual phase then reproduced one new timing-sensitive R7 assertion on all five projects: it observed the intended camera interpolation from 2048 to the stable 1024 player view instead of a permanent 2048 width. The primary replaced that transient assertion with an immutable 2048-unit opening-survey fact. Per owner test policy, passed selector phases were preserved. Affected recovery passed types, fresh proof d8437dd7b964 / b4b3e409f6c7, R7 visual logic 5/5 and the supported canonical-phone Threadball destruction/reload case 1/1. The first persistence command correctly found no case because combat.spec.ts is retired; the case moved to the supported visual suite without enabling legacy coverage. Logs .cache/wp024-waypoint2-selector-final.log, .cache/wp024-waypoint2-visual-recovery-types.log, .cache/wp024-waypoint2-visual-recovery-build.log, .cache/wp024-waypoint2-visual-recovery-logic.log, .cache/wp024-waypoint2-visual-recovery-combat.log and .cache/wp024-waypoint2-r7-persistence-supported.log."
+      "details": "At committed and pushed 9e17773, the owner accepted all seven checks: the opening survey and battlefield use the whole arena; high, central and lower routes are readable; Relics open routes and remove obstacles; a breached foundation produces an open-bottom fall loss; isolated terrain remains stable and destructible; controls, camera and crater presentation remain smooth; app reopen restores the exact changed battlefield; and explicit restart creates a fresh battlefield."
     },
     {
-      "command": "Waypoint 3 focused live identity, replay and terrain continuity checks from committed base d8a1bb1",
+      "command": "Waypoint 3 exact R7 server identity, deterministic Loomkeeper, replay/resume, Practice canary, reward verification and current browser checks",
       "status": "pass",
-      "details": "The primary inspected the final change-selector task plan. The testing worker passed types once and 31/31 focused protocol plus R6/R7 simulation cases with zero retries. The new coverage proves that current live creation uses the R7 ruleset and automation identity, a crater changes authoritative terrain revision/hash and reconstructs byte-for-byte, deterministic Loomkeeper selections regenerate, and a frozen R6 automated replay remains reconstructable while mismatched R6/R7 provenance fails closed. Logs .cache/wp024-current-types.log and .cache/wp024-current-protocol-simulation-focused.log."
+      "details": "Focused types and 31/31 protocol plus R6/R7 simulation cases proved exact live R7 identity, terrain reconstruction, deterministic Loomkeeper regeneration and rejection of cross-version replay relabelling. The first zero-retry selector preserved all passing unit/build/security phases but failed three canonical browser cases on 45-second round timeouts, exposing double-charged authority work and long synchronous planning/replay work. The primary corrected scheduler accounting, detached planning and cooperative replay settlement. Affected recovery passed focused types, protocol, reward and 31/31 replay-kernel cases, fresh build proof 703a6de7ef42 / 360b48307073, standard R7 smoke, the PEI journey 1/1 and the two original Daily failures 2/2; the full selector was not repeated. Work-package, housekeeping and the expected local PostgreSQL prerequisite boundary also passed. Logs are under .cache/wp024-waypoint3-*, .cache/wp024-planner-kernel-* and .cache/wp024-replay-kernel-*."
     },
     {
-      "command": "Initial Waypoint 3 change-selected run from committed base d8a1bb1",
-      "status": "fail",
-      "details": "The zero-retry selector used fingerprint 9e6167a293bebc68bc134d6b0c62c3eae8cb4b348f8af1983a1897f7c878e4f7. Import, types, 71 work-package records, combat 48/48, Practice 2/2, tooling 133/133, protocol 20/20, simulation 72/72, Loomkeeper 39/39, relics 10/10, identity 22/22, reward 28/28 and PEI 25/25 passed. Build proof 4659c6b271fe / e5be784c1e99 passed smoke, security and bundle limits. The canonical browser phase retained 13 passes and three 45-second round timeouts in PEI line 20 and reward lines 27 and 84; visual and PostgreSQL phases consequently did not run. Trace evidence first exposed double-charged authority work and then long synchronous deterministic planning/replay work. Per policy, this failed run remains failed and the full selector was not repeated. Log .cache/wp024-waypoint3-selector-final.log."
-    },
-    {
-      "command": "Waypoint 3 affected recovery for scheduler, planner, replay settlement and browser paths",
+      "command": "Phone Gate C on server-backed R7 Practice, followed by the focused foreground-motion retest exposed by its first phone read",
       "status": "pass",
-      "details": "The primary corrected scheduler accounting so measured authority work cannot become peer clock debt, moved detached planner ticks onto an owned validated mechanics kernel, and made exact reward replay cooperative in six-tick batches with a verifier-only owned-state path. Focused types, protocol, reward and strong public-oracle differential coverage passed, including 31/31 final replay-kernel cases; the full V10 reward case improved from about 190 seconds to 76.87 seconds including authoritative fixture generation and repeated settlement proof. Fresh build proof 703a6de7ef42 / 360b48307073 and corrected standard R7 smoke passed. The first PEI recovery preserved one expected sequencing failure because the responsive result arrived while settlement was still in_progress; polling the existing durable reward update then passed the exact canonical journey 1/1 in 115.08 seconds. The two original canonical Daily failures passed 2/2 in 152.66 seconds. Maintained visual logic passed 12 cases with eight expected Windows screenshot skips. Earlier green selector phases were preserved and no legacy or full-suite rerun occurred. Logs .cache/wp024-waypoint3-clock-recovery-*, .cache/wp024-planner-kernel-*, .cache/wp024-terminal-replay-*, .cache/wp024-replay-kernel-*, .cache/wp024-final-smoke-wording.log, .cache/wp024-final-reward-browser.log and .cache/wp024-final-visual-logic.log."
+      "details": "The first phone read passed all four functional checks but exposed lag in Threadball/Spoolburst aiming, full-arena panning, walking, jumping and Pause response. The correction coalesced preview work, batched detached rollout, cached terrain topology and removed redundant validation without changing gameplay. Risk-based verification passed import, types, 48/48 combat, 2/2 Practice, 21/21 protocol, 73/73 simulation, build proof e2218239d882 / 601c4bd48ca7, smoke and 3/3 affected browser journeys. At committed and pushed cf11916, the owner accepted the focused physical retest, completing Gate C. Logs are under .cache/wp024-r7-performance-*.log."
     },
     {
-      "command": "Waypoint 3 documentation, housekeeping and PostgreSQL prerequisite boundary",
+      "command": "Phone Gate D on the final standard R7 Practice and PEI-gated Daily paths",
       "status": "pass",
-      "details": "At inspected dry-run fingerprint ced6f02b3239eeb4a71151eeefd6849d0a945f2f0bae69c2f84a5db27eb9cd2f, all 71 work-package records and the report-only housekeeping audit passed. Housekeeping confirms the current tracking branch and leaves WP-024 in progress for Phone Gate C; its manual-reconciliation flag refers to preserved historical records. The dedicated PostgreSQL phase exited successfully and recorded the expected local prerequisite skip because WP014_TEST_DATABASE_URL is absent; CI retains that database gate. Logs .cache/wp024-waypoint3-final-work-packages.log, .cache/wp024-waypoint3-final-housekeeping.log and .cache/wp024-waypoint3-final-postgres.log."
-    },
-    {
-      "command": "Phone Gate C first server-backed R7 Practice read",
-      "status": "fail",
-      "details": "The owner passed functional points 1 through 4: the accepted battlefield and controls loaded, changed terrain remained legal for the Loomkeeper, player-turn and Loomkeeper-turn reopen resumed exact state, both health and open-bottom outcomes completed, and a fresh Practice started cleanly. The same physical-phone read found a blocking foreground performance regression: Threadball and Spoolburst trajectory adjustment lagged, full-arena panning stuttered, walking could hang, jumping briefly froze and Pause sometimes required repeated taps. Gate C remains open pending the bounded performance correction and phone retest."
-    },
-    {
-      "command": "WP-024 R7 foreground-performance affected verification from ea1b1f6",
-      "status": "pass",
-      "details": "The change selector dry run produced fingerprint dab0378f5992e95e4bfd0a1bfaa7f7ba1b5da9e0aa4dd6693e866dc9707a61a8. Risk-based final-source verification passed import boundary, types, combat 48/48, Practice 2/2, protocol 21/21, simulation 73/73, build proof e2218239d882 / 601c4bd48ca7, built smoke and 3/3 targeted canonical Practice browser journeys. The browser proof covers same-frame aim coalescing, unchanged-terrain reuse through camera panning and live walking, lifecycle/reconnect, compact controls and a successful single Pause tap. Clean diagnostics measured warm R7 previews at 12.46-13.13 ms by relic, down from the pre-correction 113.7-139.9 ms observations, and 300 coordinator ticks at 385.51 ms versus 1123.3 ms before. Logs are under .cache/wp024-r7-performance-*.log."
-    },
-    {
-      "command": "Phone Gate C final foreground-performance retest",
-      "status": "pass",
-      "details": "At committed and pushed cf11916, the owner confirmed on the physical phone that the corrected game works much better. Threadball and Spoolburst aiming, full-arena panning, sustained walking, repeated jumping and Pause response are accepted. Combined with the four earlier functional passes, this completes Phone Gate C and authorizes final R7 promotion to the shared standard Practice and PEI-gated Daily path."
-    },
-    {
-      "command": "WP-024 final R7 promotion risk-based verification from 39efb21",
-      "status": "pass",
-      "details": "The worms_port_test_runner verified the frozen ten-path promotion diff at selector fingerprint 1a48756f568cd5d072cc52e94a1f378399aaa88bb015e6daf401d267b2da7b6c with zero retries or infrastructure edits. Work-package evidence 71 records, import boundary, types, protocol 21/21, fresh build proof 3cfa8b0d30b0 / be719e7549f4, standard R7 built smoke, identity bundles and reward security passed. The exact canonical Chromium standard Daily-to-Practice journey passed 1/1 in 68.792 seconds and the PEI-to-Daily-to-Practice journey passed 1/1 in 77.756 seconds. Report-only housekeeping passed. Logs are under .cache/wp024-r7-final-promotion-*.log."
-    },
-    {
-      "command": "Phone Gate D first promoted R7 read",
-      "status": "fail",
-      "details": "The owner passed point 1 and points 3 through 7 on the physical phone. Point 2 exposed a blocking shared navigation defect: Change Calling after either won or lost Practice and Daily results did not remain on the lobby, requiring the app to be closed before another helper crossing. Gate D remains open for the bounded result-navigation correction and focused phone retest; the accepted gameplay, PEI consumption, exact resume, terminal outcomes, 1 NIM payout with transaction hash and normal daily limit do not need repetition."
-    },
-    {
-      "command": "WP-024 Phone Gate D Change Calling correction verification from 86f9338",
-      "status": "pass",
-      "details": "The worms_port_test_runner verified the exact nine-path correction at selector fingerprint d1b220ec3f673e75d937e5aa46669f674ea091c13c1d1c18dcd96a121e7cc8de with zero retries and no infrastructure edits. Work-package evidence 71 records, import boundary, types, Practice units 2/2, fresh build proof c74850871c22 / faeba722b5ee and standard R7 built smoke passed. The canonical current-R7 Practice result-to-Calling-to-new-Practice case passed 1/1 in 32.790 seconds, and the canonical current-R7 Daily loss-to-Calling-to-Practice case passed 1/1 in 68.957 seconds. Logs are under .cache/wp024-gate-d-change-calling-*.log."
+      "details": "Final promotion verification passed the exact R7 protocol, fresh build/smoke, identity/reward security and both standard Daily-to-Practice and PEI-to-Daily-to-Practice journeys. The first phone read passed point 1 and points 3 through 7 but exposed retained-result replay after Change Calling in both Practice and Daily. The focused correction passed types, 2/2 Practice units, fresh build proof c74850871c22 / faeba722b5ee, R7 smoke and exact current-R7 Practice and Daily navigation journeys 1/1 each with zero retries. At committed and pushed 81fb876, the owner confirmed the Practice correction on the physical phone. The normal daily limit left no second Daily attempt; the owner accepted the equivalent automated Daily proof and explicitly authorized closure. Logs are under .cache/wp024-r7-final-promotion-* and .cache/wp024-gate-d-change-calling-*.log."
     }
   ],
   "reviews": [
@@ -228,10 +198,16 @@
       "reviewer": "primary assistant Phone Gate D navigation correction direct review",
       "status": "pass",
       "details": "Direct review traced the loop to immediate replay of the retained terminal result when the new Practice scene subscribed. The correction clears only the completed terminal, its final snapshot and local combat lifecycle; it preserves the socket session, authorized wallet, PEI receipts, reward state and server-owned daily authority. Clearing the snapshot also causes any late duplicate result for the retired challenge to be ignored. Both current-R7 browser journeys prove Change Calling remains on the lobby and can start fresh Practice. Physical-phone confirmation remains pending."
+    },
+    {
+      "role": "owner",
+      "reviewer": "WP-024 final Phone Gate D physical-phone acceptance",
+      "decision": "pass",
+      "details": "At committed and pushed 81fb876, the owner confirmed on the physical phone that Change Calling after a Practice result returns to and remains on the Calling lobby. The ordinary daily limit correctly prevented a second physical Daily attempt; the owner accepted the matching current-R7 automated Daily result-navigation proof and authorized closure. Together with the retained first-read acceptance of Gate D points 1 and 3 through 7, this completes Phone Gate D and WP-024."
     }
   ],
   "skipped_checks": [
-    "Phone Gates A, B and C passed on the physical phone at committed and pushed 4933cb2, 9e17773 and cf11916 respectively; Phone Gate D passed point 1 and points 3 through 7 but remains open for the focused Change Calling retest.",
+    "Phone Gates A, B and C passed on the physical phone at committed and pushed 4933cb2, 9e17773 and cf11916 respectively. Phone Gate D combined its retained physical passes for points 1 and 3 through 7 with the focused physical Practice navigation pass at 81fb876; the equivalent Daily navigation path passed current-R7 browser coverage and was not repeated physically because the ordinary daily limit left no attempt available.",
     "Retired R5-and-older runtime profiles and the @legacy browser suite were excluded from ordinary acceptance.",
     "The daily/release suite was not run because this is the final feature waypoint before physical Phone Gate D rather than the daily or release boundary.",
     "The broad six-run performance gate is not repeated for this correction; focused current-R7 browser coverage measures coalesced touch dispatch and unchanged-terrain reuse, while physical-phone feel remains the acceptance authority.",
@@ -240,7 +216,7 @@
     "Authoritative Ubuntu visual baseline comparison remains CI-only; Windows ran supported visual logic with screenshot comparison skipped by policy."
   ],
   "residual_risks": [
-    "Phone Gate D still has to accept Change Calling after both Practice and Daily results before WP-024 closes; all other Gate D points are already accepted.",
+    "Change Calling after a Daily result was not repeated on the physical phone at closure because the wallet had no Daily attempt available; its shared correction passed physically after Practice and passed the exact current-R7 automated Daily journey.",
     "Physical Android/iOS and Nimiq Pay WebView behavior remain outside automated browser evidence."
   ]
 }

@@ -1,6 +1,6 @@
 # WP-024 V10 R7 Terrain As Gameplay
 
-Status: **Phone Gate D navigation correction implemented; focused retest pending**
+Status: **Complete 2026-09-15**
 Planning base: `842da39`  
 Implementation base: `4f7c878`
 Implementation branch: `codex/v10-r6-action-impact-dynamics`
@@ -430,7 +430,7 @@ change to a generic `CURRENT` constant cannot conceal version drift.
 The final change-selected acceptance passed the exact production-profile and
 R7 protocol boundary, fresh build/smoke, identity bundle isolation, reward
 security and one canonical Chromium journey each for standard Daily-to-Practice
-and PEI-to-Daily-to-Practice. Phone Gate D is the remaining WP-024 gate.
+and PEI-to-Daily-to-Practice.
 
 Phone Gate D checks one final end-to-end journey:
 
@@ -463,8 +463,12 @@ and one Daily result; the other Gate D points remain accepted.
 
 Focused verification passes with a fresh build and standard R7 built smoke.
 The exact current-R7 Practice and Daily browser journeys both dismiss the
-completed result, remain on the Calling lobby and start fresh Practice. Only
-the physical-phone navigation retest remains before Gate D can close.
+completed result, remain on the Calling lobby and start fresh Practice. At
+committed and pushed `81fb876`, the owner confirmed the corrected Practice
+navigation on the physical phone. The ordinary daily limit left no second Daily
+attempt, so the owner accepted the equivalent automated Daily proof and
+explicitly authorized closure. Combined with the retained first-read passes for
+Gate D points 1 and 3 through 7, this closes Phone Gate D and WP-024.
 
 The mainnet helper and reward paths stay paused except for the supervised phone
 gate and return to their existing safe state immediately afterward.
@@ -517,9 +521,10 @@ host follow-up if app-side suspension does not remove the observed activity.
 
 ## Definition of done
 
-WP-024 closes only when the owner has accepted Gates A-D, the exact R7 Practice
+WP-024 closed after the owner accepted Gates A-D, the exact R7 Practice
 and Daily paths are deployed, replay verification proves every selected plan and
 terrain mutation through the deterministic policy, safe environment settings are
 restored, change-selected checks pass, the work-package evidence is complete and
-housekeeping agrees with the execution pointer. Until then, R6 remains the
-standard game.
+housekeeping agrees with the execution pointer. R7 is the standard Practice and
+Daily game; WP-025 Mobile Lifecycle And Power Hardening is the next authorized
+package and has not started.

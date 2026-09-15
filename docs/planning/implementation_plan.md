@@ -165,7 +165,7 @@ Phaser/Socket.IO stack.
   No server authority or economy code changed. R5 remains an explicit diagnostic
   and is not part of ordinary acceptance. See the [WP-023 contract](wp-023-v10-r6-action-impact-dynamics.md)
   and [evidence](../evidence/wp-023.json).
-- Active successor: **WP-024 V10 R7 Terrain As Gameplay**. Waypoint 1 is
+- Completed successor: **WP-024 V10 R7 Terrain As Gameplay**, 2026-09-15. Waypoint 1 was
   implemented from clean `4f7c878`; Phone Gate A passed at committed and pushed
   `4933cb2` on `/?combat-preview=v10r7`. The first phone read found both crater candidates
   too large; the active refinement now uses a 128-unit Threadball diameter and
@@ -224,14 +224,18 @@ Phaser/Socket.IO stack.
   Daily completion immediately returned to the retained result. The correction
   explicitly dismisses completed local V10 combat ownership before starting the
   Calling lobby while preserving wallet, receipt, reward and daily authority.
-  Focused automated navigation verification passes; the physical-phone retest
-  is next. Gemini has moved
+  Focused automated navigation verification passes. At committed and pushed
+  `81fb876`, the owner confirmed on the physical phone that Change Calling after
+  Practice remains on the Calling lobby. The normal daily limit left no second
+  Daily attempt; the owner accepted the matching exact current-R7 automated
+  Daily navigation proof and authorized closure. Together with the retained
+  Gate D passes for points 1 and 3 through 7, **Phone Gate D and WP-024 are
+  complete.** Gemini has moved
   out of WP-024 so no deathmatch-specific external selector is built before the
-  objective rules exist.** See the
+  objective rules exist. See the
   [WP-024 contract](wp-024-v10-r7-terrain-as-gameplay.md).
-- Queued mandatory successor after WP-024 closes: **WP-025 Mobile Lifecycle And
-  Power Hardening**. It does not interrupt the remaining WP-024 promotion or
-  Phone Gate D path. The package will suspend the
+- Next authorized successor: **WP-025 Mobile Lifecycle And Power Hardening**.
+  Its contract and implementation have not started. The package will suspend the
   custom presentation loop and local preview clock while the mini app is hidden,
   disconnect the live Socket.IO transport until foreground resume, reset timing
   anchors without catch-up work, and move independent combat animation work under
