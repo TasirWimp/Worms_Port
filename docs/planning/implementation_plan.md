@@ -203,24 +203,26 @@ Phaser/Socket.IO stack.
   exposes this exact path without identity, PEI or rewards for Phone Gate C.
   The owner passed Gate C's four functional steps on 2026-09-15, including
   resume and both result paths, but found foreground lag during Threadball and
-  Spoolburst aiming, full-arena panning, walking, jumping and Pause input. Gate
-  C remains open. The correction coalesces aim preview work to the display
+  Spoolburst aiming, full-arena panning, walking, jumping and Pause input. The
+  correction coalesces aim preview work to the display
   frame, batches the detached projectile rollout, caches terrain topology by
   its authoritative revision/hash, avoids unchanged control-layout writes and
   removes redundant validation from coordinator-owned ticks while retaining
   validation at publication. Focused current-R7 verification passes, including
   exact detached-preview equivalence, all supported simulation/protocol cases,
-  built smoke and the three affected Practice browser journeys. The physical
-  phone performance retest is the next gate.
-  The deployed standard Practice/Daily service remains on R6 until Gate C
-  passes; enabling the ordinary branch profile after acceptance activates the
-  same R7 identity for both paths before Phone Gate D. Gemini has moved
+  built smoke and the three affected Practice browser journeys. At committed
+  and pushed `cf11916`, the owner accepted the focused phone performance retest:
+  aiming, camera panning, walking, jumping and Pause response all feel much
+  better. **Phone Gate C is complete. The next execution target is final R7
+  promotion.** The deployed standard Practice/Daily service remains on R6
+  until that promotion activates the same R7 identity for both paths before
+  Phone Gate D. Gemini has moved
   out of WP-024 so no deathmatch-specific external selector is built before the
   objective rules exist.** See the
   [WP-024 contract](wp-024-v10-r7-terrain-as-gameplay.md).
 - Queued mandatory successor after WP-024 closes: **WP-025 Mobile Lifecycle And
-  Power Hardening**. It does not interrupt the remaining WP-024 Waypoint 3,
-  Phone Gate C, promotion or Phone Gate D path. The package will suspend the
+  Power Hardening**. It does not interrupt the remaining WP-024 promotion or
+  Phone Gate D path. The package will suspend the
   custom presentation loop and local preview clock while the mini app is hidden,
   disconnect the live Socket.IO transport until foreground resume, reset timing
   anchors without catch-up work, and move independent combat animation work under

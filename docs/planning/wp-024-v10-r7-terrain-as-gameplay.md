@@ -1,6 +1,6 @@
 # WP-024 V10 R7 Terrain As Gameplay
 
-Status: **Waypoint 3 correction implemented; Phone Gate C performance retest pending**
+Status: **Phone Gate C accepted; final R7 promotion is next**
 Planning base: `842da39`  
 Implementation base: `4f7c878`
 Implementation branch: `codex/v10-r6-action-impact-dynamics`
@@ -372,8 +372,8 @@ On 2026-09-15 the owner passed all four functional checks, including both
 resume positions and both terminal outcomes. The same phone read exposed a
 foreground performance regression: Threadball and Spoolburst aiming lagged,
 full-arena panning stuttered, movement could hang, jumps briefly froze and
-Pause sometimes needed repeated taps. Gate C therefore remains open even
-though its functional behavior passed.
+Pause sometimes needed repeated taps. Gate C therefore remained open even
+though its functional behavior had passed.
 
 The correction keeps gameplay and authority unchanged. Touch movement may
 replace only the newest unrendered trajectory request before the next display
@@ -405,6 +405,11 @@ The focused Phone Gate C retest checks:
    arrive, confirming no hangs or mid-air freezes; and
 4. tap Pause once from an idle grounded player action and confirm the sheet
    responds on that tap, then resume once.
+
+At committed and pushed `cf11916`, the owner accepted this focused retest on
+the physical phone: the corrected game feels much better during aiming,
+panning, walking, jumping and Pause input. Together with the earlier four
+functional passes, this closes Phone Gate C and authorizes final R7 promotion.
 
 ## Final promotion and Phone Gate D
 

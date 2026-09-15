@@ -124,6 +124,11 @@
       "command": "WP-024 R7 foreground-performance affected verification from ea1b1f6",
       "status": "pass",
       "details": "The change selector dry run produced fingerprint dab0378f5992e95e4bfd0a1bfaa7f7ba1b5da9e0aa4dd6693e866dc9707a61a8. Risk-based final-source verification passed import boundary, types, combat 48/48, Practice 2/2, protocol 21/21, simulation 73/73, build proof e2218239d882 / 601c4bd48ca7, built smoke and 3/3 targeted canonical Practice browser journeys. The browser proof covers same-frame aim coalescing, unchanged-terrain reuse through camera panning and live walking, lifecycle/reconnect, compact controls and a successful single Pause tap. Clean diagnostics measured warm R7 previews at 12.46-13.13 ms by relic, down from the pre-correction 113.7-139.9 ms observations, and 300 coordinator ticks at 385.51 ms versus 1123.3 ms before. Logs are under .cache/wp024-r7-performance-*.log."
+    },
+    {
+      "command": "Phone Gate C final foreground-performance retest",
+      "status": "pass",
+      "details": "At committed and pushed cf11916, the owner confirmed on the physical phone that the corrected game works much better. Threadball and Spoolburst aiming, full-arena panning, sustained walking, repeated jumping and Pause response are accepted. Combined with the four earlier functional passes, this completes Phone Gate C and authorizes final R7 promotion to the shared standard Practice and PEI-gated Daily path."
     }
   ],
   "reviews": [
@@ -186,10 +191,15 @@
       "reviewer": "primary assistant Phone Gate C performance correction direct review",
       "status": "pass",
       "details": "Direct review confirms the correction does not change trajectory mechanics, terrain authority, movement, pause semantics or replay output. Aim events retain only the newest unrendered request; detached projectile rollout and coordinator-owned tick batches validate at their trust boundaries; terrain geometry keys to authoritative revision/hash; and camera motion repositions cached runs. Regression coverage proves exact preview-state equivalence, input immutability, terrain reuse, coalescing and single-tap Pause response. Physical-phone responsiveness remains the final Gate C acceptance authority."
+    },
+    {
+      "reviewer": "WP-024 Phone Gate C final physical-phone acceptance",
+      "status": "pass",
+      "details": "The owner accepted the focused performance correction at committed and pushed cf11916. The prior functional passes and the final responsiveness retest together close Gate C; final R7 promotion and Phone Gate D remain open."
     }
   ],
   "skipped_checks": [
-    "Phone Gates A and B passed on the physical phone at committed and pushed 4933cb2 and 9e17773 respectively; Phone Gate C passed its four functional checks but remains open for the focused foreground-performance retest.",
+    "Phone Gates A, B and C passed on the physical phone at committed and pushed 4933cb2, 9e17773 and cf11916 respectively; Phone Gate D remains pending after final R7 promotion.",
     "Retired R5-and-older runtime profiles and the @legacy browser suite were excluded from ordinary acceptance.",
     "The daily/release suite was not run because this is a feature waypoint rather than the daily or release boundary.",
     "The broad six-run performance gate is not repeated for this correction; focused current-R7 browser coverage measures coalesced touch dispatch and unchanged-terrain reuse, while physical-phone feel remains the acceptance authority.",
@@ -198,7 +208,7 @@
     "Authoritative Ubuntu visual baseline comparison remains CI-only; Windows ran supported visual logic with screenshot comparison skipped by policy."
   ],
   "residual_risks": [
-    "Phone Gate C still has to accept the corrected aiming, panning, movement, jumping and single-tap Pause response before the ordinary Practice/Daily deployment is activated.",
+    "The accepted R7 identity still has to be promoted to the ordinary shared Practice/Daily deployment and pass Phone Gate D before WP-024 closes.",
     "Physical Android/iOS and Nimiq Pay WebView behavior remain outside automated browser evidence."
   ]
 }
