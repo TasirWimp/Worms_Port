@@ -1,6 +1,7 @@
 # WP-025 Mobile Lifecycle And Power Hardening
 
-Status: **implemented locally; Phone Gate A pending**  
+Status: **complete 2026-09-15**
+
 Implementation base: `b6f7141`  
 Implementation branch: `codex/v10-r6-action-impact-dynamics`
 
@@ -149,9 +150,17 @@ lifecycle residue. The next investigation then needs Nimiq Pay evidence about
 native WebView pause, timer pause or destruction; additional game timers or
 match rules are not justified without that evidence.
 
+Phone Gate A passed on physical Android at committed and pushed `fab94e0` on
+2026-09-15. The owner accepted all five steps: the static lobby and active
+Practice background windows showed no extra battery consumption with Nimiq Pay
+and the game in the background, Practice resumed without catch-up or stuck
+input, and the PEI-gated Daily Challenge resumed with its reservation and
+result flow intact.
+
 ## Definition of done
 
 WP-025 closes when the automated current-R7 lifecycle checks pass, Phone Gate A
 shows correct short resume and materially reduced hidden CPU activity, the
 work-package evidence is complete and housekeeping agrees with the Execution
-Pointer. WP-026 remains queued until this gate closes.
+Pointer. These conditions are satisfied. WP-025 is complete and WP-026 is the
+next authorized package; its implementation has not started.

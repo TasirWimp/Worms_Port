@@ -153,8 +153,9 @@ are also recorded in the Execution Pointer of
   to the foreground reconnects the same bounded current-R7 session and waits
   for a fresh authoritative snapshot; hidden time never becomes client-side
   catch-up animation. Match time, Daily eligibility and rewards remain
-  server-owned. Physical Nimiq Pay battery and short-resume acceptance is
-  pending.
+  server-owned. Physical Android Phone Gate A passed at committed and pushed
+  `fab94e0`: all five lobby, Practice and Daily checks behaved correctly, with
+  no extra Nimiq Pay battery consumption while the game was in the background.
 - Assets from Sorcerers may move into `assets/` only after exact-file license
   evidence proves commercial use, redistribution, and modification are allowed.
 - Product assets must be traceable through `legal/asset-manifest.json`.

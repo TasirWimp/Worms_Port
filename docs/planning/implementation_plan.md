@@ -234,23 +234,26 @@ Phaser/Socket.IO stack.
   out of WP-024 so no deathmatch-specific external selector is built before the
   objective rules exist. See the
   [WP-024 contract](wp-024-v10-r7-terrain-as-gameplay.md).
-- Active successor: **WP-025 Mobile Lifecycle And Power Hardening**, implemented
-  locally from clean `b6f7141`; automated verification is complete and Phone
-  Gate A is pending. One idempotent document/page lifecycle owner pauses Phaser and
+- Completed successor: **WP-025 Mobile Lifecycle And Power Hardening**, 2026-09-15,
+  implemented from clean `b6f7141` and accepted at committed and pushed
+  `fab94e0`. One idempotent document/page lifecycle owner pauses Phaser and
   disconnects Socket.IO while hidden. Current R7 presentation now uses Phaser's
   managed Scene update instead of its own perpetual animation frame. Foreground
   resume reconnects the bounded session, replaces hidden projection state from
   a fresh owned snapshot and never replays elapsed client animation. Daily
   Challenge authority and timing remain server-owned. Automated coverage
   requires no hidden-state frame work or delivered snapshots; the physical gate
-  compares Nimiq Pay home, the static lobby and an active Practice. Meaningful
-  residue after those app-side checks is reduced to Nimiq Pay's native WebView
-  lifecycle. Current checks prove no hidden Phaser frame callbacks, no delivered
+  compares Nimiq Pay home, the static lobby and an active Practice. Current
+  checks prove no hidden Phaser frame callbacks, no delivered
   snapshots, released movement and exact Practice/Daily resume; the initial
   browser proof exposed and the final correction removed Phaser's otherwise
-  still-scheduled paused frames. See the [WP-025 contract](wp-025-mobile-lifecycle-power-hardening.md)
-  and [evidence](../evidence/wp-025.json).
-- Queued after WP-025: **WP-026 V10 R8 Objective Modes**. It introduces the
+  still-scheduled paused frames. Physical Android Phone Gate A passed all five
+  steps, including correct Practice and Daily resume and no extra battery
+  consumption with Nimiq Pay and the game in the background. See the
+  [WP-025 contract](wp-025-mobile-lifecycle-power-hardening.md) and
+  [evidence](../evidence/wp-025.json).
+- Next authorized successor: **WP-026 V10 R8 Objective Modes**. Its implementation
+  has not started. It introduces the
   server-authoritative Defend, Collect and Claim modes, non-destructible physical
   coins and chests, objective-specific results, a separate ASCII objective layer,
   deterministic objective-aware Loomkeeper play, exact replay/resume and the

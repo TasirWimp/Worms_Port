@@ -1,8 +1,9 @@
 # WP-026 V10 R8 Objective Modes
 
-Status: **queued after WP-025; planning contract only**  
-Required predecessor: completed WP-024 R7 promotion and WP-025 lifecycle and
-power hardening
+Status: **next authorized successor; planning contract only; implementation not started**
+
+Required predecessor: completed WP-024 R7 promotion and completed WP-025
+lifecycle and power hardening
 
 ## Product outcome
 

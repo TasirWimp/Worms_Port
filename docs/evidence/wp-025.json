@@ -1,6 +1,6 @@
 {
   "id": "WP-025",
-  "status": "in_progress",
+  "status": "complete",
   "execution_mode": "single_owner",
   "starting_commit": "b6f7141",
   "branch": "codex/v10-r6-action-impact-dynamics",
@@ -58,17 +58,23 @@
       "role": "primary",
       "reviewer": "primary assistant",
       "decision": "pass",
-      "details": "Direct review traced normal startup, page visibility/pagehide/pageshow ordering, Phaser scheduling, current R7 local and server-backed presentation, Socket.IO manual reconnect, session bootstrap, V10 fresh-snapshot input fencing, disconnect movement release and Daily resume. Hidden state cancels transient projection, stops both Phaser and local preview schedulers and disconnects the socket. Resume resets timer anchors, reconnects the same bounded server authority and never enables input from stale projection. No gameplay, server timing, replay, Daily limit, PEI, reward, helper, database, asset, dependency or environment behavior changed. Physical Android power attribution remains Phone Gate A."
+      "details": "Direct review traced normal startup, page visibility/pagehide/pageshow ordering, Phaser scheduling, current R7 local and server-backed presentation, Socket.IO manual reconnect, session bootstrap, V10 fresh-snapshot input fencing, disconnect movement release and Daily resume. Hidden state cancels transient projection, stops both Phaser and local preview schedulers and disconnects the socket. Resume resets timer anchors, reconnects the same bounded server authority and never enables input from stale projection. No gameplay, server timing, replay, Daily limit, PEI, reward, helper, database, asset, dependency or environment behavior changed."
+    },
+    {
+      "role": "owner",
+      "reviewer": "WP-025 Phone Gate A physical-phone acceptance",
+      "decision": "pass",
+      "details": "At committed and pushed fab94e0 on 2026-09-15, the owner confirmed all five physical Android steps behaved correctly. The static lobby and active Practice background windows produced no extra battery consumption with Nimiq Pay and the game in the background. Practice resumed without catch-up or stuck held movement, and the PEI-gated Daily Challenge resumed with its reservation and result flow intact."
     }
   ],
   "skipped_checks": [
     "Retired R5-and-older runtime profiles and @legacy browser diagnostics were excluded from current acceptance.",
-    "Performance and visual phases were not selected: the change adds no pixels and the focused browser proof counts the exact hidden scheduler and snapshot work that caused the power risk. Foreground physical smoothness remains part of Phone Gate A.",
+    "Performance and visual phases were not selected: the change adds no pixels and the focused browser proof counts the exact hidden scheduler and snapshot work that caused the power risk. Foreground smoothness and background power behavior were accepted separately in physical Android Phone Gate A.",
     "PostgreSQL was not selected because lifecycle hardening changes no database, store, migration, settlement or concurrency boundary.",
-    "The daily/release suite was not run because this is a feature waypoint before physical Phone Gate A rather than the 22:00 checkpoint or an explicit release boundary.",
-    "Physical Android/iOS and Nimiq Pay battery acceptance has not run yet; Phone Gate A is the only remaining package gate."
+    "The daily/release suite was not run because WP-025 is a feature waypoint rather than the 22:00 checkpoint or an explicit release boundary.",
+    "A separate physical iOS run was not performed; Phone Gate A was accepted on Android in Nimiq Pay."
   ],
   "residual_risks": [
-    "Android attributes both mini-app and native host work to Nimiq Pay, so the physical comparison can reduce remaining ownership to the host layer but cannot profile native internals from this repository."
+    "Android Phone Gate A passed, but separate iOS host behavior remains unmeasured. Android attributes both mini-app and native host work to Nimiq Pay, so this repository cannot profile native host internals if a future host regression appears."
   ]
 }
