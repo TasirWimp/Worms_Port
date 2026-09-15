@@ -261,7 +261,12 @@ Phaser/Socket.IO stack.
   code-owned gate presentation and remain transparent to actors and projectiles.
   Contact, scoring, terminal rules, HUD, server/replay authority and the
   objective-aware Loomkeeper remain in Waypoints 2 and 3. Standard Practice and
-  PEI-gated Daily remain exact R7. The package introduces the
+  PEI-gated Daily remain exact R7. The first Android Gate A read at committed and
+  pushed `17200ab` passed all nine functional steps but exposed that literal
+  R6/R7 CSS selectors left R8 movement buttons unaligned and actor status cards
+  in their larger two-row form. The active focused correction gives the inherited
+  compact interface one semantic class and awaits only the phone presentation
+  recheck. The package introduces the
   server-authoritative Defend, Collect and Claim modes, non-destructible physical
   coins and chests, objective-specific results, a separate ASCII objective layer,
   deterministic objective-aware Loomkeeper play, exact replay/resume and the

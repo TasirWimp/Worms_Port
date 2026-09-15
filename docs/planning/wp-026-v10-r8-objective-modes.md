@@ -236,6 +236,18 @@ Phone Gate A confirms readable object scale; intact objects survive direct fire;
 removing support makes each kind fall and land; an open bottom removes it; and
 camera, crater rendering and controls remain smooth.
 
+The owner's first physical Android read at committed and pushed `17200ab`
+accepted all nine object, terrain, camera, control and R7-isolation steps, but
+kept Gate A open for two R8 presentation regressions: the fixed movement buttons
+did not receive their compact aligned styling, and actor status cards fell back
+to a larger two-row layout. The cause was a stylesheet boundary listing literal
+R6/R7 IDs while R8 already used the same three-button controller and compact
+status behavior. The refinement assigns that inherited interface one semantic
+`combat-action-dynamics` class, so R6, R7 and R8 share the same CSS without
+expanding another ruleset-ID list. Supported browser coverage freezes button
+visibility, 2-4 pixel spacing, absence of joystick remnants and the one-row
+health card. Phone Gate A awaits only this focused presentation recheck.
+
 ### Waypoint 2 - three deterministic modes
 
 Add exact mode layouts, contact, scoring and terminal rules plus the local HUD

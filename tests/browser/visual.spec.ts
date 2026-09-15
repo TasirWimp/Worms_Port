@@ -234,7 +234,29 @@ test('V10 R8 private preview renders bounded coin and chest physics without chan
   await expect(ui).toHaveAttribute('data-background', 'volcanic-ruin');
   await expect(ui).toHaveAttribute('data-opening-survey-width', '2048');
   await expect(ui.locator('.combat-timer')).toHaveText(/^\d{1,2}s$/);
+  await expect(ui).toHaveClass(/\bcombat-action-dynamics\b/);
   await expect(ui.locator('.movement-button')).toHaveCount(3);
+  await expect(ui.locator('.movement-zone .pad-label')).toBeHidden();
+  await expect(ui.locator('.movement-zone .pad-ring, .movement-zone .pad-knob')).toHaveCount(0);
+  const [jump, left, right] = await Promise.all([
+    ui.locator('.movement-jump').boundingBox(),
+    ui.locator('.movement-left').boundingBox(),
+    ui.locator('.movement-right').boundingBox()
+  ]);
+  for (const button of [jump, left, right]) {
+    expect(button).not.toBeNull();
+    expect(button!.width).toBeGreaterThanOrEqual(48);
+    expect(button!.height).toBeGreaterThanOrEqual(48);
+  }
+  expect(Math.abs(left!.y - right!.y)).toBeLessThanOrEqual(1);
+  expect(right!.x - left!.x - left!.width).toBeGreaterThanOrEqual(2);
+  expect(right!.x - left!.x - left!.width).toBeLessThanOrEqual(4);
+  expect(left!.y - jump!.y - jump!.height).toBeGreaterThanOrEqual(2);
+  expect(left!.y - jump!.y - jump!.height).toBeLessThanOrEqual(4);
+  const playerCard = ui.locator('.player-status');
+  await expect(playerCard.locator('.unit-status-value')).toBeHidden();
+  await expect(playerCard.locator('.unit-status-track')).toBeVisible();
+  expect((await playerCard.boundingBox())?.height).toBeLessThanOrEqual(19);
 
   await ui.locator('.v9-actions-button').tap();
   await ui.locator('.v9-attack').tap();

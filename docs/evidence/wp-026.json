@@ -14,7 +14,8 @@
     "Compile separate 64 by 36 ASCII objective layers aligned with the accepted R7 battlefield into stable coin and chest objects without changing a terrain bit or the R7 terrain hash.",
     "Apply deterministic fixed-point vertical gravity, terrain support, landing and open-bottom loss to active objects after each R8 combat tick; projectiles, actors and blasts do not collide with or directly move or damage them.",
     "Serialize the live tactical ASCII overlay and exact structured objective state beside unchanged terrain serialization.",
-    "Expose coin and chest physics through a wallet-free private v10r8 preview with code-owned placeholder presentation for physical Phone Gate A."
+    "Expose coin and chest physics through a wallet-free private v10r8 preview with code-owned placeholder presentation for physical Phone Gate A.",
+    "Correct the first Phone Gate A presentation read by assigning the inherited compact movement/status interface a semantic class shared by R6, R7 and R8, with no gameplay or authority change."
   ],
   "non_goals": [
     "No collection, capture, scoring, objective terminal result, mode selector, objective HUD or objective-aware Loomkeeper behavior in Waypoint 1.",
@@ -26,7 +27,8 @@
     "Focused R8 objective compiler, physics, serialization, fixture, presentation and private browser preview checks selected by direct review",
     "npm.cmd run verify:changes -- --base c82e74d",
     "npm.cmd run audit:housekeeping before Phone Gate A",
-    "Phone Gate A on the physical phone"
+    "Phone Gate A on the physical phone",
+    "Focused Phone Gate A presentation recheck after the accepted nine-step functional read"
   ],
   "deterministic_seeds": [
     "R8 local volcanic objective preview seed 4",
@@ -59,6 +61,11 @@
       "command": "npm.cmd run audit:housekeeping before Phone Gate A",
       "status": "pass",
       "details": "The report-only audit passed on the matching branch/upstream with WP-026 correctly in progress and the expected dirty implementation. Its manual-reconciliation flag refers to preserved historical in-progress packages and archived WP-015D3B failed-review records; no mutation was performed. Log .cache/wp026-w1-prephone-housekeeping.log."
+    },
+    {
+      "command": "Phone Gate A presentation correction: npm.cmd run verify:changes -- --base 17200ab",
+      "status": "pass",
+      "details": "The zero-retry selector passed at fingerprint 881aa5d1ad324fd8c8966a7f168051752a0e7d5867a130a4f9e0ad15b666c4e3: import, types, 73 work-package records, combat 51/51, Practice 4/4, identity 22/22, reward 28/28 and protocol 21/21. Fresh build proof 830e560417fe / de54a46f17c3 passed standard R7 smoke, identity/reward security and bundle limits at 1432507/1500000 initial JavaScript bytes and 418032/430000 gzip bytes. Canonical supported browser groups passed 18/18; visual logic passed 17 cases with eight expected Windows snapshot-comparison skips. The R8 preview passed on Chromium 360x640, 390x844, 412x915 and 844x390 plus WebKit 390x844, proving three visible 48px-or-larger buttons, 2-4px cluster spacing, no old joystick elements and a compact one-row health card. PostgreSQL, performance, legacy and daily/release coverage were not selected. Master log .cache/wp026-gatea-selector.log."
     }
   ],
   "reviews": [
@@ -67,6 +74,18 @@
       "reviewer": "primary assistant",
       "decision": "pass",
       "details": "Direct review traced R8 construction, strict ASCII compilation, fixed-point object motion, terrain support, open-bottom loss, state/objective hashes, tactical serialization, local persistence/restart, rendering and startup selection. Public ticks clone before owned mutation and validate at the trust boundary. The current registry, live protocol, server coordinator, Practice/Daily selector and reward/PEI authority remain literal R7. R8 imports no external assets or quarantined reference material and adds no server, protocol, database, dependency or environment path. The temporary code-owned coin/chest presentation and foreground smoothness remain subject to Phone Gate A."
+    },
+    {
+      "role": "owner",
+      "reviewer": "WP-026 Phone Gate A first physical-phone read",
+      "decision": "fail",
+      "details": "At committed and pushed 17200ab, the owner confirmed all nine requested object-physics, terrain, camera, control and standard-R7 isolation steps behaved as specified. Gate A remains open because Collect and Defend displayed the fixed left/right/jump controls without their compact aligned styling, with a visual remnant of the old pad, and actor name plus health bar expanded into two rows."
+    },
+    {
+      "role": "primary",
+      "reviewer": "primary assistant Phone Gate A presentation-correction review",
+      "decision": "pass",
+      "details": "R8 already selects the accepted R6-family three-button input controller and compact status logic. Only the stylesheet repeated literal R6/R7 IDs, so R8 fell back to generic V9 touch-zone and status-grid styles. One semantic combat-action-dynamics class now owns the inherited CSS for all three rulesets. The R6/R7 DOM and declarations remain unchanged in effect; no simulation, input mapping, objective, server, reward or PEI behavior changes. Physical presentation remains at the focused Gate A recheck."
     }
   ],
   "skipped_checks": [
@@ -74,9 +93,9 @@
     "Performance was not selected. The private R8 wrapper adds at most seven bounded vertical-only objects; Phone Gate A owns foreground camera, crater, control and object-motion smoothness.",
     "The local PostgreSQL prerequisite is absent, so its selected phase recorded the repository's expected skip and remains required in CI.",
     "The daily/release suite was not run because Waypoint 1 is a private feature gate rather than the 22:00 checkpoint or an explicit release boundary.",
-    "Physical Android and iOS checks have not run yet; Android Phone Gate A is the next acceptance step."
+    "Android completed the nine-step functional Gate A read but the focused presentation recheck is pending; a physical iOS check has not run."
   ],
   "residual_risks": [
-    "Phone Gate A must decide whether the code-owned coin and chest scale is readable and whether object falling remains smooth during terrain destruction and full-arena camera movement."
+    "The owner accepted object scale, fall/landing/loss and foreground behavior. Phone Gate A remains open only until Android confirms the restored aligned movement cluster and compact one-row actor status cards."
   ]
 }

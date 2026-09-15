@@ -42,7 +42,9 @@ export class ResourceTurnsV9Controls {
         const movementControl = r6Movement
             ? `<div class="combat-touch-zone movement-zone movement-buttons" role="group" aria-label="Movement buttons. Hold left or right to walk and steer in the air. Slide or tap up to jump."><span class="pad-label">Move</span><button type="button" class="movement-button movement-jump" data-movement-button="jump" aria-label="Jump"><span aria-hidden="true">↑</span><small>Jump</small></button><button type="button" class="movement-button movement-left" data-movement-button="left" aria-label="Move left"><span aria-hidden="true">←</span></button><button type="button" class="movement-button movement-right" data-movement-button="right" aria-label="Move right"><span aria-hidden="true">→</span></button></div>`
             : `<div class="combat-touch-zone movement-zone" aria-label="Movement pad. Tap a side to face. Drag sideways to walk. Push up to hop."><span class="pad-label">Drag to walk · ↑ hop</span><span class="pad-ring"></span><span class="pad-knob"></span></div>`;
-        this.root.className = initial.rulesetVersion === 10 ? 'combat-ui combat-v9 combat-v10' : 'combat-ui combat-v9';
+        this.root.className = initial.rulesetVersion === 10
+            ? `combat-ui combat-v9 combat-v10${r6Movement ? ' combat-action-dynamics' : ''}`
+            : 'combat-ui combat-v9';
         this.root.innerHTML = `<header class="combat-status"><strong class="combat-turn" aria-live="polite"></strong><span class="v9-thread"></span><span class="combat-timer"></span></header>
 <div class="combat-unit-status player-status" data-unit="player" role="group"><span class="unit-status-name">You</span><strong class="unit-status-value"></strong><span class="unit-status-track" aria-hidden="true" hidden><span></span></span></div>
 <div class="combat-unit-status loomkeeper-status" data-unit="loomkeeper" role="group"><span class="unit-status-name">Loomkeeper</span><strong class="unit-status-value"></strong><span class="unit-status-track" aria-hidden="true" hidden><span></span></span></div>
