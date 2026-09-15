@@ -253,24 +253,30 @@ Phaser/Socket.IO stack.
   [WP-025 contract](wp-025-mobile-lifecycle-power-hardening.md) and
   [evidence](../evidence/wp-025.json).
 - Active successor: **WP-026 V10 R8 Objective Modes**, beginning at clean
-  `c82e74d`. Waypoint 1 is implemented locally behind the wallet-free
-  `/?combat-preview=v10r8&objective-mode=collect|defend|claim` routes and awaits
-  Phone Gate A. It adds separate fixed ASCII objective layers, bounded coin and
+  `c82e74d`. Waypoint 1 and Phone Gate A are complete at committed and pushed
+  `87a6568` behind the wallet-free
+  `/?combat-preview=v10r8&objective-mode=collect|defend|claim` routes. It adds
+  separate fixed ASCII objective layers, bounded coin and
   chest state, fixed-point fall/support/landing/open-bottom loss, independent
-  objective revision/hash and live tactical serialization. Objects use a
-  code-owned gate presentation and remain transparent to actors and projectiles.
+  objective revision/hash and live tactical serialization. Collect coins use
+  the approved runtime asset, chests remain code-owned, and all objective
+  objects remain transparent to actors and projectiles.
   Contact, scoring, terminal rules, HUD, server/replay authority and the
   objective-aware Loomkeeper remain in Waypoints 2 and 3. Standard Practice and
   PEI-gated Daily remain exact R7. The first Android Gate A read at committed and
   pushed `17200ab` passed all nine functional steps but exposed that literal
   R6/R7 CSS selectors left R8 movement buttons unaligned and actor status cards
-  in their larger two-row form. The active focused correction gives the inherited
-  compact interface one semantic class and awaits only the phone presentation
-  recheck. The package introduces the
-  server-authoritative Defend, Collect and Claim modes, non-destructible physical
-  coins and chests, objective-specific results, a separate ASCII objective layer,
-  deterministic objective-aware Loomkeeper play, exact replay/resume and the
-  player mode-selection flow. R8 remains isolated from R7 replay truth. See the
+  in their larger two-row form. The inherited compact interface now uses one
+  semantic class across R6-R8; the owner accepted the correction in Defend and
+  Collect. A separately approved generic amber textile hex coin replaces the
+  round Collect placeholder without changing objective authority, and its final
+  physical-phone shape review passed. **Waypoint 2 is next:** add local contact,
+  scoring, terminal rules, HUD and mode selection for all three modes. The
+  package introduces the server-authoritative Defend, Collect and Claim modes,
+  non-destructible physical coins and chests, objective-specific results, a
+  separate ASCII objective layer, deterministic objective-aware Loomkeeper play,
+  exact replay/resume and the player mode-selection flow. R8 remains isolated
+  from R7 replay truth. See the
   [WP-026 contract](wp-026-v10-r8-objective-modes.md).
 - Queued after WP-026: **WP-027 Objective-Aware Gemini Loomkeeper**. Gemini may
   select only a stable ID from server-generated, deterministically simulated

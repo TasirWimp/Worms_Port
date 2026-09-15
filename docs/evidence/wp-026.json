@@ -79,6 +79,16 @@
       "command": "npm run verify:changes",
       "status": "pass",
       "details": "Delegated test execution by worms_port_test_runner on GPT-5.6 Terra/medium completed a fresh zero-retry selector at fingerprint 1ba0a5694675a994f188f941ec9772a01b7ca8d1f780562bb303511c7f04b349. Compliance, types and tooling passed 137/137; combat 51/51 and Practice 4/4 passed. The build copied 17 approved runtime assets, including the exact WP-026 coin master, and standard R7 built smoke, identity/reward/bundle checks passed. Phone browser coverage passed 11/11; visual coverage passed 17 with eight expected Windows skips for Ubuntu-only baseline pixel comparisons. R8 Collect asserted data-objective-presentation=approved-runtime-coin across Chromium 360x640, 390x844, 412x915, 844x390 and WebKit 390x844; Defend asserted code-owned chest presentation. PostgreSQL, performance and daily/release were not selected."
+    },
+    {
+      "command": "Physical Android Phone Gate A, completed across the accepted functional and presentation reads",
+      "status": "pass",
+      "details": "The owner had already accepted all nine object-physics, terrain, camera, control and R7-isolation checks. After the focused correction, the owner confirmed the compact movement controls and status presentation in both Defend and Collect. At committed and pushed 87a6568, the owner then confirmed that the approved Collect runtime coins display with the intended hexagonal shape. These combined reads close Phone Gate A without reopening already accepted behavior."
+    },
+    {
+      "command": "npm run verify:changes -- --base 87a6568",
+      "status": "pass",
+      "details": "Delegated documentation-only verification passed once at execution fingerprint 17f17cd661a5fc43dffca50c8d25c32ee277e77928cbaf86d642b2c45a188f29. Diff checks and all 73 work-package records passed in 8.5 seconds. The final planning wording changed after the dry run while retaining the same three documentation paths and identical work-package-only plan, so only the affected work-package validator is repeated after this evidence entry; no runtime, build, browser, PostgreSQL, performance, legacy or daily check is warranted. Log .cache/wp026-waypoint1-phone-acceptance-selector.log."
     }
   ],
   "reviews": [
@@ -111,16 +121,20 @@
       "reviewer": "primary assistant direct WP-026 Collect presentation review",
       "decision": "pass",
       "details": "Direct review verified that the approved static texture is only preloaded, positioned, clipped and shown for active Collect coin objects at their existing render depth. The former procedural coin remains only as an unavailable-texture fallback. Defend and Claim chest drawing, fixed-point objective state, collision/support/collection/scoring rules, protocol, server/reward/PEI behavior and R7 presentation paths are unchanged."
+    },
+    {
+      "role": "owner",
+      "reviewer": "WP-026 Phone Gate A final physical-phone acceptance",
+      "decision": "pass",
+      "details": "The owner accepted the corrected compact controls and actor status presentation in Defend and Collect, then accepted the integrated Collect coins at 87a6568 as displaying with the intended hexagonal shape. Together with the prior nine-step functional pass, Phone Gate A and Waypoint 1 are complete."
     }
   ],
   "skipped_checks": [
     "Retired R6-and-older runtime profiles and @legacy browser diagnostics were excluded from current acceptance.",
-    "Performance was not selected. The private R8 wrapper adds at most seven bounded vertical-only objects; Phone Gate A owns foreground camera, crater, control and object-motion smoothness.",
+    "Performance was not selected. The private R8 wrapper adds at most seven bounded vertical-only objects, and Phone Gate A accepted foreground camera, crater, control and object-motion smoothness.",
     "The local PostgreSQL prerequisite is absent, so its selected phase recorded the repository's expected skip and remains required in CI.",
     "The daily/release suite was not run because Waypoint 1 is a private feature gate rather than the 22:00 checkpoint or an explicit release boundary.",
-    "Android completed the nine-step functional Gate A read but the focused presentation recheck is pending; a physical iOS check has not run."
+    "Physical Android Phone Gate A passed; a physical iOS check has not run."
   ],
-  "residual_risks": [
-    "The owner accepted object scale, fall/landing/loss and foreground behavior. Phone Gate A remains open only until Android confirms the restored aligned movement cluster and compact one-row actor status cards."
-  ]
+  "residual_risks": []
 }

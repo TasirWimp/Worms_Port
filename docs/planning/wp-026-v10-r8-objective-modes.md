@@ -1,6 +1,6 @@
 # WP-026 V10 R8 Objective Modes
 
-Status: **active; Waypoint 1 Collect coin has an approved runtime presentation and passing automated verification; focused Phone Gate A recheck pending**
+Status: **active; Waypoint 1 and Phone Gate A complete; Waypoint 2 is next**
 
 Required predecessor: completed WP-024 R7 promotion and completed WP-025
 lifecycle and power hardening
@@ -270,7 +270,11 @@ status behavior. The refinement assigns that inherited interface one semantic
 `combat-action-dynamics` class, so R6, R7 and R8 share the same CSS without
 expanding another ruleset-ID list. Supported browser coverage freezes button
 visibility, 2-4 pixel spacing, absence of joystick remnants and the one-row
-health card. Phone Gate A awaits only this focused presentation recheck.
+health card. The owner then accepted that correction in both Defend and Collect.
+At committed and pushed `87a6568`, the owner also confirmed that the approved
+runtime Collect coins display with the intended hexagonal shape. Combined with
+the previously accepted object behavior, **Phone Gate A and Waypoint 1 are
+complete.**
 
 ### Waypoint 2 - three deterministic modes
 
