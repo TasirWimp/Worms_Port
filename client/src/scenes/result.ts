@@ -13,7 +13,7 @@ import {
 } from '../practice/client';
 
 export type ResultClient = Pick<PracticeClient,
-    'retryCombat' | 'combatArgs' | 'onRewardUpdate' | 'rewardForChallenge' |
+    'retryCombat' | 'combatArgs' | 'dismissCompletedCombat' | 'onRewardUpdate' | 'rewardForChallenge' |
     'claimReward' | 'rewardStatus'>;
 
 export type ResultSceneArgs = {
@@ -102,7 +102,10 @@ export default class ResultScene extends Phaser.Scene {
             'click', () => void this.retry()
         );
         this.root.querySelector<HTMLButtonElement>('.result-change')!.addEventListener(
-            'click', () => this.scene.start('practice')
+            'click', () => {
+                this.client.dismissCompletedCombat();
+                this.scene.start('practice');
+            }
         );
         this.root.querySelector<HTMLButtonElement>('.result-fullscreen')!.addEventListener(
             'click', () => void this.toggleFullscreen()

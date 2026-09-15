@@ -71,7 +71,10 @@ test('standard Daily uses volcanic V10, resumes, settles verified loss, and retr
     const retained = await store.status('browser_automated_entitlement', signer.address);
     expect(retained?.state).toBe('lost');
     expect(retained?.replay && 'automationId' in retained.replay && retained.replay.automationId).toBe(V10_R7_AUTOMATION_ID);
-    await page.getByRole('button', { name: 'Play Practice' }).tap();
+    await page.getByRole('button', { name: 'Change Calling' }).tap();
+    await expect(page.locator('.result-shell')).toHaveCount(0);
+    await expect(page.getByRole('heading', { name: 'Practice Clash' })).toBeVisible();
+    await page.getByRole('button', { name: 'Start Practice' }).tap();
     await expect(ui).toHaveAttribute('data-mode', 'practice');
     await expect(ui).toHaveAttribute('data-ruleset', V10_R7_RULESET_ID);
     await expect(ui).toHaveAttribute('data-background', 'volcanic-ruin');

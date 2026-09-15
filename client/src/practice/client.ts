@@ -149,6 +149,10 @@ export class PracticeClient {
         return this.v10.onResult(listener);
     }
 
+    public dismissCompletedCombat(): void {
+        this.v10?.dismissCompletedCombat();
+    }
+
     public rewardForChallenge(challengeId: string): RewardUpdateData | undefined {
         const update = this.rewardUpdates.get(challengeId);
         return update ? structuredClone(update) : undefined;

@@ -638,9 +638,14 @@ test('standard volcanic Practice at root keeps authority, AI, cold resume and re
     const second = runtime.sessions.activeSnapshotV10(owned())!.challengeId;
     now += 120001; runtime.sessions.sweep();
     await expect(page.locator('.result-shell')).toBeVisible();
-    await page.getByRole('button', { name: 'Play Again', exact: true }).tap();
+    await page.getByRole('button', { name: 'Change Calling', exact: true }).tap();
+    await expect(page.locator('.result-shell')).toHaveCount(0);
+    await expect(page.getByRole('heading', { name: 'Practice Clash' })).toBeVisible();
+    await page.getByRole('button', { name: /Thief/ }).tap();
+    await page.getByRole('button', { name: 'Start Practice' }).tap();
     await expect(ui).toHaveAttribute('data-background', 'volcanic-ruin');
     await expect(ui).toHaveAttribute('data-background-ready', 'true');
+    await expect(ui).toHaveAttribute('data-calling', 'thief');
     expect(runtime.sessions.activeSnapshotV10(owned())!.challengeId).not.toBe(second);
     expect(fetched.some(url => /mini-app-sdk/.test(url))).toBe(false);
     expect(errors).toEqual([]);

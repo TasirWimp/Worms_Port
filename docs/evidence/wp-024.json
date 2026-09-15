@@ -19,7 +19,8 @@
     "Serialize exact live terrain and actor overlays, bind R7 terrain revision/hash metadata to authoritative transitions, render every exposed terrain surface, introduce the full-world camera survey and restore the exact changed local preview across app reopen while explicit restart starts fresh.",
     "Waypoint 3 after terrain acceptance: move the exact R7 state into the server-authoritative lifecycle with the existing deterministic Loomkeeper, exact replay/resume and Practice canary before final Practice and Daily promotion.",
     "Correct the Phone Gate C foreground performance regression without changing gameplay: coalesce aim previews per display frame, batch detached projectile rollout validation, cache terrain topology by authoritative revision/hash, avoid unchanged layout writes and remove redundant validation inside coordinator-owned tick batches.",
-    "After Phone Gate C, promote the already accepted current R7 identity to the one normal Practice and PEI-gated Daily runtime: require NIMBLE_RUNTIME_PROFILE to be absent, reject the retired production-v7 alias and bind supported cross-mode journeys to literal R7 identifiers."
+    "After Phone Gate C, promote the already accepted current R7 identity to the one normal Practice and PEI-gated Daily runtime: require NIMBLE_RUNTIME_PROFILE to be absent, reject the retired production-v7 alias and bind supported cross-mode journeys to literal R7 identifiers.",
+    "Correct the Phone Gate D shared result navigation so Change Calling dismisses completed local V10 combat ownership and stays on the lobby without clearing wallet identity, PEI receipts, reward state or daily authority."
   ],
   "non_goals": [
     "No Gemini dependency, API call, prompt, provider configuration or external selector anywhere in WP-024; objective-aware Gemini selection is owned by WP-027 after WP-026 defines R8 objective gameplay.",
@@ -135,6 +136,16 @@
       "command": "WP-024 final R7 promotion risk-based verification from 39efb21",
       "status": "pass",
       "details": "The worms_port_test_runner verified the frozen ten-path promotion diff at selector fingerprint 1a48756f568cd5d072cc52e94a1f378399aaa88bb015e6daf401d267b2da7b6c with zero retries or infrastructure edits. Work-package evidence 71 records, import boundary, types, protocol 21/21, fresh build proof 3cfa8b0d30b0 / be719e7549f4, standard R7 built smoke, identity bundles and reward security passed. The exact canonical Chromium standard Daily-to-Practice journey passed 1/1 in 68.792 seconds and the PEI-to-Daily-to-Practice journey passed 1/1 in 77.756 seconds. Report-only housekeeping passed. Logs are under .cache/wp024-r7-final-promotion-*.log."
+    },
+    {
+      "command": "Phone Gate D first promoted R7 read",
+      "status": "fail",
+      "details": "The owner passed point 1 and points 3 through 7 on the physical phone. Point 2 exposed a blocking shared navigation defect: Change Calling after either won or lost Practice and Daily results did not remain on the lobby, requiring the app to be closed before another helper crossing. Gate D remains open for the bounded result-navigation correction and focused phone retest; the accepted gameplay, PEI consumption, exact resume, terminal outcomes, 1 NIM payout with transaction hash and normal daily limit do not need repetition."
+    },
+    {
+      "command": "WP-024 Phone Gate D Change Calling correction verification from 86f9338",
+      "status": "pass",
+      "details": "The worms_port_test_runner verified the exact nine-path correction at selector fingerprint d1b220ec3f673e75d937e5aa46669f674ea091c13c1d1c18dcd96a121e7cc8de with zero retries and no infrastructure edits. Work-package evidence 71 records, import boundary, types, Practice units 2/2, fresh build proof c74850871c22 / faeba722b5ee and standard R7 built smoke passed. The canonical current-R7 Practice result-to-Calling-to-new-Practice case passed 1/1 in 32.790 seconds, and the canonical current-R7 Daily loss-to-Calling-to-Practice case passed 1/1 in 68.957 seconds. Logs are under .cache/wp024-gate-d-change-calling-*.log."
     }
   ],
   "reviews": [
@@ -207,10 +218,20 @@
       "reviewer": "primary assistant final R7 promotion direct review",
       "status": "pass",
       "details": "Direct review confirms the ordinary runtime already consumed the current R7 ruleset and automation identity for both Practice and reward admission. Promotion removes only the misleading production-v7 environment alias, making an absent NIMBLE_RUNTIME_PROFILE the sole normal production selection; named development profiles remain isolated and cannot serve Daily. Literal R7 assertions now cover standard Daily, PEI receipt consumption, durable replay/resume and the return to Practice. No gameplay, economy, receipt, payout, database, identity, dependency or asset behavior changed."
+    },
+    {
+      "reviewer": "WP-024 Phone Gate D first physical-phone read",
+      "status": "fail",
+      "details": "Gate D point 2 failed because Change Calling could not escape the retained completed result; point 1 and points 3 through 7 passed. The next verdict is limited to Change Calling after one Practice result and one Daily result."
+    },
+    {
+      "reviewer": "primary assistant Phone Gate D navigation correction direct review",
+      "status": "pass",
+      "details": "Direct review traced the loop to immediate replay of the retained terminal result when the new Practice scene subscribed. The correction clears only the completed terminal, its final snapshot and local combat lifecycle; it preserves the socket session, authorized wallet, PEI receipts, reward state and server-owned daily authority. Clearing the snapshot also causes any late duplicate result for the retired challenge to be ignored. Both current-R7 browser journeys prove Change Calling remains on the lobby and can start fresh Practice. Physical-phone confirmation remains pending."
     }
   ],
   "skipped_checks": [
-    "Phone Gates A, B and C passed on the physical phone at committed and pushed 4933cb2, 9e17773 and cf11916 respectively; Phone Gate D remains pending after final R7 promotion.",
+    "Phone Gates A, B and C passed on the physical phone at committed and pushed 4933cb2, 9e17773 and cf11916 respectively; Phone Gate D passed point 1 and points 3 through 7 but remains open for the focused Change Calling retest.",
     "Retired R5-and-older runtime profiles and the @legacy browser suite were excluded from ordinary acceptance.",
     "The daily/release suite was not run because this is the final feature waypoint before physical Phone Gate D rather than the daily or release boundary.",
     "The broad six-run performance gate is not repeated for this correction; focused current-R7 browser coverage measures coalesced touch dispatch and unchanged-terrain reuse, while physical-phone feel remains the acceptance authority.",
@@ -219,7 +240,7 @@
     "Authoritative Ubuntu visual baseline comparison remains CI-only; Windows ran supported visual logic with screenshot comparison skipped by policy."
   ],
   "residual_risks": [
-    "The verified R7 identity still has to pass the supervised physical Phone Gate D on the ordinary shared Practice/Daily deployment before WP-024 closes.",
+    "Phone Gate D still has to accept Change Calling after both Practice and Daily results before WP-024 closes; all other Gate D points are already accepted.",
     "Physical Android/iOS and Nimiq Pay WebView behavior remain outside automated browser evidence."
   ]
 }

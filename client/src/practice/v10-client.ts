@@ -198,6 +198,13 @@ export class V10PracticeClient {
         this.results.add(listener); if (this.terminal) queueMicrotask(() => listener(structuredClone(this.terminal!)));
         return () => this.results.delete(listener);
     }
+    /** Retire only completed local combat ownership before returning to the lobby. */
+    public dismissCompletedCombat(): void {
+        if (!this.terminal) return;
+        this.terminal = undefined;
+        this.snapshot = undefined;
+        this.lifecycle = new V10PracticeLifecycle();
+    }
     public onConnection(listener: (value: V10PracticeConnection) => void): () => void { this.connections.add(listener); return () => this.connections.delete(listener); }
     public onError(listener: (value: string) => void): () => void { this.errors.add(listener); return () => this.errors.delete(listener); }
     public onUnavailable(listener: (value: string) => void): () => void { this.unavailable.add(listener); return () => this.unavailable.delete(listener); }

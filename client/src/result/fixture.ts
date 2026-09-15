@@ -21,6 +21,7 @@ export function createResultPreview(
     const client: ResultPreviewClient = {
         retryCombat: async () => structuredClone(combat.snapshot),
         combatArgs: async (snapshot) => ({ ...combat, snapshot: structuredClone(snapshot) }),
+        dismissCompletedCombat: () => undefined,
         onRewardUpdate: (listener: (update: RewardUpdateData) => void) => {
             rewardListeners.add(listener);
             return () => rewardListeners.delete(listener);
@@ -67,6 +68,7 @@ export function createResultPreview(
 type ResultPreviewClient = {
     retryCombat(calling: import('../../../shared/simulation').PlayerCalling): Promise<ChallengeSnapshot>;
     combatArgs(snapshot: ChallengeSnapshot): Promise<CombatSceneArgs>;
+    dismissCompletedCombat(): void;
     onRewardUpdate(listener: (update: RewardUpdateData) => void): () => void;
     rewardForChallenge(challengeId: string): RewardUpdateData | undefined;
     claimReward(update: RewardUpdateData): Promise<RewardUpdateData>;

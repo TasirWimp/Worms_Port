@@ -219,7 +219,13 @@ Phaser/Socket.IO stack.
   binds Practice and Daily to the literal R7 ruleset and automation identity.
   Named development profiles remain isolated diagnostics. The exact protocol,
   build/smoke, identity/reward guards and canonical standard Daily-to-Practice
-  and PEI-to-Daily-to-Practice journeys pass. **Phone Gate D is next.** Gemini has moved
+  and PEI-to-Daily-to-Practice journeys pass. The first Phone Gate D read passed
+  point 1 and points 3 through 7, but **Change Calling** after either Practice or
+  Daily completion immediately returned to the retained result. The correction
+  explicitly dismisses completed local V10 combat ownership before starting the
+  Calling lobby while preserving wallet, receipt, reward and daily authority.
+  Focused automated navigation verification passes; the physical-phone retest
+  is next. Gemini has moved
   out of WP-024 so no deathmatch-specific external selector is built before the
   objective rules exist.** See the
   [WP-024 contract](wp-024-v10-r7-terrain-as-gameplay.md).

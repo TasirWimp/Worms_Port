@@ -1,6 +1,6 @@
 # WP-024 V10 R7 Terrain As Gameplay
 
-Status: **Final R7 promotion verified; Phone Gate D is next**
+Status: **Phone Gate D navigation correction implemented; focused retest pending**
 Planning base: `842da39`  
 Implementation base: `4f7c878`
 Implementation branch: `codex/v10-r6-action-impact-dynamics`
@@ -445,6 +445,26 @@ Phone Gate D checks one final end-to-end journey:
    exposes its transaction hash.
 7. The one-started-Daily-per-wallet/day rule still applies after the temporary
    development override is removed.
+
+The first Phone Gate D read passed point 1 and points 3 through 7. It exposed
+one shared result-navigation defect at point 2: after either a won or lost
+Practice or Daily match, **Change Calling** appeared to do nothing, so the app
+had to be closed before starting another helper crossing. The completed V10
+client retained its terminal result; the newly created Practice scene subscribed
+to that retained result and was immediately sent back to the result scene.
+
+The correction dismisses only completed local combat ownership before entering
+the Calling lobby. It preserves the socket session, authorized wallet, unused
+PEI receipts, reward update and daily-attempt authority. Current R7 browser
+coverage must tap **Change Calling** after both a Practice result and a Daily
+loss, observe the lobby remain active, then start fresh Practice successfully.
+The focused phone retest repeats only this navigation from one Practice result
+and one Daily result; the other Gate D points remain accepted.
+
+Focused verification passes with a fresh build and standard R7 built smoke.
+The exact current-R7 Practice and Daily browser journeys both dismiss the
+completed result, remain on the Calling lobby and start fresh Practice. Only
+the physical-phone navigation retest remains before Gate D can close.
 
 The mainnet helper and reward paths stay paused except for the supervised phone
 gate and return to their existing safe state immediately afterward.
