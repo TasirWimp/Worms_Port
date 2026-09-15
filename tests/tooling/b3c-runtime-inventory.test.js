@@ -40,7 +40,8 @@ test('WP-015C closes the runtime inventory to eleven exact source masters below 
   );
 
   const unregistered = structuredClone(manifest);
-  unregistered.assets[0].runtime_path = 'assets/product/unregistered-runtime.png';
+  unregistered.assets.find((asset) => asset.id === 'knotkin-wizard-flux2-owned-original-source-master-v1')
+    .runtime_path = 'assets/product/unregistered-runtime.png';
   assert.match(
     validateB3cRuntimeInventory(unregistered).join('\n'),
     /unexpected runtime asset is blocked/

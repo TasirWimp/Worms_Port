@@ -76,6 +76,7 @@ export class CombatRenderer {
     private readonly effects: Phaser.GameObjects.Graphics;
     private readonly wizardSprites: Partial<Record<SimulationActor, Phaser.GameObjects.Sprite>> = {};
     private readonly cloudSprites: Phaser.GameObjects.Image[] = [];
+    private readonly objectiveCoinSprites: Phaser.GameObjects.Image[] = [];
     private readonly terrainInteriorTiles: Phaser.GameObjects.TileSprite[] = [];
     private readonly terrainTopTiles: Phaser.GameObjects.TileSprite[] = [];
     private readonly formationSprite?: Phaser.GameObjects.Image;
@@ -115,6 +116,12 @@ export class CombatRenderer {
                 .setAlpha(0.72)
                 .setMask(this.worldMask));
         }
+        for (let index = 0; index < 7; index += 1) {
+            this.objectiveCoinSprites.push(scene.add.image(0, 0, APPROVED_COMBAT_ASSETS.objectiveCoin.key)
+                .setDepth(1.05)
+                .setMask(this.worldMask)
+                .setVisible(false));
+        }
         this.formationSprite = scene.add.image(0, 0, APPROVED_COMBAT_ASSETS.formationStart.key)
             .setDepth(5)
             .setMask(this.worldMask)
@@ -127,6 +134,10 @@ export class CombatRenderer {
 
     public get assetState(): 'approved-runtime-copies' | 'procedural-fallback' {
         return this.usingApprovedAssets ? 'approved-runtime-copies' : 'procedural-fallback';
+    }
+
+    public get objectiveCoinPresentationState(): 'approved-runtime-coin' | 'code-owned' {
+        return this.objectiveCoinSprites.length > 0 ? 'approved-runtime-coin' : 'code-owned';
     }
 
     public get terrainCompilationCount(): number { return this.compiledTerrainCount; }
@@ -193,6 +204,7 @@ export class CombatRenderer {
         this.effects.destroy();
         for (const sprite of Object.values(this.wizardSprites)) sprite?.destroy();
         for (const sprite of this.cloudSprites) sprite.destroy();
+        for (const sprite of this.objectiveCoinSprites) sprite.destroy();
         for (const tile of this.terrainInteriorTiles) tile.destroy();
         for (const tile of this.terrainTopTiles) tile.destroy();
         this.formationSprite?.destroy();
@@ -652,10 +664,18 @@ export class CombatRenderer {
     private drawObjectiveObjects(state: CombatRenderState, layout: CombatLayout): void {
         const g = this.objectiveObjects;
         g.clear();
+        for (const sprite of this.objectiveCoinSprites) sprite.setVisible(false);
+        let coinSpriteIndex = 0;
         for (const object of state.objectives ?? []) {
             if (object.status !== 'active') continue;
             const point = this.worldPoint(object.xFp / 256, object.yFp / 256, layout);
             if (object.kind === 'coin') {
+                const sprite = this.objectiveCoinSprites[coinSpriteIndex++];
+                if (sprite) {
+                    const canvasSize = Math.max(14, 38 * layout.worldScale);
+                    sprite.setPosition(point.x, point.y).setDisplaySize(canvasSize, canvasSize).setVisible(true);
+                    continue;
+                }
                 const radius = Math.max(6, 16 * layout.worldScale);
                 g.fillStyle(0xE9B213, 0.98);
                 g.fillCircle(point.x, point.y, radius);

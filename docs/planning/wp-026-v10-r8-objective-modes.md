@@ -1,6 +1,6 @@
 # WP-026 V10 R8 Objective Modes
 
-Status: **active; Waypoint 1 implemented locally; Phone Gate A pending**
+Status: **active; Waypoint 1 Collect coin has an approved runtime presentation and passing automated verification; focused Phone Gate A recheck pending**
 
 Required predecessor: completed WP-024 R7 promotion and completed WP-025
 lifecycle and power hardening
@@ -35,6 +35,30 @@ promotion gate.
 The wire and server must use `objectiveMode` for the gameplay choice. Existing
 `mode` fields keep their Practice/reward meaning and must not be overloaded.
 The selected objective mode is immutable after challenge creation.
+
+## Waypoint 1 Collect coin presentation contract
+
+Waypoint 1 may replace only the Collect-mode round procedural coin with one
+static, original amber textile hexagonal coin. It is a generic flat-top
+six-sided game collectible, not the Nimiq logo: the contract prohibits Nimiq
+name/marks, official paths, official pixels, cryptocurrency symbols, wallet UI,
+text, watermark, or a claim of Nimiq brand identity. Defend and Claim chest
+presentation remains unchanged. The exact project-owned geometry guide is
+documentation-only and may condition one local-loopback ComfyUI FLUX.2 Klein
+reference edit at seed `26026001`; it has deliberately distinct 1.2-ratio,
+unrounded generic geometry. The owner approved the exact generic output. The one request completed as Comfy
+prompt `66106a30-9011-4dc7-b340-b615c4f3acaf`, producing untouched external
+1024x1024 RGB24 file `WormsPortFlux2KleinReferenceEdit_00011_.png` (906,163
+bytes, SHA-256 `9D63D9A75187885BAEC0417A06B781A4B6EE9983493E6B8699F8CF4B3ADC73A1`).
+Frozen deterministic matte cleanup, the same generic alpha mask, uniform
+scale/centering, source-master admission and a byte-identical build runtime
+copy now produce `assets/masters/objectives/collect/generic-amber-hex-coin-source-master-v1.png`
+(SHA-256 `1E56B2742351A85678EE93F5694E4DCDE5964EFC3C2C7F2C78C4364AB5354405`).
+Collect loads that static runtime texture at the existing object depth and world
+clip; Defend and Claim chests remain code-owned.
+No objective authority, 16-by-16 half extents, support, collection, score,
+collision, mode, AI, protocol, server/reward/PEI/Gemini, controls, status bars,
+atlas, dependency, animation, or per-frame image work may change.
 
 ## Mode rules
 

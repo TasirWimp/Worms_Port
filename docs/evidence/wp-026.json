@@ -15,12 +15,14 @@
     "Apply deterministic fixed-point vertical gravity, terrain support, landing and open-bottom loss to active objects after each R8 combat tick; projectiles, actors and blasts do not collide with or directly move or damage them.",
     "Serialize the live tactical ASCII overlay and exact structured objective state beside unchanged terrain serialization.",
     "Expose coin and chest physics through a wallet-free private v10r8 preview with code-owned placeholder presentation for physical Phone Gate A.",
-    "Correct the first Phone Gate A presentation read by assigning the inherited compact movement/status interface a semantic class shared by R6, R7 and R8, with no gameplay or authority change."
+    "Correct the first Phone Gate A presentation read by assigning the inherited compact movement/status interface a semantic class shared by R6, R7 and R8, with no gameplay or authority change.",
+    "Admit at most one owner-reviewed original generic amber textile hexagonal Collect-coin candidate through the closed local FLUX.2 Klein reference-edit route, then preserve all R8 objective authority and the accepted compact controls/status layout."
   ],
   "non_goals": [
     "No collection, capture, scoring, objective terminal result, mode selector, objective HUD or objective-aware Loomkeeper behavior in Waypoint 1.",
     "No server Practice, Daily, PEI, reward, helper, wallet, database, deployment profile, environment variable, replay or protocol activation in Waypoint 1.",
-    "No Gemini integration, external source, Sorcerers material, imported/generated asset, dependency or R7 behavior change."
+    "No Gemini integration, Sorcerers material, branded/trademark-derived input, dependency or R7 behavior change.",
+    "No Nimiq logo, official source pixels, official geometry, brand claim, chest change, atlas, animation, per-frame image processing, or automated candidate/source-master/runtime promotion."
   ],
   "planned_checks": [
     "npm.cmd run verify:changes -- --dry-run --base c82e74d",
@@ -32,7 +34,8 @@
   ],
   "deterministic_seeds": [
     "R8 local volcanic objective preview seed 4",
-    "volcanic-ruin-objectives-r1 fixed collect, defend and claim ASCII layers"
+    "volcanic-ruin-objectives-r1 fixed collect, defend and claim ASCII layers",
+    "WP-026 generic amber hex coin candidate seed 26026001"
   ],
   "sorcerers_reference_used": false,
   "clean_room_records": [],
@@ -66,6 +69,16 @@
       "command": "Phone Gate A presentation correction: npm.cmd run verify:changes -- --base 17200ab",
       "status": "pass",
       "details": "The zero-retry selector passed at fingerprint 881aa5d1ad324fd8c8966a7f168051752a0e7d5867a130a4f9e0ad15b666c4e3: import, types, 73 work-package records, combat 51/51, Practice 4/4, identity 22/22, reward 28/28 and protocol 21/21. Fresh build proof 830e560417fe / de54a46f17c3 passed standard R7 smoke, identity/reward security and bundle limits at 1432507/1500000 initial JavaScript bytes and 418032/430000 gzip bytes. Canonical supported browser groups passed 18/18; visual logic passed 17 cases with eight expected Windows snapshot-comparison skips. The R8 preview passed on Chromium 360x640, 390x844, 412x915 and 844x390 plus WebKit 390x844, proving three visible 48px-or-larger buttons, 2-4px cluster spacing, no old joystick elements and a compact one-row health card. PostgreSQL, performance, legacy and daily/release coverage were not selected. Master log .cache/wp026-gatea-selector.log."
+    },
+    {
+      "command": "WP-026 generic amber hex coin contract preflight and one MCP request",
+      "status": "pass",
+      "details": "Generation-component compliance, exact project-owned guide and work-package evidence checks passed before the request. The reviewed local-loopback FLUX.2 Klein reference-edit workflow A2BF8CD3C015D36646E73F2FA87F22741E4410D27B26D562331057B49CFF6C8E ran one batch-one request at seed 26026001. Queue before and after were empty. Prompt 66106a30-9011-4dc7-b340-b615c4f3acaf completed successfully in 311.118 seconds, producing external 1024x1024 RGB24 candidate 9D63D9A75187885BAEC0417A06B781A4B6EE9983493E6B8699F8CF4B3ADC73A1 (906163 bytes). ComfyUI and the bridge were stopped immediately after collection. The owner approved the exact generic candidate. Frozen normalization config 6500BD0D82250C31FBE999789895C54148F3725D53E867F77EE046DD4124A4B0 and normalizer 28B88F05237208573800C1121BE836315A2414776E114390030642461A358536 produced the 93,421-byte 256x256 RGBA master 1E56B2742351A85678EE93F5694E4DCDE5964EFC3C2C7F2C78C4364AB5354405 twice. The client build copied those exact bytes to its runtime asset path and the renderer loads it only for R8 Collect; chest presentation and objective authority remain unchanged."
+    },
+    {
+      "command": "npm run verify:changes",
+      "status": "pass",
+      "details": "Delegated test execution by worms_port_test_runner on GPT-5.6 Terra/medium completed a fresh zero-retry selector at fingerprint 1ba0a5694675a994f188f941ec9772a01b7ca8d1f780562bb303511c7f04b349. Compliance, types and tooling passed 137/137; combat 51/51 and Practice 4/4 passed. The build copied 17 approved runtime assets, including the exact WP-026 coin master, and standard R7 built smoke, identity/reward/bundle checks passed. Phone browser coverage passed 11/11; visual coverage passed 17 with eight expected Windows skips for Ubuntu-only baseline pixel comparisons. R8 Collect asserted data-objective-presentation=approved-runtime-coin across Chromium 360x640, 390x844, 412x915, 844x390 and WebKit 390x844; Defend asserted code-owned chest presentation. PostgreSQL, performance and daily/release were not selected."
     }
   ],
   "reviews": [
@@ -86,6 +99,18 @@
       "reviewer": "primary assistant Phone Gate A presentation-correction review",
       "decision": "pass",
       "details": "R8 already selects the accepted R6-family three-button input controller and compact status logic. Only the stylesheet repeated literal R6/R7 IDs, so R8 fell back to generic V9 touch-zone and status-grid styles. One semantic combat-action-dynamics class now owns the inherited CSS for all three rulesets. The R6/R7 DOM and declarations remain unchanged in effect; no simulation, input mapping, objective, server, reward or PEI behavior changes. Physical presentation remains at the focused Gate A recheck."
+    },
+    {
+      "role": "owner",
+      "reviewer": "WP-026 generic Collect coin exact-output review",
+      "decision": "pass",
+      "details": "The owner approved the exact generic amber flat-top hexagonal textile coin candidate SHA-256 9D63D9A75187885BAEC0417A06B781A4B6EE9983493E6B8699F8CF4B3ADC73A1 for deterministic normalization and bounded R8 Collect presentation. The approval excludes official Nimiq assets or brand identity and does not change the remaining physical Phone Gate A requirement."
+    },
+    {
+      "role": "primary",
+      "reviewer": "primary assistant direct WP-026 Collect presentation review",
+      "decision": "pass",
+      "details": "Direct review verified that the approved static texture is only preloaded, positioned, clipped and shown for active Collect coin objects at their existing render depth. The former procedural coin remains only as an unavailable-texture fallback. Defend and Claim chest drawing, fixed-point objective state, collision/support/collection/scoring rules, protocol, server/reward/PEI behavior and R7 presentation paths are unchanged."
     }
   ],
   "skipped_checks": [

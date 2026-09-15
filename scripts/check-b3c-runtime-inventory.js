@@ -86,14 +86,15 @@ const expectedRuntimeInventory = Object.freeze([
   }
 ]);
 
-// WP-015D4F is the only successor that may coexist with this frozen initial
-// inventory. Its own guard verifies paths, hashes, byte budget and admission.
+// Later approved presentation-only admissions may coexist with this frozen
+// inventory. Each keeps its own exact source/master/runtime guard.
 const registeredSuccessorRuntimeIds = new Set([
   'volcanic-ruin-volcanic-cone-flux2-owned-original-source-master-v1',
   'volcanic-ruin-stone-tower-flux2-owned-original-source-master-v1',
   'volcanic-ruin-distant-jungle-flux2-owned-original-source-master-v1',
   'volcanic-ruin-palm-cluster-flux2-owned-original-source-master-v1',
-  'volcanic-ruin-bush-cluster-flux2-owned-original-source-master-v1'
+  'volcanic-ruin-bush-cluster-flux2-owned-original-source-master-v1',
+  'wp-026-generic-amber-hex-coin-flux2-owned-original-source-master-v1'
 ]);
 
 function sha256(bytes) {

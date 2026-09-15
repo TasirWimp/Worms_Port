@@ -33,6 +33,20 @@ test('generation component manifest keeps tools external and output quarantined'
   assert.match(validateGenerationComponents(pathConfigDrift).join('\n'), /local_extra_model_paths_sha256 must be exact/);
 });
 
+test('approved objective coin request and byte-identical runtime admission remain closed', () => {
+  const profile = manifest.profiles.find((candidate) => candidate.id === 'flux2-klein');
+  assert.equal(profile.objective_coin_authorized_request.status, 'consumed_source_master_approved');
+  assert.equal(profile.objective_coin_source_master_review.normalized_master_sha256,
+    '1E56B2742351A85678EE93F5694E4DCDE5964EFC3C2C7F2C78C4364AB5354405');
+  assert.equal(profile.objective_coin_source_master_review.runtime_path,
+    'assets/product/objectives/collect/generic-amber-hex-coin-v1.png');
+
+  const invalid = structuredClone(manifest);
+  invalid.profiles.find((candidate) => candidate.id === 'flux2-klein')
+    .objective_coin_source_master_review.runtime_path = 'assets/product/objectives/collect/other.png';
+  assert.match(validateGenerationComponents(invalid).join('\n'), /exact objective-coin source-master review changed/);
+});
+
 test('generation checkpoint requires exact hash, size, name, and license evidence', () => {
   const invalid = structuredClone(manifest);
   const checkpoint = invalid.components.find((component) => component.id === 'stable-diffusion-v1-5-archive-fp16');

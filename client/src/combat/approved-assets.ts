@@ -53,6 +53,10 @@ export const APPROVED_COMBAT_ASSETS = {
         key: 'wp015c-patch-terrain-interior',
         path: '/assets/product/environment/patch-01/terrain/interior-v1.png'
     },
+    objectiveCoin: {
+        key: 'wp026-generic-amber-hex-coin',
+        path: '/assets/product/objectives/collect/generic-amber-hex-coin-v1.png'
+    },
     volcano: {
         key: 'wp015d4f-volcanic-ruin-volcano',
         path: '/assets/product/environment/backgrounds/volcanic-ruin/volcanic-cone-v1.png'
@@ -103,7 +107,8 @@ const STATIC_COMBAT_ASSETS = [
     APPROVED_COMBAT_ASSETS.projectile,
     APPROVED_COMBAT_ASSETS.cloud,
     APPROVED_COMBAT_ASSETS.terrainTop,
-    APPROVED_COMBAT_ASSETS.terrainInterior
+    APPROVED_COMBAT_ASSETS.terrainInterior,
+    APPROVED_COMBAT_ASSETS.objectiveCoin
 ] as const;
 
 const WIZARD_ANIMATION_ASSETS = [

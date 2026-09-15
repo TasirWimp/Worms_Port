@@ -403,10 +403,10 @@ test('selected CI jobs retain enough time for the serial zero-retry gates', () =
   const workflow = fs.readFileSync(path.resolve(__dirname, '../../.github/workflows/verify.yml'), 'utf8');
   assert.match(workflow, /CHANGE_BASE: \$\{\{ github\.event\.before \|\| github\.event\.pull_request\.base\.sha \}\}/);
   assert.equal((workflow.match(/CHANGE_BASE: \$\{\{ needs\.changes\.outputs\.base \}\}/g) ?? []).length, 2);
-  const fast = workflow.match(/\n  fast:\n([\s\S]*?)\n  browser-quality:/)?.[1] ?? '';
-  const browser = workflow.match(/\n  browser-quality:\n([\s\S]*?)\n  performance-bundle:/)?.[1] ?? '';
-  const postgres = workflow.match(/\n  postgres-reward-security:\n([\s\S]*)$/)?.[1] ?? '';
-  assert.match(fast, /\n    timeout-minutes: 60\n/);
-  assert.match(browser, /\n    timeout-minutes: 45\n/);
-  assert.match(postgres, /\n      - run: npm run test:pei:postgres\n/);
+  const fast = workflow.match(/\r?\n  fast:\r?\n([\s\S]*?)\r?\n  browser-quality:/)?.[1] ?? '';
+  const browser = workflow.match(/\r?\n  browser-quality:\r?\n([\s\S]*?)\r?\n  performance-bundle:/)?.[1] ?? '';
+  const postgres = workflow.match(/\r?\n  postgres-reward-security:\r?\n([\s\S]*)$/)?.[1] ?? '';
+  assert.match(fast, /\r?\n    timeout-minutes: 60\r?\n/);
+  assert.match(browser, /\r?\n    timeout-minutes: 45\r?\n/);
+  assert.match(postgres, /\r?\n      - run: npm run test:pei:postgres\r?\n/);
 });

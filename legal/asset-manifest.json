@@ -3,6 +3,27 @@
   "checked_date": "2026-08-08",
   "assets": [
     {
+      "id": "wp-026-generic-amber-hex-coin-flux2-owned-original-source-master-v1",
+      "file": "assets/masters/objectives/collect/generic-amber-hex-coin-source-master-v1.png",
+      "sha256": "1E56B2742351A85678EE93F5694E4DCDE5964EFC3C2C7F2C78C4364AB5354405",
+      "runtime_path": "assets/product/objectives/collect/generic-amber-hex-coin-v1.png",
+      "runtime_copy_admission": "WP-026: byte-identical runtime copy of the approved source master for the R8 Collect presentation only; no atlas, animation, physics, pickup, scoring, authority, or objective-state change.",
+      "origin_repo": "local owner-approved reference-conditioned ComfyUI generation with the pinned Black Forest Labs FLUX.2 Klein 4B component chain",
+      "original_source_url": "https://huggingface.co/black-forest-labs/FLUX.2-klein-4b-fp8/tree/5b4408e59397a4a37ccb46afe426d8ed86379441",
+      "author": "Jens Bernhardt with local FLUX.2 Klein generation and deterministic Worms_Port normalization",
+      "license": "Owned-Original",
+      "commercial_use_allowed": true,
+      "redistribution_allowed": true,
+      "modification_allowed": true,
+      "attribution_required": false,
+      "share_alike": false,
+      "no_technical_restrictions": false,
+      "evidence_url": "https://huggingface.co/black-forest-labs/FLUX.2-klein-4b-fp8/blob/5b4408e59397a4a37ccb46afe426d8ed86379441/LICENSE.md",
+      "checked_date": "2026-09-15",
+      "decision": "approved",
+      "notes": "WP-026 used one owner-approved local-loopback reference-edit request through the exact project-owned generic flat-top hex guide, not official Nimiq material or another branded/trademark source. The sole 1024x1024 RGB24 candidate remains outside the repository at its recorded Comfy output path: 906,163 bytes, SHA-256 9D63D9A75187885BAEC0417A06B781A4B6EE9983493E6B8699F8CF4B3ADC73A1, prompt ID 66106a30-9011-4dc7-b340-b615c4f3acaf, seed 26026001. The owner approved the exact generic amber coin candidate. Frozen config 6500BD0D82250C31FBE999789895C54148F3725D53E867F77EE046DD4124A4B0 and normalizer 28B88F05237208573800C1121BE836315A2414776E114390030642461A358536 perform only source verification, white-matte extraction/decontamination, largest-subject selection, uniform 27/80 scale, translation, deterministic Mitchell-Netravali resampling, and project-owned generic hex alpha clipping. Two independent normalizations reproduce this 93,421-byte 256x256 RGBA master byte-for-byte. It has one visible component, transparent canvas borders, and no gameplay meaning beyond the existing R8 Collect coin's presentation. No Sorcerers material, official Nimiq mark, text, wallet UI, cryptocurrency symbol, or other branded material was used."
+    },
+    {
       "id": "pocket-robot-openai-owned-original",
       "file": "assets/sprites/pocket-robot.png",
       "sha256": "42930118FDFD50F62D2433D76B477ECCA56D5459497943C1F431695C511EE355",

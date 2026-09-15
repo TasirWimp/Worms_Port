@@ -78,7 +78,9 @@ export class ResourceTurnsV9Scene {
         if ('objective' in this.state) {
             this.controls.root.dataset.objectiveMode = this.state.objective.objectiveMode;
             this.controls.root.dataset.objectiveRecipe = this.state.objective.recipeRevision;
-            this.controls.root.dataset.objectivePresentation = 'code-owned';
+            this.controls.root.dataset.objectivePresentation = this.state.objective.objectiveMode === 'collect'
+                ? this.renderer.objectiveCoinPresentationState
+                : 'code-owned';
         }
         this.unsubscribe = args.kind === 'v10'
             ? args.onSnapshot((state, events) => this.accept(state, events))

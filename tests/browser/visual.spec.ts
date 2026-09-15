@@ -225,7 +225,7 @@ test('V10 R8 private preview renders bounded coin and chest physics without chan
     'V10 R8 collect object-physics preview · mode rules deferred · local-only');
   await expect(ui).toHaveAttribute('data-objective-mode', 'collect');
   await expect(ui).toHaveAttribute('data-objective-recipe', 'volcanic-ruin-objectives-r1');
-  await expect(ui).toHaveAttribute('data-objective-presentation', 'code-owned');
+  await expect(ui).toHaveAttribute('data-objective-presentation', 'approved-runtime-coin');
   await expect(ui).toHaveAttribute('data-objective-active', '7');
   await expect(ui).toHaveAttribute('data-objective-lost', '0');
   await expect(ui).toHaveAttribute('data-objective-hash', /^[a-f0-9]{64}$/);
@@ -271,6 +271,7 @@ test('V10 R8 private preview renders bounded coin and chest physics without chan
   ui = page.locator('.combat-v10');
   await expect(ui).toHaveAttribute('data-ruleset', 'nimble-knots-artillery-v10-r8');
   await expect(ui).toHaveAttribute('data-objective-mode', 'defend');
+  await expect(ui).toHaveAttribute('data-objective-presentation', 'code-owned');
   await expect(ui).toHaveAttribute('data-objective-active', '1');
   await expect(ui).toHaveAttribute('data-objective-positions', /player-chest,active/);
   expect(errors).toEqual([]);

@@ -1,0 +1,44 @@
+{
+  "schema_version": 1,
+  "id": "wp-026-generic-amber-hex-coin-v1",
+  "work_package": "WP-026",
+  "frozen_at": "2026-09-15",
+  "purpose": "Deterministically extract the owner-approved generic amber hex coin candidate from its white matte, retain its original textile pixels, and clip it to the project-owned flat-top hex guide for the R8 Collect presentation.",
+  "source": {
+    "default_external_path": "C:/Users/jensb/AppData/Local/Comfy-Desktop/ComfyUI-Shared/output/WormsPortFlux2KleinReferenceEdit_00011_.png",
+    "filename": "WormsPortFlux2KleinReferenceEdit_00011_.png",
+    "sha256": "9D63D9A75187885BAEC0417A06B781A4B6EE9983493E6B8699F8CF4B3ADC73A1",
+    "bytes": 906163,
+    "width": 1024,
+    "height": 1024,
+    "channels": 3
+  },
+  "guide": {
+    "path": "docs/images/art-direction/objectives/generic-amber-hex-coin-guide-v1.png",
+    "sha256": "017D3E8A6AE043B30E0B91A450D4B00C908D8AE0B6160E6802767F95F6C95E13",
+    "vertices_source_pixels": [[256,176],[768,176],[944,512],[768,848],[256,848],[80,512]],
+    "vertices_master_pixels": [[64,44],[192,44],[236,128],[192,212],[64,212],[20,128]]
+  },
+  "boundaries": {
+    "allowed": ["exact source verification", "white-matte extraction and edge decontamination", "largest connected-subject selection", "uniform scale", "translation", "deterministic RGBA resampling", "project-owned generic hex alpha clipping"],
+    "blocked": ["inference", "manual painting", "cloning", "generative fill", "texture reconstruction", "non-uniform scale", "warp", "animation", "gameplay authority changes"]
+  },
+  "matte": {
+    "background_rgb": [255,255,255],
+    "hard_foreground_threshold": 24,
+    "soft_edge_low_threshold": 3,
+    "soft_edge_high_threshold": 16,
+    "soft_edge_radius_pixels": 2,
+    "component_connectivity": 8,
+    "expected_hard_bounds": {"min_x":190,"min_y":239,"max_x":830,"max_y":811}
+  },
+  "geometry": {
+    "master_canvas": [256,256],
+    "uniform_scale_numerator": 27,
+    "uniform_scale_denominator": 80,
+    "translation": [-44.8,-44.8],
+    "motion_safe": {"min_x":18,"max_x":238,"min_y":42,"max_y":214}
+  },
+  "resampling": {"filter":"Mitchell-Netravali bicubic","b":0.3333333333333333,"c":0.3333333333333333,"alpha":"premultiplied during filtering, straight RGBA in PNG"},
+  "outputs": {"approved_master_path":"assets/masters/objectives/collect/generic-amber-hex-coin-source-master-v1.png"}
+}

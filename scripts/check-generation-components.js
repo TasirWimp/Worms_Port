@@ -121,6 +121,16 @@ const reviewedConditioningInputContracts = new Map([
     fileSha256: 'AC9F8F101094C5C15361FD24827C4F24B7C52ACBC652000748B209CB5483F56B',
     generatorSha256: '3B009E6F4A5908D4BAFA63426E7538F9B59DD2A4A286246FFC2604DCD7D0FB69'
   }],
+  ['generic-amber-hex-coin-guide-v1', {
+    kind: 'project_owned_structure_reference',
+    sourcePath: 'docs/images/art-direction/objectives/generic-amber-hex-coin-guide-v1.png',
+    generatorPath: 'scripts/generate-objective-coin-guide.js',
+    width: 1024,
+    height: 1024,
+    fileSize: 31219,
+    fileSha256: '017D3E8A6AE043B30E0B91A450D4B00C908D8AE0B6160E6802767F95F6C95E13',
+    generatorSha256: 'BCD4F3B1B71FCB08D108F94836C481E15B28B0BDCB8D31319171D2A6C22A6D65'
+  }],
   ['volcanic-ruin-scene-reference-v1', {
     kind: 'owner_provided_visual_reference',
     sourcePath: 'docs/images/art-direction/backgrounds/volcanic-ruin-scene-reference-v1.png',
@@ -450,6 +460,33 @@ const reviewedProfileContracts = new Map([
       runtime_path_assigned: false,
       further_generation_authorized: false
     },
+    objectiveCoinAuthorizedRequest: {
+      decision: 'one_reference_edit_request_approved',
+      work_package: 'WP-026',
+      purpose: 'r8-collect-generic-amber-hex-coin-candidate',
+      tool: 'generate_flux2_klein_reference_edit',
+      workflow_sha256: 'A2BF8CD3C015D36646E73F2FA87F22741E4410D27B26D562331057B49CFF6C8E',
+      seed: 26026001,
+      prompt: 'One original isolated small mobile-game collectible coin on a plain white background: a simple flat-top six-sided amber-gold hexagonal coin, centered with generous padding, with restrained woven crochet and felt texture, a broad readable silhouette, and one soft highlight. It must remain a generic game coin with no brand identity. No text, letter, number, cryptocurrency mark, Nimiq mark, logo, wallet UI, watermark, character, weapon, scenery, floor, shadow, thick 3D rim, decorative filigree, second object, or photorealistic exchange token.',
+      width: 1024,
+      height: 1024,
+      batch_size: 1,
+      steps: 4,
+      cfg: 1,
+      sampler: 'euler',
+      reference_input: 'generic-amber-hex-coin-guide-v1',
+      reference_staged_name: 'generic-amber-hex-coin-guide-v1.png',
+      max_requests: 1,
+      status: 'consumed_source_master_approved',
+      requests_consumed: 1,
+      prompt_id: '66106a30-9011-4dc7-b340-b615c4f3acaf',
+      runtime_seconds: 311.118,
+      external_output_path: 'C:\\Users\\jensb\\AppData\\Local\\Comfy-Desktop\\ComfyUI-Shared\\output\\WormsPortFlux2KleinReferenceEdit_00011_.png',
+      external_output_sha256: '9D63D9A75187885BAEC0417A06B781A4B6EE9983493E6B8699F8CF4B3ADC73A1',
+      external_output_bytes: 906163,
+      external_output_pixel_format: 'RGB24',
+      further_requests_authorized: false
+    },
     cloudAuthorizedRequest: {
       decision: 'one_text_request_approved',
       work_package: 'WP-015B3A',
@@ -494,6 +531,20 @@ const reviewedProfileContracts = new Map([
       runtime_copy_work_package: 'WP-015B3C.1',
       runtime_copy_source_bytes: 211751,
       further_generation_authorized: false
+    },
+    objectiveCoinSourceMasterReview: {
+      decision: 'source_master_approved', generation_work_package: 'WP-026', normalization_work_package: 'WP-026',
+      seed: 26026001, conditioning_reference_sha256: '017D3E8A6AE043B30E0B91A450D4B00C908D8AE0B6160E6802767F95F6C95E13',
+      external_source_sha256: '9D63D9A75187885BAEC0417A06B781A4B6EE9983493E6B8699F8CF4B3ADC73A1',
+      normalization_config_path: 'scripts/asset-normalization/wp-026-generic-amber-hex-coin-v1.json',
+      normalization_config_sha256: '6500BD0D82250C31FBE999789895C54148F3725D53E867F77EE046DD4124A4B0',
+      normalizer_path: 'scripts/normalize-objective-coin-master.js',
+      normalizer_sha256: '28B88F05237208573800C1121BE836315A2414776E114390030642461A358536',
+      normalized_master_path: 'assets/masters/objectives/collect/generic-amber-hex-coin-source-master-v1.png',
+      normalized_master_sha256: '1E56B2742351A85678EE93F5694E4DCDE5964EFC3C2C7F2C78C4364AB5354405',
+      master_canvas: [256,256], runtime_path_assigned: true,
+      runtime_path: 'assets/product/objectives/collect/generic-amber-hex-coin-v1.png',
+      runtime_copy_work_package: 'WP-026', runtime_copy_source_bytes: 93421, further_generation_authorized: false
     },
     terrainTopAuthorizedRequest: {
       decision: 'one_text_request_approved',
@@ -1183,6 +1234,14 @@ function validateGenerationComponents(manifest, root = repoRoot) {
           JSON.stringify(profile.threadball_source_master_review) !== JSON.stringify(contract.threadballReview)) {
         errors.push(`${label}: exact Threadball source-master review changed.`);
       }
+      if (contract.objectiveCoinAuthorizedRequest &&
+          JSON.stringify(profile.objective_coin_authorized_request) !== JSON.stringify(contract.objectiveCoinAuthorizedRequest)) {
+        errors.push(`${label}: exact objective-coin authorized generation request changed.`);
+      }
+      if (contract.objectiveCoinSourceMasterReview &&
+          JSON.stringify(profile.objective_coin_source_master_review) !== JSON.stringify(contract.objectiveCoinSourceMasterReview)) {
+        errors.push(`${label}: exact objective-coin source-master review changed.`);
+      }
       if (contract.cloudAuthorizedRequest &&
           JSON.stringify(profile.cloud_authorized_request) !== JSON.stringify(contract.cloudAuthorizedRequest)) {
         errors.push(`${label}: exact Cloud authorized generation request changed.`);
@@ -1267,6 +1326,34 @@ function validateGenerationComponents(manifest, root = repoRoot) {
         if (!approvedMaster || approvedMaster.sha256 !== profile.background_source_master_review.normalized_master_sha256 ||
             approvedMaster.runtime_path !== profile.background_source_master_review.runtime_path) {
           errors.push(`${label}: approved background master must remain manifest-bound to its reviewed preview runtime_path.`);
+        }
+      }
+      if (contract.objectiveCoinSourceMasterReview) {
+        const review = profile.objective_coin_source_master_review;
+        for (const [pathField, hashField] of [
+          ['normalization_config_path', 'normalization_config_sha256'],
+          ['normalizer_path', 'normalizer_sha256'],
+          ['normalized_master_path', 'normalized_master_sha256']
+        ]) {
+          const relativePath = review?.[pathField] || '';
+          const resolvedPath = path.resolve(root, relativePath);
+          if (!relativePath || !resolvedPath.startsWith(path.resolve(root) + path.sep) || !fs.existsSync(resolvedPath)) {
+            errors.push(`${label}: objective coin ${pathField} must resolve inside the repository.`);
+            continue;
+          }
+          const actualHash = crypto.createHash('sha256').update(fs.readFileSync(resolvedPath)).digest('hex').toUpperCase();
+          if (actualHash !== review?.[hashField]) errors.push(`${label}: objective coin ${pathField} does not match ${hashField}.`);
+        }
+        const assetManifestPath = path.resolve(root, 'legal', 'asset-manifest.json');
+        const assetManifest = fs.existsSync(assetManifestPath) ? JSON.parse(fs.readFileSync(assetManifestPath, 'utf8')) : null;
+        const approvedMaster = assetManifest?.assets?.find((asset) => asset.file === review?.normalized_master_path);
+        const runtimePath = review?.runtime_path && path.resolve(root, review.runtime_path);
+        const runtimeHash = runtimePath && fs.existsSync(runtimePath) ?
+          crypto.createHash('sha256').update(fs.readFileSync(runtimePath)).digest('hex').toUpperCase() : '';
+        if (!approvedMaster || approvedMaster.sha256 !== review?.normalized_master_sha256 ||
+            approvedMaster.runtime_path !== review?.runtime_path ||
+            (runtimeHash && runtimeHash !== review?.normalized_master_sha256)) {
+          errors.push(`${label}: approved objective coin master and runtime copy must remain exact manifest-bound bytes.`);
         }
       }
       if (contract.towerSourceMasterReview) {
