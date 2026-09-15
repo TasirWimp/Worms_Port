@@ -3,6 +3,7 @@ import Phaser from 'phaser';
 import {
     SIM_RULES,
     terrainSolid,
+    type PackedTerrain,
     type RelicId,
     type SimulationActor,
     type SimulationUnit
@@ -63,6 +64,7 @@ export type CombatVisualPhase =
 // felt weave and sparse gold stitching remain readable on a phone.
 const TERRAIN_MATERIAL_SCALE_IN_WORLD = 1;
 const TERRAIN_TOP_SOURCE_HEIGHT = 64;
+type TerrainRun = Readonly<{ x: number; y: number; length: number }>;
 
 export class CombatRenderer {
     private readonly scene: Phaser.Scene;
@@ -80,6 +82,14 @@ export class CombatRenderer {
     private readonly usingApprovedAssets: boolean;
     private readonly usingWizardAnimations: boolean;
     private presentationRulesetId?: string;
+    private terrainSource?: CombatRenderState['terrain'];
+    private terrainKey?: string;
+    private terrainGeneration = 0;
+    private terrainGeometryKey?: string;
+    private terrainCameraLeft?: number;
+    private terrainInteriorRuns: TerrainRun[] = [];
+    private terrainTopRuns: TerrainRun[] = [];
+    private compiledTerrainCount = 0;
 
     public constructor(scene: Phaser.Scene) {
         this.scene = scene;
@@ -115,6 +125,8 @@ export class CombatRenderer {
     public get assetState(): 'approved-runtime-copies' | 'procedural-fallback' {
         return this.usingApprovedAssets ? 'approved-runtime-copies' : 'procedural-fallback';
     }
+
+    public get terrainCompilationCount(): number { return this.compiledTerrainCount; }
 
     public animationState(actor: SimulationActor): CombatAnimationState {
         const animation = this.wizardSprites[actor]?.anims;
@@ -216,68 +228,70 @@ export class CombatRenderer {
     }
 
     private updateTerrain(state: CombatRenderState, layout: CombatLayout): void {
+        this.prepareTerrainRuns(state);
         const cellX = state.terrain.cellSize * layout.worldScaleX;
         const cellY = state.terrain.cellSize * layout.worldScaleY;
         const materialScaleX = layout.worldScaleX * TERRAIN_MATERIAL_SCALE_IN_WORLD;
         const materialScaleY = layout.worldScaleY * TERRAIN_MATERIAL_SCALE_IN_WORLD;
         const field = layout.battlefield;
-        let interiorIndex = 0;
-        let topIndex = 0;
-
-        for (let y = 0; y < state.terrain.height; y += 1) {
-            let runStart = -1;
-            for (let x = 0; x <= state.terrain.width; x += 1) {
-                const solid = x < state.terrain.width && terrainSolid(state.terrain, x, y);
-                if (solid && runStart < 0) runStart = x;
-                if (!solid && runStart >= 0) {
-                    const tile = this.terrainInteriorTiles[interiorIndex++] ?? this.createTerrainTile(
-                        APPROVED_COMBAT_ASSETS.terrainInterior.key,
-                        this.terrainInteriorTiles
-                    );
-                    tile.setPosition(field.x + (runStart * state.terrain.cellSize - layout.camera.left) * layout.worldScaleX, field.y + y * cellY)
-                        .setSize((x - runStart) * cellX + 0.5, cellY + 0.5)
-                        .setTileScale(materialScaleX, materialScaleY)
-                        .setTilePosition(
-                            runStart * cellX / materialScaleX,
-                            y * cellY / materialScaleY
-                        )
-                        .setVisible(true);
-                    runStart = -1;
-                }
-            }
+        const geometryKey = [this.terrainGeneration, field.x, field.y, field.width, field.height,
+            layout.worldScaleX, layout.worldScaleY].join(':');
+        if (geometryKey === this.terrainGeometryKey) {
+            if (layout.camera.left === this.terrainCameraLeft) return;
+            this.terrainCameraLeft = layout.camera.left;
+            this.terrainInteriorRuns.forEach((run, index) => this.terrainInteriorTiles[index].setX(
+                field.x + (run.x * state.terrain.cellSize - layout.camera.left) * layout.worldScaleX
+            ));
+            this.terrainTopRuns.forEach((run, index) => this.terrainTopTiles[index].setX(
+                field.x + (run.x * state.terrain.cellSize - layout.camera.left) * layout.worldScaleX
+            ));
+            return;
         }
+        this.terrainGeometryKey = geometryKey;
+        this.terrainCameraLeft = layout.camera.left;
 
-        // Render every upward-facing material run. The old surface profile had
-        // only one top per column; R7 can expose bridges, caves and crater
-        // floors at several heights in the same column.
-        for (let y = 0; y < state.terrain.height; y += 1) {
-            let runStart = -1;
-            for (let x = 0; x <= state.terrain.width; x += 1) {
-                const exposed = x < state.terrain.width && terrainSolid(state.terrain, x, y) &&
-                    (y === 0 || !terrainSolid(state.terrain, x, y - 1));
-                if (exposed && runStart < 0) runStart = x;
-                if (!exposed && runStart >= 0) {
-                const tile = this.terrainTopTiles[topIndex++] ?? this.createTerrainTile(
-                    APPROVED_COMBAT_ASSETS.terrainTop.key,
-                    this.terrainTopTiles
-                    );
-                    tile.setPosition(field.x + (runStart * state.terrain.cellSize - layout.camera.left) * layout.worldScaleX, field.y + y * cellY)
-                        .setSize(
-                            (x - runStart) * cellX + 0.5,
-                            Math.max(
-                                2,
-                                layout.worldScaleY * TERRAIN_TOP_SOURCE_HEIGHT * TERRAIN_MATERIAL_SCALE_IN_WORLD
-                            )
-                        )
-                        .setTileScale(materialScaleX, materialScaleY)
-                        .setTilePosition(runStart * cellX / materialScaleX, 0)
-                        .setVisible(true);
-                    runStart = -1;
-                }
-            }
-        }
-        this.hideUnusedTiles(this.terrainInteriorTiles, interiorIndex);
-        this.hideUnusedTiles(this.terrainTopTiles, topIndex);
+        this.terrainInteriorRuns.forEach((run, index) => {
+            const tile = this.terrainInteriorTiles[index] ?? this.createTerrainTile(
+                APPROVED_COMBAT_ASSETS.terrainInterior.key,
+                this.terrainInteriorTiles
+            );
+            tile.setPosition(field.x + (run.x * state.terrain.cellSize - layout.camera.left) * layout.worldScaleX, field.y + run.y * cellY)
+                .setSize(run.length * cellX + 0.5, cellY + 0.5)
+                .setTileScale(materialScaleX, materialScaleY)
+                .setTilePosition(run.x * cellX / materialScaleX, run.y * cellY / materialScaleY)
+                .setVisible(true);
+        });
+        this.terrainTopRuns.forEach((run, index) => {
+            const tile = this.terrainTopTiles[index] ?? this.createTerrainTile(
+                APPROVED_COMBAT_ASSETS.terrainTop.key,
+                this.terrainTopTiles
+            );
+            tile.setPosition(field.x + (run.x * state.terrain.cellSize - layout.camera.left) * layout.worldScaleX, field.y + run.y * cellY)
+                .setSize(run.length * cellX + 0.5, Math.max(
+                    2,
+                    layout.worldScaleY * TERRAIN_TOP_SOURCE_HEIGHT * TERRAIN_MATERIAL_SCALE_IN_WORLD
+                ))
+                .setTileScale(materialScaleX, materialScaleY)
+                .setTilePosition(run.x * cellX / materialScaleX, 0)
+                .setVisible(true);
+        });
+        this.hideUnusedTiles(this.terrainInteriorTiles, this.terrainInteriorRuns.length);
+        this.hideUnusedTiles(this.terrainTopTiles, this.terrainTopRuns.length);
+    }
+
+    private prepareTerrainRuns(state: CombatRenderState): void {
+        const key = state.terrainHash
+            ? `${state.terrain.width}:${state.terrain.height}:${state.terrain.cellSize}:${state.terrainRevision}:${state.terrainHash}`
+            : undefined;
+        if (key ? key === this.terrainKey : state.terrain === this.terrainSource) return;
+        this.terrainSource = state.terrain;
+        this.terrainKey = key;
+        this.terrainGeneration += 1;
+        this.compiledTerrainCount += 1;
+        this.terrainGeometryKey = undefined;
+        this.terrainCameraLeft = undefined;
+        this.terrainInteriorRuns = compileTerrainRuns(state.terrain, false);
+        this.terrainTopRuns = compileTerrainRuns(state.terrain, true);
     }
 
     private createTerrainTile(
@@ -584,33 +598,23 @@ export class CombatRenderer {
     }
 
     private drawFallbackTerrain(state: CombatRenderState, layout: CombatLayout): void {
+        this.prepareTerrainRuns(state);
         const g = this.background;
         const field = layout.battlefield;
         const cellX = state.terrain.cellSize * layout.worldScaleX;
         const cellY = state.terrain.cellSize * layout.worldScaleY;
         g.fillStyle(0x795548);
-        for (let y = 0; y < state.terrain.height; y += 1) {
-            let runStart = -1;
-            for (let x = 0; x <= state.terrain.width; x += 1) {
-                const solid = x < state.terrain.width && terrainSolid(state.terrain, x, y);
-                if (solid && runStart < 0) runStart = x;
-                if (!solid && runStart >= 0) {
-                    const left = field.x + (runStart * state.terrain.cellSize - layout.camera.left) * layout.worldScaleX;
-                    const right = field.x + (x * state.terrain.cellSize - layout.camera.left) * layout.worldScaleX;
-                    g.fillRect(Math.max(field.x, left), field.y + y * cellY, Math.max(0, Math.min(field.x + field.width, right) - Math.max(field.x, left)) + 0.6, cellY + 0.6);
-                    runStart = -1;
-                }
-            }
+        for (const run of this.terrainInteriorRuns) {
+            const left = field.x + (run.x * state.terrain.cellSize - layout.camera.left) * layout.worldScaleX;
+            const right = left + run.length * cellX;
+            g.fillRect(Math.max(field.x, left), field.y + run.y * cellY,
+                Math.max(0, Math.min(field.x + field.width, right) - Math.max(field.x, left)) + 0.6, cellY + 0.6);
         }
         g.lineStyle(Math.max(2, cellY * 0.45), 0x88B04B, 1);
-        for (let x = 0; x < state.terrain.width; x += 1) {
-            for (let y = 0; y < state.terrain.height; y += 1) {
-                if (terrainSolid(state.terrain, x, y) && (y === 0 || !terrainSolid(state.terrain, x, y - 1))) {
-                    const px = field.x + (x * state.terrain.cellSize - layout.camera.left) * layout.worldScaleX;
-                    const py = field.y + y * cellY;
-                    g.lineBetween(px, py, px + cellX, py);
-                }
-            }
+        for (const run of this.terrainTopRuns) {
+            const px = field.x + (run.x * state.terrain.cellSize - layout.camera.left) * layout.worldScaleX;
+            const py = field.y + run.y * cellY;
+            g.lineBetween(px, py, px + run.length * cellX, py);
         }
     }
 
@@ -680,4 +684,21 @@ export class CombatRenderer {
             y: layout.battlefield.y + (y - layout.camera.top) * layout.worldScaleY
         };
     }
+}
+
+export function compileTerrainRuns(terrain: PackedTerrain, exposedOnly: boolean): TerrainRun[] {
+    const runs: TerrainRun[] = [];
+    for (let y = 0; y < terrain.height; y += 1) {
+        let runStart = -1;
+        for (let x = 0; x <= terrain.width; x += 1) {
+            const solid = x < terrain.width && terrainSolid(terrain, x, y);
+            const included = solid && (!exposedOnly || y === 0 || !terrainSolid(terrain, x, y - 1));
+            if (included && runStart < 0) runStart = x;
+            if (!included && runStart >= 0) {
+                runs.push({ x: runStart, y, length: x - runStart });
+                runStart = -1;
+            }
+        }
+    }
+    return runs;
 }

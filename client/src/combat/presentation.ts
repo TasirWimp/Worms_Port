@@ -11,6 +11,8 @@ import { inputBoundaryV8 } from './input';
 export type CombatRenderUnit = SimulationUnit & { grounded?: boolean };
 export type CombatRenderState = Pick<SimulationState, 'terrain' | 'activeActor' | 'selectedRelic'> & {
     rulesetId?: string;
+    terrainRevision?: number;
+    terrainHash?: string;
     units: [CombatRenderUnit, CombatRenderUnit];
 };
 

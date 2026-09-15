@@ -1,5 +1,6 @@
 import { v10gFamilyForSeed } from '../../../shared/terrain-generation-v10g';
 import {
+    advanceDetachedProjectileV10,
     advanceSimulationTicksV10,
     applySimulationBarrierV10,
     applySimulationIntentV10,
@@ -434,9 +435,6 @@ export function trajectoryPreviewV10(
         aimed.state.turn, aimed.state.phase, aimed.state.inputEpoch
     );
     if (!fired.accepted) return [];
-    let projected = fired.state;
-    for (let tick = 0; tick < 300 && projected.phase === 'projectile'; tick += 1) {
-        projected = advanceSimulationTicksV10(projected, 1).state;
-    }
+    const projected = advanceDetachedProjectileV10(fired.state, 300).state;
     return projected.lastProjectile?.trace.map(point => ({ ...point })) ?? [];
 }

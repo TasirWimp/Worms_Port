@@ -201,6 +201,17 @@ Phaser/Socket.IO stack.
   responsive without relaxing operation, plan, terrain or state-hash proof.
   The existing `development-v10-practice` deployment profile
   exposes this exact path without identity, PEI or rewards for Phone Gate C.
+  The owner passed Gate C's four functional steps on 2026-09-15, including
+  resume and both result paths, but found foreground lag during Threadball and
+  Spoolburst aiming, full-arena panning, walking, jumping and Pause input. Gate
+  C remains open. The correction coalesces aim preview work to the display
+  frame, batches the detached projectile rollout, caches terrain topology by
+  its authoritative revision/hash, avoids unchanged control-layout writes and
+  removes redundant validation from coordinator-owned ticks while retaining
+  validation at publication. Focused current-R7 verification passes, including
+  exact detached-preview equivalence, all supported simulation/protocol cases,
+  built smoke and the three affected Practice browser journeys. The physical
+  phone performance retest is the next gate.
   The deployed standard Practice/Daily service remains on R6 until Gate C
   passes; enabling the ordinary branch profile after acceptance activates the
   same R7 identity for both paths before Phone Gate D. Gemini has moved

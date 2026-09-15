@@ -31,6 +31,9 @@ export class ResourceTurnsV9Controls {
     private cleanup: (() => void)[] = []; private boundary?: string; private generation = 0; private menu: ActionMenu = 'closed';
     private choice: ActionChoice = null; private selectingRelic = false; private destroyed = false; private actionSignature = '';
     private movementPending = 0;
+    private layoutSignature = '';
+    private cardLayoutSignature = '';
+    private focusSignature = '';
 
     public constructor(parent: HTMLElement, initial: ResourceTurnsState, private readonly callbacks: Callbacks,
         private readonly now: () => number = () => performance.now(), paused = false) {
@@ -113,11 +116,27 @@ ${movementControl}
     }
 
     public setLayout(layout: CombatLayout): void {
-        this.layout = layout; this.root.dataset.orientation = layout.orientation;
-        for (const [selector, rect] of [['.movement-zone', layout.movementZone], ['.aim-zone', layout.aimZone], ['.combat-status', layout.statusZone], ['.pause-button', layout.pauseZone], ['.combat-actions', layout.actionZone]] as const) this.place(this.element(selector), rect);
-        this.positionCards();
+        this.layout = layout;
+        const signature = [layout.orientation,
+            ...Object.values(layout.movementZone), ...Object.values(layout.aimZone),
+            ...Object.values(layout.statusZone), ...Object.values(layout.pauseZone), ...Object.values(layout.actionZone)].join(':');
+        if (signature !== this.layoutSignature) {
+            this.layoutSignature = signature;
+            this.root.dataset.orientation = layout.orientation;
+            for (const [selector, rect] of [['.movement-zone', layout.movementZone], ['.aim-zone', layout.aimZone], ['.combat-status', layout.statusZone], ['.pause-button', layout.pauseZone], ['.combat-actions', layout.actionZone]] as const) this.place(this.element(selector), rect);
+        }
+        const cardSignature = [...Object.values(layout.battlefield), layout.camera.left, layout.camera.width,
+            layout.worldScaleX, layout.worldScaleY].join(':');
+        if (cardSignature !== this.cardLayoutSignature) {
+            this.cardLayoutSignature = cardSignature;
+            this.positionCards();
+        }
     }
     public setCameraFocusControls(options: { enabled: boolean; player: { direction: 'left' | 'right' | null; stitching: number }; loomkeeper: { direction: 'left' | 'right' | null; stitching: number } }): void {
+        const signature = [options.enabled, options.player.direction, options.player.stitching,
+            options.loomkeeper.direction, options.loomkeeper.stitching].join(':');
+        if (signature === this.focusSignature) return;
+        this.focusSignature = signature;
         for (const [selector, label, state] of [['.camera-focus-player', 'Back to You', options.player], ['.camera-focus-loomkeeper', 'Loomkeeper', options.loomkeeper]] as const) {
             const button = this.button(selector), visible = options.enabled && state.direction !== null; button.hidden = !visible; button.disabled = !visible;
             if (state.direction) {

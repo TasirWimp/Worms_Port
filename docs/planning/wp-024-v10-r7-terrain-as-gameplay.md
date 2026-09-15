@@ -1,6 +1,6 @@
 # WP-024 V10 R7 Terrain As Gameplay
 
-Status: **Waypoint 3 implementation complete; Phone Gate C is next**
+Status: **Waypoint 3 correction implemented; Phone Gate C performance retest pending**
 Planning base: `842da39`  
 Implementation base: `4f7c878`
 Implementation branch: `codex/v10-r6-action-impact-dynamics`
@@ -367,6 +367,44 @@ deterministic Loomkeeper:
 
 Gate C accepts the server lifecycle, deterministic replay and Practice behavior.
 It does not add objective modes, Gemini or a Daily reward change.
+
+On 2026-09-15 the owner passed all four functional checks, including both
+resume positions and both terminal outcomes. The same phone read exposed a
+foreground performance regression: Threadball and Spoolburst aiming lagged,
+full-arena panning stuttered, movement could hang, jumps briefly froze and
+Pause sometimes needed repeated taps. Gate C therefore remains open even
+though its functional behavior passed.
+
+The correction keeps gameplay and authority unchanged. Touch movement may
+replace only the newest unrendered trajectory request before the next display
+frame; the resulting preview still comes from the exact R7 mechanics. A
+detached preview validates once at entry and completion rather than once for
+every internal projectile tick. The renderer compiles terrain runs only when
+the authoritative terrain revision/hash changes, then reprojects those runs
+for camera motion. Static control geometry is rewritten only when its layout
+changes. The live coordinator may use its private owned-state tick kernel, but
+it must validate before publication and preserve every replay operation and
+state hash.
+
+Final-source verification passes all 73 supported simulation cases, all 21
+protocol cases, the affected combat and Practice units, build/smoke and three
+targeted current-phone Practice browser journeys. On an idle development host,
+warm trajectory previews measured about 12-13 ms for all three relics, compared
+with roughly 114-140 ms before the correction. A 300-tick R7 coordinator
+diagnostic measured about 386 ms, compared with about 1.12 seconds before.
+These diagnostics establish the removed work; the phone decides whether the
+result restores the intended feel.
+
+The focused Phone Gate C retest checks:
+
+1. continuously change Threadball and Spoolburst angle/power and confirm the
+   trajectory follows the thumb without the previous drag; compare Needlepoint;
+2. pan repeatedly between both arena edges and confirm the scene follows the
+   thumb smoothly;
+3. sustain walking, perform several jumps and steer in the air while snapshots
+   arrive, confirming no hangs or mid-air freezes; and
+4. tap Pause once from an idle grounded player action and confirm the sheet
+   responds on that tap, then resume once.
 
 ## Final promotion and Phone Gate D
 

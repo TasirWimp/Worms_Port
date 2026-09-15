@@ -17,7 +17,8 @@
     "Waypoint 2 after Phone Gate A: replace R7's inherited surface-only recipe with a fixed fully destructible 64 by 36 ASCII battlefield spanning the complete 2048 by 576 world, while R6 stays unchanged.",
     "Compile every authoring cell explicitly into the 256 by 72 packed mask; use all world-width columns for edge structures, routes and a 144-unit full-width destructible foundation with deliberate breach zones and no hidden floor.",
     "Serialize exact live terrain and actor overlays, bind R7 terrain revision/hash metadata to authoritative transitions, render every exposed terrain surface, introduce the full-world camera survey and restore the exact changed local preview across app reopen while explicit restart starts fresh.",
-    "Waypoint 3 after terrain acceptance: move the exact R7 state into the server-authoritative lifecycle with the existing deterministic Loomkeeper, exact replay/resume and Practice canary before final Practice and Daily promotion."
+    "Waypoint 3 after terrain acceptance: move the exact R7 state into the server-authoritative lifecycle with the existing deterministic Loomkeeper, exact replay/resume and Practice canary before final Practice and Daily promotion.",
+    "Correct the Phone Gate C foreground performance regression without changing gameplay: coalesce aim previews per display frame, batch detached projectile rollout validation, cache terrain topology by authoritative revision/hash, avoid unchanged layout writes and remove redundant validation inside coordinator-owned tick batches."
   ],
   "non_goals": [
     "No Gemini dependency, API call, prompt, provider configuration or external selector anywhere in WP-024; objective-aware Gemini selection is owned by WP-027 after WP-026 defines R8 objective gameplay.",
@@ -39,7 +40,7 @@
     "Waypoint 2 exact compiler, geometry, serializer, transition metadata, local recovery, rendering and full-arena browser checks from committed base 4933cb2",
     "Phone Gate B on the physical phone",
     "Waypoint 3 exact R7 server identity, deterministic Loomkeeper, replay/resume, Practice canary, reward verification and current browser checks",
-    "Phone Gate C on server-backed R7 Practice",
+    "Phone Gate C on server-backed R7 Practice, followed by the focused foreground-motion retest exposed by its first phone read",
     "Phone Gate D on the final standard R7 Practice and PEI-gated Daily paths"
   ],
   "deterministic_seeds": [
@@ -113,6 +114,16 @@
       "command": "Waypoint 3 documentation, housekeeping and PostgreSQL prerequisite boundary",
       "status": "pass",
       "details": "At inspected dry-run fingerprint ced6f02b3239eeb4a71151eeefd6849d0a945f2f0bae69c2f84a5db27eb9cd2f, all 71 work-package records and the report-only housekeeping audit passed. Housekeeping confirms the current tracking branch and leaves WP-024 in progress for Phone Gate C; its manual-reconciliation flag refers to preserved historical records. The dedicated PostgreSQL phase exited successfully and recorded the expected local prerequisite skip because WP014_TEST_DATABASE_URL is absent; CI retains that database gate. Logs .cache/wp024-waypoint3-final-work-packages.log, .cache/wp024-waypoint3-final-housekeeping.log and .cache/wp024-waypoint3-final-postgres.log."
+    },
+    {
+      "command": "Phone Gate C first server-backed R7 Practice read",
+      "status": "fail",
+      "details": "The owner passed functional points 1 through 4: the accepted battlefield and controls loaded, changed terrain remained legal for the Loomkeeper, player-turn and Loomkeeper-turn reopen resumed exact state, both health and open-bottom outcomes completed, and a fresh Practice started cleanly. The same physical-phone read found a blocking foreground performance regression: Threadball and Spoolburst trajectory adjustment lagged, full-arena panning stuttered, walking could hang, jumping briefly froze and Pause sometimes required repeated taps. Gate C remains open pending the bounded performance correction and phone retest."
+    },
+    {
+      "command": "WP-024 R7 foreground-performance affected verification from ea1b1f6",
+      "status": "pass",
+      "details": "The change selector dry run produced fingerprint dab0378f5992e95e4bfd0a1bfaa7f7ba1b5da9e0aa4dd6693e866dc9707a61a8. Risk-based final-source verification passed import boundary, types, combat 48/48, Practice 2/2, protocol 21/21, simulation 73/73, build proof e2218239d882 / 601c4bd48ca7, built smoke and 3/3 targeted canonical Practice browser journeys. The browser proof covers same-frame aim coalescing, unchanged-terrain reuse through camera panning and live walking, lifecycle/reconnect, compact controls and a successful single Pause tap. Clean diagnostics measured warm R7 previews at 12.46-13.13 ms by relic, down from the pre-correction 113.7-139.9 ms observations, and 300 coordinator ticks at 385.51 ms versus 1123.3 ms before. Logs are under .cache/wp024-r7-performance-*.log."
     }
   ],
   "reviews": [
@@ -165,19 +176,29 @@
       "reviewer": "primary assistant Waypoint 3 recovery direct review",
       "status": "pass",
       "details": "Direct review confirms that live R7 gameplay retains the public validated transition path. Only detached Loomkeeper candidates and fresh replay verifiers use the owned-state kernels; final invariants and every canonical operation, selected plan, terrain revision/hash and state hash remain exact. Cooperative settlement yields through the normal event loop before each next six-tick batch, so terminal results and unrelated matches remain responsive while the durable entitlement moves from in_progress through the existing reward update. External scheduler stalls still fail closed, and the standard runtime has no historical R6 selector."
+    },
+    {
+      "reviewer": "WP-024 Phone Gate C first physical-phone read",
+      "status": "fail",
+      "details": "Functional Gate C points 1 through 4 passed, but foreground responsiveness did not. This failure blocks R7 promotion even though lifecycle, replay, Loomkeeper and result behavior were correct."
+    },
+    {
+      "reviewer": "primary assistant Phone Gate C performance correction direct review",
+      "status": "pass",
+      "details": "Direct review confirms the correction does not change trajectory mechanics, terrain authority, movement, pause semantics or replay output. Aim events retain only the newest unrendered request; detached projectile rollout and coordinator-owned tick batches validate at their trust boundaries; terrain geometry keys to authoritative revision/hash; and camera motion repositions cached runs. Regression coverage proves exact preview-state equivalence, input immutability, terrain reuse, coalescing and single-tap Pause response. Physical-phone responsiveness remains the final Gate C acceptance authority."
     }
   ],
   "skipped_checks": [
-    "Phone Gates A and B passed on the physical phone at committed and pushed 4933cb2 and 9e17773 respectively; Phone Gate C remains pending for the server-backed R7 Practice canary.",
+    "Phone Gates A and B passed on the physical phone at committed and pushed 4933cb2 and 9e17773 respectively; Phone Gate C passed its four functional checks but remains open for the focused foreground-performance retest.",
     "Retired R5-and-older runtime profiles and the @legacy browser suite were excluded from ordinary acceptance.",
     "The daily/release suite was not run because this is a feature waypoint rather than the daily or release boundary.",
-    "Performance was not selected by the Waypoint 3 change selector because the accepted R7 renderer and terrain geometry did not change; five-project visual logic, Phone Gate B and the upcoming server-backed Phone Gate C cover the full-map presentation.",
+    "The broad six-run performance gate is not repeated for this correction; focused current-R7 browser coverage measures coalesced touch dispatch and unchanged-terrain reuse, while physical-phone feel remains the acceptance authority.",
     "The second parameter-only refinement reused the passing cross-system evidence at committed 18a1292; broader current unit/browser families, PostgreSQL, security and bundle checks were not repeated because their inputs and authority boundaries did not change.",
     "PostgreSQL integration was selected but skipped locally because WP014_TEST_DATABASE_URL is unavailable; CI retains that gate.",
     "Authoritative Ubuntu visual baseline comparison remains CI-only; Windows ran supported visual logic with screenshot comparison skipped by policy."
   ],
   "residual_risks": [
-    "Phone Gate C still has to accept the server-backed R7 Practice canary, including player-turn and Loomkeeper-turn reopen, before the ordinary Practice/Daily deployment is activated.",
+    "Phone Gate C still has to accept the corrected aiming, panning, movement, jumping and single-tap Pause response before the ordinary Practice/Daily deployment is activated.",
     "Physical Android/iOS and Nimiq Pay WebView behavior remain outside automated browser evidence."
   ]
 }

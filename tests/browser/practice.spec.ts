@@ -761,6 +761,56 @@ test('current R7 phone controls use a compact translucent cluster with neutral t
   } finally { await page.goto('about:blank'); await runtime.close(); }
 });
 
+test('current R7 coalesces aim work and reuses unchanged terrain while authority moves', async ({ page }) => {
+  test.setTimeout(30_000);
+  const runtime = createRuntimeServer({ clientDir: path.resolve('client/build'), identity: false,
+    sessionRegistry: { practiceV10: true, seedSource: () => 4 } });
+  const port = await runtime.listen();
+  const owned = () => runtime.sessions.getBound([...runtime.io.sockets.sockets.values()][0]?.id)!;
+  try {
+    await page.goto(`http://127.0.0.1:${port}/?sideways=off`);
+    await page.getByRole('button', { name: 'Start Practice' }).tap();
+    const ui = page.locator('.combat-v10');
+    await expect(ui).toHaveAttribute('data-ruleset', CURRENT_V10_RULESET_ID);
+    await expect(ui).toHaveAttribute('data-terrain-compilations', '1');
+
+    await pointer(page, '#game canvas', 'pointerdown', 1399, 0.5, 0.25);
+    await pointer(page, '#game canvas', 'pointermove', 1399, 0.85, 0.25);
+    await pointer(page, '#game canvas', 'pointerup', 1399, 0.85, 0.25);
+    await expect.poll(async () => Number(await ui.getAttribute('data-camera-left'))).toBeLessThan(112);
+    await expect(ui).toHaveAttribute('data-terrain-compilations', '1');
+
+    const startX = runtime.sessions.activeSnapshotV10(owned())!.simulation.units[0].xFp;
+    await pointer(page, '.combat-v10 .movement-right', 'pointerdown', 1400, 0.5, 0.5);
+    await expect.poll(() => runtime.sessions.activeSnapshotV10(owned())!.simulation.units[0].xFp).toBeGreaterThan(startX);
+    await pointer(page, '.combat-v10 .movement-right', 'pointerup', 1400, 0.5, 0.5);
+    await expect.poll(() => runtime.sessions.activeSnapshotV10(owned())!.simulation.heldDirection).toBe(0);
+    await expect(ui).toHaveAttribute('data-terrain-compilations', '1');
+
+    const dispatchMs = await ui.locator('.aim-zone').evaluate((element) => {
+      const rect = element.getBoundingClientRect();
+      const event = (type: 'pointerdown' | 'pointermove' | 'pointerup', index: number) =>
+        element.dispatchEvent(new PointerEvent(type, {
+          bubbles: true, cancelable: true, pointerId: 1401, pointerType: 'touch', isPrimary: true,
+          button: 0, buttons: type === 'pointerup' ? 0 : 1,
+          clientX: rect.left + rect.width * (0.5 + index * 0.01),
+          clientY: rect.top + rect.height * (0.55 - index * 0.008)
+        }));
+      const started = performance.now();
+      event('pointerdown', 0);
+      for (let index = 1; index <= 20; index += 1) event('pointermove', index);
+      event('pointerup', 20);
+      return performance.now() - started;
+    });
+    expect(dispatchMs).toBeLessThan(80);
+    await expect(ui).toHaveAttribute('data-preview-computations', '1');
+    await expect(ui).toHaveAttribute('data-aim-locked', 'true');
+    await expect(ui).toHaveAttribute('data-terrain-compilations', '1');
+    await ui.locator('.pause-button').tap();
+    await expect(ui).toHaveAttribute('data-paused', 'true');
+  } finally { await page.goto('about:blank'); await runtime.close(); }
+});
+
 
 test('standard volcanic Practice survives missing art and expired-session reconnect', async ({ page, context }) => {
   test.setTimeout(45_000);

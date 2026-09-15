@@ -31,13 +31,18 @@ export class ResourceTurnsV9Scene {
     private restarting = false;
     private terminalPresentation?: { result: import('../../../shared/protocol-v10-live').ChallengeResultV10; until: number };
     private readonly scenicFrame: boolean;
+    private safeArea: SafeAreaInsets;
+    private renderRequested = true;
+    private pendingPreview?: { aim: AimIntent; generation: number };
+    private previewComputationCount = 0;
+    private renderDatasetSignature = '';
 
     public constructor(
         private readonly scene: Phaser.Scene,
         private readonly args: ResourceTurnsSceneArgs,
         private readonly backgroundScene?: BackgroundSceneDefinition
     ) {
-        this.state = structuredClone(args.snapshot); createApprovedWizardAnimations(scene); this.renderer = new CombatRenderer(scene);
+        this.state = structuredClone(args.snapshot); this.safeArea = readSafeArea(); createApprovedWizardAnimations(scene); this.renderer = new CombatRenderer(scene);
         this.sceneBackground = new BackgroundRenderer(scene, backgroundScene, this.renderer.backgroundMask);
         this.scenicFrame = usesVolcanicRuinScenicFrame(this.state.rulesetId);
         const projected = projectCombatV9(this.state);
@@ -83,17 +88,27 @@ export class ResourceTurnsV9Scene {
             if (args.onResult) this.listeners.defer(args.onResult(result => this.showResult(result)));
         }
         const interrupt = () => { this.completeOpeningSurvey(); this.cancelCameraNavigation(); this.cancelPresentation(); this.controls.interrupt(); void this.neutralize(); };
-        const resize = () => { interrupt(); this.render(false); };
+        const resize = () => { this.safeArea = readSafeArea(); interrupt(); this.requestRender(); };
         this.listeners.emitter(scene.scale, Phaser.Scale.Events.RESIZE, resize); this.listeners.dom(window, 'blur', interrupt); this.listeners.dom(document, 'visibilitychange', interrupt);
         const canvas = scene.game.canvas;
         const coordinate = (event: PointerEvent) => clientPointToGame({ x: event.clientX, y: event.clientY }, document.getElementById('game')!.getBoundingClientRect(), activeSidewaysMode()).x;
         const down = (event: PointerEvent) => { if (event.button === 0) { this.completeOpeningSurvey(); this.cancelCameraTransition(); this.cameraPointer = { id: event.pointerId, x: coordinate(event) }; try { canvas.setPointerCapture(event.pointerId); } catch {} } };
-        const move = (event: PointerEvent) => { if (!this.cameraPointer || this.cameraPointer.id !== event.pointerId || !this.layout) return; const next = coordinate(event), delta = this.cameraPointer.x - next; this.cameraPointer.x = next; this.camera = panCombatCamera(projectCombatV9(this.state), this.camera, delta / this.layout.worldScaleX); };
+        const move = (event: PointerEvent) => { if (!this.cameraPointer || this.cameraPointer.id !== event.pointerId || !this.layout) return; const next = coordinate(event), delta = this.cameraPointer.x - next; this.cameraPointer.x = next; this.camera = panCombatCamera(projectCombatV9(this.state), this.camera, delta / this.layout.worldScaleX); this.requestRender(); };
         const end = (event: PointerEvent) => { if (this.cameraPointer?.id === event.pointerId) this.cancelCameraPointer(); };
         const cancel = () => { this.cancelCameraPointer(); interrupt(); };
         this.listeners.dom(canvas, 'pointerdown', down); this.listeners.dom(canvas, 'pointermove', move); this.listeners.dom(canvas, 'pointerup', end); this.listeners.dom(canvas, 'pointercancel', cancel);
         this.listeners.once(this.scene.events, Phaser.Scenes.Events.SHUTDOWN, () => this.destroy());
-        const loop = () => { if (this.destroyed) return; this.render(true); this.frame = requestAnimationFrame(loop); }; loop();
+        const loop = () => {
+            if (this.destroyed) return;
+            this.controls.pollMovement();
+            this.flushPreview();
+            if (this.renderRequested || this.cameraTransition || this.presentation || this.terminalPresentation) {
+                this.renderRequested = false;
+                this.render(false);
+            }
+            this.frame = requestAnimationFrame(loop);
+        };
+        loop();
     }
 
     public destroy(): void {
@@ -105,12 +120,12 @@ export class ResourceTurnsV9Scene {
         if (this.destroyed) return;
         const previous = this.state; this.state = structuredClone(next);
         const boundary = this.controls.update(this.state, events, this.args.paused());
-        if (boundary) { this.requestGeneration++; this.cancelCameraNavigation(); this.previewGeneration++; this.preview = []; this.cancelPresentation(); }
+        if (boundary) { this.requestGeneration++; this.cancelCameraNavigation(); this.previewGeneration++; this.pendingPreview = undefined; this.preview = []; this.cancelPresentation(); }
         const steps = planV9Presentation(previous, this.state, reducedMotion());
         if (steps.length) this.presentation = { steps, index: 0, startedAt: performance.now(), generation: this.requestGeneration };
         if (!previous.projectile && this.state.projectile) { this.projectileCamera ??= this.camera; this.camera = this.scenicFrame ? revealCombatCameraPoint(projectCombatV9(this.state), this.camera, this.state.projectile.xFp / 256) : focusCombatCamera(projectCombatV9(this.state), this.camera, this.state.projectile.xFp / 256); }
         if (previous.projectile && !this.state.projectile && this.projectileCamera) { this.camera = this.projectileCamera; this.projectileCamera = undefined; }
-        this.render(false);
+        this.requestRender();
     }
     private async submit(intent: SimulationIntentV10): Promise<boolean> {
         this.completeOpeningSurvey();
@@ -167,20 +182,28 @@ export class ResourceTurnsV9Scene {
     }
     private previewAim(aim: AimIntent | null): void {
         const generation = ++this.previewGeneration;
-        if (!aim || this.destroyed || this.args.paused()) { this.preview = []; return; }
+        if (!aim || this.destroyed || this.args.paused()) { this.pendingPreview = undefined; this.preview = []; this.requestRender(); return; }
         this.completeOpeningSurvey();
+        this.pendingPreview = { aim: { ...aim }, generation };
+    }
+    private flushPreview(): void {
+        const pending = this.pendingPreview;
+        if (!pending || this.destroyed || this.args.paused()) return;
+        this.pendingPreview = undefined;
+        this.previewComputationCount += 1;
         const points = this.args.kind === 'v10'
-            ? this.args.trajectoryPreview(aim)
-            : trajectoryPreviewV9(this.state as SimulationStateV9, aim);
-        if (this.destroyed || generation !== this.previewGeneration) return;
+            ? this.args.trajectoryPreview(pending.aim)
+            : trajectoryPreviewV9(this.state as SimulationStateV9, pending.aim);
+        if (this.destroyed || pending.generation !== this.previewGeneration) return;
         this.preview = points; const end = points.at(-1); if (end && !this.scenicFrame) this.camera = revealCombatCameraPoint(projectCombatV9(this.state), this.camera, end.x);
+        this.requestRender();
     }
     private focusActor(actor: CameraActor): void {
         if (this.destroyed || this.state.projectile || this.state.phase === 'finished') return;
         const state = projectCombatV9(this.state), unit = state.units[actor === 'player' ? 0 : 1];
         if (!unit.alive || !cameraDirectionToWorldX(this.camera, unit.x)) return;
         this.cancelCameraPointer(); const destination = cameraForActor(state, createCombatCamera(state), actor);
-        if (reducedMotion()) { this.camera = destination; return; }
+        if (reducedMotion()) { this.camera = destination; this.requestRender(); return; }
         this.cameraTransition = { kind: 'focus', actor, from: this.camera, to: destination, startedAt: performance.now() };
     }
     private advanceCamera(now: number): void {
@@ -215,7 +238,7 @@ export class ResourceTurnsV9Scene {
             this.projectileCamera ??= this.camera;
             this.camera = this.scenicFrame ? revealCombatCameraPoint(projectCombatV9(this.state), this.camera, this.state.projectile.xFp / 256) : focusCombatCamera(projectCombatV9(this.state), this.camera, this.state.projectile.xFp / 256);
         } else this.advanceCamera(now);
-        this.layout = computeCombatLayout(this.scene.scale.width, this.scene.scale.height, readSafeArea(), this.camera); this.controls.setLayout(this.layout); if (pollMovement) this.controls.pollMovement();
+        this.layout = computeCombatLayout(this.scene.scale.width, this.scene.scale.height, this.safeArea, this.camera); this.controls.setLayout(this.layout); if (pollMovement) this.controls.pollMovement();
         const queuedVisual = this.terminalPresentation ? { kind: 'impact' as const, actor: this.state.activeActor,
             relicId: this.state.lastProjectile?.relicId ?? 'threadball' as const, trace: [],
             unraveling: this.state.units.filter(unit => !unit.alive).map(unit => unit.id) } : this.visual(now); const visual: CombatVisualPhase | undefined = this.state.projectile ? {
@@ -227,14 +250,19 @@ export class ResourceTurnsV9Scene {
             loomkeeper: { direction: cameraDirectionToWorldX(this.camera, this.state.units[1].xFp / 256), stitching: this.state.units[1].stitching } });
         this.renderer.render(projectCombatV9(this.state), this.layout, this.preview, visual?.kind === 'projectile' ? visual.trace : [], visual,
             (layout) => this.sceneBackground.render(layout));
-        Object.assign(this.controls.root.dataset, { simulationTick: String(this.state.tick), playerThread: String(this.state.units[0].thread), playerShield: String(this.state.units[0].shield),
-            cameraLeft: this.camera.left.toFixed(2), cameraWidth: String(this.camera.width), presentation: visual?.kind ?? 'none', projectilePoints: String(visual?.kind === 'projectile' ? visual.trace.length : 0), projectileEndX: String(visual?.kind === 'projectile' ? visual.trace.at(-1)?.x ?? '' : ''), projectileEndY: String(visual?.kind === 'projectile' ? visual.trace.at(-1)?.y ?? '' : ''), cameraTransition: this.cameraTransition?.kind === 'opening' ? 'opening' : this.cameraTransition?.actor ?? 'none', openingSurvey: String(this.cameraTransition?.kind === 'opening') });
-        if ('terrainRevision' in this.state && this.state.terrainRevision !== undefined) {
-            this.controls.root.dataset.terrainRevision = String(this.state.terrainRevision);
-            this.controls.root.dataset.terrainHash = this.state.terrainHash ?? '';
+        const dataset = { simulationTick: String(this.state.tick), playerThread: String(this.state.units[0].thread), playerShield: String(this.state.units[0].shield),
+            cameraLeft: this.camera.left.toFixed(2), cameraWidth: String(this.camera.width), presentation: visual?.kind ?? 'none', projectilePoints: String(visual?.kind === 'projectile' ? visual.trace.length : 0), projectileEndX: String(visual?.kind === 'projectile' ? visual.trace.at(-1)?.x ?? '' : ''), projectileEndY: String(visual?.kind === 'projectile' ? visual.trace.at(-1)?.y ?? '' : ''), cameraTransition: this.cameraTransition?.kind === 'opening' ? 'opening' : this.cameraTransition?.actor ?? 'none', openingSurvey: String(this.cameraTransition?.kind === 'opening'), previewComputations: String(this.previewComputationCount), terrainCompilations: String(this.renderer.terrainCompilationCount),
+            ...('terrainRevision' in this.state && this.state.terrainRevision !== undefined
+                ? { terrainRevision: String(this.state.terrainRevision), terrainHash: this.state.terrainHash ?? '' }
+                : {}) };
+        const datasetSignature = Object.values(dataset).join(':');
+        if (datasetSignature !== this.renderDatasetSignature) {
+            this.renderDatasetSignature = datasetSignature;
+            Object.assign(this.controls.root.dataset, dataset);
         }
     }
     private cancelPresentation(): void { this.presentation = undefined; }
+    private requestRender(): void { this.renderRequested = true; }
     private cancelCameraTransition(): void { this.cameraTransition = undefined; }
     private completeOpeningSurvey(): void {
         if (this.cameraTransition?.kind !== 'opening') return;

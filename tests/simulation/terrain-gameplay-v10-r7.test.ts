@@ -13,6 +13,7 @@ import {
     V10_R6_DYNAMICS,
     V10_R6_RULESET_ID,
     V10_R7_RULESET_ID,
+    advanceDetachedProjectileV10,
     advanceSimulationTicksV10,
     applySimulationIntentV10,
     createSimulationV10,
@@ -145,6 +146,36 @@ test('R7 terrain revision advances only when the transition reconciler sees clea
     assert.equal(changed.terrainHash, hashTerrainV10R7(carved));
     const changedState = { ...initial, terrain: carved, ...changed };
     assert.notEqual(hashSimulationStateV10(changedState), hashSimulationStateV10(initial));
+});
+
+test('detached R7 trajectory batching preserves the authoritative stepwise projectile result', () => {
+    let state = createSimulationV10(4, 'wizard', V10_R7_RULESET_ID);
+    state.units[0].thread = 9;
+    state.selectedRelic = 'spoolburst';
+    const aimed = applySimulationIntentV10(state, 'player',
+        { type: 'aim', angleMilliDegrees: 45_000, powerPermille: 700 },
+        state.turn, state.phase, state.inputEpoch);
+    assert.equal(aimed.accepted, true, aimed.error?.message);
+    const fired = applySimulationIntentV10(aimed.state, 'player',
+        { type: 'fire', aimId: aimed.state.aimId },
+        aimed.state.turn, aimed.state.phase, aimed.state.inputEpoch);
+    assert.equal(fired.accepted, true, fired.error?.message);
+
+    let stepwise = structuredClone(fired.state);
+    for (let tick = 0; tick < 300 && stepwise.phase === 'projectile'; tick += 1) {
+        stepwise = advanceSimulationTicksV10(stepwise, 1).state;
+    }
+    const detachedSource = structuredClone(fired.state);
+    const detachedSourceHash = hashSimulationStateV10(detachedSource);
+    const batched = advanceDetachedProjectileV10(detachedSource, 300);
+    assert.equal(batched.accepted, true, batched.error?.message);
+    assert.equal(hashSimulationStateV10(detachedSource), detachedSourceHash, 'detached rollout does not mutate its input');
+    assert.deepEqual(batched.state.lastProjectile, stepwise.lastProjectile);
+    assert.deepEqual(batched.state.terrain, stepwise.terrain);
+    assert.equal(batched.state.terrainRevision, stepwise.terrainRevision);
+    assert.equal(batched.state.terrainHash, stepwise.terrainHash);
+    assert.equal(hashSimulationStateV10(batched.state), hashSimulationStateV10(stepwise));
+    assert.equal(advanceDetachedProjectileV10(detachedSource, Number.MAX_SAFE_INTEGER).accepted, false);
 });
 
 test('the central plug is a Threadball breach while the foundation needs sustained damage', () => {

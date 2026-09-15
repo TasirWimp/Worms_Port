@@ -1,5 +1,5 @@
 import {
-    advanceOwnedSimulationTickV10, advanceSimulationTicksV10, applySimulationBarrierV10, applySimulationIntentV10,
+    advanceOwnedSimulationTickV10, applySimulationBarrierV10, applySimulationIntentV10,
     assertSimulationInvariantsV10, createSimulationV10, forceSimulationLimitV10, hashSimulationStateV10,
     hashValidatedSimulationStateV10, CURRENT_V10_RULESET_ID,
     V10_R6_RULESET_ID, V10_R7_RULESET_ID,
@@ -175,17 +175,17 @@ export class LiveSimulationCoordinatorV10 {
             for (let index = 0; index < count && !entry.terminalResult; index++) {
                 if (entry.automated) this.prepareAutomatedTick(entry);
                 const oldPhase = entry.state.phase, oldTick = entry.state.tick;
-                const transition = this.replayVerificationKernel
-                    ? advanceOwnedSimulationTickV10(entry.state)
-                    : advanceSimulationTicksV10(entry.state, 1);
+                const transition = advanceOwnedSimulationTickV10(entry.state);
                 update = this.accept(entry, transition, { kind: 'ticks', count: 1 }, false, !entry.automated);
                 if (entry.automated) {
                     update = this.drainAutomated(entry, update);
-                    if (entry.state.tick % 3 === 0 || oldPhase !== entry.state.phase || oldTick === entry.state.tick)
+                    if (entry.state.tick % 3 === 0 || oldPhase !== entry.state.phase || oldTick === entry.state.tick) {
+                        assertSimulationInvariantsV10(entry.state);
                         this.options.onTransition?.(structuredClone(update));
+                    }
                 }
             }
-            if (this.replayVerificationKernel) assertSimulationInvariantsV10(entry.state);
+            assertSimulationInvariantsV10(entry.state);
             return update;
         } finally {
             // Logical ticks already charge planning and simulation time. Exclude
@@ -353,7 +353,7 @@ export class LiveSimulationCoordinatorV10 {
         if (!transition.accepted || !transition.mutated) return this.replayVerificationKernel
             ? this.verificationUpdate(entry, transition)
             : { ...this.snapshot(entry), transition: structuredClone(transition) };
-        const stateHash = this.replayVerificationKernel
+        const stateHash = this.replayVerificationKernel || operation.kind === 'ticks'
             ? hashValidatedSimulationStateV10(transition.state)
             : hashSimulationStateV10(transition.state);
         const automatic: ReplayOperationV10[] = reserve ? [] : transition.events.filter(event => event.type === 'input_barrier').map(event =>
@@ -386,7 +386,10 @@ export class LiveSimulationCoordinatorV10 {
         const update = this.replayVerificationKernel
             ? this.verificationUpdate(entry, transition)
             : { ...this.snapshot(entry), transition: structuredClone(transition) };
-        if (notify && (operation.kind !== 'ticks' || entry.state.tick % 3 === 0 || oldPhase !== entry.state.phase || transition.events.some(event => event.type === 'phase_changed'))) this.options.onTransition?.(update);
+        if (notify && (operation.kind !== 'ticks' || entry.state.tick % 3 === 0 || oldPhase !== entry.state.phase || transition.events.some(event => event.type === 'phase_changed'))) {
+            if (operation.kind === 'ticks') assertSimulationInvariantsV10(entry.state);
+            this.options.onTransition?.(update);
+        }
         return update;
     }
     /** Internal verifier view. Nothing returned here crosses the replay trust boundary. */

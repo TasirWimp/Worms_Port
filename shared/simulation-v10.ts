@@ -415,9 +415,52 @@ export function advanceSimulationTicksV10(current: SimulationStateV10, count: nu
 }
 
 /**
- * Internal one-tick kernel for a fresh replay verifier. The verifier exclusively
- * owns `current`, validates the completed batch and compares its canonical hash
- * with recorded authority before the state can cross a trust boundary.
+ * Advances one already-detached, already-validated preview state as a single
+ * batch. The caller owns the clone and this function validates the completed
+ * state before returning it; no intermediate state may cross a trust boundary.
+ */
+export function advanceDetachedProjectileV10(
+    current: SimulationStateV10,
+    maximumTicks: number
+): SimulationTransitionV10 {
+    assertSimulationInvariantsV10(current);
+    const maximumCombatTicks = dynamicsForV10(current.rulesetId)?.maximumCombatTicks ?? V8_DEFAULT_DYNAMICS.maximumCombatTicks;
+    if (!Number.isSafeInteger(maximumTicks) || maximumTicks < 0 || maximumTicks > maximumCombatTicks) {
+        return { accepted: false, mutated: false, state: current, events: [],
+            error: { code: 'COMMAND_REJECTED', message: 'Projectile rollout exceeds the simulation bound.' } };
+    }
+    const terrainWordsBefore = current.rulesetId === V10_R7_RULESET_ID
+        ? [...current.terrain.words]
+        : undefined;
+    let projected = cloneSimulationV9(toV9(current));
+    const events: SimulationEventV10[] = [];
+    let mutated = false;
+    for (let tick = 0; tick < maximumTicks && projected.phase === 'projectile'; tick += 1) {
+        const result = advanceOwnedSimulationTicksV9(projected, 1,
+            mechanicsForV10(current.rulesetId), dynamicsForV10(current.rulesetId));
+        if (!result.mutated) break;
+        projected = result.state;
+        events.push(...result.events);
+        mutated = true;
+    }
+    if (!mutated) return { accepted: true, mutated: false, state: current, events };
+    const terrainChanged = terrainWordsBefore?.some((word, index) => word !== projected.terrain.words[index]) ?? false;
+    const terrainRevision = current.rulesetId === V10_R7_RULESET_ID
+        ? current.terrainRevision! + (terrainChanged ? 1 : 0)
+        : undefined;
+    const terrainHash = current.rulesetId === V10_R7_RULESET_ID && terrainChanged
+        ? hashTerrainV10R7(projected.terrain)
+        : current.terrainHash;
+    const state = fromV9(projected, current.rulesetId, current.terrainProfileId,
+        current.terrainRecipeRevision, current.terrainCandidateIndex, terrainRevision, terrainHash);
+    assertSimulationInvariantsV10(state);
+    return { accepted: true, mutated: true, state, events };
+}
+
+/**
+ * Internal one-tick kernel for coordinator-owned authority or replay state. The
+ * caller exclusively owns `current` and validates the completed batch before
+ * the state can cross a trust boundary.
  */
 export function advanceOwnedSimulationTickV10(current: SimulationStateV10): SimulationTransitionV10 {
     const terrainWordsBefore = current.rulesetId === V10_R7_RULESET_ID && current.projectile
