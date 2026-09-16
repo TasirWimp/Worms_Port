@@ -1,6 +1,6 @@
 # WP-026 V10 R8 Objective Modes
 
-Status: **active; Waypoints 1-2 and Phone Gates A-B complete; Waypoint 3 implementation and automated checks complete; Phone Gate C passes on phone and awaits the focused larger-tablet motion recheck**
+Status: **complete; Waypoints 1-3 and Phone Gates A-C accepted on 2026-09-16**
 
 Required predecessor: completed WP-024 R7 promotion and completed WP-025
 lifecycle and power hardening
@@ -365,8 +365,9 @@ Input acknowledgements retain that spatial history; phase/turn boundaries,
 reconnect, long publication gaps and reduced-motion preference still snap to
 current truth. Between authority redraws it updates only the two Wizard sprites,
 team cues and anchored health cards; terrain, objectives, scenery and effects
-are not rebuilt at display-frame cadence. Gate C now owns only the focused
-physical larger-tablet quick-combo jump recheck for both actors.
+are not rebuilt at display-frame cadence. The owner’s final larger-tablet read
+found repeated quick-combo jumping substantially smoother and accepted the
+remaining motion behavior. Phone Gate C and WP-026 are complete.
 
 ## Automated acceptance
 
@@ -385,6 +386,31 @@ knockout, dropped banked coins,
 object blast impulse, rolling, bounce, carrying a chest, returning it to a base,
 procedural layouts, PvP, variable rewards or another PEI rule. WP-027 owns the
 external selector and final R8 promotion.
+
+## Deferred performance optimization waypoint
+
+This waypoint is recorded for later scheduling and is outside WP-026 closure.
+It must preserve the accepted four-tick authoritative presentation buffer,
+simulation, collision, replay, objective and reward behavior.
+
+1. **Cull offscreen terrain and objectives.** In the approved-asset renderer,
+   set terrain-interior runs, terrain-top runs and objective coin sprites
+   outside the current camera bounds to invisible, with at least one terrain
+   cell of overscan. Re-evaluate visibility only when the camera, layout or
+   authoritative terrain/object revision changes. Full-arena panning, terrain
+   destruction at both viewport edges and all three objective modes must show
+   no popping or missing presentation.
+2. **Remove display-frame actor allocations.** Reuse a fixed two-actor
+   presentation buffer in the actor-only interpolation path instead of creating
+   a projected combat state and point objects on every display frame. Full and
+   actor-only redraws must retain the same monotonic buffered timeline,
+   phase/turn/reconnect snapping and reduced-motion behavior.
+
+Run the normal change selector from the future starting commit and physically
+recheck full-arena panning plus repeated quick-combo jumps on the larger tablet.
+Do not add a blanket frame-rate cap without separate measured evidence; this
+waypoint reduces unnecessary render and allocation work while retaining the
+accepted responsive display cadence.
 
 ## Definition of done
 

@@ -252,7 +252,7 @@ Phaser/Socket.IO stack.
   consumption with Nimiq Pay and the game in the background. See the
   [WP-025 contract](wp-025-mobile-lifecycle-power-hardening.md) and
   [evidence](../evidence/wp-025.json).
-- Active successor: **WP-026 V10 R8 Objective Modes**, beginning at clean
+- Completed successor: **WP-026 V10 R8 Objective Modes**, 2026-09-16, beginning at clean
   `c82e74d`. Waypoint 1 and Phone Gate A are complete at committed and pushed
   `87a6568` behind the wallet-free
   `/?combat-preview=v10r8&objective-mode=collect|defend|claim` routes. It adds
@@ -269,8 +269,8 @@ Phaser/Socket.IO stack.
   semantic class across R6-R8; the owner accepted the correction in Defend and
   Collect. A separately approved generic amber textile hex coin replaces the
   round Collect placeholder without changing objective authority, and its final
-  physical-phone shape review passed. **Waypoint 2 and Phone Gate B are
-  complete; Waypoint 3 remains in focused Phone Gate C correction.** The owner
+  physical-phone shape review passed. **Waypoints 1-2 and Phone Gates A-B are
+  complete.** The owner
   passed all seven Waypoint 2 mode-selection, objective, result and R7-isolation
   steps on the physical phone. The first Waypoint 3 phone read accepted entry
   and ordinary live play, but found that destroyed WebViews did not resume R8
@@ -292,8 +292,10 @@ Phaser/Socket.IO stack.
   samples and retaining history across input acknowledgements. Only Wizard
   sprites, team cues and anchored health cards update between authority samples;
   phase/turn boundaries and reconnects still snap to current truth. Selected
-  automated correction verification is complete; one focused larger-tablet
-  quick-combo jump recheck remains before Gate C can close. The
+  automated correction verification is complete. At committed and pushed
+  `57093a5`, the owner found repeated larger-tablet quick-combo jumping
+  substantially smoother and accepted the remaining motion behavior.
+  **Phone Gate C and WP-026 are complete.** The
   private R8 canary now
   has contact, scoring, terminal rules, HUD and mode selection for all three
   modes. Wizard is the only visible player character: the normal R7
@@ -306,6 +308,11 @@ Phaser/Socket.IO stack.
   exact replay/resume. The current automated gate passes while R8 remains
   isolated from R7 replay and reward truth. See the
   [WP-026 contract](wp-026-v10-r8-objective-modes.md).
+- Deferred later optimization waypoint: add camera-aware visibility culling for
+  terrain runs and objective coins, then remove display-frame allocations from
+  the two-actor interpolation path. It is outside WP-026 closure and is not the
+  current execution target. Its bounded contract and physical tablet recheck
+  are recorded in the [WP-026 deferred performance waypoint](wp-026-v10-r8-objective-modes.md#deferred-performance-optimization-waypoint).
 - Queued after WP-026: **WP-027 Objective-Aware Gemini Loomkeeper**. Gemini may
   select only a stable ID from server-generated, deterministically simulated
   complete-turn candidates whose consequences include the active objective,
