@@ -4,6 +4,7 @@ import type { ResourceTurnsEvent, ResourceTurnsState } from './contracts';
 import { CombatInputController, R6MovementButtonController, UnifiedMovementInputController,
     type AimIntent, type R6MovementButton } from './input';
 import { appendV9DamageReceipts, projectCombatV9, projectCombatV9Resources, v9OffenseAllowed } from './resource-turns-v9-fixture';
+import type { CombatRenderUnit } from './presentation';
 import { activeSidewaysMode, clientPointToGame } from '../lib/sideways';
 import { computeActorStatusLayout, type CombatLayout } from './layout';
 
@@ -141,6 +142,9 @@ ${movementControl}
             this.cardLayoutSignature = cardSignature;
             this.positionCards();
         }
+    }
+    public setUnitPositions(units: readonly [CombatRenderUnit, CombatRenderUnit]): void {
+        this.positionCards(units);
     }
     public setCameraFocusControls(options: { enabled: boolean; player: { direction: 'left' | 'right' | null; stitching: number }; loomkeeper: { direction: 'left' | 'right' | null; stitching: number } }): void {
         const signature = [options.enabled, options.player.direction, options.player.stitching,
@@ -319,7 +323,7 @@ ${movementControl}
         field.setAttribute('aria-label', field.textContent);
     }
     private phaseCopy(): string { if (this.terminal()) return this.terminalGuidance(); if (this.paused) return this.callbacks.live ? 'Practice paused' : 'Preview paused'; return this.state.activeActor === 'player' ? `You · ${this.state.phase}` : this.callbacks.live || this.callbacks.automated ? `Loomkeeper · ${this.state.phase}` : `Loomkeeper · ${this.state.phase} · V9D deferred`; }
-    private positionCards(): void { if (!this.layout) return; const positions = computeActorStatusLayout(this.layout, projectCombatV9(this.state).units, this.state.rulesetId); for (const [selector, rect] of [['.player-status', positions.player], ['.loomkeeper-status', positions.loomkeeper]] as const) { const element = this.element(selector); element.hidden = !rect; if (rect) this.place(element, rect); } }
+    private positionCards(units: readonly [CombatRenderUnit, CombatRenderUnit] = projectCombatV9(this.state).units): void { if (!this.layout) return; const positions = computeActorStatusLayout(this.layout, units, this.state.rulesetId); for (const [selector, rect] of [['.player-status', positions.player], ['.loomkeeper-status', positions.loomkeeper]] as const) { const element = this.element(selector); element.hidden = !rect; if (rect) this.place(element, rect); } }
     private setCard(selector: string, displayName: string, accessibleName: string, stitching: number, thread: number, shield: number, shieldExpiresTurn: number | null): void {
         const shieldLabel = shield > 0 ? `Shield ${shield} · expires turn ${shieldExpiresTurn}` : 'Shield inactive';
         const element = this.element(selector); element.setAttribute('aria-label', `${accessibleName} · ${stitching} Stitching · Thread ${thread} of 9 · ${shieldLabel}`);

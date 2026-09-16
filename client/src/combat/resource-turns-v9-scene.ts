@@ -4,7 +4,7 @@ import { V9PreviewListenerCleanup, type ResourceTurnsEvent, type ResourceTurnsSc
 import { createApprovedWizardAnimations, WIZARD_UNRAVEL_DURATION_MS } from './approved-assets';
 import { cameraDirectionToWorldX, cameraForActor, createCombatCamera, createCombatOverviewCamera, focusCombatCamera, interpolateCombatCamera, panCombatCamera, revealCombatCameraPoint, type CombatCamera } from './camera';
 import { computeCombatLayout, type CombatLayout } from './layout';
-import { liveProjectileTraceV9, planV9Presentation, projectCombatV9, trajectoryPreviewV9, type V9PresentationStep } from './resource-turns-v9-fixture';
+import { liveProjectileTraceV9, planV9Presentation, projectCombatV9, ResourceTurnsActorMotionBuffer, trajectoryPreviewV9, type V9PresentationStep } from './resource-turns-v9-fixture';
 import { CombatRenderer, type CombatVisualPhase } from './renderer';
 import type { BackgroundSceneDefinition } from './background-scene';
 import { BackgroundRenderer } from './background-renderer';
@@ -40,6 +40,7 @@ export class ResourceTurnsV9Scene {
     private suspended = false;
     private resyncSnapshotPending = false;
     private skipTerminalPresentation = false;
+    private readonly actorMotion = new ResourceTurnsActorMotionBuffer();
 
     public constructor(
         private readonly scene: Phaser.Scene,
@@ -146,6 +147,8 @@ export class ResourceTurnsV9Scene {
         }
         const previous = this.state; this.state = structuredClone(next);
         const boundary = this.controls.update(this.state, events, this.args.paused());
+        this.actorMotion.observe(previous, this.state, performance.now(), boundary,
+            reducedMotion() || !this.renderer.supportsActorMotion);
         if (this.resyncSnapshotPending) {
             this.resyncSnapshotPending = false;
             this.skipTerminalPresentation = this.state.phase === 'finished' || this.state.winner !== null;
@@ -156,6 +159,7 @@ export class ResourceTurnsV9Scene {
             this.projectileCamera = undefined;
             this.cancelCameraNavigation();
             this.cancelPresentation();
+            this.actorMotion.clear();
             this.requestRender();
             return;
         }
@@ -296,10 +300,12 @@ export class ResourceTurnsV9Scene {
             kind: 'projectile', actor: this.state.projectile.actor, relicId: this.state.projectile.relicId,
             trace: liveProjectileTraceV9(this.state.projectile)
         } : queuedVisual;
+        const frame = this.actorMotion.frame(this.state, now);
+        this.controls.setUnitPositions(frame.units);
         this.controls.setCameraFocusControls({ enabled: !this.state.projectile && this.state.phase !== 'finished',
-            player: { direction: cameraDirectionToWorldX(this.camera, this.state.units[0].xFp / 256), stitching: this.state.units[0].stitching },
-            loomkeeper: { direction: cameraDirectionToWorldX(this.camera, this.state.units[1].xFp / 256), stitching: this.state.units[1].stitching } });
-        this.renderer.render(projectCombatV9(this.state), this.layout, this.preview, visual?.kind === 'projectile' ? visual.trace : [], visual,
+            player: { direction: cameraDirectionToWorldX(this.camera, frame.units[0].x), stitching: this.state.units[0].stitching },
+            loomkeeper: { direction: cameraDirectionToWorldX(this.camera, frame.units[1].x), stitching: this.state.units[1].stitching } });
+        this.renderer.render(frame, this.layout, this.preview, visual?.kind === 'projectile' ? visual.trace : [], visual,
             (layout) => this.sceneBackground.render(layout));
         const dataset = { simulationTick: String(this.state.tick), playerThread: String(this.state.units[0].thread), playerShield: String(this.state.units[0].shield),
             cameraLeft: this.camera.left.toFixed(2), cameraWidth: String(this.camera.width), presentation: visual?.kind ?? 'none', projectilePoints: String(visual?.kind === 'projectile' ? visual.trace.length : 0), projectileEndX: String(visual?.kind === 'projectile' ? visual.trace.at(-1)?.x ?? '' : ''), projectileEndY: String(visual?.kind === 'projectile' ? visual.trace.at(-1)?.y ?? '' : ''), cameraTransition: this.cameraTransition?.kind === 'opening' ? 'opening' : this.cameraTransition?.actor ?? 'none', openingSurvey: String(this.cameraTransition?.kind === 'opening'), previewComputations: String(this.previewComputationCount), terrainCompilations: String(this.renderer.terrainCompilationCount),
@@ -346,6 +352,10 @@ export class ResourceTurnsV9Scene {
             (this.terminalPresentation !== undefined && now >= this.terminalPresentation.until)) {
             this.renderRequested = false;
             this.render();
+        } else if (this.actorMotion.active && this.layout) {
+            const frame = this.actorMotion.frame(this.state, now);
+            this.controls.setUnitPositions(frame.units);
+            this.renderer.renderActors(frame, this.layout, this.visual(now));
         }
     };
 
@@ -366,6 +376,7 @@ export class ResourceTurnsV9Scene {
         this.preview = [];
         this.cancelCameraNavigation();
         this.cancelPresentation();
+        this.actorMotion.clear();
         this.controls.interrupt();
         this.args.setLocalClockSuspended?.(true);
         this.controls.root.dataset.lifecycle = 'suspended';

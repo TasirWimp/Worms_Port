@@ -282,8 +282,15 @@ Phaser/Socket.IO stack.
   correction now retains only active private-R8 authority across destroyed
   WebViews, removes the duplicate live terminal sheet, cuts repeated R8 preview,
   validation, storage and redraw work, and prevents passive displacement from
-  being presented as player walking. Automated correction verification is
-  complete; a focused physical recheck remains before Gate C can close. The
+  being presented as player walking. The owner passed all five focused checks
+  on the physical phone. The larger-tablet read retained one issue: walking for
+  either actor could begin smoothly and then skip visible frames, while jumps
+  could pause briefly in mid-air. V10's 10 Hz published actor positions now use
+  bounded presentation-only interpolation without prediction; only Wizard
+  sprites, team cues and anchored health cards update between authority samples,
+  while lifecycle boundaries and reconnects snap to current truth. Selected
+  automated correction verification is complete; one focused larger-tablet
+  walking and jumping recheck remains before Gate C can close. The
   private R8 canary now
   has contact, scoring, terminal rules, HUD and mode selection for all three
   modes. Wizard is the only visible player character: the normal R7

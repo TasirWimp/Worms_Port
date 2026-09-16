@@ -21,12 +21,14 @@ import {
 } from '../../client/src/combat/loomseed-origin';
 import { trajectoryPreview } from '../../client/src/combat/preview';
 import { movementRefreshIntervalMs, stitchingHealthColor } from '../../client/src/combat/resource-turns-v9-controls';
+import { ResourceTurnsActorMotionBuffer } from '../../client/src/combat/resource-turns-v9-fixture';
 import {
     applySimulationCommand,
     canonicalSimulationJson,
     createLatestSimulation,
     SIM_RULES
 } from '../../shared/simulation';
+import { createSimulationV10, V10_R7_RULESET_ID } from '../../shared/simulation-v10';
 
 const VIEWPORTS = [
     [360, 640],
@@ -35,6 +37,34 @@ const VIEWPORTS = [
     [844, 390],
     [800, 300]
 ] as const;
+
+test('current V10 actor motion fills publication intervals without predicting authority', () => {
+    const before = createSimulationV10(4, 'wizard', V10_R7_RULESET_ID);
+    const next = structuredClone(before);
+    next.tick += 3;
+    next.revision += 1;
+    next.units[0].xFp += 300;
+    next.units[0].yFp -= 600;
+    next.units[1].xFp -= 150;
+    const motion = new ResourceTurnsActorMotionBuffer();
+    motion.observe(before, next, 1_000, false, false);
+    assert.equal(motion.active, true);
+    const halfway = motion.frame(next, 1_060);
+    assert.equal(halfway.units[0].x, (before.units[0].xFp + 150) / 256);
+    assert.equal(halfway.units[0].y, (before.units[0].yFp - 300) / 256);
+    assert.equal(halfway.units[1].x, (before.units[1].xFp - 75) / 256);
+    assert.equal(motion.frame(next, 1_120).units[0].x, next.units[0].xFp / 256);
+    assert.equal(motion.active, false);
+
+    const boundary = structuredClone(next);
+    boundary.tick += 3;
+    boundary.units[0].xFp += 300;
+    motion.observe(next, boundary, 2_000, true, false);
+    assert.equal(motion.active, false, 'turn and phase boundaries snap to the latest authority');
+
+    motion.observe(next, boundary, 3_000, false, true);
+    assert.equal(motion.active, false, 'reduced-motion presentation keeps exact authoritative positions');
+});
 
 test('combat layout preserves the fixed world and non-overlapping safe control zones', () => {
     for (const [width, height] of VIEWPORTS) {

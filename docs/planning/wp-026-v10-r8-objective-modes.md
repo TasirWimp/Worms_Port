@@ -1,6 +1,6 @@
 # WP-026 V10 R8 Objective Modes
 
-Status: **active; Waypoints 1-2 and Phone Gates A-B complete; Waypoint 3 implementation and automated checks complete; Phone Gate C next**
+Status: **active; Waypoints 1-2 and Phone Gates A-B complete; Waypoint 3 implementation and automated checks complete; Phone Gate C passes on phone and awaits the focused larger-tablet motion recheck**
 
 Required predecessor: completed WP-024 R7 promotion and completed WP-025
 lifecycle and power hardening
@@ -351,6 +351,19 @@ redraws only when their state changes, and labels walking only from active held
 movement. The focused physical recheck owns player-turn resume,
 Loomkeeper-turn resume, one terminal prompt, smooth phone/tablet pan, aim and
 movement, and absence of uncommanded player walking.
+
+The focused phone recheck passed all five corrected lifecycle, terminal-surface,
+foreground-performance and motion-ownership steps. The same read found one
+remaining larger-tablet presentation issue: both Wizards move smoothly at first
+but later appear to skip frames, and jumps can pause briefly in mid-air. Live
+V10 authority deliberately publishes every three 30 Hz simulation ticks. The
+bounded presentation correction now interpolates only between the two latest
+authoritative actor positions, never extrapolates, and snaps on phase/turn
+boundaries, reconnect, long publication gaps and reduced-motion preference.
+Between authority redraws it updates only the two Wizard sprites, team cues and
+anchored health cards; terrain, objectives, scenery and effects are not rebuilt
+at display-frame cadence. Gate C now owns only the physical larger-tablet motion
+recheck for both actors' walking and jumping.
 
 ## Automated acceptance
 

@@ -7,11 +7,97 @@ import type { CombatSceneArgsV9, ResourceTurnsEvent, ResourceTurnsState } from '
 import type { CombatRenderState } from './presentation';
 import { WIZARD_CAST_DURATION_MS } from './approved-assets';
 import type { CombatVisualPhase } from './renderer';
+import { usesV10R6ActionDynamics } from '../../../shared/simulation-v10';
 
 export type V9FixtureClock = { now: () => number; every: (callback: () => void) => () => void };
 
 const V9_COSTS = { threadball: 2, needlepoint: 3, spoolburst: 5 } as const;
 export type V9PresentationStep = { visual: CombatVisualPhase; durationMs: number };
+
+type ActorMotionPoint = Readonly<{ x: number; y: number }>;
+type ActorMotionTransition = Readonly<{
+    from: readonly [ActorMotionPoint, ActorMotionPoint];
+    to: readonly [ActorMotionPoint, ActorMotionPoint];
+    startedAt: number;
+    durationMs: number;
+}>;
+
+/**
+ * Current V10 authority publishes live motion every three 30 Hz ticks. This
+ * buffer fills only the visual interval between those facts. It never predicts
+ * velocity, changes input readiness, or feeds a rendered position back into
+ * simulation state.
+ */
+export class ResourceTurnsActorMotionBuffer {
+    private transition?: ActorMotionTransition;
+
+    public observe(
+        previous: ResourceTurnsState,
+        next: ResourceTurnsState,
+        now: number,
+        boundary: boolean,
+        prefersReducedMotion: boolean
+    ): void {
+        if (boundary || prefersReducedMotion || !usesV10R6ActionDynamics(next.rulesetId) ||
+            previous.rulesetId !== next.rulesetId) {
+            this.transition = undefined;
+            return;
+        }
+        const tickDelta = next.tick - previous.tick;
+        if (tickDelta <= 0) return;
+        if (tickDelta > 6) {
+            this.transition = undefined;
+            return;
+        }
+        const target = actorMotionPoints(next);
+        const source = this.pointsAt(now) ?? actorMotionPoints(previous);
+        if (source.every((point, index) => point.x === target[index].x && point.y === target[index].y)) return;
+        this.transition = {
+            from: source,
+            to: target,
+            startedAt: now,
+            // Slight overlap bridges ordinary timer/socket jitter without
+            // extrapolating beyond the latest authoritative position.
+            durationMs: Math.max(50, Math.min(140, tickDelta * 40))
+        };
+    }
+
+    public frame(state: ResourceTurnsState, now: number): CombatRenderState {
+        const projected = projectCombatV9(state);
+        const points = this.pointsAt(now);
+        if (!points) return projected;
+        for (const index of [0, 1] as const) {
+            projected.units[index].x = points[index].x;
+            projected.units[index].y = points[index].y;
+        }
+        if (this.transition && now >= this.transition.startedAt + this.transition.durationMs) {
+            this.transition = undefined;
+        }
+        return projected;
+    }
+
+    public get active(): boolean { return this.transition !== undefined; }
+    public clear(): void { this.transition = undefined; }
+
+    private pointsAt(now: number): readonly [ActorMotionPoint, ActorMotionPoint] | undefined {
+        const transition = this.transition;
+        if (!transition) return undefined;
+        const amount = Math.max(0, Math.min(1, (now - transition.startedAt) / transition.durationMs));
+        const point = (index: 0 | 1): ActorMotionPoint => ({
+            x: transition.from[index].x + (transition.to[index].x - transition.from[index].x) * amount,
+            y: transition.from[index].y + (transition.to[index].y - transition.from[index].y) * amount
+        });
+        return [point(0), point(1)];
+    }
+}
+
+function actorMotionPoints(state: ResourceTurnsState): readonly [ActorMotionPoint, ActorMotionPoint] {
+    const point = (index: 0 | 1): ActorMotionPoint => ({
+        x: state.units[index].xFp / 256,
+        y: state.units[index].yFp / 256
+    });
+    return [point(0), point(1)];
+}
 
 /** V9 view projection stays behind the local preview's lazy fixture seam. */
 export function projectCombatV9(state: ResourceTurnsState): CombatRenderState {

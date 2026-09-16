@@ -142,6 +142,8 @@ export class CombatRenderer {
 
     public get terrainCompilationCount(): number { return this.compiledTerrainCount; }
 
+    public get supportsActorMotion(): boolean { return this.usingApprovedAssets; }
+
     public animationState(actor: SimulationActor): CombatAnimationState {
         const animation = this.wizardSprites[actor]?.anims;
         return { key: animation?.currentAnim?.key ?? 'static', frame: animation?.currentFrame?.index ?? 0,
@@ -173,7 +175,7 @@ export class CombatRenderer {
         if (this.usingApprovedAssets) {
             this.updateClouds(layout);
             this.updateTerrain(state, layout);
-            this.updateWizardSprites(state.units, layout, visualPhase);
+            this.renderActors(state, layout, visualPhase);
         } else {
             this.drawFallbackClouds(layout);
             this.drawFallbackTerrain(state, layout);
@@ -185,8 +187,6 @@ export class CombatRenderer {
         }
 
         this.drawObjectiveObjects(state, layout);
-        this.teamCues.clear();
-        if (this.usingApprovedAssets) this.drawTeamCues(state.units, layout);
 
         this.effects.clear();
         this.drawTrace(this.traceFromLoomseed(preview, state.activeActor, layout), layout, 0xE9B213, 0.95, true);
@@ -194,6 +194,19 @@ export class CombatRenderer {
 
         g.lineStyle(2, 0x1F2348, 0.65);
         g.strokeRoundedRect(field.x, field.y, field.width, field.height, 10);
+    }
+
+    /** Lightweight 60 Hz presentation path; static terrain and scenery stay untouched. */
+    public renderActors(
+        state: CombatRenderState,
+        layout: CombatLayout,
+        visualPhase?: CombatVisualPhase
+    ): void {
+        if (!this.usingApprovedAssets) return;
+        this.presentationRulesetId = state.rulesetId;
+        this.updateWizardSprites(state.units, layout, visualPhase);
+        this.teamCues.clear();
+        this.drawTeamCues(state.units, layout);
     }
 
     public destroy(): void {
