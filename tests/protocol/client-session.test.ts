@@ -112,3 +112,23 @@ test('browser session bootstrap rotates a retained active-reward token after Web
     assert.equal(sessionStorage.getItem('nimble-knots.session-token'), 'b'.repeat(43));
     assert.equal(localStorage.getItem('nimble-knots.active-reward-session-token'), 'b'.repeat(43));
 });
+
+test('browser session bootstrap rotates a retained active-objective token after WebView restart', async () => {
+    const sessionStorage = new MemoryStorage();
+    const localStorage = new MemoryStorage();
+    localStorage.setItem('nimble-knots.active-objective-session-token', 'a'.repeat(43));
+    Object.assign(globalThis, {
+        sessionStorage,
+        localStorage,
+        window: { setTimeout, clearTimeout }
+    });
+    const socket = new FakeSocket();
+
+    const session = await bootstrapSession(socket as any);
+
+    assert.equal(session.sessionId, 'session_identifier_01');
+    assert.deepEqual(socket.actions, ['resume', 'resume']);
+    assert.equal(sessionStorage.getItem('nimble-knots.session-token'), 'b'.repeat(43));
+    assert.equal(localStorage.getItem('nimble-knots.active-objective-session-token'), 'b'.repeat(43));
+    assert.equal(localStorage.getItem('nimble-knots.active-reward-session-token'), null);
+});

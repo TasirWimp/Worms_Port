@@ -47,6 +47,14 @@
       "reason": "The default sideways onboarding journey is frozen on the canonical portrait project."
     },
     {
+      "file": "practice.spec.ts",
+      "title": "R8 objective Practice survives destroyed WebViews during both actors turns",
+      "runsOn": [
+        "chromium-390x844"
+      ],
+      "reason": "One canonical Android-sized Chromium host covers localStorage bearer recovery across destroyed WebViews."
+    },
+    {
       "file": "reward.spec.ts",
       "title": "Daily Challenge discloses, authorizes, plays, and reports a consumed loss",
       "runsOn": [

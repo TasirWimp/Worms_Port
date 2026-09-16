@@ -648,6 +648,73 @@ test('standard volcanic Practice at root keeps authority, AI, cold resume and re
   } finally { await page.goto('about:blank'); await runtime.close(); }
 });
 
+test('R8 objective Practice survives destroyed WebViews during both actors turns', async ({ context }) => {
+  test.setTimeout(60_000);
+  const runtime = createRuntimeServer({ clientDir: path.resolve('client/build'), identity: false,
+    sessionRegistry: { practiceV10: true, seedSource: () => 4 } });
+  const port = await runtime.listen();
+  const errors: string[] = [];
+  let activePage: Page | undefined;
+  const openPage = async (): Promise<Page> => {
+    const next = await context.newPage();
+    next.on('pageerror', error => errors.push(error.message));
+    next.on('console', message => { if (message.type() === 'error') errors.push(message.text()); });
+    await next.goto(`http://127.0.0.1:${port}/?combat-preview=v10r8&sideways=off`);
+    activePage = next;
+    return next;
+  };
+  try {
+    let app = await openPage();
+    await app.getByRole('button', { name: 'Start Collect' }).tap();
+    let ui = app.locator('.combat-v10');
+    await expect(ui).toHaveAttribute('data-ruleset', 'nimble-knots-artillery-v10-r8');
+    const challengeId = await ui.getAttribute('data-challenge-id');
+    const objectiveHash = await ui.getAttribute('data-objective-hash');
+    const objectivePositions = await ui.getAttribute('data-objective-positions');
+    expect(challengeId).toBeTruthy();
+
+    // Closing the page destroys sessionStorage, matching a discarded mini-app
+    // WebView while preserving this origin's deliberately bounded R8 bearer.
+    await app.close();
+    activePage = undefined;
+    await expect.poll(() => runtime.io.sockets.sockets.size).toBe(0);
+
+    app = await openPage();
+    await expect(app.getByRole('button', { name: 'Resume Collect' })).toBeVisible();
+    await app.getByRole('button', { name: 'Resume Collect' }).tap();
+    ui = app.locator('.combat-v10');
+    await expect(ui).toHaveAttribute('data-challenge-id', challengeId!);
+    await expect(ui).toHaveAttribute('data-objective-hash', objectiveHash!);
+    await expect(ui).toHaveAttribute('data-objective-positions', objectivePositions!);
+
+    await ui.locator('.v9-actions-button').tap();
+    await ui.locator('.v9-attack').tap();
+    await ui.locator('.relic-needlepoint').tap();
+    await expect(ui).toHaveAttribute('data-selected-relic', 'needlepoint');
+    await expect(ui.locator('.aim-zone')).toHaveAttribute('aria-disabled', 'false');
+    await aimAt(app, 40, 2701);
+    await expect(ui.locator('.fire-button')).toBeEnabled();
+    await ui.locator('.fire-button').tap();
+    await expect(ui).toHaveAttribute('data-active-actor', 'loomkeeper', { timeout: 15_000 });
+
+    await app.close();
+    activePage = undefined;
+    await expect.poll(() => runtime.io.sockets.sockets.size).toBe(0);
+
+    app = await openPage();
+    await expect(app.getByRole('button', { name: 'Resume Collect' })).toBeVisible();
+    await app.getByRole('button', { name: 'Resume Collect' }).tap();
+    ui = app.locator('.combat-v10');
+    await expect(ui).toHaveAttribute('data-challenge-id', challengeId!);
+    await expect(ui).toHaveAttribute('data-objective-mode', 'collect');
+    await expect(ui).toHaveAttribute('data-objective-hash', /^[a-f0-9]{64}$/);
+    expect(errors).toEqual([]);
+  } finally {
+    if (activePage && !activePage.isClosed()) await activePage.close();
+    await runtime.close();
+  }
+});
+
 test('current R7 phone controls use a compact translucent cluster with neutral tap-jump and slide aftertouch', async ({ page }) => {
   test.setTimeout(60_000);
   const runtime = createRuntimeServer({ clientDir: path.resolve('client/build'), identity: false,

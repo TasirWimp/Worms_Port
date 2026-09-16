@@ -2,6 +2,7 @@ import { z } from 'zod';
 
 import {
     advanceOwnedSimulationTickV10,
+    advanceDetachedProjectileV10,
     applySimulationBarrierV10,
     applySimulationIntentV10,
     assertSimulationInvariantsV10,
@@ -380,7 +381,9 @@ export function advanceSimulationTicksV10R8(
 }
 
 export function advanceOwnedSimulationTickV10R8(current: SimulationStateV10R8): SimulationTransitionV10R8 {
-    assertSimulationInvariantsV10R8(current);
+    // This is the coordinator-owned tick kernel. Its caller validates the
+    // starting state and the completed publication batch, matching R7's owned
+    // tick boundary instead of rescanning the full terrain on every 30 Hz tick.
     if (current.phase === 'finished') {
         return { accepted: true, mutated: false, state: current, events: [] };
     }
@@ -431,20 +434,24 @@ export function trajectoryPreviewV10R8(
     state: SimulationStateV10R8,
     aim: { angleMilliDegrees: number; powerPermille: number }
 ): { x: number; y: number }[] {
-    const source = cloneSimulationV10R8(state);
+    // Objective objects are deliberately projectile-transparent. Reuse the
+    // exact R7 ballistic projection after one R8 trust-boundary validation,
+    // rather than advancing objective physics and rescanning its support for
+    // every detached preview tick under the player's thumb.
+    const source = simulationV10R7ViewOfR8(state);
     if (source.phase !== 'action' || source.activeActor !== 'player' || source.winner !== null ||
         source.castUsed || source.heldDirection !== 0 ||
         source.units.some(unit => !unit.alive || !unit.grounded || unit.vxFp !== 0 || unit.vyFp !== 0)) return [];
-    const aimed = applySimulationIntentV10R8(
+    const aimed = applySimulationIntentV10(
         source, 'player', { type: 'aim', ...aim }, source.turn, source.phase, source.inputEpoch
     );
     if (!aimed.accepted) return [];
-    const fired = applySimulationIntentV10R8(
+    const fired = applySimulationIntentV10(
         aimed.state, 'player', { type: 'fire', aimId: aimed.state.aimId },
         aimed.state.turn, aimed.state.phase, aimed.state.inputEpoch
     );
     if (!fired.accepted) return [];
-    const projected = advanceDetachedProjectileV10R8(fired.state, 300).state;
+    const projected = advanceDetachedProjectileV10(fired.state, 300).state;
     return projected.lastProjectile?.trace.map(point => ({ ...point })) ?? [];
 }
 

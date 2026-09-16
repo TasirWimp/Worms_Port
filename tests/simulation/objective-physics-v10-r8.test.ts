@@ -8,6 +8,7 @@ import {
     applySimulationIntentV10,
     CURRENT_V10_RULESET_ID,
     hashTerrainV10R7,
+    V10_R6_DYNAMICS,
     V10_R7_RULESET_ID
 } from '../../shared/simulation-v10';
 import {
@@ -326,6 +327,21 @@ test('R8 resolves opposing chest-loss and elimination victories on one tick as a
     assert.equal(result.winner, 'draw');
     assert.deepEqual(result.objective.result, { winner: 'draw', reason: 'simultaneous' });
     assertSimulationInvariantsV10R8(result);
+});
+
+test('R8 handover returns neutral stationary authority to the player', () => {
+    const initial = createSimulationV10R8(4, 'wizard', 'defend');
+    const loomkeeperTurn = advanceSimulationTicksV10R8(initial, V10_R6_DYNAMICS.actionTicks).state;
+    assert.equal(loomkeeperTurn.activeActor, 'loomkeeper');
+    const returned = advanceSimulationTicksV10R8(loomkeeperTurn, V10_R6_DYNAMICS.actionTicks).state;
+    assert.equal(returned.activeActor, 'player');
+    assert.equal(returned.heldDirection, 0);
+    assert.equal(returned.units[0].vxFp, 0);
+    assert.equal(returned.units[1].vxFp, 0);
+    const playerX = returned.units[0].xFp;
+    const idle = advanceSimulationTicksV10R8(returned, 3).state;
+    assert.equal(idle.units[0].xFp, playerX,
+        'the player cannot inherit movement after a Loomkeeper handover');
 });
 
 function setLayerCell(source: string, row: number, column: number, glyph: string): string {

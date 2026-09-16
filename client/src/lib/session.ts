@@ -15,6 +15,7 @@ import {
 
 const SESSION_TOKEN_KEY = 'nimble-knots.session-token';
 const ACTIVE_REWARD_SESSION_TOKEN_KEY = 'nimble-knots.active-reward-session-token';
+const ACTIVE_OBJECTIVE_SESSION_TOKEN_KEY = 'nimble-knots.active-objective-session-token';
 const ACTIVE_GAME_KEY = 'nimble-knots.active-game';
 const ACK_TIMEOUT_MS = 5000;
 const sessionReady = new WeakMap<Socket, Promise<SessionOpenData>>();
@@ -88,8 +89,14 @@ export function whenSessionReady (socket: Socket): Promise<SessionOpenData>
 export function adoptSession(socket: Socket, session: SessionOpenData): SessionOpenData
 {
     const retainedReward = readRetainedRewardSessionToken();
+    const retainedObjective = readRetainedObjectiveSessionToken();
     sessionStorage.setItem(SESSION_TOKEN_KEY, session.token);
-    if (retainedReward) writeRetainedRewardSessionToken(session.token);
+    if (retainedReward) {
+        writeRetainedRewardSessionToken(session.token);
+        clearRetainedObjectiveSession();
+    } else if (retainedObjective) {
+        writeRetainedObjectiveSessionToken(session.token);
+    }
     const ready = Promise.resolve(structuredClone(session));
     sessionReady.set(socket, ready);
     return structuredClone(session);
@@ -102,13 +109,38 @@ export function adoptSession(socket: Socket, session: SessionOpenData): SessionO
  * terminal result or rejected/expired server session clears it.
  */
 export function retainRewardSession(session: SessionOpenData): void {
+    clearRetainedObjectiveSession();
     writeRetainedRewardSessionToken(session.token);
 }
 
 export function clearRetainedRewardSession(): void {
     try {
         if (typeof localStorage !== 'undefined') {
-            localStorage.removeItem(ACTIVE_REWARD_SESSION_TOKEN_KEY);
+            if (localStorage.getItem(ACTIVE_REWARD_SESSION_TOKEN_KEY)) {
+                localStorage.removeItem(ACTIVE_REWARD_SESSION_TOKEN_KEY);
+            }
+        }
+    } catch {
+        // Storage denial keeps the existing session-only behavior.
+    }
+}
+
+/**
+ * The private R8 Practice canary has the same destroyed-WebView resume need as
+ * an active Daily match. Ordinary Practice remains session-only: this token is
+ * retained only while an acknowledged R8 objective match is active.
+ */
+export function retainObjectiveSession(session: SessionOpenData): void {
+    clearRetainedRewardSession();
+    writeRetainedObjectiveSessionToken(session.token);
+}
+
+export function clearRetainedObjectiveSession(): void {
+    try {
+        if (typeof localStorage !== 'undefined') {
+            if (localStorage.getItem(ACTIVE_OBJECTIVE_SESSION_TOKEN_KEY)) {
+                localStorage.removeItem(ACTIVE_OBJECTIVE_SESSION_TOKEN_KEY);
+            }
         }
     } catch {
         // Storage denial keeps the existing session-only behavior.
@@ -180,7 +212,7 @@ async function openSession (
     if (storedToken && !transientToken) {
         sessionStorage.removeItem(SESSION_TOKEN_KEY);
     }
-    const token = transientToken ?? readRetainedRewardSessionToken();
+    const token = transientToken ?? readRetainedRewardSessionToken() ?? readRetainedObjectiveSessionToken();
     const request = token
         ? { requestId: requestId(), action: 'resume' as const, token }
         : { requestId: requestId(), action: 'create' as const };
@@ -203,6 +235,7 @@ async function openSession (
                 || response.error.code === 'SESSION_EXPIRED')) {
             sessionStorage.removeItem(SESSION_TOKEN_KEY);
             clearRetainedRewardSession();
+            clearRetainedObjectiveSession();
             clearActiveGameId();
             return openSession(socket, allowAckRecovery);
         }
@@ -229,7 +262,35 @@ function writeRetainedRewardSessionToken(token: string): void {
     if (!SESSION_TOKEN_PATTERN.test(token)) return;
     try {
         if (typeof localStorage !== 'undefined') {
-            localStorage.setItem(ACTIVE_REWARD_SESSION_TOKEN_KEY, token);
+            if (localStorage.getItem(ACTIVE_REWARD_SESSION_TOKEN_KEY) !== token) {
+                localStorage.setItem(ACTIVE_REWARD_SESSION_TOKEN_KEY, token);
+            }
+        }
+    } catch {
+        // Storage denial keeps the existing session-only behavior.
+    }
+}
+
+function readRetainedObjectiveSessionToken(): string | null {
+    try {
+        if (typeof localStorage === 'undefined') return null;
+        const token = localStorage.getItem(ACTIVE_OBJECTIVE_SESSION_TOKEN_KEY);
+        if (!token) return null;
+        if (SESSION_TOKEN_PATTERN.test(token)) return token;
+        localStorage.removeItem(ACTIVE_OBJECTIVE_SESSION_TOKEN_KEY);
+    } catch {
+        // Storage denial keeps the existing session-only behavior.
+    }
+    return null;
+}
+
+function writeRetainedObjectiveSessionToken(token: string): void {
+    if (!SESSION_TOKEN_PATTERN.test(token)) return;
+    try {
+        if (typeof localStorage !== 'undefined') {
+            if (localStorage.getItem(ACTIVE_OBJECTIVE_SESSION_TOKEN_KEY) !== token) {
+                localStorage.setItem(ACTIVE_OBJECTIVE_SESSION_TOKEN_KEY, token);
+            }
         }
     } catch {
         // Storage denial keeps the existing session-only behavior.

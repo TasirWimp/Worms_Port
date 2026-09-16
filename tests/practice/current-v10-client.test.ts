@@ -89,7 +89,7 @@ test('current V10 movement release waits for an in-flight movement acknowledgeme
 });
 
 test('R8 Practice client binds the selected objective across pause and retry', async () => {
-    installSessionStorage();
+    const storage = installSessionStorage();
     const runtime = createRuntimeServer({
         allowMissingOrigin: true,
         sessionRegistry: { practiceV10: true, seedSource: () => 4, v10TestOnly: { nowUs: () => 0 } }
@@ -108,6 +108,7 @@ test('R8 Practice client binds the selected objective across pause and retry', a
         if (first.rulesetId !== V10_R8_RULESET_ID) throw new Error('Expected R8 Practice.');
         assert.equal(first.objectiveMode, 'claim');
         assert.equal(first.simulation.objective.objectiveMode, 'claim');
+        assert.match(storage.localStorage.getItem('nimble-knots.active-objective-session-token') ?? '', /^[A-Za-z0-9_-]{43}$/);
         const args = await client.combatArgs(first);
         assert.equal(args.snapshot.rulesetId, V10_R8_RULESET_ID);
         await args.setPaused(true);
@@ -125,17 +126,63 @@ test('R8 Practice client binds the selected objective across pause and retry', a
     }
 });
 
-function installSessionStorage(): void {
-    const values = new Map<string, string>();
-    Object.assign(globalThis, {
-        window: { setTimeout, clearTimeout },
-        sessionStorage: {
+test('R8 Practice survives a destroyed WebView and rotates its bounded bearer on retry', async () => {
+    const storage = installSessionStorage();
+    const runtime = createRuntimeServer({
+        allowMissingOrigin: true,
+        sessionRegistry: { practiceV10: true, seedSource: () => 4, v10TestOnly: { nowUs: () => 0 } }
+    });
+    const port = await runtime.listen();
+    let socket = io(`http://127.0.0.1:${port}`, { transports: ['websocket'] });
+    let client: PracticeClient | undefined;
+    try {
+        client = await PracticeClient.connect(socket, await bootstrapSession(socket));
+        const created = await client.startObjectiveCombat('collect');
+        const retained = storage.localStorage.getItem('nimble-knots.active-objective-session-token');
+        assert.match(retained ?? '', /^[A-Za-z0-9_-]{43}$/);
+
+        client.dispose();
+        const disconnected = new Promise<void>(resolve => socket.once('disconnect', () => resolve()));
+        socket.close();
+        await disconnected;
+        storage.sessionStorage.clear();
+
+        socket = io(`http://127.0.0.1:${port}`, { transports: ['websocket'] });
+        client = await PracticeClient.connect(socket, await bootstrapSession(socket));
+        const resumed = await client.startObjectiveCombat('collect');
+        assert.equal(resumed.challengeId, created.challengeId);
+        assert.equal(resumed.rulesetId, V10_R8_RULESET_ID);
+        if (resumed.rulesetId !== V10_R8_RULESET_ID) throw new Error('Expected resumed R8 Practice.');
+        assert.equal(resumed.objectiveMode, 'collect');
+
+        await (await client.combatArgs(resumed)).restart();
+        assert.match(storage.localStorage.getItem('nimble-knots.active-objective-session-token') ?? '', /^[A-Za-z0-9_-]{43}$/,
+            'a same-mode retry retains only the replacement active objective session');
+    } finally {
+        client?.dispose();
+        socket.close();
+        await runtime.close();
+    }
+});
+
+function installSessionStorage(): { sessionStorage: Storage; localStorage: Storage } {
+    const memory = (): Storage => {
+        const values = new Map<string, string>();
+        return {
             getItem: (key: string) => values.get(key) ?? null,
             setItem: (key: string, value: string) => values.set(key, value),
             removeItem: (key: string) => values.delete(key),
             clear: () => values.clear(),
             key: (index: number) => [...values.keys()][index] ?? null,
             get length() { return values.size; }
-        }
+        } as Storage;
+    };
+    const sessionStorage = memory();
+    const localStorage = memory();
+    Object.assign(globalThis, {
+        window: { setTimeout, clearTimeout },
+        sessionStorage,
+        localStorage
     });
+    return { sessionStorage, localStorage };
 }

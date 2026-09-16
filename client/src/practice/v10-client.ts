@@ -1,5 +1,8 @@
 import { trajectoryPreviewV10 } from '../combat/terrain-starts-v10-fixture';
-import { clearRetainedRewardSession, retainRewardSession, whenSessionReady } from '../lib/session';
+import {
+    clearRetainedObjectiveSession, clearRetainedRewardSession,
+    retainObjectiveSession, retainRewardSession, whenSessionReady
+} from '../lib/session';
 import type { PracticeSessionCursor } from './contracts';
 import { clearActivePractice, writeActivePractice } from './storage';
 import type { Socket } from 'socket.io-client';
@@ -36,8 +39,10 @@ export class V10PracticeLifecycle {
     public disconnect(): void { if (this.connected) { this.connected = false; this.resyncRequired = true; this.currentGeneration += 1; } }
     public acceptSnapshot(value: unknown, ownedSessionId: string, resync = false): V10PracticeSnapshot | undefined {
         const parsed = ChallengeSnapshotV10Schema.safeParse(value);
-        if (!parsed.success || parsed.data.sessionId !== ownedSessionId) return undefined;
-        const next = parsed.data;
+        return parsed.success ? this.acceptValidatedSnapshot(parsed.data, ownedSessionId, resync) : undefined;
+    }
+    public acceptValidatedSnapshot(next: V10PracticeSnapshot, ownedSessionId: string, resync = false): V10PracticeSnapshot | undefined {
+        if (next.sessionId !== ownedSessionId) return undefined;
         if (this.snapshot && (this.snapshot.challengeId !== next.challengeId || this.snapshot.sessionId !== next.sessionId)) return undefined;
         if (this.resyncRequired && !resync) return undefined;
         if (this.snapshot) {
@@ -73,6 +78,7 @@ export class V10PracticeClient {
     private terminal?: ChallengeResultV10;
     private disposed = false;
     private mutation?: Promise<unknown>;
+    private retainedSessionIdentity?: string;
     private readonly snapshots = new Set<(value: V10PracticeSnapshot) => void>();
     private readonly results = new Set<(value: ChallengeResultV10) => void>();
     private readonly connections = new Set<(value: V10PracticeConnection) => void>();
@@ -229,6 +235,8 @@ export class V10PracticeClient {
         this.lifecycle.disconnect();
         clearActivePractice();
         clearRetainedRewardSession();
+        clearRetainedObjectiveSession();
+        this.retainedSessionIdentity = undefined;
         for (const listener of this.unavailable) listener('The previous volcanic Clash cannot be resumed. Start a fresh Clash.');
         this.dispose();
     }
@@ -242,13 +250,10 @@ export class V10PracticeClient {
     private readonly onSnapshotEvent = (raw: unknown): void => {
         const parsed = ChallengeSnapshotV10Schema.safeParse(raw);
         if (!parsed.success) return this.report('The server sent an invalid V10 Practice snapshot.');
-        const accepted = this.lifecycle.acceptSnapshot(parsed.data, this.session().sessionId, true);
+        const accepted = this.lifecycle.acceptValidatedSnapshot(parsed.data, this.session().sessionId, true);
         if (!accepted) return;
         this.snapshot = accepted; writeActivePractice(accepted.sessionId, accepted.challengeId);
-        if (accepted.mode === 'reward') {
-            if (accepted.status === 'active') retainRewardSession(this.session());
-            else clearRetainedRewardSession();
-        }
+        this.syncRetainedSession(accepted);
         this.cursor.nextSequence = Math.max(this.cursor.nextSequence, accepted.nextSequence);
         for (const listener of this.snapshots) listener(structuredClone(accepted));
     };
@@ -288,7 +293,7 @@ export class V10PracticeClient {
         try { return await operation; } finally { if (this.mutation === operation) this.mutation = undefined; }
     }
     private acceptAckSnapshot(value: V10PracticeSnapshot, sequence: number, inputSequence: number, resync: boolean): V10PracticeSnapshot {
-        const accepted = this.lifecycle.acceptSnapshot(value, this.session().sessionId, resync) ?? (() => {
+        const accepted = this.lifecycle.acceptValidatedSnapshot(value, this.session().sessionId, resync) ?? (() => {
             const current = this.lifecycle.current;
             return current && current.sessionId === value.sessionId && current.challengeId === value.challengeId &&
                 current.simulation.revision >= value.simulation.revision && current.nextInputSequence >= inputSequence ? current : undefined;
@@ -299,10 +304,7 @@ export class V10PracticeClient {
         // lifecycle acknowledgement carries the advanced outer sequence.
         if (!accepted || inputSequence !== accepted.nextInputSequence) throw new Error('Stale V10 Practice acknowledgement.');
         this.snapshot = accepted; writeActivePractice(accepted.sessionId, accepted.challengeId);
-        if (accepted.mode === 'reward') {
-            if (accepted.status === 'active') retainRewardSession(this.session());
-            else clearRetainedRewardSession();
-        }
+        this.syncRetainedSession(accepted);
         this.cursor.nextSequence = Math.max(this.cursor.nextSequence, sequence);
         for (const listener of this.snapshots) listener(structuredClone(accepted));
         return structuredClone(accepted);
@@ -315,8 +317,25 @@ export class V10PracticeClient {
         this.terminal = structuredClone(value);
         clearActivePractice();
         clearRetainedRewardSession();
+        clearRetainedObjectiveSession();
+        this.retainedSessionIdentity = undefined;
         for (const listener of this.results) listener(structuredClone(value));
         return structuredClone(value);
+    }
+    private syncRetainedSession(value: V10PracticeSnapshot): void {
+        if (value.status !== 'active') {
+            if (value.mode === 'reward') clearRetainedRewardSession();
+            if (value.rulesetId === V10_R8_RULESET_ID) clearRetainedObjectiveSession();
+            this.retainedSessionIdentity = undefined;
+            return;
+        }
+        const session = this.session();
+        const identity = value.mode === 'reward' ? `reward:${session.token}`
+            : value.rulesetId === V10_R8_RULESET_ID ? `objective:${session.token}` : undefined;
+        if (!identity || identity === this.retainedSessionIdentity) return;
+        if (value.mode === 'reward') retainRewardSession(session);
+        else retainObjectiveSession(session);
+        this.retainedSessionIdentity = identity;
     }
     private requireSnapshot(): V10PracticeSnapshot { if (!this.snapshot || this.terminal) throw new Error('No active V10 Practice Clash is available.'); return this.snapshot; }
     private requireInput(): V10PracticeSnapshot { const value = this.requireSnapshot(); if (!this.inputReady()) throw new Error('Wait for a fresh authoritative V10 snapshot.'); return value; }

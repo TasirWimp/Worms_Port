@@ -270,10 +270,21 @@ Phaser/Socket.IO stack.
   Collect. A separately approved generic amber textile hex coin replaces the
   round Collect placeholder without changing objective authority, and its final
   physical-phone shape review passed. **Waypoint 2 and Phone Gate B are
-  complete; Waypoint 3 implementation and automated checks are complete, and
-  Phone Gate C is next.** The owner passed all seven
-  mode-selection, objective, result and R7-isolation steps on the physical
-  phone. The private R8 canary now
+  complete; Waypoint 3 remains in focused Phone Gate C correction.** The owner
+  passed all seven Waypoint 2 mode-selection, objective, result and R7-isolation
+  steps on the physical phone. The first Waypoint 3 phone read accepted entry
+  and ordinary live play, but found that destroyed WebViews did not resume R8
+  during either actor's turn, terminal combat briefly exposed duplicate action
+  prompts, and R8 input and rendering had become laggy on phone and especially
+  a larger tablet. Its report that the deterministic Loomkeeper did not visibly
+  pursue coins or chests is accepted as strategy-quality scope for WP-027;
+  WP-026 retains only a legal, bounded and replayable fallback. A focused
+  correction now retains only active private-R8 authority across destroyed
+  WebViews, removes the duplicate live terminal sheet, cuts repeated R8 preview,
+  validation, storage and redraw work, and prevents passive displacement from
+  being presented as player walking. Automated correction verification is
+  complete; a focused physical recheck remains before Gate C can close. The
+  private R8 canary now
   has contact, scoring, terminal rules, HUD and mode selection for all three
   modes. Wizard is the only visible player character: the normal R7
   lobby removes the obsolete class choice while retaining the existing

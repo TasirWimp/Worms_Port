@@ -221,6 +221,7 @@ export class ResourceTurnsV9Scene {
         this.skipTerminalPresentation = false;
         if (!skipPresentation && result.protocolVersion === 10 && this.state.units.some(unit => !unit.alive)) {
             this.terminalPresentation ??= { result, until: performance.now() + WIZARD_UNRAVEL_DURATION_MS };
+            this.requestRender();
             return;
         }
         this.scene.scene.start('result', { result, calling: this.args.calling ?? 'wizard',
@@ -340,11 +341,20 @@ export class ResourceTurnsV9Scene {
         if (this.destroyed || this.suspended) return;
         this.controls.pollMovement();
         this.flushPreview();
-        if (this.renderRequested || this.cameraTransition || this.presentation || this.terminalPresentation) {
+        const now = performance.now();
+        if (this.renderRequested || this.cameraTransition || this.presentationBoundaryDue(now) ||
+            (this.terminalPresentation !== undefined && now >= this.terminalPresentation.until)) {
             this.renderRequested = false;
             this.render();
         }
     };
+
+    private presentationBoundaryDue(now: number): boolean {
+        const current = this.presentation;
+        if (!current || current.generation !== this.requestGeneration) return false;
+        const step = current.steps[current.index];
+        return !step || now - current.startedAt >= step.durationMs;
+    }
 
     private suspendProjection(): void {
         if (this.destroyed || this.suspended) return;

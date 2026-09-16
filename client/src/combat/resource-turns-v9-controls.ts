@@ -113,11 +113,15 @@ ${movementControl}
             button.disabled = !action; button.setAttribute('aria-disabled', String(!action));
         }
         this.button('.pause-button').disabled = !(this.callbacks.pauseAllowed?.() ?? this.pauseAllowed()) && !paused; this.button('.pause-button').textContent = paused ? 'Resume' : 'Pause';
-        this.element('.v9-pause-sheet').hidden = !paused && !this.terminal();
+        // A live result scene is the only terminal action surface. Keeping the
+        // in-arena preview sheet hidden avoids a second retry/mode prompt while
+        // authoritative defeat presentation is still visible.
+        const localTerminal = this.terminal() && !this.callbacks.live;
+        this.element('.v9-pause-sheet').hidden = !paused && !localTerminal;
         this.element('.v9-pause-sheet strong').textContent = this.terminal()
             ? this.terminalGuidance()
             : this.callbacks.live ? 'Practice paused · the authoritative clock is stopped.' : 'Preview paused · the local tick clock is stopped.';
-        this.button('.v9-change-mode').hidden = !this.terminal() || !this.callbacks.changeMode;
+        this.button('.v9-change-mode').hidden = !localTerminal || !this.callbacks.changeMode;
         this.refreshActions(); this.positionCards(); return changed;
     }
 

@@ -41,7 +41,10 @@
     "Physical Android Phone Gate C",
     "npm.cmd run audit:housekeeping before Phone Gate A",
     "Phone Gate A on the physical phone",
-    "Focused Phone Gate A presentation recheck after the accepted nine-step functional read"
+    "Focused Phone Gate A presentation recheck after the accepted nine-step functional read",
+    "Phone Gate C correction: focused session, Practice client, R8 physics, combat presentation and destroyed-WebView browser checks",
+    "Phone Gate C correction: npm.cmd run verify:changes -- --base fa87d2e",
+    "Focused physical Android phone and tablet Gate C recheck"
   ],
   "deterministic_seeds": [
     "R8 local volcanic objective preview seed 4",
@@ -140,6 +143,16 @@
       "command": "Waypoint 3 pre-Phone-Gate-C work-package and housekeeping checks",
       "status": "pass",
       "details": "The work-package validator accepted all 73 evidence records. Report-only housekeeping confirmed the matching codex/v10-r6-action-impact-dynamics upstream and WP-026 correctly remains in progress. Its manual-reconciliation flag is limited to preserved historical in-progress packages and failed-review history, including the already-resolved first WP-026 Phone Gate A read; no gone tracking branch or mutation was reported. Logs .cache/wp026-w3-work-packages.log and .cache/wp026-w3-prephone-housekeeping.log."
+    },
+    {
+      "command": "Physical Android Phone Gate C first read",
+      "status": "fail",
+      "details": "The owner passed entry and ordinary live-play steps 1-2. Steps 3-4 failed because destroying and reopening the mini-app during both the player and Loomkeeper turns did not recover the active Collect match. The current deterministic Loomkeeper did not visibly pursue the chest in steps 5-6; the owner accepted moving that strategy-quality judgment to WP-027 while retaining legal, bounded, non-stalling fallback behavior in WP-026. Step 7 exposed a duplicate in-arena retry/change-mode prompt before the result scene. The same read found laggy movement, jumping, aiming and panning, stronger on a larger tablet, plus apparent uncommanded player walking after a Loomkeeper turn. Gate C remains open for the bounded correction and focused recheck."
+    },
+    {
+      "command": "Phone Gate C correction change-selected acceptance composed under the zero-retry recovery policy",
+      "status": "pass",
+      "details": "worms_port_test_runner on GPT-5.6 Terra/medium ran one selector from fa87d2e. At fingerprint 43029115e7111f2d3aea957994800f8c925e0c291770622556e6bccdca9bdad3 it passed diff/import/types, 73 work-package records, combat 51/51, Practice 6/6, identity 22/22, reward 28/28, protocol 25/25, simulation 85/85, Loomkeeper 39/39, relics 10/10, PEI 25/25, tooling 137/137, fresh build proof cc1f59f09bd2 / 920d0f32b17f, standard R7 smoke, identity/reward security and bundle limits at 1435299/1500000 raw initial JavaScript bytes and 418977/430000 JavaScript plus CSS gzip bytes. The canonical browser phase preserved 18/19 passes and stopped only because the new R8 recovery test used a retired relic-menu locator after already proving player-turn WebView recovery. Replacing that test locator with the current V10 action menu made the exact case pass 1/1 in 18.0 seconds, proving the same challenge across destroyed WebViews during both player and Loomkeeper turns; no green browser case was rerun. The first visual command retained a known Windows-only missing-baseline failure with 16 functional passes and eight expected skips. Selector-equivalent ignore-snapshot recovery ran only the six affected case identities and passed 6 with four expected project skips; Ubuntu remains the pixel authority. PostgreSQL phase fingerprint d959385f5f95366bde272b554822eff56d6bca5cb7efd98a5854a82371d05ff8 exited successfully with its explicit local prerequisite skip because WP014_TEST_DATABASE_URL is absent. Logs .cache/wp026-gatec-correction-selector.log, .cache/wp026-gatec-webview-recovery.log, .cache/wp026-gatec-visual.log and .cache/wp026-gatec-postgres.log."
     }
   ],
   "reviews": [
@@ -196,17 +209,30 @@
       "reviewer": "primary assistant direct Waypoint 3 review",
       "decision": "pass",
       "details": "Direct review traced the private v10r8 route from strict Practice-only creation through exact ruleset, automation, objective-mode and recipe ownership on every input and lifecycle packet. Snapshot, result and replay schemas fail closed on mixed R7/R8 identities; resume preserves objective state and mode; replay reconstruction regenerates the recorded fixed-budget selected plans. The deterministic Loomkeeper retains the existing 180-plan combat lattice and adds mode-specific coin pursuit, chest attack, guard and interception ranking while executing only ordinary authoritative intents. The canary retires an active ordinary Practice but never displaces an active rewarded Daily. Ordinary Practice creation and every reward/Daily creation remain exact R7, and Practice-only R8 completion never enters reward settlement. The small R8 route identity is separated from objective simulation code so ordinary startup stays within bundle limits. Phone Gate C still owns physical feel, opponent behavior and lifecycle acceptance."
+    },
+    {
+      "role": "owner",
+      "reviewer": "WP-026 Phone Gate C first physical-phone and tablet read",
+      "decision": "fail",
+      "details": "The owner accepted steps 1-2, reported failed destroyed-WebView resume during both actors' turns, a duplicate terminal action prompt and degraded foreground performance, and observed apparent player motion after a Loomkeeper turn. The owner explicitly accepted deferring visibly convincing objective strategy to WP-027. WP-026 Gate C therefore remains open for lifecycle, presentation and performance correction while its deterministic policy is judged only for legal, bounded, non-stalling and replayable turns."
+    },
+    {
+      "role": "primary",
+      "reviewer": "primary assistant direct Phone Gate C correction review",
+      "decision": "pass",
+      "details": "Direct review verified that only an active private R8 objective match gains a localStorage bearer across destroyed WebViews; ordinary Practice remains session-only, rewarded Daily keeps its existing independent retention rule, and terminal, rejected or expired ownership clears the R8 bearer. Incoming V10 snapshots are strictly parsed once, unchanged active-Practice storage is not rewritten, R8 aim reuses the exact projectile-transparent R7 ballistic path, and coordinator-owned R8 ticks validate at the same publication boundaries as R7. Live terminal actions now belong only to the result scene. Presentation redraws occur on authority, camera or presentation boundaries, and passive blast, fall or settle displacement cannot be labelled as held player walking. Automated acceptance is complete; physical phone/tablet feel remains at the focused Gate C recheck."
     }
   ],
   "skipped_checks": [
     "Retired R6-and-older runtime profiles and @legacy browser diagnostics were excluded from current acceptance.",
-    "Performance was not selected. R8 retains the fixed 180-plan budget and at most seven bounded objective objects; Phone Gate C owns the physical foreground and opponent-turn read.",
+    "The standalone release performance matrix was not selected. Focused correction and physical phone/tablet reads cover the reported private-R8 foreground regression; the 22:00 daily gate retains the full performance phase.",
     "The local PostgreSQL prerequisite is absent, so its selected phase recorded the repository's expected skip and remains required in CI.",
     "The daily/release suite was not run because Waypoint 3 is a private feature gate rather than the 22:00 checkpoint or an explicit release boundary.",
-    "Physical Android Phone Gates A and B passed; Phone Gate C and a physical iOS check have not run."
+    "Physical Android Phone Gates A and B passed. The first Phone Gate C read failed and its focused correction recheck remains open; a physical iOS check has not run."
   ],
   "residual_risks": [
-    "Waypoint 3 server-backed replay/resume and objective-aware Loomkeeper behavior passed focused automation and remain subject to physical Phone Gate C.",
+    "The Phone Gate C correction remains subject to focused Android phone and larger-tablet confirmation for destroyed-WebView resume, one terminal action surface, smooth foreground input/rendering and no uncommanded player walking.",
+    "Visibly convincing objective strategy is intentionally deferred to WP-027; WP-026 retains a legal, bounded, non-stalling and replayable deterministic fallback.",
     "R8 remains private behind combat-preview=v10r8; standard Practice and PEI-gated Daily intentionally remain R7 until WP-027."
   ]
 }

@@ -20,7 +20,10 @@ export function readActivePractice(): StoredPractice | undefined {
 
 export function writeActivePractice(sessionId: string, challengeId: string): void {
     if (typeof sessionStorage === 'undefined') return;
-    sessionStorage.setItem(ACTIVE_PRACTICE_KEY, JSON.stringify({ sessionId, challengeId }));
+    const value = JSON.stringify({ sessionId, challengeId });
+    if (sessionStorage.getItem(ACTIVE_PRACTICE_KEY) !== value) {
+        sessionStorage.setItem(ACTIVE_PRACTICE_KEY, value);
+    }
 }
 
 export function clearActivePractice(): void {

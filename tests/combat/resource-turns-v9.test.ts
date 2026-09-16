@@ -231,8 +231,12 @@ test('V9 clone-only trajectory and authority receipt presentation never mutate t
         const trace = trajectoryPreviewV9(before, { angleMilliDegrees: 25_000, powerPermille: 700 });
         assert.ok(trace.length > 1, 'the visual preview has a V9-generated trajectory');
         assert.deepEqual(fixture.snapshot, before, 'trajectory projection cannot debit Thread, advance ticks, or alter authority');
-        const moving = structuredClone(before); moving.revision += 1; moving.units[0].xFp += 128;
+        const moving = structuredClone(before); moving.revision += 1; moving.heldDirection = 1; moving.units[0].xFp += 128;
         assert.equal(planV9Presentation(before, moving, true)[0]?.visual.kind, 'movement');
+        const displaced = structuredClone(before); displaced.revision += 1; displaced.units[0].xFp += 128;
+        displaced.activeActor = 'loomkeeper';
+        assert.equal(planV9Presentation(before, displaced, true)[0]?.visual.kind, undefined,
+            'blast or settling displacement cannot masquerade as player walking during the Loomkeeper turn');
         const live = structuredClone(before);
         live.projectile = { actor: 'player', relicId: 'threadball', xFp: 100 * 256 + 64, yFp: 80 * 256 + 128,
             vxFp: 1, vyFp: 1, flightTicks: 1, startX: 96, startY: 80, trace: [{ x: 96, y: 80 }] };
@@ -420,6 +424,23 @@ test('V9 controls derive action legality and lifecycle guidance from the latest 
         assert.match(root.querySelector<HTMLElement>('.combat-message')!.textContent ?? '', /deferred to V9D/, 'waiting guidance survives retained receipts');
         state.phase = 'finished'; state.winner = 'player'; state.finishReason = 'unravelled'; controls.update(state);
         assert.match(root.querySelector<HTMLElement>('.combat-message')!.textContent ?? '', /You won by authoritative unravelled outcome/);
+        controls.destroy();
+    } finally { fixture.destroy(); dom.restore(); }
+});
+
+test('live combat leaves terminal retry and mode actions to the result scene', async () => {
+    const dom = installControlDom(); const fixture = await createResourceTurnsV9Fixture(1, 'wizard', createClock());
+    try {
+        const controls = new ResourceTurnsV9Controls(dom.parent, fixture.snapshot, {
+            submit: async () => true, pause: () => {}, neutral: () => {}, live: true,
+            restart: () => {}, changeMode: () => {}
+        });
+        const terminal = structuredClone(fixture.snapshot);
+        terminal.phase = 'finished'; terminal.winner = 'player'; terminal.finishReason = 'unravelled';
+        controls.update(terminal);
+        const root = controls.root as unknown as FakeElement;
+        assert.equal((root.querySelector<HTMLElement>('.v9-pause-sheet') as any).hidden, true);
+        assert.equal((root.querySelector<HTMLElement>('.v9-change-mode') as any).hidden, true);
         controls.destroy();
     } finally { fixture.destroy(); dom.restore(); }
 });

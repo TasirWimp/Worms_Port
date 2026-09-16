@@ -324,9 +324,11 @@ Move exact R8 into the server-backed Practice canary, implement complete-turn
 deterministic candidates and bind all objective facts to replay and resume.
 
 Phone Gate C plays all three modes across changed terrain, closes and reopens
-during both actors’ turns, confirms the same objects and plan resume, and checks
-that the Loomkeeper visibly pursues the selected objective without illegal or
-stalled turns.
+during both actors’ turns, confirms the same challenge and objective state
+resume, and checks that the deterministic Loomkeeper completes legal,
+non-stalling turns. Judging visibly convincing chest or coin strategy is moved
+to WP-027 with the objective-aware Gemini selector; it is not a WP-026 closure
+condition.
 
 Waypoint 3 keeps the private `combat-preview=v10r8` admission boundary, but the
 match behind it is now the live server authority rather than the local fixture.
@@ -334,6 +336,21 @@ Ordinary Practice and PEI-gated Daily remain exact R7. An R8 Practice creation
 binds `objectiveMode`, `volcanic-ruin-objectives-r1` and
 `wp-026-v10-r8-objectives-v1`; every subsequent input and lifecycle packet must
 carry that same recorded ruleset and automation identity.
+
+The owner's first physical Gate C read accepted mode entry and ordinary live
+play, then exposed four canary corrections. Destroying the mini-app WebView lost
+the R8 Practice bearer during both the player and Loomkeeper turns; terminal
+combat briefly showed an in-arena retry/change-mode sheet before the result
+scene; R8 aim, pan and movement regressed on phone and more strongly on a larger
+tablet; and post-Loomkeeper displacement could be presented as player walking.
+The bounded correction retains only an active R8 objective bearer across
+destroyed WebViews, clears it at terminal or rejection, removes the duplicate
+live terminal action surface, reuses the projectile-transparent R7 trajectory
+path, removes repeated validation and storage work, schedules presentation
+redraws only when their state changes, and labels walking only from active held
+movement. The focused physical recheck owns player-turn resume,
+Loomkeeper-turn resume, one terminal prompt, smooth phone/tablet pan, aim and
+movement, and absence of uncommanded player walking.
 
 ## Automated acceptance
 
@@ -346,7 +363,9 @@ R7 and older runtime profiles remain explicit diagnostics.
 
 ## Explicit deferrals
 
-WP-026 does not add Gemini, respawning, temporary knockout, dropped banked coins,
+WP-026 does not add Gemini or require human-like objective strategy from its
+bounded deterministic fallback. It also does not add respawning, temporary
+knockout, dropped banked coins,
 object blast impulse, rolling, bounce, carrying a chest, returning it to a base,
 procedural layouts, PvP, variable rewards or another PEI rule. WP-027 owns the
 external selector and final R8 promotion.
@@ -354,7 +373,8 @@ external selector and final R8 promotion.
 ## Definition of done
 
 WP-026 closes when Phone Gates A-C pass, all three modes are complete in the
-server-backed R8 Practice canary, the deterministic Loomkeeper and fresh replay
-verifier reproduce every objective transition, change-selected checks pass, the
-work-package evidence is complete and housekeeping agrees with the execution
-pointer. R7 remains standard Practice and Daily until WP-027.
+server-backed R8 Practice canary, the deterministic Loomkeeper remains legal,
+bounded and replayable, the fresh replay verifier reproduces every objective
+transition, change-selected checks pass, the work-package evidence is complete
+and housekeeping agrees with the execution pointer. R7 remains standard
+Practice and Daily until WP-027.

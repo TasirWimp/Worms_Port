@@ -71,8 +71,13 @@ export function planV9Presentation(previous: ResourceTurnsState, next: ResourceT
     if (next.revision <= previous.revision || next.turn < previous.turn) return [];
     const duration = reducedMotion ? { movement: 70, charge: 40, formation: 50, projectile: 150, impact: 90 }
         : { movement: 220, charge: WIZARD_CAST_DURATION_MS / 2, formation: WIZARD_CAST_DURATION_MS / 2, projectile: 640, impact: 280 };
-    const moving = ([0, 1] as const).find(index => previous.units[index].xFp !== next.units[index].xFp || previous.units[index].yFp !== next.units[index].yFp);
-    const steps: V9PresentationStep[] = moving === undefined ? [] : [{ visual: { kind: 'movement', actor: next.units[moving].id }, durationMs: duration.movement }];
+    const activeIndex = next.activeActor === 'player' ? 0 : 1;
+    const activeMoved = next.heldDirection !== 0 && previous.activeActor === next.activeActor &&
+        (previous.units[activeIndex].xFp !== next.units[activeIndex].xFp ||
+            previous.units[activeIndex].yFp !== next.units[activeIndex].yFp);
+    const steps: V9PresentationStep[] = activeMoved
+        ? [{ visual: { kind: 'movement', actor: next.activeActor }, durationMs: duration.movement }]
+        : [];
     const trace = (next.projectile ? liveProjectileTraceV9(next.projectile) : next.lastProjectile?.trace.map(point => ({ ...point })) ?? []);
     const relicId = next.projectile?.relicId ?? next.lastProjectile?.relicId;
     if (!relicId) return steps;
