@@ -29,20 +29,30 @@ import {
     V10_R7_VERTICAL_EXPANSION
 } from './terrain-battlefield-v10-r7';
 import { V8_SIM_RULES } from './simulation-v8';
-import { terrainSolid, type PackedTerrain, type PlayerCalling, type SimulationActor, type SimulationWinner } from './simulation';
+import { terrainSolid, type PackedTerrain, type PlayerCalling, type SimulationActor } from './simulation';
+import {
+    V10_R8_OBJECTIVE_MODES,
+    V10_R8_OBJECTIVE_RECIPE_REVISION,
+    V10_R8_RULESET_ID,
+    type V10R8ObjectiveKind,
+    type V10R8ObjectiveMode,
+    type V10R8ObjectiveResult,
+    type V10R8ObjectiveResultReason,
+    type V10R8ObjectiveStatus
+} from './objective-v10-r8';
 
-export const V10_R8_RULESET_ID = 'nimble-knots-artillery-v10-r8' as const;
-export const V10_R8_OBJECTIVE_RECIPE_REVISION = 'volcanic-ruin-objectives-r1' as const;
-export const V10_R8_OBJECTIVE_MODES = Object.freeze(['defend', 'collect', 'claim'] as const);
-export type V10R8ObjectiveMode = typeof V10_R8_OBJECTIVE_MODES[number];
-export type V10R8ObjectiveKind = 'coin' | 'chest';
-export type V10R8ObjectiveStatus = 'active' | 'collected' | 'captured' | 'lost';
-export type V10R8ObjectiveResultReason = 'elimination' | 'chest_captured' | 'chest_lost' |
-    'coin_lead' | 'coins_resolved' | 'turn_limit' | 'simulation_limit' | 'simultaneous';
-export type V10R8ObjectiveResult = Readonly<{
-    winner: SimulationWinner;
-    reason: V10R8ObjectiveResultReason;
-}>;
+export {
+    V10_R8_OBJECTIVE_MODES,
+    V10_R8_OBJECTIVE_RECIPE_REVISION,
+    V10_R8_RULESET_ID
+} from './objective-v10-r8';
+export type {
+    V10R8ObjectiveKind,
+    V10R8ObjectiveMode,
+    V10R8ObjectiveResult,
+    V10R8ObjectiveResultReason,
+    V10R8ObjectiveStatus
+} from './objective-v10-r8';
 
 export const V10_R8_OBJECT_DIMENSIONS = Object.freeze({
     coin: Object.freeze({ halfWidth: 16, halfHeight: 16 }),
@@ -197,8 +207,14 @@ export type SimulationStateV10R8 = Omit<SimulationStateV10, 'rulesetId'> & {
     objective: V10R8ObjectiveState;
 };
 
-export type SimulationTransitionV10R8 = Omit<SimulationTransitionV10, 'state'> & {
+export type SimulationEventV10R8 = SimulationEventV10 |
+    Readonly<{ type: 'coin_collected'; objectId: string; actor: SimulationActor; tick: number }> |
+    Readonly<{ type: 'chest_captured'; objectId: string; actor: SimulationActor; tick: number }> |
+    Readonly<{ type: 'objective_lost'; objectId: string; kind: V10R8ObjectiveKind; tick: number }>;
+
+export type SimulationTransitionV10R8 = Omit<SimulationTransitionV10, 'state' | 'events'> & {
     state: SimulationStateV10R8;
+    events: SimulationEventV10R8[];
 };
 
 const ObjectiveObjectSchema = z.object({
@@ -228,6 +244,16 @@ const ObjectiveStateSchema = z.object({
             'turn_limit', 'simulation_limit', 'simultaneous'])
     }).strict().nullable()
 }).strict();
+
+/** Strict wire validator for the isolated R8 state family. */
+export const SimulationStateV10R8Schema = z.custom<SimulationStateV10R8>((value) => {
+    try {
+        assertSimulationInvariantsV10R8(value as SimulationStateV10R8);
+        return true;
+    } catch {
+        return false;
+    }
+}, 'Invalid R8 simulation state.');
 
 export function objectiveModeV10R8(value: unknown): V10R8ObjectiveMode {
     return value === 'defend' || value === 'claim' ? value : 'collect';
@@ -341,7 +367,7 @@ export function advanceSimulationTicksV10R8(
     }
     let state = cloneSimulationV10R8(current);
     let mutated = false;
-    const events: SimulationEventV10[] = [];
+    const events: SimulationEventV10R8[] = [];
     for (let tick = 0; tick < count; tick += 1) {
         const transition = advanceOwnedSimulationTickV10R8(state);
         if (!transition.mutated) break;
@@ -361,10 +387,15 @@ export function advanceOwnedSimulationTickV10R8(current: SimulationStateV10R8): 
     const combat = advanceOwnedSimulationTickV10(r7View(current));
     if (!combat.mutated) return { ...combat, state: current };
     const objective = advanceObjectiveAuthorityV10R8(current.objective, combat.state);
-    if (!objective.result) return { ...combat, state: fromR7(combat.state, objective) };
+    const objectiveEvents = objectiveTransitionEvents(current.objective, objective, combat.state.tick);
+    if (!objective.result) return { ...combat, state: fromR7(combat.state, objective),
+        events: [...combat.events, ...objectiveEvents] };
     const state = finishObjectiveMatchV10R8(combat.state, objective.result);
     const finishReason = state.finishReason!;
-    const events: SimulationEventV10[] = combat.events.filter(event => event.type !== 'finished');
+    const events: SimulationEventV10R8[] = [
+        ...combat.events.filter(event => event.type !== 'finished'),
+        ...objectiveEvents
+    ];
     if (!combat.events.some(event => event.type === 'phase_changed' && event.phase === 'finished')) {
         events.push({ type: 'input_barrier', reason: 'phase', tick: state.tick });
         events.push({ type: 'phase_changed', phase: 'finished', tick: state.tick });
@@ -383,7 +414,7 @@ export function advanceDetachedProjectileV10R8(
     }
     let state = cloneSimulationV10R8(current);
     let mutated = false;
-    const events: SimulationEventV10[] = [];
+    const events: SimulationEventV10R8[] = [];
     for (let tick = 0; tick < maximumTicks && state.phase === 'projectile'; tick += 1) {
         const transition = advanceOwnedSimulationTickV10R8(state);
         if (!transition.mutated) break;
@@ -497,6 +528,11 @@ export function assertSimulationInvariantsV10R8(state: SimulationStateV10R8): vo
 
 export function hashSimulationStateV10R8(state: SimulationStateV10R8): string {
     assertSimulationInvariantsV10R8(state);
+    return hashCanonicalV10Value(state);
+}
+
+/** Internal replay seam after the transition boundary has established R8 invariants. */
+export function hashValidatedSimulationStateV10R8(state: SimulationStateV10R8): string {
     return hashCanonicalV10Value(state);
 }
 
@@ -747,6 +783,26 @@ function objectiveActorDistanceSquaredV10R8(
     const dx = unit.xFp - object.xFp;
     const dy = unit.yFp - object.yFp;
     return dx * dx + dy * dy;
+}
+
+function objectiveTransitionEvents(
+    previous: V10R8ObjectiveState,
+    next: V10R8ObjectiveState,
+    tick: number
+): SimulationEventV10R8[] {
+    const before = new Map(previous.objects.map(object => [object.id, object]));
+    const events: SimulationEventV10R8[] = [];
+    for (const object of next.objects) {
+        if (before.get(object.id)?.status === object.status) continue;
+        if (object.status === 'collected' && object.resolvedBy) {
+            events.push({ type: 'coin_collected', objectId: object.id, actor: object.resolvedBy, tick });
+        } else if (object.status === 'captured' && object.resolvedBy) {
+            events.push({ type: 'chest_captured', objectId: object.id, actor: object.resolvedBy, tick });
+        } else if (object.status === 'lost') {
+            events.push({ type: 'objective_lost', objectId: object.id, kind: object.kind, tick });
+        }
+    }
+    return events;
 }
 
 function evaluateObjectiveResultV10R8(

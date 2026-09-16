@@ -17,12 +17,16 @@ export const V9_AUTOMATION_ID = 'wp-015d3b-v9d-v1' as const;
 export const V10_R6_AUTOMATION_ID = 'wp-023-v10-r6-live-v1' as const;
 /** Current R7 terrain-as-gameplay authority. */
 export const V10_R7_AUTOMATION_ID = 'wp-024-v10-r7-live-v1' as const;
+/** R8 server-backed objective-mode Practice canary authority. */
+export const V10_R8_AUTOMATION_ID = 'wp-026-v10-r8-objectives-v1' as const;
 export const V10_AUTOMATION_ID = V10_R7_AUTOMATION_ID;
 export const V10_AUTOMATION_IDS = Object.freeze([
     V10_R6_AUTOMATION_ID,
-    V10_R7_AUTOMATION_ID
+    V10_R7_AUTOMATION_ID,
+    V10_R8_AUTOMATION_ID
 ] as const);
 export type V10AutomationId = typeof V10_AUTOMATION_IDS[number];
 export function isV10AutomationId(value: unknown): value is V10AutomationId {
-    return value === V10_R6_AUTOMATION_ID || value === V10_R7_AUTOMATION_ID;
+    return value === V10_R6_AUTOMATION_ID || value === V10_R7_AUTOMATION_ID ||
+        value === V10_R8_AUTOMATION_ID;
 }

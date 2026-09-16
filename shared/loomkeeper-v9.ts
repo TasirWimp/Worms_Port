@@ -47,6 +47,14 @@ export type LoomkeeperPlannerOptionsV9 = {
     mechanics?: ProjectileMechanics;
     dynamics?: SimulationDynamics;
     candidateAt?: (ordinal: number) => LoomkeeperCandidateV9;
+    /** Later-version deterministic objective scoring; absent for frozen V9 behavior. */
+    rankCandidate?: (context: Readonly<{
+        source: SimulationStateV9;
+        completed: SimulationStateV9;
+        candidate: LoomkeeperCandidateV9;
+        actor: SimulationActor;
+        baseRank: readonly number[];
+    }>) => readonly number[];
 };
 
 /** Phaser-free bounded V9 planner. Prefix evaluation mutates clones only. */
@@ -95,12 +103,12 @@ export class LoomkeeperPlannerV9 {
         // Thread, so this candidate can be rejected before any identical
         // movement/physics work while still consuming its frozen lattice slot.
         if (!candidateAffordable(this.source, candidate, this.prefix)) return undefined;
-        if (!this.reuseIdenticalPrefixes) return evaluateCandidate(this.source, this.chargedSource, candidate, this.prefix, this.options.mechanics, this.options.dynamics);
+        if (!this.reuseIdenticalPrefixes) return evaluateCandidate(this.source, this.chargedSource, candidate, this.prefix, this.options.mechanics, this.options.dynamics, this.options.rankCandidate);
         if (!this.preparedPrefixes.has(candidate.scriptIndex))
             this.preparedPrefixes.set(candidate.scriptIndex, preparePrefix(this.chargedSource, candidate, this.prefix, this.options.mechanics, this.options.dynamics));
         const prepared = this.preparedPrefixes.get(candidate.scriptIndex);
-        return prepared ? evaluatePreparedCandidate(this.source, candidate, this.prefix, prepared, this.options.mechanics, this.options.dynamics)
-            : evaluateCandidate(this.source, this.chargedSource, candidate, this.prefix, this.options.mechanics, this.options.dynamics);
+        return prepared ? evaluatePreparedCandidate(this.source, candidate, this.prefix, prepared, this.options.mechanics, this.options.dynamics, this.options.rankCandidate)
+            : evaluateCandidate(this.source, this.chargedSource, candidate, this.prefix, this.options.mechanics, this.options.dynamics, this.options.rankCandidate);
     }
 }
 
@@ -185,12 +193,13 @@ export function prefixFor(state: SimulationStateV9): V9Prefix {
     return Math.abs(own.xFp - other.xFp) > 640 * 256 ? 'threadleap' : 'none';
 }
 function evaluateCandidate(source: SimulationStateV9, chargedSource: SimulationStateV9, candidate: LoomkeeperCandidateV9,
-    prefix: V9Prefix, mechanics?: ProjectileMechanics, dynamics?: SimulationDynamics): Evaluation | undefined {
+    prefix: V9Prefix, mechanics?: ProjectileMechanics, dynamics?: SimulationDynamics,
+    rankCandidate?: LoomkeeperPlannerOptionsV9['rankCandidate']): Evaluation | undefined {
     if (!candidateAffordable(source, candidate, prefix)) return undefined;
     const rollout = DetachedSimulationRolloutV9.fromTrustedSource(chargedSource, dynamics);
     const state = rollout.state; const ticks = V9_AI_PLANNING_TICKS;
     const execution = new LoomkeeperExecutionV9(candidate, prefix, state);
-    return finishEvaluation(source, candidate, rollout, ticks, execution, mechanics, dynamics);
+    return finishEvaluation(source, candidate, rollout, ticks, execution, mechanics, dynamics, rankCandidate);
 }
 /**
  * Prefixes depend only on the chosen movement script and public action-entry
@@ -227,12 +236,14 @@ function preparePrefix(chargedSource: SimulationStateV9, candidate: LoomkeeperCa
     return undefined;
 }
 function evaluatePreparedCandidate(source: SimulationStateV9, candidate: LoomkeeperCandidateV9, prefix: V9Prefix,
-    prepared: PreparedPrefix, mechanics?: ProjectileMechanics, dynamics?: SimulationDynamics): Evaluation | undefined {
+    prepared: PreparedPrefix, mechanics?: ProjectileMechanics, dynamics?: SimulationDynamics,
+    rankCandidate?: LoomkeeperPlannerOptionsV9['rankCandidate']): Evaluation | undefined {
     const rollout = DetachedSimulationRolloutV9.fromTrustedSource(prepared.state, dynamics);
-    return finishEvaluation(source, candidate, rollout, prepared.logicalTicks, new LoomkeeperExecutionV9(candidate, prefix, rollout.state, true), mechanics, dynamics);
+    return finishEvaluation(source, candidate, rollout, prepared.logicalTicks, new LoomkeeperExecutionV9(candidate, prefix, rollout.state, true), mechanics, dynamics, rankCandidate);
 }
 function finishEvaluation(source: SimulationStateV9, candidate: LoomkeeperCandidateV9, rollout: DetachedSimulationRolloutV9, initialTicks: number,
-    execution: LoomkeeperExecutionV9, mechanics?: ProjectileMechanics, dynamics?: SimulationDynamics): Evaluation | undefined {
+    execution: LoomkeeperExecutionV9, mechanics?: ProjectileMechanics, dynamics?: SimulationDynamics,
+    rankCandidate?: LoomkeeperPlannerOptionsV9['rankCandidate']): Evaluation | undefined {
     let state = rollout.state, ticks = initialTicks; const actor = source.activeActor;
     while (state.phase !== 'finished' && state.turn === source.turn && ticks < V9_AI_MAX_ROLLOUT_TICKS) {
         for (let count = 0; count < 8; count += 1) { const operation = execution.next(state); if (!operation) break;
@@ -246,9 +257,11 @@ function finishEvaluation(source: SimulationStateV9, candidate: LoomkeeperCandid
     if (ticks >= V9_AI_MAX_ROLLOUT_TICKS && state.phase !== 'finished' && state.turn === source.turn) throw new Error('V9 candidate exceeded its frozen work bound.');
     const completed = completeDetachedSimulationRolloutV9(rollout);
     const own = completed.units[actor === 'player' ? 0 : 1], target = completed.units[actor === 'player' ? 1 : 0];
-    return { candidate, logicalTicks: ticks, rank: [completed.winner === actor ? 3 : completed.phase !== 'finished' ? 2 : completed.winner === 'draw' ? 1 : 0,
+    const baseRank = [completed.winner === actor ? 3 : completed.phase !== 'finished' ? 2 : completed.winner === 'draw' ? 1 : 0,
         source.units[actor === 'player' ? 1 : 0].stitching - target.stitching - 2 * (source.units[actor === 'player' ? 0 : 1].stitching - own.stitching),
-        own.thread, Math.min(640 * 256, Math.abs(completed.units[0].xFp - completed.units[1].xFp)), -candidate.movementTicks, -candidate.ordinal] };
+        own.thread, Math.min(640 * 256, Math.abs(completed.units[0].xFp - completed.units[1].xFp)), -candidate.movementTicks, -candidate.ordinal];
+    return { candidate, logicalTicks: ticks,
+        rank: rankCandidate?.({ source, completed, candidate, actor, baseRank }) ?? baseRank };
 }
 function candidateAffordable(source: SimulationStateV9, candidate: LoomkeeperCandidateV9, prefix: V9Prefix): boolean {
     const actor = source.units[source.activeActor === 'player' ? 0 : 1];

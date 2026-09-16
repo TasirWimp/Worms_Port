@@ -17,7 +17,8 @@
     "Expose coin and chest physics through a wallet-free private v10r8 preview with code-owned placeholder presentation for physical Phone Gate A.",
     "Correct the first Phone Gate A presentation read by assigning the inherited compact movement/status interface a semantic class shared by R6, R7 and R8, with no gameplay or authority change.",
     "Admit at most one owner-reviewed original generic amber textile hexagonal Collect-coin candidate through the closed local FLUX.2 Klein reference-edit route, then preserve all R8 objective authority and the accepted compact controls/status layout.",
-    "Waypoint 2: replace the obsolete visible Calling choice with a fixed internal Wizard Calling, reuse the private R8 canary lobby buttons for Defend, Collect and Claim, and add deterministic local contact, scoring, terminal results and objective HUD while standard Practice and Daily remain R7."
+    "Waypoint 2: replace the obsolete visible Calling choice with a fixed internal Wizard Calling, reuse the private R8 canary lobby buttons for Defend, Collect and Claim, and add deterministic local contact, scoring, terminal results and objective HUD while standard Practice and Daily remain R7.",
+    "Waypoint 3: move the private R8 canary from local fixture authority to server-backed Practice, bind objective state and selected deterministic plans to replay/resume, and make the Loomkeeper evaluate objective progress while ordinary Practice and PEI-gated Daily remain R7."
   ],
   "non_goals": [
     "No collection, capture, scoring, objective terminal result, mode selector, objective HUD or objective-aware Loomkeeper behavior in Waypoint 1.",
@@ -32,6 +33,12 @@
     "Waypoint 2: npm.cmd run verify:changes -- --dry-run --base a01af15",
     "Waypoint 2 focused R8 contact, scoring, terminal, fixed-Wizard lobby, objective selector/HUD and current R7 Practice/Daily continuity checks selected by direct review",
     "Waypoint 2: npm.cmd run verify:changes -- --base a01af15",
+    "Waypoint 3: npm.cmd run verify:changes -- --dry-run --base 0d74a58",
+    "Waypoint 3 focused R8 protocol, replay reconstruction, client resume, deterministic Loomkeeper and private server-canary browser checks selected by direct review",
+    "Waypoint 3: npm.cmd run verify:changes -- --base 0d74a58",
+    "Waypoint 3 bounded build, bundle, browser and PostgreSQL recovery phases under the zero-retry policy",
+    "npm.cmd run audit:housekeeping before Phone Gate C",
+    "Physical Android Phone Gate C",
     "npm.cmd run audit:housekeeping before Phone Gate A",
     "Phone Gate A on the physical phone",
     "Focused Phone Gate A presentation recheck after the accepted nine-step functional read"
@@ -108,6 +115,31 @@
       "command": "Waypoint 2 selected browser and PostgreSQL phases, composed after classified recovery",
       "status": "pass",
       "details": "At fingerprint aaef9538ac5d2a3ea8b18b6ad80523791c04ca4b12bd8596e659df4871a392c8, the canonical current browser group passed 17/18 and stopped only because the shared-server Daily loss settlement exceeded the default five-second UI wait after reaching its correct authoritative result. Trace review found no product exception, disconnect or invalid state. The test now uses the established 15-second asynchronous settlement bound. At final fingerprint 1635d6d15ca9b708a4f94f944b1ecbc42c1ea0faeab696b5190e57ac76e29610, the exact failed case passed 1/1 and the previously unrun five-project visual logic passed 22 cases with eight expected Windows snapshot skips. The other 17 browser cases were not repeated. PostgreSQL exited successfully with its explicit local prerequisite skip because WP014_TEST_DATABASE_URL is absent and remains required in CI. Logs .cache/wp026-w2-browser-phase.log, .cache/wp026-w2-reward-timeout-*.log, .cache/wp026-w2-visual-recovery.log and .cache/wp026-w2-postgres-phase.log."
+    },
+    {
+      "command": "Physical Android Phone Gate B",
+      "status": "pass",
+      "details": "At committed and pushed 0d74a58, the owner confirmed all seven Waypoint 2 checks work as specified: fixed-Wizard selection across Defend, Collect and Claim, objective HUD and discovery, collection/capture/loss outcomes, restart/change-mode flow, and unchanged standard R7 Practice/Daily behavior. This closes Phone Gate B and authorizes Waypoint 3."
+    },
+    {
+      "command": "Waypoint 3 focused and change-selected checks composed under the zero-retry recovery policy",
+      "status": "pass",
+      "details": "The dry run selected current import, type, work-package, product-unit, build/security/budget, supported browser and PostgreSQL coverage with no performance, fallback, legacy or daily work. Focused R8 protocol, resume, client and objective tests passed 17/17. The single delegated selector at fingerprint 9187d13cdc8ae846b200a0c95e64d2729175c147524a98c17bc96aa0867f29a4 passed import, types, work packages, combat 51/51, Practice 5/5, identity 22/22, reward 28/28, protocol 24/24, simulation 84/84, Loomkeeper 39/39, relics 10/10, PEI 25/25, fresh build, standard R7 smoke and identity/reward security, then stopped at a bundle regression. Direct review split the lightweight R8 route identity from objective simulation code. Bounded build and bundle recovery passed at proof 216742583c85 / 05c786ff5dc2 with initial JavaScript 1434485/1500000 bytes and JavaScript plus CSS gzip 418851/430000 bytes. No passing unit group or whole selector was repeated. Logs .cache/wp026-w3-selector-dry-run.log, .cache/wp026-w3-focused-r8-units.log, .cache/wp026-w3-selector.log and .cache/wp026-w3-bundle-recovery-*.log."
+    },
+    {
+      "command": "Waypoint 3 selected browser and PostgreSQL phases composed after classified recovery",
+      "status": "pass",
+      "details": "The ordinary supported Chromium phone group passed 18/18. Visual logic preserved 21 passes and eight expected Windows screenshot skips before one WebKit R8 case exposed a test that dragged the aim control before the server had acknowledged Needlepoint selection. The test now waits for the authoritative selected-relic and enabled-aim facts; the exact WebKit case passed 1/1 in 7.3 seconds without repeating the visual matrix. PostgreSQL phase fingerprint c7a7fe14e4cce4b46c966c5a815deb9f9489ff35bf34ec0fb63b3559019332f0 exited successfully with the explicit local prerequisite skip because WP014_TEST_DATABASE_URL is absent and remains required in CI. Logs .cache/wp026-w3-selector-browser.log, .cache/wp026-w3-webkit-visual-recovery.log and .cache/wp026-w3-selector-postgres.log."
+    },
+    {
+      "command": "Waypoint 3 final Practice-to-canary lifecycle boundary checks",
+      "status": "pass",
+      "details": "Direct review found that the private R8 route could inherit an active ordinary R7 Practice. The client now retires only that ordinary Practice before creating R8, resumes an already-active R8 mode exactly, and refuses to displace an active rewarded Daily match. Delegated zero-retry recovery passed types, the complete current V10 client file 3/3, fresh build proof 09ebb1aa6561 / 15f564bfa22e, standard R7 volcanic built smoke and bundle limits at 1434643/1500000 initial JavaScript bytes and 418893/430000 JavaScript plus CSS gzip bytes. Other green groups were preserved. Logs .cache/wp026-w3-final-boundary-*.log."
+    },
+    {
+      "command": "Waypoint 3 pre-Phone-Gate-C work-package and housekeeping checks",
+      "status": "pass",
+      "details": "The work-package validator accepted all 73 evidence records. Report-only housekeeping confirmed the matching codex/v10-r6-action-impact-dynamics upstream and WP-026 correctly remains in progress. Its manual-reconciliation flag is limited to preserved historical in-progress packages and failed-review history, including the already-resolved first WP-026 Phone Gate A read; no gone tracking branch or mutation was reported. Logs .cache/wp026-w3-work-packages.log and .cache/wp026-w3-prephone-housekeeping.log."
     }
   ],
   "reviews": [
@@ -152,17 +184,29 @@
       "reviewer": "primary assistant direct Waypoint 2 review",
       "decision": "pass",
       "details": "Direct review traced the fixed-Wizard lobby boundary, private dynamic R8 selector, contact and exact-tie ordering, banked scores, unbeatable Collect lead, chest capture/loss, actor/objective simultaneous results, turn and lifecycle limits, objective hashes, compact HUD, offscreen indicators, restart and mode-change lifecycle. Current server-backed Practice and Daily remain R7 and the R8 selector is excluded from their initial bundle. Existing V9/R7 local-preview controls and wording are preserved. Physical gameplay feel and discoverability remain at Phone Gate B."
+    },
+    {
+      "role": "owner",
+      "reviewer": "WP-026 Phone Gate B physical-phone acceptance",
+      "decision": "pass",
+      "details": "The owner reported that all seven specified Waypoint 2 steps work as expected at committed and pushed 0d74a58. Waypoint 2 is accepted and Waypoint 3 may proceed."
+    },
+    {
+      "role": "primary",
+      "reviewer": "primary assistant direct Waypoint 3 review",
+      "decision": "pass",
+      "details": "Direct review traced the private v10r8 route from strict Practice-only creation through exact ruleset, automation, objective-mode and recipe ownership on every input and lifecycle packet. Snapshot, result and replay schemas fail closed on mixed R7/R8 identities; resume preserves objective state and mode; replay reconstruction regenerates the recorded fixed-budget selected plans. The deterministic Loomkeeper retains the existing 180-plan combat lattice and adds mode-specific coin pursuit, chest attack, guard and interception ranking while executing only ordinary authoritative intents. The canary retires an active ordinary Practice but never displaces an active rewarded Daily. Ordinary Practice creation and every reward/Daily creation remain exact R7, and Practice-only R8 completion never enters reward settlement. The small R8 route identity is separated from objective simulation code so ordinary startup stays within bundle limits. Phone Gate C still owns physical feel, opponent behavior and lifecycle acceptance."
     }
   ],
   "skipped_checks": [
     "Retired R6-and-older runtime profiles and @legacy browser diagnostics were excluded from current acceptance.",
-    "Performance was not selected. R8 retains at most seven bounded vertical-only objects and constant-size contact/result work per tick; Phone Gate B still owns the physical foreground read for the completed mode layer.",
+    "Performance was not selected. R8 retains the fixed 180-plan budget and at most seven bounded objective objects; Phone Gate C owns the physical foreground and opponent-turn read.",
     "The local PostgreSQL prerequisite is absent, so its selected phase recorded the repository's expected skip and remains required in CI.",
-    "The daily/release suite was not run because Waypoint 2 is a private feature gate rather than the 22:00 checkpoint or an explicit release boundary.",
-    "Physical Android Phone Gate A passed; Phone Gate B and a physical iOS check have not run."
+    "The daily/release suite was not run because Waypoint 3 is a private feature gate rather than the 22:00 checkpoint or an explicit release boundary.",
+    "Physical Android Phone Gates A and B passed; Phone Gate C and a physical iOS check have not run."
   ],
   "residual_risks": [
-    "Waypoint 2 intentionally reuses the R7 Loomkeeper. Objective-aware movement and decisions arrive in Waypoint 3, so Phone Gate B evaluates the mode mechanics and player flow rather than final opponent behavior.",
-    "R8 remains a private local canary. Server replay, resume and objective authority remain Waypoint 3 work."
+    "Waypoint 3 server-backed replay/resume and objective-aware Loomkeeper behavior passed focused automation and remain subject to physical Phone Gate C.",
+    "R8 remains private behind combat-preview=v10r8; standard Practice and PEI-gated Daily intentionally remain R7 until WP-027."
   ]
 }

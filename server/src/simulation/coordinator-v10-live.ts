@@ -5,36 +5,52 @@ import {
     V10_R6_RULESET_ID, V10_R7_RULESET_ID,
     type SimulationBarrierV10, type SimulationIntentV10, type SimulationStateV10, type SimulationTransitionV10
 } from '../../../shared/simulation-v10';
+import {
+    advanceOwnedSimulationTickV10R8, applySimulationBarrierV10R8, applySimulationIntentV10R8,
+    assertSimulationInvariantsV10R8, createSimulationV10R8, forceSimulationLimitV10R8,
+    hashSimulationStateV10R8, hashValidatedSimulationStateV10R8, V10_R8_OBJECTIVE_RECIPE_REVISION,
+    V10_R8_RULESET_ID,
+    type SimulationEventV10R8, type SimulationStateV10R8, type V10R8ObjectiveMode
+} from '../../../shared/simulation-v10-r8';
 import type { PlayerCalling, SimulationActor } from '../../../shared/simulation';
 import {
-    CoordinatorReplayV10Schema, CoordinatorReplayV10AutomatedSchema, ReplayOperationV10Schema, V10_REPLAY_LIMITS, jsonBytesV10,
+    CoordinatorReplayV10Schema, CoordinatorReplayV10AutomatedSchema, CoordinatorReplayV10R8Schema,
+    ReplayOperationV10Schema, V10_REPLAY_LIMITS, jsonBytesV10,
     type CoordinatorReplayV10, type CoordinatorReplayV10Automated, type ReplayOperationV10, type V10StopReason
 } from '../../../shared/protocol-v10-live';
 import {
-    isV10AutomationId, V10_AUTOMATION_ID, V10_R6_AUTOMATION_ID, V10_R7_AUTOMATION_ID,
+    isV10AutomationId, V10_AUTOMATION_ID, V10_R6_AUTOMATION_ID, V10_R7_AUTOMATION_ID, V10_R8_AUTOMATION_ID,
     type V10AutomationId
 } from '../../../shared/combat-version';
 import { LoomkeeperExecutionV10, LoomkeeperPlannerV10, type LoomkeeperSelectionV10 } from '../../../shared/loomkeeper-v10';
+import { LoomkeeperExecutionV10R8, LoomkeeperPlannerV10R8 } from '../../../shared/loomkeeper-v10-r8';
 
 export { V10_REPLAY_LIMITS } from '../../../shared/protocol-v10-live';
 export type { CoordinatorReplayV10 } from '../../../shared/protocol-v10-live';
 
 const REPLAY_VERIFICATION_TICK_BATCH = 6;
 
-type LiveV10RulesetId = typeof V10_R6_RULESET_ID | typeof V10_R7_RULESET_ID;
+type LiveV10RulesetId = typeof V10_R6_RULESET_ID | typeof V10_R7_RULESET_ID | typeof V10_R8_RULESET_ID;
 type LiveV10Identity = Readonly<{ rulesetId: LiveV10RulesetId; automationId: V10AutomationId }>;
+type LiveSimulationStateV10 = SimulationStateV10 | SimulationStateV10R8;
+type LiveSimulationTransitionV10 = Omit<SimulationTransitionV10, 'state' | 'events'> & {
+    state: LiveSimulationStateV10;
+    events: SimulationEventV10R8[];
+};
+type LivePlannerV10 = LoomkeeperPlannerV10 | LoomkeeperPlannerV10R8;
+type LiveExecutionV10 = LoomkeeperExecutionV10 | LoomkeeperExecutionV10R8;
 export type CoordinatorTerminalResultV10 = {
     rulesetId: LiveV10RulesetId; challengeId: string; sessionId: string;
-    winner: SimulationStateV10['winner']; reason: string; tick: number; stateHash: string;
+    winner: LiveSimulationStateV10['winner']; reason: string; tick: number; stateHash: string;
     automationId?: V10AutomationId;
     stopReason?: V10StopReason;
 };
 export type CoordinatorSnapshotV10 = {
-    challengeId: string; sessionId: string; state: SimulationStateV10; stateHash: string;
+    challengeId: string; sessionId: string; state: LiveSimulationStateV10; stateHash: string;
     replayLength: number; paused: boolean; unavailable: boolean; terminalResult?: CoordinatorTerminalResultV10;
     automationId?: V10AutomationId;
 };
-export type CoordinatorUpdateV10 = CoordinatorSnapshotV10 & { transition: SimulationTransitionV10 };
+export type CoordinatorUpdateV10 = CoordinatorSnapshotV10 & { transition: LiveSimulationTransitionV10 };
 export type LiveSimulationCoordinatorV10Options = {
     nowUs?: () => number; yieldBatch?: () => Promise<void>; tickIntervalMs?: number;
     /** Test seams may only lower frozen replay caps. */
@@ -46,14 +62,14 @@ export type LiveSimulationCoordinatorV10Options = {
     onTerminal?: (result: CoordinatorTerminalResultV10) => void;
     /** Bounded operational metadata; never includes session identifiers or raw exceptions. */
     onSafetyStop?: (diagnostic: { reason: V10StopReason; tick: number; turn: number;
-        phase: SimulationStateV10['phase']; actor: SimulationActor; dueTicks: number;
+        phase: LiveSimulationStateV10['phase']; actor: SimulationActor; dueTicks: number;
         planningTicks: number; maximumPlanningBatchUs: number }) => void;
 };
 type Entry = {
-    replay: CoordinatorReplayV10 | CoordinatorReplayV10Automated; state: SimulationStateV10; stateHash: string; bytes: number;
+    replay: CoordinatorReplayV10 | CoordinatorReplayV10Automated; state: LiveSimulationStateV10; stateHash: string; bytes: number;
     paused: boolean; unavailable: boolean; anchorUs: number; credit: bigint;
-    automated: boolean; aiTurn?: number; planningElapsed?: number; planner?: LoomkeeperPlannerV10;
-    planningFailed?: boolean; execution?: LoomkeeperExecutionV10;
+    automated: boolean; aiTurn?: number; planningElapsed?: number; planner?: LivePlannerV10;
+    planningFailed?: boolean; execution?: LiveExecutionV10;
     runtimeFailed?: boolean; stopReason?: V10StopReason; maximumPlanningBatchUs?: number;
     terminalResult?: CoordinatorTerminalResultV10; pendingTerminal?: CoordinatorTerminalResultV10;
 };
@@ -88,8 +104,9 @@ export class LiveSimulationCoordinatorV10 {
 
     public create(challengeId: string, sessionId: string, seed: number, calling: PlayerCalling): CoordinatorSnapshotV10 {
         if (this.matches.has(challengeId)) throw new Error('Duplicate V10 challenge.');
+        if (this.identity.rulesetId === V10_R8_RULESET_ID) throw new Error('R8 requires an automated objective identity.');
         const state = createState(seed, calling, this.identity.rulesetId);
-        const stateHash = hashSimulationStateV10(state);
+        const stateHash = hashLiveState(state);
         const replay = CoordinatorReplayV10Schema.parse({ formatVersion: 10, challengeId, sessionId, seed, calling,
             rulesetId: this.identity.rulesetId, terrainProfileId: state.terrainProfileId, recipeRevision: state.terrainRecipeRevision, candidateIndex: state.terrainCandidateIndex, initialStateHash: stateHash, records: [] });
         const entry: Entry = { replay, state, stateHash, bytes: jsonBytesV10(replay), paused: false,
@@ -99,12 +116,16 @@ export class LiveSimulationCoordinatorV10 {
         return this.snapshot(entry);
     }
 
-    public createAutomated(challengeId: string, sessionId: string, seed: number, calling: PlayerCalling): CoordinatorSnapshotV10 & { automationId: V10AutomationId } {
+    public createAutomated(challengeId: string, sessionId: string, seed: number, calling: PlayerCalling,
+        config?: Readonly<{ objectiveMode: V10R8ObjectiveMode }>): CoordinatorSnapshotV10 & { automationId: V10AutomationId } {
         if (this.matches.has(challengeId)) throw new Error('Duplicate V10 challenge.');
-        const state = createState(seed, calling, this.identity.rulesetId), stateHash = hashSimulationStateV10(state);
+        const identity = config ? liveIdentityForRuleset(V10_R8_RULESET_ID) : this.identity;
+        const state = createState(seed, calling, identity.rulesetId, config?.objectiveMode), stateHash = hashLiveState(state);
         const replay = CoordinatorReplayV10AutomatedSchema.parse({ formatVersion: 10, challengeId, sessionId, seed, calling,
-            rulesetId: this.identity.rulesetId, terrainProfileId: state.terrainProfileId, recipeRevision: state.terrainRecipeRevision, candidateIndex: state.terrainCandidateIndex,
-            automationId: this.identity.automationId, initialStateHash: stateHash, records: [], chosenPlans: [] });
+            rulesetId: identity.rulesetId, terrainProfileId: state.terrainProfileId, recipeRevision: state.terrainRecipeRevision, candidateIndex: state.terrainCandidateIndex,
+            ...(isR8State(state) ? { objectiveMode: state.objective.objectiveMode,
+                objectiveRecipeRevision: V10_R8_OBJECTIVE_RECIPE_REVISION } : {}),
+            automationId: identity.automationId, initialStateHash: stateHash, records: [], chosenPlans: [] });
         const entry: Entry = { replay, state, stateHash, bytes: jsonBytesV10(replay), paused: false, unavailable: false,
             anchorUs: this.clock(), credit: 0n, automated: true };
         if (entry.bytes + V10_REPLAY_LIMITS.terminalBytes > this.maxBytes) throw new Error('No terminal replay reserve.');
@@ -120,7 +141,7 @@ export class LiveSimulationCoordinatorV10 {
         const entry = this.require(challengeId);
         const operation = ReplayOperationV10Schema.parse({ kind: 'intent', actor, intent, expectedTurn, expectedPhase, expectedEpoch });
         if (entry.paused) return this.rejected(entry, 'The match is paused.');
-        const transition = applySimulationIntentV10(entry.state, actor, intent, expectedTurn, expectedPhase, expectedEpoch);
+        const transition = applyLiveIntent(entry.state, actor, intent, expectedTurn, expectedPhase, expectedEpoch);
         if (transition.error?.code === 'INTENT_LIMIT') {
             this.barrier(challengeId, { reason: 'intent_limit', actor, expectedTurn, expectedEpoch });
             return { ...this.snapshot(entry), transition: { ...transition, state: structuredClone(entry.state) } };
@@ -151,7 +172,7 @@ export class LiveSimulationCoordinatorV10 {
                 return this.accept(entry, transition, operation);
             }
         }
-        const transition = applySimulationBarrierV10(entry.state, barrier);
+        const transition = applyLiveBarrier(entry.state, barrier);
         if (transition.error?.code === 'LIFECYCLE_LIMIT') return this.safety(challengeId, 'lifecycle_limit');
         return this.accept(entry, transition, operation);
     }
@@ -175,17 +196,17 @@ export class LiveSimulationCoordinatorV10 {
             for (let index = 0; index < count && !entry.terminalResult; index++) {
                 if (entry.automated) this.prepareAutomatedTick(entry);
                 const oldPhase = entry.state.phase, oldTick = entry.state.tick;
-                const transition = advanceOwnedSimulationTickV10(entry.state);
+                const transition = advanceLiveTick(entry.state);
                 update = this.accept(entry, transition, { kind: 'ticks', count: 1 }, false, !entry.automated);
                 if (entry.automated) {
                     update = this.drainAutomated(entry, update);
                     if (entry.state.tick % 3 === 0 || oldPhase !== entry.state.phase || oldTick === entry.state.tick) {
-                        assertSimulationInvariantsV10(entry.state);
+                        assertLiveState(entry.state);
                         this.options.onTransition?.(structuredClone(update));
                     }
                 }
             }
-            assertSimulationInvariantsV10(entry.state);
+            assertLiveState(entry.state);
             return update;
         } finally {
             // Logical ticks already charge planning and simulation time. Exclude
@@ -218,7 +239,7 @@ export class LiveSimulationCoordinatorV10 {
             phase: entry.state.phase, actor: entry.state.activeActor, dueTicks: this.dueTicks(challengeId),
             planningTicks: entry.planningElapsed ?? 0, maximumPlanningBatchUs: entry.maximumPlanningBatchUs ?? 0 });
         entry.unavailable = reason !== 'replay_limit' && reason !== 'left'; entry.paused = false; entry.credit = 0n;
-        return this.accept(entry, forceSimulationLimitV10(entry.state), { kind: 'safety', reason: reason === 'clock_debt' ? 'expiry' : reason }, true);
+        return this.accept(entry, forceLiveLimit(entry.state), { kind: 'safety', reason: reason === 'clock_debt' ? 'expiry' : reason }, true);
     }
     public replay(challengeId: string): CoordinatorReplayV10 | CoordinatorReplayV10Automated | undefined {
         const entry = this.matches.get(challengeId); return entry && structuredClone(entry.replay);
@@ -279,7 +300,8 @@ export class LiveSimulationCoordinatorV10 {
             }) });
         verifier.replayVerificationKernel = true;
         try {
-            const initial = verifier.createAutomated(replay.challengeId, replay.sessionId, replay.seed, replay.calling);
+            const initial = verifier.createAutomated(replay.challengeId, replay.sessionId, replay.seed, replay.calling,
+                replay.rulesetId === V10_R8_RULESET_ID ? { objectiveMode: replay.objectiveMode } : undefined);
             if (initial.stateHash !== replay.initialStateHash) throw new Error('V10 initial hash mismatch.');
             let cursor = 0;
             while (cursor < replay.records.length) {
@@ -313,7 +335,8 @@ export class LiveSimulationCoordinatorV10 {
             }) });
         verifier.replayVerificationKernel = true;
         try {
-            const initial = verifier.createAutomated(replay.challengeId, replay.sessionId, replay.seed, replay.calling);
+            const initial = verifier.createAutomated(replay.challengeId, replay.sessionId, replay.seed, replay.calling,
+                replay.rulesetId === V10_R8_RULESET_ID ? { objectiveMode: replay.objectiveMode } : undefined);
             if (initial.stateHash !== replay.initialStateHash) throw new Error('V10 initial hash mismatch.');
             let cursor = 0;
             while (cursor < replay.records.length) {
@@ -349,13 +372,13 @@ export class LiveSimulationCoordinatorV10 {
     public deleteForSession(sessionId: string): void { for (const [id, entry] of this.matches) if (entry.replay.sessionId === sessionId) this.matches.delete(id); }
     public dispose(): void { if (this.timer) clearInterval(this.timer); this.matches.clear(); }
 
-    private accept(entry: Entry, transition: SimulationTransitionV10, operation: ReplayOperationV10, reserve = false, notify = true): CoordinatorUpdateV10 {
+    private accept(entry: Entry, transition: LiveSimulationTransitionV10, operation: ReplayOperationV10, reserve = false, notify = true): CoordinatorUpdateV10 {
         if (!transition.accepted || !transition.mutated) return this.replayVerificationKernel
             ? this.verificationUpdate(entry, transition)
             : { ...this.snapshot(entry), transition: structuredClone(transition) };
         const stateHash = this.replayVerificationKernel || operation.kind === 'ticks'
-            ? hashValidatedSimulationStateV10(transition.state)
-            : hashSimulationStateV10(transition.state);
+            ? hashValidatedLiveState(transition.state)
+            : hashLiveState(transition.state);
         const automatic: ReplayOperationV10[] = reserve ? [] : transition.events.filter(event => event.type === 'input_barrier').map(event =>
             event.reason === 'phase' ? { kind: 'automatic', reason: 'phase', tick: transition.state.tick, inputEpoch: transition.state.inputEpoch, phase: transition.state.phase }
                 : { kind: 'automatic', reason: 'lease_expired', tick: transition.state.tick, inputEpoch: transition.state.inputEpoch });
@@ -378,7 +401,7 @@ export class LiveSimulationCoordinatorV10 {
         entry.replay.records.push(...annotations);
         if (entry.state.phase === 'finished' && !entry.terminalResult) {
             entry.terminalResult = { rulesetId: liveRulesetId(entry.replay.rulesetId), challengeId: entry.replay.challengeId, sessionId: entry.replay.sessionId,
-                winner: entry.state.winner, reason: entry.state.finishReason!, tick: entry.state.tick, stateHash,
+                winner: entry.state.winner, reason: objectiveResultReason(entry.state), tick: entry.state.tick, stateHash,
                 ...(entry.stopReason ? { stopReason: entry.stopReason } : {}),
                 ...(entry.automated && 'automationId' in entry.replay ? { automationId: entry.replay.automationId } : {}) };
             entry.pendingTerminal = entry.terminalResult; this.options.onTerminal?.(structuredClone(entry.terminalResult));
@@ -387,13 +410,13 @@ export class LiveSimulationCoordinatorV10 {
             ? this.verificationUpdate(entry, transition)
             : { ...this.snapshot(entry), transition: structuredClone(transition) };
         if (notify && (operation.kind !== 'ticks' || entry.state.tick % 3 === 0 || oldPhase !== entry.state.phase || transition.events.some(event => event.type === 'phase_changed'))) {
-            if (operation.kind === 'ticks') assertSimulationInvariantsV10(entry.state);
+            if (operation.kind === 'ticks') assertLiveState(entry.state);
             this.options.onTransition?.(update);
         }
         return update;
     }
     /** Internal verifier view. Nothing returned here crosses the replay trust boundary. */
-    private verificationUpdate(entry: Entry, transition: SimulationTransitionV10): CoordinatorUpdateV10 {
+    private verificationUpdate(entry: Entry, transition: LiveSimulationTransitionV10): CoordinatorUpdateV10 {
         return { challengeId: entry.replay.challengeId, sessionId: entry.replay.sessionId, state: entry.state,
             stateHash: entry.stateHash, replayLength: entry.replay.records.length, paused: entry.paused,
             unavailable: entry.unavailable, transition,
@@ -402,22 +425,22 @@ export class LiveSimulationCoordinatorV10 {
     }
     private snapshot(entry: Entry): CoordinatorSnapshotV10 { return { challengeId: entry.replay.challengeId, sessionId: entry.replay.sessionId, state: structuredClone(entry.state), stateHash: entry.stateHash, replayLength: entry.replay.records.length, paused: entry.paused, unavailable: entry.unavailable, ...(entry.automated && 'automationId' in entry.replay ? { automationId: entry.replay.automationId } : {}), ...(entry.terminalResult ? { terminalResult: structuredClone(entry.terminalResult) } : {}) }; }
     private noop(entry: Entry): CoordinatorUpdateV10 {
-        const transition = { accepted: true, mutated: false, state: entry.state, events: [] } satisfies SimulationTransitionV10;
+        const transition: LiveSimulationTransitionV10 = { accepted: true, mutated: false, state: entry.state, events: [] };
         return this.replayVerificationKernel
             ? this.verificationUpdate(entry, transition)
             : { ...this.snapshot(entry), transition: structuredClone(transition) };
     }
     private rejected(entry: Entry, message: string): CoordinatorUpdateV10 { return { ...this.snapshot(entry), transition: { accepted: false, mutated: false, state: structuredClone(entry.state), events: [], error: { code: 'COMMAND_REJECTED', message } } }; }
-    private resumeInterruptedThreadleap(entry: Entry): SimulationTransitionV10 {
+    private resumeInterruptedThreadleap(entry: Entry): LiveSimulationTransitionV10 {
         if (entry.state.lifecycleBarrierCount >= 128) {
             return { accepted: false, mutated: false, state: structuredClone(entry.state), events: [],
                 error: { code: 'LIFECYCLE_LIMIT', message: 'Lifecycle budget exhausted.' } };
         }
-        if (entry.state.revision >= 65534 || entry.state.inputEpoch >= 65534) return forceSimulationLimitV10(entry.state);
+        if (entry.state.revision >= 65534 || entry.state.inputEpoch >= 65534) return forceLiveLimit(entry.state);
         const state = structuredClone(entry.state);
         state.heldDirection = 0; state.leaseExpiresTick = null; state.lastLeaseRefreshTick = null; state.aim = null;
         state.units[0].vxFp = 0; state.inputEpoch += 1; state.lifecycleBarrierCount += 1; state.revision += 1;
-        assertSimulationInvariantsV10(state);
+        assertLiveState(state);
         return { accepted: true, mutated: true, state, events: [] };
     }
     private prepareAutomatedTick(entry: Entry): void {
@@ -430,7 +453,9 @@ export class LiveSimulationCoordinatorV10 {
         if (!entry.planningFailed) {
             const started = this.clock();
             try {
-                entry.planner ??= this.options.plannerFactory?.(structuredClone(entry.state)) ?? new LoomkeeperPlannerV10(entry.state);
+                entry.planner ??= isR8State(entry.state)
+                    ? new LoomkeeperPlannerV10R8(entry.state)
+                    : this.options.plannerFactory?.(structuredClone(entry.state)) ?? new LoomkeeperPlannerV10(entry.state);
                 entry.planner.step();
             } catch { entry.planningFailed = true; entry.planner = undefined; }
             finally {
@@ -447,19 +472,19 @@ export class LiveSimulationCoordinatorV10 {
             const selection: LoomkeeperSelectionV10 = entry.planningFailed ? { prefix: 'none', status: 'work_failure', ordinal: null } : entry.planner!.selection;
             // This write is the debit barrier: an execution is impossible until the plan is retained.
             if (!this.recordSelection(entry, entry.state.turn, selection)) return this.safety(entry.replay.challengeId, 'replay_limit');
-            if (selection.status === 'selected') entry.execution = new LoomkeeperExecutionV10(entry.planner!.selectedCandidate()!, selection.prefix, entry.state);
+            if (selection.status === 'selected') entry.execution = isR8State(entry.state)
+                ? new LoomkeeperExecutionV10R8(entry.planner!.selectedCandidate()!, selection.prefix, entry.state)
+                : new LoomkeeperExecutionV10(entry.planner!.selectedCandidate()!, selection.prefix, entry.state);
         }
         if (!entry.execution) return initial;
         let update = initial;
         for (let count = 0; count < 8; count += 1) {
-            const operation = this.replayVerificationKernel
-                ? entry.execution.nextValidated(entry.state)
-                : entry.execution.next(entry.state);
+            const operation = nextExecution(entry.execution, entry.state, this.replayVerificationKernel);
             if (!operation) break;
             const before = entry.state;
             const transition = operation.kind === 'intent'
-                ? applySimulationIntentV10(before, 'loomkeeper', operation.intent, before.turn, before.phase, before.inputEpoch)
-                : applySimulationBarrierV10(before, operation.barrier);
+                ? applyLiveIntent(before, 'loomkeeper', operation.intent, before.turn, before.phase, before.inputEpoch)
+                : applyLiveBarrier(before, operation.barrier);
             if (!transition.accepted) throw new Error(`Authoritative V10 policy emitted an illegal operation: ${transition.error?.message ?? 'unknown'}`);
             if (!transition.mutated) continue;
             const replayOperation: ReplayOperationV10 = operation.kind === 'intent'
@@ -512,16 +537,21 @@ export class LiveSimulationCoordinatorV10 {
 
 }
 
-function createState(seed: number, calling: PlayerCalling, rulesetId: LiveV10RulesetId): SimulationStateV10 {
-    return createSimulationV10(seed, calling, rulesetId);
+function createState(seed: number, calling: PlayerCalling, rulesetId: LiveV10RulesetId,
+    objectiveMode?: V10R8ObjectiveMode): LiveSimulationStateV10 {
+    return rulesetId === V10_R8_RULESET_ID
+        ? createSimulationV10R8(seed, calling, objectiveMode)
+        : createSimulationV10(seed, calling, rulesetId);
 }
 function liveRulesetId(value: unknown): LiveV10RulesetId {
-    if (value !== V10_R6_RULESET_ID && value !== V10_R7_RULESET_ID) throw new Error('Unsupported live V10 replay ruleset.');
+    if (value !== V10_R6_RULESET_ID && value !== V10_R7_RULESET_ID && value !== V10_R8_RULESET_ID)
+        throw new Error('Unsupported live V10 replay ruleset.');
     return value;
 }
 function liveIdentityForRuleset(value: unknown): LiveV10Identity {
     const rulesetId = liveRulesetId(value);
-    return { rulesetId, automationId: rulesetId === V10_R6_RULESET_ID ? V10_R6_AUTOMATION_ID : V10_R7_AUTOMATION_ID };
+    return { rulesetId, automationId: rulesetId === V10_R6_RULESET_ID ? V10_R6_AUTOMATION_ID
+        : rulesetId === V10_R8_RULESET_ID ? V10_R8_AUTOMATION_ID : V10_R7_AUTOMATION_ID };
 }
 function validateLiveIdentity(identity: LiveV10Identity): LiveV10Identity {
     const expected = liveIdentityForRuleset(identity.rulesetId);
@@ -531,4 +561,54 @@ function validateLiveIdentity(identity: LiveV10Identity): LiveV10Identity {
 function bounded(value: number, minimum: number, maximum: number): number {
     if (!Number.isSafeInteger(value) || value < minimum || value > maximum) throw new RangeError('V10 integer bound exceeded.');
     return value;
+}
+
+function isR8State(state: LiveSimulationStateV10): state is SimulationStateV10R8 {
+    return state.rulesetId === V10_R8_RULESET_ID;
+}
+
+function applyLiveIntent(state: LiveSimulationStateV10, actor: SimulationActor, intent: SimulationIntentV10,
+    expectedTurn: number, expectedPhase: LiveSimulationStateV10['phase'], expectedEpoch: number): LiveSimulationTransitionV10 {
+    return isR8State(state)
+        ? applySimulationIntentV10R8(state, actor, intent, expectedTurn, expectedPhase, expectedEpoch)
+        : applySimulationIntentV10(state, actor, intent, expectedTurn, expectedPhase, expectedEpoch);
+}
+
+function applyLiveBarrier(state: LiveSimulationStateV10, barrier: SimulationBarrierV10): LiveSimulationTransitionV10 {
+    return isR8State(state) ? applySimulationBarrierV10R8(state, barrier) : applySimulationBarrierV10(state, barrier);
+}
+
+function advanceLiveTick(state: LiveSimulationStateV10): LiveSimulationTransitionV10 {
+    return isR8State(state) ? advanceOwnedSimulationTickV10R8(state) : advanceOwnedSimulationTickV10(state);
+}
+
+function forceLiveLimit(state: LiveSimulationStateV10): LiveSimulationTransitionV10 {
+    return isR8State(state) ? forceSimulationLimitV10R8(state) : forceSimulationLimitV10(state);
+}
+
+function assertLiveState(state: LiveSimulationStateV10): void {
+    if (isR8State(state)) assertSimulationInvariantsV10R8(state);
+    else assertSimulationInvariantsV10(state);
+}
+
+function hashLiveState(state: LiveSimulationStateV10): string {
+    return isR8State(state) ? hashSimulationStateV10R8(state) : hashSimulationStateV10(state);
+}
+
+function hashValidatedLiveState(state: LiveSimulationStateV10): string {
+    return isR8State(state) ? hashValidatedSimulationStateV10R8(state) : hashValidatedSimulationStateV10(state);
+}
+
+function objectiveResultReason(state: LiveSimulationStateV10): string {
+    return isR8State(state) ? state.objective.result?.reason ?? state.finishReason! : state.finishReason!;
+}
+
+function nextExecution(execution: LiveExecutionV10, state: LiveSimulationStateV10,
+    validated: boolean): ReturnType<LoomkeeperExecutionV10['next']> {
+    if (isR8State(state)) {
+        if (!(execution instanceof LoomkeeperExecutionV10R8)) throw new Error('R8 execution identity changed.');
+        return validated ? execution.nextValidated(state) : execution.next(state);
+    }
+    if (!(execution instanceof LoomkeeperExecutionV10)) throw new Error('R7 execution identity changed.');
+    return validated ? execution.nextValidated(state) : execution.next(state);
 }

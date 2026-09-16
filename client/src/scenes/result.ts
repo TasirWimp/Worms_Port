@@ -5,6 +5,7 @@ import type { ChallengeResultV8Automated } from '../../../shared/protocol-v8';
 import type { ChallengeResultV10 } from '../../../shared/protocol-v10-live';
 import type { ChallengeResultV9 } from '../../../shared/protocol-v9';
 import type { PlayerCalling } from '../../../shared/simulation';
+import { V10_R8_RULESET_ID, type V10R8ObjectiveMode } from '../../../shared/objective-v10-r8';
 import { canRequestFullscreen, toggleGameFullscreen } from '../combat/fullscreen';
 import { activeSidewaysMode } from '../lib/sideways';
 import {
@@ -52,6 +53,8 @@ export default class ResultScene extends Phaser.Scene {
         const outcome = this.args.result?.outcome;
         const stopReason = (this.args.result?.protocolVersion === 9 || this.args.result?.protocolVersion === 10) ? this.args.result.stopReason : undefined;
         const interrupted = stopReason && stopReason !== 'expiry' && stopReason !== 'left';
+        const objectiveMode = this.args.result?.protocolVersion === 10 &&
+            this.args.result.rulesetId === V10_R8_RULESET_ID ? this.args.result.objectiveMode : undefined;
         this.add.rectangle(this.scale.width / 2, this.scale.height / 2,
             this.scale.width, this.scale.height, 0x1F2348);
         this.root = document.createElement('main');
@@ -76,6 +79,9 @@ export default class ResultScene extends Phaser.Scene {
                     <dl class="result-facts">
                         <div><dt>Final tick</dt><dd>${this.args.result.finalTick ?? '—'}</dd></div>
                         <div><dt>Replay hash</dt><dd>${shortHash(this.args.result.finalStateHash)}</dd></div>
+                        ${objectiveMode ? `<div><dt>Objective result</dt><dd>${this.args.result?.protocolVersion === 10 &&
+                            this.args.result.rulesetId === V10_R8_RULESET_ID
+                                ? this.args.result.objectiveResultReason.replaceAll('_', ' ') : '—'}</dd></div>` : ''}
                     </dl>` : ''}
                 ${this.args.rewarded ? `
                     <section class="reward-result" aria-live="polite">
@@ -92,7 +98,7 @@ export default class ResultScene extends Phaser.Scene {
                 <button type="button" class="result-retry">${
                     this.args.rewarded ? 'Play Practice' : 'Play Again'
                 }</button>
-                <button type="button" class="result-change">Back to Lobby</button>
+                <button type="button" class="result-change">${objectiveMode ? 'Change Mode' : 'Back to Lobby'}</button>
                 <button type="button" class="result-fullscreen" hidden></button>
                 <p class="result-message" aria-live="polite"></p>
             </section>
@@ -104,7 +110,8 @@ export default class ResultScene extends Phaser.Scene {
         this.root.querySelector<HTMLButtonElement>('.result-change')!.addEventListener(
             'click', () => {
                 this.client.dismissCompletedCombat();
-                this.scene.start('practice');
+                this.scene.start(objectiveMode ? 'objective-mode' : 'practice',
+                    objectiveMode ? { selectedMode: objectiveMode } : undefined);
             }
         );
         this.root.querySelector<HTMLButtonElement>('.result-fullscreen')!.addEventListener(
@@ -213,7 +220,9 @@ export default class ResultScene extends Phaser.Scene {
         button.disabled = true;
         message.textContent = 'Weaving a fresh Practice Clash…';
         try {
-            const snapshot = await this.client.retryCombat(this.args.calling);
+            const objectiveMode: V10R8ObjectiveMode | undefined = this.args.result?.protocolVersion === 10 &&
+                this.args.result.rulesetId === V10_R8_RULESET_ID ? this.args.result.objectiveMode : undefined;
+            const snapshot = await this.client.retryCombat(this.args.calling, objectiveMode);
             const combatArgs = await this.client.combatArgs(snapshot);
             if (this.args.previewLabel) combatArgs.previewLabel = this.args.previewLabel;
             this.scene.start('combat', combatArgs);

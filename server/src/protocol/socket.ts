@@ -843,7 +843,8 @@ export function setupProtocol(
             void registry.sequenceAsync(session, request.requestId, request.sequence, { event: protocolEventsV10.create, ...request }, async () => {
                 if (registry.getBound(socket.id) !== session) return failure(request.requestId, 'UNAUTHORIZED', 'Creation transport disconnected.');
                 const admission = registry.admitChallengeAutomatedV10(session, request.mode,
-                    request.mode === 'reward' ? request.challengeId : undefined);
+                    request.mode === 'reward' ? request.challengeId : undefined,
+                    'objectiveMode' in request ? request.objectiveMode : undefined);
                 if (admission) return failure(request.requestId, admission.code, admission.message, admission.retryable);
                 let entitlement: Awaited<ReturnType<RewardService['start']>> | undefined;
                 try {
@@ -866,7 +867,8 @@ export function setupProtocol(
                         }
                     }
                     const created = registry.createChallengeAutomatedV10(session, request.mode, request.calling,
-                        entitlement ? { challengeId: entitlement.challengeId, seed: entitlement.seed } : undefined);
+                        entitlement ? { challengeId: entitlement.challengeId, seed: entitlement.seed } : undefined,
+                        'objectiveMode' in request ? request.objectiveMode : undefined);
                     if ('code' in created && entitlement) {
                         await options.rewards!.completeMatch({ protocolVersion: 1, serverTimeMs: Date.now(), sessionId: session.id,
                             challengeId: entitlement.challengeId, outcome: 'left', revision: 0, nextSequence: session.nextSequence,

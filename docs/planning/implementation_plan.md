@@ -256,32 +256,34 @@ Phaser/Socket.IO stack.
   `c82e74d`. Waypoint 1 and Phone Gate A are complete at committed and pushed
   `87a6568` behind the wallet-free
   `/?combat-preview=v10r8&objective-mode=collect|defend|claim` routes. It adds
-  separate fixed ASCII objective layers, bounded coin and
-  chest state, fixed-point fall/support/landing/open-bottom loss, independent
-  objective revision/hash and live tactical serialization. Collect coins use
-  the approved runtime asset, chests remain code-owned, and all objective
-  objects remain transparent to actors and projectiles.
-  Contact, scoring, terminal rules, HUD, server/replay authority and the
-  objective-aware Loomkeeper remain in Waypoints 2 and 3. Standard Practice and
-  PEI-gated Daily remain exact R7. The first Android Gate A read at committed and
+  separate fixed ASCII objective layers, bounded coin and chest state,
+  fixed-point fall/support/landing/open-bottom loss, independent objective
+  revision/hash and live tactical serialization. Collect coins use the approved
+  runtime asset, chests remain code-owned, and all objective objects remain
+  transparent to actors and projectiles. Contact, scoring, terminal rules, HUD
+  and mode selection completed in Waypoint 2. Standard Practice and PEI-gated
+  Daily remain exact R7. The first Android Gate A read at committed and
   pushed `17200ab` passed all nine functional steps but exposed that literal
   R6/R7 CSS selectors left R8 movement buttons unaligned and actor status cards
   in their larger two-row form. The inherited compact interface now uses one
   semantic class across R6-R8; the owner accepted the correction in Defend and
   Collect. A separately approved generic amber textile hex coin replaces the
   round Collect placeholder without changing objective authority, and its final
-  physical-phone shape review passed. **Waypoint 2 implementation and automated
-  checks are complete; Phone Gate B is next.** The private local R8 canary now
+  physical-phone shape review passed. **Waypoint 2 and Phone Gate B are
+  complete; Waypoint 3 implementation and automated checks are complete, and
+  Phone Gate C is next.** The owner passed all seven
+  mode-selection, objective, result and R7-isolation steps on the physical
+  phone. The private R8 canary now
   has contact, scoring, terminal rules, HUD and mode selection for all three
   modes. Wizard is the only visible player character: the normal R7
   lobby removes the obsolete class choice while retaining the existing
   `calling: "wizard"` protocol field, and the private R8 lobby reuses those three
   buttons for Defend, Collect and Claim. The
-  package introduces the server-authoritative Defend, Collect and Claim modes,
-  non-destructible physical coins and chests, objective-specific results, a
-  separate ASCII objective layer, deterministic objective-aware Loomkeeper play,
-  exact replay/resume and the player mode-selection flow. R8 remains isolated
-  from R7 replay truth. See the
+  Waypoint 3 moves that same private route to server-authoritative Defend,
+  Collect and Claim matches with non-destructible physical coins and chests,
+  objective-specific results, a deterministic objective-aware Loomkeeper and
+  exact replay/resume. The current automated gate passes while R8 remains
+  isolated from R7 replay and reward truth. See the
   [WP-026 contract](wp-026-v10-r8-objective-modes.md).
 - Queued after WP-026: **WP-027 Objective-Aware Gemini Loomkeeper**. Gemini may
   select only a stable ID from server-generated, deterministically simulated

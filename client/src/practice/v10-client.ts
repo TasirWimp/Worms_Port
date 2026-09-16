@@ -13,7 +13,10 @@ import {
 } from '../../../shared/protocol-v10-live';
 import { V10_AUTOMATION_ID } from '../../../shared/combat-version';
 import { CURRENT_V10_RULESET_ID, type SimulationIntentV10, type SimulationStateV10 } from '../../../shared/simulation-v10';
-import type { CombatSceneArgsV10 } from '../combat/contracts';
+import { trajectoryPreviewV10R8, V10_R8_OBJECTIVE_RECIPE_REVISION, V10_R8_RULESET_ID,
+    type SimulationStateV10R8, type V10R8ObjectiveMode } from '../../../shared/simulation-v10-r8';
+import { V10_R8_AUTOMATION_ID } from '../../../shared/combat-version';
+import type { CombatSceneArgsV10, CombatSceneArgsV10R8, SimulationStateV10Family } from '../combat/contracts';
 
 export type V10PracticeSnapshot = z.infer<typeof ChallengeSnapshotV10Schema>;
 
@@ -46,7 +49,7 @@ export class V10PracticeLifecycle {
         if (!this.connected) this.currentGeneration += 1;
         this.connected = true; this.resyncRequired = false; this.snapshot = structuredClone(next); return this.current;
     }
-    public canPause(): boolean { const state = this.snapshot?.simulation as SimulationStateV10 | undefined; return Boolean(this.connected && !this.resyncRequired && this.snapshot?.mode === 'practice' &&
+    public canPause(): boolean { const state = this.snapshot?.simulation as SimulationStateV10Family | undefined; return Boolean(this.connected && !this.resyncRequired && this.snapshot?.mode === 'practice' &&
         this.snapshot.status === 'active' && !this.snapshot.paused && state?.activeActor === 'player' && state.phase === 'action' &&
         state.units.every(unit => unit.alive && unit.grounded && unit.vxFp === 0 && unit.vyFp === 0)); }
     public pauseUnavailableReason(): string | undefined {
@@ -99,38 +102,52 @@ export class V10PracticeClient {
     }
     public pauseAllowed(): boolean { return this.lifecycle.canPause() && !this.mutation; }
     public pauseReason(): string | undefined { return this.lifecycle.pauseUnavailableReason(); }
-    public combatArgs(snapshot: V10PracticeSnapshot): CombatSceneArgsV10 {
+    public combatArgs(snapshot: V10PracticeSnapshot): CombatSceneArgsV10 | CombatSceneArgsV10R8 {
         if (snapshot.challengeId !== this.snapshot?.challengeId) throw new Error('V10 Practice ownership changed.');
         const mode = snapshot.mode;
+        const r8 = snapshot.rulesetId === V10_R8_RULESET_ID;
+        const state = snapshot.simulation as SimulationStateV10Family;
         return {
-            kind: 'v10', snapshot: snapshot.simulation as SimulationStateV10, previewLabel: 'Volcanic Ruin', live: true,
+            kind: 'v10', snapshot: state, previewLabel: r8
+                ? `V10 R8 ${snapshot.objectiveMode} objective-mode canary`
+                : 'Volcanic Ruin', live: true,
             challengeId: snapshot.challengeId,
-            rewarded: mode === 'reward', trajectoryPreview: aim => trajectoryPreviewV10(this.requireSnapshot().simulation as SimulationStateV10, aim), calling: snapshot.calling,
-            submit: intent => this.submit(intent).then(value => value.simulation as SimulationStateV10),
-            setPaused: paused => this.setPaused(paused).then(value => value.simulation as SimulationStateV10),
-            cancelInput: () => this.cancelInput().then(value => value.simulation as SimulationStateV10),
-            releaseMovement: () => this.releaseMovement().then(value => value.simulation as SimulationStateV10),
+            rewarded: mode === 'reward', trajectoryPreview: aim => {
+                const current = this.requireSnapshot().simulation;
+                return current.rulesetId === V10_R8_RULESET_ID
+                    ? trajectoryPreviewV10R8(current as SimulationStateV10R8, aim)
+                    : trajectoryPreviewV10(current as SimulationStateV10, aim);
+            }, calling: snapshot.calling,
+            submit: intent => this.submit(intent).then(value => value.simulation as SimulationStateV10Family),
+            setPaused: paused => this.setPaused(paused).then(value => value.simulation as SimulationStateV10Family),
+            cancelInput: () => this.cancelInput().then(value => value.simulation as SimulationStateV10Family),
+            releaseMovement: () => this.releaseMovement().then(value => value.simulation as SimulationStateV10Family),
             paused: () => this.snapshot?.paused ?? false,
             pauseAllowed: () => this.pauseAllowed(), pauseReason: () => this.pauseReason(),
             inputReady: () => this.inputReady(),
-            onSnapshot: listener => this.onSnapshot(value => listener(value.simulation as SimulationStateV10, [])),
+            onSnapshot: listener => this.onSnapshot(value => listener(value.simulation as SimulationStateV10Family, [])),
             onResult: listener => this.onResult(listener),
             onConnection: listener => this.onConnection(listener),
             onUnavailable: listener => this.onUnavailable(listener), onError: listener => this.onError(listener),
             restart: async () => {
                 if (this.snapshot?.status === 'active') await this.leave();
-                const next = await this.start('practice', snapshot.calling);
+                const next = await this.start('practice', snapshot.calling,
+                    undefined, r8 ? snapshot.objectiveMode : undefined);
                 return this.combatArgs(next);
             },
             destroy: () => undefined
-        };
+        } as CombatSceneArgsV10 | CombatSceneArgsV10R8;
     }
 
     public async start(mode: 'practice' | 'reward', calling: PlayerCalling,
-        reservation?: V10PracticeReservation): Promise<V10PracticeSnapshot> {
+        reservation?: V10PracticeReservation, objectiveMode?: V10R8ObjectiveMode): Promise<V10PracticeSnapshot> {
         await whenSessionReady(this.socket);
         const sequence = this.cursor.nextSequence;
-        const request = mode === 'practice'
+        const request = mode === 'practice' && objectiveMode
+            ? { requestId: requestId(), sequence, mode, calling, rulesetId: V10_R8_RULESET_ID,
+                automationId: V10_R8_AUTOMATION_ID, objectiveMode,
+                objectiveRecipeRevision: V10_R8_OBJECTIVE_RECIPE_REVISION }
+            : mode === 'practice'
             ? { requestId: requestId(), sequence, mode, calling, rulesetId: CURRENT_V10_RULESET_ID, automationId: V10_AUTOMATION_ID }
             : { requestId: requestId(), sequence, mode, calling, challengeId: reservation?.challengeId,
                 eligibilityToken: reservation?.eligibilityToken, rulesetId: CURRENT_V10_RULESET_ID, automationId: V10_AUTOMATION_ID };
@@ -146,8 +163,8 @@ export class V10PracticeClient {
 
     public async submit(intent: SimulationIntentV10): Promise<V10PracticeSnapshot> {
         const value = this.requireInput();
-        const request = { requestId: requestId(), challengeId: value.challengeId, rulesetId: CURRENT_V10_RULESET_ID,
-            automationId: V10_AUTOMATION_ID, inputSequence: value.nextInputSequence,
+        const request = { requestId: requestId(), challengeId: value.challengeId, rulesetId: value.rulesetId,
+            automationId: value.automationId, inputSequence: value.nextInputSequence,
             expectedTurn: value.simulation.turn, expectedPhase: value.simulation.phase,
             inputEpoch: value.simulation.inputEpoch, intent };
         const ack: any = await this.mutate<z.infer<typeof CandidateAckV10Schema>>(protocolEventsV10.input, request, CandidateAckV10Schema);
@@ -167,8 +184,8 @@ export class V10PracticeClient {
             try { await pending; } catch { /* fence the latest accepted snapshot below */ }
         }
         const value = this.requireSnapshot();
-        const request = { requestId: requestId(), challengeId: value.challengeId, rulesetId: CURRENT_V10_RULESET_ID,
-            automationId: V10_AUTOMATION_ID, expectedTurn: value.simulation.turn, inputEpoch: value.simulation.inputEpoch };
+        const request = { requestId: requestId(), challengeId: value.challengeId, rulesetId: value.rulesetId,
+            automationId: value.automationId, expectedTurn: value.simulation.turn, inputEpoch: value.simulation.inputEpoch };
         const ack: any = await this.mutate<z.infer<typeof CandidateAckV10Schema>>(event, request, CandidateAckV10Schema);
         if (!ack.data || !('simulation' in ack.data)) throw new Error('V10 neutral fence did not return an authoritative snapshot.');
         return this.acceptAckSnapshot(ack.data, ack.nextSequence, ack.nextInputSequence, false);
@@ -177,8 +194,8 @@ export class V10PracticeClient {
     public async setPaused(paused: boolean): Promise<V10PracticeSnapshot> {
         if (paused && !this.pauseAllowed()) throw new Error(this.pauseReason() ?? 'Pause is unavailable in this authority state.');
         const value = this.requireSnapshot();
-        const request = { requestId: requestId(), challengeId: value.challengeId, rulesetId: CURRENT_V10_RULESET_ID,
-            automationId: V10_AUTOMATION_ID, sequence: this.cursor.nextSequence, paused };
+        const request = { requestId: requestId(), challengeId: value.challengeId, rulesetId: value.rulesetId,
+            automationId: value.automationId, sequence: this.cursor.nextSequence, paused };
         const ack: any = await this.mutate<z.infer<typeof CandidateAckV10Schema>>(protocolEventsV10.pause, request, CandidateAckV10Schema);
         if (!ack.data || !('simulation' in ack.data)) throw new Error('V10 pause did not return an authoritative snapshot.');
         return this.acceptAckSnapshot(ack.data, ack.nextSequence, ack.nextInputSequence, false);
@@ -186,8 +203,8 @@ export class V10PracticeClient {
 
     public async leave(): Promise<ChallengeResultV10> {
         const value = this.requireSnapshot();
-        const request = { requestId: requestId(), challengeId: value.challengeId, rulesetId: CURRENT_V10_RULESET_ID,
-            automationId: V10_AUTOMATION_ID, sequence: this.cursor.nextSequence };
+        const request = { requestId: requestId(), challengeId: value.challengeId, rulesetId: value.rulesetId,
+            automationId: value.automationId, sequence: this.cursor.nextSequence };
         const ack: any = await this.mutate<z.infer<typeof CandidateAckV10Schema>>(protocolEventsV10.leave, request, CandidateAckV10Schema);
         if (!ack.data || !('outcome' in ack.data)) throw new Error('V10 leave did not return an authoritative result.');
         return this.acceptResult(ack.data, ack.nextSequence, ack.nextInputSequence);

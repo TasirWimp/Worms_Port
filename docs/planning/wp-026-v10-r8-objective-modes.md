@@ -1,6 +1,6 @@
 # WP-026 V10 R8 Objective Modes
 
-Status: **active; Waypoint 1 and Phone Gate A complete; Waypoint 2 awaits Phone Gate B**
+Status: **active; Waypoints 1-2 and Phone Gates A-B complete; Waypoint 3 implementation and automated checks complete; Phone Gate C next**
 
 Required predecessor: completed WP-024 R7 promotion and completed WP-025
 lifecycle and power hardening
@@ -324,9 +324,16 @@ Move exact R8 into the server-backed Practice canary, implement complete-turn
 deterministic candidates and bind all objective facts to replay and resume.
 
 Phone Gate C plays all three modes across changed terrain, closes and reopens
-during both actors' turns, confirms the same objects and plan resume, and checks
+during both actors’ turns, confirms the same objects and plan resume, and checks
 that the Loomkeeper visibly pursues the selected objective without illegal or
 stalled turns.
+
+Waypoint 3 keeps the private `combat-preview=v10r8` admission boundary, but the
+match behind it is now the live server authority rather than the local fixture.
+Ordinary Practice and PEI-gated Daily remain exact R7. An R8 Practice creation
+binds `objectiveMode`, `volcanic-ruin-objectives-r1` and
+`wp-026-v10-r8-objectives-v1`; every subsequent input and lifecycle packet must
+carry that same recorded ruleset and automation identity.
 
 ## Automated acceptance
 

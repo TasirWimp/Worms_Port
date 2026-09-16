@@ -6,6 +6,7 @@ import { bootstrapSession } from '../../client/src/lib/session';
 import { PracticeClient } from '../../client/src/practice/client';
 import { createRuntimeServer } from '../../server/src/runtime';
 import { CURRENT_V10_RULESET_ID } from '../../shared/simulation-v10';
+import { V10_R8_RULESET_ID } from '../../shared/simulation-v10-r8';
 
 test('current Practice client owns only the volcanic V10 lifecycle', async () => {
     installSessionStorage();
@@ -80,6 +81,43 @@ test('current V10 movement release waits for an in-flight movement acknowledgeme
         const stopped = await released;
         assert.equal(stopped.heldDirection, 0,
             'pointer release serializes behind the pending walk instead of losing the neutral fence');
+    } finally {
+        client?.dispose();
+        socket.close();
+        await runtime.close();
+    }
+});
+
+test('R8 Practice client binds the selected objective across pause and retry', async () => {
+    installSessionStorage();
+    const runtime = createRuntimeServer({
+        allowMissingOrigin: true,
+        sessionRegistry: { practiceV10: true, seedSource: () => 4, v10TestOnly: { nowUs: () => 0 } }
+    });
+    const port = await runtime.listen();
+    const socket = io(`http://127.0.0.1:${port}`, { transports: ['websocket'] });
+    let client: PracticeClient | undefined;
+    try {
+        client = await PracticeClient.connect(socket, await bootstrapSession(socket));
+        const ordinary = await client.startCombat('wizard');
+        assert.equal(ordinary.rulesetId, CURRENT_V10_RULESET_ID);
+        const first = await client.startObjectiveCombat('claim');
+        assert.notEqual(first.challengeId, ordinary.challengeId,
+            'the private canary retires an active ordinary Practice before creating R8');
+        assert.equal(first.rulesetId, V10_R8_RULESET_ID);
+        if (first.rulesetId !== V10_R8_RULESET_ID) throw new Error('Expected R8 Practice.');
+        assert.equal(first.objectiveMode, 'claim');
+        assert.equal(first.simulation.objective.objectiveMode, 'claim');
+        const args = await client.combatArgs(first);
+        assert.equal(args.snapshot.rulesetId, V10_R8_RULESET_ID);
+        await args.setPaused(true);
+        assert.equal(args.paused(), true);
+        await args.setPaused(false);
+        const next = await client.retryCombat('wizard', 'claim');
+        assert.notEqual(next.challengeId, first.challengeId);
+        assert.equal(next.rulesetId, V10_R8_RULESET_ID);
+        if (next.rulesetId !== V10_R8_RULESET_ID) throw new Error('Expected retried R8 Practice.');
+        assert.equal(next.objectiveMode, 'claim');
     } finally {
         client?.dispose();
         socket.close();

@@ -1,4 +1,5 @@
-import { LiveSimulationCoordinatorV10, type LiveSimulationCoordinatorV10Options } from './coordinator-v10-live';
+import { LiveSimulationCoordinatorV10, type LiveSimulationCoordinatorV10Options,
+    type CoordinatorSnapshotV10 as CoordinatorSnapshotLiveV10 } from './coordinator-v10-live';
 import type { CoordinatorReplayV10Automated } from '../../../shared/protocol-v10-live';
 import { isV10AutomationId } from '../../../shared/combat-version';
 import { SimulationCoordinator, type CoordinatorReplay, type CoordinatorSnapshot,
@@ -16,7 +17,7 @@ import { V9_RULESET_ID } from '../../../shared/simulation-v9';
 import { isV10RulesetId, V10_RULESET_ID, type V10RulesetId } from '../../../shared/simulation-v10';
 import { LEGACY_RULESET_ID, type PlayerCalling, type SimulationRulesetId } from '../../../shared/simulation';
 
-export type VersionedCoordinatorSnapshot = CoordinatorSnapshot | CoordinatorSnapshotV8Family | CoordinatorSnapshotV9 | CoordinatorSnapshotV10;
+export type VersionedCoordinatorSnapshot = CoordinatorSnapshot | CoordinatorSnapshotV8Family | CoordinatorSnapshotV9 | CoordinatorSnapshotV10 | CoordinatorSnapshotLiveV10;
 export type VersionedCoordinatorReplay = CoordinatorReplay | CoordinatorReplayV8Runtime | CoordinatorReplayV9 | CoordinatorReplayV10 | CoordinatorReplayV10Automated;
 export type VersionedCoordinatorResult = CoordinatorTerminalResult | CoordinatorTerminalResultV8Family | CoordinatorTerminalResultV9 | CoordinatorTerminalResultV10;
 

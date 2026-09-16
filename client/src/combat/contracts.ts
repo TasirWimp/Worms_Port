@@ -4,7 +4,7 @@ import type { ChallengeSnapshotV8Runtime as ChallengeSnapshotV8, ChallengeResult
 import type { SimulationIntentV8Family as SimulationIntentV8 } from '../../../shared/simulation-v8';
 import type { SimulationEventV9, SimulationIntentV9, SimulationStateV9 } from '../../../shared/simulation-v9';
 import type { SimulationEventV10, SimulationIntentV10, SimulationStateV10 } from '../../../shared/simulation-v10';
-import type { SimulationStateV10R8 } from '../../../shared/simulation-v10-r8';
+import type { SimulationEventV10R8, SimulationStateV10R8 } from '../../../shared/simulation-v10-r8';
 import type { ChallengeResultV9 } from '../../../shared/protocol-v9';
 import type { PlayerCalling } from '../../../shared/simulation';
 
@@ -96,7 +96,7 @@ type CombatSceneArgsV10Base<State extends SimulationStateV10Family> = {
     setLocalClockSuspended?: (suspended: boolean) => void;
     trajectoryPreview: (aim: { angleMilliDegrees: number; powerPermille: number }) => { x: number; y: number }[];
     restart: () => Promise<CombatSceneArgsV10Base<State>>;
-    onSnapshot: (listener: (snapshot: State, events: SimulationEventV10[]) => void) => () => void;
+    onSnapshot: (listener: (snapshot: State, events: SimulationEventV10R8[]) => void) => () => void;
     onResult?: (listener: (result: import('../../../shared/protocol-v10-live').ChallengeResultV10) => void) => () => void;
     onConnection?: (listener: (state: 'connected' | 'reconnecting') => void) => () => void;
     onUnavailable?: (listener: (message: string) => void) => () => void;
@@ -111,7 +111,7 @@ export type CombatSceneArgsV10R8 = CombatSceneArgsV10Base<SimulationStateV10R8>;
 
 export type ResourceTurnsSceneArgs = CombatSceneArgsV9 | CombatSceneArgsV10 | CombatSceneArgsV10R8;
 export type ResourceTurnsState = SimulationStateV9 | SimulationStateV10Family;
-export type ResourceTurnsEvent = SimulationEventV9 | SimulationEventV10;
+export type ResourceTurnsEvent = SimulationEventV9 | SimulationEventV10R8;
 
 /** Shared by the V9 scene's DOM and Phaser registrations so direct teardown is complete. */
 export class V9PreviewListenerCleanup {

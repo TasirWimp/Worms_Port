@@ -182,7 +182,14 @@ test('live R8 serialization overlays actors and active objects beside exact terr
 test('R8 collects by living-body overlap and leaves an exact two-actor distance tie active', () => {
     const initial = createSimulationV10R8(4, 'wizard', 'collect');
     const objective = objectiveAtActor(initial, 'collect', 'player');
-    const collected = advanceSimulationTicksV10R8({ ...initial, objective }, 1).state;
+    const collection = advanceSimulationTicksV10R8({ ...initial, objective }, 1);
+    const collected = collection.state;
+    const collectionEvent = collection.events.find(event => event.type === 'coin_collected');
+    assert.equal(collectionEvent?.type, 'coin_collected');
+    if (collectionEvent?.type !== 'coin_collected') throw new Error('Expected coin collection event.');
+    assert.match(collectionEvent.objectId, /^coin-[1-7]$/);
+    assert.equal(collectionEvent.actor, 'player');
+    assert.equal(collectionEvent.tick, 1);
     assert.equal(collected.objective.scores.player, 1);
     assert.equal(collected.objective.objects.filter(object => object.status === 'collected').length, 1);
     assert.equal(collected.objective.objects.find(object => object.status === 'collected')?.resolvedBy, 'player');
@@ -233,10 +240,14 @@ test('R8 ends Collect as soon as a four-coin lead cannot be caught', () => {
 
 test('R8 chest contact awards only the attacker and records the exact result reason', () => {
     const claim = createSimulationV10R8(4, 'wizard', 'claim');
-    const claimed = advanceSimulationTicksV10R8({
+    const capture = advanceSimulationTicksV10R8({
         ...claim,
         objective: objectiveAtActor(claim, 'claim', 'player')
-    }, 1).state;
+    }, 1);
+    const claimed = capture.state;
+    assert.deepEqual(capture.events.find(event => event.type === 'chest_captured'), {
+        type: 'chest_captured', objectId: 'loomkeeper-chest', actor: 'player', tick: 1
+    });
     assert.equal(claimed.winner, 'player');
     assert.deepEqual(claimed.objective.result, { winner: 'player', reason: 'chest_captured' });
     assert.equal(claimed.objective.objects[0].status, 'captured');

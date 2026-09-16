@@ -1,7 +1,7 @@
 import Phaser from 'phaser';
 
-import { V10_R8_RULESET_ID, type V10R8ObjectiveMode } from '../../../shared/simulation-v10-r8';
-import type { CombatSceneArgsV10R8 } from '../combat/contracts';
+import { V10_R8_RULESET_ID, type V10R8ObjectiveMode } from '../../../shared/objective-v10-r8';
+import { PRACTICE_CLIENT_REGISTRY_KEY, type PracticeClient } from '../practice/client';
 import { drawBackdrop } from './practice';
 
 const MODE_COPY: Readonly<Record<V10R8ObjectiveMode, Readonly<{ title: string; short: string; detail: string }>>> = {
@@ -26,13 +26,18 @@ export default class ObjectiveModeScene extends Phaser.Scene {
     private root?: HTMLElement;
     private selected: V10R8ObjectiveMode = 'collect';
     private starting = false;
+    private client: PracticeClient;
+    private autoStart = false;
+    private activeMode?: V10R8ObjectiveMode;
 
     public constructor() {
         super({ key: 'objective-mode' });
     }
 
-    public init(args?: { selectedMode?: V10R8ObjectiveMode }): void {
+    public init(args?: { selectedMode?: V10R8ObjectiveMode; autoStart?: boolean }): void {
         this.starting = false;
+        this.autoStart = args?.autoStart === true;
+        this.activeMode = undefined;
         if (args?.selectedMode === 'defend' || args?.selectedMode === 'collect' || args?.selectedMode === 'claim') {
             this.selected = args.selectedMode;
         }
@@ -40,14 +45,15 @@ export default class ObjectiveModeScene extends Phaser.Scene {
 
     public create(): void {
         const host = document.getElementById('game');
-        if (!host) throw new Error('Objective mode scene requires the #game host.');
+        this.client = this.registry.get(PRACTICE_CLIENT_REGISTRY_KEY) as PracticeClient;
+        if (!host || !this.client) throw new Error('Objective mode scene requires the live Practice client.');
         drawBackdrop(this);
         this.root = document.createElement('main');
         this.root.className = 'practice-shell objective-mode-shell';
         this.root.dataset.selectedMode = this.selected;
         this.root.innerHTML = `
             <section class="practice-card objective-mode-card" aria-labelledby="objective-mode-title">
-                <p class="practice-eyebrow">V10 R8 local canary · Wizard Knotkin</p>
+                <p class="practice-eyebrow">V10 R8 server Practice canary · Wizard Knotkin</p>
                 <h1 id="objective-mode-title">Choose the objective</h1>
                 <p class="practice-intro">The same Volcanic Ruin supports three ways to win.</p>
                 <fieldset class="calling-picker objective-mode-picker">
@@ -71,7 +77,13 @@ export default class ObjectiveModeScene extends Phaser.Scene {
         this.root.querySelector<HTMLButtonElement>('.objective-mode-start')!
             .addEventListener('click', () => void this.startSelectedMode());
         this.events.once(Phaser.Scenes.Events.SHUTDOWN, () => this.root?.remove());
+        const current = this.client.currentCombatSnapshot();
+        if (current?.status === 'active' && current.rulesetId === V10_R8_RULESET_ID) {
+            this.selected = current.objectiveMode;
+            this.activeMode = current.objectiveMode;
+        }
         this.refresh();
+        if (this.autoStart) queueMicrotask(() => void this.startSelectedMode());
     }
 
     private refresh(): void {
@@ -81,9 +93,12 @@ export default class ObjectiveModeScene extends Phaser.Scene {
             const selected = button.dataset.objectiveMode === this.selected;
             button.classList.toggle('is-selected', selected);
             button.setAttribute('aria-pressed', String(selected));
+            button.disabled = this.activeMode !== undefined;
         }
         this.root.querySelector<HTMLElement>('.objective-mode-description')!.textContent = MODE_COPY[this.selected].detail;
-        this.root.querySelector<HTMLButtonElement>('.objective-mode-start')!.textContent = `Start ${MODE_COPY[this.selected].title}`;
+        this.root.querySelector<HTMLButtonElement>('.objective-mode-start')!.textContent = this.activeMode
+            ? `Resume ${MODE_COPY[this.selected].title}`
+            : `Start ${MODE_COPY[this.selected].title}`;
     }
 
     private async startSelectedMode(): Promise<void> {
@@ -94,14 +109,9 @@ export default class ObjectiveModeScene extends Phaser.Scene {
         button.disabled = true;
         message.textContent = 'Weaving the objective…';
         try {
-            const { createTerrainStartsV10Fixture } = await import('../combat/terrain-starts-v10-fixture');
-            const args = await createTerrainStartsV10Fixture(
-                4, 'wizard', undefined, V10_R8_RULESET_ID, undefined, true, this.selected
-            ) as CombatSceneArgsV10R8;
-            if (!this.scene.isActive()) {
-                args.destroy();
-                return;
-            }
+            const snapshot = await this.client.startObjectiveCombat(this.selected);
+            const args = await this.client.combatArgs(snapshot);
+            if (!this.scene.isActive()) return;
             const url = new URL(window.location.href);
             url.searchParams.set('objective-mode', this.selected);
             window.history.replaceState(null, '', url);

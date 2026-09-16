@@ -14,7 +14,6 @@ import {
     V10_R7_RULESET_ID,
     V10_RULESET_ID,
     type V10RulesetId,
-    type SimulationEventV10,
     type SimulationIntentV10,
     type SimulationStateV10
 } from '../../../shared/simulation-v10';
@@ -30,6 +29,7 @@ import {
     simulationV10R7ViewOfValidatedR8,
     trajectoryPreviewV10R8,
     V10_R8_RULESET_ID,
+    type SimulationEventV10R8,
     type SimulationStateV10R8,
     type V10R8ObjectiveMode
 } from '../../../shared/simulation-v10-r8';
@@ -172,7 +172,7 @@ export async function createTerrainStartsV10Fixture(
     let execution: LoomkeeperExecutionV10 | undefined;
     let planningFailed = false;
     let retiringForRestart = false;
-    const listeners = new Set<(state: SimulationStateV10Family, events: SimulationEventV10[]) => void>();
+    const listeners = new Set<(state: SimulationStateV10Family, events: SimulationEventV10R8[]) => void>();
     let persistedBoundary = '';
 
     const persist = (force = false) => {
@@ -191,7 +191,7 @@ export async function createTerrainStartsV10Fixture(
     };
     persist(fresh || state === initial);
 
-    const publish = (events: SimulationEventV10[] = [], forcePersist = false) => {
+    const publish = (events: SimulationEventV10R8[] = [], forcePersist = false) => {
         if (destroyed) return;
         persist(forcePersist);
         publishing = true;
@@ -238,7 +238,7 @@ export async function createTerrainStartsV10Fixture(
         }
         planningTicks += 1;
     };
-    const drainAutomation = (events: SimulationEventV10[]) => {
+    const drainAutomation = (events: SimulationEventV10R8[]) => {
         if (state.phase === 'finished') return;
         if (state.phase === 'action' && state.activeActor === 'loomkeeper' && aiTurn === state.turn &&
             planningTicks === V10_AI_PLANNING_TICKS && !execution && !planningFailed) {
@@ -281,7 +281,7 @@ export async function createTerrainStartsV10Fixture(
             return false;
         }
         let count = 0;
-        const events: SimulationEventV10[] = [];
+        const events: SimulationEventV10R8[] = [];
         while (credit >= 1000 && count < 6 && state.phase !== 'finished') {
             credit -= 1000;
             prepareAutomatedTick();

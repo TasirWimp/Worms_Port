@@ -38,7 +38,8 @@ export class LoomkeeperPlannerV10 {
             ...options,
             mechanics: mechanicsForV10(source.rulesetId),
             dynamics: dynamicsForV10(source.rulesetId),
-            candidateAt: usesV10GTactics(source.rulesetId) ? v10gCandidateAt : undefined
+            candidateAt: usesV10GTactics(source.rulesetId) ? v10gCandidateAt : undefined,
+            rankCandidate: options.rankCandidate
         });
     }
 

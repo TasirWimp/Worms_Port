@@ -11,6 +11,7 @@ import {
     type WalletIdentity
 } from '../../../shared/protocol';
 import type { PlayerCalling } from '../../../shared/simulation';
+import { V10_R8_RULESET_ID, type V10R8ObjectiveMode } from '../../../shared/objective-v10-r8';
 import type { CombatSceneArgsV10 } from '../combat/contracts';
 import { takeTerrainV10SessionEvents, whenSessionReady } from '../lib/session';
 import type { PracticeConnectionState, PracticeSessionCursor, Unsubscribe } from './contracts';
@@ -99,6 +100,19 @@ export class PracticeClient {
         return v10.start('practice', calling);
     }
 
+    public async startObjectiveCombat(objectiveMode: V10R8ObjectiveMode): Promise<ChallengeSnapshotV10> {
+        const v10 = await this.getV10();
+        const current = v10.currentSnapshot();
+        if (current?.status === 'active') {
+            if (current.rulesetId === V10_R8_RULESET_ID) return current;
+            if (current.mode === 'reward') {
+                throw new Error('Finish the active Daily Challenge before opening the objective canary.');
+            }
+            await v10.leave();
+        }
+        return v10.start('practice', 'wizard', undefined, objectiveMode);
+    }
+
     public currentIdentity(): WalletIdentity | undefined {
         return this.identity ? structuredClone(this.identity) : undefined;
     }
@@ -133,13 +147,13 @@ export class PracticeClient {
         });
     }
 
-    public async retryCombat(calling: PlayerCalling): Promise<ChallengeSnapshotV10> {
+    public async retryCombat(calling: PlayerCalling, objectiveMode?: V10R8ObjectiveMode): Promise<ChallengeSnapshotV10> {
         const v10 = await this.getV10();
         if (v10.currentSnapshot()?.status === 'active') await v10.leave();
-        return v10.start('practice', calling);
+        return v10.start('practice', calling, undefined, objectiveMode);
     }
 
-    public async combatArgs(snapshot: ChallengeSnapshotV10): Promise<CombatSceneArgsV10> {
+    public async combatArgs(snapshot: ChallengeSnapshotV10): Promise<CombatSceneArgsV10 | import('../combat/contracts').CombatSceneArgsV10R8> {
         if (snapshot.protocolVersion !== 10) throw new Error('Current combat requires V10 authority.');
         return (await this.getV10()).combatArgs(snapshot);
     }

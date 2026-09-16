@@ -238,14 +238,14 @@ test('V10 R8 private lobby reuses the three choices for objective modes with a f
   await expect(ui).toHaveAttribute('data-calling', 'wizard');
 });
 
-test('V10 R8 private preview renders bounded coin and chest physics without changing the R7 shell', async ({ page }) => {
+test('V10 R8 server Practice canary renders and resumes exact objective authority', async ({ page }) => {
   test.setTimeout(45_000);
   const errors = captureErrors(page);
   await page.goto('/?combat-preview=v10r8&objective-mode=collect&sideways=off');
   let ui = page.locator('.combat-v10');
   await expect(ui).toHaveAttribute('data-ruleset', 'nimble-knots-artillery-v10-r8');
   await expect(ui).toHaveAttribute('data-preview',
-    'V10 R8 collect objective-mode canary · local-only');
+    'V10 R8 collect objective-mode canary');
   await expect(ui).toHaveAttribute('data-objective-mode', 'collect');
   await expect(ui).toHaveAttribute('data-objective-recipe', 'volcanic-ruin-objectives-r1');
   await expect(ui).toHaveAttribute('data-objective-presentation', 'approved-runtime-coin');
@@ -287,19 +287,22 @@ test('V10 R8 private preview renders bounded coin and chest physics without chan
   await ui.locator('.v9-actions-button').tap();
   await ui.locator('.v9-attack').tap();
   await ui.locator('.relic-needlepoint').tap();
+  await expect(ui).toHaveAttribute('data-selected-relic', 'needlepoint');
+  await expect(ui.locator('.aim-zone')).toHaveAttribute('aria-disabled', 'false');
   await dragPad(page, '.combat-v10 .aim-zone', 2601, 0.35, 0);
   await expect(ui).toHaveAttribute('data-aim-locked', 'true');
   await ui.locator('.fire-button').tap();
   await expect(ui).toHaveAttribute('data-combat-phase', /projectile|settling|retreat/);
   await expect(ui).toHaveAttribute('data-objective-active', '7');
 
-  await page.goto('/?combat-preview=v10r8&objective-mode=defend&sideways=off');
+  const objectiveHash = await ui.getAttribute('data-objective-hash');
+  const objectivePositions = await ui.getAttribute('data-objective-positions');
+  await page.reload();
   ui = page.locator('.combat-v10');
   await expect(ui).toHaveAttribute('data-ruleset', 'nimble-knots-artillery-v10-r8');
-  await expect(ui).toHaveAttribute('data-objective-mode', 'defend');
-  await expect(ui).toHaveAttribute('data-objective-presentation', 'code-owned');
-  await expect(ui).toHaveAttribute('data-objective-active', '1');
-  await expect(ui).toHaveAttribute('data-objective-positions', /player-chest,active/);
+  await expect(ui).toHaveAttribute('data-objective-mode', 'collect');
+  await expect(ui).toHaveAttribute('data-objective-hash', objectiveHash!);
+  await expect(ui).toHaveAttribute('data-objective-positions', objectivePositions!);
   expect(errors).toEqual([]);
 });
 

@@ -92,7 +92,9 @@ class NimbleKnotsGame extends Phaser.Game
                     : objectiveModeScene
                         ? [ CombatScene, objectiveModeScene, JoinScene, RoomScene, GameScene ]
                         : [ CombatScene, JoinScene, RoomScene, GameScene ]
-                : [ BootScene, PracticeScene, CombatScene, ResultScene, JoinScene, RoomScene, GameScene ]
+                : objectiveModeScene
+                    ? [ BootScene, objectiveModeScene, PracticeScene, CombatScene, ResultScene, JoinScene, RoomScene, GameScene ]
+                    : [ BootScene, PracticeScene, CombatScene, ResultScene, JoinScene, RoomScene, GameScene ]
         });
     }
 
@@ -134,6 +136,24 @@ window.onload = async () => {
         syncVisualViewport();
         game.registry.set(PRACTICE_CLIENT_REGISTRY_KEY, preview.client);
         game.scene.start('result', preview.args);
+        return;
+    }
+    if (query.get('combat-preview') === 'v10r8') {
+        const objectiveModeScene = (await import('./scenes/objective-mode')).default;
+        const socket = io({ transports: ['websocket'] });
+        const session = await bootstrapSession(socket);
+        const client = await PracticeClient.connect(socket, session);
+        applicationLifecycle = new ApplicationLifecycle({ onResume: syncVisualViewport });
+        applicationLifecycle.attachSocket(socket);
+        const game = new NimbleKnotsGame(false, objectiveModeScene);
+        runningGame = game;
+        applicationLifecycle.attachGame(game);
+        syncVisualViewport();
+        game.registry.set(PRACTICE_CLIENT_REGISTRY_KEY, client);
+        game.scene.start('objective-mode', {
+            selectedMode: query.get('objective-mode') ?? undefined,
+            autoStart: query.has('objective-mode')
+        });
         return;
     }
     const combatPreview = query.has('combat-preview');
