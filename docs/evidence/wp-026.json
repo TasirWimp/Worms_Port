@@ -158,6 +158,11 @@
       "command": "Phone Gate C larger-tablet actor-motion correction",
       "status": "pass",
       "details": "The first selector at fingerprint 29463e51b68e088c5c55c4704bd209469f74bbddfe9ecd9b23b36e989a657ab3 preserved passing diff and import-boundary checks, then stopped on a readonly tuple integration error before any unit, build or browser phase. The type-only correction passed, followed without repeating the full selector by combat 51/51, Practice 6/6, fresh build proof bcc3b942efd9 / f4475eb590af, standard R7 smoke, identity/reward security and bundle limits at 1435401/1500000 initial JavaScript bytes and 418966/430000 gzip bytes. Practice browser coverage passed 32 with eight expected skips, resilience passed 2 with eight expected skips, and smoke passed 10/10. Direct review then found that the new interpolation regression had been placed in the excluded historical V9 test file; moving it to the supported current combat suite passed types and combat 52/52, including the exact bounded-current-V10 test, without running legacy coverage or repeating the green build/browser phases. The presentation fills only the interval between current V10 actor samples, never extrapolates, keeps authority and input unchanged, and uses an actor-only display-frame pass. Logs .cache/wp026-tablet-motion-dry-run.log, .cache/wp026-tablet-motion-selector.log, .cache/wp026-tablet-motion-*.log and .cache/wp026-tablet-motion-current-*.log."
+    },
+    {
+      "command": "Phone Gate C quick-combo buffered-motion hardening",
+      "status": "pass",
+      "details": "worms_port_test_runner on GPT-5.6 Terra/medium ran the zero-retry selector once at fingerprint 516b41a22b0fa70c5bfc9d5cf417d353b927d2e10f92b73f2c8a09ef1999815a. Import, types, combat 53/53 and Practice 6/6 passed. Fresh build proof 6f8e5831ed54 / 78790244fb87 passed standard R7 smoke, identity/reward security and bundle limits at 1435401/1500000 initial JavaScript bytes and 418972/430000 JavaScript plus CSS gzip bytes. Selected Practice, resilience and smoke browser continuity passed 12/12. PostgreSQL, performance, fallback, legacy and daily/release coverage were not selected. Log .cache/wp026-tablet-jump-buffer-selector.log."
     }
   ],
   "reviews": [
@@ -238,6 +243,18 @@
       "reviewer": "primary assistant direct larger-tablet motion-correction review",
       "decision": "pass",
       "details": "Direct review traced the visible stepping to current live V10 publication every three 30 Hz simulation ticks, magnified by the larger tablet world scale. The correction retains exact authority and interpolates only from the current rendered actor position to the latest published position for at most 140 ms, with no velocity prediction. It snaps on input/lifecycle boundaries, reconnect, publication gaps over six ticks and reduced-motion preference. The display-frame path updates only both Wizard sprites, their team cues and health-card anchors; terrain, objectives, scenery, projectile effects and authority projection retain their state-driven redraw cadence. The regression lives in the supported current combat suite; no legacy runtime or test was restored. Physical larger-tablet walking and jumping feel remains the final Gate C check."
+    },
+    {
+      "role": "owner",
+      "reviewer": "WP-026 Phone Gate C larger-tablet motion recheck",
+      "decision": "fail",
+      "details": "The owner reported a substantial tablet improvement, with one remaining small mid-air stop during roughly every third jump in a quick jump combo. Gate C remains open only for the buffered-motion hardening and focused physical recheck."
+    },
+    {
+      "role": "primary",
+      "reviewer": "primary assistant direct quick-combo buffered-motion review",
+      "decision": "pass",
+      "details": "Direct review found that the first presentation layer still chased the newest 10 Hz position and could consume its target before the next publication. The replacement retains a bounded authoritative sample history and renders four 30 Hz ticks behind authority: one publication interval plus one tick of jitter margin. It interpolates only between known points, preserves the sample clock across same-tick revisions and input metadata acknowledgements, and snaps on spatial lifecycle discontinuities, reconnect, gaps over six ticks and reduced-motion preference. Both full and actor-only redraws use the same monotonic timeline. Authority, collision, input and replay state remain unchanged, and no legacy runtime or test was restored. Physical larger-tablet quick-combo feel remains the final Gate C check."
     }
   ],
   "skipped_checks": [
@@ -245,10 +262,10 @@
     "The standalone release performance matrix was not selected. Focused correction and physical phone/tablet reads cover the reported private-R8 foreground regression; the 22:00 daily gate retains the full performance phase.",
     "The local PostgreSQL prerequisite is absent, so its selected phase recorded the repository's expected skip and remains required in CI.",
     "The daily/release suite was not run because Waypoint 3 is a private feature gate rather than the 22:00 checkpoint or an explicit release boundary.",
-    "Physical Android Phone Gates A and B passed, and all five focused Gate C checks pass on the phone. The larger-tablet walking and jumping recheck remains open; a physical iOS check has not run."
+    "Physical Android Phone Gates A and B passed, and all five focused Gate C checks pass on the phone. The larger-tablet quick-combo jump recheck remains open; a physical iOS check has not run."
   ],
   "residual_risks": [
-    "The phone has accepted destroyed-WebView resume, one terminal action surface, smooth foreground input/rendering and no uncommanded player walking. Phone Gate C remains subject only to larger-tablet confirmation of smooth walking and jumping for both actors.",
+    "The phone has accepted destroyed-WebView resume, one terminal action surface, smooth foreground input/rendering and no uncommanded player walking. Phone Gate C remains subject only to larger-tablet confirmation that repeated quick-combo jumps stay smooth for both actors.",
     "Visibly convincing objective strategy is intentionally deferred to WP-027; WP-026 retains a legal, bounded, non-stalling and replayable deterministic fallback.",
     "R8 remains private behind combat-preview=v10r8; standard Practice and PEI-gated Daily intentionally remain R7 until WP-027."
   ]

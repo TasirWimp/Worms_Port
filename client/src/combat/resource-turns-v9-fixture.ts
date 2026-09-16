@@ -15,21 +15,27 @@ const V9_COSTS = { threadball: 2, needlepoint: 3, spoolburst: 5 } as const;
 export type V9PresentationStep = { visual: CombatVisualPhase; durationMs: number };
 
 type ActorMotionPoint = Readonly<{ x: number; y: number }>;
-type ActorMotionTransition = Readonly<{
-    from: readonly [ActorMotionPoint, ActorMotionPoint];
-    to: readonly [ActorMotionPoint, ActorMotionPoint];
-    startedAt: number;
-    durationMs: number;
+type ActorMotionSample = Readonly<{
+    tick: number;
+    points: readonly [ActorMotionPoint, ActorMotionPoint];
+    receivedAt: number;
 }>;
 
+const ACTOR_MOTION_TICKS_PER_SECOND = 30;
+const ACTOR_MOTION_DELAY_TICKS = 4;
+const ACTOR_MOTION_MAX_GAP_TICKS = 6;
+const ACTOR_MOTION_HISTORY = 8;
+
 /**
- * Current V10 authority publishes live motion every three 30 Hz ticks. This
- * buffer fills only the visual interval between those facts. It never predicts
- * velocity, changes input readiness, or feeds a rendered position back into
- * simulation state.
+ * Current V10 authority publishes live motion every three 30 Hz ticks. Keep one
+ * publication interval plus one tick of jitter margin behind authority so every
+ * rendered point lies between two known samples. This never predicts velocity,
+ * changes input readiness, or feeds a rendered position back into simulation.
  */
 export class ResourceTurnsActorMotionBuffer {
-    private transition?: ActorMotionTransition;
+    private samples: ActorMotionSample[] = [];
+    private presentationTick?: number;
+    private lastRenderedTick?: number;
 
     public observe(
         previous: ResourceTurnsState,
@@ -40,55 +46,105 @@ export class ResourceTurnsActorMotionBuffer {
     ): void {
         if (boundary || prefersReducedMotion || !usesV10R6ActionDynamics(next.rulesetId) ||
             previous.rulesetId !== next.rulesetId) {
-            this.transition = undefined;
+            this.reset(next, now);
             return;
         }
         const tickDelta = next.tick - previous.tick;
-        if (tickDelta <= 0) return;
-        if (tickDelta > 6) {
-            this.transition = undefined;
+        if (tickDelta < 0 || tickDelta > ACTOR_MOTION_MAX_GAP_TICKS) {
+            this.reset(next, now);
             return;
         }
-        const target = actorMotionPoints(next);
-        const source = this.pointsAt(now) ?? actorMotionPoints(previous);
-        if (source.every((point, index) => point.x === target[index].x && point.y === target[index].y)) return;
-        this.transition = {
-            from: source,
-            to: target,
-            startedAt: now,
-            // Slight overlap bridges ordinary timer/socket jitter without
-            // extrapolating beyond the latest authoritative position.
-            durationMs: Math.max(50, Math.min(140, tickDelta * 40))
-        };
+        if (!this.samples.length) {
+            const inferredAt = now - Math.max(0, tickDelta) * 1000 / ACTOR_MOTION_TICKS_PER_SECOND;
+            this.samples.push({ tick: previous.tick, points: actorMotionPoints(previous), receivedAt: inferredAt });
+            this.presentationTick = Math.max(previous.tick, next.tick - ACTOR_MOTION_DELAY_TICKS);
+        }
+        this.push(next, now);
     }
 
     public frame(state: ResourceTurnsState, now: number): CombatRenderState {
         const projected = projectCombatV9(state);
-        const points = this.pointsAt(now);
+        const tick = this.renderTick(now);
+        const points = this.pointsAt(tick);
         if (!points) return projected;
         for (const index of [0, 1] as const) {
             projected.units[index].x = points[index].x;
             projected.units[index].y = points[index].y;
         }
-        if (this.transition && now >= this.transition.startedAt + this.transition.durationMs) {
-            this.transition = undefined;
-        }
+        this.lastRenderedTick = tick;
+        this.prune();
         return projected;
     }
 
-    public get active(): boolean { return this.transition !== undefined; }
-    public clear(): void { this.transition = undefined; }
-
-    private pointsAt(now: number): readonly [ActorMotionPoint, ActorMotionPoint] | undefined {
-        const transition = this.transition;
-        if (!transition) return undefined;
-        const amount = Math.max(0, Math.min(1, (now - transition.startedAt) / transition.durationMs));
-        const point = (index: 0 | 1): ActorMotionPoint => ({
-            x: transition.from[index].x + (transition.to[index].x - transition.from[index].x) * amount,
-            y: transition.from[index].y + (transition.to[index].y - transition.from[index].y) * amount
-        });
-        return [point(0), point(1)];
+    public needsFrame(now: number): boolean {
+        if (this.samples.length < 2) return false;
+        const tick = this.renderTick(now);
+        for (let index = 1; index < this.samples.length; index += 1) {
+            const from = this.samples[index - 1], to = this.samples[index];
+            if (to.tick < tick || sameActorMotionPoints(from.points, to.points)) continue;
+            if (to.tick > tick || (this.lastRenderedTick ?? -1) < tick) return true;
+        }
+        return false;
     }
+
+    public clear(): void { this.samples = []; this.presentationTick = undefined; this.lastRenderedTick = undefined; }
+
+    private push(state: ResourceTurnsState, now: number): void {
+        const sample: ActorMotionSample = { tick: state.tick, points: actorMotionPoints(state), receivedAt: now };
+        const latest = this.samples.at(-1);
+        if (latest?.tick === sample.tick) {
+            // Revision-only acknowledgements update the known point without
+            // restarting the buffered clock.
+            this.samples[this.samples.length - 1] = { ...sample, receivedAt: latest.receivedAt };
+        } else if (!latest || latest.tick < sample.tick) {
+            this.samples.push(sample);
+        }
+        if (this.samples.length > ACTOR_MOTION_HISTORY) this.samples.splice(0, this.samples.length - ACTOR_MOTION_HISTORY);
+    }
+
+    private renderTick(now: number): number {
+        const latest = this.samples.at(-1);
+        if (!latest) return 0;
+        const estimated = Math.min(latest.tick,
+            latest.tick + Math.max(0, now - latest.receivedAt) * ACTOR_MOTION_TICKS_PER_SECOND / 1000 -
+                ACTOR_MOTION_DELAY_TICKS);
+        this.presentationTick = Math.max(this.presentationTick ?? estimated, estimated);
+        return this.presentationTick;
+    }
+
+    private pointsAt(tick: number): readonly [ActorMotionPoint, ActorMotionPoint] | undefined {
+        const first = this.samples[0];
+        if (!first) return undefined;
+        if (tick <= first.tick) return first.points;
+        for (let index = 1; index < this.samples.length; index += 1) {
+            const from = this.samples[index - 1], to = this.samples[index];
+            if (tick > to.tick) continue;
+            const amount = to.tick === from.tick ? 1 : Math.max(0, Math.min(1, (tick - from.tick) / (to.tick - from.tick)));
+            const point = (actor: 0 | 1): ActorMotionPoint => ({
+                x: from.points[actor].x + (to.points[actor].x - from.points[actor].x) * amount,
+                y: from.points[actor].y + (to.points[actor].y - from.points[actor].y) * amount
+            });
+            return [point(0), point(1)];
+        }
+        return this.samples.at(-1)?.points;
+    }
+
+    private prune(): void {
+        const tick = this.presentationTick;
+        if (tick === undefined) return;
+        while (this.samples.length > 2 && this.samples[1].tick <= tick) this.samples.shift();
+    }
+
+    private reset(state: ResourceTurnsState, now: number): void {
+        this.samples = [{ tick: state.tick, points: actorMotionPoints(state), receivedAt: now }];
+        this.presentationTick = state.tick;
+        this.lastRenderedTick = state.tick;
+    }
+}
+
+export function resourceTurnsActorMotionBoundary(previous: ResourceTurnsState, next: ResourceTurnsState): boolean {
+    return previous.rulesetId !== next.rulesetId || next.tick < previous.tick || next.turn !== previous.turn ||
+        next.activeActor !== previous.activeActor || next.phase !== previous.phase || next.winner !== previous.winner;
 }
 
 function actorMotionPoints(state: ResourceTurnsState): readonly [ActorMotionPoint, ActorMotionPoint] {
@@ -97,6 +153,13 @@ function actorMotionPoints(state: ResourceTurnsState): readonly [ActorMotionPoin
         y: state.units[index].yFp / 256
     });
     return [point(0), point(1)];
+}
+
+function sameActorMotionPoints(
+    first: readonly [ActorMotionPoint, ActorMotionPoint],
+    second: readonly [ActorMotionPoint, ActorMotionPoint]
+): boolean {
+    return first.every((point, index) => point.x === second[index].x && point.y === second[index].y);
 }
 
 /** V9 view projection stays behind the local preview's lazy fixture seam. */

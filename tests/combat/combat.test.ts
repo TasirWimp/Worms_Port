@@ -21,7 +21,7 @@ import {
 } from '../../client/src/combat/loomseed-origin';
 import { trajectoryPreview } from '../../client/src/combat/preview';
 import { movementRefreshIntervalMs, stitchingHealthColor } from '../../client/src/combat/resource-turns-v9-controls';
-import { ResourceTurnsActorMotionBuffer } from '../../client/src/combat/resource-turns-v9-fixture';
+import { resourceTurnsActorMotionBoundary, ResourceTurnsActorMotionBuffer } from '../../client/src/combat/resource-turns-v9-fixture';
 import {
     applySimulationCommand,
     canonicalSimulationJson,
@@ -38,7 +38,7 @@ const VIEWPORTS = [
     [800, 300]
 ] as const;
 
-test('current V10 actor motion fills publication intervals without predicting authority', () => {
+test('current V10 actor motion buffers publication jitter without predicting authority', () => {
     const before = createSimulationV10(4, 'wizard', V10_R7_RULESET_ID);
     const next = structuredClone(before);
     next.tick += 3;
@@ -48,22 +48,43 @@ test('current V10 actor motion fills publication intervals without predicting au
     next.units[1].xFp -= 150;
     const motion = new ResourceTurnsActorMotionBuffer();
     motion.observe(before, next, 1_000, false, false);
-    assert.equal(motion.active, true);
-    const halfway = motion.frame(next, 1_060);
-    assert.equal(halfway.units[0].x, (before.units[0].xFp + 150) / 256);
-    assert.equal(halfway.units[0].y, (before.units[0].yFp - 300) / 256);
-    assert.equal(halfway.units[1].x, (before.units[1].xFp - 75) / 256);
-    assert.equal(motion.frame(next, 1_120).units[0].x, next.units[0].xFp / 256);
-    assert.equal(motion.active, false);
+    assert.equal(motion.needsFrame(1_000), true);
+    const buffered = motion.frame(next, 1_100);
+    assert.equal(buffered.units[0].x, (before.units[0].xFp + 200) / 256);
+    assert.equal(buffered.units[0].y, (before.units[0].yFp - 400) / 256);
+    assert.equal(buffered.units[1].x, (before.units[1].xFp - 100) / 256);
+    assert.equal(motion.frame(next, 1_134).units[0].x, next.units[0].xFp / 256);
+    assert.equal(motion.needsFrame(1_134), false);
 
     const boundary = structuredClone(next);
     boundary.tick += 3;
     boundary.units[0].xFp += 300;
     motion.observe(next, boundary, 2_000, true, false);
-    assert.equal(motion.active, false, 'turn and phase boundaries snap to the latest authority');
+    assert.equal(motion.needsFrame(2_000), false, 'turn and phase boundaries snap to the latest authority');
 
     motion.observe(next, boundary, 3_000, false, true);
-    assert.equal(motion.active, false, 'reduced-motion presentation keeps exact authoritative positions');
+    assert.equal(motion.needsFrame(3_000), false, 'reduced-motion presentation keeps exact authoritative positions');
+});
+
+test('current V10 jump acknowledgements retain buffered history across input metadata changes', () => {
+    const tick0 = createSimulationV10(4, 'wizard', V10_R7_RULESET_ID);
+    const tick3 = structuredClone(tick0); tick3.tick = 3; tick3.revision += 3;
+    const tick6 = structuredClone(tick3); tick6.tick = 6; tick6.revision += 3;
+    const jumpAck = structuredClone(tick6); jumpAck.tick = 7; jumpAck.revision += 1;
+    jumpAck.inputEpoch += 1; jumpAck.units[0].grounded = false; jumpAck.units[0].support = null;
+    const tick9 = structuredClone(jumpAck); tick9.tick = 9; tick9.revision += 2; tick9.units[0].yFp -= 600;
+    const motion = new ResourceTurnsActorMotionBuffer();
+    motion.observe(tick0, tick3, 100, false, false);
+    motion.frame(tick3, 200);
+    motion.observe(tick3, tick6, 200, false, false);
+    assert.equal(resourceTurnsActorMotionBoundary(tick6, jumpAck), false,
+        'input epochs are command metadata rather than a spatial discontinuity');
+    motion.observe(tick6, jumpAck, 233, false, false);
+    motion.observe(jumpAck, tick9, 300, false, false);
+    assert.equal(motion.frame(tick9, 334).units[0].y, tick6.units[0].yFp / 256);
+    const airborne = motion.frame(tick9, 384).units[0].y;
+    assert.ok(airborne < tick6.units[0].yFp / 256 && airborne > tick9.units[0].yFp / 256,
+        'the delayed render timeline moves between known takeoff samples without a catch-up snap');
 });
 
 test('combat layout preserves the fixed world and non-overlapping safe control zones', () => {

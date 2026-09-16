@@ -353,17 +353,20 @@ Loomkeeper-turn resume, one terminal prompt, smooth phone/tablet pan, aim and
 movement, and absence of uncommanded player walking.
 
 The focused phone recheck passed all five corrected lifecycle, terminal-surface,
-foreground-performance and motion-ownership steps. The same read found one
-remaining larger-tablet presentation issue: both Wizards move smoothly at first
-but later appear to skip frames, and jumps can pause briefly in mid-air. Live
-V10 authority deliberately publishes every three 30 Hz simulation ticks. The
-bounded presentation correction now interpolates only between the two latest
-authoritative actor positions, never extrapolates, and snaps on phase/turn
-boundaries, reconnect, long publication gaps and reduced-motion preference.
-Between authority redraws it updates only the two Wizard sprites, team cues and
-anchored health cards; terrain, objectives, scenery and effects are not rebuilt
-at display-frame cadence. Gate C now owns only the physical larger-tablet motion
-recheck for both actors' walking and jumping.
+foreground-performance and motion-ownership steps. The first larger-tablet read
+found that both Wizards could move smoothly at first and later skip frames, with
+jumps briefly pausing in mid-air. Interpolating toward each newest publication
+improved that behavior substantially, but the next tablet read retained a small
+pause during roughly every third quick-combo jump. Live V10 authority publishes
+every three 30 Hz simulation ticks, so presentation now stays four ticks behind:
+one complete publication interval plus one tick of arrival-jitter margin. It
+interpolates between buffered authoritative samples and never extrapolates.
+Input acknowledgements retain that spatial history; phase/turn boundaries,
+reconnect, long publication gaps and reduced-motion preference still snap to
+current truth. Between authority redraws it updates only the two Wizard sprites,
+team cues and anchored health cards; terrain, objectives, scenery and effects
+are not rebuilt at display-frame cadence. Gate C now owns only the focused
+physical larger-tablet quick-combo jump recheck for both actors.
 
 ## Automated acceptance
 

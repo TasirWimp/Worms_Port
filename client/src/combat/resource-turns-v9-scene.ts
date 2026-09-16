@@ -4,7 +4,7 @@ import { V9PreviewListenerCleanup, type ResourceTurnsEvent, type ResourceTurnsSc
 import { createApprovedWizardAnimations, WIZARD_UNRAVEL_DURATION_MS } from './approved-assets';
 import { cameraDirectionToWorldX, cameraForActor, createCombatCamera, createCombatOverviewCamera, focusCombatCamera, interpolateCombatCamera, panCombatCamera, revealCombatCameraPoint, type CombatCamera } from './camera';
 import { computeCombatLayout, type CombatLayout } from './layout';
-import { liveProjectileTraceV9, planV9Presentation, projectCombatV9, ResourceTurnsActorMotionBuffer, trajectoryPreviewV9, type V9PresentationStep } from './resource-turns-v9-fixture';
+import { liveProjectileTraceV9, planV9Presentation, projectCombatV9, resourceTurnsActorMotionBoundary, ResourceTurnsActorMotionBuffer, trajectoryPreviewV9, type V9PresentationStep } from './resource-turns-v9-fixture';
 import { CombatRenderer, type CombatVisualPhase } from './renderer';
 import type { BackgroundSceneDefinition } from './background-scene';
 import { BackgroundRenderer } from './background-renderer';
@@ -147,7 +147,8 @@ export class ResourceTurnsV9Scene {
         }
         const previous = this.state; this.state = structuredClone(next);
         const boundary = this.controls.update(this.state, events, this.args.paused());
-        this.actorMotion.observe(previous, this.state, performance.now(), boundary,
+        this.actorMotion.observe(previous, this.state, performance.now(),
+            resourceTurnsActorMotionBoundary(previous, this.state),
             reducedMotion() || !this.renderer.supportsActorMotion);
         if (this.resyncSnapshotPending) {
             this.resyncSnapshotPending = false;
@@ -352,7 +353,7 @@ export class ResourceTurnsV9Scene {
             (this.terminalPresentation !== undefined && now >= this.terminalPresentation.until)) {
             this.renderRequested = false;
             this.render();
-        } else if (this.actorMotion.active && this.layout) {
+        } else if (this.actorMotion.needsFrame(now) && this.layout) {
             const frame = this.actorMotion.frame(this.state, now);
             this.controls.setUnitPositions(frame.units);
             this.renderer.renderActors(frame, this.layout, this.visual(now));

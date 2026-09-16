@@ -285,12 +285,15 @@ Phaser/Socket.IO stack.
   being presented as player walking. The owner passed all five focused checks
   on the physical phone. The larger-tablet read retained one issue: walking for
   either actor could begin smoothly and then skip visible frames, while jumps
-  could pause briefly in mid-air. V10's 10 Hz published actor positions now use
-  bounded presentation-only interpolation without prediction; only Wizard
-  sprites, team cues and anchored health cards update between authority samples,
-  while lifecycle boundaries and reconnects snap to current truth. Selected
+  could pause briefly in mid-air. Interpolating toward each 10 Hz publication
+  improved the tablet behavior substantially, but a small pause remained during
+  roughly every third quick-combo jump. Actor presentation now follows a
+  four-tick delayed timeline, interpolating only between buffered authoritative
+  samples and retaining history across input acknowledgements. Only Wizard
+  sprites, team cues and anchored health cards update between authority samples;
+  phase/turn boundaries and reconnects still snap to current truth. Selected
   automated correction verification is complete; one focused larger-tablet
-  walking and jumping recheck remains before Gate C can close. The
+  quick-combo jump recheck remains before Gate C can close. The
   private R8 canary now
   has contact, scoring, terminal rules, HUD and mode selection for all three
   modes. Wizard is the only visible player character: the normal R7
