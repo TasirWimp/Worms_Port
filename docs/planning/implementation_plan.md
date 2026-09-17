@@ -313,11 +313,18 @@ Phaser/Socket.IO stack.
   the two-actor interpolation path. It is outside WP-026 closure and is not the
   current execution target. Its bounded contract and physical tablet recheck
   are recorded in the [WP-026 deferred performance waypoint](wp-026-v10-r8-objective-modes.md#deferred-performance-optimization-waypoint).
-- Queued after WP-026: **WP-027 Objective-Aware Gemini Loomkeeper**. Gemini may
-  select only a stable ID from server-generated, deterministically simulated
-  complete-turn candidates whose consequences include the active objective,
-  terrain topology and object state. The deterministic R8 policy remains the
-  permanent fallback and replay verification never calls Gemini. See the
+- Queued after WP-026: **WP-027 Strategic-Voyage Gemini Loomkeeper**. A
+  server-owned strategic voyage now makes the multi-turn decision process
+  explicit. Each Loomkeeper turn uses a bounded Gemini narrator pass to retain,
+  repair or switch strategy; deterministic multi-cut generation and simulation
+  then produce factual transition packets; a separate Gemini choice pass may
+  select only a stable candidate ID from the resulting atlas. Cross-level
+  validation rejects strategic claims that contradict simulated consequences.
+  The deterministic R8 policy remains the permanent stage-specific fallback,
+  active matches persist the accepted voyage across reconnect, and replay
+  reconstructs the full carrier/candidate chain without calling Gemini. The
+  refined path has three implementation waypoints before live Practice and
+  final Practice/Daily phone gates. See the
   [WP-027 contract](wp-027-gemini-objective-loomkeeper.md).
 - Active target: mobile-first single-player Nimiq Pay competition release.
 - Latest completed slice: **WP-015D4D V10G Terrain And Weapon Tactics**;
