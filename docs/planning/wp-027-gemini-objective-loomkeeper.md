@@ -209,6 +209,70 @@ envelope or delta. Turn/resource pressure may appear when it is a game fact.
 Provider latency, concurrency and spend budgets remain kernel-owned operational
 limits and are not model-facing strategic channels.
 
+## Closed-loop cycle calibration
+
+Every Loomkeeper reasoning window receives a first-class, server-derived
+`CycleCalibration` for the previous complete observation cycle. This makes the
+results of earlier actions explicit feedback for the next proposal instead of
+leaving calibration distributed across transition, envelope and residue fields.
+It calibrates match-local reasoning context and constraints; it does not train,
+fine-tune or update Gemini's model weights.
+
+The packet keeps immediate execution accuracy separate from later strategic
+effect:
+
+- `actionReconciliation` compares the selected candidate's predicted
+  transition with the authoritative result immediately after execution;
+- `interveningTransitions` records the separately caused player and system
+  changes before the next Loomkeeper turn; and
+- `strategicCalibration` compares the proposed pressure intent, predicted
+  pressure deltas and resulting current envelope across that full observation
+  window.
+
+This separation prevents a legal player counteraction from being mislabeled as
+a simulator integrity failure. An immediate authoritative mismatch follows the
+existing integrity-failure path. A route that was created exactly as predicted
+and then destroyed by the player instead becomes strategy strain and feedback
+for repair or switching.
+
+`CycleCalibration` contains:
+
+- basis match, surface, committed-voyage, proposal, candidate and observation
+  window IDs;
+- pressure channels the proposal intended to relieve and explicitly accepted
+  worsening in counter-pressure channels;
+- predicted and observed per-channel pressure deltas, each classified as
+  `matched`, `underperformed`, `overperformed`, `reversed` or `unknown`;
+- commitments `advanced`, `preserved`, `strained`, `violated` or `completed`;
+- residue IDs added, resolved and still carried;
+- a server-derived strategy status: `aligned`, `strained` or `diverged`;
+- a next-cycle policy: `normal`, `repair_required` or `fallback_only`; and
+- exact reason, source-fact and reopen-condition IDs.
+
+Calibration is typed and rule-derived rather than reduced to one score. The
+versioned rules and consecutive-divergence bound are frozen in Waypoint 1:
+
+- `aligned` permits the normal bounded transition set;
+- `strained` requires the next accepted proposal to repair or switch against a
+  present reason unless the server facts already show that the strain resolved;
+- `diverged` makes the next Loomkeeper turn deterministic-fallback-only, after
+  which calibration is derived again; and
+- repeated `diverged` results at the frozen bound disable Gemini for the rest of
+  that match without affecting deterministic completion.
+
+The current calibration packet and allowed transition set enter the next
+narrator request. Gemini must cite the current calibration ID and may interpret
+the feedback, but cannot edit its facts, status, next-cycle policy or divergence
+count. Deterministic fallback turns produce calibration too, so re-entry is
+based on observed world changes rather than the passage of one turn. Replay and
+reconnect recover the exact packet without a provider call.
+
+The first Loomkeeper window receives a server-created bootstrap calibration
+with `actionReconciliation: not_applicable`, status `aligned`, policy `normal`
+and reason `match_start`. It still carries any player/system transitions since
+match creation and the current pressure envelope; empty history is represented
+explicitly and is not invented as successful prior progress.
+
 ## Candidate cuts and transition packets
 
 WP-027 must not preserve the inherited fixed combat lattice as the only search
@@ -257,15 +321,18 @@ window:
 
 1. snapshot the bound `MatchAuthorityKernel` identity, authoritative R8
    `WorldSurface` and previous `CommittedStrategicVoyage`;
-2. reconcile the previous Loomkeeper candidate's predicted/observed transition
-   and derive the observed player/system transitions since that result;
+2. reconcile the previous Loomkeeper candidate's immediate predicted/observed
+   transition and separately derive the player/system transitions since that
+   result;
 3. build the bounded `WorldSurfaceProjection`, opportunity catalogue and
-   `WorldPressureEnvelope` from objective, topology, threat, support, resource,
-   affordance and reachable-region facts;
-4. run the **narrator pass**, which returns a `VoyageProposal` and desired
-   `WorldIntentProposal`;
+   `WorldPressureEnvelope`, then derive the authoritative `CycleCalibration`
+   from the previous proposal, prediction, observed transitions and current
+   envelope;
+4. run the **narrator pass** with that calibration, which returns a
+   `VoyageProposal`, desired `WorldIntentProposal` and bounded pressure intent;
 5. validate and freeze a `PendingVoyageProposal` for this reasoning window
-   without committing the next strategic carrier;
+   against the calibration's allowed transition set without committing the next
+   strategic carrier;
 6. generate, simulate and refine the multi-cut candidate atlas, including a
    predicted `WorldTransition` and `ProjectedPressureDelta` for each final
    candidate, while retaining mandatory exploration and fallback coverage;
@@ -282,14 +349,17 @@ window:
     envelope and `CommittedStrategicVoyage`, then carry that witnessed boundary
     into the next reasoning window.
 
-The narrator is evaluated every Loomkeeper turn because one full player turn is
-the natural observation window. It may retain the carrier unchanged. A strategy
-switch requires one current reason code such as `route_blocked`,
+The narrator is evaluated every eligible Loomkeeper turn because one full
+player turn is the natural observation window. A `fallback_only` calibration is
+the explicit exception. The narrator may retain the carrier unchanged. A
+strategy switch requires one current reason code such as `route_blocked`,
 `protected_commitment_failed`, `terminal_threat`, `objective_phase_changed` or
 `decisive_opportunity`. The server validates that the referenced condition is
 present, but does not replace Gemini's strategic preference with a hidden score.
 Validation makes the switch pending; the selected action and observed
-transition determine whether and how it becomes the next committed carrier.
+transition determine whether and how it becomes the next committed carrier. A
+`repair_required` calibration rejects an unrelated continue/refine proposal; a
+`fallback_only` calibration bypasses both Gemini passes for that turn.
 
 The choice validator checks factual consistency. For example, a candidate
 cannot claim to preserve chest support if its simulated world transition
@@ -304,6 +374,7 @@ The narrator response uses a strict schema equivalent to:
 
 ```json
 {
+  "calibrationId": "current-cycle-calibration-id",
   "transition": "continue|refine|repair|switch|complete",
   "transitionReason": "progress|route_blocked|protected_commitment_failed|terminal_threat|objective_phase_changed|decisive_opportunity",
   "focus": "objective_progress|objective_defence|denial|terrain_access|combat_pressure|survival",
@@ -314,6 +385,10 @@ The narrator response uses a strict schema equivalent to:
     "targetIds": ["current-request-id"],
     "protectedAffordanceIds": ["current-request-id"],
     "acceptedIrreversibleEffectIds": ["current-request-id"]
+  },
+  "pressureIntent": {
+    "relieveChannelIds": ["current-pressure-channel-id"],
+    "acceptedWorseningChannelIds": ["current-counter-pressure-channel-id"]
   },
   "horizonOwnTurns": 2,
   "protectedCommitmentIds": ["current-request-id"],
@@ -334,7 +409,12 @@ The choice response uses a separate strict schema equivalent to:
 
 All referenced IDs are enums from the exact current request. Required fields,
 array bounds and horizon bounds are enforced; additional properties are
-rejected. Output count is one and output ceilings remain small. Strategy,
+rejected. The calibration ID must equal the current server packet, the proposed
+transition must be allowed by its next-cycle policy, and accepted worsening may
+name only a currently exposed counter-pressure channel. Accepting a worsening
+only makes the proposed tradeoff explicit: it cannot suppress residue, waive a
+protected commitment, change calibration or make an irreversible effect legal.
+Output count is one and output ceilings remain small. Strategy,
 world-intent and function labels remain untrusted proposal, audit and
 continuity metadata. They cannot create a candidate, construct a capability,
 alter operations, commit a voyage or change the predicted world transition.
@@ -352,6 +432,8 @@ Each reasoning-window record adds:
 - provider outcome for narrator and choice independently;
 - exact stable model and prompt-contract revisions;
 - basis state, terrain, objective and previous committed-carrier hashes;
+- current cycle-calibration hash, strategy status, next-cycle policy,
+  divergence count and source transition IDs;
 - canonical narrator request/response hashes, pending voyage-proposal hash and
   pending world-intent-proposal hash;
 - cut-family allocation, proposal-set and final-atlas hashes;
@@ -368,13 +450,14 @@ Each reasoning-window record adds:
 
 The fresh verifier recreates R8, reconstructs the coupled world/voyage chain
 from committed records, regenerates the deterministic surface projection,
-pressure envelope, opportunity catalogue and candidate atlas, checks evidence
-identities, confirms that the recorded ID resolved to a legal current-atlas
-capability and reproduces its predicted and observed transitions before
-replaying its operations. It never calls Gemini. This reconstructs the pending
-proposal, authorized surface transformation, committed carrier and resulting
-match; it does not claim that a later model call would make the same strategic
-or tactical choice. Hashes bind the reconstructed evidence and currentness.
+pressure envelope, cycle calibration, opportunity catalogue and candidate
+atlas, checks evidence identities, confirms that the recorded ID resolved to a
+legal current-atlas capability and reproduces its predicted and observed
+transitions before replaying its operations. It never calls Gemini. This
+reconstructs the calibration feedback, pending proposal, authorized surface
+transformation, committed carrier and resulting match; it does not claim that a
+later model call would make the same strategic or tactical choice. Hashes bind
+the reconstructed evidence and currentness.
 Separate type, module and negative-response checks establish that no
 model-facing path can construct or invoke a core capability.
 
@@ -406,6 +489,9 @@ Failure behavior is stage-specific and recorded:
   R8 plan for that turn and leaves the previous committed voyage intact;
 - rejected narrator semantics add typed residue to a server-derived continuation
   and use deterministic fallback without calling the choice pass;
+- a missing/stale calibration ID, transition outside the packet's allowed set or
+  attempt to rewrite calibration facts rejects the proposal and follows the
+  packet's server-owned next-cycle policy;
 - candidate generation or simulation failure fails closed and cannot be
   presented as Gemini success;
 - choice timeout, invalid output, stale basis, unknown ID or semantic mismatch
@@ -431,10 +517,11 @@ breaker and a deployment spend budget. Shadow evidence records both-pass
 latency, schema and semantic validity, fallback reason, input/output tokens,
 estimated cost, voyage transitions, cut coverage, selected function and
 candidate comparison across all three objective modes. It also records desired,
-predicted and observed world effects, affordance changes and reconciliation
-status. Live thresholds and budget are explicit evidence and cannot be silently
-relaxed in configuration. They remain server-owned and are not included as
-strategic pressure channels.
+predicted and observed world effects, affordance changes, calibration status and
+policy transitions, divergence/fallback sequences and reconciliation status.
+Live thresholds and budget are explicit evidence and cannot be silently relaxed
+in configuration. They remain server-owned and are not included as strategic
+pressure channels.
 
 ## Security and configuration
 
@@ -470,14 +557,16 @@ ordinary dependency, license, audit and bundle review.
 Freeze the logical `MatchAuthorityKernel`/`WorldSurface`/
 `WorldSurfaceProjection` split, committed and pending voyage schemas,
 `WorldIntentProposal`, non-scalar `WorldPressureEnvelope`, predicted/observed
-`WorldTransition`, projected pressure deltas, observation delta, opportunity
+`WorldTransition`, projected pressure deltas, `CycleCalibration` and its
+aligned/strained/diverged policy rules, observation delta, opportunity
 catalogue, candidate-cut registry, exploration allocation, current-atlas
 resolver, internal capability boundary, transition packets, atomic turn-commit
 boundary, final-atlas bounds and replay records. Prove that each mode exposes
 objective, terrain, threat, recovery and world-shaping alternatives;
-counter-pressure and null-space survive projection; player-created world
-changes reach the next narrator window; exact reconstruction uses no provider;
-and model-facing types cannot express or invoke core operations.
+counter-pressure and null-space survive projection; immediate action mismatch
+remains distinct from later player-created strategy strain; player-created
+world changes reach the next narrator window; exact reconstruction uses no
+provider; and model-facing types cannot express or invoke core operations.
 
 No external Gemini request is permitted in this waypoint.
 
@@ -487,8 +576,10 @@ Implement the narrator and choice contracts behind the server-only adapter.
 Prove pending-to-committed carrier continuation, justified repair/switch,
 contradiction rejection, bounded world-intent proposal, pressure-envelope use,
 projected pressure deltas, typed predicted/observed transition reconciliation,
-response to intervening player transitions, world-effect contradiction
-rejection, unknown/stale/cross-match IDs, late-response races, malicious but
+cycle-calibration feedback, response to intervening player transitions,
+aligned/repair-required/fallback-only enforcement, repeated-divergence disable,
+world-effect contradiction rejection, missing/stale calibration IDs,
+unknown/stale/cross-match candidate IDs, late-response races, malicious but
 schema-valid responses, separate stage failure, deterministic fallback-derived
 continuation, crash recovery before and across the atomic commit, reconnect and
 circuit/spend limits with network-free local fakes. Profile request sizes and
@@ -496,14 +587,16 @@ define the provisional local deadline allocation.
 
 ### Waypoint 3 - deployed shadow mode
 
-Run both Gemini passes in shadow across Defend, Collect and Claim. The
-deterministic Loomkeeper acts while evidence measures voyage stability, valid
-strategy switches, cross-cut choice, desired world effects, factual consistency,
-prediction reconciliation, pressure tradeoffs, latency and cost. Compare
-selected candidates with fallback and confirm that Gemini distinguishes
-objective modes, deliberately changes battlefield affordances, uses material
-counter-pressure rather than echoing one channel and changes strategy when
-observed conditions warrant it. Freeze the live canary deadline and
+Run both Gemini passes in shadow on every eligible reasoning window across
+Defend, Collect and Claim; fallback-only windows record that neither call was
+made. The deterministic Loomkeeper acts while evidence measures voyage
+stability, valid strategy switches, cross-cut choice, desired world effects,
+factual consistency, prediction reconciliation, pressure tradeoffs, latency and
+cost. Compare selected candidates with fallback and confirm that Gemini
+distinguishes objective modes, deliberately changes battlefield affordances,
+uses material counter-pressure rather than echoing one channel, responds to
+calibration after underperformance or player counteraction and changes strategy
+when observed conditions warrant it. Freeze the live canary deadline and
 sub-deadlines from this evidence before Phone Gate A.
 
 Shadow output cannot alter gameplay, replay or reward truth.
@@ -524,7 +617,10 @@ movement or a threat justifies repair or switching. Confirm that:
 5. the bounded reasoning wait preserves the turn-based flow;
 6. close/reopen resumes the same match, world revision and strategic voyage;
    and
-7. controlled narrator and choice failures each fall back and finish the match.
+7. controlled narrator and choice failures each fall back and finish the match;
+   and
+8. one deliberate counteraction strains the prior plan and the next Loomkeeper
+   turn visibly repairs or switches according to its calibration feedback.
 
 ### Final promotion and Phone Gate B
 
@@ -546,7 +642,10 @@ Coverage must prove the match-authority/surface/projection split, coupled
 committed world/voyage-chain validity, pending proposal status, canonical world
 evidence identities, world-intent proposal and transition-reason evidence,
 typed predicted/observed reconciliation, pressure-envelope and projected-delta
-derivation, counter-pressure/null-space retention, affordance and
+derivation, counter-pressure/null-space retention, exact cycle-calibration
+derivation and replay, direct-action versus intervening-player attribution,
+aligned/strained/diverged classification, repair/fallback policy enforcement,
+bounded repeated-divergence disable, calibration immutability, affordance and
 irreversible-effect derivation, candidate-cut coverage and bounds, mandatory
 exploration, mode-specific consequences, strict schemas, cross-level
 contradiction rejection, current-atlas capability resolution,
@@ -577,12 +676,13 @@ resolution.
 WP-027 closes only when the deterministic voyage/candidate boundary, two-pass
 fake gate, deployed shadow evidence, live Practice Phone Gate A and final
 Practice/Daily Phone Gate B pass; exact replay reconstructs every carrier and
-selected plan plus its predicted and observed world transition without Gemini;
-the model-facing adapter has no path to construct or invoke an invariant-core
-capability; pending proposals cannot survive as committed carriers without an
-observed transition; safe deployment settings are restored; change-selected
-checks pass; evidence is complete; and housekeeping agrees with the execution
-pointer.
+selected plan, cycle-calibration packet and predicted/observed world transition
+without Gemini; the model-facing adapter has no path to construct or invoke an
+invariant-core capability; pending proposals cannot survive as committed
+carriers without an observed transition; observed underperformance and player
+counteraction feed the next bounded policy without becoming model-authored
+memory; safe deployment settings are restored; change-selected checks pass;
+evidence is complete; and housekeeping agrees with the execution pointer.
 
 ## Design provenance
 

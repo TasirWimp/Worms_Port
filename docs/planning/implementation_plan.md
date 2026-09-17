@@ -319,15 +319,22 @@ Phaser/Socket.IO stack.
   surface and model-facing surface projection are separate responsibilities;
   Gemini has no response or module path to construct operations, patch state or
   invoke the executor. Each Loomkeeper turn derives a non-scalar strategic
-  pressure envelope, then uses a bounded Gemini narrator pass to propose retaining,
-  repairing or switching strategy and a bounded `WorldIntentProposal`.
+  pressure envelope and a server-owned `CycleCalibration` from the previous
+  proposal, predicted/observed action result and subsequent player/system
+  changes. The calibration separates simulator integrity from strategic
+  underperformance, classifies the voyage as aligned, strained or diverged and
+  constrains the next cycle to normal reasoning, required repair or deterministic
+  fallback without changing Gemini's weights. A bounded Gemini narrator pass then
+  proposes retaining, repairing or switching strategy and a bounded
+  `WorldIntentProposal`.
   Deterministic multi-cut generation and simulation produce predicted
   `WorldTransition` packets plus per-channel pressure deltas; a separate Gemini
   choice pass may select only a stable candidate ID from the resulting atlas. A
   current-atlas resolver converts a valid ID into an internal candidate capability
   for authoritative execution. The proposal becomes the next committed voyage
   only after the observed world transition witnesses the actual selected or
-  fallback action. Hashes bind currentness, replay and audit evidence; the
+  fallback action; that result feeds the following cycle's calibration. Hashes
+  bind currentness, replay and audit evidence; the
   capability boundary supplies containment. Cross-level validation rejects
   strategic or world-effect claims that contradict simulated consequences. The
   deterministic R8 policy remains the permanent stage-specific fallback, atomic
