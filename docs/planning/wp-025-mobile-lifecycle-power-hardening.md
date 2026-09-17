@@ -2,7 +2,7 @@
 
 Status: **complete 2026-09-15**
 
-Implementation base: `b6f7141`  
+Implementation base: `b6f7141`
 Implementation branch: `codex/v10-r6-action-impact-dynamics`
 
 ## Product outcome

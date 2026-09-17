@@ -1,7 +1,7 @@
 # WP-024 V10 R7 Terrain As Gameplay
 
 Status: **Complete 2026-09-15**
-Planning base: `842da39`  
+Planning base: `842da39`
 Implementation base: `4f7c878`
 Implementation branch: `codex/v10-r6-action-impact-dynamics`
 

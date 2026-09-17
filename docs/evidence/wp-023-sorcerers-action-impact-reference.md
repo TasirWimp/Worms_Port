@@ -3,7 +3,7 @@
 Status: frozen reference-observation handoff, 2026-09-13; implementation is
 independent and in progress.
 
-Observer: Codex primary single-owner reference observer.  
+Observer: Codex primary single-owner reference observer.
 Reference identity: public `lorgan3/sorcerers`, commit
 `0f45c4920321c0a3a14de30fe5cf44131a38da89`.
 
@@ -53,4 +53,3 @@ Sorcerers source code, identifiers, file layout, algorithms, constants, tests,
 maps and assets are excluded. The primary assistant performs a direct
 source-boundary review before package closure; this is single-owner review and
 is not claimed as independent clean-room separation.
-

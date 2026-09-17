@@ -1,7 +1,7 @@
 # WP-023 V10 R6 Action And Impact Dynamics
 
 Status: **Complete 2026-09-14**
-Branch: `codex/v10-r6-action-impact-dynamics`  
+Branch: `codex/v10-r6-action-impact-dynamics`
 Starting commit: `c0f63ec`
 
 ## Product change
