@@ -314,22 +314,28 @@ Phaser/Socket.IO stack.
   current execution target. Its bounded contract and physical tablet recheck
   are recorded in the [WP-026 deferred performance waypoint](wp-026-v10-r8-objective-modes.md#deferred-performance-optimization-waypoint).
 - Queued after WP-026: **WP-027 Strategic-Voyage Gemini Loomkeeper**. A
-  server-owned strategic voyage is coupled to the deterministic world trajectory
-  it helps select. Each Loomkeeper turn uses a bounded Gemini narrator pass to
-  retain, repair or switch strategy and declare a bounded `WorldIntent`;
-  deterministic multi-cut generation and simulation then produce hashed
-  predicted `WorldTransition` packets; a separate Gemini choice pass may select
-  only a stable candidate ID from the resulting atlas. The server executes that
-  candidate, compares the observed world transition with the prediction and
-  carries the reconciled result plus intervening observed player/system world
-  transitions into the next reasoning window. Cross-level
-  validation rejects strategic or world-effect claims that contradict simulated
-  consequences. The deterministic R8 policy remains the permanent stage-specific
-  fallback, active matches persist the accepted world/voyage state across
-  reconnect, and replay reconstructs the full carrier/candidate/world-transition
-  chain without calling Gemini. The refined path has three implementation
-  waypoints before live Practice and final Practice/Daily phone gates. See the
-  [WP-027 contract](wp-027-gemini-objective-loomkeeper.md).
+  server-owned committed strategic voyage is coupled to the deterministic world
+  trajectory it helps select. The match-bound authority kernel, mutable world
+  surface and model-facing surface projection are separate responsibilities;
+  Gemini has no response or module path to construct operations, patch state or
+  invoke the executor. Each Loomkeeper turn derives a non-scalar strategic
+  pressure envelope, then uses a bounded Gemini narrator pass to propose retaining,
+  repairing or switching strategy and a bounded `WorldIntentProposal`.
+  Deterministic multi-cut generation and simulation produce predicted
+  `WorldTransition` packets plus per-channel pressure deltas; a separate Gemini
+  choice pass may select only a stable candidate ID from the resulting atlas. A
+  current-atlas resolver converts a valid ID into an internal candidate capability
+  for authoritative execution. The proposal becomes the next committed voyage
+  only after the observed world transition witnesses the actual selected or
+  fallback action. Hashes bind currentness, replay and audit evidence; the
+  capability boundary supplies containment. Cross-level validation rejects
+  strategic or world-effect claims that contradict simulated consequences. The
+  deterministic R8 policy remains the permanent stage-specific fallback, atomic
+  committed world/voyage boundaries survive reconnect, and replay reconstructs
+  the full proposal/capability/carrier/world-transition chain without calling
+  Gemini. The refined path has three implementation waypoints before live
+  Practice and final Practice/Daily phone gates. See the [WP-027
+  contract](wp-027-gemini-objective-loomkeeper.md).
 - Active target: mobile-first single-player Nimiq Pay competition release.
 - Latest completed slice: **WP-015D4D V10G Terrain And Weapon Tactics**;
   see the [V10G preparation contract](wp-015d4a-v10-terrain-starts-contract.md#v10g-terrain-and-weapon-tactics-preparation).
