@@ -1,6 +1,8 @@
 {
   "id": "WP-015D4C",
-  "status": "in_progress",
+  "status": "superseded",
+  "superseded_by": "WP-015D4D V10G Terrain And Weapon Tactics",
+  "supersession_reason": "V10F's deterministic generator and preview were retained, while V10G replaced its deferred tactical-effectiveness work with the next accepted terrain-and-weapon package.",
   "execution_mode": "single_owner",
   "starting_commit": "2875e065f43fb2ee96510cb08ba0c4caafe0f34f",
   "branch": "codex/wp-015d4c-v10f-procedural-terrain",

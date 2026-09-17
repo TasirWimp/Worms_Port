@@ -13,7 +13,8 @@ const allowedFields = new Set([
   'starting_lock_sha256', 'owning_roles', 'scope', 'non_goals',
   'planned_checks', 'deterministic_seeds', 'sorcerers_reference_used',
   'clean_room_records', 'check_results', 'reviews', 'skipped_checks',
-  'residual_risks', 'support_episodes', 'execution_mode'
+  'residual_risks', 'support_episodes', 'execution_mode', 'superseded_by',
+  'supersession_reason'
 ]);
 
 function canonicalLockHash(commit, root = repoRoot) {
@@ -294,7 +295,13 @@ function validateEvidence(
     if (ids.has(evidence.id)) errors.push(`${label}: duplicate work-package id.`);
     ids.add(evidence.id);
     if (!/^WP-\d{3}(?:[A-Z]|[A-Z]\d[A-Z])?$/.test(evidence.id || '')) errors.push(`${label}: invalid work-package id.`);
-    if (!['in_progress', 'complete', 'blocked'].includes(evidence.status)) errors.push(`${label}: invalid status.`);
+    if (!['in_progress', 'complete', 'blocked', 'superseded'].includes(evidence.status)) errors.push(`${label}: invalid status.`);
+    if (evidence.status === 'superseded') {
+      if (!isNonEmptyString(evidence.superseded_by)) errors.push(`${label}: superseded evidence requires superseded_by.`);
+      if (!isNonEmptyString(evidence.supersession_reason)) errors.push(`${label}: superseded evidence requires supersession_reason.`);
+    } else if (evidence.superseded_by !== undefined || evidence.supersession_reason !== undefined) {
+      errors.push(`${label}: supersession fields require superseded status.`);
+    }
     if (evidence.execution_mode !== undefined && evidence.execution_mode !== 'single_owner') {
       errors.push(`${label}: invalid execution mode.`);
     }

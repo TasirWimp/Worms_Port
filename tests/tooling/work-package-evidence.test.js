@@ -117,6 +117,28 @@ test('work-package evidence accepts a single uppercase stabilization suffix', ()
   );
 });
 
+test('superseded evidence names its successor without claiming completion', () => {
+  const superseded = {
+    ...base,
+    status: 'superseded',
+    superseded_by: 'WP-1000 successor package',
+    supersession_reason: 'The successor owns the remaining work and this record remains historical.'
+  };
+  assert.deepEqual(validateEvidence([superseded], [], () => hash), []);
+  assert.match(
+    validateEvidence([{ ...superseded, superseded_by: undefined }], [], () => hash).join('\n'),
+    /requires superseded_by/
+  );
+  assert.match(
+    validateEvidence([{ ...superseded, supersession_reason: '' }], [], () => hash).join('\n'),
+    /requires supersession_reason/
+  );
+  assert.match(
+    validateEvidence([{ ...base, superseded_by: 'WP-1000' }], [], () => hash).join('\n'),
+    /supersession fields require superseded status/
+  );
+});
+
 test('support episodes retain an open request before reciprocal reduction', () => {
   const open = pendingSupportEpisode();
   assert.deepEqual(validateEvidence([{ ...base, support_episodes: [open] }], [], () => hash), []);

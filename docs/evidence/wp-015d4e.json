@@ -1,6 +1,8 @@
 {
   "id": "WP-015D4E",
-  "status": "in_progress",
+  "status": "superseded",
+  "superseded_by": "WP-015D4F/WP-015D4G/WP-015D4H volcanic runtime successors",
+  "supersession_reason": "The source-master-only package was followed by separately bounded lazy loading, composition and standard-Practice integration. This record does not claim those later runtime gates as part of D4E.",
   "execution_mode": "single_owner",
   "starting_commit": "1accbeb",
   "branch": "codex/volcanic-ruin-background-art",

@@ -1,6 +1,8 @@
 {
   "id": "WP-015D3A",
-  "status": "in_progress",
+  "status": "superseded",
+  "superseded_by": "WP-015D3B V9 Resource And Utilities",
+  "supersession_reason": "The unpromoted V8 candidate was replaced by the versioned V9 package and remains recoverable historical evidence. Supersession does not assert V8 release completion or erase its outstanding gates.",
   "starting_commit": "dc66d2ac0f02b1b7c47f6949816a7cbc6e48e286",
   "branch": "codex/wp-015d3a-v8-preparation-v0",
   "initial_worktree": "clean",

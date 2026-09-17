@@ -9,6 +9,13 @@ Phaser/Socket.IO stack.
 
 - Development policy: **Primary ownership with testing-only delegation**, effective 2026-09-10. The primary selects coverage and owns implementation/product corrections/direct review; one Terra/medium `worms_port_test_runner` executes and manages the tests. Other agents and WP-016 remain retired. See [Testing delegation](../process/development_workflow.md#testing-delegation). Main model/effort follow the user selection, with no repo pin. The selector and 22:00 Europe/Berlin daily suite remain in use.
 
+- Canonical package state: **WP-026 V10 R8 Objective Modes is complete**.
+  Standard Practice and PEI-gated Daily remain R7; the server-backed R8
+  objective canary remains private. **WP-027 Strategic-Voyage Gemini
+  Loomkeeper is queued at contract/calibration only**: no runtime Gemini call,
+  provider configuration, public R8 promotion or reward-path change is
+  authorized.
+
 - Verification infrastructure: the isolated change-selection/build-reuse port
   from `da1e7a9` follows the owner-requested 22:00 Berlin daily/full cadence.
   Failed feature checks now preserve unchanged-input passes using the selector's
@@ -160,8 +167,8 @@ Phaser/Socket.IO stack.
   release in a resumed rewarded match. The temporary wallet-scoped repeat
   variables were removed, the helper and game were restored to safe environment
   settings, and both Render services were redeployed. **Phone Gate C and WP-023
-  are complete.** No successor package is authorized; the next execution target
-  waits for the owner's next topic.
+  are complete.** At that closure no successor package had yet been authorized;
+  WP-024 was subsequently opened and is recorded below.
   No server authority or economy code changed. R5 remains an explicit diagnostic
   and is not part of ordinary acceptance. See the [WP-023 contract](wp-023-v10-r6-action-impact-dynamics.md)
   and [evidence](../evidence/wp-023.json).
@@ -330,7 +337,7 @@ Phaser/Socket.IO stack.
   final Practice/Daily Gate B follows promotion. See the
   [WP-027 contract](wp-027-gemini-objective-loomkeeper.md).
 - Active target: mobile-first single-player Nimiq Pay competition release.
-- Latest completed slice: **WP-015D4D V10G Terrain And Weapon Tactics**;
+- Historical completed predecessor: **WP-015D4D V10G Terrain And Weapon Tactics**;
   see the [V10G preparation contract](wp-015d4a-v10-terrain-starts-contract.md#v10g-terrain-and-weapon-tactics-preparation).
   The owner accepted R3 Twin Crests on a physical phone at `c52fc28` and
   authorized family expansion. R4 `v10g-families-r1` now extends the unchanged
@@ -338,25 +345,27 @@ Phaser/Socket.IO stack.
   Expanded-family selected verification passed (67 canonical browser cases);
   the owner accepted the expanded maps on a physical phone at `8e40a82`
   and explicitly authorized closure. **V10G is complete.**
-  WP-015D4E Volcanic-Ruin Background Art completed source-master admission.
-  WP-015D4F completed the lazy preview bundle. Active successor:
-  **WP-015D4G Volcanic-Ruin Composition And Terrain Alignment**, beginning at
+  WP-015D4E Volcanic-Ruin Background Art completed source-master admission,
+  WP-015D4F completed the lazy preview bundle, WP-015D4G completed composition
+  and terrain alignment, and WP-015D4H completed standard volcanic Practice.
+  These are predecessors to WP-022 through WP-026 above, not active successors.
+  **WP-015D4G Volcanic-Ruin Composition And Terrain Alignment** began at
   `990d2b3`. The owner authorizes scene framing plus an ASCII-authored R5 valley
   using the existing assets. Combined preview: `/?combat-preview=v10g&background-preview=volcanic-ruin`.
   Historical D4G implementation and direct review evidence:
   five-project scenic checks passed; selected runtime checks passed, with one
   Chromium resource-load failure passing unchanged on isolated rerun. See
-  [D4G verification evidence](../evidence/wp-015d4g.json). Owner phone acceptance, including the restart fix, was confirmed on 2026-09-11; D4H is now the active successor.
+  [D4G verification evidence](../evidence/wp-015d4g.json). Owner phone acceptance, including the restart fix, was confirmed on 2026-09-11; D4H subsequently completed.
   Old V10G maps, asset bytes/budgets and public activation remain unchanged. See the
   [preview-bundle contract](wp-015d4f-volcanic-ruin-preview-bundle-contract.md).
   `/?combat-preview=v10g` defaults to Twin Crests; append `&terrain-map=` with
   `trench-needle`, `stepping-mesa`, `rampart-high-left` or `rampart-high-right`.
   Old R3 seeds/replays retain the fixed Twin Crests recipe; R2 remains unchanged.
   Public Practice/Daily activation is a separate owner decision.
-  V10G closed on `codex/wp-015d4d-v10g-terrain-weapon-tactics`; current
-  background-art preparation branch: `codex/volcanic-ruin-background-art`.
+  Historical branch carriers are `codex/wp-015d4d-v10g-terrain-weapon-tactics`
+  and `codex/volcanic-ruin-background-art`.
   Family expansion began from a clean worktree at `c52fc28`; closure follows
-  clean `d796232`. No agents are used. The 22:00 daily suite, Ubuntu release
+  clean `d796232`. These slices used the then-current single-owner policy. The 22:00 daily suite, Ubuntu release
   visual checks and PostgreSQL gate remain separate from this package closure.
 - Playable predecessor: **WP-015D4C V10F Procedural Terrain.** Its preparation
   follows WP-015D4B V10E Tactical Terrain Refinement. It
@@ -449,8 +458,8 @@ Phaser/Socket.IO stack.
   planner and movement physics remain unchanged. Local
   `?combat-preview=v10e` is the refined phone candidate; the original V10 route
   remains available. Implementation and automated acceptance are complete;
-  physical-phone terrain feel remains open. Overall package evidence stays
-  `in_progress`, and no public Practice, Daily Challenge, reward promotion or
+  physical-phone terrain feel remained open when V10F superseded this package.
+  Its evidence is preserved as `superseded`, and no public Practice, Daily Challenge, reward promotion or
   V11 progression is implied. The owner chose to proceed with V10F and
   authorized a bounded new research pass. The
   [pinned V10F reference pack](../evidence/wp-015d4c-v10f-procedural-terrain-reference-pack.md)
@@ -512,8 +521,8 @@ Phaser/Socket.IO stack.
   [frozen behavior-only handoff](../evidence/wp-015d3a-v8-action-turns-behavior-record.md),
   owner-required shared Practice/reward combat rules, immutable replay
   identities, clean-room roles, and the feature/daily verification cadence. The
-  [evidence record](../evidence/wp-015d3a.json) stays `in_progress` and the
-  clean-room record stays `observed`; neither asserts completed V8.
+  [evidence record](../evidence/wp-015d3a.json) is preserved as `superseded` by
+  V9 and the clean-room record stays `observed`; neither asserts completed V8.
   The owner corrected the initial mode-split proposal: both current modes
   already use V7 and standard AI, and V8 must promote one shared combat
   version for both. Eligibility/payout remain separate mode policies;
@@ -3536,7 +3545,7 @@ allowance cannot be reassigned to JavaScript.
    time was 9m09s. Exact Ubuntu bundle and timing measurements, expected-skip,
    security, self-review, and residual risks are recorded in
    `docs/evidence/wp-014e.json`.
-6. **WP-014F Quality-gate repair - in progress 2026-08-31:** ordinary Verify
+6. **WP-014F Quality-gate repair - superseded 2026-09-17:** ordinary Verify
    run `33420614409` on a documentation-only Lane G PR exposed pre-existing
    quality debt. Its Linux visual baselines still showed the placeholder arena
    while actual captures contained the already-approved production art; one
@@ -3567,7 +3576,9 @@ allowance cannot be reassigned to JavaScript.
    coverage changes.
    Replacement Linux baselines remain blocked until the pinned Ubuntu 24.04
    artifact-only workflow generates them and every changed candidate is
-   explicitly inspected. Evidence is open in `docs/evidence/wp-014f.json`.
+   explicitly inspected. WP-014G/WP-014H and later reviewed baseline promotion
+   replaced this bounded repair; its uncompleted gate remains historical in
+   `docs/evidence/wp-014f.json`.
 7. **WP-014G Browser-harness optimization - complete 2026-09-01:** preserves
    the five maintained projects, zero retries, one worker per existing CI shard,
    expected-skip accounting, visual thresholds, timing budgets, and fresh-build
@@ -3625,8 +3636,9 @@ Primary implementation references reviewed for this refinement:
 
 ### WP-015 Production Art And Audio
 
-Status: in progress. Depends on WP-010 and WP-014 asset gates. WP-015A is
-complete; WP-015B is the active slice.
+Status: historical predecessor. WP-015A completed; WP-015B's bounded approved
+masters and runtime-copy work moved through later V10 integration packages.
+Unfinished roster and animation breadth remain deferred rather than active here.
 
 Goal: assemble a basic, phone-playable production-art version of the existing
 artillery loop so real-device testing can show how characters, weapons,
@@ -3668,8 +3680,8 @@ Sequential delivery slices:
   external generator stack, freeze its bridge environment, prove a bounded
   loopback smoke, and provide one fail-closed re-entry command. This slice
   promotes no media.
-- **WP-015B Basic assembly contract and vertical-slice foundation — in
-  progress:**
+- **WP-015B Basic assembly contract and vertical-slice foundation — historical,
+  superseded by bounded runtime integration:**
   - **WP-015B0 Approval and canonical baseline — complete 2026-08-02:** record
     the project owner's Nimiq-team/foundation encouragement attestation and
     historical geometry approval, later superseded for production anatomy by

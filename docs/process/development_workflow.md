@@ -142,7 +142,15 @@ record that transition while preserving historical support/review records.
 Append the latest direct verdict after historical reviews; a failed latest verdict
 blocks closure. Support-record consistency remains checked; retirement does not invent exchanges
 or relabel direct review as independent. Before completion, record checks, direct review,
-skipped check, and residual risk. Generated traces, videos, reports,
+skipped check, and residual risk. Evidence status is lifecycle truth, not a
+branch-merger proxy. `in_progress` names a package that still owns current work,
+`complete` requires every planned check and the applicable final review, and
+`blocked` remains current but cannot advance. Use `superseded` when an incomplete
+or partially accepted historical package no longer owns current work because a
+named successor replaced it. Superseded evidence must name that successor and
+explain the boundary; it keeps failed reviews, skipped checks and residual risks
+intact and does not imply that the predecessor passed completion or release
+gates. Generated traces, videos, reports,
 screenshots, caches, and raw logs stay in ignored `test-results/` or
 `playwright-report/`. Only compact sanitized facts belong in the tracked
 record; never persist secrets, wallet material, device identifiers, or raw

@@ -1,6 +1,8 @@
 {
   "id": "WP-014F",
-  "status": "in_progress",
+  "status": "superseded",
+  "superseded_by": "WP-014G/WP-014H verification funnel successors",
+  "supersession_reason": "Later verification-funnel work and reviewed baseline promotion replaced this bounded repair package. Its uncompleted baseline gate remains historical evidence rather than a completion claim.",
   "starting_commit": "7f8fe6108ae26a0e25bb3ca185dab6c1f86c662f",
   "branch": "codex/wp-014f-quality-gate-repair-v0",
   "initial_worktree": "clean",

@@ -1,6 +1,8 @@
 {
   "id": "WP-015D2A",
-  "status": "in_progress",
+  "status": "superseded",
+  "superseded_by": "WP-015D2V and later versioned combat packages",
+  "supersession_reason": "The analytical harness remains research evidence, while later bounded navigation and versioned combat packages became the product execution path. Rejected analytical candidates remain rejected.",
   "starting_commit": "99cb25b9c1233f771fc65263b7f131c41be8aee2",
   "branch": "codex/wp-015-production-assets",
   "initial_worktree": "clean",

@@ -1,6 +1,8 @@
 {
   "id": "WP-015D4B",
-  "status": "in_progress",
+  "status": "superseded",
+  "superseded_by": "WP-015D4C V10F Procedural Terrain",
+  "supersession_reason": "The owner proceeded from the V10E local candidate to the separately versioned V10F package before physical terrain-feel closure. The remaining V10E gate stays recorded rather than being retroactively passed.",
   "execution_mode": "single_owner",
   "starting_commit": "b879b930b91da5c2054a54c5849df4985aebc0af",
   "branch": "codex/wp-015d4b-v10e-tactical-terrain",

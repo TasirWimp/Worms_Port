@@ -1,6 +1,8 @@
 {
   "id": "WP-015D4A",
-  "status": "in_progress",
+  "status": "superseded",
+  "superseded_by": "WP-015D4B V10E Tactical Terrain Refinement",
+  "supersession_reason": "The accepted V10 preview and assessment were retained while V10E became the next bounded terrain identity. Public promotion and release gates remained outside this predecessor.",
   "execution_mode": "single_owner",
   "starting_commit": "00ee140b7c7eeafb591e5decd3eca5bcbf2278dc",
   "branch": "codex/wp-015d4a-v10-terrain-starts-v0",

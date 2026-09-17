@@ -9,7 +9,7 @@ The `Worms_Port` repository was bootstrapped from the MIT
 
 ## Current volcanic Practice
 
-The normal `/` entry in the WP-024 branch starts server-backed V10 R7 Practice
+The normal `/` entry in the current production runtime starts server-backed V10 R7 Practice
 on the accepted full-width, fully destructible Volcanic Ruin battlefield, with
 the existing terrain weapons and deterministic Loomkeeper.
 The five background images load only when combat starts. Practice remains
@@ -71,10 +71,10 @@ phone acceptance should cover Start Practice, aim/fire and AI reply, pause,
 reconnect/reload, and repeated retries with the background still present.
 See the [standard Practice contract](docs/planning/wp-015d4f-volcanic-ruin-preview-bundle-contract.md#wp-015d4h-standard-server-backed-volcanic-practice).
 
-### Private R8 objective-physics preview
+### Private R8 objective-mode canary
 
-WP-026 Waypoint 1 is isolated behind wallet-free local preview routes. It does
-not change `/`, server Practice, Daily, PEI admission or rewards:
+WP-026 is complete behind wallet-free private routes. It does not change the
+normal `/` entry, standard R7 Practice, Daily, PEI admission or rewards:
 
 ```text
 /?combat-preview=v10r8&objective-mode=collect
@@ -82,15 +82,16 @@ not change `/`, server Practice, Daily, PEI admission or rewards:
 /?combat-preview=v10r8&objective-mode=claim
 ```
 
-The preview places seven coins for Collect or one chest for Defend and Claim on
-a separate ASCII layer aligned to the full R7 arena. Shots pass through the
-objects without damaging them. Destroying their terrain support makes them fall
-vertically, land on lower terrain or disappear after their whole body leaves the
-open bottom. Contact, score, result rules, objective HUD and objective-aware AI
-are intentionally absent until later WP-026 waypoints. The current code-owned
-coin and chest drawings exist for Phone Gate A scale and behavior review.
-Unknown `objective-mode` values select Collect. A reload restores the matching
-local preview; its Restart action creates the selected mode from a fresh layout.
+The private canary creates server-authoritative R8 Practice with seven approved
+runtime coins for Collect or one code-owned chest for Defend and Claim on a
+separate ASCII layer aligned to the full R7 arena. Shots pass through objectives
+without damaging them. Removing terrain support makes objectives fall, land on
+lower terrain or leave through the open bottom. Contact, scoring, terminal
+results, objective HUD, mode selection, deterministic objective-aware fallback,
+exact replay and destroyed-WebView resume are implemented. Unknown
+`objective-mode` values select Collect. Reload resumes an owned active R8 match;
+Restart creates the selected mode from a fresh layout. Standard Practice and
+PEI-gated Daily remain R7 until a later explicitly accepted promotion.
 
 ## Temporary Nimiq Pay Display Workaround
 
@@ -164,8 +165,9 @@ are also recorded in the Execution Pointer of
   the root path now supplies the server-backed R7 Practice canary. Waypoints
   1-3 and Phone Gates A-C are accepted. The final promotion activates this
   deterministic server/replay identity for both Practice and Daily;
-  objective modes and Gemini are separately planned in
-  [WP-026](docs/planning/wp-026-v10-r8-objective-modes.md) and
+  private R8 objective modes are complete in
+  [WP-026](docs/planning/wp-026-v10-r8-objective-modes.md), while strategic
+  Gemini selection remains queued at contract/calibration only in
   [WP-027](docs/planning/wp-027-gemini-objective-loomkeeper.md).
   Named development profiles remain diagnostics and cannot activate the
   PEI-gated Daily Challenge.

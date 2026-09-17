@@ -1,6 +1,8 @@
 {
   "id": "WP-015D3B",
-  "status": "in_progress",
+  "status": "superseded",
+  "superseded_by": "WP-015D4A V10 Terrain And Starting Positions",
+  "supersession_reason": "V9 engineering and phone acceptance were preserved, then V10 became the active product path. Historical failed reviews and unrun release gates remain evidence and are not converted into a V9 completion claim.",
   "execution_mode": "single_owner",
   "starting_commit": "da1e7a9c1a1c19bcfa4385e3db28cb530f660ebb",
   "branch": "codex/wp-015d3b-v9d-resource-utilities",

@@ -6,11 +6,14 @@ function command(args) { try { return childProcess.execFileSync('git', args, { c
 function readEvidence() { const directory = path.join(repoRoot, 'docs', 'evidence'); return fs.readdirSync(directory).flatMap((file) => { if (!file.endsWith('.json')) return []; try { const record = JSON.parse(fs.readFileSync(path.join(directory, file), 'utf8')); return record.id && record.branch ? [{ file: `docs/evidence/${file}`, ...record }] : []; } catch { return []; } }); }
 function analyzeHousekeeping({ currentBranch, upstream, worktreeDirty, mergedBranches, goneTrackingBranches, evidence }) {
   const inProgress = evidence.filter((record) => record.status === 'in_progress');
+  const superseded = evidence.filter((record) => record.status === 'superseded');
+  const supersededPackages = superseded.map(({ id, file, branch, superseded_by }) => ({ id, file, branch, superseded_by }));
+  const supersededFailedReviews = superseded.flatMap((record) => (record.reviews || []).filter((review) => review.decision === 'fail').map((review) => ({ id: record.id, file: record.file, branch: record.branch, reviewer: review.reviewer })));
   const failedReviews = inProgress.flatMap((record) => (record.reviews || []).filter((review) => review.decision === 'fail').map((review) => ({ id: record.id, file: record.file, branch: record.branch, reviewer: review.reviewer })));
   return { currentBranch, upstream, worktreeDirty, mergedBranches, goneTrackingBranches,
     currentBranchPackages: inProgress.filter((record) => record.branch === currentBranch).map(({ id, file, status }) => ({ id, file, status })),
     otherInProgressPackages: inProgress.filter((record) => record.branch !== currentBranch).map(({ id, file, branch, status }) => ({ id, file, branch, status })),
-    failedReviews, manualReconciliationRequired: failedReviews.length > 0 || goneTrackingBranches.length > 0 };
+    supersededPackages, supersededFailedReviews, failedReviews, manualReconciliationRequired: failedReviews.length > 0 || goneTrackingBranches.length > 0 };
 }
 function main() {
   const currentBranch = command(['branch', '--show-current']) || '(detached)';

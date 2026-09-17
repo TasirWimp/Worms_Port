@@ -1,6 +1,8 @@
 {
   "id": "WP-015B",
-  "status": "in_progress",
+  "status": "superseded",
+  "superseded_by": "WP-015B3C.1 and later V10 runtime-integration packages",
+  "supersession_reason": "The approved exact-file masters moved through separately evidenced runtime-copy and V10 integration packages. Unfinished roster and animation work remains deferred and is not claimed complete here.",
   "starting_commit": "bfb1677f4a1cb460cf9b5125c7aa14336cf6dbc6",
   "branch": "codex/wp-015-production-assets",
   "initial_worktree": "clean",
