@@ -424,7 +424,7 @@ Those tests remain source history and may run only through the explicit
 `--legacy` diagnostic switch, including
 `npm run test:browser:reward:postgres -- --legacy` for the database-backed
 journey; the selector, quality gate and daily/release gate never request that
-switch. Routine protocol, simulation, combat, Practice and reward unit commands
+switch. Routine protocol, simulation, Loomkeeper, combat, Practice and reward unit commands
 likewise exclude version-only V7/V8/V9 files and legacy-bearing mixed files
 through `scripts/run-supported-unit-tests.js`; current V10 cases are extracted
 where a mixed file would otherwise hide them. `npm run test:legacy` is the

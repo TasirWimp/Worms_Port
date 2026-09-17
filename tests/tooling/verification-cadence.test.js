@@ -383,7 +383,9 @@ test('daily coverage stays complete with a single compliance/types/build pass', 
 });
 
 test('routine unit selectors exclude every explicit legacy diagnostic', () => {
-  for (const suite of ['protocol', 'simulation', 'combat', 'practice', 'reward']) {
+  assert.equal(scripts['test:loomkeeper'],
+    'node scripts/run-supported-unit-tests.js loomkeeper');
+  for (const suite of ['protocol', 'simulation', 'loomkeeper', 'combat', 'practice', 'reward']) {
     const selected = suiteFiles(suite);
     if (suite !== 'practice') assert.ok(selected.length > 0, suite);
     assert.equal(selected.some((file) => legacyFiles.has(file)), false, suite);
@@ -391,6 +393,10 @@ test('routine unit selectors exclude every explicit legacy diagnostic', () => {
   assert.deepEqual(suiteFiles('practice'), [
     'tests/practice/application-lifecycle.test.ts',
     'tests/practice/current-v10-client.test.ts'
+  ]);
+  assert.deepEqual(suiteFiles('loomkeeper'), [
+    'tests/loomkeeper/loomkeeper.test.ts',
+    'tests/loomkeeper/terrain-starts-v10.test.ts'
   ]);
   for (const file of legacyFiles) {
     assert.equal(fs.existsSync(path.resolve(__dirname, '../..', file)), true, file);

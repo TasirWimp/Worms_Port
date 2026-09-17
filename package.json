@@ -31,7 +31,7 @@
     "test:tooling": "node --test --test-concurrency=1 tests/tooling/*.test.js",
     "test:protocol": "node scripts/run-supported-unit-tests.js protocol",
     "test:simulation": "node scripts/run-supported-unit-tests.js simulation",
-    "test:loomkeeper": "node --import tsx --test tests/loomkeeper/*.test.ts",
+    "test:loomkeeper": "node scripts/run-supported-unit-tests.js loomkeeper",
     "assess:v8": "node --import tsx --test tests/loomkeeper/action-turns-v8.assessment.ts",
     "assess:v9": "node --import tsx --test tests/loomkeeper/resource-turns-v9.assessment.ts",
     "assess:v10": "node --import tsx --test tests/loomkeeper/terrain-starts-v10.assessment.ts",

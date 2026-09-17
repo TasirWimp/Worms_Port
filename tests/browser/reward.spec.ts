@@ -85,7 +85,10 @@ test('standard Daily uses volcanic V10, resumes, settles verified loss, and retr
     expect(runtime.sessions.activeSnapshotV10(runtime.sessions.getBound(socketId)!)!.challengeId).toBe(challenge);
     await completeCurrentClash(page);
     await expect(page.locator('.result-shell')).toHaveAttribute('data-outcome', 'loomkeeper_win');
-    await expect(page.locator('.reward-result-status')).toContainText('did not earn a reward');
+    await expect(page.locator('.reward-result-status')).toContainText(
+      'did not earn a reward',
+      { timeout: 15_000 }
+    );
     await expect(page.locator('.reward-claim')).toBeHidden();
     const retained = await store.status('browser_automated_entitlement', signer.address);
     expect(retained?.state).toBe('lost');

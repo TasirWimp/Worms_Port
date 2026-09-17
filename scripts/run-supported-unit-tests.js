@@ -17,6 +17,8 @@ const legacyFiles = new Set([
   'tests/simulation/mechanics.test.ts',
   'tests/simulation/resource-turns-v9-replay.test.ts',
   'tests/simulation/resource-turns-v9.test.ts',
+  'tests/loomkeeper/action-turns-v8.test.ts',
+  'tests/loomkeeper/resource-turns-v9.test.ts',
   'tests/combat/action-turns-v8-r1.test.ts',
   'tests/combat/action-turns-v8.test.ts',
   'tests/combat/camera-legacy.test.ts',
