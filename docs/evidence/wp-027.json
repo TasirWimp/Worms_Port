@@ -1,0 +1,70 @@
+{
+  "id": "WP-027",
+  "status": "in_progress",
+  "execution_mode": "single_owner",
+  "starting_commit": "16dca69",
+  "branch": "codex/wp-027-gemini-loomkeeper",
+  "initial_worktree": "clean",
+  "starting_lock_sha256": "6B768A8FDE2695D02555CA17201FD7CE420F9AC075B91380474DD7A643042BC8",
+  "owning_roles": [
+    "primary assistant"
+  ],
+  "scope": [
+    "Waypoint 1: implement a server-owned deterministic R8 strategic decision boundary without any Gemini call, provider dependency or runtime activation.",
+    "Produce a compact full-arena 64 by 36 ASCII battlefield with exact actor, objective and support facts, a bounded committed-voyage carrier, recent-change carrier and stable basis identity.",
+    "Prepare 8 to 12 legal complete-turn candidates including the existing deterministic fallback, exact immediate consequences, future opportunities, risks and explicit uncertainty within the six-second whole-window ceiling.",
+    "Resolve model-facing candidate IDs only through current-basis one-use server capabilities and freeze strict selected/abstention response, pending/executing/committed evidence and byte/search caps.",
+    "Verify deterministic reconstruction, paired-world projection distinctions, capability rejection, response validation and detached-projection parity with authoritative R8 execution."
+  ],
+  "non_goals": [
+    "No Gemini SDK, API key, network call, provider adapter, prompt execution, shadow mode or live model selection in Waypoint 1.",
+    "No coordinator activation, player-visible behavior, R8 public promotion, Daily/reward/PEI change, deployment variable or external-service mutation.",
+    "No change to existing R8 physics, deterministic fallback selection, objective rules, presentation, assets or legacy runtime support.",
+    "No Sorcerers source, asset or implementation input."
+  ],
+  "planned_checks": [
+    "npm.cmd run check:types and focused WP-027 strategic-voyage tests",
+    "npm.cmd run verify:changes -- --dry-run",
+    "npm.cmd run verify:changes",
+    "npm.cmd run audit:housekeeping before Waypoint 1 closure"
+  ],
+  "deterministic_seeds": [
+    "R8 volcanic objective seed 4 across Defend, Collect and Claim",
+    "existing nimble-knots-loomkeeper-v5 deterministic fallback"
+  ],
+  "sorcerers_reference_used": false,
+  "clean_room_records": [],
+  "check_results": [
+    {
+      "command": "npm.cmd run check:types and focused WP-027 strategic-voyage tests",
+      "status": "pass",
+      "details": "Delegated zero-retry execution by worms_port_test_runner on GPT-5.6 Terra/medium passed server/client types and 8/8 WP-027 tests, including the direct-review hardening rerun. The boundary prepares the existing 180-plan fallback plus a 12-proposal atlas in about 1.34 seconds on the development host (fallback 1.04s, atlas 0.31s), below the six-second ceiling. Coverage includes all three modes, deterministic rebuild, compact-map and byte caps, family diversity, strict selected/abstention parsing, unknown/forged/cross-basis/globally consumed capability rejection, pending versus witnessed commit validation, immutable strategic payloads, fallback-bound basis identity, a paired-world terrain distinction and exact immediate-field parity against one authoritative R8 complete turn. Logs .cache/wp027-w1-projection-types.log, .cache/wp027-w1-projection-strategic-voyage.log, .cache/wp027-w1-direct-review-types.log and .cache/wp027-w1-direct-review-strategic-voyage.log."
+    },
+    {
+      "command": "npm.cmd run verify:changes",
+      "status": "pass",
+      "details": "worms_port_test_runner on GPT-5.6 Terra/medium completed the final zero-retry selector at fingerprint d806110890eb7d1c9156582f005bd661104c749484421e8bb64a7ea90cdc0886. Diff, 74 work-package records, import boundary and types passed. Supported units passed protocol 25/25, simulation 85/85, Loomkeeper 24/24, relics 10/10, combat 53/53, Practice 6/6, identity 22/22, reward 28/28 and PEI 25/25. Fresh build proof a754e5e43571 / 78790244fb87 passed standard R7 smoke, identity and reward security, and bundle limits at 1435401/1500000 initial JavaScript bytes and 418972/430000 gzip bytes. The canonical Chromium phone journeys passed 19/19 in 6.8 minutes. PostgreSQL exited through its expected local prerequisite skip because WP014_TEST_DATABASE_URL is absent and remains a CI gate. Performance, legacy, daily and release coverage were not selected. Log .cache/wp027-w1-final-selector.log."
+    },
+    {
+      "command": "npm.cmd run audit:housekeeping before Waypoint 1 closure",
+      "status": "pass",
+      "details": "Report-only housekeeping passed on codex/wp-027-gemini-loomkeeper tracking origin/main. WP-027 is the sole in-progress package, the dirty worktree is the expected uncommitted implementation, no tracking branch is gone, failedReviews is empty and manualReconciliationRequired is false. Historical merged and superseded entries remain report-only. Log .cache/wp027-w1-housekeeping.log."
+    }
+  ],
+  "reviews": [
+    {
+      "reviewer": "primary assistant direct Waypoint 1 review",
+      "status": "pass",
+      "details": "The boundary is isolated from runtime activation, accepts only a server-computed fallback, exposes causal summaries rather than operations and keeps provider output outside execution authority. Direct review bound fallback identity into the basis, made issued capabilities globally one-use across equivalent rebuilt boundaries, froze nested strategic inputs and preserved the contract allowance for a sparse atlas when fewer than eight distinct legal turns exist. The optimized detached projection reuses current R7 combat mechanics and applies R8 objective support/contact semantics; a complete-turn parity regression found no immediate consequence difference."
+    }
+  ],
+  "skipped_checks": [
+    "Physical phone testing is not applicable before live Gemini Practice Gate A.",
+    "Deployed Gemini, performance-matrix and daily/release gates are outside the deterministic Waypoint 1 boundary.",
+    "The selected PostgreSQL phase used its expected local prerequisite skip because WP014_TEST_DATABASE_URL is absent; PostgreSQL remains a CI gate."
+  ],
+  "residual_risks": [
+    "Waypoint 2 must integrate the boundary with atomic coordinator persistence, replay and local fake-provider deadlines before any external provider mode exists.",
+    "The 1.43-second preparation observation is local evidence, not deployed Gemini latency evidence or a release threshold."
+  ]
+}

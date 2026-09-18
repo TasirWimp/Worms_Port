@@ -1,6 +1,6 @@
 # WP-027 Strategic-Voyage Gemini Loomkeeper
 
-Status: **queued after WP-026; simplified planning contract only**
+Status: **in progress; Waypoint 1 deterministic boundary implemented**
 Required predecessor: completed WP-026 R8 objective-mode canary
 
 ## Product outcome
@@ -257,6 +257,19 @@ Use paired worlds with similar summaries but different necessary routes to
 check projection sufficiency. Correct missing distinctions in the server brief;
 do not build a generic refinement protocol. Retain delayed-benefit candidates
 and meaningful alternatives rather than ranking only immediate reward.
+
+Implementation status, 2026-09-18: complete under automated acceptance. The
+server-owned boundary projects the complete arena to a 64 by 36 `#`/`+`/`.`
+map with structured actor, object and support facts; binds state, voyage and
+recent changes to a stable basis; and emits 8-12 legal candidates including the
+existing deterministic fallback. Current-basis IDs resolve only to one-use
+internal capabilities. Selected and abstention responses, byte/search caps and
+pending/executing/committed evidence are strict. The optimized detached atlas
+reuses current R7 combat mechanics while applying R8 objective motion/contact;
+its immediate fields match an authoritative R8 complete turn in regression.
+Local preparation measured about 1.4 seconds, which is feasibility evidence,
+not a deployed latency claim. No coordinator path or provider calls this module
+yet. Waypoint 2 owns that integration.
 
 ### Waypoint 2 - single-call adapter with local fakes
 

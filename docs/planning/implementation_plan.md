@@ -9,12 +9,16 @@ Phaser/Socket.IO stack.
 
 - Development policy: **Primary ownership with testing-only delegation**, effective 2026-09-10. The primary selects coverage and owns implementation/product corrections/direct review; one Terra/medium `worms_port_test_runner` executes and manages the tests. Other agents and WP-016 remain retired. See [Testing delegation](../process/development_workflow.md#testing-delegation). Main model/effort follow the user selection, with no repo pin. The selector and 22:00 Europe/Berlin daily suite remain in use.
 
-- Canonical package state: **WP-026 V10 R8 Objective Modes is complete**.
+- Canonical package state: **WP-027 Strategic-Voyage Gemini Loomkeeper is in progress**.
+  WP-026 V10 R8 Objective Modes is complete.
   Standard Practice and PEI-gated Daily remain R7; the server-backed R8
-  objective canary remains private. **WP-027 Strategic-Voyage Gemini
-  Loomkeeper is queued at contract/calibration only**: no runtime Gemini call,
-  provider configuration, public R8 promotion or reward-path change is
-  authorized.
+  objective canary remains private. **WP-027 Waypoint 1 is implemented**: its
+  server-only deterministic boundary produces the compact world/strategy brief,
+  8-12 causal candidates, strict response and voyage-record schemas, and
+  current-basis one-use capabilities without external calls. Next is Waypoint 2,
+  the single-call adapter and atomic coordinator/replay integration using local
+  fakes. No runtime Gemini call, provider configuration, public R8 promotion or
+  reward-path change is authorized.
 
 - Verification infrastructure: the isolated change-selection/build-reuse port
   from `da1e7a9` follows the owner-requested 22:00 Berlin daily/full cadence.
@@ -320,7 +324,7 @@ Phaser/Socket.IO stack.
   the two-actor interpolation path. It is outside WP-026 closure and is not the
   current execution target. Its bounded contract and physical tablet recheck
   are recorded in the [WP-026 deferred performance waypoint](wp-026-v10-r8-objective-modes.md#deferred-performance-optimization-waypoint).
-- Queued after WP-026: **WP-027 Strategic-Voyage Gemini Loomkeeper**.
+- Active after WP-026: **WP-027 Strategic-Voyage Gemini Loomkeeper**.
   One bounded Gemini call per turn combines strategic continuation and legal
   candidate selection. The server prepares a compact objective/ASCII battlefield/
   current-strategy/recent-change brief and roughly 8–12 diverse simulated
@@ -336,6 +340,8 @@ Phaser/Socket.IO stack.
   strategy probes. Live Practice Gate A establishes realized multi-turn behavior;
   final Practice/Daily Gate B follows promotion. See the
   [WP-027 contract](wp-027-gemini-objective-loomkeeper.md).
+  Waypoint 1 now implements the deterministic server boundary and has no runtime
+  activation. Waypoint 2 is the next implementation slice.
 - Active target: mobile-first single-player Nimiq Pay competition release.
 - Historical completed predecessor: **WP-015D4D V10G Terrain And Weapon Tactics**;
   see the [V10G preparation contract](wp-015d4a-v10-terrain-starts-contract.md#v10g-terrain-and-weapon-tactics-preparation).
