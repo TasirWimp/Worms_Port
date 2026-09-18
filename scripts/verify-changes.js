@@ -109,6 +109,9 @@ function planChanges(paths) {
       }
     } else if (file === 'scripts/smoke-built-server.js') {
       add(suites, ['test:tooling', 'smoke:built']);
+    } else if (file === 'scripts/run-wp027-shadow-probes.ts') {
+      checks.add('check:types');
+      suites.add('test:loomkeeper');
     } else if (file === '.github/workflows/verify.yml') {
       suites.add('test:tooling');
       postgres = true;

@@ -168,6 +168,7 @@ test('WP-027 turn records cannot commit unwitnessed strategy or mismatch a provi
         immediatePredictionHash: 'a'.repeat(64),
         observedStateHash: null,
         timingMs: { preparation: 100, provider: 10, validation: 1, total: 111 },
+        usage: null,
         responseBytes: 240,
         diagnostic: null
     } as const;
@@ -177,6 +178,16 @@ test('WP-027 turn records cannot commit unwitnessed strategy or mismatch a provi
     }).success, false);
     assert.equal(StrategicTurnRecordV10R8Schema.safeParse({
         ...pending, selectedCandidateId: 'c02'
+    }).success, false);
+    assert.equal(StrategicTurnRecordV10R8Schema.safeParse({
+        ...pending, providerDecision: null
+    }).success, false);
+    assert.equal(StrategicTurnRecordV10R8Schema.safeParse({
+        ...pending,
+        providerMode: 'gemini_shadow',
+        decisionSource: 'local_fake',
+        usage: { inputTokens: 10, outputTokens: 5, thinkingTokens: 5, totalTokens: 10,
+            estimatedCostUsdMicros: 100 }
     }).success, false);
     assert.equal(StrategicTurnRecordV10R8Schema.safeParse({
         ...pending, status: 'committed', committedVoyage: voyage, observedStateHash: 'b'.repeat(64)

@@ -6,8 +6,10 @@ import {
     type StrategicDecisionBriefV10R8
 } from './loomkeeper-strategy-v10-r8';
 import {
+    StrategicProviderUsageV10R8Schema,
     V10_R8_PROMPT_VERSION,
     type StrategicDecisionV10R8,
+    type StrategicProviderUsageV10R8,
     type StrategicTurnRecordV10R8
 } from '../../../shared/strategic-voyage-v10-r8';
 
@@ -20,18 +22,25 @@ export type StrategicDecisionProviderRequestV10R8 = Readonly<{
     deadlineMs: number;
 }>;
 
+export type StrategicDecisionProviderResponseV10R8 = Readonly<{
+    payload: unknown;
+    usage: StrategicProviderUsageV10R8 | null;
+}>;
+
 /** Data-only provider seam. It receives no executor, replay or persistence authority. */
 export interface StrategicDecisionProviderV10R8 {
-    readonly mode: 'local_fake';
+    readonly mode: 'local_fake' | 'gemini_shadow' | 'gemini';
     readonly modelId: string;
-    decide(request: StrategicDecisionProviderRequestV10R8): Promise<unknown>;
+    decide(request: StrategicDecisionProviderRequestV10R8): Promise<StrategicDecisionProviderResponseV10R8>;
 }
 
 export type StrategicProviderOutcomeV10R8 = StrategicTurnRecordV10R8['operationalOutcome'];
 export type StrategicProviderResultV10R8 = Readonly<{
     outcome: StrategicProviderOutcomeV10R8;
     decision: StrategicDecisionV10R8 | null;
+    providerMode: StrategicDecisionProviderV10R8['mode'];
     modelId: string;
+    usage: StrategicProviderUsageV10R8 | null;
     responseBytes: number | null;
     diagnostic: string | null;
     timingMs: StrategicTurnRecordV10R8['timingMs'];
@@ -65,7 +74,7 @@ export class StrategicDecisionAdapterV10R8 {
         readonly provider: StrategicDecisionProviderV10R8,
         options: StrategicDecisionAdapterOptionsV10R8 = {}
     ) {
-        if (!/^[A-Za-z0-9._-]{1,96}$/.test(provider.modelId)) throw new Error('Invalid local provider model identity.');
+        if (!/^[A-Za-z0-9._-]{1,96}$/.test(provider.modelId)) throw new Error('Invalid strategic provider model identity.');
         this.#deadlineMs = boundedInteger(options.deadlineMs ?? V10_R8_STRATEGIC_DEADLINE_MS, 1, V10_R8_STRATEGIC_DEADLINE_MS);
         this.#maxConcurrent = boundedInteger(options.maxConcurrentRequests ?? 4, 1, 32);
         this.#maxRequests = boundedInteger(options.maxRequests ?? 10_000, 1, 1_000_000);
@@ -109,23 +118,35 @@ export class StrategicDecisionAdapterV10R8 {
             if (typeof raced === 'symbol') {
                 controller.abort();
                 this.#registerFailure(providerEnded);
-                return this.#result('timeout', null, null, 'Provider deadline elapsed.', preparation,
+                return this.#result('timeout', null, null, null, 'Provider deadline elapsed.', preparation,
                     providerEnded - providerStarted, 0, providerEnded - started);
             }
             if ('error' in raced) {
                 this.#registerFailure(providerEnded);
-                return this.#result('provider_error', null, null, 'Provider request failed.', preparation,
+                return this.#result('provider_error', null, null, null, 'Provider request failed.', preparation,
                     providerEnded - providerStarted, 0, providerEnded - started);
             }
             const validationStarted = this.#nowMs();
-            const serialized = serializableBytes(raced.value);
-            let decision: StrategicDecisionV10R8;
+            const serialized = serializableBytes(raced.value.payload);
+            let usage: StrategicProviderUsageV10R8 | null;
             try {
-                decision = parseStrategicDecisionV10R8(raced.value);
+                usage = raced.value.usage === null
+                    ? null
+                    : StrategicProviderUsageV10R8Schema.parse(raced.value.usage);
             } catch {
                 const ended = this.#nowMs();
                 this.#registerFailure(ended);
-                return this.#result('invalid_response', null,
+                return this.#result('invalid_response', null, null, null,
+                    'Provider usage metadata failed strict validation.', preparation,
+                    providerEnded - providerStarted, ended - validationStarted, ended - started);
+            }
+            let decision: StrategicDecisionV10R8;
+            try {
+                decision = parseStrategicDecisionV10R8(raced.value.payload);
+            } catch {
+                const ended = this.#nowMs();
+                this.#registerFailure(ended);
+                return this.#result('invalid_response', null, usage,
                     serialized !== null && serialized <= V10_R8_CANDIDATE_CAPS.responseBytes ? serialized : null,
                     'Provider response failed strict validation.', preparation,
                     providerEnded - providerStarted, ended - validationStarted, ended - started);
@@ -133,7 +154,7 @@ export class StrategicDecisionAdapterV10R8 {
             const ended = this.#nowMs();
             this.#consecutiveFailures = 0;
             this.#circuitUntilMs = 0;
-            return this.#result(decision.candidateId === null ? 'abstained' : 'selected', decision,
+            return this.#result(decision.candidateId === null ? 'abstained' : 'selected', decision, usage,
                 serialized, null, preparation, providerEnded - providerStarted,
                 ended - validationStarted, ended - started);
         } finally {
@@ -163,19 +184,19 @@ export class StrategicDecisionAdapterV10R8 {
 
     #gate(matchId: string, preparation: number, started: number): StrategicProviderResultV10R8 | undefined {
         if (preparation >= this.#deadlineMs) {
-            return this.#result('timeout', null, null, 'Preparation exhausted the decision deadline.',
+            return this.#result('timeout', null, null, null, 'Preparation exhausted the decision deadline.',
                 preparation, 0, 0, preparation);
         }
         if (this.#active.has(matchId) || this.#active.size >= this.#maxConcurrent) {
-            return this.#result('concurrency_limit', null, null, 'Provider concurrency limit reached.',
+            return this.#result('concurrency_limit', null, null, null, 'Provider concurrency limit reached.',
                 preparation, 0, 0, this.#nowMs() - started);
         }
         if (this.#requests >= this.#maxRequests) {
-            return this.#result('spend_limit', null, null, 'Provider request budget exhausted.',
+            return this.#result('spend_limit', null, null, null, 'Provider request budget exhausted.',
                 preparation, 0, 0, this.#nowMs() - started);
         }
         if (this.#nowMs() < this.#circuitUntilMs) {
-            return this.#result('circuit_open', null, null, 'Provider circuit is open.',
+            return this.#result('circuit_open', null, null, null, 'Provider circuit is open.',
                 preparation, 0, 0, this.#nowMs() - started);
         }
         return undefined;
@@ -191,6 +212,7 @@ export class StrategicDecisionAdapterV10R8 {
     #result(
         outcome: StrategicProviderOutcomeV10R8,
         decision: StrategicDecisionV10R8 | null,
+        usage: StrategicProviderUsageV10R8 | null,
         responseBytes: number | null,
         diagnostic: string | null,
         preparation: number,
@@ -201,7 +223,9 @@ export class StrategicDecisionAdapterV10R8 {
         return Object.freeze({
             outcome,
             decision,
+            providerMode: this.provider.mode,
             modelId: this.provider.modelId,
+            usage,
             responseBytes,
             diagnostic,
             timingMs: Object.freeze({

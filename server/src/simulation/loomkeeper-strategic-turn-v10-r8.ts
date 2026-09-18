@@ -48,15 +48,17 @@ export function authorizeStrategicTurnV10R8(input: Readonly<{
         const semanticError = validateDecision(input.boundary, input.state, currentStrategy, decision);
         const candidate = input.boundary.brief.legalCandidates.find(item => item.candidateId === decision.candidateId);
         if (!semanticError && candidate) {
-            selected = candidate;
-            decisionSource = 'local_fake';
+            if (providerResult?.providerMode !== 'gemini_shadow') {
+                selected = candidate;
+                decisionSource = providerResult?.providerMode === 'gemini' ? 'gemini' : 'local_fake';
+            }
         } else {
             outcome = 'invalid_response';
             diagnostic = semanticError ?? 'Provider candidate is not in the current atlas.';
         }
     }
 
-    const proposedVoyage = decisionSource === 'local_fake' && decision
+    const proposedVoyage = decisionSource !== 'deterministic_fallback' && decision
         ? voyageFromDecision(input.state, currentStrategy, decision, selected)
         : fallbackVoyage(input.state, currentStrategy, selected);
     const evidence = input.boundary.evidence();
@@ -67,7 +69,7 @@ export function authorizeStrategicTurnV10R8(input: Readonly<{
         revision: input.boundary.brief.revision,
         policyId: input.boundary.brief.policyId,
         promptVersion: V10_R8_PROMPT_VERSION,
-        providerMode: providerResult ? 'local_fake' : 'deterministic',
+        providerMode: providerResult?.providerMode ?? 'deterministic',
         modelId: providerResult?.modelId ?? null,
         operationalOutcome: outcome,
         turn: input.state.turn,
@@ -81,6 +83,7 @@ export function authorizeStrategicTurnV10R8(input: Readonly<{
         immediatePredictionHash: hashCanonicalV10Value(selected.immediate),
         observedStateHash: null,
         timingMs,
+        usage: providerResult?.usage ?? null,
         responseBytes: providerResult?.responseBytes ?? null,
         diagnostic
     });

@@ -111,6 +111,8 @@ export type SessionRegistryOptions = {
     /** Wallet-free deployment profile. Normal V10 runtimes leave this false. */
     v10PracticeOnly?: boolean;
     v10TestOnly?: Pick<LiveSimulationCoordinatorV10Options, 'nowUs' | 'yieldBatch' | 'tickIntervalMs' | 'maxReplayRecords' | 'maxReplayBytes'>;
+    /** Server-only strategic transport and sanitized observer for private R8 objective matches. */
+    v10Strategy?: Pick<LiveSimulationCoordinatorV10Options, 'strategicAdapter' | 'onStrategicTurnObserved'>;
     onChallengeSnapshotV10?: (snapshot: ChallengeSnapshotV10, socketId?: string) => void;
     onChallengeCompletedV10?: (result: ChallengeResultV10, socketId?: string) => void;
     onChallengeSettledV10?: (result: ChallengeResultV10, replay: CoordinatorReplayV10Automated) => void;
@@ -278,7 +280,8 @@ export class SessionRegistry {
         v9: { ...options.v9TestOnly, tickIntervalMs: this.practiceV9 ? 10 : options.v9TestOnly?.tickIntervalMs,
             onSafetyStop: this.practiceV9 ? diagnostic => console.warn('[v9-practice-stop]', JSON.stringify(diagnostic)) : undefined,
             onTransition: update => this.onSimulationTransitionV9(update) },
-        v10Live: { ...options.v10TestOnly, tickIntervalMs: options.v10TestOnly ? options.v10TestOnly.tickIntervalMs : this.practiceV10 ? 10 : undefined,
+        v10Live: { ...options.v10TestOnly, ...options.v10Strategy,
+            tickIntervalMs: options.v10TestOnly ? options.v10TestOnly.tickIntervalMs : this.practiceV10 ? 10 : undefined,
             onTransition: update => this.onSimulationTransitionV10(update),
             onSafetyStop: diagnostic => console.warn('[v10-practice-stop]', JSON.stringify(diagnostic)) } });
         this.coordinator = this.versions.legacy;

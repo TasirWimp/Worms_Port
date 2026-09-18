@@ -271,6 +271,15 @@ test('built smoke harness edits select only tooling and the supported runtime sm
   assert.equal(combined.tasks.indexOf('smoke:built'), combined.tasks.indexOf('build:outputs') + 1);
 });
 
+test('WP-027 shadow probe runner selects its typed Loomkeeper owner without broad fallback', () => {
+  const plan = planChanges(['scripts/run-wp027-shadow-probes.ts']);
+  assert.deepEqual(plan.tasks, ['check:types', 'test:loomkeeper']);
+  assert.deepEqual(plan.browser, []);
+  assert.equal(plan.postgres, false);
+  assert.equal(plan.performance, false);
+  assert.deepEqual(plan.fallback, []);
+});
+
 test('dependency edits retain audit, PostgreSQL and performance checks', () => {
   const plan = planChanges(['package-lock.json']);
   assert.ok(plan.tasks.includes('audit'));
@@ -395,7 +404,10 @@ test('routine unit selectors exclude every explicit legacy diagnostic', () => {
     'tests/practice/current-v10-client.test.ts'
   ]);
   assert.deepEqual(suiteFiles('loomkeeper'), [
+    'tests/loomkeeper/gemini-strategy-v10-r8.test.ts',
     'tests/loomkeeper/loomkeeper.test.ts',
+    'tests/loomkeeper/strategic-provider-v10-r8.test.ts',
+    'tests/loomkeeper/strategic-voyage-v10-r8.test.ts',
     'tests/loomkeeper/terrain-starts-v10.test.ts'
   ]);
   for (const file of legacyFiles) {

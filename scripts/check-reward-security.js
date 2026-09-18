@@ -50,6 +50,8 @@ function scanRewardSecurity(projectRoot = root, options = {}) {
     'PrivateKey.fromHex',
     'REWARD_PRIVATE_KEY_FILE',
     'PEI_PROXY_PRIVATE_KEY_FILE',
+    'GEMINI_API_KEY',
+    'generativelanguage.googleapis.com',
     'NIMIQ_RECOVERY_WORDS',
     SYNTHETIC_TEST_PRIVATE_KEY
   ]) {

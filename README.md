@@ -93,6 +93,26 @@ exact replay and destroyed-WebView resume are implemented. Unknown
 Restart creates the selected mode from a fresh layout. Standard Practice and
 PEI-gated Daily remain R7 until a later explicitly accepted promotion.
 
+WP-027 Waypoint 3 adds an optional server-only Gemini shadow to these private
+R8 routes. Safe startup remains deterministic when `LOOMKEEPER_PROVIDER` is
+absent or set to `deterministic`. To collect the bounded shadow evidence on the
+game service, set all three values and redeploy:
+
+```text
+LOOMKEEPER_PROVIDER=gemini-shadow
+GEMINI_MODEL=gemini-3.8-flash
+GEMINI_API_KEY=<Render secret>
+```
+
+Shadow mode records Gemini's proposal, latency, usage and estimated cost, while
+the existing deterministic Loomkeeper still acts. It does not affect standard
+R7 Practice, Daily, PEI or rewards. In a controlled server shell with those
+same values, `node --import tsx scripts/run-wp027-shadow-probes.ts` makes exactly
+five no-retry calls and writes the sanitized direct-review artifact to
+`test-results/wp027-shadow-probes.json`. Incomplete external configuration fails
+startup. Set `LOOMKEEPER_PROVIDER=deterministic` after the shadow gate; dormant
+credentials are ignored in deterministic mode.
+
 ## Temporary Nimiq Pay Display Workaround
 
 **Current default:** a portrait browser viewport renders the complete game as

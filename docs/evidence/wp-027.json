@@ -18,20 +18,25 @@
     "Waypoint 2: add a data-only, one-call local-fake adapter with a six-second whole-window deadline, strict response validation, no retry, abort, concurrency, request-budget and circuit-breaker bounds.",
     "Integrate the strategic boundary with the private R8 coordinator through an atomic chosen-plan and pending/executing/committed voyage record while keeping all execution authority inside the current-basis resolver.",
     "Persist the strategy policy and at most eight strategic turns in R8 replay; reconstruct committed and final uncommitted-prefix states without a provider and reject altered or extended evidence.",
-    "Attribute player counteractions separately from system changes, preserve original continuation deadlines and accepted temporary cost, and keep deterministic fallback source attribution explicit."
+    "Attribute player counteractions separately from system changes, preserve original continuation deadlines and accepted temporary cost, and keep deterministic fallback source attribution explicit.",
+    "Waypoint 3: integrate the exact stable gemini-3.8-flash model through direct server-only structured-output REST with low thinking, strict usage parsing and no SDK dependency.",
+    "Keep Gemini shadow proposals outside execution authority while retaining source-correct pending evidence, timing, token and frozen introductory-cost measurements for every validated provider result.",
+    "Fail external configuration closed, isolate ordinary quality runs from the provider, retain cancellation/concurrency/request-budget/circuit bounds and prevent the API key or provider endpoint from entering the client bundle.",
+    "Freeze five deterministic-baseline behavioral probes and prospective useful/valid/on-time/fallback/authority/cost thresholds before collecting real deployed shadow results."
   ],
   "non_goals": [
     "No Gemini SDK, API key, network call, provider adapter, prompt execution, shadow mode or live model selection in Waypoint 1.",
     "No coordinator activation, player-visible behavior, R8 public promotion, Daily/reward/PEI change, deployment variable or external-service mutation.",
     "No change to existing R8 physics, deterministic fallback selection, objective rules, presentation, assets or legacy runtime support.",
     "No Sorcerers source, asset or implementation input.",
-    "No Gemini SDK, API key, network call, live model selection, environment variable, deployment mutation or provider expense in Waypoint 2."
+    "No Gemini SDK, API key, network call, live model selection, environment variable, deployment mutation or provider expense in Waypoint 2.",
+    "Waypoint 3 implementation does not perform a real Gemini call, mutate Render, activate live Gemini selection, promote R8 to standard Practice/Daily or change PEI/reward behavior."
   ],
   "planned_checks": [
     "npm.cmd run check:types and focused WP-027 strategic-voyage/provider/R8 protocol tests",
     "npm.cmd run verify:changes -- --dry-run",
     "npm.cmd run verify:changes",
-    "npm.cmd run audit:housekeeping before Waypoint 1 closure"
+    "npm.cmd run check:work-packages and npm.cmd run audit:housekeeping after Waypoint 3 implementation"
   ],
   "deterministic_seeds": [
     "R8 volcanic objective seed 4 across Defend, Collect and Claim",
@@ -69,6 +74,26 @@
       "command": "npm.cmd run check:work-packages and npm.cmd run audit:housekeeping after Waypoint 2",
       "status": "pass",
       "details": "The evidence validator passed all 74 records. Report-only housekeeping passed with branch and upstream both codex/wp-027-gemini-loomkeeper, WP-027 as the sole in-progress package, the expected uncommitted implementation worktree, no gone tracking branch, failedReviews empty and manualReconciliationRequired false. Logs .cache/wp027-w2-final-work-packages.log and .cache/wp027-w2-final-housekeeping.log."
+    },
+    {
+      "command": "npm.cmd run check:types and focused WP-027 Waypoint 3 tests",
+      "status": "pass",
+      "details": "Delegated zero-retry execution by worms_port_test_runner on GPT-5.6 Terra/medium passed server/client types and 20/20 focused strategic tests: 5 Gemini transport/config/probe/telemetry/shadow-replay cases, 7 Waypoint 2 provider cases and 8 deterministic-voyage cases. After direct review moved operational telemetry to the validated pending decision, the affected type check and 5/5 Gemini cases passed without repeating the unchanged W1/W2 files. Logs .cache/wp027-w3-types-initial.log, .cache/wp027-w3-focused-behavior.log, .cache/wp027-w3-telemetry-types.log and .cache/wp027-w3-telemetry-gemini.log."
+    },
+    {
+      "command": "node --test tests/tooling/verification-cadence.test.js and npm.cmd run verify:changes -- --dry-run",
+      "status": "pass",
+      "details": "The first selector inspection exposed the new operational runner as an unknown-path broad fallback. Direct correction assigned it to typed Loomkeeper coverage and updated the stale current-only Loomkeeper inventory. The affected zero-retry tooling rerun passed 32/32 and the final dry run passed at fingerprint bb20d7548a6930a52c79b9576600432b9f24f365014deb1ab6df0867d1c0a9e2 with an empty fallback list and no visual, performance, daily, release or legacy selection. The earlier 31/32 infrastructure expectation failure is preserved in .cache/wp027-w3-selector-cadence.log; recovery and final plan logs are .cache/wp027-w3-selector-cadence-recovery.log and .cache/wp027-w3-selector-final-dry-run.log."
+    },
+    {
+      "command": "npm.cmd run verify:changes",
+      "status": "pass",
+      "details": "worms_port_test_runner on GPT-5.6 Terra/medium completed the final zero-retry selector once in 624.7 seconds at fingerprint 013176249ebd7fed1f09b1da7378d3b7ed30990b96f933d0998612bc335a35f7. Work-package evidence 74, diff, import boundary, types and 139/139 tooling tests passed. Supported units passed Loomkeeper 36/36, protocol 25/25, simulation 85/85, relics 10/10, combat 53/53, Practice 6/6, identity 22/22, reward 28/28 and PEI 25/25. Fresh build proof 53ed7f24f257 / 9708884e6be8 passed the standard current R7 built smoke, identity bundles and reward security. Bundle limits passed at 1,435,401/1,500,000 initial JavaScript bytes and 419,089/430,000 gzip bytes. The canonical Chromium phone journeys passed 19/19 in 6.3 minutes. PostgreSQL exited through its expected local prerequisite skip because WP014_TEST_DATABASE_URL is absent and remains a CI gate. Visual, performance, daily, release and legacy coverage were not selected. Log .cache/wp027-w3-final-selector.log."
+    },
+    {
+      "command": "npm.cmd run check:work-packages and npm.cmd run audit:housekeeping after Waypoint 3 implementation",
+      "status": "pass",
+      "details": "Delegated zero-retry closure checks by worms_port_test_runner passed in 7.8 seconds. The evidence validator accepted all 74 work-package records. Housekeeping confirmed matching local/upstream codex/wp-027-gemini-loomkeeper branches, the expected dirty WP-027 worktree, WP-027 as the sole in-progress package, no gone tracking branches, no failed reviews and no manual reconciliation requirement. Historical merged/superseded findings remain report-only. Logs .cache/wp027-w3-final-work-packages.log and .cache/wp027-w3-final-housekeeping.log."
     }
   ],
   "reviews": [
@@ -81,15 +106,21 @@
       "reviewer": "primary assistant direct Waypoint 2 review",
       "status": "pass",
       "details": "The adapter receives only a compact data brief and cannot access execution, session, replay or reward authority. Direct review kept all model-shaped output behind strict syntax, current-brief semantics and one-use capabilities; retained the selection and voyage before execution; committed only after observation; separated provider, fallback and feedback attribution; and verified no external provider dependency or secret exists. Review diagnostics found and corrected partial-tick replay ordering, final-prefix recovery extension and active-request replacement edges before the final selector."
+    },
+    {
+      "reviewer": "primary assistant direct Waypoint 3 implementation review",
+      "status": "pass",
+      "details": "The direct REST transport sends only the bounded brief, validates one complete structured response and exact usage metadata, discards raw provider failures and never receives capabilities or execution authority. Shadow always authorizes the matched deterministic fallback while retaining the unexecuted proposal and exact source for provider-free replay. Direct review moved sanitized measurement before execution so aborted matches cannot hide incurred calls, added strict outcome/decision/usage replay invariants, kept model prose out of runtime logs, froze five fixtures and thresholds before real collection, and corrected the selector without broad visual/performance work."
     }
   ],
   "skipped_checks": [
-    "Physical phone testing is not applicable before live Gemini Practice Gate A.",
-    "Deployed Gemini shadow, strategy-quality probes, performance-matrix and daily/release gates are outside Waypoint 2.",
-    "The selected PostgreSQL phase used its expected local prerequisite skip because WP014_TEST_DATABASE_URL is absent; PostgreSQL remains a CI gate."
+    "No real Gemini request was made during implementation verification because the repository and CI use local fakes; deployed shadow collection is the next operational gate.",
+    "Physical phone testing starts at live Gemini Practice Gate A after shadow acceptance.",
+    "Visual, performance, daily/release and retired legacy coverage are not selected for this server-only slice."
   ],
   "residual_risks": [
-    "Waypoint 3 must add the real server-only Gemini transport in shadow, freeze operational thresholds and run the five bounded strategy probes before live selection is considered.",
-    "The local preparation and fake-provider observations are feasibility evidence, not deployed Gemini latency, cost or strategy-quality evidence."
+    "The real five-call deployed shadow artifact must still demonstrate at least four valid/useful/on-time choices, no more than one provider fallback, zero authority violations, p95 at or below six seconds and total estimated cost at or below USD 0.05 before live selection is considered.",
+    "The frozen cost estimate uses Gemini 3.8 Flash introductory pricing through 2026-12-31 and must be reviewed if shadow operation continues under later pricing.",
+    "Local fake and transport tests prove the authority and measurement harness, not deployed Gemini latency or multi-turn strategy quality."
   ]
 }

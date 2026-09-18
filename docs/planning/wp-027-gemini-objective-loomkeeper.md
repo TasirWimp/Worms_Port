@@ -236,8 +236,8 @@ circuit breaker and spend limit. Match policy stays fixed across reconnect.
 
 ```text
 LOOMKEEPER_PROVIDER=deterministic
-GEMINI_API_KEY=<server-side secret; absent while deterministic>
-GEMINI_MODEL=<exact stable model ID; required for shadow or live Gemini>
+GEMINI_API_KEY=<server-side secret; required only for shadow or live Gemini>
+GEMINI_MODEL=gemini-3.8-flash
 ```
 
 Providers remain `deterministic`, `gemini-shadow` and `gemini`. Incomplete
@@ -329,6 +329,51 @@ fallback rate and strategic behavior before collecting acceptance results. Use
 matched deterministic baselines. If results miss the target, simplify the brief,
 fix candidate coverage or adjust supported model settings and retest the affected
 probes. Do not respond by adding another conceptual layer by default.
+
+Implementation status, 2026-09-18: the server-only Waypoint 3 path is
+implemented and awaits deployed shadow collection. It uses the exact stable
+`gemini-3.8-flash` model through direct `generateContent` REST, structured JSON
+output and `low` thinking. It adds no SDK dependency. The API key exists only in
+the server process; quality runs reject external-provider activation and the
+client-bundle security scan rejects both the key name and Google provider
+endpoint. Current R7 Practice and Daily never enter this adapter. Only private
+R8 objective matches consult it.
+
+`gemini-shadow` retains the validated proposal, model identity, source,
+preparation/provider/validation times, token usage and estimated
+[introductory cost](https://ai.google.dev/gemini-api/docs/latest-model#pricing)
+while authorizing only the deterministic candidate and voyage. The sanitized
+observation is emitted as soon as validation succeeds, so closing a match before
+execution cannot hide an incurred call or make the proposal claim an observed
+result. Prompt prose,
+wallet/session identity, raw errors and credentials never enter operational
+logs. Replay reconstructs the retained shadow proposal without calling Gemini.
+The one-call adapter keeps the six-second total deadline, two-request deployment
+concurrency, 250-request process budget, cancellation, no retry and a
+three-failure/60-second circuit breaker. Google documents the pinned model as
+[stable](https://ai.google.dev/gemini-api/docs/models/gemini-3.8-flash), the
+[structured-output contract](https://ai.google.dev/api/generate-content), and
+the supported [`low` thinking level](https://ai.google.dev/gemini-api/docs/generate-content/thinking).
+
+The five fixtures and acceptance thresholds are frozen in
+`loomkeeper-strategy-probes-v10-r8.ts` before any deployed result is collected:
+
+- exactly five one-call probes, with no retry;
+- at least four schema- and fact-valid responses and four useful choices;
+- at least four responses inside six seconds, p95 no greater than six seconds,
+  and at most one operational provider fallback;
+- zero shadow authority violations; every executed choice remains the matched
+  deterministic baseline; and
+- at most USD 0.05 estimated total cost for the five-call set.
+
+The report includes the fixed basis/brief/atlas hashes, matched deterministic
+candidate, proposed candidate, bounded reason/watch text, strategy, source,
+timings and usage for direct review. It does not score explanation style. Run it
+only with the shadow configuration through
+`node --import tsx scripts/run-wp027-shadow-probes.ts`; the sanitized artifact is
+written to `test-results/wp027-shadow-probes.json`. Passing local-fake coverage
+proves the harness, while only this real deployed run can establish latency,
+cost and model strategy quality.
 
 ### Phone Gate A - live Gemini Practice
 

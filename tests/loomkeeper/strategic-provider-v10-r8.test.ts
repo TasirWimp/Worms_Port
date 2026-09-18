@@ -321,7 +321,11 @@ function localProvider(
     modelId: string,
     decide: (request: StrategicDecisionProviderRequestV10R8) => unknown | Promise<unknown>
 ): StrategicDecisionProviderV10R8 {
-    return Object.freeze({ mode: 'local_fake' as const, modelId, decide: request => Promise.resolve(decide(request)) });
+    return Object.freeze({
+        mode: 'local_fake' as const,
+        modelId,
+        decide: async request => Object.freeze({ payload: await decide(request), usage: null })
+    });
 }
 
 function validDecision(
@@ -359,7 +363,9 @@ function providerResult(
     return Object.freeze({
         outcome,
         decision,
+        providerMode: 'local_fake',
         modelId: 'authorization-fake',
+        usage: null,
         responseBytes: Buffer.byteLength(JSON.stringify(decision)),
         diagnostic: null,
         timingMs: Object.freeze({ preparation: 10, provider: 1, validation: 1, total: 12 })

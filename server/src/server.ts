@@ -24,6 +24,7 @@ import { peiConfigFromEnvironment } from './pei/config';
 import { PeiCoordinatorV0 } from './pei/coordinator';
 import { NimiqRpcPeiChainAdapterV0 } from './pei/nimiq-rpc-adapter';
 import { MemoryPeiJourneyStoreV0, PostgresPeiJourneyStoreV0 } from './pei/store';
+import { loomkeeperStrategyRuntimeFromEnvironmentV10R8 } from './simulation/loomkeeper-strategy-config-v10-r8';
 
 const port = Number(process.env.PORT) || 3000;
 const sessionOpenRateCapacity = Number(process.env.SESSION_OPEN_RATE_CAPACITY);
@@ -63,6 +64,7 @@ async function main(): Promise<void> {
 
 async function createNormalRuntime(): Promise<RuntimeServer> {
     assertRewardQualityTestEnvironment();
+    const loomkeeperStrategy = loomkeeperStrategyRuntimeFromEnvironmentV10R8();
     const rewardConfig = rewardConfigFromEnvironment();
     const identity = identityOptionsFromEnvironment(rewardConfig.mode !== 'disabled');
     const store = rewardStoreFromEnvironment(rewardConfig.mode);
@@ -118,6 +120,10 @@ async function createNormalRuntime(): Promise<RuntimeServer> {
             : undefined,
         sessionRegistry: {
             practiceV10: !(process.env.NODE_ENV === 'test' && process.env.PRACTICE_TEST_VERSION === 'legacy'),
+            ...(loomkeeperStrategy.strategicAdapter ? { v10Strategy: {
+                strategicAdapter: loomkeeperStrategy.strategicAdapter,
+                onStrategicTurnObserved: record => loomkeeperStrategy.telemetry?.observe(record)
+            } } : {}),
             ...(peiConfig ? { reconnectGraceMs: (peiConfig.requestTtlSeconds + 30) * 1_000 } : {}),
             ...(deterministicTestSeeds.length > 0 ? {
             seedSource: (_sessionId, practiceIndex) => deterministicTestSeeds[

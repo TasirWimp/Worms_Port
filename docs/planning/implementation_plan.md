@@ -17,8 +17,13 @@ Phaser/Socket.IO stack.
   causal candidates and current-basis one-use capabilities; the bounded
   single-call adapter and coordinator now prove strict local-fake selection,
   fallback, atomic strategic records, deletion recovery and exact provider-free
-  replay. Next is Waypoint 3's deployed shadow and bounded strategy probes. No
-  live Gemini selection, public R8 promotion or reward-path change is authorized.
+  replay. **Waypoint 3's server-only implementation is now present**: the exact
+  stable Gemini transport, shadow-only deterministic execution, sanitized
+  timing/token/cost evidence, provider-free shadow replay and five fixed probes
+  with prospectively frozen thresholds. The next gate is to configure the
+  private R8 canary as `gemini-shadow` and collect/review the real five-probe
+  artifact. No live Gemini selection, public R8 promotion or reward-path change
+  is authorized.
 
 - Verification infrastructure: the isolated change-selection/build-reuse port
   from `da1e7a9` follows the owner-requested 22:00 Berlin daily/full cadence.

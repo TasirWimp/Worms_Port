@@ -81,6 +81,15 @@ const abstainedDecision = z.object({
 export const StrategicDecisionV10R8Schema = z.union([selectedDecision, abstainedDecision]);
 export type StrategicDecisionV10R8 = z.infer<typeof StrategicDecisionV10R8Schema>;
 
+export const StrategicProviderUsageV10R8Schema = z.object({
+    inputTokens: z.number().int().min(0).max(1_000_000),
+    outputTokens: z.number().int().min(0).max(1_000_000),
+    thinkingTokens: z.number().int().min(0).max(1_000_000),
+    totalTokens: z.number().int().min(0).max(2_000_000),
+    estimatedCostUsdMicros: z.number().int().min(0).max(1_000_000_000)
+}).strict().readonly();
+export type StrategicProviderUsageV10R8 = z.infer<typeof StrategicProviderUsageV10R8Schema>;
+
 export const StrategicTurnRecordV10R8Schema = z.object({
     revision: z.literal(V10_R8_BRIEF_REVISION),
     policyId: z.literal(V10_R8_STRATEGY_POLICY_ID),
@@ -110,6 +119,7 @@ export const StrategicTurnRecordV10R8Schema = z.object({
         validation: z.number().int().min(0).max(60_000),
         total: z.number().int().min(0).max(60_000)
     }).strict().readonly(),
+    usage: StrategicProviderUsageV10R8Schema.nullable(),
     responseBytes: z.number().int().min(0).max(1_024).nullable(),
     diagnostic: z.string().max(160).nullable()
 }).strict().superRefine((record, context) => {
@@ -133,9 +143,52 @@ export const StrategicTurnRecordV10R8Schema = z.object({
             message: 'A provider-selected capability must match its validated provider decision.' });
     }
     if (record.providerMode === 'deterministic' &&
-        (record.modelId !== null || record.providerDecision !== null || record.decisionSource !== 'deterministic_fallback')) {
+        (record.modelId !== null || record.providerDecision !== null || record.usage !== null ||
+            record.decisionSource !== 'deterministic_fallback')) {
         context.addIssue({ code: z.ZodIssueCode.custom, path: ['providerMode'],
             message: 'Deterministic mode cannot claim a provider decision or model.' });
+    }
+    if (record.providerMode !== 'deterministic' && record.modelId === null) {
+        context.addIssue({ code: z.ZodIssueCode.custom, path: ['modelId'],
+            message: 'Provider-backed strategic turns require an exact model identity.' });
+    }
+    if (record.providerMode === 'local_fake' && record.decisionSource === 'gemini') {
+        context.addIssue({ code: z.ZodIssueCode.custom, path: ['decisionSource'],
+            message: 'A local fake cannot claim a Gemini decision.' });
+    }
+    if (record.providerMode === 'gemini' && record.decisionSource === 'local_fake') {
+        context.addIssue({ code: z.ZodIssueCode.custom, path: ['decisionSource'],
+            message: 'Gemini mode cannot claim a local-fake decision.' });
+    }
+    if (record.providerMode === 'gemini_shadow' && record.decisionSource !== 'deterministic_fallback') {
+        context.addIssue({ code: z.ZodIssueCode.custom, path: ['decisionSource'],
+            message: 'Gemini shadow proposals never receive execution authority.' });
+    }
+    if (record.providerMode === 'local_fake' && record.usage !== null) {
+        context.addIssue({ code: z.ZodIssueCode.custom, path: ['usage'],
+            message: 'Local fakes cannot claim external provider usage.' });
+    }
+    if (record.providerMode !== 'deterministic') {
+        const selectedProposal = record.providerDecision?.candidateId !== null &&
+            record.providerDecision?.candidateId !== undefined;
+        if (record.operationalOutcome === 'selected' && !selectedProposal) {
+            context.addIssue({ code: z.ZodIssueCode.custom, path: ['operationalOutcome'],
+                message: 'Selected provider outcomes require exactly one retained selected proposal.' });
+        }
+        if (record.operationalOutcome === 'abstained' && record.providerDecision?.candidateId !== null) {
+            context.addIssue({ code: z.ZodIssueCode.custom, path: ['providerDecision'],
+                message: 'Abstention requires a retained strict abstention response.' });
+        }
+        if (!['selected', 'abstained', 'invalid_response'].includes(record.operationalOutcome) &&
+            record.providerDecision !== null) {
+            context.addIssue({ code: z.ZodIssueCode.custom, path: ['providerDecision'],
+                message: 'Unavailable providers cannot retain a response decision.' });
+        }
+    }
+    if (record.usage && record.usage.totalTokens <
+        record.usage.inputTokens + record.usage.outputTokens + record.usage.thinkingTokens) {
+        context.addIssue({ code: z.ZodIssueCode.custom, path: ['usage', 'totalTokens'],
+            message: 'Provider usage total cannot be smaller than its token components.' });
     }
 });
 export type StrategicTurnRecordV10R8 = z.infer<typeof StrategicTurnRecordV10R8Schema>;

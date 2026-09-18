@@ -81,8 +81,10 @@ export type LiveSimulationCoordinatorV10Options = {
     maxReplayRecords?: number; maxReplayBytes?: number;
     /** Historical replay verification seam; live runtime omits it and uses the current identity. */
     replayIdentity?: LiveV10Identity;
-    /** Local-fake Waypoint 2 seam. Production runtime omits it and stays deterministic. */
+    /** Bounded strategic provider seam. It is consulted only by private R8 objective matches. */
     strategicAdapter?: StrategicDecisionAdapterV10R8;
+    /** Sanitized provider-result observer; it receives no session or wallet identity. */
+    onStrategicTurnObserved?: (record: StrategicTurnRecordV10R8) => void;
     /** Provider-free replay input, accepted only by the internal verification kernel. */
     replayStrategicTurns?: readonly StrategicTurnRecordV10R8[];
     /** Exact terminal tick for an R8 replay that ends with an uncommitted provider call. */
@@ -710,6 +712,11 @@ export class LiveSimulationCoordinatorV10 {
                 currentStrategy: entry.strategic.currentStrategy,
                 providerResult
             });
+            try {
+                this.options.onStrategicTurnObserved?.(entry.strategic.ready.record);
+            } catch {
+                // Operational telemetry cannot interrupt deterministic fallback authority.
+            }
             entry.anchorUs = this.clock();
             entry.credit = 0n;
         });
@@ -823,13 +830,13 @@ export class LiveSimulationCoordinatorV10 {
 
 function providerResultFromReplay(record: StrategicTurnRecordV10R8): StrategicProviderResultV10R8 | undefined {
     if (record.providerMode === 'deterministic') return undefined;
-    if (record.providerMode !== 'local_fake' || !record.modelId) {
-        throw new Error('Only deterministic and local-fake strategic replay are supported before Waypoint 3.');
-    }
+    if (!record.modelId) throw new Error('Provider-backed strategic replay is missing its model identity.');
     return Object.freeze({
         outcome: record.operationalOutcome,
         decision: record.providerDecision,
+        providerMode: record.providerMode,
         modelId: record.modelId,
+        usage: record.usage,
         responseBytes: record.responseBytes,
         diagnostic: record.diagnostic,
         timingMs: record.timingMs
