@@ -281,6 +281,28 @@ costs, player counteractions, correct fallback attribution, crash recovery,
 reconnect and exact provider-free replay. Profile local preparation and request
 sizes. Fakes prove behavior, not deployed latency or model strategy quality.
 
+Implementation status, 2026-09-18: complete under automated acceptance. A
+data-only local-fake adapter now owns one strict request, the remainder of the
+six-second whole-window deadline, response-byte validation, abort, concurrency,
+request-budget and circuit-breaker bounds. It never receives an executor,
+replay authority, session capability or secret. The R8 coordinator stops
+logical time while the call is pending, validates the response against the
+current brief and activates only a current-basis one-use capability. Candidate
+selection and the pending voyage are retained together before execution; the
+record becomes committed only after the resulting turn has an observed state.
+Abstention, invalid output, timeout, provider failure and every open guard use
+the same deterministic fallback with explicit source attribution and no retry.
+
+R8 replay now carries the policy identity and at most eight strategic-turn
+records. It reconstructs exact local-fake choices from retained evidence
+without a provider, rejects changed evidence, and accepts a final replay prefix
+whose provider call had not committed before deletion so recovery can replan.
+The next brief receives separately attributed player and system changes while
+continuation preserves the original milestone deadline and declared temporary
+cost. Current R7 Practice and Daily behavior remain unchanged. No Gemini SDK,
+API key, external request, provider configuration or public R8 promotion exists
+in this waypoint. Waypoint 3 is the next implementation slice.
+
 ### Waypoint 3 - deployed shadow and bounded strategy probes
 
 In shadow, the deterministic Loomkeeper acts. Measure schema/factual validity,

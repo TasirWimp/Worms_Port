@@ -14,6 +14,10 @@ import {
     V10_R8_AUTOMATION_ID
 } from './combat-version';
 import {
+    StrategicTurnRecordV10R8Schema,
+    V10_R8_STRATEGY_POLICY_ID
+} from './strategic-voyage-v10-r8';
+import {
     CoordinatorReplayV10Schema, ReplayOperationV10Schema, ReplayRecordV10Schema,
     V10_REPLAY_LIMITS, jsonBytesV10
 } from './protocol-v10';
@@ -77,9 +81,11 @@ export const CoordinatorReplayV10R8Schema = z.object({
     recipeRevision: z.literal(V10_R7_BATTLEFIELD_RECIPE_REVISION), candidateIndex: z.literal(0),
     objectiveMode: z.enum(V10_R8_OBJECTIVE_MODES),
     objectiveRecipeRevision: z.literal(V10_R8_OBJECTIVE_RECIPE_REVISION),
+    strategyPolicyId: z.literal(V10_R8_STRATEGY_POLICY_ID),
     automationId: z.literal(V10_R8_AUTOMATION_ID), initialStateHash: hash,
     records: z.array(ReplayRecordV10Schema).max(V10_REPLAY_LIMITS.records),
-    chosenPlans: z.array(LoomkeeperSelectionV10Schema).max(16)
+    chosenPlans: z.array(LoomkeeperSelectionV10Schema).max(16),
+    strategicTurns: z.array(StrategicTurnRecordV10R8Schema).max(8)
 }).strict();
 
 export const CoordinatorReplayV10AutomatedSchema = z.union([

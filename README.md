@@ -166,10 +166,11 @@ are also recorded in the Execution Pointer of
   1-3 and Phone Gates A-C are accepted. The final promotion activates this
   deterministic server/replay identity for both Practice and Daily;
   private R8 objective modes are complete in
-  [WP-026](docs/planning/wp-026-v10-r8-objective-modes.md). WP-027 Waypoint 1
-  now provides the server-only deterministic strategic brief, candidate atlas
-  and one-use capability boundary, with no provider or runtime activation;
-  Waypoint 2 owns local-fake adapter integration. See
+  [WP-026](docs/planning/wp-026-v10-r8-objective-modes.md). WP-027 Waypoints 1
+  and 2 now provide the server-only deterministic strategic brief, candidate
+  atlas, one-use capability boundary, bounded local-fake adapter, atomic
+  strategy evidence and provider-free replay. Production remains deterministic;
+  Waypoint 3 owns deployed shadow evaluation and strategy probes. See
   [WP-027](docs/planning/wp-027-gemini-objective-loomkeeper.md).
   Named development profiles remain diagnostics and cannot activate the
   PEI-gated Daily Challenge.

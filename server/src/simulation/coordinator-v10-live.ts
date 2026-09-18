@@ -24,6 +24,30 @@ import {
 } from '../../../shared/combat-version';
 import { LoomkeeperExecutionV10, LoomkeeperPlannerV10, type LoomkeeperSelectionV10 } from '../../../shared/loomkeeper-v10';
 import { LoomkeeperExecutionV10R8, LoomkeeperPlannerV10R8 } from '../../../shared/loomkeeper-v10-r8';
+import {
+    EMPTY_COMMITTED_VOYAGE_V10_R8,
+    EMPTY_RECENT_CHANGES_V10_R8,
+    StrategicTurnRecordV10R8Schema,
+    V10_R8_STRATEGY_POLICY_ID,
+    type CommittedStrategicVoyageV10R8,
+    type RecentStrategicChangesV10R8,
+    type StrategicTurnRecordV10R8
+} from '../../../shared/strategic-voyage-v10-r8';
+import {
+    buildStrategicDecisionBoundaryV10R8,
+    type StrategicCandidateSummaryV10R8
+} from './loomkeeper-strategy-v10-r8';
+import {
+    StrategicDecisionAdapterV10R8,
+    type StrategicProviderResultV10R8
+} from './loomkeeper-strategy-provider-v10-r8';
+import {
+    authorizeStrategicTurnV10R8,
+    committedStrategicTurnV10R8,
+    deriveRecentStrategicChangesV10R8,
+    executingStrategicTurnV10R8,
+    type PendingStrategicTurnV10R8
+} from './loomkeeper-strategic-turn-v10-r8';
 
 export { V10_REPLAY_LIMITS } from '../../../shared/protocol-v10-live';
 export type { CoordinatorReplayV10 } from '../../../shared/protocol-v10-live';
@@ -57,6 +81,12 @@ export type LiveSimulationCoordinatorV10Options = {
     maxReplayRecords?: number; maxReplayBytes?: number;
     /** Historical replay verification seam; live runtime omits it and uses the current identity. */
     replayIdentity?: LiveV10Identity;
+    /** Local-fake Waypoint 2 seam. Production runtime omits it and stays deterministic. */
+    strategicAdapter?: StrategicDecisionAdapterV10R8;
+    /** Provider-free replay input, accepted only by the internal verification kernel. */
+    replayStrategicTurns?: readonly StrategicTurnRecordV10R8[];
+    /** Exact terminal tick for an R8 replay that ends with an uncommitted provider call. */
+    replayFinalTick?: number;
     plannerFactory?: (state: SimulationStateV10) => LoomkeeperPlannerV10;
     onTransition?: (update: CoordinatorUpdateV10) => void;
     onTerminal?: (result: CoordinatorTerminalResultV10) => void;
@@ -65,6 +95,19 @@ export type LiveSimulationCoordinatorV10Options = {
         phase: LiveSimulationStateV10['phase']; actor: SimulationActor; dueTicks: number;
         planningTicks: number; maximumPlanningBatchUs: number }) => void;
 };
+type StrategicRuntimeV10R8 = {
+    source?: SimulationStateV10R8;
+    currentStrategy: CommittedStrategicVoyageV10R8;
+    recentChanges: RecentStrategicChangesV10R8;
+    request?: Promise<void>;
+    ready?: PendingStrategicTurnV10R8;
+    decisionStateHash?: string;
+    executing?: Readonly<{ recordIndex: number; candidate: StrategicCandidateSummaryV10R8 }>;
+    lastObserved?: SimulationStateV10R8;
+    lastAction?: string;
+    lastObservedResult?: string;
+    planningWorkUs: number;
+};
 type Entry = {
     replay: CoordinatorReplayV10 | CoordinatorReplayV10Automated; state: LiveSimulationStateV10; stateHash: string; bytes: number;
     paused: boolean; unavailable: boolean; anchorUs: number; credit: bigint;
@@ -72,6 +115,7 @@ type Entry = {
     planningFailed?: boolean; execution?: LiveExecutionV10;
     runtimeFailed?: boolean; stopReason?: V10StopReason; maximumPlanningBatchUs?: number;
     terminalResult?: CoordinatorTerminalResultV10; pendingTerminal?: CoordinatorTerminalResultV10;
+    strategic?: StrategicRuntimeV10R8;
 };
 
 /** Candidate V10 authority. Ordinary V10 foundations and tagged automated matches remain distinct. */
@@ -124,10 +168,17 @@ export class LiveSimulationCoordinatorV10 {
         const replay = CoordinatorReplayV10AutomatedSchema.parse({ formatVersion: 10, challengeId, sessionId, seed, calling,
             rulesetId: identity.rulesetId, terrainProfileId: state.terrainProfileId, recipeRevision: state.terrainRecipeRevision, candidateIndex: state.terrainCandidateIndex,
             ...(isR8State(state) ? { objectiveMode: state.objective.objectiveMode,
-                objectiveRecipeRevision: V10_R8_OBJECTIVE_RECIPE_REVISION } : {}),
+                objectiveRecipeRevision: V10_R8_OBJECTIVE_RECIPE_REVISION,
+                strategyPolicyId: V10_R8_STRATEGY_POLICY_ID,
+                strategicTurns: [] } : {}),
             automationId: identity.automationId, initialStateHash: stateHash, records: [], chosenPlans: [] });
         const entry: Entry = { replay, state, stateHash, bytes: jsonBytesV10(replay), paused: false, unavailable: false,
-            anchorUs: this.clock(), credit: 0n, automated: true };
+            anchorUs: this.clock(), credit: 0n, automated: true,
+            ...(isR8State(state) ? { strategic: {
+                currentStrategy: EMPTY_COMMITTED_VOYAGE_V10_R8,
+                recentChanges: EMPTY_RECENT_CHANGES_V10_R8,
+                planningWorkUs: 0
+            } } : {}) };
         if (entry.bytes + V10_REPLAY_LIMITS.terminalBytes > this.maxBytes) throw new Error('No terminal replay reserve.');
         this.matches.set(challengeId, entry); return this.snapshot(entry) as CoordinatorSnapshotV10 & { automationId: V10AutomationId };
     }
@@ -194,7 +245,13 @@ export class LiveSimulationCoordinatorV10 {
         try {
             let update = this.noop(entry);
             for (let index = 0; index < count && !entry.terminalResult; index++) {
-                if (entry.automated) this.prepareAutomatedTick(entry);
+                if (entry.automated) {
+                    if (entry.strategic?.request && !entry.strategic.ready) break;
+                    if (entry.strategic?.ready && !this.activateStrategicTurn(entry)) {
+                        return this.safety(entry.replay.challengeId, 'replay_limit');
+                    }
+                    this.prepareAutomatedTick(entry);
+                }
                 const oldPhase = entry.state.phase, oldTick = entry.state.tick;
                 const transition = advanceLiveTick(entry.state);
                 update = this.accept(entry, transition, { kind: 'ticks', count: 1 }, false, !entry.automated);
@@ -219,6 +276,10 @@ export class LiveSimulationCoordinatorV10 {
     public pump(challengeId: string): CoordinatorSnapshotV10 {
         const entry = this.require(challengeId); this.accrue(entry);
         if (entry.paused || entry.terminalResult) return this.snapshot(entry);
+        if (entry.strategic?.request && !entry.strategic.ready) {
+            entry.credit = 0n; entry.anchorUs = this.clock();
+            return this.snapshot(entry);
+        }
         if (entry.credit / 1_000_000n > 30n) return this.safety(challengeId, 'clock_debt');
         const count = Math.min(6, Number(entry.credit / 1_000_000n)); entry.credit -= BigInt(count) * 1_000_000n;
         if (count) this.advance(challengeId, count); return this.snapshot(entry);
@@ -231,6 +292,12 @@ export class LiveSimulationCoordinatorV10 {
             snapshot = this.pump(challengeId);
         }
         return snapshot;
+    }
+    public async waitForStrategicDecision(challengeId: string): Promise<CoordinatorSnapshotV10> {
+        const entry = this.require(challengeId);
+        await entry.strategic?.request;
+        if (!this.matches.has(challengeId)) throw new Error('V10 match closed during strategic decision.');
+        return this.snapshot(this.require(challengeId));
     }
     public safety(challengeId: string, reason: Extract<ReplayOperationV10, { kind: 'safety' }>['reason'] | 'clock_debt'): CoordinatorUpdateV10 {
         const entry = this.require(challengeId); if (entry.terminalResult) return this.noop(entry);
@@ -297,7 +364,9 @@ export class LiveSimulationCoordinatorV10 {
             maxReplayBytes: this.maxBytes, replayIdentity: validateLiveIdentity({
                 rulesetId: replay.rulesetId as LiveV10RulesetId,
                 automationId: replay.automationId
-            }) });
+            }), ...(replay.rulesetId === V10_R8_RULESET_ID
+                ? { replayStrategicTurns: replay.strategicTurns, replayFinalTick: replayTickCount(replay.records) }
+                : {}) });
         verifier.replayVerificationKernel = true;
         try {
             const initial = verifier.createAutomated(replay.challengeId, replay.sessionId, replay.seed, replay.calling,
@@ -305,8 +374,20 @@ export class LiveSimulationCoordinatorV10 {
             if (initial.stateHash !== replay.initialStateHash) throw new Error('V10 initial hash mismatch.');
             let cursor = 0;
             while (cursor < replay.records.length) {
-                const generated = verifier.require(replay.challengeId).replay.records[cursor];
-                if (generated) { if (JSON.stringify(generated) !== JSON.stringify(replay.records[cursor])) throw new Error(`V10 automated replay divergence at ${cursor}.`); cursor += 1; continue; }
+                let generated = verifier.require(replay.challengeId).replay.records[cursor];
+                if (generated) {
+                    const expectedRecord = replay.records[cursor];
+                    if (generated.operation.kind === 'ticks' && expectedRecord.operation.kind === 'ticks' &&
+                        generated.operation.count < expectedRecord.operation.count) {
+                        verifier.advance(replay.challengeId, expectedRecord.operation.count - generated.operation.count);
+                        generated = verifier.require(replay.challengeId).replay.records[cursor];
+                    }
+                    if (JSON.stringify(generated) !== JSON.stringify(expectedRecord)) {
+                        throw new Error(`V10 automated replay divergence at ${cursor}: expected ${JSON.stringify(expectedRecord.operation)}, generated ${JSON.stringify(generated?.operation)}.`);
+                    }
+                    cursor += 1;
+                    continue;
+                }
                 const operation = replay.records[cursor].operation;
                 if (operation.kind === 'automatic' || (operation.kind === 'intent' && operation.actor === 'loomkeeper') ||
                     (operation.kind === 'barrier' && operation.barrier.actor === 'loomkeeper')) throw new Error(`Missing generated V10 policy operation at ${cursor}.`);
@@ -319,7 +400,11 @@ export class LiveSimulationCoordinatorV10 {
             }
             const regenerated = verifier.require(replay.challengeId).replay;
             if (JSON.stringify(regenerated.records) !== JSON.stringify(replay.records) || !('chosenPlans' in regenerated) ||
-                JSON.stringify(regenerated.chosenPlans) !== JSON.stringify(replay.chosenPlans)) throw new Error('V10 automated policy proof is incomplete or changed.');
+                JSON.stringify(regenerated.chosenPlans) !== JSON.stringify(replay.chosenPlans) ||
+                (replay.rulesetId === V10_R8_RULESET_ID && (!('strategicTurns' in regenerated) ||
+                    JSON.stringify(regenerated.strategicTurns) !== JSON.stringify(replay.strategicTurns)))) {
+                throw new Error('V10 automated policy proof is incomplete or changed.');
+            }
             return verifier.get(replay.challengeId)!;
         } finally { verifier.dispose(); }
     }
@@ -332,7 +417,9 @@ export class LiveSimulationCoordinatorV10 {
             maxReplayBytes: this.maxBytes, replayIdentity: validateLiveIdentity({
                 rulesetId: replay.rulesetId as LiveV10RulesetId,
                 automationId: replay.automationId
-            }) });
+            }), ...(replay.rulesetId === V10_R8_RULESET_ID
+                ? { replayStrategicTurns: replay.strategicTurns, replayFinalTick: replayTickCount(replay.records) }
+                : {}) });
         verifier.replayVerificationKernel = true;
         try {
             const initial = verifier.createAutomated(replay.challengeId, replay.sessionId, replay.seed, replay.calling,
@@ -340,8 +427,26 @@ export class LiveSimulationCoordinatorV10 {
             if (initial.stateHash !== replay.initialStateHash) throw new Error('V10 initial hash mismatch.');
             let cursor = 0;
             while (cursor < replay.records.length) {
-                const generated = verifier.require(replay.challengeId).replay.records[cursor];
-                if (generated) { if (JSON.stringify(generated) !== JSON.stringify(replay.records[cursor])) throw new Error(`V10 automated replay divergence at ${cursor}.`); cursor += 1; continue; }
+                let generated = verifier.require(replay.challengeId).replay.records[cursor];
+                if (generated) {
+                    const expectedRecord = replay.records[cursor];
+                    if (generated.operation.kind === 'ticks' && expectedRecord.operation.kind === 'ticks' &&
+                        generated.operation.count < expectedRecord.operation.count) {
+                        let remaining = expectedRecord.operation.count - generated.operation.count;
+                        while (remaining > 0) {
+                            const count = Math.min(REPLAY_VERIFICATION_TICK_BATCH, remaining);
+                            verifier.advance(replay.challengeId, count);
+                            remaining -= count;
+                            await this.yieldBatch();
+                        }
+                        generated = verifier.require(replay.challengeId).replay.records[cursor];
+                    }
+                    if (JSON.stringify(generated) !== JSON.stringify(expectedRecord)) {
+                        throw new Error(`V10 automated replay divergence at ${cursor}: expected ${JSON.stringify(expectedRecord.operation)}, generated ${JSON.stringify(generated?.operation)}.`);
+                    }
+                    cursor += 1;
+                    continue;
+                }
                 const operation = replay.records[cursor].operation;
                 if (operation.kind === 'automatic' || (operation.kind === 'intent' && operation.actor === 'loomkeeper') ||
                     (operation.kind === 'barrier' && operation.barrier.actor === 'loomkeeper')) throw new Error(`Missing generated V10 policy operation at ${cursor}.`);
@@ -360,7 +465,11 @@ export class LiveSimulationCoordinatorV10 {
             }
             const regenerated = verifier.require(replay.challengeId).replay;
             if (JSON.stringify(regenerated.records) !== JSON.stringify(replay.records) || !('chosenPlans' in regenerated) ||
-                JSON.stringify(regenerated.chosenPlans) !== JSON.stringify(replay.chosenPlans)) throw new Error('V10 automated policy proof is incomplete or changed.');
+                JSON.stringify(regenerated.chosenPlans) !== JSON.stringify(replay.chosenPlans) ||
+                (replay.rulesetId === V10_R8_RULESET_ID && (!('strategicTurns' in regenerated) ||
+                    JSON.stringify(regenerated.strategicTurns) !== JSON.stringify(replay.strategicTurns)))) {
+                throw new Error('V10 automated policy proof is incomplete or changed.');
+            }
             return verifier.get(replay.challengeId)!;
         } finally { verifier.dispose(); }
     }
@@ -368,9 +477,20 @@ export class LiveSimulationCoordinatorV10 {
         const entry = this.matches.get(challengeId); const result = entry?.pendingTerminal; if (entry) entry.pendingTerminal = undefined;
         return result && structuredClone(result);
     }
-    public delete(challengeId: string): boolean { return this.matches.delete(challengeId); }
-    public deleteForSession(sessionId: string): void { for (const [id, entry] of this.matches) if (entry.replay.sessionId === sessionId) this.matches.delete(id); }
-    public dispose(): void { if (this.timer) clearInterval(this.timer); this.matches.clear(); }
+    public delete(challengeId: string): boolean {
+        this.options.strategicAdapter?.cancelMatch(challengeId);
+        return this.matches.delete(challengeId);
+    }
+    public deleteForSession(sessionId: string): void {
+        for (const [id, entry] of this.matches) if (entry.replay.sessionId === sessionId) {
+            this.options.strategicAdapter?.cancelMatch(id); this.matches.delete(id);
+        }
+    }
+    public dispose(): void {
+        if (this.timer) clearInterval(this.timer);
+        for (const id of this.matches.keys()) this.options.strategicAdapter?.cancelMatch(id);
+        this.matches.clear();
+    }
 
     private accept(entry: Entry, transition: LiveSimulationTransitionV10, operation: ReplayOperationV10, reserve = false, notify = true): CoordinatorUpdateV10 {
         if (!transition.accepted || !transition.mutated) return this.replayVerificationKernel
@@ -399,6 +519,7 @@ export class LiveSimulationCoordinatorV10 {
         }
         if (coalesce) entry.replay.records[entry.replay.records.length - 1] = record; else entry.replay.records.push(record);
         entry.replay.records.push(...annotations);
+        this.commitStrategicTurnIfObserved(entry);
         if (entry.state.phase === 'finished' && !entry.terminalResult) {
             entry.terminalResult = { rulesetId: liveRulesetId(entry.replay.rulesetId), challengeId: entry.replay.challengeId, sessionId: entry.replay.sessionId,
                 winner: entry.state.winner, reason: objectiveResultReason(entry.state), tick: entry.state.tick, stateHash,
@@ -448,6 +569,15 @@ export class LiveSimulationCoordinatorV10 {
         if (entry.aiTurn !== entry.state.turn) {
             entry.aiTurn = entry.state.turn; entry.planningElapsed = 0; entry.planningFailed = false; entry.execution = undefined;
             entry.planner = undefined;
+            if (isR8State(entry.state) && entry.strategic) {
+                entry.strategic.source = structuredClone(entry.state);
+                entry.strategic.recentChanges = this.recentStrategicChanges(entry, entry.state);
+                entry.strategic.request = undefined;
+                entry.strategic.ready = undefined;
+                entry.strategic.decisionStateHash = undefined;
+                entry.strategic.executing = undefined;
+                entry.strategic.planningWorkUs = 0;
+            }
         }
         if ((entry.planningElapsed ?? 0) >= 30) return;
         if (!entry.planningFailed) {
@@ -461,6 +591,7 @@ export class LiveSimulationCoordinatorV10 {
             finally {
                 const planningWorkUs = Math.max(0, this.clock() - started);
                 entry.maximumPlanningBatchUs = Math.max(entry.maximumPlanningBatchUs ?? 0, planningWorkUs);
+                if (entry.strategic) entry.strategic.planningWorkUs += planningWorkUs;
             }
         }
         entry.planningElapsed = (entry.planningElapsed ?? 0) + 1;
@@ -470,11 +601,15 @@ export class LiveSimulationCoordinatorV10 {
         if (entry.state.phase === 'action' && entry.state.activeActor === 'loomkeeper' && entry.aiTurn === entry.state.turn &&
             entry.planningElapsed === 30 && !this.hasSelection(entry, entry.state.turn)) {
             const selection: LoomkeeperSelectionV10 = entry.planningFailed ? { prefix: 'none', status: 'work_failure', ordinal: null } : entry.planner!.selection;
-            // This write is the debit barrier: an execution is impossible until the plan is retained.
-            if (!this.recordSelection(entry, entry.state.turn, selection)) return this.safety(entry.replay.challengeId, 'replay_limit');
-            if (selection.status === 'selected') entry.execution = isR8State(entry.state)
-                ? new LoomkeeperExecutionV10R8(entry.planner!.selectedCandidate()!, selection.prefix, entry.state)
-                : new LoomkeeperExecutionV10(entry.planner!.selectedCandidate()!, selection.prefix, entry.state);
+            if (isR8State(entry.state) && selection.status === 'selected') {
+                if (!entry.strategic?.request && !entry.strategic?.ready) this.beginStrategicDecision(entry, selection);
+            } else {
+                // This write is the debit barrier: an execution is impossible until the plan is retained.
+                if (!this.recordSelection(entry, entry.state.turn, selection)) return this.safety(entry.replay.challengeId, 'replay_limit');
+                if (selection.status === 'selected') entry.execution = new LoomkeeperExecutionV10(
+                    entry.planner!.selectedCandidate()!, selection.prefix, entry.state as SimulationStateV10
+                );
+            }
         }
         if (!entry.execution) return initial;
         let update = initial;
@@ -493,6 +628,155 @@ export class LiveSimulationCoordinatorV10 {
             update = this.accept(entry, transition, ReplayOperationV10Schema.parse(replayOperation), false, false);
         }
         return update;
+    }
+    private beginStrategicDecision(entry: Entry, fallbackSelection: LoomkeeperSelectionV10): void {
+        if (!isR8State(entry.state) || !entry.strategic?.source || fallbackSelection.status !== 'selected') {
+            throw new Error('R8 strategic decision requires a selected deterministic fallback.');
+        }
+        const strategic = entry.strategic;
+        const boundaryStarted = this.clock();
+        const boundary = buildStrategicDecisionBoundaryV10R8({
+            challengeId: entry.replay.challengeId,
+            state: strategic.source,
+            deterministicFallback: {
+                candidate: entry.planner!.selectedCandidate()!,
+                prefix: fallbackSelection.prefix
+            },
+            currentStrategy: strategic.currentStrategy,
+            recentChanges: strategic.recentChanges
+        });
+        const preparationMs = Math.round((strategic.planningWorkUs + Math.max(0, this.clock() - boundaryStarted)) / 1_000);
+        const expected = this.replayVerificationKernel
+            ? this.options.replayStrategicTurns?.find(record => record.turn === entry.state.turn)
+            : undefined;
+        if (this.replayVerificationKernel) {
+            // A replay may end while its provider request is still uncommitted.
+            // Any later policy operation still fails reconstruction because no
+            // capability is activated without a retained strategic turn.
+            if (!expected) {
+                if (this.options.replayFinalTick === entry.state.tick) return;
+                throw new Error('Strategic replay is missing the current turn record.');
+            }
+            const providerResult = providerResultFromReplay(expected);
+            const pending = authorizeStrategicTurnV10R8({
+                boundary,
+                state: strategic.source,
+                currentStrategy: strategic.currentStrategy,
+                ...(providerResult ? { providerResult } : {})
+            });
+            const expectedPending = StrategicTurnRecordV10R8Schema.parse({
+                ...expected,
+                status: 'pending',
+                committedVoyage: null,
+                observedStateHash: null
+            });
+            if (JSON.stringify(pending.record) !== JSON.stringify(expectedPending)) {
+                throw new Error('Strategic replay decision boundary changed.');
+            }
+            strategic.ready = pending;
+            strategic.decisionStateHash = entry.stateHash;
+            return;
+        }
+        if (!this.options.strategicAdapter) {
+            strategic.ready = authorizeStrategicTurnV10R8({
+                boundary,
+                state: strategic.source,
+                currentStrategy: strategic.currentStrategy
+            });
+            strategic.decisionStateHash = entry.stateHash;
+            return;
+        }
+        const decisionStateHash = entry.stateHash;
+        const decisionTurn = entry.state.turn;
+        strategic.decisionStateHash = decisionStateHash;
+        let request!: Promise<void>;
+        request = this.options.strategicAdapter.request(
+            entry.replay.challengeId,
+            boundary.brief,
+            preparationMs
+        ).then(providerResult => {
+            const current = this.matches.get(entry.replay.challengeId);
+            if (current !== entry || !entry.strategic || entry.strategic.request !== request) return;
+            if (entry.stateHash !== decisionStateHash ||
+                entry.state.turn !== decisionTurn) {
+                entry.strategic.request = undefined;
+                entry.strategic.decisionStateHash = undefined;
+                entry.aiTurn = undefined;
+                return;
+            }
+            entry.strategic.ready = authorizeStrategicTurnV10R8({
+                boundary,
+                state: entry.strategic.source!,
+                currentStrategy: entry.strategic.currentStrategy,
+                providerResult
+            });
+            entry.anchorUs = this.clock();
+            entry.credit = 0n;
+        });
+        strategic.request = request;
+    }
+    private activateStrategicTurn(entry: Entry): boolean {
+        if (!isR8State(entry.state) || !entry.strategic?.ready || !('strategicTurns' in entry.replay)) return false;
+        const pending = entry.strategic.ready;
+        const executing = executingStrategicTurnV10R8(pending.record);
+        const resolved = pending.boundary.consume(pending.capability);
+        const selection: LoomkeeperSelectionV10 = {
+            prefix: resolved.prefix,
+            status: 'selected',
+            ordinal: resolved.candidate.ordinal
+        };
+        const previousPlans = entry.replay.chosenPlans;
+        const previousTurns = entry.replay.strategicTurns;
+        entry.replay.chosenPlans = [...previousPlans, { turn: entry.state.turn, ...selection }];
+        entry.replay.strategicTurns = [...previousTurns, executing];
+        const executingBytes = jsonBytesV10(entry.replay);
+        const reserved = committedStrategicTurnV10R8(executing, '0'.repeat(64));
+        entry.replay.strategicTurns[entry.replay.strategicTurns.length - 1] = reserved;
+        const committedBytes = jsonBytesV10(entry.replay);
+        entry.replay.strategicTurns[entry.replay.strategicTurns.length - 1] = executing;
+        if (Math.max(executingBytes, committedBytes) > this.maxBytes - V10_REPLAY_LIMITS.terminalBytes) {
+            entry.replay.chosenPlans = previousPlans;
+            entry.replay.strategicTurns = previousTurns;
+            return false;
+        }
+        entry.bytes = executingBytes;
+        entry.execution = new LoomkeeperExecutionV10R8(resolved.candidate, resolved.prefix, entry.state);
+        entry.strategic.executing = Object.freeze({
+            recordIndex: entry.replay.strategicTurns.length - 1,
+            candidate: pending.candidate
+        });
+        entry.strategic.ready = undefined;
+        entry.strategic.request = undefined;
+        return true;
+    }
+    private commitStrategicTurnIfObserved(entry: Entry): void {
+        if (!entry.strategic?.executing || !('strategicTurns' in entry.replay) || !isR8State(entry.state)) return;
+        const executing = entry.replay.strategicTurns[entry.strategic.executing.recordIndex];
+        if (!executing || executing.status !== 'executing') throw new Error('Strategic execution record is missing.');
+        if (entry.state.phase !== 'finished' && entry.state.turn === executing.turn) return;
+        const committed = committedStrategicTurnV10R8(executing, entry.stateHash);
+        entry.replay.strategicTurns[entry.strategic.executing.recordIndex] = committed;
+        const bytes = jsonBytesV10(entry.replay);
+        if (bytes > this.maxBytes - V10_REPLAY_LIMITS.terminalBytes) {
+            throw new Error('Strategic commit exceeded its reserved replay budget.');
+        }
+        entry.bytes = bytes;
+        entry.strategic.currentStrategy = committed.committedVoyage!;
+        entry.strategic.lastObserved = structuredClone(entry.state);
+        entry.strategic.lastAction = describeStrategicAction(entry.strategic.executing.candidate);
+        entry.strategic.lastObservedResult = describeStrategicResult(entry.strategic.executing.candidate);
+        entry.strategic.executing = undefined;
+    }
+    private recentStrategicChanges(entry: Entry, current: SimulationStateV10R8): RecentStrategicChangesV10R8 {
+        const strategic = entry.strategic;
+        if (!strategic?.lastObserved) return EMPTY_RECENT_CHANGES_V10_R8;
+        return deriveRecentStrategicChangesV10R8({
+            previous: strategic.lastObserved,
+            current,
+            currentStrategy: strategic.currentStrategy,
+            previousAction: strategic.lastAction ?? null,
+            observedResult: strategic.lastObservedResult ?? null
+        });
     }
     private hasSelection(entry: Entry, turn: number): boolean { return 'chosenPlans' in entry.replay && entry.replay.chosenPlans.some(plan => plan.turn === turn); }
     private excludeMeasuredAuthorityWork(elapsedUs: number): void {
@@ -535,6 +819,36 @@ export class LiveSimulationCoordinatorV10 {
         } finally { this.ticking = false; }
     }
 
+}
+
+function providerResultFromReplay(record: StrategicTurnRecordV10R8): StrategicProviderResultV10R8 | undefined {
+    if (record.providerMode === 'deterministic') return undefined;
+    if (record.providerMode !== 'local_fake' || !record.modelId) {
+        throw new Error('Only deterministic and local-fake strategic replay are supported before Waypoint 3.');
+    }
+    return Object.freeze({
+        outcome: record.operationalOutcome,
+        decision: record.providerDecision,
+        modelId: record.modelId,
+        responseBytes: record.responseBytes,
+        diagnostic: record.diagnostic,
+        timingMs: record.timingMs
+    });
+}
+
+function replayTickCount(records: readonly Readonly<{ operation?: ReplayOperationV10 }>[]): number {
+    return records.reduce((total, record) => total +
+        (record.operation?.kind === 'ticks' ? record.operation.count : 0), 0);
+}
+
+function describeStrategicAction(candidate: StrategicCandidateSummaryV10R8): string {
+    const jump = candidate.action.jump ? ' with jump' : '';
+    return `${candidate.candidateId}: ${candidate.action.movement}${jump}, then ${candidate.action.relicId}.`;
+}
+
+function describeStrategicResult(candidate: StrategicCandidateSummaryV10R8): string {
+    const immediate = candidate.immediate;
+    return `${candidate.candidateId} removed ${immediate.terrainCellsRemoved} terrain cells, changed player stitching by ${immediate.opponentStitchingDelta}, and objective score by ${immediate.objectiveScoreDelta}.`;
 }
 
 function createState(seed: number, calling: PlayerCalling, rulesetId: LiveV10RulesetId,

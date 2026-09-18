@@ -8,6 +8,7 @@ import {
     StrategicTurnRecordV10R8Schema,
     StrategicDecisionV10R8Schema,
     V10_R8_CANDIDATE_CAPS,
+    V10_R8_PROMPT_VERSION,
     buildStrategicDecisionBoundaryV10R8,
     parseStrategicDecisionV10R8,
     projectWorldSurfaceV10R8,
@@ -138,7 +139,7 @@ test('WP-027 response schema freezes selected and abstention variants', () => {
     assert.throws(() => parseStrategicDecisionV10R8({ ...selected, reason: 'x'.repeat(2_000) }), /byte cap/);
 });
 
-test('WP-027 turn records cannot commit unwitnessed strategy or mismatch a Gemini selection', () => {
+test('WP-027 turn records cannot commit unwitnessed strategy or mismatch a provider selection', () => {
     const boundary = boundaryFixture('collect');
     const evidence = boundary.evidence();
     const decision = {
@@ -152,16 +153,23 @@ test('WP-027 turn records cannot commit unwitnessed strategy or mismatch a Gemin
     const pending = {
         revision: boundary.brief.revision,
         policyId: boundary.brief.policyId,
+        promptVersion: V10_R8_PROMPT_VERSION,
+        providerMode: 'local_fake',
+        modelId: 'wp027-local-fake-v1',
+        operationalOutcome: 'selected',
         turn: loomkeeperFixture('collect').state.turn,
         ...evidence,
         selectedCandidateId: 'c01',
-        decisionSource: 'gemini',
+        decisionSource: 'local_fake',
         providerDecision: decision,
         status: 'pending',
         proposedVoyage: voyage,
         committedVoyage: null,
         immediatePredictionHash: 'a'.repeat(64),
-        observedStateHash: null
+        observedStateHash: null,
+        timingMs: { preparation: 100, provider: 10, validation: 1, total: 111 },
+        responseBytes: 240,
+        diagnostic: null
     } as const;
     assert.equal(StrategicTurnRecordV10R8Schema.safeParse(pending).success, true);
     assert.equal(StrategicTurnRecordV10R8Schema.safeParse({

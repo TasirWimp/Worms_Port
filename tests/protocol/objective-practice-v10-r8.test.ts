@@ -14,6 +14,7 @@ import {
     V10_R8_OBJECTIVE_RECIPE_REVISION, V10_R8_RULESET_ID,
     type V10R8ObjectiveMode
 } from '../../shared/simulation-v10-r8';
+import { V10_R8_STRATEGY_POLICY_ID } from '../../shared/strategic-voyage-v10-r8';
 
 const r8Request = {
     requestId: 'objective_request_001', sequence: 0, mode: 'practice', calling: 'wizard',
@@ -82,14 +83,24 @@ test('R8 Loomkeeper plans are replay-bound, legal and objective-sensitive', asyn
             const created = live.createAutomated(id, `objective_owner_${mode}_01`, 4, 'wizard', { objectiveMode: mode });
             assert.equal(created.state.rulesetId, V10_R8_RULESET_ID);
             live.advance(id, V10_R6_DYNAMICS.actionTicks + 60);
+            for (let attempt = 0; attempt < 400; attempt += 1) {
+                const current = live.replay(id);
+                if (current && 'strategicTurns' in current && current.strategicTurns.length > 0 &&
+                    current.strategicTurns.every(turn => turn.status === 'committed')) break;
+                live.advance(id, 6);
+            }
             const replay = live.replay(id)!;
             assert.equal(CoordinatorReplayV10AutomatedSchema.safeParse(replay).success, true);
             assert.equal(replay.rulesetId, V10_R8_RULESET_ID);
             if (replay.rulesetId !== V10_R8_RULESET_ID) throw new Error('Expected R8 replay.');
             assert.equal(replay.objectiveMode, mode);
             assert.equal(replay.objectiveRecipeRevision, V10_R8_OBJECTIVE_RECIPE_REVISION);
+            assert.equal(replay.strategyPolicyId, V10_R8_STRATEGY_POLICY_ID);
             assert.ok(replay.chosenPlans.length > 0);
             assert.ok(replay.chosenPlans.every(plan => plan.status !== 'work_failure'));
+            assert.ok(replay.strategicTurns.length > 0);
+            assert.ok(replay.strategicTurns.every(turn => turn.status === 'committed'));
+            assert.ok(replay.strategicTurns.every(turn => turn.decisionSource === 'deterministic_fallback'));
             const selected = replay.chosenPlans.find(plan => plan.status === 'selected');
             assert.ok(selected?.ordinal !== null && selected?.ordinal !== undefined);
             ordinals.add(selected.ordinal);

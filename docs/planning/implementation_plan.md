@@ -12,13 +12,13 @@ Phaser/Socket.IO stack.
 - Canonical package state: **WP-027 Strategic-Voyage Gemini Loomkeeper is in progress**.
   WP-026 V10 R8 Objective Modes is complete.
   Standard Practice and PEI-gated Daily remain R7; the server-backed R8
-  objective canary remains private. **WP-027 Waypoint 1 is implemented**: its
-  server-only deterministic boundary produces the compact world/strategy brief,
-  8-12 causal candidates, strict response and voyage-record schemas, and
-  current-basis one-use capabilities without external calls. Next is Waypoint 2,
-  the single-call adapter and atomic coordinator/replay integration using local
-  fakes. No runtime Gemini call, provider configuration, public R8 promotion or
-  reward-path change is authorized.
+  objective canary remains private. **WP-027 Waypoints 1 and 2 are implemented**:
+  the server-owned boundary produces the compact world/strategy brief, 8-12
+  causal candidates and current-basis one-use capabilities; the bounded
+  single-call adapter and coordinator now prove strict local-fake selection,
+  fallback, atomic strategic records, deletion recovery and exact provider-free
+  replay. Next is Waypoint 3's deployed shadow and bounded strategy probes. No
+  live Gemini selection, public R8 promotion or reward-path change is authorized.
 
 - Verification infrastructure: the isolated change-selection/build-reuse port
   from `da1e7a9` follows the owner-requested 22:00 Berlin daily/full cadence.
@@ -340,8 +340,11 @@ Phaser/Socket.IO stack.
   strategy probes. Live Practice Gate A establishes realized multi-turn behavior;
   final Practice/Daily Gate B follows promotion. See the
   [WP-027 contract](wp-027-gemini-objective-loomkeeper.md).
-  Waypoint 1 now implements the deterministic server boundary and has no runtime
-  activation. Waypoint 2 is the next implementation slice.
+  Waypoint 1 implements the deterministic server boundary. Waypoint 2 now adds
+  the one-call operational envelope, local-fake coordinator integration,
+  pending/executing/committed strategy evidence and provider-free replay while
+  retaining deterministic production behavior. Waypoint 3's deployed shadow
+  and bounded strategy probes are next.
 - Active target: mobile-first single-player Nimiq Pay competition release.
 - Historical completed predecessor: **WP-015D4D V10G Terrain And Weapon Tactics**;
   see the [V10G preparation contract](wp-015d4a-v10-terrain-starts-contract.md#v10g-terrain-and-weapon-tactics-preparation).

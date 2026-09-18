@@ -1,5 +1,3 @@
-import { z } from 'zod';
-
 import {
     LoomkeeperExecutionV9,
     prefixFor,
@@ -35,6 +33,38 @@ import {
     type SimulationStateV9
 } from '../../../shared/simulation-v9';
 import { terrainSolid, type SimulationActor } from '../../../shared/simulation';
+import {
+    CommittedStrategicVoyageV10R8Schema,
+    EMPTY_COMMITTED_VOYAGE_V10_R8,
+    EMPTY_RECENT_CHANGES_V10_R8,
+    RecentStrategicChangesV10R8Schema,
+    StrategicDecisionV10R8Schema,
+    V10_R8_BRIEF_REVISION,
+    V10_R8_STRATEGY_MILESTONE_IDS,
+    V10_R8_STRATEGY_POLICY_ID,
+    type CommittedStrategicVoyageV10R8,
+    type RecentStrategicChangesV10R8,
+    type StrategicDecisionV10R8
+} from '../../../shared/strategic-voyage-v10-r8';
+
+export {
+    CommittedStrategicVoyageV10R8Schema,
+    EMPTY_COMMITTED_VOYAGE_V10_R8,
+    EMPTY_RECENT_CHANGES_V10_R8,
+    RecentStrategicChangesV10R8Schema,
+    StrategicDecisionV10R8Schema,
+    StrategicTurnRecordV10R8Schema,
+    V10_R8_BRIEF_REVISION,
+    V10_R8_PROMPT_VERSION,
+    V10_R8_STRATEGY_MILESTONE_IDS,
+    V10_R8_STRATEGY_POLICY_ID
+} from '../../../shared/strategic-voyage-v10-r8';
+export type {
+    CommittedStrategicVoyageV10R8,
+    RecentStrategicChangesV10R8,
+    StrategicDecisionV10R8,
+    StrategicTurnRecordV10R8
+} from '../../../shared/strategic-voyage-v10-r8';
 
 const FP = 256;
 const BRIEF_WIDTH = 64;
@@ -50,8 +80,6 @@ const MAX_ROLLOUT_TICKS = 1_050;
 const PLANNING_TICKS = 30;
 const MAX_OPERATIONS_PER_TICK = 8;
 
-export const V10_R8_STRATEGY_POLICY_ID = 'nimble-knots-strategy-v1' as const;
-export const V10_R8_BRIEF_REVISION = 'v10-r8-strategic-brief-r1' as const;
 export const V10_R8_CANDIDATE_CAPS = Object.freeze({
     sourcePlans: 180,
     proposals: MAX_PROPOSALS,
@@ -66,68 +94,6 @@ export const V10_R8_CANDIDATE_CAPS = Object.freeze({
     responseBytes: 1_024
 });
 
-const boundedText = z.string().trim().min(1).max(160);
-const boundedTextList = z.array(boundedText).max(4).readonly();
-const optionalId = z.string().min(1).max(64).regex(/^[A-Za-z0-9_-]+$/).nullable();
-
-export const CommittedStrategicVoyageV10R8Schema = z.object({
-    targetId: optionalId,
-    milestoneId: optionalId,
-    originalDueOwnTurn: z.number().int().min(1).max(8).nullable(),
-    acceptedTemporaryCost: z.string().max(160).nullable(),
-    invalidationConditions: boundedTextList,
-    unresolvedConcerns: boundedTextList
-}).strict().readonly();
-export type CommittedStrategicVoyageV10R8 = z.infer<typeof CommittedStrategicVoyageV10R8Schema>;
-
-export const EMPTY_COMMITTED_VOYAGE_V10_R8: CommittedStrategicVoyageV10R8 = CommittedStrategicVoyageV10R8Schema.parse({
-    targetId: null,
-    milestoneId: null,
-    originalDueOwnTurn: null,
-    acceptedTemporaryCost: null,
-    invalidationConditions: [],
-    unresolvedConcerns: []
-});
-
-export const RecentStrategicChangesV10R8Schema = z.object({
-    previousAction: z.string().max(160).nullable(),
-    observedResult: z.string().max(160).nullable(),
-    playerChanges: boundedTextList,
-    systemChanges: boundedTextList,
-    unresolvedConcerns: boundedTextList
-}).strict().readonly();
-export type RecentStrategicChangesV10R8 = z.infer<typeof RecentStrategicChangesV10R8Schema>;
-
-export const EMPTY_RECENT_CHANGES_V10_R8: RecentStrategicChangesV10R8 = RecentStrategicChangesV10R8Schema.parse({
-    previousAction: null,
-    observedResult: null,
-    playerChanges: [],
-    systemChanges: [],
-    unresolvedConcerns: []
-});
-
-const selectedDecision = z.object({
-    candidateId: z.string().regex(/^c(?:0[1-9]|1[0-2])$/),
-    strategy: z.enum(['continue', 'refine', 'repair', 'switch', 'complete']),
-    targetId: z.string().min(1).max(64).regex(/^[A-Za-z0-9_-]+$/),
-    milestoneId: z.string().min(1).max(64).regex(/^[A-Za-z0-9_-]+$/),
-    horizonOwnTurns: z.number().int().min(1).max(8),
-    reason: boundedText,
-    watchFor: boundedText
-}).strict().readonly();
-const abstainedDecision = z.object({
-    candidateId: z.null(),
-    strategy: z.null(),
-    targetId: z.null(),
-    milestoneId: z.null(),
-    horizonOwnTurns: z.null(),
-    reason: boundedText,
-    watchFor: z.null()
-}).strict().readonly();
-
-export const StrategicDecisionV10R8Schema = z.union([selectedDecision, abstainedDecision]);
-export type StrategicDecisionV10R8 = z.infer<typeof StrategicDecisionV10R8Schema>;
-
 export function parseStrategicDecisionV10R8(input: unknown): StrategicDecisionV10R8 {
     let serialized: string | undefined;
     try {
@@ -140,39 +106,6 @@ export function parseStrategicDecisionV10R8(input: unknown): StrategicDecisionV1
     if (bytes > V10_R8_CANDIDATE_CAPS.responseBytes) throw new Error('Strategic decision exceeds its byte cap.');
     return StrategicDecisionV10R8Schema.parse(input);
 }
-
-const hash = z.string().regex(/^[a-f0-9]{64}$/);
-const candidateId = z.string().regex(/^c(?:0[1-9]|1[0-2])$/);
-export const StrategicTurnRecordV10R8Schema = z.object({
-    revision: z.literal(V10_R8_BRIEF_REVISION),
-    policyId: z.literal(V10_R8_STRATEGY_POLICY_ID),
-    turn: z.number().int().min(0).max(16),
-    basisId: hash,
-    stateHash: hash,
-    briefHash: hash,
-    candidateAtlasHash: hash,
-    selectedCandidateId: candidateId,
-    decisionSource: z.enum(['gemini', 'deterministic_fallback']),
-    providerDecision: StrategicDecisionV10R8Schema.nullable(),
-    status: z.enum(['pending', 'executing', 'committed']),
-    proposedVoyage: CommittedStrategicVoyageV10R8Schema.nullable(),
-    committedVoyage: CommittedStrategicVoyageV10R8Schema.nullable(),
-    immediatePredictionHash: hash,
-    observedStateHash: hash.nullable()
-}).strict().superRefine((record, context) => {
-    const committed = record.status === 'committed';
-    if ((committed && (record.observedStateHash === null || record.committedVoyage === null)) ||
-        (!committed && (record.observedStateHash !== null || record.committedVoyage !== null))) {
-        context.addIssue({ code: z.ZodIssueCode.custom, path: ['status'],
-            message: 'Only committed strategic turns carry observed state and committed voyage.' });
-    }
-    if (record.providerDecision?.candidateId && record.decisionSource === 'gemini' &&
-        record.providerDecision.candidateId !== record.selectedCandidateId) {
-        context.addIssue({ code: z.ZodIssueCode.custom, path: ['selectedCandidateId'],
-            message: 'A Gemini-selected capability must match its validated provider decision.' });
-    }
-});
-export type StrategicTurnRecordV10R8 = z.infer<typeof StrategicTurnRecordV10R8Schema>;
 
 export type StrategicCandidateFamilyV10R8 =
     | 'objective_progress'
@@ -222,6 +155,10 @@ export type StrategicDecisionBriefV10R8 = Readonly<{
         scores: Readonly<Record<SimulationActor, number>>;
         ownThread: number;
         remainingTurns: number;
+    }>;
+    strategyVocabulary: Readonly<{
+        targetIds: readonly string[];
+        milestoneIds: typeof V10_R8_STRATEGY_MILESTONE_IDS;
     }>;
     battlefield: Readonly<{
         width: typeof BRIEF_WIDTH;
@@ -403,6 +340,14 @@ export function buildStrategicDecisionBoundaryV10R8(
             scores: Object.freeze({ ...state.objective.scores }),
             ownThread: own.thread,
             remainingTurns: Math.max(0, 16 - state.turn)
+        }),
+        strategyVocabulary: Object.freeze({
+            targetIds: Object.freeze([
+                ...state.objective.objects.filter(object => object.status === 'active').map(object => object.id),
+                'player',
+                'loomkeeper'
+            ]),
+            milestoneIds: V10_R8_STRATEGY_MILESTONE_IDS
         }),
         battlefield: projectWorldSurfaceV10R8(state),
         currentStrategy,
@@ -876,7 +821,7 @@ export function projectWorldSurfaceV10R8(
 
 function winningCondition(state: SimulationStateV10R8): string {
     if (state.objective.objectiveMode === 'collect') return 'Collect more coins than the player before all coins resolve or the turn limit.';
-    if (state.objective.objectiveMode === 'defend') return 'Prevent the player chest from being captured while pursuing the player.';
+    if (state.objective.objectiveMode === 'defend') return "Capture the player's chest before elimination or the turn limit.";
     return 'Prevent the player from capturing the Loomkeeper chest.';
 }
 
