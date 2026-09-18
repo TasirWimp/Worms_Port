@@ -20,8 +20,12 @@ Phaser/Socket.IO stack.
   replay. **Waypoint 3's server-only implementation is now present**: the exact
   stable Gemini transport, shadow-only deterministic execution, sanitized
   timing/token/cost evidence, provider-free shadow replay and five fixed probes
-  with prospectively frozen thresholds. The next gate is to configure the
-  private R8 canary as `gemini-shadow` and collect/review the real five-probe
+  with prospectively frozen thresholds. An initial ad hoc deployed Collect trace
+  preserved deterministic authority but did not meet the reliability target;
+  it exposed an undercounted total-time field and an operationally opaque
+  provider-error label. The correction now sums preparation, provider and
+  validation time and logs only allowlisted provider failure categories. The
+  next gate is to deploy that correction and collect/review the real five-probe
   artifact. No live Gemini selection, public R8 promotion or reward-path change
   is authorized.
 

@@ -355,6 +355,19 @@ three-failure/60-second circuit breaker. Google documents the pinned model as
 [structured-output contract](https://ai.google.dev/api/generate-content), and
 the supported [`low` thinking level](https://ai.google.dev/gemini-api/docs/generate-content/thinking).
 
+The first ad hoc deployed Collect trace on 2026-09-18 was diagnostic rather
+than the fixed five-probe gate. Its six observations retained deterministic
+authority throughout, but produced only one valid selection alongside two
+timeouts, one provider error, one invalid response and one circuit-open
+fallback. The trace exposed that `timingMs.total` omitted preparation whenever
+provider time was longer, and that a generic provider-error label could not
+separate a rate limit, HTTP rejection, network failure or abort. The corrected
+adapter now requires total time to equal preparation plus provider plus
+validation, emits only allowlisted operational categories, and still discards
+provider bodies, raw exceptions and credentials. This trace does not satisfy
+shadow acceptance; collect a fresh fixed probe artifact after deploying the
+correction.
+
 The five fixtures and acceptance thresholds are frozen in
 `loomkeeper-strategy-probes-v10-r8.ts` before any deployed result is collected:
 

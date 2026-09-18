@@ -22,7 +22,8 @@
     "Waypoint 3: integrate the exact stable gemini-3.8-flash model through direct server-only structured-output REST with low thinking, strict usage parsing and no SDK dependency.",
     "Keep Gemini shadow proposals outside execution authority while retaining source-correct pending evidence, timing, token and frozen introductory-cost measurements for every validated provider result.",
     "Fail external configuration closed, isolate ordinary quality runs from the provider, retain cancellation/concurrency/request-budget/circuit bounds and prevent the API key or provider endpoint from entering the client bundle.",
-    "Freeze five deterministic-baseline behavioral probes and prospective useful/valid/on-time/fallback/authority/cost thresholds before collecting real deployed shadow results."
+    "Freeze five deterministic-baseline behavioral probes and prospective useful/valid/on-time/fallback/authority/cost thresholds before collecting real deployed shadow results.",
+    "Correct deployed shadow measurement so total time covers preparation, provider and validation, and expose only allowlisted provider failure categories without retaining provider bodies, raw exceptions or credentials."
   ],
   "non_goals": [
     "No Gemini SDK, API key, network call, provider adapter, prompt execution, shadow mode or live model selection in Waypoint 1.",
@@ -30,7 +31,7 @@
     "No change to existing R8 physics, deterministic fallback selection, objective rules, presentation, assets or legacy runtime support.",
     "No Sorcerers source, asset or implementation input.",
     "No Gemini SDK, API key, network call, live model selection, environment variable, deployment mutation or provider expense in Waypoint 2.",
-    "Waypoint 3 implementation does not perform a real Gemini call, mutate Render, activate live Gemini selection, promote R8 to standard Practice/Daily or change PEI/reward behavior."
+    "Local Waypoint 3 implementation verification does not perform a real Gemini call, mutate Render, activate live Gemini selection, promote R8 to standard Practice/Daily or change PEI/reward behavior."
   ],
   "planned_checks": [
     "npm.cmd run check:types and focused WP-027 strategic-voyage/provider/R8 protocol tests",
@@ -94,6 +95,16 @@
       "command": "npm.cmd run check:work-packages and npm.cmd run audit:housekeeping after Waypoint 3 implementation",
       "status": "pass",
       "details": "Delegated zero-retry closure checks by worms_port_test_runner passed in 7.8 seconds. The evidence validator accepted all 74 work-package records. Housekeeping confirmed matching local/upstream codex/wp-027-gemini-loomkeeper branches, the expected dirty WP-027 worktree, WP-027 as the sole in-progress package, no gone tracking branches, no failed reviews and no manual reconciliation requirement. Historical merged/superseded findings remain report-only. Logs .cache/wp027-w3-final-work-packages.log and .cache/wp027-w3-final-housekeeping.log."
+    },
+    {
+      "command": "npm.cmd run check:types and focused WP-027 Gemini/provider/voyage tests after the first deployed shadow trace",
+      "status": "pass",
+      "details": "Delegated zero-retry execution by worms_port_test_runner passed types and 22/22 focused Gemini transport, provider-envelope and strategic-voyage cases in 44.2 seconds. Direct review then covered response-stream failure classification; unchanged provider/voyage inputs were preserved while types and the affected 6/6 Gemini cases passed in 31.8 seconds. Coverage proves end-to-end timing as preparation plus provider plus validation, the matching replay invariant, bounded HTTP/rate-limit/network/abort/response categories without raw provider text, diagnostic visibility in sanitized telemetry and unchanged deterministic shadow authority/provider-free replay. Logs .cache/wp027-shadow-hardening-types.log, .cache/wp027-shadow-hardening-focused.log, .cache/wp027-shadow-stream-types.log and .cache/wp027-shadow-stream-gemini.log."
+    },
+    {
+      "command": "npm.cmd run verify:changes after deployed-shadow timing and diagnostic hardening",
+      "status": "pass",
+      "details": "worms_port_test_runner completed the final selector once with zero retries in 580.4 seconds at fingerprint 2292fa2b6b67f759b7a4ac4143aadb515512c9c24d91e6b0680b41807a6e1300. Preflight, all 74 work-package records, import boundary and types passed. Supported units passed protocol 25/25, simulation 85/85, Loomkeeper 38/38, relics 10/10, combat 53/53, Practice 6/6, identity 22/22, reward 28/28 and PEI 25/25. Fresh build proof 0fd250c9f317 / 1963077de790 passed current built smoke and security; bundle limits passed at 1,435,401/1,500,000 initial JavaScript bytes and 419,090/430,000 gzip bytes. The supported Chromium phone journeys passed 19/19 in 5.8 minutes. PostgreSQL used its expected local prerequisite skip because WP014_TEST_DATABASE_URL is absent. Performance, visual, legacy, daily and release coverage were not selected. Log .cache/wp027-shadow-final-selector.log."
     }
   ],
   "reviews": [
@@ -111,15 +122,21 @@
       "reviewer": "primary assistant direct Waypoint 3 implementation review",
       "status": "pass",
       "details": "The direct REST transport sends only the bounded brief, validates one complete structured response and exact usage metadata, discards raw provider failures and never receives capabilities or execution authority. Shadow always authorizes the matched deterministic fallback while retaining the unexecuted proposal and exact source for provider-free replay. Direct review moved sanitized measurement before execution so aborted matches cannot hide incurred calls, added strict outcome/decision/usage replay invariants, kept model prose out of runtime logs, froze five fixtures and thresholds before real collection, and corrected the selector without broad visual/performance work."
+    },
+    {
+      "reviewer": "primary assistant direct deployed-shadow hardening review",
+      "status": "pass",
+      "details": "The first ad hoc Collect trace preserved deterministic execution but exposed an undercounted total-time field and a generic provider-error label. The correction derives the total from the three recorded components and rejects mismatched replay evidence. Provider and response-stream failures cross the transport boundary only as an allowlisted category; provider bodies, raw exception messages and credentials are discarded. Telemetry includes that bounded category while continuing to exclude model reason/watch prose and user/session identity. The six-second whole-window deadline, no-retry rule, circuit breaker and shadow-only authority remain unchanged."
     }
   ],
   "skipped_checks": [
-    "No real Gemini request was made during implementation verification because the repository and CI use local fakes; deployed shadow collection is the next operational gate.",
+    "Automated implementation verification makes no real Gemini request because repository and CI checks use local fakes. The owner's ad hoc deployed Collect trace is diagnostic evidence; a fresh fixed five-probe artifact remains the next operational gate.",
     "Physical phone testing starts at live Gemini Practice Gate A after shadow acceptance.",
     "Visual, performance, daily/release and retired legacy coverage are not selected for this server-only slice."
   ],
   "residual_risks": [
     "The real five-call deployed shadow artifact must still demonstrate at least four valid/useful/on-time choices, no more than one provider fallback, zero authority violations, p95 at or below six seconds and total estimated cost at or below USD 0.05 before live selection is considered.",
+    "The first ad hoc deployed trace produced two timeouts, one provider error, one invalid response, one circuit-open fallback and one valid selection. It does not satisfy the fixed gate; redeploy the measurement correction before diagnosing the remaining latency, provider category and response-validity distribution.",
     "The frozen cost estimate uses Gemini 3.8 Flash introductory pricing through 2026-12-31 and must be reviewed if shadow operation continues under later pricing.",
     "Local fake and transport tests prove the authority and measurement harness, not deployed Gemini latency or multi-turn strategy quality."
   ]

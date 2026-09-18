@@ -85,6 +85,22 @@ test('WP-027 adapter falls back once for invalid, late and unavailable providers
     assert.equal(timedCalls, 1);
 });
 
+test('WP-027 adapter records end-to-end timing as preparation plus provider and validation', async () => {
+    const boundary = collectBoundary('wp027_adapter_timing');
+    const readings = [100, 100, 250, 250, 255];
+    const adapter = new StrategicDecisionAdapterV10R8(localProvider('timing-fake', request =>
+        validDecision(request.brief)), { nowMs: () => readings.shift() ?? 255 });
+
+    const result = await adapter.request('wp027_timing_match_01', boundary.brief, 40);
+
+    assert.deepEqual(result.timingMs, {
+        preparation: 40,
+        provider: 150,
+        validation: 5,
+        total: 195
+    });
+});
+
 test('WP-027 adapter enforces circuit, request-budget and concurrency envelopes', async () => {
     const brief = collectBoundary('wp027_adapter_limits').brief;
     let now = 100;
@@ -94,7 +110,9 @@ test('WP-027 adapter enforces circuit, request-budget and concurrency envelopes'
         if (circuitCalls === 1) throw new Error('simulated provider outage');
         return validDecision(request.brief);
     }), { failureThreshold: 1, circuitCooldownMs: 5, nowMs: () => now });
-    assert.equal((await circuit.request('wp027_circuit_match1', brief, 0)).outcome, 'provider_error');
+    const unclassified = await circuit.request('wp027_circuit_match1', brief, 0);
+    assert.equal(unclassified.outcome, 'provider_error');
+    assert.equal(unclassified.diagnostic, 'provider_unclassified_failure');
     assert.equal((await circuit.request('wp027_circuit_match2', brief, 0)).outcome, 'circuit_open');
     assert.equal(circuitCalls, 1);
     now = 106;

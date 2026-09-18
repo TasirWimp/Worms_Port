@@ -27,6 +27,29 @@ export type StrategicDecisionProviderResponseV10R8 = Readonly<{
     usage: StrategicProviderUsageV10R8 | null;
 }>;
 
+export const STRATEGIC_PROVIDER_FAILURE_DIAGNOSTICS_V10_R8 = [
+    'provider_http_rate_limited',
+    'provider_http_auth_rejected',
+    'provider_http_request_rejected',
+    'provider_http_unavailable',
+    'provider_http_unexpected_status',
+    'provider_network_failure',
+    'provider_request_aborted',
+    'provider_response_too_large',
+    'provider_response_invalid',
+    'provider_unclassified_failure'
+] as const;
+export type StrategicProviderFailureDiagnosticV10R8 =
+    typeof STRATEGIC_PROVIDER_FAILURE_DIAGNOSTICS_V10_R8[number];
+
+/** Carries one allowlisted operational category without retaining provider text or credentials. */
+export class StrategicProviderOperationalErrorV10R8 extends Error {
+    public constructor(readonly diagnostic: StrategicProviderFailureDiagnosticV10R8) {
+        super('Strategic provider operation failed.');
+        this.name = 'StrategicProviderOperationalErrorV10R8';
+    }
+}
+
 /** Data-only provider seam. It receives no executor, replay or persistence authority. */
 export interface StrategicDecisionProviderV10R8 {
     readonly mode: 'local_fake' | 'gemini_shadow' | 'gemini';
@@ -90,8 +113,7 @@ export class StrategicDecisionAdapterV10R8 {
     ): Promise<StrategicProviderResultV10R8> {
         if (!/^[A-Za-z0-9_-]{16,64}$/.test(matchId)) throw new Error('Invalid strategic match identity.');
         const preparation = boundedInteger(Math.round(preparationMs), 0, 60_000);
-        const started = this.#nowMs();
-        const gated = this.#gate(matchId, preparation, started);
+        const gated = this.#gate(matchId, preparation);
         if (gated) return gated;
 
         const controller = new AbortController();
@@ -110,7 +132,7 @@ export class StrategicDecisionAdapterV10R8 {
             brief,
             signal: controller.signal,
             deadlineMs: remainingMs
-        }))).then(value => ({ value }), () => ({ error: true as const }));
+        }))).then(value => ({ value }), error => ({ error: providerFailureDiagnostic(error) }));
 
         try {
             const raced = await Promise.race([providerResult, timeoutResult]);
@@ -119,12 +141,12 @@ export class StrategicDecisionAdapterV10R8 {
                 controller.abort();
                 this.#registerFailure(providerEnded);
                 return this.#result('timeout', null, null, null, 'Provider deadline elapsed.', preparation,
-                    providerEnded - providerStarted, 0, providerEnded - started);
+                    providerEnded - providerStarted, 0);
             }
             if ('error' in raced) {
                 this.#registerFailure(providerEnded);
-                return this.#result('provider_error', null, null, null, 'Provider request failed.', preparation,
-                    providerEnded - providerStarted, 0, providerEnded - started);
+                return this.#result('provider_error', null, null, null, raced.error, preparation,
+                    providerEnded - providerStarted, 0);
             }
             const validationStarted = this.#nowMs();
             const serialized = serializableBytes(raced.value.payload);
@@ -138,7 +160,7 @@ export class StrategicDecisionAdapterV10R8 {
                 this.#registerFailure(ended);
                 return this.#result('invalid_response', null, null, null,
                     'Provider usage metadata failed strict validation.', preparation,
-                    providerEnded - providerStarted, ended - validationStarted, ended - started);
+                    providerEnded - providerStarted, ended - validationStarted);
             }
             let decision: StrategicDecisionV10R8;
             try {
@@ -149,14 +171,14 @@ export class StrategicDecisionAdapterV10R8 {
                 return this.#result('invalid_response', null, usage,
                     serialized !== null && serialized <= V10_R8_CANDIDATE_CAPS.responseBytes ? serialized : null,
                     'Provider response failed strict validation.', preparation,
-                    providerEnded - providerStarted, ended - validationStarted, ended - started);
+                    providerEnded - providerStarted, ended - validationStarted);
             }
             const ended = this.#nowMs();
             this.#consecutiveFailures = 0;
             this.#circuitUntilMs = 0;
             return this.#result(decision.candidateId === null ? 'abstained' : 'selected', decision, usage,
                 serialized, null, preparation, providerEnded - providerStarted,
-                ended - validationStarted, ended - started);
+                ended - validationStarted);
         } finally {
             if (timeout) clearTimeout(timeout);
             if (this.#active.get(matchId) === active) this.#active.delete(matchId);
@@ -182,22 +204,22 @@ export class StrategicDecisionAdapterV10R8 {
         });
     }
 
-    #gate(matchId: string, preparation: number, started: number): StrategicProviderResultV10R8 | undefined {
+    #gate(matchId: string, preparation: number): StrategicProviderResultV10R8 | undefined {
         if (preparation >= this.#deadlineMs) {
             return this.#result('timeout', null, null, null, 'Preparation exhausted the decision deadline.',
-                preparation, 0, 0, preparation);
+                preparation, 0, 0);
         }
         if (this.#active.has(matchId) || this.#active.size >= this.#maxConcurrent) {
             return this.#result('concurrency_limit', null, null, null, 'Provider concurrency limit reached.',
-                preparation, 0, 0, this.#nowMs() - started);
+                preparation, 0, 0);
         }
         if (this.#requests >= this.#maxRequests) {
             return this.#result('spend_limit', null, null, null, 'Provider request budget exhausted.',
-                preparation, 0, 0, this.#nowMs() - started);
+                preparation, 0, 0);
         }
         if (this.#nowMs() < this.#circuitUntilMs) {
             return this.#result('circuit_open', null, null, null, 'Provider circuit is open.',
-                preparation, 0, 0, this.#nowMs() - started);
+                preparation, 0, 0);
         }
         return undefined;
     }
@@ -217,9 +239,10 @@ export class StrategicDecisionAdapterV10R8 {
         diagnostic: string | null,
         preparation: number,
         provider: number,
-        validation: number,
-        total: number
+        validation: number
     ): StrategicProviderResultV10R8 {
+        const providerMs = boundedInteger(Math.round(Math.max(0, provider)), 0, 60_000);
+        const validationMs = boundedInteger(Math.round(Math.max(0, validation)), 0, 60_000);
         return Object.freeze({
             outcome,
             decision,
@@ -230,15 +253,21 @@ export class StrategicDecisionAdapterV10R8 {
             diagnostic,
             timingMs: Object.freeze({
                 preparation,
-                provider: boundedInteger(Math.round(Math.max(0, provider)), 0, 60_000),
-                validation: boundedInteger(Math.round(Math.max(0, validation)), 0, 60_000),
-                total: boundedInteger(Math.round(Math.max(preparation, total)), 0, 60_000)
+                provider: providerMs,
+                validation: validationMs,
+                total: Math.min(60_000, preparation + providerMs + validationMs)
             })
         });
     }
 }
 
 const timeoutMarker = Symbol('strategic-provider-timeout');
+
+function providerFailureDiagnostic(error: unknown): StrategicProviderFailureDiagnosticV10R8 {
+    return error instanceof StrategicProviderOperationalErrorV10R8
+        ? error.diagnostic
+        : 'provider_unclassified_failure';
+}
 
 function serializableBytes(input: unknown): number | null {
     try {

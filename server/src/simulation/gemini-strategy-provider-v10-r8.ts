@@ -6,8 +6,10 @@ import type { StrategicDecisionBriefV10R8 } from './loomkeeper-strategy-v10-r8';
 import type {
     StrategicDecisionProviderRequestV10R8,
     StrategicDecisionProviderResponseV10R8,
-    StrategicDecisionProviderV10R8
+    StrategicDecisionProviderV10R8,
+    StrategicProviderFailureDiagnosticV10R8
 } from './loomkeeper-strategy-provider-v10-r8';
+import { StrategicProviderOperationalErrorV10R8 } from './loomkeeper-strategy-provider-v10-r8';
 
 export const WP027_GEMINI_MODEL_ID = 'gemini-3.8-flash' as const;
 export const WP027_GEMINI_ENDPOINT =
@@ -42,25 +44,49 @@ export class GeminiStrategicDecisionProviderV10R8 implements StrategicDecisionPr
     public async decide(
         request: StrategicDecisionProviderRequestV10R8
     ): Promise<StrategicDecisionProviderResponseV10R8> {
-        const response = await this.fetchImpl(WP027_GEMINI_ENDPOINT, {
-            method: 'POST',
-            signal: request.signal,
-            headers: {
-                'Content-Type': 'application/json',
-                'x-goog-api-key': this.apiKey
-            },
-            body: JSON.stringify(geminiRequestBody(request.brief))
-        });
-        if (!response.ok) throw new Error('Gemini request was rejected.');
+        let response: Response;
+        try {
+            response = await this.fetchImpl(WP027_GEMINI_ENDPOINT, {
+                method: 'POST',
+                signal: request.signal,
+                headers: {
+                    'Content-Type': 'application/json',
+                    'x-goog-api-key': this.apiKey
+                },
+                body: JSON.stringify(geminiRequestBody(request.brief))
+            });
+        } catch (error) {
+            throw new StrategicProviderOperationalErrorV10R8(
+                request.signal.aborted || isAbortError(error)
+                    ? 'provider_request_aborted'
+                    : 'provider_network_failure'
+            );
+        }
+        if (!response.ok) {
+            throw new StrategicProviderOperationalErrorV10R8(httpFailureDiagnostic(response.status));
+        }
         const declaredLength = Number(response.headers.get('content-length'));
         if (Number.isFinite(declaredLength) && declaredLength > MAX_PROVIDER_BODY_BYTES) {
-            throw new Error('Gemini response exceeded its transport cap.');
+            throw new StrategicProviderOperationalErrorV10R8('provider_response_too_large');
         }
-        const body = await response.text();
+        let body: string;
+        try {
+            body = await response.text();
+        } catch (error) {
+            throw new StrategicProviderOperationalErrorV10R8(
+                request.signal.aborted || isAbortError(error)
+                    ? 'provider_request_aborted'
+                    : 'provider_network_failure'
+            );
+        }
         if (Buffer.byteLength(body, 'utf8') > MAX_PROVIDER_BODY_BYTES) {
-            throw new Error('Gemini response exceeded its transport cap.');
+            throw new StrategicProviderOperationalErrorV10R8('provider_response_too_large');
         }
-        return parseGeminiResponse(body);
+        try {
+            return parseGeminiResponse(body);
+        } catch {
+            throw new StrategicProviderOperationalErrorV10R8('provider_response_invalid');
+        }
     }
 }
 
@@ -178,4 +204,16 @@ function nonNegativeInteger(value: unknown, name: string): number {
 
 function validApiKey(value: string): boolean {
     return value === value.trim() && value.length >= 20 && value.length <= 256 && !/\s/.test(value);
+}
+
+function httpFailureDiagnostic(status: number): StrategicProviderFailureDiagnosticV10R8 {
+    if (status === 429) return 'provider_http_rate_limited';
+    if (status === 401 || status === 403) return 'provider_http_auth_rejected';
+    if (status >= 400 && status < 500) return 'provider_http_request_rejected';
+    if (status >= 500 && status < 600) return 'provider_http_unavailable';
+    return 'provider_http_unexpected_status';
+}
+
+function isAbortError(error: unknown): boolean {
+    return error instanceof Error && error.name === 'AbortError';
 }

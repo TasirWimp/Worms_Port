@@ -190,5 +190,11 @@ export const StrategicTurnRecordV10R8Schema = z.object({
         context.addIssue({ code: z.ZodIssueCode.custom, path: ['usage', 'totalTokens'],
             message: 'Provider usage total cannot be smaller than its token components.' });
     }
+    const expectedTotalMs = Math.min(60_000,
+        record.timingMs.preparation + record.timingMs.provider + record.timingMs.validation);
+    if (record.timingMs.total !== expectedTotalMs) {
+        context.addIssue({ code: z.ZodIssueCode.custom, path: ['timingMs', 'total'],
+            message: 'Strategic timing total must cover preparation, provider and validation.' });
+    }
 });
 export type StrategicTurnRecordV10R8 = z.infer<typeof StrategicTurnRecordV10R8Schema>;

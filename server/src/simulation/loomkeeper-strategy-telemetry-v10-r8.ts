@@ -43,6 +43,7 @@ export class StrategicShadowTelemetryV10R8 {
             proposalCandidateId: record.providerDecision?.candidateId ?? null,
             authorizedCandidateId: record.selectedCandidateId,
             decisionSource: record.decisionSource,
+            diagnostic: record.diagnostic,
             timingMs: record.timingMs,
             usage: record.usage
         })}`);

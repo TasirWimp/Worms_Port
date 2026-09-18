@@ -10,6 +10,7 @@ import {
 } from '../../server/src/simulation/loomkeeper-strategy-probes-v10-r8';
 import {
     StrategicDecisionAdapterV10R8,
+    StrategicProviderOperationalErrorV10R8,
     type StrategicDecisionProviderRequestV10R8,
     type StrategicDecisionProviderV10R8,
     type StrategicProviderResultV10R8
@@ -72,6 +73,52 @@ test('WP-027 Gemini transport sends one bounded structured request and records u
         totalTokens: 170,
         estimatedCostUsdMicros: 278
     });
+});
+
+test('WP-027 Gemini transport exposes only bounded operational failure categories', async () => {
+    const brief = createWp027ProbeFixturesV10R8()[0].boundary.brief;
+    const request = {
+        promptVersion: 'v10-r8-strategic-prompt-r1' as const,
+        brief,
+        signal: new AbortController().signal,
+        deadlineMs: 6_000
+    };
+    const cases = [
+        [429, 'provider_http_rate_limited'],
+        [403, 'provider_http_auth_rejected'],
+        [400, 'provider_http_request_rejected'],
+        [503, 'provider_http_unavailable'],
+        [302, 'provider_http_unexpected_status']
+    ] as const;
+    for (const [status, diagnostic] of cases) {
+        const provider = new GeminiStrategicDecisionProviderV10R8('gemini_shadow', TEST_API_KEY,
+            async () => new Response('private provider body', { status }));
+        await assert.rejects(() => provider.decide(request), error =>
+            error instanceof StrategicProviderOperationalErrorV10R8 && error.diagnostic === diagnostic &&
+            !error.message.includes('private provider body'));
+    }
+    const network = new GeminiStrategicDecisionProviderV10R8('gemini_shadow', TEST_API_KEY,
+        async () => { throw new TypeError('private network detail'); });
+    await assert.rejects(() => network.decide(request), error =>
+        error instanceof StrategicProviderOperationalErrorV10R8 &&
+        error.diagnostic === 'provider_network_failure' && !error.message.includes('private network detail'));
+
+    const bodyReadFailure = new GeminiStrategicDecisionProviderV10R8('gemini_shadow', TEST_API_KEY,
+        async () => ({
+            ok: true,
+            status: 200,
+            headers: new Headers(),
+            text: async () => { throw new TypeError('private response stream detail'); }
+        } as Response));
+    await assert.rejects(() => bodyReadFailure.decide(request), error =>
+        error instanceof StrategicProviderOperationalErrorV10R8 &&
+        error.diagnostic === 'provider_network_failure' && !error.message.includes('private response stream detail'));
+
+    const invalid = new GeminiStrategicDecisionProviderV10R8('gemini_shadow', TEST_API_KEY,
+        async () => new Response('{"private":"malformed-provider-shape"}', { status: 200 }));
+    await assert.rejects(() => invalid.decide(request), error =>
+        error instanceof StrategicProviderOperationalErrorV10R8 &&
+        error.diagnostic === 'provider_response_invalid' && !error.message.includes('malformed-provider-shape'));
 });
 
 test('WP-027 provider configuration is deterministic by default and fails closed when external setup is incomplete', () => {
@@ -160,16 +207,33 @@ test('WP-027 telemetry emits source-correct operational facts without model pros
     const lines: string[] = [];
     const telemetry = new StrategicShadowTelemetryV10R8(line => lines.push(line));
     telemetry.observe(selected.record);
-    assert.equal(lines.length, 1);
+    const unavailable = authorizeStrategicTurnV10R8({
+        boundary: fixture.boundary,
+        state: fixture.state,
+        currentStrategy: fixture.currentStrategy,
+        providerResult: {
+            outcome: 'provider_error',
+            decision: null,
+            providerMode: 'gemini_shadow',
+            modelId: 'gemini-3.8-flash',
+            usage: null,
+            responseBytes: null,
+            diagnostic: 'provider_http_rate_limited',
+            timingMs: { preparation: 200, provider: 300, validation: 0, total: 500 }
+        }
+    });
+    telemetry.observe(unavailable.record);
+    assert.equal(lines.length, 2);
     assert.doesNotMatch(lines[0], new RegExp(secretReason));
     assert.match(lines[0], /"providerMode":"gemini_shadow"/);
+    assert.match(lines[1], /"diagnostic":"provider_http_rate_limited"/);
     assert.deepEqual(telemetry.summary(), {
-        observedTurns: 1,
+        observedTurns: 2,
         selectedProposals: 1,
         abstentions: 0,
-        invalidOrUnavailable: 0,
-        deterministicSelections: 1,
-        p50TotalMs: 1_000,
+        invalidOrUnavailable: 1,
+        deterministicSelections: 2,
+        p50TotalMs: 500,
         p95TotalMs: 1_000,
         totalTokens: 100,
         estimatedCostUsdMicros: 1_000
