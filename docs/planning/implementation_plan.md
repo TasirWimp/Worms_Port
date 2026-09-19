@@ -24,10 +24,14 @@ Phaser/Socket.IO stack.
   preserved deterministic authority but did not meet the reliability target;
   it exposed an undercounted total-time field and an operationally opaque
   provider-error label. The correction now sums preparation, provider and
-  validation time and logs only allowlisted provider failure categories. The
-  next gate is to deploy that correction and collect/review the real five-probe
-  artifact. No live Gemini selection, public R8 promotion or reward-path change
-  is authorized.
+  validation time and logs only allowlisted provider failure categories. A
+  follow-up three-call attempt on `gemini-3.8-flash` then produced two provider
+  HTTP-unavailable results and one timeout. The exact stable shadow pin is now
+  `gemini-3.6-flash` with `low` thinking; the prompt, frozen five probes,
+  thresholds, deadline, no-retry rule and deterministic execution authority are
+  unchanged. The next gate is to deploy 3.6 and collect/review the real
+  five-probe artifact. No live Gemini selection, public R8 promotion or
+  reward-path change is authorized.
 
 - Verification infrastructure: the isolated change-selection/build-reuse port
   from `da1e7a9` follows the owner-requested 22:00 Berlin daily/full cadence.

@@ -1,7 +1,11 @@
 import assert from 'node:assert/strict';
 import test from 'node:test';
 
-import { GeminiStrategicDecisionProviderV10R8, WP027_GEMINI_ENDPOINT } from '../../server/src/simulation/gemini-strategy-provider-v10-r8';
+import {
+    GeminiStrategicDecisionProviderV10R8,
+    WP027_GEMINI_ENDPOINT,
+    WP027_GEMINI_MODEL_ID
+} from '../../server/src/simulation/gemini-strategy-provider-v10-r8';
 import { loomkeeperStrategyRuntimeFromEnvironmentV10R8 } from '../../server/src/simulation/loomkeeper-strategy-config-v10-r8';
 import {
     createWp027ProbeFixturesV10R8,
@@ -57,6 +61,10 @@ test('WP-027 Gemini transport sends one bounded structured request and records u
         deadlineMs: 6_000
     });
 
+    assert.equal(provider.modelId, WP027_GEMINI_MODEL_ID);
+    assert.equal(WP027_GEMINI_MODEL_ID, 'gemini-3.6-flash');
+    assert.equal(WP027_GEMINI_ENDPOINT,
+        'https://generativelanguage.googleapis.com/v1beta/models/gemini-3.6-flash:generateContent');
     assert.equal(capturedUrl, WP027_GEMINI_ENDPOINT);
     assert.equal(capturedInit?.method, 'POST');
     assert.equal((capturedInit?.headers as Record<string, string>)['x-goog-api-key'], TEST_API_KEY);
@@ -128,17 +136,22 @@ test('WP-027 provider configuration is deterministic by default and fails closed
     }), /GEMINI_MODEL/);
     assert.throws(() => loomkeeperStrategyRuntimeFromEnvironmentV10R8({
         LOOMKEEPER_PROVIDER: 'gemini-shadow',
-        GEMINI_MODEL: 'gemini-3.8-flash'
+        GEMINI_MODEL: 'gemini-3.6-flash'
     }), /GEMINI_API_KEY/);
     assert.throws(() => loomkeeperStrategyRuntimeFromEnvironmentV10R8({
         LOOMKEEPER_PROVIDER: 'gemini-shadow',
-        GEMINI_MODEL: 'gemini-3.8-flash',
+        GEMINI_MODEL: 'gemini-3.6-flash',
         GEMINI_API_KEY: TEST_API_KEY,
         WP014_QUALITY_TEST: 'true'
     }), /refuse an external/);
-    const configured = loomkeeperStrategyRuntimeFromEnvironmentV10R8({
+    assert.throws(() => loomkeeperStrategyRuntimeFromEnvironmentV10R8({
         LOOMKEEPER_PROVIDER: 'gemini-shadow',
         GEMINI_MODEL: 'gemini-3.8-flash',
+        GEMINI_API_KEY: TEST_API_KEY
+    }), /frozen stable model gemini-3\.6-flash/);
+    const configured = loomkeeperStrategyRuntimeFromEnvironmentV10R8({
+        LOOMKEEPER_PROVIDER: 'gemini-shadow',
+        GEMINI_MODEL: 'gemini-3.6-flash',
         GEMINI_API_KEY: TEST_API_KEY
     }, async () => new Response('', { status: 500 }), () => {});
     assert.equal(configured.mode, 'gemini-shadow');
@@ -215,7 +228,7 @@ test('WP-027 telemetry emits source-correct operational facts without model pros
             outcome: 'provider_error',
             decision: null,
             providerMode: 'gemini_shadow',
-            modelId: 'gemini-3.8-flash',
+            modelId: 'gemini-3.6-flash',
             usage: null,
             responseBytes: null,
             diagnostic: 'provider_http_rate_limited',
@@ -314,7 +327,7 @@ function providerResult(decision: StrategicDecisionV10R8): StrategicProviderResu
         outcome: decision.candidateId === null ? 'abstained' : 'selected',
         decision,
         providerMode: 'gemini_shadow',
-        modelId: 'gemini-3.8-flash',
+        modelId: 'gemini-3.6-flash',
         usage: {
             inputTokens: 50,
             outputTokens: 20,
@@ -333,7 +346,7 @@ function shadowProvider(
 ): StrategicDecisionProviderV10R8 {
     return {
         mode: 'gemini_shadow',
-        modelId: 'gemini-3.8-flash',
+        modelId: 'gemini-3.6-flash',
         decide: async request => ({
             payload: decide(request),
             usage: {

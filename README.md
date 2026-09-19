@@ -100,7 +100,7 @@ game service, set all three values and redeploy:
 
 ```text
 LOOMKEEPER_PROVIDER=gemini-shadow
-GEMINI_MODEL=gemini-3.8-flash
+GEMINI_MODEL=gemini-3.6-flash
 GEMINI_API_KEY=<Render secret>
 ```
 

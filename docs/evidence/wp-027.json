@@ -19,7 +19,7 @@
     "Integrate the strategic boundary with the private R8 coordinator through an atomic chosen-plan and pending/executing/committed voyage record while keeping all execution authority inside the current-basis resolver.",
     "Persist the strategy policy and at most eight strategic turns in R8 replay; reconstruct committed and final uncommitted-prefix states without a provider and reject altered or extended evidence.",
     "Attribute player counteractions separately from system changes, preserve original continuation deadlines and accepted temporary cost, and keep deterministic fallback source attribution explicit.",
-    "Waypoint 3: integrate the exact stable gemini-3.8-flash model through direct server-only structured-output REST with low thinking, strict usage parsing and no SDK dependency.",
+    "Waypoint 3: integrate the exact stable gemini-3.6-flash model through direct server-only structured-output REST with low thinking, strict usage parsing and no SDK dependency.",
     "Keep Gemini shadow proposals outside execution authority while retaining source-correct pending evidence, timing, token and frozen introductory-cost measurements for every validated provider result.",
     "Fail external configuration closed, isolate ordinary quality runs from the provider, retain cancellation/concurrency/request-budget/circuit bounds and prevent the API key or provider endpoint from entering the client bundle.",
     "Freeze five deterministic-baseline behavioral probes and prospective useful/valid/on-time/fallback/authority/cost thresholds before collecting real deployed shadow results.",
@@ -105,6 +105,21 @@
       "command": "npm.cmd run verify:changes after deployed-shadow timing and diagnostic hardening",
       "status": "pass",
       "details": "worms_port_test_runner completed the final selector once with zero retries in 580.4 seconds at fingerprint 2292fa2b6b67f759b7a4ac4143aadb515512c9c24d91e6b0680b41807a6e1300. Preflight, all 74 work-package records, import boundary and types passed. Supported units passed protocol 25/25, simulation 85/85, Loomkeeper 38/38, relics 10/10, combat 53/53, Practice 6/6, identity 22/22, reward 28/28 and PEI 25/25. Fresh build proof 0fd250c9f317 / 1963077de790 passed current built smoke and security; bundle limits passed at 1,435,401/1,500,000 initial JavaScript bytes and 419,090/430,000 gzip bytes. The supported Chromium phone journeys passed 19/19 in 5.8 minutes. PostgreSQL used its expected local prerequisite skip because WP014_TEST_DATABASE_URL is absent. Performance, visual, legacy, daily and release coverage were not selected. Log .cache/wp027-shadow-final-selector.log."
+    },
+    {
+      "command": "npm.cmd run check:types and focused WP-027 Gemini test after pinning gemini-3.6-flash",
+      "status": "pass",
+      "details": "Delegated zero-retry execution by worms_port_test_runner on GPT-5.6 Terra/medium passed server/client types in 5.599 seconds and the focused Gemini transport/config/probe/telemetry/replay file 6/6 in 28.972 seconds. The transport asserts the exact gemini-3.6-flash endpoint and low thinking, configuration accepts only 3.6 and explicitly rejects the former 3.8 pin, and no real provider request was made. Logs .cache/wp027-model-pin-types.log and .cache/wp027-model-pin-gemini.log."
+    },
+    {
+      "command": "npm.cmd run verify:changes after pinning gemini-3.6-flash",
+      "status": "pass",
+      "details": "worms_port_test_runner completed the final selector once with zero retries in 551.196 seconds at fingerprint 2b89392a0fd2403b78a79165173b7ae39f4568507427848268469da6f73d0ce5. Preflight, all 74 work-package records, import boundary and types passed. The nine supported current unit groups passed 292/292, including Loomkeeper 38/38. Fresh build proof 3f132d04a9e9 / 32829e13b254 passed current built smoke and security; bundle limits passed at 1,435,401/1,500,000 initial JavaScript bytes and 419,090/430,000 gzip bytes. The selected Chromium phone journeys passed 19/19 in 5.7 minutes. PostgreSQL used its expected local prerequisite skip because WP014_TEST_DATABASE_URL is absent. Legacy, visual, performance, daily and release coverage were not selected, and no real Gemini request ran. Log .cache/wp027-model-pin-final-selector.log."
+    },
+    {
+      "command": "npm.cmd run check:work-packages and npm.cmd run audit:housekeeping after the Gemini 3.6 pin",
+      "status": "pass",
+      "details": "Delegated zero-retry closure passed in 7.543 seconds. The evidence validator accepted all 74 work-package records. Housekeeping confirmed matching local/upstream codex/wp-027-gemini-loomkeeper branches, the expected dirty WP-027 worktree, WP-027 as the sole in-progress package, no gone tracking branches, no failed reviews and no manual reconciliation requirement. Historical merged and superseded findings remain report-only. Logs .cache/wp027-model-pin-closure-work-packages.log and .cache/wp027-model-pin-closure-housekeeping.log."
     }
   ],
   "reviews": [
@@ -127,6 +142,11 @@
       "reviewer": "primary assistant direct deployed-shadow hardening review",
       "status": "pass",
       "details": "The first ad hoc Collect trace preserved deterministic execution but exposed an undercounted total-time field and a generic provider-error label. The correction derives the total from the three recorded components and rejects mismatched replay evidence. Provider and response-stream failures cross the transport boundary only as an allowlisted category; provider bodies, raw exception messages and credentials are discarded. Telemetry includes that bounded category while continuing to exclude model reason/watch prose and user/session identity. The six-second whole-window deadline, no-retry rule, circuit breaker and shadow-only authority remain unchanged."
+    },
+    {
+      "reviewer": "primary assistant direct Gemini 3.6 model-pin review",
+      "status": "pass",
+      "details": "The provider replacement changes only the exact stable server-side model and derived endpoint. Gemini 3.6 Flash supports structured output and low thinking, and its current standard paid token rates match the frozen estimator through 2026-12-31. Startup rejects the former 3.8 value. The prompt, response schema, five probes, thresholds, deadline, request and circuit bounds, replay evidence and deterministic shadow execution remain unchanged, preserving a single-variable deployed comparison."
     }
   ],
   "skipped_checks": [
@@ -136,8 +156,8 @@
   ],
   "residual_risks": [
     "The real five-call deployed shadow artifact must still demonstrate at least four valid/useful/on-time choices, no more than one provider fallback, zero authority violations, p95 at or below six seconds and total estimated cost at or below USD 0.05 before live selection is considered.",
-    "The first ad hoc deployed trace produced two timeouts, one provider error, one invalid response, one circuit-open fallback and one valid selection. It does not satisfy the fixed gate; redeploy the measurement correction before diagnosing the remaining latency, provider category and response-validity distribution.",
-    "The frozen cost estimate uses Gemini 3.8 Flash introductory pricing through 2026-12-31 and must be reviewed if shadow operation continues under later pricing.",
+    "The first ad hoc deployed trace produced two timeouts, one provider error, one invalid response, one circuit-open fallback and one valid selection. A later three-call 3.8 attempt produced two provider HTTP-unavailable results and one timeout. Neither satisfies the fixed gate; deploy the 3.6 pin before collecting the next fixed artifact.",
+    "The frozen cost estimate uses Gemini 3.6 Flash standard paid rates of USD 0.75 input and USD 3.75 output per million tokens through 2026-12-31; the free tier is free of charge, and the estimate must be reviewed if shadow operation continues under later pricing.",
     "Local fake and transport tests prove the authority and measurement harness, not deployed Gemini latency or multi-turn strategy quality."
   ]
 }

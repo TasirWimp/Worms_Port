@@ -11,7 +11,7 @@ import type {
 } from './loomkeeper-strategy-provider-v10-r8';
 import { StrategicProviderOperationalErrorV10R8 } from './loomkeeper-strategy-provider-v10-r8';
 
-export const WP027_GEMINI_MODEL_ID = 'gemini-3.8-flash' as const;
+export const WP027_GEMINI_MODEL_ID = 'gemini-3.6-flash' as const;
 export const WP027_GEMINI_ENDPOINT =
     `https://generativelanguage.googleapis.com/v1beta/models/${WP027_GEMINI_MODEL_ID}:generateContent` as const;
 
