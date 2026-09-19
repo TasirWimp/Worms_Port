@@ -23,7 +23,8 @@
     "Keep Gemini shadow proposals outside execution authority while retaining source-correct pending evidence, timing, token and frozen introductory-cost measurements for every validated provider result.",
     "Fail external configuration closed, isolate ordinary quality runs from the provider, retain cancellation/concurrency/request-budget/circuit bounds and prevent the API key or provider endpoint from entering the client bundle.",
     "Freeze five deterministic-baseline behavioral probes and prospective useful/valid/on-time/fallback/authority/cost thresholds before collecting real deployed shadow results.",
-    "Correct deployed shadow measurement so total time covers preparation, provider and validation, and expose only allowlisted provider failure categories without retaining provider bodies, raw exceptions or credentials."
+    "Correct deployed shadow measurement so total time covers preparation, provider and validation, and expose only allowlisted provider failure categories without retaining provider bodies, raw exceptions or credentials.",
+    "After the first Gemini 3.6 gate, retain sanitized diagnostics in the probe artifact, measure live-equivalent planner and boundary preparation, state the 160-character output limit through supported schema descriptions, advance the changed instruction to exact prompt r2, and make the temporary-cost fixture expose an explicit committed route and delayed benefit without changing thresholds or authority."
   ],
   "non_goals": [
     "No Gemini SDK, API key, network call, provider adapter, prompt execution, shadow mode or live model selection in Waypoint 1.",
@@ -120,6 +121,31 @@
       "command": "npm.cmd run check:work-packages and npm.cmd run audit:housekeeping after the Gemini 3.6 pin",
       "status": "pass",
       "details": "Delegated zero-retry closure passed in 7.543 seconds. The evidence validator accepted all 74 work-package records. Housekeeping confirmed matching local/upstream codex/wp-027-gemini-loomkeeper branches, the expected dirty WP-027 worktree, WP-027 as the sole in-progress package, no gone tracking branches, no failed reviews and no manual reconciliation requirement. Historical merged and superseded findings remain report-only. Logs .cache/wp027-model-pin-closure-work-packages.log and .cache/wp027-model-pin-closure-housekeeping.log."
+    },
+    {
+      "command": "node --import tsx scripts/run-wp027-shadow-probes.ts on the deployed gemini-3.6-flash Render service",
+      "status": "fail",
+      "details": "The exact five-call gate ran once with zero retries on 2026-09-19 and preserved deterministic authority. It returned 2/5 valid responses, 0/5 useful choices, three provider fallbacks, 5/5 on-time under the artifact's recorded window, zero authority violations, 3,548 ms p95 and USD 0.009801 estimated cost. The result is preserved at docs/evidence/wp-027-shadow-gate-gemini-3.6-v1/result.json. Direct review found that the probe artifact omits the allowlisted diagnostic and the runner passes preparation as zero, so provider failures remain unclassified and the p95 is not a whole-window measurement. The gate remains failed and was not rerun."
+    },
+    {
+      "command": "npm.cmd run verify:changes after preserving the deployed Gemini 3.6 shadow result",
+      "status": "pass",
+      "details": "The delegated zero-retry documentation selector passed all 74 work-package records in 8.173 seconds at fingerprint 39ac4fd48e6a4a787bfa40e17e4411287921060719bff95084362efb97d8a3b5. It selected only check:work-packages with no fallback; build, browser, PostgreSQL, performance, visual, legacy, daily and release checks were not selected for the evidence-only change. Log .cache/wp027-deployed-shadow-evidence-selector.log."
+    },
+    {
+      "command": "npm.cmd run check:types and focused WP-027 Gemini/provider/voyage tests after the first Gemini 3.6 gate",
+      "status": "pass",
+      "details": "Delegated zero-retry execution by worms_port_test_runner on GPT-5.6 Terra/medium passed server/client types in 5.584 seconds and 22/22 affected Gemini transport, provider-envelope and strategic-voyage cases in 32.050 seconds. Coverage proves the r2 prompt pin and supported schema descriptions, deterministic fixture reconstruction, an explicit committed temporary-cost route, diagnostic retention and measured preparation propagation without a real provider call. Logs .cache/wp027-postgate-refinement-current-types.log and .cache/wp027-postgate-refinement-current-loomkeeper.log."
+    },
+    {
+      "command": "npm.cmd run verify:changes after the first Gemini 3.6 gate refinement",
+      "status": "pass",
+      "details": "worms_port_test_runner completed the final selector once with zero retries in 549.725 seconds at fingerprint dc8cfb6764ee299101c3340cd4102af06bfa9bd292c42b81326d1943ab6806f2. All 292 supported current unit cases passed, including Loomkeeper 38/38, protocol 25/25, simulation 85/85, relics 10/10, combat 53/53, Practice 6/6, identity 22/22, reward 28/28 and PEI 25/25. Fresh build proof 40d33d42e2a4 / 7a4b89e8a552 passed built smoke, security and bundle limits at 1,435,401/1,500,000 initial JavaScript bytes and 419,092/430,000 gzip bytes. The supported Chromium phone journeys passed 19/19 in 5.7 minutes. PostgreSQL used its expected local prerequisite skip because WP014_TEST_DATABASE_URL is absent. Performance, visual, legacy, daily and release coverage were not selected, and no real Gemini request ran. Log .cache/wp027-postgate-refinement-final-selector.log."
+    },
+    {
+      "command": "npm.cmd run check:work-packages and npm.cmd run audit:housekeeping after the first Gemini 3.6 gate refinement",
+      "status": "pass",
+      "details": "Delegated zero-retry closure passed in 7.445 seconds. The evidence validator accepted all 74 work-package records. Housekeeping confirmed matching local/upstream codex/wp-027-gemini-loomkeeper branches, the expected dirty WP-027 worktree, WP-027 as the sole in-progress package, no gone tracking branches, no failed reviews and no manual reconciliation requirement. Logs .cache/wp027-postgate-refinement-closure-work-packages.log and .cache/wp027-postgate-refinement-closure-housekeeping.log."
     }
   ],
   "reviews": [
@@ -147,16 +173,27 @@
       "reviewer": "primary assistant direct Gemini 3.6 model-pin review",
       "status": "pass",
       "details": "The provider replacement changes only the exact stable server-side model and derived endpoint. Gemini 3.6 Flash supports structured output and low thinking, and its current standard paid token rates match the frozen estimator through 2026-12-31. Startup rejects the former 3.8 value. The prompt, response schema, five probes, thresholds, deadline, request and circuit bounds, replay evidence and deterministic shadow execution remain unchanged, preserving a single-variable deployed comparison."
+    },
+    {
+      "reviewer": "primary assistant direct deployed Gemini 3.6 gate review",
+      "status": "pass",
+      "details": "Review accepted the captured artifact as evidence of a failed gate, not as shadow acceptance. Reliability and usefulness missed their thresholds while latency, cost and invariant authority passed the fields the artifact records. Candidate-level review found a plausible immediate-score choice in the under-specified temporary-cost fixture and a genuine future-route miss in the preserve-option fixture. The artifact itself exposed two evidence defects: provider diagnostics are omitted and preparation is fixed to zero. Live Gemini selection remains blocked pending measurement correction, JSON-schema/runtime text-bound alignment and fixture review."
+    },
+    {
+      "reviewer": "primary assistant direct post-gate measurement refinement review",
+      "status": "pass",
+      "details": "The corrected runner constructs fixed scenario facts outside the decision window and measures the same 30-step planner plus strategic-boundary preparation counted in live R8. The adapter rounds and validates that measurement, reduces the provider deadline by it and includes it in total/p95. Probe artifacts now retain only the existing sanitized diagnostic. Google-supported property descriptions and the r2 system instruction communicate the strict server-side 160-character contract without unsupported maxLength keywords. The temporary-cost fixture exposes a committed coin route, delayed benefit and accepted distance cost, and usefulness requires continuation or refinement of that same target and milestone. Thresholds, no retry and deterministic shadow authority remain unchanged."
     }
   ],
   "skipped_checks": [
-    "Automated implementation verification makes no real Gemini request because repository and CI checks use local fakes. The owner's ad hoc deployed Collect trace is diagnostic evidence; a fresh fixed five-probe artifact remains the next operational gate.",
+    "Automated implementation verification makes no real Gemini request because repository and CI checks use local fakes. The one deployed Gemini 3.6 five-probe artifact failed and will not be rerun until its measurement gaps and temporary-cost fixture are corrected.",
     "Physical phone testing starts at live Gemini Practice Gate A after shadow acceptance.",
     "Visual, performance, daily/release and retired legacy coverage are not selected for this server-only slice."
   ],
   "residual_risks": [
-    "The real five-call deployed shadow artifact must still demonstrate at least four valid/useful/on-time choices, no more than one provider fallback, zero authority violations, p95 at or below six seconds and total estimated cost at or below USD 0.05 before live selection is considered.",
-    "The first ad hoc deployed trace produced two timeouts, one provider error, one invalid response, one circuit-open fallback and one valid selection. A later three-call 3.8 attempt produced two provider HTTP-unavailable results and one timeout. Neither satisfies the fixed gate; deploy the 3.6 pin before collecting the next fixed artifact.",
+    "The deployed Gemini 3.6 gate failed at 2/5 valid, 0/5 useful and three provider fallbacks. It must eventually demonstrate at least four valid/useful/on-time choices, no more than one provider fallback, zero authority violations, p95 at or below six seconds and total estimated cost at or below USD 0.05 before live selection is considered.",
+    "The preserved r1 artifact drops the allowlisted provider diagnostic and records preparation as zero, so its provider errors remain unclassified and its 3,548 ms p95 is not evidence for the whole live decision window. The corrected r2 runner still needs one deployed artifact.",
+    "The refined temporary-cost facts are deterministic synthetic probe evidence; only the next deployed zero-retry gate can establish whether Gemini uses the exposed committed route and delayed benefit within the frozen usefulness rubric.",
     "The frozen cost estimate uses Gemini 3.6 Flash standard paid rates of USD 0.75 input and USD 3.75 output per million tokens through 2026-12-31; the free tier is free of charge, and the estimate must be reviewed if shadow operation continues under later pricing.",
     "Local fake and transport tests prove the authority and measurement harness, not deployed Gemini latency or multi-turn strategy quality."
   ]

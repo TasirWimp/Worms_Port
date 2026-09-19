@@ -400,6 +400,48 @@ written to `test-results/wp027-shadow-probes.json`. Passing local-fake coverage
 proves the harness, while only this real deployed run can establish latency,
 cost and model strategy quality.
 
+Deployed gate result, 2026-09-19: the exact five-call `gemini-3.6-flash` run
+failed without retry. The captured [sanitized result](../evidence/wp-027-shadow-gate-gemini-3.6-v1/result.json)
+recorded 2/5 valid responses, 0/5 useful choices, three provider fallbacks, 5/5
+responses inside the recorded deadline, zero authority violations, 3,548 ms p95
+and USD 0.009801 estimated cost. The valid temporary-cost response chose the
+immediate coin-scoring fallback rather than a candidate carrying the rubric's
+short-term cost. The valid future-option response acknowledged terrain risk but
+chose the 32-cell-damage fallback rather than the one-cell-damage candidate.
+One response failed strict validation and two ended as provider errors.
+
+Direct review also found that this artifact cannot yet substantiate two of its
+operational claims. The probe result omits the allowlisted diagnostic, so its
+provider errors cannot be classified. The runner constructs the fixtures before
+calling the adapter and passes preparation as zero, so the reported p95 excludes
+the 2.4-2.7 second preparation observed in live phone traces. Treat the latency
+and failure-category fields as incomplete evidence. Before another paid or free
+provider run, carry diagnostics into the sanitized probe result, measure the
+whole preparation/provider/validation window, align the provider JSON schema's
+text bounds with the strict 160-character runtime contract and directly review
+whether the temporary-cost fixture actually exposes a defensible delayed
+benefit. Do not change the frozen thresholds, rerun this gate or enable live
+Gemini until those measurement and fixture issues are corrected.
+
+Measurement refinement, 2026-09-19: the next runner version now retains the
+record's sanitized diagnostic beside each probe result. It constructs the fixed
+world and narrative context before the decision window, then measures the same
+planner and strategic-boundary work counted as preparation in live R8 matches;
+that duration reduces the provider's remaining six-second budget and contributes
+to total and p95 time. The temporary-cost fixture now carries a committed
+`coin-1` route, an explicit accepted distance cost and facts explaining why
+taking the nearby coin closes the only later route. Its usefulness check also
+requires continuing or refining that same target and milestone. Google supports
+only a subset of JSON Schema string constraints, so the transport uses supported
+property descriptions plus the system instruction to state the 160-character
+limit while the server retains strict validation. Thresholds, no retry,
+deterministic shadow authority and the preserved failed artifact are unchanged.
+Because the system instruction changed, the exact prompt identity advances to
+`v10-r8-strategic-prompt-r2`. The preserved failed artifact remains immutable
+`r1` evidence; private `r1` replay is not promoted across the policy change.
+Focused and change-selected verification passed once with zero retries. No
+provider call is authorized until this refinement is deployed.
+
 ### Phone Gate A - live Gemini Practice
 
 Enable live Gemini only in the R8 Practice canary. Across Defend, Collect and

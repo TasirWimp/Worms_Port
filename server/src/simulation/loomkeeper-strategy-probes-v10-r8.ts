@@ -8,8 +8,6 @@ import {
 } from '../../../shared/simulation-v10-r8';
 import {
     CommittedStrategicVoyageV10R8Schema,
-    EMPTY_COMMITTED_VOYAGE_V10_R8,
-    EMPTY_RECENT_CHANGES_V10_R8,
     RecentStrategicChangesV10R8Schema,
     type CommittedStrategicVoyageV10R8,
     type RecentStrategicChangesV10R8,
@@ -53,6 +51,8 @@ export type Wp027ProbeFixture = Readonly<{
     boundary: StrategicDecisionBoundaryV10R8;
 }>;
 
+export type Wp027ProbeScenario = Readonly<Omit<Wp027ProbeFixture, 'boundary'>>;
+
 export type Wp027ProbeResult = Readonly<{
     id: Wp027ProbeId;
     valid: boolean;
@@ -60,6 +60,7 @@ export type Wp027ProbeResult = Readonly<{
     onTime: boolean;
     authoritySafe: boolean;
     operationalOutcome: StrategicTurnRecordV10R8['operationalOutcome'];
+    diagnostic: string | null;
     proposalCandidateId: string | null;
     deterministicCandidateId: string;
     strategy: Extract<StrategicDecisionV10R8, { candidateId: string }>['strategy'] | null;
@@ -87,59 +88,117 @@ export type Wp027ProbeReport = Readonly<{
 }>;
 
 export function createWp027ProbeFixturesV10R8(): readonly Wp027ProbeFixture[] {
-    return Object.freeze([
-        createFixture('temporary-cost-preparation', 4, 'collect', (state) => ({
-            currentStrategy: EMPTY_COMMITTED_VOYAGE_V10_R8,
-            recentChanges: EMPTY_RECENT_CHANGES_V10_R8,
-            reviewQuestion: 'Does the proposal accept an explicit immediate cost for a later objective opportunity?'
-        })),
-        createFixture('continue-through-setback', 4, 'collect', state => {
-            const strategy = committedStrategy(state, 'approach-objective',
-                'Ending farther away this turn preserves access to the next coin.');
-            return {
-                currentStrategy: strategy,
+    return Object.freeze(WP027_PROBE_IDS.map(id =>
+        prepareWp027ProbeFixtureV10R8(createWp027ProbeScenarioV10R8(id))));
+}
+
+/** Creates the fixed world and narrative facts that exist before the decision window starts. */
+export function createWp027ProbeScenarioV10R8(id: Wp027ProbeId): Wp027ProbeScenario {
+    const definition = probeDefinition(id);
+    const state = advanceSimulationTicksV10R8(
+        createSimulationV10R8(definition.seed, 'wizard', definition.mode),
+        V10_R6_DYNAMICS.actionTicks + 60
+    ).state;
+    if (state.activeActor !== 'loomkeeper') throw new Error('Probe fixture did not reach the Loomkeeper turn.');
+    return Object.freeze({ id, state, ...definition.context(state) });
+}
+
+/** Performs the planner plus boundary work counted as preparation in live R8 decisions. */
+export function prepareWp027ProbeFixtureV10R8(scenario: Wp027ProbeScenario): Wp027ProbeFixture {
+    const planner = new LoomkeeperPlannerV10R8(scenario.state);
+    for (let tick = 0; tick < 30; tick += 1) planner.step();
+    if (planner.selection.status !== 'selected' || !planner.selectedCandidate()) {
+        throw new Error('Probe fixture has no deterministic fallback.');
+    }
+    const boundary = buildStrategicDecisionBoundaryV10R8({
+        challengeId: `wp027_probe_${scenario.id.replace(/-/g, '_')}`,
+        state: scenario.state,
+        deterministicFallback: {
+            candidate: planner.selectedCandidate()!,
+            prefix: planner.selection.prefix
+        },
+        currentStrategy: scenario.currentStrategy,
+        recentChanges: scenario.recentChanges
+    });
+    return Object.freeze({ ...scenario, boundary });
+}
+
+function probeDefinition(id: Wp027ProbeId): Readonly<{
+    seed: number;
+    mode: V10R8ObjectiveMode;
+    context: (state: SimulationStateV10R8) => Readonly<{
+        currentStrategy: CommittedStrategicVoyageV10R8;
+        recentChanges: RecentStrategicChangesV10R8;
+        reviewQuestion: string;
+    }>;
+}> {
+    switch (id) {
+        case 'temporary-cost-preparation':
+            return Object.freeze({ seed: 4, mode: 'collect', context: state => {
+                const strategy = committedStrategy(state, 'preserve-route',
+                    'Ending farther from the committed coin this turn preserves its only future route.');
+                return {
+                    currentStrategy: strategy,
+                    recentChanges: changes({
+                        previousAction: 'The Loomkeeper committed to the only remaining route to its next coin.',
+                        observedResult: 'Taking the nearby coin now closes that route; a temporary distance loss keeps it open.',
+                        systemChanges: ['The future target remains reachable only through the route preserved by accepting distance loss.'],
+                        unresolvedConcerns: ['Immediate scoring can strand the Loomkeeper from its committed future target.']
+                    }),
+                    reviewQuestion: 'Does the proposal accept an explicit immediate cost for a later objective opportunity?'
+                };
+            } });
+        case 'continue-through-setback':
+            return Object.freeze({ seed: 4, mode: 'collect', context: state => {
+                const strategy = committedStrategy(state, 'approach-objective',
+                    'Ending farther away this turn preserves access to the next coin.');
+                return {
+                    currentStrategy: strategy,
+                    recentChanges: changes({
+                        previousAction: 'The Loomkeeper accepted distance loss to preserve the lower route.',
+                        observedResult: 'The lower route remains feasible and the declared cost occurred.',
+                        unresolvedConcerns: strategy.unresolvedConcerns
+                    }),
+                    reviewQuestion: 'Does the proposal continue the still-feasible committed plan through its declared setback?'
+                };
+            } });
+        case 'repair-destroyed-route':
+            return Object.freeze({ seed: 7, mode: 'claim', context: state => {
+                const strategy = committedStrategy(state, 'preserve-route', null);
+                return {
+                    currentStrategy: strategy,
+                    recentChanges: changes({
+                        previousAction: 'The Loomkeeper preserved the upper route to the objective.',
+                        observedResult: 'The player destroyed the route support before this turn.',
+                        playerChanges: ['Player removed the supporting terrain for the committed route.'],
+                        systemChanges: ['Terrain revision changed after the route was destroyed.'],
+                        unresolvedConcerns: strategy.unresolvedConcerns
+                    }),
+                    reviewQuestion: 'Does the proposal repair or switch after the player invalidated a necessary route?'
+                };
+            } });
+        case 'preserve-future-option':
+            return Object.freeze({ seed: 11, mode: 'defend', context: state => {
+                const strategy = committedStrategy(state, 'preserve-route', null);
+                return {
+                    currentStrategy: strategy,
+                    recentChanges: changes({
+                        observedResult: 'The chest route is intact, but destructive shots can remove its remaining landing support.',
+                        unresolvedConcerns: ['The next local attack may close the only valuable chest route.']
+                    }),
+                    reviewQuestion: 'Does the proposal avoid needless terrain destruction that closes the valuable future route?'
+                };
+            } });
+        case 'acknowledge-information-gap':
+            return Object.freeze({ seed: 13, mode: 'collect', context: state => ({
+                currentStrategy: committedStrategy(state, 'create-route', null),
                 recentChanges: changes({
-                    previousAction: 'The Loomkeeper accepted distance loss to preserve the lower route.',
-                    observedResult: 'The lower route remains feasible and the declared cost occurred.',
-                    unresolvedConcerns: strategy.unresolvedConcerns
+                    observedResult: 'The compressed battlefield does not distinguish which of two hidden supports survives.',
+                    unresolvedConcerns: ['The bounded surface projection cannot establish the missing support fact.']
                 }),
-                reviewQuestion: 'Does the proposal continue the still-feasible committed plan through its declared setback?'
-            };
-        }),
-        createFixture('repair-destroyed-route', 7, 'claim', state => {
-            const strategy = committedStrategy(state, 'preserve-route', null);
-            return {
-                currentStrategy: strategy,
-                recentChanges: changes({
-                    previousAction: 'The Loomkeeper preserved the upper route to the objective.',
-                    observedResult: 'The player destroyed the route support before this turn.',
-                    playerChanges: ['Player removed the supporting terrain for the committed route.'],
-                    systemChanges: ['Terrain revision changed after the route was destroyed.'],
-                    unresolvedConcerns: strategy.unresolvedConcerns
-                }),
-                reviewQuestion: 'Does the proposal repair or switch after the player invalidated a necessary route?'
-            };
-        }),
-        createFixture('preserve-future-option', 11, 'defend', state => {
-            const strategy = committedStrategy(state, 'preserve-route', null);
-            return {
-                currentStrategy: strategy,
-                recentChanges: changes({
-                    observedResult: 'The chest route is intact, but destructive shots can remove its remaining landing support.',
-                    unresolvedConcerns: ['The next local attack may close the only valuable chest route.']
-                }),
-                reviewQuestion: 'Does the proposal avoid needless terrain destruction that closes the valuable future route?'
-            };
-        }),
-        createFixture('acknowledge-information-gap', 13, 'collect', state => ({
-            currentStrategy: committedStrategy(state, 'create-route', null),
-            recentChanges: changes({
-                observedResult: 'The compressed battlefield does not distinguish which of two hidden supports survives.',
-                unresolvedConcerns: ['The bounded surface projection cannot establish the missing support fact.']
-            }),
-            reviewQuestion: 'Does the proposal abstain or choose conservatively while explicitly acknowledging the missing fact?'
-        }))
-    ]);
+                reviewQuestion: 'Does the proposal abstain or choose conservatively while explicitly acknowledging the missing fact?'
+            }) });
+    }
 }
 
 export function evaluateWp027ProbeV10R8(
@@ -167,6 +226,7 @@ export function evaluateWp027ProbeV10R8(
             record.decisionSource === 'deterministic_fallback' &&
             record.selectedCandidateId === deterministicFallback(fixture).candidateId,
         operationalOutcome: record.operationalOutcome,
+        diagnostic: record.diagnostic,
         proposalCandidateId: decision?.candidateId ?? null,
         deterministicCandidateId: deterministicFallback(fixture).candidateId,
         strategy: decision?.strategy ?? null,
@@ -204,40 +264,6 @@ export function summarizeWp027ProbesV10R8(results: readonly Wp027ProbeResult[]):
             totals.p95Ms <= threshold.maximumP95Ms &&
             totals.estimatedCostUsdMicros <= threshold.maximumCostUsdMicros
     });
-}
-
-function createFixture(
-    id: Wp027ProbeId,
-    seed: number,
-    mode: V10R8ObjectiveMode,
-    context: (state: SimulationStateV10R8) => Readonly<{
-        currentStrategy: CommittedStrategicVoyageV10R8;
-        recentChanges: RecentStrategicChangesV10R8;
-        reviewQuestion: string;
-    }>
-): Wp027ProbeFixture {
-    const state = advanceSimulationTicksV10R8(
-        createSimulationV10R8(seed, 'wizard', mode),
-        V10_R6_DYNAMICS.actionTicks + 60
-    ).state;
-    if (state.activeActor !== 'loomkeeper') throw new Error('Probe fixture did not reach the Loomkeeper turn.');
-    const planner = new LoomkeeperPlannerV10R8(state);
-    for (let tick = 0; tick < 30; tick += 1) planner.step();
-    if (planner.selection.status !== 'selected' || !planner.selectedCandidate()) {
-        throw new Error('Probe fixture has no deterministic fallback.');
-    }
-    const scenario = context(state);
-    const boundary = buildStrategicDecisionBoundaryV10R8({
-        challengeId: `wp027_probe_${id.replace(/-/g, '_')}`,
-        state,
-        deterministicFallback: {
-            candidate: planner.selectedCandidate()!,
-            prefix: planner.selection.prefix
-        },
-        currentStrategy: scenario.currentStrategy,
-        recentChanges: scenario.recentChanges
-    });
-    return Object.freeze({ id, state, boundary, ...scenario });
 }
 
 function committedStrategy(
@@ -280,8 +306,11 @@ function usefulForProbe(
     }
     if (!decision || decision.candidateId === null || !candidate) return false;
     if (fixture.id === 'temporary-cost-preparation') {
-        return temporaryCost(candidate) && candidate.opportunities.some(opportunity =>
-            /objective|future route|closer/i.test(opportunity));
+        return (decision.strategy === 'continue' || decision.strategy === 'refine') &&
+            decision.targetId === fixture.currentStrategy.targetId &&
+            decision.milestoneId === fixture.currentStrategy.milestoneId &&
+            temporaryCost(candidate) && candidate.opportunities.some(opportunity =>
+                /objective|future route|closer/i.test(opportunity));
     }
     if (fixture.id === 'continue-through-setback') {
         return decision.strategy === 'continue' &&

@@ -27,11 +27,23 @@ Phaser/Socket.IO stack.
   validation time and logs only allowlisted provider failure categories. A
   follow-up three-call attempt on `gemini-3.8-flash` then produced two provider
   HTTP-unavailable results and one timeout. The exact stable shadow pin is now
-  `gemini-3.6-flash` with `low` thinking; the prompt, frozen five probes,
-  thresholds, deadline, no-retry rule and deterministic execution authority are
-  unchanged. The next gate is to deploy 3.6 and collect/review the real
-  five-probe artifact. No live Gemini selection, public R8 promotion or
-  reward-path change is authorized.
+  `gemini-3.6-flash` with `low` thinking. Its first exact five-probe deployment
+  failed without retry: 2/5 valid, 0/5 useful, three provider fallbacks, 5/5
+  within the recorded time, zero authority violations and USD 0.009801 cost.
+  Direct review also found the artifact drops provider diagnostics and records
+  zero preparation time, so it cannot classify failures or substantiate
+  whole-window latency. The local refinement now carries sanitized diagnostics
+  into every probe result, measures live-equivalent planner/boundary preparation,
+  states the strict 160-character text limit through supported schema
+  descriptions and prompt instructions, and gives the temporary-cost fixture an
+  explicit committed route and delayed benefit. Its usefulness check binds the
+  choice to that target and milestone. The changed instruction is pinned as
+  `v10-r8-strategic-prompt-r2`; the failed `r1` artifact remains immutable
+  evidence and private `r1` replay is not promoted. Frozen thresholds and
+  deterministic authority remain unchanged. Local focused and change-selected
+  verification passed with zero retries. The next gate is deployment followed by
+  one new zero-retry five-probe artifact. No live Gemini selection, public R8
+  promotion or reward-path change is authorized.
 
 - Verification infrastructure: the isolated change-selection/build-reuse port
   from `da1e7a9` follows the owner-requested 22:00 Berlin daily/full cadence.

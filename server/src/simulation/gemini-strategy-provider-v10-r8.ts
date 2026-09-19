@@ -24,6 +24,7 @@ const SYSTEM_INSTRUCTION = [
     'Choose exactly one legal candidate or abstain. Never invent an action, object, route, target, or observation.',
     'Prefer continuing a feasible committed strategy through its declared temporary cost.',
     'Repair or switch only when current evidence invalidates that strategy or protects a more valuable future option.',
+    'Keep reason and watchFor concise, non-empty and no longer than 160 characters each.',
     'Your output is advice only. The server validates it and alone owns execution.'
 ].join('\n');
 
@@ -119,8 +120,14 @@ function responseSchema(brief: StrategicDecisionBriefV10R8): Readonly<Record<str
             targetId: { type: 'string', enum: [...brief.strategyVocabulary.targetIds] },
             milestoneId: { type: 'string', enum: [...brief.strategyVocabulary.milestoneIds] },
             horizonOwnTurns: { type: 'integer', minimum: 1, maximum: 8 },
-            reason: { type: 'string' },
-            watchFor: { type: 'string' }
+            reason: {
+                type: 'string',
+                description: 'Required concise justification using only brief facts; 1 to 160 characters.'
+            },
+            watchFor: {
+                type: 'string',
+                description: 'Required concise observation that could change the plan; 1 to 160 characters.'
+            }
         },
         required: ['candidateId', 'strategy', 'targetId', 'milestoneId', 'horizonOwnTurns', 'reason', 'watchFor']
     };
@@ -133,7 +140,10 @@ function responseSchema(brief: StrategicDecisionBriefV10R8): Readonly<Record<str
             targetId: { type: 'null' },
             milestoneId: { type: 'null' },
             horizonOwnTurns: { type: 'null' },
-            reason: { type: 'string' },
+            reason: {
+                type: 'string',
+                description: 'Required concise explanation of the information gap; 1 to 160 characters.'
+            },
             watchFor: { type: 'null' }
         },
         required: ['candidateId', 'strategy', 'targetId', 'milestoneId', 'horizonOwnTurns', 'reason', 'watchFor']

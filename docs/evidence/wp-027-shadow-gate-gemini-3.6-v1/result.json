@@ -1,0 +1,211 @@
+{
+  "capture": {
+    "source": "Render Web Shell on nimble-knots-cotton-clash",
+    "command": "node --import tsx scripts/run-wp027-shadow-probes.ts",
+    "attempts": 1,
+    "retries": 0,
+    "note": "The deployed artifact was read through the authenticated Render shell. Fixture hashes were reproduced locally from the same committed generator and matched the deployed hashes visible in the artifact. No Gemini credential or raw provider response was captured."
+  },
+  "generatedAt": "2026-09-19T19:52:12.776Z",
+  "modelId": "gemini-3.6-flash",
+  "promptVersion": "v10-r8-strategic-prompt-r1",
+  "fixtures": [
+    {
+      "id": "temporary-cost-preparation",
+      "basisId": "dc1e83ae28240cc1336f22cc0e29cbe45f8dbb0944f0cf56e0b79ba26c737c07",
+      "stateHash": "40cddabc0aeda4338c88518f4bbbc7fe8c2b093b3a62450cd575065a94718e9a",
+      "briefHash": "747f96c23653105c22f6424e1d3b019067ce50e6d16ccb844a340f7e51eab097",
+      "candidateAtlasHash": "b9d9852e2e915bb162699dd6560b348a7cb7af5188df74f35cab55ccb1090871",
+      "reviewQuestion": "Does the proposal accept an explicit immediate cost for a later objective opportunity?"
+    },
+    {
+      "id": "continue-through-setback",
+      "basisId": "e4cf4b131a0bc33df648c75619e1f9e1e1e76270b105aca59a120f30698126ab",
+      "stateHash": "40cddabc0aeda4338c88518f4bbbc7fe8c2b093b3a62450cd575065a94718e9a",
+      "briefHash": "1e8d2f774c4e7e5d773e0acf4379a2c61134736c4a670d7b17a46792706b1444",
+      "candidateAtlasHash": "b9d9852e2e915bb162699dd6560b348a7cb7af5188df74f35cab55ccb1090871",
+      "reviewQuestion": "Does the proposal continue the still-feasible committed plan through its declared setback?"
+    },
+    {
+      "id": "repair-destroyed-route",
+      "basisId": "f318dedee4fc8c9d6ed89386172afb1bfa57431ec74d1d06c269d1e04fe1031b",
+      "stateHash": "3de445b3ceb5acd4401684bde628958fac18a503ddca4e6c52ef046f8a341bdb",
+      "briefHash": "ae011f7b0a202950c9c2aa3a256652960e6eaa69b0c63a94462eedec0d91c47c",
+      "candidateAtlasHash": "777c68b68c3ab3c196bbe26aa5bfe7ab059c4bf0b5a7e728b675ddc1568faefe",
+      "reviewQuestion": "Does the proposal repair or switch after the player invalidated a necessary route?"
+    },
+    {
+      "id": "preserve-future-option",
+      "basisId": "6f54ac9a86de50c90634cc87d1fabacec1619f8c738d5ce059784c67e6f1930c",
+      "stateHash": "3799d094bd570c0d300e74f43101c344abdb8e09c8c429ac27a69e7eddecda7f",
+      "briefHash": "7ceaa9a61cdbd41d8f568f5e752c4e00c398a4219dd5800f77de8f4f3fa8e531",
+      "candidateAtlasHash": "0bc9b242b82e5d0240f23f539ffe08b0264897f54e88c161ee1a8d786e140312",
+      "reviewQuestion": "Does the proposal avoid needless terrain destruction that closes the valuable future route?"
+    },
+    {
+      "id": "acknowledge-information-gap",
+      "basisId": "622bf3894263459cb610a7560faa03e3dd99ac69d6e05d3176d65f5efe02527c",
+      "stateHash": "b6d02a0f78ab81ca8300c657da062ba0120da64e67fad66052cd25ffe26389f2",
+      "briefHash": "2ab6c645bac0be9e978b9b43a3c97a625b8ba679170977f7e4eb060ada33a555",
+      "candidateAtlasHash": "46c2e7215efab3aa7d62634ec3b870208793e35d320157ec28e0506516ac2270",
+      "reviewQuestion": "Does the proposal abstain or choose conservatively while explicitly acknowledging the missing fact?"
+    }
+  ],
+  "thresholds": {
+    "calls": 5,
+    "minimumValid": 4,
+    "minimumUseful": 4,
+    "minimumOnTime": 4,
+    "maximumProviderFallbacks": 1,
+    "maximumAuthorityViolations": 0,
+    "maximumP95Ms": 6000,
+    "maximumCostUsdMicros": 50000
+  },
+  "results": [
+    {
+      "id": "temporary-cost-preparation",
+      "valid": true,
+      "useful": false,
+      "onTime": true,
+      "authoritySafe": true,
+      "operationalOutcome": "selected",
+      "proposalCandidateId": "c01",
+      "deterministicCandidateId": "c01",
+      "strategy": "refine",
+      "reason": "Candidate c01 directly secures coin-3, increasing objective score immediately while maintaining safety.",
+      "watchFor": "Monitor player movement and response toward remaining active coins on the left.",
+      "timingMs": {
+        "preparation": 0,
+        "provider": 3401,
+        "validation": 1,
+        "total": 3402
+      },
+      "usage": {
+        "inputTokens": 3618,
+        "outputTokens": 100,
+        "thinkingTokens": 295,
+        "totalTokens": 4013,
+        "estimatedCostUsdMicros": 4195
+      },
+      "reviewQuestion": "Does the proposal accept an explicit immediate cost for a later objective opportunity?"
+    },
+    {
+      "id": "continue-through-setback",
+      "valid": false,
+      "useful": false,
+      "onTime": true,
+      "authoritySafe": true,
+      "operationalOutcome": "provider_error",
+      "proposalCandidateId": null,
+      "deterministicCandidateId": "c01",
+      "strategy": null,
+      "reason": null,
+      "watchFor": null,
+      "timingMs": {
+        "preparation": 0,
+        "provider": 3548,
+        "validation": 0,
+        "total": 3548
+      },
+      "usage": null,
+      "reviewQuestion": "Does the proposal continue the still-feasible committed plan through its declared setback?"
+    },
+    {
+      "id": "repair-destroyed-route",
+      "valid": false,
+      "useful": false,
+      "onTime": true,
+      "authoritySafe": true,
+      "operationalOutcome": "invalid_response",
+      "proposalCandidateId": null,
+      "deterministicCandidateId": "c01",
+      "strategy": null,
+      "reason": null,
+      "watchFor": null,
+      "timingMs": {
+        "preparation": 0,
+        "provider": 2433,
+        "validation": 1,
+        "total": 2434
+      },
+      "usage": {
+        "inputTokens": 3324,
+        "outputTokens": 133,
+        "thinkingTokens": 0,
+        "totalTokens": 3457,
+        "estimatedCostUsdMicros": 2992
+      },
+      "reviewQuestion": "Does the proposal repair or switch after the player invalidated a necessary route?"
+    },
+    {
+      "id": "preserve-future-option",
+      "valid": true,
+      "useful": false,
+      "onTime": true,
+      "authoritySafe": true,
+      "operationalOutcome": "selected",
+      "proposalCandidateId": "c01",
+      "deterministicCandidateId": "c01",
+      "strategy": "continue",
+      "reason": "Candidate c01 continues the current strategy towards the player-chest by reducing objective distance by 39 while also dealing damage to opponent stitching.",
+      "watchFor": "Player response and potential terrain destruction that might alter or close the route.",
+      "timingMs": {
+        "preparation": 0,
+        "provider": 1751,
+        "validation": 0,
+        "total": 1751
+      },
+      "usage": {
+        "inputTokens": 3070,
+        "outputTokens": 83,
+        "thinkingTokens": 0,
+        "totalTokens": 3153,
+        "estimatedCostUsdMicros": 2614
+      },
+      "reviewQuestion": "Does the proposal avoid needless terrain destruction that closes the valuable future route?"
+    },
+    {
+      "id": "acknowledge-information-gap",
+      "valid": false,
+      "useful": false,
+      "onTime": true,
+      "authoritySafe": true,
+      "operationalOutcome": "provider_error",
+      "proposalCandidateId": null,
+      "deterministicCandidateId": "c01",
+      "strategy": null,
+      "reason": null,
+      "watchFor": null,
+      "timingMs": {
+        "preparation": 0,
+        "provider": 166,
+        "validation": 0,
+        "total": 166
+      },
+      "usage": null,
+      "reviewQuestion": "Does the proposal abstain or choose conservatively while explicitly acknowledging the missing fact?"
+    }
+  ],
+  "totals": {
+    "calls": 5,
+    "valid": 2,
+    "useful": 0,
+    "onTime": 5,
+    "providerFallbacks": 3,
+    "authorityViolations": 0,
+    "p95Ms": 3548,
+    "estimatedCostUsdMicros": 9801
+  },
+  "passed": false,
+  "directReview": {
+    "accepted": false,
+    "findings": [
+      "Reliability and strategic usefulness missed the frozen thresholds; do not promote Gemini to live selection.",
+      "The temporary-cost probe selected the immediate coin-scoring deterministic candidate rather than any candidate carrying the rubric's declared short-term cost.",
+      "The preserve-future-option probe mentioned route-destruction risk but selected c01, which removes 32 terrain cells, instead of minimum-damage c04, which removes one.",
+      "The invalid response carried usage but the retained artifact intentionally contains no rejected provider payload, so its exact schema or semantic violation cannot be reconstructed.",
+      "The artifact omits provider diagnostics for provider_error results and therefore cannot distinguish HTTP availability, rate limit, network or abort failures.",
+      "The runner passes preparation as zero after constructing fixtures, so its p95 measures provider and validation time rather than the complete live decision window."
+    ]
+  }
+}

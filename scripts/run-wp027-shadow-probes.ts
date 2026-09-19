@@ -1,13 +1,18 @@
 import fs from 'node:fs/promises';
 import path from 'node:path';
+import { performance } from 'node:perf_hooks';
 
 import { V10_R8_PROMPT_VERSION } from '../shared/strategic-voyage-v10-r8';
 import { WP027_GEMINI_MODEL_ID } from '../server/src/simulation/gemini-strategy-provider-v10-r8';
 import { loomkeeperStrategyRuntimeFromEnvironmentV10R8 } from '../server/src/simulation/loomkeeper-strategy-config-v10-r8';
 import {
-    createWp027ProbeFixturesV10R8,
+    createWp027ProbeScenarioV10R8,
     evaluateWp027ProbeV10R8,
-    summarizeWp027ProbesV10R8
+    prepareWp027ProbeFixtureV10R8,
+    WP027_PROBE_IDS,
+    summarizeWp027ProbesV10R8,
+    type Wp027ProbeFixture,
+    type Wp027ProbeResult
 } from '../server/src/simulation/loomkeeper-strategy-probes-v10-r8';
 
 async function main(): Promise<void> {
@@ -15,14 +20,18 @@ async function main(): Promise<void> {
     if (runtime.mode !== 'gemini-shadow' || !runtime.strategicAdapter) {
         throw new Error('WP-027 probes require LOOMKEEPER_PROVIDER=gemini-shadow.');
     }
-    const fixtures = createWp027ProbeFixturesV10R8();
-    const results = [];
-    for (let index = 0; index < fixtures.length; index += 1) {
-        const fixture = fixtures[index];
+    const fixtures: Wp027ProbeFixture[] = [];
+    const results: Wp027ProbeResult[] = [];
+    for (let index = 0; index < WP027_PROBE_IDS.length; index += 1) {
+        const scenario = createWp027ProbeScenarioV10R8(WP027_PROBE_IDS[index]);
+        const preparationStarted = performance.now();
+        const fixture = prepareWp027ProbeFixtureV10R8(scenario);
+        const preparationMs = Math.max(0, performance.now() - preparationStarted);
+        fixtures.push(fixture);
         const providerResult = await runtime.strategicAdapter.request(
             `wp027_shadow_probe_${String(index + 1).padStart(2, '0')}`,
             fixture.boundary.brief,
-            0
+            preparationMs
         );
         results.push(evaluateWp027ProbeV10R8(fixture, providerResult));
     }
