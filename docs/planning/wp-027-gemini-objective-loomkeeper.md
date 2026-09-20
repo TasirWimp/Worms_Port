@@ -1,6 +1,6 @@
 # WP-027 Strategic-Voyage Model Loomkeeper
 
-Status: **in progress; Mistral Small 4 shadow replacement locally verified, deployed gate pending**
+Status: **in progress; Mistral Small 4 compatibility correction locally verified, deployed gate pending**
 Required predecessor: completed WP-026 R8 objective-mode canary
 
 ## Product outcome
@@ -562,6 +562,46 @@ passed with no real provider call. The first selector attempt correctly stopped
 at a supported-test inventory assertion after discovering the new Mistral test;
 the inventory was corrected and only that failed tooling case was rerun before
 one full selector pass on the changed fingerprint.
+
+Deployed Mistral operational evidence, 2026-09-20: the first fixed gate
+[artifact](../evidence/wp-027-shadow-gate-mistral-small-4-v1/result.json) records
+0/5 valid and useful calls, 5/5 on time, five fallbacks, zero authority
+violations and no charged tokens. Its first three requests were classified
+`provider_http_rate_limited`, after which the circuit opened. The account's
+direct response reported a zero-request allowance, so this run reached no
+model inference and provides no strategy evidence.
+
+After pay-as-you-go was enabled, the second unchanged gate
+[artifact](../evidence/wp-027-shadow-gate-mistral-small-4-v2/result.json) again
+records 0/5 valid and useful calls, 5/5 on time, five fallbacks, zero authority
+violations and no charged tokens. This time the first three requests were
+classified `provider_http_request_rejected`, followed by the circuit opening.
+A minimal direct request then succeeded against exact `mistral-small-2603` and
+reported 100 requests and 100,000 tokens per minute. That separates account
+capacity from the full request rejection: the credential, model and paid
+allowance work, while the structured request contract does not.
+
+Mistral compatibility correction, 2026-09-20: strict structured output now
+receives a provider-specific top-level `object` schema with
+`additionalProperties: false`, all seven properties required and the five
+selection fields plus `watchFor` nullable. This matches Mistral's strict schema
+shape while remaining only a wire-format superset. The shared server validator
+still requires either all five selection fields plus a reason, or all five
+selection fields and `watchFor` null plus an abstention reason; any mixed form
+is rejected and the deterministic fallback remains authoritative. The dynamic
+prompt-r4 gameplay contract, brief-r2 content, exact model, eight-second
+window, no-retry rule, probe thresholds and candidate authority do not change.
+The two failed artifacts remain immutable. Once this correction passes local
+verification and is deployed, one new five-probe gate is allowed because the
+provider request input has changed.
+
+Local correction verification passed with zero retries and no external call:
+types; 29/29 focused Mistral, Gemini, provider and voyage cases; all 299
+selected server units; fresh build, built smoke, identity/reward security and
+bundle limits; and 19/19 canonical Chromium phone journeys. PostgreSQL retained
+its expected missing-local-URL prerequisite skip. Performance, visual, retired
+legacy, daily and release coverage were not selected. The next action is to
+deploy this commit and run the changed-input five-probe Mistral gate once.
 
 ### Phone Gate A - live accepted-provider Practice
 

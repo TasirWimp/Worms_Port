@@ -11,7 +11,7 @@ import type {
 } from './loomkeeper-strategy-provider-v10-r8';
 import { StrategicProviderOperationalErrorV10R8 } from './loomkeeper-strategy-provider-v10-r8';
 import {
-    strategicResponseSchemaV10R8,
+    strategicMistralResponseSchemaV10R8,
     strategicSystemInstructionV10R8,
     strategicUserPromptV10R8
 } from './loomkeeper-strategy-prompt-v10-r8';
@@ -99,7 +99,7 @@ export function mistralRequestBody(brief: StrategicDecisionBriefV10R8): Readonly
             type: 'json_schema',
             json_schema: Object.freeze({
                 name: 'loomkeeper_strategic_decision',
-                schema: strategicResponseSchemaV10R8(brief),
+                schema: strategicMistralResponseSchemaV10R8(brief),
                 strict: true
             })
         }),

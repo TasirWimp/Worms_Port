@@ -81,3 +81,44 @@ export function strategicResponseSchemaV10R8(
     };
     return Object.freeze({ anyOf: Object.freeze([selected, abstained]) });
 }
+
+/** Mistral strict output requires one top-level object; runtime validation retains the exact union. */
+export function strategicMistralResponseSchemaV10R8(
+    brief: StrategicDecisionBriefV10R8
+): Readonly<Record<string, unknown>> {
+    const nullable = (schema: Readonly<Record<string, unknown>>) => Object.freeze({
+        anyOf: Object.freeze([schema, Object.freeze({ type: 'null' })])
+    });
+    return Object.freeze({
+        type: 'object',
+        additionalProperties: false,
+        properties: Object.freeze({
+            candidateId: nullable(Object.freeze({
+                type: 'string', enum: brief.legalCandidates.map(candidate => candidate.candidateId)
+            })),
+            strategy: nullable(Object.freeze({
+                type: 'string', enum: ['continue', 'refine', 'repair', 'switch', 'complete']
+            })),
+            targetId: nullable(Object.freeze({
+                type: 'string', enum: [...brief.strategyVocabulary.targetIds]
+            })),
+            milestoneId: nullable(Object.freeze({
+                type: 'string', enum: [...brief.strategyVocabulary.milestoneIds]
+            })),
+            horizonOwnTurns: nullable(Object.freeze({
+                type: 'integer', minimum: 1, maximum: 8
+            })),
+            reason: Object.freeze({
+                type: 'string',
+                description: 'Required concise justification or abstention explanation; 1 to 160 characters.'
+            }),
+            watchFor: nullable(Object.freeze({
+                type: 'string',
+                description: 'Concise observation that could change a selected plan; 1 to 160 characters.'
+            }))
+        }),
+        required: Object.freeze([
+            'candidateId', 'strategy', 'targetId', 'milestoneId', 'horizonOwnTurns', 'reason', 'watchFor'
+        ])
+    });
+}

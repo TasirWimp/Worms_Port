@@ -75,8 +75,25 @@ Phaser/Socket.IO stack.
   explicit in replay and artifacts; Gemini remains available only to preserve
   its historical evidence. Mistral has no live execution mode yet. Local
   focused and change-selected verification passed with zero retries after one
-  supported-test inventory correction. Run the five-probe Mistral shadow gate
-  once with no retry before considering live authority.
+  supported-test inventory correction. The first deployed Mistral gate reached
+  no inference: its first three calls were rate-limited while the account
+  reported a zero-request allowance, then the circuit opened. After the owner
+  enabled pay-as-you-go, a minimal request succeeded and exposed a 100-request
+  per-minute allowance, but the unchanged full gate's first three structured
+  requests were rejected before inference and again opened the circuit. Both
+  failed artifacts are preserved; neither measures Mistral strategy quality.
+  Direct request-contract review found the remaining provider-specific mismatch:
+  the shared exact selected-or-abstained schema used a root `anyOf`, while
+  Mistral strict structured output requires a top-level object. The correction
+  sends a Mistral-only top-level object with every field required and the
+  selection fields nullable. The existing server validator still accepts only
+  a complete selection or a complete abstention, so mixed nullable output
+  cannot gain authority. Prompt r4, brief r2, thresholds, timing and fallback
+  authority are unchanged. After local verification and deployment, run one
+  new five-probe Mistral shadow gate; the changed wire schema makes it a new
+  input rather than a retry of either failed artifact. Local focused and
+  change-selected verification passed once with zero retries and no provider
+  call; the deployed gate remains pending.
   No live Gemini selection, public R8 promotion or reward-path change is authorized.
 
 - Verification infrastructure: the isolated change-selection/build-reuse port

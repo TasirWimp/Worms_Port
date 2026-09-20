@@ -66,8 +66,15 @@ test('WP-027 Mistral transport sends one bounded structured request and records 
     const providerInput = JSON.parse(body.messages[1].content);
     assert.equal(providerInput.brief.legalCandidates.some((candidate: Record<string, unknown>) =>
         'deterministicFallback' in candidate), false);
-    assert.deepEqual(body.response_format.json_schema.schema.anyOf[0].properties.candidateId.enum,
+    const schema = body.response_format.json_schema.schema;
+    assert.equal(schema.type, 'object');
+    assert.equal(schema.additionalProperties, false);
+    assert.equal('anyOf' in schema, false);
+    assert.deepEqual(schema.properties.candidateId.anyOf[0].enum,
         fixture.boundary.brief.legalCandidates.map(candidate => candidate.candidateId));
+    assert.deepEqual(schema.properties.candidateId.anyOf[1], { type: 'null' });
+    assert.deepEqual(schema.required,
+        ['candidateId', 'strategy', 'targetId', 'milestoneId', 'horizonOwnTurns', 'reason', 'watchFor']);
     assert.deepEqual(response.payload, decision);
     assert.deepEqual(response.usage, {
         inputTokens: 120,
