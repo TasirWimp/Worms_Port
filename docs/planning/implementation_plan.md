@@ -69,7 +69,8 @@ Phaser/Socket.IO stack.
   than the declared immediate cost. Preserve this failed artifact and do not
   rerun the unchanged gate. The local replacement path now adds exact stable
   `mistral-small-2603` as `mistral-shadow` through direct server-only Chat
-  Completions REST with high reasoning and strict structured output. It reuses
+  Completions REST with no provider reasoning trace and strict structured
+  output. It reuses
   the same dynamic r4 game contract, brief, eight-second envelope, five probes,
   thresholds and deterministic execution authority. Provider identity is
   explicit in replay and artifacts; Gemini remains available only to preserve
@@ -96,12 +97,18 @@ Phaser/Socket.IO stack.
   call. The changed-input deployment then failed before inference for the same
   three calls and opened the circuit. A one-request diagnostic exposed exact
   provider error 3051: this model accepts only `none` or `high`, although the
-  generic API contract lists `low`. The transport now uses `high` because this
-  gate evaluates multi-turn strategy; the unchanged eight-second threshold
-  decides whether that supported setting is operationally viable. The third
-  failed artifact is preserved and must not be rerun unchanged. Focused types,
-  transport, evidence and housekeeping checks passed with zero retries; the
-  supported-setting deployed gate remains pending.
+  generic API contract lists `low`. The first supported `high` gate then failed
+  at 0/5 valid, 0/5 useful, 3/5 on time and five fallbacks with 8,001 ms p95.
+  An exact diagnostic request returned HTTP 200 but used all 2,048 completion
+  tokens as reasoning and ended `length` without a final answer. Increasing its
+  token or time allowance would violate the bounded operational goal. The
+  transport therefore moves to the only remaining supported setting, `none`.
+  This preserves the prompt, candidate evidence and strict output validation;
+  the frozen usefulness and eight-second thresholds now decide whether direct
+  Mistral answers retain enough strategic depth. The full fourth artifact must
+  be captured before the next deployment, and the `high` gate must not be rerun
+  unchanged. Focused types, exact transport, evidence and housekeeping checks
+  passed with zero retries; the direct-answer deployed gate remains pending.
   No live Gemini selection, public R8 promotion or reward-path change is authorized.
 
 - Verification infrastructure: the isolated change-selection/build-reuse port

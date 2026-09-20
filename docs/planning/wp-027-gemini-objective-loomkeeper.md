@@ -1,6 +1,6 @@
 # WP-027 Strategic-Voyage Model Loomkeeper
 
-Status: **in progress; Mistral Small 4 supported-reasoning correction locally verified, deployed gate pending**
+Status: **in progress; Mistral Small 4 bounded direct-answer correction locally verified, artifact capture and deployed gate pending**
 Required predecessor: completed WP-026 R8 objective-mode canary
 
 ## Product outcome
@@ -543,8 +543,8 @@ reliability decision before another strategy or prompt change.
 Mistral replacement implementation, 2026-09-20: the next provider comparison
 uses exact stable `mistral-small-2603` as `mistral-shadow`. Its server-only
 direct Chat Completions REST transport sends the same prompt-r4 dynamic game
-contract, bounded brief and strict selected-or-abstain JSON schema with `high`
-reasoning. The adapter parses one complete structured answer, Mistral token
+contract, bounded brief and strict selected-or-abstain JSON schema with
+`reasoning_effort=none`. The adapter parses one complete structured answer, Mistral token
 usage and the current USD 0.15 input/USD 0.60 output per million-token cost
 estimate. It keeps the shared eight-second deadline, no retry, cancellation,
 two-request concurrency limit, request budget and circuit breaker. The Bearer
@@ -626,6 +626,33 @@ types, 5/5 Mistral transport cases, all 74 work-package records and repository
 housekeeping. The broad selector, build, browser and PostgreSQL paths were not
 repeated because the immediately preceding full selector covers the unchanged
 runtime and the correction changes only the asserted request literal.
+
+Deployed high-reasoning result, 2026-09-20: the fixed gate summary records 0/5
+valid and useful calls, 3/5 on time, five fallbacks, zero authority violations,
+8,001 ms p95 and no captured token cost. A separate exact first-probe request
+proved that the schema and request are accepted with HTTP 200. It consumed
+6,378 prompt tokens and all 2,048 completion tokens, returned
+`finish_reason=length`, and contained a closed thinking block without a final
+text answer. The provider therefore performed extensive analysis but supplied
+no decision that the server could validate or execute.
+
+The bounded correction uses the only remaining supported setting,
+`reasoning_effort=none`. Raising the completion budget or deadline for `high`
+would work against the operational 3-8 second decision envelope and still
+would not guarantee a final answer. Direct mode removes the provider reasoning
+trace while retaining the r4 strategic instructions, full brief, candidate
+after-states, strict validator and deterministic fallback. The same five
+usefulness probes must establish whether those inputs are sufficient for
+multi-turn judgment. Thresholds, model, prompt, schema, no-retry policy and
+authority remain unchanged. Capture the full high-gate artifact before the
+next deployment; then run one changed-input `none` gate after focused local
+verification.
+
+Focused local verification passed with zero retries and no external request:
+types, 5/5 exact Mistral transport cases, all 74 work-package records and
+repository housekeeping. Broad product coverage was not repeated because the
+only runtime change is the asserted provider request literal and the preceding
+full selector covers all unchanged paths.
 
 ### Phone Gate A - live accepted-provider Practice
 
