@@ -1,0 +1,180 @@
+{
+  "generatedAt": "2026-09-20T20:16:12.848Z",
+  "modelId": "mistral-small-2603",
+  "promptVersion": "v10-r8-strategic-prompt-r4",
+  "fixtures": [
+    {
+      "id": "temporary-cost-preparation",
+      "basisId": "4e6233bcde3941541120c82d8cd3f5cffe7aa113cb328e1b97433209e09210b2",
+      "stateHash": "40cddabc0aeda4338c88518f4bbbc7fe8c2b093b3a62450cd575065a94718e9a",
+      "briefHash": "9ff109e2ebd4408896eaaef28cf11e220299c38585ea6f31cd23e6e565d51dd9",
+      "candidateAtlasHash": "9031122306d0705ee9ecfcf8c6e38551871e5c27aa90dc71c1140fb5195b513d",
+      "reviewQuestion": "Does the proposal accept an explicit immediate cost for a later objective opportunity?"
+    },
+    {
+      "id": "continue-through-setback",
+      "basisId": "de1519291c628e9c25bd869a47f26e70a03e5b072ee62e2c161f5b671e27c04e",
+      "stateHash": "40cddabc0aeda4338c88518f4bbbc7fe8c2b093b3a62450cd575065a94718e9a",
+      "briefHash": "e60c65a1f5f297ac07265e7f9cdf4b046bdc16c0701806d66b0e834b73e4c167",
+      "candidateAtlasHash": "866ef454351e2b22929b4ed89fbd064f275c0a175b597ed00204098d774ec601",
+      "reviewQuestion": "Does the proposal continue the still-feasible committed plan through its declared setback?"
+    },
+    {
+      "id": "repair-destroyed-route",
+      "basisId": "07a4e53e6d33724f2dd05c0bba69efe72f9d3b57b7243d0af692f5c4513faf61",
+      "stateHash": "3de445b3ceb5acd4401684bde628958fac18a503ddca4e6c52ef046f8a341bdb",
+      "briefHash": "9060afb87bb3a351e265c6c233cefd40887b86ceba8350b3ef122b5446210448",
+      "candidateAtlasHash": "6912ebaa59faa50fc9aeaf4740c62f3a691130f2829487d7969833c1bebcfa78",
+      "reviewQuestion": "Does the proposal repair or switch after the player invalidated a necessary route?"
+    },
+    {
+      "id": "preserve-future-option",
+      "basisId": "f3014cdb2dca030448d17e0952ff81e958f10a944886674c67928605983d6822",
+      "stateHash": "3799d094bd570c0d300e74f43101c344abdb8e09c8c429ac27a69e7eddecda7f",
+      "briefHash": "8ee514d41bcab4b864c41c8b4d37caf68db4dc6609e7f100e4c76c580473fa73",
+      "candidateAtlasHash": "92a76c97aac500ea37ca9ced8a81091c15fc0bddc11c89b20d00eada25b2507e",
+      "reviewQuestion": "Does the proposal avoid needless terrain destruction that closes the valuable future route?"
+    },
+    {
+      "id": "acknowledge-information-gap",
+      "basisId": "a26b60517c802ecfb87f8faaa396de7038ed483de8a8d88b634d29df4b3167b9",
+      "stateHash": "b6d02a0f78ab81ca8300c657da062ba0120da64e67fad66052cd25ffe26389f2",
+      "briefHash": "62cb026f74e8405152b558e56878655755b61a29fa925db3789b3de10c4ef0eb",
+      "candidateAtlasHash": "3aa03612ddc4c2736dc69cab8ce7193d5b98afd1322744bc6f54cfecdb421a0a",
+      "reviewQuestion": "Does the proposal abstain or choose conservatively while explicitly acknowledging the missing fact?"
+    }
+  ],
+  "thresholds": {
+    "calls": 5,
+    "minimumValid": 4,
+    "minimumUseful": 4,
+    "minimumOnTime": 4,
+    "maximumProviderFallbacks": 1,
+    "maximumAuthorityViolations": 0,
+    "maximumP95Ms": 8000,
+    "maximumCostUsdMicros": 50000
+  },
+  "results": [
+    {
+      "id": "temporary-cost-preparation",
+      "valid": false,
+      "useful": false,
+      "onTime": true,
+      "authoritySafe": true,
+      "operationalOutcome": "provider_error",
+      "diagnostic": "provider_http_request_rejected",
+      "proposalCandidateId": null,
+      "deterministicCandidateId": "c11",
+      "strategy": null,
+      "reason": null,
+      "watchFor": null,
+      "timingMs": {
+        "preparation": 3512,
+        "provider": 215,
+        "validation": 0,
+        "total": 3727
+      },
+      "usage": null,
+      "reviewQuestion": "Does the proposal accept an explicit immediate cost for a later objective opportunity?"
+    },
+    {
+      "id": "continue-through-setback",
+      "valid": false,
+      "useful": false,
+      "onTime": true,
+      "authoritySafe": true,
+      "operationalOutcome": "provider_error",
+      "diagnostic": "provider_http_request_rejected",
+      "proposalCandidateId": null,
+      "deterministicCandidateId": "c10",
+      "strategy": null,
+      "reason": null,
+      "watchFor": null,
+      "timingMs": {
+        "preparation": 2418,
+        "provider": 210,
+        "validation": 0,
+        "total": 2628
+      },
+      "usage": null,
+      "reviewQuestion": "Does the proposal continue the still-feasible committed plan through its declared setback?"
+    },
+    {
+      "id": "repair-destroyed-route",
+      "valid": false,
+      "useful": false,
+      "onTime": true,
+      "authoritySafe": true,
+      "operationalOutcome": "provider_error",
+      "diagnostic": "provider_http_request_rejected",
+      "proposalCandidateId": null,
+      "deterministicCandidateId": "c07",
+      "strategy": null,
+      "reason": null,
+      "watchFor": null,
+      "timingMs": {
+        "preparation": 2203,
+        "provider": 136,
+        "validation": 0,
+        "total": 2339
+      },
+      "usage": null,
+      "reviewQuestion": "Does the proposal repair or switch after the player invalidated a necessary route?"
+    },
+    {
+      "id": "preserve-future-option",
+      "valid": false,
+      "useful": false,
+      "onTime": true,
+      "authoritySafe": true,
+      "operationalOutcome": "circuit_open",
+      "diagnostic": "Provider circuit is open.",
+      "proposalCandidateId": null,
+      "deterministicCandidateId": "c02",
+      "strategy": null,
+      "reason": null,
+      "watchFor": null,
+      "timingMs": {
+        "preparation": 2163,
+        "provider": 0,
+        "validation": 0,
+        "total": 2163
+      },
+      "usage": null,
+      "reviewQuestion": "Does the proposal avoid needless terrain destruction that closes the valuable future route?"
+    },
+    {
+      "id": "acknowledge-information-gap",
+      "valid": false,
+      "useful": false,
+      "onTime": true,
+      "authoritySafe": true,
+      "operationalOutcome": "circuit_open",
+      "diagnostic": "Provider circuit is open.",
+      "proposalCandidateId": null,
+      "deterministicCandidateId": "c03",
+      "strategy": null,
+      "reason": null,
+      "watchFor": null,
+      "timingMs": {
+        "preparation": 2135,
+        "provider": 0,
+        "validation": 0,
+        "total": 2135
+      },
+      "usage": null,
+      "reviewQuestion": "Does the proposal abstain or choose conservatively while explicitly acknowledging the missing fact?"
+    }
+  ],
+  "totals": {
+    "calls": 5,
+    "valid": 0,
+    "useful": 0,
+    "onTime": 5,
+    "providerFallbacks": 5,
+    "authorityViolations": 0,
+    "p95Ms": 3727,
+    "estimatedCostUsdMicros": 0
+  },
+  "passed": false
+}

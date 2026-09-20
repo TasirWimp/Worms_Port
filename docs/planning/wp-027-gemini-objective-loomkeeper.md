@@ -1,6 +1,6 @@
 # WP-027 Strategic-Voyage Model Loomkeeper
 
-Status: **in progress; Mistral Small 4 compatibility correction locally verified, deployed gate pending**
+Status: **in progress; Mistral Small 4 supported-reasoning correction locally verified, deployed gate pending**
 Required predecessor: completed WP-026 R8 objective-mode canary
 
 ## Product outcome
@@ -543,7 +543,7 @@ reliability decision before another strategy or prompt change.
 Mistral replacement implementation, 2026-09-20: the next provider comparison
 uses exact stable `mistral-small-2603` as `mistral-shadow`. Its server-only
 direct Chat Completions REST transport sends the same prompt-r4 dynamic game
-contract, bounded brief and strict selected-or-abstain JSON schema with `low`
+contract, bounded brief and strict selected-or-abstain JSON schema with `high`
 reasoning. The adapter parses one complete structured answer, Mistral token
 usage and the current USD 0.15 input/USD 0.60 output per million-token cost
 estimate. It keeps the shared eight-second deadline, no retry, cancellation,
@@ -602,6 +602,30 @@ bundle limits; and 19/19 canonical Chromium phone journeys. PostgreSQL retained
 its expected missing-local-URL prerequisite skip. Performance, visual, retired
 legacy, daily and release coverage were not selected. The next action is to
 deploy this commit and run the changed-input five-probe Mistral gate once.
+
+Deployed schema-correction result and exact diagnostic, 2026-09-20: the
+[third artifact](../evidence/wp-027-shadow-gate-mistral-small-4-v3/result.json)
+again records 0/5 valid and useful calls, 5/5 on time, five fallbacks, zero
+authority violations and no token cost. The first three requests were rejected
+in 136-215 ms, followed by the circuit opening. A separate request built from
+the exact first-probe body returned provider code 3051: `reasoning_effort=low`
+is unsupported for exact `mistral-small-2603`; its accepted values are `none`
+and `high`. The schema correction was therefore not exercised by inference.
+
+The transport now selects supported `high` reasoning. `none` would optimize
+latency by removing the deliberate reasoning that this strategic gate is meant
+to assess. The frozen eight-second whole-window threshold remains the
+operational constraint: if `high` cannot return at least four useful valid
+answers within it, Mistral Small 4 does not qualify. Prompt r4, brief r2,
+schema, probes, thresholds, no-retry policy and deterministic authority remain
+unchanged. The third artifact is immutable; one new deployed gate is allowed
+only after this parameter correction is verified and deployed.
+
+Focused local verification passed with zero retries and no external request:
+types, 5/5 Mistral transport cases, all 74 work-package records and repository
+housekeeping. The broad selector, build, browser and PostgreSQL paths were not
+repeated because the immediately preceding full selector covers the unchanged
+runtime and the correction changes only the asserted request literal.
 
 ### Phone Gate A - live accepted-provider Practice
 

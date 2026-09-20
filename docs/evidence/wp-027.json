@@ -27,9 +27,10 @@
     "After the first Gemini 3.6 gate, retain sanitized diagnostics in the probe artifact, measure live-equivalent planner and boundary preparation, state the 160-character output limit through supported schema descriptions, advance the changed instruction to exact prompt r2, and make the temporary-cost fixture expose an explicit committed route and delayed benefit without changing thresholds or authority.",
     "After the corrected r2 gate, add bounded deterministic ASCII and structured after-state deltas to every candidate, remove fallback identity from the model-facing brief, independently neutralize candidate identity and presentation order while retaining private server fallback authority, advance to prompt r3 and brief r2, and apply the owner-authorized eight-second whole-window deadline.",
     "Advance to prompt r4 with a compact shared turn-based destructible-world gameplay contract and exactly one active-mode clause derived from the selected Collect, Defend or Claim objective.",
-    "After the failed r4 Gemini reliability gate, add exact stable mistral-small-2603 as a distinct server-only mistral-shadow provider using direct Chat Completions REST, low reasoning, strict structured output, exact usage and current cost measurement.",
+    "After the failed r4 Gemini reliability gate, add exact stable mistral-small-2603 as a distinct server-only mistral-shadow provider using direct Chat Completions REST, high reasoning, strict structured output, exact usage and current cost measurement.",
     "Reuse the same r4 prompt, brief, eight-second envelope, fixed five probes and deterministic execution authority; retain explicit provider identity in replay and probe artifacts while preserving Gemini history.",
-    "After the two failed deployed Mistral operational attempts, preserve both artifacts and replace only Mistral's root-union response schema with a strict top-level object whose nullable wire fields remain subject to the existing exact selected-or-abstained server validator."
+    "After the two failed deployed Mistral operational attempts, preserve both artifacts and replace only Mistral's root-union response schema with a strict top-level object whose nullable wire fields remain subject to the existing exact selected-or-abstained server validator.",
+    "After the deployed schema correction still failed before inference, preserve the third artifact, diagnose the exact request once, and replace unsupported Mistral low reasoning with the model-supported high setting while retaining the frozen eight-second gate."
   ],
   "non_goals": [
     "No Gemini SDK, API key, network call, provider adapter, prompt execution, shadow mode or live model selection in Waypoint 1.",
@@ -249,6 +250,16 @@
       "command": "npm.cmd run check:types, four focused strategic-provider files and npm.cmd run verify:changes for the Mistral strict-schema correction",
       "status": "pass",
       "details": "Delegated zero-retry execution by worms_port_test_runner made no provider call. Types passed; focused Mistral/Gemini/provider/voyage coverage passed 29/29. The selector passed at fingerprint 725fe0b5c7436286b49327ce53f36669dbc123d0a195316c2d9105acfde4e030 in 567.219 seconds: protocol 25/25, simulation 85/85, Loomkeeper 45/45, relics 10/10, combat 53/53, Practice 6/6, identity 22/22, reward 28/28 and PEI 25/25. Fresh build proof b1a163c1d0ff / 621819e5ca66 passed smoke and identity/reward security. Bundle limits passed at 1,435,401/1,500,000 initial JavaScript bytes and 419,087/430,000 gzip bytes. Canonical Chromium 390x844 phone journeys passed 19/19. PostgreSQL used its expected missing-WP014_TEST_DATABASE_URL prerequisite skip; performance, visual, retired legacy, daily and release coverage were not selected. Logs .cache/wp027-mistral-strict-schema-types.log, .cache/wp027-mistral-strict-schema-loomkeeper.log and .cache/wp027-mistral-strict-schema-selector.log."
+    },
+    {
+      "command": "deployed Mistral Small 4 five-probe gate after the strict top-level-object schema correction plus one exact-request diagnostic",
+      "status": "fail",
+      "details": "The preserved v3 artifact records 0/5 valid, 0/5 useful, 5/5 on time, five fallbacks, zero authority violations, 3,727 ms p95 and zero token cost. Three provider_http_request_rejected outcomes in 136-215 ms were followed by the circuit opening. A separate request constructed from the exact first-probe body returned HTTP 400, provider code 3051: reasoning_effort=low is unsupported for exact mistral-small-2603, whose accepted values are none and high. No request reached model inference, so this remains operational failure evidence rather than strategy evidence."
+    },
+    {
+      "command": "focused verification for the Mistral supported reasoning-effort correction",
+      "status": "pass",
+      "details": "Delegated zero-retry verification by worms_port_test_runner passed types, 5/5 exact Mistral transport cases, all 74 work-package records and repository housekeeping. No external request ran. The broad selector, build, browser and PostgreSQL checks were intentionally not repeated because only the request literal reasoning_effort low-to-high, its exact assertion and evidence/docs changed; the immediately preceding full selector covers all unchanged product paths. Logs .cache/wp027-mistral-effort-types.log, .cache/wp027-mistral-effort-test.log, .cache/wp027-mistral-effort-work-packages.log and .cache/wp027-mistral-effort-housekeeping.log."
     }
   ],
   "reviews": [
@@ -316,6 +327,11 @@
       "reviewer": "primary assistant direct Mistral strict-schema compatibility review",
       "status": "pass",
       "details": "Official Mistral structured-output examples and API shape require a strict top-level object with required properties. The correction applies that shape only to the Mistral wire request, permits null at individual fields so both protocol outcomes can be represented, and leaves the shared runtime union as the authority boundary. A mixed nullable response still fails validation and falls back deterministically. Prompt r4, brief r2, exact model, candidate contents and ordering, deadline, thresholds, replay identity and shadow authority remain unchanged, so the next deployed gate isolates the schema correction."
+    },
+    {
+      "reviewer": "primary assistant direct Mistral supported-reasoning correction review",
+      "status": "pass",
+      "details": "The exact provider response identifies one bounded request parameter rather than a schema, credential, capacity or model-access failure. The transport selects high because WP-027 is explicitly testing multi-turn strategic judgment; none would remove the deliberate reasoning being evaluated. The existing eight-second whole-window threshold remains unchanged and will reject high if its latency is not operationally useful. Model, prompt, brief, schema, candidates, thresholds, retry policy, circuit breaker, replay and deterministic shadow authority are unchanged."
     }
   ],
   "skipped_checks": [
@@ -334,7 +350,7 @@
     "The corrected r2 artifact remains failed historical evidence at 1/5 usefulness and 5,999 ms p95; it does not qualify r4 and will not be rerun unchanged.",
     "The frozen cost estimate uses Gemini 3.6 Flash standard paid rates of USD 0.75 input and USD 3.75 output per million tokens through 2026-12-31; the free tier is free of charge, and the estimate must be reviewed if shadow operation continues under later pricing.",
     "Local fake and transport tests prove the authority and measurement harness, not deployed Gemini or Mistral latency or multi-turn strategy quality.",
-    "The two deployed Mistral artifacts did not reach inference: v1 was blocked by zero account capacity and v2 by rejection of the full structured request. The provider-specific top-level object correction remains operationally unproven until one changed-input five-probe deployment runs.",
+    "The three deployed Mistral artifacts did not reach inference: v1 was blocked by zero account capacity, v2 rejected the original structured request and v3 identified unsupported reasoning_effort=low. Supported high reasoning remains operationally unproven under the frozen eight-second threshold until one changed-input five-probe deployment runs.",
     "Mistral Small 4 remains shadow-only. It cannot receive execution authority unless a later explicit live-mode slice follows a passing fixed five-probe gate."
   ]
 }
